@@ -6165,7 +6165,7 @@ class Main < Sinatra::Base
         after = PageKinds.builds_on(slug, @@content, pinnable_slugs, :development => DEVELOPMENT)
         show = "<a href='/lehrplan?zeige=#{h.(slug)}#wege'>im Lehrplan zeigen</a>"
         next_html = "<div class='teacher-note-next'><i class='bi bi-signpost-split' aria-hidden='true'></i><div><strong>Wie es weitergehen kann:</strong> " +
-            (after.empty? ? "Keine andere Aktivität baut auf dieser auf; die Wege durch alle stehen im <a href='/lehrplan#wege'>Lehrplan</a>." :
+            (after.empty? ? "Keine andere Aktivität baut auf dieser auf. Wie die Aktivitäten aufeinander aufbauen, zeigt der <a href='/lehrplan?zeige=#{h.(slug)}#wege'>Lehrplan</a>." :
                 "Auf dieser Aktivität #{after.size == 1 ? 'baut' : 'bauen'} #{PageKinds.join_and(after.map { |s, t| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(t))}</a>" })} auf (#{show}).") +
             '</div></div>'
         "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}#{next_html}</div></div>" \
