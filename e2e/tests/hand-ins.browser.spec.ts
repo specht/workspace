@@ -70,10 +70,10 @@ const HAND_INS: HandIn[] = [
   },
   {
     task: 'feuerwerk/abgabe',
-    setup: (c) => write(c, 'pixelram-starter/feuerwerk.c', '#include <pixelram.h>\n\nint main(void)\n{\n    return 0;\n}\n'),
-    answer: 'pixelram-starter/feuerwerk.c',
+    setup: (c) => write(c, 'feuerwerk/feuerwerk.c', '#include <pixelram.h>\n\nint main(void)\n{\n    return 0;\n}\n'),
+    answer: 'feuerwerk/feuerwerk.c',
     shown: { code: '#include <pixelram.h>' },
-    folders: ['pixelram-starter'],
+    folders: ['feuerwerk'],
   },
   {
     task: 'hugo/abgabe',
@@ -214,8 +214,12 @@ for (const handIn of HAND_INS) {
       teacher.on('console', (m) => consoleLines.push(m.text()));
       await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
       await teacher.goto(`/klasse?group=E2E&activity=${activity}`);
+      // the answers of the hand-in task, not the first task with answers
+      // (other tests leave answers to other tasks of the same activity)
       const link = teacher.locator('a.cb-submission').first();
-      if (!(await link.isVisible())) await teacher.locator('details.class-answers summary').first().click();
+      if (!(await link.isVisible())) {
+        await teacher.locator('details.class-answers', { has: teacher.locator('a.cb-submission') }).first().locator('summary').click();
+      }
       await link.click();
       const dialog = teacher.getByRole('dialog');
       await expect(dialog).toBeVisible();
