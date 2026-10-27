@@ -6,7 +6,8 @@ require 'cgi'
 #
 #   languages: [ruby, python]
 #
-# and marks what differs between them, on lines of their own:
+# and marks what differs between them, on lines of their own (one marker
+# may name several languages, <!-- language: javascript dart java -->):
 #
 #   <!-- language: ruby -->
 #   ```ruby
@@ -47,7 +48,7 @@ module CodeLanguages
     DEFAULT = 'ruby'
     VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
 
-    START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+)[ \t]*-->[ \t]*$/
+    START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+(?:[ \t,]+[a-z]+)*)[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/language[ \t]*-->[ \t]*$/
 
     def self.known?(language)
@@ -70,8 +71,9 @@ module CodeLanguages
             next piece if i.odd?
 
             piece.gsub(START) do
-                warn&.call("<!-- language: #{$1} -->: unknown language") unless known?($1)
-                "\n<div class='code-language-start' data-language='#{CGI.escapeHTML($1)}'></div>\n"
+                languages = $1.split(/[ \t,]+/)
+                languages.reject { |l| known?(l) }.each { |l| warn&.call("<!-- language: #{l} -->: unknown language") }
+                "\n<div class='code-language-start' data-language='#{CGI.escapeHTML(languages.join(' '))}'></div>\n"
             end.gsub(FINISH, "\n<div class='code-language-end'></div>\n")
         end.join
     end

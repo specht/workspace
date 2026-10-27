@@ -3356,13 +3356,14 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 
 /* Pages in more than one programming language (CodeLanguages): the page
-   container says which one is shown, the other parts stay hidden. Without
-   a choice the first one, Ruby, is shown. */
-[data-code-language='ruby'] .code-language:not([data-language='ruby']),
-[data-code-language='python'] .code-language:not([data-language='python']),
-[data-code-language='javascript'] .code-language:not([data-language='javascript']),
-[data-code-language='dart'] .code-language:not([data-language='dart']),
-[data-code-language='java'] .code-language:not([data-language='java']) {
+   container says which one is shown, the other parts stay hidden; a part
+   may be for several (data-language='javascript dart java'). Without a
+   choice the first one, Ruby, is shown. */
+[data-code-language='ruby'] .code-language:not([data-language~='ruby']),
+[data-code-language='python'] .code-language:not([data-language~='python']),
+[data-code-language='javascript'] .code-language:not([data-language~='javascript']),
+[data-code-language='dart'] .code-language:not([data-language~='dart']),
+[data-code-language='java'] .code-language:not([data-language~='java']) {
     display: none;
 }
 
@@ -3420,8 +3421,25 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     background: transparent;
     font: inherit;
     line-height: 1.5;
+    white-space: nowrap;
+    hyphens: manual;
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+/* On a phone, four or five names do not fit in one row: the languages not
+   chosen show only their logo, their name stays for screen readers. */
+@media (max-width: 575.98px) {
+    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) {
+        padding: 0.1em 0.55em;
+    }
+    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) .code-language-option-name {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
 }
 
 .code-language-option img {

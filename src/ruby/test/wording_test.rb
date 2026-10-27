@@ -40,6 +40,19 @@ class WordingTest < Minitest::Test
     end
 
     # the server opens links to other sites in a new tab (ExternalLinks)
+    # The paragraph right after <div class='hint …'> is HTML: Markdown in it
+    # stays as it is, and backticks show up on the page. Code there is <code>.
+    def test_no_backticks_in_html_boxes
+        found = Dir.glob(File.join(CONTENT, '**', '*.md')).flat_map do |path|
+            lines = File.readlines(path)
+            lines.each_index.select { |i| lines[i] =~ /\A<div class='hint[^']*'[^>]*>\s*\z/ }.filter_map do |i|
+                para = lines[(i + 1)..].take_while { |l| !l.strip.empty? && !l.start_with?('<!--', '</div>') }
+                "#{path.sub("#{CONTENT}/", '')}:#{i + 2}" if para.any? { |l| l.include?('`') }
+            end
+        end
+        assert_empty found
+    end
+
     def test_no_target_on_external_links
         assert_empty hits(/<a\b[^>]*href=['"]https?:\/\/[^>]*\btarget=|<a\b[^>]*\btarget=[^>]*href=['"]https?:\/\//)
     end
