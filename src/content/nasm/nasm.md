@@ -143,6 +143,8 @@ crop-bottom: 14%
 
 <img class='full' src='syntax-highlighting.webp' alt='hello.asm mit farbiger Syntax, von section .data über mov rax, 1 bis zum letzten syscall.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren und linken. Dazu verwenden wir den Netwide Assembler `nasm`, um den Assembler-Code in eine Objektdatei zu übersetzen, und den GNU Linker `ld`, um die Objektdatei anschließend in eine ausführbare Datei zu linken.
@@ -217,6 +219,8 @@ nasm -f elf64 hello.asm && ld hello.o -o hello && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der nächste Befehl nur ausgeführt wird, wenn der vorherige Befehl erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, in Zeile 9 statt `rax` das Wort `ray` zu schreiben:
@@ -242,7 +246,11 @@ nasm -f elf64 hello.asm
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um einen vorherigen Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Der Assembler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Der Assembler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -257,6 +265,16 @@ crop-terminal-lines: auto
 <img class='full' src='hello-error.webp' alt='nasm meldet hello.asm:9: error: symbol »ray« not defined.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 9) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
+
+### Der Text und seine Länge
+
+Der Text steht in Zeile 2, seine Länge in Zeile 12: `mov rdx, 14`. Nichts im Programm sorgt dafür, dass beide zusammenpassen.
+
+_task(laenge)
+
+_task(eigener-text)
 
 ## Primfaktorzerlegung
 

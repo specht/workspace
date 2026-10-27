@@ -1,0 +1,43 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: nasm
+examples:
+  hallo:
+    pass:
+      - files: { hello.asm: hello.asm }
+      - files: { hello.asm: hello-error.asm }
+    fail:
+      - files: { hello.asm: { text: "section .data\n    hello db 'Hello, World!', 10, 0\n" } }
+        say: syscall
+      - files: { hello.asm: { text: "" } }
+      - files: { hallo.asm: hello.asm }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\0linked", executable: true } }
+    fail:
+      - files: { hello.o: { text: "\x7FELF\x02\x01\x01\0object" } }
+        say: ld hello.o -o hello
+      - files: { hello: { from: hello.asm, executable: true } }
+        say: kein übersetztes Programm
+  fehler:
+    pass:
+      - answer: symbol `ray' not defined
+      - answer: symbol ray not defined
+      - answer: "error: symbol `ray' not defined"
+    fail:
+      - answer: ray
+        say: der ganze Text
+      - answer: 'hello.asm:9'
+        say: die Zeile
+      - answer: invalid combination of opcode and operands
+  eigener-text:
+    pass:
+      - files: { hello.asm: loesung/hello-workspace.asm }
+    fail:
+      - files: { hello.asm: hello.asm }
+        say: Hello, Workspace!
+      - files: { hello.asm: { text: "    hello db 'Hello, Workspace!', 10, 0\n    mov rdx, 14\n" } }
+        say: seine Länge
+      - files: { hello.asm: { text: "    hello db 'Hello, Workspace!', 10, 0\n    mov rdx, 17\n" } }
+        say: seine Länge
