@@ -1,0 +1,122 @@
+# Aufgaben zu »Fortran«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: fortran
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.f90`.
+    file: hello.f90
+    check:
+      type: files
+      path: hello.f90
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)^\s*program\s+\w+'
+            say: 'In `hello.f90` fehlt die erste Zeile, `program HelloWorld`.'
+          - pattern: '(?i)^\s*print\s*\*\s*,\s*["'']Hello, World!["'']'
+            say: 'In `hello.f90` finde ich noch kein `print *, "Hello, World!"`. Steht es genau so da, mit Stern, Komma und Anführungszeichen?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.f90`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.f90` eingegeben, mit `.f90` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.f90` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Übersetzt
+    prompt: |
+      Übersetze `hello.f90` mit `gfortran`, sodass in `/workspace` das
+      ausführbare Programm `hello` liegt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch kein Programm `hello`. Im Terminal, im Ordner `/workspace`: `gfortran hello.f90 -o hello`. Meldet `gfortran` einen Fehler, steht kein Programm da.'
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Lösche es mit `rm hello` und übersetze noch einmal mit `gfortran hello.f90 -o hello`.'
+    hint:
+      - '`ls -l` zeigt, welche Dateien in `/workspace` liegen. Ein übersetztes Programm ist grün.'
+      - 'Ohne `-o hello` nennt `gfortran` das Programm `a.out`. Der Name hinter `-o` ist der des Programms.'
+    solution: |
+      `gfortran hello.f90 -o hello` übersetzt den Quelltext in Maschinencode und
+      schreibt ihn in die Datei `hello`. Sie ist ein Programm im Format ELF, das
+      Linux direkt ausführt: `./hello`.
+
+  - id: fehler
+    title: Die Fehlermeldung
+    prompt: |
+      Was meldet `gfortran` für `prin`? Gib den Text hinter `Error:` ein, ohne
+      `at (1)`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(error\W*)?unclassifiable\s+statement\b'
+    feedback:
+      - when: { matches: '(?i)prin' }
+        say: '`prin` ist das Wort, über das `gfortran` stolpert. Gesucht ist, was es darüber sagt: der Text hinter `Error:`.'
+      - when: { matches: '(?i)^\W*error\W*$' }
+        say: Das ist nur die Art der Meldung. Gesucht ist der Text dahinter.
+    hint: Die Meldung zeigt erst die Zeile mit dem Fehler und markiert die Stelle mit einer `1`. Die letzte Zeile beginnt mit `Error:`.
+    solution: |
+      `Unclassifiable statement`: `gfortran` kann die Zeile keiner Anweisung
+      zuordnen, die es kennt. Die `1` unter der Zeile und `at (1)` zeigen, wo
+      es die Zeile nicht mehr versteht.
+
+  - id: ueberlauf
+    title: Drei Milliarden
+    prediction: true
+    prompt: |
+      Was passiert, wenn du `factor` die Zahl `3000000000` gibst? Überleg erst,
+      dann probier es aus. Schau dir dazu die Zeile `integer :: n, i` an.
+    check:
+      type: choice
+      options:
+        - 'Das Programm bricht mit einer Fehlermeldung ab: Die Zahl passt nicht in eine `integer`-Variable.'
+        - 'Es gibt die Primfaktoren von 3000000000 aus.'
+        - 'Es rechnet mit einer falschen, kleineren Zahl weiter und gibt deren Faktoren aus.'
+        - 'Es wartet weiter auf eine Eingabe, weil die Zahl zu lang ist.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Eine `integer`-Variable hat in `gfortran` 32 Bit. Wie groß darf die Zahl darin höchstens sein?'
+      - when: { picked: 2 }
+        say: 'So machen es manche Sprachen, etwa Pascal. Probier aus, was `gfortran` tut.'
+      - when: { picked: 3 }
+        say: 'Die Zahl wird schon gelesen, wenn du <kbd>Enter</kbd> drückst. Probier aus, was dann passiert.'
+    solution: |
+      Das Programm bricht beim Einlesen ab: `Fortran runtime error: Integer
+      overflow while reading item 1`. Eine `integer`-Variable hat 32 Bit und
+      reicht bis 2147483647.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.f90` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.f90
+    check:
+      type: files
+      path: bubblesort.f90
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)if\s*\(\s*array\s*\(\s*j\s*\)\s*<=?\s*array\s*\(\s*j\s*\+\s*1\s*\)\s*\)|if\s*\(\s*array\s*\(\s*j\s*\+\s*1\s*\)\s*>=?\s*array\s*\(\s*j\s*\)\s*\)'
+            say: 'In `bubblesort.f90` vergleicht das Programm noch wie vorher: Zwei Zahlen werden vertauscht, wenn die vordere größer ist. Wann sollen sie jetzt vertauscht werden?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.f90`. Speichere das Programm unter diesem Namen.
+    hint:
+      - Zwei benachbarte Zahlen werden in der Zeile mit `if` vertauscht. Unter welcher Bedingung?
+      - Für absteigend wird vertauscht, wenn die vordere Zahl kleiner ist als die hintere.
+    solution: |
+      In der Zeile mit `if` wird aus `>` ein `<`:
+      `if (array(j) < array(j+1)) then`. Jetzt wandert in jedem Durchlauf die
+      kleinste Zahl nach hinten.

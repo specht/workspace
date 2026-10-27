@@ -102,9 +102,17 @@ html[data-bs-theme="dark"] pre {
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
 }
 
+/* A block with line numbers is a table of two pre (Rouge): both take the
+   block's size, instead of the 93 % once more and the 90 % of tables,
+   which made them smaller than every other block */
 pre pre {
     padding: 0;
     border-radius: 0;
+    font-size: inherit;
+}
+
+pre .rouge-table {
+    font-size: inherit;
 }
 
 pre .s,
@@ -2024,11 +2032,11 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     align-content: start;
     flex: 1 1 auto;
     min-height: 0;
-    /* A long list (the Personen page) scrolls on its own; at its end the
-       page does not take over. The page's scrolling still moves it to the
-       current heading (_template.html). */
+    /* A long list (the Personen page) scrolls on its own first; at its end
+       the page takes over, and a short list lets the page scroll at once.
+       The page's scrolling still moves it to the current heading
+       (_template.html). */
     overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: rgba(var(--bs-body-color-rgb), 0.18) transparent;
     gap: 0.04rem;

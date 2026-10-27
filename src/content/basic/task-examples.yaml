@@ -1,0 +1,33 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: basic
+examples:
+  hallo:
+    pass:
+      - files: { hello.bas: hello.bas }
+      - files: { hello.bas: { text: "print \"Hello, World!\"\n" } }
+    fail:
+      - files: { hello.bas: hello-error.bas }
+        say: PRINT "Hello, World!"
+      - files: { hello.bas: { text: "" } }
+      - files: { hallo.bas: hello.bas }
+  hundert:
+    pass:
+      - files: { bubblesort.bas: loesung/bubblesort-100.bas }
+    fail:
+      - files: { bubblesort.bas: bubblesort.bas }
+        say: DIM arr(10)
+      - files: { bubblesort.bas: { text: "DIM arr(100)\nFOR i = 1 TO 100\nNEXT i\nFOR i = 1 TO 10\nNEXT i\nFOR i = 1 TO 9\n    FOR j = 1 TO 10 - i\n    NEXT j\nNEXT i\nFOR i = 1 TO 10\nNEXT i\n" } }
+        say: Zählen alle drei bis 100?
+      - files: { bubblesort.bas: { text: "DIM arr(100)\nFOR i = 1 TO 100\nFOR i = 1 TO 100\nFOR i = 1 TO 100\nFOR i = 1 TO 9\n    FOR j = 1 TO 10 - i\n" } }
+        say: einmal weniger
+      - files: { bubblesort.bas: { text: "DIM arr(100)\nFOR i = 1 TO 100\nFOR i = 1 TO 100\nFOR i = 1 TO 100\nFOR i = 1 TO 99\n    FOR j = 1 TO 10 - i\n" } }
+        say: 10 - i
+  absteigend:
+    pass:
+      - files: { bubblesort.bas: { text: "        IF arr(j) < arr(j + 1) THEN\n" } }
+      - files: { bubblesort.bas: { text: "        if arr(j+1) > arr(j) then\n" } }
+    fail:
+      - files: { bubblesort.bas: bubblesort.bas }
+        say: vergleicht das Programm noch wie vorher

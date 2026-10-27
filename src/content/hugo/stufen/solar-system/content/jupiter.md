@@ -2,6 +2,7 @@
 title: Jupiter
 date: 2026-10-15
 description: Ein Riese mit einem Sturm, größer als die Erde.
+image: /images/jupiter.jpg
 tags: [Gasriese, Monde]
 ---
 

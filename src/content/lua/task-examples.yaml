@@ -1,0 +1,32 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: lua
+examples:
+  hallo:
+    pass:
+      - files: { hello.lua: hello.lua }
+      - files: { hello.lua: hello-shebang.lua }
+      - files: { hello.lua: { text: "print('Hello, World!')\n" } }
+    fail:
+      - files: { hello.lua: hello-error.lua }
+        say: print("Hello, World!")
+      - files: { hello.lua: { text: "" } }
+      - files: { hallo.lua: hello.lua }
+  ausfuehrbar:
+    pass:
+      - files: { hello.lua: { from: hello-shebang.lua, executable: true } }
+    fail:
+      - files: { hello.lua: hello-shebang.lua }
+        say: nicht ausführbar
+      - files: { hello.lua: { from: hello.lua, executable: true } }
+        say: Shebang
+      - files: { hello.lua: { text: "#!/usr/bin/env lua\nprin(\"Hello, World!\")\n", executable: true } }
+        say: prin
+  absteigend:
+    pass:
+      - files: { bubblesort.lua: { text: "            if arr[j] < arr[j + 1] then\n" } }
+      - files: { bubblesort.lua: { text: "            if arr[j+1] > arr[j] then\n" } }
+    fail:
+      - files: { bubblesort.lua: bubblesort.lua }
+        say: vergleicht das Programm noch wie vorher

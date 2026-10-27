@@ -1,0 +1,126 @@
+# Aufgaben zum Steckbrief »Dart«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace
+# (hello.dart, factor.dart, bubblesort.dart), so wie die Seite sie speichern
+# lässt.
+format: 1
+activity: dart
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.dart`.
+    file: hello.dart
+    check:
+      type: files
+      path: hello.dart
+      expect:
+        format: text
+        contains:
+          - pattern: 'print\s*\(\s*[''"]Hello, World![''"]\s*\)'
+            say: 'In `hello.dart` finde ich noch kein `print(''Hello, World!'')`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: '\bvoid\s+main\s*\('
+            say: 'In `hello.dart` fehlt `void main()`, die Funktion, mit der das Programm beginnt.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.dart`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.dart` eingegeben, mit `.dart` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.dart` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Was Dart nicht findet
+    prompt: |
+      Dart meldet `Error: … not found: 'prin'`. Was findet es nicht? Gesucht
+      ist das Wort an der Stelle der drei Punkte.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(method|methode)(\s+not\s+found)?\W*$'
+    feedback:
+      - when: { matches: '(?i)prin' }
+        say: Gesucht ist nicht der Name, sondern was `prin` für Dart ist. Das Wort steht am Anfang, hinter `Error:`.
+      - when: { matches: '(?i)^\W*error\W*$' }
+        say: '`Error` sagt nur, dass es ein Fehler ist. Gesucht ist das Wort dahinter.'
+    hint: 'Die Zeile lautet `hello.dart:2:5: Error: … not found: ''prin''.`'
+    solution: |
+      `Method`: Dart sucht eine Methode `prin` und findet keine. Darunter zeigt
+      es die Zeile und markiert `prin` mit `^^^^`. Weil Dart das ganze Programm
+      vor dem Start übersetzt, läuft keine einzige Zeile, auch nicht die vor
+      dem Fehler.
+
+  - id: int-grenze
+    title: Eine zu große Zahl
+    prompt: |
+      Gib bei `dart run factor.dart` die Zahl `9223372036854775808` ein, eins
+      mehr als die größte Zahl, die in ein `int` passt. Mit welcher Exception
+      bricht das Programm ab? Ihr Name endet auf `Exception`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*FormatException\W*$'
+    feedback:
+      - when: { matches: '(?i)Overflow' }
+        say: 'So heißt sie in C#. Probier es in Dart aus: Die Exception hat einen anderen Namen.'
+      - when: { matches: '(?i)^\W*(Unhandled\s+)?Exception\W*$' }
+        say: Gesucht ist der ganze Name, das Wort vor `Exception` gehört dazu.
+    hint: Die Meldung beginnt mit `Unhandled exception:`, in der Zeile darunter steht der Name.
+    solution: |
+      `FormatException: Positive input exceeds the limit of integer`. Ein `int`
+      hat in Dart 64 Bit und reicht bis 9223372036854775807; `int.parse` lehnt
+      eine größere Zahl ab, statt mit einer falschen weiterzurechnen.
+
+  - id: ohne-ausrufezeichen
+    title: Ohne Ausrufezeichen
+    prediction: true
+    prompt: |
+      In `factor.dart` steht `int.parse(stdin.readLineSync()!)`.
+      `readLineSync()` liefert `null`, wenn keine Eingabe mehr kommt. Was
+      passiert, wenn du das `!` löschst und das Programm startest? Überleg
+      erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - 'Dart übersetzt das Programm nicht: `int.parse` braucht einen Text, und `readLineSync()` könnte `null` liefern.'
+        - 'Das Programm läuft wie vorher; das `!` ist nur ein Ausrufezeichen für Leser.'
+        - 'Das Programm startet und bricht erst ab, wenn wirklich keine Eingabe kommt.'
+        - 'Das Programm startet, nennt aber für jede Zahl `null` als Faktor.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Das `!` hat in Dart eine Bedeutung für den Compiler.'
+      - when: { picked: 2 }
+        say: 'So wäre es in vielen Sprachen. Probier es in Dart aus: Kommt es überhaupt zum Start?'
+      - when: { picked: 3 }
+        say: '`null` ist keine Zahl, die man teilen könnte. Probier es aus.'
+    solution: |
+      Dart meldet `The argument type 'String?' can't be assigned to the parameter
+      type 'String'` und startet das Programm nicht. `String?` heißt: ein Text
+      oder `null`. `int.parse` nimmt nur einen Text. Das `!` sagt dem
+      Compiler: Hier kommt nie `null`. Ohne das `!` besteht Dart darauf, dass du
+      den Fall `null` behandelst, noch bevor das Programm läuft.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Ändere `bubbleSort` in `bubblesort.dart` so, dass die größte Zahl zuerst
+      kommt, und starte das Skript noch einmal.
+    file: bubblesort.dart
+    check:
+      type: dart
+      file: bubblesort.dart
+      cases:
+        - call: 'final a = [3, 1, 4, 1, 5]; bubbleSort(a); a[0]'
+          expect: 5
+          say: Die größte Zahl soll zuerst kommen. Noch sortiert `bubbleSort` aufsteigend.
+        - call: 'final a = [3, 1, 4, 1, 5]; bubbleSort(a); a'
+          expect: '[5, 4, 3, 1, 1]'
+          say: 'Die größte Zahl steht vorn, aber der Rest ist noch nicht absteigend: Aus `[3, 1, 4, 1, 5]` soll `[5, 4, 3, 1, 1]` werden.'
+        - call: 'final a = <int>[]; bubbleSort(a); a'
+          expect: '<int>[]'
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```dart
+      if (numbers[j] < numbers[j + 1]) {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.

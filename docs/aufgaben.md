@@ -1179,8 +1179,8 @@ Rufen auf, was in Java-Klassen oder einer Dart-Datei der Lernenden steht, wie
 Aufrufe herum und führt es im Workspace aus, als Gast in einem neuen Ordner
 in `/tmp`. Bei Java übersetzt `javac` es zusammen mit allen `.java`-Dateien
 im Ordner von `file`, bei Dart importiert es die Datei (und damit, was sie
-importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`; das `dart` im
-Pfad ist das von Flutter, das erst in seinen eigenen Ordner schreiben will).
+importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`,
+`/opt/dart-sdk`).
 Ein eigenes `main` läuft dabei nicht.
 
 ```yaml

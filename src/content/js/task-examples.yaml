@@ -1,0 +1,42 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: js
+examples:
+  hallo:
+    pass:
+      - files: { hello.js: hello.js }
+      - files: { hello.js: hello-shebang.js }
+      - files: { hello.js: { text: "console.log('Hello, World!')\n" } }
+    fail:
+      - files: { hello.js: hello-error.js }
+        say: console.log("Hello, World!")
+      - files: { hello.js: { text: "" } }
+      - files: { hallo.js: hello.js }
+  fehler:
+    pass:
+      - answer: TypeError
+      - answer: typeerror
+      - answer: 'TypeError:'
+    fail:
+      - answer: console.print is not a function
+        say: das eine Wort davor
+      - answer: ReferenceError
+      - answer: SyntaxError
+  ausfuehrbar:
+    pass:
+      - files: { hello.js: { from: hello-shebang.js, executable: true } }
+    fail:
+      - files: { hello.js: hello-shebang.js }
+        say: nicht ausführbar
+      - files: { hello.js: { from: hello.js, executable: true } }
+        say: Shebang
+      - files: { hello.js: { text: "#!/usr/bin/env node\nconsole.print(\"Hello, World!\");\n", executable: true } }
+        say: console.print
+  absteigend:
+    pass:
+      - files: { bubblesort.js: { text: "            if (arr[j] < arr[j + 1]) {\n" } }
+      - files: { bubblesort.js: { text: "            if (arr[j + 1] > arr[j]) {\n" } }
+    fail:
+      - files: { bubblesort.js: bubblesort.js }
+        say: vergleicht das Programm noch wie vorher

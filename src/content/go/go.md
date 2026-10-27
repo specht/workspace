@@ -107,6 +107,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.go, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
@@ -160,6 +162,8 @@ go build hello.go && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 Go bietet hierfür auch einen Shortcut an, der das Kompilieren und Ausführen in einem Schritt erledigt (dann wird die temporäre, ausführbare Datei nach der Ausführung wieder gelöscht):
 
 ```bash
@@ -189,6 +193,8 @@ go run hello.go
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
+_task(fehler)
+
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
@@ -205,8 +211,14 @@ crop-terminal-lines: auto
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 6) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
+_task(unbenutzt)
+
+<!-- after: unbenutzt -->
+Go ist streng mit allem, was du nicht benutzt: Eine Variable, die nie gelesen wird, ist ein Fehler, keine Warnung.
+<!-- /after -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Go ist streng mit allem, was du nicht benutzt. Schreib in <code>main</code> unter die Zeile mit <code>fmt.Println</code> die Zeile <code>x := 42</code> und starte das Programm. Was meldet der Compiler? Lösch die Zeile wieder und lösch stattdessen die Zeile mit <code>fmt.Println</code>: Was meldet er jetzt? Stell die Datei danach wieder her.
+<strong>Ausprobieren:</strong> Lösch die Zeile mit <code>x := 42</code> wieder und lösch stattdessen die Zeile mit <code>fmt.Println</code>. Was meldet der Compiler jetzt? Stell die Datei danach wieder her.
 </div>
 
 ## Primfaktorzerlegung
@@ -257,12 +269,10 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(absteigend)
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.go</code> und starte das Programm noch einmal:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Wie oft steht die 10 im Quelltext? Ersetze in der <code>for</code>-Schleife die 10 durch <code>len(numbers)</code>, die Länge der Liste: Wie viele Zahlen musst du jetzt noch ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10. Wie oft steht die 10 im Quelltext? Ersetze in der <code>for</code>-Schleife die 10 durch <code>len(numbers)</code>, die Länge der Liste: Wie viele Zahlen musst du jetzt noch ändern?
 </div>
 
 ## Zusammenfassung

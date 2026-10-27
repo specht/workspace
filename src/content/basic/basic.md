@@ -169,6 +169,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal startet bwbasic hello.bas mit seiner Begrüßung, gibt Hello, World! aus und wartet danach mit bwBASIC:.'>
 
+_task(hallo)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> BASIC wartet nach dem Programm hinter <code>bwBASIC:</code> auf weitere Befehle. Gib dort <code>PRINT 6 * 7</code> ein: BASIC führt den Befehl sofort aus, ganz ohne Datei. Was zeigen danach <code>LIST</code> und <code>RUN</code>?
 </div>
@@ -183,6 +185,8 @@ Wenn du einen Fehler im Code machst, wird BASIC eine Fehlermeldung ausgeben. Ver
 PRIN "Hello, World!"
 ```
 
+_task(fehler)
+
 Speichere die Datei und führe das Skript erneut aus:
 
 ```bash
@@ -193,7 +197,9 @@ bwbasic hello.bas
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-BASIC sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+<!-- after: fehler -->
+
+Über der Begrüßung erscheint eine Fehlermeldung:
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -210,7 +216,9 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello-error.webp' alt='bwbasic hello.bas meldet nach der Begrüßung sh: 1: PRIN: not found.'>
 
-Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+Die Meldung kommt gar nicht von BASIC: `bwbasic` gibt jede Zeile, die es nicht als BASIC kennt, an die Shell `sh` weiter, und die kennt keinen Befehl `PRIN`. Die `1` ist deshalb die erste Zeile dessen, was `sh` bekommen hat, nicht die Zeile in `hello.bas`. Es lohnt sich, Fehlermeldungen genau zu lesen: Oft verrät schon ihr Anfang, wer sie schreibt. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ## Primfaktorzerlegung
 
@@ -267,13 +275,11 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.bas</code> und starte das Skript noch einmal:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Welche Zahlen im Quelltext musst du dafür ändern: nur die 10?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
-</div>
+Die nächsten beiden Aufgaben ändern `bubblesort.bas`. Starte das Skript nach jeder Änderung noch einmal; mit `SYSTEM` beendest du BASIC danach.
+
+_task(hundert)
+
+_task(absteigend)
 
 ## Zusammenfassung
 

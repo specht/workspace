@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' width='1280' height='720'>
+<rect width='1280' height='720' fill='#ffffff'/>
+<line x1='440.0' y1='274.5' x2='534.1' y2='304.9' stroke='#2b5fb4' stroke-width='5' stroke-linecap='round'/><polygon points='555.0,311.6 537.7,293.4 530.4,316.3' fill='#2b5fb4'/>
+<line x1='440.0' y1='448.3' x2='534.1' y2='417.0' stroke='#2b5fb4' stroke-width='5' stroke-linecap='round'/><polygon points='555.0,410.0 530.3,405.6 537.9,428.3' fill='#2b5fb4'/>
+<rect x='40.0' y='95.0' width='400' height='230' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='66.0' y='145.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='32' font-weight='600' fill='#1f2937'>Rezepte für jeden Tag</text>
+<text x='66.0' y='195.0' text-anchor='start' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#6b7280'>pizza.html</text>
+<text x='66.0' y='237.0' text-anchor='start' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#6b7280'>curry.html</text>
+<text x='66.0' y='279.0' text-anchor='start' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#6b7280'>index.html</text>
+<rect x='40.0' y='420.0' width='400' height='190' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='66.0' y='470.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='32' font-weight='600' fill='#1f2937'>Laufend fit</text>
+<text x='66.0' y='520.0' text-anchor='start' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#6b7280'>laufen.html</text>
+<text x='66.0' y='562.0' text-anchor='start' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#6b7280'>fussball.html</text>
+<line x1='855.0' y1='360.0' x2='913.0' y2='360.0' stroke='#d97706' stroke-width='5' stroke-linecap='round'/><polygon points='935.0,360.0 913.0,348.0 913.0,372.0' fill='#d97706'/>
+<rect x='555.0' y='255.0' width='300' height='210' rx='18' fill='#ffffff' stroke='#1f2937' stroke-width='3'/>
+<text x='705' y='330' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='44' font-weight='600' fill='#1f2937'>Tracker</text>
+<text x='705' y='382' text-anchor='middle' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='30' font-weight='400' fill='#6b7280'>pixel.gif</text>
+<text x='705' y='428' text-anchor='middle' font-family="'IBM Plex Mono', ui-monospace, monospace" font-size='28' font-weight='400' fill='#d97706'>visitor=3f9a1c2b</text>
+<rect x='935.0' y='210.0' width='300' height='300' rx='18' fill='#ffffff' stroke='#d97706' stroke-width='3'/>
+<text x='963.0' y='264.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='40' font-weight='600' fill='#1f2937'>Profil</text>
+<text x='963.0' y='328.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='400' fill='#1f2937'>Kochen</text>
+<rect x='1080.0' y='304.0' width='80.0' height='26' rx='6' fill='#d97706'/>
+<text x='1213.0' y='328.0' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='600' fill='#6b7280'>3</text>
+<text x='963.0' y='390.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='400' fill='#1f2937'>Sport</text>
+<rect x='1080.0' y='366.0' width='53.3' height='26' rx='6' fill='#d97706'/>
+<text x='1213.0' y='390.0' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='600' fill='#6b7280'>2</text>
+<text x='963.0' y='452.0' text-anchor='start' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='400' fill='#1f2937'>Pizza</text>
+<rect x='1080.0' y='428.0' width='26.7' height='26' rx='6' fill='#d97706'/>
+<text x='1213.0' y='452.0' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='28' font-weight='600' fill='#6b7280'>1</text>
+</svg>

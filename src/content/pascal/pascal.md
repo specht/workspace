@@ -185,6 +185,10 @@ fpc hello.pas && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(hallo)
+
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `WriteLn` das Wort `WritLn` zu schreiben:
@@ -207,7 +211,11 @@ fpc hello.pas
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -222,6 +230,8 @@ crop-terminal-lines: auto
 <img class='full' src='error.webp' alt='fpc meldet hello.pas(4,5) Error: Identifier not found "WritLn" und bricht die Übersetzung ab.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 4) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ## Primfaktorzerlegung
 
@@ -255,9 +265,17 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(ueberlauf)
+
+<!-- after: ueberlauf -->
+
+Statt der Faktoren steht `Factors of -31072:` da, ohne eine Fehlermeldung. `integer` hat in Free Pascal 16 Bit und reicht von -32768 bis 32767; was größer ist, läuft über und beginnt im negativen Bereich von vorn.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>100000</code> ein. Was passiert, und was könnte der Grund dafür sein? Ersetze danach in der Zeile <code>number, i: integer;</code> das Wort <code>integer</code> durch <code>longint</code>, übersetze neu und probier die Zahl noch einmal. Und was passiert jetzt bei <code>3000000000</code>?
+<strong>Ausprobieren:</strong> Ersetze in der Zeile <code>number, i: integer;</code> das Wort <code>integer</code> durch <code>longint</code>, übersetze neu und gib <code>100000</code> noch einmal ein. Und was passiert jetzt bei <code>3000000000</code>?
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
@@ -291,12 +309,10 @@ crop-terminal-lines: auto
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.pas</code>, übersetze neu und starte das Programm:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10: Ändere <code>bubblesort.pas</code>, übersetze neu und starte das Programm. Warum musst du dafür nur eine einzige Zahl ändern?
 </div>
+
+_task(absteigend)
 
 ## Programmieren wie in den 90ern
 

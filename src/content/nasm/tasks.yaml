@@ -1,0 +1,127 @@
+# Aufgaben zu »Assembler (NASM)«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: nasm
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.asm`.
+    file: hello.asm
+    check:
+      type: files
+      path: hello.asm
+      expect:
+        format: text
+        contains:
+          - pattern: '^\s*hello\s+db\s+[''"]Hello, World![''"]'
+            say: 'In `hello.asm` fehlt die Zeile mit dem Text, `hello db ''Hello, World!'', 10, 0`.'
+          - pattern: '^\s*syscall\b'
+            min: 2
+            say: 'In `hello.asm` fehlen die beiden `syscall`: einer gibt den Text aus, einer beendet das Programm.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.asm`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.asm` eingegeben, mit `.asm` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.asm` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Übersetzt und gelinkt
+    prompt: |
+      Übersetze `hello.asm` mit `nasm` und linke es mit `ld`, sodass in
+      `/workspace` das ausführbare Programm `hello` liegt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch kein Programm `hello`. Im Terminal, im Ordner `/workspace`: erst `nasm -f elf64 hello.asm`, dann `ld hello.o -o hello`.'
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Lösche es mit `rm hello` und übersetze noch einmal.'
+    hint:
+      - '`ls -l` zeigt, welche Dateien in `/workspace` liegen. Nach `nasm` steht dort `hello.o`, nach `ld` auch `hello`, grün.'
+      - '`hello.o` allein ist noch kein Programm: Erst `ld` macht daraus eines, das Linux starten kann.'
+    solution: |
+      `nasm -f elf64 hello.asm` übersetzt den Assembler-Code in die
+      Objektdatei `hello.o`, `ld hello.o -o hello` linkt sie zum Programm
+      `hello`, im Format ELF, das Linux direkt ausführt: `./hello`.
+
+  - id: fehler
+    title: Die Fehlermeldung
+    prompt: |
+      Was meldet `nasm` für `ray`? Gib den Text hinter `error:` ein.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(error\W*)?symbol\W+ray\W+not\s+defined\W*$'
+    feedback:
+      - when: { matches: '(?i)^\W*ray\W*$' }
+        say: '`ray` ist das Wort, über das `nasm` stolpert. Gesucht ist, was es darüber sagt: der ganze Text hinter `error:`.'
+      - when: { matches: '(?i)hello\.asm:9' }
+        say: Das sind die Datei und die Zeile. Gesucht ist der Text hinter `error:`.
+    hint: 'Die Meldung beginnt mit dem Dateinamen und der Zeile, `hello.asm:9:`, dann kommt `error:` und dahinter, was falsch ist.'
+    solution: |
+      `symbol 'ray' not defined`: Für `nasm` ist `ray` kein Register, also hält
+      es das Wort für einen Namen im Programm, ein Symbol, wie `hello` eines
+      ist. Ein Symbol `ray` gibt es aber nirgends.
+
+  - id: laenge
+    title: Zu kurz
+    prediction: true
+    prompt: |
+      In `hello.asm` steht `mov rdx, 14`. Was gibt `./hello` aus, wenn dort
+      stattdessen `mov rdx, 5` steht? Überleg erst, dann probier es aus:
+      ändern, übersetzen, linken, starten.
+    check:
+      type: choice
+      options:
+        - '`Hello`, ohne Zeilenumbruch: Die Eingabeaufforderung steht gleich dahinter.'
+        - '`Hello, World!`, wie vorher.'
+        - '`Hello, World!` fünfmal untereinander.'
+        - 'Nichts, das Programm stürzt ab.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Woher weiß `write`, wo der Text aufhört?'
+      - when: { picked: 2 }
+        say: '`rdx` ist kein Zähler für Wiederholungen. Was steht oben über die Register von `write`?'
+      - when: { picked: 3 }
+        say: 'Das Programm läuft ganz normal zu Ende. Probier es aus.'
+    solution: |
+      `Hello`, ohne Zeilenumbruch. `write` gibt genau so viele Bytes aus, wie in
+      `rdx` steht, ab der Adresse in `rsi`. Wo der Text aufhört, weiß es nicht;
+      die 14 sind die 13 Zeichen von `Hello, World!` und der Zeilenumbruch
+      dahinter, die `10`.
+
+  - id: eigener-text
+    title: Ein anderer Text
+    prompt: |
+      Ändere `hello.asm` so, dass `./hello` die Zeile `Hello, Workspace!`
+      ausgibt, vollständig und mit Zeilenumbruch.
+    file: hello.asm
+    check:
+      type: files
+      path: hello.asm
+      expect:
+        format: text
+        contains:
+          - pattern: '^\s*hello\s+db\s+[''"]Hello, Workspace![''"]\s*,\s*10\b'
+            say: 'In `hello.asm` steht noch nicht `hello db ''Hello, Workspace!'', 10, 0`.'
+          - pattern: '^\s*mov\s+rdx\s*,\s*18\s*(;.*)?$'
+            say: 'Der Text ist neu, aber in `rdx` steht noch nicht seine Länge. Wie viele Bytes hat `Hello, Workspace!` mit dem Zeilenumbruch?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.asm`.
+    hint:
+      - Der Text steht in Zeile 2, seine Länge in Zeile 12.
+      - Zähl jedes Zeichen von `Hello, Workspace!` mit, auch Komma, Leerzeichen und Ausrufezeichen. Dazu kommt der Zeilenumbruch, die `10`.
+    solution: |
+      `hello db 'Hello, Workspace!', 10, 0` und `mov rdx, 18`: 17 Zeichen und
+      der Zeilenumbruch. Steht in `rdx` eine kleinere Zahl, fehlt das Ende; die
+      `0` am Ende des Texts gibt `write` nicht aus, solange `rdx` sie nicht
+      mitzählt.

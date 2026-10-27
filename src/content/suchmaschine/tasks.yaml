@@ -1,0 +1,498 @@
+# Aufgaben zu »Eine Suchmaschine«, in Ruby und, unter python:, in Python.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/suchmaschine. Das
+# Tierlexikon kommt aus tierlexikon/ im Ordner der Aktivität, gepackt nach
+# src/static/suchmaschine/tierlexikon.tar.gz mit
+#   tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
+#       -C src/content/suchmaschine -cf - tierlexikon | gzip -n -9 \
+#       > src/static/suchmaschine/tierlexikon.tar.gz
+# Die Zahlen gehören zu diesem Tierlexikon.
+format: 1
+activity: suchmaschine
+tasks:
+  - id: geheim
+    title: Eine Seite ohne Link
+    prediction: true
+    prompt: |
+      Im Ordner `tierlexikon` liegt die Datei `geheim.html`, und der Webserver
+      liefert sie aus. Findet ein Crawler, der bei `/index.html` anfängt und
+      den Links folgt, diese Seite?
+    check:
+      type: choice
+      options:
+        - Nein, wenn keine Seite einen Link auf sie hat.
+        - Ja, er findet jede Datei, die der Webserver ausliefert.
+        - Ja, aber erst ganz am Ende, nach allen anderen Seiten.
+        - Nur, wenn sie im selben Ordner liegt wie `index.html`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Woher sollte der Crawler den Namen der Datei kennen? Er sieht nur, was in den Seiten steht.
+      - when: { picked: 2 }
+        say: Der Crawler holt die Seiten, deren Pfad er in einem Link gefunden hat, und keine anderen. Wie kommt er also zu `geheim.html`?
+      - when: { picked: 3 }
+        say: Der Ordner spielt für den Crawler keine Rolle; er sieht nur Pfade in Links.
+    solution: |
+      Nur über einen Link. `geheim.html` verlinkt keine Seite des Tierlexikons,
+      darum findet sie kein Crawler, obwohl jeder sie mit ihrer Adresse
+      abrufen kann.
+
+  - id: crawl
+    title: Der Crawler
+    prompt: |
+      Schreib in `suchmaschine/search.rb` die Funktion `crawl(start, fetch)`.
+      Die Prüfung gibt ihr statt `fetch_page` eine kleine ausgedachte Website
+      mit vier Seiten, `/a.html` bis `/d.html`, auf der `/d.html` niemand
+      verlinkt und ein Link auf `/fehlt.html` zeigt, die es nicht gibt. Sie
+      fragt, welche Pfade `crawl("/a.html", …)` findet, was unter `/c.html`
+      steht und wie oft `crawl` eine Seite holt.
+    check:
+      type: ruby
+      file: suchmaschine/search.rb
+      cases:
+        - call: 'site = { "/a.html" => "<a href=\"/b.html\">B</a> <a href=\"/c.html\">C</a>", "/b.html" => "<a href=\"/a.html\">A</a> <a href=\"/c.html\">C</a> <a href=\"/fehlt.html\">?</a>", "/c.html" => "<p>Ende</p>", "/d.html" => "<p>Niemand verlinkt mich</p>" }; crawl("/a.html", ->(path) { site[path] }).keys.sort == ["/a.html", "/b.html", "/c.html"]'
+          expect: true
+          say: Von `/a.html` aus erreicht `crawl` noch `/b.html` und `/c.html`. `/fehlt.html` gibt es nicht (`fetch` gibt `nil`), und auf `/d.html` zeigt kein Link.
+        - call: 'site = { "/a.html" => "<a href=\"/b.html\">B</a> <a href=\"/c.html\">C</a>", "/b.html" => "<a href=\"/a.html\">A</a> <a href=\"/c.html\">C</a>", "/c.html" => "<p>Ende</p>" }; crawl("/a.html", ->(path) { site[path] })["/c.html"] == "<p>Ende</p>"'
+          expect: true
+          say: Unter jedem Pfad steht das HTML seiner Seite, so wie `fetch` es geliefert hat.
+        - call: 'site = { "/a.html" => "<a href=\"/b.html\">B</a> <a href=\"/c.html\">C</a>", "/b.html" => "<a href=\"/a.html\">A</a> <a href=\"/c.html\">C</a> <a href=\"/fehlt.html\">?</a>", "/c.html" => "<p>Ende</p>" }; calls = 0; crawl("/a.html", ->(path) { calls += 1; site[path] }); calls'
+          expect: 4
+          say: '`crawl` soll jeden Pfad nur einmal holen: `/a.html`, `/b.html`, `/c.html` und `/fehlt.html`, auch wenn zwei Seiten auf `/c.html` verlinken.'
+        - call: 'crawl("/fehlt.html", ->(path) { nil }) == {}'
+          expect: true
+          say: Gibt es schon die erste Seite nicht, findet `crawl` gar nichts.
+    hint: '`fetch.call(path)` holt eine Seite mit der Funktion, die `crawl` bekommen hat.'
+    solution: |
+      ```ruby
+      def crawl(start, fetch)
+        pages = {}
+        queue = [start]
+        seen = [start]
+        until queue.empty?
+          path = queue.shift
+          html = fetch.call(path)
+          next if html.nil?
+
+          pages[path] = html
+          links(html).each do |link|
+            next if seen.include?(link)
+
+            seen << link
+            queue << link
+          end
+        end
+        pages
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/search.py` die Funktion `crawl(start, fetch)`.
+        Die Prüfung gibt ihr statt `fetch_page` eine kleine ausgedachte Website
+        mit vier Seiten, `/a.html` bis `/d.html`, auf der `/d.html` niemand
+        verlinkt und ein Link auf `/fehlt.html` zeigt, die es nicht gibt. Sie
+        fragt, welche Pfade `crawl('/a.html', …)` findet, was unter `/c.html`
+        steht und wie oft `crawl` eine Seite holt.
+      check:
+        type: python
+        file: suchmaschine/search.py
+        cases:
+          - call: |-
+              site = {'/a.html': '<a href="/b.html">B</a> <a href="/c.html">C</a>', '/b.html': '<a href="/a.html">A</a> <a href="/c.html">C</a> <a href="/fehlt.html">?</a>', '/c.html': '<p>Ende</p>', '/d.html': '<p>Niemand verlinkt mich</p>'}; sorted(crawl('/a.html', site.get)) == ['/a.html', '/b.html', '/c.html']
+            expect: true
+            say: Von `/a.html` aus erreicht `crawl` noch `/b.html` und `/c.html`. `/fehlt.html` gibt es nicht (`fetch` gibt `None`), und auf `/d.html` zeigt kein Link.
+          - call: |-
+              site = {'/a.html': '<a href="/b.html">B</a> <a href="/c.html">C</a>', '/b.html': '<a href="/a.html">A</a> <a href="/c.html">C</a>', '/c.html': '<p>Ende</p>'}; crawl('/a.html', site.get)['/c.html'] == '<p>Ende</p>'
+            expect: true
+            say: Unter jedem Pfad steht das HTML seiner Seite, so wie `fetch` es geliefert hat.
+          - call: |-
+              site = {'/a.html': '<a href="/b.html">B</a> <a href="/c.html">C</a>', '/b.html': '<a href="/a.html">A</a> <a href="/c.html">C</a> <a href="/fehlt.html">?</a>', '/c.html': '<p>Ende</p>'}; calls = []; crawl('/a.html', lambda path: calls.append(path) or site.get(path)); len(calls)
+            expect: 4
+            say: '`crawl` soll jeden Pfad nur einmal holen: `/a.html`, `/b.html`, `/c.html` und `/fehlt.html`, auch wenn zwei Seiten auf `/c.html` verlinken.'
+          - call: "crawl('/fehlt.html', lambda path: None) == {}"
+            expect: true
+            say: Gibt es schon die erste Seite nicht, findet `crawl` gar nichts.
+      hint: '`fetch(path)` holt eine Seite mit der Funktion, die `crawl` bekommen hat.'
+      solution: |
+        ```python
+        def crawl(start, fetch):
+            pages = {}
+            queue = [start]
+            seen = [start]
+            while queue:
+                path = queue.pop(0)
+                html = fetch(path)
+                if html is None:
+                    continue
+                pages[path] = html
+                for link in links(html):
+                    if link not in seen:
+                        seen.append(link)
+                        queue.append(link)
+            return pages
+        ```
+
+  - id: seiten
+    title: Wie viele Seiten?
+    prompt: |
+      Wie viele Seiten findet dein Crawler im Tierlexikon, wenn er bei
+      `/index.html` anfängt?
+    check:
+      type: number
+      expect: 10
+      tolerance: 0
+    feedback:
+      - when: { equals: 11 }
+        say: So viele HTML-Dateien liegen im Ordner. Findet der Crawler alle davon?
+      - when: { equals: 12 }
+        say: Im Ordner liegt auch `style.css`, aber dorthin führt kein `<a href>`. Lass dein Programm laufen und zähl, was es findet.
+    hint: Starte `main` im ersten Terminal, während der Webserver im zweiten läuft.
+    solution: |
+      10: alle Seiten außer `geheim.html`, auch die Anzeige
+      `katzenfutter-billig.html`, auf die der Hund verlinkt.
+
+  - id: index
+    title: Der Index
+    prompt: |
+      Schreib in `suchmaschine/search.rb` die Funktion `build_index(pages)`.
+      Die Prüfung ruft sie mit zwei kleinen Seiten über eine Katze und einen
+      Hund auf, mit einer Seite, auf der dasselbe Wort dreimal steht, und mit
+      einem leeren Hash, und vergleicht den Index, der herauskommt.
+    check:
+      type: ruby
+      file: suchmaschine/search.rb
+      cases:
+        - call: 'build_index({ "/a.html" => "<p>Die Katze schläft.</p>", "/b.html" => "<p>Der Hund und die Katze</p>" }) == { "die" => ["/a.html", "/b.html"], "katze" => ["/a.html", "/b.html"], "schläft" => ["/a.html"], "der" => ["/b.html"], "hund" => ["/b.html"], "und" => ["/b.html"] }'
+          expect: true
+          say: Jedes Wort kommt klein geschrieben in den Index, mit den Pfaden seiner Seiten in der Reihenfolge der Seiten.
+        - call: 'build_index({ "/a.html" => "<h1>Katze</h1><p>Katze, Katze!</p>" }) == { "katze" => ["/a.html"] }'
+          expect: true
+          say: Steht ein Wort auf einer Seite dreimal, steht ihr Pfad trotzdem nur einmal in seiner Liste.
+        - call: 'build_index({}) == {}'
+          expect: true
+    solution: |
+      ```ruby
+      def build_index(pages)
+        index = {}
+        pages.each do |path, html|
+          words(html).uniq.each do |word|
+            index[word] ||= []
+            index[word] << path
+          end
+        end
+        index
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/search.py` die Funktion `build_index(pages)`.
+        Die Prüfung ruft sie mit zwei kleinen Seiten über eine Katze und einen
+        Hund auf, mit einer Seite, auf der dasselbe Wort dreimal steht, und mit
+        einem leeren `dict`, und vergleicht den Index, der herauskommt.
+      check:
+        type: python
+        file: suchmaschine/search.py
+        cases:
+          - call: "build_index({'/a.html': '<p>Die Katze schläft.</p>', '/b.html': '<p>Der Hund und die Katze</p>'}) == {'die': ['/a.html', '/b.html'], 'katze': ['/a.html', '/b.html'], 'schläft': ['/a.html'], 'der': ['/b.html'], 'hund': ['/b.html'], 'und': ['/b.html']}"
+            expect: true
+            say: Jedes Wort kommt klein geschrieben in den Index, mit den Pfaden seiner Seiten in der Reihenfolge der Seiten.
+          - call: "build_index({'/a.html': '<h1>Katze</h1><p>Katze, Katze!</p>'}) == {'katze': ['/a.html']}"
+            expect: true
+            say: Steht ein Wort auf einer Seite dreimal, steht ihr Pfad trotzdem nur einmal in seiner Liste.
+          - call: "build_index({}) == {}"
+            expect: true
+      solution: |
+        ```python
+        def build_index(pages):
+            index = {}
+            for path, html in pages.items():
+                for word in dict.fromkeys(words(html)):
+                    if word not in index:
+                        index[word] = []
+                    index[word].append(path)
+            return index
+        ```
+
+  - id: suchen
+    title: Suchen
+    prompt: |
+      Schreib in `suchmaschine/search.rb` die Funktion `search(index, query)`.
+      Die Prüfung gibt ihr einen kleinen Index mit den Wörtern »katze«,
+      »hund« und »maus« und sucht nach »katze«, nach »Katze Hund«, nach
+      »katze vogel« und nach einer leeren Anfrage.
+    check:
+      type: ruby
+      file: suchmaschine/search.rb
+      cases:
+        - call: 'index = { "katze" => ["/b.html", "/a.html"], "hund" => ["/b.html", "/c.html"], "maus" => ["/c.html"] }; search(index, "katze") == ["/a.html", "/b.html"]'
+          expect: true
+          say: Die Treffer kommen nach dem Alphabet sortiert zurück.
+        - call: 'index = { "katze" => ["/b.html", "/a.html"], "hund" => ["/b.html", "/c.html"], "maus" => ["/c.html"] }; search(index, "Katze Hund") == ["/b.html"]'
+          expect: true
+          say: Gesucht sind die Seiten, auf denen beide Wörter stehen. Groß geschrieben findet `words` sie trotzdem, es macht alles klein.
+        - call: 'index = { "katze" => ["/b.html", "/a.html"], "hund" => ["/b.html", "/c.html"], "maus" => ["/c.html"] }; search(index, "katze vogel") == []'
+          expect: true
+          say: »vogel« steht auf keiner Seite, also auch nicht zusammen mit »katze«.
+        - call: 'search({ "katze" => ["/a.html"] }, "") == []'
+          expect: true
+          say: Eine leere Anfrage findet nichts.
+    solution: |
+      ```ruby
+      def search(index, query)
+        results = nil
+        words(query).each do |word|
+          found = index[word] || []
+          results = results.nil? ? found : results & found
+        end
+        (results || []).sort
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/search.py` die Funktion `search(index, query)`.
+        Die Prüfung gibt ihr einen kleinen Index mit den Wörtern »katze«,
+        »hund« und »maus« und sucht nach »katze«, nach »Katze Hund«, nach
+        »katze vogel« und nach einer leeren Anfrage.
+      check:
+        type: python
+        file: suchmaschine/search.py
+        cases:
+          - call: "index = {'katze': ['/b.html', '/a.html'], 'hund': ['/b.html', '/c.html'], 'maus': ['/c.html']}; search(index, 'katze') == ['/a.html', '/b.html']"
+            expect: true
+            say: Die Treffer kommen nach dem Alphabet sortiert zurück.
+          - call: "index = {'katze': ['/b.html', '/a.html'], 'hund': ['/b.html', '/c.html'], 'maus': ['/c.html']}; search(index, 'Katze Hund') == ['/b.html']"
+            expect: true
+            say: Gesucht sind die Seiten, auf denen beide Wörter stehen. Groß geschrieben findet `words` sie trotzdem, es macht alles klein.
+          - call: "index = {'katze': ['/b.html', '/a.html'], 'hund': ['/b.html', '/c.html'], 'maus': ['/c.html']}; search(index, 'katze vogel') == []"
+            expect: true
+            say: »vogel« steht auf keiner Seite, also auch nicht zusammen mit »katze«.
+          - call: "search({'katze': ['/a.html']}, '') == []"
+            expect: true
+            say: Eine leere Anfrage findet nichts.
+      solution: |
+        ```python
+        def search(index, query):
+            results = None
+            for word in words(query):
+                found = index.get(word, [])
+                results = found if results is None else [path for path in results if path in found]
+            return sorted(results or [])
+        ```
+
+  - id: treffer
+    title: Nachts und Insekten
+    prompt: |
+      Auf wie vielen Seiten des Tierlexikons stehen die Wörter »nachts« und
+      »Insekten« beide? Such mit deinem Programm nach `nachts insekten`.
+    check:
+      type: number
+      expect: 2
+      tolerance: 0
+    feedback:
+      - when: { equals: 4 }
+        say: So viele Seiten haben eins der beiden Wörter. Sucht `search` die Seiten, auf denen jedes Wort steht?
+      - when: { equals: 0 }
+        say: Groß- und Kleinschreibung spielt keine Rolle, `words` macht alles klein. Kommt bei dir gar nichts?
+    solution: |
+      Zwei: der Igel und die Zwergfledermaus. Beim Waldkauz steht »nachts«,
+      aber er frisst Mäuse; bei der Amsel stehen Insekten, aber nicht »nachts«.
+
+  - id: erster
+    title: Wer steht bei »katze« oben?
+    prediction: true
+    prompt: |
+      Du suchst nach `katze`, und `rank_by_count` ordnet die Treffer danach,
+      wie oft das Wort auf der Seite steht. Welche Seite steht oben?
+    check:
+      type: choice
+      options:
+        - '`/katzenfutter-billig.html`'
+        - '`/katze.html`'
+        - '`/hund.html`'
+        - '`/index.html`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Auf der Seite über die Hauskatze steht »Katze« viermal. Gibt es eine Seite, die das Wort noch öfter wiederholt?
+      - when: { picked: 2 }
+        say: Beim Hund steht »Katze« einmal, in einem Vergleich. Schau dir die Anzeige an, auf die er verlinkt.
+      - when: { picked: 3 }
+        say: Auf der Startseite steht »Hauskatze«, für `words` ein anderes Wort als »katze«.
+    solution: |
+      Die Anzeige `katzenfutter-billig.html`: »Katze« steht dort achtzehnmal,
+      auf der Seite über die Hauskatze viermal.
+
+  - id: eingehend
+    title: Eingehende Links
+    prompt: |
+      Schreib in `suchmaschine/search.rb` die Funktion `incoming(pages)`. Die
+      Prüfung ruft sie mit kleinen ausgedachten Websites auf: mit einem Link
+      auf sich selbst, mit zwei Links auf dasselbe Ziel, mit einem Link auf
+      eine Seite, die nicht in `pages` steht, und mit zwei Seiten, die auf eine
+      dritte verlinken.
+    check:
+      type: ruby
+      file: suchmaschine/search.rb
+      cases:
+        - call: 'incoming({ "/a.html" => "<a href=\"/c.html\">C</a>", "/b.html" => "<a href=\"/c.html\">C</a>", "/c.html" => "<p>Ziel</p>" }) == { "/c.html" => 2 }'
+          expect: true
+          say: Auf `/c.html` verlinken zwei andere Seiten; auf `/a.html` und `/b.html` verlinkt keine, sie fehlen im Hash.
+        - call: 'incoming({ "/a.html" => "<a href=\"/a.html\">ich</a> <a href=\"/b.html\">B</a>", "/b.html" => "" }) == { "/b.html" => 1 }'
+          expect: true
+          say: Ein Link einer Seite auf sich selbst zählt nicht.
+        - call: 'incoming({ "/a.html" => "<a href=\"/b.html\">B</a> <a href=\"/b.html\">noch einmal B</a>", "/b.html" => "" }) == { "/b.html" => 1 }'
+          expect: true
+          say: Zwei Links derselben Seite auf dasselbe Ziel zählen einmal.
+        - call: 'incoming({ "/a.html" => "<a href=\"/x.html\">X</a> <a href=\"/b.html\">B</a>", "/b.html" => "<a href=\"/a.html\">A</a>" }) == { "/b.html" => 1, "/a.html" => 1 }'
+          expect: true
+          say: '`/x.html` steht nicht in `pages`; ein Link dorthin zählt nicht.'
+    solution: |
+      ```ruby
+      def incoming(pages)
+        counts = {}
+        pages.each do |path, html|
+          links(html).uniq.each do |link|
+            next if link == path || !pages.key?(link)
+
+            counts[link] = (counts[link] || 0) + 1
+          end
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/search.py` die Funktion `incoming(pages)`. Die
+        Prüfung ruft sie mit kleinen ausgedachten Websites auf: mit einem Link
+        auf sich selbst, mit zwei Links auf dasselbe Ziel, mit einem Link auf
+        eine Seite, die nicht in `pages` steht, und mit zwei Seiten, die auf
+        eine dritte verlinken.
+      check:
+        type: python
+        file: suchmaschine/search.py
+        cases:
+          - call: |-
+              incoming({'/a.html': '<a href="/c.html">C</a>', '/b.html': '<a href="/c.html">C</a>', '/c.html': '<p>Ziel</p>'}) == {'/c.html': 2}
+            expect: true
+            say: Auf `/c.html` verlinken zwei andere Seiten; auf `/a.html` und `/b.html` verlinkt keine, sie fehlen im `dict`.
+          - call: |-
+              incoming({'/a.html': '<a href="/a.html">ich</a> <a href="/b.html">B</a>', '/b.html': ''}) == {'/b.html': 1}
+            expect: true
+            say: Ein Link einer Seite auf sich selbst zählt nicht.
+          - call: |-
+              incoming({'/a.html': '<a href="/b.html">B</a> <a href="/b.html">noch einmal B</a>', '/b.html': ''}) == {'/b.html': 1}
+            expect: true
+            say: Zwei Links derselben Seite auf dasselbe Ziel zählen einmal.
+          - call: |-
+              incoming({'/a.html': '<a href="/x.html">X</a> <a href="/b.html">B</a>', '/b.html': '<a href="/a.html">A</a>'}) == {'/b.html': 1, '/a.html': 1}
+            expect: true
+            say: '`/x.html` steht nicht in `pages`; ein Link dorthin zählt nicht.'
+      solution: |
+        ```python
+        def incoming(pages):
+            counts = {}
+            for path, html in pages.items():
+                for link in dict.fromkeys(links(html)):
+                    if link != path and link in pages:
+                        counts[link] = counts.get(link, 0) + 1
+            return counts
+        ```
+
+  - id: startseite-links
+    title: Die Startseite
+    prompt: |
+      Wie viele andere Seiten verlinken im Tierlexikon auf `/index.html`? Lass
+      dir in deinem Programm `counts` ausgeben, oder zähl selbst nach.
+    check:
+      type: number
+      expect: 8
+      tolerance: 0
+    feedback:
+      - when: { equals: 9 }
+        say: Eine Seite verlinkt die Startseite nicht. Schau dir die Anzeige an.
+      - when: { equals: 10 }
+        say: '`geheim.html` findet der Crawler nicht, und die Startseite verlinkt sich nicht selbst.'
+    solution: |
+      Acht: jede Tierseite und das Impressum. Die Anzeige verlinkt nur sich
+      selbst, und `geheim.html` hat der Crawler nicht gefunden. Darum stünde
+      die Startseite bei einem Wort, das auf ihr steht, ganz oben.
+
+  - id: linkfarm
+    title: Fünfzig neue Seiten
+    prompt: |
+      Der Händler des Katzenfutters legt fünfzig neue Seiten an, die alle auf
+      seine Anzeige verlinken und auf die sonst niemand verlinkt. Dein Crawler
+      findet sie. Was geschieht bei der Suche nach »katze«, und was ändert
+      PageRank daran?
+    check:
+      type: choice
+      options:
+        - Bei dir steht die Anzeige dann oben; bei PageRank zählen die fünfzig Links wenig, weil auf ihre Seiten niemand verlinkt.
+        - Bei dir bleibt die Hauskatze oben, weil Links von neuen Seiten nicht zählen.
+        - Bei beiden steht die Anzeige oben, denn mehr Links sind mehr Links.
+        - Bei beiden bleibt die Hauskatze oben, weil Selbstlinks nicht zählen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`incoming` fragt nicht, wie alt eine Seite ist. Wie viele eingehende Links hätte die Anzeige dann?'
+      - when: { picked: 2 }
+        say: Bei dir stimmt das. Was unterscheidet PageRank von deinem Zählen?
+      - when: { picked: 3 }
+        say: Die fünfzig Seiten verlinken nicht auf sich selbst, sondern auf die Anzeige. Wie viele andere Seiten verlinken dann auf sie?
+    solution: |
+      Dein Ranking zählt jeden Link gleich: Mit fünfzig eingehenden Links steht
+      die Anzeige oben. Bei PageRank wiegt ein Link so viel, wie die Seite
+      wert ist, von der er kommt; auf die fünfzig Seiten verlinkt niemand, also
+      sind sie wenig wert. Echte Spammer versuchen darum, Links von bekannten
+      Seiten zu bekommen, etwa in Kommentaren unter Artikeln.
+
+  - id: vergessen
+    title: Ein alter Artikel
+    prompt: |
+      Ein Zeitungsartikel von vor fünfzehn Jahren berichtet über Schulden einer
+      Frau, die sie längst bezahlt hat. Sucht jemand nach ihrem Namen, steht er
+      ganz oben. Sie möchte, dass der Link dort verschwindet. Wer entscheidet
+      in der EU zuerst darüber?
+    check:
+      type: choice
+      options:
+        - Die Suchmaschine selbst, auf einen Antrag der Frau
+        - Nur ein Gericht; ohne Urteil bleibt der Link
+        - Die Zeitung, der der Artikel gehört
+        - Niemand, denn was im Web steht, darf jede Suchmaschine zeigen
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein Gericht kommt erst dazu, wenn jemand mit einer Entscheidung nicht einverstanden ist. An wen wendet sich die Frau zuerst?
+      - when: { picked: 2 }
+        say: Der Artikel soll ja bleiben dürfen. Es geht um den Link in den Treffern zu ihrem Namen. Wer macht diese Liste?
+      - when: { picked: 3 }
+        say: Darüber hat der Europäische Gerichtshof 2014 anders entschieden. Wer kann den Link aus den Treffern nehmen?
+    solution: |
+      Die Suchmaschine, auf Antrag. Sie wägt ab, ob das Recht der Person
+      schwerer wiegt als das Interesse der Öffentlichkeit; wer nicht
+      einverstanden ist, geht zur Datenschutzbehörde oder vor Gericht.
+
+  - id: reihenfolge
+    title: Wer unten steht
+    prompt: |
+      Deine Suchmaschine ordnet nach eingehenden Links. Beschreib zwei Arten
+      von Seiten, die dabei unten landen, obwohl sie gute Antworten haben
+      können, und erkläre jeweils, warum. Was würdest du ändern, damit sie eine
+      Chance bekommen, und was würde ein Spammer dann ausnutzen?
+    check:
+      type: reflection
+      min_words: 40
+    examples:
+      - |
+        Eine ganz neue Seite steht unten, weil noch niemand Zeit hatte, auf sie
+        zu verlinken, auch wenn sie die beste Erklärung hat. Ebenso eine kleine
+        Website, etwa ein Verein, auf den nur zwei Seiten verlinken. Ich würde
+        neuen Seiten für eine Weile einen Bonus geben. Ein Spammer würde dann
+        jeden Tag neue Seiten anlegen, um immer den Bonus zu bekommen.
+      - |
+        Seiten in einer anderen Sprache als die meisten bekommen wenige Links
+        und stehen unten, genau wie Seiten, auf die man nur über eine Suche
+        kommt, weil sie nirgends verlinkt sind. Ich würde zusätzlich zählen,
+        wie oft das Suchwort im Titel steht. Das kann ein Spammer aber genauso
+        ausnutzen wie die Anzahl der Wörter, indem er nur Titel mit dem Wort
+        schreibt.

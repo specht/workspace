@@ -692,18 +692,6 @@ function install_secondary_autotoc() {
     window.addEventListener('scroll', request_secondary_autotoc_update);
     window.addEventListener('resize', request_secondary_autotoc_update);
 
-    // the page scrolls right of the sidebar only: over the sidebar's list
-    // the list scrolls (and stops at its ends), anywhere else up to the
-    // sidebar's right edge, on its title, below its list or left of it,
-    // nothing
-    window.addEventListener('wheel', function (event) {
-        if (nav.classList.contains('hidden')) return;
-        const box = nav.getBoundingClientRect();
-        if (box.width === 0 || event.clientX >= box.right) return;
-        if (event.target.closest && event.target.closest('.autotoc-secondary-items')) return;
-        event.preventDefault();
-    }, { passive: false });
-
     request_secondary_autotoc_update();
 }
 

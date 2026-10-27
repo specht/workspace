@@ -1,0 +1,43 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: rust
+examples:
+  hallo:
+    pass:
+      - files: { hello.rs: hello.rs }
+      - files: { hello.rs: { text: "fn main() { println!(\"Hello, World!\"); }\n" } }
+    fail:
+      - files: { hello.rs: hello-error.rs }
+        say: println!
+      - files: { hello.rs: { text: "println!(\"Hello, world!\");\n" } }
+        say: fn main()
+      - files: { hello.rs: { text: "" } }
+      - files: { hallo.rs: hello.rs }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00", executable: true } }
+    fail:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00" } }
+        say: ausführbar
+      - files: { hello: { from: hello.rs, executable: true } }
+        say: kein übersetztes Programm
+      - files: { hello.rs: hello.rs }
+        say: noch kein Programm
+  fehler:
+    pass:
+      - answer: macro
+      - answer: Makro
+      - answer: macro!
+    fail:
+      - answer: function
+      - answer: printn
+      - answer: println
+  absteigend:
+    pass:
+      - files: { bubblesort.rs: { text: "fn bubble_sort(arr: &mut [i32]) {\n    let n = arr.len();\n    for i in 0..n {\n        for j in 0..n - i - 1 {\n            if arr[j] < arr[j + 1] {\n                arr.swap(j, j + 1);\n            }\n        }\n    }\n}\n\nfn main() {\n    let mut arr = [0; 10];\n    bubble_sort(&mut arr);\n}\n" } }
+    fail:
+      - files: { bubblesort.rs: bubblesort.rs }
+        say: kleinere Zahl
+      - files: { bubblesort.rs: { text: "fn main() {\n    let arr = [0; 10];\n    if arr[j] < arr[j + 1] {\n    }\n}\n" } }
+        say: let mut arr

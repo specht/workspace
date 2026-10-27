@@ -158,11 +158,13 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt node hello.js die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Node.js eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `log` das Wort `print` zu schreiben:
 
-```lua
+```js
 console.print("Hello, World!");
 ```
 
@@ -176,7 +178,11 @@ node hello.js
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Node.js sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Node.js sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -192,9 +198,11 @@ crop-terminal-lines: auto
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
+<!-- /after -->
+
 ### Shebang `#!`
 
-Bisher musst du, um dein Skript auszuführen, immer den Node.js-Interpreter explizit aufrufen. Wenn du dein Skript wie ein normales Programm ausführen möchtest, kannst du ein sogenanntes Shebang am Anfang deiner Datei hinzufügen. Das Shebang besteht aus einer Raute `#` gefolgt von einem Ausrufezeichen `!` und dem Pfad zum Lua-Interpreter. In unserem Fall sieht das so aus:
+Bisher musst du, um dein Skript auszuführen, immer den Node.js-Interpreter explizit aufrufen. Wenn du dein Skript wie ein normales Programm ausführen möchtest, kannst du ein sogenanntes Shebang am Anfang deiner Datei hinzufügen. Das Shebang besteht aus einer Raute `#` gefolgt von einem Ausrufezeichen `!` und dem Pfad zum Interpreter, hier Node.js. In unserem Fall sieht das so aus:
 
 ```js
 #!/usr/bin/env node
@@ -229,6 +237,8 @@ sleep: 0.5
 
 <img class='full' src='shebang.webp' alt='Oben hello.js mit #!/usr/bin/env node in der ersten Zeile, unten im Terminal chmod +x hello.js und ./hello.js, das Hello, World! ausgibt.'>
 
+_task(ausfuehrbar)
+
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
@@ -254,9 +264,17 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann JavaScript auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
+_task(grosse-zahl)
+
+<!-- after: grosse-zahl -->
+
+`node` zeigt `123456789123456780`: Die letzte Ziffer ist verloren. JavaScript speichert jede Zahl als Gleitkommazahl mit 64 Bit, und genau sind ganze Zahlen damit nur bis 9007199254740991.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib <code>123456789123456789</code> ein. Die Zahl endet auf 9, ist also ungerade: Warum steht trotzdem eine 2 in der Liste? Starte <code>node</code> ohne Dateinamen und gib die Zahl dort ein. Was zeigt <code>node</code> an? Und was zeigt es bei <code>123456789123456789n</code>, mit einem <code>n</code> am Ende? Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>node</code>.
+<strong>Ausprobieren:</strong> Gib <code>123456789123456789</code> in <code>factor.js</code> ein. Die Zahl endet auf 9, ist also ungerade: Warum steht trotzdem eine 2 in der Liste? Und was zeigt <code>node</code> bei <code>123456789123456789n</code>, mit einem <code>n</code> am Ende? Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>node</code>.
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
@@ -286,10 +304,11 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.js</code> und starte das Programm noch einmal:
 <ul>
 <li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 <li>JavaScript kann Arrays auch selbst sortieren. Gib in <code>node</code> <code>[10, 9, 100, 25, 3].sort()</code> ein. Was fällt dir am Ergebnis auf, und woran könnte das liegen?</li>
 </ul>
 </div>
+
+_task(absteigend)
 
 ## Zusammenfassung
 

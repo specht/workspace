@@ -1,0 +1,127 @@
+# Aufgaben zum Steckbrief »Rust«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.rs,
+# factor.rs, bubblesort.rs), so wie die Seite sie speichern lässt. Rust
+# installieren die Lernenden selbst mit rustup (in ~/.cargo); die Aufgaben
+# lesen darum nur Dateien und führen nichts mit rustc aus.
+format: 1
+activity: rust
+tasks:
+  - id: hallo
+    title: Hello, world!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.rs`.
+    file: hello.rs
+    check:
+      type: files
+      path: hello.rs
+      expect:
+        format: text
+        contains:
+          - pattern: 'println!\s*\(\s*"Hello, [Ww]orld!"\s*\)'
+            say: 'In `hello.rs` finde ich noch kein `println!("Hello, world!")`. Steht es genau so da, mit dem Ausrufezeichen hinter `println`, mit Komma und Anführungszeichen?'
+          - pattern: '\bfn\s+main\s*\(\s*\)'
+            say: 'In `hello.rs` fehlt `fn main()`, die Funktion, mit der das Programm beginnt.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.rs`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.rs` eingegeben, mit `.rs` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.rs` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `hello.rs` mit `rustc`, sodass `./hello` im Ordner `/workspace`
+      `Hello, world!` ausgibt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch kein Programm `/workspace/hello`. Meldet `rustc hello.rs` »command not found«, ist Rust noch nicht installiert, oder das Terminal ist von vor der Installation: Schließ es mit <kbd>Strg</kbd><kbd>D</kbd> und öffne ein neues.'
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Hast du den Quelltext unter diesem Namen gespeichert? Er gehört in `hello.rs`, das Programm macht `rustc hello.rs`.'
+    hint:
+      - '`rustc --version` zeigt, ob Rust bereit ist. Wenn nicht: erst die Installation mit `rustup` oben auf der Seite.'
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `hello.rs` liegt. `rustc hello.rs` nennt das Programm nach der Datei, ohne `.rs`.
+    solution: |
+      `rustc hello.rs` übersetzt den Quelltext in ein Programm `hello` mit
+      Maschinencode. Es läuft auch auf einem Rechner, auf dem kein Rust
+      installiert ist.
+
+  - id: fehler
+    title: Wofür rustc printn hält
+    prompt: |
+      `rustc` meldet `cannot find … printn in this scope`. Wofür hält es
+      `printn`? Gesucht ist das Wort an der Stelle der drei Punkte.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(macro|makro)\W*$'
+    feedback:
+      - when: { matches: '(?i)function|funktion' }
+        say: 'So wäre es ohne das Ausrufezeichen. Lies die erste Zeile der Meldung: Was steht zwischen `find` und `printn`?'
+      - when: { matches: '(?i)print' }
+        say: Gesucht ist nicht der Name, sondern was `printn` für `rustc` ist. Das Wort steht direkt davor.
+    hint: 'Die erste Zeile lautet `error: cannot find … printn in this scope`.'
+    solution: |
+      Ein Makro (`macro`). Das Ausrufezeichen in `println!` heißt, dass es kein
+      gewöhnlicher Funktionsaufruf ist: Ein Makro erzeugt beim Übersetzen
+      Code. `println!` prüft so schon beim Übersetzen, ob der Text und die
+      Werte zusammenpassen, die es ausgeben soll.
+
+  - id: ohne-mut
+    title: Ohne mut
+    prediction: true
+    prompt: |
+      Lösch in `bubblesort.rs` das `mut` in `let mut arr` und übersetze neu. Was
+      passiert? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - '`rustc` übersetzt das Programm nicht: `arr` darf sich nicht ändern, aber die Schleife schreibt Zahlen hinein.'
+        - 'Das Programm läuft wie vorher; `mut` macht es nur schneller.'
+        - 'Das Programm läuft, aber die Liste bleibt unsortiert.'
+        - 'Das Programm stürzt beim Sortieren ab.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Was `mut` heißt, sagt dir `rustc` dann selbst.'
+      - when: { picked: 2 }
+        say: 'Ob sich `arr` ändern darf, entscheidet in Rust nicht das laufende Programm. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Abstürzen kann nur, was gestartet ist. Probier es aus: Kommt es so weit?'
+    solution: |
+      `rustc` meldet `cannot assign to arr[_], as arr is not declared as
+      mutable` und schlägt vor, `mut` wieder davorzusetzen. In Rust ist jede
+      Variable unveränderlich, bis `mut` sie veränderlich macht. Der Compiler
+      prüft das beim Übersetzen, nicht erst, wenn das Programm läuft.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Stell das `mut` wieder her. Ändere dann `bubble_sort` in `bubblesort.rs`
+      so, dass die größte Zahl zuerst kommt, übersetze neu und starte das
+      Programm noch einmal.
+    file: bubblesort.rs
+    check:
+      type: files
+      path: bubblesort.rs
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s+arr\[j\]\s*<\s*arr\[j\s*\+\s*1\]|if\s+arr\[j\s*\+\s*1\]\s*>\s*arr\[j\]'
+            say: Noch vergleicht die Zeile mit `if` so, dass die kleinere Zahl nach vorn kommt. Welches Zeichen musst du ändern, damit die größere vorn landet?
+          - pattern: 'let\s+mut\s+arr\b'
+            say: '`let mut arr` fehlt noch: Ohne `mut` lässt `rustc` das Programm nicht übersetzen.'
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```rust
+      if arr[j] < arr[j + 1] {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.

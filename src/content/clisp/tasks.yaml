@@ -1,0 +1,97 @@
+# Aufgaben zu »Common Lisp«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: clisp
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.lisp` und führe es
+      mit `sbcl --script hello.lisp` aus.
+    file: hello.lisp
+    check:
+      type: files
+      path: hello.lisp
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)^\s*\(\s*format\s+t\s+"Hello, World!(~%)?"\s*\)'
+            say: 'In `hello.lisp` finde ich noch kein `(format t "Hello, World!~%")`. Steht es genau so da, mit beiden Klammern?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.lisp`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.lisp` eingegeben, mit `.lisp` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.lisp` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Die Art des Fehlers
+    prompt: |
+      Welche Art von Fehler meldet SBCL für `formt`? Sie steht in der ersten
+      Zeile der Meldung hinter `Unhandled`, in Großbuchstaben.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(unhandled\s+)?undefined-function\W*$'
+    feedback:
+      - when: { matches: '(?i)is undefined' }
+        say: Das ist die Beschreibung des Fehlers. Gesucht ist die Art davor, ein Wort mit Bindestrich hinter `Unhandled`.
+      - when: { matches: '(?i)^\W*formt\W*$' }
+        say: '`formt` ist das Wort, über das SBCL stolpert. Gesucht ist die Art des Fehlers.'
+    hint: SBCL hängt an die Meldung eine lange Liste an, woher der Aufruf kam. Scroll im Terminal nach oben, bis zur Zeile mit `Unhandled`.
+    solution: |
+      `UNDEFINED-FUNCTION`: Lisp liest `(formt t …)` als Aufruf einer Funktion
+      `formt`, und die gibt es nicht. In Lisp ist das erste Wort in einer
+      Klammer immer die Funktion, auch bei `format`.
+
+  - id: bruch
+    title: Ein Drittel und ein Sechstel
+    prediction: true
+    prompt: |
+      In Lisp steht das Rechenzeichen vorn, vor den Zahlen: `(+ 1 2)` heißt
+      `1 + 2`. Was gibt `sbcl` für `(+ 1/3 1/6)` aus? Überleg erst, dann
+      probier es aus: Starte `sbcl` ohne Dateinamen und gib den Ausdruck ein.
+    check:
+      type: choice
+      options:
+        - '`1/2`'
+        - '`0.5`'
+        - '`0.49999997`'
+        - 'Einen Fehler, weil `1/3` keine Zahl ist.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Ein Taschenrechner zeigt das. Probier aus, was Lisp aus zwei Brüchen macht.'
+      - when: { picked: 2 }
+        say: 'So kann es mit Kommazahlen aussehen, die nicht genau sind. Lisp rechnet hier aber gar nicht mit Kommazahlen. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Für Lisp ist `1/3` eine Zahl, ein Bruch. Probier es aus.'
+    solution: |
+      `1/2`. Lisp rechnet mit Brüchen genau: 1/3 + 1/6 = 2/6 + 1/6 = 3/6, und
+      das kürzt es zu 1/2. Mit `(exit)` beendest du `sbcl`.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      `bubble-sort` bekommt die Funktion, mit der es vergleicht, als zweiten
+      Parameter; ohne ihn ist es `<`. Ändere den Aufruf in `bubblesort.lisp`
+      so, dass das Programm absteigend sortiert, die größte Zahl zuerst.
+    file: bubblesort.lisp
+    check:
+      type: files
+      path: bubblesort.lisp
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)\(\s*bubble-sort\s+list\s+(#''|\(\s*function\s+)>=?\s*\)?\s*\)'
+            say: 'In `bubblesort.lisp` ruft das Programm `bubble-sort` noch ohne zweiten Parameter auf. Welche Funktion vergleicht so, dass die größere Zahl vorn steht?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.lisp`. Speichere das Skript unter diesem Namen.
+    hint:
+      - 'Der Aufruf steht weiter unten: `(bubble-sort list)`. Der zweite Parameter kommt hinter `list`.'
+      - 'Eine Funktion gibst du mit `#''` davor weiter, etwa `#''<`.'
+    solution: |
+      `(bubble-sort list #'>)`. `#'>` ist die Funktion `>` selbst, nicht ihr
+      Ergebnis; `bubble-sort` ruft sie für je zwei benachbarte Zahlen auf und
+      vertauscht die beiden, wenn sie `NIL` zurückgibt.

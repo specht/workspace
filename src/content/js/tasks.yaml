@@ -1,0 +1,119 @@
+# Aufgaben zu »JavaScript«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: js
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.js` und führe es mit
+      `node hello.js` aus.
+    file: hello.js
+    check:
+      type: files
+      path: hello.js
+      expect:
+        format: text
+        contains:
+          - pattern: '^\s*console\.log\s*\(\s*["''`]Hello, World!["''`]\s*\)'
+            say: 'In `hello.js` finde ich noch kein `console.log("Hello, World!")`. Steht es genau so da, mit Punkt, Klammern und Anführungszeichen?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.js`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.js` eingegeben, mit `.js` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.js` ist noch leer. Schreib `console.log("Hello, World!");` hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Die Art des Fehlers
+    prompt: |
+      Welche Art von Fehler meldet Node.js für `console.print`? Sie steht am
+      Anfang der Zeile, die sagt, was falsch ist, vor dem Doppelpunkt.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*TypeError\W*$'
+    feedback:
+      - when: { matches: '(?i)not a function' }
+        say: Das ist die Beschreibung des Fehlers. Gesucht ist das eine Wort davor, vor dem Doppelpunkt.
+      - when: { matches: '(?i)^\W*ReferenceError\W*$' }
+        say: '`ReferenceError` meldet Node.js, wenn es einen Namen gar nicht kennt. `console` kennt es aber: Steht in deiner Datei `console.print`?'
+    hint: Über der Meldung zeigt Node.js die Zeile aus deiner Datei und markiert die Stelle mit `^`. Die Zeile darunter beginnt mit der Art des Fehlers.
+    solution: |
+      `TypeError`: `console.print` gibt es nicht, der Wert ist `undefined`, und
+      `undefined` lässt sich nicht aufrufen wie eine Funktion. Die ganze Zeile
+      lautet `TypeError: console.print is not a function`.
+
+  - id: ausfuehrbar
+    title: Ein ausführbares Skript
+    prompt: |
+      `hello.js` hat ein Shebang und ist ausführbar, sodass `./hello.js`
+      `Hello, World!` ausgibt.
+    file: hello.js
+    check:
+      type: files
+      path: hello.js
+      expect:
+        executable: true
+        contains:
+          - pattern: '^#!.*\bnode\b'
+            say: 'In `hello.js` fehlt das Shebang. Die erste Zeile heißt `#!/usr/bin/env node`.'
+          - pattern: '^\s*console\.log\b'
+            say: 'Das Shebang ist da, aber `console.log` fehlt. Steht noch `console.print` in der Datei?'
+    feedback:
+      - when: { problem: not_executable }
+        say: '`hello.js` ist noch nicht ausführbar. Im Terminal, im Ordner `/workspace`: `chmod +x hello.js`.'
+    hint: '`ls -l hello.js` zeigt die Rechte. Steht vorn `-rwxr-xr-x`, ist die Datei ausführbar, bei `-rw-r--r--` noch nicht.'
+
+  - id: grosse-zahl
+    title: Eine große Zahl
+    prediction: true
+    prompt: |
+      Was zeigt `node` an, wenn du dort `123456789123456789` eingibst und
+      <kbd>Enter</kbd> drückst? Überleg erst, dann probier es aus: Starte `node`
+      ohne Dateinamen.
+    check:
+      type: choice
+      options:
+        - '`123456789123456780`'
+        - '`123456789123456789`'
+        - '`1.2345678912345679e+17`'
+        - 'Eine Fehlermeldung, weil die Zahl zu groß ist.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Die Zahl hat 18 Stellen, und JavaScript speichert jede Zahl in 64 Bit, auch die Stellen hinter dem Komma.'
+      - when: { picked: 2 }
+        say: 'So schreibt JavaScript erst Zahlen ab 10<sup>21</sup>. Probier aus, was bei dieser Zahl erscheint.'
+      - when: { picked: 3 }
+        say: 'JavaScript rechnet weiter, ohne etwas zu melden. Probier es aus.'
+    solution: |
+      `123456789123456780`. JavaScript speichert jede Zahl als
+      Gleitkommazahl mit 64 Bit; genau sind ganze Zahlen damit nur bis
+      9007199254740991, also bis etwa 16 Stellen. Die letzte Ziffer ist
+      verloren, und `factor.js` zerlegt eine andere, gerade Zahl.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.js` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.js
+    check:
+      type: files
+      path: bubblesort.js
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s*\(\s*arr\s*\[\s*j\s*\]\s*<=?\s*arr\s*\[\s*j\s*\+\s*1\s*\]\s*\)|if\s*\(\s*arr\s*\[\s*j\s*\+\s*1\s*\]\s*>=?\s*arr\s*\[\s*j\s*\]\s*\)'
+            say: 'In `bubblesort.js` vergleicht das Programm noch wie vorher: Zwei Zahlen werden vertauscht, wenn die vordere größer ist. Wann sollen sie jetzt vertauscht werden?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.js`. Speichere das Skript unter diesem Namen.
+    hint:
+      - Zwei benachbarte Zahlen werden in der Zeile mit `if` vertauscht. Unter welcher Bedingung?
+      - Für absteigend wird vertauscht, wenn die vordere Zahl kleiner ist als die hintere.
+    solution: |
+      In der Zeile mit `if` wird aus `>` ein `<`:
+      `if (arr[j] < arr[j + 1]) {`. Jetzt wandert in jedem Durchlauf die
+      kleinste Zahl nach hinten.

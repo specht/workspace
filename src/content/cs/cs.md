@@ -100,6 +100,8 @@ crop-bottom: 40%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei HelloWorld.cs, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor das Programm laufen kann, muss es kompiliert werden: Der Compiler übersetzt den Quelltext in eine Form, die die .NET-Laufzeitumgebung ausführen kann.
@@ -163,6 +165,8 @@ dotnet run HelloWorld.cs
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
+_task(fehler)
+
 Statt das Programm zu starten, gibt der Compiler eine Fehlermeldung aus, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
@@ -208,8 +212,14 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(int-grenze)
+
+<!-- after: int-grenze -->
+`int.Parse` liest ein `int`: 32 Bit, höchstens 2147483647. 3000000000 passt nicht hinein. C# rechnet dann nicht mit einer falschen Zahl weiter, sondern bricht mit einer Exception ab.
+<!-- /after -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was meldet C#, und was könnte der Grund dafür sein? Ersetze danach in der Zeile mit <code>int.Parse</code> beide <code>int</code> durch <code>long</code> und probier die Zahl noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+<strong>Ausprobieren:</strong> Ersetze in der Zeile mit <code>int.Parse</code> beide <code>int</code> durch <code>long</code> und probier <code>3000000000</code> noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
 </div>
 
 ## Bubblesort
@@ -240,13 +250,12 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(ueber-das-ende)
+
+_task(absteigend)
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>BubbleSort.cs</code> und starte das Programm noch einmal:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-<li>Ändere in der Schleife, die das Array füllt, die Bedingung <code>i &lt; numbers.Length</code> zu <code>i &lt;= numbers.Length</code>. Was meldet C# beim Ausführen? Stell die Bedingung danach wieder her.</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10 und starte das Programm noch einmal. Warum musst du dafür nur eine einzige Zahl ändern?
 </div>
 
 ## Zusammenfassung

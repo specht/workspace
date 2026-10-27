@@ -5,6 +5,7 @@
     {{ range site.RegularPages }}
       <li>
         <a href="{{ .RelPermalink }}">
+          {{ with .Params.image }}<img src="{{ . | relURL }}" alt="">{{ end }}
           <strong>{{ .Title }}</strong>
           <span>{{ .Description }}</span>
         </a>

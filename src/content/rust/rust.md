@@ -89,6 +89,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.rs, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
@@ -159,6 +161,8 @@ rustc hello.rs && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `println` das Wort `printn` zu schreiben:
@@ -178,6 +182,8 @@ rustc hello.rs
 <div class='hint'>
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
+
+_task(fehler)
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
@@ -262,13 +268,12 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(ohne-mut)
+
+_task(absteigend)
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.rs</code>, übersetze neu und starte das Programm:
-<ul>
-<li>Sortiere 100 Zahlen statt 10: Welche Zahlen musst du dafür ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-<li>Lösch das <code>mut</code> in <code>let mut arr</code>. Was meldet der Compiler, und was schlägt er vor? Stell das <code>mut</code> danach wieder her.</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10, übersetze neu und starte das Programm. Welche Zahlen musst du dafür ändern?
 </div>
 
 ## Zusammenfassung

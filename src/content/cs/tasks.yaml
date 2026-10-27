@@ -1,0 +1,123 @@
+# Aufgaben zum Steckbrief »C#«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace
+# (HelloWorld.cs, Factor.cs, BubbleSort.cs), so wie die Seite sie speichern
+# lässt; dotnet run übersetzt und startet sie in einem Schritt.
+format: 1
+activity: cs
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/HelloWorld.cs`.
+    file: HelloWorld.cs
+    check:
+      type: files
+      path: HelloWorld.cs
+      expect:
+        format: text
+        contains:
+          - pattern: 'Console\.WriteLine\s*\(\s*"Hello, World!"\s*\)'
+            say: 'In `HelloWorld.cs` finde ich noch kein `Console.WriteLine("Hello, World!")`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: 'static\s+void\s+Main\s*\('
+            say: 'In `HelloWorld.cs` fehlt die Methode `Main`, mit der das Programm beginnt: `public static void Main(string[] args)`.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/HelloWorld.cs`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `HelloWorld.cs` eingegeben, mit `.cs` am Ende?
+      - when: { problem: wrong_format }
+        say: '`HelloWorld.cs` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Die Nummer des Fehlers
+    prompt: |
+      Der Compiler gibt jedem Fehler eine Nummer, die mit `CS` beginnt. Welche
+      Nummer hat der Fehler mit `WriteLin`?
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(error\s+)?CS\s*0117\W*$'
+    feedback:
+      - when: { matches: '(?i)^\W*7\W*17\W*$' }
+        say: Das sind Zeile und Zeichen, an denen der Fehler steht. Gesucht ist die Nummer, die mit `CS` beginnt.
+      - when: { matches: '(?i)^\W*(error\s+)?CS\s*\d+\W*$' }
+        say: Das ist eine Nummer von C#, aber nicht die dieses Fehlers. Lies die Zeile, in der `WriteLin` steht.
+      - when: { matches: '(?i)WriteLin' }
+        say: Gesucht ist die Nummer, nicht der Name. Sie steht in derselben Zeile hinter `error`.
+    hint: 'Die Zeile mit dem Fehler beginnt mit dem Dateinamen und der Stelle in Klammern, dann kommt `error` und die Nummer.'
+    solution: |
+      `CS0117`: »`Console` does not contain a definition for `WriteLin`«. Mit der
+      Nummer findest du den Fehler in der Dokumentation von Microsoft, mit
+      Erklärung und Beispielen, auch wenn die Meldung selbst knapp ist.
+
+  - id: int-grenze
+    title: Eine zu große Zahl
+    prompt: |
+      Gib bei `dotnet run Factor.cs` statt 123 die Zahl `3000000000` ein. Mit
+      welcher Exception bricht das Programm ab? Ihr Name endet auf
+      `Exception`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(System\.)?OverflowException\W*$'
+    feedback:
+      - when: { matches: '(?i)FormatException' }
+        say: '`FormatException` käme bei einer Eingabe, die gar keine Zahl ist. Schau in die erste Zeile der Meldung.'
+      - when: { matches: '(?i)^\W*(Unhandled\s+)?Exception\W*$' }
+        say: Gesucht ist der ganze Name, das Wort vor `Exception` gehört dazu.
+    hint: Die erste Zeile lautet `Unhandled exception. …`, und dahinter steht der Name.
+    solution: |
+      `System.OverflowException`: »Value was either too large or too small for
+      an Int32«. `int.Parse` liest ein `int`, 32 Bit, höchstens 2147483647.
+      3000000000 passt nicht hinein, und C# bricht ab, statt mit einer falschen
+      Zahl weiterzurechnen.
+
+  - id: ueber-das-ende
+    title: Über das Ende hinaus
+    prediction: true
+    prompt: |
+      In `BubbleSort.cs` füllt eine Schleife das Array mit
+      `for (int i = 0; i < numbers.Length; i++)`. Was passiert, wenn dort
+      `i <= numbers.Length` steht? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - 'Das Programm bricht beim Start mit einer `IndexOutOfRangeException` ab.'
+        - 'Der Compiler weigert sich, das Programm zu übersetzen.'
+        - 'Das Array wird um eine Zahl länger, und es werden 11 Zahlen sortiert.'
+        - 'Es läuft wie vorher; die Schleife schreibt einmal in den Speicher hinter dem Array.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. Für den Compiler ist `<=` ein Vergleich wie jeder andere; wie lang das Array zur Laufzeit ist, prüft er nicht.'
+      - when: { picked: 2 }
+        say: '`new int[10]` legt die Länge fest, sie ändert sich danach nicht. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'So könnte es in C sein. Probier es in C# aus: Hier wird jeder Zugriff geprüft.'
+    solution: |
+      Mit `i <= numbers.Length` erreicht `i` den Wert 10, und `numbers[10]` gibt
+      es nicht: Die Indizes gehen von 0 bis 9. C# prüft jeden Zugriff auf ein
+      Array und bricht mit `System.IndexOutOfRangeException: Index was outside
+      the bounds of the array` ab. C prüft das nicht und schreibt still in den
+      Speicher dahinter.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Stell die Bedingung wieder her. Ändere dann `Sort` in `BubbleSort.cs` so,
+      dass die größte Zahl zuerst kommt, und starte das Programm noch einmal.
+    file: BubbleSort.cs
+    check:
+      type: files
+      path: BubbleSort.cs
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s*\(\s*arr\[j\]\s*<\s*arr\[j\s*\+\s*1\]\s*\)|if\s*\(\s*arr\[j\s*\+\s*1\]\s*>\s*arr\[j\]\s*\)'
+            say: Noch vergleicht die Zeile mit `if` so, dass die kleinere Zahl nach vorn kommt. Welches Zeichen musst du ändern, damit die größere vorn landet?
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```cs
+      if (arr[j] < arr[j + 1])
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.

@@ -89,6 +89,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.dart, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Programm ausführen
 
 Um unser Programm auszuführen, müssen wir den Dart-Compiler aufrufen und ihm den Dateinamen unseres Programms übergeben.
@@ -106,46 +108,23 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>da
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 <!-- tutorial-screenshot
-# Der erste Lauf: Dart erklärt die Telemetrie, das braucht Platz
+# Der erste Lauf. Im Terminal des Editors zeigt Dart den Text zur
+# Telemetrie, obwohl sie aus ist (dart --disable-analytics beim Start,
+# init-code-server-run, und davor hier noch einmal); außerhalb des Editors
+# nicht. Ungeklärt; der Text unter dem Bild sagt, dass man ihn übergehen kann.
 hide-left-sidebar
 terminal-maximize
+terminal-run: dart --disable-analytics > /dev/null; dart run hello.dart > /dev/null
+terminal-wait-for-prompt
 press: Control+l
 terminal-run: dart run hello.dart
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-telemetry.webp' alt='dart run hello.dart erklärt zuerst in einem langen Text, dass das Dart-Werkzeug Nutzungsdaten an Google Analytics schickt und wie dart --disable-analytics das abstellt; ganz unten steht Hello, World!.'>
+<img class='full' src='hello-again.webp' alt='dart run hello.dart zeigt zuerst einen englischen Text: Das Dart-Werkzeug schicke Nutzungsdaten an Google Analytics, abschalten lasse sich das mit dart --disable-analytics; darunter steht Hello, World!.'>
 
-### Was ist Telemetrie?
-
-Telemetrie ist eine Funktion von Dart, die Informationen über die Ausführung des Programms sammelt und an Google sendet. Diese Informationen helfen den Entwicklern von Dart, die Sprache zu verbessern. Um zu verhindern, dass Telemetrie-Daten gesendet werden, gib den folgenden Befehl wie angegeben ein:
-
-```bash
-dart --disable-analytics
-```
-
-Du solltest nun eine Bestätigung sehen, dass die Telemetrie deaktiviert wurde:
-
-<!-- tutorial-screenshot
-press: Control+l
-terminal-run: dart --disable-analytics
-terminal-wait-for-prompt
-crop-terminal-lines: auto
--->
-
-<img class='full' src='disable-analytics.webp' alt='dart --disable-analytics antwortet »Analytics reporting disabled«.'>
-
-Wenn wir das Programm erneut ausführen, sollte es die Nachricht `Hello, World!` ohne die Meldung zur Telemetrie ausgeben:
-
-<!-- tutorial-screenshot
-press: Control+l
-terminal-run: dart run hello.dart
-terminal-wait-for-prompt
-crop-terminal-lines: auto
--->
-
-<img class='full' src='hello-again.webp' alt='dart run hello.dart gibt jetzt nur noch Hello, World! aus.'>
+Von sich aus schickt Dart Nutzungsdaten an Google, damit seine Entwickler sehen, welche Befehle wie oft laufen. Im Workspace ist das abgeschaltet: Bei jedem Start deines Workspace läuft dafür `dart --disable-analytics`. Steht beim allerersten Lauf trotzdem ein langer englischer Text über Google Analytics vor `Hello, World!`, kannst du ihn übergehen. Auf einem eigenen Rechner schaltet derselbe Befehl die Nutzungsdaten ab.
 
 <div class='hint'>
 Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
@@ -170,6 +149,8 @@ dart run hello.dart
 <div class='hint'>
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
+
+_task(fehler)
 
 Dart sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
@@ -212,13 +193,17 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Dart auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Probier die Grenzen von <code>int</code> aus:
-<ul>
-<li>Gib <code>9223372036854775807</code> ein, die größte Zahl, die in ein <code>int</code> passt, und danach <code>9223372036854775808</code>. Was meldet Dart beim zweiten Mal?</li>
-<li>Lösch das <code>!</code> hinter <code>readLineSync()</code>. Was meldet Dart, noch bevor das Programm startet? Tipp: <code>readLineSync()</code> liefert <code>null</code>, wenn keine Eingabe mehr kommt. Stell das <code>!</code> danach wieder her.</li>
-</ul>
-</div>
+_task(int-grenze)
+
+<!-- after: int-grenze -->
+Ein `int` hat in Dart 64 Bit und reicht bis 9223372036854775807. Eine größere Zahl lehnt `int.parse` ab, statt mit einer falschen weiterzurechnen.
+<!-- /after -->
+
+_task(ohne-ausrufezeichen)
+
+<!-- after: ohne-ausrufezeichen -->
+`String?` heißt: ein Text oder `null`. Ohne das `!` besteht Dart darauf, dass du den Fall `null` behandelst, noch bevor das Programm läuft. Stell das `!` danach wieder her.
+<!-- /after -->
 
 ## Bubblesort
 
@@ -244,11 +229,12 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(absteigend)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.dart</code> und starte das Skript noch einmal:
 <ul>
 <li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 <li>Ersetze in <code>generateRandomNumbers</code> die Zeile mit <code>numbers.add</code> durch <code>numbers.add('Apfel');</code>. Was meldet Dart, und was hat das mit <code>List&lt;int&gt;</code> zu tun? Stell die Zeile danach wieder her.</li>
 </ul>
 </div>

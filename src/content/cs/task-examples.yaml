@@ -1,0 +1,38 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: cs
+examples:
+  hallo:
+    pass:
+      - files: { HelloWorld.cs: HelloWorld.cs }
+    fail:
+      - files: { HelloWorld.cs: error-HelloWorld.cs }
+        say: Console.WriteLine
+      - files: { HelloWorld.cs: { text: "Console.WriteLine(\"Hello, World!\");\n" } }
+        say: Main
+      - files: { HelloWorld.cs: { text: "" } }
+      - files: { helloworld.cs: HelloWorld.cs }
+  fehler:
+    pass:
+      - answer: CS0117
+      - answer: error CS0117
+      - answer: cs0117
+    fail:
+      - answer: (7,17)
+      - answer: CS1061
+      - answer: WriteLin
+  int-grenze:
+    pass:
+      - answer: OverflowException
+      - answer: System.OverflowException
+    fail:
+      - answer: FormatException
+      - answer: Exception
+      - answer: Unhandled exception
+  absteigend:
+    pass:
+      - files: { BubbleSort.cs: { text: "    static void Sort(int[] arr)\n    {\n        int n = arr.Length;\n        for (int i = 0; i < n - 1; i++)\n        {\n            for (int j = 0; j < n - i - 1; j++)\n            {\n                if (arr[j] < arr[j + 1])\n                {\n                }\n            }\n        }\n    }\n" } }
+    fail:
+      - files: { BubbleSort.cs: BubbleSort.cs }
+        say: kleinere Zahl

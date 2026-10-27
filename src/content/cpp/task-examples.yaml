@@ -1,0 +1,33 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: cpp
+examples:
+  hallo:
+    pass:
+      - files: { hello.cpp: hello.cpp }
+      - files: { hello.cpp: { text: "#include <iostream>\nusing namespace std;\nint main() { cout << \"Hello, World!\"; }\n" } }
+    fail:
+      - files: { hello.cpp: hello-error.cpp }
+        say: std::cout
+      - files: { hello.cpp: { text: "int main() {\n    std::cout << \"Hello, World!\\n\";\n}\n" } }
+        say: iostream
+      - files: { hello.cpp: { text: "" } }
+      - files: { hallo.cpp: hello.cpp }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00", executable: true } }
+    fail:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00" } }
+        say: ausführbar
+      - files: { hello: { from: hello.cpp, executable: true } }
+        say: kein übersetztes Programm
+      - files: { hello.cpp: hello.cpp }
+        say: noch kein Programm
+  absteigend:
+    pass:
+      - files: { bubblesort.cpp: { text: "void bubbleSort(int arr[], int size) {\n    for (int i = 0; i < size - 1; i++) {\n        for (int j = 0; j < size - i - 1; j++) {\n            if (arr[j] < arr[j + 1]) {\n                int temp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = temp;\n            }\n        }\n    }\n}\n" } }
+      - files: { bubblesort.cpp: { text: "            if (arr[j + 1] > arr[j]) {\n" } }
+    fail:
+      - files: { bubblesort.cpp: bubblesort.cpp }
+        say: kleinere Zahl

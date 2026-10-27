@@ -1,0 +1,65 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# loesung/ ist tracker.rb und tracker.py am Ende der Seite, stufen/ die
+# Stände davor; in fehler/ stehen häufige Fehler, je einer gegenüber der
+# Lösung.
+format: 1
+activity: tracking
+examples:
+  pixel:
+    # Der Befehl fragt sonst den laufenden Tracker. Hier steht seine Ausgabe,
+    # wie Stufe 2 und Stufe 1 sie auf curl -w geben.
+    pass:
+      - answer: "printf '200 image/gif\\n'"
+    fail:
+      - answer: "printf '404 text/plain; charset=utf-8\\n'"
+        say: neu gestartet
+      - answer: "printf '000 \\n'"
+        say: Unter Port 8000
+  erkannt:
+    # Die Header, wie Stufe 3 und Stufe 2 sie auf curl -D - geben
+    pass:
+      - answer: "printf 'HTTP/1.1 200 OK\\r\\nContent-Type: image/gif\\r\\nContent-Length: 42\\r\\nCache-Control: no-store\\r\\nConnection: close\\r\\n\\r\\n'"
+    fail:
+      - answer: "printf 'HTTP/1.1 200 OK\\r\\nContent-Type: image/gif\\r\\nContent-Length: 42\\r\\nCache-Control: no-store\\r\\nSet-Cookie: visitor=5c0ffee1; Max-Age=31536000; Path=/\\r\\nConnection: close\\r\\n\\r\\n'"
+        say: neue Kennung
+  cookies:
+    pass:
+      - { files: { tracking/tracker.rb: loesung/tracker.rb } }
+      - { files: { tracking/tracker.rb: stufen/3.rb } }
+    fail:
+      - { files: { tracking/tracker.rb: stufen/2.rb } }
+      - { files: { tracking/tracker.rb: fehler/jedes-gleichheitszeichen.rb }, say: ersten }
+      - { files: { tracking/tracker.rb: fehler/leerzeichen-im-namen.rb }, say: Leerzeichen }
+    python:
+      pass:
+        - { files: { tracking/tracker.py: loesung/tracker.py } }
+        - { files: { tracking/tracker.py: stufen/3.py } }
+      fail:
+        - { files: { tracking/tracker.py: stufen/2.py } }
+        - { files: { tracking/tracker.py: fehler/jedes-gleichheitszeichen.py } }
+        - { files: { tracking/tracker.py: fehler/leerzeichen-im-namen.py }, say: Leerzeichen }
+  besuche:
+    pass:
+      - { files: { tracking/tracker.rb: loesung/tracker.rb } }
+    fail:
+      - { files: { tracking/tracker.rb: stufen/3.rb } }
+      - { files: { tracking/tracker.rb: fehler/alle-besuche.rb }, say: zwei Besuche }
+    python:
+      pass:
+        - { files: { tracking/tracker.py: loesung/tracker.py } }
+      fail:
+        - { files: { tracking/tracker.py: stufen/3.py } }
+        - { files: { tracking/tracker.py: fehler/alle-besuche.py }, say: zwei Besuche }
+  stichwoerter:
+    pass:
+      - { files: { tracking/tracker.rb: loesung/tracker.rb } }
+    fail:
+      - { files: { tracking/tracker.rb: stufen/3.rb } }
+      - { files: { tracking/tracker.rb: fehler/ohne-strip.rb }, say: Leerzeichen }
+    python:
+      pass:
+        - { files: { tracking/tracker.py: loesung/tracker.py } }
+      fail:
+        - { files: { tracking/tracker.py: stufen/3.py } }
+        - { files: { tracking/tracker.py: fehler/ohne-strip.py }, say: Leerzeichen }

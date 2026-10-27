@@ -2,6 +2,7 @@
 title: Saturn
 date: 2026-10-15
 description: Leichter als Wasser, mit Ringen aus Eis.
+image: /images/saturn.jpg
 tags: [Gasriese, Ringe]
 ---
 

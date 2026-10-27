@@ -1,0 +1,98 @@
+# Aufgaben zu »Lua«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: lua
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.lua` und führe es
+      mit `lua hello.lua` aus.
+    file: hello.lua
+    check:
+      type: files
+      path: hello.lua
+      expect:
+        format: text
+        contains:
+          - pattern: '^\s*print\s*\(\s*["'']Hello, World!["'']\s*\)'
+            say: 'In `hello.lua` finde ich noch kein `print("Hello, World!")`. Steht es genau so da, mit Klammern und Anführungszeichen?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.lua`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.lua` eingegeben, mit `.lua` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.lua` ist noch leer. Schreib `print("Hello, World!")` hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: ausfuehrbar
+    title: Ein ausführbares Skript
+    prompt: |
+      `hello.lua` hat ein Shebang und ist ausführbar, sodass `./hello.lua`
+      `Hello, World!` ausgibt.
+    file: hello.lua
+    check:
+      type: files
+      path: hello.lua
+      expect:
+        executable: true
+        contains:
+          - pattern: '^#!.*\blua\b'
+            say: 'In `hello.lua` fehlt das Shebang. Die erste Zeile heißt `#!/usr/bin/env lua`.'
+          - pattern: '^\s*print\b'
+            say: 'Das Shebang ist da, aber `print` fehlt. Steht noch `prin` in der Datei?'
+    feedback:
+      - when: { problem: not_executable }
+        say: '`hello.lua` ist noch nicht ausführbar. Im Terminal, im Ordner `/workspace`: `chmod +x hello.lua`.'
+    hint: '`ls -l hello.lua` zeigt die Rechte. Steht vorn `-rwxr-xr-x`, ist die Datei ausführbar, bei `-rw-r--r--` noch nicht.'
+
+  - id: index
+    title: Vor der ersten Zahl
+    prediction: true
+    prompt: |
+      Die Zahlen in `bubblesort.lua` stehen in `array[1]` bis `array[10]`.
+      Was gibt `print(array[0])` aus, als letzte Zeile des Skripts? Überleg
+      erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - '`nil`'
+        - 'Die kleinste Zahl, die erste nach dem Sortieren.'
+        - '`0`'
+        - 'Eine Fehlermeldung: Den Index 0 gibt es nicht.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'So wäre es in einer Sprache, deren Arrays mit dem Index 0 beginnen, wie JavaScript oder Python. Wo beginnt Lua? Probier es aus.'
+      - when: { picked: 2 }
+        say: 'Lua erfindet keinen Wert. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Lua meldet hier nichts. Probier es aus.'
+    solution: |
+      `nil`, Luas Wert für »nichts«. Eine Tabelle in Lua beginnt mit dem
+      Index 1, unter dem Index 0 steht nichts. Das ist kein Fehler: Wer einen
+      Index liest, unter dem nichts steht, bekommt `nil`.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.lua` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.lua
+    check:
+      type: files
+      path: bubblesort.lua
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s+arr\s*\[\s*j\s*\]\s*<=?\s*arr\s*\[\s*j\s*\+\s*1\s*\]\s+then|if\s+arr\s*\[\s*j\s*\+\s*1\s*\]\s*>=?\s*arr\s*\[\s*j\s*\]\s+then'
+            say: 'In `bubblesort.lua` vergleicht das Programm noch wie vorher: Zwei Zahlen werden vertauscht, wenn die vordere größer ist. Wann sollen sie jetzt vertauscht werden?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.lua`. Speichere das Skript unter diesem Namen.
+    hint:
+      - Zwei benachbarte Zahlen werden in der Zeile mit `if` vertauscht. Unter welcher Bedingung?
+      - Für absteigend wird vertauscht, wenn die vordere Zahl kleiner ist als die hintere.
+    solution: |
+      In der Zeile mit `if` wird aus `>` ein `<`:
+      `if arr[j] < arr[j + 1] then`. Jetzt wandert in jedem Durchlauf die
+      kleinste Zahl nach hinten.

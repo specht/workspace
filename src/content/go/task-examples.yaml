@@ -1,0 +1,40 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: go
+examples:
+  hallo:
+    pass:
+      - files: { hello.go: hello.go }
+    fail:
+      - files: { hello.go: hello-error.go }
+        say: fmt.Println
+      - files: { hello.go: { text: "import \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n" } }
+        say: package main
+      - files: { hello.go: { text: "" } }
+      - files: { hallo.go: hello.go }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00", executable: true } }
+    fail:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00" } }
+        say: ausführbar
+      - files: { hello: { from: hello.go, executable: true } }
+        say: kein übersetztes Programm
+      - files: { hello.go: hello.go }
+        say: noch kein Programm
+  fehler:
+    pass:
+      - answer: undefined
+      - answer: Undefined
+      - answer: 'undefined:'
+    fail:
+      - answer: fmt.Printn
+      - answer: error
+      - answer: command-line-arguments
+  absteigend:
+    pass:
+      - files: { bubblesort.go: { text: "func bubbleSort(numbers []int) {\n    n := len(numbers)\n    for i := 0; i < n-1; i++ {\n        for j := 0; j < n-i-1; j++ {\n            if numbers[j] < numbers[j+1] {\n                numbers[j], numbers[j+1] = numbers[j+1], numbers[j]\n            }\n        }\n    }\n}\n" } }
+    fail:
+      - files: { bubblesort.go: bubblesort.go }
+        say: kleinere Zahl

@@ -156,6 +156,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt lua hello.lua die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Lua eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
@@ -227,6 +229,8 @@ sleep: 0.5
 
 <img class='full' src='shebang.webp' alt='Oben hello.lua mit #!/usr/bin/env lua in der ersten Zeile, unten im Terminal chmod +x hello.lua und ./hello.lua, das Hello, World! ausgibt.'>
 
+_task(ausfuehrbar)
+
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
@@ -281,13 +285,12 @@ crop-terminal-lines: auto
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.lua</code> und starte das Skript noch einmal:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Wie oft steht die 10 im Quelltext? Ersetze in den beiden Schleifen für die Ausgabe die 10 durch <code>#array</code>, die Länge der Tabelle: Wie viele Zahlen musst du jetzt noch ändern?</li>
-<li>Die Zahlen stehen in <code>array[1]</code> bis <code>array[10]</code>. Was gibt <code>print(array[0])</code> aus?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10. Wie oft steht die 10 in <code>bubblesort.lua</code>? Ersetze in den beiden Schleifen für die Ausgabe die 10 durch <code>#array</code>, die Länge der Tabelle: Wie viele Zahlen musst du jetzt noch ändern?
 </div>
+
+_task(index)
+
+_task(absteigend)
 
 ## Zusammenfassung
 
