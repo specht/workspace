@@ -17,7 +17,7 @@ reference: [struktogramme]
 # Prüfziffern: erst planen, dann programmieren
 
 <p class='abstract'>
-Warum piept die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, als Pseudocode und Struktogramm, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht.
+Warum piept die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, mit Kommentaren im Code, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht.
 </p>
 
 <script src='/include/struktogramm.js'></script>
@@ -315,12 +315,16 @@ _task(pruefziffer)
 ## Erst planen, dann programmieren
 
 Bisher stand der Plan schon da, und du hast ihn übersetzt. Ab jetzt planst du
-selbst. Bevor du die erste Zeile Code schreibst, klärst du drei Fragen: Was
-bekommt die Funktion, und was gibt sie zurück? Welche Fälle gibt es, auch
-solche, die nicht vorkommen sollten? Und in welcher Reihenfolge geschieht was?
-Die Antworten schreibst du als Pseudocode auf. Das Struktogramm dazu zeigt dir,
-ob dein Plan aufgeht: Steht etwas in der falschen Spalte oder außerhalb der
-Schleife, siehst du es dort.
+selbst, und zwar gleich dort, wo der Code hinkommt: Du legst die Funktion an
+und schreibst als Kommentare hinein, was sie Schritt für Schritt tun soll, noch
+ohne eine Zeile Code. Dabei klärst du drei Fragen: Was bekommt die Funktion,
+und was gibt sie zurück? Welche Fälle gibt es, auch solche, die nicht vorkommen
+sollten? Und in welcher Reihenfolge geschieht was?
+
+Dann ersetzt du einen Kommentar nach dem anderen durch Code und probierst nach
+jedem Schritt aus. Die Kommentare dürfen stehen bleiben: Wer den Code später
+liest, sieht so, wofür jeder Teil da ist. Genauso planen viele, die beruflich
+programmieren; der Plan ist Pseudocode, nur eben in der Datei.
 
 ### Ist der Code gültig?
 
@@ -330,22 +334,12 @@ die letzte die Prüfziffer der ersten zwölf ist.
 
 <!-- language: ruby -->
 <div class='hint own' data-check='ean'>
-<strong>Jetzt bist du dran:</strong> Plane die Funktion <code>valid_ean?(code)</code>
-erst im Feld unten oder auf Papier, dann schreib sie. Sie gibt <code>true</code>
-oder <code>false</code> zurück und benutzt <code>check_digit</code>.
+<strong>Jetzt bist du dran:</strong> Leg die Funktion <code>valid_ean?(code)</code>
+an und schreib zuerst deinen Plan als Kommentare hinein, dann den Code dazu.
+Sie gibt <code>true</code> oder <code>false</code> zurück und benutzt
+<code>check_digit</code>.
 </div>
-<!-- /language -->
-<!-- language: python -->
-<div class='hint own' data-check='ean'>
-<strong>Jetzt bist du dran:</strong> Plane die Funktion <code>is_valid_ean(code)</code>
-erst im Feld unten oder auf Papier, dann schreib sie. Sie gibt <code>True</code>
-oder <code>False</code> zurück und benutzt <code>check_digit</code>.
-</div>
-<!-- /language -->
 
-_include(struktogramme#ausprobieren)
-
-<!-- language: ruby -->
 <!-- hint -->
 Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
 zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
@@ -353,14 +347,15 @@ dann gleich `false` zurück.
 <!-- /hint -->
 
 <!-- hint -->
-Ein Plan, dem noch die Einzelheiten fehlen:
+Ein Plan, dem noch der Code fehlt:
 
-```pseudocode
-valid_ean(code):
-    if (code hat nicht genau 13 Zeichen): return false
-    if (ein Zeichen ist keine Ziffer): return false
-    digits ← (die 13 Zeichen als Zahlen)
-    return check_digit(die ersten zwölf) == digits[12]
+```ruby
+def valid_ean?(code)
+  # nicht genau 13 Zeichen: false
+  # ein Zeichen ist keine Ziffer: false
+  # die 13 Zeichen als Zahlen
+  # gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+end
 ```
 <!-- /hint -->
 
@@ -374,31 +369,44 @@ ersten zwölf Elemente einer Liste.
 <!-- solution -->
 ```ruby
 def valid_ean?(code)
+  # nicht genau 13 Zeichen: false
   return false unless code.length == 13
+  # ein Zeichen ist keine Ziffer: false
   return false unless code.chars.all? { |c| ('0'..'9').include?(c) }
 
+  # die 13 Zeichen als Zahlen
   digits = code.chars.map(&:to_i)
+  # gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
   check_digit(digits[0..11]) == digits[12]
 end
 ```
 <!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
+<div class='hint own' data-check='ean'>
+<strong>Jetzt bist du dran:</strong> Leg die Funktion <code>is_valid_ean(code)</code>
+an und schreib zuerst deinen Plan als Kommentare hinein, dann den Code dazu.
+Sie gibt <code>True</code> oder <code>False</code> zurück und benutzt
+<code>check_digit</code>.
+</div>
+
 <!-- hint -->
 Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
 zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
-dann gleich `false` zurück.
+dann gleich `False` zurück.
 <!-- /hint -->
 
 <!-- hint -->
-Ein Plan, dem noch die Einzelheiten fehlen:
+Ein Plan, dem noch der Code fehlt. Damit Python die Funktion schon jetzt
+annimmt, steht am Ende `pass`, das nichts tut:
 
-```pseudocode
-valid_ean(code):
-    if (code hat nicht genau 13 Zeichen): return false
-    if (ein Zeichen ist keine Ziffer): return false
-    digits ← (die 13 Zeichen als Zahlen)
-    return check_digit(die ersten zwölf) == digits[12]
+```python
+def is_valid_ean(code):
+    # nicht genau 13 Zeichen: False
+    # ein Zeichen ist keine Ziffer: False
+    # die 13 Zeichen als Zahlen
+    # gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+    pass
 ```
 <!-- /hint -->
 
@@ -411,11 +419,15 @@ Zahl 7, und `digits[0:12]` sind die ersten zwölf Elemente einer Liste.
 <!-- solution -->
 ```python
 def is_valid_ean(code):
+    # nicht genau 13 Zeichen: False
     if len(code) != 13:
         return False
+    # ein Zeichen ist keine Ziffer: False
     if not all(c in '0123456789' for c in code):
         return False
+    # die 13 Zeichen als Zahlen
     digits = [int(c) for c in code]
+    # gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
     return check_digit(digits[0:12]) == digits[12]
 ```
 <!-- /solution -->
@@ -442,10 +454,18 @@ Für `3-499-12304-5` ist die Summe
 3 · 10 + 4 · 9 + 9 · 8 + 9 · 7 + 1 · 6 + 2 · 5 + 3 · 4 + 0 · 3 + 4 · 2 + 5 · 1
 = 242 = 22 · 11; die ISBN ist gültig.
 
-Diesmal steht kein Plan auf der Seite. Schreib deinen eigenen Plan für
-`valid_isbn` als Pseudocode in das Feld oben, bis das Struktogramm zeigt, was du
-meinst: Was geschieht mit den Bindestrichen, was mit einem `X`, was mit einem
-Zeichen, das weder Ziffer noch `X` ist?
+<!-- language: ruby -->
+Diesmal steht kein Plan auf der Seite. Leg `valid_isbn?(isbn)` an und schreib
+deinen Plan als Kommentare hinein, bevor du Code schreibst: Was geschieht mit
+den Bindestrichen, was mit einem `X`, was mit einem Zeichen, das weder Ziffer
+noch `X` ist?
+<!-- /language -->
+<!-- language: python -->
+Diesmal steht kein Plan auf der Seite. Leg `is_valid_isbn(isbn)` an und schreib
+deinen Plan als Kommentare hinein, bevor du Code schreibst: Was geschieht mit
+den Bindestrichen, was mit einem `X`, was mit einem Zeichen, das weder Ziffer
+noch `X` ist?
+<!-- /language -->
 
 _task(plan-isbn)
 

@@ -280,27 +280,38 @@ tasks:
   - id: plan-isbn
     title: Dein Plan für die ISBN
     prompt: |
-      Schreib deinen Plan für `valid_isbn` als Pseudocode, so wie du ihn im
-      Feld oben gezeichnet hast, und kopier ihn hierher. Deine Lehrkraft sieht
-      ihn.
+      Kopier die Kommentare deines Plans für `valid_isbn?` hierher, bevor du
+      den Code dazu schreibst. Deine Lehrkraft sieht sie.
     check: { type: reflection, min_words: 15 }
     examples:
       - |
-        ```pseudocode
-        valid_isbn(isbn):
-            text ← isbn without "-"
-            if length of text != 10: return false
-            total ← 0
-            for i from 0 to 9:
-                if i == 9 and text[i] == "X":
-                    value ← 10
-                else if text[i] is a digit:
-                    value ← number of text[i]
-                else:
-                    return false
-                total ← total + (10 - i) * value
-            return total mod 11 == 0
+        ```ruby
+        def valid_isbn?(isbn)
+          # die Bindestriche herausnehmen
+          # nicht genau 10 Zeichen: false
+          # für jedes Zeichen mit seinem Index:
+          #   ein X nur am Ende, es zählt 10
+          #   sonst eine Ziffer, oder false
+          #   die Zahl mal (10 - Index) zur Summe
+          # gültig, wenn die Summe durch 11 teilbar ist
+        end
         ```
+      - |
+        ```python
+        def is_valid_isbn(isbn):
+            # die Bindestriche herausnehmen
+            # nicht genau 10 Zeichen: False
+            # für jedes Zeichen mit seinem Index:
+            #   ein X nur am Ende, es zählt 10
+            #   sonst eine Ziffer, oder False
+            #   die Zahl mal (10 - Index) zur Summe
+            # gültig, wenn die Summe durch 11 teilbar ist
+            pass
+        ```
+    python:
+      prompt: |
+        Kopier die Kommentare deines Plans für `is_valid_isbn` hierher, bevor
+        du den Code dazu schreibst. Deine Lehrkraft sieht sie.
 
   - id: isbn
     title: Bücher prüfen

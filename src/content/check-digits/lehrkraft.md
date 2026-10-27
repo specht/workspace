@@ -1,4 +1,4 @@
-Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, als Pseudocode und Struktogramm, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Ruby oder Python.
+Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Ruby oder Python.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen mit Parametern und Rückgabewert, Verzweigungen, eine Zählschleife, Listen mit Index; etwa nach den Katas zu Funktionen, Entscheidungen, Schleifen und Listen. Struktogramme und Pseudocode erklärt die Seite, ausführlicher das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a>.</td></tr>
@@ -10,7 +10,7 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 <tr><th>Dateien</th><td>Alles in <code>/workspace/check-digits</code>: <code>check_digits.rb</code> oder <code>check_digits.py</code> mit allen Funktionen, dazu <code>swaps.rb</code> oder <code>swaps.py</code> für die Zahlendreher. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Vier Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe; die Aufgabe sagt jeweils, womit.</li>
-<li>Der Plan für die ISBN ist eine offene Aufgabe: Er geht ans Klassenboard. Unter der Aufgabe sehen nur Lehrkräfte ein Beispiel für einen guten Plan.</li>
+<li>Der Plan für die ISBN ist eine offene Aufgabe: Die Lernenden kopieren die Kommentare ihres Plans hinein, bevor sie den Code schreiben; er geht ans Klassenboard. Unter der Aufgabe sehen nur Lehrkräfte ein Beispiel für einen guten Plan.</li>
 <li>Dazu die Prüfziffer von Hand, das Ergebnis eines Struktogramms, die Zahl der übersehenen Zahlendreher und drei Vorhersagen. Der Workspace muss für die Prüfungen laufen.</li>
 </ul></td></tr>
 </table>
@@ -24,9 +24,9 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 
 #### Die Aufgaben
 
-- »Erst planen, dann programmieren« beginnt mit übersetzen: Bei <code>check_digit</code> steht das Struktogramm auf der Seite, bei <code>valid_ean</code> ein Plan in Schritten in den Tipps, bei der ISBN nichts. Der Plan für die ISBN ist die Stelle, an der sich zeigt, ob jemand plant oder gleich tippt; ein Vergleich zweier Pläne an der Tafel lohnt sich (Was geschieht mit den Bindestrichen? Wo wird das X behandelt?).
+- Struktogramme kommen zweimal vor, zum Lesen (<code>mystery</code>) und zum Übersetzen (<code>check_digit</code>), wie es der Rahmenlehrplan nennt. Geplant wird nicht mit einem Struktogramm, sondern mit Kommentaren in der Datei: Das ist Pseudocode an der Stelle, an der der Code entsteht, und so planen auch viele, die beruflich programmieren. Bei <code>valid_ean</code> steht ein Plan als Kommentare in den Tipps, bei der ISBN nichts. Der Plan für die ISBN ist die Stelle, an der sich zeigt, ob jemand plant oder gleich tippt; ein Vergleich zweier Pläne an der Tafel lohnt sich (Was geschieht mit den Bindestrichen? Wo wird das X behandelt?).
 - Die Prüfungen von <code>valid_ean</code> und <code>valid_isbn</code> rufen die Funktionen auch mit zu kurzen, zu langen und falschen Eingaben auf; die Aufgabe kündigt das an. Wer die Fälle im Plan hat, besteht sie beim ersten Versuch.
-- Das Struktogramm im Feld zum Ausprobieren entsteht aus dem Pseudocode; »Als SVG speichern« lädt das Bild herunter, etwa für ein Arbeitsblatt. Die Schlüsselwörter des Pseudocodes sind Englisch wie im ganzen Handbuch.
+- Wer einen Plan doch als Struktogramm sehen will: Das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a> zeichnet es aus Pseudocode; »Als SVG speichern« lädt das Bild herunter, etwa für ein Arbeitsblatt. Die Schlüsselwörter des Pseudocodes sind Englisch wie im ganzen Handbuch, den Pfeil tippt man als <code>&lt;-</code>.
 - Die häufigsten Fehler, die die Prüfungen eigens abfangen: die Gewichte vertauscht (mit 3 beginnend), das zweite <code>mod 10</code> vergessen (die Prüfziffer wird 10), ein Code mit 14 Ziffern als gültig, das X der ISBN nicht behandelt.
 
 #### Was schiefgeht
