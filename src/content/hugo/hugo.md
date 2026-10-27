@@ -1,8 +1,10 @@
 <div class='meta'>
 image: startseite.webp
+image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben die Navigation mit Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einem Satz über sie"
 kind: projekt
 language: Hugo
 duration: 2 Doppelstunden
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Inhalt und Layout getrennt)"
 requires: [static-website]
 reference: [yaml, html, css]
 </div>
