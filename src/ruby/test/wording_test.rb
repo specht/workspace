@@ -55,6 +55,26 @@ class WordingTest < Minitest::Test
         assert_empty hits(/\bmal\s?(nehmen|genommen|nimmt|nimm)\b/i)
     end
 
+    # » · « between words reads as if an AI wrote it; a comma, »und«, a
+    # colon or parentheses instead. The dot stays a multiplication sign:
+    # between numbers (»3 · 4«), in LaTeX, and between variables in lower
+    # case or single letters (»dir · n«, »plane · camera_x«, »S · V«).
+    # A word on one side and a number on the other (»Bytes · 4 Takte«)
+    # slips through: read for it.
+    def test_no_middle_dot_as_separator
+        found = files.flat_map do |path|
+            text = prose(File.read(path)).gsub(/\$\$.*?\$\$|\$[^$\n]+\$|\\\(.*?\\\)|\\\[.*?\\\]/m) { |maths| "\n" * maths.count("\n") }
+            text.lines.each_with_index.flat_map do |line, i|
+                line.gsub(/<[^>\n]*>/, '').scan(/(\S+) ?· ?(\S+)/).filter_map do |left, right|
+                    words = [left[/([\p{L}_]+)[)»«"'.,:;!?]*\z/, 1], right[/\A[»„"']?(\p{L}[\p{L}_]*)/, 1]]
+                    next if words.any?(&:nil?) || words.all? { |word| word.match?(/\A([a-z_]+|\p{L})\z/) }
+                    "#{path.sub("#{CONTENT}/", '')}:#{i + 1}: #{left} · #{right}"
+                end
+            end
+        end
+        assert_empty found
+    end
+
     # Stack, Queue, Priority Queue, Hash Table stay English
     def test_english_data_structure_names
         assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher/)
