@@ -20,9 +20,34 @@ keine Aktivität im Workspace« stehen: Auch eine Lücke ist gut zu wissen.
 Über der Liste steht ein Bild der Wege durch die Aktivitäten
 (`src/ruby/include/curriculum_graph.rb`): jede Aktivität, die auf einer
 anderen aufbaut (`requires:`) oder auf der eine andere aufbaut, als Kasten in
-der Farbe ihres Abschnitts im Katalog, mit einem Pfeil von dem, was zuerst
-kommt. Von links nach rechts nach der längsten Kette davor; in einer Spalte
-stehen die Kästen nahe bei denen, mit denen sie verbunden sind. Wählt eine
+einer Farbe nach Alter (was nur die Pläne der Sek I nennen, was beide nennen,
+was nur die der Oberstufe nennen), mit einem Pfeil von dem, was zuerst
+kommt. Von links nach rechts nach der längsten Kette davor. Ein Pfeil über
+mehrere Spalten bekommt in jeder Spalte dazwischen eigenen Platz, damit er
+durch keinen Kasten läuft. Bänder nach Alter von oben nach unten haben die
+Kästen von ihren Nachbarn weggezogen, die Pfeile liefen lang und steil;
+darum die Farben.
+
+Die Reihenfolge der Kästen in jeder Spalte wird einmal gesucht und
+gespeichert (`src/ruby/include/curriculum-graph.json`), der Server liest sie
+nur: Die Suche zählt sich kreuzende Pfeile, wie weit und wie steil sie
+steigen und Pfeile, die einen Umweg nehmen müssen, und dauert etwa drei
+Minuten. Kommt eine Aktivität in den Katalog oder geht eine heraus, oder
+ändert sich bei einer `requires:`, dann auf dem Rechner der
+Entwicklung (nicht im Container, der `src` nur lesen darf):
+
+```bash
+src/scripts/curriculum-graph.rb
+```
+
+und die geänderte `curriculum-graph.json` mit committen.
+`src/ruby/test/curriculum_graph_test.rb` schlägt fehl, solange sie
+nicht passt; `src/scripts/curriculum-graph.rb --check` sagt es ohne zu
+suchen. Passt sie nicht, ordnet der Server die Kästen schnell und schlechter;
+die Entwicklungsseite sucht dann selbst kurz und behält das Ergebnis, bis
+sich wieder etwas ändert.
+
+Wählt eine
 Lehrkraft einen Namen der Pläne (über dem Bild, oder mit dem Knopf neben dem
 Namen in der Liste) oder klickt sie auf einen Kasten, bleibt hervorgehoben,
 was den Namen trägt, und jede Aktivität auf einem Weg dorthin; das Symbol im

@@ -4,6 +4,7 @@ image_alt: "Pixeliges Feuer, unten hellgelb, nach oben dunkelrot"
 kind: projekt
 duration: 2 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Rastergrafik, Farbmodelle, Figuren und Animationen); Oberstufe: Vertiefung Computergrafik (Paletten, Filterkernel)"
+requires: [drawing]
 language: Pixelflow Canvas / Ruby
 </div>
 

@@ -1,7 +1,7 @@
 <style>
     /* The graph of »Baut auf … auf« (curriculum_graph.rb): a box for each
-       activity, coloured by its catalog section (its hue, --cg-h), the
-       arrows from what comes first. A name of the plans or a box chosen:
+       activity, coloured by age (its hue, --cg-h: Sek I, both, Oberstufe),
+       the arrows from what comes first. A name of the plans or a box chosen:
        what carries the name, and the way to it, stay; the rest fades. */
     .lehrplan-page .cg-intro {
         color: var(--bs-secondary-color);
@@ -30,11 +30,18 @@
         inset: 0;
         overflow: visible;
     }
+    /* an arrow: its path, and its head as a triangle at the path's end */
     .lehrplan-page .cg-edge {
+        color: var(--cg-line);
+        transition: opacity 0.2s, color 0.2s;
+    }
+    .lehrplan-page .cg-edge path {
         fill: none;
-        stroke: var(--cg-line);
+        stroke: currentColor;
         stroke-width: 1.5;
-        transition: opacity 0.2s, stroke 0.2s;
+    }
+    .lehrplan-page .cg-edge polygon {
+        fill: currentColor;
     }
     .lehrplan-page .cg-node {
         position: absolute;
@@ -84,7 +91,9 @@
         font-weight: 600;
     }
     .lehrplan-page .cg-edge.cg-on {
-        stroke: var(--cg-on);
+        color: var(--cg-on);
+    }
+    .lehrplan-page .cg-edge.cg-on path {
         stroke-width: 2.2;
     }
     .lehrplan-page .cg-legend {
@@ -144,21 +153,10 @@
     [data-bs-theme='dark'] .lehrplan-page .lp-graph-show {
         color: #c7a6f0;
     }
-    .lehrplan-page .cg-c0 { --cg-h: 0; }
-    .lehrplan-page .cg-c1 { --cg-h: 138; }
-    .lehrplan-page .cg-c2 { --cg-h: 275; }
-    .lehrplan-page .cg-c3 { --cg-h: 53; }
-    .lehrplan-page .cg-c4 { --cg-h: 190; }
-    .lehrplan-page .cg-c5 { --cg-h: 328; }
-    .lehrplan-page .cg-c6 { --cg-h: 105; }
-    .lehrplan-page .cg-c7 { --cg-h: 243; }
-    .lehrplan-page .cg-c8 { --cg-h: 20; }
-    .lehrplan-page .cg-c9 { --cg-h: 158; }
-    .lehrplan-page .cg-c10 { --cg-h: 295; }
-    .lehrplan-page .cg-c11 { --cg-h: 73; }
-    .lehrplan-page .cg-c12 { --cg-h: 210; }
-    .lehrplan-page .cg-c13 { --cg-h: 348; }
-    .lehrplan-page .cg-c14 { --cg-h: 125; }
+    /* the ages: Sek I, Sek I und Oberstufe, Oberstufe */
+    .lehrplan-page .cg-a0 { --cg-h: 145; }
+    .lehrplan-page .cg-a1 { --cg-h: 38; }
+    .lehrplan-page .cg-a2 { --cg-h: 250; }
 </style>
 <div class='container lehrplan-page'>
     <div
@@ -177,11 +175,12 @@
     <h2 id='wege'>Wege durch die Aktivitäten</h2>
     <p class='cg-intro'>
         Welche Aktivität auf welcher aufbaut: Ein Pfeil führt von dem, was zuerst kommt, zu dem, was darauf aufbaut,
-        von links nach rechts. Wähl einen Namen der Pläne oder klick auf eine Aktivität: Dann bleibt hervorgehoben,
-        was dazu gehört und welcher Weg dorthin führt.
+        von links nach rechts. Die Farbe sagt, für welches Alter: was nur die Pläne der Sek I nennen, was beide nennen,
+        was nur die der Oberstufe nennen. Wähl einen Namen der Pläne oder klick auf eine Aktivität: Dann bleibt
+        hervorgehoben, was dazu gehört und welcher Weg dorthin führt.
     </p>
     #{CurriculumGraph.topic_select(@curriculum_graph)}
-    #{CurriculumGraph.html(@curriculum_graph, @@sections, @@section_order, @@content)}
+    #{CurriculumGraph.html(@curriculum_graph, @@sections, @@content)}
     #{CurriculumOverview.html(@@content, pinnable_slugs, :in_graph => @curriculum_graph[:nodes].flat_map { |n| n[:topics] }.to_set)}
 </div>
 <script>
