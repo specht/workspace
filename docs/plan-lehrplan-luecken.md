@@ -40,6 +40,10 @@ model, the Turing machine, the logic sandbox, then the rest.
   members, loans; a book and a DVD are both media), and an own
   class-diagram extension like the ER-Werkstatt, so that the diagram is
   checked like everything else.
+- **The extension's name** (27 October 2026): the UML-Werkstatt, files
+  `.uml`, so that state and sequence diagrams can join it later; class
+  diagrams first. Also agreed: the outline below, the slug `bibliothek`,
+  preparing a new Workspace image (built after asking).
 - **The diagram's language** (27 October 2026): like the ER-Werkstatt's,
   indentation and a few English keywords, one member per line, `+` and `-`
   for public and private (no `#` for protected: it starts a comment), types
@@ -127,7 +131,7 @@ What it needs, in this order (state on 27 October 2026 after each):
 Slug `bibliothek`, title »Klassen entwerfen: eine Bibliothek«, kind
 `projekt`, languages `[ruby, python, javascript, dart, java]`, about three
 Doppelstunden. No starter repository: students make a folder `bibliothek`
-with a `.classes` file and their code (one file, in Java one file per
+with a `.uml` file and their code (one file, in Java one file per
 class). Each chapter goes from the story to the diagram to the code, each
 step checked:
 
@@ -160,7 +164,7 @@ step checked:
 
 A person box: Alan Kay (Smalltalk, »object-oriented«) or Kristen Nygaard
 and Ole-Johan Dahl (Simula, the first classes). Handbuch: a page on
-the Klassen-Werkstatt's language like `er-modelle`.
+the UML-Werkstatt's language like `er-modelle`.
 
 ## Java and Dart for Katas later
 

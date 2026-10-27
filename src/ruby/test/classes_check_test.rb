@@ -2,7 +2,7 @@ require 'minitest/autorun'
 require_relative '../include/classes_check'
 
 # The check classes (ClassesCheck): the task against the summary the
-# Klassen-Werkstatt's core prints (node classes-core.js --json), here written
+# UML-Werkstatt's core prints (node uml-core.js --json), here written
 # by hand in that shape.
 class ClassesCheckTest < Minitest::Test
     def member(name, params, returns, visibility = '+')
@@ -29,7 +29,7 @@ class ClassesCheckTest < Minitest::Test
     end
 
     CHECK = {
-        'type' => 'classes', 'file' => 'bibliothek/bibliothek.classes',
+        'type' => 'classes', 'file' => 'bibliothek/bibliothek.uml',
         'classes' => [
             { 'name' => 'Medium', 'abstract' => true, 'attributes' => ['- title: String', 'available'], 'methods' => ['+ lend(): void', 'isAvailable(): boolean'] },
             { 'name' => 'Book', 'extends' => 'Medium', 'methods' => ['+ Book(title: String, author: String)'] },
@@ -107,13 +107,13 @@ class ClassesCheckTest < Minitest::Test
     end
 
     def test_the_read_out_uses_the_files_own_notation
-        read = ClassesCheck.describe(summary, 'bibliothek/bibliothek.classes')
+        read = ClassesCheck.describe(summary, 'bibliothek/bibliothek.uml')
         assert_includes read, "class Book extends Medium\n  - author: String\n  + Book(title: String, author: String)"
         assert_includes read, 'association loans: Member 1 -- 0..* Medium'
     end
 
     def test_spec_errors
-        assert_includes ClassesCheck.spec_errors('file' => 'x.classes'), 'classes needs classes or associations'
+        assert_includes ClassesCheck.spec_errors('file' => 'x.uml'), 'classes needs classes or associations'
         assert_includes ClassesCheck.spec_errors('classes' => [{ 'name' => 'Book', 'colour' => 'red' }]), 'classes[0]: unknown keys: colour'
         assert_includes ClassesCheck.spec_errors('associations' => [{ 'between' => %w[A B], 'multiplicities' => ['1', 'viele'] }]),
                         'associations[0].multiplicities must be two, like ["1", "0..*"]'

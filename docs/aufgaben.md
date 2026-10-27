@@ -1359,17 +1359,17 @@ Attributen (Schlüssel fett), Beziehungen und die Tabellen, die daraus werden.
 
 ### classes
 
-Liest ein Klassendiagramm aus einer `.classes`-Datei (die Klassen-Werkstatt,
-`src/vscode-extensions/classes`) und vergleicht es mit der Aufgabe, wie `er`
+Liest das Klassendiagramm aus einer `.uml`-Datei (die UML-Werkstatt,
+`src/vscode-extensions/uml`) und vergleicht es mit der Aufgabe, wie `er`
 ein ER-Modell (`ClassesCheck`). Der Server schickt den Kern der
-Klassen-Werkstatt mit und lässt ihn im Workspace mit `node` lesen
-(`classes-core.js --json`); so liest jeder Workspace gleich, auch einer mit
+UML-Werkstatt mit und lässt ihn im Workspace mit `node` lesen
+(`uml-core.js --json`); so liest jeder Workspace gleich, auch einer mit
 einer älteren Erweiterung.
 
 ```yaml
 check:
   type: classes
-  file: bibliothek/bibliothek.classes
+  file: bibliothek/bibliothek.uml
   classes:
     - name: Medium
       abstract: true
@@ -1389,7 +1389,7 @@ Was die Aufgabe nennt, muss da sein; weitere Klassen, Attribute, Methoden und
 Assoziationen dürfen es auch. Eine Methode zählt nach ihrem Namen und, wenn
 angegeben, den Typen ihrer Parameter (ihre Namen sind egal) und ihrem
 Rückgabetyp. Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«,
-mit Zeile und Meldung, wie die Klassen-Werkstatt sie im Editor unterstreicht),
+mit Zeile und Meldung, wie die UML-Werkstatt sie im Editor unterstreicht),
 dann der erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein
 Attribut, eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre
 Richtung. Unter »Was der Workspace gelesen hat« steht das Diagramm in der

@@ -207,13 +207,13 @@ module TaskCheck
             :solution => status == :correct ? task['solution'] : nil)
     end
 
-    NOT_RUNNING_CLASSES = 'Starte zuerst deinen Workspace. Dein Diagramm liest die Klassen-Werkstatt in deinem Workspace.'
+    NOT_RUNNING_CLASSES = 'Starte zuerst deinen Workspace. Dein Diagramm liest die UML-Werkstatt in deinem Workspace.'
 
-    # classes: a class diagram, read by the Klassen-Werkstatt's core in the
+    # classes: a class diagram, read by the UML-Werkstatt's core in the
     # Workspace (ClassesCheck), like er.
     def self.check_classes(task, check, workspace, runner)
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
-        return Result.new(:status => :unavailable, :message => 'Die Klassen-Werkstatt fehlt auf dem Server. Sag deiner Lehrkraft Bescheid.') unless ClassesCheck.available?
+        return Result.new(:status => :unavailable, :message => 'Die UML-Werkstatt fehlt auf dem Server. Sag deiner Lehrkraft Bescheid.') unless ClassesCheck.available?
 
         file = check['file']
         if workspace.entry(file)[:type] != :file

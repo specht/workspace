@@ -3,19 +3,19 @@ require 'json'
 require 'shellwords'
 require 'zlib'
 
-# Check type classes (docs/aufgaben.md): a class diagram in a .classes file
-# (the Klassen-Werkstatt, src/vscode-extensions/classes).
+# Check type classes (docs/aufgaben.md): the class diagram in a .uml file
+# (the UML-Werkstatt, src/vscode-extensions/uml).
 #
 # Like ErCheck, the server does not read the diagram itself: it sends the
-# Klassen-Werkstatt's core along (gzipped, so that a Workspace with an older
+# UML-Werkstatt's core along (gzipped, so that a Workspace with an older
 # extension gets the same reading) and runs its command line with node in the
-# person's Workspace (node core.js --json file), then compares the summary
+# person's Workspace (node uml-core.js --json file), then compares the summary
 # with the task. Everything after that works on the JSON and can be tested
 # without a Workspace.
 #
 #   check:
 #     type: classes
-#     file: bibliothek/bibliothek.classes
+#     file: bibliothek/bibliothek.uml
 #     classes:
 #       - name: Medium
 #         abstract: true
@@ -34,7 +34,7 @@ require 'zlib'
 # may be. A method is matched by its name and, if given, the types of its
 # parameters (their names do not count) and its return type.
 module ClassesCheck
-    CORE_PATH = File.expand_path('../../vscode-extensions/classes/core/classes-core.js', __dir__)
+    CORE_PATH = File.expand_path('../../vscode-extensions/uml/core/uml-core.js', __dir__)
     CORE = File.file?(CORE_PATH) ? Base64.strict_encode64(Zlib.gzip(File.read(CORE_PATH, encoding: 'UTF-8'), :level => 9)) : nil
     NAME = /\A[A-Za-z][A-Za-z0-9_]*\z/
     MULTIPLICITY = /\A(\*|\d+|\d+\.\.(\d+|\*))\z/
@@ -50,8 +50,8 @@ module ClassesCheck
         <<~SH
             t=$(mktemp -d) || exit 1
             trap 'rm -rf "$t"' EXIT
-            printf '%s' #{Shellwords.escape(CORE)} | base64 -d | gunzip > "$t/classes-core.js"
-            node "$t/classes-core.js" --json #{Shellwords.escape(file)}
+            printf '%s' #{Shellwords.escape(CORE)} | base64 -d | gunzip > "$t/uml-core.js"
+            node "$t/uml-core.js" --json #{Shellwords.escape(file)}
         SH
     end
 
@@ -171,7 +171,7 @@ module ClassesCheck
         unless errors.empty?
             first = errors.first(3).map { |p| "- Zeile #{p['line']}: #{p['msg']}" }.join("\n")
             more = errors.size > 3 ? "\n- … und #{errors.size - 3} weitere" : ''
-            return [false, :errors, "In #{code(file)} #{errors.size == 1 ? 'steht noch ein Fehler' : "stehen noch #{errors.size} Fehler"}. Die Klassen-Werkstatt unterstreicht sie auch im Editor.\n\n#{first}#{more}"]
+            return [false, :errors, "In #{code(file)} #{errors.size == 1 ? 'steht noch ein Fehler' : "stehen noch #{errors.size} Fehler"}. Die UML-Werkstatt unterstreicht sie auch im Editor.\n\n#{first}#{more}"]
         end
 
         classes = (summary['classes'] || []).to_h { |c| [c['name'], c] }
@@ -298,7 +298,7 @@ module ClassesCheck
     # [status, problem, message, read] (TaskCheck turns it into a Result).
     def self.evaluate(task, check, summary)
         file = check['file']
-        return [:unavailable, nil, 'Die Klassen-Werkstatt hat das Diagramm nicht gelesen. Versuch es gleich noch einmal.', nil] if summary.nil?
+        return [:unavailable, nil, 'Die UML-Werkstatt hat das Diagramm nicht gelesen. Versuch es gleich noch einmal.', nil] if summary.nil?
 
         read = describe(summary, file)
         return [:wrong, :missing, "#{code(file)} gibt es nicht.", read] if summary['missing']

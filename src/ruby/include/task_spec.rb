@@ -599,10 +599,10 @@ module TaskSpec
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat((check['type'] == 'java' ? JavaCheck : DartCheck).spec_errors(check))
         when 'classes'
-            # Runs the Klassen-Werkstatt's core on a .classes file in the Workspace.
+            # Runs the UML-Werkstatt's core on the class diagram of a .uml file in the Workspace.
             allowed += %w[file classes associations]
             errors.concat(path_errors(check['file'], 'file'))
-            errors << 'file must end in .classes' if nonempty_string?(check['file']) && !check['file'].end_with?('.classes')
+            errors << 'file must end in .uml' if nonempty_string?(check['file']) && !check['file'].end_with?('.uml')
             errors.concat(ClassesCheck.spec_errors(check))
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
