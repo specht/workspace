@@ -6,15 +6,15 @@ Lernende schalten Gatter, Addierer, Flipflops und ein kleines Rechenwerk auf der
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Gatter und ihre Schaltzeichen, die Regel von De Morgan als Vorhersage, NICHT, UND, ODER und XOR aus NAND, der Halbaddierer.</li>
 <li><b>2. Doppelstunde:</b> Volladdierer, Addierer für 4 Bit mit der Vorhersage zum Überlauf, RS- und D-Flipflop.</li>
-<li><b>3. Doppelstunde oder für Schnelle:</b> das Rechenwerk: Subtrahieren mit dem Addierer, die Flags, die Kata <code>alu</code> und der Vergleich mit der CPU Sandbox.</li>
+<li><b>3. Doppelstunde oder für Schnelle:</b> das Rechenwerk: Subtrahieren mit dem Addierer, die Flags, die Aufgabe <code>alu</code> und der Vergleich mit der CPU Sandbox.</li>
 </ul></td></tr>
-<tr><th>Dateien</th><td>Keine: Der Code steht in den Karten der Seite (Katas), der Workspace muss nicht laufen.</td></tr>
+<tr><th>Dateien</th><td>Keine: Der Code steht in den Aufgaben auf der Seite, der Workspace muss nicht laufen.</td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Sieben Katas (<code>function</code>): Die Prüfung ruft die Funktionen mit allen Kombinationen der Eingänge auf, beim Addierer und beim Rechenwerk mit 10 und 15 Paaren.</li>
+<li>Sieben Aufgaben mit Code (<code>function</code>): Die Prüfung ruft die Funktionen mit allen Kombinationen der Eingänge auf, beim Addierer und beim Rechenwerk mit 10 und 15 Paaren.</li>
 <li>Jeder Aufruf läuft zweimal: einmal mit 0 und 1, dann mit Signalen, die nur die Gatter der Aufgabe lesen können (<code>gates:</code>). Wer selbst rechnet oder vergleicht (<code>a &amp; b</code>, <code>if a == 1</code>, eine Tabelle), besteht den ersten Lauf und nicht den zweiten, mit einer Rückmeldung, die das sagt.</li>
 <li>Sieben Fragen mit Auswahl oder Zahl, vier davon Vorhersagen vor der Schaltung, die sie beantwortet.</li>
 </ul></td></tr>
-<tr><th>Lösung</th><td>Unter jeder Kata nach dem Lösen; als Lehrkraft mit »Lösung einsetzen«.</td></tr>
+<tr><th>Lösung</th><td>Unter jeder Aufgabe nach dem Lösen; als Lehrkraft mit »Lösung einsetzen«.</td></tr>
 </table>
 
 #### Die Aufgaben

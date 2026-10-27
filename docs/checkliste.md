@@ -101,6 +101,7 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
+| »Kata« heißt nur, was auf einer Kata-Seite steht (der Abschnitt »Katas«: `kata-…`, Pip). Code-Karten auf einer Aktivität (Prüfart `function` zum Beispiel in `logikgatter`) sind »Aufgaben«, im Text, in der Notiz für Lehrkräfte und in Kommentaren | Der Maintainer: »A kata is a kata kata«; sonst sucht eine Lehrkraft Katas im Abschnitt »Katas«, die dort nicht stehen | Lesen |
 | Die Aufgabe sagt, was man schreibt und was die Prüfung damit tut: Ruft sie eine Funktion selbst auf, nennt der Text die Aufrufe (»die Prüfung ruft ihn auf drei Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`«) | Sonst rätselt man, warum Pip drei Schritte geht, obwohl man nur einen Spruch geschrieben hat | Lesen |
 | Mehrere Karten einer Aufgabe unterscheiden sich, und jede zeigt, was erwartet wird; jeder Reiter nennt den Aufruf, den die Prüfung auf dieser Karte macht. Zahlen im Aufgabentext gelten für jede Karte, die jemand zu sehen bekommt | Drei gleiche Karten prüfen nichts; jede Person sieht nur ihre eigene Karte | Lesen, `katas.browser.spec.ts` |
 | Jede Kata hat einen Knopf, »Ausführen« mit dem Abspiel-Symbol: Er führt den Code aus, zeigt, was er ausgibt (bei Pip: spielt den Lauf ab), und prüft. Der Erfolg kommt bei Pip erst, wenn der Lauf zu Ende gespielt ist | Zwei Knöpfe für fast dasselbe verwirren; ein Lob vor dem Ende verrät das Ergebnis | `katas.browser.spec.ts` (ein Knopf), Lesen |

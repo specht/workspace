@@ -1,6 +1,6 @@
 # Aufgaben zu »Vom Gatter zum Rechenwerk«, in Ruby und in Python (unter python:).
-# Format: docs/aufgaben.md. Die Katas mit gates: (GateCheck) lassen die Eingänge
-# nur durch die Gatter gehen. Eine Änderung an einer Kata gehört in beide Sprachen.
+# Format: docs/aufgaben.md. Die Aufgaben mit gates: (GateCheck) lassen die Eingänge
+# nur durch die Gatter gehen. Eine Änderung an einer Aufgabe gehört in beide Sprachen.
 format: 1
 activity: logikgatter
 tasks:

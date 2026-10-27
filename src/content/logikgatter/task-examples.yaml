@@ -1,5 +1,5 @@
 # Beispiele für die Prüfungen (docs/aufgaben.md, »Beispiele für die Prüfungen«):
-# je Kata die Lösung, die sie annehmen muss, und eine Fassung, die richtig
+# je Aufgabe die Lösung, die sie annehmen muss, und eine Fassung, die richtig
 # rechnet, aber nicht nur über die Gatter; der starter wird von selbst geprüft.
 format: 1
 activity: logikgatter
