@@ -6868,10 +6868,10 @@ class Main < Sinatra::Base
         io << grouped_activity_options(activities.map { |a, t, _| [a, t, slugs[a]] }, activity_key)
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
-        io << activity_feedback_button(group, activity_key)
         # the group's repository of the activity, on the Workspace's Git server
         browse = slug && (@@content[slug] || {})[:class_repo] && git_browse_url((group_class_repos([group])[group] || {})[slug])
         io << "<a class='class-activity-link' href='#{h.(browse)}' title='Das Repository der Gruppe zu dieser Aktivität'><i class='bi bi-git' aria-hidden='true'></i>Repository</a>" if browse
+        io << activity_feedback_button(group, activity_key)
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='dropdown class-live' data-group='#{h.(group)}'>"
