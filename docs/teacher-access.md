@@ -490,6 +490,58 @@ im Fortschritt) mit einem Balken, dazu »zuletzt« über alle Aktivitäten
 (`ClassBoard.overview`). Noten und Export gibt es nicht; die Zahlen sagen,
 wie weit jemand ist.
 
+## Rückmeldung zu einer Aktivität
+
+Lehrkräfte sagen der Administration, wie eine Aktivität mit einer Gruppe
+lief (`include/activity_feedback.rb`, die Seite in
+`include/activity_feedback_page.rb`, `activity_feedback.js`). Im Reiter
+»Fortschritt« steht dafür immer »Rückmeldung geben« (danach »Deine
+Rückmeldung«); es öffnet ein Formular über der Tabelle, nie ein Fenster
+von selbst. Die Fragen: wie es insgesamt lief (gut, teils, teils, nicht
+gut, dazu ein Satz), die Dauer gemessen an `duration:` (kürzer, passte,
+länger), das Niveau für die Gruppe (zu leicht, passend, zu schwer), in
+welcher der fünf Sprachen der Klassen (`CodeLanguages::LANGUAGES`) die
+Aktivität zusätzlich gewünscht ist (die, die sie schon hat, sind als »gibt
+es schon« gesperrt; dazu ein Feld für eine andere), was gefehlt, gestört
+oder gut funktioniert hat, und ob die Administration an die Adresse
+schreiben darf. Alles ist freiwillig, eine Antwort muss sein. Eine
+Rückmeldung je Lehrkraft, Gruppe und Aktivität; sie lässt sich ändern.
+
+**Wann die Seite fragt** (`ActivityFeedback.prompt`): Mindestens drei der
+Lernenden der Gruppe (in einer kleineren Gruppe alle; ohne Lehrkräfte,
+Admins und Testkonten) haben eine Aufgabe der Aktivität geprüft,
+beantwortet oder abgegeben, und das neueste `updated` ihrer `TaskState`s
+ist mindestens 7 und höchstens 60 Tage alt. Dann steht über der Tabelle
+die Karte »Wie lief die Aktivität?« mit »Rückmeldung geben«, »Nicht jetzt«
+(14 Tage ausgeblendet, `snoozed_until`) und »Nicht mehr fragen« (`never`,
+für diese Gruppe und Aktivität). Ältere Aktivitäten fragen nicht mehr von
+selbst; der Knopf bleibt. Wartet eine Karte, zeigt die Startseite der
+Lehrkraft einen kleinen Hinweis, nur die neueste; »Nicht jetzt« dort blendet
+diese Karte 14 Tage aus und im selben Browser eine Woche lang jeden Hinweis
+auf der Startseite (lokaler Speicher).
+
+**Wer**: Rückmeldungen geben nur Lehrkräfte einer Gruppe (`+`), auch Admins
+nur für Gruppen, die sie selbst betreuen; nicht für Testgruppen und nicht
+beim Nachahmen (`feedback_group!` in `include/access.rb`, sonst 403). Lesen
+kann alle die Administration unter `/rueckmeldungen` (Menü
+»Administration«, unter »Inhalte«), um zu sehen, welche Aktivitäten Arbeit
+brauchen: zuerst je Aktivität eine Karte (wie es lief als Balken in Grün,
+Gelb und Rot mit Zeichen und Zahlen, Dauer und Niveau als »2× länger, 1×
+passte« mit der angesetzten Dauer, die gewünschten Sprachen), die neueste
+Rückmeldung zuerst; darunter jede Antwort mit ihren Texten, Gruppe,
+Lehrkraft und Datum, die Adresse nur, wenn das Häkchen gesetzt ist. Filter:
+Name der Aktivität, »Nur mit Text«, »Kontakt erwünscht«. Lernende sehen
+nichts davon.
+
+**Gespeichert** als `(:ActivityFeedback {group, activity, …})-[:BY]->(:User)`
+(Datenschutzerklärung, Verzeichnis und Löschkonzept aus `privacy.rb`). Sie
+geht mit dem Konto der Lehrkraft (`AccountDeletion`) und steht in ihrem
+Download unter `rueckmeldungen`. Beim Umbenennen der Gruppe zieht sie mit;
+wird die Gruppe gelöscht, bleibt eine beantwortete unter `former_group`
+(»Gruppe gelöscht« auf `/rueckmeldungen`, eine neue Gruppe gleichen Namens
+wird neu gefragt), »Nicht jetzt« und »Nicht mehr fragen« fallen weg
+(`GroupData`).
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
@@ -502,6 +554,8 @@ wie weit jemand ist.
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
+| Rückmeldung zu einer Aktivität geben und ändern (Klassenseite, »Fortschritt«) | | | ✓ eigene Gruppen | ✓ selbst betreute Gruppen |
+| Alle Rückmeldungen lesen (`/rueckmeldungen`) | | | | ✓ |
 | Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
 | Zeile des Lehrplans (`curriculum`, im Streifen über der Seite, in Lila) | | | ✓ | ✓ |
 | Die Übersicht `/lehrplan` (docs/lehrplan.md); Gäste wählen das Land über `?land=`, Lehrkräfte speichern es im Profil | ✓ | ✓ | ✓ | ✓ |

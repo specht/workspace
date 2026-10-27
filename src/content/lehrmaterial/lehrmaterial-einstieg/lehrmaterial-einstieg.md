@@ -97,6 +97,10 @@ Mit **Treffpunkt** über der Tabelle legst du fest, bis zu welcher Aufgabe alle 
 
 <img class='full full-shadow shot' src='klasse-treffpunkt.webp' alt='Über der Tabelle im Reiter Fortschritt: Treffpunkt nach Aufgabe 1, »16 von 17 da«, darunter »Noch nicht da: 1« mit einem Namen und dem Knopf »fehlt heute«. In der Tabelle zeigt eine gestrichelte Linie nach der ersten Spalte, wo der Treffpunkt liegt.'>
 
+#### Rückmeldung
+
+Haben mindestens drei aus deiner Gruppe mit einer Aktivität gearbeitet und seit einer Woche niemand mehr eine Aufgabe daraus geprüft, beantwortet oder abgegeben, fragt eine Karte über der Tabelle: **Wie lief die Aktivität?** Ein paar Klicks genügen: wie es insgesamt lief, ob die Dauer passte, ob das Niveau für die Gruppe passte, in welcher Programmiersprache du die Aktivität gern hättest, und was gefehlt oder gut funktioniert hat. Alles ist freiwillig, eine Antwort genügt. Lesen kann die Rückmeldung nur die Administration, die die Aktivitäten schreibt; deine Klasse sieht nichts davon. Eine E-Mail bekommst du dazu nur, wenn du es ankreuzt. **Nicht jetzt** blendet die Karte für 14 Tage aus, **Nicht mehr fragen** für diese Aktivität und Gruppe ganz. Früher antworten oder deine Antwort ändern kannst du jederzeit mit **Rückmeldung geben** über der Tabelle; wartet eine Karte, steht ein kurzer Hinweis darauf auch auf deiner Startseite.
+
 ### Überblick
 
 Hier steht jede Person der Gruppe mit allen Aktivitäten, an denen jemand aus der Gruppe gearbeitet hat; angeheftete kommen zuerst. In jeder Zelle steht, wie viele Aufgaben gelöst sind, von allen ohne Extras, mit einem schmalen Balken; ein Strich heißt: noch nichts bearbeitet. Ein Klick auf eine Spalte öffnet die Aktivität im Reiter **Fortschritt**. Ganz rechts steht, wann die Person zuletzt eine Aufgabe irgendeiner Aktivität geprüft hat. Noten sind das nicht: Die Zahlen sagen, wie weit jemand ist, nicht wie gut.
@@ -241,6 +245,7 @@ Steht an einer Aufgabe **Vorschau für Lehrkräfte**, sind Aufgaben auf eurer In
 - Für jede Aufgabe die letzte Antwort, ob sie stimmt und wie viele Versuche es waren. Lernende können ihre Antwort selbst löschen.
 - Abgaben als Kopie, bis die Person sie löscht oder neu abgibt.
 - Wer wann einen Workspace geöffnet oder jemanden nachgeahmt hat, mit deinem Satz dazu.
+- Deine Rückmeldungen zu Aktivitäten, bis dein Konto gelöscht wird.
 
 Daraus zeigt die Klassenseite auch, wann jemand zuletzt eine Aufgabe geprüft hat; eigens gespeichert wird dafür nichts.
 
