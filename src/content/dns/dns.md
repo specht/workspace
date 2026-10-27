@@ -4,6 +4,7 @@ image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, daru
 kind: labor
 duration: 1 Doppelstunde
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Computernetze (Funktionsweise des Internet: Namen und Adressen), Rechner und Netze (Protokolle, Client-Server-Struktur)"
+topics: [netze, client-server]
 language: Bash
 requires: [tcpip]
 reference: [netzwerk, terminal]

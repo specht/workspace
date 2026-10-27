@@ -4,21 +4,39 @@
   "inputs": [
     "e2e/tests/teacher-guide.pictures.ts",
     "src/ruby/include/class_board.rb",
+    "src/ruby/include/class_page.rb",
     "src/ruby/include/submission_view.rb",
     "src/ruby/include/teacher_roles.rb",
     "src/static/include/class_board.js",
+    "src/static/include/class_last_active.js",
     "src/static/include/submission_viewer.js",
     "src/static/include/tasks.js",
     "src/static/include/default.css",
     "src/static/include/dark.css",
     "src/static/_template.html",
-    "src/content/static-website/tasks.yaml"
+    "src/content/static-website/tasks.yaml",
+    "src/static/include/meeting_point.js",
+    "src/static/include/meeting_status.js",
+    "src/static/include/class_meeting.js",
+    "src/ruby/include/student_home.rb",
+    "src/static/lehrplan.html",
+    "src/ruby/include/curriculum_graph.rb",
+    "src/ruby/include/curriculum_overview.rb",
+    "src/content/static-website/lehrkraft.md"
   ],
-  "hash": "b8e31469a39422dcb87a9a6c1268a0c8e375c55bbc9e6d7a528226ad766ac2dc",
+  "hash": "d89003196b56065911ae667b3dae53f692fe1f5e89836e7142a879e4879c8a62",
   "pictures": [
     "abgabe-ansehen.webp",
+    "aktivitaet-lehrkraft.webp",
     "codes-beamer.webp",
+    "klasse-einstellungen.webp",
     "klasse-fortschritt.webp",
-    "klasse-lernende.webp"
+    "klasse-lernende.webp",
+    "klasse-treffpunkt.webp",
+    "klasse-ueberblick.webp",
+    "lehrplan-pdf.webp",
+    "lehrplan.webp",
+    "startseite-angeheftet.webp",
+    "treffpunkt-band.webp"
   ]
 }

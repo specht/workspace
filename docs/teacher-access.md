@@ -140,7 +140,18 @@ der Administration über alle Gruppen; Lehrkräfte landen von dort im Reiter
   die importierten Gruppen, Testgruppen und Werkzeug-Gruppen und löscht die
   übrigen (`include/group_data.rb`).
 - Der Link zu den Unterlagen für die eigene Schule (datenschutz.md,
-  »Partnerschulen«).
+  »Partnerschulen«): auf der Klassenseite im Reiter »Einstellungen« unter
+  »Schule« (`class_school_html` in `include/class_page.rb`), mit der Schule
+  der Gruppe und ob sie zugestimmt hat; bei einer Schule, die noch nicht
+  zugestimmt hat, auch der Elternbrief mit Einverständniserklärung. Gruppen
+  aus den Einladungsdateien zeigen dort nichts.
+- Was sich hier nicht tun lässt, sagt die Seite statt einer Lücke: Einer
+  Lehrkraft ohne Schule steht an der Stelle von »Neue Gruppe«, dass die
+  Administration die Schule zuordnet und an wen sie schreibt
+  (`new_group_note_html`); eine Gruppe aus den Einladungsdateien (vor dem
+  Import alle, in der Entwicklung die Werkzeug-Gruppen) zeigt im Reiter
+  »Lernende«, dass die Administration sie pflegt (`class_board.js`), statt
+  die Karte wortlos wegzulassen.
 
 Administratorinnen und Administratoren sehen alle Gruppen und wählen beim
 Anlegen die Schule, auch »Gäste«. Sie finden `/gruppen` und `/personen` im
@@ -198,10 +209,28 @@ der eigene Workspace startet erst nach »Ich bin einverstanden«
 Administration und Testkonten sind ausgenommen; wer in einen Workspace
 hineinsieht, ist nicht betroffen.
 
+## Sprachen der Klasse
+
+Unter »Einstellungen« ordnet eine Lehrkraft die Programmiersprachen ihrer
+Gruppe (`class_languages.js`, `/api/set_group_code_languages`): Jede
+Aktivität, die es in mehreren Sprachen gibt, zeigt die erste Sprache dieser
+Liste, die sie anbietet, sonst Ruby, sonst ihre erste (`CodeLanguages.resolve`).
+Alle fünf Sprachen sind erlaubt; darunter stehen die übrigen, die am
+häufigsten angebotenen zuerst, mit der Zahl der Aktivitäten. Ziehen (Maus,
+Stift, auf dem Handy am Griff), die Pfeile oder die Tastatur (↑/↓, Entf,
+Enter) ändern die Liste, gespeichert wird sofort; leer wird sie nie. Ein Satz
+darunter sagt, welche Aktivitäten dann welche Sprache zeigen. Gespeichert ist
+die Liste als `GroupSetting.code_languages`; eine Gruppe von vorher mit einer
+Sprache (`code_language`) gilt als Liste mit dieser einen, bis die Liste zum
+ersten Mal gespeichert wird. Wer in mehreren Gruppen ist, bekommt die Liste
+der ersten Gruppe mit einer Einstellung. Die eigene Wahl auf einer Seite
+(Ruby oder Python, `u.code_language`, und JavaScript, Dart oder Java auf den
+Seiten, die sie anbieten) geht vor.
+
 ## Kopierknöpfe
 
 Voreingestellt hat jeder Codeblock einen Kopierknopf, für alle. Auf der
-Klassenseite neben »Sprache« stellt »Kopierknöpfe: Wo sinnvoll« eine Gruppe
+Klassenseite neben »Sprachen der Klasse« stellt »Kopierknöpfe: Wo sinnvoll« eine Gruppe
 um: Ihre Lernenden bekommen Kopierknöpfe nur an Blöcken, bei denen Abtippen
 nichts lehrt (docs/aktivitaet-schreiben.md), und tippen kurzen Code ab
 (`GroupSetting.copy_all_code = false`, sofort gespeichert). Wer in mehreren
@@ -317,7 +346,10 @@ einem Git-Server im Netz braucht dann niemand.
   Vereinbarung zur Auftragsverarbeitung (`decision_at`, `agreement_at`;
   `approved_at`, sobald beide da sind), für die Schule der Installation
   genauso. Daneben, wie viele Schülerinnen und Schüler ein Einverständnis
-  haben und wie viele ungeklärt sind. »Gäste anlegen« macht die Schule
+  haben und wie viele ungeklärt sind. Die Zahl der Lehrkräfte klappt die
+  Lehrkräfte der Schule auf (`Main#teachers_by_school`, eine Abfrage für alle
+  Schulen): Name und Adresse, die Gruppen, die sie betreuen, wie viele
+  Lernende darin sind und wann sie zuletzt da waren. »Gäste anlegen« macht die Schule
   `guests` für Erwachsene von außerhalb (Nutzungsordnung); ihre Gruppen
   entstehen unter `/gruppen`.
 - Lehrkräfte ohne Konto (»Aufräumen«): eingeladene Lehrkräfte ohne Konto,
@@ -334,11 +366,17 @@ einem Git-Server im Netz braucht dann niemand.
   zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`
   gesetzt ist, dem Hinweis zu den Kosten. »Keine Lehrkraft mehr« nimmt
   Schule und betreute Gruppen weg.
-- Alle Personen mit Rolle, Schule, Gruppen, wann sie zuletzt da waren und
+- Alle Personen mit Rolle, Schule, Gruppen, bei Lernenden und Gästen den
+  Lehrkräften ihrer Gruppen (`Roster.teachers_of_members` aus `@@teachers`
+  und `@@group_members`, ohne die Testgruppen; »–«, wenn keine Gruppe eine
+  hat), wann sie zuletzt da waren und
   dem Speicher ihres Workspace (`Main#workspace_disk_usage`, aus der Messung
   von `housekeeping.rb`; hervorgehoben ab dem Fünffachen des Medians und
   mindestens 200 MB), filterbar nach Schule und Rolle, sortierbar nach »am
-  längsten nicht da« und »meister Speicher«. Namen lassen sich dort ändern;
+  längsten nicht da« und »am meisten Speicher«. Die Suche findet auch die
+  Lehrkraft: Ihr Name oder ihre Adresse zeigt sie und alle, die sie betreut;
+  dahin führt auch ein Klick auf eine Lehrkraft, hier und unter »Schulen«.
+  Namen lassen sich dort ändern;
   eine einzelne Einladung ohne Konto lässt sich entfernen.
   »Zuletzt da« ist `User.last_seen` (der Tag des letzten Besuchs, seit
   2026-10-18 erfasst, höchstens ein Schreibzugriff am Tag, nicht beim
@@ -368,6 +406,29 @@ Gruppe, die auf der Klassenseite gewählt ist). Wer in zwei Gruppen ist, sieht
 den früheren Treffpunkt.
 Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
 
+## Wer still ist, wie weit alle sind
+
+Im Reiter »Fortschritt« steht in jeder Zeile unter »zuletzt«, wann die
+Person zuletzt eine Aufgabe der Aktivität geprüft, beantwortet oder
+abgegeben hat (das `updated` ihrer `TaskState`s; gespeichert wird dafür
+nichts Neues). Arbeitet die Klasse gerade daran (mindestens zwei in den
+letzten 20 Minuten), nennt eine Zeile über der Tabelle, wer seit über zehn
+Minuten nichts geprüft oder abgegeben hat, gezählt vom Beginn der Stunde an
+(der ersten Prüfung von jemandem in den letzten 90 Minuten); wer alles
+gelöst hat, zählt nicht. Ihre Namen sind leicht hinterlegt, ohne
+Alarmfarbe: Was im Workspace geschieht, sieht die Seite nicht. Die Regel
+steht in `ClassBoard.quiet`; `class_last_active.js` lässt die Zeiten
+weiterlaufen und fragt jede Minute `/api/class/last_active` (nur für die
+eigenen Gruppen). Wer für den Treffpunkt »fehlt heute« ist, steht nicht in
+der Zeile.
+
+Der Reiter »Überblick« zeigt jede Person mit allen Aktivitäten der Gruppe:
+angeheftete zuerst, dann jede, an der jemand der Gruppe gearbeitet hat, in
+der Reihenfolge des Katalogs; je Zelle gelöst von allen (ohne Extras, wie
+im Fortschritt) mit einem Balken, dazu »zuletzt« über alle Aktivitäten
+(`ClassBoard.overview`). Noten und Export gibt es nicht; die Zahlen sagen,
+wie weit jemand ist.
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
@@ -381,7 +442,8 @@ Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
 | Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
-| Zeile des Lehrplans (`curriculum`, im Streifen über der Seite, in Lila) und die Übersicht `/lehrplan` (docs/lehrplan.md) | | | ✓ | ✓ |
+| Zeile des Lehrplans (`curriculum`, im Streifen über der Seite, in Lila) | | | ✓ | ✓ |
+| Die Übersicht `/lehrplan` (docs/lehrplan.md); Gäste wählen das Land über `?land=`, Lehrkräfte speichern es im Profil | ✓ | ✓ | ✓ | ✓ |
 | »Anpinnen« im Streifen über einer Aktivität: dieselben Anheftungen wie auf der Klassenseite, bei einer Gruppe mit einem Klick, bei mehreren in einer Liste mit Häkchen | | | ✓ eigene Gruppen | ✓ |
 | »Lösung einsetzen« neben den Knöpfen einer Kata | | ✓ | ✓ | ✓ |
 | Startseite: »Weiter mit«, »So geht’s« | ✓ (auch Testkonten) | | | |

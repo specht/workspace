@@ -3,6 +3,32 @@
 format: 1
 activity: kellerautomat
 tasks:
+  - id: vorhersage-stack
+    title: Was passiert bei (()?
+    prediction: true
+    prompt: |
+      Derselbe Automat liest jetzt `(()`. Spiel es im Kopf durch, Zeichen für
+      Zeichen: Was liegt am Ende auf dem Stack, und nimmt er das Wort an?
+    check:
+      type: choice
+      options:
+        - Auf dem Stack liegt nur noch `#`, er nimmt das Wort an.
+        - Bei der `)` findet er keinen Übergang und lehnt das Wort sofort ab.
+        - Auf dem Stack liegt `#(`, er lehnt das Wort ab.
+        - Auf dem Stack liegt `#((`, er lehnt das Wort ab.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Zähl mit. Zwei `(` legen zwei Klammern auf den Stack, die `)` nimmt nur eine wieder herunter.
+      - when: { picked: 1 }
+        say: Bei der `)` liegt oben eine `(`. Dafür hat er einen Übergang, wie bei `(()())` im dritten Schritt.
+      - when: { picked: 3 }
+        say: Die `)` nimmt die oberste `(` wieder herunter.
+    solution: |
+      Am Ende liegt `#(` auf dem Stack: Eine Klammer ist noch offen. Angenommen
+      ist ein Wort nur, wenn am Ende nur noch `#` daliegt, wenn also jede
+      Klammer wieder zu ist.
+
   - id: zaehler
     title: Reicht ein Zähler?
     prediction: true

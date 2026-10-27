@@ -120,13 +120,13 @@ hook: beispiel
 - Die Zeile mit `viewport` sagt Handys, dass sie die Seite in ihrer echten Breite zeigen sollen.
 - Der `<title>` steht im Browser-Tab, nicht auf der Seite.
 
-<div class='hint'>
-In der Shower-Vorlage ist dieses Gerüst schon fertig. Deine Folien stehen im <code>&lt;body&gt;</code>, jede in ihrer eigenen <code>&lt;section class="slide"&gt;</code>.
-</div>
-
 <div class='tutorial-preview-clear'></div>
 
 <!-- /part -->
+
+<div class='hint'>
+In der Shower-Vorlage ist dieses Gerüst schon fertig. Deine Folien stehen im <code>&lt;body&gt;</code>, jede in ihrer eigenen <code>&lt;section class="slide"&gt;</code>.
+</div>
 
 ## Text
 

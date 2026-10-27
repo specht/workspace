@@ -5,6 +5,7 @@ kind: projekt
 language: Cypher
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Datenbanken (Datenmodellierung als Graph, Abfragen mit Cypher im Vergleich zu SQL)"
+topics: [datenbanken-modellierung, datenbanken-abfragen, graphen]
 requires: [filmdatenbank]
 reference: [cypher, datensaetze]
 </div>

@@ -93,7 +93,9 @@ module PageKinds
     # more than one (CodeLanguages); the switch beside the label shows it,
     # the label itself does not name it (»Übung«, not »Übung (Ruby)«, which
     # would change width when switching).
-    def self.header(slug, content, sections, development: false, extra: '', show_duration: false, show_curriculum: false, code_language: nil)
+    # curriculum_plan: the plan of the teacher's state (Curriculum), whose
+    # line the header shows; Berlin and Brandenburg's without one.
+    def self.header(slug, content, sections, development: false, extra: '', show_duration: false, show_curriculum: false, code_language: nil, curriculum_plan: nil)
         entry = content[slug]
         return '' if entry.nil? || entry[:teacher_only]
 
@@ -127,10 +129,14 @@ module PageKinds
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
             end
             # the line of the curriculum, for teachers (docs/lehrplan.md), each
-            # name a link to the activities under it on /lehrplan
-            if show_curriculum && entry[:curriculum].is_a?(String) && !entry[:curriculum].strip.empty?
-                html << "<span class='page-kind-curriculum' title='Rahmenlehrplan (nur für Lehrkräfte sichtbar)'>" \
-                        "<i class='bi bi-mortarboard'></i>#{Curriculum.linked_html(entry[:curriculum])}</span>"
+            # name a link to the activities under it on /lehrplan; a plan
+            # still a draft says so
+            plan = curriculum_plan || Curriculum.default_plan
+            line = show_curriculum ? Curriculum.line(plan, slug, entry) : nil
+            if line.is_a?(String) && !line.strip.empty?
+                draft = Curriculum.draft?(plan) ? " <span class='page-kind-draft' title='#{h.(plan[:status_text])}'>Entwurf</span>" : ''
+                html << "<span class='page-kind-curriculum' title='#{h.(plan[:label])} (nur für Lehrkräfte sichtbar)'>" \
+                        "<i class='bi bi-mortarboard'></i>#{Curriculum.linked_html(line, plan)}#{draft}</span>"
             end
             required = requires_of(slug, content, development: development)
             unless required.empty?

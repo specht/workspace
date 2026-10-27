@@ -1,7 +1,8 @@
 <div class='meta'>
 image: go-logo.png
 kind: steckbrief
-curriculum: "Oberstufe: Syntax und Semantik (Compiler)"
+curriculum: "Oberstufe: Algorithmen und Softwareentwicklung (ein Programm übersetzen, Fehlermeldungen lesen, Bubblesort ändern)"
+topics: [programmiersprachen]
 </div>
 
 <div

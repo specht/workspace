@@ -1,7 +1,8 @@
 <div class='meta'>
 image: basic-logo.png
 kind: steckbrief
-curriculum: "Sek I: Geschichte der Informatik (Heimcomputer); Oberstufe: Syntax und Semantik (Interpreter)"
+curriculum: "Sek I: Geschichte der Informatik (Heimcomputer); Oberstufe: Algorithmen und Softwareentwicklung (ein Programm ausführen, Fehlermeldungen lesen, Bubblesort ändern)"
+topics: [programmiersprachen, geschichte]
 </div>
 
 <div

@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenschutz, rechtliche Grundlagen); Oberstufe: Datenbanken und Datenschutz (Datenschutz), Vertiefung Informatik und Gesellschaft (Tracking, Profile, Einwilligung)"
+topics: [datenschutz, client-server, gesellschaft]
 requires: [webserver]
 reference: [http, dark-patterns]
 </div>

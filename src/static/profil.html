@@ -611,6 +611,12 @@
             <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
                 <h2 id="for-teachers">Für Lehrkräfte</h2>
                 <p>Deine Gruppen und wer darin ist: <a href='/klasse'>Klassen</a>. Wie alles zusammenhängt: <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a>.</p>
+                <h3 id='curriculum-state'>Lehrpläne</h3>
+                <p class='d-flex flex-wrap align-items-center gap-2'>
+                    <label for='profile_curriculum_state'>Die Lehrpläne von</label>
+                    #{teacher_logged_in? ? curriculum_state_select('profile_curriculum_state') : ''}
+                </p>
+                <p class='small text-body-secondary'>Nach ihnen richten sich die Zeile oben auf jeder Aktivität und die Seite <a href='/lehrplan'>Lehrplan</a>. Ein Plan im Entwurf ist noch nicht von einer Lehrkraft des Landes geprüft.</p>
                 <div class="profile-subsection-heading">
                     <h3>Leistungsüberprüfungen</h3>
                     <div class="btn-module-control">
@@ -1388,6 +1394,12 @@ vscode_config: {}</pre>
             });
         });
         // Hell, Auto, Dunkel: gleich umschalten, ohne Neuladen (update_dark_mode im Template)
+        // the state whose curricula the pages show (Curriculum)
+        $('#profile_curriculum_state').on('change', function(e) {
+            api_call('/api/set_curriculum_state/' + encodeURIComponent(e.target.value), {}, function(data) {
+                if (data.success) show_success_message('Gespeichert: Die Seiten zeigen jetzt diese Lehrpläne.');
+            });
+        });
         $('.bu-set-brightness').on('click', function(e) {
             let button = $(e.target.closest('.btn'));
             let choice = button.data('brightness');

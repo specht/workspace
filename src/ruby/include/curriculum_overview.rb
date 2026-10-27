@@ -3,30 +3,13 @@ require_relative 'curriculum'
 require_relative 'page_kinds'
 require 'set'
 
-# The page /lehrplan, for logged-in teachers: for every name of the plans
-# (Curriculum, docs/lehrplan.md) the activities whose curriculum line names
-# it, in the order of the catalog, with the details of their line. A name
-# without an activity stays on the page: a gap is worth knowing too. Only
-# what students see in the catalog (Main#pinnable_slugs): no hidden section.
+# The page /lehrplan, public (a guest chooses the state with ?land=): for every name of the plan
+# (Curriculum, the teacher's state; docs/lehrplan.md) the activities whose
+# line names it, in the order of the catalog, with the details of their
+# line. A name without an activity stays on the page: a gap is worth
+# knowing too. Only what students see in the catalog (Main#pinnable_slugs):
+# no hidden section.
 module CurriculumOverview
-    # The plans' own groups, with the source of each level.
-    LEVELS = [
-        {
-            :level => 'Sek I', :title => 'Sekundarstufe I', :id => 'sek-i',
-            :source => 'Rahmenlehrplan Teil C Informatik, Wahlpflichtfach, Jahrgangsstufen 7–10, Berlin und Brandenburg (2015)',
-            :groups => [['Pflichtthemenfelder', Curriculum::SEK_I[0, 5]], ['Wahlthemenfelder', Curriculum::SEK_I[5..]]],
-        },
-        {
-            :level => 'Oberstufe', :title => 'Oberstufe', :id => 'oberstufe',
-            :source => 'Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin',
-            :groups => [['Einführungsphase', Curriculum::OBERSTUFE[0, 4]], ['Kurshalbjahre', Curriculum::OBERSTUFE[4, 8]],
-                        ['Vertiefungsgebiete im 3. Kurshalbjahr', Curriculum::OBERSTUFE[12..]]],
-        },
-    ].freeze
-
-    # Said beside a name where the plan says more about it.
-    NOTES = { ['Sek I', 'Datenbanken'] => 'In Berlin verpflichtend.' }.freeze
-
     def self.h(text)
         CGI.escapeHTML(text.to_s)
     end
@@ -37,10 +20,10 @@ module CurriculumOverview
 
     # [level, name] => [[slug, details], …] for the given activities, in
     # their order.
-    def self.index(content, slugs)
+    def self.index(content, slugs, plan = nil)
         index = Hash.new { |hash, key| hash[key] = [] }
         slugs.each do |slug|
-            Curriculum.entries((content[slug] || {})[:curriculum]).each do |level, name, details|
+            Curriculum.entries(Curriculum.line(plan, slug, content[slug]), plan).each do |level, name, details|
                 index[[level, name]] << [slug, details]
             end
         end
@@ -48,18 +31,27 @@ module CurriculumOverview
     end
 
     # in_graph: the anchors of the names the graph above can show
-    # (CurriculumGraph); those get a button that shows them there.
-    def self.html(content, slugs, in_graph: Set.new)
-        index = index(content, slugs)
+    # (CurriculumGraph); those get a button that shows them there. state:
+    # the teacher's, for a source a plan gives for one of its states.
+    def self.html(content, slugs, in_graph: Set.new, plan: nil, state: nil)
+        plan ||= Curriculum.default_plan
+        index = index(content, slugs, plan)
         html = +''
-        LEVELS.each do |l|
+        plan[:levels].each do |l|
+            source = l[:source_for][state.to_s] || l[:source]
+            pdf = l[:pdf_for][state.to_s] || l[:pdf]
+            url = l[:url_for][state.to_s] || l[:url]
+            # the plan to read: its PDF, and the page it comes from
+            links = []
+            links << "<a href='#{h(pdf)}' target='_blank' rel='noopener'><i class='bi bi-file-earmark-pdf' aria-hidden='true'></i> Lehrplan als PDF</a>" if pdf
+            links << "<a href='#{h(url)}' target='_blank' rel='noopener'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i> Seite des Landes</a>" if url
             html << "<h2 id='#{l[:id]}'>#{h(l[:title])}</h2>\n"
-            html << "<p class='lp-source'>#{h(l[:source])}</p>\n"
+            html << "<p class='lp-source'>#{h(source)}#{links.empty? ? '' : " · #{links.join(' · ')}"}</p>\n"
             l[:groups].each do |group, names|
                 html << "<p class='lp-group'>#{h(group)}</p>\n"
                 names.each do |name|
                     found = index[[l[:level], name]]
-                    note = NOTES[[l[:level], name]]
+                    note = plan[:notes][[l[:level], name]]
                     html << "<section class='lp-topic'>\n"
                     # the count beside the heading, not in the side navigation
                     show = in_graph.include?(anchor(l[:level], name)) ?

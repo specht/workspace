@@ -120,6 +120,20 @@
         font-size: 0.85rem;
         color: var(--bs-secondary-color);
     }
+    .lehrplan-page .lp-state {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.3em 0.6em;
+        font-size: 0.95rem;
+    }
+    .lehrplan-page .lp-state select {
+        width: auto;
+    }
+    .lehrplan-page .lp-state-hint {
+        color: var(--bs-secondary-color);
+        font-size: 0.85rem;
+    }
     .lehrplan-page .lp-graph-show {
         margin-left: 0.4em;
         padding: 0 0.3em;
@@ -183,25 +197,38 @@
         data-levels="h2,h3">
     </div>
     <h1 class='mt-4'>Lehrplan</h1>
-    <p class='abstract'>
-        Welche Aktivitäten des Workspace zu welchem Teil der Rahmenlehrpläne von Berlin und Brandenburg passen:
-        für jedes Themenfeld der Sekundarstufe I und jeden Inhalt der Oberstufe, mit dem, was die Aktivität
-        dazu übt. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
-        Nur Lehrkräfte sehen diese Seite.
+    #{(@curriculum_lens = curriculum_plan) && ''}
+    <p class='abstract'>#{CGI.escapeHTML(@curriculum_lens[:intro])}</p>
+    <p class='lp-state' data-store='#{teacher_logged_in? ? 'yes' : 'no'}'>
+        <label for='lp_state'>Lehrpläne von</label> #{curriculum_state_select('lp_state')}
+        #{teacher_logged_in? ? "<span class='lp-state-hint'>Gilt auch für die Zeile oben auf jeder Aktivität; ändern lässt es sich auch im <a href='/profil#for-teachers'>Profil</a>.</span>" : ''}
     </p>
-    #{(@curriculum_graph = CurriculumGraph.from_content(@@content, pinnable_slugs, :development => DEVELOPMENT)) && ''}
+    #{Curriculum.draft?(@curriculum_lens) ? "<div class='alert alert-warning lp-draft'><i class='bi bi-cone-striped me-1' aria-hidden='true'></i><strong>#{CGI.escapeHTML(@curriculum_lens[:status_text].to_s)}.</strong> Abgeleitet aus den Themen jeder Aktivität; was nicht passt oder fehlt, bitte an die Administration.</div>" : ''}
+    #{(@curriculum_graph = CurriculumGraph.from_content(@@content, pinnable_slugs, :development => DEVELOPMENT, :plan => @curriculum_lens)) && ''}
     <h2 id='wege'>Wege durch die Aktivitäten</h2>
     <p class='cg-intro'>
         Welche Aktivität auf welcher aufbaut: Ein Pfeil führt von dem, was zuerst kommt, zu dem, was darauf aufbaut,
-        von links nach rechts. Die Farbe sagt, für welches Alter: was nur die Pläne der Sek I nennen, was beide nennen,
-        was nur die der Oberstufe nennen. Wähl einen Namen der Pläne oder klick auf eine Aktivität: Dann bleibt
+        von links nach rechts. Die Farbe sagt, für wen eine Aktivität gedacht ist: gelb für die Sek I,
+        türkis für die Oberstufe, im Verlauf von gelb zu türkis für beide. Wähl einen Namen der Pläne oder klick auf eine Aktivität: Dann bleibt
         hervorgehoben, was dazu gehört und welcher Weg dorthin führt.
     </p>
     #{CurriculumGraph.topic_select(@curriculum_graph)}
     #{CurriculumGraph.html(@curriculum_graph, @@sections, @@content)}
-    #{CurriculumOverview.html(@@content, pinnable_slugs, :in_graph => @curriculum_graph[:nodes].flat_map { |n| n[:topics] }.to_set)}
+    #{CurriculumOverview.html(@@content, pinnable_slugs, :in_graph => @curriculum_graph[:nodes].flat_map { |n| n[:topics] }.to_set, :plan => @curriculum_lens, :state => curriculum_state)}
 </div>
 <script>
+    // The state whose plans the page shows (Curriculum): a teacher's is
+    // stored, then the page again; a guest's goes into the address.
+    document.getElementById('lp_state').addEventListener('change', function (event) {
+        const state = event.target.value;
+        if (document.querySelector('.lp-state').dataset.store !== 'yes') {
+            location.href = '/lehrplan?land=' + encodeURIComponent(state);
+            return;
+        }
+        api_call('/api/set_curriculum_state/' + encodeURIComponent(state), {}, function (data) {
+            if (data.success) location.reload();
+        });
+    });
     // The graph (curriculum_graph.rb): a name of the plans or a box chosen
     // keeps what carries it and every activity on a way to it; the rest
     // fades. The same choice again, or a click beside the boxes, clears it.
@@ -246,10 +273,27 @@
             if (!event.target.closest('.cg-node')) { select.value = ''; show([], null); }
         });
         // from a name in the list below: up to the picture, the name chosen
+        // and its boxes in the middle of the window (below the bar at the
+        // top), the picture scrolled sideways to them if it is wider
+        function centreHits() {
+            const hits = nodes.filter(function (n) { return n.classList.contains('cg-hit'); });
+            if (!hits.length) { document.getElementById('wege').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+            const boxes = hits.map(function (n) { return n.getBoundingClientRect(); });
+            const top = Math.min.apply(null, boxes.map(function (b) { return b.top; }));
+            const bottom = Math.max.apply(null, boxes.map(function (b) { return b.bottom; }));
+            const left = Math.min.apply(null, boxes.map(function (b) { return b.left; }));
+            const right = Math.max.apply(null, boxes.map(function (b) { return b.right; }));
+            const bar = 80;
+            const room = window.innerHeight - bar;
+            const y = window.scrollY + (bottom - top > room - 40 ? top - bar - 20 : (top + bottom) / 2 - bar - room / 2);
+            window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+            const frame = graph.parentElement.getBoundingClientRect();
+            graph.parentElement.scrollTo({ left: graph.parentElement.scrollLeft + (left + right) / 2 - (frame.left + frame.right) / 2, behavior: 'smooth' });
+        }
         document.querySelectorAll('.lp-graph-show').forEach(function (button) {
             button.addEventListener('click', function () {
                 topic(button.dataset.topic);
-                document.getElementById('wege').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                centreHits();
             });
         });
         // as wide as the window allows right of the text's left edge

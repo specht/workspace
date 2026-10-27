@@ -130,4 +130,33 @@ class RosterTest < Minitest::Test
         before, after = roundtrip(texts)
         assert_equal [], Roster.differences(before, after)
     end
+
+    # /personen: each member with the teachers of its groups, each once,
+    # never itself, and a teacher's test group does not count.
+    def test_teachers_of_members
+        built = roster([<<~END_OF_TEXT], ['admin@example.org'])
+            > Klasse 9a
+            student-a@example.org
+            student-b@example.org
+            + teacher-1@example.org
+            + teacher-2@example.org
+
+            > LK Informatik
+            student-a@example.org
+            teacher-2@example.org
+            + teacher-3@example.org
+            + teacher-2@example.org
+
+            > AG ohne Lehrkraft
+            student-c@example.org
+        END_OF_TEXT
+        built[:group_members]['Test teacher-1'] = ['test-1@example.org']
+        built[:teachers]['teacher-1@example.org'] << 'Test teacher-1'
+        of = Roster.teachers_of_members(:teachers => built[:teachers], :group_members => built[:group_members], :skip => ['Test teacher-1'])
+        assert_equal %w[teacher-1@example.org teacher-2@example.org teacher-3@example.org], of['student-a@example.org'].sort
+        assert_equal %w[teacher-1@example.org teacher-2@example.org], of['student-b@example.org'].sort
+        assert_equal %w[teacher-3@example.org], of['teacher-2@example.org']
+        assert_nil of['student-c@example.org']
+        assert_nil of['test-1@example.org']
+    end
 end

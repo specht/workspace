@@ -5,6 +5,8 @@ kind: projekt
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript, dart, java]
 curriculum: "Sek I: Algorithmisches Problemlösen (Grundlagen der Objektorientierung); Oberstufe: objektorientierte Modellierung (UML-Klassendiagramme), objektorientierte Programmierung"
+topics: [objektorientierung]
+requires: [kata-lists]
 </div>
 
 <div

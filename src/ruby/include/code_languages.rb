@@ -28,11 +28,14 @@ require 'cgi'
 # solved in the other.
 #
 # Which language a person sees: the first the page offers of their own
-# choice (u.code_language, set with the switch), the languages of their
-# classes a teacher has set one for, and Ruby; else the page's first.
+# choice (u.code_language, set with the switch), the ranked list of the
+# first of their classes a teacher has set one for, and Ruby; else the
+# page's first.
 #
-# A class sets Ruby or Python (GROUP_LANGUAGES). JavaScript, Dart and Java
-# are offered where a page needs them: JavaScript on the Katas
+# A class ranks any of the five (GROUP_LANGUAGES; g.code_languages, a list,
+# the class page's »Sprachen der Klasse«). A person's own switch picks
+# between Ruby and Python (OWN_LANGUAGES). JavaScript, Dart and Java are
+# offered where a page needs them: JavaScript on the Katas
 # (docs/plan-katas.md), all five on the activity about classes
 # (docs/plan-lehrplan-luecken.md). Someone who picks one of these three keeps
 # it apart (u.kata_code_language) and still sees Ruby or Python elsewhere.
@@ -43,8 +46,10 @@ require 'cgi'
 module CodeLanguages
     LANGUAGES = %w[ruby python javascript dart java].freeze
     NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java' }.freeze
-    # What a teacher can set for a class
-    GROUP_LANGUAGES = %w[ruby python].freeze
+    # What a teacher can rank for a class
+    GROUP_LANGUAGES = LANGUAGES
+    # What a person's own switch stores as their choice for every page
+    OWN_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
     VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
 
@@ -146,12 +151,22 @@ module CodeLanguages
         own.is_a?(Hash) ? base.merge(own) : base
     end
 
-    # Which language a person sees: own choice, then the first class with a
-    # setting, then Ruby. group_languages: { group => language } for the
-    # person's groups, in file order.
+    # A class's ranked languages as stored: a list (g.code_languages), or
+    # one language from before the list (g.code_language); known ones once
+    # each, in order; nil for none.
+    def self.ranked(value)
+        list = Array(value).map(&:to_s).select { |l| known?(l) }.uniq
+        list.empty? ? nil : list
+    end
+
+    # Which language a person sees: own choice (one, or several in order),
+    # then the ranked list of the first class with a setting, then Ruby.
+    # group_languages: { group => list or language } for the person's
+    # groups, in file order.
     # offered: the page's languages; without them, any known language.
     def self.resolve(own, group_languages, offered = LANGUAGES)
-        candidates = [own, *group_languages.values, DEFAULT]
+        list = group_languages.values.map { |v| ranked(v) }.compact.first || []
+        candidates = [*Array(own), *list, DEFAULT]
         candidates.find { |l| known?(l) && offered.include?(l) } || offered.first
     end
 

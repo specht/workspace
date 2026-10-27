@@ -6,6 +6,7 @@ language: Ruby / Python / SQL
 languages: [ruby, python]
 duration: 1 Doppelstunde
 curriculum: "Sek I: Datenbanken (Datensätze suchen), Information und Daten (Datensicherheit); Oberstufe: Datenbanken (Datenschutz und Datensicherheit: SQL Injection, Prepared Statements)"
+topics: [datenbanken-abfragen, datensicherheit]
 requires: [mysql]
 reference: [sql, ruby-python]
 </div>

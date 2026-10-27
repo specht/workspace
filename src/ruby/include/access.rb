@@ -135,8 +135,13 @@ class Main < Sinatra::Base
     end
 
     # A refusal, not an error: 403 for anyone who is not an administrator.
-    def admin_only!
+    def admins_only!
         halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
+    end
+
+    # The same for what changes the roster, which must be writable.
+    def admin_only!
+        admins_only!
         roster_writable!
     end
 end

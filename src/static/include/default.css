@@ -346,7 +346,9 @@ pre .code-context {
 pre .code-cut {
     display: block;
     height: 0.4rem;
-    margin: 0.3rem -1em;
+    /* across the block's padding: 1em, or what the block says it is
+       (--cut-reach, on a phone 1rem, below) */
+    margin: 0.3rem calc(-1 * var(--cut-reach, 1em));
     background: rgba(255, 255, 255, 0.3);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
@@ -379,8 +381,8 @@ pre .code-cut + .code-line:not(.code-context)::before,
 pre .code-line:not(.code-context):has(+ .code-cut)::after {
     content: '';
     position: absolute;
-    left: -1em;
-    right: -1em;
+    left: calc(-1 * var(--cut-reach, 1em));
+    right: calc(-1 * var(--cut-reach, 1em));
     height: 1.4em;
     pointer-events: none;
 }
@@ -1093,6 +1095,7 @@ img.full.full-shadow {
     width: calc(100% - 0.5em);
     box-sizing: border-box;
 }
+
 
 img.fit-width {
     min-width: unset;
@@ -3341,6 +3344,22 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+    /* A wide picture that scrolls sideways (img.full in its .scroll-x):
+       its box too from edge to edge, the picture starting where the text
+       starts; scrolled, it uses the whole width of the screen instead of
+       ending at the column's right margin */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .scroll-x:has(> img.full):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* a code block's cut and its shadow reach across that padding to the
+       screen's edges (pre .code-cut) */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > :is(pre, .code-copy-box):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        --cut-reach: 1rem;
+    }
     /* the card's colour bar stays, at the screen's edge */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
         border-left-width: 5px;
@@ -3741,6 +3760,26 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     color: #5b2f8f;
 }
 
+/* the choice of the state for the curricula (profile, /lehrplan): as wide
+   as its names */
+select.curriculum-state {
+    width: auto;
+    max-width: 100%;
+}
+
+/* a plan not yet checked by a teacher of its state (Curriculum): said
+   beside the line, small and outlined */
+.page-kind-draft {
+    display: inline-block;
+    margin-left: 0.3em;
+    padding: 0 0.4em;
+    border: 1px solid currentColor;
+    border-radius: 0.6em;
+    font-size: 0.78em;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
 .page-kind-activity .page-kind-links a,
 .reference-include-link a {
     color: #0f766e;
@@ -3763,8 +3802,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .task-card,
 .reference-part,
 h2[id],
-h3[id] {
-    scroll-margin-top: 5em;
+h3[id],
+:target {
+    /* rem, not em: a heading's larger font would keep twice the room */
+    scroll-margin-top: 5rem;
+}
+
+/* an empty anchor before a heading (<div id='lehrkraefte'></div>): the
+   heading's own gap follows it, so that it too lands just below the bar */
+:target:empty {
+    scroll-margin-top: 3rem;
 }
 
 .task-card {
@@ -4570,6 +4617,177 @@ ul.task-teacher-list .task-teacher-answer {
     margin: 0.4em 0 0;
 }
 
+/* »Sprachen der Klasse« (class_languages.js): the ranked languages as rows
+   with a number, a grip, the logo, the name and how many activities offer
+   it; the others below, quieter, each added with a tap. A row being dragged
+   lifts with a soft shadow; where it would land, a dashed gap. */
+.class-languages {
+    margin-top: 0.6em;
+}
+
+.cl-list,
+.cl-more {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 30em;
+}
+
+.cl-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.4em 0.5em 0.4em 0.6em;
+    margin-bottom: 0.4em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    background: var(--bs-body-bg);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+}
+
+.cl-item:hover {
+    border-color: var(--bs-secondary-color);
+}
+
+.cl-item:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.cl-rank {
+    flex: 0 0 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+    font-size: 85%;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    line-height: 1.6em;
+}
+
+/* the grip takes a finger's drag; the page scrolls under the rest */
+.cl-grip {
+    color: var(--bs-secondary-color);
+    touch-action: none;
+    padding: 0.2em 0;
+}
+
+.cl-logo {
+    flex: 0 0 auto;
+    border-radius: 4px;
+}
+
+.cl-name {
+    font-weight: 600;
+}
+
+.cl-count {
+    margin-left: auto;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.cl-tools {
+    display: flex;
+    gap: 0.1em;
+}
+
+.cl-btn {
+    border: none;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    border-radius: 0.4em;
+    padding: 0.15em 0.4em;
+    line-height: 1.2;
+}
+
+.cl-btn:hover:not(:disabled):not([aria-disabled='true']) {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+}
+
+.cl-btn:disabled,
+.cl-btn[aria-disabled='true'] {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.cl-list .cl-add,
+.cl-more .cl-up,
+.cl-more .cl-down,
+.cl-more .cl-remove,
+.cl-more .cl-rank {
+    display: none;
+}
+
+/* the other languages: quieter, a tap adds them */
+.cl-more .cl-item {
+    border-style: dashed;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cl-more .cl-item:hover {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg-subtle);
+}
+
+.cl-more .cl-name {
+    font-weight: 400;
+}
+
+.cl-add {
+    color: var(--bs-primary);
+    font-size: 90%;
+}
+
+.cl-add span {
+    margin-left: 0.25em;
+}
+
+/* lifted while dragged (its place is set by the script), and the gap */
+.cl-item.cl-dragging {
+    z-index: 1080;
+    cursor: grabbing;
+    scale: 1.03;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0.7em 1.6em rgba(0, 0, 0, 0.18);
+    transition: none;
+}
+
+.cl-gap {
+    margin-bottom: 0.4em;
+    border: 2px dashed var(--bs-primary-border-subtle);
+    border-radius: 0.6em;
+    background: var(--bs-primary-bg-subtle);
+}
+
+body.cl-dragging-page,
+body.cl-dragging-page * {
+    cursor: grabbing !important;
+    user-select: none;
+}
+
+.cl-preview {
+    margin-top: 0.8em;
+}
+
+@media (max-width: 575.98px) {
+    .cl-count {
+        display: none;
+    }
+
+    .cl-tools {
+        margin-left: auto;
+    }
+}
+
 .class-repos .class-repos-save {
     margin-top: 0.4em;
 }
@@ -5264,6 +5482,20 @@ ul.task-teacher-list .task-teacher-answer {
     margin-left: 0.1em;
 }
 
+/* A sign of the board outside it, as in the teacher guide's legend: the
+   colour on the sign, since a table's cells set their own colour */
+.cb-sign {
+    display: inline-block;
+    padding: 0.1em 0.45em;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.cb-sign small {
+    font-size: 70%;
+    margin-left: 0.1em;
+}
+
 .cb-correct, .cb-live-correct { color: #146c43; }
 .cb-sent { color: #0b4fb3; }
 .cb-wrong, .cb-live-wrong { color: #8a5300; }
@@ -5311,6 +5543,135 @@ ul.task-teacher-list .task-teacher-answer {
 
 .cb-total {
     font-weight: 600;
+}
+
+/* »zuletzt« (ClassBoard.ago, class_last_active.js): quiet, after »gelöst« */
+.class-board .cb-last {
+    font-size: 85%;
+    color: #5c636a;
+    text-align: right;
+}
+
+/* Who has checked nothing for a while, while the class is at work: told
+   gently, with a cool tint and the hourglass of the line above the board,
+   not as an alarm (it may be someone who works without pressing »Prüfen«). */
+.class-board tr.cb-quiet .cb-name {
+    background-color: #eef2f7;
+}
+
+.class-board tr.cb-quiet .cb-name::after {
+    content: '\F41F';
+    font-family: bootstrap-icons;
+    margin-left: 0.4em;
+    font-size: 85%;
+    color: #6c7a8c;
+}
+
+.cb-quiet-line {
+    margin: 0.4em 0 0;
+    font-size: 90%;
+    color: #4a5868;
+}
+
+.cb-quiet-line .bi {
+    margin-right: 0.4em;
+}
+
+/* »Überblick«: per student and activity, solved of all, with a thin bar */
+.class-overview-note {
+    color: #5c636a;
+    font-size: 90%;
+    max-width: 48em;
+}
+
+.class-overview {
+    border-collapse: collapse;
+    font-size: 95%;
+}
+
+.class-overview th,
+.class-overview td {
+    padding: 0.35em 0.5em;
+    border-bottom: 1px solid #e3e3e3;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.class-overview .cb-name {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+}
+
+.class-overview thead th.co-activity {
+    vertical-align: bottom;
+    font-weight: 400;
+    min-width: 4.2em;
+}
+
+.class-overview thead th.co-activity a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.class-overview thead th.co-activity a:hover .cb-task-title {
+    color: #0b5ed7;
+}
+
+.co-count {
+    display: block;
+    font-variant-numeric: tabular-nums;
+}
+
+.co-bar {
+    display: block;
+    height: 4px;
+    margin: 0.15em auto 0;
+    width: 3.2em;
+    border-radius: 2px;
+    background-color: #e3e6ea;
+    overflow: hidden;
+}
+
+.co-bar > span {
+    display: block;
+    height: 100%;
+    background-color: #198754;
+}
+
+.co-done .co-count {
+    color: #146c43;
+    font-weight: 600;
+}
+
+.co-none {
+    color: #adb5bd;
+}
+
+.class-overview .cb-last {
+    font-size: 85%;
+    color: #5c636a;
+    text-align: left;
+    padding-right: 1em;
+}
+
+.class-overview tfoot td,
+.class-overview tfoot th {
+    font-size: 80%;
+    color: #5c636a;
+}
+
+/* Where something cannot be done here: why, and whom to ask */
+.class-group-new-note,
+.class-group-files {
+    font-size: 90%;
+    color: #4a5868;
+}
+
+.class-group-new-note .bi,
+.class-group-files .bi {
+    margin-right: 0.4em;
 }
 
 .class-answers {
@@ -5385,7 +5746,10 @@ ul.task-teacher-list .task-teacher-answer {
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .shc-with-picture {
-    --shc-picture-width: 20em;
+    /* wide enough that the 16:9 picture is about as tall as the text
+       beside it (kind, title, two lines, progress, »Weiter mit«, button),
+       so that filling the height crops little */
+    --shc-picture-width: 23em;
     grid-template-columns: var(--shc-picture-width) 1fr;
     align-items: center;
 }
@@ -5400,6 +5764,20 @@ ul.task-teacher-list .task-teacher-answer {
     align-self: start;
     aspect-ratio: 16 / 9;
     background: var(--bs-tertiary-bg);
+}
+/* beside the text the picture fills the card's whole height, at least
+   16:9: a card with progress, »Weiter mit« and its button is taller than the
+   picture, which would leave an empty strip under it; it is cropped around
+   the card's focus (image: x y) */
+@media (min-width: 576px) {
+    .shc-with-picture {
+        align-items: stretch;
+    }
+    .shc-with-picture .shc-picture {
+        align-self: stretch;
+        aspect-ratio: auto;
+        min-height: calc(var(--shc-picture-width) * 9 / 16);
+    }
 }
 @media (min-width: 576px) {
     .shc-with-picture .shc-abstract {
@@ -5810,6 +6188,22 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.35em;
 }
 
+/* the titles lead to their activities (the listener in _template.html) and stand out
+   from »Baut auf … und … auf«, so that it is clear where one ends and the
+   next begins (»Katas: Dictionaries und Katas: Listen«): a faint dotted line */
+.card-requires-title {
+    text-decoration: underline dotted;
+    text-decoration-color: rgba(107, 118, 128, 0.55);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.card-requires-title:hover {
+    color: var(--bs-link-color);
+    text-decoration-color: currentColor;
+}
+
 /* for admins at the foot of a card, a tile or a Kata set (Main#usage_html):
    a thin band, a segment per task in five steps of one blue, darker where
    the task was solved more often, next to the activity's most solved task
@@ -5887,6 +6281,19 @@ html[data-bs-theme="dark"] .usage-row {
     .hscol:last-child:nth-child(odd) .tutorial_card3.card-with-usage .card-content {
         padding-bottom: 2.6em;
     }
+}
+/* a student's own band (CardUsage.own_html): the segments of the pinned
+   card, a little thinner here */
+.usage-own .usage-own-bar {
+    flex: 1 1 auto;
+    gap: 2px;
+}
+.usage-own .shc-mark {
+    height: 4px;
+    border-radius: 1px;
+}
+.usage-own .shc-open {
+    background-color: var(--bs-border-color);
 }
 .tutorial_card3 .card-content .card-usage {
     position: absolute;
@@ -6854,8 +7261,8 @@ textarea.struktogramm-playground-input {
     }
 
     pre .code-cut {
-        margin-left: -0.6em;
-        margin-right: -0.6em;
+        margin-left: calc(-1 * var(--cut-reach, 0.6em));
+        margin-right: calc(-1 * var(--cut-reach, 0.6em));
     }
 
     .code-copy-box pre .code-cut {
@@ -6864,8 +7271,8 @@ textarea.struktogramm-playground-input {
 
     pre .code-cut + .code-line:not(.code-context)::before,
     pre .code-line:not(.code-context):has(+ .code-cut)::after {
-        left: -0.6em;
-        right: -0.6em;
+        left: calc(-1 * var(--cut-reach, 0.6em));
+        right: calc(-1 * var(--cut-reach, 0.6em));
     }
 
     .code-copy-box pre .code-cut + .code-line:not(.code-context)::before,

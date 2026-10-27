@@ -21,6 +21,13 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Lehrkräfte wählen im Profil oder auf `/lehrplan` ihr Bundesland; gespeichert wird es am Konto
+  (`curriculum_state`), die Datenschutzerklärung nennt es unter den Einstellungen. Ohne Wahl gilt Berlin.
+  Baden-Württemberg ist ein Entwurf (docs/plan-bundeslaender.md).
+- `LEGAL_BASIS = :pending` in `credentials.rb` für die Zeit, in der die Schulen den Einsatz noch prüfen: Die
+  Datenschutzerklärung sagt dann, dass Entscheidungen und Vereinbarungen noch ausstehen, welche Rechtsgrundlage
+  vorgesehen ist (`SCHOOL_LAW`) und bis wann sie vorliegen sollen (`TRANSITION_DEADLINE`), statt »noch nicht
+  eingetragen«.
 - Das Workspace-Image neu bauen (`./build-image.sh`): Flutter, das Android-SDK und der Gradle-Cache sind heraus
   (rund 8 GB kleiner), Dart bleibt als eigenes SDK; Go kommt in Version 1.27.3 von go.dev statt aus Ubuntu
   (`GOTOOLCHAIN=local`); `man` funktioniert wieder (englische Seiten); Dart, Go, .NET und PowerShell melden keine

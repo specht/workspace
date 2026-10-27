@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Computernetze (Protokolle als Vereinbarungen zwischen Kommunikationspartnern), Rechner und Netze (Client-Server-Struktur, Protokolle)"
+topics: [client-server, netze]
 requires: [tcpip]
 reference: [netzwerk, http, ruby-python]
 </div>

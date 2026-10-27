@@ -33,6 +33,15 @@ class TaskCheckTest < Minitest::Test
         refute result.counts?
     end
 
+    # ${name} that is not one of TaskSpec::VARIABLES is text: a JavaScript
+    # template literal in a choice (kata-functions, predict-badge).
+    def test_template_literal_is_no_variable
+        task = { 'id' => 'x', 'check' => { 'type' => 'choice', 'options' => ['Bello', '${name} ist ${age}'], 'correct' => 1 } }
+        assert_empty TaskCheck.variables_used(task['check'])
+        assert_equal '${name} ist ${age}', TaskCheck.fill('${name} ist ${age}', {})
+        assert_equal :correct, TaskCheck.check(task, '1').status
+    end
+
     def test_answer_text_ignores_case_unless_asked
         task = { 'id' => 'x', 'check' => { 'type' => 'answer', 'expect' => ['Hallo Welt', 'Moin'] } }
         assert_equal :correct, TaskCheck.check(task, 'hallo   WELT', variables: {}).status

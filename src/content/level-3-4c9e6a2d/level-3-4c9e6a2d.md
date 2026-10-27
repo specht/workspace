@@ -4,6 +4,7 @@ image_alt: "Ein Saal aus Marmor im warmen Licht der Leuchten: helle Wände und h
 kind: projekt
 duration: 1 Doppelstunde
 curriculum: "Sek I: Digitale Bilder und Visualisierung; Oberstufe: Vertiefung Computergrafik (Lightmap, weiche Schatten, indirektes Licht)"
+topics: [computergrafik]
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git
 template_name: der Backrooms-Vorlage

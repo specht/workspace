@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Information und Daten (Codierung); Oberstufe: Algorithmen und Datenstrukturen (Bäume, Huffman-Codierung)"
+topics: [codierung, kompression, datenstrukturen]
 requires: [kata-dicts]
 reference: [heap, baeume, bits-und-bytes, ruby-python]
 </div>

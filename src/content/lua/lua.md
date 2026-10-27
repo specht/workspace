@@ -1,7 +1,8 @@
 <div class='meta'>
 image: lua-logo.png
 kind: steckbrief
-curriculum: "Oberstufe: Syntax und Semantik (Interpreter)"
+curriculum: "Oberstufe: Algorithmen und Softwareentwicklung (ein Programm ausführen, Fehlermeldungen lesen, Bubblesort ändern)"
+topics: [programmiersprachen]
 </div>
 
 <div

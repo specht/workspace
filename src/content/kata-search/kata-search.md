@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Suchen, Schritt für Schritt und durch Halbieren
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (lineare und binäre Suche, Effizienz)"
+topics: [suchen-sortieren]
 requires: [kata-recursion]
 </div>
 

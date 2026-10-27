@@ -82,6 +82,20 @@ class PageKindsTest < Minitest::Test
         refute_includes PageKinds.header('showerjs', content, sections, :show_curriculum => true), 'page-kind-curriculum'
     end
 
+    # Through the plan of the teacher's state: Berlin's as before, another
+    # derived from the topics and marked while it is a draft.
+    def test_the_curriculum_through_the_state
+        c = content.merge('x' => { :title => 'X', :kind => 'projekt', :curriculum => 'Sek I: Datenbanken; Oberstufe: Datenbanken', :topics => %w[datenbanken-abfragen] })
+        berlin = PageKinds.header('x', c, sections, :show_curriculum => true, :curriculum_plan => Curriculum.plan_for('berlin'))
+        assert_equal PageKinds.header('x', c, sections, :show_curriculum => true), berlin
+        assert_includes berlin, "title='Rahmenlehrplan (nur für Lehrkräfte sichtbar)'"
+        refute_includes berlin, 'page-kind-draft'
+        bw = PageKinds.header('x', c, sections, :show_curriculum => true, :curriculum_plan => Curriculum.plan_for('baden-wuerttemberg'))
+        assert_includes bw, "Kursstufe: <a href='/lehrplan#kursstufe-relationale-datenbanksysteme'>Relationale Datenbanksysteme</a>"
+        assert_includes bw, "class='page-kind-draft'"
+        refute_includes bw, 'sek-i-datenbanken'
+    end
+
     def test_the_duration_is_only_for_teachers
         refute_includes PageKinds.header('showerjs', content, sections), 'Doppelstunden'
         assert_includes PageKinds.header('showerjs', content, sections, :show_duration => true), 'Doppelstunden'

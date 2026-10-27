@@ -61,8 +61,10 @@ CONTACT_EMAIL = 'kontakt@example.com'
 # Die Rechtsgrundlage: :school erst, wenn die Schulleitung schriftlich
 # entschieden hat, dass der Workspace im Unterricht eingesetzt wird (die
 # Unterlagen unter /datenschutz helfen dabei); :consent, wenn er ein eigenes
-# Angebot ist und jede Person (unter 16 die Eltern) einwilligt. Ohne diese
-# Zeile sagt die Seite, dass sie noch nicht eingetragen ist.
+# Angebot ist und jede Person (unter 16 die Eltern) einwilligt; :pending,
+# solange die Schulen noch prüfen und entscheiden (die Seite sagt das und
+# nennt TRANSITION_DEADLINE als Ziel). Ohne diese Zeile sagt die Seite, dass
+# sie noch nicht eingetragen ist.
 # LEGAL_BASIS = :school
 # Die Vorschrift, auf die sich die Schule stützt (für :school):
 # SCHOOL_LAW = '§ 64 Abs. 11 des Schulgesetzes für das Land Berlin und § 2 der Digitale Lehr- und Lernmittel-Verordnung (DigLLV)'

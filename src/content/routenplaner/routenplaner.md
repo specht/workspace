@@ -6,6 +6,8 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Graphen, Breitensuche, Dijkstra, Heap, A*)"
+topics: [graphen, datenstrukturen]
+requires: [kata-dicts]
 template: https://github.com/specht/routenplaner-starter.git
 template_name: der Vorlage des Routenplaners
 reference: [graphen, heap, ruby-python]
@@ -149,7 +151,7 @@ Die Karte kommt von [OpenStreetMap](https://www.openstreetmap.org/), einer Karte
 
 _person(coast)
 
-Öffne `data/steglitz.tsv`. Jede Zeile ist ein Weg, die vier Teile trennt ein Tabulator:
+Öffne `data/steglitz-zehlendorf.tsv`. Jede Zeile ist ein Weg, die vier Teile trennt ein Tabulator:
 
 ```text
 residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.457700 …

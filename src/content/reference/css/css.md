@@ -26,18 +26,16 @@ Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower. Jedes Bei
 
 ## Grundlagen
 
-Wie eine CSS-Regel aufgebaut ist und wie sie die richtigen Elemente findet.
+Wie eine CSS-Regel aufgebaut ist und wie sie die richtigen Elemente findet. Wohin die Regeln kommen:
+
+- **Webseite:** Lege `styles.css` neben `index.html` an und binde sie im `<head>` ein: `<link rel="stylesheet" href="styles.css">`.
+- **Shower:** Die Vorlage hat schon eine `styles.css`. Deine Regeln gehören ans Ende, unter den Kommentar »Eigene CSS-Regeln«.
 
 <!-- part: regeln -->
 <!-- short: CSS steht in `styles.css`: Selektor, dann in geschweiften Klammern Eigenschaft und Wert, `h2 { color: #75507b; }`. -->
 ### CSS-Regeln
 
-CSS schreibst du in eine eigene Datei, `styles.css`. So bleibt der Inhalt in `index.html` und die Gestaltung in `styles.css`.
-
-- **Webseite:** Lege `styles.css` neben `index.html` an und binde sie im `<head>` ein: `<link rel="stylesheet" href="styles.css">`.
-- **Shower:** Die Vorlage hat schon eine `styles.css`. Deine Regeln gehören ans Ende, unter den Kommentar »Eigene CSS-Regeln«.
-
-Eine CSS-Regel sieht so aus:
+CSS schreibst du in eine eigene Datei, `styles.css`. So bleibt der Inhalt in `index.html` und die Gestaltung in `styles.css`. Eine CSS-Regel sieht so aus:
 
 <!-- screenshot-code: regeln-html -->
 ```html

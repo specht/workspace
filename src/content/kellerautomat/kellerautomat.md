@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Sprachen und Automaten (formale Sprachen, Kellerautomaten, Grenzen endlicher Automaten), Vertiefung Theoretische Informatik (Kellerautomaten, Schubfachprinzip)"
+topics: [kellerautomaten]
 requires: [automata]
 reference: [automaten, listen, ruby-python]
 </div>
@@ -21,6 +22,14 @@ reference: [automaten, listen, ruby-python]
 <p class='abstract'>
 Stehen in <code>x = (a[1] + b) * {2}</code> alle Klammern richtig? Ein endlicher Automat kann das nicht prüfen, ein Zähler auch nicht. Du gibst einem Automaten einen Stack als Gedächtnis und baust damit in Ruby oder Python einen Kellerautomaten, der Klammern prüft und Wörter wie aaabbb erkennt. Dann findest du heraus, warum ein endlicher Automat an aaabbb scheitern muss, egal wie viele Zustände er hat.
 </p>
+
+Bevor es um Begriffe geht, sieh einem Kellerautomaten bei der Arbeit zu. Er prüft, ob die runden Klammern in `(()())` richtig stehen, und liest dazu das Wort Zeichen für Zeichen von links. Rechts daneben hat er einen **Stack**, einen Stapel, auf den er oben etwas legen und von dem er oben etwas herunternehmen kann; ganz unten liegt `#`. Schalte Schritt für Schritt weiter und achte darauf, was bei jeder `(` und bei jeder `)` mit dem Stack passiert.
+
+<div class='automaton-stepper' data-stepper data-fixed data-title='Ein Kellerautomat bei der Arbeit' data-kind='pushdown' data-states='q0' data-start='q0' data-accept='q0' data-rules='q0 ( # #( q0; q0 ( ( (( q0; q0 ) ( ε q0' data-input='(()())'></div>
+<script src='/include/automaton_layout.js'></script>
+<script src='/include/automaton_stepper.js'></script>
+
+_task(vorhersage-stack)
 
 In [Endliche Automaten](/automata) hast du gesehen, was ein Automat mit endlich vielen Zuständen kann: Drehkreuze, Zahlenschlösser, Teilbarkeit. Am Ende stand eine Grenze. Was er sich merken müsste, ohne dass es eine feste Obergrenze gibt, kann er nicht. Klammern sind so ein Fall: In `((((…))))` können beliebig viele Klammern offen sein, bevor die erste zugeht.
 
@@ -160,7 +169,7 @@ _task(stack)
 
 ## Ein Kellerautomat
 
-Dein `balanced` ist ein Programm mit Schleifen und Vergleichen. Ein **Kellerautomat** schafft dasselbe nur mit einer Tabelle, wie ein endlicher Automat. Er hat Zustände, liest das Wort Zeichen für Zeichen und hat dazu einen Stack. Bei jedem Zeichen sieht er in seiner Tabelle nach, und zwar mit drei Angaben: seinem Zustand, dem gelesenen Zeichen und dem obersten Zeichen des Stacks. Die Tabelle sagt ihm den neuen Zustand und was er an die Stelle des obersten Zeichens legt: nichts, dasselbe Zeichen wieder oder mehrere Zeichen.
+Dein `balanced` ist ein Programm mit Schleifen und Vergleichen. Ein **Kellerautomat** wie der vom Anfang der Seite schafft dasselbe nur mit einer Tabelle, wie ein endlicher Automat. Er hat Zustände, liest das Wort Zeichen für Zeichen und hat dazu einen Stack. Bei jedem Zeichen sieht er in seiner Tabelle nach, und zwar mit drei Angaben: seinem Zustand, dem gelesenen Zeichen und dem obersten Zeichen des Stacks. Die Tabelle sagt ihm den neuen Zustand und was er an die Stelle des obersten Zeichens legt: nichts, dasselbe Zeichen wieder oder mehrere Zeichen.
 
 Ganz unten im Stack liegt am Anfang ein `#`. So erkennt der Automat, dass sein Stack leer ist: wenn `#` oben liegt. Nimmt er ein Wort an, ist er am Ende in einem akzeptierenden Zustand, und auf dem Stack liegt nur noch `#`. Fehlt für ein Paar aus Zeichen und oberstem Zeichen ein Übergang, lehnt er das Wort ab.
 

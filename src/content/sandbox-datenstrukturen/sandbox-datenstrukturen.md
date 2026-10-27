@@ -4,6 +4,8 @@ image_alt: "Die Datenstruktur-Sandbox mit Python-Code eines AVL-Baums links und 
 kind: projekt
 duration: 4 bis 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Listen, Stack, Queue, Bäume, Heap, Hash Table)"
+topics: [datenstrukturen]
+requires: [kata-recursion, supermarkt]
 language: Dart / Python / JavaScript / Java
 reference: [gitlab, git, listen, baeume, heap, hash-tables]
 template: https://github.com/specht/data-structures-sandbox.git

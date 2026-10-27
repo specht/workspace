@@ -9,6 +9,7 @@ require './include/kata_map.rb'
 require './include/solution_blocks.rb'
 require './include/hint_steps.rb'
 require './include/after_task.rb'
+require './include/card_usage.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
@@ -678,6 +679,7 @@ class Main < Sinatra::Base
     require './include/login_sessions_page.rb'
     require './include/cable_page.rb'
     require './include/kata_page.rb'
+    require './include/class_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -1647,6 +1649,12 @@ class Main < Sinatra::Base
                     img['src'] = "/cache/#{sha1}.webp"
                     add_media_variants(img, image_path) { |variant_path| "/cache/#{convert_image(variant_path)}.webp" }
                 end
+                # a screenshot of the site (class shot, taken at twice the
+                # pixels): at most half its width, so that its text is never
+                # bigger than the page's around it
+                if img.classes.include?('shot') && (width = webp_width(image_path))
+                    img['style'] = ["max-width: #{width / 2}px; min-width: min(1000px, #{width / 2}px)", img['style']].compact.join('; ')
+                end
                 if img.classes.include?('full')
                     # a picture made from a drawing beside it (x.svg next to
                     # x.webp) has the page as its background: no shadow in
@@ -1702,6 +1710,21 @@ class Main < Sinatra::Base
     # screenshot README). media_variants.js shows the one that fits the theme
     # and the toggles in the corner (glasses, CRT).
     MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph crt folie]
+
+    # The width of a WebP in pixels, from its header (lossy VP8, lossless
+    # VP8L, extended VP8X); nil for anything else
+    def self.webp_width(path)
+        head = File.binread(path, 30)
+        return nil unless head && head.size >= 30 && head[0, 4] == 'RIFF' && head[8, 4] == 'WEBP'
+
+        case head[12, 4]
+        when 'VP8 ' then head[26, 2].unpack1('v') & 0x3fff
+        when 'VP8L' then (head[21, 4].unpack1('V') & 0x3fff) + 1
+        when 'VP8X' then (head[24, 3] + "\0").unpack1('V') + 1
+        end
+    rescue StandardError
+        nil
+    end
 
     def self.add_media_variants(element, media_path)
         extension = File.extname(media_path)
@@ -2155,6 +2178,9 @@ class Main < Sinatra::Base
                     # line of the curriculum teachers see on the overview.
                     :idea => page_meta['idea'],
                     :curriculum => page_meta['curriculum'],
+                    # its topics (src/content/curricula/themen.yaml), from which
+                    # the plan of another state derives its line (Curriculum)
+                    :topics => Array(page_meta['topics']).map(&:to_s),
                     # whom the activity is for, where its curriculum line
                     # names both plans but it is meant for the younger
                     # (CurriculumGraph.age_of): Sek I, Sek I und Oberstufe,
@@ -4716,7 +4742,7 @@ class Main < Sinatra::Base
     # After restoring a backup made at backup_time: delete again every
     # account deleted since. Returns the addresses.
     post '/api/admin/repeat_deletions' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:backup_date])
         backup_time = Time.parse(data[:backup_date].to_s) rescue nil
         halt 400, { :error => 'invalid_date' }.to_json unless backup_time
@@ -4732,7 +4758,7 @@ class Main < Sinatra::Base
     # rules (Datenschutzerklärung, »Speicherdauer«). The address typed a
     # second time is the confirmation.
     post '/api/admin/delete_account' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :confirmation], :optional_keys => [:notify], :types => { :notify => Object })
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
@@ -4763,7 +4789,7 @@ class Main < Sinatra::Base
     DELETION_NOTICE_DAYS = 14
 
     post '/api/admin/announce_deletion' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
@@ -4802,7 +4828,7 @@ class Main < Sinatra::Base
     # account, a school that asks to stop): sessions, login, the running
     # Workspace, shared links and web apps end at once; nothing is deleted.
     post '/api/admin/suspend_access' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason], :max_value_lengths => { :reason => 300 })
         email = data[:email].to_s.downcase
         halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
@@ -4822,7 +4848,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/lift_suspension' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.suspended_at, u.suspended_by, u.suspended_reason;', :email => data[:email].to_s.downcase)
         Main.refresh_nginx_config()
@@ -4831,7 +4857,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/cancel_deletion' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.deletion_at, u.deletion_announced_at, u.deletion_announced_by;', :email => data[:email].to_s.downcase)
         STDERR.puts "Announced deletion of #{data[:email]} cancelled by #{@session_user[:email]}"
@@ -4841,7 +4867,7 @@ class Main < Sinatra::Base
     # The person keeps the account as a guest: into a group of the guests'
     # school (Nutzungsordnung), and the announced deletion is off.
     post '/api/admin/keep_as_guest' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :group])
         email = data[:email].to_s.downcase
         halt 400, { :error => 'not_a_guest_group' }.to_json if neo4j_query(<<~END_OF_QUERY, :name => data[:group]).empty?
@@ -5120,8 +5146,9 @@ class Main < Sinatra::Base
 
     # Everyone invited or with an account, for the administration: address,
     # name, role, groups, schools, whether there is an account, when last
-    # active, the disk space of the Workspace. query matches part of the name,
-    # address, group or school.
+    # active, the disk space of the Workspace, and for students and guests
+    # the teachers of their groups. query matches part of the name, address,
+    # group, school or teacher (so a teacher's name lists its students).
     def people_overview(query = '')
         Main.load_invitations()
         accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
@@ -5135,6 +5162,8 @@ class Main < Sinatra::Base
         END_OF_QUERY
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
+        name_of = ->(email) { n = (@@invitations[email] || {})[:name] || accounts[email]; n.nil? || n == email ? nil : n }
+        teachers_of = Roster.teachers_of_members(:teachers => @@teachers, :group_members => @@group_members, :skip => @@test_groups)
         q = query.to_s.strip.downcase
         schools_of = Hash.new { |hash, key| hash[key] = [] }
         if Main.roster_imported
@@ -5155,21 +5184,23 @@ class Main < Sinatra::Base
                 else 'Lernende'
             end
             active = activity[email]
-            { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
+            teachers = %w[Lernende Gast].include?(role) ? (teachers_of[email] || []).map { |t| { :email => t, :name => name_of.(t) } }.sort_by { |t| [t[:name].to_s.downcase, t[:email]] } : []
+            { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort, :teachers => teachers,
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
               :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
               :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email],
               :guest => guests.include?(email), :terms_accepted_at => terms_at[email], :suspended => suspended[email] }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
-                p[:schools].any? { |g| g.downcase.include?(q) }
+                p[:schools].any? { |g| g.downcase.include?(q) } ||
+                p[:teachers].any? { |t| t[:email].include?(q) || t[:name].to_s.downcase.include?(q) }
         end.sort_by { |p| [p[:name].to_s.downcase, p[:email]] }
     end
 
     # school: a school's name (or '-' for none); role: one of the roles;
     # sort: 'active' puts those inactive longest (and never) first.
     post '/api/admin/people' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:optional_keys => [:query, :limit, :school, :role, :sort, :state], :types => { :limit => Integer }, :max_body_length => 1024)
         everyone = people_overview(data[:query].to_s.strip.empty? ? '' : data[:query])
         counts = PEOPLE_STATES.keys.to_h { |state| [state, 0] }
@@ -5226,7 +5257,7 @@ class Main < Sinatra::Base
     # Accounts whose address is no longer in any invitation list: what the
     # deletion rules remove at the end of a school year.
     post '/api/admin/uninvited_accounts' do
-        assert(admin_logged_in?)
+        admins_only!
         Main.load_invitations()
         rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name, u.deletion_at AS deletion_at ORDER BY u.email;').reject do |row|
             @@invitations.key?(row['email'])
@@ -5424,13 +5455,36 @@ class Main < Sinatra::Base
             "<script src='/include/page_pin.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}' defer></script></span>"
     end
 
+    # The state whose curricula a teacher sees (profile, /lehrplan;
+    # Curriculum, docs/plan-bundeslaender.md); Berlin without a choice.
+    def curriculum_state
+        # a teacher's is stored; a guest chooses on /lehrplan (?land=)
+        state = @session_user ? @session_user[:curriculum_state].to_s : params['land'].to_s
+        Curriculum.states.any? { |key, _, _| key == state } ? state : Curriculum::DEFAULT_STATE
+    end
+
+    def curriculum_plan
+        Curriculum.plan_for(curriculum_state)
+    end
+
+    # The choice of the state, for the profile and /lehrplan: a select that
+    # stores it (curriculum_state.js) and reloads the page.
+    def curriculum_state_select(id)
+        options = Curriculum.states.map do |key, name, plan|
+            label = Curriculum.draft?(plan) ? "#{name} (Entwurf)" : name
+            "<option value='#{CGI.escapeHTML(key)}'#{key == curriculum_state ? ' selected' : ''}>#{CGI.escapeHTML(label)}</option>"
+        end
+        "<select id='#{id}' class='form-select form-select-sm curriculum-state' aria-label='Bundesland für die Lehrpläne'>#{options.join}</select>"
+    end
+
     def page_kind_header(slug)
         # the teacher's buttons together at the right end, wrapping together
         tools = page_pin_button(slug) + teacher_note_toggle(slug)
         toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
                                   :show_duration => teacher_logged_in?, :show_curriculum => teacher_logged_in?,
-                                  :code_language => page_code_language(slug))
+                                  :code_language => page_code_language(slug),
+                                  :curriculum_plan => teacher_logged_in? ? curriculum_plan : nil)
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
@@ -5440,17 +5494,29 @@ class Main < Sinatra::Base
 
     # --- Programming languages (CodeLanguages) ---------------------------------
 
-    # The language a teacher set for each group, { group => language } in
-    # the order given; nil where none is set.
+    # The languages a teacher ranked for each group, { group => [languages] }
+    # in the order given; nil where none is set. A group set before the
+    # list has one language (g.code_language), read as a list of one.
     def group_code_languages(groups)
         return {} if groups.empty?
 
         rows = neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a
             MATCH (g:GroupSetting) WHERE g.group IN $groups
-            RETURN g.group AS group, g.code_language AS language;
+            RETURN g.group AS group, g.code_languages AS languages, g.code_language AS language;
         END_OF_QUERY
-        set = rows.to_h { |row| [row['group'], row['language']] }
+        set = rows.to_h { |row| [row['group'], CodeLanguages.ranked(row['languages'] || row['language'])] }
         groups.to_h { |group| [group, set[group]] }
+    end
+
+    # The activities of the catalog that offer more than one language, for
+    # the class's ranking: [{ title, languages }] in catalog order
+    def multi_language_activities
+        pinnable_slugs.filter_map do |slug|
+            languages = (@@content[slug] || {})[:languages] || []
+            next if languages.size < 2
+
+            { :title => plain_title(slug), :languages => languages }
+        end
     end
 
     # --- Copy buttons per group ---------------------------------------------------
@@ -5611,7 +5677,7 @@ class Main < Sinatra::Base
             # JavaScript, picked on a Kata page, is kept apart from the
             # choice between Ruby and Python, which stays for other pages
             kata = user_logged_in? ? @session_user[:kata_code_language] : nil
-            CodeLanguages.resolve(kata, { :own => own }.merge(groups), languages)
+            CodeLanguages.resolve([kata, own], groups, languages)
         end
     end
 
@@ -5734,11 +5800,12 @@ class Main < Sinatra::Base
             "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
                 "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
-        # What gives away a task's answer waits for it (AfterTask), for
-        # everyone who can answer; tasks.js shows it then. A teacher sees the
-        # page as the class does and can open it without answering
+        # What gives away a task's answer waits for it (AfterTask), also for
+        # a guest: otherwise a student could read the answers in a private
+        # window before guessing. tasks.js shows it once answered. A teacher
+        # sees the page as the class does and can open it without answering
         # (revealAfter: a button in the line that waits).
-        waits = user_logged_in?
+        waits = true
         "<style>.tasks-off-only { display: none; }" \
             "#{waits ? ' .after-task:not(.after-task-shown) > .after-task-body { display: none; } .after-task:not(.after-task-shown) > .after-task-wait { display: block; }' : ''}</style>" \
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
@@ -6051,6 +6118,7 @@ class Main < Sinatra::Base
             CREATE (a:TaskAttempt {task: $task, version: $version, status: $status, ts: $updated})-[:BY]->(u);
         END_OF_QUERY
         notify_meeting_progress(email, found[:key].split('/').first)
+        @@task_results_changed_at = Time.now
         TaskStore.public_state(props, found[:version])
     end
 
@@ -6282,7 +6350,11 @@ class Main < Sinatra::Base
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
               :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
               :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
-              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%",
+              # centred: the card shows nearly all of the 16:9 picture, a
+              # little narrower once its text is taller (default.css); the
+              # focus (image: x y) is for the phone's square crop on the
+              # catalog and would push the little that is cut to one side
+              :position => '50% 50%',
               # a set of Katas: its band from the strip, in its hue
               :kata => kata_teaser(p[:slug]) }
         end
@@ -6594,6 +6666,7 @@ class Main < Sinatra::Base
 
     CLASS_TABS = [
         ['fortschritt', 'Fortschritt', 'bi-check2-square'],
+        ['ueberblick', 'Überblick', 'bi-bar-chart-steps'],
         ['lernende', 'Lernende', 'bi-people'],
         ['startseite', 'Startseite', 'bi-pin-angle'],
         ['einstellungen', 'Einstellungen', 'bi-sliders'],
@@ -6615,7 +6688,7 @@ class Main < Sinatra::Base
     # (members, co-teachers, consent, welcome mails, end), filled by
     # class_board.js, which moves each person's Workspace into its row.
     def class_group_html(group)
-        "<section class='class-group-manage' data-group='#{CGI.escapeHTML(group.to_s)}'><p class='text-body-secondary'>Einen Moment …</p></section>"
+        "<section class='class-group-manage' data-group='#{CGI.escapeHTML(group.to_s)}' data-contact='#{CGI.escapeHTML(contact_email)}'><p class='text-body-secondary'>Einen Moment …</p></section>"
     end
 
     # The class page (/klasse): the group up top, waiting login codes right
@@ -6628,7 +6701,8 @@ class Main < Sinatra::Base
         if groups.empty?
             return "<p>Du betreust noch keine Gruppe.</p><p>#{new_group_button_html}</p>" unless new_group_button_html.empty?
 
-            return "<p>Du betreust noch keine Gruppe. Dir ist noch keine Schule zugeordnet; das macht die Administration. Danach legst du hier deine Gruppen an.</p>"
+            return "<p>Du betreust noch keine Gruppe. Dir ist noch keine Schule zugeordnet; das macht die Administration. Danach legst du hier deine Gruppen an. " \
+                "Schreib dafür #{class_contact_html}, an welcher Schule du unterrichtest.</p>"
         end
 
         prefs = class_prefs
@@ -6662,6 +6736,7 @@ class Main < Sinatra::Base
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
             "<button type='button' class='btn btn-outline-secondary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></span></form>"
+        io << new_group_note_html
         io << "<div class='class-login-codes' data-group='#{h.(group)}' data-school='#{h.(school_names_of_groups[group])}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
             "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
             "<table class='table table-sm'><tbody></tbody></table></div>"
@@ -6674,6 +6749,7 @@ class Main < Sinatra::Base
         io << "</div>"
         panel = ->(key, html) { "<section class='class-panel' role='tabpanel' id='class-panel-#{key}' aria-labelledby='class-tab-#{key}'#{key == tab ? '' : ' hidden'}>#{html}</section>" }
         io << panel.('fortschritt', class_progress_html(group))
+        io << panel.('ueberblick', class_overview_html(group))
         io << panel.('lernende', class_people_html(group))
         io << panel.('startseite', class_pins_html(group))
         io << panel.('einstellungen', class_settings_html(group))
@@ -6685,20 +6761,21 @@ class Main < Sinatra::Base
     def class_settings_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         io = +"<div class='class-settings'>"
-        # The programming language of the group's activities (CodeLanguages),
-        # where an activity offers more than one.
-        current = group_code_languages([group])[group]
-        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-code-language'>Sprache</label></h3>" \
-            "<select class='form-select class-code-language' id='class-code-language' data-group='#{h.(group)}' aria-describedby='class-code-language-hint'>"
-        CodeLanguages::GROUP_LANGUAGES.each do |language|
-            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
-            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
-        end
-        io << "</select><p class='class-setting-hint' id='class-code-language-hint'>Für Aktivitäten, die es in mehreren Sprachen gibt. " \
-            "Lernende können auf der Seite selbst umschalten.</p></section>"
-        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
-            "});</script>"
+        # The programming languages of the group's activities, ranked
+        # (CodeLanguages): drawn by class_languages.js from the data, the
+        # languages of the activities with it for the counts and the preview.
+        ranked = group_code_languages([group])[group] || [CodeLanguages::DEFAULT]
+        activities = multi_language_activities
+        data = {
+            :group => group, :ranked => ranked, :default => CodeLanguages::DEFAULT,
+            :languages => CodeLanguages::GROUP_LANGUAGES.map { |l| { :id => l, :name => CodeLanguages::NAMES[l] } },
+            :activities => activities,
+        }
+        io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-languages-title'>Sprachen der Klasse</h3>" \
+            "<p class='class-setting-hint'>Jede Aktivität, die es in mehreren Sprachen gibt, zeigt die erste dieser Liste, die sie anbietet. " \
+            "Zieh eine Sprache an ihren Platz oder hol eine aus »Weitere Sprachen« dazu. Lernende können auf der Seite selbst umschalten.</p>" \
+            "<div class='class-languages' data-languages='#{h.(data.to_json)}'></div></section>"
+        io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?).
         copy_all = group_copy_all_code?([group])
@@ -6712,6 +6789,7 @@ class Main < Sinatra::Base
             "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
             "});</script>"
         io << class_repos_html(group)
+        io << class_school_html(group)
         io << "</div>"
     end
 
@@ -6822,34 +6900,85 @@ class Main < Sinatra::Base
         counts
     end
 
-    # For admins at the foot of a card, a tile or a Kata set (activity_usage):
-    # one row, a thin band with a segment for every task of the page, in its
-    # order, its blue in five steps as dark as that task was solved often,
-    # next to the most solved one (grey: never), and beside it the solved
-    # tasks and the people.
-    def usage_html(counts, slug, css_class)
-        content = @@content[slug] || {}
-        return '' unless counts && content[:tasks]
+    # For a teacher the same counts as activity_usage, over the students of
+    # the groups the teacher teaches (CardUsage.students_of), with :of, how
+    # many they are. Kept only until a task result changes (stored or
+    # deleted, @@task_results_changed_at) or the groups change: during a
+    # lesson the band is as current as the class page, and a quiet evening
+    # costs no queries.
+    def teacher_usage(email)
+        @@teacher_usage = {} unless defined?(@@teacher_usage)
+        excluded = (ADMIN_USERS.to_a + @@teachers.keys + @@test_accounts.keys).uniq
+        students = CardUsage.students_of(email, :teachers => @@teachers, :group_members => @@group_members,
+                                         :skip => @@test_groups, :excluded => excluded).to_a.sort
+        cached = @@teacher_usage[email]
+        changed = defined?(@@task_results_changed_at) ? @@task_results_changed_at : Time.at(0)
+        return cached[:counts] if cached && cached[:students] == students && cached[:at] > changed
 
+        options = { :done => StudentHome::DONE, :students => students }
+        tasks = students.empty? ? {} : neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['task'], row['solved'].to_i] }
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.status IN $done AND u.email IN $students
+            RETURN s.task AS task, count(s) AS solved;
+        END_OF_QUERY
+        people = students.empty? ? {} : neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['activity'], row['people'].to_i] }
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.status IN $done AND u.email IN $students
+            RETURN split(s.task, '/')[0] AS activity, count(DISTINCT u) AS people;
+        END_OF_QUERY
+        counts = { :tasks => tasks, :people => people, :of => students.size }
+        @@teacher_usage[email] = { :at => Time.now, :students => students, :counts => counts }
+        counts
+    end
+
+    # A student's own tasks on the cards, for the activities begun:
+    # { slug => { :titles => [core task titles], :marks => [...] } }, as the
+    # pinned card counts them (StudentHome.progress: extras do not count).
+    def my_card_progress
+        @my_card_progress ||= begin
+            begun = my_progress.to_h { |p| [p[:slug], p] }
+            activities_with_tasks(->(slug) { class_repo_variant(slug) }).filter_map do |a|
+                entry = begun[a[:slug]]
+                next unless entry
+
+                [a[:slug], { :titles => a[:tasks].reject { |t| t[:extra] }.map { |t| t[:title] }, :marks => entry[:marks] }]
+            end.to_h
+        end
+    end
+
+    # Which band the catalog shows at the foot of each card (usage_html):
+    # admins everybody's (an admin who also teaches too: the admin view is
+    # the wider one and already holds the class), a teacher their own
+    # students', a student their own tasks; nil for anyone else.
+    def card_usage
+        if admin_logged_in?
+            { :mode => :admin, :counts => activity_usage }
+        elsif teacher_logged_in?
+            { :mode => :teacher, :counts => teacher_usage(@session_user[:email]) }
+        elsif student_home_visible?
+            { :mode => :own, :progress => my_card_progress }
+        end
+    end
+
+    # The band at the foot of a card, a tile or a Kata set (CardUsage): one
+    # row, a thin band with a segment for every task of the page, in its
+    # order, and beside it what it adds up to; '' where there is none (no
+    # tasks, or a student who has not begun).
+    def usage_html(usage, slug, css_class)
+        content = @@content[slug] || {}
+        return '' unless usage && content[:tasks]
+
+        if usage[:mode] == :own
+            mine = usage[:progress][slug]
+            return mine ? CardUsage.own_html(mine[:titles], mine[:marks], :css_class => css_class) : ''
+        end
+        counts = usage[:counts]
         activity = content[:tasks][:activity]
         ids = content[:tasks][:on_page] || []
         per_task = ids.map { |id| counts[:tasks]["#{activity}/#{id}"].to_i }
-        solved = per_task.sum
-        people = counts[:people][activity].to_i
-        top = [per_task.max.to_i, 1].max
-        bars = ids.each_with_index.map do |id, i|
-            title = CGI.escapeHTML(content[:tasks][:by_id][id]['title'].to_s)
-            # five steps of the ramp (default.css), none for a task never solved
-            level = per_task[i].zero? ? 0 : (5.0 * per_task[i] / top).ceil
-            "<span class='usage-bar usage-level-#{level}' title='#{i + 1}. #{title}: #{per_task[i]}'></span>"
-        end
-        text = "#{solved} gelöst · #{people} #{people == 1 ? 'Person' : 'Personen'}"
-        "<span class='usage-row #{css_class}'>" \
-            "<span class='usage-strip' aria-hidden='true'>#{bars.join}</span>" \
-            "<span class='usage' title='#{text}, ohne Lehrkräfte, Admins und Testkonten'>" \
-            "<span aria-hidden='true'><i class='bi bi-check2-all'></i>#{solved}</span>" \
-            "<span aria-hidden='true'><i class='bi bi-person'></i>#{people}</span>" \
-            "<span class='visually-hidden'>#{text}</span></span></span>"
+        titles = ids.map { |id| content[:tasks][:by_id][id]['title'].to_s }
+        CardUsage.band_html(titles, per_task, :solved => per_task.sum, :people => counts[:people][activity].to_i,
+                            :css_class => css_class, :of => usage[:mode] == :teacher ? counts[:of] : nil)
     end
 
     def print_content_overview(catalog = :student)
@@ -6880,7 +7009,8 @@ class Main < Sinatra::Base
                 card_index = 0
                 # pinned for one of the person's groups: a pin on the card, as on the Kata strip
                 catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
-                usage = catalog == :student && admin_logged_in? ? activity_usage : nil
+                # the band at the foot of the cards (card_usage): admins, teachers, students
+                usage = catalog == :student ? card_usage : nil
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
@@ -6906,7 +7036,8 @@ class Main < Sinatra::Base
                     # carousel: true (Katas): one strip of the sets with the
                     # person's progress instead of cards (KataMap)
                     if section[:carousel]
-                        io.puts kata_carousel_html(section, usage)
+                        # a student's own progress is the strip's already
+                        io.puts kata_carousel_html(section, usage && usage[:mode] != :own ? usage : nil)
                         next
                     end
                     # tiles: true (programming languages): small tiles with
@@ -6943,7 +7074,8 @@ class Main < Sinatra::Base
                         content = @@content[slug]
                         io.puts "<div class='hscol'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
-                        used_card = usage && content[:tasks] ? ' card-with-usage' : ''
+                        band = usage_html(usage, slug, 'card-usage')
+                        used_card = band.empty? ? '' : ' card-with-usage'
                         io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}#{used_card}'>"
                         io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
                         io.puts "<h4>#{content[:title]}</h4>"
@@ -6978,9 +7110,9 @@ class Main < Sinatra::Base
                         io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         if catalog == :student
-                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
+                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT))
                         end
-                        io.puts usage_html(usage, slug, 'card-usage')
+                        io.puts band
                         io.puts "</div>"
                         io.puts "</div>"
                         io.puts "</a>"
@@ -7775,6 +7907,7 @@ class Main < Sinatra::Base
             DETACH DELETE s;
         END_OF_QUERY
         notify_meeting_progress(email, task.split('/').first)
+        @@task_results_changed_at = Time.now
         neo4j_query(<<~END_OF_QUERY, :email => email, :task => task)
             MATCH (a:TaskAttempt {task: $task})-[:BY]->(:User {email: $email})
             DETACH DELETE a;
@@ -7817,6 +7950,20 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         active = @session_user["show_#{key}".to_sym]
         "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
+    end
+
+    # The state whose curricula a teacher sees (Curriculum): one of the
+    # states of the plans in src/content/curricula/.
+    post '/api/set_curriculum_state/:state' do
+        assert(teacher_logged_in?)
+        state = params['state']
+        assert(Curriculum.states.any? { |key, _, _| key == state })
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :state => state})
+            MATCH (u:User {email: $email})
+            SET u.curriculum_state = $state
+            RETURN u;
+        END_OF_STRING
+        respond(:ok => true)
     end
 
     post '/api/set_brightness/:mode' do
@@ -8479,7 +8626,7 @@ class Main < Sinatra::Base
         # JavaScript, Dart and Java only where a page offers them
         # (CodeLanguages): they do not replace the choice between Ruby and
         # Python, and picking one of those again leaves them behind.
-        if CodeLanguages::GROUP_LANGUAGES.include?(data[:language])
+        if CodeLanguages::OWN_LANGUAGES.include?(data[:language])
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
                 MATCH (u:User {email: $email})
                 SET u.code_language = $language
@@ -8496,26 +8643,21 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
-    # The language a teacher sets for a group they administer; '' removes
-    # it, and the group sees Ruby again.
-    post '/api/set_group_code_language' do
+    # The languages a teacher ranks for a group they administer
+    # (»Sprachen der Klasse«): known ones, each once, at least one; the list
+    # replaces the one language stored before it.
+    post '/api/set_group_code_languages' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:group, :language])
+        data = parse_request_data(:required_keys => [:group, :languages], :types => { :languages => Array })
         group = data[:group]
         assert(class_groups.include?(group))
-        language = data[:language].to_s
-        assert(language.empty? || CodeLanguages::GROUP_LANGUAGES.include?(language))
-        if language.empty?
-            neo4j_query(<<~END_OF_STRING, {:group => group})
-                MATCH (g:GroupSetting {group: $group})
-                REMOVE g.code_language;
-            END_OF_STRING
-        else
-            neo4j_query(<<~END_OF_STRING, {:group => group, :language => language})
-                MERGE (g:GroupSetting {group: $group})
-                SET g.code_language = $language;
-            END_OF_STRING
-        end
+        languages = data[:languages]
+        assert(!languages.empty? && languages.all? { |l| l.is_a?(String) && CodeLanguages::GROUP_LANGUAGES.include?(l) } && languages.uniq.size == languages.size)
+        neo4j_query(<<~END_OF_STRING, {:group => group, :languages => languages})
+            MERGE (g:GroupSetting {group: $group})
+            SET g.code_languages = $languages
+            REMOVE g.code_language;
+        END_OF_STRING
         respond(:yay => 'sure')
     end
 
@@ -9135,7 +9277,7 @@ class Main < Sinatra::Base
         # The progress page (/screenshot-progress): the pass, its pages and
         # the files captured last, from the generator.
         get '/api/tutorial_screenshots/overview' do
-            assert(admin_logged_in?)
+            admins_only!
             headers 'Cache-Control' => 'no-store'
             begin
                 respond(TutorialScreenshots.overview)
@@ -9149,7 +9291,7 @@ class Main < Sinatra::Base
         # A captured file by its tutorial (rust/rust.md) and target, for the
         # progress page's stream: inside that tutorial's folder only.
         get '/api/tutorial_screenshots/capture' do
-            assert(admin_logged_in?)
+            admins_only!
             relative = params['markdown'].to_s
             target = params['target'].to_s
             halt 400 unless TutorialScreenshots.valid_relative_markdown_path?(relative)
@@ -9250,7 +9392,9 @@ class Main < Sinatra::Base
         slugs = section[:entries].select do |slug|
             @@content[slug] && @@content[slug][:tasks] && (DEVELOPMENT || !@@content[slug][:dev_only])
         end
-        stops = slugs.map { |slug| KataMap.stop(slug, @@content[slug]) }
+        # the curriculum line through the teacher's state (Curriculum)
+        plan = teacher_logged_in? ? curriculum_plan : nil
+        stops = slugs.map { |slug| KataMap.stop(slug, plan ? @@content[slug].merge(:curriculum => Curriculum.line(plan, slug, @@content[slug])) : @@content[slug]) }
         # a picture as an icon with its file's time, so a new one is loaded
         stops.each do |stop|
             path = "/src/static#{stop.icon}"
@@ -9503,13 +9647,10 @@ class Main < Sinatra::Base
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?
         end
-        # The activities by the names of the curricula (curriculum_overview.rb),
-        # like the curriculum lines only for teachers.
-        if path == '/lehrplan'
-            this_is_a_page_for_logged_in_users!
-            Main.load_invitations()
-            halt_forbidden_page! unless teacher_logged_in?
-        end
+        # The activities by the names of the curricula (curriculum_overview.rb)
+        # are public: a teacher or a school can see what the Workspace offers
+        # before asking for an account. The curriculum line on each activity
+        # stays for teachers.
         # The profile is about the logged-in person; without one it would
         # fail while drawing its buttons.
         if path == '/profil'

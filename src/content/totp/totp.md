@@ -6,6 +6,8 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Information und Daten (Codierung, Datensicherheit); Oberstufe: Vertiefung Kryptologie und Datensicherheit (zweiter Faktor, HMAC, Einmalcodes)"
+topics: [verschluesselung, datensicherheit]
+age: Oberstufe
 requires: [crypto]
 reference: [kryptographie, bits-und-bytes, ruby-python]
 </div>

@@ -3,6 +3,7 @@ image: start-page.webp:50:0
 image_alt: "Die Startseite des Workspace mit einem kurzen Text, daneben VS Code mit einem kleinen Python-Programm im Terminal"
 kind: grundlagen
 curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz)"
+topics: [betriebssystem]
 </div>
 
 # Was ist der Hackschule Workspace?
@@ -10,7 +11,7 @@ curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software); Oberstu
 <img class='r' style='width: 8em;' src='vscode.png' alt='Das blaue Logo von Visual Studio Code'>
 
 <p class='abstract'>
-Der Hackschule Workspace ist eine Programmierumgebung, die direkt im Browser läuft. Schülerinnen und Schüler können damit programmieren, Webseiten bauen und neue Technologien ausprobieren, ohne vorher Software installieren oder einrichten zu müssen.
+Der Hackschule Workspace ist eine Programmierumgebung, die direkt im Browser läuft. Du kannst damit programmieren, Webseiten bauen und neue Technologien ausprobieren, ohne vorher Software installieren oder einrichten zu müssen.
 </p>
 
 Im Mittelpunkt steht **Visual Studio Code**, ein Editor, der auch in der professionellen Softwareentwicklung weit verbreitet ist. Dazu kommen ein Terminal und viele bereits eingerichtete Programmiersprachen, Werkzeuge und Erweiterungen.
@@ -36,13 +37,15 @@ Der Hackschule Workspace ist für den Einsatz im Informatikunterricht, in Worksh
 
 Der Workspace ist dabei bewusst keine einzelne Lernumgebung für eine bestimmte Programmiersprache. Er stellt eine gemeinsame technische Grundlage bereit, auf der ganz unterschiedliche Unterrichtsprojekte laufen können – von ersten HTML-Seiten und kleinen Programmen bis zu Datenbanken, Grafik, Spielen und weiteren Themen.
 
-Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt für eigene Aufgaben genutzt oder einfach zum Entdecken neuer Themen eingesetzt werden. Wie eine Aktivität aufgebaut ist und warum, steht unten unter [»Was eine Aktivität ausmacht«](#was-eine-aktivität-ausmacht).
+Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt für eigene Aufgaben genutzt oder einfach zum Entdecken neuer Themen eingesetzt werden. Wie eine Aktivität aufgebaut ist und warum, steht unten unter [»Was eine Aktivität ausmacht«](#aktivitaet). Welche Aktivität zu welchem Thema deines Rahmenlehrplans passt und was worauf aufbaut, zeigt der [Lehrplan](/lehrplan), für Berlin, Brandenburg und Baden-Württemberg.
 
 ### Mit deiner Klasse arbeiten
 
 Du kannst den Workspace auf zwei Wegen mit deinen Lernenden nutzen.
 
-**Hier, auf dieser Installation.** Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, an welcher Schule du unterrichtest und mit welchen Klassen du arbeiten möchtest. Wenn es passt, lädt dich die Administration als Lehrkraft ein. Dann legst du unter »Klassen« deine Gruppen an und lädst deine Schülerinnen und Schüler mit ihren E-Mail-Adressen ein; nach der Anmeldung zeigt dir die Seite »Einstieg für Lehrkräfte« die erste Stunde Schritt für Schritt. Ob der Workspace im Unterricht eingesetzt wird, entscheidet deine Schulleitung. Die Unterlagen dafür (Datenschutzerklärung, Vereinbarung zur Auftragsverarbeitung, Elternbrief) bekommst du von der Administration.
+**Hier, auf dieser Installation.** Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, an welcher Schule du unterrichtest und mit welchen Klassen du arbeiten möchtest. Wenn es passt, lädt dich die Administration als Lehrkraft ein. Dann legst du unter »Klassen« deine Gruppen an und lädst deine Schülerinnen und Schüler mit ihren E-Mail-Adressen ein; nach der Anmeldung zeigt dir die Seite »Einstieg für Lehrkräfte« die erste Stunde Schritt für Schritt. Ob der Workspace im Unterricht eingesetzt wird, entscheidet deine Schulleitung; was sie dafür braucht, steht im nächsten Absatz.
+
+**Datenschutz.** Wer diese Installation betreibt, wo die Daten liegen, was gespeichert wird und wann es gelöscht wird, steht öffentlich in der [Datenschutzerklärung](/impressum#datenschutz); dort steht auch, auf welcher Grundlage die Schulen den Workspace nutzen. Die Unterlagen für die Schule (die Entscheidung für die Schulleitung, eine Prüfübersicht für die Datenschutzbeauftragte Stelle, die Vereinbarung zur Auftragsverarbeitung, ein Elternbrief) sind nicht öffentlich: Sie gehen als Dateien oder ausgedruckt an die Schulleitung. Möchte deine Schulleitung sie sehen, auch bevor du ein Konto hast, schreib an <a href='mailto:${contact_email}'>${contact_email}</a>.
 
 **Auf einem eigenen Server.** Der Quelltext des Workspace ist öffentlich: [github.com/specht/workspace](https://github.com/specht/workspace). Du kannst ihn für deine Schule selbst betreiben, auf einem Rechner der Schule oder auf einem gemieteten Server. Der Server sollte nur für den Workspace da sein, denn der Webserver darf dort Container starten und stoppen. Wie viel Leistung nötig ist, hängt davon ab, wie viele gleichzeitig arbeiten: Ein gemieteter Server mit 4 Kernen und 8 GB RAM reicht für wenig Betrieb, für mehrere Klassen gleichzeitig eher ein Server mit 16 Kernen und 32 GB RAM. Wie die Installation geht, steht im [README](https://github.com/specht/workspace#betrieb-auf-einem-server), mit einer [Schnellstart-Anleitung für einen gemieteten Server](https://github.com/specht/workspace/blob/main/bootstrap/README.hetzner.centos.md).
 
@@ -91,6 +94,8 @@ move-mouse: selector:.terminal
 -->
 <img hidden src='workspace.webp' alt='Der Workspace: oben im Editor hallo.py, ein Programm, das nach dem Namen fragt, unten im Terminal sein Lauf: Wie heißt du? Ada, Hallo, Ada!'>
 
+<div id='aktivitaet'></div>
+
 ## Was eine Aktivität ausmacht
 
 Eine Aktivität ist kein Text mit ein paar Beispielen, sondern eine Folge von Schritten, die Lernende in ihrem eigenen Workspace selbst gehen: eine Webseite bauen, einen Webserver schreiben, eine Datenbank abfragen. Die Seite erklärt, was neu ist, aber vor allem lässt sie die Lernenden etwas tun und sagt ihnen, ob es stimmt. Das Muster dahinter heißt in der Informatikdidaktik PRIMM: erst vermuten, dann ausführen, untersuchen, ändern und am Ende selbst schreiben (Predict, Run, Investigate, Modify, Make; [Sentance, Waite und Kallia 2019](https://doi.org/10.1080/08993408.2019.1608781)). Die meisten Bilder in diesem Kapitel stammen aus [»Einführung in SQL«](/mysql), die Tipps aus der Fortsetzung [»SQL: Gruppieren und Verbinden«](/sql-joins).
@@ -101,13 +106,13 @@ Gearbeitet wird in Visual Studio Code, mit Dateien, Terminal und Git, so wie in 
 
 ### Erst vermuten, dann ausprobieren
 
-Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. Lehrkräfte und Gäste sehen alles sofort; so wie hier sehen es nur Lernende.
+Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. So sehen es Lernende und Gäste; Lehrkräfte öffnen es mit einem Klick, auch ohne Vermutung.
 
-<img class='full full-shadow' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
+<img class='full full-shadow shot' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
 
 Wer die Reihenfolge wählt, in der man eine Abfrage schreibt, bekommt eine Rückmeldung genau zu diesem Irrtum, und darunter erscheint die Erklärung:
 
-<img class='full full-shadow' src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe, angekreuzt ist SELECT, FROM, WHERE, ORDER BY, LIMIT. Die Rückmeldung: So schreibt man die Abfrage, ausgeführt wird sie anders; der Query Stepper zeigt, womit die Datenbank anfängt. Darunter ist jetzt der Absatz erschienen, der die Reihenfolge erklärt.'>
+<img class='full full-shadow shot' src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe, angekreuzt ist SELECT, FROM, WHERE, ORDER BY, LIMIT. Die Rückmeldung: So schreibt man die Abfrage, ausgeführt wird sie anders; der Query Stepper zeigt, womit die Datenbank anfängt. Darunter ist jetzt der Absatz erschienen, der die Reihenfolge erklärt.'>
 
 ### Selbst schreiben statt abtippen
 
@@ -115,7 +120,7 @@ In den Programmierprojekten schreiben die Lernenden eine kleine Funktion zuerst 
 
 Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg, dann ein Gerüst mit Lücken, nie die ganze Lösung. Der nächste Tipp erscheint erst eine Minute, nachdem der vorige aufgeklappt wurde, ohne Uhr, damit man mit jedem arbeitet, statt bis zum letzten durchzuklicken. Welche Tipps jemand gebraucht hat, merkt sich nur der eigene Browser; keine Lehrkraft sieht es.
 
-<img class='full full-shadow' src='tour-tipp.webp' alt='Die Aufgabe »Viele Nachbarn«: Welche Länder haben mehr als acht Nachbarn? Ein Feld für die Abfrage, darunter der erste Tipp aufgeklappt: Wie viele Zeilen hat border für Deutschland, und was zählt COUNT, wenn du nach country_code gruppierst? Einen nächsten Tipp gibt es noch nicht.'>
+<img class='full full-shadow shot' src='tour-tipp.webp' alt='Die Aufgabe »Viele Nachbarn«: Welche Länder haben mehr als acht Nachbarn? Ein Feld für die Abfrage, darunter der erste Tipp aufgeklappt: Wie viele Zeilen hat border für Deutschland, und was zählt COUNT, wenn du nach country_code gruppierst? Einen nächsten Tipp gibt es noch nicht.'>
 
 ### Aufgaben, die nachsehen
 
@@ -123,13 +128,13 @@ Aufgaben stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt
 
 Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«. Wer bei den fünf größten Ländern das `DESC` vergisst, liest »Das sind die fünf kleinsten«, und auch beim Ankreuzen hat jede falsche Antwort ihre eigene Rückmeldung. Die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
 
-<img class='full full-shadow' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
+<img class='full full-shadow shot' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
 
 ### Die Menschen hinter einer Sache
 
 Hinter jeder Erfindung stehen Menschen. Wer ein Verfahren, eine Sprache oder ein Format erfunden hat, um das es in einem Abschnitt geht, bekommt dort einen kurzen Kasten: ein freies Foto, wenn es eines gibt, und zwei, drei Sätze, die an das anknüpfen, was die Lernenden gerade tun. Wo ein Abschnitt mit einem berühmten Aufsatz anfängt, verweist die Seite auf ihn, beim Raytracer etwa auf den von Turner Whitted aus dem Jahr 1980, und wo ein Buch genau dort weitermacht, wo die Seite aufhört, auch auf das Buch. Alle Personen stehen gesammelt im Handbuch unter [»Personen«](/reference/personen).
 
-<img class='full full-shadow' src='tour-menschen.webp' alt='Der Kasten zu Tim Berners-Lee in »Ein eigener Webserver«: links ein Foto von ihm auf einer Bühne, rechts, dass er 1989 am CERN das World Wide Web vorschlug, bis Ende 1990 HTML, HTTP, den ersten Webserver und den ersten Browser schrieb und das Web nicht patentieren ließ.'>
+<img class='full full-shadow shot' src='tour-menschen.webp' alt='Der Kasten zu Tim Berners-Lee in »Ein eigener Webserver«: links ein Foto von ihm auf einer Bühne, rechts, dass er 1989 am CERN das World Wide Web vorschlug, bis Ende 1990 HTML, HTTP, den ersten Webserver und den ersten Browser schrieb und das Web nicht patentieren ließ.'>
 
 ### Was die Lehrkraft davon hat
 

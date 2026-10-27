@@ -392,6 +392,21 @@ only to look nice.
   the other widgets: state names in its italics with a small index
   (q<sub>0</sub>, names as in mathematics), the symbols upright as on the
   tape; in the message q<sub>0</sub> as in the page's text.
+  The same widget shows a **pushdown automaton** (`data-kind='pushdown'`,
+  rules `state read top push next`, `ε` for pushing nothing): the word as a
+  tape, the stack as a column of cells right of the drawing, `#` at the
+  bottom and the top framed purple, the variables `state`, `symbol`, `top`
+  and `push`; and a **Turing machine** (`data-kind='turing'`, rules `state
+  read write move next`): the tape from its first to its last cell used in
+  the whole run, one empty cell more on either side, the head as the purple
+  frame, the cell just written purple, the variables `state`, `read`,
+  `write` and `move`; it stops in a state of `data-accept` (the tape is the
+  result) or where no rule fits (`data-result='accept'`: accepted or
+  rejected). A label of several lines has one line per rule, and only the
+  line used in the step is purple. `data-fixed` hides the input, for the
+  widget at the top of »Kellerautomaten« and »Turingmaschinen«, whose word
+  a task must not come from. The engine (`machine`, `trace`) runs without a
+  page: `test/static/automaton_stepper.test.cjs`.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.

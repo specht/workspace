@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Buchstaben zählen, umdrehen, umwandeln und verschlüsseln
 curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung), Information und Daten (Codierung, Verschlüsselung)"
+topics: [zeichenketten, codierung, verschluesselung]
 requires: [kata-loops]
 </div>
 

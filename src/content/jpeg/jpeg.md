@@ -5,6 +5,7 @@ kind: labor
 language: C
 duration: 4 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Farbräume, DCT, Bildkompression), Algorithmen und Datenstrukturen (Huffman-Codierung)"
+topics: [digitale-bilder, kompression]
 requires: [pixelram, huffman]
 reference: [c, pixelram, workspace, farbraeume, bits-und-bytes]
 template: https://github.com/specht/pixelram-starter.git

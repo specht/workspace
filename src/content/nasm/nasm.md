@@ -2,6 +2,7 @@
 image: nasm-logo.png
 kind: steckbrief
 curriculum: "Oberstufe: Vertiefung Maschinennahe Programmierung (Register, Systemaufrufe, Unterprogramme)"
+topics: [maschinennah, programmiersprachen]
 </div>
 
 <div

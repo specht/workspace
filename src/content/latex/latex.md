@@ -5,6 +5,7 @@ kind: projekt
 language: LaTeX
 duration: 3 Doppelstunden
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
+topics: [standardsoftware]
 reference: [latex]
 </div>
 

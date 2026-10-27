@@ -5,6 +5,7 @@ kind: uebung
 reference: [shortcuts]
 duration: 2 bis 3 Doppelstunden
 curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software: Tastatur und Editor); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung)"
+topics: [betriebssystem]
 </div>
 
 <div

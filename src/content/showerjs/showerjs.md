@@ -4,7 +4,8 @@ image_alt: "Eine orange Schreibmaschine, darunter der Platzhalter »Titel deiner
 kind: projekt
 language: HTML
 duration: 2 bis 3 Doppelstunden
-curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets, rechtliche Grundlagen: Bildrechte)"
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets)"
+topics: [webseiten]
 reference: [workspace, html, css, layout, shower]
 template: https://git.nhcham.org/specht/shower.js.git
 template_name: der shower.js-Vorlage
@@ -125,6 +126,8 @@ _task(bild-auf-folie)
 Bild neben Text, als Hintergrund, im Zuschnitt: _uses(vorlage, bildgroesse)
 
 ## Gestalten
+
+Die Vorlage hat schon eine `styles.css` mit den Regeln des Themes. Deine eigenen Regeln gehören ans Ende der Datei, unter den Kommentar »Eigene CSS-Regeln«.
 
 _include(css#regeln)
 

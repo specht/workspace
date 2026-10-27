@@ -5,6 +5,8 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
+topics: [fehlererkennung, codierung, darstellung]
+age: Sek I
 requires: [kata-lists]
 reference: [struktogramme]
 </div>
@@ -76,6 +78,68 @@ mit dem Gewicht 1 um 1 bis 9, ändert sich die Summe um 1 bis 9. Ändert sich
 eine mit dem Gewicht 3, ändert sich die Summe um 3, 6, 9, …, 27, aber nie um 10,
 20 oder 30. In beiden Fällen ist danach eine andere Prüfziffer nötig.
 <!-- /after -->
+
+## Wie die Striche die Ziffern tragen
+
+Der Scanner liest keine Ziffern, sondern hell und dunkel. Ein Strichcode ist
+in 95 gleich breite Streifen geteilt, die **Module**. Jedes Modul ist dunkel
+oder hell, also eine 1 oder eine 0; ein breiter Strich sind mehrere dunkle
+Module nebeneinander.
+
+<img class='drawing' style='width: 37.5em' src='aufbau.webp' alt='Der Strichcode der Nudeln, 4 260111 020434, auf einem weißen Etikett. Farbige Flächen hinter den Strichen zeigen die Teile: am linken und rechten Rand je drei Module »Rand« und in der Mitte fünf Module »Mitte«, orange, dazwischen links und rechts je »sechs Ziffern, je 7 Module«, blau. Die Striche von Rand und Mitte reichen weiter nach unten als die anderen. Darunter eine Klammer über den ganzen Code: 95 Module, 3 + 6 · 7 + 5 + 6 · 7 + 3.'>
+
+Am Rand und in der Mitte stehen feste Muster: `101` links und rechts, `01010`
+in der Mitte. Ihre Striche reichen weiter nach unten als die anderen. An ihnen
+erkennt der Scanner, wo der Code anfängt, wo seine Mitte ist und wie breit ein
+Modul ist, egal wie weit die Packung vom Scanner entfernt ist. Dazwischen
+stehen links und rechts je sechs Ziffern mit je sieben Modulen.
+
+Jede Ziffer besteht aus genau zwei dunklen und zwei hellen Abschnitten. Welches
+Muster zu welcher Ziffer gehört, legt GS1 in einer Tabelle fest, und zwar in
+drei Fassungen, **L**, **G** und **R**. So sieht die 4 in allen dreien aus:
+
+<img class='drawing' style='width: 34em' src='ziffer.webp' alt='Die Ziffer 4 in drei Fassungen, je sieben Kästchen, dunkel für 1 und hell für 0. L, links: 0100011, 3 dunkle Module, ungerade. G, links: 0011101, 4 dunkle Module, gerade. R, rechts: 1011100, 4 dunkle Module, gerade.'>
+
+R ist L mit vertauschtem Hell und Dunkel, G ist R von hinten nach vorne
+gelesen. Darum genügt die Tabelle für L:
+
+<div class='scroll-x'><table class='table'>
+<tr><th>Ziffer</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>L</th><td><code>0001101</code></td><td><code>0011001</code></td><td><code>0010011</code></td><td><code>0111101</code></td><td><code>0100011</code></td><td><code>0110001</code></td><td><code>0101111</code></td><td><code>0111011</code></td><td><code>0110111</code></td><td><code>0001011</code></td></tr>
+</table>
+</div>
+
+Rechts von der Mitte steht jede Ziffer in R. Links steht sie in L oder in G,
+und L hat immer eine ungerade Zahl dunkler Module, G eine gerade.
+
+_task(rechts-lesen)
+
+Zähl die Ziffern unter dem Code: Links und rechts von der Mitte stehen je
+sechs, die 4 ganz vorne hat keine eigenen Striche. Sie steckt in der Auswahl
+der Fassungen in der linken Hälfte. Bei den Nudeln stehen die Ziffern
+2 6 0 1 1 1 in den Fassungen L G L L G G, und dieses Muster bedeutet die 4:
+
+<div class='scroll-x'><table class='table' style='width: auto;'>
+<tr><th>Erste Ziffer</th><th>Linke Hälfte</th></tr>
+<tr><td>0</td><td><code>L L L L L L</code></td></tr>
+<tr><td>1</td><td><code>L L G L G G</code></td></tr>
+<tr><td>2</td><td><code>L L G G L G</code></td></tr>
+<tr><td>3</td><td><code>L L G G G L</code></td></tr>
+<tr><td>4</td><td><code>L G L L G G</code></td></tr>
+<tr><td>5</td><td><code>L G G L L G</code></td></tr>
+<tr><td>6</td><td><code>L G G G L L</code></td></tr>
+<tr><td>7</td><td><code>L G L G L G</code></td></tr>
+<tr><td>8</td><td><code>L G L G G L</code></td></tr>
+<tr><td>9</td><td><code>L G G L G L</code></td></tr>
+</table>
+</div>
+
+Die erste Ziffer links steht dabei immer in L. Liest der Scanner einen Code
+von rechts nach links, etwa weil die Packung auf dem Kopf liegt, trifft er
+zuerst auf eine Ziffer mit einer geraden Zahl dunkler Module. Daran merkt er,
+dass er rückwärts liest, und dreht die Ziffern um.
+
+_task(erste-ziffer)
 
 ## Ein Algorithmus, drei Schreibweisen
 
@@ -260,7 +324,7 @@ _task(gewicht)
 <!-- language: ruby -->
 <!-- hint -->
 Wie die Bausteine in Ruby heißen, steht im Handbuch unter
-[Vom Pseudocode zum Code](/reference/struktogramme#vom-pseudocode-zum-code):
+[Vom Pseudocode zum Code](/reference/struktogramme#4-vom-pseudocode-zum-code):
 `←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist `(0..11).each do |i|`.
 <!-- /hint -->
 
@@ -287,7 +351,7 @@ ob das Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wied
 <!-- language: python -->
 <!-- hint -->
 Wie die Bausteine in Python heißen, steht im Handbuch unter
-[Vom Pseudocode zum Code](/reference/struktogramme#vom-pseudocode-zum-code):
+[Vom Pseudocode zum Code](/reference/struktogramme#4-vom-pseudocode-zum-code):
 `←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist
 `for i in range(0, 12)`, denn `range` hört eins vor dem Ende auf.
 <!-- /hint -->

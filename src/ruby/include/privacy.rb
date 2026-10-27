@@ -1,6 +1,7 @@
 require 'cgi'
 require 'date'
 require_relative 'authentication'
+require_relative 'school_transition'
 
 # The Impressum and the Datenschutzerklärung (/impressum) and the documents
 # for the school (/datenschutz/…, privacy_documents.rb), all from the facts
@@ -13,13 +14,13 @@ require_relative 'authentication'
 # Each heading names the point of Art. 13/14 DSGVO it answers, so that a
 # reviewer can tick them off.
 #
-# The facts were checked in the code on 2026-10-22. Whoever changes what is
+# The facts were checked in the code on 2026-10-27. Whoever changes what is
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 10, 22)
+    CHECKED = Date.new(2026, 10, 27)
 
-    LEGAL_BASES = [:school, :consent].freeze
+    LEGAL_BASES = [:school, :consent, :pending].freeze
 
     # The settings the pages use, each optional (credentials.template.rb).
     STRING_SETTINGS = %w[
@@ -28,7 +29,7 @@ module Privacy
     ].freeze
 
     # The settings as a Hash with symbol keys: strings stripped, an empty or
-    # missing one nil; legal_basis :school, :consent or nil.
+    # missing one nil; legal_basis :school, :consent, :pending or nil.
     def self.settings(scope = Object)
         values = STRING_SETTINGS.to_h do |name|
             value = scope.const_defined?(name) ? scope.const_get(name).to_s.strip : ''
@@ -36,6 +37,8 @@ module Privacy
         end
         basis = scope.const_defined?('LEGAL_BASIS') ? scope.const_get('LEGAL_BASIS').to_s.strip.to_sym : nil
         values[:legal_basis] = LEGAL_BASES.include?(basis) ? basis : nil
+        # :pending names the date by which the schools' documents are due
+        values[:transition_deadline] = SchoolTransition.deadline(scope)
         months = scope.const_defined?('BACKUP_RETENTION_MONTHS') ? scope.const_get('BACKUP_RETENTION_MONTHS').to_i : 0
         values[:backup_retention_months] = months > 0 ? months : nil
         values[:web_root] = scope.const_defined?('WEB_ROOT') ? scope.const_get('WEB_ROOT').to_s : nil
@@ -260,7 +263,7 @@ module Privacy
                 :how_long => "#{session_days} Tage, bis zur Abmeldung (auch aus einem anderen Browser über das Profil) oder bis zur Löschung des Kontos",
             },
             {
-                :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten',
+                :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten; bei Lehrkräften das Bundesland, nach dessen Lehrplänen die Seiten eingeordnet werden',
                 :categories => [:account],
                 :purpose => 'Darstellung',
                 :who => 'die Person selbst',
@@ -455,6 +458,17 @@ module Privacy
                 'Ein Konto wird erst freigeschaltet, wenn die Einwilligung vorliegt. ' \
                 'Die Teilnahme ist freiwillig: Wer nicht teilnimmt, hat dadurch keinen Nachteil und erhält eine andere Möglichkeit, die Aufgaben zu bearbeiten. ' \
                 "Die Einwilligung kann jederzeit mit Wirkung für die Zukunft widerrufen werden, per E-Mail an #{contact_html(s)}; das Konto wird dann gelöscht.</p>"
+        when :pending
+            # The schools are deciding (docs/handoff-datenschutz.md): said as
+            # it is, without claiming a basis that is not documented yet.
+            law = s[:school_law] ? h(s[:school_law]) : 'dem Schulgesetz des Landes'
+            '<p>Die Schulen, an denen der Workspace im Unterricht genutzt wird, prüfen seinen Einsatz derzeit mit ihren Datenschutzbeauftragten Stellen; ' \
+                'über den Einsatz entscheiden die Schulleitungen schriftlich. ' \
+                "Rechtsgrundlage soll dann Art. 6 Abs. 1 Buchst. e DSGVO in Verbindung mit #{law} sein. " \
+                'Die Entscheidungen der Schulleitungen und die Vereinbarungen zur Auftragsverarbeitung stehen noch aus; ' \
+                "sie sollen bis zum #{s[:transition_deadline].strftime('%d.%m.%Y')} vorliegen. " \
+                'Bis dahin wird nur verarbeitet, was der Unterricht braucht, wie oben beschrieben. ' \
+                "Für Fragen, Auskunft, Widerspruch und Löschung ist #{contact_html(s)} erreichbar.</p>" + others_html
         else
             "<p>Die Rechtsgrundlage ist für diese Installation noch nicht eingetragen. Auskunft gibt #{contact_html(s)}.</p>"
         end
@@ -617,8 +631,9 @@ module Privacy
 
             #{heading('Was Lehrkräfte sehen', 'Empfänger innerhalb der Schule · Art. 13 Abs. 1 Buchst. e DSGVO')}
             <p>
-            Lehrkräfte einer Gruppe sehen in der Klassenübersicht, welche Aufgaben ihre Schülerinnen und Schüler bearbeitet haben
-            und mit welchem Ergebnis, und deren Abgaben. Um zu helfen, können sie den Workspace einer Schülerin oder eines Schülers öffnen
+            Lehrkräfte einer Gruppe sehen in der Klassenübersicht, welche Aufgaben ihre Schülerinnen und Schüler bearbeitet haben,
+            mit welchem Ergebnis und wann zuletzt, und deren Abgaben. Auf der Startseite sehen sie zu jeder Aktivität, wie viele
+            ihrer Schülerinnen und Schüler jede Aufgabe gelöst haben, zusammengezählt. Um zu helfen, können sie den Workspace einer Schülerin oder eines Schülers öffnen
             oder die Seite so sehen, wie diese Person sie sieht. Dafür geben sie eine kurze Begründung an, und die Person sieht beim
             nächsten Besuch einen Hinweis, zum Beispiel: »Frau Berger hat sich am 14.10. um 10:12 deinen Workspace angesehen:
             Ich sehe mir deine Abgabe an.« Im Profil stehen die letzten dieser Hinweise.

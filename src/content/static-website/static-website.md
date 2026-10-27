@@ -4,6 +4,7 @@ image_alt: "Die Logos von HTML5 und CSS"
 kind: projekt
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets)"
+topics: [webseiten]
 language: HTML / CSS
 reference: [workspace, html, css, layout]
 </div>
@@ -417,7 +418,31 @@ Der `<head>` sollte jetzt so aussehen:
 </head>
 ```
 
-Schreibe nun in `styles.css`:
+### Wie eine CSS-Regel funktioniert
+
+_include(css#regeln)
+
+<div class='hint own' data-check='css'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>styles.css</code> deine erste Regel, eine für <code>body</code>. Sie gilt für die ganze Seite und legt drei Angaben fest: die Hintergrundfarbe mit <code>background</code>, die Schriftfarbe mit <code>color</code> und die Schrift mit <code>font-family</code>. Die Farben suchst du dir aus; achte darauf, dass die Schrift auf dem Hintergrund gut lesbar bleibt. Speichere und sieh dir die Seite in der Vorschau an.
+</div>
+
+<!-- hint -->
+Der Selektor ist <code>body</code>, ohne Punkt, denn gemeint ist das Element <code>&lt;body&gt;</code>. Zwischen <code>{</code> und <code>}</code> stehen drei Zeilen der Form <code>eigenschaft: wert;</code>, mit Doppelpunkt und Semikolon.
+<!-- /hint -->
+<!-- hint -->
+Farben schreibst du als Namen wie <code>darkblue</code> oder als Hex-Wert wie <code>#351c2b</code>. Für die Schrift passt <code>system-ui, sans-serif</code>: die Schrift des Systems, sonst irgendeine ohne Serifen. Ein Gerüst; die Lücken mit <code>…</code> füllst du:
+
+```css
+body {
+    background: …;
+    color: …;
+    font-family: …;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+Eine Möglichkeit, mit einem dunklen Hintergrund und heller Schrift. `margin: 0` nimmt außerdem den schmalen Rand weg, den der Browser sonst um die Seite lässt:
 
 ```css
 body {
@@ -426,7 +451,14 @@ body {
     color: #fff2f6;
     font-family: system-ui, sans-serif;
 }
+```
+<!-- /solution -->
 
+_task(css)
+
+Unter deine Regel kommen noch vier Regeln für den Rest der Seite: `main` hält den Inhalt schmal und in der Mitte, `a` färbt die Links, `img` passt das Bild in die Breite und rundet seine Ecken, `.credit` macht den Bildnachweis klein und blass:
+
+```css
 main {
     max-width: 900px;
     margin: 0 auto;
@@ -449,9 +481,7 @@ img {
 }
 ```
 
-Speichere die Datei. Die Änderung sollte sofort deutlich zu sehen sein: dunkler Hintergrund, helle Schrift, eine andere Linkfarbe und ein Bild mit abgerundeten Ecken.
-
-_task(css)
+Speichere die Datei. Der Inhalt steht jetzt schmaler in der Mitte, die Links haben eine eigene Farbe, und das Bild hat abgerundete Ecken. Mit den Farben aus der Lösung oben sieht die Seite so aus:
 
 <!-- tutorial-screenshot
 write-file: website-test/styles.css <- file:lehrkraft/6-styles.css
@@ -462,12 +492,8 @@ viewport: 720x405
 -->
 
 <button class='tutorial-preview' type='button'>
-    <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen, auberginefarbenen Hintergrund, fast weiße Schrift, rosa Links und ein Bild mit abgerundeten Ecken.'>
+    <img src='website-styled.webp' alt='Die Axolotl-Webseite mit einem dunklen, auberginefarbenen Hintergrund, fast weiße Schrift, rosa Links und ein Bild mit abgerundeten Ecken.'>
 </button>
-
-### Wie eine CSS-Regel funktioniert
-
-_include(css#regeln)
 
 _task(selektor)
 

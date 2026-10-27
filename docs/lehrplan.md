@@ -7,6 +7,12 @@ gesammelt auf `/lehrplan`. Auf den Karten im Katalog steht sie nicht: Dort
 zählt, worum es geht. Sie sagt, wo die Aktivität in den Lehrplänen
 steht, damit eine Lehrkraft sie in ihre Planung einordnen kann.
 
+Lehrkräfte aus einem anderen Land wählen es im Profil oder auf `/lehrplan`;
+dann sehen sie überall die Zeile des Plans ihres Landes, abgeleitet aus den
+Themen der Aktivität (`topics:`), und `/lehrplan` ordnet nach dessen Namen
+([plan-bundeslaender.md](plan-bundeslaender.md)). Wer nichts wählt, sieht
+Berlin. Die Zeile `curriculum:` bleibt die von Berlin und Brandenburg.
+
 Die Seite `/lehrplan` (verlinkt von der Klassenseite und von der Zeile oben
 auf jeder Aktivität) zeigt es andersherum: für jeden Namen der Pläne die
 Aktivitäten, deren Zeile ihn nennt, in der Reihenfolge des Katalogs, mit den
@@ -30,9 +36,9 @@ der linken an, mehrere nebeneinander in der Reihenfolge, in der sie
 weiterlaufen, damit sie sich nicht überdecken. Bänder nach Alter von oben nach unten haben die
 Kästen von ihren Nachbarn weggezogen, die Pfeile liefen lang und steil;
 darum die Farben. Nennt die Zeile beide Pläne, ist die Aktivität aber für
-die Jüngeren gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
-und Oberstufe` oder `Oberstufe`; die Katas zu Schleifen, Listen und
-Dictionaries). Eine Aktivität baut nie auf einer für Ältere auf:
+eine Stufe gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
+und Oberstufe` oder `Oberstufe`): `Sek I` bei den ersten Katas, bei `rle`,
+`mysql` oder `tcpip`, `Oberstufe` bei `sandbox-cpu` und `totp`. Eine Aktivität baut nie auf einer für Ältere auf:
 `curriculum_graph_test.rb` prüft es.
 
 Die Reihenfolge der Kästen in jeder Spalte wird einmal gesucht und
@@ -80,14 +86,17 @@ curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukture
   genügen. Wo die Sek I nichts dazu sagt (Raytracing), nur die Oberstufe.
 - In Anführungszeichen, weil der Doppelpunkt sonst YAML stört.
 
-`src/ruby/include/curriculum.rb` kennt die Namen; `curriculum_test.rb` prüft
-jede Aktivität des Katalogs (außer »Zurückgestellt«): dass sie eine Zeile hat
-und dass jeder Name darin aus den Listen stammt.
+`src/content/curricula/berlin-brandenburg.yaml` hat die Namen, in den
+Gruppen, in denen `/lehrplan` sie zeigt, mit den Quellen;
+`src/ruby/include/curriculum.rb` liest sie. `curriculum_test.rb` prüft jede
+Aktivität des Katalogs (außer »Zurückgestellt«): dass sie eine Zeile hat,
+dass jeder Name darin aus den Listen stammt und dass sie Themen (`topics:`)
+hat. Ein neuer Name kommt in die Datei und in die Tabellen unten.
 
 ## Sekundarstufe I
 
-Rahmenlehrplan Teil C Informatik, Wahlpflichtfach, Jahrgangsstufen 7–10,
-Berlin und Brandenburg (2015). Fünf Pflichtthemenfelder und fünf
+[Rahmenlehrplan Teil C Informatik](https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/Rahmenlehrplanprojekt/amtliche_Fassung/Teil_C_Informatik_2015_11_10.pdf)
+(PDF), Wahlpflichtfach, Jahrgangsstufen 7–10, Berlin und Brandenburg (2015). Fünf Pflichtthemenfelder und fünf
 Wahlthemenfelder; in Berlin ist das Wahlthemenfeld Datenbanken verpflichtend.
 Die Inhalte jedes Themenfelds, für die Einzelheiten:
 
@@ -106,9 +115,12 @@ Die Inhalte jedes Themenfelds, für die Einzelheiten:
 
 ## Oberstufe
 
-Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin
-(Einführungsphase überarbeitet 2010; Kapitel 1 ersetzt durch die Teile A und B
-von 2021).
+[Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin](https://www.berlin.de/sen/bildung/unterricht/faecher-rahmenlehrplaene/rahmenlehrplaene/rahmenlehrplan-informatik-go-teil-c.pdf)
+(PDF; Einführungsphase überarbeitet 2010; Kapitel 1 ersetzt durch die Teile A und B
+von 2021). Brandenburg hat eine eigene Fassung:
+[Teil C Informatik, RLP GOST 2022](https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/gymnasiale_oberstufe/curricula/2022/Teil_C_RLP_GOST_2022_Informatik.pdf)
+(PDF). Die PDFs stehen auch in `src/content/curricula/` (`pdf:`) und auf
+`/lehrplan` neben jeder Stufe.
 
 | Name | Woher | Inhalte |
 | --- | --- | --- |

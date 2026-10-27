@@ -78,6 +78,16 @@ class PrivacyTest < Minitest::Test
         assert_includes consent, 'Datenübertragbarkeit (Art. 20)'
 
         assert_includes page(FULL), 'Verantwortlich ist Dr. Erika Muster'
+
+        # While the schools decide: said plainly, with the intended basis and
+        # the date, the operator responsible, the right to object
+        pending = page(FULL.merge('LEGAL_BASIS' => :pending, 'TRANSITION_DEADLINE' => '2027-04-12'))
+        assert_includes pending, 'stehen noch aus'
+        assert_includes pending, 'soll dann Art. 6 Abs. 1 Buchst. e DSGVO in Verbindung mit § 1 Schulgesetz'
+        assert_includes pending, 'bis zum 12.04.2027'
+        assert_includes pending, 'Verantwortlich ist Dr. Erika Muster'
+        assert_includes pending, 'widersprechen (Art. 21)'
+        refute_includes pending, 'noch nicht eingetragen'
     end
 
     PARTNER = {

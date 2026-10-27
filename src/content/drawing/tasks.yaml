@@ -76,6 +76,22 @@ tasks:
         say: Schau dir die beiden Enden der Kurve an. Wo liegen sie?
     solution: Die Kurve beginnt im ersten Punkt und endet im letzten. Die beiden mittleren Punkte ziehen sie in ihre Richtung, ohne dass sie hindurchgeht.
 
+  - id: kurven
+    title: Drei Hügel
+    prompt: |
+      In `rainbow.rb` stehen unter der ersten Kurve zwei weitere: eine von
+      (0, 140) nach (320, 140) und eine von (0, 170) nach (320, 170), die
+      mittleren Punkte nach deiner Wahl.
+    file: rainbow.rb
+    check:
+      type: files
+      path: rainbow.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bdraw_cubic_bezier\s*\(\s*0\s*,\s*140\s*,[^)]*,\s*320\s*,\s*140\s*\)', say: 'In `rainbow.rb` finde ich noch keine Kurve, die bei (0, 140) anfängt und bei (320, 140) aufhört: `draw_cubic_bezier(0, 140, …, …, …, …, 320, 140)`.' }
+          - { pattern: '\bdraw_cubic_bezier\s*\(\s*0\s*,\s*170\s*,[^)]*,\s*320\s*,\s*170\s*\)', say: 'In `rainbow.rb` finde ich noch keine Kurve, die bei (0, 170) anfängt und bei (320, 170) aufhört: `draw_cubic_bezier(0, 170, …, …, …, …, 320, 170)`.' }
+
   - id: fluten
     title: Ein Eimer Farbe im Himmel
     prediction: true

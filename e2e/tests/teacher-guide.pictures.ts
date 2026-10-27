@@ -25,10 +25,13 @@ const REPO = path.resolve(__dirname, '../..');
 // below, and hashes the files the same way).
 const INPUTS = [
   'e2e/tests/teacher-guide.pictures.ts',
-  'src/ruby/include/class_board.rb', 'src/ruby/include/submission_view.rb', 'src/ruby/include/teacher_roles.rb',
-  'src/static/include/class_board.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
+  'src/ruby/include/class_board.rb', 'src/ruby/include/class_page.rb', 'src/ruby/include/submission_view.rb', 'src/ruby/include/teacher_roles.rb',
+  'src/static/include/class_board.js', 'src/static/include/class_last_active.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
   'src/static/include/default.css', 'src/static/include/dark.css', 'src/static/_template.html',
   'src/content/static-website/tasks.yaml',
+  'src/static/include/meeting_point.js', 'src/static/include/meeting_status.js', 'src/static/include/class_meeting.js',
+  'src/ruby/include/student_home.rb', 'src/static/lehrplan.html', 'src/ruby/include/curriculum_graph.rb', 'src/ruby/include/curriculum_overview.rb',
+  'src/content/static-website/lehrkraft.md',
 ];
 const taken: string[] = [];
 
@@ -75,6 +78,17 @@ const MISTAKES: [string, string, string][] = [
   ['e2e-peer@example.com', 'selektor', '0'], ['e2e-peer@example.com', 'selektor', '2'], ['e2e-peer@example.com', 'selektor', '3'],
 ];
 const STUCK = new Set(['e2e-auth-student-3@example.com alt-text', 'e2e-peer@example.com selektor']);
+// »zuletzt« as in a lesson half an hour in (minutes ago; the script itself
+// checks every task within seconds): Mats has not checked anything yet and
+// Hannes stopped a while ago, so the line above the board names both.
+const LAST: Record<string, number> = {
+  'e2e-auth-student-0@example.com': 3, 'e2e-auth-student-1@example.com': 2, 'e2e-auth-student-2@example.com': 6,
+  'e2e-auth-student-3@example.com': 4, 'e2e-auth-student-4@example.com': 1, 'e2e-auth-student-5@example.com': 8,
+  'e2e-auth-student-6@example.com': 5, 'e2e-auth-student-7@example.com': 17, 'e2e-peer@example.com': 2,
+  'e2e-0@example.com': 1, 'e2e-1@example.com': 7, 'e2e-2@example.com': 3,
+  'e2e-4@example.com': 9, 'e2e-5@example.com': 4, 'e2e-6@example.com': 6, 'e2e-7@example.com': 2,
+};
+const QUIET = ['e2e-3@example.com', 'e2e-auth-student-7@example.com'];
 
 const STAGES = path.resolve(__dirname, '../../src/content/static-website/lehrkraft');
 const PHOTO = path.resolve(__dirname, '../../src/content/reference/html/bilder/classroom.jpg');
@@ -141,7 +155,9 @@ async function dress(page: Page, zoom = 1) {
     nodes.forEach((n) => { const t = fix(n.data); if (t !== n.data) n.data = t; });
     document.documentElement.style.zoom = String(z);
   }, [NAMES, zoom] as const);
-  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; }' });
+  // the E2E teacher has no school and its group comes from a file: notes a
+  // teacher of a school with a group of its own never sees
+  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; } .class-group-new-note, .class-group-files { display: none !important; }' });
 }
 
 async function shoot(page: Page, name: string, anchor: string | null, out: string) {
@@ -154,6 +170,31 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
   await page.waitForTimeout(300);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png });
+  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
+  taken.push(name + '.webp');
+}
+
+// A picture of a part of the page: the box around the elements (selectors),
+// with some room above and below, the whole page width of the content; for
+// what one sentence of the guide is about rather than a whole screen.
+// every: each selector counts with all its matches, not only the first
+async function shootBox(page: Page, name: string, selectors: string[], out: string, room = { top: 16, bottom: 16 }, maxHeight = 1100, every = false) {
+  const box = await page.evaluate(([sels, r, max, all]) => {
+    const rects = (sels as string[]).flatMap((s) => {
+      const found = all ? Array.from(document.querySelectorAll(s)) : [document.querySelector(s)].filter(Boolean);
+      if (!found.length) throw new Error('missing ' + s);
+      return found.map((e) => (e as Element).getBoundingClientRect());
+    });
+    const main = (document.querySelector('.container, main') || document.body).getBoundingClientRect();
+    const top = Math.min(...rects.map((b) => b.top)) + window.scrollY - (r as any).top;
+    const bottom = Math.max(...rects.map((b) => b.bottom)) + window.scrollY + (r as any).bottom;
+    const left = Math.max(0, Math.min(main.left, ...rects.map((b) => b.left)) - 8);
+    const right = Math.min(document.documentElement.clientWidth, Math.max(main.right, ...rects.map((b) => b.right)) + 8);
+    return { x: left, y: Math.max(0, top), width: right - left, height: Math.min(bottom - top, max as number) };
+  }, [selectors, room, maxHeight, every] as const);
+  await page.waitForTimeout(300);
+  const png = path.join(out, name + '.png');
+  await page.screenshot({ path: png, fullPage: true, clip: box });
   execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
   taken.push(name + '.webp');
 }
@@ -172,6 +213,15 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     return pages.get(email)!;
   };
   const container = new WorkspaceContainer('e2e-0@example.com');
+  // what the pictures set for the group, taken back at the end: the meeting
+  // point, and the pin unless the activity was pinned before
+  let meetingSet = false;
+  let pinnedHere = false;
+  const page2x = async (email: string) => {
+    const p = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
+    await loginAsE2eUser(p, email, testInfo);
+    return p;
+  };
   try {
     const check = async (email: string, task: string, answer = '') => {
       const result = await (await (await as(email)).request.post('/api/task/check', { data: { task: `static-website/${task}`, answer } })).json();
@@ -202,11 +252,57 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
 
     const teacher = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
     await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+    await teacher.route('**/api/class/last_active', async (route) => {
+      const now = Math.floor(Date.now() / 1000);
+      const last = Object.fromEntries(Object.entries(LAST).map(([email, minutes]) => [email, now - minutes * 60 - 20]));
+      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ now, last: { ...last, 'e2e-3@example.com': 0 }, quiet: QUIET }) });
+    });
     await teacher.goto('/klasse?group=E2E&activity=static-website');
     await teacher.evaluate(() => localStorage.setItem('hackschule-class-welcome-hidden', '1'));
     await teacher.reload();
+    await expect(teacher.locator('.cb-quiet-line')).toBeVisible({ timeout: 15_000 });
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-fortschritt', '.class-board-select', out);
+
+    // The meeting point after the first task (the address, task 2, needs a
+    // running Workspace and nobody here has it): everyone is there but Mats,
+    // who has not started; beside his name the button »fehlt heute«
+    expect((await teacher.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: 'index' } })).ok()).toBeTruthy();
+    meetingSet = true;
+    await teacher.reload();
+    const waiting = teacher.locator('details.class-meeting-waiting');
+    await expect(waiting).toBeVisible({ timeout: 15_000 });
+    if (!(await waiting.getAttribute('open'))) await waiting.locator('summary').click();
+    await expect(waiting.locator('button.meeting-away')).toHaveCount(1);
+    await teacher.waitForTimeout(500);
+    await dress(teacher);
+    await shootBox(teacher, 'klasse-treffpunkt', ['.class-meeting-control', '.class-meeting-status', 'table.class-board thead', 'table.class-board tbody tr:nth-child(4)'], out);
+
+    // ... and what a student sees who is not there yet: the band after the task
+    const mats = await page2x('e2e-3@example.com');
+    await mats.goto('/static-website');
+    const band = mats.locator('aside.meeting-point');
+    await expect(band).toBeVisible({ timeout: 15_000 });
+    await band.scrollIntoViewIfNeeded();
+    await dress(mats);
+    await shootBox(mats, 'treffpunkt-band', ['aside.meeting-point'], out, { top: 110, bottom: 90 });
+    await mats.context().close();
+
+    // How far everyone has come, across the group's activities; »zuletzt«
+    // the same lesson as on the board
+    await teacher.goto('/klasse?group=E2E&tab=ueberblick');
+    await teacher.evaluate((last) => {
+      const now = Math.floor(Date.now() / 1000);
+      document.querySelectorAll<HTMLElement>('table.class-overview tbody tr[data-email]').forEach((tr) => {
+        const minutes = (last as Record<string, number>)[tr.dataset.email!];
+        const td = tr.querySelector<HTMLElement>('td.cb-last')!;
+        td.dataset.updated = minutes === undefined ? '0' : String(now - minutes * 60 - 20);
+        td.textContent = (window as any).ClassLastActive.ago(Number(td.dataset.updated), now);
+      });
+    }, LAST);
+    await dress(teacher, 0.78);
+    await shoot(teacher, 'klasse-ueberblick', '.class-board-select', out);
+    await teacher.unroute('**/api/class/last_active');
 
     // The class at work: each Workspace with a load of its own (LOADS)
     await teacher.goto('/klasse?group=E2E&tab=lernende');
@@ -246,6 +342,47 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await shoot(teacher, 'abgabe-ansehen', null, out);
     await teacher.keyboard.press('Escape');
 
+    // Einstellungen: language, copy buttons, Git repositories, the school
+    await teacher.goto('/klasse?group=E2E&tab=einstellungen');
+    await dress(teacher, 0.78);
+    await shoot(teacher, 'klasse-einstellungen', '.class-board-select', out);
+
+    // What a pinned activity looks like for the class: at the top of the
+    // front page (pinned only for the picture, unless it was before)
+    const aylin = await page2x('e2e-auth-student-0@example.com');
+    await aylin.goto('/');
+    if (await aylin.locator("section.student-home a[href='/static-website']").count() === 0) {
+      expect((await teacher.request.post('/api/class/pin', { data: { group: 'E2E', slug: 'static-website' } })).ok()).toBeTruthy();
+      pinnedHere = true;
+    }
+    await aylin.reload();
+    await expect(aylin.locator('section.student-home')).toBeVisible({ timeout: 15_000 });
+    await dress(aylin);
+    await shootBox(aylin, 'startseite-angeheftet', ['section.student-home'], out, { top: 24, bottom: 24 });
+    await aylin.context().close();
+
+    // The curricula: the state, the graph with a name of the plans chosen,
+    // and a level with its plan as a PDF
+    await teacher.goto('/lehrplan');
+    const topic = teacher.locator('select.cg-topic');
+    // a name whose activities stand together in the graph, so that the
+    // picture shows them, not a page of faded boxes
+    const value = await topic.locator('option', { hasText: 'Leben in und mit vernetzten Systemen' }).first().getAttribute('value');
+    await topic.selectOption(value!);
+    await teacher.waitForTimeout(600);
+    await dress(teacher);
+    await shootBox(teacher, 'lehrplan', ['select.cg-topic', '.cg-node.cg-hit'], out, { top: 16, bottom: 24 }, 1100, true);
+    await dress(teacher);
+    await shootBox(teacher, 'lehrplan-pdf', ['h2#sek-i', 'h2#sek-i + p.lp-source'], out, { top: 12, bottom: 12 });
+
+    // An activity as a teacher sees it: the curriculum line at the top and
+    // the teacher's note opened
+    await teacher.goto('/static-website');
+    await teacher.locator('button.teacher-note-toggle').click();
+    await expect(teacher.locator('#teacher-note')).toBeVisible();
+    await dress(teacher);
+    await shootBox(teacher, 'aktivitaet-lehrkraft', ['.page-kind'], out, { top: 16, bottom: 380 });
+
     // No one waits for a code here; the projector view gets example rows.
     await teacher.goto('/klasse?group=E2E');
     await teacher.getByRole('button', { name: 'Anmelde-Codes zeigen' }).click();
@@ -273,6 +410,9 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       inputs: INPUTS, hash: inputsHash(), pictures: [...taken].sort(),
     }, null, 2) + '\n');
   } finally {
+    const cleaner = await as('e2e-teacher@example.com');
+    if (meetingSet) await cleaner.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: '' } });
+    if (pinnedHere) await cleaner.request.post('/api/class/unpin', { data: { group: 'E2E', slug: 'static-website' } });
     for (const key of touched) {
       const [email, task] = key.split(' ');
       await (await as(email)).request.post('/api/task/delete', { data: { task } });

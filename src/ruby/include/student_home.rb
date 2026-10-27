@@ -208,8 +208,8 @@ module StudentHome
     end
 
     # Small label for a catalog card: its kind, as in the strip above the
-    # page. Cards show no progress (the catalog stays calm; an activity shows
-    # it on its own page, and »Weiter mit« on the start page).
+    # page. A student's progress is the band at the card's foot, on the
+    # cards begun only (CardUsage), not here.
     def self.card_badges(kind, language = nil)
         label = PageKinds.kind_label(kind, language)
         parts = []
@@ -222,11 +222,16 @@ module StudentHome
     end
 
     # The line at the foot of a catalog card: what the activity builds on.
-    # titles: plain titles of the required activities (PageKinds.requires_of)
-    def self.card_requires(titles)
-        return '' if titles.empty?
+    # required: [slug, title] of the required activities (PageKinds.requires_of).
+    # The card is a link, and a link holds no other: each title is a span
+    # that makes the card lead to its activity while the pointer is on it (the listener in _template.html);
+    # the keyboard reaches those activities by their own cards.
+    def self.card_requires(required)
+        return '' if required.empty?
 
-        "<div class='card-requires'><i class='bi bi-layers' aria-hidden='true'></i>" \
-            "Baut auf #{PageKinds.join_and(titles.map { |t| h(CGI.unescapeHTML(t.to_s)) })} auf</div>"
+        titles = required.map do |slug, title|
+            "<span class='card-requires-title' data-href='/#{h(slug)}'>#{h(CGI.unescapeHTML(title.to_s))}</span>"
+        end
+        "<div class='card-requires'><i class='bi bi-layers' aria-hidden='true'></i>Baut auf #{PageKinds.join_and(titles)} auf</div>"
     end
 end

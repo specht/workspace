@@ -5,6 +5,7 @@ kind: projekt
 language: TIC-80 / Lua
 duration: 3 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen, Variablenkonzept), Digitale Bilder und Visualisierung (Figuren und Animationen); Oberstufe: Algorithmen und Softwareentwicklung (Sequenz, Auswahl, Wiederholung, Variablenkonzept)"
+topics: [grundstrukturen, animation]
 reference: [tic80, workspace]
 </div>
 

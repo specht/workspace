@@ -4,6 +4,7 @@ image_alt: "Ein B-Baum über Telefonnummern: oben die Wurzel, darunter drei Knot
 kind: labor
 duration: 1 Doppelstunde
 curriculum: "Oberstufe: Datenbanken (Index, Primärschlüssel), Algorithmen und Datenstrukturen (B-Baum)"
+topics: [datenbanken-modellierung, datenstrukturen]
 language: SQL
 requires: [mysql]
 reference: [sql]

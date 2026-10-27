@@ -7,10 +7,10 @@
             <a class='class-help-link' href='/lehrplan'><i class='bi bi-mortarboard' aria-hidden='true'></i>Lehrplan</a>
         </span>
     </div>
-    <p class='class-board-intro'>Nur du und die anderen Lehrkräfte der Gruppe sehen diese Seite.</p>
+    <p class='class-board-intro'>Nur du und die anderen Lehrkräfte der Gruppe sehen diese Seite. Welche Aktivität zu welchem Thema deines Lehrplans passt, zeigt der <a href='/lehrplan'>Lehrplan</a>.</p>
     <div class='class-welcome' hidden>
         <i class='bi bi-signpost-split' aria-hidden='true'></i>
-        <div><strong>Neu hier?</strong> Der <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a> zeigt in wenigen Minuten, wie sich deine Klasse anmeldet, was diese Seite zeigt und wie du alles mit deinem Testkonto ausprobierst.</div>
+        <div><strong>Neu hier?</strong> Der <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a> zeigt in wenigen Minuten, wie sich deine Klasse anmeldet, was diese Seite zeigt und wie du alles mit deinem Testkonto ausprobierst. Welche Aktivität zu welchem Thema deines Lehrplans passt, zeigt der <a href='/lehrplan'>Lehrplan</a>.</div>
         <button type='button' class='btn btn-sm btn-outline-secondary class-welcome-close'>Ausblenden</button>
     </div>
     #{class_board_page}
@@ -19,5 +19,6 @@
 <script src='/include/class_board.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/meeting_status.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/class_meeting.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
+<script src='/include/class_last_active.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/submission_viewer.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
 <script src='/include/kata_hand_ins.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

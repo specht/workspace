@@ -58,8 +58,11 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
   Seiten sagen, dass keine Daten die EU verlassen) und E-Mail-Dienst.
 - `LEGAL_BASIS`: `:school`, sobald die Schulleitung schriftlich entschieden
   hat; dann ist die Schule verantwortlich. `:consent` für ein eigenes Angebot
-  mit Einwilligung. Ohne die Zeile sagt die Seite, dass die Rechtsgrundlage
-  noch nicht eingetragen ist.
+  mit Einwilligung. `:pending`, solange die Schulen noch prüfen und
+  entscheiden: Die Seite sagt dann, dass die Entscheidungen und Vereinbarungen
+  noch ausstehen, welche Rechtsgrundlage vorgesehen ist (`SCHOOL_LAW`) und bis
+  wann sie vorliegen sollen (`TRANSITION_DEADLINE`). Ohne die Zeile sagt die
+  Seite, dass die Rechtsgrundlage noch nicht eingetragen ist.
 - `SCHOOL_LAW`: die Vorschrift, auf die sich die Schule stützt. Steht darin
   `DigLLV`, nennen Prüfübersicht und Löschkonzept die Berliner Regeln.
 - `SUPERVISORY_AUTHORITY`: die Aufsichtsbehörde für Beschwerden.

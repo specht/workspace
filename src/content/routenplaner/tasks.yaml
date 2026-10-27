@@ -17,8 +17,10 @@ tasks:
     feedback:
       - when: { equals: 45181 }
         say: Das sind alle Wege. Gesucht sind nur die, deren Zeile mit `footway` anfängt.
-    hint: '`grep -c` zählt die Zeilen, auf die ein Muster passt: `grep -c "^footway" data/steglitz-zehlendorf.tsv`. Das `^` heißt »am Anfang der Zeile«.'
-    solution: 21 234, fast die Hälfte aller 45 181 Wege.
+    hint:
+      - Jede Zeile der Datei ist ein Weg, und ihr erster Teil ist die Art. Gesucht ist also die Zahl der Zeilen, die mit `footway` anfangen. Zählen musst du sie nicht selbst.
+      - '`grep` findet die Zeilen, auf die ein Muster passt, und mit `-c` zählt es sie nur, statt sie anzuzeigen. Im Muster heißt `^` »am Anfang der Zeile«.'
+    solution: '21 234, fast die Hälfte aller 45 181 Wege: `grep -c "^footway" data/steglitz-zehlendorf.tsv`.'
 
   - id: lesen
     title: Die Wege lesen
