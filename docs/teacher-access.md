@@ -328,6 +328,17 @@ einem Git-Server im Netz braucht dann niemand.
   Verlauf, jeder Commit mit seinen Änderungen, alles als ZIP. Die Lernenden
   der Gruppe sehen dieselben Seiten. Bilder werden gezeigt; HTML, SVG und
   Markdown-HTML aus den Repositorys nie ausgeführt.
+- **Übersicht:** `/git` (`GitOverview` in `src/ruby/include/git_overview.rb`)
+  listet jedes Repository auf dem Server in den Gruppen der Lehrkraft
+  (`class_groups`, nur Gruppen mit einem Ordner): Gruppe, Aktivität,
+  Adresse, Art der Schlüssel, der letzte Commit mit dem Namen seines Autors
+  (nie die E-Mail-Adresse), »Ansehen« und »Einstellungen«
+  (`/klasse?group=…&repos=…`). »Nicht eingetragen« heißt, die Gruppe hat für
+  die Seite eine andere Adresse oder keine. Admins sehen alle Gruppen mit
+  einem Ordner und dazu deren Lehrkräfte; Lernende bekommen 403, ohne
+  `GIT_SERVER` gibt es die Seite nicht (404). Verlinkt unter den Feldern der
+  Einstellungen (»Übersicht«) und in der Kopfzeile jeder Seite eines
+  Repositorys (»Repositorys«). Ein Aufruf von git je Repository, kein Cache.
 - **Löschen:** »Löschen« neben dem Feld (nach einer Rückfrage) löscht das
   Repository mit allem darin. Wird eine Gruppe gelöscht oder fehlt sie im
   eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein

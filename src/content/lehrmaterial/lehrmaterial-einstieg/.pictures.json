@@ -22,13 +22,16 @@
     "src/static/lehrplan.html",
     "src/ruby/include/curriculum_graph.rb",
     "src/ruby/include/curriculum_overview.rb",
-    "src/content/static-website/lehrkraft.md"
+    "src/content/static-website/lehrkraft.md",
+    "src/ruby/include/git_overview.rb",
+    "src/ruby/include/git_server.rb"
   ],
   "hash": "d89003196b56065911ae667b3dae53f692fe1f5e89836e7142a879e4879c8a62",
   "pictures": [
     "abgabe-ansehen.webp",
     "aktivitaet-lehrkraft.webp",
     "codes-beamer.webp",
+    "git-uebersicht.webp",
     "klasse-einstellungen.webp",
     "klasse-fortschritt.webp",
     "klasse-lernende.webp",
