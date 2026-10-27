@@ -552,6 +552,8 @@ module Privacy
         out << '<p>Der Workspace ist ein nicht-kommerzielles Angebot für den Informatikunterricht, betrieben von einer Lehrkraft. ' \
             "Es gibt keine Werbung, keine kostenpflichtigen Funktionen und keine Auswertung der Daten für andere Zwecke.</p>\n"
         out << "<p>Quelltext: <a href='https://github.com/specht/workspace'>https://github.com/specht/workspace</a></p>\n"
+        out << "<p><strong>Für Lehrkräfte:</strong> Wie eine Lehrkraft ihre Klasse hier anmeldet oder den Workspace auf einem eigenen oder gemieteten Server betreibt, " \
+            "steht unter <a href='/about#lehrkraefte'>»Für Lehrkräfte«</a>.</p>\n"
         out
     end
 

@@ -28,6 +28,8 @@ Programmieren lernt man vor allem durchs Ausprobieren. Wenn etwas nicht funktion
 Eine kurze Einführung in die wichtigsten Funktionen des Workspaces findest du unter [»Basics«](/basics).
 
 
+<div id='lehrkraefte'></div>
+
 ## Für Lehrkräfte
 
 Der Hackschule Workspace ist für den Einsatz im Informatikunterricht, in Workshops und in Arbeitsgemeinschaften gedacht. Die notwendige Software ist bereits vorbereitet, sodass Unterricht nicht damit beginnen muss, Entwicklungsumgebungen auf unterschiedlichen Rechnern zu installieren und einzurichten.
@@ -35,6 +37,14 @@ Der Hackschule Workspace ist für den Einsatz im Informatikunterricht, in Worksh
 Der Workspace ist dabei bewusst keine einzelne Lernumgebung für eine bestimmte Programmiersprache. Er stellt eine gemeinsame technische Grundlage bereit, auf der ganz unterschiedliche Unterrichtsprojekte laufen können – von ersten HTML-Seiten und kleinen Programmen bis zu Datenbanken, Grafik, Spielen und weiteren Themen.
 
 Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt für eigene Aufgaben genutzt oder einfach zum Entdecken neuer Themen eingesetzt werden. Wie eine Aktivität aufgebaut ist und warum, steht unten unter [»Was eine Aktivität ausmacht«](#was-eine-aktivität-ausmacht).
+
+### Mit deiner Klasse arbeiten
+
+Du kannst den Workspace auf zwei Wegen mit deinen Lernenden nutzen.
+
+**Hier, auf dieser Installation.** Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, an welcher Schule du unterrichtest und mit welchen Klassen du arbeiten möchtest. Wenn es passt, lädt dich die Administration als Lehrkraft ein. Dann legst du unter »Klassen« deine Gruppen an und lädst deine Schülerinnen und Schüler mit ihren E-Mail-Adressen ein; nach der Anmeldung zeigt dir die Seite »Einstieg für Lehrkräfte« die erste Stunde Schritt für Schritt. Ob der Workspace im Unterricht eingesetzt wird, entscheidet deine Schulleitung. Die Unterlagen dafür (Datenschutzerklärung, Vereinbarung zur Auftragsverarbeitung, Elternbrief) bekommst du von der Administration.
+
+**Auf einem eigenen Server.** Der Quelltext des Workspace ist öffentlich: [github.com/specht/workspace](https://github.com/specht/workspace). Du kannst ihn für deine Schule selbst betreiben, auf einem Rechner der Schule oder auf einem gemieteten Server. Der Server sollte nur für den Workspace da sein, denn der Webserver darf dort Container starten und stoppen. Wie viel Leistung nötig ist, hängt davon ab, wie viele gleichzeitig arbeiten: Ein gemieteter Server mit 4 Kernen und 8 GB RAM reicht für wenig Betrieb, für mehrere Klassen gleichzeitig eher ein Server mit 16 Kernen und 32 GB RAM. Wie die Installation geht, steht im [README](https://github.com/specht/workspace#betrieb-auf-einem-server), mit einer [Schnellstart-Anleitung für einen gemieteten Server](https://github.com/specht/workspace/blob/main/bootstrap/README.hetzner.centos.md).
 
 ## Los geht's
 
