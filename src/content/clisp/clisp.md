@@ -200,6 +200,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt sbcl --script hello.lisp die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Lisp eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `format` das Wort `formt` zu schreiben:
@@ -218,7 +220,11 @@ sbcl --script hello.lisp
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-SBCL sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden (du musst etwas nach oben scrollen, um den Auslöser zu finden):
+SBCL sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden (du musst etwas nach oben scrollen, um den Auslöser zu finden). Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text. SBCL hängt eine lange Rückverfolgung an;
@@ -239,6 +245,8 @@ crop-terminal-lines: 4
 <img class='full' src='hello-error.webp' alt='sbcl meldet Unhandled UNDEFINED-FUNCTION: The function COMMON-LISP-USER::FORMT is undefined.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt SBCL im Gegensatz zu vielen anderen Interpretern keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ## Primfaktorzerlegung
 
@@ -265,9 +273,15 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Lisp auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
+_task(bruch)
+
+<!-- after: bruch -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Lisp rechnet mit beliebig großen ganzen Zahlen und mit Brüchen. Starte <code>sbcl</code> ohne Dateinamen und gib nacheinander <code>(expt 2 100)</code>, <code>(/ 1 3)</code> und <code>(+ 1/3 1/6)</code> ein. Was kommt jeweils heraus? Was hätte ein Taschenrechner bei <code>(/ 1 3)</code> angezeigt? Mit <code>(exit)</code> beendest du <code>sbcl</code>.
+<strong>Ausprobieren:</strong> Lisp rechnet mit Brüchen genau und mit beliebig großen ganzen Zahlen. Gib in <code>sbcl</code> noch <code>(expt 2 100)</code> und <code>(/ 1 3)</code> ein. Was hätte ein Taschenrechner bei <code>(/ 1 3)</code> angezeigt? Mit <code>(exit)</code> beendest du <code>sbcl</code>.
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
@@ -297,10 +311,11 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.lisp</code> und starte das Skript noch einmal:
 <ul>
 <li>Starte das Programm mehrmals hintereinander. Sind es jedes Mal andere Zahlen? Schreib dann die Zeile <code>(setf *random-state* (make-random-state t))</code> an den Anfang der Datei und probier es noch einmal.</li>
-<li><code>bubble-sort</code> bekommt die Funktion, mit der es vergleicht, als zweiten Parameter. Ändere den Aufruf zu <code>(bubble-sort list #'&gt;)</code>: Was passiert?</li>
 <li>Sortiere 100 Zahlen statt 10: Welche Zahl musst du dafür ändern?</li>
 </ul>
 </div>
+
+_task(absteigend)
 
 ## Zusammenfassung
 

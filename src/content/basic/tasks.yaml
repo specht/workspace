@@ -1,0 +1,112 @@
+# Aufgaben zu »BASIC«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: basic
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.bas` und führe es
+      mit `bwbasic hello.bas` aus.
+    file: hello.bas
+    check:
+      type: files
+      path: hello.bas
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)^\s*print\s*"Hello, World!"'
+            say: 'In `hello.bas` finde ich noch kein `PRINT "Hello, World!"`. Steht es genau so da, mit Anführungszeichen?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.bas`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.bas` eingegeben, mit `.bas` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.bas` ist noch leer. Schreib `PRINT "Hello, World!"` hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Wer meldet den Fehler?
+    prediction: true
+    prompt: |
+      In `hello.bas` steht jetzt `PRIN` statt `PRINT`. Was erscheint, wenn du
+      das Skript mit `bwbasic hello.bas` startest? Überleg erst, dann probier
+      es aus.
+    check:
+      type: choice
+      options:
+        - '`sh: 1: PRIN: not found`: Die Meldung kommt von der Shell, nicht von BASIC.'
+        - '`Syntax error in line 1`: BASIC kennt den Befehl `PRIN` nicht.'
+        - '`Hello, World!`: BASIC erkennt, dass `PRINT` gemeint ist.'
+        - 'Nichts: BASIC überspringt die Zeile, die es nicht versteht.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'So melden es viele BASIC-Interpreter. Probier aus, was `bwbasic` tut: Die Meldung beginnt anders.'
+      - when: { picked: 2 }
+        say: 'BASIC ergänzt nichts. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Probier es aus. Über der Begrüßung von `bwbasic` steht eine Meldung.'
+    solution: |
+      `sh: 1: PRIN: not found`. `bwbasic` gibt jede Zeile, die es nicht als
+      BASIC kennt, an die Shell `sh` weiter, und die findet keinen Befehl
+      `PRIN`. Die `1` ist die erste Zeile dessen, was `sh` bekommen hat, nicht
+      die Zeile in `hello.bas`.
+
+  - id: hundert
+    title: Hundert Zahlen
+    prompt: |
+      Ändere `bubblesort.bas` so, dass das Programm 100 Zufallszahlen sortiert
+      und alle 100 ausgibt.
+    file: bubblesort.bas
+    check:
+      type: files
+      path: bubblesort.bas
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)^\s*dim\s+arr\s*\(\s*100\s*\)'
+            say: 'Das Array ist noch zu klein: `DIM arr(10)` hat Platz für 10 Zahlen.'
+          - pattern: '(?i)^\s*for\s+i\s*=\s*1\s+to\s+100\s*$'
+            min: 3
+            say: 'Drei Schleifen zählen bis 10: Die erste füllt das Array, zwei geben es aus. Zählen alle drei bis 100?'
+          - pattern: '(?i)^\s*for\s+i\s*=\s*1\s+to\s+99\s*$'
+            say: 'Die äußere Schleife des Sortierens läuft einmal weniger, als es Zahlen gibt. Bis wohin zählt sie bei 100 Zahlen?'
+          - pattern: '(?i)^\s*for\s+j\s*=\s*1\s+to\s+100\s*-\s*i\s*$'
+            say: 'In der inneren Schleife steht noch `10 - i`.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.bas`. Speichere das Skript unter diesem Namen.
+    hint:
+      - BASIC kennt hier keine Länge des Arrays. Jede Schleife nennt ihr Ende selbst.
+      - 'Such im Quelltext nach jeder 10 und nach der 9, die eins weniger ist als 10.'
+    solution: |
+      Sechs Zeilen ändern sich: `DIM arr(100)`, dreimal `FOR i = 1 TO 100`,
+      `FOR i = 1 TO 99` und `FOR j = 1 TO 100 - i`. Weil keine Schleife die
+      Länge des Arrays kennt, hängt jede an derselben Zahl. Eine Variable
+      `n = 100` am Anfang, die alle Schleifen benutzen, macht das nächste Mal
+      einfacher.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.bas` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.bas
+    check:
+      type: files
+      path: bubblesort.bas
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)if\s+arr\s*\(\s*j\s*\)\s*<=?\s*arr\s*\(\s*j\s*\+\s*1\s*\)\s+then|if\s+arr\s*\(\s*j\s*\+\s*1\s*\)\s*>=?\s*arr\s*\(\s*j\s*\)\s+then'
+            say: 'In `bubblesort.bas` vergleicht das Programm noch wie vorher: Zwei Zahlen werden vertauscht, wenn die vordere größer ist. Wann sollen sie jetzt vertauscht werden?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.bas`. Speichere das Skript unter diesem Namen.
+    hint:
+      - Zwei benachbarte Zahlen werden in der Zeile mit `IF` vertauscht. Unter welcher Bedingung?
+      - Für absteigend wird vertauscht, wenn die vordere Zahl kleiner ist als die hintere.
+    solution: |
+      In der Zeile mit `IF` wird aus `>` ein `<`:
+      `IF arr(j) < arr(j + 1) THEN`. Jetzt wandert in jedem Durchlauf die
+      kleinste Zahl nach hinten.

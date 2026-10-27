@@ -1,0 +1,33 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: clisp
+examples:
+  hallo:
+    pass:
+      - files: { hello.lisp: hello.lisp }
+      - files: { hello.lisp: { text: "(FORMAT T \"Hello, World!~%\")\n" } }
+    fail:
+      - files: { hello.lisp: hello-error.lisp }
+        say: (format t "Hello, World!~%")
+      - files: { hello.lisp: { text: "" } }
+      - files: { hallo.lisp: hello.lisp }
+  fehler:
+    pass:
+      - answer: UNDEFINED-FUNCTION
+      - answer: undefined-function
+      - answer: Unhandled UNDEFINED-FUNCTION
+    fail:
+      - answer: The function COMMON-LISP-USER::FORMT is undefined.
+        say: ein Wort mit Bindestrich
+      - answer: formt
+        say: Art des Fehlers
+      - answer: SIMPLE-ERROR
+  absteigend:
+    pass:
+      - files: { bubblesort.lisp: { text: "  (bubble-sort list #'>)\n" } }
+      - files: { bubblesort.lisp: { text: "  (bubble-sort list (function >))\n" } }
+    fail:
+      - files: { bubblesort.lisp: bubblesort.lisp }
+        say: noch ohne zweiten Parameter
+      - files: { bubblesort.lisp: { text: "  (bubble-sort list #'<)\n" } }
