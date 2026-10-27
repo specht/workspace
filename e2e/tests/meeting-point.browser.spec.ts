@@ -57,3 +57,32 @@ test('a meeting point reaches the open page, counts the student as there and goe
   await teacherContext.close();
   expect(errors).toEqual([]);
 });
+
+// The teacher sets and lifts it right on the activity page, for the group
+// chosen on the class page.
+test('a teacher places the meeting point on the activity page', async ({ page, browser, e2eEmail }, testInfo) => {
+  test.setTimeout(90_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/crypto');
+  const box = page.locator('aside.meeting-point');
+
+  const teacherContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL });
+  const teacher = await teacherContext.newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  await teacher.goto('/klasse?group=E2E&tab=fortschritt&activity=crypto');
+  await teacher.goto('/crypto');
+  const slot = teacher.locator('.meeting-slot:not([hidden])').filter({ hasText: 'Treffpunkt für E2E' });
+  await expect(slot.first()).toBeVisible();
+  // after the second task
+  await teacher.locator('.meeting-slot').nth(1).getByRole('button').click();
+  await expect(teacher.locator('aside.meeting-point')).toContainText(/von E2E: \d+ von \d+ da/);
+  await expect(teacher.locator('.meeting-slot').nth(1)).toBeHidden();
+  await expect(teacher.locator('.meeting-slot').first()).toContainText('hierher verschieben');
+  await expect(box).toBeVisible({ timeout: 10_000 });
+  await expect(box).toHaveCount(1);
+
+  await teacher.locator('aside.meeting-point .meeting-lift').click();
+  await expect(teacher.locator('aside.meeting-point')).toHaveCount(0);
+  await expect(box).toHaveCount(0, { timeout: 10_000 });
+  await teacherContext.close();
+});

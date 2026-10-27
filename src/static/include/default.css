@@ -4901,6 +4901,41 @@ ul.task-teacher-list .task-teacher-answer {
     margin-left: auto;
     font-size: 0.9em;
 }
+.meeting-head .meeting-lift {
+    margin-left: auto;
+    padding: 0.05em 0.6em;
+    font-size: 0.85em;
+}
+.meeting-head .meeting-lift .bi {
+    margin-right: 0.35em;
+}
+.meeting-head .meeting-lift + a {
+    margin-left: 0;
+}
+/* A teacher's place for the point below a task: faint until pointed at */
+.meeting-slot {
+    display: flex;
+    justify-content: flex-end;
+    margin: -1em 0 1em;
+}
+.meeting-slot-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.15em 0.75em;
+    border: 1px dashed var(--meeting);
+    border-radius: 999px;
+    background: none;
+    color: var(--meeting);
+    font-size: 0.8em;
+    opacity: 0.45;
+    transition: opacity 0.15s, background-color 0.15s;
+}
+.meeting-slot-button:hover,
+.meeting-slot-button:focus-visible {
+    opacity: 1;
+    background: var(--meeting-bg);
+}
 .meeting-body {
     margin-top: 0.5em;
 }
@@ -4910,8 +4945,8 @@ ul.task-teacher-list .task-teacher-answer {
 .meeting-body ul {
     margin: 0;
 }
-.meeting-status .class-meeting-status {
-    margin: 0;
+.meeting-status:empty {
+    display: none;
 }
 .class-meeting-control {
     display: flex;

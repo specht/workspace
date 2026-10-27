@@ -5748,7 +5748,13 @@ class Main < Sinatra::Base
     # without a group: then no point can concern the page.
     def meeting_page_config(tasks)
         teacher = teacher_logged_in?
-        groups = teacher ? [class_prefs['group']].compact & class_groups : my_groups
+        # a teacher: the group chosen on the class page, or the only one
+        groups = if teacher
+            chosen = [class_prefs['group']].compact & class_groups
+            chosen.empty? && class_groups.size == 1 ? class_groups : chosen
+        else
+            my_groups
+        end
         return nil if groups.empty?
 
         config = { :points => meeting_points(groups, tasks[:activity]), :groups => groups, :teacher => teacher }

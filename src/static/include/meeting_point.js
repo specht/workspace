@@ -95,16 +95,66 @@
 
     function teacherHtml(point) {
         return "<div class='meeting-head'><i class='bi bi-flag' aria-hidden='true'></i><strong>Treffpunkt</strong>" +
-            '<span>von ' + esc(point.group) + "</span><a href='" + esc(config.classUrl) + "'>Auf der Klassenseite ändern</a></div>" +
+            '<span>von ' + esc(point.group) + "<span class='meeting-count'></span></span>" +
+            "<button type='button' class='btn btn-sm btn-outline-secondary meeting-lift'><i class='bi bi-x-lg' aria-hidden='true'></i>Aufheben</button>" +
+            "<a href='" + esc(config.classUrl) + "'>Auf der Klassenseite</a></div>" +
             "<div class='meeting-body meeting-status'></div>";
     }
 
-    // the teacher's count, from the class page's line
+    // A teacher sets, moves and lifts the point right on the page: below
+    // every task that is not an Extra a small dashed button, faint until
+    // pointed at; for the group chosen on the class page.
+    function setPoint(task) {
+        const group = config.groups[0];
+        api_call('/api/class/meeting', { group: group, activity: page.activity, task: task }, function (data) {
+            if (!data.success) return;
+            if (data.task) points[group] = data.task;
+            else delete points[group];
+            render();
+        });
+    }
+
+    const slots = {};
+    function placeSlots() {
+        order().forEach(function (id) {
+            const mine = cards().filter(function (card) { return idOf(card) === id; });
+            if (mine.some(function (card) { return card.querySelector('.task-extra'); })) return;
+            const slot = document.createElement('div');
+            slot.className = 'meeting-slot';
+            slot.innerHTML = "<button type='button' class='meeting-slot-button'><i class='bi bi-flag' aria-hidden='true'></i><span></span></button>";
+            slot.querySelector('button').addEventListener('click', function () { setPoint(id); });
+            const at = place({ task: id });
+            if (at.before) at.before.before(slot);
+            else at.after.after(slot);
+            slots[id] = slot;
+        });
+    }
+
+    function labelSlots(point) {
+        Object.keys(slots).forEach(function (id) {
+            const slot = slots[id];
+            slot.hidden = !!point && point.task === id;
+            slot.querySelector('span').textContent = 'Treffpunkt für ' + config.groups[0] + (point ? ' hierher verschieben' : ' hier setzen');
+        });
+    }
+
+    // the teacher's count and who is missing, from the class page's line
     function loadStatus(point) {
         const target = box && box.querySelector('.meeting-status');
         if (!target) return;
         api_call('/api/class/meeting_status', { group: point.group, activity: page.activity }, function (data) {
-            if (data.success && box && box.contains(target)) target.innerHTML = data.html;
+            if (!data.success || !box || !box.contains(target)) return;
+            const line = document.createElement('div');
+            line.innerHTML = data.html;
+            const count = line.querySelector('.class-meeting-count');
+            box.querySelector('.meeting-count').textContent = count ? ': ' + count.textContent : '';
+            const open = !!target.querySelector('details[open]');
+            target.innerHTML = '';
+            const waiting = line.querySelector('details');
+            if (waiting) {
+                waiting.open = open;
+                target.appendChild(waiting);
+            }
         }, { no_please_wait: true });
     }
 
@@ -112,6 +162,7 @@
     let shown = '';
     function render() {
         const point = current();
+        if (config.teacher) labelSlots(point);
         const key = point ? point.group + '|' + point.task + '|' + (config.teacher ? 't' : arrived(point)) : '';
         if (key === shown) return;
         shown = key;
@@ -125,7 +176,10 @@
         const at = place(point);
         if (at.before) at.before.before(box);
         else at.after.after(box);
-        if (config.teacher) loadStatus(point);
+        if (config.teacher) {
+            box.querySelector('.meeting-lift').addEventListener('click', function () { setPoint(''); });
+            loadStatus(point);
+        }
     }
 
     // Solved cards move a student past the point
@@ -171,6 +225,7 @@
         };
     }
 
+    if (config.teacher) placeSlots();
     render();
     connect(1000);
 })();
