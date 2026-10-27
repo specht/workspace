@@ -5999,6 +5999,13 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.35em;
 }
 
+/* the titles stand out from »Baut auf … und … auf«, so that it is clear
+   where one ends and the next begins (»Katas: Dictionaries und Katas: Listen«) */
+.card-requires-title {
+    color: #3d4650;
+    font-weight: 600;
+}
+
 /* for admins at the foot of a card, a tile or a Kata set (Main#usage_html):
    a thin band, a segment per task in five steps of one blue, darker where
    the task was solved more often, next to the activity's most solved task

@@ -227,6 +227,6 @@ module StudentHome
         return '' if titles.empty?
 
         "<div class='card-requires'><i class='bi bi-layers' aria-hidden='true'></i>" \
-            "Baut auf #{PageKinds.join_and(titles.map { |t| h(CGI.unescapeHTML(t.to_s)) })} auf</div>"
+            "Baut auf #{PageKinds.join_and(titles.map { |t| "<span class='card-requires-title'>#{h(CGI.unescapeHTML(t.to_s))}</span>" })} auf</div>"
     end
 end
