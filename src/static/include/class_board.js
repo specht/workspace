@@ -596,7 +596,16 @@ document.addEventListener('click', function (e) {
             if (!group) {
                 // Deleted just now: back to the class page.
                 if (shown) { location.href = '/klasse'; return; }
-                here.remove();
+                // A group the card does not know comes from the invitation
+                // files (before the import; in development also the tools'
+                // groups): say who keeps it instead of leaving a gap.
+                const contact = here.dataset.contact;
+                const write = contact
+                    ? `Schreib an <a href="mailto:${esc(contact)}">${esc(contact)}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.`
+                    : 'Sag der Administration, für welche Gruppe, und schick die E-Mail-Adressen mit.';
+                here.innerHTML = data.admin
+                    ? "<p class='class-group-files'><i class='bi bi-file-earmark-text' aria-hidden='true'></i>Die Einladungen dieser Gruppe stehen in Dateien auf dem Server; hier lässt sie sich nicht bearbeiten.</p>"
+                    : "<p class='class-group-files'><i class='bi bi-file-earmark-text' aria-hidden='true'></i>Die Einladungen dieser Gruppe stehen noch in Dateien; Namen und Adressen pflegt die Administration. " + write + '</p>';
                 return;
             }
             shown = true;

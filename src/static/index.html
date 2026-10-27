@@ -10,6 +10,8 @@
     .front-hero-points li { display: flex; gap: 0.7em; align-items: baseline; line-height: 1.45; text-align: left; hyphens: manual; }
     .front-hero-points i { flex: none; color: var(--bs-success); }
     .front-hero-login { margin: 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
+    .front-hero-teachers { margin: 0.6em 0 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
+    .front-hero-teachers .bi { margin-right: 0.4em; }
     .front-hero-picture { display: block; width: 100%; border-radius: 10px; box-shadow: 0 0.4em 1.5em rgba(0, 0, 0, 0.2); }
     .front-hero-reflection { display: none; }
     /* From lg, beside the text: the picture turned a little towards it,
@@ -81,6 +83,10 @@
                     <p class='front-hero-login'>
                         <a href='/login'>Melde dich mit deiner E-Mail-Adresse an.</a>
                         Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
+                    </p>
+                    <p class='front-hero-teachers'>
+                        <i class='bi bi-mortarboard' aria-hidden='true'></i><a href='/about#lehrkraefte'>Für Lehrkräfte und Schulleitungen</a>:
+                        wie du mit deiner Klasse arbeitest, wer den Workspace betreibt und was mit den Daten geschieht.
                     </p>
                 </div>
                 <div class='col-12 col-lg-5'><div class='front-hero-stage'>#{front_picture_html}</div></div>

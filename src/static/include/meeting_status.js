@@ -31,6 +31,9 @@ window.MeetingStatus = (function () {
         try {
             localStorage.setItem(key(group), JSON.stringify(list));
         } catch (e) { /* private window: only this page forgets it */ }
+        // this page too (»storage« only reaches the other pages), e.g. the
+        // board's line of who is quiet (class_last_active.js)
+        document.dispatchEvent(new CustomEvent('meeting-absent-changed', { detail: { group: group } }));
     }
 
     // { arrived, waiting, away, total, all }: today's absent left out
@@ -84,5 +87,5 @@ window.MeetingStatus = (function () {
         });
     }
 
-    return { summary: summary, countText: countText, detailsHtml: detailsHtml, bind: bind, onChange: onChange, esc: esc };
+    return { summary: summary, countText: countText, detailsHtml: detailsHtml, bind: bind, onChange: onChange, esc: esc, absent: absent };
 })();

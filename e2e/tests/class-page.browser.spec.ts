@@ -15,6 +15,17 @@ test('the class page: tabs, menu and the Workspaces of the group', async ({ page
   await page.getByRole('button', { name: 'Jetzt nachsehen' }).click();
   await expect(page.locator('.class-live-menu .class-live-check').first()).toBeVisible();
   await page.keyboard.press('Escape');
+  // »zuletzt« for every row, and the line of who is quiet (shown only while
+  // the class is at work)
+  await expect(page.locator('table.class-board thead th.cb-last')).toHaveText('zuletzt');
+  await expect(page.locator('table.class-board tbody tr').first().locator('td.cb-last')).toHaveAttribute('data-updated', /^\d+$/);
+  await expect(page.locator('.cb-quiet-line')).toHaveCount(1);
+  // This teacher has no school: instead of »Neue Gruppe«, why and whom to ask.
+  await expect(page.locator('.class-group-new-note')).toContainText('Schule zugeordnet');
+
+  await page.getByRole('tab', { name: 'Überblick' }).click();
+  await expect(page).toHaveURL(/tab=ueberblick/);
+  await expect(page.locator('#class-panel-ueberblick table.class-overview')).toBeVisible();
 
   await page.getByRole('tab', { name: /Lernende/ }).click();
   await expect(page).toHaveURL(/tab=lernende/);
@@ -24,6 +35,8 @@ test('the class page: tabs, menu and the Workspaces of the group', async ({ page
   await expect(page.locator('.class-server-line')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('.class-server-cpu')).toContainText('% CPU');
   await expect(page.locator('.class-server-ram')).toContainText('RAM');
+  // E2E comes from the tools' invitation file: said, not left out silently
+  await expect(page.locator('.class-group-files')).toContainText('in Dateien');
 
   await page.reload();
   await expect(page.getByRole('tab', { name: /Lernende/ })).toHaveAttribute('aria-selected', 'true');

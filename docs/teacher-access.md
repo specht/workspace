@@ -140,7 +140,18 @@ der Administration über alle Gruppen; Lehrkräfte landen von dort im Reiter
   die importierten Gruppen, Testgruppen und Werkzeug-Gruppen und löscht die
   übrigen (`include/group_data.rb`).
 - Der Link zu den Unterlagen für die eigene Schule (datenschutz.md,
-  »Partnerschulen«).
+  »Partnerschulen«): auf der Klassenseite im Reiter »Einstellungen« unter
+  »Schule« (`class_school_html` in `include/class_page.rb`), mit der Schule
+  der Gruppe und ob sie zugestimmt hat; bei einer Schule, die noch nicht
+  zugestimmt hat, auch der Elternbrief mit Einverständniserklärung. Gruppen
+  aus den Einladungsdateien zeigen dort nichts.
+- Was sich hier nicht tun lässt, sagt die Seite statt einer Lücke: Einer
+  Lehrkraft ohne Schule steht an der Stelle von »Neue Gruppe«, dass die
+  Administration die Schule zuordnet und an wen sie schreibt
+  (`new_group_note_html`); eine Gruppe aus den Einladungsdateien (vor dem
+  Import alle, in der Entwicklung die Werkzeug-Gruppen) zeigt im Reiter
+  »Lernende«, dass die Administration sie pflegt (`class_board.js`), statt
+  die Karte wortlos wegzulassen.
 
 Administratorinnen und Administratoren sehen alle Gruppen und wählen beim
 Anlegen die Schule, auch »Gäste«. Sie finden `/gruppen` und `/personen` im
@@ -376,6 +387,29 @@ verschiebt und hebt die Lehrkraft den Treffpunkt auch direkt auf (für die
 Gruppe, die auf der Klassenseite gewählt ist). Wer in zwei Gruppen ist, sieht
 den früheren Treffpunkt.
 Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
+
+## Wer still ist, wie weit alle sind
+
+Im Reiter »Fortschritt« steht in jeder Zeile unter »zuletzt«, wann die
+Person zuletzt eine Aufgabe der Aktivität geprüft, beantwortet oder
+abgegeben hat (das `updated` ihrer `TaskState`s; gespeichert wird dafür
+nichts Neues). Arbeitet die Klasse gerade daran (mindestens zwei in den
+letzten 20 Minuten), nennt eine Zeile über der Tabelle, wer seit über zehn
+Minuten nichts geprüft oder abgegeben hat, gezählt vom Beginn der Stunde an
+(der ersten Prüfung von jemandem in den letzten 90 Minuten); wer alles
+gelöst hat, zählt nicht. Ihre Namen sind leicht hinterlegt, ohne
+Alarmfarbe: Was im Workspace geschieht, sieht die Seite nicht. Die Regel
+steht in `ClassBoard.quiet`; `class_last_active.js` lässt die Zeiten
+weiterlaufen und fragt jede Minute `/api/class/last_active` (nur für die
+eigenen Gruppen). Wer für den Treffpunkt »fehlt heute« ist, steht nicht in
+der Zeile.
+
+Der Reiter »Überblick« zeigt jede Person mit allen Aktivitäten der Gruppe:
+angeheftete zuerst, dann jede, an der jemand der Gruppe gearbeitet hat, in
+der Reihenfolge des Katalogs; je Zelle gelöst von allen (ohne Extras, wie
+im Fortschritt) mit einem Balken, dazu »zuletzt« über alle Aktivitäten
+(`ClassBoard.overview`). Noten und Export gibt es nicht; die Zahlen sagen,
+wie weit jemand ist.
 
 ## Wer was sieht
 

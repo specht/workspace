@@ -483,6 +483,23 @@ html[data-bs-theme="dark"] {
     .cb-often-wrong {
         background-color: #3a2c12;
     }
+    .class-board tr.cb-quiet .cb-name { background-color: #1e2733; }
+    .class-board tr.cb-quiet .cb-name::after { color: #8fa3ba; }
+    .class-board .cb-last,
+    .class-overview .cb-last,
+    .class-overview-note,
+    .class-overview tfoot td,
+    .class-overview tfoot th { color: #adb5bd; }
+    .cb-quiet-line,
+    .class-group-new-note,
+    .class-group-files { color: #b6c4d4; }
+    .class-overview th,
+    .class-overview td { border-bottom-color: #33332f; }
+    .class-overview .cb-name { background-color: #151514; }
+    .co-bar { background-color: #33332f; }
+    .co-bar > span { background-color: #4fb37e; }
+    .co-done .co-count { color: #6fd39b; }
+    .co-none { color: #5c636a; }
     .cb-task-title,
     .class-board tfoot td,
     .class-live-note {
