@@ -46,6 +46,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md): the names of the curricula with no
   or few activities, what could fill each, what is decided (object orientation as an activity with
   modelling, in five languages) and what is open
+- [docs/plan-git-gruppen.md](docs/plan-git-gruppen.md): Git repositories for groups kept by the Workspace
+  itself (a mounted directory or an SSH container), browsable on the site; a plan, open questions
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
