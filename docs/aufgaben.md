@@ -1357,6 +1357,47 @@ Zeilennummer, so wie die Erweiterung sie unterstreicht.
 Unter der Rückmeldung steht, was im Modell steht: Entitäten mit ihren
 Attributen (Schlüssel fett), Beziehungen und die Tabellen, die daraus werden.
 
+### classes
+
+Liest ein Klassendiagramm aus einer `.classes`-Datei (die Klassen-Werkstatt,
+`src/vscode-extensions/classes`) und vergleicht es mit der Aufgabe, wie `er`
+ein ER-Modell (`ClassesCheck`). Der Server schickt den Kern der
+Klassen-Werkstatt mit und lässt ihn im Workspace mit `node` lesen
+(`classes-core.js --json`); so liest jeder Workspace gleich, auch einer mit
+einer älteren Erweiterung.
+
+```yaml
+check:
+  type: classes
+  file: bibliothek/bibliothek.classes
+  classes:
+    - name: Medium
+      abstract: true
+      attributes: ["- title: String", available]    # wie in der Datei; Zeichen und Typ nur, wenn angegeben
+      methods: ["+ lend(): void", "isAvailable(): boolean"]
+    - name: Book
+      extends: Medium
+      methods: ["+ Book(title: String, author: String)"]   # ein Konstruktor: der Name der Klasse, ohne Typ
+  associations:
+    - between: [Member, Medium]
+      multiplicities: ["1", "0..*"]                 # in der Reihenfolge von between
+      directed: false                               # true: Member -> Medium
+      name: loans                                   # wenn der Name zählt
+```
+
+Was die Aufgabe nennt, muss da sein; weitere Klassen, Attribute, Methoden und
+Assoziationen dürfen es auch. Eine Methode zählt nach ihrem Namen und, wenn
+angegeben, den Typen ihrer Parameter (ihre Namen sind egal) und ihrem
+Rückgabetyp. Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«,
+mit Zeile und Meldung, wie die Klassen-Werkstatt sie im Editor unterstreicht),
+dann der erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein
+Attribut, eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre
+Richtung. Unter »Was der Workspace gelesen hat« steht das Diagramm in der
+Schreibweise der Datei. Für `feedback` gibt es `problem` mit `missing`,
+`errors`, `missing_class`, `abstract`, `extends`, `missing_attribute`,
+`attribute`, `missing_method`, `method`, `missing_association`,
+`multiplicity` und `direction`.
+
 ### keyboard
 
 ```yaml

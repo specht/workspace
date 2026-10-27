@@ -8,6 +8,7 @@ require_relative 'measure_check'
 require_relative 'scene_check'
 require_relative 'sql_check'
 require_relative 'er_check'
+require_relative 'classes_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
 require_relative 'c_check'
@@ -31,7 +32,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby javascript c java dart function pip tests]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -96,6 +97,7 @@ module TaskCheck
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_cypher(task, check, answer, cypher) if type == 'cypher'
         return check_er(task, check, workspace, runner) if type == 'er'
+        return check_classes(task, check, workspace, runner) if type == 'classes'
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_calls(task, check, workspace, guest_runner, JavascriptCheck) if type == 'javascript'
@@ -201,6 +203,29 @@ module TaskCheck
         return Result.new(:status => :unavailable, :message => 'Das Lesen des Modells hat zu lange gedauert. Versuch es gleich noch einmal.') if result[:timed_out]
 
         status, problem, message, read = ErCheck.evaluate(task, check, ErCheck.parse(result[:output]))
+        Result.new(:status => status, :problem => problem, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    NOT_RUNNING_CLASSES = 'Starte zuerst deinen Workspace. Dein Diagramm liest die Klassen-Werkstatt in deinem Workspace.'
+
+    # classes: a class diagram, read by the Klassen-Werkstatt's core in the
+    # Workspace (ClassesCheck), like er.
+    def self.check_classes(task, check, workspace, runner)
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+        return Result.new(:status => :unavailable, :message => 'Die Klassen-Werkstatt fehlt auf dem Server. Sag deiner Lehrkraft Bescheid.') unless ClassesCheck.available?
+
+        file = check['file']
+        if workspace.entry(file)[:type] != :file
+            other = workspace.other_case(file)
+            hint = other ? " Es gibt aber `#{other}`; Groß- und Kleinschreibung zählen." : " Lege sie im Ordner `#{File.dirname(file)}` an."
+            return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
+        end
+        result = runner&.call(ClassesCheck.command(file), 15)
+        return Result.new(:status => :unavailable, :message => NOT_RUNNING_CLASSES) if result.nil?
+        return Result.new(:status => :unavailable, :message => 'Das Lesen des Diagramms hat zu lange gedauert. Versuch es gleich noch einmal.') if result[:timed_out]
+
+        status, problem, message, read = ClassesCheck.evaluate(task, check, ClassesCheck.parse(result[:output]))
         Result.new(:status => status, :problem => problem, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
     end

@@ -40,6 +40,23 @@ model, the Turing machine, the logic sandbox, then the rest.
   members, loans; a book and a DVD are both media), and an own
   class-diagram extension like the ER-Werkstatt, so that the diagram is
   checked like everything else.
+- **The diagram's language** (27 October 2026): like the ER-Werkstatt's,
+  indentation and a few English keywords, one member per line, `+` and `-`
+  for public and private (no `#` for protected: it starts a comment), types
+  as in Java (`int`, `String`, `boolean`):
+
+  ```
+  # Eine Bibliothek
+  class Medium (abstract)
+    - title: String
+    + lend(): void
+  class Book extends Medium
+    - author: String
+    + Book(title: String, author: String)
+  class Member
+    + borrow(medium: Medium): void
+  association loans: Member 1 -- 0..* Medium
+  ```
 
 ## Open questions for the maintainer
 

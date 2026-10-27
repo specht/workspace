@@ -5,6 +5,7 @@ require 'yaml'
 require_relative 'sql_check'
 require_relative 'cypher_check'
 require_relative 'er_check'
+require_relative 'classes_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 require_relative 'story_check'
@@ -53,6 +54,7 @@ module TaskSpec
         'sql' => 'M6',
         'cypher' => 'M7',
         'er' => 'M7',
+        'classes' => 'M8',
         'schema' => 'M7',
         'keyboard' => 'M7',
         'python' => 'M7',
@@ -104,6 +106,7 @@ module TaskSpec
         'sql' => %w[same_result_as query_matches],
         'cypher' => %w[same_result_as query_matches],
         'er' => %w[problem],
+        'classes' => %w[problem],
         'schema' => %w[problem],
         'keyboard' => %w[problem],
         'python' => [],
@@ -595,6 +598,12 @@ module TaskSpec
             allowed += %w[file cases timeout setup]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat((check['type'] == 'java' ? JavaCheck : DartCheck).spec_errors(check))
+        when 'classes'
+            # Runs the Klassen-Werkstatt's core on a .classes file in the Workspace.
+            allowed += %w[file classes associations]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors << 'file must end in .classes' if nonempty_string?(check['file']) && !check['file'].end_with?('.classes')
+            errors.concat(ClassesCheck.spec_errors(check))
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
             allowed += %w[file entities relationships tables]
