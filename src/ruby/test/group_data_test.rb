@@ -33,15 +33,21 @@ class GroupDataTest < Minitest::Test
     def test_drop_takes_settings_and_pins_of_those_names
         db = FakeDb.new
         GroupData.drop!(db, ['10b', '10b', '', nil])
-        # first the folders of the group's Git repositories, then the nodes
-        assert_equal 2, db.queries.size
+        # first the folders of the group's Git repositories, then the
+        # teachers' answered feedback keeps the name as former_group, then the nodes
+        assert_equal 3, db.queries.size
         assert_match(/g\.git_id/, db.queries.first[0])
+        assert_match(/SET f\.former_group = f\.group REMOVE f\.group/, db.queries[1][0])
+        assert_match(/f\.created_at IS NOT NULL/, db.queries[1][0])
+        assert_equal({ :names => ['10b'] }, db.queries[1][1])
         query, params = db.queries.last
+        # unanswered feedback (»Nicht jetzt«, »Nicht mehr fragen«) goes with the group
+        assert_match(/n:ActivityFeedback AND n\.created_at IS NULL/, query)
         assert_match(/n:GroupSetting OR n:Pin OR n:MeetingPoint/, query)
         assert_match(/n\.group IN \$names/, query)
         assert_equal({ :names => ['10b'] }, params)
         GroupData.drop!(db, [])
-        assert_equal 2, db.queries.size
+        assert_equal 3, db.queries.size
     end
 
     def test_import_keeps_the_imported_and_the_other_known_groups
@@ -51,9 +57,10 @@ class GroupDataTest < Minitest::Test
         assert_match(/n:GroupSetting OR n:Pin OR n:MeetingPoint/, query)
         assert_match(/NOT n\.group IN \$keep/, query)
         assert_equal({ :keep => ['10a', '10b', 'Testgruppe (A)'] }, params)
+        assert_match(/NOT f\.group IN \$keep AND f\.created_at IS NOT NULL/, db.queries[1][0])
         # Never everything at once: without any group to keep, nothing goes.
         GroupData.drop_all_but!(db, [])
-        assert_equal 2, db.queries.size
+        assert_equal 3, db.queries.size
     end
 
     # The places that create, delete, import and reread groups use it.

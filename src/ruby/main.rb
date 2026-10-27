@@ -64,6 +64,7 @@ require './include/account_export.rb'
 require './include/mail_texts.rb'
 require './include/health.rb'
 require './include/card_images.rb'
+require './include/activity_feedback.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -683,6 +684,7 @@ class Main < Sinatra::Base
     require './include/cable_page.rb'
     require './include/kata_page.rb'
     require './include/class_page.rb'
+    require './include/activity_feedback_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -5020,6 +5022,7 @@ class Main < Sinatra::Base
                 :look_ins => neo4j_query('MATCH (l:LookIn)-[:FOR]->(:User {email: $email}) RETURN l ORDER BY l.ts;', :email => email).map { |r| r['l'] },
                 :live_apps => neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) RETURN s;', :email => email).map { |r| r['s'] },
                 :sessions => neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.impersonated_by IS NULL RETURN s;', :email => email).map { |r| r['s'] },
+                :feedback => neo4j_query('MATCH (f:ActivityFeedback)-[:BY]->(:User {email: $email}) RETURN f;', :email => email).map { |r| r['f'] },
             }
             File.write(File.join(dir, 'konto.json'), AccountExport.account_json(rows))
             File.write(File.join(dir, 'LIESMICH.txt'), AccountExport::README)
@@ -6860,6 +6863,7 @@ class Main < Sinatra::Base
         io << grouped_activity_options(activities.map { |a, t, _| [a, t, slugs[a]] }, activity_key)
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
+        io << activity_feedback_button(group, activity_key)
         # the group's repository of the activity, on the Workspace's Git server
         browse = slug && (@@content[slug] || {})[:class_repo] && git_browse_url((group_class_repos([group])[group] || {})[slug])
         io << "<a class='class-activity-link' href='#{h.(browse)}' title='Das Repository der Gruppe zu dieser Aktivität'><i class='bi bi-git' aria-hidden='true'></i>Repository</a>" if browse
@@ -6887,6 +6891,8 @@ class Main < Sinatra::Base
         me = @session_user[:email]
         viewer = { :email => me, :name => 'Du (Lehrkraft)' }
         states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
+        # How did it go? Once the group looks finished (ActivityFeedback)
+        io << activity_feedback_html(group, activity_key, states)
         board = ClassBoard.build(members, tasks, states, :viewer => viewer)
         # The meeting point: who has arrived (class_meeting.js asks again
         # while the page is open), and the line on the board after its task
@@ -10109,6 +10115,13 @@ class Main < Sinatra::Base
         # The pictures that need permission, with the letters
         # (picture_rights.rb): administrators only.
         if path == '/picture-rights'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless admin_logged_in?
+        end
+        # Feedback of the teachers on the activities (activity_feedback.rb):
+        # administrators only.
+        if path == '/rueckmeldungen'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?

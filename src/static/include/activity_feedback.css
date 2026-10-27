@@ -1,0 +1,271 @@
+/* Feedback of teachers on an activity (activity_feedback.rb): the card and
+   the form on the class page, the hint on the start page, the
+   administration's page. The accent is Cling's teal (#12959f). */
+
+.feedback-card,
+.feedback-home {
+    --feedback-accent: #0f7f88;
+    --feedback-bg: #eef8f8;
+    --feedback-border: #9fd3d6;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9em;
+    margin: 0.8em 0 1em;
+    padding: 0.8em 1em;
+    border: 1px solid var(--feedback-border);
+    border-radius: 0.6em;
+    background-color: var(--feedback-bg);
+    text-align: left;
+}
+
+.feedback-card[hidden],
+.feedback-home[hidden],
+.feedback-form[hidden] {
+    display: none;
+}
+
+.feedback-card > .bi,
+.feedback-home > .bi {
+    font-size: 1.5em;
+    line-height: 1.2;
+    color: var(--feedback-accent);
+}
+
+.feedback-card-body,
+.feedback-home-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.feedback-card-title {
+    margin: 0 0 0.3em;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.feedback-card-body p {
+    margin: 0 0 0.6em;
+}
+
+.feedback-card-actions,
+.feedback-home-actions,
+.feedback-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+}
+
+.feedback-home {
+    align-items: center;
+}
+
+/* the toolbar's button and the form's buttons: icon and label */
+.feedback-open .bi,
+.feedback-form-actions .bi,
+.feedback-form-saved .bi {
+    margin-right: 0.4em;
+}
+
+.feedback-form {
+    max-width: 44em;
+    margin: 0.8em 0 1.4em;
+    padding: 1em 1.2em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    background-color: var(--bs-body-bg);
+    text-align: left;
+}
+
+.feedback-form-title {
+    margin: 0 0 0.4em;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.feedback-form-note,
+.feedback-hint-line {
+    margin: 0 0 0.8em;
+    color: var(--bs-secondary-color);
+    font-size: 0.92em;
+}
+
+.feedback-hint-line {
+    margin: -0.2em 0 0.4em;
+}
+
+.feedback-form-saved {
+    margin: 0 0 0.8em;
+    color: var(--bs-success-text-emphasis);
+}
+
+.feedback-question {
+    margin: 0 0 1em;
+    padding: 0;
+    border: 0;
+}
+
+.feedback-question legend,
+.feedback-question > .form-label {
+    margin-bottom: 0.35em;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.feedback-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    margin-bottom: 0.45em;
+}
+
+.feedback-choices .btn-check:checked + .btn {
+    border-color: #0f7f88;
+    background-color: #0f7f88;
+    color: #fff;
+}
+
+.feedback-language-current {
+    opacity: 0.75;
+}
+
+.feedback-language-note {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+
+.feedback-text-short {
+    max-width: 30em;
+}
+
+.feedback-contact {
+    margin: 0 0 1em;
+}
+
+.feedback-form-error {
+    margin: 0 0 0.8em;
+    color: var(--bs-danger-text-emphasis);
+}
+
+.feedback-form-error[hidden] {
+    display: none;
+}
+
+/* /rueckmeldungen */
+.feedback-admin {
+    max-width: 60em;
+    text-align: left;
+}
+
+.feedback-total {
+    color: var(--bs-secondary-color);
+}
+
+.feedback-activity {
+    margin: 1.6em 0;
+    padding-top: 1em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.feedback-activity-title {
+    margin: 0 0 0.6em;
+    font-size: 1.25rem;
+}
+
+.feedback-activity-count {
+    margin-left: 0.4em;
+    font-size: 0.8em;
+    font-weight: normal;
+    color: var(--bs-secondary-color);
+}
+
+.feedback-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.feedback-counts {
+    width: auto;
+    margin-bottom: 1em;
+}
+
+.feedback-counts th {
+    padding-right: 1.2em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.feedback-counts td {
+    padding-right: 1.2em;
+    white-space: nowrap;
+}
+
+.feedback-counts td[colspan] {
+    white-space: normal;
+}
+
+.feedback-counts .feedback-zero {
+    color: var(--bs-secondary-color);
+}
+
+.feedback-entry {
+    margin: 0 0 1em;
+    padding: 0.6em 0.9em;
+    border-left: 3px solid #12959f;
+    background-color: var(--bs-tertiary-bg);
+    border-radius: 0 0.4em 0.4em 0;
+}
+
+.feedback-entry-head {
+    margin: 0 0 0.3em;
+}
+
+.feedback-contact-ok {
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+}
+
+.feedback-entry-answers {
+    margin: 0 0 0.4em;
+    padding-left: 1.2em;
+}
+
+.feedback-entry-text {
+    margin: 0.3em 0;
+    white-space: normal;
+}
+
+.feedback-entry-label {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+
+@media (max-width: 575.98px) {
+    .feedback-card,
+    .feedback-home {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4em;
+    }
+    .feedback-form {
+        padding: 0.8em;
+    }
+    .feedback-counts th,
+    .feedback-counts td {
+        padding-right: 0.6em;
+        white-space: normal;
+    }
+}
+
+html[data-bs-theme="dark"] {
+    .feedback-card,
+    .feedback-home {
+        --feedback-accent: #5cc6cd;
+        --feedback-bg: #10292b;
+        --feedback-border: #1f5559;
+    }
+    .feedback-choices .btn-check:checked + .btn {
+        border-color: #12959f;
+        background-color: #12959f;
+        color: #fff;
+    }
+}

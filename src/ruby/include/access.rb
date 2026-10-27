@@ -8,7 +8,8 @@
 # - who is logged in as what: user / teacher account / + teacher / admin
 # - may_look_in?: into whose account (LookIn)
 # - terms_required?: a guest who has not agreed to the Nutzungsordnung
-# - route guards: teacher_or_admin!, admin_only!, managed_group!
+# - route guards: teacher_or_admin!, admin_only!, managed_group!,
+#   feedback_group! (ActivityFeedback)
 class Main < Sinatra::Base
     # Who may use the Workspace: whoever is invited, the administration,
     # test accounts, and an account whose deletion is announced (until the
@@ -131,6 +132,21 @@ class Main < Sinatra::Base
 
     def managed_group!(name)
         halt 403, { :error => 'not_your_group' }.to_json unless may_manage_group?(name.to_s)
+        name.to_s
+    end
+
+    # Feedback on an activity (ActivityFeedback) comes from a teacher of the
+    # group (+ in the roster, TEACHES), an administrator too only for the
+    # groups they teach, never for a test group (it is no class) and never
+    # while someone imitates the teacher: it is the teacher's own word.
+    def feedback_groups
+        return [] unless user_logged_in? && @impersonated_by.nil?
+
+        ((@@teachers[my_email] || Set.new).to_a - @@test_groups.to_a).sort
+    end
+
+    def feedback_group!(name)
+        halt 403, { :error => 'not_your_group' }.to_json unless feedback_groups.include?(name.to_s)
         name.to_s
     end
 

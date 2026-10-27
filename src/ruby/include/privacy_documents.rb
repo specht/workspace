@@ -270,7 +270,7 @@ module PrivacyDocuments
                 ['Verantwortlicher (Art. 30 Abs. 1 Buchst. a)', "#{controller}#{address}"],
                 ['Datenschutzbeauftragte Stelle', dsb],
                 ['Ansprechperson', Privacy.contact_html(s)],
-                ['Zwecke (Buchst. b)', 'Durchführung des Informatikunterrichts: Programmieren in einer eigenen Umgebung, Bearbeitung und automatische Prüfung von Aufgaben, Abgaben, Leistungsüberprüfungen, Begleitung des Lernstands durch die Lehrkraft.'],
+                ['Zwecke (Buchst. b)', 'Durchführung des Informatikunterrichts: Programmieren in einer eigenen Umgebung, Bearbeitung und automatische Prüfung von Aufgaben, Abgaben, Leistungsüberprüfungen, Begleitung des Lernstands durch die Lehrkraft; Verbesserung der Aktivitäten anhand freiwilliger Rückmeldungen der Lehrkräfte.'],
                 ['Rechtsgrundlage', 'Art. 6 Abs. 1 Buchst. e DSGVO' + (s[:school_law] ? " in Verbindung mit #{h(s[:school_law])}" : '') + '; für Erwachsene von außerhalb der Schule Art. 6 Abs. 1 Buchst. b DSGVO'],
                 ['Betroffene Personen (Buchst. c)', 'Schülerinnen und Schüler, die eine Lehrkraft eingeladen hat; Lehrkräfte. Nicht in der Verantwortung der Schule: Erwachsene von außerhalb der Schule und ehemalige Schülerinnen und Schüler, die ihr Konto behalten (Nutzungsordnung)'],
                 ['Empfänger (Buchst. d)', 'Lehrkräfte der jeweiligen Lerngruppe; die Administration des Servers; als Auftragsverarbeiter: ' + processors.join(' ')],
@@ -330,7 +330,7 @@ module PrivacyDocuments
             <h2>Was mit einem Konto gelöscht wird</h2>
             <p>
             Workspace mit allen Dateien, die Workspaces der Leistungsüberprüfungen, die eigenen MySQL- und Neo4j-Datenbanken,
-            Antworten, Abgaben, Hinweise zur Einsicht, Sitzungen, Anmeldeanfragen, geteilte Links und das Konto selbst.
+            Antworten, Abgaben, Hinweise zur Einsicht, Sitzungen, Anmeldeanfragen, geteilte Links, bei Lehrkräften ihre Rückmeldungen zu Aktivitäten und das Konto selbst.
             Ein automatischer Test stellt sicher, dass nichts, was zu einer Person gespeichert wird, dabei vergessen wird.
             </p>
         END_OF_HTML
@@ -350,6 +350,7 @@ module PrivacyDocuments
         ['Offene Anmelde-Codes der Gruppe sehen (zum Zeigen im Unterricht)', '–', 'nur eigene Gruppen', '–', 'alle'],
         ['In einen Workspace sehen oder die Seite so sehen, wie die Person sie sieht (mit Begründung, die die Person sieht)', '–', 'nur eigene Gruppen, nie andere Lehrkräfte', '–', 'alle; zusätzlich ein Jahr protokolliert'],
         ['Leistungsüberprüfungen anlegen und auswerten', '–', 'nur eigene Gruppen', '–', 'ja'],
+        ['Rückmeldung zu einer Aktivität geben und die eigene ändern; alle Rückmeldungen lesen', '–', 'nur eigene Gruppen, nur die eigene', '–', 'alle lesen; geben nur für Gruppen, die sie selbst betreut'],
         ['Eine Person zur Lehrkraft machen, einer Schule zuordnen', '–', '–', '–', 'ja'],
         ['Zugang sperren, Löschung ankündigen, Konten löschen', '–', '–', '–', 'ja'],
         ['Schulen, Stand der Abstimmung mit den Schulen, Betrieb des Servers', '–', '–', '–', 'ja'],

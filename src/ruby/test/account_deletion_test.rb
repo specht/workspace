@@ -19,6 +19,9 @@ class AccountDeletionTest < Minitest::Test
     def test_every_node_linked_to_a_user_is_deleted_or_not_owned
         labels = linked_labels
         assert_includes labels, ['QrLoginRequest', 'APPROVED_BY']
+        # a teacher's feedback on activities goes with the account
+        assert_includes labels, ['ActivityFeedback', 'BY']
+        assert_includes AccountDeletion.node_statements, 'MATCH (u:User {email: $email}) MATCH (n:ActivityFeedback)-[:BY]->(u) DETACH DELETE n;'
         labels.each do |label, relation|
             next if AccountDeletion::NOT_OWNED[label] == relation
 

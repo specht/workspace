@@ -2,7 +2,10 @@
 # (GroupSetting: programming language, class repositories), the
 # activities pinned for it (Pin) and its meeting points (MeetingPoint).
 # They go with the group, so that a new group of the same name never
-# inherits them (docs/teacher-access.md).
+# inherits them (docs/teacher-access.md). The teachers' feedback on its
+# activities (ActivityFeedback) is theirs, not the group's: what they
+# answered stays, under former_group instead of group (a new group of the
+# same name is asked anew); »Nicht jetzt« and »Nicht mehr fragen« go.
 #
 #   - the delete button (/api/groups/delete) drops them with the group;
 #   - a group that is gone from the roster when it is read again (an
@@ -13,12 +16,20 @@
 #
 # db is anything with neo4j_query(query, params) ($neo4j, or a test double).
 module GroupData
+    RETIRE_FEEDBACK = <<~END_OF_QUERY
+        MATCH (f:ActivityFeedback) WHERE f.group IN $names AND f.created_at IS NOT NULL
+        SET f.former_group = f.group REMOVE f.group;
+    END_OF_QUERY
+    RETIRE_FEEDBACK_ALL_BUT = <<~END_OF_QUERY
+        MATCH (f:ActivityFeedback) WHERE f.group IS NOT NULL AND NOT f.group IN $keep AND f.created_at IS NOT NULL
+        SET f.former_group = f.group REMOVE f.group;
+    END_OF_QUERY
     DROP = <<~END_OF_QUERY
-        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint) AND n.group IN $names
+        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint OR (n:ActivityFeedback AND n.created_at IS NULL)) AND n.group IN $names
         DETACH DELETE n;
     END_OF_QUERY
     DROP_ALL_BUT = <<~END_OF_QUERY
-        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint) AND NOT n.group IN $keep
+        MATCH (n) WHERE (n:GroupSetting OR n:Pin OR n:MeetingPoint OR (n:ActivityFeedback AND n.created_at IS NULL)) AND NOT n.group IN $keep
         DETACH DELETE n;
     END_OF_QUERY
 
@@ -50,6 +61,7 @@ module GroupData
         return if names.empty?
 
         ids = db.neo4j_query(GIT_IDS, :names => names).map { |row| row['id'] }
+        db.neo4j_query(RETIRE_FEEDBACK, :names => names)
         db.neo4j_query(DROP, :names => names)
         drop_git_folders(ids)
     end
@@ -60,6 +72,7 @@ module GroupData
         return if keep.empty?
 
         ids = db.neo4j_query(GIT_IDS_ALL_BUT, :keep => keep).map { |row| row['id'] }
+        db.neo4j_query(RETIRE_FEEDBACK_ALL_BUT, :keep => keep)
         db.neo4j_query(DROP_ALL_BUT, :keep => keep)
         drop_git_folders(ids)
     end
