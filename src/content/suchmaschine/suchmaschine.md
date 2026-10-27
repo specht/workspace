@@ -831,7 +831,7 @@ counts = incoming(pages)
 Such noch einmal nach »katze«: Jetzt steht die Hauskatze oben, die Anzeige
 unten.
 
-_task(katze-links)
+_task(startseite-links)
 
 ### PageRank
 
