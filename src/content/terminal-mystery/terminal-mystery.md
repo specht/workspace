@@ -5,6 +5,7 @@ kind: projekt
 language: Bash
 duration: 2 Doppelstunden
 curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software, Netzwerkkommunikation); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz, Betriebssysteme)"
+topics: [betriebssystem]
 requires: [working-with-files, git]
 reference: [netzwerk, terminal, git]
 </div>

@@ -14,11 +14,11 @@ require_relative 'school_transition'
 # Each heading names the point of Art. 13/14 DSGVO it answers, so that a
 # reviewer can tick them off.
 #
-# The facts were checked in the code on 2026-10-22. Whoever changes what is
+# The facts were checked in the code on 2026-10-27. Whoever changes what is
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 10, 22)
+    CHECKED = Date.new(2026, 10, 27)
 
     LEGAL_BASES = [:school, :consent, :pending].freeze
 
@@ -263,7 +263,7 @@ module Privacy
                 :how_long => "#{session_days} Tage, bis zur Abmeldung (auch aus einem anderen Browser über das Profil) oder bis zur Löschung des Kontos",
             },
             {
-                :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten',
+                :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten; bei Lehrkräften das Bundesland, nach dessen Lehrplänen die Seiten eingeordnet werden',
                 :categories => [:account],
                 :purpose => 'Darstellung',
                 :who => 'die Person selbst',

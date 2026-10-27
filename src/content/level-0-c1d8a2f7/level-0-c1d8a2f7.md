@@ -4,6 +4,7 @@ image_alt: "Ein Saal aus weißem, geädertem Marmor unter einem Satteldach, zwei
 kind: projekt
 duration: 2 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Figuren, Farbmodelle); Oberstufe: Vertiefung Computergrafik (prozedurale Texturen, Shader)"
+topics: [computergrafik, digitale-bilder]
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git
 template_name: der Backrooms-Vorlage

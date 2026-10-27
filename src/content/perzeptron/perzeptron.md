@@ -5,6 +5,7 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen), Information und Daten (Daten, Information); Oberstufe: Vertiefung Künstliche Intelligenz (ein Perzeptron, Lernen aus Beispielen, seine Grenzen)"
+topics: [ki]
 requires: [kata-lists]
 reference: [svg]
 </div>

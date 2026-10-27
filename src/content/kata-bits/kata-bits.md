@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Zahlen in Bits, im Sechzehnersystem und in jedem anderen
 curriculum: "Sek I: Information und Daten (Zahlensysteme, Codierung)"
+topics: [zahlensysteme, codierung]
 requires: [kata-dicts]
 </div>
 

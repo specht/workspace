@@ -1,0 +1,79 @@
+# Die Rahmenlehrpläne von Berlin und Brandenburg (docs/lehrplan.md,
+# docs/plan-bundeslaender.md). Die Zeile jeder Aktivität steht in ihrem
+# Meta-Block (curriculum:); dieser Plan gibt die Namen, ihre Gruppen und die
+# Quellen. Berlin und Brandenburg sind im Profil zwei Einträge mit diesem
+# einen Plan.
+title: Rahmenlehrpläne von Berlin und Brandenburg
+states:
+  berlin: Berlin
+  brandenburg: Brandenburg
+status: geprüft
+# die Zeile jeder Aktivität: ihr curriculum: im Meta-Block
+lines: meta
+# über dem Bild auf /lehrplan
+intro: >-
+  Welche Aktivitäten des Workspace zu welchem Teil der Rahmenlehrpläne von Berlin und Brandenburg passen:
+  für jedes Themenfeld der Sekundarstufe I und jeden Inhalt der Oberstufe, mit dem, was die Aktivität
+  dazu übt. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
+  Nur Lehrkräfte sehen diese Seite.
+# der Titel der Zeile oben auf jeder Aktivität
+label: Rahmenlehrplan
+levels:
+  - level: Sek I
+    title: Sekundarstufe I
+    id: sek-i
+    source: Rahmenlehrplan Teil C Informatik, Wahlpflichtfach, Jahrgangsstufen 7–10, Berlin und Brandenburg (2015)
+    url: https://bildungsserver.berlin-brandenburg.de/rlp-online/c-faecher/informatik/themen-und-inhalte
+    groups:
+      Pflichtthemenfelder:
+        - Standardsoftware
+        - Informatiksysteme
+        - Leben in und mit vernetzten Systemen
+        - Information und Daten
+        - Algorithmisches Problemlösen
+      Wahlthemenfelder:
+        - Geschichte der Informatik
+        - Datenbanken
+        - Projektmanagement
+        - Physical Computing
+        - Digitale Bilder und Visualisierung
+  - level: Oberstufe
+    title: Oberstufe
+    id: oberstufe
+    source: Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin
+    url: https://www.berlin.de/sen/bildung/unterricht/faecher-rahmenlehrplaene/rahmenlehrplaene/oberstufe/
+    # Die Kurshalbjahre haben Berlin und Brandenburg gemeinsam erarbeitet;
+    # die Einführungsphase ist die Berliner. Noch nicht geprüft.
+    source_for:
+      brandenburg: >-
+        Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik: die Kurshalbjahre gemeinsam mit Brandenburg,
+        die Einführungsphase nach dem Berliner Plan (in Brandenburg noch zu prüfen)
+    groups:
+      Einführungsphase:
+        - Grundlagen informatischen Arbeitens
+        - Algorithmen und Softwareentwicklung
+        - Datenbanken und Datenschutz
+        - Computernetze
+      Kurshalbjahre:
+        - Datenbanken
+        - Algorithmen und Datenstrukturen
+        - objektorientierte Modellierung
+        - objektorientierte Programmierung
+        - Syntax und Semantik
+        - Rechner und Netze
+        - Sprachen und Automaten
+        - Softwareprojekt
+      Vertiefungsgebiete im 3. Kurshalbjahr:
+        - Vertiefung Applikative Programmierung
+        - Vertiefung Kryptologie und Datensicherheit
+        - Vertiefung Computergrafik
+        - Vertiefung Computer-Netze
+        - Vertiefung Künstliche Intelligenz
+        - Vertiefung Technische Informatik
+        - Vertiefung Maschinennahe Programmierung
+        - Vertiefung Informatik und Gesellschaft
+        - Vertiefung Theoretische Informatik
+# neben einem Namen, wo der Plan mehr dazu sagt
+notes:
+  Sek I:
+    Datenbanken: In Berlin verpflichtend.

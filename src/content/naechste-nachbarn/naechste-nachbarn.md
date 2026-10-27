@@ -5,6 +5,7 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen), Leben in und mit vernetzten Systemen (Datenschutz, rechtliche Grundlagen); Oberstufe: Vertiefung Künstliche Intelligenz (Klassifizieren nach den nächsten Nachbarn), Vertiefung Informatik und Gesellschaft (was ein Programm aus alten Entscheidungen übernimmt, wer verantwortlich bleibt)"
+topics: [ki, datenschutz, gesellschaft]
 requires: [kata-lists]
 </div>
 

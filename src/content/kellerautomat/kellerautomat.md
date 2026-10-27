@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Sprachen und Automaten (formale Sprachen, Kellerautomaten, Grenzen endlicher Automaten), Vertiefung Theoretische Informatik (Kellerautomaten, Schubfachprinzip)"
+topics: [kellerautomaten]
 requires: [automata]
 reference: [automaten, listen, ruby-python]
 </div>

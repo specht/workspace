@@ -4,6 +4,7 @@ image_alt: "Ein hohes Treppenhaus mit gelber Tapete: Eine Holztreppe steigt an d
 kind: projekt
 duration: 1 Doppelstunde
 curriculum: "Sek I: Digitale Bilder und Visualisierung; Oberstufe: Vertiefung Computergrafik (Kollisionserkennung)"
+topics: [computergrafik]
 reference: [workspace, kartografie]
 template: https://github.com/specht/backrooms-starter.git
 template_name: der Backrooms-Vorlage

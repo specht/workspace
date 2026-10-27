@@ -5,6 +5,7 @@ kind: projekt
 language: Pixelflow Canvas / Ruby
 duration: 2 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Rastergrafik, Farbmodelle, Turtle-Grafik), Algorithmisches Problemlösen (algorithmische Grundstrukturen)"
+topics: [digitale-bilder, grundstrukturen]
 reference: [workspace, farben]
 </div>
 

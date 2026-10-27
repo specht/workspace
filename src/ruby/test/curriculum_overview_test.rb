@@ -16,7 +16,7 @@ class CurriculumOverviewTest < Minitest::Test
     end
 
     def test_every_name_of_the_plans_has_its_place
-        (Curriculum::SEK_I.map { |n| ['Sek I', n] } + Curriculum::OBERSTUFE.map { |n| ['Oberstufe', n] }).each do |level, name|
+        (Curriculum.sek_i.map { |n| ['Sek I', n] } + Curriculum.oberstufe.map { |n| ['Oberstufe', n] }).each do |level, name|
             assert_includes html, "id='#{CurriculumOverview.anchor(level, name)}'"
         end
         assert_includes html, 'Noch keine Aktivität im Workspace.'
@@ -36,5 +36,20 @@ class CurriculumOverviewTest < Minitest::Test
     def test_anchor
         assert_equal 'sek-i-algorithmisches-problemlosen', CurriculumOverview.anchor('Sek I', 'Algorithmisches Problemlösen')
         assert_equal 'oberstufe-vertiefung-computer-netze', CurriculumOverview.anchor('Oberstufe', 'Vertiefung Computer-Netze')
+    end
+
+    # Another state's plan: its levels and names, its source; Berlin's
+    # source for Brandenburg's teachers says what is shared.
+    def test_another_plan
+        plan = Curriculum.plan_for('baden-wuerttemberg')
+        content = { 'x' => { :title => 'X', :kind => 'projekt', :curriculum => 'Oberstufe: Sprachen und Automaten', :topics => %w[automaten] } }
+        html = CurriculumOverview.html(content, %w[x], :plan => plan)
+        assert_includes html, "<h2 id='kursstufe'>"
+        assert_includes html, "id='#{CurriculumOverview.anchor('Kursstufe', 'Automaten und formale Sprachen')}'"
+        assert_includes html, "<a href='/x'>X</a> <span class='lp-kind'>Projekt</span><span class='lp-details'>endliche Automaten</span>"
+        refute_includes html, "id='sek-i'"
+        brandenburg = CurriculumOverview.html(content, %w[x], :state => 'brandenburg')
+        assert_includes brandenburg, 'gemeinsam mit Brandenburg'
+        refute_includes html(), 'gemeinsam mit Brandenburg'
     end
 end

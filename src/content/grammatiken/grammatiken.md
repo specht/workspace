@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Syntax und Semantik (Grammatik, EBNF, Syntaxdiagramme, Syntaxbaum, rekursiver Abstieg), Sprachen und Automaten (natürliche und formale Sprachen, kontextfreie Grammatiken), Vertiefung Theoretische Informatik (Chomsky-Hierarchie, Mehrdeutigkeit)"
+topics: [grammatiken, kellerautomaten]
 requires: [kellerautomat]
 reference: [automaten, listen, ruby-python]
 </div>

@@ -7,6 +7,12 @@ gesammelt auf `/lehrplan`. Auf den Karten im Katalog steht sie nicht: Dort
 zählt, worum es geht. Sie sagt, wo die Aktivität in den Lehrplänen
 steht, damit eine Lehrkraft sie in ihre Planung einordnen kann.
 
+Lehrkräfte aus einem anderen Land wählen es im Profil oder auf `/lehrplan`;
+dann sehen sie überall die Zeile des Plans ihres Landes, abgeleitet aus den
+Themen der Aktivität (`topics:`), und `/lehrplan` ordnet nach dessen Namen
+([plan-bundeslaender.md](plan-bundeslaender.md)). Wer nichts wählt, sieht
+Berlin. Die Zeile `curriculum:` bleibt die von Berlin und Brandenburg.
+
 Die Seite `/lehrplan` (verlinkt von der Klassenseite und von der Zeile oben
 auf jeder Aktivität) zeigt es andersherum: für jeden Namen der Pläne die
 Aktivitäten, deren Zeile ihn nennt, in der Reihenfolge des Katalogs, mit den
@@ -80,9 +86,12 @@ curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukture
   genügen. Wo die Sek I nichts dazu sagt (Raytracing), nur die Oberstufe.
 - In Anführungszeichen, weil der Doppelpunkt sonst YAML stört.
 
-`src/ruby/include/curriculum.rb` kennt die Namen; `curriculum_test.rb` prüft
-jede Aktivität des Katalogs (außer »Zurückgestellt«): dass sie eine Zeile hat
-und dass jeder Name darin aus den Listen stammt.
+`src/content/curricula/berlin-brandenburg.yaml` hat die Namen, in den
+Gruppen, in denen `/lehrplan` sie zeigt, mit den Quellen;
+`src/ruby/include/curriculum.rb` liest sie. `curriculum_test.rb` prüft jede
+Aktivität des Katalogs (außer »Zurückgestellt«): dass sie eine Zeile hat,
+dass jeder Name darin aus den Listen stammt und dass sie Themen (`topics:`)
+hat. Ein neuer Name kommt in die Datei und in die Tabellen unten.
 
 ## Sekundarstufe I
 

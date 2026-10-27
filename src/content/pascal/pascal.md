@@ -2,6 +2,7 @@
 image: pascal-logo.png
 kind: steckbrief
 curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Syntax und Semantik (Compiler)"
+topics: [programmiersprachen, geschichte]
 </div>
 
 <div

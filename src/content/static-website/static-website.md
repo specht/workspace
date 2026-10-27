@@ -4,6 +4,7 @@ image_alt: "Die Logos von HTML5 und CSS"
 kind: projekt
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets)"
+topics: [webseiten]
 language: HTML / CSS
 reference: [workspace, html, css, layout]
 </div>

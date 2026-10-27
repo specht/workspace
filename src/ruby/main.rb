@@ -2156,6 +2156,9 @@ class Main < Sinatra::Base
                     :idea => page_meta['idea'],
                     :curriculum => page_meta['curriculum'],
                     # whom the activity is for, where its curriculum line
+                    # its topics (src/content/curricula/themen.yaml), from which
+                    # the plan of another state derives its line (Curriculum)
+                    :topics => Array(page_meta['topics']).map(&:to_s),
                     # names both plans but it is meant for the younger
                     # (CurriculumGraph.age_of): Sek I, Sek I und Oberstufe,
                     # Oberstufe
@@ -5430,12 +5433,34 @@ class Main < Sinatra::Base
     end
 
     def page_kind_header(slug)
+    # The state whose curricula a teacher sees (profile, /lehrplan;
+    # Curriculum, docs/plan-bundeslaender.md); Berlin without a choice.
+    def curriculum_state
+        state = (@session_user || {})[:curriculum_state].to_s
+        Curriculum.states.any? { |key, _, _| key == state } ? state : Curriculum::DEFAULT_STATE
+    end
+
+    def curriculum_plan
+        Curriculum.plan_for(curriculum_state)
+    end
+
+    # The choice of the state, for the profile and /lehrplan: a select that
+    # stores it (curriculum_state.js) and reloads the page.
+    def curriculum_state_select(id)
+        options = Curriculum.states.map do |key, name, plan|
+            label = Curriculum.draft?(plan) ? "#{name} (Entwurf)" : name
+            "<option value='#{CGI.escapeHTML(key)}'#{key == curriculum_state ? ' selected' : ''}>#{CGI.escapeHTML(label)}</option>"
+        end
+        "<select id='#{id}' class='form-select form-select-sm curriculum-state' aria-label='Bundesland für die Lehrpläne'>#{options.join}</select>"
+    end
+
         # the teacher's buttons together at the right end, wrapping together
         tools = page_pin_button(slug) + teacher_note_toggle(slug)
         toggle = tools.empty? ? '' : "<span class='page-teacher-tools'>#{tools}</span>"
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
                                   :show_duration => teacher_logged_in?, :show_curriculum => teacher_logged_in?,
-                                  :code_language => page_code_language(slug))
+                                  :code_language => page_code_language(slug),
+                                  :curriculum_plan => teacher_logged_in? ? curriculum_plan : nil)
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
@@ -7830,6 +7855,20 @@ class Main < Sinatra::Base
         neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :mode => mode})
             MATCH (u:User {email: $email})
             SET u.brightness = $mode
+    # The state whose curricula a teacher sees (Curriculum): one of the
+    # states of the plans in src/content/curricula/.
+    post '/api/set_curriculum_state/:state' do
+        assert(teacher_logged_in?)
+        state = params['state']
+        assert(Curriculum.states.any? { |key, _, _| key == state })
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :state => state})
+            MATCH (u:User {email: $email})
+            SET u.curriculum_state = $state
+            RETURN u;
+        END_OF_STRING
+        respond(:ok => true)
+    end
+
             RETURN u;
         END_OF_STRING
     end
@@ -9255,7 +9294,9 @@ class Main < Sinatra::Base
         slugs = section[:entries].select do |slug|
             @@content[slug] && @@content[slug][:tasks] && (DEVELOPMENT || !@@content[slug][:dev_only])
         end
-        stops = slugs.map { |slug| KataMap.stop(slug, @@content[slug]) }
+        # the curriculum line through the teacher's state (Curriculum)
+        plan = teacher_logged_in? ? curriculum_plan : nil
+        stops = slugs.map { |slug| KataMap.stop(slug, plan ? @@content[slug].merge(:curriculum => Curriculum.line(plan, slug, @@content[slug])) : @@content[slug]) }
         # a picture as an icon with its file's time, so a new one is loaded
         stops.each do |stop|
             path = "/src/static#{stop.icon}"

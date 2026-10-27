@@ -2,6 +2,7 @@
 image: lua-logo.png
 kind: steckbrief
 curriculum: "Oberstufe: Syntax und Semantik (Interpreter)"
+topics: [programmiersprachen]
 </div>
 
 <div

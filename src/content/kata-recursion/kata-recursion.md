@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Funktionen, die sich selbst aufrufen, mit einem Fall, der aufhört
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (rekursive Verfahren)"
+topics: [rekursion]
 requires: [kata-lists]
 </div>
 

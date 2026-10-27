@@ -5,6 +5,7 @@ kind: projekt
 language: HTML
 duration: 2 bis 3 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets, rechtliche Grundlagen: Bildrechte)"
+topics: [webseiten]
 reference: [workspace, html, css, layout, shower]
 template: https://git.nhcham.org/specht/shower.js.git
 template_name: der shower.js-Vorlage

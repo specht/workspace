@@ -60,6 +60,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
 | `curriculum` | Wo die Aktivität in den Lehrplänen steht, in den Namen der Pläne von Berlin und Brandenburg: `"Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen); Oberstufe: Algorithmen und Datenstrukturen"`. Nur angemeldete Lehrkräfte sehen sie, oben auf der Seite und auf `/lehrplan`. Form und erlaubte Namen in [lehrplan.md](lehrplan.md) |
+| `topics` | Die Themen der Aktivität aus `src/content/curricula/themen.yaml`, zum Beispiel `[grundstrukturen, unterprogramme]`; aus ihnen leiten die Pläne anderer Länder ihre Zeile ab ([plan-bundeslaender.md](plan-bundeslaender.md)) |
 | `idea`, `icon` | Nur bei Übungen mit Katas: die Idee in wenigen Worten und ein Icon, ein Bootstrap-Icon (`bi-braces`) oder eine Figur in Grau (`/images/pip/icon-pip.png`, aus `make_icons.py`), für den Streifen der Katas auf der Startseite (checkliste.md, »Katas und Pip«) |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |

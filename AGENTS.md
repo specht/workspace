@@ -43,6 +43,9 @@ address from `credentials.rb` and the code `123456`.
   `tests`), Pip unter Funkelbach in three parts: what exists, the maintainer's decisions and why, what is open
 - [docs/lehrplan.md](docs/lehrplan.md): the `curriculum:` line every activity carries for teachers:
   its form and the only names allowed, from the Berlin-Brandenburg curricula
+- [docs/plan-bundeslaender.md](docs/plan-bundeslaender.md): the curricula of other states: topics per
+  activity (`topics:`), one plan per file in `src/content/curricula/`, the teacher's state in the profile;
+  Baden-Württemberg as a draft for a teacher there to check
 - [docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md): the names of the curricula with no
   or few activities, what could fill each, what is decided (object orientation as an activity with
   modelling, in five languages) and what is open

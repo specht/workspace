@@ -5,6 +5,7 @@ kind: projekt
 language: Svelte
 duration: 3 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Sprachen und Automaten (zustandsorientierte Modellierung)"
+topics: [webseiten, zustaende]
 requires: [static-website]
 reference: [workspace, html, css, layout]
 </div>

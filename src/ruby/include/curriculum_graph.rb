@@ -80,20 +80,13 @@ module CurriculumGraph
     # docs/lehrplan.md); an activity without a line counts as both. Meta
     # age: (one of these) says whom an activity is for where its line names
     # both plans but it is meant for the younger, and wins.
-    AGES = ['Sek I', 'Sek I und Oberstufe', 'Oberstufe'].freeze
+    AGES = Curriculum::AGES
     # the room an arrow takes where it passes a column (a dummy, as in a
     # Sugiyama layout): no box stands there, so no arrow runs through one
     PASS = 20
 
     def self.age_of(levels, age = nil)
-        return AGES.index(age) if AGES.include?(age)
-
-        sek = levels.include?('Sek I')
-        ober = levels.include?('Oberstufe')
-        return 0 if sek && !ober
-        return 2 if ober && !sek
-
-        1
+        Curriculum.age_of(levels, age)
     end
 
     # What a layout is made from, for telling whether a stored one fits:
@@ -420,12 +413,15 @@ module CurriculumGraph
     end
 
     # The nodes and edges of the activities students see in the catalog
-    # (slugs, in its order), with the anchors of their names of the plans.
-    def self.inputs(content, slugs, development: false)
+    # (slugs, in its order), with the anchors of their names in the plan
+    # (the teacher's state, Curriculum); the levels and so the age always
+    # from the line of Berlin and Brandenburg, which every state's ages share.
+    def self.inputs(content, slugs, development: false, plan: nil)
         nodes = slugs.map do |slug|
             entry = content[slug] || {}
+            line = Curriculum.line(plan, slug, entry)
             { :slug => slug, :title => CGI.unescapeHTML(PageKinds.plain_title(entry)), :section => entry[:section],
-              :topics => Curriculum.entries(entry[:curriculum]).map { |level, name, _| Curriculum.anchor(level, name) }.uniq,
+              :topics => Curriculum.entries(line, plan).map { |level, name, _| Curriculum.anchor(level, name) }.uniq,
               :levels => Curriculum.entries(entry[:curriculum]).map(&:first).uniq, :age => entry[:age] }
         end
         edges = slugs.flat_map do |slug|
@@ -440,8 +436,8 @@ module CurriculumGraph
     # The picture for the page: the stored order if it fits; otherwise in
     # development one searched briefly (kept in memory until the inputs
     # change), in production the quick one. stale: no stored order fits.
-    def self.from_content(content, slugs, development: false)
-        nodes, edges = inputs(content, slugs, :development => development)
+    def self.from_content(content, slugs, development: false, plan: nil)
+        nodes, edges = inputs(content, slugs, :development => development, :plan => plan)
         k = key(nodes, edges)
         orders = stored(k)
         stale = orders.nil?
@@ -450,7 +446,7 @@ module CurriculumGraph
                 @searched[k] ||= search(nodes, edges, :restarts => QUICK_RESTARTS)[:orders]
             end
         end
-        layout(nodes, edges, :orders => orders).merge(:stale => stale)
+        layout(nodes, edges, :orders => orders).merge(:stale => stale, :plan => plan)
     end
 
     # The catalog and the meta lines the picture is made of, read from the
@@ -476,7 +472,7 @@ module CurriculumGraph
                 content[slug] = { :title => title, :section => section['key'], :dev_only => dev_only,
                                   :teacher_only => section['teacher_only'] == true, :hidden_section => section['hidden'] == true,
                                   :requires => Array(meta['requires']).map(&:to_s).reject(&:empty?), :curriculum => meta['curriculum'],
-                                  :age => meta['age'] }
+                                  :age => meta['age'], :topics => Array(meta['topics']).map(&:to_s) }
                 slugs << slug unless section['hidden'] || (dev_only && !development)
             end
         end
@@ -636,7 +632,7 @@ module CurriculumGraph
     # choosing one: [[level, [[anchor, name]]]]
     def self.topics(graph)
         present = graph[:nodes].flat_map { |n| n[:topics] }.to_set
-        Curriculum::LEVELS.map do |level, names|
+        Curriculum.names(graph[:plan]).map do |level, names|
             [level, names.map { |name| [Curriculum.anchor(level, name), name] }.select { |anchor, _| present.include?(anchor) }]
         end.reject { |_, list| list.empty? }
     end

@@ -5,6 +5,7 @@ kind: projekt
 language: SQL
 duration: 3 Doppelstunden
 curriculum: "Sek I: Datenbanken (Datenbanken als Tabellen planen, verknüpfte Tabellen); Oberstufe: Datenbanken (Datenmodellierung, relationales Datenbankschema, Join)"
+topics: [datenbanken-modellierung, datenbanken-abfragen]
 requires: [mysql]
 reference: [er-modelle, sql, json, datensaetze]
 </div>

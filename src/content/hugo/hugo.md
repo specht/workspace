@@ -5,6 +5,7 @@ kind: projekt
 language: Hugo
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Inhalt und Layout getrennt)"
+topics: [webseiten]
 requires: [static-website]
 reference: [yaml, html, css]
 </div>

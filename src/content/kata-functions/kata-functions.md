@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Werte bekommen, rechnen, ein Ergebnis zurückgeben
 curriculum: "Sek I: Algorithmisches Problemlösen (Variablenkonzept und Prozeduren)"
+topics: [grundstrukturen, unterprogramme]
 </div>
 
 # Katas: Erste Funktionen

@@ -1,0 +1,68 @@
+# Die Themen, die jede Aktivität im Meta-Block nennt (topics:), unabhängig
+# von einem Land: Aus ihnen leitet der Plan eines Landes seine Zeile ab,
+# wenn er keine eigene für die Aktivität hat (docs/plan-bundeslaender.md).
+# Gegliedert nach den Inhaltsbereichen der Bildungsstandards Informatik der
+# Gesellschaft für Informatik; fein genug, um zu tragen, was die Namen der
+# Pläne von Berlin und Brandenburg unterscheiden. Ein Thema heißt, was die
+# Aktivität wirklich übt, nicht alles, was sie berührt.
+
+Information und Daten:
+  codierung: Codierung von Zeichen und Daten
+  zahlensysteme: Zahlensysteme und Bits
+  fehlererkennung: Prüfziffern und Fehlererkennung
+  kompression: Kompression
+  digitale-bilder: digitale Bilder, Farbmodelle, Bildformate
+  bildalgorithmen: Algorithmen auf den Pixeln eines Bildes
+  information: Daten, Information, Nachricht
+  datenbanken-abfragen: Datenbanken abfragen und ändern
+  datenbanken-modellierung: Datenbanken modellieren
+
+Algorithmen:
+  grundstrukturen: algorithmische Grundstrukturen und Variablen
+  unterprogramme: Unterprogramme mit Parametern und Rückgabewerten
+  zeichenketten: Zeichenketten bearbeiten
+  listen: Listen und Arrays
+  datenstrukturen: Datenstrukturen
+  suchen-sortieren: Suchen und Sortieren, Aufwand
+  rekursion: Rekursion
+  graphen: Graphen und Wegsuche
+  darstellung: Struktogramm und Pseudocode
+  miniwelt: Miniwelten
+  testen: Testen
+
+Modellieren und Programmieren:
+  objektorientierung: Objektorientierung und Klassendiagramme
+  zustaende: zustandsorientierte Modellierung
+  funktional: funktionale Programmierung
+  maschinennah: maschinennahe Programmierung
+  programmiersprachen: Programmiersprachen, Compiler und Interpreter
+
+Sprachen und Automaten:
+  automaten: endliche Automaten
+  grammatiken: Grammatiken, Syntaxdiagramme und Parser
+  kellerautomaten: Kellerautomaten und kontextfreie Sprachen
+  berechenbarkeit: Turingmaschinen und Grenzen der Berechenbarkeit
+
+Informatiksysteme:
+  rechneraufbau: Aufbau eines Rechners
+  betriebssystem: Betriebssystem, Dateien und Verzeichnisse
+  netze: Netze und Protokolle
+  client-server: Client und Server
+  webseiten: Webseiten gestalten
+  standardsoftware: Textverarbeitung und Präsentation
+  computergrafik: Computergrafik
+  animation: Figuren, Spiele und Animationen
+
+Informatik, Mensch und Gesellschaft:
+  verschluesselung: Verschlüsselung
+  datensicherheit: Datensicherheit und Angriffe
+  datenschutz: Datenschutz
+  recht: Urheberrecht und Recht am Bild
+  ki: künstliche Intelligenz
+  geschichte: Geschichte der Informatik
+  suchmaschinen: Suchmaschinen, Informationen beschaffen und prüfen
+  gesellschaft: Informatik und Gesellschaft
+
+Projekte:
+  teamarbeit: Arbeiten im Team, Versionsverwaltung
+  softwareprojekt: Softwareprojekte planen und durchführen

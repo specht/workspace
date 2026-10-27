@@ -1,0 +1,158 @@
+# Die Bildungspläne von Baden-Württemberg für Informatik am Gymnasium
+# (docs/plan-bundeslaender.md). Ein Entwurf: Die Zeile jeder Aktivität wird
+# aus ihren Themen abgeleitet (topics:, themen.yaml), über die Zuordnung
+# unten; eine Lehrkraft in Baden-Württemberg prüft sie
+# (docs/plan-bundeslaender.md, »Was die Lehrkraft prüft«). Was sie
+# bestätigt oder ändert, kommt als eigene Zeile unter lines:.
+# Stand der Quellen: 27. Oktober 2026.
+title: Bildungspläne von Baden-Württemberg
+states:
+  baden-wuerttemberg: Baden-Württemberg
+status: Entwurf
+status_text: Entwurf, von einer Lehrkraft in Baden-Württemberg zu prüfen
+intro: >-
+  Welche Aktivitäten des Workspace zu welchem Teil der Bildungspläne von Baden-Württemberg für Informatik am
+  Gymnasium passen: der Aufbaukurs in Klasse 7, das Profilfach IMP in den Klassen 8 bis 10 und Informatik in der
+  Kursstufe. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität. Nur Lehrkräfte sehen diese Seite.
+label: Bildungsplan Baden-Württemberg (Entwurf)
+levels:
+  - level: Klasse 7
+    title: Klasse 7
+    id: klasse-7
+    source: >-
+      Bildungsplan 2016, Aufbaukurs Informatik (Klasse 7); bis zum Bildungsplan des neuen Pflichtfachs
+      »Informatik und Medienbildung« gilt er für Klasse 7 weiter
+    url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/SEK1/INF7
+    # für wen eine Aktivität sein darf, um hier zu stehen (age: und die
+    # Berliner Zeile, CurriculumGraph::AGES): Sek I, Sek I und Oberstufe
+    ages: [0, 1]
+    groups:
+      Inhaltsbezogene Kompetenzen:
+        - Daten und Codierung
+        - Algorithmen
+        - Rechner und Netze
+        - Informationsgesellschaft und Datensicherheit
+  - level: IMP 8–10
+    title: Profilfach IMP, Klassen 8 bis 10
+    id: imp
+    source: >-
+      Bildungsplan 2016, Gymnasium, Profilfach Informatik, Mathematik, Physik (IMP), Teil Informatik; läuft aus,
+      sein Nachfolger NIT (Naturwissenschaft, Informatik und Technik) hat noch keinen eigenen Bildungsplan
+    url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/IMP
+    ages: [0, 1]
+    groups:
+      Inhaltsbezogene Kompetenzen Informatik:
+        - Daten und Codierung
+        - Algorithmen
+        - Rechner und Netze
+        - Informationsgesellschaft und Datensicherheit
+  - level: Kursstufe
+    title: Kursstufe, Basisfach und Leistungsfach
+    id: kursstufe
+    source: Bildungsplan 2016, Gymnasium, Informatik (Schulversuch), Versuchsfassung 2020, Klassen 11/12
+    url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/INF
+    ages: [1, 2]
+    groups:
+      Daten und Codierung:
+        - Bitebene
+        - Datenstrukturen
+        - Relationale Datenbanksysteme
+      Algorithmen:
+        - Strukturierte und objektorientierte Programmierung
+        - Algorithmen auf Datenstrukturen
+        - Rekursion
+      Weitere Bereiche:
+        - Rechner und Netze
+        - Informationsgesellschaft und Datensicherheit
+        - Automaten und formale Sprachen
+        - Projektmanagement
+notes:
+  IMP 8–10:
+    Rechner und Netze: Logik und Schaltnetze (Klasse 10) übt noch keine Aktivität.
+  Kursstufe:
+    Automaten und formale Sprachen: Grammatiken und Kellerautomaten nur im Leistungsfach.
+# Thema (themen.yaml) => wo es im Plan steht: »Stufe: Name (Einzelheiten)«.
+# Nur, was die Teilkompetenzen wirklich nennen; im Zweifel weniger.
+topics:
+  codierung:
+    - "Klasse 7: Daten und Codierung (Codierung)"
+  zahlensysteme:
+    - "Klasse 7: Daten und Codierung (Binärsystem)"
+    - "Kursstufe: Bitebene (Zahlen als Bitfolgen)"
+  fehlererkennung:
+    - "IMP 8–10: Daten und Codierung (Klasse 8: Fehlererkennung mit Prüfsummen)"
+  kompression:
+    - "IMP 8–10: Daten und Codierung (Klasse 9: Kompression)"
+    - "Kursstufe: Bitebene (verlustfreie Kompression)"
+  bildalgorithmen:
+    - "IMP 8–10: Algorithmen (Klasse 10: Bitmap-Algorithmen)"
+  datenbanken-abfragen:
+    - "Kursstufe: Relationale Datenbanksysteme (Abfragen mit SQL)"
+  datenbanken-modellierung:
+    - "Kursstufe: Relationale Datenbanksysteme (Datenbanken modellieren)"
+  grundstrukturen:
+    - "Klasse 7: Algorithmen (Grundbausteine, Variablen)"
+    - "IMP 8–10: Algorithmen (Klasse 9: Grundbausteine und Variablen in Textcode)"
+  unterprogramme:
+    - "IMP 8–10: Algorithmen (Unterprogramme)"
+  listen:
+    - "IMP 8–10: Algorithmen (Arrays)"
+  datenstrukturen:
+    - "Kursstufe: Datenstrukturen"
+  suchen-sortieren:
+    - "IMP 8–10: Algorithmen (Klasse 9: Sortieren)"
+    - "Kursstufe: Algorithmen auf Datenstrukturen (Suchen und Sortieren)"
+  rekursion:
+    - "Kursstufe: Rekursion"
+  graphen:
+    - "IMP 8–10: Daten und Codierung (Graphen)"
+    - "Kursstufe: Datenstrukturen (Graphen)"
+    - "Kursstufe: Algorithmen auf Datenstrukturen (Wegsuche in Graphen)"
+  darstellung:
+    - "Klasse 7: Algorithmen (grafisch dargestellte Algorithmen)"
+    - "Kursstufe: Strukturierte und objektorientierte Programmierung (Struktogramm, Pseudocode)"
+  miniwelt:
+    - "Klasse 7: Algorithmen (Algorithmen entwerfen)"
+  testen:
+    - "IMP 8–10: Algorithmen (Testen)"
+  objektorientierung:
+    - "Kursstufe: Strukturierte und objektorientierte Programmierung (Klassen und Objekte, UML-Klassendiagramme)"
+  zustaende:
+    - "Kursstufe: Automaten und formale Sprachen (Abläufe mit endlichen Automaten modellieren)"
+  automaten:
+    - "Kursstufe: Automaten und formale Sprachen (endliche Automaten)"
+  grammatiken:
+    - "Kursstufe: Automaten und formale Sprachen (Grammatiken, Syntaxdiagramme)"
+  kellerautomaten:
+    - "Kursstufe: Automaten und formale Sprachen (Kellerautomaten)"
+  rechneraufbau:
+    - "Kursstufe: Rechner und Netze (Von-Neumann-Maschine)"
+  netze:
+    - "Klasse 7: Rechner und Netze (Netze)"
+    - "IMP 8–10: Rechner und Netze (Pakete und Protokolle)"
+    - "Kursstufe: Rechner und Netze (Pakete und Protokolle)"
+  client-server:
+    - "Klasse 7: Rechner und Netze (Client und Server)"
+    - "IMP 8–10: Rechner und Netze (Webserver)"
+  webseiten:
+    - "IMP 8–10: Rechner und Netze (Klasse 8: eigene Webseiten)"
+  verschluesselung:
+    - "Klasse 7: Informationsgesellschaft und Datensicherheit (Verschlüsselung)"
+    - "IMP 8–10: Informationsgesellschaft und Datensicherheit (Verschlüsselung)"
+    - "Kursstufe: Informationsgesellschaft und Datensicherheit (Verschlüsselung)"
+  datensicherheit:
+    - "Kursstufe: Informationsgesellschaft und Datensicherheit (Datensicherheit)"
+  datenschutz:
+    - "Klasse 7: Informationsgesellschaft und Datensicherheit (personenbezogene Daten)"
+    - "IMP 8–10: Informationsgesellschaft und Datensicherheit (Klasse 8: Erhebung personenbezogener Daten)"
+    - "Kursstufe: Informationsgesellschaft und Datensicherheit (Datenschutz)"
+  recht:
+    - "Klasse 7: Informationsgesellschaft und Datensicherheit (Recht am Bild, Urheberrecht)"
+  teamarbeit:
+    - "Kursstufe: Projektmanagement (Teamarbeit)"
+  softwareprojekt:
+    - "IMP 8–10: Algorithmen (Klasse 8: ein kleines Softwareprojekt)"
+    - "Kursstufe: Projektmanagement (Projekte planen)"
+# Zeilen, die eine Lehrkraft geprüft hat, statt der abgeleiteten:
+# slug: "Klasse 7: Algorithmen (…); Kursstufe: …"
+lines: {}

@@ -2,6 +2,7 @@
 image: clisp-logo.png
 kind: steckbrief
 curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Vertiefung Applikative Programmierung (funktional)"
+topics: [funktional, programmiersprachen, geschichte]
 </div>
 
 <div

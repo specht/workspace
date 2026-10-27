@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Sprachen und Automaten (formale Sprachen, Turingmaschinen), Vertiefung Theoretische Informatik (Turingmaschine, Halteproblem, Church-Turing-These)"
+topics: [berechenbarkeit]
 requires: [automata]
 reference: [automaten, ruby-python]
 </div>

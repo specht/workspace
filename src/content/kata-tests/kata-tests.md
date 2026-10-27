@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Tests schreiben, die jeden Fehler finden
 curriculum: "Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Testen)"
+topics: [testen]
 requires: [kata-search]
 </div>
 

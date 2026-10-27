@@ -5,6 +5,7 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
+topics: [fehlererkennung, codierung, darstellung]
 requires: [kata-lists]
 reference: [struktogramme]
 </div>

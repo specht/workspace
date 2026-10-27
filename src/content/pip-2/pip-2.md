@@ -6,6 +6,7 @@ duration: 3 Doppelstunden
 languages: [ruby, python, javascript]
 idea: "Pip findet Bello: Schleifen mit Bedingung, eigene Funktionen, Variablen, ein Algorithmus fürs Labyrinth"
 curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten, algorithmische Grundstrukturen, Variablenkonzept und Prozeduren); Oberstufe: Algorithmen und Datenstrukturen (ein Algorithmus fürs Labyrinth)"
+topics: [miniwelt, grundstrukturen, unterprogramme]
 requires: [pip-1, kata-loops]
 </div>
 

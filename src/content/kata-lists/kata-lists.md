@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Listen durchgehen, zusammenrechnen, umbauen und mischen
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen auf Listen); Oberstufe: Algorithmen und Datenstrukturen (Listen)"
+topics: [listen]
 age: Sek I
 requires: [kata-texts]
 </div>

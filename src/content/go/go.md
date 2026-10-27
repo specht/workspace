@@ -2,6 +2,7 @@
 image: go-logo.png
 kind: steckbrief
 curriculum: "Oberstufe: Syntax und Semantik (Compiler)"
+topics: [programmiersprachen]
 </div>
 
 <div

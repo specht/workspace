@@ -4,6 +4,7 @@ image_alt: "Ein rot-cyan gezeichneter Ring über einem Gitter, zum Ansehen mit e
 kind: projekt
 duration: 3 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Vektorgrafik, Figuren und Animationen: 3D-Szenen aus Körpern); Oberstufe: Vertiefung Computergrafik (Transformationen im Raum, Stereoskopie)"
+topics: [computergrafik]
 language: Anaglyph-Viewer
 template: https://github.com/specht/anaglyph.git
 template_name: der Anaglyph-Vorlage

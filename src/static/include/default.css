@@ -3741,6 +3741,26 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     color: #5b2f8f;
 }
 
+/* the choice of the state for the curricula (profile, /lehrplan): as wide
+   as its names */
+select.curriculum-state {
+    width: auto;
+    max-width: 100%;
+}
+
+/* a plan not yet checked by a teacher of its state (Curriculum): said
+   beside the line, small and outlined */
+.page-kind-draft {
+    display: inline-block;
+    margin-left: 0.3em;
+    padding: 0 0.4em;
+    border: 1px solid currentColor;
+    border-radius: 0.6em;
+    font-size: 0.78em;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
 .page-kind-activity .page-kind-links a,
 .reference-include-link a {
     color: #0f766e;

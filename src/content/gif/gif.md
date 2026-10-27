@@ -5,6 +5,7 @@ kind: labor
 language: C
 duration: 3 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Rastergrafik, Bildformat GIF), Vertiefung Maschinennahe Programmierung (Bytes und Bits in C)"
+topics: [digitale-bilder, kompression, maschinennah]
 requires: [pixelram, lzw]
 reference: [c, pixelram, workspace, bits-und-bytes]
 template: https://github.com/specht/pixelram-starter.git

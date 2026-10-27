@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Je nach Wert etwas anderes tun
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung)"
+topics: [grundstrukturen]
 requires: [kata-functions]
 </div>
 

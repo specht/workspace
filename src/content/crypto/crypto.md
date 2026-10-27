@@ -5,6 +5,7 @@ kind: labor
 language: Bash
 duration: 2 Doppelstunden
 curriculum: "Sek I: Information und Daten (Datensicherheit); Oberstufe: Vertiefung Kryptologie und Datensicherheit (Hashes, symmetrische und asymmetrische Verschlüsselung, Signaturen)"
+topics: [verschluesselung, datensicherheit]
 requires: [tcpip]
 reference: [kryptographie, netzwerk, terminal]
 </div>

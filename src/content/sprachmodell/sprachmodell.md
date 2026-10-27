@@ -5,6 +5,7 @@ kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung, Implementieren von Algorithmen), Information und Daten (Daten, Information, Nachricht); Oberstufe: Vertiefung Künstliche Intelligenz (ein Sprachmodell aus Wortpaaren), Vertiefung Informatik und Gesellschaft (woher die Texte kommen, was ein Modell daraus übernimmt)"
+topics: [ki, zeichenketten, information, gesellschaft]
 requires: [kata-dicts]
 reference: [regex]
 </div>

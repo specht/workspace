@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Graphen, Breitensuche, Dijkstra, Heap, A*)"
+topics: [graphen, datenstrukturen]
 template: https://github.com/specht/routenplaner-starter.git
 template_name: der Vorlage des Routenplaners
 reference: [graphen, heap, ruby-python]

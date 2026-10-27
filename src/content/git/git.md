@@ -4,6 +4,7 @@ image_alt: "Das Logo von Git"
 kind: grundlagen
 duration: 3 Doppelstunden
 curriculum: "Sek I: Projektmanagement (Arbeiten und Kooperieren im Team); Oberstufe: Softwareprojekt (systematische Softwareentwicklung)"
+topics: [teamarbeit]
 reference: [workspace, terminal, git, gitlab]
 </div>
 

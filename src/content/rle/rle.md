@@ -6,6 +6,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 1 Doppelstunde
 curriculum: "Sek I: Information und Daten (Codierung), Algorithmisches Problemlösen (Zeichenkettenbearbeitung); Oberstufe: Algorithmen und Softwareentwicklung (Algorithmik im Kleinen)"
+topics: [kompression, codierung, zeichenketten]
 requires: [kata-lists]
 reference: [bits-und-bytes, ruby-python]
 </div>

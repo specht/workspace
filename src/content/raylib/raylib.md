@@ -5,6 +5,7 @@ kind: projekt
 language: raylib / C
 duration: 5 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (3D-Echtzeitgrafik, Beleuchtung mit Shadern, Texturen)"
+topics: [computergrafik]
 requires: [pixelram]
 reference: [c, raylib, glsl, vektoren]
 template: https://github.com/specht/raylib-starter.git

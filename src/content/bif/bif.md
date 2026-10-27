@@ -4,6 +4,7 @@ image_alt: "Der BIF-Editor mit den Seiten einer Geschichte als Graph, daneben di
 kind: projekt
 duration: 3 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (Modellierung einfacher Abläufe, Variablenkonzept, algorithmische Grundstrukturen: Verzweigung)"
+topics: [grundstrukturen]
 language: Markdown / JavaScript
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage

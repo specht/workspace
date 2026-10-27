@@ -2,6 +2,7 @@
 image: Java-Logo.png
 kind: steckbrief
 curriculum: "Oberstufe: Syntax und Semantik (Compiler, Bytecode)"
+topics: [programmiersprachen]
 </div>
 
 <div
