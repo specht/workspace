@@ -103,6 +103,27 @@ class CodeLanguagesTest < Minitest::Test
         assert_equal 'python', CodeLanguages.resolve(nil, {}, %w[python])
     end
 
+    # A class ranks its languages: each page shows the first it offers;
+    # only the first class with a list counts; the person's own choices first
+    def test_ranked_class_languages
+        assert_equal 'javascript', CodeLanguages.resolve(nil, { '10a' => %w[javascript python] }, %w[ruby python javascript])
+        assert_equal 'python', CodeLanguages.resolve(nil, { '10a' => %w[javascript python] }, %w[ruby python])
+        assert_equal 'ruby', CodeLanguages.resolve(nil, { '10a' => %w[java] }, %w[ruby python])
+        assert_equal 'dart', CodeLanguages.resolve(nil, { '10a' => %w[java] }, %w[dart javascript])
+        assert_equal 'python', CodeLanguages.resolve(nil, { '9b' => nil, '10a' => %w[python], 'LK' => %w[java] }, %w[ruby python java])
+        assert_equal 'ruby', CodeLanguages.resolve(['javascript', 'ruby'], { '10a' => %w[python] }, %w[ruby python])
+        assert_equal 'javascript', CodeLanguages.resolve([nil, nil], { '10a' => %w[javascript] }, %w[ruby javascript])
+    end
+
+    # Before the list there was one language per class: it reads as a list
+    def test_ranked_reads_the_old_value
+        assert_equal %w[python], CodeLanguages.ranked('python')
+        assert_equal %w[javascript ruby], CodeLanguages.ranked(%w[javascript cobol ruby javascript])
+        assert_nil CodeLanguages.ranked(nil)
+        assert_nil CodeLanguages.ranked([])
+        assert_nil CodeLanguages.ranked('cobol')
+    end
+
     TASK = {
         'id' => 'kompressor', 'title' => 'Der Kompressor', 'prompt' => 'Schreib `compress` in `lzw.rb`.',
         'check' => { 'type' => 'ruby', 'file' => 'lzw/lzw.rb', 'cases' => [{ "compress('A')" => '[65]' }] },

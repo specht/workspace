@@ -235,8 +235,9 @@ Knöpfe.
 ### In Ruby und in Python
 
 Eine Aktivität, deren Sprache frei ist, gibt es in Ruby und in Python.
-Lehrkräfte stellen auf der Klassenseite (`/klasse`) unter »Sprache« ein,
-welche ihre Gruppe sieht; ohne Einstellung ist es Ruby. Lernende können auf
+Lehrkräfte ordnen auf der Klassenseite (`/klasse`) unter »Sprachen der
+Klasse« die Sprachen ihrer Gruppe; jede Aktivität zeigt die erste davon, die
+sie anbietet, ohne Einstellung Ruby. Lernende können auf
 der Seite mit einem Schalter neben der Art der Aktivität selbst umschalten,
 und diese Wahl gilt dann für sie auf allen solchen Seiten.
 

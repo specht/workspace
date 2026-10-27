@@ -209,10 +209,28 @@ der eigene Workspace startet erst nach »Ich bin einverstanden«
 Administration und Testkonten sind ausgenommen; wer in einen Workspace
 hineinsieht, ist nicht betroffen.
 
+## Sprachen der Klasse
+
+Unter »Einstellungen« ordnet eine Lehrkraft die Programmiersprachen ihrer
+Gruppe (`class_languages.js`, `/api/set_group_code_languages`): Jede
+Aktivität, die es in mehreren Sprachen gibt, zeigt die erste Sprache dieser
+Liste, die sie anbietet, sonst Ruby, sonst ihre erste (`CodeLanguages.resolve`).
+Alle fünf Sprachen sind erlaubt; darunter stehen die übrigen, die am
+häufigsten angebotenen zuerst, mit der Zahl der Aktivitäten. Ziehen (Maus,
+Stift, auf dem Handy am Griff), die Pfeile oder die Tastatur (↑/↓, Entf,
+Enter) ändern die Liste, gespeichert wird sofort; leer wird sie nie. Ein Satz
+darunter sagt, welche Aktivitäten dann welche Sprache zeigen. Gespeichert ist
+die Liste als `GroupSetting.code_languages`; eine Gruppe von vorher mit einer
+Sprache (`code_language`) gilt als Liste mit dieser einen, bis die Liste zum
+ersten Mal gespeichert wird. Wer in mehreren Gruppen ist, bekommt die Liste
+der ersten Gruppe mit einer Einstellung. Die eigene Wahl auf einer Seite
+(Ruby oder Python, `u.code_language`, und JavaScript, Dart oder Java auf den
+Seiten, die sie anbieten) geht vor.
+
 ## Kopierknöpfe
 
 Voreingestellt hat jeder Codeblock einen Kopierknopf, für alle. Auf der
-Klassenseite neben »Sprache« stellt »Kopierknöpfe: Wo sinnvoll« eine Gruppe
+Klassenseite neben »Sprachen der Klasse« stellt »Kopierknöpfe: Wo sinnvoll« eine Gruppe
 um: Ihre Lernenden bekommen Kopierknöpfe nur an Blöcken, bei denen Abtippen
 nichts lehrt (docs/aktivitaet-schreiben.md), und tippen kurzen Code ab
 (`GroupSetting.copy_all_code = false`, sofort gespeichert). Wer in mehreren

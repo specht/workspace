@@ -4599,6 +4599,177 @@ ul.task-teacher-list .task-teacher-answer {
     margin: 0.4em 0 0;
 }
 
+/* »Sprachen der Klasse« (class_languages.js): the ranked languages as rows
+   with a number, a grip, the logo, the name and how many activities offer
+   it; the others below, quieter, each added with a tap. A row being dragged
+   lifts with a soft shadow; where it would land, a dashed gap. */
+.class-languages {
+    margin-top: 0.6em;
+}
+
+.cl-list,
+.cl-more {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 30em;
+}
+
+.cl-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.4em 0.5em 0.4em 0.6em;
+    margin-bottom: 0.4em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    background: var(--bs-body-bg);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+}
+
+.cl-item:hover {
+    border-color: var(--bs-secondary-color);
+}
+
+.cl-item:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.cl-rank {
+    flex: 0 0 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+    font-size: 85%;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    line-height: 1.6em;
+}
+
+/* the grip takes a finger's drag; the page scrolls under the rest */
+.cl-grip {
+    color: var(--bs-secondary-color);
+    touch-action: none;
+    padding: 0.2em 0;
+}
+
+.cl-logo {
+    flex: 0 0 auto;
+    border-radius: 4px;
+}
+
+.cl-name {
+    font-weight: 600;
+}
+
+.cl-count {
+    margin-left: auto;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.cl-tools {
+    display: flex;
+    gap: 0.1em;
+}
+
+.cl-btn {
+    border: none;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    border-radius: 0.4em;
+    padding: 0.15em 0.4em;
+    line-height: 1.2;
+}
+
+.cl-btn:hover:not(:disabled):not([aria-disabled='true']) {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+}
+
+.cl-btn:disabled,
+.cl-btn[aria-disabled='true'] {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.cl-list .cl-add,
+.cl-more .cl-up,
+.cl-more .cl-down,
+.cl-more .cl-remove,
+.cl-more .cl-rank {
+    display: none;
+}
+
+/* the other languages: quieter, a tap adds them */
+.cl-more .cl-item {
+    border-style: dashed;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cl-more .cl-item:hover {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg-subtle);
+}
+
+.cl-more .cl-name {
+    font-weight: 400;
+}
+
+.cl-add {
+    color: var(--bs-primary);
+    font-size: 90%;
+}
+
+.cl-add span {
+    margin-left: 0.25em;
+}
+
+/* lifted while dragged (its place is set by the script), and the gap */
+.cl-item.cl-dragging {
+    z-index: 1080;
+    cursor: grabbing;
+    scale: 1.03;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0.7em 1.6em rgba(0, 0, 0, 0.18);
+    transition: none;
+}
+
+.cl-gap {
+    margin-bottom: 0.4em;
+    border: 2px dashed var(--bs-primary-border-subtle);
+    border-radius: 0.6em;
+    background: var(--bs-primary-bg-subtle);
+}
+
+body.cl-dragging-page,
+body.cl-dragging-page * {
+    cursor: grabbing !important;
+    user-select: none;
+}
+
+.cl-preview {
+    margin-top: 0.8em;
+}
+
+@media (max-width: 575.98px) {
+    .cl-count {
+        display: none;
+    }
+
+    .cl-tools {
+        margin-left: auto;
+    }
+}
+
 .class-repos .class-repos-save {
     margin-top: 0.4em;
 }

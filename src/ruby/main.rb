@@ -5494,17 +5494,29 @@ class Main < Sinatra::Base
 
     # --- Programming languages (CodeLanguages) ---------------------------------
 
-    # The language a teacher set for each group, { group => language } in
-    # the order given; nil where none is set.
+    # The languages a teacher ranked for each group, { group => [languages] }
+    # in the order given; nil where none is set. A group set before the
+    # list has one language (g.code_language), read as a list of one.
     def group_code_languages(groups)
         return {} if groups.empty?
 
         rows = neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a
             MATCH (g:GroupSetting) WHERE g.group IN $groups
-            RETURN g.group AS group, g.code_language AS language;
+            RETURN g.group AS group, g.code_languages AS languages, g.code_language AS language;
         END_OF_QUERY
-        set = rows.to_h { |row| [row['group'], row['language']] }
+        set = rows.to_h { |row| [row['group'], CodeLanguages.ranked(row['languages'] || row['language'])] }
         groups.to_h { |group| [group, set[group]] }
+    end
+
+    # The activities of the catalog that offer more than one language, for
+    # the class's ranking: [{ title, languages }] in catalog order
+    def multi_language_activities
+        pinnable_slugs.filter_map do |slug|
+            languages = (@@content[slug] || {})[:languages] || []
+            next if languages.size < 2
+
+            { :title => plain_title(slug), :languages => languages }
+        end
     end
 
     # --- Copy buttons per group ---------------------------------------------------
@@ -5665,7 +5677,7 @@ class Main < Sinatra::Base
             # JavaScript, picked on a Kata page, is kept apart from the
             # choice between Ruby and Python, which stays for other pages
             kata = user_logged_in? ? @session_user[:kata_code_language] : nil
-            CodeLanguages.resolve(kata, { :own => own }.merge(groups), languages)
+            CodeLanguages.resolve([kata, own], groups, languages)
         end
     end
 
@@ -6749,20 +6761,21 @@ class Main < Sinatra::Base
     def class_settings_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         io = +"<div class='class-settings'>"
-        # The programming language of the group's activities (CodeLanguages),
-        # where an activity offers more than one.
-        current = group_code_languages([group])[group]
-        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-code-language'>Sprache</label></h3>" \
-            "<select class='form-select class-code-language' id='class-code-language' data-group='#{h.(group)}' aria-describedby='class-code-language-hint'>"
-        CodeLanguages::GROUP_LANGUAGES.each do |language|
-            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
-            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
-        end
-        io << "</select><p class='class-setting-hint' id='class-code-language-hint'>Für Aktivitäten, die es in mehreren Sprachen gibt. " \
-            "Lernende können auf der Seite selbst umschalten.</p></section>"
-        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
-            "});</script>"
+        # The programming languages of the group's activities, ranked
+        # (CodeLanguages): drawn by class_languages.js from the data, the
+        # languages of the activities with it for the counts and the preview.
+        ranked = group_code_languages([group])[group] || [CodeLanguages::DEFAULT]
+        activities = multi_language_activities
+        data = {
+            :group => group, :ranked => ranked, :default => CodeLanguages::DEFAULT,
+            :languages => CodeLanguages::GROUP_LANGUAGES.map { |l| { :id => l, :name => CodeLanguages::NAMES[l] } },
+            :activities => activities,
+        }
+        io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-languages-title'>Sprachen der Klasse</h3>" \
+            "<p class='class-setting-hint'>Jede Aktivität, die es in mehreren Sprachen gibt, zeigt die erste dieser Liste, die sie anbietet. " \
+            "Zieh eine Sprache an ihren Platz oder hol eine aus »Weitere Sprachen« dazu. Lernende können auf der Seite selbst umschalten.</p>" \
+            "<div class='class-languages' data-languages='#{h.(data.to_json)}'></div></section>"
+        io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?).
         copy_all = group_copy_all_code?([group])
@@ -8613,7 +8626,7 @@ class Main < Sinatra::Base
         # JavaScript, Dart and Java only where a page offers them
         # (CodeLanguages): they do not replace the choice between Ruby and
         # Python, and picking one of those again leaves them behind.
-        if CodeLanguages::GROUP_LANGUAGES.include?(data[:language])
+        if CodeLanguages::OWN_LANGUAGES.include?(data[:language])
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
                 MATCH (u:User {email: $email})
                 SET u.code_language = $language
@@ -8630,26 +8643,21 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
-    # The language a teacher sets for a group they administer; '' removes
-    # it, and the group sees Ruby again.
-    post '/api/set_group_code_language' do
+    # The languages a teacher ranks for a group they administer
+    # (»Sprachen der Klasse«): known ones, each once, at least one; the list
+    # replaces the one language stored before it.
+    post '/api/set_group_code_languages' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:group, :language])
+        data = parse_request_data(:required_keys => [:group, :languages], :types => { :languages => Array })
         group = data[:group]
         assert(class_groups.include?(group))
-        language = data[:language].to_s
-        assert(language.empty? || CodeLanguages::GROUP_LANGUAGES.include?(language))
-        if language.empty?
-            neo4j_query(<<~END_OF_STRING, {:group => group})
-                MATCH (g:GroupSetting {group: $group})
-                REMOVE g.code_language;
-            END_OF_STRING
-        else
-            neo4j_query(<<~END_OF_STRING, {:group => group, :language => language})
-                MERGE (g:GroupSetting {group: $group})
-                SET g.code_language = $language;
-            END_OF_STRING
-        end
+        languages = data[:languages]
+        assert(!languages.empty? && languages.all? { |l| l.is_a?(String) && CodeLanguages::GROUP_LANGUAGES.include?(l) } && languages.uniq.size == languages.size)
+        neo4j_query(<<~END_OF_STRING, {:group => group, :languages => languages})
+            MERGE (g:GroupSetting {group: $group})
+            SET g.code_languages = $languages
+            REMOVE g.code_language;
+        END_OF_STRING
         respond(:yay => 'sure')
     end
 
