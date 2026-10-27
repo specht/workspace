@@ -18,15 +18,6 @@ class DevOnlyTest < Minitest::Test
         'reference/uml' => { :title => 'Klassendiagramme', :dev_only => true },
     }.freeze
 
-    def test_a_draft_activity_is_served_in_development_only
-        refute PageKinds.served?('draft', CONTENT['draft'])
-        assert PageKinds.served?('draft', CONTENT['draft'], :development => true)
-        assert PageKinds.served?('kata-bits', CONTENT['kata-bits'])
-        refute PageKinds.served?('nothing', nil, :development => true)
-        # a Handbuch page in development stays at its address: live pages link to it
-        assert PageKinds.served?('reference/uml', CONTENT['reference/uml'])
-    end
-
     def test_no_list_names_a_draft_in_production
         slugs = %w[kata-bits draft]
         assert_empty PageKinds.builds_on('kata-bits', CONTENT, slugs)

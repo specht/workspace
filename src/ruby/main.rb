@@ -10324,7 +10324,7 @@ class Main < Sinatra::Base
             redirect moved.start_with?('https://') ? moved : "#{WEB_ROOT}/#{moved}", 301
             return
         end
-        if PageKinds.served?(path[1, path.size - 1], @@content[path[1, path.size - 1]], :development => DEVELOPMENT)
+        if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
             path = '/a.html'
         end

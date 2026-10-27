@@ -45,11 +45,11 @@ schlägt fehl, solange das Bild veraltet ist.
 Eine neue Aktivität, die noch nicht für alle da sein soll, bekommt einen
 Punkt vor den Namen (`- .logikgatter`): Sie steht dann nur in der
 Entwicklung im Katalog, auf `/lehrplan`, in »Wie es weitergehen kann« und
-in »Wird verwendet in« des Handbuchs; in der Produktion gibt es sie nirgends,
-auch nicht unter ihrer Adresse (`PageKinds.served?`, `dev_only_test.rb`), und
-das gespeicherte Bild der Wege hat für die Produktion ein eigenes Layout ohne
-sie. Eine Handbuch-Seite mit Punkt bleibt unter ihrer Adresse erreichbar,
-weil Aktivitäten auf sie verlinken, bevor sie im Katalog des Handbuchs steht.
+in »Wird verwendet in« des Handbuchs; in der Produktion steht sie in keiner
+Liste (`dev_only_test.rb`), und das gespeicherte Bild der Wege hat für die
+Produktion ein eigenes Layout ohne sie. Unter ihrer Adresse bleibt sie auch in
+der Produktion erreichbar, für den, der sie kennt (so wollte es der
+Maintainer: was nicht auf der Startseite steht, darf erreichbar sein).
 
 Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
 vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
