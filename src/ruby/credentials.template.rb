@@ -25,6 +25,11 @@ ADMIN_USERS = []
 # in den Inhalten. Ohne diese Zeile fehlt die Adresse dort einfach.
 CONTACT_EMAIL = 'kontakt@example.com'
 
+# Die öffentliche Adresse des Workspace, für die Links in den Briefen an
+# Rechteinhaber auf /picture-rights, wenn diese Installation eine andere hat
+# (etwa die zum Entwickeln). Ohne diese Zeile gilt WEB_ROOT.
+# PUBLIC_WEB_ROOT = 'https://workspace.example.org'
+
 # Impressum und Datenschutzerklärung (/impressum) und die Unterlagen für die
 # Schule (/datenschutz, docs/datenschutz.md). Jede Zeile ist freiwillig; ohne
 # sie fehlt die Angabe dort, und die Seiten sagen, dass sie fehlt.
