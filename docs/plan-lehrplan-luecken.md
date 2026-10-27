@@ -64,7 +64,7 @@ full, also by bringing back parked activities or moving them:
 | Rechnen | Wie Computer rechnen (6 → 9) | a logic sandbox (gates to the ALU of `sandbox-cpu`); a Turing machine; `cable` back (Sender-Empfänger, Baudot) or a third card from the gaps above | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
-State of the package Software (27 October 2026), all dev-only:
+State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
 `check-digits` (»Prüfziffern: erst planen, dann programmieren«: EAN-13 and
 ISBN-10, a Struktogramm read and translated, then planned by the students;
 Ruby and Python, with its card picture), `supermarkt`, the Handbuch pages
