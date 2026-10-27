@@ -206,9 +206,39 @@ Doppelstunden, built on Katas: Dictionaries and Listen.
    asking who decides), and that a person stays responsible. Joy Buolamwini's
    »Gender Shades« (2018) as the real case, in a paper box.
 
-Open: whether the class's own text for the language model is a task of its
-own; the dataset of digits (UCI »Optical Recognition of Handwritten Digits«,
-CC BY 4.0, or digits the class draws on the page).
+State (28 October 2026): `sprachmodell` is written (dev-only).
+
+#### »Ein Neuron lernt« (`perzeptron`), outline
+
+Real data first: the Palmer penguins (Gorman, Williams and Fraser 2014;
+CC0), measured on the Antarctic Peninsula. Adélie and Gentoo are told apart
+by two measurements of the bill, its length and its depth: with the raw
+millimetres, zero weights, rate 1 and the file's order, a perceptron gets
+all 274 right after 12 passes, and its weights can be read (29.1 · length −
+74.0 · depth − 1 > 0: Gentoo has a long, flat bill). Adélie against
+Chinstrap is never error-free: a single neuron's limit in real data,
+before XOR.
+
+1. The neuron by hand: inputs, weights, a sum, a threshold; McCulloch and
+   Pitts (1943), Rosenblatt's Mark I Perceptron (1958).
+2. `predict(weights, bias, features)`, for any number of features (part 2
+   needs 64); loading the CSV is given.
+3. The learning rule, `learn(…)` for one example, `train(examples, passes)`
+   counting the errors of each pass; a prediction (will it ever be
+   error-free?) and the number of passes.
+4. What it learned: the weights read as a rule; a given function draws the
+   penguins and the line into an SVG opened in VS Code.
+5. Penguins it has not seen: trained on half, tested on the rest.
+6. Where one neuron stops: Adélie against Chinstrap, then XOR (Minsky and
+   Papert, 1969), and why two layers can.
+7. Digits: 8 × 8 pixels, »0 or 1?«, the same functions with 64 features
+   (UCI »Optical Recognition of Handwritten Digits«, CC BY 4.0); the
+   weights as a picture of what the neuron looks for; a drawing pad on the
+   page where students paste their weights and draw (taking up the idea of
+   the parked `digits-experiment`: their own handwriting).
+
+Open: whether digits the class draws on the pad become a dataset of its
+own (an extra).
 
 ## Open questions for the maintainer
 

@@ -1,0 +1,352 @@
+# Aufgaben zu »Ein Neuron lernt«, in Ruby und, unter python:, in Python.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/perzeptron. Die Zahlen
+# gehören zu penguins.csv und den Ziffern in src/static/perzeptron, mit
+# Gewichten und Bias 0 am Anfang und den Beispielen in der Reihenfolge der
+# Datei.
+format: 1
+activity: perzeptron
+tasks:
+  - id: welcher-pinguin
+    title: Welcher Pinguin?
+    prediction: true
+    prompt: |
+      Ein Pinguin hat einen Schnabel, der 48 mm lang und 15 mm hoch ist. Ein
+      anderer hat einen Schnabel, der 38 mm lang und 19 mm hoch ist. Einer ist
+      ein Adéliepinguin, einer ein Eselspinguin. Welcher ist der
+      Eselspinguin?
+    check:
+      type: choice
+      options:
+        - Der mit dem langen, flachen Schnabel.
+        - Der mit dem kurzen, hohen Schnabel.
+        - Am Schnabel kann man das nicht erkennen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Andersherum. Was dein Neuron später aus den Daten lernt, zeigt es genau.
+      - when: { picked: 2 }
+        say: An einem Maß allein oft nicht, an beiden zusammen schon. Das findet dein Neuron gleich selbst heraus.
+    solution: |
+      Der mit dem langen, flachen Schnabel. Eselspinguine haben lange, schmale
+      Schnäbel, Adéliepinguine kurze, hohe.
+
+  - id: von-hand
+    title: Von Hand gerechnet
+    prompt: |
+      Ein Neuron hat die Gewichte 2 und −5 und den Bias 10. Wie groß ist seine
+      Summe für einen Schnabel, der 39 mm lang und 18 mm hoch ist?
+    check: { type: number, expect: -2 }
+    feedback:
+      - when: { equals: -12 }
+        say: Der Bias fehlt noch.
+      - when: { equals: 178 }
+        say: Das Gewicht der Höhe ist −5; das Produkt ist negativ.
+      - when: { equals: 0 }
+        say: Gefragt ist die Summe selbst, nicht was das Neuron sagt.
+    hint: |
+      2 mal 39, plus −5 mal 18, plus 10.
+    solution: |
+      2 · 39 − 5 · 18 + 10 = 78 − 90 + 10 = −2. Die Summe ist nicht größer als
+      0: Das Neuron sagt 0, ein Adéliepinguin.
+
+  - id: vorhersage
+    title: Das Neuron entscheidet
+    prompt: |
+      Schreib in `perzeptron/neuron.rb` die Funktion
+      `predict(weights, bias, features)`. Die Prüfung ruft sie mit zwei und mit
+      drei Merkmalen auf, auch mit einer Summe von genau 0.
+    check:
+      type: ruby
+      file: perzeptron/neuron.rb
+      cases:
+        - call: 'predict([2, -5], 10, [50, 15])'
+          expect: 1
+        - call: 'predict([2, -5], 10, [39, 18])'
+          expect: 0
+          say: Die Summe ist −2, also nicht größer als 0.
+        - call: 'predict([1, 1, 1], -3, [1, 1, 1])'
+          expect: 0
+          say: Die Summe ist genau 0, und 1 gibt es nur, wenn sie größer als 0 ist.
+        - call: 'predict([1, 1, 1], -3, [1, 1, 2])'
+          expect: 1
+          say: Mit drei Merkmalen zählt auch das dritte; geh alle durch, nicht nur zwei.
+    solution: |
+      ```ruby
+      def predict(weights, bias, features)
+        sum = bias
+        features.each_index do |i|
+          sum += weights[i] * features[i]
+        end
+        sum > 0 ? 1 : 0
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `perzeptron/neuron.py` die Funktion
+        `predict(weights, bias, features)`. Die Prüfung ruft sie mit zwei und
+        mit drei Merkmalen auf, auch mit einer Summe von genau 0.
+      check:
+        type: python
+        file: perzeptron/neuron.py
+        cases:
+          - call: 'predict([2, -5], 10, [50, 15])'
+            expect: 1
+          - call: 'predict([2, -5], 10, [39, 18])'
+            expect: 0
+            say: Die Summe ist −2, also nicht größer als 0.
+          - call: 'predict([1, 1, 1], -3, [1, 1, 1])'
+            expect: 0
+            say: Die Summe ist genau 0, und 1 gibt es nur, wenn sie größer als 0 ist.
+          - call: 'predict([1, 1, 1], -3, [1, 1, 2])'
+            expect: 1
+            say: Mit drei Merkmalen zählt auch das dritte; geh alle durch, nicht nur zwei.
+      solution: |
+        ```python
+        def predict(weights, bias, features):
+            total = bias
+            for i in range(len(features)):
+                total += weights[i] * features[i]
+            return 1 if total > 0 else 0
+        ```
+
+  - id: lernen
+    title: Lernen aus Fehlern
+    prompt: |
+      Schreib in `perzeptron/neuron.rb` die Funktion `train(examples, epochs)`.
+      Die Prüfung lässt sie »und« lernen (1 nur, wenn beide Eingaben 1 sind) und
+      »oder« (1, wenn mindestens eine 1 ist), und fragt dann das gelernte
+      Neuron mit `predict`.
+    check:
+      type: ruby
+      file: perzeptron/neuron.rb
+      cases:
+        - call: 'w, b = train([[[0, 0], 0], [[0, 1], 0], [[1, 0], 0], [[1, 1], 1]], 50); [[0, 0], [0, 1], [1, 0], [1, 1]].map { |x| predict(w, b, x) }'
+          expect: '[0, 0, 0, 1]'
+          say: Nach dem Lernen soll das Neuron »und« können. Ändert train bei einem Fehler die Gewichte um Fehler mal Merkmal und den Bias um den Fehler?
+        - call: 'w, b = train([[[0, 0], 0], [[0, 1], 1], [[1, 0], 1], [[1, 1], 1]], 50); [[0, 0], [0, 1], [1, 0], [1, 1]].map { |x| predict(w, b, x) }'
+          expect: '[0, 1, 1, 1]'
+        - call: 'w, b = train([[[1, 1], 1]], 5); w.size == 2'
+          expect: true
+          say: train gibt die Gewichte und den Bias zurück, die Gewichte als Liste mit einem Gewicht je Merkmal.
+    solution: |
+      ```ruby
+      def train(examples, epochs)
+        weights = Array.new(examples[0][0].size, 0.0)
+        bias = 0.0
+        epochs.times do |epoch|
+          errors = 0
+          examples.each do |features, target|
+            error = target - predict(weights, bias, features)
+            next if error == 0
+
+            features.each_index do |i|
+              weights[i] += error * features[i]
+            end
+            bias += error
+            errors += 1
+          end
+          puts "Epoche #{epoch + 1}: #{errors} Fehler"
+          break if errors == 0
+        end
+        [weights, bias]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `perzeptron/neuron.py` die Funktion `train(examples, epochs)`.
+        Die Prüfung lässt sie »und« lernen (1 nur, wenn beide Eingaben 1 sind)
+        und »oder« (1, wenn mindestens eine 1 ist), und fragt dann das gelernte
+        Neuron mit `predict`.
+      check:
+        type: python
+        file: perzeptron/neuron.py
+        cases:
+          - call: 'w, b = train([[[0, 0], 0], [[0, 1], 0], [[1, 0], 0], [[1, 1], 1]], 50); [predict(w, b, x) for x in [[0, 0], [0, 1], [1, 0], [1, 1]]]'
+            expect: '[0, 0, 0, 1]'
+            say: Nach dem Lernen soll das Neuron »und« können. Ändert train bei einem Fehler die Gewichte um Fehler mal Merkmal und den Bias um den Fehler?
+          - call: 'w, b = train([[[0, 0], 0], [[0, 1], 1], [[1, 0], 1], [[1, 1], 1]], 50); [predict(w, b, x) for x in [[0, 0], [0, 1], [1, 0], [1, 1]]]'
+            expect: '[0, 1, 1, 1]'
+          - call: 'w, b = train([[[1, 1], 1]], 5); len(w) == 2'
+            expect: true
+            say: train gibt die Gewichte und den Bias zurück, die Gewichte als Liste mit einem Gewicht je Merkmal.
+      solution: |
+        ```python
+        def train(examples, epochs):
+            weights = [0.0] * len(examples[0][0])
+            bias = 0.0
+            for epoch in range(epochs):
+                errors = 0
+                for features, target in examples:
+                    error = target - predict(weights, bias, features)
+                    if error == 0:
+                        continue
+                    for i in range(len(features)):
+                        weights[i] += error * features[i]
+                    bias += error
+                    errors += 1
+                print(f"Epoche {epoch + 1}: {errors} Fehler")
+                if errors == 0:
+                    break
+            return weights, bias
+        ```
+
+  - id: fehlerfrei
+    title: Wird es fehlerfrei?
+    prediction: true
+    prompt: |
+      Gleich lernt dein Neuron aus 274 Adélie- und Eselspinguinen, höchstens
+      100 Epochen lang. Was passiert?
+    check:
+      type: choice
+      options:
+        - Nach einigen Epochen ordnet es alle 274 richtig ein.
+        - Es wird immer besser, aber ein paar Fehler bleiben.
+        - Es lernt nichts; die Zahl der Fehler bleibt gleich.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei manchen Arten passiert das, gleich weiter unten. Hier lassen sich die beiden Gruppen ganz trennen.
+      - when: { picked: 2 }
+        say: Jeder Fehler verschiebt die Gewichte in Richtung der richtigen Antwort. Bleibt da alles gleich?
+    solution: |
+      Nach zwölf Epochen ordnet es alle richtig ein. Die beiden Arten lassen
+      sich an den zwei Maßen ganz trennen, und dann findet ein Perzeptron
+      immer Gewichte, die keinen Fehler mehr machen.
+
+  - id: epochen
+    title: Wie viele Epochen?
+    prompt: |
+      Nach wie vielen Epochen macht dein Neuron bei den Pinguinen keinen Fehler
+      mehr? Gezählt wird die Epoche ohne Fehler mit.
+    check: { type: number, expect: 12 }
+    feedback:
+      - when: { equals: 11 }
+        say: Die Epoche ohne Fehler zählt mit; sie ist die letzte, die train ausgibt.
+      - when: { equals: 100 }
+        say: So viele dürfte es höchstens. Hört train nach einer Epoche ohne Fehler auf?
+    hint: |
+      Führe `learn.rb` (in Python `learn.py`) aus und lies die letzte Zeile
+      mit »Epoche«. Ist es eine andere Zahl, schau, ob deine Gewichte und der
+      Bias bei 0 anfangen.
+    solution: |
+      Zwölf: Die zwölfte Epoche ist die erste ohne Fehler. Die Gewichte sind
+      dann 29.1 und −74.0, der Bias −1.
+
+  - id: genauigkeit
+    title: Wie oft richtig?
+    prompt: |
+      Schreib in `perzeptron/neuron.rb` die Funktion
+      `accuracy(weights, bias, examples)`. Die Prüfung gibt ihr ein Neuron und
+      vier Beispiele, von denen es drei richtig einordnet.
+    check:
+      type: ruby
+      file: perzeptron/neuron.rb
+      cases:
+        - call: 'accuracy([1, 1], -1.5, [[[1, 1], 1], [[0, 1], 0], [[1, 0], 0], [[0, 0], 1]])'
+          expect: 0.75
+          say: Drei von vier sind richtig, also 0.75. Rechnet deine Funktion mit Kommazahlen? In Ruby ergibt 3 / 4 die ganze Zahl 0.
+        - call: 'accuracy([1, 1], -1.5, [[[1, 1], 1]])'
+          expect: 1.0
+    solution: |
+      ```ruby
+      def accuracy(weights, bias, examples)
+        right = examples.count { |features, target| predict(weights, bias, features) == target }
+        right.to_f / examples.size
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `perzeptron/neuron.py` die Funktion
+        `accuracy(weights, bias, examples)`. Die Prüfung gibt ihr ein Neuron und
+        vier Beispiele, von denen es drei richtig einordnet.
+      check:
+        type: python
+        file: perzeptron/neuron.py
+        cases:
+          - call: 'accuracy([1, 1], -1.5, [[[1, 1], 1], [[0, 1], 0], [[1, 0], 0], [[0, 0], 1]])'
+            expect: 0.75
+            say: Drei von vier sind richtig, also 0.75.
+          - call: 'accuracy([1, 1], -1.5, [[[1, 1], 1]])'
+            expect: 1.0
+      solution: |
+        ```python
+        def accuracy(weights, bias, examples):
+            right = sum(1 for features, target in examples if predict(weights, bias, features) == target)
+            return right / len(examples)
+        ```
+
+  - id: nie-gesehen
+    title: Pinguine, die es nie gesehen hat
+    prompt: |
+      Wie viel Prozent der Pinguine, aus denen es nicht gelernt hat, ordnet
+      dein Neuron richtig ein?
+    check: { type: number, expect: 100, tolerance: 0.1, unit: '%' }
+    feedback:
+      - when: { equals: 1 }
+        say: Das ist der Anteil als Zahl von 0 bis 1; gefragt sind Prozent.
+    solution: |
+      Alle 137, also 100 Prozent. Die Regel, die es aus der einen Hälfte
+      gelernt hat, gilt auch für die andere.
+
+  - id: zuegelpinguin
+    title: Adélie- oder Zügelpinguin?
+    prediction: true
+    prompt: |
+      Ändere in `learn.rb` (in Python `learn.py`) die zweite Art zu
+      `"Chinstrap"` und lass das Neuron lernen. Was passiert in 100 Epochen?
+      Vermute erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Es ordnet nach einigen Epochen alle richtig ein, wie vorher.
+        - Es macht bis zum Ende Fehler, ein oder zwei in jeder Epoche.
+        - Es macht bei fast jedem Pinguin einen Fehler.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Dafür müsste eine Gerade alle Adélie- von allen Zügelpinguinen trennen. Gibt es eine?
+      - when: { picked: 2 }
+        say: Die meisten Zügelpinguine haben deutlich längere Schnäbel. Nur einzelne sind schwierig.
+    solution: |
+      Es macht bis zur hundertsten Epoche Fehler, meist zwei. Keine Gerade
+      trennt alle Adélie- von allen Zügelpinguinen.
+
+  - id: nullen-und-einsen
+    title: Fremde Handschriften
+    prediction: true
+    prompt: |
+      Dein Neuron lernt aus `digits-train.csv`, Nullen von Einsen zu
+      unterscheiden, und wird an den Ziffern in `digits-test.csv` geprüft, die
+      andere Menschen geschrieben haben. Wie viele davon ordnet es richtig ein?
+    check:
+      type: choice
+      options:
+        - Alle.
+        - Etwa neun von zehn.
+        - Etwa die Hälfte; fremde Handschriften kennt es nicht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Eine 0 und eine 1 sehen sich kaum ähnlich, egal wer schreibt. Probier es aus.
+      - when: { picked: 2 }
+        say: Es kennt die Handschrift nicht, aber es achtet auf die Kästchen, die bei jeder 0 dunkel sind und bei keiner 1.
+    solution: |
+      Alle 360. Nach zehn Epochen macht es beim Lernen keinen Fehler mehr, und
+      die Regel gilt auch für fremde Handschriften.
+
+  - id: drei-und-acht
+    title: Drei oder Acht?
+    prompt: |
+      Lass dein Neuron 3 gegen 8 lernen, aus `digits-train.csv`, und miss mit
+      `accuracy`, wie viel Prozent der Ziffern in `digits-test.csv` es richtig
+      einordnet. Runde auf eine Stelle nach dem Komma.
+    check: { type: number, expect: 97.2, tolerance: 0.05, unit: '%' }
+    feedback:
+      - when: { equals: 100 }
+        say: Das ist die Genauigkeit bei den Ziffern, aus denen es gelernt hat. Gefragt sind die in digits-test.csv.
+    hint: |
+      Wie bei den Pinguinen: `train` mit `digits("digits-train.csv", 3, 8)`,
+      dann `accuracy` mit `digits("digits-test.csv", 3, 8)`, mal 100.
+    solution: |
+      97,2 Prozent: 347 von 357. Eine 3 und eine 8 sehen sich ähnlicher als
+      eine 0 und eine 1; an manchen Kästchen sind beide dunkel.

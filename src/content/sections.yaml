@@ -177,6 +177,7 @@
     ihren Daten übernehmen.
   entries:
     - .sprachmodell
+    - .perzeptron
 
 - key: compression
   compact: true

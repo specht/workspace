@@ -1,0 +1,45 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# loesung/ ist neuron.rb und neuron.py am Ende der Seite; in fehler/ stehen
+# häufige Fehler, je einer gegenüber der Lösung.
+format: 1
+activity: perzeptron
+examples:
+  vorhersage:
+    pass:
+      - { files: { perzeptron/neuron.rb: loesung/neuron.rb } }
+    fail:
+      - { files: { perzeptron/neuron.rb: { text: "# noch leer\n" } } }
+      - { files: { perzeptron/neuron.rb: fehler/ohne-bias.rb } }
+      - { files: { perzeptron/neuron.rb: fehler/ab-null.rb } }
+    python:
+      pass:
+        - { files: { perzeptron/neuron.py: loesung/neuron.py } }
+      fail:
+        - { files: { perzeptron/neuron.py: { text: "# noch leer\n" } } }
+        - { files: { perzeptron/neuron.py: fehler/ohne-bias.py } }
+        - { files: { perzeptron/neuron.py: fehler/ab-null.py } }
+  lernen:
+    pass:
+      - { files: { perzeptron/neuron.rb: loesung/neuron.rb } }
+    fail:
+      - { files: { perzeptron/neuron.rb: { text: "# noch leer\n" } } }
+      - { files: { perzeptron/neuron.rb: fehler/bias-bleibt.rb } }
+    python:
+      pass:
+        - { files: { perzeptron/neuron.py: loesung/neuron.py } }
+      fail:
+        - { files: { perzeptron/neuron.py: { text: "# noch leer\n" } } }
+        - { files: { perzeptron/neuron.py: fehler/bias-bleibt.py } }
+  genauigkeit:
+    pass:
+      - { files: { perzeptron/neuron.rb: loesung/neuron.rb } }
+    fail:
+      - { files: { perzeptron/neuron.rb: { text: "# noch leer\n" } } }
+      - { files: { perzeptron/neuron.rb: fehler/ganze-zahlen.rb } }
+    python:
+      pass:
+        - { files: { perzeptron/neuron.py: loesung/neuron.py } }
+      fail:
+        - { files: { perzeptron/neuron.py: { text: "# noch leer\n" } } }
+        - { files: { perzeptron/neuron.py: fehler/falsche-gezaehlt.py } }

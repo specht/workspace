@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120">
+  <rect width="300" height="120" fill="white"/>
+  <line x1="10" y1="100" x2="60" y2="20" stroke="black" stroke-width="3"/>
+  <ellipse cx="105" cy="60" rx="30" ry="18" fill="none" stroke="#2b5fb4" stroke-width="3"/>
+  <polygon points="160,95 185,25 210,95" fill="#16a34a"/>
+  <path d="M 230 90 Q 255 10 285 90" fill="none" stroke="#d97706" stroke-width="4"/>
+  <text x="150" y="115" font-size="12" text-anchor="middle">line, ellipse, polygon, path</text>
+</svg>

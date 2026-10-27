@@ -53,11 +53,13 @@
   icon: /images/pen.png
   description: |
     Webseiten und Folien bauen: Inhalt mit HTML, Aussehen mit CSS, Anordnung
-    mit Flexbox und Spalten. Jedes Beispiel als Webseite und als Folie.
+    mit Flexbox und Spalten, Bilder aus Text mit SVG. Jedes Beispiel als
+    Webseite und als Folie.
   entries:
     - html
     - css
     - layout
+    - svg
 
 - key: reference-presentations
   label: Präsentationen
