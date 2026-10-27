@@ -5985,22 +5985,26 @@ ul.task-teacher-list .task-teacher-answer {
     color: #5c636a;
 }
 
-/* Handbuch »ER-Modelle als Text«: model on the left, diagram on the right. */
-.er-playground {
+/* Handbuch »ER-Modelle als Text« and »Klassendiagramme als Text«: model on
+   the left, diagram on the right. */
+.er-playground,
+.uml-playground {
     display: grid;
     grid-template-columns: minmax(16em, 2fr) 3fr;
     gap: 0.8em 1em;
     margin: 1em 0 1.5em;
 }
 
-.er-playground-input {
+.er-playground-input,
+.uml-playground-input {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: 90%;
     min-height: 22em;
     resize: vertical;
 }
 
-.er-playground-output {
+.er-playground-output,
+.uml-playground-output {
     border: 1px solid #e3e3e3;
     border-radius: 0.5em;
     padding: 0.6em;
@@ -6008,7 +6012,8 @@ ul.task-teacher-list .task-teacher-answer {
     background-color: #fff;
 }
 
-.er-playground-diagram svg {
+.er-playground-diagram svg,
+.uml-playground-diagram svg {
     display: block;
     width: 100%;
     height: auto;
@@ -6016,7 +6021,8 @@ ul.task-teacher-list .task-teacher-answer {
     margin-top: 0.5em;
 }
 
-.er-playground-problems {
+.er-playground-problems,
+.uml-playground-problems {
     color: #b02a37;
     font-size: 90%;
     margin-top: 0.4em;
@@ -6035,9 +6041,24 @@ ul.task-teacher-list .task-teacher-answer {
     overflow: auto;
 }
 
+/* With an error the last good diagram stays, faded, as in the UML-Werkstatt. */
+.uml-playground-stale {
+    opacity: 0.4;
+}
+
 @media (max-width: 720px) {
-    .er-playground {
+    .er-playground,
+    .uml-playground {
         grid-template-columns: 1fr;
+    }
+
+    /* On a phone the diagram keeps a readable size and scrolls sideways. */
+    .uml-playground-diagram {
+        overflow-x: auto;
+    }
+
+    .uml-playground-diagram svg {
+        min-width: 36em;
     }
 }
 

@@ -178,6 +178,16 @@
   entries:
     - tic80
 
+- key: reference-software
+  label: Software entwerfen
+  icon: /images/hammer-and-wrench.png
+  description: |
+    Klassendiagramme als Text schreiben und lesen: Klassen, Attribute,
+    Methoden, Vererbung und Assoziationen, und was die UML-Werkstatt daraus
+    macht.
+  entries:
+    - .uml
+
 - key: reference-algorithms
   label: Algorithmen und Datenstrukturen
   icon: /images/brain.png

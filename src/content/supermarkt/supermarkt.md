@@ -66,7 +66,9 @@ kommen im Programm nicht vor; die Simulation tut nichts mit ihnen.
 Lege im Workspace einen Ordner `supermarkt` an und darin eine Datei
 `supermarkt.uml` für das Klassendiagramm. Die UML-Werkstatt zeigt das Diagramm
 neben der Datei, sobald du oben rechts auf das Symbol mit dem Diagramm klickst,
-und unterstreicht, was sie nicht versteht.
+und unterstreicht, was sie nicht versteht. Alles, was du in eine `.uml`-Datei
+schreiben kannst, steht im Handbuch unter
+[Klassendiagramme als Text](/reference/uml).
 
 <!-- language: ruby -->
 Für den Code kommt `supermarket.rb` dazu:

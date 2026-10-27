@@ -684,6 +684,18 @@ html[data-bs-theme="dark"] {
         --er-red: #f19aa1;
     }
     .er-playground-problems { color: #f19aa1; }
+    .uml-playground-output {
+        border-color: #33332f;
+        background-color: #1c1c1b;
+        /* Colours of the class diagram (uml-core.js) */
+        --cd-ink: #e7e6e1;
+        --cd-paper: #1c1c1b;
+        --cd-shape: #1c1c1b;
+        --cd-muted: #a3a29d;
+        --cd-pen: #7fbfe3;
+        --cd-pen-soft: #1d3346;
+    }
+    .uml-playground-problems { color: #f19aa1; }
     .subview-dialog { background-color: #1b1f26; }
     .subview-head,
     .subview-bar,

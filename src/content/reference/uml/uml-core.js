@@ -1,0 +1,1 @@
+../../../vscode-extensions/uml/core/uml-core.js
