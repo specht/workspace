@@ -1,6 +1,6 @@
 <div class='meta'>
 image: startseite.webp
-image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben ein Kopf wie ein Nachthimmel mit der Navigation Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einer Kugel in seiner Farbe und einem Satz über ihn"
+image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben ein Kopf wie ein Nachthimmel mit der Navigation Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einem Foto und einem Satz über ihn"
 kind: projekt
 language: Hugo
 duration: 2 Doppelstunden
@@ -62,10 +62,32 @@ title: Unser Sonnensystem
 - `locale: de` ist die Sprache der Website.
 - `title` ist ihr Name; er erscheint gleich auf jeder Seite.
 
+Jeder Planet bekommt ein Foto. Hol dir die drei Fotos in den Ordner `static/images`:
+
+```bash
+cd /workspace/solar-system
+mkdir -p static/images
+wget -qO static/images/jupiter.jpg https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg
+wget -qO static/images/mars.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Mars_23_aug_2003_hubble.jpg/1280px-Mars_23_aug_2003_hubble.jpg
+wget -qO static/images/saturn.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/1280px-Saturn_during_Equinox.jpg
+```
+
+Die Fotos sind gemeinfrei: Jupiter und Mars hat das Weltraumteleskop Hubble aufgenommen (NASA, ESA, A. Simon und das Hubble Heritage Team), Saturn die Raumsonde Cassini (NASA, JPL und Space Science Institute). Was in `static` liegt, übernimmt Hugo unverändert in die Website: `static/images/mars.jpg` steht dort unter der Adresse `/images/mars.jpg`.
+
 <!-- tutorial-screenshot
 # Neue Website im Terminal, dann den Ordner öffnen
 terminal-open
 terminal-run: cd /workspace && hugo new site solar-system --format yaml
+terminal-wait-for-prompt
+terminal-run: cd /workspace/solar-system
+terminal-wait-for-prompt
+terminal-run: mkdir -p static/images
+terminal-wait-for-prompt
+terminal-run: wget -qO static/images/jupiter.jpg https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg
+terminal-wait-for-prompt
+terminal-run: wget -qO static/images/mars.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Mars_23_aug_2003_hubble.jpg/1280px-Mars_23_aug_2003_hubble.jpg
+terminal-wait-for-prompt
+terminal-run: wget -qO static/images/saturn.jpg https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/1280px-Saturn_during_Equinox.jpg
 terminal-wait-for-prompt
 write-file: solar-system/hugo.yaml <- file:stufen/solar-system/hugo.yaml
 press: Control+j
@@ -96,7 +118,7 @@ Eine Seite ist eine Markdown-Datei in `content`. Lege `content/mars.md` an:
 title: Mars
 date: 2026-10-15
 description: Der rote Planet mit dem höchsten Vulkan.
-color: "#c1440e"
+image: /images/mars.jpg
 tags: [Gesteinsplanet, Monde]
 ---
 
@@ -114,7 +136,7 @@ der Erde. Seit Jahren fahren dort Roboterfahrzeuge herum und schicken Bilder.
 - An seinen Polen liegen Kappen aus Eis.
 ```
 
-Oben steht zwischen zwei Zeilen `---` die **Front Matter**, Angaben über die Seite in YAML: ihr Titel, ein Datum, eine kurze Beschreibung, eine Farbe und Schlagwörter (`tags`). `color` ist ein eigenes Feld: Hugo kennt es nicht, aber ein Layout kann es lesen; dazu später mehr. Darunter steht der Inhalt in Markdown, wie in einer README-Datei: `**fett**`, `## Überschrift`, `- Liste`.
+Oben steht zwischen zwei Zeilen `---` die **Front Matter**, Angaben über die Seite in YAML: ihr Titel, ein Datum, eine kurze Beschreibung, ein Foto und Schlagwörter (`tags`). `image` ist ein eigenes Feld: Hugo kennt es nicht, aber ein Layout kann es lesen; dazu später mehr. Darunter steht der Inhalt in Markdown, wie in einer README-Datei: `**fett**`, `## Überschrift`, `- Liste`.
 
 _uses(front-matter)
 
@@ -216,7 +238,7 @@ Jetzt zeigt sich, wofür das gut ist. Lege zwei weitere Seiten an, `content/jupi
 title: Jupiter
 date: 2026-10-15
 description: Ein Riese mit einem Sturm, größer als die Erde.
-color: "#c99b6b"
+image: /images/jupiter.jpg
 tags: [Gasriese, Monde]
 ---
 
@@ -239,7 +261,7 @@ und `content/saturn.md`:
 title: Saturn
 date: 2026-10-15
 description: Leichter als Wasser, mit Ringen aus Eis.
-color: "#e3c27a"
+image: /images/saturn.jpg
 tags: [Gasriese, Ringe]
 ---
 
@@ -303,7 +325,8 @@ Sie bekommt ein eigenes Layout, `layouts/home.html`, das unter ihrem Text eine K
   <ul class="cards">
     {{ range site.RegularPages }}
       <li>
-        <a href="{{ .RelPermalink }}"{{ with .Params.color }} style="--planet: {{ . }}"{{ end }}>
+        <a href="{{ .RelPermalink }}">
+          {{ with .Params.image }}<img src="{{ . | relURL }}" alt="">{{ end }}
           <strong>{{ .Title }}</strong>
           <span>{{ .Description }}</span>
         </a>
@@ -313,7 +336,7 @@ Sie bekommt ein eigenes Layout, `layouts/home.html`, das unter ihrem Text eine K
 {{ end }}
 ```
 
-`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite. Eigene Felder wie `color` stehen in `.Params`: `{{ with .Params.color }}` schreibt das `style` mit der Farbe nur, wenn die Seite eine hat, und darin steht sie für `{{ . }}`.
+`{{ .Description }}` ist die Beschreibung aus der Front Matter jeder Seite. Eigene Felder wie `image` stehen in `.Params`: `{{ with .Params.image }}` schreibt das Bild nur, wenn die Seite eins hat, und darin steht die Adresse für `{{ . }}`. `alt=""` sagt einem Screenreader, dass das Foto nur schmückt: Der Name des Planeten steht gleich darunter.
 
 _task(neue-seite)
 
@@ -323,7 +346,7 @@ Wer einen neuen Planeten anlegt, bekommt die Karte auf der Startseite und den Li
 
 ## Aussehen mit CSS
 
-Was in `static` liegt, übernimmt Hugo unverändert in die fertige Website. Lege `static/style.css` an:
+Auch das CSS kommt nach `static`. Lege `static/style.css` an:
 
 ```css_copy
 body {
@@ -406,7 +429,7 @@ main a {
   gap: 0.4em;
   height: 100%;
   box-sizing: border-box;
-  padding: 1.4em 1em;
+  padding: 0.8em 0.8em 1.2em;
   border-radius: 0.8em;
   background: white;
   color: inherit;
@@ -421,14 +444,13 @@ main a {
   box-shadow: 0 0.5em 1.2em rgba(20, 33, 61, 0.2);
 }
 
-/* der Planet: eine Kugel in der Farbe aus seiner Front Matter */
-.cards a::before {
-  content: "";
-  width: 4.5em;
-  height: 4.5em;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.75), var(--planet, #fca311) 40%, #0b132b 130%);
-  box-shadow: 0 0.3em 0.8em rgba(11, 19, 43, 0.25);
+/* das Foto: alle gleich groß, ganz zu sehen, auf schwarzem Grund */
+.cards img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: #000000;
+  border-radius: 0.5em;
 }
 
 .cards strong {
@@ -449,7 +471,7 @@ footer {
 }
 ```
 
-Die Kugel jedes Planeten ist kein Bild: `.cards a::before` setzt vor jede Karte ein leeres Element, rund und mit einem Farbverlauf. `var(--planet, #fca311)` ist die Farbe, die `home.html` aus der Front Matter in das `style` der Karte schreibt, und Orange, wenn eine Seite keine hat.
+`object-fit: contain` zeigt jedes Foto ganz, ob hoch oder breit wie der Saturn mit seinen Ringen, und füllt den Rest des Rahmens mit Schwarz.
 
 Binde die Datei in `layouts/baseof.html` im `<head>` ein, unter dem `<title>`:
 
@@ -480,7 +502,7 @@ sleep: 1
 check-task: navigation
 terminal-expect-no-text: ERROR
 -->
-<img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit einem Kopf wie ein Nachthimmel mit kleinen Sternen, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten, jede mit einer Kugel in der Farbe des Planeten (hellbraun, rostrot, blassgelb), seinem Namen und einer Beschreibung.'>
+<img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit einem Kopf wie ein Nachthimmel mit kleinen Sternen, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten, jede mit einem Foto des Planeten vor schwarzem Grund, seinem Namen und einer Beschreibung.'>
 
 _uses(regeln, selektoren)
 

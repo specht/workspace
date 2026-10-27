@@ -2,7 +2,7 @@
 title: Mars
 date: 2026-10-15
 description: Der rote Planet mit dem höchsten Vulkan.
-color: "#c1440e"
+image: /images/mars.jpg
 tags: [Gesteinsplanet, Monde]
 ---
 
