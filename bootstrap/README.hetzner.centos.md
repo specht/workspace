@@ -258,15 +258,15 @@ Es wird ein paar Minuten dauern, bis der Workspace läuft – es werden beim ers
 
 ## Schritt 5: Frontend starten
 
-Das Frontend (Traefik) kümmert sich um das TLS-Zertifikat (Letsencrypt) und stellt die Schnittstelle nach außen dar:
+Das Frontend (Traefik) kümmert sich um das TLS-Zertifikat (Letsencrypt) und stellt die Schnittstelle nach außen dar. Es läuft direkt aus dem Ordner `docker/traefik` des Workspace, nicht aus einer Kopie: So kommt jede Änderung mit `git pull`, und der Wächter, über den Traefik Docker liest, findet seinen Code (`docker/docker-guard`). Traefik bekommt keinen Docker-Socket, sondern nur diesen Wächter, der nichts als Lesen erlaubt.
 
 ```
-cd
-mkdir -p frontend/traefik
-cp workspace/docker/traefik/docker-compose.yaml frontend/docker-compose.yaml
-cd frontend
+cd ~/workspace/docker/traefik
+mkdir -p traefik
 touch traefik/acme.json && chmod 600 traefik/acme.json
 ```
+
+`traefik/acme.json` (die Zertifikate) und die `.env` von unten bleiben außerhalb von Git (`.gitignore`).
 
 ### DNS: deSEC (empfohlen) oder Cloudflare
 
@@ -312,11 +312,13 @@ ACME_EMAIL=deine-adresse@example.org
 
 Die Datei enthält ein Geheimnis: `chmod 600 .env`. Und damit die Datenschutzerklärung den Richtigen nennt, in `src/ruby/credentials.rb` des Workspace dasselbe, etwa `DNS_PROVIDER = 'deSEC e. V.'` (ohne den Wert steht dort Cloudflare).
 
-Jetzt können wir das Frontend starten:
+Jetzt können wir das Frontend starten, im selben Ordner:
 
 ```
 docker compose up -d
 ```
+
+Es startet zwei Container: `traefik-docker-guard`, den Wächter, und `traefik`. Im Log des Wächters (`docker logs traefik-docker-guard`) steht »read only«.
 
 Um die Erstellung des Zertifikats zu triggern, müssen wir einmal den Workspace herunterfahren und wieder starten:
 
