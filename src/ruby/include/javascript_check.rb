@@ -1,9 +1,11 @@
 require 'json'
+require 'shellwords'
 require_relative 'call_check'
 
-# The harness for a Kata in JavaScript (KataCheck, docs/plan-katas.md): the
-# counterpart of PythonCheck and RubyCheck, for the code typed into a card,
-# never a file in the Workspace (there is no check type javascript).
+# The harness for JavaScript: the counterpart of PythonCheck and RubyCheck,
+# for the code typed into a Kata's card (KataCheck, docs/plan-katas.md) and,
+# as check type javascript (docs/aufgaben.md), for a file in the Workspace,
+# run there with node as the guest (command), like ruby and python.
 #
 # The harness runs the code in a vm context of its own with the console
 # switched off, so top-level lines that call the function to try it out do
@@ -56,6 +58,10 @@ module JavascriptCheck
             };
         }
         const run = (source) => vm.runInContext(source, context, { timeout: 30000 });
+        // several steps divided by ; (const a = new Account(5); a.deposit(3); a.balance())
+        // in a block of their own, so that two cases may both say const a; the block
+        // gives the value of its last step
+        const call = (source) => run(/;\\s*\\S/.test(source) ? '{' + source + '\\n}' : source);
         (() => {
             let source;
             try {
@@ -80,7 +86,7 @@ module JavascriptCheck
                 const entry = { call: c.call, expect: c.expect };
                 if (c.raises) {
                     try {
-                        entry.got = short(run(c.call));
+                        entry.got = short(call(c.call));
                         entry.ok = false;
                     } catch (error) {
                         entry.ok = true;
@@ -92,7 +98,7 @@ module JavascriptCheck
                 try {
                     const expected = run('(' + c.expect + ')');
                     if (c.show) entry.shown = short(expected);
-                    const got = run(c.call);
+                    const got = call(c.call);
                     entry.got = short(got);
                     entry.ok = util.isDeepStrictEqual(got, expected);
                 } catch (error) {
@@ -124,6 +130,25 @@ module JavascriptCheck
     def self.argv(file, cases, forbid = [])
         payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'], 'show' => c['show'] }.compact }
         ['node', '-e', HARNESS, file, JSON.generate(payload), JSON.generate(forbid)]
+    end
+
+    # The script for a file in the Workspace, run in /workspace as the guest:
+    # the harness goes into a file of its own, since node -e would take the
+    # file for the script's first argument.
+    def self.command(file, cases)
+        _, _, harness, *arguments = argv(file, cases)
+        <<~SH
+            t=$(mktemp -d) || exit 1
+            trap 'rm -rf "$t"' EXIT
+            cat > "$t/harness.js" <<'__HS_HARNESS__'
+            #{harness.chomp}
+            __HS_HARNESS__
+            node "$t/harness.js" #{Shellwords.join(arguments)}
+        SH
+    end
+
+    def self.spec_errors(check)
+        CallCheck.spec_errors(check, '.js')
     end
 
     # [status, message, read] for the harness output.

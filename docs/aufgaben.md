@@ -782,6 +782,27 @@ check:
       say: Ein leerer Text ergibt keinen einzigen Code.
 ```
 
+#### Aufrufe in mehreren Schritten
+
+Was ein Objekt kann, zeigt sich oft erst über mehrere Schritte: anlegen,
+verändern, fragen. Ein Aufruf darf darum aus Schritten bestehen, getrennt
+durch `;`; der letzte gibt das Ergebnis (`CallCheck.steps`, das nur an `;`
+außerhalb von Klammern und Texten trennt). Das geht in allen Sprachen, auch
+in den Katas:
+
+```yaml
+cases:
+  - call: a = Account(5); a.deposit(3); a.balance()        # Python
+    expect: 8
+  - a = Account.new(5); a.deposit(3); a.balance: 8          # Ruby
+  - const a = new Account(5); a.deposit(3); a.balance(): 8  # JavaScript
+```
+
+In Python laufen die Schritte in einer Kopie der Namen der Datei, ändern dort
+also nichts; in JavaScript in einem Block für sich, so dass jeder Fall sein
+eigenes `const a` haben darf; in Ruby auf oberster Ebene, wie jeder Aufruf.
+Java und Dart schreiben die Schritte in den Code, den sie erzeugen (unten).
+
 ### function
 
 Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
@@ -1112,6 +1133,80 @@ Zeile und die Meldung des Compilers; fehlt eine Funktion, heißt es »In
 (andere Parameter), nennt sie den Aufruf. `setup` ist für Hilfsfunktionen, die
 mehrere Aufrufe lesbar machen; was darin nicht zum Programm passt, meldet die
 Prüfung als »Die Prüfung passt noch nicht zu deinem Programm«.
+
+### javascript
+
+Ruft auf, was in einer JavaScript-Datei der Lernenden steht, wie `ruby` und
+`python`, mit `node` im Workspace als Gast (`JavascriptCheck`): dasselbe
+Skript wie bei den Katas in JavaScript, nur auf eine Datei (`file`, auf
+`.js`). Verglichen wird mit `util.isDeepStrictEqual`, Arrays und Objekte also
+nach ihrem Inhalt; `console` ist dabei stumm. Die Beispiele warten, wo es kein
+`node` gibt, wie bei den Katas.
+
+```yaml
+check:
+  type: javascript
+  file: bibliothek/library.js
+  cases:
+    - new Book('Faust', 'Goethe').title: "'Faust'"
+    - call: const b = new Book('A', 'B'); b.lend(); b.isAvailable()
+      expect: false
+```
+
+### java, dart
+
+Rufen auf, was in Java-Klassen oder einer Dart-Datei der Lernenden steht, wie
+`ruby` und `python` (`JavaCheck`, `DartCheck`). Beide Sprachen haben kein
+`eval`; darum schreibt die Prüfung, wie bei `c`, ein Testprogramm um die
+Aufrufe herum und führt es im Workspace aus, als Gast in einem neuen Ordner
+in `/tmp`. Bei Java übersetzt `javac` es zusammen mit allen `.java`-Dateien
+im Ordner von `file`, bei Dart importiert es die Datei (und damit, was sie
+importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`; das `dart` im
+Pfad ist das von Flutter, das erst in seinen eigenen Ordner schreiben will).
+Ein eigenes `main` läuft dabei nicht.
+
+```yaml
+check:
+  type: java
+  file: bibliothek/Book.java              # die Datei der Aufgabe; ihr ganzer Ordner wird übersetzt
+  setup: |                                # Java in der Testklasse, Hilfen für die Aufrufe
+    static Book faust() { return new Book("Faust", "Goethe"); }
+  cases:
+    - new Book("Faust", "Goethe").getTitle(): '"Faust"'
+    - call: Book b = faust(); b.lend(); b.isAvailable()
+      expect: false
+      say: Ein ausgeliehenes Buch ist nicht mehr da.
+    - call: new Book("", "Goethe")
+      raises: true
+
+check:
+  type: dart
+  file: bibliothek/library.dart
+  cases:
+    - Book('Faust', 'Goethe').title: "'Faust'"
+    - call: final b = Book('A', 'B'); b.lend(); b.isAvailable
+      expect: false
+```
+
+Aufrufe und Ergebnisse sind Java oder Dart, in mehreren Schritten wie oben;
+jeder Fall steht in einer eigenen Methode, Namen stören sich also nicht. Die
+Werte werden verglichen, nicht die Objekte: Zahlen als Zahlen (ein `int` ist
+gleich einem `long`, Kommazahlen bis auf 1e-9), Listen und Arrays Element für
+Element, Maps und Mengen nach ihren Einträgen, alles andere mit `equals`
+oder `==`. Die Rückmeldung zeigt einen Wert wie im Code (`"Faust"`, `[1, 2]`,
+in Dart `'Faust'`), ein Objekt der eigenen Klasse mit seinem `toString`. Was
+der Code ausgibt, verschwindet. Bricht ein Fall mit einer Exception ab, steht
+sie mit der Datei und Zeile im Code der Person da, aus der sie kam: »bricht
+ab: `NullPointerException: … (Book.java, Zeile 5)`«; die anderen Fälle laufen
+weiter. Lässt sich der Code nicht übersetzen, sagt die Prüfung, was fehlt
+(»`Book` hat noch keine Methode `lend`«, »Die Klasse `Book` gibt es noch
+nicht«), welche Zeile welcher Datei der Compiler nicht versteht, oder welcher
+Aufruf nicht zum Programm passt. Ein Lauf dauert in einem Workspace etwa eine
+Sekunde (Java) bis zwei (Dart); `timeout` gilt wie bei `python` für alles.
+
+Die Beispiele (`task-examples.yaml`) brauchen `javac` oder `dart`; wo sie
+fehlen (der Ruby-Container, die CI), warten sie auf eine Maschine, die sie
+hat, wie Katas in JavaScript ohne Node.
 
 ### sql
 

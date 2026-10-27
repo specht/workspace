@@ -11,6 +11,9 @@ require_relative 'er_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
 require_relative 'c_check'
+require_relative 'javascript_check'
+require_relative 'java_check'
+require_relative 'dart_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 
@@ -28,7 +31,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c function pip tests]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby javascript c java dart function pip tests]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -95,7 +98,10 @@ module TaskCheck
         return check_er(task, check, workspace, runner) if type == 'er'
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
+        return check_calls(task, check, workspace, guest_runner, JavascriptCheck) if type == 'javascript'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
+        return check_calls(task, check, workspace, guest_runner, JavaCheck) if type == 'java'
+        return check_calls(task, check, workspace, guest_runner, DartCheck) if type == 'dart'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
         return check_tests(task, check, answer, kata) if type == 'tests'
         return check_pip(task, check, answer, kata, kata_seed, kata_map) if type == 'pip'
@@ -201,8 +207,8 @@ module TaskCheck
 
     NOT_RUNNING_CALLS = 'Starte zuerst deinen Workspace. Dein Programm läuft zum Prüfen in deinem Workspace.'
 
-    # python, ruby, c: calls into the person's own file (PythonCheck,
-    # RubyCheck, CCheck). The code is theirs, so it only ever runs as the guest
+    # python, ruby, javascript, c, java, dart: calls into the person's own
+    # file (PythonCheck, RubyCheck, JavascriptCheck, CCheck, JavaCheck, DartCheck). The code is theirs, so it only ever runs as the guest
     # (rule 1).
     def self.check_calls(task, check, workspace, runner, language)
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?

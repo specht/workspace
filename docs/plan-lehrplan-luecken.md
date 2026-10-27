@@ -60,16 +60,20 @@ methods come out of it, drawn as a class diagram, then written as code and
 checked; then relationships: »hat ein« (association, with multiplicities)
 and »ist ein« (inheritance).
 
-What it needs, in this order:
+What it needs, in this order (state on 27 October 2026 after each):
 
-1. **Five languages on an activity.** `CodeLanguages` knows Ruby, Python
+1. **Five languages on an activity** (done: Dart and Java in
+   `CodeLanguages`, with logos and colours in the switch). `CodeLanguages` knows Ruby, Python
    and JavaScript, and an activity offers Ruby and Python (a class sets one
    of them, `GROUP_LANGUAGES`). Dart and Java join `LANGUAGES` (with names,
    the switch, syntax highlighting of code blocks and code inputs); whether
    the class setting offers them stays the maintainer's call. JavaScript is
    so far a language of the Katas only (plan-katas.md); this page would be
    the first activity with it.
-2. **Checks of Java and Dart files in the Workspace.** The checks `ruby`,
+2. **Checks of Java and Dart files in the Workspace** (done: check types
+   `java` and `dart`, docs/aufgaben.md, tried on real classes in the
+   Workspace image; and `javascript` for a file in the Workspace, which
+   there was none of: the Katas' harness, run with node as the guest). The checks `ruby`,
    `python` (and `javascript`) load the person's file in their Workspace and
    evaluate each call with the language's `eval`. Java and Dart have none:
    their harness is generated as source around the calls of the task,
@@ -78,7 +82,8 @@ What it needs, in this order:
    lists is identity, Java arrays need `Arrays.deepEquals`; both harnesses
    bring their own comparison and their own way to print a value.
    They run in the Workspace, which has the memory a JVM needs.
-3. **Calls of several steps.** An object's behaviour shows over steps:
+3. **Calls of several steps** (done for all five languages and the Katas,
+   docs/aufgaben.md, »Aufrufe in mehreren Schritten«). An object's behaviour shows over steps:
    `a = Account(5); a.deposit(3); a.balance()`. Ruby's and JavaScript's
    `eval` return the last value already; Python's harness evaluates one
    expression and needs to run the statements before the last one first;

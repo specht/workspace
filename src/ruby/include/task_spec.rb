@@ -12,6 +12,8 @@ require_relative 'scene_color'
 require_relative 'html_lite'
 require_relative 'python_check'
 require_relative 'c_check'
+require_relative 'java_check'
+require_relative 'dart_check'
 require_relative 'hint_steps'
 require_relative 'ruby_check'
 require_relative 'kata_check'
@@ -55,7 +57,10 @@ module TaskSpec
         'keyboard' => 'M7',
         'python' => 'M7',
         'ruby' => 'M7',
+        'javascript' => 'M8',
         'c' => 'M7',
+        'java' => 'M8',
+        'dart' => 'M8',
         'function' => 'M8',
         'pip' => 'M8',
         'tests' => 'M8',
@@ -103,7 +108,10 @@ module TaskSpec
         'keyboard' => %w[problem],
         'python' => [],
         'ruby' => [],
+        'javascript' => [],
         'c' => [],
+        'java' => [],
+        'dart' => [],
         'function' => %w[same_as],
         'pip' => [],
         'tests' => [],
@@ -557,6 +565,11 @@ module TaskSpec
             allowed += %w[file cases timeout]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(RubyCheck.spec_errors(check))
+        when 'javascript'
+            # Calls into the person's JavaScript file, run with node as the guest (JavascriptCheck).
+            allowed += %w[file cases timeout]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(JavascriptCheck.spec_errors(check))
         when 'function'
             # A Kata: calls functions in the code typed into the card, run in
             # a container of its own (KataCheck).
@@ -576,6 +589,12 @@ module TaskSpec
             allowed += %w[file cases timeout tolerance setup]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(CCheck.spec_errors(check))
+        when 'java', 'dart'
+            # Calls into the person's Java classes or Dart file, through a
+            # harness written around the calls (JavaCheck, DartCheck).
+            allowed += %w[file cases timeout setup]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat((check['type'] == 'java' ? JavaCheck : DartCheck).spec_errors(check))
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
             allowed += %w[file entities relationships tables]

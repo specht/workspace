@@ -57,6 +57,21 @@ module PythonCheck
             shown = repr(value)
             return shown if len(shown) <= 200 else shown[:200] + '…'
 
+        def evaluate(call, module):
+            """A call, or several steps divided by ; whose last one gives the value
+            (a = Account(5); a.deposit(3); a.balance()): the steps run in a copy
+            of the module's names, so they change nothing in it."""
+            try:
+                return eval(call, vars(module))
+            except SyntaxError:
+                tree = ast.parse(call)
+                if not tree.body or not isinstance(tree.body[-1], ast.Expr):
+                    raise
+                last = ast.Expression(tree.body.pop().value)
+                scope = dict(vars(module))
+                exec(compile(tree, '<check>', 'exec'), scope)
+                return eval(compile(last, '<check>', 'eval'), scope)
+
         def definitions(tree, wanted):
             """The module with only the definitions and the variables they need."""
             def loaded(node):
@@ -140,7 +155,7 @@ module PythonCheck
                 for case in cases:
                     for expression in (case['call'], case.get('expect') or 'None'):
                         try:
-                            wanted |= {n.id for n in ast.walk(ast.parse(expression, mode='eval')) if isinstance(n, ast.Name)}
+                            wanted |= {n.id for n in ast.walk(ast.parse(expression)) if isinstance(n, ast.Name)}
                         except SyntaxError:
                             pass
                 code = compile(definitions(tree, wanted), full, 'exec')
@@ -157,7 +172,7 @@ module PythonCheck
                 if case.get('raises'):
                     try:
                         with contextlib.redirect_stdout(sink):
-                            got = eval(case['call'], vars(module))
+                            got = evaluate(case['call'], module)
                         entry['got'] = short(got)
                         entry['ok'] = False
                     except Exception as error:
@@ -171,7 +186,7 @@ module PythonCheck
                     if case.get('show'):
                         entry['shown'] = short(expected)
                     with contextlib.redirect_stdout(sink):
-                        got = eval(case['call'], vars(module))
+                        got = evaluate(case['call'], module)
                     entry['got'] = short(got)
                     entry['ok'] = bool(got == expected)
                 except BaseException as error:

@@ -65,6 +65,39 @@ module CallCheck
         errors
     end
 
+    # A call of several steps, »a = Account(5); a.deposit(3); a.balance()«,
+    # as its steps: split at »;« outside brackets and string literals, empty
+    # steps dropped. The last one gives the value; the others prepare it
+    # (the harness of each language runs them, JavaCheck and DartCheck put
+    # them into the code they generate).
+    def self.steps(call)
+        steps = ['']
+        depth = 0
+        quote = nil
+        escaped = false
+        call.to_s.each_char do |c|
+            if quote
+                steps[-1] += c
+                if escaped then escaped = false
+                elsif c == '\\' then escaped = true
+                elsif c == quote then quote = nil
+                end
+                next
+            end
+            case c
+            when '"', "'" then quote = c
+            when '(', '[', '{' then depth += 1
+            when ')', ']', '}' then depth -= 1
+            end
+            if c == ';' && depth.zero?
+                steps << ''
+            else
+                steps[-1] += c
+            end
+        end
+        steps.map(&:strip).reject(&:empty?)
+    end
+
     def self.parse(output)
         line = output.to_s.lines.reverse.find { |l| l.start_with?(RESULT_MARK) }
         return nil unless line
