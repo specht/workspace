@@ -358,6 +358,22 @@ docker_compose[:services][:docker_guard] = {
 docker_compose[:services][:ruby][:environment] << 'DOCKER_HOST=unix:///run/docker-guard/docker.sock'
 (docker_compose[:services][:ruby][:depends_on] ||= []) << :docker_guard
 
+# A second guard for the peer firewall, which only watches: read only, the
+# containers and the network and nothing else (DockerPolicy::READONLY). So
+# the firewall, with NET_ADMIN on the host's network, holds no Docker socket.
+FileUtils.mkpath(File.join(DATA_PATH, 'docker-guard-ro'))
+docker_compose[:services][:docker_guard_ro] = {
+    :image => 'ruby:3.4.10-alpine3.24',
+    :command => ['ruby', '/guard/guard.rb'],
+    :volumes => ['/var/run/docker.sock:/var/run/docker.sock',
+                 './docker/docker-guard:/guard:ro',
+                 './src/ruby/include/docker_policy.rb:/policy/docker_policy.rb:ro',
+                 "#{DATA_PATH}/docker-guard-ro:/run/docker-guard"],
+    :environment => { 'GUARD_MODE' => 'readonly' },
+    :network_mode => 'none',
+    :restart => 'always',
+}
+
 docker_compose[:services][:peer_firewall] = {
     :build => './docker/peer-firewall',
     :network_mode => 'host',
@@ -365,8 +381,11 @@ docker_compose[:services][:peer_firewall] = {
     :cap_add => ['NET_ADMIN'],
     :security_opt => ['no-new-privileges:true'],
     :read_only => true,
-    :volumes => ['/var/run/docker.sock:/var/run/docker.sock:ro'],
+    # Docker only through the read-only guard (docker_guard_ro)
+    :volumes => ["#{DATA_PATH}/docker-guard-ro:/run/docker-guard:ro"],
+    :depends_on => [:docker_guard_ro],
     :environment => {
+        'DOCKER_SOCKET' => '/run/docker-guard/docker.sock',
         'WORKSPACE_NETWORK' => "#{PROJECT_NAME}_user",
         'INFRASTRUCTURE_LABEL' => 'hackschule.workspace.peer_firewall.infrastructure',
         'PEER_TCP_PORTS' => '1234',

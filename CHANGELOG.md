@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt
+  (`GUARD_MODE=readonly`). Nach dem Update: `./config.rb build peer_firewall && ./config.rb up -d` und in
+  `docker/traefik` `docker compose up -d` (startet `traefik-docker-guard` und Traefik neu).
 - Lehrkräfte wählen im Profil oder auf `/lehrplan` ihr Bundesland; gespeichert wird es am Konto
   (`curriculum_state`), die Datenschutzerklärung nennt es unter den Einstellungen. Ohne Wahl gilt Berlin.
   Baden-Württemberg ist ein Entwurf (docs/plan-bundeslaender.md).

@@ -99,4 +99,37 @@ class DockerPolicyTest < Minitest::Test
         refute DockerPolicy.decide('POST', '/v1.47/containers/x/update', '', '{}', CONFIG, :name => 'hs_code_abc').first
         refute DockerPolicy.decide('POST', '/v1.47/swarm/init', '', '{}', CONFIG).first
     end
+
+    # The guard of those who only watch (the peer firewall, Traefik): what
+    # they read passes, everything else is refused, also what the backend's
+    # guard allows
+    READONLY = DockerPolicy::Config.new(:images => [], :bind_prefix => '', :networks => [], :exec_containers => [],
+        :hup_containers => [], :name_prefix => 'hs_code_', :readonly => true)
+
+    def test_a_watcher_reads
+        ['/_ping', '/version', '/v1.47/version', '/v1.47/info', '/v1.47/events', '/v1.47/containers/json',
+         '/v1.47/containers/abc123/json', '/v1.47/networks', '/v1.47/networks/workspace_user'].each do |path|
+            assert_equal [true], DockerPolicy.decide('GET', path, '', '', READONLY), path
+        end
+        assert_equal [true], DockerPolicy.decide('HEAD', '/_ping', '', '', READONLY)
+    end
+
+    def test_a_watcher_changes_nothing
+        [['POST', '/v1.47/containers/create'], ['POST', '/v1.47/containers/hs_code_abc/start'],
+         ['POST', '/v1.47/containers/workspace_mysql_1/exec'], ['POST', '/v1.47/exec/1/start'],
+         ['DELETE', '/v1.47/containers/hs_code_abc'], ['POST', '/v1.47/containers/x/kill'],
+         ['GET', '/v1.47/containers/x/logs'], ['GET', '/v1.47/containers/x/stats'], ['GET', '/v1.47/containers/x/archive'],
+         ['GET', '/v1.47/images/json'], ['POST', '/v1.47/images/create'], ['GET', '/v1.47/volumes'],
+         ['POST', '/v1.47/networks/create'], ['POST', '/v1.47/networks/x/connect'], ['GET', '/v1.47/secrets'],
+         ['POST', '/v1.47/build'], ['GET', '/v1.47/containers/x/export']].each do |method, path|
+            allowed, reason = DockerPolicy.decide(method, path, '', '{}', READONLY)
+            refute allowed, "#{method} #{path}"
+            assert_match(/not needed to watch/, reason)
+        end
+    end
+
+    def test_the_mode_comes_from_the_environment
+        assert DockerPolicy.config_from_env('GUARD_MODE' => 'readonly').readonly
+        refute DockerPolicy.config_from_env({}).readonly
+    end
 end

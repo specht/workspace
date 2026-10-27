@@ -25,8 +25,10 @@ module DockerPolicy
     # those that may get a HUP (nginx).
     # max_cpus, max_memory (bytes), max_pids: the largest limits a container
     # may ask for; nil means a Workspace's (workspace_runtime.rb).
+    # readonly (GUARD_MODE=readonly): a guard for those who only watch, the
+    # peer firewall and Traefik: READONLY below and nothing else.
     Config = Struct.new(:images, :bind_prefix, :networks, :exec_containers, :hup_containers, :name_prefix,
-        :max_cpus, :max_memory, :max_pids, keyword_init: true)
+        :max_cpus, :max_memory, :max_pids, :readonly, keyword_init: true)
     MAX_CPUS = 4
     MAX_MEMORY = 4 * 1024**3
     MAX_PIDS = 256
@@ -42,8 +44,23 @@ module DockerPolicy
             :name_prefix => env['GUARD_NAME_PREFIX'].to_s.empty? ? 'hs_code_' : env['GUARD_NAME_PREFIX'],
             :max_cpus => env['GUARD_MAX_CPUS'].to_s.empty? ? nil : env['GUARD_MAX_CPUS'].to_f,
             :max_memory => env['GUARD_MAX_MEMORY'].to_s.empty? ? nil : env['GUARD_MAX_MEMORY'].to_i,
-            :max_pids => env['GUARD_MAX_PIDS'].to_s.empty? ? nil : env['GUARD_MAX_PIDS'].to_i
+            :max_pids => env['GUARD_MAX_PIDS'].to_s.empty? ? nil : env['GUARD_MAX_PIDS'].to_i,
+            :readonly => env['GUARD_MODE'].to_s == 'readonly'
         )
+    end
+
+    # What a watcher reads: the peer firewall the network of the Workspaces
+    # and the containers on it (docker/peer-firewall), Traefik the containers,
+    # their labels and the events that tell it when they change. Only GET and
+    # HEAD; no logs, no exec, no images, no stats.
+    READONLY = [
+        %r{\A/_ping\z}, %r{\A/version\z}, %r{\A/info\z}, %r{\A/events\z},
+        %r{\A/containers/json\z}, %r{\A/containers/[^/]+/json\z},
+        %r{\A/networks\z}, %r{\A/networks/[^/]+\z},
+    ].freeze
+
+    def self.readonly_allowed?(method, path)
+        %w[GET HEAD].include?(method) && READONLY.any? { |pattern| plain_path(path).match?(pattern) }
     end
 
     # The path without the API version: /v1.47/containers/json -> /containers/json
@@ -80,6 +97,10 @@ module DockerPolicy
     # Decides; name: the resolved container name (without the leading /) for
     # kinds that need one. Returns [true] or [false, reason].
     def self.decide(method, path, query, body, config, name: nil)
+        if config.readonly
+            return readonly_allowed?(method, path) ? [true] : [false, "#{method} #{plain_path(path)} is not needed to watch"]
+        end
+
         kind, = classify(method, path)
         case kind
         when :read, :exec_session, :container_read

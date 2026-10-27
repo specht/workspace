@@ -13,6 +13,13 @@
 # provider reaches it. The same DNS host belongs in DNS_PROVIDER in
 # credentials.rb, for the Datenschutzerklärung.
 #
+# Docker: Traefik reads which containers want to be reached (their labels)
+# through a guard, not the Docker socket itself: the guard passes only what
+# a watcher reads (DockerPolicy::READONLY in src/ruby/include/docker_policy.rb,
+# GET on containers, networks, events, version) and refuses the rest, so a
+# hole in Traefik is no way to start a container on the host. The guard is
+# the Workspace's own (docker/docker-guard), started here with this compose.
+#
 # Privacy (docs/datenschutz.md): there is deliberately no --accesslog, so
 # Traefik writes no IP addresses of visitors; the Datenschutzerklärung says
 # the logs contain none. What Traefik does write (start, certificates,
@@ -22,7 +29,29 @@ networks:
   proxy:
     external: true
 
+volumes:
+  docker-guard:
+
 services:
+  docker-guard:
+    image: ruby:3.4.10-alpine3.24
+    container_name: traefik-docker-guard
+    restart: unless-stopped
+    command: ["ruby", "/guard/guard.rb"]
+    environment:
+      GUARD_MODE: readonly
+    network_mode: none
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../docker-guard:/guard:ro
+      - ../../src/ruby/include/docker_policy.rb:/policy/docker_policy.rb:ro
+      - docker-guard:/run/docker-guard
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
   traefik:
     networks:
       - proxy
@@ -43,6 +72,7 @@ services:
 
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+      - --providers.docker.endpoint=unix:///run/docker-guard/docker.sock
 
       - --certificatesresolvers.le.acme.email=${ACME_EMAIL:?ACME_EMAIL missing, see the top of this file}
       - --certificatesresolvers.le.acme.storage=/acme/acme.json
@@ -57,8 +87,11 @@ services:
     env_file:
       - .env
 
+    depends_on:
+      - docker-guard
+
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - docker-guard:/run/docker-guard:ro
       - ./traefik/acme.json:/acme/acme.json
 
     logging:
