@@ -212,6 +212,14 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await mobileCard.locator('.code-input').scrollIntoViewIfNeeded();
   await mobileCard.locator('.pip-world').screenshot({ path: testInfo.outputPath('pip-phone.png') });
   await phone.close();
+  // changed code: the old run is gone, nothing to step through until the next
+  await card.locator('.task-code').focus();
+  await page.keyboard.press('Control+End');
+  await page.keyboard.type('\n');
+  await expect(card.locator('.pip-status')).toHaveText('Seit der Änderung noch nicht gelaufen');
+  await expect(card.locator('.stepper-timeline')).toBeHidden();
+  await expect(card.locator("[data-go='next']")).toBeDisabled();
+  await expect(card.locator('.code-input-gutter > .current')).toHaveCount(0);
 });
 
 // The first chapter: the plan is clicked, one line a click, and only

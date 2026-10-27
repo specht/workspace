@@ -720,6 +720,8 @@
                         sql.value = plan;
                         if (sql.codeInputUpdate) sql.codeInputUpdate();
                     }, function () { submit(card); });
+                } else if (sql) {
+                    sql.addEventListener('input', function () { card.pipPlayer.forget(); });
                 }
             }
             if (sql) sql.addEventListener('keydown', function (e) {

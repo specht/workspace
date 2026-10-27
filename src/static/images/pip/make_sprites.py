@@ -67,12 +67,13 @@ def tone(ramp, value, x, y):
     return ramp[low + 1] if value - low > (BAYER[y % 4][x % 4] + 0.5) / 16 else ramp[low]
 
 
-def noise(seed, period=4):
-    """Smooth noise over a tile that wraps at its edges: random values on a
-    period × period grid, blended between them; returns f(x, y) in 0 … 1."""
+def noise(seed, period=4, size=T):
+    """Smooth noise over a square of size pixels (a tile) that wraps at its
+    edges: random values on a period × period grid, blended between them;
+    returns f(x, y) in 0 … 1."""
     rng = random.Random(seed)
     grid = [[rng.random() for _ in range(period)] for _ in range(period)]
-    cell = T / period
+    cell = size / period
 
     def f(x, y):
         gx, gy = x / cell, y / cell
@@ -168,22 +169,47 @@ def floor(variant):
     return img
 
 
-def rock_top(variant):
+# The rock is one picture each for its top and its face, ROCK_TILES fields
+# across, that wraps at its edges; pip_world.js takes each pixel from where
+# it lies in the whole scene, so the lumps run across the borders of the
+# fields and there are no seams between them.
+ROCK_TILES = 10
+
+
+def nearby(items, size, cell=T):
+    """items (x, y, …) in buckets of cell pixels, wrapped at size: those
+    near (x, y) are the ones in its bucket and the eight round it, each
+    moved by a whole size where that brings it closer."""
+    n = size // cell
+    buckets = {}
+    for item in items:
+        buckets.setdefault((int(item[0] // cell) % n, int(item[1] // cell) % n), []).append(item)
+
+    def near(x, y):
+        bx, by = int(x // cell), int(y // cell)
+        out = []
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for item in buckets.get(((bx + dx) % n, (by + dy) % n), ()):
+                    ox = item[0] + round((x - item[0]) / size) * size
+                    oy = item[1] + round((y - item[1]) / size) * size
+                    out.append((ox, oy) + tuple(item[2:]))
+        return out
+    return near
+
+
+def rock_top():
     """The top of the rock seen from above: rounded lumps, each lit from the
     top left and shading off (dithered), dark seams between them."""
-    rng = random.Random(200 + variant)
-    grain = noise(210 + variant, 6)
-    lumps = []
-    for _ in range(7):
-        cx, cy, r = rng.uniform(0, T), rng.uniform(0, T), rng.uniform(4.5, 7.5)
-        for ox in (-T, 0, T):
-            for oy in (-T, 0, T):
-                lumps.append((cx + ox, cy + oy, r))
-    img = canvas()
-    for y in range(T):
-        for x in range(T):
-            near = sorted((math.hypot(x + 0.5 - cx, y + 0.5 - cy) / r, cx, cy, r) for cx, cy, r in lumps)
-            d, cx, cy, r = near[0]
+    size = T * ROCK_TILES
+    rng = random.Random(200)
+    grain = noise(210, 6 * ROCK_TILES, size)
+    lumps = nearby([(rng.uniform(0, size), rng.uniform(0, size), rng.uniform(4.5, 7.5)) for _ in range(7 * ROCK_TILES * ROCK_TILES)], size)
+    img = canvas(size, size)
+    for y in range(size):
+        for x in range(size):
+            near = sorted((math.hypot(x + 0.5 - cx, y + 0.5 - cy) / r, cx, cy, r) for cx, cy, r in lumps(x + 0.5, y + 0.5))
+            d, cx, cy, r = near[0] if near else (2, 0, 0, 1)
             if d > 1:
                 put(img, x, y, tone(ROCK, 0.6 + grain(x, y) * 0.6, x, y))
                 continue
@@ -197,26 +223,32 @@ def rock_top(variant):
     return img
 
 
-def rock_face(variant):
+def rock_face():
     """The front of the rock where it faces an open tile, half a tile high:
     rounded rocks lit from the top left (dithered), dark gaps between them,
-    dark at its foot."""
-    rng = random.Random(300 + variant)
-    grain = noise(310 + variant, 8)
+    dark at its foot; ROCK_TILES fields long, wrapping at its ends."""
+    size = T * ROCK_TILES
+    rng = random.Random(300)
+    grain = noise(310, 8 * ROCK_TILES, size)
     h = T // 2
     rocks = []
-    x = rng.uniform(-4, 0)
-    while x < T + 4:
+    x = 0.0
+    while True:
         rx, ry = rng.uniform(3.5, 6), rng.uniform(3.5, 5)
+        if x + rx * 2 > size - 2:
+            break
         rocks.append((x + rx, rng.uniform(4, 8), rx, ry))
         x += rx * 2 - rng.uniform(0.5, 1.5)
+    # the last gap closes over the end: the rocks spread to fill it
+    stretch = size / (x + 1.0)
+    rocks = [(cx * stretch, cy, rx * stretch, ry) for cx, cy, rx, ry in rocks]
     for cx, cy, rx, ry in list(rocks):
-        rocks.append((cx + T, cy, rx, ry))
-        rocks.append((cx - T, cy, rx, ry))
-    img = canvas(T, h)
+        rocks.append((cx + size, cy, rx, ry))
+        rocks.append((cx - size, cy, rx, ry))
+    img = canvas(size, h)
     for y in range(h):
-        for x in range(T):
-            near = sorted((((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2, cx, cy, rx, ry) for cx, cy, rx, ry in rocks)
+        for x in range(size):
+            near = sorted((((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2, cx, cy, rx, ry) for cx, cy, rx, ry in rocks if abs(x + 0.5 - cx) < rx + 8)
             d, cx, cy, rx, ry = near[0]
             if d > 1:
                 put(img, x, y, tone(ROCK, 1.2 + grain(x, y) * 0.6, x, y))
@@ -229,7 +261,7 @@ def rock_face(variant):
             put(img, x, y, tone(ROCK, value, x, y))
     # dark at its foot; the light edge on top is drawn by pip_world.js along
     # the face's outline, round curves too, so it is not in the picture
-    for x in range(T):
+    for x in range(size):
         put(img, x, h - 1, ROCK[0])
     return img
 
@@ -593,8 +625,8 @@ def mampfer_frames():
 def main():
     out = {
         'floor.png': strip([floor(i) for i in range(4)]),
-        'rock-top.png': strip([rock_top(i) for i in range(3)]),
-        'rock-face.png': strip([rock_face(i) for i in range(4)]),
+        'rock-top.png': rock_top(),
+        'rock-face.png': rock_face(),
         'stone.png': strip([stone(i) for i in range(4)]),
         'glibber.png': strip([grounded(f, 8) for f in frames(load('glibber_laufen.png'))]),
         'bello.png': strip([grounded(f, 8) for f in frames(load('hund_stehen.png'))]),
@@ -606,6 +638,8 @@ def main():
         'stalagmite.png': stalagmite(), 'bat.png': strip([bat(i) for i in range(4)]),
         'wichtel.png': load('wichtel_stehen.png'),
         'mampfer.png': strip(mampfer_frames()),
+        # it looks east by itself; walking west (or with Pip to the west), mirrored, frame by frame
+        'mampfer-west.png': strip([f.transpose(Image.Transpose.FLIP_LEFT_RIGHT) for f in mampfer_frames()]),
     }
     for direction in ('east', 'west', 'north', 'south'):
         out[f'pip-{direction}.png'] = strip(pip_frames(direction))

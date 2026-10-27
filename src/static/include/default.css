@@ -9376,6 +9376,24 @@ html[data-bs-theme="dark"] .bitplane-widget {
     justify-content: center;
 }
 
+/* a map the Wichtel builds only for a run (pip_world.js, show): in place
+   of the scene a dark panel of its size that says so */
+.pip-map-box.pip-unbuilt { position: relative; }
+.pip-map-box.pip-unbuilt > .pip-map { visibility: hidden; }
+.pip-map-box.pip-unbuilt::after {
+    content: attr(data-unbuilt);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em 2em;
+    text-align: center;
+    color: #b4b9da;
+    background: radial-gradient(circle, #1c1d36, #0b0b16);
+    border-radius: 0.4em;
+}
+
 .pip-map {
     position: relative;
     isolation: isolate;
@@ -9508,10 +9526,12 @@ html[data-bs-theme="dark"] .bitplane-widget {
     width: var(--w);
     height: calc(var(--tile) * 37 / 24);
     margin: calc(var(--tile) * -14 / 24) 0 0 calc(var(--tile) * -4 / 24);
-    background-image: url(/images/pip/mampfer.png?v=13);
+    background-image: url(/images/pip/mampfer.png?v=14);
     background-size: 800% 100%;
     animation: pip-mampfer-chomp 0.8s steps(4) infinite;
 }
+/* it looks east by itself; west, its frames mirrored (make_sprites.py) */
+.pip-mampfer[data-facing='west'] { background-image: url(/images/pip/mampfer-west.png?v=14); }
 .pip-mampfer.pip-running { animation: pip-mampfer-run max(var(--step), 1ms) steps(4); }
 @keyframes pip-mampfer-chomp { to { background-position-x: calc(var(--w) * -4); } }
 @keyframes pip-mampfer-run {
@@ -9571,7 +9591,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .pip-pip.pip-walking { animation: pip-frames-2 var(--step) steps(2); }
 .pip-pip.pip-bump { animation: pip-bump 300ms; }
 .pip-pip.pip-caught { animation: pip-caught 600ms 2; }
-.pip-pip.pip-cheer { animation: pip-frames-2 var(--step) steps(2), pip-hop 360ms ease-out var(--step) 2; }
+.pip-pip.pip-cheer { animation: pip-frames-2 var(--step) steps(2), pip-hop 420ms ease-in-out var(--step); }
 
 @keyframes pip-frames-2 { to { background-position-x: calc(-2 * var(--tile)); } }
 @keyframes pip-frames-4 { to { background-position-x: calc(-4 * var(--tile)); } }
@@ -9583,7 +9603,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* eaten by the Mampfer: gone after the step that brings it there */
 .pip-eaten { animation: pip-eaten 1ms var(--step, 0ms) forwards; }
 @keyframes pip-eaten { to { visibility: hidden; opacity: 0; } }
-@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.3); } }
+@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.18); } }
 
 /* The light: a layer over the ground, the rock and what stands in the dark,
    which multiplies them with a cave blue, so that it is darker but every
@@ -9602,6 +9622,17 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: background-color 1.2s;
 }
 .pip-done .pip-light { background-color: #b4b9da; }
+/* the glows on the floor and the faces only (pip_world.js, floorMask):
+   the layer is screened onto the light as a whole */
+.pip-glows {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+}
 .pip-glow {
     position: absolute;
     top: 0;
