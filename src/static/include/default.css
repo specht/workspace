@@ -497,6 +497,17 @@ hr {
     box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.3);
 }
 
+/* The line between groups of a menu: Bootstrap's thin one, not the shaded
+   rule above */
+.dropdown-menu hr.dropdown-divider {
+    height: 0 !important;
+    margin: 0.4rem 0;
+    border: 0;
+    border-top: 1px solid var(--bs-dropdown-divider-bg);
+    opacity: 1;
+    box-shadow: none;
+}
+
 svg {
     user-select: none;
 }
