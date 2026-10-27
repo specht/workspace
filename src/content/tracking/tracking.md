@@ -73,10 +73,17 @@ def h(text)
   CGI.escapeHTML(text.to_s)
 end
 
+# Ein wenig CSS, damit die Seiten lesbar sind
+STYLE = "<style>body { font-family: system-ui, sans-serif; margin: 2em; }\n" \
+        "table { border-collapse: collapse; }\n" \
+        "th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }\n" \
+        "th { color: #666; font-weight: normal; }\n" \
+        "td { word-break: break-all; }</style>\n"
+
 # Die Seite unter /: alle Header, die der Browser geschickt hat
 def headers_page(headers)
   rows = headers.map { |name, value| "<tr><th>#{h(name)}</th><td>#{h(value)}</td></tr>" }
-  "<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n" \
+  "<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n#{STYLE}" \
     "<h1>Was dieser Server über dich weiß</h1>\n<table>\n#{rows.join("\n")}\n</table>\n"
 end
 
@@ -152,10 +159,18 @@ def h(text):
     return html.escape(str(text if text is not None else ''))
 
 
+# Ein wenig CSS, damit die Seiten lesbar sind
+STYLE = ('<style>body { font-family: system-ui, sans-serif; margin: 2em; }\n'
+         'table { border-collapse: collapse; }\n'
+         'th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }\n'
+         'th { color: #666; font-weight: normal; }\n'
+         'td { word-break: break-all; }</style>\n')
+
+
 def headers_page(headers):
     """Die Seite unter /: alle Header, die der Browser geschickt hat"""
     rows = '\n'.join(f'<tr><th>{h(name)}</th><td>{h(value)}</td></tr>' for name, value in headers.items())
-    return ("<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n"
+    return ("<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n" + STYLE +
             f'<h1>Was dieser Server über dich weiß</h1>\n<table>\n{rows}\n</table>\n')
 
 
@@ -206,6 +221,9 @@ python3 tracker.py
 
 <!-- stage: stufen/1.py as tracker.py -->
 <!-- /language -->
+
+`STYLE` ist ein wenig CSS: Der Tracker schickt es im Kopf jeder seiner Seiten
+mit, damit die Tabelle lesbar ist.
 
 Öffne im Browser die Adresse aus »Forwarded Address« für Port 8000. Der
 Tracker zeigt dir, was dein Browser ihm geschickt hat:
@@ -862,9 +880,9 @@ def profile_page(visitor, visits, counts, headers)
   interests = counts.sort_by { |keyword, count| -count }.first(5).map do |keyword, count|
     "<li>#{h(keyword)} (#{count})</li>"
   end
-  "<!DOCTYPE html><meta charset='utf-8'><title>Dein Profil</title>\n" \
+  "<!DOCTYPE html><meta charset='utf-8'><title>Dein Profil</title>\n#{STYLE}" \
     "<h1>Dein Profil</h1>\n" \
-    "<p>Deine Kennung: <code>#{h(visitor || 'keine')}</code></p>\n" \
+    "<p>Deine Kennung: #{h(visitor || 'keine')}</p>\n" \
     "<p>Dein Browser: #{h(headers['user-agent'])}<br>Deine Sprache: #{h(headers['accept-language'])}</p>\n" \
     "<h2>Seiten, auf denen du warst</h2>\n<ol>\n#{pages.join("\n")}\n</ol>\n" \
     "<h2>Was dich vermutlich interessiert</h2>\n<ol>\n#{interests.join("\n")}\n</ol>\n"
@@ -895,9 +913,9 @@ def profile_page(visitor, visits, counts, headers):
     pages = '\n'.join(f'<li>{h(page)}</li>' for page, keywords in visits)
     top = sorted(counts.items(), key=lambda pair: -pair[1])[:5]
     interests = '\n'.join(f'<li>{h(keyword)} ({count})</li>' for keyword, count in top)
-    return ("<!DOCTYPE html><meta charset='utf-8'><title>Dein Profil</title>\n"
+    return ("<!DOCTYPE html><meta charset='utf-8'><title>Dein Profil</title>\n" + STYLE +
             '<h1>Dein Profil</h1>\n'
-            f"<p>Deine Kennung: <code>{h(visitor or 'keine')}</code></p>\n"
+            f"<p>Deine Kennung: {h(visitor or 'keine')}</p>\n"
             f"<p>Dein Browser: {h(headers.get('user-agent'))}<br>Deine Sprache: {h(headers.get('accept-language'))}</p>\n"
             f'<h2>Seiten, auf denen du warst</h2>\n<ol>\n{pages}\n</ol>\n'
             f'<h2>Was dich vermutlich interessiert</h2>\n<ol>\n{interests}\n</ol>\n')

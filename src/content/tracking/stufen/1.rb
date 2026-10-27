@@ -19,10 +19,17 @@ def h(text)
   CGI.escapeHTML(text.to_s)
 end
 
+# Ein wenig CSS, damit die Seiten lesbar sind
+STYLE = "<style>body { font-family: system-ui, sans-serif; margin: 2em; }\n" \
+        "table { border-collapse: collapse; }\n" \
+        "th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }\n" \
+        "th { color: #666; font-weight: normal; }\n" \
+        "td { word-break: break-all; }</style>\n"
+
 # Die Seite unter /: alle Header, die der Browser geschickt hat
 def headers_page(headers)
   rows = headers.map { |name, value| "<tr><th>#{h(name)}</th><td>#{h(value)}</td></tr>" }
-  "<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n" \
+  "<!DOCTYPE html><meta charset='utf-8'><title>Was ich über dich weiß</title>\n#{STYLE}" \
     "<h1>Was dieser Server über dich weiß</h1>\n<table>\n#{rows.join("\n")}\n</table>\n"
 end
 
