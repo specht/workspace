@@ -177,12 +177,13 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
 // A picture of a part of the page: the box around the elements (selectors),
 // with some room above and below, the whole page width of the content; for
 // what one sentence of the guide is about rather than a whole screen.
-async function shootBox(page: Page, name: string, selectors: string[], out: string, room = { top: 16, bottom: 16 }, maxHeight = 1100) {
-  const box = await page.evaluate(([sels, r, max]) => {
-    const rects = (sels as string[]).map((s) => {
-      const e = document.querySelector(s);
-      if (!e) throw new Error('missing ' + s);
-      return e.getBoundingClientRect();
+// every: each selector counts with all its matches, not only the first
+async function shootBox(page: Page, name: string, selectors: string[], out: string, room = { top: 16, bottom: 16 }, maxHeight = 1100, every = false) {
+  const box = await page.evaluate(([sels, r, max, all]) => {
+    const rects = (sels as string[]).flatMap((s) => {
+      const found = all ? Array.from(document.querySelectorAll(s)) : [document.querySelector(s)].filter(Boolean);
+      if (!found.length) throw new Error('missing ' + s);
+      return found.map((e) => (e as Element).getBoundingClientRect());
     });
     const main = (document.querySelector('.container, main') || document.body).getBoundingClientRect();
     const top = Math.min(...rects.map((b) => b.top)) + window.scrollY - (r as any).top;
@@ -190,7 +191,7 @@ async function shootBox(page: Page, name: string, selectors: string[], out: stri
     const left = Math.max(0, Math.min(main.left, ...rects.map((b) => b.left)) - 8);
     const right = Math.min(document.documentElement.clientWidth, Math.max(main.right, ...rects.map((b) => b.right)) + 8);
     return { x: left, y: Math.max(0, top), width: right - left, height: Math.min(bottom - top, max as number) };
-  }, [selectors, room, maxHeight] as const);
+  }, [selectors, room, maxHeight, every] as const);
   await page.waitForTimeout(300);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png, fullPage: true, clip: box });
@@ -364,11 +365,13 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     // and a level with its plan as a PDF
     await teacher.goto('/lehrplan');
     const topic = teacher.locator('select.cg-topic');
-    const value = await topic.locator('option', { hasText: 'Information und Daten' }).first().getAttribute('value');
+    // a name whose activities stand together in the graph, so that the
+    // picture shows them, not a page of faded boxes
+    const value = await topic.locator('option', { hasText: 'Leben in und mit vernetzten Systemen' }).first().getAttribute('value');
     await topic.selectOption(value!);
     await teacher.waitForTimeout(600);
     await dress(teacher);
-    await shootBox(teacher, 'lehrplan', ['.lp-state', 'select.cg-topic'], out, { top: 16, bottom: 560 });
+    await shootBox(teacher, 'lehrplan', ['select.cg-topic', '.cg-node.cg-hit'], out, { top: 16, bottom: 24 }, 1100, true);
     await dress(teacher);
     await shootBox(teacher, 'lehrplan-pdf', ['h2#sek-i', 'h2#sek-i + p.lp-source'], out, { top: 12, bottom: 12 });
 

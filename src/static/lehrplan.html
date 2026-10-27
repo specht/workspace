@@ -273,10 +273,27 @@
             if (!event.target.closest('.cg-node')) { select.value = ''; show([], null); }
         });
         // from a name in the list below: up to the picture, the name chosen
+        // and its boxes in the middle of the window (below the bar at the
+        // top), the picture scrolled sideways to them if it is wider
+        function centreHits() {
+            const hits = nodes.filter(function (n) { return n.classList.contains('cg-hit'); });
+            if (!hits.length) { document.getElementById('wege').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+            const boxes = hits.map(function (n) { return n.getBoundingClientRect(); });
+            const top = Math.min.apply(null, boxes.map(function (b) { return b.top; }));
+            const bottom = Math.max.apply(null, boxes.map(function (b) { return b.bottom; }));
+            const left = Math.min.apply(null, boxes.map(function (b) { return b.left; }));
+            const right = Math.max.apply(null, boxes.map(function (b) { return b.right; }));
+            const bar = 80;
+            const room = window.innerHeight - bar;
+            const y = window.scrollY + (bottom - top > room - 40 ? top - bar - 20 : (top + bottom) / 2 - bar - room / 2);
+            window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+            const frame = graph.parentElement.getBoundingClientRect();
+            graph.parentElement.scrollTo({ left: graph.parentElement.scrollLeft + (left + right) / 2 - (frame.left + frame.right) / 2, behavior: 'smooth' });
+        }
         document.querySelectorAll('.lp-graph-show').forEach(function (button) {
             button.addEventListener('click', function () {
                 topic(button.dataset.topic);
-                document.getElementById('wege').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                centreHits();
             });
         });
         // as wide as the window allows right of the text's left edge

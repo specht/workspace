@@ -18,7 +18,7 @@ Was du für die erste Stunde mit dem Workspace brauchst: wie deine Klasse sich a
 
 Jede Schülerin und jeder Schüler hat einen eigenen **Workspace**: Visual Studio Code im Browser, mit einem eigenen Ordner, der erhalten bleibt. Auf der Startseite stehen **Aktivitäten**, also Anleitungen zu einem Thema (eine Webseite bauen, eine interaktive Geschichte schreiben, eine Datenbank abfragen). In vielen Aktivitäten stehen **Aufgaben**, die der Workspace selbst prüft: Er sieht in den Dateien nach, führt eine Abfrage aus oder vergleicht eine Antwort. Im **Handbuch** schlagen die Lernenden nach, was sie in mehreren Aktivitäten brauchen.
 
-Du siehst dieselben Seiten wie deine Klasse, mit ein paar Zusätzen: den Menüpunkten **Klassen** (deine Gruppen, ihr Fortschritt und wer darin ist) und **Lehrplan** (welche Aktivität zu welchem Thema deines Lehrplans passt), auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** und unter den Schritten dem Knopf **Code bis hier** (mehr dazu unten).
+Du siehst dieselben Seiten wie deine Klasse, mit ein paar Zusätzen: dem Menüpunkt **Klassen** (deine Gruppen, ihr Fortschritt und wer darin ist; von dort führt ein Link zum **Lehrplan**, welche Aktivität zu welchem Thema deines Lehrplans passt), auf manchen Aktivitäten dem Knopf **Notiz für Lehrkräfte** und unter den Schritten dem Knopf **Code bis hier** (mehr dazu unten).
 
 ## Die erste Stunde: anmelden
 
@@ -137,19 +137,19 @@ Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeicher
 
 ## Eine Aktivität finden: der Lehrplan
 
-Unter **Lehrplan** stehen die Themen deines Rahmenlehrplans, für die Sekundarstufe I und für die Oberstufe, und unter jedem die Aktivitäten, die es behandeln. Neben jeder Stufe führen Links zum Lehrplan selbst, als PDF, und zur Seite des Landes. Oben wählst du dein Bundesland; ohne Wahl siehst du Berlin.
+Im [Lehrplan](/lehrplan), verlinkt oben auf der Klassenseite, stehen die Themen deines Rahmenlehrplans, für die Sekundarstufe I und für die Oberstufe, und unter jedem die Aktivitäten, die es behandeln. Neben jeder Stufe führen Links zum Lehrplan selbst, als PDF, und zur Seite des Landes. Oben wählst du dein Bundesland; ohne Wahl siehst du Berlin.
 
 <img class='full full-shadow shot' src='lehrplan-pdf.webp' alt='Die Überschrift Sekundarstufe I, darunter der Name des Rahmenlehrplans und die Links »Lehrplan als PDF« und »Seite des Landes«.'>
 
 Darüber zeigt ein Bild, was worauf aufbaut: Ein Pfeil führt von einer Aktivität zu denen, die auf ihr aufbauen. Die Farbe sagt, für wen eine Aktivität gedacht ist: gelb für die Sekundarstufe I, türkis für die Oberstufe, beides im Verlauf für Aktivitäten, die zu beiden passen. Wählst du über dem Bild unter **Name der Pläne** ein Thema, hebt es die Aktivitäten dazu hervor und den Weg dorthin:
 
-<img class='full full-shadow shot' src='lehrplan.webp' alt='Oben »Lehrpläne von Berlin«, darunter »Wege durch die Aktivitäten« mit dem Thema »Information und Daten« gewählt: Kästen für die Aktivitäten, durch Pfeile verbunden; die zum Thema und ihr Weg dorthin kräftig, die übrigen blass.'>
+<img class='full full-shadow shot' src='lehrplan.webp' alt='Über dem Bild der Wege ist »Leben in und mit vernetzten Systemen« gewählt. Hervorgehoben sind Statische Webseiten mit Hugo und der Frontend-Entwicklung, TCP/IP mit dem eigenen Webserver, DNS und Daten aus dem Netz, »Was eine Webseite über dich erfährt«, Nächste Nachbarn und die Suchmaschine, dazu der Weg der Katas dorthin; alles andere ist blass.'>
 
-Dieselbe Zeile siehst du oben auf jeder Aktivitätsseite: Die Namen der Themen darin führen an ihre Stelle unter **Lehrplan**.
+Dieselbe Zeile siehst du oben auf jeder Aktivitätsseite: Die Namen der Themen darin führen an ihre Stelle im Lehrplan.
 
 ## Die erste Doppelstunde
 
-1. **Vorher:** Such unter **Lehrplan** eine Aktivität zu deinem Thema aus. Leg die Gruppe an und trag die Adressen ein (Reiter **Lernende**). Probier die Aktivität mit deinem Testkonto aus (siehe unten).
+1. **Vorher:** Such im [Lehrplan](/lehrplan) eine Aktivität zu deinem Thema aus. Leg die Gruppe an und trag die Adressen ein (Reiter **Lernende**). Probier die Aktivität mit deinem Testkonto aus (siehe unten).
 2. **Anmelden:** Zeig **Anmelde-Codes zeigen** am Beamer; die Klasse meldet sich mit dem Anfang ihrer Adresse an und liest ihren Code dort ab.
 3. **Anheften:** Heft die Aktivität der Stunde im Reiter **Startseite** an. Sie steht dann bei allen ganz oben.
 4. **Treffpunkt:** Setz im Reiter **Fortschritt** einen Treffpunkt nach der Aufgabe, bis zu der alle vor dem ersten Gespräch kommen sollen.
