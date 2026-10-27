@@ -3783,7 +3783,8 @@ select.curriculum-state {
 .task-card,
 .reference-part,
 h2[id],
-h3[id] {
+h3[id],
+:target {
     scroll-margin-top: 5em;
 }
 
@@ -5548,7 +5549,10 @@ ul.task-teacher-list .task-teacher-answer {
     box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.08);
 }
 .shc-with-picture {
-    --shc-picture-width: 20em;
+    /* wide enough that the 16:9 picture is about as tall as the text
+       beside it (kind, title, two lines, progress, »Weiter mit«, button),
+       so that filling the height crops little */
+    --shc-picture-width: 23em;
     grid-template-columns: var(--shc-picture-width) 1fr;
     align-items: center;
 }
@@ -5563,6 +5567,20 @@ ul.task-teacher-list .task-teacher-answer {
     align-self: start;
     aspect-ratio: 16 / 9;
     background: var(--bs-tertiary-bg);
+}
+/* beside the text the picture fills the card's whole height, at least
+   16:9: a card with progress, »Weiter mit« and its button is taller than the
+   picture, which would leave an empty strip under it; it is cropped around
+   the card's focus (image: x y) */
+@media (min-width: 576px) {
+    .shc-with-picture {
+        align-items: stretch;
+    }
+    .shc-with-picture .shc-picture {
+        align-self: stretch;
+        aspect-ratio: auto;
+        min-height: calc(var(--shc-picture-width) * 9 / 16);
+    }
 }
 @media (min-width: 576px) {
     .shc-with-picture .shc-abstract {

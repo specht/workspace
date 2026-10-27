@@ -6313,7 +6313,11 @@ class Main < Sinatra::Base
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
               :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
               :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
-              :position => "#{c[:image_x] || 50}% #{c[:image_y] || 50}%",
+              # centred: the card shows nearly all of the 16:9 picture, a
+              # little narrower once its text is taller (default.css); the
+              # focus (image: x y) is for the phone's square crop on the
+              # catalog and would push the little that is cut to one side
+              :position => '50% 50%',
               # a set of Katas: its band from the strip, in its hue
               :kata => kata_teaser(p[:slug]) }
         end
