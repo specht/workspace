@@ -172,6 +172,7 @@ Android build support, before broad rollout:
 * [ ] Measure memory and PID usage of `flutter build apk --debug` with the resource profiler
 * [ ] Re-check student container limits against the Android/Gradle workload
 * [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
+* [ ] Look at the build of the `android-sdk` stage: `sdkmanager` warns that it is deprecated in favour of the Android CLI, and accepting the licences and unzipping the NDK take most of its time
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
