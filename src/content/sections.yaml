@@ -100,9 +100,9 @@
     - static-website
     - svelte
     - wetter
-    - .hugo
-    - .suchmaschine
-    - .tracking
+    - hugo
+    - suchmaschine
+    - tracking
 
 - key: ki
   label: Künstliche Intelligenz
@@ -185,9 +185,9 @@
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - automata
-    - .kellerautomat
-    - .turingmaschine
-    - .grammatiken
+    - kellerautomat
+    - turingmaschine
+    - grammatiken
     - calculator
     - routenplaner
 

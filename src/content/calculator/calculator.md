@@ -317,7 +317,7 @@ factor     = "-" factor | atom
 atom       = Zahl | "(" expression ")"
 ```
 
-Ein Ausdruck ist eine Summe aus Termen, ein Term ein Produkt aus Faktoren, und ein Faktor ist eine Zahl oder wieder ein ganzer Ausdruck in Klammern. Dass `*` stärker bindet als `+`, steht in der Grammatik selbst: Ein Term wird ganz eingesammelt, bevor das nächste `+` drankommt.
+Ein Ausdruck ist eine Summe aus Termen, ein Term ein Produkt aus Faktoren, und ein Faktor ist eine Zahl oder wieder ein ganzer Ausdruck in Klammern. Dass `*` stärker bindet als `+`, steht in der Grammatik selbst: Ein Term wird ganz eingesammelt, bevor das nächste `+` drankommt. Wie man Grammatiken liest, als Syntaxdiagramm zeichnet und Regel für Regel in Funktionen übersetzt, zeigt die Aktivität [Grammatiken](/grammatiken) ausführlicher.
 
 Mit solchen Regeln legte 1960 der Bericht über die Programmiersprache ALGOL 60 die ganze Sprache fest. Herausgegeben hat ihn Peter Naur, und nach ihm und John Backus heißt die Schreibweise Backus-Naur-Form.
 
