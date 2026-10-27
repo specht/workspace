@@ -13,6 +13,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
 require './include/person_sources.rb'
+require './include/picture_rights.rb'
 require './include/curriculum_overview.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
@@ -1619,6 +1620,7 @@ class Main < Sinatra::Base
         html = redcarpet.render(markdown)
         root = Nokogiri::HTML(html)
         wrap_reference_includes(root)
+        PictureRights.withhold(root, path, development: DEVELOPMENT)
 
         root.css('img').each do |img|
             begin
@@ -9294,6 +9296,13 @@ class Main < Sinatra::Base
         # fact-checking: development only.
         if path == '/person-sources'
             halt 404 unless DEVELOPMENT
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless admin_logged_in?
+        end
+        # The pictures that need permission, with the letters
+        # (picture_rights.rb): administrators only.
+        if path == '/picture-rights'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?

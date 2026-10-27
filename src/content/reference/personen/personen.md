@@ -130,8 +130,10 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Hans Peter Luhn
 
 <div class='person'>
+<img src='luhn.webp' alt='Schwarzweißfoto von Hans Peter Luhn, älterer Mann mit Brille und zurückgekämmtem Haar, in Anzug und Krawatte, ein Blatt Endlospapier in der Hand.'>
 <p><strong>Hans Peter Luhn</strong> (1896–1964), Ingenieur aus Barmen (heute Wuppertal), später bei IBM in den USA. 1953 schlug er in einer Notiz für IBM vor, Schlüssel mit einer Rechnung auf Buckets zu verteilen und Kollisionen in Listen zu sammeln: die erste Hash Table, mit Chaining.</p>
 <p>Von ihm stammt auch die letzte Ziffer jeder Kreditkartennummer, die Prüfziffer nach dem Luhn-Algorithmus: Mit ihr fällt eine falsch getippte Ziffer sofort auf.</p>
+<p class='person-credit'>Foto: IBM, zugeschnitten (<a href='https://spectrum.ieee.org/hans-peter-luhn-and-the-birth-of-the-hashing-algorithm'>IEEE Spectrum</a>)</p>
 </div>
 <!-- /part -->
 

@@ -7270,6 +7270,13 @@ div[data-stepper] :not(pre) > code:not([class]),
 .person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
 /* a person without a free photo: the text alone, no silhouette */
 .person:not(:has(img)) { display: block; }
+/* Development only: a picture still waiting for permission
+   (picture_rights.rb); on the live site it is left out */
+img.picture-withheld {
+    outline: 3px dashed #e09400;
+    outline-offset: 2px;
+    opacity: 0.5;
+}
 /* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
 /* as wide as its portraits: two or three */
 .person.pair { grid-template-columns: auto minmax(0, 1fr); }

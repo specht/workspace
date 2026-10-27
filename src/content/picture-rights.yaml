@@ -1,0 +1,39 @@
+# Permission for the pictures that are someone else's and not under a free
+# licence, shown on the admin page /picture-rights
+# (src/ruby/include/picture_rights.rb). The page finds the pictures itself:
+# every picture whose credit line names no free licence (CC0, CC BY…,
+# gemeinfrei, public domain), and every photo in a person box without a
+# credit line. This file says, per picture (its path below src/content), who
+# to ask and what came of it:
+#
+#   holder:      who holds the rights (a person, an archive, a university)
+#   contact:     an email address, or the address of a contact form
+#   source:      where the picture comes from (the page it was taken from)
+#   language:    en (default) or de, the language of the letter
+#   greeting:    the letter's first line (»Dear Dr. Gorman«)
+#   picture_en:  what the picture is, in the letter (»your portrait from your
+#                faculty page«); picture_de likewise
+#   context_en:  next to what it is shown (»next to a short text about …«);
+#                context_de likewise
+#   status:      open (default), asked, granted, refused
+#   asked:       the date the letter went out
+#   answered:    the date of the answer
+#   note:        anything else: what was agreed (the credit line asked
+#                for), where the answer is kept
+#
+# Keep the answers themselves (the emails) outside the repository. After a
+# refusal, the picture leaves the page; its entry stays here with the date.
+
+perzeptron/gorman.webp:
+  holder: Kristen Gorman (the photo is from her faculty page at the University of Alaska Fairbanks)
+  contact: kbgorman@alaska.edu
+  source: https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php
+  greeting: Dear Dr. Gorman
+  picture_en: your portrait from your faculty page at UAF
+  context_en: next to a short text about your penguin measurements at Palmer Station, which our students use to train their first artificial neuron
+
+reference/personen/luhn.webp:
+  holder: IBM (the photo appears with the credit »IBM« in IEEE Spectrum)
+  source: https://spectrum.ieee.org/hans-peter-luhn-and-the-birth-of-the-hashing-algorithm
+  picture_en: the photo of Hans Peter Luhn at a printer, from IBM's archives
+  context_en: in a short portrait of him, next to the hash table and the Luhn check digit our students program
