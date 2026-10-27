@@ -356,6 +356,7 @@ als eine gibt; Testgruppen und Gruppen ohne Schule zuletzt.
 | Notizen für Lehrkräfte (auf den Aktivitäten) | | ✓ | ✓ | ✓ |
 | Der ganze Code an jedem Schritt (Knopf »Code bis hier«, nicht beim Nachahmen) | | ✓ | ✓ | ✓ |
 | Klassenseite `/klasse` für die eigenen Gruppen | | | ✓ | ✓ alle |
+| Auf der Startseite am Fuß jeder Aktivität: wie oft ihre Aufgaben gelöst wurden (ein Band mit einem Feld je Aufgabe, dazu Lösungen und Personen), ohne Lehrkräfte, Admins und Testkonten; gezählt höchstens alle 10 Minuten (`activity_usage`) | | | | ✓ |
 | Anmelde-Codes der eigenen Gruppen (Klassenseite) | | | ✓ | ✓ |
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |

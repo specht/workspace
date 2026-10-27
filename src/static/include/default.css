@@ -5567,6 +5567,92 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.35em;
 }
 
+/* for admins at the foot of a card, a tile or a Kata set (Main#usage_html):
+   a thin band, a segment per task in five steps of one blue, darker where
+   the task was solved more often, next to the activity's most solved task
+   (grey: never), and beside it the solved tasks and the people. The steps
+   are an ordinal ramp checked against the surface (light: #fff, dark:
+   #212529); in dark mode more is lighter. */
+.usage-row {
+    --usage-1: #86b6ef;
+    --usage-2: #5598e7;
+    --usage-3: #2a78d6;
+    --usage-4: #1c5cab;
+    --usage-5: #104281;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+}
+html[data-bs-theme="dark"] .usage-row {
+    --usage-1: #1c5cab;
+    --usage-2: #2a78d6;
+    --usage-3: #5598e7;
+    --usage-4: #86b6ef;
+    --usage-5: #b7d3f6;
+}
+.usage-strip {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 2px;
+    height: 4px;
+}
+.usage-bar {
+    flex: 1 1 0;
+    min-width: 2px;
+    border-radius: 1px;
+    background: var(--bs-border-color);
+}
+.usage-level-1 { background: var(--usage-1); }
+.usage-level-2 { background: var(--usage-2); }
+.usage-level-3 { background: var(--usage-3); }
+.usage-level-4 { background: var(--usage-4); }
+.usage-level-5 { background: var(--usage-5); }
+.usage {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 0.6em;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.usage .bi {
+    margin-right: 0.2em;
+}
+/* a card: the row at its foot, with room kept for it; the text fills the
+   card (as tall as the others in its row), so the row sits at the bottom of
+   every card (on a phone the card is a row whose text fills it already) */
+.tutorial_card3.card-with-usage .card-content {
+    padding-bottom: 2.3em;
+}
+@media (min-width: 768px) {
+    .hscol .tutorial_card3.card-with-usage > div {
+        display: flex;
+        flex-direction: column;
+    }
+    .hscol .tutorial_card3.card-with-usage > div > img {
+        flex: none;
+    }
+    .hscol .tutorial_card3.card-with-usage .card-content {
+        flex: 1 1 auto;
+    }
+}
+.tutorial_card3 .card-content .card-usage {
+    position: absolute;
+    left: 1em;
+    right: 1em;
+    bottom: 0.8em;
+}
+.lang-tile-usage {
+    grid-column: 1 / -1;
+    padding: 0 0.8em 0.5em;
+}
+/* a Kata set: below its progress, the last row */
+.kata-set-usage {
+    margin-top: 0.5em;
+}
+
 .tutorial_card3 .card-content .card-title-row {
     margin-bottom: 6px;
 

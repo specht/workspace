@@ -6604,6 +6604,63 @@ class Main < Sinatra::Base
         io
     end
 
+    # For admins on the front page: how often each task was solved (correct
+    # or handed in, StudentHome::DONE), and by how many people per activity,
+    # without admins, teachers and test accounts. Two queries over all
+    # TaskStates, at most every USAGE_SECONDS; nothing new is stored.
+    # { :tasks => { 'activity/id' => solved }, :people => { activity => n } }
+    USAGE_SECONDS = 600
+    def activity_usage
+        @@activity_usage = nil unless defined?(@@activity_usage)
+        return @@activity_usage[:counts] if @@activity_usage && Time.now - @@activity_usage[:at] < USAGE_SECONDS
+
+        excluded = (ADMIN_USERS.to_a + @@teachers.keys + @@test_accounts.keys).uniq
+        options = { :done => StudentHome::DONE, :excluded => excluded }
+        tasks = neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['task'], row['solved'].to_i] }
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.status IN $done AND NOT u.email IN $excluded
+            RETURN s.task AS task, count(s) AS solved;
+        END_OF_QUERY
+        people = neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['activity'], row['people'].to_i] }
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.status IN $done AND NOT u.email IN $excluded
+            RETURN split(s.task, '/')[0] AS activity, count(DISTINCT u) AS people;
+        END_OF_QUERY
+        counts = { :tasks => tasks, :people => people }
+        @@activity_usage = { :at => Time.now, :counts => counts }
+        counts
+    end
+
+    # For admins at the foot of a card, a tile or a Kata set (activity_usage):
+    # one row, a thin band with a segment for every task of the page, in its
+    # order, its blue in five steps as dark as that task was solved often,
+    # next to the most solved one (grey: never), and beside it the solved
+    # tasks and the people.
+    def usage_html(counts, slug, css_class)
+        content = @@content[slug] || {}
+        return '' unless counts && content[:tasks]
+
+        activity = content[:tasks][:activity]
+        ids = content[:tasks][:on_page] || []
+        per_task = ids.map { |id| counts[:tasks]["#{activity}/#{id}"].to_i }
+        solved = per_task.sum
+        people = counts[:people][activity].to_i
+        top = [per_task.max.to_i, 1].max
+        bars = ids.each_with_index.map do |id, i|
+            title = CGI.escapeHTML(content[:tasks][:by_id][id]['title'].to_s)
+            # five steps of the ramp (default.css), none for a task never solved
+            level = per_task[i].zero? ? 0 : (5.0 * per_task[i] / top).ceil
+            "<span class='usage-bar usage-level-#{level}' title='#{i + 1}. #{title}: #{per_task[i]}'></span>"
+        end
+        text = "#{solved} gelöst · #{people} #{people == 1 ? 'Person' : 'Personen'}"
+        "<span class='usage-row #{css_class}'>" \
+            "<span class='usage-strip' aria-hidden='true'>#{bars.join}</span>" \
+            "<span class='usage' title='#{text}, ohne Lehrkräfte, Admins und Testkonten'>" \
+            "<span aria-hidden='true'><i class='bi bi-check2-all'></i>#{solved}</span>" \
+            "<span aria-hidden='true'><i class='bi bi-person'></i>#{people}</span>" \
+            "<span class='visually-hidden'>#{text}</span></span></span>"
+    end
+
     def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
         assert([:student, :teaching, :reference].include?(catalog))
@@ -6632,6 +6689,7 @@ class Main < Sinatra::Base
                 card_index = 0
                 # pinned for one of the person's groups: a pin on the card, as on the Kata strip
                 catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
+                usage = catalog == :student && admin_logged_in? ? activity_usage : nil
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
@@ -6651,7 +6709,7 @@ class Main < Sinatra::Base
                     # carousel: true (Katas): one strip of the sets with the
                     # person's progress instead of cards (KataMap)
                     if section[:carousel]
-                        io.puts kata_carousel_html(section)
+                        io.puts kata_carousel_html(section, usage)
                         next
                     end
                     # tiles: true (programming languages): small tiles with
@@ -6677,7 +6735,7 @@ class Main < Sinatra::Base
                             io.puts "<a class='lang-tile' href='/#{slug}'>" \
                                 "<span class='lang-tile-logo'>#{logo}</span>" \
                                 "<span class='lang-tile-name'>#{name}</span>" \
-                                "#{year ? "<span class='lang-tile-year'>#{year}</span>" : ''}</a>"
+                                "#{year ? "<span class='lang-tile-year'>#{year}</span>" : ''}#{usage_html(usage, slug, 'lang-tile-usage')}</a>"
                         end
                         io.puts "</div>"
                         next
@@ -6688,7 +6746,8 @@ class Main < Sinatra::Base
                         content = @@content[slug]
                         io.puts "<div class='hscol'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
-                        io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}'>"
+                        used_card = usage && content[:tasks] ? ' card-with-usage' : ''
+                        io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}#{used_card}'>"
                         io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
                         io.puts "<h4>#{content[:title]}</h4>"
                         io.puts "<div>"
@@ -6724,6 +6783,7 @@ class Main < Sinatra::Base
                         if catalog == :student
                             io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
                         end
+                        io.puts usage_html(usage, slug, 'card-usage')
                         io.puts "</div>"
                         io.puts "</div>"
                         io.puts "</a>"
@@ -8988,7 +9048,7 @@ class Main < Sinatra::Base
     # The Katas of a catalog section (carousel: true) for the person viewing
     # the front page (KataMap): the sets with their icons and progress, the curriculum lines for teachers, and the sets pinned for
     # the person's groups, the latest first.
-    def kata_carousel_html(section)
+    def kata_carousel_html(section, usage = nil)
         slugs = section[:entries].select do |slug|
             @@content[slug] && @@content[slug][:tasks] && (DEVELOPMENT || !@@content[slug][:dev_only])
         end
@@ -9000,7 +9060,8 @@ class Main < Sinatra::Base
         end
         progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
         pinned = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
-        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned)
+        KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned,
+            :usage => usage ? slugs.to_h { |slug| [slug, usage_html(usage, slug, 'kata-set-usage')] } : {})
     end
 
     # Whose Workspace has this address: exactly one running Workspace of an
