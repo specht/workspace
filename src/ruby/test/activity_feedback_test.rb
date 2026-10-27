@@ -150,15 +150,33 @@ class ActivityFeedbackTest < Minitest::Test
     def test_admin_html
         html = ActivityFeedback.admin_html(ActivityFeedback.summary(rows))
         assert_includes html, '3 Rückmeldungen zu 2 Aktivitäten'
-        assert_includes html, "mailto:a@example.org"
+        # the overview: a card per activity, newest first, with the bar and the summaries
+        assert_operator html.index("data-title='kryptographie'"), :<, html.index("data-title='sql'")
+        assert_includes html, "<span class='fb-good' style='flex-grow: 1'></span><span class='fb-mixed' style='flex-grow: 1'></span>"
+        assert_includes html, "aria-label='Insgesamt: gut 1, teils, teils 1, nicht gut 0'"
+        assert_includes html, '1× länger'
+        assert_includes html, "<span class='badge fb-lang'>Python 2</span> <span class='badge fb-lang'>Java 1</span>"
+        assert_includes html, 'Kotlin'
+        assert_includes html, '1 Text lesen'
+        assert_includes html, "href='#fb-crypto'"
+        assert_includes html, "id='fb-crypto'"
+        assert_includes html, "<a href='/crypto'>Kryptographie</a>"
+        # the answers: the address only where the teacher ticked the box
+        assert_includes html, 'mailto:a@example.org'
         refute_includes html, 'b@example.org'
         assert_includes html, '10a (Gruppe gelöscht)'
-        assert_includes html, 'Dauer: länger (angesetzt: 2 Doppelstunden)'
-        assert_includes html, 'Python <strong>2</strong>'
-        assert_includes html, '»Kotlin«'
-        assert_includes html, "<a href='/crypto'>Kryptographie</a>"
+        assert_includes html, 'Mehr Zeit für Aufgabe 3.'
+        assert_includes html, "data-text='1' data-contact='1'"
+        assert_includes html, "data-text='0' data-contact='0'"
         refute_includes html, ' · '
         assert_includes ActivityFeedback.admin_html([]), 'Noch keine Rückmeldung'
+        assert_includes ActivityFeedback.admin_html([]), 'Rückmeldung geben'
+    end
+
+    def test_tally_text
+        assert_equal '2× länger, 1× passte', ActivityFeedback.tally_text('duration', { 'shorter' => 0, 'fit' => 1, 'longer' => 2 })
+        assert_nil ActivityFeedback.tally_text('level', { 'easy' => 0, 'fit' => 0, 'hard' => 0 })
+        assert_includes ActivityFeedback.bar_html({ 'good' => 0, 'mixed' => 0, 'bad' => 0 }), 'fb-bar-empty'
     end
 
     # Who may: a teacher of the group, through feedback_group!, before

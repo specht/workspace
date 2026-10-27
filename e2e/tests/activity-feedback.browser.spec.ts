@@ -110,17 +110,25 @@ test('a teacher gives feedback on an activity, changes it, and the administratio
   await loginAsE2eUser(admin, adminEmail(), testInfo);
   await admin.goto('/rueckmeldungen');
   await expect(admin.locator('h1')).toHaveText('Rückmeldungen der Lehrkräfte');
-  const entry = admin.locator('.feedback-entry', { hasText: marker });
+  const entry = admin.locator('.fb-entry', { hasText: marker });
   await expect(entry).toHaveCount(1);
   await expect(entry).toContainText('E2E');
   await expect(entry).toContainText('Niveau: zu schwer');
-  await expect(entry).toContainText('Dauer: länger (angesetzt: 2 Doppelstunden)');
+  await expect(entry).toContainText('Dauer: länger');
+  // the overview card of the activity, with the planned duration
+  await expect(admin.locator('.fb-card', { hasText: 'Kryptographie' })).toContainText('angesetzt: 2 Doppelstunden');
+  // a filter: only answers with a text; this one has one
+  await admin.locator("label[for='fb-only-text']").click();
+  await expect(entry).toBeVisible();
+  await admin.locator('.fb-search').fill('gibt es nicht');
+  await expect(admin.locator('.fb-none-found')).toBeVisible();
+  await admin.locator('.fb-search').fill('');
   await expect(entry.locator(`a[href='mailto:${TEACHER}']`)).toHaveCount(1);
-  await keep(admin, 'feedback-admin-desktop', '.feedback-activity:has(.feedback-entry)');
+  await keep(admin, 'feedback-admin-desktop', '.fb-page');
   if (shots) {
     await admin.setViewportSize({ width: 390, height: 844 });
     await admin.reload();
-    await keep(admin, 'feedback-admin-phone', '.feedback-activity:has(.feedback-entry)');
+    await keep(admin, 'feedback-admin-phone', '.fb-page');
   }
   // the menu links the page
   await admin.goto('/');

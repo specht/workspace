@@ -228,10 +228,24 @@ module ActivityFeedback
     end
 
     # --- The administration's page ------------------------------------------
+    #
+    # The administration opens it now and then to see which activities need
+    # work: first an overview, one card per activity (how it went as a bar,
+    # duration and level in a few words, the languages wished for), the
+    # newest feedback first; below, per activity, every answer with its
+    # texts. Filters (activity_feedback.js): an activity's name, »Nur mit
+    # Text«, »Kontakt erwünscht«.
 
-    # rows: [{ activity:, title:, slug:, group:, teacher:, email:, feedback: node }]
-    # -> [{ activity:, title:, slug:, count:, newest:, counts: { 'overall' => { 'good' => n } },
-    #       languages: { id => n }, languages_texts: [..], entries: [...] }], newest first.
+    # How »how it went« is drawn: colour class and icon per answer.
+    OVERALL_LOOK = {
+        'good' => ['fb-good', 'bi-emoji-smile'],
+        'mixed' => ['fb-mixed', 'bi-emoji-neutral'],
+        'bad' => ['fb-bad', 'bi-emoji-frown'],
+    }.freeze
+
+    # rows: [{ activity:, title:, slug:, duration:, group:, teacher:, email:, feedback: node }]
+    # -> [{ activity:, title:, slug:, duration:, count:, newest:, counts: { 'overall' => { 'good' => n } },
+    #       languages: { id => n } (most wished first), languages_texts: [..], entries: [...] }], newest first.
     def self.summary(rows)
         rows.group_by { |r| r[:activity] }.map do |activity, list|
             entries = list.map do |r|
@@ -240,6 +254,7 @@ module ActivityFeedback
                     :group => f['group'] || r[:group], :former_group => f['group'].nil? ? f['former_group'] : nil,
                     :teacher => r[:teacher], :email => f['contact'] == true ? r[:email] : nil,
                     :at => (f['updated_at'] || f['created_at']).to_i, :answers => f,
+                    :has_text => %w[overall_text text].any? { |key| !f[key].to_s.empty? },
                 }
             end.sort_by { |e| -e[:at] }
             counts = CHOICES.to_h do |key, choices|
@@ -247,64 +262,135 @@ module ActivityFeedback
             end
             languages = CodeLanguages::LANGUAGES.to_h { |id| [id, entries.count { |e| Array(e[:answers]['languages']).include?(id) }] }
             {
-                :activity => activity, :title => list.first[:title], :slug => list.first[:slug], :count => entries.size,
-                :newest => entries.first[:at], :counts => counts, :languages => languages.select { |_, n| n > 0 },
+                :activity => activity, :title => list.first[:title], :slug => list.first[:slug], :duration => list.first[:duration],
+                :count => entries.size, :newest => entries.first[:at], :counts => counts,
+                :languages => languages.select { |_, n| n > 0 }.sort_by { |id, n| [-n, CodeLanguages::LANGUAGES.index(id)] }.to_h,
                 :languages_texts => entries.filter_map { |e| e[:answers]['languages_text'] },
                 :entries => entries,
             }
         end.sort_by { |a| -a[:newest] }
     end
 
-    def self.admin_html(summary)
-        io = +''
-        if summary.empty?
-            return "<p class='feedback-none'>Noch keine Rückmeldung. Lehrkräfte geben sie auf der Klassenseite, im Reiter »Fortschritt« einer Aktivität.</p>"
+    # »2× länger, 1× passte«: the answers given, the most frequent first;
+    # nil when nobody answered the question.
+    def self.tally_text(key, counts)
+        given = CHOICES[key].filter_map { |value, text| [counts[value], text] if counts[value].to_i > 0 }
+        return nil if given.empty?
+
+        given.sort_by { |n, _| -n }.map { |n, text| "#{n}× #{text}" }.join(', ')
+    end
+
+    def self.anchor(activity)
+        "fb-#{activity.to_s.gsub(/[^a-z0-9_-]+/i, '-')}"
+    end
+
+    def self.plural(n, one, many)
+        "#{n} #{n == 1 ? one : many}"
+    end
+
+    def self.title_html(a)
+        a[:slug] ? "<a href='/#{h(a[:slug])}'>#{h(a[:title])}</a>" : h(a[:title] || a[:activity])
+    end
+
+    # The bar of »how it went«: one segment per answer, as wide as its
+    # count; grey when nobody answered the question.
+    def self.bar_html(counts)
+        total = counts.values.sum
+        label = OVERALL.map { |value, text| "#{text} #{counts[value]}" }.join(', ')
+        return "<div class='fb-bar fb-bar-empty' role='img' aria-label='Insgesamt: keine Angabe'></div>" if total.zero?
+
+        segments = OVERALL.filter_map do |value, _|
+            next if counts[value].zero?
+
+            "<span class='#{OVERALL_LOOK[value][0]}' style='flex-grow: #{counts[value]}'></span>"
         end
+        "<div class='fb-bar' role='img' aria-label='Insgesamt: #{h(label)}'>#{segments.join}</div>"
+    end
+
+    def self.overall_counts_html(counts)
+        OVERALL.map do |value, text|
+            cls, icon = OVERALL_LOOK[value]
+            "<span class='fb-count #{cls}#{counts[value].zero? ? ' fb-zero' : ''}'><i class='bi #{icon}' aria-hidden='true'></i>#{h(text)} <strong>#{counts[value]}</strong></span>"
+        end.join
+    end
+
+    def self.languages_html(a)
+        badges = a[:languages].map { |id, n| "<span class='badge fb-lang'>#{h(CodeLanguages::NAMES[id])} #{n}</span>" }
+        badges += a[:languages_texts].uniq.map { |t| "<span class='badge fb-lang fb-lang-other'>#{h(t)}</span>" }
+        badges.join(' ')
+    end
+
+    def self.overview_card_html(a)
+        texts = a[:entries].count { |e| e[:has_text] }
+        contact = a[:entries].any? { |e| e[:email] }
+        io = +"<article class='fb-card' data-title='#{h(a[:title].to_s.downcase)}' data-text='#{texts > 0 ? 1 : 0}' data-contact='#{contact ? 1 : 0}'>"
+        io << "<div class='fb-card-head'><h3 class='fb-card-title'>#{title_html(a)}</h3>" \
+            "<span class='fb-muted'>#{plural(a[:count], 'Rückmeldung', 'Rückmeldungen')}, zuletzt #{date(a[:newest])}</span></div>"
+        io << bar_html(a[:counts]['overall'])
+        io << "<div class='fb-counts'>#{overall_counts_html(a[:counts]['overall'])}</div>"
+        io << "<dl class='fb-facts'>"
+        duration = tally_text('duration', a[:counts]['duration'])
+        planned = a[:duration].to_s.strip.empty? ? '' : "<span class='fb-muted fb-planned'>angesetzt: #{h(a[:duration])}</span>"
+        io << "<div><dt><i class='bi bi-clock' aria-hidden='true'></i>Dauer</dt><dd>#{duration ? h(duration) : '–'}#{planned}</dd></div>"
+        level = tally_text('level', a[:counts]['level'])
+        io << "<div><dt><i class='bi bi-speedometer2' aria-hidden='true'></i>Niveau</dt><dd>#{level ? h(level) : '–'}</dd></div>"
+        languages = languages_html(a)
+        io << "<div><dt><i class='bi bi-code-slash' aria-hidden='true'></i>Gewünscht</dt><dd>#{languages.empty? ? '–' : languages}</dd></div>"
+        io << '</dl>'
+        link = texts > 0 ? "#{plural(texts, 'Text', 'Texte')} lesen" : 'Alle Antworten'
+        io << "<a class='fb-to-texts' href='##{anchor(a[:activity])}'><i class='bi bi-chat-left-text' aria-hidden='true'></i>#{link}</a>"
+        io << '</article>'
+    end
+
+    def self.entry_html(e)
+        f = e[:answers]
+        group = e[:former_group] ? "#{h(e[:former_group])} (Gruppe gelöscht)" : h(e[:group])
+        io = +"<article class='fb-entry' data-text='#{e[:has_text] ? 1 : 0}' data-contact='#{e[:email] ? 1 : 0}'>"
+        chips = CHOICES.keys.filter_map do |key|
+            text = label(key, f[key])
+            next unless text
+
+            cls = key == 'overall' ? " #{OVERALL_LOOK[f[key]][0]}" : ''
+            prefix = { 'overall' => '', 'duration' => 'Dauer: ', 'level' => 'Niveau: ' }[key]
+            "<span class='fb-chip#{cls}'>#{prefix}#{h(text)}</span>"
+        end
+        languages = Array(f['languages']).map { |id| CodeLanguages::NAMES[id.to_s] }.compact
+        languages << f['languages_text'] if f['languages_text']
+        chips << "<span class='fb-chip'>gewünscht: #{languages.map { |l| h(l) }.join(', ')}</span>" unless languages.empty?
+        io << "<div class='fb-chips'>#{chips.join}</div>" unless chips.empty?
+        io << "<p class='fb-text'>#{h(f['overall_text'])}</p>" if f['overall_text']
+        io << "<p class='fb-text'>#{h(f['text']).gsub("\n", '<br>')}</p>" if f['text']
+        io << "<p class='fb-entry-meta'>#{group}, #{h(e[:teacher])}, #{date(e[:at])}"
+        if e[:email]
+            io << "<a class='fb-mail' href='mailto:#{h(e[:email])}' title='Hat angekreuzt, dass die Administration schreiben darf'>" \
+                "<i class='bi bi-envelope' aria-hidden='true'></i>#{h(e[:email])}</a>"
+        end
+        io << '</p></article>'
+    end
+
+    EMPTY = "<div class='fb-empty'><i class='bi bi-chat-square-text' aria-hidden='true'></i><div><p><strong>Noch keine Rückmeldung.</strong></p>" \
+        '<p>Lehrkräfte geben sie auf der Klassenseite, im Reiter »Fortschritt« einer Aktivität (»Rückmeldung geben«). Von selbst fragt die Seite danach, ' \
+        'wenn mindestens drei aus einer Gruppe mit einer Aktivität gearbeitet haben und eine Woche lang nichts mehr dazu kam.</p>' \
+        '<p>Hier steht dann je Aktivität, wie es lief, ob Dauer und Niveau passten und welche Sprachen gewünscht sind, darunter jeder Text.</p></div></div>'.freeze
+
+    def self.admin_html(summary)
+        return EMPTY if summary.empty?
 
         total = summary.sum { |a| a[:count] }
-        io << "<p class='feedback-total'>#{total} #{total == 1 ? 'Rückmeldung' : 'Rückmeldungen'} zu #{summary.size} " \
-            "#{summary.size == 1 ? 'Aktivität' : 'Aktivitäten'}, die neueste zuerst.</p>"
+        io = +"<form class='fb-filters' role='search' onsubmit='return false'>" \
+            "<input type='search' class='form-control form-control-sm fb-search' placeholder='Aktivität suchen' aria-label='Aktivität suchen'>" \
+            "<input type='checkbox' class='btn-check' id='fb-only-text' autocomplete='off'>" \
+            "<label class='btn btn-sm btn-outline-secondary' for='fb-only-text'><i class='bi bi-chat-left-text' aria-hidden='true'></i>Nur mit Text</label>" \
+            "<input type='checkbox' class='btn-check' id='fb-only-contact' autocomplete='off'>" \
+            "<label class='btn btn-sm btn-outline-secondary' for='fb-only-contact'><i class='bi bi-envelope' aria-hidden='true'></i>Kontakt erwünscht</label>" \
+            "<span class='fb-muted fb-total'>#{plural(total, 'Rückmeldung', 'Rückmeldungen')} zu #{plural(summary.size, 'Aktivität', 'Aktivitäten')}</span></form>"
+        io << "<p class='fb-none-found' hidden>Keine Rückmeldung passt zu diesem Filter.</p>"
+        io << "<h2 class='fb-heading'>Überblick</h2><div class='fb-overview'>#{summary.map { |a| overview_card_html(a) }.join}</div>"
+        io << "<h2 class='fb-heading'>Antworten und Texte</h2>"
         summary.each do |a|
-            title = a[:slug] ? "<a href='/#{h(a[:slug])}'>#{h(a[:title])}</a>" : h(a[:title] || a[:activity])
-            io << "<section class='feedback-activity'><h2 class='feedback-activity-title'>#{title} " \
-                "<span class='feedback-activity-count'>#{a[:count]} #{a[:count] == 1 ? 'Rückmeldung' : 'Rückmeldungen'}</span></h2>"
-            io << "<div class='feedback-table-scroll'><table class='table table-sm feedback-counts'><tbody>"
-            CHOICES.each do |key, choices|
-                io << "<tr><th scope='row'>#{QUESTIONS[key]}</th>"
-                choices.each do |value, text|
-                    n = a[:counts][key][value]
-                    io << "<td class='#{n.zero? ? 'feedback-zero' : ''}'>#{h(text)} <strong>#{n}</strong></td>"
-                end
-                io << '</tr>'
-            end
-            wished = a[:languages].map { |id, n| "#{h(CodeLanguages::NAMES[id])} <strong>#{n}</strong>" }
-            wished += a[:languages_texts].map { |t| "»#{h(t)}«" }
-            io << "<tr><th scope='row'>Sprachen</th><td colspan='3'>#{wished.empty? ? '–' : wished.join(', ')}</td></tr>"
-            io << '</tbody></table></div>'
-            a[:entries].each do |e|
-                f = e[:answers]
-                group = e[:former_group] ? "#{h(e[:former_group])} (Gruppe gelöscht)" : h(e[:group])
-                io << "<article class='feedback-entry'><p class='feedback-entry-head'><strong>#{group}</strong>, #{h(e[:teacher])}, #{date(e[:at])}"
-                io << ", <a href='mailto:#{h(e[:email])}'>#{h(e[:email])}</a> <span class='feedback-contact-ok'>(darf angeschrieben werden)</span>" if e[:email]
-                io << '</p>'
-                parts = CHOICES.keys.filter_map do |key|
-                    text = label(key, f[key])
-                    next unless text
-
-                    extra = key == 'duration' && !f['duration_planned'].to_s.empty? ? " (angesetzt: #{h(f['duration_planned'])})" : ''
-                    "#{QUESTIONS[key]}: #{h(text)}#{extra}"
-                end
-                languages = Array(f['languages']).map { |id| CodeLanguages::NAMES[id.to_s] }.compact
-                languages << f['languages_text'] if f['languages_text']
-                parts << "Sprachen: #{languages.map { |l| h(l) }.join(', ')}" unless languages.empty?
-                io << "<ul class='feedback-entry-answers'>#{parts.map { |p| "<li>#{p}</li>" }.join}</ul>" unless parts.empty?
-                io << "<p class='feedback-entry-text'><span class='feedback-entry-label'>Ein Satz dazu:</span> #{h(f['overall_text'])}</p>" if f['overall_text']
-                if f['text']
-                    io << "<p class='feedback-entry-text'><span class='feedback-entry-label'>Gefehlt, gestört, gut funktioniert:</span><br>" \
-                        "#{h(f['text']).gsub("\n", '<br>')}</p>"
-                end
-                io << '</article>'
-            end
+            io << "<section class='fb-activity' id='#{anchor(a[:activity])}' data-title='#{h(a[:title].to_s.downcase)}'>" \
+                "<h3 class='fb-activity-title'>#{title_html(a)} <span class='fb-muted'>#{plural(a[:count], 'Rückmeldung', 'Rückmeldungen')}</span></h3>"
+            a[:entries].each { |e| io << entry_html(e) }
             io << '</section>'
         end
         io

@@ -139,12 +139,50 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        setupHome();
-        setupClass();
-    });
-    if (document.readyState !== 'loading') {
-        setupHome();
-        setupClass();
+    // /rueckmeldungen: an activity's name, »Nur mit Text«, »Kontakt
+    // erwünscht«. An answer shows when it passes both boxes, an activity
+    // (its card and its section) when its name matches and one of its
+    // answers shows.
+    function setupAdmin() {
+        const filters = document.querySelector('.fb-filters');
+        if (!filters) return;
+        const search = filters.querySelector('.fb-search');
+        const onlyText = document.getElementById('fb-only-text');
+        const onlyContact = document.getElementById('fb-only-contact');
+        const none = document.querySelector('.fb-none-found');
+        const apply = function () {
+            const words = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+            const shown = {};
+            document.querySelectorAll('.fb-activity').forEach(function (section) {
+                const named = words.every(function (w) { return section.dataset.title.includes(w); });
+                let any = false;
+                section.querySelectorAll('.fb-entry').forEach(function (entry) {
+                    const ok = named && (!onlyText.checked || entry.dataset.text === '1') && (!onlyContact.checked || entry.dataset.contact === '1');
+                    entry.hidden = !ok;
+                    if (ok) any = true;
+                });
+                section.hidden = !any;
+                shown[section.id] = any;
+            });
+            let cards = 0;
+            document.querySelectorAll('.fb-card').forEach(function (card) {
+                const link = card.querySelector('.fb-to-texts');
+                const id = link ? link.getAttribute('href').slice(1) : '';
+                card.hidden = !shown[id];
+                if (!card.hidden) cards++;
+            });
+            none.hidden = cards > 0;
+        };
+        search.addEventListener('input', apply);
+        onlyText.addEventListener('change', apply);
+        onlyContact.addEventListener('change', apply);
     }
+
+    function setup() {
+        setupHome();
+        setupClass();
+        setupAdmin();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
+    else setup();
 })();

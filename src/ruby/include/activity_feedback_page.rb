@@ -176,19 +176,16 @@ class Main < Sinatra::Base
     # (administrators only; the page checks it in main.rb as well).
     def activity_feedback_admin_page
         admins_only!
-        titles = @@content.each_with_object({}) do |(slug, c), all|
-            all[c[:tasks][:activity]] ||= [slug, plain_title(slug)] if c[:tasks]
+        pages = @@content.each_with_object({}) do |(slug, c), all|
+            all[c[:tasks][:activity]] ||= [slug, plain_title(slug), c[:duration]] if c[:tasks]
         end
-        rows = neo4j_query(<<~END_OF_QUERY).map do |row|
-            MATCH (f:ActivityFeedback)-[:BY]->(u:User)
-            WHERE f.created_at IS NOT NULL
-            RETURN f, u.email AS email;
-        END_OF_QUERY
+        query = 'MATCH (f:ActivityFeedback)-[:BY]->(u:User) WHERE f.created_at IS NOT NULL RETURN f, u.email AS email;'
+        rows = neo4j_query(query).map do |row|
             f = row['f']
-            slug, title = titles[f[:activity]] || [nil, f[:activity]]
-            { :activity => f[:activity], :slug => slug, :title => title, :group => f[:group], :email => row['email'],
+            slug, title, duration = pages[f[:activity]] || [nil, f[:activity], nil]
+            { :activity => f[:activity], :slug => slug, :title => title, :duration => duration, :group => f[:group], :email => row['email'],
               :teacher => ((@@invitations[row['email']] || {})[:name] || row['email']), :feedback => f }
         end
-        "#{feedback_css}<div class='feedback-admin'>#{ActivityFeedback.admin_html(ActivityFeedback.summary(rows))}</div>"
+        "#{feedback_css}<div class='fb-page'>#{ActivityFeedback.admin_html(ActivityFeedback.summary(rows))}</div>#{feedback_script}"
     end
 end
