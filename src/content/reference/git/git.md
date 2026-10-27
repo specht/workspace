@@ -263,9 +263,10 @@ Ein Tag ist ein fester Name für einen Commit, etwa für eine Version, die du ab
 
 Zu jedem Befehl zeigt `git help befehl` alle Optionen, zum Beispiel `git help commit`.
 
-<div class='book'>
-<i class='bi bi-book'></i>
+<div class='book with-cover'>
+<img class='book-cover' src='cover-pro-git.webp' alt='Cover von »Pro Git«, zweite Auflage: der Titel in Orange auf Schwarz, darunter Scott Chacon und Ben Straub.'>
 <p><strong>Pro Git</strong>, Scott Chacon und Ben Straub, Apress, 2. Auflage 2014. Alles, was hier fehlt: Rebase, Git auf einem Server, die Arbeit mit GitHub und wie Git seine Commits intern speichert. Frei lesbar, auch auf Deutsch: <a href='https://git-scm.com/book/de/v2'>auf git-scm.com</a>.</p>
+<p class='book-credit'>Cover: Apress, CC BY-NC-SA 3.0 (<a href='https://github.com/progit/progit2'>progit2</a>)</p>
 </div>
 
 - [Git Reference](https://git-scm.com/docs): jeder Befehl mit allen Optionen, auf Englisch.

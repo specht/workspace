@@ -2188,7 +2188,8 @@ _task(eigene-szene)
 
 Wie es weitergeht, mit Texturen, Lampen und Nebel, steht in einer Buchreihe, die einen Raytracer ebenfalls Schritt für Schritt baut, in C++:
 
-<div class='book'>
-<i class='bi bi-book'></i>
+<div class='book with-cover'>
+<img class='book-cover' src='cover-rtw1.webp' alt='Cover von »Ray Tracing in One Weekend«: ein gerendertes Bild mit vielen bunten Kugeln, einer gläsernen und einer spiegelnden, darunter die Namen Peter Shirley, Trevor D Black und Steve Hollasch.'>
 <p><strong>Ray Tracing in One Weekend</strong>, Peter Shirley, Trevor David Black und Steve Hollasch, seit 2016. Drei kurze Bücher: Im ersten entsteht ein Path Tracer mit Glas und Tiefenschärfe wie deiner, im zweiten kommen Texturen, Lampen, Rauch und Bewegungsunschärfe dazu, im dritten geht es darum, die richtigen Strahlen zu würfeln. Frei online, ohne Urheberrechte (CC0): <a href='https://raytracing.github.io/'>raytracing.github.io</a>.</p>
+<p class='book-credit'>Cover: Peter Shirley, Trevor David Black und Steve Hollasch, CC0 (<a href='https://raytracing.github.io/'>raytracing.github.io</a>)</p>
 </div>

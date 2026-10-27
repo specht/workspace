@@ -977,9 +977,10 @@ großen Diensten.
 <strong>Ausprobieren:</strong> Vergleiche mit jemandem neben dir die Seite unter <code>/</code> eures Trackers. Achte darauf, welche Zeilen sich unterscheiden und welche bei euch beiden gleich sind.
 </div>
 
-<div class='book'>
-<i class='bi bi-book'></i>
+<div class='book with-cover'>
+<img class='book-cover' src='cover-zuboff.webp' alt='Cover von »Das Zeitalter des Überwachungskapitalismus« von Shoshana Zuboff: schwarze und orange Schrift auf weißem Grund mit orangem Rand, links eine Überwachungskamera.'>
 <p><strong>Das Zeitalter des Überwachungskapitalismus</strong>, Shoshana Zuboff, Campus, 2018. Wie Firmen aus dem, was Menschen im Netz tun, Vorhersagen über sie machen und verkaufen; ein dickes Buch für alle, die das Thema weiterverfolgen wollen, beim <a href='https://campus.de/wirtschaft-gesellschaft/wirtschaftssachbuch/das-zeitalter-des-ueberwachungskapitalismus/CAM50930'>Campus Verlag</a>.</p>
+<p class='book-credit'>Cover: Campus Verlag (<a href='https://campus.de/wirtschaft-gesellschaft/wirtschaftssachbuch/das-zeitalter-des-ueberwachungskapitalismus/CAM50930'>Downloads auf der Seite des Buchs</a>)</p>
 </div>
 
 ## Was das Gesetz sagt

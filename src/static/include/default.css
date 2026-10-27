@@ -7548,7 +7548,9 @@ h3:has(+ .person) {
 /* A book or a paper to read on (the Black Books of Abrash and Sanglard,
    Whitted's paper): a book or document icon
    beside its title, author and year, two sentences on what is in it and
-   where to read it; like a person box, without a photo (covers are not free) */
+   where to read it; like a person box. A cover only where it is free or
+   offered by the publisher for coverage (picture-rights.yaml): then the box
+   is .with-cover and the cover takes the icon's place, with a credit line */
 .book {
     display: grid;
     grid-template-columns: 2.2em minmax(0, 1fr);
@@ -7575,6 +7577,19 @@ h3:has(+ .person) {
 .book > .bi::before { vertical-align: 0; }
 .book p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
 .book p:last-child { margin-bottom: 0; }
+.book.with-cover { grid-template-columns: 5.5em minmax(0, 1fr); }
+.book > .book-cover {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+    width: 100%;
+    height: auto;
+    border-radius: 0.25em;
+    box-shadow: 0 0.15em 0.5em rgba(0, 0, 0, 0.25);
+}
+.book p.book-credit { font-size: 0.82em; color: var(--bs-secondary-color); }
+@media (max-width: 480px) {
+    .book.with-cover { grid-template-columns: 4.2em minmax(0, 1fr); }
+}
 
 /* The box that _tool(name) puts into a page (Tools in tools.rb); it opens
    the tool in a new tab. */
@@ -9850,6 +9865,8 @@ html[data-bs-theme="dark"] .bitplane-widget {
    stands there (pip_world.js); beside Pip above Pip */
 .pip-nook { z-index: calc(13 + var(--y) * 4); }
 .pip-nook.pip-near { z-index: calc(503 + var(--y) * 4); }
+/* in front of the Mampfer, which shines, but in the dark, unlike Pip's */
+.pip-nook.pip-shaded { filter: brightness(0.42); }
 
 .pip-tall {
     height: calc(var(--tile) * var(--h));

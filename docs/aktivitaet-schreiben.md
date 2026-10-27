@@ -356,8 +356,16 @@ Ein Buch, das genau dort weitermacht, wo ein Abschnitt aufhört (Abrashs
 *Graphics Programming Black Book* nach den Texture Mappern, Sanglards
 *Game Engine Black Book* nach Wolfenstein 3D), bekommt einen Kasten wie ein
 Mensch, mit einem Buch-Icon statt eines Fotos: Titel, Autor, Jahr, zwei
-Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nicht
-darin, denn Cover sind nicht frei. Ein Aufsatz, mit dem etwas angefangen
+Sätze, was darin steht, und wo man es lesen kann. Ein Cover steht nur
+darin, wo es frei ist (das Buch unter CC0 oder CC BY…, mit dem Cover) oder
+der Verlag es zum Herunterladen anbietet, etwa im Pressebereich oder auf der
+Seite des Buchs; dann wird der Kasten `book with-cover`, das Cover
+(`<img class='book-cover' …>`, etwa 240 Pixel breit, mit Alt-Text) steht
+an der Stelle des Icons, darunter eine Zeile `<p class='book-credit'>Cover:
+Verlag (Quelle)</p>`, und ein Cover, das nicht frei ist, kommt mit
+`status: granted` und den Bedingungen in `picture-rights.yaml`; ohne
+Eintrag bleibt es weg und das Icon steht da (`picture_rights.rb`). Kein
+Cover aus einem Shop, von Google Books oder Open Library. Ein Aufsatz, mit dem etwas angefangen
 hat (Whitteds Raytracing von 1980), bekommt denselben Kasten mit
 `bi-file-earmark-text` statt `bi-book`: nur der historische Aufsatz, in dem
 das Verfahren des Abschnitts zum ersten Mal beschrieben ist, und nur, wo er
