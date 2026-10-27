@@ -96,7 +96,10 @@ Jeder Commit trägt einen Namen und eine E-Mail-Adresse. Trage deinen echten Nam
 ```bash
 git config --global user.name "Vorname Nachname"
 git config --global user.email "deine.mail@example.org"
+git config --global pull.rebase false
 ```
+
+Die dritte Zeile sagt `git pull`, was es tun soll, wenn andere inzwischen gepusht haben und du auch schon committet hast: die Commits zusammenführen (merge). Ohne sie bricht `git pull` dann mit `Need to specify how to reconcile divergent branches` ab.
 
 Welche Adresse dein Konto hat, steht bei GitLab unter **Edit profile → Emails**, bei Gitea und Forgejo unter **Settings → Account**, bei GitHub unter **Settings → Emails** (wer dort die Adresse privat hält, nimmt die `noreply`-Adresse, die GitHub anzeigt).
 
@@ -113,7 +116,14 @@ git pull
 git push
 ```
 
-Öffnet `git pull` einen Editor für eine Commit-Nachricht, speichere sie unverändert und schließe den Editor. Meldet Git einen **Konflikt**, hat jemand dieselbe Datei geändert wie du. Dann gilt: nichts löschen, nichts überschreiben, nach Hilfe fragen. Solange du nur Dateien in deinem eigenen Ordner änderst, passiert das nicht.
+Öffnet `git pull` einen Editor für eine Commit-Nachricht, speichere sie unverändert und schließe den Editor. Bricht `git pull` stattdessen mit `Need to specify how to reconcile divergent branches` ab, fehlt eine Einstellung; trag sie einmal ein und hol dann noch einmal:
+
+```bash
+git config --global pull.rebase false
+git pull
+```
+
+Meldet Git einen **Konflikt**, hat jemand dieselbe Datei geändert wie du. Dann gilt: nichts löschen, nichts überschreiben, nach Hilfe fragen. Solange du nur Dateien in deinem eigenen Ordner änderst, passiert das nicht.
 <!-- /part -->
 
 ## Zum Nachschlagen
