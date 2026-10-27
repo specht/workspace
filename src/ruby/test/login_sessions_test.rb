@@ -76,11 +76,11 @@ class LoginSessionsTest < Minitest::Test
     end
 
     def test_when_text
-        assert_equal 'angemeldet am 3. Oktober 2026 · zuletzt gestern',
+        assert_equal 'angemeldet am 3. Oktober 2026, zuletzt gestern',
             LoginSessions.when_text({ :created_on => '2026-10-03', :last_used_on => '2026-10-21' }, :today => TODAY)
         assert_equal 'angemeldet heute', LoginSessions.when_text({ :created_on => '2026-10-22', :last_used_on => '2026-10-22' }, :today => TODAY)
         # From before the days were stored; used once since.
-        assert_equal 'Tag der Anmeldung unbekannt · zuletzt heute',
+        assert_equal 'Tag der Anmeldung unbekannt, zuletzt heute',
             LoginSessions.when_text({ :last_used_on => '2026-10-22' }, :today => TODAY)
         assert_equal 'Tag der Anmeldung unbekannt', LoginSessions.when_text({}, :today => TODAY)
     end
@@ -124,7 +124,7 @@ class LoginSessionsTest < Minitest::Test
         assert_equal 3, html.scan('bu-end-session').size
         assert_includes html, 'Unbekanntes Gerät'
         assert_includes html, 'bi-question-circle'
-        assert_includes html, 'angemeldet am 20. Oktober 2026 · zuletzt heute'
+        assert_includes html, 'angemeldet am 20. Oktober 2026, zuletzt heute'
         refute_includes html, 'bu_all_sessions'
     end
 

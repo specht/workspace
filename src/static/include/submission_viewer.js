@@ -185,7 +185,7 @@
         }
         const total = data.files.reduce((n, f) => n + (f.size || 0), 0);
         facts.push(data.files.length === 1 ? '1 Datei' : data.files.length + ' Dateien', sizeText(total));
-        heading.appendChild(el('div', 'subview-facts', facts.join(' · ')));
+        heading.appendChild(el('div', 'subview-facts', facts.join(', ')));
         head.appendChild(heading);
         const download = withIcon('a', 'btn btn-sm btn-outline-secondary subview-action', 'bi-download', 'Herunterladen');
         download.href = data.download;

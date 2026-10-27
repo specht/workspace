@@ -233,7 +233,8 @@
             card.querySelector('.task-actions').before(box);
         }
         box.innerHTML = '';
-        box.appendChild(document.createTextNode('Deine Abgabe: ' + summary + ' · '));
+        // »Ordner: 3 Dateien, 12 KB«; stored before as »Ordner · 3 Dateien, 12 KB«
+        box.appendChild(document.createTextNode('Deine Abgabe: ' + String(summary).replace(' · ', ': ') + ', '));
         const link = document.createElement('a');
         link.href = '/api/task/submission/' + card.dataset.task;
         link.textContent = 'herunterladen';
@@ -243,7 +244,7 @@
     function writeAnswer(card, answer) {
         if (card.dataset.type === 'submit') {
             const select = card.querySelector('.task-pick');
-            const parts = String(answer || '').split(' · ');
+            const parts = String(answer || '').split(/ · |: /);
             if (select && parts.length > 1) {
                 select.dataset.stored = parts[0];
                 select.value = parts[0];
@@ -509,7 +510,7 @@
         const handedIn = !!(state && state.handed_in);
         button.hidden = !(state && state.status === 'correct') && !handedIn;
         card.dataset.handedIn = handedIn ? '1' : '';
-        button.textContent = handedIn ? 'Eingereicht · Zurücknehmen' : 'Einreichen';
+        button.textContent = handedIn ? 'Eingereicht, zurücknehmen' : 'Einreichen';
     }
 
     function toggleHandIn(card) {

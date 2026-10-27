@@ -721,8 +721,8 @@ module PrivacyDocuments
     # The index of /datenschutz.
     def self.index_html(s)
         items = DOCUMENTS.map do |slug, (title, who)|
-            pdf = " · <a href='#{path(s, "#{slug}.pdf")}'>PDF</a>"
-            consent = slug == 'elternbrief' ? " · <a href='#{path(s, slug)}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>mit Einverständniserklärung</a> (<a href='#{path(s, 'elternbrief.pdf')}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>PDF</a>; solange die Schule nicht zugestimmt hat)" : ''
+            pdf = ", als <a href='#{path(s, "#{slug}.pdf")}'>PDF</a>"
+            consent = slug == 'elternbrief' ? ", <a href='#{path(s, slug)}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>mit Einverständniserklärung</a> (<a href='#{path(s, 'elternbrief.pdf')}#{s[:school_key] ? '&amp;' : '?'}einverstaendnis=1'>PDF</a>; solange die Schule nicht zugestimmt hat)" : ''
             "<li><a href='#{path(s, slug)}'>#{h(title)}</a>#{pdf}#{consent}<br><span class='who'>#{h(who)}</span></li>"
         end
         partner = s[:partner] ? "<p>Die Unterlagen für <strong>#{school(s)}</strong>: Verantwortlich ist die Schule, #{operator(s)} betreibt den Workspace für sie als Auftragsverarbeiter. " \
@@ -784,7 +784,7 @@ module PrivacyDocuments
             <body>
             #{toolbar}
             <h1>#{h(title)}</h1>
-            <p class='who'>#{h(who)}#{s[:school_name] ? " · #{h(s[:school_name])}" : ''} · Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}</p>
+            <p class='who'>#{h(who)}#{s[:school_name] ? ", #{h(s[:school_name])}" : ''}, Stand #{Privacy::CHECKED.strftime('%d.%m.%Y')}</p>
             #{content}
             </body>
             </html>

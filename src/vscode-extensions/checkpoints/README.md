@@ -135,7 +135,7 @@ Each checkpoint row shows how much project content was added and removed compare
 with the preceding checkpoint:
 
 ```text
-Checkpoint 3   10:42:17 · +2,4 MB −18 KB
+Checkpoint 3   10:42:17, +2,4 MB −18 KB
 ```
 
 For a modified file, the full old blob size counts as removed and the full new

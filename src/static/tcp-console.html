@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const span = document.createElement('span');
     const i = document.createElement('i');
     i.className = 'bi ' + icon;
-    span.append(i, document.createTextNode(clock() + ' · ' + text));
+    span.append(i, document.createTextNode(clock() + ' ' + text));
     row.append(span);
     log.append(row);
     follow(kind === 'connecting');

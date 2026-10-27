@@ -2536,12 +2536,12 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 
 .scene-gallery-failed figcaption::after {
-    content: ' · ließ sich nicht zeichnen';
+    content: ' (ließ sich nicht zeichnen)';
     opacity: 0.7;
 }
 
 .scene-gallery-errors figcaption::after {
-    content: ' · der Viewer meldet Fehler';
+    content: ' (der Viewer meldet Fehler)';
     opacity: 0.7;
 }
 
@@ -3678,6 +3678,13 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .lehrplan-page .lp-source {
     color: var(--bs-secondary-color);
     font-size: 0.9rem;
+}
+/* the plan's PDF and the state's page: a line of their own under the source */
+.lehrplan-page .lp-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1.4rem;
+    margin-top: 0.2rem;
 }
 .lehrplan-page .lp-group {
     margin: 1.6rem 0 0.2rem;
@@ -8442,7 +8449,7 @@ div[data-stepper] [data-play] {
     justify-content: center;
 }
 div[data-stepper]::before {
-    content: 'Zum Ausprobieren · ← → schalten weiter';
+    content: 'Zum Ausprobieren: ← → schalten weiter';
     /* a pill like a task's number */
     display: inline-block;
     padding: 0.15em 0.75em;
@@ -8556,7 +8563,7 @@ div[data-stepper] .stepper-word { display: none; }
    picture steps too (stepper_keys.js). */
 @media (pointer: coarse) {
     div[data-stepper]::before {
-        content: 'Zum Ausprobieren · Tasten tippen oder über das Bild wischen';
+        content: 'Zum Ausprobieren: Tasten tippen oder über das Bild wischen';
     }
     div[data-stepper] .stepper-row {
         display: flex;
@@ -9662,7 +9669,7 @@ html[data-bs-theme="dark"] .automaton-stepper {
 }
 /* the frame of the other widgets (div[data-stepper]), its hint for a slider */
 .bitplane-widget::before {
-    content: 'Zum Ausprobieren · die Griffe ziehen';
+    content: 'Zum Ausprobieren: die Griffe ziehen';
     display: inline-block;
     padding: 0.15em 0.75em;
     border-radius: 1em;

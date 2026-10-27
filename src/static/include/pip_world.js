@@ -902,7 +902,7 @@
                 Object.values(this.buttons).forEach((button) => { button.disabled = true; });
                 this.playButton.disabled = true;
                 this.box.dataset.steps = 1;
-                this.status.textContent = 'Karte ' + (i + 1) + ' von ' + this.maps.length + ' · noch nicht gebaut';
+                this.status.textContent = 'Karte ' + (i + 1) + ' von ' + this.maps.length + ', noch nicht gebaut';
             }
         }
 
@@ -1000,9 +1000,9 @@
         update() {
             const frame = this.frames[this.index];
             const ran = this.frames.length > 1;
-            const maps = this.replay.maps > 1 ? 'Karte ' + this.replay.map + ' von ' + this.replay.maps + ' · ' : '';
+            const maps = this.replay.maps > 1 ? 'Karte ' + this.replay.map + ' von ' + this.replay.maps + ', ' : '';
             const steps = this.frames[this.frames.length - 1].step;
-            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : frame.after ? ' · nach dem Plan' : '') : this.replay.edited ? 'Seit der Änderung noch nicht gelaufen' : 'Noch nicht gelaufen';
+            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ', Zeile ' + frame.line : frame.after ? ', nach dem Plan' : '') : this.replay.edited ? 'Seit der Änderung noch nicht gelaufen' : 'Noch nicht gelaufen';
             this.buttons.first.disabled = this.buttons.prev.disabled = this.index === 0;
             this.buttons.next.disabled = this.buttons.last.disabled = this.index >= this.frames.length - 1;
             this.playButton.disabled = !ran;

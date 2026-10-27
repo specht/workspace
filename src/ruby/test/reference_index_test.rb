@@ -112,7 +112,7 @@ class ReferenceIndexTest < Minitest::Test
         assert_equal ['Git und GitLab', 'HTML-Folien'], cards.map { |c| c.at_css('h2').text }
         assert_nil cards[0].at_css('.reference-card-abstract'), 'no prose on the cards'
         assert_equal ['/reference/gitlab#ssh-schluessel', '/reference/gitlab#git-name'], cards[0].css('.reference-outline > li > a').map { |a| a['href'] }
-        assert_equal 'Listen <ul> · Text', cards[1].at_css('.reference-outline-sub').text
+        assert_equal 'Listen <ul>, Text', cards[1].at_css('.reference-outline-sub').text
         assert_equal ['publickey </script>', 'Jeder Commit trägt einen Namen.'], cards[0].css('.reference-outline-sub').map(&:text)
         assert_equal 1, doc.css('.reference-card-label img').size
         script = doc.at_css('#reference-search-index')

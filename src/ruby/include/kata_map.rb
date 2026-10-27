@@ -41,11 +41,11 @@ module KataMap
         CGI.escapeHTML(text.to_s)
     end
 
-    # »4 Einstieg · 4 Übung · 2 Knobelei · 2 Extras«
+    # »4 Einstieg, 4 Übung, 2 Knobelei, 2 Extras«
     def self.counts_text(counts)
         parts = LEVELS.filter_map { |level, name| "#{counts[level]} #{name}" if counts[level].to_i > 0 }
         parts << "#{counts[:extra]} #{counts[:extra] == 1 ? 'Extra' : 'Extras'}" if counts[:extra].to_i > 0
-        parts.join(' · ')
+        parts.join(', ')
     end
 
     # The Katas on the front page instead of their cards: every set in a

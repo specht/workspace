@@ -85,8 +85,8 @@
             if (data.school) {
                 const key = encodeURIComponent(data.school.key);
                 school.append(data.school.approved
-                    ? `<p>Deine Schule: <strong>${esc(data.school.name)}</strong>, hat dem Einsatz zugestimmt · <a href="/datenschutz?schule=${key}"><i class='bi bi-file-earmark-text'></i> Unterlagen für deine Schule</a></p>`
-                    : `<details class='mb-3'><summary>Deine Schule: <strong>${esc(data.school.name)}</strong>, <span class='text-warning-emphasis'>hat noch nicht zugestimmt</span> · was heißt das?</summary>`
+                    ? `<p>Deine Schule: <strong>${esc(data.school.name)}</strong>, hat dem Einsatz zugestimmt. <a href="/datenschutz?schule=${key}"><i class='bi bi-file-earmark-text'></i> Unterlagen für deine Schule</a></p>`
+                    : `<details class='mb-3'><summary>Deine Schule: <strong>${esc(data.school.name)}</strong>, <span class='text-warning-emphasis'>hat noch nicht zugestimmt</span>. Was heißt das?</summary>`
                         + `<p class='mt-2'>Am besten unterschreibt die Schulleitung die Entscheidung und die Vereinbarung aus den <a href="/datenschutz?schule=${key}">Unterlagen für deine Schule</a>; schick sie dann an die Administration. `
                         + `Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis (<a href="/datenschutz/elternbrief?schule=${key}&einverstaendnis=1">Elternbrief mit Einverständniserklärung</a>): Du bewahrst es auf und trägst das Datum in der Gruppe ein. Anmelden können sich alle schon jetzt.</p></details>`);
             } else if (!data.admin) {
@@ -131,7 +131,7 @@
             schools.sort((a, b) => (home.has(b) - home.has(a)) || (guests.has(a) - guests.has(b)) || a.localeCompare(b, 'de'));
             schools.forEach(function (name) {
                 const groups = data.groups.filter(g => school_of(g) === name);
-                if (schools.length > 1) here.append($(`<h2 class='school-heading'></h2>`).text(`${name}${guests.has(name) ? ' (ohne Schule)' : ''} · ${groups.length} ${groups.length === 1 ? 'Gruppe' : 'Gruppen'}`));
+                if (schools.length > 1) here.append($(`<h2 class='school-heading'></h2>`).text(`${name}${guests.has(name) ? ' (ohne Schule)' : ''}, ${groups.length} ${groups.length === 1 ? 'Gruppe' : 'Gruppen'}`));
                 groups.forEach(g => here.append(render_group(g, data.admin).data('info', g)));
             });
             $('#groups_filter').toggle(data.groups.length > 3);

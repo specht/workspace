@@ -108,9 +108,9 @@ test('a solved Kata is handed in and shown in class without the name', async ({ 
   await expect(card).toHaveAttribute('data-status', 'correct', { timeout: 30_000 });
   await expect(handIn).toHaveText('Einreichen');
   await handIn.click();
-  await expect(handIn).toHaveText('Eingereicht · Zurücknehmen');
+  await expect(handIn).toHaveText('Eingereicht, zurücknehmen');
   await page.reload();
-  await expect(card.locator('.task-hand-in')).toHaveText('Eingereicht · Zurücknehmen');
+  await expect(card.locator('.task-hand-in')).toHaveText('Eingereicht, zurücknehmen');
 
   const teacher = await browser.newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
@@ -178,7 +178,7 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await expect(card.locator('.task-feedback')).toBeVisible();
   await expect(card).toHaveAttribute('data-status', 'correct');
   // the replay ends at the lamp, the last step on the last line
-  await expect(card.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 20_000 });
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 8 von 8, Zeile 8', { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
   // Pip has lit the old lamp; back at the start it is dark again
   await expect(card.locator('.pip-lamp')).toHaveClass(/pip-lit/);
@@ -207,7 +207,7 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
   await mobile.goto(page.url());
   const mobileCard = mobile.locator('.task-card[data-task="pip-1/shaft"]:visible');
   await mobileCard.locator('.task-submit').click();
-  await expect(mobileCard.locator('.pip-status')).toHaveText('Schritt 8 von 8 · Zeile 8', { timeout: 30_000 });
+  await expect(mobileCard.locator('.pip-status')).toHaveText('Schritt 8 von 8, Zeile 8', { timeout: 30_000 });
   await expect(mobileCard.locator('.task-console')).toBeHidden();
   await mobileCard.locator('.code-input').scrollIntoViewIfNeeded();
   await mobileCard.locator('.pip-world').screenshot({ path: testInfo.outputPath('pip-phone.png') });
@@ -254,7 +254,7 @@ test('Pip is clicked to the first lamp', async ({ page, e2eEmail }, testInfo) =>
   await expect(undo).toBeDisabled();
 
   for (const button of [forward, forward, left, forward, forward, forward]) await button.click();
-  await expect(card.locator('.pip-status')).toHaveText('Schritt 6 von 6 · Zeile 6');
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 6 von 6, Zeile 6');
   await card.screenshot({ path: testInfo.outputPath('pip-buttons.png') });
   await forward.click();
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 30_000 });
@@ -265,7 +265,7 @@ test('Pip is clicked to the first lamp', async ({ page, e2eEmail }, testInfo) =>
 
   // after a reload the plan is clicked through again, up to the lamp
   await page.reload();
-  await expect(card.locator('.pip-status')).toHaveText('Schritt 7 von 7 · Zeile 7');
+  await expect(card.locator('.pip-status')).toHaveText('Schritt 7 von 7, Zeile 7');
   await expect(card.locator('.code-input-gutter > div')).toHaveCount(8);
   await expect(undo).toBeEnabled();
   await expect(card.locator("[data-go='next']")).toBeDisabled();
@@ -291,7 +291,7 @@ test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail },
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 2 Karten.', { timeout: 30_000 });
   // the replay: three turns, the plan's own move left out
-  await expect(card.locator('.pip-status')).toHaveText(/^Karte 1 von 2 · Schritt 3 von 3/, { timeout: 20_000 });
+  await expect(card.locator('.pip-status')).toHaveText(/^Karte 1 von 2, Schritt 3 von 3/, { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
   // what the plan says while it is loaded is said too, and the cursor is
   // back in the editor
@@ -337,7 +337,7 @@ test('Pip runs on the map of the tab', async ({ page, e2eEmail }, testInfo) => {
   await expect(card.locator('.pip-tab').first()).toBeDisabled({ timeout: 30_000 });
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 3 Karten.', { timeout: 30_000 });
   await expect(card.locator('.task-feedback')).toBeVisible();
-  await expect(card.locator('.pip-status')).toHaveText(/^Karte 2 von 3 · Schritt 5 von 5/);
+  await expect(card.locator('.pip-status')).toHaveText(/^Karte 2 von 3, Schritt 5 von 5/);
   await expect(card.locator('.pip-tab').nth(1)).toHaveClass(/active/);
   await expect(card.locator('.pip-tab').first()).toBeEnabled();
 });

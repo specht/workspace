@@ -596,10 +596,10 @@ module Privacy
             sind vor allem Programme, Dateien und Übungen.
             </p>
 
-            #{heading('Wer verantwortlich ist', 'Verantwortlicher und Kontakt · Art. 13 Abs. 1 Buchst. a, b DSGVO')}
+            #{heading('Wer verantwortlich ist', 'Verantwortlicher und Kontakt (Art. 13 Abs. 1 Buchst. a, b DSGVO)')}
             #{controller_html(s)}
 
-            #{heading('Wozu die Daten verarbeitet werden', 'Zwecke · Art. 13 Abs. 1 Buchst. c DSGVO')}
+            #{heading('Wozu die Daten verarbeitet werden', 'Zwecke (Art. 13 Abs. 1 Buchst. c DSGVO)')}
             <p>
             Für den Unterricht, vor allem im Fach Informatik: Schülerinnen und Schüler programmieren in ihrem eigenen Workspace, bearbeiten Aufgaben,
             lassen sie automatisch prüfen und geben Ergebnisse ab; die Lehrkraft sieht den Stand der Lerngruppe und hilft bei Problemen.
@@ -611,14 +611,14 @@ module Privacy
             #{legal_basis_html(s)}
             #{partners_html(partners)}
 
-            #{heading('Welche Daten gespeichert werden', 'Kategorien, Herkunft, Empfänger und Speicherdauer · Art. 13 Abs. 1 Buchst. e, Abs. 2 Buchst. a; Art. 14 Abs. 1 Buchst. d, Abs. 2 Buchst. f DSGVO')}
+            #{heading('Welche Daten gespeichert werden', 'Kategorien, Herkunft, Empfänger und Speicherdauer (Art. 13 Abs. 1 Buchst. e, Abs. 2 Buchst. a; Art. 14 Abs. 1 Buchst. d, Abs. 2 Buchst. f DSGVO)')}
             #{records_table_html(records(s))}
             <p>
             Alle diese Daten liegen auf dem Server des Workspace. E-Mail-Adresse, Gruppe und, wenn gewünscht, den Namen trägt die
             Lehrkraft aus ihrer Einladungsliste ein; alles andere entsteht durch die Arbeit im Workspace.
             </p>
 
-            #{heading('Anmeldung per Code', 'Sicherheit der Anmeldung · Art. 32 DSGVO')}
+            #{heading('Anmeldung per Code', 'Sicherheit der Anmeldung (Art. 32 DSGVO)')}
             <p>
             Bei der Anmeldung merkt sich der Browser eine zufällige Kennung, und ein Code wird per E-Mail verschickt.
             Angemeldet wird nur, wer beides hat: den Code und den Browser, der ihn angefordert hat. Der E-Mail-Dienst sieht den Code,
@@ -629,7 +629,7 @@ module Privacy
             die offenen Codes ihrer Gruppe auf ihrer Klassenseite; anmelden kann sie sich damit selbst nicht.
             </p>
 
-            #{heading('Was Lehrkräfte sehen', 'Empfänger innerhalb der Schule · Art. 13 Abs. 1 Buchst. e DSGVO')}
+            #{heading('Was Lehrkräfte sehen', 'Empfänger innerhalb der Schule (Art. 13 Abs. 1 Buchst. e DSGVO)')}
             <p>
             Lehrkräfte einer Gruppe sehen in der Klassenübersicht, welche Aufgaben ihre Schülerinnen und Schüler bearbeitet haben,
             mit welchem Ergebnis und wann zuletzt, und deren Abgaben. Auf der Startseite sehen sie zu jeder Aktivität, wie viele
@@ -655,7 +655,7 @@ module Privacy
             die im Workspace angemeldet sind. Der Link zum Workspace gilt eine Woche (erneutes Teilen verlängert ihn) oder bis er abgeschaltet wird, der zur Web-App bis zum Abschalten. Die Seite weist beim Teilen darauf hin.
             </p>
 
-            #{heading('Cookies und Speicher im Browser', 'Endgeräte · § 25 TDDDG')}
+            #{heading('Cookies und Speicher im Browser', 'Endgeräte (§ 25 TDDDG)')}
             <p>
             Vor der Anmeldung setzt die Seite keine Cookies. Nach der Anmeldung setzt sie nur technisch notwendige: einen für die Sitzung
             und einen, mit dem der Browser den eigenen Workspace öffnen darf (für eine Lehrkraft, die in einen Workspace sieht, einen dritten).
@@ -663,7 +663,7 @@ module Privacy
             und der Editor speichert dort, welche Dateien geöffnet waren. Diese Angaben verlassen den Browser nicht.
             </p>
 
-            #{heading('Dienste außerhalb des Servers', 'Empfänger · Art. 13 Abs. 1 Buchst. e DSGVO')}
+            #{heading('Dienste außerhalb des Servers', 'Empfänger (Art. 13 Abs. 1 Buchst. e DSGVO)')}
             <p>
             Die Seiten des Workspace laden nichts von fremden Servern: Schriften, Skripte und Symbole kommen vom Server selbst.
             Beteiligt sind:
@@ -672,7 +672,7 @@ module Privacy
             #{services(s).map { |svc| "<li>#{svc[:html]}</li>" }.join("\n")}
             </ul>
 
-            #{heading('Übermittlung in Länder außerhalb der EU', 'Drittländer · Art. 13 Abs. 1 Buchst. f DSGVO')}
+            #{heading('Übermittlung in Länder außerhalb der EU', 'Drittländer (Art. 13 Abs. 1 Buchst. f DSGVO)')}
             <p>
             Der Workspace übermittelt keine personenbezogenen Daten in Länder außerhalb der Europäischen Union.
             Manche Paketquellen und GitHub haben ihren Sitz in den USA; von dort holt der Server Vorlagen und Bibliotheken,
@@ -700,7 +700,7 @@ module Privacy
             keine Note, und hat keine rechtliche oder ähnlich erhebliche Wirkung. Es findet kein Profiling statt.
             </p>
 
-            #{heading('Schutzmaßnahmen', 'Technische und organisatorische Maßnahmen · Art. 25, 32 DSGVO')}
+            #{heading('Schutzmaßnahmen', 'Technische und organisatorische Maßnahmen (Art. 25, 32 DSGVO)')}
             #{measures_html(s)}
 
             #{heading('Rechte der betroffenen Personen', 'Art. 13 Abs. 2 Buchst. b, c, d DSGVO')}
@@ -709,7 +709,7 @@ module Privacy
             #{supervisory_html(s)}
             </p>
 
-            #{heading('Wer nicht einverstanden ist', 'Ausübung der Rechte · Art. 12 DSGVO', :id => 'nicht-einverstanden')}
+            #{heading('Wer nicht einverstanden ist', 'Ausübung der Rechte (Art. 12 DSGVO)', :id => 'nicht-einverstanden')}
             <p>
             Im Profil unter »Meine Daten« lässt sich alles, was zum Konto gespeichert ist, als Archiv herunterladen
             (Workspace, Abgaben, MySQL- und Neo4j-Datenbanken, Kontodaten), und das Konto lässt sich dort selbst löschen.

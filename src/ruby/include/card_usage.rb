@@ -51,7 +51,7 @@ module CardUsage
         text = if of
                    "Deine Lernenden: #{people} von #{of} haben hier etwas gelöst, zusammen #{solved} Aufgaben"
                else
-                   "#{solved} gelöst · #{people} #{people == 1 ? 'Person' : 'Personen'}, ohne Lehrkräfte, Admins und Testkonten"
+                   "#{solved} gelöst, #{people} #{people == 1 ? 'Person' : 'Personen'}, ohne Lehrkräfte, Admins und Testkonten"
                end
         people_shown = of ? "#{people}/#{of}" : people.to_s
         "<span class='usage-row #{css_class}'>" \

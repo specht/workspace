@@ -47,7 +47,7 @@ class PrivacyDocumentsTest < Minitest::Test
         ([nil] + PrivacyDocuments::DOCUMENTS.keys).each do |slug|
             html = PrivacyDocuments.page(slug, s)
             refute_match(/\bnil\b|#\{/, html, slug.inspect)
-            assert_includes html, '· Partnerschule ·', slug.inspect
+            assert_includes html, ', Partnerschule, ', slug.inspect
             assert_includes html, "href='/datenschutz?schule=partner-1'", slug.inspect if slug
         end
         PrivacyDocuments::DOCUMENTS.each_key { |slug| assert_includes PrivacyDocuments.page(nil, s), "href='/datenschutz/#{slug}?schule=partner-1'" }

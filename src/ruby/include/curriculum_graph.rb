@@ -610,7 +610,7 @@ module CurriculumGraph
         graph[:nodes].each do |n|
             label = section_label(sections, n[:section])
             io << "<div class='cg-node cg-a#{n[:age]}' style='left: #{n[:x]}px; top: #{n[:y]}px;' data-slug='#{h(n[:slug])}' data-topics='#{h(n[:topics].join(' '))}'>"
-            io << "<button type='button' class='cg-pick' title='#{h(n[:title])}#{label ? " · #{h(label)}" : ''}: der Weg dorthin'>#{h(short(n[:title]))}</button>"
+            io << "<button type='button' class='cg-pick' title='#{h(n[:title])}#{label ? " (#{h(label)})" : ''}: der Weg dorthin'>#{h(short(n[:title]))}</button>"
             io << "<a class='cg-open' href='/#{h(n[:slug])}' target='_blank' rel='noopener' aria-label='#{h(n[:title])} öffnen' title='Öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i></a>"
             io << '</div>'
         end
