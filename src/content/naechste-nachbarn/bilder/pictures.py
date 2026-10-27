@@ -9,9 +9,13 @@
   districts, the shop, and where the 300 customers of the past live.
 - stadt-kaution.svg: the same, each customer coloured by the staff's
   decision (amber: a deposit).
+- karte.svg: the card's picture, unlike the penguins of »Ein Neuron lernt«:
+  the south of the town in 16:9, the customers coloured by the staff's
+  decision, and a new customer in Sandberg with lines to the five nearest,
+  most of them asked for a deposit.
 
-Render each with src/scripts/render-svg.rb, the teaser at 1280, the maps at
-900."""
+Render each with src/scripts/render-svg.rb, the teaser and the card at 1280,
+the maps at 900."""
 
 import math
 from pathlib import Path
@@ -129,6 +133,55 @@ def town(path, coloured):
     (HERE / path).write_text("\n".join(out) + "\n")
 
 
+def card():
+    w, h = 1280, 720
+    # the town from x = 0 to 8 km, y from 0 to 4.5 km: Sandberg, the river,
+    # the south of the districts beyond it
+    scale = w / 8
+
+    def sx(x):
+        return x * scale
+
+    def sy(y):
+        return h - y * (h / 4.5)
+
+    lines = (STATIC / "customers.csv").read_text().splitlines()
+    keys = lines[0].split(",")
+    people = [dict(zip(keys, line.split(","))) for i, line in enumerate(lines[1:]) if i % 2 == 0]
+    people = [p for p in people if float(p["y"]) <= 4.6]
+    # where the legend and the district's name stand, no customers
+    boxes = [(24, 20, 444, 80), (24, sy(0.25) - 40, 214, sy(0.25) + 14)]
+    free = lambda p: not any(x0 - 12 <= sx(float(p["x"])) <= x1 + 12 and y0 - 12 <= sy(float(p["y"])) <= y1 + 12 for x0, y0, x1, y1 in boxes)
+    people = [p for p in people if free(p)]
+    new = (5.1, 1.5)
+    near = sorted(people, key=lambda p: math.hypot(float(p["x"]) - new[0], float(p["y"]) - new[1]))[:5]
+    out = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {w} {h}' width='{w}' height='{h}'>",
+           f"<rect width='{w}' height='{h}' fill='{WHITE}'/>",
+           f"<rect x='0' y='{sy(3.15):.1f}' width='{w}' height='{sy(2.85) - sy(3.15):.1f}' fill='{WATER}' stroke='{BLUE}' stroke-width='2'/>"]
+    for person in near:
+        out.append(f"<line x1='{sx(new[0]):.1f}' y1='{sy(new[1]):.1f}' x2='{sx(float(person['x'])):.1f}' y2='{sy(float(person['y'])):.1f}' "
+                   f"stroke='{TEXT}' stroke-width='3'/>")
+    for person in people:
+        fill = AMBER if person["deposit"] == "1" else BLUE
+        ring = person in near
+        out.append(f"<circle cx='{sx(float(person['x'])):.1f}' cy='{sy(float(person['y'])):.1f}' r='{11 if ring else 9}' fill='{fill}' "
+                   f"stroke='{TEXT if ring else WHITE}' stroke-width='{3 if ring else 2}'/>")
+    out.append(f"<circle cx='{sx(new[0]):.1f}' cy='{sy(new[1]):.1f}' r='24' fill='{WHITE}' stroke='{TEXT}' stroke-width='4'/>")
+    out.append(text(sx(new[0]), sy(new[1]) + 11, "?", 32, TEXT, weight="bold"))
+    out.append(f"<rect x='24' y='{sy(0.25) - 40:.1f}' width='190' height='54' rx='12' fill='{WHITE}'/>")
+    out.append(text(40, sy(0.25), "Sandberg", 34, TEXT, anchor="start", weight="bold"))
+    out.append(text(w - 40, sy(3) + 8, "Fluss", 26, BLUE, anchor="end"))
+    # the legend, top left, on white
+    out.append(f"<rect x='24' y='20' width='420' height='60' rx='12' fill='{WHITE}' stroke='{LINE}' stroke-width='2'/>")
+    out.append(f"<circle cx='54' cy='50' r='11' fill='{AMBER}'/>")
+    out.append(text(74, 60, "mit Kaution", 28, TEXT, anchor="start"))
+    out.append(f"<circle cx='254' cy='50' r='11' fill='{BLUE}'/>")
+    out.append(text(274, 60, "ohne Kaution", 28, TEXT, anchor="start"))
+    out.append("</svg>")
+    (HERE / "karte.svg").write_text("\n".join(out) + "\n")
+
+
 teaser()
 town("stadt.svg", False)
 town("stadt-kaution.svg", True)
+card()
