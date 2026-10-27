@@ -121,9 +121,9 @@ class StudentHomeTest < Minitest::Test
 
     def test_card_requires
         assert_equal '', StudentHome.card_requires([])
-        t = ->(title) { "<span class='card-requires-title'>#{title}</span>" }
-        assert_includes StudentHome.card_requires(['Echtzeitgrafik mit C']), "Baut auf #{t.('Echtzeitgrafik mit C')} auf"
-        # each title set off, so that »… und …« reads as two titles
-        assert_includes StudentHome.card_requires(['Dateien', 'Git', 'HTML &amp; CSS']), "Baut auf #{t.('Dateien')}, #{t.('Git')} und #{t.('HTML &amp; CSS')} auf"
+        t = ->(slug, title) { "<span class='card-requires-title' data-href='/#{slug}'>#{title}</span>" }
+        assert_includes StudentHome.card_requires([%w[pixelram Echtzeitgrafik\ mit\ C]]), "Baut auf #{t.('pixelram', 'Echtzeitgrafik mit C')} auf"
+        # each title its own, leading to its activity, so that »… und …« reads as two
+        assert_includes StudentHome.card_requires([%w[a Dateien], %w[b Git], ['c', 'HTML &amp; CSS']]), "Baut auf #{t.('a', 'Dateien')}, #{t.('b', 'Git')} und #{t.('c', 'HTML &amp; CSS')} auf"
     end
 end

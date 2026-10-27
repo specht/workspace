@@ -1205,5 +1205,24 @@ window.addEventListener('load', function() {
     <div class='please-reload' style='display: none;'>
         Die Verbindung zum Server wurde unterbrochen. Bitte lade die Seite neu.
     </div>
+    <script>
+        // »Baut auf … auf« on a card (StudentHome.card_requires): a title
+        // leads to its activity, not to the card's; a middle click or
+        // Ctrl opens it in a new tab, as a link would
+        document.addEventListener('click', function (event) {
+            const title = event.target.closest && event.target.closest('.card-requires-title[data-href]');
+            if (!title) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.ctrlKey || event.metaKey) window.open(title.dataset.href, '_blank');
+            else location.href = title.dataset.href;
+        }, true);
+        document.addEventListener('auxclick', function (event) {
+            const title = event.button === 1 && event.target.closest && event.target.closest('.card-requires-title[data-href]');
+            if (!title) return;
+            event.preventDefault();
+            window.open(title.dataset.href, '_blank');
+        }, true);
+    </script>
 </body>
 </html>

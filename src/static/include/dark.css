@@ -523,9 +523,6 @@ html[data-bs-theme="dark"] {
     .student-howto-kinds {
         color: #9aa3ab;
     }
-    .card-requires-title {
-        color: #d0d5da;
-    }
     .student-continue-list a,
     .student-howto {
         border-color: #33332f;

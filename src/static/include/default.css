@@ -5999,11 +5999,20 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.35em;
 }
 
-/* the titles stand out from »Baut auf … und … auf«, so that it is clear
-   where one ends and the next begins (»Katas: Dictionaries und Katas: Listen«) */
+/* the titles lead to their activities (the listener in _template.html) and stand out
+   from »Baut auf … und … auf«, so that it is clear where one ends and the
+   next begins (»Katas: Dictionaries und Katas: Listen«): a faint dotted line */
 .card-requires-title {
-    color: #3d4650;
-    font-weight: 600;
+    text-decoration: underline dotted;
+    text-decoration-color: rgba(107, 118, 128, 0.55);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.card-requires-title:hover {
+    color: var(--bs-link-color);
+    text-decoration-color: currentColor;
 }
 
 /* for admins at the foot of a card, a tile or a Kata set (Main#usage_html):

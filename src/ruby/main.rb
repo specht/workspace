@@ -7041,7 +7041,7 @@ class Main < Sinatra::Base
                         io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         if catalog == :student
-                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT).map(&:last))
+                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT))
                         end
                         io.puts usage_html(usage, slug, 'card-usage')
                         io.puts "</div>"
