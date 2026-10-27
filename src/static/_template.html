@@ -1223,6 +1223,22 @@ window.addEventListener('load', function() {
             if (!card || !card.dataset.ownHref || (event.relatedTarget && title.contains(event.relatedTarget))) return;
             card.setAttribute('href', card.dataset.ownHref);
         });
+        // A jump to a person (/reference/personen#gorman, /picture-rights):
+        // the name and the box in the middle of the window below the bar,
+        // or the name just below the bar when the box is taller than that
+        function centre_person() {
+            const anchor = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+            const heading = anchor && anchor.classList.contains('reference-part') ? anchor.nextElementSibling : null;
+            const box = heading && heading.nextElementSibling;
+            if (!box || !box.classList.contains('person')) return;
+            const bar = 5 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const top = heading.getBoundingClientRect().top + window.scrollY;
+            const height = box.getBoundingClientRect().bottom + window.scrollY - top;
+            const room = window.innerHeight - bar;
+            window.scrollTo({ top: top - bar - Math.max(0, (room - height) / 2) });
+        }
+        window.addEventListener('load', centre_person);
+        window.addEventListener('hashchange', centre_person);
     </script>
 </body>
 </html>

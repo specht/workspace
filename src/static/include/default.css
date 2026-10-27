@@ -7954,6 +7954,28 @@ div[data-stepper] :not(pre) > code:not([class]),
     border-radius: 0.4em;
 }
 .person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
+/* the person one came for (/reference/personen#gorman): a yellow ring
+   (Cling, as Sek I on /lehrplan) that stays a few seconds for the eye to
+   find the box, then fades; the layout stays as it is */
+.reference-part:target + h3 + .person {
+    animation: person-target-fade 1.5s ease-in 3s both;
+}
+@keyframes person-target-fade {
+    from {
+        border-color: #f0a000;
+        box-shadow: 0 0 0 0.25rem #f0a000;
+    }
+    to {
+        border-color: var(--bs-border-color);
+        box-shadow: 0 0 0 0.25rem transparent;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .reference-part:target + h3 + .person {
+        animation-duration: 0.01s;
+        animation-delay: 5s;
+    }
+}
 /* a person without a free photo: the text alone, no silhouette */
 .person:not(:has(img)) { display: block; }
 /* Development only: a picture still waiting for permission
