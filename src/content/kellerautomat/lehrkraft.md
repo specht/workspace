@@ -29,8 +29,8 @@ Kellerautomaten zum Programmieren, in Ruby oder Python: Lernende prüfen Klammer
 
 #### Begriffe
 
-Die Seite benutzt deterministische Kellerautomaten mit einem Zeichen `#` am Boden und Annahme durch akzeptierenden Zustand und leeren Stack, ohne ε-Übergänge. Nichtdeterministische Kellerautomaten (für Palindrome) und kontextfreie Grammatiken werden nur erwähnt; die Grammatiken übt »Ein Rechner für Ausdrücke«.
+Die Seite benutzt deterministische Kellerautomaten mit einem Zeichen `#` am Boden und Annahme durch akzeptierenden Zustand und leeren Stack, ohne ε-Übergänge. Nichtdeterministische Kellerautomaten (für Palindrome) und kontextfreie Grammatiken werden nur erwähnt; die Grammatiken üben »Grammatiken« und »Ein Rechner für Ausdrücke«.
 
 #### Weiter
 
-»Turingmaschinen« schließt an: a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> prüft kein Kellerautomat, eine Turingmaschine schon.
+»Turingmaschinen« schließt an: a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> prüft kein Kellerautomat, eine Turingmaschine schon. »Grammatiken« beschreibt dieselben Sprachen mit Regeln und macht daraus einen Parser im rekursiven Abstieg.

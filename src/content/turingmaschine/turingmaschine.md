@@ -428,7 +428,7 @@ Was auch immer `halts` über `paradox` sagt, `paradox` macht es falsch. Also kan
 
 ## Wie geht es weiter?
 
-- **Die Stufen der Automaten.** Endliche Automaten, Kellerautomaten und Turingmaschinen erkennen Sprachen, die immer schwieriger werden: reguläre, kontextfreie und alle, die man überhaupt prüfen kann. Wenn du die anderen noch nicht kennst: [Endliche Automaten](/automata) und [Kellerautomaten](/kellerautomat).
+- **Die Stufen der Automaten.** Endliche Automaten, Kellerautomaten und Turingmaschinen erkennen Sprachen, die immer schwieriger werden: reguläre, kontextfreie und alle, die man überhaupt prüfen kann. Wenn du die anderen noch nicht kennst: [Endliche Automaten](/automata) und [Kellerautomaten](/kellerautomat). Zu jeder Stufe gehört eine Art von Grammatik; diese Ordnung heißt Chomsky-Hierarchie und steht am Ende von [Grammatiken](/grammatiken).
 - **Schnell oder langsam.** Dass eine Maschine etwas kann, heißt nicht, dass sie es schnell kann. Wie die Zahl der Schritte mit der Länge der Eingabe wächst, ist die Frage der Komplexitätstheorie, mit der berühmten offenen Frage, ob P gleich NP ist.
 
 <img class='teaser' hidden src='teaser.webp' alt='Ein Band aus Feldern, das nach beiden Seiten weitergeht, mit _ _ 1 0 1 1 _ _ _ darauf. Über der letzten 1 steht ein violetter Kopf mit q1, darüber der Übergang »1 / 0, L«.'>

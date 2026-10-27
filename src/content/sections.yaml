@@ -187,6 +187,7 @@
     - automata
     - .kellerautomat
     - .turingmaschine
+    - .grammatiken
     - calculator
     - routenplaner
 

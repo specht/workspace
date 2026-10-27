@@ -319,6 +319,10 @@ atom       = Zahl | "(" expression ")"
 
 Ein Ausdruck ist eine Summe aus Termen, ein Term ein Produkt aus Faktoren, und ein Faktor ist eine Zahl oder wieder ein ganzer Ausdruck in Klammern. Dass `*` stärker bindet als `+`, steht in der Grammatik selbst: Ein Term wird ganz eingesammelt, bevor das nächste `+` drankommt.
 
+Mit solchen Regeln legte 1960 der Bericht über die Programmiersprache ALGOL 60 die ganze Sprache fest. Herausgegeben hat ihn Peter Naur, und nach ihm und John Backus heißt die Schreibweise Backus-Naur-Form.
+
+_person(naur)
+
 Aus jeder Regel wird eine Methode, die vorn aus der Liste der Tokens nimmt, was zu ihr gehört, und den Baum dafür zurückgibt. So sieht die erste aus:
 
 <!-- language: ruby -->
@@ -348,7 +352,9 @@ def expression(tokens):
 Schreib `parse` so, dass es eine Kopie der Tokens (`list(tokens)`) an `expression` gibt und danach prüft, dass nichts übrig ist. Dann fehlen `term`, `factor` und `atom`. Bei einer Klammer ruft `atom` wieder `expression` auf und erwartet danach ein `)`.
 <!-- /language -->
 
-Wo der Automat nur Zustände hatte, merkt sich das Programm, wo es gerade ist: Jeder Aufruf, der noch nicht fertig ist, wartet auf dem **[Stack](/reference/listen#stack)**, bis der Aufruf darin zurückkommt. Bei `((((1))))` liegen vier `atom` übereinander, und jedes weiß, dass es noch ein `)` braucht. Eine Grammatik wie diese heißt **kontextfrei**, und ein Parser, der für jede Regel eine Methode hat, die sich gegenseitig aufrufen, heißt **rekursiver Abstieg**.
+Wo der Automat nur Zustände hatte, merkt sich das Programm, wo es gerade ist: Jeder Aufruf, der noch nicht fertig ist, wartet auf dem **[Stack](/reference/listen#stack)**, bis der Aufruf darin zurückkommt. Bei `((((1))))` liegen vier `atom` übereinander, und jedes weiß, dass es noch ein `)` braucht. Eine Grammatik wie diese heißt **kontextfrei**, ein Wort des Sprachwissenschaftlers Noam Chomsky, und ein Parser, der für jede Regel eine Methode hat, die sich gegenseitig aufrufen, heißt **rekursiver Abstieg**.
+
+_person(chomsky)
 
 _task(baum)
 

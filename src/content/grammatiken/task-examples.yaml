@@ -1,0 +1,33 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: grammatiken
+examples:
+  number:
+    pass:
+      - files: { grammatiken/number.py: loesung/number.py }
+    fail:
+      # Der Anfang von der Seite: digit und number fehlen noch
+      - files: { grammatiken/number.py: stufen/number.py }
+      # Ohne das erste digit ist auch ein Wort ohne Ziffer eine Zahl
+      - files: { grammatiken/number.py: { text: "# Zahlen aus Ziffern, nach der Grammatik\n#   number = digit { digit }\n#   digit  = \"0\" | \"1\" | … | \"9\"\n\n# Das Zeichen am Index i, am Ende des Worts ein leerer String\ndef peek(word, i):\n    return word[i] if i < len(word) else ''\n\n\n# digit = \"0\" | \"1\" | … | \"9\"\ndef digit(word, i):\n    if not '0' <= peek(word, i) <= '9':\n        return None\n    return i + 1\n\n\n# number = digit { digit }\ndef number(word, i):\n    while '0' <= peek(word, i) <= '9':\n        i = digit(word, i)\n    return i\n\n\nprint(number('123', 0))\nprint(number('12a', 0))\nprint(number('a1', 0))\n" } }
+    ruby:
+      pass:
+        - files: { grammatiken/number.rb: loesung/number.rb }
+      fail:
+        - files: { grammatiken/number.rb: stufen/number.rb }
+        - files: { grammatiken/number.rb: { text: "# Zahlen aus Ziffern, nach der Grammatik\n#   number = digit { digit }\n#   digit  = \"0\" | \"1\" | … | \"9\"\n\n# Das Zeichen am Index i, am Ende des Worts ein leerer String\ndef peek(word, i)\n    word[i] || ''\nend\n\n# digit = \"0\" | \"1\" | … | \"9\"\ndef digit(word, i)\n    return nil unless peek(word, i).between?('0', '9')\n    i + 1\nend\n\n# number = digit { digit }\ndef number(word, i)\n    i = digit(word, i) while peek(word, i).between?('0', '9')\n    i\nend\n\np number('123', 0)\np number('12a', 0)\np number('a1', 0)\n" } }
+  ausdruck:
+    pass:
+      - files: { grammatiken/expression.py: loesung/expression.py }
+    fail:
+      # Die Kopie von number.py, noch ohne expression, term und factor
+      - files: { grammatiken/expression.py: loesung/number.py }
+      # accepts fragt nur, ob expression etwas gelesen hat, nicht, ob alles
+      - files: { grammatiken/expression.py: { text: "# Ausdrücke mit + und * und Klammern, nach der Grammatik\n#   expression = term { \"+\" term }\n#   term       = factor { \"*\" factor }\n#   factor     = number | \"(\" expression \")\"\n#   number     = digit { digit }\n#   digit      = \"0\" | \"1\" | … | \"9\"\n\n# Das Zeichen am Index i, am Ende des Worts ein leerer String\ndef peek(word, i):\n    return word[i] if i < len(word) else ''\n\n\n# digit = \"0\" | \"1\" | … | \"9\"\ndef digit(word, i):\n    if not '0' <= peek(word, i) <= '9':\n        return None\n    return i + 1\n\n\n# number = digit { digit }\ndef number(word, i):\n    i = digit(word, i)\n    if i is None:\n        return None\n    while '0' <= peek(word, i) <= '9':\n        i = digit(word, i)\n    return i\n\n\n# expression = term { \"+\" term }\ndef expression(word, i):\n    i = term(word, i)\n    while i is not None and peek(word, i) == '+':\n        i = term(word, i + 1)\n    return i\n\n\n# term = factor { \"*\" factor }\ndef term(word, i):\n    i = factor(word, i)\n    while i is not None and peek(word, i) == '*':\n        i = factor(word, i + 1)\n    return i\n\n\n# factor = number | \"(\" expression \")\"\ndef factor(word, i):\n    if peek(word, i) != '(':\n        return number(word, i)\n    i = expression(word, i + 1)\n    if i is None or peek(word, i) != ')':\n        return None\n    return i + 1\n\n\n# Das Wort gehört dazu, wenn expression es bis zum Ende liest\ndef accepts(word):\n    return expression(word, 0) is not None\n\n\nfor word in ['2+3*4', '(1+2)*3', '2+', '(1+2', '2*+3']:\n    print(repr(word), accepts(word))\n" } }
+    ruby:
+      pass:
+        - files: { grammatiken/expression.rb: loesung/expression.rb }
+      fail:
+        - files: { grammatiken/expression.rb: loesung/number.rb }
+        - files: { grammatiken/expression.rb: { text: "# Ausdrücke mit + und * und Klammern, nach der Grammatik\n#   expression = term { \"+\" term }\n#   term       = factor { \"*\" factor }\n#   factor     = number | \"(\" expression \")\"\n#   number     = digit { digit }\n#   digit      = \"0\" | \"1\" | … | \"9\"\n\n# Das Zeichen am Index i, am Ende des Worts ein leerer String\ndef peek(word, i)\n    word[i] || ''\nend\n\n# digit = \"0\" | \"1\" | … | \"9\"\ndef digit(word, i)\n    return nil unless peek(word, i).between?('0', '9')\n    i + 1\nend\n\n# number = digit { digit }\ndef number(word, i)\n    i = digit(word, i)\n    return nil if i.nil?\n    i = digit(word, i) while peek(word, i).between?('0', '9')\n    i\nend\n\n# expression = term { \"+\" term }\ndef expression(word, i)\n    i = term(word, i)\n    while !i.nil? && peek(word, i) == '+'\n        i = term(word, i + 1)\n    end\n    i\nend\n\n# term = factor { \"*\" factor }\ndef term(word, i)\n    i = factor(word, i)\n    while !i.nil? && peek(word, i) == '*'\n        i = factor(word, i + 1)\n    end\n    i\nend\n\n# factor = number | \"(\" expression \")\"\ndef factor(word, i)\n    return number(word, i) unless peek(word, i) == '('\n    i = expression(word, i + 1)\n    return nil if i.nil? || peek(word, i) != ')'\n    i + 1\nend\n\n# Das Wort gehört dazu, wenn expression es bis zum Ende liest\ndef accepts(word)\n    !expression(word, 0).nil?\nend\n\n['2+3*4', '(1+2)*3', '2+', '(1+2', '2*+3'].each do |word|\n    puts \"#{word.inspect} #{accepts(word)}\"\nend\n" } }

@@ -1,5 +1,6 @@
 """Tapes, stacks and heads of automata as SVG, for the pictures of
-»Kellerautomaten« and »Turingmaschinen« (render with src/scripts/render-svg.rb).
+»Kellerautomaten«, »Turingmaschinen« and »Grammatiken« (its stack of open
+calls) (render with src/scripts/render-svg.rb).
 
 The state diagrams themselves are not drawn here: the pages draw them with
 the widget of »Endliche Automaten« (<div class='automaton-drawing'>,
@@ -129,4 +130,29 @@ def stack(x, base, size, symbols, top_current=True, walls=True, width=STROKE):
         gap = size * 0.12
         parts.append(f"<path d='M {x - gap:.1f} {top_y:.1f} L {x - gap:.1f} {base + gap:.1f} L {x + size + gap:.1f} {base + gap:.1f} "
                      f"L {x + size + gap:.1f} {top_y:.1f}' fill='none' stroke='{INK}' stroke-width='{width * 2}'/>")
+    return ''.join(parts)
+
+
+def frames(x, base, w, h, labels, top_current=True, walls=True, width=STROKE, size=None):
+    """A stack of wide entries from the bottom (base) upwards, the last label
+    on top: the open calls of a program (»Grammatiken«), drawn like a stack
+    of an automaton; walls: the open box it stands in."""
+    font = size or round(h * 0.42)
+    parts = []
+    for j, label in enumerate(labels):
+        top = j == len(labels) - 1
+        current = top and top_current
+        y = base - (j + 1) * h
+        stroke = ACCENT if current else INK
+        parts.append(f"<rect x='{x:.1f}' y='{y:.1f}' width='{w}' height='{h}' fill='{WHITE}' "
+                     f"stroke='{stroke}' stroke-width='{width * (2 if current else 1)}'/>"
+                     + text(x + w / 2, y + h / 2 + font * 0.36, label, font, ACCENT if current else INK))
+    # the top entry again, so that its border lies on the one below
+    if labels and top_current:
+        parts.append(parts.pop())
+    if walls:
+        top_y = base - len(labels) * h - h * 0.6
+        gap = h * 0.12
+        parts.append(f"<path d='M {x - gap:.1f} {top_y:.1f} L {x - gap:.1f} {base + gap:.1f} L {x + w + gap:.1f} {base + gap:.1f} "
+                     f"L {x + w + gap:.1f} {top_y:.1f}' fill='none' stroke='{INK}' stroke-width='{width * 2}'/>")
     return ''.join(parts)

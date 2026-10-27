@@ -349,7 +349,8 @@ _task(grammatik)
 ## Wie geht es weiter?
 
 - **Ein Band statt eines Stacks.** Auch Kellerautomaten haben eine Grenze: a<sup>n</sup>b<sup>n</sup>c<sup>n</sup>, gleich viele a, b und c, prüft keiner. Was dafür fehlt, ist ein Gedächtnis, in dem man überall lesen und schreiben kann. Das hat die [Turingmaschine](/turingmaschine).
-- **Ein Rechner für Ausdrücke.** In [Ein Rechner für Ausdrücke](/calculator) baust du aus einer Grammatik ein Programm, das `2 + 3 * (4 - 1)` versteht. Die Klammern prüft dort der Stack der Funktionsaufrufe.
+- **Regeln statt einer Maschine.** In [Grammatiken](/grammatiken) beschreibst du Sprachen wie die Klammerwörter mit Regeln, zeichnest sie als Syntaxdiagramme und machst aus jeder Regel eine Funktion. Die Klammern prüft dann der Stack der Funktionsaufrufe.
+- **Ein Rechner für Ausdrücke.** In [Ein Rechner für Ausdrücke](/calculator) baust du aus einer Grammatik ein Programm, das `2 + 3 * (4 - 1)` versteht und ausrechnet.
 
 <img class='teaser' hidden src='teaser.webp' alt='Ein Wort aus Klammern in einer Reihe von Feldern, über der vierten, einer schließenden runden Klammer, steht ein violetter Kopf mit q0. Ein grauer Pfeil führt zu einem Stack rechts daneben: unten #, darüber eine runde, eine eckige und oben, violett, wieder eine runde öffnende Klammer.'>
 
