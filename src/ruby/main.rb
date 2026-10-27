@@ -1937,6 +1937,9 @@ class Main < Sinatra::Base
         # Rendering a page: everything below for one entry of paths, into
         # parsed_content, parsed_content_paths and the catalog order
         # (parsed_sections, entries).
+        # »Added content« per page, printed sorted once all are rendered
+        # (the workers finish in no particular order)
+        added = []
         render_entries = lambda do |list|
             list.each do |entry|
                 entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -2146,7 +2149,7 @@ class Main < Sinatra::Base
                 # end
                 meta = root.css('.meta').first
                 entry_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - entry_started_at
-                STDERR.puts "Added content: #{slug} (#{format('%.3f', entry_elapsed)}s)"
+                added << [slug, entry_elapsed]
                 parsed_content[slug] = {
                     :html => html,
                     :dev_only => entry[:dev_only],
@@ -2294,7 +2297,7 @@ class Main < Sinatra::Base
                     begin
                         render_entries.call(part)
                         entries = parsed_sections.transform_values { |s| s[:entries] }
-                        writer.write(Marshal.dump([parsed_content, parsed_content_paths, entries]))
+                        writer.write(Marshal.dump([parsed_content, parsed_content_paths, entries, added]))
                         writer.close
                         exit!(0)
                     rescue Exception => e
@@ -2310,7 +2313,8 @@ class Main < Sinatra::Base
                 reader.close
                 Process.wait(pid)
                 if $?.success? && !data.empty?
-                    content, content_paths, entries = Marshal.load(data)
+                    content, content_paths, entries, part_added = Marshal.load(data)
+                    added.concat(part_added)
                     parsed_content.merge!(content)
                     parsed_content_paths.merge!(content_paths)
                     entries.each_pair { |key, slugs| parsed_sections[key][:entries].concat(slugs) }
@@ -2324,6 +2328,7 @@ class Main < Sinatra::Base
         else
             render_entries.call(paths)
         end
+        added.sort_by(&:first).each { |slug, elapsed| STDERR.puts "Added content: #{slug} (#{format('%.3f', elapsed)}s)" }
         if partial
             parsed_content.each_pair do |slug, content|
                 @@content[slug] = content
