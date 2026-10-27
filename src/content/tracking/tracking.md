@@ -269,7 +269,8 @@ gehört, hat den Schnipsel geschrieben, und die Website hat ihn eingebaut.
 
 Noch kennt dein Tracker `/pixel.gif` nicht. Er bekommt jetzt ein Bild aus einem
 einzigen durchsichtigen Pixel und schreibt jeden Besuch in eine Datei,
-`visits.log`.
+`visits.log`. Das Bild ist eine vollständige GIF-Datei von 42 Bytes; was in so
+einer Datei steht, zeigt [»Eine GIF-Datei decodieren«](/gif).
 
 <!-- language: ruby -->
 Unter die `require`-Zeilen kommen das Bild und der Name der Datei:
