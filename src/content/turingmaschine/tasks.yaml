@@ -3,6 +3,33 @@
 format: 1
 activity: turingmaschine
 tasks:
+  - id: was-rechnet
+    title: Was rechnet die Maschine?
+    prompt: |
+      Schalte die Maschine oben bis zum Ende durch. `1011` ist im Binärsystem
+      die Zahl 11. Was macht die Maschine mit der Zahl auf ihrem Band?
+    check:
+      type: choice
+      options:
+        - Sie verdoppelt die Zahl.
+        - Sie dreht die Reihenfolge der Ziffern um.
+        - Sie zählt 1 dazu.
+        - Sie zieht 1 ab.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Verdoppeln hängt im Binärsystem eine 0 hinten an, aus `1011` würde `10110`. Welche Zahl steht am Ende auf dem Band?
+      - when: { picked: 1 }
+        say: Umgedreht wäre `1011` dann `1101`. Vergleich das mit dem Band im letzten Schritt.
+      - when: { picked: 3 }
+        say: Dann stünde am Ende `1010` auf dem Band. Rechne die Zahl im letzten Schritt ins Dezimalsystem um.
+    hint: |
+      Rechne aus, welche Zahl am Ende auf dem Band steht. Im Binärsystem sind die
+      Stellen von rechts 1, 2, 4 und 8 wert.
+    solution: |
+      Sie zählt 1 dazu: Am Ende steht `1100` auf dem Band, und das ist 8 + 4 = 12,
+      eins mehr als 11. Wie sie das macht, Schritt für Schritt, steht weiter unten.
+
   - id: vorhersage-plus
     title: Was steht danach auf dem Band?
     prediction: true

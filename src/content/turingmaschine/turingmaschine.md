@@ -23,9 +23,17 @@ reference: [automaten, ruby-python]
 Ein Band, ein Kopf, der darauf liest und schreibt, und eine kleine Tabelle: Mehr braucht man nicht, um alles zu berechnen, was dein Computer berechnen kann. Du baust in Ruby oder Python Turingmaschinen, die Binärzahlen hochzählen, addieren und Wörter wie aaabbbccc prüfen, zählst ihre Schritte und findest mit einem Gedankenexperiment eine Frage, die kein Programm der Welt beantworten kann.
 </p>
 
+Bevor es um Begriffe geht, sieh einer Turingmaschine bei der Arbeit zu. Auf ihrem Band steht `1011`, eine Zahl im Binärsystem. Schalte Schritt für Schritt weiter und achte darauf, wohin der violette Rahmen, ihr Kopf, auf dem Band wandert und was er hineinschreibt. Oben steht in jedem Schritt, was die Maschine liest (`read`), was sie schreibt (`write`) und wohin der Kopf geht (`move`): L heißt links, R rechts.
+
+<div class='automaton-stepper' data-stepper data-fixed data-title='Eine Turingmaschine bei der Arbeit' data-kind='turing' data-states='q0 q1 qH' data-start='q0' data-accept='qH' data-rules='q0 0 0 R q0; q0 1 1 R q0; q0 _ _ L q1; q1 1 0 L q1; q1 0 1 L qH; q1 _ 1 L qH' data-input='1011'></div>
+<script src='/include/automaton_layout.js'></script>
+<script src='/include/automaton_stepper.js'></script>
+
+_task(was-rechnet)
+
 Ein [endlicher Automat](/automata) merkt sich nur seinen Zustand. Ein [Kellerautomat](/kellerautomat) hat dazu einen Stack, aber auch er sieht immer nur dessen oberstes Zeichen. Wörter wie aaabbbccc, mit gleich vielen a, b und c, prüft darum keiner von beiden: Hat ein Kellerautomat beim Zählen der a seinen Stack gefüllt und beim Vergleichen mit den b wieder geleert, weiß er nicht mehr, wie viele c kommen müssen.
 
-1936 fragte sich der britische Mathematiker Alan Turing, was »berechnen« überhaupt heißt. Seine Antwort war eine Maschine, die so arbeitet wie ein Mensch mit Bleistift und Papier: Sie sieht auf ein Feld, schreibt etwas hinein, geht ein Feld weiter und merkt sich dabei nur, an welcher Stelle ihres Verfahrens sie gerade ist. Heute heißt sie **Turingmaschine**.
+1936 fragte sich der britische Mathematiker Alan Turing, was »berechnen« überhaupt heißt. Seine Antwort war eine Maschine wie die, die du eben gesehen hast. Sie arbeitet wie ein Mensch mit Bleistift und Papier: Sie sieht auf ein Feld, schreibt etwas hinein, geht ein Feld weiter und merkt sich dabei nur, an welcher Stelle ihres Verfahrens sie gerade ist. Heute heißt sie **Turingmaschine**.
 
 _person(turing)
 
@@ -46,11 +54,11 @@ Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du
 
 ## Band, Kopf und Zustand
 
-Eine Turingmaschine hat ein **Band** aus Feldern, das nach links und rechts ohne Ende weitergeht. In jedem Feld steht ein Zeichen; ein leeres Feld schreiben wir als `_`. Am Anfang steht die Eingabe auf dem Band, und der **Kopf** steht auf ihrem ersten Zeichen. Die Maschine ist außerdem in einem **Zustand**, am Anfang in q<sub>0</sub>.
+Die Maschine vom Anfang der Seite hat drei Teile. Ihr **Band** besteht aus Feldern und geht nach links und rechts ohne Ende weiter. In jedem Feld steht ein Zeichen; ein leeres Feld schreiben wir als `_`, wie die Felder links und rechts von `1011`. Am Anfang steht die Eingabe auf dem Band, und der **Kopf**, der violette Rahmen, steht auf ihrem ersten Zeichen. Außerdem ist die Maschine in einem **Zustand**, am Anfang in q<sub>0</sub>, dem Kreis mit dem violetten Ring.
 
 In jedem Schritt liest der Kopf das Zeichen unter sich. Zu ihrem Zustand und diesem Zeichen schlägt die Maschine in ihrer Tabelle nach, und dort stehen drei Angaben: welches Zeichen sie in das Feld schreibt, ob der Kopf ein Feld nach links (L) oder nach rechts (R) geht, und ihr neuer Zustand. Erreicht sie den Zustand q<sub>H</sub>, hält sie an, und was dann auf dem Band steht, ist ihr Ergebnis.
 
-Die erste Maschine zählt 1 zu einer Binärzahl dazu. Im Bild steht an jedem Pfeil das gelesene Zeichen, hinter dem Schrägstrich das geschriebene und die Richtung:
+Die Maschine vom Anfang zählt 1 zu einer Binärzahl dazu. Im Bild steht an jedem Pfeil das gelesene Zeichen, hinter dem Schrägstrich das geschriebene und die Richtung; im Schritt-für-Schritt-Bild oben ist die Zeile violett, die gerade benutzt wird:
 
 <div class='automaton-drawing' role='img' aria-label='Drei Zustände nebeneinander: q0 mit Startpfeil, q1 und qH mit doppeltem Rand. q0 hat einen Pfeil zu sich selbst mit »0 / 0, R« und »1 / 1, R«, ein Pfeil von q0 nach q1 trägt »_ / _, L«. q1 hat einen Pfeil zu sich selbst mit »1 / 0, L«, ein Pfeil von q1 nach qH trägt »0 / 1, L« und »_ / 1, L«.' data-states='q0 q1 qH' data-start='q0' data-accept='qH' data-arrows='q0 | 0 / 0, R | q0; q0 | 1 / 1, R | q0; q0 | _ / _, L | q1; q1 | 1 / 0, L | q1; q1 | 0 / 1, L | qH; q1 | _ / 1, L | qH'></div>
 <script src='/include/automaton_layout.js'></script>
