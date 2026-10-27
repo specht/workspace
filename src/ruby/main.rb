@@ -2197,9 +2197,10 @@ class Main < Sinatra::Base
                         meta = YAML.load(meta)
                         if meta['image']
                             parts = meta['image'].split(':')
-                            # name.webp:contain for a drawing: padded to 16:9 instead of cropped
+                            # name.webp:contain for a drawing: padded to 16:9 instead of cropped;
+                            # name.webp:contain:x:y also sets what a phone's narrower box keeps
                             contain = parts[1] == 'contain'
-                            parts = parts.first(1) if contain
+                            parts = [parts[0], *parts[2..]] if contain
                             convert = contain ? method(:convert_image_padded) : method(:convert_image)
                             image_path = File.join(File.dirname(path), parts[0])
                             if File.file?(image_path)

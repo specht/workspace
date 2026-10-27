@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: title.webp:100:50
 image_alt: "Ein Straßenfoto mit einem Lastendreirad; ein Gesicht ist vergrößert und zeigt grobe Farbpixel"
 kind: labor
 language: C

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: fertig.webp
+image: fertig.webp:0:50
 image_alt: "Blick durch eine Halle mit Ziegelsäulen, gefliestem Boden und einer Decke mit Holzbalken, die nach hinten ins Dunkel verschwindet; oben links eine halb durchsichtige Karte"
 kind: projekt
 language: C

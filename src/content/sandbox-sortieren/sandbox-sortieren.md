@@ -1,5 +1,5 @@
 <div class='meta'>
-image: sorting-sandbox.webp
+image: sorting-sandbox.webp:70:50
 image_alt: "Die Sortier-Sandbox mit dem Code von Bubblesort links und den zu sortierenden Zahlen als grüne Balken rechts"
 kind: projekt
 duration: 4 bis 6 Doppelstunden

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:70:50
 image_alt: "Ein Wort aus Klammern in einer Reihe von Feldern, über der vierten, einer schließenden runden Klammer, steht ein violetter Kopf mit q0. Ein grauer Pfeil führt zu einem Stack rechts daneben: unten #, darüber eine runde, eine eckige und oben, violett, wieder eine runde öffnende Klammer."
 kind: projekt
 language: Ruby / Python

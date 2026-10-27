@@ -1,5 +1,5 @@
 <div class='meta'>
-image: html-css-logo.png
+image: html-css-logo.png:0:50
 image_alt: "Die Logos von HTML5 und CSS"
 kind: projekt
 duration: 2 Doppelstunden

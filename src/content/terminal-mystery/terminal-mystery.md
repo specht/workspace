@@ -1,5 +1,5 @@
 <div class='meta'>
-image: liesmich.webp
+image: liesmich.webp:40:50
 image_alt: "VS Code mit dem Ordner bitstein und dem Brief der Kriminalpolizei über die gestohlene Goldene Diskette"
 kind: projekt
 language: Bash

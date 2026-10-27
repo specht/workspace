@@ -1,5 +1,5 @@
 <div class='meta'>
-image: data-structures-avl.webp
+image: data-structures-avl.webp:80:50
 image_alt: "Die Datenstruktur-Sandbox mit Python-Code eines AVL-Baums links und dem gezeichneten Baum mit der Wurzel 30 rechts"
 kind: projekt
 duration: 4 bis 6 Doppelstunden

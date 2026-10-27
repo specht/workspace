@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:70:50
 image_alt: "Ein Mann isst an der Strandpromenade Pommes, Möwen fliegen um ihn herum"
 kind: projekt
 language: Ruby / Python
