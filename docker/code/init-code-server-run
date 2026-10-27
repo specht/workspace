@@ -101,11 +101,13 @@ EOF
     chown "$workspace_user:$workspace_group" /workspace/.bashrc
 fi
 
-# No usage reporting from Dart, which keeps the setting in the home
+# No usage reporting from Dart and Go, which keep the setting in the home
 # directory (the image sets the environment variables for the other tools):
-# it writes reporting=0 into ~/.dart-tool. As the student, at every start, so
-# that it holds for old volumes too; quick, and nothing else changes.
+# Dart writes reporting=0 into ~/.dart-tool, Go stops even its local
+# counters. As the student, at every start, so that it holds for old volumes
+# too; quick, and nothing else changes.
 HOME=/workspace s6-setuidgid "$workspace_user" dart --disable-analytics >/dev/null 2>&1 || true
+HOME=/workspace s6-setuidgid "$workspace_user" go telemetry off >/dev/null 2>&1 || true
 
 # SSH permissions
 chmod 700 /workspace/.ssh

@@ -31,6 +31,10 @@ ARG LUA_VERSION=5.4
 ARG JAVA_VERSION=25
 ARG SMALLTALK_VERSION=3.2.5
 ARG HUGO_VERSION=0.164.0
+# Go from go.dev instead of Ubuntu's golang-go (1.22); the checksum from
+# https://go.dev/dl/?mode=json
+ARG GO_VERSION=1.27.3
+ARG GO_SHA256=65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40
 ARG YQ_VERSION=4.54.1
 ARG YQ_SHA256=8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f
 ARG DOTNET_VERSION=10.0
@@ -279,9 +283,8 @@ ENV PATH="/opt/dart-sdk/bin:${PATH}"
 
 # No usage reporting: the tools that read it from the environment. Dart keeps
 # its setting in the home directory, which is the student's volume; the
-# Workspace's start switches it off there (init-code-server-run). Go 1.22
-# from apt has no telemetry; from Go 1.23 on, `go telemetry off` belongs there
-# too.
+# Workspace's start switches it off there (init-code-server-run), and Go's
+# (since 1.23 it counts locally, uploading nothing; off stops the counting).
 ENV DART_SUPPRESS_ANALYTICS=true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV POWERSHELL_TELEMETRY_OPTOUT=1
@@ -340,7 +343,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         git \
         gnucobol${GNUCOBOL_MAJOR} \
         gnupg \
-        golang-go \
         graphviz \
         guile-${GUILE_VERSION} \
         host \
@@ -460,6 +462,31 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
     make install; \
     cd /; \
     rm -rf /tmp/smalltalk
+
+
+# --------------------------------------------------------------------
+# Go, pinned and checked
+# --------------------------------------------------------------------
+
+ARG GO_VERSION
+ARG GO_SHA256
+
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    archive=/var/cache/hackschule-downloads/go${GO_VERSION}.linux-amd64.tar.gz; \
+    if [ ! -s "$archive" ]; then \
+        wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O "${archive}.tmp"; \
+        mv "${archive}.tmp" "$archive"; \
+    fi; \
+    printf '%s  %s\n' "${GO_SHA256}" "$archive" | sha256sum -c -; \
+    rm -rf /usr/local/go; \
+    tar -xzf "$archive" -C /usr/local; \
+    /usr/local/go/bin/go version
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+# what runs is the Go in the image: no toolchain downloaded because a
+# project's go.mod asks for a newer one
+ENV GOTOOLCHAIN=local
 
 
 # --------------------------------------------------------------------
