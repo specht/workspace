@@ -37,30 +37,34 @@ module MeetingPoint
 
     # Who of a group has arrived, for the class board: members [{ email:,
     # name: }], states { email => { task_id => state } } (ClassBoard's).
-    # { :index, :title, :arrived => [names], :waiting => [names] }, or nil
-    # when the task is not one of tasks.
+    # { :index, :title, :task, :arrived, :waiting } with [{ email:, name: }],
+    # or nil when the task is not one of tasks. Who is absent today only the
+    # teacher's browser knows (meeting_status.js).
     def self.status(tasks, task_id, members, states)
         index = tasks.index { |t| t[:id] == task_id }
         return nil if index.nil?
 
         arrived, waiting = members.sort_by { |m| m[:name].to_s.downcase }
             .partition { |m| arrived?(tasks, task_id, states[m[:email]] || {}) }
+        person = ->(m) { { :email => m[:email], :name => m[:name] } }
         { :index => index, :title => tasks[index][:title], :task => task_id,
-          :arrived => arrived.map { |m| m[:name] }, :waiting => waiting.map { |m| m[:name] } }
+          :arrived => arrived.map(&person), :waiting => waiting.map(&person) }
     end
 
     def self.h(text)
         CGI.escapeHTML(text.to_s)
     end
 
-    # The line above the class board: where the point is and who is there.
+    # The line above the class board: where the point is and who is there
+    # (without a browser that knows who is absent; meeting_status.js draws
+    # it again with them).
     def self.status_html(status)
         return '' if status.nil?
 
         total = status[:arrived].size + status[:waiting].size
         waiting = status[:waiting].empty? ? '' :
             "<details class='class-meeting-waiting'><summary>Noch nicht da: #{status[:waiting].size}</summary>" \
-            "<p>#{status[:waiting].map { |n| h(n) }.join(', ')}</p></details>"
+            "<p>#{status[:waiting].map { |m| h(m[:name]) }.join(', ')}</p></details>"
         "<div class='class-meeting-status' data-task='#{h(status[:task])}'>" \
             "<i class='bi bi-flag' aria-hidden='true'></i>" \
             "<span>Treffpunkt nach Aufgabe #{status[:index] + 1} (#{h(status[:title])}): " \

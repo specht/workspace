@@ -2367,6 +2367,26 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     text-align: center;
 }
 
+/* .single: one picture that has to be read, a diagram or a map, at most
+   36em wide and never taller than most of the screen, centred with its
+   caption (.centered keeps it at 16em, too small for labels) */
+.gallery.single {
+    display: flex;
+    justify-content: center;
+}
+
+.gallery.single figure {
+    max-width: 36em;
+    text-align: center;
+}
+
+.gallery.single img {
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    margin: 0 auto;
+}
+
 /* .centered.small: at most 11em, for sketches with few large labels that
    would look oversized at 16em (raycaster: the dot product) */
 .gallery.centered.small figure {
@@ -4871,10 +4891,14 @@ ul.task-teacher-list .task-teacher-answer {
 :root {
     --meeting: #0f766e;
     --meeting-bg: #effaf8;
+    --meeting-all: #198754;
+    --meeting-all-bg: #e8f5ee;
 }
 [data-bs-theme='dark'] {
     --meeting: #5eead4;
     --meeting-bg: rgba(94, 234, 212, 0.07);
+    --meeting-all: #75b798;
+    --meeting-all-bg: rgba(117, 183, 152, 0.12);
 }
 .meeting-point {
     margin: 2em 0;
@@ -4939,6 +4963,18 @@ ul.task-teacher-list .task-teacher-answer {
 .meeting-body {
     margin-top: 0.5em;
 }
+/* After the point: the next lesson's part of the page, dimmed and still
+   readable; full again under the pointer or with the focus inside */
+.meeting-later {
+    opacity: 0.45;
+    filter: grayscale(0.6);
+    transition: opacity 0.2s, filter 0.2s;
+}
+.meeting-later:hover,
+.meeting-later:focus-within {
+    opacity: 1;
+    filter: none;
+}
 .meeting-body p {
     margin: 0 0 0.3em;
 }
@@ -4971,12 +5007,46 @@ ul.task-teacher-list .task-teacher-answer {
 .class-meeting-status > .bi {
     color: var(--meeting);
 }
-.class-meeting-waiting summary {
-    color: var(--bs-secondary-color);
+/* Everyone present has arrived */
+.meeting-point.meeting-all {
+    border-color: var(--meeting-all);
+    background: var(--meeting-all-bg);
+    color: inherit;
+}
+.meeting-point.meeting-all .meeting-head .bi,
+.meeting-point.meeting-all .meeting-head strong,
+.class-meeting-status.meeting-all > .bi,
+.class-meeting-status.meeting-all .class-meeting-count {
+    color: var(--meeting-all);
+}
+.class-meeting-waiting ul {
+    list-style: none;
+    margin: 0.2em 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1em 1em;
     font-size: 0.9em;
 }
-.class-meeting-waiting p {
-    margin: 0.2em 0 0;
+.class-meeting-waiting li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+}
+.meeting-away {
+    padding: 0;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+}
+.meeting-away .bi {
+    margin-right: 0.2em;
+}
+.meeting-away:hover {
+    color: var(--bs-link-color);
+}
+.class-meeting-waiting summary {
+    color: var(--bs-secondary-color);
     font-size: 0.9em;
 }
 .class-board .cb-meeting {

@@ -357,9 +357,15 @@ Tabelle), verschiebt ihn oder hebt ihn auf (»keiner«). Wer die Seite offen
 hat, sieht es sofort, ohne neu zu laden: Nach der Aufgabe steht ein Band
 »Hier trifft sich deine Klasse«; wer alle Aufgaben bis dahin gelöst hat
 (Extras zählen nicht), liest dort »Du bist da« und was bis zum Gespräch zu
-tun ist. Versteckt wird nichts. Über der Tabelle steht, wie viele da sind und
-wer noch fehlt; die Tabelle hat nach der Spalte der Aufgabe eine
-gestrichelte Linie. Wer in zwei Gruppen ist, sieht den früheren Treffpunkt.
+tun ist. Versteckt wird nichts; was danach kommt, ist blasser. Über der
+Tabelle steht, wie viele da sind und wer noch fehlt, und es zählt neu,
+sobald jemand eine Aufgabe löst; wer heute fehlt, nimmt die Lehrkraft mit
+»fehlt heute« aus der Zählung (nur ihr Browser merkt es sich, bis
+Mitternacht). Sind alle da, wird die Zeile grün. Die Tabelle hat nach der
+Spalte der Aufgabe eine gestrichelte Linie. Auf der Seite der Aktivität setzt,
+verschiebt und hebt die Lehrkraft den Treffpunkt auch direkt auf (für die
+Gruppe, die auf der Klassenseite gewählt ist). Wer in zwei Gruppen ist, sieht
+den früheren Treffpunkt.
 Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
 
 ## Wer was sieht

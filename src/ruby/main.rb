@@ -5739,6 +5739,7 @@ class Main < Sinatra::Base
             "#{code_input}" \
             "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" \
+            "#{config[:meeting] && config[:meeting][:teacher] ? "<script src='/include/meeting_status.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{config[:meeting] ? "<script src='/include/meeting_point.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}"
     end
 
@@ -6042,6 +6043,7 @@ class Main < Sinatra::Base
                 s.updated = $updated
             CREATE (a:TaskAttempt {task: $task, version: $version, status: $status, ts: $updated})-[:BY]->(u);
         END_OF_QUERY
+        notify_meeting_progress(email, found[:key].split('/').first)
         TaskStore.public_state(props, found[:version])
     end
 
@@ -6321,9 +6323,25 @@ class Main < Sinatra::Base
     end
 
     # Open pages of an activity, each with the groups whose point it shows
-    # (/ws_meeting): { id => { ws:, activity:, groups: } }
+    # (/ws_meeting): { id => { ws:, activity:, groups:, teacher: } }
     @@meeting_ws = {}
     @@meeting_ws_mutex = Mutex.new
+
+    # A student's task changed: the teachers' open pages of the activity
+    # (the box on the page, the line on the class board) count again.
+    def notify_meeting_progress(email, activity)
+        return unless defined?(@@group_members)
+
+        groups = @@group_members.select { |_, members| members.include?(email) }.keys
+        return if groups.empty?
+
+        clients = @@meeting_ws_mutex.synchronize do
+            @@meeting_ws.values.select { |c| c[:teacher] && c[:activity] == activity && (c[:groups] & groups).any? }
+        end
+        clients.each do |c|
+            (c[:groups] & groups).each { |group| c[:ws].send({ :action => 'progress', :group => group }.to_json) rescue nil }
+        end
+    end
 
     def broadcast_meeting(group, activity, task)
         clients = @@meeting_ws_mutex.synchronize do
@@ -6366,19 +6384,20 @@ class Main < Sinatra::Base
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:group, :activity], :max_value_lengths => {:group => 200, :activity => 64})
         halt 403 unless class_groups.include?(data[:group])
-        respond(:html => meeting_status_html(data[:group], data[:activity]))
+        respond(:status => meeting_status(data[:group], data[:activity]))
     end
 
-    def meeting_status_html(group, activity)
+    # MeetingPoint.status of a group's point, or nil without one
+    def meeting_status(group, activity)
         task = meeting_points([group], activity)[group]
-        return '' if task.nil?
+        return nil if task.nil?
 
         _, _, tasks = class_activities(group).find { |a, _, _| a == activity }
-        return '' if tasks.nil?
+        return nil if tasks.nil?
 
         members = class_members(group)
         states = class_board_states(members.map { |m| m[:email] }, activity)
-        MeetingPoint.status_html(MeetingPoint.status(tasks, task, members, states))
+        MeetingPoint.status(tasks, task, members, states)
     end
 
     # The choice on the class board: no point, or after one of the tasks.
@@ -6397,19 +6416,21 @@ class Main < Sinatra::Base
     end
 
     # Open pages of an activity hear when a point of their groups is set,
-    # moved or lifted (meeting_point.js); a ping every half minute keeps the
-    # connection (nginx ends a silent one after a minute).
+    # moved or lifted (meeting_point.js, class_meeting.js), and teachers when
+    # a student of the group solved a task; a ping every half minute keeps
+    # the connection (nginx ends a silent one after a minute).
     get '/ws_meeting' do
         halt 403 unless user_logged_in?
         halt 400 unless Faye::WebSocket.websocket?(request.env)
         activity = params['activity'].to_s
         halt 400 unless activity =~ /\A[a-z0-9_-]+\z/
         Main.load_invitations()
-        groups = (my_groups + (teacher_logged_in? ? class_groups : [])).uniq
+        teacher = teacher_logged_in?
+        groups = (my_groups + (teacher ? class_groups : [])).uniq
         ws = Faye::WebSocket.new(request.env)
         id = ws.object_id
         ws.on(:open) do |_|
-            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activity => activity, :groups => groups } }
+            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activity => activity, :groups => groups, :teacher => teacher } }
             # what is set now: a page that lost its connection catches up
             ws.send({ :action => 'points', :points => meeting_points(groups, activity) }.to_json) rescue nil
         end
@@ -7740,6 +7761,7 @@ class Main < Sinatra::Base
             MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
             DETACH DELETE s;
         END_OF_QUERY
+        notify_meeting_progress(email, task.split('/').first)
         neo4j_query(<<~END_OF_QUERY, :email => email, :task => task)
             MATCH (a:TaskAttempt {task: $task})-[:BY]->(:User {email: $email})
             DETACH DELETE a;

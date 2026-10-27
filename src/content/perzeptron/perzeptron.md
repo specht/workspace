@@ -37,7 +37,7 @@ dev-only, like Rosenblatt. -->
 <p class='person-credit'>Foto: University of Alaska Fairbanks (<a href='https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php'>College of Fisheries and Ocean Sciences</a>)</p>
 </div>
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='pinguine.webp' alt='Drei gezeichnete Pinguine vor Farbflecken, mit ihren englischen Namen: links ein Zügelpinguin vor Lila, in der Mitte ein Eselspinguin mit orangefarbenem Schnabel vor Petrol, rechts ein Adéliepinguin vor Orange.'><figcaption>Zügel-, Esels- und Adéliepinguin. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
 </div>
 
@@ -45,7 +45,7 @@ Der Adéliepinguin und der Eselspinguin sehen sich auf den ersten Blick
 ähnlich. Am Schnabel kann man sie unterscheiden, wenn man weiß, worauf man
 achten muss. Gemessen wurde er so:
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='schnabel.webp' alt='Der gezeichnete Kopf eines Eselspinguins von der Seite, am Schnabel zwei Maße eingezeichnet: »Bill length«, die Länge bis zur Spitze, und »Bill depth«, die Höhe an der Wurzel.'><figcaption>Die Länge (bill length) und die Höhe (bill depth) des Schnabels; in der Datei heißen sie <code>bill_length_mm</code> und <code>bill_depth_mm</code>. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
 </div>
 

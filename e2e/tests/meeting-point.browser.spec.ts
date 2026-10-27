@@ -37,6 +37,10 @@ test('a meeting point reaches the open page, counts the student as there and goe
   await expect(box).toBeVisible({ timeout: 10_000 });
   await expect(box).toContainText('Hier trifft sich deine Klasse');
   await expect(box).not.toHaveClass(/meeting-arrived/);
+  // what follows is dimmed, not hidden
+  await expect(page.locator('.meeting-later').first()).toBeVisible();
+  await expect(page.locator('h2', { hasText: 'Passwörter speichern' }).locator('xpath=ancestor-or-self::*[contains(@class, "meeting-later")]')).toHaveCount(1);
+  const before = await teacher.locator('.class-meeting-count').textContent();
 
   // solving the task: the student is there
   const card = page.locator(".task-card[data-task='crypto/lawine']");
@@ -47,9 +51,19 @@ test('a meeting point reaches the open page, counts the student as there and goe
   await expect(box).toContainText('Du bist da.');
   await expect(box).toContainText('jemandem aus deiner Klasse helfen');
 
-  // the board counts the student
-  await teacher.reload();
-  await expect(teacher.locator('.class-meeting-status')).toContainText(/[1-9]\d* von \d+ da/);
+  // the board counts the student, without a reload
+  const arrivedBefore = parseInt(before!, 10);
+  await expect(teacher.locator('.class-meeting-count')).toHaveText(new RegExp('^' + (arrivedBefore + 1) + ' von \\d+ da$'), { timeout: 10_000 });
+
+  // everyone else absent today: everyone present is there
+  const line = teacher.locator('.class-meeting-status');
+  await line.locator('summary', { hasText: 'Noch nicht da' }).click();
+  for (let i = 0; i < 60 && await line.locator("button.meeting-away[data-away='1']").count() > 0; i++) {
+    await line.locator("button.meeting-away[data-away='1']").first().click();
+  }
+  await expect(line).toHaveClass(/meeting-all/);
+  await expect(line).toContainText('alle da');
+  await expect(line).toContainText(/Fehlen heute: \d+/);
 
   // lifted: gone from the open page
   await teacher.locator('.class-meeting-choice').selectOption('');

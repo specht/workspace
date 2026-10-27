@@ -27,7 +27,7 @@ der Adéliepinguin, der Zügelpinguin (englisch Chinstrap) und der Eselspinguin
 (Gentoo). Die Biologin Kristen Gorman hat an 342 von ihnen die Länge und die
 Höhe des Schnabels gemessen, in Millimetern.
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='../perzeptron/pinguine.webp' alt='Drei gezeichnete Pinguine vor Farbflecken, mit ihren englischen Namen: links ein Zügelpinguin vor Lila, in der Mitte ein Eselspinguin mit orangefarbenem Schnabel vor Petrol, rechts ein Adéliepinguin vor Orange.'><figcaption>Zügel-, Esels- und Adéliepinguin. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
 </div>
 
@@ -38,7 +38,7 @@ nimmt die Art, die unter ihnen am häufigsten ist. Das sind seine **nächsten
 Nachbarn**, und das Verfahren heißt danach: **k nächste Nachbarn**, wobei k
 sagt, wie viele Nachbarn gefragt werden.
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='teaser.webp' alt='Pinguine in einem Diagramm, nach rechts die Länge des Schnabels, nach oben seine Höhe, in drei Farben für Adélie-, Zügel- und Eselspinguine. In der Mitte ein Kreis mit einem Fragezeichen, von dem Linien zu den fünf nächsten Pinguinen gehen: Der nächste ist ein Eselspinguin, drei der fünf sind Zügelpinguine.'><figcaption>Ein unbekannter Pinguin und seine fünf nächsten Nachbarn: Der nächste ist ein Eselspinguin, aber drei der fünf sind Zügelpinguine</figcaption></figure>
 </div>
 
@@ -466,7 +466,7 @@ und sie haben zu jeder Kundin und jedem Kunden aufgeschrieben:
 </table>
 </div>
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='stadt.webp' alt='Ein quadratischer Stadtplan, 8 mal 8 Kilometer, mit einem Fluss, der waagerecht durch das untere Drittel fließt. Nördlich davon liegen von West nach Ost Lindenhof, Altstadt mit dem Laden und Bahnhofsviertel, südlich davon Sandberg. Graue Punkte zeigen, wo die Kundinnen und Kunden wohnen, über die ganze Stadt verteilt.'><figcaption>Die Stadt und die 300 Kundinnen und Kunden, über die der Laden bisher entschieden hat</figcaption></figure>
 </div>
 
@@ -671,7 +671,7 @@ Zahlen sind der Wohnort, und die nächsten Nachbarn eines Menschen am Sandberg
 wohnen am Sandberg, im wörtlichen Sinn. Der Laden hat dort öfter eine Kaution
 verlangt, also verlangt sie das Programm dort auch.
 
-<div class='gallery centered'>
+<div class='gallery single'>
 <figure><img src='stadt-kaution.webp' alt='Derselbe Stadtplan, jetzt mit farbigen Punkten: orange, wer eine Kaution zahlen musste, blau, wer keine zahlen musste. Nördlich des Flusses sind die meisten Punkte blau, am Sandberg südlich des Flusses die meisten orange.'><figcaption>Wie der Laden bisher entschieden hat</figcaption></figure>
 </div>
 

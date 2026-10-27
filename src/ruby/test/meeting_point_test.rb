@@ -35,8 +35,9 @@ class MeetingPointTest < Minitest::Test
         }
         status = MeetingPoint.status(TASKS, 'b', members, states)
         assert_equal 2, status[:index]
-        assert_equal ['Zoe'], status[:arrived]
-        assert_equal %w[Ali Mia], status[:waiting]
+        assert_equal ['Zoe'], status[:arrived].map { |m| m[:name] }
+        assert_equal %w[Ali Mia], status[:waiting].map { |m| m[:name] }
+        assert_equal 'a@x', status[:waiting].first[:email]
         html = MeetingPoint.status_html(status)
         assert_includes html, 'Treffpunkt nach Aufgabe 3 (Zweite)'
         assert_includes html, '1 von 3 da'

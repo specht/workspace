@@ -644,7 +644,7 @@ module Privacy
             <p>
             Vor der Anmeldung setzt die Seite keine Cookies. Nach der Anmeldung setzt sie nur technisch notwendige: einen für die Sitzung
             und einen, mit dem der Browser den eigenen Workspace öffnen darf (für eine Lehrkraft, die in einen Workspace sieht, einen dritten).
-            Daneben speichert der Browser einige Einstellungen der Seite (lokaler Speicher), etwa ob ein Hinweis ausgeblendet ist oder welche Tipps einer Aufgabe schon aufgeklappt wurden (für jedes Konto getrennt),
+            Daneben speichert der Browser einige Einstellungen der Seite (lokaler Speicher), etwa ob ein Hinweis ausgeblendet ist oder welche Tipps einer Aufgabe schon aufgeklappt wurden (für jedes Konto getrennt), bei Lehrkräften, wer an einem Tag beim Treffpunkt einer Gruppe fehlt (bis Mitternacht),
             und der Editor speichert dort, welche Dateien geöffnet waren. Diese Angaben verlassen den Browser nicht.
             </p>
 

@@ -72,15 +72,27 @@ The maintainer was unsure; built **after a task**, as proposed:
   in `meeting_point_test.rb`.
 - Class board, tab »Fortschritt«: the choice »Treffpunkt« in the toolbar
   (`meeting_control_html`, `/api/class/meeting`), the line »… von … da«
-  with who is missing (`/api/class/meeting_status`, asked again every 20
-  seconds by `class_meeting.js`), and a dashed line after the task's column.
+  with who is missing (`/api/class/meeting_status`, drawn by
+  `meeting_status.js`), and a dashed line after the task's column.
+- Who has arrived is counted again as soon as a student of the group
+  solves or deletes a task (`notify_meeting_progress` in
+  `store_task_result`, a »progress« message to the teachers' pages), and
+  every minute anyway.
+- Absent today: in the list of who is missing, »fehlt heute« leaves a
+  student out of the count until midnight; only the teacher's browser
+  remembers it (localStorage, named in the privacy notice), and every page
+  of that browser counts with it. Once everyone present has arrived, the
+  line and the box turn green (»alle da«).
+- After the point the page is dimmed (`.meeting-later`, also the chapters
+  after it), readable, full again under the pointer.
 - The page: `meeting_point.js` from `TASK_PAGE.meeting`
   (`meeting_page_config`): after the task's card and what reveals its
   answer, or before the next chapter's heading when no task follows in the
   chapter. Quiet until the student has arrived, then the page's open
   Extras, the first set of Katas with open tasks, and helping a classmate.
-  A teacher sees the point of the group chosen on the class page, with the
-  count and a link to change it.
+  A teacher sees the point of the group chosen on the class page (or the
+  only group), with the count, »Aufheben«, and below every other task a
+  faint dashed button to set or move it there.
 - Live: `/ws_meeting?activity=…` sends the points of one's groups when it
   connects and every change after; the page pings every 30 seconds and
   connects again after a break.

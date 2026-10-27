@@ -138,7 +138,10 @@ man vergleicht (auf dem Handy zwei, bei `columns-2` eins); `portrait` ist
 für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
 Modelle eines Kenney-Kits, `centered` für wenige kleine Bilder wie zwei Diagramme
 (höchstens 16em breit, in der Mitte, immer in einer Reihe; mit `small` höchstens
-11em, für Skizzen mit wenigen großen Beschriftungen), `wide-narrow` für ein
+11em, für Skizzen mit wenigen großen Beschriftungen), `single` für ein
+einzelnes Bild, das man lesen muss, ein Diagramm mit Beschriftungen oder eine
+Karte (höchstens 36em breit und nie höher als der größte Teil des
+Bildschirms, in der Mitte), `wide-narrow` für ein
 breites Bild neben einem schmaleren, etwa gleich hoch (ein Blick in den Raum
 und die flache Textur daneben; auf dem Handy untereinander). Mit `hide-lone` fällt von vier Bildern das vierte
 weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
