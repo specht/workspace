@@ -3785,7 +3785,14 @@ select.curriculum-state {
 h2[id],
 h3[id],
 :target {
-    scroll-margin-top: 5em;
+    /* rem, not em: a heading's larger font would keep twice the room */
+    scroll-margin-top: 5rem;
+}
+
+/* an empty anchor before a heading (<div id='lehrkraefte'></div>): the
+   heading's own gap follows it, so that it too lands just below the bar */
+:target:empty {
+    scroll-margin-top: 3rem;
 }
 
 .task-card {
