@@ -6093,6 +6093,19 @@ html[data-bs-theme="dark"] .usage-row {
         padding-bottom: 2.6em;
     }
 }
+/* a student's own band (CardUsage.own_html): the segments of the pinned
+   card, a little thinner here */
+.usage-own .usage-own-bar {
+    flex: 1 1 auto;
+    gap: 2px;
+}
+.usage-own .shc-mark {
+    height: 4px;
+    border-radius: 1px;
+}
+.usage-own .shc-open {
+    background-color: var(--bs-border-color);
+}
 .tutorial_card3 .card-content .card-usage {
     position: absolute;
     left: 1em;

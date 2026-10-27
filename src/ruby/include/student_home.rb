@@ -208,8 +208,8 @@ module StudentHome
     end
 
     # Small label for a catalog card: its kind, as in the strip above the
-    # page. Cards show no progress (the catalog stays calm; an activity shows
-    # it on its own page, and »Weiter mit« on the start page).
+    # page. A student's progress is the band at the card's foot, on the
+    # cards begun only (CardUsage), not here.
     def self.card_badges(kind, language = nil)
         label = PageKinds.kind_label(kind, language)
         parts = []

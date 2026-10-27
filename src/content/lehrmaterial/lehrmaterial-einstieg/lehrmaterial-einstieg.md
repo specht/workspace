@@ -179,6 +179,12 @@ Willst du noch einmal von vorn anfangen, klick im Reiter **Lernende** deiner Tes
 
 Löst du in deinem eigenen Konto eine Aufgabe, steht sie auf der Klassenseite in einer eigenen Zeile **Du (Lehrkraft)** unter der Klasse. Für einen kurzen Test reicht das oft schon; für alles, was wie bei einer Schülerin aussehen soll, nimm das Testkonto.
 
+## Auf der Startseite
+
+Am Fuß jeder Karte mit Aufgaben siehst du ein schmales Band, ein Feld je Aufgabe, in der Reihenfolge der Seite. Es zählt nur die Schülerinnen und Schüler deiner Gruppen: Je dunkler ein Feld, desto mehr von ihnen haben die Aufgabe gelöst, ganz dunkel heißt alle, grau keiner. Daneben steht, wie viele Aufgaben sie dort zusammen gelöst haben und wie viele von ihnen überhaupt etwas, etwa »2« und »1/17«. Fährst du mit der Maus über ein Feld, steht dort die Aufgabe und »6 von 17 deiner Lernenden gelöst«. Die Zahlen sind höchstens zehn Minuten alt. So siehst du auf einen Blick, womit deine Klassen schon gearbeitet haben; wer genau wo steht, zeigt die Klassenseite.
+
+Deine Schülerinnen und Schüler sehen an derselben Stelle ihre eigenen Aufgaben, sobald sie eine Aktivität begonnen haben: grün gelöst, gelb versucht, dazu »3/14«.
+
 ## Auf einer Aktivitätsseite
 
 Wie eine Aktivität aufgebaut ist und warum (Vermutungen vor dem Ausprobieren, Tipps in Stufen, Aufgaben, die im Workspace nachsehen), steht mit Bildern unter [»Was eine Aktivität ausmacht«](/about#aktivitaet).
