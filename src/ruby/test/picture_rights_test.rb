@@ -102,6 +102,10 @@ class PictureRightsTest < Minitest::Test
             assert_includes body, 'https://ws.example/neuron'
             assert_includes body, 'https://example.org/station'
             assert_includes body, '»Foto: Universität«'
+            # every address on a line of its own, easy to find and to click
+            assert_includes body, "Sie finden sie hier:\nhttps://ws.example\n\n"
+            assert_includes body, "von dieser Seite:\nhttps://example.org/station\nWir würden es"
+            body.lines.grep(/https?:/).each { |line| assert_match(%r{\Ahttps?://\S+\n?\z}, line) }
             assert_includes body, 'Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen.'
             assert_includes body, 'zeigen wir gern eines, das Sie uns schicken'
             assert body.end_with?("N. N.\nLehrkraft, Schule X\nk@example.org")
@@ -123,6 +127,8 @@ class PictureRightsTest < Minitest::Test
             refute_includes plain, 'year of birth'
             assert_includes asking, 'may we show it there?'
             assert_includes plain, "a short reply is all it takes.\n\nThank you"
+            assert_includes plain, "You can see it here:\nhttps://ws.example\n\n"
+            plain.lines.grep(/https?:/).each { |line| assert_match(%r{\Ahttps?://\S+\n?\z}, line) }
             _, german = PictureRights.letter(two, { 'language' => 'de' }, sender: sender, root: 'https://ws.example')
             assert_includes german, "genügt eine kurze Antwort.\n\nNoch eine Frage"
             assert_includes german, "wie es Ihnen lieber ist.\n\nVielen Dank"
