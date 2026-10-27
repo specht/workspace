@@ -35,6 +35,13 @@ dem passenden Abschnitt:
     - meine-aktivitaet
 ```
 
+Danach stimmt das Bild der Wege auf `/lehrplan` nicht mehr: Es wird einmal in
+der Entwicklung berechnet und gespeichert. Berechne es auf dem Host mit
+`src/scripts/curriculum-graph.rb` neu (etwa 3 Minuten) und committe
+`src/ruby/include/curriculum-graph.json` mit. Dasselbe gilt, wenn eine
+Aktivität wegfällt oder ihr `requires:` sich ändert; `curriculum_graph_test.rb`
+schlägt fehl, solange das Bild veraltet ist.
+
 Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
 vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
 einen Link im Profil), bekommt er `hidden: true`, statt auskommentiert zu
@@ -662,6 +669,7 @@ ruby test/task_card_test.rb      # jedes _task() hat eine Aufgabe
 ruby test/page_kinds_test.rb     # jede Handbuch-Seite in reference: gibt es
 ruby test/task_examples_test.rb  # jede Prüfung nimmt ihre Beispiele an und lehnt Gegenbeispiele ab
 ruby test/page_code_test.rb      # der Code auf der Seite steht in den Dateien der Rezepte
+ruby test/curriculum_graph_test.rb  # das Bild auf /lehrplan passt zu den Aktivitäten, requires: zeigt nie auf Ältere
 ```
 
 Dann im Entwicklungsmodus die Seite öffnen. Als Lehrkraft siehst du die

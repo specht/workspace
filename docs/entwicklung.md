@@ -170,6 +170,7 @@ Deshalb laufen höchstens `EXPORT_LIMIT` (2) gleichzeitig
 | Geändert | Dann |
 | --- | --- |
 | Inhalte in `src/content/` | nichts; in der Entwicklung liest jeder Seitenaufruf sie neu |
+| eine Aktivität neu, gelöscht oder umbenannt, ihr `requires:`, `sections.yaml` | das Bild der Wege auf `/lehrplan` neu berechnen: `src/scripts/curriculum-graph.rb` auf dem Host (etwa 3 Minuten, im Hintergrund), dann `src/ruby/include/curriculum-graph.json` mit committen; `--check` sagt nur, ob es noch passt ([lehrplan.md](lehrplan.md)) |
 | Ruby (`src/ruby/`) | in der Entwicklung nichts: `rerun` startet den Dienst bei jeder Änderung neu; auf dem Server `./config.rb restart ruby` |
 | CSS, JS in `src/static/` | Seite neu laden. Hält der Browser die alte Datei, hilft <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>R</kbd>; jeder Neustart von `ruby` setzt außerdem einen neuen `CACHE_BUSTER` |
 | Screenshot-Generator (`src/tutorial-screenshots/`, `docker/tutorial-screenshots/`) | `./config.rb build tutorial_screenshots && ./config.rb up -d tutorial_screenshots` |
