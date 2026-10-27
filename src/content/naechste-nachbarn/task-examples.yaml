@@ -1,0 +1,69 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# loesung/ ist knn.rb und knn.py am Ende der Seite; in fehler/ stehen
+# häufige Fehler, je einer gegenüber der Lösung.
+format: 1
+activity: naechste-nachbarn
+examples:
+  abstand:
+    pass:
+      - { files: { nachbarn/knn.rb: loesung/knn.rb } }
+    fail:
+      - { files: { nachbarn/knn.rb: { text: "# noch leer\n" } } }
+      - { files: { nachbarn/knn.rb: fehler/ohne-wurzel.rb } }
+      - { files: { nachbarn/knn.rb: fehler/nur-zwei.rb } }
+    python:
+      pass:
+        - { files: { nachbarn/knn.py: loesung/knn.py } }
+      fail:
+        - { files: { nachbarn/knn.py: { text: "# noch leer\n" } } }
+        - { files: { nachbarn/knn.py: fehler/ohne-wurzel.py } }
+        - { files: { nachbarn/knn.py: fehler/nur-zwei.py } }
+  nachbarn:
+    pass:
+      - { files: { nachbarn/knn.rb: loesung/knn.rb } }
+    fail:
+      - { files: { nachbarn/knn.rb: { text: "# noch leer\n" } } }
+      - { files: { nachbarn/knn.rb: fehler/weiteste.rb } }
+    python:
+      pass:
+        - { files: { nachbarn/knn.py: loesung/knn.py } }
+      fail:
+        - { files: { nachbarn/knn.py: { text: "# noch leer\n" } } }
+        - { files: { nachbarn/knn.py: fehler/weiteste.py } }
+  abstimmen:
+    pass:
+      - { files: { nachbarn/knn.rb: loesung/knn.rb } }
+    fail:
+      - { files: { nachbarn/knn.rb: { text: "# noch leer\n" } } }
+      - { files: { nachbarn/knn.rb: fehler/nur-der-naechste.rb } }
+    python:
+      pass:
+        - { files: { nachbarn/knn.py: loesung/knn.py } }
+      fail:
+        - { files: { nachbarn/knn.py: { text: "# noch leer\n" } } }
+        - { files: { nachbarn/knn.py: fehler/nur-der-naechste.py } }
+  genauigkeit:
+    pass:
+      - { files: { nachbarn/knn.rb: loesung/knn.rb } }
+    fail:
+      - { files: { nachbarn/knn.rb: { text: "# noch leer\n" } } }
+      - { files: { nachbarn/knn.rb: fehler/ganze-zahlen.rb } }
+    python:
+      pass:
+        - { files: { nachbarn/knn.py: loesung/knn.py } }
+      fail:
+        - { files: { nachbarn/knn.py: { text: "# noch leer\n" } } }
+        - { files: { nachbarn/knn.py: fehler/falsche-gezaehlt.py } }
+  kaution-anteil:
+    pass:
+      - { files: { nachbarn/knn.rb: loesung/knn.rb } }
+    fail:
+      - { files: { nachbarn/knn.rb: { text: "# noch leer\n" } } }
+      - { files: { nachbarn/knn.rb: fehler/richtige-gezaehlt.rb } }
+    python:
+      pass:
+        - { files: { nachbarn/knn.py: loesung/knn.py } }
+      fail:
+        - { files: { nachbarn/knn.py: { text: "# noch leer\n" } } }
+        - { files: { nachbarn/knn.py: fehler/richtige-gezaehlt.py } }

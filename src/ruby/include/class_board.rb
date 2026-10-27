@@ -81,13 +81,14 @@ module ClassBoard
         parts.join(', ')
     end
 
-    # The cells of one row and its »gelöst« count.
-    def self.row_cells(r, tasks, activity)
+    # The cells of one row and its »gelöst« count. meeting: the index of
+    # the task the meeting point follows (a line after its column).
+    def self.row_cells(r, tasks, activity, meeting = nil)
         io = +''
         r[:cells].each_with_index do |c, i|
             icon, label = SYMBOLS.fetch(c.status, SYMBOLS['none'])
             symbol = icon.start_with?('bi-') ? "<i class='bi #{icon}' role='img' aria-label='#{h(label)}'></i>" : Icons.tabler(icon, :label => label)
-            klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}#{tasks[i][:extra] ? ' cb-extra' : ''}"
+            klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}#{tasks[i][:extra] ? ' cb-extra' : ''}#{i == meeting ? ' cb-meeting' : ''}"
             count = c.attempts.to_i > 1 && c.status == 'wrong' ? "<small>#{c.attempts}</small>" : ''
             io << "<td class='#{klass}' data-task='#{h(activity)}/#{h(tasks[i][:id])}' title='#{h(cell_title(c))}'>#{symbol}#{count}</td>"
         end
@@ -95,8 +96,10 @@ module ClassBoard
     end
 
     # HTML of the board. submission_url: lambda(email, task_id) -> URL.
-    def self.html(board, activity:, submission_url: nil)
+    # meeting: the id of the task the group's meeting point follows.
+    def self.html(board, activity:, submission_url: nil, meeting: nil)
         tasks = board[:tasks]
+        meeting = tasks.index { |t| t[:id] == meeting } if meeting
         io = +"<div class='class-board-scroll'><table class='class-board'>"
         io << '<thead><tr><th class="cb-name">Name</th>'
         tasks.each_with_index do |t, i|
@@ -104,6 +107,7 @@ module ClassBoard
             flags = []
             flags << 'cb-often-wrong' if s[:often_wrong]
             flags << 'cb-extra' if t[:extra]
+            flags << 'cb-meeting' if i == meeting
             io << "<th class='cb-task #{flags.join(' ')}' data-task='#{h(activity)}/#{h(t[:id])}' title='#{h(t[:title])}'>"
             # Title first, upright; the numbers then line up right above the cells.
             io << "<span class='cb-task-title'>#{t[:extra] ? "<i class='bi bi-stars' aria-label='Extra'></i> " : ''}#{h(t[:title])}</span><span class='cb-task-number'>#{i + 1}</span></th>"
@@ -111,19 +115,19 @@ module ClassBoard
         io << '<th class="cb-total">gelöst</th></tr></thead><tbody>'
         board[:rows].each do |r|
             io << "<tr data-email='#{h(r[:email])}'><th class='cb-name'>#{h(r[:name])}</th>"
-            io << row_cells(r, tasks, activity)
+            io << row_cells(r, tasks, activity, meeting)
         end
         io << '</tbody>'
         if (own = board[:own])
             io << "<tbody class='cb-own'><tr data-email='#{h(own[:email])}'><th class='cb-name'>#{h(own[:name])}</th>"
-            io << row_cells(own, tasks, activity) << '</tbody>'
+            io << row_cells(own, tasks, activity, meeting) << '</tbody>'
         end
         io << '<tfoot><tr><th class="cb-name">Klasse</th>'
         board[:summary].each_with_index do |s, i|
             notes = ["#{s[:done]}/#{board[:rows].size}"]
             notes << "#{s[:stuck]} hängen" if s[:stuck] > 0
             notes << "#{s[:predicted_right]} richtig vermutet" if s[:predicted_right]
-            io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
+            io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}#{i == meeting ? ' cb-meeting' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
         end
         io << '<td></td></tr></tfoot></table></div>'
         rows = board[:own] ? board[:rows] + [board[:own]] : board[:rows]

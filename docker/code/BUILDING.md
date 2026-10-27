@@ -2,15 +2,28 @@
 
 The code-server release (`CODE_SERVER_IMAGE`) and the toolchain build base
 (`TOOLCHAIN_BASE_IMAGE`) are deliberately separate Dockerfile ARGs. Upgrading
-code-server does not reinstall TeX Live, Flutter, Android or Emscripten. The
+code-server does not reinstall TeX Live or Emscripten. The
 toolchain base is pinned to an already known-compatible code-server release;
 upgrade it separately after checking operating-system compatibility.
 
 From the repository root, `bash docker/code/build-toolchains.sh` builds the
-five stages **sequentially**, saving each result as a locally tagged image:
-`hs_code_toolchain_{texlive,flutter,android,gradle,emscripten}:stable`.
+two stages **sequentially**, saving each result as a locally tagged image:
+`hs_code_toolchain_{texlive,emscripten}:stable`.
 Re-running it uses BuildKit's existing cache for unchanged stage instructions.
-The final Dockerfile imports directories from those five images via `COPY`.
+The final Dockerfile imports directories from those two images via `COPY`.
+Dart is installed on its own in the final image (a pinned SDK, about 0.5 GB).
+Flutter, the Android SDK and the Gradle cache left the image on 28 October
+2026: no activity used them, and they were half of its 16.6 GiB; the stages
+are in the Git history (before that date) for the Flutter activity in TODO.md.
+
+No usage reporting: the image sets `DART_SUPPRESS_ANALYTICS`,
+`DOTNET_CLI_TELEMETRY_OPTOUT`, `POWERSHELL_TELEMETRY_OPTOUT` and
+`DO_NOT_TRACK`; code-server runs with `--disable-telemetry`; Dart keeps its
+setting in the home directory, and so does Go, so `init-code-server-run`
+runs `dart --disable-analytics` and `go telemetry off` as the student at every
+start. Go comes from go.dev (`GO_VERSION`), not from apt, with
+`GOTOOLCHAIN=local`: no other toolchain is downloaded behind the student's
+back.
 
 `./build-image.sh` refreshes those stages, builds a *candidate*, clones the
 real `specht/latex-tutorial` repository, compiles its six example documents
@@ -42,13 +55,20 @@ trying to preserve BuildKit's expensive stage caches. Existing running student
 containers are not stopped by these build scripts.
 
 **Building elsewhere:** A server without room for the build can take the
-finished image from a machine that has it. `./upload-image.sh HOST
-[REMOTE_DIR]` compresses `hs_code_server:latest` with zstd (about 7 GB for
-the 17.8 GB image, in October 2026; loading it needs about twice its size
-on the server for a moment), sends it with rsync, which continues
-after a dropped connection, checks it on the server, loads it there, starts
-it once and removes the old image when no container uses it any more. Put
-`REMOTE_DIR` on a disk with room (on the production server
-`/mnt/hackschule`); `CHECK_ONLY=1` looks at the server without changing
-anything. The toolchain images and BuildKit's cache stay on the building
-machine; the server needs only the student image.
+finished image from a machine that has it: `./upload-image.sh HOST
+[REMOTE_DIR]`. By default it goes through a registry container on the server
+(listening only on 127.0.0.1 there, its storage in `REMOTE_DIR/registry`)
+reached through SSH: socat here, `docker exec` into the registry's container
+there, so the server needs no port forwarding. `docker push` sends only the
+layers the registry does not have, so after the first run an update sends only what
+changed, and `docker pull` unpacks layer by layer (the image and its largest
+layer, 3.5 GB in October 2026). Afterwards the registry stops and its garbage
+collection keeps only the current image's layers. `--archive` sends the whole
+image as one zstd file instead (about 7 GB; `docker load` needs about twice
+the image on the server for a moment). Either way the script checks the
+layers on the server against the image built here, starts it once, and
+removes the old image when no container uses it any more. Put `REMOTE_DIR` on
+a disk with room (on the production server `/mnt/hackschule/upload`);
+`CHECK_ONLY=1` looks at the server without changing anything. The toolchain
+images and BuildKit's cache stay on the building machine; the server needs
+only the student image.

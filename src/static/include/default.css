@@ -497,6 +497,17 @@ hr {
     box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.3);
 }
 
+/* The line between groups of a menu: Bootstrap's thin one, not the shaded
+   rule above */
+.dropdown-menu hr.dropdown-divider {
+    height: 0 !important;
+    margin: 0.4rem 0;
+    border: 0;
+    border-top: 1px solid var(--bs-dropdown-divider-bg);
+    opacity: 1;
+    box-shadow: none;
+}
+
 svg {
     user-select: none;
 }
@@ -2354,6 +2365,26 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .gallery.centered figure {
     flex: 0 1 16em;
     text-align: center;
+}
+
+/* .single: one picture that has to be read, a diagram or a map, at most
+   36em wide and never taller than most of the screen, centred with its
+   caption (.centered keeps it at 16em, too small for labels) */
+.gallery.single {
+    display: flex;
+    justify-content: center;
+}
+
+.gallery.single figure {
+    max-width: 36em;
+    text-align: center;
+}
+
+.gallery.single img {
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    margin: 0 auto;
 }
 
 /* .centered.small: at most 11em, for sketches with few large labels that
@@ -4853,6 +4884,170 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.4em;
 }
 
+/* The meeting point (meeting_point.js, class_meeting.js): on the page a
+   band across the width where the class meets, quiet until one has
+   arrived; on the class board the choice, who is there, and a line after
+   the task's column */
+:root {
+    --meeting: #0f766e;
+    --meeting-bg: #effaf8;
+    --meeting-all: #198754;
+    --meeting-all-bg: #e8f5ee;
+}
+[data-bs-theme='dark'] {
+    --meeting: #5eead4;
+    --meeting-bg: rgba(94, 234, 212, 0.07);
+    --meeting-all: #75b798;
+    --meeting-all-bg: rgba(117, 183, 152, 0.12);
+}
+.meeting-point {
+    margin: 2em 0;
+    padding: 0.7em 1.1em;
+    border-top: 2px dashed var(--meeting);
+    border-bottom: 2px dashed var(--meeting);
+    color: var(--bs-secondary-color);
+}
+.meeting-point.meeting-arrived {
+    background: var(--meeting-bg);
+    color: inherit;
+}
+.meeting-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25em 0.6em;
+}
+.meeting-head .bi,
+.meeting-head strong {
+    color: var(--meeting);
+}
+.meeting-head a {
+    margin-left: auto;
+    font-size: 0.9em;
+}
+.meeting-head .meeting-lift {
+    margin-left: auto;
+    padding: 0.05em 0.6em;
+    font-size: 0.85em;
+}
+.meeting-head .meeting-lift .bi {
+    margin-right: 0.35em;
+}
+.meeting-head .meeting-lift + a {
+    margin-left: 0;
+}
+/* A teacher's place for the point below a task: faint until pointed at */
+.meeting-slot {
+    display: flex;
+    justify-content: flex-end;
+    margin: -1em 0 1em;
+}
+.meeting-slot-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.15em 0.75em;
+    border: 1px dashed var(--meeting);
+    border-radius: 999px;
+    background: none;
+    color: var(--meeting);
+    font-size: 0.8em;
+    opacity: 0.45;
+    transition: opacity 0.15s, background-color 0.15s;
+}
+.meeting-slot-button:hover,
+.meeting-slot-button:focus-visible {
+    opacity: 1;
+    background: var(--meeting-bg);
+}
+.meeting-body {
+    margin-top: 0.5em;
+}
+/* After the point: the next lesson's part of the page, evenly dimmed and
+   still readable (no hover: a whole chapter is one block, and the one
+   under the pointer would light up while scrolling) */
+.meeting-later {
+    opacity: 0.55;
+    filter: grayscale(0.6);
+}
+.meeting-body p {
+    margin: 0 0 0.3em;
+}
+.meeting-body ul {
+    margin: 0;
+}
+.meeting-status:empty {
+    display: none;
+}
+.class-meeting-control {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0;
+}
+.class-meeting-control .bi {
+    color: var(--meeting);
+}
+.class-meeting-control select {
+    width: auto;
+    max-width: 22em;
+}
+.class-meeting-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3em 0.6em;
+    margin: 0 0 0.8em;
+}
+.class-meeting-status > .bi {
+    color: var(--meeting);
+}
+/* Everyone present has arrived */
+.meeting-point.meeting-all {
+    border-color: var(--meeting-all);
+    background: var(--meeting-all-bg);
+    color: inherit;
+}
+.meeting-point.meeting-all .meeting-head .bi,
+.meeting-point.meeting-all .meeting-head strong,
+.class-meeting-status.meeting-all > .bi,
+.class-meeting-status.meeting-all .class-meeting-count {
+    color: var(--meeting-all);
+}
+.class-meeting-waiting ul {
+    list-style: none;
+    margin: 0.2em 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1em 1em;
+    font-size: 0.9em;
+}
+.class-meeting-waiting li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+}
+.meeting-away {
+    padding: 0;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+}
+.meeting-away .bi {
+    margin-right: 0.2em;
+}
+.meeting-away:hover {
+    color: var(--bs-link-color);
+}
+.class-meeting-waiting summary {
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+}
+.class-board .cb-meeting {
+    border-right: 3px dashed var(--meeting) !important;
+}
+
 .class-activity-select {
     margin: 0;
     padding: 0;
@@ -7270,6 +7465,13 @@ div[data-stepper] :not(pre) > code:not([class]),
 .person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
 /* a person without a free photo: the text alone, no silhouette */
 .person:not(:has(img)) { display: block; }
+/* Development only: a picture still waiting for permission
+   (picture_rights.rb); on the live site it is left out */
+img.picture-withheld {
+    outline: 3px dashed #e09400;
+    outline-offset: 2px;
+    opacity: 0.5;
+}
 /* two people in one box (Lempel and Ziv, Adelson-Velski and Landis) */
 /* as wide as its portraits: two or three */
 .person.pair { grid-template-columns: auto minmax(0, 1fr); }

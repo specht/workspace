@@ -1171,13 +1171,17 @@ window.addEventListener('load', function() {
                 <!-- Teachers manage their groups on the class page (tab »Gruppe«);
                      /gruppen is the administration's overview. -->
                 <div class='btn-group' style='#{admin_logged_in? ? '' : 'display: none;'}'>
-                    <button type='button' class="btn btn-menu dropdown-toggle #{['/admin', '/gruppen', '/personen', '/person-sources'].include?(request.path) ? 'active' : ''}" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i>Administration</button>
+                    <button type='button' class="btn btn-menu dropdown-toggle #{['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources'].include?(request.path) ? 'active' : ''}" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i>Administration</button>
                     <ul class='dropdown-menu'>
                         <li><a class="dropdown-item #{request.path == '/admin' ? 'active' : ''}" href='/admin'#{request.path == '/admin' ? " aria-current='page'" : ''}><i class='bi bi-speedometer2 me-2'></i>Betrieb</a></li>
                         <li><a class="dropdown-item #{request.path == '/gruppen' ? 'active' : ''}" href='/gruppen'#{request.path == '/gruppen' ? " aria-current='page'" : ''}><i class='bi bi-person-lines-fill me-2'></i>Gruppen</a></li>
                         <li><a class="dropdown-item #{request.path == '/personen' ? 'active' : ''}" href='/personen'#{request.path == '/personen' ? " aria-current='page'" : ''}><i class='bi bi-building me-2'></i>Personen und Schulen</a></li>
-                        <!-- Development only: the sources of the person boxes (person_sources.rb) -->
-                        #{DEVELOPMENT ? "<li><hr class='dropdown-divider'></li><li><a class='dropdown-item " + (request.path == '/person-sources' ? 'active' : '') + "' href='/person-sources'><i class='bi bi-patch-check me-2'></i>Belege der Personen</a></li>" : ''}
+                        <!-- What the site shows: picture rights (picture_rights.rb) and,
+                             in development only, the sources of the person boxes -->
+                        <li><hr class='dropdown-divider'></li>
+                        <li><h6 class='dropdown-header'>Inhalte</h6></li>
+                        <li><a class="dropdown-item #{request.path == '/picture-rights' ? 'active' : ''}" href='/picture-rights'#{request.path == '/picture-rights' ? " aria-current='page'" : ''}><i class='bi bi-image me-2'></i>Bildrechte</a></li>
+                        #{DEVELOPMENT ? "<li><a class='dropdown-item " + (request.path == '/person-sources' ? 'active' : '') + "' href='/person-sources'><i class='bi bi-patch-check me-2'></i>Belege der Personen</a></li>" : ''}
                     </ul>
                 </div>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-menu btn-menu-profile #{request.path == '/profil' ? 'active' : ''}" title='Profil'><i class='bi bi-person-badge'></i>#{CGI.escapeHTML(((@@invitations[(@session_user || {})[:email]] || {})[:name]).to_s.strip.empty? ? (@session_user || {})[:email].to_s : (@@invitations[(@session_user || {})[:email]] || {})[:name].to_s)}</a>

@@ -15,14 +15,14 @@ the class page how many, and who, have arrived. A plan, 28 October 2026.
   Extras, the next Kata set, and helping a classmate.
 - **One meeting point** per activity and group. The teacher sets, moves and
   lifts it live; everyone with the page open sees the change without a
-  reload (the websocket the class page uses already).
+  reload (over a websocket of its own, `/ws_meeting`).
 - **A student in two groups** (rare) sees the earlier of the two points.
 - **Lifted is lifted:** once the teacher lifts it, it is gone, for absent
   students too.
 
-## Open: at a task or at a chapter
+## At a task, not at a chapter
 
-The maintainer is unsure. Proposed: **after a task.**
+The maintainer was unsure; built **after a task**, as proposed:
 
 - »Arrived« must be countable, and what the Workspace counts is tasks: a
   student has arrived when every task before the point that is not an
@@ -61,3 +61,40 @@ The maintainer is unsure. Proposed: **after a task.**
   two groups), a Playwright test: the teacher sets the point, a student's
   open page shows it without a reload, solving the last task before it
   moves the student into »da«, lifting removes it.
+
+## As built
+
+- `MeetingPoint` nodes in Neo4j: `key` (group|activity), `group`,
+  `activity`, `task`, `ts`. Renamed and dropped with their group like pins
+  (`GroupData`, the rename in `groups_page.rb`). No data about a person.
+- `src/ruby/include/meeting_point.rb`: who has arrived (Extras do not
+  count), the earliest of several points, the line above the board; tested
+  in `meeting_point_test.rb`.
+- Class board, tab »Fortschritt«: the choice »Treffpunkt« in the toolbar
+  (`meeting_control_html`, `/api/class/meeting`), the line »… von … da«
+  with who is missing (`/api/class/meeting_status`, drawn by
+  `meeting_status.js`), and a dashed line after the task's column.
+- Who has arrived is counted again as soon as a student of the group
+  solves or deletes a task (`notify_meeting_progress` in
+  `store_task_result`, a »progress« message to the teachers' pages), and
+  every minute anyway.
+- Absent today: in the list of who is missing, »fehlt heute« leaves a
+  student out of the count until midnight; only the teacher's browser
+  remembers it (localStorage, named in the privacy notice), and every page
+  of that browser counts with it. Once everyone present has arrived, the
+  line and the box turn green (»alle da«).
+- After the point the page is dimmed (`.meeting-later`, also the chapters
+  after it), evenly and readable; no hover, because a chapter is one block
+  and the one under the pointer lit up while scrolling.
+- The page: `meeting_point.js` from `TASK_PAGE.meeting`
+  (`meeting_page_config`): after the task's card and what reveals its
+  answer, or before the next chapter's heading when no task follows in the
+  chapter. Quiet until the student has arrived, then the page's open
+  Extras, the first set of Katas with open tasks, and helping a classmate.
+  A teacher sees the point of the group chosen on the class page (or the
+  only group), with the count, »Aufheben«, and below every other task a
+  faint dashed button to set or move it there.
+- Live: `/ws_meeting?activity=…` sends the points of one's groups when it
+  connects and every change after; the page pings every 30 seconds and
+  connects again after a break.
+- Test: `e2e/tests/meeting-point.browser.spec.ts`.

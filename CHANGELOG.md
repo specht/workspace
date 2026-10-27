@@ -21,6 +21,16 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Workspace-Image neu bauen (`./build-image.sh`): Flutter, das Android-SDK und der Gradle-Cache sind heraus
+  (rund 8 GB kleiner), Dart bleibt als eigenes SDK; Go kommt in Version 1.27.3 von go.dev statt aus Ubuntu
+  (`GOTOOLCHAIN=local`); `man` funktioniert wieder (englische Seiten); Dart, Go, .NET und PowerShell melden keine
+  Nutzungsdaten. `./upload-image.sh` braucht auf dem Rechner, der hochlädt, jetzt `socat` und auf dem Server keine
+  Portweiterleitung über SSH mehr.
+- Bilder, die anderen gehören und unter keiner freien Lizenz stehen (und Fotos in Personenkästen ohne Bildzeile),
+  erscheinen erst auf den Seiten, wenn `src/content/picture-rights.yaml` sie als erlaubt führt. Die Seite
+  `/picture-rights` (Administration › Bildrechte) zeigt sie, mit einem Brief an alle, die die Rechte haben. Die
+  Erlaubnis gilt für die Installation, die gefragt hat; wer eine eigene betreibt, fragt selbst. Für die Links in den
+  Briefen gibt es in `credentials.rb` den freiwilligen Wert `PUBLIC_WEB_ROOT`.
 - Neu: `./upload-image.sh HOST [VERZEICHNIS]` kopiert das Workspace-Image, das ein anderer Rechner gebaut hat, auf
   einen Server und ersetzt dort das alte, für Server ohne Platz für den Bau: Über die Leitung gehen rund 7 GB,
   die Toolchains und der Cache des Baus bleiben auf dem Rechner, der baut. `CHECK_ONLY=1` sieht nur nach;

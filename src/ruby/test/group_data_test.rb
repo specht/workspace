@@ -37,7 +37,7 @@ class GroupDataTest < Minitest::Test
         assert_equal 2, db.queries.size
         assert_match(/g\.git_id/, db.queries.first[0])
         query, params = db.queries.last
-        assert_match(/n:GroupSetting OR n:Pin/, query)
+        assert_match(/n:GroupSetting OR n:Pin OR n:MeetingPoint/, query)
         assert_match(/n\.group IN \$names/, query)
         assert_equal({ :names => ['10b'] }, params)
         GroupData.drop!(db, [])
@@ -48,7 +48,7 @@ class GroupDataTest < Minitest::Test
         db = FakeDb.new
         GroupData.drop_all_but!(db, ['10a', '10b', 'Testgruppe (A)', '10a'])
         query, params = db.queries.last
-        assert_match(/n:GroupSetting OR n:Pin/, query)
+        assert_match(/n:GroupSetting OR n:Pin OR n:MeetingPoint/, query)
         assert_match(/NOT n\.group IN \$keep/, query)
         assert_equal({ :keep => ['10a', '10b', 'Testgruppe (A)'] }, params)
         # Never everything at once: without any group to keep, nothing goes.

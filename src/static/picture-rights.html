@@ -1,0 +1,141 @@
+#{ assert(admin_logged_in?) }
+<style>
+    /* Pictures that need permission (picture_rights.rb): a card each, with
+       the letter to the rights holder. */
+    .pr-page {
+        --pr-open: #9e9e9e;
+        --pr-asked: #e09400;
+        --pr-granted: #2e7d32;
+        --pr-refused: #c62828;
+        max-width: 60rem;
+    }
+    .pr-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin: 1rem 0;
+    }
+    .pr-picture {
+        display: flex;
+        gap: 1rem;
+        border-left: 4px solid var(--pr-open);
+        padding: 0.6rem 0 0.6rem 0.9rem;
+        margin: 1.2rem 0;
+    }
+    .pr-asked { border-left-color: var(--pr-asked); }
+    .pr-granted { border-left-color: var(--pr-granted); }
+    .pr-refused { border-left-color: var(--pr-refused); }
+    .pr-asked h2 .bi { color: var(--pr-asked); }
+    .pr-granted h2 .bi { color: var(--pr-granted); }
+    .pr-refused h2 .bi { color: var(--pr-refused); }
+    .pr-picture > img {
+        width: 7rem;
+        height: 8.75rem;
+        object-fit: cover;
+        border-radius: 0.3rem;
+        flex: none;
+    }
+    .pr-body-col {
+        flex: 1;
+        min-width: 0;
+    }
+    .pr-picture h2 {
+        font-size: 1rem;
+        margin: 0 0 0.3rem;
+        word-break: break-all;
+    }
+    .pr-picture h2 .bi {
+        margin-right: 0.45rem;
+    }
+    .pr-pages, .pr-credit {
+        margin: 0 0 0.3rem;
+        font-size: 0.9rem;
+    }
+    .pr-credit, .pr-gone {
+        color: var(--bs-secondary-color);
+    }
+    .pr-none {
+        font-style: italic;
+    }
+    .pr-picture dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 0.1rem 0.8rem;
+        font-size: 0.9rem;
+        margin: 0.4rem 0;
+    }
+    .pr-picture dd {
+        margin: 0;
+        word-break: break-word;
+    }
+    .pr-missing {
+        font-size: 0.9rem;
+        color: var(--pr-asked);
+        margin: 0.3rem 0;
+    }
+    .pr-missing .bi {
+        margin-right: 0.4rem;
+    }
+    .pr-letter summary {
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .pr-letter input, .pr-letter textarea {
+        margin-top: 0.4rem;
+        font-family: inherit;
+    }
+    .pr-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.4rem;
+    }
+    @media (max-width: 575px) {
+        .pr-picture {
+            flex-direction: column;
+        }
+    }
+    [data-bs-theme='dark'] .pr-page {
+        --pr-granted: #66bb6a;
+        --pr-asked: #ffb300;
+        --pr-refused: #ef5350;
+    }
+</style>
+<div class='container pr-page'>
+    <h1>Bildrechte</h1>
+    <p class='abstract'>
+        Die Bilder, die anderen gehören und unter keiner freien Lizenz stehen, mit einem Brief an alle, die die Rechte haben.
+        Was gefragt und geantwortet wurde, steht in <code>src/content/picture-rights.yaml</code>: Dort wird ein Bild nach dem Absenden <code>asked</code>, nach der Antwort <code>granted</code> oder <code>refused</code>.
+    </p>
+    #{PictureRights.page_html(image: ->(path) { File.exist?(path) ? "/cache/#{Main.convert_image(path)}.webp" : '' },
+        dev_only: ->(url) { (@@content[url.delete_prefix('/').sub(/#.*/, '')] || {})[:dev_only] })}
+</div>
+<script>
+    document.querySelectorAll('.pr-filters button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const filter = button.dataset.filter;
+            document.querySelectorAll('.pr-filters button').forEach(function (b) { b.classList.toggle('active', b === button); });
+            document.querySelectorAll('.pr-picture').forEach(function (card) {
+                card.hidden = filter !== 'all' && card.dataset.state !== filter;
+            });
+        });
+    });
+    // The letter as edited: the mail link and the copy take the fields' text
+    document.querySelectorAll('.pr-letter').forEach(function (letter) {
+        const subject = letter.querySelector('.pr-subject');
+        const body = letter.querySelector('.pr-body');
+        const mail = letter.querySelector('[data-mailto]');
+        function update() {
+            if (mail) mail.href = 'mailto:' + encodeURIComponent(mail.dataset.mailto) + '?subject=' + encodeURIComponent(subject.value) + '&body=' + encodeURIComponent(body.value);
+        }
+        subject.addEventListener('input', update);
+        body.addEventListener('input', update);
+        letter.querySelector('.pr-copy').addEventListener('click', function (e) {
+            const button = e.currentTarget;
+            navigator.clipboard.writeText([subject.value, '', body.value].join(String.fromCharCode(10))).then(function () {
+                button.innerHTML = "<i class='bi bi-check-lg'></i> Kopiert";
+                setTimeout(function () { button.innerHTML = "<i class='bi bi-clipboard'></i> Kopieren"; }, 1500);
+            });
+        });
+    });
+</script>

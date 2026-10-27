@@ -25,12 +25,21 @@ Wie lernt ein Programm aus Beispielen, ohne dass jemand ihm die Regel verrät? D
 
 Auf den Inseln vor der Antarktischen Halbinsel hat die Biologin Kristen Gorman
 von 2007 bis 2009 Pinguine vermessen: ihre Art, ihr Gewicht, die Länge ihrer
-Flossen und ihren Schnabel. Zwei der drei Arten sehen sich auf den ersten Blick
-ähnlich, der Adéliepinguin und der Eselspinguin (englisch Gentoo). Am Schnabel
-kann man sie unterscheiden, wenn man weiß, worauf man achten muss.
+Flossen und ihren Schnabel. Drei Arten leben dort: der Zügelpinguin
+(englisch Chinstrap), der Eselspinguin (Gentoo) und der Adéliepinguin.
 
-<div class='gallery centered'>
-<figure><img src='schnabel.webp' alt='Ein Pinguinkopf von der Seite, am Schnabel zwei Maße eingezeichnet: die Länge von der Wurzel bis zur Spitze und die Höhe an der Wurzel.'><figcaption>Zwei Maße des Schnabels: die Länge und die Höhe</figcaption></figure>
+_person(gorman)
+
+<div class='gallery single'>
+<figure><img src='pinguine.webp' alt='Drei gezeichnete Pinguine vor Farbflecken, mit ihren englischen Namen: links ein Zügelpinguin vor Lila, in der Mitte ein Eselspinguin mit orangefarbenem Schnabel vor Petrol, rechts ein Adéliepinguin vor Orange.'><figcaption>Zügel-, Esels- und Adéliepinguin. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
+</div>
+
+Der Adéliepinguin und der Eselspinguin sehen sich auf den ersten Blick
+ähnlich. Am Schnabel kann man sie unterscheiden, wenn man weiß, worauf man
+achten muss. Gemessen wurde er so:
+
+<div class='gallery single'>
+<figure><img src='schnabel.webp' alt='Der gezeichnete Kopf eines Eselspinguins von der Seite, am Schnabel zwei Maße eingezeichnet: »Bill length«, die Länge bis zur Spitze, und »Bill depth«, die Höhe an der Wurzel.'><figcaption>Die Länge (bill length) und die Höhe (bill depth) des Schnabels; in der Datei heißen sie <code>bill_length_mm</code> und <code>bill_depth_mm</code>. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
 </div>
 
 Du wirst ein Programm schreiben, das diese Regel selbst findet, nur aus den
@@ -64,14 +73,7 @@ Das erste solche Neuron beschrieben der Neurologe Warren McCulloch und der
 Logiker Walter Pitts 1943, auf Papier. Frank Rosenblatt baute 1958 eines, das
 seine Gewichte selbst einstellte: das **Perzeptron**.
 
-<!-- Moves to the Personen page (part rosenblatt) when this activity leaves
-dev-only: person_boxes_test.rb wants every person there placed on a live page. -->
-<div class='person'>
-<img src='rosenblatt.webp' alt='Schwarzweißporträt von Frank Rosenblatt als junger Mann mit gewelltem Haar, in Jackett und gemusterter Krawatte.'>
-<p><strong>Frank Rosenblatt</strong> (1928–1971), US-amerikanischer Psychologe an der Cornell University. 1958 baute er das Mark I Perceptron: eine Kamera aus 20 × 20 Fotozellen, also 400 Eingaben, deren Gewichte Motoren an Drehwiderständen selbst einstellten. Die Maschine lernte, einfache Formen auseinanderzuhalten.</p>
-<p>Deine Funktion <code>train</code> lernt nach seiner Regel: bei jedem Fehler die Gewichte ein Stück in Richtung der richtigen Antwort.</p>
-<p class='person-credit'>Foto: unbekannt, um 1950, Heinz Nixdorf MuseumsForum, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Frank_Rosenblatt.jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(rosenblatt)
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>

@@ -130,8 +130,10 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Hans Peter Luhn
 
 <div class='person'>
+<img src='luhn.webp' alt='Schwarzweißfoto von Hans Peter Luhn, älterer Mann mit Brille und zurückgekämmtem Haar, in Anzug und Krawatte, ein Blatt Endlospapier in der Hand.'>
 <p><strong>Hans Peter Luhn</strong> (1896–1964), Ingenieur aus Barmen (heute Wuppertal), später bei IBM in den USA. 1953 schlug er in einer Notiz für IBM vor, Schlüssel mit einer Rechnung auf Buckets zu verteilen und Kollisionen in Listen zu sammeln: die erste Hash Table, mit Chaining.</p>
 <p>Von ihm stammt auch die letzte Ziffer jeder Kreditkartennummer, die Prüfziffer nach dem Luhn-Algorithmus: Mit ihr fällt eine falsch getippte Ziffer sofort auf.</p>
+<p class='person-credit'>Foto: IBM, zugeschnitten (<a href='https://spectrum.ieee.org/hans-peter-luhn-and-the-birth-of-the-hashing-algorithm'>IEEE Spectrum</a>)</p>
 </div>
 <!-- /part -->
 
@@ -167,6 +169,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='hopper.webp' alt='Schwarzweißfoto von Grace Hopper in der Uniform der US Navy, mit verschränkten Armen vor einem Rechner.'>
 <p><strong>Grace Hopper</strong> (1906–1992), amerikanische Informatikerin und Konteradmiralin der US Navy. Schon 1952 schrieb sie ein Programm, das aus kurzen Befehlen Maschinencode zusammensetzt, und nannte es Compiler; niemand glaubte ihr zunächst, dass ein Rechner so etwas kann. Sie wollte Programme in englischen Wörtern schreiben und hörte, Computer verstünden kein Englisch. Ihre Sprache FLOW-MATIC benutzte trotzdem englische Wörter, und COBOL übernahm das: <code>DIVIDE NUM BY 2 GIVING LIM</code>.</p>
 <p>1947 fand ihr Team in einem Relais des Rechners Mark II eine Motte und klebte sie ins Logbuch: »First actual case of bug being found«, der erste echte Fall eines Käfers. Fehler hießen schon vorher Bugs, aber Hopper erzählte die Geschichte so gern, dass sie berühmt wurde.</p>
+<p class='person-credit'>Foto: Lynn Gilbert, 1978, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Grace_Murray_Hopper,_in_her_office_in_Washington_DC,_1978,_©Lynn_Gilbert.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -304,6 +307,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>John McCarthy</strong> (1927–2011), amerikanischer Informatiker am MIT und in Stanford. 1958 erfand er Lisp, in dem auch die Programme selbst Listen in Klammern sind. Dass Ruby oder Python Speicher, den dein Programm nicht mehr braucht, ohne dein Zutun wieder freigeben, geht ebenfalls auf ihn zurück: Diese Garbage Collection erfand er für Lisp.</p>
 <p>Den Begriff <em>Artificial Intelligence</em>, Künstliche Intelligenz, prägte er 1955 in einem Antrag für eine Sommerkonferenz. Und schon 1959 schlug er vor, dass viele Menschen an eigenen Terminals gleichzeitig denselben Rechner benutzen.</p>
 <p class='person-credit'>Foto: null0, 2006, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:John_McCarthy_Stanford.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1928 -->
+<!-- part: rosenblatt -->
+### Frank Rosenblatt
+
+<div class='person'>
+<img src='rosenblatt.webp' alt='Schwarzweißporträt von Frank Rosenblatt als junger Mann mit gewelltem Haar, in Jackett und gemusterter Krawatte.'>
+<p><strong>Frank Rosenblatt</strong> (1928–1971), US-amerikanischer Psychologe an der Cornell University. 1958 baute er das Mark I Perceptron: eine Kamera aus 20 × 20 Fotozellen, also 400 Eingaben, deren Gewichte Motoren an Drehwiderständen selbst einstellten. Die Maschine lernte, einfache Formen auseinanderzuhalten.</p>
+<p>Deine Funktion <code>train</code> lernt nach seiner Regel: bei jedem Fehler die Gewichte ein Stück in Richtung der richtigen Antwort.</p>
+<p class='person-credit'>Foto: unbekannt, um 1950, Heinz Nixdorf MuseumsForum, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Frank_Rosenblatt.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -926,6 +941,19 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1974 -->
+<!-- birth year not published; placed by her bachelor’s degree in 1996 -->
+<!-- part: gorman -->
+### Kristen Gorman
+
+<div class='person'>
+<img src='gorman.webp' alt='Porträt von Kristen Gorman auf einem Boot vor grauem Meer, mit Schirmmütze, die Sonnenbrille hochgeschoben, in blauer Jacke.'>
+<p><strong>Kristen Gorman</strong>, Meeresbiologin, heute an der University of Alaska Fairbanks. Für ihre Doktorarbeit an der Simon Fraser University in Kanada vermaß sie auf der Palmer-Station in der Antarktis drei Sommer lang Pinguine aller drei Arten. Sie wollte wissen, wie die Kolonien damit zurechtkommen, dass das Meereis und mit ihm das Futter zurückgeht.</p>
+<p>Ihre Messungen hat sie veröffentlicht, frei für alle. Allison Horst und Alison Hill machten 2020 daraus das Paket palmerpenguins, heute einer der beliebtesten Datensätze zum Üben. Deine Datei <code>penguins.csv</code> stammt daraus.</p>
+<p class='person-credit'>Foto: University of Alaska Fairbanks (<a href='https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php'>College of Fisheries and Ocean Sciences</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1977 -->
 <!-- part: graydon-hoare -->
 ### Graydon Hoare
@@ -1003,5 +1031,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='harris.webp' alt='Rich Harris bei einem Vortrag vor einer Wand mit Svelte-Code: ein Mann mit lockigem rotblondem Haar, die Hand erhoben.'>
 <p><strong>Rich Harris</strong>, britischer Journalist und Programmierer, baute interaktive Grafiken für Zeitungen, erst beim Guardian, dann bei der New York Times. 2016 schrieb er Svelte: keine Bibliothek, die im Browser mitläuft, sondern einen Compiler. Wenn du <code>npm run build</code> eingibst, übersetzt Svelte deine <code>.svelte</code>-Dateien in gewöhnliches JavaScript.</p>
 <p>Vorher hatte er schon Rollup geschrieben, ein Programm, das viele JavaScript-Dateien zu wenigen zusammenpackt. Ende 2021 ging er von der Zeitung zur Firma Vercel, um nur noch an Svelte zu arbeiten.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1990 -->
+<!-- 1990 in most sources, 1989 in some; the box names no year -->
+<!-- part: buolamwini -->
+### Joy Buolamwini
+
+<div class='person'>
+<img src='buolamwini.webp' alt='Porträt von Joy Buolamwini vor dunklem Hintergrund, mit lockigem Haar und einer roten Brille, in weißer Jacke über einem lachsfarbenen Oberteil.'>
+<p><strong>Joy Buolamwini</strong>, kanadisch-US-amerikanische Informatikerin. Am MIT Media Lab baute sie einen Spiegel, der Gesichter erkennen sollte; ihr Gesicht erkannte die Software erst, als sie eine weiße Maske aufsetzte. Sie gründete die Algorithmic Justice League, die Verzerrungen in Programmen aufdeckt, und schrieb darüber 2023 das Buch »Unmasking AI«.</p>
+<p>Wie du am Sandberg hat sie die Fehler eines Programms nach Gruppen getrennt gezählt.</p>
+<p class='person-credit'>Foto: Niccolò Caranti, 2018, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Joy_Buolamwini,_2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

@@ -176,8 +176,9 @@
     Funktion. Dabei siehst du, was diese Verfahren können, und was sie aus
     ihren Daten übernehmen.
   entries:
-    - .sprachmodell
-    - .perzeptron
+    - sprachmodell
+    - perzeptron
+    - naechste-nachbarn
 
 - key: compression
   compact: true

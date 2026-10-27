@@ -1,0 +1,132 @@
+# Permission for the pictures that are someone else's and not under a free
+# licence, shown on the admin page /picture-rights
+# (src/ruby/include/picture_rights.rb). The page finds the pictures itself:
+# every picture whose credit line names no free licence (CC0, CC BY…,
+# gemeinfrei, public domain), and every photo in a person box without a
+# credit line. This file says, per picture (its path below src/content), who
+# to ask and what came of it:
+#
+#   holder:      who holds the rights (a person, an archive, a university)
+#   contact:     an email address, or the address of a contact form
+#   source:      where the picture comes from (the page it was taken from)
+#   language:    en (default) or de, the language of the letter
+#   greeting:    the letter's first line (»Dear Dr. Gorman«)
+#   picture_en:  what the picture is, in the letter (»your portrait from your
+#                faculty page«); picture_de likewise
+#   context_en:  next to what it is shown (»next to a short text about …«);
+#                context_de likewise
+#   status:      open (default), asked, granted, refused
+#   asked:       the date the letter went out
+#   answered:    the date of the answer
+#   note:        anything else: what was agreed (the credit line asked
+#                for), where the answer is kept
+#
+# Keep the answers themselves (the emails) outside the repository. After a
+# refusal, the picture leaves the page; its entry stays here with the date.
+
+reference/personen/gorman.webp:
+  holder: Kristen Gorman (the photo is from her faculty page at the University of Alaska Fairbanks)
+  contact: kbgorman@alaska.edu
+  source: https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php
+  note: The photographer is not named; copy the college's communications (uaf-pio-cfos-team@alaska.edu), which may hold the rights.
+  greeting: Dear Dr. Gorman
+  picture_en: your portrait from your faculty page at UAF
+  context_en: next to a short text about your penguin measurements at Palmer Station, which our students use to train their first artificial neuron
+
+reference/personen/luhn.webp:
+  holder: IBM (the photo appears with the credit »IBM« in IEEE Spectrum)
+  contact: https://spectrum.ieee.org/contact
+  note: IBM publishes no way to ask for a picture; the IBM Corporate Archives (2455 South Road, Poughkeepsie NY 12601, phone +1 845 433 2759) have no email address. Ask IEEE Spectrum whom at IBM they asked. No free photo of Luhn on Commons.
+  source: https://spectrum.ieee.org/hans-peter-luhn-and-the-birth-of-the-hashing-algorithm
+  picture_en: the photo of Hans Peter Luhn at a printer, from IBM's archives
+  context_en: in a short portrait of him, next to the hash table and the Luhn check digit our students program
+
+reference/personen/backus.webp:
+  holder: unknown; probably IBM (a publicity photo)
+  source: https://mathshistory.st-andrews.ac.uk/Biographies/Backus/pictdisplay/
+  note: "MacTutor shows the same picture and says it does not own the copyright of its pictures; ask them where it comes from. Free instead, used before: Pierre Lescanne, 1989, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:John_Backus_2.jpg)."
+
+reference/personen/ritchie.webp:
+  holder: Nokia Bell Labs (a Bell Labs portrait, as on his home page cm.bell-labs.com/who/dmr)
+  contact: press.services@nokia.com
+  source: http://cm.bell-labs.com/who/dmr/
+  greeting: Dear Nokia Bell Labs press team
+  picture_en: the Bell Labs portrait of Dennis Ritchie from his home page
+  context_en: in a short portrait of him, next to the C programs our students write
+  note: "The address comes from a search result; nokia.com refused automatic requests, so check it in a browser. Free instead, used before: Denise Panyik-Dale, 2011, CC BY 2.0 (https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg)."
+
+reference/personen/graydon-hoare.webp:
+  holder: unknown; a private-looking street photo, probably by Graydon Hoare or a friend
+  contact: https://types.pl/@graydon
+  note: The source was not found. He says on his profile that he dislikes attention; expect no answer. No free photo of him on Commons.
+
+reference/personen/harris.webp:
+  holder: unknown; probably the conference that filmed the talk (about 2017 to 2019)
+  contact: https://github.com/Rich-Harris
+  note: The source was not found (not YGLF 2019, not JSCamp 2019). No free photo of him on Commons.
+
+reference/personen/matsumoto.webp:
+  holder: Marcin Bajer
+  contact: https://www.flickr.com/photos/rrrodrigo/
+  source: https://www.flickr.com/photos/rrrodrigo/2393323487
+  greeting: Dear Marcin
+  picture_en: your photo of Yukihiro Matsumoto at EuRuKo 2008 in Prague
+  context_en: in a short portrait of him, next to the Ruby our students program in
+  note: "Probably free: his EuRuKo 2008 photos are CC BY-NC 2.0, but the exact frame was not found. If it turns up with that licence, give it a credit line with the licence instead of asking."
+
+reference/personen/gosling.webp:
+  holder: Yuichi Sakuraba
+  contact: https://www.flickr.com/photos/skrb/
+  source: https://www.flickr.com/photos/skrb/10507989114
+  greeting: Dear Mr. Sakuraba
+  picture_en: your photo of James Gosling
+  context_en: in a short portrait of him, next to the Java our students program in
+  note: "Probably free: his photos of Gosling are CC BY-NC 2.0, but the exact frame was not found (the nearest is the JavaOne 2013 keynote). If it turns up with that licence, give it a credit line with the licence instead of asking."
+
+reference/personen/ierusalimschy.webp:
+  holder: Ernani d'Almeida (photo), Lua.org
+  contact: team@lua.org
+  source: https://www.lua.org/authors.html
+  greeting: Dear Roberto, Waldemar and Luiz
+  picture_en: the photo of the three of you by Ernani d'Almeida (2011) from lua.org
+  context_en: cut into three portraits, next to a short text about Lua
+  note: "One letter for all three portraits (celes.webp, figueiredo.webp); no contact for the photographer was found, so the authors are asked to pass it on. Free instead for Ierusalimschy alone: Commons File:Roberto_Ierusalimschy.png (CC BY 3.0)."
+
+reference/personen/celes.webp:
+  holder: Ernani d'Almeida (photo), Lua.org
+  note: Asked with ierusalimschy.webp; set the same status there.
+
+reference/personen/figueiredo.webp:
+  holder: Ernani d'Almeida (photo), Lua.org
+  note: Asked with ierusalimschy.webp; set the same status there.
+
+reference/personen/kemeny.webp:
+  holder: Trustees of Dartmouth College (Rauner Special Collections Library)
+  contact: trademarks@dartmouth.edu
+  source: https://www.library.dartmouth.edu/about-us/policies/rauner-publication-permission
+  greeting: Dear Rauner Special Collections Library
+  picture_en: the Dartmouth photo of John Kemeny and Thomas Kurtz holding a BASIC booklet
+  context_en: cut into two portraits, in a short text about BASIC
+  note: One letter for both portraits (kurtz.webp). Dartmouth asks for the credit »Courtesy Dartmouth Libraries«. That it is their photo is fairly but not fully certain (Computerwoche credits »Dartmouth-College«).
+
+reference/personen/kurtz.webp:
+  holder: Trustees of Dartmouth College
+  note: Asked with kemeny.webp; set the same status there.
+
+reference/personen/griesemer.webp:
+  holder: Google LLC (a still from »Meet the Go Team«, Google I/O 2012, standard YouTube licence)
+  source: https://www.youtube.com/watch?v=sln-gJaURzk
+  note: "Google has no way to ask; expect no answer. Free instead, used before: Commons File:Robert_Griesemer.jpg (CC BY-SA 4.0) and File:Rob-pike-oscon.jpg (CC BY 2.0)."
+
+reference/personen/pike.webp:
+  holder: Google LLC
+  note: The same still as griesemer.webp.
+
+reference/personen/bak.webp:
+  holder: Google LLC, Devoxx (a still from the Dart 1.0 interview at Devoxx 2013, standard YouTube licence)
+  source: https://www.youtube.com/watch?v=iKhxgcR1GZg
+  note: "No way to ask was found. Free instead for Bak: Commons File:Lars_Bak.png, from the Google I/O 2012 talk »Dart – A Modern Web Language« (CC BY 3.0); Lund may be in that video too."
+
+reference/personen/lund.webp:
+  holder: Google LLC, Devoxx
+  note: The same still as bak.webp.

@@ -167,12 +167,17 @@ HTML/JavaScript: find an element and change it.
 Flutter:         change the state and rebuild the interface.
 ```
 
-Android build support, before broad rollout:
+Flutter, the Android SDK and the Gradle cache left the image on 28 October 2026
+(no activity used them; 8.6 GB of 16.6 GiB). For this activity they come back:
+the stages `flutter`, `android-sdk` and `flutter-android` and the test
+`e2e/tests/flutter.toolchain.spec.ts` are in the Git history before that date.
+Then, before broad rollout:
 
 * [ ] Measure memory and PID usage of `flutter build apk --debug` with the resource profiler
 * [ ] Re-check student container limits against the Android/Gradle workload
 * [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
-* [ ] Look at the build of the `android-sdk` stage: `sdkmanager` warns that it is deprecated in favour of the Android CLI, and accepting the licences and unzipping the NDK take most of its time
+* [ ] `sdkmanager` is deprecated in favour of the Android CLI; accepting the licences and unzipping the NDK took most of that stage's time
+* [ ] Dart comes on its own now (`DART_VERSION`); Flutter brings its own, so one of the two goes
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 

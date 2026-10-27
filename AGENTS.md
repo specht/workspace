@@ -50,6 +50,8 @@ address from `credentials.rb` and the code `123456`.
   itself (a mounted directory or an SSH container), browsable on the site; a plan, open questions
 - [docs/plan-treffpunkt.md](docs/plan-treffpunkt.md): a meeting point a teacher sets in an activity for
   a group, live, soft (nothing hidden); what is decided and how it could be built
+- `/picture-rights` (`src/ruby/include/picture_rights.rb`, `src/content/picture-rights.yaml`): pictures that are
+  someone else's without a free licence, with a letter asking for permission; off the pages until granted
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures

@@ -348,6 +348,7 @@ class Main < Sinatra::Base
             $neo4j.neo4j_query('MATCH (g:Group {name: $old}) SET g.name = $new, g.renamed_from = $old, g.renamed_at = $now, g.renamed_by = $me;',
                 :old => old_name, :new => new_name, :now => Time.now.to_i, :me => my_email)
             $neo4j.neo4j_query('MATCH (p:Pin {group: $old}) SET p.group = $new, p.key = $new + "|" + p.slug;', :old => old_name, :new => new_name)
+            $neo4j.neo4j_query('MATCH (m:MeetingPoint {group: $old}) SET m.group = $new, m.key = $new + "|" + m.activity;', :old => old_name, :new => new_name)
             $neo4j.neo4j_query('MATCH (s:GroupSetting {group: $old}) SET s.group = $new;', :old => old_name, :new => new_name)
             $neo4j.neo4j_query('UNWIND $rows AS r MATCH (u:User {email: r.email}) SET u.class_prefs = r.prefs;', :rows => prefs)
         end

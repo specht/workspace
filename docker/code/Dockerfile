@@ -11,19 +11,16 @@
 ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.140.0
 # Pin the toolchain build environment independently of the code-server release.
 # Keep it compatible with the target code-server distribution (notably glibc).
-# Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Flutter/Android/Emscripten.
+# Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Emscripten.
 # Bump this separately when the underlying Linux distribution changes.
 ARG TOOLCHAIN_BASE_IMAGE=linuxserver/code-server:4.138.0
 
 ARG TL_YEAR=2026
-ARG FLUTTER_VERSION=3.47.0
-ARG ANDROID_CMDLINE_TOOLS_VERSION=15859902
-ARG ANDROID_CMDLINE_TOOLS_SHA256=4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583
-ARG ANDROID_PLATFORM=36
-ARG ANDROID_BUILD_TOOLS_VERSION=36.1.0
-ARG ANDROID_BUILD_TOOLS_COMPAT_VERSION=36.0.0
-ARG ANDROID_CMAKE_VERSION=3.22.1
-ARG ANDROID_NDK_VERSION=28.2.13676358
+# Dart on its own, the version Flutter 3.47 brought (Flutter, the Android
+# SDK and the Gradle cache left the image on 28 October 2026: no activity
+# used them, and they were half its size; see TODO.md, »Flutter«)
+ARG DART_VERSION=3.13.0
+ARG DART_SHA256=87902573facd8acacac7ee1fe73fa8d0668e06065016068e2ed6c5c99c6b1ee0
 ARG EMSCRIPTEN_VERSION=6.0.6
 ARG RAYLIB_VERSION=6.0
 
@@ -34,6 +31,10 @@ ARG LUA_VERSION=5.4
 ARG JAVA_VERSION=25
 ARG SMALLTALK_VERSION=3.2.5
 ARG HUGO_VERSION=0.164.0
+# Go from go.dev instead of Ubuntu's golang-go (1.22); the checksum from
+# https://go.dev/dl/?mode=json
+ARG GO_VERSION=1.27.3
+ARG GO_SHA256=65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40
 ARG YQ_VERSION=4.54.1
 ARG YQ_SHA256=8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f
 ARG DOTNET_VERSION=10.0
@@ -171,183 +172,6 @@ RUN set -eu; \
 # This is a fresh installation already downloaded from CTAN.
 
 # ====================================================================
-# Flutter stage
-#
-# Also separate so normal Dockerfile changes do not force Flutter to
-# download and precache itself again.
-# ====================================================================
-
-FROM ${TOOLCHAIN_BASE_IMAGE} AS flutter
-
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /etc/apt/apt.conf.d/docker-clean \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        git \
-        unzip \
-        wget \
-        xz-utils \
-        libglu1-mesa
-
-ARG FLUTTER_VERSION
-
-RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
-    set -eux; \
-    archive=/var/cache/hackschule-downloads/flutter-${FLUTTER_VERSION}.tar.xz; \
-    if [ ! -s "$archive" ]; then \
-        wget -q \
-            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
-            -O "${archive}.tmp"; \
-        mv "${archive}.tmp" "$archive"; \
-    fi; \
-    mkdir -p /opt/flutter; \
-    tar -xf "$archive" \
-        -C /opt/flutter \
-        --strip-components=1
-
-ENV FLUTTER_ROOT=/opt/flutter
-ENV FLUTTER_SUPPRESS_ANALYTICS=true
-ENV DART_SUPPRESS_ANALYTICS=true
-ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
-
-RUN git config --system --add safe.directory /opt/flutter \
-    && flutter precache --web --android \
-    && flutter --version
-
-
-# ====================================================================
-# Android SDK stage
-#
-# Keep the Android SDK separate from Flutter itself. This lets Flutter
-# and Android tooling be updated independently while keeping both large
-# downloads cacheable.
-# ====================================================================
-
-FROM ${TOOLCHAIN_BASE_IMAGE} AS android-sdk
-
-ARG DEBIAN_FRONTEND=noninteractive
-ARG JAVA_VERSION
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /etc/apt/apt.conf.d/docker-clean \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        openjdk-${JAVA_VERSION}-jdk-headless \
-        unzip \
-        wget
-
-ARG ANDROID_CMDLINE_TOOLS_VERSION
-ARG ANDROID_CMDLINE_TOOLS_SHA256
-ARG ANDROID_PLATFORM
-ARG ANDROID_BUILD_TOOLS_VERSION
-ARG ANDROID_BUILD_TOOLS_COMPAT_VERSION
-ARG ANDROID_CMAKE_VERSION
-ARG ANDROID_NDK_VERSION
-
-ENV ANDROID_HOME=/opt/android-sdk
-ENV ANDROID_SDK_ROOT=/opt/android-sdk
-ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${PATH}"
-
-RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
-    set -eux; \
-    archive=/var/cache/hackschule-downloads/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip; \
-    if [ ! -s "$archive" ]; then \
-        wget -q \
-            "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip" \
-            -O "${archive}.tmp"; \
-        mv "${archive}.tmp" "$archive"; \
-    fi; \
-    printf '%s  %s\n' \
-        "${ANDROID_CMDLINE_TOOLS_SHA256}" \
-        "$archive" \
-        | sha256sum -c -; \
-    rm -rf /tmp/android-cmdline-tools; \
-    mkdir -p /tmp/android-cmdline-tools "${ANDROID_HOME}/cmdline-tools"; \
-    unzip -q "$archive" -d /tmp/android-cmdline-tools; \
-    mv \
-        /tmp/android-cmdline-tools/cmdline-tools \
-        "${ANDROID_HOME}/cmdline-tools/latest"; \
-    rm -rf /tmp/android-cmdline-tools
-
-RUN yes \
-        | sdkmanager \
-            --sdk_root="${ANDROID_HOME}" \
-            --licenses \
-            >/dev/null \
-    && sdkmanager \
-        --sdk_root="${ANDROID_HOME}" \
-        "platform-tools" \
-        "platforms;android-${ANDROID_PLATFORM}" \
-        "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
-        "build-tools;${ANDROID_BUILD_TOOLS_COMPAT_VERSION}" \
-        "cmake;${ANDROID_CMAKE_VERSION}" \
-        "ndk;${ANDROID_NDK_VERSION}"
-
-
-# ====================================================================
-# Flutter + Android verification/cache stage
-#
-# Build one tiny APK during the image build. Besides verifying the
-# complete toolchain, this leaves Gradle/AGP artifacts in a cache that
-# students can reuse instead of downloading them in every container.
-# ====================================================================
-
-FROM flutter AS flutter-android
-
-ARG DEBIAN_FRONTEND=noninteractive
-ARG JAVA_VERSION
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /etc/apt/apt.conf.d/docker-clean \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        openjdk-${JAVA_VERSION}-jdk-headless
-
-COPY --from=android-sdk \
-    /opt/android-sdk \
-    /opt/android-sdk
-
-ENV ANDROID_HOME=/opt/android-sdk
-ENV ANDROID_SDK_ROOT=/opt/android-sdk
-ENV GRADLE_USER_HOME=/opt/gradle-cache
-ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
-
-RUN set -eux; \
-    mkdir -p "${GRADLE_USER_HOME}"; \
-    printf '%s\n' \
-        'org.gradle.jvmargs=-Xmx2G -XX:MaxMetaspaceSize=512m -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError' \
-        'org.gradle.workers.max=2' \
-        'kotlin.compiler.execution.strategy=in-process' \
-        > "${GRADLE_USER_HOME}/gradle.properties"; \
-    flutter create \
-        --empty \
-        --platforms=android \
-        /tmp/flutter_android_smoke; \
-    cd /tmp/flutter_android_smoke; \
-    flutter build apk --debug; \
-    test -s build/app/outputs/flutter-apk/app-debug.apk; \
-    cd android; \
-    ./gradlew --stop; \
-    cd /; \
-    rm -rf \
-        /tmp/flutter_android_smoke \
-        "${GRADLE_USER_HOME}/daemon"; \
-    test ! -e "${GRADLE_USER_HOME}/daemon"; \
-    find "${GRADLE_USER_HOME}" \
-        -type f \
-        -name '*.lock' \
-        -delete; \
-    chmod -R a+rwX "${GRADLE_USER_HOME}"
-
-
-# ====================================================================
 # Emscripten + raylib WebAssembly
 # ====================================================================
 
@@ -426,23 +250,6 @@ COPY --link --from=hs_code_toolchain_texlive:stable \
     /usr/local/texlive \
     /usr/local/texlive
 
-COPY --link --chmod=a+rwX --from=hs_code_toolchain_flutter:stable \
-    /opt/flutter \
-    /opt/flutter
-
-COPY --link --from=hs_code_toolchain_android:stable \
-    /opt/android-sdk \
-    /opt/android-sdk
-
-COPY --link --chmod=a+rwX --from=hs_code_toolchain_gradle:stable \
-     /opt/gradle-cache \
-     /opt/gradle-cache
-
-# COPY sets the permissions of the copied cache contents, but the destination
-# directory itself is created by Docker. Gradle must be able to create new
-# top-level directories such as daemon/ at runtime.
-RUN chmod 0777 /opt/gradle-cache
-
 COPY --link --from=hs_code_toolchain_emscripten:stable \
     /opt/emsdk \
     /opt/emsdk
@@ -458,13 +265,8 @@ ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 #   emcc program.c -lraylib
 
 # The numeric UID of abc can change when linuxserver initializes
-# the container, so don't rely on build-time ownership.
-#
-# Flutter's SDK checkout is writable because COPY --chmod applies the
-# permissions while creating the layer, avoiding a second copy-up layer.
-# The Gradle cache is already made writable in flutter-android, and the
-# Emscripten cache in raylib-web, before they are copied into this image.
-RUN git config --system --add safe.directory /opt/flutter
+# the container, so don't rely on build-time ownership. The Emscripten cache
+# is made writable in raylib-web, before it is copied into this image.
 
 # --------------------------------------------------------------------
 # Environment
@@ -477,18 +279,16 @@ ENV PATH=${TEXLIVE_DIR}/bin/x86_64-linux:$PATH
 ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man
 ENV INFOPATH=${TEXLIVE_DIR}/texmf-dist/doc/info
 
-ENV ANDROID_HOME=/opt/android-sdk
-ENV ANDROID_SDK_ROOT=/opt/android-sdk
-ENV GRADLE_USER_HOME=/opt/gradle-cache
-ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
+ENV PATH="/opt/dart-sdk/bin:${PATH}"
 
-ENV FLUTTER_ROOT=/opt/flutter
-ENV FLUTTER_SUPPRESS_ANALYTICS=true
+# No usage reporting: the tools that read it from the environment. Dart keeps
+# its setting in the home directory, which is the student's volume; the
+# Workspace's start switches it off there (init-code-server-run), and Go's
+# (since 1.23 it counts locally, uploading nothing; off stops the counting).
 ENV DART_SUPPRESS_ANALYTICS=true
-
-# Flutter ships the Dart SDK it was tested with. Keep both CLIs together
-# instead of mixing Flutter with a separately installed Dart release.
-ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV POWERSHELL_TELEMETRY_OPTOUT=1
+ENV DO_NOT_TRACK=1
 
 
 # --------------------------------------------------------------------
@@ -543,7 +343,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         git \
         gnucobol${GNUCOBOL_MAJOR} \
         gnupg \
-        golang-go \
         graphviz \
         guile-${GUILE_VERSION} \
         host \
@@ -615,6 +414,26 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         zip \
         zlib1g-dev
 
+# Dart, pinned and checked, from the same download cache as the toolchains
+ARG DART_VERSION
+ARG DART_SHA256
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    archive=/var/cache/hackschule-downloads/dartsdk-${DART_VERSION}-linux-x64.zip; \
+    if [ ! -s "$archive" ]; then \
+        wget -q \
+            "https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/sdk/dartsdk-linux-x64-release.zip" \
+            -O "${archive}.tmp"; \
+        mv "${archive}.tmp" "$archive"; \
+    fi; \
+    printf '%s  %s\n' "${DART_SHA256}" "$archive" | sha256sum -c -; \
+    rm -rf /opt/dart-sdk /tmp/dart-sdk; \
+    mkdir -p /tmp/dart-sdk; \
+    unzip -q "$archive" -d /tmp/dart-sdk; \
+    mv /tmp/dart-sdk/dart-sdk /opt/dart-sdk; \
+    rm -rf /tmp/dart-sdk; \
+    /opt/dart-sdk/bin/dart --version
+
 
 # --------------------------------------------------------------------
 # GNU Smalltalk
@@ -643,6 +462,31 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
     make install; \
     cd /; \
     rm -rf /tmp/smalltalk
+
+
+# --------------------------------------------------------------------
+# Go, pinned and checked
+# --------------------------------------------------------------------
+
+ARG GO_VERSION
+ARG GO_SHA256
+
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    archive=/var/cache/hackschule-downloads/go${GO_VERSION}.linux-amd64.tar.gz; \
+    if [ ! -s "$archive" ]; then \
+        wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O "${archive}.tmp"; \
+        mv "${archive}.tmp" "$archive"; \
+    fi; \
+    printf '%s  %s\n' "${GO_SHA256}" "$archive" | sha256sum -c -; \
+    rm -rf /usr/local/go; \
+    tar -xzf "$archive" -C /usr/local; \
+    /usr/local/go/bin/go version
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+# what runs is the Go in the image: no toolchain downloaded because a
+# project's go.mod asks for a newer one
+ENV GOTOOLCHAIN=local
 
 
 # --------------------------------------------------------------------
@@ -952,6 +796,48 @@ RUN getcap -r /usr /opt /app 2>/dev/null | cut -d' ' -f1 | xargs -r -n 1 setcap 
 
 # /admin »Betrieb« warns about an image built before this.
 LABEL de.hackschule.file-capabilities="none"
+
+
+# --------------------------------------------------------------------
+# Man pages. Ubuntu's minimized base keeps none (/etc/dpkg/dpkg.cfg.d/
+# excludes) and puts a note in place of man. From here on dpkg lets the
+# English pages in; those of the packages installed above come
+# out of their .deb files, only the pages, so that this layer stays a few
+# dozen MB instead of every package once more. Late in the file on
+# purpose: the layers above stay as they are, and an upload sends only
+# this one. The .deb files stay in apt's cache for the next build.
+# --------------------------------------------------------------------
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    set -eu; \
+    sed -i 's|^path-exclude=/usr/share/man/\*$|&\npath-include=/usr/share/man/man*|' \
+        /etc/dpkg/dpkg.cfg.d/excludes; \
+    grep -q '^path-include=/usr/share/man/man\*' /etc/dpkg/dpkg.cfg.d/excludes; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --reinstall --no-install-recommends \
+        manpages manpages-dev git-man; \
+    installed="$(dpkg-query -W -f '${Status} ${binary:Package}=${Version}\n' | awk '$3 == "installed" { print $4 }')"; \
+    # all at once; a package apt cannot fetch (installed from a file)
+    # makes that fail, then one by one, skipping those
+    apt-get install -y -q --reinstall --download-only $installed >/dev/null 2>&1 || \
+        for p in $installed; do apt-get install -y -q --reinstall --download-only "$p" >/dev/null 2>&1 || echo "no .deb: $p"; done; \
+    for p in $installed; do \
+        name="${p%%=*}"; name="${name%%:*}"; version="$(echo "${p#*=}" | sed 's/:/%3a/')"; \
+        for deb in /var/cache/apt/archives/"${name}_${version}"_*.deb; do \
+            [ -f "$deb" ] || continue; \
+            dpkg-deb --fsys-tarfile "$deb" | tar -x -C / --wildcards './usr/share/man/man*' 2>/dev/null || true; \
+        done; \
+    done; \
+    if [ -f /usr/bin/man.REAL ]; then rm /usr/bin/man && dpkg-divert --quiet --remove --rename /usr/bin/man; fi; \
+    export MANPATH="${MANPATH}:"; \
+    mandb -q || true; \
+    man -w ls >/dev/null; man -w 3 printf >/dev/null; man -w git-commit >/dev/null; \
+    du -sh /usr/share/man
+
+# The empty last part of MANPATH stands for the system's own pages
+# (manpath.config); without it, man found only TeX Live's (ENV above).
+ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man:
 
 
 # --------------------------------------------------------------------
