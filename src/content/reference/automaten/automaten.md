@@ -295,6 +295,18 @@ r<sub>0</sub> und r<sub>1</sub> werden ein Zustand s<sub>0</sub>, r<sub>2</sub> 
 <div class='automaton-drawing' role='img' aria-label='Minimierter DEA mit drei Kreisen s0, s1, s2 in einer Reihe, s2 akzeptiert. b führt von s0 nach s1 und von s1 nach s2, in s2 bleibt er mit b; a führt von jedem Zustand nach s0.' data-regex='(a|b)*bb' data-automaton='min'></div>
 <!-- /part -->
 
+## Mit Zufall: Markow-Ketten
+
+Ein endlicher Automat geht bei jedem Zeichen in genau einen nächsten Zustand.
+Bei einer **Markow-Kette** entscheidet der Zufall: Jeder Übergang hat eine
+feste Wahrscheinlichkeit, und die Kette liest kein Wort, sie erzeugt eine Folge
+von Zuständen. Welcher Zustand als Nächstes kommt, hängt nur vom Zustand jetzt
+ab, nicht davon, wie die Kette dorthin kam. Ein Sprachmodell aus Wortpaaren ist
+eine Markow-Kette, deren Zustände die Wörter sind: Nach »Es« kommt mit einer
+gewissen Wahrscheinlichkeit »war«, mit einer anderen »ist«.
+
+_person(markow)
+
 ## Zum Nachschlagen
 
 Wie man solche Automaten selbst programmiert, zeigt die Aktivität [Endliche Automaten](/automata); [Automatron](/automatron) rechnet alle Schritte dieser Seite für einen eigenen regulären Ausdruck durch. Automaten stehen in jedem Lehrbuch der theoretischen Informatik. Zum Weiterlesen:

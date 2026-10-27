@@ -164,6 +164,20 @@
     - calculator
     - routenplaner
 
+# docs/plan-lehrplan-luecken.md, »The KI section«: three cards, dev-only
+# until all three exist
+- key: ki
+  label: Künstliche Intelligenz
+  icon: /images/brain.png
+  description: |
+    Wie lernt ein Programm aus Beispielen? Du baust ein winziges
+    Sprachmodell, ein Neuron, das selbst lernt, und ein Programm, das nach
+    den nächsten Nachbarn entscheidet, ohne Bibliotheken, Funktion für
+    Funktion. Dabei siehst du, was diese Verfahren können, und was sie aus
+    ihren Daten übernehmen.
+  entries:
+    - .sprachmodell
+
 - key: compression
   compact: true
   label: Bilder und Kompression

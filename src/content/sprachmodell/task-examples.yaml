@@ -1,0 +1,65 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# loesung/ ist model.rb und model.py am Ende der Seite; in fehler/ stehen
+# häufige Fehler, je einer gegenüber der Lösung.
+format: 1
+activity: sprachmodell
+examples:
+  zaehlen:
+    pass:
+      - { files: { sprachmodell/model.rb: loesung/model.rb } }
+    fail:
+      - { files: { sprachmodell/model.rb: { text: "# noch leer\n" } } }
+      - { files: { sprachmodell/model.rb: fehler/letztes-wort.rb } }
+    python:
+      pass:
+        - { files: { sprachmodell/model.py: loesung/model.py } }
+      fail:
+        - { files: { sprachmodell/model.py: { text: "# noch leer\n" } } }
+        - { files: { sprachmodell/model.py: fehler/letztes-wort.py } }
+  haeufigstes:
+    pass:
+      - { files: { sprachmodell/model.rb: loesung/model.rb } }
+    fail:
+      - { files: { sprachmodell/model.rb: { text: "# noch leer\n" } } }
+      - { files: { sprachmodell/model.rb: fehler/anzahl-statt-wort.rb } }
+    python:
+      pass:
+        - { files: { sprachmodell/model.py: loesung/model.py } }
+      fail:
+        - { files: { sprachmodell/model.py: { text: "# noch leer\n" } } }
+        - { files: { sprachmodell/model.py: fehler/anzahl-statt-wort.py } }
+  wuerfeln:
+    pass:
+      - { files: { sprachmodell/model.rb: loesung/model.rb } }
+    fail:
+      - { files: { sprachmodell/model.rb: { text: "# noch leer\n" } } }
+      - { files: { sprachmodell/model.rb: fehler/immer-erstes.rb }, say: ungefähr 3000 }
+    python:
+      pass:
+        - { files: { sprachmodell/model.py: loesung/model.py } }
+      fail:
+        - { files: { sprachmodell/model.py: { text: "# noch leer\n" } } }
+        - { files: { sprachmodell/model.py: fehler/immer-erstes.py }, say: ungefähr 3000 }
+  schreiben:
+    pass:
+      - { files: { sprachmodell/model.rb: loesung/model.rb } }
+    fail:
+      - { files: { sprachmodell/model.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { sprachmodell/model.py: loesung/model.py } }
+      fail:
+        - { files: { sprachmodell/model.py: { text: "# noch leer\n" } } }
+  paare:
+    pass:
+      - { files: { sprachmodell/model.rb: loesung/model.rb } }
+    fail:
+      - { files: { sprachmodell/model.rb: { text: "# noch leer\n" } } }
+      - { files: { sprachmodell/model.rb: fehler/paar-ohne-leerzeichen.rb }, say: Leerzeichen }
+    python:
+      pass:
+        - { files: { sprachmodell/model.py: loesung/model.py } }
+      fail:
+        - { files: { sprachmodell/model.py: { text: "# noch leer\n" } } }
+        - { files: { sprachmodell/model.py: fehler/paar-ohne-leerzeichen.py }, say: Leerzeichen }

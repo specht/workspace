@@ -101,6 +101,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1845 -->
+<!-- year: 1856 -->
+<!-- part: markow -->
+### Andrei Markow
+
+<div class='person'>
+<img src='markow.webp' alt='Andrei Markow 1886, eine alte Fotografie: ein junger Mann mit Vollbart und zurückgekämmtem Haar, in dunklem Anzug, leicht zur Seite blickend.'>
+<p><strong>Andrei Markow</strong> (1856–1922), russischer Mathematiker in Sankt Petersburg. 1913 ging er die ersten 20 000 Buchstaben von Puschkins »Eugen Onegin« durch und zählte, wie oft auf einen Vokal ein Vokal folgt und wie oft ein Konsonant: Der nächste Buchstabe hängt vom vorigen ab, und mit dieser Abhängigkeit kann man rechnen.</p>
+<p>Eine Kette, in der jedes Glied nur vom vorigen abhängt, heißt nach ihm Markow-Kette. Auch ein Sprachmodell aus Wortpaaren ist eine Markow-Kette.</p>
+<p class='person-credit'>Foto: unbekannt, 1886, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Andrei_Markov.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1882 -->
 <!-- part: sierpinski -->
 ### Wacław Sierpiński
@@ -200,6 +212,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='shannon.webp' alt='Schwarzweißporträt von Claude Shannon als junger Mann in Anzug und Krawatte.'>
 <p><strong>Claude Shannon</strong> (1916–2001). Wie viele Bits eine Nachricht mindestens braucht, rechnete er 1948 aus und gründete damit die Informationstheorie; das Wort <em>Bit</em> machte er bekannt. Er fuhr Einrad, jonglierte und baute die Maus Theseus, die selbst lernte, durch ein Labyrinth zu finden.</p>
 <p>Einen Code mit so wenigen Bits wie möglich suchten er und Robert Fano fast gleichzeitig, jeder für sich. Der Shannon-Fano-Code kam nah heran, aber nicht immer ganz.</p>
+<p>In derselben Arbeit von 1948 ließ er englische Texte Wort für Wort entstehen, jedes Wort nach dem vorigen aus einem Buch gezogen: ein winziges Sprachmodell, von Hand.</p>
 <p class='person-credit'>Foto: Tekniska museet, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:C.E._Shannon._Tekniska_museet_43069_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
