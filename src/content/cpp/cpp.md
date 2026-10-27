@@ -98,6 +98,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.cpp, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
@@ -151,6 +153,8 @@ g++ hello.cpp -o hello && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `cout` das Wort `coud` zu schreiben:
@@ -188,6 +192,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='error.webp' alt='g++ meldet hello.cpp:4:10: error: »coud« is not a member of »std«; did you mean »cout«?, mit der Zeile und dem Vorschlag cout darunter.'>
 
+_task(fehler)
+
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 4) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
 ## Primfaktorzerlegung
@@ -222,8 +228,14 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(int-grenze)
+
+<!-- after: int-grenze -->
+Ein `int` hat 32 Bit und reicht bis 2147483647. Ist die eingegebene Zahl größer, schreibt `cin` diese größte Zahl in `number` und merkt sich, dass das Lesen schiefging; das Programm fragt das nicht ab. Dass 2147483647 sein eigener einziger Faktor ist, ist Zufall: Sie ist eine Primzahl.
+<!-- /after -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Welche Zahl nennt das Programm in seiner Antwort, und was könnte der Grund dafür sein? Ändere danach <code>int number;</code> zu <code>long long number;</code>, übersetze neu und probier <code>123456789123456789</code>. Was ist bei <code>long long</code> anders als bei <code>int</code>?
+<strong>Ausprobieren:</strong> Ändere <code>int number;</code> zu <code>long long number;</code>, übersetze neu und probier <code>123456789123456789</code>. Was ist bei <code>long long</code> anders als bei <code>int</code>?
 </div>
 
 ## Bubblesort
@@ -257,12 +269,13 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(absteigend)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.cpp</code>, übersetze neu und starte das Programm:
 <ul>
 <li>Sortiere 100 Zahlen statt 10. Wie oft musst du dafür die 10 ersetzen?</li>
 <li>Ändere nur den Aufruf zu <code>bubbleSort(arr, 5);</code>. Welche Zahlen sind danach sortiert? Ein Array weiß in C++ nicht, wie lang es ist: Deshalb bekommt <code>bubbleSort</code> die Länge mit.</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 </ul>
 </div>
 

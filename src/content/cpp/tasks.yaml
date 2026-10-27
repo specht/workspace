@@ -1,0 +1,121 @@
+# Aufgaben zum Steckbrief »C++«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace
+# (hello.cpp, factor.cpp, bubblesort.cpp), so wie die Seite sie speichern
+# lässt.
+format: 1
+activity: cpp
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.cpp`.
+    file: hello.cpp
+    check:
+      type: files
+      path: hello.cpp
+      expect:
+        format: text
+        contains:
+          - pattern: 'cout\s*<<\s*"Hello, World!(\\n)?"'
+            say: 'In `hello.cpp` finde ich noch kein `std::cout << "Hello, World!\n"`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: '#include\s*<iostream>'
+            say: 'In `hello.cpp` fehlt die erste Zeile, `#include <iostream>`. Ohne sie kennt der Compiler `std::cout` nicht.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.cpp`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.cpp` eingegeben, mit `.cpp` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.cpp` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `hello.cpp` mit `g++`, sodass `./hello` im Ordner `/workspace`
+      `Hello, World!` ausgibt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein Programm `/workspace/hello`. Hat `g++ hello.cpp -o hello` eine Fehlermeldung ausgegeben? Dann entsteht keine ausführbare Datei.
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Hast du den Quelltext unter diesem Namen gespeichert? Er gehört in `hello.cpp`, das Programm macht `g++ hello.cpp -o hello`.'
+    hint:
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `hello.cpp` liegt. `ls` zeigt, welche Dateien da sind.
+      - '`g++ hello.cpp -o hello` übersetzt; hinter `-o` steht der Name des Programms, das entsteht.'
+    solution: |
+      `g++ hello.cpp -o hello` übersetzt den Quelltext in Maschinencode und
+      schreibt ihn in die Datei `hello`, ein ausführbares Programm für Linux.
+
+  - id: fehler
+    title: Wo der Fehler steht
+    prompt: |
+      Die Meldung beginnt mit `hello.cpp:4:10: error:`. Was sagt die 10?
+    check:
+      type: choice
+      options:
+        - 'An welchem Zeichen in Zeile 4 der Fehler beginnt: Dort steht `coud`.'
+        - Wie viele Fehler `g++` in der Datei gefunden hat.
+        - Die Nummer des Fehlers, unter der man ihn nachschlagen kann.
+        - Wie viele Zeilen das Programm hat.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Zähl in Zeile 4 die Zeichen ab, vom Anfang der Zeile bis zu `coud`, die Leerzeichen mitgezählt.'
+      - when: { picked: 2 }
+        say: Eine Fehlernummer steht bei `g++` nicht in der Meldung. Zähl in Zeile 4 die Zeichen bis zu `coud`.
+      - when: { picked: 3 }
+        say: '`hello.cpp` hat nur 6 Zeilen. Zähl in Zeile 4 die Zeichen bis zu `coud`.'
+    hint: 'Zeile 4 ist `    std::coud << "Hello, World!\n";`, mit vier Leerzeichen vorn.'
+    solution: |
+      Die Spalte: In Zeile 4 stehen vor `coud` vier Leerzeichen und `std::`,
+      neun Zeichen. Mit dem zehnten beginnt `coud`. Viele Compiler nennen die
+      Stelle so, als Datei, Zeile und Spalte.
+
+  - id: int-grenze
+    title: Eine zu große Zahl
+    prompt: |
+      Gib bei `./factor` statt 123 die Zahl `3000000000` ein. Welche Zahl nennt
+      das Programm in seiner Antwort?
+    check:
+      type: number
+      expect: 2147483647
+      tolerance: 0
+    feedback:
+      - when: { equals: 3000000000 }
+        say: 'Lies genau, was hinter `Prime factors of` steht. Ist es wirklich die Zahl, die du eingegeben hast?'
+      - when: { equals: -1294967296 }
+        say: 'So wäre es in C mit `scanf`. Probier es mit `./factor` aus: C++ liest anders.'
+    hint: '`g++ factor.cpp -o factor`, dann `./factor` und die Zahl eingeben. Die Zahl, um die es geht, steht hinter `Prime factors of`.'
+    solution: |
+      2147483647, die größte Zahl, die in ein `int` passt (32 Bit). Ist die
+      eingegebene Zahl zu groß, schreibt `cin` diese Zahl in `number` und
+      merkt sich, dass das Lesen schiefging. Das Programm fragt das nicht ab und
+      rechnet weiter. 2147483647 ist zufällig eine Primzahl, darum ist sie ihr
+      einziger Faktor.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Ändere `bubbleSort` in `bubblesort.cpp` so, dass die größte Zahl zuerst
+      kommt, übersetze neu und starte das Programm noch einmal.
+    file: bubblesort.cpp
+    check:
+      type: files
+      path: bubblesort.cpp
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s*\(\s*arr\[j\]\s*<\s*arr\[j\s*\+\s*1\]\s*\)|if\s*\(\s*arr\[j\s*\+\s*1\]\s*>\s*arr\[j\]\s*\)'
+            say: Noch vergleicht die Zeile mit `if` so, dass die kleinere Zahl nach vorn kommt. Welches Zeichen musst du ändern, damit die größere vorn landet?
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```cpp
+      if (arr[j] < arr[j + 1]) {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.
