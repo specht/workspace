@@ -145,6 +145,8 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
+* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): next an activity on object orientation with a class diagram, in Ruby, Python, JavaScript, Dart and Java (five languages on an activity, Java and Dart checks, a class-diagram extension like the ER-Werkstatt); then a tiny language model (KI), a Turing machine, a logic sandbox; open questions there
+
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
