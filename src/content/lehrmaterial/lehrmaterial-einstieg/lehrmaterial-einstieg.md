@@ -170,6 +170,8 @@ Der Server antwortet mit »Hallo! Dein Schlüssel ist eingetragen. Hier gibt es 
 
 Unter [Git-Repositorys](/git) stehen alle Repositorys im Workspace aus allen deinen Gruppen: Gruppe, Aktivität, Adresse, wie die Gruppe zu ihren Schlüsseln kommt, der letzte Commit mit dem Namen der Person, die ihn geschrieben hat, und daneben **Ansehen** und **Einstellungen**. Du findest die Seite in den Einstellungen unter den Feldern (»Übersicht«) und auf jeder Seite eines Repositorys oben links (»Repositorys«). »Nicht eingetragen« heißt: Das Repository liegt noch auf dem Server, aber die Gruppe hat für die Aktivität eine andere Adresse eingetragen oder keine.
 
+Ein Repository ohne Aktivität, etwa für ein Projekt der Klasse, legst du dort mit **Neues Repository** an: Gruppe, Name, eine Beschreibung, leer oder mit einer Datei `README.md`. Es gehört der Gruppe wie ein Klassen-Repository. Außerdem kann jede und jeder, auch du, unter **Meine Repositorys** bis zu zehn eigene Repositorys zum Üben anlegen. Die sieht nur ihre Besitzerin oder ihr Besitzer, auch du als Lehrkraft nicht: Was die Klasse gemeinsam macht, gehört in ein Repository der Gruppe.
+
 <img class='full full-shadow shot' src='git-uebersicht.webp' alt='Die Seite Git-Repositorys: eine Zeile für das Klassenquiz der 9b mit der Adresse auf dem Git-Server des Workspace, den automatischen Schlüsseln, dem letzten Commit von Jonas Becker und den Knöpfen Ansehen und Einstellungen.'>
 
 ## Eine Aktivität finden: der Lehrplan

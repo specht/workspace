@@ -157,6 +157,23 @@ the better choice only if setup for students must be zero.
 - **Moving repositories** from a Git server elsewhere is the maintainer's
   own work (`git push --mirror` into a new empty repository).
 
+- **Free repositories of a group (28 October 2026):** a teacher makes one
+  on `/git` with »Neues Repository«, in the group's folder, not tied to an
+  activity (its name may not be an activity's with a class repository);
+  members and teachers reach it like a class repository, with the group's
+  keys. Deleted on `/git` after typing its name.
+- **Own repositories for practice (28 October 2026), private to their
+  owner, decided by the maintainer:** every person may keep up to
+  `GitServer::PERSONAL_MAX` (10) repositories in a folder of their own
+  (`User.git_id`). Only the owner may clone, push and read them on the site;
+  not a teacher of the owner's group, not another student, and the
+  administration only sees that they exist (owner, name, size, date) and may
+  delete one, without reading it. **Why:** practice is private; shared work
+  belongs in the class repositories, which teachers see. A later change must
+  not open them to teachers by accident (`GitServer.access_map`,
+  `GitServer.may_read?`, tested in `git_server_test.rb`). They go with the
+  account (`Main#delete_account`).
+
 ## Open questions
 
 - Account deletion: a deleted student's commits stay in the group's

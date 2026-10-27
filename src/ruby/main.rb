@@ -101,12 +101,14 @@ SUBMISSION_VIEW_HOST = "abgaben.#{WEBSITE_HOST.split(':').first}"
 SUBMISSION_VIEW_ROOT = WEB_ROOT.sub('//', '//abgaben.')
 SUBMISSION_VIEW_SECRET = SecureRandom.hex(32)
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :neo4j, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :neo4j, :tic80, :git]
 MODULE_LABELS = {
     :workspace  => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
     :neo4j      => 'Neo4j',
     :tic80      => 'TIC-80',
+    # only with the Workspace's own Git server (GIT_SERVER)
+    :git        => 'Git',
 }
 
 # Activities that were removed, with what was stored about them
@@ -2408,13 +2410,13 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
-    # The access list for the server, from the groups and their people.
+    # The access list for the server, from the groups and their people, and
+    # each person's own folder for that person alone (GitServer.access_map).
     def self.git_refresh_access
-        map = Hash.new { |hash, key| hash[key] = [] }
-        git_groups.each do |group, data|
-            git_group_emails(group).each { |email| map[fs_tag_for_email(email)] << data[:id] }
-        end
-        GitServer.write_config('access', GitServer.access(map))
+        group_people = git_groups.to_h { |group, data| [data[:id], git_group_emails(group).map { |email| fs_tag_for_email(email) }] }
+        personal = $neo4j.neo4j_query('MATCH (u:User) WHERE u.git_id IS NOT NULL RETURN u.email AS email, u.git_id AS id;')
+            .to_h { |row| [row['id'], fs_tag_for_email(row['email'])] }
+        GitServer.write_config('access', GitServer.access(GitServer.access_map(:group_people => group_people, :personal => personal)))
     end
 
     # The keys for the server: the one each person handed in, the automatic one.
@@ -4651,6 +4653,9 @@ class Main < Sinatra::Base
         run_neo4j_statements(logins.flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
 
         task_keys.each { |task| FileUtils.rm_f(submission_path(task, email)) }
+        # the person's own Git repositories (»Meine Repositorys«)
+        git_id = (neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_id AS id;', :email => email).first || {})['id']
+        GitServer.delete_folder(git_id) if git_id.to_s.match?(GitServer::GIT_ID)
         AccountDeletion.node_statements.each { |statement| neo4j_query(statement, :email => email) }
         # The key goes with the account; the server forgets it at once.
         Main.git_refresh!(:auto => false)
@@ -7491,6 +7496,7 @@ class Main < Sinatra::Base
         params = parse_request_data(:required_keys => [:module])
         key = params[:module].to_sym
         assert(MODULE_ORDER.include?(key))
+        assert(key != :git || GitServer.enabled?)
 
         flag = @session_user["show_#{key}".to_sym] == true
         new_flag = !flag
@@ -7977,6 +7983,54 @@ class Main < Sinatra::Base
         emails.each { |email| FileUtils.rm_f(submission_path(task, email)) }
         STDERR.puts "#{@session_user[:email]} deleted #{deleted} hand-ins of #{task} in #{data[:group]}"
         respond(:deleted => deleted)
+    end
+
+    # The menu's button to /git, for those who chose it on the profile
+    # (show_git); none without the Workspace's own Git server.
+    def git_menu_button_html
+        return '' unless GitServer.enabled? && @session_user
+
+        "<a style='#{@session_user[:show_git] ? '' : 'display: none;'}' href='/git' data-menu-module='git' class='btn btn-menu'>" \
+            "<i class='bi bi-git'></i>Git</a>"
+    end
+
+    # The profile's »Git« (under »Werkzeuge«, a tool like the TIC-80): the
+    # key with the Workspace's Git server, one's own repositories with
+    # »Neues Repository«, the way to the groups' ones and to the Handbuch.
+    def git_profile_html
+        return '' unless GitServer.enabled? && user_logged_in?
+
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        email = @session_user[:email]
+        id = git_personal_id(email)
+        mine = id ? GitServer.repos(id) : []
+        git_groups = Main.git_groups
+        groups = (teacher_account_logged_in? || admin_logged_in? ? class_groups : my_groups).select { |g| git_groups.key?(g) }
+        shared = groups.sum { |g| git_names(git_groups[g][:id]).size }
+        full = mine.size >= GitServer::PERSONAL_MAX ? "Du hast schon #{GitServer::PERSONAL_MAX} Repositorys." : nil
+        io = +"<div class='profile-subsection' id='git'><div class='profile-subsection-heading'><h3>Git</h3>" \
+            "<div class='btn-module-control'>#{print_module_button(:git)}</div></div>"
+        io << '<p>Der Git-Server des Workspace hält Repositorys für deine Gruppen und eigene zum Üben, die nur du klonen, pushen und ansehen kannst. ' \
+            "Erreichbar ist er aus deinem Workspace. Wie Git geht, steht im Handbuch unter <a href='/reference/git'>Git</a>.</p>"
+        io << git_my_key_html(email)
+        io << "<div class='git-profile-head'><h4>Meine Repositorys <span class='git-profile-count'>#{mine.size} von #{GitServer::PERSONAL_MAX}</span></h4>" \
+            "#{GitOverview.new_form_html(:disabled => full)}</div>"
+        if mine.empty?
+            io << "<p class='git-overview-intro'>Noch keine.</p>"
+        else
+            io << "<ul class='git-profile-list'>"
+            mine.each do |r|
+                io << "<li><i class='bi bi-journal-code' aria-hidden='true'></i><a href='#{h.("#{WEB_ROOT}/git/#{id}/#{r[:name]}")}'>#{h.(r[:name])}</a>"
+                io << "<span class='git-overview-description'>#{h.(r[:description])}</span>" unless r[:description].empty?
+                io << '</li>'
+            end
+            io << '</ul>'
+        end
+        io << "<p class='git-profile-groups'><i class='bi bi-people' aria-hidden='true'></i>" \
+            "#{shared.zero? ? 'Deine Gruppen haben noch keine Repositorys im Workspace.' : "In deinen Gruppen: #{shared == 1 ? 'ein Repository' : "#{shared} Repositorys"}."} " \
+            "<a href='/git'>Alle Repositorys</a></p>"
+        cache = "#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"
+        io << "<script src='/include/git_repos.js?#{cache}' defer></script><script src='/include/git_key.js?#{cache}' defer></script></div>"
     end
 
     def print_module_button(key)
@@ -8813,6 +8867,162 @@ class Main < Sinatra::Base
         respond(:ok => true, :repos => ClassRepos.parse(json))
     end
 
+    # The names of the repositories in a folder.
+    def git_names(id)
+        Dir.glob(File.join(GitServer::REPOS, id, '*.git')).map { |path| File.basename(path, '.git') }
+    end
+
+    # The README.md a new repository starts with, if it should.
+    def git_readme(name, description)
+        "# #{name}\n#{description.empty? ? '' : "\n#{description}\n"}"
+    end
+
+    # A free repository of a group, not tied to an activity, made on /git:
+    # in the group's folder, for its members and teachers like a class
+    # repository, with the group's keys.
+    post '/api/git/create_group_repo' do
+        data = parse_request_data(:required_keys => [:group, :name], :optional_keys => [:description, :readme],
+            :types => { :readme => Object }, :max_value_lengths => { :group => 256, :name => 100, :description => 400 }, :max_body_length => 2048)
+        group, name = data[:group], data[:name].to_s.strip
+        git_teacher_of!(group)
+        id = git_id_for_group(group, :create => true)
+        problem = GitServer.name_problem(name, :taken => git_names(id), :reserved => class_repo_slugs)
+        return respond(:ok => false, :error => problem) if problem
+
+        description = GitServer.clean_description(data[:description])
+        GitServer.create_repo(id, name, :description => description, :readme => data[:readme] == true ? git_readme(name, description) : nil)
+        Main.git_refresh!
+        STDERR.puts "Git: free repository #{id}/#{name} of #{group} created by #{@session_user[:email]}"
+        respond(:ok => true, :address => GitServer.address(id, name), :url => "#{WEB_ROOT}/git/#{id}/#{name}")
+    end
+
+    # Deletes a free repository of a group; the confirmation is its name.
+    # One of an activity goes on the class page (delete_repo), with its address.
+    post '/api/git/delete_group_repo' do
+        data = parse_request_data(:required_keys => [:group, :name, :confirmation], :max_value_lengths => { :group => 256, :name => 100, :confirmation => 100 })
+        group, name = data[:group], data[:name]
+        git_teacher_of!(group)
+        halt 400 unless name.match?(GitServer::NAME)
+        return respond(:ok => false, :error => 'Der Name stimmt nicht.') unless data[:confirmation].to_s.strip == name
+
+        id = git_id_for_group(group)
+        halt 404 unless id && git_names(id).include?(name)
+        tied = class_repo_slugs.include?(name) || (group_class_repos([group])[group] || {}).values.include?(GitServer.address(id, name))
+        return respond(:ok => false, :error => 'Das Repository gehört zu einer Aktivität; du löschst es auf der Klassenseite.') if tied
+
+        GitServer.delete_repo(id, name)
+        STDERR.puts "Git: free repository #{id}/#{name} of #{group} deleted by #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
+    # The folder of a person's own repositories; with create, a new one.
+    def git_personal_id(email, create: false)
+        row = neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_id AS id;', :email => email).first
+        return row['id'] if row && row['id']
+        return nil unless create
+
+        id = nil
+        5.times do
+            id = GitServer.new_git_id
+            used = neo4j_query('OPTIONAL MATCH (g:GroupSetting {git_id: $id}) OPTIONAL MATCH (u:User {git_id: $id}) RETURN count(g) + count(u) AS n;',
+                :id => id).first['n'].to_i > 0
+            break unless used || File.exist?(File.join(GitServer::REPOS, id))
+        end
+        neo4j_query('MATCH (u:User {email: $email}) SET u.git_id = coalesce(u.git_id, $id);', :email => email, :id => id)
+        neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_id AS id;', :email => email).first['id']
+    end
+
+    # Whose own folder this is, or nil.
+    def git_owner_of_id(id)
+        row = neo4j_query('MATCH (u:User {git_id: $id}) RETURN u.email AS email;', :id => id).first
+        row && row['email']
+    end
+
+    # A repository of one's own, for practice (»Meine Repositorys«): only
+    # its owner may clone, push and read it, at most GitServer::PERSONAL_MAX.
+    post '/api/git/create_my_repo' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled?
+        data = parse_request_data(:required_keys => [:name], :optional_keys => [:description, :readme],
+            :types => { :readme => Object }, :max_value_lengths => { :name => 100, :description => 400 }, :max_body_length => 2048)
+        name = data[:name].to_s.strip
+        email = @session_user[:email]
+        existing = (id = git_personal_id(email)) ? git_names(id) : []
+        problem = GitServer.name_problem(name, :taken => existing, :limit => GitServer::PERSONAL_MAX)
+        return respond(:ok => false, :error => problem) if problem
+
+        id ||= git_personal_id(email, :create => true)
+        description = GitServer.clean_description(data[:description])
+        GitServer.create_repo(id, name, :description => description, :readme => data[:readme] == true ? git_readme(name, description) : nil)
+        Main.git_refresh!(:auto => false)
+        respond(:ok => true, :address => GitServer.address(id, name), :url => "#{WEB_ROOT}/git/#{id}/#{name}")
+    end
+
+    post '/api/git/delete_my_repo' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled?
+        data = parse_request_data(:required_keys => [:name, :confirmation], :max_value_lengths => { :name => 100, :confirmation => 100 })
+        name = data[:name]
+        halt 400 unless name.match?(GitServer::NAME)
+        return respond(:ok => false, :error => 'Der Name stimmt nicht.') unless data[:confirmation].to_s.strip == name
+
+        id = git_personal_id(@session_user[:email])
+        halt 404 unless id && git_names(id).include?(name)
+        GitServer.delete_repo(id, name)
+        respond(:ok => true)
+    end
+
+    # An administrator deletes someone's own repository (support), without
+    # having seen into it; the confirmation is its name.
+    post '/api/git/delete_personal_repo' do
+        assert(admin_logged_in?)
+        halt 404 unless GitServer.enabled?
+        data = parse_request_data(:required_keys => [:id, :name, :confirmation], :max_value_lengths => { :id => 20, :name => 100, :confirmation => 100 })
+        id, name = data[:id], data[:name]
+        halt 400 unless id.match?(GitServer::GIT_ID) && name.match?(GitServer::NAME)
+        return respond(:ok => false, :error => 'Der Name stimmt nicht.') unless data[:confirmation].to_s.strip == name
+
+        owner = git_owner_of_id(id)
+        halt 404 unless owner && git_names(id).include?(name)
+        GitServer.delete_repo(id, name)
+        STDERR.puts "Git: own repository #{id}/#{name} deleted by the administrator #{@session_user[:email]}"
+        respond(:ok => true)
+    end
+
+    # A key pair for the Workspace's Git server in one's own Workspace (as
+    # a group in »Automatisch« gets it), for one's own repositories.
+    post '/api/git/install_my_key' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled? && File.exist?(GitServer::HOST_KEY)
+        email = @session_user[:email]
+        home = File.join('/user', fs_tag_for_email(email), 'workspace')
+        return respond(:ok => false, :error => 'Starte zuerst einmal deinen Workspace; dann gibt es den Ordner, in den der Schlüssel kommt.') unless File.directory?(home)
+
+        line = GitServer.install_auto_key(home, :host_key_text => File.read(GitServer::HOST_KEY))
+        neo4j_query('MATCH (u:User {email: $email}) SET u.git_auto_key = $key;', :email => email, :key => line)
+        Main.git_refresh!(:auto => false)
+        respond(:ok => true)
+    end
+
+    # What the server knows of this person's keys, for »Meine Repositorys«.
+    def git_my_key_html(email)
+        row = neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_key AS key, u.git_auto_key AS auto;', :email => email).first || {}
+        auto = row['auto'] && File.exist?(File.join('/user', fs_tag_for_email(email), 'workspace', '.ssh', GitServer::AUTO_KEY))
+        if auto
+            return "<p class='git-mine-key'><i class='bi bi-key' aria-hidden='true'></i>Dein Workspace hat einen Schlüssel für den Git-Server: " \
+                "<code>~/.ssh/#{GitServer::AUTO_KEY}</code>. Damit klonst und pushst du deine Repositorys.</p>"
+        end
+        if row['key']
+            return "<p class='git-mine-key'><i class='bi bi-key' aria-hidden='true'></i>Du hast einen öffentlichen Schlüssel abgegeben " \
+                "(<code>#{CGI.escapeHTML(GitServer.fingerprint(row['key']).to_s)}</code>); mit ihm klonst und pushst du deine Repositorys.</p>"
+        end
+        "<div class='git-mine-nokey'><p><i class='bi bi-key' aria-hidden='true'></i>Zum Klonen und Pushen braucht dein Workspace einen Schlüssel für den Git-Server. " \
+            'Der Workspace legt dir einen an, oder du gibst den öffentlichen Schlüssel eines eigenen Schlüsselpaars ab.</p>' \
+            "<p><button type='button' class='btn btn-outline-secondary' data-git-install-key><i class='bi bi-key' aria-hidden='true'></i>" \
+            "Schlüssel in meinem Workspace anlegen</button></p>" \
+            "<details class='git-mine-handin'><summary>Einen eigenen öffentlichen Schlüssel abgeben</summary><div class='git-key' data-git-key></div></details></div>"
+    end
+
     # How the group's students get their keys: handed in, or automatic.
     post '/api/git/set_keys' do
         data = parse_request_data(:required_keys => [:group, :mode], :max_value_lengths => { :group => 256, :mode => 20 })
@@ -8890,7 +9100,8 @@ class Main < Sinatra::Base
     # /git/<git id>/<name>/raw/<ref>/<path>       a file by itself (?download=1: as a download)
     # /git/<git id>/<name>/entries/<ref>/<path>   a folder's entries as JSON, for the sidebar
     #
-    # For the members and teachers of the group the folder belongs to.
+    # For the members and teachers of the group the folder belongs to; a
+    # person's own folder for that person alone (GitServer.may_read?).
     # Sinatra (Mustermann) anchors the pattern itself.
     GIT_BROWSE_PATH = %r{/git/([a-z0-9]{10})/([a-z0-9][a-z0-9-]{0,62})(?:/(tree|blob|commits|commit|archive|raw|entries)(?:/(.*))?)?/?}
     GIT_PICTURES = GitBrowse::PICTURES
@@ -9157,8 +9368,9 @@ class Main < Sinatra::Base
         tab_ref ||= ref
         io = +"<nav class='git-crumbs' aria-label='Repository'><i class='bi bi-git' aria-hidden='true'></i>"
         # the overview of every repository first, for those who have one (/git)
-        io << "<a href='#{WEB_ROOT}/git'>Repositorys</a><span class='git-crumb-sep'>/</span>" if teacher_account_logged_in? || admin_logged_in?
-        io << "<span>#{h.(@git[:group])}</span><span class='git-crumb-sep'>/</span><a href='#{h.(git_url)}'><strong>#{h.(@git[:name])}</strong></a></nav>"
+        io << "<a href='#{WEB_ROOT}/git'>Repositorys</a><span class='git-crumb-sep'>/</span>"
+        io << (@git[:owner] ? "<a href='#{WEB_ROOT}/git#meine'>Meine Repositorys</a>" : "<span>#{h.(@git[:group])}</span>")
+        io << "<span class='git-crumb-sep'>/</span><a href='#{h.(git_url)}'><strong>#{h.(@git[:name])}</strong></a></nav>"
         io << "<div class='git-toolbar'><div class='git-toolbar-start'>"
         if ref
             io << "<button class='btn btn-outline-secondary git-side-toggle git-side-button' type='button' aria-controls='git-side' aria-expanded='true' " \
@@ -9493,16 +9705,19 @@ class Main < Sinatra::Base
         io << git_layout_html(side, kind_here == :tree ? git_folder_html(sha, ref, path) : git_file_html(sha, ref, path))
     end
 
-    # Every repository on the server in the groups the person teaches; an
-    # administrator's: all, with their teachers (GitOverview). One git call
-    # per repository, for its last commit.
+    # Every repository on the server in the groups the person teaches (an
+    # administrator: all, with their teachers; a student: their own groups),
+    # a free one made here, and the person's own repositories for practice;
+    # for an administrator, that such exist. One git call per repository,
+    # for its last commit.
     get %r{/git/?} do
         this_is_a_page_for_logged_in_users!
         halt 404 unless GitServer.enabled?
-        halt_forbidden_page! unless teacher_account_logged_in? || admin_logged_in?
+        teacher = teacher_account_logged_in? || admin_logged_in?
         admin = admin_logged_in?
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
         git_groups = Main.git_groups
-        groups = (admin ? git_groups.keys.sort_by(&:downcase) : class_groups).select { |g| git_groups.key?(g) }
+        groups = (admin ? git_groups.keys.sort_by(&:downcase) : teacher ? class_groups : my_groups).select { |g| git_groups.key?(g) }
         teachers = nil
         if admin
             teachers = Hash.new { |hash, key| hash[key] = [] }
@@ -9511,11 +9726,39 @@ class Main < Sinatra::Base
                 taught.each { |g| teachers[g] << name }
             end
         end
+        slugs = class_repo_slugs
         rows = GitOverview.rows(:groups => groups, :git_groups => git_groups, :repos => ->(id) { GitServer.repos(id) },
-            :titles => ->(slug) { @@content[slug] ? plain_title(slug) : nil },
+            :titles => ->(slug) { slugs.include?(slug) && @@content[slug] ? plain_title(slug) : nil },
             :class_repos => group_class_repos(groups), :teachers => teachers)
-        @git_page = "<div class='container git-overview-page'><h1>Git-Repositorys</h1>" \
-            "#{GitOverview.html(rows, :admin => admin, :web_root => WEB_ROOT)}</div>"
+        email = @session_user[:email]
+        id = git_personal_id(email)
+        mine = id ? GitServer.repos(id) : []
+        page = +"<div class='container git-overview-page'><h1>Git-Repositorys</h1>"
+        page << "<section class='git-overview-section'><div class='git-overview-head'><h2>Repositorys der Gruppen</h2>"
+        page << GitOverview.new_form_html(:groups => class_groups) if teacher && !class_groups.empty?
+        page << "</div>#{GitOverview.html(rows, :admin => admin, :student => !teacher, :web_root => WEB_ROOT)}</section>"
+        full = mine.size >= GitServer::PERSONAL_MAX ? "Du hast schon #{GitServer::PERSONAL_MAX} Repositorys." : nil
+        page << "<section class='git-overview-section' id='meine'><div class='git-overview-head'><h2>Meine Repositorys</h2>"
+        page << "#{GitOverview.new_form_html(:disabled => full)}</div>"
+        page << "<p class='git-overview-intro'>Zum Üben, nur für dich: Niemand sonst kann sie klonen, pushen oder ansehen, auch deine Lehrkräfte nicht. " \
+            "Was ihr gemeinsam macht, gehört in ein Repository der Gruppe. #{mine.size} von #{GitServer::PERSONAL_MAX}.</p>"
+        page << git_my_key_html(email)
+        page << GitOverview.personal_html(mine, :id => id, :web_root => WEB_ROOT)
+        page << '</section>'
+        if admin
+            owners = neo4j_query('MATCH (u:User) WHERE u.git_id IS NOT NULL RETURN u.email AS email, u.git_id AS id;').to_a
+            personal = owners.flat_map do |row|
+                name = (@@invitations[row['email']] || {})[:name] || row['email']
+                GitServer.repos(row['id']).map { |r| r.merge(:owner => name, :id => row['id']) }
+            end.sort_by { |r| [r[:owner].downcase, r[:name]] }
+            page << "<section class='git-overview-section'><h2>Eigene Repositorys der Personen</h2>"
+            page << "<p class='git-overview-intro'>Repositorys, die jemand für sich zum Üben angelegt hat. Hineinsehen kann nur die Person selbst; " \
+                'du siehst, dass es sie gibt, und kannst eins löschen, etwa wenn der Platz knapp wird.</p>'
+            page << GitOverview.personal_admin_html(personal) << '</section>'
+        end
+        cache = "#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"
+        page << "</div><script src='/include/git_repos.js?#{cache}'></script><script src='/include/git_key.js?#{cache}'></script>"
+        @git_page = page
         running_tests = my_running_tests()
         path = request.path
         slug = nil
@@ -9532,10 +9775,13 @@ class Main < Sinatra::Base
         id, name, view, rest = params['captures']
         rest = rest.to_s.split('/').map { |part| URI.decode_www_form_component(part.gsub('+', '%2B')) }.join('/')
         group = git_group_of_id(id)
-        halt_forbidden_page! unless group && git_may_browse?(group)
+        # a person's own folder: that person alone, no teacher, no administrator
+        owner = group ? nil : git_owner_of_id(id)
+        reader = group && git_may_browse?(group)
+        halt_forbidden_page! unless (group || owner) && GitServer.may_read?(:owner => owner, :group_reader => reader, :email => @session_user[:email])
         repo = GitServer.repo_path(id, name)
         halt 404 unless File.directory?(repo)
-        @git = { :id => id, :name => name, :group => group, :repo => repo }
+        @git = { :id => id, :name => name, :group => group, :owner => owner, :repo => repo }
 
         if %w[raw archive entries].include?(view)
             refs = GitBrowse.refs(repo)

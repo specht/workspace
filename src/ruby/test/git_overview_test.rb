@@ -38,8 +38,57 @@ class GitOverviewTest < Minitest::Test
         list = rows(%w[9b], :class_repos => { '9b' => { 'class-quiz' => 'git@git.workspace:a1b2c3d4e5/class-quiz.git' } })
         assert list[0][:in_use]
         refute list[1][:in_use]
+        assert_equal 0, GitOverview.html(list).scan('nicht eingetragen').size, 'a free repository is no activity\'s'
+        assert_equal 1, GitOverview.html(rows(%w[9b])).scan('nicht eingetragen').size
+    end
+
+    # A repository without an activity of its name is a free one: its
+    # description, deleted here instead of on the class page.
+    def test_a_free_repository
+        list = GitOverview.rows(:groups => %w[9b], :git_groups => GIT_GROUPS,
+            :repos => ->(_) { [{ :name => 'projekt', :size => 1, :last => nil, :author => nil, :description => 'Unser <Projekt>' }] },
+            :titles => ->(_) { nil })
+        assert list[0][:free]
         html = GitOverview.html(list)
-        assert_equal 1, html.scan('nicht eingetragen').size
+        assert_includes html, '>frei</span>'
+        assert_includes html, 'Unser &lt;Projekt&gt;'
+        assert_includes html, "data-git-delete='group' data-group='9b' data-name='projekt'"
+        refute_includes html, 'Einstellungen'
+    end
+
+    # A student sees the groups' repositories to look at, nothing to set or delete.
+    def test_a_student_looks_only
+        html = GitOverview.html(rows(%w[9b]), :student => true)
+        assert_includes html, 'deiner Gruppen'
+        assert_includes html, "href='/git/a1b2c3d4e5/class-quiz'"
+        refute_includes html, 'Einstellungen'
+        refute_includes html, 'data-git-delete'
+        refute_includes html, '<th>Schlüssel</th>'
+        assert_includes GitOverview.html([], :student => true), 'noch keine Repositorys'
+    end
+
+    # One's own repositories with their address; for an administrator only
+    # that they exist, with no way to look into them.
+    def test_own_repositories
+        mine = [{ :name => 'uebung', :size => 2048, :last => LAST, :author => 'Ada', :description => 'Branches' }]
+        html = GitOverview.personal_html(mine, :id => 'p1p1p1p1p1')
+        assert_includes html, 'p1p1p1p1p1/uebung.git'
+        assert_includes html, "href='/git/p1p1p1p1p1/uebung'"
+        assert_includes html, "data-git-delete='mine' data-name='uebung'"
+        assert_includes GitOverview.personal_html([], :id => nil), 'Noch keine'
+        admin = GitOverview.personal_admin_html([{ :owner => 'Schülerin A', :id => 'p1p1p1p1p1', :name => 'uebung', :size => 2048, :last => LAST }])
+        assert_includes admin, 'Schülerin A'
+        assert_includes admin, "data-git-delete='personal' data-id='p1p1p1p1p1'"
+        refute_includes admin, '/git/p1p1p1p1p1', 'no way into it'
+    end
+
+    def test_the_form_for_a_new_one
+        form = GitOverview.new_form_html(:groups => ['9b', '<10a>'])
+        assert_includes form, "data-git-new='group'"
+        assert_includes form, "<option value='&lt;10a&gt;'>"
+        mine = GitOverview.new_form_html(:disabled => 'Du hast schon 10 Repositorys.')
+        assert_includes mine, "data-git-new='mine'"
+        assert_includes mine, 'disabled'
     end
 
     def test_the_table

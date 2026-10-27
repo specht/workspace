@@ -132,4 +132,51 @@ class GitServerTest < Minitest::Test
             end
         end
     end
+
+    # Names of new repositories: the address's rules, one name once per
+    # folder, an activity's name only on the class page, at most a limit.
+    def test_names_of_new_repositories
+        assert_nil GitServer.name_problem('uebung-1')
+        assert_match(/Kleinbuchstaben/, GitServer.name_problem('Mein Test'))
+        assert_match(/Kleinbuchstaben/, GitServer.name_problem('-x'))
+        assert_match(/Namen/, GitServer.name_problem(''))
+        assert_match(/gibt es hier schon/, GitServer.name_problem('quiz', :taken => %w[quiz]))
+        assert_match(/Aktivität/, GitServer.name_problem('class-quiz', :reserved => %w[class-quiz]))
+        assert_match(/schon 10 Repositorys/, GitServer.name_problem('neu', :taken => (1..10).map { |i| "r#{i}" }, :limit => GitServer::PERSONAL_MAX))
+        assert_nil GitServer.name_problem('neu', :taken => (1..9).map { |i| "r#{i}" }, :limit => GitServer::PERSONAL_MAX)
+        assert_equal 'Zwei Zeilen', GitServer.clean_description("Zwei\nZeilen")
+        assert_equal GitServer::DESCRIPTION_MAX, GitServer.clean_description('x' * 500).size
+    end
+
+    def test_a_repository_with_a_readme_and_a_description
+        Dir.mktmpdir do |root|
+            path = GitServer.create_repo('a1b2c3d4e5', 'uebung', :readme => "# uebung\n", :description => 'Zum Üben', :root => root, :uid => Process.uid)
+            assert_equal "# uebung\n", GitServer.git('--git-dir', path, 'show', 'main:README.md')
+            assert_equal 'Workspace', GitServer.git('--git-dir', path, 'log', '-1', '--format=%an').strip
+            repo = GitServer.repos('a1b2c3d4e5', :root => root).first
+            assert_equal 'Zum Üben', repo[:description]
+            empty = GitServer.create_repo('a1b2c3d4e5', 'leer', :root => root, :uid => Process.uid)
+            assert_equal '', GitServer.description(empty)
+            assert_raises(RuntimeError) { GitServer.git('--git-dir', empty, 'rev-parse', '--verify', 'main') }
+        end
+    end
+
+    # Practice is private (docs/plan-git-gruppen.md): a person's own folder
+    # is in the access list for that person alone, not for a teacher of the
+    # person's group, who reaches only the group's folder; on the site the
+    # owner alone reads it, an administrator neither.
+    def test_own_repositories_are_the_owners_alone
+        map = GitServer.access_map(:group_people => { 'g1g1g1g1g1' => %w[student teacher] }, :personal => { 'p1p1p1p1p1' => 'student' })
+        assert_equal %w[g1g1g1g1g1 p1p1p1p1p1], map['student'].sort
+        assert_equal %w[g1g1g1g1g1], map['teacher']
+        access = GitServer.access(map)
+        assert_includes access, "student p1p1p1p1p1\n"
+        refute_match(/^teacher p1p1p1p1p1$/, access)
+        assert GitServer.may_read?(:owner => 'student@example.com', :group_reader => false, :email => 'student@example.com')
+        refute GitServer.may_read?(:owner => 'student@example.com', :group_reader => true, :email => 'teacher@example.com')
+        refute GitServer.may_read?(:owner => 'student@example.com', :group_reader => true, :email => 'admin@example.com')
+        assert GitServer.may_read?(:owner => nil, :group_reader => true, :email => 'teacher@example.com')
+        refute GitServer.may_read?(:owner => nil, :group_reader => false, :email => 'other@example.com')
+    end
 end
+

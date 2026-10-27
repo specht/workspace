@@ -357,7 +357,8 @@ einem Git-Server im Netz braucht dann niemand.
   (nie die E-Mail-Adresse), »Ansehen« und »Einstellungen«
   (`/klasse?group=…&repos=…`). »Nicht eingetragen« heißt, die Gruppe hat für
   die Seite eine andere Adresse oder keine. Admins sehen alle Gruppen mit
-  einem Ordner und dazu deren Lehrkräfte; Lernende bekommen 403, ohne
+  einem Ordner und dazu deren Lehrkräfte; Lernende sehen die Repositorys
+  ihrer Gruppen zum Ansehen, ohne Einstellungen und ohne Löschen, ohne
   `GIT_SERVER` gibt es die Seite nicht (404). Verlinkt unter den Feldern der
   Einstellungen (»Übersicht«) und in der Kopfzeile jeder Seite eines
   Repositorys (»Repositorys«). Ein Aufruf von git je Repository, kein Cache.
@@ -366,6 +367,33 @@ einem Git-Server im Netz braucht dann niemand.
   eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein
   Konto gelöscht, verschwinden seine Schlüssel; seine Commits bleiben als
   Arbeit der Gruppe in deren Repositorys.
+- **Freie Repositorys einer Gruppe:** »Neues Repository« auf `/git`
+  (Lehrkräfte und Admins, für ihre Gruppen; `/api/git/create_group_repo`):
+  Gruppe, Name (die Regeln der Adresse, einmal je Ordner, nicht der Name
+  einer Aktivität mit Klassen-Repository, `GitServer.name_problem`),
+  Beschreibung (in git's Datei `description`), leer oder mit einer
+  `README.md` (ein Commit von »Workspace«). Es liegt im Ordner der Gruppe
+  und gehört zu keiner Aktivität (»frei« in der Übersicht); Zugang wie bei
+  einem Klassen-Repository. Gelöscht wird es auf `/git` nach dem Eintippen
+  seines Namens (`/api/git/delete_group_repo`); eins einer Aktivität weiter
+  auf der Klassenseite.
+- **Eigene Repositorys zum Üben** (»Meine Repositorys« auf `/git` und im
+  Profil unter »Werkzeuge«, »Git«): jede Person, Lernende wie Lehrkräfte,
+  höchstens `GitServer::PERSONAL_MAX` (10), in einem eigenen Ordner
+  (`User.git_id`, angelegt beim ersten). **Nur die Person selbst** darf sie
+  klonen, pushen und ansehen; nicht die Lehrkräfte ihrer Gruppen, nicht
+  andere Lernende. Admins sehen auf `/git` nur, dass es sie gibt (Person,
+  Name, Größe, Datum) und können eins löschen, aber nicht hineinsehen. So
+  entschieden, weil Üben privat ist; was gemeinsam entsteht, gehört in ein
+  Repository der Gruppe (docs/plan-git-gruppen.md). Getestet in
+  `git_server_test.rb` (`access_map`, `may_read?`) und
+  `git-repos.browser.spec.ts`. Schlüssel: die, die die Person schon hat;
+  ohne einen legt der Workspace auf Wunsch ein Schlüsselpaar in ihrem
+  Workspace an (`/api/git/install_my_key`, wie bei »Automatisch«) oder sie
+  gibt einen öffentlichen Schlüssel ab. Gelöscht mit dem Konto
+  (`Main#delete_account`). Das Profil hat dazu »Git im Menü anzeigen«
+  (`show_git`), wie phpMyAdmin und Neo4j; alles davon nur mit
+  `GIT_SERVER`.
 - **Ein vorhandenes Repository umziehen:** ein leeres im Workspace anlegen,
   dann aus einem Klon des alten `git push --mirror` an die neue Adresse.
 

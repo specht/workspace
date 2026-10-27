@@ -11057,11 +11057,170 @@ table.git-overview code > span {
     display: block;
 }
 
+/* /git in sections: the groups' repositories, one's own; »Neues Repository«
+   at the right of each heading, its form below (git_repos.js) */
+.git-overview-section {
+    margin-bottom: 2.2em;
+}
+
+.git-overview-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6em 1em;
+    margin-bottom: 0.4em;
+}
+
+.git-overview-head h2 {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.git-new {
+    display: contents;
+}
+
+.git-new .btn .bi,
+.git-mine-nokey .btn .bi,
+.git-overview-actions .btn .bi {
+    margin-right: 0.35em;
+}
+
+.git-new-form {
+    flex: 0 0 100%;
+    width: 100%;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    background: var(--bs-tertiary-bg);
+    padding: 0.9em 1.1em;
+}
+
+.git-new-form > * {
+    max-width: 36em;
+}
+
+.git-overview-section .git-overview-intro {
+    text-align: left;
+}
+
+.git-profile-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6em 1em;
+    margin: 1em 0 0.5em;
+}
+
+.git-profile-head h4 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.git-profile-count {
+    color: var(--bs-secondary-color);
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 0.4em;
+}
+
+.git-profile-list {
+    list-style: none;
+    padding: 0;
+}
+
+.git-profile-list li {
+    padding: 0.2em 0;
+}
+
+.git-profile-list .bi,
+.git-profile-groups .bi {
+    color: var(--bs-secondary-color);
+    margin-right: 0.45em;
+}
+
+.git-profile-list .git-overview-description {
+    display: inline;
+    margin-left: 0.6em;
+}
+
+.git-new-field {
+    margin-bottom: 0.8em;
+}
+
+.git-new-optional {
+    color: var(--bs-secondary-color);
+    font-weight: normal;
+}
+
+.git-new-buttons {
+    display: flex;
+    gap: 0.5em;
+}
+
+.git-new-buttons .bi {
+    margin-right: 0.35em;
+}
+
+.git-overview-free {
+    display: inline-block;
+    margin-left: 0.5em;
+    padding: 0 0.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1em;
+    font-size: 0.78em;
+    color: var(--bs-secondary-color);
+    vertical-align: 0.1em;
+}
+
+.git-overview-description {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: 0.85em;
+}
+
+.git-mine-key,
+.git-mine-nokey {
+    text-align: left;
+    hyphens: manual;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    padding: 0.6em 0.9em;
+    overflow-wrap: anywhere;
+}
+
+.git-mine-key .bi,
+.git-mine-nokey > p:first-child .bi {
+    color: #d9822b;
+    margin-right: 0.4em;
+}
+
+.git-mine-nokey p:last-of-type {
+    margin-bottom: 0.4em;
+}
+
+.git-mine-nokey .btn {
+    white-space: normal;
+    text-align: left;
+}
+
+.git-mine-handin summary {
+    cursor: pointer;
+    margin-bottom: 0.4em;
+}
+
 .git-overview-actions {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 0.3em;
     white-space: nowrap;
+}
+
+.git-overview-actions .btn {
+    width: 100%;
+    max-width: 9em;
 }
 
 @media (max-width: 767.98px) {

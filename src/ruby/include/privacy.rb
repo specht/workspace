@@ -174,8 +174,17 @@ module Privacy
                     'was jemand beigetragen hat, bleibt nach dem Löschen seines Kontos als Arbeit der Gruppe im Repository',
             },
             {
-                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt, ' \
-                    'einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
+                :data => 'Eigene Git-Repositorys zum Üben (höchstens zehn je Person): Dateien und die Geschichte der Commits, mit dem Namen und der ' \
+                    'E-Mail-Adresse, die jemand in seinen Commits angibt; dazu eine zufällige Kennung des Ordners am Konto',
+                :source => 'von der Person selbst angelegt und hochgeladen (git push)',
+                :categories => [:content],
+                :purpose => 'Üben mit Git',
+                :who => 'nur die Person selbst; die Administration sieht Name, Größe und Datum und kann ein Repository löschen, ohne hineinzusehen',
+                :how_long => 'bis die Person es löscht, bis zur Löschung des Kontos',
+            },
+            {
+                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt ' \
+                    'oder die Person es für ihre eigenen Repositorys wünscht, einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
                 :categories => [:account],
                 :purpose => 'Anmeldung am Git-Server des Workspace',
                 :who => 'Administration',
