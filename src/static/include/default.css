@@ -5638,6 +5638,13 @@ html[data-bs-theme="dark"] .usage-row {
         flex: 1 1 auto;
     }
 }
+/* the card alone in its row on a tablet, the picture beside the text: room
+   for the row below its text too */
+@media (min-width: 768px) and (max-width: 1199.999999px) {
+    .hscol:last-child:nth-child(odd) .tutorial_card3.card-with-usage .card-content {
+        padding-bottom: 2.6em;
+    }
+}
 .tutorial_card3 .card-content .card-usage {
     position: absolute;
     left: 1em;
