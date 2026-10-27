@@ -8975,7 +8975,7 @@ class Main < Sinatra::Base
     # An administrator deletes someone's own repository (support), without
     # having seen into it; the confirmation is its name.
     post '/api/git/delete_personal_repo' do
-        assert(admin_logged_in?)
+        admins_only!
         halt 404 unless GitServer.enabled?
         data = parse_request_data(:required_keys => [:id, :name, :confirmation], :max_value_lengths => { :id => 20, :name => 100, :confirmation => 100 })
         id, name = data[:id], data[:name]
