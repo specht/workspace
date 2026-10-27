@@ -5284,6 +5284,20 @@ ul.task-teacher-list .task-teacher-answer {
     margin-left: 0.1em;
 }
 
+/* A sign of the board outside it, as in the teacher guide's legend: the
+   colour on the sign, since a table's cells set their own colour */
+.cb-sign {
+    display: inline-block;
+    padding: 0.1em 0.45em;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.cb-sign small {
+    font-size: 70%;
+    margin-left: 0.1em;
+}
+
 .cb-correct, .cb-live-correct { color: #146c43; }
 .cb-sent { color: #0b4fb3; }
 .cb-wrong, .cb-live-wrong { color: #8a5300; }

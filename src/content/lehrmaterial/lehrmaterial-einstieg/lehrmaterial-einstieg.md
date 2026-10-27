@@ -58,12 +58,12 @@ Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede
 <table class='table'>
 <thead><tr><th>Zeichen</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td class='cb-cell cb-correct'><svg class='ti ti-check' aria-hidden='true'><use href='/include/tabler/tabler.svg#check'/></svg></td><td>gelöst</td></tr>
-<tr><td class='cb-cell cb-sent'><i class='bi bi-paper-plane' aria-hidden='true'></i></td><td>abgegeben, oder eine Antwort in eigenen Worten gespeichert</td></tr>
-<tr><td class='cb-cell cb-wrong'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>2</small></td><td>noch nicht gelöst, nach so vielen Versuchen</td></tr>
-<tr><td class='cb-cell cb-wrong cb-stuck'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>3</small></td><td>hängt: noch nicht gelöst, nach drei Versuchen oder mehr</td></tr>
-<tr><td class='cb-cell cb-stale'><svg class='ti ti-refresh' aria-hidden='true'><use href='/include/tabler/tabler.svg#refresh'/></svg></td><td>Die Aufgabe hat sich geändert, die Antwort ist von vorher.</td></tr>
-<tr><td class='cb-cell cb-none'><svg class='ti ti-minus' aria-hidden='true'><use href='/include/tabler/tabler.svg#minus'/></svg></td><td>noch nicht bearbeitet</td></tr>
+<tr><td><span class='cb-sign cb-correct'><svg class='ti ti-check' aria-hidden='true'><use href='/include/tabler/tabler.svg#check'/></svg></span></td><td>gelöst</td></tr>
+<tr><td><span class='cb-sign cb-sent'><i class='bi bi-paper-plane' aria-hidden='true'></i></span></td><td>abgegeben, oder eine Antwort in eigenen Worten gespeichert</td></tr>
+<tr><td><span class='cb-sign cb-wrong'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>2</small></span></td><td>noch nicht gelöst, nach so vielen Versuchen</td></tr>
+<tr><td><span class='cb-sign cb-wrong cb-stuck'><svg class='ti ti-x' aria-hidden='true'><use href='/include/tabler/tabler.svg#x'/></svg><small>3</small></span></td><td>hängt: noch nicht gelöst, nach drei Versuchen oder mehr</td></tr>
+<tr><td><span class='cb-sign cb-stale'><svg class='ti ti-refresh' aria-hidden='true'><use href='/include/tabler/tabler.svg#refresh'/></svg></span></td><td>Die Aufgabe hat sich geändert, die Antwort ist von vorher.</td></tr>
+<tr><td><span class='cb-sign cb-none'><svg class='ti ti-minus' aria-hidden='true'><use href='/include/tabler/tabler.svg#minus'/></svg></span></td><td>noch nicht bearbeitet</td></tr>
 </tbody>
 </table>
 </div>
