@@ -1,0 +1,42 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: pascal
+examples:
+  hallo:
+    pass:
+      - files: { hello.pas: hello.pas }
+      - files: { hello.pas: { text: "PROGRAM Hello;\nBEGIN\n  writeln('Hello, World!');\nEND.\n" } }
+    fail:
+      - files: { hello.pas: hello-error.pas }
+        say: WriteLn('Hello, World!')
+      - files: { hello.pas: { text: "program HelloWorld;\nbegin\n  WriteLn(\"Hello, World!\");\nend.\n" } }
+        say: einfache Anführungszeichen
+      - files: { hello.pas: { text: "" } }
+      - files: { hallo.pas: hello.pas }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\0compiled", executable: true } }
+    fail:
+      - files: { hello.pas: hello.pas }
+        say: fpc hello.pas
+      - files: { hello: { from: hello.pas, executable: true } }
+        say: kein übersetztes Programm
+  fehler:
+    pass:
+      - answer: Identifier not found
+      - answer: 'Error: Identifier not found "WritLn"'
+      - answer: identifier not found
+    fail:
+      - answer: WritLn
+        say: der Text hinter
+      - answer: 'Fatal: There were 1 errors compiling module, stopping'
+        say: Fatal
+      - answer: Syntax error
+  absteigend:
+    pass:
+      - files: { bubblesort.pas: { text: "            if arr[j] < arr[j + 1] then begin\n" } }
+      - files: { bubblesort.pas: { text: "    IF arr[j+1] > arr[j] THEN BEGIN\n" } }
+    fail:
+      - files: { bubblesort.pas: bubblesort.pas }
+        say: vergleicht das Programm noch wie vorher

@@ -1,0 +1,120 @@
+# Aufgaben zu »Pascal«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: pascal
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.pas`.
+    file: hello.pas
+    check:
+      type: files
+      path: hello.pas
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)^\s*program\s+\w+\s*;'
+            say: 'In `hello.pas` fehlt die erste Zeile, `program HelloWorld;`, mit dem Semikolon am Ende.'
+          - pattern: '(?i)^\s*writeln\s*\(\s*''Hello, World!''\s*\)'
+            say: 'In `hello.pas` finde ich noch kein `WriteLn(''Hello, World!'')`. Pascal schreibt Texte in einfache Anführungszeichen.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.pas`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.pas` eingegeben, mit `.pas` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.pas` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Übersetzt
+    prompt: |
+      Übersetze `hello.pas` mit `fpc`, sodass in `/workspace` das ausführbare
+      Programm `hello` liegt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch kein Programm `hello`. Im Terminal, im Ordner `/workspace`: `fpc hello.pas`. Meldet `fpc` einen Fehler, steht kein Programm da.'
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Lösche es mit `rm hello` und übersetze noch einmal mit `fpc hello.pas`.'
+    hint:
+      - '`ls -l` zeigt, welche Dateien in `/workspace` liegen. Ein übersetztes Programm ist grün.'
+      - '`fpc` nennt das Programm wie die Datei, nur ohne `.pas`. Aus `hello.pas` wird `hello`.'
+    solution: |
+      `fpc hello.pas` übersetzt den Quelltext und schreibt das Programm in die
+      Datei `hello`, daneben eine Objektdatei `hello.o`. `hello` ist ein
+      Programm im Format ELF, das Linux direkt ausführt: `./hello`.
+
+  - id: fehler
+    title: Die Fehlermeldung
+    prompt: |
+      Was meldet `fpc` für `WritLn`? Gib den Text hinter `Error:` ein, ohne den
+      Namen in Anführungszeichen.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(error\W*)?identifier\s+not\s+found\b'
+    feedback:
+      - when: { matches: '(?i)^\W*writl?n\W*$' }
+        say: '`WritLn` ist das Wort, über das `fpc` stolpert. Gesucht ist, was es darüber sagt: der Text hinter `Error:`.'
+      - when: { matches: '(?i)fatal' }
+        say: 'Die Zeile mit `Fatal` sagt nur, dass `fpc` aufgibt. Der Grund steht eine Zeile darüber, hinter `Error:`.'
+    hint: 'Die Zeile mit dem Fehler beginnt mit dem Dateinamen und zwei Zahlen in Klammern, `hello.pas(4,5)`: Zeile 4, Zeichen 5.'
+    solution: |
+      `Identifier not found`: `fpc` kennt keinen Namen `WritLn`. Davor stehen
+      die Datei, die Zeile und das Zeichen: `hello.pas(4,5)`.
+
+  - id: ueberlauf
+    title: Hunderttausend
+    prediction: true
+    prompt: |
+      Was gibt `factor` aus, wenn du `100000` eingibst? Überleg erst, dann
+      probier es aus. Schau dir dazu die Zeile `number, i: integer;` an.
+    check:
+      type: choice
+      options:
+        - '`Factors of -31072:` und keine Faktoren.'
+        - '`Factors of 100000: 2 2 2 2 2 5 5 5 5 5`'
+        - 'Eine Fehlermeldung: Die Zahl passt nicht in eine `integer`-Variable.'
+        - 'Nichts: Das Programm wartet weiter auf eine Eingabe.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Probier es aus. In Free Pascal hat `integer` nur 16 Bit. Wie groß darf die Zahl darin höchstens sein?'
+      - when: { picked: 2 }
+        say: 'So macht es Fortran. Probier aus, was Pascal tut: Es meldet nichts.'
+    solution: |
+      `Factors of -31072:` und keine Faktoren. `integer` hat in Free Pascal
+      16 Bit und reicht von -32768 bis 32767. Bei 100000 läuft der Wert über
+      und beginnt von vorn, im negativen Bereich; die Schleife `for i := 2 to
+      number` läuft dann kein einziges Mal.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.pas` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.pas
+    check:
+      type: files
+      path: bubblesort.pas
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)if\s+arr\s*\[\s*j\s*\]\s*<=?\s*arr\s*\[\s*j\s*\+\s*1\s*\]|if\s+arr\s*\[\s*j\s*\+\s*1\s*\]\s*>=?\s*arr\s*\[\s*j\s*\]'
+            say: 'In `bubblesort.pas` vergleicht das Programm noch wie vorher: Zwei Zahlen werden vertauscht, wenn die vordere größer ist. Wann sollen sie jetzt vertauscht werden?'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.pas`. Speichere das Programm unter diesem Namen.
+    hint:
+      - Zwei benachbarte Zahlen werden in der Zeile mit `if` vertauscht. Unter welcher Bedingung?
+      - Für absteigend wird vertauscht, wenn die vordere Zahl kleiner ist als die hintere.
+    solution: |
+      In der Zeile mit `if` wird aus `>` ein `<`:
+      `if arr[j] < arr[j + 1] then begin`. Jetzt wandert in jedem Durchlauf
+      die kleinste Zahl nach hinten.

@@ -177,6 +177,10 @@ gfortran hello.f90 -o hello && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(hallo)
+
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
@@ -197,7 +201,11 @@ gfortran hello.f90 -o hello
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -212,6 +220,8 @@ crop-terminal-lines: auto
 <img class='full' src='error.webp' alt='gfortran zeigt Zeile 2 von hello.f90 mit prin *, "Hello, World!", markiert die Stelle und meldet Error: Unclassifiable statement at (1).'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ## Primfaktorzerlegung
 
@@ -245,9 +255,17 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(ueberlauf)
+
+<!-- after: ueberlauf -->
+
+Das Programm bricht schon beim Einlesen ab: `Integer overflow while reading item 1`. Eine `integer`-Variable hat in `gfortran` 32 Bit und reicht nur bis 2147483647.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was passiert, und was könnte der Grund dafür sein? Schau dir dazu die Zeile <code>integer :: n, i</code> an.
+<strong>Ausprobieren:</strong> Ändere die Zeile zu <code>integer(kind=8) :: n, i</code>, übersetze neu und gib <code>3000000000</code> noch einmal ein. Mit 64 Bit passt die Zahl hinein, und das Programm gibt ihre Faktoren aus. Warum ist es danach noch eine ganze Weile nicht fertig? Schau dir die Zeile <code>do i = 2, n</code> an. Mit <kbd>Strg</kbd><kbd>C</kbd> brichst du es ab.
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
@@ -281,12 +299,10 @@ crop-terminal-lines: auto
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.f90</code>, übersetze neu und starte das Programm:
-<ul>
-<li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Sortiere 100 Zahlen statt 10: Ändere <code>bubblesort.f90</code>, übersetze neu und starte das Programm. Warum musst du dafür nur eine einzige Zahl ändern?
 </div>
+
+_task(absteigend)
 
 ## Zusammenfassung
 

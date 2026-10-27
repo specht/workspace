@@ -1,0 +1,40 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: fortran
+examples:
+  hallo:
+    pass:
+      - files: { hello.f90: hello.f90 }
+      - files: { hello.f90: { text: "PROGRAM Hello\n  PRINT *, 'Hello, World!'\nEND PROGRAM Hello\n" } }
+    fail:
+      - files: { hello.f90: hello-error.f90 }
+        say: print *, "Hello, World!"
+      - files: { hello.f90: { text: "" } }
+      - files: { hallo.f90: hello.f90 }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\0compiled", executable: true } }
+    fail:
+      - files: { hello.f90: hello.f90 }
+        say: gfortran hello.f90 -o hello
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\0compiled" } }
+      - files: { hello: { from: hello.f90, executable: true } }
+        say: kein übersetztes Programm
+  fehler:
+    pass:
+      - answer: Unclassifiable statement
+      - answer: 'Error: Unclassifiable statement at (1)'
+      - answer: unclassifiable statement
+    fail:
+      - answer: prin
+        say: der Text hinter
+      - answer: Error
+      - answer: Syntax error
+  absteigend:
+    pass:
+      - files: { bubblesort.f90: { text: "      if (array(j) < array(j+1)) then\n" } }
+      - files: { bubblesort.f90: { text: "      IF (array(j+1) > array(j)) THEN\n" } }
+    fail:
+      - files: { bubblesort.f90: bubblesort.f90 }
+        say: vergleicht das Programm noch wie vorher
