@@ -2,23 +2,23 @@
   "screenshots": {
     "automatron-schloss.webp": {
       "environment_fingerprint": "b4e5c9cce846091190cc60946e042c07b5ce086a84a97c146e09f82e4026391d",
-      "output_sha256": "946f16cd3f723c8a3c11f74c58239486a2c3a70306ea9f6e23c703a15e1aab5c",
+      "output_sha256": "e3bf2078e7f54d4dd3910c896c427f7c8eb2bce8a26911e026c9e66baecca6c8",
       "state_hash": "7344f52da7b7ae72c2af5cfcca86fb35d78acd3f27b4c6f08510f1765b3041a9",
       "variants": {
-        "automatron-schloss-dark.webp": "db0a52d955721af0bbacda6d8d3e2f59ecca5d3280a7acbda3bad71974d69841"
+        "automatron-schloss-dark.webp": "4bc38d1361ccd799e1e1cfd580d5ec246a869036a816ffe52db6430ff1e0e26a"
       },
       "workspace_look": "4.140.0-ls368"
     },
     "drehkreuz-ruby.webp": {
       "environment_fingerprint": "b4e5c9cce846091190cc60946e042c07b5ce086a84a97c146e09f82e4026391d",
-      "output_sha256": "3bbf18cac9e8028e1027de97a45c9f6a79af017228c2821f0479018682d30794",
+      "output_sha256": "1c3f1ae2cc138ca827bf25b669a2e537406713e3012d513b5725cd8a6248b315",
       "state_hash": "736874d0cde146f1e9e93aa29129e86852cdbac207e06d310a94ead7c16fba39",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "drehkreuz.webp": {
       "environment_fingerprint": "b4e5c9cce846091190cc60946e042c07b5ce086a84a97c146e09f82e4026391d",
-      "output_sha256": "ec3b6c98688757eebd764656700595f08c37cbffe1e15620a0e002e9f316e9f3",
+      "output_sha256": "3e84a990f871b5aa2a5cf63be8937c00d9b9ffb0e6544f9798084635fc5e351e",
       "state_hash": "71322f6c1f59cd649cba3ddce5a4fd4d17390fe53e60323a0a1d5e4f685931ee",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
@@ -39,10 +39,10 @@
     },
     "teaser.webp": {
       "environment_fingerprint": "b4e5c9cce846091190cc60946e042c07b5ce086a84a97c146e09f82e4026391d",
-      "output_sha256": "f490a2239cab297620bb1a50b0a4e17d920696fd90b335e0ff40a95c80aa1014",
+      "output_sha256": "5558944fcef4d98eff67632d590c184f0322da30c12e61d883434796c7bfc37d",
       "state_hash": "55a14f234c9c465f104d5311199df5dc745bdbec56546c7a62caa0d44b6e439b",
       "variants": {
-        "teaser-dark.webp": "5fffb19e17a9e54d6fa438c8f1eed3a972c38355d5065bfd4060884fb66f0889"
+        "teaser-dark.webp": "579dc899bf6c6446b6e427441a2a813615e7421bb051c7811294f1d64a3a8adc"
       },
       "workspace_look": "4.140.0-ls368"
     },
