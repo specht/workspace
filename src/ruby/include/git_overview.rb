@@ -140,8 +140,8 @@ module GitOverview
     def self.personal_html(repos, id:, web_root: '')
         io = +''
         if repos.empty?
-            return io << "<p class='git-overview-empty'><i class='bi bi-journal-code' aria-hidden='true'></i>Noch keine; " \
-                'mit »Neues Repository« legst du eins an.</p>'
+            return io << "<p class='git-overview-empty'><i class='bi bi-journal-code' aria-hidden='true'></i>Noch keine eigenen Repositorys; " \
+                'mit »Neues Repository« legst du ein Repository an.</p>'
         end
 
         io << "<div class='git-overview-scroll'><table class='table git-overview git-overview-mine'><thead><tr><th>Repository</th><th>Adresse</th>" \
