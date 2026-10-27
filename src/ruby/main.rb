@@ -2197,9 +2197,10 @@ class Main < Sinatra::Base
                         meta = YAML.load(meta)
                         if meta['image']
                             parts = meta['image'].split(':')
-                            # name.webp:contain for a drawing: padded to 16:9 instead of cropped
+                            # name.webp:contain for a drawing: padded to 16:9 instead of cropped;
+                            # name.webp:contain:x:y also sets what a phone's narrower box keeps
                             contain = parts[1] == 'contain'
-                            parts = parts.first(1) if contain
+                            parts = [parts[0], *parts[2..]] if contain
                             convert = contain ? method(:convert_image_padded) : method(:convert_image)
                             image_path = File.join(File.dirname(path), parts[0])
                             if File.file?(image_path)
@@ -6890,8 +6891,14 @@ class Main < Sinatra::Base
                     end.empty?
                     # The icon next to the heading is decoration (alt='').
                     io.puts "<h2><div class='squircle'><img alt='' src='#{section[:icon]}'></div> #{section[:label]}</h2>"
+                    # short: in sections.yaml is the sentence a phone shows
+                    # instead of the description, so the cards come sooner.
                     if section[:description]
-                        io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
+                        if section[:short]
+                            io.puts "<p class='section-description'><span class='section-long'>#{section[:description]}</span><span class='section-short'>#{section[:short]}</span></p>"
+                        else
+                            io.puts "<p class='section-description'>#{section[:description]}</p>"
+                        end
                     end
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]

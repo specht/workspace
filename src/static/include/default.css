@@ -201,6 +201,27 @@ pre.code-pseudocode .o {
     color: #fe8019 !important;
 }
 
+/* The front page's section introductions: on a phone the short sentence
+   (short: in sections.yaml), from 768 px the description. */
+.section-description {
+    margin-top: -1em;
+    margin-bottom: 1em;
+}
+
+.section-description .section-short {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .section-description:has(.section-short) .section-long {
+        display: none;
+    }
+
+    .section-description .section-short {
+        display: inline;
+    }
+}
+
 /* ```ebnf blocks (Rouge::Lexers::EBNF): nonterminals blue, the name a rule
    defines bold, terminals yellow like every string, and the signs of the
    notation (= | { } [ ] ( )) orange, so that "(" in quotes, which lands in
@@ -5774,13 +5795,15 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 
-/* What an activity builds on, quietly at the foot of its card. */
+/* What an activity builds on, quietly at the foot of its card; the closing
+   »auf« does not stand alone on the last line. */
 .tutorial_card3 .card-content .card-requires {
     margin-top: 0.4em;
     color: #6b7680;
     font-size: 0.8rem;
     line-height: 1.3;
     hyphens: manual;
+    text-wrap: pretty;
 }
 
 .card-requires .bi {
@@ -5896,6 +5919,9 @@ html[data-bs-theme="dark"] .usage-row {
     font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    /* names of tools and languages (PIXELFLOW CANVAS, JAVASCRIPT): a narrow
+       card wraps them at a space or a slash, never inside the name */
+    hyphens: manual;
 }
 
 /* measure and command cards */
@@ -9719,6 +9745,10 @@ html[data-bs-theme="dark"] .bitplane-widget {
     }
     /* one set in the middle, its neighbours peeking in */
     .kata-set { flex-basis: 78%; }
+    /* the strip reaches the screen's edges: the arrows (a mouse on a narrow
+       window) stay inside it instead of widening the page */
+    .kata-scroll[data-dir='-1'] { left: 0.25em; }
+    .kata-scroll[data-dir='1'] { right: 0.25em; }
 }
 
 /* Katas handed in (KataHandIns, kata_hand_ins.js): the list on the class

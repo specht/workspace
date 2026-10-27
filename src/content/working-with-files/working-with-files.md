@@ -1,5 +1,5 @@
 <div class='meta'>
-image: working-with-files.webp
+image: working-with-files.webp:0:50
 image_alt: "Ein Terminal mit der Ausgabe von tree: zehn Dateien im Ordner working-with-files"
 kind: grundlagen
 duration: 3 Doppelstunden

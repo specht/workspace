@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:contain
+image: teaser.webp:contain:20:50
 image_alt: "Eine Diskette als Pixelbild in Blau und Grau, daneben jede Zeile als Lauflängen wie 3×1 und 9×3"
 kind: labor
 language: Ruby / Python

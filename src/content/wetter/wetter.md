@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:0:50
 image_alt: "Eine Wetter-App für Berlin: 12 Grad und bedeckt, darunter die Vorhersage für sieben Tage"
 kind: projekt
 language: Ruby / Python / JavaScript

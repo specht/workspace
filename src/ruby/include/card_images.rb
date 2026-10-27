@@ -29,11 +29,13 @@ module CardImages
     QUALITY = 82
     URL_PATTERN = %r{\A/cache/([0-9a-f]{16})\.webp\z}
 
-    # How wide a card's picture is shown (default.css, .hscol and
+    # How wide a card's picture is drawn (default.css, .hscol and
     # .tutorial_card3): a third of the row from 1200 px (at most 432 px, the
-    # widest container), half of it from 768 px, on a phone 36 % of the card
-    # beside its text.
-    CARD_SIZES = '(max-width: 767.98px) 36vw, (max-width: 1199.98px) 50vw, min(33vw, 432px)'
+    # widest container), half of it from 768 px. On a phone the box is 36 %
+    # of the card beside its text and about as tall as wide, and the 16:9
+    # picture covers it at full height: drawn about 1.6 times as wide as the
+    # box, 56vw, of which the box shows the part around the card's focus.
+    CARD_SIZES = '(max-width: 767.98px) 56vw, (max-width: 1199.98px) 50vw, min(33vw, 432px)'
     # The logos of the language tiles: two in a row below 576 px, else four.
     TILE_SIZES = '(max-width: 575.98px) 50vw, 25vw'
 

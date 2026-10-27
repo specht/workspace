@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:20:50
 image_alt: "Ein Abstimmungsergebnis als Balken: Pizza 5, Nudeln 2, Curry 4, Salat 1"
 kind: projekt
 language: Ruby / Python

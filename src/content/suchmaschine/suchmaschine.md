@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:0:50
 image_alt: "Eine Seite mit Suchergebnissen: im Suchfeld »katze«, darunter drei Treffer mit Titel, Adresse und dem Anfang ihres Textes, oben die Hauskatze mit 3 Links auf sie, dann der Hund mit 2, zuletzt orange die Anzeige »Katze Katze Katzenfutter« mit 1 Link, deren Text nur aus dem Wort Katze besteht."
 kind: projekt
 language: Ruby / Python

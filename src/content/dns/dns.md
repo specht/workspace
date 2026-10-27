@@ -1,5 +1,5 @@
 <div class='meta'>
-image: dns-tree.webp:contain
+image: dns-tree.webp:contain:15:50
 image_alt: "Ein Baum der Domainnamen: die Wurzel, darunter de, com und org, darunter hackschule, wikipedia und google"
 kind: labor
 duration: 1 Doppelstunde
