@@ -185,7 +185,9 @@
         return {
             pos: (s) => pos.get(s),
             edges: L.paths.map((p) => ({ from: p.e.from, to: p.e.to, label: p.e.label, d: move(p.d), path: (inset) => move(p.end(inset)),
-                lx: p.box.x + p.box.w / 2 + dx, ly: p.box.y + 12 + dy, key: `edge-${p.e.from}-${p.e.to}` })),
+                lx: p.box.x + p.box.w / 2 + dx, ly: p.box.y + 12 + dy, key: `edge-${p.e.from}-${p.e.to}`,
+                // a label along its arrow (AutomatonLayout): the line it stands on
+                along: p.label && p.label.type === 'curve' ? { d: move(p.label.d), at: p.label.at } : null })),
             width,
             height: TOP + vh,
         };
@@ -234,7 +236,13 @@
         eps.forEach(([f, t], i) => svg.appendChild(make('path', { 'data-key': `pulse-eps-${i}`, 'data-pulse': `edge-${f}-${t}`, 'data-delay': step.used.length ? 0.5 : 0, 'data-length': 0.5, 'data-swell': 2.5, d: 'M0 0', opacity: 0 })));
         // a wide invisible line on every arrow to point at (AutomatonLayout.hover)
         for (const e of geo.edges) svg.appendChild(make('path', { 'data-key': `pick-${e.key}`, 'data-edge': e.key, class: 'automaton-pick', d: e.d }));
-        for (const e of geo.edges) svg.appendChild(make('text', { 'data-key': `label-${e.key}`, 'data-edge': e.key, x: e.lx, y: e.ly, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400, text: e.label }));
+        for (const e of geo.edges) {
+            const look = { 'data-key': `label-${e.key}`, 'data-edge': e.key, 'text-anchor': 'middle', 'font-size': 13, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: used.has(e.key) ? 'var(--automaton-accent)' : 'var(--automaton-ink)', 'font-weight': used.has(e.key) ? 700 : 400 };
+            if (!e.along) { svg.appendChild(make('text', { ...look, x: e.lx, y: e.ly, text: e.label })); continue; }
+            const id = `${marker}-along-${e.key}`;
+            svg.appendChild(make('path', { 'data-key': `along-${e.key}`, id, d: e.along.d, fill: 'none', stroke: 'none' }));
+            svg.appendChild(make('text', look, [make('textPath', { href: `#${id}`, startOffset: e.along.at, 'text-anchor': 'middle', text: e.label })]));
+        }
         // the start: an arrow from the left
         const [sx, sy] = geo.pos(a.start);
         svg.appendChild(make('path', { 'data-key': 'start', d: `M${sx - R - 34} ${sy} L${sx - (step.states.includes(a.start) ? RING + 3.5 : R + 2)} ${sy}`, fill: 'none', stroke: 'var(--automaton-line)', 'stroke-width': 1.6, 'marker-end': `url(#${marker})` }));

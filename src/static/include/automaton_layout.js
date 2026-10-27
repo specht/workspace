@@ -430,7 +430,9 @@
         }
         if (!labels) return { score: badness(paths, pos) };
         // labels: outside their arrow (to its left), moved out until clear;
-        // else on the other side
+        // else on the other side; level, or along the arrows (curved, below),
+        // one kind for the whole drawing
+        const place = (curved) => {
         const placed = [];
         // each arrow's bounding box: an arrow far from a label is not
         // measured point by point
@@ -452,10 +454,104 @@
         const distance = (b, [px, py]) => Math.hypot(Math.max(b.x - px, 0, px - b.x - b.w), Math.max(b.y - py, 0, py - b.y - b.h));
         // side by side, two labels would read as one: more room sideways
         const overlap = (b, o) => !(b.x + b.w + 10 < o.x || o.x + o.w + 10 < b.x || b.y + b.h + 3 < o.y || o.y + o.h + 3 < b.y);
+        // A label of one line on an arrow between two states follows the
+        // arrow: its text runs along a line parallel to the curve, beside its
+        // middle part, in reading direction (left to right, never upside
+        // down), so that it can only be read as that arrow's. pts are the
+        // middle line of the text, a point per unit or so; mid is that line
+        // over the whole curve, base the line the letters stand on.
+        const curveLabel = (path, t, below, off, w, h) => {
+            const dir = (u) => { const a = path.at(Math.max(0, u - 0.004)); const b = path.at(Math.min(1, u + 0.004)); return [b[0] - a[0], b[1] - a[1]]; };
+            const flip = dir(t)[0] < 0;
+            const N = 160;
+            const k = (below ? 1 : -1) * (off + h / 2);
+            const mid = [];
+            const base = [];
+            for (let i = 0; i <= N; i++) {
+                const u = flip ? 1 - i / N : i / N;
+                let [dx, dy] = dir(u);
+                if (flip) { dx = -dx; dy = -dy; }
+                const l = Math.hypot(dx, dy) || 1;
+                const down = [-dy / l, dx / l];
+                const p = path.at(u);
+                mid.push([p[0] + down[0] * k, p[1] + down[1] * k]);
+                // the letters' middle is 4.5 units above their baseline
+                base.push([p[0] + down[0] * (k + 4.5), p[1] + down[1] * (k + 4.5)]);
+            }
+            const length = (line) => { const acc = [0]; for (let i = 1; i < line.length; i++) acc.push(acc[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1])); return acc; };
+            const accMid = length(mid);
+            const accBase = length(base);
+            const i = Math.round((flip ? 1 - t : t) * N);
+            const centre = accMid[i];
+            // room for the whole text, clear of both ends
+            if (centre - w / 2 < 10 || centre + w / 2 > accMid[N] - 10) return null;
+            const pts = mid.filter((_, j) => accMid[j] >= centre - w / 2 + h / 2 - 2 && accMid[j] <= centre + w / 2 - h / 2 + 2);
+            if (!pts.length) return null;
+            const d = `M${base.map((p) => `${Math.round(p[0] * 10) / 10} ${Math.round(p[1] * 10) / 10}`).join(' L')}`;
+            // how steep the text stands there: 0 level, 1 upright
+            const [sx, sy] = dir(t);
+            const steep = Math.abs(sy) / (Math.hypot(sx, sy) || 1);
+            return { type: 'curve', pts, r: h / 2, d, at: Math.round(accBase[i] * 10) / 10, steep };
+        };
+        // a label as circles: the points of its middle line, each with the
+        // half height of the text around it (a box: a grid of them)
+        const boxCircles = (b) => {
+            const r = 7.5;
+            const pts = [];
+            for (let y = b.y + r; y <= b.y + b.h - r + 0.01; y += Math.max(1, Math.min(4, b.h - 2 * r || 4))) {
+                for (let x = b.x + r; x <= b.x + b.w - r + 0.01; x += 4) pts.push([x, y]);
+                if (b.h - 2 * r < 1) break;
+            }
+            return { pts: pts.length ? pts : [[b.x + b.w / 2, b.y + b.h / 2]], r };
+        };
+        const placedCircles = [];
+        const clearOf = (c, other, room) => c.pts.every((p) => other.pts.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= c.r + other.r + room));
+        const boundsOfCircles = (c) => {
+            const xs = c.pts.map((p) => p[0]);
+            const ys = c.pts.map((p) => p[1]);
+            return { x: Math.min(...xs) - c.r, y: Math.min(...ys) - c.r, w: Math.max(...xs) - Math.min(...xs) + 2 * c.r, h: Math.max(...ys) - Math.min(...ys) + 2 * c.r };
+        };
+        // the nearest point of a curve to a label, less the label's half height
+        const reach = (c, pts) => {
+            let least = Infinity;
+            for (const p of c.pts) for (const q of pts) least = Math.min(least, Math.hypot(p[0] - q[0], p[1] - q[1]));
+            return least - c.r;
+        };
         // a label stays at its own arrow: somewhere along its middle part,
         // at most 25 units out; where nothing is clear, at its middle
         for (const path of paths) {
             const { w, h } = labelSize(path.e.label);
+            // a single symbol stays upright: turned, an a or a b is hard to
+            // read and gains nothing
+            if (curved && !path.loop && !String(path.e.label).includes('\n') && [...String(path.e.label)].length > 1) {
+                let found = null;
+                let value = -Infinity;
+                for (const below of [false, true]) {
+                    for (const t of [0.5, 0.44, 0.56, 0.38, 0.62, 0.32, 0.68, 0.26, 0.74]) {
+                        for (let off = 5; off <= 17; off += 3) {
+                            const c = curveLabel(path, t, below, off, w, h);
+                            if (!c) continue;
+                            const mine = reach(c, path.own);
+                            const others = Math.min(Infinity, ...paths.filter((o) => o !== path && gap(boundsOfCircles(c), o.bounds) < 60).map((o) => reach(c, o.own)));
+                            const states = Math.min(...[...pos.values()].map((o) => reach(c, [o]) - R - ring));
+                            const ok = mine >= 1 && others >= Math.max(4, mine + 6) && states >= 4 && placedCircles.every((o) => clearOf(c, o, 3));
+                            // the least ambiguous of the clear places: far from
+                            // other arrows, near the middle, close to its own
+                            // line, above it rather than below, and where the
+                            // arrow is less steep (upright text reads slowly)
+                            const v = Math.min(others - mine, 40) - Math.abs(t - 0.5) * 8 - off * 0.3 - (below ? 1 : 0) - c.steep * 14;
+                            if (ok && v > value) { value = v; found = c; }
+                        }
+                    }
+                }
+                if (found) {
+                    path.label = found;
+                    path.box = boundsOfCircles(found);
+                    placedCircles.push(found);
+                    placed.push(path.box);
+                    continue;
+                }
+            }
             let best = null;
             let margin = -Infinity;
             const ts = path.loop ? [0.5] : [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74];
@@ -497,17 +593,37 @@
             }
             placed.push(best);
             path.box = best;
+            path.label = { type: 'box', ...boxCircles(best) };
+            placedCircles.push(path.label);
+        }
+        // labels a reader could take for another arrow's
+        let ambiguous = 0;
+        for (const path of paths) {
+            if (path.label.type === 'curve') {
+                const mine = reach(path.label, path.own);
+                const others = Math.min(Infinity, ...paths.filter((o) => o !== path).map((o) => reach(path.label, o.own)));
+                if (others < mine + 6) ambiguous++;
+                continue;
+            }
+            const mine = Math.min(...path.own.map((pt) => distance(path.box, pt)));
+            if (nearestOther(path, path.box, mine + 12) < mine + 10) ambiguous++;
+        }
+        return { placed, ambiguous };
+        };
+        // two states (a Drehkreuz) read well with level labels; from three on,
+        // labels between two arrows are easily taken for the other's, also
+        // where they are clearly nearer their own: along the arrows, unless
+        // that leaves more labels unclear
+        let { placed, ambiguous } = place(false);
+        if (pos.size > 2 && paths.some((path) => !path.loop && !String(path.e.label).includes('\n') && [...String(path.e.label)].length > 1)) {
+            const along = place(true);
+            if (along.ambiguous <= ambiguous) ({ placed, ambiguous } = along);
+            else ({ placed, ambiguous } = place(false));
         }
         // the whole picture
         const xs = [...[...pos.values()].map((p) => p[0] - R - 44), ...[...pos.values()].map((p) => p[0] + R + 6), ...points.map((p) => p[0]), ...placed.flatMap((b) => [b.x, b.x + b.w])];
         const ys = [...[...pos.values()].flatMap((p) => [p[1] - R - 6, p[1] + R + 6]), ...points.map((p) => p[1]), ...placed.flatMap((b) => [b.y, b.y + b.h])];
         const view = [Math.min(...xs) - 8, Math.min(...ys) - 8, Math.max(...xs) - Math.min(...xs) + 16, Math.max(...ys) - Math.min(...ys) + 16];
-        // labels a reader could take for another arrow's
-        let ambiguous = 0;
-        for (const path of paths) {
-            const mine = Math.min(...path.own.map((pt) => distance(path.box, pt)));
-            if (nearestOther(path, path.box, mine + 12) < mine + 10) ambiguous++;
-        }
         return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states, score: badness(paths, pos), ambiguous };
     }
 
@@ -567,7 +683,15 @@
         const lines = (p) => String(p.e.label).split('\n');
         const labelX = (p) => Math.round(lines(p).length > 1 ? p.box.x + 2 : p.box.x + p.box.w / 2);
         const tspans = (p) => lines(p).map((l, i) => (i ? `<tspan x="${labelX(p)}" dy="15">${esc(l)}</tspan>` : esc(l))).join('');
-        for (const p of L.paths) parts.push(`<text x="${labelX(p)}" y="${Math.round(p.box.y + 12)}" text-anchor="${lines(p).length > 1 ? 'start' : 'middle'}" font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}">${tspans(p)}</text>`);
+        // a label along its arrow: the text on a line parallel to the curve
+        L.paths.forEach((p, i) => {
+            if (p.label && p.label.type === 'curve') {
+                parts.push(`<path id="${head}-label-${i}" d="${p.label.d}" fill="none" stroke="none"/>`);
+                parts.push(`<text font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}"><textPath href="#${head}-label-${i}" startOffset="${p.label.at}" text-anchor="middle">${esc(p.e.label)}</textPath></text>`);
+            } else {
+                parts.push(`<text x="${labelX(p)}" y="${Math.round(p.box.y + 12)}" text-anchor="${lines(p).length > 1 ? 'start' : 'middle'}" font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}">${tspans(p)}</text>`);
+            }
+        });
         const [sx, sy] = L.pos.get(L.start);
         parts.push(`<path d="M${sx - R - 36} ${sy} L${sx - R - 2} ${sy}" class="automaton-arrow" marker-end="url(#${head})"/>`);
         for (const s of L.states) {
