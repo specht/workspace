@@ -140,6 +140,8 @@ if [ -n "${CHECK_ONLY:-}" ]; then
 else
     remote "mkdir -p '$remote_dir'"
 fi
+remote "test -w '$remote_dir'" ||
+    fail "$remote_dir on $host is not writable for the SSH user; take a directory of your own there, for example: ssh $host 'sudo mkdir -p $remote_dir/image-upload && sudo chown \$(id -un) $remote_dir/image-upload', then $remote_dir/image-upload as REMOTE_DIR."
 have="$(remote "df -Pk '$remote_dir' | awk 'NR == 2 { print \$4 * 1024 }'")"
 partial="$(remote "stat -c %s '$remote_dir/$name' 2>/dev/null || echo 0")"
 [ "$have" -ge $((file_bytes - partial)) ] ||
