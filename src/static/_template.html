@@ -1206,23 +1206,23 @@ window.addEventListener('load', function() {
         Die Verbindung zum Server wurde unterbrochen. Bitte lade die Seite neu.
     </div>
     <script>
-        // »Baut auf … auf« on a card (StudentHome.card_requires): a title
-        // leads to its activity, not to the card's; a middle click or
-        // Ctrl opens it in a new tab, as a link would
-        document.addEventListener('click', function (event) {
+        // »Baut auf … auf« on a card (StudentHome.card_requires): while the
+        // pointer is on a title, the card's link is that activity's, so that
+        // the status bar, a click, Ctrl, a middle click and »Link kopieren«
+        // all lead there; leaving the title gives the card its own back
+        document.addEventListener('pointerover', function (event) {
             const title = event.target.closest && event.target.closest('.card-requires-title[data-href]');
-            if (!title) return;
-            event.preventDefault();
-            event.stopPropagation();
-            if (event.ctrlKey || event.metaKey) window.open(title.dataset.href, '_blank');
-            else location.href = title.dataset.href;
-        }, true);
-        document.addEventListener('auxclick', function (event) {
-            const title = event.button === 1 && event.target.closest && event.target.closest('.card-requires-title[data-href]');
-            if (!title) return;
-            event.preventDefault();
-            window.open(title.dataset.href, '_blank');
-        }, true);
+            const card = title && title.closest('a[href]');
+            if (!card) return;
+            if (!card.dataset.ownHref) card.dataset.ownHref = card.getAttribute('href');
+            card.setAttribute('href', title.dataset.href);
+        });
+        document.addEventListener('pointerout', function (event) {
+            const title = event.target.closest && event.target.closest('.card-requires-title[data-href]');
+            const card = title && title.closest('a[href]');
+            if (!card || !card.dataset.ownHref || (event.relatedTarget && title.contains(event.relatedTarget))) return;
+            card.setAttribute('href', card.dataset.ownHref);
+        });
     </script>
 </body>
 </html>

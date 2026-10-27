@@ -224,7 +224,7 @@ module StudentHome
     # The line at the foot of a catalog card: what the activity builds on.
     # required: [slug, title] of the required activities (PageKinds.requires_of).
     # The card is a link, and a link holds no other: each title is a span
-    # that leads to its activity on a click (default.css, the listener in _template.html);
+    # that makes the card lead to its activity while the pointer is on it (the listener in _template.html);
     # the keyboard reaches those activities by their own cards.
     def self.card_requires(required)
         return '' if required.empty?
