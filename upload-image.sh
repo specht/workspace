@@ -42,6 +42,9 @@
 # installed (here, on the server) compressing and loading show a progress
 # bar.
 set -euo pipefail
+# The whole script is one block: bash reads it completely before running
+# it, so that editing the file during a run cannot break that run.
+{
 cd "$(dirname "$0")"
 
 host="${1:-}"
@@ -117,6 +120,7 @@ if [ -s "$file" ] && zstd -q -t "$file" 2>/dev/null; then
     ok "Already compressed: $file"
 else
     shown "docker save $image | zstd -T0 -$level -o $file.part"
+    info 'docker save gathers the layers first: for a minute or two nothing moves'
     if [ -n "$have_pv" ]; then
         docker save "$image" | pv -s "$unpacked_bytes" -N packing -pterab | zstd -T0 -"$level" -q -o "$file.part"
     else
@@ -258,3 +262,5 @@ remote "rm -f '$marker'"
 finish_step
 printf '\n%s%sDone%s in %s: %s (%s) is on %s; new Workspaces start with it.\n' \
     "$bold" "$green" "$reset" "$(duration "$SECONDS")" "$image" "$short" "$host"
+exit 0
+}
