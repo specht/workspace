@@ -24,6 +24,7 @@ levels:
     id: sek-i
     source: Rahmenlehrplan Teil C Informatik, Wahlpflichtfach, Jahrgangsstufen 7–10, Berlin und Brandenburg (2015)
     url: https://bildungsserver.berlin-brandenburg.de/rlp-online/c-faecher/informatik/themen-und-inhalte
+    pdf: https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/Rahmenlehrplanprojekt/amtliche_Fassung/Teil_C_Informatik_2015_11_10.pdf
     groups:
       Pflichtthemenfelder:
         - Standardsoftware
@@ -42,8 +43,13 @@ levels:
     id: oberstufe
     source: Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin
     url: https://www.berlin.de/sen/bildung/unterricht/faecher-rahmenlehrplaene/rahmenlehrplaene/oberstufe/
+    pdf: https://www.berlin.de/sen/bildung/unterricht/faecher-rahmenlehrplaene/rahmenlehrplaene/rahmenlehrplan-informatik-go-teil-c.pdf
     # Die Kurshalbjahre haben Berlin und Brandenburg gemeinsam erarbeitet;
     # die Einführungsphase ist die Berliner. Noch nicht geprüft.
+    url_for:
+      brandenburg: https://bildungsserver.berlin-brandenburg.de/curricula-gost-bb
+    pdf_for:
+      brandenburg: https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/gymnasiale_oberstufe/curricula/2022/Teil_C_RLP_GOST_2022_Informatik.pdf
     source_for:
       brandenburg: >-
         Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik: die Kurshalbjahre gemeinsam mit Brandenburg,

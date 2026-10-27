@@ -82,9 +82,14 @@ hat:
 
 | Stufe | Plan | Stand |
 | --- | --- | --- |
-| Klasse 7 | [Bildungsplan 2016, Aufbaukurs Informatik](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/SEK1/INF7) | gilt für Klasse 7, bis das neue Pflichtfach »Informatik und Medienbildung« (Klassen 5 bis 11, seit 2025/26 von Klasse 5 an eingeführt) einen eigenen Bildungsplan hat |
-| Klassen 8–10 | [Bildungsplan 2016, Profilfach IMP, Teil Informatik](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/IMP) | läuft aus; der Nachfolger NIT (Naturwissenschaft, Informatik und Technik) hat noch keinen Bildungsplan |
-| Kursstufe | [Bildungsplan 2016, Informatik (Schulversuch), Versuchsfassung 2020](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/INF) | Basisfach und Leistungsfach; die Teilkompetenzen nur des Leistungsfachs sind markiert |
+| Klasse 7 | [Bildungsplan 2016, Aufbaukurs Informatik](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/SEK1/INF7), [PDF](https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/4615778/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen) | gilt für Klasse 7, bis das neue Pflichtfach »Informatik und Medienbildung« (Klassen 5 bis 11, seit 2025/26 von Klasse 5 an eingeführt) einen eigenen Bildungsplan hat |
+| Klassen 8–10 | [Bildungsplan 2016, Profilfach IMP, Teil Informatik](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/IMP), [PDF](https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/4590964/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen) | läuft aus; der Nachfolger NIT (Naturwissenschaft, Informatik und Technik) hat noch keinen Bildungsplan |
+| Kursstufe | [Bildungsplan 2016, Informatik (Schulversuch), Versuchsfassung 2020](https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/INF), [PDF](https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/5101992/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen) | Basisfach und Leistungsfach; die Teilkompetenzen nur des Leistungsfachs sind markiert |
+
+Die PDFs erzeugt bildungsplaene-bw.de beim Aufruf; die Nummer im Link bleibt
+dieselbe (geprüft am 27. Oktober 2026). Eine Ebene bekommt ihr PDF unter `pdf:`,
+einzelne Länder einer Datei ihr eigenes unter `pdf_for:` (und ihre Seite unter `url_for:`); `/lehrplan` zeigt es
+neben der Quelle jeder Stufe.
 
 Weitere Quellen: das Kultusministerium zum neuen Fach
 ([Informatik und Medienbildung](https://km.baden-wuerttemberg.de/de/schule/schulartuebergreifend/mint/schule-und-unterricht/informatik-und-medienbildung)),

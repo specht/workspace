@@ -23,6 +23,7 @@ levels:
       Bildungsplan 2016, Aufbaukurs Informatik (Klasse 7); bis zum Bildungsplan des neuen Pflichtfachs
       »Informatik und Medienbildung« gilt er für Klasse 7 weiter
     url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/SEK1/INF7
+    pdf: 'https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/4615778/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen'
     # für wen eine Aktivität sein darf, um hier zu stehen (age: und die
     # Berliner Zeile, CurriculumGraph::AGES): Sek I, Sek I und Oberstufe
     ages: [0, 1]
@@ -39,6 +40,7 @@ levels:
       Bildungsplan 2016, Gymnasium, Profilfach Informatik, Mathematik, Physik (IMP), Teil Informatik; läuft aus,
       sein Nachfolger NIT (Naturwissenschaft, Informatik und Technik) hat noch keinen eigenen Bildungsplan
     url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/IMP
+    pdf: 'https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/4590964/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen'
     ages: [0, 1]
     groups:
       Inhaltsbezogene Kompetenzen Informatik:
@@ -51,6 +53,7 @@ levels:
     id: kursstufe
     source: Bildungsplan 2016, Gymnasium, Informatik (Schulversuch), Versuchsfassung 2020, Klassen 11/12
     url: https://www.bildungsplaene-bw.de/,Lde/LS/BP2016BW/ALLG/GYM/INF
+    pdf: 'https://www.bildungsplaene-bw.de/site/bildungsplan-rebrush2024/bpExport/5101992/Lde/index.html?_page=0&requestMode=PDF&_finish=Erstellen'
     ages: [1, 2]
     groups:
       Daten und Codierung:

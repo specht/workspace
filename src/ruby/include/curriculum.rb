@@ -53,6 +53,8 @@ module Curriculum
             {
                 :level => l['level'].to_s, :title => l['title'].to_s, :id => l['id'].to_s,
                 :source => l['source'].to_s, :url => l['url'], :source_for => l['source_for'] || {},
+                # the plan itself as a PDF, for a state that has its own (pdf_for)
+                :pdf => l['pdf'], :pdf_for => l['pdf_for'] || {}, :url_for => l['url_for'] || {},
                 :ages => Array(l['ages'] || [0, 1, 2]).map(&:to_i),
                 :groups => (l['groups'] || {}).map { |group, names| [group.to_s, Array(names).map(&:to_s)] },
             }

@@ -39,8 +39,14 @@ module CurriculumOverview
         html = +''
         plan[:levels].each do |l|
             source = l[:source_for][state.to_s] || l[:source]
+            pdf = l[:pdf_for][state.to_s] || l[:pdf]
+            url = l[:url_for][state.to_s] || l[:url]
+            # the plan to read: its PDF, and the page it comes from
+            links = []
+            links << "<a href='#{h(pdf)}' target='_blank' rel='noopener'><i class='bi bi-file-earmark-pdf' aria-hidden='true'></i> Lehrplan als PDF</a>" if pdf
+            links << "<a href='#{h(url)}' target='_blank' rel='noopener'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i> Seite des Landes</a>" if url
             html << "<h2 id='#{l[:id]}'>#{h(l[:title])}</h2>\n"
-            html << "<p class='lp-source'>#{h(source)}</p>\n"
+            html << "<p class='lp-source'>#{h(source)}#{links.empty? ? '' : " · #{links.join(' · ')}"}</p>\n"
             l[:groups].each do |group, names|
                 html << "<p class='lp-group'>#{h(group)}</p>\n"
                 names.each do |name|

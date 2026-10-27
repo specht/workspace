@@ -95,8 +95,8 @@ hat. Ein neuer Name kommt in die Datei und in die Tabellen unten.
 
 ## Sekundarstufe I
 
-Rahmenlehrplan Teil C Informatik, Wahlpflichtfach, Jahrgangsstufen 7–10,
-Berlin und Brandenburg (2015). Fünf Pflichtthemenfelder und fünf
+[Rahmenlehrplan Teil C Informatik](https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/Rahmenlehrplanprojekt/amtliche_Fassung/Teil_C_Informatik_2015_11_10.pdf)
+(PDF), Wahlpflichtfach, Jahrgangsstufen 7–10, Berlin und Brandenburg (2015). Fünf Pflichtthemenfelder und fünf
 Wahlthemenfelder; in Berlin ist das Wahlthemenfeld Datenbanken verpflichtend.
 Die Inhalte jedes Themenfelds, für die Einzelheiten:
 
@@ -115,9 +115,12 @@ Die Inhalte jedes Themenfelds, für die Einzelheiten:
 
 ## Oberstufe
 
-Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin
-(Einführungsphase überarbeitet 2010; Kapitel 1 ersetzt durch die Teile A und B
-von 2021).
+[Rahmenlehrplan für die gymnasiale Oberstufe, Teil C Informatik, Berlin](https://www.berlin.de/sen/bildung/unterricht/faecher-rahmenlehrplaene/rahmenlehrplaene/rahmenlehrplan-informatik-go-teil-c.pdf)
+(PDF; Einführungsphase überarbeitet 2010; Kapitel 1 ersetzt durch die Teile A und B
+von 2021). Brandenburg hat eine eigene Fassung:
+[Teil C Informatik, RLP GOST 2022](https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/gymnasiale_oberstufe/curricula/2022/Teil_C_RLP_GOST_2022_Informatik.pdf)
+(PDF). Die PDFs stehen auch in `src/content/curricula/` (`pdf:`) und auf
+`/lehrplan` neben jeder Stufe.
 
 | Name | Woher | Inhalte |
 | --- | --- | --- |

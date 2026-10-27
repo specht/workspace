@@ -52,4 +52,20 @@ class CurriculumOverviewTest < Minitest::Test
         assert_includes brandenburg, 'gemeinsam mit Brandenburg'
         refute_includes html(), 'gemeinsam mit Brandenburg'
     end
+
+    # Every level links its plan as a PDF and the state's page; Brandenburg's
+    # Oberstufe has a plan of its own, Berlin's teachers see Berlin's
+    def test_the_plans_to_read
+        berlin = html()
+        assert_includes berlin, 'rahmenlehrplan-informatik-go-teil-c.pdf'
+        assert_includes berlin, 'Teil_C_Informatik_2015_11_10.pdf'
+        refute_includes berlin, 'RLP_GOST_2022_Informatik.pdf'
+        brandenburg = CurriculumOverview.html({}, [], :state => 'brandenburg')
+        assert_includes brandenburg, 'Teil_C_RLP_GOST_2022_Informatik.pdf'
+        assert_includes brandenburg, 'curricula-gost-bb'
+        refute_includes brandenburg, 'rahmenlehrplan-informatik-go-teil-c.pdf'
+        Curriculum.plans.each do |plan|
+            plan[:levels].each { |l| assert l[:pdf], "#{plan[:key]} #{l[:id]}: no pdf:" }
+        end
+    end
 end
