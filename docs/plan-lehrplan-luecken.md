@@ -122,6 +122,46 @@ What it needs, in this order (state on 27 October 2026 after each):
    objektorientierte Modellierung, objektorientierte Programmierung; Sek I:
    Algorithmisches Problemlösen (Grundlagen der Objektorientierung)).
 
+### Outline of the page (draft, to be agreed)
+
+Slug `bibliothek`, title »Klassen entwerfen: eine Bibliothek«, kind
+`projekt`, languages `[ruby, python, javascript, dart, java]`, about three
+Doppelstunden. No starter repository: students make a folder `bibliothek`
+with a `.classes` file and their code (one file, in Java one file per
+class). Each chapter goes from the story to the diagram to the code, each
+step checked:
+
+1. **Die Geschichte.** A short text about a school library: books with title
+   and author, members who borrow, at most three books at a time, loans for
+   four weeks, DVDs for one. Students mark nouns and verbs; a choice task:
+   which nouns become classes (Book, Member), which are attributes (title,
+   author), which are not part of the program at all (the shelf).
+2. **Die erste Klasse.** `class Book` with `title` and `author` in the
+   diagram (check `classes`), then in code: the class with a constructor
+   and getters (checks per language: `new Book("Faust", "Goethe").getTitle()`).
+   Why private attributes and public methods (encapsulation), said briefly.
+3. **Zustand und Verhalten.** `lend()`, `giveBack()`, `isAvailable()`: an
+   object remembers. A prediction first (»Was ergibt `isAvailable()` nach
+   `lend()`, `lend()`, `giveBack()`?«), then the code, checked in steps
+   (`b = Book(…); b.lend(); b.isAvailable()`). »Jetzt bist du dran«: what
+   happens when a lent book is lent again.
+4. **Mitglieder: eine Assoziation.** `Member` with `borrow(book)` and the
+   books borrowed; the association `Member 1 -- 0..* Book` with its
+   multiplicities in the diagram; in code a list in the member. The rule
+   »at most three« as `borrow` returning false. Checks over several
+   objects.
+5. **Vererbung.** Books and DVDs: `Medium (abstract)` with what both share,
+   `Book` and `Dvd extends Medium`; `loanDays()` differs (28, 7) and is
+   overridden. Diagram first, then the code; a prediction about which
+   `loanDays()` runs for a `Medium` that is a `Dvd`.
+6. **Wie geht es weiter?** Reservations, fees, a `Library` class holding
+   everything; the same design in another of the five languages; »Katas:
+   Objekte« once it exists.
+
+A person box: Alan Kay (Smalltalk, »object-oriented«) or Kristen Nygaard
+and Ole-Johan Dahl (Simula, the first classes). Handbuch: a page on
+the Klassen-Werkstatt's language like `er-modelle`.
+
 ## Java and Dart for Katas later
 
 Measured on 27 October 2026 in the Workspace image (OpenJDK 25.0.4, Dart
