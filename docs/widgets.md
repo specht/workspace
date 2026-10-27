@@ -407,6 +407,23 @@ only to look nice.
   widget at the top of »Kellerautomaten« and »Turingmaschinen«, whose word
   a task must not come from. The engine (`machine`, `trace`) runs without a
   page: `test/static/automaton_stepper.test.cjs`.
+- **Circuits** (`logic_circuit.js`, »Vom Gatter zum Rechenwerk«): no step
+  buttons, the reader switches the inputs (a click, a tap, Enter or the
+  space bar; on a narrow screen also as buttons of 44 px under the drawing,
+  and the labels grow up to 1.3). Gates as in DIN EN 60617 (rectangles with
+  `&`, `≥1`, `=1`, `1`, a circle where the output is negated), as German
+  school books draw them; a wire with a 1 in Cling amber (`#c98500`, dark
+  `#f0a000`, the yellow of /lehrplan), with a 0 grey and thinner; buses
+  (four bits on one line) thick, their value written over them; control
+  lines dashed; a dot where a wire branches, none where wires only cross.
+  A change runs round by round (every gate computes from the values before,
+  all at once, 110 ms a round), so that a carry is seen running through the
+  adder; the RS flip-flop holds its bit by the same rounds, and one that
+  does not come to rest within 64 rounds says so after 12 shown. Beside a
+  circuit without memory its truth table, the current row purple; a row
+  sets the inputs. The circuits are a library in the script, laid out by
+  hand; the engine runs without a page (`test/static/logic_circuit.test.cjs`,
+  among others every ALU result against the flags of the CPU Sandbox).
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.
