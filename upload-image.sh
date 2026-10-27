@@ -7,33 +7,40 @@
 #   ./upload-image.sh HOST [REMOTE_DIR]
 #
 # HOST is an SSH host (an entry in ~/.ssh/config or user@host). REMOTE_DIR is
-# where the compressed file lands on the server (default: the home directory
-# there); put it on a disk with room, not necessarily the one Docker uses.
+# where the compressed file waits on the server until it is loaded (default:
+# the home directory there). Best a disk other than Docker's: then the old
+# image can stay until the new one is loaded and checked.
 #
-# Steps, each one printed with the commands it runs, each safe to run again:
+# Six steps, each printed with the commands it runs:
 #   1. compress the image into a file here, named after the image's ID, so
 #      that a second run with the same image skips this step;
 #   2. check the server: rsync, zstd and docker there, room for the file in
 #      REMOTE_DIR, and which image hs_code_server:latest is there now;
 #   3. send the file with rsync; if the connection drops, it tries again
 #      (up to UPLOAD_ATTEMPTS times) and continues where it stopped;
-#   4. test the file on the server; if Docker's directory there has no room
-#      for the new image beside the old one, remove the old one first, but
-#      only if no container uses it (otherwise stop and say so);
+#   4. test the file on the server; if Docker has no room there for the new
+#      image beside the old one, remove the old one first, but only if no
+#      container uses it (otherwise stop and say so);
 #   5. load the new image, check that it has the layers of the one built
 #      here, start it once (code-server --version), and tag it as candidate;
 #   6. remove the old image if no container uses it any more (running
-#      Workspaces keep it until they restart; then run the script again or
-#      remove it by hand), and the file on the server (KEEP_REMOTE_FILE=1
-#      keeps it).
+#      Workspaces keep it until they restart; the script says how to remove
+#      it later), the file on the server (KEEP_REMOTE_FILE=1 keeps it) and
+#      the note of the run.
 #
-# Nothing else on the server is removed: no other images, no cache.
+# Run it again as often as needed: after an interruption it continues with
+# the step that was not finished (a note on the server, NAME.replaces, keeps
+# the image being replaced until the end), and when everything is done it
+# changes nothing. Not two runs at the same time. Nothing else on the server
+# is removed: no other images, no cache.
 #
 # Settings by environment: IMAGE (default hs_code_server:latest), WORK_DIR
 # for the file here (default ~/.cache/hackschule-images, outside the
 # repository), UPLOAD_ATTEMPTS (default 50), ZSTD_LEVEL (default 6),
-# KEEP_REMOTE_FILE, and CHECK_ONLY=1 to stop after step 2: the server is
-# looked at, nothing is sent or changed there.
+# KEEP_REMOTE_FILE, CHECK_ONLY=1 to stop after step 2 (the server is looked
+# at, nothing is sent or changed there), NO_COLOR=1 for plain text. With pv
+# installed (here, on the server) compressing and loading show a progress
+# bar.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -44,20 +51,56 @@ if [ -z "$host" ] || [ "$host" = '-h' ] || [ "$host" = '--help' ]; then
     exit 2
 fi
 image="${IMAGE:-hs_code_server:latest}"
+repository="${image%%:*}"
 work_dir="${WORK_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/hackschule-images}"
-mkdir -p "$work_dir"
 attempts="${UPLOAD_ATTEMPTS:-50}"
 level="${ZSTD_LEVEL:-6}"
 
+# --- Output: colours on a terminal, plain text elsewhere ---------------------
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+    bold=$'\e[1m' dim=$'\e[2m' cyan=$'\e[36m' green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' reset=$'\e[0m'
+else
+    bold='' dim='' cyan='' green='' yellow='' red='' reset=''
+fi
+duration() { local s=$1; if [ "$s" -ge 60 ]; then printf '%d min %02d s' $((s / 60)) $((s % 60)); else printf '%d s' "$s"; fi; }
+current_step=0
+step_started=$SECONDS
+finish_step() { [ "$current_step" -gt 0 ] && printf '%s      took %s%s\n' "$dim" "$(duration $((SECONDS - step_started)))" "$reset"; return 0; }
+step() {
+    finish_step
+    current_step=$1
+    step_started=$SECONDS
+    printf '\n%s%s[%s/6]%s%s %s%s\n' "$bold" "$cyan" "$1" "$reset" "$bold" "$2" "$reset"
+}
+info() { printf '      %s\n' "$*"; }
+ok() { printf '      %s%s%s\n' "$green" "$*" "$reset"; }
+warn() { printf '      %s%s%s\n' "$yellow" "$*" "$reset"; }
+fail() { printf '\n%s%sStopped:%s %s%s%s\n' "$bold" "$red" "$reset" "$red" "$*" "$reset" >&2; exit 1; }
+shown() { printf '%s      $ %s%s\n' "$dim" "$*" "$reset" >&2; }
+gib() { awk -v b="$1" 'BEGIN { printf "%.1f GiB", b / 1073741824 }'; }
+
+# Every command on the server is shown before it runs, on stderr, so that
+# what a command prints can be read back.
+remote() {
+    shown "ssh $host $1"
+    # shellcheck disable=SC2029  # expanded here on purpose
+    ssh "$host" "$1"
+}
+# Containers on the server that use an image (running or stopped)
+users_of() { remote "docker ps -a --filter ancestor=$1 --format '{{.Names}} ({{.Status}})'"; }
+
 for tool in docker zstd rsync ssh; do
-    command -v "$tool" >/dev/null || { echo "Missing here: $tool" >&2; exit 1; }
+    command -v "$tool" >/dev/null || fail "Missing here: $tool"
 done
+have_pv=''
+command -v pv >/dev/null && have_pv=1
+mkdir -p "$work_dir"
 
 id="$(docker image inspect --format '{{.Id}}' "$image" 2>/dev/null)" ||
-    { echo "No image $image here; build it with ./build-image.sh." >&2; exit 1; }
+    fail "No image $image here; build it with ./build-image.sh."
 short="${id#sha256:}"
 short="${short:0:12}"
-name="$(echo "${image%%:*}" | tr '/' '-')-$short.tar.zst"
+name="$(echo "$repository" | tr '/' '-')-$short.tar.zst"
 file="$work_dir/$name"
 unpacked_bytes="$(docker image inspect --format '{{.Size}}' "$image")"
 # What identifies the image on both sides: its layers. The ID would not do,
@@ -65,131 +108,153 @@ unpacked_bytes="$(docker image inspect --format '{{.Size}}' "$image")"
 # from different documents.
 fingerprint='docker image inspect --format "{{json .RootFS.Layers}}"'
 layers="$(eval "$fingerprint '$image'" | sha256sum | cut -c1-16)"
-gib() { awk -v b="$1" 'BEGIN { printf "%.1f GiB", b / 1073741824 }'; }
 
-echo "=== $image ($short), $(gib "$unpacked_bytes") unpacked ==="
+printf '%s%s%s %s(%s, %s unpacked) to %s%s\n' "$bold" "$image" "$reset" "$dim" "$short" "$(gib "$unpacked_bytes")" "$host" "$reset"
 
-# 1. The file here
+# --- 1. The file here --------------------------------------------------------
+step 1 'Compressing the image'
 if [ -s "$file" ] && zstd -q -t "$file" 2>/dev/null; then
-    echo "=== 1. Already compressed: $file ($(gib "$(stat -c %s "$file")")) ==="
+    ok "Already compressed: $file"
 else
-    echo "=== 1. Compressing into $file ==="
-    echo "+ docker save $image | zstd -T0 -$level -q -o $file.part" >&2
-    docker save "$image" | zstd -T0 -"$level" -q -o "$file.part"
+    shown "docker save $image | zstd -T0 -$level -o $file.part"
+    if [ -n "$have_pv" ]; then
+        docker save "$image" | pv -s "$unpacked_bytes" -N packing -pterab | zstd -T0 -"$level" -q -o "$file.part"
+    else
+        docker save "$image" | zstd -T0 -"$level" -q -o "$file.part"
+    fi
     mv "$file.part" "$file"
 fi
 file_bytes="$(stat -c %s "$file")"
-echo "=== $(gib "$file_bytes") to send ==="
+ok "$(gib "$file_bytes") to send ($file)"
 
-# Every command on the server is printed before it runs, on stderr, so
-# that what a command prints can be read back.
-remote() {
-    echo "+ ssh $host $1" >&2
-    # shellcheck disable=SC2029  # expanded here on purpose
-    ssh "$host" "$1"
-}
-# Containers on the server that use an image (running or stopped)
-users_of() {
-    remote "docker ps -a --filter ancestor=$1 --format '{{.Names}} ({{.Status}})'"
-}
-
-# 2. The server
-echo "=== 2. Checking $host ==="
-remote 'for tool in rsync zstd docker; do command -v $tool >/dev/null || { echo "Missing: $tool" >&2; exit 1; }; done'
+# --- 2. The server -----------------------------------------------------------
+step 2 "Checking $host"
+remote 'for tool in rsync zstd docker; do command -v $tool >/dev/null || { echo "Missing on the server: $tool" >&2; exit 1; }; done'
+remote_pv="$(remote 'command -v pv >/dev/null && echo yes || true')"
 if [ -n "${CHECK_ONLY:-}" ]; then
-    remote "test -d '$remote_dir'" || { echo "No directory $remote_dir on $host." >&2; exit 1; }
+    remote "test -d '$remote_dir'" || fail "No directory $remote_dir on $host."
 else
     remote "mkdir -p '$remote_dir'"
 fi
 have="$(remote "df -Pk '$remote_dir' | awk 'NR == 2 { print \$4 * 1024 }'")"
 partial="$(remote "stat -c %s '$remote_dir/$name' 2>/dev/null || echo 0")"
-if [ "$have" -lt $((file_bytes - partial)) ]; then
-    echo "Not enough room in $remote_dir on $host: $(gib "$have") free, $(gib $((file_bytes - partial))) needed." >&2
-    exit 1
-fi
-old="$(remote "docker image inspect --format '{{.Id}}' '$image' 2>/dev/null || true")"
-old_layers=''
-[ -z "$old" ] || old_layers="$(remote "$fingerprint '$image' | sha256sum | cut -c1-16")"
-if [ -z "$old" ]; then
-    echo "=== $host has no $image yet ==="
-elif [ "$old_layers" = "$layers" ]; then
-    echo "=== $host already has this image ($short); nothing to do ==="
-    exit 0
+[ "$have" -ge $((file_bytes - partial)) ] ||
+    fail "Not enough room in $remote_dir on $host: $(gib "$have") free, $(gib $((file_bytes - partial))) needed."
+info "Room in $remote_dir: $(gib "$have") free"
+[ "$partial" -eq 0 ] || info "Already there from an earlier run: $(gib "$partial")"
+
+# A note beside the upload: the ID of the image being replaced, written
+# before loading and removed at the very end. While it exists, a run is not
+# finished, and a new run picks up where that one stopped.
+marker="$remote_dir/$name.replaces"
+current="$(remote "docker image inspect --format '{{.Id}}' '$image' 2>/dev/null || true")"
+current_layers=''
+[ -z "$current" ] || current_layers="$(remote "$fingerprint '$image' | sha256sum | cut -c1-16")"
+pending="$(remote "test -e '$marker' && echo yes || true")"
+loaded_already=''
+if [ -n "$current" ] && [ "$current_layers" = "$layers" ]; then
+    if [ -z "$pending" ]; then
+        finish_step
+        printf '\n%s%sNothing to do:%s %s already has this image, and no earlier run is unfinished.\n' "$bold" "$green" "$reset" "$host"
+        exit 0
+    fi
+    loaded_already=1
+    old="$(remote "cat '$marker'")"
+    warn "$host has this image already; finishing the run that loaded it"
 else
-    echo "=== $host has $image ${old#sha256:} now; it gets replaced ==="
+    old="$current"
+    [ -z "$pending" ] || old="$(remote "cat '$marker'")"
+    if [ -z "$current" ]; then
+        info "$host has no $image yet"
+    else
+        info "$host has $image ${current#sha256:}; it gets replaced"
+    fi
 fi
 if [ -n "${CHECK_ONLY:-}" ]; then
-    echo "=== CHECK_ONLY: stopping here; nothing was sent or changed on $host ==="
+    finish_step
+    printf '\n%s%sCHECK_ONLY:%s stopping here; nothing was sent or changed on %s.\n' "$bold" "$yellow" "$reset" "$host"
     exit 0
 fi
 
-# 3. Sending, again after a dropped connection
-echo "=== 3. Sending to $host:$remote_dir ==="
-attempt=1
-until { echo "+ rsync --partial --append-verify --progress $file $host:$remote_dir/"
-        rsync --partial --append-verify --progress "$file" "$host:$remote_dir/"; }; do
-    if [ "$attempt" -ge "$attempts" ]; then
-        echo "Gave up after $attempts attempts; run the script again to continue where it stopped." >&2
-        exit 1
-    fi
-    attempt=$((attempt + 1))
-    echo "=== Connection lost; attempt $attempt of $attempts in 30 seconds ==="
-    sleep 30
-done
-
-# 4. Testing the file, room for the image
-echo "=== 4. Testing the file on $host ==="
-remote "zstd -q -t '$remote_dir/$name'"
-# Docker's directory, and containerd's where Docker keeps images there
-# (the containerd image store): the less free of the two counts
-root="$(remote "docker info --format '{{.DockerRootDir}}'")"
-have="$(remote "for d in '$root' /var/lib/containerd; do [ -d \$d ] && df -Pk \$d | awk 'NR == 2 { print \$4 * 1024 }'; done | sort -n | head -1")"
-echo "=== Room for images on $host ($root, /var/lib/containerd): $(gib "$have") free, $(gib "$unpacked_bytes") needed ==="
 removed_before=''
-if [ "$have" -lt "$unpacked_bytes" ]; then
-    if [ -z "$old" ]; then
-        echo "Not enough room in $root on $host, and no old image to make room with." >&2
-        exit 1
+if [ -z "$loaded_already" ]; then
+    # --- 3. Sending, again after a dropped connection ------------------------
+    step 3 "Sending to $host:$remote_dir"
+    attempt=1
+    until { shown "rsync --partial --append-verify --info=progress2 $file $host:$remote_dir/"
+            rsync --partial --append-verify --info=progress2 "$file" "$host:$remote_dir/"; }; do
+        [ "$attempt" -lt "$attempts" ] ||
+            fail "Gave up after $attempts attempts; run the script again to continue where it stopped."
+        attempt=$((attempt + 1))
+        warn "Connection lost; attempt $attempt of $attempts in 30 seconds"
+        sleep 30
+    done
+    ok 'Sent'
+
+    # --- 4. Testing the file, room for the image -----------------------------
+    step 4 "Testing the file and the room on $host"
+    remote "zstd -q -t '$remote_dir/$name'"
+    ok 'The file is complete'
+    remote "echo '$old' > '$marker'"
+    # Docker's directory, and containerd's where Docker keeps images there
+    # (the containerd image store): the less free of the two counts
+    root="$(remote "docker info --format '{{.DockerRootDir}}'")"
+    have="$(remote "for d in '$root' /var/lib/containerd; do [ -d \$d ] && df -Pk \$d | awk 'NR == 2 { print \$4 * 1024 }'; done | sort -n | head -1")"
+    info "Room for images ($root, /var/lib/containerd): $(gib "$have") free, $(gib "$unpacked_bytes") needed"
+    if [ "$have" -lt "$unpacked_bytes" ]; then
+        [ -n "$current" ] || fail "Not enough room for the image on $host, and no old image to make room with."
+        users="$(users_of "$current")"
+        if [ -n "$users" ]; then
+            printf '%s\n' "$users" >&2
+            fail 'No room beside the old image, and the containers above still use it. Stop them (their Workspaces) or make room otherwise, then run the script again.'
+        fi
+        warn 'No room beside the old image; removing it first (no container uses it)'
+        # without its last tag the image goes too
+        remote "docker image rm $repository:candidate 2>/dev/null || true"
+        remote "docker image rm '$image'"
+        removed_before=1
+    else
+        ok 'Room beside the old image; it stays until the new one is checked'
     fi
-    users="$(users_of "$old")"
-    if [ -n "$users" ]; then
-        echo "No room beside the old image, and containers still use it:" >&2
-        echo "$users" >&2
-        echo 'Stop them (their Workspaces) or make room otherwise, then run the script again.' >&2
-        exit 1
-    fi
-    echo "=== No room beside the old image; removing it first (no container uses it) ==="
-    # without its last tag the image goes too
-    remote "docker image rm $(echo "${image%%:*}"):candidate 2>/dev/null || true"
-    remote "docker image rm '$image'"
-    removed_before=1
 fi
 
-# 5. Loading and checking the new image
-echo "=== 5. Loading into Docker on $host ==="
-remote "zstd -dc '$remote_dir/$name' | docker load"
+# --- 5. Loading and checking the new image -----------------------------------
+step 5 "Loading and checking the image on $host"
+if [ -z "$loaded_already" ]; then
+    if [ -n "$remote_pv" ]; then
+        # pv draws on the terminal, so ssh gets one (-t)
+        shown "ssh -t $host pv '$remote_dir/$name' | zstd -dc | docker load"
+        ssh -t "$host" "pv -s $file_bytes -N loading -pterab '$remote_dir/$name' | zstd -dc | docker load"
+    else
+        info "No pv on $host: no progress bar while loading (about as long as compressing took)"
+        remote "zstd -dc '$remote_dir/$name' | docker load"
+    fi
+fi
 loaded="$(remote "$fingerprint '$image' | sha256sum | cut -c1-16")"
-if [ "$loaded" != "$layers" ]; then
-    echo "$image on $host has other layers than the one built here; the file stays in $remote_dir." >&2
-    exit 1
-fi
-echo "=== $image on $host has the layers of the image built here ==="
+[ "$loaded" = "$layers" ] ||
+    fail "$image on $host has other layers than the one built here; the file stays in $remote_dir."
+ok 'Its layers are those of the image built here'
 remote "docker run --rm --entrypoint /app/code-server/bin/code-server '$image' --version"
-remote "docker tag '$image' $(echo "${image%%:*}"):candidate"
+ok 'It starts'
+remote "docker tag '$image' $repository:candidate"
 
-# 6. Removing the old image and the file
-echo "=== 6. Cleaning up on $host ==="
-if [ -n "$old" ] && [ -z "$removed_before" ]; then
+# --- 6. Removing the old image, the file and the note ------------------------
+step 6 "Cleaning up on $host"
+if [ -n "$old" ] && [ -z "$removed_before" ] && [ -n "$(remote "docker image inspect --format '{{.Id}}' $old 2>/dev/null || true")" ]; then
     users="$(users_of "$old")"
     if [ -n "$users" ]; then
-        echo "=== The old image ${old#sha256:} stays: these containers still use it ==="
-        echo "$users"
-        echo "=== Once they have restarted with the new image: ssh $host docker image rm $old ==="
+        warn "The old image ${old#sha256:} stays: these containers still use it"
+        printf '%s\n' "$users" | sed 's/^/        /'
+        warn "Once they have restarted with the new image: ssh $host docker image rm $old"
     else
         remote "docker image rm $old"
+        ok 'Old image removed'
     fi
 fi
 if [ -z "${KEEP_REMOTE_FILE:-}" ]; then
     remote "rm -f '$remote_dir/$name'"
 fi
-echo "=== Done: $image ($short) is on $host; new Workspaces start with it ==="
+remote "rm -f '$marker'"
+finish_step
+printf '\n%s%sDone%s in %s: %s (%s) is on %s; new Workspaces start with it.\n' \
+    "$bold" "$green" "$reset" "$(duration "$SECONDS")" "$image" "$short" "$host"
