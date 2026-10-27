@@ -678,6 +678,7 @@ class Main < Sinatra::Base
     require './include/login_sessions_page.rb'
     require './include/cable_page.rb'
     require './include/kata_page.rb'
+    require './include/class_page.rb'
 
     def workspace_url()
         if user_logged_in?
@@ -6624,6 +6625,7 @@ class Main < Sinatra::Base
 
     CLASS_TABS = [
         ['fortschritt', 'Fortschritt', 'bi-check2-square'],
+        ['ueberblick', 'Überblick', 'bi-bar-chart-steps'],
         ['lernende', 'Lernende', 'bi-people'],
         ['startseite', 'Startseite', 'bi-pin-angle'],
         ['einstellungen', 'Einstellungen', 'bi-sliders'],
@@ -6645,7 +6647,7 @@ class Main < Sinatra::Base
     # (members, co-teachers, consent, welcome mails, end), filled by
     # class_board.js, which moves each person's Workspace into its row.
     def class_group_html(group)
-        "<section class='class-group-manage' data-group='#{CGI.escapeHTML(group.to_s)}'><p class='text-body-secondary'>Einen Moment …</p></section>"
+        "<section class='class-group-manage' data-group='#{CGI.escapeHTML(group.to_s)}' data-contact='#{CGI.escapeHTML(contact_email)}'><p class='text-body-secondary'>Einen Moment …</p></section>"
     end
 
     # The class page (/klasse): the group up top, waiting login codes right
@@ -6658,7 +6660,8 @@ class Main < Sinatra::Base
         if groups.empty?
             return "<p>Du betreust noch keine Gruppe.</p><p>#{new_group_button_html}</p>" unless new_group_button_html.empty?
 
-            return "<p>Du betreust noch keine Gruppe. Dir ist noch keine Schule zugeordnet; das macht die Administration. Danach legst du hier deine Gruppen an.</p>"
+            return "<p>Du betreust noch keine Gruppe. Dir ist noch keine Schule zugeordnet; das macht die Administration. Danach legst du hier deine Gruppen an. " \
+                "Schreib dafür #{class_contact_html}, an welcher Schule du unterrichtest.</p>"
         end
 
         prefs = class_prefs
@@ -6692,6 +6695,7 @@ class Main < Sinatra::Base
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
             "<button type='button' class='btn btn-outline-secondary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></span></form>"
+        io << new_group_note_html
         io << "<div class='class-login-codes' data-group='#{h.(group)}' data-school='#{h.(school_names_of_groups[group])}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
             "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
             "<table class='table table-sm'><tbody></tbody></table></div>"
@@ -6704,6 +6708,7 @@ class Main < Sinatra::Base
         io << "</div>"
         panel = ->(key, html) { "<section class='class-panel' role='tabpanel' id='class-panel-#{key}' aria-labelledby='class-tab-#{key}'#{key == tab ? '' : ' hidden'}>#{html}</section>" }
         io << panel.('fortschritt', class_progress_html(group))
+        io << panel.('ueberblick', class_overview_html(group))
         io << panel.('lernende', class_people_html(group))
         io << panel.('startseite', class_pins_html(group))
         io << panel.('einstellungen', class_settings_html(group))
@@ -6742,6 +6747,7 @@ class Main < Sinatra::Base
             "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
             "});</script>"
         io << class_repos_html(group)
+        io << class_school_html(group)
         io << "</div>"
     end
 
