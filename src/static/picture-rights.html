@@ -130,9 +130,33 @@
         }
         subject.addEventListener('input', update);
         body.addEventListener('input', update);
+        // the copy as plain text and as HTML: a mail program pastes the
+        // HTML, with the addresses as links (a mailto: body is text only)
+        function letter_html(text) {
+            const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            const linked = (line) => line.split(/(https?:[^ <>"]+)/).map(function (part, i) {
+                if (i % 2 === 0) return escape(part);
+                // ».«, »,« or a closing bracket after an address belong to the sentence
+                let tail = '';
+                while (/[.,;:!?)]$/.test(part) && !(part.endsWith(')') && part.split('(').length > part.split(')').length - 1)) {
+                    tail = part.slice(-1) + tail;
+                    part = part.slice(0, -1);
+                }
+                return "<a href='" + escape(part) + "'>" + escape(part) + '</a>' + escape(tail);
+            }).join('');
+            const newline = String.fromCharCode(10);
+            return text.split(newline + newline).map((p) => '<p>' + p.split(newline).map(linked).join('<br>') + '</p>').join('');
+        }
         letter.querySelector('.pr-copy').addEventListener('click', function (e) {
             const button = e.currentTarget;
-            navigator.clipboard.writeText([subject.value, '', body.value].join(String.fromCharCode(10))).then(function () {
+            const text = [subject.value, '', body.value].join(String.fromCharCode(10));
+            const copied = window.ClipboardItem
+                ? navigator.clipboard.write([new ClipboardItem({
+                    'text/plain': new Blob([text], { type: 'text/plain' }),
+                    'text/html': new Blob([letter_html(text)], { type: 'text/html' }),
+                })]).catch(() => navigator.clipboard.writeText(text))
+                : navigator.clipboard.writeText(text);
+            copied.then(function () {
                 button.innerHTML = "<i class='bi bi-check-lg'></i> Kopiert";
                 setTimeout(function () { button.innerHTML = "<i class='bi bi-clipboard'></i> Kopieren"; }, 1500);
             });
