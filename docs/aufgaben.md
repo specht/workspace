@@ -1140,17 +1140,20 @@ Ruft auf, was in einer JavaScript-Datei der Lernenden steht, wie `ruby` und
 `python`, mit `node` im Workspace als Gast (`JavascriptCheck`): dasselbe
 Skript wie bei den Katas in JavaScript, nur auf eine Datei (`file`, auf
 `.js`). Verglichen wird mit `util.isDeepStrictEqual`, Arrays und Objekte also
-nach ihrem Inhalt; `console` ist dabei stumm. Die Beispiele warten, wo es kein
-`node` gibt, wie bei den Katas.
+nach ihrem Inhalt; `console` ist dabei stumm. Anders als der Code einer Kata
+darf die Datei ein Modul sein, mit `require`, `module` und `exports`: So endet
+`supermarkt/supermarket.js` mit `module.exports = { … }` für die Simulation in
+einer zweiten Datei. Die Beispiele warten, wo es kein `node` gibt, wie bei den
+Katas.
 
 ```yaml
 check:
   type: javascript
-  file: bibliothek/library.js
+  file: supermarkt/supermarket.js
   cases:
-    - new Book('Faust', 'Goethe').title: "'Faust'"
-    - call: const b = new Book('A', 'B'); b.lend(); b.isAvailable()
-      expect: false
+    - new Customer(12, 30).items: 12
+    - call: const k = new Checkout(); k.serve(new Customer(10, 0)); k.freeAt
+      expect: 90
 ```
 
 ### java, dart
@@ -1369,39 +1372,47 @@ einer älteren Erweiterung.
 ```yaml
 check:
   type: classes
-  file: bibliothek/bibliothek.uml
+  file: supermarkt/supermarkt.uml
   classes:
-    - name: Medium
-      abstract: true
-      attributes: ["- title: String", available]    # wie in der Datei; Zeichen und Typ nur, wenn angegeben
-      methods: ["+ lend(): void", "isAvailable(): boolean"]
-    - name: Book
-      extends: Medium
-      methods: ["+ Book(title: String, author: String)"]   # ein Konstruktor: der Name der Klasse, ohne Typ
+    - name: Checkout
+      abstract: false
+      attributes: [freeAt]                          # wie in der Datei; Zeichen und Typ nur, wenn angegeben
+      methods: ["+ Checkout()", "serve(customer: Customer): int"]   # ein Konstruktor: der Name der Klasse, ohne Typ
+    - name: ExpressCheckout
+      extends: Checkout
+      overrides: ["+ accepts(customer: Customer): boolean"]
   associations:
-    - between: [Member, Medium]
-      multiplicities: ["1", "0..*"]                 # in der Reihenfolge von between
-      directed: false                               # true: Member -> Medium
-      name: loans                                   # wenn der Name zählt
+    - between: [Supermarket, Checkout]
+      multiplicities: ["1", "1..*"]                 # in der Reihenfolge von between
+      directed: false                               # true: Supermarket -> Checkout
+      name: checkouts                               # wenn der Name zählt
 ```
 
 Was die Aufgabe nennt, muss da sein; weitere Klassen, Attribute, Methoden und
-Assoziationen dürfen es auch. Eine Methode zählt nach ihrem Namen und, wenn
-angegeben, den Typen ihrer Parameter (ihre Namen sind egal) und ihrem
-Rückgabetyp. Das Diagramm schreibt die Namen wie der Code der Lernenden:
-`isAvailable`, `is_available` und Rubys `available?` gelten als dieselbe
-Methode, `loanDays` und `loan_days` auch; ein `!` am Ende (Ruby, `sort!`)
-macht eine andere Methode daraus. Damit die Rückmeldung die Namen der
-Sprache nennt, bekommt die Aufgabe Varianten mit `check` (`ruby:`,
-`python:`), wie in `bibliothek/tasks.yaml`, `diagramm-medien`. Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«,
-mit Zeile und Meldung, wie die UML-Werkstatt sie im Editor unterstreicht),
-dann der erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein
-Attribut, eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre
-Richtung. Unter »Was der Workspace gelesen hat« steht das Diagramm in der
-Schreibweise der Datei. Für `feedback` gibt es `problem` mit `missing`,
-`errors`, `missing_class`, `abstract`, `extends`, `missing_attribute`,
-`attribute`, `missing_method`, `method`, `missing_association`,
-`multiplicity` und `direction`.
+Assoziationen dürfen es auch. Eine Klasse hat auch, was sie erbt, nur die
+Konstruktoren ihrer Oberklasse nicht. Was unter `overrides` steht, muss sie
+selbst haben, in ihrem eigenen Kasten, und eine Klasse über ihr auch: Sie
+überschreibt es. Fehlt es nur in ihrem Kasten, sagt die Rückmeldung »`ExpressCheckout`
+erbt `accepts` von `Checkout`, soll es aber anders machen …«. Eine Methode
+zählt nach ihrem Namen und, wenn angegeben, den Typen ihrer Parameter (ihre
+Namen sind egal) und ihrem Rückgabetyp.
+
+Das Diagramm schreibt die Namen wie der Code der Lernenden: `isAvailable`,
+`is_available` und Rubys `available?` gelten als dieselbe Methode, `accepts`
+und Rubys `accepts?` auch, `freeAt` und `free_at` auch; ein `!` am Ende
+(Ruby, `sort!`) macht eine andere Methode daraus. Damit die Rückmeldung die
+Namen der Sprache nennt, bekommt die Aufgabe Varianten mit `check` (`ruby:`,
+`python:`), wie in `supermarkt/tasks.yaml`.
+
+Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«, mit Zeile
+und Meldung, wie die UML-Werkstatt sie im Editor unterstreicht), dann der
+erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein Attribut,
+eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre Richtung. Unter
+»Was der Workspace gelesen hat« steht das Diagramm in der Schreibweise der
+Datei. Für `feedback` gibt es `problem` mit `missing`, `errors`,
+`missing_class`, `abstract`, `extends`, `missing_attribute`, `attribute`,
+`missing_method`, `method`, `override`, `missing_association`, `multiplicity`
+und `direction`.
 
 ### keyboard
 

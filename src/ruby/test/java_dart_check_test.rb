@@ -1,4 +1,6 @@
 require 'minitest/autorun'
+require 'open3'
+require 'tmpdir'
 require_relative '../include/java_check'
 require_relative '../include/dart_check'
 require_relative '../include/javascript_check'
@@ -88,6 +90,22 @@ class JavaDartCheckTest < Minitest::Test
         assert_includes script, "cat > \"$t/harness.js\" <<'__HS_HARNESS__'"
         assert_match(/^node "\$t\/harness\.js" bibliothek\/library\.js /, script, 'the file is the first argument, not the script')
         assert_includes JavascriptCheck.spec_errors('file' => 'x.py', 'cases' => [{ 'f()' => 1 }]), 'file must end in .js'
+    end
+
+    # A Workspace file may be a module (module.exports, require); a Kata's
+    # code may not.
+    def test_javascript_modules_only_for_workspace_files
+        skip 'node not installed' unless system('node --version', out: File::NULL, err: File::NULL)
+        Dir.mktmpdir do |dir|
+            File.write(File.join(dir, 'm.js'), "const fs = require('fs');\nclass A { v() { return 2; } }\nmodule.exports = { A };\n")
+            cases = JavascriptCheck.cases('cases' => [{ 'new A().v()' => 2 }])
+            out, = Open3.capture2('bash', '-c', JavascriptCheck.command('m.js', cases), chdir: dir)
+            assert_equal true, JSON.parse(out[/#{JavascriptCheck::RESULT_MARK}(.*)/, 1])['cases'][0]['ok'], out
+            _, _, harness, *arguments = JavascriptCheck.argv('m.js', cases)
+            File.write(File.join(dir, 'harness.js'), harness)
+            out, = Open3.capture2('node', 'harness.js', *arguments, chdir: dir)
+            assert_equal 'load', JSON.parse(out[/#{JavascriptCheck::RESULT_MARK}(.*)/, 1])['error']['kind'], 'a Kata has no require'
+        end
     end
 
     def test_spec_errors

@@ -107,11 +107,27 @@ class ClassesCheckTest < Minitest::Test
         assert_equal [:correct, nil, 'Passt.'], result(CHECK, s), 'is_available in Python is isAvailable'
         check = CHECK.merge('classes' => [{ 'name' => 'Medium', 'methods' => ['+ available?(): boolean'] }])
         assert_equal [:correct, nil, 'Passt.'], result(check), 'and the other way round'
+        check = CHECK.merge('classes' => [{ 'name' => 'Member', 'methods' => ['borrow?(m: Medium): void'] }])
+        assert_equal [:correct, nil, 'Passt.'], result(check), 'borrow? in Ruby is borrow elsewhere'
         s['classes'][0]['methods'][1]['name'] = 'lend!'
         assert_equal [:wrong, :missing_method, '`Medium` hat noch keine Methode `lend`.'], result(CHECK, s), 'lend! is another method'
         s['classes'][0]['methods'][1]['name'] = 'lend'
         s['classes'][0]['methods'][2]['name'] = 'available'
         assert_equal [:wrong, :missing_method, '`Medium` hat noch keine Methode `isAvailable`.'], result(CHECK, s)
+    end
+
+    def test_overrides
+        s = summary
+        check = CHECK.merge('classes' => [{ 'name' => 'Book', 'extends' => 'Medium', 'overrides' => ['+ lend(): void'] }])
+        assert_equal :override, result(check, s)[1], 'lend is only inherited'
+        assert_match(/`Book` erbt `lend` von `Medium`, soll es aber anders machen/, result(check, s)[2])
+        s['classes'][1]['methods'] << member('lend', [], 'void')
+        assert_equal [:correct, nil, 'Passt.'], result(check, s)
+        check = CHECK.merge('classes' => [{ 'name' => 'Book', 'overrides' => ['+ Book(title: String, author: String)'] }])
+        assert_equal :override, result(check, s)[1], 'nothing above has it'
+        check = CHECK.merge('classes' => [{ 'name' => 'Book', 'overrides' => ['+ renew(): void'] }])
+        assert_equal :missing_method, result(check, s)[1]
+        assert_empty ClassesCheck.spec_errors(CHECK.merge('classes' => [{ 'name' => 'Book', 'overrides' => ['+ lend(): void'] }]))
     end
 
     def test_errors_in_the_file_come_first

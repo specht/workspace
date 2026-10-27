@@ -24,6 +24,7 @@ require 'zlib'
 #       - name: Book
 #         extends: Medium
 #         methods: ["+ Book(title: String, author: String)"]  # a constructor: the class's name, no type
+#         overrides: ["+ loanDays(): int"]   # in its own box, and in a class above it
 #     associations:
 #       - between: [Member, Medium]
 #         multiplicities: ["1", "0..*"]    # in the order of between
@@ -41,7 +42,7 @@ module ClassesCheck
     NAME = /\A[A-Za-z][A-Za-z0-9_]*\z/
     MULTIPLICITY = /\A(\*|\d+|\d+\.\.(\d+|\*))\z/
     PROBLEMS = %w[missing errors missing_class abstract extends missing_attribute attribute missing_method method
-                  missing_association multiplicity direction].freeze
+                  override missing_association multiplicity direction].freeze
 
     def self.available?
         !CORE.nil?
@@ -78,13 +79,16 @@ module ClassesCheck
     end
 
     # The diagram uses the names of the student's language: isAvailable,
-    # is_available and available? (Ruby) are one method, loanDays and
-    # loan_days one, so a task asks in any spelling. A »!« stays: sort! and
-    # sort are two methods in Ruby.
-    def self.same_name(name)
-        name = name.to_s
-        name = "is#{name.chomp('?')}" if name.end_with?('?')
-        name.delete('_').downcase
+    # is_available and available? (Ruby) are one method, accepts and
+    # accepts? one, freeAt and free_at one, so a task asks in any spelling.
+    # A »!« stays: sort! and sort are two methods in Ruby.
+    def self.name_keys(name)
+        key = name.to_s.delete('_').downcase
+        key.end_with?('?') ? [key.chomp('?'), "is#{key.chomp('?')}"] : [key]
+    end
+
+    def self.same_name?(a, b)
+        name_keys(a).intersect?(name_keys(b))
     end
 
     # "- title: String" -> { visibility: '-', name: 'title', type: 'String' }
@@ -125,11 +129,11 @@ module ClassesCheck
                         errors << "classes[#{i}] needs a name"
                         next
                     end
-                    extra = c.keys - %w[name abstract extends attributes methods]
+                    extra = c.keys - %w[name abstract extends attributes methods overrides]
                     errors << "classes[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
                     errors << "classes[#{i}].abstract must be true or false" if c.key?('abstract') && ![true, false].include?(c['abstract'])
                     errors << "classes[#{i}].extends must be a class name or ~" if c.key?('extends') && !(c['extends'].nil? || c['extends'].to_s =~ NAME)
-                    %w[attributes methods].each do |key|
+                    %w[attributes methods overrides].each do |key|
                         next unless c.key?(key)
 
                         unless c[key].is_a?(Array) && !c[key].empty?
@@ -211,10 +215,10 @@ module ClassesCheck
                 return [false, :extends, message]
             end
             line = ancestry(have, classes)
-            attributes = line.reverse.flat_map { |c| c['attributes'] || [] }.to_h { |a| [same_name(a['name']), a] }
+            attributes = line.reverse.flat_map { |c| c['attributes'] || [] }.to_h { |a| [name_keys(a['name']).first, a] }
             (spec['attributes'] || []).each do |text|
                 want = parse_attribute(text)
-                got = attributes[same_name(want[:name])]
+                got = attributes[name_keys(want[:name]).first]
                 if got.nil?
                     there = attributes.empty? ? 'noch keine Attribute' : "nur #{list(attributes.values.map { |a| a['name'] })}"
                     return [false, :missing_attribute, "#{code(name)} hat noch kein Attribut #{code(want[:name])}. Es hat #{there}."]
@@ -227,13 +231,23 @@ module ClassesCheck
                     return [false, :attribute, "#{code("#{name}.#{want[:name]}")} soll #{said}."]
                 end
             end
-            # its own methods first, then what it inherits, constructors not
-            methods = (have['methods'] || []) + line.drop(1).flat_map { |c| (c['methods'] || []).reject { |m| m['constructor'] } }
-            (spec['methods'] || []).each do |text|
+            # its own methods first, then what it inherits, constructors not;
+            # what it overrides must be its own and be in a class above it
+            own = have['methods'] || []
+            inherited = line.drop(1).flat_map { |c| (c['methods'] || []).reject { |m| m['constructor'] } }
+            wanted = (spec['methods'] || []).map { |t| [t, false] } + (spec['overrides'] || []).map { |t| [t, true] }
+            wanted.each do |text, override|
                 want = parse_method(text)
-                named = methods.select { |m| same_name(m['name']) == same_name(want[:name]) }
+                above = inherited.any? { |m| same_name?(m['name'], want[:name]) }
+                named = (override ? own : own + inherited).select { |m| same_name?(m['name'], want[:name]) }
+                if override && named.empty? && above
+                    return [false, :override, "#{code(name)} erbt #{code(want[:name])} von #{code(have['extends'])}, soll es aber anders machen: Schreib die Methode auch in den Kasten von #{code(name)}."]
+                end
                 what = want[:name] == name ? 'keinen Konstruktor' : "keine Methode #{code(want[:name])}"
                 return [false, :missing_method, "#{code(name)} hat noch #{what}."] if named.empty?
+                if override && !above
+                    return [false, :override, "#{code(name)} soll #{code(want[:name])} überschreiben, aber in keiner Klasse darüber gibt es #{code(want[:name])}."]
+                end
 
                 fitting = want[:params] ? named.select { |m| (m['params'] || []).map { |p| squeeze(p['type']) } == want[:params] } : named
                 if fitting.empty?
