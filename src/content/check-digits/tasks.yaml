@@ -49,6 +49,35 @@ tasks:
       Die Summe ist 4 + 6 + 6 + 0 + 1 + 3 + 1 + 0 + 2 + 0 + 4 + 9 = 36; bis 40
       fehlen 4. Der ganze Code ist `4 260111 020434`.
 
+
+  - id: rechts-lesen
+    title: Eine Ziffer aus Strichen
+    prompt: |
+      Rechts von der Mitte steht eine Ziffer mit dem Muster `1000010`. Welche
+      Ziffer ist es?
+    check: { type: number, expect: 3 }
+    feedback:
+      - when: { equals: 7 }
+        say: '`1000010` ist kein L-Muster: Rechts steht R. Vertausch erst 0 und 1, dann such in der Tabelle für L.'
+    hint:
+      - Rechts steht jede Ziffer in R, und R ist L mit vertauschtem Hell und Dunkel.
+      - Aus `1000010` wird mit vertauschten 0 und 1 `0111101`.
+    solution: |
+      Die 3. Vertauscht man 0 und 1, wird aus `1000010` das L-Muster
+      `0111101`, und das gehört in der Tabelle zur 3. Bei den Nudeln steht
+      sie rechts an fünfter Stelle.
+
+  - id: erste-ziffer
+    title: Die versteckte erste Ziffer
+    prompt: |
+      Auf einer anderen Ware stehen die sechs Ziffern links von der Mitte in
+      den Fassungen L G G L L G. Mit welcher Ziffer beginnt ihr Code?
+    check: { type: number, expect: 5 }
+    hint:
+      - Die erste Ziffer hat keine eigenen Striche; sie steckt im Muster der Fassungen links.
+      - Such das Muster L G G L L G in der Tabelle der ersten Ziffern.
+    solution: |
+      Mit der 5: Das Muster L G G L L G steht in der Tabelle bei der 5.
   - id: raetsel
     title: Ein Struktogramm lesen
     prediction: true
