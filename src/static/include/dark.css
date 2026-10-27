@@ -696,6 +696,20 @@ html[data-bs-theme="dark"] {
         --cd-pen-soft: #1d3346;
     }
     .uml-playground-problems { color: #f19aa1; }
+    .struktogramm-playground-output {
+        border-color: #33332f;
+        background-color: #1c1c1b;
+    }
+    .struktogramm-playground-problems { color: #f19aa1; }
+    /* Colours of a Struktogramm (struktogramm.js) */
+    .struktogramm,
+    .struktogramm-playground-diagram {
+        --sg-ink: #e7e6e1;
+        --sg-paper: #1c1c1b;
+        --sg-soft: #1d3346;
+        --sg-muted: #a3a29d;
+        --sg-pen: #7fbfe3;
+    }
     .subview-dialog { background-color: #1b1f26; }
     .subview-head,
     .subview-bar,

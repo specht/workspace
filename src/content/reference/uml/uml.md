@@ -150,9 +150,9 @@ Im Diagramm stehen die Namen so, wie dein Programm sie schreibt, damit du beides
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Sprache</th><th>Attribut</th><th>Methode, die fragt</th></tr></thead>
 <tbody>
-<tr><td>Ruby</td><td><code>free_seats</code></td><td><code>available?</code></td></tr>
-<tr><td>Python</td><td><code>free_seats</code></td><td><code>is_available</code></td></tr>
-<tr><td>JavaScript, Dart, Java</td><td><code>freeSeats</code></td><td><code>isAvailable</code></td></tr>
+<tr><th>Ruby</th><td><code>free_seats</code></td><td><code>available?</code></td></tr>
+<tr><th>Python</th><td><code>free_seats</code></td><td><code>is_available</code></td></tr>
+<tr><th>JavaScript, Dart, Java</th><td><code>freeSeats</code></td><td><code>isAvailable</code></td></tr>
 </tbody>
 </table></div>
 

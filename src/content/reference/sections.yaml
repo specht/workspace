@@ -182,10 +182,11 @@
   label: Software entwerfen
   icon: /images/hammer-and-wrench.png
   description: |
-    Klassendiagramme als Text schreiben und lesen: Klassen, Attribute,
-    Methoden, Vererbung und Assoziationen, und was die UML-Werkstatt daraus
-    macht.
+    Einen Algorithmus als Pseudocode und als Struktogramm aufschreiben,
+    bevor du ihn programmierst; Klassendiagramme als Text schreiben und
+    lesen, und was die UML-Werkstatt daraus macht.
   entries:
+    - .struktogramme
     - .uml
 
 - key: reference-algorithms

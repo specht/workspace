@@ -5985,18 +5985,22 @@ ul.task-teacher-list .task-teacher-answer {
     color: #5c636a;
 }
 
-/* Handbuch »ER-Modelle als Text« and »Klassendiagramme als Text«: model on
-   the left, diagram on the right. */
+/* Handbuch »ER-Modelle als Text«, »Klassendiagramme als Text« and
+   »Pseudocode und Struktogramme«: text on the left, diagram on the right. */
 .er-playground,
-.uml-playground {
+.uml-playground,
+.struktogramm-playground {
     display: grid;
     grid-template-columns: minmax(16em, 2fr) 3fr;
     gap: 0.8em 1em;
     margin: 1em 0 1.5em;
 }
 
-.er-playground-input,
-.uml-playground-input {
+/* textarea. outranks Bootstrap's textarea.form-control, whose min-height
+   would otherwise leave two lines on a phone */
+textarea.er-playground-input,
+textarea.uml-playground-input,
+textarea.struktogramm-playground-input {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: 90%;
     min-height: 22em;
@@ -6004,7 +6008,8 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .er-playground-output,
-.uml-playground-output {
+.uml-playground-output,
+.struktogramm-playground-output {
     border: 1px solid #e3e3e3;
     border-radius: 0.5em;
     padding: 0.6em;
@@ -6022,7 +6027,8 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .er-playground-problems,
-.uml-playground-problems {
+.uml-playground-problems,
+.struktogramm-playground-problems {
     color: #b02a37;
     font-size: 90%;
     margin-top: 0.4em;
@@ -6042,13 +6048,33 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 /* With an error the last good diagram stays, faded, as in the UML-Werkstatt. */
-.uml-playground-stale {
+.uml-playground-stale,
+.struktogramm-playground-stale {
     opacity: 0.4;
+}
+
+/* A Struktogramm (struktogramm.js) at its own size; a wide one scrolls
+   sideways instead of shrinking its text. */
+.struktogramm,
+.struktogramm-playground-diagram {
+    overflow-x: auto;
+    margin: 0.5em 0 1.2em;
+}
+
+.struktogramm svg,
+.struktogramm-playground-diagram svg {
+    display: block;
+    max-width: none;
+}
+
+.struktogramm-playground-save {
+    margin-top: 0.4em;
 }
 
 @media (max-width: 720px) {
     .er-playground,
-    .uml-playground {
+    .uml-playground,
+    .struktogramm-playground {
         grid-template-columns: 1fr;
     }
 

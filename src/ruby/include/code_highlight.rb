@@ -156,6 +156,11 @@ module CodeHighlight
                 # The Handbuch's pseudocode (Rouge::Lexers::Pseudocode)
                 lexer = Rouge::Lexers::Pseudocode.new
                 pre['class'] = [pre['class'], 'code-pseudocode'].compact.join(' ')
+            when 'struktogramm'
+                # Pseudocode that struktogramm.js draws as a Struktogramm;
+                # without JavaScript it stays highlighted pseudocode.
+                lexer = Rouge::Lexers::Pseudocode.new
+                pre['class'] = [pre['class'], 'code-pseudocode', 'code-struktogramm'].compact.join(' ')
             when 'python'
                 lexer = Rouge::Lexers::Python.new
             when 'room'
