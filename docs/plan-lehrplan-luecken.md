@@ -36,6 +36,10 @@ model, the Turing machine, the logic sandbox, then the rest.
   objektorientierte Programmierung side by side, and »Analyse und
   Modellierung folgen dem objektorientierten Ansatz«; a Kata set practises
   the mechanics but cannot model, an activity covers both names.
+- **Its story and its diagram** (27 October 2026): a library (books,
+  members, loans; a book and a DVD are both media), and an own
+  class-diagram extension like the ER-Werkstatt, so that the diagram is
+  checked like everything else.
 
 ## Open questions for the maintainer
 
@@ -46,8 +50,6 @@ model, the Turing machine, the logic sandbox, then the rest.
   scratch without libraries, which suits »students write small functions
   first« better?
 - The order of the rest.
-- For the object-oriented activity: its story, and the way to draw the
-  diagram (below).
 
 ## The object-oriented activity (draft)
 
