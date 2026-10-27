@@ -177,9 +177,9 @@
   icon: /images/computer.png
   description: |
     Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
-    und Datenstrukturen selbst bauen, endliche Automaten, ein Rechner, der
-    Ausdrücke versteht, und ein Routenplaner, der in echten Karten von Berlin
-    den kürzesten Weg findet.
+    und Datenstrukturen selbst bauen, Automaten vom endlichen bis zur
+    Turingmaschine, Grammatiken und ein Rechner, der Ausdrücke versteht, und
+    ein Routenplaner, der in echten Karten von Berlin den kürzesten Weg findet.
   entries:
     - sandbox-cpu
     - sandbox-sortieren
