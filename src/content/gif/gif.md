@@ -1118,7 +1118,7 @@ crop-element: #canvas
 -->
 <img class='full' src='markt.webp' alt='Ein Lastendreirad mit drei Männern vor einem Laden mit bunten Plastikwaren, als GIF mit 256 Farben.'>
 
-<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
+<p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski (<a href='https://koby.photography/'>https://koby.photography/</a>)</p>
 
 _task(pruefsumme-markt)
 
@@ -1429,7 +1429,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // offsetLeft counts from the strip, the nearest positioned element
         const from = left.offsetLeft, to = right.offsetLeft + right.offsetWidth;
         const middle = (from + to) / 2;
-        codeLabel.textContent = `Code ${step.code} · ${step.size} Bits`;
+        codeLabel.textContent = `Code ${step.code} mit ${step.size} Bits`;
         // The window fades out at both sides (the mask, 2.5em): the ends of
         // the stream and the label stay clear of that.
         const fade = 3 * parseFloat(getComputedStyle(windowBox).fontSize);

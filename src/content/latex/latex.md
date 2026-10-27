@@ -148,7 +148,7 @@ Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Erset
   \vfill
   {\large Alex Schmidt\par}
   \vspace{3mm}
-  {\large Kurs Physik 11 · Schuljahr 2026/27\par}
+  {\large Kurs Physik 11, Schuljahr 2026/27\par}
   \vspace{3mm}
   {\large Abgabe: 15. Oktober 2026\par}
 \end{titlepage}
@@ -588,7 +588,7 @@ Hier ist die ganze Facharbeit, wie sie jetzt aussehen sollte. Die Pakete stehen 
   \vfill
   {\large Alex Schmidt\par}
   \vspace{3mm}
-  {\large Kurs Physik 11 · Schuljahr 2026/27\par}
+  {\large Kurs Physik 11, Schuljahr 2026/27\par}
   \vspace{3mm}
   {\large Abgabe: 15. Oktober 2026\par}
 \end{titlepage}

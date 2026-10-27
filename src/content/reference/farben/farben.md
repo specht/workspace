@@ -115,62 +115,62 @@ Eine Palette ist eine Auswahl von Farben, die gut zusammenpassen. Die Cling-Pale
 
 <div class='color-palette' aria-label='Die 44 Farben der Cling-Palette'>
 <div class='color-palette-row'><span class='color-palette-family'>Gelb, Orange und Rot</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#ffe617' data-color='#ffe617' data-index='0' title='0 · #ffe617'>0</button>
-<button type='button' class='color-palette-swatch dark' style='background:#fad31c' data-color='#fad31c' data-index='1' title='1 · #fad31c'>1</button>
-<button type='button' class='color-palette-swatch dark' style='background:#fdb717' data-color='#fdb717' data-index='2' title='2 · #fdb717'>2</button>
-<button type='button' class='color-palette-swatch dark' style='background:#faaa21' data-color='#faaa21' data-index='3' title='3 · #faaa21'>3</button>
-<button type='button' class='color-palette-swatch dark' style='background:#f1753f' data-color='#f1753f' data-index='4' title='4 · #f1753f'>4</button>
-<button type='button' class='color-palette-swatch dark' style='background:#ed5724' data-color='#ed5724' data-index='5' title='5 · #ed5724'>5</button>
-<button type='button' class='color-palette-swatch dark' style='background:#ef4538' data-color='#ef4538' data-index='6' title='6 · #ef4538'>6</button>
-<button type='button' class='color-palette-swatch dark' style='background:#ea2830' data-color='#ea2830' data-index='7' title='7 · #ea2830'>7</button>
-<button type='button' class='color-palette-swatch light' style='background:#bc2326' data-color='#bc2326' data-index='8' title='8 · #bc2326'>8</button>
-<button type='button' class='color-palette-swatch light' style='background:#8c0c03' data-color='#8c0c03' data-index='9' title='9 · #8c0c03'>9</button>
+<button type='button' class='color-palette-swatch dark' style='background:#ffe617' data-color='#ffe617' data-index='0' title='0: #ffe617'>0</button>
+<button type='button' class='color-palette-swatch dark' style='background:#fad31c' data-color='#fad31c' data-index='1' title='1: #fad31c'>1</button>
+<button type='button' class='color-palette-swatch dark' style='background:#fdb717' data-color='#fdb717' data-index='2' title='2: #fdb717'>2</button>
+<button type='button' class='color-palette-swatch dark' style='background:#faaa21' data-color='#faaa21' data-index='3' title='3: #faaa21'>3</button>
+<button type='button' class='color-palette-swatch dark' style='background:#f1753f' data-color='#f1753f' data-index='4' title='4: #f1753f'>4</button>
+<button type='button' class='color-palette-swatch dark' style='background:#ed5724' data-color='#ed5724' data-index='5' title='5: #ed5724'>5</button>
+<button type='button' class='color-palette-swatch dark' style='background:#ef4538' data-color='#ef4538' data-index='6' title='6: #ef4538'>6</button>
+<button type='button' class='color-palette-swatch dark' style='background:#ea2830' data-color='#ea2830' data-index='7' title='7: #ea2830'>7</button>
+<button type='button' class='color-palette-swatch light' style='background:#bc2326' data-color='#bc2326' data-index='8' title='8: #bc2326'>8</button>
+<button type='button' class='color-palette-swatch light' style='background:#8c0c03' data-color='#8c0c03' data-index='9' title='9: #8c0c03'>9</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Rosa und Violett</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#e5185d' data-color='#e5185d' data-index='10' title='10 · #e5185d'>10</button>
-<button type='button' class='color-palette-swatch dark' style='background:#f384ae' data-color='#f384ae' data-index='11' title='11 · #f384ae'>11</button>
-<button type='button' class='color-palette-swatch dark' style='background:#fac6d2' data-color='#fac6d2' data-index='12' title='12 · #fac6d2'>12</button>
-<button type='button' class='color-palette-swatch dark' style='background:#b296c7' data-color='#b296c7' data-index='13' title='13 · #b296c7'>13</button>
-<button type='button' class='color-palette-swatch light' style='background:#7b67ae' data-color='#7b67ae' data-index='14' title='14 · #7b67ae'>14</button>
-<button type='button' class='color-palette-swatch light' style='background:#5f3577' data-color='#5f3577' data-index='15' title='15 · #5f3577'>15</button>
+<button type='button' class='color-palette-swatch dark' style='background:#e5185d' data-color='#e5185d' data-index='10' title='10: #e5185d'>10</button>
+<button type='button' class='color-palette-swatch dark' style='background:#f384ae' data-color='#f384ae' data-index='11' title='11: #f384ae'>11</button>
+<button type='button' class='color-palette-swatch dark' style='background:#fac6d2' data-color='#fac6d2' data-index='12' title='12: #fac6d2'>12</button>
+<button type='button' class='color-palette-swatch dark' style='background:#b296c7' data-color='#b296c7' data-index='13' title='13: #b296c7'>13</button>
+<button type='button' class='color-palette-swatch light' style='background:#7b67ae' data-color='#7b67ae' data-index='14' title='14: #7b67ae'>14</button>
+<button type='button' class='color-palette-swatch light' style='background:#5f3577' data-color='#5f3577' data-index='15' title='15: #5f3577'>15</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Grün</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#c1d18a' data-color='#c1d18a' data-index='16' title='16 · #c1d18a'>16</button>
-<button type='button' class='color-palette-swatch dark' style='background:#799155' data-color='#799155' data-index='17' title='17 · #799155'>17</button>
-<button type='button' class='color-palette-swatch dark' style='background:#80bc42' data-color='#80bc42' data-index='18' title='18 · #80bc42'>18</button>
-<button type='button' class='color-palette-swatch dark' style='background:#4aa03f' data-color='#4aa03f' data-index='19' title='19 · #4aa03f'>19</button>
-<button type='button' class='color-palette-swatch dark' style='background:#16884a' data-color='#16884a' data-index='20' title='20 · #16884a'>20</button>
-<button type='button' class='color-palette-swatch light' style='background:#003f2e' data-color='#003f2e' data-index='21' title='21 · #003f2e'>21</button>
+<button type='button' class='color-palette-swatch dark' style='background:#c1d18a' data-color='#c1d18a' data-index='16' title='16: #c1d18a'>16</button>
+<button type='button' class='color-palette-swatch dark' style='background:#799155' data-color='#799155' data-index='17' title='17: #799155'>17</button>
+<button type='button' class='color-palette-swatch dark' style='background:#80bc42' data-color='#80bc42' data-index='18' title='18: #80bc42'>18</button>
+<button type='button' class='color-palette-swatch dark' style='background:#4aa03f' data-color='#4aa03f' data-index='19' title='19: #4aa03f'>19</button>
+<button type='button' class='color-palette-swatch dark' style='background:#16884a' data-color='#16884a' data-index='20' title='20: #16884a'>20</button>
+<button type='button' class='color-palette-swatch light' style='background:#003f2e' data-color='#003f2e' data-index='21' title='21: #003f2e'>21</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Blau</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#c3def1' data-color='#c3def1' data-index='22' title='22 · #c3def1'>22</button>
-<button type='button' class='color-palette-swatch dark' style='background:#55beed' data-color='#55beed' data-index='23' title='23 · #55beed'>23</button>
-<button type='button' class='color-palette-swatch dark' style='background:#31a8e0' data-color='#31a8e0' data-index='24' title='24 · #31a8e0'>24</button>
-<button type='button' class='color-palette-swatch dark' style='background:#238acc' data-color='#238acc' data-index='25' title='25 · #238acc'>25</button>
-<button type='button' class='color-palette-swatch light' style='background:#0d60ae' data-color='#0d60ae' data-index='26' title='26 · #0d60ae'>26</button>
-<button type='button' class='color-palette-swatch light' style='background:#143b86' data-color='#143b86' data-index='27' title='27 · #143b86'>27</button>
-<button type='button' class='color-palette-swatch light' style='background:#001b4a' data-color='#001b4a' data-index='28' title='28 · #001b4a'>28</button>
+<button type='button' class='color-palette-swatch dark' style='background:#c3def1' data-color='#c3def1' data-index='22' title='22: #c3def1'>22</button>
+<button type='button' class='color-palette-swatch dark' style='background:#55beed' data-color='#55beed' data-index='23' title='23: #55beed'>23</button>
+<button type='button' class='color-palette-swatch dark' style='background:#31a8e0' data-color='#31a8e0' data-index='24' title='24: #31a8e0'>24</button>
+<button type='button' class='color-palette-swatch dark' style='background:#238acc' data-color='#238acc' data-index='25' title='25: #238acc'>25</button>
+<button type='button' class='color-palette-swatch light' style='background:#0d60ae' data-color='#0d60ae' data-index='26' title='26: #0d60ae'>26</button>
+<button type='button' class='color-palette-swatch light' style='background:#143b86' data-color='#143b86' data-index='27' title='27: #143b86'>27</button>
+<button type='button' class='color-palette-swatch light' style='background:#001b4a' data-color='#001b4a' data-index='28' title='28: #001b4a'>28</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Türkis</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#7dcdc2' data-color='#7dcdc2' data-index='29' title='29 · #7dcdc2'>29</button>
-<button type='button' class='color-palette-swatch dark' style='background:#00a8a8' data-color='#00a8a8' data-index='30' title='30 · #00a8a8'>30</button>
-<button type='button' class='color-palette-swatch dark' style='background:#12959f' data-color='#12959f' data-index='31' title='31 · #12959f'>31</button>
-<button type='button' class='color-palette-swatch light' style='background:#094e54' data-color='#094e54' data-index='32' title='32 · #094e54'>32</button>
+<button type='button' class='color-palette-swatch dark' style='background:#7dcdc2' data-color='#7dcdc2' data-index='29' title='29: #7dcdc2'>29</button>
+<button type='button' class='color-palette-swatch dark' style='background:#00a8a8' data-color='#00a8a8' data-index='30' title='30: #00a8a8'>30</button>
+<button type='button' class='color-palette-swatch dark' style='background:#12959f' data-color='#12959f' data-index='31' title='31: #12959f'>31</button>
+<button type='button' class='color-palette-swatch light' style='background:#094e54' data-color='#094e54' data-index='32' title='32: #094e54'>32</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Braun und Sand</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch light' style='background:#381e11' data-color='#381e11' data-index='33' title='33 · #381e11'>33</button>
-<button type='button' class='color-palette-swatch dark' style='background:#c05c20' data-color='#c05c20' data-index='34' title='34 · #c05c20'>34</button>
-<button type='button' class='color-palette-swatch dark' style='background:#bf9b6b' data-color='#bf9b6b' data-index='35' title='35 · #bf9b6b'>35</button>
-<button type='button' class='color-palette-swatch dark' style='background:#e9d4a7' data-color='#e9d4a7' data-index='36' title='36 · #e9d4a7'>36</button>
+<button type='button' class='color-palette-swatch light' style='background:#381e11' data-color='#381e11' data-index='33' title='33: #381e11'>33</button>
+<button type='button' class='color-palette-swatch dark' style='background:#c05c20' data-color='#c05c20' data-index='34' title='34: #c05c20'>34</button>
+<button type='button' class='color-palette-swatch dark' style='background:#bf9b6b' data-color='#bf9b6b' data-index='35' title='35: #bf9b6b'>35</button>
+<button type='button' class='color-palette-swatch dark' style='background:#e9d4a7' data-color='#e9d4a7' data-index='36' title='36: #e9d4a7'>36</button>
 </div></div>
 <div class='color-palette-row'><span class='color-palette-family'>Grau, Schwarz und Weiß</span><div class='color-palette-swatches'>
-<button type='button' class='color-palette-swatch dark' style='background:#e7e6e1' data-color='#e7e6e1' data-index='37' title='37 · #e7e6e1'>37</button>
-<button type='button' class='color-palette-swatch dark' style='background:#cfd0d2' data-color='#cfd0d2' data-index='38' title='38 · #cfd0d2'>38</button>
-<button type='button' class='color-palette-swatch dark' style='background:#8a8b8f' data-color='#8a8b8f' data-index='39' title='39 · #8a8b8f'>39</button>
-<button type='button' class='color-palette-swatch dark' style='background:#778590' data-color='#778590' data-index='40' title='40 · #778590'>40</button>
-<button type='button' class='color-palette-swatch light' style='background:#474d4d' data-color='#474d4d' data-index='41' title='41 · #474d4d'>41</button>
-<button type='button' class='color-palette-swatch light' style='background:#050608' data-color='#050608' data-index='42' title='42 · #050608'>42</button>
-<button type='button' class='color-palette-swatch dark' style='background:#ffffff' data-color='#ffffff' data-index='43' title='43 · #ffffff'>43</button>
+<button type='button' class='color-palette-swatch dark' style='background:#e7e6e1' data-color='#e7e6e1' data-index='37' title='37: #e7e6e1'>37</button>
+<button type='button' class='color-palette-swatch dark' style='background:#cfd0d2' data-color='#cfd0d2' data-index='38' title='38: #cfd0d2'>38</button>
+<button type='button' class='color-palette-swatch dark' style='background:#8a8b8f' data-color='#8a8b8f' data-index='39' title='39: #8a8b8f'>39</button>
+<button type='button' class='color-palette-swatch dark' style='background:#778590' data-color='#778590' data-index='40' title='40: #778590'>40</button>
+<button type='button' class='color-palette-swatch light' style='background:#474d4d' data-color='#474d4d' data-index='41' title='41: #474d4d'>41</button>
+<button type='button' class='color-palette-swatch light' style='background:#050608' data-color='#050608' data-index='42' title='42: #050608'>42</button>
+<button type='button' class='color-palette-swatch dark' style='background:#ffffff' data-color='#ffffff' data-index='43' title='43: #ffffff'>43</button>
 </div></div>
 </div>
 

@@ -112,7 +112,7 @@ YAML errät, was ein Wert ist. Was du als Text meinst, ist manchmal eine Zahl od
 <thead><tr><th>Geschrieben</th><th>Ruby</th><th><code>yq</code></th><th>Gemeint war</th></tr></thead>
 <tbody>
 <tr><td><code>country: no</code></td><td><code>false</code></td><td><code>"no"</code></td><td>Norwegen: <code>"no"</code></td></tr>
-<tr><td><code>answer: yes</code> · <code>light: on</code></td><td><code>true</code></td><td><code>"yes"</code> · <code>"on"</code></td><td>je nachdem</td></tr>
+<tr><td><code>answer: yes</code>, <code>light: on</code></td><td><code>true</code></td><td><code>"yes"</code>, <code>"on"</code></td><td>je nachdem</td></tr>
 <tr><td><code>version: 1.10</code></td><td><code>1.1</code></td><td><code>1.10</code></td><td>Version 1.10: <code>"1.10"</code></td></tr>
 <tr><td><code>time: 12:30</code></td><td><code>45000</code></td><td><code>"12:30"</code></td><td>eine Uhrzeit: <code>"12:30"</code></td></tr>
 <tr><td><code>zip: 01234</code></td><td><code>668</code></td><td><code>1234</code></td><td>eine Postleitzahl: <code>"01234"</code></td></tr>
@@ -130,7 +130,7 @@ Drei Meldungen, bei denen das Lesen ganz abbricht:
 <tbody>
 <tr><td><code>found a tab character that violates indentation</code></td><td>In der genannten Zeile ist mit Tab eingerückt. In VS Code zeigt die Statusleiste unten »Spaces« oder »Tab Size«; ein Klick darauf stellt um.</td></tr>
 <tr><td><code>mapping values are not allowed in this context</code></td><td>In einem Wert steht <code>: </code>, etwa <code>title: Mein Film: Teil 2</code>. Der Wert gehört in Anführungszeichen.</td></tr>
-<tr><td><code>did not find expected key</code> · <code>did not find expected '-' indicator</code></td><td>Die Einrückung passt nicht: Ein Eintrag steht ein Leerzeichen zu weit links oder rechts, bei der zweiten Meldung in einer Liste.</td></tr>
+<tr><td><code>did not find expected key</code> oder <code>did not find expected '-' indicator</code></td><td>Die Einrückung passt nicht: Ein Eintrag steht ein Leerzeichen zu weit links oder rechts, bei der zweiten Meldung in einer Liste.</td></tr>
 </tbody>
 </table>
 </div>

@@ -164,7 +164,7 @@ function costTable() {
         return wide || sizeOf(info, s) !== sizeOf(info, x) || cycleLabel(info, s) !== cycleLabel(info, x);
     }).map((info) => {
         const wide = WIDE_OPERATIONS.has(info.name);
-        const cost = (arch, w = false) => `${sizeOf(info, arch, w)} · ${cycleLabel(info, arch, w)}`;
+        const cost = (arch, w = false) => `${sizeOf(info, arch, w)} Bytes, ${cycleLabel(info, arch, w)} Takte`;
         const same = cost(s) === cost(x);
         return `<tr><td>${code(info.syntax)}</td><td class='minicpu-num'>${cost(s)}</td>` +
             `<td class='minicpu-num'>${same ? cost(x) : `<strong>${cost(x)}</strong>`}</td>` +

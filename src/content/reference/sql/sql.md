@@ -94,7 +94,7 @@ SELECT name FROM country WHERE name LIKE '%land%';
 <tr><td><code>IN ('Europa', 'Asien')</code></td><td>einer der Werte</td></tr>
 <tr><td><code>BETWEEN 10 AND 20</code></td><td>von 10 bis 20, beide eingeschlossen</td></tr>
 <tr><td><code>LIKE '%land%'</code></td><td>Textmuster: <code>%</code> steht für beliebig viele Zeichen, <code>_</code> für genau eines</td></tr>
-<tr><td><code>IS NULL</code> · <code>IS NOT NULL</code></td><td>kein Wert eingetragen. <code>= NULL</code> trifft nie zu.</td></tr>
+<tr><td><code>IS NULL</code>, <code>IS NOT NULL</code></td><td>kein Wert eingetragen. <code>= NULL</code> trifft nie zu.</td></tr>
 </tbody>
 </table>
 </div>
@@ -190,9 +190,12 @@ CREATE TABLE entry (
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Schreibweise</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>INT</code> · <code>DECIMAL(6,2)</code></td><td>ganze Zahl · Kommazahl mit 6 Stellen, davon 2 nach dem Komma</td></tr>
-<tr><td><code>VARCHAR(80)</code> · <code>TEXT</code></td><td>Text bis 80 Zeichen · langer Text</td></tr>
-<tr><td><code>DATE</code> · <code>DATETIME</code></td><td>Datum · Datum mit Uhrzeit</td></tr>
+<tr><td><code>INT</code></td><td>ganze Zahl</td></tr>
+<tr><td><code>DECIMAL(6,2)</code></td><td>Kommazahl mit 6 Stellen, davon 2 nach dem Komma</td></tr>
+<tr><td><code>VARCHAR(80)</code></td><td>Text bis 80 Zeichen</td></tr>
+<tr><td><code>TEXT</code></td><td>langer Text</td></tr>
+<tr><td><code>DATE</code></td><td>Datum</td></tr>
+<tr><td><code>DATETIME</code></td><td>Datum mit Uhrzeit</td></tr>
 <tr><td><code>NOT NULL</code></td><td>Die Spalte braucht immer einen Wert.</td></tr>
 <tr><td><code>DEFAULT CURRENT_TIMESTAMP</code></td><td>ohne Angabe der Zeitpunkt des Einfügens</td></tr>
 <tr><td><code>AUTO_INCREMENT</code></td><td>MySQL vergibt die nächste Nummer selbst.</td></tr>
@@ -269,7 +272,7 @@ Platzhalter stehen nur für Werte, nicht für Tabellen- oder Spaltennamen. Muss 
 <tr><td><code>1054</code> Unknown column …</td><td>Die Spalte gibt es nicht. <code>DESCRIBE</code> zeigt die richtigen Namen. Auch ein Text ohne Anführungszeichen wird als Spaltenname gelesen.</td></tr>
 <tr><td><code>1062</code> Duplicate entry …</td><td>Der Wert steht schon in einer Spalte mit <code>PRIMARY KEY</code> oder <code>UNIQUE</code>.</td></tr>
 <tr><td><code>1452</code> Cannot add or update a child row</td><td>Ein Fremdschlüssel verweist auf eine Zeile, die es nicht gibt.</td></tr>
-<tr><td><code>1045</code> · <code>1044</code> Access denied</td><td>Falscher Benutzername oder falsches Passwort, oder dieser Zugang darf die Datenbank nicht benutzen.</td></tr>
+<tr><td><code>1045</code> oder <code>1044</code> Access denied</td><td>Falscher Benutzername oder falsches Passwort, oder dieser Zugang darf die Datenbank nicht benutzen.</td></tr>
 </tbody>
 </table>
 </div>
