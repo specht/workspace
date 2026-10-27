@@ -9,8 +9,8 @@ require_relative 'call_check'
 # the guest user that can read /workspace but not change it (rule 1), writes
 # harness.dart into a fresh folder in /tmp, which imports the file (and so
 # what it imports) and runs the calls of the check, and runs it with the
-# Dart SDK itself (DART: the dart on the path is Flutter's, which wants to
-# write into its own folder first). A main of the file never runs.
+# Dart SDK (DART, /opt/dart-sdk since Flutter left the image). A main of the
+# file never runs.
 #
 #   check:
 #     type: dart
@@ -35,7 +35,7 @@ module DartCheck
     MAX_CASES = CallCheck::MAX_CASES
     RESULT_MARK = CallCheck::RESULT_MARK
     COMPILE_MARK = '__HS_COMPILE__'
-    DART = '/opt/flutter/bin/cache/dart-sdk/bin/dart'
+    DART = '/opt/dart-sdk/bin/dart'
     MAX_ERROR_LINES = 6
 
     def self.cases(check)
