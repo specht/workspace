@@ -8487,6 +8487,14 @@ class Main < Sinatra::Base
         fragment.to_html
     end
 
+    # A code block of the site's own (commands, not a file of the repository).
+    def git_snippet_html(text, language)
+        fragment = Nokogiri::HTML::DocumentFragment.parse("<pre><code class='#{language}'></code></pre>")
+        fragment.at('code').content = text
+        CodeHighlight.apply(fragment)
+        fragment.to_html
+    end
+
     # A README: Markdown without HTML of its own and without pictures, code highlighted.
     def git_markdown_html(text)
         renderer = Redcarpet::Render::HTML.new(:filter_html => true, :no_images => true, :safe_links_only => true, :no_styles => true)
@@ -8579,7 +8587,8 @@ class Main < Sinatra::Base
         if ref.nil?
             io << git_header_html(nil, :files)
             io << "<div class='git-empty'><p>Das Repository ist noch leer.</p><p>So kommt der erste Commit hinein:</p>"
-            io << "<pre><code>git clone #{h.(GitServer.address(@git[:id], @git[:name]))}\n# Dateien anlegen, dann\ngit add -A\ngit commit -m \"Der Anfang\"\ngit push</code></pre></div>"
+            io << git_snippet_html("git clone #{GitServer.address(@git[:id], @git[:name])}\ncd #{@git[:name]}\n" \
+                "# Dateien anlegen, dann:\ngit add -A\ngit commit -m \"Der Anfang\"\ngit push\n", 'bash') << "</div>"
             return io
         end
         sha = GitBrowse.resolve(repo, ref)

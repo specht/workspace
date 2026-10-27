@@ -4511,7 +4511,6 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 .class-repos-dialog .class-repo-git .btn {
-    min-height: 44px;
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
@@ -9916,7 +9915,6 @@ div.pip-world[data-stepper] .stepper-timeline {
 }
 
 .git-key-buttons .btn {
-    min-height: 44px;
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
@@ -9966,7 +9964,6 @@ div.pip-world[data-stepper] .stepper-timeline {
 
 .git-bar .btn,
 .git-file-bar a {
-    min-height: 44px;
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
@@ -10152,6 +10149,12 @@ div.pip-world[data-stepper] .stepper-timeline {
     font-size: 90%;
 }
 
-.git-empty pre {
-    max-width: 40em;
+/* For a finger at least 44 px; with a mouse the buttons keep their size. */
+@media (pointer: coarse) {
+    .class-repos-dialog .class-repo-git .btn,
+    .git-key-buttons .btn,
+    .git-bar .btn,
+    .git-file-bar a {
+        min-height: 44px;
+    }
 }

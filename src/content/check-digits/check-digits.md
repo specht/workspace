@@ -345,6 +345,7 @@ oder <code>False</code> zurück und benutzt <code>check_digit</code>.
 
 _include(struktogramme#ausprobieren)
 
+<!-- language: ruby -->
 <!-- hint -->
 Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
 zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
@@ -363,7 +364,6 @@ valid_ean(code):
 ```
 <!-- /hint -->
 
-<!-- language: ruby -->
 <!-- hint -->
 Für die Einzelheiten in Ruby: `code.length` ist die Zahl der Zeichen,
 `code.chars` die Liste der Zeichen, `('0'..'9').include?(c)` sagt, ob `c` eine
@@ -384,6 +384,24 @@ end
 <!-- /solution -->
 <!-- /language -->
 <!-- language: python -->
+<!-- hint -->
+Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
+zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
+dann gleich `false` zurück.
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch die Einzelheiten fehlen:
+
+```pseudocode
+valid_ean(code):
+    if (code hat nicht genau 13 Zeichen): return false
+    if (ein Zeichen ist keine Ziffer): return false
+    digits ← (die 13 Zeichen als Zahlen)
+    return check_digit(die ersten zwölf) == digits[12]
+```
+<!-- /hint -->
+
 <!-- hint -->
 Für die Einzelheiten in Python: `len(code)` ist die Zahl der Zeichen,
 `c in '0123456789'` sagt, ob `c` eine Ziffer ist, `int(c)` macht aus `'7'` die
