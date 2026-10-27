@@ -128,11 +128,19 @@ module TaskCheck
             result.message ||= task['prediction'] ? 'Gut vermutet.' : 'Richtig.'
             result.solution = task['solution']
         elsif result.status == :wrong
-            result.message ||= task['prediction'] ?
-                'Deine Vermutung war eine andere. Probier es aus und vergleiche.' :
-                'Das stimmt noch nicht.'
+            result.message = task['prediction'] ? wrong_prediction(result.message) : (result.message || 'Das stimmt noch nicht.')
         end
         result
+    end
+
+    # A wrong prediction says so first, then why (the task's feedback) or
+    # what to do. The card shows only the colour of a hint, not »falsch«.
+    WRONG_PREDICTION = 'Deine Vermutung stimmt nicht.'
+
+    def self.wrong_prediction(message)
+        return "#{WRONG_PREDICTION} Probier es aus und sieh nach, was wirklich passiert." if message.to_s.strip.empty?
+
+        message.lstrip.start_with?('```', '<') ? "#{WRONG_PREDICTION}\n\n#{message}" : "#{WRONG_PREDICTION} #{message}"
     end
 
     # measure and command run in the person's Workspace (MeasureCheck);
@@ -552,7 +560,7 @@ module TaskCheck
         end
         message = say && say['say']
         if message.nil? && correct.size > 1
-            message = 'Das stimmt noch nicht ganz. Mehrere Antworten können richtig sein.'
+            message = task['prediction'] ? 'Mehrere Antworten können richtig sein.' : 'Das stimmt noch nicht ganz. Mehrere Antworten können richtig sein.'
         end
         Result.new(:status => :wrong, :message => message)
     end
