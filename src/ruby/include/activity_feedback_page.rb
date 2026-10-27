@@ -70,11 +70,28 @@ class Main < Sinatra::Base
         students = feedback_students(group)
         results = ActivityFeedback.results(states, students)
         now = Time.now.to_i
+        moved_on = results[:last] ? feedback_moved_on(students, activity_key, results[:last]) : 0
         state = ActivityFeedback.prompt(:feedback => stored, :last => results[:last], :students => results[:students],
-                                        :size => students.size, :now => now)
+                                        :size => students.size, :now => now, :moved_on => moved_on)
         card = state == :due ? ActivityFeedback.card_html(group, info[:title], (now - results[:last]) / ActivityFeedback::DAY) : ''
         "<div class='feedback-place' id='rueckmeldung' data-state='#{state}'>#{card}#{ActivityFeedback.form_html(info, stored)}</div>" \
             "#{feedback_css}#{feedback_script}"
+    end
+
+    # Whether the class has moved on (ActivityFeedback.prompt): the most of
+    # these students with a result newer than last in one activity other
+    # than activity_key.
+    def feedback_moved_on(emails, activity_key, last)
+        return 0 if emails.empty?
+
+        values = { :emails => emails, :prefix => "#{activity_key}/", :last => last }
+        row = neo4j_query(<<~END_OF_QUERY, values).first
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE u.email IN $emails AND NOT s.task STARTS WITH $prefix AND s.updated > $last
+            WITH split(s.task, '/')[0] AS activity, count(DISTINCT u) AS n
+            RETURN max(n) AS n;
+        END_OF_QUERY
+        row && row['n'] ? row['n'].to_i : 0
     end
 
     def feedback_script
@@ -115,8 +132,10 @@ class Main < Sinatra::Base
             per_activity.each do |activity, times|
                 next unless activities[activity]
 
+                newest = students[group].to_h { |email| [email, last[email]] }
+                moved_on = ActivityFeedback.moved_on_count(newest, activity, times.max)
                 state = ActivityFeedback.prompt(:feedback => stored[[group, activity]], :last => times.max, :students => times.size,
-                                                :size => students[group].size, :now => now)
+                                                :size => students[group].size, :now => now, :moved_on => moved_on)
                 due << [times.max, group, activity, activities[activity]] if state == :due
             end
         end

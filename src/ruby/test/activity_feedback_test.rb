@@ -34,18 +34,23 @@ class ActivityFeedbackTest < Minitest::Test
         assert_equal false, ActivityFeedback.normalize({ 'text' => 'Gut.', 'contact' => 'yes' })['contact']
     end
 
-    def prompt(feedback: nil, quiet_days: 8, students: 5, size: 20)
+    # moved_on: how many of the group's students went on to one other
+    # activity after the last result here (by default all who worked here)
+    def prompt(feedback: nil, quiet_days: 8, students: 5, size: 20, moved_on: nil)
         last = quiet_days && NOW - quiet_days * DAY
-        ActivityFeedback.prompt(:feedback => feedback, :last => last, :students => students, :size => size, :now => NOW)
+        ActivityFeedback.prompt(:feedback => feedback, :last => last, :students => students, :size => size, :now => NOW,
+                                :moved_on => moved_on || students)
     end
 
     # The rule: results of at least three students (all, in a smaller
-    # group), none for seven days, the last one at most sixty days ago.
+    # group); the group has moved on and none came here for seven days, or
+    # none came for 21 days; the last one at most sixty days ago.
     def test_looks_finished
         assert_equal :due, prompt
         assert_equal :due, prompt(:quiet_days => 7)
         assert_equal :in_progress, prompt(:quiet_days => 6)
-        assert_equal :in_progress, ActivityFeedback.prompt(:feedback => nil, :last => NOW - 7 * DAY + 1, :students => 5, :size => 20, :now => NOW)
+        assert_equal :in_progress, ActivityFeedback.prompt(:feedback => nil, :last => NOW - 7 * DAY + 1, :students => 5, :size => 20, :now => NOW,
+                                                           :moved_on => 5)
         assert_equal :due, prompt(:quiet_days => 60)
         assert_equal :too_old, prompt(:quiet_days => 61)
         assert_equal :not_worked, prompt(:quiet_days => nil, :students => 0)
@@ -56,6 +61,46 @@ class ActivityFeedbackTest < Minitest::Test
         assert_equal :not_worked, prompt(:students => 1, :size => 2)
         # a group without students counted: one result is enough to ask
         assert_equal :due, prompt(:students => 1, :size => 0)
+    end
+
+    # A week of holidays or a cancelled lesson in the middle of an
+    # activity: nothing new anywhere, so no card before three weeks
+    def test_holidays_do_not_ask_before_three_weeks
+        assert_equal :in_progress, prompt(:quiet_days => 8, :moved_on => 0)
+        assert_equal :in_progress, prompt(:quiet_days => 14, :moved_on => 0)
+        assert_equal :in_progress, prompt(:quiet_days => 20, :moved_on => 0)
+        assert_equal :due, prompt(:quiet_days => 21, :moved_on => 0)
+        # moved on, but the last result here only six days ago
+        assert_equal :in_progress, prompt(:quiet_days => 6)
+        # the limit of sixty days holds either way
+        assert_equal :too_old, prompt(:quiet_days => 61, :moved_on => 0)
+    end
+
+    # A few students trying another activity are no moving on of the class:
+    # half of those who worked here, and at least three
+    def test_a_few_students_elsewhere_are_no_moving_on
+        assert_equal :in_progress, prompt(:students => 20, :moved_on => 3)
+        assert_equal :in_progress, prompt(:students => 20, :moved_on => 9)
+        assert_equal :due, prompt(:students => 20, :moved_on => 10)
+        assert_equal :in_progress, prompt(:students => 4, :moved_on => 2, :size => 20)
+        assert_equal :due, prompt(:students => 4, :moved_on => 3, :size => 20)
+        # a group of two: both
+        assert_equal :in_progress, prompt(:students => 2, :size => 2, :moved_on => 1)
+        assert_equal :due, prompt(:students => 2, :size => 2, :moved_on => 2)
+    end
+
+    # From the newest result per student and activity: the most students in
+    # one other activity after the last one here
+    def test_moved_on_count
+        newest = {
+            'a' => { 'here' => 100, 'next' => 210 },
+            'b' => { 'here' => 120, 'next' => 220, 'kata' => 300 },
+            'c' => { 'here' => 150, 'kata' => 90 },
+            'd' => { 'next' => 140 },
+        }
+        assert_equal 2, ActivityFeedback.moved_on_count(newest, 'here', 150)
+        assert_equal 0, ActivityFeedback.moved_on_count(newest, 'here', 400)
+        assert_equal 0, ActivityFeedback.moved_on_count({}, 'here', 150)
     end
 
     def test_not_now_never_and_answered

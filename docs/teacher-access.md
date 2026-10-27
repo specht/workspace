@@ -510,8 +510,15 @@ Rückmeldung je Lehrkraft, Gruppe und Aktivität; sie lässt sich ändern.
 **Wann die Seite fragt** (`ActivityFeedback.prompt`): Mindestens drei der
 Lernenden der Gruppe (in einer kleineren Gruppe alle; ohne Lehrkräfte,
 Admins und Testkonten) haben eine Aufgabe der Aktivität geprüft,
-beantwortet oder abgegeben, und das neueste `updated` ihrer `TaskState`s
-ist mindestens 7 und höchstens 60 Tage alt. Dann steht über der Tabelle
+beantwortet oder abgegeben, das neueste `updated` ihrer `TaskState`s ist
+höchstens 60 Tage alt, und die Klasse ist entweder weitergegangen und
+hier seit 7 Tagen still, oder hier seit 21 Tagen still (`QUIET_DAYS`,
+`QUIET_ALONE_DAYS`). Weitergegangen heißt: In einer anderen Aktivität
+haben mindestens die Hälfte der Lernenden, die hier gearbeitet haben, und
+mindestens drei eine Aufgabe nach der letzten von hier
+(`ActivityFeedback.moved_on_count`); ein paar, die anderswo stöbern,
+zählen nicht. Eine Woche Ferien oder eine ausgefallene Stunde mitten in
+einer Aktivität bringt die Karte also nicht. Dann steht über der Tabelle
 die Karte »Wie lief die Aktivität?« mit »Rückmeldung geben«, »Nicht jetzt«
 (14 Tage ausgeblendet, `snoozed_until`) und »Nicht mehr fragen« (`never`,
 für diese Gruppe und Aktivität). Ältere Aktivitäten fragen nicht mehr von

@@ -26,7 +26,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   `data/git-repos`); sie gehen mit dem Konto, die Datenschutzerklärung und das Verzeichnis nennen sie. `/git` ist jetzt auch
   für Lernende offen; im Profil gibt es »Git im Menü anzeigen«.
 - Lehrkräfte können auf der Klassenseite zurückmelden, wie eine Aktivität mit ihrer Gruppe lief; die Seite fragt
-  danach, wenn die Gruppe eine Woche lang nichts mehr dazu geprüft hat. Gespeichert wird es als `ActivityFeedback`
+  danach, wenn die Gruppe weitergegangen ist und eine Woche lang nichts mehr dazu geprüft hat (oder drei
+  Wochen lang gar nichts). Gespeichert wird es als `ActivityFeedback`
   am Konto der Lehrkraft (gelöscht mit dem Konto), die Administration liest es unter `/rueckmeldungen`; die
   Datenschutzerklärung und das Verzeichnis nennen es.
 - Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt

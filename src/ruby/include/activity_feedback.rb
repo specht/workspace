@@ -24,12 +24,19 @@ require_relative 'code_languages'
 # fetches the data (include/activity_feedback_page.rb).
 module ActivityFeedback
     DAY = 24 * 3600
-    # »Looks finished«: nobody of the group's students has checked,
-    # answered or handed in a task of the activity for QUIET_DAYS, and at
-    # least MIN_STUDENTS of them (all, in a smaller group) did so before.
-    # Older than ASK_WITHIN_DAYS, the card does not come by itself any
-    # more (nobody remembers a lesson of last term); the link stays.
+    # »Looks finished«: at least MIN_STUDENTS of the group's students (all,
+    # in a smaller group) have a result in the activity, and either the
+    # class has moved on (in one other activity, at least half of those
+    # students and at least as many as MIN_STUDENTS asks have a result newer
+    # than the last one here: a few students trying something else are no
+    # moving on) and nothing came here for QUIET_DAYS, or nothing came for
+    # QUIET_ALONE_DAYS (a class that stops after an activity). A week of
+    # holidays or a cancelled lesson alone does not bring the card in the
+    # middle of an activity. Older than ASK_WITHIN_DAYS, the card does not
+    # come by itself any more (nobody remembers a lesson of last term); the
+    # button stays.
     QUIET_DAYS = 7
+    QUIET_ALONE_DAYS = 21
     ASK_WITHIN_DAYS = 60
     MIN_STUDENTS = 3
     # »Nicht jetzt«
@@ -74,20 +81,35 @@ module ActivityFeedback
     # feedback: the stored node (symbol keys) or nil; last: the newest
     # TaskState.updated of the group's students in the activity (epoch) or
     # nil; students: how many of them have one; size: how many students the
-    # group has. :answered, :never, :not_worked, :in_progress, :too_old,
-    # :snoozed or :due (the card shows).
-    def self.prompt(feedback:, last:, students:, size:, now:)
+    # group has; moved_on: the most of the group's students that have a
+    # result newer than last in one other activity (moved_on_count).
+    # :answered, :never, :not_worked, :in_progress, :too_old, :snoozed or
+    # :due (the card shows).
+    def self.prompt(feedback:, last:, students:, size:, now:, moved_on: 0)
         feedback ||= {}
         return :answered if feedback[:created_at]
         return :never if feedback[:never] == true
-        return :not_worked if last.nil? || students.to_i < [[MIN_STUDENTS, size.to_i].min, 1].max
+        need = [[MIN_STUDENTS, size.to_i].min, 1].max
+        return :not_worked if last.nil? || students.to_i < need
 
         quiet = now.to_i - last.to_i
-        return :in_progress if quiet < QUIET_DAYS * DAY
+        class_moved_on = moved_on.to_i >= [(students.to_i / 2.0).ceil, need].max
+        return :in_progress if quiet < (class_moved_on ? QUIET_DAYS : QUIET_ALONE_DAYS) * DAY
         return :too_old if quiet > ASK_WITHIN_DAYS * DAY
         return :snoozed if feedback[:snoozed_until].to_i > now.to_i
 
         :due
+    end
+
+    # moved_on for prompt: newest is { email => { activity => newest result
+    # (epoch) } } for the group's students; the most of them with a result
+    # newer than last in one activity other than this one.
+    def self.moved_on_count(newest, activity, last)
+        counts = Hash.new(0)
+        newest.each_value do |per_activity|
+            per_activity.each { |other, t| counts[other] += 1 if other != activity && t.to_i > last.to_i }
+        end
+        counts.values.max || 0
     end
 
     # The newest result and how many students have one, from the board's
