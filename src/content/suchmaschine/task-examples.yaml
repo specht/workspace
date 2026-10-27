@@ -1,0 +1,57 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# loesung/ ist search.rb und search.py am Ende der Seite, stufen/ die Stände
+# davor; in fehler/ stehen häufige Fehler, je einer gegenüber der Lösung.
+format: 1
+activity: suchmaschine
+examples:
+  crawl:
+    pass:
+      - { files: { suchmaschine/search.rb: loesung/search.rb } }
+      - { files: { suchmaschine/search.rb: stufen/search-1.rb } }
+    fail:
+      - { files: { suchmaschine/search.rb: { text: "# noch leer\n" } } }
+      - { files: { suchmaschine/search.rb: fehler/nil-gespeichert.rb }, say: fehlt.html }
+    python:
+      pass:
+        - { files: { suchmaschine/search.py: loesung/search.py } }
+        - { files: { suchmaschine/search.py: stufen/search-1.py } }
+      fail:
+        - { files: { suchmaschine/search.py: { text: "# noch leer\n" } } }
+        - { files: { suchmaschine/search.py: fehler/nil-gespeichert.py }, say: fehlt.html }
+  index:
+    pass:
+      - { files: { suchmaschine/search.rb: loesung/search.rb } }
+    fail:
+      - { files: { suchmaschine/search.rb: stufen/search-1.rb } }
+      - { files: { suchmaschine/search.rb: fehler/ohne-uniq.rb }, say: nur einmal }
+    python:
+      pass:
+        - { files: { suchmaschine/search.py: loesung/search.py } }
+      fail:
+        - { files: { suchmaschine/search.py: stufen/search-1.py } }
+        - { files: { suchmaschine/search.py: fehler/ohne-uniq.py }, say: nur einmal }
+  suchen:
+    pass:
+      - { files: { suchmaschine/search.rb: loesung/search.rb } }
+    fail:
+      - { files: { suchmaschine/search.rb: stufen/search-1.rb } }
+      - { files: { suchmaschine/search.rb: fehler/vereinigung.rb }, say: beide Wörter }
+    python:
+      pass:
+        - { files: { suchmaschine/search.py: loesung/search.py } }
+      fail:
+        - { files: { suchmaschine/search.py: stufen/search-1.py } }
+        - { files: { suchmaschine/search.py: fehler/vereinigung.py }, say: beide Wörter }
+  eingehend:
+    pass:
+      - { files: { suchmaschine/search.rb: loesung/search.rb } }
+    fail:
+      - { files: { suchmaschine/search.rb: stufen/search-3.rb } }
+      - { files: { suchmaschine/search.rb: fehler/selbstlinks.rb }, say: sich selbst }
+    python:
+      pass:
+        - { files: { suchmaschine/search.py: loesung/search.py } }
+      fail:
+        - { files: { suchmaschine/search.py: stufen/search-3.py } }
+        - { files: { suchmaschine/search.py: fehler/selbstlinks.py }, say: sich selbst }
