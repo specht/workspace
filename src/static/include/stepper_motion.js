@@ -92,11 +92,16 @@
             live.replaceChildren(...goal.cloneNode(true).childNodes);
             next = after;
         }
-        // at rest on the goal: backwards, the goal's own drawing
+        // at rest on the goal: backwards, the goal's own drawing, as it is
+        // now; a widget may draw the next step into the same SVG before this
+        // movement is finished (a quick second step back), and that drawing
+        // must stay where it is
+        const goalView = goal.getAttribute('viewBox');
+        const goalCopy = backwards ? goal.cloneNode(true) : null;
         const rest = () => {
             if (!backwards) return;
-            if (goal.getAttribute('viewBox')) live.setAttribute('viewBox', goal.getAttribute('viewBox'));
-            live.replaceChildren(...goal.childNodes);
+            if (goalView) live.setAttribute('viewBox', goalView);
+            live.replaceChildren(...goalCopy.childNodes);
         };
         const old = new Map();
         for (const child of live.children) if (child.dataset.key && !child.dataset.ends && !old.has(child.dataset.key)) old.set(child.dataset.key, child);

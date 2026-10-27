@@ -7979,6 +7979,9 @@ div[data-stepper] .stepper-word { display: none; }
         flex-wrap: wrap;
         align-items: center;
         row-gap: 0.4em;
+        /* no gap of a widget's own between the buttons: the pairs below are
+           joined, the groups apart by their margins */
+        column-gap: 0;
     }
     div[data-stepper] [data-go],
     div[data-stepper] [data-play],
