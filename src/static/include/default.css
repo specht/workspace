@@ -3342,6 +3342,17 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+    /* A wide picture that scrolls sideways (img.full in its .scroll-x):
+       its box too from edge to edge, the picture starting where the text
+       starts; scrolled, it uses the whole width of the screen instead of
+       ending at the column's right margin */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .scroll-x:has(> img.full):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
     /* the card's colour bar stays, at the screen's edge */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
         border-left-width: 5px;
