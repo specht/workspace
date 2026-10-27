@@ -346,7 +346,9 @@ pre .code-context {
 pre .code-cut {
     display: block;
     height: 0.4rem;
-    margin: 0.3rem -1em;
+    /* across the block's padding: 1em, or what the block says it is
+       (--cut-reach, on a phone 1rem, below) */
+    margin: 0.3rem calc(-1 * var(--cut-reach, 1em));
     background: rgba(255, 255, 255, 0.3);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 1.5L8 6.5L16 1.5' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") left center / 0.8rem 100% repeat-x;
@@ -379,8 +381,8 @@ pre .code-cut + .code-line:not(.code-context)::before,
 pre .code-line:not(.code-context):has(+ .code-cut)::after {
     content: '';
     position: absolute;
-    left: -1em;
-    right: -1em;
+    left: calc(-1 * var(--cut-reach, 1em));
+    right: calc(-1 * var(--cut-reach, 1em));
     height: 1.4em;
     pointer-events: none;
 }
@@ -3352,6 +3354,11 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
         margin-right: calc(50% - 50vw);
         padding-left: 1rem;
         padding-right: 1rem;
+    }
+    /* a code block's cut and its shadow reach across that padding to the
+       screen's edges (pre .code-cut) */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > :is(pre, .code-copy-box):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        --cut-reach: 1rem;
     }
     /* the card's colour bar stays, at the screen's edge */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
@@ -7254,8 +7261,8 @@ textarea.struktogramm-playground-input {
     }
 
     pre .code-cut {
-        margin-left: -0.6em;
-        margin-right: -0.6em;
+        margin-left: calc(-1 * var(--cut-reach, 0.6em));
+        margin-right: calc(-1 * var(--cut-reach, 0.6em));
     }
 
     .code-copy-box pre .code-cut {
@@ -7264,8 +7271,8 @@ textarea.struktogramm-playground-input {
 
     pre .code-cut + .code-line:not(.code-context)::before,
     pre .code-line:not(.code-context):has(+ .code-cut)::after {
-        left: -0.6em;
-        right: -0.6em;
+        left: calc(-1 * var(--cut-reach, 0.6em));
+        right: calc(-1 * var(--cut-reach, 0.6em));
     }
 
     .code-copy-box pre .code-cut + .code-line:not(.code-context)::before,
