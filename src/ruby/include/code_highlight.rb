@@ -175,6 +175,11 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Smalltalk.new
             when 'sql'
                 lexer = Rouge::Lexers::SQL.new
+            when 'syntaxdiagramm', 'syntaxbaum'
+                # EBNF or a tree that syntax_diagram.js draws as a syntax
+                # diagram or a syntax tree; without JavaScript the text stays.
+                lexer = Rouge::Lexers::PlainText.new
+                pre['class'] = [pre['class'], "code-#{language}"].compact.join(' ')
             when 'svelte'
                 lexer = Rouge::Lexers::Svelte.new
             when 'tex'

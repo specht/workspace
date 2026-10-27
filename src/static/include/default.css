@@ -6577,6 +6577,18 @@ textarea.struktogramm-playground-input {
     opacity: 0.4;
 }
 
+/* A syntax diagram or tree (syntax_diagram.js) at its own size, like a
+   Struktogramm; a wide one scrolls sideways instead of shrinking its text. */
+.syntax-diagram {
+    overflow-x: auto;
+    margin: 0.5em 0 1.2em;
+}
+
+.syntax-diagram svg {
+    display: block;
+    max-width: none;
+}
+
 /* A Struktogramm (struktogramm.js) at its own size; a wide one scrolls
    sideways instead of shrinking its text. */
 .struktogramm,

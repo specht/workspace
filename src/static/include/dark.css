@@ -710,6 +710,13 @@ html[data-bs-theme="dark"] {
         --sg-muted: #a3a29d;
         --sg-pen: #7fbfe3;
     }
+    /* Colours of a syntax diagram or tree (syntax_diagram.js) */
+    .syntax-diagram {
+        --sd-ink: #e3e6ea;
+        --sd-line: #9aa1ac;
+        --sd-paper: #151514;
+        --sd-accent: #a78bfa;
+    }
     .subview-dialog { background-color: #1b1f26; }
     .subview-head,
     .subview-bar,

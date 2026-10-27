@@ -185,8 +185,9 @@ function install_code_copy() {
             // not the coloured layer behind an SQL or Cypher input (code_input.js),
             // not what is no code: bit diagrams and hex dumps (pre.spec), the
             // output of a program or a file name written by hand (pre.no-copy),
-            // a Struktogramm (struktogramm.js draws it in place of the block)
-            if (pre.matches('.spec, .no-copy, .code-struktogramm')) return;
+            // a Struktogramm, a syntax diagram or tree (struktogramm.js and
+            // syntax_diagram.js draw them in place of the block)
+            if (pre.matches('.spec, .no-copy, .code-struktogramm, .code-syntaxdiagramm, .code-syntaxbaum')) return;
             if (!pre.parentElement.closest('pre, .case-note, .code-input')) blocks.push(pre);
         });
     }
