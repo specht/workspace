@@ -18,9 +18,10 @@
 #      REMOTE_DIR, and which image hs_code_server:latest is there now;
 #   3. send the file with rsync; if the connection drops, it tries again
 #      (up to UPLOAD_ATTEMPTS times) and continues where it stopped;
-#   4. test the file on the server; if Docker has no room there for the new
-#      image beside the old one, remove the old one first, but only if no
-#      container uses it (otherwise stop and say so);
+#   4. test the file on the server; if Docker has no room there for loading
+#      the new image beside the old one (loading needs about twice the
+#      image), remove the old one first, but only if no container uses it
+#      (otherwise stop and say so);
 #   5. load the new image, check that it has the layers of the one built
 #      here, start it once (code-server --version), and tag it as candidate;
 #   6. remove the old image if no container uses it any more (running
@@ -206,11 +207,15 @@ if [ -z "$loaded_already" ]; then
     ok 'The file is complete'
     remote "echo '$old' > '$marker'"
     # Docker's directory, and containerd's where Docker keeps images there
-    # (the containerd image store): the less free of the two counts
+    # (the containerd image store): the less free of the two counts.
+    # docker load unpacks the layers through temporary files, so while it
+    # runs it needs about twice the image (measured on the production
+    # server, 28 October 2026: 31 GB for an image of 16.6 GiB).
     root="$(remote "docker info --format '{{.DockerRootDir}}'")"
     have="$(remote "for d in '$root' /var/lib/containerd; do [ -d \$d ] && df -Pk \$d | awk 'NR == 2 { print \$4 * 1024 }'; done | sort -n | head -1")"
-    info "Room for images ($root, /var/lib/containerd): $(gib "$have") free, $(gib "$unpacked_bytes") needed"
-    if [ "$have" -lt "$unpacked_bytes" ]; then
+    needed=$((unpacked_bytes * 2))
+    info "Room for images ($root, /var/lib/containerd): $(gib "$have") free, $(gib "$needed") needed while loading"
+    if [ "$have" -lt "$needed" ]; then
         [ -n "$current" ] || fail "Not enough room for the image on $host, and no old image to make room with."
         users="$(users_of "$current")"
         if [ -n "$users" ]; then
