@@ -2,58 +2,58 @@
   "layouts": [
     {
       "name": "production",
-      "key": "ee0ed7855e9f6252",
-      "cost": 95.81,
-      "quick": 360.3,
+      "key": "632ef4afa10c018e",
+      "cost": 114.76,
+      "quick": 329.84,
       "orders": [
         [
           0,
           [
-            "mysql",
-            "automata",
+            "working-with-files",
+            "git",
             "tcpip",
             "pip-1",
+            "mysql",
             "kata-functions",
-            "static-website",
-            "pixelram",
+            "automata",
             "drawing",
-            "git",
-            "working-with-files"
+            "pixelram",
+            "static-website"
           ]
         ],
         [
           1,
           [
-            "sql-index",
-            "filmdatenbank",
-            "bobby_tables",
-            "sql-joins",
-            "calculator",
-            "webserver",
-            "wetter",
+            "terminal-mystery",
+            "class-quiz",
             "crypto",
             "dns",
+            "webserver",
+            "wetter",
             "pip-1>pip-2#1",
+            "bobby_tables",
+            "sql-index",
+            "sql-joins",
+            "filmdatenbank",
             "kata-decisions",
-            "svelte",
+            "calculator",
+            "fire",
             "raylib",
             "raytracing",
-            "raycaster",
             "pixelram>gif#1",
+            "raycaster",
             "pixelram>jpeg#1",
-            "fire",
-            "class-quiz",
-            "terminal-mystery"
+            "svelte"
           ]
         ],
         [
           2,
           [
-            "neo4j-filmdatenbank",
-            "pixelwand",
-            "steganography",
             "totp",
+            "steganography",
+            "pixelwand",
             "pip-1>pip-2#2",
+            "neo4j-filmdatenbank",
             "kata-loops",
             "pixelram>gif#2",
             "pixelram>jpeg#2"
@@ -80,15 +80,15 @@
         [
           5,
           [
-            "kata-recursion",
             "pip-2>pip-3#2",
-            "naechste-nachbarn",
+            "kata-recursion",
             "check-digits",
+            "naechste-nachbarn",
             "kata-dicts",
-            "rle",
-            "perzeptron",
             "pixelram>gif#5",
-            "pixelram>jpeg#5"
+            "rle",
+            "pixelram>jpeg#5",
+            "perzeptron"
           ]
         ],
         [
@@ -97,11 +97,11 @@
             "kata-search",
             "pip-3",
             "kata-bits",
-            "sprachmodell",
             "lzw",
-            "huffman",
             "pixelram>gif#6",
-            "pixelram>jpeg#6"
+            "huffman",
+            "pixelram>jpeg#6",
+            "sprachmodell"
           ]
         ],
         [
@@ -116,120 +116,120 @@
     },
     {
       "name": "development",
-      "key": "954c0f19ef1b4b01",
-      "cost": 115.16,
-      "quick": 390.7,
+      "key": "2352a29192b66d76",
+      "cost": 167.52,
+      "quick": 407.07,
       "orders": [
         [
           0,
           [
-            "static-website",
-            "automata",
             "working-with-files",
             "git",
-            "tcpip",
+            "mysql",
+            "static-website",
             "pip-1",
             "kata-functions",
-            "mysql",
+            "automata",
             "pixelram",
+            "tcpip",
             "drawing"
           ]
         ],
         [
           1,
           [
+            "terminal-mystery",
+            "class-quiz",
+            "sql-joins",
+            "bobby_tables",
+            "sql-index",
+            "filmdatenbank",
             "svelte",
             "hugo",
+            "pip-1>pip-2#1",
+            "kata-decisions",
             "calculator",
             "kellerautomat",
             "turingmaschine",
-            "terminal-mystery",
-            "class-quiz",
-            "webserver",
-            "dns",
-            "crypto",
-            "wetter",
-            "pip-1>pip-2#1",
-            "kata-decisions",
-            "bobby_tables",
-            "sql-index",
-            "sql-joins",
-            "filmdatenbank",
-            "raytracing",
-            "raylib",
-            "pixelram>gif#1",
             "pixelram>jpeg#1",
+            "raylib",
             "raycaster",
+            "raytracing",
+            "pixelram>gif#1",
+            "dns",
+            "webserver",
+            "wetter",
+            "crypto",
             "fire"
           ]
         ],
         [
           2,
           [
+            "neo4j-filmdatenbank",
+            "pip-1>pip-2#2",
+            "kata-loops",
+            "pixelram>jpeg#2",
             "pixelwand",
             "tracking",
             "steganography",
-            "totp",
-            "pip-1>pip-2#2",
-            "kata-loops",
-            "neo4j-filmdatenbank",
             "pixelram>gif#2",
-            "pixelram>jpeg#2"
+            "totp"
           ]
         ],
         [
           3,
           [
             "pip-2",
+            "pixelram>jpeg#3",
             "kata-texts",
-            "pixelram>gif#3",
-            "pixelram>jpeg#3"
+            "pixelram>gif#3"
           ]
         ],
         [
           4,
           [
             "pip-2>pip-3#1",
+            "pixelram>jpeg#4",
             "kata-lists",
-            "pixelram>gif#4",
-            "pixelram>jpeg#4"
+            "pixelram>gif#4"
           ]
         ],
         [
           5,
           [
             "pip-2>pip-3#2",
-            "kata-recursion",
+            "pixelram>jpeg#5",
+            "check-digits",
             "naechste-nachbarn",
             "kata-lists>suchmaschine#1",
             "kata-dicts",
-            "check-digits",
             "perzeptron",
             "rle",
             "pixelram>gif#5",
-            "pixelram>jpeg#5"
+            "kata-recursion"
           ]
         ],
         [
           6,
           [
-            "kata-search",
+            "pixelram>jpeg#6",
             "pip-3",
+            "huffman",
             "suchmaschine",
             "sprachmodell",
             "kata-bits",
             "lzw",
-            "huffman",
             "pixelram>gif#6",
-            "pixelram>jpeg#6"
+            "kata-search"
           ]
         ],
         [
           7,
           [
-            "kata-tests",
+            "jpeg",
             "gif",
-            "jpeg"
+            "kata-tests"
           ]
         ]
       ]

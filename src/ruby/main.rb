@@ -2155,6 +2155,11 @@ class Main < Sinatra::Base
                     # line of the curriculum teachers see on the overview.
                     :idea => page_meta['idea'],
                     :curriculum => page_meta['curriculum'],
+                    # whom the activity is for, where its curriculum line
+                    # names both plans but it is meant for the younger
+                    # (CurriculumGraph.age_of): Sek I, Sek I und Oberstufe,
+                    # Oberstufe
+                    :age => page_meta['age'],
                     # its icon in the strip: bi-braces, or a picture (/images/…)
                     :icon => page_meta['icon'].to_s[%r{\A(bi-[a-z0-9-]+|/images/[\w/.-]+\.(png|webp|svg))\z}],
                 }

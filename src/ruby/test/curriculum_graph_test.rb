@@ -88,8 +88,10 @@ class CurriculumGraphTest < Minitest::Test
     def test_no_arrow_runs_through_a_box
         g = big
         at = g[:nodes].to_h { |n| [n[:slug], n] }
+        ports = CurriculumGraph.ports(g)
         g[:edges].each do |a, b|
-            arrow = CurriculumGraph.edge_path(at[a], at[b], g[:routes][[a, b]], g[:nodes])
+            out_at, in_at = ports[[a, b]]
+            arrow = CurriculumGraph.edge_path(at[a], at[b], g[:routes][[a, b]], :out_at => out_at, :in_at => in_at)
             points = CurriculumGraph.points(arrow[:d]) + arrow[:head]
             # (its own ends: near a corner they lie inside the plain rectangle)
             g[:nodes].reject { |n| [a, b].include?(n[:slug]) }.each do |n|
@@ -101,52 +103,90 @@ class CurriculumGraphTest < Minitest::Test
         end
     end
 
-    # how far a point lies outside a box's rounded outline (negative: inside)
-    def outside(box, pt)
-        w = CurriculumGraph::BOX_W / 2.0
-        h = CurriculumGraph::BOX_H / 2.0
-        r = CurriculumGraph::RADIUS
-        dx = (pt[0] - (box[:x] + w)).abs - (w - r)
-        dy = (pt[1] - (box[:y] + h)).abs - (h - r)
-        Math.hypot([dx, 0].max, [dy, 0].max) + [[dx, dy].max, 0].min - r
+    def arrows(g)
+        at = g[:nodes].to_h { |n| [n[:slug], n] }
+        ports = CurriculumGraph.ports(g)
+        g[:edges].to_h do |a, b|
+            out_at, in_at = ports[[a, b]]
+            [[a, b], CurriculumGraph.edge_path(at[a], at[b], g[:routes][[a, b]], :out_at => out_at, :in_at => in_at)]
+        end
     end
 
-    def test_arrows_into_one_box_end_at_different_points_on_its_border_aimed_at_its_centre
+    def test_arrows_into_one_box_arrive_apart_on_its_left_side_aimed_at_its_centre
         g = big
-        at = g[:nodes].to_h { |n| [n[:slug], n] }
-        box = at['o3']
+        box = g[:nodes].find { |n| n[:slug] == 'o3' }
         centre = [box[:x] + CurriculumGraph::BOX_W / 2.0, box[:y] + CurriculumGraph::BOX_H / 2.0]
-        arrows = g[:edges].select { |_, b| b == 'o3' }.map { |a, b| CurriculumGraph.edge_path(at[a], at[b], g[:routes][[a, b]], g[:nodes]) }
-        assert arrows.size >= 2
-        assert_equal arrows.size, arrows.map { |arrow| arrow[:head][0].map(&:round) }.uniq.size
-        arrows.each do |arrow|
+        into = arrows(g).select { |(_, b), _| b == 'o3' }.values
+        assert into.size >= 2
+        tips = into.map { |arrow| arrow[:head][0] }
+        assert tips.map { |_, y| y }.combination(2).all? { |y1, y2| (y1 - y2).abs >= 5 }, 'tips apart'
+        into.each do |arrow|
             tip, wing, other = arrow[:head]
             base = [(wing[0] + other[0]) / 2, (wing[1] + other[1]) / 2]
-            # the tip on the rounded outline
-            assert_in_delta 0, outside(box, tip), 0.05, "tip #{tip} not on the border"
-            # the head points at the centre, and the path ends at its base
+            # on the straight part of the left side, not in a rounded corner
+            assert_in_delta box[:x], tip[0], 1e-9
+            assert (tip[1] - centre[1]).abs <= CurriculumGraph::BOX_H / 2.0 - CurriculumGraph::RADIUS
+            # the head points at the centre, the path ends at its base
             # heading the same way
             assert_in_delta Math.atan2(centre[1] - tip[1], centre[0] - tip[0]), Math.atan2(tip[1] - base[1], tip[0] - base[0]), 0.01
             points = CurriculumGraph.points(arrow[:d])
             assert_in_delta 0, Math.hypot(points[-1][0] - base[0], points[-1][1] - base[1]), 0.15
-            assert_in_delta Math.atan2(tip[1] - base[1], tip[0] - base[0]), Math.atan2(points[-1][1] - points[-3][1], points[-1][0] - points[-3][0]), 0.05
+            assert_in_delta Math.atan2(tip[1] - base[1], tip[0] - base[0]), Math.atan2(points[-1][1] - points[-2][1], points[-1][0] - points[-2][0]), 0.05
         end
     end
 
-    # near a corner the rim is the quarter circle, at the radius from its centre
-    def test_the_rim_follows_the_rounded_corner
-        w = CurriculumGraph::BOX_W / 2.0
-        h = CurriculumGraph::BOX_H / 2.0
+    # several arrows of one box leave its right side apart, in the order of
+    # where they go, so that they neither overlap nor cross right there
+    def test_arrows_from_one_box_leave_its_right_side_in_the_order_of_their_targets
+        g = big
+        box = g[:nodes].find { |n| n[:slug] == 's1' }
+        out = arrows(g).select { |(a, _), _| a == 's1' }
+        assert out.size >= 3
+        starts = out.transform_values { |arrow| CurriculumGraph.points(arrow[:d])[0] }
+        # on the right side, or on its rounded corner (at the radius from
+        # the corner's centre)
+        right = box[:x] + CurriculumGraph::BOX_W
         r = CurriculumGraph::RADIUS
-        u = [w, h].then { |x, y| l = Math.hypot(x, y); [x / l, y / l] }
-        pt = CurriculumGraph.rim([0.0, 0.0], u)
-        assert_in_delta r, Math.hypot(pt[0] - (w - r), pt[1] - (h - r)), 1e-9
-        assert pt[0] < w && pt[1] < h, 'inside the plain rectangle'
-        # on a straight side as before
-        assert_equal [w, 0.0], CurriculumGraph.rim([0.0, 0.0], [1.0, 0.0])
-        x, y = CurriculumGraph.rim([10.0, 20.0], [-0.2, 0.98].then { |a, b| l = Math.hypot(a, b); [a / l, b / l] })
-        assert_in_delta 20 + h, y, 1e-9
-        assert x < 10
+        starts.each_value do |x, y|
+            dy = (y - (box[:y] + CurriculumGraph::BOX_H / 2.0)).abs - (CurriculumGraph::BOX_H / 2.0 - r)
+            dy <= 0 ? assert_in_delta(right, x, 0.05) : assert_in_delta(r, Math.hypot(x - (right - r), dy), 0.1)
+        end
+        by_start = starts.sort_by { |_, (_, y)| y }.map(&:first)
+        aims = out.keys.to_h do |a, b|
+            route = g[:routes][[a, b]]
+            [[a, b], route.empty? ? g[:nodes].find { |n| n[:slug] == b }[:y] : route[0][1]]
+        end
+        assert_equal by_start, out.keys.sort_by { |edge| [aims[edge], edge[1]] }
+        assert_equal starts.size, starts.values.map { |_, y| y.round(1) }.uniq.size
+    end
+
+    # six arrows of one box leave as far apart as the side and its corners
+    # allow, the outermost on the corners' quarter circles
+    def test_many_arrows_leave_into_the_corners
+        children = %w[c1 c2 c3 c4 c5 c6]
+        g = CurriculumGraph.layout(([node('p')] + children.map { |c| node(c) }), children.map { |c| ['p', c] })
+        box = g[:nodes].find { |n| n[:slug] == 'p' }
+        r = CurriculumGraph::RADIUS
+        right = box[:x] + CurriculumGraph::BOX_W
+        middle = box[:y] + CurriculumGraph::BOX_H / 2.0
+        starts = arrows(g).values.map { |arrow| CurriculumGraph.points(arrow[:d])[0] }.sort_by(&:last)
+        assert_in_delta CurriculumGraph::OUT_SPAN * 2, starts[-1][1] - starts[0][1], 0.2
+        [starts[0], starts[-1]].each do |x, y|
+            assert_in_delta r, Math.hypot(x - (right - r), (y - middle).abs - (CurriculumGraph::BOX_H / 2.0 - r)), 0.1
+        end
+    end
+
+    # a long arrow runs on one level through the columns it passes where
+    # nothing is in the way: one bend out, one bend in
+    def test_a_long_arrow_runs_level
+        nodes = %w[a b c d].map { |s| node(s) }
+        g = CurriculumGraph.layout(nodes, [%w[a b], %w[b c], %w[c d], %w[a d]])
+        route = g[:routes][%w[a d]]
+        assert_equal 2, route.size
+        assert_in_delta route[0][1], route[1][1], 0.5
+        d = arrows(g)[%w[a d]][:d]
+        # a curve out of a, straight through both passes, a curve into d
+        assert_operator d.scan('C').size, :<=, 2, d
     end
 
     def test_the_search_is_no_worse_than_the_quick_order_and_repeats_itself
@@ -209,5 +249,31 @@ class CurriculumGraphTest < Minitest::Test
         orders = CurriculumGraph.stored(CurriculumGraph.key(nodes, edges))
         assert orders, "The picture on /lehrplan is stale (an activity entered or left the catalog, or its requires: changed): run #{CurriculumGraph::COMMAND} and commit src/ruby/include/curriculum-graph.json"
         assert CurriculumGraph.fits?(CurriculumGraph.frame(nodes, edges), orders), "run #{CurriculumGraph::COMMAND}"
+    end
+
+    # age: names one of the ages, and no activity builds on one meant for
+    # older students
+    def test_ages_progress_from_young_to_old
+        root = File.expand_path('../../..', __dir__)
+        [false, true].each do |development|
+            content, slugs = CurriculumGraph.read_content(root, :development => development)
+            slugs.each do |slug|
+                age = content[slug][:age]
+                assert age.nil? || CurriculumGraph::AGES.include?(age), "#{slug}: age: #{age.inspect} is none of #{CurriculumGraph::AGES.join(', ')}"
+            end
+            nodes, edges = CurriculumGraph.inputs(content, slugs, :development => development)
+            age = nodes.to_h { |n| [n[:slug], CurriculumGraph.age_of(n[:levels], n[:age])] }
+            wrong = edges.select { |a, b| age[a] > age[b] }.map do |a, b|
+                "#{b} (#{CurriculumGraph::AGES[age[b]]}) requires #{a} (#{CurriculumGraph::AGES[age[a]]}): set age: on #{a} or rethink the requires: of #{b}"
+            end
+            assert_empty wrong, wrong.join("\n")
+        end
+    end
+
+    def test_age_wins_over_the_curriculum_line
+        assert_equal 1, CurriculumGraph.age_of(['Sek I', 'Oberstufe'])
+        assert_equal 0, CurriculumGraph.age_of(['Sek I', 'Oberstufe'], 'Sek I')
+        assert_equal 2, CurriculumGraph.age_of(['Sek I'], 'Oberstufe')
+        assert_equal 0, CurriculumGraph.age_of(['Sek I'], 'nonsense')
     end
 end

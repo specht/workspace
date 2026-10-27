@@ -19,8 +19,8 @@ require_relative 'page_kinds'
 #
 # The order of the boxes and passes within a column is searched
 # once in development (search: restarts and simulated annealing, scoring
-# crossings, the arrows' lengths and bends, arrows that would need a detour)
-# and stored in STORE, with a key of what it was made from (key); the server
+# crossings, how far and how steeply the arrows rise, the steps of a long
+# arrow from one level to another) and stored in STORE, with a key of what it was made from (key); the server
 # only reads it. src/scripts/curriculum-graph.rb searches and stores it, and
 # test/curriculum_graph_test.rb fails while the stored order no longer
 # fits the activities. Without a fitting one the server orders them quickly
@@ -45,36 +45,49 @@ module CurriculumGraph
     # an arrow's head, drawn as a triangle at the end of its path
     HEAD_LEN = 7.0
     HEAD_W = 6.0
+    # where arrows arrive at a box's left side: up to PORT_SPAN from the
+    # middle, on the straight part of the side (so no tip sits in a rounded
+    # corner); where they leave its right side: up to OUT_SPAN, into the
+    # corners, so that many arrows leave further apart; PORT_STEP apart at
+    # most
+    PORT_SPAN = BOX_H / 2.0 - RADIUS - 1
+    OUT_SPAN = BOX_H / 2.0 - 3
+    PORT_STEP = 7.0
+    # how steeply an arrow may leave its box (rise per run)
+    SLOPE = 0.35
 
     STORE = File.expand_path('curriculum-graph.json', __dir__)
     COMMAND = 'src/scripts/curriculum-graph.rb'
     # goes up when what the layout is made of changes, so that a stored
     # order made the old way no longer fits
-    VERSION = 2
+    VERSION = 4
     # the search: how often it starts afresh, how many moves each time; and
-    # how much each thing counts (an arrow's length and bends in rows)
+    # how much each thing counts (an arrow's rise in rows)
     RESTARTS = 24
     STEPS = 2500
     QUICK_RESTARTS = 3
     CROSSING = 4.0
     STEEP = 0.5
-    BEND = 1.0
+    STEP = 10.0
     THROUGH = 50.0
-    DETOUR = 1.5
 
     def self.h(text)
         CGI.escapeHTML(text.to_s)
     end
 
-    # The ages, a colour each: what the plans of Sek I name only, what both
-    # name, what only the Oberstufe's names (curriculum:, docs/lehrplan.md);
-    # an activity without a line counts as both
+    # The ages, a colour each, youngest first: what the plans of Sek I name
+    # only, what both name, what only the Oberstufe's names (curriculum:,
+    # docs/lehrplan.md); an activity without a line counts as both. Meta
+    # age: (one of these) says whom an activity is for where its line names
+    # both plans but it is meant for the younger, and wins.
     AGES = ['Sek I', 'Sek I und Oberstufe', 'Oberstufe'].freeze
     # the room an arrow takes where it passes a column (a dummy, as in a
     # Sugiyama layout): no box stands there, so no arrow runs through one
     PASS = 20
 
-    def self.age_of(levels)
+    def self.age_of(levels, age = nil)
+        return AGES.index(age) if AGES.include?(age)
+
         sek = levels.include?('Sek I')
         ober = levels.include?('Oberstufe')
         return 0 if sek && !ober
@@ -139,11 +152,14 @@ module CurriculumGraph
         # as high as the tallest column
         size = groups.values.map { |ids| ids.sum { |id| item[id][:room] } }.max || 0
         segments = chains.values.flat_map { |chain| chain.each_cons(2).to_a }
+        # the passes of each long arrow, which keep to one level (place)
+        runs = chains.values.map { |chain| chain[1...-1] }.reject(&:empty?)
         { :by_slug => by_slug, :edges => edges, :linked => linked, :alone => alone, :depth => depth,
           :item => item, :chains => chains, :left => left, :right => right, :groups => groups,
           :size => size, :height => size + PAD * 2, :segments => segments,
           :columns => segments.group_by { |a, _| item[a][:depth] }.values,
-          :passes => item.keys.select { |id| item[id][:pass] } }
+          :passes => item.keys.select { |id| item[id][:pass] }, :runs => runs, :ends => chains.values.to_h { |chain| [chain[1...-1], [chain[0], chain[-1]]] },
+          :steps => segments.select { |a, b| item[a][:pass] && item[b][:pass] } }
     end
 
     # each column stacked in the middle of the picture, in its order
@@ -177,18 +193,37 @@ module CurriculumGraph
         groups
     end
 
-    # The height of each item, given the order: each as near the mean
+    # The height of each item, given the order: each box as near the mean
     # height of what it is joined to as the items around it and the
-    # picture allow, again and again until nothing moves (a few passes
-    # left a parent high above its children)
+    # picture allow, again and again until nothing moves (a few passes left
+    # a parent high above its children). The passes of a long arrow all
+    # want one level, so that it runs straight with one bend out and one in:
+    # half way between its ends, or as near to it as fits between the items
+    # above and below each of its passes; only where no one level fits all
+    # of them does each pass go its own way, and the arrow steps.
     def self.place(frame, groups)
         centre = stack(frame, groups)
         item = frame[:item]
         size = frame[:size]
+        slot = {}
+        groups.each_value { |ids| ids.each_with_index { |id, i| slot[id] = [ids, i] } }
         PLACING.times do
             moved = 0.0
+            level = {}
+            frame[:runs].each do |passes|
+                a, b = frame[:ends][passes]
+                low = PAD + PASS / 2.0
+                high = PAD + size - PASS / 2.0
+                passes.each do |id|
+                    ids, i = slot[id]
+                    low = [low, centre[ids[i - 1]] + (item[ids[i - 1]][:room] + PASS) / 2.0].max if i > 0
+                    high = [high, centre[ids[i + 1]] - (item[ids[i + 1]][:room] + PASS) / 2.0].min if i < ids.size - 1
+                end
+                wanted = (centre[a] + centre[b]) / 2.0
+                passes.each { |id| level[id] = low <= high ? wanted.clamp(low, high) : mean(frame[:left][id] + frame[:right][id], centre, centre[id]) }
+            end
             groups.each_value do |ids|
-                want = ids.map { |id| mean(frame[:left][id] + frame[:right][id], centre, centre[id]) }
+                want = ids.map { |id| level[id] || mean(frame[:left][id] + frame[:right][id], centre, centre[id]) }
                 room = ids.map { |id| item[id][:room] }
                 # down the column: where it wants, below the one above and
                 # inside the picture; then up: above the one below and inside
@@ -221,7 +256,7 @@ module CurriculumGraph
         x = ->(d) { PAD + d * COL }
         placed = frame[:linked].map do |slug|
             n = frame[:by_slug][slug]
-            n.merge(:depth => frame[:depth][slug], :age => age_of(n[:levels] || []), :x => x.(frame[:depth][slug]), :y => centre[slug] - BOX_H / 2.0)
+            n.merge(:depth => frame[:depth][slug], :age => age_of(n[:levels] || [], n[:age]), :x => x.(frame[:depth][slug]), :y => centre[slug] - BOX_H / 2.0)
         end.sort_by { |n| [n[:depth], n[:y]] }
         routes = frame[:chains].transform_values { |chain| chain[1...-1].map { |id| [x.(item[id][:depth]), centre[id]] } }
         width = PAD * 2 + ((frame[:depth].values.max || 0) * COL) + BOX_W
@@ -230,8 +265,8 @@ module CurriculumGraph
     end
 
     # How bad an order is, from the heights alone: crossings between two
-    # columns, the arrows' rise (and more so a steep one, which runs past
-    # the boxes beside its ends), and the bends where an arrow passes a column
+    # columns, the arrows' rise (and more so a steep one), and each step of
+    # a long arrow from one level to another between the columns it passes
     def self.cost(frame, centre)
         crossings = 0
         frame[:columns].each do |segments|
@@ -248,31 +283,27 @@ module CurriculumGraph
             rise += dy
             steep += dy * dy
         end
-        bends = frame[:passes].sum do |id|
-            ((centre[id] - centre[frame[:left][id][0]]) - (centre[frame[:right][id][0]] - centre[id])).abs / ROW
-        end
-        CROSSING * crossings + rise + STEEP * steep + BEND * bends
+        steps = frame[:steps].count { |a, b| (centre[a] - centre[b]).abs > 0.5 }
+        CROSSING * crossings + rise + STEEP * steep + STEP * steps
     end
 
-    # The cost with the arrows drawn: an arrow through a box counts much, one
-    # that cannot aim straight and leaves or arrives through the side facing
-    # the gap a little
+    # The cost with the arrows drawn, and an arrow through a box counting
+    # much (none should: they run in the gaps and through their passes)
     def self.drawn_cost(frame, groups)
         g = picture(frame, groups)
         at = g[:nodes].to_h { |n| [n[:slug], n] }
+        ports = ports(g)
         through = 0
-        detours = 0
         g[:edges].each do |a, b|
-            arrow = edge_path(at[a], at[b], g[:routes][[a, b]] || [], g[:nodes])
-            detours += 1 if arrow[:kind] == :lean
-            points = points(arrow[:d])
+            out_at, in_at = ports[[a, b]]
+            points = points(edge_path(at[a], at[b], g[:routes][[a, b]] || [], :out_at => out_at, :in_at => in_at)[:d])
             through += g[:nodes].count do |n|
                 next false if n[:slug] == a || n[:slug] == b
 
                 points.any? { |px, py| px > n[:x] + 0.5 && px < n[:x] + BOX_W - 0.5 && py > n[:y] + 0.5 && py < n[:y] + BOX_H - 0.5 }
             end
         end
-        cost(frame, place(frame, groups)) + THROUGH * through + DETOUR * detours
+        cost(frame, place(frame, groups)) + THROUGH * through
     end
 
     # The search for a good order: the quick one, and restarts from orders
@@ -363,7 +394,7 @@ module CurriculumGraph
             entry = content[slug] || {}
             { :slug => slug, :title => CGI.unescapeHTML(PageKinds.plain_title(entry)), :section => entry[:section],
               :topics => Curriculum.entries(entry[:curriculum]).map { |level, name, _| Curriculum.anchor(level, name) }.uniq,
-              :levels => Curriculum.entries(entry[:curriculum]).map(&:first).uniq }
+              :levels => Curriculum.entries(entry[:curriculum]).map(&:first).uniq, :age => entry[:age] }
         end
         edges = slugs.flat_map do |slug|
             PageKinds.requires_of(slug, content, :development => development).map { |name, _| [name, slug] }
@@ -412,7 +443,8 @@ module CurriculumGraph
                 title = text[/^#\s+(.+)$/, 1].to_s.strip
                 content[slug] = { :title => title, :section => section['key'], :dev_only => dev_only,
                                   :teacher_only => section['teacher_only'] == true, :hidden_section => section['hidden'] == true,
-                                  :requires => Array(meta['requires']).map(&:to_s).reject(&:empty?), :curriculum => meta['curriculum'] }
+                                  :requires => Array(meta['requires']).map(&:to_s).reject(&:empty?), :curriculum => meta['curriculum'],
+                                  :age => meta['age'] }
                 slugs << slug unless section['hidden'] || (dev_only && !development)
             end
         end
@@ -429,24 +461,6 @@ module CurriculumGraph
         first, rest = title.split(/:\s/, 2)
         text = SERIES.key?(first) && rest ? "#{SERIES[first]}: #{rest}" : first.to_s.strip
         text.length > 40 ? "#{text[0, 39].rstrip}…" : text
-    end
-
-    # Where a ray from a box's centre c along the unit vector u leaves the
-    # box: on its straight sides, or near a corner on the quarter circle
-    def self.rim(c, u)
-        half_w = BOX_W / 2.0
-        half_h = BOX_H / 2.0
-        t = [u[0].zero? ? Float::INFINITY : half_w / u[0].abs, u[1].zero? ? Float::INFINITY : half_h / u[1].abs].min
-        dx = u[0] * t
-        dy = u[1] * t
-        if dx.abs > half_w - RADIUS && dy.abs > half_h - RADIUS
-            # the corner's circle: its centre k, the farther of the two
-            # points where the ray meets it
-            k = [(half_w - RADIUS) * (dx <=> 0), (half_h - RADIUS) * (dy <=> 0)]
-            b = u[0] * k[0] + u[1] * k[1]
-            t = b + Math.sqrt([b * b - k[0]**2 - k[1]**2 + RADIUS**2, 0].max)
-        end
-        [c[0] + u[0] * t, c[1] + u[1] * t]
     end
 
     # The points along a path's segments (M, C, L), sampled
@@ -476,115 +490,79 @@ module CurriculumGraph
         points
     end
 
+    # Where each arrow leaves its box and arrives at the other, as heights
+    # from the middle of the box's right and left side: { [from, to] =>
+    # [out_at, in_at] }. Several arrows of one box spread over the side in
+    # the order of where they go (or come from), so that they neither run
+    # on top of each other nor cross right there; a lone arrow leaves and
+    # arrives a little towards the other end.
+    def self.ports(graph)
+        at = graph[:nodes].to_h { |n| [n[:slug], n] }
+        middle = ->(slug) { at[slug][:y] + BOX_H / 2.0 }
+        route = ->(edge) { (graph[:routes] || {})[edge] || [] }
+        result = graph[:edges].to_h { |edge| [edge, [0.0, 0.0]] }
+        spread = lambda do |edges, side, own, other|
+            span = side.zero? ? OUT_SPAN : PORT_SPAN
+            if edges.size == 1
+                edge = edges[0]
+                result[edge][side] = ((other.(edge) - own) * 0.25).clamp(-PORT_SPAN, PORT_SPAN)
+                next
+            end
+            sorted = edges.sort_by { |edge| [other.(edge), edge[1 - side]] }
+            step = [span * 2 / (sorted.size - 1), PORT_STEP].min
+            sorted.each_with_index { |edge, i| result[edge][side] = (i - (sorted.size - 1) / 2.0) * step }
+        end
+        graph[:edges].group_by(&:first).each do |a, edges|
+            spread.(edges, 0, middle.(a), ->(edge) { r = route.(edge); r.empty? ? middle.(edge[1]) : r[0][1] })
+        end
+        graph[:edges].group_by(&:last).each do |b, edges|
+            spread.(edges, 1, middle.(b), ->(edge) { r = route.(edge); r.empty? ? middle.(edge[0]) : r[-1][1] })
+        end
+        result
+    end
+
     # An arrow from a box to another (the site's rule for diagrams: it aims
-    # at the centres, its head follows it, the tip on the border): { d: the
-    # path, head: [tip, wing, wing], kind: }. The path starts on the source's
-    # rim and stops at the head's base; the head lies along the path's last
-    # direction, which points at the target's centre, its tip on the rim.
-    # To the next column a straight line between the two centres (kind
-    # :line), so that the arrows of a box with many children fan out. Where
-    # that line would run through another box (boxes: all of them), the
-    # arrow leaves on the line to the target's centre and curves into the
-    # target's side facing the gap, aimed at its centre (:fan); only where
-    # that curve too would cross a box does it leave through the side facing
-    # the gap (:lean). Over several columns it runs level through the passes
-    # it takes in the columns between (:long), its first stretch leaving
-    # along the line from the source's centre and its last one arriving on
-    # the line to the target's centre where they stay clear.
-    def self.edge_path(from, to, through = [], boxes = [])
-        half_w = BOX_W / 2.0
-        half_h = BOX_H / 2.0
-        cs = [from[:x] + half_w, from[:y] + half_h]
-        ct = [to[:x] + half_w, to[:y] + half_h]
-        others = boxes.reject { |n| n.equal?(from) || n.equal?(to) || (n[:slug] && (n[:slug] == from[:slug] || n[:slug] == to[:slug])) }
+    # at the centre, its head follows it, the tip on the border): { d: the
+    # path, head: [tip, wing, wing] }. It leaves the source's right side at
+    # out_at (ports) going right, gently towards where it goes, and runs in
+    # the gaps between the columns: over several columns level through the
+    # passes it takes in the columns between, from one to the next in a
+    # smooth curve. It arrives at the target's left side at in_at, the head
+    # pointing at the target's centre; the path stops at the head's base,
+    # heading the same way. A curve's handles reach half across its gap, so
+    # it never doubles back into a box.
+    def self.edge_path(from, to, through = [], out_at: 0.0, in_at: 0.0)
         unit = ->(v) { l = Math.hypot(*v); l.zero? ? [1.0, 0.0] : [v[0] / l, v[1] / l] }
-        inside = ->(pt) { others.any? { |n| pt[0] > n[:x] + 0.5 && pt[0] < n[:x] + BOX_W - 0.5 && pt[1] > n[:y] + 0.5 && pt[1] < n[:y] + BOX_H - 0.5 } }
-        clear = ->(pts) { pts.none? { |pt| inside.(pt) } }
-        line_pts = ->(p, q) { (0..30).map { |i| t = i / 30.0; [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t] } }
-        curve_pts = lambda do |p, c1, c2, q|
-            (0..40).map do |i|
-                t = i / 40.0
-                u = 1 - t
-                (0..1).map { |k| u**3 * p[k] + 3 * u * u * t * c1[k] + 3 * u * t * t * c2[k] + t**3 * q[k] }
+        # on the right side, or on its rounded corner
+        corner = out_at.abs - (BOX_H / 2.0 - RADIUS)
+        inset = corner > 0 ? RADIUS - Math.sqrt(RADIUS**2 - corner**2) : 0.0
+        start = [from[:x] + BOX_W - inset, from[:y] + BOX_H / 2.0 + out_at]
+        centre = [to[:x] + BOX_W / 2.0, to[:y] + BOX_H / 2.0]
+        tip = [to[:x].to_f, centre[1] + in_at]
+        u = unit.([centre[0] - tip[0], centre[1] - tip[1]])
+        base = [tip[0] - u[0] * HEAD_LEN, tip[1] - u[1] * HEAD_LEN]
+        n = [-u[1] * HEAD_W / 2, u[0] * HEAD_W / 2]
+        head = [tip, [base[0] + n[0], base[1] + n[1]], [base[0] - n[0], base[1] - n[1]]]
+        # where the path goes, each point with its heading there
+        first = through.empty? ? base : through[0]
+        run = first[0] - start[0]
+        stops = [[start, unit.([run, (first[1] - start[1]).clamp(-run * SLOPE, run * SLOPE)])]]
+        through.each { |x, y| stops << [[x, y], [1.0, 0.0]] << [[x + BOX_W, y], [1.0, 0.0]] }
+        stops << [base, u]
+        d = +format('M%.1f %.1f', *start)
+        stops.each_cons(2) do |(p, ua), (q, ub)|
+            line = unit.([q[0] - p[0], q[1] - p[1]])
+            along = ->(v) { (v[0] * line[1] - v[1] * line[0]).abs < 0.01 }
+            if along.(ua) && along.(ub)
+                d << format(' L%.1f %.1f', *q)
+            else
+                half = (q[0] - p[0]) / 2.0
+                c1 = [p[0] + half, p[1] + ua[1] / ua[0] * half]
+                c2 = [q[0] - half, q[1] - ub[1] / ub[0] * half]
+                d << format(' C%.1f %.1f %.1f %.1f %.1f %.1f', *c1, *c2, *q)
             end
         end
-        # arriving along u: the tip on the target's rim, the head's base
-        # behind it, and the two wings
-        arrive = lambda do |u|
-            tip = rim(ct, [-u[0], -u[1]])
-            base = [tip[0] - u[0] * HEAD_LEN, tip[1] - u[1] * HEAD_LEN]
-            n = [-u[1] * HEAD_W / 2, u[0] * HEAD_W / 2]
-            [tip, base, [tip, [base[0] + n[0], base[1] + n[1]], [base[0] - n[0], base[1] - n[1]]], u]
-        end
-        arrow = ->(d, head, kind) { { :d => d, :head => head, :kind => kind } }
-        if through.empty?
-            u = unit.([ct[0] - cs[0], ct[1] - cs[1]])
-            p0 = rim(cs, u)
-            tip, base, head = arrive.(u)
-            return arrow.(format('M%.1f %.1f L%.1f %.1f', *p0, *base), head, :line) if clear.(line_pts.(p0, tip))
-        end
-        # the ends through the sides facing the gap, aimed at the centres,
-        # leaning towards the other end no further than that side allows
-        gap = COL - BOX_W
-        reach = half_w + gap / 2.0
-        lean = (half_h - 5) / half_w * reach
-        first_y = through.empty? ? ct[1] : through[0][1]
-        last_y = through.empty? ? cs[1] : through[-1][1]
-        level = [1.0, 0.0]
-        # a curve from p heading ua to q, arriving heading ub; its handles
-        # a share of the distance, so that it bends along the whole way and
-        # not just before the head
-        curve = lambda do |p, ua, q, ub|
-            k = Math.hypot(q[0] - p[0], q[1] - p[1]) * 0.4
-            c1 = [p[0] + ua[0] * k, p[1] + ua[1] * k]
-            c2 = [q[0] - ub[0] * k, q[1] - ub[1] * k]
-            [format('C%.1f %.1f %.1f %.1f %.1f %.1f', *c1, *c2, *q), curve_pts.(p, c1, c2, q)]
-        end
-        # the start: on the line to aim if that stays clear
-        start = lambda do |aim|
-            u = unit.([aim[0] - cs[0], aim[1] - cs[1]])
-            p0 = rim(cs, u)
-            return [p0, u, true] if u[0] > 0 && clear.(line_pts.(p0, aim))
-
-            u = unit.([reach, ((first_y - cs[1]) * 0.3).clamp(-lean, lean)])
-            [rim(cs, u), u, false]
-        end
-        # the end: on the line from from_pt to the centre if that stays
-        # clear, else through the side facing the gap
-        finish = lambda do |from_pt|
-            u = unit.([ct[0] - from_pt[0], ct[1] - from_pt[1]])
-            ends = arrive.(u)
-            return ends + [true] if u[0] > 0 && clear.(line_pts.(from_pt, ends[0]))
-
-            arrive.(unit.([reach, ((ct[1] - last_y) * 0.3).clamp(-lean, lean)])) + [false]
-        end
-        if through.empty?
-            tip, base, head, u1, = finish.(cs)
-            # leaving on the line to the target's centre, so that a box's
-            # arrows fan out, then into the target's side facing the gap;
-            # where that curve would run through a box, leaving that side too
-            u = unit.([ct[0] - cs[0], ct[1] - cs[1]])
-            p0 = rim(cs, u)
-            seg, pts = curve.(p0, u, base, u1)
-            return arrow.(format('M%.1f %.1f ', *p0) + seg, head, :fan) if u[0] > 0 && clear.(pts + line_pts.(base, tip))
-
-            p0, u0, = start.(ct)
-            seg, = curve.(p0, u0, base, u1)
-            return arrow.(format('M%.1f %.1f ', *p0) + seg, head, :lean)
-        end
-        p0, u0, = start.([through[0][0], through[0][1]])
-        d = +format('M%.1f %.1f ', *p0)
-        at = p0
-        heading = u0
-        through.each do |px, py|
-            seg, = curve.(at, heading, [px, py], level)
-            d << seg << format(' L%.1f %.1f ', px + BOX_W, py)
-            at = [px + BOX_W, py]
-            heading = level
-        end
-        _, base, head, u1, = finish.(at)
-        seg, = curve.(at, heading, base, u1)
-        arrow.(d << seg, head, :long)
+        { :d => d, :head => head }
     end
 
     # The picture as HTML; the boxes coloured by age (lehrplan.html,
@@ -593,8 +571,10 @@ module CurriculumGraph
         at = graph[:nodes].to_h { |n| [n[:slug], n] }
         io = +"<div class='cg-scroll'><div class='cg-graph' style='width: #{graph[:width]}px; height: #{graph[:height]}px;' data-stored='#{graph[:stale] ? 'no' : 'yes'}'>"
         io << "<svg class='cg-edges' width='#{graph[:width]}' height='#{graph[:height]}' viewBox='0 0 #{graph[:width]} #{graph[:height]}' aria-hidden='true'>"
+        ports = ports(graph)
         graph[:edges].each do |a, b|
-            arrow = edge_path(at[a], at[b], (graph[:routes] || {})[[a, b]] || [], graph[:nodes])
+            out_at, in_at = ports[[a, b]]
+            arrow = edge_path(at[a], at[b], (graph[:routes] || {})[[a, b]] || [], :out_at => out_at, :in_at => in_at)
             head = arrow[:head].map { |x, y| format('%.1f,%.1f', x, y) }.join(' ')
             io << "<g class='cg-edge' data-from='#{h(a)}' data-to='#{h(b)}'><path d='#{arrow[:d]}'/><polygon points='#{head}'/></g>"
         end

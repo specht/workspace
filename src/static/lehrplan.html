@@ -1,6 +1,6 @@
 <style>
     /* The graph of »Baut auf … auf« (curriculum_graph.rb): a box for each
-       activity, coloured by age (its hue, --cg-h: Sek I, both, Oberstufe),
+       activity, coloured by age (--cg-border, --cg-fill: Sek I, both, Oberstufe),
        the arrows from what comes first. A name of the plans or a box chosen:
        what carries the name, and the way to it, stay; the rest fades. */
     .lehrplan-page .cg-intro {
@@ -48,9 +48,9 @@
         display: flex;
         width: 118px;
         height: 36px;
-        border: 1.5px solid hsl(var(--cg-h) 45% 45%);
+        border: 1.5px solid var(--cg-border);
         border-radius: 7px;
-        background: hsl(var(--cg-h) 60% 93%);
+        background: var(--cg-fill);
         transition: opacity 0.2s, box-shadow 0.2s;
     }
     .lehrplan-page .cg-pick {
@@ -74,7 +74,7 @@
         display: flex;
         align-items: center;
         padding: 0 0.45em;
-        color: hsl(var(--cg-h) 45% 35%);
+        color: var(--cg-icon, var(--cg-border));
         font-size: 0.75rem;
         opacity: 0.6;
     }
@@ -87,7 +87,7 @@
         opacity: 0.18;
     }
     .lehrplan-page .cg-node.cg-hit {
-        box-shadow: 0 0 0 3px hsl(var(--cg-h) 55% 45% / 0.45);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--cg-icon, var(--cg-border)) 45%, transparent);
         font-weight: 600;
     }
     .lehrplan-page .cg-edge.cg-on {
@@ -111,9 +111,9 @@
         width: 0.9em;
         height: 0.9em;
         margin-right: 0.35em;
-        border: 1.5px solid hsl(var(--cg-h) 45% 45%);
+        border: 1.5px solid var(--cg-border);
         border-radius: 3px;
-        background: hsl(var(--cg-h) 60% 93%);
+        background: var(--cg-fill);
         vertical-align: -0.1em;
     }
     .lehrplan-page .cg-alone {
@@ -142,21 +142,39 @@
         --cg-line: #5c636e;
         --cg-on: #c7a6f0;
     }
-    [data-bs-theme='dark'] .lehrplan-page .cg-node,
-    [data-bs-theme='dark'] .lehrplan-page .cg-swatch {
-        border-color: hsl(var(--cg-h) 45% 60%);
-        background: hsl(var(--cg-h) 30% 20%);
-    }
-    [data-bs-theme='dark'] .lehrplan-page .cg-open {
-        color: hsl(var(--cg-h) 50% 75%);
-    }
     [data-bs-theme='dark'] .lehrplan-page .lp-graph-show {
         color: #c7a6f0;
     }
     /* the ages: Sek I, Sek I und Oberstufe, Oberstufe */
-    .lehrplan-page .cg-a0 { --cg-h: 145; }
-    .lehrplan-page .cg-a1 { --cg-h: 38; }
-    .lehrplan-page .cg-a2 { --cg-h: 250; }
+    /* the ages: yellow for Sek I, teal (Cling's) for the Oberstufe, a
+       pale (dark: deep) tint of each as the fill, the text the body colour;
+       what both name running from the one to the other, left to right,
+       fill and border (stripes were loud behind the text) */
+    .lehrplan-page {
+        --cg-sek: #c98500;
+        --cg-ober: #12959f;
+        --cg-sek-fill: #fdf3de;
+        --cg-ober-fill: #e0f1f3;
+    }
+    [data-bs-theme='dark'] .lehrplan-page {
+        --cg-sek: #f0a000;
+        --cg-sek-fill: #4f4020;
+        --cg-ober-fill: #1e3e43;
+    }
+    .lehrplan-page .cg-a0 {
+        --cg-border: var(--cg-sek);
+        --cg-fill: var(--cg-sek-fill);
+    }
+    .lehrplan-page .cg-a2 {
+        --cg-border: var(--cg-ober);
+        --cg-fill: var(--cg-ober-fill);
+    }
+    .lehrplan-page .cg-a1 {
+        --cg-border: transparent;
+        --cg-icon: var(--cg-ober);
+        --cg-fill: linear-gradient(90deg, var(--cg-sek-fill), var(--cg-ober-fill)) padding-box,
+            linear-gradient(90deg, var(--cg-sek), var(--cg-ober)) border-box;
+    }
 </style>
 <div class='container lehrplan-page'>
     <div

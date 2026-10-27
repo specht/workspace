@@ -5,6 +5,7 @@ duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Nachschlagen, zählen und gruppieren mit Schlüsseln und Werten
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen mit Schlüsseln und Werten); Oberstufe: Algorithmen und Datenstrukturen (Hash Table)"
+age: Sek I
 requires: [kata-lists]
 </div>
 

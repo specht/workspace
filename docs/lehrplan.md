@@ -24,15 +24,22 @@ einer Farbe nach Alter (was nur die Pläne der Sek I nennen, was beide nennen,
 was nur die der Oberstufe nennen), mit einem Pfeil von dem, was zuerst
 kommt. Von links nach rechts nach der längsten Kette davor. Ein Pfeil über
 mehrere Spalten bekommt in jeder Spalte dazwischen eigenen Platz, damit er
-durch keinen Kasten läuft. Bänder nach Alter von oben nach unten haben die
+durch keinen Kasten läuft; wo nichts im Weg ist, läuft er dort auf einer
+Höhe. Pfeile verlassen einen Kasten an seiner rechten Seite und kommen an
+der linken an, mehrere nebeneinander in der Reihenfolge, in der sie
+weiterlaufen, damit sie sich nicht überdecken. Bänder nach Alter von oben nach unten haben die
 Kästen von ihren Nachbarn weggezogen, die Pfeile liefen lang und steil;
-darum die Farben.
+darum die Farben. Nennt die Zeile beide Pläne, ist die Aktivität aber für
+die Jüngeren gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
+und Oberstufe` oder `Oberstufe`; die Katas zu Schleifen, Listen und
+Dictionaries). Eine Aktivität baut nie auf einer für Ältere auf:
+`curriculum_graph_test.rb` prüft es.
 
 Die Reihenfolge der Kästen in jeder Spalte wird einmal gesucht und
 gespeichert (`src/ruby/include/curriculum-graph.json`), der Server liest sie
 nur: Die Suche zählt sich kreuzende Pfeile, wie weit und wie steil sie
-steigen und Pfeile, die einen Umweg nehmen müssen, und dauert etwa drei
-Minuten. Kommt eine Aktivität in den Katalog oder geht eine heraus, oder
+steigen und jede Stufe eines langen Pfeils von einer Höhe auf eine andere,
+und dauert etwa drei Minuten. Kommt eine Aktivität in den Katalog oder geht eine heraus, oder
 ändert sich bei einer `requires:`, dann auf dem Rechner der
 Entwicklung (nicht im Container, der `src` nur lesen darf):
 
