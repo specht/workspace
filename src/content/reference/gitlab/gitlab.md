@@ -80,7 +80,13 @@ Erscheint `No such file or directory`, erzeugst du einen neuen. Bestätige den v
 ssh-keygen -t ed25519 -C "Vorname Nachname"
 ```
 
-Ein Schlüssel besteht aus zwei Dateien. `~/.ssh/id_ed25519` ist der **private** Schlüssel: Er bleibt in deinem Workspace, und niemand bekommt ihn. `~/.ssh/id_ed25519.pub` ist der **öffentliche**: Mit ihm prüft der Server, dass du es bist. Den gibst du hier ab:
+Ein Schlüssel besteht aus zwei Dateien. `~/.ssh/id_ed25519` ist der **private** Schlüssel: Er bleibt in deinem Workspace, und niemand bekommt ihn. `~/.ssh/id_ed25519.pub` ist der **öffentliche**: Mit ihm prüft der Server, dass du es bist. Zeige ihn an und kopiere die ganze Zeile, die mit `ssh-ed25519` beginnt:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Füge sie hier ein, so wie bei jedem Git-Server:
 
 <div class='git-key' data-git-key></div>
 <script src='/include/git_key.js'></script>
@@ -93,7 +99,7 @@ ssh -T git@git.workspace
 
 Beim ersten Mal fragt SSH, ob du dem Server vertraust, und zeigt seinen Fingerabdruck: `ED25519 key fingerprint is SHA256:…`. Vergleiche ihn mit dem im Kasten oben. Stimmen sie überein, antworte mit `yes`; so weißt du, dass am anderen Ende wirklich der Git-Server sitzt. Danach begrüßt er dich und nennt die Repositorys, die du benutzen darfst.
 
-Meldet SSH `Permission denied (publickey)`, hast du den Schlüssel noch nicht abgegeben, oder du hast danach einen neuen erzeugt; dann gib ihn noch einmal ab.
+Meldet SSH `Permission denied (publickey)`, hast du den Schlüssel noch nicht eingefügt, eine andere Zeile kopiert als die aus `id_ed25519.pub`, oder danach einen neuen erzeugt; dann füg ihn noch einmal ein.
 <!-- /part -->
 
 <!-- part: ssh-workspace-auto -->

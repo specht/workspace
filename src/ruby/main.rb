@@ -8420,17 +8420,22 @@ class Main < Sinatra::Base
                 :host => host, :host_name => GitServer::HOST)
     end
 
-    # The person hands in the public key of their Workspace.
+    # The person hands in a public key, pasted as one line (as on any Git
+    # server): ~/.ssh/id_ed25519.pub. A private key is refused with a word
+    # on why; the comment of the key is not stored (GitServer.parse_key).
     post '/api/git/hand_in_key' do
         assert(user_logged_in?)
         halt 404 unless GitServer.enabled?
-        email = @session_user[:email]
-        workspace = git_workspace_key(email)
-        return respond(:ok => false, :error => 'missing') unless workspace
+        data = parse_request_data(:required_keys => [:key], :max_value_lengths => { :key => 16_384 })
+        text = data[:key].to_s.strip
+        return respond(:ok => false, :error => 'private') if text.include?('PRIVATE KEY')
 
-        neo4j_query('MATCH (u:User {email: $email}) SET u.git_key = $key;', :email => email, :key => workspace[:line])
+        key = GitServer.parse_key(text.lines.first.to_s)
+        return respond(:ok => false, :error => 'invalid') unless key && text.lines.size == 1
+
+        neo4j_query('MATCH (u:User {email: $email}) SET u.git_key = $key;', :email => @session_user[:email], :key => key[:line])
         Main.git_refresh!(:auto => false)
-        respond(:ok => true, :fingerprint => GitServer.fingerprint(workspace[:line]), :file => workspace[:file])
+        respond(:ok => true, :fingerprint => GitServer.fingerprint(key[:line]))
     end
 
     post '/api/git/remove_key' do

@@ -68,9 +68,9 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
   }
 });
 
-// The other way: the student creates a key pair, hands in the public key
-// with the box in the Handbuch, and gets in after accepting the server's
-// key, whose fingerprint the box shows.
+// The other way: the student creates a key pair, pastes the public key
+// into the box in the Handbuch (a private key is refused), and gets in after
+// accepting the server's key, whose fingerprint the box shows.
 test('a student hands in a key and reaches the Git server with it', async ({ freshWorkspace: workspace, e2eEmail, browser }, testInfo) => {
   test.setTimeout(240_000);
   const group = 'E2E';
@@ -93,7 +93,13 @@ test('a student hands in a key and reaches the Git server with it', async ({ fre
 
     await workspace.goto('/reference/gitlab');
     const box = workspace.locator('[data-git-key]').first();
-    await box.getByRole('button', { name: 'Schlüssel abgeben' }).click();
+    // the private key is refused, with a word on why
+    await box.getByRole('textbox', { name: 'Dein öffentlicher Schlüssel' }).fill((await run('cat ~/.ssh/id_ed25519')).stdout);
+    await box.getByRole('button', { name: 'Hinzufügen' }).click();
+    await expect(box.locator('.invalid-feedback')).toContainText('privater');
+    // the line of the public key, pasted as on any Git server
+    await box.getByRole('textbox', { name: 'Dein öffentlicher Schlüssel' }).fill((await run('cat ~/.ssh/id_ed25519.pub')).stdout);
+    await box.getByRole('button', { name: 'Hinzufügen' }).click();
     await expect(box).toContainText('Abgegeben');
     const fingerprint = (await run('ssh-keygen -l -f ~/.ssh/id_ed25519.pub')).stdout.split(' ')[1];
     await expect(box).toContainText(fingerprint);

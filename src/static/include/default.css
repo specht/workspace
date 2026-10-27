@@ -9973,6 +9973,9 @@ div.pip-world[data-stepper] .stepper-timeline {
 
 .git-key p {
     margin-bottom: 0.5em;
+    /* flush left: a fingerprint does not break, and justified text would
+       spread the words of its line far apart */
+    text-align: left;
 }
 
 .git-key p:last-child {
@@ -10004,6 +10007,17 @@ div.pip-world[data-stepper] .stepper-timeline {
 .git-key .btn-link {
     padding: 0;
     vertical-align: baseline;
+}
+
+.git-key .form-label {
+    font-weight: 600;
+    margin: 0.2em 0 0.3em;
+}
+
+.git-key-input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 85%;
+    word-break: break-all;
 }
 
 .git-key-host {

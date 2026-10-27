@@ -277,9 +277,11 @@ einem Git-Server im Netz braucht dann niemand.
 - **Der Ordner der Gruppe** ist eine zufällige Kennung (`GroupSetting.git_id`),
   nicht ihr Name: Eine umbenannte Gruppe behält ihre Adressen.
 - **Schlüssel:** Die Lehrkraft wählt je Gruppe (`GroupSetting.git_keys`).
-  »Abgeben«: Lernende erzeugen ein Schlüsselpaar und geben den öffentlichen
-  Schlüssel mit dem Kasten auf der Seite ab (gelesen aus ihrem
-  `~/.ssh/id_ed25519.pub`); beim ersten `ssh -T` vergleichen sie den
+  »Abgeben«: Lernende erzeugen ein Schlüsselpaar und fügen die Zeile ihres
+  öffentlichen Schlüssels (`~/.ssh/id_ed25519.pub`) in den Kasten auf der
+  Seite ein, wie bei jedem Git-Server; einen privaten Schlüssel weist der
+  Kasten zurück, ohne ihn zu speichern. Liegt im Workspace ein anderer
+  öffentlicher Schlüssel als der abgegebene, sagt der Kasten das; beim ersten `ssh -T` vergleichen sie den
   Fingerabdruck des Servers mit dem im Kasten. »Automatisch«: Der Workspace
   schreibt jedem Mitglied ein Schlüsselpaar `~/.ssh/workspace_git`, einen
   Abschnitt für `git.workspace` in `~/.ssh/config` und den Schlüssel des
