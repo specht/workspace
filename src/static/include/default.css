@@ -1094,12 +1094,6 @@ img.full.full-shadow {
     box-sizing: border-box;
 }
 
-/* a screenshot of the site, capped at its own size (main.rb, class shot):
-   in the middle where it is narrower than the column */
-img.full.shot {
-    margin-left: auto;
-    margin-right: auto;
-}
 
 img.fit-width {
     min-width: unset;

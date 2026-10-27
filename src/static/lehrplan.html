@@ -199,9 +199,9 @@
     <h1 class='mt-4'>Lehrplan</h1>
     #{(@curriculum_lens = curriculum_plan) && ''}
     <p class='abstract'>#{CGI.escapeHTML(@curriculum_lens[:intro])}</p>
-    <p class='lp-state'>
+    <p class='lp-state' data-store='#{teacher_logged_in? ? 'yes' : 'no'}'>
         <label for='lp_state'>Lehrpläne von</label> #{curriculum_state_select('lp_state')}
-        <span class='lp-state-hint'>Gilt auch für die Zeile oben auf jeder Aktivität; ändern lässt es sich auch im <a href='/profil#for-teachers'>Profil</a>.</span>
+        #{teacher_logged_in? ? "<span class='lp-state-hint'>Gilt auch für die Zeile oben auf jeder Aktivität; ändern lässt es sich auch im <a href='/profil#for-teachers'>Profil</a>.</span>" : ''}
     </p>
     #{Curriculum.draft?(@curriculum_lens) ? "<div class='alert alert-warning lp-draft'><i class='bi bi-cone-striped me-1' aria-hidden='true'></i><strong>#{CGI.escapeHTML(@curriculum_lens[:status_text].to_s)}.</strong> Abgeleitet aus den Themen jeder Aktivität; was nicht passt oder fehlt, bitte an die Administration.</div>" : ''}
     #{(@curriculum_graph = CurriculumGraph.from_content(@@content, pinnable_slugs, :development => DEVELOPMENT, :plan => @curriculum_lens)) && ''}
@@ -217,10 +217,15 @@
     #{CurriculumOverview.html(@@content, pinnable_slugs, :in_graph => @curriculum_graph[:nodes].flat_map { |n| n[:topics] }.to_set, :plan => @curriculum_lens, :state => curriculum_state)}
 </div>
 <script>
-    // The state whose plans the page shows (Curriculum): stored, then the
-    // page again.
+    // The state whose plans the page shows (Curriculum): a teacher's is
+    // stored, then the page again; a guest's goes into the address.
     document.getElementById('lp_state').addEventListener('change', function (event) {
-        api_call('/api/set_curriculum_state/' + encodeURIComponent(event.target.value), {}, function (data) {
+        const state = event.target.value;
+        if (document.querySelector('.lp-state').dataset.store !== 'yes') {
+            location.href = '/lehrplan?land=' + encodeURIComponent(state);
+            return;
+        }
+        api_call('/api/set_curriculum_state/' + encodeURIComponent(state), {}, function (data) {
             if (data.success) location.reload();
         });
     });

@@ -5457,7 +5457,8 @@ class Main < Sinatra::Base
     # The state whose curricula a teacher sees (profile, /lehrplan;
     # Curriculum, docs/plan-bundeslaender.md); Berlin without a choice.
     def curriculum_state
-        state = (@session_user || {})[:curriculum_state].to_s
+        # a teacher's is stored; a guest chooses on /lehrplan (?land=)
+        state = @session_user ? @session_user[:curriculum_state].to_s : params['land'].to_s
         Curriculum.states.any? { |key, _, _| key == state } ? state : Curriculum::DEFAULT_STATE
     end
 
@@ -9580,13 +9581,10 @@ class Main < Sinatra::Base
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?
         end
-        # The activities by the names of the curricula (curriculum_overview.rb),
-        # like the curriculum lines only for teachers.
-        if path == '/lehrplan'
-            this_is_a_page_for_logged_in_users!
-            Main.load_invitations()
-            halt_forbidden_page! unless teacher_logged_in?
-        end
+        # The activities by the names of the curricula (curriculum_overview.rb)
+        # are public: a teacher or a school can see what the Workspace offers
+        # before asking for an account. The curriculum line on each activity
+        # stays for teachers.
         # The profile is about the logged-in person; without one it would
         # fail while drawing its buttons.
         if path == '/profil'

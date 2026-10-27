@@ -13,7 +13,7 @@ status_text: Entwurf, von einer Lehrkraft in Baden-Württemberg zu prüfen
 intro: >-
   Welche Aktivitäten des Workspace zu welchem Teil der Bildungspläne von Baden-Württemberg für Informatik am
   Gymnasium passen: der Aufbaukurs in Klasse 7, das Profilfach IMP in den Klassen 8 bis 10 und Informatik in der
-  Kursstufe. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität. Nur Lehrkräfte sehen diese Seite.
+  Kursstufe. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
 label: Bildungsplan Baden-Württemberg (Entwurf)
 levels:
   - level: Klasse 7

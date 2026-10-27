@@ -3,7 +3,7 @@ require_relative 'curriculum'
 require_relative 'page_kinds'
 require 'set'
 
-# The page /lehrplan, for logged-in teachers: for every name of the plan
+# The page /lehrplan, public (a guest chooses the state with ?land=): for every name of the plan
 # (Curriculum, the teacher's state; docs/lehrplan.md) the activities whose
 # line names it, in the order of the catalog, with the details of their
 # line. A name without an activity stays on the page: a gap is worth

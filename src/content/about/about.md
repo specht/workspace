@@ -37,7 +37,7 @@ Der Hackschule Workspace ist für den Einsatz im Informatikunterricht, in Worksh
 
 Der Workspace ist dabei bewusst keine einzelne Lernumgebung für eine bestimmte Programmiersprache. Er stellt eine gemeinsame technische Grundlage bereit, auf der ganz unterschiedliche Unterrichtsprojekte laufen können – von ersten HTML-Seiten und kleinen Programmen bis zu Datenbanken, Grafik, Spielen und weiteren Themen.
 
-Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt für eigene Aufgaben genutzt oder einfach zum Entdecken neuer Themen eingesetzt werden. Wie eine Aktivität aufgebaut ist und warum, steht unten unter [»Was eine Aktivität ausmacht«](#was-eine-aktivität-ausmacht).
+Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt für eigene Aufgaben genutzt oder einfach zum Entdecken neuer Themen eingesetzt werden. Wie eine Aktivität aufgebaut ist und warum, steht unten unter [»Was eine Aktivität ausmacht«](#was-eine-aktivität-ausmacht). Welche Aktivität zu welchem Thema deines Rahmenlehrplans passt und was worauf aufbaut, zeigt der [Lehrplan](/lehrplan), für Berlin, Brandenburg und Baden-Württemberg.
 
 ### Mit deiner Klasse arbeiten
 
