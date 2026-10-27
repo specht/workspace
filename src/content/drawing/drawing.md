@@ -425,18 +425,51 @@ _task(bezier)
 
 _person(bezier)
 
-Wir zeichnen drei kubische Bézierkurven in verschiedenen Grüntönen. Bei jeder sind der erste und der letzte Punkt die Enden der Kurve, die beiden mittleren ziehen sie in ihre Richtung. Schreib den Code unter `fill_rect`:
+Wir zeichnen drei kubische Bézierkurven in verschiedenen Grüntönen. Bei jeder sind der erste und der letzte Punkt die Enden der Kurve, die beiden mittleren ziehen sie in ihre Richtung. Die erste schreibst du unter `fill_rect`:
 
 ```ruby
 set_color(7)
 draw_cubic_bezier(0, 120, 100, 140, 200, 100, 320, 120)
+```
+
+`draw_cubic_bezier` bekommt die vier Punkte nacheinander, jeden als x und y. Die Kurve beginnt am linken Rand bei (0, 120) und endet am rechten bei (320, 120). Dazwischen zieht (100, 140) sie nach unten, denn y wächst nach unten, und (200, 100) nach oben.
+
+<div class='hint own' data-check='kurven'>
+<strong>Jetzt bist du dran:</strong> Zeichne darunter die beiden anderen Hügel: die zweite Kurve mit Farbe 8 von (0, 140) nach (320, 140), die dritte mit Farbe 9 von (0, 170) nach (320, 170). Die beiden mittleren Punkte jeder Kurve suchst du dir selbst aus. Achte darauf, dass sich die Kurven nicht kreuzen: Gleich füllst du die Flächen zwischen ihnen, und gekreuzte Kurven machen daraus andere Flächen.
+</div>
+
+<!-- hint -->
+Die Enden stehen schon fest. Die zweite Kurve fängt also mit <code>0, 140</code> an und hört mit <code>320, 140</code> auf; dazwischen stehen die beiden mittleren Punkte, jeder als x und y. Vor jede Kurve gehört ihre Farbe, wie bei der ersten.
+<!-- /hint -->
+<!-- hint -->
+Nimm für die mittleren Punkte x-Werte zwischen 0 und 320, etwa 100 und 200, und y-Werte in der Nähe der Enden. Ein Gerüst; die Lücken mit <code>…</code> füllst du:
+
+```ruby
+set_color(8)
+draw_cubic_bezier(0, 140, …, …, …, …, 320, 140)
+set_color(9)
+draw_cubic_bezier(0, 170, …, …, …, …, 320, 170)
+```
+<!-- /hint -->
+
+<!-- solution -->
+Eine Möglichkeit:
+
+```ruby
 set_color(8)
 draw_cubic_bezier(0, 140, 100, 150, 200, 110, 320, 140)
 set_color(9)
 draw_cubic_bezier(0, 170, 110, 140, 220, 140, 320, 170)
 ```
+<!-- /solution -->
 
-Dein Bild sollte jetzt so aussehen:
+_task(kurven)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz einen der mittleren Punkte deiner zweiten Kurve weit nach oben, etwa auf y = 20, und starte das Programm. Achte darauf, ob die Kurve den Punkt erreicht oder nur in seine Richtung ausholt, und wie weit. Stell den Punkt danach wieder zurück.
+</div>
+
+Mit den Punkten aus der Lösung sieht dein Bild so aus:
 
 <!-- tutorial-screenshot
 # Drei Kurven

@@ -1,6 +1,57 @@
 format: 1
 activity: kata-functions
 tasks:
+  - id: predict-triple
+    title: "Was erscheint?"
+    level: 1
+    prediction: true
+    prompt: |
+      Welche Zahl schreibt das Programm oben hin?
+    check:
+      type: number
+      expect: 42
+    feedback:
+      - when: { equals: 14 }
+        say: "`14` ist der Wert, mit dem die Funktion aufgerufen wird. Was gibt sie damit zurück?"
+      - when: { equals: 3 }
+        say: "`3` ist der Faktor in der Funktion. Was ergibt `3 * n`, wenn `n` den Wert `14` hat?"
+
+  - id: predict-badge
+    title: "Welcher Text?"
+    level: 1
+    prediction: true
+    prompt: |
+      Was schreibt das Programm oben hin?
+    check:
+      type: choice
+      options: ["Bello ist 3 Jahre alt", "#{name} ist #{age} Jahre alt", "name ist age Jahre alt", "Eine Fehlermeldung"]
+      correct: 0
+    python:
+      check:
+        type: choice
+        options: ["Bello ist 3 Jahre alt", "{name} ist {age} Jahre alt", "name ist age Jahre alt", "Eine Fehlermeldung"]
+        correct: 0
+    javascript:
+      check:
+        type: choice
+        options: ["Bello ist 3 Jahre alt", "${name} ist ${age} Jahre alt", "name ist age Jahre alt", "Eine Fehlermeldung"]
+        correct: 0
+
+  - id: predict-rest
+    title: "Der Rest"
+    level: 1
+    prediction: true
+    prompt: |
+      Welche Zahl schreibt die zweite Zeile oben hin?
+    check:
+      type: number
+      expect: 2
+    feedback:
+      - when: { equals: 3 }
+        say: "`3` passt fünfmal in 17, das ist die erste Zeile. `%` fragt, was dabei übrig bleibt."
+      - when: { between: [3.3, 3.5] }
+        say: "`3.4` ist 17 durch 5 mit Komma, das ist die dritte Zeile. `%` fragt, was übrig bleibt, wenn 5 dreimal in 17 passt."
+
   - id: add
     title: "Zwei Zahlen addieren"
     level: 1

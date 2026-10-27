@@ -59,11 +59,20 @@ examples:
       - files:
           website-test/index.html: lehrkraft/6-css.html
           website-test/styles.css: lehrkraft/6-styles.css
+      # eigene Farben und eine eigene Schrift, nur die Regel für body
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/styles.css: lehrkraft/6-body.css
     fail:
       # styles.css, aber index.html bindet sie nicht ein
       - files:
           website-test/index.html: lehrkraft/5-bildnachweis.html
           website-test/styles.css: lehrkraft/6-styles.css
+      # nur die übrigen Regeln, keine für body
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/styles.css: lehrkraft/6-ohne-body.css
+        say: background
   flexbox:
     pass:
       - files: { website-test/styles.css: lehrkraft/7-styles.css }

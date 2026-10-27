@@ -403,13 +403,15 @@ module TaskCheck
         end
     end
 
-    # Names of the ${...} variables a check uses.
+    # Names of the ${...} variables a check uses. Only the known ones
+    # (TaskSpec::VARIABLES): ${name} in a JavaScript template literal, say an
+    # option of a choice, is text.
     def self.variables_used(check)
-        JSON.generate(check).scan(TaskSpec::VARIABLE_PATTERN).flatten.uniq
+        JSON.generate(check).scan(TaskSpec::VARIABLE_PATTERN).flatten.uniq & TaskSpec::VARIABLES
     end
 
     def self.fill(text, variables)
-        text.to_s.gsub(TaskSpec::VARIABLE_PATTERN) { variables[$1].to_s }
+        text.to_s.gsub(TaskSpec::VARIABLE_PATTERN) { |found| TaskSpec::VARIABLES.include?($1) ? variables[$1].to_s : found }
     end
 
     # --- answer -------------------------------------------------------------

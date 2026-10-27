@@ -22,6 +22,21 @@ examples:
     fail:
       # Ein WebP, das .png heißt
       - files: { rainbow.png: first-pixel.webp }
+  kurven:
+    pass:
+      - files: { rainbow.rb: stufen/step-4.rb }
+      # eigene mittlere Punkte, ohne Leerzeichen
+      - files: { rainbow.rb: { text: "set_color(8)\ndraw_cubic_bezier(0,140,80,160,240,120,320,140)\nset_color(9)\ndraw_cubic_bezier(0,170,90,150,230,160,320,170)\n" } }
+    fail:
+      # der Stand davor: nur der Hintergrund
+      - files: { rainbow.rb: stufen/step-3.rb }
+        say: "(0, 140)"
+      # nur die erste Kurve
+      - files: { rainbow.rb: { text: "set_color(7)\ndraw_cubic_bezier(0, 120, 100, 140, 200, 100, 320, 120)\n" } }
+        say: "(0, 140)"
+      # die zweite Kurve endet nicht am rechten Rand
+      - files: { rainbow.rb: { text: "draw_cubic_bezier(0, 140, 100, 150, 200, 110, 300, 140)\ndraw_cubic_bezier(0, 170, 110, 140, 220, 140, 320, 170)\n" } }
+        say: "(320, 140)"
   flaechen:
     pass:
       - files: { rainbow.rb: stufen/step-6.rb }

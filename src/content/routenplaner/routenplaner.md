@@ -149,7 +149,7 @@ Die Karte kommt von [OpenStreetMap](https://www.openstreetmap.org/), einer Karte
 
 _person(coast)
 
-Öffne `data/steglitz.tsv`. Jede Zeile ist ein Weg, die vier Teile trennt ein Tabulator:
+Öffne `data/steglitz-zehlendorf.tsv`. Jede Zeile ist ein Weg, die vier Teile trennt ein Tabulator:
 
 ```text
 residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.457700 …

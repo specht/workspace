@@ -1,6 +1,47 @@
 format: 1
 activity: kata-loops
 tasks:
+  - id: predict-sevens
+    title: "Wie viele Siebener?"
+    level: 1
+    prediction: true
+    prompt: |
+      Welche Zahl schreibt das Programm oben hin?
+    check:
+      type: number
+      expect: 7
+    feedback:
+      - when: { equals: 50 }
+        say: "Die Schleife läuft 50-mal, aber `count` wird nur größer, wenn die Bedingung gilt."
+      - when: { equals: 8 }
+        say: "Zähl nach: Welche Vielfachen von 7 liegen zwischen 1 und 50? 56 ist schon zu groß."
+
+  - id: predict-countdown
+    title: "Was erscheint?"
+    level: 1
+    prediction: true
+    prompt: |
+      Was schreibt das Programm oben hin, Zeile für Zeile?
+    check:
+      type: choice
+      options: ["3, 2, 1, Los!", "3, 2, 1, 0, Los!", "1, 2, 3, Los!", "3, Los!, 2, Los!, 1, Los!"]
+      correct: 0
+
+  - id: predict-halving
+    title: "Wie oft halbieren?"
+    level: 1
+    prediction: true
+    prompt: |
+      Welche Zahl schreibt das Programm oben hin?
+    check:
+      type: number
+      expect: 6
+    feedback:
+      - when: { equals: 7 }
+        say: "Schreib die Werte von `n` auf: 100, 50, 25 … Bei welchem Wert hört die Schleife auf, und wie oft wurde bis dahin halbiert?"
+      - when: { equals: 50 }
+        say: "`50` ist `n` nach dem ersten Halbieren. Gefragt ist, wie oft halbiert wird, bis `n` nicht mehr größer als 1 ist."
+
   - id: sum-to
     title: "Von 1 bis n zusammenzählen"
     level: 1

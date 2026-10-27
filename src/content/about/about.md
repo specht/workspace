@@ -10,7 +10,7 @@ curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software); Oberstu
 <img class='r' style='width: 8em;' src='vscode.png' alt='Das blaue Logo von Visual Studio Code'>
 
 <p class='abstract'>
-Der Hackschule Workspace ist eine Programmierumgebung, die direkt im Browser läuft. Schülerinnen und Schüler können damit programmieren, Webseiten bauen und neue Technologien ausprobieren, ohne vorher Software installieren oder einrichten zu müssen.
+Der Hackschule Workspace ist eine Programmierumgebung, die direkt im Browser läuft. Du kannst damit programmieren, Webseiten bauen und neue Technologien ausprobieren, ohne vorher Software installieren oder einrichten zu müssen.
 </p>
 
 Im Mittelpunkt steht **Visual Studio Code**, ein Editor, der auch in der professionellen Softwareentwicklung weit verbreitet ist. Dazu kommen ein Terminal und viele bereits eingerichtete Programmiersprachen, Werkzeuge und Erweiterungen.

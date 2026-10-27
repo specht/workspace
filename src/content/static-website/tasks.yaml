@@ -122,15 +122,18 @@ tasks:
         say: Das Bild ist sehr groß; die Seite lädt dann lange. Verkleinere es, zum Beispiel mit einem Bildprogramm, auf 1000 bis 2000 Pixel Breite.
 
   - id: css
-    title: Gestaltet mit CSS
-    prompt: Lege `styles.css` an, binde die Datei in `index.html` ein und schreibe die Regeln von oben hinein.
+    title: Deine erste Regel
+    prompt: In `styles.css` steht eine Regel für `body` mit einer Hintergrundfarbe (`background`), einer Schriftfarbe (`color`) und einer Schrift (`font-family`), und `index.html` bindet die Datei ein.
     check:
       type: css
       file: website-test/styles.css
       linked_from: website-test/index.html
       expect:
         parses: true
-        min_rules: 5
+        declares:
+          - { selector: body, property: background, say: "Die Regel für `body` braucht eine Hintergrundfarbe: `background: …;`. Mit `background-color` ginge es auch, gefragt ist hier `background`." }
+          - { selector: body, property: color, say: "Die Regel für `body` braucht eine Schriftfarbe: `color: …;`." }
+          - { selector: body, property: font-family, say: "Die Regel für `body` braucht eine Schrift: `font-family: …;`, zum Beispiel `system-ui, sans-serif`." }
     feedback:
       - when: { problem: missing }
         say: "`website-test/styles.css` gibt es noch nicht. Lege die Datei im Explorer neben `index.html` an."

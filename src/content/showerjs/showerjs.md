@@ -126,6 +126,8 @@ Bild neben Text, als Hintergrund, im Zuschnitt: _uses(vorlage, bildgroesse)
 
 ## Gestalten
 
+Die Vorlage hat schon eine `styles.css` mit den Regeln des Themes. Deine eigenen Regeln gehören ans Ende der Datei, unter den Kommentar »Eigene CSS-Regeln«.
+
 _include(css#regeln)
 
 _task(eigene-regel)
