@@ -2653,13 +2653,18 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 
 /* Folded to one line, a box keeps what there is to copy (```bash_copy,
-   such as the address to clone), right under that line. */
+   such as the address to clone), right under that line. The gap goes above
+   the box, not the block: the copy button sits at the box's top edge. */
 .reference-include-folded > :not(.reference-include-done, .code-copy-box) {
     display: none;
 }
 
+.reference-include-folded > .code-copy-box {
+    margin-top: 0.5em;
+}
+
 .reference-include-folded > .code-copy-box pre {
-    margin: 0.5em 0 0;
+    margin: 0;
 }
 
 .reference-include-done {

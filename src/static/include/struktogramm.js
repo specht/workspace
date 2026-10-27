@@ -231,7 +231,7 @@
         if (node.size) return node.size;
         let size;
         if (node.type === 'statement') {
-            size = { w: m(node.text) + 2 * PAD, h: ROW };
+            size = { w: m(typeset(node.text)) + 2 * PAD, h: ROW };
         } else if (node.type === 'if') {
             // Each column is wide enough for its label in the corner below
             // the line; the condition fits between the two lines at the
@@ -240,21 +240,26 @@
             const a = measureAll(node.then, m);
             const b = measureAll(node.else, m);
             const cols = [{ w: Math.max(a.w, label('wahr')), h: a.h }, { w: Math.max(b.w, label('falsch')), h: b.h }];
-            const cond = (m(node.cond) + PAD + 6) / (1 - COND_DEPTH);
+            const cond = (m(typeset(node.cond)) + PAD + 6) / (1 - COND_DEPTH);
             size = { w: Math.max(cols[0].w + cols[1].w, cond), h: HEAD + Math.max(a.h, b.h) };
             node.cols = cols;
         } else if (node.type === 'loop' || node.type === 'repeat') {
             const b = measureAll(node.body, m);
-            const head = m(node.type === 'loop' ? node.head : `until ${node.cond}`) + 2 * PAD;
+            const head = m(typeset(node.type === 'loop' ? node.head : `until ${node.cond}`)) + 2 * PAD;
             size = { w: Math.max(head, BAR + b.w), h: ROW + b.h };
         }
         node.size = size;
         return size;
     }
 
+    // What a keyboard has, as the Handbuch writes it: <- is ←, <= is ≤, >= is ≥.
+    function typeset(text) {
+        return String(text).replace(/<-/g, '←').replace(/<=/g, '≤').replace(/>=/g, '≥');
+    }
+
     function textSVG(text, x, y, cls) {
         // keywords in the colour of the pseudocode's keywords
-        const parts = String(text).split(/([\p{L}_][\p{L}\p{N}_]*)/u);
+        const parts = typeset(text).split(/([\p{L}_][\p{L}\p{N}_]*)/u);
         const inner = parts.map((part) => KEYWORDS.has(part) ? `<tspan class="sg-kw">${esc(part)}</tspan>` : esc(part)).join('');
         return `<text class="${cls}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${inner}</text>`;
     }
@@ -288,7 +293,7 @@
             rect(x, y, w, HEAD, 'sg-head');
             out.push(`<path class="sg-line" d="M${x.toFixed(1)},${y.toFixed(1)} L${split.toFixed(1)},${(y + HEAD).toFixed(1)} L${(x + w).toFixed(1)},${y.toFixed(1)}"/>`);
             // the condition centred between the two lines at its baseline
-            const cw = m(node.cond);
+            const cw = m(typeset(node.cond));
             const from = x + left * COND_DEPTH;
             const to = x + w - (w - left) * COND_DEPTH;
             const centre = Math.min(Math.max((from + to) / 2, from + 3 + cw / 2), to - 3 - cw / 2);
@@ -345,7 +350,7 @@
         const H = Math.ceil(y - 22 + margin);
         const label = opts.label || 'Struktogramm';
         const head = `<svg xmlns="http://www.w3.org/2000/svg" class="struktogramm-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}">` +
-            `<title>${esc(label)}</title><desc>${esc(text)}</desc><style>${STYLE}</style>` +
+            `<title>${esc(label)}</title><desc>${esc(typeset(text))}</desc><style>${STYLE}</style>` +
             (opts.background ? `<rect width="${W}" height="${H}" fill="${esc(opts.background)}"/>` : '');
         return { svg: `${head}${out.join('')}</svg>`, errors: [], diagrams: parsed.diagrams, width: W, height: H };
     }
@@ -387,5 +392,5 @@
         else start();
     }
 
-    return { parse, svg, estimateWidth, canvasMeasure, esc };
+    return { parse, svg, estimateWidth, canvasMeasure, esc, typeset };
 });

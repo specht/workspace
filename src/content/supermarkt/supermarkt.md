@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Drei Kassen eines Supermarkts, die erste mit dem Schild »Express · bis 10«. Vor ihr warten zwei Leute mit wenig im Wagen, vor den anderen beiden drei und vier Leute mit vollen Wagen."
+image_alt: "Drei Kassen als Zeitleisten von 9:00 bis 9:15: farbige Blöcke nebeneinander, je eine Kundin oder ein Kunde, die Zahl darin die Artikel, ein langer Block für 59 Artikel, ein kurzer für einen."
 kind: projekt
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript, dart, java]

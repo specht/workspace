@@ -99,3 +99,12 @@ test('an empty column, and errors give no picture', () => {
     assert.strictEqual(S.svg('if x > 0\n    y ← 1').svg, null);
     assert.strictEqual(S.svg('   \n').svg, null);
 });
+
+test('what a keyboard has: <- is ←, <= is ≤, >= is ≥', () => {
+    const out = S.svg('if x <= 3:\n    y <- y + 1\nwhile n >= 10:\n    n <- n div 10').svg;
+    assert.match(out, /x ≤ 3/);
+    assert.match(out, /y ← y \+ 1/);
+    assert.match(out, /n ≥ 10/);
+    assert.doesNotMatch(out, /&lt;-/);
+    assert.strictEqual(S.typeset('a < -1'), 'a < -1');
+});

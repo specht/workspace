@@ -24,7 +24,7 @@ Wie du einen Algorithmus aufschreibst, bevor du ihn programmierst: als Pseudocod
 <!-- part: ausprobieren -->
 ## Ausprobieren
 
-Schreib Pseudocode ins Feld; daneben oder darunter erscheint das Struktogramm, während du tippst. Hier wird nichts gespeichert; »Als SVG speichern« legt das Bild als Datei ab, für ein Arbeitsblatt oder eine Abgabe.
+Schreib Pseudocode ins Feld; daneben oder darunter erscheint das Struktogramm, während du tippst. Den Pfeil `←` tippst du als `<-`, das Feld macht ihn daraus. Hier wird nichts gespeichert; »Als SVG speichern« legt das Bild als Datei ab, für ein Arbeitsblatt oder eine Abgabe.
 
 <div class='struktogramm-playground'>
 <textarea class='form-control struktogramm-playground-input' wrap='off' spellcheck='false' autocapitalize='off' aria-label='Pseudocode'>count_vowels(word):
@@ -67,7 +67,16 @@ window.addEventListener('DOMContentLoaded', function () {
         link.click();
         URL.revokeObjectURL(link.href);
     });
-    input.addEventListener('input', draw);
+    // ← has no key: <- becomes ← while typing, and the cursor stays where it was.
+    input.addEventListener('input', function () {
+        if (input.value.indexOf('<-') >= 0) {
+            var before = input.value.slice(0, input.selectionStart);
+            var moved = (before.match(/<-/g) || []).length;
+            input.value = input.value.replace(/<-/g, '←');
+            input.selectionStart = input.selectionEnd = before.length - moved;
+        }
+        draw();
+    });
     (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(draw);
 });
 </script>
@@ -81,8 +90,8 @@ Pseudocode sieht aus wie ein Programm, ist aber für Menschen geschrieben: Er sa
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Pseudocode</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>sum ← 0</code></td><td>eine Zuweisung: <code>sum</code> bekommt den Wert 0. Der Pfeil zeigt, wohin der Wert geht.</td></tr>
-<tr><td><code>a == b</code>, <code>a != b</code>, <code>a &lt; b</code>, <code>a ≤ b</code></td><td>Vergleiche: gleich, ungleich, kleiner, kleiner oder gleich</td></tr>
+<tr><td><code>sum ← 0</code></td><td>eine Zuweisung: <code>sum</code> bekommt den Wert 0. Der Pfeil zeigt, wohin der Wert geht. Tippen kannst du ihn als <code>&lt;-</code>.</td></tr>
+<tr><td><code>a == b</code>, <code>a != b</code>, <code>a &lt; b</code>, <code>a ≤ b</code></td><td>Vergleiche: gleich, ungleich, kleiner, kleiner oder gleich; <code>≤</code> und <code>≥</code> tippst du als <code>&lt;=</code> und <code>&gt;=</code></td></tr>
 <tr><td><code>and</code>, <code>or</code>, <code>not</code></td><td>Bedingungen verknüpfen</td></tr>
 <tr><td><code>a mod b</code>, <code>a div b</code></td><td>der Rest und das ganzzahlige Ergebnis einer Division: <code>17 mod 5</code> ist 2, <code>17 div 5</code> ist 3</td></tr>
 <tr><td><code>list[i]</code>, <code>length</code></td><td>das Element mit dem Index <code>i</code> (das erste hat den Index 0), die Zahl der Elemente</td></tr>
