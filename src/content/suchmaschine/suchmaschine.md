@@ -849,6 +849,48 @@ einer Seite, die niemand kennt.
 
 _task(linkfarm)
 
+## Geschrieben für die Suchmaschine
+
+Die Anzeige für Katzenfutter hat dein erstes Ranking mit einem einfachen Trick
+gewonnen: Sie wiederholt das Wort, nach dem gesucht wird. Weil oben stehen Geld
+bringt, lebt eine ganze Branche davon, Seiten nach oben zu bringen: die
+**Suchmaschinenoptimierung**, englisch Search Engine Optimization (SEO). Seit
+es Suchmaschinen gibt, geht es hin und her: Die Optimierer finden einen Trick,
+die Suchmaschine lernt, ihn zu erkennen, und die Optimierer suchen den nächsten.
+
+- **Wörter:** Ende der 1990er Jahre füllten Seiten sich mit Suchwörtern, oft
+  in weißer Schrift auf weißem Grund, unsichtbar für Menschen, aber nicht für
+  den Crawler.
+- **Links:** Als Links zählten, kauften und tauschten Seiten Links und bauten
+  Linkfarmen. 2012 stufte Google mit einer Änderung namens Penguin Seiten
+  herab, die das taten.
+- **Masse:** Firmen ließen billig Texte zu allem schreiben, wonach oft gesucht
+  wird, sogenannte Inhaltsfarmen; 2011 stufte Google sie mit einer Änderung
+  namens Panda herab. Heute schreiben Sprachmodelle solche Texte in Sekunden,
+  viel größere als das aus [»Ein winziges Sprachmodell«](/sprachmodell).
+
+Was das aus den Treffern macht, haben Informatiker der Universität Leipzig und
+der Bauhaus-Universität Weimar ein Jahr lang gemessen. Sie stellten Google,
+Bing und DuckDuckGo 7392 Suchanfragen nach Testberichten, etwa nach den besten
+Kopfhörern. Im Web verdienen nur wenige Testberichte an **Affiliate-Links**:
+Links zu einem Shop, für die der Shop bei jedem Kauf einen Anteil zahlt. Unter
+den Treffern war es die Mehrheit. Wenn eine Suchmaschine solche Seiten
+herabstufte, half das nur eine Weile.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Is Google Getting Worse? A Longitudinal Investigation of SEO Spam in Search Engines</strong>, Janek Bevendorff, Matti Wiegmann, Martin Potthast und Benno Stein, ECIR 2024. Ein Jahr Suchanfragen nach Testberichten bei drei Suchmaschinen: <a href='https://doi.org/10.1007/978-3-031-56063-7_4'>Springer</a>.</p>
+</div>
+
+Manches, was Suchmaschinen belohnen, hilft auch Menschen: ein Titel, der sagt,
+worum es geht, Bilder mit Alt-Text, eine Seite, die schnell lädt. Schwierig
+wird es, wenn eine Seite für den Crawler geschrieben ist statt für die, die sie
+lesen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Such nach »beste Kopfhörer« oder einem anderen Gerät. Achte darauf, wie viele der ersten zehn Treffer Listen mit Links zum Kaufen sind, und ob eine Seite sagt, wer die Geräte wirklich ausprobiert hat.
+</div>
+
 ## Wer entscheidet, was gefunden wird
 
 Deine Suchmaschine hat zwei Rankings gesehen, und jedes bevorzugt andere
@@ -860,9 +902,6 @@ die noch niemand verlinkt, steht unten, egal wie gut sie ist.
   neu eine Seite ist, wo du gerade bist, was andere angeklickt haben. Wie genau,
   verraten sie nicht, auch damit niemand das Ranking so leicht ausnutzt wie das
   Katzenfutter das deine.
-- Weil oben stehen Geld bringt, lebt eine ganze Branche davon, Seiten nach
-  oben zu bringen: **Suchmaschinenoptimierung**, englisch Search Engine
-  Optimization (SEO).
 - In Deutschland läuft der weitaus größte Teil aller Suchanfragen über eine
   einzige Suchmaschine. Was sie unten einordnet, findet kaum jemand.
 - Ein Crawler fragt eine Website zuerst nach der Datei `/robots.txt`, in der
