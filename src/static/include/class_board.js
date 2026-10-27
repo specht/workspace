@@ -358,22 +358,20 @@
     }
 
     // The server as a whole, so a slow Workspace can be told from a busy
-    // server: CPU and RAM in one row, as on »Betrieb«.
+    // server: one line, a part from 90 % on marked.
     function showServer(data) {
-        const row = people.querySelector('.class-server-load');
-        if (!row || !data) return;
-        const fill = (i, percent, html) => {
-            const bar = row.querySelectorAll('.progress-bar')[i];
-            bar.style.width = percent + '%';
-            bar.classList.toggle('load-full', percent >= 90);
-            bar.classList.toggle('load-high', percent >= 75 && percent < 90);
-            row.querySelectorAll('p')[i].innerHTML = html;
+        const line = people.querySelector('.class-server-line');
+        if (!line || !data) return;
+        const part = (cls, percent, html) => {
+            const span = line.querySelector(cls);
+            span.innerHTML = html;
+            span.classList.toggle('load-full', percent >= 90);
         };
-        fill(0, data.cpu_usage, Math.round(data.cpu_usage) + ' % von ' + data.num_cores + ' Kernen');
+        part('.class-server-cpu', data.cpu_usage, `${Math.round(data.cpu_usage)} % CPU`);
         // The sizes come with their unit as HTML (»19.6<span class='unit'>G</span>«).
-        fill(1, data.ram_percent, data.ram_used + ' von ' + data.ram_total);
-        fill(2, data.disk_user_percent, data.disk_user_used + ' von ' + data.disk_user_total);
-        row.hidden = false;
+        part('.class-server-ram', data.ram_percent, `${data.ram_used} von ${data.ram_total} RAM`);
+        part('.class-server-disk', data.disk_user_percent, `${data.disk_user_used} von ${data.disk_user_total} Speicher belegt`);
+        line.hidden = false;
     }
 
     function connect() {
@@ -612,50 +610,41 @@ document.addEventListener('click', function (e) {
     window.load_groups();
 })();
 
-// The class repositories of the group (ClassRepos in main.rb): the button
-// beside »Sprache« opens a dialog with one field per activity that clones
-// one, in the order of the catalog. Saved together; the server checks
-// every address and saves nothing if one is not valid, and the dialog marks
-// that field. /klasse?repos=SLUG (the link on the activity page) opens the
-// dialog at that field.
+// The class repositories of the group (ClassRepos in main.rb), in the tab
+// »Einstellungen«: one field per activity that clones one, in the order of
+// the catalog. Saved together; the server checks every address and saves
+// nothing if one is not valid, and the field is marked. /klasse?repos=SLUG
+// (the link on the activity page) opens the tab (main.rb) at that field.
 (function () {
-    const button = document.querySelector('.class-repos-open');
-    if (!button) return;
+    const box = document.querySelector('.class-repos');
+    if (!box) return;
     const esc = (t) => $('<div>').text(t === undefined || t === null ? '' : String(t)).html();
-    const group = button.dataset.group;
+    const group = box.dataset.group;
     // The Workspace's own Git server (GitServer in main.rb): a repository
     // can be created there instead of naming one elsewhere.
-    const git_server = button.dataset.gitServer === '1';
+    const git_server = box.dataset.gitServer === '1';
     const LOCAL = /^git@git\.workspace:([a-z0-9]{10})\/([a-z0-9-]+)\.git$/;
 
     function entries() {
-        try { return JSON.parse(button.dataset.repos); } catch (e) { return []; }
-    }
-
-    // The button shows how many addresses the group has (»Git · 2«).
-    function show_count(list) {
-        const count = list.filter((e) => e.address).length;
-        button.querySelector('.class-repos-count').textContent = count > 0 ? `· ${count}` : '';
-        button.classList.toggle('has-repos', count > 0);
-        button.setAttribute('aria-label', `Klassen-Repositorys: ${count} von ${list.length} eingetragen`);
-        button.title = `Klassen-Repositorys der Gruppe: ${count} von ${list.length} eingetragen`;
+        try { return JSON.parse(box.dataset.repos); } catch (e) { return []; }
     }
 
     function save() {
         const repos = {};
-        document.querySelectorAll('.class-repo-input').forEach((input) => {
+        box.querySelectorAll('.class-repo-input').forEach((input) => {
             repos[input.dataset.slug] = input.value.trim();
             input.classList.remove('is-invalid');
             input.removeAttribute('aria-invalid');
         });
-        const confirm = $('#__template_modal .modal-footer .btn-primary').prop('disabled', true);
+        const confirm = box.querySelector('.class-repos-save');
+        confirm.disabled = true;
         api_call('/api/set_group_class_repos', { group: group, repos: repos }, function (r) {
-            confirm.prop('disabled', false);
+            confirm.disabled = false;
             if (!r.success) return;
             if (!r.ok) {
                 let first = null;
                 Object.keys(r.errors || {}).forEach((slug) => {
-                    const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
+                    const input = box.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
                     if (!input) return;
                     input.classList.add('is-invalid');
                     input.setAttribute('aria-invalid', 'true');
@@ -665,13 +654,11 @@ document.addEventListener('click', function (e) {
                 return;
             }
             const list = entries().map((e) => Object.assign(e, { address: (r.repos || {})[e.slug] || null }));
-            button.dataset.repos = JSON.stringify(list);
-            show_count(list);
-            $('#__template_modal').modal('hide');
+            box.dataset.repos = JSON.stringify(list);
+            list.forEach((e) => set_actions(e));
             const count = list.filter((e) => e.address).length;
             show_success_message(`Gespeichert: ${count === 0 ? 'keine Adresse' : count === 1 ? 'eine Adresse' : `${count} Adressen`} für ${esc(group)}.`);
         }, { no_please_wait: true });
-        return false;
     }
 
     // Beside a field: create the repository in the Workspace, or, for one
@@ -690,23 +677,26 @@ document.addEventListener('click', function (e) {
             + `<i class='bi bi-plus-lg' aria-hidden='true'></i>Im Workspace anlegen${e.starter ? ', mit den Dateien der Seite' : ''}</button>`;
     }
 
+    function set_actions(e) {
+        const actions = box.querySelector(`.class-repo-git[data-slug="${CSS.escape(e.slug)}"]`);
+        if (actions) actions.innerHTML = git_actions(e);
+    }
+
     function set_entry(slug, address) {
         const list = entries().map((e) => e.slug === slug ? Object.assign(e, { address: address }) : e);
-        button.dataset.repos = JSON.stringify(list);
-        show_count(list);
-        const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
+        box.dataset.repos = JSON.stringify(list);
+        const input = box.querySelector(`.class-repo-input[data-slug="${CSS.escape(slug)}"]`);
         if (input) input.value = address || '';
-        const actions = document.querySelector(`.class-repo-git[data-slug="${CSS.escape(slug)}"]`);
-        if (actions) actions.innerHTML = git_actions(list.find((e) => e.slug === slug));
+        set_actions(list.find((e) => e.slug === slug));
     }
 
     function git_keys_html() {
         if (!git_server) return '';
-        const mode = button.dataset.gitKeys || 'handed_in';
+        const mode = box.dataset.gitKeys || 'handed_in';
         const option = (value, label, hint) => `<div class='form-check'>`
             + `<input class='form-check-input' type='radio' name='class-repos-keys' id='class-repos-keys-${value}' value='${value}'${mode === value ? ' checked' : ''}>`
             + `<label class='form-check-label' for='class-repos-keys-${value}'>${label}<span class='class-repos-keys-hint'>${hint}</span></label></div>`;
-        return `<fieldset class='class-repos-keys'><legend>Schlüssel für Repositorys im Workspace</legend>`
+        return `<fieldset class='class-repos-keys'><legend class='class-setting-subtitle'>Schlüssel</legend>`
             + option('handed_in', 'Die Lernenden erzeugen ein Schlüsselpaar und geben den öffentlichen Schlüssel ab',
                 'wie bei einem Git-Server im Netz; die Seiten zeigen, wie es geht')
             + option('auto', 'Der Workspace richtet den Schlüssel für alle ein',
@@ -714,17 +704,18 @@ document.addEventListener('click', function (e) {
             + `</fieldset>`;
     }
 
-    function open(focus_slug) {
-        let body = `<p class='class-repos-intro'>Lernende der Gruppe sehen die Adresse im Befehl zum Klonen und bekommen die Aufgaben zu Git. `
+    function render() {
+        let html = `<p class='class-setting-hint'>Lernende der Gruppe sehen die Adresse im Befehl zum Klonen und bekommen die Aufgaben zu Git. `
             + (git_server
                 ? `Ein Repository im Workspace legst du hier an; dafür braucht niemand ein Konto. Für einen Git-Server im Netz trägst du seine Adresse ein und lädst die Lernenden dort ein.</p>`
                 : `Dafür lädst du sie auf den Git-Server ein.</p>`)
             + git_keys_html()
-            + `<p class='class-repos-format' id='class-repos-format'>Zum Beispiel <code>git@git.example.org:lehrkraft/klasse.git</code>, `
-            + `auch <code>ssh://…</code> oder <code>https://…</code></p>`;
+            + `<h4 class='class-setting-subtitle'>Adressen der Seiten</h4>`
+            + `<p class='class-repos-format' id='class-repos-format'>Eine Adresse eines Git-Servers im Netz ist zum Beispiel <code>git@git.example.org:lehrkraft/klasse.git</code>, `
+            + `auch <code>ssh://…</code> oder <code>https://…</code>.</p>`;
         entries().forEach((e) => {
             const id = `class-repo-${e.slug}`;
-            body += `<div class='class-repo-field'><label class='form-label' for='${esc(id)}'>${esc(e.title)}</label>`
+            html += `<div class='class-repo-field'><label class='form-label' for='${esc(id)}'>${esc(e.title)}</label>`
                 + `<a class='class-repo-page' href='/${esc(e.slug)}' target='_blank' rel='noopener' aria-label='${esc(e.title)} in neuem Tab öffnen' title='Seite in neuem Tab öffnen'>`
                 + `<i class='bi bi-box-arrow-up-right' aria-hidden='true'></i></a>`
                 + `<input type='text' class='form-control class-repo-input' id='${esc(id)}' data-slug='${esc(e.slug)}' value='${esc(e.address || '')}' `
@@ -733,71 +724,65 @@ document.addEventListener('click', function (e) {
                 + `<div class='invalid-feedback' id='${esc(id)}-error'>Keine Adresse, die der Workspace annimmt: <code>git@server:pfad.git</code>, `
                 + `<code>ssh://server/pfad.git</code> oder <code>https://server/pfad.git</code>, ohne Leerzeichen.</div></div>`;
         });
-        body += `<p class='class-repos-note'>Ein leeres Feld entfernt die Adresse. Ohne Adresse arbeiten die Lernenden nur in ihrem Workspace.</p>`;
-        // Before showing: without a fade, »shown« comes at once.
-        $('#__template_modal').one('shown.bs.modal', function () {
-            const input = document.querySelector(`.class-repo-input[data-slug="${CSS.escape(focus_slug || '')}"]`) || document.querySelector('.class-repo-input');
-            if (input) input.focus();
-        });
-        showTemplateModal(`<i class='bi bi-hdd-network' aria-hidden='true'></i>Klassen-Repositorys für ${esc(group)}`, body,
-            "<i class='bi bi-check-lg'></i>Speichern", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', save);
-        $('#__template_modal .modal-body').addClass('class-repos-dialog');
-        $('#__template_modal').one('hidden.bs.modal', function () { $('#__template_modal .modal-body').removeClass('class-repos-dialog'); });
-        $('#__template_modal .class-repo-input').on('keydown', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); save(); }
-        });
-        if (git_server) bind_git();
+        html += `<p class='class-repos-note'>Ein leeres Feld entfernt die Adresse. Ohne Adresse arbeiten die Lernenden nur in ihrem Workspace.</p>`
+            + `<button type='button' class='btn btn-primary class-repos-save'><i class='bi bi-check-lg' aria-hidden='true'></i>Adressen speichern</button>`;
+        box.innerHTML = html;
     }
 
-    function bind_git() {
-        const modal = $('#__template_modal');
-        modal.off('.git');
-        modal.on('change.git', 'input[name="class-repos-keys"]', function () {
-            const mode = this.value;
-            api_call('/api/git/set_keys', { group: group, mode: mode }, function (r) {
-                if (!r.success || !r.ok) return;
-                button.dataset.gitKeys = mode;
-                show_success_message(mode === 'auto'
-                    ? `Der Workspace richtet die Schlüssel ein: ${r.installed === 1 ? 'ein Workspace' : `${r.installed} Workspaces`} sofort, die anderen beim nächsten Start.`
-                    : 'Die Lernenden geben ihre Schlüssel selbst ab.');
-            }, { no_please_wait: true });
-        });
-        modal.on('click.git', '.class-repo-create', function () {
-            const slug = this.dataset.slug;
-            this.disabled = true;
+    box.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && e.target.classList.contains('class-repo-input')) { e.preventDefault(); save(); }
+    });
+    box.addEventListener('change', function (e) {
+        if (e.target.name !== 'class-repos-keys') return;
+        const mode = e.target.value;
+        api_call('/api/git/set_keys', { group: group, mode: mode }, function (r) {
+            if (!r.success || !r.ok) return;
+            box.dataset.gitKeys = mode;
+            show_success_message(mode === 'auto'
+                ? `Der Workspace richtet die Schlüssel ein: ${r.installed === 1 ? 'ein Workspace' : `${r.installed} Workspaces`} sofort, die anderen beim nächsten Start.`
+                : 'Die Lernenden geben ihre Schlüssel selbst ab.');
+        }, { no_please_wait: true });
+    });
+    box.addEventListener('click', function (e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+        if (target.classList.contains('class-repos-save')) { save(); return; }
+        const slug = target.dataset.slug;
+        if (target.classList.contains('class-repo-create')) {
+            target.disabled = true;
             api_call('/api/git/create_repo', { group: group, slug: slug }, (r) => {
-                this.disabled = false;
+                target.disabled = false;
                 if (!r.success || !r.ok) return;
                 set_entry(slug, r.address);
                 show_success_message(`Angelegt: ${esc(r.address)}`);
             }, { no_please_wait: true });
-        });
-        modal.on('click.git', '.class-repo-delete', function () {
-            const slug = this.dataset.slug;
-            if (!this.classList.contains('confirming')) {
-                this.classList.add('confirming');
-                this.innerHTML = "<i class='bi bi-trash' aria-hidden='true'></i>Wirklich löschen? Alles darin ist weg.";
+        } else if (target.classList.contains('class-repo-delete')) {
+            if (!target.classList.contains('confirming')) {
+                target.classList.add('confirming');
+                target.innerHTML = "<i class='bi bi-trash' aria-hidden='true'></i>Wirklich löschen? Alles darin ist weg.";
                 return;
             }
-            this.disabled = true;
+            target.disabled = true;
             api_call('/api/git/delete_repo', { group: group, slug: slug }, (r) => {
-                this.disabled = false;
+                target.disabled = false;
                 if (!r.success || !r.ok) return;
                 set_entry(slug, (r.repos || {})[slug] || null);
                 show_success_message('Das Repository ist gelöscht.');
             }, { no_please_wait: true });
-        });
-        modal.one('hidden.bs.modal', function () { modal.off('.git'); });
-    }
+        }
+    });
 
-    show_count(entries());
-    button.addEventListener('click', () => open());
+    render();
     const wanted = new URLSearchParams(location.search).get('repos');
     if (wanted) {
-        // Once the address is in the dialog, the address bar forgets the wish.
+        // Once the field is shown, the address bar forgets the wish.
         const url = new URL(location.href);
         url.searchParams.delete('repos');
         history.replaceState(null, '', url);
-        $(function () { open(wanted); });
+        const input = box.querySelector(`.class-repo-input[data-slug="${CSS.escape(wanted)}"]`);
+        if (input) {
+            input.scrollIntoView({ block: 'center' });
+            input.focus({ preventScroll: true });
+        }
     }
 })();

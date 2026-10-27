@@ -5580,7 +5580,7 @@ class Main < Sinatra::Base
         if with.empty?
             where = groups.size == 1 ? "<a href='#{h.(link.(groups.first))}'>auf der Klassenseite</a>" : "auf der <a href='/klasse'>Klassenseite</a> bei der Gruppe"
             return "<p class='class-repo-hint'><i class='bi bi-hdd-network' aria-hidden='true'></i>Lernende sehen diese Seite ohne Git. " \
-                "Soll eine Klasse ihre Arbeit in ein gemeinsames Repository hochladen, trägst du dessen Adresse #{where} unter »Git« ein.</p>"
+                "Soll eine Klasse ihre Arbeit in ein gemeinsames Repository hochladen, trägst du dessen Adresse #{where} im Reiter »Einstellungen« ein.</p>"
         end
         items = with.map { |g| "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: <code>#{h.(repos[g][slug])}</code>" }
         others = with.size < groups.size ? ' Deine anderen Gruppen sehen die Seite ohne Git.' : ''
@@ -6354,10 +6354,10 @@ class Main < Sinatra::Base
         # How busy the server is, so that a slow Workspace can be told from a
         # busy server, and how much room is left on the disk of the
         # Workspaces (df: the whole partition, so nothing can be saved once
-        # it is full): one row as on »Betrieb«, from the teachers' websocket
+        # it is full): one quiet line, from the teachers' websocket
         # (server_stats), see class_board.js.
-        cell = ->(icon, label) { "<div class='server-load-cell'><div class='server-load-label'><i class='bi #{icon}' aria-hidden='true'></i>#{label}</div><div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>–</p></div>" }
-        io << "<div class='server-load-pair server-load-three class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}#{cell.('bi-nvme', 'Speicherplatz')}</div>"
+        io << "<p class='class-server-line' hidden><i class='bi bi-hdd-rack' aria-hidden='true'></i>Server: " \
+            "<span class='class-server-cpu'></span> · <span class='class-server-ram'></span> · <span class='class-server-disk'></span></p>"
         io << class_group_html(group) unless test_group
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
@@ -6411,6 +6411,7 @@ class Main < Sinatra::Base
         ['fortschritt', 'Fortschritt', 'bi-check2-square'],
         ['lernende', 'Lernende', 'bi-people'],
         ['startseite', 'Startseite', 'bi-pin-angle'],
+        ['einstellungen', 'Einstellungen', 'bi-sliders'],
     ].freeze
 
     # »Neue Gruppe« on the class page: for teachers with a school (their
@@ -6449,6 +6450,8 @@ class Main < Sinatra::Base
         group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
         # »gruppe«: the tab that managed the group is part of »Lernende« now.
         wanted = params['tab'] == 'gruppe' ? 'lernende' : params['tab']
+        # the link of an activity page to its class repository (/klasse?repos=SLUG)
+        wanted = 'einstellungen' if params['repos'].to_s != ''
         tab = CLASS_TABS.any? { |key, _, _| key == wanted } ? wanted : 'fortschritt'
         io = +"<form class='class-board-select' method='get' action='/klasse'>"
         # a search field (class_board.js), with the schools as headings
@@ -6470,30 +6473,6 @@ class Main < Sinatra::Base
             groups.each { |g| io << option.call(g) }
         end
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
-        # The programming language of the group's activities (CodeLanguages),
-        # where an activity offers more than one; saved at once, not sent with
-        # the form.
-        current = group_code_languages([group])[group]
-        io << "<label title='Für Aktivitäten, die es in mehreren Sprachen gibt. Lernende können auf der Seite selbst umschalten.'>Sprache <select class='form-select class-code-language' data-group='#{h.(group)}'>"
-        CodeLanguages::GROUP_LANGUAGES.each do |language|
-            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
-            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
-        end
-        io << "</select></label>"
-        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () {}, { no_please_wait: true });" \
-            "});</script>"
-        # Copy buttons on every code block for the group's students, or only
-        # where the page has them (group_copy_all_code?); saved at once.
-        copy_all = group_copy_all_code?([group])
-        io << "<label title='An jedem Codeblock (Voreinstellung): überall ein Kopierknopf. Wo sinnvoll: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab.'>" \
-            "Kopierknöpfe <select class='form-select class-copy-all-code' data-group='#{h.(group)}'>" \
-            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option>" \
-            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option></select></label>"
-        io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () {}, { no_please_wait: true });" \
-            "});</script>"
-        io << class_repos_button_html(group)
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
@@ -6505,20 +6484,56 @@ class Main < Sinatra::Base
         CLASS_TABS.each do |key, label, icon|
             count = key == 'lernende' ? " <span class='class-tab-count'>#{class_members(group).size}</span>" : ''
             io << "<button type='button' role='tab' class='class-tab' id='class-tab-#{key}' data-tab='#{key}' aria-controls='class-panel-#{key}' " \
-                "aria-selected='#{key == tab}'#{key == tab ? '' : " tabindex='-1'"}><i class='bi #{icon}' aria-hidden='true'></i>#{label}#{count}</button>"
+                "aria-selected='#{key == tab}'#{key == tab ? '' : " tabindex='-1'"} title='#{label}'><i class='bi #{icon}' aria-hidden='true'></i><span class='class-tab-label'>#{label}</span>#{count}</button>"
         end
         io << "</div>"
         panel = ->(key, html) { "<section class='class-panel' role='tabpanel' id='class-panel-#{key}' aria-labelledby='class-tab-#{key}'#{key == tab ? '' : ' hidden'}>#{html}</section>" }
         io << panel.('fortschritt', class_progress_html(group))
         io << panel.('lernende', class_people_html(group))
         io << panel.('startseite', class_pins_html(group))
+        io << panel.('einstellungen', class_settings_html(group))
         io
     end
 
-    # The class repositories of the group (ClassRepos): a button beside the
-    # language that opens a dialog with one field per activity that clones
-    # one (class_board.js); its count says how many are set.
-    def class_repos_button_html(group)
+    # The tab »Einstellungen«: what holds for the whole group, each saved at
+    # once, with what it does in a sentence instead of a tooltip.
+    def class_settings_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        io = +"<div class='class-settings'>"
+        # The programming language of the group's activities (CodeLanguages),
+        # where an activity offers more than one.
+        current = group_code_languages([group])[group]
+        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-code-language'>Sprache</label></h3>" \
+            "<select class='form-select class-code-language' id='class-code-language' data-group='#{h.(group)}' aria-describedby='class-code-language-hint'>"
+        CodeLanguages::GROUP_LANGUAGES.each do |language|
+            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
+            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
+        end
+        io << "</select><p class='class-setting-hint' id='class-code-language-hint'>Für Aktivitäten, die es in mehreren Sprachen gibt. " \
+            "Lernende können auf der Seite selbst umschalten.</p></section>"
+        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
+            "});</script>"
+        # Copy buttons on every code block for the group's students, or only
+        # where the page has them (group_copy_all_code?).
+        copy_all = group_copy_all_code?([group])
+        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-copy-all-code'>Kopierknöpfe</label></h3>" \
+            "<select class='form-select class-copy-all-code' id='class-copy-all-code' data-group='#{h.(group)}' aria-describedby='class-copy-all-code-hint'>" \
+            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option>" \
+            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option></select>" \
+            "<p class='class-setting-hint' id='class-copy-all-code-hint'>»An jedem Codeblock« (Voreinstellung): überall ein Kopierknopf. " \
+            "»Wo sinnvoll«: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab.</p></section>"
+        io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
+            "});</script>"
+        io << class_repos_html(group)
+        io << "</div>"
+    end
+
+    # The class repositories of the group (ClassRepos), in the tab
+    # »Einstellungen«: one field per activity that clones one, drawn by
+    # class_board.js from data-repos.
+    def class_repos_html(group)
         slugs = class_repo_slugs
         return '' if slugs.empty?
 
@@ -6530,12 +6545,9 @@ class Main < Sinatra::Base
               # with the Workspace's own Git server: a starter folder fills a new repository
               :starter => File.directory?(File.join('/src/content', slug, 'starter')) }
         end
-        count = entries.count { |e| e[:address] }
-        state = "Klassen-Repositorys: #{count} von #{entries.size} eingetragen"
         git = GitServer.enabled? ? " data-git-server='1' data-git-keys='#{h.((Main.git_groups[group] || {})[:keys] || GitServer::KEYS_HANDED_IN)}'" : ''
-        "<button type='button' class='btn btn-outline-secondary class-repos-open#{count > 0 ? ' has-repos' : ''}' data-group='#{h.(group)}' " \
-            "data-repos='#{h.(entries.to_json)}'#{git} aria-label='#{h.(state)}' title='#{h.(state)}'>" \
-            "<i class='bi bi-hdd-network' aria-hidden='true'></i>Git<span class='class-repos-count'>#{count > 0 ? "· #{count}" : ''}</span></button>"
+        "<section class='class-setting class-setting-repos'><h3 class='class-setting-title'>Git-Repositorys</h3>" \
+            "<div class='class-repos' data-group='#{h.(group)}' data-repos='#{h.(entries.to_json)}'#{git}></div></section>"
     end
 
     # The tab »Fortschritt«: the activity, a toolbar (look into the
@@ -6564,7 +6576,7 @@ class Main < Sinatra::Base
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='dropdown class-live' data-group='#{h.(group)}'>"
-            io << "<button type='button' class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>"
+            io << "<button type='button' class='btn btn-sm btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>"
             io << "<i class='bi bi-search' aria-hidden='true'></i>Jetzt nachsehen</button><ul class='dropdown-menu class-live-menu'>"
             io << "<li><span class='dropdown-item-text class-live-note'>Liest die Workspaces der Gruppe so, wie die Karte es tut, und ändert nichts.</span></li>"
             live.each do |t|

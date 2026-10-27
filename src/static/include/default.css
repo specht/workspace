@@ -4442,15 +4442,76 @@ ul.task-teacher-list .task-teacher-answer {
     flex: 1;
 }
 
-/* The button for the class repositories (class_repos_button_html):
-   »Git · 2« once the group has addresses; and its dialog (class_board.js). */
-.class-repos-count {
-    margin-left: 0.3em;
+/* The tab »Einstellungen« (class_settings_html): one setting under the
+   other, each a section with the same heading and a thin line between
+   them; inside the Git section, smaller headings. Text flush left. */
+.class-settings {
+    max-width: 46em;
+    margin-top: 0.6em;
 }
 
-.class-repos-open.has-repos {
-    border-color: var(--bs-link-color);
-    color: var(--bs-link-color);
+.class-settings p,
+.class-settings .form-check-label {
+    text-align: left;
+}
+
+.class-setting {
+    padding: 1.2em 0 1.4em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.class-setting:first-child {
+    border-top: none;
+}
+
+.class-setting-title {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin: 0 0 0.5em;
+}
+
+.class-setting-title label {
+    margin: 0;
+}
+
+.class-setting-subtitle {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 1.2em 0 0.4em;
+    padding: 0;
+}
+
+.class-setting > .form-select {
+    width: auto;
+    min-width: 14em;
+    max-width: 100%;
+}
+
+.class-setting-hint {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin: 0.4em 0 0;
+}
+
+.class-repos .class-repos-save {
+    margin-top: 0.4em;
+}
+
+/* How busy the server is, one quiet line above the people (class_board.js);
+   a part that is nearly full stands out. */
+.class-server-line {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin: 0.4em 0 1em;
+}
+
+.class-server-line .bi {
+    margin-right: 0.35em;
+}
+
+.class-server-line .load-full {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
 }
 
 /* An icon before the title of the site's dialog (showTemplateModal). */
@@ -4458,53 +4519,47 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.45em;
 }
 
-.class-repos-dialog .class-repos-intro {
+.class-repos .class-repos-intro {
     margin-bottom: 0.4em;
 }
 
-.class-repos-dialog .class-repos-format,
-.class-repos-dialog .class-repos-note {
+.class-repos .class-repos-format,
+.class-repos .class-repos-note {
     font-size: 90%;
     color: var(--bs-secondary-color);
     overflow-wrap: anywhere;
 }
 
-.class-repos-dialog .class-repos-format {
+.class-repos .class-repos-format {
     margin-bottom: 1em;
 }
 
-.class-repos-dialog .class-repos-note {
+.class-repos .class-repos-note {
     margin: 0;
 }
 
-.class-repos-dialog .class-repo-field {
+.class-repos .class-repo-field {
     margin-bottom: 1em;
 }
 
-.class-repos-dialog .class-repo-field .form-label {
+.class-repos .class-repo-field .form-label {
     margin-bottom: 0.3em;
 }
 
 /* The Workspace's own Git server (GitServer): how keys come about, and
    beside each field what can be done with a repository there. Buttons
    at least 44 px high for a finger, with room between them. */
-.class-repos-dialog .class-repos-keys {
-    margin: 0 0 1.2em;
+.class-repos .class-repos-keys {
+    margin: 0;
 }
 
-.class-repos-dialog .class-repos-keys legend {
-    font-size: 100%;
-    font-weight: 600;
-    margin-bottom: 0.3em;
-}
-
-.class-repos-dialog .class-repos-keys-hint {
+.class-repos .class-repos-keys-hint {
     display: block;
     font-size: 90%;
     color: var(--bs-secondary-color);
 }
 
-.class-repos-dialog .class-repo-git {
+.class-repos .class-repo-git {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -4512,17 +4567,17 @@ ul.task-teacher-list .task-teacher-answer {
     margin-top: 0.4em;
 }
 
-.class-repos-dialog .class-repo-git .btn {
+.class-repos .class-repo-git .btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
 }
 
-.class-repos-dialog .class-repo-git .bi {
+.class-repos .class-repo-git .bi {
     margin: 0;
 }
 
-.class-repos-dialog .class-repo-local {
+.class-repos .class-repo-local {
     font-size: 90%;
     color: var(--bs-secondary-color);
     display: inline-flex;
@@ -4531,7 +4586,7 @@ ul.task-teacher-list .task-teacher-answer {
 }
 
 /* The link to the page beside its label: the icon alone, centred. */
-.class-repos-dialog .class-repo-page {
+.class-repos .class-repo-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4540,33 +4595,33 @@ ul.task-teacher-list .task-teacher-answer {
     font-size: 85%;
 }
 
-.class-repos-dialog .class-repo-page .bi {
+.class-repos .class-repo-page .bi {
     margin: 0;
 }
 
-.class-repos-dialog .class-repo-page .bi::before {
+.class-repos .class-repo-page .bi::before {
     vertical-align: 0;
 }
 
 /* Entered addresses in monospace; an empty field says so in the page's
    font, faint, so that it never looks filled in. */
-.class-repos-dialog .class-repo-input {
+.class-repos .class-repo-input {
     font-family: var(--bs-font-monospace);
     font-size: 90%;
 }
 
-.class-repos-dialog .class-repo-input:placeholder-shown {
+.class-repos .class-repo-input:placeholder-shown {
     font-family: inherit;
     font-size: inherit;
 }
 
-.class-repos-dialog .class-repo-input::placeholder {
+.class-repos .class-repo-input::placeholder {
     color: var(--bs-secondary-color);
     opacity: 0.6;
     font-style: italic;
 }
 
-.class-repos-dialog .invalid-feedback {
+.class-repos .invalid-feedback {
     overflow-wrap: anywhere;
 }
 
@@ -4603,6 +4658,22 @@ ul.task-teacher-list .task-teacher-answer {
     .class-tab {
         padding: 0.5em 0.7em;
         white-space: nowrap;
+    }
+
+    /* Four tabs do not fit: those not chosen show their icon only; the
+       name stays for screen readers (and as the title). */
+    .class-tab:not([aria-selected='true']) .class-tab-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .class-tab:not([aria-selected='true']) .bi {
+        margin-right: 0;
+        font-size: 1.15em;
     }
 }
 
@@ -4989,6 +5060,8 @@ ul.task-teacher-list .task-teacher-answer {
 
 .class-board tfoot td {
     white-space: normal;
+    /* »1 richtig vermutet« breaks between words, not as »vermu-tet« */
+    hyphens: manual;
     max-width: 5em;
     font-size: 80%;
     color: #5c636a;
@@ -6764,7 +6837,9 @@ body.subview-open {
         flex-shrink: 0;
         padding: 0.5em 0.65em;
     }
-    .class-tab .bi {
+    /* the chosen tab with its name only; the others show their icon
+       (further up, ».class-tab:not([aria-selected='true'])«) */
+    .class-tab[aria-selected='true'] .bi {
         display: none;
     }
     .class-welcome {
@@ -10153,7 +10228,7 @@ div.pip-world[data-stepper] .stepper-timeline {
 
 /* For a finger at least 44 px; with a mouse the buttons keep their size. */
 @media (pointer: coarse) {
-    .class-repos-dialog .class-repo-git .btn,
+    .class-repos .class-repo-git .btn,
     .git-key-buttons .btn,
     .git-bar .btn,
     .git-file-bar a {

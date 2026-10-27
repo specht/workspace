@@ -22,24 +22,22 @@ test('a teacher sets the class repository of a group; its students see it, other
 
   try {
     await teacher.goto('/klasse?group=' + encodeURIComponent(testGroup) + '&tab=fortschritt');
-    await teacher.getByRole('button', { name: /Klassen-Repositorys/ }).click();
-    const dialog = teacher.locator('#__template_modal');
-    await expect(dialog.locator('.modal-title')).toContainText(`Klassen-Repositorys für ${testGroup}`);
+    await teacher.getByRole('tab', { name: 'Einstellungen' }).click();
+    const dialog = teacher.locator('.class-repos');
+    await expect(teacher.locator('.class-setting-repos h3')).toHaveText('Git-Repositorys');
     const field = dialog.getByRole('textbox', { name: 'Sortieralgorithmen erforschen' });
-    await expect(dialog.locator('.class-repo-input')).toHaveCount(3);
+    expect(await dialog.locator('.class-repo-input').count()).toBeGreaterThanOrEqual(3);
 
     // Not an address: named, nothing saved.
     await field.fill('git@git.example.org:e2e/sorting.git; rm -rf ~');
-    await dialog.getByRole('button', { name: 'Speichern' }).click();
+    await dialog.getByRole('button', { name: 'Adressen speichern' }).click();
     await expect(field).toHaveClass(/is-invalid/);
-    await expect(dialog.locator('.is-invalid + .invalid-feedback')).toBeVisible();
-    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.is-invalid ~ .invalid-feedback')).toBeVisible();
 
     await field.fill(address);
-    await dialog.getByRole('button', { name: 'Speichern' }).click();
-    await expect(dialog).toBeHidden();
-    await expect(teacher.locator('.class-repos-count')).toHaveText(/^· [1-3]$/);
-    await expect(teacher.locator('.class-repos-open')).toHaveClass(/has-repos/);
+    await dialog.getByRole('button', { name: 'Adressen speichern' }).click();
+    await expect(field).not.toHaveClass(/is-invalid/);
+    await expect(teacher.locator('.api_messages')).toContainText('Gespeichert');
 
     // A teacher of a group it does not manage: refused.
     const refused = await teacher.request.post('/api/set_group_class_repos', { data: { group: 'E2E Teachers', repos: { 'sandbox-sortieren': address } } });
@@ -54,10 +52,10 @@ test('a teacher sets the class repository of a group; its students see it, other
     await expect(line).toContainText('Deine anderen Gruppen sehen die Seite ohne Git.');
     await expect(teacher.locator('pre', { hasText: 'git clone [Adresse des Klassen-Repositorys]' })).toHaveCount(1);
     await line.getByRole('link', { name: testGroup }).click();
-    await expect(teacher.locator('#__template_modal .modal-title')).toContainText(testGroup);
-    await expect(teacher.locator('#__template_modal').getByRole('textbox', { name: 'Sortieralgorithmen erforschen' })).toBeFocused();
-    await expect(teacher.locator('#__template_modal').getByRole('textbox', { name: 'Sortieralgorithmen erforschen' })).toHaveValue(address);
-    await teacher.keyboard.press('Escape');
+    // the link opens the tab »Einstellungen« at the page's field
+    await expect(teacher.getByRole('tab', { name: 'Einstellungen' })).toHaveAttribute('aria-selected', 'true');
+    await expect(teacher.locator('.class-repos').getByRole('textbox', { name: 'Sortieralgorithmen erforschen' })).toBeFocused();
+    await expect(teacher.locator('.class-repos').getByRole('textbox', { name: 'Sortieralgorithmen erforschen' })).toHaveValue(address);
 
     // A student of that group: the address, the server, the Git tasks.
     const student = await (await browser.newContext()).newPage();

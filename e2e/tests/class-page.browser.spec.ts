@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-// The class page has three tabs with one job each; the chosen tab stays in
+// The class page has tabs with one job each; the chosen tab stays in
 // the address. »Lernende« shows the server's cards and each Workspace live.
 test('the class page: tabs, menu and the Workspaces of the group', async ({ page }, testInfo) => {
   test.setTimeout(90_000);
@@ -20,9 +20,10 @@ test('the class page: tabs, menu and the Workspaces of the group', async ({ page
   await expect(page).toHaveURL(/tab=lernende/);
   await expect(page.locator('#class-panel-fortschritt')).toBeHidden();
   await expect(page.locator('.class-people-table')).toBeVisible();
-  // The server's CPU and RAM in one row, from the start; the values follow.
-  await expect(page.locator('.class-server-load')).toBeVisible();
-  await expect(page.locator('.class-server-load p').first()).toContainText('% von', { timeout: 20_000 });
+  // The server's CPU, RAM and disk in one small line, once the values are there.
+  await expect(page.locator('.class-server-line')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('.class-server-cpu')).toContainText('% CPU');
+  await expect(page.locator('.class-server-ram')).toContainText('RAM');
 
   await page.reload();
   await expect(page.getByRole('tab', { name: /Lernende/ })).toHaveAttribute('aria-selected', 'true');
