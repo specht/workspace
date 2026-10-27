@@ -30,7 +30,7 @@ In der Schule kommen viele nicht an ihr Postfach. Dafür gibt es die Klassenseit
 2. Klick auf **Anmelde-Codes zeigen** und zeig die Seite am Beamer.
 3. Lass die Klasse die Anmeldung starten. Jeder Name erscheint mit seinem Code, sobald er angefordert ist; Mail-Adressen stehen dort nicht.
 
-<img class='full full-shadow' src='codes-beamer.webp' alt='Die Anmelde-Codes am Beamer: Namen und Codes in großer Schrift.'>
+<img class='full full-shadow shot' src='codes-beamer.webp' alt='Die Anmelde-Codes am Beamer: Namen und Codes in großer Schrift.'>
 
 Ein Code gilt einmal und nur kurze Zeit. Wer sich vertippt, fordert einfach einen neuen an. Wartet jemand auf einen Code, siehst du ihn auch ohne Beamer-Ansicht oben auf der Klassenseite.
 
@@ -52,7 +52,7 @@ Unter **Klassen** wählst du oben die Gruppe. Darunter liegen fünf Reiter: **Fo
 
 Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede Spalte ist eine Aufgabe, ihr Titel steht darüber.
 
-<img class='full full-shadow' src='klasse-fortschritt.webp' alt='Der Reiter Fortschritt: eine Tabelle mit Namen und Aufgaben, Haken für gelöste Aufgaben.'>
+<img class='full full-shadow shot' src='klasse-fortschritt.webp' alt='Der Reiter Fortschritt: eine Tabelle mit Namen und Aufgaben, Haken für gelöste Aufgaben.'>
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
@@ -79,7 +79,7 @@ Darüber stehen zwei Werkzeuge:
 
 Unter der Tabelle stehen die Antworten in eigenen Worten und die **Abgaben**. Ein Klick auf eine Abgabe öffnet sie über der Klassenseite: links die Dateien, rechts der Quelltext. Bei Webseiten und interaktiven Geschichten startet **Starten** die Abgabe so, wie die Person sie abgegeben hat, mit allem, was sich darin bewegt.
 
-<img class='full full-shadow' src='abgabe-ansehen.webp' alt='Eine abgegebene Webseite läuft im Fenster über der Klassenseite; links die Dateien.'>
+<img class='full full-shadow shot' src='abgabe-ansehen.webp' alt='Eine abgegebene Webseite läuft im Fenster über der Klassenseite; links die Dateien.'>
 
 Eine Abgabe ist eine Kopie. Was die Person danach im Workspace ändert, ändert die Abgabe nicht; sie kann aber jederzeit neu abgeben.
 
@@ -91,17 +91,17 @@ Die Klassenseite merkt sich, welche Gruppe und welche Aktivität du zuletzt ange
 
 Mit **Treffpunkt** über der Tabelle legst du fest, bis zu welcher Aufgabe alle kommen sollen, bevor ihr gemeinsam weitermacht, etwa für ein Gespräch an der Tafel. Wer die Aktivität offen hat, sieht nach dieser Aufgabe sofort das Band »Hier trifft sich deine Klasse«; wer alle Aufgaben bis dahin gelöst hat (Extras zählen nicht), liest dort »Du bist da«. Versteckt wird nichts; was danach kommt, ist nur blasser.
 
-<img class='full full-shadow' src='treffpunkt-band.webp' alt='Auf der Seite der Aktivität, unter einer Aufgabe: ein Band zwischen zwei gestrichelten Linien, »Treffpunkt: Hier trifft sich deine Klasse, bevor es weitergeht.« Die Überschrift danach ist blasser.'>
+<img class='full full-shadow shot' src='treffpunkt-band.webp' alt='Auf der Seite der Aktivität, unter einer Aufgabe: ein Band zwischen zwei gestrichelten Linien, »Treffpunkt: Hier trifft sich deine Klasse, bevor es weitergeht.« Die Überschrift danach ist blasser.'>
 
 Über der Tabelle steht, wie viele schon da sind und wer noch fehlt; die Zahl ändert sich, sobald jemand eine Aufgabe löst. Wer heute nicht da ist, nimmst du mit **fehlt heute** aus der Zählung; das merkt sich nur dein Browser, bis Mitternacht. Sind alle da, wird die Zeile grün. **keiner** hebt den Treffpunkt wieder auf. Auf der Seite der Aktivität setzt und verschiebst du ihn auch direkt, mit dem gestrichelten Knopf nach einer Aufgabe.
 
-<img class='full full-shadow' src='klasse-treffpunkt.webp' alt='Über der Tabelle im Reiter Fortschritt: Treffpunkt nach Aufgabe 1, »16 von 17 da«, darunter »Noch nicht da: 1« mit einem Namen und dem Knopf »fehlt heute«. In der Tabelle zeigt eine gestrichelte Linie nach der ersten Spalte, wo der Treffpunkt liegt.'>
+<img class='full full-shadow shot' src='klasse-treffpunkt.webp' alt='Über der Tabelle im Reiter Fortschritt: Treffpunkt nach Aufgabe 1, »16 von 17 da«, darunter »Noch nicht da: 1« mit einem Namen und dem Knopf »fehlt heute«. In der Tabelle zeigt eine gestrichelte Linie nach der ersten Spalte, wo der Treffpunkt liegt.'>
 
 ### Überblick
 
 Hier steht jede Person der Gruppe mit allen Aktivitäten, an denen jemand aus der Gruppe gearbeitet hat; angeheftete kommen zuerst. In jeder Zelle steht, wie viele Aufgaben gelöst sind, von allen ohne Extras, mit einem schmalen Balken; ein Strich heißt: noch nichts bearbeitet. Ein Klick auf eine Spalte öffnet die Aktivität im Reiter **Fortschritt**. Ganz rechts steht, wann die Person zuletzt eine Aufgabe irgendeiner Aktivität geprüft hat. Noten sind das nicht: Die Zahlen sagen, wie weit jemand ist, nicht wie gut.
 
-<img class='full full-shadow' src='klasse-ueberblick.webp' alt='Der Reiter Überblick: Namen untereinander, darüber die Aktivitäten der Gruppe, in den Zellen gelöste Aufgaben mit einem schmalen Balken, rechts, wann zuletzt.'>
+<img class='full full-shadow shot' src='klasse-ueberblick.webp' alt='Der Reiter Überblick: Namen untereinander, darüber die Aktivitäten der Gruppe, in den Zellen gelöste Aufgaben mit einem schmalen Balken, rechts, wann zuletzt.'>
 
 ### Lernende
 
@@ -109,7 +109,7 @@ Hier steht jede Person der Gruppe mit ihrem Workspace: ob er läuft, wie viel Re
 
 Im selben Reiter verwaltest du die Gruppe: Namen und Adressen, Willkommensmails, das Einverständnis, ein Enddatum, weitere Lehrkräfte, Umbenennen und Löschen; unten nimmst du neue Personen auf.
 
-<img class='full full-shadow' src='klasse-lernende.webp' alt='Der Reiter Lernende: oben die Auslastung des Servers, darunter die Lernenden mit ihrem Workspace und den Angaben der Gruppe.'>
+<img class='full full-shadow shot' src='klasse-lernende.webp' alt='Der Reiter Lernende: oben die Auslastung des Servers, darunter die Lernenden mit ihrem Workspace und den Angaben der Gruppe.'>
 
 Bei jeder Person stehen zwei Knöpfe:
 
@@ -122,13 +122,13 @@ Bevor du einen Workspace öffnest oder jemanden nachahmst, schreibst du einen Sa
 
 Was du hier für die Gruppe **anheftest**, steht bei allen in der Gruppe oben auf der Startseite. So findet die Klasse die Aktivität der Stunde sofort:
 
-<img class='full full-shadow' src='startseite-angeheftet.webp' alt='Oben auf der Startseite einer Schülerin: »Von deiner Lehrkraft«, darunter die Karte der Aktivität mit ihrem Fortschritt, »Weiter mit« der nächsten Aufgabe, dem Knopf »Weitermachen« und »Angeheftet für 9b«.'>
+<img class='full full-shadow shot' src='startseite-angeheftet.webp' alt='Oben auf der Startseite einer Schülerin: »Von deiner Lehrkraft«, darunter die Karte der Aktivität mit ihrem Fortschritt, »Weiter mit« der nächsten Aufgabe, dem Knopf »Weitermachen« und »Angeheftet für 9b«.'>
 
 ### Einstellungen
 
 Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeichert.
 
-<img class='full full-shadow' src='klasse-einstellungen.webp' alt='Der Reiter Einstellungen: oben die Sprache, darunter die Kopierknöpfe, dann die Git-Repositorys mit der Wahl, wie die Lernenden zu ihrem Schlüssel kommen.'>
+<img class='full full-shadow shot' src='klasse-einstellungen.webp' alt='Der Reiter Einstellungen: oben die Sprache, darunter die Kopierknöpfe, dann die Git-Repositorys mit der Wahl, wie die Lernenden zu ihrem Schlüssel kommen.'>
 
 - **Sprache:** Gibt es eine Aktivität in mehreren Programmiersprachen (etwa Ruby und Python), sieht die Gruppe zuerst diese. Lernende können auf der Seite selbst umschalten.
 - **Kopierknöpfe:** »An jedem Codeblock« setzt überall einen Kopierknopf. »Wo sinnvoll« lässt ihn nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippt die Klasse ab.
@@ -139,11 +139,11 @@ Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeicher
 
 Unter **Lehrplan** stehen die Themen deines Rahmenlehrplans, für die Sekundarstufe I und für die Oberstufe, und unter jedem die Aktivitäten, die es behandeln. Neben jeder Stufe führen Links zum Lehrplan selbst, als PDF, und zur Seite des Landes. Oben wählst du dein Bundesland; ohne Wahl siehst du Berlin.
 
-<img class='full full-shadow' src='lehrplan-pdf.webp' alt='Die Überschrift Sekundarstufe I, darunter der Name des Rahmenlehrplans und die Links »Lehrplan als PDF« und »Seite des Landes«.'>
+<img class='full full-shadow shot' src='lehrplan-pdf.webp' alt='Die Überschrift Sekundarstufe I, darunter der Name des Rahmenlehrplans und die Links »Lehrplan als PDF« und »Seite des Landes«.'>
 
 Darüber zeigt ein Bild, was worauf aufbaut: Ein Pfeil führt von einer Aktivität zu denen, die auf ihr aufbauen. Die Farbe sagt, für wen eine Aktivität gedacht ist: gelb für die Sekundarstufe I, türkis für die Oberstufe, beides im Verlauf für Aktivitäten, die zu beiden passen. Wählst du über dem Bild unter **Name der Pläne** ein Thema, hebt es die Aktivitäten dazu hervor und den Weg dorthin:
 
-<img class='full full-shadow' src='lehrplan.webp' alt='Oben »Lehrpläne von Berlin«, darunter »Wege durch die Aktivitäten« mit dem Thema »Information und Daten« gewählt: Kästen für die Aktivitäten, durch Pfeile verbunden; die zum Thema und ihr Weg dorthin kräftig, die übrigen blass.'>
+<img class='full full-shadow shot' src='lehrplan.webp' alt='Oben »Lehrpläne von Berlin«, darunter »Wege durch die Aktivitäten« mit dem Thema »Information und Daten« gewählt: Kästen für die Aktivitäten, durch Pfeile verbunden; die zum Thema und ihr Weg dorthin kräftig, die übrigen blass.'>
 
 Dieselbe Zeile siehst du oben auf jeder Aktivitätsseite: Die Namen der Themen darin führen an ihre Stelle unter **Lehrplan**.
 
@@ -185,7 +185,7 @@ Wie eine Aktivität aufgebaut ist und warum (Vermutungen vor dem Ausprobieren, T
 
 Oben rechts steht bei manchen Aktivitäten der Knopf **Notiz für Lehrkräfte**. Er öffnet Hinweise nur für dich: wie lange die Teile dauern, was die Aufgaben prüfen, wo Lernende meistens hängen bleiben. Geschlossen stört er nicht, auch nicht am Beamer. In derselben Zeile stehen, wie lange die Aktivität dauert, und die Zeile des Lehrplans:
 
-<img class='full full-shadow' src='aktivitaet-lehrkraft.webp' alt='Oben auf einer Aktivität, wie Lehrkräfte sie sehen: die Art (Projekt), die Dauer (2 Doppelstunden), die Zeile des Lehrplans, die Handbuch-Seiten und die Knöpfe »Angepinnt« und »Notiz für Lehrkräfte«; darunter die geöffnete Notiz mit Ablauf und Hinweisen.'>
+<img class='full full-shadow shot' src='aktivitaet-lehrkraft.webp' alt='Oben auf einer Aktivität, wie Lehrkräfte sie sehen: die Art (Projekt), die Dauer (2 Doppelstunden), die Zeile des Lehrplans, die Handbuch-Seiten und die Knöpfe »Angepinnt« und »Notiz für Lehrkräfte«; darunter die geöffnete Notiz mit Ablauf und Hinweisen.'>
 
 Baut eine Aktivität ein Programm Schritt für Schritt auf, steht unter vielen Bildern rechts ein kleiner Knopf **Code bis hier**. Er kopiert das ganze Programm, wie es an dieser Stelle aussieht, damit du ein Ergebnis ausprobieren kannst, ohne alle Schritte davor zu gehen. Deine Klasse sieht ihn nicht.
 

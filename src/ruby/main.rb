@@ -1648,6 +1648,12 @@ class Main < Sinatra::Base
                     img['src'] = "/cache/#{sha1}.webp"
                     add_media_variants(img, image_path) { |variant_path| "/cache/#{convert_image(variant_path)}.webp" }
                 end
+                # a screenshot of the site (class shot, taken at twice the
+                # pixels): at most half its width, so that its text is never
+                # bigger than the page's around it
+                if img.classes.include?('shot') && (width = webp_width(image_path))
+                    img['style'] = ["max-width: #{width / 2}px; min-width: min(1000px, #{width / 2}px)", img['style']].compact.join('; ')
+                end
                 if img.classes.include?('full')
                     # a picture made from a drawing beside it (x.svg next to
                     # x.webp) has the page as its background: no shadow in
@@ -1703,6 +1709,21 @@ class Main < Sinatra::Base
     # screenshot README). media_variants.js shows the one that fits the theme
     # and the toggles in the corner (glasses, CRT).
     MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph crt folie]
+
+    # The width of a WebP in pixels, from its header (lossy VP8, lossless
+    # VP8L, extended VP8X); nil for anything else
+    def self.webp_width(path)
+        head = File.binread(path, 30)
+        return nil unless head && head.size >= 30 && head[0, 4] == 'RIFF' && head[8, 4] == 'WEBP'
+
+        case head[12, 4]
+        when 'VP8 ' then head[26, 2].unpack1('v') & 0x3fff
+        when 'VP8L' then (head[21, 4].unpack1('V') & 0x3fff) + 1
+        when 'VP8X' then (head[24, 3] + "\0").unpack1('V') + 1
+        end
+    rescue StandardError
+        nil
+    end
 
     def self.add_media_variants(element, media_path)
         extension = File.extname(media_path)

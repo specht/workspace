@@ -106,11 +106,11 @@ Gearbeitet wird in Visual Studio Code, mit Dateien, Terminal und Git, so wie in 
 
 Bevor etwas ausgeführt wird, fragt die Seite oft, was gleich passieren wird, in der Einführung in SQL zum Beispiel, in welcher Reihenfolge die Datenbank die Teile einer Abfrage abarbeitet. Was die Antwort verraten würde, ein Bild vom Ergebnis oder der Absatz, der es erklärt, erscheint erst, wenn die Vermutung abgegeben ist, ob richtig oder falsch. Wer sich erst festgelegt hat, schaut beim Ausprobieren genau hin. Lehrkräfte und Gäste sehen alles sofort; so wie hier sehen es nur Lernende.
 
-<img class='full full-shadow' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
+<img class='full full-shadow shot' src='tour-vorhersage.webp' alt='Die Aufgabe »Die Reihenfolge«: In welcher Reihenfolge arbeitet die Datenbank SELECT, FROM, WHERE, ORDER BY und LIMIT ab? Vier Reihenfolgen zur Wahl und der Knopf »Vermutung abgeben«. Darunter statt der Erklärung nur die Zeile: Hier geht es weiter, sobald du deine Antwort oben abgegeben hast.'>
 
 Wer die Reihenfolge wählt, in der man eine Abfrage schreibt, bekommt eine Rückmeldung genau zu diesem Irrtum, und darunter erscheint die Erklärung:
 
-<img class='full full-shadow' src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe, angekreuzt ist SELECT, FROM, WHERE, ORDER BY, LIMIT. Die Rückmeldung: So schreibt man die Abfrage, ausgeführt wird sie anders; der Query Stepper zeigt, womit die Datenbank anfängt. Darunter ist jetzt der Absatz erschienen, der die Reihenfolge erklärt.'>
+<img class='full full-shadow shot' src='tour-vorhersage-danach.webp' alt='Dieselbe Aufgabe, angekreuzt ist SELECT, FROM, WHERE, ORDER BY, LIMIT. Die Rückmeldung: So schreibt man die Abfrage, ausgeführt wird sie anders; der Query Stepper zeigt, womit die Datenbank anfängt. Darunter ist jetzt der Absatz erschienen, der die Reihenfolge erklärt.'>
 
 ### Selbst schreiben statt abtippen
 
@@ -118,7 +118,7 @@ In den Programmierprojekten schreiben die Lernenden eine kleine Funktion zuerst 
 
 Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg, dann ein Gerüst mit Lücken, nie die ganze Lösung. Der nächste Tipp erscheint erst eine Minute, nachdem der vorige aufgeklappt wurde, ohne Uhr, damit man mit jedem arbeitet, statt bis zum letzten durchzuklicken. Welche Tipps jemand gebraucht hat, merkt sich nur der eigene Browser; keine Lehrkraft sieht es.
 
-<img class='full full-shadow' src='tour-tipp.webp' alt='Die Aufgabe »Viele Nachbarn«: Welche Länder haben mehr als acht Nachbarn? Ein Feld für die Abfrage, darunter der erste Tipp aufgeklappt: Wie viele Zeilen hat border für Deutschland, und was zählt COUNT, wenn du nach country_code gruppierst? Einen nächsten Tipp gibt es noch nicht.'>
+<img class='full full-shadow shot' src='tour-tipp.webp' alt='Die Aufgabe »Viele Nachbarn«: Welche Länder haben mehr als acht Nachbarn? Ein Feld für die Abfrage, darunter der erste Tipp aufgeklappt: Wie viele Zeilen hat border für Deutschland, und was zählt COUNT, wenn du nach country_code gruppierst? Einen nächsten Tipp gibt es noch nicht.'>
 
 ### Aufgaben, die nachsehen
 
@@ -126,13 +126,13 @@ Aufgaben stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt
 
 Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«. Wer bei den fünf größten Ländern das `DESC` vergisst, liest »Das sind die fünf kleinsten«, und auch beim Ankreuzen hat jede falsche Antwort ihre eigene Rückmeldung. Die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
 
-<img class='full full-shadow' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
+<img class='full full-shadow shot' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
 
 ### Die Menschen hinter einer Sache
 
 Hinter jeder Erfindung stehen Menschen. Wer ein Verfahren, eine Sprache oder ein Format erfunden hat, um das es in einem Abschnitt geht, bekommt dort einen kurzen Kasten: ein freies Foto, wenn es eines gibt, und zwei, drei Sätze, die an das anknüpfen, was die Lernenden gerade tun. Wo ein Abschnitt mit einem berühmten Aufsatz anfängt, verweist die Seite auf ihn, beim Raytracer etwa auf den von Turner Whitted aus dem Jahr 1980, und wo ein Buch genau dort weitermacht, wo die Seite aufhört, auch auf das Buch. Alle Personen stehen gesammelt im Handbuch unter [»Personen«](/reference/personen).
 
-<img class='full full-shadow' src='tour-menschen.webp' alt='Der Kasten zu Tim Berners-Lee in »Ein eigener Webserver«: links ein Foto von ihm auf einer Bühne, rechts, dass er 1989 am CERN das World Wide Web vorschlug, bis Ende 1990 HTML, HTTP, den ersten Webserver und den ersten Browser schrieb und das Web nicht patentieren ließ.'>
+<img class='full full-shadow shot' src='tour-menschen.webp' alt='Der Kasten zu Tim Berners-Lee in »Ein eigener Webserver«: links ein Foto von ihm auf einer Bühne, rechts, dass er 1989 am CERN das World Wide Web vorschlug, bis Ende 1990 HTML, HTTP, den ersten Webserver und den ersten Browser schrieb und das Web nicht patentieren ließ.'>
 
 ### Was die Lehrkraft davon hat
 
