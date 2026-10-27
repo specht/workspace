@@ -21,6 +21,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Workspace-Image neu bauen (`./build-image.sh`): Flutter, das Android-SDK und der Gradle-Cache sind heraus
+  (rund 8 GB kleiner), Dart bleibt als eigenes SDK; Go kommt in Version 1.27.3 von go.dev statt aus Ubuntu
+  (`GOTOOLCHAIN=local`); `man` funktioniert wieder (englische Seiten); Dart, Go, .NET und PowerShell melden keine
+  Nutzungsdaten. `./upload-image.sh` braucht auf dem Rechner, der hochlädt, jetzt `socat` und auf dem Server keine
+  Portweiterleitung über SSH mehr.
 - Bilder, die anderen gehören und unter keiner freien Lizenz stehen (und Fotos in Personenkästen ohne Bildzeile),
   erscheinen erst auf den Seiten, wenn `src/content/picture-rights.yaml` sie als erlaubt führt. Die Seite
   `/picture-rights` (Administration › Bildrechte) zeigt sie, mit einem Brief an alle, die die Rechte haben. Die
