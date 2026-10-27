@@ -12,8 +12,11 @@ class WordingTest < Minitest::Test
         Dir.glob(File.join(CONTENT, '**', '*.{md,yaml}')).reject { |path| path.include?('/_drafts/') || File.basename(path) == 'task-examples.yaml' }
     end
 
+    # the text without code, each code block kept as its empty lines, so
+    # that a line number still points into the file
     def prose(text)
-        text.gsub(/^[ \t]*```.*?^[ \t]*```/m, '').gsub(/`[^`\n]*`/, '').gsub(/<code\b.*?<\/code>/m, '')
+        text.gsub(/^[ \t]*```.*?^[ \t]*```/m) { |block| "\n" * block.count("\n") }
+            .gsub(/`[^`\n]*`/, '').gsub(/<code\b.*?<\/code>/m) { |code| "\n" * code.count("\n") }
     end
 
     # [file:line, line] for every line of prose matching pattern
@@ -28,6 +31,24 @@ class WordingTest < Minitest::Test
     # it makes a class laugh; what is meant has a name
     def test_no_ding
         assert_empty hits(/\bDing(e|en|es|s)?\b/)
+    end
+
+    # a sentence that ends on a bare »eine« leaves out what it is about
+    # (»Dein Modell ist eine.«); the noun is said again. Across line breaks
+    # too, so the whole prose is searched, not line by line. An adjective
+    # without its noun (»Du baust heute ein winziges.«) is the same mistake,
+    # but a search cannot tell it from a verb (»einen vorher.«): read for it.
+    def test_no_sentence_ending_on_a_bare_article
+        pattern = /\b(ist|sind|bleibt|bleiben|wird|werden|war|waren)\s+(k?eine|k?einer|k?eines|k?eins)\s*[.!?]/
+        found = files.flat_map do |path|
+            text = prose(File.read(path))
+            text.to_enum(:scan, pattern).map do
+                match = Regexp.last_match
+                line = text[0, match.begin(0)].count("\n") + 1
+                "#{path.sub("#{CONTENT}/", '')}:#{line}: #{match[0].gsub(/\s+/, ' ')}"
+            end
+        end
+        assert_empty found
     end
 
     def test_multiplizieren_not_malnehmen

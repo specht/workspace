@@ -17,7 +17,7 @@ Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und i
 - Die Bits kommen verkehrt herum heraus, wenn jedes neue hinten statt vorn angehängt wird; die Rückmeldung zeigt es an der 13.
 - Beim Zurücklesen werden nur die Einsen gezählt, statt bei jeder Stelle zu verdoppeln.
 - Die 0: Sie ist <code>'0'</code> und braucht ein Bit; eine Schleife, die bei 0 nicht läuft, gibt einen leeren Text oder 0 zurück.
-- »Gerade« reicht nicht für eine Zweierpotenz: 12 ist gerade, 1 ist eine.
+- »Gerade« reicht nicht für eine Zweierpotenz: 12 ist gerade, aber keine Zweierpotenz, und 1 ist eine Zweierpotenz, aber ungerade.
 - Im Byte fehlen die Nullen vorn: 5 ist <code>'00000101'</code>.
 - Römische Zahlen ohne die Paare wie <code>IV</code> und <code>CM</code>; beim Lesen wird ein kleineres Zeichen vor einem größeren dazugezählt statt abgezogen.
 
