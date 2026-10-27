@@ -654,6 +654,20 @@ shannon:
         quote: "But Shannon’s electromechanical toy was able to “remember” its path with the help of telephone relay switches. … The mouse, which was featured in Popular Science, Time, and Life magazines the same year the AT&T film was made, learned purely through trial and error."
       - url: https://news.mit.edu/2001/shannon
         quote: "Claude Shannon's electromechanical mouse, which he called Theseus"
+  - text: Schon als Student am MIT zeigte er 1937 in seiner Masterarbeit, dass sich Schaltungen aus Relais mit der Algebra von George Boole beschreiben und vereinfachen lassen
+    sources:
+      - url: https://en.wikipedia.org/wiki/A_Symbolic_Analysis_of_Relay_and_Switching_Circuits
+        quote: "A Symbolic Analysis of Relay and Switching Circuits is the title of a master's thesis written by computer science pioneer Claude E. Shannon while attending the Massachusetts Institute of Technology (MIT) in 1937, … In his thesis, Shannon … proved that Boolean algebra could be used to simplify the arrangement of the relays"
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Shannon/
+        quote: "Shannon wrote a Master's thesis A Symbolic Analysis of Relay and Switching Circuits on the use of Boole's algebra to analyse and optimise relay switching circuits."
+  - text: mit 1 und 0 für einen Kontakt, der geschlossen oder offen ist
+    sources:
+      - url: https://news.mit.edu/2001/shannon
+        quote: "His master's thesis, \"A Symbolic Analysis of Relay and Switching Circuits,\" used Boolean algebra--in which problems are solved by manipulating two symbols, 1 and 0--to establish the theoretical underpinnings of digital circuits."
+  - text: Damit begann die Theorie der digitalen Schaltungen.
+    sources:
+      - url: https://news.mit.edu/2001/shannon
+        quote: "This work was the beginning of modern switching theory."
   - text: "Einen Code mit so wenigen Bits wie möglich suchten er und Robert Fano fast gleichzeitig, jeder für sich."
     note: "Korrigiert; vorher: »Einen Code mit so wenigen Bits wie möglich suchte er mit Robert Fano.«"
     sources:

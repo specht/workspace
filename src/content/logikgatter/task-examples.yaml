@@ -1,0 +1,120 @@
+# Beispiele für die Prüfungen (docs/aufgaben.md, »Beispiele für die Prüfungen«):
+# je Kata die Lösung, die sie annehmen muss, und eine Fassung, die richtig
+# rechnet, aber nicht nur über die Gatter; der starter wird von selbst geprüft.
+format: 1
+activity: logikgatter
+examples:
+  nand-not-and:
+    pass:
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef and_(a, b)\n  not_(nand(a, b))\nend\n"
+    fail:
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a & b\nend\n"
+        say: "Kommen die Eingänge aber als Signale"
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, 0)\nend\n\ndef and_(a, b)\n  not_(nand(a, b))\nend\n"
+        say: "`nand(a, 0)` ist immer 1, was auch immer"
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef and_(a, b)\n  nand(a, b)\nend\n"
+        say: "`and_` gibt noch das NAND selbst zurück,"
+    python:
+      pass:
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef and_(a, b):\n    return not_(nand(a, b))\n"
+      fail:
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return a & b\n"
+          say: "Kommen die Eingänge aber als Signale"
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, 0)\n\ndef and_(a, b):\n    return not_(nand(a, b))\n"
+          say: "`nand(a, 0)` ist immer 1, was auch immer"
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef and_(a, b):\n    return nand(a, b)\n"
+          say: "`and_` gibt noch das NAND selbst zurück,"
+  nand-or-xor:
+    pass:
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef or_(a, b)\n  nand(not_(a), not_(b))\nend\n\ndef xor_(a, b)\n  x = nand(a, b)\n  nand(nand(a, x), nand(b, x))\nend\n"
+    fail:
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef or_(a, b)\n  a | b\nend\n\ndef xor_(a, b)\n  a ^ b\nend\n"
+        say: "nur durch `nand`"
+      - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef or_(a, b)\n  nand(a, b)\nend\n\ndef xor_(a, b)\n  x = nand(a, b)\n  nand(nand(a, x), nand(b, x))\nend\n"
+        say: "`nand(a, b)` liefert für 00 eine 1, das "
+    python:
+      pass:
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef or_(a, b):\n    return nand(not_(a), not_(b))\n\ndef xor_(a, b):\n    x = nand(a, b)\n    return nand(nand(a, x), nand(b, x))\n"
+      fail:
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef or_(a, b):\n    return a | b\n\ndef xor_(a, b):\n    return a ^ b\n"
+          say: "nur durch `nand`"
+        - answer: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef or_(a, b):\n    return nand(a, b)\n\ndef xor_(a, b):\n    x = nand(a, b)\n    return nand(nand(a, x), nand(b, x))\n"
+          say: "`nand(a, b)` liefert für 00 eine 1, das "
+  half-adder:
+    pass:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n"
+    fail:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [(a + b) % 2, a * b]\nend\n"
+        say: "Kommen die Eingänge aber als Signale"
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [or_(a, b), and_(a, b)]\nend\n"
+        say: "Mit ODER wäre die Summe von 1 und 1 glei"
+    python:
+      pass:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n"
+      fail:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [(a + b) % 2, a * b]\n"
+          say: "Kommen die Eingänge aber als Signale"
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return xor_(a, b), and_(a, b)\n"
+          say: "`return s, c` gibt in Python ein Tupel `"
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [or_(a, b), and_(a, b)]\n"
+          say: "Mit ODER wäre die Summe von 1 und 1 glei"
+  full-adder:
+    pass:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n"
+    fail:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef full_adder(a, b, c_in)\n  t = a + b + c_in\n  [t % 2, t / 2]\nend\n"
+        say: "Kommen die Eingänge aber als Signale"
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, and_(c1, c2)]\nend\n"
+        say: "Mit UND ist `c_out` immer 0, denn die be"
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, c2]\nend\n"
+        say: "Ein Übertrag kann auch aus dem ersten Ha"
+    python:
+      pass:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n"
+      fail:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef full_adder(a, b, c_in):\n    t = a + b + c_in\n    return [t % 2, t // 2]\n"
+          say: "Kommen die Eingänge aber als Signale"
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, and_(c1, c2)]\n"
+          say: "Mit UND ist `c_out` immer 0, denn die be"
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, c2]\n"
+          say: "Ein Übertrag kann auch aus dem ersten Ha"
+  add4:
+    pass:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4(a, b)\n  s = [0, 0, 0, 0]\n  c = 0\n  3.downto(0) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n"
+    fail:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4(a, b)\n  s = [0, 0, 0, 0]\n  c = 0\n  0.upto(3) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n"
+        say: "Der Übertrag läuft bei dir von links nac"
+    python:
+      pass:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4(a, b):\n    s = [0, 0, 0, 0]\n    c = 0\n    for i in range(3, -1, -1):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n"
+      fail:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4(a, b):\n    s = [0, 0, 0, 0]\n    c = 0\n    for i in range(4):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n"
+          say: "Der Übertrag läuft bei dir von links nac"
+  d-latch:
+    pass:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef d_latch(d, clock, q)\n  or_(and_(clock, d), and_(not_(clock), q))\nend\n"
+    fail:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef d_latch(d, clock, q)\n  clock == 1 ? d : q\nend\n"
+        say: "Kommen die Eingänge aber als Signale"
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef d_latch(d, clock, q)\n  and_(clock, d)\nend\n"
+        say: "Ist der Takt 0, vergisst dein Flipflop s"
+    python:
+      pass:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef d_latch(d, clock, q):\n    return or_(and_(clock, d), and_(not_(clock), q))\n"
+      fail:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef d_latch(d, clock, q):\n    return d if clock == 1 else q\n"
+          say: "Kommen die Eingänge aber als Signale"
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef d_latch(d, clock, q):\n    return and_(clock, d)\n"
+          say: "Ist der Takt 0, vergisst dein Flipflop s"
+  alu:
+    pass:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4c(a, b, c)\n  s = [0, 0, 0, 0]\n  3.downto(0) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n\ndef alu(op, a, b)\n  if op == 'add' || op == 'sub'\n    sub = op == 'sub' ? 1 : 0\n    r, c = add4c(a, b.map { |bit| xor_(bit, sub) }, sub)\n    cf = xor_(c, sub)\n  else\n    r = (0..3).map do |i|\n      if op == 'and' then and_(a[i], b[i])\n      elsif op == 'or' then or_(a[i], b[i])\n      else xor_(a[i], b[i])\n      end\n    end\n    cf = 0\n  end\n  zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n  [r, zf, cf]\nend\n"
+    fail:
+      - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4c(a, b, c)\n  s = [0, 0, 0, 0]\n  3.downto(0) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n\ndef alu(op, a, b)\n  if op == 'add' || op == 'sub'\n    sub = op == 'sub' ? 1 : 0\n    r, c = add4c(a, b.map { |bit| xor_(bit, sub) }, sub)\n    cf = c\n  else\n    r = (0..3).map do |i|\n      if op == 'and' then and_(a[i], b[i])\n      elsif op == 'or' then or_(a[i], b[i])\n      else xor_(a[i], b[i])\n      end\n    end\n    cf = 0\n  end\n  zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n  [r, zf, cf]\nend\n"
+        say: "Bei `sub` ist CF 1, wenn geborgt werden "
+    python:
+      pass:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4c(a, b, c):\n    s = [0, 0, 0, 0]\n    for i in range(3, -1, -1):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n\ndef alu(op, a, b):\n    if op == 'add' or op == 'sub':\n        sub = 1 if op == 'sub' else 0\n        r, c = add4c(a, [xor_(bit, sub) for bit in b], sub)\n        cf = xor_(c, sub)\n    else:\n        r = []\n        for i in range(4):\n            if op == 'and':\n                r.append(and_(a[i], b[i]))\n            elif op == 'or':\n                r.append(or_(a[i], b[i]))\n            else:\n                r.append(xor_(a[i], b[i]))\n        cf = 0\n    zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n    return [r, zf, cf]\n"
+      fail:
+        - answer: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4c(a, b, c):\n    s = [0, 0, 0, 0]\n    for i in range(3, -1, -1):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n\ndef alu(op, a, b):\n    if op == 'add' or op == 'sub':\n        sub = 1 if op == 'sub' else 0\n        r, c = add4c(a, [xor_(bit, sub) for bit in b], sub)\n        cf = c\n    else:\n        r = []\n        for i in range(4):\n            if op == 'and':\n                r.append(and_(a[i], b[i]))\n            elif op == 'or':\n                r.append(or_(a[i], b[i]))\n            else:\n                r.append(xor_(a[i], b[i]))\n        cf = 0\n    zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n    return [r, zf, cf]\n"
+          say: "Bei `sub` ist CF 1, wenn geborgt werden "

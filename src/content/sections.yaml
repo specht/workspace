@@ -181,6 +181,8 @@
 # Wie Computer rechnen: drei Reihen zu je drei Karten, die Maschine, die
 # Automaten vom endlichen bis zur Turingmaschine, dann Grammatiken, der
 # Rechner und der Routenplaner (docs/plan-lehrplan-luecken.md, »Rechnen«).
+# .logikgatter (Gatter bis Rechenwerk) nur in der Entwicklung, bis die Reihen
+# der Startseite eine zehnte Karte tragen.
 
 - key: computing
   compact: true
@@ -193,6 +195,7 @@
     Turingmaschine, Grammatiken und ein Rechner, der Ausdrücke versteht, und
     ein Routenplaner, der in echten Karten von Berlin den kürzesten Weg findet.
   entries:
+    - .logikgatter
     - sandbox-cpu
     - sandbox-sortieren
     - sandbox-datenstrukturen

@@ -130,6 +130,8 @@ topics:
     - "Kursstufe: Automaten und formale Sprachen (Kellerautomaten)"
   rechneraufbau:
     - "Kursstufe: Rechner und Netze (Von-Neumann-Maschine)"
+  schaltnetze:
+    - "IMP 8–10: Rechner und Netze (Klasse 10: Logik und Schaltnetze)"
   netze:
     - "Klasse 7: Rechner und Netze (Netze)"
     - "IMP 8–10: Rechner und Netze (Pakete und Protokolle)"
