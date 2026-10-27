@@ -324,7 +324,7 @@ _task(gewicht)
 <!-- language: ruby -->
 <!-- hint -->
 Wie die Bausteine in Ruby heißen, steht im Handbuch unter
-[Vom Pseudocode zum Code](/reference/struktogramme#vom-pseudocode-zum-code):
+[Vom Pseudocode zum Code](/reference/struktogramme#4-vom-pseudocode-zum-code):
 `←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist `(0..11).each do |i|`.
 <!-- /hint -->
 
@@ -351,7 +351,7 @@ ob das Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wied
 <!-- language: python -->
 <!-- hint -->
 Wie die Bausteine in Python heißen, steht im Handbuch unter
-[Vom Pseudocode zum Code](/reference/struktogramme#vom-pseudocode-zum-code):
+[Vom Pseudocode zum Code](/reference/struktogramme#4-vom-pseudocode-zum-code):
 `←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist
 `for i in range(0, 12)`, denn `range` hört eins vor dem Ende auf.
 <!-- /hint -->

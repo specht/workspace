@@ -181,7 +181,7 @@ Löst du in deinem eigenen Konto eine Aufgabe, steht sie auf der Klassenseite in
 
 ## Auf einer Aktivitätsseite
 
-Wie eine Aktivität aufgebaut ist und warum (Vermutungen vor dem Ausprobieren, Tipps in Stufen, Aufgaben, die im Workspace nachsehen), steht mit Bildern unter [»Was eine Aktivität ausmacht«](/about#was-eine-aktivität-ausmacht).
+Wie eine Aktivität aufgebaut ist und warum (Vermutungen vor dem Ausprobieren, Tipps in Stufen, Aufgaben, die im Workspace nachsehen), steht mit Bildern unter [»Was eine Aktivität ausmacht«](/about#aktivitaet).
 
 Oben rechts steht bei manchen Aktivitäten der Knopf **Notiz für Lehrkräfte**. Er öffnet Hinweise nur für dich: wie lange die Teile dauern, was die Aufgaben prüfen, wo Lernende meistens hängen bleiben. Geschlossen stört er nicht, auch nicht am Beamer. In derselben Zeile stehen, wie lange die Aktivität dauert, und die Zeile des Lehrplans:
 
