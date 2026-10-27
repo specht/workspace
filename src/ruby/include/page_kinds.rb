@@ -32,6 +32,17 @@ module PageKinds
         slug.to_s.start_with?(REFERENCE_PREFIX)
     end
 
+    # Whether a page is served at its address. An activity that is only in
+    # development (».slug« in sections.yaml) does not exist in production:
+    # not in the catalog, not in any list, and not at its address either. A
+    # Handbuch page in development stays reachable there, since live pages
+    # link to it before it is in the Handbuch's catalog (/reference/uml).
+    def self.served?(slug, entry, development: false)
+        return false if entry.nil?
+
+        development || !entry[:dev_only] || reference?(slug)
+    end
+
     # Title of a page without markup ('' if unknown).
     def self.plain_title(entry)
         (entry || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip
