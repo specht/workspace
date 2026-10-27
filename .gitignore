@@ -1,6 +1,9 @@
 /data
 # the one config.rb writes; docker/traefik/docker-compose.yaml belongs to the repository
 /docker-compose.yaml
+# Traefik's token and certificates, next to its compose file on the server
+docker/traefik/.env
+docker/traefik/traefik/
 docker/code/dart.deb
 docker/code/*.vsix
 docker/ruby/Gemfile
