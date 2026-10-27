@@ -5620,9 +5620,23 @@ html[data-bs-theme="dark"] .usage-row {
 .usage .bi {
     margin-right: 0.2em;
 }
-/* a card: the row at its foot, with room kept for it */
+/* a card: the row at its foot, with room kept for it; the text fills the
+   card (as tall as the others in its row), so the row sits at the bottom of
+   every card (on a phone the card is a row whose text fills it already) */
 .tutorial_card3.card-with-usage .card-content {
     padding-bottom: 2.3em;
+}
+@media (min-width: 768px) {
+    .hscol .tutorial_card3.card-with-usage > div {
+        display: flex;
+        flex-direction: column;
+    }
+    .hscol .tutorial_card3.card-with-usage > div > img {
+        flex: none;
+    }
+    .hscol .tutorial_card3.card-with-usage .card-content {
+        flex: 1 1 auto;
+    }
 }
 .tutorial_card3 .card-content .card-usage {
     position: absolute;
