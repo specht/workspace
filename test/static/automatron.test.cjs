@@ -82,3 +82,24 @@ test('every arrow ends on its target and every label keeps clear of the states',
         }
     }
 });
+
+// A pushdown automaton's or a Turing machine's labels have spaces and
+// commas: they come in data-arrows, one line per transition, the box as
+// tall as its lines and clear of the states
+test('labels with spaces and commas stand one above the other', () => {
+    const a = Layout.fromData({ states: 'q0 q1 qH', start: 'q0', accept: 'qH',
+        arrows: 'q0 | 0 / 0, R | q0; q0 | 1 / 1, R | q0; q0 | _ / _, L | q1; q1 | 0 / 1, L | qH; q1 | _ / 1, L | qH' });
+    assert.deepStrictEqual(a.edges.map((e) => e.label), ['0 / 0, R', '1 / 1, R', '_ / _, L', '0 / 1, L', '_ / 1, L']);
+    const L = Layout.layout(a);
+    const loop = L.paths.find((p) => p.e.from === 'q0' && p.e.to === 'q0');
+    assert.strictEqual(loop.e.label, '0 / 0, R\n1 / 1, R');
+    assert.strictEqual(loop.box.h, 30);
+    for (const p of L.paths) for (const [sx, sy] of L.pos.values()) {
+        const b = p.box;
+        assert.ok(Math.hypot(Math.max(b.x - sx, 0, sx - b.x - b.w), Math.max(b.y - sy, 0, sy - b.y - b.h)) >= Layout.R, p.e.label);
+    }
+    const svg = Layout.svg(a);
+    assert.match(svg, /1 \/ 1, R<\/tspan>/);
+    // qH is q with a small H, like q0
+    assert.match(svg, />q<tspan dy="0.3em" font-size="0.7em">H<\/tspan>/);
+});

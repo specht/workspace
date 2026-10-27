@@ -1,0 +1,35 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: turingmaschine
+examples:
+  vorhersage-plus:
+    pass:
+      - answer: '1000'
+      - answer: ' 1000 '
+    fail:
+      - answer: '1111'
+      - answer: '000'
+      - answer: '10000'
+  minus-eins:
+    pass:
+      - files: { turingmaschine/minus_one.py: loesung/minus_one.py }
+    fail:
+      # Unverändert zählt die Maschine 1 dazu
+      - files: { turingmaschine/minus_one.py: stufen/plus_one.py }
+    ruby:
+      pass:
+        - files: { turingmaschine/minus_one.rb: loesung/minus_one.rb }
+      fail:
+        - files: { turingmaschine/minus_one.rb: stufen/plus_one.rb }
+  addieren:
+    pass:
+      - files: { turingmaschine/add.py: loesung/add.py }
+    fail:
+      # Für + gibt es in plus_one keinen Übergang
+      - files: { turingmaschine/add.py: stufen/plus_one.py }
+    ruby:
+      pass:
+        - files: { turingmaschine/add.rb: loesung/add.rb }
+      fail:
+        - files: { turingmaschine/add.rb: stufen/plus_one.rb }

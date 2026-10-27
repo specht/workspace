@@ -22,7 +22,11 @@
 // role='img' aria-label='…' data-states='q0 q1' data-start='q0'
 // data-accept='q1' data-transitions='q0 münze q1, q1 drücken q0, …'>;
 // a symbol a-c stands for a, b and c, the labels between two states are
-// joined.
+// joined. Labels with spaces or commas (a pushdown automaton's »(, # / #(«,
+// a Turing machine's »1 / 0, L«) come in data-arrows instead, transitions
+// separated by ';' and their parts by '|': data-arrows='q0 | (, # / #( | q0;
+// q1 | _ / 1, L | qH'; the labels between two states then stand one above
+// the other.
 (function (root) {
     'use strict';
     const R = 22;
@@ -30,9 +34,15 @@
     const RING_ROOM = 4;
     const BASE_GAPX = 116;
     const BASE_GAPY = 92;
-    // a state's name: a letter and its index, q0, r12, qF (the error state)
-    const NAME = /^([A-Za-z])(\d+|F)$/;
+    // a state's name: a letter and its index, q0, r12, qF (the error
+    // state), qH and qJ (a Turing machine's halting and accepting states)
+    const NAME = /^([A-Za-z])(\d+|[FHJ])$/;
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    // a label's box: 7.8 units per character of its longest line, 15 per line
+    const labelSize = (label) => {
+        const lines = String(label).split('\n');
+        return { w: 7.8 * Math.max(...lines.map((l) => l.length)) + 4, h: 15 * lines.length };
+    };
 
     // Several starts for the order inside the columns (the sweeps settle
     // in the nearest good order, not always in the best), the drawing that
@@ -117,7 +127,7 @@
         const edges = [...pairs.values()].map((e) => ({ ...e, label: joinLabels(e.labels) }));
         // long labels (0, 3, 6, 9) need room between the states: the gaps
         // grow with the longest
-        const longest = Math.max(0, ...edges.map((e) => 7.8 * e.label.length + 4));
+        const longest = Math.max(0, ...edges.map((e) => labelSize(e.label).w));
         let GAPX = Math.max(BASE_GAPX, longest + 64) * (options.spreadX || 1);
         let GAPY = Math.max(BASE_GAPY, longest + 40) * (options.spread || 1);
         const out = new Map(ids.map((id) => [id, []]));
@@ -438,15 +448,14 @@
             }
             return least;
         };
-        const box = (cx, cy, w) => ({ x: cx - w / 2, y: cy - 8, w, h: 15 });
+        const box = (cx, cy, w, h = 15) => ({ x: cx - w / 2, y: cy - h / 2 - 0.5, w, h });
         const distance = (b, [px, py]) => Math.hypot(Math.max(b.x - px, 0, px - b.x - b.w), Math.max(b.y - py, 0, py - b.y - b.h));
         // side by side, two labels would read as one: more room sideways
         const overlap = (b, o) => !(b.x + b.w + 10 < o.x || o.x + o.w + 10 < b.x || b.y + b.h + 3 < o.y || o.y + o.h + 3 < b.y);
         // a label stays at its own arrow: somewhere along its middle part,
         // at most 25 units out; where nothing is clear, at its middle
         for (const path of paths) {
-            const w = 7.8 * path.e.label.length + 4;
-            const h = 15;
+            const { w, h } = labelSize(path.e.label);
             let best = null;
             let margin = -Infinity;
             const ts = path.loop ? [0.5] : [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74];
@@ -456,7 +465,7 @@
                         const [mx, my] = path.at(t);
                         // out along the normal by the box's own extent too
                         const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
-                        const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w);
+                        const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w, h);
                         // clear of everything, and clearly nearer to its own
                         // arrow than to any other, so that it is read as its
                         const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
@@ -477,7 +486,7 @@
                 for (const side of [1, -1]) for (let t = 0.2; t <= 0.81; t += 0.05) for (let off = 4; off <= 40; off += 3) {
                     const [mx, my] = path.at(path.loop ? 0.5 : t);
                     const ext = Math.abs(path.normal[0]) * w / 2 + Math.abs(path.normal[1]) * h / 2;
-                    const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w);
+                    const b = box(mx + path.normal[0] * (off + ext - 6) * side, my + path.normal[1] * (off + ext - 6) * side, w, h);
                     const mine = Math.min(...path.own.map((pt) => distance(b, pt)));
                     const others = nearestOther(path, b, 13);
                     const states = Math.min(...[...pos.values()].map((o) => distance(b, o) - R - ring));
@@ -502,8 +511,10 @@
         return { pos, paths, view, accept: new Set(a.accept), start: a.start, states: a.states, score: badness(paths, pos), ambiguous };
     }
 
-    // ε stays ε; several symbols in a run: a–c, 0–9
+    // ε stays ε; several symbols in a run: a–c, 0–9. Labels with spaces
+    // (»(, # / #(«) one per line, in the order given
     function joinLabels(labels) {
+        if (labels.some((l) => /\s/.test(l))) return [...new Set(labels)].join('\n');
         const list = [...new Set(labels)].sort();
         const singles = list.filter((l) => l.length === 1 && l !== 'ε');
         const rest = list.filter((l) => !(l.length === 1 && l !== 'ε'));
@@ -550,7 +561,13 @@
         const edge = (p) => esc(`${p.e.from}>${p.e.to}`).replace(/"/g, '&quot;');
         for (const p of L.paths) parts.push(`<path d="${round(p.d)}" class="automaton-arrow" data-edge="${edge(p)}" data-head-on="url(#${head}-on)" marker-end="url(#${head})"/>`);
         for (const p of L.paths) parts.push(`<path d="${round(p.d)}" class="automaton-pick" data-edge="${edge(p)}"/>`);
-        for (const p of L.paths) parts.push(`<text x="${Math.round(p.box.x + p.box.w / 2)}" y="${Math.round(p.box.y + 12)}" text-anchor="middle" font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}">${esc(p.e.label)}</text>`);
+        // a label of several lines (a pushdown automaton's) as one text, a
+        // tspan per line, flush left so that the columns of the transitions
+        // stand under each other
+        const lines = (p) => String(p.e.label).split('\n');
+        const labelX = (p) => Math.round(lines(p).length > 1 ? p.box.x + 2 : p.box.x + p.box.w / 2);
+        const tspans = (p) => lines(p).map((l, i) => (i ? `<tspan x="${labelX(p)}" dy="15">${esc(l)}</tspan>` : esc(l))).join('');
+        for (const p of L.paths) parts.push(`<text x="${labelX(p)}" y="${Math.round(p.box.y + 12)}" text-anchor="${lines(p).length > 1 ? 'start' : 'middle'}" font-size="13" font-family="${MONO}" class="automaton-label" data-edge="${edge(p)}">${tspans(p)}</text>`);
         const [sx, sy] = L.pos.get(L.start);
         parts.push(`<path d="M${sx - R - 36} ${sy} L${sx - R - 2} ${sy}" class="automaton-arrow" marker-end="url(#${head})"/>`);
         for (const s of L.states) {
@@ -567,10 +584,15 @@
 
     // The data attributes of a drawing or a step widget: states, start,
     // accepting states, transitions 'q0 a-c q1' (one arrow, a run of
-    // symbols) separated by commas
+    // symbols) separated by commas, and arrows 'q0 | (, # / #( | q0'
+    // (a label with spaces and commas) separated by ';'
     function fromData(data) {
         const ids = data.states.trim().split(/\s+/);
         const edges = [];
+        for (const part of (data.arrows || '').split(';').map((t) => t.trim()).filter(Boolean)) {
+            const [from, label, to] = part.split('|').map((t) => t.trim());
+            edges.push({ from, to, label });
+        }
         for (const part of (data.transitions || '').split(',').map((t) => t.trim()).filter(Boolean)) {
             const [from, symbols, to] = part.split(/\s+/);
             const run = symbols.match(/^(.)-(.)$/);

@@ -1,0 +1,330 @@
+# Aufgaben zu »Turingmaschinen«, in Python und in Ruby (unter ruby:).
+# Format: docs/aufgaben.md. Alles liegt in /workspace/turingmaschine.
+format: 1
+activity: turingmaschine
+tasks:
+  - id: vorhersage-plus
+    title: Was steht danach auf dem Band?
+    prediction: true
+    prompt: |
+      Spiel die Maschine für `111` im Kopf durch, bevor du sie startest: Was
+      steht auf dem Band, wenn sie in q<sub>H</sub> angehalten hat?
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*1000\s*$'
+    feedback:
+      - when: { matches: '^\s*1111\s*$' }
+        say: Dann hätte die Maschine eine 1 angehängt. Was schreibt q<sub>1</sub> auf eine 1, und wohin geht der Kopf danach?
+      - when: { matches: '^\s*0+\s*$' }
+        say: Fast. Die drei 1 werden zu 0, aber dann steht der Kopf auf dem leeren Feld davor. Was macht q<sub>1</sub> mit `_`?
+    hint: |
+      q<sub>0</sub> läuft nach rechts bis hinter die letzte Ziffer. Dann ist
+      q<sub>1</sub> dran, von rechts nach links: Jede 1 wird zu 0, und der Kopf
+      geht weiter nach links.
+    solution: |
+      `1000`. q<sub>1</sub> macht aus jeder 1 eine 0, wie beim schriftlichen
+      Addieren mit Übertrag, und schreibt auf das leere Feld vor der Zahl eine 1.
+      111 ist 7, 1000 ist 8.
+
+  - id: minus-eins
+    title: Eins weniger
+    prompt: |
+      Kopiere `plus_one.py` nach `minus_one.py` und ändere die Übergänge so,
+      dass die Maschine 1 von einer Binärzahl abzieht, die größer als 0 ist:
+      Aus `1100` wird `1011`. Eine 0 vorne darf stehen bleiben, aus `1000` darf
+      `0111` werden. Die Prüfung ruft `run` mit eigenen Zahlen auf.
+    check:
+      type: python
+      file: turingmaschine/minus_one.py
+      cases:
+        - call: run('1')
+          expect: "'0'"
+          say: Aus 1 wird 0. Was schreibt q<sub>1</sub>, wenn der Kopf auf der letzten Ziffer steht und sie eine 1 ist?
+        - run('11'): "'10'"
+        - run('1100'): "'1011'"
+        - run('101'): "'100'"
+        - call: run('1000').lstrip('0')
+          expect: "'111'"
+          say: Beim Abziehen gibt es auch einen Übertrag, nur andersherum. Von hinten wird jede 0 zu 1, bis eine 1 kommt.
+        - call: run('10110').lstrip('0')
+          expect: "'10101'"
+    hint:
+      - |
+        Zieh von Hand ab, wie in der Schule: `1100 − 1`. Von hinten gelesen, was
+        passiert mit jeder 0, und was mit der ersten 1?
+      - |
+        q<sub>0</sub> bleibt, wie es ist: Er läuft zum Ende der Zahl. Nur die
+        Zeilen von q<sub>1</sub> ändern sich. Eine 0 wird zu 1, und der Kopf geht
+        weiter nach links; eine 1 wird zu 0, und die Maschine hält. Ein leeres
+        Feld erreicht sie bei einer Zahl größer als 0 nie.
+      - |
+        Ein Gerüst für q<sub>1</sub>:
+
+        ```python
+            ('q1', '0'): ('1', 'L', ...),
+            ('q1', '1'): ('0', 'L', ...),
+        ```
+    solution: |
+      ```python
+          # q1: von hinten 1 weg, mit Übertrag
+          ('q1', '0'): ('1', 'L', 'q1'),
+          ('q1', '1'): ('0', 'L', HALT),
+      ```
+
+    ruby:
+      prompt: |
+        Kopiere `plus_one.rb` nach `minus_one.rb` und ändere die Übergänge so,
+        dass die Maschine 1 von einer Binärzahl abzieht, die größer als 0 ist:
+        Aus `1100` wird `1011`. Eine 0 vorne darf stehen bleiben, aus `1000` darf
+        `0111` werden. Die Prüfung ruft `run` mit eigenen Zahlen auf.
+      check:
+        type: ruby
+        file: turingmaschine/minus_one.rb
+        cases:
+          - call: run('1')
+            expect: "'0'"
+            say: Aus 1 wird 0. Was schreibt q<sub>1</sub>, wenn der Kopf auf der letzten Ziffer steht und sie eine 1 ist?
+          - run('11'): "'10'"
+          - run('1100'): "'1011'"
+          - run('101'): "'100'"
+          - call: run('1000').sub(/\A0+/, '')
+            expect: "'111'"
+            say: Beim Abziehen gibt es auch einen Übertrag, nur andersherum. Von hinten wird jede 0 zu 1, bis eine 1 kommt.
+          - call: run('10110').sub(/\A0+/, '')
+            expect: "'10101'"
+      hint:
+        - |
+          Zieh von Hand ab, wie in der Schule: `1100 − 1`. Von hinten gelesen, was
+          passiert mit jeder 0, und was mit der ersten 1?
+        - |
+          q<sub>0</sub> bleibt, wie es ist: Er läuft zum Ende der Zahl. Nur die
+          Zeilen von q<sub>1</sub> ändern sich. Eine 0 wird zu 1, und der Kopf geht
+          weiter nach links; eine 1 wird zu 0, und die Maschine hält. Ein leeres
+          Feld erreicht sie bei einer Zahl größer als 0 nie.
+        - |
+          Ein Gerüst für q<sub>1</sub>:
+
+          ```ruby
+              ['q1', '0'] => ['1', 'L', ...],
+              ['q1', '1'] => ['0', 'L', ...],
+          ```
+      solution: |
+        ```ruby
+            # q1: von hinten 1 weg, mit Übertrag
+            ['q1', '0'] => ['1', 'L', 'q1'],
+            ['q1', '1'] => ['0', 'L', HALT],
+        ```
+
+  - id: addieren
+    title: Strichlisten addieren
+    prompt: |
+      Eine Zahl als Strichliste ist eine Reihe von 1: `111` ist 3, `11` ist 2.
+      Kopiere `plus_one.py` nach `add.py` und schreib neue Übergänge: Auf dem
+      Band stehen zwei Strichlisten mit `+` dazwischen, am Ende steht nur noch
+      ihre Summe als Strichliste. Aus `111+11` wird `11111`. Die Prüfung ruft
+      `run` auf, auch mit `+11` und `11+`, wo eine Zahl 0 ist.
+    check:
+      type: python
+      file: turingmaschine/add.py
+      cases:
+        - run('1+1'): "'11'"
+        - run('111+11'): "'11111'"
+        - call: run('1+1111')
+          expect: "'11111'"
+        - call: run('+11')
+          expect: "'11'"
+          say: Steht das `+` ganz vorn, ist die erste Zahl 0. Die Maschine muss mit `+` als erstem Zeichen umgehen können.
+        - call: run('11+')
+          expect: "'11'"
+          say: Ist die zweite Zahl 0, steht nach dem `+` gleich ein leeres Feld.
+        - call: run('1111+111')
+          expect: "'1111111'"
+    hint:
+      - |
+        Was muss sich auf dem Band ändern, damit aus `111+11` die Strichliste
+        `11111` wird? Es sind genau zwei Felder.
+      - |
+        Das `+` wird zu einer 1. Dann ist eine 1 zu viel da, und die letzte 1
+        ganz rechts wird zu `_`. Dafür läuft die Maschine bis hinter das Ende,
+        geht einen Schritt zurück und löscht.
+      - |
+        Ein Gerüst; zwei Zeilen fehlen:
+
+        ```python
+        TRANSITIONS = {
+            # q0: über die erste Zahl, das + wird zu 1
+            ('q0', '1'): ('1', 'R', 'q0'),
+            ('q0', '+'): ...,
+            # q1: über die zweite Zahl bis hinter das Ende
+            ('q1', '1'): ('1', 'R', 'q1'),
+            ('q1', '_'): ('_', 'L', 'q2'),
+            # q2: die letzte 1 löschen
+            ('q2', '1'): ...,
+        }
+        ```
+    solution: |
+      ```python
+      TRANSITIONS = {
+          # q0: über die erste Zahl, das + wird zu 1
+          ('q0', '1'): ('1', 'R', 'q0'),
+          ('q0', '+'): ('1', 'R', 'q1'),
+          # q1: über die zweite Zahl bis hinter das Ende
+          ('q1', '1'): ('1', 'R', 'q1'),
+          ('q1', '_'): ('_', 'L', 'q2'),
+          # q2: die letzte 1 löschen
+          ('q2', '1'): ('_', 'L', HALT),
+      }
+      ```
+
+    ruby:
+      prompt: |
+        Eine Zahl als Strichliste ist eine Reihe von 1: `111` ist 3, `11` ist 2.
+        Kopiere `plus_one.rb` nach `add.rb` und schreib neue Übergänge: Auf dem
+        Band stehen zwei Strichlisten mit `+` dazwischen, am Ende steht nur noch
+        ihre Summe als Strichliste. Aus `111+11` wird `11111`. Die Prüfung ruft
+        `run` auf, auch mit `+11` und `11+`, wo eine Zahl 0 ist.
+      check:
+        type: ruby
+        file: turingmaschine/add.rb
+        cases:
+          - run('1+1'): "'11'"
+          - run('111+11'): "'11111'"
+          - call: run('1+1111')
+            expect: "'11111'"
+          - call: run('+11')
+            expect: "'11'"
+            say: Steht das `+` ganz vorn, ist die erste Zahl 0. Die Maschine muss mit `+` als erstem Zeichen umgehen können.
+          - call: run('11+')
+            expect: "'11'"
+            say: Ist die zweite Zahl 0, steht nach dem `+` gleich ein leeres Feld.
+          - call: run('1111+111')
+            expect: "'1111111'"
+      hint:
+        - |
+          Was muss sich auf dem Band ändern, damit aus `111+11` die Strichliste
+          `11111` wird? Es sind genau zwei Felder.
+        - |
+          Das `+` wird zu einer 1. Dann ist eine 1 zu viel da, und die letzte 1
+          ganz rechts wird zu `_`. Dafür läuft die Maschine bis hinter das Ende,
+          geht einen Schritt zurück und löscht.
+        - |
+          Ein Gerüst; zwei Zeilen fehlen:
+
+          ```ruby
+          TRANSITIONS = {
+              # q0: über die erste Zahl, das + wird zu 1
+              ['q0', '1'] => ['1', 'R', 'q0'],
+              ['q0', '+'] => ...,
+              # q1: über die zweite Zahl bis hinter das Ende
+              ['q1', '1'] => ['1', 'R', 'q1'],
+              ['q1', '_'] => ['_', 'L', 'q2'],
+              # q2: die letzte 1 löschen
+              ['q2', '1'] => ...,
+          }
+          ```
+      solution: |
+        ```ruby
+        TRANSITIONS = {
+            # q0: über die erste Zahl, das + wird zu 1
+            ['q0', '1'] => ['1', 'R', 'q0'],
+            ['q0', '+'] => ['1', 'R', 'q1'],
+            # q1: über die zweite Zahl bis hinter das Ende
+            ['q1', '1'] => ['1', 'R', 'q1'],
+            ['q1', '_'] => ['_', 'L', 'q2'],
+            # q2: die letzte 1 löschen
+            ['q2', '1'] => ['_', 'L', HALT],
+        }
+        ```
+
+  - id: wachstum
+    title: Doppelt so lang
+    prediction: true
+    prompt: |
+      Für `aabbcc` braucht die Maschine 23 Schritte. Wie viele braucht sie
+      ungefähr für `aaaabbbbcccc`, das doppelt so lang ist?
+    check:
+      type: choice
+      options:
+        - Etwa genauso viele, die Maschine liest jedes Feld nur einmal.
+        - Etwa doppelt so viele, rund 46.
+        - Etwa dreimal bis viermal so viele, rund 70 bis 90.
+        - Etwa zehnmal so viele, über 200.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Der Kopf läuft in jeder Runde einmal nach rechts und zurück, und es gibt so viele Runden, wie a da sind.
+      - when: { picked: 1 }
+        say: Doppelt so lang heißt doppelt so viele Runden. Wie lang ist jetzt jede Runde?
+    solution: |
+      77 Schritte, gut dreimal so viele. Es gibt doppelt so viele Runden, und
+      jede Runde ist etwa doppelt so lang, weil der Kopf über das Wort hin und
+      zurück läuft. Je länger das Wort, desto näher kommt das Verhältnis an
+      viermal: Die Zahl der Schritte wächst mit dem Quadrat der Länge.
+
+  - id: schritte
+    title: Schritte zählen
+    prompt: |
+      Wie viele Schritte braucht die Maschine für `aaabbbccc`? Lass sie es dir
+      sagen.
+    check:
+      type: number
+      expect: 46
+    feedback:
+      - when: { equals: 23 }
+        say: Das sind die Schritte für `aabbcc`. Ändere das Wort im Aufruf mit `trace`.
+    solution: |
+      46 Schritte. Dafür ändert man den Aufruf mit `trace` auf `aaabbbccc` und
+      liest die letzte Zeile.
+
+  - id: endlos
+    title: Eine Maschine, die nicht aufhört
+    prediction: true
+    prompt: |
+      Angenommen, in `plus_one` führt der Übergang für q<sub>0</sub> und `_`
+      nicht mehr nach links in q<sub>1</sub>, sondern zu `'_', 'R', 'q0'`: Auf
+      einem leeren Feld geht die Maschine nach rechts und bleibt in
+      q<sub>0</sub>. Was passiert bei `run('1')`?
+    check:
+      type: choice
+      options:
+        - Die Maschine hält sofort, weil das Band leer ist.
+        - Sie gibt `10` aus wie vorher.
+        - Sie läuft nach rechts, ohne je anzuhalten; `run` bricht nach 1000 Schritten ab.
+        - Python oder Ruby meldet einen Fehler, weil ein Übergang fehlt.
+      correct: 2
+    feedback:
+      - when: { picked: 1 }
+        say: Für `10` müsste q<sub>1</sub> drankommen. Welcher Übergang führt jetzt noch nach q<sub>1</sub>?
+      - when: { picked: 3 }
+        say: Für `('q0', '_')` gibt es einen Übergang, nur führt er zurück nach q<sub>0</sub>.
+    solution: |
+      Hinter der Zahl liegen nur leere Felder, und auf jedem geht die Maschine
+      wieder nach rechts. Sie hält nie. Ohne `max_steps` liefe `run` ohne Ende,
+      bis man es mit <kbd>Strg</kbd><kbd>C</kbd> abbricht.
+
+  - id: halteproblem
+    title: Der Widerspruch
+    prompt: |
+      Angenommen, es gäbe `halts(program)`, die für jedes Programm richtig
+      sagt, ob es anhält. Was antwortet `halts(paradox)`?
+    check:
+      type: choice
+      options:
+        - '`True`: `paradox` hält an.'
+        - '`False`: `paradox` hält nicht an.'
+        - Jede Antwort ist falsch, also kann es `halts` nicht geben.
+        - Das hängt davon ab, wie schnell der Computer ist.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Dann geht `paradox` in die Endlosschleife und hält nicht an. `halts` hätte sich geirrt.
+      - when: { picked: 1 }
+        say: Dann ist `paradox` sofort fertig und hält an. `halts` hätte sich geirrt.
+      - when: { picked: 3 }
+        say: Ob ein Programm anhält, hängt nicht von der Geschwindigkeit ab, nur davon, ob es irgendwann fertig ist.
+    solution: |
+      Sagt `halts` »hält an«, läuft `paradox` ewig; sagt es »hält nicht an«, hält
+      `paradox` sofort. Beide Antworten sind falsch. Eine Funktion `halts`, die
+      immer richtig antwortet, kann es darum nicht geben, auf keinem Computer und
+      in keiner Sprache.
