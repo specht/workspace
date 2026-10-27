@@ -923,6 +923,29 @@ Referenz. So besteht keine Tabelle der festen Fälle.
       say: Die kleinere Zahl ist nur manchmal ein Teiler der größeren.
 ```
 
+**Wo nur Gatter rechnen dürfen** (Logikgatter, Addierer, das Rechenwerk in
+»Vom Gatter zum Rechenwerk«), nennt `gates` die Gatter, die die Eingänge
+verknüpfen dürfen: `not_`, `and_`, `or_`, `xor_`, `nand` oder `nor`, nur in
+Ruby und Python (`GateCheck`). Jeder Fall läuft dann zweimal: erst wie
+immer, mit den Gattern aus dem `starter`, dann mit jeder 0 und 1 in den
+Argumenten (auch in Listen) als Signal, das nur die Gatter der Prüfung lesen
+können. Wer selbst rechnet oder vergleicht (`a & b`, `if a == 1`, eine
+Tabelle), besteht den ersten Lauf und nicht den zweiten, und die Rückmeldung
+sagt »Mit 0 und 1 stimmt …, kommen die Eingänge aber als Signale …«. Eine
+feste 0 oder 1 darf in ein Gatter (ein Übertrag, der bei 0 anfängt), und was
+keine 0 oder 1 ist (ein Text wie `'sub'`, der wählt, was gerechnet wird),
+bleibt, wie es ist. Jeder Fall ruft eine Funktion auf, `name(argumente)`,
+ohne Schritte und ohne `raises`.
+
+```yaml
+  check:
+    type: function
+    language: ruby
+    gates: [nand]
+    cases:
+      - and_(1, 1): 1
+```
+
 **Typische Fehler** erkennt `feedback` mit `same_as`, dem Gegenstück zu
 `same_result_as` bei SQL: eine falsche Lösung, die die Autorin schreibt und
 niemand zu sehen bekommt. Sie läuft im selben Container mit denselben
