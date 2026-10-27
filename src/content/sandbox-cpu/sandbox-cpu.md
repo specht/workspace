@@ -5,6 +5,7 @@ kind: projekt
 duration: 6 bis 8 Doppelstunden
 curriculum: "Sek I: Informatiksysteme (Aufbau und Eigenschaften eines Informatiksystems, EVA-Prinzip); Oberstufe: Rechner und Netze (Von-Neumann-Architektur), Vertiefung Maschinennahe Programmierung (Assembler, C)"
 topics: [rechneraufbau, maschinennah]
+age: Oberstufe
 language: Assembler / C
 reference: [gitlab, git, minicpu, minicpu-io, minicpu-c, bits-und-bytes]
 template: https://github.com/specht/cpu-sandbox.git

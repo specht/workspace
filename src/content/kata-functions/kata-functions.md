@@ -4,8 +4,9 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Werte bekommen, rechnen, ein Ergebnis zurückgeben
-curriculum: "Sek I: Algorithmisches Problemlösen (Variablenkonzept und Prozeduren)"
+curriculum: "Sek I: Algorithmisches Problemlösen (Variablenkonzept und Prozeduren); Oberstufe: Algorithmen und Softwareentwicklung (Variablenkonzept, Parameterkonzept)"
 topics: [grundstrukturen, unterprogramme]
+age: Sek I
 </div>
 
 # Katas: Erste Funktionen

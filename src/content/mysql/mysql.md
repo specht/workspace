@@ -5,6 +5,7 @@ kind: grundlagen
 duration: 2 Doppelstunden
 curriculum: "Sek I: Datenbanken (Datensätze suchen); Oberstufe: Datenbanken und Datenschutz (ein relationales Datenbanksystem benutzen, einfache Abfragen mit SQL)"
 topics: [datenbanken-abfragen]
+age: Sek I
 language: SQL
 reference: [sql, datensaetze]
 </div>

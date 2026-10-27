@@ -4,8 +4,8 @@ image_alt: "Punkte für 274 Pinguine in einem Diagramm, nach rechts die Länge d
 kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
-curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen), Information und Daten (Daten, Information); Oberstufe: Vertiefung Künstliche Intelligenz (ein Perzeptron, Lernen aus Beispielen, seine Grenzen)"
-topics: [ki]
+curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten: vom Neuron auf Papier 1943 über Rosenblatts Perzeptron bis zur Kritik von Minsky und Papert); Oberstufe: Vertiefung Künstliche Intelligenz (ein Perzeptron, Lernen aus Beispielen, seine Grenzen)"
+topics: [ki, geschichte]
 requires: [kata-lists]
 reference: [svg]
 </div>

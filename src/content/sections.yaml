@@ -178,8 +178,9 @@
     - neo4j-filmdatenbank
     - bobby_tables
 
-# Software entwerfen (docs/plan-lehrplan-luecken.md): Klassen und ihre
-# Diagramme; später Testen, Zusammenarbeit mit Git, ein Softwareprojekt.
+# Wie Computer rechnen: drei Reihen zu je drei Karten, die Maschine, die
+# Automaten vom endlichen bis zur Turingmaschine, dann Grammatiken, der
+# Rechner und der Routenplaner (docs/plan-lehrplan-luecken.md, »Rechnen«).
 
 - key: computing
   compact: true
@@ -202,8 +203,9 @@
     - calculator
     - routenplaner
 
-# docs/plan-lehrplan-luecken.md, »The KI section«: three cards, dev-only
-# until all three exist
+# Software entwerfen (docs/plan-lehrplan-luecken.md, »Software«): erst
+# planen, dann programmieren; Klassen und ihre Diagramme; ein Projekt der
+# ganzen Klasse mit Git.
 
 - key: software
   label: Software entwerfen

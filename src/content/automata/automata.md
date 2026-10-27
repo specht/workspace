@@ -7,6 +7,7 @@ languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Oberstufe: Sprachen und Automaten (zustandsorientierte Modellierung, endliche Automaten, deterministisch und nichtdeterministisch)"
 topics: [automaten, zustaende]
+requires: [kata-dicts]
 reference: [automaten, regex, ruby-python]
 </div>
 

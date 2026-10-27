@@ -7,6 +7,7 @@ languages: [ruby, python]
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Suchmaschinen, Beschaffung und Prüfung von Informationen), Algorithmisches Problemlösen (Implementieren von Algorithmen); Oberstufe: Algorithmen und Datenstrukturen (Breitensuche, ein invertierter Index), Vertiefung Informatik und Gesellschaft (wer bestimmt, was gefunden wird)"
 topics: [suchmaschinen, graphen, gesellschaft]
+age: Sek I
 requires: [kata-dicts, kata-lists]
 reference: [graphen, listen, regex, http]
 </div>

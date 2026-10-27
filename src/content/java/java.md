@@ -1,7 +1,7 @@
 <div class='meta'>
 image: Java-Logo.png
 kind: steckbrief
-curriculum: "Oberstufe: Syntax und Semantik (Compiler, Bytecode)"
+curriculum: "Oberstufe: Algorithmen und Softwareentwicklung (ein Programm übersetzen, Fehlermeldungen lesen, einfache Datentypen, Bubblesort ändern)"
 topics: [programmiersprachen]
 </div>
 

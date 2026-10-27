@@ -4,8 +4,9 @@ image_alt: "Das Wort »Es« mit Pfeilen zu den Wörtern, die in den Märchen der
 kind: projekt
 duration: 2 Doppelstunden
 languages: [ruby, python]
-curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung, Implementieren von Algorithmen), Information und Daten (Daten, Information, Nachricht); Oberstufe: Vertiefung Künstliche Intelligenz (ein Sprachmodell aus Wortpaaren), Vertiefung Informatik und Gesellschaft (woher die Texte kommen, was ein Modell daraus übernimmt)"
-topics: [ki, zeichenketten, information, gesellschaft]
+curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung, Implementieren von Algorithmen), Information und Daten (Daten, Information, Nachricht), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten: Markow und Shannon zählen Buchstaben und Wörter); Oberstufe: Vertiefung Künstliche Intelligenz (ein Sprachmodell aus Wortpaaren), Vertiefung Informatik und Gesellschaft (woher die Texte kommen, was ein Modell daraus übernimmt)"
+topics: [ki, zeichenketten, information, gesellschaft, geschichte]
+age: Sek I
 requires: [kata-dicts]
 reference: [regex]
 </div>

@@ -4,8 +4,9 @@ kind: uebung
 duration: 1 Doppelstunde
 languages: [ruby, python, javascript]
 idea: Je nach Wert etwas anderes tun
-curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung)"
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung); Oberstufe: Algorithmen und Softwareentwicklung (Auswahl)"
 topics: [grundstrukturen]
+age: Sek I
 requires: [kata-functions]
 </div>
 

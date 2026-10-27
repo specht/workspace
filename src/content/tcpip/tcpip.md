@@ -5,6 +5,7 @@ kind: labor
 duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Computernetze (Funktionsweise des Internet, Schichtenmodell, Protokolle), Rechner und Netze (Protokolle, Schichtenarchitektur)"
 topics: [netze]
+age: Sek I
 reference: [netzwerk, http, json, terminal]
 </div>
 

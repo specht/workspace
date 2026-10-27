@@ -1,7 +1,7 @@
 <div class='meta'>
 image: js-logo.png
 kind: steckbrief
-curriculum: "Oberstufe: Syntax und Semantik (Interpreter)"
+curriculum: "Oberstufe: Algorithmen und Softwareentwicklung (ein Programm ausführen, Fehlermeldungen lesen, einfache Datentypen, Bubblesort ändern)"
 topics: [programmiersprachen]
 </div>
 

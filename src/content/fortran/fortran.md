@@ -1,7 +1,7 @@
 <div class='meta'>
 image: fortran-logo.png
 kind: steckbrief
-curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Syntax und Semantik (Compiler)"
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Algorithmen und Softwareentwicklung (ein Programm übersetzen, Fehlermeldungen lesen, einfache Datentypen, Bubblesort ändern)"
 topics: [programmiersprachen, geschichte]
 </div>
 

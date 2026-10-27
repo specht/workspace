@@ -7,7 +7,7 @@ languages: [ruby, python]
 duration: 3 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Digitalisierung von Bildern, Farbmodelle), Information und Daten (Datensicherheit); Oberstufe: Vertiefung Kryptologie und Datensicherheit (Steganographie und Steganalyse)"
 topics: [digitale-bilder, bildalgorithmen, datensicherheit]
-requires: [crypto]
+requires: [kata-bits]
 reference: [farbraeume, bits-und-bytes, ruby-python]
 </div>
 

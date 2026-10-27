@@ -36,9 +36,9 @@ der linken an, mehrere nebeneinander in der Reihenfolge, in der sie
 weiterlaufen, damit sie sich nicht überdecken. Bänder nach Alter von oben nach unten haben die
 Kästen von ihren Nachbarn weggezogen, die Pfeile liefen lang und steil;
 darum die Farben. Nennt die Zeile beide Pläne, ist die Aktivität aber für
-die Jüngeren gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
-und Oberstufe` oder `Oberstufe`; die Katas zu Schleifen, Listen und
-Dictionaries). Eine Aktivität baut nie auf einer für Ältere auf:
+eine Stufe gedacht, sagt es ein Feld `age:` im Meta-Block (`Sek I`, `Sek I
+und Oberstufe` oder `Oberstufe`): `Sek I` bei den ersten Katas, bei `rle`,
+`mysql` oder `tcpip`, `Oberstufe` bei `sandbox-cpu` und `totp`. Eine Aktivität baut nie auf einer für Ältere auf:
 `curriculum_graph_test.rb` prüft es.
 
 Die Reihenfolge der Kästen in jeder Spalte wird einmal gesucht und

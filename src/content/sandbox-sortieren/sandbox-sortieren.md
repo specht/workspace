@@ -5,6 +5,7 @@ kind: projekt
 duration: 4 bis 6 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (Analysieren, Modifizieren und Implementieren von Algorithmen); Oberstufe: Algorithmen und Datenstrukturen (Sortierverfahren, Aufwand)"
 topics: [suchen-sortieren]
+requires: [kata-lists]
 language: Dart / Python / JavaScript / Java
 reference: [gitlab, git, sortieren, heap]
 template: https://github.com/specht/sorting-sandbox.git
