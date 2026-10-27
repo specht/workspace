@@ -2,15 +2,27 @@
 
 The code-server release (`CODE_SERVER_IMAGE`) and the toolchain build base
 (`TOOLCHAIN_BASE_IMAGE`) are deliberately separate Dockerfile ARGs. Upgrading
-code-server does not reinstall TeX Live, Flutter, Android or Emscripten. The
+code-server does not reinstall TeX Live or Emscripten. The
 toolchain base is pinned to an already known-compatible code-server release;
 upgrade it separately after checking operating-system compatibility.
 
 From the repository root, `bash docker/code/build-toolchains.sh` builds the
-five stages **sequentially**, saving each result as a locally tagged image:
-`hs_code_toolchain_{texlive,flutter,android,gradle,emscripten}:stable`.
+two stages **sequentially**, saving each result as a locally tagged image:
+`hs_code_toolchain_{texlive,emscripten}:stable`.
 Re-running it uses BuildKit's existing cache for unchanged stage instructions.
-The final Dockerfile imports directories from those five images via `COPY`.
+The final Dockerfile imports directories from those two images via `COPY`.
+Dart is installed on its own in the final image (a pinned SDK, about 0.5 GB).
+Flutter, the Android SDK and the Gradle cache left the image on 28 October
+2026: no activity used them, and they were half of its 16.6 GiB; the stages
+are in the Git history (before that date) for the Flutter activity in TODO.md.
+
+No usage reporting: the image sets `DART_SUPPRESS_ANALYTICS`,
+`DOTNET_CLI_TELEMETRY_OPTOUT`, `POWERSHELL_TELEMETRY_OPTOUT` and
+`DO_NOT_TRACK`; code-server runs with `--disable-telemetry`; Dart keeps its
+setting in the home directory, so `init-code-server-run` runs
+`dart --disable-analytics` as the student at every start. Go 1.22 (from apt)
+has no telemetry; if Go is updated to 1.23 or later, add `go telemetry off`
+there.
 
 `./build-image.sh` refreshes those stages, builds a *candidate*, clones the
 real `specht/latex-tutorial` repository, compiles its six example documents

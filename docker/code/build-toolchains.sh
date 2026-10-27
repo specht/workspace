@@ -18,9 +18,6 @@ build_stage() {
 # Their stable tags are independently addressable COPY --from sources for the
 # final image; a newer CODE_SERVER_IMAGE does not invalidate them.
 build_stage texlive hs_code_toolchain_texlive:stable
-build_stage flutter hs_code_toolchain_flutter:stable
-build_stage android-sdk hs_code_toolchain_android:stable
-build_stage flutter-android hs_code_toolchain_gradle:stable
 build_stage raylib-web hs_code_toolchain_emscripten:stable
 
 echo '=== Reusable toolchain images are ready ==='
