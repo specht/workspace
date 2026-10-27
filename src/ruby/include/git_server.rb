@@ -260,7 +260,9 @@ module GitServer
         FileUtils.rm_rf(File.join(root, git_id))
     end
 
-    # The repositories in a group's folder: [{ name:, size:, last: Time or nil }].
+    # The repositories in a group's folder:
+    # [{ name:, size:, last: Time or nil, author: the last commit's author's name or nil }].
+    # One git call per repository; names only, never an e-mail address.
     def self.repos(git_id, root: REPOS)
         return [] unless git_id.to_s.match?(GIT_ID)
 
@@ -268,14 +270,14 @@ module GitServer
             name = File.basename(path, '.git')
             next unless name.match?(NAME)
 
-            last = begin
-                stamp = git('--git-dir', path, 'log', '-1', '--format=%ct', '--all').strip
-                stamp.empty? ? nil : Time.at(stamp.to_i)
+            stamp, author = begin
+                git('--git-dir', path, 'log', '-1', '--format=%ct%x1f%an', '--all').strip.split("\x1f", 2)
             rescue RuntimeError
                 nil
             end
+            last = stamp.to_s.empty? ? nil : Time.at(stamp.to_i)
             size = Dir.glob(File.join(path, '**', '*')).sum { |f| File.file?(f) ? File.size(f) : 0 }
-            { :name => name, :size => size, :last => last }
+            { :name => name, :size => size, :last => last, :author => last ? author.to_s : nil }
         end
     end
 end

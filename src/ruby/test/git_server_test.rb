@@ -102,7 +102,9 @@ class GitServerTest < Minitest::Test
             repos = GitServer.repos('a1b2c3d4e5', :root => root)
             assert_equal %w[class-quiz sandbox], repos.map { |r| r[:name] }
             assert_kind_of Time, repos[0][:last]
+            assert_equal 'Workspace', repos[0][:author], 'the starter commit is by the Workspace'
             assert_nil repos[1][:last]
+            assert_nil repos[1][:author]
             assert_raises(ArgumentError) { GitServer.repo_path('a1b2c3d4e5', '../x', :root => root) }
             GitServer.delete_repo('a1b2c3d4e5', 'sandbox', :root => root)
             assert_equal %w[class-quiz], GitServer.repos('a1b2c3d4e5', :root => root).map { |r| r[:name] }

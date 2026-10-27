@@ -10976,6 +10976,115 @@ div.pip-world[data-stepper] .stepper-timeline {
     color: var(--bs-danger-text-emphasis);
 }
 
+/* Every repository of a teacher's groups (/git, GitOverview): one table,
+   the last commit's time with its author below, the buttons one above the
+   other; on a phone each repository is a card, with the column's name
+   (data-label) above each value. */
+.git-overview-page {
+    margin-top: 1em;
+}
+
+.git-overview-intro,
+.git-overview-empty {
+    color: var(--bs-secondary-color);
+}
+
+.git-overview-empty .bi,
+.class-repos-overview .bi {
+    color: #f05133;
+    margin-right: 0.4em;
+}
+
+/* not .scroll-x, whose shadow in dark mode is for screenshots */
+.git-overview-scroll {
+    overflow-x: auto;
+}
+
+table.git-overview td {
+    vertical-align: top;
+    white-space: normal;
+    hyphens: manual;
+}
+
+.git-overview-time {
+    white-space: nowrap;
+}
+
+/* breaks after the colon (<wbr>), on a phone anywhere */
+table.git-overview code > span {
+    white-space: nowrap;
+}
+
+.git-overview-author {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: 0.85em;
+}
+
+.git-overview-none,
+.git-overview-unused {
+    color: var(--bs-secondary-color);
+    font-size: 0.85em;
+}
+
+.git-overview-unused {
+    display: block;
+}
+
+.git-overview-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    table.git-overview thead {
+        display: none;
+    }
+
+    table.git-overview,
+    table.git-overview tbody,
+    table.git-overview tr,
+    table.git-overview td {
+        display: block;
+    }
+
+    table.git-overview tr {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5em;
+        padding: 0.5em 0.8em;
+        margin-bottom: 0.8em;
+    }
+
+    table.git-overview td {
+        border: none;
+        padding: 0.2em 0;
+        background: none;
+    }
+
+    table.git-overview td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.8em;
+        color: var(--bs-secondary-color);
+    }
+
+    table.git-overview code > span {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .git-overview-actions {
+        flex-direction: row;
+        margin-top: 0.3em;
+    }
+}
+
+.class-repos-overview {
+    margin-top: 0.8em;
+}
+
 /* Reading a group's repository (/git/…, GitBrowse in main.rb): a light
    view of files, history and commits. */
 .git-browse {

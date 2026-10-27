@@ -39,6 +39,7 @@ require './include/database_provisioning.rb'
 require './include/case_server.rb'
 require './include/git_server.rb'
 require './include/git_browse.rb'
+require './include/git_overview.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
 require './include/teacher_roles.rb'
@@ -6818,8 +6819,11 @@ class Main < Sinatra::Base
               :starter => File.directory?(File.join('/src/content', slug, 'starter')) }
         end
         git = GitServer.enabled? ? " data-git-server='1' data-git-keys='#{h.((Main.git_groups[group] || {})[:keys] || GitServer::KEYS_HANDED_IN)}'" : ''
+        # every repository in the teacher's groups at once: /git (GitOverview)
+        overview = GitServer.enabled? ? "<p class='class-repos-overview'><i class='bi bi-git' aria-hidden='true'></i>" \
+            "Alle Repositorys deiner Gruppen im Workspace: <a href='#{WEB_ROOT}/git'>Übersicht</a></p>" : ''
         "<section class='class-setting class-setting-repos'><h3 class='class-setting-title'>Git-Repositorys</h3>" \
-            "<div class='class-repos' data-group='#{h.(group)}' data-repos='#{h.(entries.to_json)}'#{git}></div></section>"
+            "<div class='class-repos' data-group='#{h.(group)}' data-repos='#{h.(entries.to_json)}'#{git}></div>#{overview}</section>"
     end
 
     # The tab »Fortschritt«: the activity, a toolbar (look into the
@@ -8949,6 +8953,8 @@ class Main < Sinatra::Base
         address = GitServer.address(@git[:id], @git[:name])
         io = +''
         io << "<nav class='git-crumbs' aria-label='Repository'><i class='bi bi-git' aria-hidden='true'></i> "
+        # the overview of every repository first, for those who have one (/git)
+        io << "<a href='#{WEB_ROOT}/git'>Repositorys</a> / " if teacher_account_logged_in? || admin_logged_in?
         io << "<span>#{h.(@git[:group])}</span> / <a href='#{h.(git_url)}'><strong>#{h.(@git[:name])}</strong></a></nav>"
         io << "<div class='git-bar'>"
         io << "<div class='btn-group git-tabs' role='group'>"
@@ -9082,6 +9088,39 @@ class Main < Sinatra::Base
             io << "<p class='git-note'>Die Datei ist länger; hier stehen die ersten #{GitBrowse::MAX_BLOB / 1024} KB.</p>" if file[:cut] && !file[:binary]
         end
         io
+    end
+
+    # Every repository on the server in the groups the person teaches; an
+    # administrator's: all, with their teachers (GitOverview). One git call
+    # per repository, for its last commit.
+    get %r{/git/?} do
+        this_is_a_page_for_logged_in_users!
+        halt 404 unless GitServer.enabled?
+        halt_forbidden_page! unless teacher_account_logged_in? || admin_logged_in?
+        admin = admin_logged_in?
+        git_groups = Main.git_groups
+        groups = (admin ? git_groups.keys.sort_by(&:downcase) : class_groups).select { |g| git_groups.key?(g) }
+        teachers = nil
+        if admin
+            teachers = Hash.new { |hash, key| hash[key] = [] }
+            @@teachers.each do |email, taught|
+                name = (@@invitations[email] || {})[:name] || email
+                taught.each { |g| teachers[g] << name }
+            end
+        end
+        rows = GitOverview.rows(:groups => groups, :git_groups => git_groups, :repos => ->(id) { GitServer.repos(id) },
+            :titles => ->(slug) { @@content[slug] ? plain_title(slug) : nil },
+            :class_repos => group_class_repos(groups), :teachers => teachers)
+        @git_page = "<div class='container git-overview-page'><h1>Git-Repositorys</h1>" \
+            "#{GitOverview.html(rows, :admin => admin, :web_root => WEB_ROOT)}</div>"
+        running_tests = my_running_tests()
+        path = request.path
+        slug = nil
+        template = File.read(File.join(@@static_dir, '_template.html'))
+        # as on the repository pages below: the page is the literal, the
+        # table comes in as a value and is never read as a template
+        html = Main.inject_page_metadata(TrustedTemplate.render_page(template, '#{@git_page}', binding), request.path)
+        respond_raw_with_mimetype(html, 'text/html')
     end
 
     get GIT_BROWSE_PATH do
