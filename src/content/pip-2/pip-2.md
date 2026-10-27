@@ -32,8 +32,8 @@ variants: dark
 
 <div class='pip-wichtel'>
 »Hinter den Glibbern geht es tiefer hinein«, sagt der Wichtel. »Da unten habe ich
-keine Karten mehr. Pip muss selbst nachsehen, wo es weitergeht. Zum Glück kann
-dein Plan Fragen stellen.«
+keine Karten mehr; die zeichne ich unterwegs. Pip muss selbst nachsehen, wo es
+weitergeht. Zum Glück kann dein Plan Fragen stellen.«
 </div>
 
 ## Im Finstern
@@ -327,6 +327,7 @@ _task(way-out)
 <div class='pip-wichtel'>
 Oben ist es Nacht, und über Funkelbach leuchten die Sterne. Bello schüttelt
 sich, dass das Wasser nur so spritzt. »Gut gemacht«, sagt der Wichtel und
-nimmt Pips Laterne. Unten im Stollen brennen jetzt alle alten Lampen.
+nimmt Pips Laterne. Unten im Stollen brennen jetzt die alten Lampen, an denen
+Pip vorbeigekommen ist.
 </div>
 <!-- /after -->

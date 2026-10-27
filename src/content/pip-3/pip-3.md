@@ -23,10 +23,13 @@ mitgebracht hat. Nachts glüht er rot. Der Wichtel dreht ihn in den Händen und
 wird blass.
 
 <div class='pip-wichtel'>
-»Ein Herzstein«, sagt er. »Der gehört nach ganz unten, hinter die letzte alte
-Lampe. Dort wohnt der Mampfer. Er hört jeden Schritt und kennt jeden Gang, und
-er nimmt immer den kürzesten Weg zu dir. Nur ins Licht geht er nicht: Seine
-Augen sind fürs Dunkle gemacht, eine Lampe blendet ihn.«
+»Ein Herzstein«, sagt er. »Der gehört dem Mampfer. Er wohnt ganz unten, hinter
+der letzten alten Lampe, die noch nie jemand angezündet hat. Der Stein summt,
+weil er nach Hause will, und der Mampfer sucht ihn, seit Bello ihn mitgenommen
+hat. Nach oben ist er ihm nicht gefolgt: Auf dem Weg brennen jetzt die Lampen,
+und seine Augen sind fürs Dunkle gemacht, eine Lampe blendet ihn. Aber wer den
+Stein trägt, den findet er. Er hört jeden Schritt, kennt jeden Gang und nimmt
+immer den kürzesten Weg. Bring ihm seinen Stein zurück.«
 </div>
 
 ## Der Mampfer
@@ -69,7 +72,7 @@ schaut. Schau unter der Karte zu, wie viele Felder der Mampfer dabei aufholt.
 
 Die Lampen, die Pip unterwegs angezündet hat, brennen noch. In ihr Licht, die
 neun Felder um eine brennende Lampe, geht der Mampfer nicht, auch nicht, wenn
-Pip darin steht. Pip schon. Auf der Karte ist das Licht ein heller Schein auf
+Pip darin steht. Pip darf hinein. Auf der Karte ist das Licht ein heller Schein auf
 dem Boden.
 
 _task(stone-in-the-dark)
@@ -171,7 +174,8 @@ _task(way)
 
 ## Der kürzeste Weg
 
-Zwei neue Fragen geben Pip die Karte des Wichtels und sagen, wohin Pip schaut.
+Zwei neue Fragen geben Pip die Karte, die der Wichtel auf der Suche nach Bello
+gezeichnet hat, und sagen, wohin Pip schaut.
 Wie die anderen Fragen kosten sie keinen Schritt.
 
 <!-- language: ruby -->
@@ -208,10 +212,12 @@ _task(escape)
 
 <!-- after: escape -->
 <div class='pip-wichtel'>
-Hinter der letzten Lampe legt Pip den Herzstein in eine Mulde im Fels. Er hört
-auf zu summen. Der Mampfer schnuppert daran, schiebt ihn mit der Nase in seine
-Höhle und rollt sich darum zusammen wie Bello um einen Knochen. Von Pip will er
-nichts mehr wissen. »Na also«, sagt der Wichtel. »Und jetzt leise.«
+Die letzte Lampe flammt auf, und der Mampfer bleibt am Rand ihres Lichts
+stehen. Pip legt den Herzstein auf den Boden, dort, wo das Licht aufhört, und
+schiebt ihn ins Dunkle. Er hört auf zu summen. Der Mampfer schnuppert daran,
+schiebt ihn mit der Nase in seine Höhle und rollt sich darum zusammen wie Bello
+um einen Knochen. Von Pip will er nichts mehr wissen. »Er wollte nur seinen
+Stein zurück«, sagt der Wichtel. »Und jetzt leise nach Hause.«
 </div>
 <!-- /after -->
 
