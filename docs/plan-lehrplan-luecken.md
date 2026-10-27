@@ -25,6 +25,60 @@ what could fill each, in which form, what was decided and what is open.
 The order proposed: Computernetze (done), object orientation, the language
 model, the Turing machine, the logic sandbox, then the rest.
 
+### Gaps inside names that have activities
+
+A name with activities can still leave out what its plan lists. As of
+27 October 2026, found by comparing the contents in [lehrplan.md](lehrplan.md)
+with the details of every `curriculum:` line and a search of the pages:
+
+| Name | Left out | Proposal |
+| --- | --- | --- |
+| Sek I: Leben in und mit vernetzten Systemen | Suchmaschinen, Beschaffung und Prüfung von Informationen, Datenschutz, Gefahren bei E-Mails (Phishing, Schadprogramme); only web pages and the network are covered | »Eine Suchmaschine« and »Was eine Webseite über dich erfährt« (package Web below); »E-Mail und Phishing«: a mail server in the Workspace, a forged sender, what headers reveal |
+| Sek I: Information und Daten | Strichcode, QR-Code (no page explains them), Sender-Empfänger-Modell (only in the parked `cable`) | check digits (EAN, ISBN) and the error correction of a QR code, as a chapter or a Kata; `cable` back |
+| Sek I: Datenbanken | Datensätze einfügen, löschen, verändern are on pages, but no line names them | the lines of `mysql` and `filmdatenbank`, if the pages practise it |
+| Sek I: Geschichte der Informatik | only portraits of languages: no Rechenhilfsmittel, Rechnergenerationen, technische Entwicklung der Informationsübertragung | `cable` (Baudot); later a chapter in `sandbox-cpu` |
+| Sek I: Digitale Bilder und Visualisierung | Vektorgrafik only as 3D scenes; Manipulation von Bildern und Filmen; rekursive Algorithmen für Grafiken | an SVG chapter; a recursive tree in `drawing` |
+| Oberstufe: Algorithmen und Softwareentwicklung | Struktogramm, Pseudocode; of four activities two are portraits of languages | »Erst planen, dann programmieren« (package Software below) |
+| Oberstufe: Syntax und Semantik | Syntaxdiagramme; of 13 activities only `calculator` works on a grammar, the rest are portraits that name their compiler | syntax diagrams and EBNF as a chapter of `calculator` |
+| Oberstufe: Datenbanken | Normalisierung (Leistungskurs) | a chapter of `filmdatenbank` |
+| Oberstufe: Datenbanken und Datenschutz | Datenschutz, Urheberrecht | »Was eine Webseite über dich erfährt« |
+| Oberstufe: Computernetze, Vertiefung Computer-Netze | LAN, WLAN (Ethernet, MAC addresses, ARP); routing between networks | a chapter of `tcpip` |
+| Oberstufe: Softwareprojekt | Ergonomie | a chapter of the Git project below, or of `svelte` |
+
+## Packages for the front page
+
+On a wide screen the front page shows three cards in a row, and every
+section holds three or six (Fireworks and Hugo were parked for that, in
+eabe9ca9); the language tiles stand four in a row and fill four rows. So
+new activities come in threes per section, tiles in fours, and a chapter
+in an existing activity costs no place. Proposed on 27 October 2026, after
+the maintainer asked to close the gaps where appropriate, keeping the rows
+full, also by bringing back parked activities or moving them:
+
+| Package | Section | Cards | Closes |
+| --- | --- | --- | --- |
+| Software | Software entwerfen (now only `supermarkt`, dev-only) | `supermarkt`; »Erst planen, dann programmieren« (Struktogramm and Pseudocode before the code, then the code checked); »Gemeinsam an einem Projekt« (issues, branches, merge requests, review in the class repository, `GroupSetting`; locally without it) | objektorientierte Modellierung and Programmierung, Algorithmen und Softwareentwicklung, Projektmanagement, Softwareprojekt |
+| Web | Web (3 → 6) | `hugo` back from »Zurückgestellt«; »Eine Suchmaschine« (a crawler over a small site, an inverted index, ranking); »Was eine Webseite über dich erfährt« (a tracking pixel and cookies in the students' own web server, then the discussion) | Suchmaschinen, Datenschutz, Informatik und Gesellschaft |
+| Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
+| KI | a new section Künstliche Intelligenz (0 → 3) | »Ein winziges Sprachmodell« (bigrams); »Ein Perzeptron« from scratch; »Nächste Nachbarn« (classifying, and what biased data does) | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
+| Rechnen | Wie Computer rechnen (6 → 9) | a logic sandbox (gates to the ALU of `sandbox-cpu`); a Turing machine; `cable` back (Sender-Empfänger, Baudot) or a third card from the gaps above | Technische Informatik, Theoretische Informatik, Information und Daten |
+| Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
+
+Fireworks (`feuerwerk`) could join Spiele & 3D-Welten with two more cards;
+it still needs a teacher note, a try in class and its screenshots (TODO.md).
+`cable` was parked on purpose (fa0f2c81); the maintainer agreed on
+27 October 2026 that it may come back. Before that it gets a new framing:
+it is not a cable but radio, like Morse on shortwave (CW), each lamp a
+carrier keyed on and off. A shared frequency that everyone can hear and
+send on is what radio is, and it is why others can listen in or jam (the
+third think box); the page now starts with »ein langes Kabel mit fünf
+Adern« and then adds a frequency »wie bei einem Funkgerät«. To change: the
+title, the chapter »Das Kabel«, `src/static/ether.html`, the teacher note
+in `cable.js`, `lehrkraft.md` (its source, the worksheet »Datenübertragung
+per Kabel«, keeps its name), and beside Baudot's telegraph a word on Morse
+and CW. Whether the slug `cable` becomes `radio` is open (the CHANGELOG
+line is still »Unreleased«).
+
 ## Decisions
 
 - **Computernetze** (27 October 2026): TCP/IP, DNS and the web server carry
@@ -78,6 +132,10 @@ model, the Turing machine, the logic sandbox, then the rest.
   languages, `<!-- language: javascript dart java -->`), and the general
   examples use names of one word (`toggle`, `seats`). Types stay as in
   Java. Ruby's `accepts?` is the others' `accepts` too.
+- **Packages for the front page** (27 October 2026): close the gaps where
+  appropriate while every section keeps full rows; parked activities may
+  come back and activities may move. Software first (it lets `supermarkt`
+  go public); `cable` may come back.
 - **Overriding in the diagram** (27 October 2026): since a class has what
   it inherits, a task can no longer see whether a subclass overrides a
   method; `overrides` in the check `classes` asks for it in the class's
