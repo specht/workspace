@@ -32,4 +32,31 @@ class HtmlBlockTest < Minitest::Test
         end
         assert_empty found, "Put the closing tag on a line of its own:\n#{found.join("\n")}"
     end
+
+    # Inside a block of HTML (a hint box, a table, a figure) Redcarpet leaves
+    # the text alone: **bold** shows its asterisks. There it is <strong>.
+    def test_no_markdown_bold_inside_html
+        found = Dir[File.join(CONTENT, '**', '*.md')].flat_map do |file|
+            tag = nil
+            depth = 0
+            fence = false
+            File.readlines(file).each_with_index.filter_map do |line, i|
+                if line.start_with?('```')
+                    fence = !fence
+                    next
+                end
+                next if fence
+                tag = Regexp.last_match(1) if tag.nil? && line =~ /\A<(div|table|section|figure|details|aside)\b/
+                next unless tag
+
+                depth += line.scan(/<#{tag}\b/).size - line.scan(%r{</#{tag}>}).size
+                text = line.gsub(%r{<code>.*?</code>|`[^`]*`}, '')
+                hit = text =~ /\*\*[^*\s][^*]*\*\*/ ? "#{file.sub("#{CONTENT}/", '')}:#{i + 1}: #{line.strip[0, 70]}" : nil
+                tag = nil if depth <= 0
+                depth = 0 if tag.nil?
+                hit
+            end
+        end
+        assert_empty found, "Inside HTML, write <strong> instead of **:\n#{found.join("\n")}"
+    end
 end

@@ -41,7 +41,7 @@ Wer sich anmelden kann, steht in einer Gruppe. Unter **Klassen** legst du mit **
 Welcher Schule du angehörst, trägt die Administration ein. Hat deine Schule dem Einsatz noch nicht zugestimmt, vermerkst du im Reiter **Lernende**, für wen ein schriftliches Einverständnis vorliegt; anmelden können sich alle schon jetzt (mehr dazu unten).
 
 <div class='hint'>
-Steht im Reiter **Lernende**, dass die Einladungen der Gruppe noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
+Steht im Reiter <strong>Lernende</strong>, dass die Einladungen der Gruppe noch in Dateien stehen, pflegt sie die Administration: Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, für welche Gruppe, und schick die E-Mail-Adressen mit.
 </div>
 
 ## Die Klassenseite
