@@ -1,6 +1,7 @@
 require 'rouge'
 require 'nokogiri'
 require_relative 'er_lexer'
+require_relative 'uml_lexer'
 require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
 require_relative 'minicpu_lexer'
