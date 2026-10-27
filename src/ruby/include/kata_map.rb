@@ -68,7 +68,8 @@ module KataMap
         "<span class='kata-set-art' aria-hidden='true'>#{art}</span>"
     end
 
-    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [])
+    # usage: { slug => the line for admins (Main#usage_html) }
+    def self.carousel_html(stops, progress: nil, teacher: false, pinned: [], usage: {})
         core = ->(stop) { stop.counts.reject { |k, _| k == :extra }.values.sum }
         io = +"<div class='kata-carousel'>"
         io << "<div class='kata-strip'>"
@@ -107,6 +108,8 @@ module KataMap
                 io << "<span class='kata-set-progress'><span class='kata-set-bar' aria-hidden='true'><span style='width: #{share}%'></span></span>"
                 io << "#{solved} von #{total} gelöst#{extras > 0 ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span>"
             end
+            # for admins at the very foot (Main#usage_html)
+            io << usage[stop.slug].to_s
             io << '</span></a>'
         end
         io << '</div>'
