@@ -15,7 +15,7 @@ class_repo: group
     data-levels="h2,h3">
 </div>
 
-# Gemeinsam an einem Projekt: das Quiz der Klasse
+# Im Team mit Git: das Klassenquiz
 
 <p class='abstract'>
 Eure Klasse baut zusammen ein Quiz: Jede und jeder schreibt eine Runde Fragen, alle in einem gemeinsamen Git-Repository. Dabei passiert, womit Teams jeden Tag umgehen: Ein Push wird abgelehnt, zwei ändern dieselbe Zeile, ein Konflikt will gelöst werden. Danach verteilt ihr die Arbeit am Programm, und jede und jeder erledigt eine Aufgabe in einem eigenen Branch.
