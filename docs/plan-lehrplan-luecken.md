@@ -206,7 +206,7 @@ Doppelstunden, built on Katas: Dictionaries and Listen.
    asking who decides), and that a person stays responsible. Joy Buolamwini's
    »Gender Shades« (2018) as the real case, in a paper box.
 
-State (28 October 2026): `sprachmodell` is written (dev-only).
+State: all three are written (`sprachmodell`, `perzeptron`, `naechste-nachbarn`), dev-only; the section goes live when the maintainer says so. Rosenblatt and Buolamwini then move from inline boxes to the Personen page.
 
 #### »Ein Neuron lernt« (`perzeptron`), outline
 
