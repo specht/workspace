@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' width='1280' height='720'>
+<rect width='1280' height='720' fill='#ffffff'/>
+<line x1='430.0' y1='318.7' x2='771.6' y2='177.5' stroke='#2b5fb4' stroke-width='25.0' stroke-linecap='round'/>
+<polygon points='818.7,158.0 756.1,140.0 787.1,215.0' fill='#2b5fb4'/>
+<rect x='815.0' y='66.0' width='230' height='92' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='843.0' y='127' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='42' fill='#1f2937'>war</text>
+<text x='1019.0' y='125' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='600' fill='#6b7280'>41</text>
+<line x1='430.0' y1='339.3' x2='779.8' y2='267.0' stroke='#2b5fb4' stroke-width='14.3' stroke-linecap='round'/>
+<polygon points='815.0,259.8 774.3,240.7 785.2,293.4' fill='#2b5fb4'/>
+<rect x='815.0' y='190.0' width='230' height='92' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='843.0' y='251' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='42' fill='#1f2937'>ist</text>
+<text x='1019.0' y='249' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='600' fill='#6b7280'>21</text>
+<line x1='430.0' y1='360.0' x2='785.0' y2='360.0' stroke='#2b5fb4' stroke-width='10.0' stroke-linecap='round'/>
+<polygon points='815.0,360.0 785.0,338.5 785.0,381.5' fill='#2b5fb4'/>
+<rect x='815.0' y='314.0' width='230' height='92' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='843.0' y='375' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='42' fill='#1f2937'>trug</text>
+<text x='1019.0' y='373' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='600' fill='#6b7280'>13</text>
+<line x1='430.0' y1='380.7' x2='791.5' y2='455.4' stroke='#2b5fb4' stroke-width='5.7' stroke-linecap='round'/>
+<polygon points='815.0,460.2 794.8,439.7 788.3,471.1' fill='#2b5fb4'/>
+<rect x='815.0' y='438.0' width='230' height='92' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='843.0' y='499' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='42' fill='#1f2937'>soll</text>
+<text x='1019.0' y='497' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='600' fill='#6b7280'>5</text>
+<line x1='430.0' y1='401.3' x2='796.6' y2='552.8' stroke='#2b5fb4' stroke-width='5.7' stroke-linecap='round'/>
+<polygon points='818.7,562.0 802.7,538.0 790.5,567.7' fill='#2b5fb4'/>
+<rect x='815.0' y='562.0' width='230' height='92' rx='18' fill='#eef3fb' stroke='#2b5fb4' stroke-width='3'/>
+<text x='843.0' y='623' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='42' fill='#1f2937'>wird</text>
+<text x='1019.0' y='621' text-anchor='end' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='34' font-weight='600' fill='#6b7280'>5</text>
+<rect x='230.0' y='295.0' width='200' height='130' rx='18' fill='#ffffff' stroke='#1f2937' stroke-width='3'/>
+<text x='330' y='384' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='68' font-weight='600' fill='#1f2937'>Es</text>
+</svg>

@@ -1,0 +1,514 @@
+# Aufgaben zu »Ein winziges Sprachmodell«, in Ruby und, unter python:, in
+# Python. Format: docs/aufgaben.md. Alles liegt in /workspace/sprachmodell.
+# Die Zahlen gehören zu maerchen.txt, wie es
+# src/scripts/collect-maerchen/collect-maerchen.rb baut.
+format: 1
+activity: sprachmodell
+tasks:
+  - id: naechstes-wort
+    title: Was folgt auf »Es«?
+    prediction: true
+    prompt: |
+      In den Märchen beginnen viele Sätze mit »Es«. Welches Wort folgt darauf
+      am häufigsten?
+    check:
+      type: choice
+      options:
+        - war
+        - ist
+        - kam
+        - gibt
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: »Es ist« steht oft in dem, was jemand sagt. Erzählt wird in den Märchen aber in einer anderen Zeit.
+      - when: { picked: 2 }
+        say: Märchen erzählen in der Vergangenheit, das passt. Nachzählen kannst du gleich selbst.
+      - when: { picked: 3 }
+        say: »Es gibt« ist heute häufig. In den Märchen wird in der Vergangenheit erzählt.
+    solution: |
+      »war«, 41-mal: »Es war einmal …«, »Es war ein König …«.
+
+  - id: woerter
+    title: Wie viele Wörter?
+    prompt: |
+      Wie viele Wörter und Satzzeichen findet `words` in den ganzen Märchen?
+      Lies dazu `maerchen.txt` ein, ruf `words` damit auf und lass dir die
+      Länge der Liste geben.
+    check: { type: number, expect: 93581 }
+    feedback:
+      - when: { equals: 80122 }
+        say: So viele Wörter zählt `wc -w`, das Satzzeichen nicht einzeln zählt. Ruf `words` auf.
+    hint: |
+      In Ruby liest `File.read("maerchen.txt")` die Datei als einen String, in
+      Python `open("maerchen.txt").read()`. Die Länge einer Liste gibt
+      `.size` in Ruby und `len(…)` in Python.
+    solution: |
+      93 581: 79 979 Wörter und 13 602 Satzzeichen. In Ruby
+      `words(File.read("maerchen.txt")).size`, in Python
+      `len(words(open("maerchen.txt").read()))`.
+
+  - id: von-hand
+    title: Von Hand gezählt
+    prompt: |
+      Was steht im Dictionary des Textes »Der Wolf kam. Der Jäger kam. Der Wolf
+      lief.« unter »kam«?
+    check:
+      type: choice
+      options:
+        - »Der« zweimal
+        - ».« zweimal
+        - »Wolf« einmal und »Jäger« einmal
+        - »Der« dreimal
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Nach »kam« kommt zuerst der Punkt; »Der« folgt erst auf den Punkt.
+      - when: { picked: 2 }
+        say: Das sind die Wörter, die vor »kam« stehen. Gezählt wird, was danach kommt.
+      - when: { picked: 3 }
+        say: Unter jedem Wort steht, was direkt danach kommt. Was steht direkt hinter »kam«?
+    solution: |
+      Nach »kam« kommt beide Male der Punkt: ».« zweimal. Der Punkt ist für das
+      Modell ein Wort wie jedes andere.
+
+  - id: zaehlen
+    title: Wer folgt auf wen
+    prompt: |
+      Schreib in `sprachmodell/model.rb` die Funktion `follow_counts(tokens)`.
+      Die Prüfung ruft sie mit kurzen Listen auf und vergleicht das
+      Dictionary, das herauskommt.
+    check:
+      type: ruby
+      file: sprachmodell/model.rb
+      cases:
+        - call: 'follow_counts(["a", "b", "a", "c", "a", "b"]) == { "a" => { "b" => 2, "c" => 1 }, "b" => { "a" => 1 }, "c" => { "a" => 1 } }'
+          expect: true
+          say: Unter »a« steht zweimal »b« und einmal »c«; das letzte Wort hat keinen Nachfolger und kommt nicht als Schlüssel vor.
+        - call: 'follow_counts(["Der", "Wolf", "kam", "."]) == { "Der" => { "Wolf" => 1 }, "Wolf" => { "kam" => 1 }, "kam" => { "." => 1 } }'
+          expect: true
+        - call: 'follow_counts(["allein"]) == {}'
+          expect: true
+          say: Ein einziges Wort hat keinen Nachfolger; das Dictionary bleibt leer.
+    solution: |
+      ```ruby
+      def follow_counts(tokens)
+        counts = {}
+        (0...tokens.size - 1).each do |i|
+          word = tokens[i]
+          following = tokens[i + 1]
+          counts[word] ||= {}
+          counts[word][following] = (counts[word][following] || 0) + 1
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `sprachmodell/model.py` die Funktion `follow_counts(tokens)`.
+        Die Prüfung ruft sie mit kurzen Listen auf und vergleicht das
+        Dictionary, das herauskommt.
+      check:
+        type: python
+        file: sprachmodell/model.py
+        cases:
+          - call: 'follow_counts(["a", "b", "a", "c", "a", "b"]) == {"a": {"b": 2, "c": 1}, "b": {"a": 1}, "c": {"a": 1}}'
+            expect: true
+            say: Unter »a« steht zweimal »b« und einmal »c«; das letzte Wort hat keinen Nachfolger und kommt nicht als Schlüssel vor.
+          - call: 'follow_counts(["Der", "Wolf", "kam", "."]) == {"Der": {"Wolf": 1}, "Wolf": {"kam": 1}, "kam": {".": 1}}'
+            expect: true
+          - call: 'follow_counts(["allein"]) == {}'
+            expect: true
+            say: Ein einziges Wort hat keinen Nachfolger; das Dictionary bleibt leer.
+      solution: |
+        ```python
+        def follow_counts(tokens):
+            counts = {}
+            for i in range(len(tokens) - 1):
+                word = tokens[i]
+                following = tokens[i + 1]
+                if word not in counts:
+                    counts[word] = {}
+                counts[word][following] = counts[word].get(following, 0) + 1
+            return counts
+        ```
+
+  - id: nach-sprach
+    title: Nach »sprach«
+    prompt: |
+      Was folgt in den Märchen am häufigsten auf »sprach«? Schau mit `top`
+      nach.
+    check:
+      type: choice
+      options:
+        - der
+        - er
+        - ein Doppelpunkt
+        - zu
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: »sprach der König« kommt oft vor, 149-mal. Etwas anderes noch öfter.
+      - when: { picked: 1 }
+        say: »sprach er« steht 94-mal da. Schau dir die ganze Liste von `top` an, auch die Satzzeichen.
+      - when: { picked: 3 }
+        say: »sprach zu« steht 28-mal da. Ganz oben in der Liste von `top` steht etwas anderes.
+    solution: |
+      Der Doppelpunkt, 207-mal: »Da sprach er: …« Danach kommt, was jemand sagt.
+      Für das Modell ist ein Satzzeichen ein Wort wie jedes andere.
+
+  - id: haeufigstes
+    title: Das häufigste Wort
+    prompt: |
+      Schreib in `sprachmodell/model.rb` die Funktion `most_likely(counts, word)`.
+      Die Prüfung ruft sie mit kleinen Dictionaries auf, auch mit einem Wort,
+      das darin fehlt.
+    check:
+      type: ruby
+      file: sprachmodell/model.rb
+      cases:
+        - call: 'most_likely({ "Es" => { "war" => 41, "ist" => 21, "trug" => 13 } }, "Es")'
+          expect: '"war"'
+        - call: 'most_likely({ "a" => { "b" => 1, "c" => 5, "d" => 2 } }, "a")'
+          expect: '"c"'
+          say: Gesucht ist der Nachfolger mit der größten Anzahl, nicht der erste.
+        - call: 'most_likely({ "a" => { "b" => 1 } }, "x")'
+          expect: ~
+          say: Für ein Wort, das nie vorkam, gibt es keinen Nachfolger; zurück kommt nil.
+    solution: |
+      ```ruby
+      def most_likely(counts, word)
+        return nil unless counts.key?(word)
+
+        counts[word].max_by { |following, count| count }[0]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `sprachmodell/model.py` die Funktion `most_likely(counts, word)`.
+        Die Prüfung ruft sie mit kleinen Dictionaries auf, auch mit einem Wort,
+        das darin fehlt.
+      check:
+        type: python
+        file: sprachmodell/model.py
+        cases:
+          - call: 'most_likely({"Es": {"war": 41, "ist": 21, "trug": 13}}, "Es")'
+            expect: "'war'"
+          - call: 'most_likely({"a": {"b": 1, "c": 5, "d": 2}}, "a")'
+            expect: "'c'"
+            say: Gesucht ist der Nachfolger mit der größten Anzahl, nicht der größte Schlüssel.
+          - call: 'most_likely({"a": {"b": 1}}, "x")'
+            expect: ~
+            say: Für ein Wort, das nie vorkam, gibt es keinen Nachfolger; zurück kommt None.
+      solution: |
+        ```python
+        def most_likely(counts, word):
+            if word not in counts:
+                return None
+            return max(counts[word], key=counts[word].get)
+        ```
+
+  - id: immer-das-haeufigste
+    title: Immer das häufigste Wort
+    prediction: true
+    prompt: |
+      Das Programm beginnt mit »Es« und hängt 30-mal das häufigste nächste
+      Wort an. Was kommt heraus?
+    check:
+      type: choice
+      options:
+        - Bei jedem Start ein anderer Anfang eines Märchens.
+        - Ein Satz, und dann hört es auf.
+        - Ein paar Wörter, dann wiederholt es immer dieselben.
+        - Ein Satz aus einem der Märchen, Wort für Wort.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Das häufigste Wort nach »Es« ist jedes Mal dasselbe. Entscheidet das Programm je anders?
+      - when: { picked: 1 }
+        say: Auch auf einen Punkt folgt ein Wort, das häufigste nach einem Punkt. Das Programm hört nach 30 Wörtern auf, nicht am Satzende.
+      - when: { picked: 3 }
+        say: Jedes Paar von Wörtern steht in den Märchen, aber hintereinander kommen sie dort nie so vor.
+    solution: |
+      Nach ein paar Wörtern sagt es »ich will ich will …«: Auf »ich« folgt am
+      häufigsten »will«, auf »will« am häufigsten »ich«. Und es schreibt jedes
+      Mal genau diesen Text.
+
+  - id: wuerfeln
+    title: Würfeln nach der Häufigkeit
+    prompt: |
+      Schreib in `sprachmodell/model.rb` die Funktion `next_word(counts, word)`.
+      Die Prüfung zieht 4000-mal aus `{ "a" => 3, "b" => 1 }` und erwartet
+      ungefähr dreimal so oft »a« wie »b«, dazu ein Wort mit nur einem
+      Nachfolger und eines, das fehlt.
+    check:
+      type: ruby
+      file: sprachmodell/model.rb
+      cases:
+        - call: '(1..4000).count { next_word({ "x" => { "a" => 3, "b" => 1 } }, "x") == "a" }.between?(2800, 3200)'
+          expect: true
+          say: Von 4000 Zügen sollen ungefähr 3000 »a« sein, denn »a« wurde dreimal gezählt und »b« einmal.
+        - call: '(1..200).all? { %w[a b].include?(next_word({ "x" => { "a" => 3, "b" => 1 } }, "x")) }'
+          expect: true
+          say: Jeder Zug soll einer der Nachfolger sein, nie nil und nie etwas anderes.
+        - call: 'next_word({ "x" => { "a" => 1 } }, "x")'
+          expect: '"a"'
+        - call: 'next_word({ "x" => { "a" => 1 } }, "y")'
+          expect: ~
+          say: Für ein Wort, das nie vorkam, kommt nil zurück.
+    solution: |
+      ```ruby
+      def next_word(counts, word)
+        return nil unless counts.key?(word)
+
+        r = rand(counts[word].values.sum)
+        counts[word].each do |following, count|
+          return following if r < count
+
+          r -= count
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `sprachmodell/model.py` die Funktion `next_word(counts, word)`.
+        Die Prüfung zieht 4000-mal aus `{"a": 3, "b": 1}` und erwartet
+        ungefähr dreimal so oft »a« wie »b«, dazu ein Wort mit nur einem
+        Nachfolger und eines, das fehlt.
+      check:
+        type: python
+        file: sprachmodell/model.py
+        cases:
+          - call: '2800 <= sum(next_word({"x": {"a": 3, "b": 1}}, "x") == "a" for _ in range(4000)) <= 3200'
+            expect: true
+            say: Von 4000 Zügen sollen ungefähr 3000 »a« sein, denn »a« wurde dreimal gezählt und »b« einmal.
+          - call: 'all(next_word({"x": {"a": 3, "b": 1}}, "x") in ("a", "b") for _ in range(200))'
+            expect: true
+            say: Jeder Zug soll einer der Nachfolger sein, nie None und nie etwas anderes.
+          - call: 'next_word({"x": {"a": 1}}, "x")'
+            expect: "'a'"
+          - call: 'next_word({"x": {"a": 1}}, "y")'
+            expect: ~
+            say: Für ein Wort, das nie vorkam, kommt None zurück.
+      solution: |
+        ```python
+        def next_word(counts, word):
+            if word not in counts:
+                return None
+            r = random.randrange(sum(counts[word].values()))
+            for following, count in counts[word].items():
+                if r < count:
+                    return following
+                r -= count
+        ```
+
+  - id: schreiben
+    title: Ein Märchen schreiben
+    prompt: |
+      Schreib in `sprachmodell/model.rb` die Funktion `generate(counts, start, n)`.
+      Die Prüfung gibt ihr Dictionaries, in denen jedes Wort nur einen
+      Nachfolger hat, so dass das Ergebnis feststeht.
+    check:
+      type: ruby
+      file: sprachmodell/model.rb
+      cases:
+        - call: 'generate({ "a" => { "b" => 1 }, "b" => { "c" => 1 }, "c" => { "a" => 1 } }, "a", 4)'
+          expect: '["a", "b", "c", "a", "b"]'
+          say: Das Startwort steht vorn, danach kommen n gezogene Wörter.
+        - call: 'generate({ "a" => { "b" => 1 } }, "a", 5)'
+          expect: '["a", "b"]'
+          say: Nach »b« gibt es keinen Nachfolger; dort hört die Liste auf.
+        - call: 'generate({}, "a", 3)'
+          expect: '["a"]'
+    solution: |
+      ```ruby
+      def generate(counts, start, n)
+        tokens = [start]
+        n.times do
+          following = next_word(counts, tokens.last)
+          break if following.nil?
+
+          tokens << following
+        end
+        tokens
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `sprachmodell/model.py` die Funktion `generate(counts, start, n)`.
+        Die Prüfung gibt ihr Dictionaries, in denen jedes Wort nur einen
+        Nachfolger hat, so dass das Ergebnis feststeht.
+      check:
+        type: python
+        file: sprachmodell/model.py
+        cases:
+          - call: 'generate({"a": {"b": 1}, "b": {"c": 1}, "c": {"a": 1}}, "a", 4)'
+            expect: "['a', 'b', 'c', 'a', 'b']"
+            say: Das Startwort steht vorn, danach kommen n gezogene Wörter.
+          - call: 'generate({"a": {"b": 1}}, "a", 5)'
+            expect: "['a', 'b']"
+            say: Nach »b« gibt es keinen Nachfolger; dort hört die Liste auf.
+          - call: 'generate({}, "a", 3)'
+            expect: "['a']"
+      solution: |
+        ```python
+        def generate(counts, start, n):
+            tokens = [start]
+            for _ in range(n):
+                following = next_word(counts, tokens[-1])
+                if following is None:
+                    break
+                tokens.append(following)
+            return tokens
+        ```
+
+  - id: gedaechtnis
+    title: Wie weit sieht das Modell zurück?
+    prompt: |
+      Wenn dein Modell das nächste Wort zieht: Was von dem bisher
+      Geschriebenen berücksichtigt es?
+    check:
+      type: choice
+      options:
+        - Nur das letzte Wort.
+        - Den ganzen Satz bis hier.
+        - Alles, was es bisher geschrieben hat.
+        - Gar nichts; es zieht irgendein Wort aus den Märchen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Schau, womit `generate` die Funktion `next_word` aufruft.
+      - when: { picked: 2 }
+        say: Schau, womit `generate` die Funktion `next_word` aufruft. Steht dort die ganze Liste?
+      - when: { picked: 3 }
+        say: Es zieht nur aus den Nachfolgern eines Wortes, nicht aus allen Wörtern. Welches Wortes?
+    solution: |
+      Nur das letzte Wort. Darum passen zwei Wörter nebeneinander, aber ein
+      Satz ergibt keinen Sinn: Am Ende des Satzes weiß das Modell nicht mehr,
+      wie er anfing.
+
+  - id: paare
+    title: Zwei Wörter Kontext
+    prompt: |
+      Schreib in `sprachmodell/model.rb` die Funktion `pair_counts(tokens)`.
+      Die Prüfung ruft sie mit kurzen Listen auf und vergleicht das
+      Dictionary.
+    check:
+      type: ruby
+      file: sprachmodell/model.rb
+      cases:
+        - call: 'pair_counts(["a", "b", "c", "a", "b", "d"]) == { "a b" => { "c" => 1, "d" => 1 }, "b c" => { "a" => 1 }, "c a" => { "b" => 1 } }'
+          expect: true
+          say: Der Schlüssel sind zwei Wörter mit einem Leerzeichen dazwischen, »a b«; gezählt wird das Wort danach.
+        - call: 'pair_counts(["a", "b"]) == {}'
+          expect: true
+          say: Nach zwei Wörtern kommt nichts mehr; es gibt noch kein Paar mit Nachfolger.
+    solution: |
+      ```ruby
+      def pair_counts(tokens)
+        counts = {}
+        (0...tokens.size - 2).each do |i|
+          pair = "#{tokens[i]} #{tokens[i + 1]}"
+          following = tokens[i + 2]
+          counts[pair] ||= {}
+          counts[pair][following] = (counts[pair][following] || 0) + 1
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `sprachmodell/model.py` die Funktion `pair_counts(tokens)`.
+        Die Prüfung ruft sie mit kurzen Listen auf und vergleicht das
+        Dictionary.
+      check:
+        type: python
+        file: sprachmodell/model.py
+        cases:
+          - call: 'pair_counts(["a", "b", "c", "a", "b", "d"]) == {"a b": {"c": 1, "d": 1}, "b c": {"a": 1}, "c a": {"b": 1}}'
+            expect: true
+            say: Der Schlüssel sind zwei Wörter mit einem Leerzeichen dazwischen, »a b«; gezählt wird das Wort danach.
+          - call: 'pair_counts(["a", "b"]) == {}'
+            expect: true
+            say: Nach zwei Wörtern kommt nichts mehr; es gibt noch kein Paar mit Nachfolger.
+      solution: |
+        ```python
+        def pair_counts(tokens):
+            counts = {}
+            for i in range(len(tokens) - 2):
+                pair = tokens[i] + " " + tokens[i + 1]
+                following = tokens[i + 2]
+                if pair not in counts:
+                    counts[pair] = {}
+                counts[pair][following] = counts[pair].get(following, 0) + 1
+            return counts
+        ```
+
+  - id: zwei-woerter
+    title: Mit zwei Wörtern
+    prediction: true
+    prompt: |
+      Gleich schreibt dein Modell mit zwei Wörtern Kontext. Wie wird der Text?
+    check:
+      type: choice
+      options:
+        - Er liest sich besser, Satzstücke klingen wie aus einem Märchen.
+        - Er liest sich so wie vorher.
+        - Er wird schlechter, weil das Modell weniger Beispiele hat.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Nach »sprach der« folgt etwas anderes als nach »Da sprach«. Weiß das Modell mit zwei Wörtern mehr?
+      - when: { picked: 2 }
+        say: Weniger Beispiele je Kontext hat es wirklich. Aber jedes passt genauer. Was wiegt beim Lesen mehr?
+    solution: |
+      Besser: Drei Wörter hintereinander stehen jetzt so in einem Märchen, und
+      ganze Satzstücke klingen richtig. Warum, zeigt die nächste Aufgabe.
+
+  - id: abgeschrieben
+    title: Wie viel Auswahl bleibt?
+    prompt: |
+      Wie viel Prozent der Paare in `pair_counts` haben in den Märchen genau
+      einen Nachfolger? Runde auf eine ganze Zahl.
+    check: { type: number, expect: 78, tolerance: 1, unit: '%' }
+    feedback:
+      - when: { equals: 55 }
+        say: So viele sind es bei einzelnen Wörtern, in `follow_counts`. Gefragt sind die Paare.
+      - when: { equals: 22 }
+        say: Das ist der Rest, die Paare mit mehr als einem Nachfolger.
+    hint:
+      - |
+        Ein Paar hat genau einen Nachfolger, wenn sein Dictionary nur einen
+        Eintrag hat. Zähl diese Paare und teile durch die Zahl aller Paare.
+      - |
+        In Ruby: `pairs.count { |pair, followers| followers.size == 1 }`, in
+        Python `sum(1 for followers in pairs.values() if len(followers) == 1)`.
+        Die Zahl aller Paare ist `pairs.size` oder `len(pairs)`; mal 100.
+    solution: |
+      78 Prozent: 32 477 von 41 816 Paaren. Nach so einem Paar schreibt das
+      Modell genau das Wort, das im Märchen steht.
+
+  - id: boese
+    title: Was ist böse?
+    prediction: true
+    prompt: |
+      Was folgt in den Märchen am häufigsten auf »böse«? Vermute erst, dann
+      schau mit `top(counts, "böse", 4)` nach.
+    check:
+      type: choice
+      options:
+        - Vor allem Frauen, wie die Hexe oder die Stiefmutter.
+        - Vor allem Tiere, wie der Wolf oder der Fuchs.
+        - Vor allem Männer, wie der Räuber oder der König.
+        - Vor allem Gedanken und Träume, die einem keine Ruhe lassen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Der Wolf ist in den Märchen oft böse, aber das Wort »böse« steht nie vor ihm. Schau mit `top` nach.
+      - when: { picked: 2 }
+        say: Räuber und Könige gibt es viele, aber »böse« steht nie vor ihnen. Schau mit `top` nach.
+      - when: { picked: 3 }
+        say: Böse Träume und böse Gedanken kommen vor, je einmal. Schau mit `top` nach, was öfter folgt.
+    solution: |
+      Weib und Hexe je dreimal, Stiefmutter und Buben je zweimal: Von den 14
+      Malen, die »böse« dasteht, ist es achtmal eine Frau.

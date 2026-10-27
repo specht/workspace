@@ -9209,6 +9209,20 @@ class Main < Sinatra::Base
         end
     end
 
+    # The starter of an activity, its folder starter/ (the class quiz): the
+    # files a page fetches with wget when the group has no class repository,
+    # the same that GitServer puts into a new one. Only that folder of an
+    # activity the person may see; anything else in the activity's folder
+    # (tasks.yaml, the solutions) stays unreachable.
+    get %r{/([a-z0-9-]+)/starter/([A-Za-z0-9_\-./]+)} do |slug, path|
+        content = @@content[slug]
+        halt 404 unless content && !content[:teacher_only] && (DEVELOPMENT || !content[:dev_only])
+        root = File.join('/src/content', slug, 'starter')
+        file = File.expand_path(path, root)
+        halt 404 unless file.start_with?("#{root}/") && File.file?(file)
+        respond_raw_with_mimetype(File.binread(file), 'text/plain; charset=utf-8')
+    end
+
     get '/*' do
         path = request.path
         slug = nil

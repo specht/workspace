@@ -6203,6 +6203,109 @@ html[data-bs-theme="dark"] .usage-row {
     color: #5c636a;
 }
 
+/* The drawing pad of »Ein Neuron lernt« (neuron_pad.js): the drawing on
+   white like paper in both modes; beside it the 32 × 32 dots, the 64 values
+   and the weights as grids of 8 × 8; one below the other on a phone. */
+.neuron-pad {
+    margin: 1em 0 1.5em;
+    padding: 1em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+}
+.neuron-pad-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em 1.5em;
+    align-items: flex-start;
+}
+.neuron-pad-drawing {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+.neuron-pad-canvas {
+    width: min(100%, 320px);
+    aspect-ratio: 1;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.4em;
+    touch-action: none;
+    cursor: crosshair;
+}
+.neuron-pad-clear .bi { margin-right: 0.35em; }
+.neuron-pad-side {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+.neuron-pad-figure {
+    margin: 0;
+}
+.neuron-pad-figure figcaption {
+    margin-top: 0.3em;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    max-width: 9.5em;
+}
+.neuron-pad-dots {
+    display: block;
+    width: 8.5em;
+    aspect-ratio: 1;
+    border: 1px solid var(--bs-border-color);
+    image-rendering: pixelated;
+}
+.neuron-pad-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: 8.5em;
+    aspect-ratio: 1;
+    border: 1px solid var(--bs-border-color);
+}
+.neuron-pad-grid span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
+    background: color-mix(in srgb, var(--bs-body-color) calc(var(--level, 0) * 85%), transparent);
+}
+/* the values: dark squares get light numbers */
+.neuron-pad-grid:not(.neuron-pad-weights) span {
+    color: color-mix(in srgb, var(--bs-body-bg) calc(var(--level, 0) * 100%), var(--bs-secondary-color));
+}
+.neuron-pad-weights span { background: transparent; }
+.neuron-pad-weights span.positive { background: color-mix(in srgb, #2b5fb4 calc(var(--level, 0) * 100%), transparent); }
+.neuron-pad-weights span.negative { background: color-mix(in srgb, #d97706 calc(var(--level, 0) * 100%), transparent); }
+html[data-bs-theme="dark"] .neuron-pad-weights span.positive { background: color-mix(in srgb, #6ea2f2 calc(var(--level, 0) * 100%), transparent); }
+html[data-bs-theme="dark"] .neuron-pad-weights span.negative { background: color-mix(in srgb, #fbbf24 calc(var(--level, 0) * 100%), transparent); }
+.neuron-pad-weights { position: relative; }
+.neuron-pad-weights.neuron-pad-empty::after {
+    content: 'noch kein Neuron';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+.neuron-pad-example {
+    margin-top: 0.5em;
+}
+.neuron-pad-example .bi { margin-right: 0.35em; }
+.neuron-pad-label {
+    margin-top: 1em;
+    font-weight: 600;
+}
+textarea.neuron-pad-input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 85%;
+}
+.neuron-pad-verdict {
+    margin: 0.6em 0 0;
+}
+
 /* Handbuch »ER-Modelle als Text«, »Klassendiagramme als Text« and
    »Pseudocode und Struktogramme«: text on the left, diagram on the right. */
 .er-playground,

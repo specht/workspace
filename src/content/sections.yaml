@@ -143,9 +143,9 @@
     mit den Klassen, die es braucht. Dann programmierst du nach deinem Plan,
     allein oder mit der ganzen Klasse in einem gemeinsamen Git-Repository.
   entries:
-    - .check-digits
-    - .supermarkt
-    - .class-quiz
+    - check-digits
+    - supermarkt
+    - class-quiz
 
 - key: computing
   compact: true
@@ -163,6 +163,21 @@
     - automata
     - calculator
     - routenplaner
+
+# docs/plan-lehrplan-luecken.md, »The KI section«: three cards, dev-only
+# until all three exist
+- key: ki
+  label: Künstliche Intelligenz
+  icon: /images/brain.png
+  description: |
+    Wie lernt ein Programm aus Beispielen? Du baust ein winziges
+    Sprachmodell, ein Neuron, das selbst lernt, und ein Programm, das nach
+    den nächsten Nachbarn entscheidet, ohne Bibliotheken, Funktion für
+    Funktion. Dabei siehst du, was diese Verfahren können, und was sie aus
+    ihren Daten übernehmen.
+  entries:
+    - .sprachmodell
+    - .perzeptron
 
 - key: compression
   compact: true

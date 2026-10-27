@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Neu: `./upload-image.sh HOST [VERZEICHNIS]` kopiert das Workspace-Image, das ein anderer Rechner gebaut hat, auf
+  einen Server und ersetzt dort das alte, für Server ohne Platz für den Bau: Über die Leitung gehen rund 7 GB,
+  die Toolchains und der Cache des Baus bleiben auf dem Rechner, der baut. `CHECK_ONLY=1` sieht nur nach;
+  Einzelheiten in `docker/code/BUILDING.md`.
 - Das Frontend (Traefik) liegt jetzt unter `docker/traefik/docker-compose.yaml` statt `frontend-docker-compose.yaml`,
   mit Protokollen von höchstens 3 × 10 MB (bisher ohne Grenze). Den DNS kann jetzt deSEC (empfohlen) oder Cloudflare
   verwalten; die Adresse für Letsencrypt steht nicht mehr in der Datei. Beim Update in die `.env` neben ihr

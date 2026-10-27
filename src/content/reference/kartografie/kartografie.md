@@ -163,7 +163,7 @@ Erst wird ein Modell gedreht, um seine eigene Mitte. Dann steht seine Mitte übe
 
 ### Ein Becken
 
-Jedes Feld mit dem Buchstaben gehört zum Becken; Felder nebeneinander, gleich tief, mit gleichem Wasser und gleicher Farbe, sind eins. In ein Becken voll Wasser kann man nicht hineingehen, in ein leeres fällt man. Ein Raum mit einem Becken hat keine Rampe.
+Jedes Feld mit dem Buchstaben gehört zum Becken; Felder nebeneinander, gleich tief, mit gleichem Wasser und gleicher Farbe, bilden ein Becken. In ein Becken voll Wasser kann man nicht hineingehen, in ein leeres Becken fällt man. Ein Raum mit einem Becken hat keine Rampe.
 
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>

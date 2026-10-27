@@ -13,7 +13,7 @@ curriculum: "Sek I: Algorithmisches Problemlösen (Grundlagen der Objektorientie
     data-levels="h2,h3">
 </div>
 
-# Klassen entwerfen: Lohnt sich eine Expresskasse?
+# Klassen entwerfen: die Expresskasse
 
 <p class='abstract'>
 Ein Supermarkt überlegt, eine seiner drei Kassen zur Expresskasse zu machen.

@@ -16,7 +16,7 @@ what could fill each, in which form, what was decided and what is open.
 | Oberstufe: Vertiefung Theoretische Informatik | 0 | a Turing machine as the next step after »Endliche Automaten«, in the same simulator; the halting problem as a thought experiment; complexity from the comparisons the sorting sandbox counts | extend `automata`, a new page | medium | open |
 | Oberstufe: Vertiefung Technische Informatik | 0 | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | a new sandbox widget | large | open |
 | Oberstufe: Vertiefung Informatik und Gesellschaft | 0 | »Was eine Webseite über dich erfährt«: a tracking pixel and cookies in the students' own web server, what it learns about visitors, then the discussion; bias in training data as a section of the language model | project, sections elsewhere | medium | open |
-| Sek I: Physical Computing | 0 | the Workspace cannot reach hardware, but it can build for it: MicroPython for Calliope mini or micro:bit, downloaded as a `.hex` and dragged onto the board's USB drive (the usual way to flash them); the image needs the build tools. Or a simulated board on the website | project, image change | medium | open: which boards do the schools have? |
+| Sek I: Physical Computing | 0 | the Workspace cannot reach hardware, but it can build for it: MicroPython for Calliope mini or micro:bit, downloaded as a `.hex` and dragged onto the board's USB drive (the usual way to flash them); the image needs the build tools. Or a simulated board on the website | project, image change | medium | shelved: the schools have no boards (28 October 2026) |
 | Oberstufe: Vertiefung Applikative Programmierung | 1 (the Lisp portrait) | the planned Prolog page (TODO.md, »Later ideas«) for logic programming; a Kata strand with `map`, `filter`, `reduce` for functional programming | page, Kata strand | medium | open |
 | Sek I: Projektmanagement, Oberstufe: Softwareprojekt | 1, 2 | the planned Git collaboration (TODO.md, »Later ideas«) and the activity »Testen« (TODO.md, »Katas«) | activities | medium | open |
 | Oberstufe: Datenbanken und Datenschutz | 1 | the planned modelling chapter of the database sequence (TODO.md) | chapter | medium | open |
@@ -64,7 +64,7 @@ full, also by bringing back parked activities or moving them:
 | Rechnen | Wie Computer rechnen (6 → 9) | a logic sandbox (gates to the ALU of `sandbox-cpu`); a Turing machine; `cable` back (Sender-Empfänger, Baudot) or a third card from the gaps above | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
-State of the package Software (27 October 2026), all dev-only:
+State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
 `check-digits` (»Prüfziffern: erst planen, dann programmieren«: EAN-13 and
 ISBN-10, a Struktogramm read and translated, then planned by the students;
 Ruby and Python, with its card picture), `supermarkt`, the Handbuch pages
@@ -161,14 +161,90 @@ line is still »Unreleased«).
   method; `overrides` in the check `classes` asks for it in the class's
   own box and in a class above it.
 
+- **The next four** (28 October 2026): Künstliche Intelligenz, the Turing
+  machine, the logic sandbox and Informatik und Gesellschaft, in packages
+  that keep the rows of the front page full. Physical Computing is shelved:
+  the schools have no boards.
+  - **KI first**, a section of its own with three cards (below), dev-only
+    until all three exist.
+  - **Informatik und Gesellschaft both ways**: inside the KI section (what
+    biased data does to nearest neighbours, where a language model's text
+    comes from) and as »Was eine Webseite über dich erfährt« in Web, which
+    then takes `hugo` back and »Eine Suchmaschine« to reach six.
+  - **Wie Computer rechnen** grows to nine: the logic sandbox, the Turing
+    machine, and `cable` back, reframed as CW radio.
+
+## The KI section (outline)
+
+Three projects in Ruby and Python, written from scratch without libraries,
+so that students write the small functions themselves; each in about two
+Doppelstunden, built on Katas: Dictionaries and Listen.
+
+1. **»Ein winziges Sprachmodell«** (`sprachmodell`). A text (fairy tales of
+   the Brothers Grimm, public domain, as a dataset; or one the class
+   chooses) is split into words; a dictionary counts which word follows
+   which; the most likely next word, then text generated word by word,
+   drawn by its counts. Then two words of context instead of one: the text
+   gets better and starts to copy whole sentences of the original, which is
+   the trade-off of every language model. Shannon did this by hand in 1948
+   (»A Mathematical Theory of Communication«, a person box and a paper box),
+   Markov with the letters of »Eugen Onegin« in 1913. For Gesellschaft: the
+   model knows only its text (whose texts, with whose consent), repeats what
+   the text says often, and writes fluently without knowing whether it is
+   true.
+2. **»Ein Neuron lernt«** (`perzeptron`). A perceptron from scratch: weights,
+   a sum, a threshold; the learning rule on points of two classes with two
+   features, drawn after every pass; then 8 × 8 pixel digits (a free
+   dataset), its 64 weights shown as a picture of what it looks for. XOR it
+   cannot learn (Minsky and Papert, 1969), and why two layers can. Frank
+   Rosenblatt (1958) in a person box.
+3. **»Nächste Nachbarn: Wer entscheidet hier?«** (`naechste-nachbarn`).
+   Classifying by the k nearest examples (Fix and Hodges, 1951); accuracy on
+   data held back. Then made-up decisions of the past, skewed against one
+   part of a town: the classifier learns the skew and repeats it; the error
+   rate per group shows it; what could be done (other data, other features,
+   asking who decides), and that a person stays responsible. Joy Buolamwini's
+   »Gender Shades« (2018) as the real case, in a paper box.
+
+State (28 October 2026): `sprachmodell` is written (dev-only).
+
+#### »Ein Neuron lernt« (`perzeptron`), outline
+
+Real data first: the Palmer penguins (Gorman, Williams and Fraser 2014;
+CC0), measured on the Antarctic Peninsula. Adélie and Gentoo are told apart
+by two measurements of the bill, its length and its depth: with the raw
+millimetres, zero weights, rate 1 and the file's order, a perceptron gets
+all 274 right after 12 passes, and its weights can be read (29.1 · length −
+74.0 · depth − 1 > 0: Gentoo has a long, flat bill). Adélie against
+Chinstrap is never error-free: a single neuron's limit in real data,
+before XOR.
+
+1. The neuron by hand: inputs, weights, a sum, a threshold; McCulloch and
+   Pitts (1943), Rosenblatt's Mark I Perceptron (1958).
+2. `predict(weights, bias, features)`, for any number of features (part 2
+   needs 64); loading the CSV is given.
+3. The learning rule, `learn(…)` for one example, `train(examples, passes)`
+   counting the errors of each pass; a prediction (will it ever be
+   error-free?) and the number of passes.
+4. What it learned: the weights read as a rule; a given function draws the
+   penguins and the line into an SVG opened in VS Code.
+5. Penguins it has not seen: trained on half, tested on the rest.
+6. Where one neuron stops: Adélie against Chinstrap, then XOR (Minsky and
+   Papert, 1969), and why two layers can.
+7. Digits: 8 × 8 pixels, »0 or 1?«, the same functions with 64 features
+   (UCI »Optical Recognition of Handwritten Digits«, CC BY 4.0); the
+   weights as a picture of what the neuron looks for; a drawing pad on the
+   page where students paste their weights and draw (taking up the idea of
+   the parked `digits-experiment`: their own handwriting).
+
+Open: whether digits the class draws on the pad become a dataset of its
+own (an extra).
+
 ## Open questions for the maintainer
 
-- Physical Computing: which boards do the schools have (Calliope mini,
-  micro:bit, none)?
-- Künstliche Intelligenz: TensorFlow in the image (large), so that
-  `digits-experiment` can go into the catalog, or networks written from
-  scratch without libraries, which suits »students write small functions
-  first« better?
+- Künstliche Intelligenz: proposed from scratch without libraries (above);
+  TensorFlow in the image would let `digits-experiment` into the catalog
+  later.
 - The order of the rest.
 
 ## The object-oriented activity (draft)
@@ -227,7 +303,7 @@ What it needs, in this order (state on 27 October 2026 after each):
 
 ### Outline of the page
 
-Slug `supermarkt`, title »Klassen entwerfen: Lohnt sich eine Expresskasse?«,
+Slug `supermarkt`, title »Klassen entwerfen: die Expresskasse« (shortened on 28 October 2026 from »… Lohnt sich eine Expresskasse?«),
 kind `projekt`, languages `[ruby, python, javascript, dart, java]`, about
 three Doppelstunden, dev-only for now. No starter repository: students make
 a folder `supermarkt` with `supermarkt.uml` and their code (one file, in
