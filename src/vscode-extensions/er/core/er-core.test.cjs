@@ -204,7 +204,7 @@ test('diagrams: deterministic, kept positions, escaped labels', () => {
     assert.deepEqual(again.positions['E:movie'], { x: 999, y: -999 });
     const tables = core.diagram(FILM, 'tables');
     assert.match(tables.svg, />movie_crew</);
-    assert.match(tables.svg, /class="tag pk"[^>]*>PK·FK</);
+    assert.match(tables.svg, /class="tag pk"[^>]*>PK, FK</);
     const tricky = core.diagram('entity Bücher\n  id: int, primary key\n', 'chen');
     assert.match(tricky.svg, />Bücher</);
     assert.equal(core.esc('<a href="x">'), '&lt;a href=&quot;x&quot;&gt;');
@@ -245,7 +245,7 @@ test('crow\'s foot and tables in layers: what is referenced above, no box on ano
         assert.ok(at[parent].y < at[child].y, `${parent} above ${child}`);
     }
     // the three columns: type, name, key
-    assert.match(core.diagram(FILM, 'tables').svg, /<text class="typ"[^>]*>int<\/text><text class="row"[^>]*>movie_id<\/text><text class="tag pk"[^>]*>PK·FK<\/text>/);
+    assert.match(core.diagram(FILM, 'tables').svg, /<text class="typ"[^>]*>int<\/text><text class="row"[^>]*>movie_id<\/text><text class="tag pk"[^>]*>PK, FK<\/text>/);
 });
 
 test('crow\'s foot: long lines go round, a kept box stays and a new one moves aside', () => {

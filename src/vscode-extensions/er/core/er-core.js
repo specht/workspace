@@ -396,7 +396,7 @@
         const cols = {
             type: Math.max(0, ...rows.map((r) => tw(r.type) * 0.92)),
             name: Math.max(0, ...rows.map((r) => tw(r.name))),
-            key: rows.some((r) => r.tag) ? Math.max(...rows.map((r) => tw(r.tag.replace(',', '·')) * 0.85)) : 0,
+            key: rows.some((r) => r.tag) ? Math.max(...rows.map((r) => tw(r.tag.replace(',', ', ')) * 0.85)) : 0,
         };
         const w = Math.max(tw(label, 600) + 28, 10 + cols.type + 20 + cols.name + (cols.key ? 20 + cols.key : 0) + 10);
         return { id, kind: 'T', label, rows, cols, w: Math.max(120, w), h: HEAD_H + rows.length * ROW_H + 6 };
@@ -1126,7 +1126,7 @@
                 const rows = n.rows.map((r, i) => {
                     const y = rowTop(i) + ROW_H / 2;
                     return `<text class="typ" x="${f(x0 + 10)}" y="${f(y)}">${esc(r.type)}</text><text class="row" x="${f(xName)}" y="${f(y)}">${esc(r.name)}</text>` +
-                        (r.tag ? `<text class="tag${r.tag.startsWith('PK') ? ' pk' : ''}" x="${f(xKey)}" y="${f(y)}">${esc(r.tag.replace(',', '·'))}</text>` : '');
+                        (r.tag ? `<text class="tag${r.tag.startsWith('PK') ? ' pk' : ''}" x="${f(xKey)}" y="${f(y)}">${esc(r.tag.replace(',', ', '))}</text>` : '');
                 }).join('');
                 S.push(`${g}<rect class="box" x="${f(x0)}" y="${f(y0)}" width="${f(n.w)}" height="${f(n.h)}"/><rect class="boxhead" x="${f(x0 + 0.8)}" y="${f(y0 + 0.8)}" width="${f(n.w - 1.6)}" height="${f(HEAD_H - 0.8)}"/>` +
                     `${shade}${rules}<line x1="${f(x0)}" y1="${f(y0 + HEAD_H)}" x2="${f(-x0)}" y2="${f(y0 + HEAD_H)}" stroke="var(--er-ink,#1f2937)" stroke-width="1"/>` +

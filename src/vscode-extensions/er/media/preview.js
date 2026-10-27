@@ -190,7 +190,7 @@
         schemaLines = core.schemaLines(use.model, use.result, level);
         schemaTitle.textContent = level === 'tables' ? 'Tabellen' : 'Entitätstypen';
         schemaBox.innerHTML = core.schemaText(schemaLines, 'html') + (level === 'tables'
-            ? '<p class="legend"><u>unterstrichen</u> = Primärschlüssel · <span class="fk">↑</span> = Fremdschlüssel</p>'
+            ? '<p class="legend"><u>unterstrichen</u> = Primärschlüssel, <span class="fk">↑</span> = Fremdschlüssel</p>'
             : '<p class="legend"><u>unterstrichen</u> = Schlüssel</p>');
         const result = use.result;
         stepsBox.innerHTML = result.steps.map((s) => `<li><span class="tag">${esc(s.tag)}</span> ${withCode(s.text)}</li>`).join('');
