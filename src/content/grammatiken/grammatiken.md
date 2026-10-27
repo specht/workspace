@@ -45,7 +45,7 @@ Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du
 
 Eine Grammatik für eine winzige Sprache, deren Sätze aus drei Wörtern bestehen:
 
-```text
+```ebnf
 sentence = subject verb object
 subject  = "Pip" | "Bello"
 verb     = "findet" | "sucht"
@@ -56,7 +56,7 @@ Jede Zeile ist eine **Regel**. Links vom `=` steht ein Name, ein **Nichtterminal
 
 Einen Satz baut man, indem man beim Startsymbol beginnt und immer ein Nichtterminal durch das ersetzt, was rechts in seiner Regel steht, bei `|` durch eine der Möglichkeiten. Sind nur noch Terminale übrig, ist der Satz fertig. Diese Kette heißt **Ableitung**:
 
-```text
+```ebnf
 sentence
 ⇒ subject verb object
 ⇒ "Pip" verb object
@@ -107,7 +107,7 @@ Weil die Klammern zur Schreibweise gehören, steht eine Klammer, die selbst im W
 
 Die Klammerwörter aus dem Kellerautomaten, `()`, `(())()` und so weiter, beschreibt eine einzige Regel:
 
-```text
+```ebnf
 brackets = { "(" brackets ")" }
 ```
 
@@ -121,7 +121,7 @@ brackets("(" brackets("(" brackets ")") ")" "(" brackets ")")
 
 Niklaus Wirth hat Grammatiken auch gezeichnet, zuerst für seine Sprache Pascal. Ein **Syntaxdiagramm** liest man von links nach rechts, die Linien entlang: Wo sich ein Weg teilt, wählst du einen. Ein runder Kasten ist ein Terminal, das so im Wort steht. Ein eckiger ist ein Nichtterminal: Dort gehst du durch dessen eigenes Diagramm und kommst danach zurück. So sieht eine Grammatik für Zahlen aus:
 
-```text
+```ebnf
 number = digit { digit }
 digit  = "0" | "1" | … | "9"
 ```
@@ -404,7 +404,7 @@ _task(number)
 
 Jetzt eine Sprache, die schon nach Programmieren aussieht: Ausdrücke aus Zahlen mit `+`, `*` und runden Klammern, ohne Leerzeichen, etwa `2+3*4` oder `(1+2)*3`.
 
-```text
+```ebnf
 expression = term { "+" term }
 term       = factor { "*" factor }
 factor     = number | "(" expression ")"
@@ -461,7 +461,7 @@ Eine Funktion, die sich als Erstes selbst aufruft, mit demselben Index, kommt ni
 
 Warum so umständlich mit `term` und `factor`? Kürzer ginge es so:
 
-```text
+```ebnf
 expression = expression "+" expression | expression "*" expression | number
 ```
 

@@ -201,6 +201,23 @@ pre.code-pseudocode .o {
     color: #fe8019 !important;
 }
 
+/* ```ebnf blocks (Rouge::Lexers::EBNF): nonterminals blue, the name a rule
+   defines bold, terminals yellow like every string, and the signs of the
+   notation (= | { } [ ] ( )) orange, so that "(" in quotes, which lands in
+   the word, never looks like a bracket of the notation. */
+pre.code-ebnf .nc,
+pre.code-ebnf .nf {
+    color: #6cb6ff !important;
+}
+
+pre.code-ebnf .nf {
+    font-weight: bold;
+}
+
+pre.code-ebnf .o {
+    color: #fe8019 !important;
+}
+
 /* ```minicpu blocks (Rouge::Lexers::MiniCPU): registers and the labels a
    line defines stand out, as in the CPU Sandbox's editor. */
 pre.code-minicpu .nb {

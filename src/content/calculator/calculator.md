@@ -310,7 +310,7 @@ _task(klammern)
 
 Was ein Automat nicht kann, kann ein Programm, das sich selbst aufruft. Die Regeln für Ausdrücke lassen sich als **Grammatik** aufschreiben, eine Regel pro Zeile. `{ … }` heißt »beliebig oft, auch keinmal«, `|` heißt »oder«:
 
-```text
+```ebnf
 expression = term { ("+" | "-") term }
 term       = factor { ("*" | "/") factor }
 factor     = "-" factor | atom
@@ -407,7 +407,7 @@ _task(hoch-vorhersage)
 <!-- after: hoch-vorhersage -->
 Hoch wird von rechts nach links gerechnet. Und ein Minus davor gilt erst nach dem Hoch: `-2 ^ 2` ist −4, so wie in der Mathematik −2² = −4 ist. Beides passt in eine neue Regel zwischen `factor` und `atom`:
 
-```text
+```ebnf
 factor     = "-" factor | power
 power      = atom [ "^" factor ]
 ```
