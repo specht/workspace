@@ -79,12 +79,13 @@ def text(x, y, content, size=15, colour=INK, anchor='middle', family=SANS, weigh
             f'font-size="{size}" font-weight="{weight}" fill="{colour}">{content}</text>')
 
 
-def bracket(x0, x1, y, colour, label, lines=1):
-    """A bracket over the modules x0..x1, its label above it."""
-    out = [f'<path d="M{x0:.1f} {y + 7} V{y} H{x1:.1f} V{y + 7}" fill="none" stroke="{colour}" stroke-width="2"/>']
-    for i, line in enumerate(label.split('\n')):
-        out.append(text((x0 + x1) / 2, y - 8 - 17 * (len(label.split('\n')) - 1 - i), line, 14, colour))
-    return ''.join(out)
+def region(x0, x1, y0, y1, colour, label):
+    """A part of the code: a pale band of its colour behind the bars from
+    x0 to x1, its name above it. The band is the colour itself, faint, so
+    that it stays pale on the white label in dark mode too."""
+    return (f'<rect x="{x0:.1f}" y="{y0}" width="{x1 - x0:.1f}" height="{y1 - y0}" fill="{colour}" fill-opacity="0.16"/>'
+            f'<rect x="{x0:.1f}" y="{y0}" width="{x1 - x0:.1f}" height="4" fill="{colour}"/>'
+            + text((x0 + x1) / 2, y0 - 9, label, 14, colour))
 
 
 def aufbau(code, unit=6):
@@ -97,6 +98,12 @@ def aufbau(code, unit=6):
     width = x0 + 95 * unit + 7 * unit + margin
     out = [f'<rect width="{width}" height="{top + guard_h + 70}" fill="#ffffff"/>',
            f'<rect x="{margin}" y="{top - 10}" width="{width - 2 * margin}" height="{guard_h + 10 + size + 8}" rx="6" fill="{LABEL}" stroke="{LINE}" stroke-width="1.5"/>']
+    # the parts behind the bars, over the whole height of the label
+    m = lambda i: x0 + i * unit
+    y0, y1 = top - 10, top + guard_h + size + 8
+    for a, b, colour, label in [(0, 3, AMBER, 'Rand'), (3, 45, BLUE, 'sechs Ziffern, je 7 Module'), (45, 50, AMBER, 'Mitte'),
+                                (50, 92, BLUE, 'sechs Ziffern, je 7 Module'), (92, 95, AMBER, 'Rand')]:
+        out.append(region(m(a), m(b), y0, y1, colour, label))
     x = x0
     for pattern, guard in modules(code):
         for bit in pattern:
@@ -108,13 +115,6 @@ def aufbau(code, unit=6):
     for k in range(6):
         out.append(text(x0 + (3 + 7 * k + 3.5) * unit, y_text, code[1 + k], size, BAR, 'middle', MONO))
         out.append(text(x0 + (50 + 7 * k + 3.5) * unit, y_text, code[7 + k], size, BAR, 'middle', MONO))
-    m = lambda i: x0 + i * unit
-    y = top - 24
-    out.append(bracket(m(0), m(3), y, AMBER, 'Rand'))
-    out.append(bracket(m(3) + 2, m(45) - 2, y, BLUE, 'sechs Ziffern, je 7 Module'))
-    out.append(bracket(m(45), m(50), y, AMBER, 'Mitte'))
-    out.append(bracket(m(50) + 2, m(92) - 2, y, BLUE, 'sechs Ziffern, je 7 Module'))
-    out.append(bracket(m(92), m(95), y, AMBER, 'Rand'))
     # 95 modules: a scale under the label
     yb = top + guard_h + size + 30
     out.append(f'<path d="M{m(0)} {yb - 5} V{yb} H{m(95)} V{yb - 5}" fill="none" stroke="{GREY}" stroke-width="1.5"/>')

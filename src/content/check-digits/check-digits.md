@@ -6,6 +6,7 @@ duration: 2 Doppelstunden
 languages: [ruby, python]
 curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
 topics: [fehlererkennung, codierung, darstellung]
+age: Sek I
 requires: [kata-lists]
 reference: [struktogramme]
 </div>
@@ -85,7 +86,7 @@ in 95 gleich breite Streifen geteilt, die **Module**. Jedes Modul ist dunkel
 oder hell, also eine 1 oder eine 0; ein breiter Strich sind mehrere dunkle
 Module nebeneinander.
 
-<img class='drawing' style='width: 37.5em' src='aufbau.webp' alt='Der Strichcode der Nudeln, 4 260111 020434, auf einem weißen Etikett. Darüber Klammern: am linken und rechten Rand je drei Module »Rand«, in der Mitte fünf Module »Mitte«, dazwischen links und rechts je »sechs Ziffern, je 7 Module«. Die Striche von Rand und Mitte reichen weiter nach unten als die anderen. Darunter eine Klammer über den ganzen Code: 95 Module, 3 + 6 · 7 + 5 + 6 · 7 + 3.'>
+<img class='drawing' style='width: 37.5em' src='aufbau.webp' alt='Der Strichcode der Nudeln, 4 260111 020434, auf einem weißen Etikett. Farbige Flächen hinter den Strichen zeigen die Teile: am linken und rechten Rand je drei Module »Rand« und in der Mitte fünf Module »Mitte«, orange, dazwischen links und rechts je »sechs Ziffern, je 7 Module«, blau. Die Striche von Rand und Mitte reichen weiter nach unten als die anderen. Darunter eine Klammer über den ganzen Code: 95 Module, 3 + 6 · 7 + 5 + 6 · 7 + 3.'>
 
 Am Rand und in der Mitte stehen feste Muster: `101` links und rechts, `01010`
 in der Mitte. Ihre Striche reichen weiter nach unten als die anderen. An ihnen
