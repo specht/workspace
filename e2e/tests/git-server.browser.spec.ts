@@ -55,7 +55,7 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
     await expect(workspace.locator('.git-log-subject').first()).toHaveText('Runde von E2E');
     await teacher.goto(browsePath + '/commits/main');
     await teacher.locator('.git-log-subject', { hasText: 'Runde von E2E' }).click();
-    await expect(teacher.locator('.git-file h3', { hasText: 'questions/e2e.txt' })).toBeVisible();
+    await expect(teacher.locator('.git-diff-path', { hasText: 'questions/e2e.txt' })).toBeVisible();
     await expect(teacher.locator('.git-add', { hasText: 'Wie viele Bits' })).toBeVisible();
 
     // The teacher's overview of the group's repositories: the row with the

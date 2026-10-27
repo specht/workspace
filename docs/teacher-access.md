@@ -324,10 +324,32 @@ einem Git-Server im Netz braucht dann niemand.
   über 50 MB an. Nach jeder Änderung an den Gruppen, an einem Repository oder
   an einem Schlüssel schreibt das Backend die Liste der Schlüssel und der
   Zugriffe neu (`data/git-server/config`).
-- **Ansehen:** »Ansehen« neben dem Feld führt zu `/git/<Ordner>/<Seite>`: Dateien,
-  Verlauf, jeder Commit mit seinen Änderungen, alles als ZIP. Die Lernenden
-  der Gruppe sehen dieselben Seiten. Bilder werden gezeigt; HTML, SVG und
-  Markdown-HTML aus den Repositorys nie ausgeführt.
+- **Ansehen:** `/git/<Ordner>/<Seite>` (main.rb, »Reading a group's
+  repository in the browser«; `GitBrowse`, `git_browse.js`) ist ein
+  Code-Browser: links der Dateibaum des Stands (Ordner öffnen sich an Ort
+  und Stelle und bleiben beim Weiterklicken offen, Pfeiltasten und Enter,
+  `t` sucht eine Datei), rechts ein Ordner mit dem letzten Commit jedes
+  Eintrags und seinem README, eine Datei mit Zeilennummern und Links pro
+  Zeile (`#L12`), im Code-Stil der Seite, ein Bild (auch SVG, mit
+  »Quelltext«), der Verlauf nach Tagen (Tags markiert) oder ein Commit mit
+  seinen Änderungen. Oben Branches und Tags in einem Menü, »Klonen« (die
+  Adresse in einem Feld mit Kopierknopf) und »ZIP«; auf dem Handy liegt der
+  Baum über dem Inhalt. Hat ein Stand mehr als `GitBrowse::TREE_MAX`
+  Einträge, liest der Baum seine Ordner einzeln (`…/entries/<ref>/<Pfad>`,
+  JSON). Jeder git-Aufruf ist in Zeit und Ausgabe begrenzt. Dürfen:
+  Mitglieder und Lehrkräfte der Gruppe und Admins (`git_may_browse?`),
+  für Seiten, JSON und Dateien gleich. Dateien für sich (`…/raw/…`) kommen
+  als Bild oder Text mit `Content-Security-Policy: sandbox` und `nosniff`:
+  HTML, SVG und Markdown-HTML aus den Repositorys laufen nie. Ein README
+  zeigt nur Bilder aus dem Repository selbst; ein Bild von anderswo
+  verriete dessen Server, wer liest, statt seiner steht der Alt-Text.
+- **Wo man hinfindet:** Lernende über »Das Repository im Browser ansehen«
+  unter dem Klon-Befehl der Aktivität (nur in den Varianten für den
+  Git-Server des Workspace, `ClassRepos.mark_browse`); Lehrkräfte über
+  »Ansehen« neben dem Feld in den Einstellungen, »ansehen« in der Zeile
+  »Klassen-Repository« über der Aktivität, »Repository« neben »Zur Seite«
+  im Fortschritt der Klassenseite und die Übersicht `/git`. Ohne
+  Berechtigung oder ohne `GIT_SERVER` erscheint keiner dieser Links.
 - **Übersicht:** `/git` (`GitOverview` in `src/ruby/include/git_overview.rb`)
   listet jedes Repository auf dem Server in den Gruppen der Lehrkraft
   (`class_groups`, nur Gruppen mit einem Ordner): Gruppe, Aktivität,

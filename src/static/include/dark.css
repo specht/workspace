@@ -787,3 +787,19 @@ html[data-bs-theme="dark"] {
         g.edge.faded { path, polygon { stroke: #4a4a46; } polygon { fill: #4a4a46; } text { fill: #6a6964; } }
     }
 }
+
+/* Reading a repository (/git/…): the tags' badges */
+html[data-bs-theme="dark"] {
+    .git-tag-badge {
+        border-color: #7a5326;
+        color: #f0b97a;
+        background: #2e2214;
+    }
+    .git-tag-badge:hover {
+        color: #f6cf9f;
+        background: #3a2a17;
+    }
+    .git-line:target {
+        background-color: #4a4020;
+    }
+}

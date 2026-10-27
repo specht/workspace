@@ -299,4 +299,19 @@ class ClassReposTest < Minitest::Test
         %w[GitLab Gitea Forgejo GitHub].each { |server| assert_includes page, server }
         assert_match(/<!-- part: https-anmelden -->/, page)
     end
+
+    # The Workspace's own server: under the code block that clones the class
+    # repository a button to its page on the site, filled per person.
+    def test_a_look_at_the_repository_beside_the_clone_command
+        require 'nokogiri'
+        token = ClassRepos::TOKENS['class_repo']
+        root = Nokogiri::HTML::DocumentFragment.parse("<p>Klonen:</p><pre class='copy-code'>git clone #{token} ~/class-quiz\n</pre><pre>ls</pre>")
+        ClassRepos.mark_browse(root)
+        buttons = root.css('p.class-repo-browse a')
+        assert_equal 1, buttons.size
+        assert_equal ClassRepos::BROWSE_TOKEN, buttons.first['href']
+        assert_equal 'pre', root.at('p.class-repo-browse').previous_element.name
+        assert_includes buttons.first.text, 'im Browser ansehen'
+    end
 end
+
