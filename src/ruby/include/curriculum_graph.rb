@@ -14,7 +14,7 @@ require_relative 'page_kinds'
 # The boxes are HTML over an SVG of the arrows (buttons, Bootstrap icons);
 # lehrplan.html highlights a name of the plans or a box and the way to it.
 module CurriculumGraph
-    BOX_W = 132
+    BOX_W = 118
     BOX_H = 36
     COL = 156
     ROW = 46
@@ -130,7 +130,9 @@ module CurriculumGraph
         y1 = from[:y] + BOX_H / 2.0
         x2 = to[:x] - 1.5
         y2 = to[:y] + BOX_H / 2.0
-        bend = [(x2 - x1) / 2.0, 24].max
+        # the handles half the gap: longer ones overshoot each other in a
+        # narrow gap, and a rising arrow kinks just before its tip
+        bend = (x2 - x1) / 2.0
         format('M%.1f %.1f C%.1f %.1f %.1f %.1f %.1f %.1f', x1, y1, x1 + bend, y1, x2 - bend, y2, x2, y2)
     end
 
@@ -141,7 +143,7 @@ module CurriculumGraph
         at = graph[:nodes].to_h { |n| [n[:slug], n] }
         io = +"<div class='cg-scroll'><div class='cg-graph' style='width: #{graph[:width]}px; height: #{graph[:height]}px;'>"
         io << "<svg class='cg-edges' width='#{graph[:width]}' height='#{graph[:height]}' viewBox='0 0 #{graph[:width]} #{graph[:height]}' aria-hidden='true'>"
-        io << "<defs><marker id='cg-head' viewBox='0 0 10 10' refX='10' refY='5' markerWidth='8' markerHeight='8' markerUnits='userSpaceOnUse' orient='auto-start-reverse'><path d='M0 0L10 5L0 10z' fill='context-stroke'/></marker></defs>"
+        io << "<defs><marker id='cg-head' viewBox='0 0 10 10' refX='10' refY='5' markerWidth='7' markerHeight='7' markerUnits='userSpaceOnUse' orient='auto-start-reverse'><path d='M0 0L10 5L0 10z' fill='context-stroke'/></marker></defs>"
         graph[:edges].each do |a, b|
             io << "<path class='cg-edge' data-from='#{h(a)}' data-to='#{h(b)}' d='#{edge_path(at[a], at[b])}' marker-end='url(#cg-head)'/>"
         end
