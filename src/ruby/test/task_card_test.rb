@@ -152,7 +152,17 @@ class TaskCardTest < Minitest::Test
             assert File.file?(tasks_path), "#{page} uses _task() but has no tasks.yaml"
             known = TaskSpec.load_file(tasks_path)['tasks'].map { |t| t['id'] }
             ids.each { |id| assert_includes known, id, "#{page}: _task(#{id})" }
-            assert_equal ids.uniq, ids, "#{page} places a task twice"
+            # a task may stand once in each of two blocks that exclude each
+            # other (<!-- if: … -->, ContentParts: one class sees one), but
+            # only once in what one class sees
+            text = File.read(page, encoding: 'UTF-8')
+            block = /<!--\s*if:[^>]*-->(.*?)<!--\s*\/if\s*-->/m
+            _, outside = TaskCard.mark_slots(text.gsub(block, ''))
+            [''].concat(text.scan(block).flatten).each do |branch|
+                _, inside = TaskCard.mark_slots(branch)
+                seen = outside + inside
+                assert_equal seen.uniq, seen, "#{page} places a task twice"
+            end
         end
     end
 

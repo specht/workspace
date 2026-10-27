@@ -78,6 +78,9 @@ test(
       expectSuccess(environment, 'the opt-out variables');
       const dart = await run('grep -x reporting=0 /workspace/.dart-tool/dart-flutter-telemetry.config');
       expectSuccess(dart, 'Dart reporting=0 in the home directory');
+      // and its notice marked as shown, or the first run in a terminal prints it
+      const notice = await run("grep -q '^dart-tool=' /workspace/.dart-tool/dart-flutter-telemetry.config");
+      expectSuccess(notice, 'Dart notice marked as shown');
       const go = await run('go telemetry');
       expectSuccess(go, 'go telemetry');
       expect(go.stdout.trim()).toBe('off');

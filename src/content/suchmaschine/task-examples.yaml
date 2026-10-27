@@ -55,3 +55,29 @@ examples:
       fail:
         - { files: { suchmaschine/search.py: stufen/search-3.py } }
         - { files: { suchmaschine/search.py: fehler/selbstlinks.py }, say: sich selbst }
+  ganze-adressen:
+    pass:
+      - { files: { suchmaschine/webcrawler.rb: loesung/webcrawler.rb } }
+    fail:
+      - { files: { suchmaschine/webcrawler.rb: stufen/webcrawler-0.rb } }
+      - { files: { suchmaschine/webcrawler.rb: fehler/fremde-hosts.rb }, say: andere Website }
+      - { files: { suchmaschine/webcrawler.rb: fehler/mit-anker.rb }, say: 'uri.fragment = nil' }
+    python:
+      pass:
+        - { files: { suchmaschine/webcrawler.py: loesung/webcrawler.py } }
+      fail:
+        - { files: { suchmaschine/webcrawler.py: stufen/webcrawler-0.py } }
+        - { files: { suchmaschine/webcrawler.py: fehler/fremde-hosts.py }, say: andere Website }
+        - { files: { suchmaschine/webcrawler.py: fehler/mit-anker.py }, say: 'urldefrag' }
+  erlaubt:
+    pass:
+      - { files: { suchmaschine/webcrawler.rb: loesung/webcrawler.rb } }
+    fail:
+      - { files: { suchmaschine/webcrawler.rb: stufen/webcrawler-0.rb } }
+      - { files: { suchmaschine/webcrawler.rb: fehler/regel-gleich.rb }, say: so anfängt }
+    python:
+      pass:
+        - { files: { suchmaschine/webcrawler.py: loesung/webcrawler.py } }
+      fail:
+        - { files: { suchmaschine/webcrawler.py: stufen/webcrawler-0.py } }
+        - { files: { suchmaschine/webcrawler.py: fehler/regel-gleich.py }, say: so anfängt }

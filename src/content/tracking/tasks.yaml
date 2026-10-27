@@ -404,6 +404,35 @@ tasks:
       Anmeldung. Einkaufen geht auch ohne die Statistik des Shops. So sehen es
       auch die deutschen Datenschutzbehörden.
 
+  - id: ablehnen-versteckt
+    title: Ohne Knopf zum Ablehnen
+    prediction: true
+    prompt: |
+      In einem Versuch sahen Menschen zwei Fassungen desselben Banners. In der
+      einen standen »Alle akzeptieren« und »Alle ablehnen« nebeneinander. In
+      der anderen gab es nur »Alle akzeptieren« und einen Link zu den
+      Einstellungen, hinter dem man ablehnen konnte. Was wird aus dem Anteil
+      derer, die zustimmen, wenn der Knopf zum Ablehnen fehlt?
+    check:
+      type: choice
+      options:
+        - Er steigt um gut 20 Prozentpunkte.
+        - Er bleibt fast gleich, denn wer ablehnen will, findet den Weg.
+        - Er sinkt, weil das Banner misstrauisch macht.
+        - Er steigt auf fast 100 Prozent.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Den Weg gibt es. Aber gehen ihn alle, wenn ein Klick genügt, um das Banner loszuwerden?
+      - when: { picked: 2 }
+        say: Gesunken ist der Anteil im Versuch nicht. Was macht der eine Klick auf »Alle akzeptieren« einfacher als der Weg über die Einstellungen?
+      - when: { picked: 3 }
+        say: So stark war die Wirkung im Versuch nicht. Gestiegen ist der Anteil aber deutlich.
+    solution: |
+      Er steigt um gut 20 Prozentpunkte: Im Versuch von Nouwens und anderen
+      (CHI 2020) stimmten 22 bis 23 Prozentpunkte mehr zu, wenn der Knopf zum
+      Ablehnen auf der ersten Seite fehlte.
+
   - id: banner
     title: Bevor du auf »Alle akzeptieren« drückst
     prompt: |

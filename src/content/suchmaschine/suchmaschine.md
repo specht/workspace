@@ -831,7 +831,7 @@ counts = incoming(pages)
 Such noch einmal nach »katze«: Jetzt steht die Hauskatze oben, die Anzeige
 unten.
 
-_task(katze-links)
+_task(startseite-links)
 
 ### PageRank
 
@@ -926,6 +926,533 @@ ist; er ist nur über den Namen nicht mehr zu finden. Seit 2018 steht dieses
 <!-- /after -->
 
 _task(reihenfolge)
+
+<!-- extra -->
+## Ins echte Web
+
+Dein Crawler kennt bisher nur das Tierlexikon auf deinem eigenen Webserver.
+Der Workspace erreicht aber das ganze Internet, und so könnte dein Crawler auch
+eine echte Website durchsuchen, etwa die deiner Schule. Draußen fehlt ihm
+einiges:
+
+- Echte Websites schreiben ihre Links oft als ganze Adresse
+  (`https://www.beispiel-schule.de/kontakt`) oder relativ zu der Seite, auf
+  der sie stehen (`hund.html` statt `/tiere/hund.html`). `links` kennt nur
+  Pfade, die mit `/` anfangen.
+- Er holt Seite um Seite, so schnell er kann, und hört erst auf, wenn er alles
+  hat. Ein kleiner Webserver merkt so einen Ansturm, und die Crawler einer
+  ganzen Klasse auf einmal erst recht.
+- Er fragt nicht, was er lesen soll. Das steht in der Datei `/robots.txt`.
+
+Ein **höflicher Crawler** holt höchstens 30 Seiten, wartet vor jeder Anfrage
+eine Sekunde, hält sich an `robots.txt` und bleibt auf der Website, bei der er
+angefangen hat. Mit jeder Anfrage schickt er seinen **User-Agent**, einen
+Namen, der sagt, wer da fragt, so wie dein Browser seinen.
+
+### Der Crawler für draußen
+
+<!-- language: ruby -->
+Lege neben `search.rb` eine neue Datei `webcrawler.rb` an:
+
+```ruby
+require 'net/http'
+require 'uri'
+
+# Wer der Crawler ist; viele Websites schreiben das in ihr Protokoll
+USER_AGENT = 'Hackschule-Crawler (Informatikkurs, Hackschule Workspace)'
+# Höchstens so viele Seiten, und so viele Sekunden Pause vor jeder
+MAX_PAGES = 30
+PAUSE = 1
+
+# Die Ziele aller Links einer Seite, so wie sie im HTML stehen
+def href_targets(html)
+  html.scan(/<a\s[^>]*?href\s*=\s*["']([^"']*)["']/i).flatten
+end
+
+# Was robots.txt allen Crawlern verbietet (User-agent: *), als Liste von
+# Anfängen von Pfaden; vereinfacht, RFC 9309 kennt noch mehr
+def robots_rules(text)
+  rules = []
+  applies = false
+  text.each_line do |line|
+    key, value = line.sub(/#.*/, '').split(':', 2).map(&:strip)
+    next if value.nil?
+
+    case key.downcase
+    when 'user-agent' then applies = (value == '*')
+    when 'disallow' then rules << value if applies && !value.empty?
+    end
+  end
+  rules
+end
+
+# Eine Anfrage mit dem User-Agent des Crawlers
+def get(url)
+  uri = URI(url)
+  Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
+                  open_timeout: 10, read_timeout: 10) do |http|
+    http.get(uri.request_uri, 'User-Agent' => USER_AGENT)
+  end
+end
+
+# robots.txt der Website, oder nichts, wenn es keine gibt
+def fetch_robots(start)
+  response = get(URI.join(start, '/robots.txt').to_s)
+  response.is_a?(Net::HTTPSuccess) ? response.body.force_encoding('UTF-8').scrub : ''
+rescue StandardError
+  ''
+end
+
+# Eine HTML-Seite als [Adresse, HTML], oder nil; folgt Weiterleitungen,
+# solange sie auf derselben Website bleiben
+def fetch_url(url)
+  host = URI(url).host
+  5.times do
+    response = get(url)
+    if response.is_a?(Net::HTTPRedirection)
+      url = URI.join(url, response['location']).to_s
+      return nil unless URI(url).host == host
+
+      next
+    end
+    return nil unless response.is_a?(Net::HTTPSuccess) && response['content-type'].to_s.start_with?('text/html')
+
+    return [url, response.body.force_encoding('UTF-8').scrub]
+  end
+  nil
+rescue StandardError
+  nil
+end
+
+# Höchstens max_pages Seiten der Website von start, mit Pause und nach
+# robots.txt, als Hash von Adresse zu HTML
+def polite_crawl(start, max_pages = MAX_PAGES)
+  rules = robots_rules(fetch_robots(start))
+  puts "robots.txt verbietet: #{rules.empty? ? 'nichts' : rules.join(', ')}"
+  pages = {}
+  queue = [start]
+  seen = [start]
+  until queue.empty? || pages.size >= max_pages
+    url = queue.shift
+    unless allowed?(rules, URI(url).request_uri)
+      puts "übersprungen: #{url}"
+      next
+    end
+    sleep PAUSE
+    found = fetch_url(url)
+    next if found.nil?
+
+    address, html = found
+    puts "geholt: #{address}"
+    pages[address] = html
+    absolute_links(html, address).each do |link|
+      next if seen.include?(link)
+
+      seen << link
+      queue << link
+    end
+  end
+  pages
+end
+```
+
+<!-- stage: stufen/webcrawler-0.rb as webcrawler.rb -->
+
+- `href_targets` findet das Ziel jedes Links, so wie es im HTML steht, auch
+  in einfachen Anführungszeichen.
+- `get` schickt eine Anfrage mit dem User-Agent des Crawlers; nach zehn
+  Sekunden ohne Antwort gibt sie auf.
+- `fetch_url` holt eine Seite. Leitet der Server weiter, etwa von `http` auf
+  `https`, folgt sie, solange die Weiterleitung auf derselben Website bleibt.
+  Ist die Antwort keine HTML-Seite, sondern ein Bild oder ein PDF, oder lehnt
+  der Server ab, gibt sie `nil` zurück, und der Crawler macht mit der nächsten
+  Adresse weiter.
+- `polite_crawl` ist dein `crawl`, nur mit ganzen Adressen statt Pfaden, mit
+  der Pause und der Grenze, und mit den Regeln aus `robots.txt`. Zwei
+  Funktionen, die es aufruft, fehlen noch: `absolute_links` und `allowed?`.
+<!-- /language -->
+<!-- language: python -->
+Lege neben `search.py` eine neue Datei `webcrawler.py` an:
+
+```python
+import re
+import time
+import urllib.error
+import urllib.request
+from urllib.parse import urldefrag, urljoin, urlparse
+
+# Wer der Crawler ist; viele Websites schreiben das in ihr Protokoll
+USER_AGENT = 'Hackschule-Crawler (Informatikkurs, Hackschule Workspace)'
+# Höchstens so viele Seiten, und so viele Sekunden Pause vor jeder
+MAX_PAGES = 30
+PAUSE = 1
+
+
+def href_targets(html):
+    """Die Ziele aller Links einer Seite, so wie sie im HTML stehen"""
+    return re.findall(r'<a\s[^>]*?href\s*=\s*["\']([^"\']*)["\']', html, re.IGNORECASE)
+
+
+def robots_rules(text):
+    """Was robots.txt allen Crawlern verbietet (User-agent: *), als Liste von
+    Anfängen von Pfaden; vereinfacht, RFC 9309 kennt noch mehr"""
+    rules = []
+    applies = False
+    for line in text.splitlines():
+        line = line.split('#', 1)[0]
+        if ':' not in line:
+            continue
+        key, value = (part.strip() for part in line.split(':', 1))
+        if key.lower() == 'user-agent':
+            applies = value == '*'
+        elif key.lower() == 'disallow' and applies and value:
+            rules.append(value)
+    return rules
+
+
+def get(url):
+    """Eine Anfrage mit dem User-Agent des Crawlers"""
+    request = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
+    return urllib.request.urlopen(request, timeout=10)
+
+
+def fetch_robots(start):
+    """robots.txt der Website, oder nichts, wenn es keine gibt"""
+    try:
+        with get(urljoin(start, '/robots.txt')) as response:
+            return response.read().decode('utf-8', errors='replace')
+    except Exception:
+        return ''
+
+
+def fetch_url(url):
+    """Eine HTML-Seite als (Adresse, HTML), oder None; urlopen folgt
+    Weiterleitungen, die Seite muss aber auf derselben Website bleiben"""
+    try:
+        with get(url) as response:
+            address = response.geturl()
+            if urlparse(address).netloc != urlparse(url).netloc:
+                return None
+            if response.headers.get_content_type() != 'text/html':
+                return None
+            return address, response.read().decode('utf-8', errors='replace')
+    except Exception:
+        return None
+
+
+def request_path(url):
+    """Der Pfad einer Adresse mit dem Teil hinter ?, wie robots.txt ihn meint"""
+    parts = urlparse(url)
+    return (parts.path or '/') + ('?' + parts.query if parts.query else '')
+
+
+def polite_crawl(start, max_pages=MAX_PAGES):
+    """Höchstens max_pages Seiten der Website von start, mit Pause und nach
+    robots.txt, als dict von Adresse zu HTML"""
+    rules = robots_rules(fetch_robots(start))
+    print('robots.txt verbietet:', ', '.join(rules) if rules else 'nichts')
+    pages = {}
+    queue = [start]
+    seen = [start]
+    while queue and len(pages) < max_pages:
+        url = queue.pop(0)
+        if not allowed(rules, request_path(url)):
+            print('übersprungen:', url)
+            continue
+        time.sleep(PAUSE)
+        found = fetch_url(url)
+        if found is None:
+            continue
+        address, html = found
+        print('geholt:', address)
+        pages[address] = html
+        for link in absolute_links(html, address):
+            if link not in seen:
+                seen.append(link)
+                queue.append(link)
+    return pages
+```
+
+<!-- stage: stufen/webcrawler-0.py as webcrawler.py -->
+
+- `href_targets` findet das Ziel jedes Links, so wie es im HTML steht, auch
+  in einfachen Anführungszeichen.
+- `get` schickt eine Anfrage mit dem User-Agent des Crawlers; nach zehn
+  Sekunden ohne Antwort gibt sie auf.
+- `fetch_url` holt eine Seite. Leitet der Server weiter, etwa von `http` auf
+  `https`, folgt `urlopen` der Weiterleitung; die Seite muss aber auf derselben
+  Website bleiben. Ist die Antwort keine HTML-Seite, sondern ein Bild oder ein
+  PDF, oder lehnt der Server ab, gibt sie `None` zurück, und der Crawler macht
+  mit der nächsten Adresse weiter.
+- `polite_crawl` ist dein `crawl`, nur mit ganzen Adressen statt Pfaden, mit
+  der Pause und der Grenze, und mit den Regeln aus `robots.txt`. Zwei
+  Funktionen, die es aufruft, fehlen noch: `absolute_links` und `allowed`.
+<!-- /language -->
+
+### Ganze Adressen
+
+Steht auf der Seite `https://schule.example/tiere/katze.html` ein Link auf
+`hund.html`, meint er die Seite im selben Ordner,
+`https://schule.example/tiere/hund.html`. Ein Link auf `/index.html` meint
+`https://schule.example/index.html`, und eine ganze Adresse bleibt, wie sie
+ist. Was hinter einem `#` steht, ist nur eine Stelle auf einer Seite: Für den
+Crawler ist `index.html#oben` dieselbe Seite wie `index.html`.
+
+<!-- language: ruby -->
+Das Rechnen nimmt dir `URI.join` ab:
+
+```ruby
+URI.join('https://schule.example/tiere/katze.html', 'hund.html').to_s
+# => "https://schule.example/tiere/hund.html"
+```
+
+Ein `URI` kennt die Teile einer Adresse: `scheme` (`"https"`), `host`
+(`"schule.example"`), `port` und `fragment`, das, was hinter `#` steht.
+
+<div class='hint own' data-check='ganze-adressen'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>webcrawler.rb</code> die Funktion <code>absolute_links(html, base)</code>. <code>base</code> ist die Adresse der Seite. Sie gibt die Ziele ihrer Links als ganze Adressen zurück: ohne <code>#…</code>, nur mit <code>http</code> oder <code>https</code>, nur auf demselben Host und Port wie <code>base</code>, und jede Adresse nur einmal.
+</div>
+
+<!-- hint -->
+Für jedes Ziel aus `href_targets(html)` rechnest du mit `URI.join(base, target)`
+die ganze Adresse aus. Manche Ziele kann `URI.join` nicht lesen, etwa mit
+Leerzeichen darin; mit `(URI.join(base, target) rescue nil)` bekommst du dann
+`nil` und überspringst das Ziel.
+<!-- /hint -->
+
+<!-- hint -->
+Weiter mit `next`, wenn `uri.scheme` weder `"http"` noch `"https"` ist oder
+`uri.host` und `uri.port` andere sind als bei `URI(base)`. Sonst entfernt
+`uri.fragment = nil` das `#…`, und `uri.to_s` ist die Adresse, die du
+anhängst, wenn sie noch nicht im Ergebnis steht.
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+# Die Links einer Seite als ganze Adressen, nur auf ihrer eigenen Website,
+# ohne #…, jede nur einmal; base ist die Adresse der Seite
+def absolute_links(html, base)
+  base_uri = URI(base)
+  result = []
+  href_targets(html).each do |target|
+    uri = (URI.join(base, target) rescue nil)
+    next if uri.nil?
+    next unless %w[http https].include?(uri.scheme)
+    next unless uri.host == base_uri.host && uri.port == base_uri.port
+
+    uri.fragment = nil
+    url = uri.to_s
+    result << url unless result.include?(url)
+  end
+  result
+end
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: python -->
+Das Rechnen nimmt dir `urljoin` ab, das Abschneiden von `#…` `urldefrag`:
+
+```python
+urljoin('https://schule.example/tiere/katze.html', 'hund.html')
+# 'https://schule.example/tiere/hund.html'
+urldefrag('https://schule.example/index.html#oben')[0]
+# 'https://schule.example/index.html'
+```
+
+`urlparse(url)` zerlegt eine Adresse in ihre Teile: `.scheme` ist `'https'`,
+`.netloc` der Host, mit Port, wenn einer dasteht.
+
+<div class='hint own' data-check='ganze-adressen'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>webcrawler.py</code> die Funktion <code>absolute_links(html, base)</code>. <code>base</code> ist die Adresse der Seite. Sie gibt die Ziele ihrer Links als ganze Adressen zurück: ohne <code>#…</code>, nur mit <code>http</code> oder <code>https</code>, nur mit demselben <code>netloc</code> wie <code>base</code>, und jede Adresse nur einmal.
+</div>
+
+<!-- hint -->
+Für jedes Ziel aus `href_targets(html)` rechnest du mit
+`urldefrag(urljoin(base, target))[0]` die ganze Adresse ohne `#…` aus.
+<!-- /hint -->
+
+<!-- hint -->
+Mit `continue` weiter, wenn `urlparse(url).scheme` weder `'http'` noch
+`'https'` ist oder `netloc` ein anderes ist als bei `urlparse(base)`. Sonst
+hängst du die Adresse an, wenn sie noch nicht im Ergebnis steht.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def absolute_links(html, base):
+    """Die Links einer Seite als ganze Adressen, nur auf ihrer eigenen Website,
+    ohne #…, jede nur einmal; base ist die Adresse der Seite"""
+    result = []
+    for target in href_targets(html):
+        url = urldefrag(urljoin(base, target))[0]
+        parts = urlparse(url)
+        if parts.scheme not in ('http', 'https') or parts.netloc != urlparse(base).netloc:
+            continue
+        if url not in result:
+            result.append(url)
+    return result
+```
+<!-- /solution -->
+<!-- /language -->
+
+_task(ganze-adressen)
+
+### Was robots.txt erlaubt
+
+In der Datei `/robots.txt` sagt eine Website Crawlern, was sie nicht holen
+sollen. Wie sie aufgebaut ist, steht in [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309),
+dem Robots Exclusion Protocol:
+
+```text
+User-agent: Googlebot
+Disallow: /
+
+User-agent: *
+Disallow: /intern/
+Disallow: /impressum.html
+```
+
+Jede Gruppe beginnt mit `User-agent`, dem Crawler, für den sie gilt; `*` meint
+alle. Eine Zeile `Disallow` verbietet jeden Pfad, der so anfängt:
+`/intern/` also `/intern/noten.html` und alles andere in diesem Ordner, aber
+nicht `/internat.html`. Hier darf der Googlebot gar nichts holen, alle anderen
+alles außer `/intern/` und dem Impressum.
+
+`robots_rules` liest aus der Datei die Zeilen `Disallow` der Gruppe für `*`,
+im Beispiel `["/intern/", "/impressum.html"]`. Das ist vereinfacht: RFC 9309
+kennt auch Zeilen `Allow` und die Zeichen `*` und `$` in einer Regel.
+<!-- language: python -->
+Pythons Standardbibliothek liest die ganze Datei mit `urllib.robotparser`.
+<!-- /language -->
+
+<!-- language: ruby -->
+<div class='hint own' data-check='erlaubt'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>webcrawler.rb</code> die Funktion <code>allowed?(rules, path)</code>. Sie gibt <code>true</code> zurück, wenn keine der Regeln der Anfang von <code>path</code> ist.
+</div>
+
+<!-- hint -->
+`path.start_with?(rule)` sagt, ob der Pfad mit der Regel anfängt, und
+`rules.none? { |rule| … }`, ob das für keine Regel gilt.
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+# Ob der Crawler den Pfad holen darf: Keine Regel ist sein Anfang
+def allowed?(rules, path)
+  rules.none? { |rule| path.start_with?(rule) }
+end
+```
+<!-- /solution -->
+
+<!-- stage: loesung/webcrawler.rb as webcrawler.rb -->
+<!-- /language -->
+<!-- language: python -->
+<div class='hint own' data-check='erlaubt'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>webcrawler.py</code> die Funktion <code>allowed(rules, path)</code>. Sie gibt <code>True</code> zurück, wenn keine der Regeln der Anfang von <code>path</code> ist.
+</div>
+
+<!-- hint -->
+`path.startswith(rule)` sagt, ob der Pfad mit der Regel anfängt, und
+`any(… for rule in rules)`, ob das für mindestens eine Regel gilt; davor ein
+`not`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def allowed(rules, path):
+    """Ob der Crawler den Pfad holen darf: Keine Regel ist sein Anfang"""
+    return not any(path.startswith(rule) for rule in rules)
+```
+<!-- /solution -->
+
+<!-- stage: loesung/webcrawler.py as webcrawler.py -->
+<!-- /language -->
+
+_task(erlaubt)
+
+### Erst im Tierlexikon
+
+Gib dem Tierlexikon eine `robots.txt`, die das Impressum verbietet:
+
+```bash
+printf 'User-agent: *\nDisallow: /impressum.html\n' > ~/suchmaschine/tierlexikon/robots.txt
+```
+
+<!-- language: ruby -->
+Das Programm dazu kommt in `web.rb`. Ohne Adresse fängt es beim Tierlexikon an:
+
+```ruby
+require_relative 'webcrawler'
+
+start = ARGV[0] || 'http://localhost:8000/index.html'
+pages = polite_crawl(start)
+puts "#{pages.size} Seiten geholt"
+```
+
+Starte es, während der Webserver im zweiten Terminal läuft:
+
+```bash
+ruby web.rb
+```
+
+<!-- stage: loesung/web.rb as web.rb -->
+<!-- /language -->
+<!-- language: python -->
+Das Programm dazu kommt in `web.py`. Ohne Adresse fängt es beim Tierlexikon an:
+
+```python
+import sys
+
+from webcrawler import *
+
+start = sys.argv[1] if len(sys.argv) > 1 else 'http://localhost:8000/index.html'
+pages = polite_crawl(start)
+print(f'{len(pages)} Seiten geholt')
+```
+
+Starte es, während der Webserver im zweiten Terminal läuft:
+
+```bash
+python3 web.py
+```
+
+<!-- stage: loesung/web.py as web.py -->
+<!-- /language -->
+
+_task(hoeflich)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Achte darauf, wie lange der Lauf dauert und an welcher Stelle der Crawler eine Seite überspringt. Ändere dann <code>PAUSE</code> auf <code>0</code> und starte noch einmal: So schnell holt ein Crawler, der auf niemanden Rücksicht nimmt.
+</div>
+
+### Auf einer echten Website
+
+Bevor dein Crawler eine echte Website besucht:
+
+- **Frag, wer die Website betreut**, an einer Schule oft eine Lehrkraft oder
+  die Schul-IT. Jede Anfrage deines Crawlers landet im Protokoll ihres
+  Webservers, mit deinem User-Agent.
+- **Lasst ihn einmal für die ganze Klasse laufen**, am Beamer, statt dreißigmal
+  gleichzeitig.
+
+<!-- language: ruby -->
+Dann bekommt `web.rb` die Startseite der Website:
+
+```bash
+ruby web.rb https://www.beispiel-schule.de/
+```
+<!-- /language -->
+<!-- language: python -->
+Dann bekommt `web.py` die Startseite der Website:
+
+```bash
+python3 web.py https://www.beispiel-schule.de/
+```
+<!-- /language -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Achte darauf, was <code>robots.txt</code> verbietet, wie viele Seiten der Crawler holt, bevor er bei 30 aufhört, und wie lange das dauert. Vergleiche mit dem, was du im Browser siehst: Links, die erst ein Skript im Browser erzeugt, stehen nicht im HTML, und dein Crawler findet sie nicht.
+</div>
 
 ## Zum Nachschlagen
 

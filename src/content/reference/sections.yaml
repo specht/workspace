@@ -96,12 +96,14 @@
   icon: /images/handshake.png
   description: |
     Die Befehle fürs Netz im Terminal (ping, nc, dig, ssh), wie Browser und
-    Server miteinander reden (HTTP), Hashes, Schlüssel und Unterschriften,
-    und die beiden Schreibweisen für Daten, die dabei und in Einstellungen
-    vorkommen: JSON und YAML.
+    Server miteinander reden (HTTP), wie Websites zur Zustimmung drängen
+    (Dark Patterns), Hashes, Schlüssel und Unterschriften, und die beiden
+    Schreibweisen für Daten, die dabei und in Einstellungen vorkommen: JSON
+    und YAML.
   entries:
     - netzwerk
     - http
+    - dark-patterns
     - kryptographie
     - json
     - yaml

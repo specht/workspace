@@ -496,3 +496,181 @@ tasks:
         wie oft das Suchwort im Titel steht. Das kann ein Spammer aber genauso
         ausnutzen wie die Anzahl der Wörter, indem er nur Titel mit dem Wort
         schreibt.
+
+  - id: ganze-adressen
+    title: Ganze Adressen
+    extra: true
+    prompt: |
+      Schreib in `suchmaschine/webcrawler.rb` die Funktion
+      `absolute_links(html, base)`. Die Prüfung gibt ihr die Seite
+      `https://schule.example/tiere/katze.html` mit sechs Links: einem
+      relativen (`hund.html`), einem mit `#oben`, einem zur Wikipedia, einem
+      mit ganzer Adresse auf derselben Website, einem `mailto:` und noch einmal
+      `hund.html`.
+    check:
+      type: ruby
+      file: suchmaschine/webcrawler.rb
+      cases:
+        - call: 'h = "<a href=\"hund.html\">Hund</a> <a href=\"/index.html#oben\">Start</a> <a href=\"https://de.wikipedia.org/wiki/Katze\">W</a> <a href=\"https://schule.example/kontakt\">K</a> <a href=\"mailto:info@schule.example\">M</a> <a href=\"hund.html\">Hund</a>"; absolute_links(h, "https://schule.example/tiere/katze.html").include?("https://schule.example/tiere/hund.html")'
+          expect: true
+          say: '`hund.html` steht neben `katze.html`, im Ordner `/tiere/`: `https://schule.example/tiere/hund.html`. `URI.join(base, target)` rechnet das aus.'
+        - call: 'h = "<a href=\"/index.html#oben\">Start</a>"; absolute_links(h, "https://schule.example/tiere/katze.html") == ["https://schule.example/index.html"]'
+          expect: true
+          say: 'Hinter `#` steht nur eine Stelle auf derselben Seite. Ohne `#oben` bleibt `https://schule.example/index.html`: `uri.fragment = nil`.'
+        - call: 'h = "<a href=\"https://de.wikipedia.org/wiki/Katze\">W</a> <a href=\"mailto:info@schule.example\">M</a> <a href=\"https://schule.example/kontakt\">K</a>"; absolute_links(h, "https://schule.example/tiere/katze.html") == ["https://schule.example/kontakt"]'
+          expect: true
+          say: Die Wikipedia ist eine andere Website, und `mailto:` ist gar keine Seite. Es bleiben nur Adressen mit `http` oder `https` auf demselben Host wie die Seite.
+        - call: 'h = "<a href=\"hund.html\">Hund</a> <a href=\"hund.html\">noch einmal</a>"; absolute_links(h, "https://schule.example/tiere/katze.html") == ["https://schule.example/tiere/hund.html"]'
+          expect: true
+          say: Zwei Links auf dieselbe Seite ergeben eine Adresse.
+    hint:
+      - '`URI.join(base, target)` macht aus einem Linkziel eine ganze Adresse, als `URI`: `URI.join("https://schule.example/tiere/katze.html", "hund.html").to_s` ist `"https://schule.example/tiere/hund.html"`.'
+      - 'Ein `URI` hat `scheme` (`"https"`), `host` (`"schule.example"`), `port` und `fragment` (was hinter `#` steht). `uri.fragment = nil` entfernt das Fragment, `uri.to_s` gibt die Adresse als String.'
+      - 'Für jedes Ziel aus `href_targets(html)`: `URI.join`, dann weiter mit `next`, wenn `scheme` weder `"http"` noch `"https"` ist oder `host` und `port` andere sind als bei `URI(base)`; sonst das Fragment entfernen und die Adresse anhängen, wenn sie noch nicht im Ergebnis steht.'
+    solution: |
+      ```ruby
+      def absolute_links(html, base)
+        base_uri = URI(base)
+        result = []
+        href_targets(html).each do |target|
+          uri = (URI.join(base, target) rescue nil)
+          next if uri.nil?
+          next unless %w[http https].include?(uri.scheme)
+          next unless uri.host == base_uri.host && uri.port == base_uri.port
+
+          uri.fragment = nil
+          url = uri.to_s
+          result << url unless result.include?(url)
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/webcrawler.py` die Funktion
+        `absolute_links(html, base)`. Die Prüfung gibt ihr die Seite
+        `https://schule.example/tiere/katze.html` mit sechs Links: einem
+        relativen (`hund.html`), einem mit `#oben`, einem zur Wikipedia, einem
+        mit ganzer Adresse auf derselben Website, einem `mailto:` und noch
+        einmal `hund.html`.
+      check:
+        type: python
+        file: suchmaschine/webcrawler.py
+        cases:
+          - call: |-
+              'https://schule.example/tiere/hund.html' in absolute_links('<a href="hund.html">Hund</a> <a href="/index.html#oben">Start</a> <a href="https://de.wikipedia.org/wiki/Katze">W</a> <a href="https://schule.example/kontakt">K</a> <a href="mailto:info@schule.example">M</a> <a href="hund.html">Hund</a>', 'https://schule.example/tiere/katze.html')
+            expect: true
+            say: '`hund.html` steht neben `katze.html`, im Ordner `/tiere/`: `https://schule.example/tiere/hund.html`. `urljoin(base, target)` rechnet das aus.'
+          - call: |-
+              absolute_links('<a href="/index.html#oben">Start</a>', 'https://schule.example/tiere/katze.html') == ['https://schule.example/index.html']
+            expect: true
+            say: 'Hinter `#` steht nur eine Stelle auf derselben Seite. Ohne `#oben` bleibt `https://schule.example/index.html`: `urldefrag(url)[0]`.'
+          - call: |-
+              absolute_links('<a href="https://de.wikipedia.org/wiki/Katze">W</a> <a href="mailto:info@schule.example">M</a> <a href="https://schule.example/kontakt">K</a>', 'https://schule.example/tiere/katze.html') == ['https://schule.example/kontakt']
+            expect: true
+            say: Die Wikipedia ist eine andere Website, und `mailto:` ist gar keine Seite. Es bleiben nur Adressen mit `http` oder `https` auf demselben Host wie die Seite.
+          - call: |-
+              absolute_links('<a href="hund.html">Hund</a> <a href="hund.html">noch einmal</a>', 'https://schule.example/tiere/katze.html') == ['https://schule.example/tiere/hund.html']
+            expect: true
+            say: Zwei Links auf dieselbe Seite ergeben eine Adresse.
+      hint:
+        - '`urljoin(base, target)` macht aus einem Linkziel eine ganze Adresse: `urljoin("https://schule.example/tiere/katze.html", "hund.html")` ist `"https://schule.example/tiere/hund.html"`.'
+        - '`urldefrag(url)[0]` ist die Adresse ohne das, was hinter `#` steht. `urlparse(url)` zerlegt sie: `.scheme` ist `"https"`, `.netloc` der Host, mit Port, wenn einer dasteht.'
+        - 'Für jedes Ziel aus `href_targets(html)`: `urljoin`, dann `urldefrag`, dann mit `continue` weiter, wenn `scheme` weder `"http"` noch `"https"` ist oder `netloc` ein anderes als bei `urlparse(base)`; sonst die Adresse anhängen, wenn sie noch nicht im Ergebnis steht.'
+      solution: |
+        ```python
+        def absolute_links(html, base):
+            result = []
+            for target in href_targets(html):
+                url = urldefrag(urljoin(base, target))[0]
+                parts = urlparse(url)
+                if parts.scheme not in ('http', 'https') or parts.netloc != urlparse(base).netloc:
+                    continue
+                if url not in result:
+                    result.append(url)
+            return result
+        ```
+
+  - id: erlaubt
+    title: Was robots.txt erlaubt
+    extra: true
+    prompt: |
+      Schreib in `suchmaschine/webcrawler.rb` die Funktion
+      `allowed?(rules, path)`. Die Prüfung gibt ihr die Regeln
+      `["/intern/", "/impressum.html"]` und fragt nach `/intern/noten.html`,
+      `/impressum.html` und `/index.html`, dann nach einem Pfad ohne Regeln.
+    check:
+      type: ruby
+      file: suchmaschine/webcrawler.rb
+      cases:
+        - call: 'allowed?(["/intern/", "/impressum.html"], "/intern/noten.html")'
+          expect: false
+          say: '`/intern/noten.html` fängt mit der Regel `/intern/` an und ist damit verboten. Eine Regel verbietet jeden Pfad, der so anfängt: `start_with?`.'
+        - call: 'allowed?(["/intern/", "/impressum.html"], "/impressum.html")'
+          expect: false
+          say: '`/impressum.html` steht genau so in den Regeln.'
+        - call: 'allowed?(["/intern/", "/impressum.html"], "/index.html")'
+          expect: true
+          say: Mit keiner der beiden Regeln fängt `/index.html` an; der Crawler darf die Seite holen.
+        - call: 'allowed?([], "/intern/noten.html")'
+          expect: true
+          say: Ohne Regeln ist alles erlaubt.
+    hint:
+      - 'Verboten ist ein Pfad, wenn er mit einer der Regeln anfängt: `path.start_with?(rule)`.'
+      - '`rules.none? { |rule| … }` ist `true`, wenn der Block für keine Regel `true` ergibt.'
+    solution: |
+      ```ruby
+      def allowed?(rules, path)
+        rules.none? { |rule| path.start_with?(rule) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `suchmaschine/webcrawler.py` die Funktion
+        `allowed(rules, path)`. Die Prüfung gibt ihr die Regeln
+        `['/intern/', '/impressum.html']` und fragt nach `/intern/noten.html`,
+        `/impressum.html` und `/index.html`, dann nach einem Pfad ohne Regeln.
+      check:
+        type: python
+        file: suchmaschine/webcrawler.py
+        cases:
+          - call: allowed(['/intern/', '/impressum.html'], '/intern/noten.html')
+            expect: false
+            say: '`/intern/noten.html` fängt mit der Regel `/intern/` an und ist damit verboten. Eine Regel verbietet jeden Pfad, der so anfängt: `startswith`.'
+          - call: allowed(['/intern/', '/impressum.html'], '/impressum.html')
+            expect: false
+            say: '`/impressum.html` steht genau so in den Regeln.'
+          - call: allowed(['/intern/', '/impressum.html'], '/index.html')
+            expect: true
+            say: Mit keiner der beiden Regeln fängt `/index.html` an; der Crawler darf die Seite holen.
+          - call: allowed([], '/intern/noten.html')
+            expect: true
+            say: Ohne Regeln ist alles erlaubt.
+      hint:
+        - 'Verboten ist ein Pfad, wenn er mit einer der Regeln anfängt: `path.startswith(rule)`.'
+        - '`any(… for rule in rules)` ist `True`, wenn es für mindestens eine Regel `True` ist; davor ein `not`.'
+      solution: |
+        ```python
+        def allowed(rules, path):
+            return not any(path.startswith(rule) for rule in rules)
+        ```
+
+  - id: hoeflich
+    title: Der höfliche Crawler im Tierlexikon
+    extra: true
+    prompt: |
+      Wie viele Seiten holt dein höflicher Crawler aus dem Tierlexikon, wenn
+      dort die `robots.txt` von oben liegt?
+    check:
+      type: number
+      expect: 9
+      tolerance: 0
+    feedback:
+      - when: { equals: 10 }
+        say: So viele findet der Crawler ohne Regeln. Liegt `robots.txt` im Ordner `tierlexikon`, und meldet dein Programm am Anfang, was sie verbietet?
+      - when: { equals: 11 }
+        say: So viele HTML-Dateien liegen im Ordner. Auf `geheim.html` zeigt kein Link.
+    hint: Starte `web` im ersten Terminal, während der Webserver im zweiten läuft, und zähl die Zeilen mit »geholt«.
+    solution: |
+      9: alle Seiten, die der Crawler von `/index.html` aus findet, außer
+      `/impressum.html`, das `robots.txt` verbietet.

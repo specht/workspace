@@ -41,10 +41,11 @@
 .algo-stepper { margin: 1em 0 1.5em; --algo-accent: #6741d9; --algo-frontier: #ffe066; --algo-done: #b197fc;
     --algo-line: #adb5bd; --algo-ink: var(--bs-body-color); --algo-paper: var(--bs-body-bg); --algo-start: var(--bs-success); --algo-goal: var(--bs-danger);
     --algo-pred: color-mix(in srgb, var(--algo-accent) 55%, var(--algo-paper));
-    --algo-bar: color-mix(in srgb, var(--algo-line) 60%, transparent); --algo-bracket: var(--algo-line); }
+    --algo-bar: color-mix(in srgb, var(--algo-line) 60%, transparent); --algo-bracket: var(--algo-line);
+    --algo-rock: #6f655c; --algo-floor: #f1ead9; }
 /* in the dark, a bar or bracket in the line's grey would nearly vanish once dimmed */
 html[data-bs-theme="dark"] .algo-stepper { --algo-accent: #b197fc; --algo-frontier: #c9a227; --algo-done: #5f3dc4; --algo-line: #5c636e;
-    --algo-bar: #6b7380; --algo-bracket: #858d9a; }
+    --algo-bar: #6b7380; --algo-bracket: #858d9a; --algo-rock: #2b2622; --algo-floor: #4a4239; }
 /* the pointers along which the calls on the stack went down */
 .algo-stepper svg path.on-stack { stroke-width: 2.4; stroke-dasharray: 7 4; animation: algo-march 0.9s linear infinite; }
 @keyframes algo-march { to { stroke-dashoffset: -11; } }
@@ -111,6 +112,15 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
 @keyframes algo-return { to { opacity: 0.3; } }
 @media (prefers-reduced-motion: reduce) { .algo-stepper ol.algo-stack li.returning { animation: none; opacity: 0.3; } }
 .algo-stepper .algo-body { position: relative; }
+/* the real cave behind a map's graph (caveBehind): under the picture, its
+   tiles where the graph's are; Pip and the Mampfer not, their rings mark them */
+.algo-stepper .algo-cave { position: absolute; overflow: hidden; pointer-events: none; z-index: 0; border-radius: 0.4em; }
+.algo-stepper .algo-cave-box { transform-origin: 0 0; }
+.algo-stepper .algo-cave .pip-pip, .algo-stepper .algo-cave .pip-mampfer, .algo-stepper .algo-cave .pip-bubble { display: none; }
+/* path_back's variables beside the code */
+.algo-stepper table.algo-vars { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.85em; margin-bottom: 0.6em; }
+.algo-stepper table.algo-vars td { padding: 0.1em 0.8em 0.1em 0; text-align: left; }
+.algo-stepper table.algo-vars td.algo-var-name { color: var(--algo-accent); }
 /* the lines from the calls to their nodes lie behind the picture and the code */
 .algo-stepper svg.algo-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
 .algo-stepper .algo-body > svg.algo-picture, .algo-stepper .algo-body > .algo-side { position: relative; z-index: 1; }
@@ -120,7 +130,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
 .algo-stepper .algo-section { min-width: 0; display: flex; flex-direction: column; }
 .algo-stepper .algo-timeline-box { margin: 0 0 0.8em; overflow-x: auto; scrollbar-width: none; }
 .algo-stepper .algo-timeline-box::-webkit-scrollbar { display: none; }
-.algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 6px); padding-right: 4em; }
+/* room for the current step's dot (12 px and its rings) at the first and
+   the last step and above and below the bar: the box scrolls and would cut
+   it; names near the end move left (placeNames) */
+.algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 6px); padding: 4px 11px; }
 @media (pointer: coarse), (max-width: 576px) { .algo-stepper .algo-timeline-inner { min-width: calc(var(--steps) * 24px); } }
 .algo-stepper .algo-timeline { margin: 0; }
 .algo-stepper .algo-op-names { position: relative; font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.72em; }
@@ -175,29 +188,78 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     };
 
     // A graph from a map (data-grid): the open tiles, 14 units apart; the
-    // neighbours in the world's order, not by name (grid).
+    // neighbours in the world's order, not by name (grid). The scene is the
+    // map with the rock PipView puts round it (pip_world.js, frame(): a ring
+    // of rock, as much on either side of the open part): the nodes stand on
+    // its tiles, so that the real cave can lie behind the graph (caveBehind).
     function gridGraph(text) {
         const rows = text.split('|');
         const open = (x, y) => rows[y] !== undefined && rows[y][x] !== undefined && rows[y][x] !== '#';
-        const graph = { nodes: {}, edges: [], grid: {} };
-        let minX = Infinity;
-        let minY = Infinity;
+        const graph = { nodes: {}, edges: [], grid: {}, tiles: [] };
+        let [bx0, by0, bx1, by1] = [Infinity, Infinity, -1, -1];
         rows.forEach((row, y) => [...row].forEach((c, x) => {
             if (!open(x, y)) return;
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
+            [bx0, by0, bx1, by1] = [Math.min(bx0, x), Math.min(by0, y), Math.max(bx1, x), Math.max(by1, y)];
             if (c === 'P') graph.start = `${x},${y}`;
             if (c === 'M') graph.goal = `${x},${y}`;
         }));
+        const width = Math.max(...rows.map((row) => row.length));
+        const even = (n, inner) => n + (n - inner) % 2;
+        const cols = even(width + 2, bx1 - bx0 + 1);
+        const height = even(Math.max(rows.length + 2, Math.round(cols / 1.5)), by1 - by0 + 1);
+        const sx = Math.floor((cols - (bx1 - bx0 + 1)) / 2) - bx0;
+        const sy = Math.floor((height - (by1 - by0 + 1)) / 2) - by0;
+        graph.scene = { text, width, height: rows.length, cols, rows: height };
+        // every tile of the scene, for plain tiles where pip_world.js is not
+        // on the page
+        for (let y = 0; y < height; y++) for (let x = 0; x < cols; x++) graph.tiles.push({ at: [x * 14, y * 14], rock: !open(x - sx, y - sy) });
         rows.forEach((row, y) => [...row].forEach((c, x) => {
             if (!open(x, y)) return;
             const id = `${x},${y}`;
-            graph.nodes[id] = [(x - minX) * 14, (y - minY) * 14];
+            graph.nodes[id] = [(x + sx) * 14 + 7, (y + sy) * 14 + 7];
             if (open(x + 1, y)) graph.edges.push([id, `${x + 1},${y}`, 1]);
             if (open(x, y + 1)) graph.edges.push([id, `${x},${y + 1}`, 1]);
             graph.grid[id] = [[1, 0], [0, -1], [-1, 0], [0, 1]].filter(([dx, dy]) => open(x + dx, y + dy)).map(([dx, dy]) => [`${x + dx},${y + dy}`, 1]);
         }));
         return graph;
+    }
+
+    // The real cave behind the graph of a map: a PipView of the map under the
+    // picture, as wide as the scene's tiles are drawn there (70 units each),
+    // drawn at 48 pixels a tile and scaled; Pip and the Mampfer themselves
+    // not, the rings mark them. Returns the function that places it again
+    // (after a step, on a resize); false where pip_world.js is not on the page.
+    function caveBehind(picture, graph, width) {
+        const world = window.PipWorld;
+        if (!world || !graph.scene) return false;
+        const { text, cols, rows } = graph.scene;
+        const holder = el('div', { class: 'algo-cave', 'aria-hidden': 'true' });
+        const box = el('div', { class: 'algo-cave-box' });
+        holder.appendChild(box);
+        picture.before(holder);
+        box.style.width = `${cols * 48}px`;
+        const map = world.parse(text.split('|').join('\n'));
+        new world.PipView(box, map.layout, map.start, { width: map.layout.width, height: map.layout.height, columns: cols });
+        // where the picture is, measured: on a narrow screen the body only
+        // groups (display: contents), and the layer's box is another one
+        const fit = () => {
+            const unit = picture.clientWidth / width;
+            const parent = holder.offsetParent;
+            if (!unit || !parent) return;
+            const at = picture.getBoundingClientRect();
+            const base = parent.getBoundingClientRect();
+            Object.assign(holder.style, {
+                left: `${at.left - base.left - parent.clientLeft + parent.scrollLeft}px`, top: `${at.top - base.top - parent.clientTop + parent.scrollTop}px`,
+                width: `${cols * 70 * unit}px`, height: `${rows * 70 * unit}px` });
+            box.style.transform = `scale(${(70 * unit) / 48})`;
+        };
+        fit();
+        if (window.ResizeObserver) {
+            const watch = new ResizeObserver(fit);
+            watch.observe(picture);
+            watch.observe(picture.closest('.algo-stepper') || picture);
+        }
+        return fit;
     }
 
     function neighbours(graph) {
@@ -274,17 +336,23 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const inner = { call: `path_back(predecessor, ${goal})` };
             const P = (at) => ({ lines: GRAPH_CODE.pathBack, at });
             const path = [];
-            const back = (message, at, marks) => snapshot(message, 0, { code: P(at), stack: [outer, inner], path: [...path], ...marks });
+            // the variables of path_back beside the code, with their values:
+            // predecessor is the arrows in the picture, predecessor[node] the
+            // one leaving node
+            const vars = (node) => [['goal', goal], ['node', node === undefined ? '–' : String(node)],
+                ['predecessor[node]', node === undefined || node === null ? '–' : String(found[node])], ['path', path.length ? `[${path.join(', ')}]` : '[]']];
+            const back = (message, at, marks, node) => snapshot(message, 0, { code: P(at), stack: [outer, inner], path: [...path], vars: vars(node), ...marks });
             back('path ← empty list: Der Weg ist noch leer. Er entsteht rückwärts, vom Ziel aus.', 2, {});
-            back(`node ← goal: node ist ${goal}, das Ziel.`, 3, { focus: goal });
+            back(`node ← goal: node ist ${goal}, das Ziel.`, 3, { focus: goal }, goal);
             for (let node = goal; node !== null;) {
                 path.unshift(node);
-                back(`add node at the front of path: ${node} kommt vorne dazu.`, 5, { focus: node });
+                back(`add node at the front of path: ${node}, auf das node gerade zeigt, kommt vorne in path.`, 5, { focus: node }, node);
                 const before = found[node];
-                back(before === null ? `node ← predecessor[node]: ${node} ist der Start, sein Vorgänger ist null.` : `node ← predecessor[node]: Der Pfeil von ${node} zeigt auf ${before}.`, 6, { focus: before === null ? 'null' : before });
+                back(before === null ? `node ← predecessor[node]: ${node} ist der Start, sein Vorgänger ist null.` : `node ← predecessor[node]: Der Pfeil von ${node} zeigt auf ${before}; node geht dorthin.`, 6,
+                    { focus: before === null ? 'null' : before, follow: node }, before);
                 node = before;
             }
-            back('while node != null: node ist null, die Schleife endet.', 4, { focus: 'null' });
+            back('while node != null: node ist null, die Schleife endet.', 4, { focus: 'null' }, null);
             back(`return path: Der Weg ist ${path.join('–')}${shortest ? `, ${dist[goal]} lang` : `, ${path.length - 1} Kanten`}.`, 7, { done: true, stack: [{ ...outer, returns: path.join('–') }, { ...inner, returns: path.join('–') }] });
         };
 
@@ -378,10 +446,14 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     function graphLayout(graph, start, kind) {
         const shortest = kind === 'dijkstra' || kind === 'astar';
         const at = {};
-        for (const [id, [x, y]] of Object.entries(graph.nodes)) at[id] = [x * 5 + 60, y * 5 + 54];
-        const width = 620;
+        // a cave (data-grid) sits on the tiles of its scene, 70 units each,
+        // from the picture's corner
+        const [ox, oy] = graph.grid ? [0, 0] : [60, 54];
+        for (const [id, [x, y]] of Object.entries(graph.nodes)) at[id] = [x * 5 + ox, y * 5 + oy];
+        const tiles = (graph.tiles || []).map(t => ({ x: t.at[0] * 5, y: t.at[1] * 5, rock: t.rock }));
+        const width = graph.scene ? Math.max(620, graph.scene.cols * 70) : 620;
         // a cave (data-grid) is as high as its rows: the queue right under it
-        const rowY = graph.grid ? Math.max(...Object.values(at).map(([, y]) => y)) + 110 : 400;
+        const rowY = graph.scene ? graph.scene.rows * 70 + 40 : 400;
         const segments = graph.edges.map(([a, b]) => [at[a], at[b]]);
         const rectPoint = (r, [px, py]) => Math.hypot(Math.max(r.x - px, 0, px - r.x - r.w), Math.max(r.y - py, 0, py - r.y - r.h));
         const rectSegment = (r, [p, q]) => {
@@ -439,7 +511,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             nodeSpot[id] = spot(id, 44, 18, 48);
             neighborSpot[id] = spot(id, 74, shortest ? 40 : 18, 40);
         }
-        return { at, width, rowY, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 14.5 - 6 - 44, y: nullAt[1] - 9 } };
+        return { at, width, rowY, tiles, nodeSpot, neighborSpot, nullAt, nodeAtNull: { x: nullAt[0] - 14.5 - 6 - 44, y: nullAt[1] - 9 } };
     }
 
     // Text that grows where the picture is shown small (a phone): every text
@@ -497,7 +569,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     function drawGraph(svg, graph, frame, start, goal, kind, marker, layout) {
         svg.replaceChildren();
         const shortest = kind === 'dijkstra' || kind === 'astar';
-        const { at, width, rowY } = layout;
+        const { at, width, rowY, tiles } = layout;
         const R = 16;
         const label = (name, x, y) => [
             el('svg:rect', { 'data-solid': '', 'data-key': `var-${name}`, x, y, width: 14 + 7.5 * name.length, height: 18, rx: 4, fill: 'var(--algo-paper)', stroke: 'var(--algo-accent)', 'stroke-width': 1.5 }),
@@ -533,6 +605,13 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             ...(shortest ? [el('svg:mask', { id: `${marker}-gaps`, maskUnits: 'userSpaceOnUse', x: -100, y: -100, width: width + 200, height: rowY + 300 },
                 [el('svg:rect', { x: -100, y: -100, width: width + 200, height: rowY + 300, fill: 'white' }), ...gaps])] : []),
         ]));
+        // the cave behind the graph (data-grid): rock and floor, each tile
+        // under its node; the same in every frame, nothing on it moves
+        for (const [i, t] of (layout.cave ? [] : tiles || []).entries()) {
+            // a unit wider and higher, so that no seam shows between tiles
+            svg.appendChild(el('svg:rect', { 'data-key': `tile-${i}`, 'data-solid': '', x: t.x, y: t.y, width: 71, height: 71,
+                fill: t.rock ? 'var(--algo-rock)' : 'var(--algo-floor)' }));
+        }
         // the path at the end: the arrows along it, thick
         const onPath = new Set();
         if (frame.done) for (let n = goal; frame.found[n]; n = frame.found[n]) onPath.add(n);
@@ -546,7 +625,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // shorter way comes (stepper_motion.js)
         for (const [n, p] of Object.entries(frame.found)) {
             if (p === null) continue;
-            const thick = onPath.has(n);
+            // thick: on the path at the end, or the arrow path_back follows now
+            const thick = onPath.has(n) || frame.follow === n;
             svg.appendChild(pointer(`pred-${n}`, `node-${n} node-${p}`, at[n], at[p], { stroke: thick ? 'var(--algo-accent)' : 'var(--algo-pred)', 'stroke-width': thick ? 4 : 2.5,
                 'marker-end': `url(#${marker}${thick ? '-accent' : '-pred'})`, ...masked }));
         }
@@ -563,7 +643,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const d = Math.hypot(nx - sx, ny - sy);
             const [ux, uy] = [(nx - sx) / d, (ny - sy) / d];
             svg.appendChild(el('svg:line', { 'data-key': 'pred-null', x1: sx + ux * R, y1: sy + uy * R, x2: nx - ux * 17, y2: ny - uy * 17, stroke: 'var(--algo-pred)', 'stroke-width': 2.5, 'stroke-dasharray': '3 3' }));
-            svg.appendChild(el('svg:text', { 'data-key': 'null-label', x: nx, y: ny + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: 'var(--bs-secondary-color)', text: 'null' }));
+            svg.appendChild(el('svg:text', { 'data-key': 'null-label', x: nx, y: ny + 4, 'text-anchor': 'middle', 'font-size': 12, 'font-family': "'0xProto Nerd Font Mono', monospace", fill: layout.cave ? '#e9ecef' : 'var(--bs-secondary-color)', text: 'null' }));
         }
         // the variables' arrows, under the nodes; the labels come after them
         const labels = [];
@@ -3532,6 +3612,9 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const algo = widget.dataset.algo;
         let frames;
         let draw;
+        // the real cave behind a map's graph, once the picture is on the page
+        let mountCave = null;
+        let caveFit = null;
         // Every step is drawn into svg, which is never shown; picture, the
         // visible one, moves to it (stepper_motion.js)
         const picture = el('svg:svg', { class: 'algo-picture', role: 'img' });
@@ -3552,7 +3635,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}) });
                 if (frame.returning) { li.classList.add('returning'); li.style.animationDelay = `${((all.length - 1 - i) / (all.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`; }
                 return li;
-            }))] : []), ...codeBox(frame.code));
+            }))] : []), ...(frame.vars ? [el('h5', { text: 'Variablen' }), el('table', { class: 'algo-table algo-vars' },
+                [el('tbody', {}, frame.vars.map(([name, value]) => el('tr', {}, [el('td', { class: 'algo-var-name', text: name }), el('td', { text: value })])))])] : []), ...codeBox(frame.code));
         const setupOps = parseOps(widget.dataset.setup || '');
         if (algo === 'ring') {
             const capacity = Number(widget.dataset.capacity || 6);
@@ -3667,6 +3751,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             frames = traceGraph(graph, start, goal, algo);
             const marker = `algo-arrow-${++widgetCount}`;
             const layout = graphLayout(graph, start, algo);
+            if (graph.scene && window.PipWorld) {
+                layout.cave = true;
+                mountCave = () => { caveFit = caveBehind(picture, graph, layout.width) || null; };
+            }
             // the path beside the row if the longest row ends before it
             const rowLeft = 30 + 7.5 * ({ bfs: 'queue', dfs: 'stack' }[algo] || 'pq').length;
             layout.pathBeside = rowLeft + 18 + (Math.max(1, ...frames.map((f) => f.entries.length)) - 1) * 36 + 14 < 320;
@@ -3723,7 +3811,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const stackLabels = (items, origin) => {
             const placed = [];
             for (const item of [...items].reverse()) {
-                const left = item.x - 4.5;
+                // from its dot to the right, moved left where it would run
+                // past the bar's end
+                const room = item.node.parentElement ? item.node.parentElement.clientWidth : Infinity;
+                const left = Math.max(0, Math.min(item.x - 4.5, room - item.node.offsetWidth));
                 const right = left + item.node.offsetWidth;
                 let row = 0;
                 const fits = (r) => placed.every((o) => (o.row !== r || right + 8 < o.left || left > o.right + 8) && (o.row <= r || o.x < left - 3 || o.x > right + 3));
@@ -3801,6 +3892,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const legend = legendOf(algo, widget.dataset.sort, frames, Boolean(widget.dataset.grid));
         if (legend) body.appendChild(legend);
         widget.replaceChildren(...title, ...presetChoice(widget), el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
+        if (mountCave) mountCave();
         // One under the other where the code would get less than about 20em
         // beside the picture (34em, the gap 1.2em): measured on the widget,
         // not the window, so that a narrow column of a wide window counts too
@@ -3949,6 +4041,8 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             const moving = back ? frames[before] : frame;
             before = index;
             draw(frame);
+            // what stands above the picture may have changed its height
+            if (caveFit) requestAnimationFrame(caveFit);
             // on a small screen the text grows: by as much as the picture is
             // shown smaller than 0.75 of its size, at most by 0.35
             const vbWidth = Number((svg.getAttribute('viewBox') || '0 0 0').split(/\s+/)[2]) || 0;

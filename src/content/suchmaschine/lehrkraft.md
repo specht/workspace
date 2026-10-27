@@ -6,17 +6,20 @@ Lernende bauen eine Suchmaschine für eine kleine Website, das »Kleine Tierlexi
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die drei Teile einer Suchmaschine, Einrichten, <code>fetch_page</code> und <code>links</code>, die Breitensuche mit Queue, <code>crawl</code>, der Lauf über das Tierlexikon, der invertierte Index mit <code>build_index</code>.</li>
 <li><b>2. Doppelstunde:</b> <code>search</code> als Schnittmenge, das Ranking nach der Anzahl der Wörter und die Anzeige ganz oben, <code>incoming</code> und das Ranking nach Links, PageRank, wer entscheidet, was gefunden wird, das Recht auf Vergessenwerden.</li>
+<li><b>Extra »Ins echte Web«</b> für Schnelle: ein höflicher Crawler in <code>webcrawler.rb</code> oder <code>webcrawler.py</code>, der ganze Adressen auflöst, höchstens 30 Seiten holt, vor jeder Anfrage eine Sekunde wartet, <code>robots.txt</code> beachtet und einen User-Agent schickt. Erst im Tierlexikon, dann, wenn die Betreuung der Website einverstanden ist, einmal gemeinsam am Beamer auf der Website der Schule.</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td>Alles in <code>/workspace/suchmaschine</code>: der Ordner <code>tierlexikon</code> (mit <code>wget</code> von dieser Seite), <code>search.rb</code> oder <code>search.py</code> mit allen Funktionen, <code>main.rb</code> oder <code>main.py</code> mit dem Programm, das sucht. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Vier Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe mit kleinen, ausgedachten Websites und Indizes; die Aufgabe sagt jeweils, womit. <code>crawl</code> bekommt dafür statt <code>fetch_page</code> eine Funktion, die die ausgedachte Website liefert, und muss jede Seite genau einmal holen.</li>
 <li>Dazu drei Zahlen aus dem Tierlexikon, zwei Fragen, zwei Vorhersagen und ein Text über das Ranking.</li>
+<li>Im Extra »Ins echte Web« zwei weitere Funktionen, <code>absolute_links</code> und <code>allowed?</code> (Python: <code>allowed</code>), mit ausgedachten Seiten und Regeln geprüft, nie mit einer echten Website, und die Zahl der Seiten, die der höfliche Crawler im Tierlexikon holt. Alle drei sind Extras und zählen nicht mit.</li>
 </ul></td></tr>
 </table>
 
 #### Die Zahlen
 
 - Der Crawler findet von <code>/index.html</code> aus 10 Seiten; <code>geheim.html</code> verlinkt keine.
+- Der höfliche Crawler des Extras holt mit der <code>robots.txt</code> der Seite (<code>Disallow: /impressum.html</code>) 9 Seiten, in etwa 9 Sekunden; den Link des Pinguins zur Wikipedia lässt er aus.
 - Der Index hat 187 verschiedene Wörter.
 - »nachts« und »insekten« stehen zusammen auf zwei Seiten, Igel und Zwergfledermaus; eins der beiden auf vier.
 - »katze« steht auf drei Seiten: 18-mal in der Anzeige, 4-mal bei der Hauskatze, einmal beim Hund. »Hauskatze« ist für <code>words</code> ein anderes Wort.
@@ -29,6 +32,8 @@ Lernende bauen eine Suchmaschine für eine kleine Website, das »Kleine Tierlexi
 - Die Frage zum Recht auf Vergessenwerden fragt, wer zuerst entscheidet, nicht, ob es richtig ist. Der Text über das Ranking am Ende eignet sich für ein Gespräch: Jede Regel bevorzugt jemanden, und jede lässt sich ausnutzen.
 
 #### Was schiefgeht
+
+- **Das Extra auf einer echten Website:** Bitte vorher die Betreuung der Website fragen; jede Anfrage steht dort im Protokoll, mit dem User-Agent »Hackschule-Crawler (Informatikkurs, Hackschule Workspace)«. Manche Server lehnen unbekannte Crawler ab; der Crawler überspringt solche Seiten. Menüs, die erst ein Skript im Browser baut, findet er nicht, und die Ruby-Fassung überspringt Links, die <code>URI.join</code> nicht lesen kann, etwa mit Umlauten oder Leerzeichen.
 
 - **<code>Connection refused</code>:** Der Webserver im zweiten Terminal läuft nicht, oder er läuft auf einem anderen Port als 8000.
 - **Der Crawler hört nicht auf:** Er merkt sich nicht, welche Pfade er schon in die Queue gestellt hat, und läuft zwischen Katze und Hund im Kreis. <kbd>Strg</kbd><kbd>C</kbd> beendet ihn.

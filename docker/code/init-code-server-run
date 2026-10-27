@@ -107,6 +107,15 @@ fi
 # counters. As the student, at every start, so that it holds for old volumes
 # too; quick, and nothing else changes.
 HOME=/workspace s6-setuidgid "$workspace_user" dart --disable-analytics >/dev/null 2>&1 || true
+# Even with reporting off, Dart prints its long notice about Google Analytics
+# on the first run in a terminal, until its settings say the notice was
+# shown: the line Dart writes itself after showing it (»dart-tool=DATE,1«,
+# 1 the notice's version). The file ends without a line break, hence the
+# leading \n.
+dart_config=/workspace/.dart-tool/dart-flutter-telemetry.config
+if [ -f "$dart_config" ] && ! grep -q '^dart-tool=' "$dart_config"; then
+    HOME=/workspace s6-setuidgid "$workspace_user" sh -c 'printf "\ndart-tool=%s,1\n" "$(date +%F)" >> "$1"' sh "$dart_config" || true
+fi
 HOME=/workspace s6-setuidgid "$workspace_user" go telemetry off >/dev/null 2>&1 || true
 
 # SSH permissions
