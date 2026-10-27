@@ -1,0 +1,122 @@
+# Aufgaben zum Steckbrief »Go«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.go,
+# factor.go, bubblesort.go), so wie die Seite sie speichern lässt.
+format: 1
+activity: go
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.go`.
+    file: hello.go
+    check:
+      type: files
+      path: hello.go
+      expect:
+        format: text
+        contains:
+          - pattern: 'fmt\.Println\s*\(\s*"Hello, World!"\s*\)'
+            say: 'In `hello.go` finde ich noch kein `fmt.Println("Hello, World!")`. Steht es genau so da, mit großem P, Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: '^\s*package\s+main\b'
+            say: 'In `hello.go` fehlt die erste Zeile, `package main`. Erst mit ihr wird aus der Datei ein Programm, das man starten kann.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.go`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.go` eingegeben, mit `.go` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.go` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `hello.go` mit `go build`, sodass `./hello` im Ordner
+      `/workspace` `Hello, World!` ausgibt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein Programm `/workspace/hello`. Hat `go build hello.go` eine Fehlermeldung ausgegeben? Dann entsteht keine ausführbare Datei. `go run` allein legt auch keine an.
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Hast du den Quelltext unter diesem Namen gespeichert? Er gehört in `hello.go`, das Programm macht `go build hello.go`.'
+    hint:
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `hello.go` liegt. `ls` zeigt, welche Dateien da sind.
+      - '`go build hello.go` übersetzt und nennt das Programm nach der Datei, ohne `.go`.'
+    solution: |
+      `go build hello.go` übersetzt den Quelltext in ein Programm `hello`. Es
+      enthält alles, was es braucht, und läuft auf jedem Linux-Rechner mit
+      demselben Prozessor, auch wo kein Go installiert ist.
+
+  - id: fehler
+    title: Was Go über Printn sagt
+    prompt: |
+      Die Meldung nennt die Datei, Zeile und Spalte, dann ein Wort und
+      `fmt.Printn`. Welches Wort ist das?
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*undefined\W*$'
+    feedback:
+      - when: { matches: '(?i)Printn|Println' }
+        say: Gesucht ist das Wort, das Go über `fmt.Printn` sagt. Es steht direkt davor.
+      - when: { matches: '(?i)^\W*(error|command-line-arguments)\W*$' }
+        say: Lies die zweite Zeile der Meldung, die mit `./hello.go` beginnt.
+    hint: 'Die Zeile sieht so aus: `./hello.go:6:9: … fmt.Printn`.'
+    solution: |
+      `undefined`: Im Paket `fmt` gibt es nichts, das `Printn` heißt. Go meldet
+      das, bevor das Programm überhaupt startet; `go run` übersetzt erst und
+      startet nur, wenn das gelingt.
+
+  - id: unbenutzt
+    title: Eine Variable, die niemand braucht
+    prediction: true
+    prompt: |
+      Schreib in `main` unter die Zeile mit `fmt.Println` die Zeile `x := 42`
+      und starte das Programm mit `go run hello.go`. Was passiert? Überleg
+      erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - 'Go übersetzt das Programm nicht: `x` wird angelegt, aber nie benutzt.'
+        - 'Es erscheint `Hello, World!`, die Zeile mit `x` stört nicht.'
+        - 'Es erscheint `Hello, World!` und darunter `42`.'
+        - 'Es erscheint `Hello, World!`, dazu eine Warnung, dass `x` nie benutzt wird.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'In den meisten Sprachen wäre das so. Probier es in Go aus.'
+      - when: { picked: 2 }
+        say: '`x := 42` legt eine Variable an, ausgegeben wird nur, was in `fmt.Println` steht. Probier es aus.'
+      - when: { picked: 3 }
+        say: 'Fast: Go meldet es, aber nicht nur als Warnung. Probier es aus.'
+    solution: |
+      Go meldet `declared and not used: x` und übersetzt das Programm nicht.
+      Eine Variable, die nie gelesen wird, ist in Go ein Fehler, ebenso ein
+      Paket, das importiert, aber nicht benutzt wird. So bleibt kein
+      vergessener Rest im Programm stehen.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Ändere `bubbleSort` in `bubblesort.go` so, dass die größte Zahl zuerst
+      kommt, und starte das Programm noch einmal.
+    file: bubblesort.go
+    check:
+      type: files
+      path: bubblesort.go
+      expect:
+        format: text
+        contains:
+          - pattern: 'if\s+numbers\[j\]\s*<\s*numbers\[j\s*\+\s*1\]|if\s+numbers\[j\s*\+\s*1\]\s*>\s*numbers\[j\]'
+            say: Noch vergleicht die Zeile mit `if` so, dass die kleinere Zahl nach vorn kommt. Welches Zeichen musst du ändern, damit die größere vorn landet?
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```go
+      if numbers[j] < numbers[j+1] {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.
