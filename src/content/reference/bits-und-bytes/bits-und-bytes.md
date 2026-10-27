@@ -1,6 +1,6 @@
 <div class='meta'>
 kind: reference
-search: Bit, Byte, binär, Binärzahl, hexadezimal, Hex, 0x, 0b, Hexdump, hd, xxd, ASCII, UTF-8, Umlaut, Little Endian, Big Endian, Zweierkomplement, negativ, Überlauf, AND, OR, XOR, Shift, Maske, KiB, MiB
+search: Bit, Byte, binär, Binärzahl, hexadezimal, Hex, 0x, 0b, Hexdump, hd, xxd, ASCII, ASCII-Tabelle, Codepage, Unicode, Codepoint, UTF-8, UTF-16, Emoji, Umlaut, Little Endian, Big Endian, Zweierkomplement, negativ, Überlauf, AND, OR, XOR, Shift, Maske, KiB, MiB
 </div>
 
 <div
@@ -157,6 +157,54 @@ Wer Bytes als Text liest, muss wissen, wie sie kodiert sind. Steht statt `Grüß
 _person(thompson)
 <!-- /part -->
 
+## Die ASCII-Tabelle
+
+ASCII legt 128 Zeichen fest, die Nummern 0 bis 127. Die Tabelle hier stammt aus einem alten Handbuch für den IBM-PC: links die Nummern 0 bis 127, rechts 128 bis 255, jede dezimal, hexadezimal und mit ihrem Zeichen.
+
+<img class='full invert-dark' src='../../working-with-files/ascii.webp' alt='Eine gedruckte Zeichentabelle in acht Spalten, jede mit Dezimalzahl, Hexzahl und Zeichen. Links 0 bis 127: oben Bildchen wie Smileys, Herzen und Pfeile, dann Satzzeichen, Ziffern und Buchstaben. Rechts 128 bis 255: Buchstaben mit Akzenten und Umlauten, Striche für Rahmen, griechische Buchstaben und mathematische Zeichen.'>
+
+An der Tabelle fällt zweierlei auf. Die Nummern 0 bis 31 sind eigentlich **Steuerzeichen**: 10 ist das Zeilenende, 9 der Tabulator, 13 der Wagenrücklauf. Der IBM-PC zeichnete für sie trotzdem Bildchen, Smileys und Kartensymbole. Und die rechte Hälfte gehört nicht mehr zu ASCII: Sie ist die **Codepage 437** des IBM-PC, mit Umlauten, Akzenten und Strichen für Rahmen. Dort ist `ä` die 132 (`0x84`). In Latin-1, der Codepage, die später unter Windows und im Web üblich war, ist `ä` dagegen die 228 (`0xe4`), und die 132 ist dort gar kein Buchstabe. Welches Zeichen ein Byte über 127 war, hing also davon ab, welche Codepage ein Rechner benutzte, und ein Text kam auf einem anderen Rechner oft mit falschen Zeichen an.
+
+## Unicode
+
+**Unicode** löst das mit einer einzigen Liste für alle Schriften der Welt: Jedes Zeichen hat darin eine eigene Nummer, den **Codepoint**, geschrieben als `U+` und eine Hexzahl. `A` ist U+0041, `ä` ist U+00E4, `€` ist U+20AC, `😀` ist U+1F600. Mehr als 150.000 Zeichen sind vergeben, Platz ist für über eine Million, bis U+10FFFF. Die ersten 128 Codepoints sind genau ASCII, die ersten 256 genau Latin-1.
+
+<div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
+<thead><tr><th></th><th>Codepoint eines Zeichens</th><th>Zeichen zu einem Codepoint</th></tr></thead>
+<tbody>
+<tr><th>Python</th><td><code>ord('ä')</code> → 228, <code>hex(ord('€'))</code> → <code>'0x20ac'</code></td><td><code>chr(0x20ac)</code> → <code>'€'</code>, im String <code>'\u20ac'</code></td></tr>
+<tr><th>Ruby</th><td><code>'ä'.ord</code> → 228, <code>'€'.ord.to_s(16)</code> → <code>"20ac"</code></td><td><code>0x20ac.chr('UTF-8')</code> → <code>"€"</code>, im String <code>"\u20ac"</code></td></tr>
+</tbody>
+</table>
+</div>
+
+Unicode sagt nur, welche Nummer ein Zeichen hat. Wie diese Nummer als Bytes in einer Datei steht, legt eine **Kodierung** fest, und die wichtigste ist UTF-8.
+
+## UTF-8
+
+UTF-8 schreibt einen Codepoint mit einem bis vier Bytes. An den ersten Bits eines Bytes sieht man, wie viele Bytes zu seinem Zeichen gehören:
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Codepoints</th><th>Bytes</th><th>Bits</th></tr></thead>
+<tbody>
+<tr><td>U+0000 bis U+007F</td><td>1</td><td><code>0xxxxxxx</code></td></tr>
+<tr><td>U+0080 bis U+07FF</td><td>2</td><td><code>110xxxxx 10xxxxxx</code></td></tr>
+<tr><td>U+0800 bis U+FFFF</td><td>3</td><td><code>1110xxxx 10xxxxxx 10xxxxxx</code></td></tr>
+<tr><td>U+10000 bis U+10FFFF</td><td>4</td><td><code>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</code></td></tr>
+</tbody>
+</table>
+</div>
+
+In die `x` kommen die Bits des Codepoints, von links nach rechts. `ä` ist U+00E4, mit elf Bits `00011100100`. Fünf davon passen ins erste Byte, sechs ins zweite: `110 00011` und `10 100100`, also `c3 a4`. Im Terminal siehst du die Bytes eines Zeichens mit `printf '€' | xxd`: `e2 82 ac`.
+
+Daraus folgt, was UTF-8 so praktisch macht:
+
+- Ein Byte unter 128 ist immer ein ASCII-Zeichen. Ein Programm, das nur ASCII kennt, liest englischen Text in UTF-8 richtig.
+- Ein Byte, das mit `10` beginnt, ist immer die Fortsetzung eines Zeichens. Wer mitten in eine Datei springt, findet so den Anfang des nächsten Zeichens.
+- Ein Zeichen hat mal ein Byte, mal vier: Zeichen zählen und Bytes zählen gibt verschiedene Zahlen, wie oben bei `Grüße`.
+
+Nicht überall steht Text als UTF-8 im Speicher. JavaScript, Java und Windows benutzen innen **UTF-16**: zwei Bytes für jedes Zeichen bis U+FFFF und zwei mal zwei Bytes für alles darüber, etwa für Emojis. Darum ist in JavaScript `'😀'.length` 2 und erst `[...'😀'].length` 1. In Python ist `len('😀')` 1, in Ruby `'😀'.length` auch.
+
 ## Zahlen aus mehreren Bytes
 
 <!-- part: endian -->
@@ -261,4 +309,5 @@ Zwei Stellen, an denen die Sprachen sich unterscheiden:
 
 - [Python: Bitwise Operations on Integer Types](https://docs.python.org/3/library/stdtypes.html#bitwise-operations-on-integer-types): die Operationen, dazu `int.to_bytes` und `int.from_bytes` weiter unten auf derselben Seite, auf Englisch.
 - [Ruby: Packed Data](https://docs.ruby-lang.org/en/master/packed_data_rdoc.html): alle Buchstaben für `pack` und `unpack`, auf Englisch.
-- [Zweierkomplement](https://de.wikipedia.org/wiki/Zweierkomplement) und [UTF-8](https://de.wikipedia.org/wiki/UTF-8) in der Wikipedia, mit der Tabelle, wie UTF-8 ein Zeichen auf ein bis vier Bytes verteilt.
+- [Zweierkomplement](https://de.wikipedia.org/wiki/Zweierkomplement) und [UTF-8](https://de.wikipedia.org/wiki/UTF-8) in der Wikipedia, mit der Tabelle, wie UTF-8 ein Zeichen auf ein bis vier Bytes verteilt; dazu [Unicode](https://de.wikipedia.org/wiki/Unicode) und die [Codepage 437](https://de.wikipedia.org/wiki/Codepage_437) des IBM-PC.
+- [Unicode-Zeichentabellen](https://www.unicode.org/charts/): jeder Codepoint, nach Schriften geordnet, auf Englisch.
