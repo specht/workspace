@@ -385,7 +385,7 @@ Die ersten drei Zeilen stimmen. Aber die letzte: Lena hat sich vertippt, 1 2 1 2
 
 _task(schloss)
 
-### Automatron zeichnet nach
+### Automatron baut den Automaten
 
 Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit. Ein Werkzeug kann sie dir abnehmen: [Automatron](/automatron) baut aus einem **regulären Ausdruck** einen Automaten. `(0|1|2|3|4|5|6|7|8|9)*1213` heißt: beliebig viele Ziffern (`|` ist »oder«, `*` »beliebig oft, auch keinmal«), danach `1213`. Gib den Ausdruck in Automatron ein. Unter »Minimierung« zeigt es den minimierten DEA: den Automaten mit den wenigsten Zuständen, der dasselbe tut:
 
