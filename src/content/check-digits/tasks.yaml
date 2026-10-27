@@ -1,0 +1,459 @@
+# Aufgaben zu »Prüfziffern: erst planen, dann programmieren«, in Ruby und,
+# unter python:, in Python. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/check-digits.
+format: 1
+activity: check-digits
+tasks:
+  - id: eine-ziffer
+    title: Eine Ziffer falsch
+    prediction: true
+    prompt: |
+      Die Kassiererin tippt statt der dritten Ziffer eine andere ein, sonst
+      stimmt alles. Was macht die Kasse?
+    check:
+      type: choice
+      options:
+        - Sie piept, egal welche Ziffer sie falsch tippt.
+        - Sie piept nur bei manchen falschen Ziffern.
+        - Sie piept nicht; dafür müsste sie alle Waren der Welt kennen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei zwei falschen Ziffern kann das passieren. Bei einer einzigen nie, das zeigt das nächste Kapitel.
+      - when: { picked: 2 }
+        say: Die Kasse muss keine Ware kennen. Sie rechnet mit den Ziffern selbst nach.
+    solution: |
+      Sie piept jedes Mal. Die letzte Ziffer ist aus den anderen zwölf
+      berechnet; stimmt eine der zwölf nicht, passt die Rechnung nicht mehr.
+
+  - id: von-hand
+    title: Von Hand gerechnet
+    prompt: |
+      Berechne die Prüfziffer zu den ersten zwölf Ziffern `4 260111 02043`,
+      von Hand oder mit dem Taschenrechner.
+    check: { type: number, expect: 4 }
+    feedback:
+      - when: { equals: 36 }
+        say: 36 ist die Summe. Die Prüfziffer ist, was bis zum nächsten Vielfachen von 10 fehlt.
+      - when: { equals: 6 }
+        say: 6 ist der Rest der Summe. Gesucht ist, was bis zur nächsten durch 10 teilbaren Zahl fehlt.
+      - when: { equals: 0 }
+        say: Prüf die Gewichte noch einmal; die erste Ziffer zählt einfach, die zweite dreifach.
+    hint:
+      - |
+        Schreib die zwölf Ziffern untereinander und daneben abwechselnd 1 und 3,
+        mit 1 beginnend. Multipliziere jede Ziffer mit ihrem Gewicht.
+      - |
+        Die Produkte sind 4, 6, 6, 0, 1, 3, 1, 0, 2, 0, 4, 9.
+    solution: |
+      Die Summe ist 4 + 6 + 6 + 0 + 1 + 3 + 1 + 0 + 2 + 0 + 4 + 9 = 36; bis 40
+      fehlen 4. Der ganze Code ist `4 260111 020434`.
+
+  - id: raetsel
+    title: Ein Struktogramm lesen
+    prediction: true
+    prompt: |
+      Was gibt `mystery(4021)` zurück? Geh das Struktogramm Zeile für Zeile
+      durch und schreib dir die Werte von `n` und `s` auf.
+    check: { type: number, expect: 7 }
+    feedback:
+      - when: { equals: 4 }
+        say: Die Schleife läuft, solange `n > 0` ist, also mehr als einmal.
+      - when: { equals: 1 }
+        say: '`n mod 10` ist die letzte Ziffer; danach wird `n` um eine Ziffer kürzer. Wie oft geht das bei 4021?'
+      - when: { equals: 4021 }
+        say: '`s` beginnt bei 0 und bekommt bei jedem Durchlauf `n mod 10` dazu.'
+    solution: |
+      7. Die Schleife nimmt die Ziffern von hinten: 1, 2, 0, 4. `mystery`
+      berechnet die Quersumme.
+
+  - id: zweites-mod
+    title: Wozu das zweite mod?
+    prompt: |
+      Die Prüfziffer ist `(10 - total mod 10) mod 10`. Wann ändert das zweite
+      `mod 10` etwas am Ergebnis?
+    check:
+      type: choice
+      options:
+        - Nie; es steht nur zur Sicherheit da.
+        - Wenn total durch 10 teilbar ist.
+        - Wenn total größer als 100 ist.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Rechne `10 - total mod 10` für total = 40. Ist das eine Ziffer?
+      - when: { picked: 2 }
+        say: '`total mod 10` ist immer eine Ziffer von 0 bis 9, egal wie groß total ist. Welche davon macht Ärger?'
+    solution: |
+      Ist total durch 10 teilbar, ist `10 - total mod 10` gleich 10, und eine
+      Prüfziffer ist eine Ziffer. Das zweite `mod 10` macht daraus 0.
+
+  - id: gewicht
+    title: Das Gewicht
+    prompt: |
+      Schreib in `check-digits/check_digits.rb` die Funktion `weight(index)`:
+      Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
+      Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+    check:
+      type: ruby
+      file: check-digits/check_digits.rb
+      cases:
+        - call: 'weight(0)'
+          expect: 1
+          say: Der Index 0 gehört zur ersten Ziffer, und die zählt einfach.
+        - call: 'weight(1)'
+          expect: 3
+        - call: 'weight(4)'
+          expect: 1
+        - call: 'weight(11)'
+          expect: 3
+    solution: |
+      ```ruby
+      def weight(index)
+        if index.even?
+          1
+        else
+          3
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `check-digits/check_digits.py` die Funktion `weight(index)`:
+        Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
+        Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+      check:
+        type: python
+        file: check-digits/check_digits.py
+        cases:
+          - call: 'weight(0)'
+            expect: 1
+            say: Der Index 0 gehört zur ersten Ziffer, und die zählt einfach.
+          - call: 'weight(1)'
+            expect: 3
+          - call: 'weight(4)'
+            expect: 1
+          - call: 'weight(11)'
+            expect: 3
+      solution: |
+        ```python
+        def weight(index):
+            if index % 2 == 0:
+                return 1
+            else:
+                return 3
+        ```
+
+  - id: pruefziffer
+    title: Die Prüfziffer
+    prompt: |
+      Schreib `check_digit(digits)` nach dem Struktogramm. `digits` ist eine
+      Liste von zwölf Zahlen. Die Prüfung ruft die Funktion mit den Ziffern
+      von `4 260111 02043` auf, mit zwölf Nullen und mit
+      `[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]`.
+    check:
+      type: ruby
+      file: check-digits/check_digits.rb
+      cases:
+        - call: 'check_digit([4, 2, 6, 0, 1, 1, 1, 0, 2, 0, 4, 3])'
+          expect: 4
+          say: Für diese Ziffern hast du die Prüfziffer schon von Hand gerechnet.
+        - call: 'check_digit([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])'
+          expect: 0
+          say: Bei zwölf Nullen ist total 0, und 10 − 0 ist 10, keine Ziffer. Denk an das zweite `mod 10`.
+        - call: 'check_digit([4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])'
+          expect: 0
+          say: Hier ist total 10. Denk an das zweite `mod 10`.
+        - call: 'check_digit([5, 9, 0, 1, 2, 3, 4, 1, 2, 3, 4, 5])'
+          expect: 7
+    solution: |
+      ```ruby
+      def check_digit(digits)
+        total = 0
+        (0..11).each do |i|
+          total = total + weight(i) * digits[i]
+        end
+        (10 - total % 10) % 10
+      end
+      ```
+    python:
+      check:
+        type: python
+        file: check-digits/check_digits.py
+        cases:
+          - call: 'check_digit([4, 2, 6, 0, 1, 1, 1, 0, 2, 0, 4, 3])'
+            expect: 4
+            say: Für diese Ziffern hast du die Prüfziffer schon von Hand gerechnet.
+          - call: 'check_digit([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])'
+            expect: 0
+            say: Bei zwölf Nullen ist total 0, und 10 − 0 ist 10, keine Ziffer. Denk an das zweite `mod 10`.
+          - call: 'check_digit([4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])'
+            expect: 0
+            say: Hier ist total 10. Denk an das zweite `mod 10`.
+          - call: 'check_digit([5, 9, 0, 1, 2, 3, 4, 1, 2, 3, 4, 5])'
+            expect: 7
+      solution: |
+        ```python
+        def check_digit(digits):
+            total = 0
+            for i in range(0, 12):
+                total = total + weight(i) * digits[i]
+            return (10 - total % 10) % 10
+        ```
+
+  - id: ean
+    title: Ist der Code gültig?
+    prompt: |
+      Schreib `valid_ean?(code)`: Sie bekommt einen Code als String und gibt
+      `true` zurück, wenn er aus genau 13 Ziffern besteht und die letzte
+      die richtige Prüfziffer ist, sonst `false`. Die Prüfung ruft sie mit
+      gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
+      solchen mit Buchstaben.
+    check:
+      type: ruby
+      file: check-digits/check_digits.rb
+      cases:
+        - call: 'valid_ean?("4260111020434")'
+          expect: true
+        - call: 'valid_ean?("4260111020834")'
+          expect: false
+          say: In `4260111020834` ist eine Ziffer falsch abgetippt; die Prüfziffer passt nicht mehr.
+        - call: 'valid_ean?("5901234123457")'
+          expect: true
+        - call: 'valid_ean?("426011102043")'
+          expect: false
+          say: Zwölf Ziffern sind zu wenig für einen Code.
+        - call: 'valid_ean?("42601110204340")'
+          expect: false
+          say: Vierzehn Ziffern sind zu viel, auch wenn die ersten dreizehn passen.
+        - call: 'valid_ean?("426011102043A")'
+          expect: false
+          say: Ein Buchstabe ist keine Ziffer.
+    solution: |
+      ```ruby
+      def valid_ean?(code)
+        return false unless code.length == 13
+        return false unless code.chars.all? { |c| ('0'..'9').include?(c) }
+
+        digits = code.chars.map(&:to_i)
+        check_digit(digits[0..11]) == digits[12]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `is_valid_ean(code)`: Sie bekommt einen Code als String und gibt
+        `True` zurück, wenn er aus genau 13 Ziffern besteht und die letzte
+        die richtige Prüfziffer ist, sonst `False`. Die Prüfung ruft sie mit
+        gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
+        solchen mit Buchstaben.
+      check:
+        type: python
+        file: check-digits/check_digits.py
+        cases:
+          - call: 'is_valid_ean("4260111020434")'
+            expect: true
+          - call: 'is_valid_ean("4260111020834")'
+            expect: false
+            say: In `4260111020834` ist eine Ziffer falsch abgetippt; die Prüfziffer passt nicht mehr.
+          - call: 'is_valid_ean("5901234123457")'
+            expect: true
+          - call: 'is_valid_ean("426011102043")'
+            expect: false
+            say: Zwölf Ziffern sind zu wenig für einen Code.
+          - call: 'is_valid_ean("42601110204340")'
+            expect: false
+            say: Vierzehn Ziffern sind zu viel, auch wenn die ersten dreizehn passen.
+          - call: 'is_valid_ean("426011102043A")'
+            expect: false
+            say: Ein Buchstabe ist keine Ziffer.
+      solution: |
+        ```python
+        def is_valid_ean(code):
+            if len(code) != 13:
+                return False
+            if not all(c in '0123456789' for c in code):
+                return False
+            digits = [int(c) for c in code]
+            return check_digit(digits[0:12]) == digits[12]
+        ```
+
+  - id: plan-isbn
+    title: Dein Plan für die ISBN
+    prompt: |
+      Schreib deinen Plan für `valid_isbn` als Pseudocode, so wie du ihn im
+      Feld oben gezeichnet hast, und kopier ihn hierher. Deine Lehrkraft sieht
+      ihn.
+    check: { type: reflection, min_words: 15 }
+    examples:
+      - |
+        ```pseudocode
+        valid_isbn(isbn):
+            text ← isbn without "-"
+            if length of text != 10: return false
+            total ← 0
+            for i from 0 to 9:
+                if i == 9 and text[i] == "X":
+                    value ← 10
+                else if text[i] is a digit:
+                    value ← number of text[i]
+                else:
+                    return false
+                total ← total + (10 - i) * value
+            return total mod 11 == 0
+        ```
+
+  - id: isbn
+    title: Bücher prüfen
+    prompt: |
+      Schreib `valid_isbn?(isbn)` nach deinem Plan. Die Prüfung ruft sie mit
+      ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit einem X an
+      der falschen Stelle und mit falschen Ziffern.
+    check:
+      type: ruby
+      file: check-digits/check_digits.rb
+      cases:
+        - call: 'valid_isbn?("3-12-345678-1")'
+          expect: true
+          say: Die Bindestriche zählen nicht mit; nimm sie vor dem Rechnen heraus.
+        - call: 'valid_isbn?("3123456781")'
+          expect: true
+        - call: 'valid_isbn?("3-12-345603-X")'
+          expect: true
+          say: Am Ende steht hier X für 10.
+        - call: 'valid_isbn?("3-12-345603-0")'
+          expect: false
+        - call: 'valid_isbn?("3-12-345687-1")'
+          expect: false
+          say: Zwei Ziffern sind vertauscht; die Summe ist dann nicht mehr durch 11 teilbar.
+        - call: 'valid_isbn?("3-12-34X603-0")'
+          expect: false
+          say: Ein X darf nur am Ende stehen.
+        - call: 'valid_isbn?("3-12-34567-1")'
+          expect: false
+          say: Neun Ziffern sind zu wenig.
+    solution: |
+      ```ruby
+      def valid_isbn?(isbn)
+        text = isbn.delete('-')
+        return false unless text.length == 10
+
+        total = 0
+        text.chars.each_with_index do |c, i|
+          if c == 'X' && i == 9
+            value = 10
+          elsif ('0'..'9').include?(c)
+            value = c.to_i
+          else
+            return false
+          end
+          total = total + (10 - i) * value
+        end
+        total % 11 == 0
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `is_valid_isbn(isbn)` nach deinem Plan. Die Prüfung ruft sie mit
+        ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit einem X an
+        der falschen Stelle und mit falschen Ziffern.
+      check:
+        type: python
+        file: check-digits/check_digits.py
+        cases:
+          - call: 'is_valid_isbn("3-12-345678-1")'
+            expect: true
+            say: Die Bindestriche zählen nicht mit; nimm sie vor dem Rechnen heraus.
+          - call: 'is_valid_isbn("3123456781")'
+            expect: true
+          - call: 'is_valid_isbn("3-12-345603-X")'
+            expect: true
+            say: Am Ende steht hier X für 10.
+          - call: 'is_valid_isbn("3-12-345603-0")'
+            expect: false
+          - call: 'is_valid_isbn("3-12-345687-1")'
+            expect: false
+            say: Zwei Ziffern sind vertauscht; die Summe ist dann nicht mehr durch 11 teilbar.
+          - call: 'is_valid_isbn("3-12-34X603-0")'
+            expect: false
+            say: Ein X darf nur am Ende stehen.
+          - call: 'is_valid_isbn("3-12-34567-1")'
+            expect: false
+            say: Neun Ziffern sind zu wenig.
+      solution: |
+        ```python
+        def is_valid_isbn(isbn):
+            text = isbn.replace('-', '')
+            if len(text) != 10:
+                return False
+            total = 0
+            for i, c in enumerate(text):
+                if c == 'X' and i == 9:
+                    value = 10
+                elif c in '0123456789':
+                    value = int(c)
+                else:
+                    return False
+                total = total + (10 - i) * value
+            return total % 11 == 0
+        ```
+
+  - id: zahlendreher-vorhersage
+    title: Zahlendreher
+    prediction: true
+    prompt: |
+      Die Kassiererin vertauscht zwei benachbarte Ziffern, die verschieden
+      sind, etwa `42` statt `24`. Merkt die Kasse das?
+    check:
+      type: choice
+      options:
+        - Immer.
+        - Meistens, aber nicht immer.
+        - Etwa bei jedem zweiten Zahlendreher.
+        - Nie; die Summe der Ziffern bleibt ja gleich.
+      correct: 1
+    feedback:
+      - when: { picked: 3 }
+        say: Die Summe der Ziffern bleibt gleich, aber die beiden Ziffern tauschen ihre Gewichte.
+    solution: |
+      Meistens: Die beiden Ziffern tauschen ihre Gewichte 1 und 3, und das
+      ändert die Summe fast immer so, dass die Prüfziffer nicht mehr passt.
+
+  - id: zahlendreher
+    title: Wie viele merkt sie nicht?
+    prompt: |
+      Wie viele der 90 Zahlendreher aus zwei verschiedenen Ziffern merkt
+      `valid_ean?` nicht?
+    check: { type: number, expect: 10 }
+    feedback:
+      - when: { equals: 0 }
+        say: Läuft dein Programm über alle 90 Paare? Und vertauscht es wirklich die ersten beiden Ziffern des gültigen Codes?
+      - when: { equals: 90 }
+        say: Dann hält `valid_ean?` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
+    solution: |
+      10 von 90: genau die Paare, deren Ziffern sich um 5 unterscheiden, etwa
+      `05` und `50` oder `27` und `72`.
+    python:
+      prompt: |
+        Wie viele der 90 Zahlendreher aus zwei verschiedenen Ziffern merkt
+        `is_valid_ean` nicht?
+      feedback:
+        - when: { equals: 0 }
+          say: Läuft dein Programm über alle 90 Paare? Und vertauscht es wirklich die ersten beiden Ziffern des gültigen Codes?
+        - when: { equals: 90 }
+          say: Dann hält `is_valid_ean` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
+
+  - id: isbn-dreher
+    title: Und bei Büchern?
+    prediction: true
+    extra: true
+    prompt: |
+      Wie viele Zahlendreher aus zwei verschiedenen Ziffern merkt die ISBN
+      nicht?
+    check:
+      type: choice
+      options: [Keinen., Auch etwa jeden neunten., Mehr als bei EAN.]
+      correct: 0
+    solution: |
+      Keinen. Vertauschen zwei benachbarte Ziffern a und b, ändert sich die
+      Summe um a − b, und das ist nie durch 11 teilbar. Darum rechnet die ISBN
+      mit 11 und nimmt dafür das X in Kauf.

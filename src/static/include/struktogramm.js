@@ -34,6 +34,11 @@
     const BAR = 24;          // the bar left of a loop's body
     const HEAD = 58;         // height of a decision's triangle
     const EMPTY = 48;        // width of an empty column
+    const BASELINE = ROW / 2 + FONT_SIZE * 0.35;
+    // Depths in a decision's triangle, as shares of its height: the
+    // condition's baseline, and the labels »wahr« and »falsch«.
+    const COND_DEPTH = (BASELINE - 2) / HEAD;
+    const LABEL_DEPTH = (HEAD - 7) / HEAD;
     const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'from', 'to', 'down', 'repeat',
         'until', 'return', 'not', 'and', 'or', 'mod', 'div', 'break', 'continue']);
     const NAME = '[\\p{L}_][\\p{L}\\p{N}_]*[?!]?';
@@ -228,14 +233,16 @@
         if (node.type === 'statement') {
             size = { w: m(node.text) + 2 * PAD, h: ROW };
         } else if (node.type === 'if') {
+            // Each column is wide enough for its label in the corner below
+            // the line; the condition fits between the two lines at the
+            // depth of its baseline.
+            const label = (text) => (m(text, 12) + PAD + 12) / LABEL_DEPTH;
             const a = measureAll(node.then, m);
             const b = measureAll(node.else, m);
-            // the condition sits in the upper third of the triangle, where a
-            // quarter of the width is taken by the two lines
-            const cond = (m(node.cond) + 2 * PAD) / 0.72;
-            const labels = m('wahr', 12) + m('falsch', 12) + 6 * PAD;
-            size = { w: Math.max(a.w + b.w, cond, labels), h: HEAD + Math.max(a.h, b.h) };
-            node.cols = [a, b];
+            const cols = [{ w: Math.max(a.w, label('wahr')), h: a.h }, { w: Math.max(b.w, label('falsch')), h: b.h }];
+            const cond = (m(node.cond) + PAD + 6) / (1 - COND_DEPTH);
+            size = { w: Math.max(cols[0].w + cols[1].w, cond), h: HEAD + Math.max(a.h, b.h) };
+            node.cols = cols;
         } else if (node.type === 'loop' || node.type === 'repeat') {
             const b = measureAll(node.body, m);
             const head = m(node.type === 'loop' ? node.head : `until ${node.cond}`) + 2 * PAD;
@@ -267,8 +274,6 @@
         });
     }
 
-    const BASELINE = ROW / 2 + FONT_SIZE * 0.35;
-
     function draw(node, x, y, w, h, out, m) {
         const rect = (rx, ry, rw, rh, cls = 'sg-box') =>
             out.push(`<rect class="${cls}" x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${rw.toFixed(1)}" height="${rh.toFixed(1)}"/>`);
@@ -282,9 +287,11 @@
             const split = x + left;
             rect(x, y, w, HEAD, 'sg-head');
             out.push(`<path class="sg-line" d="M${x.toFixed(1)},${y.toFixed(1)} L${split.toFixed(1)},${(y + HEAD).toFixed(1)} L${(x + w).toFixed(1)},${y.toFixed(1)}"/>`);
-            // the condition centred in the upper triangle, inside the box
+            // the condition centred between the two lines at its baseline
             const cw = m(node.cond);
-            const centre = Math.min(Math.max((x + (x + w) + split) / 3, x + PAD + cw / 2), x + w - PAD - cw / 2);
+            const from = x + left * COND_DEPTH;
+            const to = x + w - (w - left) * COND_DEPTH;
+            const centre = Math.min(Math.max((from + to) / 2, from + 3 + cw / 2), to - 3 - cw / 2);
             out.push(textSVG(node.cond, centre - cw / 2, y + BASELINE - 2, 'sg-text'));
             out.push(`<text class="sg-label" x="${(x + PAD).toFixed(1)}" y="${(y + HEAD - 7).toFixed(1)}">wahr</text>`);
             out.push(`<text class="sg-label sg-end" x="${(x + w - PAD).toFixed(1)}" y="${(y + HEAD - 7).toFixed(1)}">falsch</text>`);

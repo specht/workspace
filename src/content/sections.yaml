@@ -138,10 +138,11 @@
   label: Software entwerfen
   icon: /images/hammer-and-wrench.png
   description: |
-    Entwirf ein Programm, bevor du es schreibst: Welche Klassen braucht es,
-    was wissen sie, was tun sie? Du zeichnest den Entwurf als Klassendiagramm
-    und programmierst ihn dann, in einer von fünf Sprachen.
+    Plane ein Programm, bevor du es schreibst: einen Algorithmus als
+    Pseudocode und Struktogramm, ein größeres Programm als Klassendiagramm
+    mit den Klassen, die es braucht. Dann programmierst du nach deinem Plan.
   entries:
+    - .check-digits
     - .supermarkt
 
 - key: computing

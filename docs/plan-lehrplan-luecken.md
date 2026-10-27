@@ -64,6 +64,26 @@ full, also by bringing back parked activities or moving them:
 | Rechnen | Wie Computer rechnen (6 → 9) | a logic sandbox (gates to the ALU of `sandbox-cpu`); a Turing machine; `cable` back (Sender-Empfänger, Baudot) or a third card from the gaps above | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
+State of the package Software (27 October 2026), all dev-only:
+`check-digits` (»Prüfziffern: erst planen, dann programmieren«: EAN-13 and
+ISBN-10, a Struktogramm read and translated, then planned by the students;
+Ruby and Python, with its card picture), `supermarkt`, the Handbuch pages
+»Pseudocode und Struktogramme« (`struktogramm.js` draws ```` ```struktogramm ````
+blocks and the playground) and »Klassendiagramme als Text«. Open: the third
+card (the team project with Git), the card picture and screenshots of
+`supermarkt`. The keywords in a Struktogramm are those of the Handbuch's
+pseudocode (English, `while`, `for`, `until`), the labels of a decision
+»wahr« and »falsch«; whether German keywords (»solange«, »wiederhole … bis«)
+suit the classes better was asked: English stays, the same words as the
+pseudocode beside it (27 October 2026).
+
+The third card (decided 27 October 2026): a class quiz in the class
+repository (`class_repo: group`). Each student adds questions in a folder of
+their own and registers them in one shared list, so that a merge conflict
+happens for real; then branches, pull before push, reviewing a classmate's
+commit, a `TODO.md` as the task board. Without a class repository the page
+simulates a teammate locally, as the Git activity does.
+
 Fireworks (`feuerwerk`) could join Spiele & 3D-Welten with two more cards;
 it still needs a teacher note, a try in class and its screenshots (TODO.md).
 `cable` was parked on purpose (fa0f2c81); the maintainer agreed on

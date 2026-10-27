@@ -1,0 +1,61 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stufen in stufen/ sind der Code nach jedem Kapitel; was ein Kapitel
+# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler.
+format: 1
+activity: check-digits
+examples:
+  gewicht:
+    pass:
+      - { files: { check-digits/check_digits.rb: stufen/1-gewicht/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: loesung/check_digits.rb } }
+    fail:
+      - { files: { check-digits/check_digits.rb: { text: "# noch leer\n" } } }
+      - { files: { check-digits/check_digits.rb: fehler/gewicht-vertauscht.rb } }
+    python:
+      pass:
+        - { files: { check-digits/check_digits.py: stufen/1-gewicht/check_digits.py } }
+        - { files: { check-digits/check_digits.py: loesung/check_digits.py } }
+      fail:
+        - { files: { check-digits/check_digits.py: { text: "# noch leer\n" } } }
+        - { files: { check-digits/check_digits.py: fehler/gewicht-vertauscht.py } }
+  pruefziffer:
+    pass:
+      - { files: { check-digits/check_digits.rb: stufen/2-pruefziffer/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: loesung/check_digits.rb } }
+    fail:
+      - { files: { check-digits/check_digits.rb: stufen/1-gewicht/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: fehler/ohne-mod.rb }, say: das zweite }
+    python:
+      pass:
+        - { files: { check-digits/check_digits.py: stufen/2-pruefziffer/check_digits.py } }
+        - { files: { check-digits/check_digits.py: loesung/check_digits.py } }
+      fail:
+        - { files: { check-digits/check_digits.py: stufen/1-gewicht/check_digits.py } }
+        - { files: { check-digits/check_digits.py: fehler/ohne-mod.py }, say: das zweite }
+  ean:
+    pass:
+      - { files: { check-digits/check_digits.rb: stufen/3-ean/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: loesung/check_digits.rb } }
+    fail:
+      - { files: { check-digits/check_digits.rb: stufen/2-pruefziffer/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: fehler/ohne-laenge.rb }, say: Vierzehn }
+    python:
+      pass:
+        - { files: { check-digits/check_digits.py: stufen/3-ean/check_digits.py } }
+        - { files: { check-digits/check_digits.py: loesung/check_digits.py } }
+      fail:
+        - { files: { check-digits/check_digits.py: stufen/2-pruefziffer/check_digits.py } }
+        - { files: { check-digits/check_digits.py: fehler/ohne-laenge.py }, say: zu wenig }
+  isbn:
+    pass:
+      - { files: { check-digits/check_digits.rb: loesung/check_digits.rb } }
+    fail:
+      - { files: { check-digits/check_digits.rb: stufen/3-ean/check_digits.rb } }
+      - { files: { check-digits/check_digits.rb: fehler/isbn-ohne-x.rb }, say: X für 10 }
+    python:
+      pass:
+        - { files: { check-digits/check_digits.py: loesung/check_digits.py } }
+      fail:
+        - { files: { check-digits/check_digits.py: stufen/3-ean/check_digits.py } }
+        - { files: { check-digits/check_digits.py: fehler/isbn-ohne-x.py }, say: X für 10 }
