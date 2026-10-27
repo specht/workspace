@@ -37,6 +37,23 @@
         color: var(--bs-secondary-color);
         padding-left: 0.2rem;
     }
+    /* Below a school: its teachers, one per line; on a phone the parts wrap */
+    .school-teachers li {
+        display: grid;
+        grid-template-columns: minmax(12em, 2fr) minmax(8em, 3fr) 7em 9em;
+        gap: 0.2em 1em;
+        align-items: baseline;
+        padding: 0.3em 0;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+    .school-teachers li:last-child {
+        border-bottom: none;
+    }
+    @media (max-width: 767.98px) {
+        .school-teachers li {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 <div class='api_messages page-messages' style='display: none;' role='status' aria-live='polite'></div>
 <div class='container people-page'>
@@ -565,12 +582,17 @@
                         () => people_call('/api/people/delete_school', { key: s.key }, load_all)));
                     actions.append(del);
                 }
+                const teachers = (s.teacher_list || []).length ? teachers_detail(s) : null;
                 row.append(name, date_input('decision_at'), date_input('agreement_at'), $('<td>').html(school_status(s)), transition_cell(s),
-                    $('<td>').text(s.groups), $('<td>').text(s.teachers), $('<td>').text(s.students), actions);
+                    $('<td>').text(s.groups), teachers ? teachers_count_cell(s, teachers) : $('<td>').text(s.teachers), $('<td>').text(s.students), actions);
                 table.find('tbody').append(row);
                 if (detail) {
                     row.addClass('has-row-detail');
                     table.find('tbody').append(detail);
+                }
+                if (teachers) {
+                    row.addClass('has-row-detail');
+                    table.find('tbody').append(teachers);
                 }
                 // The guests' explanation is long: a row of its own below, so
                 // that it does not squeeze the table's columns.
@@ -711,6 +733,71 @@
         load_all_people();
     }
 
+    // Who teaches a student or guest: the teachers of its groups, each a
+    // link that lists that teacher and its students. »–« if no group has one.
+    function teachers_cell(p) {
+        const cell = $('<td class="small">');
+        if (!['Lernende', 'Gast'].includes(p.role)) return cell;
+        const teachers = p.teachers || [];
+        if (!teachers.length) return cell.attr('data-sort', '').append($("<span class='text-body-secondary' title='keine Gruppe mit einer Lehrkraft'>–</span>"));
+        cell.attr('data-sort', (teachers[0].name || teachers[0].email).toLowerCase());
+        teachers.forEach(function (t, i) {
+            if (i) cell.append(', ');
+            cell.append(teacher_link(t));
+        });
+        return cell;
+    }
+
+    function teacher_link(t) {
+        return $(`<a href='#personen'></a>`).text(t.name || t.email).attr('title', `${t.email}: diese Lehrkraft und wen sie betreut`)
+            .on('click', function (e) { e.preventDefault(); show_teacher(t.email); });
+    }
+
+    // »Personen«, searched for one teacher: the teacher and the students
+    // and guests of its groups.
+    function show_teacher(email) {
+        people_state = '';
+        $('#all_school, #all_role').val('');
+        $('#all_query').val(email);
+        select_tab('personen', true);
+        history.replaceState(null, '', location.pathname + location.search + '#personen');
+        load_all_people();
+    }
+
+    // Below a school: its teachers, the groups they teach, how many students
+    // are in them, account and last visit.
+    const open_teacher_lists = new Set();
+    function teachers_detail(s) {
+        // A list, not a table: make_sortable of the schools would take the
+        // rows of a table inside for its own.
+        const list = $("<ul class='list-unstyled mb-0 school-teachers'></ul>");
+        s.teacher_list.forEach(function (t) {
+            const groups = t.groups.length ? esc(t.groups.join(', ')) : "<span class='text-body-secondary'>keine Gruppe</span>";
+            list.append($('<li>').append(
+                $("<span class='school-teacher-name'></span>").append(teacher_link(t), $("<span class='person-email'></span>").text(t.email)),
+                $("<span class='school-teacher-groups'></span>").html(groups),
+                $("<span class='school-teacher-count'></span>").text(`Lernende: ${t.students}`),
+                $("<span class='school-teacher-active'></span>").html(active_html(t))));
+        });
+        return $("<tr class='row-detail teachers-detail'>").append($("<td colspan='9'>").append(list)).toggle(open_teacher_lists.has(s.key));
+    }
+
+    function teachers_count_cell(s, detail) {
+        const n = s.teacher_list.length;
+        if (!n) return $('<td>').attr('data-sort', 0).text(s.teachers);
+        const open = open_teacher_lists.has(s.key);
+        const button = $(`<button type='button' class='btn btn-sm btn-link p-0 text-decoration-none'></button>`)
+            .attr({ 'aria-expanded': open ? 'true' : 'false', title: `Lehrkräfte von ${s.name}` })
+            .html(`${s.teachers} <i class='bi bi-chevron-${open ? 'up' : 'down'}' aria-hidden='true'></i>`);
+        button.on('click', function () {
+            const now = !open_teacher_lists.has(s.key);
+            if (now) open_teacher_lists.add(s.key); else open_teacher_lists.delete(s.key);
+            detail.toggle(now);
+            button.attr('aria-expanded', now ? 'true' : 'false').find('.bi').toggleClass('bi-chevron-down', !now).toggleClass('bi-chevron-up', now);
+        });
+        return $('<td>').attr('data-sort', s.teachers).append(button);
+    }
+
     let all_timer = null;
     function load_all_people() {
         const query = $('#all_query').val().trim();
@@ -720,7 +807,7 @@
             render_chips(data.counts);
             if (!query) $('#count-personen').text(data.everyone);
             const here = $('#all_here').empty();
-            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
+            const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th><input type='checkbox' class='form-check-input cb-person-all' aria-label='Alle auswählen'></th><th>Name und Adresse</th><th>Rolle</th><th>Schule</th><th>Gruppen</th><th title='die Lehrkräfte der Gruppen, in denen jemand ist'>Lehrkräfte</th><th>Zuletzt da</th><th title='Speicherplatz des Workspace'>Speicher</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             data.people.forEach(function (p) {
                 // Names live on the invitation; an account without one keeps its own.
                 const name = p.invited
@@ -740,7 +827,7 @@
                 table.find('tbody').append($('<tr>').append($('<td>').append(cb),
                     $('<td>').attr('data-sort', (p.name || p.email).toLowerCase()).append(name, $("<span class='person-email'></span>").text(p.email).append(deletion_note(p))),
                     $('<td>').html(esc(p.role) + (p.guest && p.role !== 'Administration' ? `<span class='person-email'>${p.terms_accepted_at ? `Nutzungsordnung angenommen ${new Date(p.terms_accepted_at * 1000).toLocaleDateString('de-DE')}` : (p.account ? "<span class='text-warning-emphasis'>Nutzungsordnung offen</span>" : 'Nutzungsordnung bei der ersten Anmeldung')}</span>` : '')),
-                    $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')),
+                    $('<td>').text((p.schools || []).join(', ')), $('<td>').text(p.groups.join(', ')), teachers_cell(p),
                     $('<td class="text-nowrap">').attr('data-sort', p.active_on || '').html(active_html(p)),
                     $('<td class="text-nowrap">').attr('data-sort', p.disk_kb === null || p.disk_kb === undefined ? -1 : p.disk_kb).html(disk_html(p.disk_kb, data.fat_kb)), actions));
             });

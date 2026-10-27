@@ -188,6 +188,24 @@ module Roster
         lines
     end
 
+    # Who teaches whom, for /personen: for every member, the teachers of the
+    # groups it is in (never itself), each teacher once. teachers: email =>
+    # its groups (as in @@teachers); group_members: group => emails; skip:
+    # groups that do not count (the teachers' own test groups).
+    def self.teachers_of_members(teachers:, group_members:, skip: [])
+        by_group = {}
+        teachers.each do |email, groups|
+            groups.each { |group| (by_group[group] ||= []) << email unless skip.include?(group) }
+        end
+        result = {}
+        group_members.each do |group, members|
+            next if skip.include?(group) || !by_group[group]
+
+            members.each { |member| result[member] = (result[member] || []) | (by_group[group] - [member]) }
+        end
+        result.reject { |_, list| list.empty? }
+    end
+
     # The structures Main keeps, from the groups, the members and the
     # administrators. A person's group is the first it appears in, its name
     # the last one given (without any, the address). Groups come in the order

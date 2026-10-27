@@ -317,7 +317,10 @@ einem Git-Server im Netz braucht dann niemand.
   Vereinbarung zur Auftragsverarbeitung (`decision_at`, `agreement_at`;
   `approved_at`, sobald beide da sind), für die Schule der Installation
   genauso. Daneben, wie viele Schülerinnen und Schüler ein Einverständnis
-  haben und wie viele ungeklärt sind. »Gäste anlegen« macht die Schule
+  haben und wie viele ungeklärt sind. Die Zahl der Lehrkräfte klappt die
+  Lehrkräfte der Schule auf (`Main#teachers_by_school`, eine Abfrage für alle
+  Schulen): Name und Adresse, die Gruppen, die sie betreuen, wie viele
+  Lernende darin sind und wann sie zuletzt da waren. »Gäste anlegen« macht die Schule
   `guests` für Erwachsene von außerhalb (Nutzungsordnung); ihre Gruppen
   entstehen unter `/gruppen`.
 - Lehrkräfte ohne Konto (»Aufräumen«): eingeladene Lehrkräfte ohne Konto,
@@ -334,11 +337,17 @@ einem Git-Server im Netz braucht dann niemand.
   zu `/gruppen` und zu den Unterlagen ihrer Schule und, wenn `COST_NOTE`
   gesetzt ist, dem Hinweis zu den Kosten. »Keine Lehrkraft mehr« nimmt
   Schule und betreute Gruppen weg.
-- Alle Personen mit Rolle, Schule, Gruppen, wann sie zuletzt da waren und
+- Alle Personen mit Rolle, Schule, Gruppen, bei Lernenden und Gästen den
+  Lehrkräften ihrer Gruppen (`Roster.teachers_of_members` aus `@@teachers`
+  und `@@group_members`, ohne die Testgruppen; »–«, wenn keine Gruppe eine
+  hat), wann sie zuletzt da waren und
   dem Speicher ihres Workspace (`Main#workspace_disk_usage`, aus der Messung
   von `housekeeping.rb`; hervorgehoben ab dem Fünffachen des Medians und
   mindestens 200 MB), filterbar nach Schule und Rolle, sortierbar nach »am
-  längsten nicht da« und »meister Speicher«. Namen lassen sich dort ändern;
+  längsten nicht da« und »am meisten Speicher«. Die Suche findet auch die
+  Lehrkraft: Ihr Name oder ihre Adresse zeigt sie und alle, die sie betreut;
+  dahin führt auch ein Klick auf eine Lehrkraft, hier und unter »Schulen«.
+  Namen lassen sich dort ändern;
   eine einzelne Einladung ohne Konto lässt sich entfernen.
   »Zuletzt da« ist `User.last_seen` (der Tag des letzten Besuchs, seit
   2026-10-18 erfasst, höchstens ein Schreibzugriff am Tag, nicht beim

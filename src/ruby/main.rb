@@ -5120,8 +5120,9 @@ class Main < Sinatra::Base
 
     # Everyone invited or with an account, for the administration: address,
     # name, role, groups, schools, whether there is an account, when last
-    # active, the disk space of the Workspace. query matches part of the name,
-    # address, group or school.
+    # active, the disk space of the Workspace, and for students and guests
+    # the teachers of their groups. query matches part of the name, address,
+    # group, school or teacher (so a teacher's name lists its students).
     def people_overview(query = '')
         Main.load_invitations()
         accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |row| [row['email'], row['name']] }
@@ -5135,6 +5136,8 @@ class Main < Sinatra::Base
         END_OF_QUERY
         groups_of = Hash.new { |hash, key| hash[key] = [] }
         @@group_members.each { |group, members| members.each { |email| groups_of[email] << group unless @@test_groups.include?(group) } }
+        name_of = ->(email) { n = (@@invitations[email] || {})[:name] || accounts[email]; n.nil? || n == email ? nil : n }
+        teachers_of = Roster.teachers_of_members(:teachers => @@teachers, :group_members => @@group_members, :skip => @@test_groups)
         q = query.to_s.strip.downcase
         schools_of = Hash.new { |hash, key| hash[key] = [] }
         if Main.roster_imported
@@ -5155,14 +5158,16 @@ class Main < Sinatra::Base
                 else 'Lernende'
             end
             active = activity[email]
-            { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort,
+            teachers = %w[Lernende Gast].include?(role) ? (teachers_of[email] || []).map { |t| { :email => t, :name => name_of.(t) } }.sort_by { |t| [t[:name].to_s.downcase, t[:email]] } : []
+            { :email => email, :name => name == email ? nil : name, :role => role, :groups => groups_of[email].sort, :teachers => teachers,
               :schools => schools_of[email].sort, :account => accounts.key?(email), :invited => @@invitations.key?(email),
               :active_on => active && active[:day] ? active[:day].to_s : nil, :active_source => active && active[:day] ? active[:source] : nil,
               :disk_kb => accounts.key?(email) ? disk[fs_tag_for_email(email)] : nil, :deletion_at => deletion_at[email],
               :guest => guests.include?(email), :terms_accepted_at => terms_at[email], :suspended => suspended[email] }
         end.select do |p|
             q.empty? || p[:email].include?(q) || p[:name].to_s.downcase.include?(q) || p[:groups].any? { |g| g.downcase.include?(q) } ||
-                p[:schools].any? { |g| g.downcase.include?(q) }
+                p[:schools].any? { |g| g.downcase.include?(q) } ||
+                p[:teachers].any? { |t| t[:email].include?(q) || t[:name].to_s.downcase.include?(q) }
         end.sort_by { |p| [p[:name].to_s.downcase, p[:email]] }
     end
 

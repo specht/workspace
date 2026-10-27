@@ -40,6 +40,33 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
+    # The teachers of every school, for the list below a school on
+    # /personen: groups they teach, how many students are in them, whether
+    # there is an account and when they were last here. One query for all.
+    def teachers_by_school
+        accounts = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name;').to_h { |r| [r['email'], r['name']] }
+        activity = activity_by_email
+        rows = neo4j_query(<<~END_OF_QUERY)
+            MATCH (t:Invitation)-[:AT]->(s:School)
+            OPTIONAL MATCH (t)-[:TEACHES]->(g:Group)
+            OPTIONAL MATCH (m:Invitation)-[:MEMBER_OF]->(g)
+            WHERE m.email <> t.email AND coalesce(m.teacher, false) = false
+                AND NOT (m)-[:TEACHES]->(:Group) AND NOT (m)-[:AT]->(:School)
+            RETURN s.key AS school, t.email AS email, t.name AS name,
+                collect(DISTINCT g.name) AS groups, count(DISTINCT m) AS students
+            ORDER BY toLower(coalesce(t.name, t.email));
+        END_OF_QUERY
+        rows.group_by { |r| r['school'] }.transform_values do |list|
+            list.map do |r|
+                name = r['name'] || accounts[r['email']]
+                active = activity[r['email']]
+                { :email => r['email'], :name => name == r['email'] ? nil : name, :groups => r['groups'].sort_by(&:downcase),
+                  :students => r['students'].to_i, :account => accounts.key?(r['email']),
+                  :active_on => active && active[:day] ? active[:day].to_s : nil }
+            end
+        end
+    end
+
     def school_approval!(key)
         neo4j_query(<<~END_OF_QUERY, :key => key, :now => Time.now.to_i, :me => my_email)
             MATCH (s:School {key: $key})
@@ -55,6 +82,8 @@ class Main < Sinatra::Base
         halt 403, { :error => 'admins_only' }.to_json unless admin_logged_in?
         imported = !Main.roster_imported.nil?
         schools = imported ? schools_overview : []
+        teachers = imported ? teachers_by_school : {}
+        schools.each { |school| school[:teacher_list] = teachers[school[:key] || school['key']] || [] }
         deadline = SchoolTransition.deadline
         transition = SchoolTransition.summary(schools, Date.today, deadline).merge(
             :states => SchoolTransition::STATES, :steps => SchoolTransition::STEPS,
