@@ -1,0 +1,44 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: java
+examples:
+  hallo:
+    pass:
+      - files: { HelloWorld.java: HelloWorld.java }
+    fail:
+      - files: { HelloWorld.java: error-HelloWorld.java }
+        say: System.out.println
+      - files: { HelloWorld.java: { text: "public class Hello {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n" } }
+        say: genau wie die Datei
+      - files: { HelloWorld.java: { text: "" } }
+      - files: { helloworld.java: HelloWorld.java }
+  uebersetzt:
+    pass:
+      - files: { HelloWorld.class: { text: "class file" } }
+    fail:
+      - files: { HelloWorld.java: HelloWorld.java }
+        say: HelloWorld.class
+  fehler:
+    pass:
+      - answer: method printn(String)
+      - answer: printn
+      - answer: 'symbol: method printn(String)'
+    fail:
+      - answer: println
+      - answer: cannot find symbol
+      - answer: String
+  int-grenze:
+    pass:
+      - answer: InputMismatchException
+      - answer: java.util.InputMismatchException
+    fail:
+      - answer: NumberFormatException
+      - answer: Exception
+      - answer: main
+  absteigend:
+    pass:
+      - files: { BubbleSort.java: { text: "public class BubbleSort {\n    public static void bubbleSort(int[] array) {\n        int n = array.length;\n        for (int i = 0; i < n - 1; i++) {\n            for (int j = 0; j < n - i - 1; j++) {\n                if (array[j] < array[j + 1]) {\n                    int temp = array[j];\n                    array[j] = array[j + 1];\n                    array[j + 1] = temp;\n                }\n            }\n        }\n    }\n}\n" } }
+    fail:
+      - files: { BubbleSort.java: BubbleSort.java }
+        say: aufsteigend

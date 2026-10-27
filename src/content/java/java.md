@@ -89,6 +89,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei HelloWorld.java mit farbiger Syntax, public class HelloWorld mit der Methode main.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren.
@@ -144,6 +146,8 @@ javac HelloWorld.java && java HelloWorld
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `println` das Wort `printn` zu schreiben:
@@ -165,6 +169,8 @@ javac HelloWorld.java
 <div class='hint'>
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
+
+_task(fehler)
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
@@ -215,8 +221,14 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(int-grenze)
+
+<!-- after: int-grenze -->
+`nextInt` liest ein `int`: 32 Bit, höchstens 2147483647. 3000000000 passt nicht hinein. Anders als C rechnet Java dann nicht mit einer falschen Zahl weiter, sondern bricht mit einer Exception ab und nennt die Eingabe, die nicht passte.
+<!-- /after -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Was meldet Java, und was könnte der Grund dafür sein? Ändere danach die Zeile mit <code>nextInt</code> zu <code>long number = scanner.nextLong();</code>, übersetze neu und probier die Zahl noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+<strong>Ausprobieren:</strong> Ändere die Zeile mit <code>nextInt</code> zu <code>long number = scanner.nextLong();</code>, übersetze neu und probier <code>3000000000</code> noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
 </div>
 
 ## Bubblesort
@@ -250,11 +262,12 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(absteigend)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>BubbleSort.java</code>, übersetze neu und starte das Programm:
 <ul>
 <li>Sortiere 100 Zahlen statt 10. Warum musst du dafür nur eine einzige Zahl ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 <li>Ändere in <code>generateRandomArray</code> die Bedingung <code>i &lt; size</code> zu <code>i &lt;= size</code>. Was meldet Java beim Ausführen? Stell die Bedingung danach wieder her.</li>
 </ul>
 </div>

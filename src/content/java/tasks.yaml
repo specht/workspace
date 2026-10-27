@@ -1,0 +1,122 @@
+# Aufgaben zum Steckbrief »Java«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace
+# (HelloWorld.java, Factor.java, BubbleSort.java), so wie die Seite sie
+# speichern lässt.
+format: 1
+activity: java
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/HelloWorld.java`.
+    file: HelloWorld.java
+    check:
+      type: files
+      path: HelloWorld.java
+      expect:
+        format: text
+        contains:
+          - pattern: 'System\.out\.println\s*\(\s*"Hello, World!"\s*\)'
+            say: 'In `HelloWorld.java` finde ich noch kein `System.out.println("Hello, World!")`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: 'public\s+class\s+HelloWorld\b'
+            say: 'Die Klasse in `HelloWorld.java` muss `HelloWorld` heißen, genau wie die Datei: `public class HelloWorld`.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/HelloWorld.java`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `HelloWorld.java` eingegeben, mit großem H und großem W?
+      - when: { problem: wrong_format }
+        say: '`HelloWorld.java` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `HelloWorld.java` mit `javac`, sodass `java HelloWorld` im
+      Ordner `/workspace` `Hello, World!` ausgibt.
+    file: HelloWorld.class
+    check:
+      type: files
+      path: HelloWorld.class
+      expect:
+        exists: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/HelloWorld.class`. Hat `javac HelloWorld.java` eine Fehlermeldung ausgegeben? Dann entsteht keine `.class`-Datei.
+    hint:
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `HelloWorld.java` liegt. `ls` zeigt, welche Dateien da sind.
+      - '`javac HelloWorld.java` übersetzt. Es gibt nichts aus, wenn alles stimmt; danach liegt `HelloWorld.class` daneben.'
+    solution: |
+      `javac HelloWorld.java` übersetzt den Quelltext in Bytecode für die Java
+      Virtual Machine und schreibt ihn nach `HelloWorld.class`. `java
+      HelloWorld` startet die JVM, die diese Datei ausführt; die Endung
+      `.class` lässt man dabei weg.
+
+  - id: fehler
+    title: Was javac nicht findet
+    prompt: |
+      `javac` meldet `cannot find symbol`. Welches Symbol findet es nicht? Es
+      steht in der Meldung hinter `symbol:`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(symbol:\s*)?(method\s+)?printn\b'
+    feedback:
+      - when: { matches: '(?i)println' }
+        say: '`println` gibt es, die Methode kennt Java. Gesucht ist das, was in deiner Datei steht und was Java nicht kennt.'
+      - when: { matches: '(?i)cannot find' }
+        say: Das ist die Art des Fehlers. Gesucht ist das Symbol, das in der Meldung hinter `symbol:` steht.
+      - when: { matches: '(?i)^\W*String\W*$' }
+        say: '`String` steht in Klammern dahinter: die Art des Werts, mit dem die Methode aufgerufen wird. Gesucht ist ihr Name.'
+    hint: Die Meldung hat mehrere Zeilen. Eine beginnt mit `symbol:`, eine mit `location:`.
+    solution: |
+      `method printn(String)`: eine Methode `printn`, aufgerufen mit einem
+      `String`. Die gibt es in `System.out` nicht. Darüber steht die Zeile
+      (`HelloWorld.java:3`) mit dem Code, eine Marke zeigt auf die Stelle.
+
+  - id: int-grenze
+    title: Eine zu große Zahl
+    prompt: |
+      Gib bei `java Factor` statt 123 die Zahl `3000000000` ein. Mit welcher
+      Exception bricht das Programm ab? Ihr Name endet auf `Exception`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(java\.util\.)?InputMismatchException\W*$'
+    feedback:
+      - when: { matches: '(?i)NumberFormatException' }
+        say: '`NumberFormatException` käme von `Integer.parseInt`. Dieses Programm liest mit einem `Scanner`; schau in die erste Zeile der Meldung.'
+      - when: { matches: '(?i)^\W*Exception\W*$' }
+        say: Gesucht ist der ganze Name, das Wort vor `Exception` gehört dazu.
+      - when: { matches: '(?i)main' }
+        say: '`main` ist der Thread, in dem es passiert ist. Der Name der Exception steht dahinter.'
+    hint: Die erste Zeile lautet `Exception in thread "main" …`, und dahinter steht der Name.
+    solution: |
+      `java.util.InputMismatchException`: `nextInt` liest ein `int`, 32 Bit,
+      höchstens 2147483647. 3000000000 passt nicht hinein. Anders als C rechnet
+      Java nicht mit einer falschen Zahl weiter, sondern bricht ab und sagt,
+      welche Eingabe nicht passte.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Ändere `bubbleSort` in `BubbleSort.java` so, dass die größte Zahl zuerst
+      kommt, übersetze neu und starte das Programm noch einmal.
+    file: BubbleSort.java
+    check:
+      type: java
+      file: BubbleSort.java
+      cases:
+        - call: 'int[] a = {3, 1, 4, 1, 5}; BubbleSort.bubbleSort(a); a[0]'
+          expect: 5
+          say: Die größte Zahl soll zuerst kommen. Noch sortiert `bubbleSort` aufsteigend.
+        - call: 'int[] a = {3, 1, 4, 1, 5}; BubbleSort.bubbleSort(a); a'
+          expect: 'new int[]{5, 4, 3, 1, 1}'
+          say: 'Die größte Zahl steht vorn, aber der Rest ist noch nicht absteigend: Aus `{3, 1, 4, 1, 5}` soll `{5, 4, 3, 1, 1}` werden.'
+        - call: 'int[] a = {2, 9}; BubbleSort.bubbleSort(a); a'
+          expect: 'new int[]{9, 2}'
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```java
+      if (array[j] < array[j + 1]) {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.
