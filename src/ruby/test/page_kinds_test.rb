@@ -106,7 +106,8 @@ class PageKindsTest < Minitest::Test
     def test_real_pages_point_at_existing_reference_pages
         root = File.expand_path('../../content', __dir__)
         catalog = YAML.safe_load(File.read(File.join(root, 'reference/sections.yaml'), encoding: 'UTF-8'))
-        known = catalog.flat_map { |s| s['entries'] }
+        # a dev-only page (».uml«) is a page too
+        known = catalog.flat_map { |s| s['entries'] }.map { |entry| entry.delete_prefix('.') }
         Dir[File.join(root, '*/*.md')].each do |path|
             next if File.basename(path) == ContentParts::NOTE_FILE
             md = File.read(path, encoding: 'UTF-8')

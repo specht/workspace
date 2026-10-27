@@ -33,25 +33,27 @@ class GroupDataTest < Minitest::Test
     def test_drop_takes_settings_and_pins_of_those_names
         db = FakeDb.new
         GroupData.drop!(db, ['10b', '10b', '', nil])
-        assert_equal 1, db.queries.size
-        query, params = db.queries.first
+        # first the folders of the group's Git repositories, then the nodes
+        assert_equal 2, db.queries.size
+        assert_match(/g\.git_id/, db.queries.first[0])
+        query, params = db.queries.last
         assert_match(/n:GroupSetting OR n:Pin/, query)
         assert_match(/n\.group IN \$names/, query)
         assert_equal({ :names => ['10b'] }, params)
         GroupData.drop!(db, [])
-        assert_equal 1, db.queries.size
+        assert_equal 2, db.queries.size
     end
 
     def test_import_keeps_the_imported_and_the_other_known_groups
         db = FakeDb.new
         GroupData.drop_all_but!(db, ['10a', '10b', 'Testgruppe (A)', '10a'])
-        query, params = db.queries.first
+        query, params = db.queries.last
         assert_match(/n:GroupSetting OR n:Pin/, query)
         assert_match(/NOT n\.group IN \$keep/, query)
         assert_equal({ :keep => ['10a', '10b', 'Testgruppe (A)'] }, params)
         # Never everything at once: without any group to keep, nothing goes.
         GroupData.drop_all_but!(db, [])
-        assert_equal 1, db.queries.size
+        assert_equal 2, db.queries.size
     end
 
     # The places that create, delete, import and reread groups use it.

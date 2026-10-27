@@ -1,0 +1,1474 @@
+# Aufgaben zu »Klassen entwerfen: Lohnt sich eine Expresskasse?«, in Ruby und,
+# unter python:, javascript:, dart: und java:, in den anderen vier Sprachen;
+# die Klassendiagramme in den Namen der Sprache (javascript, dart und java
+# schreiben gleich). Format: docs/aufgaben.md. Alles liegt in
+# /workspace/supermarkt.
+format: 1
+activity: supermarkt
+tasks:
+  - id: klasse-oder-attribut
+    title: Klasse oder Attribut?
+    prompt: |
+      In der Geschichte stehen die Nomen Kasse, Kundin, Zahl der Artikel und
+      Expresskasse. Drei davon werden Klassen, weil es von ihnen mehrere gibt
+      und jede eigene Werte und eigenes Verhalten hat. Welches wird keine
+      Klasse, sondern ein Attribut einer anderen?
+    check:
+      type: choice
+      options: [Kasse, Kundin, Zahl der Artikel, Expresskasse]
+      correct: 2
+    feedback:
+      - when: { picked: 3 }
+        say: Eine Expresskasse bedient Leute wie jede Kasse, nur nach einer eigenen Regel. Sie tut etwas, also ist sie mehr als ein Wert.
+      - when: { picked: 1 }
+        say: Eine Kundin kommt an, hat Artikel und wartet. Sie hat mehrere Werte, also ist sie mehr als ein Wert.
+    solution: |
+      Die Zahl der Artikel ist eine Zahl, die zu einer Kundin gehört; sie hat
+      kein eigenes Verhalten. Sie wird das Attribut `items`.
+
+  - id: diagramm-kunde
+    title: Die Kundin im Diagramm
+    prompt: |
+      Schreib in `supermarkt/supermarkt.uml` die Klasse `Customer` mit den
+      Attributen `items` und `arrival`, beide `int` und privat, und mit einem
+      öffentlichen Konstruktor, der beide bekommt.
+    check:
+      type: classes
+      file: supermarkt/supermarkt.uml
+      classes:
+        - name: Customer
+          attributes: ["- items: int", "- arrival: int"]
+          methods: ["+ Customer(items: int, arrival: int)"]
+    feedback:
+      - when: { problem: missing_class }
+        say: Es fehlt noch `class Customer`, mit großem C.
+      - when: { problem: attribute }
+        say: 'Attribute sind privat (`-`) und haben einen Typ, `- items: int`.'
+      - when: { problem: missing_method }
+        say: 'Der Konstruktor heißt wie die Klasse und hat keinen Rückgabetyp, `+ Customer(items: int, arrival: int)`.'
+    hint:
+      - |
+        Eine Klasse beginnt mit `class Customer`; alles, was zu ihr gehört,
+        steht darunter eingerückt, eine Zeile je Attribut oder Methode.
+      - |
+        Ein Attribut ist `- name: Typ`, der Konstruktor `+ Customer(…)` mit den
+        Parametern in der Klammer, `name: Typ`, durch Komma getrennt.
+    solution: |
+      ```uml
+      class Customer
+        - items: int
+        - arrival: int
+        + Customer(items: int, arrival: int)
+      ```
+
+  - id: kunde
+    title: Die Kundin im Code
+    prompt: |
+      Schreib in `supermarket.rb` die Klasse `Customer`: Der Konstruktor bekommt
+      die Zahl der Artikel und die Ankunftszeit, `items` und `arrival` geben sie
+      zurück.
+    check:
+      type: ruby
+      file: supermarkt/supermarket.rb
+      cases:
+        - call: 'Customer.new(12, 30).items'
+          expect: 12
+        - call: 'Customer.new(12, 30).arrival'
+          expect: 30
+          say: Der zweite Wert im Konstruktor ist die Ankunftszeit.
+        - call: 'Customer.new(3, 95).items'
+          expect: 3
+    solution: |
+      ```ruby
+      class Customer
+        attr_reader :items, :arrival
+
+        def initialize(items, arrival)
+          @items = items
+          @arrival = arrival
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `supermarket.py` die Klasse `Customer`: Der Konstruktor bekommt
+        die Zahl der Artikel und die Ankunftszeit, die Properties `items` und
+        `arrival` geben sie zurück.
+      check:
+        type: python
+        file: supermarkt/supermarket.py
+        cases:
+          - call: 'Customer(12, 30).items'
+            expect: 12
+          - call: 'Customer(12, 30).arrival'
+            expect: 30
+            say: Der zweite Wert im Konstruktor ist die Ankunftszeit.
+          - call: 'Customer(3, 95).items'
+            expect: 3
+      solution: |
+        ```python
+        class Customer:
+            def __init__(self, items, arrival):
+                self._items = items
+                self._arrival = arrival
+
+            @property
+            def items(self):
+                return self._items
+
+            @property
+            def arrival(self):
+                return self._arrival
+        ```
+    javascript:
+      prompt: |
+        Schreib in `supermarket.js` die Klasse `Customer`: Der Konstruktor bekommt
+        die Zahl der Artikel und die Ankunftszeit, die Getter `items` und `arrival`
+        geben sie zurück.
+      check:
+        type: javascript
+        file: supermarkt/supermarket.js
+        cases:
+          - call: 'new Customer(12, 30).items'
+            expect: 12
+          - call: 'new Customer(12, 30).arrival'
+            expect: 30
+            say: Der zweite Wert im Konstruktor ist die Ankunftszeit.
+          - call: 'new Customer(3, 95).items'
+            expect: 3
+      solution: |
+        ```javascript
+        class Customer {
+          #items;
+          #arrival;
+
+          constructor(items, arrival) {
+            this.#items = items;
+            this.#arrival = arrival;
+          }
+
+          get items() {
+            return this.#items;
+          }
+
+          get arrival() {
+            return this.#arrival;
+          }
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib in `supermarket.dart` die Klasse `Customer`: Der Konstruktor
+        bekommt die Zahl der Artikel und die Ankunftszeit, die Getter `items` und
+        `arrival` geben sie zurück.
+      check:
+        type: dart
+        file: supermarkt/supermarket.dart
+        cases:
+          - call: 'Customer(12, 30).items'
+            expect: 12
+          - call: 'Customer(12, 30).arrival'
+            expect: 30
+            say: Der zweite Wert im Konstruktor ist die Ankunftszeit.
+          - call: 'Customer(3, 95).items'
+            expect: 3
+      solution: |
+        ```dart
+        class Customer {
+          final int _items;
+          final int _arrival;
+
+          Customer(this._items, this._arrival);
+
+          int get items => _items;
+          int get arrival => _arrival;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Customer.java` die Klasse `Customer`: Der Konstruktor bekommt
+        die Zahl der Artikel und die Ankunftszeit, `getItems()` und `getArrival()`
+        geben sie zurück.
+      check:
+        type: java
+        file: supermarkt/Customer.java
+        cases:
+          - call: 'new Customer(12, 30).getItems()'
+            expect: 12
+          - call: 'new Customer(12, 30).getArrival()'
+            expect: 30
+            say: Der zweite Wert im Konstruktor ist die Ankunftszeit.
+          - call: 'new Customer(3, 95).getItems()'
+            expect: 3
+      solution: |
+        `Customer.java`:
+
+        ```java
+        public class Customer {
+            private int items;
+            private int arrival;
+
+            public Customer(int items, int arrival) {
+                this.items = items;
+                this.arrival = arrival;
+            }
+
+            public int getItems() {
+                return items;
+            }
+
+            public int getArrival() {
+                return arrival;
+            }
+        }
+        ```
+
+  - id: kasse-vorhersage
+    title: Wie lange wartet sie?
+    prediction: true
+    prompt: |
+      An einer leeren Kasse kommt in Sekunde 0 eine Kundin mit 10 Artikeln an,
+      in Sekunde 30 eine mit 5 Artikeln:
+
+      ```ruby
+      first = Customer.new(10, 0)
+      second = Customer.new(5, 30)
+      ```
+
+      Wie viele Sekunden wartet die zweite, bis sie drankommt?
+    check:
+      type: choice
+      options: ['0: Sie kommt ja erst nach der ersten.', '30: So lange ist die erste schon dran.', '60', '90: So lange braucht die erste.']
+      correct: 2
+    solution: |
+      Die erste ist bis Sekunde 90 dran (60 + 3 · 10). Die zweite kommt in
+      Sekunde 30 und muss bis Sekunde 90 warten: 60 Sekunden.
+    python:
+      prompt: |
+        An einer leeren Kasse kommt in Sekunde 0 eine Kundin mit 10 Artikeln an,
+        in Sekunde 30 eine mit 5 Artikeln:
+
+        ```python
+        first = Customer(10, 0)
+        second = Customer(5, 30)
+        ```
+
+        Wie viele Sekunden wartet die zweite, bis sie drankommt?
+    javascript:
+      prompt: |
+        An einer leeren Kasse kommt in Sekunde 0 eine Kundin mit 10 Artikeln an,
+        in Sekunde 30 eine mit 5 Artikeln:
+
+        ```javascript
+        const first = new Customer(10, 0);
+        const second = new Customer(5, 30);
+        ```
+
+        Wie viele Sekunden wartet die zweite, bis sie drankommt?
+    dart:
+      prompt: |
+        An einer leeren Kasse kommt in Sekunde 0 eine Kundin mit 10 Artikeln an,
+        in Sekunde 30 eine mit 5 Artikeln:
+
+        ```dart
+        final first = Customer(10, 0);
+        final second = Customer(5, 30);
+        ```
+
+        Wie viele Sekunden wartet die zweite, bis sie drankommt?
+    java:
+      prompt: |
+        An einer leeren Kasse kommt in Sekunde 0 eine Kundin mit 10 Artikeln an,
+        in Sekunde 30 eine mit 5 Artikeln:
+
+        ```java
+        Customer first = new Customer(10, 0);
+        Customer second = new Customer(5, 30);
+        ```
+
+        Wie viele Sekunden wartet die zweite, bis sie drankommt?
+
+  - id: kasse
+    title: Die Kasse
+    prompt: |
+      Schreib die Klasse `Checkout`. Eine neue Kasse ist ab Sekunde 0 frei;
+      `free_at` sagt, ab wann sie frei ist. `service_time(customer)` gibt
+      60 + 3 Sekunden je Artikel zurück. `serve(customer)` fängt an, sobald die
+      Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
+      und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
+      für jeden Fall eine neue Kasse an.
+    check:
+      type: ruby
+      file: supermarkt/supermarket.rb
+      cases:
+        - call: Checkout.new.free_at
+          expect: 0
+          say: Eine neue Kasse ist ab Sekunde 0 frei.
+        - call: 'Checkout.new.service_time(Customer.new(10, 0))'
+          expect: 90
+          say: '60 Sekunden Bezahlen und 3 je Artikel: 60 + 3 · 10.'
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0))'
+          expect: 0
+          say: 'Wer an eine freie Kasse kommt, wartet nicht.'
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0)); k.free_at'
+          expect: 90
+          say: Nach der ersten Kundin ist die Kasse ab Sekunde 90 frei.
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0)); k.serve(Customer.new(5, 30))'
+          expect: 60
+          say: Die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran.
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0)); k.serve(Customer.new(5, 30)); k.free_at'
+          expect: 165
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0)); k.serve(Customer.new(5, 200))'
+          expect: 0
+          say: 'Kommt jemand, wenn die Kasse schon wieder frei ist, wartet sie nicht; die Kasse fängt erst an, wenn sie da ist.'
+        - call: 'k = Checkout.new; k.serve(Customer.new(10, 0)); k.serve(Customer.new(5, 200)); k.free_at'
+          expect: 275
+          say: 'Die Kasse fängt in Sekunde 200 an, nicht schon in Sekunde 90.'
+    solution: |
+      ```ruby
+      class Checkout
+        attr_reader :free_at
+
+        def initialize
+          @free_at = 0
+        end
+
+        def service_time(customer)
+          60 + 3 * customer.items
+        end
+
+        def serve(customer)
+          start = [customer.arrival, @free_at].max
+          @free_at = start + service_time(customer)
+          start - customer.arrival
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib die Klasse `Checkout`. Eine neue Kasse ist ab Sekunde 0 frei;
+        `free_at` sagt, ab wann sie frei ist. `service_time(customer)` gibt
+        60 + 3 Sekunden je Artikel zurück. `serve(customer)` fängt an, sobald die
+        Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
+        und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
+        für jeden Fall eine neue Kasse an.
+      check:
+        type: python
+        file: supermarkt/supermarket.py
+        cases:
+          - call: Checkout().free_at
+            expect: 0
+            say: Eine neue Kasse ist ab Sekunde 0 frei.
+          - call: 'Checkout().service_time(Customer(10, 0))'
+            expect: 90
+            say: '60 Sekunden Bezahlen und 3 je Artikel: 60 + 3 · 10.'
+          - call: 'k = Checkout(); k.serve(Customer(10, 0))'
+            expect: 0
+            say: 'Wer an eine freie Kasse kommt, wartet nicht.'
+          - call: 'k = Checkout(); k.serve(Customer(10, 0)); k.free_at'
+            expect: 90
+            say: Nach der ersten Kundin ist die Kasse ab Sekunde 90 frei.
+          - call: 'k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 30))'
+            expect: 60
+            say: Die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran.
+          - call: 'k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 30)); k.free_at'
+            expect: 165
+          - call: 'k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 200))'
+            expect: 0
+            say: 'Kommt jemand, wenn die Kasse schon wieder frei ist, wartet sie nicht; die Kasse fängt erst an, wenn sie da ist.'
+          - call: 'k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 200)); k.free_at'
+            expect: 275
+            say: 'Die Kasse fängt in Sekunde 200 an, nicht schon in Sekunde 90.'
+      solution: |
+        ```python
+        class Checkout:
+            def __init__(self):
+                self._free_at = 0
+
+            @property
+            def free_at(self):
+                return self._free_at
+
+            def service_time(self, customer):
+                return 60 + 3 * customer.items
+
+            def serve(self, customer):
+                start = max(customer.arrival, self._free_at)
+                self._free_at = start + self.service_time(customer)
+                return start - customer.arrival
+        ```
+    javascript:
+      prompt: |
+        Schreib die Klasse `Checkout`. Eine neue Kasse ist ab Sekunde 0 frei;
+        `freeAt` sagt, ab wann sie frei ist. `serviceTime(customer)` gibt
+        60 + 3 Sekunden je Artikel zurück. `serve(customer)` fängt an, sobald die
+        Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
+        und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
+        für jeden Fall eine neue Kasse an.
+      check:
+        type: javascript
+        file: supermarkt/supermarket.js
+        cases:
+          - call: new Checkout().freeAt
+            expect: 0
+            say: Eine neue Kasse ist ab Sekunde 0 frei.
+          - call: 'new Checkout().serviceTime(new Customer(10, 0))'
+            expect: 90
+            say: '60 Sekunden Bezahlen und 3 je Artikel: 60 + 3 · 10.'
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0))'
+            expect: 0
+            say: 'Wer an eine freie Kasse kommt, wartet nicht.'
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0)); k.freeAt'
+            expect: 90
+            say: Nach der ersten Kundin ist die Kasse ab Sekunde 90 frei.
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 30))'
+            expect: 60
+            say: Die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran.
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 30)); k.freeAt'
+            expect: 165
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 200))'
+            expect: 0
+            say: 'Kommt jemand, wenn die Kasse schon wieder frei ist, wartet sie nicht; die Kasse fängt erst an, wenn sie da ist.'
+          - call: 'const k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 200)); k.freeAt'
+            expect: 275
+            say: 'Die Kasse fängt in Sekunde 200 an, nicht schon in Sekunde 90.'
+      solution: |
+        ```javascript
+        class Checkout {
+          #freeAt = 0;
+
+          get freeAt() {
+            return this.#freeAt;
+          }
+
+          serviceTime(customer) {
+            return 60 + 3 * customer.items;
+          }
+
+          serve(customer) {
+            const start = Math.max(customer.arrival, this.#freeAt);
+            this.#freeAt = start + this.serviceTime(customer);
+            return start - customer.arrival;
+          }
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib die Klasse `Checkout`. Eine neue Kasse ist ab Sekunde 0 frei;
+        `freeAt` sagt, ab wann sie frei ist. `serviceTime(customer)` gibt
+        60 + 3 Sekunden je Artikel zurück. `serve(customer)` fängt an, sobald die
+        Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
+        und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
+        für jeden Fall eine neue Kasse an.
+      check:
+        type: dart
+        file: supermarkt/supermarket.dart
+        cases:
+          - call: Checkout().freeAt
+            expect: 0
+            say: Eine neue Kasse ist ab Sekunde 0 frei.
+          - call: 'Checkout().serviceTime(Customer(10, 0))'
+            expect: 90
+            say: '60 Sekunden Bezahlen und 3 je Artikel: 60 + 3 · 10.'
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0))'
+            expect: 0
+            say: 'Wer an eine freie Kasse kommt, wartet nicht.'
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0)); k.freeAt'
+            expect: 90
+            say: Nach der ersten Kundin ist die Kasse ab Sekunde 90 frei.
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 30))'
+            expect: 60
+            say: Die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran.
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 30)); k.freeAt'
+            expect: 165
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 200))'
+            expect: 0
+            say: 'Kommt jemand, wenn die Kasse schon wieder frei ist, wartet sie nicht; die Kasse fängt erst an, wenn sie da ist.'
+          - call: 'final k = Checkout(); k.serve(Customer(10, 0)); k.serve(Customer(5, 200)); k.freeAt'
+            expect: 275
+            say: 'Die Kasse fängt in Sekunde 200 an, nicht schon in Sekunde 90.'
+      solution: |
+        ```dart
+        class Checkout {
+          int _freeAt = 0;
+
+          int get freeAt => _freeAt;
+
+          int serviceTime(Customer customer) => 60 + 3 * customer.items;
+
+          int serve(Customer customer) {
+            final start = customer.arrival > _freeAt ? customer.arrival : _freeAt;
+            _freeAt = start + serviceTime(customer);
+            return start - customer.arrival;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib die Klasse `Checkout`. Eine neue Kasse ist ab Sekunde 0 frei;
+        `getFreeAt()` sagt, ab wann sie frei ist. `serviceTime(customer)` gibt
+        60 + 3 Sekunden je Artikel zurück. `serve(customer)` fängt an, sobald die
+        Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
+        und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
+        für jeden Fall eine neue Kasse an.
+      check:
+        type: java
+        file: supermarkt/Checkout.java
+        cases:
+          - call: new Checkout().getFreeAt()
+            expect: 0
+            say: Eine neue Kasse ist ab Sekunde 0 frei.
+          - call: 'new Checkout().serviceTime(new Customer(10, 0))'
+            expect: 90
+            say: '60 Sekunden Bezahlen und 3 je Artikel: 60 + 3 · 10.'
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0))'
+            expect: 0
+            say: 'Wer an eine freie Kasse kommt, wartet nicht.'
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0)); k.getFreeAt()'
+            expect: 90
+            say: Nach der ersten Kundin ist die Kasse ab Sekunde 90 frei.
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 30))'
+            expect: 60
+            say: Die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran.
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 30)); k.getFreeAt()'
+            expect: 165
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 200))'
+            expect: 0
+            say: 'Kommt jemand, wenn die Kasse schon wieder frei ist, wartet sie nicht; die Kasse fängt erst an, wenn sie da ist.'
+          - call: 'Checkout k = new Checkout(); k.serve(new Customer(10, 0)); k.serve(new Customer(5, 200)); k.getFreeAt()'
+            expect: 275
+            say: 'Die Kasse fängt in Sekunde 200 an, nicht schon in Sekunde 90.'
+      solution: |
+        `Checkout.java`:
+
+        ```java
+        public class Checkout {
+            private int freeAt = 0;
+
+            public int getFreeAt() {
+                return freeAt;
+            }
+
+            public int serviceTime(Customer customer) {
+                return 60 + 3 * customer.getItems();
+            }
+
+            public int serve(Customer customer) {
+                int start = Math.max(customer.getArrival(), freeAt);
+                freeAt = start + serviceTime(customer);
+                return start - customer.getArrival();
+            }
+        }
+        ```
+
+  - id: diagramm-supermarkt
+    title: Der Supermarkt im Diagramm
+    prompt: |
+      Ergänze das Diagramm um die Klasse `Supermarket` mit einem Konstruktor, der
+      eine Liste von Kassen bekommt, `checkouts: List<Checkout>`, und den Methoden
+      `arrive(customer: Customer): int` und `averageWait(): double`. Dazu
+      `Checkout` mit `- freeAt: int`, einem Konstruktor ohne Parameter,
+      `serviceTime(customer: Customer): int` und `serve(customer: Customer): int`.
+      Verbinde `Supermarket` und `Checkout` mit einer Assoziation `checkouts`, deren
+      Multiplizitäten sagen: Ein Supermarkt hat eine oder mehrere Kassen, jede Kasse
+      gehört zu genau einem Supermarkt.
+    check:
+      type: classes
+      file: supermarkt/supermarkt.uml
+      classes:
+        - name: Checkout
+          attributes: ["- freeAt: int"]
+          methods: ["+ Checkout()", "+ serviceTime(customer: Customer): int", "+ serve(customer: Customer): int"]
+        - name: Supermarket
+          methods: ["+ Supermarket(checkouts: List<Checkout>)", "+ arrive(customer: Customer): int", "+ averageWait(): double"]
+      associations:
+        - between: [Supermarket, Checkout]
+          multiplicities: ["1", "1..*"]
+    solution: |
+      ```uml
+      class Checkout
+        - freeAt: int
+        + Checkout()
+        + serviceTime(customer: Customer): int
+        + serve(customer: Customer): int
+
+      class Supermarket
+        - totalWait: int
+        - customers: int
+        + Supermarket(checkouts: List<Checkout>)
+        + arrive(customer: Customer): int
+        + averageWait(): double
+
+      association checkouts: Supermarket 1 -- 1..* Checkout
+      ```
+
+      Die Attribute für die Summe der Wartezeiten und die Zahl der Kundinnen prüft
+      die Aufgabe nicht; sie gehören zum Entwurf, aber jeder darf sie nennen, wie er
+      will.
+    feedback:
+      - when: { problem: multiplicity }
+        say: Lies jede Seite für sich. Wie viele Supermärkte hat eine Kasse? Wie viele Kassen ein Supermarkt?
+      - when: { problem: missing_association }
+        say: 'Eine Assoziation steht für sich, nicht in einer Klasse, `association checkouts: Supermarket … -- … Checkout`.'
+      - when: { problem: method }
+        say: 'Der Konstruktor bekommt die Kassen als Liste: `+ Supermarket(checkouts: List<Checkout>)`.'
+    hint: |
+      Eine Multiplizität steht an der Klasse, um deren Anzahl es geht:
+      `Supermarket 1 -- 1..* Checkout` heißt, an einer Kasse hängt genau ein
+      Supermarkt, an einem Supermarkt mindestens eine Kasse.
+    ruby:
+      prompt: |
+        Ergänze das Diagramm um die Klasse `Supermarket` mit einem Konstruktor, der
+        eine Liste von Kassen bekommt, `checkouts: List<Checkout>`, und den Methoden
+        `arrive(customer: Customer): int` und `average_wait(): double`. Dazu
+        `Checkout` mit `- free_at: int`, einem Konstruktor ohne Parameter,
+        `service_time(customer: Customer): int` und `serve(customer: Customer): int`.
+        Verbinde `Supermarket` und `Checkout` mit einer Assoziation `checkouts`, deren
+        Multiplizitäten sagen: Ein Supermarkt hat eine oder mehrere Kassen, jede Kasse
+        gehört zu genau einem Supermarkt.
+      check:
+        type: classes
+        file: supermarkt/supermarkt.uml
+        classes:
+          - name: Checkout
+            attributes: ["- free_at: int"]
+            methods: ["+ Checkout()", "+ service_time(customer: Customer): int", "+ serve(customer: Customer): int"]
+          - name: Supermarket
+            methods: ["+ Supermarket(checkouts: List<Checkout>)", "+ arrive(customer: Customer): int", "+ average_wait(): double"]
+        associations:
+          - between: [Supermarket, Checkout]
+            multiplicities: ["1", "1..*"]
+      solution: |
+        ```uml
+        class Checkout
+          - free_at: int
+          + Checkout()
+          + service_time(customer: Customer): int
+          + serve(customer: Customer): int
+
+        class Supermarket
+          - total_wait: int
+          - customers: int
+          + Supermarket(checkouts: List<Checkout>)
+          + arrive(customer: Customer): int
+          + average_wait(): double
+
+        association checkouts: Supermarket 1 -- 1..* Checkout
+        ```
+
+        Die Attribute für die Summe der Wartezeiten und die Zahl der Kundinnen prüft
+        die Aufgabe nicht; sie gehören zum Entwurf, aber jeder darf sie nennen, wie er
+        will.
+    python:
+      prompt: |
+        Ergänze das Diagramm um die Klasse `Supermarket` mit einem Konstruktor, der
+        eine Liste von Kassen bekommt, `checkouts: List<Checkout>`, und den Methoden
+        `arrive(customer: Customer): int` und `average_wait(): double`. Dazu
+        `Checkout` mit `- free_at: int`, einem Konstruktor ohne Parameter,
+        `service_time(customer: Customer): int` und `serve(customer: Customer): int`.
+        Verbinde `Supermarket` und `Checkout` mit einer Assoziation `checkouts`, deren
+        Multiplizitäten sagen: Ein Supermarkt hat eine oder mehrere Kassen, jede Kasse
+        gehört zu genau einem Supermarkt.
+      check:
+        type: classes
+        file: supermarkt/supermarkt.uml
+        classes:
+          - name: Checkout
+            attributes: ["- free_at: int"]
+            methods: ["+ Checkout()", "+ service_time(customer: Customer): int", "+ serve(customer: Customer): int"]
+          - name: Supermarket
+            methods: ["+ Supermarket(checkouts: List<Checkout>)", "+ arrive(customer: Customer): int", "+ average_wait(): double"]
+        associations:
+          - between: [Supermarket, Checkout]
+            multiplicities: ["1", "1..*"]
+      solution: |
+        ```uml
+        class Checkout
+          - free_at: int
+          + Checkout()
+          + service_time(customer: Customer): int
+          + serve(customer: Customer): int
+
+        class Supermarket
+          - total_wait: int
+          - customers: int
+          + Supermarket(checkouts: List<Checkout>)
+          + arrive(customer: Customer): int
+          + average_wait(): double
+
+        association checkouts: Supermarket 1 -- 1..* Checkout
+        ```
+
+        Die Attribute für die Summe der Wartezeiten und die Zahl der Kundinnen prüft
+        die Aufgabe nicht; sie gehören zum Entwurf, aber jeder darf sie nennen, wie er
+        will.
+
+  - id: supermarkt
+    title: Der Supermarkt
+    prompt: |
+      Schreib die Klasse `Supermarket`. Der Konstruktor bekommt eine Liste von
+      Kassen. `arrive(customer)` schickt die Kundin an die Kasse, die am frühesten
+      frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
+      gibt ihre Wartezeit zurück. `average_wait()` gibt die mittlere Wartezeit aller
+      zurück, die bisher kamen, als Kommazahl.
+    check:
+      type: ruby
+      file: supermarkt/supermarket.rb
+      cases:
+        - call: 's = Supermarket.new([Checkout.new]); s.arrive(Customer.new(10, 0))'
+          expect: 0
+        - call: 's = Supermarket.new([Checkout.new]); s.arrive(Customer.new(10, 0)); s.arrive(Customer.new(10, 30))'
+          expect: 60
+          say: 'Mit einer Kasse wartet die zweite, bis die erste fertig ist.'
+        - call: 's = Supermarket.new([Checkout.new, Checkout.new]); s.arrive(Customer.new(10, 0)); s.arrive(Customer.new(10, 30))'
+          expect: 0
+          say: Mit zwei Kassen geht die zweite an die freie.
+        - call: 'a = Checkout.new; b = Checkout.new; s = Supermarket.new([a, b]); s.arrive(Customer.new(10, 0)); a.free_at'
+          expect: 90
+          say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+        - call: 'a = Checkout.new; b = Checkout.new; s = Supermarket.new([a, b]); s.arrive(Customer.new(10, 0)); b.free_at'
+          expect: 0
+          say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+        - call: 'a = Checkout.new; b = Checkout.new; s = Supermarket.new([a, b]); s.arrive(Customer.new(10, 0)); s.arrive(Customer.new(10, 30)); s.arrive(Customer.new(10, 40)); a.free_at'
+          expect: 180
+          say: 'Die dritte geht an die Kasse, die am frühesten frei ist: die erste, ab Sekunde 90.'
+        - call: 's = Supermarket.new([Checkout.new]); s.arrive(Customer.new(10, 0)); s.arrive(Customer.new(10, 45)); s.average_wait'
+          expect: 22.5
+          say: 'Die beiden warten 0 und 45 Sekunden, im Mittel 22,5; eine ganze Zahl ließe die 0,5 weg.'
+    solution: |
+      ```ruby
+      class Supermarket
+        def initialize(checkouts)
+          @checkouts = checkouts
+          @total_wait = 0
+          @customers = 0
+        end
+
+        def arrive(customer)
+          best = nil
+          @checkouts.each do |checkout|
+            best = checkout if best.nil? || checkout.free_at < best.free_at
+          end
+          wait = best.serve(customer)
+          @total_wait += wait
+          @customers += 1
+          wait
+        end
+
+        def average_wait
+          @total_wait.to_f / @customers
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib die Klasse `Supermarket`. Der Konstruktor bekommt eine Liste von
+        Kassen. `arrive(customer)` schickt die Kundin an die Kasse, die am frühesten
+        frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
+        gibt ihre Wartezeit zurück. `average_wait()` gibt die mittlere Wartezeit aller
+        zurück, die bisher kamen, als Kommazahl.
+      check:
+        type: python
+        file: supermarkt/supermarket.py
+        cases:
+          - call: 's = Supermarket([Checkout()]); s.arrive(Customer(10, 0))'
+            expect: 0
+          - call: 's = Supermarket([Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30))'
+            expect: 60
+            say: 'Mit einer Kasse wartet die zweite, bis die erste fertig ist.'
+          - call: 's = Supermarket([Checkout(), Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30))'
+            expect: 0
+            say: Mit zwei Kassen geht die zweite an die freie.
+          - call: 'a = Checkout(); b = Checkout(); s = Supermarket([a, b]); s.arrive(Customer(10, 0)); a.free_at'
+            expect: 90
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'a = Checkout(); b = Checkout(); s = Supermarket([a, b]); s.arrive(Customer(10, 0)); b.free_at'
+            expect: 0
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'a = Checkout(); b = Checkout(); s = Supermarket([a, b]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30)); s.arrive(Customer(10, 40)); a.free_at'
+            expect: 180
+            say: 'Die dritte geht an die Kasse, die am frühesten frei ist: die erste, ab Sekunde 90.'
+          - call: 's = Supermarket([Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 45)); s.average_wait()'
+            expect: 22.5
+            say: 'Die beiden warten 0 und 45 Sekunden, im Mittel 22,5; eine ganze Zahl ließe die 0,5 weg.'
+      solution: |
+        ```python
+        class Supermarket:
+            def __init__(self, checkouts):
+                self._checkouts = checkouts
+                self._total_wait = 0
+                self._customers = 0
+
+            def arrive(self, customer):
+                best = None
+                for checkout in self._checkouts:
+                    if best is None or checkout.free_at < best.free_at:
+                        best = checkout
+                wait = best.serve(customer)
+                self._total_wait += wait
+                self._customers += 1
+                return wait
+
+            def average_wait(self):
+                return self._total_wait / self._customers
+        ```
+    javascript:
+      prompt: |
+        Schreib die Klasse `Supermarket`. Der Konstruktor bekommt eine Liste von
+        Kassen. `arrive(customer)` schickt die Kundin an die Kasse, die am frühesten
+        frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
+        gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
+        zurück, die bisher kamen, als Kommazahl.
+      check:
+        type: javascript
+        file: supermarkt/supermarket.js
+        cases:
+          - call: 'const s = new Supermarket([new Checkout()]); s.arrive(new Customer(10, 0))'
+            expect: 0
+          - call: 'const s = new Supermarket([new Checkout()]); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30))'
+            expect: 60
+            say: 'Mit einer Kasse wartet die zweite, bis die erste fertig ist.'
+          - call: 'const s = new Supermarket([new Checkout(), new Checkout()]); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30))'
+            expect: 0
+            say: Mit zwei Kassen geht die zweite an die freie.
+          - call: 'const a = new Checkout(); const b = new Checkout(); const s = new Supermarket([a, b]); s.arrive(new Customer(10, 0)); a.freeAt'
+            expect: 90
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'const a = new Checkout(); const b = new Checkout(); const s = new Supermarket([a, b]); s.arrive(new Customer(10, 0)); b.freeAt'
+            expect: 0
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'const a = new Checkout(); const b = new Checkout(); const s = new Supermarket([a, b]); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30)); s.arrive(new Customer(10, 40)); a.freeAt'
+            expect: 180
+            say: 'Die dritte geht an die Kasse, die am frühesten frei ist: die erste, ab Sekunde 90.'
+          - call: 'const s = new Supermarket([new Checkout()]); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 45)); s.averageWait()'
+            expect: 22.5
+            say: 'Die beiden warten 0 und 45 Sekunden, im Mittel 22,5; eine ganze Zahl ließe die 0,5 weg.'
+      solution: |
+        ```javascript
+        class Supermarket {
+          #checkouts;
+          #totalWait = 0;
+          #customers = 0;
+
+          constructor(checkouts) {
+            this.#checkouts = checkouts;
+          }
+
+          arrive(customer) {
+            let best = null;
+            for (const checkout of this.#checkouts) {
+              if (best === null || checkout.freeAt < best.freeAt) {
+                best = checkout;
+              }
+            }
+            const wait = best.serve(customer);
+            this.#totalWait += wait;
+            this.#customers += 1;
+            return wait;
+          }
+
+          averageWait() {
+            return this.#totalWait / this.#customers;
+          }
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib die Klasse `Supermarket`. Der Konstruktor bekommt eine Liste von
+        Kassen. `arrive(customer)` schickt die Kundin an die Kasse, die am frühesten
+        frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
+        gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
+        zurück, die bisher kamen, als Kommazahl.
+      check:
+        type: dart
+        file: supermarkt/supermarket.dart
+        cases:
+          - call: 'final s = Supermarket([Checkout()]); s.arrive(Customer(10, 0))'
+            expect: 0
+          - call: 'final s = Supermarket([Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30))'
+            expect: 60
+            say: 'Mit einer Kasse wartet die zweite, bis die erste fertig ist.'
+          - call: 'final s = Supermarket([Checkout(), Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30))'
+            expect: 0
+            say: Mit zwei Kassen geht die zweite an die freie.
+          - call: 'final a = Checkout(); final b = Checkout(); final s = Supermarket([a, b]); s.arrive(Customer(10, 0)); a.freeAt'
+            expect: 90
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'final a = Checkout(); final b = Checkout(); final s = Supermarket([a, b]); s.arrive(Customer(10, 0)); b.freeAt'
+            expect: 0
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'final a = Checkout(); final b = Checkout(); final s = Supermarket([a, b]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 30)); s.arrive(Customer(10, 40)); a.freeAt'
+            expect: 180
+            say: 'Die dritte geht an die Kasse, die am frühesten frei ist: die erste, ab Sekunde 90.'
+          - call: 'final s = Supermarket([Checkout()]); s.arrive(Customer(10, 0)); s.arrive(Customer(10, 45)); s.averageWait()'
+            expect: 22.5
+            say: 'Die beiden warten 0 und 45 Sekunden, im Mittel 22,5; eine ganze Zahl ließe die 0,5 weg.'
+      solution: |
+        ```dart
+        class Supermarket {
+          final List<Checkout> _checkouts;
+          int _totalWait = 0;
+          int _customers = 0;
+
+          Supermarket(this._checkouts);
+
+          int arrive(Customer customer) {
+            Checkout? best;
+            for (final checkout in _checkouts) {
+              if (best == null || checkout.freeAt < best.freeAt) {
+                best = checkout;
+              }
+            }
+            final wait = best!.serve(customer);
+            _totalWait += wait;
+            _customers += 1;
+            return wait;
+          }
+
+          double averageWait() => _totalWait / _customers;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib die Klasse `Supermarket`. Der Konstruktor bekommt eine Liste von
+        Kassen. `arrive(customer)` schickt die Kundin an die Kasse, die am frühesten
+        frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
+        gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
+        zurück, die bisher kamen, als Kommazahl.
+      check:
+        type: java
+        file: supermarkt/Supermarket.java
+        cases:
+          - call: 'Supermarket s = new Supermarket(List.of(new Checkout())); s.arrive(new Customer(10, 0))'
+            expect: 0
+          - call: 'Supermarket s = new Supermarket(List.of(new Checkout())); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30))'
+            expect: 60
+            say: 'Mit einer Kasse wartet die zweite, bis die erste fertig ist.'
+          - call: 'Supermarket s = new Supermarket(List.of(new Checkout(), new Checkout())); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30))'
+            expect: 0
+            say: Mit zwei Kassen geht die zweite an die freie.
+          - call: 'Checkout a = new Checkout(); Checkout b = new Checkout(); Supermarket s = new Supermarket(List.of(a, b)); s.arrive(new Customer(10, 0)); a.getFreeAt()'
+            expect: 90
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'Checkout a = new Checkout(); Checkout b = new Checkout(); Supermarket s = new Supermarket(List.of(a, b)); s.arrive(new Customer(10, 0)); b.getFreeAt()'
+            expect: 0
+            say: 'Sind beide Kassen frei, geht die Kundin an die erste in der Liste.'
+          - call: 'Checkout a = new Checkout(); Checkout b = new Checkout(); Supermarket s = new Supermarket(List.of(a, b)); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 30)); s.arrive(new Customer(10, 40)); a.getFreeAt()'
+            expect: 180
+            say: 'Die dritte geht an die Kasse, die am frühesten frei ist: die erste, ab Sekunde 90.'
+          - call: 'Supermarket s = new Supermarket(List.of(new Checkout())); s.arrive(new Customer(10, 0)); s.arrive(new Customer(10, 45)); s.averageWait()'
+            expect: 22.5
+            say: 'Die beiden warten 0 und 45 Sekunden, im Mittel 22,5; eine ganze Zahl ließe die 0,5 weg.'
+      solution: |
+        `Supermarket.java`:
+
+        ```java
+        import java.util.List;
+
+        public class Supermarket {
+            private List<Checkout> checkouts;
+            private int totalWait = 0;
+            private int customers = 0;
+
+            public Supermarket(List<Checkout> checkouts) {
+                this.checkouts = checkouts;
+            }
+
+            public int arrive(Customer customer) {
+                Checkout best = null;
+                for (Checkout checkout : checkouts) {
+                    if (best == null || checkout.getFreeAt() < best.getFreeAt()) {
+                        best = checkout;
+                    }
+                }
+                int wait = best.serve(customer);
+                totalWait += wait;
+                customers += 1;
+                return wait;
+            }
+
+            public double averageWait() {
+                return (double) totalWait / customers;
+            }
+        }
+        ```
+
+  - id: diagramm-kassen
+    title: Expresskasse und Selbstbedienung im Diagramm
+    prompt: |
+      Ergänze das Diagramm: `Checkout` bekommt die Methode
+      `accepts(customer: Customer): boolean`. `ExpressCheckout` und
+      `SelfCheckout` erben von `Checkout`; die Expresskasse überschreibt
+      `accepts`, die Selbstbedienungskasse `serviceTime`.
+    check:
+      type: classes
+      file: supermarkt/supermarkt.uml
+      classes:
+        - name: Checkout
+          methods: ["+ accepts(customer: Customer): boolean"]
+        - name: ExpressCheckout
+          extends: Checkout
+          overrides: ["+ accepts(customer: Customer): boolean"]
+        - name: SelfCheckout
+          extends: Checkout
+          overrides: ["+ serviceTime(customer: Customer): int"]
+    solution: |
+      ```uml
+      class Checkout
+        - freeAt: int
+        + Checkout()
+        + accepts(customer: Customer): boolean
+        + serviceTime(customer: Customer): int
+        + serve(customer: Customer): int
+
+      class ExpressCheckout extends Checkout
+        + accepts(customer: Customer): boolean
+
+      class SelfCheckout extends Checkout
+        + serviceTime(customer: Customer): int
+      ```
+    feedback:
+      - when: { problem: extends }
+        say: 'Was erbt, schreibt den Namen dahinter, `class ExpressCheckout extends Checkout`.'
+    hint: |
+      In `ExpressCheckout` und `SelfCheckout` steht nur, was bei ihnen anders
+      ist: je eine Methode. Alles andere erben sie.
+    ruby:
+      prompt: |
+        Ergänze das Diagramm: `Checkout` bekommt die Methode
+        `accepts?(customer: Customer): boolean`. `ExpressCheckout` und
+        `SelfCheckout` erben von `Checkout`; die Expresskasse überschreibt
+        `accepts?`, die Selbstbedienungskasse `service_time`.
+      check:
+        type: classes
+        file: supermarkt/supermarkt.uml
+        classes:
+          - name: Checkout
+            methods: ["+ accepts?(customer: Customer): boolean"]
+          - name: ExpressCheckout
+            extends: Checkout
+            overrides: ["+ accepts?(customer: Customer): boolean"]
+          - name: SelfCheckout
+            extends: Checkout
+            overrides: ["+ service_time(customer: Customer): int"]
+      solution: |
+        ```uml
+        class Checkout
+          - free_at: int
+          + Checkout()
+          + accepts?(customer: Customer): boolean
+          + service_time(customer: Customer): int
+          + serve(customer: Customer): int
+
+        class ExpressCheckout extends Checkout
+          + accepts?(customer: Customer): boolean
+
+        class SelfCheckout extends Checkout
+          + service_time(customer: Customer): int
+        ```
+    python:
+      prompt: |
+        Ergänze das Diagramm: `Checkout` bekommt die Methode
+        `accepts(customer: Customer): boolean`. `ExpressCheckout` und
+        `SelfCheckout` erben von `Checkout`; die Expresskasse überschreibt
+        `accepts`, die Selbstbedienungskasse `service_time`.
+      check:
+        type: classes
+        file: supermarkt/supermarkt.uml
+        classes:
+          - name: Checkout
+            methods: ["+ accepts(customer: Customer): boolean"]
+          - name: ExpressCheckout
+            extends: Checkout
+            overrides: ["+ accepts(customer: Customer): boolean"]
+          - name: SelfCheckout
+            extends: Checkout
+            overrides: ["+ service_time(customer: Customer): int"]
+      solution: |
+        ```uml
+        class Checkout
+          - free_at: int
+          + Checkout()
+          + accepts(customer: Customer): boolean
+          + service_time(customer: Customer): int
+          + serve(customer: Customer): int
+
+        class ExpressCheckout extends Checkout
+          + accepts(customer: Customer): boolean
+
+        class SelfCheckout extends Checkout
+          + service_time(customer: Customer): int
+        ```
+
+  - id: kassen-vorhersage
+    title: Drei Kassen, ein Aufruf
+    prediction: true
+    prompt: |
+      Eine Kundin mit 20 Artikeln, und eine Schleife über drei Kassen:
+
+      ```ruby
+      customer = Customer.new(20, 0)
+      [Checkout.new, ExpressCheckout.new, SelfCheckout.new].each do |checkout|
+        puts checkout.service_time(customer)
+      end
+      ```
+
+      Was gibt sie aus?
+    check:
+      type: choice
+      options: ['120, 120, 150', '120, 0, 150: Die Expresskasse nimmt sie ja nicht.', '120, 120, 120: Alle stehen in einer Liste von Kassen.', '150, 150, 150']
+      correct: 0
+    solution: |
+      Die normale Kasse rechnet 60 + 3 · 20 = 120, die Expresskasse erbt diese
+      Rechnung, die Selbstbedienungskasse hat ihre eigene: 30 + 6 · 20 = 150. Ob
+      eine Kasse jemanden nimmt, fragt die Schleife gar nicht.
+    python:
+      prompt: |
+        Eine Kundin mit 20 Artikeln, und eine Schleife über drei Kassen:
+
+        ```python
+        customer = Customer(20, 0)
+        for checkout in [Checkout(), ExpressCheckout(), SelfCheckout()]:
+            print(checkout.service_time(customer))
+        ```
+
+        Was gibt sie aus?
+    javascript:
+      prompt: |
+        Eine Kundin mit 20 Artikeln, und eine Schleife über drei Kassen:
+
+        ```javascript
+        const customer = new Customer(20, 0);
+        for (const checkout of [new Checkout(), new ExpressCheckout(), new SelfCheckout()]) {
+          console.log(checkout.serviceTime(customer));
+        }
+        ```
+
+        Was gibt sie aus?
+    dart:
+      prompt: |
+        Eine Kundin mit 20 Artikeln, und eine Schleife über drei Kassen:
+
+        ```dart
+        final customer = Customer(20, 0);
+        for (final checkout in [Checkout(), ExpressCheckout(), SelfCheckout()]) {
+          print(checkout.serviceTime(customer));
+        }
+        ```
+
+        Was gibt sie aus?
+    java:
+      prompt: |
+        Eine Kundin mit 20 Artikeln, und eine Schleife über drei Kassen:
+
+        ```java
+        Customer customer = new Customer(20, 0);
+        for (Checkout checkout : List.of(new Checkout(), new ExpressCheckout(), new SelfCheckout())) {
+            System.out.println(checkout.serviceTime(customer));
+        }
+        ```
+
+        Was gibt sie aus?
+
+  - id: kassen
+    title: Expresskasse und Selbstbedienung
+    prompt: |
+      Gib `Checkout` die Methode `accepts?(customer)`, die `true` zurückgibt.
+      Schreib `ExpressCheckout`, die nur Kundinnen mit höchstens zehn Artikeln
+      nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
+      braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
+      Kasse, die sie nimmt.
+    check:
+      type: ruby
+      file: supermarkt/supermarket.rb
+      cases:
+        - call: 'ExpressCheckout.new.accepts?(Customer.new(10, 0))'
+          expect: true
+          say: Mit zehn Artikeln darf man an die Expresskasse.
+        - call: 'ExpressCheckout.new.accepts?(Customer.new(11, 0))'
+          expect: false
+          say: Mit elf Artikeln darf man nicht an die Expresskasse.
+        - call: 'ExpressCheckout.new.service_time(Customer.new(10, 0))'
+          expect: 90
+          say: Die Expresskasse kassiert so schnell wie jede Kasse.
+        - call: 'SelfCheckout.new.service_time(Customer.new(20, 0))'
+          expect: 150
+          say: '30 Sekunden Bezahlen und 6 je Artikel: 30 + 6 · 20.'
+        - call: 'SelfCheckout.new.accepts?(Customer.new(40, 0))'
+          expect: true
+        - call: 'k = SelfCheckout.new; k.serve(Customer.new(20, 0)); k.free_at'
+          expect: 150
+          say: Die geerbte Methode zum Bedienen rechnet mit der Zeit der Selbstbedienungskasse.
+        - call: 's = Supermarket.new([ExpressCheckout.new, Checkout.new]); s.arrive(Customer.new(30, 0)); s.arrive(Customer.new(30, 10))'
+          expect: 140
+          say: Mit 30 Artikeln darf niemand an die Expresskasse; beide müssen an die normale Kasse.
+    solution: |
+      ```ruby
+      class ExpressCheckout < Checkout
+        def accepts?(customer)
+          customer.items <= 10
+        end
+      end
+
+      class SelfCheckout < Checkout
+        def service_time(customer)
+          30 + 6 * customer.items
+        end
+      end
+      ```
+
+      In `arrive` gehört an den Anfang der Schleife:
+
+      ```ruby
+      next unless checkout.accepts?(customer)
+      ```
+    python:
+      prompt: |
+        Gib `Checkout` die Methode `accepts(customer)`, die `True` zurückgibt.
+        Schreib `ExpressCheckout`, die nur Kundinnen mit höchstens zehn Artikeln
+        nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
+        braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
+        Kasse, die sie nimmt.
+      check:
+        type: python
+        file: supermarkt/supermarket.py
+        cases:
+          - call: 'ExpressCheckout().accepts(Customer(10, 0))'
+            expect: true
+            say: Mit zehn Artikeln darf man an die Expresskasse.
+          - call: 'ExpressCheckout().accepts(Customer(11, 0))'
+            expect: false
+            say: Mit elf Artikeln darf man nicht an die Expresskasse.
+          - call: 'ExpressCheckout().service_time(Customer(10, 0))'
+            expect: 90
+            say: Die Expresskasse kassiert so schnell wie jede Kasse.
+          - call: 'SelfCheckout().service_time(Customer(20, 0))'
+            expect: 150
+            say: '30 Sekunden Bezahlen und 6 je Artikel: 30 + 6 · 20.'
+          - call: 'SelfCheckout().accepts(Customer(40, 0))'
+            expect: true
+          - call: 'k = SelfCheckout(); k.serve(Customer(20, 0)); k.free_at'
+            expect: 150
+            say: Die geerbte Methode zum Bedienen rechnet mit der Zeit der Selbstbedienungskasse.
+          - call: 's = Supermarket([ExpressCheckout(), Checkout()]); s.arrive(Customer(30, 0)); s.arrive(Customer(30, 10))'
+            expect: 140
+            say: Mit 30 Artikeln darf niemand an die Expresskasse; beide müssen an die normale Kasse.
+      solution: |
+        ```python
+        class ExpressCheckout(Checkout):
+            def accepts(self, customer):
+                return customer.items <= 10
+
+
+        class SelfCheckout(Checkout):
+            def service_time(self, customer):
+                return 30 + 6 * customer.items
+        ```
+
+        In `arrive` heißt die Bedingung der Schleife:
+
+        ```python
+        if checkout.accepts(customer) and (best is None or checkout.free_at < best.free_at):
+        ```
+    javascript:
+      prompt: |
+        Gib `Checkout` die Methode `accepts(customer)`, die `true` zurückgibt.
+        Schreib `ExpressCheckout`, die nur Kundinnen mit höchstens zehn Artikeln
+        nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
+        braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
+        Kasse, die sie nimmt.
+      check:
+        type: javascript
+        file: supermarkt/supermarket.js
+        cases:
+          - call: 'new ExpressCheckout().accepts(new Customer(10, 0))'
+            expect: true
+            say: Mit zehn Artikeln darf man an die Expresskasse.
+          - call: 'new ExpressCheckout().accepts(new Customer(11, 0))'
+            expect: false
+            say: Mit elf Artikeln darf man nicht an die Expresskasse.
+          - call: 'new ExpressCheckout().serviceTime(new Customer(10, 0))'
+            expect: 90
+            say: Die Expresskasse kassiert so schnell wie jede Kasse.
+          - call: 'new SelfCheckout().serviceTime(new Customer(20, 0))'
+            expect: 150
+            say: '30 Sekunden Bezahlen und 6 je Artikel: 30 + 6 · 20.'
+          - call: 'new SelfCheckout().accepts(new Customer(40, 0))'
+            expect: true
+          - call: 'const k = new SelfCheckout(); k.serve(new Customer(20, 0)); k.freeAt'
+            expect: 150
+            say: Die geerbte Methode zum Bedienen rechnet mit der Zeit der Selbstbedienungskasse.
+          - call: 'const s = new Supermarket([new ExpressCheckout(), new Checkout()]); s.arrive(new Customer(30, 0)); s.arrive(new Customer(30, 10))'
+            expect: 140
+            say: Mit 30 Artikeln darf niemand an die Expresskasse; beide müssen an die normale Kasse.
+      solution: |
+        ```javascript
+        class ExpressCheckout extends Checkout {
+          accepts(customer) {
+            return customer.items <= 10;
+          }
+        }
+
+        class SelfCheckout extends Checkout {
+          serviceTime(customer) {
+            return 30 + 6 * customer.items;
+          }
+        }
+        ```
+
+        In `arrive` heißt die Bedingung der Schleife:
+
+        ```javascript
+        if (checkout.accepts(customer) && (best === null || checkout.freeAt < best.freeAt)) {
+        ```
+    dart:
+      prompt: |
+        Gib `Checkout` die Methode `accepts(customer)`, die `true` zurückgibt.
+        Schreib `ExpressCheckout`, die nur Kundinnen mit höchstens zehn Artikeln
+        nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
+        braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
+        Kasse, die sie nimmt.
+      check:
+        type: dart
+        file: supermarkt/supermarket.dart
+        cases:
+          - call: 'ExpressCheckout().accepts(Customer(10, 0))'
+            expect: true
+            say: Mit zehn Artikeln darf man an die Expresskasse.
+          - call: 'ExpressCheckout().accepts(Customer(11, 0))'
+            expect: false
+            say: Mit elf Artikeln darf man nicht an die Expresskasse.
+          - call: 'ExpressCheckout().serviceTime(Customer(10, 0))'
+            expect: 90
+            say: Die Expresskasse kassiert so schnell wie jede Kasse.
+          - call: 'SelfCheckout().serviceTime(Customer(20, 0))'
+            expect: 150
+            say: '30 Sekunden Bezahlen und 6 je Artikel: 30 + 6 · 20.'
+          - call: 'SelfCheckout().accepts(Customer(40, 0))'
+            expect: true
+          - call: 'final k = SelfCheckout(); k.serve(Customer(20, 0)); k.freeAt'
+            expect: 150
+            say: Die geerbte Methode zum Bedienen rechnet mit der Zeit der Selbstbedienungskasse.
+          - call: 'final s = Supermarket([ExpressCheckout(), Checkout()]); s.arrive(Customer(30, 0)); s.arrive(Customer(30, 10))'
+            expect: 140
+            say: Mit 30 Artikeln darf niemand an die Expresskasse; beide müssen an die normale Kasse.
+      solution: |
+        ```dart
+        class ExpressCheckout extends Checkout {
+          @override
+          bool accepts(Customer customer) => customer.items <= 10;
+        }
+
+        class SelfCheckout extends Checkout {
+          @override
+          int serviceTime(Customer customer) => 30 + 6 * customer.items;
+        }
+        ```
+
+        In `arrive` heißt die Bedingung der Schleife:
+
+        ```dart
+        if (checkout.accepts(customer) && (best == null || checkout.freeAt < best.freeAt)) {
+        ```
+    java:
+      prompt: |
+        Gib `Checkout` die Methode `accepts(customer)`, die `true` zurückgibt.
+        Schreib `ExpressCheckout`, die nur Kundinnen mit höchstens zehn Artikeln
+        nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
+        braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
+        Kasse, die sie nimmt.
+      check:
+        type: java
+        file: supermarkt/ExpressCheckout.java
+        cases:
+          - call: 'new ExpressCheckout().accepts(new Customer(10, 0))'
+            expect: true
+            say: Mit zehn Artikeln darf man an die Expresskasse.
+          - call: 'new ExpressCheckout().accepts(new Customer(11, 0))'
+            expect: false
+            say: Mit elf Artikeln darf man nicht an die Expresskasse.
+          - call: 'new ExpressCheckout().serviceTime(new Customer(10, 0))'
+            expect: 90
+            say: Die Expresskasse kassiert so schnell wie jede Kasse.
+          - call: 'new SelfCheckout().serviceTime(new Customer(20, 0))'
+            expect: 150
+            say: '30 Sekunden Bezahlen und 6 je Artikel: 30 + 6 · 20.'
+          - call: 'new SelfCheckout().accepts(new Customer(40, 0))'
+            expect: true
+          - call: 'SelfCheckout k = new SelfCheckout(); k.serve(new Customer(20, 0)); k.getFreeAt()'
+            expect: 150
+            say: Die geerbte Methode zum Bedienen rechnet mit der Zeit der Selbstbedienungskasse.
+          - call: 'Supermarket s = new Supermarket(List.of(new ExpressCheckout(), new Checkout())); s.arrive(new Customer(30, 0)); s.arrive(new Customer(30, 10))'
+            expect: 140
+            say: Mit 30 Artikeln darf niemand an die Expresskasse; beide müssen an die normale Kasse.
+      solution: |
+        `ExpressCheckout.java`:
+
+        ```java
+        public class ExpressCheckout extends Checkout {
+            @Override
+            public boolean accepts(Customer customer) {
+                return customer.getItems() <= 10;
+            }
+        }
+        ```
+
+        `SelfCheckout.java`:
+
+        ```java
+        public class SelfCheckout extends Checkout {
+            @Override
+            public int serviceTime(Customer customer) {
+                return 30 + 6 * customer.getItems();
+            }
+        }
+        ```
+
+        In `Checkout.java` dazu `accepts`, das `true` zurückgibt; in `arrive` heißt
+        die Bedingung der Schleife:
+
+        ```java
+        if (checkout.accepts(customer) && (best == null || checkout.getFreeAt() < best.getFreeAt())) {
+        ```
+
+  - id: drei-kassen
+    title: Drei Kassen
+    prompt: |
+      Wie viele Sekunden warten die Leute an diesem Samstag mit drei normalen
+      Kassen im Mittel?
+    check: { type: number, expect: 69.75, tolerance: 0.1, unit: s }
+    solution: |
+      Etwa 69,75 Sekunden. Kommt etwas anderes heraus, stimmt vielleicht die Wahl
+      der Kasse nicht: die am frühesten frei ist, bei Gleichstand die erste.
+
+  - id: expresskasse-vorhersage
+    title: Lohnt sich die Expresskasse?
+    prediction: true
+    prompt: |
+      Eine der drei Kassen wird Expresskasse, für höchstens zehn Artikel. Was
+      passiert mit der mittleren Wartezeit aller?
+    check:
+      type: choice
+      options: ['Sie sinkt deutlich: Wer wenig hat, kommt schnell durch.', 'Sie bleibt etwa gleich: Es sind ja immer noch drei Kassen.', Sie steigt deutlich.]
+      correct: 2
+    solution: |
+      Sie steigt, von etwa 70 auf etwa 118 Sekunden: Für die vollen Wagen bleiben
+      nur zwei Kassen, und die Expresskasse steht oft leer.
+
+  - id: expresskasse
+    title: Zwei Kassen und eine Expresskasse
+    prompt: |
+      Wie viele Sekunden warten die Leute mit zwei normalen Kassen und einer
+      Expresskasse im Mittel?
+    check: { type: number, expect: 118.29, tolerance: 0.1, unit: s }
+    solution: |
+      Etwa 118,29 Sekunden, deutlich länger als mit drei normalen Kassen.
+
+  - id: selbstbedienung
+    title: Zwei Kassen und zwei Selbstbedienungskassen
+    prompt: |
+      Wie viele Sekunden warten die Leute mit zwei normalen Kassen und zwei
+      Selbstbedienungskassen im Mittel?
+    check: { type: number, expect: 12.44, tolerance: 0.1, unit: s }
+    solution: |
+      Etwa 12,44 Sekunden.

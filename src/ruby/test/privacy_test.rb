@@ -177,6 +177,16 @@ class PrivacyTest < Minitest::Test
         assert_includes page(FULL.merge('BACKUP' => 'in einer Storage Box')), 'noch nicht eingetragen'
     end
 
+    # The Git server of the groups (GIT_SERVER): its repositories and keys
+    # are named only when the installation has it.
+    def test_git_repositories_only_when_switched_on
+        refute_includes page(FULL), 'Git-Repositorys von Gruppen'
+        html = page(FULL.merge('GIT_SERVER' => true))
+        assert_includes html, 'Git-Repositorys von Gruppen'
+        assert_includes html, 'Öffentlicher SSH-Schlüssel'
+        refute_includes page(FULL.merge('GIT_SERVER' => 'ja')), 'Git-Repositorys von Gruppen'
+    end
+
     def test_no_old_claims
         html = page(FULL)
         refute_includes html, 'keine externen Dienste'

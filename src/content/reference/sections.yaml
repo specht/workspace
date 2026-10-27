@@ -178,6 +178,17 @@
   entries:
     - tic80
 
+- key: reference-software
+  label: Software entwerfen
+  icon: /images/hammer-and-wrench.png
+  description: |
+    Einen Algorithmus als Pseudocode und als Struktogramm aufschreiben,
+    bevor du ihn programmierst; Klassendiagramme als Text schreiben und
+    lesen, und was die UML-Werkstatt daraus macht.
+  entries:
+    - .struktogramme
+    - .uml
+
 - key: reference-algorithms
   label: Algorithmen und Datenstrukturen
   icon: /images/brain.png

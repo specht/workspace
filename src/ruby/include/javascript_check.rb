@@ -1,9 +1,11 @@
 require 'json'
+require 'shellwords'
 require_relative 'call_check'
 
-# The harness for a Kata in JavaScript (KataCheck, docs/plan-katas.md): the
-# counterpart of PythonCheck and RubyCheck, for the code typed into a card,
-# never a file in the Workspace (there is no check type javascript).
+# The harness for JavaScript: the counterpart of PythonCheck and RubyCheck,
+# for the code typed into a Kata's card (KataCheck, docs/plan-katas.md) and,
+# as check type javascript (docs/aufgaben.md), for a file in the Workspace,
+# run there with node as the guest (command), like ruby and python.
 #
 # The harness runs the code in a vm context of its own with the console
 # switched off, so top-level lines that call the function to try it out do
@@ -12,6 +14,10 @@ require_relative 'call_check'
 # by their content. It prints one JSON line after RESULT_MARK, as the others
 # do. forbid (KataCheck) names functions and methods such as Math.max or
 # Array.prototype.sort; they fail when the person's code calls them.
+#
+# A file in the Workspace may be a module: it gets require, module and
+# exports, so it can end with module.exports = { … } for another file that
+# runs it (supermarkt/simulation.js). The code of a Kata's card does not.
 module JavascriptCheck
     RESULT_MARK = CallCheck::RESULT_MARK
 
@@ -20,7 +26,7 @@ module JavascriptCheck
         const fs = require('fs');
         const util = require('util');
         const vm = require('vm');
-        const [file, payload, forbidden] = process.argv.slice(2);
+        const [file, payload, forbidden, modules] = process.argv.slice(2);
         const cases = JSON.parse(payload);
         const full = path.resolve(file);
         const result = { cases: [] };
@@ -39,7 +45,12 @@ module JavascriptCheck
             return null;
         };
         const quiet = () => {};
-        const context = vm.createContext({ console: { log: quiet, info: quiet, warn: quiet, error: quiet } });
+        const globals = { console: { log: quiet, info: quiet, warn: quiet, error: quiet } };
+        if (modules === 'modules') {
+            const own = { exports: {} };
+            Object.assign(globals, { require: require('module').createRequire(full), module: own, exports: own.exports });
+        }
+        const context = vm.createContext(globals);
         for (const name of JSON.parse(forbidden || '[]')) {
             const parts = name.split('.');
             const key = parts.pop();
@@ -56,6 +67,10 @@ module JavascriptCheck
             };
         }
         const run = (source) => vm.runInContext(source, context, { timeout: 30000 });
+        // several steps divided by ; (const a = new Account(5); a.deposit(3); a.balance())
+        // in a block of their own, so that two cases may both say const a; the block
+        // gives the value of its last step
+        const call = (source) => run(/;\\s*\\S/.test(source) ? '{' + source + '\\n}' : source);
         (() => {
             let source;
             try {
@@ -80,7 +95,7 @@ module JavascriptCheck
                 const entry = { call: c.call, expect: c.expect };
                 if (c.raises) {
                     try {
-                        entry.got = short(run(c.call));
+                        entry.got = short(call(c.call));
                         entry.ok = false;
                     } catch (error) {
                         entry.ok = true;
@@ -92,7 +107,7 @@ module JavascriptCheck
                 try {
                     const expected = run('(' + c.expect + ')');
                     if (c.show) entry.shown = short(expected);
-                    const got = run(c.call);
+                    const got = call(c.call);
                     entry.got = short(got);
                     entry.ok = util.isDeepStrictEqual(got, expected);
                 } catch (error) {
@@ -121,9 +136,29 @@ module JavascriptCheck
     end
 
     # The harness as a list of arguments (KataCheck runs it as a file).
-    def self.argv(file, cases, forbid = [])
+    # modules: the file may use require and module.exports (a Workspace file).
+    def self.argv(file, cases, forbid = [], modules: false)
         payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'], 'show' => c['show'] }.compact }
-        ['node', '-e', HARNESS, file, JSON.generate(payload), JSON.generate(forbid)]
+        ['node', '-e', HARNESS, file, JSON.generate(payload), JSON.generate(forbid), *('modules' if modules)]
+    end
+
+    # The script for a file in the Workspace, run in /workspace as the guest:
+    # the harness goes into a file of its own, since node -e would take the
+    # file for the script's first argument.
+    def self.command(file, cases)
+        _, _, harness, *arguments = argv(file, cases, modules: true)
+        <<~SH
+            t=$(mktemp -d) || exit 1
+            trap 'rm -rf "$t"' EXIT
+            cat > "$t/harness.js" <<'__HS_HARNESS__'
+            #{harness.chomp}
+            __HS_HARNESS__
+            node "$t/harness.js" #{Shellwords.join(arguments)}
+        SH
+    end
+
+    def self.spec_errors(check)
+        CallCheck.spec_errors(check, '.js')
     end
 
     # [status, message, read] for the harness output.

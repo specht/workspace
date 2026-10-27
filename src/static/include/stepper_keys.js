@@ -388,6 +388,8 @@ document.addEventListener('keydown', (event) => {
     const add = (widget) => {
         const next = widget.querySelector("[data-go='next']");
         if (!next) return;
+        // the row of the buttons, laid out by default.css
+        next.parentElement.classList.add('stepper-row');
         // back and next say so beside their arrows (on a desktop; the
         // stylesheet hides the words where room is short)
         const prev = widget.querySelector("[data-go='prev']");

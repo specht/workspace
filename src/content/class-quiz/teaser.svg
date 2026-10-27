@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+<rect width="1280" height="720" fill="#ffffff"/>
+<g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 110 380 L 1190 380" stroke="#2b5fb4"/>
+<path d="M 110 380 C 176 380 164 220 230 220 L 330 220 C 396 220 384 380 450 380" stroke="#16a34a"/>
+<path d="M 110 380 C 192 380 178 540 260 540 L 520 540 C 592 540 578 380 650 380" stroke="#d97706"/>
+<path d="M 650 380 C 722 380 708 220 780 220 L 870 220 C 930 220 920 380 980 380" stroke="#7c3aed"/>
+<path d="M 650 380 C 722 380 708 560 780 560 L 960 560 C 1037 560 1023 380 1100 380" stroke="#dc2626"/>
+</g>
+<circle cx="230" cy="220" r="17" fill="#16a34a" stroke="#ffffff" stroke-width="6"/>
+<circle cx="330" cy="220" r="17" fill="#16a34a" stroke="#ffffff" stroke-width="6"/>
+<circle cx="260" cy="540" r="17" fill="#d97706" stroke="#ffffff" stroke-width="6"/>
+<circle cx="400" cy="540" r="17" fill="#d97706" stroke="#ffffff" stroke-width="6"/>
+<circle cx="520" cy="540" r="17" fill="#d97706" stroke="#ffffff" stroke-width="6"/>
+<circle cx="780" cy="220" r="17" fill="#7c3aed" stroke="#ffffff" stroke-width="6"/>
+<circle cx="870" cy="220" r="17" fill="#7c3aed" stroke="#ffffff" stroke-width="6"/>
+<circle cx="780" cy="560" r="17" fill="#dc2626" stroke="#ffffff" stroke-width="6"/>
+<circle cx="880" cy="560" r="17" fill="#dc2626" stroke="#ffffff" stroke-width="6"/>
+<circle cx="960" cy="560" r="17" fill="#dc2626" stroke="#ffffff" stroke-width="6"/>
+<circle cx="110" cy="380" r="17" fill="#2b5fb4" stroke="#ffffff" stroke-width="6"/>
+<circle cx="450" cy="380" r="24" fill="#ffffff" stroke="#2b5fb4" stroke-width="10"/>
+<circle cx="650" cy="380" r="24" fill="#ffffff" stroke="#2b5fb4" stroke-width="10"/>
+<circle cx="980" cy="380" r="24" fill="#ffffff" stroke="#2b5fb4" stroke-width="10"/>
+<circle cx="1100" cy="380" r="24" fill="#ffffff" stroke="#2b5fb4" stroke-width="10"/>
+<circle cx="1190" cy="380" r="17" fill="#2b5fb4" stroke="#ffffff" stroke-width="6"/>
+<rect x="236" y="138" width="89" height="44" rx="22" fill="#16a34a"/><text x="280" y="169" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="24" font-weight="700" fill="#ffffff">lena</text>
+<rect x="353" y="588" width="75" height="44" rx="22" fill="#d97706"/><text x="390" y="619" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="24" font-weight="700" fill="#ffffff">ida</text>
+<rect x="760" y="138" width="129" height="44" rx="22" fill="#7c3aed"/><text x="825" y="169" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="24" font-weight="700" fill="#ffffff">prozent</text>
+<rect x="819" y="608" width="102" height="44" rx="22" fill="#dc2626"/><text x="870" y="639" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="24" font-weight="700" fill="#ffffff">tipps</text>
+<rect x="1146" y="278" width="89" height="44" rx="22" fill="#2b5fb4"/><text x="1190" y="309" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="24" font-weight="700" fill="#ffffff">main</text>
+</svg>

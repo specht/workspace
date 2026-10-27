@@ -46,6 +46,28 @@
 
     const key = (p) => p[0] + ',' + p[1];
 
+    // Painting the rock pixel by pixel is the slow part of a page with many
+    // scenes (pip-1 has over forty): a scene waits until it comes near the
+    // window, and until it is shown at all (the cards of the other
+    // language are hidden).
+    const NEAR = '1000px 0px';
+    const waiting = new WeakMap();
+    let watcher = null;
+    function whenNear(node) {
+        if (!window.IntersectionObserver) return Promise.resolve();
+        watcher = watcher || new IntersectionObserver((entries) => entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            watcher.unobserve(entry.target);
+            const go = waiting.get(entry.target);
+            waiting.delete(entry.target);
+            if (go) go();
+        }), { rootMargin: NEAR });
+        return new Promise((resolve) => {
+            waiting.set(node, resolve);
+            watcher.observe(node);
+        });
+    }
+
     // A number from 0 to 1 for a tile, always the same: where decoration
     // goes depends on the map alone, so a map looks the same every time.
     function hash(x, y, salt) {
@@ -63,11 +85,9 @@
         { name: 'se', at: [1, 1], sides: [[0, 1], [1, 0]], diagonal: [1, 1] },
     ];
 
-    // How many variants each strip of the ground and the rock has
-    // (make_sprites.py).
+    // How many variants the strip of the ground has (make_sprites.py); the
+    // rock's top and face are one picture each that wraps at its edges.
     const FLOORS = 4;
-    const TOPS = 3;
-    const FACES = 4;
     const IMG = '/images/pip/';
     // pixels of a tile in the pictures, half of it, the height of a face
     const PX = 24;
@@ -85,7 +105,11 @@
     const SIDE = 4;
     const SIDE_ROWS = [7, 5, 4, 3];
     const RIM_FACE = [140, 156, 196];
-    const VERSION = '?v=13';
+    const VERSION = '?v=14';
+    // toward the edges of the scene the rock fades into the dark, dithered,
+    // over EDGE_FADE fields at most, outside the map (fadeEdges)
+    const EDGE_FADE = 3;
+    const FADE_STEPS = [1, 0.78, 0.56, 0.36, 0.18];
     // ordered dithering in map pixels, as in make_sprites.py
     const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 
@@ -165,6 +189,8 @@
             if (layout.bello) this.tile('bello pip-sort', layout.bello);
             this.glibbers = (start.glibbers || []).map((p) => this.tile('glibber pip-sort actor', p));
             this.light = el('div', 'pip-light', this.world);
+            // the spots of light, on the floor and the faces of the walls only
+            this.glows = el('div', 'pip-glows', this.light);
             lights.forEach(([name, p, r]) => this.glow(name, p, r));
             // the old lamp's post stands against a wall, its lantern hangs out
             // over the open ground: mirrored where the wall is on the right
@@ -248,45 +274,51 @@
             // that a 2 × 2 room or pillar can be a circle); the corner point
             // decides. PipWorld.corners ('tight', 'wide' or 'round') makes
             // them all one kind, for looking at them (scratch tests).
-            const radius = (x, y, q, alone) => {
+            // A corner with rock above the open ground (the lower ones of a
+            // wall, the upper ones of a nook) shows the face along its curve:
+            // a round one would draw it as a long slant, so it is wide at most.
+            const radius = (x, y, q, alone, solid) => {
                 const kind = window.PipWorld.corners;
                 const h = hash(x + q.at[0], y + q.at[1], 8);
                 const choice = kind || (h < 0.4 ? 'tight' : h < 0.75 ? 'wide' : 'round');
-                return choice === 'tight' ? TIGHT : choice === 'round' && alone ? PX : HALF;
+                const face = solid ? q.at[1] === 1 : q.at[1] === 0;
+                return choice === 'tight' ? TIGHT : choice === 'round' && alone && !face ? PX : HALF;
             };
-            const shape = new Uint8Array(W * H);
-            const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
-            // outside the quarter circle of radius r in the tile's corner
-            // that quarter q holds (r up to a whole tile)
-            const outsideRound = (q, r, px, py) => {
-                const cx = q.at[0] ? PX - r : r;
-                const cy = q.at[1] ? PX - r : r;
-                const dx = px + 0.5 - cx;
-                const dy = py + 0.5 - cy;
-                return (q.at[0] ? dx > 0 : dx < 0) && (q.at[1] ? dy > 0 : dy < 0) && dx * dx + dy * dy > r * r;
-            };
-            for (let ty = 0; ty < this.layout.height; ty++) {
-                for (let tx = 0; tx < this.layout.width; tx++) {
-                    const corners = QUARTERS.filter((q) => wall(tx, ty)
-                        ? q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
-                        : q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
-                    const radii = corners.map((q) => radius(tx, ty, q, corners.length === 1));
-                    for (let py = 0; py < PX; py++) {
-                        for (let px = 0; px < PX; px++) {
-                            // a round corner takes the whole tile, the others
-                            // their quarter
-                            const n = corners.findIndex((c, k) => radii[k] === PX || inQuarter(c, px, py));
-                            const cut = n >= 0 && outsideRound(corners[n], radii[n], px, py);
-                            // a wall loses its round corner, an open tile gains its nook
-                            const rock = wall(tx, ty) ? !cut : Boolean(cut);
-                            if (rock) shape[(ty * PX + py) * W + tx * PX + px] = 1;
+            const draw = ({ top, face, ground }) => {
+                // the outline of the rock, a pixel a field's PX
+                const shape = new Uint8Array(W * H);
+                const inQuarter = (q, px, py) => (px < HALF) === (q.at[0] === 0) && (py < HALF) === (q.at[1] === 0);
+                // outside the quarter circle of radius r in the tile's corner
+                // that quarter q holds (r up to a whole tile)
+                const outsideRound = (q, r, px, py) => {
+                    const cx = q.at[0] ? PX - r : r;
+                    const cy = q.at[1] ? PX - r : r;
+                    const dx = px + 0.5 - cx;
+                    const dy = py + 0.5 - cy;
+                    return (q.at[0] ? dx > 0 : dx < 0) && (q.at[1] ? dy > 0 : dy < 0) && dx * dx + dy * dy > r * r;
+                };
+                for (let ty = 0; ty < this.layout.height; ty++) {
+                    for (let tx = 0; tx < this.layout.width; tx++) {
+                        const corners = QUARTERS.filter((q) => wall(tx, ty)
+                            ? q.sides.every(([dx, dy]) => open(tx + dx, ty + dy)) && open(tx + q.diagonal[0], ty + q.diagonal[1])
+                            : q.sides.every(([dx, dy]) => wall(tx + dx, ty + dy)) && wall(tx + q.diagonal[0], ty + q.diagonal[1]));
+                        const solid = wall(tx, ty);
+                        const radii = corners.map((q) => radius(tx, ty, q, corners.length === 1, solid));
+                        for (let py = 0; py < PX; py++) {
+                            for (let px = 0; px < PX; px++) {
+                                // a round corner takes the whole tile, the others
+                                // their quarter
+                                const n = corners.findIndex((c, k) => radii[k] === PX || inQuarter(c, px, py));
+                                const cut = n >= 0 && outsideRound(corners[n], radii[n], px, py);
+                                // a wall loses its round corner, an open tile gains its nook
+                                const rock = solid ? !cut : Boolean(cut);
+                                if (rock) shape[(ty * PX + py) * W + tx * PX + px] = 1;
+                            }
                         }
                     }
                 }
-            }
-            const at = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? 1 : shape[y * W + x];
-            const grid = Boolean(this.box.closest('.pip-static'));
-            const draw = ({ top, face, ground }) => {
+                const at = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? 1 : shape[y * W + x];
+                const grid = Boolean(this.box.closest('.pip-static'));
                 const g = canvasNode.getContext('2d');
                 const groundGraphics = groundNode.getContext('2d');
                 const below = groundGraphics.createImageData(W, H);
@@ -355,23 +387,20 @@
                     for (let x = 0; x < W; x++) {
                         if (!at(x, y)) continue;
                         const i = (y * W + x) * 4;
-                        const tx = Math.floor(x / PX);
-                        const ty = Math.floor(y / PX);
                         if (isFace(x, y)) {
                             const k = front[y * W + x];
                             if (k > 0) {
-                                const foot = Math.floor(Math.min(H - 1, y + k) / PX);
-                                copy(face, Math.floor(hash(tx, foot, 11) * FACES) * PX + (x % PX), FACE - k, i);
+                                copy(face, x % face.width, FACE - k, i);
                             } else {
                                 // the side face: the face's rock turned upright, as
                                 // light as the front face, so that it reads as a wall
-                                copy(face, Math.floor(hash(tx, ty, 12) * FACES) * PX + (y % PX), SIDE_ROWS[across[y * W + x] - 1], i);
+                                copy(face, y % face.width, SIDE_ROWS[across[y * W + x] - 1], i);
                             }
                             // its upper edge, where the top of the rock begins
                             if ((at(x, y - 1) && !isFace(x, y - 1)) || (at(x - 1, y) && !isFace(x - 1, y))) setColour(i, RIM_FACE);
                             continue;
                         }
-                        copy(top, Math.floor(hash(tx, ty, 10) * TOPS) * PX + (x % PX), y % PX, i);
+                        copy(top, x % top.width, y % top.height, i);
                         // the light edge of the top where open ground lies
                         // behind it, a soft one where it lies to the left: the
                         // edge of a room's right wall, which goes on up beside
@@ -383,6 +412,8 @@
                         else if (!at(x - 1, y) || isFace(x - 1, y)) setColour(i, RIM_SOFT);
                     }
                 }
+                this.floorMask(W, H, at, isFace);
+                this.fadeEdges(out, W, H);
                 g.putImageData(out, 0, 0);
                 // the rock in the lower half of an open field (a round
                 // corner's nook) stands in front of what stands there: a
@@ -415,13 +446,14 @@
             // until the rock is drawn, the map stays hidden: no flash of a
             // cave without walls
             this.world.classList.add('pip-loading');
-            textures().then(draw, () => null).then(() => this.world.classList.remove('pip-loading'));
+            Promise.all([textures(), whenNear(this.world)]).then(([pictures]) => draw(pictures), () => null).then(() => this.world.classList.remove('pip-loading'));
             // at the foot of a face: glowing mushrooms and crystals (with
             // their own light, above the dark), red mushrooms, stalagmites
             this.shining = [];
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
-                    if (!wall(x, y) || wall(x, y + 1)) continue;
+                    // on a straight piece of face only, not on a corner's curve
+                    if (!wall(x, y) || wall(x, y + 1) || !wall(x - 1, y) || !wall(x + 1, y)) continue;
                     const h = hash(x, y, 2);
                     if (h < 0.1) {
                         this.shining.push(['glowshroom', [x, y]]);
@@ -431,6 +463,48 @@
                         lights.push(['crystal', [x, y], 1.2]);
                     } else if (h < 0.21) this.tile('deco pip-mushroom pip-sort', [x, y]);
                     else if (h < 0.3) this.tile('deco pip-stalagmite pip-sort', [x, y]);
+                }
+            }
+        }
+
+        // Light falls on the floor and on the faces of the walls, not on the
+        // top of the rock: the layer of the glows gets a mask of them, in map
+        // pixels as the rock.
+        floorMask(W, H, at, isFace) {
+            const node = document.createElement('canvas');
+            node.width = W;
+            node.height = H;
+            const g = node.getContext('2d');
+            const image = g.createImageData(W, H);
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    if (!at(x, y) || isFace(x, y)) image.data[(y * W + x) * 4 + 3] = 255;
+                }
+            }
+            g.putImageData(image, 0, 0);
+            this.glows.style.maskImage = this.glows.style.webkitMaskImage = 'url(' + node.toDataURL() + ')';
+        }
+
+        // The rock darker toward the edges of the scene, in FADE_STEPS,
+        // dithered with BAYER, so the cave has no hard border: over the last
+        // EDGE_FADE fields before each edge, or the room between the map and
+        // the edge where that is less; the map itself, its walls too, stays
+        // as it is.
+        fadeEdges(image, W, H) {
+            const [x0, y0, x1, y1] = (this.inner || [0, 0, W / PX, H / PX]).map((v) => v * PX);
+            const top = FADE_STEPS.length - 1;
+            // how far into the fade a pixel lies: 0 at its start, 1 at the edge
+            const side = (gap, room) => room <= 0 || gap >= room ? 0 : 1 - gap / Math.min(EDGE_FADE * PX, room);
+            for (let y = 0; y < H; y++) {
+                const ty = y < y0 ? side(y, y0) : y >= y1 ? side(H - 1 - y, H - y1) : 0;
+                for (let x = 0; x < W; x++) {
+                    const tx = x < x0 ? side(x, x0) : x >= x1 ? side(W - 1 - x, W - x1) : 0;
+                    const amount = Math.max(0, Math.min(1, Math.max(tx, ty)));
+                    if (amount <= 0) continue;
+                    const level = amount * top;
+                    const step = Math.min(top, Math.floor(level) + (level % 1 > (BAYER[y % 4][x % 4] + 0.5) / 16 ? 1 : 0));
+                    const i = (y * W + x) * 4;
+                    for (let k = 0; k < 3; k++) image.data[i + k] = Math.round(image.data[i + k] * FADE_STEPS[step]);
                 }
             }
         }
@@ -492,7 +566,7 @@
 
         // A spot of light in the light layer, r tiles across from its middle.
         glow(name, p, r) {
-            const node = el('div', 'pip-glow pip-glow-' + name.split(' ').join(' pip-glow-'), this.light);
+            const node = el('div', 'pip-glow pip-glow-' + name.split(' ').join(' pip-glow-'), this.glows);
             node.style.setProperty('--x', p[0]);
             node.style.setProperty('--y', p[1]);
             node.style.setProperty('--r', r);
@@ -525,11 +599,28 @@
         // from the width of the box (resize). The world and
         // the frames know only the map: shift() moves a frame into the scene.
         frame(map, first, scene) {
-            const cols = Math.max(Math.max(map.width, scene.width) + 2, scene.columns || SCENE_COLUMNS);
-            const rows = Math.max(Math.max(map.height, scene.height) + 2, Math.round(cols / SCENE_RATIO));
-            const ox = Math.floor((cols - map.width) / 2);
-            const oy = Math.floor((rows - map.height) / 2);
+            // the open part of the map (where Pip can walk) in the middle,
+            // not the map: a map may have more rock on one side
+            const blocked = new Set((map.walls || []).map(key));
+            let [bx0, by0, bx1, by1] = [map.width, map.height, -1, -1];
+            for (let y = 0; y < map.height; y++) {
+                for (let x = 0; x < map.width; x++) {
+                    if (blocked.has(x + ',' + y)) continue;
+                    [bx0, by0, bx1, by1] = [Math.min(bx0, x), Math.min(by0, y), Math.max(bx1, x), Math.max(by1, y)];
+                }
+            }
+            if (bx1 < 0) [bx0, by0, bx1, by1] = [0, 0, map.width - 1, map.height - 1];
+            // as much rock on either side: a column or row more where the
+            // rest would be odd
+            const even = (n, inner) => n + (n - inner) % 2;
+            const cols = even(Math.max(Math.max(map.width, scene.width) + 2, scene.columns || SCENE_COLUMNS), bx1 - bx0 + 1);
+            const rows = even(Math.max(Math.max(map.height, scene.height) + 2, Math.round(cols / SCENE_RATIO)), by1 - by0 + 1);
+            const ox = Math.floor((cols - (bx1 - bx0 + 1)) / 2) - bx0;
+            const oy = Math.floor((rows - (by1 - by0 + 1)) / 2) - by0;
             this.offset = [ox, oy];
+            // the open part and the rock round it stay as they are; outside
+            // it the rock fades toward the edges (fadeEdges)
+            this.inner = [ox + bx0 - 1, oy + by0 - 1, ox + bx1 + 2, oy + by1 + 2];
             const at = (p) => [p[0] + ox, p[1] + oy].concat(p.slice(2));
             const inside = new Set();
             for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) inside.add((x + ox) + ',' + (y + oy));
@@ -578,6 +669,8 @@
 
         // A frame of the run: animate: walk there in duration ms.
         show(original, animate, duration) {
+            // a boolean: classList.toggle(name, undefined) would flip the class
+            animate = Boolean(animate);
             const frame = this.shift(original);
             this.world.style.setProperty('--step', (animate ? duration : 0) + 'ms');
             const pip = frame.pip;
@@ -600,11 +693,16 @@
                 this.glibbers[i].style.setProperty('--x', g[0]);
                 this.glibbers[i].style.setProperty('--y', g[1]);
             });
-            // the Mampfer runs while it moves, and chomps standing
+            // the Mampfer runs while it moves, and chomps standing; it looks
+            // where it runs, standing or running up and down at Pip, and
+            // with Pip in its own column as before
             (frame.mampfers || []).forEach((m, i) => {
                 const node = this.mampfers[i];
                 if (!node) return;
-                const moved = node.style.getPropertyValue('--x') !== String(m[0]) || node.style.getPropertyValue('--y') !== String(m[1]);
+                const oldX = node.style.getPropertyValue('--x');
+                const moved = oldX !== String(m[0]) || node.style.getPropertyValue('--y') !== String(m[1]);
+                if (oldX !== '' && Number(oldX) !== m[0]) node.dataset.facing = m[0] < Number(oldX) ? 'west' : 'east';
+                else if (pip.x !== m[0]) node.dataset.facing = pip.x < m[0] ? 'west' : 'east';
                 node.style.setProperty('--x', m[0]);
                 node.style.setProperty('--y', m[1]);
                 node.classList.remove('pip-running');
@@ -785,9 +883,16 @@
             if (run) this.load(Object.assign({}, run, { runs: this.runs }), false);
             else if (map && map.layout) this.load({ layout: map.layout, frames: [map.start], map: i + 1, maps: this.maps.length }, false);
             else {
+                // no picture of another map in its place: a dark panel that
+                // says so, the size of the scene, and nothing to step through
                 this.stop();
                 this.active(i);
-                this.status.textContent = 'Karte ' + (i + 1) + ' baut der Wichtel für dich, wenn du deinen Plan ausführst.';
+                this.mapBox.classList.add('pip-unbuilt');
+                this.mapBox.dataset.unbuilt = 'Karte ' + (i + 1) + ' baut der Wichtel für dich, wenn du deinen Plan ausführst.';
+                Object.values(this.buttons).forEach((button) => { button.disabled = true; });
+                this.playButton.disabled = true;
+                this.box.dataset.steps = 1;
+                this.status.textContent = 'Karte ' + (i + 1) + ' von ' + this.maps.length + ' · noch nicht gebaut';
             }
         }
 
@@ -818,6 +923,7 @@
         // stopped or skipped (the card shows the result then).
         load(replay, play, over) {
             this.stop();
+            this.mapBox.classList.remove('pip-unbuilt');
             this.over = over || null;
             this.replay = replay;
             if (replay.runs) this.runs = replay.runs;
@@ -834,6 +940,15 @@
             return columns(this.mapBox);
         }
 
+        // The code changed after a run: the run's steps name lines that may
+        // say something else now, so it is dropped, on every map; the map
+        // shows where the run began until the next one.
+        forget() {
+            if (this.busy || !this.replay || (this.frames.length < 2 && !this.runs.length)) return;
+            this.load(Object.assign({}, this.replay, { frames: [this.frames[0]], runs: [], output: null, edited: true }), false);
+            this.runs = [];
+        }
+
         // the same frame in a scene of the new size
         redraw() {
             this.mapBox.innerHTML = '';
@@ -843,11 +958,20 @@
 
         // a long run (a maze) goes faster, so that it plays in about half a
         // minute at 1×; a turn or taking a stone is quicker than a step,
-        // unless Glibbers walk meanwhile
+        // unless Glibbers walk meanwhile or a Mampfer moves in it: it walks
+        // a field in a frame's time, and would rush through a turn
         duration(frame) {
             const base = Math.max(60, Math.min(STEP_TIME, 30000 / this.frames.length));
-            const quick = frame && QUICK.includes(frame.event) && !(frame.glibbers || []).length ? QUICK_SHARE : 1;
+            const quick = frame && QUICK.includes(frame.event) && !(frame.glibbers || []).length && !this.mampferMoves(frame) ? QUICK_SHARE : 1;
             return base * quick / SPEED_NAMES[speed][0];
+        }
+
+        // Does a Mampfer stand elsewhere than in the frame before?
+        mampferMoves(frame) {
+            const i = this.frames.indexOf(frame);
+            if (i <= 0 || !(frame.mampfers || []).length) return false;
+            const before = this.frames[i - 1].mampfers || [];
+            return frame.mampfers.some((m, k) => !before[k] || before[k][0] !== m[0] || before[k][1] !== m[1]);
         }
 
         go(index, animate) {
@@ -868,7 +992,7 @@
             const ran = this.frames.length > 1;
             const maps = this.replay.maps > 1 ? 'Karte ' + this.replay.map + ' von ' + this.replay.maps + ' · ' : '';
             const steps = this.frames[this.frames.length - 1].step;
-            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : frame.after ? ' · nach dem Plan' : '') : 'Noch nicht gelaufen';
+            this.status.textContent = ran ? maps + 'Schritt ' + frame.step + ' von ' + steps + (frame.line ? ' · Zeile ' + frame.line : frame.after ? ' · nach dem Plan' : '') : this.replay.edited ? 'Seit der Änderung noch nicht gelaufen' : 'Noch nicht gelaufen';
             this.buttons.first.disabled = this.buttons.prev.disabled = this.index === 0;
             this.buttons.next.disabled = this.buttons.last.disabled = this.index >= this.frames.length - 1;
             this.playButton.disabled = !ran;

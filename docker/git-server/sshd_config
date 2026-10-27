@@ -1,0 +1,21 @@
+# Only the user git, only with a key, only the forced command of the key
+# (git-gate, written by the backend into authorized_keys with restrict).
+Port 22
+HostKey /keys/ssh_host_ed25519_key
+AllowUsers git
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile /etc/git-server/authorized_keys
+DisableForwarding yes
+PermitTTY no
+PermitUserEnvironment no
+PermitUserRC no
+PrintMotd no
+UseDNS no
+LoginGraceTime 20
+MaxStartups 30:50:100
+MaxSessions 4
+ClientAliveInterval 30
+ClientAliveCountMax 4

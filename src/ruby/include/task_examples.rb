@@ -46,9 +46,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python c command choice number answer function pip tests].freeze
+    FAST_TYPES = %w[files html css references ruby python javascript c java dart command choice number answer function pip tests].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python c command function pip tests].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python javascript c java dart command function pip tests].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say].freeze
 
@@ -80,6 +80,10 @@ module TaskExamples
                 # none (the Ruby container), its examples wait for a machine
                 # that has it.
                 next if %w[function pip tests].include?(type) && variant['check']['language'] == 'javascript' && !node?
+                # Java and Dart likewise: their examples wait for a machine with javac or dart
+                next if type == 'javascript' && !node?
+                next if type == 'java' && !tool?('javac')
+                next if type == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
 
                 given = examples[id] || {}
                 given = given[language] || {} if language
@@ -220,6 +224,13 @@ module TaskExamples
         return @python_modules[name] if @python_modules.key?(name)
         @python_modules[name] = system('python3', '-c', 'import importlib.util, sys; sys.exit(importlib.util.find_spec(sys.argv[1]) is None)', name,
             :out => File::NULL, :err => File::NULL)
+    end
+
+    # whether this machine has a program, for the examples of Java and Dart
+    def self.tool?(name)
+        @tools ||= {}
+        @tools[name] = system('sh', '-c', "command -v #{name}", :out => File::NULL, :err => File::NULL) unless @tools.key?(name)
+        @tools[name]
     end
 
     def self.node?

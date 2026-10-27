@@ -255,7 +255,15 @@ this runs on 12 April 2027 by itself.
    Either enforce it or change the sentence before anyone uses that mode.
 7. The full current wording of § 64 Abs. 11 SchulG (the DigLLV cites a
    »Satz 2«; the source used showed one sentence): check on gesetze.berlin.de.
-8. Not verified: Germany's age in Art. 8 GDPR (widely reported as 16), the
+8. Git repositories of groups in the Workspace (`GIT_SERVER`, off by
+   default; docs/teacher-access.md, »Repositorys im Workspace«): when an
+   account is deleted, its keys go, but its commits stay in the group's
+   repositories as group work, with the name and e-mail address the person
+   wrote into them (in the Workspace freely chosen; the Handbuch says so).
+   The privacy notice says this. Whether that is allowed, or the name must
+   be removed from the history, is for the DSB. Deleting the group deletes
+   its repositories.
+9. Not verified: Germany's age in Art. 8 GDPR (widely reported as 16), the
    BlnDSG on fines for public bodies, Nebentätigkeit rules, a central
    Dienstvereinbarung for school software.
 

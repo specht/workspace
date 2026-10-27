@@ -49,6 +49,14 @@ class CodeLanguagesTest < Minitest::Test
         assert_includes texts, 'Wieder für alle.'
     end
 
+    def test_a_part_can_be_for_several_languages
+        root = render("<!-- language: javascript dart java -->\n\nA\n\n<!-- /language -->\n")
+        assert_equal 'javascript dart java', root.at_css('div.code-language')['data-language']
+        warnings = []
+        CodeLanguages.mark("<!-- language: ruby, kotlin -->\n", warn: ->(w) { warnings << w })
+        assert_equal ['<!-- language: kotlin -->: unknown language'], warnings
+    end
+
     def test_parts_right_after_each_other_stand_side_by_side
         root = CodeLanguages.pair(render(PAGE))
         compare = root.at_css('div.code-compare')

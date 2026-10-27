@@ -1,0 +1,71 @@
+#!/bin/sh
+# git-gate ACCOUNT: the forced command of every key (GitServer.authorized_keys
+# in src/ruby/include/git_server.rb). Lets ACCOUNT fetch from and push to a
+# repository in a folder it has a line for in /etc/git-server/access
+# (»ACCOUNT GIT_ID«), and nothing else. Without a command (ssh -T) it greets
+# and lists those repositories.
+set -eu
+account=${1:-}
+access=/etc/git-server/access
+root=/srv/git
+
+deny() {
+    echo "$1" >&2
+    exit 1
+}
+
+case "$account" in
+    ''|*[!a-z0-9]*) deny 'Dieser Schlüssel gehört zu keinem Konto.' ;;
+esac
+
+folders() {
+    [ -f "$access" ] || return 0
+    while read -r who id; do
+        [ "$who" = "$account" ] && printf '%s\n' "$id"
+    done < "$access"
+    return 0
+}
+
+command=${SSH_ORIGINAL_COMMAND:-}
+if [ -z "$command" ]; then
+    echo 'Hallo! Dein Schlüssel ist eingetragen. Hier gibt es keine Shell, nur Git.'
+    found=
+    for id in $(folders); do
+        for repo in "$root/$id"/*.git; do
+            [ -d "$repo" ] || continue
+            [ -n "$found" ] || echo 'Deine Repositorys:'
+            found=1
+            echo "  git@git.workspace:$id/${repo##*/}"
+        done
+    done
+    [ -n "$found" ] || echo 'Für dich gibt es noch kein Repository.'
+    exit 0
+fi
+
+verb=${command%% *}
+case "$verb" in
+    git-upload-pack|git-receive-pack|git-upload-archive) ;;
+    *) deny 'Hier geht nur Git: clone, fetch, pull und push.' ;;
+esac
+
+# The path as Git sends it: 'id/name.git', perhaps with a leading slash
+path=${command#* }
+path=${path#\'}
+path=${path%\'}
+path=${path#/}
+case "$path" in
+    *[!a-z0-9/.-]*|*..*|*/*/*|.*|*/.*) deny "Ein Repository $path gibt es hier nicht." ;;
+esac
+id=${path%%/*}
+name=${path#*/}
+case "$name" in
+    *.git) ;;
+    *) name="$name.git" ;;
+esac
+case "$id" in
+    [a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]) ;;
+    *) deny "Ein Repository $path gibt es hier nicht." ;;
+esac
+folders | grep -qxF "$id" || deny "Auf $path hast du keinen Zugriff. Gehörst du zu der Gruppe, der es gehört?"
+[ -d "$root/$id/$name" ] || deny "Das Repository $path gibt es nicht (mehr)."
+exec git-shell -c "$verb '$root/$id/$name'"

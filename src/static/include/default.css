@@ -151,29 +151,35 @@ pre .na {
 /* ```er blocks (Rouge::Lexers::ER): like the ER-Werkstatt in VS Code.
    ```cypher blocks (Rouge::Lexers::WorkspaceCypher) use the same colours:
    labels like entities, relationship types like relationships, property
-   keys like attributes (.na, above). */
+   keys like attributes (.na, above). ```uml blocks (Rouge::Lexers::UML)
+   too: classes like entities, associations like relationships. */
 pre.code-er .nc,
-pre.code-cypher .nc {
+pre.code-cypher .nc,
+pre.code-uml .nc {
     color: #6cb6ff !important;
     font-weight: bold;
 }
 
 pre.code-er .nf,
-pre.code-cypher .nf {
+pre.code-cypher .nf,
+pre.code-uml .nf {
     color: #e2a8ff !important;
 }
 
 pre.code-er .kt,
-pre.code-cypher .nb {
+pre.code-cypher .nb,
+pre.code-uml .kt {
     color: #56d4dd !important;
 }
 
-pre.code-er .kp {
+pre.code-er .kp,
+pre.code-uml .kp {
     font-weight: bold;
 }
 
 pre.code-er .m,
-pre.code-cypher .m {
+pre.code-cypher .m,
+pre.code-uml .m {
     color: #ff9e64 !important;
 }
 
@@ -2647,13 +2653,20 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 
 /* Folded to one line, a box keeps what there is to copy (```bash_copy,
-   such as the address to clone), right under that line. */
-.reference-include-folded > :not(.reference-include-done, .code-copy-box) {
+   such as the address to clone), right under that line, and nothing else:
+   _template.html puts every code block in a .code-copy-box, so only those
+   with pre.copy-code stay. The gap goes above the box, not the block: the
+   copy button sits at the box's top edge. */
+.reference-include-folded > :not(.reference-include-done, .code-copy-box:has(> pre.copy-code)) {
     display: none;
 }
 
+.reference-include-folded > .code-copy-box {
+    margin-top: 0.5em;
+}
+
 .reference-include-folded > .code-copy-box pre {
-    margin: 0.5em 0 0;
+    margin: 0;
 }
 
 .reference-include-done {
@@ -3350,11 +3363,14 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 }
 
 /* Pages in more than one programming language (CodeLanguages): the page
-   container says which one is shown, the other parts stay hidden. Without
-   a choice the first one, Ruby, is shown. */
-[data-code-language='ruby'] .code-language:not([data-language='ruby']),
-[data-code-language='python'] .code-language:not([data-language='python']),
-[data-code-language='javascript'] .code-language:not([data-language='javascript']) {
+   container says which one is shown, the other parts stay hidden; a part
+   may be for several (data-language='javascript dart java'). Without a
+   choice the first one, Ruby, is shown. */
+[data-code-language='ruby'] .code-language:not([data-language~='ruby']),
+[data-code-language='python'] .code-language:not([data-language~='python']),
+[data-code-language='javascript'] .code-language:not([data-language~='javascript']),
+[data-code-language='dart'] .code-language:not([data-language~='dart']),
+[data-code-language='java'] .code-language:not([data-language~='java']) {
     display: none;
 }
 
@@ -3412,8 +3428,25 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     background: transparent;
     font: inherit;
     line-height: 1.5;
+    white-space: nowrap;
+    hyphens: manual;
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+/* On a phone, four or five names do not fit in one row: the languages not
+   chosen show only their logo, their name stays for screen readers. */
+@media (max-width: 575.98px) {
+    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) {
+        padding: 0.1em 0.55em;
+    }
+    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) .code-language-option-name {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
 }
 
 .code-language-option img {
@@ -3506,6 +3539,15 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 
 .code-language-option[data-set-language='javascript'][aria-pressed='true'] {
     color: #8a6d00;
+}
+
+/* the blue of Dart's logo, the orange of Java's, dark enough for text */
+.code-language-option[data-set-language='dart'][aria-pressed='true'] {
+    color: #0468b4;
+}
+
+.code-language-option[data-set-language='java'][aria-pressed='true'] {
+    color: #b0560c;
 }
 
 .page-kind-links a {
@@ -4400,15 +4442,76 @@ ul.task-teacher-list .task-teacher-answer {
     flex: 1;
 }
 
-/* The button for the class repositories (class_repos_button_html):
-   »Git · 2« once the group has addresses; and its dialog (class_board.js). */
-.class-repos-count {
-    margin-left: 0.3em;
+/* The tab »Einstellungen« (class_settings_html): one setting under the
+   other, each a section with the same heading and a thin line between
+   them; inside the Git section, smaller headings. Text flush left. */
+.class-settings {
+    max-width: 46em;
+    margin-top: 0.6em;
 }
 
-.class-repos-open.has-repos {
-    border-color: var(--bs-link-color);
-    color: var(--bs-link-color);
+.class-settings p,
+.class-settings .form-check-label {
+    text-align: left;
+}
+
+.class-setting {
+    padding: 1.2em 0 1.4em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.class-setting:first-child {
+    border-top: none;
+}
+
+.class-setting-title {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin: 0 0 0.5em;
+}
+
+.class-setting-title label {
+    margin: 0;
+}
+
+.class-setting-subtitle {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 1.2em 0 0.4em;
+    padding: 0;
+}
+
+.class-setting > .form-select {
+    width: auto;
+    min-width: 14em;
+    max-width: 100%;
+}
+
+.class-setting-hint {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin: 0.4em 0 0;
+}
+
+.class-repos .class-repos-save {
+    margin-top: 0.4em;
+}
+
+/* How busy the server is, one quiet line above the people (class_board.js);
+   a part that is nearly full stands out. */
+.class-server-line {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin: 0.4em 0 1em;
+}
+
+.class-server-line .bi {
+    margin-right: 0.35em;
+}
+
+.class-server-line .load-full {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
 }
 
 /* An icon before the title of the site's dialog (showTemplateModal). */
@@ -4416,35 +4519,74 @@ ul.task-teacher-list .task-teacher-answer {
     margin-right: 0.45em;
 }
 
-.class-repos-dialog .class-repos-intro {
+.class-repos .class-repos-intro {
     margin-bottom: 0.4em;
 }
 
-.class-repos-dialog .class-repos-format,
-.class-repos-dialog .class-repos-note {
+.class-repos .class-repos-format,
+.class-repos .class-repos-note {
     font-size: 90%;
     color: var(--bs-secondary-color);
     overflow-wrap: anywhere;
 }
 
-.class-repos-dialog .class-repos-format {
+.class-repos .class-repos-format {
     margin-bottom: 1em;
 }
 
-.class-repos-dialog .class-repos-note {
+.class-repos .class-repos-note {
     margin: 0;
 }
 
-.class-repos-dialog .class-repo-field {
+.class-repos .class-repo-field {
     margin-bottom: 1em;
 }
 
-.class-repos-dialog .class-repo-field .form-label {
+.class-repos .class-repo-field .form-label {
     margin-bottom: 0.3em;
 }
 
+/* The Workspace's own Git server (GitServer): how keys come about, and
+   beside each field what can be done with a repository there. Buttons
+   at least 44 px high for a finger, with room between them. */
+.class-repos .class-repos-keys {
+    margin: 0;
+}
+
+.class-repos .class-repos-keys-hint {
+    display: block;
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.class-repos .class-repo-git {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 0.4em;
+}
+
+.class-repos .class-repo-git .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.class-repos .class-repo-git .bi {
+    margin: 0;
+}
+
+.class-repos .class-repo-local {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
 /* The link to the page beside its label: the icon alone, centred. */
-.class-repos-dialog .class-repo-page {
+.class-repos .class-repo-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4453,33 +4595,33 @@ ul.task-teacher-list .task-teacher-answer {
     font-size: 85%;
 }
 
-.class-repos-dialog .class-repo-page .bi {
+.class-repos .class-repo-page .bi {
     margin: 0;
 }
 
-.class-repos-dialog .class-repo-page .bi::before {
+.class-repos .class-repo-page .bi::before {
     vertical-align: 0;
 }
 
 /* Entered addresses in monospace; an empty field says so in the page's
    font, faint, so that it never looks filled in. */
-.class-repos-dialog .class-repo-input {
+.class-repos .class-repo-input {
     font-family: var(--bs-font-monospace);
     font-size: 90%;
 }
 
-.class-repos-dialog .class-repo-input:placeholder-shown {
+.class-repos .class-repo-input:placeholder-shown {
     font-family: inherit;
     font-size: inherit;
 }
 
-.class-repos-dialog .class-repo-input::placeholder {
+.class-repos .class-repo-input::placeholder {
     color: var(--bs-secondary-color);
     opacity: 0.6;
     font-style: italic;
 }
 
-.class-repos-dialog .invalid-feedback {
+.class-repos .invalid-feedback {
     overflow-wrap: anywhere;
 }
 
@@ -4516,6 +4658,22 @@ ul.task-teacher-list .task-teacher-answer {
     .class-tab {
         padding: 0.5em 0.7em;
         white-space: nowrap;
+    }
+
+    /* Four tabs do not fit: those not chosen show their icon only; the
+       name stays for screen readers (and as the title). */
+    .class-tab:not([aria-selected='true']) .class-tab-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .class-tab:not([aria-selected='true']) .bi {
+        margin-right: 0;
+        font-size: 1.15em;
     }
 }
 
@@ -4902,6 +5060,8 @@ ul.task-teacher-list .task-teacher-answer {
 
 .class-board tfoot td {
     white-space: normal;
+    /* »1 richtig vermutet« breaks between words, not as »vermu-tet« */
+    hyphens: manual;
     max-width: 5em;
     font-size: 80%;
     color: #5c636a;
@@ -5950,22 +6110,31 @@ ul.task-teacher-list .task-teacher-answer {
     color: #5c636a;
 }
 
-/* Handbuch »ER-Modelle als Text«: model on the left, diagram on the right. */
-.er-playground {
+/* Handbuch »ER-Modelle als Text«, »Klassendiagramme als Text« and
+   »Pseudocode und Struktogramme«: text on the left, diagram on the right. */
+.er-playground,
+.uml-playground,
+.struktogramm-playground {
     display: grid;
     grid-template-columns: minmax(16em, 2fr) 3fr;
     gap: 0.8em 1em;
     margin: 1em 0 1.5em;
 }
 
-.er-playground-input {
+/* textarea. outranks Bootstrap's textarea.form-control, whose min-height
+   would otherwise leave two lines on a phone */
+textarea.er-playground-input,
+textarea.uml-playground-input,
+textarea.struktogramm-playground-input {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: 90%;
     min-height: 22em;
     resize: vertical;
 }
 
-.er-playground-output {
+.er-playground-output,
+.uml-playground-output,
+.struktogramm-playground-output {
     border: 1px solid #e3e3e3;
     border-radius: 0.5em;
     padding: 0.6em;
@@ -5973,7 +6142,8 @@ ul.task-teacher-list .task-teacher-answer {
     background-color: #fff;
 }
 
-.er-playground-diagram svg {
+.er-playground-diagram svg,
+.uml-playground-diagram svg {
     display: block;
     width: 100%;
     height: auto;
@@ -5981,7 +6151,9 @@ ul.task-teacher-list .task-teacher-answer {
     margin-top: 0.5em;
 }
 
-.er-playground-problems {
+.er-playground-problems,
+.uml-playground-problems,
+.struktogramm-playground-problems {
     color: #b02a37;
     font-size: 90%;
     margin-top: 0.4em;
@@ -6000,9 +6172,44 @@ ul.task-teacher-list .task-teacher-answer {
     overflow: auto;
 }
 
+/* With an error the last good diagram stays, faded, as in the UML-Werkstatt. */
+.uml-playground-stale,
+.struktogramm-playground-stale {
+    opacity: 0.4;
+}
+
+/* A Struktogramm (struktogramm.js) at its own size; a wide one scrolls
+   sideways instead of shrinking its text. */
+.struktogramm,
+.struktogramm-playground-diagram {
+    overflow-x: auto;
+    margin: 0.5em 0 1.2em;
+}
+
+.struktogramm svg,
+.struktogramm-playground-diagram svg {
+    display: block;
+    max-width: none;
+}
+
+.struktogramm-playground-save {
+    margin-top: 0.4em;
+}
+
 @media (max-width: 720px) {
-    .er-playground {
+    .er-playground,
+    .uml-playground,
+    .struktogramm-playground {
         grid-template-columns: 1fr;
+    }
+
+    /* On a phone the diagram keeps a readable size and scrolls sideways. */
+    .uml-playground-diagram {
+        overflow-x: auto;
+    }
+
+    .uml-playground-diagram svg {
+        min-width: 36em;
     }
 }
 
@@ -6630,7 +6837,9 @@ body.subview-open {
         flex-shrink: 0;
         padding: 0.5em 0.65em;
     }
-    .class-tab .bi {
+    /* the chosen tab with its name only; the others show their icon
+       (further up, ».class-tab:not([aria-selected='true'])«) */
+    .class-tab[aria-selected='true'] .bi {
         display: none;
     }
     .class-welcome {
@@ -7355,8 +7564,11 @@ div[data-stepper]::before {
    speed as a pair on the left, then the step count. A button that cannot
    be used is grey, not pale green. */
 div[data-stepper] .stepper-word { display: none; }
+/* .stepper-row: the row of the step buttons (stepper_keys.js), a class
+   rather than :has(> [data-go]), which made every change on the page
+   check every element, a lag in each keystroke of a code box */
 @media (pointer: fine) and (min-width: 577px) {
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -7387,7 +7599,7 @@ div[data-stepper] .stepper-word { display: none; }
         position: relative;
     }
     /* the step count on the left, play and its speed before it */
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         order: 0;
         margin: 0 auto 0 0.75rem;
     }
@@ -7446,32 +7658,32 @@ div[data-stepper] .stepper-word { display: none; }
     div[data-stepper]::before {
         content: 'Zum Ausprobieren · Tasten tippen oder über das Bild wischen';
     }
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         order: 0;
         margin: 0 auto 0 0;
     }
     /* play and its speed on the left, before the step count */
-    div[data-stepper] :has(> [data-go]) > [data-play],
-    div[data-stepper] :has(> [data-go]) > [data-speed] {
+    div[data-stepper] .stepper-row > [data-play],
+    div[data-stepper] .stepper-row > [data-speed] {
         order: 0;
         min-height: 2.75rem;
         flex: 0 0 2.75rem;
         padding: 0;
         margin: 0;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go] {
+    div[data-stepper] .stepper-row > [data-go] {
         min-height: 2.75rem;
         margin: 0;
         font-size: 1.25rem;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='first'],
-    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+    div[data-stepper] .stepper-row > [data-go='first'],
+    div[data-stepper] .stepper-row > [data-go='last'] {
         flex: 0 0 2.75rem;
         font-size: 1.05rem;
         /* quieter than the steps, but not faint: faint means disabled */
@@ -7480,19 +7692,19 @@ div[data-stepper] .stepper-word { display: none; }
         --bs-btn-disabled-bg: transparent;
         --bs-btn-disabled-color: var(--bs-success);
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='first'] {
+    div[data-stepper] .stepper-row > [data-go='first'] {
         order: 1;
         margin-left: auto;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+    div[data-stepper] .stepper-row > [data-go='last'] {
         order: 2;
         margin-right: 0.9em;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='prev'] {
+    div[data-stepper] .stepper-row > [data-go='prev'] {
         order: 3;
         flex: 0 0 5.5rem;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='next'] {
+    div[data-stepper] .stepper-row > [data-go='next'] {
         order: 4;
         flex: 0 0 5.5rem;
     }
@@ -7500,19 +7712,19 @@ div[data-stepper] .stepper-word { display: none; }
 /* On a narrow screen the step count goes on a line of its own above the
    buttons, which keep to the right */
 @media (max-width: 576px) {
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         flex-basis: 100%;
         margin-left: 0;
     }
     /* with play: the count, play and its speed on one line */
-    div[data-stepper] :has(> [data-play]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row:has(> [data-play]) > :not([data-go]):not([data-play]):not([data-speed]) {
         flex: 0 0 calc(100% - 5.5rem - 0.8em - 1px);
         order: -1;
     }
@@ -9164,6 +9376,24 @@ html[data-bs-theme="dark"] .bitplane-widget {
     justify-content: center;
 }
 
+/* a map the Wichtel builds only for a run (pip_world.js, show): in place
+   of the scene a dark panel of its size that says so */
+.pip-map-box.pip-unbuilt { position: relative; }
+.pip-map-box.pip-unbuilt > .pip-map { visibility: hidden; }
+.pip-map-box.pip-unbuilt::after {
+    content: attr(data-unbuilt);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em 2em;
+    text-align: center;
+    color: #b4b9da;
+    background: radial-gradient(circle, #1c1d36, #0b0b16);
+    border-radius: 0.4em;
+}
+
 .pip-map {
     position: relative;
     isolation: isolate;
@@ -9296,10 +9526,12 @@ html[data-bs-theme="dark"] .bitplane-widget {
     width: var(--w);
     height: calc(var(--tile) * 37 / 24);
     margin: calc(var(--tile) * -14 / 24) 0 0 calc(var(--tile) * -4 / 24);
-    background-image: url(/images/pip/mampfer.png?v=13);
+    background-image: url(/images/pip/mampfer.png?v=14);
     background-size: 800% 100%;
     animation: pip-mampfer-chomp 0.8s steps(4) infinite;
 }
+/* it looks east by itself; west, its frames mirrored (make_sprites.py) */
+.pip-mampfer[data-facing='west'] { background-image: url(/images/pip/mampfer-west.png?v=14); }
 .pip-mampfer.pip-running { animation: pip-mampfer-run max(var(--step), 1ms) steps(4); }
 @keyframes pip-mampfer-chomp { to { background-position-x: calc(var(--w) * -4); } }
 @keyframes pip-mampfer-run {
@@ -9359,7 +9591,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 .pip-pip.pip-walking { animation: pip-frames-2 var(--step) steps(2); }
 .pip-pip.pip-bump { animation: pip-bump 300ms; }
 .pip-pip.pip-caught { animation: pip-caught 600ms 2; }
-.pip-pip.pip-cheer { animation: pip-frames-2 var(--step) steps(2), pip-hop 360ms ease-out var(--step) 2; }
+.pip-pip.pip-cheer { animation: pip-frames-2 var(--step) steps(2), pip-hop 420ms ease-in-out var(--step); }
 
 @keyframes pip-frames-2 { to { background-position-x: calc(-2 * var(--tile)); } }
 @keyframes pip-frames-4 { to { background-position-x: calc(-4 * var(--tile)); } }
@@ -9371,7 +9603,7 @@ html[data-bs-theme="dark"] .bitplane-widget {
 /* eaten by the Mampfer: gone after the step that brings it there */
 .pip-eaten { animation: pip-eaten 1ms var(--step, 0ms) forwards; }
 @keyframes pip-eaten { to { visibility: hidden; opacity: 0; } }
-@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.3); } }
+@keyframes pip-hop { 50% { translate: 0 calc(var(--tile) * -0.18); } }
 
 /* The light: a layer over the ground, the rock and what stands in the dark,
    which multiplies them with a cave blue, so that it is darker but every
@@ -9390,6 +9622,17 @@ html[data-bs-theme="dark"] .bitplane-widget {
     transition: background-color 1.2s;
 }
 .pip-done .pip-light { background-color: #b4b9da; }
+/* the glows on the floor and the faces only (pip_world.js, floorMask):
+   the layer is screened onto the light as a whole */
+.pip-glows {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: screen;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+}
 .pip-glow {
     position: absolute;
     top: 0;
@@ -9751,4 +9994,292 @@ div.pip-world[data-stepper] .stepper-timeline {
     background: rgba(177, 151, 252, 0.2);
     border-left: 3px solid #b197fc;
     pointer-events: none;
+}
+
+/* The key box for the Workspace's own Git server (git_key.js). */
+.git-key {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6em;
+    padding: 0.8em 1em;
+    margin: 1em 0 1.5em;
+    overflow-wrap: anywhere;
+}
+
+.git-key p {
+    margin-bottom: 0.5em;
+    /* flush left: a fingerprint does not break, and justified text would
+       spread the words of its line far apart */
+    text-align: left;
+}
+
+.git-key p:last-child {
+    margin-bottom: 0;
+}
+
+.git-key .bi-check-lg {
+    color: var(--bs-success);
+    margin-right: 0.3em;
+}
+
+.git-key-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    margin: 0.4em 0 0.6em;
+}
+
+.git-key-buttons .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.git-key-buttons .bi {
+    margin: 0;
+}
+
+.git-key .btn-link {
+    padding: 0;
+    vertical-align: baseline;
+}
+
+.git-key .form-label {
+    font-weight: 600;
+    margin: 0.2em 0 0.3em;
+}
+
+.git-key-input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 85%;
+    word-break: break-all;
+}
+
+.git-key-host {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.git-key-warning {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* Reading a group's repository (/git/…, GitBrowse in main.rb): a light
+   view of files, history and commits. */
+.git-browse {
+    margin-top: 1em;
+}
+
+.git-crumbs {
+    font-size: 1.4em;
+    margin-bottom: 0.6em;
+    overflow-wrap: anywhere;
+}
+
+.git-crumbs .bi {
+    color: #f05133;
+}
+
+.git-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+.git-bar .btn,
+.git-file-bar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.git-bar .bi {
+    margin: 0;
+}
+
+.git-branch {
+    color: var(--bs-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.git-clone {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1em;
+    overflow-wrap: anywhere;
+}
+
+.git-path {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 95%;
+    margin: 0.4em 0 0.8em;
+    overflow-wrap: anywhere;
+}
+
+.git-meta {
+    font-size: 90%;
+    color: var(--bs-secondary-color);
+}
+
+.git-last {
+    border: 1px solid var(--bs-border-color);
+    border-bottom: 0;
+    border-radius: 0.5em 0.5em 0 0;
+    background: var(--bs-tertiary-bg);
+    padding: 0.5em 0.8em;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.git-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.git-tree li {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.45em 0.8em;
+    border-top: 1px solid var(--bs-border-color);
+    min-height: 44px;
+}
+
+.git-tree li:first-child {
+    border-top: 0;
+}
+
+.git-tree .bi-folder-fill {
+    color: #54aeff;
+}
+
+.git-tree a {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.git-size {
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.git-readme {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    padding: 1em 1.2em;
+    margin-bottom: 1.5em;
+    overflow-wrap: anywhere;
+}
+
+.git-file-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em;
+    margin-bottom: 0.4em;
+}
+
+.git-picture img {
+    max-width: 100%;
+    border: 1px solid var(--bs-border-color);
+}
+
+.git-log {
+    list-style: none;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+}
+
+.git-log li {
+    padding: 0.55em 0.8em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.git-log li:first-child {
+    border-top: 0;
+}
+
+.git-log-subject {
+    display: block;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.git-commit-head h2 {
+    font-size: 1.4em;
+    overflow-wrap: anywhere;
+}
+
+.git-message {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-bottom: 0.6em;
+}
+
+.git-file h3 {
+    font-size: 1em;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    margin: 1.5em 0 0.4em;
+    overflow-wrap: anywhere;
+}
+
+.git-status {
+    font-family: var(--bs-body-font-family);
+    font-size: 80%;
+    border-radius: 0.4em;
+    padding: 0.1em 0.45em;
+    margin-right: 0.3em;
+    background: var(--bs-secondary-bg);
+}
+
+.git-status-added { background: rgba(26, 127, 55, 0.15); }
+.git-status-deleted { background: rgba(207, 34, 46, 0.15); }
+
+.git-diff {
+    font-size: 85%;
+    line-height: 1.45;
+    overflow-x: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    padding: 0.5em 0;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.git-diff span {
+    display: inline-block;
+    min-width: 100%;
+}
+
+.git-diff,
+.git-diff span {
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+}
+
+.git-add { background: rgba(26, 127, 55, 0.15); }
+.git-del { background: rgba(207, 34, 46, 0.15); }
+.git-hunk { color: var(--bs-secondary-color); background: var(--bs-tertiary-bg); }
+
+.git-note {
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+}
+
+/* For a finger at least 44 px; with a mouse the buttons keep their size. */
+@media (pointer: coarse) {
+    .class-repos .class-repo-git .btn,
+    .git-key-buttons .btn,
+    .git-bar .btn,
+    .git-file-bar a {
+        min-height: 44px;
+    }
 }

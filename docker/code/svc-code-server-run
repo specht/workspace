@@ -31,6 +31,7 @@ EXTENSIONS=(
     "/app/extensions/ritwickdey.LiveServer.vsix|ritwickdey.LiveServer"
     "/app/extensions/hackschule-er-0.3.0.vsix|hackschule.hackschule-er"
     "/app/extensions/hackschule-backrooms-0.1.1.vsix|hackschule.hackschule-backrooms"
+    "/app/extensions/hackschule-uml-0.1.0.vsix|hackschule.hackschule-uml"
 )
 
 mkdir -p "$EXT_DIR"

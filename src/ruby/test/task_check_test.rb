@@ -128,9 +128,9 @@ class TaskCheckTest < Minitest::Test
         assert_equal :correct, TaskCheck.check(task, '1', variables: {}).status
         wrong = TaskCheck.check(task, '0', variables: {})
         assert_equal :wrong, wrong.status
-        assert_match(/nichts mit Zeit/, wrong.message)
+        assert_match(/\ADeine Vermutung stimmt nicht\. .*nichts mit Zeit/, wrong.message)
         other = TaskCheck.check(task, '3', variables: {})
-        assert_match(/Vermutung/, other.message) # prediction task
+        assert_equal 'Deine Vermutung stimmt nicht. Probier es aus und sieh nach, was wirklich passiert.', other.message
         assert_equal :invalid, TaskCheck.check(task, '7', variables: {}).status
         assert_equal :invalid, TaskCheck.check(task, 'zwei', variables: {}).status
         assert_equal :invalid, TaskCheck.check(task, '', variables: {}).status

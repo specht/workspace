@@ -33,6 +33,8 @@ require './include/authentication.rb'
 require './include/login_names.rb'
 require './include/database_provisioning.rb'
 require './include/case_server.rb'
+require './include/git_server.rb'
+require './include/git_browse.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
 require './include/teacher_roles.rb'
@@ -68,9 +70,11 @@ require 'faye/websocket'
 require 'open3'
 require 'resolv'
 require 'ipaddr'
+require 'erb'
 require 'redcarpet'
 require 'rouge'
 require './include/er_lexer.rb'
+require './include/uml_lexer.rb'
 require './include/cypher_lexer.rb'
 require './include/code_highlight.rb'
 require 'securerandom'
@@ -1419,7 +1423,7 @@ class Main < Sinatra::Base
     # The features of this installation that pages may show parts for
     # (ContentParts.filter_features).
     def self.content_features
-        CaseServer.enabled? ? ['case_server'] : []
+        (CaseServer.enabled? ? ['case_server'] : []) + (GitServer.enabled? ? ['git_server'] : [])
     end
 
     def self.convert_image(image_path)
@@ -2339,6 +2343,82 @@ class Main < Sinatra::Base
         @@load_invitations_mutex.synchronize do
             load_invitations_locked
         end
+        git_refresh!
+    end
+
+    # --- Git repositories of groups in the Workspace (GitServer) -------------
+
+    # Who may use a group's repositories: its members and its teachers.
+    def self.git_group_emails(group)
+        teachers = @@teachers.select { |_, groups| groups.include?(group) }.keys
+        ((@@group_members[group] || []) + teachers).uniq
+    end
+
+    # { group => { id:, keys: } } for the groups with a folder on the server.
+    def self.git_groups
+        $neo4j.neo4j_query(<<~END_OF_QUERY).to_h { |row| [row['group'], { :id => row['id'], :keys => row['keys'] || GitServer::KEYS_HANDED_IN }] }
+            MATCH (g:GroupSetting) WHERE g.git_id IS NOT NULL
+            RETURN g.group AS group, g.git_id AS id, g.git_keys AS keys;
+        END_OF_QUERY
+    end
+
+    # The access list for the server, from the groups and their people.
+    def self.git_refresh_access
+        map = Hash.new { |hash, key| hash[key] = [] }
+        git_groups.each do |group, data|
+            git_group_emails(group).each { |email| map[fs_tag_for_email(email)] << data[:id] }
+        end
+        GitServer.write_config('access', GitServer.access(map))
+    end
+
+    # The keys for the server: the one each person handed in, the automatic one.
+    def self.git_refresh_keys
+        entries = Hash.new { |hash, key| hash[key] = [] }
+        $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
+            MATCH (u:User) WHERE u.git_key IS NOT NULL OR u.git_auto_key IS NOT NULL
+            RETURN u.email AS email, u.git_key AS key, u.git_auto_key AS auto;
+        END_OF_QUERY
+            entries[fs_tag_for_email(row['email'])].concat([row['key'], row['auto']].compact)
+        end
+        GitServer.write_config('authorized_keys', GitServer.authorized_keys(entries))
+    end
+
+    # The people of the groups whose teachers chose automatic keys.
+    def self.git_auto_emails
+        git_groups.select { |_, data| data[:keys] == GitServer::KEYS_AUTO }.keys.flat_map { |group| git_group_emails(group) }.uniq
+    end
+
+    # KEYS_AUTO: the key pair in the Workspace folder of each of these
+    # people that has one (anyone who has logged in), its public key on the
+    # account. Returns how many got one.
+    def self.git_install_auto_keys(emails)
+        return 0 unless GitServer.enabled? && File.exist?(GitServer::HOST_KEY)
+
+        host_key = File.read(GitServer::HOST_KEY)
+        count = 0
+        emails.each do |email|
+            home = File.join('/user', fs_tag_for_email(email), 'workspace')
+            next unless File.directory?(home)
+
+            line = GitServer.install_auto_key(home, :host_key_text => host_key)
+            $neo4j.neo4j_query('MATCH (u:User {email: $email}) SET u.git_auto_key = $key;', :email => email, :key => line)
+            count += 1
+        rescue StandardError => e
+            STDERR.puts "Git: the automatic key for a Workspace failed: #{e.class}: #{e.message}"
+        end
+        count
+    end
+
+    # Everything the server reads, afresh: after the roster was read, a
+    # repository or a key changed, an account was deleted.
+    def self.git_refresh!(auto: true)
+        return unless GitServer.enabled?
+
+        git_install_auto_keys(git_auto_emails) if auto
+        git_refresh_keys
+        git_refresh_access
+    rescue StandardError => e
+        STDERR.puts "Git: refreshing the server's files failed: #{e.class}: #{e.message}"
     end
 
 
@@ -4111,6 +4191,13 @@ class Main < Sinatra::Base
 
             # STDERR.puts ">>> Workspace login is #{workspace_login}, database login is #{database_login}"
 
+            # A group with automatic Git keys (GitServer): the key pair is in
+            # the Workspace before it starts.
+            if GitServer.enabled? && test_tag.nil? && Main.git_auto_emails.include?(email)
+                Main.git_install_auto_keys([email])
+                Main.git_refresh!(:auto => false)
+            end
+
             with_timing("start_server #{container_name}: docker run") do
                 workspace_runtime.start_workspace(
                     :fs_tag => container_name,
@@ -4519,6 +4606,8 @@ class Main < Sinatra::Base
 
         task_keys.each { |task| FileUtils.rm_f(submission_path(task, email)) }
         AccountDeletion.node_statements.each { |statement| neo4j_query(statement, :email => email) }
+        # The key goes with the account; the server forgets it at once.
+        Main.git_refresh!(:auto => false)
         note_deletion(email)
         Main.refresh_nginx_config()
 
@@ -5431,7 +5520,23 @@ class Main < Sinatra::Base
     def class_repo_view(slug)
         @class_repo_view ||= {}
         @class_repo_view[slug] ||= ClassRepos.view(slug, :per_group => (@@content[slug] || {})[:class_repo] == true,
-            :placeholders => class_repo_placeholders?, :groups => my_groups, :settings => my_class_repos)
+            :placeholders => class_repo_placeholders?, :groups => my_groups, :settings => my_class_repos,
+            :local => git_local_mode)
+    end
+
+    # For ClassRepos.variant: :auto or :keys for an address on the
+    # Workspace's Git server, after how its group's students get their
+    # keys; nil for other addresses.
+    def git_local_mode
+        @git_local_mode ||= begin
+            modes = GitServer.enabled? ? Main.git_groups.values.to_h { |data| [data[:id], data[:keys]] } : {}
+            lambda do |address|
+                parsed = GitServer.parse_address(address)
+                next nil unless parsed
+
+                modes[parsed[0]] == GitServer::KEYS_AUTO ? :auto : :keys
+            end
+        end
     end
 
     # The variant of a page this person sees (nil: the page as it is);
@@ -5447,7 +5552,7 @@ class Main < Sinatra::Base
 
         @group_class_repos ||= {}
         @group_class_repos[group] ||= group_class_repos([group])[group] || {}
-        ClassRepos.variant(@group_class_repos[group][slug])
+        ClassRepos.variant(@group_class_repos[group][slug], :local => git_local_mode)
     end
 
     # The tasks a page shows in a variant (nil: the page as it is).
@@ -5475,7 +5580,7 @@ class Main < Sinatra::Base
         if with.empty?
             where = groups.size == 1 ? "<a href='#{h.(link.(groups.first))}'>auf der Klassenseite</a>" : "auf der <a href='/klasse'>Klassenseite</a> bei der Gruppe"
             return "<p class='class-repo-hint'><i class='bi bi-hdd-network' aria-hidden='true'></i>Lernende sehen diese Seite ohne Git. " \
-                "Soll eine Klasse ihre Arbeit in ein gemeinsames Repository hochladen, trägst du dessen Adresse #{where} unter »Git« ein.</p>"
+                "Soll eine Klasse ihre Arbeit in ein gemeinsames Repository hochladen, trägst du dessen Adresse #{where} im Reiter »Einstellungen« ein.</p>"
         end
         items = with.map { |g| "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: <code>#{h.(repos[g][slug])}</code>" }
         others = with.size < groups.size ? ' Deine anderen Gruppen sehen die Seite ohne Git.' : ''
@@ -6249,10 +6354,10 @@ class Main < Sinatra::Base
         # How busy the server is, so that a slow Workspace can be told from a
         # busy server, and how much room is left on the disk of the
         # Workspaces (df: the whole partition, so nothing can be saved once
-        # it is full): one row as on »Betrieb«, from the teachers' websocket
+        # it is full): one quiet line, from the teachers' websocket
         # (server_stats), see class_board.js.
-        cell = ->(icon, label) { "<div class='server-load-cell'><div class='server-load-label'><i class='bi #{icon}' aria-hidden='true'></i>#{label}</div><div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>–</p></div>" }
-        io << "<div class='server-load-pair server-load-three class-server-load mb-3' aria-label='Server, jede Sekunde neu'>#{cell.('bi-cpu', 'CPU des Servers')}#{cell.('bi-memory', 'RAM des Servers')}#{cell.('bi-nvme', 'Speicherplatz')}</div>"
+        io << "<p class='class-server-line' hidden><i class='bi bi-hdd-rack' aria-hidden='true'></i>Server: " \
+            "<span class='class-server-cpu'></span> · <span class='class-server-ram'></span> · <span class='class-server-disk'></span></p>"
         io << class_group_html(group) unless test_group
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
@@ -6306,6 +6411,7 @@ class Main < Sinatra::Base
         ['fortschritt', 'Fortschritt', 'bi-check2-square'],
         ['lernende', 'Lernende', 'bi-people'],
         ['startseite', 'Startseite', 'bi-pin-angle'],
+        ['einstellungen', 'Einstellungen', 'bi-sliders'],
     ].freeze
 
     # »Neue Gruppe« on the class page: for teachers with a school (their
@@ -6344,6 +6450,8 @@ class Main < Sinatra::Base
         group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
         # »gruppe«: the tab that managed the group is part of »Lernende« now.
         wanted = params['tab'] == 'gruppe' ? 'lernende' : params['tab']
+        # the link of an activity page to its class repository (/klasse?repos=SLUG)
+        wanted = 'einstellungen' if params['repos'].to_s != ''
         tab = CLASS_TABS.any? { |key, _, _| key == wanted } ? wanted : 'fortschritt'
         io = +"<form class='class-board-select' method='get' action='/klasse'>"
         # a search field (class_board.js), with the schools as headings
@@ -6365,30 +6473,6 @@ class Main < Sinatra::Base
             groups.each { |g| io << option.call(g) }
         end
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
-        # The programming language of the group's activities (CodeLanguages),
-        # where an activity offers more than one; saved at once, not sent with
-        # the form.
-        current = group_code_languages([group])[group]
-        io << "<label title='Für Aktivitäten, die es in mehreren Sprachen gibt. Lernende können auf der Seite selbst umschalten.'>Sprache <select class='form-select class-code-language' data-group='#{h.(group)}'>"
-        CodeLanguages::GROUP_LANGUAGES.each do |language|
-            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
-            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
-        end
-        io << "</select></label>"
-        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () {}, { no_please_wait: true });" \
-            "});</script>"
-        # Copy buttons on every code block for the group's students, or only
-        # where the page has them (group_copy_all_code?); saved at once.
-        copy_all = group_copy_all_code?([group])
-        io << "<label title='An jedem Codeblock (Voreinstellung): überall ein Kopierknopf. Wo sinnvoll: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab.'>" \
-            "Kopierknöpfe <select class='form-select class-copy-all-code' data-group='#{h.(group)}'>" \
-            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option>" \
-            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option></select></label>"
-        io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
-            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () {}, { no_please_wait: true });" \
-            "});</script>"
-        io << class_repos_button_html(group)
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
@@ -6400,20 +6484,56 @@ class Main < Sinatra::Base
         CLASS_TABS.each do |key, label, icon|
             count = key == 'lernende' ? " <span class='class-tab-count'>#{class_members(group).size}</span>" : ''
             io << "<button type='button' role='tab' class='class-tab' id='class-tab-#{key}' data-tab='#{key}' aria-controls='class-panel-#{key}' " \
-                "aria-selected='#{key == tab}'#{key == tab ? '' : " tabindex='-1'"}><i class='bi #{icon}' aria-hidden='true'></i>#{label}#{count}</button>"
+                "aria-selected='#{key == tab}'#{key == tab ? '' : " tabindex='-1'"} title='#{label}'><i class='bi #{icon}' aria-hidden='true'></i><span class='class-tab-label'>#{label}</span>#{count}</button>"
         end
         io << "</div>"
         panel = ->(key, html) { "<section class='class-panel' role='tabpanel' id='class-panel-#{key}' aria-labelledby='class-tab-#{key}'#{key == tab ? '' : ' hidden'}>#{html}</section>" }
         io << panel.('fortschritt', class_progress_html(group))
         io << panel.('lernende', class_people_html(group))
         io << panel.('startseite', class_pins_html(group))
+        io << panel.('einstellungen', class_settings_html(group))
         io
     end
 
-    # The class repositories of the group (ClassRepos): a button beside the
-    # language that opens a dialog with one field per activity that clones
-    # one (class_board.js); its count says how many are set.
-    def class_repos_button_html(group)
+    # The tab »Einstellungen«: what holds for the whole group, each saved at
+    # once, with what it does in a sentence instead of a tooltip.
+    def class_settings_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        io = +"<div class='class-settings'>"
+        # The programming language of the group's activities (CodeLanguages),
+        # where an activity offers more than one.
+        current = group_code_languages([group])[group]
+        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-code-language'>Sprache</label></h3>" \
+            "<select class='form-select class-code-language' id='class-code-language' data-group='#{h.(group)}' aria-describedby='class-code-language-hint'>"
+        CodeLanguages::GROUP_LANGUAGES.each do |language|
+            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
+            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
+        end
+        io << "</select><p class='class-setting-hint' id='class-code-language-hint'>Für Aktivitäten, die es in mehreren Sprachen gibt. " \
+            "Lernende können auf der Seite selbst umschalten.</p></section>"
+        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
+            "});</script>"
+        # Copy buttons on every code block for the group's students, or only
+        # where the page has them (group_copy_all_code?).
+        copy_all = group_copy_all_code?([group])
+        io << "<section class='class-setting'><h3 class='class-setting-title'><label for='class-copy-all-code'>Kopierknöpfe</label></h3>" \
+            "<select class='form-select class-copy-all-code' id='class-copy-all-code' data-group='#{h.(group)}' aria-describedby='class-copy-all-code-hint'>" \
+            "<option value='all'#{copy_all ? ' selected' : ''}>An jedem Codeblock</option>" \
+            "<option value='marked'#{copy_all ? '' : ' selected'}>Wo sinnvoll</option></select>" \
+            "<p class='class-setting-hint' id='class-copy-all-code-hint'>»An jedem Codeblock« (Voreinstellung): überall ein Kopierknopf. " \
+            "»Wo sinnvoll«: nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippen die Lernenden ab.</p></section>"
+        io << "<script>document.querySelector('.class-copy-all-code').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_copy_all_code', { group: e.target.dataset.group, on: e.target.value === 'all' }, function () { show_success_message('Gespeichert.'); }, { no_please_wait: true });" \
+            "});</script>"
+        io << class_repos_html(group)
+        io << "</div>"
+    end
+
+    # The class repositories of the group (ClassRepos), in the tab
+    # »Einstellungen«: one field per activity that clones one, drawn by
+    # class_board.js from data-repos.
+    def class_repos_html(group)
         slugs = class_repo_slugs
         return '' if slugs.empty?
 
@@ -6421,13 +6541,13 @@ class Main < Sinatra::Base
         set = group_class_repos([group])[group] || {}
         entries = slugs.map do |slug|
             { :slug => slug, :title => plain_title(slug), :address => set[slug],
-              :folder => ((@@content[slug] || {})[:template] || {})[:folder] || slug }
+              :folder => ((@@content[slug] || {})[:template] || {})[:folder] || slug,
+              # with the Workspace's own Git server: a starter folder fills a new repository
+              :starter => File.directory?(File.join('/src/content', slug, 'starter')) }
         end
-        count = entries.count { |e| e[:address] }
-        state = "Klassen-Repositorys: #{count} von #{entries.size} eingetragen"
-        "<button type='button' class='btn btn-outline-secondary class-repos-open#{count > 0 ? ' has-repos' : ''}' data-group='#{h.(group)}' " \
-            "data-repos='#{h.(entries.to_json)}' aria-label='#{h.(state)}' title='#{h.(state)}'>" \
-            "<i class='bi bi-hdd-network' aria-hidden='true'></i>Git<span class='class-repos-count'>#{count > 0 ? "· #{count}" : ''}</span></button>"
+        git = GitServer.enabled? ? " data-git-server='1' data-git-keys='#{h.((Main.git_groups[group] || {})[:keys] || GitServer::KEYS_HANDED_IN)}'" : ''
+        "<section class='class-setting class-setting-repos'><h3 class='class-setting-title'>Git-Repositorys</h3>" \
+            "<div class='class-repos' data-group='#{h.(group)}' data-repos='#{h.(entries.to_json)}'#{git}></div></section>"
     end
 
     # The tab »Fortschritt«: the activity, a toolbar (look into the
@@ -6456,7 +6576,7 @@ class Main < Sinatra::Base
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='dropdown class-live' data-group='#{h.(group)}'>"
-            io << "<button type='button' class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>"
+            io << "<button type='button' class='btn btn-sm btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>"
             io << "<i class='bi bi-search' aria-hidden='true'></i>Jetzt nachsehen</button><ul class='dropdown-menu class-live-menu'>"
             io << "<li><span class='dropdown-item-text class-live-note'>Liest die Workspaces der Gruppe so, wie die Karte es tut, und ändert nichts.</span></li>"
             live.each do |t|
@@ -8098,9 +8218,9 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:language])
         assert(CodeLanguages.known?(data[:language]))
-        # JavaScript only on Kata pages (CodeLanguages): it does not replace
-        # the choice between Ruby and Python, and picking one of those again
-        # leaves JavaScript behind.
+        # JavaScript, Dart and Java only where a page offers them
+        # (CodeLanguages): they do not replace the choice between Ruby and
+        # Python, and picking one of those again leaves them behind.
         if CodeLanguages::GROUP_LANGUAGES.include?(data[:language])
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
                 MATCH (u:User {email: $email})
@@ -8190,6 +8310,414 @@ class Main < Sinatra::Base
         end
         STDERR.puts "Class repositories of #{group} set by #{@session_user[:email]}: #{json || '{}'}"
         respond(:ok => true, :repos => ClassRepos.parse(json))
+    end
+
+    # --- Repositories of groups in the Workspace (GitServer) -----------------
+
+    def git_teacher_of!(group)
+        teacher_or_admin!
+        halt 404 unless GitServer.enabled?
+        halt 403 unless class_groups.include?(group)
+    end
+
+    # The folder of a group on the server; with create, a new one if it has none.
+    def git_id_for_group(group, create: false)
+        row = neo4j_query('MATCH (g:GroupSetting {group: $group}) RETURN g.git_id AS id;', :group => group).first
+        return row['id'] if row && row['id']
+        return nil unless create
+
+        neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.git_id = coalesce(g.git_id, $id);',
+            :group => group, :id => GitServer.new_git_id)
+        neo4j_query('MATCH (g:GroupSetting {group: $group}) RETURN g.git_id AS id;', :group => group).first['id']
+    end
+
+    # Sets (or with nil removes) one class repository of a group; returns the JSON.
+    def git_set_class_repo(group, slug, address)
+        row = neo4j_query('MATCH (g:GroupSetting {group: $group}) RETURN g.class_repos AS repos;', :group => group).first
+        json = ClassRepos.update(row && row['repos'], slug, address)
+        if json
+            neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.class_repos = $json;', :group => group, :json => json)
+        elsif row
+            neo4j_query('MATCH (g:GroupSetting {group: $group}) REMOVE g.class_repos;', :group => group)
+        end
+        json
+    end
+
+    # A teacher creates the repository of a page for the group, from the
+    # page's starter/ folder if it has one; its address becomes the group's
+    # class repository of that page.
+    post '/api/git/create_repo' do
+        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => { :group => 256, :slug => 100 })
+        group, slug = data[:group], data[:slug]
+        git_teacher_of!(group)
+        halt 400 unless class_repo_slugs.include?(slug) && slug.match?(GitServer::NAME)
+        id = git_id_for_group(group, :create => true)
+        unless File.exist?(GitServer.repo_path(id, slug))
+            starter = File.join('/src/content', slug, 'starter')
+            GitServer.create_repo(id, slug, :starter => File.directory?(starter) ? starter : nil)
+        end
+        address = GitServer.address(id, slug)
+        json = git_set_class_repo(group, slug, address)
+        Main.git_refresh!
+        STDERR.puts "Git: repository #{id}/#{slug} of #{group} created by #{@session_user[:email]}"
+        respond(:ok => true, :address => address, :repos => ClassRepos.parse(json))
+    end
+
+    # Deletes the group's repository of a page, with everything in it.
+    post '/api/git/delete_repo' do
+        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => { :group => 256, :slug => 100 })
+        group, slug = data[:group], data[:slug]
+        git_teacher_of!(group)
+        halt 400 unless slug.match?(GitServer::NAME)
+        id = git_id_for_group(group)
+        halt 404 unless id
+        GitServer.delete_repo(id, slug)
+        row = neo4j_query('MATCH (g:GroupSetting {group: $group}) RETURN g.class_repos AS repos;', :group => group).first
+        json = row && row['repos']
+        # The page's address goes too, if it is this repository's.
+        json = git_set_class_repo(group, slug, nil) if GitServer.parse_address(ClassRepos.parse(json)[slug]) == [id, slug]
+        STDERR.puts "Git: repository #{id}/#{slug} of #{group} deleted by #{@session_user[:email]}"
+        respond(:ok => true, :repos => ClassRepos.parse(json))
+    end
+
+    # How the group's students get their keys: handed in, or automatic.
+    post '/api/git/set_keys' do
+        data = parse_request_data(:required_keys => [:group, :mode], :max_value_lengths => { :group => 256, :mode => 20 })
+        group, mode = data[:group], data[:mode]
+        git_teacher_of!(group)
+        halt 400 unless GitServer::KEY_MODES.include?(mode)
+        neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.git_keys = $mode;', :group => group, :mode => mode)
+        count = mode == GitServer::KEYS_AUTO ? Main.git_install_auto_keys(Main.git_group_emails(group)) : 0
+        Main.git_refresh!(:auto => false)
+        STDERR.puts "Git: keys of #{group} set to #{mode} by #{@session_user[:email]}"
+        respond(:ok => true, :mode => mode, :installed => count)
+    end
+
+    # The person's public key in their Workspace, if there is one.
+    def git_workspace_key(email)
+        ssh = File.join('/user', fs_tag_for_email(email), 'workspace', '.ssh')
+        %w[id_ed25519.pub id_ecdsa.pub id_rsa.pub].each do |name|
+            path = File.join(ssh, name)
+            next unless File.file?(path) && File.size(path) < 16_384
+
+            key = GitServer.parse_key(File.read(path))
+            return { :file => "~/.ssh/#{name}", :line => key[:line] } if key
+        end
+        nil
+    end
+
+    # For the box on a page: what the server knows of this person's key.
+    post '/api/git/key_state' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled?
+        email = @session_user[:email]
+        row = neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_key AS key, u.git_auto_key AS auto;', :email => email).first || {}
+        workspace = git_workspace_key(email)
+        host = File.exist?(GitServer::HOST_KEY) ? GitServer.fingerprint(File.read(GitServer::HOST_KEY)) : nil
+        respond(:handed_in => row['key'] && GitServer.fingerprint(row['key']),
+                :workspace => workspace && { :file => workspace[:file], :fingerprint => GitServer.fingerprint(workspace[:line]) },
+                :auto => Main.git_auto_emails.include?(email) && !row['auto'].nil?,
+                :host => host, :host_name => GitServer::HOST)
+    end
+
+    # The person hands in a public key, pasted as one line (as on any Git
+    # server): ~/.ssh/id_ed25519.pub. A private key is refused with a word
+    # on why; the comment of the key is not stored (GitServer.parse_key).
+    post '/api/git/hand_in_key' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled?
+        data = parse_request_data(:required_keys => [:key], :max_value_lengths => { :key => 16_384 })
+        text = data[:key].to_s.strip
+        return respond(:ok => false, :error => 'private') if text.include?('PRIVATE KEY')
+
+        key = GitServer.parse_key(text.lines.first.to_s)
+        return respond(:ok => false, :error => 'invalid') unless key && text.lines.size == 1
+
+        neo4j_query('MATCH (u:User {email: $email}) SET u.git_key = $key;', :email => @session_user[:email], :key => key[:line])
+        Main.git_refresh!(:auto => false)
+        respond(:ok => true, :fingerprint => GitServer.fingerprint(key[:line]))
+    end
+
+    post '/api/git/remove_key' do
+        assert(user_logged_in?)
+        halt 404 unless GitServer.enabled?
+        neo4j_query('MATCH (u:User {email: $email}) REMOVE u.git_key;', :email => @session_user[:email])
+        Main.git_refresh!(:auto => false)
+        respond(:ok => true)
+    end
+
+    # --- Reading a group's repository in the browser (GitBrowse) -------------
+    #
+    # /git/<git id>/<name>                        the files of the default branch, README below
+    # /git/<git id>/<name>/tree/<ref>/<path>      a folder
+    # /git/<git id>/<name>/blob/<ref>/<path>      a file
+    # /git/<git id>/<name>/commits/<ref>[/<path>] the history, of one file too
+    # /git/<git id>/<name>/commit/<sha>           a commit with its diff
+    # /git/<git id>/<name>/archive/<ref>          the files as a zip
+    # /git/<git id>/<name>/raw/<ref>/<path>       a picture, nothing else
+    #
+    # For the members and teachers of the group the folder belongs to.
+    # Sinatra (Mustermann) anchors the pattern itself.
+    GIT_BROWSE_PATH = %r{/git/([a-z0-9]{10})/([a-z0-9][a-z0-9-]{0,62})(?:/(tree|blob|commits|commit|archive|raw)(?:/(.*))?)?/?}
+    GIT_PICTURES = { '.png' => 'image/png', '.jpg' => 'image/jpeg', '.jpeg' => 'image/jpeg', '.gif' => 'image/gif', '.webp' => 'image/webp' }.freeze
+    GIT_LANGUAGES = {
+        '.rb' => 'ruby', '.py' => 'python', '.js' => 'javascript', '.mjs' => 'javascript', '.json' => 'json',
+        '.md' => 'markdown', '.html' => 'html', '.htm' => 'html', '.css' => 'css', '.yaml' => 'yaml', '.yml' => 'yaml',
+        '.sh' => 'bash', '.c' => 'c', '.h' => 'c', '.cpp' => 'cpp', '.hpp' => 'cpp', '.cc' => 'cpp', '.java' => 'java',
+        '.dart' => 'dart', '.sql' => 'sql', '.go' => 'go', '.rs' => 'rust', '.lua' => 'lua', '.uml' => 'uml', '.er' => 'er',
+        '.tex' => 'tex', '.cs' => 'cs', '.php' => 'php', '.svelte' => 'svelte', '.glsl' => 'glsl', '.frag' => 'glsl', '.vert' => 'glsl',
+    }.freeze
+
+    def git_group_of_id(id)
+        row = neo4j_query('MATCH (g:GroupSetting {git_id: $id}) RETURN g.group AS group;', :id => id).first
+        row && row['group']
+    end
+
+    def git_may_browse?(group)
+        admin_logged_in? || my_groups.include?(group) || class_groups.include?(group)
+    end
+
+    def git_url(*parts)
+        base = "#{WEB_ROOT}/git/#{@git[:id]}/#{@git[:name]}"
+        rest = parts.flatten.compact.map(&:to_s).reject(&:empty?).flat_map { |p| p.split('/') }.map { |p| ERB::Util.url_encode(p) }
+        rest.empty? ? base : "#{base}/#{rest.join('/')}"
+    end
+
+    def git_time(time)
+        time.localtime.strftime('%d.%m.%Y, %H:%M')
+    end
+
+    def git_size(bytes)
+        return '' unless bytes
+        return "#{bytes} Bytes" if bytes < 1024
+        return format('%.1f KB', bytes / 1024.0).tr('.', ',') if bytes < 1024 * 1024
+
+        format('%.1f MB', bytes / 1024.0 / 1024.0).tr('.', ',')
+    end
+
+    # Code of a file, highlighted like the site's code blocks.
+    def git_code_html(text, path)
+        language = GIT_LANGUAGES[File.extname(path).downcase] || 'text'
+        fragment = Nokogiri::HTML::DocumentFragment.parse("<pre><code class='#{language}_lineno'></code></pre>")
+        fragment.at('code').content = text
+        CodeHighlight.apply(fragment)
+        fragment.to_html
+    end
+
+    # A code block of the site's own (commands, not a file of the repository).
+    def git_snippet_html(text, language)
+        fragment = Nokogiri::HTML::DocumentFragment.parse("<pre><code class='#{language}'></code></pre>")
+        fragment.at('code').content = text
+        CodeHighlight.apply(fragment)
+        fragment.to_html
+    end
+
+    # A README: Markdown without HTML of its own and without pictures, code highlighted.
+    def git_markdown_html(text)
+        renderer = Redcarpet::Render::HTML.new(:filter_html => true, :no_images => true, :safe_links_only => true, :no_styles => true)
+        html = Redcarpet::Markdown.new(renderer, :fenced_code_blocks => true, :tables => true, :autolink => true).render(text)
+        fragment = Nokogiri::HTML::DocumentFragment.parse(html)
+        fragment.css('pre > code').each { |code| code['class'] = 'text' unless code['class'].to_s.match?(/\A[a-z]+\z/) }
+        CodeHighlight.apply(fragment)
+        fragment.to_html
+    end
+
+    def git_diff_html(patch)
+        lines = patch.each_line.map do |line|
+            cls = if line.start_with?('@@') then 'git-hunk'
+                  elsif line.start_with?('+') then 'git-add'
+                  elsif line.start_with?('-') then 'git-del'
+                  end
+            text = CGI.escapeHTML(line.chomp)
+            cls ? "<span class='#{cls}'>#{text}</span>" : text
+        end
+        "<pre class='git-diff no-copy'>#{lines.join("\n")}</pre>"
+    end
+
+    def git_header_html(ref, tab)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        branches = GitBrowse.branches(@git[:repo])
+        address = GitServer.address(@git[:id], @git[:name])
+        io = +''
+        io << "<nav class='git-crumbs' aria-label='Repository'><i class='bi bi-git' aria-hidden='true'></i> "
+        io << "<span>#{h.(@git[:group])}</span> / <a href='#{h.(git_url)}'><strong>#{h.(@git[:name])}</strong></a></nav>"
+        io << "<div class='git-bar'>"
+        io << "<div class='btn-group git-tabs' role='group'>"
+        io << "<a class='btn btn-sm #{tab == :files ? 'btn-secondary' : 'btn-outline-secondary'}' href='#{h.(git_url('tree', ref))}'><i class='bi bi-folder2-open' aria-hidden='true'></i>Dateien</a>"
+        io << "<a class='btn btn-sm #{tab == :history ? 'btn-secondary' : 'btn-outline-secondary'}' href='#{h.(git_url('commits', ref))}'><i class='bi bi-clock-history' aria-hidden='true'></i>Verlauf</a>"
+        io << "</div>"
+        if branches.size > 1
+            io << "<div class='dropdown git-branches'><button class='btn btn-sm btn-outline-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>"
+            io << "<i class='bi bi-diagram-2' aria-hidden='true'></i>#{h.(ref)}</button><ul class='dropdown-menu'>"
+            branches.each { |b| io << "<li><a class='dropdown-item#{b == ref ? ' active' : ''}' href='#{h.(git_url('tree', b))}'>#{h.(b)}</a></li>" }
+            io << "</ul></div>"
+        elsif ref
+            io << "<span class='git-branch'><i class='bi bi-diagram-2' aria-hidden='true'></i>#{h.(ref)}</span>"
+        end
+        io << "<a class='btn btn-sm btn-outline-secondary' href='#{h.(git_url('archive', ref))}'><i class='bi bi-file-earmark-zip' aria-hidden='true'></i>Als ZIP</a>" if ref
+        io << "</div>"
+        io << "<div class='git-clone'><span>Klonen:</span> <code>git clone #{h.(address)}</code></div>"
+        io
+    end
+
+    def git_path_html(ref, path)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        parts = path.split('/')
+        links = ["<a href='#{h.(git_url('tree', ref))}'>#{h.(@git[:name])}</a>"]
+        parts.each_with_index do |part, i|
+            sub = parts[0..i].join('/')
+            links << (i == parts.size - 1 ? "<span>#{h.(part)}</span>" : "<a href='#{h.(git_url('tree', ref, sub))}'>#{h.(part)}</a>")
+        end
+        "<div class='git-path'>#{links.join(' / ')}</div>"
+    end
+
+    def git_page_html(view, rest)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        repo = @git[:repo]
+        io = +''
+        if view == 'commit'
+            sha = rest.to_s.split('/').first.to_s
+            halt 404 unless sha.match?(GitBrowse::SHA)
+            commit = GitBrowse.commit(repo, sha)
+            halt 404 unless commit
+            io << git_header_html(GitBrowse.default_branch(repo), :history)
+            subject, body = commit[:message].split("\n", 2)
+            io << "<div class='git-commit-head'><h2>#{h.(subject)}</h2>"
+            io << "<div class='git-message'>#{h.(body.strip)}</div>" if body && !body.strip.empty?
+            io << "<p class='git-meta'><i class='bi bi-person' aria-hidden='true'></i>#{h.(commit[:author])} · #{h.(git_time(commit[:time]))} · <code>#{h.(commit[:short])}</code>"
+            commit[:parents].each { |parent| io << " · davor <a href='#{h.(git_url('commit', parent))}'><code>#{h.(parent[0, 7])}</code></a>" }
+            io << " · <a href='#{h.(git_url('tree', commit[:sha]))}'>Dateien zu diesem Stand</a></p></div>"
+            labels = { :added => 'neu', :deleted => 'gelöscht', :renamed => 'umbenannt', :modified => 'geändert' }
+            commit[:files].each do |file|
+                io << "<section class='git-file'><h3><span class='git-status git-status-#{file[:status]}'>#{labels[file[:status]]}</span> "
+                io << "#{file[:old_path] ? "#{h.(file[:old_path])} → " : ''}#{h.(file[:path])}</h3>"
+                io << (file[:patch].empty? ? "<p class='git-note'>Ohne Änderung am Inhalt.</p>" : git_diff_html(file[:patch]))
+                io << "</section>"
+            end
+            io << "<p class='git-note'>Der Rest dieses Commits ist zu groß, um ihn hier zu zeigen.</p>" if commit[:cut]
+            io << "<p class='git-note'>Dieser Commit ändert keine Datei.</p>" if commit[:files].empty? && !commit[:cut]
+            return io
+        end
+
+        ref, path = rest.to_s.split('/', 2)
+        ref = GitBrowse.default_branch(repo) if ref.nil? || ref.empty?
+        if ref.nil?
+            io << git_header_html(nil, :files)
+            io << "<div class='git-empty'><p>Das Repository ist noch leer.</p><p>So kommt der erste Commit hinein:</p>"
+            io << git_snippet_html("git clone #{GitServer.address(@git[:id], @git[:name])}\ncd #{@git[:name]}\n" \
+                "# Dateien anlegen, dann:\ngit add -A\ngit commit -m \"Der Anfang\"\ngit push\n", 'bash') << "</div>"
+            return io
+        end
+        sha = GitBrowse.resolve(repo, ref)
+        halt 404 unless sha
+        path = GitBrowse.clean_path(path.to_s)
+        halt 404 unless path
+
+        if view == 'commits'
+            page = [params['seite'].to_i, 1].max
+            log = GitBrowse.log(repo, sha, path, :skip => (page - 1) * GitBrowse::PAGE, :max => GitBrowse::PAGE + 1)
+            io << git_header_html(ref, :history)
+            io << git_path_html(ref, path) unless path.empty?
+            io << "<ol class='git-log'>"
+            log.first(GitBrowse::PAGE).each do |c|
+                io << "<li><a class='git-log-subject' href='#{h.(git_url('commit', c[:sha]))}'>#{h.(c[:subject])}</a>"
+                io << "<span class='git-meta'>#{h.(c[:author])} · #{h.(git_time(c[:time]))} · <code>#{h.(c[:short])}</code></span></li>"
+            end
+            io << "</ol>"
+            io << "<p class='git-note'>Noch keine Commits.</p>" if log.empty?
+            if log.size > GitBrowse::PAGE
+                io << "<p><a class='btn btn-sm btn-outline-secondary' href='#{h.(git_url('commits', ref, path))}?seite=#{page + 1}'>Ältere Commits</a></p>"
+            end
+            return io
+        end
+
+        kind = GitBrowse.kind(repo, sha, path)
+        halt 404 unless kind
+        io << git_header_html(ref, :files)
+        io << git_path_html(ref, path) unless path.empty?
+        if kind == :tree
+            last = GitBrowse.log(repo, sha, path, :max => 1).first
+            if last
+                io << "<p class='git-last'><a href='#{h.(git_url('commit', last[:sha]))}'>#{h.(last[:subject])}</a> "
+                io << "<span class='git-meta'>#{h.(last[:author])} · #{h.(git_time(last[:time]))}</span></p>"
+            end
+            io << "<ul class='git-tree'>"
+            GitBrowse.tree(repo, sha, path).each do |entry|
+                icon = entry[:type] == :tree ? 'bi-folder-fill' : 'bi-file-earmark'
+                link = git_url(entry[:type] == :tree ? 'tree' : 'blob', ref, entry[:path])
+                io << "<li><i class='bi #{icon}' aria-hidden='true'></i><a href='#{h.(link)}'>#{h.(entry[:name])}</a>"
+                io << "<span class='git-size'>#{h.(git_size(entry[:size]))}</span></li>"
+            end
+            io << "</ul>"
+            readme = GitBrowse.tree(repo, sha, path).find { |e| e[:type] == :blob && e[:name].match?(/\A(readme|liesmich)\.md\z/i) }
+            if readme
+                file = GitBrowse.blob(repo, sha, readme[:path])
+                io << "<article class='git-readme'>#{git_markdown_html(file[:text])}</article>" if file && file[:text]
+            end
+        else
+            file = GitBrowse.blob(repo, sha, path)
+            halt 404 unless file
+            io << "<div class='git-file-bar'><span class='git-meta'>#{h.(git_size(file[:size]))}</span> "
+            io << "<a href='#{h.(git_url('commits', ref, path))}'><i class='bi bi-clock-history' aria-hidden='true'></i>Verlauf dieser Datei</a></div>"
+            type = GIT_PICTURES[File.extname(path).downcase]
+            if type
+                io << "<p class='git-picture'><img src='#{h.(git_url('raw', ref, path))}' alt='#{h.(File.basename(path))}'></p>"
+            elsif file[:binary]
+                io << "<p class='git-note'>Keine Textdatei; hier gibt es nichts zu lesen. Im ZIP ist sie dabei.</p>"
+            elsif File.extname(path).downcase == '.md'
+                io << "<article class='git-readme'>#{git_markdown_html(file[:text])}</article>"
+                io << "<details class='git-source'><summary>Als Text</summary>#{git_code_html(file[:text], path)}</details>"
+            else
+                io << git_code_html(file[:text], path)
+            end
+            io << "<p class='git-note'>Die Datei ist länger; hier stehen die ersten #{GitBrowse::MAX_BLOB / 1024} KB.</p>" if file[:cut] && !file[:binary]
+        end
+        io
+    end
+
+    get GIT_BROWSE_PATH do
+        this_is_a_page_for_logged_in_users!
+        halt 404 unless GitServer.enabled?
+        id, name, view, rest = params['captures']
+        rest = rest.to_s.split('/').map { |part| URI.decode_www_form_component(part.gsub('+', '%2B')) }.join('/')
+        group = git_group_of_id(id)
+        halt_forbidden_page! unless group && git_may_browse?(group)
+        repo = GitServer.repo_path(id, name)
+        halt 404 unless File.directory?(repo)
+        @git = { :id => id, :name => name, :group => group, :repo => repo }
+
+        if view == 'raw'
+            ref, path = rest.split('/', 2)
+            sha = GitBrowse.resolve(repo, ref.to_s)
+            path = GitBrowse.clean_path(path.to_s)
+            type = path && GIT_PICTURES[File.extname(path).downcase]
+            halt 404 unless sha && type
+            file = GitBrowse.blob(repo, sha, path)
+            halt 404 unless file
+            # A picture, shown in an <img>; as a page of its own nothing in it runs.
+            headers 'X-Content-Type-Options' => 'nosniff', 'Content-Security-Policy' => "sandbox; default-src 'none'",
+                    'Cache-Control' => 'private, max-age=60'
+            return respond_raw_with_mimetype(file[:data], type)
+        end
+        if view == 'archive'
+            ref = rest.split('/').first.to_s
+            sha = GitBrowse.resolve(repo, ref)
+            halt 404 unless sha
+            zip = GitBrowse.git(repo, 'archive', '--format=zip', "--prefix=#{name}/", '--end-of-options', sha, :binary => true)
+            halt 404 unless zip
+            return respond_raw_with_mimetype_and_filename(zip, 'application/zip', "#{name}.zip")
+        end
+
+        @git_page = "<div class='container git-browse'>#{git_page_html(view, rest)}</div>"
+        # what the template reads, as in get '/*'
+        running_tests = my_running_tests()
+        path = request.path
+        slug = nil
+        template = File.read(File.join(@@static_dir, '_template.html'))
+        # The page is the literal below; the repository's text comes in as the
+        # value of @git_page and is never read as a template (TrustedTemplate).
+        html = Main.inject_page_metadata(TrustedTemplate.render_page(template, '#{@git_page}', binding), request.path)
+        respond_raw_with_mimetype(html, 'text/html')
     end
 
     post '/api/set_preferred_language' do

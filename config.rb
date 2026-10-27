@@ -301,6 +301,37 @@ if CaseServer.enabled?
     %w[museum alarmanlage].each { |role| FileUtils.mkpath(File.join(DATA_PATH, 'case-server', role)) }
 end
 
+# The Git server of the groups (docs/plan-git-gruppen.md), only with
+# GIT_SERVER = true in credentials.rb: git.workspace on the students' network,
+# reachable on port 22 and no further, like the case server (whose
+# peer-firewall label it shares). The backend writes the keys and the access
+# list into data/git-server/config and creates the repositories in
+# data/git-repos; the server reads the one and serves the other.
+require './src/ruby/include/git_server.rb'
+if GitServer.enabled?
+    %w[git-repos git-server/config git-server/host].each { |dir| FileUtils.mkpath(File.join(DATA_PATH, dir)) }
+    # sshd ignores authorized_keys in a folder others may write to (StrictModes).
+    FileUtils.chmod(0o755, File.join(DATA_PATH, 'git-server/config'))
+    docker_compose[:services][:git_server] = {
+        :build => './docker/git-server',
+        :hostname => 'git',
+        :volumes => ["#{DATA_PATH}/git-repos:/srv/git",
+                     "#{DATA_PATH}/git-server/config:/etc/git-server:ro",
+                     "#{DATA_PATH}/git-server/host:/keys"],
+        :networks => { 'user' => { :aliases => [GitServer::HOST] } },
+        :labels => ['hackschule.workspace.peer_firewall.case_server=true'],
+        :tmpfs => ['/tmp:size=64m,mode=1733'],
+        :mem_limit => '512m',
+        :pids_limit => 200,
+        :cpus => 1.0,
+        :restart => 'always',
+    }
+    if docker_compose[:services][:ruby]
+        docker_compose[:services][:ruby][:volumes] += ["#{DATA_PATH}/git-repos:/git-repos",
+                                                       "#{DATA_PATH}/git-server:/git-server"]
+    end
+end
+
 # The only service with the Docker socket next to the peer firewall: it
 # lets the backend start and stop Workspaces and exec into them and the
 # databases, and refuses everything else (docker/docker-guard/guard.rb,

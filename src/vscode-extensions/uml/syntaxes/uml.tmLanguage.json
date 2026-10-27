@@ -1,0 +1,132 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "UML-Klassendiagramm",
+  "scopeName": "source.uml",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#class"
+    },
+    {
+      "include": "#association"
+    },
+    {
+      "include": "#member"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "match": "#.*$",
+      "name": "comment.line.number-sign.uml"
+    },
+    "class": {
+      "begin": "^(class)\\s+(\\p{L}[\\p{L}\\p{N}_]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.uml"
+        },
+        "2": {
+          "name": "entity.name.type.class.uml"
+        }
+      },
+      "end": "$",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "\\b(extends)\\s+(\\p{L}[\\p{L}\\p{N}_]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.uml"
+            },
+            "2": {
+              "name": "entity.other.inherited-class.uml"
+            }
+          }
+        },
+        {
+          "match": "\\(\\s*abstract\\s*\\)",
+          "name": "storage.modifier.uml"
+        }
+      ]
+    },
+    "association": {
+      "begin": "^(association)\\s+(\\p{L}[\\p{L}\\p{N}_]*)\\s*(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.uml"
+        },
+        "2": {
+          "name": "entity.name.function.uml"
+        },
+        "3": {
+          "name": "punctuation.separator.uml"
+        }
+      },
+      "end": "$",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "--|->",
+          "name": "keyword.operator.uml"
+        },
+        {
+          "match": "(?<![\\p{L}\\p{N}_])(\\d+\\.\\.(\\d+|\\*)|\\d+|\\*)(?![\\p{L}\\p{N}_])",
+          "name": "constant.numeric.multiplicity.uml"
+        },
+        {
+          "match": "\\p{L}[\\p{L}\\p{N}_]*",
+          "name": "entity.name.type.uml"
+        }
+      ]
+    },
+    "member": {
+      "begin": "^\\s+([+-])\\s*(?:(\\p{L}[\\p{L}\\p{N}_]*[?!]?)(?=\\s*\\()|(\\p{L}[\\p{L}\\p{N}_]*))?",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.visibility.uml"
+        },
+        "2": {
+          "name": "entity.name.function.uml"
+        },
+        "3": {
+          "name": "variable.other.property.uml"
+        }
+      },
+      "end": "$",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#type"
+        },
+        {
+          "match": "[(),:<>\\[\\]]",
+          "name": "punctuation.separator.uml"
+        },
+        {
+          "match": "\\p{L}[\\p{L}\\p{N}_]*",
+          "name": "variable.parameter.uml"
+        }
+      ]
+    },
+    "type": {
+      "patterns": [
+        {
+          "match": "\\b(int|double|long|float|boolean|char|byte|short|void)\\b",
+          "name": "storage.type.primitive.uml"
+        },
+        {
+          "match": "\\b\\p{Lu}[\\p{L}\\p{N}_]*",
+          "name": "entity.name.type.uml"
+        }
+      ]
+    }
+  }
+}

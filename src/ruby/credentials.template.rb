@@ -111,6 +111,13 @@ end
 # Workspaces bekommen ihren Zugang beim nächsten Start.
 # CASE_SERVER = true
 
+# Git-Repositorys für Gruppen im Workspace selbst (docs/teacher-access.md,
+# »Repositorys im Workspace«): ein kleiner SSH-Server, git.workspace, den nur
+# Workspaces erreichen. Lehrkräfte legen die Repositorys auf der Klassenseite
+# an. Danach ./config.rb build git_server peer_firewall && ./config.rb up -d.
+# Gespeichert werden die Repositorys in data/git-repos.
+# GIT_SERVER = true
+
 # Wie viele Katas (Programmieraufgaben in der Karte, docs/aufgaben.md,
 # »function«) gleichzeitig laufen; die anderen warten der Reihe nach. Ohne
 # diese Zeile 4. Wie viele der Server verträgt, misst

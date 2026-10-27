@@ -26,13 +26,30 @@ module ClassRepos
     # The variants of a page (nil: with a class repository over SSH, the
     # page as teachers see it) and the values of the conditions in each
     # (<!-- if: class_repo -->, <!-- if: class_repo_https --> …).
+    #
+    # A repository kept by the Workspace itself (GitServer, git.workspace)
+    # has two variants, after how the group's students get their keys:
+    # LOCAL_KEYS, they hand in a key of their own; LOCAL_AUTO, the site set
+    # up a key in their Workspace. class_repo_outside: a server elsewhere,
+    # with an account and an invitation.
     WITHOUT = 'without_class_repo'
     HTTPS = 'class_repo_https'
-    CONDITIONS = %w[class_repo class_repo_ssh class_repo_https].freeze
+    LOCAL_KEYS = 'class_repo_local_keys'
+    LOCAL_AUTO = 'class_repo_local_auto'
+    CONDITIONS = %w[class_repo class_repo_ssh class_repo_https class_repo_outside
+                    class_repo_local class_repo_local_keys class_repo_local_auto].freeze
+    LOCAL_CONDITIONS = %w[class_repo_outside class_repo_local class_repo_local_keys class_repo_local_auto].freeze
     CONDITION_VALUES = {
-        nil => { 'class_repo' => true, 'class_repo_ssh' => true, 'class_repo_https' => false },
-        HTTPS => { 'class_repo' => true, 'class_repo_ssh' => false, 'class_repo_https' => true },
-        WITHOUT => { 'class_repo' => false, 'class_repo_ssh' => false, 'class_repo_https' => false },
+        nil => { 'class_repo' => true, 'class_repo_ssh' => true, 'class_repo_https' => false, 'class_repo_outside' => true,
+                 'class_repo_local' => false, 'class_repo_local_keys' => false, 'class_repo_local_auto' => false },
+        HTTPS => { 'class_repo' => true, 'class_repo_ssh' => false, 'class_repo_https' => true, 'class_repo_outside' => true,
+                   'class_repo_local' => false, 'class_repo_local_keys' => false, 'class_repo_local_auto' => false },
+        LOCAL_KEYS => { 'class_repo' => true, 'class_repo_ssh' => false, 'class_repo_https' => false, 'class_repo_outside' => false,
+                        'class_repo_local' => true, 'class_repo_local_keys' => true, 'class_repo_local_auto' => false },
+        LOCAL_AUTO => { 'class_repo' => true, 'class_repo_ssh' => false, 'class_repo_https' => false, 'class_repo_outside' => false,
+                        'class_repo_local' => true, 'class_repo_local_keys' => false, 'class_repo_local_auto' => true },
+        WITHOUT => { 'class_repo' => false, 'class_repo_ssh' => false, 'class_repo_https' => false, 'class_repo_outside' => false,
+                     'class_repo_local' => false, 'class_repo_local_keys' => false, 'class_repo_local_auto' => false },
     }.freeze
     MAX_LENGTH = 300
 
@@ -111,18 +128,28 @@ module ClassRepos
     end
 
     # The variants a page with these conditions is rendered in: nil always,
-    # WITHOUT if it has any, HTTPS if it tells SSH and HTTPS apart.
+    # WITHOUT if it has any, HTTPS if it tells SSH and HTTPS apart, the two
+    # LOCAL ones if it tells a server elsewhere from the Workspace's.
     def self.variants(conditions)
         return [nil] if conditions.empty?
 
-        conditions.any? { |c| c != 'class_repo' } ? [nil, HTTPS, WITHOUT] : [nil, WITHOUT]
+        list = [nil]
+        list << HTTPS if conditions.any? { |c| c != 'class_repo' }
+        list += [LOCAL_KEYS, LOCAL_AUTO] if conditions.any? { |c| LOCAL_CONDITIONS.include?(c) }
+        list << WITHOUT
     end
 
     # The variant for an address: WITHOUT for none, HTTPS for an https://
-    # address, nil (SSH) for the others.
-    def self.variant(address)
+    # address, LOCAL_KEYS or LOCAL_AUTO for one on the Workspace's server
+    # (local: a function that says :keys or :auto for such an address, nil
+    # for others), nil (SSH) for the others.
+    def self.variant(address, local: nil)
         text = normalize(address)
         return WITHOUT unless text
+
+        mode = local && local.call(text)
+        return LOCAL_AUTO if mode == :auto
+        return LOCAL_KEYS if mode == :keys
 
         text.start_with?('https://') ? HTTPS : nil
     end
@@ -198,12 +225,12 @@ module ClassRepos
     # address of the first of their groups that has one for this page, and
     # without one the variant without; on other pages (the Handbuch) the
     # first address of their groups, if any.
-    def self.view(slug, per_group:, placeholders:, groups:, settings:)
+    def self.view(slug, per_group:, placeholders:, groups:, settings:, local: nil)
         return { :variant => nil, :address => nil } if placeholders
         return { :variant => nil, :address => first_of(groups, settings) } unless per_group
 
         address = for_page(slug, groups, settings)
-        { :variant => variant(address), :address => address }
+        { :variant => variant(address, :local => local), :address => address }
     end
 
     # The tasks of a page (content[:tasks]) as they are in a variant: its

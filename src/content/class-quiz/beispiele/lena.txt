@@ -1,0 +1,9 @@
+# Fragen von Lena
+? Wie viele Bits hat ein Byte?
+= 8 | acht
+
+? Was ist 2 + 2?
+= 4
+
+? Mit welchem Befehl gibst du deine Commits ab?
+= git push

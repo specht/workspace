@@ -1,6 +1,7 @@
 require 'rouge'
 require 'nokogiri'
 require_relative 'er_lexer'
+require_relative 'uml_lexer'
 require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
 require_relative 'minicpu_lexer'
@@ -113,6 +114,9 @@ module CodeHighlight
             when 'er'
                 lexer = Rouge::Lexers::ER.new
                 pre['class'] = [pre['class'], 'code-er'].compact.join(' ')
+            when 'uml'
+                lexer = Rouge::Lexers::UML.new
+                pre['class'] = [pre['class'], 'code-uml'].compact.join(' ')
             when 'erlang'
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'
@@ -152,6 +156,11 @@ module CodeHighlight
                 # The Handbuch's pseudocode (Rouge::Lexers::Pseudocode)
                 lexer = Rouge::Lexers::Pseudocode.new
                 pre['class'] = [pre['class'], 'code-pseudocode'].compact.join(' ')
+            when 'struktogramm'
+                # Pseudocode that struktogramm.js draws as a Struktogramm;
+                # without JavaScript it stays highlighted pseudocode.
+                lexer = Rouge::Lexers::Pseudocode.new
+                pre['class'] = [pre['class'], 'code-pseudocode', 'code-struktogramm'].compact.join(' ')
             when 'python'
                 lexer = Rouge::Lexers::Python.new
             when 'room'

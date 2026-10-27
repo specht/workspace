@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+<rect width="1280" height="720" fill="#ffffff"/>
+<rect x="150" y="120" width="1070" height="100" rx="14" fill="#eef3fb"/>
+<text x="126" y="182" text-anchor="end" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="34" font-weight="700" fill="#1f2937">1</text>
+<rect x="150" y="280" width="1070" height="100" rx="14" fill="#eef3fb"/>
+<text x="126" y="342" text-anchor="end" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="34" font-weight="700" fill="#1f2937">2</text>
+<rect x="150" y="440" width="1070" height="100" rx="14" fill="#eef3fb"/>
+<text x="126" y="502" text-anchor="end" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="34" font-weight="700" fill="#1f2937">3</text>
+<rect x="194.6" y="132" width="133.1" height="76" rx="10" fill="#2b5fb4"/>
+<text x="261.2" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">19</text>
+<rect x="231.5" y="292" width="211.6" height="76" rx="10" fill="#16a34a"/>
+<text x="337.2" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">41</text>
+<rect x="232.7" y="452" width="86.7" height="76" rx="10" fill="#d97706"/>
+<text x="276.0" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">6</text>
+<rect x="325.4" y="452" width="93.9" height="76" rx="10" fill="#7c3aed"/>
+<text x="372.3" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">8</text>
+<rect x="333.7" y="132" width="90.3" height="76" rx="10" fill="#dc2626"/>
+<text x="378.9" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">7</text>
+<rect x="425.3" y="452" width="179.5" height="76" rx="10" fill="#2b5fb4"/>
+<text x="515.0" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">32</text>
+<rect x="430.0" y="132" width="72.5" height="76" rx="10" fill="#16a34a"/>
+<text x="466.2" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">2</text>
+<rect x="449.0" y="292" width="129.5" height="76" rx="10" fill="#d97706"/>
+<text x="513.8" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">18</text>
+<rect x="508.5" y="132" width="158.1" height="76" rx="10" fill="#7c3aed"/>
+<text x="587.5" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">26</text>
+<rect x="584.6" y="292" width="72.5" height="76" rx="10" fill="#dc2626"/>
+<text x="620.8" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">2</text>
+<rect x="610.7" y="452" width="275.8" height="76" rx="10" fill="#2b5fb4"/>
+<text x="748.6" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">59</text>
+<rect x="663.0" y="292" width="101.0" height="76" rx="10" fill="#16a34a"/>
+<text x="713.5" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">10</text>
+<rect x="672.5" y="132" width="97.4" height="76" rx="10" fill="#d97706"/>
+<text x="721.3" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">9</text>
+<rect x="770.0" y="292" width="154.5" height="76" rx="10" fill="#7c3aed"/>
+<text x="847.3" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">25</text>
+<rect x="776.0" y="132" width="86.7" height="76" rx="10" fill="#dc2626"/>
+<text x="819.3" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">6</text>
+<rect x="868.7" y="132" width="118.8" height="76" rx="10" fill="#2b5fb4"/>
+<text x="928.1" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">15</text>
+<rect x="892.5" y="452" width="68.9" height="76" rx="10" fill="#16a34a"/>
+<text x="926.9" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">1</text>
+<rect x="930.5" y="292" width="215.1" height="76" rx="10" fill="#d97706"/>
+<text x="1038.1" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">42</text>
+<rect x="967.4" y="452" width="86.7" height="76" rx="10" fill="#7c3aed"/>
+<text x="1010.8" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">6</text>
+<rect x="993.5" y="132" width="83.2" height="76" rx="10" fill="#dc2626"/>
+<text x="1035.1" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">5</text>
+<rect x="1060.1" y="452" width="83.2" height="76" rx="10" fill="#2b5fb4"/>
+<text x="1101.7" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">5</text>
+<rect x="1082.7" y="132" width="134.3" height="76" rx="10" fill="#16a34a"/>
+<text x="1149.9" y="181" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">21</text>
+<rect x="1149.3" y="452" width="67.7" height="76" rx="10" fill="#d97706"/>
+<text x="1183.1" y="501" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">2</text>
+<rect x="1151.7" y="292" width="65.3" height="76" rx="10" fill="#7c3aed"/>
+<text x="1184.3" y="341" text-anchor="middle" font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size="30" font-weight="700" fill="#ffffff">18</text>
+<line x1="150.0" y1="590" x2="150.0" y2="606" stroke="#6b7280" stroke-width="3"/>
+<text x="150.0" y="642" text-anchor="middle" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="28" fill="#6b7280">9:00</text>
+<line x1="506.7" y1="590" x2="506.7" y2="606" stroke="#6b7280" stroke-width="3"/>
+<text x="506.7" y="642" text-anchor="middle" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="28" fill="#6b7280">9:05</text>
+<line x1="863.3" y1="590" x2="863.3" y2="606" stroke="#6b7280" stroke-width="3"/>
+<text x="863.3" y="642" text-anchor="middle" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="28" fill="#6b7280">9:10</text>
+<line x1="1220.0" y1="590" x2="1220.0" y2="606" stroke="#6b7280" stroke-width="3"/>
+<text x="1220.0" y="642" text-anchor="middle" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="28" fill="#6b7280">9:15</text>
+<line x1="150" y1="590" x2="1220" y2="590" stroke="#d1d5db" stroke-width="3"/>
+</svg>

@@ -45,7 +45,8 @@ class CurriculumTest < Minitest::Test
         YAML.load_file(File.join(CONTENT, 'sections.yaml')).each do |section|
             next if section['key'] == 'parked'
 
-            (section['entries'] || []).each do |slug|
+            (section['entries'] || []).each do |entry|
+                slug = entry.delete_prefix('.')   # .slug: in development only
                 text = File.read(File.join(CONTENT, slug, "#{slug}.md"))
                 meta = YAML.safe_load(text[/<div class=.meta.>\s*\n(.*?)\n\s*<\/div>/m, 1].to_s) || {}
                 Curriculum.problems(meta['curriculum']).each { |problem| problems << "#{slug}: #{problem}" }

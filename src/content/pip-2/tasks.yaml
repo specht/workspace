@@ -1654,7 +1654,7 @@ tasks:
     title: "Trockene Füße"
     level: 2
     prompt: |
-      Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddle_ahead?` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+      Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddle_ahead?` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
     starter: |
       def turn_right
         3.times do
@@ -1721,7 +1721,7 @@ tasks:
       ```
     python:
       prompt: |
-        Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddle_ahead()` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+        Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddle_ahead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
       starter: |
         def turn_right():
             for i in range(3):
@@ -1784,7 +1784,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Bello läuft nie durch Pfützen, und Pip will auch keine nassen Füße. `puddleAhead()` sagt, ob vorn eine Pfütze ist. Für Pip zählt eine Pfütze jetzt wie eine Wand: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
+        Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddleAhead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
       starter: |
         function turnRight() {
           for (let i = 0; i < 3; i++) {
@@ -1856,7 +1856,7 @@ tasks:
     title: "Bellos Spur"
     level: 3
     prompt: |
-      Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead?` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `bello_here?` wahr ist.
+      Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead?` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `bello_here?` wahr ist.
     starter: |
       def turn_right
         3.times do
@@ -1925,7 +1925,7 @@ tasks:
       ```
     python:
       prompt: |
-        Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `bello_here()` wahr ist.
+        Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `bello_here()` wahr ist.
       starter: |
         def turn_right():
             for i in range(3):
@@ -1990,7 +1990,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Folge ihr, bis `belloHere()` wahr ist.
+        Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `belloHere()` wahr ist.
       starter: |
         function turnRight() {
           for (let i = 0; i < 3; i++) {

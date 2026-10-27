@@ -29,6 +29,8 @@ DARK = {
     '#16a34a' => '#4ade80', # green: the y axis
     '#d97706' => '#fbbf24', # amber: the sun and rays towards it
     '#0b0f19' => '#000000', # shadow on a floor: dark in both modes
+    '#fdfdfd' => '#fdfdfd', # a printed label (a barcode): white in both modes
+    '#7c3aed' => '#a78bfa', # purple: a fourth colour beside blue, green and amber (branches in a commit graph)
 }.freeze
 
 svg_path = ARGV[0] or abort "usage: #{$PROGRAM_NAME} FILE.svg [WIDTH]"

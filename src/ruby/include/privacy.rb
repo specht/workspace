@@ -43,6 +43,8 @@ module Privacy
             scope.const_defined?('PARENTAL_CONSENT_REQUIRED') && scope.const_get('PARENTAL_CONSENT_REQUIRED') == true
         # DEDICATED_SERVER = true: on the server runs nothing but the Workspace
         values[:dedicated_server] = scope.const_defined?('DEDICATED_SERVER') && scope.const_get('DEDICATED_SERVER') == true
+        # GIT_SERVER = true: Git repositories of groups in the Workspace (GitServer)
+        values[:git_server] = scope.const_defined?('GIT_SERVER') && scope.const_get('GIT_SERVER') == true
         # The school that is responsible and whom to write to: the operator's
         # own school and the operator, unless for_school replaces them.
         values[:school_name] = values[:operator_school]
@@ -152,7 +154,31 @@ module Privacy
 
     # With s, the backups too, when the installation names them (BACKUP).
     def self.records(s = {})
-        base_records + (s[:backup] ? [backup_record(s)] : [])
+        base_records + (s[:git_server] ? git_records : []) + (s[:backup] ? [backup_record(s)] : [])
+    end
+
+    # The Git server of the groups (GitServer), when the installation has it.
+    def self.git_records
+        [
+            {
+                :data => 'Git-Repositorys von Gruppen: Dateien und die Geschichte der Commits, mit dem Namen und der E-Mail-Adresse, ' \
+                    'die jemand in seinen Commits angibt (im Workspace frei gewählt, nicht die Adresse des Kontos)',
+                :source => 'von den Mitgliedern der Gruppe hochgeladen (git push); angelegt von einer Lehrkraft der Gruppe',
+                :categories => [:content],
+                :purpose => 'gemeinsames Arbeiten an einem Projekt im Unterricht',
+                :who => 'Mitglieder und Lehrkräfte der Gruppe; Administration',
+                :how_long => 'bis eine Lehrkraft der Gruppe das Repository löscht oder die Gruppe gelöscht wird; ' \
+                    'was jemand beigetragen hat, bleibt nach dem Löschen seines Kontos als Arbeit der Gruppe im Repository',
+            },
+            {
+                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt, ' \
+                    'einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
+                :categories => [:account],
+                :purpose => 'Anmeldung am Git-Server des Workspace',
+                :who => 'Administration',
+                :how_long => 'bis die Person ihn zurückzieht, bis zur Löschung des Kontos',
+            },
+        ]
     end
 
     def self.backup_kept_sentence(s)

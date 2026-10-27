@@ -1,0 +1,53 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# starter/ ist das Quiz, wie es ins Repository kommt; beispiele/ sind
+# Runden und rounds.txt mit eigener Runde und mit einem Konflikt.
+format: 1
+activity: class-quiz
+examples:
+  ssh-schluessel:
+    pass:
+      - files: { .ssh/id_ed25519.pub: { text: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG5t student@workspace\n" } }
+    fail:
+      # Nur der geheime Schlüssel
+      - files: { .ssh/id_ed25519: { text: "-----BEGIN OPENSSH PRIVATE KEY-----\n" } }
+  eigene-runde:
+    pass:
+      - files:
+          class-quiz/quiz.rb: starter/quiz.rb
+          class-quiz/rounds.txt: beispiele/rounds-lena.txt
+          class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+          class-quiz/questions/lena.txt: beispiele/lena.txt
+    fail:
+      - files:
+          class-quiz/quiz.rb: starter/quiz.rb
+          class-quiz/rounds.txt: starter/rounds.txt
+          class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+        say: nur die Beispielrunde
+      - files:
+          class-quiz/quiz.rb: starter/quiz.rb
+          class-quiz/rounds.txt: beispiele/rounds-konflikt.txt
+          class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+          class-quiz/questions/lena.txt: beispiele/lena.txt
+          class-quiz/questions/ida.txt: beispiele/ida.txt
+        say: Konflikt
+    python:
+      pass:
+        - files:
+            class-quiz/quiz.py: starter/quiz.py
+            class-quiz/rounds.txt: beispiele/rounds-lena.txt
+            class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+            class-quiz/questions/lena.txt: beispiele/lena.txt
+      fail:
+        - files:
+            class-quiz/quiz.py: starter/quiz.py
+            class-quiz/rounds.txt: starter/rounds.txt
+            class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+          say: nur die Beispielrunde
+        - files:
+            class-quiz/quiz.py: starter/quiz.py
+            class-quiz/rounds.txt: beispiele/rounds-konflikt.txt
+            class-quiz/questions/beispiel.txt: starter/questions/beispiel.txt
+            class-quiz/questions/lena.txt: beispiele/lena.txt
+            class-quiz/questions/ida.txt: beispiele/ida.txt
+          say: Konflikt

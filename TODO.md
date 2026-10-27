@@ -145,6 +145,8 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
+* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): next an activity on object orientation with a class diagram, in Ruby, Python, JavaScript, Dart and Java (five languages on an activity, Java and Dart checks, a class-diagram extension like the ER-Werkstatt); then a tiny language model (KI), a Turing machine, a logic sandbox; open questions there
+
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
@@ -182,6 +184,8 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 * [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
 * [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
 * [ ] Person boxes for Euklid, Fibonacci, Collatz and Eratosthenes (Schleifen); Richard E. Pattis (Karel the Robot) once a source gives his year of birth
+* [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, all dev-only): screenshots of the UML-Werkstatt and of the Git server's key box from recipes, a person box for Dahl and Nygaard (Simula) in `supermarkt`, a try in class; then out of dev-only. The other packages for the curriculum's gaps: docs/plan-lehrplan-luecken.md
+* [ ] `/images/white.webp`, the picture of a card without one, is missing (404)
 * [ ] The activity »Testen«: tests as files in the Workspace (`pytest`, `minitest`), red-green-refactor, with the check type `tests` reading files (`file:`, `against:`, mutants as files)
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
 
@@ -256,7 +260,7 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 * **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals
-* **Git collaboration** – branches, merge, conflicts, pull requests, working with another student, basic CI
+* **Git collaboration, further** – pull requests and basic CI on top of the class quiz (`class-quiz` has branches, merges, conflicts and a review)
 * **Data formats** – text vs binary, CSV, JSON, encodings, hex dumps; connects JPEG and network protocols
 * **PixelRAM projects** – plasma, Game of Life, Mandelbrot, raycaster, raytracer, a software rasterizer; do not turn PixelRAM into a second raylib
 * **PostgreSQL** – next to MySQL, with the exercises of [practical-sql](https://github.com/anthonydb/practical-sql)

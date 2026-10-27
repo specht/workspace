@@ -76,6 +76,12 @@ html[data-bs-theme="dark"] {
     .code-language-option[data-set-language='javascript'][aria-pressed='true'] {
         color: #f7df1e;
     }
+    .code-language-option[data-set-language='dart'][aria-pressed='true'] {
+        color: #40c4ff;
+    }
+    .code-language-option[data-set-language='java'][aria-pressed='true'] {
+        color: #f5a35c;
+    }
     .autotoc-up {
         color: #c9c8c3;
         background: #2a2a28;
@@ -678,6 +684,32 @@ html[data-bs-theme="dark"] {
         --er-red: #f19aa1;
     }
     .er-playground-problems { color: #f19aa1; }
+    .uml-playground-output {
+        border-color: #33332f;
+        background-color: #1c1c1b;
+        /* Colours of the class diagram (uml-core.js) */
+        --cd-ink: #e7e6e1;
+        --cd-paper: #1c1c1b;
+        --cd-shape: #1c1c1b;
+        --cd-muted: #a3a29d;
+        --cd-pen: #7fbfe3;
+        --cd-pen-soft: #1d3346;
+    }
+    .uml-playground-problems { color: #f19aa1; }
+    .struktogramm-playground-output {
+        border-color: #33332f;
+        background-color: #1c1c1b;
+    }
+    .struktogramm-playground-problems { color: #f19aa1; }
+    /* Colours of a Struktogramm (struktogramm.js) */
+    .struktogramm,
+    .struktogramm-playground-diagram {
+        --sg-ink: #e7e6e1;
+        --sg-paper: #1c1c1b;
+        --sg-soft: #1d3346;
+        --sg-muted: #a3a29d;
+        --sg-pen: #7fbfe3;
+    }
     .subview-dialog { background-color: #1b1f26; }
     .subview-head,
     .subview-bar,

@@ -8,9 +8,13 @@ require_relative 'measure_check'
 require_relative 'scene_check'
 require_relative 'sql_check'
 require_relative 'er_check'
+require_relative 'classes_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
 require_relative 'c_check'
+require_relative 'javascript_check'
+require_relative 'java_check'
+require_relative 'dart_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 
@@ -28,7 +32,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er schema keyboard python ruby c function pip tests]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -93,9 +97,13 @@ module TaskCheck
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_cypher(task, check, answer, cypher) if type == 'cypher'
         return check_er(task, check, workspace, runner) if type == 'er'
+        return check_classes(task, check, workspace, runner) if type == 'classes'
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
+        return check_calls(task, check, workspace, guest_runner, JavascriptCheck) if type == 'javascript'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
+        return check_calls(task, check, workspace, guest_runner, JavaCheck) if type == 'java'
+        return check_calls(task, check, workspace, guest_runner, DartCheck) if type == 'dart'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
         return check_tests(task, check, answer, kata) if type == 'tests'
         return check_pip(task, check, answer, kata, kata_seed, kata_map) if type == 'pip'
@@ -120,11 +128,19 @@ module TaskCheck
             result.message ||= task['prediction'] ? 'Gut vermutet.' : 'Richtig.'
             result.solution = task['solution']
         elsif result.status == :wrong
-            result.message ||= task['prediction'] ?
-                'Deine Vermutung war eine andere. Probier es aus und vergleiche.' :
-                'Das stimmt noch nicht.'
+            result.message = task['prediction'] ? wrong_prediction(result.message) : (result.message || 'Das stimmt noch nicht.')
         end
         result
+    end
+
+    # A wrong prediction says so first, then why (the task's feedback) or
+    # what to do. The card shows only the colour of a hint, not »falsch«.
+    WRONG_PREDICTION = 'Deine Vermutung stimmt nicht.'
+
+    def self.wrong_prediction(message)
+        return "#{WRONG_PREDICTION} Probier es aus und sieh nach, was wirklich passiert." if message.to_s.strip.empty?
+
+        message.lstrip.start_with?('```', '<') ? "#{WRONG_PREDICTION}\n\n#{message}" : "#{WRONG_PREDICTION} #{message}"
     end
 
     # measure and command run in the person's Workspace (MeasureCheck);
@@ -199,10 +215,33 @@ module TaskCheck
             :solution => status == :correct ? task['solution'] : nil)
     end
 
+    NOT_RUNNING_CLASSES = 'Starte zuerst deinen Workspace. Dein Diagramm liest die UML-Werkstatt in deinem Workspace.'
+
+    # classes: a class diagram, read by the UML-Werkstatt's core in the
+    # Workspace (ClassesCheck), like er.
+    def self.check_classes(task, check, workspace, runner)
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+        return Result.new(:status => :unavailable, :message => 'Die UML-Werkstatt fehlt auf dem Server. Sag deiner Lehrkraft Bescheid.') unless ClassesCheck.available?
+
+        file = check['file']
+        if workspace.entry(file)[:type] != :file
+            other = workspace.other_case(file)
+            hint = other ? " Es gibt aber `#{other}`; Groß- und Kleinschreibung zählen." : " Lege sie im Ordner `#{File.dirname(file)}` an."
+            return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
+        end
+        result = runner&.call(ClassesCheck.command(file), 15)
+        return Result.new(:status => :unavailable, :message => NOT_RUNNING_CLASSES) if result.nil?
+        return Result.new(:status => :unavailable, :message => 'Das Lesen des Diagramms hat zu lange gedauert. Versuch es gleich noch einmal.') if result[:timed_out]
+
+        status, problem, message, read = ClassesCheck.evaluate(task, check, ClassesCheck.parse(result[:output]))
+        Result.new(:status => status, :problem => problem, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
     NOT_RUNNING_CALLS = 'Starte zuerst deinen Workspace. Dein Programm läuft zum Prüfen in deinem Workspace.'
 
-    # python, ruby, c: calls into the person's own file (PythonCheck,
-    # RubyCheck, CCheck). The code is theirs, so it only ever runs as the guest
+    # python, ruby, javascript, c, java, dart: calls into the person's own
+    # file (PythonCheck, RubyCheck, JavascriptCheck, CCheck, JavaCheck, DartCheck). The code is theirs, so it only ever runs as the guest
     # (rule 1).
     def self.check_calls(task, check, workspace, runner, language)
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
@@ -521,7 +560,7 @@ module TaskCheck
         end
         message = say && say['say']
         if message.nil? && correct.size > 1
-            message = 'Das stimmt noch nicht ganz. Mehrere Antworten können richtig sein.'
+            message = task['prediction'] ? 'Mehrere Antworten können richtig sein.' : 'Das stimmt noch nicht ganz. Mehrere Antworten können richtig sein.'
         end
         Result.new(:status => :wrong, :message => message)
     end

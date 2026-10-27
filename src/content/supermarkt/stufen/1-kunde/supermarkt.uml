@@ -1,0 +1,5 @@
+# Kassen im Supermarkt
+class Customer
+  - items: int
+  - arrival: int
+  + Customer(items: int, arrival: int)

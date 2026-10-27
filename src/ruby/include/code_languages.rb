@@ -6,7 +6,8 @@ require 'cgi'
 #
 #   languages: [ruby, python]
 #
-# and marks what differs between them, on lines of their own:
+# and marks what differs between them, on lines of their own (one marker
+# may name several languages, <!-- language: javascript dart java -->):
 #
 #   <!-- language: ruby -->
 #   ```ruby
@@ -30,22 +31,24 @@ require 'cgi'
 # choice (u.code_language, set with the switch), the languages of their
 # classes a teacher has set one for, and Ruby; else the page's first.
 #
-# JavaScript is a language of the Katas only (docs/plan-katas.md): a Kata
-# page may offer it, the class setting does not (GROUP_LANGUAGES), and
-# someone who picks it on a Kata page still sees Ruby or Python elsewhere.
+# A class sets Ruby or Python (GROUP_LANGUAGES). JavaScript, Dart and Java
+# are offered where a page needs them: JavaScript on the Katas
+# (docs/plan-katas.md), all five on the activity about classes
+# (docs/plan-lehrplan-luecken.md). Someone who picks one of these three keeps
+# it apart (u.kata_code_language) and still sees Ruby or Python elsewhere.
 #
 # A page without languages: in its meta (a Handbuch page) may use the same
 # markers to show both: a Ruby part and a Python part right after each other
 # stand side by side, each labelled with its language (pair).
 module CodeLanguages
-    LANGUAGES = %w[ruby python javascript].freeze
-    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
+    LANGUAGES = %w[ruby python javascript dart java].freeze
+    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java' }.freeze
     # What a teacher can set for a class
     GROUP_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
     VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
 
-    START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+)[ \t]*-->[ \t]*$/
+    START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+(?:[ \t,]+[a-z]+)*)[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/language[ \t]*-->[ \t]*$/
 
     def self.known?(language)
@@ -68,8 +71,9 @@ module CodeLanguages
             next piece if i.odd?
 
             piece.gsub(START) do
-                warn&.call("<!-- language: #{$1} -->: unknown language") unless known?($1)
-                "\n<div class='code-language-start' data-language='#{CGI.escapeHTML($1)}'></div>\n"
+                languages = $1.split(/[ \t,]+/)
+                languages.reject { |l| known?(l) }.each { |l| warn&.call("<!-- language: #{l} -->: unknown language") }
+                "\n<div class='code-language-start' data-language='#{CGI.escapeHTML(languages.join(' '))}'></div>\n"
             end.gsub(FINISH, "\n<div class='code-language-end'></div>\n")
         end.join
     end

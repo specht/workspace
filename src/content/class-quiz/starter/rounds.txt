@@ -1,0 +1,3 @@
+# Die Runden des Quiz, eine pro Zeile: die Datei mit ihren Fragen.
+# Das Quiz spielt sie in dieser Reihenfolge. Neue Runden kommen ans Ende.
+questions/beispiel.txt

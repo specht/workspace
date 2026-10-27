@@ -142,8 +142,10 @@ Was nur geht, wenn eine Installation eine Funktion eingeschaltet hat, steht
 zwischen `<!-- feature: case_server -->` und `<!-- /feature -->`, jede Marke
 auf einer Zeile für sich. Ist die Funktion aus, fällt alles dazwischen weg,
 bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
-der Seite noch in der Klassenübersicht. Bisher gibt es nur `case_server`, den
-Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)).
+der Seite noch in der Klassenübersicht. Es gibt `case_server`, den
+Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)),
+und `git_server`, den Git-Server der Gruppen ([entwicklung.md](entwicklung.md#der-git-server-der-gruppen));
+mit ihm stehen im Handbuch »Git-Server« die Teile zum Schlüssel für diesen Server.
 Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
 
 ### Teile mit und ohne Klassen-Repository
@@ -160,6 +162,16 @@ Adresse über SSH geht (`git@…`, `ssh://…`: der SSH-Schlüssel), steht in
 sich; die Teile schachteln sich nicht, also endet ein `class_repo`-Teil vor
 einem `class_repo_ssh`-Teil und beginnt danach neu.
 
+Liegt das Repository auf dem Git-Server des Workspace (`git@git.workspace:…`,
+docs/teacher-access.md, »Repositorys im Workspace«), gilt
+`<!-- if: class_repo_local -->`, dazu `class_repo_local_keys`, wenn die
+Lernenden ihren Schlüssel selbst abgeben (`_include(gitlab#ssh-workspace)`
+mit dem Kasten zum Abgeben), oder `class_repo_local_auto`, wenn der Workspace
+ihn einrichtet (`_include(gitlab#ssh-workspace-auto)`). `class_repo_ssh` gilt
+dann nicht: Es meint einen Git-Server im Netz. Was nur für einen Server im
+Netz gilt (die Einladung, das Konto dort), steht in
+`<!-- if: class_repo_outside -->`, für SSH und HTTPS.
+
 Beim Laden wird die Seite in jeder Fassung gerendert (mit SSH, mit HTTPS,
 sofern sie die beiden unterscheidet, und ohne), mit eigenen
 Aufgabenkarten (`ContentParts.filter_conditions`, `ClassRepos` in
@@ -168,8 +180,10 @@ und setzt die Adresse ein:
 
 - Lernende sehen die Fassung **mit**, wenn eine ihrer Gruppen eine Adresse
   für die Seite hat (die erste solche Gruppe in der Reihenfolge ihrer
-  Gruppen), und zwar die mit HTTPS bei einer `https://`-Adresse, sonst die
-  mit SSH; ohne Adresse die Fassung **ohne**.
+  Gruppen), und zwar die mit HTTPS bei einer `https://`-Adresse, die für
+  den Workspace (mit abgegebenem oder eingerichtetem Schlüssel, wie die
+  Gruppe es eingestellt hat) bei einer Adresse dort, sonst die mit SSH;
+  ohne Adresse die Fassung **ohne**.
 - Lehrkräfte, Administration und nicht Angemeldete sehen die Fassung mit
   SSH, mit Platzhaltern statt der Adresse.
 
@@ -179,7 +193,8 @@ Startseite. Die Klassenübersicht zählt für jede Gruppe die Fassung, die ihre
 Lernenden sehen. Eine Aufgabe darf in beiden Fassungen stehen, aber in jeder
 nur einmal; `class_repos_test.rb` prüft die Sandboxes: jede Aufgabe aus
 `tasks.yaml` in einer Fassung, die Git-Aufgaben nur mit, die Fragen zum
-Thema in allen, `ssh-schluessel` nur mit SSH.
+Thema in allen, `ssh-schluessel` nur mit SSH und mit abgegebenem Schlüssel
+im Workspace.
 
 ### Teile einer Handbuch-Seite
 
@@ -782,6 +797,27 @@ check:
       say: Ein leerer Text ergibt keinen einzigen Code.
 ```
 
+#### Aufrufe in mehreren Schritten
+
+Was ein Objekt kann, zeigt sich oft erst über mehrere Schritte: anlegen,
+verändern, fragen. Ein Aufruf darf darum aus Schritten bestehen, getrennt
+durch `;`; der letzte gibt das Ergebnis (`CallCheck.steps`, das nur an `;`
+außerhalb von Klammern und Texten trennt). Das geht in allen Sprachen, auch
+in den Katas:
+
+```yaml
+cases:
+  - call: a = Account(5); a.deposit(3); a.balance()        # Python
+    expect: 8
+  - a = Account.new(5); a.deposit(3); a.balance: 8          # Ruby
+  - const a = new Account(5); a.deposit(3); a.balance(): 8  # JavaScript
+```
+
+In Python laufen die Schritte in einer Kopie der Namen der Datei, ändern dort
+also nichts; in JavaScript in einem Block für sich, so dass jeder Fall sein
+eigenes `const a` haben darf; in Ruby auf oberster Ebene, wie jeder Aufruf.
+Java und Dart schreiben die Schritte in den Code, den sie erzeugen (unten).
+
 ### function
 
 Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
@@ -1113,6 +1149,83 @@ Zeile und die Meldung des Compilers; fehlt eine Funktion, heißt es »In
 mehrere Aufrufe lesbar machen; was darin nicht zum Programm passt, meldet die
 Prüfung als »Die Prüfung passt noch nicht zu deinem Programm«.
 
+### javascript
+
+Ruft auf, was in einer JavaScript-Datei der Lernenden steht, wie `ruby` und
+`python`, mit `node` im Workspace als Gast (`JavascriptCheck`): dasselbe
+Skript wie bei den Katas in JavaScript, nur auf eine Datei (`file`, auf
+`.js`). Verglichen wird mit `util.isDeepStrictEqual`, Arrays und Objekte also
+nach ihrem Inhalt; `console` ist dabei stumm. Anders als der Code einer Kata
+darf die Datei ein Modul sein, mit `require`, `module` und `exports`: So endet
+`supermarkt/supermarket.js` mit `module.exports = { … }` für die Simulation in
+einer zweiten Datei. Die Beispiele warten, wo es kein `node` gibt, wie bei den
+Katas.
+
+```yaml
+check:
+  type: javascript
+  file: supermarkt/supermarket.js
+  cases:
+    - new Customer(12, 30).items: 12
+    - call: const k = new Checkout(); k.serve(new Customer(10, 0)); k.freeAt
+      expect: 90
+```
+
+### java, dart
+
+Rufen auf, was in Java-Klassen oder einer Dart-Datei der Lernenden steht, wie
+`ruby` und `python` (`JavaCheck`, `DartCheck`). Beide Sprachen haben kein
+`eval`; darum schreibt die Prüfung, wie bei `c`, ein Testprogramm um die
+Aufrufe herum und führt es im Workspace aus, als Gast in einem neuen Ordner
+in `/tmp`. Bei Java übersetzt `javac` es zusammen mit allen `.java`-Dateien
+im Ordner von `file`, bei Dart importiert es die Datei (und damit, was sie
+importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`; das `dart` im
+Pfad ist das von Flutter, das erst in seinen eigenen Ordner schreiben will).
+Ein eigenes `main` läuft dabei nicht.
+
+```yaml
+check:
+  type: java
+  file: bibliothek/Book.java              # die Datei der Aufgabe; ihr ganzer Ordner wird übersetzt
+  setup: |                                # Java in der Testklasse, Hilfen für die Aufrufe
+    static Book faust() { return new Book("Faust", "Goethe"); }
+  cases:
+    - new Book("Faust", "Goethe").getTitle(): '"Faust"'
+    - call: Book b = faust(); b.lend(); b.isAvailable()
+      expect: false
+      say: Ein ausgeliehenes Buch ist nicht mehr da.
+    - call: new Book("", "Goethe")
+      raises: true
+
+check:
+  type: dart
+  file: bibliothek/library.dart
+  cases:
+    - Book('Faust', 'Goethe').title: "'Faust'"
+    - call: final b = Book('A', 'B'); b.lend(); b.isAvailable
+      expect: false
+```
+
+Aufrufe und Ergebnisse sind Java oder Dart, in mehreren Schritten wie oben;
+jeder Fall steht in einer eigenen Methode, Namen stören sich also nicht. Die
+Werte werden verglichen, nicht die Objekte: Zahlen als Zahlen (ein `int` ist
+gleich einem `long`, Kommazahlen bis auf 1e-9), Listen und Arrays Element für
+Element, Maps und Mengen nach ihren Einträgen, alles andere mit `equals`
+oder `==`. Die Rückmeldung zeigt einen Wert wie im Code (`"Faust"`, `[1, 2]`,
+in Dart `'Faust'`), ein Objekt der eigenen Klasse mit seinem `toString`. Was
+der Code ausgibt, verschwindet. Bricht ein Fall mit einer Exception ab, steht
+sie mit der Datei und Zeile im Code der Person da, aus der sie kam: »bricht
+ab: `NullPointerException: … (Book.java, Zeile 5)`«; die anderen Fälle laufen
+weiter. Lässt sich der Code nicht übersetzen, sagt die Prüfung, was fehlt
+(»`Book` hat noch keine Methode `lend`«, »Die Klasse `Book` gibt es noch
+nicht«), welche Zeile welcher Datei der Compiler nicht versteht, oder welcher
+Aufruf nicht zum Programm passt. Ein Lauf dauert in einem Workspace etwa eine
+Sekunde (Java) bis zwei (Dart); `timeout` gilt wie bei `python` für alles.
+
+Die Beispiele (`task-examples.yaml`) brauchen `javac` oder `dart`; wo sie
+fehlen (der Ruby-Container, die CI), warten sie auf eine Maschine, die sie
+hat, wie Katas in JavaScript ohne Node.
+
 ### sql
 
 Seit M6. Beispiele stehen in `src/content/mysql/tasks.yaml` (»Einführung in
@@ -1261,6 +1374,60 @@ Zeilennummer, so wie die Erweiterung sie unterstreicht.
 
 Unter der Rückmeldung steht, was im Modell steht: Entitäten mit ihren
 Attributen (Schlüssel fett), Beziehungen und die Tabellen, die daraus werden.
+
+### classes
+
+Liest das Klassendiagramm aus einer `.uml`-Datei (die UML-Werkstatt,
+`src/vscode-extensions/uml`) und vergleicht es mit der Aufgabe, wie `er`
+ein ER-Modell (`ClassesCheck`). Der Server schickt den Kern der
+UML-Werkstatt mit und lässt ihn im Workspace mit `node` lesen
+(`uml-core.js --json`); so liest jeder Workspace gleich, auch einer mit
+einer älteren Erweiterung.
+
+```yaml
+check:
+  type: classes
+  file: supermarkt/supermarkt.uml
+  classes:
+    - name: Checkout
+      abstract: false
+      attributes: [freeAt]                          # wie in der Datei; Zeichen und Typ nur, wenn angegeben
+      methods: ["+ Checkout()", "serve(customer: Customer): int"]   # ein Konstruktor: der Name der Klasse, ohne Typ
+    - name: ExpressCheckout
+      extends: Checkout
+      overrides: ["+ accepts(customer: Customer): boolean"]
+  associations:
+    - between: [Supermarket, Checkout]
+      multiplicities: ["1", "1..*"]                 # in der Reihenfolge von between
+      directed: false                               # true: Supermarket -> Checkout
+      name: checkouts                               # wenn der Name zählt
+```
+
+Was die Aufgabe nennt, muss da sein; weitere Klassen, Attribute, Methoden und
+Assoziationen dürfen es auch. Eine Klasse hat auch, was sie erbt, nur die
+Konstruktoren ihrer Oberklasse nicht. Was unter `overrides` steht, muss sie
+selbst haben, in ihrem eigenen Kasten, und eine Klasse über ihr auch: Sie
+überschreibt es. Fehlt es nur in ihrem Kasten, sagt die Rückmeldung »`ExpressCheckout`
+erbt `accepts` von `Checkout`, soll es aber anders machen …«. Eine Methode
+zählt nach ihrem Namen und, wenn angegeben, den Typen ihrer Parameter (ihre
+Namen sind egal) und ihrem Rückgabetyp.
+
+Das Diagramm schreibt die Namen wie der Code der Lernenden: `isAvailable`,
+`is_available` und Rubys `available?` gelten als dieselbe Methode, `accepts`
+und Rubys `accepts?` auch, `freeAt` und `free_at` auch; ein `!` am Ende
+(Ruby, `sort!`) macht eine andere Methode daraus. Damit die Rückmeldung die
+Namen der Sprache nennt, bekommt die Aufgabe Varianten mit `check` (`ruby:`,
+`python:`), wie in `supermarkt/tasks.yaml`.
+
+Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«, mit Zeile
+und Meldung, wie die UML-Werkstatt sie im Editor unterstreicht), dann der
+erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein Attribut,
+eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre Richtung. Unter
+»Was der Workspace gelesen hat« steht das Diagramm in der Schreibweise der
+Datei. Für `feedback` gibt es `problem` mit `missing`, `errors`,
+`missing_class`, `abstract`, `extends`, `missing_attribute`, `attribute`,
+`missing_method`, `method`, `override`, `missing_association`, `multiplicity`
+und `direction`.
 
 ### keyboard
 

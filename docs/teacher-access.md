@@ -224,11 +224,11 @@ die ganze Gruppe.
 
 Die Sandboxes (Sortieren, Datenstrukturen, CPU) können mit einem
 gemeinsamen Git-Repository der Klasse arbeiten. Welches das ist, trägt eine
-Lehrkraft je Gruppe ein: auf der Klassenseite neben »Sprache« der Knopf
-»Git« (»Git · 2«, wenn die Gruppe zwei Adressen hat). Er öffnet einen
-Dialog mit einem Feld je Seite, deren Meta-Block `class_repo: group` sagt,
-in der Reihenfolge des Katalogs (`class_board.js`,
-`/api/set_group_class_repos`).
+Lehrkraft je Gruppe ein: auf der Klassenseite im Reiter »Einstellungen«
+(neben der Sprache und den Kopierknöpfen der Gruppe) unter
+»Git-Repositorys«, ein Feld je Seite, deren Meta-Block `class_repo: group`
+sagt, in der Reihenfolge des Katalogs, gespeichert mit »Adressen speichern«
+(`class_board.js`, `/api/set_group_class_repos`).
 
 - Eintragen dürfen die Lehrkräfte der Gruppe und die Administration
   (`teacher_or_admin!` und `class_groups`, sonst 403).
@@ -236,8 +236,8 @@ in der Reihenfolge des Katalogs (`class_board.js`,
   und `https://server[:port]/pfad`; der Server ein einfacher Hostname, ohne
   Leerzeichen, Anführungszeichen, `..` oder Zeichen, die in der Shell etwas
   bedeuten, denn die Adresse steht in einem Befehl, den Lernende kopieren
-  (`ClassRepos.normalize`). Ist eine Adresse ungültig, speichert der Dialog
-  nichts und markiert das Feld. Ein leeres Feld entfernt die Adresse.
+  (`ClassRepos.normalize`). Ist eine Adresse ungültig, wird
+  nichts gespeichert und das Feld markiert. Ein leeres Feld entfernt die Adresse.
 - Gespeichert als JSON `{ slug => Adresse }` in `GroupSetting.class_repos`,
   neben der Sprache der Gruppe: Umbenennen nimmt es mit, Löschen der Gruppe
   löscht es.
@@ -252,12 +252,60 @@ in der Reihenfolge des Katalogs (`class_board.js`,
   »Teile mit und ohne Klassen-Repository«).
 - Lehrkräfte sehen die Seite mit Platzhaltern und darüber einen Kasten mit
   den Gruppen, die eine Adresse haben, und dieser Adresse; jeder
-  Gruppenname führt zum Dialog auf der Klassenseite (`/klasse?group=…&repos=SLUG`).
+  Gruppenname führt zu den Einstellungen auf der Klassenseite, das Feld der
+  Seite gewählt (`/klasse?group=…&repos=SLUG`).
   Gruppen ohne Adresse fehlen darin. Hat keine Gruppe eine, steht dort statt
-  des Kastens ein leiser Hinweis, wo man sie einträgt (Klassenseite, »Git«).
+  des Kastens ein leiser Hinweis, wo man sie einträgt (Klassenseite, »Einstellungen«).
 - Der Workspace legt auf dem Git-Server keine Konten an und lädt niemanden
   ein; das macht die Lehrkraft dort selbst. Die Seite sagt den Lernenden:
   »Deine Lehrkraft lädt dich dorthin ein«.
+
+## Repositorys im Workspace
+
+Mit `GIT_SERVER = true` in `credentials.rb` hält der Workspace die
+Repositorys der Gruppen selbst (`GitServer` in
+`src/ruby/include/git_server.rb`, der Dienst `git_server` aus
+`docker/git-server`, der Plan in docs/plan-git-gruppen.md). Ein Konto auf
+einem Git-Server im Netz braucht dann niemand.
+
+- **Anlegen:** Unter »Git-Repositorys« in den Einstellungen der Klassenseite
+  steht neben jeder Seite mit `class_repo: group` »Im Workspace anlegen«. Hat die Seite einen Ordner
+  `starter/` (das Quiz der Klasse), kommt dessen Inhalt als erster Commit
+  hinein, sonst ist das Repository leer. Die Adresse,
+  `git@git.workspace:<Ordner>/<Seite>.git`, wird gleich als
+  Klassen-Repository der Seite eingetragen; alles andere wie oben.
+- **Der Ordner der Gruppe** ist eine zufällige Kennung (`GroupSetting.git_id`),
+  nicht ihr Name: Eine umbenannte Gruppe behält ihre Adressen.
+- **Schlüssel:** Die Lehrkraft wählt je Gruppe (`GroupSetting.git_keys`).
+  »Abgeben«: Lernende erzeugen ein Schlüsselpaar und fügen die Zeile ihres
+  öffentlichen Schlüssels (`~/.ssh/id_ed25519.pub`) in den Kasten auf der
+  Seite ein, wie bei jedem Git-Server; einen privaten Schlüssel weist der
+  Kasten zurück, ohne ihn zu speichern. Liegt im Workspace ein anderer
+  öffentlicher Schlüssel als der abgegebene, sagt der Kasten das; beim ersten `ssh -T` vergleichen sie den
+  Fingerabdruck des Servers mit dem im Kasten. »Automatisch«: Der Workspace
+  schreibt jedem Mitglied ein Schlüsselpaar `~/.ssh/workspace_git`, einen
+  Abschnitt für `git.workspace` in `~/.ssh/config` und den Schlüssel des
+  Servers in `~/.ssh/known_hosts`, beide Abschnitte zwischen Markierungen
+  (`# >>> Workspace-Git …`). Er tut das sofort für jeden, der schon einen
+  Workspace hat, nach jedem Einlesen der Gruppen und vor jedem Start eines
+  Workspace; vorhandene Schlüssel bleiben.
+- **Wer darf:** Mitglieder und Lehrkräfte der Gruppe, nur mit Git (clone,
+  fetch, pull, push); keine Shell, keine Weiterleitung. Der Server lehnt
+  `git push --force` und das Löschen eines Branches ab und nimmt keinen Push
+  über 50 MB an. Nach jeder Änderung an den Gruppen, an einem Repository oder
+  an einem Schlüssel schreibt das Backend die Liste der Schlüssel und der
+  Zugriffe neu (`data/git-server/config`).
+- **Ansehen:** »Ansehen« neben dem Feld führt zu `/git/<Ordner>/<Seite>`: Dateien,
+  Verlauf, jeder Commit mit seinen Änderungen, alles als ZIP. Die Lernenden
+  der Gruppe sehen dieselben Seiten. Bilder werden gezeigt; HTML, SVG und
+  Markdown-HTML aus den Repositorys nie ausgeführt.
+- **Löschen:** »Löschen« neben dem Feld (nach einer Rückfrage) löscht das
+  Repository mit allem darin. Wird eine Gruppe gelöscht oder fehlt sie im
+  eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein
+  Konto gelöscht, verschwinden seine Schlüssel; seine Commits bleiben als
+  Arbeit der Gruppe in deren Repositorys.
+- **Ein vorhandenes Repository umziehen:** ein leeres im Workspace anlegen,
+  dann aus einem Klon des alten `git push --mirror` an die neue Adresse.
 
 ## Personen und Schulen (`/personen`, Administration)
 
