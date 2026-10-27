@@ -117,10 +117,17 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
 .algo-stepper .algo-cave { position: absolute; overflow: hidden; pointer-events: none; z-index: 0; border-radius: 0.4em; }
 .algo-stepper .algo-cave-box { transform-origin: 0 0; }
 .algo-stepper .algo-cave .pip-pip, .algo-stepper .algo-cave .pip-mampfer, .algo-stepper .algo-cave .pip-bubble { display: none; }
+/* the parts of the side keep their margins inside, so that their measured
+   height is the room they take (measureSide) */
+.algo-stepper .algo-part { display: flow-root; }
 /* path_back's variables beside the code */
 .algo-stepper table.algo-vars { font-family: '0xProto Nerd Font Mono', monospace; font-size: 0.85em; margin-bottom: 0.6em; }
 .algo-stepper table.algo-vars td { padding: 0.1em 0.8em 0.1em 0; text-align: left; }
 .algo-stepper table.algo-vars td.algo-var-name { color: var(--algo-accent); }
+.algo-stepper table.algo-vars td.algo-var-name { vertical-align: top; white-space: nowrap; }
+.algo-stepper table.algo-vars td.algo-dict { display: flex; flex-wrap: wrap; gap: 0.15em 0.4em; }
+.algo-stepper table.algo-vars .algo-entry { white-space: nowrap; }
+.algo-stepper table.algo-vars .algo-entry.fresh { background: color-mix(in srgb, var(--algo-frontier) 55%, transparent); border-radius: 0.2em; padding: 0 0.2em; font-weight: 600; }
 /* the lines from the calls to their nodes lie behind the picture and the code */
 .algo-stepper svg.algo-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
 .algo-stepper .algo-body > svg.algo-picture, .algo-stepper .algo-body > .algo-side { position: relative; z-index: 1; }
@@ -242,14 +249,17 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         new world.PipView(box, map.layout, map.start, { width: map.layout.width, height: map.layout.height, columns: cols });
         // where the picture is, measured: on a narrow screen the body only
         // groups (display: contents), and the layer's box is another one
+        // The picture's own mapping to the screen (getScreenCTM): its scale
+        // and where its corner is, also where it is shown smaller than its
+        // box and centred in it (full screen, limited by the height)
         const fit = () => {
-            const unit = picture.clientWidth / width;
             const parent = holder.offsetParent;
-            if (!unit || !parent) return;
-            const at = picture.getBoundingClientRect();
+            const ctm = picture.getScreenCTM && picture.getScreenCTM();
+            if (!parent || !ctm || !ctm.a) return;
+            const unit = ctm.a;
             const base = parent.getBoundingClientRect();
             Object.assign(holder.style, {
-                left: `${at.left - base.left - parent.clientLeft + parent.scrollLeft}px`, top: `${at.top - base.top - parent.clientTop + parent.scrollTop}px`,
+                left: `${ctm.e - base.left - parent.clientLeft + parent.scrollLeft}px`, top: `${ctm.f - base.top - parent.clientTop + parent.scrollTop}px`,
                 width: `${cols * 70 * unit}px`, height: `${rows * 70 * unit}px` });
             box.style.transform = `scale(${(70 * unit) / 48})`;
         };
@@ -325,9 +335,21 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         let entries = [];
         let key = 0;
         let op = -1;
+        // the variables beside the code, with their values: predecessor (and
+        // dist) as they grow, the entry that changed last marked
+        let lastFound = null;
+        let lastDist = null;
+        const dictionary = (dict, fresh) => Object.entries(dict).map(([k, v]) => ({ text: `${k}: ${v === null ? 'null' : v}`, fresh: k === fresh }));
+        const searchVars = (marks) => {
+            const node = marks.focus && marks.focus !== 'null' && marks.focus in graph.nodes ? marks.focus : '–';
+            // neighbor last: it comes and goes, and the rows above stay put
+            return [['goal', goal], ['node', node], ...(shortest ? [['dist', dictionary(dist, lastDist)]] : []),
+                ['predecessor', dictionary(found, lastFound)], ...(marks.neighbor ? [['neighbor', marks.neighbor]] : [])];
+        };
         const snapshot = (message, at, marks = {}) => frames.push({
             found: { ...found }, dist: shortest ? { ...dist } : null, taken: [...taken], op, message, code: { lines, at }, stack: [outer],
-            entries: entries.map((e) => ({ ...e, stale: shortest && (taken.includes(e.node) || dist[e.node] + h(e.node) < e.priority) })), ...marks });
+            entries: entries.map((e) => ({ ...e, stale: shortest && (taken.includes(e.node) || dist[e.node] + h(e.node) < e.priority) })),
+            vars: searchVars(marks), ...marks });
         const byPriority = (a, b) => a.priority - b.priority || (a.node < b.node ? -1 : 1) || a.key - b.key;
 
         const pathBack = () => {
@@ -360,6 +382,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             dist[start] = 0;
             snapshot(`dist ← { ${start}: 0 }: Vom Start bis zum Start ist der Weg 0.`, 1, { changed: start });
             found[start] = null;
+            lastFound = start;
             snapshot(`predecessor ← { ${start}: null }: Der Start hat keinen Vorgänger.`, 2);
             entries.push({ key: key++, node: start, priority: 0 });
             snapshot(`pq ← priority queue with (0, ${start}): Am Anfang steht nur der Start in der Priority Queue. Die Priorität steht über dem Eintrag.`, 4);
@@ -414,8 +437,10 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                         : `if neighbor not in dist: ${next} hat noch keinen Weg.`, 12, { ...here, fresh });
                     if (!better) continue;
                     dist[next] = fresh;
+                    lastDist = next;
                     snapshot(`dist[neighbor] ← new: Der Weg bis ${next} ist jetzt ${fresh}.`, 13, { ...here, fresh, changed: next });
                     found[next] = node;
+                    lastFound = next;
                     snapshot(`predecessor[neighbor] ← node: Der Pfeil von ${next} zeigt auf ${node}.`, 14, { ...here, fresh });
                     entries.push({ key: key++, node: next, priority: fresh + h(next) });
                     entries.sort(byPriority);
@@ -428,6 +453,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                     }
                     snapshot(`if neighbor not in predecessor: ${next} ist noch nicht gefunden.`, 7, here);
                     found[next] = node;
+                    lastFound = next;
                     snapshot(`predecessor[neighbor] ← node: Der Pfeil von ${next} zeigt auf ${node}. Damit ist ${next} gefunden.`, 8, here);
                     entries.push({ key: key++, node: next });
                     snapshot(kind === 'bfs' ? `add neighbor at the back of queue: ${next} kommt hinten in die Queue.` : `put neighbor on top of stack: ${next} kommt oben auf den Stack.`, 9, here);
@@ -3629,14 +3655,23 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         const sideText = (title, text) => side.replaceChildren(el('h5', { text: title }), el('div', { class: 'algo-items' }, [text === undefined
             ? el('span', { class: 'algo-empty', text: '–' }) : el('span', { class: 'algo-item next', text: String(text) })]));
         // the calls that run (a list's node_at), above the code
-        const listSide = (frame, deepest) => side.replaceChildren(...(deepest ? [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` },
+        // The side in three parts (the calls, the variables, the pseudocode),
+        // each at least as high as in its tallest step (measureSide), so that
+        // nothing below them jumps while the steps go by; a part a step does
+        // not have keeps its room.
+        const sideHeight = { calls: 0, vars: 0, code: 0 };
+        const part = (name, children) => el('div', { class: `algo-part algo-part-${name}`, style: sideHeight[name] ? `min-height: ${sideHeight[name]}px;` : '' }, children);
+        const listSide = (frame, deepest) => side.replaceChildren(...(deepest ? [part('calls', [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` },
             (frame.stack || []).map((entry, i, all) => {
                 const li = el('li', { class: !frame.returning && i === all.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call,
                     ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}) });
                 if (frame.returning) { li.classList.add('returning'); li.style.animationDelay = `${((all.length - 1 - i) / (all.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`; }
                 return li;
-            }))] : []), ...(frame.vars ? [el('h5', { text: 'Variablen' }), el('table', { class: 'algo-table algo-vars' },
-                [el('tbody', {}, frame.vars.map(([name, value]) => el('tr', {}, [el('td', { class: 'algo-var-name', text: name }), el('td', { text: value })])))])] : []), ...codeBox(frame.code));
+            }))])] : []), ...(frame.vars ? [part('vars', [el('h5', { text: 'Variablen' }), el('table', { class: 'algo-table algo-vars' },
+                [el('tbody', {}, frame.vars.map(([name, value]) => el('tr', {}, [el('td', { class: 'algo-var-name', text: name }),
+                    // a dictionary: its entries, the one changed last marked
+                    Array.isArray(value) ? el('td', { class: 'algo-dict' }, value.length ? value.map((e) => el('span', { class: e.fresh ? 'algo-entry fresh' : 'algo-entry', text: e.text })) : [el('span', { text: '{ }' })])
+                        : el('td', { text: value })])))])])] : sideHeight.vars ? [part('vars', [])] : []), part('code', codeBox(frame.code)));
         const setupOps = parseOps(widget.dataset.setup || '');
         if (algo === 'ring') {
             const capacity = Number(widget.dataset.capacity || 6);
@@ -3893,6 +3928,38 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         if (legend) body.appendChild(legend);
         widget.replaceChildren(...title, ...presetChoice(widget), el('div', { class: 'algo-controls' }, [...buttons, play, speedButton, count]), timelineBox, body, message);
         if (mountCave) mountCave();
+        // every step once, for the height of each part of the side
+        const measureSide = () => {
+            if (!side.isConnected || !side.clientWidth) return;
+            const tallest = { calls: 0, vars: 0, code: 0 };
+            Object.keys(sideHeight).forEach((k) => { sideHeight[k] = 0; });
+            for (const frame of frames) {
+                draw(frame);
+                for (const name of Object.keys(tallest)) {
+                    const node = side.querySelector(`.algo-part-${name}`);
+                    if (node) tallest[name] = Math.max(tallest[name], node.offsetHeight);
+                }
+            }
+            Object.assign(sideHeight, tallest);
+        };
+        // once the widget comes near the screen: a page of the Handbuch has
+        // many widgets, and each would draw all its steps while it loads
+        if (window.IntersectionObserver) {
+            const near = new IntersectionObserver((seen) => {
+                if (!seen.some((e) => e.isIntersecting)) return;
+                near.disconnect();
+                measureSide();
+                draw(frames[index]);
+            }, { rootMargin: '300px' });
+            near.observe(widget);
+        } else measureSide();
+        let sideWidth = side.clientWidth;
+        if (window.ResizeObserver) new ResizeObserver(() => {
+            if (side.clientWidth === sideWidth || !side.clientWidth) return;
+            sideWidth = side.clientWidth;
+            measureSide();
+            draw(frames[index]);
+        }).observe(side);
         // One under the other where the code would get less than about 20em
         // beside the picture (34em, the gap 1.2em): measured on the widget,
         // not the window, so that a narrow column of a wide window counts too
