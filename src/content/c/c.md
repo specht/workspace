@@ -89,6 +89,8 @@ crop-bottom: 56%
 
 <img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.c, jetzt mit farbiger Syntax.'>
 
+_task(hallo)
+
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
@@ -142,6 +144,8 @@ gcc hello.c -o hello && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `printf` das Wort `prinft` zu schreiben:
@@ -165,6 +169,8 @@ gcc hello.c -o hello
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
+_task(fehler)
+
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
@@ -178,6 +184,10 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='error.webp' alt='gcc warnt hello.c:4:5: implicit declaration of function »prinft«; did you mean »printf«?, danach scheitert der Linker mit undefined reference to »prinft«.'>
+
+<!-- after: fehler -->
+Die Meldung hat zwei Teile. Zuerst übersetzt `gcc` die Datei `hello.c` für sich und warnt nur, dass es `prinft` nicht kennt. Danach setzt der Linker `ld` dein Programm mit den Funktionen der Bibliothek zusammen, in der `printf` steht. Eine Funktion `prinft` findet er dort nicht, und erst er gibt auf.
+<!-- /after -->
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 4) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -212,8 +222,14 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 
+_task(int-grenze)
+
+<!-- after: int-grenze -->
+Ein `int` hat 32 Bit und reicht von −2147483648 bis 2147483647. 3000000000 passt nicht hinein: Übrig bleiben die unteren 32 Bit, und die bedeuten als `int` eine negative Zahl. C meldet dabei keinen Fehler, das Programm rechnet einfach mit der falschen Zahl weiter.
+<!-- /after -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib statt 123 die Zahl <code>3000000000</code> ein. Welche Zahl nennt das Programm in seiner Antwort, und was könnte der Grund dafür sein? Ändere danach <code>int num, i;</code> zu <code>long num, i;</code> und jedes <code>%d</code> zu <code>%ld</code>, übersetze neu und probier die Zahl noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+<strong>Ausprobieren:</strong> Ändere <code>int num, i;</code> zu <code>long num, i;</code> und jedes <code>%d</code> zu <code>%ld</code>, übersetze neu und probier <code>3000000000</code> noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
 </div>
 
 ## Bubblesort
@@ -247,12 +263,13 @@ crop-terminal-lines: auto
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
+_task(absteigend)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.c</code>, übersetze neu und starte das Programm:
 <ul>
 <li>Sortiere 100 Zahlen statt 10. Wie oft musst du dafür die 10 ersetzen?</li>
 <li>Ändere nur den Aufruf zu <code>bubbleSort(arr, 5);</code>. Welche Zahlen sind danach sortiert? Ein Array in C weiß nicht, wie lang es ist: Deshalb bekommt <code>bubbleSort</code> die Länge mit.</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
 </ul>
 </div>
 

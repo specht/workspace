@@ -1,0 +1,41 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: c
+examples:
+  hallo:
+    pass:
+      - files: { hello.c: hello.c }
+      - files: { hello.c: { text: "#include <stdio.h>\nint main(void) { printf(\"Hello, World!\"); return 0; }\n" } }
+    fail:
+      - files: { hello.c: hello-prinft.c }
+        say: printf("Hello, World!\n")
+      - files: { hello.c: { text: "int main() {\n    printf(\"Hello, World!\\n\");\n}\n" } }
+        say: stdio.h
+      - files: { hello.c: { text: "" } }
+      - files: { hallo.c: hello.c }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00", executable: true } }
+    fail:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00" } }
+        say: ausführbar
+      - files: { hello: { from: hello.c, executable: true } }
+        say: kein übersetztes Programm
+      - files: { hello.c: hello.c }
+        say: noch kein Programm
+  fehler:
+    pass:
+      - answer: ld
+      - answer: /usr/bin/ld
+      - answer: LD
+    fail:
+      - answer: gcc
+      - answer: collect2
+      - answer: prinft
+  absteigend:
+    pass:
+      - files: { bubblesort.c: { text: "#include <stdio.h>\n\nvoid bubbleSort(int arr[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - i - 1; j++) {\n            if (arr[j] < arr[j + 1]) {\n                int temp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = temp;\n            }\n        }\n    }\n}\n\nint main() {\n    int arr[] = {3, 1, 2};\n    bubbleSort(arr, 3);\n    printf(\"%d %d %d\\n\", arr[0], arr[1], arr[2]);\n    return 0;\n}\n" } }
+    fail:
+      - files: { bubblesort.c: bubblesort.c }
+        say: aufsteigend

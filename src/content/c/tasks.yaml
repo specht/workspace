@@ -1,0 +1,126 @@
+# Aufgaben zum Steckbrief »C«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.c,
+# factor.c, bubblesort.c), so wie die Seite sie speichern lässt.
+format: 1
+activity: c
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.c`.
+    file: hello.c
+    check:
+      type: files
+      path: hello.c
+      expect:
+        format: text
+        contains:
+          - pattern: 'printf\s*\(\s*"Hello, World!(\\n)?"\s*\)'
+            say: 'In `hello.c` finde ich noch kein `printf("Hello, World!\n")`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: '#include\s*<stdio\.h>'
+            say: 'In `hello.c` fehlt die erste Zeile, `#include <stdio.h>`. Ohne sie kennt der Compiler `printf` nicht.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.c`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.c` eingegeben, mit `.c` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.c` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `hello.c` mit `gcc`, sodass `./hello` im Ordner `/workspace`
+      `Hello, World!` ausgibt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein Programm `/workspace/hello`. Hat `gcc hello.c -o hello` eine Fehlermeldung ausgegeben? Dann entsteht keine ausführbare Datei.
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Hast du den Quelltext unter diesem Namen gespeichert? Er gehört in `hello.c`, das Programm macht `gcc hello.c -o hello`.'
+    hint:
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `hello.c` liegt. `ls` zeigt, welche Dateien da sind.
+      - '`gcc hello.c -o hello` übersetzt; hinter `-o` steht der Name des Programms, das entsteht.'
+    solution: |
+      `gcc hello.c -o hello` übersetzt den Quelltext in Maschinencode und
+      schreibt ihn in die Datei `hello`. Sie beginnt mit den Bytes `7F 45 4C 46`,
+      `\x7FELF`: So erkennt Linux ein ausführbares Programm.
+
+  - id: fehler
+    title: Wer gibt auf?
+    prompt: |
+      Die letzte Zeile der Meldung beginnt mit `collect2: error:`. Welches
+      Programm hat aufgegeben? Sein Name steht direkt dahinter, vor
+      `returned 1 exit status`.
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(/usr/bin/)?ld\W*$'
+    feedback:
+      - when: { matches: '(?i)^\W*gcc\W*$' }
+        say: '`gcc` hat die Arbeit verteilt, aber aufgegeben hat ein anderes Programm. Lies die letzte Zeile bis zu `returned`.'
+      - when: { matches: '(?i)collect2' }
+        say: '`collect2` meldet nur, was passiert ist. Gesucht ist das Wort dahinter.'
+      - when: { matches: '(?i)prinft' }
+        say: 'Das ist die Funktion, die gefehlt hat. Gesucht ist das Programm, das sie gesucht hat.'
+    hint: 'Die Zeile lautet `collect2: error: … returned 1 exit status`. Gesucht ist das Wort an der Stelle der drei Punkte.'
+    solution: |
+      `ld`, der Linker. `gcc` übersetzt `hello.c` erst für sich und warnt
+      dabei nur, dass es `prinft` nicht kennt. Danach setzt `ld` das
+      übersetzte Programm mit den Funktionen der Bibliothek zusammen, findet
+      `prinft` nirgends und gibt auf: `undefined reference to 'prinft'`.
+
+  - id: int-grenze
+    title: Eine zu große Zahl
+    prompt: |
+      Gib bei `./factor` statt 123 die Zahl `3000000000` ein. Welche Zahl nennt
+      das Programm in seiner Antwort?
+    check:
+      type: number
+      expect: -1294967296
+      tolerance: 0
+    feedback:
+      - when: { equals: 3000000000 }
+        say: 'Lies genau, was hinter `Prime factors of` steht. Ist es wirklich die Zahl, die du eingegeben hast?'
+      - when: { equals: 2147483647 }
+        say: 'Das ist die größte Zahl, die in ein `int` passt. Probier es aus: Das Programm nennt eine andere.'
+      - when: { between: [1294967295, 1294967297] }
+        say: Schau noch einmal auf das Zeichen vor der Zahl.
+    hint: '`gcc factor.c -o factor`, dann `./factor` und die Zahl eingeben. Die Zahl, um die es geht, steht hinter `Prime factors of`.'
+    solution: |
+      −1294967296. Ein `int` hat 32 Bit und reicht von −2147483648 bis
+      2147483647. 3000000000 passt nicht hinein: Übrig bleiben die unteren 32
+      Bit, und die bedeuten als `int` 3000000000 − 4294967296 = −1294967296.
+      Weil die Zahl negativ ist, läuft die Schleife nicht einmal an, und das
+      Programm nennt keinen Faktor. C meldet dabei keinen Fehler.
+
+  - id: absteigend
+    title: Absteigend sortieren
+    prompt: |
+      Ändere `bubbleSort` in `bubblesort.c` so, dass die größte Zahl zuerst
+      kommt, übersetze neu und starte das Programm noch einmal.
+    file: bubblesort.c
+    check:
+      type: c
+      file: bubblesort.c
+      cases:
+        - call: '({ int a[] = {3, 1, 4, 1, 5}; bubbleSort(a, 5); a[0]; })'
+          expect: 5
+          say: Die größte Zahl soll zuerst kommen. Noch sortiert `bubbleSort` aufsteigend.
+        - call: '({ int a[] = {3, 1, 4, 1, 5}; bubbleSort(a, 5); a[1] * 1000 + a[2] * 100 + a[3] * 10 + a[4]; })'
+          expect: 4311
+          say: 'Die größte Zahl steht vorn, aber der Rest ist noch nicht absteigend: Aus `{3, 1, 4, 1, 5}` soll `{5, 4, 3, 1, 1}` werden.'
+        - call: '({ int a[] = {2, 9}; bubbleSort(a, 2); a[0] * 10 + a[1]; })'
+          expect: 92
+    hint: Ein einziges Zeichen in der Zeile mit `if` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      ```c
+      if (arr[j] < arr[j + 1]) {
+      ```
+      Mit `<` statt `>` werden zwei Nachbarn vertauscht, wenn der hintere größer
+      ist. So wandert die kleinste Zahl ans Ende.
