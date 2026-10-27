@@ -20,15 +20,15 @@ Repositorys, sofern nicht anders angegeben. Die Einrichtung selbst steht im
 ```
 
 Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
-`docker_guard`, in der Entwicklung `tutorial_screenshots`, mit
+`docker_guard`, `docker_guard_ro`, in der Entwicklung `tutorial_screenshots`, mit
 `CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«)
 und mit `GIT_SERVER = true` `git_server` (siehe »Der Git-Server der Gruppen«).
 
 ### Der Docker-Wächter
 
 Der Ruby-Dienst hat keinen Docker-Socket. Er spricht mit `docker_guard`
-(`DOCKER_HOST=unix:///run/docker-guard/docker.sock`), der als einziger neben
-der Peer-Firewall den echten Socket hat und jede Anfrage prüft
+(`DOCKER_HOST=unix:///run/docker-guard/docker.sock`), der den echten Socket
+hat und jede Anfrage prüft
 (`docker/docker-guard/guard.rb`, Regeln in `src/ruby/include/docker_policy.rb`,
 getestet in `test/docker_policy_test.rb`). Durch geht nur, was der Workspace
 braucht: Container `hs_code_*` aus dem Workspace-Image mit Ordnern unter
@@ -39,6 +39,13 @@ Lesen; `kill` für Workspaces und `HUP` für nginx. Alles andere bekommt eine
 (`./config.rb logs docker_guard`). Braucht der Code eine neue Docker-Aktion,
 gehört sie in `docker_policy.rb` (mit Test) und danach
 `./config.rb restart docker_guard`.
+
+Wer nur zusieht, bekommt einen Wächter, der nur liest (`GUARD_MODE=readonly`,
+`DockerPolicy::READONLY`): `GET` auf Container, Netze, Ereignisse und Version,
+sonst nichts, auch keine Logs, kein `exec`, keine Images. Die Peer-Firewall
+spricht mit `docker_guard_ro` (`data/docker-guard-ro/docker.sock`), Traefik
+mit seinem eigenen Wächter in `docker/traefik/docker-compose.yaml`
+(`traefik-docker-guard`). Den echten Socket haben damit nur die Wächter.
 
 ### Kapazität messen
 

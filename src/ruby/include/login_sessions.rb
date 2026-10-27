@@ -112,14 +112,14 @@ module LoginSessions
         "am #{day.day}. #{MONTHS[day.month - 1]} #{day.year}"
     end
 
-    # »angemeldet am 3. Oktober 2026 · zuletzt gestern«; the last use only
+    # »angemeldet am 3. Oktober 2026, zuletzt gestern«; the last use only
     # when it is another day than the login.
     def self.when_text(session, today: Date.today)
         created = day_text(session[:created_on], :today => today)
         last = day_text(session[:last_used_on], :today => today)
         parts = [created ? "angemeldet #{created}" : 'Tag der Anmeldung unbekannt']
         parts << "zuletzt #{last}" if last && session[:last_used_on].to_s != session[:created_on].to_s
-        parts.join(' · ')
+        parts.join(', ')
     end
 
     # The person's own sessions, this browser first, then the most recently

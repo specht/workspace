@@ -70,7 +70,7 @@ class Main < Sinatra::Base
             documents = school[:home] ? '/datenschutz' : "/datenschutz?schule=#{key}"
             io << "<p><strong>#{h.(school[:name])}</strong>"
             if school[:approved]
-                io << " hat dem Einsatz zugestimmt. · <a href='#{h.(documents)}'><i class='bi bi-file-earmark-text' aria-hidden='true'></i>Unterlagen für deine Schule</a></p>"
+                io << " hat dem Einsatz zugestimmt. <a href='#{h.(documents)}'><i class='bi bi-file-earmark-text' aria-hidden='true'></i>Unterlagen für deine Schule</a></p>"
             elsif school[:guests]
                 io << "</p><p class='class-setting-hint'>Gäste: Erwachsene, die den Workspace kennenlernen. Für sie gilt die Nutzungsordnung, keine Entscheidung einer Schule.</p>"
             else

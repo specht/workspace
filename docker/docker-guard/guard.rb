@@ -105,7 +105,8 @@ def handle(client)
 
     body = read_body(client, headers)
     path, query = target.to_s.split('?', 2)
-    kind, id = DockerPolicy.classify(method, path)
+    # a watcher's guard decides by method and path alone
+    kind, id = CONFIG.readonly ? [nil, nil] : DockerPolicy.classify(method, path)
     name = id ? container_name(id) : nil
     allowed, reason = DockerPolicy.decide(method, path, query.to_s, body, CONFIG, :name => name)
     unless allowed
@@ -135,7 +136,8 @@ end
 File.unlink(LISTEN) if File.exist?(LISTEN)
 server = UNIXServer.new(LISTEN)
 File.chmod(0o660, LISTEN)
-puts "docker-guard listening on #{LISTEN} (images #{CONFIG.images.join(', ')}, folders under #{CONFIG.bind_prefix})"
+puts CONFIG.readonly ? "docker-guard listening on #{LISTEN}, read only" :
+    "docker-guard listening on #{LISTEN} (images #{CONFIG.images.join(', ')}, folders under #{CONFIG.bind_prefix})"
 loop do
     client = server.accept
     Thread.new(client) { |c| handle(c) }

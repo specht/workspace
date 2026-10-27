@@ -128,7 +128,7 @@ export class CheckpointTreeProvider
       node.name,
       vscode.TreeItemCollapsibleState.None,
     );
-    item.description = `${localTimeLabel(node.timestamp)} · ${statsLabel(node.byteStats)}`;
+    item.description = `${localTimeLabel(node.timestamp)}, ${statsLabel(node.byteStats)}`;
     item.iconPath = new vscode.ThemeIcon(
       node.action === "restore" ? "history" : "archive",
     );

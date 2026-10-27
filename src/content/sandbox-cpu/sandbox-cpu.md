@@ -419,11 +419,12 @@ Sechzehn Aufgaben prüfen sich selbst: vom Addieren zweier Bytes über Fibonacci
 Besonders lehrreich ist es, dieselbe Aufgabe zweimal zu lösen, einmal in Assembler und einmal in C. Mit geradlinigen Lösungen ergibt sich etwa:
 
 <table class='table'>
-<tr><th>Aufgabe</th><th>Assembler: Bytes · Takte</th><th>C: Bytes · Takte</th></tr>
-<tr><td><code>add</code></td><td>12 · 75</td><td>25 · 180</td></tr>
-<tr><td><code>maximum</code></td><td>22 · 820</td><td>88 · 3.420</td></tr>
-<tr><td><code>sort</code></td><td>42 · 4.260</td><td>176 · 19.271</td></tr>
-<tr><td><code>multiply</code></td><td>33 · 5.991</td><td>92 · 1.935</td></tr>
+<tr><th rowspan='2'>Aufgabe</th><th colspan='2'>Assembler</th><th colspan='2'>C</th></tr>
+<tr><th>Bytes</th><th>Takte</th><th>Bytes</th><th>Takte</th></tr>
+<tr><td><code>add</code></td><td>12</td><td>75</td><td>25</td><td>180</td></tr>
+<tr><td><code>maximum</code></td><td>22</td><td>820</td><td>88</td><td>3.420</td></tr>
+<tr><td><code>sort</code></td><td>42</td><td>4.260</td><td>176</td><td>19.271</td></tr>
+<tr><td><code>multiply</code></td><td>33</td><td>5.991</td><td>92</td><td>1.935</td></tr>
 </table>
 
 <div class='hint think'>

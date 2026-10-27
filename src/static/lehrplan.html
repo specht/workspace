@@ -290,6 +290,16 @@
             const frame = graph.parentElement.getBoundingClientRect();
             graph.parentElement.scrollTo({ left: graph.parentElement.scrollLeft + (left + right) / 2 - (frame.left + frame.right) / 2, behavior: 'smooth' });
         }
+        // ?zeige=slug (from a teacher note, »Wie es weitergehen kann«): that
+        // activity and the ones that build on it highlighted, with the arrows
+        // between them, in the middle of the window
+        const asked = new URLSearchParams(location.search).get('zeige');
+        if (asked && nodes.some(function (n) { return n.dataset.slug === asked; })) {
+            const onward = edges.filter(function (e) { return e.dataset.from === asked; }).map(function (e) { return e.dataset.to; });
+            select.value = '';
+            show([asked].concat(onward), 'next:' + asked);
+            setTimeout(centreHits, 150);
+        }
         document.querySelectorAll('.lp-graph-show').forEach(function (button) {
             button.addEventListener('click', function () {
                 topic(button.dataset.topic);

@@ -302,7 +302,7 @@
         // Which group, and of which school: on a projector in a room that
         // other classes use too.
         const school = (document.querySelector('.class-login-codes') || {}).dataset?.school || '';
-        groupName.textContent = school ? group + ' · ' + school : group;
+        groupName.textContent = school ? group + ' (' + school + ')' : group;
         groupName.title = groupName.textContent;
         title.appendChild(groupName);
         projector.querySelector('.class-codes-close').addEventListener('click', closeProjector);
@@ -565,7 +565,7 @@ document.addEventListener('click', function (e) {
             tr.querySelectorAll('td.class-ws-cpu, td.class-ws-ram').forEach((td) => td.remove());
             const usage = document.createElement('span');
             usage.className = 'class-ws-usage';
-            usage.innerHTML = "<span class='class-ws-cpu'>–</span> · <span class='class-ws-ram'>–</span>";
+            usage.innerHTML = "<span class='class-ws-cpu'>–</span>, <span class='class-ws-ram'>–</span>";
             status.append(usage);
             status.classList.add('text-nowrap');
             // Square, as the »remove« next to them: the icon only.

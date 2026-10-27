@@ -194,7 +194,7 @@ async function confirmLargeCheckpoint(
   const choice = await vscode.window.showWarningMessage(
     [
       "Dieser Checkpoint wäre ungewöhnlich groß.",
-      reasons.join(" · "),
+      reasons.join(", "),
       "Prüfe, ob wirklich der richtige Projektordner geöffnet ist.",
     ].join(" "),
     { modal: true },

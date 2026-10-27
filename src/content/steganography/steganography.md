@@ -49,7 +49,7 @@ wget ${web_root}/steganography/strandhaeuser.png
 wget ${web_root}/steganography/moewen.png
 ```
 
-<p class='expl'>Die Fotos der Strandhäuser und der Möwen mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
+<p class='expl'>Die Fotos der Strandhäuser und der Möwen mit freundlicher Genehmigung von Ian Kobylanski (<a href='https://koby.photography/'>https://koby.photography/</a>)</p>
 
 PNG-Dateien sind komprimiert, aber ohne Verlust: Jedes Pixel kommt genau so wieder heraus, wie es hineingesteckt wurde. Das ist wichtig, denn eine versteckte Botschaft lebt in den kleinsten Unterschieden. Ein JPEG würde sie beim Speichern zerstören. Das Lesen und Schreiben übernimmt eine Bibliothek:
 

@@ -143,7 +143,7 @@ async function start() {
         if (now - since >= 1000) {
             const fps = frames * 1000 / (now - since);
             if (adaptive && fps < 40 && scale > 0.5) scale = Math.max(0.5, scale * Math.sqrt(fps / 50));
-            info.textContent = `${Math.round(fps)} Bilder/s · ${canvas.width} × ${canvas.height}`;
+            info.textContent = `${Math.round(fps)} Bilder/s, ${canvas.width} × ${canvas.height}`;
             frames = 0;
             since = now;
         }

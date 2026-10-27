@@ -149,7 +149,7 @@ module ReferenceIndex
                     io << "<li><a href='#{h(url)}##{h(chapter[:head][:id])}'>#{h(chapter[:head][:text])}</a>"
                     if !chapter[:items].empty?
                         io << "<span class='reference-outline-sub'>"
-                        io << chapter[:items].map { |item| "<a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a>" }.join(' · ')
+                        io << chapter[:items].map { |item| "<a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a>" }.join(', ')
                         io << '</span>'
                     elsif (lead = lead_sentence(leads[chapter[:head][:id]]))
                         io << "<span class='reference-outline-sub'>#{h(lead)}</span>"

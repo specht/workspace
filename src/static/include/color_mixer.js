@@ -145,7 +145,7 @@
         code('anaglyph').textContent = `fill = ${rgb.map((v) => round(v / 255, 2)).join(', ')}`;
         const near = nearest();
         if (near) {
-            code('nearest').textContent = `${near.index} · ${near.color}`;
+            code('nearest').textContent = `${near.index}: ${near.color}`;
             code('nearest-swatch').style.background = near.color;
         }
         paintSliders();

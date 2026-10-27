@@ -85,7 +85,7 @@ function mark_tutorial_screenshot_stale(item) {
                 placeholder.style.width = `${item.width}px`;
                 placeholder.style.aspectRatio = `${item.width} / ${item.height}`;
                 const label = document.createElement('span');
-                label.textContent = `${item.target} · ${item.width}×${item.height} · wird gerendert …`;
+                label.textContent = `${item.target}, ${item.width}×${item.height}, wird gerendert …`;
                 placeholder.appendChild(label);
                 img.insertAdjacentElement('beforebegin', placeholder);
             }
@@ -279,7 +279,7 @@ function update_tutorial_screenshot_monitor(snapshot) {
     if (snapshot.status === 'paused') {
         icon.classList.add('bi-pause-circle');
         const why = snapshot.auto_render?.reason === 'busy' ? ', weil gerade ein anderer Auftrag lief' : '';
-        const stale = snapshot.stale ? ` · ${snapshot.stale} veraltet` : '';
+        const stale = snapshot.stale ? `, ${snapshot.stale} veraltet` : '';
         text.textContent = `Automatisches Rendern pausiert${why}${stale}`;
         progress.hidden = true;
         return;
@@ -287,19 +287,19 @@ function update_tutorial_screenshot_monitor(snapshot) {
     progress.hidden = false;
     if (snapshot.status === 'done') {
         icon.classList.add('bi-check-lg');
-        text.textContent = `Screenshots fertig · ${snapshot.generated || 0} neu`;
+        text.textContent = `Screenshots fertig: ${snapshot.generated || 0} neu`;
     } else if (snapshot.status === 'error') {
         icon.classList.add('bi-exclamation-triangle-fill');
         text.textContent = `Screenshots fehlgeschlagen${snapshot.error ? `: ${snapshot.error}` : ''}`;
     } else if (snapshot.status === 'queued') {
         icon.classList.add('bi-hourglass-split');
-        text.textContent = `Screenshots warten · ${completed}/${snapshot.total || 0}`;
+        text.textContent = `Screenshots warten: ${completed}/${snapshot.total || 0}`;
     } else if (snapshot.status === 'preparing') {
         icon.classList.add('bi-arrow-repeat', 'bi-spin');
-        text.textContent = `Screenshots vorbereiten · ${completed}/${snapshot.total || 0}`;
+        text.textContent = `Screenshots vorbereiten: ${completed}/${snapshot.total || 0}`;
     } else {
         icon.classList.add('bi-arrow-repeat', 'bi-spin');
-        const target = snapshot.current_target ? ` · ${snapshot.current_target}` : '';
+        const target = snapshot.current_target ? `, ${snapshot.current_target}` : '';
         text.textContent = `Screenshots ${completed}/${snapshot.total || 0}${target}`;
     }
 }

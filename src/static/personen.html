@@ -189,7 +189,7 @@
         const deadline = new Date(t.deadline + 'T00:00:00').toLocaleDateString('de-DE');
         const chip = (key, n) => `<span class='badge rounded-pill text-bg-light border me-1'>${CATEGORY[key][0]}: ${n}</span>`;
         here.append($(`<div class='alert alert-light border mb-3'>
-            <div><strong>Übergangszeit bis ${deadline}</strong> · noch ${t.days_left} Tage · ${t.total} Schulen</div>
+            <div><strong>Übergangszeit bis ${deadline}</strong>, noch ${t.days_left} Tage, ${t.total} Schulen</div>
             <div class='small text-body-secondary mb-2'>${esc(t.phase.text)}</div>
             <div>${chip('documented', t.documented)}${chip('in_progress', t.in_progress)}${chip('not_contacted', t.not_contacted)}${chip('follow_up', t.follow_up)}</div>
         </div>`));
@@ -630,7 +630,7 @@
                 select.on('change', function () {
                     if (select.val()) people_call('/api/people/save_teacher', { email: t.email, school: select.val() }, load_all);
                 });
-                const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${t.welcomed_at ? day(t.welcomed_at) + ' · erneut' : 'senden'}</button>`);
+                const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${t.welcomed_at ? day(t.welcomed_at) + ', erneut' : 'senden'}</button>`);
                 welcome.on('click', function () {
                     people_call('/api/people/welcome_teacher', { email: t.email }, function () {
                         show_success_message(`Willkommensmail an ${esc(t.email)} gesendet.`);
@@ -687,7 +687,7 @@
             : `<span class='text-body-secondary' title='nur eingeladen, hat nie einen Anmelde-Code angefordert'>kein Konto</span>`;
         const days = Math.round((new Date(new Date().toISOString().slice(0, 10)) - new Date(p.active_on)) / 86400000);
         const ago = days <= 0 ? 'heute' : days === 1 ? 'gestern' : days < 60 ? `vor ${days} Tagen` : days < 730 ? `vor ${Math.round(days / 30.4)} Monaten` : `vor ${Math.round(days / 365)} Jahren`;
-        const SOURCES = { besuch: '', anmeldung: ' · Anmeldung', aufgabe: ' · Aufgabe', code: ' · Code angefordert', workspace: ' · im Workspace', dateien: ' · Datei geändert' };
+        const SOURCES = { besuch: '', anmeldung: ' (Anmeldung)', aufgabe: ' (Aufgabe)', code: ' (Code angefordert)', workspace: ' (im Workspace)', dateien: ' (Datei geändert)' };
         const source = SOURCES[p.active_source] || '';
         const old = days > 180 ? ' text-warning-emphasis' : '';
         return `<span class='${old}' title='${new Date(p.active_on).toLocaleDateString('de-DE')}'>${ago}</span><span class='small text-body-secondary'>${source}</span>`;

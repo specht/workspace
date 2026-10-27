@@ -167,7 +167,7 @@ Ein Layout ist HTML mit Lücken. Die Lücken stehen in doppelten geschweiften Kl
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ .Title }} · {{ site.Title }}</title>
+  <title>{{ .Title }} | {{ site.Title }}</title>
 </head>
 <body>
   <header>
@@ -479,7 +479,7 @@ Binde die Datei in `layouts/baseof.html` im `<head>` ein, unter dem `<title>`:
 ```html
 ~   <meta charset="utf-8">
 ~   <meta name="viewport" content="width=device-width, initial-scale=1">
-~   <title>{{ .Title }} · {{ site.Title }}</title>
+~   <title>{{ .Title }} | {{ site.Title }}</title>
   <link rel="stylesheet" href="{{ "style.css" | relURL }}">
 ~ </head>
 ~ <body>
@@ -578,7 +578,7 @@ sleep: 2
 terminal-expect-no-text: ERROR
 check-task: public
 -->
-<img class='full' src='public.webp' alt='Im Explorer der Ordner public mit den Ordnern categories, jupiter und mars; public/mars/index.html ist offen und zeigt fertiges HTML mit dem Titel »Mars · Unser Sonnensystem« und der Navigation; im Terminal die Zusammenfassung von hugo.'>
+<img class='full' src='public.webp' alt='Im Explorer der Ordner public mit den Ordnern categories, jupiter und mars; public/mars/index.html ist offen und zeigt fertiges HTML mit dem Titel »Mars | Unser Sonnensystem« und der Navigation; im Terminal die Zusammenfassung von hugo.'>
 
 _task(public)
 

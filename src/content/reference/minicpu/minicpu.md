@@ -310,14 +310,14 @@ X und Y sind zwei Register mit 16 Bit, gedacht als Zeiger. Sie brauchen keine ne
 <thead><tr><th>Befehl</th><th>Wirkung</th></tr></thead>
 <tbody>
 <tr><td><code>LDI X, 0x0800</code></td><td>lädt eine 16-Bit-Zahl</td></tr>
-<tr><td><code>LDA X, [0x0700]</code> · <code>STA [0x0700], X</code></td><td>lädt und speichert zwei Bytes, das untere zuerst</td></tr>
-<tr><td><code>LDA X, [SP+2]</code> · <code>STA [SP+2], X</code></td><td>dasselbe auf dem Stack</td></tr>
+<tr><td><code>LDA X, [0x0700]</code> und <code>STA [0x0700], X</code></td><td>lädt und speichert zwei Bytes, das untere zuerst</td></tr>
+<tr><td><code>LDA X, [SP+2]</code> und <code>STA [SP+2], X</code></td><td>dasselbe auf dem Stack</td></tr>
 <tr><td><code>MOV X, Y</code></td><td>kopiert</td></tr>
-<tr><td><code>ADD X, 32</code> · <code>ADD X, A</code> · <code>ADD X, Y</code></td><td>addiert eine Zahl, ein Byte (0–255) oder ein 16-Bit-Register; <code>SUB</code> ebenso</td></tr>
-<tr><td><code>CMP X, 0x0900</code> · <code>CMP X, Y</code></td><td>vergleicht alle 16 Bit</td></tr>
-<tr><td><code>INC X</code> · <code>DEC X</code></td><td>zum nächsten oder vorigen Byte</td></tr>
-<tr><td><code>PUSH X</code> · <code>POP X</code></td><td>zwei Bytes auf den Stack und zurück</td></tr>
-<tr><td><code>LDA A, [X]</code> · <code>STA [X], A</code></td><td>X als Zeiger: das Byte an der Adresse, die in X steht</td></tr>
+<tr><td><code>ADD X, 32</code>, <code>ADD X, A</code> oder <code>ADD X, Y</code></td><td>addiert eine Zahl, ein Byte (0–255) oder ein 16-Bit-Register; <code>SUB</code> ebenso</td></tr>
+<tr><td><code>CMP X, 0x0900</code> oder <code>CMP X, Y</code></td><td>vergleicht alle 16 Bit</td></tr>
+<tr><td><code>INC X</code> und <code>DEC X</code></td><td>zum nächsten oder vorigen Byte</td></tr>
+<tr><td><code>PUSH X</code> und <code>POP X</code></td><td>zwei Bytes auf den Stack und zurück</td></tr>
+<tr><td><code>LDA A, [X]</code> und <code>STA [X], A</code></td><td>X als Zeiger: das Byte an der Adresse, die in X steht</td></tr>
 </tbody>
 </table>
 </div>
@@ -331,36 +331,36 @@ Bei X und Y beziehen sich ZF und CF auf alle 16 Bit. Schieben, Logik, `ADC` und 
 <!-- short: Auf der 8X sind Adressen, X und Y teurer: ein Byte und ein Takt mehr. -->
 ### Was die 8X kostet
 
-Breiter ist langsamer: Eine Adresse hat zwei Bytes, eine Zahl für X oder Y auch, Laden und Speichern bewegen bei X und Y zwei Bytes, und die 8-Bit-Recheneinheit braucht für 16-Bit-Rechnungen einen Takt mehr. Die Tabelle nennt Bytes · Takte für jeden Befehl, der auf der 8X anders kostet oder X und Y kann; alle anderen kosten so viel wie auf der 8.
+Breiter ist langsamer: Eine Adresse hat zwei Bytes, eine Zahl für X oder Y auch, Laden und Speichern bewegen bei X und Y zwei Bytes, und die 8-Bit-Recheneinheit braucht für 16-Bit-Rechnungen einen Takt mehr. Die Tabelle nennt Bytes und Takte für jeden Befehl, der auf der 8X anders kostet oder X und Y kann; alle anderen kosten so viel wie auf der 8.
 
 <!-- minicpu-table: kosten-8x -->
 
 <div class='scroll-x'><table class='table table-sm reference-table minicpu-table'>
 <thead><tr><th>Befehl</th><th>8 / 8S</th><th>8X</th><th>8X mit X oder Y</th></tr></thead>
 <tbody>
-<tr><td><code>LDI A, 42</code></td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>4 · 5</td></tr>
-<tr><td><code>LDA A, [0x70]</code></td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'><strong>4 · 5</strong></td><td class='minicpu-num'>4 · 6</td></tr>
-<tr><td><code>STA [0x70], A</code></td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'><strong>4 · 5</strong></td><td class='minicpu-num'>4 · 6</td></tr>
-<tr><td><code>MOV A, B</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>ADD A, B</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>ADD A, 5</code></td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>4 · 5</td></tr>
-<tr><td><code>SUB A, B</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>SUB A, 5</code></td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>4 · 5</td></tr>
-<tr><td><code>INC A</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>DEC A</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>CMP A, B</code></td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 2</td><td class='minicpu-num'>2 · 3</td></tr>
-<tr><td><code>CMP A, 10</code></td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>3 · 3</td><td class='minicpu-num'>4 · 5</td></tr>
-<tr><td><code>PUSH A</code></td><td class='minicpu-num'>2 · 3</td><td class='minicpu-num'>2 · 3</td><td class='minicpu-num'>2 · 4</td></tr>
-<tr><td><code>POP A</code></td><td class='minicpu-num'>2 · 3</td><td class='minicpu-num'>2 · 3</td><td class='minicpu-num'>2 · 4</td></tr>
-<tr><td><code>CALL label</code></td><td class='minicpu-num'>2 · 4</td><td class='minicpu-num'><strong>3 · 6</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>RET</code></td><td class='minicpu-num'>1 · 3</td><td class='minicpu-num'><strong>1 · 4</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>LDA A, [SP+2]</code></td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'>3 · 5</td></tr>
-<tr><td><code>STA [SP+2], A</code></td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'>3 · 4</td><td class='minicpu-num'>3 · 5</td></tr>
-<tr><td><code>JMP label</code></td><td class='minicpu-num'>2 · 3</td><td class='minicpu-num'><strong>3 · 4</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>JZ label</code></td><td class='minicpu-num'>2 · 2 / 3</td><td class='minicpu-num'><strong>3 · 3 / 4</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>JNZ label</code></td><td class='minicpu-num'>2 · 2 / 3</td><td class='minicpu-num'><strong>3 · 3 / 4</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>JC label</code></td><td class='minicpu-num'>2 · 2 / 3</td><td class='minicpu-num'><strong>3 · 3 / 4</strong></td><td class='minicpu-num'>–</td></tr>
-<tr><td><code>JNC label</code></td><td class='minicpu-num'>2 · 2 / 3</td><td class='minicpu-num'><strong>3 · 3 / 4</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>LDI A, 42</code></td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>4 Bytes, 5 Takte</td></tr>
+<tr><td><code>LDA A, [0x70]</code></td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'><strong>4 Bytes, 5 Takte</strong></td><td class='minicpu-num'>4 Bytes, 6 Takte</td></tr>
+<tr><td><code>STA [0x70], A</code></td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'><strong>4 Bytes, 5 Takte</strong></td><td class='minicpu-num'>4 Bytes, 6 Takte</td></tr>
+<tr><td><code>MOV A, B</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>ADD A, B</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>ADD A, 5</code></td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>4 Bytes, 5 Takte</td></tr>
+<tr><td><code>SUB A, B</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>SUB A, 5</code></td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>4 Bytes, 5 Takte</td></tr>
+<tr><td><code>INC A</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>DEC A</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>CMP A, B</code></td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 2 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td></tr>
+<tr><td><code>CMP A, 10</code></td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>3 Bytes, 3 Takte</td><td class='minicpu-num'>4 Bytes, 5 Takte</td></tr>
+<tr><td><code>PUSH A</code></td><td class='minicpu-num'>2 Bytes, 3 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td><td class='minicpu-num'>2 Bytes, 4 Takte</td></tr>
+<tr><td><code>POP A</code></td><td class='minicpu-num'>2 Bytes, 3 Takte</td><td class='minicpu-num'>2 Bytes, 3 Takte</td><td class='minicpu-num'>2 Bytes, 4 Takte</td></tr>
+<tr><td><code>CALL label</code></td><td class='minicpu-num'>2 Bytes, 4 Takte</td><td class='minicpu-num'><strong>3 Bytes, 6 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>RET</code></td><td class='minicpu-num'>1 Bytes, 3 Takte</td><td class='minicpu-num'><strong>1 Bytes, 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>LDA A, [SP+2]</code></td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'>3 Bytes, 5 Takte</td></tr>
+<tr><td><code>STA [SP+2], A</code></td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'>3 Bytes, 4 Takte</td><td class='minicpu-num'>3 Bytes, 5 Takte</td></tr>
+<tr><td><code>JMP label</code></td><td class='minicpu-num'>2 Bytes, 3 Takte</td><td class='minicpu-num'><strong>3 Bytes, 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>JZ label</code></td><td class='minicpu-num'>2 Bytes, 2 / 3 Takte</td><td class='minicpu-num'><strong>3 Bytes, 3 / 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>JNZ label</code></td><td class='minicpu-num'>2 Bytes, 2 / 3 Takte</td><td class='minicpu-num'><strong>3 Bytes, 3 / 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>JC label</code></td><td class='minicpu-num'>2 Bytes, 2 / 3 Takte</td><td class='minicpu-num'><strong>3 Bytes, 3 / 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
+<tr><td><code>JNC label</code></td><td class='minicpu-num'>2 Bytes, 2 / 3 Takte</td><td class='minicpu-num'><strong>3 Bytes, 3 / 4 Takte</strong></td><td class='minicpu-num'>–</td></tr>
 </tbody>
 </table>
 </div>

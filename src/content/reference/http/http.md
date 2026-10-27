@@ -75,7 +75,8 @@ Eine Webseite braucht meist viele Anfragen: eine für die Seite und je eine für
 <tbody>
 <tr><td><code>GET</code></td><td>etwas holen: eine Seite, ein Bild, Daten. Ändert nichts auf dem Server; Werte stehen höchstens in der Adresse (<code>?name=Ada</code>).</td></tr>
 <tr><td><code>POST</code></td><td>Daten schicken, die etwas bewirken: ein Formular, eine neue Nachricht, eine Anmeldung. Die Daten stehen im Inhalt der Anfrage.</td></tr>
-<tr><td><code>PUT</code> · <code>PATCH</code></td><td>etwas ersetzen · einen Teil davon ändern</td></tr>
+<tr><td><code>PUT</code></td><td>etwas ersetzen</td></tr>
+<tr><td><code>PATCH</code></td><td>einen Teil davon ändern</td></tr>
 <tr><td><code>DELETE</code></td><td>etwas löschen</td></tr>
 <tr><td><code>HEAD</code></td><td>wie <code>GET</code>, aber nur die Header der Antwort, ohne Inhalt; <code>curl -I</code> fragt so</td></tr>
 </tbody>
@@ -96,16 +97,20 @@ Die erste Ziffer sagt, wie es ausgegangen ist: **2** geklappt, **3** steht woand
 <tbody>
 <tr><td><code>101 Switching Protocols</code></td><td>Der Server wechselt das Protokoll, etwa zu WebSocket.</td></tr>
 <tr><td><code>200 OK</code></td><td>Alles in Ordnung, hier ist der Inhalt.</td></tr>
-<tr><td><code>201 Created</code> · <code>204 No Content</code></td><td>etwas angelegt · erledigt, ohne Inhalt in der Antwort</td></tr>
-<tr><td><code>301 Moved Permanently</code> · <code>302 Found</code></td><td>Die Seite steht unter einer anderen Adresse, für immer · vorübergehend. Die neue Adresse steht im Header <code>Location</code>; der Browser folgt ihr von selbst.</td></tr>
+<tr><td><code>201 Created</code></td><td>etwas angelegt</td></tr>
+<tr><td><code>204 No Content</code></td><td>erledigt, ohne Inhalt in der Antwort</td></tr>
+<tr><td><code>301 Moved Permanently</code></td><td>Die Seite steht für immer unter einer anderen Adresse. Die neue Adresse steht im Header <code>Location</code>; der Browser folgt ihr von selbst.</td></tr>
+<tr><td><code>302 Found</code></td><td>Die Seite steht vorübergehend unter einer anderen Adresse, auch sie im Header <code>Location</code>.</td></tr>
 <tr><td><code>303 See Other</code></td><td>Die Antwort auf ein <code>POST</code>: »Sieh unter <code>Location</code> nach.« Der Browser holt diese Adresse mit <code>GET</code>, und Neuladen schickt das Formular nicht noch einmal.</td></tr>
 <tr><td><code>304 Not Modified</code></td><td>Die Kopie im Browser ist noch aktuell, nichts Neues zu schicken.</td></tr>
 <tr><td><code>400 Bad Request</code></td><td>Die Anfrage ergibt keinen Sinn, etwa kaputtes JSON.</td></tr>
-<tr><td><code>401 Unauthorized</code> · <code>403 Forbidden</code></td><td>erst anmelden · angemeldet, aber nicht erlaubt</td></tr>
+<tr><td><code>401 Unauthorized</code></td><td>erst anmelden</td></tr>
+<tr><td><code>403 Forbidden</code></td><td>angemeldet, aber nicht erlaubt</td></tr>
 <tr><td><code>404 Not Found</code></td><td>Unter diesem Pfad gibt es nichts.</td></tr>
 <tr><td><code>405 Method Not Allowed</code></td><td>Den Pfad gibt es, aber nicht mit dieser Methode.</td></tr>
 <tr><td><code>500 Internal Server Error</code></td><td>Das Programm auf dem Server ist abgestürzt; die Ursache steht im Log des Servers, nicht im Browser.</td></tr>
-<tr><td><code>502 Bad Gateway</code> · <code>503 Service Unavailable</code></td><td>Ein Server davor erreicht das eigentliche Programm nicht · der Server ist gerade überlastet oder in Wartung.</td></tr>
+<tr><td><code>502 Bad Gateway</code></td><td>Ein Server davor erreicht das eigentliche Programm nicht.</td></tr>
+<tr><td><code>503 Service Unavailable</code></td><td>Der Server ist gerade überlastet oder in Wartung.</td></tr>
 </tbody>
 </table>
 </div>
@@ -128,7 +133,8 @@ Header sind unabhängig von Groß- und Kleinschreibung: `content-type` ist dasse
 <tr><td><code>Content-Type: text/html; charset=utf-8</code></td><td>Was im Inhalt steht: <code>text/html</code>, <code>text/css</code>, <code>text/javascript</code>, <code>application/json</code>, <code>image/png</code> …; bei Text dazu die Kodierung</td></tr>
 <tr><td><code>Content-Length: 196</code></td><td>Länge des Inhalts in Bytes</td></tr>
 <tr><td><code>Location: /neu</code></td><td>Antwort: wohin der Browser bei 301, 302, 303 oder 201 gehen soll</td></tr>
-<tr><td><code>Set-Cookie: sid=…</code> · <code>Cookie: sid=…</code></td><td>Die Antwort legt einen Cookie im Browser ab · der Browser schickt ihn bei jeder weiteren Anfrage an denselben Server mit. So erkennt ein Server, wer angemeldet ist.</td></tr>
+<tr><td><code>Set-Cookie: sid=…</code></td><td>Die Antwort legt einen Cookie im Browser ab.</td></tr>
+<tr><td><code>Cookie: sid=…</code></td><td>Der Browser schickt den Cookie bei jeder weiteren Anfrage an denselben Server mit. So erkennt ein Server, wer angemeldet ist.</td></tr>
 <tr><td><code>Cache-Control: no-cache</code></td><td>wie lange der Browser eine Kopie aufheben darf</td></tr>
 <tr><td><code>Connection: close</code></td><td>Nach dieser Antwort schließt der Server die Verbindung. Ohne den Header bleibt sie für weitere Anfragen offen.</td></tr>
 </tbody>

@@ -244,7 +244,7 @@
             ? "<p class='reference-results-empty'>Nichts gefunden. Versuch ein anderes Wort.</p>"
             : found.hits.map(function (hit) {
                 return "<a class='reference-result' href='" + esc(hit.page.url + (hit.section.id ? '#' + hit.section.id : '')) + "'>" +
-                    "<span class='reference-result-path'>" + esc(hit.page.page.indexOf(hit.page.area) === 0 ? hit.page.page : hit.page.area + ' · ' + hit.page.page) + '</span>' +
+                    "<span class='reference-result-path'>" + esc(hit.page.page.indexOf(hit.page.area) === 0 ? hit.page.page : hit.page.area + ': ' + hit.page.page) + '</span>' +
                     "<span class='reference-result-heading'>" + mark(hit.section.heading, found.terms) + '</span>' +
                     (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.terms) + '</span>' : '') +
                     '</a>';

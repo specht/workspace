@@ -42,8 +42,8 @@ So könnte ein Film aus der Filmdatenbank aussehen:
 <tr><td><code>{ "name": wert, … }</code></td><td><strong>Objekt</strong>: Namen und Werte, durch Kommas getrennt. Die Namen stehen immer in doppelten Anführungszeichen.</td></tr>
 <tr><td><code>[ wert, wert, … ]</code></td><td><strong>Liste</strong> (Array): Werte in einer Reihenfolge, auch gemischt</td></tr>
 <tr><td><code>"Nosferatu"</code></td><td>Text (String), nur in doppelten Anführungszeichen; <code>\"</code> ist ein Anführungszeichen darin, <code>\n</code> ein Zeilenumbruch</td></tr>
-<tr><td><code>1922</code> · <code>-3.5</code> · <code>6.02e23</code></td><td>Zahlen, mit Punkt statt Komma</td></tr>
-<tr><td><code>true</code> · <code>false</code></td><td>wahr, falsch</td></tr>
+<tr><td><code>1922</code>, <code>-3.5</code>, <code>6.02e23</code></td><td>Zahlen, mit Punkt statt Komma</td></tr>
+<tr><td><code>true</code>, <code>false</code></td><td>wahr, falsch</td></tr>
 <tr><td><code>null</code></td><td>kein Wert</td></tr>
 </tbody>
 </table>

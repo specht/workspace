@@ -168,6 +168,24 @@ class PageKindsTest < Minitest::Test
         end
     end
 
+    # Where a class can go next (the teacher note): what names this one in
+    # its requires:, in the order given, without hidden, teacher-only or
+    # (outside development) dev-only pages
+    def test_builds_on
+        c = {
+            'tcpip' => { :title => 'TCP/IP-Verbindungen' },
+            'dns' => { :title => 'DNS', :requires => ['tcpip'] },
+            'webserver' => { :title => 'Ein eigener Webserver', :requires => %w[tcpip dns] },
+            'secret' => { :title => 'Nur Lehrkräfte', :teacher_only => true, :requires => ['tcpip'] },
+            'draft' => { :title => 'Entwurf', :dev_only => true, :requires => ['tcpip'] },
+            'level-x' => { :title => 'Verborgen', :hidden_section => true, :requires => ['tcpip'] },
+        }
+        order = %w[tcpip webserver dns secret draft level-x]
+        assert_equal [%w[webserver Ein\ eigener\ Webserver], %w[dns DNS]], PageKinds.builds_on('tcpip', c, order)
+        assert_equal %w[webserver dns draft], PageKinds.builds_on('tcpip', c, order, :development => true).map(&:first)
+        assert_equal [], PageKinds.builds_on('webserver', c, order)
+    end
+
     def test_reference_does_not_give_away_hidden_pages
         html = PageKinds.header('reference/workspace', content, sections)
         refute_includes html, 'Verborgen'

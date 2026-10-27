@@ -445,7 +445,7 @@
         cube.setBasis(BASES[colorMode]);
         const label = document.getElementById('cube_label');
         if (label) {
-            label.textContent = `drag to rotate · ${colorMode}`;
+            label.textContent = `drag to rotate, ${colorMode}`;
         }
         updateCubeTitle();
     }
@@ -712,7 +712,7 @@
 
         if (colorMode === 'RGB') {
             document.getElementById('color_label').textContent =
-                `${rgbText} · R=${formatFixed(c.x)} G=${formatFixed(c.y)} B=${formatFixed(c.z)}`;
+                `${rgbText}: R=${formatFixed(c.x)} G=${formatFixed(c.y)} B=${formatFixed(c.z)}`;
             return;
         }
 
@@ -729,7 +729,7 @@
             const Cr8 = clampByte((CrPrime + 0.5) * 255);
 
             document.getElementById('color_label').textContent =
-                `${rgbText} · Y=${formatFixed(Y)} Cb′=${formatFixed(CbPrime)} Cr′=${formatFixed(CrPrime)} · bytes(${Y8}, ${Cb8}, ${Cr8})`;        }
+                `${rgbText}: Y=${formatFixed(Y)} Cb′=${formatFixed(CbPrime)} Cr′=${formatFixed(CrPrime)}, bytes(${Y8}, ${Cb8}, ${Cr8})`;        }
     }
 
     function updateCubeTitle() {

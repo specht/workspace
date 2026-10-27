@@ -300,7 +300,7 @@
             const media = c.kind === 'video'
                 ? `<video src='${url(c)}' muted loop playsinline preload='metadata'></video>`
                 : `<img src='${url(c)}' alt='${esc(c.target)} aus ${esc(page_name(c.markdown_path))}'>`;
-            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}${c.replayed ? ' replayed' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${c.replayed ? `<span class='badge text-bg-secondary' title='Die Datei war aktuell und wurde nur nachgespielt'>aktuell</span>` : `<span class='badge text-bg-success'>neu</span>`}${esc(page_name(c.markdown_path))} › ${esc(c.target)} · ${when}</div></div>`);
+            const slide = $(`<div class='sp-slide${animate ? ' new' : ''}${c.replayed ? ' replayed' : ''}'><div class='sp-frame'>${media}</div><div class='sp-caption'>${c.replayed ? `<span class='badge text-bg-secondary' title='Die Datei war aktuell und wurde nur nachgespielt'>aktuell</span>` : `<span class='badge text-bg-success'>neu</span>`}${esc(page_name(c.markdown_path))} › ${esc(c.target)}, ${when}</div></div>`);
             slides.appendChild(slide[0]);
             const video = slide.find('video')[0];
             if (video) watcher.observe(video);
@@ -320,19 +320,19 @@
             } else {
                 const elapsed = data.now - data.run.started_at;
                 const left = done > 2 && done < total ? elapsed / done * (total - done) : null;
-                $('#sp_summary').text(`${done} von ${total} Dateien · ${pages_done} von ${pages.length} Seiten · ${duration(elapsed)}`
-                    + (left ? ` · noch etwa ${duration(left)}` : ''));
+                $('#sp_summary').text(`${done} von ${total} Dateien, ${pages_done} von ${pages.length} Seiten, ${duration(elapsed)}`
+                    + (left ? `, noch etwa ${duration(left)}` : ''));
             }
-            if (errors.length) $('#sp_summary').append(` · <span class='text-danger-emphasis'>${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler</span>`);
+            if (errors.length) $('#sp_summary').append(`, <span class='text-danger-emphasis'>${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler</span>`);
 
             const running = pages.find(p => p.status === 'running' || p.status === 'preparing');
             $('#sp_now').html(running
                 ? `<span class='spinner-border spinner-border-sm me-1' aria-hidden='true'></span><strong>${esc(page_name(running.markdown_path))}</strong> ${running.generated} / ${running.stale}`
                     + (running.current_target
                         ? (running.current_state === 'replaying'
-                            ? ` · <span class='text-body-secondary' title='aktuell; nur nachgespielt, damit die Bilder danach stimmen'>spielt nach: ${esc(running.current_target)}</span>`
-                            : ` · nimmt auf: <code>${esc(running.current_target)}</code>`)
-                        : running.status === 'preparing' ? ' · Workspace wird vorbereitet' : '')
+                            ? `, <span class='text-body-secondary' title='aktuell; nur nachgespielt, damit die Bilder danach stimmen'>spielt nach: ${esc(running.current_target)}</span>`
+                            : `, nimmt auf: <code>${esc(running.current_target)}</code>`)
+                        : running.status === 'preparing' ? ', Workspace wird vorbereitet' : '')
                 : (data.run && pages.length && pages_done === pages.length ? `<i class='bi bi-check-lg me-1'></i>Fertig${errors.length ? `, ${errors.length} ${errors.length === 1 ? 'Seite' : 'Seiten'} mit Fehler` : ''}.` : ''));
 
             const list = $('#sp_pages').empty();

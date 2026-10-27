@@ -1579,7 +1579,7 @@ crop-element: #canvas
 -->
 <img class='full' src='ergebnis.webp' alt='Eine Frau mit Maske trägt ein Kleinkind in einem Tragetuch an einer Bushaltestelle; daneben eine Tafel mit Busnummern.'>
 
-<p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/'>https://koby.photography/</a></p>
+<p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski (<a href='https://koby.photography/'>https://koby.photography/</a>)</p>
 
 Pixel für Pixel vergleichen lassen sich zwei JPEG-Decoder nicht: Die iDCT rechnet mit Kommazahlen, und ob ein Wert 127 oder 128 wird, hängt davon ab, wie genau und in welcher Reihenfolge gerechnet wird. Decoder wie der in deinem Browser rechnen Cb und Cr bei Subsampling außerdem weich hoch, statt einen Wert für vier Pixel zu nehmen. Die Mittelwerte von Rot, Grün und Blau über das ganze Bild ändert das aber kaum. Schreib diese Funktion über `main` und ruf sie am Ende auf:
 

@@ -205,11 +205,11 @@ function render_group(group, admin) {
         facts.push(group.last_active ? `zuletzt da ${ago_text(group.last_active)}` : `<span class='text-warning-emphasis'>keine Spur einer Nutzung</span>`);
         if (group.disk_kb) facts.push(disk_html(group.disk_kb, null));
     }
-    details.append($('<summary>').append(`<h2>${esc(group.name)}</h2><span class='facts'>${facts.join(' · ')}</span>`));
+    details.append($('<summary>').append(`<h2>${esc(group.name)}</h2><span class='facts'>${facts.join(', ')}</span>`));
     const body = $(`<div class='group-body'></div>`);
     details.append(body);
     const school_line = group.school
-        ? `${esc(group.school.name)}${group.school.guests ? ' (ohne Schule): nur Erwachsene; jede Person stimmt bei der ersten Anmeldung der <a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu' : group.school.approved ? ' · hat zugestimmt' : ' · <span class="text-warning-emphasis">hat noch nicht zugestimmt</span>'}`
+        ? `${esc(group.school.name)}${group.school.guests ? ' (ohne Schule): nur Erwachsene; jede Person stimmt bei der ersten Anmeldung der <a href="/datenschutz/nutzungsordnung">Nutzungsordnung</a> zu' : group.school.approved ? ', hat zugestimmt' : ', <span class="text-warning-emphasis">hat noch nicht zugestimmt</span>'}`
         : 'ohne Schule';
     // One row for what concerns the whole group.
     const toolbar = $(`<div class='group-toolbar'><span class='small text-body-secondary me-auto'>${school_line}</span></div>`);
@@ -296,11 +296,11 @@ function render_group(group, admin) {
                 });
             });
             name.on('keydown', function (e) { if (e.key === 'Enter') this.blur(); });
-            const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${m.welcomed_at ? day(m.welcomed_at) + ' · erneut' : 'senden'}</button>`);
+            const welcome = $(`<button type='button' class='btn btn-sm btn-link p-0'>${m.welcomed_at ? day(m.welcomed_at) + ', erneut' : 'senden'}</button>`);
             welcome.on('click', function () {
                 welcome_dialog(group, [m.email], function () {
                     m.welcomed_at = Date.now() / 1000;
-                    welcome.text(day(m.welcomed_at) + ' · erneut');
+                    welcome.text(day(m.welcomed_at) + ', erneut');
                     flash(welcome);
                 });
             });
@@ -362,8 +362,8 @@ function render_group(group, admin) {
             let text = `${r.added} hinzugefügt`;
             if (r.already) text += `, ${r.already} waren schon in der Gruppe`;
             if (r.kept_names.length) text += `; bei ${r.kept_names.length} stand schon ein anderer Name, der bleibt`;
-            if (r.rejected.length) text += `. Ohne gültige Adresse und nicht übernommen: ${r.rejected.join(' · ')}`;
-            if (r.other_school && r.other_school.length) text += `. Schon in einer Gruppe einer anderen Schule und deshalb nicht übernommen (die Administration hilft): ${r.other_school.join(' · ')}`;
+            if (r.rejected.length) text += `. Ohne gültige Adresse und nicht übernommen: ${r.rejected.join(', ')}`;
+            if (r.other_school && r.other_school.length) text += `. Schon in einer Gruppe einer anderen Schule und deshalb nicht übernommen (die Administration hilft): ${r.other_school.join(', ')}`;
             show_success_message(esc(text + '.'));
             load_groups();
         });

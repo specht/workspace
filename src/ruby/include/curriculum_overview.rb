@@ -46,7 +46,7 @@ module CurriculumOverview
             links << "<a href='#{h(pdf)}' target='_blank' rel='noopener'><i class='bi bi-file-earmark-pdf' aria-hidden='true'></i> Lehrplan als PDF</a>" if pdf
             links << "<a href='#{h(url)}' target='_blank' rel='noopener'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i> Seite des Landes</a>" if url
             html << "<h2 id='#{l[:id]}'>#{h(l[:title])}</h2>\n"
-            html << "<p class='lp-source'>#{h(source)}#{links.empty? ? '' : " · #{links.join(' · ')}"}</p>\n"
+            html << "<p class='lp-source'>#{h(source)}#{links.empty? ? '' : "<span class='lp-links'>#{links.join}</span>"}</p>\n"
             l[:groups].each do |group, names|
                 html << "<p class='lp-group'>#{h(group)}</p>\n"
                 names.each do |name|

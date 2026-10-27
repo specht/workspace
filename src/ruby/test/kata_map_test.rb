@@ -16,7 +16,7 @@ class KataMapTest < Minitest::Test
     def test_a_stop_counts_its_katas_by_level
         stop = stops.first
         assert_equal 'Erste Funktionen', stop.title
-        assert_equal '2 Einstieg · 1 Übung · 1 Knobelei · 1 Extra', KataMap.counts_text(stop.counts)
+        assert_equal '2 Einstieg, 1 Übung, 1 Knobelei, 1 Extra', KataMap.counts_text(stop.counts)
         assert_equal 'Der Mampfer', KataMap.title('Pip unter Funkelbach: Der Mampfer')
     end
 
@@ -30,7 +30,7 @@ class KataMapTest < Minitest::Test
         # no total beside the strip
         refute_includes html, 'kata-total'
         # the levels of a set on hover, in its line how many
-        assert_includes html, "title='2 Einstieg · 1 Übung · 1 Knobelei · 1 Extra'>4 Katas, 1 Extra</span>"
+        assert_includes html, "title='2 Einstieg, 1 Übung, 1 Knobelei, 1 Extra'>4 Katas, 1 Extra</span>"
         refute_includes html, 'gelöst'
         refute_includes html, 'Sek I'
     end

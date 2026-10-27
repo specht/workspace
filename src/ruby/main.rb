@@ -1520,7 +1520,7 @@ class Main < Sinatra::Base
         page_title = if heading_text.empty?
             'Hackschule Workspace'
         else
-            "#{heading_text} · Hackschule Workspace"
+            "#{heading_text} | Hackschule Workspace"
         end
 
         description_node = nil
@@ -5661,7 +5661,7 @@ class Main < Sinatra::Base
         items = with.map { |g| "<a href='#{h.(link.(g))}'>#{h.(g)}</a>: <code>#{h.(repos[g][slug])}</code>" }
         others = with.size < groups.size ? ' Deine anderen Gruppen sehen die Seite ohne Git.' : ''
         "<p class='class-repo-teacher'><i class='bi bi-hdd-network' aria-hidden='true'></i><strong>Klassen-Repository</strong>: " \
-            "#{items.join(' · ')}.#{others}</p>"
+            "#{items.join(', ')}.#{others}</p>"
     end
 
     # The language this person sees on a page that offers more than one,
@@ -6139,7 +6139,16 @@ class Main < Sinatra::Base
     def teacher_note_panel(slug)
         return '' unless teacher_note?(slug)
 
-        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}</div></div>" \
+        # where the class can go next: the activities that build on this one
+        # (the arrows out of it on /lehrplan), always current with requires:
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        after = PageKinds.builds_on(slug, @@content, pinnable_slugs, :development => DEVELOPMENT)
+        show = "<a href='/lehrplan?zeige=#{h.(slug)}#wege'>im Lehrplan zeigen</a>"
+        next_html = "<div class='teacher-note-next'><i class='bi bi-signpost-split' aria-hidden='true'></i><div><strong>Wie es weitergehen kann:</strong> " +
+            (after.empty? ? "Keine andere Aktivität baut auf dieser auf; die Wege durch alle stehen im <a href='/lehrplan#wege'>Lehrplan</a>." :
+                "Auf dieser Aktivität #{after.size == 1 ? 'baut' : 'bauen'} #{PageKinds.join_and(after.map { |s, t| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(t))}</a>" })} auf (#{show}).") +
+            '</div></div>'
+        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}#{next_html}</div></div>" \
             "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
             "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
             "document.getElementById('teacher-note').hidden = !open; });</script>"
@@ -6614,7 +6623,7 @@ class Main < Sinatra::Base
         # it is full): one quiet line, from the teachers' websocket
         # (server_stats), see class_board.js.
         io << "<p class='class-server-line' hidden><i class='bi bi-hdd-rack' aria-hidden='true'></i>Server: " \
-            "<span class='class-server-cpu'></span> · <span class='class-server-ram'></span> · <span class='class-server-disk'></span></p>"
+            "<span class='class-server-cpu'></span>, <span class='class-server-ram'></span>, <span class='class-server-disk'></span></p>"
         io << class_group_html(group) unless test_group
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
@@ -7507,7 +7516,7 @@ class Main < Sinatra::Base
         if (plan = result.plan)
             # submit: copy the files now; the stored answer says what was handed in.
             files = plan.files.size
-            answer = [data[:answer].to_s.strip, "#{files == 1 ? '1 Datei' : "#{files} Dateien"}, #{SubmissionStore.size_text(plan.total)}"].reject(&:empty?).join(' · ')
+            answer = [data[:answer].to_s.strip, "#{files == 1 ? '1 Datei' : "#{files} Dateien"}, #{SubmissionStore.size_text(plan.total)}"].reject(&:empty?).join(': ')
             begin
                 SubmissionStore.write(task_workspace_files, plan, submission_path(found[:key]))
             rescue StandardError => e
@@ -8984,9 +8993,9 @@ class Main < Sinatra::Base
             subject, body = commit[:message].split("\n", 2)
             io << "<div class='git-commit-head'><h2>#{h.(subject)}</h2>"
             io << "<div class='git-message'>#{h.(body.strip)}</div>" if body && !body.strip.empty?
-            io << "<p class='git-meta'><i class='bi bi-person' aria-hidden='true'></i>#{h.(commit[:author])} · #{h.(git_time(commit[:time]))} · <code>#{h.(commit[:short])}</code>"
-            commit[:parents].each { |parent| io << " · davor <a href='#{h.(git_url('commit', parent))}'><code>#{h.(parent[0, 7])}</code></a>" }
-            io << " · <a href='#{h.(git_url('tree', commit[:sha]))}'>Dateien zu diesem Stand</a></p></div>"
+            io << "<p class='git-meta'><i class='bi bi-person' aria-hidden='true'></i>#{h.(commit[:author])}, #{h.(git_time(commit[:time]))}, <code>#{h.(commit[:short])}</code>"
+            commit[:parents].each { |parent| io << ", davor <a href='#{h.(git_url('commit', parent))}'><code>#{h.(parent[0, 7])}</code></a>" }
+            io << ", <a href='#{h.(git_url('tree', commit[:sha]))}'>Dateien zu diesem Stand</a></p></div>"
             labels = { :added => 'neu', :deleted => 'gelöscht', :renamed => 'umbenannt', :modified => 'geändert' }
             commit[:files].each do |file|
                 io << "<section class='git-file'><h3><span class='git-status git-status-#{file[:status]}'>#{labels[file[:status]]}</span> "
@@ -9021,7 +9030,7 @@ class Main < Sinatra::Base
             io << "<ol class='git-log'>"
             log.first(GitBrowse::PAGE).each do |c|
                 io << "<li><a class='git-log-subject' href='#{h.(git_url('commit', c[:sha]))}'>#{h.(c[:subject])}</a>"
-                io << "<span class='git-meta'>#{h.(c[:author])} · #{h.(git_time(c[:time]))} · <code>#{h.(c[:short])}</code></span></li>"
+                io << "<span class='git-meta'>#{h.(c[:author])}, #{h.(git_time(c[:time]))}, <code>#{h.(c[:short])}</code></span></li>"
             end
             io << "</ol>"
             io << "<p class='git-note'>Noch keine Commits.</p>" if log.empty?
@@ -9039,7 +9048,7 @@ class Main < Sinatra::Base
             last = GitBrowse.log(repo, sha, path, :max => 1).first
             if last
                 io << "<p class='git-last'><a href='#{h.(git_url('commit', last[:sha]))}'>#{h.(last[:subject])}</a> "
-                io << "<span class='git-meta'>#{h.(last[:author])} · #{h.(git_time(last[:time]))}</span></p>"
+                io << "<span class='git-meta'>#{h.(last[:author])}, #{h.(git_time(last[:time]))}</span></p>"
             end
             io << "<ul class='git-tree'>"
             GitBrowse.tree(repo, sha, path).each do |entry|

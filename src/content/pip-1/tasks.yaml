@@ -951,6 +951,20 @@ tasks:
         }
         ```
 
+  - id: nested-steps
+    title: "Eine Schleife in der Schleife"
+    prediction: true
+    prompt: |
+      Wie viele Schritte macht Pip mit dem Plan oben, mit der Schleife in der Schleife?
+    check: { type: number, expect: 6 }
+    feedback:
+      - when: { equals: 3 }
+        say: Drei Durchläufe hat die äußere Schleife. In jedem macht die innere aber mehr als einen Schritt.
+      - when: { equals: 9 }
+        say: Dreimal drei wäre es, wenn die innere Schleife jedes Mal dreimal liefe. Sie läuft so oft, wie `side` gerade groß ist.
+    solution: |
+      Sechs: im ersten Durchlauf einer, dann zwei, dann drei, zusammen 1 + 2 + 3.
+
   - id: spiral
     title: "Die Wendeltreppe"
     level: 3

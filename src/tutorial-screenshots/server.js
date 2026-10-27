@@ -2967,7 +2967,7 @@ async function captureErrorTabs({
     );
     return {
         target: relativeTarget,
-        label: `${shot?.target || 'Screenshot'} · Fehler`,
+        label: `${shot?.target || 'Screenshot'}: Fehler`,
         stale: false,
         missing: false,
         state: 'error',

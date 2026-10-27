@@ -213,8 +213,9 @@ Schleife macht das:
 end
 ```
 
-Was zwischen `do` und `end` steht, macht Pip viermal hintereinander. Die
-Befehle darin sind eingerückt, damit man sieht, was zur Schleife gehört.
+`4.times` heißt »viermal«: Die Zahl vor `.times` sagt, wie oft. Was zwischen
+`do` und `end` steht, macht Pip viermal hintereinander. Die Befehle darin sind
+eingerückt, damit man sieht, was zur Schleife gehört.
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -255,8 +256,19 @@ end
 ```
 
 `side` ist die Zählvariable: im ersten Durchlauf 1, dann 2, dann 3. Pip sagt
-der Reihe nach 1, 2, 3. Und `side.times do … end` wiederholt so oft, wie
-`side` gerade groß ist.
+der Reihe nach 1, 2, 3.
+
+Vor `.times` darf statt einer Zahl auch die Zählvariable stehen. Dann steht
+eine Schleife in der Schleife:
+
+```ruby
+(1..3).each do |side|
+  side.times do
+    move
+  end
+  turn_left
+end
+```
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -265,8 +277,17 @@ for side in range(1, 4):
 ```
 
 `side` ist die Zählvariable: im ersten Durchlauf 1, dann 2, dann 3. Die 4 ist
-die erste Zahl, die nicht mehr dran ist. Pip sagt der Reihe nach 1, 2, 3. Und
-`for step in range(side):` wiederholt so oft, wie `side` gerade groß ist.
+die erste Zahl, die nicht mehr dran ist. Pip sagt der Reihe nach 1, 2, 3.
+
+In `range()` darf statt einer Zahl auch die Zählvariable stehen. Dann steht
+eine Schleife in der Schleife:
+
+```python
+for side in range(1, 4):
+    for step in range(side):
+        move()
+    turn_left()
+```
 <!-- /language -->
 <!-- language: javascript -->
 ```javascript
@@ -276,9 +297,29 @@ for (let side = 1; side <= 3; side++) {
 ```
 
 `side` ist die Zählvariable: im ersten Durchlauf 1, dann 2, dann 3. Pip sagt
-der Reihe nach 1, 2, 3. Und eine Schleife mit `step < side` darin wiederholt
-so oft, wie `side` gerade groß ist.
+der Reihe nach 1, 2, 3.
+
+In der Bedingung darf statt einer Zahl auch die Zählvariable stehen. Dann steht
+eine Schleife in der Schleife:
+
+```javascript
+for (let side = 1; side <= 3; side++) {
+  for (let step = 0; step < side; step++) {
+    move();
+  }
+  turnLeft();
+}
+```
 <!-- /language -->
+
+_task(nested-steps)
+
+<!-- after: nested-steps -->
+Sechs: einer, dann zwei, dann drei. Die innere Schleife fängt in jedem
+Durchlauf der äußeren von vorn an und läuft jedes Mal so oft, wie `side` gerade
+groß ist. Nach jedem Stück dreht sich Pip einmal. So wird jedes Stück ein Feld
+länger, genau wie bei der Wendeltreppe.
+<!-- /after -->
 
 _task(spiral)
 
