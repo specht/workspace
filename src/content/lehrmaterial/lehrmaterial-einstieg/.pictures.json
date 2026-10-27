@@ -14,14 +14,29 @@
     "src/static/include/default.css",
     "src/static/include/dark.css",
     "src/static/_template.html",
-    "src/content/static-website/tasks.yaml"
+    "src/content/static-website/tasks.yaml",
+    "src/static/include/meeting_point.js",
+    "src/static/include/meeting_status.js",
+    "src/static/include/class_meeting.js",
+    "src/ruby/include/student_home.rb",
+    "src/static/lehrplan.html",
+    "src/ruby/include/curriculum_graph.rb",
+    "src/ruby/include/curriculum_overview.rb",
+    "src/content/static-website/lehrkraft.md"
   ],
-  "hash": "fc2f9b6ad63d1b79750faf3f6797bb35bfed5bc51d6e87f8dfa639775bcbece4",
+  "hash": "6c9fac3e65d5ec8c847dfd9c6a3288323b98b108042567ff3f43719ebfdffa20",
   "pictures": [
     "abgabe-ansehen.webp",
+    "aktivitaet-lehrkraft.webp",
     "codes-beamer.webp",
+    "klasse-einstellungen.webp",
     "klasse-fortschritt.webp",
     "klasse-lernende.webp",
-    "klasse-ueberblick.webp"
+    "klasse-treffpunkt.webp",
+    "klasse-ueberblick.webp",
+    "lehrplan-pdf.webp",
+    "lehrplan.webp",
+    "startseite-angeheftet.webp",
+    "treffpunkt-band.webp"
   ]
 }

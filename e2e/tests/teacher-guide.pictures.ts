@@ -29,6 +29,9 @@ const INPUTS = [
   'src/static/include/class_board.js', 'src/static/include/class_last_active.js', 'src/static/include/submission_viewer.js', 'src/static/include/tasks.js',
   'src/static/include/default.css', 'src/static/include/dark.css', 'src/static/_template.html',
   'src/content/static-website/tasks.yaml',
+  'src/static/include/meeting_point.js', 'src/static/include/meeting_status.js', 'src/static/include/class_meeting.js',
+  'src/ruby/include/student_home.rb', 'src/static/lehrplan.html', 'src/ruby/include/curriculum_graph.rb', 'src/ruby/include/curriculum_overview.rb',
+  'src/content/static-website/lehrkraft.md',
 ];
 const taken: string[] = [];
 
@@ -171,6 +174,30 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
   taken.push(name + '.webp');
 }
 
+// A picture of a part of the page: the box around the elements (selectors),
+// with some room above and below, the whole page width of the content; for
+// what one sentence of the guide is about rather than a whole screen.
+async function shootBox(page: Page, name: string, selectors: string[], out: string, room = { top: 16, bottom: 16 }, maxHeight = 1100) {
+  const box = await page.evaluate(([sels, r, max]) => {
+    const rects = (sels as string[]).map((s) => {
+      const e = document.querySelector(s);
+      if (!e) throw new Error('missing ' + s);
+      return e.getBoundingClientRect();
+    });
+    const main = (document.querySelector('.container, main') || document.body).getBoundingClientRect();
+    const top = Math.min(...rects.map((b) => b.top)) + window.scrollY - (r as any).top;
+    const bottom = Math.max(...rects.map((b) => b.bottom)) + window.scrollY + (r as any).bottom;
+    const left = Math.max(0, Math.min(main.left, ...rects.map((b) => b.left)) - 8);
+    const right = Math.min(document.documentElement.clientWidth, Math.max(main.right, ...rects.map((b) => b.right)) + 8);
+    return { x: left, y: Math.max(0, top), width: right - left, height: Math.min(bottom - top, max as number) };
+  }, [selectors, room, maxHeight] as const);
+  await page.waitForTimeout(300);
+  const png = path.join(out, name + '.png');
+  await page.screenshot({ path: png, fullPage: true, clip: box });
+  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
+  taken.push(name + '.webp');
+}
+
 test('pictures for the teacher guide', async ({ freshWorkspace: workspace, browser }, testInfo) => {
   test.setTimeout(900_000);
   const out = testInfo.outputPath();
@@ -185,6 +212,15 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     return pages.get(email)!;
   };
   const container = new WorkspaceContainer('e2e-0@example.com');
+  // what the pictures set for the group, taken back at the end: the meeting
+  // point, and the pin unless the activity was pinned before
+  let meetingSet = false;
+  let pinnedHere = false;
+  const page2x = async (email: string) => {
+    const p = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
+    await loginAsE2eUser(p, email, testInfo);
+    return p;
+  };
   try {
     const check = async (email: string, task: string, answer = '') => {
       const result = await (await (await as(email)).request.post('/api/task/check', { data: { task: `static-website/${task}`, answer } })).json();
@@ -226,6 +262,30 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await expect(teacher.locator('.cb-quiet-line')).toBeVisible({ timeout: 15_000 });
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-fortschritt', '.class-board-select', out);
+
+    // The meeting point after the first task (the address, task 2, needs a
+    // running Workspace and nobody here has it): everyone is there but Mats,
+    // who has not started; beside his name the button »fehlt heute«
+    expect((await teacher.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: 'index' } })).ok()).toBeTruthy();
+    meetingSet = true;
+    await teacher.reload();
+    const waiting = teacher.locator('details.class-meeting-waiting');
+    await expect(waiting).toBeVisible({ timeout: 15_000 });
+    if (!(await waiting.getAttribute('open'))) await waiting.locator('summary').click();
+    await expect(waiting.locator('button.meeting-away')).toHaveCount(1);
+    await teacher.waitForTimeout(500);
+    await dress(teacher);
+    await shootBox(teacher, 'klasse-treffpunkt', ['.class-meeting-control', '.class-meeting-status', 'table.class-board thead', 'table.class-board tbody tr:nth-child(4)'], out);
+
+    // ... and what a student sees who is not there yet: the band after the task
+    const mats = await page2x('e2e-3@example.com');
+    await mats.goto('/static-website');
+    const band = mats.locator('aside.meeting-point');
+    await expect(band).toBeVisible({ timeout: 15_000 });
+    await band.scrollIntoViewIfNeeded();
+    await dress(mats);
+    await shootBox(mats, 'treffpunkt-band', ['aside.meeting-point'], out, { top: 110, bottom: 90 });
+    await mats.context().close();
 
     // How far everyone has come, across the group's activities; »zuletzt«
     // the same lesson as on the board
@@ -281,6 +341,45 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await shoot(teacher, 'abgabe-ansehen', null, out);
     await teacher.keyboard.press('Escape');
 
+    // Einstellungen: language, copy buttons, Git repositories, the school
+    await teacher.goto('/klasse?group=E2E&tab=einstellungen');
+    await dress(teacher, 0.78);
+    await shoot(teacher, 'klasse-einstellungen', '.class-board-select', out);
+
+    // What a pinned activity looks like for the class: at the top of the
+    // front page (pinned only for the picture, unless it was before)
+    const aylin = await page2x('e2e-auth-student-0@example.com');
+    await aylin.goto('/');
+    if (await aylin.locator("section.student-home a[href='/static-website']").count() === 0) {
+      expect((await teacher.request.post('/api/class/pin', { data: { group: 'E2E', slug: 'static-website' } })).ok()).toBeTruthy();
+      pinnedHere = true;
+    }
+    await aylin.reload();
+    await expect(aylin.locator('section.student-home')).toBeVisible({ timeout: 15_000 });
+    await dress(aylin);
+    await shootBox(aylin, 'startseite-angeheftet', ['section.student-home'], out, { top: 24, bottom: 24 });
+    await aylin.context().close();
+
+    // The curricula: the state, the graph with a name of the plans chosen,
+    // and a level with its plan as a PDF
+    await teacher.goto('/lehrplan');
+    const topic = teacher.locator('select.cg-topic');
+    const value = await topic.locator('option', { hasText: 'Information und Daten' }).first().getAttribute('value');
+    await topic.selectOption(value!);
+    await teacher.waitForTimeout(600);
+    await dress(teacher);
+    await shootBox(teacher, 'lehrplan', ['.lp-state', 'select.cg-topic'], out, { top: 16, bottom: 560 });
+    await dress(teacher);
+    await shootBox(teacher, 'lehrplan-pdf', ['h2#sek-i', 'h2#sek-i + p.lp-source'], out, { top: 12, bottom: 12 });
+
+    // An activity as a teacher sees it: the curriculum line at the top and
+    // the teacher's note opened
+    await teacher.goto('/static-website');
+    await teacher.locator('button.teacher-note-toggle').click();
+    await expect(teacher.locator('#teacher-note')).toBeVisible();
+    await dress(teacher);
+    await shootBox(teacher, 'aktivitaet-lehrkraft', ['.page-kind'], out, { top: 16, bottom: 380 });
+
     // No one waits for a code here; the projector view gets example rows.
     await teacher.goto('/klasse?group=E2E');
     await teacher.getByRole('button', { name: 'Anmelde-Codes zeigen' }).click();
@@ -308,6 +407,9 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       inputs: INPUTS, hash: inputsHash(), pictures: [...taken].sort(),
     }, null, 2) + '\n');
   } finally {
+    const cleaner = await as('e2e-teacher@example.com');
+    if (meetingSet) await cleaner.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: '' } });
+    if (pinnedHere) await cleaner.request.post('/api/class/unpin', { data: { group: 'E2E', slug: 'static-website' } });
     for (const key of touched) {
       const [email, task] = key.split(' ');
       await (await as(email)).request.post('/api/task/delete', { data: { task } });
