@@ -1,4 +1,6 @@
 <div class='meta'>
+image: teaser.webp
+image_alt: "Drei Kassen eines Supermarkts, die erste mit dem Schild »Express · bis 10«. Vor ihr warten zwei Leute mit wenig im Wagen, vor den anderen beiden drei und vier Leute mit vollen Wagen."
 kind: projekt
 duration: 3 Doppelstunden
 languages: [ruby, python, javascript, dart, java]

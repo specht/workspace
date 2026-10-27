@@ -1,0 +1,192 @@
+# Aufgaben zu »Gemeinsam an einem Projekt: das Quiz der Klasse«, in Ruby
+# und, unter python:, in Python. Format: docs/aufgaben.md. Das Quiz liegt in
+# /workspace/class-quiz, mit Klassen-Repository als Klon davon, sonst als
+# Klon eines Repositorys in /workspace/class-quiz-server.
+format: 1
+activity: class-quiz
+tasks:
+  - id: ssh-schluessel
+    title: Dein Schlüssel
+    prompt: Dein öffentlicher SSH-Schlüssel liegt in `~/.ssh/id_ed25519.pub`.
+    check:
+      type: files
+      path: .ssh/id_ed25519.pub
+      expect:
+        exists: true
+        format: text
+    hint: |
+      `~` ist im Workspace `/workspace`. `ls ~/.ssh` zeigt, was dort liegt.
+    feedback:
+      - when: { problem: missing }
+        say: |
+          Es gibt noch keinen Schlüssel. Erzeuge ihn mit
+          `ssh-keygen -t ed25519 -C "Vorname Nachname"` und bestätige alle
+          Rückfragen mit Enter.
+
+  - id: git-name
+    title: Git kennt dich
+    prompt: Git kennt deinen Namen und eine E-Mail-Adresse.
+    check:
+      type: git
+      expect:
+        identity: true
+    feedback:
+      - when: { problem: placeholder }
+        say: |
+          Du hast das Beispiel abgeschrieben. Setze zwischen die
+          Anführungszeichen deinen echten Namen und deine E-Mail-Adresse.
+
+  - id: geklont
+    title: Das Quiz ist da
+    prompt: In `~/class-quiz` liegt das Quiz, ein Git-Repository mit einem Remote.
+    check:
+      type: git
+      repo: class-quiz
+      expect:
+        has_remote: true
+
+  - id: eigene-runde
+    title: Deine Runde
+    prompt: |
+      Deine Runde steht in `questions/` und am Ende von `rounds.txt`, und
+      `ruby quiz.rb --check` findet nichts mehr. Die Prüfung ruft dafür
+      `problems_in` aus `quiz.rb` auf und zählt die Runden.
+    check:
+      type: ruby
+      file: class-quiz/quiz.rb
+      cases:
+        - call: 'problems_in("class-quiz")'
+          expect: []
+          say: Das sind die Meldungen von `ruby quiz.rb --check`.
+        - call: 'read_rounds("class-quiz")[0].size >= 2'
+          expect: true
+          say: In `rounds.txt` steht nur die Beispielrunde. Trag deine Datei in einer neuen Zeile am Ende ein.
+    python:
+      prompt: |
+        Deine Runde steht in `questions/` und am Ende von `rounds.txt`, und
+        `python3 quiz.py --check` findet nichts mehr. Die Prüfung ruft dafür
+        `problems_in` aus `quiz.py` auf und zählt die Runden.
+      check:
+        type: python
+        file: class-quiz/quiz.py
+        cases:
+          - call: 'problems_in("class-quiz")'
+            expect: []
+            say: Das sind die Meldungen von `python3 quiz.py --check`.
+          - call: 'len(read_rounds("class-quiz")[0]) >= 2'
+            expect: true
+            say: In `rounds.txt` steht nur die Beispielrunde. Trag deine Datei in einer neuen Zeile am Ende ein.
+
+  - id: push-vorhersage
+    title: Jemand war schneller
+    prediction: true
+    prompt: |
+      Kurz bevor du pushst, hat jemand anderes eine Runde gepusht. Was macht
+      Git mit deinem Push?
+    check:
+      type: choice
+      options:
+        - Es nimmt ihn an und legt deinen Commit hinter den anderen.
+        - Es lehnt ihn ab, bis du die neuen Commits geholt hast.
+        - Es nimmt ihn an, und der andere Commit ist danach weg.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Dafür müsste der Server deinen Commit mit dem anderen zusammenführen. Das tut er nie selbst; er weiß nicht, welche Fassung gelten soll.
+      - when: { picked: 2 }
+        say: Git verliert keine Commits, die schon auf dem Server sind, außer jemand erzwingt es.
+    solution: |
+      Git lehnt ab (`rejected`): Dein Commit baut auf einem Stand auf, den
+      es so nicht mehr gibt. Erst holst du mit `git pull` die neuen Commits,
+      dann pushst du noch einmal.
+
+  - id: konflikt-vorhersage
+    title: Wo es kracht
+    prediction: true
+    prompt: |
+      Du und jemand anderes habt beide eine neue Datei in `questions/`
+      angelegt und beide eine Zeile am Ende von `rounds.txt` angehängt. Wo
+      meldet `git pull` einen Konflikt?
+    check:
+      type: choice
+      options:
+        - In beiden neuen Dateien.
+        - Nur in rounds.txt.
+        - Nirgends; Git hängt beide Zeilen an.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Zwei verschiedene Dateien kann Git ohne Weiteres zusammenführen; keine Zeile ist von beiden geändert.
+      - when: { picked: 2 }
+        say: Für Git stehen beide Zeilen an derselben Stelle, und es weiß nicht, welche zuerst kommen soll.
+    solution: |
+      Nur in `rounds.txt`: Beide habt an derselben Stelle etwas geändert, am
+      Ende der Datei. Die neuen Dateien in `questions/` kommen sich nicht
+      in die Quere.
+
+  - id: konflikt
+    title: Alles zusammengeführt
+    prompt: |
+      Im Quiz ist nichts mehr offen: Ein Konflikt ist aufgelöst, alles ist
+      committet und gepusht.
+    check:
+      type: git
+      repo: class-quiz
+      expect:
+        has_remote: true
+        min_commits: 1
+        committed: true
+        pushed: true
+
+  - id: force
+    title: Mit Gewalt
+    prompt: |
+      Git lehnt deinen Push ab. Jemand rät dir zu `git push --force`. Was
+      passiert dann?
+    check:
+      type: choice
+      options:
+        - Dein Push geht durch, und die Commits, die dir gefehlt haben, sind auf dem Server weg.
+        - Git holt die fehlenden Commits und pusht danach.
+        - Git fragt die anderen, ob sie einverstanden sind.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das macht `git pull` und danach `git push`. `--force` holt nichts.
+      - when: { picked: 2 }
+        say: Git fragt niemanden. Die anderen merken es erst beim nächsten `git pull`.
+    solution: |
+      `--force` ersetzt den Stand auf dem Server durch deinen. Was die anderen
+      seitdem gepusht haben, ist dort weg. In einem gemeinsamen Repository
+      ist `--force` darum tabu.
+
+  - id: verteilt
+    title: Deine Aufgabe ist drin
+    prompt: |
+      Du hast eine Aufgabe aus `TODO.md` übernommen, in einem Branch
+      erledigt und zusammengeführt. Von dir sind jetzt mindestens drei
+      Commits im Repository, und alles ist gepusht.
+    check:
+      type: git
+      repo: class-quiz
+      expect:
+        has_remote: true
+        min_commits: 3
+        committed: true
+        pushed: true
+
+  - id: review
+    title: Ein Commit von jemand anderem
+    prompt: |
+      Such dir mit `git log` einen Commit, den jemand anderes für eine Aufgabe
+      aus `TODO.md` gemacht hat, und lies ihn mit `git show`. Wessen Commit
+      war es, was hat er geändert, und was würdest du genauso oder anders
+      machen?
+    check: { type: reflection, min_words: 25 }
+    examples:
+      - |
+        Der Commit `a3f9c21` von Ida: »Fragen einer Runde zufällig mischen«.
+        Sie hat in `play` vor der Schleife `questions.shuffle` eingefügt,
+        eine Zeile. Gut finde ich, dass der Commit nur das enthält. Getestet
+        hätte ich noch, ob die Antworten bei ihrer Frage bleiben; das tun sie,
+        weil jede Frage mit ihren Antworten zusammen gemischt wird.

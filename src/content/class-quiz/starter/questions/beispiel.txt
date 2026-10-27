@@ -1,0 +1,6 @@
+# Eine Runde zum Ausprobieren
+? Wie viele Bits hat ein Byte?
+= 8 | acht
+
+? Mit welchem Befehl holst du die Commits der anderen?
+= git pull

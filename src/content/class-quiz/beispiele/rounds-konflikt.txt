@@ -1,0 +1,8 @@
+# Die Runden des Quiz, eine pro Zeile: die Datei mit ihren Fragen.
+# Das Quiz spielt sie in dieser Reihenfolge. Neue Runden kommen ans Ende.
+questions/beispiel.txt
+<<<<<<< HEAD
+questions/lena.txt
+=======
+questions/ida.txt
+>>>>>>> 04a80e1422d4a1092423ad66fde49833572198e3
