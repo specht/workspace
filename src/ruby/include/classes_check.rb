@@ -31,8 +31,10 @@ require 'zlib'
 #         name: loans                      # optional
 #
 # What the task names must be there; more classes, members and associations
-# may be. A method is matched by its name and, if given, the types of its
-# parameters (their names do not count) and its return type.
+# may be. A class has what it inherits too (a Book that extends Medium has
+# Medium's title), but not its parent's constructors. A method is matched by
+# its name and, if given, the types of its parameters (their names do not
+# count) and its return type.
 module ClassesCheck
     CORE_PATH = File.expand_path('../../vscode-extensions/uml/core/uml-core.js', __dir__)
     CORE = File.file?(CORE_PATH) ? Base64.strict_encode64(Zlib.gzip(File.read(CORE_PATH, encoding: 'UTF-8'), :level => 9)) : nil
@@ -75,6 +77,16 @@ module ClassesCheck
         type.to_s.gsub(/\s+/, '').gsub(',', ', ')
     end
 
+    # The diagram uses the names of the student's language: isAvailable,
+    # is_available and available? (Ruby) are one method, loanDays and
+    # loan_days one, so a task asks in any spelling. A »!« stays: sort! and
+    # sort are two methods in Ruby.
+    def self.same_name(name)
+        name = name.to_s
+        name = "is#{name.chomp('?')}" if name.end_with?('?')
+        name.delete('_').downcase
+    end
+
     # "- title: String" -> { visibility: '-', name: 'title', type: 'String' }
     def self.parse_attribute(text)
         m = text.to_s.strip.match(/\A([+-])?\s*([A-Za-z][A-Za-z0-9_]*)\s*(?::\s*(.+))?\z/)
@@ -85,7 +97,7 @@ module ClassesCheck
 
     # "+ borrow(medium: Medium): void" -> { visibility:, name:, params: ['Medium'] or nil, returns: 'void' or nil }
     def self.parse_method(text)
-        m = text.to_s.strip.match(/\A([+-])?\s*([A-Za-z][A-Za-z0-9_]*)\s*(?:\((.*)\))?\s*(?::\s*(.+))?\z/)
+        m = text.to_s.strip.match(/\A([+-])?\s*([A-Za-z][A-Za-z0-9_]*[?!]?)\s*(?:\((.*)\))?\s*(?::\s*(.+))?\z/)
         return nil unless m
 
         params = m[3]&.then do |inside|
@@ -198,12 +210,13 @@ module ClassesCheck
                 end
                 return [false, :extends, message]
             end
-            attributes = (have['attributes'] || []).to_h { |a| [a['name'], a] }
+            line = ancestry(have, classes)
+            attributes = line.reverse.flat_map { |c| c['attributes'] || [] }.to_h { |a| [same_name(a['name']), a] }
             (spec['attributes'] || []).each do |text|
                 want = parse_attribute(text)
-                got = attributes[want[:name]]
+                got = attributes[same_name(want[:name])]
                 if got.nil?
-                    there = attributes.empty? ? 'noch keine Attribute' : "nur #{list(attributes.keys)}"
+                    there = attributes.empty? ? 'noch keine Attribute' : "nur #{list(attributes.values.map { |a| a['name'] })}"
                     return [false, :missing_attribute, "#{code(name)} hat noch kein Attribut #{code(want[:name])}. Es hat #{there}."]
                 end
                 if want[:type] && squeeze(got['type']) != want[:type]
@@ -214,10 +227,11 @@ module ClassesCheck
                     return [false, :attribute, "#{code("#{name}.#{want[:name]}")} soll #{said}."]
                 end
             end
-            methods = have['methods'] || []
+            # its own methods first, then what it inherits, constructors not
+            methods = (have['methods'] || []) + line.drop(1).flat_map { |c| (c['methods'] || []).reject { |m| m['constructor'] } }
             (spec['methods'] || []).each do |text|
                 want = parse_method(text)
-                named = methods.select { |m| m['name'] == want[:name] }
+                named = methods.select { |m| same_name(m['name']) == same_name(want[:name]) }
                 what = want[:name] == name ? 'keinen Konstruktor' : "keine Methode #{code(want[:name])}"
                 return [false, :missing_method, "#{code(name)} hat noch #{what}."] if named.empty?
 
@@ -264,6 +278,16 @@ module ClassesCheck
             end
         end
         [true, nil, nil]
+    end
+
+    # The class and the classes it inherits from, nearest first; a cycle (an
+    # error the summary reports anyway) ends the line.
+    def self.ancestry(klass, classes)
+        line = [klass]
+        while (parent = classes[line.last['extends']]) && !line.include?(parent)
+            line << parent
+        end
+        line
     end
 
     # The multiplicities of an association read in the order [a, other].

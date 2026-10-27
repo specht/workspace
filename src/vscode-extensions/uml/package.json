@@ -1,0 +1,100 @@
+{
+  "name": "hackschule-uml",
+  "displayName": "UML-Werkstatt",
+  "description": "UML-Klassendiagramme als Text (.uml): das Diagramm daneben, Fehler beim Tippen, Speichern als SVG.",
+  "version": "0.1.0",
+  "publisher": "hackschule",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Education"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:uml"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "uml",
+        "aliases": [
+          "UML-Klassendiagramm",
+          "uml"
+        ],
+        "extensions": [
+          ".uml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "uml",
+        "scopeName": "source.uml",
+        "path": "./syntaxes/uml.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "hackschuleUml.showPreview",
+        "title": "Klassendiagramm anzeigen",
+        "category": "UML-Werkstatt",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "hackschuleUml.saveDiagram",
+        "title": "Diagramm als SVG speichern",
+        "category": "UML-Werkstatt"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "hackschuleUml.showPreview",
+          "when": "editorLangId == uml",
+          "group": "navigation@1"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "hackschuleUml.showPreview",
+          "when": "resourceExtname == .uml",
+          "group": "navigation"
+        },
+        {
+          "command": "hackschuleUml.saveDiagram",
+          "when": "resourceExtname == .uml",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "hackschuleUml.showPreview",
+          "when": "editorLangId == uml"
+        },
+        {
+          "command": "hackschuleUml.saveDiagram",
+          "when": "editorLangId == uml"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "hackschuleUml.showPreview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == uml"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.cjs core/*.test.cjs",
+    "package": "npm test && node pack.cjs"
+  }
+}

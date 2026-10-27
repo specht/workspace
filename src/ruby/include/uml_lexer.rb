@@ -25,7 +25,7 @@ module Rouge
                     groups Keyword, Text::Whitespace, Name::Function, Text::Whitespace, Punctuation
                     push :association
                 end
-                rule %r/^([ \t]+)([+-])([ \t]*)(#{IDENT})/ do
+                rule %r/^([ \t]+)([+-])([ \t]*)(#{IDENT}[?!]?)/ do
                     groups Text::Whitespace, Operator, Text::Whitespace, Name::Attribute
                     push :member
                 end

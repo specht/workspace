@@ -90,6 +90,30 @@ class ClassesCheckTest < Minitest::Test
         assert_equal 'Es fehlt eine Assoziation zwischen `Medium` und `Member`.', result(CHECK, s)[2]
     end
 
+    def test_a_class_has_what_it_inherits_but_not_the_constructors
+        s = summary
+        s['classes'][1]['attributes'] = []
+        check = CHECK.merge('classes' => [{ 'name' => 'Book', 'attributes' => ['- title: String', '- available: boolean'], 'methods' => ['+ lend(): void'] }])
+        assert_equal [:correct, nil, 'Passt.'], result(check, s), 'title, available and lend come from Medium'
+        check = CHECK.merge('classes' => [{ 'name' => 'Book', 'methods' => ['+ Book(title: String)'] }])
+        assert_equal '`+ Book(title: String, author: String)` bekommt andere Parameter als gefragt: `String`.', result(check)[2], "Medium's constructor is not Book's"
+    end
+
+    def test_the_names_of_any_language
+        s = summary
+        s['classes'][0]['methods'][2]['name'] = 'available?'
+        assert_equal [:correct, nil, 'Passt.'], result(CHECK, s), 'available? in Ruby is isAvailable'
+        s['classes'][0]['methods'][2]['name'] = 'is_available'
+        assert_equal [:correct, nil, 'Passt.'], result(CHECK, s), 'is_available in Python is isAvailable'
+        check = CHECK.merge('classes' => [{ 'name' => 'Medium', 'methods' => ['+ available?(): boolean'] }])
+        assert_equal [:correct, nil, 'Passt.'], result(check), 'and the other way round'
+        s['classes'][0]['methods'][1]['name'] = 'lend!'
+        assert_equal [:wrong, :missing_method, '`Medium` hat noch keine Methode `lend`.'], result(CHECK, s), 'lend! is another method'
+        s['classes'][0]['methods'][1]['name'] = 'lend'
+        s['classes'][0]['methods'][2]['name'] = 'available'
+        assert_equal [:wrong, :missing_method, '`Medium` hat noch keine Methode `isAvailable`.'], result(CHECK, s)
+    end
+
     def test_errors_in_the_file_come_first
         s = summary
         s['errors'] = [{ 'line' => 3, 'msg' => 'Vor `title` fehlt `+` oder `-`.' }]

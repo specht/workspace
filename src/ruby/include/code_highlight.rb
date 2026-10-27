@@ -114,6 +114,9 @@ module CodeHighlight
             when 'er'
                 lexer = Rouge::Lexers::ER.new
                 pre['class'] = [pre['class'], 'code-er'].compact.join(' ')
+            when 'uml'
+                lexer = Rouge::Lexers::UML.new
+                pre['class'] = [pre['class'], 'code-uml'].compact.join(' ')
             when 'erlang'
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'

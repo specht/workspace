@@ -1388,7 +1388,12 @@ check:
 Was die Aufgabe nennt, muss da sein; weitere Klassen, Attribute, Methoden und
 Assoziationen dürfen es auch. Eine Methode zählt nach ihrem Namen und, wenn
 angegeben, den Typen ihrer Parameter (ihre Namen sind egal) und ihrem
-Rückgabetyp. Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«,
+Rückgabetyp. Das Diagramm schreibt die Namen wie der Code der Lernenden:
+`isAvailable`, `is_available` und Rubys `available?` gelten als dieselbe
+Methode, `loanDays` und `loan_days` auch; ein `!` am Ende (Ruby, `sort!`)
+macht eine andere Methode daraus. Damit die Rückmeldung die Namen der
+Sprache nennt, bekommt die Aufgabe Varianten mit `check` (`ruby:`,
+`python:`), wie in `bibliothek/tasks.yaml`, `diagramm-medien`. Fehler in der Datei kommen zuerst (»In `…` stehen noch 2 Fehler«,
 mit Zeile und Meldung, wie die UML-Werkstatt sie im Editor unterstreicht),
 dann der erste Unterschied: eine fehlende Klasse, `abstract`, `extends`, ein
 Attribut, eine Methode, eine Assoziation, ihre Multiplizitäten oder ihre

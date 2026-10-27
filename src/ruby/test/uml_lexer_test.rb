@@ -23,6 +23,7 @@ class UmlLexerTest < Minitest::Test
         assert_includes t, ['Name.Class', 'Medium']
         assert_includes t, ['Keyword.Pseudo', '(abstract)']
         assert_includes t, ['Operator', '-']
+        assert_includes tokens("class Book\n  + available?(): boolean\n  + renew!(): void\n"), ['Name.Attribute', 'available?']
         assert_includes t, ['Name.Attribute', 'author']
         assert_includes t, ['Keyword.Type', 'String']
         assert_includes t, ['Name.Attribute', 'borrow']

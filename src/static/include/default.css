@@ -151,29 +151,35 @@ pre .na {
 /* ```er blocks (Rouge::Lexers::ER): like the ER-Werkstatt in VS Code.
    ```cypher blocks (Rouge::Lexers::WorkspaceCypher) use the same colours:
    labels like entities, relationship types like relationships, property
-   keys like attributes (.na, above). */
+   keys like attributes (.na, above). ```uml blocks (Rouge::Lexers::UML)
+   too: classes like entities, associations like relationships. */
 pre.code-er .nc,
-pre.code-cypher .nc {
+pre.code-cypher .nc,
+pre.code-uml .nc {
     color: #6cb6ff !important;
     font-weight: bold;
 }
 
 pre.code-er .nf,
-pre.code-cypher .nf {
+pre.code-cypher .nf,
+pre.code-uml .nf {
     color: #e2a8ff !important;
 }
 
 pre.code-er .kt,
-pre.code-cypher .nb {
+pre.code-cypher .nb,
+pre.code-uml .kt {
     color: #56d4dd !important;
 }
 
-pre.code-er .kp {
+pre.code-er .kp,
+pre.code-uml .kp {
     font-weight: bold;
 }
 
 pre.code-er .m,
-pre.code-cypher .m {
+pre.code-cypher .m,
+pre.code-uml .m {
     color: #ff9e64 !important;
 }
 
