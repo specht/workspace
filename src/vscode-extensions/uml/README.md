@@ -16,7 +16,7 @@ In VS Code, a `.uml` file gets:
   and lists the errors (a click goes to the line). Zoom with −, + and
   »Einpassen« or Ctrl + mouse wheel; typing never rescales the view. Light and
   dark theme follow VS Code;
-- »Diagramm als SVG speichern«: `bibliothek.svg` next to `bibliothek.uml`, on
+- »Diagramm als SVG speichern«: `supermarkt.svg` next to `supermarkt.uml`, on
   white. An SVG the UML-Werkstatt did not write is only replaced after asking.
 
 Build: `npm run package` runs the tests and writes `hackschule-uml-<version>.vsix`
@@ -28,24 +28,31 @@ preview). The extension and the Workspace checks both use it, so a diagram
 means the same everywhere.
 
 ```
-# Eine Bibliothek
-class Medium (abstract)
-  - title: String
-  - available: boolean
-  + Medium(title: String)
-  + lend(): void
-  + isAvailable(): boolean
+# Kassen im Supermarkt
+class Customer
+  - items: int
+  - arrival: int
+  + Customer(items: int, arrival: int)
 
-class Book extends Medium
-  - author: String
-  + Book(title: String, author: String)
+class Checkout
+  - freeAt: int
+  + Checkout()
+  + accepts(customer: Customer): boolean
+  + serviceTime(customer: Customer): int
+  + serve(customer: Customer): int
 
-class Member
-  - name: String
-  + borrow(medium: Medium): void
+class ExpressCheckout extends Checkout
+  + accepts(customer: Customer): boolean
 
-association loans: Member 1 -- 0..* Medium
-association owns: Library 1 -> 0..* Medium
+class SelfCheckout extends Checkout
+  + serviceTime(customer: Customer): int
+
+class Supermarket
+  + Supermarket(checkouts: List<Checkout>)
+  + arrive(customer: Customer): int
+  + averageWait(): double
+
+association checkouts: Supermarket 1 -- 1..* Checkout
 ```
 
 - `#` starts a comment, to the end of the line; blank lines do not matter.
@@ -55,19 +62,20 @@ association owns: Library 1 -> 0..* Medium
 - Members, indented under their class, one per line, each with its
   visibility `+` (public) or `-` (private). There is no `#` (protected): `#`
   starts a comment.
-  - attribute: `- title: String`
-  - method: `+ borrow(medium: Medium): void`; the return type is required
+  - attribute: `- items: int`
+  - method: `+ serve(customer: Customer): int`; the return type is required
     (`void` when nothing is returned)
-  - constructor: named like its class, without return type: `+ Book(title: String)`
+  - constructor: named like its class, without return type: `+ Customer(items: int, arrival: int)`
 - Types as in Java: `int`, `double`, `long`, `float`, `boolean`, `char`,
   `byte`, `short`, `String`, `Object`, the wrapper classes (`Integer` …),
   `void` (only as a return type), the classes of the file, generics
-  (`List<Book>`, `ArrayList`, `LinkedList`, `Set`, `HashSet`, `TreeSet`,
-  `Queue`, `Deque`, `ArrayDeque`, `Stack`, `Map<String, Book>`, `HashMap`,
+  (`List<Checkout>`, `ArrayList`, `LinkedList`, `Set`, `HashSet`, `TreeSet`,
+  `Queue`, `Deque`, `ArrayDeque`, `Stack`, `Map<String, Checkout>`, `HashMap`,
   `TreeMap`) and arrays (`int[]`). Anything else is a warning asking whether
   a class is missing or the name is misspelled.
 - Associations: `association name: A mult -- mult B`, or `->` when only A
-  knows B (navigable from A to B). Multiplicities: `1`, `*`, `0..1`, `0..*`,
+  knows B (navigable from A to B):
+  `association queue: Checkout 1 -> 0..* Customer`. Multiplicities: `1`, `*`, `0..1`, `0..*`,
   `1..*`, a number, a range `m..n` with m ≤ n.
 - Errors: a class or a member declared twice (methods: same name and
   parameter types), `extends` an unknown class or a cycle of `extends`, an
@@ -86,8 +94,8 @@ would draw a line through a box or make the picture far too wide.
 Command line, used by the checks and for exports:
 
 ```bash
-node core/uml-core.js --json bibliothek.uml    # classes, associations, problems
-node core/uml-core.js --svg bibliothek.uml > bibliothek.svg
+node core/uml-core.js --json supermarkt.uml    # classes, associations, problems
+node core/uml-core.js --svg supermarkt.uml > supermarkt.svg
 ```
 
 `--json` prints one object:
@@ -98,20 +106,24 @@ node core/uml-core.js --svg bibliothek.uml > bibliothek.svg
   "errors":   [{ "line": 3, "from": 2, "to": 8, "msg": "…" }],
   "warnings": [{ "line": 5, "from": 0, "to": 4, "msg": "…" }],
   "classes": [
-    { "name": "Book", "abstract": false, "extends": "Medium", "line": 9,
-      "attributes": [{ "name": "author", "type": "String", "visibility": "-" }],
-      "methods": [{ "name": "Book", "constructor": true, "returns": null, "visibility": "+",
-                    "params": [{ "name": "title", "type": "String" }] }] }
+    { "name": "Customer", "abstract": false, "extends": null, "line": 2,
+      "attributes": [{ "name": "items", "type": "int", "visibility": "-" },
+                     { "name": "arrival", "type": "int", "visibility": "-" }],
+      "methods": [{ "name": "Customer", "constructor": true, "returns": null, "visibility": "+",
+                    "params": [{ "name": "items", "type": "int" }, { "name": "arrival", "type": "int" }] }] },
+    { "name": "ExpressCheckout", "abstract": false, "extends": "Checkout", "line": 14, "attributes": [],
+      "methods": [{ "name": "accepts", "constructor": false, "returns": "boolean", "visibility": "+",
+                    "params": [{ "name": "customer", "type": "Customer" }] }] }
   ],
   "associations": [
-    { "name": "loans", "from": "Member", "to": "Medium", "fromMult": "1", "toMult": "0..*", "directed": false, "line": 20 }
+    { "name": "checkouts", "from": "Supermarket", "to": "Checkout", "fromMult": "1", "toMult": "1..*", "directed": false, "line": 25 }
   ]
 }
 ```
 
 Lines are 1-based, columns (`from`, `to`) 0-based. `extends` is `null`
 without a superclass; types are written as in the file with spaces
-normalised (`Map<String, Book>`). A missing file gives
+normalised (`Map<String, Checkout>`). A missing file gives
 `{ "version": …, "missing": true, "errors": [{ "line": 0, "msg": "Die Datei … gibt es nicht." }] }`.
 `--svg` exits with 1 and the errors on stderr when the file has errors.
 

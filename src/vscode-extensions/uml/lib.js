@@ -1,7 +1,7 @@
 // Small pure helpers of the extension, tested without VS Code.
 'use strict';
 
-// bibliothek.uml -> bibliothek.svg
+// supermarkt.uml -> supermarkt.svg
 function svgPath(umlPath) {
     return umlPath.replace(/\.uml$/i, '') + '.svg';
 }

@@ -7,23 +7,25 @@
 // are English, messages for students German.
 //
 //   # comments start with #
-//   class Medium (abstract)
-//     - title: String
-//     + Medium(title: String)          constructor: named like its class
-//     + lend(): void
+//   class Customer
+//     - items: int
+//     + Customer(items: int, arrival: int)    constructor: named like its class
 //
-//   class Book extends Medium
-//     - author: String
+//   class Checkout                    abstract: class Checkout (abstract)
+//     + serve(customer: Customer): int
 //
-//   class Member
-//     + borrow(medium: Medium): void
+//   class ExpressCheckout extends Checkout
+//     + accepts(customer: Customer): boolean
 //
-//   association loans: Member 1 -- 0..* Medium     undirected
-//   association owns: Library 1 -> 0..* Medium     navigable from Library
+//   class Supermarket
+//     + averageWait(): double
+//
+//   association checkouts: Supermarket 1 -- 1..* Checkout    undirected
+//   association queue: Checkout 1 -> 0..* Customer           navigable from Checkout
 //
 // Command line (used by the Workspace checks and for exports):
-//   node uml-core.js --json bibliothek.uml      classes, associations and problems as JSON
-//   node uml-core.js --svg bibliothek.uml       the diagram as SVG, on white
+//   node uml-core.js --json supermarkt.uml      classes, associations and problems as JSON
+//   node uml-core.js --svg supermarkt.uml       the diagram as SVG, on white
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) module.exports = factory();
     else root.UmlCore = factory();
@@ -52,9 +54,9 @@
     const WRAPPERS = { int: 'Integer', double: 'Double', long: 'Long', float: 'Float', boolean: 'Boolean', char: 'Character', byte: 'Byte', short: 'Short' };
     const BUILTIN = ['String', 'Object', ...Object.values(WRAPPERS)];
     const GENERIC = { List: 1, ArrayList: 1, LinkedList: 1, Set: 1, HashSet: 1, TreeSet: 1, Queue: 1, Deque: 1, ArrayDeque: 1, Stack: 1, Map: 2, HashMap: 2, TreeMap: 2 };
-    const TYPE_EXAMPLES = 'int, double, boolean, String, List<Book> oder int[]';
+    const TYPE_EXAMPLES = 'int, double, boolean, String, List<Checkout> oder int[]';
     const MULT_LIST = '1, *, 0..1, 0..*, 1..*, eine Zahl wie 3 oder ein Bereich wie 2..4';
-    const EXAMPLE_ASSOC = '»association loans: Member 1 -- 0..* Medium«';
+    const EXAMPLE_ASSOC = '»association checkouts: Supermarket 1 -- 1..* Checkout«';
 
     // ---------- reading ----------------------------------------------------------
 
@@ -149,7 +151,7 @@
         }
     }
 
-    // The type as text, spaces normalised: Map<String, Book>, int[]
+    // The type as text, spaces normalised: Map<String, Checkout>, int[]
     function typeText(node) {
         return node.name + (node.generic ? `<${node.args.map(typeText).join(', ')}>` : '') + '[]'.repeat(node.dims);
     }
@@ -192,24 +194,26 @@
             return `»${m[1]}« steht hier nicht vor »class«: »class ${m[2]}«.`;
         }
         if (/^[+\-~]/.test(s) || /^(public|private|protected)\b/.test(s)) {
-            return 'Attribute und Methoden stehen eingerückt unter ihrer Klasse, zum Beispiel mit zwei Leerzeichen vor »- title: String«.';
+            return 'Attribute und Methoden stehen eingerückt unter ihrer Klasse, zum Beispiel mit zwei Leerzeichen vor »- items: int«.';
         }
         if (/^class\b/.test(s)) {
-            const name = (s.match(new RegExp(`^class\\s+(${NAME})`, 'u')) || [])[1] || 'Book';
-            if (/^class\s*$/.test(s)) return 'Nach »class« kommt der Name der Klasse, zum Beispiel »class Book«.';
-            if (/\(\s*abstract\s*\)\s*\S/.test(s)) return `»(abstract)« steht am Ende der Zeile: »class ${name} extends Medium (abstract)«.`;
+            const name = (s.match(new RegExp(`^class\\s+(${NAME})`, 'u')) || [])[1] || 'ExpressCheckout';
+            // the superclass of the examples, never the class itself
+            const sup = name === 'Checkout' ? 'Oberklasse' : 'Checkout';
+            if (/^class\s*$/.test(s)) return 'Nach »class« kommt der Name der Klasse, zum Beispiel »class Checkout«.';
+            if (/\(\s*abstract\s*\)\s*\S/.test(s)) return `»(abstract)« steht am Ende der Zeile: »class ${name} extends ${sup} (abstract)«.`;
             if (/\babstract\b/.test(s) && !/\(\s*abstract\s*\)/.test(s)) return `»abstract« steht in Klammern am Ende: »class ${name} (abstract)«.`;
-            if (/\bimplements\b/.test(s)) return `»implements« gibt es hier nicht, nur »extends«: »class ${name} extends Medium«.`;
+            if (/\bimplements\b/.test(s)) return `»implements« gibt es hier nicht, nur »extends«: »class ${name} extends ${sup}«.`;
             if (new RegExp(`^class\\s+${NAME}\\s+extends\\s*(\\(\\s*abstract\\s*\\))?\\s*$`, 'u').test(s)) {
-                return `Nach »extends« kommt der Name der Oberklasse: »class ${name} extends Medium«.`;
+                return `Nach »extends« kommt der Name der Oberklasse: »class ${name} extends ${sup}«.`;
             }
             if (new RegExp(`^class\\s+${NAME}\\s+extends\\s+${NAME}\\s*(,|\\s${NAME}|&)`, 'u').test(s)) {
-                return `Eine Klasse erbt von genau einer Oberklasse: »class ${name} extends Medium«.`;
+                return `Eine Klasse erbt von genau einer Oberklasse: »class ${name} extends ${sup}«.`;
             }
             if (new RegExp(`^class\\s+${NAME}\\s*(:|<|\\(|\\bextend\\b|\\binherits\\b)`, 'u').test(s)) {
-                return `Die Oberklasse schreibst du mit »extends«: »class ${name} extends Medium«.`;
+                return `Die Oberklasse schreibst du mit »extends«: »class ${name} extends ${sup}«.`;
             }
-            return 'Der Name einer Klasse ist ein Wort ohne Leerzeichen, das mit einem Buchstaben beginnt, zum Beispiel »class Book«. Danach können »extends Oberklasse« und »(abstract)« stehen.';
+            return 'Der Name einer Klasse ist ein Wort ohne Leerzeichen, das mit einem Buchstaben beginnt, zum Beispiel »class Checkout«. Danach können »extends Oberklasse« und »(abstract)« stehen.';
         }
         return `Unbekannte Zeile. Erwartet wird »class Name« oder ${EXAMPLE_ASSOC} (Schlüsselwörter klein und auf Englisch); Attribute und Methoden stehen eingerückt unter ihrer Klasse.`;
     }
@@ -351,7 +355,7 @@
                 warn(`»${node.name}« ist weder ein Java-Typ noch eine Klasse dieser Datei. Fehlt die Klasse noch, oder ist der Name falsch geschrieben?${suggest(node.name, candidates)}`);
             } else if (GENERIC[node.name]) {
                 const n = GENERIC[node.name];
-                const example = n === 2 ? `${node.name}<String, Book>` : `${node.name}<Book>`;
+                const example = n === 2 ? `${node.name}<String, Checkout>` : `${node.name}<Checkout>`;
                 if (!node.generic) warn(`Schreib in spitzen Klammern dazu, was in »${node.name}« steht, zum Beispiel »${example}«.`);
                 else if (node.args.length !== n) warn(`»${node.name}« braucht ${n === 2 ? 'zwei Typen' : 'einen Typ'} in spitzen Klammern, zum Beispiel »${example}«.`);
             } else if (node.generic) {
@@ -467,7 +471,7 @@
                 } else if (!body.includes(')')) {
                     err('Nach den Parametern fehlt die schließende Klammer »)«.');
                 } else {
-                    err('So sieht eine Methode aus: »+ lend(): void«, mit Parametern »+ borrow(medium: Medium): void«; ein Konstruktor heißt wie die Klasse und hat keinen Rückgabetyp: »+ Book(title: String)«.');
+                    err('So sieht eine Methode aus: »+ averageWait(): double«, mit Parametern »+ serve(customer: Customer): int«; ein Konstruktor heißt wie die Klasse und hat keinen Rückgabetyp: »+ Customer(items: int, arrival: int)«.');
                 }
                 return null;
             }
@@ -486,7 +490,7 @@
                     const pAt = paramsAt + part.from + lead;
                     if (!p) {
                         const c = part.comma >= 0 ? part.comma : part.from - 1;
-                        err('Hier fehlt ein Parameter. Mehrere Parameter trennst du mit Kommas: »title: String, author: String«.', paramsAt + c, paramsAt + c + 1);
+                        err('Hier fehlt ein Parameter. Mehrere Parameter trennst du mit Kommas: »items: int, arrival: int«.', paramsAt + c, paramsAt + c + 1);
                         ok = false;
                         continue;
                     }
@@ -511,7 +515,7 @@
                     if (RE_ONE_NAME.test(p)) err(`Der Parameter »${p}« braucht einen Typ, zum Beispiel »${p}: String«.`, pAt, pAt + p.length);
                     else if ((j = p.match(new RegExp(`^(\\S.*?)\\s+(${NAME})$`, 'u'))) && !p.includes(':')) {
                         err(`Erst der Name, dann ein Doppelpunkt und der Typ: »${j[2]}: ${j[1]}«.`, pAt, pAt + p.length);
-                    } else err('So sieht ein Parameter aus: »title: String«.', pAt, pAt + p.length);
+                    } else err('So sieht ein Parameter aus: »items: int«.', pAt, pAt + p.length);
                 }
             }
             // return type
@@ -556,9 +560,9 @@
         } else if ((j = t.match(new RegExp(`^(\\S.*?)\\s+(${NAME})$`, 'u'))) && !t.includes(':')) {
             err(`Erst der Name, dann ein Doppelpunkt und der Typ: »${visibility} ${j[2]}: ${j[1]}«.`);
         } else if (!t) {
-            err(`Nach »${visibility}« fehlt das Attribut oder die Methode, zum Beispiel »${visibility} title: String«.`);
+            err(`Nach »${visibility}« fehlt das Attribut oder die Methode, zum Beispiel »${visibility} items: int«.`);
         } else {
-            err('So sieht ein Attribut aus: »- title: String«, eine Methode: »+ lend(): void«.');
+            err('So sieht ein Attribut aus: »- items: int«, eine Methode: »+ averageWait(): double«.');
         }
         return null;
     }
@@ -615,6 +619,8 @@
     const LAYER_GAP = 72;
     const LAYER_GAP_ASSOC = 104;
     const BOX_GAP = 56;
+    // the least width of a row of classes without lines
+    const LONE_ROW = 900;
     const PAR_GAP = 26;
     const TRI_LEN = 15;
     const TRI_HALF = 8.5;
@@ -716,12 +722,20 @@
     // each layer is chosen the same way (all orders of up to six boxes, else
     // swaps of neighbours); x pulls every box towards its neighbours without
     // overlap, with room between two boxes for the labels of an association
-    // between them.
+    // between them. Subclasses of one class stay together under it.
+    //
+    // A class without lines to other classes takes no part in this: it would
+    // only push connected boxes apart. Such classes come last, in rows of
+    // their own below the others, centred, as wide as the rest of the
+    // picture (at least LONE_ROW).
     function layout(graph, options) {
         const tw = (options && options.measure) || estimateWidth;
         const { nodes, edges } = graph;
         if (!nodes.length) return {};
         const byId = new Map(nodes.map((n) => [n.id, n]));
+        const links = edges.filter((e) => e.a !== e.b && byId.has(e.a) && byId.has(e.b));
+        const lone = new Set(nodes.map((n) => n.id));
+        for (const e of links) { lone.delete(e.a); lone.delete(e.b); }
         const parent = new Map();
         for (const e of edges) if (e.kind === 'inherit' && !parent.has(e.a)) parent.set(e.a, e.b);
         // depth and root, safe against cycles (only in models with errors)
@@ -738,6 +752,7 @@
         const trees = [];
         const treeOf = new Map();
         nodes.forEach((n, i) => {
+            if (lone.has(n.id)) return;
             const r = rootOf.get(n.id);
             let t = trees.find((x) => x.root === r);
             if (!t) { t = { root: r, members: [], first: i }; trees.push(t); }
@@ -762,7 +777,6 @@
             const key = pairKey(e.a, e.b);
             labelGap.set(key, Math.max(labelGap.get(key) || BOX_GAP, need));
         }
-        const links = edges.filter((e) => e.a !== e.b && byId.has(e.a) && byId.has(e.b));
 
         // Everything below depends on the layers: rank, layers, near, yOf.
         const rank = new Map();
@@ -781,19 +795,35 @@
             for (let i = 1; i < layer.length; i++) mix[i] = Math.max(mix[i], mix[i - 1] + gap(layer[i - 1], layer[i]));
             layer.forEach((id, i) => x.set(id, mix[i]));
         };
-        const placeX = () => {
-            for (const layer of layers) {
+        // y: one band per layer, as high as its highest box, boxes centred in it.
+        const bands = () => {
+            yOf = [];
+            let top = 0;
+            layers.forEach((layer, r) => {
+                const h = Math.max(0, ...layer.map((id) => byId.get(id).h));
+                yOf.push(top + h / 2);
+                const across = assoc.some((e) => (rank.get(e.a) === r && rank.get(e.b) > r) || (rank.get(e.b) === r && rank.get(e.a) > r));
+                const loopBelow = r + 1 < layers.length && layers[r + 1].some((id) => loopRoom.has(id));
+                top += h + (across ? LAYER_GAP_ASSOC : LAYER_GAP) + (loopBelow ? 30 : 0);
+            });
+        };
+        // finish: one more pass downward, so that subclasses end centred
+        // under their class (only for the final picture: the choice of
+        // layers and orders is made without it)
+        const placeX = (finish) => {
+            for (const all of layers) {
+                const layer = all.filter((id) => !lone.has(id));
                 const want = [];
                 let at = 0;
                 layer.forEach((id, i) => { if (i) at += gap(layer[i - 1], id); want.push(at); });
                 const shift = at / 2;
                 pack(layer, want.map((v) => v - shift));
             }
-            for (let it = 0; it < 10; it++) {
+            for (let it = 0; it < (finish ? 11 : 10); it++) {
                 const downward = it % 2 === 0;
                 const order = downward ? [...layers.keys()] : [...layers.keys()].reverse();
                 for (const r of order) {
-                    const layer = layers[r];
+                    const layer = layers[r].filter((id) => !lone.has(id));
                     const want = layer.map((id) => {
                         const all = near.get(id);
                         const side = all.filter((o) => (downward ? rank.get(o) < r : rank.get(o) > r));
@@ -804,13 +834,31 @@
                     pack(layer, want);
                 }
             }
+            // rows of classes without lines: centred under the rest
+            let left = Infinity;
+            let right = -Infinity;
+            for (const layer of layers) {
+                for (const id of layer) {
+                    if (lone.has(id)) continue;
+                    left = Math.min(left, x.get(id) - packW(id) / 2);
+                    right = Math.max(right, x.get(id) + packW(id) / 2);
+                }
+            }
+            const middle = left <= right ? (left + right) / 2 : 0;
+            for (const layer of layers) {
+                if (!layer.length || !lone.has(layer[0])) continue;
+                let at = 0;
+                layer.forEach((id, i) => { if (i) at += gap(layer[i - 1], id); x.set(id, at); });
+                const shift = middle - (at + packW(layer[layer.length - 1]) / 2 - packW(layer[0]) / 2) / 2;
+                for (const id of layer) x.set(id, x.get(id) + shift);
+            }
         };
         // How good the picture is: few lines through boxes and crossings,
         // short lines, not too wide or high.
         const cost = () => {
             placeX();
             const pos = (id) => ({ x: x.get(id) - (loopRoom.get(id) || 0) / 2, y: yOf[rank.get(id)] });
-            const rects = nodes.map((n) => { const p = pos(n.id); return { id: n.id, x: p.x - n.w / 2, y: p.y - n.h / 2, w: n.w, h: n.h }; });
+            const rects = nodes.filter((n) => rank.has(n.id)).map((n) => { const p = pos(n.id); return { id: n.id, x: p.x - n.w / 2, y: p.y - n.h / 2, w: n.w, h: n.h }; });
             const segs = links.map((e) => ({ e, p: pos(e.a), q: pos(e.b) }));
             let c = 0;
             for (let i = 0; i < segs.length; i++) {
@@ -824,6 +872,17 @@
                     if (s.e.a === t.e.a || s.e.a === t.e.b || s.e.b === t.e.a || s.e.b === t.e.b) continue;
                     if (segmentsCross(s.p, s.q, t.p, t.q)) c += 10;
                 }
+            }
+            // subclasses of one class side by side, nothing between them
+            for (const layer of layers) {
+                const at = new Map();
+                layer.forEach((id, i) => {
+                    const p = parent.get(id);
+                    if (!p) return;
+                    if (!at.has(p)) at.set(p, []);
+                    at.get(p).push(i);
+                });
+                for (const list of at.values()) c += (list[list.length - 1] - list[0] + 1 - list.length) * 15;
             }
             let x0 = Infinity; let x1 = -Infinity; let y0 = Infinity; let y1 = -Infinity;
             for (const r of rects) { x0 = Math.min(x0, r.x); x1 = Math.max(x1, r.x + r.w); y0 = Math.min(y0, r.y); y1 = Math.max(y1, r.y + r.h); }
@@ -841,7 +900,7 @@
             for (const [id, r] of rank) rank.set(id, r - low);
             const nLayers = Math.max(...rank.values()) + 1;
             layers = Array.from({ length: nLayers }, () => []);
-            for (const n of nodes) layers[rank.get(n.id)].push(n.id);
+            for (const n of nodes) if (rank.has(n.id)) layers[rank.get(n.id)].push(n.id);
             near = new Map(nodes.map((n) => [n.id, []]));
             beside = new Map(nodes.map((n) => [n.id, []]));
             for (const e of links) {
@@ -853,16 +912,7 @@
                 near.get(e.a).push(e.b);
                 near.get(e.b).push(e.a);
             }
-            // y: one band per layer, as high as its highest box, boxes centred in it.
-            yOf = [];
-            let top = 0;
-            layers.forEach((layer, r) => {
-                const h = Math.max(0, ...layer.map((id) => byId.get(id).h));
-                yOf.push(top + h / 2);
-                const across = assoc.some((e) => (rank.get(e.a) === r && rank.get(e.b) > r) || (rank.get(e.b) === r && rank.get(e.a) > r));
-                const loopBelow = r + 1 < layers.length && layers[r + 1].some((id) => loopRoom.has(id));
-                top += h + (across ? LAYER_GAP_ASSOC : LAYER_GAP) + (loopBelow ? 30 : 0);
-            });
+            bands();
             // Start: lower layers in the order of their neighbours above.
             for (let r = 1; r < layers.length; r++) {
                 const above = new Map(layers.slice(0, r).flat().map((id, i) => [id, i]));
@@ -923,7 +973,7 @@
             offsets.set(t, wants.length ? Math.max(0, wants[Math.floor((wants.length - 1) / 2)]) : 0);
         }
         // Then each tree tried a few layers up or down, while that helps.
-        let bestCost = arrange(offsets, false).cost;
+        let bestCost = trees.length ? arrange(offsets, false).cost : 0;
         if (trees.length > 1) {
             const height = Math.max(...depth.values()) + 1;
             const maxOff = Math.min(trees.length, 4) + height;
@@ -943,8 +993,35 @@
                 if (!better) break;
             }
         }
-        arrange(offsets, true);
-        placeX();
+        if (trees.length) arrange(offsets, true);
+        else layers = [];
+        // The classes without lines, in rows below, a new row when one
+        // would be wider than the rest of the picture
+        const loneIds = nodes.filter((n) => lone.has(n.id)).map((n) => n.id);
+        if (loneIds.length) {
+            let width = LONE_ROW;
+            if (layers.length) {
+                bands();
+                placeX(true);
+                let left = Infinity;
+                let right = -Infinity;
+                for (const layer of layers) for (const id of layer) { left = Math.min(left, x.get(id) - packW(id) / 2); right = Math.max(right, x.get(id) + packW(id) / 2); }
+                width = Math.max(width, right - left);
+            }
+            let row = [];
+            let used = 0;
+            for (const id of loneIds) {
+                const add = packW(id) + (row.length ? BOX_GAP : 0);
+                if (row.length && used + add > width) { layers.push(row); row = []; used = 0; }
+                used += packW(id) + (row.length ? BOX_GAP : 0);
+                row.push(id);
+            }
+            layers.push(row);
+            layers.forEach((layer, r) => { for (const id of layer) rank.set(id, r); });
+            for (const id of loneIds) if (!near.has(id)) { near.set(id, []); beside.set(id, []); }
+        }
+        bands();
+        placeX(true);
         const result = {};
         for (const n of nodes) {
             n.x = Math.round((x.get(n.id) - (loopRoom.get(n.id) || 0) / 2) * 10) / 10;

@@ -41,7 +41,7 @@
             graph = null;
             shown = null;
             zoomLevel.textContent = '';
-            board.innerHTML = '<p class="empty">Schreib links eine Klasse, zum Beispiel:<br><code>class Book</code><br><code>&nbsp;&nbsp;- title: String</code><br><code>&nbsp;&nbsp;+ lend(): void</code></p>';
+            board.innerHTML = '<p class="empty">Schreib links eine Klasse, zum Beispiel:<br><code>class Customer</code><br><code>&nbsp;&nbsp;- items: int</code><br><code>&nbsp;&nbsp;+ Customer(items: int, arrival: int)</code></p>';
             return;
         }
         graph = core.classGraph(use);
