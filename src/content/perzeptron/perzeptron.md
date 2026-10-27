@@ -25,12 +25,28 @@ Wie lernt ein Programm aus Beispielen, ohne dass jemand ihm die Regel verrät? D
 
 Auf den Inseln vor der Antarktischen Halbinsel hat die Biologin Kristen Gorman
 von 2007 bis 2009 Pinguine vermessen: ihre Art, ihr Gewicht, die Länge ihrer
-Flossen und ihren Schnabel. Zwei der drei Arten sehen sich auf den ersten Blick
-ähnlich, der Adéliepinguin und der Eselspinguin (englisch Gentoo). Am Schnabel
-kann man sie unterscheiden, wenn man weiß, worauf man achten muss.
+Flossen und ihren Schnabel. Drei Arten leben dort: der Zügelpinguin
+(englisch Chinstrap), der Eselspinguin (Gentoo) und der Adéliepinguin.
+
+<!-- Moves to the Personen page (part gorman) when this activity leaves
+dev-only, like Rosenblatt. -->
+<div class='person'>
+<img src='gorman.webp' alt='Porträt von Kristen Gorman auf einem Boot vor grauem Meer, mit Schirmmütze, die Sonnenbrille hochgeschoben, in blauer Jacke.'>
+<p><strong>Kristen Gorman</strong>, Meeresbiologin, heute an der University of Alaska Fairbanks. Für ihre Doktorarbeit an der Simon Fraser University in Kanada vermaß sie auf der Palmer-Station in der Antarktis drei Sommer lang Pinguine aller drei Arten. Sie wollte wissen, wie die Kolonien damit zurechtkommen, dass das Meereis und mit ihm das Futter zurückgeht.</p>
+<p>Ihre Messungen hat sie veröffentlicht, frei für alle. Allison Horst und Alison Hill machten 2020 daraus das Paket palmerpenguins, heute einer der beliebtesten Datensätze zum Üben. Deine Datei <code>penguins.csv</code> stammt daraus.</p>
+<p class='person-credit'>Foto: University of Alaska Fairbanks (<a href='https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php'>College of Fisheries and Ocean Sciences</a>)</p>
+</div>
 
 <div class='gallery centered'>
-<figure><img src='schnabel.webp' alt='Ein Pinguinkopf von der Seite, am Schnabel zwei Maße eingezeichnet: die Länge von der Wurzel bis zur Spitze und die Höhe an der Wurzel.'><figcaption>Zwei Maße des Schnabels: die Länge und die Höhe</figcaption></figure>
+<figure><img src='pinguine.webp' alt='Drei gezeichnete Pinguine vor Farbflecken, mit ihren englischen Namen: links ein Zügelpinguin vor Lila, in der Mitte ein Eselspinguin mit orangefarbenem Schnabel vor Petrol, rechts ein Adéliepinguin vor Orange.'><figcaption>Zügel-, Esels- und Adéliepinguin. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
+</div>
+
+Der Adéliepinguin und der Eselspinguin sehen sich auf den ersten Blick
+ähnlich. Am Schnabel kann man sie unterscheiden, wenn man weiß, worauf man
+achten muss. Gemessen wurde er so:
+
+<div class='gallery centered'>
+<figure><img src='schnabel.webp' alt='Der gezeichnete Kopf eines Eselspinguins von der Seite, am Schnabel zwei Maße eingezeichnet: »Bill length«, die Länge bis zur Spitze, und »Bill depth«, die Höhe an der Wurzel.'><figcaption>Die Länge (bill length) und die Höhe (bill depth) des Schnabels; in der Datei heißen sie <code>bill_length_mm</code> und <code>bill_depth_mm</code>. Zeichnung: Allison Horst, CC0 (<a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a>)</figcaption></figure>
 </div>
 
 Du wirst ein Programm schreiben, das diese Regel selbst findet, nur aus den
