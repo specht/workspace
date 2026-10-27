@@ -60,7 +60,7 @@ module CurriculumGraph
     COMMAND = 'src/scripts/curriculum-graph.rb'
     # goes up when what the layout is made of changes, so that a stored
     # order made the old way no longer fits
-    VERSION = 4
+    VERSION = 5
     # the search: how often it starts afresh, how many moves each time; and
     # how much each thing counts (an arrow's rise in rows)
     RESTARTS = 24
@@ -196,11 +196,12 @@ module CurriculumGraph
     # The height of each item, given the order: each box as near the mean
     # height of what it is joined to as the items around it and the
     # picture allow, again and again until nothing moves (a few passes left
-    # a parent high above its children). The passes of a long arrow all
-    # want one level, so that it runs straight with one bend out and one in:
-    # half way between its ends, or as near to it as fits between the items
-    # above and below each of its passes; only where no one level fits all
-    # of them does each pass go its own way, and the arrow steps.
+    # a parent high above its children). The passes of a long arrow want
+    # one level, so that it runs straight with one bend out and one in: half
+    # way between its ends, or as near to it as fits between the items above
+    # and below each of its passes. Where no one level fits them all, the
+    # arrow runs in stretches, as long as one level fits, each as near half
+    # way as it can, and steps between them.
     def self.place(frame, groups)
         centre = stack(frame, groups)
         item = frame[:item]
@@ -212,15 +213,29 @@ module CurriculumGraph
             level = {}
             frame[:runs].each do |passes|
                 a, b = frame[:ends][passes]
-                low = PAD + PASS / 2.0
-                high = PAD + size - PASS / 2.0
+                wanted = (centre[a] + centre[b]) / 2.0
+                stretch = []
+                low = high = nil
+                settle = lambda do
+                    y = low <= high ? wanted.clamp(low, high) : (low + high) / 2.0
+                    stretch.each { |id| level[id] = y }
+                end
                 passes.each do |id|
                     ids, i = slot[id]
-                    low = [low, centre[ids[i - 1]] + (item[ids[i - 1]][:room] + PASS) / 2.0].max if i > 0
-                    high = [high, centre[ids[i + 1]] - (item[ids[i + 1]][:room] + PASS) / 2.0].min if i < ids.size - 1
+                    l = i.positive? ? centre[ids[i - 1]] + (item[ids[i - 1]][:room] + PASS) / 2.0 : PAD + PASS / 2.0
+                    h = i < ids.size - 1 ? centre[ids[i + 1]] - (item[ids[i + 1]][:room] + PASS) / 2.0 : PAD + size - PASS / 2.0
+                    if stretch.empty? || [low, l].max > [high, h].min
+                        settle.() unless stretch.empty?
+                        stretch = [id]
+                        low = l
+                        high = h
+                    else
+                        stretch << id
+                        low = [low, l].max
+                        high = [high, h].min
+                    end
                 end
-                wanted = (centre[a] + centre[b]) / 2.0
-                passes.each { |id| level[id] = low <= high ? wanted.clamp(low, high) : mean(frame[:left][id] + frame[:right][id], centre, centre[id]) }
+                settle.()
             end
             groups.each_value do |ids|
                 want = ids.map { |id| level[id] || mean(frame[:left][id] + frame[:right][id], centre, centre[id]) }
@@ -308,7 +323,9 @@ module CurriculumGraph
 
     # The search for a good order: the quick one, and restarts from orders
     # shuffled and then sorted the quick way, each improved by simulated
-    # annealing (swapping two items of a column or moving one within it);
+    # annealing (swapping two items of a column or moving one within it, or
+    # moving a stretch of a long arrow's passes up or down together, which
+    # lifts the arrow over boxes in one go);
     # the best by the cost with the arrows drawn. The same inputs give the
     # same order (the random numbers start from the key).
     # { orders: { depth => [id] }, cost:, quick: }
@@ -328,17 +345,32 @@ module CurriculumGraph
             kept_cost = current
             steps.times do |s|
                 temperature = 2.0 * (0.01**(s / steps.to_f))
-                k = pool.sample(:random => rng)
-                ids = groups[k].dup
-                i = rng.rand(ids.size)
-                j = rng.rand(ids.size - 1)
-                j += 1 if j >= i
-                if rng.rand < 0.5
-                    ids[i], ids[j] = ids[j], ids[i]
+                if !frame[:runs].empty? && rng.rand < 0.25
+                    passes = frame[:runs].sample(:random => rng)
+                    first = rng.rand(passes.size)
+                    last = first + rng.rand(passes.size - first)
+                    shift = [-2, -1, 1, 2].sample(:random => rng)
+                    trial = groups.dup
+                    passes[first..last].each do |id|
+                        d = frame[:item][id][:depth]
+                        ids = trial[d].dup
+                        i = ids.index(id)
+                        ids.insert((i + shift).clamp(0, ids.size - 1), ids.delete_at(i))
+                        trial[d] = ids
+                    end
                 else
-                    ids.insert(j, ids.delete_at(i))
+                    k = pool.sample(:random => rng)
+                    ids = groups[k].dup
+                    i = rng.rand(ids.size)
+                    j = rng.rand(ids.size - 1)
+                    j += 1 if j >= i
+                    if rng.rand < 0.5
+                        ids[i], ids[j] = ids[j], ids[i]
+                    else
+                        ids.insert(j, ids.delete_at(i))
+                    end
+                    trial = groups.merge(k => ids)
                 end
-                trial = groups.merge(k => ids)
                 c = cost(frame, place(frame, trial))
                 next unless c <= current || rng.rand < Math.exp((current - c) / temperature)
 
