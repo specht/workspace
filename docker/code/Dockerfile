@@ -799,6 +799,48 @@ LABEL de.hackschule.file-capabilities="none"
 
 
 # --------------------------------------------------------------------
+# Man pages. Ubuntu's minimized base keeps none (/etc/dpkg/dpkg.cfg.d/
+# excludes) and puts a note in place of man. From here on dpkg lets the
+# English pages in; those of the packages installed above come
+# out of their .deb files, only the pages, so that this layer stays a few
+# dozen MB instead of every package once more. Late in the file on
+# purpose: the layers above stay as they are, and an upload sends only
+# this one. The .deb files stay in apt's cache for the next build.
+# --------------------------------------------------------------------
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    set -eu; \
+    sed -i 's|^path-exclude=/usr/share/man/\*$|&\npath-include=/usr/share/man/man*|' \
+        /etc/dpkg/dpkg.cfg.d/excludes; \
+    grep -q '^path-include=/usr/share/man/man\*' /etc/dpkg/dpkg.cfg.d/excludes; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --reinstall --no-install-recommends \
+        manpages manpages-dev git-man; \
+    installed="$(dpkg-query -W -f '${Status} ${binary:Package}=${Version}\n' | awk '$3 == "installed" { print $4 }')"; \
+    # all at once; a package apt cannot fetch (installed from a file)
+    # makes that fail, then one by one, skipping those
+    apt-get install -y -q --reinstall --download-only $installed >/dev/null 2>&1 || \
+        for p in $installed; do apt-get install -y -q --reinstall --download-only "$p" >/dev/null 2>&1 || echo "no .deb: $p"; done; \
+    for p in $installed; do \
+        name="${p%%=*}"; name="${name%%:*}"; version="$(echo "${p#*=}" | sed 's/:/%3a/')"; \
+        for deb in /var/cache/apt/archives/"${name}_${version}"_*.deb; do \
+            [ -f "$deb" ] || continue; \
+            dpkg-deb --fsys-tarfile "$deb" | tar -x -C / --wildcards './usr/share/man/man*' 2>/dev/null || true; \
+        done; \
+    done; \
+    if [ -f /usr/bin/man.REAL ]; then rm /usr/bin/man && dpkg-divert --quiet --remove --rename /usr/bin/man; fi; \
+    export MANPATH="${MANPATH}:"; \
+    mandb -q || true; \
+    man -w ls >/dev/null; man -w 3 printf >/dev/null; man -w git-commit >/dev/null; \
+    du -sh /usr/share/man
+
+# The empty last part of MANPATH stands for the system's own pages
+# (manpath.config); without it, man found only TeX Live's (ENV above).
+ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man:
+
+
+# --------------------------------------------------------------------
 # Startup scripts — always last
 # --------------------------------------------------------------------
 
