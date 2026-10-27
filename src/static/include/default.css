@@ -3354,7 +3354,9 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
    a choice the first one, Ruby, is shown. */
 [data-code-language='ruby'] .code-language:not([data-language='ruby']),
 [data-code-language='python'] .code-language:not([data-language='python']),
-[data-code-language='javascript'] .code-language:not([data-language='javascript']) {
+[data-code-language='javascript'] .code-language:not([data-language='javascript']),
+[data-code-language='dart'] .code-language:not([data-language='dart']),
+[data-code-language='java'] .code-language:not([data-language='java']) {
     display: none;
 }
 
@@ -3506,6 +3508,15 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 
 .code-language-option[data-set-language='javascript'][aria-pressed='true'] {
     color: #8a6d00;
+}
+
+/* the blue of Dart's logo, the orange of Java's, dark enough for text */
+.code-language-option[data-set-language='dart'][aria-pressed='true'] {
+    color: #0468b4;
+}
+
+.code-language-option[data-set-language='java'][aria-pressed='true'] {
+    color: #b0560c;
 }
 
 .page-kind-links a {

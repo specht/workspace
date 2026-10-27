@@ -76,6 +76,12 @@ html[data-bs-theme="dark"] {
     .code-language-option[data-set-language='javascript'][aria-pressed='true'] {
         color: #f7df1e;
     }
+    .code-language-option[data-set-language='dart'][aria-pressed='true'] {
+        color: #40c4ff;
+    }
+    .code-language-option[data-set-language='java'][aria-pressed='true'] {
+        color: #f5a35c;
+    }
     .autotoc-up {
         color: #c9c8c3;
         background: #2a2a28;

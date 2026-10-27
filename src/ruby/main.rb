@@ -8098,9 +8098,9 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:language])
         assert(CodeLanguages.known?(data[:language]))
-        # JavaScript only on Kata pages (CodeLanguages): it does not replace
-        # the choice between Ruby and Python, and picking one of those again
-        # leaves JavaScript behind.
+        # JavaScript, Dart and Java only where a page offers them
+        # (CodeLanguages): they do not replace the choice between Ruby and
+        # Python, and picking one of those again leaves them behind.
         if CodeLanguages::GROUP_LANGUAGES.include?(data[:language])
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
                 MATCH (u:User {email: $email})

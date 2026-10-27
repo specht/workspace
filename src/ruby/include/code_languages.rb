@@ -30,16 +30,18 @@ require 'cgi'
 # choice (u.code_language, set with the switch), the languages of their
 # classes a teacher has set one for, and Ruby; else the page's first.
 #
-# JavaScript is a language of the Katas only (docs/plan-katas.md): a Kata
-# page may offer it, the class setting does not (GROUP_LANGUAGES), and
-# someone who picks it on a Kata page still sees Ruby or Python elsewhere.
+# A class sets Ruby or Python (GROUP_LANGUAGES). JavaScript, Dart and Java
+# are offered where a page needs them: JavaScript on the Katas
+# (docs/plan-katas.md), all five on the activity about classes
+# (docs/plan-lehrplan-luecken.md). Someone who picks one of these three keeps
+# it apart (u.kata_code_language) and still sees Ruby or Python elsewhere.
 #
 # A page without languages: in its meta (a Handbuch page) may use the same
 # markers to show both: a Ruby part and a Python part right after each other
 # stand side by side, each labelled with its language (pair).
 module CodeLanguages
-    LANGUAGES = %w[ruby python javascript].freeze
-    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
+    LANGUAGES = %w[ruby python javascript dart java].freeze
+    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java' }.freeze
     # What a teacher can set for a class
     GROUP_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
