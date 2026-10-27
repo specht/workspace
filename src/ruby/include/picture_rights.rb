@@ -181,7 +181,7 @@ module PictureRights
 
                 The picture comes from <%= r['source'] %>. We would credit it as »<%= credit %>« with a link to the source, or however you prefer.
 
-                May we use it there? Until we hear from you, it is not shown on the site. If you would rather we didn't use it, a short reply is all it takes.
+                May we use it there? Until we hear from you, it is not shown on the site. If you would prefer another picture, we would gladly use one you send us instead. And if you would rather we didn't use one at all, a short reply is all it takes.
 
                 Thank you very much and kind regards,
                 <%= [s[:name], [s[:role], s[:school]].reject(&:empty?).join(', '), s[:email]].reject(&:empty?).join("\n") %>
@@ -199,7 +199,7 @@ module PictureRights
 
                 Das Bild stammt von <%= r['source'] %>. Wir würden es »<%= credit %>« nennen, mit einem Link zur Quelle, oder so, wie Sie es wünschen.
 
-                Dürfen wir es dort zeigen? Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen. Wenn Sie das nicht möchten, genügt eine kurze Antwort.
+                Dürfen wir es dort zeigen? Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen. Wenn Ihnen ein anderes Bild lieber ist, zeigen wir gern eines, das Sie uns schicken. Und wenn Sie gar keines zeigen möchten, genügt eine kurze Antwort.
 
                 Vielen Dank und freundliche Grüße
                 <%= [s[:name], [s[:role], s[:school]].reject(&:empty?).join(', '), s[:email]].reject(&:empty?).join("\n") %>

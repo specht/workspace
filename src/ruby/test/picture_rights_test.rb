@@ -101,6 +101,7 @@ class PictureRightsTest < Minitest::Test
             assert_includes body, 'https://example.org/station'
             assert_includes body, '»Foto: Universität«'
             assert_includes body, 'Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen.'
+            assert_includes body, 'zeigen wir gern eines, das Sie uns schicken'
             assert body.end_with?("N. N.\nLehrkraft, Schule X\nk@example.org")
         end
     end
