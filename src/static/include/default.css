@@ -102,9 +102,17 @@ html[data-bs-theme="dark"] pre {
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
 }
 
+/* A block with line numbers is a table of two pre (Rouge): both take the
+   block's size, instead of the 93 % once more and the 90 % of tables,
+   which made them smaller than every other block */
 pre pre {
     padding: 0;
     border-radius: 0;
+    font-size: inherit;
+}
+
+pre .rouge-table {
+    font-size: inherit;
 }
 
 pre .s,
