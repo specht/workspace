@@ -1,0 +1,20 @@
+# Kassen im Supermarkt
+class Customer
+  - items: int
+  - arrival: int
+  + Customer(items: int, arrival: int)
+
+class Checkout
+  - freeAt: int
+  + Checkout()
+  + serviceTime(customer: Customer): int
+  + serve(customer: Customer): int
+
+class Supermarket
+  - totalWait: int
+  - customers: int
+  + Supermarket(checkouts: List<Checkout>)
+  + arrive(customer: Customer): int
+  + averageWait(): double
+
+association checkouts: Supermarket 1 -- 1..* Checkout

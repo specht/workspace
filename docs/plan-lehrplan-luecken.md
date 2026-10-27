@@ -10,8 +10,8 @@ what could fill each, in which form, what was decided and what is open.
 | Name | Activities | Proposal | Form | Effort | State |
 | --- | --- | --- | --- | --- | --- |
 | Oberstufe: Computernetze (Einführungsphase) | 0 | TCP/IP, DNS and the web server teach what it lists (the internet, the layered model, protocols as agreements); they were only filed under »Rechner und Netze« | the name added to their lines | minutes | done |
-| Oberstufe: objektorientierte Modellierung | 0 | an activity: a short story becomes a class diagram, then classes (below) | activity, a class-diagram extension | large | decided, next |
-| Oberstufe: objektorientierte Programmierung | 0 | the same activity; later »Katas: Objekte« to practise the mechanics | activity, later a Kata set | large | decided, next |
+| Oberstufe: objektorientierte Modellierung | 0 | an activity: a short story becomes a class diagram, then classes (below) | activity, a class-diagram extension | large | `supermarkt`, dev-only; pictures, Handbuch page and person box open |
+| Oberstufe: objektorientierte Programmierung | 0 | the same activity; later »Katas: Objekte« to practise the mechanics | activity, later a Kata set | large | `supermarkt`, dev-only; Katas later |
 | Oberstufe: Vertiefung Künstliche Intelligenz | 0 | »Ein winziges Sprachmodell«: a text generator from word pairs (bigrams) on a text the class chooses; builds on Katas: Dictionaries. Later a perceptron written from scratch. `digits-experiment` (a neural network with TensorFlow, in no catalog) needs TensorFlow in the image | project | medium | open |
 | Oberstufe: Vertiefung Theoretische Informatik | 0 | a Turing machine as the next step after »Endliche Automaten«, in the same simulator; the halting problem as a thought experiment; complexity from the comparisons the sorting sandbox counts | extend `automata`, a new page | medium | open |
 | Oberstufe: Vertiefung Technische Informatik | 0 | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | a new sandbox widget | large | open |
@@ -36,13 +36,22 @@ model, the Turing machine, the logic sandbox, then the rest.
   objektorientierte Programmierung side by side, and »Analyse und
   Modellierung folgen dem objektorientierten Ansatz«; a Kata set practises
   the mechanics but cannot model, an activity covers both names.
-- **Its story and its diagram** (27 October 2026): a library (books,
-  members, loans; a book and a DVD are both media), and an own
-  class-diagram extension like the ER-Werkstatt, so that the diagram is
-  checked like everything else.
+- **Its diagram** (27 October 2026): an own class-diagram extension like
+  the ER-Werkstatt, so that the diagram is checked like everything else.
+- **Its story** (27 October 2026): first a library, then, on the
+  maintainer's doubt, a simulation of the checkouts in a supermarket:
+  »Lohnt sich eine Expresskasse?« Why: a library is about data that must be
+  kept (books, members, loans), which is what an ER model and a database
+  are for, and its behaviour is thin. Object orientation pays where objects
+  live only while a program runs, change their state and act differently
+  by class; simulation is where it began (Simula). The simulation answers a
+  real question, and the answer surprises: with the same three cashiers,
+  an express checkout makes the average wait longer. The page says how a
+  class diagram and an ER model differ and that a real checkout system has
+  both (an ORM between them).
 - **The extension's name** (27 October 2026): the UML-Werkstatt, files
   `.uml`, so that state and sequence diagrams can join it later; class
-  diagrams first. Also agreed: the outline below, the slug `bibliothek`,
+  diagrams first. Also agreed: the outline below (then for the library),
   preparing a new Workspace image (built after asking).
 - **The diagram's language** (27 October 2026): like the ER-Werkstatt's,
   indentation and a few English keywords, one member per line, `+` and `-`
@@ -50,17 +59,29 @@ model, the Turing machine, the logic sandbox, then the rest.
   as in Java (`int`, `String`, `boolean`):
 
   ```
-  # Eine Bibliothek
-  class Medium (abstract)
-    - title: String
-    + lend(): void
-  class Book extends Medium
-    - author: String
-    + Book(title: String, author: String)
-  class Member
-    + borrow(medium: Medium): void
-  association loans: Member 1 -- 0..* Medium
+  # Kassen im Supermarkt
+  class Checkout
+    - freeAt: int
+    + serve(customer: Customer): int
+  class ExpressCheckout extends Checkout
+    + accepts(customer: Customer): boolean
+  class Supermarket
+    + Supermarket(checkouts: List<Checkout>)
+  association checkouts: Supermarket 1 -- 1..* Checkout
   ```
+- **Names in the diagram** (27 October 2026): as in the student's code, not
+  as UML usually writes them. Why: the maintainer found `isAvailable` in the
+  diagram beside `available?` in Ruby confusing. A method may end with `?`
+  or `!` (Ruby); the check `classes` takes `isAvailable`, `is_available`
+  and `available?` as one method (`!` makes another one). The page shows
+  the diagram per language where names differ (one marker may name several
+  languages, `<!-- language: javascript dart java -->`), and the general
+  examples use names of one word (`toggle`, `seats`). Types stay as in
+  Java. Ruby's `accepts?` is the others' `accepts` too.
+- **Overriding in the diagram** (27 October 2026): since a class has what
+  it inherits, a task can no longer see whether a subclass overrides a
+  method; `overrides` in the check `classes` asks for it in the class's
+  own box and in a class above it.
 
 ## Open questions for the maintainer
 
@@ -126,45 +147,43 @@ What it needs, in this order (state on 27 October 2026 after each):
    objektorientierte Modellierung, objektorientierte Programmierung; Sek I:
    Algorithmisches Problemlösen (Grundlagen der Objektorientierung)).
 
-### Outline of the page (draft, to be agreed)
+### Outline of the page
 
-Slug `bibliothek`, title »Klassen entwerfen: eine Bibliothek«, kind
-`projekt`, languages `[ruby, python, javascript, dart, java]`, about three
-Doppelstunden. No starter repository: students make a folder `bibliothek`
-with a `.uml` file and their code (one file, in Java one file per
-class). Each chapter goes from the story to the diagram to the code, each
-step checked:
+Slug `supermarkt`, title »Klassen entwerfen: Lohnt sich eine Expresskasse?«,
+kind `projekt`, languages `[ruby, python, javascript, dart, java]`, about
+three Doppelstunden, dev-only for now. No starter repository: students make
+a folder `supermarkt` with `supermarkt.uml` and their code (one file, in
+Java one file per class); the simulation itself is given on the page, and
+`customers.csv` (171 made-up customers of a Saturday morning, seeded) comes
+from the activity's folder. Times are whole seconds, so every language
+computes the same numbers (checked in all five: 69.75, 118.29, 12.44).
 
-1. **Die Geschichte.** A short text about a school library: books with title
-   and author, members who borrow, at most three books at a time, loans for
-   four weeks, DVDs for one. Students mark nouns and verbs; a choice task:
-   which nouns become classes (Book, Member), which are attributes (title,
-   author), which are not part of the program at all (the shelf).
-2. **Die erste Klasse.** `class Book` with `title` and `author` in the
-   diagram (check `classes`), then in code: the class with a constructor
-   and getters (checks per language: `new Book("Faust", "Goethe").getTitle()`).
-   Why private attributes and public methods (encapsulation), said briefly.
-3. **Zustand und Verhalten.** `lend()`, `giveBack()`, `isAvailable()`: an
-   object remembers. A prediction first (»Was ergibt `isAvailable()` nach
-   `lend()`, `lend()`, `giveBack()`?«), then the code, checked in steps
-   (`b = Book(…); b.lend(); b.isAvailable()`). »Jetzt bist du dran«: what
-   happens when a lent book is lent again.
-4. **Mitglieder: eine Assoziation.** `Member` with `borrow(book)` and the
-   books borrowed; the association `Member 1 -- 0..* Book` with its
-   multiplicities in the diagram; in code a list in the member. The rule
-   »at most three« as `borrow` returning false. Checks over several
-   objects.
-5. **Vererbung.** Books and DVDs: `Medium (abstract)` with what both share,
-   `Book` and `Dvd extends Medium`; `loanDays()` differs (28, 7) and is
-   overridden. Diagram first, then the code; a prediction about which
-   `loanDays()` runs for a `Medium` that is a `Dvd`.
-6. **Wie geht es weiter?** Reservations, fees, a `Library` class holding
-   everything; the same design in another of the five languages; »Katas:
-   Objekte« once it exists.
+1. **Die Geschichte.** The branch manager's question; Simula in one
+   paragraph; which nouns become classes, which an attribute (the number of
+   items), which nothing (the fridges).
+2. **Die erste Klasse.** `Customer` with items and arrival in the diagram,
+   then in code with getters; »Klassendiagramm oder ER-Modell?« with a
+   table.
+3. **Zustand und Verhalten.** `Checkout` remembers only when it is free
+   again; `serviceTime` (60 s + 3 s per item), `serve` returns the wait. A
+   prediction first; the checks catch a start before the customer is there.
+4. **Der Supermarkt.** The association `Supermarket 1 -- 1..* Checkout`
+   (and why a customer as a parameter is none); `arrive` picks the
+   checkout free first, the first on a tie; the average as a `double`.
+5. **Expresskasse und Selbstbedienung.** `ExpressCheckout` overrides
+   `accepts`, `SelfCheckout` `serviceTime` (30 s + 6 s per item);
+   `arrive` asks `accepts`. A prediction on polymorphism.
+6. **Der Samstag.** The simulation; three numbers; a prediction (the
+   express checkout makes it worse: 70 s to 118 s; small baskets 58 to
+   40, large ones 82 to 197); what the model leaves out.
+7. **Wie geht es weiter?** Waits per basket size, another limit, the
+   longest wait, a real Queue.
 
-A person box: Alan Kay (Smalltalk, »object-oriented«) or Kristen Nygaard
-and Ole-Johan Dahl (Simula, the first classes). Handbuch: a page on
-the UML-Werkstatt's language like `er-modelle`.
+Open: a person box for Kristen Nygaard and Ole-Johan Dahl (Simula, the
+first classes, made for simulations like this one), with photos and
+sources; a Handbuch page on the UML-Werkstatt's language like
+`er-modelle`; screenshots and the card picture from recipes; the
+UML-Werkstatt in the Workspace image.
 
 ## Java and Dart for Katas later
 

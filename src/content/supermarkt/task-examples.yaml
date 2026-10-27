@@ -1,0 +1,132 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stufen in stufen/ sind der Code nach jedem Kapitel; was ein Kapitel
+# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler, in Ruby
+# und Python. Java und Dart warten, wo javac oder dart fehlen (der
+# Ruby-Container, die CI).
+format: 1
+activity: supermarkt
+examples:
+  kunde:
+    pass:
+      - { files: { supermarkt/supermarket.rb: stufen/1-kunde/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: loesung/supermarket.rb } }
+    fail:
+      - { files: { supermarkt/supermarket.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { supermarkt/supermarket.py: stufen/1-kunde/supermarket.py } }
+        - { files: { supermarkt/supermarket.py: loesung/supermarket.py } }
+      fail:
+        - { files: { supermarkt/supermarket.py: { text: "# noch leer\n" } } }
+    javascript:
+      pass:
+        - { files: { supermarkt/supermarket.js: stufen/1-kunde/supermarket.js } }
+        - { files: { supermarkt/supermarket.js: loesung/supermarket.js } }
+      fail:
+        - { files: { supermarkt/supermarket.js: { text: "// noch leer\n" } } }
+    dart:
+      pass:
+        - { files: { supermarkt/supermarket.dart: stufen/1-kunde/supermarket.dart } }
+        - { files: { supermarkt/supermarket.dart: loesung/supermarket.dart } }
+      fail:
+        - { files: { supermarkt/supermarket.dart: { text: "// noch leer\n" } } }
+    java:
+      pass:
+        - { files: { supermarkt/Customer.java: stufen/1-kunde/Customer.java } }
+        - { files: { supermarkt/Customer.java: loesung/Customer.java, supermarkt/Checkout.java: loesung/Checkout.java, supermarkt/ExpressCheckout.java: loesung/ExpressCheckout.java, supermarkt/SelfCheckout.java: loesung/SelfCheckout.java, supermarkt/Supermarket.java: loesung/Supermarket.java } }
+      fail:
+        - { files: { supermarkt/Customer.java: { text: "public class Customer {\n}\n" } } }
+  kasse:
+    pass:
+      - { files: { supermarkt/supermarket.rb: stufen/2-kasse/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: loesung/supermarket.rb } }
+    fail:
+      - { files: { supermarkt/supermarket.rb: stufen/1-kunde/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: fehler/ohne-max.rb } }
+    python:
+      pass:
+        - { files: { supermarkt/supermarket.py: stufen/2-kasse/supermarket.py } }
+        - { files: { supermarkt/supermarket.py: loesung/supermarket.py } }
+      fail:
+        - { files: { supermarkt/supermarket.py: stufen/1-kunde/supermarket.py } }
+        - { files: { supermarkt/supermarket.py: fehler/ohne-max.py } }
+    javascript:
+      pass:
+        - { files: { supermarkt/supermarket.js: stufen/2-kasse/supermarket.js } }
+        - { files: { supermarkt/supermarket.js: loesung/supermarket.js } }
+      fail:
+        - { files: { supermarkt/supermarket.js: stufen/1-kunde/supermarket.js } }
+    dart:
+      pass:
+        - { files: { supermarkt/supermarket.dart: stufen/2-kasse/supermarket.dart } }
+        - { files: { supermarkt/supermarket.dart: loesung/supermarket.dart } }
+      fail:
+        - { files: { supermarkt/supermarket.dart: stufen/1-kunde/supermarket.dart } }
+    java:
+      pass:
+        - { files: { supermarkt/Customer.java: stufen/2-kasse/Customer.java, supermarkt/Checkout.java: stufen/2-kasse/Checkout.java } }
+        - { files: { supermarkt/Customer.java: loesung/Customer.java, supermarkt/Checkout.java: loesung/Checkout.java, supermarkt/ExpressCheckout.java: loesung/ExpressCheckout.java, supermarkt/SelfCheckout.java: loesung/SelfCheckout.java, supermarkt/Supermarket.java: loesung/Supermarket.java } }
+      fail:
+        - { files: { supermarkt/Customer.java: stufen/1-kunde/Customer.java } }
+  supermarkt:
+    pass:
+      - { files: { supermarkt/supermarket.rb: stufen/3-supermarkt/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: loesung/supermarket.rb } }
+    fail:
+      - { files: { supermarkt/supermarket.rb: stufen/2-kasse/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: fehler/letzte-kasse.rb } }
+      - { files: { supermarkt/supermarket.rb: fehler/ganze-zahl.rb } }
+    python:
+      pass:
+        - { files: { supermarkt/supermarket.py: stufen/3-supermarkt/supermarket.py } }
+        - { files: { supermarkt/supermarket.py: loesung/supermarket.py } }
+      fail:
+        - { files: { supermarkt/supermarket.py: stufen/2-kasse/supermarket.py } }
+        - { files: { supermarkt/supermarket.py: fehler/letzte-kasse.py } }
+        - { files: { supermarkt/supermarket.py: fehler/ganze-zahl.py } }
+    javascript:
+      pass:
+        - { files: { supermarkt/supermarket.js: stufen/3-supermarkt/supermarket.js } }
+        - { files: { supermarkt/supermarket.js: loesung/supermarket.js } }
+      fail:
+        - { files: { supermarkt/supermarket.js: stufen/2-kasse/supermarket.js } }
+    dart:
+      pass:
+        - { files: { supermarkt/supermarket.dart: stufen/3-supermarkt/supermarket.dart } }
+        - { files: { supermarkt/supermarket.dart: loesung/supermarket.dart } }
+      fail:
+        - { files: { supermarkt/supermarket.dart: stufen/2-kasse/supermarket.dart } }
+    java:
+      pass:
+        - { files: { supermarkt/Customer.java: stufen/3-supermarkt/Customer.java, supermarkt/Checkout.java: stufen/3-supermarkt/Checkout.java, supermarkt/Supermarket.java: stufen/3-supermarkt/Supermarket.java } }
+        - { files: { supermarkt/Customer.java: loesung/Customer.java, supermarkt/Checkout.java: loesung/Checkout.java, supermarkt/ExpressCheckout.java: loesung/ExpressCheckout.java, supermarkt/SelfCheckout.java: loesung/SelfCheckout.java, supermarkt/Supermarket.java: loesung/Supermarket.java } }
+      fail:
+        - { files: { supermarkt/Customer.java: stufen/2-kasse/Customer.java, supermarkt/Checkout.java: stufen/2-kasse/Checkout.java } }
+  kassen:
+    pass:
+      - { files: { supermarkt/supermarket.rb: loesung/supermarket.rb } }
+    fail:
+      - { files: { supermarkt/supermarket.rb: stufen/3-supermarkt/supermarket.rb } }
+      - { files: { supermarkt/supermarket.rb: fehler/express-ohne-regel.rb } }
+      - { files: { supermarkt/supermarket.rb: fehler/ohne-accepts.rb } }
+    python:
+      pass:
+        - { files: { supermarkt/supermarket.py: loesung/supermarket.py } }
+      fail:
+        - { files: { supermarkt/supermarket.py: stufen/3-supermarkt/supermarket.py } }
+    javascript:
+      pass:
+        - { files: { supermarkt/supermarket.js: loesung/supermarket.js } }
+      fail:
+        - { files: { supermarkt/supermarket.js: stufen/3-supermarkt/supermarket.js } }
+    dart:
+      pass:
+        - { files: { supermarkt/supermarket.dart: loesung/supermarket.dart } }
+      fail:
+        - { files: { supermarkt/supermarket.dart: stufen/3-supermarkt/supermarket.dart } }
+    java:
+      pass:
+        - { files: { supermarkt/Customer.java: loesung/Customer.java, supermarkt/Checkout.java: loesung/Checkout.java, supermarkt/ExpressCheckout.java: loesung/ExpressCheckout.java, supermarkt/SelfCheckout.java: loesung/SelfCheckout.java, supermarkt/Supermarket.java: loesung/Supermarket.java } }
+      fail:
+        - { files: { supermarkt/Customer.java: stufen/3-supermarkt/Customer.java, supermarkt/Checkout.java: stufen/3-supermarkt/Checkout.java, supermarkt/Supermarket.java: stufen/3-supermarkt/Supermarket.java } }

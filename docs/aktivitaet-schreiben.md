@@ -259,9 +259,9 @@ die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 `lzw/`.
 
 Ein Teil kann für mehrere Sprachen gelten, `<!-- language: javascript dart
-java -->`: So steht in `bibliothek/` ein Klassendiagramm mit `isAvailable`
+java -->`: So steht in `supermarkt/` ein Klassendiagramm mit `serviceTime`
 nur einmal für die drei Sprachen, die so schreiben, und je einmal für Ruby
-(`available?`) und Python (`is_available`).
+und Python (`service_time`).
 
 Auf einer Seite ohne `languages` (einer Handbuch-Seite) zeigen dieselben
 Kommentare beide Sprachen nebeneinander: Ein Teil für Ruby und einer für

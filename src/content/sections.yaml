@@ -132,6 +132,18 @@
     - neo4j-filmdatenbank
     - bobby_tables
 
+# Software entwerfen (docs/plan-lehrplan-luecken.md): Klassen und ihre
+# Diagramme; später Testen, Zusammenarbeit mit Git, ein Softwareprojekt.
+- key: software
+  label: Software entwerfen
+  icon: /images/hammer-and-wrench.png
+  description: |
+    Entwirf ein Programm, bevor du es schreibst: Welche Klassen braucht es,
+    was wissen sie, was tun sie? Du zeichnest den Entwurf als Klassendiagramm
+    und programmierst ihn dann, in einer von fünf Sprachen.
+  entries:
+    - .supermarkt
+
 - key: computing
   compact: true
   label: Wie Computer rechnen
