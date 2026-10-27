@@ -164,8 +164,7 @@
     }
     if (config.teacher) MeetingStatus.onChange(drawStatus);
 
-    // What comes after the point is the next lesson's: dimmed, readable,
-    // full again under the pointer
+    // What comes after the point is the next lesson's: dimmed, readable
     function dimLater() {
         document.querySelectorAll('.meeting-later').forEach(function (el) { el.classList.remove('meeting-later'); });
         if (!box) return;

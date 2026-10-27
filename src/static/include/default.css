@@ -4963,17 +4963,12 @@ ul.task-teacher-list .task-teacher-answer {
 .meeting-body {
     margin-top: 0.5em;
 }
-/* After the point: the next lesson's part of the page, dimmed and still
-   readable; full again under the pointer or with the focus inside */
+/* After the point: the next lesson's part of the page, evenly dimmed and
+   still readable (no hover: a whole chapter is one block, and the one
+   under the pointer would light up while scrolling) */
 .meeting-later {
-    opacity: 0.45;
+    opacity: 0.55;
     filter: grayscale(0.6);
-    transition: opacity 0.2s, filter 0.2s;
-}
-.meeting-later:hover,
-.meeting-later:focus-within {
-    opacity: 1;
-    filter: none;
 }
 .meeting-body p {
     margin: 0 0 0.3em;

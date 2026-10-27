@@ -84,7 +84,8 @@ The maintainer was unsure; built **after a task**, as proposed:
   of that browser counts with it. Once everyone present has arrived, the
   line and the box turn green (»alle da«).
 - After the point the page is dimmed (`.meeting-later`, also the chapters
-  after it), readable, full again under the pointer.
+  after it), evenly and readable; no hover, because a chapter is one block
+  and the one under the pointer lit up while scrolling.
 - The page: `meeting_point.js` from `TASK_PAGE.meeting`
   (`meeting_page_config`): after the task's card and what reveals its
   answer, or before the next chapter's heading when no task follows in the
