@@ -44,7 +44,7 @@ reference/personen/luhn.webp:
 reference/personen/backus.webp:
   holder: unknown; probably IBM (a publicity photo)
   source: https://mathshistory.st-andrews.ac.uk/Biographies/Backus/pictdisplay/
-  note: MacTutor shows the same picture and says it does not own the copyright of its pictures; ask them where it comes from. Free instead, used before: Pierre Lescanne, 1989, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:John_Backus_2.jpg).
+  note: "MacTutor shows the same picture and says it does not own the copyright of its pictures; ask them where it comes from. Free instead, used before: Pierre Lescanne, 1989, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:John_Backus_2.jpg)."
 
 reference/personen/ritchie.webp:
   holder: Nokia Bell Labs (a Bell Labs portrait, as on his home page cm.bell-labs.com/who/dmr)
@@ -53,7 +53,7 @@ reference/personen/ritchie.webp:
   greeting: Dear Nokia Bell Labs press team
   picture_en: the Bell Labs portrait of Dennis Ritchie from his home page
   context_en: in a short portrait of him, next to the C programs our students write
-  note: The address comes from a search result; nokia.com refused automatic requests, so check it in a browser. Free instead, used before: Denise Panyik-Dale, 2011, CC BY 2.0 (https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg).
+  note: "The address comes from a search result; nokia.com refused automatic requests, so check it in a browser. Free instead, used before: Denise Panyik-Dale, 2011, CC BY 2.0 (https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg)."
 
 reference/personen/graydon-hoare.webp:
   holder: unknown; a private-looking street photo, probably by Graydon Hoare or a friend
@@ -72,7 +72,7 @@ reference/personen/matsumoto.webp:
   greeting: Dear Marcin
   picture_en: your photo of Yukihiro Matsumoto at EuRuKo 2008 in Prague
   context_en: in a short portrait of him, next to the Ruby our students program in
-  note: Probably free: his EuRuKo 2008 photos are CC BY-NC 2.0, but the exact frame was not found. If it turns up with that licence, give it a credit line with the licence instead of asking.
+  note: "Probably free: his EuRuKo 2008 photos are CC BY-NC 2.0, but the exact frame was not found. If it turns up with that licence, give it a credit line with the licence instead of asking."
 
 reference/personen/gosling.webp:
   holder: Yuichi Sakuraba
@@ -81,7 +81,7 @@ reference/personen/gosling.webp:
   greeting: Dear Mr. Sakuraba
   picture_en: your photo of James Gosling
   context_en: in a short portrait of him, next to the Java our students program in
-  note: Probably free: his photos of Gosling are CC BY-NC 2.0, but the exact frame was not found (the nearest is the JavaOne 2013 keynote). If it turns up with that licence, give it a credit line with the licence instead of asking.
+  note: "Probably free: his photos of Gosling are CC BY-NC 2.0, but the exact frame was not found (the nearest is the JavaOne 2013 keynote). If it turns up with that licence, give it a credit line with the licence instead of asking."
 
 reference/personen/ierusalimschy.webp:
   holder: Ernani d'Almeida (photo), Lua.org
@@ -90,7 +90,7 @@ reference/personen/ierusalimschy.webp:
   greeting: Dear Roberto, Waldemar and Luiz
   picture_en: the photo of the three of you by Ernani d'Almeida (2011) from lua.org
   context_en: cut into three portraits, next to a short text about Lua
-  note: One letter for all three portraits (celes.webp, figueiredo.webp); no contact for the photographer was found, so the authors are asked to pass it on. Free instead for Ierusalimschy alone: Commons File:Roberto_Ierusalimschy.png (CC BY 3.0).
+  note: "One letter for all three portraits (celes.webp, figueiredo.webp); no contact for the photographer was found, so the authors are asked to pass it on. Free instead for Ierusalimschy alone: Commons File:Roberto_Ierusalimschy.png (CC BY 3.0)."
 
 reference/personen/celes.webp:
   holder: Ernani d'Almeida (photo), Lua.org
@@ -116,7 +116,7 @@ reference/personen/kurtz.webp:
 reference/personen/griesemer.webp:
   holder: Google LLC (a still from »Meet the Go Team«, Google I/O 2012, standard YouTube licence)
   source: https://www.youtube.com/watch?v=sln-gJaURzk
-  note: Google has no way to ask; expect no answer. Free instead, used before: Commons File:Robert_Griesemer.jpg (CC BY-SA 4.0) and File:Rob-pike-oscon.jpg (CC BY 2.0).
+  note: "Google has no way to ask; expect no answer. Free instead, used before: Commons File:Robert_Griesemer.jpg (CC BY-SA 4.0) and File:Rob-pike-oscon.jpg (CC BY 2.0)."
 
 reference/personen/pike.webp:
   holder: Google LLC
@@ -125,7 +125,7 @@ reference/personen/pike.webp:
 reference/personen/bak.webp:
   holder: Google LLC, Devoxx (a still from the Dart 1.0 interview at Devoxx 2013, standard YouTube licence)
   source: https://www.youtube.com/watch?v=iKhxgcR1GZg
-  note: No way to ask was found. Free instead for Bak: Commons File:Lars_Bak.png, from the Google I/O 2012 talk »Dart – A Modern Web Language« (CC BY 3.0); Lund may be in that video too.
+  note: "No way to ask was found. Free instead for Bak: Commons File:Lars_Bak.png, from the Google I/O 2012 talk »Dart – A Modern Web Language« (CC BY 3.0); Lund may be in that video too."
 
 reference/personen/lund.webp:
   holder: Google LLC, Devoxx
