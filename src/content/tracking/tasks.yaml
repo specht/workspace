@@ -1,0 +1,431 @@
+# Aufgaben zu »Was eine Webseite über dich erfährt«, in Ruby und, unter
+# python:, in Python. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/tracking. Die beiden Websites kommen aus websites/ im Ordner der
+# Aktivität, gepackt nach src/static/tracking/websites.tar.gz mit
+#   tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
+#       -C src/content/tracking/websites -cf - rezepte sport | gzip -n -9 \
+#       > src/static/tracking/websites.tar.gz
+format: 1
+activity: tracking
+tasks:
+  - id: vermutung
+    title: Ohne etwas einzutippen
+    prediction: true
+    prompt: |
+      Du öffnest eine Website zum ersten Mal und tippst nichts ein. Was erfährt
+      ihr Server dabei auf jeden Fall?
+    check:
+      type: choice
+      options:
+        - Welchen Browser du benutzt und welche Sprachen du eingestellt hast
+        - Deinen Namen, wenn du in einem anderen Tab irgendwo angemeldet bist
+        - Welche Seiten du vorher auf anderen Websites gelesen hast
+        - Nichts, solange du nichts eintippst
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Was du auf anderen Websites angemeldet hast, bleibt dort. Was bekommt der Server mit jeder Anfrage von selbst?
+      - when: { picked: 2 }
+        say: Davon weiß dieser Server nichts, solange ihm niemand davon erzählt. Wie andere es ihm erzählen, siehst du gleich.
+      - when: { picked: 3 }
+        say: Mit jeder Anfrage schickt der Browser Header mit, auch wenn du nichts eintippst. Welche davon kennst du schon?
+    solution: |
+      Mit jeder Anfrage schickt der Browser Header mit: `User-Agent` nennt
+      Browser und Betriebssystem, `Accept-Language` die Sprachen. Ein Server im
+      Internet sieht außerdem die IP-Adresse. Andere Websites und deinen Namen
+      kennt er nicht, außer jemand verrät sie ihm, und darum geht es auf dieser
+      Seite.
+
+  - id: pixel
+    title: Das Bild kommt an
+    prompt: |
+      Starte deinen Tracker neu, frag ihn mit
+      `curl -s -o /dev/null -w '%{http_code} %{content_type}\n' localhost:8000/pixel.gif`
+      nach dem Bild und trag den Befehl hier ein. Der Workspace führt ihn aus
+      und sieht nach, was dein Tracker antwortet: `200` und den
+      `Content-Type` eines GIF-Bildes.
+    check:
+      type: command
+      timeout: 10
+      output:
+        matching: '^200 image/gif'
+    feedback:
+      - when: { output_matches: '^000' }
+        say: Unter Port 8000 antwortet gerade niemand. Starte deinen Tracker in seinem Terminal und prüfe dann noch einmal.
+      - when: { output_matches: '^404' }
+        say: Dein Tracker kennt `/pixel.gif` noch nicht. Steht der neue Pfad vor `else`, und hast du den Tracker nach der Änderung neu gestartet?
+      - when: { output_matches: '^200 ' }
+        say: Das Bild kommt an, aber nicht als `image/gif`. Welchen `Content-Type` gibst du `respond` für `/pixel.gif` mit?
+    hint: Setz `-w '…'` in einfache Anführungszeichen, wie oben.
+    solution: |
+      `200 image/gif`: Der Tracker antwortet auf `/pixel.gif` mit den 42 Bytes
+      des Bildes, und jede Anfrage steht danach in `visits.log`.
+
+  - id: referer
+    title: Warum die Seite in der Adresse steht
+    prompt: |
+      Im Terminal deines Trackers steht unter den Anfragen nach `/pixel.gif`
+      die Zeile `Referer`. Warum hängt der Schnipsel die Seite trotzdem selbst
+      an die Adresse des Bildes?
+    check:
+      type: choice
+      options:
+        - Im `Referer` steht nur die Website, nicht die Seite darauf.
+        - An einen anderen Port schickt der Browser gar keinen `Referer`.
+        - Im `Referer` steht die Adresse des Trackers selbst.
+        - Den `Referer` kann der Tracker nicht lesen, er ist verschlüsselt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Schau noch einmal ins Terminal des Trackers. Steht dort eine Zeile `Referer`?
+      - when: { picked: 2 }
+        say: Der `Referer` sagt, von wo aus der Browser fragt, also von der Website, nicht vom Tracker. Was genau steht darin?
+      - when: { picked: 3 }
+        say: Die Header kommen beim Tracker als Text an, wie alle anderen. Vergleiche, was im `Referer` steht, mit dem, was hinter `page=` steht.
+    solution: |
+      Im `Referer` steht nur `https://…-8001.…/`, die Website ohne die Seite.
+      Fragt eine Seite einen anderen Server, schicken die großen Browser nur
+      noch so viel mit. Der Schnipsel läuft auf der Seite, kennt sie und hängt
+      sie selbst an.
+
+  - id: cookies
+    title: Den Header Cookie zerlegen
+    prompt: |
+      Schreib in `tracking/tracker.rb` die Funktion `parse_cookies(header)`.
+      Die Prüfung ruft sie mit ein paar Headern auf, etwa
+      `parse_cookies("visitor=3f9a1c2b; theme=dark")`, und vergleicht den
+      Hash, der herauskommt.
+    check:
+      type: ruby
+      file: tracking/tracker.rb
+      cases:
+        - call: 'parse_cookies("visitor=3f9a1c2b; theme=dark") == { "visitor" => "3f9a1c2b", "theme" => "dark" }'
+          expect: true
+          say: Zwischen den Paaren steht ein `;` und ein Leerzeichen; das Leerzeichen gehört nicht zum Namen.
+        - call: 'parse_cookies("visitor=3f9a1c2b") == { "visitor" => "3f9a1c2b" }'
+          expect: true
+        - call: 'parse_cookies("") == {}'
+          expect: true
+          say: Ein leerer Header ergibt einen leeren Hash.
+        - call: 'parse_cookies("token=ab=c;theme=dark") == { "token" => "ab=c", "theme" => "dark" }'
+          expect: true
+          say: Ein Wert darf selbst ein `=` enthalten. Teile jedes Paar nur am ersten `=`, mit `split('=', 2)`.
+    solution: |
+      ```ruby
+      def parse_cookies(header)
+        cookies = {}
+        header.split(';').each do |pair|
+          name, value = pair.strip.split('=', 2)
+          cookies[name] = value.to_s if name && !name.empty?
+        end
+        cookies
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `tracking/tracker.py` die Funktion `parse_cookies(header)`.
+        Die Prüfung ruft sie mit ein paar Headern auf, etwa
+        `parse_cookies('visitor=3f9a1c2b; theme=dark')`, und vergleicht das
+        `dict`, das herauskommt.
+      check:
+        type: python
+        file: tracking/tracker.py
+        cases:
+          - call: "parse_cookies('visitor=3f9a1c2b; theme=dark') == {'visitor': '3f9a1c2b', 'theme': 'dark'}"
+            expect: true
+            say: Zwischen den Paaren steht ein `;` und ein Leerzeichen; das Leerzeichen gehört nicht zum Namen.
+          - call: "parse_cookies('visitor=3f9a1c2b') == {'visitor': '3f9a1c2b'}"
+            expect: true
+          - call: "parse_cookies('') == {}"
+            expect: true
+            say: Ein leerer Header ergibt ein leeres `dict`.
+          - call: "parse_cookies('token=ab=c;theme=dark') == {'token': 'ab=c', 'theme': 'dark'}"
+            expect: true
+            say: Ein Wert darf selbst ein `=` enthalten. Teile jedes Paar nur am ersten `=`, mit `partition('=')`.
+      solution: |
+        ```python
+        def parse_cookies(header):
+            cookies = {}
+            for pair in header.split(';'):
+                name, _, value = pair.strip().partition('=')
+                if name:
+                    cookies[name] = value
+            return cookies
+        ```
+
+  - id: zweimal
+    title: Zweimal mit curl
+    prediction: true
+    prompt: |
+      Du fragst deinen Tracker zweimal hintereinander mit
+      `curl -s -D - -o /dev/null localhost:8000/pixel.gif`. Was steht in der
+      zweiten Antwort?
+    check:
+      type: choice
+      options:
+        - Ein Header `Set-Cookie` mit einer neuen Kennung
+        - Kein `Set-Cookie`, weil der Tracker `curl` schon kennt
+        - Ein `Set-Cookie` mit derselben Kennung wie beim ersten Mal
+        - Gar kein Bild, weil der Tracker jede Kennung nur einmal bedient
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Woran sollte der Tracker `curl` erkennen? Er sucht die Kennung im Header `Cookie` der Anfrage. Schickt `curl` einen mit?
+      - when: { picked: 2 }
+        say: Der Tracker würfelt jede neue Kennung. Woher sollte er die alte kennen?
+      - when: { picked: 3 }
+        say: Für `/pixel.gif` antwortet der Tracker jedes Mal mit dem Bild. Die Frage ist, ob er ein neues Cookie mitschickt.
+    solution: |
+      Eine neue Kennung, bei jeder Anfrage: `curl` hebt das Cookie nicht auf und
+      schickt keinen Header `Cookie`. Für den Tracker ist jeder Aufruf ein
+      neuer Besuch. Ein Browser dagegen merkt sich das Cookie.
+
+  - id: erkannt
+    title: Wiedererkannt
+    prompt: |
+      Frag deinen Tracker mit
+      `curl -s -D - -o /dev/null -b 'visitor=probe123' localhost:8000/pixel.gif`
+      und trag den Befehl hier ein. Der Workspace führt ihn aus und sieht
+      nach, ob dein Tracker die Kennung `probe123` wiedererkennt: Dann
+      antwortet er mit `200` und schickt kein neues `Set-Cookie`.
+    check:
+      type: command
+      timeout: 10
+      output:
+        matching: '^(HTTP/1\.[01] 200 |[A-Za-z-]+: )'
+        not_matching: '(?i)^set-cookie:'
+    feedback:
+      - when: { output_matches: '(?i)^set-cookie:' }
+        say: Dein Tracker vergibt eine neue Kennung, obwohl `probe123` mitkam. Sucht er sie mit `parse_cookies` im Header `cookie`, und hast du ihn nach der Änderung neu gestartet?
+      - when: { output_matches: '^HTTP/1\.[01] 404' }
+        say: Dein Tracker kennt `/pixel.gif` nicht. Läuft gerade die neueste Fassung?
+    hint: Läuft dein Tracker nicht, gibt `curl -s` gar nichts aus. Starte ihn in seinem Terminal.
+    solution: |
+      Mit `-b` schickt `curl` den Header `Cookie: visitor=probe123`. Der
+      Tracker findet die Kennung, schreibt den Besuch unter `probe123` auf und
+      schickt das Bild ohne neues Cookie.
+
+  - id: besuche
+    title: Die Besuche einer Kennung
+    prompt: |
+      Schreib in `tracking/tracker.rb` die Funktion `visits_of(lines, visitor)`.
+      Die Prüfung ruft sie mit drei Zeilen aus einem `visits.log` auf, in
+      denen die Kennungen `ab12` und `cd34` vorkommen, und fragt nach `ab12`,
+      nach `zz99` und nach einer leeren Liste.
+    check:
+      type: ruby
+      file: tracking/tracker.rb
+      cases:
+        - call: 'visits_of(["2026-10-28 09:00:01\tab12\ta.test/pizza.html\tPizza, Kochen", "2026-10-28 09:00:05\tcd34\tb.test/laufen.html\tLaufen, Sport", "2026-10-28 09:01:12\tab12\tb.test/laufen.html\tLaufen, Sport"], "ab12") == [["a.test/pizza.html", "Pizza, Kochen"], ["b.test/laufen.html", "Laufen, Sport"]]'
+          expect: true
+          say: '`ab12` hat zwei Besuche, zuerst die Pizza, dann das Laufen; jeder Besuch ist ein Paar aus Seite und Stichwörtern.'
+        - call: 'visits_of(["2026-10-28 09:00:01\tab12\ta.test/pizza.html\tPizza, Kochen", "2026-10-28 09:00:05\tcd34\tb.test/laufen.html\tLaufen, Sport"], "zz99") == []'
+          expect: true
+          say: Eine Kennung, die nie vorkam, hat keine Besuche.
+        - call: 'visits_of([], "ab12") == []'
+          expect: true
+    solution: |
+      ```ruby
+      def visits_of(lines, visitor)
+        visits = []
+        lines.each do |line|
+          time, id, page, keywords = line.split("\t")
+          visits << [page, keywords] if id == visitor
+        end
+        visits
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `tracking/tracker.py` die Funktion `visits_of(lines, visitor)`.
+        Die Prüfung ruft sie mit drei Zeilen aus einem `visits.log` auf, in
+        denen die Kennungen `ab12` und `cd34` vorkommen, und fragt nach `ab12`,
+        nach `zz99` und nach einer leeren Liste.
+      check:
+        type: python
+        file: tracking/tracker.py
+        cases:
+          - call: "visits_of(['2026-10-28 09:00:01\\tab12\\ta.test/pizza.html\\tPizza, Kochen', '2026-10-28 09:00:05\\tcd34\\tb.test/laufen.html\\tLaufen, Sport', '2026-10-28 09:01:12\\tab12\\tb.test/laufen.html\\tLaufen, Sport'], 'ab12') == [['a.test/pizza.html', 'Pizza, Kochen'], ['b.test/laufen.html', 'Laufen, Sport']]"
+            expect: true
+            say: '`ab12` hat zwei Besuche, zuerst die Pizza, dann das Laufen; jeder Besuch ist ein Paar aus Seite und Stichwörtern.'
+          - call: "visits_of(['2026-10-28 09:00:01\\tab12\\ta.test/pizza.html\\tPizza, Kochen', '2026-10-28 09:00:05\\tcd34\\tb.test/laufen.html\\tLaufen, Sport'], 'zz99') == []"
+            expect: true
+            say: Eine Kennung, die nie vorkam, hat keine Besuche.
+          - call: "visits_of([], 'ab12') == []"
+            expect: true
+      solution: |
+        ```python
+        def visits_of(lines, visitor):
+            visits = []
+            for line in lines:
+                fields = line.split('\t')
+                if len(fields) == 4 and fields[1] == visitor:
+                    visits.append([fields[2], fields[3]])
+            return visits
+        ```
+
+  - id: sport-zaehlen
+    title: Wie oft Sport?
+    prompt: |
+      Jemand liest auf »Laufend fit« die Startseite, »Die ersten fünf
+      Kilometer« und »Fußball im Park«, sonst nichts. Wie oft steht »Sport«
+      danach unter den Stichwörtern dieser Kennung? Die Stichwörter jeder
+      Seite stehen in ihrem Kopf, in `<meta name="keywords">`.
+    check:
+      type: number
+      expect: 3
+      tolerance: 0
+    feedback:
+      - when: { equals: 2 }
+        say: Schau auch in `sport/index.html`. Welche Stichwörter hat die Startseite?
+    solution: |
+      Dreimal: `Sport, Fitness` auf der Startseite, `Laufen, Sport, Ausdauer`
+      und `Fußball, Sport, Mannschaft`. Jedes andere Stichwort kommt einmal vor.
+
+  - id: stichwoerter
+    title: Stichwörter zählen
+    prompt: |
+      Schreib in `tracking/tracker.rb` die Funktion `count_keywords(texts)`.
+      Die Prüfung ruft sie mit kurzen Listen auf, etwa
+      `count_keywords(["Pizza, Kochen", "Curry, Kochen"])`, und vergleicht den
+      Hash, der herauskommt.
+    check:
+      type: ruby
+      file: tracking/tracker.rb
+      cases:
+        - call: 'count_keywords(["Laufen,Sport", " Sport "]) == { "Laufen" => 1, "Sport" => 2 }'
+          expect: true
+          say: Leerzeichen um ein Stichwort gehören nicht dazu; nimm sie mit `strip` weg.
+        - call: 'count_keywords(["Pizza, Kochen", "Curry, Kochen"]) == { "Pizza" => 1, "Kochen" => 2, "Curry" => 1 }'
+          expect: true
+          say: »Kochen« steht in beiden Texten und zählt darum zweimal.
+        - call: 'count_keywords(["", "Kochen"]) == { "Kochen" => 1 }'
+          expect: true
+          say: Ein leerer Text hat keine Stichwörter; ein leeres Stichwort zählt nicht.
+        - call: 'count_keywords([]) == {}'
+          expect: true
+    solution: |
+      ```ruby
+      def count_keywords(texts)
+        counts = {}
+        texts.each do |text|
+          text.to_s.split(',').each do |keyword|
+            keyword = keyword.strip
+            next if keyword.empty?
+
+            counts[keyword] = (counts[keyword] || 0) + 1
+          end
+        end
+        counts
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `tracking/tracker.py` die Funktion `count_keywords(texts)`.
+        Die Prüfung ruft sie mit kurzen Listen auf, etwa
+        `count_keywords(['Pizza, Kochen', 'Curry, Kochen'])`, und vergleicht
+        das `dict`, das herauskommt.
+      check:
+        type: python
+        file: tracking/tracker.py
+        cases:
+          - call: "count_keywords(['Laufen,Sport', ' Sport ']) == {'Laufen': 1, 'Sport': 2}"
+            expect: true
+            say: Leerzeichen um ein Stichwort gehören nicht dazu; nimm sie mit `strip()` weg.
+          - call: "count_keywords(['Pizza, Kochen', 'Curry, Kochen']) == {'Pizza': 1, 'Kochen': 2, 'Curry': 1}"
+            expect: true
+            say: »Kochen« steht in beiden Texten und zählt darum zweimal.
+          - call: "count_keywords(['', 'Kochen']) == {'Kochen': 1}"
+            expect: true
+            say: Ein leerer Text hat keine Stichwörter; ein leeres Stichwort zählt nicht.
+          - call: "count_keywords([]) == {}"
+            expect: true
+      solution: |
+        ```python
+        def count_keywords(texts):
+            counts = {}
+            for text in texts:
+                for keyword in (text or '').split(','):
+                    keyword = keyword.strip()
+                    if keyword:
+                        counts[keyword] = counts.get(keyword, 0) + 1
+            return counts
+        ```
+
+  - id: personenbezug
+    title: Ohne Namen
+    prompt: |
+      In `visits.log` steht kein einziger Name, nur Kennungen wie `3f9a1c2b`.
+      Sind die Zeilen trotzdem personenbezogene Daten im Sinn der DSGVO?
+    check:
+      type: choice
+      options:
+        - Ja, weil sich mit der Kennung die Besuche eines Menschen zusammenfassen lassen, zu einem Profil über ihn.
+        - Nein, weil kein Name darin steht.
+        - Nein, weil die Kennung zufällig gewürfelt ist.
+        - Ja, aber nur die Spalte mit der Zeit.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dein Profil unter `/profil` kam ganz ohne Namen aus. Was weiß der Tracker trotzdem über den Menschen hinter der Kennung?
+      - when: { picked: 2 }
+        say: Gewürfelt wird sie nur einmal; danach gehört sie zu einem Browser und kommt bei jedem Besuch wieder. Was lässt sich damit zusammenfassen?
+      - when: { picked: 3 }
+        say: Eine Uhrzeit allein sagt wenig über einen Menschen. Was macht die Zeilen zusammen aussagekräftig?
+    solution: |
+      Ja. Die DSGVO zählt alles dazu, was sich einer Person zuordnen lässt, auch
+      ohne Namen; ihr Erwägungsgrund 30 nennt Cookie-Kennungen und IP-Adressen
+      ausdrücklich, weil sich mit ihnen Profile bilden lassen.
+
+  - id: einwilligung
+    title: Ein Cookie für die Statistik
+    prompt: |
+      Ein Onlineshop legt mit einem Cookie eine Kennung ab, um für seine eigene
+      Statistik zu zählen, wie oft jemand wiederkommt. Braucht er dafür nach
+      § 25 TDDDG eine Einwilligung?
+    check:
+      type: choice
+      options:
+        - Ja, weil die Statistik für das Einkaufen nicht unbedingt nötig ist.
+        - Nein, weil das Cookie vom Shop selbst kommt, nicht von einer fremden Firma.
+        - Nein, weil in der Kennung kein Name steht.
+        - Nur, wenn das Cookie länger als einen Tag gilt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: § 25 fragt nicht, wem das Cookie gehört, sondern wozu es nötig ist. Braucht man die Statistik, um einzukaufen?
+      - when: { picked: 2 }
+        say: § 25 gilt für alles, was im Browser abgelegt wird, ob mit Namen oder ohne. Wann ist es ohne Einwilligung erlaubt?
+      - when: { picked: 3 }
+        say: Wie lange ein Cookie gilt, nennt § 25 nicht. Wovon hängt es dort ab?
+    solution: |
+      Ja. Ohne Einwilligung darf eine Website nur ablegen, was unbedingt nötig
+      ist für das, was die Person ausdrücklich nutzen will: den Warenkorb, die
+      Anmeldung. Einkaufen geht auch ohne die Statistik des Shops. So sehen es
+      auch die deutschen Datenschutzbehörden.
+
+  - id: banner
+    title: Bevor du auf »Alle akzeptieren« drückst
+    prompt: |
+      Ein Banner sagt beim ersten Besuch: »Wir und unsere 312 Partner verwenden
+      Cookies und ähnliche Technologien«, darunter ein großer Knopf »Alle
+      akzeptieren«. Was müsstest du wissen, um wirklich zu entscheiden?
+      Schreib drei Fragen an die Website auf und zu jeder, warum sie nach
+      dem, was dein Tracker kann, wichtig ist.
+    check:
+      type: reflection
+      min_words: 40
+    examples:
+      - |
+        Welche der 312 Partner bekommen eine Kennung von mir? Jeder kann wie
+        mein Tracker auf vielen Websites mitlesen und die Besuche
+        zusammenführen. Werden Stichwörter der Seiten gespeichert, die ich
+        lese? Aus ihnen hat mein Tracker erraten, was mich interessiert. Wie
+        lange gilt das Cookie? Mein Tracker hat es für ein Jahr gesetzt, und so
+        lange wächst das Profil.
+      - |
+        Was passiert, wenn ich ablehne: Komme ich trotzdem an den Text? Wenn
+        nur Zustimmen geht, ist es keine echte Wahl. Wohin gehen die Daten und
+        wer verkauft Werbung damit? Mein Tracker hätte das Profil weitergeben
+        können. Kann ich später alles wieder löschen lassen? Beim Löschen des
+        Cookies blieben in visits.log meine alten Besuche stehen.

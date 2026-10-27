@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="keywords" content="Kochen, Rezepte">
+<title>Rezepte für jeden Tag · Rezepte für jeden Tag</title>
+<style>
+  body { font-family: sans-serif; max-width: 36em; margin: 2em auto; padding: 0 1em; background: #fff7ed; color: #1c1917; }
+  header { color: #9a3412; font-weight: bold; font-size: 1.3em; }
+  nav a { color: #9a3412; }
+</style>
+</head>
+<body>
+<header>Rezepte für jeden Tag</header>
+<nav><a href="/index.html">Rezepte für jeden Tag</a> · <a href="/pizza.html">Pizza aus der Pfanne</a> · <a href="/curry.html">Linsencurry</a> · <a href="/kuchen.html">Schokoladenkuchen im Becher</a></nav>
+<h1>Rezepte für jeden Tag</h1>
+<p>Schnelle Gerichte für alle, die nach der Schule Hunger haben. Heute neu: eine Pizza aus der Pfanne.</p>
+<!-- Der Schnipsel einer Werbefirma, wie viele Websites ihn einbauen: Er lädt
+     ein unsichtbares Bild von ihrem Server und sagt dabei, welche Seite das ist
+     und worum es auf ihr geht. Ihr Server ist dein Tracker auf Port 8000. -->
+<script>
+  const tracker = location.origin.replace(/-\d+\./, '-8000.');
+  const keywords = document.querySelector('meta[name="keywords"]').content;
+  new Image().src = tracker + '/pixel.gif?page=' + encodeURIComponent(location.host + location.pathname) +
+    '&keywords=' + encodeURIComponent(keywords);
+</script>
+</body>
+</html>
