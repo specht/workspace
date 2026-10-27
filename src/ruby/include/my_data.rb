@@ -92,7 +92,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/rebuildable' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         respond(:folders => rebuildable_of(data[:email].to_s.downcase))
     end
@@ -117,7 +117,7 @@ class Main < Sinatra::Base
     # »Platz schaffen« for someone else, from /personen: with a reason the
     # person reads, in the audit log, and by mail when ticked.
     post '/api/admin/clean_rebuildable' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :paths, :reason], :optional_keys => [:notify],
             :types => { :paths => Array, :notify => Object }, :max_body_length => 16_000)
         email = data[:email].to_s.downcase
@@ -135,7 +135,7 @@ class Main < Sinatra::Base
     # A Workspace that runs away (»Betrieb«): the processes end, the files
     # stay; the person reads why and can start it again at once.
     post '/api/admin/stop_workspace' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :reason], :optional_keys => [:notify], :types => { :notify => Object })
         email = data[:email].to_s.downcase
         halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email]

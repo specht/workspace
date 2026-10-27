@@ -239,12 +239,12 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/invitation_import_preview' do
-        assert(admin_logged_in?)
+        admins_only!
         respond(Main.invitation_import_preview)
     end
 
     post '/api/admin/import_invitations' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:optional_keys => [:simulate_difference], :types => { :simulate_difference => Object })
         result = Main.import_invitations!(:by => @session_user[:email], :simulate_difference => data[:simulate_difference] == true)
         STDERR.puts "Invitation import by #{@session_user[:email]}: #{result[:ok] ? 'ok' : "#{result[:differences].size} differences, nothing written"}"

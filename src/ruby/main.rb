@@ -4716,7 +4716,7 @@ class Main < Sinatra::Base
     # After restoring a backup made at backup_time: delete again every
     # account deleted since. Returns the addresses.
     post '/api/admin/repeat_deletions' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:backup_date])
         backup_time = Time.parse(data[:backup_date].to_s) rescue nil
         halt 400, { :error => 'invalid_date' }.to_json unless backup_time
@@ -4732,7 +4732,7 @@ class Main < Sinatra::Base
     # rules (Datenschutzerklärung, »Speicherdauer«). The address typed a
     # second time is the confirmation.
     post '/api/admin/delete_account' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :confirmation], :optional_keys => [:notify], :types => { :notify => Object })
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
@@ -4763,7 +4763,7 @@ class Main < Sinatra::Base
     DELETION_NOTICE_DAYS = 14
 
     post '/api/admin/announce_deletion' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         email = AccountDeletion.normalize_email(data[:email])
         halt 400, { :error => 'invalid_email' }.to_json unless email
@@ -4802,7 +4802,7 @@ class Main < Sinatra::Base
     # account, a school that asks to stop): sessions, login, the running
     # Workspace, shared links and web apps end at once; nothing is deleted.
     post '/api/admin/suspend_access' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason], :max_value_lengths => { :reason => 300 })
         email = data[:email].to_s.downcase
         halt 400, { :error => 'admin_account' }.to_json if ADMIN_USERS.include?(email)
@@ -4822,7 +4822,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/lift_suspension' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.suspended_at, u.suspended_by, u.suspended_reason;', :email => data[:email].to_s.downcase)
         Main.refresh_nginx_config()
@@ -4831,7 +4831,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/admin/cancel_deletion' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email])
         neo4j_query('MATCH (u:User {email: $email}) REMOVE u.deletion_at, u.deletion_announced_at, u.deletion_announced_by;', :email => data[:email].to_s.downcase)
         STDERR.puts "Announced deletion of #{data[:email]} cancelled by #{@session_user[:email]}"
@@ -4841,7 +4841,7 @@ class Main < Sinatra::Base
     # The person keeps the account as a guest: into a group of the guests'
     # school (Nutzungsordnung), and the announced deletion is off.
     post '/api/admin/keep_as_guest' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:required_keys => [:email, :group])
         email = data[:email].to_s.downcase
         halt 400, { :error => 'not_a_guest_group' }.to_json if neo4j_query(<<~END_OF_QUERY, :name => data[:group]).empty?
@@ -5174,7 +5174,7 @@ class Main < Sinatra::Base
     # school: a school's name (or '-' for none); role: one of the roles;
     # sort: 'active' puts those inactive longest (and never) first.
     post '/api/admin/people' do
-        assert(admin_logged_in?)
+        admins_only!
         data = parse_request_data(:optional_keys => [:query, :limit, :school, :role, :sort, :state], :types => { :limit => Integer }, :max_body_length => 1024)
         everyone = people_overview(data[:query].to_s.strip.empty? ? '' : data[:query])
         counts = PEOPLE_STATES.keys.to_h { |state| [state, 0] }
@@ -5231,7 +5231,7 @@ class Main < Sinatra::Base
     # Accounts whose address is no longer in any invitation list: what the
     # deletion rules remove at the end of a school year.
     post '/api/admin/uninvited_accounts' do
-        assert(admin_logged_in?)
+        admins_only!
         Main.load_invitations()
         rows = neo4j_query('MATCH (u:User) RETURN u.email AS email, u.name AS name, u.deletion_at AS deletion_at ORDER BY u.email;').reject do |row|
             @@invitations.key?(row['email'])
@@ -9140,7 +9140,7 @@ class Main < Sinatra::Base
         # The progress page (/screenshot-progress): the pass, its pages and
         # the files captured last, from the generator.
         get '/api/tutorial_screenshots/overview' do
-            assert(admin_logged_in?)
+            admins_only!
             headers 'Cache-Control' => 'no-store'
             begin
                 respond(TutorialScreenshots.overview)
@@ -9154,7 +9154,7 @@ class Main < Sinatra::Base
         # A captured file by its tutorial (rust/rust.md) and target, for the
         # progress page's stream: inside that tutorial's folder only.
         get '/api/tutorial_screenshots/capture' do
-            assert(admin_logged_in?)
+            admins_only!
             relative = params['markdown'].to_s
             target = params['target'].to_s
             halt 400 unless TutorialScreenshots.valid_relative_markdown_path?(relative)
