@@ -184,6 +184,9 @@ removed_before=''
 if [ -z "$loaded_already" ]; then
     # --- 3. Sending, again after a dropped connection ------------------------
     step 3 "Sending to $host:$remote_dir"
+    # --append-verify continues a file; a missing one counts as an error
+    # (exit code 23) although rsync sends it whole, so it starts empty
+    remote "touch '$remote_dir/$name'"
     attempt=1
     until { shown "rsync --partial --append-verify --info=progress2 $file $host:$remote_dir/"
             rsync --partial --append-verify --info=progress2 "$file" "$host:$remote_dir/"; }; do
