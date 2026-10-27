@@ -7564,8 +7564,11 @@ div[data-stepper]::before {
    speed as a pair on the left, then the step count. A button that cannot
    be used is grey, not pale green. */
 div[data-stepper] .stepper-word { display: none; }
+/* .stepper-row: the row of the step buttons (stepper_keys.js), a class
+   rather than :has(> [data-go]), which made every change on the page
+   check every element, a lag in each keystroke of a code box */
 @media (pointer: fine) and (min-width: 577px) {
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -7596,7 +7599,7 @@ div[data-stepper] .stepper-word { display: none; }
         position: relative;
     }
     /* the step count on the left, play and its speed before it */
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         order: 0;
         margin: 0 auto 0 0.75rem;
     }
@@ -7655,32 +7658,32 @@ div[data-stepper] .stepper-word { display: none; }
     div[data-stepper]::before {
         content: 'Zum Ausprobieren · Tasten tippen oder über das Bild wischen';
     }
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         order: 0;
         margin: 0 auto 0 0;
     }
     /* play and its speed on the left, before the step count */
-    div[data-stepper] :has(> [data-go]) > [data-play],
-    div[data-stepper] :has(> [data-go]) > [data-speed] {
+    div[data-stepper] .stepper-row > [data-play],
+    div[data-stepper] .stepper-row > [data-speed] {
         order: 0;
         min-height: 2.75rem;
         flex: 0 0 2.75rem;
         padding: 0;
         margin: 0;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go] {
+    div[data-stepper] .stepper-row > [data-go] {
         min-height: 2.75rem;
         margin: 0;
         font-size: 1.25rem;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='first'],
-    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+    div[data-stepper] .stepper-row > [data-go='first'],
+    div[data-stepper] .stepper-row > [data-go='last'] {
         flex: 0 0 2.75rem;
         font-size: 1.05rem;
         /* quieter than the steps, but not faint: faint means disabled */
@@ -7689,19 +7692,19 @@ div[data-stepper] .stepper-word { display: none; }
         --bs-btn-disabled-bg: transparent;
         --bs-btn-disabled-color: var(--bs-success);
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='first'] {
+    div[data-stepper] .stepper-row > [data-go='first'] {
         order: 1;
         margin-left: auto;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='last'] {
+    div[data-stepper] .stepper-row > [data-go='last'] {
         order: 2;
         margin-right: 0.9em;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='prev'] {
+    div[data-stepper] .stepper-row > [data-go='prev'] {
         order: 3;
         flex: 0 0 5.5rem;
     }
-    div[data-stepper] :has(> [data-go]) > [data-go='next'] {
+    div[data-stepper] .stepper-row > [data-go='next'] {
         order: 4;
         flex: 0 0 5.5rem;
     }
@@ -7709,19 +7712,19 @@ div[data-stepper] .stepper-word { display: none; }
 /* On a narrow screen the step count goes on a line of its own above the
    buttons, which keep to the right */
 @media (max-width: 576px) {
-    div[data-stepper] :has(> [data-go]) {
+    div[data-stepper] .stepper-row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
         gap: 0.4em;
     }
-    div[data-stepper] :has(> [data-go]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row > :not([data-go]):not([data-play]):not([data-speed]) {
         flex-basis: 100%;
         margin-left: 0;
     }
     /* with play: the count, play and its speed on one line */
-    div[data-stepper] :has(> [data-play]) > :not([data-go]):not([data-play]):not([data-speed]) {
+    div[data-stepper] .stepper-row:has(> [data-play]) > :not([data-go]):not([data-play]):not([data-speed]) {
         flex: 0 0 calc(100% - 5.5rem - 0.8em - 1px);
         order: -1;
     }
