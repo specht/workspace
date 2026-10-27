@@ -6139,7 +6139,16 @@ class Main < Sinatra::Base
     def teacher_note_panel(slug)
         return '' unless teacher_note?(slug)
 
-        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}</div></div>" \
+        # where the class can go next: the activities that build on this one
+        # (the arrows out of it on /lehrplan), always current with requires:
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        after = PageKinds.builds_on(slug, @@content, pinnable_slugs, :development => DEVELOPMENT)
+        show = "<a href='/lehrplan?zeige=#{h.(slug)}#wege'>im Lehrplan zeigen</a>"
+        next_html = "<div class='teacher-note-next'><i class='bi bi-signpost-split' aria-hidden='true'></i><div><strong>Wie es weitergehen kann:</strong> " +
+            (after.empty? ? "Keine andere Aktivität baut auf dieser auf; die Wege durch alle stehen im <a href='/lehrplan#wege'>Lehrplan</a>." :
+                "Auf dieser Aktivität #{after.size == 1 ? 'baut' : 'bauen'} #{PageKinds.join_and(after.map { |s, t| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(t))}</a>" })} auf (#{show}).") +
+            '</div></div>'
+        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}#{next_html}</div></div>" \
             "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
             "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
             "document.getElementById('teacher-note').hidden = !open; });</script>"

@@ -65,6 +65,22 @@ module PageKinds
         end
     end
 
+    # The activities that build on this one (their requires: name it), in
+    # the order of slugs (the catalog's), the same rules as requires_of:
+    # for the teacher note, where a class can go next
+    def self.builds_on(slug, content, slugs, development: false)
+        slugs.filter_map do |name|
+            next nil if name == slug
+            entry = content[name]
+            next nil if entry.nil? || reference?(name)
+            next nil if entry[:teacher_only] || entry[:hidden_section]
+            next nil if entry[:dev_only] && !development
+            next nil unless (entry[:requires] || []).include?(slug)
+            title = plain_title(entry)
+            [name, title.empty? ? name : title]
+        end
+    end
+
     # »A«, »A und B«, »A, B und C«
     def self.join_and(items)
         items.size <= 1 ? items.join : "#{items[0..-2].join(', ')} und #{items[-1]}"

@@ -3009,6 +3009,20 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     line-height: 1.55;
 }
 
+/* below a teacher note: where the class can go next (main.rb) */
+.teacher-note-next {
+    display: flex;
+    gap: 0.6em;
+    margin-top: 1em;
+    padding-top: 0.8em;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.teacher-note-next > .bi {
+    flex: none;
+    margin-top: 0.1em;
+}
+
 .teacher-note-body > p:first-child {
     font-size: 1.05em;
 }
