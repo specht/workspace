@@ -14,6 +14,10 @@ require_relative 'sql_check'
 #         foreign_keys: ["movie_id -> movie.id", "genre_id -> genre.id"]
 #         indexes: [[movie_id]]
 #         min_rows: 1
+#     - name: city
+#       rows_where:                    # rows that meet a condition, counted
+#         - where: "name = 'Weimar'"
+#           rows: 1
 #     setup: Lege die Tabellen mit `mysql < film.sql` an.
 module SchemaCheck
     COLUMNS = <<~SQL.freeze
@@ -34,7 +38,7 @@ module SchemaCheck
         SELECT table_name, index_name, column_name FROM information_schema.statistics
         WHERE table_schema = DATABASE() ORDER BY table_name, index_name, seq_in_index
     SQL
-    PROBLEMS = %w[no_tables missing_table missing_column primary_key foreign_key index rows].freeze
+    PROBLEMS = %w[no_tables missing_table missing_column primary_key foreign_key index rows rows_where].freeze
 
     def self.spec_errors(check)
         errors = TableExpect.spec_errors(check['tables'], :rows => true)
@@ -80,11 +84,34 @@ module SchemaCheck
 
             tables[spec['name']][:rows] = result[:error] ? nil : result[:rows].dig(0, 0).to_i
         end
+        check['tables'].map { |s| TableExpect.normalize(s) }.each do |spec|
+            next unless spec['rows_where'] && tables[spec['name']]
+
+            tables[spec['name']][:rows_where] = spec['rows_where'].map do |rule|
+                result = runner.call("SELECT COUNT(*) FROM `#{spec['name']}` WHERE #{rule['where']}")
+                stop = SqlCheck.connection_stop({}, env, result)
+                return [nil, stop] if stop
+                if result[:error]
+                    return [nil, [:unavailable, 'Die Prüfung dieser Aufgabe lässt sich gerade nicht ausführen. Sag deiner Lehrkraft Bescheid.',
+                        SqlCheck.diagnosis({}, nil, env, :error => result[:error]), nil, :reference_failed]]
+                end
+                result[:rows].dig(0, 0).to_i
+            end
+        end
         [tables, nil]
     end
 
-    def self.describe(tables, env)
-        "Gelesen: Datenbank `#{env[:database] || '?'}` (Primärschlüssel fett)\n\n#{TableExpect.describe(tables, :rows => true)}"
+    # What was read; with rows_where, what was counted first, since that is
+    # what such a task is about.
+    def self.describe(tables, env, check = {})
+        counted = (check['tables'] || []).map { |s| TableExpect.normalize(s) }.flat_map do |spec|
+            found = tables.dig(spec['name'], :rows_where) || []
+            (spec['rows_where'] || []).each_with_index.map do |rule, j|
+                "- #{TableExpect.code(spec['name'])} mit `#{rule['where']}`: #{found[j].nil? ? 'nicht gezählt' : TableExpect.rows_text(found[j])}"
+            end
+        end
+        head = counted.empty? ? '' : "Gezählt in `#{env[:database] || '?'}`:\n\n#{counted.join("\n")}\n\n"
+        "#{head}Gelesen: Datenbank `#{env[:database] || '?'}` (Primärschlüssel fett)\n\n#{TableExpect.describe(tables, :rows => true)}"
     end
 
     # [status, message, read, note, problem] like SqlCheck.check.
@@ -96,7 +123,7 @@ module SchemaCheck
         tables, stop = read(check, runner, env)
         return stop if stop
 
-        read = describe(tables, env)
+        read = describe(tables, env, check)
         problem, message = if tables.empty?
             [:no_tables, "In deiner Datenbank#{env[:database] ? " `#{env[:database]}`" : ''} gibt es noch keine Tabellen."]
         else

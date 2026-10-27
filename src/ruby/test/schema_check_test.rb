@@ -114,4 +114,68 @@ class SchemaCheckTest < Minitest::Test
         bad = CHECK.merge('tables' => [{ 'name' => 'movie', 'indexes' => ['title'] }])
         assert(TaskSpec.validate_task(task.merge('check' => bad)).any? { |e| e.include?('indexes must be a list of column lists') })
     end
+
+    # rows_where: rows that meet a condition, counted read-only, for a task
+    # that changes data (INSERT, UPDATE, DELETE in »Einführung in SQL«)
+    def test_rows_where
+        where = lambda do |counts, seen = []|
+            lambda do |sql|
+                seen << sql
+                if (m = sql.match(/\ASELECT COUNT\(\*\) FROM `movie` WHERE (.*)\z/m))
+                    next { :error => { :code => 1054, :message => "Unknown column 'x'" } } if m[1] == 'x = 1'
+
+                    next { :columns => ['COUNT(*)'], :rows => [[counts.fetch(m[1]).to_s]] }
+                end
+                runner.call(sql)
+            end
+        end
+        check = CHECK.merge('tables' => [{ 'name' => 'movie', 'rows_where' => [
+            { 'where' => "title = 'Heat'", 'rows' => 1, 'say' => 'Heat fehlt noch.' },
+            { 'where' => 'year = 1995', 'rows' => 1 },
+        ] }])
+        seen = []
+        status, message, read, _, problem = SchemaCheck.check({}, check, where.({ "title = 'Heat'" => 1, 'year = 1995' => 1 }, seen), ENV_)
+        assert_equal :correct, status, message
+        assert_nil problem
+        assert_includes seen, "SELECT COUNT(*) FROM `movie` WHERE title = 'Heat'"
+        assert_includes read, "- `movie` mit `title = 'Heat'`: eine Zeile"
+        assert read.index('Gezählt') < read.index('Gelesen'), 'what was counted comes first'
+
+        status, message, _, _, problem = SchemaCheck.check({}, check, where.({ "title = 'Heat'" => 0, 'year = 1995' => 1 }), ENV_)
+        assert_equal [:wrong, :rows_where, 'Heat fehlt noch.'], [status, problem, message]
+        _, message, read, = SchemaCheck.check({}, check, where.({ "title = 'Heat'" => 1, 'year = 1995' => 12 }), ENV_)
+        assert_equal 'Die Tabelle `movie` hat 12 Zeilen mit `year = 1995`, erwartet ist eine.', message
+        assert_includes read, '`year = 1995`: 12 Zeilen'
+
+        # a task's own feedback for the problem comes before the default text
+        task = { 'feedback' => [{ 'when' => { 'problem' => 'rows_where' }, 'say' => 'Zähl nach.' }] }
+        assert_equal 'Zähl nach.', SchemaCheck.check(task, check, where.({ "title = 'Heat'" => 1, 'year = 1995' => 2 }), ENV_)[1]
+
+        # a condition MySQL cannot run is the task's fault, not the student's
+        broken = CHECK.merge('tables' => [{ 'name' => 'movie', 'rows_where' => [{ 'where' => 'x = 1', 'rows' => 0 }] }])
+        status, _, read, _, problem = SchemaCheck.check({}, broken, where.({}), ENV_)
+        assert_equal [:unavailable, :reference_failed], [status, problem]
+        assert_includes read, "Unknown column 'x'"
+
+        # no table, no counting
+        seen = []
+        status, _, _, _, problem = SchemaCheck.check({}, check.merge('tables' => [{ 'name' => 'film', 'rows_where' => [{ 'where' => 'a = 1', 'rows' => 1 }] }]), where.({}, seen), ENV_)
+        assert_equal [:wrong, :missing_table], [status, problem]
+        assert_empty seen.grep(/WHERE a = 1/)
+    end
+
+    def test_rows_where_spec
+        task = { 'id' => 'weimar', 'title' => 'Weimar', 'prompt' => 'Los',
+                 'check' => { 'type' => 'schema', 'tables' => [{ 'name' => 'city', 'rows_where' => [{ 'where' => "name = 'Weimar'", 'rows' => 1, 'say' => 'Noch nicht.' }] }] } }
+        assert_equal [], TaskSpec.validate_task(task)
+        bad = lambda do |rules|
+            TaskSpec.validate_task(task.merge('check' => { 'type' => 'schema', 'tables' => [{ 'name' => 'city', 'rows_where' => rules }] }))
+        end
+        assert(bad.([]).any? { |e| e.include?('rows_where must be a list') })
+        assert(bad.([{ 'where' => 'a = 1; DROP TABLE city', 'rows' => 1 }]).any? { |e| e.include?('without ;') })
+        assert(bad.([{ 'where' => 'a = 1', 'rows' => -1 }]).any? { |e| e.include?('rows must be a whole number') })
+        assert(bad.([{ 'where' => 'a = 1', 'rows' => 1, 'min_rows' => 1 }]).any? { |e| e.include?('unknown keys: min_rows') })
+        # a model has no rows: er does not take it
+        assert(TableExpect.spec_errors([{ 'name' => 'city', 'rows_where' => [{ 'where' => 'a = 1', 'rows' => 1 }] }], :rows => false).any? { |e| e.include?('unknown keys: rows_where') })
+    end
 end

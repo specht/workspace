@@ -396,7 +396,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) |
-| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend |
+| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl, Zeilen, die eine Bedingung erfüllen | `information_schema` | eigene MySQL-Datenbank, nur lesend |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server |
 | `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server |
 
@@ -1529,6 +1529,30 @@ check:
 `indexes` verlangt für jede Liste einen Index der Tabelle, dessen erste
 Spalten genau diese sind; der Primärschlüssel zählt mit, und ein Index auf
 `(last_name, first_name)` genügt auch für `[last_name]`.
+
+`rows_where` zählt Zeilen, die eine Bedingung erfüllen, für Aufgaben, in
+denen Lernende Daten ändern (`INSERT`, `UPDATE`, `DELETE` in »Einführung in
+SQL«): Sie schreiben den Befehl in `mycli`, die Karte hat nur »Prüfen«. Die
+Bedingung ist die der Autorin, ohne `;`, und läuft wie der Rest nur lesend
+(`SELECT COUNT(*) FROM city WHERE …`); `say` ist die Meldung, wenn die Zahl
+nicht stimmt, sonst nennt die Karte Bedingung und Zahl. Unter der
+Rückmeldung steht zuerst, was gezählt wurde. Ein `UPDATE` ohne `WHERE` fällt
+auf, wenn eine Bedingung verlangt, dass nur eine Zeile den neuen Wert hat.
+Was eine Person in einer Transaktion ohne `COMMIT` geändert hat, sieht die
+Prüfung nicht.
+
+```yaml
+check:
+  type: schema
+  tables:
+    - name: city
+      rows_where:
+        - where: "name = 'Weimar' AND population = 65566"
+          rows: 1
+          say: Weimar hat noch nicht 65566 Einwohner.
+        - where: population = 65566
+          rows: 1                  # nicht alle Städte
+```
 
 Ein Fremdschlüssel ohne Spalte nach dem Punkt zeigt auf den Primärschlüssel
 der anderen Tabelle. `setup` steht dabei, wenn Tabellen fehlen. Unter der

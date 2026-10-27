@@ -276,7 +276,9 @@ module TaskCard
         when 'c'
             n = (check['cases'] || []).size
             "Übersetzt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, startet nicht dein <code>main</code>, sondern probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
-        when 'schema' then 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'
+        when 'schema'
+            counts = (check['tables'] || []).any? { |t| t.is_a?(Hash) && t['rows_where'] }
+            counts ? 'Zählt Zeilen in deiner MySQL-Datenbank, angemeldet als du, und ändert nichts' : 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'
         when 'submit'
             if check['pick']
                 "Kopiert die gewählte Datei, höchstens #{size.(check['max_size'] || '20MB')}"
