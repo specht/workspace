@@ -50,6 +50,7 @@ ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION=0.5.4
 ARG BIF_AUTHORING_TOOLS_VERSION=0.2.1
 ARG HACKSCHULE_ER_VERSION=0.3.0
 ARG HACKSCHULE_BACKROOMS_VERSION=0.1.1
+ARG HACKSCHULE_UML_VERSION=0.1.0
 
 # ====================================================================
 # TeX Live stage
@@ -911,6 +912,7 @@ ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION
 ARG BIF_AUTHORING_TOOLS_VERSION
 ARG HACKSCHULE_ER_VERSION
 ARG HACKSCHULE_BACKROOMS_VERSION
+ARG HACKSCHULE_UML_VERSION
 
 COPY hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix \
     /app/extensions/hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix
@@ -932,6 +934,9 @@ COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
 
 COPY hackschule-backrooms-${HACKSCHULE_BACKROOMS_VERSION}.vsix \
     /app/extensions/hackschule-backrooms-${HACKSCHULE_BACKROOMS_VERSION}.vsix
+
+COPY hackschule-uml-${HACKSCHULE_UML_VERSION}.vsix \
+    /app/extensions/hackschule-uml-${HACKSCHULE_UML_VERSION}.vsix
 
 
 # --------------------------------------------------------------------

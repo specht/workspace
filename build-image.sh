@@ -31,6 +31,8 @@ cp src/vscode-extensions/er/hackschule-er-0.3.0.vsix \
     docker/code/hackschule-er-0.3.0.vsix
 cp src/vscode-extensions/backrooms/hackschule-backrooms-0.1.1.vsix \
     docker/code/hackschule-backrooms-0.1.1.vsix
+cp src/vscode-extensions/uml/hackschule-uml-0.1.0.vsix \
+    docker/code/hackschule-uml-0.1.0.vsix
 
 echo '=== Building reusable toolchains ==='
 bash docker/code/build-toolchains.sh

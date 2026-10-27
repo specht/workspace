@@ -102,6 +102,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Seiten der eigenen Adresse (Origin), höchstens 2000 Verbindungen und 300 je IP-Adresse.
   Gespeichert wird nichts; Frequenzen, Lampen und die Zahl der Verbindungen je Adresse liegen
   nur im Arbeitsspeicher. Die Zahl der Lampen stellen Lehrkräfte für alle auf der Installation ein.
+- Neue UML-Werkstatt `hackschule-uml-0.1.0.vsix` (Klassendiagramme in `.uml`-Dateien): das Workspace-Image
+  neu bauen (`build-image.sh`). Die Prüfung `classes` bringt den Kern selbst mit und läuft auch ohne sie.
 
 ## 1.0.0 (21. Oktober 2026)
 
