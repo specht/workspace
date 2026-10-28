@@ -7929,7 +7929,8 @@ html[data-bs-theme="dark"] { --stepper-current: #b197fc; --stepper-current-ink: 
 /* code inside a widget's message reads as code, not in the error-like
    pink of code in the page text */
 div[data-stepper] :not(pre) > code:not([class]),
-.bitplane-widget :not(pre) > code:not([class]) {
+.bitplane-widget :not(pre) > code:not([class]),
+.qr-damage :not(pre) > code:not([class]) {
     color: inherit;
     background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
 }
@@ -8220,7 +8221,8 @@ h3:has(+ .person) {
    it can be tried and stepped with the arrow keys. div[…] outweighs the
    widgets' own margins. */
 div[data-stepper],
-.bitplane-widget {
+.bitplane-widget,
+.qr-damage {
     --widget: #5c677d;
     --widget-ink: #4a5264;
     --widget-chip: #ebecef;
@@ -8235,7 +8237,8 @@ div[data-stepper],
     box-shadow: 0 1px 3px rgba(92, 103, 125, 0.08);
 }
 html[data-bs-theme="dark"] div[data-stepper],
-html[data-bs-theme="dark"] .bitplane-widget {
+html[data-bs-theme="dark"] .bitplane-widget,
+html[data-bs-theme="dark"] .qr-damage {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
     --widget-chip: #25272b;
@@ -9840,6 +9843,140 @@ html[data-bs-theme="dark"] .bitplane-widget {
     margin-top: 0.3em;
     font-size: 0.8em;
     color: var(--bs-secondary-color);
+}
+
+/* The QR code to paint over (qr_damage.js): the controls above, the code
+   on its printed label (white in both modes) beside what jsQR reads and
+   what the paint has damaged; under it on a narrow screen. Sticker yellow,
+   felt pen dark blue, damaged codewords red, the keyboard's frame purple */
+.qr-damage::before {
+    content: 'Zum Ausprobieren: Flecken malen';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.qr-damage .qr-damage-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1.2em;
+    margin-bottom: 0.6em;
+}
+.qr-damage .qr-damage-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.qr-damage .qr-damage-label {
+    font-size: 0.9em;
+    color: var(--widget-ink);
+    white-space: nowrap;
+    hyphens: manual;
+}
+/* on a phone each group's name stands above its buttons, so that the three
+   tools fit in one row */
+@media (max-width: 576px) {
+    .qr-damage .qr-damage-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15em;
+    }
+    .qr-damage .qr-damage-controls {
+        gap: 0.5em 1em;
+    }
+}
+.qr-damage .qr-damage-controls .form-check {
+    margin: 0;
+}
+.qr-damage .qr-damage-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1em 1.5em;
+}
+.qr-damage .qr-damage-picture {
+    width: 100%;
+    max-width: 21em;
+    flex: 0 1 21em;
+    touch-action: none;
+    cursor: crosshair;
+    border-radius: 0.4em;
+    outline: none;
+}
+.qr-damage .qr-damage-picture:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--stepper-current) 45%, transparent);
+}
+.qr-damage .qr-damage-say {
+    flex: 1 1 14em;
+    min-width: 0;
+}
+.qr-damage .qr-damage-say p {
+    margin: 0 0 0.5em;
+}
+.qr-damage .qr-damage-verdict {
+    font-weight: 700;
+}
+.qr-damage .qr-damage-verdict.ok {
+    color: #2f855a;
+}
+.qr-damage .qr-damage-verdict.fail {
+    color: #c53030;
+}
+html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.ok {
+    color: #68d391;
+}
+html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
+    color: #fc8181;
+}
+.qr-damage .qr-damage-paper {
+    fill: #fdfdfd;
+}
+.qr-damage .qr-damage-dark {
+    fill: #0b0f19;
+}
+.qr-damage .qr-damage-sticker {
+    fill: #fde68a;
+    stroke: #d97706;
+    stroke-width: 0.06;
+}
+.qr-damage .qr-damage-pen {
+    fill: #1e3a8a;
+    stroke: #1e3a8a;
+    stroke-width: 0.06;
+}
+.qr-damage .qr-damage-hit {
+    fill: #dc2626;
+    fill-opacity: 0.45;
+}
+.qr-damage .qr-damage-edge-data,
+.qr-damage .qr-damage-edge-ec {
+    fill: none;
+    stroke-width: 0.14;
+    stroke-linecap: square;
+}
+.qr-damage .qr-damage-edge-data {
+    stroke: #2b5fb4;
+}
+.qr-damage .qr-damage-edge-ec {
+    stroke: #16a34a;
+}
+.qr-damage .qr-damage-cursor {
+    fill: none;
+    stroke: #6741d9;
+    stroke-width: 0.18;
+}
+@media (pointer: coarse) {
+    .qr-damage .btn-sm {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
 }
 
 

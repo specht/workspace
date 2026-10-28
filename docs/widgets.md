@@ -366,6 +366,20 @@ only to look nice.
   »verstärken« stretches the rest to 0 to 255; one pixel's red value in
   binary under the picture. The photo (CC0, credited under it) is a PNG, so
   that every bit is the photo's own, and not one of the activity's photos.
+- **A QR code to paint over** (`qr_damage.js` on `qr_code.js`, »Prüfziffern«):
+  the same 13 digits at the levels L, M, Q and H (version 2, matrices from
+  qrencode via `src/scripts/qr-code.cjs`); a sticker (light), a felt pen
+  (dark) and an eraser, one module or 3 × 3; with the mouse, a finger (the
+  code does not scroll the page while painting) or the arrow keys and the
+  space bar. After every stroke jsQR (vendored in `include/jsqr/`, Apache
+  2.0) reads the painted code as an image, and beside it the widget says
+  what the paint turned: the codewords (data and correction) against what
+  the level repairs, the finder patterns, timing lines, alignment pattern
+  and format information; »Codewörter zeigen« draws their edges and the
+  damaged ones red. The paint stays when the level changes. The code is a
+  printed label, white in both modes. No steps, no timeline: the reader
+  paints. `test/static/qr_code.test.cjs` checks the layout against
+  qrencode and the page's stickers against jsQR.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.
