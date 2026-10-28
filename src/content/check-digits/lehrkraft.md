@@ -1,4 +1,4 @@
-Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Ruby oder Python.
+Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Zum Schluss bekleben sie einen QR-Code auf der Seite, bis er unlesbar wird, sehen, wie er Fehler repariert statt sie nur zu finden, und programmieren ein Gitter mit Paritätsbits, das ein gekipptes Bit findet. Ruby oder Python.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen mit Parametern und Rückgabewert, Verzweigungen, eine Zählschleife, Listen mit Index; etwa nach den Katas zu Funktionen, Entscheidungen, Schleifen und Listen. Struktogramme und Pseudocode erklärt die Seite, ausführlicher das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a>.</td></tr>
@@ -6,12 +6,13 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die Geschichte, die Prüfziffer von Hand, ein Struktogramm lesen, das Struktogramm der Prüfziffer, <code>weight</code> und <code>check_digit</code>.</li>
 <li><b>2. Doppelstunde:</b> erst planen, dann programmieren: der gültige Strichcode, die ISBN mit eigenem Plan, die Zahlendreher.</li>
+<li><b>3. Doppelstunde:</b> der QR-Code: woraus er besteht, die Aufkleber auf dem Code zum Bemalen, die Stufen der Korrektur, die Idee von Reed-Solomon mit einer Geraden, dann <code>parity</code> und <code>find_error</code> für ein Gitter mit Paritätsbits.</li>
 </ul></td></tr>
-<tr><th>Dateien</th><td>Alles in <code>/workspace/check-digits</code>: <code>check_digits.rb</code> oder <code>check_digits.py</code> mit allen Funktionen, dazu <code>swaps.rb</code> oder <code>swaps.py</code> für die Zahlendreher. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
+<tr><th>Dateien</th><td>Alles in <code>/workspace/check-digits</code>: <code>check_digits.rb</code> oder <code>check_digits.py</code> mit den Funktionen für Strichcodes und ISBNs, <code>swaps.rb</code> oder <code>swaps.py</code> für die Zahlendreher und <code>parity_grid.rb</code> oder <code>parity_grid.py</code> für das Gitter. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Vier Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe; die Aufgabe sagt jeweils, womit.</li>
+<li>Sechs Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe; die Aufgabe sagt jeweils, womit.</li>
 <li>Der Plan für die ISBN ist eine offene Aufgabe: Die Lernenden kopieren die Kommentare ihres Plans hinein, bevor sie den Code schreiben; er geht ans Klassenboard. Unter der Aufgabe sehen nur Lehrkräfte ein Beispiel für einen guten Plan.</li>
-<li>Dazu die Prüfziffer von Hand, das Ergebnis eines Struktogramms, die Zahl der übersehenen Zahlendreher und drei Vorhersagen. Der Workspace muss für die Prüfungen laufen.</li>
+<li>Dazu die Prüfziffer von Hand, das Ergebnis eines Struktogramms, die Zahl der übersehenen Zahlendreher, im Kapitel zum QR-Code eine Zahl, eine Auswahl und der falsche Wert auf einer Geraden, und fünf Vorhersagen. Der Workspace muss für die Prüfungen laufen.</li>
 </ul></td></tr>
 </table>
 
@@ -21,13 +22,18 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 - `mystery(4021)` gibt 7 zurück, die Quersumme.
 - Von den 90 Zahlendrehern aus zwei verschiedenen Ziffern übersieht EAN-13 genau 10: die Paare, deren Ziffern sich um 5 unterscheiden (05, 16, 27, 38, 49 und umgekehrt). Die ISBN-10 übersieht keinen, weil 11 eine Primzahl ist und sich die Summe beim Vertauschen um den Unterschied der beiden Ziffern ändert.
 - Eine einzelne falsche Ziffer findet EAN-13 immer: Mit dem Gewicht 1 ändert sie die Summe um 1 bis 9, mit dem Gewicht 3 um 3 bis 27, aber nie um ein Vielfaches von 10.
+- Der QR-Code der Seite trägt dieselben 13 Ziffern, Version 2 (25 × 25 Module, 44 Codewörter), erzeugt mit <code>qrencode</code> (<code>src/scripts/qr-code.cjs</code>). Daten und Korrektur je Stufe: L 34 und 10, M 28 und 16, Q 22 und 22, H 16 und 28; repariert werden höchstens halb so viele Codewörter, wie Korrektur sind: 5, 8, 11 und 14. Die Norm (<a href='https://www.iso.org/standard/83389.html'>ISO/IEC 18004</a>) rät, bei so kleinen Codes der Stufe L ein paar weniger zu reparieren, um sich nicht zu verlesen; das Leseprogramm der Seite (jsQR) repariert alle, die es kann.
+- Aufkleber A (5 × 5 Module im Suchmuster oben links) beschädigt kein Codewort, und der Code ist unlesbar; Aufkleber B (5 × 5 am rechten Rand, in den Daten) beschädigt fünf Codewörter, und der Code der Stufe M liest sich; bei Stufe L beschädigt er sechs, einen mehr, als L repariert, und der Code ist unlesbar. Ob ein Handy mit einem verdeckten Suchmuster genauso scheitert, hängt von der App ab; das Leseprogramm der Seite scheitert.
+- Der Code mit 29 × 29 Modulen (Version 3) hat bei Stufe M 26 Korrekturcodewörter und repariert 13. Auf der Geraden 4, 7, 11, 13 ist die 11 falsch, richtig ist 10. Das Gitter hat 16 Datenbits und 9 Paritätsbits und repariert ein Bit; kippen zwei in derselben Zeile, sind nur zwei Spalten ungerade.
 
 #### Die Aufgaben
 
 - Struktogramme kommen zweimal vor, zum Lesen (<code>mystery</code>) und zum Übersetzen (<code>check_digit</code>), wie es der Rahmenlehrplan nennt. Geplant wird nicht mit einem Struktogramm, sondern mit Kommentaren in der Datei: Das ist Pseudocode an der Stelle, an der der Code entsteht, und so planen auch viele, die beruflich programmieren. Bei <code>valid_ean</code> steht ein Plan als Kommentare in den Tipps, bei der ISBN nichts. Der Plan für die ISBN ist die Stelle, an der sich zeigt, ob jemand plant oder gleich tippt; ein Vergleich zweier Pläne an der Tafel lohnt sich (Was geschieht mit den Bindestrichen? Wo wird das X behandelt?).
 - Die Prüfungen von <code>valid_ean</code> und <code>valid_isbn</code> rufen die Funktionen auch mit zu kurzen, zu langen und falschen Eingaben auf; die Aufgabe kündigt das an. Wer die Fälle im Plan hat, besteht sie beim ersten Versuch.
 - Wer einen Plan doch als Struktogramm sehen will: Das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a> zeichnet es aus Pseudocode; »Als SVG speichern« lädt das Bild herunter, etwa für ein Arbeitsblatt. Die Schlüsselwörter des Pseudocodes sind Englisch wie im ganzen Handbuch, den Pfeil tippt man als <code>&lt;-</code>.
-- Die häufigsten Fehler, die die Prüfungen eigens abfangen: die Gewichte vertauscht (mit 3 beginnend), das zweite <code>mod 10</code> vergessen (die Prüfziffer wird 10), ein Code mit 14 Ziffern als gültig, das X der ISBN nicht behandelt.
+- Die häufigsten Fehler, die die Prüfungen eigens abfangen: die Gewichte vertauscht (mit 3 beginnend), das zweite <code>mod 10</code> vergessen (die Prüfziffer wird 10), ein Code mit 14 Ziffern als gültig, das X der ISBN nicht behandelt, bei der Parität die Zahl der Einsen statt ihres Rests, bei <code>find_error</code> die Zeile mit dem Index der Spalte statt der Spalte selbst.
+- Das Kapitel zum QR-Code erklärt Reed-Solomon nur als Idee: Werte auf einer Geraden, von der mehr Werte gespeichert sind, als nötig sind. Wie der QR-Code mit Bytes in einem endlichen Körper rechnet, kommt nicht vor; für einen Leistungskurs lohnt es sich, die Gerade durch ein Polynom höheren Grades zu ersetzen und nachzurechnen, dass n Werte ein Polynom vom Grad n − 1 festlegen.
+- Die Aufkleber lassen sich auch mit dem Handy auf Papier ausprobieren: einen QR-Code ausdrucken, ein Stück Papier über eine Ecke mit Codewörtern kleben, dann über ein Suchmuster.
 
 #### Was schiefgeht
 
@@ -37,4 +43,4 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 
 #### Weiter
 
-QR-Codes reparieren Fehler, statt sie nur zu finden (Reed-Solomon); das Experiment mit dem überklebten QR-Code am Ende der Seite dauert zwei Minuten. Die IBAN (Rest bei der Division durch 97) eignet sich als eigene Aufgabe mit derselben Planung: erst der Plan, dann der Code.
+Die IBAN (Rest bei der Division durch 97) eignet sich als eigene Aufgabe mit derselben Planung: erst der Plan, dann der Code.

@@ -59,3 +59,27 @@ examples:
       fail:
         - { files: { check-digits/check_digits.py: stufen/3-ean/check_digits.py } }
         - { files: { check-digits/check_digits.py: fehler/isbn-ohne-x.py }, say: X für 10 }
+  paritaet:
+    pass:
+      - { files: { check-digits/parity_grid.rb: loesung/parity_grid.rb } }
+    fail:
+      - { files: { check-digits/parity_grid.rb: { text: "# noch leer\n" } } }
+      - { files: { check-digits/parity_grid.rb: fehler/parity-sum.rb }, say: Rest bei der Division durch 2 }
+    python:
+      pass:
+        - { files: { check-digits/parity_grid.py: loesung/parity_grid.py } }
+      fail:
+        - { files: { check-digits/parity_grid.py: { text: "# noch leer\n" } } }
+        - { files: { check-digits/parity_grid.py: fehler/parity-sum.py }, say: Rest bei der Division durch 2 }
+  bit-finden:
+    pass:
+      - { files: { check-digits/parity_grid.rb: loesung/parity_grid.rb } }
+    fail:
+      - { files: { check-digits/parity_grid.rb: fehler/parity-sum.rb } }
+      - { files: { check-digits/parity_grid.rb: fehler/column-from-row.rb }, say: Element mit demselben Index }
+    python:
+      pass:
+        - { files: { check-digits/parity_grid.py: loesung/parity_grid.py } }
+      fail:
+        - { files: { check-digits/parity_grid.py: fehler/parity-sum.py } }
+        - { files: { check-digits/parity_grid.py: fehler/column-from-row.py }, say: Element mit demselben Index }

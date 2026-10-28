@@ -2,9 +2,9 @@
 image: teaser.webp:25:50
 image_alt: "Ein Strichcode mit den Ziffern 4 260111 020434 auf einem weißen Etikett, daneben das Struktogramm der Funktion check_digit mit einer Zählschleife von 0 bis 11."
 kind: projekt
-duration: 2 Doppelstunden
+duration: 3 Doppelstunden
 languages: [ruby, python]
-curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
+curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode, QR-Code); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
 topics: [fehlererkennung, codierung, darstellung]
 age: Sek I
 requires: [kata-lists]
@@ -20,7 +20,7 @@ reference: [struktogramme]
 # Prüfziffern: erst planen, dann programmieren
 
 <p class='abstract'>
-Warum piept die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, mit Kommentaren im Code, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht.
+Warum piept die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, mit Kommentaren im Code, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht. Zum Schluss beklebst du einen QR-Code, bis er unlesbar wird, und programmierst selbst einen Code, der einen Fehler nicht nur findet, sondern repariert.
 </p>
 
 <script src='/include/struktogramm.js'></script>
@@ -650,6 +650,399 @@ Unterschied 5, ändert sie sich um 10, und die Prüfziffer bleibt dieselbe.
 
 _task(isbn-dreher)
 
+## Wenn der Code beschädigt ist: QR-Codes
+
+<script src='/include/jsqr/jsQR.js'></script>
+<script src='/include/qr_code.js'></script>
+<script src='/include/qr_damage.js'></script>
+
+Die Prüfziffer merkt, dass eine Ziffer falsch ist. Welche es ist, weiß die
+Kasse nicht, und erst recht nicht, wie sie richtig hieße: Die Kassiererin muss
+den Code noch einmal abtippen. Auf manchen Packungen steht neben dem
+Strichcode ein **QR-Code**, und ein Handy liest ihn auch dann noch, wenn ein
+Teil verschmutzt, zerkratzt oder überklebt ist. Ein QR-Code findet Fehler
+nicht nur, er repariert sie. Der QR-Code in diesem Kapitel trägt dieselben
+dreizehn Ziffern wie der Strichcode der Nudeln.
+
+### Woraus ein QR-Code besteht
+
+Auch ein QR-Code besteht aus Modulen, diesmal aus kleinen Quadraten, hell oder
+dunkel. Dieser hier hat 25 × 25 davon:
+
+<img class='drawing' style='width: 38em' src='qr-aufbau.webp' alt='Ein QR-Code aus 25 mal 25 Modulen auf einem weißen Etikett, farbige Flächen hinter den Modulen zeigen die Teile. Orange: drei große Quadrate in den Ecken oben links, oben rechts und unten links, »Suchmuster«; eine Linie aus abwechselnd hellen und dunklen Modulen zwischen den beiden oberen, »Taktlinie«; ein kleines Quadrat unten rechts, »Ausrichtungsmuster«. Lila: schmale Streifen neben den Suchmustern, links und rechts »Formatinformation«. Der Rest ist in Blöcke aus meist acht Modulen geteilt, blau umrandet die rechte Hälfte, »Daten: 28 Codewörter«, grün umrandet ein Streifen links davon, »Korrektur: 16 Codewörter«.'>
+
+- In drei Ecken steht ein **Suchmuster**: ein dunkles Quadrat in einem hellen
+  Rahmen in einem dunklen Rahmen. An ihnen erkennt ein Handy, wo der Code ist,
+  wie er gedreht ist und wie groß ein Modul ist, so wie der Scanner am Rand
+  und an der Mitte eines Strichcodes.
+- Zwischen den Suchmustern laufen zwei **Taktlinien**, abwechselnd hell und
+  dunkel: An ihnen zählt das Handy die Zeilen und Spalten ab. Das
+  **Ausrichtungsmuster** unten rechts hilft, wenn der Code schräg fotografiert
+  ist oder auf einer gewölbten Dose klebt.
+- Neben den Suchmustern steht zweimal dieselbe **Formatinformation**: wie
+  stark der Code Fehler korrigiert und mit welcher Maske er gedruckt ist.
+- Der Rest sind **Codewörter**, je acht Module, meist ein Block aus 2 × 4.
+  Jedes trägt ein Byte, also acht Bits. Sie stehen in Doppelspalten im
+  Zickzack, von unten rechts nach oben, in der nächsten Doppelspalte wieder
+  hinunter. Die ersten 28 Codewörter, rechts, sind die **Daten**: die dreizehn
+  Ziffern und, weil sie nicht alles füllen, Füllbytes. Die übrigen 16, links,
+  sind die **Korrektur**: Sie sind aus den Daten berechnet, so wie die
+  Prüfziffer aus den zwölf Ziffern, nur sind es viel mehr.
+
+Gedruckt werden die Codewörter nicht, wie sie sind. Damit keine großen hellen
+oder dunklen Flächen entstehen und nirgends zufällig etwas, das wie ein
+Suchmuster aussieht, dreht das Programm, das den Code erzeugt, ihre Module nach
+einem festen Muster um, der **Maske**, etwa jedes Modul, bei dem Zeile und
+Spalte zusammen eine gerade Zahl ergeben. Acht Masken stehen zur Wahl; das
+Programm nimmt die, mit der der Code am gleichmäßigsten aussieht, und das Handy
+dreht dieselben Module beim Lesen wieder um.
+
+### Wie viel darf fehlen?
+
+Auf den Code kommen zwei gleich große Aufkleber aus 5 × 5 Modulen: A mitten in
+das Suchmuster oben links, B an den rechten Rand, mitten in die Codewörter mit
+den Daten. Der Code ist mit der Stufe M gedruckt; was das heißt, kommt gleich.
+
+<img class='drawing' style='width: 18em' src='qr-flecken.webp' alt='Derselbe QR-Code mit zwei gelben Aufklebern aus je 5 mal 5 Modulen: A verdeckt das Innere des Suchmusters oben links, B ein Stück des rechten Rands unter dem Suchmuster oben rechts.'>
+
+_task(qr-fleck)
+
+<!-- after: qr-fleck -->
+Probier es aus. Die Knöpfe »Aufkleber A« und »Aufkleber B« kleben die beiden
+Aufkleber auf; mit dem Aufkleber, dem Filzstift und dem Radierer malst du
+selbst, mit der Maus, dem Finger oder mit den Pfeiltasten und der Leertaste.
+Nach jedem Strich liest ein Programm für QR-Codes, jsQR, den bemalten Code als
+Bild, so wie eine App ein Foto liest. Beim Code steht, was es gelesen hat und
+was beschädigt ist.
+
+<div class='qr-damage' data-text='4260111020434' data-level='M'
+    data-l='1111111011110111001111111 1000001010010001001000001 1011101001000100001011101 1011101000011001101011101 1011101010011001101011101 1000001011101110101000001 1111111010101010101111111 0000000011000100000000000 1110011011011101111110011 0110100100001000100111101 0111011111101110111101111 1011110010111011110111000 1001011101100110011011011 0110110010100110010001001 1111011010110001000011010 0011110010100100001000001 1100001110011101111111110 0000000011101000100010110 1111111001101111101011001 1000001010011011100011111 1011101000100110111110111 1011101001100110111000000 1011101010010000011001111 1000001011000101000010010 1111111011111101101001111'
+    data-m='1111111010111110101111111 1000001001100111001000001 1011101001010010001011101 1011101010010000001011101 1011101010011000001011101 1000001010101000101000001 1111111010101010101111111 0000000011001101100000000 1000101111110100011111001 1001010001000110101001100 1101111111101000110011110 0010100100001010000110110 0111001100000111101010101 1100000010101000011111000 0000011010011111001101011 0011100001010101111001111 1111011110101100111110000 0000000010100110100010111 1111111010100001101011000 1000001001001010100010001 1011101011110111111111001 1011101001101000110110001 1011101001011110010111110 1000001000110100110011100 1111111011101100011000001'
+    data-q='1111111001101001101111111 1000001010101011001000001 1011101011110111001011101 1011101000000000101011101 1011101001011100001011101 1000001000110010001000001 1111111010101010101111111 0000000001101110000000000 0111011001001110100000110 1100010111101001101110100 1110001100111011010000010 0010110101001111010011100 1000001110010000101101101 0010110001100000000011011 0101011101101110011000001 1011010111000011000001000 0010101101010100111110011 0000000010011100100010010 1111111001011011101011111 1000001011100111100011101 1011101000101001111111100 1011101011101011110001001 1011101010111101110100010 1000001011010011100110110 1111111001101111011111001'
+    data-h='1111111001010011001111111 1000001010110011001000001 1011101001101111001011101 1011101001111100001011101 1011101001101100101011101 1000001010100011101000001 1111111010101010101111111 0000000010110100000000000 0000111100000110101100010 1111100101100001001001100 0001111111101111010011110 1100100111101010100110110 0110111010010111101010101 1001010100110110011111000 0011001111111011001101011 0001110111001011111001111 1101011010111100111110000 0000000011000010100010111 1111111011011101101011000 1000001011110110100010001 1011101011011011111111001 1011101001110100110110001 1011101000100100010111110 1000001000010010110011100 1111111000100110011000001'>
+</div>
+
+Aufkleber B beschädigt fünf Codewörter, und Stufe M repariert bis zu acht: Das
+Programm liest dieselben dreizehn Ziffern wie vorher. Aufkleber A beschädigt
+kein einziges Codewort, und trotzdem liest das Programm nichts. Ohne das
+Suchmuster findet es den Code gar nicht erst, und die Korrektur kann nur
+reparieren, was gefunden ist.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Klebe Aufkleber B auf, schalte »Codewörter
+zeigen« ein, rot sind die beschädigten, und wechsle zwischen den Stufen L, M, Q
+und H. Achte darauf, bei welcher Stufe der Code nicht mehr lesbar ist. Mal dann
+bei Stufe H mit dem Filzstift und der Größe 3 × 3 weitere Flecken in die
+Codewörter, bis er kippt, und zähl die roten Codewörter. Mit einem Handy geht es auch auf Papier:
+Druck einen QR-Code aus und kleb ein Stück Papier über eine Ecke mit
+Codewörtern, dann über ein Suchmuster.
+</div>
+
+Die Suchmuster sind darum so auffällig, und auf sie hat das Team um Masahiro
+Hara bei der Firma Denso besonders geachtet, als es den QR-Code erfand.
+
+_person(hara)
+<!-- /after -->
+
+### Die Stufen der Korrektur
+
+Wie viel ein QR-Code reparieren kann, legt fest, wer ihn erzeugt, mit einer von
+vier Stufen: L, M, Q oder H. Je höher die Stufe, desto mehr Codewörter sind
+Korrektur und desto weniger bleiben für Daten. Für den Code der Nudeln mit
+seinen 44 Codewörtern:
+
+<div class='scroll-x'><table class='table' style='width: auto;'>
+<tr><th>Stufe</th><th>Daten</th><th>Korrektur</th><th>repariert bis zu</th></tr>
+<tr><td>L</td><td>34</td><td>10</td><td>5 Codewörter</td></tr>
+<tr><td>M</td><td>28</td><td>16</td><td>8 Codewörter</td></tr>
+<tr><td>Q</td><td>22</td><td>22</td><td>11 Codewörter</td></tr>
+<tr><td>H</td><td>16</td><td>28</td><td>14 Codewörter</td></tr>
+</table>
+</div>
+
+Für jedes beschädigte Codewort braucht der Code zwei Korrekturcodewörter:
+eines, um herauszufinden, welches Codewort falsch ist, und eines, um es
+richtigzustellen. Denso Wave, die Firma hinter dem QR-Code, nennt für die vier
+Stufen ungefähr
+[7, 15, 25 und 30 Prozent](https://www.qrcode.com/en/about/error_correction.html)
+der Codewörter; bei diesem kleinen Code sind es 11, 18, 25 und 32 Prozent.
+
+_task(qr-stufen)
+
+_task(qr-nicht-immer-h)
+
+### Reparieren mit einer Geraden
+
+Wie kann ein Code einen Fehler reparieren, statt ihn nur zu bemerken? Die Idee
+hatten Irving Reed und Gustave Solomon 1960. Ganz klein sieht sie so aus: Die
+Daten sind zwei Zahlen, 2 und 6. Man liest sie als die ersten beiden Werte
+einer Folge, die bei jedem Schritt um gleich viel wächst, hier um 4, als Punkte
+auf einer Geraden. Gespeichert werden vier Werte dieser Folge, 2, 6, 10 und 14;
+die beiden letzten sind die Korrektur.
+
+Kommt ein Wert falsch an, etwa 2, 6, 11, 14, liegen drei der vier noch auf
+einer Geraden: 2, 6 und 14 wachsen um 4 bei jedem Schritt, wenn man den Platz
+der 11 mitzählt. Nur die 11 passt nicht, und auf der Geraden stünde dort die
+10. Zwei Korrekturwerte reparieren also einen falschen Wert. Weiß man dagegen
+schon, welche Werte fehlen, etwa weil zwei unlesbar sind, genügen die beiden
+übrigen: Durch zwei Punkte geht genau eine Gerade.
+
+_task(gerade)
+
+<!-- after: gerade -->
+Ein QR-Code rechnet genauso, nur nicht mit einer Geraden durch zwei Punkte,
+sondern mit einer Kurve durch so viele Punkte, wie er Datencodewörter hat, und
+er speichert so viele Punkte mehr, wie er Korrekturcodewörter hat. Gerechnet
+wird dabei nicht mit gewöhnlichen Zahlen, sondern mit Bytes in einer eigenen
+Arithmetik, einem endlichen Körper, in dem jedes Ergebnis wieder ein Byte ist.
+Das Verfahren heißt nach seinen Erfindern **Reed-Solomon-Code**. Es steckt auch
+in CDs und DVDs, die trotz Kratzern noch spielen; die Raumsonde Voyager 2
+schickte 1986 ihre Bilder vom Uranus damit zur Erde, und Server mit RAID 6
+verlieren damit keine Daten, wenn zwei ihrer Festplatten ausfallen.
+<!-- /after -->
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Polynomial Codes over Certain Finite Fields</strong>, Irving S. Reed und Gustave Solomon, Journal of the Society for Industrial and Applied Mathematics, 1960. Auf fünf Seiten die Daten als Polynom, von dem mehr Werte gespeichert werden, als nötig sind: <a href='https://doi.org/10.1137/0108018'>bei der SIAM</a>.</p>
+</div>
+
+### Jetzt bist du dran: ein Gitter, das ein Bit repariert
+
+Einen Code, der einen Fehler repariert, kannst du selbst programmieren, ganz
+ohne Kurven. Die Daten sind Bits in einem Gitter, hier vier Zeilen mit je vier
+Bits. Ans Ende jeder Zeile kommt ein **Paritätsbit**: 1, wenn die Zeile eine
+ungerade Zahl von Einsen hat, sonst 0. Danach hat jede Zeile eine gerade Zahl
+von Einsen. Darunter kommt eine Zeile mit den Paritätsbits der Spalten, sodass
+auch jede Spalte eine gerade Zahl von Einsen hat, die letzte eingeschlossen.
+Fett sind die Paritätsbits:
+
+<div class='scroll-x'><table class='table' style='width: auto; text-align: center;'>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><th>0</th></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><th>0</th></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><th>1</th></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><th>0</th></tr>
+<tr><th>0</th><th>1</th><th>0</th><th>0</th><th>1</th></tr>
+</table>
+</div>
+
+Kippt ein Bit, haben genau eine Zeile und genau eine Spalte eine ungerade Zahl
+von Einsen, und wo sie sich kreuzen, steht das gekippte Bit. Reparieren heißt
+dann: es wieder umdrehen. Wie bei der Prüfziffer kommt etwas dazu, das aus den
+Daten berechnet ist, nur zweimal, für jede Zeile und für jede Spalte, und das
+verrät nicht nur, dass ein Bit falsch ist, sondern auch, welches.
+
+Im Code ist das Gitter eine Liste von Zeilen, jede Zeile eine Liste von Bits.
+Das Gitter von oben:
+
+<!-- language: ruby -->
+```ruby
+grid = [[1, 1, 0, 0, 0], [0, 1, 0, 1, 0], [1, 1, 1, 0, 1], [0, 0, 1, 1, 0], [0, 1, 0, 0, 1]]
+```
+
+`grid[2]` ist die dritte Zeile, `grid[2][0]` ihr erstes Bit. Die Funktionen
+kommen in eine neue Datei `parity_grid.rb` im Ordner `check-digits`;
+ausprobieren kannst du sie mit `irb -r ./parity_grid.rb`.
+<!-- /language -->
+<!-- language: python -->
+```python
+grid = [[1, 1, 0, 0, 0], [0, 1, 0, 1, 0], [1, 1, 1, 0, 1], [0, 0, 1, 1, 0], [0, 1, 0, 0, 1]]
+```
+
+`grid[2]` ist die dritte Zeile, `grid[2][0]` ihr erstes Bit. Die Funktionen
+kommen in eine neue Datei `parity_grid.py` im Ordner `check-digits`;
+ausprobieren kannst du sie mit `python3 -i parity_grid.py`.
+<!-- /language -->
+
+<!-- language: ruby -->
+<div class='hint own' data-check='paritaet'>
+<strong>Jetzt bist du dran:</strong> Schreib die Funktion
+<code>parity(bits)</code>: Sie bekommt eine Liste aus Nullen und Einsen und gibt
+0 zurück, wenn darin eine gerade Zahl von Einsen steht, sonst 1.
+</div>
+
+<!-- hint -->
+Zähl die Einsen: Weil jedes Bit 0 oder 1 ist, ist ihre Zahl die Summe aller
+Bits. Ob sie gerade ist, sagt der Rest bei der Division durch 2, wie bei
+`weight`: `% 2`.
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+def parity(bits)
+  ones = 0
+  bits.each do |bit|
+    ones = ones + bit
+  end
+  ones % 2
+end
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: python -->
+<div class='hint own' data-check='paritaet'>
+<strong>Jetzt bist du dran:</strong> Schreib die Funktion
+<code>parity(bits)</code>: Sie bekommt eine Liste aus Nullen und Einsen und gibt
+0 zurück, wenn darin eine gerade Zahl von Einsen steht, sonst 1.
+</div>
+
+<!-- hint -->
+Zähl die Einsen: Weil jedes Bit 0 oder 1 ist, ist ihre Zahl die Summe aller
+Bits. Ob sie gerade ist, sagt der Rest bei der Division durch 2, wie bei
+`weight`: `% 2`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def parity(bits):
+    ones = 0
+    for bit in bits:
+        ones = ones + bit
+    return ones % 2
+```
+<!-- /solution -->
+<!-- /language -->
+
+_task(paritaet)
+
+<!-- language: ruby -->
+<div class='hint own' data-check='bit-finden'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>find_error(grid)</code>: Sie
+gibt <code>[row, column]</code> zurück, die Zeile und die Spalte des gekippten
+Bits, und <code>nil</code>, wenn alle Zeilen und Spalten eine gerade Zahl von
+Einsen haben. Schreib zuerst deinen Plan als Kommentare hinein.
+</div>
+
+<!-- hint -->
+Probier es zuerst von Hand: Dreh im Gitter oben das Bit `grid[1][2]` um. Welche
+Zeile hat jetzt eine ungerade Zahl von Einsen, welche Spalte?
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt:
+
+```ruby
+def find_error(grid)
+  # für jede Zeile mit ihrem Index: Parität 1? Index merken
+  # für jeden Index einer Spalte: die Spalte als Liste, Parität 1? Index merken
+  # keine Zeile oder keine Spalte gefunden: nil
+  # sonst [Zeile, Spalte]
+end
+```
+<!-- /hint -->
+
+<!-- hint -->
+Eine Spalte ist keine Liste im Gitter; du baust sie, indem du aus jeder Zeile
+das Element mit demselben Index nimmst: `grid.map { |line| line[c] }`. Wie viele
+Spalten es gibt, sagt `grid[0].length`.
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+def find_error(grid)
+  # die Zeile mit einer ungeraden Zahl von Einsen
+  row = nil
+  grid.each_with_index do |bits, r|
+    row = r if parity(bits) == 1
+  end
+  # die Spalte mit einer ungeraden Zahl von Einsen
+  column = nil
+  (0...grid[0].length).each do |c|
+    bits = grid.map { |line| line[c] }
+    column = c if parity(bits) == 1
+  end
+  # alles gerade: kein Fehler
+  return nil if row.nil? || column.nil?
+
+  [row, column]
+end
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg in <code>irb</code> das Gitter von oben an,
+ruf <code>find_error(grid)</code> auf, dreh mit
+<code>grid[3][1] = 1 - grid[3][1]</code> ein Bit um und ruf es noch einmal auf.
+Achte darauf, ob auch ein gekipptes Paritätsbit gefunden wird, etwa
+<code>grid[4][4]</code>.
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint own' data-check='bit-finden'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>find_error(grid)</code>: Sie
+gibt <code>[row, column]</code> zurück, die Zeile und die Spalte des gekippten
+Bits, als Liste, und <code>None</code>, wenn alle Zeilen und Spalten eine gerade
+Zahl von Einsen haben. Schreib zuerst deinen Plan als Kommentare hinein.
+</div>
+
+<!-- hint -->
+Probier es zuerst von Hand: Dreh im Gitter oben das Bit `grid[1][2]` um. Welche
+Zeile hat jetzt eine ungerade Zahl von Einsen, welche Spalte?
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt:
+
+```python
+def find_error(grid):
+    # für jeden Index einer Zeile: Parität 1? Index merken
+    # für jeden Index einer Spalte: die Spalte als Liste, Parität 1? Index merken
+    # keine Zeile oder keine Spalte gefunden: None
+    # sonst [Zeile, Spalte]
+    pass
+```
+<!-- /hint -->
+
+<!-- hint -->
+Eine Spalte ist keine Liste im Gitter; du baust sie, indem du aus jeder Zeile
+das Element mit demselben Index nimmst: `[line[c] for line in grid]`. Wie viele
+Spalten es gibt, sagt `len(grid[0])`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def find_error(grid):
+    # die Zeile mit einer ungeraden Zahl von Einsen
+    row = None
+    for r in range(len(grid)):
+        if parity(grid[r]) == 1:
+            row = r
+    # die Spalte mit einer ungeraden Zahl von Einsen
+    column = None
+    for c in range(len(grid[0])):
+        bits = [line[c] for line in grid]
+        if parity(bits) == 1:
+            column = c
+    # alles gerade: kein Fehler
+    if row is None or column is None:
+        return None
+    return [row, column]
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg in Python das Gitter von oben an, ruf
+<code>find_error(grid)</code> auf, dreh mit
+<code>grid[3][1] = 1 - grid[3][1]</code> ein Bit um und ruf es noch einmal auf.
+Achte darauf, ob auch ein gekipptes Paritätsbit gefunden wird, etwa
+<code>grid[4][4]</code>.
+</div>
+<!-- /language -->
+
+_task(bit-finden)
+
+Und wenn zwei Bits kippen?
+
+_task(zwei-bits)
+
+<!-- after: zwei-bits -->
+Kippen zwei Bits in derselben Zeile, hat die Zeile wieder eine gerade Zahl von
+Einsen, nur ihre beiden Spalten sind ungerade. Das Gitter merkt, dass etwas
+nicht stimmt, aber nicht, in welcher Zeile: Wie die Prüfziffer bemerkt es den
+Fehler, ohne ihn reparieren zu können. Für 16 Bits Daten hat das Gitter 9
+Paritätsbits und repariert ein Bit. Ein QR-Code der Stufe H repariert 14 von 44
+Codewörtern, und dafür sind fast zwei Drittel seiner Codewörter Korrektur.
+<!-- /after -->
+
 <!-- extra -->
 ## Wie geht es weiter?
 
@@ -657,11 +1050,6 @@ _task(isbn-dreher)
   oder 979 und ist selbst ein EAN-13-Code: Auf der Rückseite eines Buchs steht
   sie als Strichcode, mit derselben Prüfziffer wie auf den Nudeln. Probier
   deine Funktion für Strichcodes an einem Buch aus deinem Regal aus.
-- **Mehr als Fehler finden:** Ein QR-Code findet Fehler nicht nur, er
-  repariert sie. Er trägt so viel zusätzliche Information, dass ein Handy ihn
-  auch dann noch liest, wenn ein Teil verdeckt oder verschmutzt ist, je nach
-  Stufe der Fehlerkorrektur bis zu 30 Prozent.
-  Kleb ein Stück Papier über eine Ecke eines QR-Codes und scann ihn.
 - **Kontonummern:** Auch eine IBAN hat Prüfziffern, die dritte und vierte
   Stelle; gerechnet wird mit dem Rest bei der Division durch 97.
 

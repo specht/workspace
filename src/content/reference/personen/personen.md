@@ -822,6 +822,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1957 -->
+<!-- part: hara -->
+### Masahiro Hara
+
+<div class='person'>
+<img src='hara.webp' alt='Masahiro Hara 2023: ein Mann mit grauem, halblangem Haar in einem dunkelgrauen Anzug mit Krawatte vor einer hellen Wand.'>
+<p><strong>Masahiro Hara</strong> (geboren 1957), japanischer Ingenieur bei Denso, einem Zulieferer von Toyota. Mit nur einem Kollegen entwickelte er den QR-Code, den seine Firma 1994 vorstellte. Autofabriken verwalteten damit ihre Teile, von der Herstellung bis zum Versand. Für die Suchmuster in den Ecken suchte das Team in Drucksachen nach dem Verhältnis von hell und dunkel, das dort am seltensten vorkommt: 1 : 1 : 3 : 1 : 1.</p>
+<p>Seine Firma hält Patente auf den QR-Code, hat aber erklärt, sie nicht durchzusetzen: Jeder darf QR-Codes erzeugen und lesen, ohne zu fragen. Nur der Name »QR Code« ist eine eingetragene Marke der Denso Wave Incorporated.</p>
+<p class='person-credit'>Foto: Japan Academy (日本学士院), 2023, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Masahiro_Hara_202303.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1958 -->
 <!-- part: muuss -->
 ### Mike Muuss
