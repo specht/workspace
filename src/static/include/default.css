@@ -1447,6 +1447,11 @@ details.solution.hint-step-new > summary {
 
 /* Tutorial cards, current layout */
 
+/* the bars above and below a card's picture where its row is taller */
+.tutorial_card3 {
+    --card-bars: #f1f1ef;
+}
+
 /* A flex box, so that the cards in a row are equally tall. */
 .hscol {
     display: flex;
@@ -1497,6 +1502,9 @@ details.solution.hint-step-new > summary {
             box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.3);
         }
 
+        /* always in 16:9 with the card's focus point (image_x, image_y),
+           in every layout; where a row is taller than the picture, bars
+           above and below it (--card-bars, on the row's background) */
         img {
             display: block;
             width: 100%;
@@ -1554,9 +1562,9 @@ details.solution.hint-step-new > summary {
         }
     }
 
-    /* On a phone every card is a compact row: the picture on the left, title,
-       kind and two lines of text on the right. Everything stays visible, at a
-       third of the height of a full card. */
+    /* On a phone every card is a full card as on the desktop: the picture
+       across the whole width in 16:9, nothing of it cut and no bars, and
+       below it the kind, the title and two short lines of text. */
     @media (max-width: 767.999999px) {
         padding-right: 0.375rem;
         padding-left: 0.375rem;
@@ -1571,28 +1579,8 @@ details.solution.hint-step-new > summary {
                 box-shadow: 0 0.125em 0.4em rgba(0, 0, 0, 0.12);
             }
 
-            > div {
-                display: flex;
-                flex-direction: row;
-                align-items: stretch;
-            }
-
-            img {
-                flex: 0 0 36%;
-                width: 36%;
-                height: auto;
-                aspect-ratio: 4 / 3;
-            }
-
-            .shade {
-                display: none;
-            }
-
             .card-content {
-                flex: 1 1 0;
-                padding: 0.55em 0.75em;
-                border-top: 0;
-                border-left: 1px solid #eee;
+                padding: 0.55em 0.75em 0.6em;
 
                 .card-title-row h4 {
                     font-size: 1.05rem;
@@ -1606,7 +1594,7 @@ details.solution.hint-step-new > summary {
                 }
 
                 /* With »Baut auf … auf« below, one line of text, so the
-                   row stays about as high as its picture. */
+                   card stays short. */
                 &:has(.card-requires) .abstract {
                     -webkit-line-clamp: 1;
                 }
@@ -1626,11 +1614,13 @@ details.solution.hint-step-new > summary {
                     display: flex;
                     flex-direction: row;
                     align-items: stretch;
+                    background: linear-gradient(to right, var(--card-bars) 50%, transparent 50%);
                 }
 
                 img {
                     flex: 0 0 50%;
                     width: 50%;
+                    align-self: center;
                 }
 
                 .shade {
@@ -1648,6 +1638,58 @@ details.solution.hint-step-new > summary {
 
                     .abstract {
                         -webkit-line-clamp: 6;
+                    }
+                }
+            }
+        }
+    }
+
+    /* The pairs at the end of a section whose last row would not be full
+       (4, 5 or 7 cards; main.rb, hscol-pair): half a row each, the picture
+       in 16:9 on the left as on every card, the text beside it, so the
+       section ends in a full row instead of a gap */
+    @media (min-width: 1200px) {
+        &.hscol-pair {
+            width: 50%;
+
+            .tutorial_card3 {
+                > div {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: stretch;
+                    background: linear-gradient(to right, var(--card-bars) 58%, transparent 58%);
+                }
+
+                /* nearly as wide as a full card's picture (58% of half a
+                   row against a third), so it is not small beside them */
+                img {
+                    flex: 0 0 58%;
+                    width: 58%;
+                    align-self: center;
+                }
+
+                .shade {
+                    display: none;
+                }
+
+                .card-content {
+                    display: flex;
+                    flex: 1 1 0;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-self: stretch;
+                    padding: 0.85em 1.1em;
+                    border-top: 0;
+                    border-left: 1px solid #eee;
+
+                    /* never taller than the picture, so no bars */
+                    .abstract {
+                        -webkit-line-clamp: 2;
+                    }
+                    .card-requires {
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                     }
                 }
             }
@@ -6308,6 +6350,19 @@ html[data-bs-theme="dark"] .usage-row {
     }
     .hscol .tutorial_card3.card-with-usage .card-content {
         flex: 1 1 auto;
+    }
+}
+/* a pair card (hscol-pair) stays a row with the band too: the picture
+   beside the text, the band below the text */
+@media (min-width: 1200px) {
+    .hscol.hscol-pair .tutorial_card3.card-with-usage > div {
+        flex-direction: row;
+    }
+    .hscol.hscol-pair .tutorial_card3.card-with-usage > div > img {
+        flex: 0 0 58%;
+    }
+    .hscol.hscol-pair .tutorial_card3.card-with-usage .card-content {
+        padding-bottom: 2.6em;
     }
 }
 /* the card alone in its row on a tablet, the picture beside the text: room
