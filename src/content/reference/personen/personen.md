@@ -183,6 +183,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1903 -->
+<!-- part: church -->
+### Alonzo Church
+
+<div class='person'>
+<p><strong>Alonzo Church</strong> (1903–1995), amerikanischer Mathematiker und Logiker, von 1929 bis 1967 an der Universität Princeton. In den 1930er Jahren erfand er den Lambda-Kalkül, eine Schreibweise für Funktionen, die keinen Namen brauchen: Statt f(x) = x + 3 schreibt man λx. x + 3. Darum heißen Funktionen ohne Namen bis heute Lambdas, und in Python und Ruby gibt es dafür das Wort <code>lambda</code>.</p>
+<p>John McCarthy übernahm Churchs Schreibweise für Lisp, und von dort kam sie in viele andere Sprachen; Python bekam <code>lambda</code>, <code>map</code>, <code>filter</code> und <code>reduce</code> 1994. Bei Church in Princeton machten Alan Turing und Stephen Kleene ihren Doktor.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1903 -->
 <!-- part: neumann -->
 ### John von Neumann
 

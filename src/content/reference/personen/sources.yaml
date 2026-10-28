@@ -498,6 +498,42 @@ menger:
       - url: https://en.wikipedia.org/wiki/Menger_sponge
         quote: "it has a topological dimension of 1 and is accordingly identified as a curve. … Menger showed, in the 1926 construction, that the sponge is a universal curve"
 
+church:
+  - text: "Alonzo Church (1903–1995), amerikanischer Mathematiker und Logiker, von 1929 bis 1967 an der Universität Princeton."
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "Born 14 June 1903 Washington, D.C., USA … Died 11 August 1995 Hudson, Ohio, USA … Alonzo Church made important contributions to mathematical logic and theoretical computer science. … He returned to the United States becoming Assistant Professor of Mathematics at Princeton in 1929. … In 1967 he retired from Princeton and went to the University of California at Los Angeles"
+  - text: "In den 1930er Jahren erfand er den Lambda-Kalkül, eine Schreibweise für Funktionen, die keinen Namen brauchen"
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "He created the λ-calculus in the 1930 's which today is an invaluable tool for computer scientists."
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "Anonymous functions originate in the work of Alonzo Church in his invention of the lambda calculus, in which all functions are anonymous, in 1936 … The Lambda calculus ... was introduced by Alonzo Church in the 1930s as a precise notation for a theory of anonymous functions"
+  - text: "Statt f(x) = x + 3 schreibt man λx. x + 3."
+    sources:
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "the notation of function abstraction in lambda calculus, where the usual function f(x) = M would be written (λx. M)"
+  - text: "Darum heißen Funktionen ohne Namen bis heute Lambdas"
+    sources:
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "In several programming languages, anonymous functions are introduced using the keyword lambda, and anonymous functions are often referred to as lambdas or lambda abstractions. … The names \"lambda abstraction\", \"lambda function\", and \"lambda expression\" refer to the notation of function abstraction in lambda calculus"
+  - text: "und in Python und Ruby gibt es dafür das Wort lambda"
+    none: Workspace
+  - text: "John McCarthy übernahm Churchs Schreibweise für Lisp, und von dort kam sie in viele andere Sprachen"
+    sources:
+      - url: http://www-formal.stanford.edu/jmc/recursive/node2.html
+        quote: "This distinction and a notation for describing it, from which we deviate trivially, is given by Church [3]. … This is accomplished by Church's λ-notation."
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "Anonymous functions have been a feature of programming languages since Lisp in 1958, and a growing number of modern programming languages support anonymous functions."
+  - text: "Python bekam lambda, map, filter und reduce 1994"
+    sources:
+      - url: https://python-history.blogspot.com/2009/04/origins-of-pythons-functional-features.html
+        quote: "Thus, in January, 1994, the map(), filter(), and reduce() functions were added to the standard library. In addition, the lambda operator was introduced for creating anonymous functions (as expressions) in a more straightforward syntax."
+  - text: "Bei Church in Princeton machten Alan Turing und Stephen Kleene ihren Doktor."
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "Alan Turing, who had been thinking about the notion of effective calculability, came as a visiting graduate student in 1936 and stayed to complete his Ph.D. under Church. … Church had 31 doctoral students including Foster, Turing, Kleene, Kemeny, Boone, and Smullyan."
+
 neumann:
   - text: John von Neumann (1903–1957), Mathematiker aus Budapest
     sources:
