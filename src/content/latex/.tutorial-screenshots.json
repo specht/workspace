@@ -44,6 +44,13 @@
       "state_hash": "899e073d21652191e3e550276d586928bbbc00a1246442c6d34c13d4044bbc68",
       "workspace_look": "4.140.0-ls368"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "6fb7ec160228d0489c0f037b502b9e59e31255785cf6902bb0b2fade015b5e2c",
+      "state_hash": "16fc35b74f3c4bead1b3c54257dc917b1bfbaa46bd076b39a2d11b45e9b77033",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "titelseite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "c2e74f397d8fca74cdb31f793a96b6e431adc4ca3b5bf2ca20e8581d4602286a",

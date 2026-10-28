@@ -1,5 +1,5 @@
 <div class='meta'>
-image: facharbeit-fertig.webp
+image: teaser.webp
 image_alt: "VS Code mit dem LaTeX-Quelltext einer Facharbeit links und dem fertigen Titelblatt als PDF rechts"
 kind: projekt
 language: LaTeX
@@ -754,6 +754,17 @@ check-task: diagramm
 check-task: quellen
 -->
 <img class='full' src='facharbeit-fertig.webp' alt='Links der Quelltext der Facharbeit, rechts die Titelseite im PDF.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
+# die Karte nichts abschneidet
+viewport: 1029x579
+sharp-canvas
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Links der LaTeX-Quelltext der Facharbeit, rechts ihre Titelseite im PDF.'>
+<!-- /tutorial-scope -->
 
 So sehen die Seiten aus:
 

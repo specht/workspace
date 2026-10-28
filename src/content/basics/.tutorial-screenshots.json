@@ -35,6 +35,13 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "teaser.webp": {
+      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
+      "output_sha256": "f036366b8768bd75f59e8778302c18a65fd5c018100aab4cc8785573ac8960ab",
+      "state_hash": "205cfb89886b77275a2c9c87fea1d86c2a2e1d536683ed9fc348db03a0f2bfca",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "theme-cobalt2.webp": {
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "d9ef308b7ae48928748c38989ff168191a2d4473b8f59855d99f16296bc551c5",

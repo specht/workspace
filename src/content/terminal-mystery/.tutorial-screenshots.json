@@ -77,6 +77,13 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "f955e60236b74d9d01314a54a7ff21b7fe28f0784c212e8704e0cdc6390eaa6e",
+      "state_hash": "65dc847675155d5ab6367ce7d0f11ea5a929b3ccb93a38eff2d57a93717ce3a5",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "vereine.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "b3c31e8deda5ad05e63ff0cfc9916b442c83ba1d9f4f1f008bcab7b9d05bc8e2",

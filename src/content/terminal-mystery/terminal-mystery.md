@@ -1,5 +1,5 @@
 <div class='meta'>
-image: liesmich.webp:40:50
+image: teaser.webp
 image_alt: "VS Code mit dem Ordner bitstein und dem Brief der Kriminalpolizei über die gestohlene Goldene Diskette"
 kind: projekt
 language: Bash
@@ -62,6 +62,16 @@ check-task: entpackt
 -->
 
 <img class='full' src='liesmich.webp' alt='VS Code mit dem Ordner bitstein: links die Akten von alarmanlage bis tatort.txt, rechts der Brief von Kommissarin Weber über den Diebstahl der Goldenen Diskette.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
+# die Karte nichts abschneidet
+viewport: 1029x579
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='VS Code mit dem Ordner bitstein, rechts der Brief der Kriminalpolizei über den Diebstahl der Goldenen Diskette.'>
+<!-- /tutorial-scope -->
 
 _task(entpackt)
 

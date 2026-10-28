@@ -1,5 +1,5 @@
 <div class='meta'>
-image: er-crowfoot.webp
+image: teaser.webp
 image_alt: "VS Code mit einem Datenmodell für Filme als Text links und dem daraus gezeichneten ER-Diagramm rechts"
 kind: projekt
 language: SQL
@@ -422,6 +422,15 @@ sleep: 1
 -->
 
 <img class='full' src='er-crowfoot.webp' alt='Links das ganze Modell film.er im Editor, rechts die ER-Werkstatt mit dem Krähenfuß-Diagramm: movie, genre, crew und job, dazu der Kasten credit mit Linien zu movie, crew und job.'>
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass die
+# Karte nichts abschneidet; das Diagramm neu eingepasst
+viewport: 1029x579
+click: Einpassen
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='VS Code mit dem Datenmodell film.er links und dem Krähenfuß-Diagramm mit movie, genre, crew, job und credit rechts.'>
 
 <img class='invert-dark' src='film-2-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm mit movie, genre, crew und job; die Raute credit verbindet movie, crew und job.'>
 

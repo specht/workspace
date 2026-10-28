@@ -1,5 +1,12 @@
 {
   "screenshots": {
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "5fd7d7461c68b140e4989231bb436cc0ff7acb6bc784a720a5ba835832dde3ff",
+      "state_hash": "01f04a7b447e414d1d6ad229965462205ef25462d8fedbf0feca220f2311455b",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "totp-app-python.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "db1f859f63ffd73aa9b8913bab350d1771508ba3f7d5abae1c996e482739296b",
