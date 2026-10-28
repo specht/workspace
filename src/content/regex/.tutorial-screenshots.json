@@ -1,0 +1,49 @@
+{
+  "screenshots": {
+    "grep-post.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "bb7dc3471e730559cbb2b8cd4117f10379b63a83c69b5f05f17eb6aa6057f6e1",
+      "state_hash": "54606983d3c75311d4a9aadb499d02bd6aeac21556eea765caa110a3386300ae",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "log-python.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "120261d0dcb9b6216bb40c2d9e8d56c317fe38f096630e9840c1aee465562b18",
+      "state_hash": "3d3510a32bcc7b6d5a633c5494655ef8297972a9b205b8c8a1b3c538328f0db8",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "log-ruby.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "ae2d6e50e48af44d4ed14f1c58f4fe4a1794ab762337c0c794cd09bd8c35412c",
+      "state_hash": "9d2ec96d79e6c6edf15bd0b10e26c40b7c52586ec12b87639b0ea8bfc8ee9421",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "tally-python.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "a590b427af8a352c7dcab5b67d0084e4f59d3c87a50b8d8a196b2b4504c5511c",
+      "state_hash": "d9cc6526f71ffb9d37d028863b2e480a874fa8932a84a1ec53f81d7ce351440a",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "tally-ruby.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "9e591a90dfaf84645372ac9055eae118f210d47ead15abf26423017bad40b605",
+      "state_hash": "bebe1816da36d1fa7be6e073fd47f0b93a914079e66a5b6776256682bb31e2f6",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "6fee6a4ae531daa976e8ec7872d4fe9a15841d155192dbd76e1a524b19e4c41d",
+      "output_sha256": "6c0b733925c8cf6d4878ceae7f9903d301c33617f1c952a38bb2ae71a969bc35",
+      "state_hash": "13421fa0a888c6e8059c84ce5b19449e3c5265d24ebbb9faf00ccdfb51fb0821",
+      "variants": {
+        "teaser-dark.webp": "e5d9d3e794d202982f7e764d67ed70d4eb77d2e276f82eb95cdb26edf6f81c09"
+      },
+      "workspace_look": "4.140.0-ls368"
+    }
+  },
+  "version": 1
+}

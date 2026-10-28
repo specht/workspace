@@ -200,6 +200,7 @@
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - automata
+    - .regex
     - kellerautomat
     - turingmaschine
     - grammatiken

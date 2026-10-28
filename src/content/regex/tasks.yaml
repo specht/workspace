@@ -1,0 +1,523 @@
+# Aufgaben zu »Reguläre Ausdrücke«, in Ruby und in Python (unter python:).
+# Format: docs/aufgaben.md. Alles liegt in /workspace/regex; die Zahlen kommen
+# aus starter/access.log (daten/access_log.rb).
+format: 1
+activity: regex
+tasks:
+  - id: zaehlen-404
+    title: Wie viele 404?
+    prediction: true
+    prompt: |
+      Was zählt `grep -c 404 access.log`?
+    check:
+      type: choice
+      options:
+        - Genau die Anfragen, die der Server mit dem Status 404 beantwortet hat.
+        - Mehr als die, nämlich jede Zeile, in der irgendwo 404 steht.
+        - Weniger als die, weil grep 404 nur findet, wenn es als eigenes Wort dasteht.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: grep weiß nicht, was ein Status ist. Es sucht die drei Zeichen 4, 0 und 4 hintereinander, egal wo in der Zeile.
+      - when: { picked: 2 }
+        say: Ein eigenes Wort verlangt grep nicht. Das Muster passt auch mitten in einer längeren Zahl.
+    solution: |
+      grep zählt jede Zeile, in der die drei Zeichen `404` hintereinander
+      stehen, auch in der Zahl der Bytes wie `4048` oder `14042`.
+
+  - id: serverfehler
+    title: Fehler des Servers
+    prompt: |
+      Schreib einen Befehl, der alle Zeilen aus `access.log` ausgibt, in denen
+      der Server mit einem Fehler geantwortet hat, also mit einem Status von 500
+      bis 599. Die Prüfung führt ihn in `/workspace/regex` aus.
+    check:
+      type: command
+      dir: regex
+      timeout: 10
+      output:
+        lines: 3
+        matching: '" 5[0-9]{2} '
+    feedback:
+      - when: { output_matches: '" [1-4][0-9]{2} ' }
+        say: In der Ausgabe stehen auch Zeilen mit einem kleineren Status. Drei Ziffern mit einer 5 vorn gibt es auch in der Zahl der Bytes und im Namen des Browsers. Schreib dazu, was vor und hinter dem Status steht, wie bei `'" 404 '`.
+    hint:
+      - Der Status steht hinter dem Anführungszeichen, das die Anfrage schließt, und einem Leerzeichen; danach kommt wieder ein Leerzeichen.
+      - Mit `grep -E` heißt `[0-9]` eine Ziffer und `{2}` »das Zeichen davor zweimal«.
+    solution: |
+      `grep -E '" 5[0-9]{2} ' access.log` gibt drei Zeilen aus: Für ein paar
+      Minuten lieferte `/vertretungsplan.html` die Fehler 500 und 502.
+
+  - id: php
+    title: Nur PHP
+    prompt: |
+      Wer nach Lücken sucht, fragt nach PHP-Dateien, die es auf vielen Websites
+      gibt. Schreib einen Befehl, der alle Zeilen aus `access.log` ausgibt, in
+      deren Pfad `.php` vorkommt, ein Punkt und dann php. Die Prüfung führt ihn
+      in `/workspace/regex` aus.
+    check:
+      type: command
+      dir: regex
+      timeout: 10
+      output:
+        lines: 7
+        matching: '\.php'
+    feedback:
+      - when: { output_matches: 'php-kurs' }
+        say: In der Ausgabe steht `/ag/informatik/php-kurs.html`, eine ganz normale Seite der Schule. Ohne Backslash passt der Punkt auf jedes Zeichen, hier auf den Schrägstrich vor php.
+    solution: |
+      `grep -E '\.php' access.log` gibt sieben Zeilen aus, alle von
+      `198.51.100.66`, und keine davon gibt es auf der Website.
+
+  - id: schulnetz
+    title: Aus dem Schulnetz
+    prompt: |
+      Wie viele Anfragen kamen aus dem Netz der Schule, also von einer Adresse,
+      die mit `10.` anfängt? Zähl sie mit grep und trag die Zahl ein.
+    check:
+      type: number
+      expect: 148
+    feedback:
+      - when: { equals: 180 }
+        say: Du hast auch Zeilen gezählt, in denen `10.` erst weiter hinten steht, etwa in `Windows NT 10.0`, dem Namen des Browsers. Mit `^` davor passt das Muster nur am Anfang der Zeile.
+      - when: { equals: 247 }
+        say: Das sind alle Zeilen. Ohne Backslash passt der Punkt auf jedes Zeichen, und ohne `^` passt `10` irgendwo in der Zeile, etwa in `2026:10`.
+    solution: '`grep -E -c ''^10\.'' access.log` zählt 148 Zeilen.'
+
+  - id: scanner
+    title: Wer sucht da?
+    prompt: |
+      Jemand hat an diesem Tag nach Lücken gesucht: nach Dateien von
+      WordPress, nach `.env` und anderem, was es auf der Website nicht gibt.
+      Von welcher Adresse kamen die meisten Anfragen, die der Server mit 404
+      beantwortet hat?
+    check:
+      type: answer
+      expect: 198.51.100.66
+    feedback:
+      - when: { matches: '^[0-9]+$' }
+        say: Das ist eine Zahl von Anfragen. Gefragt ist die Adresse, von der sie kamen.
+    hint:
+      - Erst die Zeilen mit dem Status 404, dann davon nur die Adressen. Zwei grep hintereinander, mit einer Pipe dazwischen.
+      - Die Adresse steht am Anfang der Zeile, bis zum ersten Leerzeichen. `grep -E -o '^[^ ]+'` schneidet sie heraus; zählen kannst du dann wie bei den Pfaden.
+    solution: |
+      ```bash
+      grep '" 404 ' access.log | grep -E -o '^[^ ]+' | sort | uniq -c | sort -n
+      ```
+
+      `198.51.100.66` hat zwölf Pfade verlangt, die es nicht gibt, einen nach
+      dem anderen, in wenigen Minuten. So sieht ein Programm aus, das
+      Websites nach bekannten Lücken absucht.
+
+  - id: status
+    title: Der Status einer Zeile
+    prompt: |
+      Schreib in `log.rb` die Methode `status(line)`: Sie gibt den Status einer
+      Zeile als Zahl zurück, und `nil`, wenn die Zeile keinen hat. Die Prüfung
+      ruft sie mit sechs Zeilen auf und nennt die erste, bei der das Ergebnis
+      nicht stimmt.
+    file: regex/log.rb
+    check:
+      type: ruby
+      file: regex/log.rb
+      cases:
+        - call: status('10.12.4.38 - - [27/Oct/2026:08:00:33 +0100] "GET /stundenplan.html HTTP/1.1" 200 18300 "-" "curl/8.5.0"')
+          expect: 200
+          say: Drei Ziffern hintereinander gibt es auch in der Zeit, der Adresse und der Zahl der Bytes. Der Status steht hinter `" ` und vor einem Leerzeichen.
+        - call: status('198.51.100.66 - - [27/Oct/2026:10:41:09 +0100] "GET /.env HTTP/1.1" 404 162 "-" "curl/8.5.0"')
+          expect: 404
+        - call: status('198.51.100.17 - - [27/Oct/2026:08:03:27 +0100] "GET /favicon.ico HTTP/1.1" 200 4048 "-" "curl/8.5.0"')
+          expect: 200
+          say: In dieser Zeile steht 404 in der Zahl der Bytes, `4048`. Der Status ist 200.
+        - status('10.12.3.44 - - [27/Oct/2026:09:12:40 +0100] "GET /style.css HTTP/1.1" 304 0 "-" "curl/8.5.0"'): 304
+        - status('10.12.7.29 - - [27/Oct/2026:12:01:02 +0100] "GET /vertretungsplan.html HTTP/1.1" 500 0 "-" "curl/8.5.0"'): 500
+        - call: status('kein Eintrag')
+          expect: ~
+          say: Ohne Status gibt `status` `nil` zurück. `line.match` ergibt dann `nil`, und `nil[1]` bricht ab.
+    solution: |
+      ```ruby
+      def status(line)
+          m = line.match(/" (\d{3}) /)
+          return nil if m.nil?
+          m[1].to_i
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `log.py` die Funktion `status(line)`: Sie gibt den Status
+        einer Zeile als Zahl zurück, und `None`, wenn die Zeile keinen hat. Die
+        Prüfung ruft sie mit sechs Zeilen auf und nennt die erste, bei der das
+        Ergebnis nicht stimmt.
+      file: regex/log.py
+      check:
+        type: python
+        file: regex/log.py
+        cases:
+          - call: status('10.12.4.38 - - [27/Oct/2026:08:00:33 +0100] "GET /stundenplan.html HTTP/1.1" 200 18300 "-" "curl/8.5.0"')
+            expect: 200
+            say: Drei Ziffern hintereinander gibt es auch in der Zeit, der Adresse und der Zahl der Bytes. Der Status steht hinter `" ` und vor einem Leerzeichen.
+          - call: status('198.51.100.66 - - [27/Oct/2026:10:41:09 +0100] "GET /.env HTTP/1.1" 404 162 "-" "curl/8.5.0"')
+            expect: 404
+          - call: status('198.51.100.17 - - [27/Oct/2026:08:03:27 +0100] "GET /favicon.ico HTTP/1.1" 200 4048 "-" "curl/8.5.0"')
+            expect: 200
+            say: In dieser Zeile steht 404 in der Zahl der Bytes, `4048`. Der Status ist 200.
+          - status('10.12.3.44 - - [27/Oct/2026:09:12:40 +0100] "GET /style.css HTTP/1.1" 304 0 "-" "curl/8.5.0"'): 304
+          - status('10.12.7.29 - - [27/Oct/2026:12:01:02 +0100] "GET /vertretungsplan.html HTTP/1.1" 500 0 "-" "curl/8.5.0"'): 500
+          - call: status('kein Eintrag')
+            expect: ~
+            say: Ohne Status gibt `status` `None` zurück. `re.search` ergibt dann `None`, und `None.group(1)` bricht ab.
+      solution: |
+        ```python
+        def status(line):
+            m = re.search(r'" (\d{3}) ', line)
+            if m is None:
+                return None
+            return int(m.group(1))
+        ```
+
+  - id: anker
+    title: Fünf Ziffern irgendwo
+    prediction: true
+    prompt: |
+      Auf welche dieser Eingaben passt `/\d{5}/`, wenn ein Programm mit
+      `text.match?(/\d{5}/)` prüft?
+    check:
+      type: choice
+      options:
+        - '`10115`'
+        - '`D-10115 Berlin`'
+        - '`101150`'
+        - '`1011`'
+      correct: [0, 1, 2]
+    solution: |
+      Auf die ersten drei: `match?` sucht wie grep irgendwo im String nach fünf
+      Ziffern hintereinander. Nur `1011` hat zu wenige.
+    python:
+      prompt: |
+        Auf welche dieser Eingaben passt `r'\d{5}'`, wenn ein Programm mit
+        `re.search(r'\d{5}', text)` prüft?
+      solution: |
+        Auf die ersten drei: `re.search` sucht wie grep irgendwo im String nach
+        fünf Ziffern hintereinander. Nur `1011` hat zu wenige.
+
+  - id: datum
+    title: Ein Datum
+    prompt: |
+      Schreib in `validate.rb` die Methode `date?(text)` aus dem Kasten oben.
+      Die Prüfung ruft sie mit Daten auf, die es gibt, und mit Texten, die
+      keines sind, und nennt den ersten, bei dem deine Methode sich irrt.
+    file: regex/validate.rb
+    check:
+      type: ruby
+      file: regex/validate.rb
+      cases:
+        - date?('24.12.2026'): true
+        - date?('01.01.2000'): true
+        - date?('10.10.1999'): true
+        - date?('29.02.2028'): true
+        - call: date?('31.10.2026')
+          expect: true
+          say: Einen 31. gibt es in manchen Monaten.
+        - date?('20.11.2026'): true
+        - call: date?('32.01.2026')
+          expect: false
+          say: Einen 32. gibt es in keinem Monat. Nach einer 3 vorn darf nur eine 0 oder eine 1 kommen.
+        - call: date?('00.10.2026')
+          expect: false
+          say: Einen Tag 00 gibt es nicht. Nach einer 0 vorn darf nur eine Ziffer von 1 bis 9 kommen.
+        - call: date?('24.13.2026')
+          expect: false
+          say: Einen Monat 13 gibt es nicht.
+        - date?('24.00.2026'): false
+        - call: date?('1.1.2026')
+          expect: false
+          say: Tag und Monat haben hier immer zwei Ziffern.
+        - call: date?('24-12-2026')
+          expect: false
+          say: Zwischen Tag, Monat und Jahr stehen Punkte. Ohne Backslash passt der Punkt im Ausdruck auf jedes Zeichen.
+        - date?('24.12.26'): false
+        - call: date?('am 24.12.2026')
+          expect: false
+          say: Vor dem Datum darf nichts stehen. `\A` ist der Anfang des Strings.
+        - date?('24.12.2026!'): false
+        - call: date?("24.12.2026\nhallo")
+          expect: false
+          say: Hinter dem Datum steht hier eine zweite Zeile. `^` und `$` sind in Ruby Anfang und Ende einer Zeile; für den ganzen String sind es `\A` und `\z`.
+        - date?(''): false
+    solution: |
+      ```ruby
+      def date?(text)
+          text.match?(/\A(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\z/)
+      end
+      ```
+
+      `31.02.2026` nimmt auch dieser Ausdruck an: Er prüft die Form, nicht den
+      Kalender.
+    python:
+      prompt: |
+        Schreib in `validate.py` die Funktion `is_date(text)` aus dem Kasten
+        oben. Die Prüfung ruft sie mit Daten auf, die es gibt, und mit Texten,
+        die keines sind, und nennt den ersten, bei dem deine Funktion sich irrt.
+      file: regex/validate.py
+      check:
+        type: python
+        file: regex/validate.py
+        cases:
+          - is_date('24.12.2026'): true
+          - is_date('01.01.2000'): true
+          - is_date('10.10.1999'): true
+          - is_date('29.02.2028'): true
+          - call: is_date('31.10.2026')
+            expect: true
+            say: Einen 31. gibt es in manchen Monaten.
+          - is_date('20.11.2026'): true
+          - call: is_date('32.01.2026')
+            expect: false
+            say: Einen 32. gibt es in keinem Monat. Nach einer 3 vorn darf nur eine 0 oder eine 1 kommen.
+          - call: is_date('00.10.2026')
+            expect: false
+            say: Einen Tag 00 gibt es nicht. Nach einer 0 vorn darf nur eine Ziffer von 1 bis 9 kommen.
+          - call: is_date('24.13.2026')
+            expect: false
+            say: Einen Monat 13 gibt es nicht.
+          - is_date('24.00.2026'): false
+          - call: is_date('1.1.2026')
+            expect: false
+            say: Tag und Monat haben hier immer zwei Ziffern.
+          - call: is_date('24-12-2026')
+            expect: false
+            say: Zwischen Tag, Monat und Jahr stehen Punkte. Ohne Backslash passt der Punkt im Ausdruck auf jedes Zeichen.
+          - is_date('24.12.26'): false
+          - call: is_date('am 24.12.2026')
+            expect: false
+            say: Vor dem Datum darf nichts stehen. `re.fullmatch` verlangt, dass der ganze String passt.
+          - is_date('24.12.2026!'): false
+          - call: is_date('24.12.2026\n')
+            expect: false
+            say: Hinter dem Datum steht hier noch ein Zeilenende. Mit `$` kommt es durch, mit `re.fullmatch` nicht.
+          - is_date(''): false
+      solution: |
+        ```python
+        def is_date(text):
+            return re.fullmatch(r'(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}', text) is not None
+        ```
+
+        `31.02.2026` nimmt auch dieser Ausdruck an: Er prüft die Form, nicht
+        den Kalender.
+
+  - id: benutzername
+    title: Ein Benutzername
+    prompt: |
+      Für die Website der Schule gilt: Ein Benutzername hat 3 bis 16 Zeichen,
+      kleine Buchstaben von a bis z, Ziffern und den Unterstrich `_`, und er
+      fängt mit einem Buchstaben an. Schreib in `validate.rb` eine Methode
+      `username?(text)`, die genau dann `true` zurückgibt. Die Prüfung ruft sie
+      mit Namen auf, die passen, und mit solchen, die nicht passen, und nennt
+      den ersten, bei dem deine Methode sich irrt.
+    file: regex/validate.rb
+    check:
+      type: ruby
+      file: regex/validate.rb
+      cases:
+        - username?('pip'): true
+        - username?('bello_2026'): true
+        - username?('k9x'): true
+        - call: username?('abcdefghijklmnop')
+          expect: true
+          say: Das sind 16 Zeichen, so viele dürfen es sein.
+        - call: username?('ab')
+          expect: false
+          say: Zwei Zeichen sind zu wenig, es müssen mindestens drei sein.
+        - call: username?('abcdefghijklmnopq')
+          expect: false
+          say: Das sind 17 Zeichen, einer zu viel. Nach dem ersten Buchstaben dürfen noch 2 bis 15 Zeichen kommen.
+        - call: username?('2pip')
+          expect: false
+          say: Vorn muss ein Buchstabe stehen, keine Ziffer.
+        - username?('_pip'): false
+        - call: username?('Pip')
+          expect: false
+          say: Große Buchstaben sind nicht erlaubt. `\w` lässt sie durch; schreib die erlaubten Zeichen selbst in eine Klasse.
+        - call: username?('pip bello')
+          expect: false
+          say: Ein Leerzeichen ist nicht erlaubt.
+        - username?('pip-bello'): false
+        - call: username?('pipö')
+          expect: false
+          say: Nur die Buchstaben von a bis z sind erlaubt, kein ö.
+        - call: username?("pip\nadmin")
+          expect: false
+          say: Hier stehen zwei Zeilen. `^` und `$` sind in Ruby Anfang und Ende einer Zeile; für den ganzen String sind es `\A` und `\z`.
+        - username?(''): false
+    hint:
+      - Teil den Namen in zwei Stücke, das erste Zeichen und den Rest. Welche Zeichen dürfen vorn stehen, welche danach? Wie viele Zeichen hat der Rest, wenn der ganze Name 3 bis 16 Zeichen hat?
+      - '`{2,15}` heißt »das Zeichen davor zwei- bis fünfzehnmal«. Eine Zeichenklasse darf mehrere Bereiche haben: `[a-z0-9]`.'
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def username?(text)
+            text.match?(/\A[a-z]…\z/)
+        end
+        ```
+    solution: |
+      ```ruby
+      def username?(text)
+          text.match?(/\A[a-z][a-z0-9_]{2,15}\z/)
+      end
+      ```
+    python:
+      prompt: |
+        Für die Website der Schule gilt: Ein Benutzername hat 3 bis 16 Zeichen,
+        kleine Buchstaben von a bis z, Ziffern und den Unterstrich `_`, und er
+        fängt mit einem Buchstaben an. Schreib in `validate.py` eine Funktion
+        `is_username(text)`, die genau dann `True` zurückgibt. Die Prüfung ruft
+        sie mit Namen auf, die passen, und mit solchen, die nicht passen, und
+        nennt den ersten, bei dem deine Funktion sich irrt.
+      file: regex/validate.py
+      check:
+        type: python
+        file: regex/validate.py
+        cases:
+          - is_username('pip'): true
+          - is_username('bello_2026'): true
+          - is_username('k9x'): true
+          - call: is_username('abcdefghijklmnop')
+            expect: true
+            say: Das sind 16 Zeichen, so viele dürfen es sein.
+          - call: is_username('ab')
+            expect: false
+            say: Zwei Zeichen sind zu wenig, es müssen mindestens drei sein.
+          - call: is_username('abcdefghijklmnopq')
+            expect: false
+            say: Das sind 17 Zeichen, einer zu viel. Nach dem ersten Buchstaben dürfen noch 2 bis 15 Zeichen kommen.
+          - call: is_username('2pip')
+            expect: false
+            say: Vorn muss ein Buchstabe stehen, keine Ziffer.
+          - is_username('_pip'): false
+          - call: is_username('Pip')
+            expect: false
+            say: Große Buchstaben sind nicht erlaubt. `\w` lässt sie durch; schreib die erlaubten Zeichen selbst in eine Klasse.
+          - call: is_username('pip bello')
+            expect: false
+            say: Ein Leerzeichen ist nicht erlaubt.
+          - is_username('pip-bello'): false
+          - call: is_username('pipö')
+            expect: false
+            say: Nur die Buchstaben von a bis z sind erlaubt, kein ö. In Python passt `\w` auch auf Umlaute.
+          - call: is_username('pip\n')
+            expect: false
+            say: Hinter dem Namen steht noch ein Zeilenende. Mit `$` kommt es durch, mit `re.fullmatch` nicht.
+          - is_username(''): false
+      hint:
+        - Teil den Namen in zwei Stücke, das erste Zeichen und den Rest. Welche Zeichen dürfen vorn stehen, welche danach? Wie viele Zeichen hat der Rest, wenn der ganze Name 3 bis 16 Zeichen hat?
+        - '`{2,15}` heißt »das Zeichen davor zwei- bis fünfzehnmal«. Eine Zeichenklasse darf mehrere Bereiche haben: `[a-z0-9]`.'
+        - |
+          Ein Gerüst:
+
+          ```python
+          def is_username(text):
+              return re.fullmatch(r'[a-z]…', text) is not None
+          ```
+      solution: |
+        ```python
+        def is_username(text):
+            return re.fullmatch(r'[a-z][a-z0-9_]{2,15}', text) is not None
+        ```
+
+  - id: email
+    title: E-Mail-Adressen prüfen
+    prediction: true
+    prompt: |
+      Ein Formular, mit dem man sich anmeldet, fragt nach einer
+      E-Mail-Adresse. Wie prüft man sie am besten?
+    check:
+      type: choice
+      options:
+        - Mit einem regulären Ausdruck, der alle Regeln für E-Mail-Adressen genau nachbaut.
+        - 'Mit `\A[a-z0-9.]+@[a-z]+\.(de|com|org)\z`: So sehen die meisten Adressen aus.'
+        - Grob, ob ein `@` mit etwas davor und dahinter darin steht, und dann mit einer E-Mail, in der ein Link zum Bestätigen steht.
+        - Gar nicht. Wer sich vertippt, merkt es schon.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Den Ausdruck gibt es, und er ist sehr lang. Aber auch er sagt nicht, ob es das Postfach gibt und ob es der Person gehört, die das Formular ausfüllt.
+      - when: { picked: 1 }
+        say: Damit kommen viele Adressen, die es gibt, nicht durch, etwa `pip+schule@example.org` und jede mit `.net`, `.at` oder `.ch` am Ende.
+      - when: { picked: 3 }
+        say: Wer sich vertippt, bekommt nie eine E-Mail, und niemand merkt es.
+    solution: |
+      Grob prüfen und dann eine E-Mail schicken: Nur wer den Link darin
+      anklickt, hat eine Adresse, die es gibt und die ihm gehört.
+
+  - id: zustaende
+    title: Fünf Ziffern als Automat
+    prompt: |
+      Wie viele Zustände hat der kleinste DEA, der genau die Wörter aus fünf
+      Ziffern annimmt, also `\d{5}` auf das ganze Wort? Den Fehlerzustand
+      q<sub>F</sub> zählst du nicht mit.
+    check:
+      type: number
+      expect: 6
+    feedback:
+      - when: { equals: 5 }
+        say: Der Startzustand zählt mit. Vor der ersten Ziffer hat der Automat null Ziffern gelesen, nach der fünften fünf.
+      - when: { equals: 7 }
+        say: Den Fehlerzustand q<sub>F</sub>, in den eine sechste Ziffer führt, zählst du hier nicht mit.
+      - when: { equals: 50 }
+        say: Ein Pfeil mit 0–9 steht für zehn Pfeile, aber sie führen alle in denselben Zustand. Wie viel muss sich der Automat merken?
+    solution: |
+      Sechs, q<sub>0</sub> bis q<sub>5</sub>: Der Zustand ist die Zahl der
+      Ziffern, die er schon gelesen hat.
+
+  - id: automat-ausdruck
+    title: Welcher Ausdruck?
+    prompt: |
+      Welcher Ausdruck passt auf genau die Wörter, die der Automat oben
+      annimmt?
+    check:
+      type: choice
+      options:
+        - '`0|1(0|1)*`'
+        - '`(0|1)*`'
+        - '`1(0|1)*`'
+        - '`0|1(0|1)+`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dieser Ausdruck passt auch auf `00` und auf das leere Wort. Der Automat nimmt beide nicht an. Von q<sub>1</sub> führt kein Pfeil weiter, und q<sub>0</sub> hat keinen doppelten Rand.
+      - when: { picked: 2 }
+        say: Dieser Ausdruck passt nicht auf `0`. Der Automat nimmt `0` an, q<sub>1</sub> hat einen doppelten Rand.
+      - when: { picked: 3 }
+        say: Dieser Ausdruck passt nicht auf `1`. Der Automat nimmt `1` an, q<sub>2</sub> hat einen doppelten Rand.
+    solution: |
+      Die Binärzahlen ohne Nullen vorn: die `0` allein, oder eine `1` mit
+      beliebig vielen Ziffern dahinter. Der Weg über q<sub>1</sub> ist das
+      `0`, der über q<sub>2</sub> das `1(0|1)*`, die Schleife in q<sub>2</sub>
+      der Stern.
+
+  - id: klammern
+    title: Klammern mit einem Ausdruck
+    prediction: true
+    prompt: |
+      Welcher Ausdruck passt, auf das ganze Wort, genau auf die Wörter aus
+      richtig gesetzten runden Klammern: das leere Wort, `()`, `(())`, `()()`,
+      `(()())` und so weiter?
+    check:
+      type: choice
+      options:
+        - '`(\(\))*`'
+        - '`\(*\)*`'
+        - '`(\((\(\))*\))*`'
+        - Keiner davon, und auch kein anderer regulärer Ausdruck.
+      correct: 3
+    feedback:
+      - when: { picked: 0 }
+        say: Dieser Ausdruck passt auf `()()`, aber nicht auf `(())`.
+      - when: { picked: 1 }
+        say: Dieser Ausdruck passt auch auf `(()`, wo eine Klammer nie zugeht.
+      - when: { picked: 2 }
+        say: Dieser Ausdruck passt auf `(()())`, aber nicht auf `((()))`. Jede Klammer im Ausdruck erlaubt eine Ebene mehr, und irgendwann ist er zu Ende.
+    solution: |
+      Keiner. Ein Ausdruck kann nur so tief schachteln, wie er selbst
+      geschachtelt ist; ein Wort kann tiefer gehen.
