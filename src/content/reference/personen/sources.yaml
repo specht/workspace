@@ -3712,3 +3712,37 @@ hanrahan:
         quote: "Hanrahan received three Academy Awards for his work in rendering and computer graphics research."
       - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
         quote: "Hanrahan shared the 2019 ACM A.M. Turing Award with Catmull for their pioneering efforts on computer-generated imagery."
+
+metcalfe:
+  - text: Robert Metcalfe (geboren 1946), amerikanischer Ingenieur.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Robert \"Bob\" Melancton Metcalfe (born April 7, 1946) is an American engineer and entrepreneur"
+  - text: Dass dein Workspace hinter link/ether eine MAC-Adresse hat
+    none: Workspace
+  - text: geht auf ein Memo zurück, das er am 22. Mai 1973 bei Xerox PARC in Kalifornien verschickte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Metcalfe was working at PARC in 1973 when he and David Boggs invented Ethernet … He later recalled that Ethernet was born on May 22, 1973, the day he circulated a memo titled \"Alto Ethernet\" which contained a rough schematic of how it would work. \"That is the first time Ethernet appears as a word"
+      - url: https://en.wikipedia.org/wiki/Ethernet
+        quote: "In a 12-page memo written on May 22, 1973, Metcalfe named the concept \"The Ether Network.\""
+  - text: Er baute es zusammen mit David Boggs.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Metcalfe was working at PARC in 1973 when he and David Boggs invented Ethernet"
+  - text: Alle Rechner hingen an einem gemeinsamen Koaxialkabel, jeder bekam jedes Paket, und jeder nahm nur die Pakete mit seiner eigenen Adresse.
+    sources:
+      - url: https://www.cs.cornell.edu/courses/cs414/2004fa/ethernet.pdf
+        quote: "An Ethernet's shared communication facility, its Ether, is a passive broadcast medium with no central control. … Switching of packets to their destinations on the Ether is distributed among the receiving stations using packet address recognition. … an operating Ethernet of 100 nodes along a kilometer of coaxial cable."
+  - text: Den Namen nahm er vom Äther, durch den sich nach einer alten Vorstellung der Physik das Licht ausbreiten sollte.
+    sources:
+      - url: https://www.cs.cornell.edu/courses/cs414/2004fa/ethernet.pdf
+        quote: "Ethernet is named for the historical luminiferous ether through which electromagnetic radiations were once alleged to propagate."
+  - text: 1979 gründete er mit anderen die Firma 3Com, die Geräte für Netzwerke baute
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "In 1979, Metcalfe departed PARC and co-founded 3Com, a manufacturer of computer networking equipment"
+  - text: 2023 bekam er für Ethernet den Turing Award, den wichtigsten Preis der Informatik
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "In 2023, he received the Turing Award, the highest distinction in computer science. … In March 2023, Metcalfe was awarded the 2022 Association for Computing Machinery's Turing Award for his contributions to the invention of Ethernet technology."

@@ -627,6 +627,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1946 -->
+<!-- part: metcalfe -->
+### Robert Metcalfe
+
+<div class='person'>
+<img src='metcalfe.webp' alt='Robert Metcalfe 2004: ein Mann mit dichtem grauem Haar in einem dunklen Sakko und einem weißen Hemd, links hinter ihm eine Wandlampe.'>
+<p><strong>Robert Metcalfe</strong> (geboren 1946), amerikanischer Ingenieur. Dass dein Workspace hinter <code>link/ether</code> eine MAC-Adresse hat, geht auf ein Memo zurück, das er am 22. Mai 1973 bei Xerox PARC in Kalifornien verschickte: Darin hieß ein Netz für die Rechner des Labors zum ersten Mal Ethernet. Er baute es zusammen mit David Boggs. Alle Rechner hingen an einem gemeinsamen Koaxialkabel, jeder bekam jedes Paket, und jeder nahm nur die Pakete mit seiner eigenen Adresse.</p>
+<p>Den Namen nahm er vom Äther, durch den sich nach einer alten Vorstellung der Physik das Licht ausbreiten sollte. 1979 gründete er mit anderen die Firma 3Com, die Geräte für Netzwerke baute, und 2023 bekam er für Ethernet den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p class='person-credit'>Foto: Andreu Veà, 2004, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:With_Bob_Metcalfe_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1947 -->
 <!-- part: chen -->
 ### Peter Chen
