@@ -93,6 +93,15 @@
         "tag-dark.webp": "637daec505f31b82a99386ee0362281c50865ef6f8784a65355ad39f4f050429"
       },
       "workspace_look": "4.140.0-ls368"
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "51d55b40f3db9f903f5b093506d396f95a1d358ef632e692c1dc4c456eb7f1f1",
+      "output_sha256": "99a78b79c2c6fb485ba3e30c622c40e2aa06f55eb1ca93cd6f8f3e7b99d7fccd",
+      "state_hash": "c25e152c19ceb0b4e086138b3062e8fe22821832bbaa27da020a3f01cf2e3b1d",
+      "variants": {
+        "teaser-dark.webp": "6004bdfc907116b53b0f9fe4f70a9324aa99cb8aa2124444c8b694fb11e2ea9f"
+      },
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

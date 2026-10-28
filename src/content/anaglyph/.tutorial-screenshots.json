@@ -362,6 +362,17 @@
       },
       "workspace_look": "4.140.0-ls368"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
+      "output_sha256": "c971af11be0debdd4b47bac2d43a8408fe99f59e5257da5ab80f32bed3efe7ec",
+      "state_hash": "33a3fc696309624746f49bf3885c4842ea6bc3f8a3aa9b68f979cd0178f9b6c3",
+      "variants": {
+        "teaser-anaglyph.webp": "d5718cfe6a03486547756f4707724ac5427208057d225fb88065ef10dfa6384a",
+        "teaser-dark-anaglyph.webp": "b2987cc748f4edef6596eb965ea0965632107c11622b73c9263b6de765d56e0a",
+        "teaser-dark.webp": "cc9fe393e1fda279035a3d2b3401f5bcc5d35dda77bc18f29d84816331148a27"
+      },
+      "workspace_look": "4.140.0-ls368"
+    },
     "three-cubes.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
       "output_sha256": "b02a14b26704e5170352d33381dd700d0f363a1b8d64322d9b632d0a3f90f4b5",

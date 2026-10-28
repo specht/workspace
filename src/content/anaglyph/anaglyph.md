@@ -1,5 +1,5 @@
 <div class='meta'>
-image: 3d-torus-anaglyph.webp
+image: teaser-anaglyph.webp
 image_alt: "Ein rot-cyan gezeichneter Ring über einem Gitter, zum Ansehen mit einer 3D-Brille"
 kind: projekt
 duration: 3 Doppelstunden
@@ -780,6 +780,22 @@ crop-bottom: 27%
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein grau schattierter Ring schwebt über einem Gitter.'>
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: derselbe Ring, in 16:9 um ihn herum
+# ausgeschnitten; Fenster und Zoom doppelt so groß wie oben, dieselbe
+# Anordnung mit doppelt so vielen Pixeln (README, »zoom«)
+tab: preview
+viewport: 2058x1032
+zoom: 1.08
+hook: camera 20 20 -450
+variants: dark anaglyph
+crop-top: 17.3%
+crop-bottom: 18.1%
+crop-left: 20.8%
+crop-right: 21.6%
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Ein schattierter Ring schwebt über einem Gitter, rot-cyan gezeichnet zum Ansehen mit einer 3D-Brille.'>
 
 <!-- /tutorial-scope -->
 </div>
