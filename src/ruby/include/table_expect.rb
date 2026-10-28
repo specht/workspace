@@ -5,6 +5,7 @@
 #   tables:
 #     - name: movie_genre
 #       columns: [movie_id, genre_id]        # must exist; more are allowed
+#       absent_columns: [director]           # must not be there (a table split up)
 #       primary_key: [movie_id, genre_id]
 #       foreign_keys: ["movie_id -> movie.id", "genre_id -> genre"]
 #       rows: 2740                           # schema only: exactly
@@ -23,7 +24,7 @@
 module TableExpect
     NAME = /\A[A-Za-z_][A-Za-z0-9_]*\z/
     FK = /\A\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*->\s*([A-Za-z_]\w*)(?:\s*\.\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*))?\s*\z/
-    KEYS = %w[name columns primary_key foreign_keys rows min_rows indexes rows_where].freeze
+    KEYS = %w[name columns absent_columns primary_key foreign_keys rows min_rows indexes rows_where].freeze
     # What only the real database has, not a model
     DATABASE_KEYS = %w[rows min_rows indexes rows_where].freeze
     WHERE_KEYS = %w[where rows say].freeze
@@ -51,7 +52,7 @@ module TableExpect
             end
             extra = t.keys - (rows ? KEYS : KEYS - DATABASE_KEYS)
             errors << "tables[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
-            %w[columns primary_key].each do |k|
+            %w[columns absent_columns primary_key].each do |k|
                 next unless t.key?(k)
                 errors << "tables[#{i}].#{k} must be a list of column names" unless t[k].is_a?(Array) && !t[k].empty? && t[k].all? { |c| c.to_s =~ NAME }
             end
@@ -127,6 +128,10 @@ module TableExpect
             missing = (spec['columns'] || []).reject { |c| columns.include?(c) }
             unless missing.empty?
                 return [:missing_column, "#{label} hat noch #{missing.size == 1 ? 'keine Spalte' : 'keine Spalten'} #{list(missing)}. Sie hat: #{list(columns)}."]
+            end
+            present = (spec['absent_columns'] || []).select { |c| columns.include?(c) }
+            unless present.empty?
+                return [:absent_column, "#{label} hat noch #{present.size == 1 ? 'die Spalte' : 'die Spalten'} #{list(present)}; #{present.size == 1 ? 'sie gehört' : 'sie gehören'} nicht mehr hinein."]
             end
             if spec['primary_key'] && table[:pk] != spec['primary_key']
                 if table[:pk].empty?

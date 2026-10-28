@@ -150,4 +150,12 @@ class ErCheckTest < Minitest::Test
         assert(errors.any? { |e| e.include?('cardinality only for two') })
         assert(errors.any? { |e| e.include?('unknown keys: rows') })
     end
+    def test_absent_columns_in_the_tables_of_a_model
+        check = CHECK.merge('tables' => [{ 'name' => 'movie', 'columns' => ['title'], 'absent_columns' => ['year'] }])
+        _, problem, message, = evaluate(FILM, check)
+        assert_equal :absent_column, problem
+        assert_includes message, 'Die Tabelle `movie` hat noch die Spalte `year`'
+        status, = evaluate(FILM.sub("  year: int, optional\n", ''), check.merge('entities' => []))
+        assert_equal :correct, status
+    end
 end

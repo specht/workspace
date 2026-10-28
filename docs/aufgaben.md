@@ -1591,6 +1591,7 @@ check:
   tables:
     - name: movie
       columns: [id, title, year]   # müssen da sein; weitere sind erlaubt
+      absent_columns: [director]   # darf nicht (mehr) da sein
       primary_key: [id]
       min_rows: 1                  # oder rows: genau so viele
     - name: movie_genre
@@ -1598,6 +1599,13 @@ check:
       indexes: [[genre_id]]        # ein Index, der mit diesen Spalten anfängt
   setup: Lege die Tabellen mit `mysql < film.sql` an.
 ```
+
+`absent_columns` nennt Spalten, die eine Tabelle nicht (mehr) haben darf,
+für Aufgaben, in denen Lernende eine Tabelle aufteilen (die dritte
+Normalform in »Filmdatenbank mit MySQL«): Stehen sie noch da, sagt die Karte
+»Die Tabelle `club_movie` hat noch die Spalte `director`; sie gehört nicht
+mehr hinein.« (Problem-Code `absent_column`). Bei `er` gilt es ebenso für die
+Tabellen, die aus dem Modell werden.
 
 `indexes` verlangt für jede Liste einen Index der Tabelle, dessen erste
 Spalten genau diese sind; der Primärschlüssel zählt mit, und ein Index auf
@@ -1724,8 +1732,8 @@ die eingebaute Rückmeldung für einen Fall.
 | `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
-| `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `primary_key`, `foreign_key` |
-| `schema` | `no_tables`, `missing_table`, `missing_column`, `primary_key`, `foreign_key`, `index`, `rows` |
+| `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `absent_column`, `primary_key`, `foreign_key` |
+| `schema` | `no_tables`, `missing_table`, `missing_column`, `absent_column`, `primary_key`, `foreign_key`, `index`, `rows`, `rows_where` |
 | `story` | `no_project`, `no_analysis`, `stale`, `starter`, `errors`, `too_few_pages`, `too_few_choices`, `too_few_local_choices`, `too_few_conditions`, `too_few_scripts`, `too_few_images`, `unreachable`, `too_few_endings` |
 
 Text, der nur die Karten ersetzt (etwa eine nummerierte Aufgabenliste),

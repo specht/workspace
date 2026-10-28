@@ -39,7 +39,7 @@ module ErCheck
     TYPES = /\A(int|text|float|date|datetime|bool|varchar\(\d+\)|decimal\(\d+,\s*\d+\))\z/
     FLAGS = %w[key optional unique].freeze
     PROBLEMS = %w[missing errors missing_entity key missing_attribute attribute missing_relationship cardinality
-                  missing_table missing_column primary_key foreign_key].freeze
+                  missing_table missing_column absent_column primary_key foreign_key].freeze
 
     def self.available?
         !CORE.nil?
