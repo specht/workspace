@@ -303,14 +303,14 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
-                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache; bei einer Schaltung aus der Logik-Werkstatt die Schaltung), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
+                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person dort angelegt hat, mit Namen und Code; bei einer Schaltung aus der Logik-Werkstatt die Schaltung), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
                 :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis)',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, oder der Code einer gelösten Kata, den die Person selbst einreicht',
+                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
                 :categories => [:content],
                 :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe',
@@ -435,8 +435,8 @@ module Privacy
                 'Kein Tracking, keine Analyse-Werkzeuge, keine Werbung.',
                 'Schriften, Skripte und Symbole kommen vom Server selbst; die Seiten des Workspace laden nichts von fremden Servern.',
                 'Die Zugriffsprotokolle enthalten keine IP-Adressen und keine Namen; geheime Teile von Adressen (Links zum Teilen, Anmeldelinks) werden unkenntlich gemacht. Sie werden nach 7 Tagen gelöscht.',
-                'Von Aufgaben wird nur die letzte Antwort gespeichert; Versuche werden ohne Text gezählt.',
-                'Code, der in einer Kata geschrieben wird, läuft in einem eigenen kurzlebigen Container ohne Netz, der danach gelöscht wird; was er ausgibt, wird nicht gespeichert.',
+                'Von Aufgaben wird nur die letzte Antwort gespeichert (bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person selbst angelegt hat, bis sie es löscht); Versuche werden ohne Text gezählt.',
+                'Code, der in einer Kata geschrieben wird, läuft in einem eigenen kurzlebigen Container ohne Netz, der danach gelöscht wird; was er ausgibt, wird nicht gespeichert. Programme der Turtle-Grafik laufen im Browser der Person selbst; an den Server gehen nur ihr Code und die Befehle, die sie gezeichnet haben.',
                 'Von einer Sitzung werden nur die Tage der Anmeldung und der letzten Nutzung und eine grobe Angabe des Geräts (Browser und Betriebssystem) gespeichert, nicht die vollständige Kennung des Browsers und keine IP-Adresse.',
             ],
             'Verschlüsselung' => [

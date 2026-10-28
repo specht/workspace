@@ -50,7 +50,7 @@ test('the turtle draws and is checked in Ruby, Python and JavaScript', async ({ 
       // »frei ausprobieren«, so the answer goes first
       if (await fn.locator('.task-delete').isVisible()) {
         await fn.locator('.task-delete').click();
-        await page.getByRole('button', { name: 'Löschen', exact: true }).click();
+        await page.locator('#__template_modal').getByRole('button', { name: 'Löschen', exact: true }).click();
         await expect(fn.locator('.task-feedback')).toContainText('Gelöscht.');
       }
       await fn.locator('.task-code').fill(PROGRAMS[language][1].replace('4', '3').replace('90', '120'));
@@ -94,4 +94,65 @@ test('an endless program draws until it is stopped, and its code stays', async (
   await page.reload();
   await page.locator('.code-language-option[data-set-language="javascript"]').click();
   await expect(page.locator('.task-card[data-task="turtle-1/square-loop"]:visible .task-code')).toHaveValue(endless);
+});
+
+test('a free card keeps several drawings by name, hands them in, renames and deletes them', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('dialog', (d) => { errors.push('native dialog: ' + d.message()); d.dismiss(); });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/turtle-3');
+  await page.locator('.code-language-option[data-set-language="javascript"]').click();
+  const card = page.locator('.task-card[data-task="turtle-3/finale"]:visible');
+  await card.scrollIntoViewIfNeeded();
+  const select = card.locator('.turtle-sketches select');
+  // from an earlier run of this test: back to one empty drawing
+  await expect(select.locator('option').first()).toBeAttached();
+  while (await select.locator('option').count() > 1 || !(await select.inputValue()).startsWith('Bild')) {
+    await card.locator(".turtle-sketches [data-do='delete']").click();
+    await page.locator('#__template_modal').getByRole('button', { name: 'Löschen', exact: true }).click();
+    await page.waitForTimeout(400);
+  }
+  await card.locator('.turtle-speeds button', { hasText: 'Sofort' }).click();
+  const sun = 'for (let i = 0; i < 36; i++) {\n  color(i * 10);\n  forward(100);\n  back(100);\n  left(10);\n}\n';
+  await card.locator('.task-code').fill(sun);
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText(/Fertig|frei ausprobieren/, { timeout: 60_000 });
+
+  // hand it in: the picture of the last run
+  const first = await select.inputValue();
+  await card.locator('.task-hand-in').click();
+  await expect(card.locator('.task-hand-in')).toHaveText('Eingereicht, zurücknehmen');
+  await expect(select.locator('option', { hasText: '(eingereicht)' })).toHaveCount(1);
+
+  // a second drawing by name, with an empty program
+  await card.locator(".turtle-sketches [data-do='new']").click();
+  await page.locator('#ti_input_dialog').fill('Wald');
+  await page.locator('#__template_modal').getByRole('button', { name: 'Anlegen' }).click();
+  await expect(select).toHaveValue('Wald');
+  await expect(card.locator('.task-code')).not.toHaveValue(sun);
+  await expect(card.locator('.task-hand-in')).toHaveText('Einreichen');
+  await card.locator('.task-code').fill('forward(50);\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText(/Fertig|frei ausprobieren/, { timeout: 60_000 });
+
+  // back to the first, renamed; the hand-in follows the name
+  await select.selectOption(first);
+  await expect(card.locator('.task-code')).toHaveValue(sun);
+  await card.locator(".turtle-sketches [data-do='rename']").click();
+  await page.locator('#ti_input_dialog').fill('Sonne');
+  await page.locator('#__template_modal').getByRole('button', { name: 'Umbenennen' }).click();
+  await expect(select.locator('option', { hasText: 'Sonne (eingereicht)' })).toHaveCount(1);
+
+  // deleted, it is no longer handed in; Wald stays, also after a reload
+  await card.locator(".turtle-sketches [data-do='delete']").click();
+  await page.locator('#__template_modal').getByRole('button', { name: 'Löschen', exact: true }).click();
+  await expect(select.locator('option')).toHaveText(['Wald']);
+  await page.reload();
+  await page.locator('.code-language-option[data-set-language="javascript"]').click();
+  const again = page.locator('.task-card[data-task="turtle-3/finale"]:visible');
+  await expect(again.locator('.turtle-sketches select')).toHaveValue('Wald');
+  await expect(again.locator('.task-code')).toHaveValue('forward(50);\n');
+  expect(errors).toEqual([]);
 });

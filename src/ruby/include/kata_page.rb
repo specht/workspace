@@ -1,5 +1,6 @@
 require_relative 'kata_check'
 require_relative 'kata_hand_ins'
+require_relative 'turtle_sketches'
 require_relative 'submission_store'
 require_relative 'kata_queue'
 require_relative 'kata_runner'
@@ -161,14 +162,22 @@ class Main < Sinatra::Base
             next '' unless KATA_TYPES.include?(t[:type])
 
             key = "#{activity_key}/#{t[:id]}"
-            entries = members.filter_map do |m|
-                name, code = SubmissionStore.read_text(submission_path(key, m[:email]))
-                next unless code
+            entries = members.flat_map do |m|
+                name, code = SubmissionStore.read_text(submission_path(key, m[:email]), :max => 64 * 1024 * 1024)
+                next [] unless code
 
+                # drawings from a free turtle card (TurtleSketches): each a
+                # picture the server drew, with its name
+                if name == TurtleSketches::FILE
+                    pictures = JSON.parse(code) rescue []
+                    next pictures.select { |p| p.is_a?(Hash) && p['svg'].is_a?(String) }.map do |p|
+                        { :email => m[:email], :name => m[:name], :title => p['name'].to_s, :svg => p['svg'] }
+                    end
+                end
                 language = KataCheck::FILES.key(name) || 'ruby'
                 lexer = Rouge::Lexer.find(language) || Rouge::Lexers::PlainText
-                { :email => m[:email], :name => m[:name], :language => language,
-                  :code_html => Rouge::Formatters::HTML.new.format(lexer.new.lex(code)) }
+                [{ :email => m[:email], :name => m[:name], :language => language,
+                   :code_html => Rouge::Formatters::HTML.new.format(lexer.new.lex(code)) }]
             end
             KataHandIns.html(key, i + 1, t[:title], entries)
         end.join

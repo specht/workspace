@@ -48,7 +48,7 @@ module AccountExport
             'konto' => USER_KEYS.to_h { |key| [key, user[key.to_sym] || user[key]] }.compact,
             'gruppen' => rows[:groups] || [],
             'aufgaben' => (rows[:task_states] || []).map do |s|
-                pick(s, %w[task status last_answer attempts first_status first_correct updated version])
+                pick(s, %w[task status last_answer sketches attempts first_status first_correct updated version])
             end,
             'versuche' => (rows[:attempts] || []).map { |a| pick(a, %w[task status ts version]) },
             'einsicht' => (rows[:look_ins] || []).map { |l| pick(l, %w[ts kind reason by_name]) },

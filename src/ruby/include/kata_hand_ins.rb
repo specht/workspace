@@ -24,16 +24,20 @@ module KataHandIns
     def self.html(task_key, number, title, entries)
         return '' if entries.empty?
 
-        ordered = entries.sort_by { |e| Digest::SHA256.hexdigest("#{task_key}\n#{e[:email]}") }
+        ordered = entries.sort_by { |e| Digest::SHA256.hexdigest("#{task_key}\n#{e[:email]}\n#{e[:title]}") }
+        # drawings of a free turtle card: »Bild 1«, … (an SVG the server drew)
+        word, words = entries.any? { |e| e[:svg] } ? %w[Bild Bilder] : %w[Lösung Lösungen]
         io = +"<details class='class-answers kata-hand-ins'><summary>#{number}. #{h(title)}: "
-        io << "#{entries.size} #{entries.size == 1 ? 'Lösung' : 'Lösungen'} eingereicht</summary>"
+        io << "#{entries.size} #{entries.size == 1 ? word : words} eingereicht</summary>"
         io << "<p class='kata-hand-ins-note'>#{h(NOTE)}</p>"
         io << "<label class='kata-hand-ins-names'><input type='checkbox' class='form-check-input'> Namen zeigen</label>"
         io << '<ol class="kata-hand-ins-list">'
         ordered.each_with_index do |e, i|
-            io << "<li><button type='button' class='btn btn-link kata-hand-in' data-label='Lösung #{i + 1}' data-name='#{h(e[:name])}'>"
-            io << "Lösung #{i + 1}</button> <span class='kata-hand-in-name' hidden>#{h(e[:name])}</span>"
-            io << "<template><pre class='kata-hand-in-code code-#{h(e[:language])}'>#{e[:code_html]}</pre></template></li>"
+            label = e[:svg] ? "#{word} #{i + 1}: #{e[:title]}" : "#{word} #{i + 1}"
+            io << "<li><button type='button' class='btn btn-link kata-hand-in' data-label='#{h(label)}' data-name='#{h(e[:name])}'>"
+            io << "#{h(label)}</button> <span class='kata-hand-in-name' hidden>#{h(e[:name])}</span>"
+            inner = e[:svg] ? "<div class='kata-hand-in-picture'>#{e[:svg]}</div>" : "<pre class='kata-hand-in-code code-#{h(e[:language])}'>#{e[:code_html]}</pre>"
+            io << "<template>#{inner}</template></li>"
         end
         io << '</ol></details>'
     end

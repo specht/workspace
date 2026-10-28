@@ -535,6 +535,108 @@
         api_call('/api/kata/' + kind, request, follow, { no_please_wait: true });
     }
 
+    // Several drawings on a free turtle card (TurtleSketches on the server):
+    // their names above the paper, the open one in the editor, Neu,
+    // Umbenennen and Löschen; »Einreichen« hands in the open one, as the
+    // picture of its last run, and several may be handed in.
+    function sketchBook(card, editor) {
+        const task = card.dataset.task;
+        const bar = document.createElement('div');
+        bar.className = 'turtle-sketches';
+        const id = 'turtle-sketch-' + task.replace(/[^a-z0-9]+/gi, '-');
+        bar.innerHTML = "<label class='turtle-sketches-label' for='" + id + "'><i class='bi bi-images' aria-hidden='true'></i>Bild</label>" +
+            "<select class='form-select form-select-sm' id='" + id + "'></select>" +
+            "<button type='button' class='btn btn-sm btn-outline-secondary' data-do='new'><i class='bi bi-plus-lg' aria-hidden='true'></i>Neu</button>" +
+            "<button type='button' class='btn btn-sm btn-outline-secondary' data-do='rename'><i class='bi bi-pencil' aria-hidden='true'></i>Umbenennen</button>" +
+            "<button type='button' class='btn btn-sm btn-outline-secondary' data-do='delete'><i class='bi bi-trash' aria-hidden='true'></i>Löschen</button>";
+        card.querySelector('.turtle-layout').before(bar);
+        // »Meine Antwort löschen« would take all drawings at once
+        card.dataset.sketches = 'true';
+        const select = bar.querySelector('select');
+        let book = { list: [], current: null, handed: [] };
+        const say = function (text) {
+            const p = document.createElement('p');
+            p.textContent = text;
+            showFeedback(card, 'invalid', p.outerHTML);
+        };
+        const send = function (action, extra) {
+            if (card.turtle.running) card.turtle.stop();
+            api_call('/api/turtle/sketch', Object.assign({ task: task, language: card.dataset.language, action: action }, extra || {}), function (data) {
+                if (!data.success) {
+                    showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
+                    return;
+                }
+                apply(data, action);
+                if (data.error) say(data.error);
+            }, { no_please_wait: true });
+        };
+        const apply = function (data, action) {
+            const switched = data.current !== book.current || action === 'load';
+            book = data;
+            select.replaceChildren();
+            data.list.forEach(function (name) {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = data.handed.indexOf(name) >= 0 ? name + ' (eingereicht)' : name;
+                select.appendChild(option);
+            });
+            select.value = data.current;
+            if (switched) {
+                editor.value = data.code;
+                if (editor.codeInputUpdate) editor.codeInputUpdate();
+                card.turtle.blank();
+                const feedback = card.querySelector('.task-feedback');
+                feedback.className = 'task-feedback';
+                feedback.innerHTML = '';
+            }
+            if (data.state) setBadge(card, data.state.status, false);
+            showHandIn();
+        };
+        const showHandIn = function () {
+            const button = card.querySelector('.task-hand-in');
+            if (!button) return;
+            const handedIn = book.handed.indexOf(book.current) >= 0;
+            button.hidden = card.dataset.status !== 'correct' && book.handed.length === 0;
+            card.dataset.handedIn = handedIn ? '1' : '';
+            button.textContent = handedIn ? 'Eingereicht, zurücknehmen' : 'Einreichen';
+        };
+        select.addEventListener('change', function () { send('open', { name: select.value, code: editor.value }); });
+        bar.addEventListener('click', function (e) {
+            const button = e.target.closest('[data-do]');
+            if (!button) return;
+            const what = button.dataset.do;
+            if (what === 'new') {
+                input_dialog({ title: 'Neues Bild', label: 'Name des Bildes', placeholder: 'zum Beispiel Wald', confirm: 'Anlegen', icon: 'bi-plus-lg' }, function (name) {
+                    send('new', { name: name, code: editor.value });
+                });
+            } else if (what === 'rename') {
+                input_dialog({ title: 'Bild umbenennen', label: 'Neuer Name', value: book.current, confirm: 'Umbenennen', icon: 'bi-pencil' }, function (to) {
+                    send('rename', { name: book.current, to: to, code: editor.value });
+                });
+            } else if (what === 'delete') {
+                const handedIn = book.handed.indexOf(book.current) >= 0;
+                confirm_dialog({ title: '»' + book.current + '« löschen?', text: 'Das Bild und sein Programm sind danach weg' + (handedIn ? ', und es ist nicht mehr eingereicht.' : '.'),
+                    confirm: 'Löschen', icon: 'bi-trash', danger: true }, function () { send('delete', { name: book.current }); });
+            }
+        });
+        send('load');
+        return {
+            showHandIn: showHandIn,
+            handIn: function () {
+                if (book.handed.indexOf(book.current) >= 0) {
+                    send('take_back', { code: editor.value });
+                    return;
+                }
+                const run = card.turtle.lastRun;
+                if (!run || run.code !== editor.value) {
+                    say('Lass dein Bild zuerst laufen: Eingereicht wird, was die Schildkröte zuletzt gezeichnet hat.');
+                    return;
+                }
+                send('hand_in', { code: editor.value, report: JSON.stringify(run.commands) });
+            },
+        };
+    }
+
     // The turtle (turtle_canvas.js): its program runs here, in the browser,
     // and only what it drew goes to the server; these are the card's parts
     // it uses. A run that is stopped keeps its code (save), one that ends is
@@ -617,6 +719,10 @@
     function showHandIn(card, state) {
         const button = card.querySelector('.task-hand-in');
         if (!button) return;
+        if (card.sketches) {
+            card.sketches.showHandIn();
+            return;
+        }
         const handedIn = !!(state && state.handed_in);
         button.hidden = !(state && state.status === 'correct') && !handedIn;
         card.dataset.handedIn = handedIn ? '1' : '';
@@ -826,8 +932,13 @@
                 card.turtle = new TurtleCard(stage, turtleHooks(card, sql));
                 sql.addEventListener('focus', function () { card.turtle.prepare(); }, { once: true });
             }
+            // a picture of one's own: several drawings by name
+            if (card.turtle && stage.dataset.free) card.sketches = sketchBook(card, sql);
             const handIn = card.querySelector('.task-hand-in');
-            if (handIn) handIn.addEventListener('click', function () { toggleHandIn(card); });
+            if (handIn) handIn.addEventListener('click', function () {
+                if (card.sketches) card.sketches.handIn();
+                else toggleHandIn(card);
+            });
             // Pip's map (pip_world.js): the player under it marks each step's line
             const world = card.querySelector('.pip-world');
             if (world && window.PipWorld) {

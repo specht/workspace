@@ -685,6 +685,15 @@
             else this.run();
         }
 
+        // another drawing opened (tasks.js, sketchBook): an empty paper
+        blank() {
+            this.lastRun = null;
+            this.player.halt();
+            this.stage.clear();
+            this.state.textContent = '';
+            this.hooks.clearConsole();
+        }
+
         run() {
             const code = this.hooks.code();
             if (!code.trim()) {
@@ -710,6 +719,8 @@
             clearTimeout(this.running.timer);
             this.player.halt();
             this.stage.frameAll();
+            // an endless drawing, stopped, may be handed in as far as it got
+            if (this.running.phase === 'live') this.lastRun = { code: this.running.code, commands: this.running.commands.slice() };
             this.running = null;
             this.hooks.mark(null);
             this.hooks.busy(false);
@@ -761,6 +772,8 @@
             if (!r) return;
             this.hooks.mark(null);
             this.stage.frameAll();
+            // what it drew, for handing in a drawing (tasks.js, sketchBook)
+            this.lastRun = { code: r.code, commands: r.commands.slice() };
             if (r.error) {
                 this.hooks.console((r.error.line ? 'Zeile ' + r.error.line + ': ' : '') + r.error.message, true);
                 if (r.error.line) this.hooks.mark(r.error.line);

@@ -11,7 +11,7 @@ Rekursion zum Zuschauen: Lernende zeichnen mit der Schildkröte aus <a href='/tu
 <li>Zum Schluss ein eigener Baum ohne Vorlage.</li>
 </ul>Vor jeder Figur steht ein Bild, das man Stufe für Stufe durchklickt: Jede Stufe zeigt die Teile aus der Stufe davor in Farbe und, blass dahinter, die Stufe davor selbst. Statt eines Rezepts im Aufgabentext steht so vor Augen, wie sich eine Stufe aus der davor zusammensetzt.</td></tr>
 <tr><th>Prüfung</th><td>Wie in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>: Der Server zeichnet die Befehle nach und vergleicht die Linien mit dem grauen Bild, gleich in welcher Reihenfolge sie gezeichnet sind. Bei Aufgaben mit einer eigenen Funktion ruft die Prüfung sie mit mehreren Tiefen auf. Beim eigenen Baum zählt nichts: Jeder Baum mit wenigstens einer Linie ist gelöst.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Aufgabe, für jede Sprache getrennt, bis die Person ihn löscht; sichtbar nur für die Person selbst. Lehrkräfte sehen im Klassenboard nur, ob eine Aufgabe gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Aufgabe, für jede Sprache getrennt, bis die Person ihn löscht; sichtbar nur für die Person selbst. Lehrkräfte sehen im Klassenboard nur, ob eine Aufgabe gelöst ist. Bei den eigenen Bildern legen die Lernenden mehrere Bilder mit Namen an und reichen ein, so viele sie wollen; im Klassenboard erscheinen sie als Bilder, ohne Namen, bis du sie einschaltest.</td></tr>
 </table>
 
 #### Was schiefgeht

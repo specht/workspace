@@ -289,6 +289,15 @@ development since 28 October 2026). What the maintainer decided and why:
   `drawn`, neutral like a note; for a function, which call differs), and
   the dashed and red differences with their sentence only on »Unterschiede
   zeigen«. The stored state is still »noch nicht gelöst«.
+- **Several drawings on a free card** (the maintainer): on every card with
+  `free:` a row »Bild« lists the person's drawings by name, with Neu,
+  Umbenennen and Löschen; the open one is in the editor and is the card's
+  answer as before (`TaskState.sketches`, `/api/turtle/sketch`,
+  `TurtleSketches`). »Einreichen« hands in the open one, any number of
+  them: as its code and an SVG the server draws from the commands of its
+  last run, so that the class board shows pictures and no student's code
+  ever runs in someone else's browser (a worker running JavaScript or
+  Pyodide could call the site with the teacher's session).
 - **Solved, then free** (the maintainer: experiments are not punished): once
   a card is solved, a run that draws something else keeps its code, the
   card stays solved, and the card says that nothing is checked any more,

@@ -12,7 +12,7 @@ Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und K
 </ul></td></tr>
 <tr><th>Neue Befehle</th><td><code>color 200</code> (eine Farbe aus dem Farbkreis: 0 Rot, 120 Grün, 240 Blau), <code>color "gold", "crimson", 0.25</code> (gemischt), <code>push</code> und <code>pop</code> (merken sich Ort, Richtung, Stift, Farbe und Breite und kehren dorthin zurück, wie <code>save()</code> und <code>restore()</code> am Canvas im Browser), <code>random(1, 6)</code> (eine ganze Zufallszahl, mit Kommazahlen eine Kommazahl). In Python und JavaScript mit Klammern.</td></tr>
 <tr><th>Prüfung</th><td>Wie in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>: Der Server zeichnet die Befehle nach und vergleicht sie mit dem Bild der Aufgabe, bei den Farbaufgaben auch die Farben. Die Aufgaben mit Zufall und die eigenen Bilder sind gelöst, sobald die Schildkröte etwas zeichnet.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Aufgabe, für jede Sprache getrennt, bis die Person ihn löscht; sichtbar nur für die Person selbst. Lehrkräfte sehen im Klassenboard nur, ob eine Aufgabe gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Aufgabe, für jede Sprache getrennt, bis die Person ihn löscht; sichtbar nur für die Person selbst. Lehrkräfte sehen im Klassenboard nur, ob eine Aufgabe gelöst ist. Bei den eigenen Bildern legen die Lernenden mehrere Bilder mit Namen an und reichen ein, so viele sie wollen; im Klassenboard erscheinen sie als Bilder, ohne Namen, bis du sie einschaltest.</td></tr>
 </table>
 
 #### Was schiefgeht

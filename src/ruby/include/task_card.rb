@@ -190,6 +190,8 @@ module TaskCard
                 io << "<div class='turtle-stage' data-language='#{h.(check['language'])}' data-runs='#{h.(JSON.generate(calls))}'"
                 io << " data-target='#{h.(JSON.generate(target))}'" if target
                 io << " data-target-call='#{h.(calls[TurtleCheck.shown(check)])}'" if target && calls.first
+                # a picture of one's own: several drawings, by name (TurtleSketches)
+                io << " data-free='true'" if check['free']
                 io << '></div>'
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
