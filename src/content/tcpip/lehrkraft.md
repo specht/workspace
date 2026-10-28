@@ -9,7 +9,7 @@ Lernende erkunden das Netz mit Kommandozeilenwerkzeugen: die eigene Adresse, Ent
 <tr><th>Ports</th><td>Zwischen zwei Workspaces ist nur Port 1234 frei, für <code>netcat</code> zu zweit, dazu <code>ping</code>. Allein, mit <code>localhost</code>, geht jeder Port. Nach außen gehen Verbindungen ins Internet, auch an Port 80 (<code>info.cern.ch</code>).</td></tr>
 <tr><th>Im eigenen Netz</th><td><ul>
 <li>Alle Workspaces hängen an einer Linux-Bridge auf dem Server, einem Switch aus Software; ARP geht zwischen ihnen ungehindert, darum sehen Lernende nach einem <code>ping</code> die MAC-Adresse der anderen Person in <code>ip neigh</code>.</li>
-<li>Mitschneiden (<code>tcpdump</code>, <code>arping</code>) geht im Workspace nicht: Die Werkzeuge sind nicht installiert, und dem Container fehlt das Recht für rohe Sockets. Was ARP schickt, erklärt die Seite; zu sehen ist das Ergebnis in <code>ip neigh</code>.</li>
+<li>Mitschneiden (<code>tcpdump</code>, <code>arping</code>) geht im Workspace nicht: Die Werkzeuge sind nicht installiert, und dem Container fehlt mit Absicht das Recht für rohe Sockets: Alle Workspaces teilen ein Netz, und wer gefälschte ARP-Antworten schicken kann, leitet den Verkehr anderer über sich um. Was ARP schickt, erklärt die Seite; zu sehen ist das Ergebnis in <code>ip neigh</code>.</li>
 <li><code>ip neigh flush</code> ist nicht erlaubt. Gelernte Einträge blieben im Test über 20 Minuten stehen und waren nach einem Neustart des Workspace fort; wer die Vorhersage »Bevor ihr euch etwas schickt« noch einmal machen will, nimmt eine Person, mit der er noch nichts getauscht hat.</li>
 </ul></td></tr>
 </table>
