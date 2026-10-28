@@ -369,7 +369,7 @@ Erfunden wurde sie für Logo, eine Programmiersprache, mit der Kinder
 programmieren lernen sollten; die erste Schildkröte war ein Roboter auf dem
 Fußboden.
 
-_person(papert)
+<!-- Die Seite ist noch in Entwicklung: Die Personenbox für Seymour Papert (part papert, papert.webp, ihre Quellen in sources.yaml) steht in Commit ff1b480f und kommt mit _person(papert) zurück, wenn die Seite in den Katalog geht. -->
 
 <div class='book'>
 <i class='bi bi-book'></i>

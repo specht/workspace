@@ -400,18 +400,6 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1928 -->
-<!-- part: papert -->
-### Seymour Papert
-
-<div class='person'>
-<img src='papert.webp' alt='Schwarzweißfoto: Seymour Papert mit langen Locken und Vollbart an einem Tisch, vor ihm ein runder Roboter unter einer durchsichtigen Kuppel und auf dem Papier eine Zeichnung aus geraden Linien.'>
-<p><strong>Seymour Papert</strong> (1928–2016), Mathematiker aus Pretoria, ab 1963 am MIT. 1967 entwickelte er mit Wally Feurzeig und Cynthia Solomon die Programmiersprache Logo, mit der Kinder spielerisch Probleme lösen. Die erste Schildkröte von 1969 war ein Roboter, der über den Boden fuhr und mit einem kleinen Stift zeichnen konnte; auf dem Foto steht einer vor ihm. Später lief sie über den Bildschirm, so wie hier.</p>
-<p>Was er dabei über Kinder und das Lernen herausfand, schrieb er 1980 in seinem Buch »Mindstorms«.</p>
-<p class='person-credit'>Foto: Matematicamente.it, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Seymour_Papert.jpg'>Wikimedia Commons</a>)</p>
-</div>
-<!-- /part -->
-
-<!-- year: 1928 -->
 <!-- part: rosenblatt -->
 ### Frank Rosenblatt
 
