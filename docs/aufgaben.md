@@ -1843,7 +1843,10 @@ Icons stammen aus [Tabler Icons](https://tabler.io/icons) (MIT) und liegen
 als Sprite in `src/static/include/tabler/tabler.svg`; welche Icons darin sind,
 steht in `icons.txt` daneben. `src/ruby/tools/build_tabler_sprite.rb` baut das
 Sprite neu, `Icons.tabler('check')` (`src/ruby/include/icons.rb`) setzt eins
-in eine Seite.
+in eine Seite. Ein Zeichen, das Bootstrap nicht hat, kann ein Kata-Satz als
+`icon:` mit einer SVG-Datei aus `src/static/images/icons/` bekommen (das λ von
+»Funktionen als Werte« ist Tablers `outline/lambda`): Es steht wie die
+Bootstrap-Icons in der Farbe seines Bands (`KataMap.art_html`, `.kata-set-glyph`).
 
 Die Zeile »Klasse« zählt, wie viele fertig sind und wie viele hängen; bei
 Vermutungen auch, wie viele richtig vermutet haben. Eine Spalte ist gelb, wenn

@@ -1,5 +1,5 @@
 <div class='meta'>
-icon: bi-funnel
+icon: /images/icons/lambda.svg
 kind: uebung
 duration: 2 Doppelstunden
 languages: [ruby, python, javascript]

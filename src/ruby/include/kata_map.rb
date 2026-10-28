@@ -55,12 +55,17 @@ module KataMap
     # progress: { slug => { done:, total:, extras_done: } }, nil for a
     # visitor; pinned: the slugs a teacher pinned for the person's groups
     # (the first is scrolled into the middle).
-    # A set's band: its icon, or a figure like Pip (a sprite tinted in the
+    # A set's band: its icon (Bootstrap's, or an SVG from images/icons/ for
+    # a sign Bootstrap lacks), or a figure like Pip (a sprite tinted in the
     # band's hue, default.css), on its colour (--accent from where it sits).
     # The pinned card on the start page shows it too (StudentHome.card).
     def self.art_html(icon)
         icon ||= 'bi-code-slash'
-        art = if icon.start_with?('/')
+        art = if icon.start_with?('/') && icon.split('?').first.end_with?('.svg')
+            # a sign Bootstrap does not have (the λ, from Tabler): drawn like
+            # its icons, in the band's hue (default.css, .kata-set-glyph)
+            "<span class='kata-set-glyph' style='--glyph: url(#{h(icon)})'></span>"
+        elsif icon.start_with?('/')
             "<span class='kata-set-figure'><span class='kata-set-sprite kata-sprite-#{h(File.basename(icon.split('?').first, '.*'))}' style='--sprite: url(#{h(icon)})'></span></span>"
         else
             "<i class='bi #{h(icon)}'></i>"

@@ -10162,6 +10162,22 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
 .kata-set-art .bi::before {
     vertical-align: 0;
 }
+/* an icon Bootstrap lacks (images/icons/, the λ from Tabler): as large as
+   Bootstrap's and in the same colour, its shape cut out of the colour;
+   Tabler leaves 2 of 24 units free on every side, Bootstrap none, so its
+   box is 24/20 as large */
+.kata-set-glyph {
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    background: currentColor;
+    -webkit-mask: var(--glyph) center / contain no-repeat;
+    mask: var(--glyph) center / contain no-repeat;
+    transition: scale 300ms;
+}
+.kata-set:hover .kata-set-glyph {
+    scale: 1.12;
+}
 
 /* the set's number, or a tick when it is done */
 .kata-set-marks {
