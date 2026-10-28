@@ -611,7 +611,7 @@ Manche Programme können es trotzdem, mit einer Erweiterung: Das Modul [`regex`]
 
 <div class='book'>
 <i class='bi bi-book'></i>
-<p><strong>Mastering Regular Expressions</strong>, Jeffrey E. F. Friedl, O'Reilly, 3. Auflage 2006; auf Deutsch als <em>Reguläre Ausdrücke</em>. Das Buch erklärt, wie die Programme, die Ausdrücke ausführen, von innen arbeiten, warum manche Ausdrücke so viel langsamer sind als andere und wie man sie schneller schreibt, für Perl, Java, .NET, PHP und andere Sprachen. Es steht in vielen Bibliotheken; der Verlag hat es auf seiner <a href='https://www.oreilly.com/library/view/mastering-regular-expressions/0596528124/'>Seite des Buchs</a>.</p>
+<p><strong>Mastering Regular Expressions</strong>, Jeffrey E. F. Friedl, O'Reilly, 3. Auflage 2006, auch auf Deutsch erschienen. Das Buch erklärt, wie die Programme, die Ausdrücke ausführen, von innen arbeiten, warum manche Ausdrücke so viel langsamer sind als andere und wie man sie schneller schreibt, für Perl, Java, .NET, PHP und andere Sprachen. Es steht in vielen Bibliotheken; der Verlag hat es auf seiner <a href='https://www.oreilly.com/library/view/mastering-regular-expressions/0596528124/'>Seite des Buchs</a>.</p>
 </div>
 
 <!-- tutorial-screenshot
