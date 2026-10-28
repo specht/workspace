@@ -2,14 +2,10 @@ import { expect, test } from './fixtures';
 import type { Browser, Page, TestInfo } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
-// »Datenübertragung per Kabel« (/cable, /ether): one public ether without
+// »Datenübertragung per Funk« (/radio, /ether): one public ether without
 // login. Two people on the same frequency see each other's lamps, someone on
 // another frequency does not; a teacher changes the number of lamps for
 // everyone (src/ruby/include/cable_ether.rb, src/static/include/cable.js).
-//
-// Parked for now (sections.yaml, »parked«): the ether then answers 403 to
-// visitors without a login, so these tests wait until it is back.
-test.skip(true, 'Datenübertragung per Kabel ist zurückgestellt');
 
 function baseUrl(testInfo: TestInfo): string {
   const value = testInfo.project.use.baseURL;
@@ -79,7 +75,7 @@ test('nobody else can change the lamps; a teacher sets four for everyone', async
     await expect(ada.locator('.cable-key:visible')).toHaveCount(5);
 
     await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-    await teacher.goto('/cable');
+    await teacher.goto('/radio');
     const panel = teacher.locator('.cable-teacher');
     await expect(panel).toBeVisible();
     await expect(panel).toContainText('auch für andere Klassen');
@@ -105,6 +101,21 @@ test('nobody else can change the lamps; a teacher sets four for everyone', async
     await panel.getByRole('button', { name: 'Nächstes Wort' }).click();
     await expect(panel.locator('.cable-word')).toHaveText(/^[A-Z]{5,11}$/);
     await expect(panel.locator('.cable-word-count')).toHaveText(/^1 von \d+$/);
+
+    // A word for the pair on this frequency: in its row and in the list,
+    // and it stays while the lamps go on and off (the row is not rebuilt).
+    const row = panel.locator('.cable-freqs tr', { hasText: (freq / 10).toFixed(1) });
+    await row.getByRole('button', { name: `Ein Wort für ${(freq / 10).toFixed(1)} kHz` }).click();
+    const word = (await panel.locator('.cable-word').textContent()) || '';
+    expect(word).toMatch(/^[A-Z]{5,11}$/);
+    await expect(panel.locator('.cable-word-for')).toHaveText(`für ${(freq / 10).toFixed(1)} kHz`);
+    await expect(row.locator('.cable-row-word')).toHaveText(word);
+    await expect(panel.locator('.cable-given tbody tr').first()).toContainText(word);
+    await expect(panel.locator('.cable-given tbody tr')).toHaveCount(2);
+    await hold(ada, 2);
+    await expect(row.locator('.cable-dot.on')).toHaveCount(1);
+    await ada.mouse.up();
+    await expect(row.locator('.cable-row-word')).toHaveText(word);
   } finally {
     // Back to five lamps for everyone.
     const panel = teacher.locator('.cable-teacher');

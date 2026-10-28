@@ -2,56 +2,56 @@
   "layouts": [
     {
       "name": "production",
-      "key": "d9b6f68d9eeff3ab",
-      "cost": 197.11,
+      "key": "6c47e33919a04fda",
+      "cost": 194.27,
       "quick": 351.6,
       "orders": [
         [
           0,
           [
-            "static-website",
-            "drawing",
+            "mysql",
             "pixelram",
             "pip-1",
             "kata-functions",
-            "mysql",
             "tcpip",
             "working-with-files",
-            "git"
+            "git",
+            "drawing",
+            "static-website"
           ]
         ],
         [
           1,
           [
-            "svelte",
-            "hugo",
-            "fire",
+            "sql-index",
+            "filmdatenbank",
+            "bobby_tables",
+            "sql-joins",
             "raycaster",
-            "raylib",
+            "pixelram>gif#1",
             "pixelram>jpeg#1",
             "raytracing",
+            "raylib",
             "pip-1>pip-2#1",
-            "pixelram>gif#1",
-            "filmdatenbank",
             "kata-decisions",
-            "sql-index",
-            "sql-joins",
-            "bobby_tables",
-            "crypto",
             "wetter",
+            "crypto",
             "webserver",
             "dns",
             "terminal-mystery",
-            "class-quiz"
+            "class-quiz",
+            "fire",
+            "hugo",
+            "svelte"
           ]
         ],
         [
           2,
           [
+            "neo4j-filmdatenbank",
+            "pixelram>gif#2",
             "pixelram>jpeg#2",
             "pip-1>pip-2#2",
-            "pixelram>gif#2",
-            "neo4j-filmdatenbank",
             "kata-loops",
             "totp",
             "tracking",
@@ -61,8 +61,8 @@
         [
           3,
           [
-            "pixelram>jpeg#3",
             "pixelram>gif#3",
+            "pixelram>jpeg#3",
             "pip-2",
             "kata-texts"
           ]
@@ -70,8 +70,8 @@
         [
           4,
           [
-            "pixelram>jpeg#4",
             "pixelram>gif#4",
+            "pixelram>jpeg#4",
             "pip-2>pip-3#1",
             "kata-lists"
           ]
@@ -79,59 +79,59 @@
         [
           5,
           [
-            "pixelram>jpeg#5",
             "pixelram>gif#5",
+            "pixelram>jpeg#5",
             "pip-2>pip-3#2",
-            "rle",
-            "kata-dicts",
             "perzeptron",
-            "check-digits",
-            "sandbox-sortieren",
             "kata-lists>suchmaschine#1",
+            "kata-dicts",
+            "sandbox-sortieren",
             "naechste-nachbarn",
-            "kata-recursion",
-            "supermarkt"
+            "supermarkt",
+            "rle",
+            "check-digits",
+            "kata-recursion"
           ]
         ],
         [
           6,
           [
-            "pixelram>jpeg#6",
-            "huffman",
             "pixelram>gif#6",
+            "pixelram>jpeg#6",
             "pip-3",
             "lzw",
-            "kata-bits",
+            "huffman",
+            "suchmaschine",
             "routenplaner",
-            "kata-functional",
             "sprachmodell",
             "automata",
+            "kata-functional",
             "kata-objects",
-            "suchmaschine",
-            "kata-search",
-            "sandbox-datenstrukturen"
+            "kata-bits",
+            "sandbox-datenstrukturen",
+            "kata-search"
           ]
         ],
         [
           7,
           [
-            "jpeg",
             "gif",
-            "logikgatter",
-            "steganography",
+            "jpeg",
             "regex",
             "turingmaschine",
             "calculator",
             "kellerautomat",
             "textadventure",
+            "logikgatter",
+            "steganography",
             "kata-tests"
           ]
         ],
         [
           8,
           [
-            "logikwerkstatt",
-            "grammatiken"
+            "grammatiken",
+            "logikwerkstatt"
           ]
         ]
       ]

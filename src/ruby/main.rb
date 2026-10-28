@@ -303,13 +303,14 @@ class Main < Sinatra::Base
     # ?grid_demo=1 in development: parked activities added to sections, to
     # see the pairs at the end of a section (main.rb, the catalog)
     GRID_DEMO = {
-        'networks' => ['cable'],
         'games' => ['feuerwerk'],
         'software' => ['cobol', 'smalltalk'],
     }.freeze
 
     MOVED_PAGES = {
         'videothek' => 'filmdatenbank',
+        # »Datenübertragung per Kabel« became »per Funk« (2026-10)
+        'cable' => 'radio',
         # the guide to the Hackschule subdomain became a Handbuch page (2026-10)
         'custom-subdomain' => 'reference/webspace',
         # Teacher pages that became part of their sandbox (2026-10): the app

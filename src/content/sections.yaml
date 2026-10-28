@@ -151,11 +151,13 @@
   short: Lerne, wie Rechner über das Netz reden und wie man Daten dabei schützt.
   icon: /images/handshake.png
   description: |
-    Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
-    TCP/IP, ein eigener Webserver, eine Pixelwand für die ganze Klasse. Und wie
+    Wie Nachrichten von einem Ort zum anderen kommen, von Lichtzeichen über
+    Funk bis zur Webseite: ein eigenes Protokoll, TCP/IP, ein eigener
+    Webserver, eine Pixelwand für die ganze Klasse. Und wie
     man Daten schützt, mit Verschlüsselung, Signaturen und einem zweiten
     Faktor bei der Anmeldung.
   entries:
+    - radio
     - tcpip
     - dns
     - webserver
@@ -277,7 +279,6 @@
   label: Zurückgestellt
   icon: /images/bookmark.png
   entries:
-    - cable
     - feuerwerk
     - cobol
     - smalltalk

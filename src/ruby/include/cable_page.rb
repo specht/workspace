@@ -1,6 +1,6 @@
 require_relative 'cable_ether'
 
-# »Datenübertragung per Kabel«: the lamps of the activity /cable and of the
+# »Datenübertragung per Funk«: the lamps of the activity /radio and of the
 # short address /ether (static/ether.html) talk to one CableEther over
 # /ws_cable. No login: the second room may be a phone without an account.
 # Instead: only pages of this site connect (Origin), at most
@@ -13,7 +13,7 @@ class Main < Sinatra::Base
     CABLE_ADDRESS_PATH = '/ether'
 
     def self.cable_parked?
-        (@@sections['parked'] || {})[:entries].to_a.include?('cable')
+        (@@sections['parked'] || {})[:entries].to_a.include?('radio')
     end
 
     get '/ws_cable' do
