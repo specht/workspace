@@ -134,6 +134,61 @@ test('XOR from four NANDs: dragged together, checked, back after a reload', asyn
   expect(errors).toEqual([]);
 });
 
+test('several parts: a frame selects them, Entf deletes them, Strg+Z brings them back, a right click opens a menu', async ({ page, e2eEmail }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  // never the browser's own dialogs (no_native_dialogs_test.rb)
+  page.on('dialog', (d) => { errors.push('native dialog: ' + d.message()); d.dismiss(); });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/logikwerkstatt');
+  await forget(page, ['xor-nand']);
+  const editor = card(page, 'xor-nand').locator('.circuit-editor');
+  await editor.scrollIntoViewIfNeeded();
+  await tool(editor, 'nand').click();
+  await tool(editor, 'nand').click();
+  await wire(page, outPin(editor, 'g1'), inPin(editor, 'g2', 0));
+
+  // a frame around both gates, dragged on the empty paper
+  const a = await part(editor, 'g1').boundingBox();
+  const b = await part(editor, 'g2').boundingBox();
+  if (!a || !b) throw new Error('gates not visible');
+  const [x0, y0] = [Math.min(a.x, b.x) - 14, Math.min(a.y, b.y) - 14];
+  const [x1, y1] = [Math.max(a.x + a.width, b.x + b.width) + 14, Math.max(a.y + a.height, b.y + b.height) + 14];
+  await page.mouse.move(x0, y0);
+  await page.mouse.down();
+  for (let i = 1; i <= 6; i++) await page.mouse.move(x0 + ((x1 - x0) * i) / 6, y0 + ((y1 - y0) * i) / 6);
+  await page.mouse.up();
+  await expect(part(editor, 'g1')).toHaveClass(/ce-selected/);
+  await expect(part(editor, 'g2')).toHaveClass(/ce-selected/);
+  await expect(editor.locator('.ce-message')).toContainText('2 Teile ausgewählt');
+
+  // Entf deletes both, Strg+Z brings them back, with their wire
+  await page.keyboard.press('Delete');
+  await expect(part(editor, 'g1')).toHaveCount(0);
+  await expect(part(editor, 'g2')).toHaveCount(0);
+  await page.keyboard.press('Control+z');
+  await expect(part(editor, 'g1')).toBeVisible();
+  await expect(part(editor, 'g2')).toBeVisible();
+  await expect(editor.locator('.lc-wire')).not.toHaveCount(0);
+
+  // a right click on a gate: its menu; Verdoppeln adds a third gate
+  await part(editor, 'g1').click({ button: 'right' });
+  const menu = page.locator('.ce-menu');
+  await expect(menu).toBeVisible();
+  await expect(menu).toContainText('Ein Eingang mehr');
+  await menu.getByRole('menuitem', { name: /Verdoppeln/ }).click();
+  await expect(menu).toHaveCount(0);
+  await expect(part(editor, 'g3')).toBeVisible();
+
+  // on the empty paper: undo and the others; Esc closes it
+  await page.mouse.click(x1 + 120, y0, { button: 'right' });
+  await expect(menu).toContainText('Rückgängig');
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
 test('a half adder becomes a block, wired into a full adder with the keyboard', async ({ page, e2eEmail }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
