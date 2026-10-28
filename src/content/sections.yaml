@@ -251,6 +251,7 @@
   entries:
     - check-digits
     - supermarkt
+    - textadventure
     - class-quiz
 
 - key: terminal
