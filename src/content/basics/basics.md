@@ -61,6 +61,7 @@ viewport: 1029x579
 sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='VS Code ohne geöffneten Ordner, links der Explorer, rechts die Einführung »Willkommen im Hackschule Workspace«.'>
+
 <!-- /tutorial-scope -->
 
 _person(gamma)

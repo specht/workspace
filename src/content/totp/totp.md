@@ -242,6 +242,7 @@ terminal-expect-no-text: Error
 -->
 
 <img class='full' src='totp-app.webp' alt='VS Code mit einem QR-Code in qr.png; im Terminal darunter zeigt totp.rb den Schlüssel in Base32 und den aktuellen Code mit den Sekunden, die er noch gilt.'>
+
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
@@ -250,6 +251,7 @@ viewport: 1029x579
 sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='VS Code mit einem QR-Code in qr.png; im Terminal darunter zeigt totp.rb den aktuellen Code.'>
+
 <!-- /tutorial-scope -->
 <!-- /language -->
 <!-- language: python -->

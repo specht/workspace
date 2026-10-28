@@ -1959,6 +1959,7 @@ variants: dark
 crop-element: #canvas
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Bäumen und Fackeln im Gras, unten die Leiste mit Blöcken zum Bauen.'>
+
 <!-- /tutorial-scope -->
 
 _task(texturen)

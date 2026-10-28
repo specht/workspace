@@ -50,6 +50,7 @@ viewport: 1029x579
 sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Links das Keyboard-Tutorial mit Buchstaben, Umlauten und Ziffern zum Abhaken, rechts der Editor.'>
+
 <!-- /tutorial-scope -->
 
 Beginne mit dem ersten Kapitel und arbeite die Übungen der Reihe nach durch. Jede Übung sagt dir, was du tun sollst, und erkennt am Ergebnis, ob es geklappt hat: wo der Cursor steht, was markiert ist, was in der Datei steht. Erledigte Schritte bekommen einen grünen Haken. Dein Fortschritt bleibt gespeichert, du kannst also jederzeit aufhören und später an derselben Stelle weitermachen.

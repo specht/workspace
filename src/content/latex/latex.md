@@ -764,6 +764,7 @@ sharp-canvas
 sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Links der LaTeX-Quelltext der Facharbeit, rechts ihre Titelseite im PDF.'>
+
 <!-- /tutorial-scope -->
 
 So sehen die Seiten aus:

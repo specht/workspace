@@ -71,6 +71,7 @@ viewport: 1029x579
 sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='VS Code mit dem Ordner bitstein, rechts der Brief der Kriminalpolizei über den Diebstahl der Goldenen Diskette.'>
+
 <!-- /tutorial-scope -->
 
 _task(entpackt)
