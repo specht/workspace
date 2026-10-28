@@ -154,6 +154,13 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "update-without-where.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "ebcf59e74ddfd6ac0e93a724c657a12c3073cb09007dc6e1d621557964ff824d",
+      "state_hash": "d33cb3fa05e8ab32e437f04f17cd9d6e0c73c916867b10e0fcf4b14c3c8ddbc5",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "wget.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "ff209888b1093e29436e70375d27471c1d0972274b61f082494c2a12ad970b43",

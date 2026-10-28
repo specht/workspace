@@ -230,7 +230,23 @@ UPDATE entry SET message = 'Schönes Gästebuch :)' WHERE id = 1;
 DELETE FROM entry WHERE id = 2;
 ```
 
-Beide wirken auf jede Zeile, auf die `WHERE` zutrifft. **Ohne `WHERE` ändert oder löscht der Befehl alle Zeilen.** Wer unsicher ist, schreibt zuerst ein `SELECT` mit derselben Bedingung und sieht nach, welche Zeilen getroffen werden.
+Beide wirken auf jede Zeile, auf die `WHERE` zutrifft. **Ohne `WHERE` ändert oder löscht der Befehl alle Zeilen.** Wer unsicher ist, schreibt zuerst ein `SELECT` mit derselben Bedingung und sieht nach, welche Zeilen getroffen werden; in `mycli` holt <kbd>↑</kbd> die Abfrage zurück, und nur ihr Anfang ändert sich.
+
+`mycli` im Workspace fragt vor jedem `DELETE` und vor einem `UPDATE` ohne `WHERE` nach: *You're about to run a destructive command. Do you want to proceed? (y/n)*. Mit <kbd>n</kbd> bricht es ab, mit <kbd>y</kbd> führt es den Befehl aus. Eine Datei, die du mit `mysql < datei.sql` ausführst, und Programme fragen nicht.
+<!-- /part -->
+
+<!-- part: transaktion -->
+<!-- short: `START TRANSACTION;` vor einer Änderung: `COMMIT;` speichert sie, `ROLLBACK;` nimmt sie zurück. -->
+### Ausprobieren und zurücknehmen: Transaktionen
+
+```sql
+START TRANSACTION;
+DELETE FROM entry WHERE name = 'Alan';
+SELECT * FROM entry;
+ROLLBACK;
+```
+
+Ohne Transaktion gilt jede Änderung, sobald MySQL `Query OK` meldet. Nach `START TRANSACTION` gilt sie erst mit `COMMIT`; `ROLLBACK` nimmt alles seit `START TRANSACTION` zurück. Bis dahin sieht nur die eigene Verbindung die Änderungen; endet sie ohne `COMMIT`, etwa weil du `mycli` beendest, sind sie verworfen. `CREATE TABLE` und `DROP TABLE` beenden eine Transaktion: Was bis dahin geändert war, gilt, und sie selbst lassen sich nicht zurücknehmen.
 <!-- /part -->
 
 ## SQL in Programmen
