@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die Turtle-Grafik führt Ruby und Python im Browser aus: Nach dem Update einmal `./fetch-turtle-runtimes.sh`
+  ausführen (lädt Pyodide und ruby.wasm in festen Versionen nach `src/static/include/turtle/runtime`, nicht in git).
+  nginx liefert sie vorkomprimiert und lange gecacht aus (`gzip_static`); die Konfiguration schreibt der Ruby-Dienst
+  beim Start selbst.
 - Mit `GIT_SERVER`: Lehrkräfte legen auf `/git` Repositorys einer Gruppe ohne Aktivität an, und jede Person hat dort bis zu
   zehn eigene Repositorys zum Üben, die nur sie selbst klonen, pushen und ansehen kann (`User.git_id`, ein Ordner je Person in
   `data/git-repos`); sie gehen mit dem Konto, die Datenschutzerklärung und das Verzeichnis nennen sie. `/git` ist jetzt auch

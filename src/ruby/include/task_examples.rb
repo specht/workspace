@@ -48,9 +48,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python javascript c java dart command choice number answer function pip tests circuit].freeze
+    FAST_TYPES = %w[files html css references ruby python javascript c java dart command choice number answer function pip tests circuit turtle].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python javascript c java dart command function pip tests circuit].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python javascript c java dart command function pip tests circuit turtle].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say variables].freeze
 
@@ -81,7 +81,7 @@ module TaskExamples
                 # A Kata in JavaScript runs with the local node; where there is
                 # none (the Ruby container), its examples wait for a machine
                 # that has it.
-                next if %w[function pip tests].include?(type) && variant['check']['language'] == 'javascript' && !node?
+                next if %w[function pip tests turtle].include?(type) && variant['check']['language'] == 'javascript' && !node?
                 # Java and Dart likewise: their examples wait for a machine with javac or dart
                 next if type == 'javascript' && !node?
                 next if type == 'java' && !tool?('javac')
@@ -138,7 +138,7 @@ module TaskExamples
             return [] if check['compare'] == 'regex'
             first = Array(check['expect']).first
             first.is_a?(String) && !first.include?('${') ? [['pass', { 'answer' => first }]] : []
-        when 'function', 'pip', 'tests'
+        when 'function', 'pip', 'tests', 'turtle'
             task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
         when 'circuit'
             # the editor's start: the switches and lamps, nothing between them
@@ -187,9 +187,15 @@ module TaskExamples
             checked = task['check']['type'] == 'python' && task['check']['file'] && File.join(root, WorkspaceFiles.clean(task['check']['file']))
             beside = ->(name) { File.exist?(File.join(File.dirname(checked), "#{name}.py")) || File.directory?(File.join(File.dirname(checked), name)) }
             return nil if checked && File.file?(checked) && python_modules(File.read(checked)).any? { |name| !beside.(name) && !python_module?(name) }
+            # a turtle program runs here as the browser would run it
+            turtle = nil
+            if task['check']['type'] == 'turtle' && !example['answer'].to_s.strip.empty?
+                runs, error = TurtleCheck.record(task['check']['language'], example['answer'], TurtleCheck.runs(task['check']))
+                turtle = { 'runs' => runs, 'error' => error }
+            end
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
                 :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root),
-                :variables => example['variables'] || {})
+                :variables => example['variables'] || {}, :turtle => turtle)
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
             outcome.ok = expected.include?(result.status)
             if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'].to_s)

@@ -12612,3 +12612,82 @@ pre.git-code {
         min-height: 44px;
     }
 }
+
+/* The turtle (turtle_canvas.js): its paper above the code, beside it on a
+   wide screen. The paper is square and light in both themes, like a sheet;
+   three canvases on top of each other: the paper with the picture asked
+   for, the ink, the turtle with what a check found. */
+.turtle-layout {
+    margin-bottom: 0.6em;
+}
+
+.turtle-stage {
+    margin-bottom: 0.6em;
+}
+
+.turtle-frame {
+    position: relative;
+    width: 100%;
+    max-width: 30em;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 0.6em;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.turtle-frame canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.turtle-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45em;
+    min-height: 1.6em;
+    margin-top: 0.35em;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-caption:empty { display: none; }
+
+.turtle-swatch {
+    display: inline-block;
+    width: 1.4em;
+    height: 0.45em;
+    border-radius: 0.25em;
+    background: #cfc8b8;
+}
+
+.turtle-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em 0.8em;
+    margin-top: 0.4em;
+}
+
+.turtle-state {
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+@media (min-width: 992px) {
+    .turtle-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 1em;
+        align-items: start;
+    }
+    .turtle-layout > .turtle-stage { margin-bottom: 0; }
+    .turtle-layout .code-input-text,
+    .turtle-layout > textarea {
+        min-height: 18em;
+    }
+}

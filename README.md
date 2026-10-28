@@ -110,6 +110,14 @@ Wenn du TIC-80 nutzen möchtest, musst du es einmalig kompilieren. Dazu musst du
 ./build-tic80.sh
 ```
 
+**Ruby und Python im Browser**
+
+Die Turtle-Grafik führt Ruby und Python im Browser aus. Die beiden Laufzeiten (Pyodide und ruby.wasm, zusammen etwa 40 MB) lädt ein Skript einmalig in festen Versionen und prüft sie:
+
+```bash
+./fetch-turtle-runtimes.sh
+```
+
 ## Entwicklung und Tests
 
 Für zentrale Workspace-Abläufe gibt es End-to-End- und Toolchain-Tests mit Playwright. Sie prüfen unter anderem Anmeldung und Sessions, Workspace-Start, Profil, Shared Live Apps, die Netzwerkisolation sowie ausgewählte Tutorials und Werkzeugketten bis hin zum Flutter-Android-APK-Build. Nach Möglichkeit verwenden die Tests dieselben Beispiele, die auch in den Tutorials dokumentiert sind.

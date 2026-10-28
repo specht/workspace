@@ -1,0 +1,70 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«). Ein Programm läuft dafür auf diesem Rechner mit
+# denselben Befehlen wie im Browser (TurtleCheck.record).
+format: 1
+activity: turtle
+examples:
+  square:
+    pass:
+      - answer: "forward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\nforward 100\n"
+      - answer: "4.times do\n  forward 100\n  left 90\nend\n"
+      # the same square the other way round, one side in two halves
+      - answer: "left 90\nforward 100\nright 90\nforward 50\nforward 50\nright 90\nforward 100\nright 90\nforward 100\n"
+    fail:
+      - answer: "forward 100\nleft 90\nforward 100\nleft 90\nforward 100\n"
+        say: fehlt
+      - answer: "3.times do\n  forward 100\n  left 120\nend\n"
+        say: zu viel
+      - answer: "forwad 100\n"
+        say: forwad
+    python:
+      pass:
+        - answer: "for i in range(4):\n    forward(100)\n    left(90)\n"
+      fail:
+        - answer: "forward(100)\nleft(90)\n"
+          say: fehlt
+        - answer: "forward('100')\n"
+          say: braucht eine Zahl
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 4; i++) {\n  forward(100);\n  left(90);\n}\n"
+      fail:
+        - answer: "forward(100);\nleft(90);\n"
+          say: fehlt
+  square-loop:
+    pass:
+      - answer: "4.times do\n  forward 100\n  left 90\nend\n"
+    fail:
+      - answer: "forward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\nforward 100\n"
+        say: höchstens
+    python:
+      pass:
+        - answer: "for i in range(4):\n    forward(100)\n    left(90)\n"
+      fail:
+        - answer: "forward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\n"
+          say: höchstens
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 4; i++) {\n  forward(100);\n  left(90);\n}\n"
+      fail:
+        - answer: "forward(100); left(90); forward(100); left(90);\nforward(100); left(90);\nforward(100);\nleft(90);\nforward(1);\n"
+  square-function:
+    pass:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\nsquare(150)\n"
+    fail:
+      - answer: "def square(size)\n  4.times do\n    forward 150\n    left 90\n  end\nend\n\nsquare(150)\n"
+        say: square(40)
+      - answer: "4.times do\n  forward 150\n  left 90\nend\n"
+        say: square
+    python:
+      pass:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nsquare(150)\n"
+      fail:
+        - answer: "def square(size):\n    pass\n\nsquare(150)\n"
+          say: nichts
+    javascript:
+      pass:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nsquare(150);\n"
+      fail:
+        - answer: "function square(size) {\n}\n\nsquare(150);\n"
+          say: nichts

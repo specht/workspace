@@ -28,7 +28,8 @@ class Main < Sinatra::Base
         end
     end
 
-    KATA_TYPES = %w[function pip tests].freeze
+    # turtle: run in the browser (turtle_page.rb), but handed in like the others
+    KATA_TYPES = %w[function pip tests turtle].freeze
 
     def kata_request
         assert(user_logged_in?)

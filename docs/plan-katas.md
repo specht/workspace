@@ -210,3 +210,38 @@ The code:
   checked by simulation: every shortest way escapes even turning left only,
   both wall-following plans of Teil 2 are caught, and the lamp sits at two
   thirds of the longest way, so that the way is long but not all corners.
+
+### Turtle
+
+An introduction to programming beside Pip, with pictures: a turtle on a
+sheet of paper that draws a line behind it (`turtle`, in development since
+28 October 2026). What the maintainer decided and why:
+
+- **On the website, not in VS Code**, like the Katas: the code is typed into
+  a card and kept per language until the student deletes it.
+- **Dead simple:** the commands are plain functions (`forward 100`,
+  `left 90`, `pen_up`), no object, no class, no import; students write
+  their own functions later, never classes.
+- **It runs in the browser** (`turtle_worker.js`, one module worker per
+  language), live: the turtle draws while the program runs, until it ends or
+  »Stopp« ends the worker; endless programs are allowed. Ruby is ruby.wasm
+  without its standard library, Python is Pyodide, JavaScript runs as it is
+  (`fetch-turtle-runtimes.sh`, not in git; nginx serves them gzipped and
+  cached). Measured before deciding: about 6 MB for Python and 5 MB for Ruby
+  compressed, loaded once and only for the language that runs; a fresh Ruby
+  VM per run (40 to 230 ms) so that nothing of an earlier run is left over.
+  Pip's plans stay on the server: Pip's world answers questions, the turtle
+  only takes commands.
+- **Each command waits as long as it takes to draw** (a busy wait in the
+  worker), so the page draws as the program runs without a queue that
+  grows; »Sofort« draws at once. The speed is chosen per run.
+- **The check on the server:** a program that ends by itself sends its
+  commands; `TurtleWorld` replays them and compares the lines with the
+  task's picture by sampling both, so order, direction, pieces and rounding
+  do not matter. A determined student could fake the commands; for a card
+  that only says »gelöst« that is accepted. What is missing is drawn dashed,
+  what is too much in red. A stopped run only keeps the code; the card's
+  state stays (a solved card stays solved).
+- **One set of commands per language** (`turtle.rb`, `turtle.py`,
+  `turtle.js`), used by the worker and by the examples on the host
+  (`TurtleCheck.record`), so that both run the same code.

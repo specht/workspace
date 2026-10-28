@@ -174,6 +174,24 @@ module TaskCard
                     "Dein Code läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet, höchstens #{(check['timeout'] || 10).to_i} Sekunden. " \
                         "<em>Ausführen</em> startet ihn einmal und zeigt, was er ausgibt, und ruft dann deine Funktionen auf und vergleicht. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
                 end
+            when 'turtle'
+                # The turtle (TurtleCheck): its picture above the editor,
+                # with what the task asks for drawn faintly; the program runs
+                # in the browser (turtle_canvas.js, turtle_worker.js).
+                target = TurtleCheck.target(check)
+                calls = TurtleCheck.runs(check)
+                io << "<div class='turtle-layout'>"
+                io << "<div class='turtle-stage' data-language='#{h.(check['language'])}' data-runs='#{h.(JSON.generate(calls))}'"
+                io << " data-target='#{h.(JSON.generate(target))}'" if target
+                io << " data-target-call='#{h.(calls.first)}'" if target && calls.first
+                io << '></div>'
+                io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
+                io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
+                io << "#{h.(task['starter'])}</textarea>"
+                io << '</div>'
+                reads = 'Dein Programm läuft hier in deinem Browser. Die Schildkröte zeichnet, während es läuft, bis es zu Ende ist oder du es anhältst. ' \
+                    "Ist es zu Ende, geht das Bild an den Server, und der vergleicht es mit dem#{check['free'] ? ', was die Aufgabe verlangt' : ' Bild, das die Aufgabe zeigt'}#{check['cases'] ? ', für jeden Aufruf von vorn' : ''}. " \
+                    '<kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus.'
             when 'circuit'
                 # The Logik-Werkstatt's editor (circuit_editor.js) with the
                 # task's switches and lamps; it keeps the netlist in the
@@ -209,14 +227,14 @@ module TaskCard
                 when task['prediction'] then 'Vermutung abgeben'
                 # a Kata: one button runs the code (Pip: plays the run) and,
                 # when it works, solves the Kata
-                when %w[pip function tests].include?(type) then 'Ausführen'
+                when %w[pip function tests turtle].include?(type) then 'Ausführen'
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
             play = "<i class='bi bi-play-fill' aria-hidden='true'></i>"
             # a clicked plan is checked at the lamp (PipButtons)
             clicked = type == 'pip' && check['buttons']
-            io << "<button type='submit' class='btn btn-success task-submit'#{clicked ? ' hidden' : ''}>#{%w[pip function tests].include?(type) ? play : ''}#{label}</button>"
+            io << "<button type='submit' class='btn btn-success task-submit'#{clicked ? ' hidden' : ''}>#{%w[pip function tests turtle].include?(type) ? play : ''}#{label}</button>"
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.
@@ -224,7 +242,7 @@ module TaskCard
                 io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
                 io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
             end
-            if %w[function pip tests].include?(type)
+            if %w[function pip tests turtle].include?(type)
                 io << "<span class='task-queue' aria-live='polite'></span>"
                 # Einreichen (KataHandIns): shown once the Kata is solved
                 io << "<button type='button' class='btn btn-link btn-sm task-hand-in' hidden " \
@@ -232,7 +250,7 @@ module TaskCard
             end
             io << '</div>'
             io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
-            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if %w[function pip tests].include?(type)
+            io << "<pre class='task-console no-copy' hidden aria-live='polite' aria-label='Ausgabe'></pre>" if %w[function pip tests turtle].include?(type)
             io << '</form>'
         else
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"

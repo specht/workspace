@@ -1,0 +1,101 @@
+format: 1
+activity: turtle
+tasks:
+  - id: square
+    title: Ein Quadrat
+    level: 1
+    prompt: |
+      Zeichne das Quadrat: Die Schildkröte geht 100 Schritte vorwärts und dreht sich um 90 Grad nach links, und das viermal.
+    starter: |
+      forward 100
+      left 90
+    check:
+      type: turtle
+      language: ruby
+      draw: 4.times { forward 100; left 90 }
+    python:
+      starter: |
+        forward(100)
+        left(90)
+      check:
+        type: turtle
+        language: python
+        draw: 4.times { forward 100; left 90 }
+    javascript:
+      starter: |
+        forward(100);
+        left(90);
+      check:
+        type: turtle
+        language: javascript
+        draw: 4.times { forward 100; left 90 }
+
+  - id: square-loop
+    title: Viermal dasselbe
+    level: 1
+    prompt: |
+      Dasselbe Quadrat, aber in höchstens drei Zeilen: Was sich wiederholt, macht eine Schleife.
+    check:
+      type: turtle
+      language: ruby
+      draw: 4.times { forward 100; left 90 }
+      max_lines: 4
+    python:
+      check:
+        type: turtle
+        language: python
+        draw: 4.times { forward 100; left 90 }
+        max_lines: 3
+    javascript:
+      check:
+        type: turtle
+        language: javascript
+        draw: 4.times { forward 100; left 90 }
+        max_lines: 4
+
+  - id: square-function
+    title: Quadrate jeder Größe
+    level: 2
+    prompt: |
+      Schreib eine Funktion `square`, die ein Quadrat mit der Seitenlänge zeichnet, die sie bekommt.
+    starter: |
+      def square(size)
+      end
+
+      square(150)
+    check:
+      type: turtle
+      language: ruby
+      cases:
+        - call: square(150)
+          draw: 4.times { forward 150; left 90 }
+        - call: square(40)
+          draw: 4.times { forward 40; left 90 }
+    python:
+      starter: |
+        def square(size):
+            pass
+
+        square(150)
+      check:
+        type: turtle
+        language: python
+        cases:
+          - call: square(150)
+            draw: 4.times { forward 150; left 90 }
+          - call: square(40)
+            draw: 4.times { forward 40; left 90 }
+    javascript:
+      starter: |
+        function square(size) {
+        }
+
+        square(150);
+      check:
+        type: turtle
+        language: javascript
+        cases:
+          - call: square(150)
+            draw: 4.times { forward 150; left 90 }
+          - call: square(40)
+            draw: 4.times { forward 40; left 90 }

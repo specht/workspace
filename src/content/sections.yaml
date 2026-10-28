@@ -30,6 +30,7 @@
     Kampfkünsten; die Übungen bauen aufeinander auf, springen darfst du immer.
   entries:
     - pip-1
+    - .turtle
     - kata-functions
     - kata-decisions
     - kata-loops

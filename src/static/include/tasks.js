@@ -73,7 +73,7 @@
     // (task_page_setup): for everyone who can answer.
     const ANSWERED = ['correct', 'wrong', 'sent', 'stale'];
     const SOLVED = ['correct', 'sent'];
-    const KATA = ['function', 'pip', 'tests'];
+    const KATA = ['function', 'pip', 'tests', 'turtle'];
     function showAfterTasks() {
         document.querySelectorAll('.after-task[data-after]').forEach((box) => {
             const mine = cards().filter((card) => cardId(card) === box.dataset.after);
@@ -416,6 +416,11 @@
     }
 
     function submit(card) {
+        // the turtle runs in the browser: the button starts and stops it
+        if (card.turtle) {
+            card.turtle.toggle();
+            return;
+        }
         const answer = readAnswer(card);
         if (KATA.includes(card.dataset.type)) {
             kata(card, 'check', answer);
@@ -511,6 +516,65 @@
         // Pip: the map in the card's tab runs first
         if (card.pipPlayer) request.map = String(card.pipPlayer.selected);
         api_call('/api/kata/' + kind, request, follow, { no_please_wait: true });
+    }
+
+    // The turtle (turtle_canvas.js): its program runs here, in the browser,
+    // and only what it drew goes to the server; these are the card's parts
+    // it uses. A run that is stopped keeps its code (save), one that ends is
+    // checked like a Kata.
+    function turtleHooks(card, editor) {
+        const button = card.querySelector('.task-submit');
+        const idle = button.innerHTML;
+        const console_ = card.querySelector('.task-console');
+        const feedback = card.querySelector('.task-feedback');
+        const request = (path, data, done) => api_call(path, Object.assign({ task: card.dataset.task, language: card.dataset.language }, data), done, { no_please_wait: true });
+        return {
+            code: () => editor.value,
+            mark: (line) => { if (editor.codeInputMark) editor.codeInputMark(line); },
+            console: (text, error) => {
+                console_.hidden = false;
+                console_.textContent += error && console_.textContent && !console_.textContent.endsWith('\n') ? '\n' + text : text;
+                console_.classList.toggle('task-console-error', !!error);
+                console_.scrollTop = console_.scrollHeight;
+            },
+            clearConsole: () => {
+                console_.textContent = '';
+                console_.hidden = true;
+                console_.classList.remove('task-console-error');
+                feedback.className = 'task-feedback';
+                feedback.innerHTML = '';
+            },
+            save: (code) => request('/api/turtle/save', { answer: code }, function (data) {
+                if (data.success && data.state && !card.dataset.status) {
+                    setBadge(card, data.state.status, false);
+                    card.querySelector('.task-delete').hidden = false;
+                }
+            }),
+            check: (code, report, done) => request('/api/turtle/check', { answer: code, report: JSON.stringify(report) }, function (data) {
+                done();
+                if (!data || !data.success) {
+                    showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
+                    return;
+                }
+                showFeedback(card, data.status, data.message, data.solution, data.read);
+                if (data.state) {
+                    setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
+                    card.querySelector('.task-delete').hidden = false;
+                    showHandIn(card, data.state);
+                }
+                if (data.replay) card.turtle.showResult(data.replay);
+            }),
+            invalid: (message) => {
+                const p = document.createElement('p');
+                p.textContent = message;
+                showFeedback(card, 'invalid', p.outerHTML);
+            },
+            busy: (running) => {
+                button.classList.toggle('btn-success', !running);
+                button.classList.toggle('btn-danger', running);
+                button.innerHTML = running ? "<i class='bi bi-stop-fill' aria-hidden='true'></i>Stopp" : idle;
+            },
+        };
     }
 
     // Einreichen (KataHandIns): under a solved Kata, a copy of the code for
@@ -697,6 +761,9 @@
                     code.readOnly = true;
                     CodeInput.attach(code);
                 }
+                // the turtle's paper with what the task asks for
+                const stage = card.querySelector('.turtle-stage');
+                if (stage && window.TurtleCard) TurtleCard.showOnly(stage);
                 // Pip's map is shown, without anything to play
                 const map = card.querySelector('.pip-world');
                 if (map && window.PipWorld) {
@@ -719,6 +786,12 @@
             if (sql && window.CodeInput) CodeInput.attach(sql);
             const run = card.querySelector('.task-run');
             if (run) run.addEventListener('click', function () { kata(card, 'run', readAnswer(card)); });
+            // the turtle: its runtime loads while the student is still reading
+            const stage = card.querySelector('.turtle-stage');
+            if (stage && window.TurtleCard && sql) {
+                card.turtle = new TurtleCard(stage, turtleHooks(card, sql));
+                sql.addEventListener('focus', function () { card.turtle.prepare(); }, { once: true });
+            }
             const handIn = card.querySelector('.task-hand-in');
             if (handIn) handIn.addEventListener('click', function () { toggleHandIn(card); });
             // Pip's map (pip_world.js): the player under it marks each step's line
@@ -748,7 +821,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'circuit'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'turtle', 'circuit'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);
