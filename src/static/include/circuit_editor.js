@@ -33,7 +33,9 @@
 (function () {
     'use strict';
 
-    const LC = window.LogicCircuit;
+    // in node (test/static/circuit_editor.test.cjs) only the geometry
+    const isNode = typeof module !== 'undefined' && module.exports && typeof window === 'undefined';
+    const LC = isNode ? require('./logic_circuit.js') : window.LogicCircuit;
     if (!LC || !LC.Netlist) return;
     const N = LC.Netlist;
     const D = LC.draw;
@@ -124,25 +126,122 @@
     }
 
     // where a part's drawing begins on the left: a switch's name stands left of it
-    const labelLeft = (p, boxLeft) => (p.kind === 'in' ? boxLeft - 8 - 9 * p.id.length : boxLeft);
+    // a name in the mono font at 15 px: about 9 px a letter
+    const LABEL_CHAR = 9;
+    const labelLeft = (p, boxLeft) => (p.kind === 'in' ? boxLeft - 8 - LABEL_CHAR * p.id.length : boxLeft);
 
     // the source text of an output pin: g1, or h1.s for a block
     const sourceOf = (p, port) => (p.kind === 'block' ? `${p.id}.${port}` : p.id);
 
-    // the points of a wire from one pin to another, at right angles; a wire
-    // back to the left goes round below both parts
-    function route(a, b, boxA, boxB) {
+    // The ways a wire can run from one pin to another, at right angles, the
+    // plain one first: straight, or across at a column between the two pins
+    // (the middle, then lanes 8 px to either side), or, back to the left,
+    // round below both parts (lanes further out).
+    function routes(a, b, boxA, boxB) {
         const [x0, y0] = a;
         const [x1, y1] = b;
-        if (y0 === y1 && x1 > x0) return [[x0, y0], [x1, y1]];
+        if (y0 === y1 && x1 > x0) return [[[x0, y0], [x1, y1]]];
         if (x1 - x0 >= 16) {
-            const xm = Math.round((x0 + x1) / 2 / 4) * 4;
-            return [[x0, y0], [xm, y0], [xm, y1], [x1, y1]];
+            const middle = Math.round((x0 + x1) / 2 / 4) * 4;
+            const list = [];
+            for (let k = 0; k < 40; k++) {
+                const xm = middle + (k % 2 ? 1 : -1) * 8 * Math.ceil(k / 2);
+                if (xm >= x0 + 6 && xm <= x1 - 6) list.push([[x0, y0], [xm, y0], [xm, y1], [x1, y1]]);
+            }
+            return list;
         }
-        const xa = x0 + 12;
-        const xb = x1 - 12;
         const bottom = Math.max(boxA[1] + boxA[3], boxB[1] + boxB[3]) + 14;
-        return [[x0, y0], [xa, y0], [xa, bottom], [xb, bottom], [xb, y1], [x1, y1]];
+        const list = [];
+        for (let k = 0; k < 5; k++) {
+            for (let j = 0; j < 5; j++) {
+                const xa = x0 + 12 + 8 * j;
+                const xb = x1 - 12 - 8 * j;
+                const yb = bottom + 8 * k;
+                list.push([[x0, y0], [xa, y0], [xa, yb], [xb, yb], [xb, y1], [x1, y1]]);
+            }
+        }
+        return list;
+    }
+
+    // the plain way, for one wire alone
+    const route = (a, b, boxA, boxB) => routes(a, b, boxA, boxB)[0];
+
+    // whether two pieces of wire lie on top of each other for more than a point
+    function shared([p, q], [r, t]) {
+        if (p[0] === q[0] && r[0] === t[0] && p[0] === r[0]) {
+            return Math.min(Math.max(p[1], q[1]), Math.max(r[1], t[1])) - Math.max(Math.min(p[1], q[1]), Math.min(r[1], t[1])) > 0;
+        }
+        if (p[1] === q[1] && r[1] === t[1] && p[1] === r[1]) {
+            return Math.min(Math.max(p[0], q[0]), Math.max(r[0], t[0])) - Math.max(Math.min(p[0], q[0]), Math.min(r[0], t[0])) > 0;
+        }
+        return false;
+    }
+
+    const pieces = (points) => points.slice(1).map((q, i) => [points[i], q]);
+
+    // Every wire of a circuit ({ src, a, b, boxA, boxB }) gets its points:
+    // the first way on which it shares no piece with a wire from another
+    // source (one source may share: that is where it branches, with a dot).
+    // Straight wires go first, they cannot move.
+    function routeAll(wires) {
+        const placed = [];
+        const order = wires.map((w) => ({ w, ways: routes(w.a, w.b, w.boxA, w.boxB) }))
+            .sort((x, y) => (y.ways.length === 1) - (x.ways.length === 1));
+        for (const { w, ways } of order) {
+            const free = ways.find((way) => pieces(way).every((piece) => placed.every((o) => o.src === w.src || !shared(piece, o.piece))));
+            w.points = free || ways[0];
+            for (const piece of pieces(w.points)) placed.push({ src: w.src, piece });
+        }
+        return wires;
+    }
+
+    // the wires of a circuit's top level, routed
+    function wiresOf(circuit) {
+        const geoms = new Map(circuit.parts.map((p) => [p.id, geom(circuit, p)]));
+        const list = [];
+        for (const p of circuit.parts) {
+            p.src.forEach((src, i) => {
+                if (!src) return;
+                const [id, port] = src.split('.');
+                const from = geoms.get(id);
+                if (!from) return;
+                const a = from.outs[port || ''];
+                const b = geoms.get(p.id).ins[i];
+                if (!a || !b) return;
+                list.push({ src, a, b, boxA: from.box, boxB: geoms.get(p.id).box, to: [p.id, i] });
+            });
+        }
+        return routeAll(list);
+    }
+
+    // [left, top, right, bottom] of everything drawn: parts, the names of
+    // switches (left of them) and lamps (right of them), the wires
+    function extentOf(circuit, wires = wiresOf(circuit)) {
+        let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+        for (const p of circuit.parts) {
+            const [x, y, bw, bh] = geom(circuit, p).box;
+            x0 = Math.min(x0, labelLeft(p, x));
+            y0 = Math.min(y0, y);
+            x1 = Math.max(x1, x + bw + (p.kind === 'out' ? 7 + LABEL_CHAR * p.id.length : 0));
+            y1 = Math.max(y1, y + bh + (GATES[p.kind] ? 14 : 0));
+        }
+        for (const w of wires) {
+            for (const [x, y] of w.points) {
+                x0 = Math.min(x0, x);
+                x1 = Math.max(x1, x);
+                y1 = Math.max(y1, y);
+            }
+        }
+        return x0 === Infinity ? [0, 0, 0, 0] : [x0, y0, x1, y1];
+    }
+
+    // the viewBox: everything drawn and a margin of 12 around it, from 0, 0
+    // unless something lies further left or up
+    function viewBoxOf(circuit, min = [0, 0]) {
+        const [x0, y0, x1, y1] = extentOf(circuit);
+        const left = Math.min(0, x0 - 12);
+        const top = Math.min(0, y0 - 12);
+        return [left, top, Math.max(x1 + 12 - left, min[0]), Math.max(y1 + 12 - top, min[1])];
     }
 
     // ------------------------------------------------------------------
@@ -191,6 +290,11 @@
                 }
             }
         }
+    }
+
+    if (isNode) {
+        module.exports = { geom, route, routes, routeAll, wiresOf, layout, labelLeft, extentOf, viewBoxOf, shared, pieces };
+        return;
     }
 
     // ------------------------------------------------------------------
@@ -1046,17 +1150,13 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
         // ------------------------------------------------------------------
         // Drawing
 
-        // the drawing as large as what is on it; the canvas around it (with
-        // the grid) fills the rest of the line, and the table goes below
-        // when both do not fit beside each other
-        // While building, at its own size (the canvas scrolls); only to look
-        // at (a phone, a circuit on the page), as wide as there is room for.
+        // While building, the drawing has its own size, everything drawn and
+        // a margin (viewBoxOf), and the canvas around it with the grid fills
+        // the rest of the line, or scrolls; the table goes below when both
+        // do not fit side by side. Only to look at (a phone, a circuit on
+        // the page), it is as wide as there is room for.
         fitCanvas() {
-            const [x0, y0, x1, y1] = this.extent();
-            const left = Math.min(0, x0 - 8);
-            const top = Math.min(0, y0 - 8);
-            const w = Math.max(x1 - left, this.mode === 'view' ? 200 : 320);
-            const h = Math.max(y1 - top, this.mode === 'view' ? 0 : 260);
+            const [left, top, w, h] = viewBoxOf(this.c, this.mode === 'view' ? [200, 0] : [320, 260]);
             this.svg.setAttribute('viewBox', `${left} ${top} ${w} ${h}`);
             if (this.canEdit()) {
                 this.svg.setAttribute('width', w);
@@ -1072,17 +1172,8 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             }
         }
 
-        // [left, top, right, bottom] of everything drawn, labels included
         extent() {
-            let [x0, y0, x1, y1] = [Infinity, Infinity, 0, 0];
-            for (const p of this.c.parts) {
-                const [x, y, bw, bh] = geom(this.c, p).box;
-                x0 = Math.min(x0, labelLeft(p, x));
-                y0 = Math.min(y0, y);
-                x1 = Math.max(x1, x + bw + 24 + (p.kind === 'out' ? 10 + 9 * p.id.length : 0));
-                y1 = Math.max(y1, y + bh + 40);
-            }
-            return x0 === Infinity ? [0, 0, 0, 0] : [x0, y0, x1 + 8, y1];
+            return extentOf(this.c);
         }
 
         render() {
@@ -1099,20 +1190,8 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             this.lampEls = [];
             this.switchEls = [];
             this.pinEls = [];
-            // wires
-            const list = [];
-            for (const p of c.parts) {
-                p.src.forEach((src, i) => {
-                    if (!src) return;
-                    const [id, port] = src.split('.');
-                    const from = this.part(id);
-                    if (!from) return;
-                    const a = geoms.get(id).outs[port || ''];
-                    const b = geoms.get(p.id).ins[i];
-                    if (!a || !b) return;
-                    list.push({ src, points: route(a, b, geoms.get(id).box, geoms.get(p.id).box), to: [p.id, i] });
-                });
-            }
+            // wires, each in a lane of its own where it would lie on another
+            const list = wiresOf(c);
             for (const w of list) {
                 const d = D.pathOf(w.points);
                 const selected = this.sel && this.sel.wire && this.sel.wire[0] === w.to[0] && this.sel.wire[1] === w.to[1];

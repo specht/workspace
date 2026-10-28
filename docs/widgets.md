@@ -434,7 +434,10 @@ only to look nice.
   it is dropped. Parts move on an 8 px grid and snap so that a wire becomes
   straight; wires run at right angles from an output pin (right) to an
   input pin (left), back to the left around below both parts, a dot where
-  one branches; an open input is an empty ring. A wire is dragged, or on a
+  one branches; a wire that would lie on a wire from another source moves to
+  a lane of its own 8 px beside it (crossings are fine, shared pieces are
+  not); the names of switches and lamps always lie inside the drawing
+  (`test/static/circuit_editor.test.cjs`); an open input is an empty ring. A wire is dragged, or on a
   touch screen tapped pin after pin. Keyboard: Tab from part to part, arrows
   move, the space bar switches, Entf deletes, V and a digit draw a wire,
   Strg+Z and Strg+Y undo and redo (100 steps). Beside it the circuit's own

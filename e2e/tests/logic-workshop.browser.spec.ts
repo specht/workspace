@@ -34,6 +34,18 @@ async function wire(page: Page, from: Locator, to: Locator) {
   await page.mouse.up();
 }
 
+// the texts of a drawing that stick out of it (a name cut off at the edge),
+// measured in the browser
+async function textsOutside(scope: Locator) {
+  return scope.locator('svg.ce-svg').first().evaluate((svg: SVGSVGElement) => {
+    const vb = svg.viewBox.baseVal;
+    return Array.from(svg.querySelectorAll('text')).filter((t) => {
+      const b = (t as SVGTextElement).getBBox();
+      return b.width > 0 && (b.x < vb.x || b.y < vb.y || b.x + b.width > vb.x + vb.width || b.y + b.height > vb.y + vb.height);
+    }).map((t) => t.textContent);
+  });
+}
+
 // no stored answers and no drafts or blocks in the browser: every run starts
 // with empty editors
 async function forget(page: Page, ids: string[]) {
@@ -178,6 +190,8 @@ test('a half adder becomes a block, wired into a full adder with the keyboard', 
   await full.locator('.task-submit').click();
   await expect(full.locator('.task-feedback')).toContainText('Alle 8 Zeilen der Wahrheitstabelle stimmen.');
   await full.locator('.task-reads-toggle').click();
+  // c_in, the longest name on the left, and c_out on the right are whole
+  expect(await textsOutside(va)).toEqual([]);
   await va.screenshot({ path: testInfo.outputPath('full-adder.png') });
   expect(errors).toEqual([]);
 });
@@ -227,6 +241,7 @@ test('on a phone the circuits are to look at and to switch', async ({ page }, te
   await view.scrollIntoViewIfNeeded();
   await part(view, 'a').click();
   await expect(part(view, 'y').locator('text').first()).toHaveText('1');
+  for (const v of await page.locator('.circuit-view').all()) expect(await textsOutside(v)).toEqual([]);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
     await page.evaluate((s) => document.documentElement.setAttribute('data-bs-theme', s), scheme);
