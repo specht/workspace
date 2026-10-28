@@ -14,8 +14,18 @@
     const MIN_HALF = 150;
     const MARGIN = 1.2;
     const GRID = 50;
-    // distance per second and degrees per second, as in turtle_worker.js
-    const PACE = { 1: [90, 180], 2: [260, 540], 3: [1000, 2160] };
+    const GLIDE_MS = 600;
+    // how faint the picture before stays behind a level picture
+    const GHOST = 0.18;
+    // How fast the turtle draws: pixels of line per second on the paper as
+    // it is zoomed, however many turns there are, so that a fern of 40000
+    // short lines takes no longer than a square of four long ones. Turns
+    // take no time, but at »Langsam«, where one is meant to watch the
+    // turtle turn, at most TURN_MS.
+    const PACE = { 1: 100, 2: 300, 3: 2000 };
+    const TURN_SPEED = 360;
+    const TURN_MS = 250;
+    const LINE_MS = 150;
     const SPEEDS = [[1, 'Langsam'], [2, 'Normal'], [3, 'Schnell'], [0, 'Sofort']];
     const START = { x: 0, y: 0, heading: 0, pen: true, color: '#000000', width: 2 };
     // a check that runs this long without an end is given up
@@ -41,11 +51,12 @@
         return node;
     }
 
-    function duration(command, value, speed) {
+    // in ms; pixels: the pixels on the screen one step of the turtle takes
+    function duration(command, value, speed, pixels) {
         const pace = PACE[speed];
         if (!pace) return 0;
-        if (command === 'forward' || command === 'back') return Math.abs(value) / pace[0] * 1000;
-        if (command === 'left' || command === 'right') return Math.abs(value) / pace[1] * 1000;
+        if (command === 'forward' || command === 'back') return Math.abs(value) * pixels / pace * 1000;
+        if (speed === 1 && (command === 'left' || command === 'right')) return Math.min(TURN_MS, Math.abs(value) / TURN_SPEED * 1000);
         return 0;
     }
 
@@ -60,10 +71,15 @@
             this.frame = el('div', { class: 'turtle-frame' }, [this.paper, this.ink, this.top]);
             box.appendChild(this.frame);
             this.target = null;
+            // the student switched the picture asked for off (TurtleCard)
+            this.hideTarget = false;
             this.diff = null;
             this.segments = [];
             this.turtle = Object.assign({}, START);
             this.view = { cx: 0, cy: 0, half: VIEW };
+            // the widest line in pixels on the screen (a level picture
+            // zoomed in far)
+            this.maxWidth = Infinity;
             this.resize();
             if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(this.frame);
         }
@@ -82,7 +98,12 @@
             this.scale = this.size / (2 * this.view.half);
             this.drawPaper();
             this.redrawInk();
-            this.drawTop();
+            this.drawTop(this.pose);
+        }
+
+        // the pixels on the screen one step takes, as the paper is zoomed now
+        pixels() {
+            return this.scale / (window.devicePixelRatio || 1);
         }
 
         point(x, y) {
@@ -92,10 +113,12 @@
 
         // The view around the picture asked for and the start, or the
         // middle of the paper without one.
-        fit(segments) {
-            const around = segments || this.target;
+        // minHalf: how far in it may zoom (a level picture: as far as it
+        // takes to fill the paper)
+        fit(segments, minHalf = MIN_HALF) {
+            const around = segments || (this.hideTarget ? null : this.target);
             if (!around || around.length === 0) {
-                this.view = { cx: 0, cy: 0, half: VIEW };
+                this.settle({ cx: 0, cy: 0, half: VIEW });
                 return;
             }
             let [x0, y0, x1, y1] = [0, 0, 0, 0];
@@ -103,22 +126,79 @@
                 x0 = Math.min(x0, a, c); x1 = Math.max(x1, a, c);
                 y0 = Math.min(y0, b, d); y1 = Math.max(y1, b, d);
             });
-            this.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(MIN_HALF, Math.max(x1 - x0, y1 - y0) / 2 * MARGIN) };
+            this.settle({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(minHalf, Math.max(x1 - x0, y1 - y0) / 2 * MARGIN) });
         }
 
-        // The turtle at (x, y) past the edge: the paper zooms out around
-        // everything drawn, with room to grow, and draws it all again.
+        // The turtle at (x, y) past the edge: the paper follows the drawing,
+        // gliding (glide) to fit everything drawn, the turtle and the
+        // picture asked for, with room to grow; it moves as well as zooms
+        // out, so that a drawing that wanders off to one side stays in the
+        // middle (the maintainer).
         ensure(x, y) {
-            const v = this.view;
+            const v = this.goal || this.view;
             const edge = v.half * 0.97;
             if (Math.abs(x - v.cx) <= edge && Math.abs(y - v.cy) <= edge) return;
-            let [x0, y0, x1, y1] = [Math.min(x, v.cx - v.half), Math.min(y, v.cy - v.half), Math.max(x, v.cx + v.half), Math.max(y, v.cy + v.half)];
-            this.segments.forEach(([a, b, c, d]) => {
+            let [x0, y0, x1, y1] = [x, y, x, y];
+            const grow = ([a, b, c, d]) => {
                 x0 = Math.min(x0, a, c); x1 = Math.max(x1, a, c);
                 y0 = Math.min(y0, b, d); y1 = Math.max(y1, b, d);
-            });
-            this.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(x1 - x0, y1 - y0) / 2 * 1.3 };
-            this.redraw();
+            };
+            this.segments.forEach(grow);
+            if (!this.hideTarget) (this.target || []).forEach(grow);
+            const half = Math.max(MIN_HALF, v.half, Math.max(x1 - x0, y1 - y0) / 2 * 1.3);
+            this.glide({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half });
+        }
+
+        // A run is over: the paper glides to everything drawn and the turtle
+        // (and the picture asked for, when it shows), centred, also zooming
+        // in again, so that a drawing that wandered off ends in the middle.
+        frameAll() {
+            const t = this.turtle;
+            let [x0, y0, x1, y1] = [t.x, t.y, t.x, t.y];
+            const grow = ([a, b, c, d]) => {
+                x0 = Math.min(x0, a, c); x1 = Math.max(x1, a, c);
+                y0 = Math.min(y0, b, d); y1 = Math.max(y1, b, d);
+            };
+            this.segments.forEach(grow);
+            if (!this.hideTarget) (this.target || []).forEach(grow);
+            if (this.segments.length === 0) return;
+            const to = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(MIN_HALF, Math.max(x1 - x0, y1 - y0) / 2 * MARGIN) };
+            const v = this.goal || this.view;
+            // already about there: no glide for nothing
+            if (Math.abs(to.half / v.half - 1) < 0.05 && Math.abs(to.cx - v.cx) < v.half * 0.05 && Math.abs(to.cy - v.cy) < v.half * 0.05) return;
+            this.glide(to);
+        }
+
+        // The view moves to another over GLIDE_MS instead of jumping, the
+        // ink drawn again in every frame; the zoom changes evenly (half
+        // geometrically), slow at the start and the end.
+        glide(to) {
+            const from = Object.assign({}, this.view);
+            const start = performance.now();
+            this.goal = to;
+            if (this.gliding) cancelAnimationFrame(this.gliding);
+            const step = (now) => {
+                const p = Math.min(1, Math.max(0, (now - start) / GLIDE_MS));
+                const e = p < 0.5 ? 2 * p * p : 1 - 2 * (1 - p) * (1 - p);
+                this.view = { cx: from.cx + (to.cx - from.cx) * e, cy: from.cy + (to.cy - from.cy) * e, half: from.half * Math.pow(to.half / from.half, e) };
+                if (this.ghost) this.ghostAlpha = 1 + (GHOST - 1) * Math.min(1, 1.5 * e);
+                this.redraw();
+                if (p < 1) {
+                    this.gliding = requestAnimationFrame(step);
+                } else {
+                    this.gliding = null;
+                    this.goal = null;
+                }
+            };
+            this.gliding = requestAnimationFrame(step);
+        }
+
+        // where the view is headed and stays; a new picture jumps there
+        settle(to) {
+            if (this.gliding) cancelAnimationFrame(this.gliding);
+            this.gliding = null;
+            this.goal = null;
+            this.view = to;
         }
 
         drawPaper() {
@@ -144,7 +224,7 @@
             }
             // the picture asked for: a thin pencil line under the ink, which
             // covers it where the drawing is right and leaves it where not
-            if (this.target) {
+            if (this.target && !this.hideTarget) {
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.strokeStyle = '#ddd6c6';
@@ -166,6 +246,8 @@
 
         clear() {
             this.segments = [];
+            this.ghost = null;
+            this.partial = null;
             this.diff = null;
             this.turtle = Object.assign({}, START);
             this.fit();
@@ -177,7 +259,7 @@
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.strokeStyle = color;
-            ctx.lineWidth = Math.max(1, width * this.scale);
+            ctx.lineWidth = Math.max(1, Math.min(width * this.scale, this.maxWidth * (window.devicePixelRatio || 1)));
             ctx.beginPath();
             ctx.moveTo(...this.point(x1, y1));
             ctx.lineTo(...this.point(x2, y2));
@@ -185,8 +267,17 @@
         }
 
         redrawInk() {
-            this.ink.getContext('2d').clearRect(0, 0, this.size, this.size);
+            const ctx = this.ink.getContext('2d');
+            ctx.clearRect(0, 0, this.size, this.size);
+            // the picture before, faint behind this one (a level picture)
+            if (this.ghost) {
+                ctx.globalAlpha = this.ghostAlpha;
+                this.ghost.forEach((s) => this.line(...s));
+                ctx.globalAlpha = 1;
+            }
             this.segments.forEach((s) => this.line(...s));
+            // the line on its way (Player)
+            if (this.partial) this.line(...this.partial);
         }
 
         // A command, done at once; a forward or back is drawn and kept.
@@ -216,6 +307,8 @@
         // The turtle itself, and what a check found: missing pieces dashed,
         // pieces too much in red.
         drawTop(pose) {
+            // the turtle on its way, also when the view glides
+            this.pose = pose || null;
             const ctx = this.top.getContext('2d');
             ctx.clearRect(0, 0, this.size, this.size);
             if (this.diff) {
@@ -304,6 +397,7 @@
             this.speed = speed;
             this.idle = null;
             this.lastLine = null;
+            this.lineShown = 0;
             // a level picture draws faster when it would take long (levels)
             this.scale = 1;
         }
@@ -327,10 +421,14 @@
             else if (a) {
                 const now = performance.now();
                 const p = Math.min(1, (now - a.start) / a.ms);
-                a.ms = Math.max(1, duration(a.command, a.value, speed) * this.scale);
+                a.ms = Math.max(1, this.duration(a.command, a.value));
                 a.start = now - p * a.ms;
             }
             this.request();
+        }
+
+        duration(command, value) {
+            return duration(command, value, this.speed, this.stage.pixels()) * this.scale;
         }
 
         // run once nothing is left to draw
@@ -350,6 +448,7 @@
         finishActive() {
             const a = this.active;
             this.active = null;
+            this.stage.partial = null;
             this.stage.turtle = a.from;
             this.stage.apply(a.command, a.value);
             this.lastEnd = a.start + a.ms;
@@ -361,12 +460,14 @@
                 return;
             }
             const [command, value, line] = item;
-            // the line in the editor, while one can follow it
-            if (line && this.speed !== 0 && line !== this.lastLine && this.queue.length < 500) {
+            // the line in the editor, while one can follow it: at »Schnell«
+            // a new one at most every LINE_MS
+            if (line && this.speed !== 0 && line !== this.lastLine && (this.speed !== 3 || now - this.lineShown > LINE_MS)) {
                 this.lastLine = line;
+                this.lineShown = now;
                 this.onLine(line);
             }
-            const ms = this.queue.length > 3000 ? 0 : duration(command, value, this.speed) * this.scale;
+            const ms = this.duration(command, value);
             if (ms === 0) {
                 this.stage.apply(command, value);
                 return;
@@ -399,7 +500,10 @@
                     t.x = a.from.x + d * Math.cos(r);
                     t.y = a.from.y + d * Math.sin(r);
                     this.stage.ensure(t.x, t.y);
-                    if (t.pen) this.stage.line(a.drawn[0], a.drawn[1], t.x, t.y, t.color, t.width);
+                    if (t.pen) {
+                        this.stage.line(a.drawn[0], a.drawn[1], t.x, t.y, t.color, t.width);
+                        this.stage.partial = [a.from.x, a.from.y, t.x, t.y, t.color, t.width];
+                    }
                     a.drawn = [t.x, t.y];
                 } else {
                     t.heading += (a.command === 'left' ? 1 : -1) * a.value * p;
@@ -490,6 +594,9 @@
             this.player = new Player(this.stage, (text) => hooks.console(text, false), (line) => hooks.mark(line));
             this.running = null;
             const target = box.dataset.target ? JSON.parse(box.dataset.target) : null;
+            const card = box.closest('[data-task]');
+            this.taskKey = card ? card.dataset.task : '';
+            this.stage.hideTarget = !!target && storageGet('turtle-trace-hidden:' + this.taskKey) === '1';
             if (target) this.stage.setTarget(target);
             this.caption = el('div', { class: 'turtle-caption' });
             this.setCaption(target, box.dataset.targetCall);
@@ -515,6 +622,20 @@
         setCaption(target, call) {
             this.caption.replaceChildren();
             if (!target) return;
+            // the picture asked for can be switched off, for experiments
+            // (the maintainer); remembered per task in this browser
+            const toggle = el('button', { type: 'button', class: 'btn btn-link btn-sm turtle-trace-toggle' });
+            const show = () => {
+                const hidden = this.stage.hideTarget;
+                toggle.replaceChildren(el('i', { class: 'bi ' + (hidden ? 'bi-eye' : 'bi-eye-slash'), 'aria-hidden': 'true' }), document.createTextNode(hidden ? 'einblenden' : 'ausblenden'));
+                toggle.setAttribute('aria-label', hidden ? 'Das Bild der Aufgabe einblenden' : 'Das Bild der Aufgabe ausblenden');
+            };
+            toggle.addEventListener('click', () => {
+                this.setTraceHidden(!this.stage.hideTarget);
+                show();
+            });
+            this.traceToggle = show;
+            show();
             const swatch = el('span', { class: 'turtle-swatch', 'aria-hidden': 'true' });
             this.caption.appendChild(swatch);
             if (call) {
@@ -524,6 +645,14 @@
             } else {
                 this.caption.appendChild(document.createTextNode('So soll dein Bild aussehen.'));
             }
+            this.caption.appendChild(toggle);
+        }
+
+        setTraceHidden(hidden) {
+            this.stage.hideTarget = hidden;
+            storageSet('turtle-trace-hidden:' + this.taskKey, hidden ? '1' : '');
+            this.stage.redraw();
+            if (this.traceToggle) this.traceToggle();
         }
 
         // also while a program runs (Player.setSpeed); one speed for all
@@ -575,6 +704,7 @@
             runner(this.language).stop(this);
             clearTimeout(this.running.timer);
             this.player.halt();
+            this.stage.frameAll();
             this.running = null;
             this.hooks.mark(null);
             this.hooks.busy(false);
@@ -625,6 +755,7 @@
             const r = this.running;
             if (!r) return;
             this.hooks.mark(null);
+            this.stage.frameAll();
             if (r.error) {
                 this.hooks.console((r.error.line ? 'Zeile ' + r.error.line + ': ' : '') + r.error.message, true);
                 if (r.error.line) this.hooks.mark(r.error.line);
@@ -679,6 +810,8 @@
         // in grey, what is missing dashed and what is too much in red.
         showResult(show) {
             if (!show) return;
+            // the differences are against the picture asked for: it shows
+            if (this.stage.hideTarget) this.setTraceHidden(false);
             if (show.call) {
                 this.stage.setTarget(show.expected);
                 this.setCaption(show.expected, show.call);
@@ -728,6 +861,7 @@
     // the parts of a level in these colours, what joins them in grey
     const PARTS = ['#2f9e44', '#1c7ed6', '#e8590c', '#ae3ec9'];
     const JOIN = '#868e96';
+    const CONNECT = '#212529';
 
     // Each figure: its levels, the commands of a level (the parts made of
     // the level below in PARTS), and what to say about it.
@@ -820,8 +954,10 @@
                     out.push(['right', angle]);
                 };
                 if (level === 0) return out;
-                const part = (i, angle) => { out.push(['color', PARTS[i]]); hilbert(level - 1, angle); out.push(['color', JOIN]); };
-                out.push(['right', 90]); part(0, -90);
+                // the connecting lines black, as unlike the four colours of
+                // the parts as can be (grey was too close to them)
+                const part = (i, angle) => { out.push(['color', PARTS[i]]); hilbert(level - 1, angle); out.push(['color', CONNECT]); };
+                out.push(['color', CONNECT], ['right', 90]); part(0, -90);
                 out.push(['forward', size], ['left', 90]); part(1, 90);
                 out.push(['forward', size]); part(2, 90);
                 out.push(['left', 90], ['forward', size]); part(3, -90);
@@ -830,8 +966,8 @@
             },
             says(level) {
                 if (level === 0) return 'Stufe 0: nichts.';
-                if (level === 1) return 'Stufe 1: drei graue Linien, wie ein U. Die vier Kurven der Stufe 0 an den Ecken sind leer.';
-                return 'Stufe ' + level + ': vier Kurven der Stufe ' + (level - 1) + ' in vier Farben, verbunden durch drei graue Linien wie bei Stufe 1. Die erste (grün) und die letzte (lila) sind gespiegelt: Sie drehen sich jedes Mal genau andersherum.';
+                if (level === 1) return 'Stufe 1: drei schwarze Linien, wie ein U. Die vier Kurven der Stufe 0 an den Ecken sind leer.';
+                return 'Stufe ' + level + ': vier Kurven der Stufe ' + (level - 1) + ' in vier Farben, verbunden durch drei schwarze Linien wie bei Stufe 1. Die erste (grün) und die letzte (lila) sind gespiegelt: Sie drehen sich jedes Mal genau andersherum.';
             },
         },
     };
@@ -874,18 +1010,30 @@
         const figure = FIGURES[box.dataset.figure];
         if (!figure) return;
         const stage = new Stage(box);
+        stage.maxWidth = 3;
         const player = new Player(stage, () => {}, () => {});
         const says = el('p', { class: 'turtle-levels-says', 'aria-live': 'polite' });
         const buttons = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': figure.labels ? 'Größe' : 'Stufe' });
         const show = (level, animate) => {
             const commands = figure.commands(level);
+            const before = stage.view;
+            const previous = stage.segments;
             stage.target = null;
             stage.clear();
-            stage.fit(trace(commands));
+            // zoomed in on the small levels, out on the large ones, gliding
+            // there with the level before fading behind it
+            stage.fit(trace(commands), 1);
+            if (animate) {
+                const to = stage.view;
+                stage.view = before;
+                stage.ghost = previous;
+                stage.ghostAlpha = 1;
+                stage.glide(to);
+            }
             stage.redraw();
             player.reset(animate ? 3 : 0);
             // every level in about three seconds, however many lines it has
-            const total = commands.reduce((sum, [c, v]) => sum + duration(c, v, 3), 0);
+            const total = commands.reduce((sum, [c, v]) => sum + duration(c, v, 3, stage.pixels()), 0);
             player.scale = Math.min(1, 3000 / Math.max(1, total));
             player.push(commands.map(([c, v]) => [c, v, null]));
             says.textContent = figure.says(level);

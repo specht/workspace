@@ -4360,12 +4360,16 @@ ul.task-teacher-list .task-teacher-answer {
 .task-feedback-correct .task-feedback-icon { color: #1f9d55; }
 .task-feedback-wrong .task-feedback-icon { color: #c98a10; }
 .task-feedback-sent .task-feedback-icon { color: #0b5ed7; }
+.task-feedback-drawn .task-feedback-icon,
+.task-feedback-free .task-feedback-icon,
 .task-feedback-invalid .task-feedback-icon,
 .task-feedback-unavailable .task-feedback-icon { color: #6c757d; }
 
 .task-feedback-correct { border-left-color: #1f9d55; }
 .task-feedback-wrong { border-left-color: #e0a030; }
 .task-feedback-sent { border-left-color: #0b5ed7; }
+.task-feedback-drawn,
+.task-feedback-free,
 .task-feedback-invalid,
 .task-feedback-unavailable { border-left-color: #adb5bd; }
 
@@ -4392,6 +4396,8 @@ ul.task-teacher-list .task-teacher-answer {
 .task-feedback-correct { background-color: rgba(31, 157, 85, 0.12); }
 .task-feedback-wrong { background-color: rgba(224, 160, 48, 0.16); }
 .task-feedback-sent { background-color: rgba(11, 94, 215, 0.08); }
+.task-feedback-drawn,
+.task-feedback-free,
 .task-feedback-invalid,
 .task-feedback-unavailable { background-color: rgba(33, 37, 41, 0.045); }
 
@@ -12635,6 +12641,9 @@ pre.git-code {
 }
 
 .turtle-commands { margin-top: 0.2em; }
+/* a picture on its way: what differs, only when asked for (tasks.js) */
+.turtle-compare { padding: 0; font-size: inherit; vertical-align: baseline; }
+.turtle-compare-detail { margin-top: 0.3em; }
 
 .turtle-stage {
     margin-bottom: 0.6em;
@@ -12670,6 +12679,15 @@ pre.git-code {
 }
 
 .turtle-caption:empty { display: none; }
+
+.turtle-trace-toggle {
+    padding: 0 0 0 0.3em;
+    font-size: inherit;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+}
+
+.turtle-trace-toggle .bi { margin-right: 0.25em; }
 
 .turtle-swatch {
     display: inline-block;

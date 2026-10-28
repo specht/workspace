@@ -4,8 +4,8 @@ kind: uebung
 duration: 2 Doppelstunden
 languages: [ruby, python, javascript]
 idea: Eine Schildkröte zeichnet, was du ihr sagst
-curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen, Implementieren von Algorithmen), Digitale Bilder und Visualisierung (Vektorgrafik, rekursive Algorithmen für Grafiken), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten)"
-topics: [grundstrukturen, unterprogramme, rekursion, computergrafik, geschichte]
+curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen, Implementieren von Algorithmen), Digitale Bilder und Visualisierung (Vektorgrafik, Turtle-Grafik), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten)"
+topics: [grundstrukturen, unterprogramme, computergrafik, geschichte]
 </div>
 
 <div
@@ -369,7 +369,7 @@ Erfunden wurde sie für Logo, eine Programmiersprache, mit der Kinder
 programmieren lernen sollten; die erste Schildkröte war ein Roboter auf dem
 Fußboden.
 
-<!-- Die Seite ist noch in Entwicklung: Die Personenbox für Seymour Papert (part papert, papert.webp, ihre Quellen in sources.yaml) steht in Commit ff1b480f und kommt mit _person(papert) zurück, wenn die Seite in den Katalog geht. -->
+_person(papert)
 
 <div class='book'>
 <i class='bi bi-book'></i>
@@ -406,101 +406,13 @@ Namen.
 
 _task(own)
 
-<!-- extra -->
-## Bäume und Kurven
+Bäume, ein Farnblatt und Kurven, die aus kleineren Kopien ihrer selbst
+bestehen, zeichnet die Schildkröte in [Turtle: Bäume und Kurven](/turtle-2),
+sobald du Funktionen kennst, die sich selbst aufrufen.
 
-Aufgaben, die nicht mitzählen, für alle, die weiter wollen. Bis auf die
-erste sind sie **rekursiv**: Eine Funktion ruft sich selbst auf, mit einer
-kleineren Aufgabe, bis die so klein ist, dass nichts mehr zu zeichnen
-bleibt. Wie das geht, üben auch die [Katas: Rekursion](/kata-recursion).
+<!-- extra -->
+## Sterne mit vielen Zacken
+
+Eine Aufgabe, die nicht mitzählt, für alle, die weiter wollen.
 
 _task(stars)
-
-### Ein Baum
-
-Ein Baum ist ein Stamm, an dem links und rechts ein kleinerer Baum wächst.
-Jeder davon ist wieder ein Stamm mit zwei kleineren Bäumen, und so weiter,
-bis die Bäume so klein sind, dass die Funktion aufhört. Klick dich durch
-die Stufen: Jede Stufe besteht aus einem Stamm und zwei Bäumen der Stufe
-davor, in Farbe.
-
-<div class='turtle-levels' data-figure='tree'></div>
-
-Wer die Funktion schreibt, muss also nur zwei Fragen beantworten: Was
-zeichnet die kleinste Stufe? Und wie setzt sich eine Stufe aus der davor
-zusammen? Den Rest erledigen die Aufrufe von selbst.
-
-_task(tree)
-
-_task(beautiful-tree)
-
-Ein Baum, in dem links und rechts dasselbe passiert, sieht aus wie gezeichnet.
-Andere Winkel und andere Längen für jede Seite, und er wächst wie ein
-echter:
-
-_task(asymmetric-tree)
-
-_task(weeping-tree)
-
-_task(own-tree)
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Lass die Winkel und die Längen bei jedem
-Ast ein wenig vom Zufall abhängen
-<!-- language: ruby -->
-(`rand(15..35)` ist eine Zahl von 15 bis 35)
-<!-- /language -->
-<!-- language: python -->
-(mit `import random` am Anfang ist `random.randint(15, 35)` eine Zahl von 15 bis 35)
-<!-- /language -->
-<!-- language: javascript -->
-(`15 + Math.random() * 20` ist eine Zahl von 15 bis 35)
-<!-- /language -->
-und lass den Baum mehrmals wachsen. Achte darauf, ob er dann eher wie ein
-echter Baum aussieht und welche Tiefe dafür reicht.
-</div>
-
-### Ein Farnblatt
-
-Ein Farnblatt wächst wie ein Baum, nur anders: Sein Stiel biegt sich bei
-jedem Schritt ein wenig, und an jedem Schritt wächst links und rechts ein
-kleines Farnblatt. Was nach diesem Schritt kommt, ist wieder ein Farnblatt,
-nur ein bisschen kleiner.
-
-<div class='turtle-levels' data-figure='fern'></div>
-
-_task(fern)
-
-### Das Sierpiński-Dreieck
-
-Wacław Sierpiński hat ein Dreieck beschrieben, das aus drei halb so großen
-Dreiecken besteht, von denen jedes wieder aus dreien besteht:
-
-<div class='turtle-levels' data-figure='sierpinski'></div>
-
-_person(sierpinski)
-
-_task(sierpinski)
-
-### Die Koch-Kurve
-
-Helge von Koch hat 1904 eine Kurve beschrieben, die aus vier Kurven mit
-einem Drittel der Länge besteht. Je höher die Stufe, desto feiner die
-Zacken; ein Stück von ihr sieht aus wie die ganze Kurve.
-
-<div class='turtle-levels' data-figure='koch'></div>
-
-_task(koch)
-
-### Die Hilbert-Kurve
-
-David Hilbert hat 1891 eine Kurve beschrieben, die durch ein Quadrat läuft,
-ohne sich je zu kreuzen, und mit jeder Stufe jeder Stelle des Quadrats
-näherkommt. Ihre Stufe 1 ist ein U aus drei Linien. Jede höhere Stufe setzt
-vier Kurven der Stufe davor an die Ecken dieses U, verbunden durch seine
-drei Linien. Damit sie sich zu einer Linie verbinden, sind die erste und
-die letzte gespiegelt.
-
-<div class='turtle-levels' data-figure='hilbert'></div>
-
-_task(hilbert)

@@ -1,0 +1,331 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«), geschrieben vom selben Skript: die Lösung jeder
+# Sprache und ein typischer Fehler. Die Programme laufen dafür auf diesem
+# Rechner mit denselben Befehlen wie im Browser (TurtleCheck.record).
+format: 1
+activity: turtle-1
+examples:
+  steps:
+    pass:
+      - answer: "forward 50\nleft 90\nforward 50\nright 90\nforward 50\nleft 90\nforward 50\nright 90\nforward 50\nleft 90\nforward 50\nright 90\n"
+    fail:
+      - answer: "forward 50\nleft 90\nforward 50\nleft 90\nforward 50\nleft 90\nforward 50\nleft 90\nforward 50\nleft 90\nforward 50\nleft 90\n"
+        say: "zu viel"
+    python:
+      pass:
+        - answer: "forward(50)\nleft(90)\nforward(50)\nright(90)\nforward(50)\nleft(90)\nforward(50)\nright(90)\nforward(50)\nleft(90)\nforward(50)\nright(90)\n"
+      fail:
+        - answer: "forward(50)\nleft(90)\nforward(50)\nleft(90)\nforward(50)\nleft(90)\nforward(50)\nleft(90)\nforward(50)\nleft(90)\nforward(50)\nleft(90)\n"
+          say: "zu viel"
+    javascript:
+      pass:
+        - answer: "forward(50);\nleft(90);\nforward(50);\nright(90);\nforward(50);\nleft(90);\nforward(50);\nright(90);\nforward(50);\nleft(90);\nforward(50);\nright(90);\n"
+      fail:
+        - answer: "forward(50);\nleft(90);\nforward(50);\nleft(90);\nforward(50);\nleft(90);\nforward(50);\nleft(90);\nforward(50);\nleft(90);\nforward(50);\nleft(90);\n"
+          say: "zu viel"
+  square:
+    pass:
+      - answer: "forward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\n"
+    fail:
+      - answer: "forward 100\nleft 60\nforward 100\nleft 60\nforward 100\nleft 60\nforward 100\nleft 60\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "forward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\nleft(90)\n"
+      fail:
+        - answer: "forward(100)\nright(90)\nforward(100)\nright(90)\nforward(100)\nright(90)\nforward(100)\nright(90)\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "forward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\n"
+      fail:
+        - answer: "forward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\n"
+          say: "fehlt"
+  triangle:
+    pass:
+      - answer: "forward 150\nleft 120\nforward 150\nleft 120\nforward 150\nleft 120\n"
+    fail:
+      - answer: "forward 150\nleft 60\nforward 150\nleft 60\nforward 150\nleft 60\n"
+        say: "zu viel"
+    python:
+      pass:
+        - answer: "forward(150)\nleft(120)\nforward(150)\nleft(120)\nforward(150)\nleft(120)\n"
+      fail:
+        - answer: "forward(150)\nleft(60)\nforward(150)\nleft(60)\nforward(150)\nleft(60)\n"
+          say: "zu viel"
+    javascript:
+      pass:
+        - answer: "forward(150);\nleft(120);\nforward(150);\nleft(120);\nforward(150);\nleft(120);\n"
+      fail:
+        - answer: "forward(150);\nleft(60);\nforward(150);\nleft(60);\nforward(150);\nleft(60);\n"
+          say: "zu viel"
+  square-loop:
+    pass:
+      - answer: "4.times do\n  forward 100\n  left 90\nend\n"
+    fail:
+      - answer: "forward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\nforward 100\nleft 90\n"
+        say: "höchstens"
+    python:
+      pass:
+        - answer: "for i in range(4):\n    forward(100)\n    left(90)\n"
+      fail:
+        - answer: "forward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\nleft(90)\nforward(100)\nleft(90)\n"
+          say: "höchstens"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 4; i++) {\n  forward(100);\n  left(90);\n}\n"
+      fail:
+        - answer: "forward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\n"
+          say: "höchstens"
+  hexagon:
+    pass:
+      - answer: "6.times do\n  forward 80\n  left 60\nend\n"
+    fail:
+      - answer: "6.times do\n  forward 80\n  left 120\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "for i in range(6):\n    forward(80)\n    left(60)\n"
+      fail:
+        - answer: "for i in range(6):\n    forward(80)\n    left(120)\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 6; i++) {\n  forward(80);\n  left(60);\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 6; i++) {\n  forward(80);\n  left(120);\n}\n"
+          say: "fehlt"
+  square-function:
+    pass:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\nsquare(150)\n"
+    fail:
+      - answer: "def square(size)\n  4.times do\n    forward 150\n    left 90\n  end\nend\n\nsquare(150)\n"
+        say: "square(40)"
+    python:
+      pass:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nsquare(150)\n"
+      fail:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(150)\n        left(90)\n\nsquare(150)\n"
+          say: "square(40)"
+    javascript:
+      pass:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nsquare(150);\n"
+      fail:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(150);\n    left(90);\n  }\n}\n\nsquare(150);\n"
+          say: "square(40)"
+  polygon:
+    pass:
+      - answer: "def polygon(corners, side)\n  corners.times do\n    forward side\n    left 360.0 / corners\n  end\nend\n\npolygon(5, 100)\n"
+    fail:
+      - answer: "def polygon(corners, side)\n  corners.times do\n    forward side\n    left 360 / corners\n  end\nend\n"
+        say: "polygon(7, 80)"
+    python:
+      pass:
+        - answer: "def polygon(corners, side):\n    for i in range(corners):\n        forward(side)\n        left(360 / corners)\n\npolygon(5, 100)\n"
+      fail:
+        - answer: "def polygon(corners, side):\n    for i in range(corners):\n        forward(side)\n        left(360 // corners)\n"
+          say: "polygon(7, 80)"
+    javascript:
+      pass:
+        - answer: "function polygon(corners, side) {\n  for (let i = 0; i < corners; i++) {\n    forward(side);\n    left(360 / corners);\n  }\n}\n\npolygon(5, 100);\n"
+      fail:
+        - answer: "function polygon(corners, side) {\n  for (let i = 0; i < corners; i++) {\n    forward(side);\n    left(90);\n  }\n}\n"
+          say: "polygon(5, 100)"
+  flower:
+    pass:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\n12.times do\n  square(100)\n  left 30\nend\n"
+    fail:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\n12.times do\n  square(100)\n  left 90\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nfor i in range(12):\n    square(100)\n    left(30)\n"
+      fail:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nfor i in range(12):\n    square(100)\n    left(90)\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nfor (let i = 0; i < 12; i++) {\n  square(100);\n  left(30);\n}\n"
+      fail:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nfor (let i = 0; i < 12; i++) {\n  square(100);\n  left(90);\n}\n"
+          say: "fehlt"
+  dashes:
+    pass:
+      - answer: "10.times do\n  forward 10\n  pen_up\n  forward 10\n  pen_down\nend\n"
+    fail:
+      - answer: "10.times do\n  forward 10\n  pen_up\n  forward 10\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "for i in range(10):\n    forward(10)\n    pen_up()\n    forward(10)\n    pen_down()\n"
+      fail:
+        - answer: "for i in range(10):\n    forward(10)\n    pen_up()\n    forward(10)\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 10; i++) {\n  forward(10);\n  penUp();\n  forward(10);\n  penDown();\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 10; i++) {\n  forward(10);\n  penUp();\n  forward(10);\n}\n"
+          say: "fehlt"
+  colors:
+    pass:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\nwidth 4\n[\"red\", \"gold\", \"blue\"].each do |name|\n  color name\n  square(60)\n  pen_up\n  forward 80\n  pen_down\nend\n"
+    fail:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\n[\"red\", \"yellow\", \"blue\"].each do |name|\n  color name\n  square(60)\n  pen_up\n  forward 80\n  pen_down\nend\n"
+        say: "Farben"
+    python:
+      pass:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nwidth(4)\nfor name in [\"red\", \"gold\", \"blue\"]:\n    color(name)\n    square(60)\n    pen_up()\n    forward(80)\n    pen_down()\n"
+      fail:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\nfor name in [\"red\", \"yellow\", \"blue\"]:\n    color(name)\n    square(60)\n    pen_up()\n    forward(80)\n    pen_down()\n"
+          say: "Farben"
+    javascript:
+      pass:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nwidth(4);\nfor (const name of [\"red\", \"gold\", \"blue\"]) {\n  color(name);\n  square(60);\n  penUp();\n  forward(80);\n  penDown();\n}\n"
+      fail:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nfor (const name of [\"red\", \"yellow\", \"blue\"]) {\n  color(name);\n  square(60);\n  penUp();\n  forward(80);\n  penDown();\n}\n"
+          say: "Farben"
+  spiral:
+    pass:
+      - answer: "step = 10\n20.times do\n  forward step\n  left 90\n  step = step + 10\nend\n"
+    fail:
+      - answer: "step = 10\n20.times do\n  forward step\n  left 90\n  end\n"
+        say: "zu viel"
+    python:
+      pass:
+        - answer: "step = 10\nfor i in range(20):\n    forward(step)\n    left(90)\n    step = step + 10\n"
+      fail:
+        - answer: "step = 10\nfor i in range(20):\n    forward(step)\n    left(90)\n    "
+          say: "zu viel"
+    javascript:
+      pass:
+        - answer: "let step = 10;\nfor (let i = 0; i < 20; i++) {\n  forward(step);\n  left(90);\n  step = step + 10;\n}\n"
+      fail:
+        - answer: "let step = 10;\nfor (let i = 0; i < 20; i++) {\n  forward(step);\n  left(90);\n  }\n"
+          say: "zu viel"
+  star:
+    pass:
+      - answer: "5.times do\n  forward 200\n  right 144\nend\n"
+    fail:
+      - answer: "5.times do\n  forward 200\n  right 72\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "for i in range(5):\n    forward(200)\n    right(144)\n"
+      fail:
+        - answer: "for i in range(5):\n    forward(200)\n    right(72)\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 5; i++) {\n  forward(200);\n  right(144);\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 5; i++) {\n  forward(200);\n  right(72);\n}\n"
+          say: "fehlt"
+  stars:
+    pass:
+      - answer: "def star(points, size)\n  points.times do\n    forward size\n    right 180 - 180.0 / points\n  end\nend\n\nstar(7, 200)\n"
+    fail:
+      - answer: "def star(points, size)\n  points.times do\n    forward size\n    right 180 - 180 / points\n  end\nend\n"
+        say: "star(7, 200)"
+    python:
+      pass:
+        - answer: "def star(points, size):\n    for i in range(points):\n        forward(size)\n        right(180 - 180 / points)\n\nstar(7, 200)\n"
+      fail:
+        - answer: "def star(points, size):\n    for i in range(points):\n        forward(size)\n        right(144)\n"
+          say: "star(7, 200)"
+    javascript:
+      pass:
+        - answer: "function star(points, size) {\n  for (let i = 0; i < points; i++) {\n    forward(size);\n    right(180 - 180 / points);\n  }\n}\n\nstar(7, 200);\n"
+      fail:
+        - answer: "function star(points, size) {\n  for (let i = 0; i < points; i++) {\n    forward(size);\n    right(144);\n  }\n}\n"
+          say: "star(7, 200)"
+  own:
+    pass:
+      - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\ncolor \"teal\"\n12.times do\n  square(100)\n  left 30\nend\ncolor \"gold\"\nwidth 6\nsquare(30)\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "def square(size):\n    for i in range(4):\n        forward(size)\n        left(90)\n\ncolor(\"teal\")\nfor i in range(12):\n    square(100)\n    left(30)\ncolor(\"gold\")\nwidth(6)\nsquare(30)\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "function square(size) {\n  for (let i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\ncolor(\"teal\");\nfor (let i = 0; i < 12; i++) {\n  square(100);\n  left(30);\n}\ncolor(\"gold\");\nwidth(6);\nsquare(30);\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+  circle:
+    pass:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\ncircle(80)\n"
+    fail:
+      - answer: "def circle(radius)\n  36.times do\n    forward Math::PI * radius / 36\n    left 10\n  end\nend\n\ncircle(80)\n"
+        say: "circle("
+    python:
+      pass:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\ncircle(80)\n"
+      fail:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(math.pi * radius / 36)\n        left(10)\n\ncircle(80)\n"
+          say: "circle("
+    javascript:
+      pass:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\ncircle(80);\n"
+      fail:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(Math.PI * radius / 36);\n    left(10);\n  }\n}\n\ncircle(80);\n"
+          say: "circle("
+  slinky:
+    pass:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\n30.times do\n  circle(50)\n  pen_up\n  forward 8\n  pen_down\nend\n"
+    fail:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\n30.times do\n  circle(50)\n  pen_up\n  forward 16\n  pen_down\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\nfor i in range(30):\n    circle(50)\n    pen_up()\n    forward(8)\n    pen_down()\n"
+      fail:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\nfor i in range(30):\n    circle(50)\n    pen_up()\n    forward(16)\n    pen_down()\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\nfor (let i = 0; i < 30; i++) {\n  circle(50);\n  penUp();\n  forward(8);\n  penDown();\n}\n"
+      fail:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\nfor (let i = 0; i < 30; i++) {\n  circle(50);\n  penUp();\n  forward(16);\n  penDown();\n}\n"
+          say: "fehlt"
+  pattern:
+    pass:
+      - answer: "36.times do\n  forward 200\n  left 170\nend\n"
+    fail:
+      - answer: "forward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\n"
+        say: "höchstens"
+    python:
+      pass:
+        - answer: "for i in range(36):\n    forward(200)\n    left(170)\n"
+      fail:
+        - answer: "forward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\n"
+          say: "höchstens"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 36; i++) {\n  forward(200);\n  left(170);\n}\n"
+      fail:
+        - answer: "forward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\n"
+          say: "höchstens"
+  own-flower:
+    pass:
+      - answer: "def polygon(corners, side)\n  corners.times do\n    forward side\n    left 360.0 / corners\n  end\nend\n\n18.times do\n  polygon(6, 70)\n  left 20\nend\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "def polygon(corners, side):\n    for i in range(corners):\n        forward(side)\n        left(360 / corners)\n\nfor i in range(18):\n    polygon(6, 70)\n    left(20)\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "function polygon(corners, side) {\n  for (let i = 0; i < corners; i++) {\n    forward(side);\n    left(360 / corners);\n  }\n}\n\nfor (let i = 0; i < 18; i++) {\n  polygon(6, 70);\n  left(20);\n}\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"

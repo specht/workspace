@@ -2,67 +2,71 @@
   "layouts": [
     {
       "name": "production",
-      "key": "6c47e33919a04fda",
-      "cost": 194.27,
-      "quick": 351.6,
+      "key": "f5ce2221f6faa586",
+      "cost": 260.4,
+      "quick": 425.86,
       "orders": [
         [
           0,
           [
-            "mysql",
+            "static-website",
             "pixelram",
+            "turtle-1",
+            "tcpip",
             "pip-1",
             "kata-functions",
-            "tcpip",
-            "working-with-files",
             "git",
+            "working-with-files",
             "drawing",
-            "static-website"
+            "mysql"
           ]
         ],
         [
           1,
           [
-            "sql-index",
-            "filmdatenbank",
-            "bobby_tables",
-            "sql-joins",
-            "raycaster",
-            "pixelram>gif#1",
-            "pixelram>jpeg#1",
+            "svelte",
+            "hugo",
             "raytracing",
+            "raycaster",
+            "pixelram>jpeg#1",
             "raylib",
-            "pip-1>pip-2#1",
-            "kata-decisions",
-            "wetter",
+            "turtle-1>turtle-2#1",
+            "pixelram>gif#1",
             "crypto",
             "webserver",
             "dns",
-            "terminal-mystery",
+            "wetter",
+            "pip-1>pip-2#1",
+            "kata-decisions",
             "class-quiz",
+            "terminal-mystery",
             "fire",
-            "hugo",
-            "svelte"
+            "filmdatenbank",
+            "sql-joins",
+            "sql-index",
+            "bobby_tables"
           ]
         ],
         [
           2,
           [
-            "neo4j-filmdatenbank",
-            "pixelram>gif#2",
             "pixelram>jpeg#2",
+            "turtle-1>turtle-2#2",
+            "totp",
+            "pixelram>gif#2",
+            "pixelwand",
+            "tracking",
             "pip-1>pip-2#2",
             "kata-loops",
-            "totp",
-            "tracking",
-            "pixelwand"
+            "neo4j-filmdatenbank"
           ]
         ],
         [
           3,
           [
-            "pixelram>gif#3",
             "pixelram>jpeg#3",
+            "turtle-1>turtle-2#3",
+            "pixelram>gif#3",
             "pip-2",
             "kata-texts"
           ]
@@ -70,8 +74,9 @@
         [
           4,
           [
-            "pixelram>gif#4",
             "pixelram>jpeg#4",
+            "turtle-1>turtle-2#4",
+            "pixelram>gif#4",
             "pip-2>pip-3#1",
             "kata-lists"
           ]
@@ -79,52 +84,54 @@
         [
           5,
           [
-            "pixelram>gif#5",
             "pixelram>jpeg#5",
+            "turtle-1>turtle-2#5",
+            "pixelram>gif#5",
+            "kata-recursion",
             "pip-2>pip-3#2",
-            "perzeptron",
-            "kata-lists>suchmaschine#1",
-            "kata-dicts",
-            "sandbox-sortieren",
-            "naechste-nachbarn",
             "supermarkt",
+            "sandbox-sortieren",
+            "kata-dicts",
             "rle",
             "check-digits",
-            "kata-recursion"
+            "naechste-nachbarn",
+            "kata-lists>suchmaschine#1",
+            "perzeptron"
           ]
         ],
         [
           6,
           [
-            "pixelram>gif#6",
             "pixelram>jpeg#6",
+            "turtle-2",
+            "kata-search",
+            "pixelram>gif#6",
+            "sandbox-datenstrukturen",
+            "huffman",
             "pip-3",
             "lzw",
-            "huffman",
-            "suchmaschine",
+            "kata-objects",
             "routenplaner",
             "sprachmodell",
             "automata",
             "kata-functional",
-            "kata-objects",
             "kata-bits",
-            "sandbox-datenstrukturen",
-            "kata-search"
+            "suchmaschine"
           ]
         ],
         [
           7,
           [
-            "gif",
+            "kata-tests",
             "jpeg",
+            "gif",
+            "textadventure",
             "regex",
             "turingmaschine",
-            "calculator",
             "kellerautomat",
-            "textadventure",
-            "logikgatter",
+            "calculator",
             "steganography",
-            "kata-tests"
+            "logikgatter"
           ]
         ],
         [

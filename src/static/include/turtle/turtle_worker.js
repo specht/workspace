@@ -9,10 +9,9 @@
 // { type: 'run', language, code, runs, speed }. runs is a list: null
 // runs the program, a text (»square(50)«) runs the program without drawing
 // and then the call, each from the start. speed 0 sends everything at
-// once; any other speed lets each command take as long as the page's
-// fastest speed needs for it (PACE), so that the page draws while the
-// program runs, endless ones until they are stopped, at whichever speed it
-// shows them.
+// once; any other speed lets each line take as long as it takes at PACE,
+// so that the page draws while the program runs, endless ones until they
+// are stopped, at whichever speed it shows them.
 //
 // Out: { type: 'loading' } while a runtime loads, then per run
 // { type: 'start', index }, { type: 'items', list } with commands
@@ -30,11 +29,11 @@ const RUBY = BASE + 'runtime/ruby-2.10.1/';
 const MAX_COMMANDS = 200000;
 const MAX_OUTPUT = 100000;
 const MAX_WIDTH = 50;
-// distance per second and degrees per second of the fastest speed the
-// page draws at (turtle_canvas.js): a paced run never gets far ahead of
-// the page, whichever speed the page shows it at, and that may change
-// while the program runs
-const PACE = [1000, 2160];
+// steps per second: faster than the page draws at »Schnell« even on paper
+// zoomed far out (turtle_canvas.js), so that »Sofort« in the middle of a
+// run draws a fern in a few seconds; an endless program still runs for a
+// while before MAX_COMMANDS. Turns take no time, as on the page.
+const PACE = 60000;
 
 let colors = null;
 let pace = null;
@@ -78,15 +77,13 @@ function host(command, value, line) {
     count += 1;
     if (count > MAX_COMMANDS) stopAll();
     if (pace) {
-        // wait until the turtle is done with the command before: the
-        // page draws each one as it arrives, over the same time
+        // wait until the turtle is done with the line before; the page
+        // has what came before it meanwhile
+        if (performance.now() < due) flush();
         while (performance.now() < due) { /* the turtle is still on its way */ }
         batch.push([command, value, line === undefined ? null : line]);
-        flush();
-        const [distance, degrees] = pace;
-        const seconds = command === 'forward' || command === 'back' ? Math.abs(value) / distance
-            : command === 'left' || command === 'right' ? Math.abs(value) / degrees : 0;
-        due = Math.max(due, performance.now()) + seconds * 1000;
+        if (performance.now() - lastFlush > 15) flush();
+        if (command === 'forward' || command === 'back') due = Math.max(due, performance.now()) + Math.abs(value) / pace * 1000;
     } else {
         batch.push([command, value, line === undefined ? null : line]);
         if (batch.length >= 4000 || performance.now() - lastFlush > 40) flush();
@@ -99,7 +96,7 @@ function out(text) {
     printed += text.length;
     batch.push(['out', text]);
     if (printed > MAX_OUTPUT) stopAll();
-    if (pace) flush();
+    if (pace && performance.now() - lastFlush > 15) flush();
 }
 
 async function text(path) {

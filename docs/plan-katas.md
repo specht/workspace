@@ -214,8 +214,8 @@ The code:
 ### Turtle
 
 An introduction to programming beside Pip, with pictures: a turtle on a
-sheet of paper that draws a line behind it (`turtle`, in development since
-28 October 2026). What the maintainer decided and why:
+sheet of paper that draws a line behind it (`turtle-1` and `turtle-2`, in
+development since 28 October 2026). What the maintainer decided and why:
 
 - **On the website, not in VS Code**, like the Katas: the code is typed into
   a card and kept per language until the student deletes it.
@@ -232,9 +232,15 @@ sheet of paper that draws a line behind it (`turtle`, in development since
   VM per run (40 to 230 ms) so that nothing of an earlier run is left over.
   Pip's plans stay on the server: Pip's world answers questions, the turtle
   only takes commands.
-- **Each command waits as long as it takes to draw** (a busy wait in the
-  worker), so the page draws as the program runs without a queue that
-  grows; »Sofort« draws at once. The speed is chosen per run.
+- **The speed is pixels of line per second on the screen** (the maintainer,
+  at a fern that took ten minutes at »Schnell«): 100, 300 and 2000 at
+  »Langsam«, »Normal« and »Schnell«, measured on the paper as it is zoomed,
+  so a picture of 40000 short lines takes no longer than a square; turns
+  take no time, but at »Langsam« at most a quarter second, to watch the
+  turtle turn. The worker waits after each line too (a busy wait), at
+  60000 steps per second, faster than the page draws at »Schnell« even
+  zoomed far out: an endless program runs on for a while, and »Sofort« in
+  the middle of a run draws the rest at once.
 - **The check on the server:** a program that ends by itself sends its
   commands; `TurtleWorld` replays them and compares the lines with the
   task's picture by sampling both, so order, direction, pieces and rounding
@@ -246,32 +252,51 @@ sheet of paper that draws a line behind it (`turtle`, in development since
   `turtle.js`), used by the worker and by the examples on the host
   (`TurtleCheck.record`), so that both run the same code.
 - **The speed changes while a program runs** (the maintainer): the worker
-  always paces at the fastest speed, the page draws what came at the speed
-  chosen now; »Sofort« at the start sends everything at once. Shared memory
+  paces as above, the page draws what came at the speed chosen now;
+  »Sofort« at the start sends everything at once. Shared memory
   between page and worker would let the worker read the buttons itself, but
   needs cross-origin isolation for the whole page.
 - **The paper fits the picture** (the maintainer, at the Koch curve that
   used a quarter of it): centred on the picture asked for, at least ±150
   steps, zooming out around everything drawn when a drawing goes past the
-  edge; the grid stays 50 steps apart and is left out where it would be
+  edge, gliding there in 0.6 s instead of jumping (the maintainer); the grid stays 50 steps apart and is left out where it would be
   too dense. `show:` names the call whose picture a card shows.
 - **The commands at hand** above the paper, as Pip's (the maintainer); both
   widgets show them in the editor's colours, with a quiet »Befehle«.
-- **The chapters:** commands, loops, own functions, pen and colour, a
-  variable that grows, stars, one's own picture to hand in; then, as
-  extras, trees (a beautiful one in brown and green, by the maintainer's
-  wish) and curves: Sierpiński, Koch, Hilbert. Two predictions: the turn at
-  a triangle's corner (120, not 60) and 91 instead of 90 degrees.
+- **Two pages** (the maintainer: the recursive parts later, when the
+  students are there): `turtle-1` after Pip 1, with commands, loops, own
+  functions, pen and colour, a variable that grows, stars, circles, one's
+  own picture to hand in; `turtle-2` after the Katas on recursion, with
+  trees (a beautiful one in brown and green, by the maintainer's wish), a
+  fern and curves: Sierpiński, Koch, Hilbert as an extra; its icon a
+  Hilbert curve (`images/icons/hilbert.svg`, the maintainer's idea). Two
+  predictions on the first page: the turn at a triangle's corner (120, not
+  60) and 91 instead of 90 degrees.
 - **Not only tracing** (the maintainer): free cards with a goal instead of
   a picture (`free:`, also with `max_lines`, which then asks for a loop):
   one's own pattern, flower, tree and picture.
+- **A picture on its way is not »wrong«** (the maintainer: developing a fern
+  takes many runs, and a card should not say at each one that it is wrong
+  and where): a run that does not match yet gets one quiet sentence (status
+  `drawn`, neutral like a note; for a function, which call differs), and
+  the dashed and red differences with their sentence only on »Unterschiede
+  zeigen«. The stored state is still »noch nicht gelöst«.
+- **Solved, then free** (the maintainer: experiments are not punished): once
+  a card is solved, a run that draws something else keeps its code, the
+  card stays solved, and the card says that nothing is checked any more,
+  without the dashed and red differences (`/api/turtle/check`, status
+  `free`); a run that matches again says so as before.
 - **The picture asked for is a thin pencil line** under the ink (the
   maintainer found it too dark and thick); it stays visible after drawing.
 - **Recursion is shown, not dictated** (the maintainer, at a Hilbert prompt
   that was a recipe to transcribe): a level widget (`<div
   class='turtle-levels' data-figure='hilbert'>`, turtle_canvas.js) draws
   each level with the parts made of the level below in colour; the cards
-  then only say what to write, and the tips lead there. Trees also grow
+  then only say what to write, and the tips lead there. Each level fills
+  the paper (small ones zoomed in), the view glides from one level to the
+  next, and the level before stays faint behind (the maintainer); the
+  Hilbert curve's connecting lines are black, grey was too close to the
+  parts' colours. Trees also grow
   unevenly and hang down to the ground (the maintainer).
 - **One speed for all cards of a page**, and a line on its way takes the
   new speed at once (the maintainer: it did not react for a while); the

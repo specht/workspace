@@ -1142,12 +1142,16 @@ check:
 
 Für eine eigene Funktion statt `draw` eine Liste `cases` mit `call` und
 `draw`: Jeder Aufruf läuft von vorn, das Programm vorher ohne zu zeichnen;
-die Karte zeigt das Bild des ersten. Für ein eigenes Bild `free:` mit
-`min_lines` und `min_colors`. Die Schildkröte beginnt in der Mitte und
+die Karte zeigt das Bild des ersten. Für ein eigenes Bild `free: {}`: Es gilt
+jedes Bild mit wenigstens einer Linie, ohne Zählen (der Maintainer: frei
+zeichnen, nicht beurteilen); `min_lines` und `min_colors` verlangen, wo
+es zur Aufgabe gehört, so viele Linien oder Farben. Die Schildkröte beginnt in der Mitte und
 schaut nach rechts, x nach rechts, y nach oben, die Fläche reicht von −250
-bis 250. Ein Fehler zeigt das Fehlende gestrichelt und das Überzählige rot.
+bis 250. Stimmt das Bild noch nicht, sagt die Karte das in einem ruhigen Satz; das Fehlende gestrichelt und das Überzählige rot zeigt sie erst, wenn man auf »Unterschiede zeigen« klickt.
 Ein angehaltenes Programm wird nur gespeichert (`/api/turtle/save`), der
-Stand der Aufgabe bleibt. In `task-examples.yaml` steht das Programm unter
+Stand der Aufgabe bleibt. Ist eine Aufgabe gelöst, gilt ein Lauf, der etwas
+anderes zeichnet, als Ausprobieren: Der Code wird gespeichert, die Aufgabe
+bleibt gelöst, und die Karte zeigt keine Unterschiede. In `task-examples.yaml` steht das Programm unter
 `answer:`; es läuft dort mit ruby, python3 und node auf dem Rechner, mit
 denselben Befehlen (`TurtleCheck.record`).
 

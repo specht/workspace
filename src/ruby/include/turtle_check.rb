@@ -26,7 +26,7 @@ require_relative 'turtle_world'
 #
 #   or, for a picture of one's own:
 #
-#     free: { min_lines: 20, min_colors: 2 }
+#     free: {}, or { min_lines: 20, min_colors: 2 } (any picture, or one with that many)
 #
 # The comparison does not care in which order or direction lines were
 # drawn, whether a line is drawn in pieces or twice, or about small errors
@@ -86,8 +86,8 @@ module TurtleCheck
         end
         if check.key?('free')
             free = check['free']
-            unless free.is_a?(Hash) && !free.empty? && (free.keys - FREE).empty? && free.values.all? { |v| v.is_a?(Integer) && v > 0 }
-                errors << "free must name #{FREE.join(' and/or ')} as whole numbers above 0"
+            unless free.is_a?(Hash) && (free.keys - FREE).empty? && free.values.all? { |v| v.is_a?(Integer) && v > 0 }
+                errors << "free may name #{FREE.join(' and/or ')} as whole numbers above 0, or nothing (free: {})"
             end
         end
         errors << 'max_lines must be a whole number above 0' if check.key?('max_lines') && !(check['max_lines'].is_a?(Integer) && check['max_lines'] > 0)
@@ -217,7 +217,12 @@ module TurtleCheck
             [status, message, nil]
         else
             sources = check['cases'] ? check['cases'].map { |c| c['draw'] } : [check['draw']]
-            sources.each_with_index do |source, i|
+            # the call whose picture the card shows first: what differs
+            # there is what the student is looking at
+            shown = check['show'] || 0
+            order = [shown] + ((0...sources.size).to_a - [shown])
+            order.each do |i|
+                source = sources[i]
                 expected = TurtleWorld.draw(source).segments
                 drawn = worlds[i].segments
                 d = diff(expected, drawn, :colors => check['colors'] == true)
@@ -241,6 +246,7 @@ module TurtleCheck
 
     def self.free_check(free, world)
         lines = world.segments.size
+        return [:wrong, 'Die Schildkröte hat noch nichts gezeichnet.', nil] if lines == 0
         if free['min_lines'] && lines < free['min_lines']
             return [:wrong, "Dein Bild hat #{lines == 1 ? 'eine Linie' : "#{lines} Linien"}. Zeichne mindestens #{free['min_lines']}.", nil]
         end
@@ -248,7 +254,7 @@ module TurtleCheck
         if free['min_colors'] && colors < free['min_colors']
             return [:wrong, "Dein Bild hat #{colors == 1 ? 'eine Farbe' : "#{colors} Farben"}. Nimm mindestens #{free['min_colors']}.", nil]
         end
-        [:correct, 'Ein schönes Bild!', nil]
+        [:correct, 'Fertig! Gefällt dir dein Bild, kannst du es unter der Aufgabe einreichen.', nil]
     end
 
     # »Bei `square(50)` fehlt ein Stück von etwa 50 Schritten (gestrichelt),

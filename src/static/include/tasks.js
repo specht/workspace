@@ -298,7 +298,7 @@
     // Stars when it is right; a light bulb, not a cross, when it is not yet.
     const FEEDBACK_ICONS = {
         correct: 'bi-stars', wrong: 'bi-lightbulb', sent: 'bi-paper-plane',
-        invalid: 'bi-info-circle', unavailable: 'bi-info-circle',
+        invalid: 'bi-info-circle', unavailable: 'bi-info-circle', free: 'bi-brush', drawn: 'bi-pencil',
     };
 
     // In view: the first paragraph of the message (and the result of an SQL
@@ -480,7 +480,24 @@
             const result = function () {
                 // hidden while a Pip run plays (below)
                 card.querySelector('.task-feedback').hidden = false;
-                showFeedback(card, data.status, data.message, data.solution, data.read);
+                // free: solved before, and this run was the student's own
+                // experiment; it says so instead of what differs
+                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read);
+                // drawn: a picture on its way; what differs only on request
+                if (data.status === 'drawn' && data.replay) {
+                    const compare = document.createElement('button');
+                    compare.type = 'button';
+                    compare.className = 'btn btn-link btn-sm turtle-compare';
+                    compare.textContent = 'Unterschiede zeigen';
+                    compare.addEventListener('click', () => {
+                        card.turtle.showResult(data.replay);
+                        const detail = document.createElement('div');
+                        detail.className = 'turtle-compare-detail';
+                        detail.innerHTML = data.detail || '';
+                        compare.replaceWith(detail);
+                    });
+                    card.querySelector('.task-feedback .task-message').appendChild(compare);
+                }
                 if (data.state) {
                     setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                     card.querySelector('.task-delete').hidden = false;
@@ -556,13 +573,30 @@
                     showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
                     return;
                 }
-                showFeedback(card, data.status, data.message, data.solution, data.read);
+                // free: solved before, and this run was the student's own
+                // experiment; it says so instead of what differs
+                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read);
+                // drawn: a picture on its way; what differs only on request
+                if (data.status === 'drawn' && data.replay) {
+                    const compare = document.createElement('button');
+                    compare.type = 'button';
+                    compare.className = 'btn btn-link btn-sm turtle-compare';
+                    compare.textContent = 'Unterschiede zeigen';
+                    compare.addEventListener('click', () => {
+                        card.turtle.showResult(data.replay);
+                        const detail = document.createElement('div');
+                        detail.className = 'turtle-compare-detail';
+                        detail.innerHTML = data.detail || '';
+                        compare.replaceWith(detail);
+                    });
+                    card.querySelector('.task-feedback .task-message').appendChild(compare);
+                }
                 if (data.state) {
                     setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                     card.querySelector('.task-delete').hidden = false;
                     showHandIn(card, data.state);
                 }
-                if (data.replay) card.turtle.showResult(data.replay);
+                if (data.replay && data.status !== 'drawn') card.turtle.showResult(data.replay);
             }),
             invalid: (message) => {
                 const p = document.createElement('p');
