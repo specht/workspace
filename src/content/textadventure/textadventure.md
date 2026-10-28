@@ -161,6 +161,7 @@ ruft `build_world` auf, eine Funktion in `adventure.rb`, die die Welt baut
 und die Spielerin in ihren ersten Raum stellt. So sieht eine kleine Welt
 aus, mit zwei Räumen:
 
+<!-- page-code: own -->
 ```ruby
 def build_world
   hall = Room.new("Flur", "Ein langer Flur mit knarrenden Dielen.")
@@ -184,6 +185,7 @@ wget ${web_root}/textadventure/starter/play.py
 `build_world` aus `adventure.py`, die die Welt baut und die Spielerin in ihren
 ersten Raum stellt. So sieht eine kleine Welt aus, mit zwei Räumen:
 
+<!-- page-code: own -->
 ```python
 def build_world():
     hall = Room("Flur", "Ein langer Flur mit knarrenden Dielen.")
