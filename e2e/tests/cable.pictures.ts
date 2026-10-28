@@ -5,7 +5,7 @@
 //
 // One browser holds the keys 1 and 3 on 42.7 kHz; a second one on the same
 // frequency is photographed at /ether, light and dark (teaser.webp,
-// teaser-dark.webp): the whole device with a margin, 16:9, scaled to
+// teaser-dark.webp): the device on its own colour, 16:9, scaled to
 // 1280 x 720. Nothing is stored anywhere; the ether forgets both browsers when
 // they close.
 import { execFileSync } from 'node:child_process';
@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Browser, TestInfo } from '@playwright/test';
 import { expect, test } from './fixtures';
+import { loginAsE2eUser } from './workspace';
 
 const ACTIVITY = path.resolve(__dirname, '../../src/content/cable');
 const REPO = path.resolve(__dirname, '../..');
@@ -46,6 +47,9 @@ async function ether(browser: Browser, testInfo: TestInfo, scheme: 'light' | 'da
     baseURL: baseUrl(testInfo), colorScheme: scheme, viewport: { width: 900, height: 800 }, deviceScaleFactor: 2,
   });
   const page = await context.newPage();
+  // while the activity is parked, the ether is open to accounts only
+  // (cable_page.rb)
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
   await page.addInitScript((f) => window.localStorage.setItem('cable-freq', String(f)), FREQ);
   await page.goto('/ether');
   await expect(page.locator('.cable-status')).toHaveText('verbunden');
@@ -67,11 +71,23 @@ test('the card picture of the cable', async ({ browser }, testInfo) => {
       // The device without the hint under the buttons, in a 16:9 frame.
       await page.addStyleTag({ content: '.cable-keys-hint { display: none; } .ether-page h2, .ether-lead { visibility: hidden; } footer { display: none !important; }' });
       await page.waitForTimeout(300);
+      // No frame within the card's own frame: the page around the device in
+      // the device's colour, its edge and shadow gone, so the device fills
+      // the picture with its margin and nothing of it is cut.
+      // (the device's gradient, --cable-panel to --cable-panel-2, as its
+      // main colour, flat, since the page cannot continue a gradient)
+      await page.locator('.cable-device').evaluate((device) => {
+        const bg = getComputedStyle(device).getPropertyValue('--cable-panel').trim();
+        for (let e = device; e; e = e.parentElement) e.style.setProperty('background', bg, 'important');
+        device.style.setProperty('box-shadow', 'none', 'important');
+        device.style.setProperty('border-color', 'transparent', 'important');
+      });
+      await page.waitForTimeout(300);
       const box = (await page.locator('.cable-device').boundingBox())!;
-      // The whole device with a margin around it, in 16:9.
-      let width = box.width + 96;
+      // The whole device in 16:9; its own padding is the margin.
+      let width = box.width;
       let height = (width * 9) / 16;
-      if (height < box.height + 48) { height = box.height + 48; width = (height * 16) / 9; }
+      if (height < box.height) { height = box.height; width = (height * 16) / 9; }
       const clip = { x: box.x + box.width / 2 - width / 2, y: box.y + box.height / 2 - height / 2, width, height };
       const name = scheme === 'light' ? 'teaser' : 'teaser-dark';
       const png = path.join(out, name + '.png');

@@ -47,13 +47,13 @@ class WorkspaceRuntimeTest < Minitest::Test
         @capture_outputs << JSON.generate([{
             'NetworkSettings' => {
                 'Networks' => {
-                    'workspace_user' => {'IPAddress' => '172.20.0.8'},
+                    'workspace_user' => {'IPAddress' => '172.20.0.8', 'MacAddress' => 'f2:fd:53:d5:5f:65'},
                 },
             },
         }])
 
         assert_equal(
-            {:tag => 'abcdefghijklmnop', :running => true, :ip => '172.20.0.8'},
+            {:tag => 'abcdefghijklmnop', :running => true, :ip => '172.20.0.8', :mac => 'f2:fd:53:d5:5f:65'},
             @runtime.workspace_state('abcdefghijklmnop', :timeout => 10),
         )
         assert_equal(

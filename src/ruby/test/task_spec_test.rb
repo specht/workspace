@@ -27,7 +27,7 @@ class TaskSpecTest < Minitest::Test
         counts = %w[tcpip anaglyph showerjs].to_h do |slug|
             [slug, TaskSpec.load_file(File.join(CONTENT, slug, 'tasks.yaml'))['tasks'].size]
         end
-        assert_equal({ 'tcpip' => 18, 'anaglyph' => 12, 'showerjs' => 11 }, counts)
+        assert_equal({ 'tcpip' => 25, 'anaglyph' => 12, 'showerjs' => 11 }, counts)
     end
 
     def test_minimal_answer_task_is_valid

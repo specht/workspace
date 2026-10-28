@@ -33,7 +33,9 @@ require_relative 'kata_runner'
 # case with many files (the folder of »Ein Krimi im Terminal«).
 # answer: is the answer a student types (for command: the command, run with
 # sh in the example's /workspace); say: a piece of the message a
-# rejected example must get. skip: names why a check cannot be tested here,
+# rejected example must get. variables: the values of ${…} a check
+# compares with ({ workspace.mac: …}), which the server knows per person
+# (TaskSpec::VARIABLES). skip: names why a check cannot be tested here,
 # for example because it reads what a build produces. Choice and number tasks need no examples: their
 # correct answer must pass and every other option (or a number outside the
 # tolerance) must fail.
@@ -50,7 +52,7 @@ module TaskExamples
     # Checks that need examples to be tested at all.
     NEEDS_EXAMPLES = %w[files html css references ruby python javascript c java dart command function pip tests circuit].freeze
     # answer with compare: regex needs examples as well (see missing).
-    CASE_KEYS = %w[archive files answer say].freeze
+    CASE_KEYS = %w[archive files answer say variables].freeze
 
     Outcome = Struct.new(:activity, :task, :language, :kind, :index, :ok, :detail, keyword_init: true) do
         def label
@@ -186,7 +188,8 @@ module TaskExamples
             beside = ->(name) { File.exist?(File.join(File.dirname(checked), "#{name}.py")) || File.directory?(File.join(File.dirname(checked), name)) }
             return nil if checked && File.file?(checked) && python_modules(File.read(checked)).any? { |name| !beside.(name) && !python_module?(name) }
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
-                :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root))
+                :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root),
+                :variables => example['variables'] || {})
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
             outcome.ok = expected.include?(result.status)
             if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'].to_s)

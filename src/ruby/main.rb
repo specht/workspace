@@ -300,6 +300,14 @@ class Main < Sinatra::Base
     ].to_h { |id| ["mysql/#{id}", "sql-joins/#{id}"] }.freeze
 
     # Pages that were renamed; old links and bookmarks lead to the new page.
+    # ?grid_demo=1 in development: parked activities added to sections, to
+    # see the pairs at the end of a section (main.rb, the catalog)
+    GRID_DEMO = {
+        'networks' => ['cable'],
+        'games' => ['feuerwerk'],
+        'software' => ['cobol', 'smalltalk'],
+    }.freeze
+
     MOVED_PAGES = {
         'videothek' => 'filmdatenbank',
         # the guide to the Hackschule subdomain became a Handbuch page (2026-10)
@@ -6018,13 +6026,15 @@ class Main < Sinatra::Base
         names = TaskCheck.variables_used(task['check'])
         email = @session_user[:email]
         vars = {}
-        if names.include?('workspace.ip')
+        if names.include?('workspace.ip') || names.include?('workspace.mac')
             state = begin
                 get_server_state(fs_tag_for_email(email))
             rescue StandardError
                 nil
             end
-            vars['workspace.ip'] = state && state[:running] ? state[:ip] : nil
+            running = state && state[:running]
+            vars['workspace.ip'] = running ? state[:ip] : nil if names.include?('workspace.ip')
+            vars['workspace.mac'] = running ? state[:mac] : nil if names.include?('workspace.mac')
         end
         if names.include?('workspace.live_url')
             server_tag = @session_user[:server_tag]
@@ -7071,6 +7081,12 @@ class Main < Sinatra::Base
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end
+                    # Development only, ?grid_demo=1: parked activities fill
+                    # some sections to 7, 4 and 5 cards, to look at the pairs
+                    # that end a section whose last row would not be full
+                    if DEVELOPMENT && params['grid_demo'] && (extra = GRID_DEMO[section_key])
+                        entries += extra.select { |slug| @@content[slug] }
+                    end
                     # carousel: true (Katas): one strip of the sets with the
                     # person's progress instead of cards (KataMap)
                     if section[:carousel]
@@ -7107,10 +7123,16 @@ class Main < Sinatra::Base
                         next
                     end
                     io.puts "<div class='row'>"
-                    # Every card the same size; a section ends where it ends.
-                    entries.each do |slug|
+                    # Every card the same size, three in a row. A last row
+                    # that would not be full (4, 5 or 7 cards) is not left
+                    # half empty: the last cards go in pairs instead, each a
+                    # compact row like on a phone (default.css, .hscol-pair),
+                    # the last two (5, 8 …) or the last four (4, 7 …).
+                    rest = entries.size % 3
+                    paired = rest == 0 ? 0 : (rest == 1 ? [4, entries.size].min : 2)
+                    entries.each_with_index do |slug, index|
                         content = @@content[slug]
-                        io.puts "<div class='hscol'>"
+                        io.puts "<div class='hscol#{index >= entries.size - paired ? ' hscol-pair' : ''}'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
                         band = usage_html(usage, slug, 'card-usage')
                         used_card = band.empty? ? '' : ' card-with-usage'

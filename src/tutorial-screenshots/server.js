@@ -2121,7 +2121,7 @@ async function openFile(relativePath) {
 // VS Code shows a picture in its image preview, a webview, not in a text
 // editor. Its content lives in an iframe of another origin, so wait for the
 // visible webview to be ready and give the picture a moment to paint.
-const IMAGE_FILE = /\.(png|jpe?g|gif|webp|bmp|ico)$/i;
+const IMAGE_FILE = /\.(png|jpe?g|gif|webp|bmp|ico|svg)$/i;
 
 async function waitForImagePreview(page) {
     await page.waitForFunction(

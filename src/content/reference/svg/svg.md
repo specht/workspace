@@ -53,6 +53,7 @@ Bildschirm. Der Punkt (0, 0) ist die linke obere Ecke. Ein Rechteck mit `y="10"`
 beginnt also 10 Einheiten unter dem oberen Rand. Wer ein Diagramm mit y nach
 oben zeichnen will, rechnet um: Die Höhe der Fläche minus y.
 
+<!-- part: formen -->
 ## Formen
 
 ```html
@@ -94,6 +95,7 @@ oben zeichnen will, rechnet um: Die Höhe der Fläche minus y.
   durchsichtig.
 - Was später im Text steht, liegt oben: Ein Kreis nach einem Rechteck verdeckt
   es.
+<!-- /part -->
 
 ### Gruppen
 
@@ -150,14 +152,18 @@ with open("circles.svg", "w") as f:
   `&gt;` und `&amp;`, sonst ist die Datei kaputt.
 <!-- /part -->
 
+<!-- part: ansehen -->
 ## Ansehen
 
 - **In VS Code:** Eine Datei, die auf `.svg` endet, öffnet VS Code als Bild.
-  Oben rechts im Reiter wechselt ein Knopf zum Text und zurück.
+  Oben rechts im Reiter wechselt ein Knopf zum Text und zurück. Ein Klick ins
+  Bild vergrößert es, ein Klick mit gedrückter <kbd>Strg</kbd> (am Mac
+  <kbd>Alt</kbd>) verkleinert es wieder.
 - **Im Browser:** Zieh die Datei in ein Browserfenster, oder öffne sie mit dem
   Live Server.
 - **In einer Webseite:** `<img src="circles.svg" alt="…">` wie jedes Bild, oder
   das ganze `<svg>`-Element direkt im HTML, ohne `xmlns`.
+<!-- /part -->
 
 ## Zum Nachschlagen
 

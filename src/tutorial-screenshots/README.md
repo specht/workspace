@@ -697,7 +697,7 @@ their pictures this way, from the very program the page shows. Like
 ### Files and editor state
 
 `open-file` opens a Workspace file through Quick Open and waits for the Monaco
-editor to settle; a picture (`.png`, `.jpg`, `.gif`, `.webp`, …) opens in VS
+editor to settle; a picture (`.png`, `.jpg`, `.gif`, `.webp`, `.svg`, …) opens in VS
 Code's image preview instead, and `open-file` waits for its webview. A file a
 recipe has just written may take a few seconds to appear in Quick Open;
 `open-file` asks again until it does (up to 30 seconds). `close-tab` closes an editor tab by its exact label and is a

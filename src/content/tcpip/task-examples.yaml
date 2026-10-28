@@ -13,3 +13,26 @@ examples:
       - files: { 2048: { text: "#include <stdio.h>\nint main(void) { return 0; }\n", executable: true } }
   katzenfakt:
     skip: Der Befehl holt einen Fakt aus dem Netz, bei jedem Aufruf einen anderen.
+  mac-adresse:
+    pass:
+      - answer: f2:fd:53:d5:5f:65
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+      # Großbuchstaben und Backticks zählen nicht
+      - answer: '`F2:FD:53:D5:5F:65`'
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+    fail:
+      # Die MAC-Adresse aus dem Bild, nicht die eigene
+      - answer: 02:42:ac:11:00:2a
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+      - answer: 172.20.0.7
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+        say: IP-Adresse
+      - answer: ff:ff:ff:ff:ff:ff
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+        say: Broadcast-Adresse
+      - answer: 00:00:00:00:00:00
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+        say: Adresse von `lo`
+      - answer: f2-fd-53-d5-5f-65
+        variables: { workspace.mac: f2:fd:53:d5:5f:65 }
+        say: Doppelpunkten

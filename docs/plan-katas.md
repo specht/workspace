@@ -37,9 +37,10 @@ the strip on the front page:
 | 8 | `kata-dicts` Dictionaries | counting, grouping, looking up | |
 | 9 | `kata-bits` Bits und Zahlensysteme | bits and bases with `/` and `%` | |
 | 10 | `kata-recursion` Rekursion | a function that calls itself | `recursive: true`, `loops: false` |
-| 11 | `kata-search` Suchen | linear search, halving | building blocks of the Sorting Sandbox |
-| 12 | `pip-3` Der Mampfer | counting steps, the light, breadth-first search | `generate: chase`, `cave_map`, `facing` |
-| 13 | `kata-tests` Tests schreiben | tests that catch every broken version | check type `tests` |
+| 11 | `kata-functional` Funktionen als Werte | lambdas, closures, `map`, `filter`, `reduce`, chains | loop methods switched off with `forbid` where `map` or `filter` is the point |
+| 12 | `kata-search` Suchen | linear search, halving | building blocks of the Sorting Sandbox |
+| 13 | `pip-3` Der Mampfer | counting steps, the light, breadth-first search | `generate: chase`, `cave_map`, `facing` |
+| 14 | `kata-tests` Tests schreiben | tests that catch every broken version | check type `tests` |
 
 Each set has about ten core Katas at three levels (Einstieg, Übung, Knobelei)
 and two Extras (`extra: true`, counting for nobody), its teacher note, and a
@@ -96,6 +97,21 @@ The code:
 - **Prices and other sums in cent**, so that no result depends on the order of
   adding decimals. FizzBuzz is introduced as an English counting game, »Brot«
   as the one from German primary schools.
+- **Functions as values come after Rekursion** (`kata-functional`, added on
+  28 October 2026): it needs lists and, for one `reduce`, dictionaries
+  (`requires: [kata-dicts]`), and it is the other half of functional
+  programming beside recursion, for the Oberstufe's »Vertiefung Applikative
+  Programmierung«; the empty list as `reduce`'s start value is the case
+  that ends a recursion. Whether a loop is used cannot always be checked:
+  `forbid` switches off Ruby's `each`, `for` (which calls `each`), `times`
+  and `loop` and JavaScript's `forEach`, never `while` or a `for` in Python
+  and JavaScript, and in Ruby only where no `reduce` is needed, since
+  Enumerable's `reduce` calls `each` and the forbidden method would fire. A
+  `same_as` with a loop replaces the message »Du schreibst es gerade
+  selbst«, which does not fit there. Python's List Comprehensions pass: in
+  Python they are the usual way to write `map` and `filter`. One Kata
+  (»Zum ersten Mal im Minus«) is there to show where a loop with `return`
+  stays clearer, and the page shows its `reduce` version afterwards.
 - **Examples never imitate a difficulty a student may have:** a »stutter«
   function became one putting letters in brackets.
 

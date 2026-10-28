@@ -56,6 +56,20 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "ip-link.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "344be84dfa611993d20eb1260fd632d61c0b54df89956476049ef97ef9af4b40",
+      "state_hash": "2d5f5e05a49562213e5b939e545870d04ca996ffc85684c814b2022cdd4a8507",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "ip-route.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "bac3551724c23ea137d7723bc053650e50e1dfcc637c57ada509f2891e1a852a",
+      "state_hash": "18a19c9ca070c624f36116d26bbf5995f8a58f45b138b25a1012734bd7dea2a1",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
     "ls-2048-bin.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "1b6fb8763a695c320066f1a351ef65719ccc16e7850ec6d9ead7df49c96ae858",

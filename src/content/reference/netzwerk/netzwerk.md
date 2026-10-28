@@ -1,6 +1,6 @@
 <div class='meta'>
 kind: reference
-search: ping, traceroute, ifconfig, ss, Port, netcat, nc, dig, DNS, wget, curl, ssh, scp, Connection refused, localhost, 127.0.0.1
+search: ping, traceroute, ifconfig, ip link, ip neigh, ip route, MAC-Adresse, ARP, Switch, Router, Frame, ss, Port, netcat, nc, dig, DNS, wget, curl, ssh, scp, Connection refused, localhost, 127.0.0.1
 </div>
 
 <div
@@ -12,7 +12,7 @@ search: ping, traceroute, ifconfig, ss, Port, netcat, nc, dig, DNS, wget, curl, 
 # Netzwerk im Terminal
 
 <p class='abstract'>
-Die Befehle aus <a href='/tcpip'>TCP/IP</a>, <a href='/dns'>DNS</a> und dem <a href='/terminal-mystery'>Krimi im Terminal</a> zum Nachschlagen: die eigene Adresse, ob ein Rechner erreichbar ist, eine eigene Verbindung, Namen nachschlagen, Dateien holen, auf einem anderen Rechner arbeiten, und was die Fehlermeldungen sagen. Wie Browser und Server miteinander reden, steht unter <a href='/reference/http'>HTTP</a>.
+Die Befehle aus <a href='/tcpip'>TCP/IP</a>, <a href='/dns'>DNS</a> und dem <a href='/terminal-mystery'>Krimi im Terminal</a> zum Nachschlagen: die eigene Adresse, die Nachbarn im eigenen Netz, ob ein Rechner erreichbar ist, eine eigene Verbindung, Namen nachschlagen, Dateien holen, auf einem anderen Rechner arbeiten, und was die Fehlermeldungen sagen. Wie Browser und Server miteinander reden, steht unter <a href='/reference/http'>HTTP</a>.
 </p>
 
 ## Adressen und Ports
@@ -43,6 +43,25 @@ Die **IP-Adresse** bringt ein Paket zum richtigen Rechner, der **Port** zum rich
 </tbody>
 </table>
 </div>
+<!-- /part -->
+
+## Im eigenen Netz: MAC-Adressen, ARP und Router
+
+<!-- part: netz-lan -->
+<!-- short: ip link zeigt die MAC-Adresse, ip neigh die MAC-Adressen der Nachbarn, die ARP gefunden hat, ip route den Router für alles außerhalb des eigenen Netzes. -->
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Befehl</th><th>Was er zeigt</th></tr></thead>
+<tbody>
+<tr><td><code>ip link</code></td><td>die Netzwerkadapter; hinter <code>link/ether</code> die MAC-Adresse, hinter <code>brd</code> die Broadcast-Adresse <code>ff:ff:ff:ff:ff:ff</code></td></tr>
+<tr><td><code>ip -br addr</code></td><td>kurz: jeder Adapter mit seiner IP-Adresse</td></tr>
+<tr><td><code>ip neigh</code></td><td>die Nachbarn im eigenen Netz, deren MAC-Adresse dieser Rechner mit ARP herausgefunden hat: <code>REACHABLE</code> hat sich vor Kurzem gemeldet, <code>STALE</code> ist eine Weile her, <code>FAILED</code> hat nicht geantwortet</td></tr>
+<tr><td><code>ip neigh show 172.20.0.1</code></td><td>nur die Zeile zu dieser Adresse; keine Ausgabe, wenn der Rechner sie nicht kennt</td></tr>
+<tr><td><code>ip route</code></td><td>wohin Pakete gehen: das eigene Netz direkt über <code>eth0</code>, alles andere an den Router hinter <code>default via</code></td></tr>
+</tbody>
+</table>
+</div>
+
+Die **IP-Adresse** sagt, wohin ein Paket am Ende soll, die **MAC-Adresse** nur, welches Gerät im selben Netz es als Nächstes bekommt. Ethernet und WLAN packen jedes Paket dafür in einen **Frame** mit der Ziel- und der Absender-MAC. Ein **Switch** merkt sich, an welchem seiner Ports welche MAC-Adresse hängt, und schickt einen Frame nur dorthin; was er nicht kennt, und jeden Broadcast, schickt er an alle. Ein **Router** packt das Paket in einen neuen Frame mit neuen MAC-Adressen; die IP-Adressen bleiben, außer an einem Router, der private Adressen in öffentliche übersetzt. Darum zeigt `ip neigh` nur Rechner im eigenen Netz und den Router, nie einen Server im Internet.
 <!-- /part -->
 
 ## Ist ein Rechner erreichbar?

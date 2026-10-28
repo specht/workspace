@@ -183,6 +183,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1903 -->
+<!-- part: church -->
+### Alonzo Church
+
+<div class='person'>
+<p><strong>Alonzo Church</strong> (1903–1995), amerikanischer Mathematiker und Logiker, von 1929 bis 1967 an der Universität Princeton. In den 1930er Jahren erfand er den Lambda-Kalkül, eine Schreibweise für Funktionen, die keinen Namen brauchen: Statt f(x) = x + 3 schreibt man λx. x + 3. Darum heißen Funktionen ohne Namen bis heute Lambdas, und in Python und Ruby gibt es dafür das Wort <code>lambda</code>.</p>
+<p>John McCarthy übernahm Churchs Schreibweise für Lisp, und von dort kam sie in viele andere Sprachen; Python bekam <code>lambda</code>, <code>map</code>, <code>filter</code> und <code>reduce</code> 1994. Bei Church in Princeton machten Alan Turing und Stephen Kleene ihren Doktor.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1903 -->
 <!-- part: neumann -->
 ### John von Neumann
 
@@ -624,6 +634,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Ron Rivest</strong> (geboren 1947), <strong>Adi Shamir</strong> (geboren 1952) und <strong>Leonard Adleman</strong> (geboren 1945), damals am MIT. Das Schlüsselpaar, das du mit <code>openssl genpkey -algorithm RSA</code> erzeugst, trägt ihre Anfangsbuchstaben: RSA veröffentlichten sie 1977. Rivest und Shamir schlugen eine Idee nach der anderen vor, und Adleman, der Mathematiker, suchte in jeder die Schwachstelle.</p>
 <p>1977 feierten sie Pessach bei einem Studenten, mit viel Wein. Rivest konnte danach nicht schlafen, legte sich mit einem Mathebuch aufs Sofa und hatte bis zum Morgen den größten Teil des Aufsatzes geschrieben. In der gedruckten Fassung von 1978 tauchen zum ersten Mal Alice und Bob auf, die seitdem in fast jedem Beispiel zur Verschlüsselung Nachrichten tauschen. 2002 bekamen die drei den Turing Award, den wichtigsten Preis der Informatik.</p>
 <p class='person-credit'>Fotos: Ronald L. Rivest, 2015, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Ronald_L_Rivest_photo.jpg'>Wikimedia Commons</a>); Erik Tews, 2013, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Adi_Shamir_at_TU_Darmstadt_(2013).jpg'>Wikimedia Commons</a>); Leonard Adleman, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Len-mankin-pic.jpg'>Wikimedia Commons</a>), alle zugeschnitten</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1946 -->
+<!-- part: metcalfe -->
+### Robert Metcalfe
+
+<div class='person'>
+<img src='metcalfe.webp' alt='Robert Metcalfe 2004: ein Mann mit dichtem grauem Haar in einem dunklen Sakko und einem weißen Hemd, links hinter ihm eine Wandlampe.'>
+<p><strong>Robert Metcalfe</strong> (geboren 1946), amerikanischer Ingenieur. Dass dein Workspace hinter <code>link/ether</code> eine MAC-Adresse hat, geht auf ein Memo zurück, das er am 22. Mai 1973 bei Xerox PARC in Kalifornien verschickte: Darin hieß ein Netz für die Rechner des Labors zum ersten Mal Ethernet. Er baute es zusammen mit David Boggs. Alle Rechner hingen an einem gemeinsamen Koaxialkabel, jeder bekam jedes Paket, und jeder nahm nur die Pakete mit seiner eigenen Adresse.</p>
+<p>Den Namen nahm er vom Äther, durch den sich nach einer alten Vorstellung der Physik das Licht ausbreiten sollte. 1979 gründete er mit anderen die Firma 3Com, die Geräte für Netzwerke baute, und 2023 bekam er für Ethernet den Turing Award, den wichtigsten Preis der Informatik.</p>
+<p class='person-credit'>Foto: Andreu Veà, 2004, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:With_Bob_Metcalfe_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

@@ -74,8 +74,11 @@ richtige. Bis dahin steht dort »Hier geht es weiter, sobald du deine Antwort
 oben abgegeben hast« oder »… sobald du die Aufgabe oben gelöst hast«. Das gilt
 für alle, die antworten können, auch für Lehrkräfte: Sie sehen die Seite wie
 ihre Klasse und öffnen die Stelle mit »Für Lehrkräfte: jetzt zeigen« (der
-Maintainer, der sonst meinte, die Antwort stünde gleich darunter). Besucher und
-Klassen ohne Aufgaben sehen alles.
+Maintainer, der sonst meinte, die Antwort stünde gleich darunter). Besucher
+ohne Anmeldung sehen die Stelle nicht, sondern »Hier geht es weiter, sobald du
+angemeldet bist und die Aufgabe oben beantwortet hast« (`tasks.js`): Sonst
+läse eine Klasse die Antworten in einem privaten Fenster nach (der Maintainer,
+Oktober 2026). Klassen ohne Aufgaben sehen alles.
 Zuerst stand das Bild vom Ergebnis direkt unter der Vorhersage (»Licht mit
 256 Farben« im Raycaster), und die Vermutung war geschenkt.
 

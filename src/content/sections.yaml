@@ -39,6 +39,7 @@
     - kata-dicts
     - kata-bits
     - kata-recursion
+    - kata-functional
     - kata-search
     - pip-3
     - kata-tests

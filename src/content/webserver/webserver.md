@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:20:50
+image: teaser.webp
 image_alt: "Ein Abstimmungsergebnis als Balken: Pizza 5, Nudeln 2, Curry 4, Salat 1"
 kind: projekt
 language: Ruby / Python
@@ -1540,5 +1540,11 @@ tab: preview
 viewport: 720x405
 wait-for-text: Ergebnis
 sleep: 1
+# only the inside of the white page, in 16:9: no beige margin and no rounded
+# corners, so the card shows no frame within its own
+crop-left: 10.65%
+crop-right: 10.65%
+crop-top: 13.7%
+crop-bottom: 7.5%
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Die Ergebnisseite der Umfrage: für Pizza, Nudeln, Curry und Salat je ein blauer Balken mit der Zahl der Stimmen; Pizza hat die meisten.'>

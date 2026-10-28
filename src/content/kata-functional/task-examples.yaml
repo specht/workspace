@@ -1,0 +1,325 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-functional
+examples:
+  apply-n:
+    pass:
+      - answer: "def apply_n(f, n, x)\n  n.times do\n    x = f.call(x)\n  end\n  x\nend\n"
+    fail:
+      - answer: "def apply_n(f, n, x)\n  n.times { f.call(x) }\n  x\nend\n"
+        say: "das Ergebnis geht verloren"
+      - answer: "def apply_n(f, n, x)\n  f.call(x)\nend\n"
+        say: "`apply_n(->(x) { x * 2 }, 3, 1)` ergibt `2`"
+    python:
+      pass:
+        - answer: "def apply_n(f, n, x):\n    for _ in range(n):\n        x = f(x)\n    return x\n"
+      fail:
+        - answer: "def apply_n(f, n, x):\n    for _ in range(n):\n        f(x)\n    return x\n"
+          say: "das Ergebnis geht verloren"
+    javascript:
+      pass:
+        - answer: "function applyN(f, n, x) {\n  for (let i = 0; i < n; i++) {\n    x = f(x);\n  }\n  return x;\n}\n"
+      fail:
+        - answer: "function applyN(f, n, x) {\n  for (let i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n"
+          say: "das Ergebnis geht verloren"
+  make-multiplier:
+    pass:
+      - answer: "def make_multiplier(n)\n  ->(x) { x * n }\nend\n"
+    fail:
+      - answer: "def make_multiplier(n)\n  n * 2\nend\n"
+        say: "gibt keine Funktion zurück"
+      - answer: "def make_multiplier(n)\n  ->(x) { x * 2 }\nend\n"
+        say: "`make_multiplier(3).call(7)` ergibt `14`"
+    python:
+      pass:
+        - answer: "def make_multiplier(n):\n    return lambda x: x * n\n"
+      fail:
+        - answer: "def make_multiplier(n):\n    return n\n"
+          say: "gibt keine Funktion zurück"
+    javascript:
+      pass:
+        - answer: "function makeMultiplier(n) {\n  return x => x * n;\n}\n"
+      fail:
+        - answer: "function makeMultiplier(n) {\n  return n;\n}\n"
+          say: "gibt keine Funktion zurück"
+  with-tax:
+    pass:
+      - answer: "def with_tax(prices)\n  prices.map { |price| price * 119 / 100 }\nend\n"
+    fail:
+      - answer: "def with_tax(prices)\n  prices.map { |price| price * 19 / 100 }\nend\n"
+        say: "nur die Steuer"
+      - answer: "def with_tax(prices)\n  result = []\n  for price in prices\n    result << price * 119 / 100\n  end\n  result\nend\n"
+        say: "das ist hier abgeschaltet"
+    python:
+      pass:
+        - answer: "def with_tax(prices):\n    return list(map(lambda price: price * 119 // 100, prices))\n"
+        - answer: "def with_tax(prices):\n    return [price * 119 // 100 for price in prices]\n"
+      fail:
+        - answer: "def with_tax(prices):\n    return [price * 19 // 100 for price in prices]\n"
+          say: "nur die Steuer"
+        - answer: "def with_tax(prices):\n    return map(lambda price: price * 119 // 100, prices)\n"
+          say: "map object"
+    javascript:
+      pass:
+        - answer: "function withTax(prices) {\n  return prices.map(price => price * 119 / 100);\n}\n"
+      fail:
+        - answer: "function withTax(prices) {\n  const result = [];\n  prices.forEach(price => {\n    result.push(price * 119 / 100);\n  });\n  return result;\n}\n"
+          say: "das ist hier abgeschaltet"
+  lengths:
+    pass:
+      - answer: "def lengths(words)\n  words.map { |word| word.length }\nend\n"
+      - answer: "def lengths(words)\n  words.map(&:length)\nend\n"
+    fail:
+      - answer: "def lengths(words)\n  words.sum { |word| word.length }\nend\n"
+        say: "Du zählst alle Buchstaben zusammen"
+      - answer: "def lengths(words)\n  words.length.times.map { |i| words[i].length }\nend\n"
+        say: "das ist hier abgeschaltet"
+    python:
+      pass:
+        - answer: "def lengths(words):\n    return list(map(len, words))\n"
+      fail:
+        - answer: "def lengths(words):\n    return sum(map(len, words))\n"
+          say: "Du zählst alle Buchstaben zusammen"
+    javascript:
+      pass:
+        - answer: "function lengths(words) {\n  return words.map(word => word.length);\n}\n"
+      fail:
+        - answer: "function lengths(words) {\n  return words.join('').length;\n}\n"
+          say: "Du zählst alle Buchstaben zusammen"
+  evens:
+    pass:
+      - answer: "def evens(numbers)\n  numbers.select { |x| x.even? }\nend\n"
+      - answer: "def evens(numbers)\n  numbers.filter(&:even?)\nend\n"
+    fail:
+      - answer: "def evens(numbers)\n  numbers.map { |x| x % 2 == 0 }\nend\n"
+        say: "Das ist `map`"
+      - answer: "def evens(numbers)\n  numbers.select { |x| x.even? && x > 0 }\nend\n"
+        say: "0 und -2 sind auch gerade"
+    python:
+      pass:
+        - answer: "def evens(numbers):\n    return list(filter(lambda x: x % 2 == 0, numbers))\n"
+      fail:
+        - answer: "def evens(numbers):\n    return [x % 2 == 0 for x in numbers]\n"
+          say: "Das ist `map`"
+    javascript:
+      pass:
+        - answer: "function evens(numbers) {\n  return numbers.filter(x => x % 2 === 0);\n}\n"
+      fail:
+        - answer: "function evens(numbers) {\n  return numbers.map(x => x % 2 === 0);\n}\n"
+          say: "Das ist `map`"
+  with-letter:
+    pass:
+      - answer: "def with_letter(words, letter)\n  words.select { |word| word.include?(letter) }\nend\n"
+    fail:
+      - answer: "def with_letter(words, letter)\n  words.select { |word| word.downcase.include?(letter.downcase) }\nend\n"
+        say: "Du machst die Wörter klein"
+    python:
+      pass:
+        - answer: "def with_letter(words, letter):\n    return list(filter(lambda word: letter in word, words))\n"
+        - answer: "def with_letter(words, letter):\n    return [word for word in words if letter in word]\n"
+      fail:
+        - answer: "def with_letter(words, letter):\n    return [word for word in words if letter in word.lower()]\n"
+          say: "Du machst die Wörter klein"
+    javascript:
+      pass:
+        - answer: "function withLetter(words, letter) {\n  return words.filter(word => word.includes(letter));\n}\n"
+      fail:
+        - answer: "function withLetter(words, letter) {\n  return words.filter(word => word.toLowerCase().includes(letter));\n}\n"
+          say: "Du machst die Wörter klein"
+  passed:
+    pass:
+      - answer: "def passed(results)\n  results\n    .select { |name, points| points >= 5 }\n    .map { |name, points| name }\nend\n"
+    fail:
+      - answer: "def passed(results)\n  results.select { |name, points| points > 5 }.map(&:first)\nend\n"
+        say: "Mit genau 5 Punkten"
+      - answer: "def passed(results)\n  results.select { |name, points| points >= 5 }\nend\n"
+        say: "Du gibst die ganzen Paare zurück"
+    python:
+      pass:
+        - answer: "def passed(results):\n    good = filter(lambda result: result[1] >= 5, results)\n    return list(map(lambda result: result[0], good))\n"
+        - answer: "def passed(results):\n    return [name for name, points in results if points >= 5]\n"
+      fail:
+        - answer: "def passed(results):\n    return list(filter(lambda result: result[1] >= 5, results))\n"
+          say: "Du gibst die ganzen Paare zurück"
+    javascript:
+      pass:
+        - answer: "function passed(results) {\n  return results\n    .filter(([name, points]) => points >= 5)\n    .map(([name, points]) => name);\n}\n"
+      fail:
+        - answer: "function passed(results) {\n  return results.filter(([name, points]) => points > 5).map(([name]) => name);\n}\n"
+          say: "Mit genau 5 Punkten"
+        - answer: "function passed(results) {\n  const names = [];\n  results.forEach(([name, points]) => {\n    if (points >= 5) names.push(name);\n  });\n  return names;\n}\n"
+          say: "das ist hier abgeschaltet"
+  product:
+    pass:
+      - answer: "def product(numbers)\n  numbers.reduce(1) { |result, x| result * x }\nend\n"
+      - answer: "def product(numbers)\n  numbers.inject(1, :*)\nend\n"
+    fail:
+      - answer: "def product(numbers)\n  numbers.reduce(0) { |result, x| result * x }\nend\n"
+        say: "Du fängst bei 0 an"
+      - answer: "def product(numbers)\n  numbers.reduce { |result, x| result * x }\nend\n"
+        say: "Hat dein `reduce` einen Startwert"
+    python:
+      pass:
+        - answer: "from functools import reduce\n\ndef product(numbers):\n    return reduce(lambda result, x: result * x, numbers, 1)\n"
+      fail:
+        - answer: "from functools import reduce\n\ndef product(numbers):\n    return reduce(lambda result, x: result * x, numbers, 0)\n"
+          say: "Du fängst bei 0 an"
+        - answer: "import math\n\ndef product(numbers):\n    return math.prod(numbers)\n"
+          say: "math.prod"
+    javascript:
+      pass:
+        - answer: "function product(numbers) {\n  return numbers.reduce((result, x) => result * x, 1);\n}\n"
+      fail:
+        - answer: "function product(numbers) {\n  return numbers.reduce((result, x) => result * x);\n}\n"
+          say: "Hat dein `reduce` einen Startwert"
+  longest:
+    pass:
+      - answer: "def longest(words)\n  words.reduce { |best, word| word.length > best.length ? word : best }\nend\n"
+    fail:
+      - answer: "def longest(words)\n  words.reduce { |best, word| word.length >= best.length ? word : best }\nend\n"
+        say: "das spätere Wort"
+      - answer: "def longest(words)\n  words.max_by(&:length)\nend\n"
+        say: "max_by"
+    python:
+      pass:
+        - answer: "from functools import reduce\n\ndef longest(words):\n    return reduce(lambda best, word: word if len(word) > len(best) else best, words)\n"
+      fail:
+        - answer: "from functools import reduce\n\ndef longest(words):\n    return reduce(lambda best, word: word if len(word) >= len(best) else best, words)\n"
+          say: "das spätere Wort"
+        - answer: "def longest(words):\n    return max(words, key=len)\n"
+          say: "max"
+    javascript:
+      pass:
+        - answer: "function longest(words) {\n  return words.reduce((best, word) => word.length > best.length ? word : best);\n}\n"
+      fail:
+        - answer: "function longest(words) {\n  return words.reduce((best, word) => word.length >= best.length ? word : best);\n}\n"
+          say: "das spätere Wort"
+  totals:
+    pass:
+      - answer: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = sums.fetch(name, 0) + amount\n    sums\n  end\nend\n"
+    fail:
+      - answer: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = sums.fetch(name, 0) + amount\n  end\nend\n"
+        say: "Schreib `sums` in die letzte Zeile des Blocks"
+      - answer: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = amount\n    sums\n  end\nend\n"
+        say: "ersetzt dein Code den Betrag"
+    python:
+      pass:
+        - answer: "from functools import reduce\n\ndef add(sums, payment):\n    name, amount = payment\n    sums[name] = sums.get(name, 0) + amount\n    return sums\n\ndef totals(payments):\n    return reduce(add, payments, {})\n"
+        - answer: "from functools import reduce\n\ndef totals(payments):\n    return reduce(lambda sums, p: {**sums, p[0]: sums.get(p[0], 0) + p[1]}, payments, {})\n"
+      fail:
+        - answer: "from functools import reduce\n\ndef add(sums, payment):\n    name, amount = payment\n    sums[name] = sums.get(name, 0) + amount\n\ndef totals(payments):\n    return reduce(add, payments, {})\n"
+          say: "gibt aber nichts zurück"
+    javascript:
+      pass:
+        - answer: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => {\n    sums[name] = (sums[name] || 0) + amount;\n    return sums;\n  }, {});\n}\n"
+      fail:
+        - answer: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => sums[name] = (sums[name] || 0) + amount, {});\n}\n"
+          say: "geschweiften Klammern"
+        - answer: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => {\n    sums[name] = amount;\n    return sums;\n  }, {});\n}\n"
+          say: "ersetzt dein Code den Betrag"
+  category-total:
+    pass:
+      - answer: "def category_total(items, category)\n  items\n    .select { |item| item['category'] == category }\n    .map { |item| item['price'] * item['count'] }\n    .sum\nend\n"
+    fail:
+      - answer: "def category_total(items, category)\n  items.select { |item| item['category'] == category }.sum { |item| item['price'] }\nend\n"
+        say: "Du zählst jeden Preis einmal"
+    python:
+      pass:
+        - answer: "def category_total(items, category):\n    chosen = filter(lambda item: item['category'] == category, items)\n    prices = map(lambda item: item['price'] * item['count'], chosen)\n    return sum(prices)\n"
+      fail:
+        - answer: "def category_total(items, category):\n    return sum(item['price'] for item in items if item['category'] == category)\n"
+          say: "Du zählst jeden Preis einmal"
+    javascript:
+      pass:
+        - answer: "function categoryTotal(items, category) {\n  return items\n    .filter(item => item.category === category)\n    .map(item => item.price * item.count)\n    .reduce((sum, x) => sum + x, 0);\n}\n"
+      fail:
+        - answer: "function categoryTotal(items, category) {\n  return items\n    .filter(item => item.category === category)\n    .map(item => item.price * item.count)\n    .reduce((sum, x) => sum + x);\n}\n"
+          say: "Hat dein `reduce` einen Startwert"
+  rewrite-loop:
+    pass:
+      - answer: "def odd_square_sum(numbers)\n  numbers\n    .select { |n| n.odd? }\n    .map { |n| n * n }\n    .sum\nend\n"
+    fail:
+      - answer: "def odd_square_sum(numbers)\n  total = 0\n  numbers.each do |n|\n    total += n * n if n.odd?\n  end\n  total\nend\n"
+        say: "das ist hier abgeschaltet"
+      - answer: "def odd_square_sum(numbers)\n  numbers.select { |n| n > 0 && n.odd? }.map { |n| n * n }.sum\nend\n"
+        say: "-3 ist auch ungerade"
+    python:
+      pass:
+        - answer: "def odd_square_sum(numbers):\n    odd = filter(lambda n: n % 2 == 1, numbers)\n    squares = map(lambda n: n * n, odd)\n    return sum(squares)\n"
+        - answer: "def odd_square_sum(numbers):\n    return sum(n * n for n in numbers if n % 2 == 1)\n"
+      fail:
+        - answer: "def odd_square_sum(numbers):\n    return sum(map(lambda n: n * n, filter(lambda n: n % 2 == 1 and n > 0, numbers)))\n"
+          say: "-3 ist auch ungerade"
+    javascript:
+      pass:
+        - answer: "function oddSquareSum(numbers) {\n  return numbers\n    .filter(n => n % 2 !== 0)\n    .map(n => n * n)\n    .reduce((sum, x) => sum + x, 0);\n}\n"
+      fail:
+        - answer: "function oddSquareSum(numbers) {\n  return numbers.filter(n => n % 2 === 1).map(n => n * n).reduce((sum, x) => sum + x, 0);\n}\n"
+          say: "`-3 % 2` gleich `-1`"
+        - answer: "function oddSquareSum(numbers) {\n  let total = 0;\n  numbers.forEach(n => {\n    if (n % 2 !== 0) {\n      total += n * n;\n    }\n  });\n  return total;\n}\n"
+          say: "das ist hier abgeschaltet"
+  first-overdraft:
+    pass:
+      - answer: "def first_overdraft(balance, bookings)\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    return i if balance < 0\n  end\n  -1\nend\n"
+      - answer: "def first_overdraft(balance, bookings)\n  bookings.each_with_index.reduce([balance, -1]) do |(total, found), (amount, i)|\n    total += amount\n    found = i if found == -1 && total < 0\n    [total, found]\n  end[1]\nend\n"
+    fail:
+      - answer: "def first_overdraft(balance, bookings)\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    return i if balance <= 0\n  end\n  -1\nend\n"
+        say: "Bei genau 0"
+      - answer: "def first_overdraft(balance, bookings)\n  found = -1\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    found = i if balance < 0\n  end\n  found\nend\n"
+        say: "das letzte Mal"
+    python:
+      pass:
+        - answer: "def first_overdraft(balance, bookings):\n    for i, amount in enumerate(bookings):\n        balance += amount\n        if balance < 0:\n            return i\n    return -1\n"
+        - answer: "from functools import reduce\n\ndef first_overdraft(balance, bookings):\n    def step(state, pair):\n        total, found = state\n        i, amount = pair\n        total += amount\n        if found == -1 and total < 0:\n            found = i\n        return (total, found)\n    return reduce(step, enumerate(bookings), (balance, -1))[1]\n"
+      fail:
+        - answer: "def first_overdraft(balance, bookings):\n    found = -1\n    for i, amount in enumerate(bookings):\n        balance += amount\n        if balance < 0:\n            found = i\n    return found\n"
+          say: "das letzte Mal"
+    javascript:
+      pass:
+        - answer: "function firstOverdraft(balance, bookings) {\n  for (let i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance < 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n"
+        - answer: "function firstOverdraft(balance, bookings) {\n  return bookings.reduce(([total, found], amount, i) => {\n    total += amount;\n    if (found === -1 && total < 0) {\n      found = i;\n    }\n    return [total, found];\n  }, [balance, -1])[1];\n}\n"
+      fail:
+        - answer: "function firstOverdraft(balance, bookings) {\n  for (let i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance <= 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n"
+          say: "Bei genau 0"
+  compose:
+    pass:
+      - answer: "def compose(f, g)\n  ->(x) { f.call(g.call(x)) }\nend\n"
+    fail:
+      - answer: "def compose(f, g)\n  ->(x) { g.call(f.call(x)) }\nend\n"
+        say: "erst `g`, dann `f`"
+    python:
+      pass:
+        - answer: "def compose(f, g):\n    return lambda x: f(g(x))\n"
+      fail:
+        - answer: "def compose(f, g):\n    return lambda x: g(f(x))\n"
+          say: "erst `g`, dann `f`"
+    javascript:
+      pass:
+        - answer: "function compose(f, g) {\n  return x => f(g(x));\n}\n"
+      fail:
+        - answer: "function compose(f, g) {\n  return x => g(f(x));\n}\n"
+          say: "erst `g`, dann `f`"
+  my-map:
+    pass:
+      - answer: "def my_map(items, f)\n  result = []\n  items.each do |item|\n    result << f.call(item)\n  end\n  result\nend\n"
+      - answer: "def my_map(items, f)\n  return [] if items.empty?\n  [f.call(items[0])] + my_map(items[1..], f)\nend\n"
+    fail:
+      - answer: "def my_map(items, f)\n  items.each_index { |i| items[i] = f.call(items[i]) }\n  items\nend\n"
+        say: "Dein Code ändert die Liste"
+      - answer: "def my_map(items, f)\n  items.map { |item| f.call(item) }\nend\n"
+        say: "Array#map"
+    python:
+      pass:
+        - answer: "def my_map(items, f):\n    result = []\n    for item in items:\n        result.append(f(item))\n    return result\n"
+        - answer: "def my_map(items, f):\n    if not items:\n        return []\n    return [f(items[0])] + my_map(items[1:], f)\n"
+      fail:
+        - answer: "def my_map(items, f):\n    return list(map(f, items))\n"
+          say: "map"
+    javascript:
+      pass:
+        - answer: "function myMap(items, f) {\n  const result = [];\n  for (const item of items) {\n    result.push(f(item));\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function myMap(items, f) {\n  return items.map(f);\n}\n"
+          say: "Array.prototype.map"

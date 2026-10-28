@@ -498,6 +498,42 @@ menger:
       - url: https://en.wikipedia.org/wiki/Menger_sponge
         quote: "it has a topological dimension of 1 and is accordingly identified as a curve. … Menger showed, in the 1926 construction, that the sponge is a universal curve"
 
+church:
+  - text: "Alonzo Church (1903–1995), amerikanischer Mathematiker und Logiker, von 1929 bis 1967 an der Universität Princeton."
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "Born 14 June 1903 Washington, D.C., USA … Died 11 August 1995 Hudson, Ohio, USA … Alonzo Church made important contributions to mathematical logic and theoretical computer science. … He returned to the United States becoming Assistant Professor of Mathematics at Princeton in 1929. … In 1967 he retired from Princeton and went to the University of California at Los Angeles"
+  - text: "In den 1930er Jahren erfand er den Lambda-Kalkül, eine Schreibweise für Funktionen, die keinen Namen brauchen"
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "He created the λ-calculus in the 1930 's which today is an invaluable tool for computer scientists."
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "Anonymous functions originate in the work of Alonzo Church in his invention of the lambda calculus, in which all functions are anonymous, in 1936 … The Lambda calculus ... was introduced by Alonzo Church in the 1930s as a precise notation for a theory of anonymous functions"
+  - text: "Statt f(x) = x + 3 schreibt man λx. x + 3."
+    sources:
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "the notation of function abstraction in lambda calculus, where the usual function f(x) = M would be written (λx. M)"
+  - text: "Darum heißen Funktionen ohne Namen bis heute Lambdas"
+    sources:
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "In several programming languages, anonymous functions are introduced using the keyword lambda, and anonymous functions are often referred to as lambdas or lambda abstractions. … The names \"lambda abstraction\", \"lambda function\", and \"lambda expression\" refer to the notation of function abstraction in lambda calculus"
+  - text: "und in Python und Ruby gibt es dafür das Wort lambda"
+    none: Workspace
+  - text: "John McCarthy übernahm Churchs Schreibweise für Lisp, und von dort kam sie in viele andere Sprachen"
+    sources:
+      - url: http://www-formal.stanford.edu/jmc/recursive/node2.html
+        quote: "This distinction and a notation for describing it, from which we deviate trivially, is given by Church [3]. … This is accomplished by Church's λ-notation."
+      - url: https://en.wikipedia.org/wiki/Anonymous_function
+        quote: "Anonymous functions have been a feature of programming languages since Lisp in 1958, and a growing number of modern programming languages support anonymous functions."
+  - text: "Python bekam lambda, map, filter und reduce 1994"
+    sources:
+      - url: https://python-history.blogspot.com/2009/04/origins-of-pythons-functional-features.html
+        quote: "Thus, in January, 1994, the map(), filter(), and reduce() functions were added to the standard library. In addition, the lambda operator was introduced for creating anonymous functions (as expressions) in a more straightforward syntax."
+  - text: "Bei Church in Princeton machten Alan Turing und Stephen Kleene ihren Doktor."
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Church/
+        quote: "Alan Turing, who had been thinking about the notion of effective calculability, came as a visiting graduate student in 1936 and stayed to complete his Ph.D. under Church. … Church had 31 doctoral students including Foster, Turing, Kleene, Kemeny, Boone, and Smullyan."
+
 neumann:
   - text: John von Neumann (1903–1957), Mathematiker aus Budapest
     sources:
@@ -3712,3 +3748,37 @@ hanrahan:
         quote: "Hanrahan received three Academy Awards for his work in rendering and computer graphics research."
       - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
         quote: "Hanrahan shared the 2019 ACM A.M. Turing Award with Catmull for their pioneering efforts on computer-generated imagery."
+
+metcalfe:
+  - text: Robert Metcalfe (geboren 1946), amerikanischer Ingenieur.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Robert \"Bob\" Melancton Metcalfe (born April 7, 1946) is an American engineer and entrepreneur"
+  - text: Dass dein Workspace hinter link/ether eine MAC-Adresse hat
+    none: Workspace
+  - text: geht auf ein Memo zurück, das er am 22. Mai 1973 bei Xerox PARC in Kalifornien verschickte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Metcalfe was working at PARC in 1973 when he and David Boggs invented Ethernet … He later recalled that Ethernet was born on May 22, 1973, the day he circulated a memo titled \"Alto Ethernet\" which contained a rough schematic of how it would work. \"That is the first time Ethernet appears as a word"
+      - url: https://en.wikipedia.org/wiki/Ethernet
+        quote: "In a 12-page memo written on May 22, 1973, Metcalfe named the concept \"The Ether Network.\""
+  - text: Er baute es zusammen mit David Boggs.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "Metcalfe was working at PARC in 1973 when he and David Boggs invented Ethernet"
+  - text: Alle Rechner hingen an einem gemeinsamen Koaxialkabel, jeder bekam jedes Paket, und jeder nahm nur die Pakete mit seiner eigenen Adresse.
+    sources:
+      - url: https://www.cs.cornell.edu/courses/cs414/2004fa/ethernet.pdf
+        quote: "An Ethernet's shared communication facility, its Ether, is a passive broadcast medium with no central control. … Switching of packets to their destinations on the Ether is distributed among the receiving stations using packet address recognition. … an operating Ethernet of 100 nodes along a kilometer of coaxial cable."
+  - text: Den Namen nahm er vom Äther, durch den sich nach einer alten Vorstellung der Physik das Licht ausbreiten sollte.
+    sources:
+      - url: https://www.cs.cornell.edu/courses/cs414/2004fa/ethernet.pdf
+        quote: "Ethernet is named for the historical luminiferous ether through which electromagnetic radiations were once alleged to propagate."
+  - text: 1979 gründete er mit anderen die Firma 3Com, die Geräte für Netzwerke baute
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "In 1979, Metcalfe departed PARC and co-founded 3Com, a manufacturer of computer networking equipment"
+  - text: 2023 bekam er für Ethernet den Turing Award, den wichtigsten Preis der Informatik
+    sources:
+      - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
+        quote: "In 2023, he received the Turing Award, the highest distinction in computer science. … In March 2023, Metcalfe was awarded the 2022 Association for Computing Machinery's Turing Award for his contributions to the invention of Ethernet technology."
