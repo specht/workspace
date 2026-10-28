@@ -6,12 +6,12 @@ Ein Einstieg ins Programmieren mit Bildern: Lernende steuern eine Schildkröte, 
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Eigene Befehle«.<ul>
 <li>Die Schildkröte (1 Vorhersage, 3 Aufgaben): eine Treppe, ein Quadrat, die Vorhersage, um wie viel sich die Schildkröte an der Ecke eines Dreiecks dreht, das Dreieck.</li>
 <li>Wiederholen (2 Aufgaben): das Quadrat mit einer Schleife in wenigen Zeilen, ein Sechseck.</li>
-<li>Eigene Befehle (3 Aufgaben): <code>square(size)</code>, Vielecke mit beliebig vielen Ecken, eine Rosette aus Quadraten.</li>
+<li>Eigene Befehle (3 Aufgaben): <code>square(size)</code>, Vielecke mit beliebig vielen Ecken, eine Blume aus Quadraten.</li>
 <li>Stift und Farbe (2 Aufgaben): eine gestrichelte Linie, drei bunte Quadrate.</li>
 <li>Spiralen (1 Vorhersage, 1 Aufgabe): eine eckige Spirale mit einer Variablen, die Vorhersage, was 91 statt 90 Grad tun.</li>
 <li>Sterne (1 Aufgabe) und die Geschichte der Schildkröte (Logo, »Mindstorms«).</li>
 <li>Kreise und Federn (2 Aufgaben): <code>circle(radius)</code> als Vieleck mit 36 Ecken über den Umfang 2 · π · r, eine Feder aus 30 Kreisen.</li>
-<li>Eigene Bilder (3 Aufgaben ohne Vorlage, verteilt über die Seite): ein Muster in höchstens sechs Zeilen, eine Rosette, ein Bild mit mindestens zwei Farben; dazu ein eigener Baum bei den Extras.</li>
+<li>Eigene Bilder (3 Aufgaben ohne Vorlage, verteilt über die Seite): ein Muster in höchstens sechs Zeilen, eine Blume, ein Bild mit mindestens zwei Farben; dazu ein eigener Baum bei den Extras.</li>
 <li>Bäume und Kurven, Extras (10): Sterne mit beliebig vielen Zacken, ein rekursiver Baum, ein schöner, ein schiefer und ein hängender Baum, ein eigener Baum, ein Farnblatt, das Sierpiński-Dreieck, die Koch-Kurve, die Hilbert-Kurve. Wie eine rekursive Figur aufgebaut ist, zeigt vor jeder ein Bild, das man Stufe für Stufe durchklickt; die Teile aus der Stufe davor sind farbig.</li>
 </ul></td></tr>
 <tr><th>Technik</th><td>Das Programm läuft im Browser, nicht im Workspace: Ruby und Python als WebAssembly, beim ersten Lauf einmal geladen (Python etwa 6 MB, Ruby etwa 5 MB, danach aus dem Cache des Browsers). Die Schildkröte zeichnet, während das Programm läuft; die Geschwindigkeit lässt sich auch mitten im Lauf ändern, »Stopp« beendet auch eine Endlosschleife.</td></tr>

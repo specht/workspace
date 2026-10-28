@@ -21,7 +21,7 @@ Eine Schildkröte läuft über ein Blatt Papier und zieht mit einem Stift eine
 Linie hinter sich her. Du sagst ihr, was sie tun soll: vorwärts gehen, sich
 nach links drehen, sich nach rechts drehen. Aus ein paar Befehlen wird ein
 Quadrat, aus einer Schleife ein Stern, aus einer eigenen Funktion eine
-Rosette und am Ende ein Bild, das du dir selbst ausdenkst.
+Blume und am Ende ein Bild, das du dir selbst ausdenkst.
 </p>
 
 ## Die Schildkröte
@@ -227,9 +227,9 @@ _task(square-function)
 
 _task(polygon)
 
-_task(rosette)
+_task(flower)
 
-_task(own-rosette)
+_task(own-flower)
 
 ## Stift und Farbe
 

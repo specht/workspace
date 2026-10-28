@@ -131,7 +131,7 @@ examples:
       fail:
         - answer: "function polygon(corners, side) {\n  for (let i = 0; i < corners; i++) {\n    forward(side);\n    left(90);\n  }\n}\n"
           say: "polygon(5, 100)"
-  rosette:
+  flower:
     pass:
       - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\n12.times do\n  square(100)\n  left 30\nend\n"
     fail:
@@ -419,7 +419,7 @@ examples:
       fail:
         - answer: "forward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\n"
           say: "höchstens"
-  own-rosette:
+  own-flower:
     pass:
       - answer: "def polygon(corners, side)\n  corners.times do\n    forward side\n    left 360.0 / corners\n  end\nend\n\n18.times do\n  polygon(6, 70)\n  left 20\nend\n"
     fail:

@@ -617,8 +617,8 @@ tasks:
         polygon(5, 100);
         ```
 
-  - id: rosette
-    title: "Eine Rosette"
+  - id: flower
+    title: "Eine Blume aus Quadraten"
     level: 2
     prompt: |
       Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
@@ -704,11 +704,11 @@ tasks:
         }
         ```
 
-  - id: own-rosette
-    title: "Deine Rosette"
+  - id: own-flower
+    title: "Deine Blume"
     level: 2
     prompt: |
-      Bau deine eigene Rosette: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
+      Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
     starter: |
       def polygon(corners, side)
         # dein Vieleck von eben
@@ -719,8 +719,8 @@ tasks:
       free: { min_lines: 40 }
       commands: [forward, back, left, right]
     hint:
-      - "Wie bei der Rosette aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
-      - "Damit die Rosette einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+      - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+      - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
     solution: |
       ```ruby
       def polygon(corners, side)
@@ -737,7 +737,7 @@ tasks:
       ```
     python:
       prompt: |
-        Bau deine eigene Rosette: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
       starter: |
         def polygon(corners, side):
             # dein Vieleck von eben
@@ -748,8 +748,8 @@ tasks:
         free: { min_lines: 40 }
         commands: [forward, back, left, right]
       hint:
-        - "Wie bei der Rosette aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
-        - "Damit die Rosette einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
       solution: |
         ```python
         def polygon(corners, side):
@@ -763,7 +763,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Bau deine eigene Rosette: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt. Mindestens 40 Linien.
       starter: |
         function polygon(corners, side) {
           // dein Vieleck von eben
@@ -774,8 +774,8 @@ tasks:
         free: { min_lines: 40 }
         commands: [forward, back, left, right]
       hint:
-        - "Wie bei der Rosette aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
-        - "Damit die Rosette einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
       solution: |
         ```javascript
         function polygon(corners, side) {
@@ -1338,7 +1338,7 @@ tasks:
     title: "Dein eigenes Bild"
     level: 2
     prompt: |
-      Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Rosetten, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+      Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
     starter: |
       # Dein Bild
     check:
@@ -1346,7 +1346,7 @@ tasks:
       language: "ruby"
       free: { min_lines: 20, min_colors: 2 }
     hint:
-      - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Rosette aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+      - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
       - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
     solution: |
       ```ruby
@@ -1368,7 +1368,7 @@ tasks:
       ```
     python:
       prompt: |
-        Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Rosetten, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+        Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
       starter: |
         # Dein Bild
       check:
@@ -1376,7 +1376,7 @@ tasks:
         language: "python"
         free: { min_lines: 20, min_colors: 2 }
       hint:
-        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Rosette aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
         - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
       solution: |
         ```python
@@ -1395,7 +1395,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Rosetten, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+        Zeichne ein eigenes Bild, mit mindestens 20 Linien und mindestens zwei Farben: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
       starter: |
         // Dein Bild
       check:
@@ -1403,7 +1403,7 @@ tasks:
         language: "javascript"
         free: { min_lines: 20, min_colors: 2 }
       hint:
-        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Rosette aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
         - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
       solution: |
         ```javascript

@@ -264,7 +264,7 @@ sheet of paper that draws a line behind it (`turtle`, in development since
   a triangle's corner (120, not 60) and 91 instead of 90 degrees.
 - **Not only tracing** (the maintainer): free cards with a goal instead of
   a picture (`free:`, also with `max_lines`, which then asks for a loop):
-  one's own pattern, rosette, tree and picture.
+  one's own pattern, flower, tree and picture.
 - **The picture asked for is a thin pencil line** under the ink (the
   maintainer found it too dark and thick); it stays visible after drawing.
 - **Recursion is shown, not dictated** (the maintainer, at a Hilbert prompt
