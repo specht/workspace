@@ -15,6 +15,44 @@
 # A claim whose text no longer occurs in the box is listed on the page as
 # missing: the box was changed after it was checked.
 
+leibniz:
+  - text: (1646–1716), deutscher Philosoph und Mathematiker, ab 1676 Bibliothekar und Hofrat in Hannover
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Leibniz/
+        quote: "Born: 1 July 1646, Leipzig, Saxony (now Germany). Died: 14 November 1716, Hannover, Hanover (now Germany) … accepted a position from the Duke of Hanover, Johann Friedrich, … as librarian and Court Councillor … The rest of Leibniz's life, from December 1676 until his death, was spent at Hanover"
+  - text: 1673 zeigte er der Royal Society in London das hölzerne Modell einer Rechenmaschine
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stepped_reckoner
+        quote: "He presented a wooden model to the Royal Society of London on 1 February 1673 and received much encouragement."
+  - text: Sie war die erste, die alle vier Grundrechenarten konnte, und rechnete noch mit Zehnerziffern
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stepped_reckoner
+        quote: "It was the first calculator that could perform all four basic arithmetic operations."
+  - text: Die einzige erhaltene steht heute in der Landesbibliothek in Hannover
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stepped_reckoner
+        quote: "today only one survives in the National Library of Lower Saxony … in Hanover, Germany"
+  - text: 1679 schrieb er zum ersten Mal auf, wie man nur mit 0 und 1 zählt und rechnet
+    sources:
+      - url: https://en.wikipedia.org/wiki/Binary_number#Leibniz
+        quote: "His first known work on binary, \"On the Binary Progression\", in 1679, … algorithms for performing basic arithmetic operations such as addition, subtraction, multiplication, and division using binary numbers"
+  - text: gedruckt erschien es 1703 als Explication de l'Arithmétique Binaire
+    sources:
+      - url: https://en.wikipedia.org/wiki/Binary_number#Leibniz
+        quote: "His most well known work appears in his article Explication de l'Arithmétique Binaire (published in 1703)."
+  - text: Darin deutet er auch die Zeichen des I Ging, Figuren aus sechs ganzen und gebrochenen Strichen, als Zahlen im Zweiersystem
+    sources:
+      - url: https://fr.wikisource.org/wiki/Leibniz-en.francais-Gerhardt.Math.1a7.djvu/Num%C3%A9ration.binaire
+        quote: "Explication de l'arithmétique binaire, qui se sert des seuls caractères 0 et 1, avec des remarques sur son utilité, et sur ce qu'elle donne le sens des anciennes figures chinoises de Fohy"
+  - text: Er hatte seine Art zu zählen dem Jesuiten Joachim Bouvet in Peking geschickt, und Bouvet erkannte darin diese alten chinesischen Figuren wieder
+    sources:
+      - url: https://fr.wikisource.org/wiki/Leibniz-en.francais-Gerhardt.Math.1a7.djvu/Num%C3%A9ration.binaire
+        quote: "Il n’y a guères plus de deux ans que j’envoyai au R. P. Bouvet, Jésuite Français célèbre, qui demeure à Pékin, ma manière de compter par 0 et 1, et il n’en fallut pas davantage"
+      - url: https://en.wikipedia.org/wiki/Binary_number#Leibniz
+        quote: "While corresponding with the Jesuit priest Joachim Bouvet in 1700 … Bouvet demonstrated in his 1701 letters that the I Ching was an independent, parallel invention of binary notation."
+  - text: Wie in seinen Beispielen addierst du in den Katas zu Bits Stelle für Stelle mit Übertrag
+    none: Workspace
+
 snellius:
   - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
     sources:

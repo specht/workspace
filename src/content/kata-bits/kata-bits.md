@@ -132,6 +132,8 @@ Der letzte Übertrag hat keine Stelle mehr über sich: Er wird eine neue Stelle
 vorn, und das Ergebnis ist ein Bit länger als die beiden Zahlen.
 <!-- /after -->
 
+_person(leibniz)
+
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>Explication de l'Arithmétique Binaire</strong>, Gottfried Wilhelm Leibniz, 1703. Leibniz schreibt die Zahlen nur mit 0 und 1 und rechnet damit, an Beispielen für Addieren, Subtrahieren, Multiplizieren und Dividieren. Auswendig lernen müsse man dafür nichts, nicht einmal, dass 6 und 7 zusammen 13 sind. Auf Französisch, auf <a href='https://fr.wikisource.org/wiki/Leibniz-en.francais-Gerhardt.Math.1a7.djvu/Num%C3%A9ration.binaire'>Wikisource</a>.</p>
