@@ -1,5 +1,5 @@
 <div class='meta'>
-image: ../reference/bif/story-image.webp:30:50
+image: ../reference/bif/story-teaser.webp
 image_alt: "Der BIF-Editor mit den Seiten einer Geschichte als Graph, daneben die Vorschau mit einem Schlüssel an einer Wand"
 kind: projekt
 duration: 3 Doppelstunden

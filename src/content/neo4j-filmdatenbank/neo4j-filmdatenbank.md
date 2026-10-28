@@ -1,5 +1,5 @@
 <div class='meta'>
-image: neo4j-browser-path.webp:0:100
+image: teaser.webp
 image_alt: "Der Neo4j Browser mit einer Cypher-Abfrage und dem Ergebnis als Graph aus Personen und Filmen"
 kind: projekt
 language: Cypher
@@ -478,6 +478,17 @@ variants: dark
 -->
 
 <img class='full' src='neo4j-browser-path.webp' alt='Neo4j Browser: der Weg von Dwayne Johnson über The Other Guys, Samuel L. Jackson und Coming to America zu Eddie Murphy.'>
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: derselbe Weg in 16:9, ebenso hoch, nur
+# breiter, so dass die Karte nichts abschneidet
+tab: preview
+viewport: 1244x700
+move-mouse: selector:[data-testid=main-editor]
+sleep: 3
+variants: dark
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Neo4j Browser mit der Abfrage nach dem kürzesten Weg und dem Ergebnis als Graph: Dwayne Johnson, The Other Guys, Samuel L. Jackson, Coming to America, Eddie Murphy.'>
 
 <div class='hint task'>
 Such dir zwei Personen aus, die nichts miteinander zu tun zu haben scheinen. Über welche Filme und welche anderen Menschen sind sie verbunden? Findet Neo4j keinen Weg, gibt es in unseren Daten keinen mit höchstens acht Schritten.

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: totp-app.webp:60:50
+image: teaser.webp
 image_alt: "VS Code mit einem QR-Code und im Terminal einem Programm, das sechsstellige Codes wie eine Authenticator-App erzeugt"
 kind: projekt
 language: Ruby / Python
@@ -242,6 +242,17 @@ terminal-expect-no-text: Error
 -->
 
 <img class='full' src='totp-app.webp' alt='VS Code mit einem QR-Code in qr.png; im Terminal darunter zeigt totp.rb den Schlüssel in Base32 und den aktuellen Code mit den Sekunden, die er noch gilt.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
+# die Karte nichts abschneidet
+viewport: 1029x579
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='VS Code mit einem QR-Code in qr.png; im Terminal darunter zeigt totp.rb den aktuellen Code.'>
+
+<!-- /tutorial-scope -->
 <!-- /language -->
 <!-- language: python -->
 Den QR-Code macht eine Bibliothek:

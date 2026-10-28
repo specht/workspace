@@ -1,5 +1,5 @@
 <div class='meta'>
-image: tag.webp
+image: teaser.webp
 image_alt: "Eine Blockwelt mit Bäumen auf grüner Wiese, unten eine Leiste mit Blöcken zum Bauen"
 kind: projekt
 language: raylib / C
@@ -1945,6 +1945,22 @@ check-task: texturen
 check-task: kacheln
 -->
 <img class='full fit-width' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: derselbe Blick, das Fenster etwas
+# schmaler, so dass das Bild des Programms 16:9 ist und die Karte nichts
+# abschneidet (das Programm passt sich der Größe des Fensters an)
+tab: preview
+viewport: 949x541
+zoom: 0.5555556
+hook: settle
+variants: dark
+crop-element: #canvas
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Bäumen und Fackeln im Gras, unten die Leiste mit Blöcken zum Bauen.'>
+
+<!-- /tutorial-scope -->
 
 _task(texturen)
 

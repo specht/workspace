@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:50:40
+image: teaser.webp
 icon: /images/pip/icon-bello.png
 kind: uebung
 duration: 3 Doppelstunden
@@ -26,7 +26,9 @@ tab: preview
 viewport: 640x1000
 hook: solve trail
 sleep: 2
-crop-element: .task-card[data-task="pip-2/trail"]:visible .pip-map
+# 16:9 aus der 4:3-Karte: die Höhle mit dem Fels darum, ohne die runden Ecken
+hook: band trail 0.475
+crop-element: #teaser-band
 variants: dark
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Die Karte einer Höhle von oben: Eine Spur aus Pfotenabdrücken läuft in Kurven durch die Höhle, an zwei Stellen durch eine Pfütze, und am Ende steht Bello. Pip ist der Spur schon zur Hälfte gefolgt.'>

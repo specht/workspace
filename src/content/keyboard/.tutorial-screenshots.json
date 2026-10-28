@@ -13,6 +13,13 @@
       "state_hash": "3c5cc8c5239f57af4fa5489d8b97e56d131d2bc2a7f5f04e5ffb396c09ff8e5a",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
+      "output_sha256": "a620b5d13c0f3522712c56a183837d496d2fe94ee523f3eefb58251cb63cc2bb",
+      "state_hash": "d495fea743913ab4af1f4d22551fa04518b3aef779c7aeb21b7ac7c08805a99b",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
     }
   },
   "version": 1

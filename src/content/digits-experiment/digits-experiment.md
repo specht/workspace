@@ -1,5 +1,5 @@
 <div class='meta'>
-image: interactive-3.webp:0:50
+image: teaser.webp
 kind: labor
 language: Python
 template: https://github.com/specht/digits-experiment.git
@@ -273,6 +273,10 @@ Falls du ein noch besseres Modell haben möchtest, kannst du die Anzahl der Epoc
 In den bisherigen Beispielen war es so, dass wir nur weiß und blau gesehen haben, wobei blau für »positiv« steht. Wenn du statt `ReLU` eine Aktivierungsfunktion wählst, die auch negative Werte zurückgeben kann (wie z. B. `tanh`), dann wirst du auch orangefarbene Neuronen bekommen (für negative Werte):
 
 <img class='full' src='interactive-3.webp' alt='Das Netz erkennt eine gezeichnete 7; blaue und orange Verbindungen kennzeichnen positive und negative Gewichte.'>
+
+<!-- Bild für die Karte der Aktivität: dasselbe Bild in 16:9, oben und unten
+     um seinen weißen Grund erweitert, so dass die Karte nichts abschneidet -->
+<img class='teaser' hidden src='teaser.webp' alt='Das Netz erkennt eine gezeichnete 7; blaue und orange Verbindungen kennzeichnen positive und negative Gewichte.'>
 
 
 ## Zusammenfassung

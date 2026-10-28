@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:contain
+image: teaser.webp
 image_alt: "Ein Volladdierer im Editor der Logik-Werkstatt: zwei Bausteine HA und ein ODER, die Schalter a und c_in auf 1, die Lampe c_out leuchtet; Leitungen mit einer 1 sind gelb, die mit einer 0 grau."
 kind: labor
 duration: 2 Doppelstunden

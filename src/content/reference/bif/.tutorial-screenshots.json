@@ -25,6 +25,15 @@
       },
       "workspace_look": "4.140.0-ls368"
     },
+    "story-teaser.webp": {
+      "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
+      "output_sha256": "82fdcf98ed0a5f2067191ff60668673e46e73707b4bbe04ed27e1a262ef59663",
+      "state_hash": "efc987bd1c83b29797246d069c837873cb980e47a40b15efcc64daa2689e8c71",
+      "variants": {
+        "story-teaser-dark.webp": "b679350bded92feead667f96d1a3d7f5db3fa6900eb468f6a958c01383fef64b"
+      },
+      "workspace_look": "4.140.0-ls368"
+    },
     "theme-default.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
       "output_sha256": "4bdb9a8332e03711ac3d9be70540c2188cd36b0177a7e8ac234bac813c90b2a9",

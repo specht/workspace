@@ -42,7 +42,9 @@ export default {
 
         // hook: paint-teaser: the scene of »paint« with more going on, as if
         // the class had been at it for a while: a rainbow, clouds, flowers.
-        // For the picture on the activity's card.
+        // For the picture on the activity's card, which shows rows 2 to 37
+        // of the 40 (hook: band): the clouds start at row 3, the flowers
+        // end at row 37.
         async 'paint-teaser'({ page }) {
             await page.evaluate(() => new Promise((resolve, reject) => {
                 const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
@@ -75,8 +77,8 @@ export default {
                 rect(39, 24, 40, 32, 15);                                        // tree
                 for (let y = -5; y <= 5; y++) for (let x = -5; x <= 5; x++)
                     if (x * x + y * y <= 26) dot(40 + x, 19 + y, 6);
-                [[4, 34, 2], [8, 37, 4], [30, 35, 12], [34, 38, 1], [47, 34, 2],  // flowers
-                 [52, 37, 4], [58, 35, 12], [61, 38, 1], [2, 38, 4], [44, 37, 12]].forEach(([x, y, color]) => {
+                [[4, 32, 2], [8, 35, 4], [30, 33, 12], [34, 36, 1], [47, 32, 2],  // flowers
+                 [52, 35, 4], [58, 33, 12], [61, 36, 1], [2, 36, 4], [44, 35, 12]].forEach(([x, y, color]) => {
                     dot(x, y, color); dot(x, y + 1, 7);
                 });
                 ws.onopen = () => {
@@ -89,6 +91,21 @@ export default {
                 ws.onerror = () => reject(new Error('hook: paint-teaser: no WebSocket connection'));
             }));
             await page.waitForTimeout(500);
+        },
+
+        // hook: band: an empty box over rows 2 to 37 of the wall, 64 by 36
+        // pixels, 16:9, for crop-element: #teaser-band. The wall is 64 by
+        // 40 (8:5), and its frame has rounded corners; the band leaves both
+        // out, so the card shows the picture and nothing around it.
+        async band({ page }) {
+            await page.evaluate(() => {
+                document.getElementById('teaser-band')?.remove();
+                const band = document.createElement('div');
+                band.id = 'teaser-band';
+                band.style.cssText = 'position: absolute; left: 0; right: 0; top: calc(100% * 2 / 40); '
+                    + 'height: calc(100% * 36 / 40); pointer-events: none;';
+                document.getElementById('grid').appendChild(band);
+            });
         },
     },
 };

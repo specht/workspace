@@ -520,6 +520,18 @@ variants: dark
 <img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
 <!-- /part -->
 
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität »Interaktive Geschichten mit BIF«: dieselbe
+# Ansicht in 16:9, so dass die Karte nichts abschneidet; der Graph neu eingepasst
+tab: preview
+viewport: 1029x579
+click: Fit graph
+move-mouse: No problems
+sleep: 1.5
+variants: dark
+-->
+<img class='teaser' hidden src='story-teaser.webp' alt='Links der Story-Graph mit Flur, Treppenhaus und Ende in der Gruppe Schule, rechts die Büroseite der Geschichte mit dem Bild eines Schlüssels an der Wand.'>
+
 <!-- part: medien -->
 <!-- short: `<audio controls src="…">` und `<video controls>` wie in HTML, die Dateien im Geschichtenordner. -->
 ### Audio und Video

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:0:50
+image: teaser.webp
 image_alt: "Ein Terminal, in dem nc eine HTTP-Anfrage an info.cern.ch schickt, darunter die Antwort des Servers"
 kind: labor
 duration: 3 Doppelstunden
@@ -963,9 +963,10 @@ In [Ein eigener Webserver](/webserver) schreibst du die andere Seite selbst: ein
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: HTTP von Hand, groß; 700 hoch, weil
 # VS Code 1.140 dem Terminal weniger Platz lässt und sonst der Befehl oben
-# herausscrollt
+# herausscrollt; 902 breit und 13 Zeilen des Terminals (bis zum Ende der
+# Antwort), damit das Bild 16:9 ist und die Karte nichts abschneidet
 zoom: 1.5
-viewport: 1029x700
+viewport: 902x700
 press: Control+Shift+P
 type: Terminal: Kill All Terminals
 press: Enter
@@ -984,6 +985,6 @@ press: Enter
 press: Enter
 wait-for-text: Content-Type
 sleep: 1
-crop-terminal-lines: auto
+crop-terminal-lines: 13
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Ein Terminal in großer Schrift: nc -C info.cern.ch 80, die getippte Anfrage HEAD /hypertext/WWW/TheProject.html und die Antwort des Servers mit HTTP/1.1 200 OK und Last-Modified: Thu, 03 Dec 1992.'>

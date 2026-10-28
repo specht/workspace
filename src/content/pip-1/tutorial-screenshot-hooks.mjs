@@ -38,6 +38,30 @@ export default {
             });
             await page.addStyleTag({ content: 'footer.footer-fixed { display: none; }' });
         },
+
+        // hook: band ID CENTER: an empty box across the whole map of the
+        // visible card of the Kata ID, 16:9, its middle at CENTER (0 to 1) of
+        // the map's height, for crop-element: #teaser-band. The map is 4:3
+        // with rounded corners; the band takes the tunnels with the rock
+        // around them and leaves the corners out, so the card shows the map
+        // and no frame around it.
+        async band({ page, args }) {
+            const [id, center] = String(args).trim().split(/\s+/);
+            const fraction = Number(center);
+            if (!(fraction > 0 && fraction < 1)) throw new Error('hook: band ID CENTER (0 to 1)');
+            const map = page.locator(`.task-card[data-task$="/${id}"]:visible .pip-map`);
+            await map.evaluate((element, middle) => {
+                document.getElementById('teaser-band')?.remove();
+                const box = element.getBoundingClientRect();
+                const height = box.width * 9 / 16;
+                const top = Math.min(Math.max(box.top + box.height * middle - height / 2, box.top), box.bottom - height);
+                const band = document.createElement('div');
+                band.id = 'teaser-band';
+                band.style.cssText = `position: absolute; pointer-events: none; left: ${box.left + scrollX}px; `
+                    + `top: ${top + scrollY}px; width: ${box.width}px; height: ${height}px;`;
+                document.body.appendChild(band);
+            }, fraction);
+        },
     },
 
     // variants: dark: the site follows the system's colour scheme.

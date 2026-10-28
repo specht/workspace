@@ -1372,6 +1372,8 @@ tab: preview
 viewport: 1029x700
 wait-for-text: Pixelwand
 hook: paint-teaser
-crop-element: #wall
+# 16:9: die Zeilen 2 bis 37 der Wand, ohne ihre runden Ecken
+hook: band
+crop-element: #teaser-band
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Eine Pixelwand voller Bild: ein Regenbogen über hellblauem Himmel, Wolken, eine Sonne, ein Haus mit rotem Dach, ein Baum und bunte Blumen auf der Wiese.'>

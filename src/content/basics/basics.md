@@ -1,5 +1,5 @@
 <div class='meta'>
-image: vs-code-welcome.webp:0:50
+image: teaser.webp
 image_alt: "VS Code im Browser mit der Einführung »Willkommen im Hackschule Workspace« und dem leeren Explorer"
 kind: grundlagen
 curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software, strukturierte Speicherung von Dateien); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz, Verzeichnisbaum)"
@@ -52,6 +52,17 @@ wait-for-text: Deine Dateien bleiben
 -->
 
 <img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Einführung »Willkommen im Hackschule Workspace« mit dem ersten Schritt »Deine Dateien bleiben« und dem Knopf »Ordner öffnen«.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
+# die Karte nichts abschneidet
+viewport: 1029x579
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='VS Code ohne geöffneten Ordner, links der Explorer, rechts die Einführung »Willkommen im Hackschule Workspace«.'>
+
+<!-- /tutorial-scope -->
 
 _person(gamma)
 

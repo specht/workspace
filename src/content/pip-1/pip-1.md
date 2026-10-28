@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp:50:30
+image: teaser.webp
 icon: /images/pip/icon-pip.png
 kind: uebung
 duration: 2 Doppelstunden
@@ -24,7 +24,9 @@ tab: preview
 viewport: 640x1000
 hook: solve tunnel
 sleep: 2
-crop-element: .task-card[data-task="pip-1/tunnel"]:visible .pip-map
+# 16:9 aus der 4:3-Karte: der Stollen mit dem Fels darum, ohne die runden Ecken
+hook: band tunnel 0.474
+crop-element: #teaser-band
 variants: dark
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Die Karte eines gewundenen Stollens von oben, zwischen dunklen Felswänden: Pip hat die erste Hälfte der gelb leuchtenden Funkensteine schon aufgesammelt, die übrigen liegen noch auf dem Weg zur Lampe am Ende.'>

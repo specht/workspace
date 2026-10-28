@@ -134,8 +134,8 @@
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "e9fe9816350072735390c5dfe5cf124245f3edf939315a29455ccee8c95ed4ed",
-      "state_hash": "1991a3cefeb9ea056b96c70010d2ac6da5c95226d589e271a77b82684dd60b60",
+      "output_sha256": "08bf627d3ef2595b1d222779af289b2009a4d9af2cd12ff59ef1506984dd753c",
+      "state_hash": "4ba8337411f698d5f9ce1d23fe9fbc04580889fb0eab937fcb411e15625dab50",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },

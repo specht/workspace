@@ -1,5 +1,5 @@
 <div class='meta'>
-image: keyboard-tutorial.webp:0:30
+image: teaser.webp
 image_alt: "VS Code mit dem Keyboard-Tutorial in der Seitenleiste: Buchstaben, Umlaute und Ziffern zum Abhaken"
 kind: uebung
 reference: [shortcuts]
@@ -41,6 +41,17 @@ sleep: 0.5
 -->
 
 <img class='full' src='keyboard-tutorial.webp' alt='Links das Keyboard-Tutorial mit der Überschrift »Willkommen zum Keyboard-Tutorial!« und den ersten Tasten zum Ausprobieren, rechts der Editor.'>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dasselbe Fenster in 16:9, so dass
+# die Karte nichts abschneidet
+viewport: 1029x579
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Links das Keyboard-Tutorial mit Buchstaben, Umlauten und Ziffern zum Abhaken, rechts der Editor.'>
+
+<!-- /tutorial-scope -->
 
 Beginne mit dem ersten Kapitel und arbeite die Übungen der Reihe nach durch. Jede Übung sagt dir, was du tun sollst, und erkennt am Ergebnis, ob es geklappt hat: wo der Cursor steht, was markiert ist, was in der Datei steht. Erledigte Schritte bekommen einen grünen Haken. Dein Fortschritt bleibt gespeichert, du kannst also jederzeit aufhören und später an derselben Stelle weitermachen.
 
