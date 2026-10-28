@@ -682,6 +682,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
     hint:
       - "Ein Strich und eine Lücke wiederholen sich zehnmal."
       - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
@@ -701,6 +702,7 @@ tasks:
         type: "turtle"
         language: "python"
         draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Ein Strich und eine Lücke wiederholen sich zehnmal."
         - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
@@ -719,6 +721,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Ein Strich und eine Lücke wiederholen sich zehnmal."
         - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
@@ -753,6 +756,7 @@ tasks:
         width 4
         %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
       colors: true
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
     hint:
       - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
       - "Vor jedem Quadrat seine Farbe: `color \"red\"`. Wer mag, nimmt eine Schleife über die Farben: `[\"red\", \"gold\", \"blue\"].each do |name|`."
@@ -791,6 +795,7 @@ tasks:
           width 4
           %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
         - "Vor jedem Quadrat seine Farbe: `color(\"red\")`. Wer mag, nimmt eine Schleife über die Farben: `for name in [\"red\", \"gold\", \"blue\"]:`."
@@ -828,6 +833,7 @@ tasks:
           width 4
           %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
         - "Vor jedem Quadrat seine Farbe: `color(\"red\")`. Wer mag, nimmt eine Schleife über die Farben: `for (const name of [\"red\", \"gold\", \"blue\"]) {`."
@@ -1127,6 +1133,7 @@ tasks:
           36.times { forward 2 * Math::PI * radius / 36; left 10 }
         end
         30.times { circle(50); pen_up; forward 8; pen_down }
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
     hint:
       - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
       - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
@@ -1163,6 +1170,7 @@ tasks:
             36.times { forward 2 * Math::PI * radius / 36; left 10 }
           end
           30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
         - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
@@ -1196,6 +1204,7 @@ tasks:
             36.times { forward 2 * Math::PI * radius / 36; left 10 }
           end
           30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
         - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
@@ -1227,6 +1236,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
     hint:
       - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
       - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
@@ -1257,6 +1267,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
         - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
@@ -1284,6 +1295,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
         - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."

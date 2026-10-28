@@ -292,6 +292,7 @@ tasks:
             left 90
             tree(80, 7)
       colors: true
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
       show: 1
     hint:
       - "Breite und Farbe setzt die Funktion am Anfang, bevor sie den Ast zeichnet: Dann gelten sie für ihn."
@@ -368,6 +369,7 @@ tasks:
               left 90
               tree(80, 7)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Breite und Farbe setzt die Funktion am Anfang, bevor sie den Ast zeichnet: Dann gelten sie für ihn."
@@ -447,6 +449,7 @@ tasks:
               left 90
               tree(80, 7)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Breite und Farbe setzt die Funktion am Anfang, bevor sie den Ast zeichnet: Dann gelten sie für ihn."
@@ -526,6 +529,7 @@ tasks:
             left 90
             tree(80, 9)
       colors: true
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
       show: 1
     hint:
       - "Der linke und der rechte Baum bekommen jetzt verschiedene Zahlen: `size * 0.8` und `size * 0.6`."
@@ -601,6 +605,7 @@ tasks:
               left 90
               tree(80, 9)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Der linke und der rechte Baum bekommen jetzt verschiedene Zahlen: `size * 0.8` und `size * 0.6`."
@@ -679,6 +684,7 @@ tasks:
               left 90
               tree(80, 9)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Der linke und der rechte Baum bekommen jetzt verschiedene Zahlen: `size * 0.8` und `size * 0.6`."
@@ -757,6 +763,7 @@ tasks:
             left 90
             tree(52, 10)
       colors: true
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
       show: 1
     hint:
       - "Es ändern sich nur Zahlen und Farben: 36 statt 25 Grad, 0,84 statt 0,75, `depth * 0.7` für die Breite."
@@ -832,6 +839,7 @@ tasks:
               left 90
               tree(52, 10)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Es ändern sich nur Zahlen und Farben: 36 statt 25 Grad, 0,84 statt 0,75, `depth * 0.7` für die Breite."
@@ -910,6 +918,7 @@ tasks:
               left 90
               tree(52, 10)
         colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Es ändern sich nur Zahlen und Farben: 36 statt 25 Grad, 0,84 statt 0,75, `depth * 0.7` für die Breite."
@@ -973,6 +982,7 @@ tasks:
             end
             left 90
             fern(25, 1)
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
       show: 1
     hint:
       - "Kleiner als 1 zeichnet die Funktion nichts."
@@ -1036,6 +1046,7 @@ tasks:
               end
               left 90
               fern(25, 1)
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Kleiner als 1 zeichnet die Funktion nichts."
@@ -1099,6 +1110,7 @@ tasks:
               end
               left 90
               fern(25, 1)
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
         show: 1
       hint:
         - "Kleiner als 1 zeichnet die Funktion nichts."
@@ -1769,6 +1781,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
     hint:
       - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
       - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
@@ -1806,6 +1819,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
         - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
@@ -1846,6 +1860,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
       hint:
         - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
         - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."

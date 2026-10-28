@@ -31,17 +31,22 @@ def pen_down = __turtle('pen_down')
 # wheel (0 red, 120 green, 240 blue), or mixed from two: color "gold",
 # "red", 0.25 is a quarter of the way from gold to red. The host gets one
 # text: the name, "hue:200" or "mix:gold:red:0.25".
-def color(name, other = nil, amount = nil)
+def __turtle_color(command, name, other, amount)
     if name.is_a?(Numeric) && other.nil?
-        __turtle('color', "hue:#{__turtle_number('color', name).to_f}")
+        __turtle(command, "hue:#{__turtle_number(command, name).to_f}")
     elsif name.is_a?(String) && other.nil?
-        __turtle('color', name)
+        __turtle(command, name)
     elsif name.is_a?(String) && other.is_a?(String) && amount.is_a?(Numeric)
-        __turtle('color', "mix:#{name}:#{other}:#{__turtle_number('color', amount).to_f}")
+        __turtle(command, "mix:#{name}:#{other}:#{__turtle_number(command, amount).to_f}")
     else
-        raise ArgumentError, 'color braucht einen Namen wie color "red", eine Zahl wie color 200 oder zwei Farben und einen Anteil wie color "gold", "red", 0.5'
+        raise ArgumentError, "#{command} braucht einen Namen wie #{command} \"red\", eine Zahl wie #{command} 200 oder zwei Farben und einen Anteil wie #{command} \"gold\", \"red\", 0.5"
     end
 end
+
+def color(name, other = nil, amount = nil) = __turtle_color('color', name, other, amount)
+
+# The colour of the paper, with the same colours as color.
+def background(name, other = nil, amount = nil) = __turtle_color('background', name, other, amount)
 
 def width(size) = __turtle('width', __turtle_number('width', size))
 

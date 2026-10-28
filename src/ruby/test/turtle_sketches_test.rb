@@ -34,6 +34,14 @@ class TurtleSketchesTest < Minitest::Test
         assert_nil TurtleSketches.svg([])
     end
 
+    def test_the_paper_keeps_the_colour_the_program_gave_it
+        world = TurtleSketches.world([['background', 'navy'], ['background', 'hue:120'], ['forward', 10]])
+        assert_equal TurtleWorld.hue_hex(120.0), world.paper
+        assert_includes TurtleSketches.svg(world.segments, world.paper), "fill='#{world.paper}'"
+        assert_includes TurtleSketches.svg(world.segments), "fill='#fffdf8'"
+        assert_nil TurtleSketches.world([['background', 'nocolour']])
+    end
+
     def test_handed_in_drawings_show_as_pictures_with_their_names
         svg = TurtleSketches.svg(TurtleSketches.picture([['forward', 10]]))
         entries = [{ :email => 'ada@x', :name => 'Ada', :title => 'Wald <b>', :svg => svg },

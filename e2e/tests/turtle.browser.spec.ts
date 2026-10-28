@@ -156,3 +156,30 @@ test('a free card keeps several drawings by name, hands them in, renames and del
   await expect(again.locator('.task-code')).toHaveValue('forward(50);\n');
   expect(errors).toEqual([]);
 });
+
+test('colours to pick from under color and background; background colours the paper', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/turtle-3');
+  const programs = { ruby: 'background "navy"\nforward 50\n', python: 'background("navy")\nforward(50)\n', javascript: 'background("navy");\nforward(50);\n' };
+  for (const language of ['javascript', 'python', 'ruby'] as const) {
+    await page.locator(`.code-language-option[data-set-language="${language}"]`).click();
+    const card = page.locator('.task-card[data-task="turtle-3/finale"]:visible');
+    await card.scrollIntoViewIfNeeded();
+    await card.locator('.turtle-speeds button', { hasText: 'Sofort' }).click();
+    await card.locator('.task-code').fill(programs[language]);
+    await card.locator('.task-submit').click();
+    await expect(card.locator('.task-feedback')).toContainText(/Fertig|frei ausprobieren/, { timeout: 60_000 });
+    // the corner of the paper is navy
+    const pixel = await card.locator('canvas.turtle-paper').evaluate((c: HTMLCanvasElement) => Array.from(c.getContext('2d')!.getImageData(1, 1, 1, 1).data.slice(0, 3)));
+    expect(pixel).toEqual([0, 0, 128]);
+    // a swatch under background goes into the program where the cursor is
+    await card.locator(".turtle-palette-open[data-command='background']").click();
+    await card.locator('.turtle-palette-swatch').first().click();
+    await expect(card.locator('.turtle-palette')).toHaveCount(0);
+    await expect(card.locator('.task-code')).toHaveValue(/background\(?\s?"#ffe617"\)?;?/);
+  }
+  expect(errors).toEqual([]);
+});

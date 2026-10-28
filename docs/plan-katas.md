@@ -289,6 +289,14 @@ development since 28 October 2026). What the maintainer decided and why:
   `drawn`, neutral like a note; for a function, which call differs), and
   the dashed and red differences with their sentence only on »Unterschiede
   zeigen«. The stored state is still »noch nicht gelöst«.
+- **Colours to pick from** (the maintainer): the chips `color` and
+  `background` above the paper open a palette, Cling (the site's palette,
+  from Pixelflow and the 2D Game Studio) and some HTML names by hue; a click
+  puts the colour into the program where the cursor was, as a hex code or a
+  name, so that no new syntax is needed. `background` colours the paper,
+  with the same colours as `color` (the grid turns lighter on a dark one);
+  the comparison ignores it, a handed-in picture keeps it. Every card lists
+  its commands, so that turtle-1 does not show those of turtle-3.
 - **Several drawings on a free card** (the maintainer): on every card with
   `free:` a row »Bild« lists the person's drawings by name, with Neu,
   Umbenennen and Löschen; the open one is in the editor and is the card's

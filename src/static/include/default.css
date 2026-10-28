@@ -12794,3 +12794,74 @@ dialog.native-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 .turtle-sketches .btn .bi { margin-right: 0.3em; }
 
 .task-card[data-sketches] .task-delete { display: none !important; }
+
+/* the colours to pick from under the color chip of a turtle card
+   (turtle_canvas.js): Cling and some HTML names; the chip itself a button */
+.turtle-commands { position: relative; }
+
+.pip-commands button.pip-command {
+    border: 0;
+    font-family: var(--bs-font-monospace);
+    cursor: pointer;
+}
+
+.pip-commands button.pip-command .bi {
+    margin-left: 0.45em;
+    color: #fabd2f;
+}
+
+.turtle-palette {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 0.3em);
+    left: 0;
+    width: min(23rem, calc(100vw - 32px));
+    padding: 0.6em 0.7em 0.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    background: var(--bs-body-bg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.turtle-palette-title {
+    margin: 0.1em 0 0.3em;
+    font-size: 80%;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-palette-swatches {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin-bottom: 0.5em;
+}
+
+.turtle-palette-swatch {
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    background: var(--swatch);
+    cursor: pointer;
+}
+
+.turtle-palette-swatch:hover,
+.turtle-palette-swatch:focus-visible {
+    outline: 2px solid var(--bs-body-color);
+    outline-offset: 1px;
+}
+
+.turtle-palette-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6em;
+    font-size: 80%;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-palette-value {
+    min-width: 7.5em;
+    font-size: 110%;
+}

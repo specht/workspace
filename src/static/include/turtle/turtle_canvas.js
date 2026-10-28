@@ -51,6 +51,20 @@
         return node;
     }
 
+    // 0 (black) to 1 (white), of a colour as #rrggbb
+    function luminance(hex) {
+        const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    }
+
+    // the grid on the paper: faint, a little stronger at the axes; on a
+    // paper of the program's own colour, lighter or darker than it
+    function gridColor(axis, dark, background) {
+        if (!background) return axis ? '#e2dbc9' : '#f0ebde';
+        if (dark) return axis ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.09)';
+        return axis ? 'rgba(0, 0, 0, 0.14)' : 'rgba(0, 0, 0, 0.06)';
+    }
+
     // in ms; pixels: the pixels on the screen one step of the turtle takes
     function duration(command, value, speed, pixels) {
         const pace = PACE[speed];
@@ -77,6 +91,7 @@
             this.segments = [];
             this.turtle = Object.assign({}, START);
             this.saved = [];
+            this.background = null;
             this.view = { cx: 0, cy: 0, half: VIEW };
             // the widest line in pixels on the screen (a level picture
             // zoomed in far)
@@ -205,20 +220,22 @@
         drawPaper() {
             const ctx = this.paper.getContext('2d');
             const s = this.size;
-            ctx.fillStyle = '#fffdf8';
+            // the paper, or the colour the program gave it (background)
+            ctx.fillStyle = this.background || '#fffdf8';
             ctx.fillRect(0, 0, s, s);
+            const dark = this.background && luminance(this.background) < 0.45;
             const ratio = window.devicePixelRatio || 1;
             ctx.lineWidth = ratio;
             const v = this.view;
             // the grid, unless its lines would sit too close together
             if (GRID * this.scale >= 7 * ratio) {
                 for (let g = Math.ceil((v.cx - v.half) / GRID) * GRID; g <= v.cx + v.half; g += GRID) {
-                    ctx.strokeStyle = g === 0 ? '#e2dbc9' : '#f0ebde';
+                    ctx.strokeStyle = gridColor(g === 0, dark, this.background);
                     const [x] = this.point(g, 0);
                     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, s); ctx.stroke();
                 }
                 for (let g = Math.ceil((v.cy - v.half) / GRID) * GRID; g <= v.cy + v.half; g += GRID) {
-                    ctx.strokeStyle = g === 0 ? '#e2dbc9' : '#f0ebde';
+                    ctx.strokeStyle = gridColor(g === 0, dark, this.background);
                     const [, y] = this.point(0, g);
                     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(s, y); ctx.stroke();
                 }
@@ -252,6 +269,7 @@
             this.diff = null;
             this.turtle = Object.assign({}, START);
             this.saved = [];
+            this.background = null;
             this.fit();
             this.redraw();
         }
@@ -304,6 +322,10 @@
             else if (command === 'pen_down') t.pen = true;
             else if (command === 'color') t.color = value;
             else if (command === 'width') t.width = value;
+            else if (command === 'background') {
+                this.background = value;
+                this.drawPaper();
+            }
             // push remembers all of the turtle, pop goes back there
             else if (command === 'push') this.saved.push(Object.assign({}, t));
             else if (command === 'pop' && this.saved.length > 0) this.turtle = this.saved.pop();
@@ -1116,6 +1138,99 @@
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startLevels);
     else startLevels();
+
+    // ----- colours to pick from, under the color chip of a card -----
+
+    // Cling (the palette of Pixelflow and the 2D Game Studio), in its order,
+    // and some of the HTML names, from red round to grey
+    const CLING = ['#ffe617', '#fad31c', '#fdb717', '#faaa21', '#f1753f', '#ed5724', '#ef4538', '#ea2830', '#bc2326', '#8c0c03', '#e5185d',
+        '#f384ae', '#fac6d2', '#b296c7', '#7b67ae', '#5f3577', '#c1d18a', '#799155', '#80bc42', '#4aa03f', '#16884a', '#003f2e', '#c3def1',
+        '#55beed', '#31a8e0', '#238acc', '#0d60ae', '#143b86', '#001b4a', '#7dcdc2', '#00a8a8', '#12959f', '#094e54', '#381e11', '#c05c20',
+        '#bf9b6b', '#e9d4a7', '#e7e6e1', '#cfd0d2', '#8a8b8f', '#778590', '#474d4d', '#050608', '#ffffff'];
+    const NAMED = ['crimson', 'red', 'tomato', 'coral', 'salmon', 'deeppink', 'hotpink', 'pink', 'darkorange', 'orange', 'gold', 'yellow', 'khaki',
+        'yellowgreen', 'limegreen', 'forestgreen', 'seagreen', 'olivedrab', 'darkgreen', 'turquoise', 'teal', 'skyblue', 'dodgerblue', 'steelblue',
+        'royalblue', 'navy', 'orchid', 'violet', 'plum', 'purple', 'rebeccapurple', 'tan', 'peru', 'chocolate', 'sienna', 'saddlebrown',
+        'white', 'silver', 'gray', 'dimgray', 'black'];
+
+    // the colour into the card's program where the cursor was, or on a line
+    // of its own at the end when the editor was never touched
+    function insertColor(card, value, command) {
+        const editor = card.querySelector('.task-code');
+        if (!editor) return;
+        const language = editor.dataset.codeLanguage;
+        const text = language === 'ruby' ? command + ' "' + value + '"' : language === 'python' ? command + '("' + value + '")' : command + '("' + value + '");';
+        const touched = editor.dataset.touched;
+        editor.focus();
+        if (touched) {
+            editor.setRangeText(text, editor.selectionStart, editor.selectionEnd, 'end');
+        } else {
+            const end = editor.value.length;
+            editor.setRangeText((end && !editor.value.endsWith('\n') ? '\n' : '') + text + '\n', end, end, 'end');
+        }
+        editor.dataset.touched = 'true';
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+        if (editor.codeInputUpdate) editor.codeInputUpdate();
+    }
+
+    let palette = null;
+
+    function closePalette() {
+        if (!palette) return;
+        palette.opener.setAttribute('aria-expanded', 'false');
+        palette.box.remove();
+        document.removeEventListener('pointerdown', palette.outside, true);
+        palette = null;
+    }
+
+    function openPalette(opener) {
+        const card = opener.closest('.task-card');
+        closePalette();
+        const box = el('div', { class: 'turtle-palette', role: 'dialog', 'aria-label': 'Farben zum Aussuchen' });
+        const value = el('code', { class: 'turtle-palette-value', text: ' ' });
+        const group = (title, colours) => {
+            box.appendChild(el('div', { class: 'turtle-palette-title', text: title }));
+            const row = el('div', { class: 'turtle-palette-swatches' });
+            colours.forEach((c) => {
+                const b = el('button', { type: 'button', class: 'turtle-palette-swatch', style: '--swatch: ' + c, title: c, 'aria-label': c });
+                const show = () => { value.textContent = c; };
+                b.addEventListener('mouseenter', show);
+                b.addEventListener('focus', show);
+                b.addEventListener('click', () => {
+                    closePalette();
+                    insertColor(card, c, opener.dataset.command || 'color');
+                });
+                row.appendChild(b);
+            });
+            box.appendChild(row);
+        };
+        group('Cling', CLING);
+        group('Namen', NAMED);
+        box.appendChild(el('div', { class: 'turtle-palette-foot' }, [value, el('span', { text: 'Ein Klick setzt die Farbe in dein Programm.' })]));
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closePalette();
+                opener.focus();
+            }
+        });
+        opener.parentElement.appendChild(box);
+        opener.setAttribute('aria-expanded', 'true');
+        const outside = (e) => { if (!box.contains(e.target) && e.target !== opener && !opener.contains(e.target)) closePalette(); };
+        document.addEventListener('pointerdown', outside, true);
+        palette = { box, opener, outside };
+        box.querySelector('button').focus({ preventScroll: true });
+    }
+
+    document.addEventListener('click', (e) => {
+        const opener = e.target.closest('.turtle-palette-open');
+        if (!opener) return;
+        if (palette && palette.opener === opener) closePalette();
+        else openPalette(opener);
+    });
+    // where the student last put the cursor counts from the first click on
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches && e.target.matches('.task-code')) e.target.dataset.touched = 'true';
+    });
 
     window.TurtleCard = TurtleCard;
     window.TurtleCard.showOnly = showOnly;

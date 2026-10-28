@@ -527,7 +527,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
-      commands: [forward, left, right, hue, random]
+      commands: [forward, left, right, background, hue, random]
     hint:
       - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
       - "Die Farbe des `i`-ten Schritts: `color i / 3.0`, so ist sie nach 1000 Schritten fast einmal herum."
@@ -548,7 +548,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
-        commands: [forward, left, right, hue, random]
+        commands: [forward, left, right, background, hue, random]
       hint:
         - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
         - "Die Farbe des `i`-ten Schritts: `color(i / 3)`, so ist sie nach 1000 Schritten fast einmal herum."
@@ -568,7 +568,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
-        commands: [forward, left, right, hue, random]
+        commands: [forward, left, right, background, hue, random]
       hint:
         - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
         - "Die Farbe des `i`-ten Schritts: `color(i / 3)`, so ist sie nach 1000 Schritten fast einmal herum."
@@ -740,7 +740,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
-      commands: [forward, back, left, pen_up, pen_down, push, pop, mix, random]
+      commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
     hint:
       - "Ein Halm: `push`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop`. Danach steht die Schildkröte wieder unten."
       - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
@@ -772,7 +772,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
-        commands: [forward, back, left, pen_up, pen_down, push, pop, mix, random]
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
       hint:
         - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
         - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
@@ -802,7 +802,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
-        commands: [forward, back, left, pen_up, pen_down, push, pop, mix, random]
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
       hint:
         - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
         - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
@@ -1423,7 +1423,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
-      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
     hint:
       - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
       - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
@@ -1494,7 +1494,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
-        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
       hint:
         - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
         - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
@@ -1565,7 +1565,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
-        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
       hint:
         - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
         - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
@@ -1620,7 +1620,7 @@ tasks:
       type: "turtle"
       language: "ruby"
       free: {}
-      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
     hint:
       - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
       - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
@@ -1664,7 +1664,7 @@ tasks:
         type: "turtle"
         language: "python"
         free: {}
-        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
       hint:
         - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
         - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
@@ -1710,7 +1710,7 @@ tasks:
         type: "turtle"
         language: "javascript"
         free: {}
-        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, hue, mix, random]
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
       hint:
         - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
         - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."

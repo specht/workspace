@@ -105,13 +105,13 @@ function mixHex(a, b, t) {
 // done, otherwise why not. line: the student's line, or null.
 function host(command, value, line) {
     if (quiet) return null;
-    if (command === 'color') {
+    if (command === 'color' || command === 'background') {
         const found = colorHex(value);
         if (!found) {
             // in a mix, the name it does not know
             const mix = /^mix:([^:]+):([^:]+):/.exec(String(value));
             const name = mix ? (colorHex(mix[1]) ? mix[2] : mix[1]) : value;
-            return 'color kennt »' + name + '« nicht: Nimm einen englischen Farbnamen wie "red", "orange" oder "darkgreen" oder eine Farbe wie "#ff8800".';
+            return command + ' kennt »' + name + '« nicht: Nimm einen englischen Farbnamen wie "red", "orange" oder "darkgreen" oder eine Farbe wie "#ff8800".';
         }
         value = found;
     }

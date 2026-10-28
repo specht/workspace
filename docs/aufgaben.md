@@ -1126,7 +1126,10 @@ Befehle sind schlichte Funktionen ohne Objekt, `forward`, `back`, `left`,
 und Breite und kehren dorthin zurück) und `random(1, 6)` (eine ganze
 Zufallszahl, mit Kommazahlen eine Kommazahl); `color` nimmt einen Namen,
 eine Zahl (den Farbton im Farbkreis, `color 200`) oder zwei Farben und einen
-Anteil (`color "gold", "red", 0.25`). Sie stehen in
+Anteil (`color "gold", "red", 0.25`), `background` dieselben Farben für das
+Papier. Ein Klick auf `color` oder `background` über dem Papier öffnet Farben
+zum Aussuchen (Cling und einige HTML-Namen), ein Klick auf eine setzt sie ins
+Programm. Sie stehen in
 `src/static/include/turtle/turtle.rb`, `.py` und `.js`; Browser und Server
 rechnen Farbton und Mischung gleich (`colorHex` in `turtle_worker.js`,
 `TurtleWorld.color_hex`). `commands:` wählt die Befehle über dem Papier aus,

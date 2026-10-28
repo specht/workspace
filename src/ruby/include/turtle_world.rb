@@ -20,14 +20,15 @@ class TurtleWorld
     MAX_WIDTH = 50
     MAX_COMMANDS = 200_000
     MAX_DEPTH = 10_000
-    COMMANDS = %w[forward back left right pen_up pen_down color width push pop].freeze
+    COMMANDS = %w[forward back left right pen_up pen_down color width push pop background].freeze
 
     Segment = Struct.new(:x1, :y1, :x2, :y2, :color, :width) do
         def length = Math.hypot(x2 - x1, y2 - y1)
         def to_a = [x1.round(2), y1.round(2), x2.round(2), y2.round(2), color, width]
     end
 
-    attr_reader :segments, :count
+    # paper: its colour as hex (background), nil when the program left it
+    attr_reader :segments, :count, :paper
 
     def initialize
         @x = 0.0
@@ -123,11 +124,11 @@ class TurtleWorld
         when 'right' then @heading -= value.to_f
         when 'pen_up' then @pen = false
         when 'pen_down' then @pen = true
-        when 'color'
+        when 'color', 'background'
             hex = TurtleWorld.color_hex(value)
             raise Error, "unbekannte Farbe #{value}" unless hex
 
-            @color = hex
+            name == 'color' ? @color = hex : @paper = hex
         when 'width'
             raise Error, 'Breite außerhalb' unless value > 0 && value <= MAX_WIDTH
 
@@ -156,11 +157,15 @@ class TurtleWorld
     def pop = command('pop')
 
     # color 200 and color 'gold', 'red', 0.5 as in the students' commands
-    def color(name, other = nil, amount = nil)
-        return command('color', "hue:#{name.to_f}") if name.is_a?(Numeric)
-        return command('color', "mix:#{name}:#{other}:#{amount.to_f}") if other
+    def color(name, other = nil, amount = nil) = command('color', TurtleWorld.colour_text(name, other, amount))
+    def background(name, other = nil, amount = nil) = command('background', TurtleWorld.colour_text(name, other, amount))
 
-        command('color', name)
+    # color 200 or color 'gold', 'red', 0.5 as the commands send it
+    def self.colour_text(name, other, amount)
+        return "hue:#{name.to_f}" if name.is_a?(Numeric)
+        return "mix:#{name}:#{other}:#{amount.to_f}" if other
+
+        name
     end
 
     # in draw:, a picture with chance in it is drawn the same each time

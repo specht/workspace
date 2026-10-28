@@ -284,7 +284,10 @@ forward(80);
 ```
 <!-- /language -->
 
-Welche Namen es gibt, steht in der [Liste der Farbnamen](https://developer.mozilla.org/de/docs/Web/CSS/named-color)
+Ein Klick auf den Befehl `color` über dem Papier öffnet Farben zum
+Aussuchen: die Palette Cling und einige Namen. Ein Klick auf eine Farbe
+setzt sie in dein Programm, dorthin, wo zuletzt der Cursor stand. Alle 148
+Namen stehen in der [Liste der Farbnamen](https://developer.mozilla.org/de/docs/Web/CSS/named-color)
 von MDN, mit einem Kästchen in jeder Farbe; statt eines Namens geht auch
 eine Farbe wie `"#ff8800"`.
 

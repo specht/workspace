@@ -59,7 +59,7 @@ module TurtleSketches
 
     # The picture as SVG on its paper, from the lines TurtleWorld drew:
     # y up as on the card, one path per colour and width.
-    def self.svg(segments)
+    def self.svg(segments, background = nil)
         segments = segments.first(MAX_SEGMENTS)
         return nil if segments.empty?
 
@@ -77,13 +77,18 @@ module TurtleSketches
             "<path d='#{d}' stroke='#{color}' stroke-width='#{f.(width.to_f)}'/>"
         end
         "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{f.(x0)} #{f.(y0)} #{f.(w)} #{f.(h)}' fill='none' stroke-linecap='round' stroke-linejoin='round'>" \
-            "<rect x='#{f.(x0)}' y='#{f.(y0)}' width='#{f.(w)}' height='#{f.(h)}' fill='#{PAPER}'/>#{paths.join}</svg>"
+            "<rect x='#{f.(x0)}' y='#{f.(y0)}' width='#{f.(w)}' height='#{f.(h)}' fill='#{background || PAPER}'/>#{paths.join}</svg>"
     end
 
-    # The commands a card reports, replayed; nil when they are none.
-    def self.picture(commands)
-        TurtleWorld.replay(commands).segments
+    # The commands a card reports, replayed (TurtleWorld, with its
+    # segments and paper); nil when they are none.
+    def self.world(commands)
+        TurtleWorld.replay(commands)
     rescue TurtleWorld::Error
         nil
+    end
+
+    def self.picture(commands)
+        world(commands)&.segments
     end
 end

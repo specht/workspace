@@ -183,7 +183,14 @@ module TaskCard
                 # the commands at hand, as the language writes them
                 io << "<div class='pip-commands turtle-commands' aria-label='Befehle für die Schildkröte'><span class='pip-commands-label' aria-hidden='true'>Befehle</span>"
                 (check['commands'] || TurtleCheck::COMMANDS).each do |command|
-                    io << "<code class='pip-command' title='#{h.(TurtleCheck::DESCRIPTIONS[command])}'>#{h.(TurtleCheck::SPELLING.fetch(check['language'])[command])}</code>"
+                    spelled = h.(TurtleCheck::SPELLING.fetch(check['language'])[command])
+                    if %w[color background].include?(command)
+                        # opens the colours to pick from (turtle_canvas.js, palette)
+                        io << "<button type='button' class='pip-command turtle-palette-open' data-command='#{command}' aria-haspopup='dialog' aria-expanded='false' " \
+                              "title='Farben zum Aussuchen: ein Klick setzt eine in dein Programm'>#{spelled}<i class='bi bi-palette' aria-hidden='true'></i></button>"
+                    else
+                        io << "<code class='pip-command' title='#{h.(TurtleCheck::DESCRIPTIONS[command])}'>#{spelled}</code>"
+                    end
                 end
                 io << '</div>'
                 io << "<div class='turtle-layout'>"

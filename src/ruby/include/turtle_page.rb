@@ -229,7 +229,8 @@ class Main < Sinatra::Base
             rescue JSON::ParserError
                 nil
             end
-            segments = commands.is_a?(Array) ? TurtleSketches.picture(commands) : nil
+            world = commands.is_a?(Array) ? TurtleSketches.world(commands) : nil
+            segments = world&.segments
             others = handed.reject { |e| e['name'] == current['name'] && e['language'] == language }
             if segments.nil? || segments.empty?
                 error = 'Lass dein Bild zuerst laufen: Eingereicht wird, was die Schildkröte zuletzt gezeichnet hat.'
@@ -237,7 +238,7 @@ class Main < Sinatra::Base
                 error = "Mehr als #{TurtleSketches::MAX_HANDED} Bilder gehen nicht zum Einreichen: Nimm erst eines zurück."
             else
                 handed = others + [{ 'name' => current['name'], 'language' => language, 'code' => current['code'],
-                                     'svg' => TurtleSketches.svg(segments) }]
+                                     'svg' => TurtleSketches.svg(segments, world.paper) }]
             end
         when 'take_back'
             handed.reject! { |e| e['name'] == current['name'] && e['language'] == language }

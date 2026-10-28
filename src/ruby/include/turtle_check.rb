@@ -48,13 +48,16 @@ module TurtleCheck
     SPELLING = {
         'ruby' => { 'forward' => 'forward 100', 'back' => 'back 100', 'left' => 'left 90', 'right' => 'right 90',
                     'pen_up' => 'pen_up', 'pen_down' => 'pen_down', 'color' => 'color "red"', 'width' => 'width 4',
-                    'push' => 'push', 'pop' => 'pop', 'hue' => 'color 200', 'mix' => 'color "gold", "red", 0.5', 'random' => 'random(1, 6)' },
+                    'push' => 'push', 'pop' => 'pop', 'hue' => 'color 200', 'mix' => 'color "gold", "red", 0.5', 'random' => 'random(1, 6)',
+                    'background' => 'background "navy"' },
         'python' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
                       'pen_up' => 'pen_up()', 'pen_down' => 'pen_down()', 'color' => 'color("red")', 'width' => 'width(4)',
-                      'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)' },
+                      'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)',
+                      'background' => 'background("navy")' },
         'javascript' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
                           'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)',
-                          'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)' },
+                          'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)',
+                          'background' => 'background("navy")' },
     }.freeze
     DESCRIPTIONS = {
         'forward' => 'so viele Schritte vorwärts gehen', 'back' => 'so viele Schritte rückwärts gehen',
@@ -67,6 +70,7 @@ module TurtleCheck
         'hue' => 'eine Farbe aus dem Farbkreis: 0 Rot, 60 Gelb, 120 Grün, 180 Türkis, 240 Blau, 300 Lila',
         'mix' => 'eine Farbe zwischen zwei Farben: 0 ist die erste, 1 die zweite, 0.5 genau dazwischen',
         'random' => 'eine zufällige Zahl von 1 bis 6; mit Kommazahlen wie random(0.5, 2) eine Kommazahl dazwischen',
+        'background' => 'die Farbe des Papiers, mit denselben Farben wie color',
     }.freeze
     # what the card says under its picture for a call (»square(50)«)
     EMPTY = 'Schreib zuerst ein Programm.'

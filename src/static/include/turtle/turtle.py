@@ -54,15 +54,24 @@ def pen_down():
 # wheel (0 red, 120 green, 240 blue), or mixed from two: color("gold",
 # "red", 0.25) is a quarter of the way from gold to red. The host gets one
 # text: the name, "hue:200" or "mix:gold:red:0.25".
-def color(name, other=None, amount=None):
+def _turtle_color(command, name, other, amount):
     if isinstance(name, (int, float)) and not isinstance(name, bool) and other is None:
-        _turtle('color', f'hue:{float(_turtle_number("color", name))}')
+        _turtle(command, f'hue:{float(_turtle_number(command, name))}')
     elif isinstance(name, str) and other is None:
-        _turtle('color', name)
+        _turtle(command, name)
     elif isinstance(name, str) and isinstance(other, str) and isinstance(amount, (int, float)) and not isinstance(amount, bool):
-        _turtle('color', f'mix:{name}:{other}:{float(_turtle_number("color", amount))}')
+        _turtle(command, f'mix:{name}:{other}:{float(_turtle_number(command, amount))}')
     else:
-        raise TypeError('color braucht einen Namen wie color("red"), eine Zahl wie color(200) oder zwei Farben und einen Anteil wie color("gold", "red", 0.5)')
+        raise TypeError(f'{command} braucht einen Namen wie {command}("red"), eine Zahl wie {command}(200) oder zwei Farben und einen Anteil wie {command}("gold", "red", 0.5)')
+
+
+def color(name, other=None, amount=None):
+    _turtle_color('color', name, other, amount)
+
+
+# The colour of the paper, with the same colours as color.
+def background(name, other=None, amount=None):
+    _turtle_color('background', name, other, amount)
 
 
 def width(size):

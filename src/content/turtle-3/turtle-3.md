@@ -86,6 +86,11 @@ color("gold", "crimson", 0.25);    // ein Viertel des Wegs von Gold nach Rot
 
 _task(fan)
 
+Auch das Papier bekommt eine Farbe: `background` nimmt dieselben Farben wie
+`color`, einen Namen, eine Zahl aus dem Farbkreis oder eine Mischung. Ein
+Klick auf `color` oder `background` über dem Papier öffnet Farben zum
+Aussuchen, darunter die Palette Cling.
+
 ## Merken und zurückkehren
 
 Beim Baum in »Bäume und Kurven« ist die Schildkröte nach jedem Ast den
