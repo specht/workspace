@@ -147,7 +147,7 @@ module TaskCard
                     io << '</div>'
                 else
                     # the commands this task knows, as the language writes them
-                    io << "<div class='pip-commands' aria-label='Befehle für Pip'>"
+                    io << "<div class='pip-commands' aria-label='Befehle für Pip'><span class='pip-commands-label' aria-hidden='true'>Befehle</span>"
                     (check['commands'] + ['say']).each do |command|
                         io << "<code class='pip-command#{PipCheck::QUESTIONS.include?(command) ? ' pip-question' : ''}' title='#{h.(PipCheck::DESCRIPTIONS[command])}'>#{h.(PipCheck.spelling(check['language'], command))}</code>"
                     end
@@ -180,10 +180,16 @@ module TaskCard
                 # in the browser (turtle_canvas.js, turtle_worker.js).
                 target = TurtleCheck.target(check)
                 calls = TurtleCheck.runs(check)
+                # the commands at hand, as the language writes them
+                io << "<div class='pip-commands turtle-commands' aria-label='Befehle für die Schildkröte'><span class='pip-commands-label' aria-hidden='true'>Befehle</span>"
+                (check['commands'] || TurtleCheck::COMMANDS).each do |command|
+                    io << "<code class='pip-command' title='#{h.(TurtleCheck::DESCRIPTIONS[command])}'>#{h.(TurtleCheck::SPELLING.fetch(check['language'])[command])}</code>"
+                end
+                io << '</div>'
                 io << "<div class='turtle-layout'>"
                 io << "<div class='turtle-stage' data-language='#{h.(check['language'])}' data-runs='#{h.(JSON.generate(calls))}'"
                 io << " data-target='#{h.(JSON.generate(target))}'" if target
-                io << " data-target-call='#{h.(calls.first)}'" if target && calls.first
+                io << " data-target-call='#{h.(calls[TurtleCheck.shown(check)])}'" if target && calls.first
                 io << '></div>'
                 io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
                 io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"

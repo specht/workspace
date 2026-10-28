@@ -3,11 +3,16 @@
 // turtle_worker.js, one worker per language, and the card's run, stop and
 // check. tasks.js makes a TurtleCard for every card with a .turtle-stage.
 //
-// The geometry is TurtleWorld's (turtle_world.rb): the turtle starts in the
-// middle, looks to the right, x to the right and y up, left is
-// counter-clockwise; the stage shows -VIEW … VIEW both ways.
+// The geometry is TurtleWorld's (turtle_world.rb): the turtle starts at
+// (0, 0), looks to the right, x to the right and y up, left is
+// counter-clockwise. The paper shows the picture the task asks for, with a
+// margin, at least MIN_HALF steps from its middle to each side (VIEW
+// without a picture), and zooms out when a drawing goes past its edge; its
+// lines stay GRID steps apart.
 (function () {
     const VIEW = 250;
+    const MIN_HALF = 150;
+    const MARGIN = 1.2;
     const GRID = 50;
     // distance per second and degrees per second, as in turtle_worker.js
     const PACE = { 1: [90, 180], 2: [260, 540], 3: [1000, 2160] };
@@ -58,6 +63,7 @@
             this.diff = null;
             this.segments = [];
             this.turtle = Object.assign({}, START);
+            this.view = { cx: 0, cy: 0, half: VIEW };
             this.resize();
             if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(this.frame);
         }
@@ -68,15 +74,51 @@
             const px = Math.round(css * ratio);
             if (this.size === px) return;
             this.size = px;
-            this.scale = px / (2 * VIEW);
             [this.paper, this.ink, this.top].forEach((c) => { c.width = px; c.height = px; });
+            this.redraw();
+        }
+
+        redraw() {
+            this.scale = this.size / (2 * this.view.half);
             this.drawPaper();
             this.redrawInk();
             this.drawTop();
         }
 
         point(x, y) {
-            return [(x + VIEW) * this.scale, (VIEW - y) * this.scale];
+            const v = this.view;
+            return [(x - v.cx + v.half) * this.scale, (v.half - (y - v.cy)) * this.scale];
+        }
+
+        // The view around the picture asked for and the start, or the
+        // middle of the paper without one.
+        fit(segments) {
+            const around = segments || this.target;
+            if (!around || around.length === 0) {
+                this.view = { cx: 0, cy: 0, half: VIEW };
+                return;
+            }
+            let [x0, y0, x1, y1] = [0, 0, 0, 0];
+            around.forEach(([a, b, c, d]) => {
+                x0 = Math.min(x0, a, c); x1 = Math.max(x1, a, c);
+                y0 = Math.min(y0, b, d); y1 = Math.max(y1, b, d);
+            });
+            this.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(MIN_HALF, Math.max(x1 - x0, y1 - y0) / 2 * MARGIN) };
+        }
+
+        // The turtle at (x, y) past the edge: the paper zooms out around
+        // everything drawn, with room to grow, and draws it all again.
+        ensure(x, y) {
+            const v = this.view;
+            const edge = v.half * 0.97;
+            if (Math.abs(x - v.cx) <= edge && Math.abs(y - v.cy) <= edge) return;
+            let [x0, y0, x1, y1] = [Math.min(x, v.cx - v.half), Math.min(y, v.cy - v.half), Math.max(x, v.cx + v.half), Math.max(y, v.cy + v.half)];
+            this.segments.forEach(([a, b, c, d]) => {
+                x0 = Math.min(x0, a, c); x1 = Math.max(x1, a, c);
+                y0 = Math.min(y0, b, d); y1 = Math.max(y1, b, d);
+            });
+            this.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, half: Math.max(x1 - x0, y1 - y0) / 2 * 1.3 };
+            this.redraw();
         }
 
         drawPaper() {
@@ -84,20 +126,30 @@
             const s = this.size;
             ctx.fillStyle = '#fffdf8';
             ctx.fillRect(0, 0, s, s);
-            ctx.lineWidth = Math.max(1, this.scale * 0.6);
-            for (let v = -VIEW; v <= VIEW; v += GRID) {
-                ctx.strokeStyle = v === 0 ? '#e2dbc9' : '#f0ebde';
-                const [x] = this.point(v, 0);
-                const [, y] = this.point(0, v);
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, s); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(s, y); ctx.stroke();
+            const ratio = window.devicePixelRatio || 1;
+            ctx.lineWidth = ratio;
+            const v = this.view;
+            // the grid, unless its lines would sit too close together
+            if (GRID * this.scale >= 7 * ratio) {
+                for (let g = Math.ceil((v.cx - v.half) / GRID) * GRID; g <= v.cx + v.half; g += GRID) {
+                    ctx.strokeStyle = g === 0 ? '#e2dbc9' : '#f0ebde';
+                    const [x] = this.point(g, 0);
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, s); ctx.stroke();
+                }
+                for (let g = Math.ceil((v.cy - v.half) / GRID) * GRID; g <= v.cy + v.half; g += GRID) {
+                    ctx.strokeStyle = g === 0 ? '#e2dbc9' : '#f0ebde';
+                    const [, y] = this.point(0, g);
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(s, y); ctx.stroke();
+                }
             }
+            // the picture asked for: a thin pencil line under the ink, which
+            // covers it where the drawing is right and leaves it where not
             if (this.target) {
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-                ctx.strokeStyle = '#cfc8b8';
+                ctx.strokeStyle = '#ddd6c6';
                 this.target.forEach(([x1, y1, x2, y2, , width]) => {
-                    ctx.lineWidth = Math.max(5, (width + 4) * this.scale);
+                    ctx.lineWidth = Math.max(2 * ratio, Math.min(width * this.scale, 6 * ratio) + ratio);
                     ctx.beginPath();
                     ctx.moveTo(...this.point(x1, y1));
                     ctx.lineTo(...this.point(x2, y2));
@@ -108,15 +160,16 @@
 
         setTarget(segments) {
             this.target = segments;
-            this.drawPaper();
+            this.fit();
+            this.redraw();
         }
 
         clear() {
             this.segments = [];
             this.diff = null;
             this.turtle = Object.assign({}, START);
-            this.ink.getContext('2d').clearRect(0, 0, this.size, this.size);
-            this.drawTop();
+            this.fit();
+            this.redraw();
         }
 
         line(x1, y1, x2, y2, color, width) {
@@ -144,6 +197,7 @@
                 const r = t.heading * Math.PI / 180;
                 const x = t.x + d * Math.cos(r);
                 const y = t.y + d * Math.sin(r);
+                this.ensure(x, y);
                 if (t.pen && d !== 0) {
                     const s = [t.x, t.y, x, y, t.color, t.width];
                     this.segments.push(s);
@@ -262,6 +316,20 @@
             requestAnimationFrame((now) => { this.frameRequested = false; this.frame(now); });
         }
 
+        // The line on its way goes on at the new speed from where it is.
+        setSpeed(speed) {
+            this.speed = speed;
+            const a = this.active;
+            if (a && speed === 0) this.finishActive();
+            else if (a) {
+                const now = performance.now();
+                const p = Math.min(1, (now - a.start) / a.ms);
+                a.ms = Math.max(1, duration(a.command, a.value, speed));
+                a.start = now - p * a.ms;
+            }
+            this.request();
+        }
+
         // run once nothing is left to draw
         whenIdle(callback) {
             this.idle = callback;
@@ -304,9 +372,11 @@
             this.active = { command, value, ms, start, from: Object.assign({}, this.stage.turtle), drawn: [this.stage.turtle.x, this.stage.turtle.y] };
         }
 
+        // At most about 12 ms of drawing per frame, so that the page keeps
+        // answering clicks while a large picture appears at once.
         frame(now) {
-            let budget = 20000;
-            while (budget-- > 0) {
+            const deadline = performance.now() + 12;
+            while (performance.now() < deadline) {
                 if (!this.active) {
                     if (this.queue.length === 0) break;
                     this.take(this.queue.shift(), now);
@@ -325,6 +395,7 @@
                     const r = t.heading * Math.PI / 180;
                     t.x = a.from.x + d * Math.cos(r);
                     t.y = a.from.y + d * Math.sin(r);
+                    this.stage.ensure(t.x, t.y);
                     if (t.pen) this.stage.line(a.drawn[0], a.drawn[1], t.x, t.y, t.color, t.width);
                     a.drawn = [t.x, t.y];
                 } else {
@@ -394,6 +465,8 @@
     }
 
     const runners = {};
+    // the turtle cards of the page, which share their speed
+    const cards = [];
     function runner(language) {
         if (!runners[language]) runners[language] = new Runner(language);
         return runners[language];
@@ -428,11 +501,12 @@
                 return b;
             });
             this.state = el('span', { class: 'turtle-state', 'aria-live': 'polite' });
+            cards.push(this);
             bar.appendChild(speeds);
             bar.appendChild(this.state);
             box.appendChild(this.caption);
             box.appendChild(bar);
-            this.setSpeed(this.speed);
+            this.setSpeed(this.speed, true);
         }
 
         setCaption(target, call) {
@@ -449,9 +523,15 @@
             }
         }
 
-        setSpeed(value) {
+        // also while a program runs (Player.setSpeed); one speed for all
+        // turtle cards of the page, remembered for the next one
+        setSpeed(value, fromAll) {
+            if (!fromAll) {
+                cards.forEach((card) => { if (card !== this) card.setSpeed(value, true); });
+                storageSet('turtle-speed', String(value));
+            }
             this.speed = value;
-            storageSet('turtle-speed', String(value));
+            this.player.setSpeed(value);
             this.speedButtons.forEach((b) => {
                 const on = Number(b.dataset.speed) === value;
                 b.classList.toggle('active', on);
@@ -600,7 +680,12 @@
                 this.stage.setTarget(show.expected);
                 this.setCaption(show.expected, show.call);
                 this.stage.clear();
-                show.drawn.forEach((s) => { this.stage.segments.push(s); this.stage.line(...s); });
+                show.drawn.forEach((s) => {
+                    this.stage.ensure(s[0], s[1]);
+                    this.stage.ensure(s[2], s[3]);
+                    this.stage.segments.push(s);
+                    this.stage.line(...s);
+                });
             }
             this.stage.showDiff({ missing: show.missing, extra: show.extra });
         }
@@ -611,6 +696,186 @@
         const stage = new Stage(box);
         if (box.dataset.target) stage.setTarget(JSON.parse(box.dataset.target));
     }
+
+    // ----- how a recursive figure is built, level by level -----
+
+    // The lines a list of commands draws, without drawing them.
+    function trace(commands) {
+        const t = Object.assign({}, START);
+        const out = [];
+        commands.forEach(([command, value]) => {
+            if (command === 'forward' || command === 'back') {
+                const d = command === 'back' ? -value : value;
+                const r = t.heading * Math.PI / 180;
+                const x = t.x + d * Math.cos(r);
+                const y = t.y + d * Math.sin(r);
+                if (t.pen) out.push([t.x, t.y, x, y, t.color, t.width]);
+                t.x = x;
+                t.y = y;
+            } else if (command === 'left') t.heading += value;
+            else if (command === 'right') t.heading -= value;
+            else if (command === 'pen_up') t.pen = false;
+            else if (command === 'pen_down') t.pen = true;
+            else if (command === 'color') t.color = value;
+            else if (command === 'width') t.width = value;
+        });
+        return out;
+    }
+
+    // the parts of a level in these colours, what joins them in grey
+    const PARTS = ['#2f9e44', '#1c7ed6', '#e8590c', '#ae3ec9'];
+    const JOIN = '#868e96';
+
+    // Each figure: its levels, the commands of a level (the parts made of
+    // the level below in PARTS), and what to say about it.
+    const FIGURES = {
+        koch: {
+            levels: 4,
+            commands(level) {
+                const out = [['width', 3]];
+                const koch = (size, depth) => {
+                    if (depth === 0) { out.push(['forward', size]); return; }
+                    koch(size / 3, depth - 1); out.push(['left', 60]);
+                    koch(size / 3, depth - 1); out.push(['right', 120]);
+                    koch(size / 3, depth - 1); out.push(['left', 60]);
+                    koch(size / 3, depth - 1);
+                };
+                if (level === 0) { koch(243, 0); return out; }
+                [['left', 60], ['right', 120], ['left', 60], null].forEach((turn, i) => {
+                    out.push(['color', PARTS[i]]);
+                    koch(81, level - 1);
+                    if (turn) out.push(turn);
+                });
+                return out;
+            },
+            says(level) {
+                if (level === 0) return 'Stufe 0: eine gerade Linie.';
+                return 'Stufe ' + level + ': vier Kurven der Stufe ' + (level - 1) + ', jede ein Drittel so lang, in vier Farben. Zwischen ihnen dreht sich die Schildkröte 60 Grad nach links, 120 nach rechts und 60 nach links.';
+            },
+        },
+        sierpinski: {
+            levels: 4,
+            commands(level) {
+                const out = [['width', 2]];
+                const tri = (size, depth) => {
+                    if (depth === 0) { for (let i = 0; i < 3; i++) out.push(['forward', size], ['left', 120]); return; }
+                    const half = size / 2;
+                    tri(half, depth - 1);
+                    out.push(['pen_up'], ['forward', half], ['pen_down']);
+                    tri(half, depth - 1);
+                    out.push(['pen_up'], ['back', half], ['left', 60], ['forward', half], ['right', 60], ['pen_down']);
+                    tri(half, depth - 1);
+                    out.push(['pen_up'], ['left', 60], ['back', half], ['right', 60], ['pen_down']);
+                };
+                if (level === 0) { tri(256, 0); return out; }
+                const half = 128;
+                out.push(['color', PARTS[0]]); tri(half, level - 1);
+                out.push(['pen_up'], ['forward', half], ['pen_down'], ['color', PARTS[1]]); tri(half, level - 1);
+                out.push(['pen_up'], ['back', half], ['left', 60], ['forward', half], ['right', 60], ['pen_down'], ['color', PARTS[2]]); tri(half, level - 1);
+                return out;
+            },
+            says(level) {
+                if (level === 0) return 'Stufe 0: ein Dreieck mit drei gleich langen Seiten.';
+                return 'Stufe ' + level + ': drei Dreiecke der Stufe ' + (level - 1) + ', halb so groß, in drei Farben: links unten, rechts unten und oben.';
+            },
+        },
+        tree: {
+            levels: 5,
+            commands(level) {
+                const out = [['left', 90]];
+                const tree = (size, depth) => {
+                    if (depth === 0) return;
+                    out.push(['forward', size], ['left', 30]);
+                    tree(size * 0.7, depth - 1);
+                    out.push(['right', 60]);
+                    tree(size * 0.7, depth - 1);
+                    out.push(['left', 30], ['pen_up'], ['back', size], ['pen_down']);
+                };
+                if (level === 0) return out;
+                out.push(['color', JOIN], ['width', 4], ['forward', 100], ['left', 30], ['width', 2], ['color', PARTS[0]]);
+                tree(70, level - 1);
+                out.push(['right', 60], ['color', PARTS[1]]);
+                tree(70, level - 1);
+                return out;
+            },
+            says(level) {
+                if (level === 0) return 'Stufe 0: nichts. Hier hört die Funktion auf.';
+                return 'Stufe ' + level + ': ein Stamm (grau), an dem links und rechts je ein Baum der Stufe ' + (level - 1) + ' wächst, 0,7-mal so groß und 30 Grad zur Seite gedreht.';
+            },
+        },
+        hilbert: {
+            levels: 5,
+            commands(level) {
+                const out = [['width', 3]];
+                const size = level === 0 ? 0 : 240 / (Math.pow(2, level) - 1);
+                const hilbert = (depth, angle) => {
+                    if (depth === 0) return;
+                    out.push(['right', angle]); hilbert(depth - 1, -angle);
+                    out.push(['forward', size], ['left', angle]); hilbert(depth - 1, angle);
+                    out.push(['forward', size]); hilbert(depth - 1, angle);
+                    out.push(['left', angle], ['forward', size]); hilbert(depth - 1, -angle);
+                    out.push(['right', angle]);
+                };
+                if (level === 0) return out;
+                const part = (i, angle) => { out.push(['color', PARTS[i]]); hilbert(level - 1, angle); out.push(['color', JOIN]); };
+                out.push(['right', 90]); part(0, -90);
+                out.push(['forward', size], ['left', 90]); part(1, 90);
+                out.push(['forward', size]); part(2, 90);
+                out.push(['left', 90], ['forward', size]); part(3, -90);
+                out.push(['right', 90]);
+                return out;
+            },
+            says(level) {
+                if (level === 0) return 'Stufe 0: nichts.';
+                if (level === 1) return 'Stufe 1: drei graue Linien, wie ein U. Die vier Kurven der Stufe 0 an den Ecken sind leer.';
+                return 'Stufe ' + level + ': vier Kurven der Stufe ' + (level - 1) + ' in vier Farben, verbunden durch drei graue Linien wie bei Stufe 1. Die erste (grün) und die letzte (lila) sind gespiegelt: Sie drehen sich jedes Mal genau andersherum.';
+            },
+        },
+    };
+
+    // <div class='turtle-levels' data-figure='koch'></div>: the paper, a
+    // button for each level and a sentence about it; a click lets the
+    // turtle draw that level, its parts in colour.
+    function levels(box) {
+        const figure = FIGURES[box.dataset.figure];
+        if (!figure) return;
+        const stage = new Stage(box);
+        const player = new Player(stage, () => {}, () => {});
+        const says = el('p', { class: 'turtle-levels-says', 'aria-live': 'polite' });
+        const buttons = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': 'Stufe' });
+        const show = (level, animate) => {
+            const commands = figure.commands(level);
+            stage.target = null;
+            stage.clear();
+            stage.fit(trace(commands));
+            stage.redraw();
+            player.reset(animate ? 3 : 0);
+            player.push(commands.map(([c, v]) => [c, v, null]));
+            says.textContent = figure.says(level);
+            Array.from(buttons.children).forEach((b, i) => {
+                b.classList.toggle('active', i === level);
+                b.setAttribute('aria-pressed', i === level ? 'true' : 'false');
+            });
+        };
+        for (let level = 0; level <= figure.levels; level++) {
+            const b = el('button', { type: 'button', class: 'btn btn-outline-secondary', text: 'Stufe ' + level });
+            b.addEventListener('click', () => show(level, true));
+            buttons.appendChild(b);
+        }
+        box.appendChild(el('div', { class: 'turtle-bar' }, [buttons]));
+        box.appendChild(says);
+        show(Math.min(2, figure.levels), false);
+    }
+
+    function startLevels() {
+        document.querySelectorAll('.turtle-levels').forEach((box) => {
+            if (box.dataset.ready) return;
+            box.dataset.ready = '1';
+            levels(box);
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startLevels);
+    else startLevels();
 
     window.TurtleCard = TurtleCard;
     window.TurtleCard.showOnly = showOnly;

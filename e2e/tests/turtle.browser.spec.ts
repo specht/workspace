@@ -29,6 +29,12 @@ test('the turtle draws and is checked in Ruby, Python and JavaScript', async ({ 
     await square.locator('.task-code').fill(PROGRAMS[language][0]);
     await square.locator('.task-submit').click();
     await expect(square.locator('.task-feedback')).toContainText('Dein Bild stimmt.', { timeout: 60_000 });
+    // nothing printed, nothing in the console (no messages of the runtime's start)
+    await expect(square.locator('.task-console')).toBeHidden();
+    // the commands at hand, as this language writes them
+    await expect(square.locator('.turtle-commands')).toContainText(language === 'ruby' ? 'left 90' : 'left(90)');
+    const dashes = page.locator('.task-card[data-task="turtle/dashes"]:visible');
+    await expect(dashes.locator('.turtle-commands')).toContainText(language === 'javascript' ? 'penUp()' : language === 'python' ? 'pen_up()' : 'pen_up');
 
     // a function, called twice from the start; then a triangle instead
     const fn = page.locator('.task-card[data-task="turtle/square-function"]:visible');
@@ -55,7 +61,13 @@ test('an endless program draws until it is stopped, and its code stays', async (
   await expect(card.locator('.task-submit')).toContainText('Stopp');
   // the line the turtle is on is marked in the editor while it draws
   await expect(card.locator('.code-input-gutter .current, .code-input-mark:visible').first()).toBeVisible({ timeout: 15_000 });
-  await page.waitForTimeout(1500);
+  // the speed changes while it runs, on every turtle card of the page
+  await card.locator('.turtle-speeds button', { hasText: 'Langsam' }).click();
+  await expect(page.locator('.task-card[data-task="turtle/square"]:visible .turtle-speeds button.active')).toHaveText('Langsam');
+  await page.waitForTimeout(800);
+  await card.locator('.turtle-speeds button', { hasText: 'Sofort' }).click();
+  await page.waitForTimeout(800);
+  await expect(card.locator('.task-submit')).toContainText('Stopp');
   await card.locator('.task-submit').click();
   await expect(card.locator('.turtle-state')).toHaveText('Angehalten.');
   await expect(card.locator('.task-submit')).toContainText('Ausführen');

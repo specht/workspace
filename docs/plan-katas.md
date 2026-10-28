@@ -245,3 +245,34 @@ sheet of paper that draws a line behind it (`turtle`, in development since
 - **One set of commands per language** (`turtle.rb`, `turtle.py`,
   `turtle.js`), used by the worker and by the examples on the host
   (`TurtleCheck.record`), so that both run the same code.
+- **The speed changes while a program runs** (the maintainer): the worker
+  always paces at the fastest speed, the page draws what came at the speed
+  chosen now; »Sofort« at the start sends everything at once. Shared memory
+  between page and worker would let the worker read the buttons itself, but
+  needs cross-origin isolation for the whole page.
+- **The paper fits the picture** (the maintainer, at the Koch curve that
+  used a quarter of it): centred on the picture asked for, at least ±150
+  steps, zooming out around everything drawn when a drawing goes past the
+  edge; the grid stays 50 steps apart and is left out where it would be
+  too dense. `show:` names the call whose picture a card shows.
+- **The commands at hand** above the paper, as Pip's (the maintainer); both
+  widgets show them in the editor's colours, with a quiet »Befehle«.
+- **The chapters:** commands, loops, own functions, pen and colour, a
+  variable that grows, stars, one's own picture to hand in; then, as
+  extras, trees (a beautiful one in brown and green, by the maintainer's
+  wish) and curves: Sierpiński, Koch, Hilbert. Two predictions: the turn at
+  a triangle's corner (120, not 60) and 91 instead of 90 degrees.
+- **Not only tracing** (the maintainer): free cards with a goal instead of
+  a picture (`free:`, also with `max_lines`, which then asks for a loop):
+  one's own pattern, rosette, tree and picture.
+- **The picture asked for is a thin pencil line** under the ink (the
+  maintainer found it too dark and thick); it stays visible after drawing.
+- **Recursion is shown, not dictated** (the maintainer, at a Hilbert prompt
+  that was a recipe to transcribe): a level widget (`<div
+  class='turtle-levels' data-figure='hilbert'>`, turtle_canvas.js) draws
+  each level with the parts made of the level below in colour; the cards
+  then only say what to write, and the tips lead there. Trees also grow
+  unevenly and hang down to the ground (the maintainer).
+- **One speed for all cards of a page**, and a line on its way takes the
+  new speed at once (the maintainer: it did not react for a while); the
+  player draws at most about 12 ms per frame.

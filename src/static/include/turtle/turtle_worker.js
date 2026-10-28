@@ -8,9 +8,11 @@
 // In: { type: 'prepare', language } to load a runtime ahead, and
 // { type: 'run', language, code, runs, speed }. runs is a list: null
 // runs the program, a text (»square(50)«) runs the program without drawing
-// and then the call, each from the start. speed 0 draws at once; 1 to 3
-// let each command take as long as the turtle needs for it, so that the
-// page draws while the program runs, endless ones until they are stopped.
+// and then the call, each from the start. speed 0 sends everything at
+// once; any other speed lets each command take as long as the page's
+// fastest speed needs for it (PACE), so that the page draws while the
+// program runs, endless ones until they are stopped, at whichever speed it
+// shows them.
 //
 // Out: { type: 'loading' } while a runtime loads, then per run
 // { type: 'start', index }, { type: 'items', list } with commands
@@ -28,8 +30,11 @@ const RUBY = BASE + 'runtime/ruby-2.10.1/';
 const MAX_COMMANDS = 200000;
 const MAX_OUTPUT = 100000;
 const MAX_WIDTH = 50;
-// distance per second and degrees per second, by speed
-const PACE = { 1: [90, 180], 2: [260, 540], 3: [1000, 2160] };
+// distance per second and degrees per second of the fastest speed the
+// page draws at (turtle_canvas.js): a paced run never gets far ahead of
+// the page, whichever speed the page shows it at, and that may change
+// while the program runs
+const PACE = [1000, 2160];
 
 let colors = null;
 let pace = null;
@@ -227,6 +232,9 @@ async function runRuby(code, call) {
     const printer = consolePrinter({ stdout: out, stderr: out });
     const { vm } = await RubyVM.instantiateModule({
         module: rubyModule, wasip1: wasi,
+        // without the standard library: no RubyGems and no error helpers,
+        // which would otherwise say so on stderr at every start
+        args: ['ruby.wasm', '--disable=gems,error_highlight,did_you_mean,syntax_suggest', '-EUTF-8', '-e_=0'],
         addToImports: (imports) => printer.addToImports(imports),
         setMemory: (memory) => printer.setMemory(memory),
     });
@@ -301,7 +309,7 @@ self.onmessage = async (event) => {
         self.postMessage({ type: 'done' });
         return;
     }
-    pace = PACE[message.speed] || null;
+    pace = message.speed > 0 ? PACE : null;
     count = 0;
     printed = 0;
     for (let i = 0; i < message.runs.length; i++) {

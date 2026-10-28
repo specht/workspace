@@ -11052,19 +11052,29 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
 .pip-commands {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35em;
+    align-items: center;
+    gap: 0.4em;
     margin: 0.5em 0 0.8em;
 }
-.pip-command {
-    padding: 0.1em 0.45em;
-    border-radius: 0.35em;
-    background: var(--bs-tertiary-bg);
-    color: var(--bs-body-color);
+.pip-commands-label {
+    margin-right: 0.15em;
     font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+/* the commands in the colours of the editor beside them, alike in both
+   themes (Pip and the turtle); a question in the yellow of the same palette */
+.pip-commands .pip-command {
+    padding: 0.2em 0.55em;
+    border-radius: 0.4em;
+    background: var(--code-bg, rgb(40, 40, 40));
+    color: #ebdbb2;
+    font-size: 0.9em;
+    line-height: 1.4;
+    white-space: nowrap;
     cursor: help;
 }
-.pip-command.pip-question {
-    color: var(--stepper-current);
+.pip-commands .pip-command.pip-question {
+    color: #fabd2f;
 }
 
 /* the first chapter: a button a command instead of the list, the plan
@@ -12616,10 +12626,15 @@ pre.git-code {
 /* The turtle (turtle_canvas.js): its paper above the code, beside it on a
    wide screen. The paper is square and light in both themes, like a sheet;
    three canvases on top of each other: the paper with the picture asked
-   for, the ink, the turtle with what a check found. */
+   for, the ink, the turtle with what a check found. It is never higher
+   than about half the window, so that a card with its button fits a Full
+   HD school display, also at 125 %. */
 .turtle-layout {
+    --turtle-size: min(30em, 56vh);
     margin-bottom: 0.6em;
 }
+
+.turtle-commands { margin-top: 0.2em; }
 
 .turtle-stage {
     margin-bottom: 0.6em;
@@ -12628,7 +12643,7 @@ pre.git-code {
 .turtle-frame {
     position: relative;
     width: 100%;
-    max-width: 30em;
+    max-width: var(--turtle-size, 30em);
     aspect-ratio: 1;
     margin: 0 auto;
     border-radius: 0.6em;
@@ -12659,9 +12674,9 @@ pre.git-code {
 .turtle-swatch {
     display: inline-block;
     width: 1.4em;
-    height: 0.45em;
-    border-radius: 0.25em;
-    background: #cfc8b8;
+    height: 3px;
+    border-radius: 2px;
+    background: #d6cfbf;
 }
 
 .turtle-bar {
@@ -12688,6 +12703,25 @@ pre.git-code {
     .turtle-layout > .turtle-stage { margin-bottom: 0; }
     .turtle-layout .code-input-text,
     .turtle-layout > textarea {
-        min-height: 18em;
+        min-height: calc(var(--turtle-size) + 4.4em);
     }
+}
+
+/* How a recursive figure is built (turtle_canvas.js, levels): the paper,
+   a button per level and a sentence about it, narrower than a card. */
+.turtle-levels {
+    max-width: 26em;
+    margin: 1em auto 1.4em;
+}
+
+.turtle-levels .turtle-frame {
+    max-width: min(26em, 50vh);
+}
+
+.turtle-levels-says {
+    min-height: 3em;
+    margin: 0.5em 0 0;
+    font-size: 90%;
+    text-align: center;
+    color: var(--bs-secondary-color);
 }

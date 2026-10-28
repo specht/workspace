@@ -596,7 +596,7 @@ module TaskSpec
             errors.concat(CircuitCheck.spec_errors(check))
         when 'turtle'
             # A program that draws, run in the browser, its lines compared here (TurtleCheck).
-            allowed += %w[language draw cases free max_lines colors]
+            allowed += %w[language draw cases free max_lines colors commands show]
             errors.concat(TurtleCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).

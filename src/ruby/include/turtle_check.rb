@@ -22,6 +22,7 @@ require_relative 'turtle_world'
 #     cases:
 #       - call: square(50)
 #         draw: 4.times { forward 50; left 90 }
+#     show: 0                        # optional: the call whose picture the card shows
 #
 #   or, for a picture of one's own:
 #
@@ -40,6 +41,24 @@ module TurtleCheck
     FILES = { 'ruby' => 'kata.rb', 'python' => 'kata.py', 'javascript' => 'kata.js' }.freeze
     LANGUAGES = FILES.keys.freeze
     FREE = %w[min_lines min_colors].freeze
+    # The commands as each language writes them, with an example, and what
+    # they do: the card lists them like Pip's (commands: picks some).
+    COMMANDS = TurtleWorld::COMMANDS
+    SPELLING = {
+        'ruby' => { 'forward' => 'forward 100', 'back' => 'back 100', 'left' => 'left 90', 'right' => 'right 90',
+                    'pen_up' => 'pen_up', 'pen_down' => 'pen_down', 'color' => 'color "red"', 'width' => 'width 4' },
+        'python' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
+                      'pen_up' => 'pen_up()', 'pen_down' => 'pen_down()', 'color' => 'color("red")', 'width' => 'width(4)' },
+        'javascript' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
+                          'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)' },
+    }.freeze
+    DESCRIPTIONS = {
+        'forward' => 'so viele Schritte vorwärts gehen', 'back' => 'so viele Schritte rückwärts gehen',
+        'left' => 'sich um so viele Grad nach links drehen', 'right' => 'sich um so viele Grad nach rechts drehen',
+        'pen_up' => 'den Stift heben: Die Schildkröte geht, ohne zu zeichnen', 'pen_down' => 'den Stift wieder aufs Papier setzen',
+        'color' => 'die Farbe des Stifts: ein englischer Name wie "red" oder "darkgreen", oder "#ff8800"',
+        'width' => 'wie dick der Stift zeichnet, 1 bis 50 (am Anfang 2)',
+    }.freeze
     # what the card says under its picture for a call (»square(50)«)
     EMPTY = 'Schreib zuerst ein Programm.'
 
@@ -73,6 +92,12 @@ module TurtleCheck
         end
         errors << 'max_lines must be a whole number above 0' if check.key?('max_lines') && !(check['max_lines'].is_a?(Integer) && check['max_lines'] > 0)
         errors << 'colors must be true or false' if check.key?('colors') && ![true, false].include?(check['colors'])
+        if check.key?('show') && !(check['cases'].is_a?(Array) && check['show'].is_a?(Integer) && check['show'].between?(0, check['cases'].size - 1))
+            errors << 'show must be the index of one of the cases'
+        end
+        if check.key?('commands') && !(check['commands'].is_a?(Array) && !check['commands'].empty? && (check['commands'] - COMMANDS).empty?)
+            errors << "commands must list some of #{COMMANDS.join(', ')}"
+        end
         errors
     end
 
@@ -91,10 +116,14 @@ module TurtleCheck
     end
 
     # The picture the card shows faintly before anything runs: the whole
-    # program's, or the first call's.
+    # program's, or that of the call show: names (the first by default).
     def self.target(check)
-        source = check['draw'] || (check['cases'] && check['cases'].first['draw'])
+        source = check['draw'] || (check['cases'] && check['cases'][shown(check)]['draw'])
         source ? TurtleWorld.draw(source).segments.map(&:to_a) : nil
+    end
+
+    def self.shown(check)
+        check['show'].is_a?(Integer) ? check['show'] : 0
     end
 
     # ----- comparing -----
@@ -180,7 +209,12 @@ module TurtleCheck
 
         worlds = runs.map { |commands| TurtleWorld.replay(commands) }
         if check['free']
-            free_check(check['free'], worlds.first)
+            status, message = free_check(check['free'], worlds.first)
+            if status == :correct && check['max_lines'] && (n = lines(code)) > check['max_lines']
+                return [:wrong, "Dein Bild hat genug Linien, aber dein Programm hat #{n} Zeilen. Geht es in höchstens #{check['max_lines']}? " \
+                                'Was sich wiederholt, kann eine Schleife machen.', nil]
+            end
+            [status, message, nil]
         else
             sources = check['cases'] ? check['cases'].map { |c| c['draw'] } : [check['draw']]
             sources.each_with_index do |source, i|
