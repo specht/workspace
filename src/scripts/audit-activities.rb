@@ -11,8 +11,9 @@
 # Notiz (lehrkraft.md opens with »Lernende«), generiert / von Hand (pictures
 # from recipes and others; »von Hand« counts photos and diagrams too),
 # dunkel (dark variants among the generated pictures), Karte (whether the card
-# picture comes from a recipe and has a NAME-dark version; »Icon« for a set
-# of Katas, which has an icon instead). A »!« marks what
+# picture comes from a recipe and has a NAME-dark version, and whether it is
+# 16:9 unless it is a drawing with :contain; »Icon« for a set of Katas, which
+# has an icon instead). A »!« marks what
 # the checklist asks for.
 require 'json'
 require 'yaml'
@@ -27,6 +28,23 @@ def catalog
     YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |section| section['hidden'] }
         .flat_map { |section| section['entries'] || [] }
         .map { |entry| entry.to_s.delete_prefix('.') }
+end
+
+# Width and height of a picture (ImageMagick's identify), nil without it.
+def picture_size(path)
+    width, height = IO.popen(['identify', '-format', '%w %h', "#{path}[0]"], err: File::NULL, &:read).split.map(&:to_i)
+    width.to_i.positive? && height.to_i.positive? ? [width, height] : nil
+rescue SystemCallError
+    nil
+end
+
+# The card shows its picture in 16:9 everywhere (docs/checkliste.md); a
+# drawing with :contain is padded to it by the server.
+def card_ratio_note(dir, meta, card)
+    return '' if meta.match?(/^image:\s*\S+:contain/)
+    size = picture_size(File.join(dir, card))
+    return '' unless size
+    (size[0].to_f / size[1] - 16.0 / 9).abs > 0.01 ? ', nicht 16:9!' : ''
 end
 
 def local_images(markdown)
@@ -78,7 +96,8 @@ def audit(slug)
                   meta.match?(/^icon:\s*\S/) ? 'Icon' : 'fehlt!'
               else
                   dark_card = File.file?(File.join(dir, card.sub(/(\.\w+)\z/, '-dark\1')))
-                  (generated.include?(card) ? 'Rezept' : 'kein Rezept') + (dark_card ? '' : ', nicht dunkel')
+                  (generated.include?(card) ? 'Rezept' : 'kein Rezept') + (dark_card ? '' : ', nicht dunkel') +
+                      card_ratio_note(dir, meta, card)
               end
     }
 end

@@ -103,7 +103,7 @@ image: tcpip.webp
 | `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
 | `template_name` | Name der Vorlage im Genitiv, für »Es gibt eine neue Version der CPU Sandbox!«; ohne das Feld: »… von `cpu-sandbox`« |
 | `class_repo` | `group`: Die Seite arbeitet mit einem Klassen-Repository, dessen Adresse die Lehrkraft je Gruppe auf der Klassenseite einträgt (die Sandboxes). Nie eine Adresse; siehe »Teile mit und ohne Klassen-Repository« |
-| `image` | Das Bild der Karte im Katalog, relativ zur Seite; `name.webp:30:0` setzt den Ausschnitt (x und y in Prozent), `name.webp:contain` zeigt eine Zeichnung ganz. Auf dem Handy ist das Bild links neben dem Text etwa so hoch wie breit und zeigt nur die Mitte der 16:9, gut die Hälfte bis drei Viertel der Breite: x legt fest, welcher Teil bleibt (0 links, 100 rechts), auch bei einer Zeichnung (`name.webp:contain:20:50`). Auf dem Desktop ist ein 16:9-Bild ganz zu sehen |
+| `image` | Das Bild der Karte im Katalog, relativ zur Seite, selbst 16:9 (docs/checkliste.md): Die Karte zeigt es auf dem Desktop und auf dem Handy ganz. `name.webp:contain` füllt eine Zeichnung mit der Farbe ihrer Ecke auf 16:9 auf. `name.webp:30:0` setzt den Ausschnitt (x und y in Prozent) eines Bildes, das nicht 16:9 ist; das soll keines sein |
 | `image_alt` | Was das Bild der Karte zeigt, in Anführungszeichen (`image_alt: "Ein Huffman-Baum mit …"`); Pflicht zu `image`, `alt_text_test.rb` prüft es. Steht dasselbe Bild mit Alt-Text auf der Seite, gilt dieser |
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
