@@ -136,7 +136,7 @@ _person(leibniz)
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
-<p><strong>Explication de l'Arithmétique Binaire</strong>, Gottfried Wilhelm Leibniz, 1703. Leibniz schreibt die Zahlen nur mit 0 und 1 und rechnet damit, an Beispielen für Addieren, Subtrahieren, Multiplizieren und Dividieren. Auswendig lernen müsse man dafür nichts, nicht einmal, dass 6 und 7 zusammen 13 sind. Auf Französisch, auf <a href='https://fr.wikisource.org/wiki/Leibniz-en.francais-Gerhardt.Math.1a7.djvu/Num%C3%A9ration.binaire'>Wikisource</a>.</p>
+<p><strong>Explication de l'Arithmétique Binaire</strong>, Gottfried Wilhelm Leibniz, 1703. Leibniz schreibt die Zahlen nur mit 0 und 1 und rechnet damit, an Beispielen für Addieren, Subtrahieren, Multiplizieren und Dividieren. Auswendig lernen müsse man dafür nichts, anders als beim gewöhnlichen Rechnen, bei dem man wissen müsse, »que 6 et 7 pris ensemble font 13«: dass 6 und 7 zusammen 13 ergeben. Auf Französisch, auf <a href='https://fr.wikisource.org/wiki/Leibniz-en.francais-Gerhardt.Math.1a7.djvu/Num%C3%A9ration.binaire'>Wikisource</a>.</p>
 </div>
 
 Für den Code nimmst du dir zuerst eine einzige Stelle vor.
