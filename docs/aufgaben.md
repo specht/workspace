@@ -319,6 +319,7 @@ In `expect` können Werte stehen, die der Server pro Person kennt.
 | Variable | Wert |
 | --- | --- |
 | `${workspace.ip}` | IP-Adresse des eigenen Workspace |
+| `${workspace.mac}` | MAC-Adresse des eigenen Workspace (`eth0`), wie Docker sie beim Start vergeben hat |
 | `${workspace.live_url}` | Adresse des eigenen Live Servers, z. B. `https://q7k2m-5500.workspace.hackschule.de` |
 | `${person.codeword}` | Ein Codewort, das für jede Person anders ist |
 
@@ -2054,6 +2055,10 @@ examples:
 - `answer` ist eine Antwort, wie Lernende sie eintippen, für `answer` mit
   `compare: regex` und für `command`: dort der Befehl, den der Test mit `sh`
   im Workspace-Ordner ausführt, wie der Gast in `/workspace`.
+- `variables` gibt die Werte der Platzhalter (`${workspace.mac}` …), die der
+  Server sonst pro Person kennt: `{ workspace.mac: f2:fd:53:d5:5f:65 }`. So
+  lässt sich auch eine `answer` mit Platzhalter prüfen (»Deine MAC-Adresse« in
+  `tcpip`).
 - `say` ist ein Stück der Meldung, die ein abgelehntes Beispiel bekommen muss.
   So zeigt der Test auch, dass die richtige Meldung kommt.
 - Unter `ruby:` oder `python:` stehen die Beispiele einer Sprachvariante mit

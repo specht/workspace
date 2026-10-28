@@ -57,6 +57,7 @@ module TaskCheck
 
     UNAVAILABLE_VARIABLE = {
         'workspace.ip' => 'Starte zuerst deinen Workspace. Dann kann ich die Adresse mit der deines Workspaces vergleichen.',
+        'workspace.mac' => 'Starte zuerst deinen Workspace. Dann kann ich die MAC-Adresse mit der deines Workspaces vergleichen.',
         'workspace.live_url' => 'Starte zuerst deinen Workspace. Dann kann ich die Adresse mit der deiner Live-Vorschau vergleichen.',
         'person.codeword' => 'Für diese Aufgabe gibt es noch kein Codewort.',
     }.freeze

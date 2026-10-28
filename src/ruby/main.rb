@@ -6018,13 +6018,15 @@ class Main < Sinatra::Base
         names = TaskCheck.variables_used(task['check'])
         email = @session_user[:email]
         vars = {}
-        if names.include?('workspace.ip')
+        if names.include?('workspace.ip') || names.include?('workspace.mac')
             state = begin
                 get_server_state(fs_tag_for_email(email))
             rescue StandardError
                 nil
             end
-            vars['workspace.ip'] = state && state[:running] ? state[:ip] : nil
+            running = state && state[:running]
+            vars['workspace.ip'] = running ? state[:ip] : nil if names.include?('workspace.ip')
+            vars['workspace.mac'] = running ? state[:mac] : nil if names.include?('workspace.mac')
         end
         if names.include?('workspace.live_url')
             server_tag = @session_user[:server_tag]

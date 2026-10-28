@@ -33,7 +33,7 @@ module TaskSpec
 
     ID_PATTERN = /\A[a-z0-9][a-z0-9-]{0,47}\z/
     VARIABLE_PATTERN = /\$\{([a-z_.]+)\}/
-    VARIABLES = %w[workspace.ip workspace.live_url person.codeword].freeze
+    VARIABLES = %w[workspace.ip workspace.mac workspace.live_url person.codeword].freeze
 
     # Milestone in which each check type becomes available. Types marked
     # 'later' may already be written down; they are validated but not run.

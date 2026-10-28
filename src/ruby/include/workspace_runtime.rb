@@ -48,7 +48,11 @@ module WorkspaceRuntime
             inspect = inspect_json.strip.empty? ? [] : JSON.parse(inspect_json)
             unless inspect.empty?
                 result[:running] = true
-                result[:ip] = inspect.first['NetworkSettings']['Networks'][WORKSPACE_NETWORK]['IPAddress']
+                network = inspect.first['NetworkSettings']['Networks'][WORKSPACE_NETWORK]
+                result[:ip] = network['IPAddress']
+                # Docker makes it up when the container starts (TCP/IP, »Im
+                # eigenen Netz«); a task compares it with ${workspace.mac}.
+                result[:mac] = network['MacAddress']
             end
             result
         end
