@@ -2,8 +2,8 @@
 image: teaser.webp:0:50
 image_alt: "Ein Terminal, in dem nc eine HTTP-Anfrage an info.cern.ch schickt, darunter die Antwort des Servers"
 kind: labor
-duration: 2 Doppelstunden
-curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Computernetze (Funktionsweise des Internet, Schichtenmodell, Protokolle), Rechner und Netze (Protokolle, Schichtenarchitektur)"
+duration: 3 Doppelstunden
+curriculum: "Sek I: Leben in und mit vernetzten Systemen (Datenaustausch im Netzwerk); Oberstufe: Computernetze (LAN, WLAN, Funktionsweise des Internet, Schichtenmodell, Protokolle), Rechner und Netze (Protokolle, Schichtenarchitektur), Vertiefung Computer-Netze (Ethernet, MAC-Adressen, ARP, Switches, Routing)"
 topics: [netze]
 age: Sek I
 reference: [netzwerk, http, json, terminal]
@@ -18,7 +18,7 @@ reference: [netzwerk, http, json, terminal]
 # TCP/IP-Verbindungen
 
 <p class='abstract'>
-Wie findet ein Paket seinen Weg durchs Internet, und wie wird aus einzelnen Paketen eine Verbindung, über die eine ganze Webseite kommt? Du findest die Adresse deines Workspace heraus, misst mit <code>ping</code>, wie weit Server entfernt sind, und verfolgst mit <code>traceroute</code> den Weg der Pakete. Dann siehst du, wie TCP eine Verbindung aufbaut, chattest mit <code>netcat</code> und holst eine Webseite von 1992, indem du HTTP von Hand tippst. Zum Schluss lädst du mit <code>wget</code> und <code>curl</code> Dateien und Daten aus dem Netz.
+Wie findet ein Paket seinen Weg durchs Internet, und wie wird aus einzelnen Paketen eine Verbindung, über die eine ganze Webseite kommt? Du findest die Adresse deines Workspace heraus, misst mit <code>ping</code>, wie weit Server entfernt sind, und verfolgst mit <code>traceroute</code> den Weg der Pakete. Eine Schicht tiefer siehst du, wie ein Paket im eigenen Netz mit MAC-Adressen und ARP das richtige Gerät findet und was Switches und Router damit tun. Dann siehst du, wie TCP eine Verbindung aufbaut, chattest mit <code>netcat</code> und holst eine Webseite von 1992, indem du HTTP von Hand tippst. Zum Schluss lädst du mit <code>wget</code> und <code>curl</code> Dateien und Daten aus dem Netz.
 </p>
 
 ## Vorbereitung
@@ -221,6 +221,218 @@ _task(router-zaehlen)
 <strong>Ausprobieren:</strong> Gib einem Paket selbst eine kleine TTL mit: <code>ping -c 3 -t 3 8.8.8.8</code> schickt drei Pakete mit TTL 3. Wer antwortet jetzt, und was meldet er? Erhöhe die TTL Schritt für Schritt: Ab welcher TTL antwortet Google selbst? Kommt bei einer TTL gar nichts zurück, hat sich der Router nicht gemeldet, wie bei einem Stern in <code>traceroute</code>.
 </div>
 
+## Im eigenen Netz: Ethernet, ARP und Switches
+
+<div class='hint books'>
+In diesem Abschnitt lernst du die Befehle <code>ip link</code>, <code>ip neigh</code> und <code>ip route</code> kennen.
+</div>
+
+`traceroute` hat gezeigt, dass ein Paket von Router zu Router springt. Aber wie kommt es über ein Kabel oder durch die Luft vom einen Gerät zum nächsten? Dafür gibt es unter IP eine eigene Schicht mit eigenen Adressen.
+
+### Die MAC-Adresse
+
+`ifconfig` hat dir hinter `ether` schon eine zweite Adresse gezeigt. Der neuere Befehl `ip` zeigt sie auch:
+
+```bash
+ip link
+```
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ip link
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='ip-link.webp' alt='Die Ausgabe von ip link: der Adapter lo mit link/loopback und lauter Nullen, darunter eth0 mit link/ether und einer MAC-Adresse aus sechs Hexadezimalzahlen, dahinter brd ff:ff:ff:ff:ff:ff.'>
+
+<!-- /tutorial-scope -->
+
+Hinter `link/ether` steht die **MAC-Adresse** von `eth0` (»Media Access Control«): sechs Bytes, als Hexadezimalzahlen mit Doppelpunkten dazwischen. Ein Netzwerkadapter in einem Laptop oder Handy bekommt sie schon in der Fabrik. Die ersten drei Bytes stehen für den Hersteller, die letzten drei vergibt der Hersteller selbst, jede Kombination nur einmal. Dein Workspace hat keine Netzwerkkarte, die man anfassen kann; seine MAC-Adresse hat sich Docker ausgedacht, als es deinen Workspace gestartet hat, und nach einem Neustart kann es eine andere sein. Selbst vergebene Adressen erkennt man an der zweiten Ziffer: 2, 6, A oder E.
+
+`brd ff:ff:ff:ff:ff:ff` ist die **Broadcast-Adresse**: Was an sie geht, bekommen alle im Netz. Bei `lo` stehen nur Nullen, denn was über Loopback geht, verlässt den Rechner nicht.
+
+_task(mac-adresse)
+
+Wozu zwei Adressen? Stell dir ein Paket vor, das quer durchs Land geschickt wird. Die **IP-Adresse** ist die Anschrift auf dem Paket: Sie bleibt von der Absenderin bis zum Ziel dieselbe. Die **MAC-Adresse** ist der Zettel für die nächste Etappe, von welchem Lager zu welchem Lager der nächste Lkw fährt. In jedem Lager kommt ein neuer Zettel darauf, die Anschrift bleibt. Eine MAC-Adresse gilt darum nur im eigenen Netz, bis zum nächsten Router.
+
+### Der Frame
+
+Auf dem Kabel reist ein IP-Paket nicht allein. **Ethernet** packt es in einen **Frame**: vorn die MAC-Adresse des Ziels, die des Absenders und eine Zahl für das, was drinsteckt (`0x0800` für ein IPv4-Paket, `0x0806` für ARP), hinten eine Prüfsumme, an der der Empfänger erkennt, ob unterwegs ein Bit gekippt ist.
+
+<svg viewBox="0 0 400 210" role="img" aria-label="Ein Ethernet-Frame als Reihe von Feldern: Ziel-MAC, 6 Bytes; Absender-MAC, 6 Bytes; Typ, 2 Bytes; das IP-Paket, 46 bis 1500 Bytes; Prüfsumme, 4 Bytes. Darunter ist das IP-Paket vergrößert: vorn der IP-Header mit Absender-IP, Ziel-IP und TTL, dahinter die Daten für ICMP oder TCP." style="width: 100%; max-width: 34em; display: block; margin: 1em auto; font-family: inherit; font-size: 12px;">
+    <text x="2" y="22" fill="currentColor" font-weight="bold">Ethernet-Frame</text>
+    <rect x="2" y="32" width="70" height="50" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" />
+    <rect x="72" y="32" width="100" height="50" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" />
+    <rect x="172" y="32" width="34" height="50" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" />
+    <rect x="206" y="32" width="116" height="50" fill="none" stroke="currentColor" stroke-width="1.5" />
+    <rect x="322" y="32" width="76" height="50" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" />
+    <text x="37" y="53" text-anchor="middle" fill="currentColor">Ziel-MAC</text>
+    <text x="37" y="71" text-anchor="middle" fill="currentColor" opacity="0.75">6 Bytes</text>
+    <text x="122" y="53" text-anchor="middle" fill="currentColor">Absender-MAC</text>
+    <text x="122" y="71" text-anchor="middle" fill="currentColor" opacity="0.75">6 Bytes</text>
+    <text x="189" y="53" text-anchor="middle" fill="currentColor">Typ</text>
+    <text x="189" y="71" text-anchor="middle" fill="currentColor" opacity="0.75">2</text>
+    <text x="264" y="53" text-anchor="middle" fill="currentColor" font-weight="bold">IP-Paket</text>
+    <text x="264" y="71" text-anchor="middle" fill="currentColor" opacity="0.75">46–1500 Bytes</text>
+    <text x="360" y="53" text-anchor="middle" fill="currentColor">Prüfsumme</text>
+    <text x="360" y="71" text-anchor="middle" fill="currentColor" opacity="0.75">4 Bytes</text>
+    <line x1="206" y1="82" x2="90" y2="132" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" />
+    <line x1="322" y1="82" x2="398" y2="132" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" />
+    <rect x="90" y="132" width="160" height="72" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.5" />
+    <rect x="250" y="132" width="148" height="72" fill="none" stroke="currentColor" stroke-width="1.5" />
+    <text x="170" y="153" text-anchor="middle" fill="currentColor">IP-Header:</text>
+    <text x="170" y="171" text-anchor="middle" fill="currentColor">Absender-IP, Ziel-IP,</text>
+    <text x="170" y="189" text-anchor="middle" fill="currentColor">TTL und mehr</text>
+    <text x="324" y="162" text-anchor="middle" fill="currentColor">Daten für</text>
+    <text x="324" y="180" text-anchor="middle" fill="currentColor">ICMP oder TCP</text>
+</svg>
+
+Ein Adapter sieht sich von jedem Frame zuerst die Ziel-MAC an. Ist es nicht seine eigene und nicht die Broadcast-Adresse, wirft er den Frame weg, ohne hineinzusehen.
+
+_person(metcalfe)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Ethernet: Distributed Packet Switching for Local Computer Networks</strong>, Robert M. Metcalfe und David R. Boggs, Communications of the ACM, 1976. Der Aufsatz, der Ethernet beschreibt: ein Kabel, an dem alle hängen, Pakete, die jeder bekommt und nur der Adressat behält, und was geschieht, wenn zwei gleichzeitig senden: <a href='https://www.cs.cornell.edu/courses/cs414/2004fa/ethernet.pdf'>als PDF</a>.</p>
+</div>
+
+### ARP: Wer hat diese Adresse?
+
+Für einen Frame braucht dein Workspace die MAC-Adresse des Ziels. Meist kennt er aber nur dessen IP-Adresse.
+
+_task(arp-wie)
+
+<!-- after: arp-wie -->
+Er fragt alle. Das Protokoll dafür heißt **ARP**, Address Resolution Protocol ([RFC 826](https://www.rfc-editor.org/rfc/rfc826), 1982). Der Workspace schickt einen Frame an die Broadcast-Adresse `ff:ff:ff:ff:ff:ff`, darin sinngemäß: »Wer hat `172.20.0.9`? Antwort bitte an `172.20.0.7`, MAC-Adresse `f2:fd:53:d5:5f:65`.« Alle im Netz bekommen die Frage, aber nur der Rechner mit dieser IP-Adresse antwortet, direkt an den Fragenden: »`172.20.0.9` hat `62:d2:c5:7a:c2:d7`.« Die Antwort merkt sich der Workspace in einer Tabelle, damit er nicht vor jedem Paket neu fragen muss.
+<!-- /after -->
+
+### Die Nachbarn: `ip neigh`
+
+<div class='hint handshake'>
+Hierfür brauchst du eine zweite Person mit einem eigenen Workspace.
+</div>
+
+Die Tabelle mit den MAC-Adressen, die dein Workspace schon kennt, zeigt `ip neigh` (»neighbours«, die Nachbarn). Findet mit `ifconfig` eure beiden IP-Adressen heraus und schreibt sie auf, aber schickt euch noch nichts.
+
+_task(neigh-vorher)
+
+<!-- after: neigh-vorher -->
+Sieh nach:
+
+```bash
+ip neigh
+```
+
+Die Ausgabe sieht etwa so aus, mit anderen Adressen:
+
+```text
+172.20.0.6 dev eth0 lladdr 16:57:cd:6f:d3:96 REACHABLE
+172.20.0.1 dev eth0 lladdr 72:51:dc:81:a6:37 STALE
+```
+
+Die Adresse der anderen Person steht nicht darin: Dein Workspace hatte noch keinen Grund, nach ihr zu fragen. Jede Zeile nennt eine IP-Adresse, den Adapter (`dev eth0`) und hinter `lladdr` (»link layer address«) die MAC-Adresse. `REACHABLE` heißt, der Nachbar hat sich vor Kurzem gemeldet; `STALE`, dass das schon eine Weile her ist und dein Workspace beim nächsten Paket an ihn nachprüft. Welche Zeilen bei dir stehen, hängt davon ab, mit wem dein Workspace zuletzt geredet hat.
+<!-- /after -->
+
+Jetzt schickt eine von euch, Person A, drei Pakete an Person B, mit der IP-Adresse von B, zum Beispiel:
+
+```bash
+ping -c 3 172.20.0.9
+```
+
+`-c 3` heißt: drei Pakete, dann hört `ping` von selbst auf. Danach sieht A wieder mit `ip neigh` nach:
+
+```text
+172.20.0.9 dev eth0 lladdr 62:d2:c5:7a:c2:d7 REACHABLE
+172.20.0.6 dev eth0 lladdr 16:57:cd:6f:d3:96 REACHABLE
+172.20.0.1 dev eth0 lladdr 72:51:dc:81:a6:37 STALE
+```
+
+Oben steht eine neue Zeile: die IP-Adresse von B mit einer MAC-Adresse. B prüft mit `ip link`, ob es die eigene ist.
+
+_task(neigh-gegenseite)
+
+<!-- after: neigh-gegenseite -->
+A steht jetzt auch bei B. Die Frage von A kam mit der IP-Adresse und der MAC-Adresse von A, und B hat sich beide gleich gemerkt; ohne sie hätte B gar nicht antworten können. So steht es auch in RFC 826. Bei B zeigt `ip neigh` jetzt zum Beispiel:
+
+```text
+172.20.0.7 dev eth0 lladdr f2:fd:53:d5:5f:65 REACHABLE
+```
+<!-- /after -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Was geschieht, wenn niemand antwortet? Ändere die letzte Zahl deiner IP-Adresse in <code>250</code> und schick drei Pakete dorthin, etwa <code>ping -c 3 172.20.0.250</code>; antwortet doch jemand, nimm eine andere Zahl. Von welcher Adresse kommt die Meldung <code>Destination Host Unreachable</code>? Und was zeigt <code>ip neigh</code> danach für diese Adresse?
+</div>
+
+### Und Google?
+
+Bisher ging es um Nachbarn im eigenen Netz. Was aber ist mit Servern im Internet?
+
+_task(neigh-google)
+
+<!-- after: neigh-google -->
+Für `8.8.8.8` gibt es keine Zeile, auch nicht für `rubiomonocoat.pe` oder Canberra. Wohin dein Workspace ein Paket schickt, steht in seiner **Routing-Tabelle**:
+
+```bash
+ip route
+```
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ip route
+terminal-wait-for-prompt
+terminal-run: ip neigh show 8.8.8.8
+terminal-wait-for-prompt
+terminal-run: ip neigh show 172.20.0.1
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='ip-route.webp' alt='ip route zeigt zwei Zeilen: default via 172.20.0.1 dev eth0 und 172.20.0.0/16 dev eth0 proto kernel scope link src mit der eigenen Adresse. Danach gibt ip neigh show 8.8.8.8 nichts aus, und ip neigh show 172.20.0.1 zeigt eine Zeile mit der MAC-Adresse des Routers.'>
+
+<!-- /tutorial-scope -->
+
+Die zweite Zeile im Bild sagt: Alle Adressen von `172.20.0.0` bis `172.20.255.255` liegen im eigenen Netz, hinter `eth0` (`/16` heißt: Die ersten 16 Bits sind bei allen gleich). Für sie fragt dein Workspace mit ARP direkt nach der MAC-Adresse. Die erste Zeile gilt für alles andere: `default via 172.20.0.1`, ab zum Router. Für ein Paket an `8.8.8.8` fragt dein Workspace darum nach der MAC-Adresse des Routers und schickt den Frame an ihn; im IP-Paket darin steht weiter `8.8.8.8` als Ziel. Mit einer Adresse dahinter zeigt `ip neigh show` nur die Zeile zu dieser Adresse: Für `8.8.8.8` gibt es keine, für den Router schon. Bei dir können die Zahlen andere sein. Der Router hinter `default via` ist der Server, auf dem die Workspaces laufen.
+<!-- /after -->
+
+### Switches
+
+In einem Klassenraum hängen die Rechner nicht an einem gemeinsamen Kabel wie bei Metcalfe, sondern jeder mit einem eigenen Kabel an einem **Switch**, einem Kasten mit vielen Buchsen, den **Ports**. Der Switch liest in jedem Frame die MAC-Adressen und schickt ihn nur an den Port, an dem das Ziel hängt. Woher weiß er das? Er führt eine Tabelle aus MAC-Adressen und Ports, und wenn er eingeschaltet wird, ist sie leer.
+
+_task(switch-leer)
+
+<!-- after: switch-leer -->
+Drei Rechner hängen an einem Switch, der gerade eingeschaltet wurde: A an Port 1, B an Port 2 und C an Port 3. A will B anpingen und kennt die MAC-Adresse von B noch nicht.
+
+<table class='table'>
+<tr><th>Frame</th><th>Was der Switch tut</th><th>Seine Tabelle danach</th></tr>
+<tr><td>A an alle (<code>ff:ff:ff:ff:ff:ff</code>): »Wer hat die IP-Adresse von B?«</td><td>Ein Broadcast geht an alle anderen Ports, an 2 und 3. Er merkt sich: A hängt an Port 1.</td><td>A: Port 1</td></tr>
+<tr><td>B an A: »Die habe ich.«</td><td>A kennt er: nur an Port 1. Er merkt sich: B hängt an Port 2.</td><td>A: Port 1<br>B: Port 2</td></tr>
+<tr><td>A an B: das erste <code>ping</code></td><td>B kennt er: nur an Port 2. C bekommt davon nichts mit.</td><td>A: Port 1<br>B: Port 2</td></tr>
+<tr><td>A an C</td><td>C kennt er noch nicht: an alle anderen Ports, an 2 und 3, wie einen Broadcast. B wirft den Frame weg.</td><td>A: Port 1<br>B: Port 2</td></tr>
+</table>
+
+Der Switch lernt nur aus den Absender-Adressen der Frames, die bei ihm ankommen; was er nicht kennt, schickt er an alle. Kommt von einer Adresse ein paar Minuten lang nichts, vergisst er sie wieder, und steckt jemand seinen Rechner um, lernt er den neuen Port mit dem nächsten Frame.
+
+Auch dein Workspace hängt an einem Switch. Docker hat auf dem Server einen Switch aus Software gebaut, eine Linux-Bridge, und jeder Workspace steckt mit einem virtuellen Kabel darin. Ihre Tabelle siehst du von deinem Workspace aus nicht; auf dem Server zeigt sie der Befehl `bridge fdb`, mit den MAC-Adressen der Container, die in den letzten fünf Minuten etwas geschickt haben.
+<!-- /after -->
+
+### WLAN: Alle hören alles
+
+Im WLAN gibt es kein Kabel und keinen Port, an den ein Frame allein geht. Jeder Adapter in Reichweite empfängt jeden Frame auf seinem Kanal, so wie die Rechner an Metcalfes Kabel. Auch hier trägt jeder Frame MAC-Adressen, und ein Adapter wirft weg, was nicht an ihn geht. Ein Laptop kann das aber auch lassen und alles mitlesen, was in der Luft ist. Darum verschlüsseln WPA2 und WPA3 den Inhalt jedes Frames. Wer mithört, sieht dann noch, welche MAC-Adressen miteinander reden und wie viel, aber nicht mehr, was sie sich schicken. Der Access Point reicht die Frames zwischen Funk und Kabel weiter, ähnlich wie ein Switch.
+
+### Router: neue MAC-Adressen bei jedem Sprung
+
+Zurück zu `traceroute`: Ein Paket an `8.8.8.8` kam über elf Router. Jeder davon packt den Frame aus, liest im IP-Paket die Ziel-IP, zieht eins von der TTL ab und sucht in seiner Routing-Tabelle den nächsten Router. Dessen MAC-Adresse kennt er schon oder fragt mit ARP nach. Dann packt er das Paket in einen neuen Frame, mit seiner eigenen MAC-Adresse als Absender und der des nächsten Routers als Ziel. Zwischen zwei großen Routern läuft vielleicht kein Ethernet, sondern ein anderes Verfahren über Glasfaser, aber immer gilt: neuer Frame, dasselbe Paket. Die IP-Adressen darin bleiben, nur die TTL wird kleiner.
+
+Eine Ausnahme kennst du schon: Der Router, der die privaten Adressen übersetzt, tauscht auch die Absender-IP gegen eine öffentliche Adresse aus, und auf dem Rückweg wieder zurück.
+
+_task(router-tauscht)
+
+_include(netzwerk#netz-lan)
+
 ## Pakete, Ports und Verbindungen
 
 ### Schichten
@@ -236,7 +448,7 @@ Bisher ging es um Pakete, die von einer Adresse zu einer anderen reisen. Darum k
 </tr>
 </table>
 
-Jede Schicht benutzt die darunter und weiß nichts von denen darüber: IP trägt ein Paket zum Ziel, ohne zu wissen, dass ein Stück einer Webseite darin steckt. Zwei dieser Adressen hat dir `ifconfig` schon gezeigt, `ether` und `inet`. Die beiden mittleren Schichten geben dem Ganzen seinen Namen: **TCP/IP**.
+Jede Schicht benutzt die darunter und weiß nichts von denen darüber: IP trägt ein Paket zum Ziel, ohne zu wissen, dass ein Stück einer Webseite darin steckt. Zwei dieser Adressen kennst du schon: die MAC-Adresse aus `ip link` und die IP-Adresse aus `ifconfig`. Die beiden mittleren Schichten geben dem Ganzen seinen Namen: **TCP/IP**.
 
 _person(cerf-kahn)
 
@@ -738,6 +950,7 @@ Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonn
 <table class='table table-sm'>
 <tr><th>Adresse</th><td><code>ifconfig</code></td></tr>
 <tr><th>Entfernung und Weg</th><td><code>ping</code>, <code>traceroute -q 1</code></td></tr>
+<tr><th>Im eigenen Netz</th><td><code>ip link</code> (die MAC-Adresse), <code>ip neigh</code> (die Nachbarn, die ARP gefunden hat), <code>ip route</code> (der Router)</td></tr>
 <tr><th>Ports und Verbindungen</th><td><code>ss -tln</code> (wartende Ports), <code>curl -w '%{time_connect}'</code> (Dauer des Handshakes)</td></tr>
 <tr><th>Eigene Verbindungen</th><td><code>nc -l -p 1234</code> und <code>nc ADRESSE 1234</code>, <code>nc -C info.cern.ch 80</code> (HTTP von Hand), <code>telnet</code> (unverschlüsselt, nur noch fürs Kino)</td></tr>
 <tr><th>Herunterladen</th><td><code>wget</code>, <code>curl</code>, <code>curl -I</code> (nur die Header), <code>jq</code> (JSON lesbar machen)</td></tr>

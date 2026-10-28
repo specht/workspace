@@ -142,6 +142,181 @@ tasks:
         von Paket zu Paket um eins, so meldet sich jeder Router auf dem Weg der
         Reihe nach. Ein Stern heißt, dass ein Router sich nicht gemeldet hat.
 
+  - id: mac-adresse
+    title: Deine MAC-Adresse
+    prompt: |
+      Wie lautet die MAC-Adresse deines Adapters `eth0`? Im Bild oben steht
+      eine andere als bei dir.
+    check:
+      type: answer
+      expect: ${workspace.mac}
+      placeholder: z. B. 02:42:ac:11:00:2a
+    hint:
+      - '`ip link` zeigt zwei Adapter. Welcher davon verbindet deinen Workspace mit dem Netz?'
+      - Unter `eth0` steht eine Zeile, die mit `link/ether` beginnt. Gesucht ist die erste Adresse darin, nicht die hinter `brd`.
+    feedback:
+      - when: { matches: '^\d{1,3}(\.\d{1,3}){3}(/\d+)?$' }
+        say: Das ist eine IP-Adresse. Gesucht ist die MAC-Adresse hinter `link/ether`.
+      - when: { matches: '(?i)^ff(:ff){5}$' }
+        say: Das ist die Broadcast-Adresse hinter `brd`, die für alle gilt. Gesucht ist die Adresse davor.
+      - when: { matches: '^00(:00){5}$' }
+        say: Das ist die Adresse von `lo`. Gesucht ist die von `eth0`.
+      - when: { matches: '(?i)^[0-9a-f]{2}(-[0-9a-f]{2}){5}$' }
+        say: Schreib die Bytes mit Doppelpunkten dazwischen, so wie `ip link` sie zeigt.
+    solution: |
+      Die Adresse hinter `link/ether` bei `eth0`. Docker hat sie sich beim
+      Start des Workspace ausgedacht; die zweite Ziffer (2, 6, A oder E)
+      zeigt, dass sie nicht von einem Hersteller stammt.
+
+  - id: arp-wie
+    title: Wer kennt die MAC-Adresse?
+    prediction: true
+    prompt: |
+      Dein Workspace will einem anderen Workspace in seinem Netz ein Paket
+      schicken. Er kennt dessen IP-Adresse, aber nicht die MAC-Adresse, die
+      in den Frame gehört. Wie findet er sie heraus?
+    check:
+      type: choice
+      options:
+        - Er fragt alle im Netz, und der Rechner mit dieser IP-Adresse antwortet.
+        - Er fragt einen DNS-Server, wie bei einem Namen.
+        - Er schickt den Frame an den Router, der die MAC-Adressen aller Rechner kennt.
+        - Er sieht in einer Liste nach, die alle Rechner beim Start bekommen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: DNS übersetzt Namen in IP-Adressen. Die IP-Adresse kennt dein Workspace hier schon; gesucht ist die Adresse eine Schicht tiefer.
+      - when: { picked: 2 }
+        say: Der Router ist für Ziele außerhalb des eigenen Netzes da. Woher sollte er die MAC-Adressen aller Rechner kennen?
+    solution: |
+      Mit ARP: Ein Frame an die Broadcast-Adresse `ff:ff:ff:ff:ff:ff` fragt
+      alle »Wer hat diese IP-Adresse?«, und nur der Gemeinte antwortet mit
+      seiner MAC-Adresse.
+
+  - id: neigh-vorher
+    title: Bevor ihr euch etwas schickt
+    prediction: true
+    prompt: |
+      Ihr habt euch noch nichts geschickt. Was zeigt `ip neigh` bei dir für
+      die IP-Adresse der anderen Person?
+    check:
+      type: choice
+      options:
+        - Nichts, für diese Adresse gibt es keine Zeile.
+        - Eine Zeile mit ihrer MAC-Adresse, weil ihr im selben Netz seid.
+        - Eine Zeile mit `FAILED`, weil noch kein Paket hinübergegangen ist.
+        - Eine Zeile für jeden Workspace der Klasse, auch für ihren.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Woher sollte dein Workspace ihre MAC-Adresse kennen, wenn er nie nach ihr gefragt hat?
+    solution: |
+      Die Tabelle füllt sich erst, wenn dein Workspace mit ARP nach einer
+      Adresse fragt oder selbst gefragt wird. Vorher steht die andere Person
+      nicht darin.
+
+  - id: neigh-gegenseite
+    title: Wer kennt jetzt wen?
+    prediction: true
+    prompt: |
+      A hat B angepingt. B hat nur geantwortet und selbst nie nach A gefragt.
+      Steht A jetzt in der Ausgabe von `ip neigh` bei B?
+    check:
+      type: choice
+      options:
+        - Ja, mit der MAC-Adresse von A.
+        - Nein, B hat ja nicht gefragt.
+        - Nur die IP-Adresse von A, ohne MAC-Adresse.
+        - Erst, wenn B selbst A anpingt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Um zu antworten, braucht B die MAC-Adresse von A. Woher könnte B sie haben, ohne zu fragen?
+      - when: { picked: 3 }
+        say: Die Antworten auf das `ping` von A sind schon Pakete von B an A. Was braucht B dafür?
+    solution: |
+      Ja. Die ARP-Frage von A enthielt die IP-Adresse und die MAC-Adresse
+      von A, und B hat sich beide gemerkt, um antworten zu können.
+
+  - id: neigh-google
+    title: Und 8.8.8.8?
+    prediction: true
+    prompt: |
+      Vorhin hast du `8.8.8.8` angepingt, und Google hat geantwortet. Was
+      steht in `ip neigh` für `8.8.8.8`?
+    check:
+      type: choice
+      options:
+        - Nichts, für `8.8.8.8` gibt es keine Zeile.
+        - Eine Zeile mit der MAC-Adresse von Googles Server.
+        - Eine Zeile mit `FAILED`, weil Google zu weit weg ist.
+        - Eine Zeile mit der MAC-Adresse von Googles Server, aber erst nach einigen Sekunden.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Eine MAC-Adresse gilt nur im eigenen Netz. Steht Googles Server in deinem Netz?
+      - when: { picked: 3 }
+        say: Eine MAC-Adresse gilt nur im eigenen Netz. Steht Googles Server in deinem Netz?
+      - when: { picked: 2 }
+        say: Ein `FAILED` stünde da, wenn dein Workspace gefragt und keine Antwort bekommen hätte. Hat er nach `8.8.8.8` überhaupt gefragt?
+    solution: |
+      `8.8.8.8` liegt nicht im eigenen Netz. Dein Workspace schickt den Frame
+      an den Router (`default via` in `ip route`), und nur dessen MAC-Adresse
+      steht in `ip neigh`.
+
+  - id: switch-leer
+    title: Ein Switch ohne Tabelle
+    prediction: true
+    prompt: |
+      Ein Switch wurde gerade eingeschaltet, seine Tabelle ist leer. A
+      schickt einen Frame an B. Was macht der Switch mit dem Frame?
+    check:
+      type: choice
+      options:
+        - Er schickt ihn an alle Ports außer dem, von dem er kam.
+        - Er wirft ihn weg, weil er B noch nicht kennt.
+        - Er schickt ihn an A zurück, damit A es später noch einmal versucht.
+        - Er fragt mit ARP nach, an welchem Port B hängt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dann käme in einem frisch eingeschalteten Netz nie etwas an. Wie kann der Switch sicher sein, dass B den Frame bekommt?
+      - when: { picked: 3 }
+        say: ARP fragt nach der MAC-Adresse zu einer IP-Adresse. Die MAC-Adresse von B steht schon im Frame; der Switch sucht den Port.
+    solution: |
+      Was er nicht kennt, schickt er an alle anderen Ports; wer nicht gemeint
+      ist, wirft den Frame weg. Dabei merkt er sich, an welchem Port A hängt,
+      denn die Absender-MAC steht im Frame.
+
+  - id: router-tauscht
+    title: Beim zweiten Router
+    prompt: |
+      Ein Paket von deinem Workspace an `8.8.8.8` kommt beim zweiten Router
+      auf dem Weg an. Was steht in diesem Moment als Ziel im Frame, und was
+      als Ziel im IP-Paket?
+    check:
+      type: choice
+      options:
+        - 'Frame: die MAC-Adresse des zweiten Routers. IP-Paket: 8.8.8.8'
+        - 'Frame: die MAC-Adresse von Googles Server. IP-Paket: 8.8.8.8'
+        - 'Frame: die MAC-Adresse des zweiten Routers. IP-Paket: die IP-Adresse des zweiten Routers'
+        - 'Frame: die MAC-Adresse deines Workspace. IP-Paket: 8.8.8.8'
+      correct: 0
+    hint:
+      - Denk an das Paket mit der Anschrift und dem Zettel für die nächste Etappe. Was davon bleibt, was kommt in jedem Lager neu?
+      - Die Ziel-MAC eines Frames gehört immer zu einem Gerät im selben Netz wie sein Absender. Wer hat den Frame zum zweiten Router geschickt, und an wen?
+    feedback:
+      - when: { picked: 1 }
+        say: Die MAC-Adresse von Googles Server kennt nur, wer mit ihm im selben Netz ist. Wer ist das hier?
+      - when: { picked: 2 }
+        say: Stünde der Router als Ziel im IP-Paket, wäre das Paket bei ihm am Ziel und käme nie bei Google an.
+      - when: { picked: 3 }
+        say: Die MAC-Adresse deines Workspace stand als Absender im ersten Frame, bis zum ersten Router. Danach gibt es einen neuen Frame.
+    solution: |
+      Der erste Router hat das Paket in einen neuen Frame gepackt: als
+      Absender seine eigene MAC-Adresse, als Ziel die des zweiten Routers.
+      Im IP-Paket steht weiter `8.8.8.8`; nur die TTL ist eins kleiner.
+
   - id: schichten
     title: Wer schickt noch einmal?
     prompt: |
