@@ -40,6 +40,7 @@ with the details of every `curriculum:` line and a search of the pages:
 | Sek I: Digitale Bilder und Visualisierung | Vektorgrafik only as 3D scenes; Manipulation von Bildern und Filmen; rekursive Algorithmen für Grafiken | an SVG chapter; a recursive tree in `drawing` |
 | Oberstufe: Algorithmen und Softwareentwicklung | nothing: Struktogramm and Pseudocode are covered now (`check-digits`); the Katas to functions, decisions and loops and the twelve language portraits name it since 27 October 2026 | |
 | Oberstufe: Syntax und Semantik | nothing: `grammatiken` and `calculator` cover it, both live; the language portraits no longer claim it (27 October 2026) | |
+| Oberstufe: Sprachen und Automaten | regular expressions, only an outlook at the end of `automata` and the Handbuch page `reference/regex` | »Reguläre Ausdrücke« between automata and grammars: grep in a web server's log, groups in Ruby or Python, validating postcodes, dates and user names (and why not e-mail addresses), backtracking, regex to automaton with the Thompson construction and Kleene's theorem, no expression for brackets. In progress, dev-only: `regex` (28 October 2026), after `automata` in the catalog |
 | Oberstufe: Datenbanken | Normalisierung (Leistungskurs) | a chapter of `filmdatenbank` |
 | Oberstufe: Datenbanken und Datenschutz | Urheberrecht; Datenschutz is covered now (`tracking`) | a section on licences, perhaps with the picture rights of the Workspace's own pages |
 | Oberstufe: Computernetze, Vertiefung Computer-Netze | LAN, WLAN (Ethernet, MAC addresses, ARP); routing between networks | a chapter of `tcpip` |
@@ -61,7 +62,7 @@ full, also by bringing back parked activities or moving them:
 | Web | Web (3 → 6) | `hugo` back, `suchmaschine`, `tracking`: done, all live | Suchmaschinen, Datenschutz, Informatik und Gesellschaft |
 | Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
 | KI | a new section Künstliche Intelligenz (0 → 3) | `sprachmodell`, `perzeptron`, `naechste-nachbarn`: done, live | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
-| Rechnen | Wie Computer rechnen (6 → 9) | `kellerautomat`, `turingmaschine`, `grammatiken`: done, live; the logic gates (`logikgatter`) dev-only; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
+| Rechnen | Wie Computer rechnen (6 → 9) | `kellerautomat`, `turingmaschine`, `grammatiken`: done, live; the logic gates (`logikgatter`) and regular expressions (`regex`) dev-only; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
 State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
