@@ -407,9 +407,11 @@
     // ------------------------------------------------------------------
     // Geometry: where the pins are, and the wires between them
 
+    // a gate's height by the number of its inputs
+    const gateHeightFor = (count) => (count === 1 ? 32 : PITCH * count);
+
     function gateHeight(n) {
-        const count = n.reduce ? 1 : n.inputs.length;
-        return count === 1 ? 32 : PITCH * count;
+        return gateHeightFor(n.reduce ? 1 : n.inputs.length);
     }
 
     // [x, y, dir] of a node's input i, dir where the wire comes from
@@ -524,7 +526,280 @@
         return false;
     }
 
-    const engine = { GATES, CIRCUITS, initial, round, settle, truthTable, setChoice, wires, junctions, valueAt, MAX_ROUNDS };
+    // ------------------------------------------------------------------
+    // Netlists: circuits a person builds (circuit_editor.js, »Logik-Werkstatt«,
+    // src/content/logikwerkstatt), as text, one part per line:
+    //
+    //   in a @40,60            a switch: its name, where it stands
+    //   nand g1 a b @120,48    a gate: its id, then the source of each input
+    //   HA h1 a g1             a block (a stored sub-circuit), by its name
+    //   out y h1.s             a lamp and its source; h1.s is the output s of h1
+    //   block HA               a block: its in lines are its inputs, its out
+    //     …                    lines its outputs, in this order
+    //   end
+    //
+    // »-« is an input without a wire, »#« starts a comment, »;« ends a line
+    // as well (a netlist in an attribute). The same text is the answer the
+    // check reads on the server (src/ruby/include/circuit_check.rb), which
+    // parses, flattens and settles it the same way. Positions are optional:
+    // without them the editor lays the circuit out itself.
+    //
+    // flatten() turns a netlist into a circuit of the engine above: every
+    // block is replaced by its gates, their ids prefixed with the block's
+    // (h1/g1), so that round() and settle() run it unchanged, feedback
+    // through blocks included.
+
+    const GATE_KINDS = ['and', 'or', 'xor', 'not', 'nand', 'nor'];
+    const NAME = /^[A-Za-z_][A-Za-z0-9_]{0,15}$/;
+    const BLOCK_NAME = /^[A-Za-z][A-Za-z0-9_]{0,11}$/;
+    const KEYWORDS = ['in', 'out', 'block', 'end', ...GATE_KINDS];
+    const LIMITS = { parts: 150, blocks: 16, depth: 8, gates: 1000, maxInputs: 4 };
+    // what a gate is called in a message
+    const GATE_NAMES = { and: 'UND', or: 'ODER', xor: 'XOR', not: 'NICHT', nand: 'NAND', nor: 'NOR' };
+
+    function inputCount(kind, n) {
+        if (kind === 'not') return n === 1;
+        return n >= 2 && n <= LIMITS.maxInputs;
+    }
+
+    // { circuit: { parts, blocks }, errors: [{ line, message }] }; a part is
+    // { id, kind, src: [source or null], x, y } (kind: in, out, a gate, or
+    // block with block: its name)
+    function parseNetlist(text) {
+        const errors = [];
+        const top = { parts: [] };
+        const blocks = {};
+        let scope = top;
+        let scopeName = null;
+        const fail = (line, message) => errors.push({ line, message });
+        String(text || '').split(/\r?\n|;/).forEach((raw, i) => {
+            const lineNo = i + 1;
+            const line = raw.replace(/#.*$/, '').trim();
+            if (!line) return;
+            const tokens = line.split(/\s+/);
+            const head = tokens[0];
+            if (head === 'block') {
+                if (scopeName) return fail(lineNo, `Ein Baustein steht nicht in einem anderen: ${scopeName} hat noch kein end.`);
+                const name = tokens[1];
+                if (tokens.length !== 2 || !BLOCK_NAME.test(name || '') || KEYWORDS.includes(name.toLowerCase())) {
+                    return fail(lineNo, `Ein Baustein braucht einen Namen aus Buchstaben und Ziffern, etwa »block HA«.`);
+                }
+                if (blocks[name]) return fail(lineNo, `Den Baustein ${name} gibt es zweimal.`);
+                if (Object.keys(blocks).length >= LIMITS.blocks) return fail(lineNo, `Mehr als ${LIMITS.blocks} Bausteine gehen nicht.`);
+                scope = { parts: [] };
+                blocks[name] = scope;
+                scopeName = name;
+                return;
+            }
+            if (head === 'end') {
+                if (!scopeName) return fail(lineNo, 'Zu diesem end gibt es kein block.');
+                scope = top;
+                scopeName = null;
+                return;
+            }
+            let x = null;
+            let y = null;
+            const last = tokens[tokens.length - 1];
+            const at = /^@(\d{1,4}),(\d{1,4})$/.exec(last);
+            if (at) {
+                tokens.pop();
+                x = Number(at[1]);
+                y = Number(at[2]);
+            } else if (last.startsWith('@')) {
+                return fail(lineNo, `»${last}« ist keine Stelle: so etwa @120,48.`);
+            }
+            const [kind, id, ...src] = tokens;
+            if (!id || !NAME.test(id)) return fail(lineNo, `»${id || ''}« taugt nicht als Name: Buchstaben, Ziffern und _, vorn ein Buchstabe.`);
+            if (scope.parts.some((p) => p.id === id)) return fail(lineNo, `Den Namen ${id} gibt es hier zweimal.`);
+            if (scope.parts.length >= LIMITS.parts) return fail(lineNo, `Mehr als ${LIMITS.parts} Teile gehen nicht.`);
+            const part = { id, kind, src: src.map((s) => (s === '-' ? null : s)), x, y };
+            if (kind === 'in') {
+                if (src.length) return fail(lineNo, `Ein Schalter (in ${id}) hat keine Eingänge.`);
+            } else if (kind === 'out') {
+                if (src.length !== 1) return fail(lineNo, `Eine Lampe (out ${id}) hat genau eine Leitung, etwa »out ${id} g1«.`);
+            } else if (GATE_KINDS.includes(kind)) {
+                if (!inputCount(kind, src.length)) {
+                    return fail(lineNo, kind === 'not' ? `Ein NICHT (${id}) hat genau einen Eingang.` : `Ein ${GATE_NAMES[kind]} (${id}) hat 2 bis ${LIMITS.maxInputs} Eingänge.`);
+                }
+            } else if (BLOCK_NAME.test(kind || '')) {
+                part.kind = 'block';
+                part.block = kind;
+            } else {
+                return fail(lineNo, `»${kind}« kenne ich nicht: in, out, ein Gatter (${GATE_KINDS.join(', ')}) oder der Name eines Bausteins.`);
+            }
+            for (const s of part.src) {
+                if (s !== null && !/^[A-Za-z_][A-Za-z0-9_]{0,15}(\.[A-Za-z_][A-Za-z0-9_]{0,15})?$/.test(s)) return fail(lineNo, `»${s}« ist keine Quelle: ein Name wie g1 oder h1.s, oder - ohne Leitung.`);
+            }
+            scope.parts.push(part);
+        });
+        if (scopeName) fail(0, `Dem Baustein ${scopeName} fehlt sein end.`);
+        const circuit = { parts: top.parts, blocks };
+        if (!errors.length) errors.push(...checkNetlist(circuit));
+        return { circuit, errors };
+    }
+
+    const pinsIn = (def) => def.parts.filter((p) => p.kind === 'in').map((p) => p.id);
+    const pinsOut = (def) => def.parts.filter((p) => p.kind === 'out').map((p) => p.id);
+
+    // sources that exist, blocks that exist with as many inputs as given,
+    // no block inside itself
+    function checkNetlist(circuit) {
+        const errors = [];
+        const where = (name) => (name ? ` im Baustein ${name}` : '');
+        const scopes = [[null, circuit], ...Object.entries(circuit.blocks).map(([n, d]) => [n, d])];
+        for (const [name, def] of scopes) {
+            const byId = new Map(def.parts.map((p) => [p.id, p]));
+            for (const p of def.parts) {
+                if (p.kind === 'block') {
+                    const inner = circuit.blocks[p.block];
+                    if (!inner) {
+                        errors.push({ line: 0, message: `Den Baustein ${p.block} (${p.id}${where(name)}) gibt es nicht.` });
+                        continue;
+                    }
+                    if (inner.parts && p.src.length !== pinsIn(inner).length) {
+                        errors.push({ line: 0, message: `${p.block} hat ${pinsIn(inner).length} Eingänge, ${p.id}${where(name)} bekommt ${p.src.length}.` });
+                    }
+                }
+                for (const s of p.src) {
+                    if (s === null) continue;
+                    const [id, port] = s.split('.');
+                    const from = byId.get(id);
+                    const bad = (msg) => errors.push({ line: 0, message: `${p.id}${where(name)}: ${msg}` });
+                    if (!from) bad(`Die Quelle ${s} gibt es nicht.`);
+                    else if (from.kind === 'out') bad(`${s} ist eine Lampe; eine Leitung kommt aus einem Schalter, einem Gatter oder einem Baustein.`);
+                    else if (from.kind === 'block') {
+                        const inner = circuit.blocks[from.block];
+                        if (inner && !port) bad(`Bei einem Baustein nennt die Quelle den Ausgang, etwa ${id}.${pinsOut(inner)[0] || 's'}.`);
+                        else if (inner && !pinsOut(inner).includes(port)) bad(`${from.block} hat keinen Ausgang ${port}.`);
+                    } else if (port) bad(`${id} hat nur einen Ausgang; die Quelle heißt ${id}.`);
+                }
+            }
+        }
+        // a block that contains itself, directly or through others
+        const visiting = new Set();
+        const done = new Set();
+        const visit = (name, path) => {
+            if (done.has(name)) return;
+            if (visiting.has(name)) {
+                errors.push({ line: 0, message: `Der Baustein ${name} enthält sich selbst (${[...path, name].join(' → ')}).` });
+                return;
+            }
+            visiting.add(name);
+            for (const p of (circuit.blocks[name] || { parts: [] }).parts) if (p.kind === 'block' && circuit.blocks[p.block]) visit(p.block, [...path, name]);
+            visiting.delete(name);
+            done.add(name);
+        };
+        Object.keys(circuit.blocks).forEach((n) => visit(n, []));
+        return errors;
+    }
+
+    function partLine(p) {
+        const kind = p.kind === 'block' ? p.block : p.kind;
+        const src = p.src.map((s) => (s === null || s === undefined ? '-' : s));
+        const at = Number.isFinite(p.x) && Number.isFinite(p.y) ? ` @${Math.round(p.x)},${Math.round(p.y)}` : '';
+        return [kind, p.id, ...src].join(' ') + at;
+    }
+
+    // The text of a netlist: the blocks first, in the order they are needed.
+    function formatNetlist(circuit) {
+        const lines = [];
+        const written = new Set();
+        const write = (name) => {
+            if (written.has(name) || !circuit.blocks[name]) return;
+            written.add(name);
+            for (const p of circuit.blocks[name].parts) if (p.kind === 'block') write(p.block);
+            lines.push(`block ${name}`, ...circuit.blocks[name].parts.map((p) => `  ${partLine(p)}`), 'end');
+        };
+        Object.keys(circuit.blocks).forEach(write);
+        lines.push(...circuit.parts.map(partLine));
+        return lines.join('\n') + '\n';
+    }
+
+    // The blocks a circuit uses, directly or inside other blocks.
+    function usedBlocks(circuit, parts = circuit.parts, seen = new Set()) {
+        for (const p of parts) {
+            if (p.kind !== 'block' || seen.has(p.block) || !circuit.blocks[p.block]) continue;
+            seen.add(p.block);
+            usedBlocks(circuit, circuit.blocks[p.block].parts, seen);
+        }
+        return seen;
+    }
+
+    // A netlist as a circuit of the engine: { circuit: { nodes }, resolve(src)
+    // (the key whose value a wire of the top level carries), gates: count by
+    // kind, inner: how many of them are inside blocks, blocks: instances at
+    // the top level }. An input without a wire, and a loop of wires through
+    // no gate, carry 0 (the key '#0', which nothing sets).
+    function flatten(circuit) {
+        const nodes = [];
+        const alias = new Map();
+        const gates = {};
+        let inner = 0;
+        const local = (prefix, s) => {
+            if (s === null || s === undefined) return '#0';
+            const [id, port] = s.split('.');
+            return port ? `${prefix}${id}/${port}` : `${prefix}${id}`;
+        };
+        const expand = (def, prefix, depth) => {
+            if (depth > LIMITS.depth) throw new Error(`Bausteine stecken mehr als ${LIMITS.depth}-mal ineinander.`);
+            for (const p of def.parts) {
+                if (p.kind === 'in') {
+                    if (!prefix) nodes.push({ kind: 'in', id: p.id, label: p.id });
+                } else if (p.kind === 'out') {
+                    if (prefix) alias.set(`${prefix}${p.id}`, local(prefix, p.src[0]));
+                    else nodes.push({ kind: 'out', id: `>${p.id}`, from: local(prefix, p.src[0]), label: p.id });
+                } else if (p.kind === 'block') {
+                    const block = circuit.blocks[p.block];
+                    const inside = `${prefix}${p.id}/`;
+                    pinsIn(block).forEach((pin, i) => alias.set(`${inside}${pin}`, local(prefix, p.src[i])));
+                    expand(block, inside, depth + 1);
+                } else {
+                    gates[p.kind] = (gates[p.kind] || 0) + 1;
+                    if (prefix) inner += 1;
+                    if (nodes.length > LIMITS.gates) throw new Error(`Mehr als ${LIMITS.gates} Gatter gehen nicht.`);
+                    nodes.push({ kind: p.kind, id: `${prefix}${p.id}`, inputs: p.src.map((s) => local(prefix, s)) });
+                }
+            }
+        };
+        expand(circuit, '', 0);
+        const chase = (key) => {
+            const seen = new Set();
+            while (alias.has(key)) {
+                if (seen.has(key)) return '#0';
+                seen.add(key);
+                key = alias.get(key);
+            }
+            return key;
+        };
+        for (const n of nodes) {
+            if (n.inputs) n.inputs = n.inputs.map(chase);
+            if (n.from) n.from = chase(n.from);
+        }
+        const blocks = circuit.parts.filter((p) => p.kind === 'block').length;
+        return { circuit: { nodes }, resolve: (s) => chase(local('', s)), gates, inner, blocks };
+    }
+
+    // whether the gates feed back into themselves (a flip-flop): then the
+    // circuit has a state and no truth table of its own
+    function hasFeedback(flat) {
+        const byId = new Map(flat.circuit.nodes.filter((n) => n.inputs).map((n) => [n.id, n]));
+        const state = new Map();
+        const visit = (id) => {
+            if (state.get(id) === 1) return true;
+            if (state.get(id) === 2 || !byId.has(id)) return false;
+            state.set(id, 1);
+            for (const k of byId.get(id).inputs) if (visit(k)) return true;
+            state.set(id, 2);
+            return false;
+        };
+        return [...byId.keys()].some(visit);
+    }
+
+    const Netlist = { parse: parseNetlist, format: formatNetlist, check: checkNetlist, flatten, hasFeedback, usedBlocks,
+        pinsIn, pinsOut, GATE_KINDS, GATE_NAMES, NAME, BLOCK_NAME, KEYWORDS, LIMITS };
+
+    const engine = { GATES, CIRCUITS, initial, round, settle, truthTable, setChoice, wires, junctions, valueAt, MAX_ROUNDS, Netlist,
+        GW, PITCH, BUBBLE, SWITCH_W, SWITCH_H, LAMP, ROUND_MS, SHOWN_ROUNDS, gateHeightFor };
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = engine;
         return;
@@ -642,6 +917,17 @@ table.lc-truth-table .lc-gap { border-left: 2px solid var(--bs-border-color); }
 .logic-circuit .lc-input-button { min-width: 44px; min-height: 44px; padding: 0; font-family: '0xProto Nerd Font Mono', monospace; font-weight: 700; }
 .logic-circuit .lc-input-button.lc-one { background: var(--lc-one-fill); border-color: var(--lc-one); color: var(--lc-ink); }
 `;
+
+    // A gate as DIN EN 60617 draws it: the rectangle, its sign, the circle of
+    // a negated output. Also the editor's (circuit_editor.js).
+    function drawGateShape(parent, x, y, kind, count) {
+        const g = svg('g', { class: 'lc-gate' }, parent);
+        const h = gateHeightFor(count);
+        svg('rect', { x, y, width: GW, height: h }, g);
+        text(g, x + GW / 2, y + 15, GATES[kind].sign, { class: 'lc-sign' });
+        if (GATES[kind].neg) svg('circle', { cx: x + GW + BUBBLE, cy: y + h / 2, r: BUBBLE }, g);
+        return g;
+    }
 
     function addStyle() {
         if (document.getElementById('logic-circuit-style')) return;
@@ -883,11 +1169,7 @@ table.lc-truth-table .lc-gap { border-left: 2px solid var(--bs-border-color); }
         }
 
         function drawGate(parent, n) {
-            const g = svg('g', { class: 'lc-gate' }, parent);
-            const h = gateHeight(n);
-            svg('rect', { x: n.x, y: n.y, width: GW, height: h }, g);
-            text(g, n.x + GW / 2, n.y + 15, GATES[n.kind].sign, { class: 'lc-sign' });
-            if (GATES[n.kind].neg) svg('circle', { cx: n.x + GW + BUBBLE, cy: n.y + h / 2, r: BUBBLE }, g);
+            drawGateShape(parent, n.x, n.y, n.kind, n.reduce ? 1 : n.inputs.length);
         }
 
         function drawBlock(parent, n) {
@@ -999,6 +1281,8 @@ table.lc-truth-table .lc-gap { border-left: 2px solid var(--bs-border-color); }
             }
         });
     }
+    // what the editor draws with
+    engine.draw = { svg, html, text, pathOf, gate: drawGateShape, addStyle };
     window.LogicCircuit = engine;
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();

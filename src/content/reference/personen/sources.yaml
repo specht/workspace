@@ -53,6 +53,46 @@ leibniz:
   - text: Wie in seinen Beispielen addierst du in den Katas zu Bits Stelle für Stelle mit Übertrag
     none: Workspace
 
+boole:
+  - text: (1815–1864), englischer Mathematiker, Professor in Cork in Irland
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Boole/
+        quote: "Born: 2 November 1815, Lincoln, Lincolnshire, England. Died: 8 December 1864, Ballintemple, County Cork, Ireland … Boole was appointed to the chair of mathematics at Queens College, Cork in 1849."
+  - text: In seinem Buch The Laws of Thought von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Boole/
+        quote: "An investigation into the Laws of Thought … (1854) … Boole approached logic in a new way reducing it to a simple algebra, incorporating logic into mathematics."
+  - text: Nach ihm heißen true und false in vielen Sprachen Boolean, in Python ist es der Typ bool
+    sources:
+      - url: https://en.wikipedia.org/wiki/Boolean_data_type
+        quote: "It is named after George Boole, who first defined an algebraic system of logic in the mid-19th century. … Python, from version 2.3 forward, has a bool type which is a subclass of int"
+
+eccles-jordan:
+  - text: (1875–1966) und F. W. Jordan, britische Physiker
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Eccles
+        quote: "William Eccles (physicist) (1875–1966), British physicist and pioneer in the development of radio communication"
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The first electronic latch was invented in 1918 by the British physicists William Eccles and F. W. Jordan."
+  - text: 1918 meldeten sie eine Schaltung aus zwei Elektronenröhren zum Patent an, die sich gegenseitig in ihrem Zustand halten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "It was initially called the Eccles–Jordan trigger circuit and consisted of two active elements (vacuum tubes). … Schematics from the Eccles and Jordan trigger relay patent filed 1918, one drawn as a cascade of amplifiers with a positive feedback path, and the other as a symmetric cross-coupled pair"
+  - text: das erste elektronische Latch, ein Speicher für ein Bit
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The first electronic latch was invented in 1918"
+  - text: Sie hieß zuerst Eccles–Jordan trigger circuit, heute heißt sie Flipflop
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "It was initially called the Eccles–Jordan trigger circuit"
+  - text: 1943 steckte sie in Colossus, dem britischen Rechner, der im Krieg verschlüsselte Nachrichten knackte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The design was used in the 1943 British Colossus codebreaking computer"
+  - text: Im RS-Flipflop aus zwei NOR-Gattern halten sich die beiden Gatter genauso gegenseitig fest wie die beiden Röhren
+    none: Workspace
+
 snellius:
   - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
     sources:
@@ -868,6 +908,12 @@ codd:
         quote: "issuing his paper \"A Relational Model of Data for Large Shared Data Banks\" in 1970"
       - url: https://www.ibm.com/history/edgar-codd
         quote: "organized information into tables that could be linked … users could access information without knowing the database's physical blueprint."
+  - text: Auch die Normalformen stammen von ihm, die erste von 1970, die zweite und dritte von 1971.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Database_normalization
+        quote: "Codd introduced the concept of normalization and what is now known as the first normal form (1NF) in 1970. Codd went on to define the second normal form (2NF) and third normal form (3NF) in 1971"
+      - url: https://en.wikipedia.org/wiki/Third_normal_form
+        quote: "Third normal form (3NF) is a level of database normalization defined by English computer scientist Edgar F. Codd"
   - text: IBM zögerte lange.
     sources:
       - url: https://en.wikipedia.org/wiki/Edgar_F._Codd
@@ -2663,6 +2709,42 @@ abrash:
         quote: "Introducing Michael Abrash, Oculus Chief Scientist … I'm tremendously excited to join Oculus, and when I think back, it's astonishing how unlikely the path to this moment is."
       - url: https://en.wikipedia.org/wiki/Michael_Abrash
         quote: "joined their company as Chief Scientist"
+
+hara:
+  - text: Masahiro Hara (geboren 1957)
+    sources:
+      - url: https://www.japan-acad.go.jp/japanese/news/2023/031301.html
+        quote: "原昌宏 … 昭和32年（65歳）"
+      - url: https://en.wikipedia.org/wiki/Masahiro_Hara
+        quote: "Hara was born in Tokyo in 1957."
+  - text: japanischer Ingenieur bei Denso, einem Zulieferer von Toyota
+    sources:
+      - url: https://en.wikipedia.org/wiki/Masahiro_Hara
+        quote: "After graduating from Hosei University, Hara worked at Denso, a Toyota Group subsidiary, where he began developing a barcode system."
+      - url: https://www.japan-acad.go.jp/japanese/news/2023/031301.html
+        quote: "（株）デンソーウェーブ主席技師"
+  - text: Mit nur einem Kollegen entwickelte er den QR-Code, den seine Firma 1994 vorstellte.
+    sources:
+      - url: https://www.qrcode.com/en/history/
+        quote: "Masahiro Hara in charge of the development of the QR Code … He dared to try this with only one other person as his team member. … In 1994, DENSO WAVE (then a division of DENSO CORPORATION) announced the release of its QR Code."
+  - text: Autofabriken verwalteten damit ihre Teile, von der Herstellung bis zum Versand.
+    sources:
+      - url: https://www.qrcode.com/en/history/
+        quote: "the QR Code was adopted by the auto industry for use in their electronic Kanban*, and it contributed greatly to making their management work efficient for a wide range of tasks from production to shipping to the issuing of transaction slips."
+      - url: https://en.wikipedia.org/wiki/Masahiro_Hara
+        quote: "he was tasked with creating a new 2D code to efficiently track automotive components."
+  - text: "Für die Suchmuster in den Ecken suchte das Team in Drucksachen nach dem Verhältnis von hell und dunkel, das dort am seltensten vorkommt: 1 : 1 : 3 : 1 : 1."
+    sources:
+      - url: https://www.qrcode.com/en/history/
+        quote: "Eventually, they came up with the least used ratio of black and white areas on printed matter. This ratio was 1:1:3:1:1."
+  - text: "Seine Firma hält Patente auf den QR-Code, hat aber erklärt, sie nicht durchzusetzen: Jeder darf QR-Codes erzeugen und lesen, ohne zu fragen."
+    sources:
+      - url: https://www.qrcode.com/en/history/
+        quote: "Although DENSO WAVE would retain the patent rights to the QR Code, it declared that it would not exercise them."
+  - text: Nur der Name »QR Code« ist eine eingetragene Marke der Denso Wave Incorporated.
+    sources:
+      - url: https://www.qrcode.com/en/faq.html
+        quote: "The word “QR Code” is registered trademark of DENSO WAVE INCORPORATED in Japan and other countries. … This registered trademark applies only for the word “QR Code”, and not for the QR Code pattern (image)."
 
 muuss:
   - text: Mike Muuss (1958–2000), amerikanischer Informatiker am Ballistic Research Laboratory der US-Armee.

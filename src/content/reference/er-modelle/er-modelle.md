@@ -129,7 +129,8 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <tr><td><code>datetime</code></td><td>Datum mit Uhrzeit</td><td><code>DATETIME</code></td></tr>
 <tr><td><code>bool</code></td><td>wahr oder falsch</td><td><code>BOOLEAN</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Markierung</th><th>Bedeutung</th></tr></thead>
@@ -138,7 +139,8 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <tr><td><code>optional</code></td><td>darf leer bleiben (<code>NULL</code>). Ohne die Markierung muss immer ein Wert da sein (<code>NOT NULL</code>).</td></tr>
 <tr><td><code>unique</code></td><td>kein Wert darf doppelt vorkommen</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 ```er
 entity book
@@ -166,7 +168,8 @@ Die Kardinalität sagt, mit wie vielen Datensätzen der anderen Seite einer verb
 <tr><td><code>n:1</code></td><td>wie <code>1:n</code>, nur andersherum geschrieben</td><td><code>relationship lives_in: student n:1 city</code></td></tr>
 <tr><td><code>n:m</code></td><td>auf beiden Seiten viele</td><td><code>relationship takes: student n:m course</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Eine Beziehung kann eine Entität mit sich selbst verbinden: `relationship friend: person n:m person`.
 
@@ -204,7 +207,8 @@ So übersetzt die ER-Werkstatt ein Modell. In der Vorschau steht es für dein Mo
 <tr><td>Beziehung einer Entität mit sich selbst</td><td><code>n:m</code>: eine Tabelle mit dem Namen der Beziehung und den Spalten <code>from_…_id</code> und <code>to_…_id</code>. <code>1:n</code>: ein Fremdschlüssel wie <code>mentor_person_id</code> (Name der Beziehung, dann der Tabelle), der leer sein darf</td></tr>
 <tr><td>Attribut einer Beziehung</td><td>eine Spalte in der Tabelle, die die Beziehung speichert</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüssel: `movie_id` zeigt auf `movie.id`.
 <!-- /part -->
@@ -219,7 +223,50 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 <tr><td>Krähenfuß</td><td>Kästen mit Attributen; am Linienende ein Strich für »eins«, ein Krähenfuß für »viele«. Eine n:m-Beziehung ist noch eine Linie.</td></tr>
 <tr><td>Tabellen</td><td>die Tabellen, wie sie in der Datenbank entstehen: jede n:m-Beziehung ist eine eigene Tabelle. <code>PK</code> = Primärschlüssel, <code>FK</code> = Fremdschlüssel.</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
+<!-- /part -->
+
+## Normalformen
+
+<!-- part: anomalien -->
+### Anomalien
+
+Steht dieselbe Tatsache in mehreren Zeilen, etwa das Geburtsjahr einer Regisseurin bei jedem ihrer Filme, kann eine Tabelle sich selbst widersprechen. Drei Fälle haben Namen:
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Anomalie</th><th>Was passiert</th></tr></thead>
+<tbody>
+<tr><td>Änderungsanomalie (Update-Anomalie)</td><td>Ein <code>UPDATE</code> ändert die Tatsache nur in einem Teil der Zeilen; danach stehen zwei Werte für dasselbe in der Tabelle.</td></tr>
+<tr><td>Einfügeanomalie</td><td>Etwas lässt sich nicht eintragen, weil ein anderer Teil der Zeile fehlt: eine Regisseurin ohne Film, wenn der Film zum Primärschlüssel gehört.</td></tr>
+<tr><td>Löschanomalie</td><td>Ein <code>DELETE</code> löscht mehr als gemeint: Mit dem letzten Film einer Regisseurin verschwindet auch alles, was die Tabelle über sie wusste.</td></tr>
+</tbody>
+</table>
+</div>
+
+Normalisieren heißt, eine Tabelle so in mehrere aufzuteilen, dass jede Tatsache nur einmal gespeichert ist. Ein `JOIN` setzt sie für eine Abfrage wieder zusammen.
+<!-- /part -->
+
+<!-- part: normalformen -->
+### Funktionale Abhängigkeit und die drei Normalformen
+
+Eine Spalte B hängt **funktional** von Spalten A ab, geschrieben A → B, wenn in der Tabelle zu jedem Wert von A höchstens ein Wert von B gehört: Wer A kennt, kennt B. In `crew` gilt `id → birth_year`, aber nicht `name → birth_year`: In den Filmdaten heißen drei Personen John Morris, geboren 1926, 1969 und 1984.
+
+Ein **Schlüssel** ist hier jede kleinste Menge von Spalten, von der alle anderen Spalten funktional abhängen; der Primärschlüssel ist einer davon. Eine **Nichtschlüsselspalte** gehört zu keinem Schlüssel.
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Normalform</th><th>Verlangt</th><th>So wird die Tabelle aufgeteilt</th></tr></thead>
+<tbody>
+<tr><td>1. Normalform</td><td>In jeder Zelle steht ein einzelner Wert (atomar), keine Liste wie <code>Cillian Murphy, Elliot Page, …</code>.</td><td>eine Zeile pro Wert; die Spalte mit den einzelnen Werten wird Teil des Schlüssels</td></tr>
+<tr><td>2. Normalform</td><td>1. Normalform, und jede Nichtschlüsselspalte hängt vom ganzen Schlüssel ab, nicht schon von einem Teil davon. Verletzt ist sie nur bei einem Schlüssel aus mehreren Spalten.</td><td>was nur von einem Teil des Schlüssels abhängt, kommt mit diesem Teil in eine eigene Tabelle</td></tr>
+<tr><td>3. Normalform</td><td>2. Normalform, und keine Nichtschlüsselspalte hängt transitiv vom Schlüssel ab, also über Spalten, die selbst kein Schlüssel sind, wie in <code>movie_id → director_id → director_birth_year</code>.</td><td>die Spalte in der Mitte (<code>director_id</code>) bekommt eine eigene Tabelle mit allem, was von ihr abhängt, und bleibt als Fremdschlüssel zurück</td></tr>
+</tbody>
+</table>
+</div>
+
+Kurz gesagt: Jede Nichtschlüsselspalte sagt etwas über den Schlüssel, den ganzen Schlüssel und nichts als den Schlüssel. So fasste William Kent die zweite und dritte Normalform 1983 zusammen. Spalten wie `actor_1`, `actor_2`, `actor_3` sind dieselbe Liste in anderer Form; viele Bücher zählen auch sie als Verstoß gegen die erste Normalform.
+
+Edgar F. Codd beschrieb die erste Normalform 1970, die zweite und dritte 1971. Es gibt weitere, strengere Normalformen (Boyce-Codd, vierte, fünfte); für die meisten Tabellen ist die dritte das Ziel.
 <!-- /part -->
 
 ## Werkzeuge
@@ -240,7 +287,8 @@ Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 <tr><td>Diagramm sichern</td><td>»Als SVG speichern« schreibt <code>name-chen.svg</code>, <code>name-crowfoot.svg</code> oder <code>name-tables.svg</code></td></tr>
 <tr><td>Schema als Text</td><td>Unter dem Diagramm steht eine Zeile pro Entitätstyp (bei Chen und Krähenfuß) oder pro Tabelle (bei Tabellen), der Schlüssel unterstrichen, ein Fremdschlüssel mit ↑. »Kopieren« legt sie als Text in die Zwischenablage, zum Einfügen in ein Arbeitsblatt.</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <!-- /part -->
 
 <!-- part: kommandozeile -->
@@ -270,4 +318,5 @@ Die Schreibweise der `.er`-Dateien gehört zur ER-Werkstatt; eine Referenz auße
 
 - [CREATE TABLE](https://dev.mysql.com/doc/refman/8.4/en/create-table.html) im Handbuch von MySQL 8.4, auf Englisch: alles, was in einer Tabellendefinition stehen kann, auch `PRIMARY KEY` und `UNIQUE`.
 - [FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html): wie MySQL Fremdschlüssel prüft und was beim Löschen einer Zeile geschieht, auf die einer zeigt.
+- [A Simple Guide to Five Normal Forms in Relational Database Theory](https://www.bkent.net/Doc/simple5.htm), William Kent, 1983, auf Englisch: die Normalformen bis zur fünften, kurz und mit kleinen Beispielen.
 - Abfragen auf die fertigen Tabellen stehen bei [SQL](/reference/sql), die Datensätze der Aktivitäten bei [Datensätze](/reference/datensaetze).

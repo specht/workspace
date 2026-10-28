@@ -30,6 +30,7 @@ DARK = {
     '#d97706' => '#fbbf24', # amber: the sun and rays towards it
     '#0b0f19' => '#000000', # shadow on a floor: dark in both modes
     '#fdfdfd' => '#fdfdfd', # a printed label (a barcode): white in both modes
+    '#fde68a' => '#fde68a', # a yellow sticker on a printed label (a QR code): the same in both modes
     '#7c3aed' => '#a78bfa', # purple: a fourth colour beside blue, green and amber (branches in a commit graph)
 }.freeze
 

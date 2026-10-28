@@ -120,7 +120,8 @@ Die Schlüsselwörter sind Englisch: `class`, `extends`, `abstract`, `associatio
 <tr><td><code>+ clear(): void</code></td><td><code>void</code>: Die Methode gibt nichts zurück. Den Typ musst du immer angeben.</td></tr>
 <tr><td><code>+ Room(number: String, seats: int)</code></td><td>der <b>Konstruktor</b>: heißt wie die Klasse und hat keinen Typ</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Ein `#` für »geschützt« (protected) gibt es hier nicht, denn `#` beginnt einen Kommentar.
 
@@ -137,7 +138,8 @@ Die Typen schreibst du wie in Java, auch wenn du in einer anderen Sprache progra
 <tr><td><code>int[]</code></td><td>ein Array</td></tr>
 <tr><td><code>Room</code></td><td>jede Klasse aus derselben Datei</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Einen anderen Typ unterstreicht die UML-Werkstatt gelb und fragt, ob eine Klasse fehlt oder der Name falsch geschrieben ist.
 <!-- /part -->
@@ -154,7 +156,8 @@ Im Diagramm stehen die Namen so, wie dein Programm sie schreibt, damit du beides
 <tr><th>Python</th><td><code>free_seats</code></td><td><code>is_available</code></td></tr>
 <tr><th>JavaScript, Dart, Java</th><td><code>freeSeats</code></td><td><code>isAvailable</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Eine Methode darf, wie in Ruby, auf `?` oder `!` enden. Die Prüfungen einer Aktivität nehmen `isAvailable`, `is_available` und `available?` als dieselbe Methode.
 <!-- /part -->
@@ -200,7 +203,8 @@ Die **Multiplizität** steht bei der Klasse, deren Anzahl sie angibt. `School 1 
 <tr><td><code>1..*</code></td><td>mindestens eins</td></tr>
 <tr><td><code>4</code>, <code>2..6</code></td><td>genau vier, zwei bis sechs</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Mit `->` statt `--` kennt nur die linke Klasse die rechte, nicht umgekehrt; im Diagramm hat die Linie dann eine Pfeilspitze:
 
@@ -223,7 +227,8 @@ Im Code wird aus einer Assoziation meist ein Attribut: Die Schule hat eine Liste
 <tr><td>eine Linie ohne Spitze</td><td>eine Assoziation; ihr Name steht kursiv in der Mitte, die Multiplizitäten an den Enden</td></tr>
 <tr><td>eine Linie mit offener Pfeilspitze</td><td>eine Assoziation, die nur in eine Richtung bekannt ist</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <!-- /part -->
 
 <!-- part: er -->
@@ -247,7 +252,8 @@ Eine Datei mit der Endung `.uml` öffnet VS Code mit der UML-Werkstatt.
 <tr><td>Zoomen</td><td>−, + und »Einpassen« über dem Diagramm, oder <kbd>Strg</kbd> und das Mausrad</td></tr>
 <tr><td>Diagramm sichern</td><td>»Diagramm als SVG speichern« schreibt <code>name.svg</code> neben die Datei, auf weißem Grund. Eine SVG-Datei, die nicht von der UML-Werkstatt stammt, wird nur nach Rückfrage überschrieben.</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <!-- /part -->
 
 <!-- part: kommandozeile -->

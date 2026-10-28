@@ -178,4 +178,22 @@ class SchemaCheckTest < Minitest::Test
         # a model has no rows: er does not take it
         assert(TableExpect.spec_errors([{ 'name' => 'city', 'rows_where' => [{ 'where' => 'a = 1', 'rows' => 1 }] }], :rows => false).any? { |e| e.include?('unknown keys: rows_where') })
     end
+    # absent_columns: columns that must be gone, for a table split up (3NF
+    # in »Filmdatenbank«, where the director's columns move to their own table)
+    def test_absent_columns
+        check = CHECK.merge('tables' => [{ 'name' => 'movie', 'columns' => %w[id title], 'absent_columns' => %w[year director] }])
+        status, message, _, _, problem = SchemaCheck.check({}, check, runner, ENV_)
+        assert_equal [:wrong, :absent_column], [status, problem]
+        assert_equal 'Die Tabelle `movie` hat noch die Spalte `year`; sie gehört nicht mehr hinein.', message
+        columns = COLUMNS + [%w[movie director varchar(255)]]
+        _, message, = SchemaCheck.check({}, check, runner(:columns => columns), ENV_)
+        assert_equal 'Die Tabelle `movie` hat noch die Spalten `year` und `director`; sie gehören nicht mehr hinein.', message
+        status, = SchemaCheck.check({}, CHECK.merge('tables' => [{ 'name' => 'movie', 'absent_columns' => ['director'] }]), runner, ENV_)
+        assert_equal :correct, status
+
+        task = { 'id' => 'split', 'title' => 'Split', 'prompt' => 'Los', 'check' => check }
+        assert_equal [], TaskSpec.validate_task(task)
+        bad = check.merge('tables' => [{ 'name' => 'movie', 'absent_columns' => 'director' }])
+        assert(TaskSpec.validate_task(task.merge('check' => bad)).any? { |e| e.include?('absent_columns must be a list of column names') })
+    end
 end

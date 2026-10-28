@@ -174,6 +174,20 @@ module TaskCard
                     "Dein Code läuft in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet, höchstens #{(check['timeout'] || 10).to_i} Sekunden. " \
                         "<em>Ausführen</em> startet ihn einmal und zeigt, was er ausgibt, und ruft dann deine Funktionen auf und vergleicht. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
                 end
+            when 'circuit'
+                # The Logik-Werkstatt's editor (circuit_editor.js) with the
+                # task's switches and lamps; it keeps the netlist in the
+                # hidden field, which is the answer (CircuitCheck).
+                attrs = { 'inputs' => check['inputs'].join(' '), 'outputs' => check['outputs'].join(' ') }
+                attrs['gates'] = check['gates'].join(' ') if check['gates']
+                attrs['max-gates'] = check['max_gates'].to_s if check['max_gates']
+                attrs['min-blocks'] = check['min_blocks'].to_s if check['min_blocks']
+                attrs['blocks'] = 'false' if check['blocks'] == false
+                attrs['memory'] = 'true' if check['sequence']
+                io << "<div class='circuit-editor' data-task-editor='true'#{attrs.map { |k, v| " data-#{k}='#{h.(v)}'" }.join}></div>"
+                io << "<textarea class='task-input circuit-answer' name='answer' hidden aria-hidden='true' tabindex='-1'></textarea>"
+                steps = check['sequence'] ? 'stellt die Schalter Schritt für Schritt so, wie die Aufgabe es sagt' : "schaltet jede Zeile der Wahrheitstabelle ein, #{1 << check['inputs'].size} Zeilen"
+                reads = "Deine Schaltung geht als Text an den Server. Er #{steps}, lässt die Gatter Runde für Runde rechnen wie hier im Editor und vergleicht die Lampen. Ausgeführt wird dabei nichts."
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'

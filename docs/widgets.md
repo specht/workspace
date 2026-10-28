@@ -366,6 +366,20 @@ only to look nice.
   »verstärken« stretches the rest to 0 to 255; one pixel's red value in
   binary under the picture. The photo (CC0, credited under it) is a PNG, so
   that every bit is the photo's own, and not one of the activity's photos.
+- **A QR code to paint over** (`qr_damage.js` on `qr_code.js`, »Prüfziffern«):
+  the same 13 digits at the levels L, M, Q and H (version 2, matrices from
+  qrencode via `src/scripts/qr-code.cjs`); a sticker (light), a felt pen
+  (dark) and an eraser, one module or 3 × 3; with the mouse, a finger (the
+  code does not scroll the page while painting) or the arrow keys and the
+  space bar. After every stroke jsQR (vendored in `include/jsqr/`, Apache
+  2.0) reads the painted code as an image, and beside it the widget says
+  what the paint turned: the codewords (data and correction) against what
+  the level repairs, the finder patterns, timing lines, alignment pattern
+  and format information; »Codewörter zeigen« draws their edges and the
+  damaged ones red. The paint stays when the level changes. The code is a
+  printed label, white in both modes. No steps, no timeline: the reader
+  paints. `test/static/qr_code.test.cjs` checks the layout against
+  qrencode and the page's stickers against jsQR.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.
@@ -424,6 +438,42 @@ only to look nice.
   sets the inputs. The circuits are a library in the script, laid out by
   hand; the engine runs without a page (`test/static/logic_circuit.test.cjs`,
   among others every ALU result against the flags of the CPU Sandbox).
+- **The circuit editor** (`circuit_editor.js`, »Logik-Werkstatt«): the same
+  drawing and the same engine as the circuits above (gates from
+  `logic_circuit.js`, its `settle` round by round, 110 ms a round), but the
+  students build. A palette of the six gates (in a task only those its check
+  allows), switches and lamps in the free editor, and the blocks a person
+  has saved; a click puts a part on a free place (switches on the left,
+  lamps right of the rest, gates column by column), dragging puts it where
+  it is dropped. Parts move on an 8 px grid and snap so that a wire becomes
+  straight; wires run at right angles from an output pin (right) to an
+  input pin (left), back to the left around below both parts, a dot where
+  one branches; a wire that would lie on a wire from another source moves to
+  a lane of its own 8 px beside it (crossings are fine, shared pieces are
+  not); the names of switches and lamps always lie inside the drawing
+  (`test/static/circuit_editor.test.cjs`); an open input is an empty ring. A wire is dragged, or on a
+  touch screen tapped pin after pin. Keyboard: Tab from part to part, arrows
+  move, the space bar switches, Entf deletes, V and a digit draw a wire,
+  Strg+Z and Strg+Y undo and redo (100 steps). Beside it the circuit's own
+  truth table up to five switches (a row sets them), a note instead when a
+  wire feeds back. While building the drawing has its own size and the
+  canvas scrolls; to look at (a phone, `<div class='circuit-view'
+  data-netlist='…'>` in a page) it is as wide as there is room for, and on a
+  phone the editor only switches and says that building needs a larger
+  screen. A circuit is a netlist (`LogicCircuit.Netlist`: parse, format,
+  flatten, one line a part, `block NAME … end` for a block); flatten replaces
+  every block by its gates (ids `h1/g1`), so the engine runs it unchanged,
+  feedback through blocks included. »Als Baustein speichern« keeps the
+  circuit as a block, its switches its inputs and its lamps its outputs from
+  top to bottom; placing a block copies it from the library into the
+  circuit with the blocks inside it, so a circuit always carries what it
+  uses. Drafts and the library stay in the browser (localStorage, per
+  account like the tips); a checked circuit is the task's answer on the
+  server and brings its blocks back on another computer. The netlists of
+  `src/ruby/test/fixtures/circuits.json` run the same in the page
+  (`test/static/logic_circuit.test.cjs`) and on the server
+  (`circuit_check_test.rb`); the editor itself has
+  `e2e/tests/logic-workshop.browser.spec.ts`.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.

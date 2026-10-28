@@ -497,3 +497,259 @@ tasks:
       Keinen. Vertauschen zwei benachbarte Ziffern a und b, ändert sich die
       Summe um a − b, und das ist nie durch 11 teilbar. Darum rechnet die ISBN
       mit 11 und nimmt dafür das X in Kauf.
+
+  - id: qr-fleck
+    title: Zwei Aufkleber
+    prediction: true
+    prompt: |
+      Der QR-Code der Nudeln ist mit der Stufe M gedruckt. Welcher der beiden
+      Aufkleber macht ihn unlesbar?
+    check:
+      type: choice
+      options:
+        - Nur A, der auf dem Suchmuster.
+        - Nur B, der auf den Codewörtern.
+        - Beide.
+        - Keiner; so kleine Flecken repariert ein QR-Code.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: B deckt Codewörter ab, und genau die kann die Korrektur reparieren. Was deckt A ab?
+      - when: { picked: 2 }
+        say: Beide decken gleich viele Module ab, aber nur B trifft Codewörter. Was braucht ein Handy, bevor es überhaupt Codewörter lesen kann?
+      - when: { picked: 3 }
+        say: Die Korrektur repariert Codewörter. Trifft A überhaupt eines?
+    solution: |
+      Nur A. B beschädigt fünf Codewörter, und Stufe M repariert bis zu acht.
+      A beschädigt kein Codewort, aber ohne das Suchmuster findet das
+      Leseprogramm den Code nicht.
+
+  - id: qr-stufen
+    title: Wie viel repariert er?
+    prompt: |
+      Ein größerer QR-Code mit 29 × 29 Modulen hat bei der Stufe M 70
+      Codewörter: 44 für die Daten und 26 für die Korrektur. Wie viele
+      beschädigte Codewörter kann er höchstens reparieren?
+    check: { type: number, expect: 13 }
+    feedback:
+      - when: { equals: 26 }
+        say: Für jedes beschädigte Codewort braucht der Code zwei Korrekturcodewörter, eines für das Wo und eines für das Was.
+      - when: { equals: 44 }
+        say: Die Datencodewörter reparieren nichts; es zählen die Korrekturcodewörter.
+      - when: { equals: 35 }
+        say: Die Hälfte aller Codewörter wäre es, wenn alle Korrektur wären. Es zählen nur die Korrekturcodewörter.
+    hint:
+      - Nur die Korrekturcodewörter reparieren.
+      - Wie viele Korrekturcodewörter braucht der Code für ein einziges beschädigtes Codewort?
+    solution: |
+      13: Je beschädigtes Codewort braucht er zwei Korrekturcodewörter, und 26
+      reichen für 13. Das sind 13 von 70 Codewörtern, knapp 19 Prozent.
+
+  - id: qr-nicht-immer-h
+    title: Warum nicht immer H?
+    prompt: |
+      Stufe H repariert am meisten. Warum druckt man trotzdem nicht jeden
+      QR-Code mit Stufe H?
+    check:
+      type: choice
+      options:
+        - Die Korrektur braucht Platz; bei gleichem Inhalt wird der Code oft größer, oder seine Module werden kleiner.
+        - Ein Code der Stufe H hat mehr Codewörter und darum auch mehr Fehler.
+        - Stufe H können nur besondere Scanner lesen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Fehler entstehen durch Schmutz und Kratzer, nicht durch Codewörter. Was kosten die vielen Korrekturcodewörter?
+      - when: { picked: 2 }
+        say: Jedes Leseprogramm liest alle vier Stufen; die Stufe steht in der Formatinformation.
+    solution: |
+      Die Korrekturcodewörter brauchen Platz. Bei Stufe H sind fast zwei
+      Drittel der Codewörter Korrektur; für denselben Inhalt braucht der Code
+      darum oft mehr Module, oder sie werden kleiner und für eine Kamera
+      schwerer zu erkennen. Denso Wave nennt Q oder H für Fabriken, in denen
+      Codes schmutzig werden; am häufigsten wird M gewählt.
+
+  - id: gerade
+    title: Ein Wert ist falsch
+    prompt: |
+      Gespeichert wurden vier Werte, die auf einer Geraden liegen: Sie wachsen
+      bei jedem Schritt um gleich viel. Angekommen sind 4, 7, 11 und 13; einer
+      davon ist falsch. Wie heißt er richtig?
+    check: { type: number, expect: 10 }
+    feedback:
+      - when: { equals: 11 }
+        say: Die 11 ist der falsche Wert. Gesucht ist, was an ihrem Platz stehen müsste.
+      - when: { equals: 3 }
+        say: Um 3 wächst die Folge bei jedem Schritt. Gesucht ist der richtige Wert für den falschen.
+    hint:
+      - Lass nacheinander jeden der vier Werte weg und prüf, ob die drei anderen gleichmäßig wachsen, wenn man den Platz des fehlenden mitzählt.
+      - Ohne die 11 bleiben 4, 7 und 13. Von 7 bis 13 sind es zwei Schritte.
+    solution: |
+      10. Ohne die 11 wachsen 4, 7 und 13 um 3 bei jedem Schritt, von 7 bis 13
+      sind es zwei Schritte; an den Platz der 11 gehört die 10. Lässt man
+      einen anderen Wert weg, wachsen die übrigen drei nicht gleichmäßig.
+
+  - id: paritaet
+    title: Die Parität
+    prompt: |
+      Schreib in `check-digits/parity_grid.rb` die Funktion `parity(bits)`. Die
+      Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
+      `parity([1])` und `parity([])` auf.
+    check:
+      type: ruby
+      file: check-digits/parity_grid.rb
+      cases:
+        - call: 'parity([1, 0, 1, 1])'
+          expect: 1
+          say: Drei Einsen sind eine ungerade Zahl. Die Parität ist 0 oder 1, der Rest bei der Division durch 2.
+        - call: 'parity([1, 1, 0, 0])'
+          expect: 0
+        - call: 'parity([1])'
+          expect: 1
+        - call: 'parity([])'
+          expect: 0
+          say: Eine leere Liste hat keine Einsen, und 0 ist gerade.
+    solution: |
+      ```ruby
+      def parity(bits)
+        ones = 0
+        bits.each do |bit|
+          ones = ones + bit
+        end
+        ones % 2
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `check-digits/parity_grid.py` die Funktion `parity(bits)`.
+        Die Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
+        `parity([1])` und `parity([])` auf.
+      check:
+        type: python
+        file: check-digits/parity_grid.py
+        cases:
+          - call: 'parity([1, 0, 1, 1])'
+            expect: 1
+            say: Drei Einsen sind eine ungerade Zahl. Die Parität ist 0 oder 1, der Rest bei der Division durch 2.
+          - call: 'parity([1, 1, 0, 0])'
+            expect: 0
+          - call: 'parity([1])'
+            expect: 1
+          - call: 'parity([])'
+            expect: 0
+            say: Eine leere Liste hat keine Einsen, und 0 ist gerade.
+      solution: |
+        ```python
+        def parity(bits):
+            ones = 0
+            for bit in bits:
+                ones = ones + bit
+            return ones % 2
+        ```
+
+  - id: bit-finden
+    title: Das gekippte Bit
+    prompt: |
+      Schreib `find_error(grid)` in `check-digits/parity_grid.rb`. Die Prüfung
+      ruft sie mit einem Gitter aus fünf Zeilen und fünf Spalten auf: ohne
+      Fehler, mit einem gekippten Bit in Zeile 1 und Spalte 2 und mit einem
+      gekippten Paritätsbit in Zeile 3 und Spalte 4 (gezählt ab 0); dazu mit
+      einem kleineren Gitter aus drei Zeilen und vier Spalten.
+    check:
+      type: ruby
+      file: check-digits/parity_grid.rb
+      cases:
+        - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+          expect: ~
+          say: In diesem Gitter haben alle Zeilen und Spalten eine gerade Zahl von Einsen; dann gibt es keinen Fehler.
+        - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+          expect: '[1, 2]'
+          say: Die Spalte findest du, wenn du aus jeder Zeile das Element mit demselben Index nimmst.
+        - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 1], [0, 0, 1, 0, 1]])'
+          expect: '[3, 4]'
+          say: Auch ein Paritätsbit kann kippen; dieses steht in der letzten Spalte.
+        - call: 'find_error([[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0]])'
+          expect: '[2, 0]'
+          say: Dieses Gitter hat drei Zeilen und vier Spalten. Wie viele Spalten es gibt, sagt die Länge einer Zeile.
+    solution: |
+      ```ruby
+      def find_error(grid)
+        row = nil
+        grid.each_with_index do |bits, r|
+          row = r if parity(bits) == 1
+        end
+        column = nil
+        (0...grid[0].length).each do |c|
+          bits = grid.map { |line| line[c] }
+          column = c if parity(bits) == 1
+        end
+        return nil if row.nil? || column.nil?
+
+        [row, column]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `find_error(grid)` in `check-digits/parity_grid.py`. Die
+        Prüfung ruft sie mit einem Gitter aus fünf Zeilen und fünf Spalten auf:
+        ohne Fehler, mit einem gekippten Bit in Zeile 1 und Spalte 2 und mit
+        einem gekippten Paritätsbit in Zeile 3 und Spalte 4 (gezählt ab 0);
+        dazu mit einem kleineren Gitter aus drei Zeilen und vier Spalten.
+      check:
+        type: python
+        file: check-digits/parity_grid.py
+        cases:
+          - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+            expect: ~
+            say: In diesem Gitter haben alle Zeilen und Spalten eine gerade Zahl von Einsen; dann gibt es keinen Fehler.
+          - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+            expect: '[1, 2]'
+            say: Die Spalte findest du, wenn du aus jeder Zeile das Element mit demselben Index nimmst.
+          - call: 'find_error([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 1], [0, 0, 1, 0, 1]])'
+            expect: '[3, 4]'
+            say: Auch ein Paritätsbit kann kippen; dieses steht in der letzten Spalte.
+          - call: 'find_error([[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0]])'
+            expect: '[2, 0]'
+            say: Dieses Gitter hat drei Zeilen und vier Spalten. Wie viele Spalten es gibt, sagt die Länge einer Zeile.
+      solution: |
+        ```python
+        def find_error(grid):
+            row = None
+            for r in range(len(grid)):
+                if parity(grid[r]) == 1:
+                    row = r
+            column = None
+            for c in range(len(grid[0])):
+                bits = [line[c] for line in grid]
+                if parity(bits) == 1:
+                    column = c
+            if row is None or column is None:
+                return None
+            return [row, column]
+        ```
+
+  - id: zwei-bits
+    title: Zwei Bits gekippt
+    prediction: true
+    prompt: |
+      Im Gitter kippen zwei Bits, die in derselben Zeile stehen. Was zeigen die
+      Paritäten?
+    check:
+      type: choice
+      options:
+        - Keine Zeile hat eine ungerade Zahl von Einsen, aber zwei Spalten.
+        - Eine Zeile und zwei Spalten haben eine ungerade Zahl von Einsen.
+        - Alle Zeilen und Spalten bleiben gerade; das Gitter merkt nichts.
+        - Zwei Zeilen und zwei Spalten haben eine ungerade Zahl von Einsen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Zeile verliert oder gewinnt zwei Einsen, oder eine kommt dazu und eine geht. Ist ihre Zahl danach gerade oder ungerade?
+      - when: { picked: 2 }
+        say: Die beiden Bits stehen in verschiedenen Spalten, und in jeder dieser Spalten kippt eines.
+      - when: { picked: 3 }
+        say: Beide Bits stehen in derselben Zeile, also in nur einer Zeile.
+    solution: |
+      Die Zeile hat wieder eine gerade Zahl von Einsen, die beiden Spalten
+      eine ungerade. Das Gitter merkt den Fehler, weiß aber nicht, in welcher
+      Zeile er steht, und kann ihn darum nicht reparieren.

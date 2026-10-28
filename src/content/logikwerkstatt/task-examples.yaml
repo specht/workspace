@@ -1,0 +1,207 @@
+# Beispiele für die Prüfungen (docs/aufgaben.md, »Beispiele für die Prüfungen«):
+# je Aufgabe eine Schaltung, die sie annehmen muss, und die typischen Fehler.
+# Die Schaltung ist der Text, den der Editor schickt (Netlist, logic_circuit.js);
+# ohne Stellen (@x,y) legt der Editor sie selbst aus. Der Anfang des Editors,
+# Schalter und Lampen ohne Leitung, wird von selbst als Gegenbeispiel geprüft.
+format: 1
+activity: logikwerkstatt
+examples:
+  halbaddierer:
+    pass:
+      - answer: |
+          in a @48,40
+          in b @48,104
+          xor g1 a b @200,32
+          and g2 a b @200,96
+          out s g1 @560,40
+          out c g2 @560,104
+    fail:
+      - answer: |
+          in a
+          in b
+          or g1 a b
+          and g2 a b
+          out s g1
+          out c g2
+        say: "Bei a = 1 und b = 1 leuchtet die Lampe s, sie sollte aus sein."
+      - answer: |
+          in a
+          in b
+          xor g1 a b
+          and g2 a -
+          out s g1
+          out c g2
+        say: "Am UND g2 ist ein Eingang ohne Leitung."
+      - answer: |
+          in a
+          in b
+          nand n a b
+          not g2 n
+          xor g1 a b
+          out s g1
+          out c g2
+        say: "Aber deine Schaltung hat 3 Gatter; es geht mit 2."
+  xor-nand:
+    pass:
+      - answer: "in a; in b; nand x a b; nand l a x; nand r x b; nand g l r; out y g"
+    fail:
+      - answer: "in a; in b; xor g a b; out y g"
+        say: "In dieser Aufgabe gibt es nur NAND. Deine Schaltung hat auch XOR."
+      - answer: "in a; in b; nand x a b; out y x"
+        say: "Bei a = 0 und b = 0 leuchtet die Lampe y, sie sollte aus sein."
+      - answer: "in a; in b; nand na a a; nand nb b b; nand l a nb; nand r na b; nand o l r; out y o"
+        say: "es geht mit 4"
+  multiplexer:
+    pass:
+      - answer: "in a; in b; in sel; not ns sel; and ga a ns; and gb b sel; or o ga gb; out y o"
+    fail:
+      - answer: "in a; in b; in sel; and ga a sel; not ns sel; and gb b ns; or o ga gb; out y o"
+        say: "Bei a = 0, b = 1 und sel = 0 leuchtet die Lampe y, sie sollte aus sein."
+      - answer: "in a; in b; in sel; or o a b; out y o"
+        say: "Bei a = 0, b = 1 und sel = 0"
+  volladdierer:
+    pass:
+      - answer: |
+          block HA
+            in a
+            in b
+            xor x a b
+            and k a b
+            out s x
+            out c k
+          end
+          in a
+          in b
+          in c_in
+          HA h1 a b
+          HA h2 h1.s c_in
+          or o h1.c h2.c
+          out s h2.s
+          out c_out o
+    fail:
+      - answer: |
+          in a; in b; in c_in
+          xor x1 a b; xor x2 x1 c_in
+          and k1 a b; and k2 x1 c_in; or o k1 k2
+          out s x2; out c_out o
+        say: "Bau sie aber aus Bausteinen: Gefragt sind mindestens 2, in deiner Schaltung steht keiner."
+      - answer: |
+          block HA
+            in a
+            in b
+            xor x a b
+            and k a b
+            out s x
+            out c k
+          end
+          in a
+          in b
+          in c_in
+          HA h1 a b
+          HA h2 h1.s c_in
+          and o h1.c h2.c
+          out s h2.s
+          out c_out o
+        say: "Bei a = 0, b = 1 und c_in = 1 ist die Lampe c_out aus, sie sollte leuchten."
+  vergleicher:
+    pass:
+      - answer: |
+          in a1; in a0; in b1; in b0
+          xor d1 a1 b1; not e1 d1
+          xor d0 a0 b0; not e0 d0
+          and q e1 e0
+          not nb1 b1; not nb0 b0
+          and hi a1 nb1
+          and lo e1 a0 nb0
+          or g hi lo
+          out eq q; out gt g
+    fail:
+      - answer: |
+          in a1; in a0; in b1; in b0
+          xor d1 a1 b1; not e1 d1
+          xor d0 a0 b0; not e0 d0
+          and q e1 e0
+          not nb1 b1; not nb0 b0
+          and hi a1 nb1
+          and lo a0 nb0
+          or g hi lo
+          out eq q; out gt g
+        say: "Bei a = 01 (1) und b = 10 (2) leuchtet die Lampe gt, sie sollte aus sein."
+  addierer4:
+    pass:
+      - answer: |
+          block HA
+            in a
+            in b
+            xor x a b
+            and k a b
+            out s x
+            out c k
+          end
+          block VA
+            in a
+            in b
+            in c_in
+            HA h1 a b
+            HA h2 h1.s c_in
+            or o h1.c h2.c
+            out s h2.s
+            out c_out o
+          end
+          in a3; in a2; in a1; in a0; in b3; in b2; in b1; in b0; in c_in
+          VA v0 a0 b0 c_in
+          VA v1 a1 b1 v0.c_out
+          VA v2 a2 b2 v1.c_out
+          VA v3 a3 b3 v2.c_out
+          out s3 v3.s; out s2 v2.s; out s1 v1.s; out s0 v0.s
+          out c_out v3.c_out
+    fail:
+      - answer: |
+          block HA
+            in a
+            in b
+            xor x a b
+            and k a b
+            out s x
+            out c k
+          end
+          block VA
+            in a
+            in b
+            in c_in
+            HA h1 a b
+            HA h2 h1.s c_in
+            or o h1.c h2.c
+            out s h2.s
+            out c_out o
+          end
+          in a3; in a2; in a1; in a0; in b3; in b2; in b1; in b0; in c_in
+          VA v0 a0 b0 c_in
+          VA v1 a1 b1 c_in
+          VA v2 a2 b2 v1.c_out
+          VA v3 a3 b3 v2.c_out
+          out s3 v3.s; out s2 v2.s; out s1 v1.s; out s0 v0.s
+          out c_out v3.c_out
+        say: "zeigen die Lampen c_out s3 s2 s1 s0 `00011`, richtig wäre `00001` (1)"
+      - answer: |
+          block VA
+            in a
+            in b
+            in c_in
+            HA h1 a b
+            out s h1.s
+            out c_out h1.c
+          end
+          in a3; in a2; in a1; in a0; in b3; in b2; in b1; in b0; in c_in
+          VA v0 a0 b0 c_in
+          out s3 -; out s2 -; out s1 -; out s0 v0.s; out c_out -
+        say: "Den Baustein HA"
+  d-latch:
+    pass:
+      - answer: "in d; in takt; not nd d; and r nd takt; and s d takt; nor m r mn; nor mn m s; out q m"
+      - answer: "in d; in takt; nand ns d takt; not nd d; nand nr nd takt; nand m ns mn; nand mn nr m; out q m"
+    fail:
+      - answer: "in d; in takt; out q d"
+        say: "Im 3. Schritt (d = 0 und takt = 0) ist die Lampe q aus, sie sollte leuchten. Ist der Takt 0, ändert D nichts an Q."
+      - answer: "in d; in takt; not nd d; and r nd takt; and s d takt; nor m s mn; nor mn m r; out q m"
+        say: "Im 1. Schritt (d = 1 und takt = 1) ist die Lampe q aus, sie sollte leuchten."

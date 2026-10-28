@@ -98,7 +98,8 @@ Pseudocode sieht aus wie ein Programm, ist aber für Menschen geschrieben: Er sa
 <tr><td><code>name(a, b):</code></td><td>eine Funktion mit ihren Parametern; eingerückt darunter, was sie tut</td></tr>
 <tr><td><code>return x</code></td><td>die Funktion endet und gibt <code>x</code> zurück</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Was zu einem `if`, einer Schleife oder einer Funktion gehört, steht eingerückt unter der Zeile mit dem Doppelpunkt. Eine einzelne Anweisung darf auch gleich hinter dem Doppelpunkt stehen: `if x < 0: x ← -x`.
 <!-- /part -->
@@ -195,7 +196,8 @@ contains(list, wanted):
 <tr><th><code>repeat:</code> … <code>until done</code></th><td><code>loop do</code> … <code>break if done</code> <code>end</code></td><td><code>while True:</code> … <code>if done: break</code></td></tr>
 <tr><th><code>name(a, b):</code> … <code>return x</code></th><td><code>def name(a, b)</code> … <code>return x</code> <code>end</code></td><td><code>def name(a, b):</code> … <code>return x</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Vorsicht bei der Zählschleife: `for i from 0 to 11` zählt die 11 mit. Ruby schreibt das genauso (`0..11`), Pythons `range` hört dagegen eins vorher auf, darum `range(0, 12)`.
 <!-- /part -->

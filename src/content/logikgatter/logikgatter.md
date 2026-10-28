@@ -72,11 +72,7 @@ Beide Schaltungen liefern in jeder Zeile dasselbe: 1 nur dann, wenn `a` und `b` 
 
 Dass man mit 1 und 0 rechnen kann wie mit Zahlen, nach festen Regeln wie den beiden von eben, ist älter als jeder Computer.
 
-<div class='person'>
-<img src='boole.webp' alt='Stich von George Boole um 1864: ein Mann mit zurückgekämmtem dunklem Haar, hohem Kragen und Halsbinde, den Blick zur Seite.'>
-<p><strong>George Boole</strong> (1815–1864), englischer Mathematiker, Professor in Cork in Irland. In seinem Buch <em>The Laws of Thought</em> von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen. Nach ihm heißen <code>true</code> und <code>false</code> in vielen Sprachen Boolean, in Python ist es der Typ <code>bool</code>.</p>
-<p class='person-credit'>Bild: unbekannter Künstler, um 1864, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:George_Boole.jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(boole)
 
 Gut achtzig Jahre später zeigte Claude Shannon, damals Student am MIT, dass Booles Algebra genau beschreibt, was Schalter tun.
 
@@ -220,6 +216,8 @@ _task(latch-both)
 Ist S einmal 1 gewesen, hält sich das Flipflop selbst: Q ist 1, also ist \\(\overline{\mathrm{Q}} = \mathrm{NOR}(\mathrm{S}, 1) = 0\\), und damit bleibt \\(\mathrm{Q} = \mathrm{NOR}(0, 0) = 1\\), auch wenn S wieder 0 ist. Erst R = 1 setzt Q zurück auf 0, und auch das bleibt.
 
 Sind S und R beide 1, sind Q und <span class='lc-not'><span aria-hidden='true'>Q</span><span class='visually-hidden'>nicht Q</span></span> beide 0. Gehen dann beide im selben Augenblick zurück auf 0, sehen beide NOR zwei Nullen und schalten auf 1, dann sehen beide eine 1 und schalten auf 0, immer weiter: In der Simulation oben schalten alle Gatter gleich schnell, und die Schaltung kommt nie zur Ruhe. In echter Hardware ist eines der beiden Gatter ein wenig schneller, aber welches, weiß man vorher nicht. Darum heißt S = R = 1 der **verbotene Zustand** des RS-Flipflops.
+
+_person(eccles-jordan)
 <!-- /after -->
 
 ### Mit Takt: das D-Flipflop

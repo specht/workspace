@@ -4,7 +4,7 @@ image_alt: "VS Code mit einem Datenmodell für Filme als Text links und dem dara
 kind: projekt
 language: SQL
 duration: 3 Doppelstunden
-curriculum: "Sek I: Datenbanken (Datenbanken als Tabellen planen, verknüpfte Tabellen); Oberstufe: Datenbanken (Datenmodellierung, relationales Datenbankschema, Join)"
+curriculum: "Sek I: Datenbanken (Datenbanken als Tabellen planen, verknüpfte Tabellen); Oberstufe: Datenbanken (Datenmodellierung, relationales Datenbankschema, Join, Normalisierung)"
 topics: [datenbanken-modellierung, datenbanken-abfragen]
 requires: [mysql]
 reference: [er-modelle, sql, json, datensaetze]
@@ -521,6 +521,268 @@ Fragen, die von Person zu Film zu Person und weiter wandern, werden in SQL schne
 
 _task(neue-frage)
 
+<!-- extra -->
+## Normalisierung
+
+Deine Filmdaten liegen auf sechs Tabellen, und für fast jede Frage brauchst du ein `JOIN`. Warum nicht eine einzige große Tabelle, in der alles steht? In diesem Kapitel baust du eine solche Tabelle, siehst, was mit ihr schiefgeht, und teilst sie Schritt für Schritt wieder auf. Am Ende stehst du bei den Tabellen, die du schon kennst. Das Verfahren heißt **Normalisierung**; im Grundkurs kannst du das Kapitel überspringen.
+
+### Eine Liste für alles
+
+Ein Filmclub sammelt seine Filmabende in einer Liste, eine Zeile pro Film: Titel, Jahr, wer Regie geführt hat, deren Geburtsjahr und wer mitspielt. Ein Ausschnitt:
+
+<div class='scroll-x'>
+<table class='table table-sm' style='min-width: 56em'>
+<thead>
+<tr><th>movie_id</th><th>title</th><th>year</th><th>director_id</th><th>director</th><th>director_birth_year</th><th>actors</th></tr>
+</thead>
+<tbody>
+<tr><td>891</td><td>Good Bye Lenin!</td><td>2003</td><td>6892</td><td>Wolfgang Becker</td><td>1954</td><td>Alexander Beyer, Burghart Klaußner, Chulpan Khamatova, …</td></tr>
+<tr><td>1499</td><td>Inception</td><td>2010</td><td>5048</td><td>Christopher Nolan</td><td>1970</td><td>Cillian Murphy, Elliot Page, Joseph Gordon-Levitt, …</td></tr>
+<tr><td>1916</td><td>Interstellar</td><td>2014</td><td>5048</td><td>Christopher Nolan</td><td>1970</td><td>Anne Hathaway, Bill Irwin, Casey Affleck, …</td></tr>
+<tr><td>2565</td><td>Barbie</td><td>2023</td><td>10282</td><td>Greta Gerwig</td><td>1983</td><td>America Ferrera, Dua Lipa, Emma Mackey, …</td></tr>
+</tbody>
+</table>
+</div>
+
+Die Liste des Clubs baust du aus deinen eigenen Tabellen nach, mit den 25 Filmen von vier Regisseurinnen und Regisseuren. Starte `mycli` und gib diesen Befehl ein; du musst ihn nicht nachbauen:
+
+```sql_copy
+CREATE TABLE club_list (PRIMARY KEY (movie_id)) AS
+SELECT movie.id AS movie_id, movie.title, movie.year,
+       crew.id AS director_id, crew.name AS director,
+       crew.birth_year AS director_birth_year,
+       (SELECT GROUP_CONCAT(actor.name ORDER BY actor.name SEPARATOR ', ')
+        FROM movie_crew AS credit
+        JOIN crew AS actor ON credit.crew_id = actor.id
+        JOIN job AS role ON credit.job_id = role.id
+        WHERE credit.movie_id = movie.id AND role.title = 'actor') AS actors
+FROM movie
+JOIN movie_crew ON movie.id = movie_crew.movie_id
+JOIN job ON movie_crew.job_id = job.id
+JOIN crew ON movie_crew.crew_id = crew.id
+WHERE job.title = 'director'
+  AND crew.name IN ('Christopher Nolan', 'Greta Gerwig', 'Wolfgang Becker', 'Wolfgang Petersen');
+```
+
+`CREATE TABLE … AS SELECT` legt eine Tabelle an und füllt sie mit dem Ergebnis der Abfrage; in der Klammer davor steht ihr Primärschlüssel, hier `movie_id`. `GROUP_CONCAT` hängt die Namen aller Schauspielerinnen und Schauspieler eines Films zu einem Text zusammen. Sieh dir die Tabelle an:
+
+```sql
+SELECT movie_id, title, director, director_birth_year FROM club_list;
+```
+
+Christopher Nolan steht dreizehnmal da, bei jedem seiner Filme, und mit ihm dreizehnmal sein Geburtsjahr.
+
+_task(vorhersage-geburtsjahr)
+
+<!-- after: vorhersage-geburtsjahr -->
+Nach dem `UPDATE` zeigt das `SELECT` zwei Zeilen:
+
+<div class='scroll-x'>
+<table class='table table-sm'>
+<thead>
+<tr><th>director</th><th>director_birth_year</th></tr>
+</thead>
+<tbody>
+<tr><td>Christopher Nolan</td><td>1970</td></tr>
+<tr><td>Christopher Nolan</td><td>1907</td></tr>
+</tbody>
+</table>
+</div>
+
+Das `WHERE` hat genau eine Zeile getroffen, die von »Inception«. Die zwölf anderen Filme von Nolan sagen weiter 1970, und die Tabelle widerspricht sich: Wann ist Christopher Nolan geboren? MySQL kann das nicht verhindern, denn nichts in `club_list` sagt, dass `director_birth_year` in allen Zeilen mit derselben `director_id` gleich sein muss. Das ist eine **Änderungsanomalie** (auch Update-Anomalie): Eine Tatsache steht in vielen Zeilen, und wer sie ändert, muss jede davon treffen. Mit `ROLLBACK;` nimmst du das `UPDATE` zurück, und Nolan hat wieder ein Geburtsjahr.
+<!-- /after -->
+
+### Einfügen und löschen
+
+Der Club möchte Wim Wenders in seine Liste aufnehmen, bevor ein Film von ihm gezeigt wird:
+
+```sql
+INSERT INTO club_list (director_id, director, director_birth_year)
+VALUES (2379, 'Wim Wenders', 1945);
+```
+
+MySQL lehnt ab: `Field 'movie_id' doesn't have a default value`. Der Primärschlüssel ist `movie_id`, und ohne Film gibt es keinen. Einen Regisseur ohne Film kann die Tabelle nicht speichern, höchstens mit einem ausgedachten Film. Das ist eine **Einfügeanomalie**.
+
+Andersherum: »Good Bye Lenin!« ist der einzige Film von Wolfgang Becker in der Liste. Was weiß die Tabelle noch über ihn, wenn der Film gestrichen wird? Probier es in einer Transaktion, wie in der »Einführung in SQL«. Auf die Frage von `mycli` vor dem `DELETE` antwortest du mit <kbd>y</kbd>:
+
+```sql
+START TRANSACTION;
+DELETE FROM club_list WHERE movie_id = 891;
+SELECT * FROM club_list WHERE director = 'Wolfgang Becker';
+ROLLBACK;
+```
+
+Das `SELECT` findet keine Zeile mehr: Mit dem Film ist auch verschwunden, dass Wolfgang Becker 1954 geboren ist. Das ist eine **Löschanomalie**. Das `ROLLBACK` holt die Zeile zurück; `SELECT COUNT(*) FROM club_list;` zeigt wieder 25.
+
+In deinen eigenen Tabellen gibt es keine dieser drei Anomalien. Wolfgang Becker steht in `crew` in einer Zeile für sich, mit seinem Geburtsjahr, ganz gleich, wie viele Filme von ihm es gibt. Sein Geburtsjahr steht dort nur einmal, ein `UPDATE` trifft also alles, und eine Person ohne Film ist einfach eine Zeile in `crew` ohne Zeile in `movie_crew`.
+
+### Abhängigkeiten zwischen Spalten
+
+Woran liegt es? `club_list` speichert in einer Zeile Tatsachen über drei verschiedene Objekte: über einen Film (Titel, Jahr), über eine Person, die Regie geführt hat (Name, Geburtsjahr), und über die Besetzung. Welche Spalte von welcher abhängt, beschreiben **funktionale Abhängigkeiten**, und die **Normalformen** sagen, welche Abhängigkeiten in einer Tabelle erlaubt sind. Das Handbuch hat beide auf einen Blick:
+
+_include(er-modelle#normalformen)
+
+_person(codd)
+
+In `club_list` gilt `movie_id → title`, `movie_id → director_id` und `director_id → director_birth_year`. `director → movie_id` gilt nicht: Zu Christopher Nolan gehören dreizehn Filme. In den nächsten drei Abschnitten bringst du die Liste des Clubs in die erste, zweite und dritte Normalform.
+
+### Erste Normalform: ein Wert pro Zelle
+
+In `actors` stehen bis zu zehn Namen in einer Zelle. Für die Datenbank ist das ein einziger Text. Welche Filme hat der Club mit Michael Caine gezeigt? Das geht nur mit `LIKE '%Michael Caine%'`, das jeden Text durchsucht, und schon `LIKE '%Michael C%'` fände auch Michael Cera. `club_list` verletzt die erste Normalform.
+
+Die Lösung ist eine Zeile pro Name. Aus einem Text die Namen wieder herauszuschneiden, ist in SQL mühsam; deine Tabellen haben sie zum Glück schon einzeln, in `movie_crew`. Die neue Tabelle `club_cast` übernimmt alle Spalten von `club_list` außer `actors` und bekommt dafür eine Spalte `actor` mit einem Namen:
+
+```sql_copy
+CREATE TABLE club_cast (PRIMARY KEY (movie_id, actor)) AS
+SELECT club_list.movie_id, club_list.title, club_list.year,
+       club_list.director_id, club_list.director, club_list.director_birth_year,
+       crew.name AS actor
+FROM club_list
+JOIN movie_crew ON club_list.movie_id = movie_crew.movie_id
+JOIN job ON movie_crew.job_id = job.id
+JOIN crew ON movie_crew.crew_id = crew.id
+WHERE job.title = 'actor';
+```
+
+`club_cast` hat 247 Zeilen, »Inception« allein zehn:
+
+<div class='scroll-x'>
+<table class='table table-sm' style='min-width: 50em'>
+<thead>
+<tr><th>movie_id</th><th>title</th><th>year</th><th>director_id</th><th>director</th><th>director_birth_year</th><th>actor</th></tr>
+</thead>
+<tbody>
+<tr><td>1499</td><td>Inception</td><td>2010</td><td>5048</td><td>Christopher Nolan</td><td>1970</td><td>Cillian Murphy</td></tr>
+<tr><td>1499</td><td>Inception</td><td>2010</td><td>5048</td><td>Christopher Nolan</td><td>1970</td><td>Elliot Page</td></tr>
+<tr><td>1499</td><td>Inception</td><td>2010</td><td>5048</td><td>Christopher Nolan</td><td>1970</td><td>Joseph Gordon-Levitt</td></tr>
+<tr><td colspan='7'>… sieben weitere Zeilen für »Inception«</td></tr>
+</tbody>
+</table>
+</div>
+
+Jetzt findet `WHERE actor = 'Michael Caine'` genau seine Filme. Der Primärschlüssel besteht aus zwei Spalten: `movie_id` allein bestimmt keine Zeile mehr, erst zusammen mit `actor`. Als Schema, der Primärschlüssel unterstrichen:
+
+<div class='schema-lines'>
+<div><span class='schema-table'>club_cast</span>(<u>movie_id</u>, title, year, director_id, director, director_birth_year, <u>actor</u>)</div>
+</div>
+
+### Zweite Normalform: der ganze Schlüssel
+
+`club_cast` ist in der ersten Normalform, aber die Wiederholungen sind schlimmer geworden: Titel, Jahr und Regie von »Inception« stehen jetzt zehnmal da, Nolans Geburtsjahr 127-mal. Der Grund: `title`, `year`, `director_id`, `director` und `director_birth_year` hängen nur von `movie_id` ab, einem Teil des Schlüssels. Wer mitspielt, ändert nichts am Titel. Das verletzt die zweite Normalform.
+
+Was nur von `movie_id` abhängt, kommt mit `movie_id` in eine eigene Tabelle `club_movie`. `DISTINCT` macht aus den zehn gleichen Zeilen von »Inception« eine:
+
+```sql_copy
+CREATE TABLE club_movie (PRIMARY KEY (id)) AS
+SELECT DISTINCT movie_id AS id, title, year, director_id, director, director_birth_year
+FROM club_cast;
+```
+
+In `club_cast` bleiben nur die beiden Spalten des Schlüssels. `ALTER TABLE` ändert eine Tabelle, die es schon gibt: `DROP COLUMN` löscht eine Spalte, `ADD FOREIGN KEY` macht `movie_id` zu einem Fremdschlüssel auf `club_movie`. Wie vor einem `DELETE` fragt `mycli` vor einem `ALTER TABLE` nach; du antwortest mit <kbd>y</kbd>:
+
+```sql_copy
+ALTER TABLE club_cast
+  DROP COLUMN title, DROP COLUMN year, DROP COLUMN director_id,
+  DROP COLUMN director, DROP COLUMN director_birth_year,
+  ADD FOREIGN KEY (movie_id) REFERENCES club_movie (id);
+```
+
+Aus einer Tabelle sind zwei geworden, ein Fremdschlüssel verbindet sie:
+
+<div class='schema-lines'>
+<div><span class='schema-table'>club_movie</span>(<u>id</u>, title, year, director_id, director, director_birth_year)</div>
+<div><span class='schema-table'>club_cast</span>(<u><span class='schema-fk' title='verweist auf club_movie.id'><span class='schema-arrow'>↑</span>movie_id</span></u>, <u>actor</u>)</div>
+</div>
+
+`SELECT COUNT(*) FROM club_movie;` zeigt 25, eine Zeile pro Film. Ein `JOIN` setzt die alte Tabelle wieder zusammen, wann immer du sie brauchst:
+
+```sql
+SELECT club_movie.title, club_cast.actor
+FROM club_movie
+JOIN club_cast ON club_movie.id = club_cast.movie_id
+WHERE club_movie.title = 'Inception';
+```
+
+### Dritte Normalform: nichts über Umwege
+
+`club_movie` ist in der zweiten Normalform: Ihr Schlüssel ist eine einzige Spalte, von einem Teil davon kann nichts abhängen. Nolans Geburtsjahr steht aber immer noch dreizehnmal da. `director` und `director_birth_year` hängen von `id` nur über einen Umweg ab: `id → director_id → director_birth_year`. Kennst du die Person, kennst du ihr Geburtsjahr, ganz gleich, um welchen Film es geht. Diese transitive Abhängigkeit verletzt die dritte Normalform, und sie ist es, die die drei Anomalien vom Anfang möglich macht.
+
+<div class='hint own' data-check='dritte-normalform'>
+<strong>Jetzt bist du dran:</strong> Bring <code>club_movie</code> in die dritte Normalform, mit zwei Befehlen wie im Abschnitt davor. Die Personen kommen in eine neue Tabelle <code>club_director</code> mit den Spalten <code>id</code>, <code>name</code> und <code>birth_year</code> und dem Primärschlüssel <code>id</code>. In <code>club_movie</code> bleibt <code>director_id</code> als Fremdschlüssel auf <code>club_director</code>; <code>director</code> und <code>director_birth_year</code> fallen dort weg. Meldet MySQL <code>Duplicate entry '5048' for key 'club_director.PRIMARY'</code>, hat Nolan in <code>club_movie</code> zwei Geburtsjahre, weil das <code>UPDATE</code> von oben ohne <code>ROLLBACK</code> geblieben ist: <code>UPDATE club_movie SET director_birth_year = 1970 WHERE director_id = 5048;</code> repariert es, dann geht es.
+</div>
+
+<!-- hint -->
+Welche Spalten hängen von `director_id` ab? Genau die kommen in `club_director`, zusammen mit `director_id` selbst als `id`. In `club_movie` bleibt von ihnen nur `director_id`.
+<!-- /hint -->
+<!-- hint -->
+Der erste Befehl ist ein `CREATE TABLE … AS SELECT DISTINCT … FROM club_movie` wie für `club_movie`; mit `AS` gibst du den Spalten ihre neuen Namen (`director AS name`). Der zweite ist ein `ALTER TABLE club_movie` mit zwei `DROP COLUMN` und einem `ADD FOREIGN KEY`.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```sql
+CREATE TABLE club_director (PRIMARY KEY (id)) AS
+SELECT DISTINCT director_id AS id, … AS name, … AS birth_year
+FROM club_movie;
+
+ALTER TABLE club_movie
+  DROP COLUMN …, DROP COLUMN …,
+  ADD FOREIGN KEY (…) REFERENCES … (…);
+```
+<!-- /hint -->
+
+<!-- solution -->
+```sql
+CREATE TABLE club_director (PRIMARY KEY (id)) AS
+SELECT DISTINCT director_id AS id, director AS name, director_birth_year AS birth_year
+FROM club_movie;
+
+ALTER TABLE club_movie
+  DROP COLUMN director, DROP COLUMN director_birth_year,
+  ADD FOREIGN KEY (director_id) REFERENCES club_director (id);
+```
+<!-- /solution -->
+
+_task(dritte-normalform)
+
+<!-- after: dritte-normalform -->
+`club_director` hat vier Zeilen, eine pro Person, und Nolans Geburtsjahr steht nur noch einmal da. Ein `UPDATE` mit `WHERE id = 5048` ändert es für alle seine Filme zugleich, Wim Wenders passt als Zeile ohne Film hinein, und wer »Good Bye Lenin!« streicht (erst seine Zeilen in `club_cast`, dann die in `club_movie`), verliert Wolfgang Becker nicht. Die Liste des Clubs ist jetzt in der dritten Normalform:
+
+<div class='schema-lines'>
+<div><span class='schema-table'>club_movie</span>(<u>id</u>, title, year, <span class='schema-fk' title='verweist auf club_director.id'><span class='schema-arrow'>↑</span>director_id</span>)</div>
+<div><span class='schema-table'>club_director</span>(<u>id</u>, name, birth_year)</div>
+<div><span class='schema-table'>club_cast</span>(<u><span class='schema-fk' title='verweist auf club_movie.id'><span class='schema-arrow'>↑</span>movie_id</span></u>, <u>actor</u>)</div>
+</div>
+<!-- /after -->
+
+### Zurück zu deinen Tabellen
+
+Vergleich das mit deinen eigenen sechs Tabellen:
+
+_schema(movies)
+
+`movie` entspricht `club_movie`, und `crew` entspricht `club_director`. Zwei Schritte gehen deine Tabellen weiter:
+
+- Wer mitspielt, ist auch eine Person. In `club_cast` steht nur ein Name, und Namen sind kein guter Schlüssel: In den Filmdaten heißen drei verschiedene Personen John Morris. In `crew` hat jede Person eine `id`, ein Geburtsjahr und ein Todesjahr, ob sie Regie führt, mitspielt oder die Musik schreibt.
+- Was eine Person bei einem Film gemacht hat, ist eine Zeile in `movie_crew`, mit der Tätigkeit aus `job`. `club_movie` hat Platz für genau eine `director_id`, aber 227 Filme der Datenbank haben zwei oder mehr Regisseurinnen und Regisseure. Und Robert Zemeckis hat bei »Back to the Future« Regie geführt und das Drehbuch geschrieben: zwei Zeilen in `movie_crew`.
+
+`movie_crew` besteht nur aus ihrem Schlüssel, da kann keine Spalte von einem Teil abhängen; in `movie`, `genre`, `crew` und `job` hängt jede Spalte direkt von der `id` ab. Deine sechs Tabellen sind in der dritten Normalform. Das ER-Modell hat sie dorthin gebracht: Jede Art von Objekt bekam ihre eigene Entität und damit ihre eigene Tabelle, und jede n:m-Beziehung ihre eigene Tabelle.
+
+_task(welche-normalform)
+
+_task(welche-normalform-sprache)
+
+Die Tabellen des Clubs brauchst du nicht mehr. Willst du sie loswerden, löscht ein einziger Befehl alle vier; `mycli` fragt vorher nach:
+
+```sql
+DROP TABLE club_cast, club_movie, club_director, club_list;
+```
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>A Simple Guide to Five Normal Forms in Relational Database Theory</strong>, William Kent, Communications of the ACM, 1983. Auf wenigen Seiten die erste bis fünfte Normalform, mit kleinen Beispielen; von ihm stammt der Satz vom Schlüssel, dem ganzen Schlüssel und nichts als dem Schlüssel: <a href='https://www.bkent.net/Doc/simple5.htm'>auf der Seite des Autors</a>.</p>
+</div>
+
 ## Zusammenfassung
 
 - Ein **ER-Modell** beschreibt Entitäten, ihre Attribute und Beziehungen. In der ER-Werkstatt schreibst du es als Text in eine `.er`-Datei und siehst es als Chen-, Krähenfuß- oder Tabellendiagramm.
@@ -596,4 +858,34 @@ check-task: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON
 check-task-fails: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' ORDER BY movie.year;
 check-task: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN job ON movie_crew.job_id = job.id WHERE job.title = 'director' GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
 check-task-fails: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
+-->
+
+<!-- tutorial-step
+# Normalisierung: die Tabellen des Filmclubs, wie die Seite sie anlegt; die
+# dritte Normalform ist vor dem Kasten »Jetzt bist du dran« nicht gelöst und
+# mit seiner Lösung gelöst
+terminal-run: mysql -e "DROP TABLE IF EXISTS club_cast, club_movie, club_director, club_list"
+terminal-wait-for-prompt
+check-task-fails: dritte-normalform
+terminal-run: mysql -e "CREATE TABLE club_list (PRIMARY KEY (movie_id)) AS SELECT movie.id AS movie_id, movie.title, movie.year, crew.id AS director_id, crew.name AS director, crew.birth_year AS director_birth_year, (SELECT GROUP_CONCAT(actor.name ORDER BY actor.name SEPARATOR ', ') FROM movie_crew AS credit JOIN crew AS actor ON credit.crew_id = actor.id JOIN job AS role ON credit.job_id = role.id WHERE credit.movie_id = movie.id AND role.title = 'actor') AS actors FROM movie JOIN movie_crew ON movie.id = movie_crew.movie_id JOIN job ON movie_crew.job_id = job.id JOIN crew ON movie_crew.crew_id = crew.id WHERE job.title = 'director' AND crew.name IN ('Christopher Nolan', 'Greta Gerwig', 'Wolfgang Becker', 'Wolfgang Petersen')"
+terminal-wait-for-prompt
+check-task: vorhersage-geburtsjahr <- 1
+check-task-fails: vorhersage-geburtsjahr <- 0
+terminal-run: mysql -e "CREATE TABLE club_cast (PRIMARY KEY (movie_id, actor)) AS SELECT club_list.movie_id, club_list.title, club_list.year, club_list.director_id, club_list.director, club_list.director_birth_year, crew.name AS actor FROM club_list JOIN movie_crew ON club_list.movie_id = movie_crew.movie_id JOIN job ON movie_crew.job_id = job.id JOIN crew ON movie_crew.crew_id = crew.id WHERE job.title = 'actor'"
+terminal-wait-for-prompt
+terminal-run: mysql -e "CREATE TABLE club_movie (PRIMARY KEY (id)) AS SELECT DISTINCT movie_id AS id, title, year, director_id, director, director_birth_year FROM club_cast"
+terminal-wait-for-prompt
+terminal-run: mysql -e "ALTER TABLE club_cast DROP COLUMN title, DROP COLUMN year, DROP COLUMN director_id, DROP COLUMN director, DROP COLUMN director_birth_year, ADD FOREIGN KEY (movie_id) REFERENCES club_movie (id)"
+terminal-wait-for-prompt
+check-task-fails: dritte-normalform
+terminal-run: mysql -e "CREATE TABLE club_director (PRIMARY KEY (id)) AS SELECT DISTINCT director_id AS id, director AS name, director_birth_year AS birth_year FROM club_movie"
+terminal-wait-for-prompt
+check-task-fails: dritte-normalform
+terminal-run: mysql -e "ALTER TABLE club_movie DROP COLUMN director, DROP COLUMN director_birth_year, ADD FOREIGN KEY (director_id) REFERENCES club_director (id)"
+terminal-wait-for-prompt
+check-task: dritte-normalform
+check-task: welche-normalform <- 1
+check-task-fails: welche-normalform <- 2
+check-task: welche-normalform-sprache <- 2
+check-task-fails: welche-normalform-sprache <- 1
 -->

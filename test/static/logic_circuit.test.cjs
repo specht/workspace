@@ -3,7 +3,7 @@
 // computed round by round as the widget shows them.
 const test = require('node:test');
 const assert = require('node:assert');
-const { CIRCUITS, initial, settle, truthTable, setChoice, wires, junctions } = require('../../src/static/include/logic_circuit.js');
+const { CIRCUITS, initial, settle, truthTable, setChoice, wires, junctions, valueAt } = require('../../src/static/include/logic_circuit.js');
 
 // the values after setting some inputs and letting the circuit settle
 function after(circuit, values, inputs) {
@@ -139,4 +139,67 @@ test('wires branch with a dot only where they branch', () => {
             }
         }
     }
+});
+
+// ----------------------------------------------------------------------
+// Netlists of the Logik-Werkstatt (circuit_editor.js): read, laid out as
+// text again, flattened and run. The same circuits the server's check runs
+// (src/ruby/test/circuit_check_test.rb, fixtures/circuits.json).
+const { Netlist } = require('../../src/static/include/logic_circuit.js');
+const fixtures = require('../../src/ruby/test/fixtures/circuits.json');
+
+test('netlists give the same truth tables as on the server', () => {
+    for (const f of fixtures.tables) {
+        const { circuit, errors } = Netlist.parse(f.text);
+        assert.deepStrictEqual(errors, [], f.name);
+        const flat = Netlist.flatten(circuit);
+        if (f.unstable) {
+            const start = initial(flat.circuit);
+            assert.strictEqual(settle(flat.circuit, start).stable, false, f.name);
+            continue;
+        }
+        assert.deepStrictEqual(truthTable(flat.circuit).rows.map((r) => r.outputs), f.rows, f.name);
+    }
+});
+
+test('a netlist with memory keeps its state from step to step', () => {
+    for (const f of fixtures.sequences) {
+        const flat = Netlist.flatten(Netlist.parse(f.text).circuit);
+        let v = initial(flat.circuit);
+        for (const step of f.steps) {
+            const r = settle(flat.circuit, Object.assign({}, v, step.set));
+            assert.ok(r.stable, f.name);
+            v = r.rounds[r.rounds.length - 1];
+            const q = flat.circuit.nodes.find((n) => n.id === '>q');
+            assert.strictEqual(valueAt(v, q.from), step.q, `${f.name}: ${JSON.stringify(step)}`);
+        }
+    }
+});
+
+test('a netlist that cannot be read says why, in the same words as the server', () => {
+    for (const f of fixtures.errors) {
+        const { errors } = Netlist.parse(f.text);
+        assert.ok(errors.length && errors[0].message.includes(f.message), `${f.message}: ${JSON.stringify(errors)}`);
+    }
+});
+
+test('format writes what parse reads, blocks first and only once', () => {
+    const text = fixtures.tables[2].text;
+    const { circuit } = Netlist.parse(text);
+    const again = Netlist.format(circuit);
+    assert.deepStrictEqual(Netlist.parse(again).circuit, circuit);
+    assert.strictEqual(again.match(/^block HA$/gm).length, 1);
+    assert.ok(again.indexOf('block HA') < again.indexOf('in a'));
+    assert.deepStrictEqual([...Netlist.usedBlocks(circuit)], ['HA']);
+});
+
+test('flatten counts the gates, inside blocks too, and the blocks at the top', () => {
+    const flat = Netlist.flatten(Netlist.parse(fixtures.tables[2].text).circuit);
+    assert.deepStrictEqual(flat.gates, { xor: 2, and: 2, or: 1 });
+    assert.strictEqual(flat.inner, 4);
+    assert.strictEqual(flat.blocks, 2);
+    assert.strictEqual(flat.resolve('h2.s'), 'h2/x');
+    assert.strictEqual(flat.resolve(null), '#0');
+    assert.ok(Netlist.hasFeedback(Netlist.flatten(Netlist.parse(fixtures.sequences[0].text).circuit)));
+    assert.ok(!Netlist.hasFeedback(flat));
 });

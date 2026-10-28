@@ -38,7 +38,7 @@ module SchemaCheck
         SELECT table_name, index_name, column_name FROM information_schema.statistics
         WHERE table_schema = DATABASE() ORDER BY table_name, index_name, seq_in_index
     SQL
-    PROBLEMS = %w[no_tables missing_table missing_column primary_key foreign_key index rows rows_where].freeze
+    PROBLEMS = %w[no_tables missing_table missing_column absent_column primary_key foreign_key index rows rows_where].freeze
 
     def self.spec_errors(check)
         errors = TableExpect.spec_errors(check['tables'], :rows => true)

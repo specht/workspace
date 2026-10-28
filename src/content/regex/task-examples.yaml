@@ -1,0 +1,93 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: regex
+examples:
+  serverfehler:
+    pass:
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -E '" 5[0-9]{2} ' access.log
+      - files: { regex/access.log: starter/access.log }
+        answer: grep '" 5' access.log
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -E '" 5[0-9]{2} ' regex/access.log
+    fail:
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -E '5[0-9]{2}' access.log
+        say: kleineren Status
+      - files: { regex/access.log: starter/access.log }
+        answer: grep 500 access.log
+  php:
+    pass:
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -E '\.php' access.log
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -F .php access.log
+    fail:
+      - files: { regex/access.log: starter/access.log }
+        answer: grep -E '.php' access.log
+        say: php-kurs.html
+      - files: { regex/access.log: starter/access.log }
+        answer: grep php access.log
+        say: Backslash
+  status:
+    pass:
+      - files: { regex/log.rb: stufen/log-2.rb, regex/access.log: starter/access.log }
+      - files: { regex/log.rb: { text: "def status(line) = line[/\" (\\d{3}) /, 1]&.to_i\n" } }
+    fail:
+      - files: { regex/log.rb: stufen/log.rb, regex/access.log: starter/access.log }
+      - files: { regex/log.rb: { text: "def status(line)\n  line[/\\d{3}/].to_i\nend\n" } }
+        say: Der Status steht hinter
+      - files: { regex/log.rb: { text: "def status(line)\n  line[/\" (\\d{3}) /, 1].to_i\nend\n" } }
+        say: nil
+      - files: { regex/log.rb: { text: "def status(line)\n  line.match(/\" (\\d{3}) /)[1].to_i\nend\n" } }
+    python:
+      pass:
+        - files: { regex/log.py: stufen/log-2.py, regex/access.log: starter/access.log }
+      fail:
+        - files: { regex/log.py: stufen/log.py, regex/access.log: starter/access.log }
+        - files: { regex/log.py: { text: "import re\n\ndef status(line):\n    return int(re.search(r'\\d{3}', line).group(0))\n" } }
+          say: Der Status steht hinter
+        - files: { regex/log.py: { text: "import re\n\ndef status(line):\n    return re.search(r'\" (\\d{3}) ', line).group(1)\n" } }
+  datum:
+    pass:
+      - files: { regex/validate.rb: loesung/validate.rb }
+    fail:
+      - files: { regex/validate.rb: stufen/validate.rb }
+      - files: { regex/validate.rb: { text: "def date?(text)\n  text.match?(/\\d{2}\\.\\d{2}\\.\\d{4}/)\nend\n" } }
+        say: 32.
+      - files: { regex/validate.rb: { text: "def date?(text)\n  text.match?(/^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$/)\nend\n" } }
+        say: zweite Zeile
+      - files: { regex/validate.rb: { text: "def date?(text)\n  text.match?(/\\A(0[1-9]|[12][0-9]|3[01]).(0[1-9]|1[0-2]).\\d{4}\\z/)\nend\n" } }
+        say: Backslash
+    python:
+      pass:
+        - files: { regex/validate.py: loesung/validate.py }
+      fail:
+        - files: { regex/validate.py: stufen/validate.py }
+        - files: { regex/validate.py: { text: "import re\n\ndef is_date(text):\n    return re.search(r'^(0[1-9]|[12][0-9]|3[01])\\.(0[1-9]|1[0-2])\\.\\d{4}$', text) is not None\n" } }
+          say: Zeilenende
+        - files: { regex/validate.py: { text: "import re\n\ndef is_date(text):\n    return re.search(r'\\d{2}\\.\\d{2}\\.\\d{4}', text) is not None\n" } }
+          say: 32.
+  benutzername:
+    pass:
+      - files: { regex/validate.rb: loesung/validate.rb }
+    fail:
+      - files: { regex/validate.rb: stufen/validate.rb }
+      - files: { regex/validate.rb: { text: "def username?(text)\n  text.match?(/\\A\\w{3,16}\\z/)\nend\n" } }
+        say: Vorn muss ein Buchstabe
+      - files: { regex/validate.rb: { text: "def username?(text)\n  text.match?(/\\A[a-zA-Z][a-zA-Z0-9_]{2,15}\\z/)\nend\n" } }
+        say: Große Buchstaben
+      - files: { regex/validate.rb: { text: "def username?(text)\n  text.match?(/^[a-z][a-z0-9_]{2,15}$/)\nend\n" } }
+        say: zwei Zeilen
+      - files: { regex/validate.rb: { text: "def username?(text)\n  text.match?(/\\A[a-z][a-z0-9_]{3,16}\\z/)\nend\n" } }
+        say: "`username?('pip')`"
+    python:
+      pass:
+        - files: { regex/validate.py: loesung/validate.py }
+      fail:
+        - files: { regex/validate.py: stufen/validate.py }
+        - files: { regex/validate.py: { text: "import re\n\ndef is_username(text):\n    return re.fullmatch(r'[a-z]\\w{2,15}', text) is not None\n" } }
+          say: Umlaute
+        - files: { regex/validate.py: { text: "import re\n\ndef is_username(text):\n    return re.match(r'^[a-z][a-z0-9_]{2,15}$', text) is not None\n" } }
+          say: Zeilenende

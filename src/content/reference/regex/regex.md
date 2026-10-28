@@ -46,7 +46,7 @@ Reguläre Ausdrücke heißen auf Englisch *regular expressions*, kurz **Regex** 
 <tr><td><code>A*</code></td><td>A beliebig oft, auch keinmal: die <strong>Kleenesche Hülle</strong> (der Kleene-Stern)</td><td><code>ab*</code> passt auf a, ab, abbb</td></tr>
 <tr><td><code>A+</code></td><td>A mindestens einmal: die <strong>positive Hülle</strong></td><td><code>\d+</code> passt auf jede Zahl</td></tr>
 <tr><td><code>A?</code></td><td>A höchstens einmal</td><td><code>Farbe?</code> passt auf Farb und Farbe</td></tr>
-<tr><td><code>A{3}</code>, <code>A{2,4}</code></td><td>genau dreimal, zwei- bis viermal</td><td><code>\d{5}</code> passt auf eine Postleitzahl</td></tr>
+<tr><td><code>A{3}</code>, <code>A{2,4}</code>, <code>A{2,}</code></td><td>genau dreimal, zwei- bis viermal, mindestens zweimal</td><td><code>\d{5}</code> passt auf eine Postleitzahl</td></tr>
 <tr><td><code>^</code>, <code>$</code></td><td>Anfang und Ende einer Zeile</td><td><code>^#</code> passt auf Zeilen, die mit # beginnen</td></tr>
 </table>
 
@@ -65,7 +65,7 @@ Den Automaten hinter einem Ausdruck zeichnet [Automatron](/automatron). Es kennt
 ## In Ruby
 
 <!-- part: ruby -->
-<!-- short: Ruby: /muster/, string.match?(re), string =~ re, string.scan(re), string.gsub(re, ersatz); \A und \z für Anfang und Ende des ganzen Strings. -->
+<!-- short: Ruby: /muster/, string.match?(re), string =~ re (der Index des ersten Treffers oder nil), string.match(re) mit Gruppen, string.scan(re), string.gsub(re, ersatz); \A und \z für Anfang und Ende des ganzen Strings. -->
 In Ruby steht ein regulärer Ausdruck zwischen Schrägstrichen:
 
 ```ruby
@@ -74,6 +74,7 @@ puts '10115'.match?(plz)            # true
 puts '1011'.match?(plz)             # false
 
 text = 'Am 3.10. und am 24.12. ist frei.'
+p text =~ /\d+\./                  # 3
 p text.scan(/\d+\.\d+\./)           # ["3.10.", "24.12."]
 puts text.gsub(/\d+/, '#')          # Am #.#. und am #.#. ist frei.
 
@@ -82,7 +83,7 @@ if (m = text.match(/(\d+)\.(\d+)\./))
 end
 ```
 
-`\A` und `\z` sind Anfang und Ende des ganzen Strings. `^` und `$` sind in Ruby Anfang und Ende jeder *Zeile*: `/^\d{5}$/` passt auch auf einen String, in dem irgendwo eine Zeile nur aus fünf Ziffern besteht.
+`=~` gibt den Index zurück, an dem der erste Treffer beginnt, oder `nil`; in einem `if` heißt das »passt« oder »passt nicht«. `match` gibt ein `MatchData` mit den Gruppen, `m[1]` ist die erste Klammer. `\A` und `\z` sind Anfang und Ende des ganzen Strings. `^` und `$` sind in Ruby Anfang und Ende jeder *Zeile*: `/^\d{5}$/` passt auch auf einen String, in dem irgendwo eine Zeile nur aus fünf Ziffern besteht.
 <!-- /part -->
 
 ## In Python

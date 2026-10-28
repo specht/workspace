@@ -88,6 +88,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1815 -->
+<!-- part: boole -->
+### George Boole
+
+<div class='person'>
+<img src='boole.webp' alt='Stich von George Boole um 1864: ein Mann mit zurückgekämmtem dunklem Haar, hohem Kragen und Halsbinde, den Blick zur Seite.'>
+<p><strong>George Boole</strong> (1815–1864), englischer Mathematiker, Professor in Cork in Irland. In seinem Buch <em>The Laws of Thought</em> von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen. Nach ihm heißen <code>true</code> und <code>false</code> in vielen Sprachen Boolean, in Python ist es der Typ <code>bool</code>.</p>
+<p class='person-credit'>Bild: unbekannter Künstler, um 1864, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:George_Boole.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1831 -->
 <!-- part: maxwell -->
 ### James Clerk Maxwell
@@ -122,6 +133,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Andrei Markow</strong> (1856–1922), russischer Mathematiker in Sankt Petersburg. 1913 ging er die ersten 20 000 Buchstaben von Puschkins »Eugen Onegin« durch und zählte, wie oft auf einen Vokal ein Vokal folgt und wie oft ein Konsonant: Der nächste Buchstabe hängt vom vorigen ab, und mit dieser Abhängigkeit kann man rechnen.</p>
 <p>Eine Kette, in der jedes Glied nur vom vorigen abhängt, heißt nach ihm Markow-Kette. Auch ein Sprachmodell aus Wortpaaren ist eine Markow-Kette.</p>
 <p class='person-credit'>Foto: unbekannt, 1886, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Andrei_Markov.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1875 -->
+<!-- part: eccles-jordan -->
+### William Eccles und F. W. Jordan
+
+<div class='person'>
+<p><strong>William Eccles</strong> (1875–1966) und <strong>F. W. Jordan</strong>, britische Physiker. 1918 meldeten sie eine Schaltung aus zwei Elektronenröhren zum Patent an, die sich gegenseitig in ihrem Zustand halten: das erste elektronische Latch, ein Speicher für ein Bit. Sie hieß zuerst <em>Eccles–Jordan trigger circuit</em>, heute heißt sie Flipflop. 1943 steckte sie in Colossus, dem britischen Rechner, der im Krieg verschlüsselte Nachrichten knackte.</p>
+<p>Im RS-Flipflop aus zwei NOR-Gattern halten sich die beiden Gatter genauso gegenseitig fest wie die beiden Röhren.</p>
 </div>
 <!-- /part -->
 
@@ -264,7 +285,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Edgar F. Codd
 
 <div class='person'>
-<p><strong>Edgar F. Codd</strong> (1923–2003), britischer Mathematiker, im Zweiten Weltkrieg Pilot, dann bei IBM in den USA. 1970 schlug er vor, Daten in Tabellen zu speichern und mit Abfragen zu holen, ohne zu wissen, wie sie gespeichert sind: das relationale Modell.</p>
+<p><strong>Edgar F. Codd</strong> (1923–2003), britischer Mathematiker, im Zweiten Weltkrieg Pilot, dann bei IBM in den USA. 1970 schlug er vor, Daten in Tabellen zu speichern und mit Abfragen zu holen, ohne zu wissen, wie sie gespeichert sind: das relationale Modell. Auch die Normalformen stammen von ihm, die erste von 1970, die zweite und dritte von 1971.</p>
 <p>IBM zögerte lange. Zwei Kollegen, Donald Chamberlin und Raymond Boyce, entwickelten aus seiner Idee SQL; die erste SQL-Datenbank zu kaufen gab es 1979 von einer kleinen Firma, die heute Oracle heißt.</p>
 </div>
 <!-- /part -->
@@ -798,6 +819,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Michael Abrash</strong> (geboren 1957), amerikanischer Programmierer. Seine Bücher über schnellen Code wie <em>Zen of Code Optimization</em> lasen in den 1990er Jahren alle, die Spiele programmierten. 1995 holte John Carmack ihn zu id Software, und zusammen brachten sie Quake (1996) auf PCs ohne 3D-Grafikkarte zum Laufen. Quake nutzt beide Ideen: Die Wände zeichnet es sortiert, jedes Pixel nur einmal, und schreibt dabei ihre Entfernung in einen Tiefenpuffer, an dem sich danach Monster und Waffen messen.</p>
 <p>Bill Gates selbst versuchte, ihn bei Microsoft zu halten. Wie Quake das alles macht, erklärt Abrash in seinem <em>Graphics Programming Black Book</em>, das er 2001 frei ins Netz stellte. Ab 2014 forschte er als Chefwissenschaftler von Oculus an VR-Brillen.</p>
 <p class='person-credit'>Foto: Maurizio Pesce, 2015, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_Abrash_at_Facebook%27s_F8_2015.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1957 -->
+<!-- part: hara -->
+### Masahiro Hara
+
+<div class='person'>
+<img src='hara.webp' alt='Masahiro Hara 2023: ein Mann mit grauem, halblangem Haar in einem dunkelgrauen Anzug mit Krawatte vor einer hellen Wand.'>
+<p><strong>Masahiro Hara</strong> (geboren 1957), japanischer Ingenieur bei Denso, einem Zulieferer von Toyota. Mit nur einem Kollegen entwickelte er den QR-Code, den seine Firma 1994 vorstellte. Autofabriken verwalteten damit ihre Teile, von der Herstellung bis zum Versand. Für die Suchmuster in den Ecken suchte das Team in Drucksachen nach dem Verhältnis von hell und dunkel, das dort am seltensten vorkommt: 1 : 1 : 3 : 1 : 1.</p>
+<p>Seine Firma hält Patente auf den QR-Code, hat aber erklärt, sie nicht durchzusetzen: Jeder darf QR-Codes erzeugen und lesen, ohne zu fragen. Nur der Name »QR Code« ist eine eingetragene Marke der Denso Wave Incorporated.</p>
+<p class='person-credit'>Foto: Japan Academy (日本学士院), 2023, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Masahiro_Hara_202303.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

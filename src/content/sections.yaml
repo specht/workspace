@@ -178,33 +178,60 @@
     - neo4j-filmdatenbank
     - bobby_tables
 
-# Wie Computer rechnen: drei Reihen zu je drei Karten, die Maschine, die
-# Automaten vom endlichen bis zur Turingmaschine, dann Grammatiken, der
-# Rechner und der Routenplaner (docs/plan-lehrplan-luecken.md, »Rechnen«).
 # .logikgatter (Gatter bis Rechenwerk) nur in der Entwicklung, bis die Reihen
 # der Startseite eine zehnte Karte tragen.
+
+# Wie Computer rechnen, Algorithmen und Datenstrukturen, Automaten und
+# Sprachen: früher ein Abschnitt, geteilt nach den Namen der Lehrpläne
+# (Technische Informatik; Algorithmen und Datenstrukturen; Sprachen und
+# Automaten, Syntax und Semantik), damit jede Reihe voll ist
+# (docs/plan-lehrplan-luecken.md, »Rechnen«). Icons: Noto Emoji v2.047.
 
 - key: computing
   compact: true
   label: Wie Computer rechnen
-  short: Ein Blick unter die Haube, von der CPU über Automaten bis zum Routenplaner.
+  short: Vom einzelnen Gatter über eigene Schaltungen bis zur programmierbaren CPU.
   icon: /images/computer.png
   description: |
-    Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
-    und Datenstrukturen selbst bauen, Automaten vom endlichen bis zur
-    Turingmaschine, Grammatiken und ein Rechner, der Ausdrücke versteht, und
-    ein Routenplaner, der in echten Karten von Berlin den kürzesten Weg findet.
+    Ein Blick unter die Haube: aus Gattern einen Addierer und ein Rechenwerk
+    bauen, in der Werkstatt eigene Schaltungen zusammenstecken und zu
+    Bausteinen machen, und am Ende eine kleine CPU in Assembler und C
+    programmieren.
   entries:
-    - .logikgatter
+    - logikgatter
+    - logikwerkstatt
     - sandbox-cpu
+
+- key: algorithms
+  compact: true
+  label: Algorithmen und Datenstrukturen
+  short: Sortieren, Listen, Bäume und Heaps von innen, und der kürzeste Weg durch Berlin.
+  icon: /images/bar-chart.png
+  description: |
+    Sortierverfahren und Datenstrukturen selbst bauen und Schritt für Schritt
+    zusehen, was sie tun, und ein Routenplaner, der in echten Karten von
+    Berlin den kürzesten Weg findet.
+  entries:
     - sandbox-sortieren
     - sandbox-datenstrukturen
+    - routenplaner
+
+- key: theory
+  compact: true
+  label: Automaten und Sprachen
+  short: Vom endlichen Automaten über reguläre Ausdrücke bis zu Grammatiken und Turingmaschinen.
+  icon: /images/robot.png
+  description: |
+    Was Maschinen erkennen können und was nicht: endliche Automaten, reguläre
+    Ausdrücke, Kellerautomaten und die Turingmaschine, dann Grammatiken und
+    ein Rechner, der Ausdrücke versteht.
+  entries:
     - automata
+    - regex
     - kellerautomat
     - turingmaschine
     - grammatiken
     - calculator
-    - routenplaner
 
 # Software entwerfen (docs/plan-lehrplan-luecken.md, »Software«): erst
 # planen, dann programmieren; Klassen und ihre Diagramme; ein Projekt der
