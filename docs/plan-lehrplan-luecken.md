@@ -14,7 +14,7 @@ what could fill each, in which form, what was decided and what is open.
 | Oberstufe: objektorientierte Programmierung | 1 | the same activity; later »Katas: Objekte« to practise the mechanics | activity, later a Kata set | large | `supermarkt`, live; Katas later |
 | Oberstufe: Vertiefung Künstliche Intelligenz | 3 | »Ein winziges Sprachmodell« (bigrams), »Ein Neuron lernt« (a perceptron from scratch), »Nächste Nachbarn« (classifying, and what biased data does) | section KI | large | done, live: `sprachmodell`, `perzeptron`, `naechste-nachbarn` |
 | Oberstufe: Vertiefung Theoretische Informatik | 3 | pushdown automata, Turing machines and the halting problem, grammars and the Chomsky hierarchy, after »Endliche Automaten« | activities | medium | done, live: `kellerautomat`, `turingmaschine`, `grammatiken`; complexity still only in `kata-search` and the sorting sandbox |
-| Oberstufe: Vertiefung Technische Informatik | 0 (2 in development) | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | an activity with a circuit widget, then one with a circuit editor (below) | large | in progress, dev-only: `logikgatter`, `logikwerkstatt` |
+| Oberstufe: Vertiefung Technische Informatik | 2 | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | an activity with a circuit widget, then one with a circuit editor (below) | large | done, live: `logikgatter`, `logikwerkstatt` (28 October 2026) |
 | Oberstufe: Vertiefung Informatik und Gesellschaft | 4 | »Was eine Webseite über dich erfährt« (tracking in the students' own web server, cookie banners and dark patterns), the search engine's SEO section, the training data of the language model, a decision by neighbours | project, sections elsewhere | medium | done, live: `tracking`, `suchmaschine`, `sprachmodell`, `naechste-nachbarn` |
 | Sek I: Physical Computing | 0 | the Workspace cannot reach hardware, but it can build for it: MicroPython for Calliope mini or micro:bit, downloaded as a `.hex` and dragged onto the board's USB drive (the usual way to flash them); the image needs the build tools. Or a simulated board on the website | project, image change | medium | shelved: the schools have no boards (28 October 2026) |
 | Oberstufe: Vertiefung Applikative Programmierung | 1 (the Lisp portrait) | the planned Prolog page (TODO.md, »Later ideas«) for logic programming; a Kata strand with `map`, `filter`, `reduce` for functional programming | page, Kata strand | medium | open |
@@ -40,7 +40,7 @@ with the details of every `curriculum:` line and a search of the pages:
 | Sek I: Digitale Bilder und Visualisierung | Vektorgrafik only as 3D scenes; Manipulation von Bildern und Filmen; rekursive Algorithmen für Grafiken | an SVG chapter; a recursive tree in `drawing` |
 | Oberstufe: Algorithmen und Softwareentwicklung | nothing: Struktogramm and Pseudocode are covered now (`check-digits`); the Katas to functions, decisions and loops and the twelve language portraits name it since 27 October 2026 | |
 | Oberstufe: Syntax und Semantik | nothing: `grammatiken` and `calculator` cover it, both live; the language portraits no longer claim it (27 October 2026) | |
-| Oberstufe: Sprachen und Automaten | regular expressions, only an outlook at the end of `automata` and the Handbuch page `reference/regex` | »Reguläre Ausdrücke« between automata and grammars: grep in a web server's log, groups in Ruby or Python, validating postcodes, dates and user names (and why not e-mail addresses), backtracking, regex to automaton with the Thompson construction and Kleene's theorem, no expression for brackets. In progress, dev-only: `regex` (28 October 2026), after `automata` in the catalog |
+| Oberstufe: Sprachen und Automaten | regular expressions, only an outlook at the end of `automata` and the Handbuch page `reference/regex` | »Reguläre Ausdrücke« between automata and grammars: grep in a web server's log, groups in Ruby or Python, validating postcodes, dates and user names (and why not e-mail addresses), backtracking, regex to automaton with the Thompson construction and Kleene's theorem, no expression for brackets. Done, live: `regex` (28 October 2026), after `automata` in the section »Automaten und Sprachen« |
 | Oberstufe: Datenbanken | Normalisierung (Leistungskurs) | a chapter of `filmdatenbank` |
 | Oberstufe: Datenbanken und Datenschutz | Urheberrecht; Datenschutz is covered now (`tracking`) | a section on licences, perhaps with the picture rights of the Workspace's own pages |
 | Oberstufe: Computernetze, Vertiefung Computer-Netze | LAN, WLAN (Ethernet, MAC addresses, ARP); routing between networks | a chapter of `tcpip` |
@@ -62,7 +62,7 @@ full, also by bringing back parked activities or moving them:
 | Web | Web (3 → 6) | `hugo` back, `suchmaschine`, `tracking`: done, all live | Suchmaschinen, Datenschutz, Informatik und Gesellschaft |
 | Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
 | KI | a new section Künstliche Intelligenz (0 → 3) | `sprachmodell`, `perzeptron`, `naechste-nachbarn`: done, live | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
-| Rechnen | Wie Computer rechnen (6 → 9) | `kellerautomat`, `turingmaschine`, `grammatiken`: done, live; the logic gates (`logikgatter`), the circuit editor (`logikwerkstatt`) and regular expressions (`regex`) dev-only; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
+| Rechnen | Wie Computer rechnen (6 → 9), split on 28 October 2026 into Wie Computer rechnen (3), Algorithmen und Datenstrukturen (3), Automaten und Sprachen (6) | `kellerautomat`, `turingmaschine`, `grammatiken`, `logikgatter`, `logikwerkstatt`, `regex`: done, live; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
 State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
@@ -243,20 +243,20 @@ own (an extra).
 
 ## Logic gates: what exists and the next step
 
-`logikgatter` (»Vom Gatter zum Rechenwerk«, 28 October 2026, dev-only:
-`.logikgatter` first in »Wie Computer rechnen«, until the front page takes a
-tenth card there) is the first version: circuits to click
+`logikgatter` (»Vom Gatter zum Rechenwerk«, 28 October 2026, live since the
+front page's split the same day, first in »Wie Computer rechnen«) is the first
+version: circuits to click
 (`logic_circuit.js`, gates as in DIN EN 60617), predictions before each
-circuit, and seven Katas that may only use gates (`gates:` in the check
+circuit, and seven Aufgaben with code that may only use gates (`gates:` in the check
 `function`, `GateCheck`): NOT and AND from NAND, OR and XOR from NAND, half
 adder, full adder, a 4-bit adder, the D flip-flop as a function, and a 4-bit
 ALU with ADD, SUB, AND, OR, XOR and the flags ZF and CF as the CPU Sandbox
-sets them (CF after SUB is the borrow). George Boole has a box in the page
-itself, since a box on the Personen page would need a visible page: when
-`logikgatter` goes live, he moves there (`_person(boole)`, with his sources).
+sets them (CF after SUB is the borrow). George Boole, and William Eccles with
+F. W. Jordan (the first electronic latch, 1918), have boxes on the Personen
+page (`_person(boole)`, `_person(eccles-jordan)`).
 
 **The circuit editor: `logikwerkstatt`** (»Logik-Werkstatt«, 28 October
-2026, dev-only: `.logikwerkstatt` after `.logikgatter` in »Wie Computer
+2026, live: `logikwerkstatt` after `logikgatter` in »Wie Computer
 rechnen«, so that the section reads logikgatter → Werkstatt → `sandbox-cpu`,
 from the gate to the processor). Students build on the page, with the
 drawing and the engine of `logic_circuit.js` (`circuit_editor.js`,

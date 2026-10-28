@@ -34,7 +34,6 @@ Lernende suchen mit `grep -E` in einem Logfile nach Fehlern und nach einem Progr
 
 #### Was schiefgeht
 
-- **`wget` meldet `404 Not Found`:** Solange die Aktivität nur in der Entwicklung im Katalog steht, liefert die Website das Logfile nur dort aus.
 - **grep findet nichts, obwohl das Muster stimmt:** Das Muster steht nicht in einfachen Anführungszeichen, und das Terminal hat das `"` oder die Leerzeichen selbst verbraucht.
 - **grep findet mit `\d` nichts oder Falsches:** grep kennt `\d` nicht und sucht stattdessen ein `d`; dort heißt es `[0-9]`.
 - **Python: `re.error` oder ein Backslash verschwindet:** Das Muster ist kein Raw-String; es fehlt das `r` vor dem Anführungszeichen.
