@@ -1,7 +1,7 @@
 {
   "screenshots": {
     "editor.webp": {
-      "environment_fingerprint": "44f0c44c3ad4c21675d2311ed40c13214111606fe5b21b5c4a472e95b0069334",
+      "environment_fingerprint": "0323f0181c107b21fc3a6fcc125b5329b5d034b4ffea18e130a8b52221a4ff75",
       "output_sha256": "1c86a607ab01c6ac1d13f441bc3a60c71330fa1264036dbded291fa77eff7a59",
       "state_hash": "59b2bbb496bbef138f06a83074992b149a02de05f62091e82b101881accbf99a",
       "variants": {
@@ -10,11 +10,11 @@
       "workspace_look": "4.140.0-ls368"
     },
     "teaser.webp": {
-      "environment_fingerprint": "44f0c44c3ad4c21675d2311ed40c13214111606fe5b21b5c4a472e95b0069334",
-      "output_sha256": "e43573a998d0c244edbbe614e6a9054d99a209178eb28ea299290ba928aad6ab",
+      "environment_fingerprint": "0323f0181c107b21fc3a6fcc125b5329b5d034b4ffea18e130a8b52221a4ff75",
+      "output_sha256": "64f671c7e42376770740121d73cc3fa53b511b27abd99cb6a2e2abfa8ef5cfdd",
       "state_hash": "c16387ff5baf05d98ac878698bc9a8030986c7b19c623b9acd47911a045af4db",
       "variants": {
-        "teaser-dark.webp": "b50e802d57d4202b027e924bb6ad92220868c4728b2567966a032250c0c6e877"
+        "teaser-dark.webp": "3dd424c2f22203aa30a5259ac3139cc248e96411a622bd81db97f2f7d28523ad"
       },
       "workspace_look": "4.140.0-ls368"
     }

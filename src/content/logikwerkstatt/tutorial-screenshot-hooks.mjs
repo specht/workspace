@@ -12,7 +12,8 @@ and g2 a b @200,136
 out s g1 @400,64
 out c g2 @400,160
 `,
-    // the full adder of two half adders
+    // the full adder of two half adders, laid out so that the drawing
+    // comes out 16:9 (612 by 346 units), as a card picture is
     teaser: `block HA
   in a
   in b
@@ -21,14 +22,14 @@ out c g2 @400,160
   out s x
   out c k
 end
-in a @64,56
-in b @64,104
-in c_in @64,160
-HA h1 a b @136,24
-HA h2 h1.s c_in @232,104
-or o h1.c h2.c @408,152
-out s h2.s @536,136
-out c_out o @536,176
+in a @64,48
+in b @64,136
+in c_in @64,304
+HA h1 a b @136,32
+HA h2 h1.s c_in @248,200
+or o h1.c h2.c @400,272
+out s h2.s @528,224
+out c_out o @528,304
 `,
 };
 
@@ -60,6 +61,13 @@ export default {
                 editor.after(false, false);
                 if (name === 'teaser') editor.setInputs({ a: 1, c_in: 1 });
                 el.style.setProperty('background', 'var(--bs-body-bg)', 'important');
+                // the card picture without the canvas's own rounded edge: no
+                // frame within the card's frame, the dots run to the edges
+                if (name === 'teaser') {
+                    const canvas = el.querySelector('.ce-canvas');
+                    canvas.style.setProperty('border', '0', 'important');
+                    canvas.style.setProperty('border-radius', '0', 'important');
+                }
                 // the page's fixed bars (contents, footer) would cover it
                 for (const element of document.querySelectorAll('body *')) {
                     if (el.contains(element) || element.contains(el)) continue;
