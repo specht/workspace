@@ -1103,6 +1103,237 @@ tasks:
         }
         ```
 
+  - id: circle
+    title: "Ein Kreis"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+    starter: |
+      def circle(radius)
+      end
+
+      circle(80)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "circle(80)"
+          draw: |
+            def circle(radius)
+              36.times { forward 2 * Math::PI * radius / 36; left 10 }
+            end
+            circle(80)
+        - call: "circle(30)"
+          draw: |
+            def circle(radius)
+              36.times { forward 2 * Math::PI * radius / 36; left 10 }
+            end
+            circle(30)
+      commands: [forward, back, left, right]
+    hint:
+      - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+      - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+      - "π heißt in Ruby `Math::PI`."
+    solution: |
+      ```ruby
+      def circle(radius)
+        36.times do
+          forward 2 * Math::PI * radius / 36
+          left 10
+        end
+      end
+
+      circle(80)
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        import math
+
+        def circle(radius):
+            pass
+
+        circle(80)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in Python `math.pi`; dafür steht `import math` oben."
+      solution: |
+        ```python
+        import math
+
+        def circle(radius):
+            for i in range(36):
+                forward(2 * math.pi * radius / 36)
+                left(10)
+
+        circle(80)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        function circle(radius) {
+        }
+
+        circle(80);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in JavaScript `Math.PI`."
+      solution: |
+        ```javascript
+        function circle(radius) {
+          for (let i = 0; i < 36; i++) {
+            forward(2 * Math.PI * radius / 36);
+            left(10);
+          }
+        }
+
+        circle(80);
+        ```
+
+  - id: slinky
+    title: "Eine Feder"
+    level: 2
+    prompt: |
+      Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+    starter: |
+      def circle(radius)
+        # dein Kreis von eben
+      end
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        def circle(radius)
+          36.times { forward 2 * Math::PI * radius / 36; left 10 }
+        end
+        30.times { circle(50); pen_up; forward 8; pen_down }
+    hint:
+      - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+      - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+    solution: |
+      ```ruby
+      def circle(radius)
+        36.times do
+          forward 2 * Math::PI * radius / 36
+          left 10
+        end
+      end
+
+      30.times do
+        circle(50)
+        pen_up
+        forward 8
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        import math
+
+        def circle(radius):
+            # dein Kreis von eben
+            pass
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```python
+        import math
+
+        def circle(radius):
+            for i in range(36):
+                forward(2 * math.pi * radius / 36)
+                left(10)
+
+        for i in range(30):
+            circle(50)
+            pen_up()
+            forward(8)
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        function circle(radius) {
+          // dein Kreis von eben
+        }
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```javascript
+        function circle(radius) {
+          for (let i = 0; i < 36; i++) {
+            forward(2 * Math.PI * radius / 36);
+            left(10);
+          }
+        }
+
+        for (let i = 0; i < 30; i++) {
+          circle(50);
+          penUp();
+          forward(8);
+          penDown();
+        }
+        ```
+
   - id: own
     title: "Dein eigenes Bild"
     level: 2
@@ -2350,6 +2581,199 @@ tasks:
 
         left(90);
         tree(70, 8);
+        ```
+
+  - id: fern
+    title: "Ein Farnblatt"
+    level: 3
+    extra: true
+    prompt: |
+      Schreib `fern(size, sign)` für das Farnblatt aus dem Bild oben. `sign` ist 1 oder −1 und sagt, wohin sich das Blatt biegt: Mit −1 ist es gespiegelt. Danach steht die Schildkröte wieder unten am Stiel und schaut wie vorher.
+    starter: |
+      def fern(size, sign)
+      end
+
+      color "forestgreen"
+      left 90
+      fern(25, 1)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "left 90; fern(4, 1)"
+          draw: |
+            def fern(size, sign)
+              return if size < 1
+              forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+              forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+              right 7 * sign; fern(size - 1, sign); left 7 * sign
+              back size * 2
+            end
+            left 90
+            fern(4, 1)
+        - call: "left 90; fern(25, 1)"
+          draw: |
+            def fern(size, sign)
+              return if size < 1
+              forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+              forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+              right 7 * sign; fern(size - 1, sign); left 7 * sign
+              back size * 2
+            end
+            left 90
+            fern(25, 1)
+      show: 1
+    hint:
+      - "Kleiner als 1 zeichnet die Funktion nichts."
+      - "Sonst: ein Stück Stiel, 70 · `sign` nach rechts, ein halb so großes Blatt mit `-sign`, zurückdrehen; noch ein Stück Stiel, 70 · `sign` nach links, ein halb so großes Blatt mit `sign`, zurückdrehen."
+      - "Dann der Rest des Blatts: 7 · `sign` nach rechts, `fern(size - 1, sign)`, 7 · `sign` zurück, und den Stiel zurück, zwei Stücke: `size * 2`."
+    solution: |
+      ```ruby
+      def fern(size, sign)
+        return if size < 1
+        forward size
+        right 70 * sign
+        fern(size * 0.5, -sign)
+        left 70 * sign
+        forward size
+        left 70 * sign
+        fern(size * 0.5, sign)
+        right 70 * sign
+        right 7 * sign
+        fern(size - 1, sign)
+        left 7 * sign
+        back size * 2
+      end
+
+      color "forestgreen"
+      left 90
+      fern(25, 1)
+      ```
+    python:
+      prompt: |
+        Schreib `fern(size, sign)` für das Farnblatt aus dem Bild oben. `sign` ist 1 oder −1 und sagt, wohin sich das Blatt biegt: Mit −1 ist es gespiegelt. Danach steht die Schildkröte wieder unten am Stiel und schaut wie vorher.
+      starter: |
+        def fern(size, sign):
+            pass
+
+        color("forestgreen")
+        left(90)
+        fern(25, 1)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "left(90); fern(4, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(4, 1)
+          - call: "left(90); fern(25, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(25, 1)
+        show: 1
+      hint:
+        - "Kleiner als 1 zeichnet die Funktion nichts."
+        - "Sonst: ein Stück Stiel, 70 · `sign` nach rechts, ein halb so großes Blatt mit `-sign`, zurückdrehen; noch ein Stück Stiel, 70 · `sign` nach links, ein halb so großes Blatt mit `sign`, zurückdrehen."
+        - "Dann der Rest des Blatts: 7 · `sign` nach rechts, `fern(size - 1, sign)`, 7 · `sign` zurück, und den Stiel zurück, zwei Stücke: `size * 2`."
+      solution: |
+        ```python
+        def fern(size, sign):
+            if size < 1:
+                return
+            forward(size)
+            right(70 * sign)
+            fern(size * 0.5, -sign)
+            left(70 * sign)
+            forward(size)
+            left(70 * sign)
+            fern(size * 0.5, sign)
+            right(70 * sign)
+            right(7 * sign)
+            fern(size - 1, sign)
+            left(7 * sign)
+            back(size * 2)
+
+        color("forestgreen")
+        left(90)
+        fern(25, 1)
+        ```
+    javascript:
+      prompt: |
+        Schreib `fern(size, sign)` für das Farnblatt aus dem Bild oben. `sign` ist 1 oder −1 und sagt, wohin sich das Blatt biegt: Mit −1 ist es gespiegelt. Danach steht die Schildkröte wieder unten am Stiel und schaut wie vorher.
+      starter: |
+        function fern(size, sign) {
+        }
+
+        color("forestgreen");
+        left(90);
+        fern(25, 1);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "left(90); fern(4, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(4, 1)
+          - call: "left(90); fern(25, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(25, 1)
+        show: 1
+      hint:
+        - "Kleiner als 1 zeichnet die Funktion nichts."
+        - "Sonst: ein Stück Stiel, 70 · `sign` nach rechts, ein halb so großes Blatt mit `-sign`, zurückdrehen; noch ein Stück Stiel, 70 · `sign` nach links, ein halb so großes Blatt mit `sign`, zurückdrehen."
+        - "Dann der Rest des Blatts: 7 · `sign` nach rechts, `fern(size - 1, sign)`, 7 · `sign` zurück, und den Stiel zurück, zwei Stücke: `size * 2`."
+      solution: |
+        ```javascript
+        function fern(size, sign) {
+          if (size < 1) return;
+          forward(size);
+          right(70 * sign);
+          fern(size * 0.5, -sign);
+          left(70 * sign);
+          forward(size);
+          left(70 * sign);
+          fern(size * 0.5, sign);
+          right(70 * sign);
+          right(7 * sign);
+          fern(size - 1, sign);
+          left(7 * sign);
+          back(size * 2);
+        }
+
+        color("forestgreen");
+        left(90);
+        fern(25, 1);
         ```
 
   - id: sierpinski

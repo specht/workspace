@@ -347,6 +347,60 @@ examples:
       fail:
         - answer: "for (let i = 0; i < 4; i++) {\n  forward(100);\n  left(90);\n}\n"
           say: "mindestens"
+  circle:
+    pass:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\ncircle(80)\n"
+    fail:
+      - answer: "def circle(radius)\n  36.times do\n    forward Math::PI * radius / 36\n    left 10\n  end\nend\n\ncircle(80)\n"
+        say: "circle("
+    python:
+      pass:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\ncircle(80)\n"
+      fail:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(math.pi * radius / 36)\n        left(10)\n\ncircle(80)\n"
+          say: "circle("
+    javascript:
+      pass:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\ncircle(80);\n"
+      fail:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(Math.PI * radius / 36);\n    left(10);\n  }\n}\n\ncircle(80);\n"
+          say: "circle("
+  slinky:
+    pass:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\n30.times do\n  circle(50)\n  pen_up\n  forward 8\n  pen_down\nend\n"
+    fail:
+      - answer: "def circle(radius)\n  36.times do\n    forward 2 * Math::PI * radius / 36\n    left 10\n  end\nend\n\n30.times do\n  circle(50)\n  pen_up\n  forward 16\n  pen_down\nend\n"
+        say: "fehlt"
+    python:
+      pass:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\nfor i in range(30):\n    circle(50)\n    pen_up()\n    forward(8)\n    pen_down()\n"
+      fail:
+        - answer: "import math\n\ndef circle(radius):\n    for i in range(36):\n        forward(2 * math.pi * radius / 36)\n        left(10)\n\nfor i in range(30):\n    circle(50)\n    pen_up()\n    forward(16)\n    pen_down()\n"
+          say: "fehlt"
+    javascript:
+      pass:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\nfor (let i = 0; i < 30; i++) {\n  circle(50);\n  penUp();\n  forward(8);\n  penDown();\n}\n"
+      fail:
+        - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\nfor (let i = 0; i < 30; i++) {\n  circle(50);\n  penUp();\n  forward(16);\n  penDown();\n}\n"
+          say: "fehlt"
+  fern:
+    pass:
+      - answer: "def fern(size, sign)\n  return if size < 1\n  forward size\n  right 70 * sign\n  fern(size * 0.5, -sign)\n  left 70 * sign\n  forward size\n  left 70 * sign\n  fern(size * 0.5, sign)\n  right 70 * sign\n  right 7 * sign\n  fern(size - 1, sign)\n  left 7 * sign\n  back size * 2\nend\n\ncolor \"forestgreen\"\nleft 90\nfern(25, 1)\n"
+    fail:
+      - answer: "def fern(size, sign)\n  return if size < 1\n  forward size\n  right 70 * sign\n  fern(size * 0.5, sign)\n  left 70 * sign\n  forward size\n  left 70 * sign\n  fern(size * 0.5, sign)\n  right 70 * sign\n  right 7 * sign\n  fern(size - 1, sign)\n  left 7 * sign\n  back size * 2\nend\n\ncolor \"forestgreen\"\nleft 90\nfern(25, 1)\n"
+        say: "fern"
+    python:
+      pass:
+        - answer: "def fern(size, sign):\n    if size < 1:\n        return\n    forward(size)\n    right(70 * sign)\n    fern(size * 0.5, -sign)\n    left(70 * sign)\n    forward(size)\n    left(70 * sign)\n    fern(size * 0.5, sign)\n    right(70 * sign)\n    right(7 * sign)\n    fern(size - 1, sign)\n    left(7 * sign)\n    back(size * 2)\n\ncolor(\"forestgreen\")\nleft(90)\nfern(25, 1)\n"
+      fail:
+        - answer: "def fern(size, sign):\n    if size < 1:\n        return\n    forward(size)\n    right(70 * sign)\n    fern(size * 0.5, sign)\n    left(70 * sign)\n    forward(size)\n    left(70 * sign)\n    fern(size * 0.5, sign)\n    right(70 * sign)\n    right(7 * sign)\n    fern(size - 1, sign)\n    left(7 * sign)\n    back(size * 2)\n\ncolor(\"forestgreen\")\nleft(90)\nfern(25, 1)\n"
+          say: "fern"
+    javascript:
+      pass:
+        - answer: "function fern(size, sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, -sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\ncolor(\"forestgreen\");\nleft(90);\nfern(25, 1);\n"
+      fail:
+        - answer: "function fern(size, sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\ncolor(\"forestgreen\");\nleft(90);\nfern(25, 1);\n"
+          say: "fern"
   pattern:
     pass:
       - answer: "36.times do\n  forward 200\n  left 170\nend\n"

@@ -288,6 +288,7 @@
             this.stage = stage;
             this.onOutput = onOutput;
             this.onLine = onLine;
+            this.scale = 1;
             this.queue = [];
             this.active = null;
             this.lastEnd = 0;
@@ -303,6 +304,8 @@
             this.speed = speed;
             this.idle = null;
             this.lastLine = null;
+            // a level picture draws faster when it would take long (levels)
+            this.scale = 1;
         }
 
         push(items) {
@@ -324,7 +327,7 @@
             else if (a) {
                 const now = performance.now();
                 const p = Math.min(1, (now - a.start) / a.ms);
-                a.ms = Math.max(1, duration(a.command, a.value, speed));
+                a.ms = Math.max(1, duration(a.command, a.value, speed) * this.scale);
                 a.start = now - p * a.ms;
             }
             this.request();
@@ -363,7 +366,7 @@
                 this.lastLine = line;
                 this.onLine(line);
             }
-            const ms = this.queue.length > 3000 ? 0 : duration(command, value, this.speed);
+            const ms = this.queue.length > 3000 ? 0 : duration(command, value, this.speed) * this.scale;
             if (ms === 0) {
                 this.stage.apply(command, value);
                 return;
@@ -833,6 +836,37 @@
         },
     };
 
+    // the fern of Logo: a stem that bends a little with every step, with a
+    // fern of half the size to either side; the levels are its sizes
+    const fern = (out, size, sign) => {
+        if (size < 1) return;
+        out.push(['forward', size], ['right', 70 * sign]);
+        fern(out, size * 0.5, -sign);
+        out.push(['left', 70 * sign], ['forward', size], ['left', 70 * sign]);
+        fern(out, size * 0.5, sign);
+        out.push(['right', 70 * sign], ['right', 7 * sign]);
+        fern(out, size - 1, sign);
+        out.push(['left', 7 * sign], ['back', size * 2]);
+    };
+    FIGURES.fern = {
+        levels: 3,
+        labels: ['Größe 3', 'Größe 6', 'Größe 12', 'Größe 25'],
+        commands(level) {
+            const size = [3, 6, 12, 25][level];
+            const out = [['left', 90], ['width', 2], ['color', JOIN], ['forward', size], ['right', 70], ['color', PARTS[0]]];
+            fern(out, size * 0.5, -1);
+            out.push(['color', JOIN], ['left', 70], ['forward', size], ['left', 70], ['color', PARTS[1]]);
+            fern(out, size * 0.5, 1);
+            out.push(['right', 70], ['right', 7], ['color', PARTS[2]]);
+            fern(out, size - 1, 1);
+            return out;
+        },
+        says(level) {
+            const size = [3, 6, 12, 25][level];
+            return 'Ein Farnblatt der Größe ' + size + ': zwei Stücke Stiel (grau), rechts und links ein Farnblatt halber Größe (grün und blau), ein wenig gedreht, und dann der Rest, ein Farnblatt der Größe ' + (size - 1) + ' (orange). Kleiner als 1 zeichnet es nichts.';
+        },
+    };
+
     // <div class='turtle-levels' data-figure='koch'></div>: the paper, a
     // button for each level and a sentence about it; a click lets the
     // turtle draw that level, its parts in colour.
@@ -842,7 +876,7 @@
         const stage = new Stage(box);
         const player = new Player(stage, () => {}, () => {});
         const says = el('p', { class: 'turtle-levels-says', 'aria-live': 'polite' });
-        const buttons = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': 'Stufe' });
+        const buttons = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': figure.labels ? 'Größe' : 'Stufe' });
         const show = (level, animate) => {
             const commands = figure.commands(level);
             stage.target = null;
@@ -850,6 +884,9 @@
             stage.fit(trace(commands));
             stage.redraw();
             player.reset(animate ? 3 : 0);
+            // every level in about three seconds, however many lines it has
+            const total = commands.reduce((sum, [c, v]) => sum + duration(c, v, 3), 0);
+            player.scale = Math.min(1, 3000 / Math.max(1, total));
             player.push(commands.map(([c, v]) => [c, v, null]));
             says.textContent = figure.says(level);
             Array.from(buttons.children).forEach((b, i) => {
@@ -858,7 +895,7 @@
             });
         };
         for (let level = 0; level <= figure.levels; level++) {
-            const b = el('button', { type: 'button', class: 'btn btn-outline-secondary', text: 'Stufe ' + level });
+            const b = el('button', { type: 'button', class: 'btn btn-outline-secondary', text: figure.labels ? figure.labels[level] : 'Stufe ' + level });
             b.addEventListener('click', () => show(level, true));
             buttons.appendChild(b);
         }

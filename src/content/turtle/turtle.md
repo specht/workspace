@@ -379,6 +379,24 @@ Schildkröte, laufen ein Quadrat ab und schreiben dann auf, was sie getan
 haben.</p>
 </div>
 
+## Kreise und Federn
+
+Einen echten Kreis kann die Schildkröte nicht zeichnen, nur gerade Linien.
+Aber ein Vieleck mit vielen Ecken sieht aus wie ein Kreis, wenn seine
+Seiten kurz genug sind. Wie lang, verrät der Umfang: Ein Kreis mit dem
+Radius r ist 2 · π · r lang, und π ist ungefähr 3,14.
+
+_task(circle)
+
+_task(slinky)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Dreh die Schildkröte nach jedem Kreis ein
+wenig, um 1,5 Grad zum Beispiel, und gib jedem Kreis eine andere Farbe. Achte
+darauf, wie sich die Feder biegt, und wie viele Kreise sie braucht, bis
+sie einmal herum ist.
+</div>
+
 ## Dein eigenes Bild
 
 Jetzt du: Was du in den Aufgaben gebaut hast, darfst du alles
@@ -441,6 +459,17 @@ Ast ein wenig vom Zufall abhängen
 und lass den Baum mehrmals wachsen. Achte darauf, ob er dann eher wie ein
 echter Baum aussieht und welche Tiefe dafür reicht.
 </div>
+
+### Ein Farnblatt
+
+Ein Farnblatt wächst wie ein Baum, nur anders: Sein Stiel biegt sich bei
+jedem Schritt ein wenig, und an jedem Schritt wächst links und rechts ein
+kleines Farnblatt. Was nach diesem Schritt kommt, ist wieder ein Farnblatt,
+nur ein bisschen kleiner.
+
+<div class='turtle-levels' data-figure='fern'></div>
+
+_task(fern)
 
 ### Das Sierpiński-Dreieck
 
