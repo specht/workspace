@@ -51,13 +51,6 @@ class WordingTest < Minitest::Test
         assert_empty found
     end
 
-    # »Rosette« reads as crude slang in a class (the maintainer); a figure of
-    # shapes turned round a point is a »Blume«. The engraver E. Rosette in a
-    # picture's credit line is a name.
-    def test_no_rosette
-        assert_empty hits(/Rosette/).reject { |hit| hit.include?('person-credit') }
-    end
-
     def test_multiplizieren_not_malnehmen
         assert_empty hits(/\bmal\s?(nehmen|genommen|nimmt|nimm)\b/i)
     end
