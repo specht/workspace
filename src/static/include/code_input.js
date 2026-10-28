@@ -234,8 +234,50 @@
         ]);
     }
 
-    const HIGHLIGHT = { sql, cypher, ruby, python, javascript };
-    const INDENT = { python: '    ', ruby: '  ', javascript: '  ' };
+    // Class diagrams of the UML-Werkstatt (```uml), line by line as
+    // Rouge::Lexers::UML (src/ruby/include/uml_lexer.rb): a class header,
+    // a member (+ or - and a name), an association, a comment.
+    const UML_IDENT = '[\\p{L}_][\\p{L}\\p{N}_]*';
+    const UML_TYPES = new Set('int double long float boolean char String void List Map Set'.split(' '));
+    const UML_REST = {
+        header: [
+            [/#.*/y, 'c1'],
+            [/\bextends\b/y, 'k'],
+            [/\(abstract\)/y, 'kp'],
+            [new RegExp(UML_IDENT, 'uy'), 'nc'],
+            [/[\s\S]/y, null],
+        ],
+        member: [
+            [/#.*/y, 'c1'],
+            [new RegExp(UML_IDENT, 'uy'), (w) => UML_TYPES.has(w) ? 'kt' : /^[A-Z]/.test(w) ? 'nc' : 'nv'],
+            [/[(),:<>[\]]/y, 'p'],
+            [/[\s\S]/y, null],
+        ],
+        association: [
+            [/#.*/y, 'c1'],
+            [/\d+\.\.(?:\d+|\*)|\*|\d+/y, 'm'],
+            [/--|->/y, 'o'],
+            [new RegExp(UML_IDENT, 'uy'), 'nc'],
+            [/[\s\S]/y, null],
+        ],
+    };
+
+    function uml(text) {
+        return text.split('\n').map((line) => {
+            let m = line.match(new RegExp('^(class)([ \\t]+)(' + UML_IDENT + ')', 'u'));
+            if (m) return span('k', m[1]) + span(null, m[2]) + span('nc', m[3]) + scan(line.slice(m[0].length), UML_REST.header);
+            m = line.match(new RegExp('^(association)([ \\t]+)(' + UML_IDENT + ')([ \\t]*)(:)', 'u'));
+            if (m) return span('k', m[1]) + span(null, m[2]) + span('nf', m[3]) + span(null, m[4]) + span('p', m[5]) + scan(line.slice(m[0].length), UML_REST.association);
+            m = line.match(new RegExp('^([ \\t]+)([+-])([ \\t]*)(' + UML_IDENT + '[?!]?)', 'u'));
+            if (m) return span(null, m[1]) + span('o', m[2]) + span(null, m[3]) + span('na', m[4]) + scan(line.slice(m[0].length), UML_REST.member);
+            m = line.match(/^(\s*)(#.*)$/);
+            if (m) return span(null, m[1]) + span('c1', m[2]);
+            return span(null, line);
+        }).join('\n');
+    }
+
+    const HIGHLIGHT = { sql, cypher, ruby, python, javascript, uml };
+    const INDENT = { python: '    ', ruby: '  ', javascript: '  ', uml: '  ' };
 
     // Writing code: Tab indents (the selected lines, or at the cursor),
     // Shift+Tab takes it back, Enter keeps the line's indentation and adds
@@ -243,6 +285,7 @@
     // field, as everywhere else on the page. Edits go through insertText, so
     // Ctrl+Z still undoes them.
     function opensBlock(language, line) {
+        if (language === 'uml') return /^class\b/.test(line);
         if (language === 'javascript') return /[{([]$/.test(line.replace(/\/\/.*$/, '').trimEnd());
         const code = line.replace(/#.*$/, '').trimEnd();
         if (language === 'python') return code.endsWith(':');
@@ -334,7 +377,8 @@
         const box = document.createElement('div');
         box.className = 'code-input';
         const view = document.createElement('pre');
-        view.className = 'code-input-view' + (language === 'cypher' ? ' code-cypher' : '');
+        // Cypher and UML blocks have colours of their own (code_highlight.rb)
+        view.className = 'code-input-view' + (language === 'cypher' ? ' code-cypher' : language === 'uml' ? ' code-uml' : '');
         view.setAttribute('aria-hidden', 'true');
         textarea.parentNode.insertBefore(box, textarea);
         box.appendChild(view);
@@ -459,5 +503,5 @@
         update();
     }
 
-    window.CodeInput = { attach, sql, cypher, ruby, python, javascript };
+    window.CodeInput = { attach, sql, cypher, ruby, python, javascript, uml };
 })();
