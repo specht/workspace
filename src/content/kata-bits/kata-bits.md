@@ -171,7 +171,7 @@ Prozessor merkt sich das Bit, das herausfällt, als Flag, und rechnet weiter;
 was das Ergebnis bedeutet, muss das Programm wissen. Pac-Man (1980) zählt die
 Level in einem Byte: In Level 256 läuft eine Rechnung damit über, die rechte
 Hälfte des Bildschirms füllt sich mit Zeichensalat, und das Level ist nicht
-zu schaffen ([The Pac-Man Dossier](https://pacman.holenet.info/), englisch). Was in C, Ruby, Python und JavaScript überläuft und was nicht,
+zu schaffen ([The Pac-Man Dossier](https://pacman.holenet.info/)). Was in C, Ruby, Python und JavaScript überläuft und was nicht,
 steht im Handbuch unter [Negative Zahlen](/reference/bits-und-bytes#zweierkomplement).
 
 _task(add-byte)
