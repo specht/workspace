@@ -1122,8 +1122,16 @@ Ein Programm, das zeichnet (`TurtleCheck`, Übung »Turtle«): Eine
 Schildkröte läuft über ein Blatt und zieht eine Linie hinter sich her. Die
 Befehle sind schlichte Funktionen ohne Objekt, `forward`, `back`, `left`,
 `right`, `pen_up`, `pen_down`, `color`, `width` (in JavaScript `penUp`,
-`penDown`); sie stehen in `src/static/include/turtle/turtle.rb`, `.py` und
-`.js`. Das Programm läuft **im Browser** (`turtle_worker.js`, Ruby und
+`penDown`), dazu `push` und `pop` (merken sich Ort, Richtung, Stift, Farbe
+und Breite und kehren dorthin zurück) und `random(1, 6)` (eine ganze
+Zufallszahl, mit Kommazahlen eine Kommazahl); `color` nimmt einen Namen,
+eine Zahl (den Farbton im Farbkreis, `color 200`) oder zwei Farben und einen
+Anteil (`color "gold", "red", 0.25`). Sie stehen in
+`src/static/include/turtle/turtle.rb`, `.py` und `.js`; Browser und Server
+rechnen Farbton und Mischung gleich (`colorHex` in `turtle_worker.js`,
+`TurtleWorld.color_hex`). `commands:` wählt die Befehle über dem Papier aus,
+mit `hue`, `mix` und `random` für die Schreibweisen von `color` und für
+`random`. Das Programm läuft **im Browser** (`turtle_worker.js`, Ruby und
 Python als WebAssembly aus `./fetch-turtle-runtimes.sh`), live, bis es zu
 Ende ist oder jemand »Stopp« drückt. Endet es von selbst, gehen die Befehle
 an den Server; `TurtleWorld` zeichnet sie nach und vergleicht die Linien

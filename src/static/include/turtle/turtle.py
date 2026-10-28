@@ -4,6 +4,7 @@
 # in tests. line is the line of the student's program (kata.py). The host
 # answers None, or a message why it cannot do the command.
 import sys as _sys
+import random as _random
 
 
 def _turtle_line():
@@ -49,11 +50,42 @@ def pen_down():
     _turtle('pen_down')
 
 
-def color(name):
-    if not isinstance(name, str):
-        raise TypeError(f'color braucht einen Text, zum Beispiel color("red"), nicht {name!r}')
-    _turtle('color', name)
+# A colour by name ("red", "#ff8800"), by a number, its hue on the colour
+# wheel (0 red, 120 green, 240 blue), or mixed from two: color("gold",
+# "red", 0.25) is a quarter of the way from gold to red. The host gets one
+# text: the name, "hue:200" or "mix:gold:red:0.25".
+def color(name, other=None, amount=None):
+    if isinstance(name, (int, float)) and not isinstance(name, bool) and other is None:
+        _turtle('color', f'hue:{float(_turtle_number("color", name))}')
+    elif isinstance(name, str) and other is None:
+        _turtle('color', name)
+    elif isinstance(name, str) and isinstance(other, str) and isinstance(amount, (int, float)) and not isinstance(amount, bool):
+        _turtle('color', f'mix:{name}:{other}:{float(_turtle_number("color", amount))}')
+    else:
+        raise TypeError('color braucht einen Namen wie color("red"), eine Zahl wie color(200) oder zwei Farben und einen Anteil wie color("gold", "red", 0.5)')
 
 
 def width(size):
     _turtle('width', _turtle_number('width', size))
+
+
+# Remembers where the turtle is, where it looks, its pen, colour and width;
+# pop goes back to the last place remembered, without drawing.
+def push():
+    _turtle('push')
+
+
+def pop():
+    _turtle('pop')
+
+
+# A random number from low to high: a whole one for whole numbers
+# (random(1, 6) as a die), otherwise one with a fraction.
+def random(low, high):
+    _turtle_number('random', low)
+    _turtle_number('random', high)
+    if high < low:
+        low, high = high, low
+    if isinstance(low, int) and isinstance(high, int):
+        return _random.randint(low, high)
+    return _random.uniform(low, high)

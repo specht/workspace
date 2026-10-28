@@ -77,24 +77,6 @@ examples:
       fail:
         - answer: "forward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\nforward(100);\nleft(90);\n"
           say: "höchstens"
-  hexagon:
-    pass:
-      - answer: "6.times do\n  forward 80\n  left 60\nend\n"
-    fail:
-      - answer: "6.times do\n  forward 80\n  left 120\nend\n"
-        say: "fehlt"
-    python:
-      pass:
-        - answer: "for i in range(6):\n    forward(80)\n    left(60)\n"
-      fail:
-        - answer: "for i in range(6):\n    forward(80)\n    left(120)\n"
-          say: "fehlt"
-    javascript:
-      pass:
-        - answer: "for (let i = 0; i < 6; i++) {\n  forward(80);\n  left(60);\n}\n"
-      fail:
-        - answer: "for (let i = 0; i < 6; i++) {\n  forward(80);\n  left(120);\n}\n"
-          say: "fehlt"
   square-function:
     pass:
       - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\nsquare(150)\n"
@@ -221,24 +203,6 @@ examples:
       fail:
         - answer: "for (let i = 0; i < 5; i++) {\n  forward(200);\n  right(72);\n}\n"
           say: "fehlt"
-  stars:
-    pass:
-      - answer: "def star(points, size)\n  points.times do\n    forward size\n    right 180 - 180.0 / points\n  end\nend\n\nstar(7, 200)\n"
-    fail:
-      - answer: "def star(points, size)\n  points.times do\n    forward size\n    right 180 - 180 / points\n  end\nend\n"
-        say: "star(7, 200)"
-    python:
-      pass:
-        - answer: "def star(points, size):\n    for i in range(points):\n        forward(size)\n        right(180 - 180 / points)\n\nstar(7, 200)\n"
-      fail:
-        - answer: "def star(points, size):\n    for i in range(points):\n        forward(size)\n        right(144)\n"
-          say: "star(7, 200)"
-    javascript:
-      pass:
-        - answer: "function star(points, size) {\n  for (let i = 0; i < points; i++) {\n    forward(size);\n    right(180 - 180 / points);\n  }\n}\n\nstar(7, 200);\n"
-      fail:
-        - answer: "function star(points, size) {\n  for (let i = 0; i < points; i++) {\n    forward(size);\n    right(144);\n  }\n}\n"
-          say: "star(7, 200)"
   own:
     pass:
       - answer: "def square(size)\n  4.times do\n    forward size\n    left 90\n  end\nend\n\ncolor \"teal\"\n12.times do\n  square(100)\n  left 30\nend\ncolor \"gold\"\nwidth 6\nsquare(30)\n"
@@ -293,24 +257,6 @@ examples:
       fail:
         - answer: "function circle(radius) {\n  for (let i = 0; i < 36; i++) {\n    forward(2 * Math.PI * radius / 36);\n    left(10);\n  }\n}\n\nfor (let i = 0; i < 30; i++) {\n  circle(50);\n  penUp();\n  forward(16);\n  penDown();\n}\n"
           say: "fehlt"
-  pattern:
-    pass:
-      - answer: "36.times do\n  forward 200\n  left 170\nend\n"
-    fail:
-      - answer: "forward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\nforward 100\nleft 170\n"
-        say: "höchstens"
-    python:
-      pass:
-        - answer: "for i in range(36):\n    forward(200)\n    left(170)\n"
-      fail:
-        - answer: "forward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\nforward(100)\nleft(170)\n"
-          say: "höchstens"
-    javascript:
-      pass:
-        - answer: "for (let i = 0; i < 36; i++) {\n  forward(200);\n  left(170);\n}\n"
-      fail:
-        - answer: "forward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\nforward(100);\nleft(170);\n"
-          say: "höchstens"
   own-flower:
     pass:
       - answer: "def polygon(corners, side)\n  corners.times do\n    forward side\n    left 360.0 / corners\n  end\nend\n\n18.times do\n  polygon(6, 70)\n  left 20\nend\n"

@@ -143,13 +143,6 @@ Klammern steht, wiederholt JavaScript; `i` zählt dabei mit, von 0 bis 4.
 
 _task(square-loop)
 
-_task(hexagon)
-
-Bisher hat die Schildkröte nachgezeichnet. Jetzt bist du dran, mit einem
-Muster, das sich niemand vorher ausgedacht hat:
-
-_task(pattern)
-
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ein Kreis ist für die Schildkröte ein Vieleck
 mit sehr vielen Ecken. Lass sie 360-mal 2 Schritte gehen und sich jedes Mal
@@ -409,10 +402,3 @@ _task(own)
 Bäume, ein Farnblatt und Kurven, die aus kleineren Kopien ihrer selbst
 bestehen, zeichnet die Schildkröte in [Turtle: Bäume und Kurven](/turtle-2),
 sobald du Funktionen kennst, die sich selbst aufrufen.
-
-<!-- extra -->
-## Sterne mit vielen Zacken
-
-Eine Aufgabe, die nicht mitzählt, für alle, die weiter wollen.
-
-_task(stars)

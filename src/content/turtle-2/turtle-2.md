@@ -59,24 +59,6 @@ _task(asymmetric-tree)
 
 _task(weeping-tree)
 
-_task(own-tree)
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Lass die Winkel und die Längen bei jedem
-Ast ein wenig vom Zufall abhängen
-<!-- language: ruby -->
-(`rand(15..35)` ist eine Zahl von 15 bis 35)
-<!-- /language -->
-<!-- language: python -->
-(mit `import random` am Anfang ist `random.randint(15, 35)` eine Zahl von 15 bis 35)
-<!-- /language -->
-<!-- language: javascript -->
-(`15 + Math.random() * 20` ist eine Zahl von 15 bis 35)
-<!-- /language -->
-und lass den Baum mehrmals wachsen. Achte darauf, ob er dann eher wie ein
-echter Baum aussieht und welche Tiefe dafür reicht.
-</div>
-
 ## Ein Farnblatt
 
 Ein Farnblatt wächst wie ein Baum, nur anders: Sein Stiel biegt sich bei
@@ -122,3 +104,18 @@ die letzte gespiegelt.
 <div class='turtle-levels' data-figure='hilbert'></div>
 
 _task(hilbert)
+
+## Dein eigener Baum
+
+Zum Schluss ein Baum, den sich niemand vorher ausgedacht hat. Geprüft wird
+hier nichts: Jeder Baum ist richtig.
+
+_task(own-tree)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass die Winkel und die Längen bei jedem
+Ast ein wenig vom Zufall abhängen: <code>random(15, 35)</code> ist eine zufällige Zahl
+von 15 bis 35, <code>random(0.6, 0.8)</code> eine Kommazahl dazwischen. Lass den Baum
+dann mehrmals wachsen. Achte darauf, ob er so eher wie ein echter Baum
+aussieht und welche Tiefe dafür reicht.
+</div>

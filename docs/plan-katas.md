@@ -271,7 +271,15 @@ development since 28 October 2026). What the maintainer decided and why:
   fern and curves: Sierpiński, Koch, Hilbert as an extra; its icon a
   Hilbert curve (`images/icons/hilbert.svg`, the maintainer's idea). Two
   predictions on the first page: the turn at a triangle's corner (120, not
-  60) and 91 instead of 90 degrees.
+  60) and 91 instead of 90 degrees. A third, `turtle-3` »Pflanzen, Zufall
+  und Farbe« (the maintainer: a Kata set, not an activity of its own):
+  colour from a number (the hue) and mixed from two, `push` and `pop`
+  (given as commands, as a canvas has `save()` and `restore()`; the
+  maintainer: this is about drawing, not about building a stack), `random`,
+  and Lindenmayer systems, a word drawn letter by letter and grown by a
+  rule, with a level picture of the plant. Every page ends with a free
+  section (the maintainer), and turtle-1 lost its weaker cards (a hexagon
+  after the square loop, a pattern counted in lines, many-pointed stars).
 - **Not only tracing** (the maintainer): free cards with a goal instead of
   a picture (`free:`, also with `max_lines`, which then asks for a loop):
   one's own pattern, flower, tree and picture.

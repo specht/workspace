@@ -19,7 +19,8 @@ class TurtleWorld
     START_WIDTH = 2
     MAX_WIDTH = 50
     MAX_COMMANDS = 200_000
-    COMMANDS = %w[forward back left right pen_up pen_down color width].freeze
+    MAX_DEPTH = 10_000
+    COMMANDS = %w[forward back left right pen_up pen_down color width push pop].freeze
 
     Segment = Struct.new(:x1, :y1, :x2, :y2, :color, :width) do
         def length = Math.hypot(x2 - x1, y2 - y1)
@@ -37,15 +38,53 @@ class TurtleWorld
         @width = START_WIDTH
         @segments = []
         @count = 0
+        @saved = []
     end
 
-    # #ff8800, #f80 or a CSS name, as hex; nil when it is none of them.
+    # #ff8800, #f80, a CSS name, a hue (»hue:200«) or a mix
+    # (»mix:gold:red:0.25«), as hex; nil when it is none of them. The same
+    # as colorHex in turtle_worker.js.
     def self.color_hex(name)
         text = name.to_s.strip.downcase
+        if (hue = text[/\Ahue:(.+)\z/, 1])
+            degrees = Float(hue, exception: false)
+            return degrees&.finite? ? hue_hex(degrees) : nil
+        end
+        if (mix = text.match(/\Amix:([^:]+):([^:]+):(.+)\z/))
+            a = color_hex(mix[1])
+            b = color_hex(mix[2])
+            t = Float(mix[3], exception: false)
+            return a && b && t&.finite? ? mix_hex(a, b, t) : nil
+        end
         return text if text.match?(/\A#\h{6}\z/)
         return "##{text[1] * 2}#{text[2] * 2}#{text[3] * 2}" if text.match?(/\A#\h{3}\z/)
 
         COLORS[text]
+    end
+
+    def self.hex(r, g, b) = '#' + [r, g, b].map { |c| c.clamp(0, 255).round.to_s(16).rjust(2, '0') }.join
+
+    # the hue on the colour wheel: saturation 0.8, lightness 0.47 (HSL)
+    def self.hue_hex(degrees)
+        h = degrees % 360
+        c = (1 - (2 * 0.47 - 1).abs) * 0.8
+        x = c * (1 - ((h / 60) % 2 - 1).abs)
+        m = 0.47 - c / 2
+        r, g, b = if h < 60 then [c, x, 0]
+                  elsif h < 120 then [x, c, 0]
+                  elsif h < 180 then [0, c, x]
+                  elsif h < 240 then [0, x, c]
+                  elsif h < 300 then [x, 0, c]
+                  else [c, 0, x]
+                  end
+        hex((r + m) * 255, (g + m) * 255, (b + m) * 255)
+    end
+
+    # from a to b, t of the way (0 to 1)
+    def self.mix_hex(a, b, t)
+        amount = t.clamp(0.0, 1.0)
+        part = ->(h, i) { h[1 + 2 * i, 2].to_i(16) }
+        hex(*(0..2).map { |i| part.(a, i) + (part.(b, i) - part.(a, i)) * amount })
     end
 
     # A picture from the task file (trusted Ruby, as the rest of it).
@@ -93,6 +132,14 @@ class TurtleWorld
             raise Error, 'Breite außerhalb' unless value > 0 && value <= MAX_WIDTH
 
             @width = value.to_f
+        when 'push'
+            raise Error, 'zu viele Stellen gemerkt' if @saved.size >= MAX_DEPTH
+
+            @saved << [@x, @y, @heading, @pen, @color, @width]
+        when 'pop'
+            raise Error, 'pop ohne push' if @saved.empty?
+
+            @x, @y, @heading, @pen, @color, @width = @saved.pop
         end
         nil
     end
@@ -104,8 +151,23 @@ class TurtleWorld
     def right(angle) = command('right', angle)
     def pen_up = command('pen_up')
     def pen_down = command('pen_down')
-    def color(name) = command('color', name)
     def width(size) = command('width', size)
+    def push = command('push')
+    def pop = command('pop')
+
+    # color 200 and color 'gold', 'red', 0.5 as in the students' commands
+    def color(name, other = nil, amount = nil)
+        return command('color', "hue:#{name.to_f}") if name.is_a?(Numeric)
+        return command('color', "mix:#{name}:#{other}:#{amount.to_f}") if other
+
+        command('color', name)
+    end
+
+    # in draw:, a picture with chance in it is drawn the same each time
+    def random(low, high)
+        @random ||= Random.new(1)
+        low.is_a?(Integer) && high.is_a?(Integer) ? @random.rand(low..high) : low + @random.rand * (high - low)
+    end
 
     private
 

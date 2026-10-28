@@ -43,14 +43,18 @@ module TurtleCheck
     FREE = %w[min_lines min_colors].freeze
     # The commands as each language writes them, with an example, and what
     # they do: the card lists them like Pip's (commands: picks some).
-    COMMANDS = TurtleWorld::COMMANDS
+    # (hue, mix: color with a number or two colours; random: a number)
+    COMMANDS = (TurtleWorld::COMMANDS + %w[hue mix random]).freeze
     SPELLING = {
         'ruby' => { 'forward' => 'forward 100', 'back' => 'back 100', 'left' => 'left 90', 'right' => 'right 90',
-                    'pen_up' => 'pen_up', 'pen_down' => 'pen_down', 'color' => 'color "red"', 'width' => 'width 4' },
+                    'pen_up' => 'pen_up', 'pen_down' => 'pen_down', 'color' => 'color "red"', 'width' => 'width 4',
+                    'push' => 'push', 'pop' => 'pop', 'hue' => 'color 200', 'mix' => 'color "gold", "red", 0.5', 'random' => 'random(1, 6)' },
         'python' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
-                      'pen_up' => 'pen_up()', 'pen_down' => 'pen_down()', 'color' => 'color("red")', 'width' => 'width(4)' },
+                      'pen_up' => 'pen_up()', 'pen_down' => 'pen_down()', 'color' => 'color("red")', 'width' => 'width(4)',
+                      'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)' },
         'javascript' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
-                          'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)' },
+                          'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)',
+                          'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)' },
     }.freeze
     DESCRIPTIONS = {
         'forward' => 'so viele Schritte vorwärts gehen', 'back' => 'so viele Schritte rückwärts gehen',
@@ -58,6 +62,11 @@ module TurtleCheck
         'pen_up' => 'den Stift heben: Die Schildkröte geht, ohne zu zeichnen', 'pen_down' => 'den Stift wieder aufs Papier setzen',
         'color' => 'die Farbe des Stifts: ein englischer Name wie "red" oder "darkgreen", oder "#ff8800"',
         'width' => 'wie dick der Stift zeichnet, 1 bis 50 (am Anfang 2)',
+        'push' => 'sich merken, wo die Schildkröte ist und wohin sie schaut, mit Stift, Farbe und Breite',
+        'pop' => 'zurück zur Stelle, die sich die Schildkröte zuletzt gemerkt hat, ohne zu zeichnen',
+        'hue' => 'eine Farbe aus dem Farbkreis: 0 Rot, 60 Gelb, 120 Grün, 180 Türkis, 240 Blau, 300 Lila',
+        'mix' => 'eine Farbe zwischen zwei Farben: 0 ist die erste, 1 die zweite, 0.5 genau dazwischen',
+        'random' => 'eine zufällige Zahl von 1 bis 6; mit Kommazahlen wie random(0.5, 2) eine Kommazahl dazwischen',
     }.freeze
     # what the card says under its picture for a call (»square(50)«)
     EMPTY = 'Schreib zuerst ein Programm.'

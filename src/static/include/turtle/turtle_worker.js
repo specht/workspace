@@ -29,6 +29,8 @@ const RUBY = BASE + 'runtime/ruby-2.10.1/';
 const MAX_COMMANDS = 200000;
 const MAX_OUTPUT = 100000;
 const MAX_WIDTH = 50;
+// places remembered with push at once
+const MAX_DEPTH = 10000;
 // steps per second: faster than the page draws at »Schnell« even on paper
 // zoomed far out (turtle_canvas.js), so that »Sofort« in the middle of a
 // run draws a fern in a few seconds; an endless program still runs for a
@@ -36,6 +38,7 @@ const MAX_WIDTH = 50;
 const PACE = 60000;
 
 let colors = null;
+let depth = 0;
 let pace = null;
 let due = 0;
 let quiet = false;
@@ -57,11 +60,45 @@ function stopAll() {
     self.close();
 }
 
+// A colour as #rrggbb: a name, #rgb or #rrggbb, a hue (»hue:200«, color
+// 200) or a mix (»mix:gold:red:0.25«), as TurtleWorld.color_hex on the
+// server; null when it is none of them.
 function colorHex(name) {
     const text = String(name).trim().toLowerCase();
+    const hue = /^hue:(.+)$/.exec(text);
+    if (hue) return Number.isFinite(Number(hue[1])) ? hueHex(Number(hue[1])) : null;
+    const mix = /^mix:([^:]+):([^:]+):(.+)$/.exec(text);
+    if (mix) {
+        const a = colorHex(mix[1]);
+        const b = colorHex(mix[2]);
+        const t = Number(mix[3]);
+        return a && b && Number.isFinite(t) ? mixHex(a, b, t) : null;
+    }
     if (/^#[0-9a-f]{6}$/.test(text)) return text;
     if (/^#[0-9a-f]{3}$/.test(text)) return '#' + text[1] + text[1] + text[2] + text[2] + text[3] + text[3];
     return colors[text] || null;
+}
+
+function hex(r, g, b) {
+    return '#' + [r, g, b].map((c) => Math.round(Math.min(255, Math.max(0, c))).toString(16).padStart(2, '0')).join('');
+}
+
+// the hue on the colour wheel, as bright as it stays readable on the
+// paper: saturation 0.8, lightness 0.47 (HSL)
+function hueHex(degrees) {
+    const h = ((degrees % 360) + 360) % 360;
+    const c = (1 - Math.abs(2 * 0.47 - 1)) * 0.8;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = 0.47 - c / 2;
+    const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return hex((r + m) * 255, (g + m) * 255, (b + m) * 255);
+}
+
+// from a to b, t of the way (0 to 1)
+function mixHex(a, b, t) {
+    const amount = Math.min(1, Math.max(0, t));
+    const part = (h, i) => parseInt(h.slice(1 + 2 * i, 3 + 2 * i), 16);
+    return hex(...[0, 1, 2].map((i) => part(a, i) + (part(b, i) - part(a, i)) * amount));
 }
 
 // The one way in for every command of every language: null when it is
@@ -69,9 +106,22 @@ function colorHex(name) {
 function host(command, value, line) {
     if (quiet) return null;
     if (command === 'color') {
-        const hex = colorHex(value);
-        if (!hex) return 'color kennt »' + value + '« nicht: Nimm einen englischen Farbnamen wie "red", "orange" oder "darkgreen" oder eine Farbe wie "#ff8800".';
-        value = hex;
+        const found = colorHex(value);
+        if (!found) {
+            // in a mix, the name it does not know
+            const mix = /^mix:([^:]+):([^:]+):/.exec(String(value));
+            const name = mix ? (colorHex(mix[1]) ? mix[2] : mix[1]) : value;
+            return 'color kennt »' + name + '« nicht: Nimm einen englischen Farbnamen wie "red", "orange" oder "darkgreen" oder eine Farbe wie "#ff8800".';
+        }
+        value = found;
+    }
+    if (command === 'push') {
+        if (depth >= MAX_DEPTH) return 'push: Die Schildkröte merkt sich schon ' + MAX_DEPTH + ' Stellen. Fehlt irgendwo ein pop?';
+        depth += 1;
+    }
+    if (command === 'pop') {
+        if (depth === 0) return 'pop: Die Schildkröte hat sich keine Stelle gemerkt. Vor jedem pop steht ein push.';
+        depth -= 1;
     }
     if (command === 'width' && !(value > 0 && value <= MAX_WIDTH)) return 'width braucht eine Zahl über 0 und höchstens ' + MAX_WIDTH + ', nicht ' + value + '.';
     count += 1;
@@ -313,6 +363,7 @@ self.onmessage = async (event) => {
         runIndex = i;
         const call = message.runs[i];
         quiet = call !== null;
+        depth = 0;
         due = performance.now();
         self.postMessage({ type: 'start', index: i });
         let error = null;

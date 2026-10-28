@@ -27,10 +27,34 @@ def right(angle) = __turtle('right', __turtle_number('right', angle))
 def pen_up = __turtle('pen_up')
 def pen_down = __turtle('pen_down')
 
-def color(name)
-    raise ArgumentError, "color braucht einen Text, zum Beispiel color \"red\", nicht #{name.inspect}" unless name.is_a?(String)
-
-    __turtle('color', name)
+# A colour by name ("red", "#ff8800"), by a number, its hue on the colour
+# wheel (0 red, 120 green, 240 blue), or mixed from two: color "gold",
+# "red", 0.25 is a quarter of the way from gold to red. The host gets one
+# text: the name, "hue:200" or "mix:gold:red:0.25".
+def color(name, other = nil, amount = nil)
+    if name.is_a?(Numeric) && other.nil?
+        __turtle('color', "hue:#{__turtle_number('color', name).to_f}")
+    elsif name.is_a?(String) && other.nil?
+        __turtle('color', name)
+    elsif name.is_a?(String) && other.is_a?(String) && amount.is_a?(Numeric)
+        __turtle('color', "mix:#{name}:#{other}:#{__turtle_number('color', amount).to_f}")
+    else
+        raise ArgumentError, 'color braucht einen Namen wie color "red", eine Zahl wie color 200 oder zwei Farben und einen Anteil wie color "gold", "red", 0.5'
+    end
 end
 
 def width(size) = __turtle('width', __turtle_number('width', size))
+
+# Remembers where the turtle is, where it looks, its pen, colour and width;
+# pop goes back to the last place remembered, without drawing.
+def push = __turtle('push')
+def pop = __turtle('pop')
+
+# A random number from low to high: a whole one for whole numbers
+# (random(1, 6) as a die), otherwise one with a fraction.
+def random(low, high)
+    __turtle_number('random', low)
+    __turtle_number('random', high)
+    low, high = high, low if high < low
+    low.is_a?(Integer) && high.is_a?(Integer) ? rand(low..high) : low + rand * (high - low)
+end

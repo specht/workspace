@@ -76,6 +76,7 @@
             this.diff = null;
             this.segments = [];
             this.turtle = Object.assign({}, START);
+            this.saved = [];
             this.view = { cx: 0, cy: 0, half: VIEW };
             // the widest line in pixels on the screen (a level picture
             // zoomed in far)
@@ -250,6 +251,7 @@
             this.partial = null;
             this.diff = null;
             this.turtle = Object.assign({}, START);
+            this.saved = [];
             this.fit();
             this.redraw();
         }
@@ -302,6 +304,9 @@
             else if (command === 'pen_down') t.pen = true;
             else if (command === 'color') t.color = value;
             else if (command === 'width') t.width = value;
+            // push remembers all of the turtle, pop goes back there
+            else if (command === 'push') this.saved.push(Object.assign({}, t));
+            else if (command === 'pop' && this.saved.length > 0) this.turtle = this.saved.pop();
         }
 
         // The turtle itself, and what a check found: missing pieces dashed,
@@ -837,7 +842,8 @@
 
     // The lines a list of commands draws, without drawing them.
     function trace(commands) {
-        const t = Object.assign({}, START);
+        let t = Object.assign({}, START);
+        const saved = [];
         const out = [];
         commands.forEach(([command, value]) => {
             if (command === 'forward' || command === 'back') {
@@ -854,6 +860,8 @@
             else if (command === 'pen_down') t.pen = true;
             else if (command === 'color') t.color = value;
             else if (command === 'width') t.width = value;
+            else if (command === 'push') saved.push(Object.assign({}, t));
+            else if (command === 'pop' && saved.length > 0) t = saved.pop();
         });
         return out;
     }
@@ -1000,6 +1008,40 @@
         says(level) {
             const size = [3, 6, 12, 25][level];
             return 'Ein Farnblatt der Größe ' + size + ': zwei Stücke Stiel (grau), rechts und links ein Farnblatt halber Größe (grün und blau), ein wenig gedreht, und dann der Rest, ein Farnblatt der Größe ' + (size - 1) + ' (orange). Kleiner als 1 zeichnet es nichts.';
+        },
+    };
+
+    // a plant from a word (turtle-3): every F of the rule F[+F]F[-F]F is
+    // a plant of the level before, each in its own colour; [ and ] are
+    // push and pop
+    const RULE = 'F[+F]F[-F]F';
+    const RULE_PARTS = PARTS.concat(['#0c8599']);
+    FIGURES.plant = {
+        levels: 4,
+        commands(level) {
+            const out = [['left', 90], ['width', 2]];
+            const size = 4 * Math.pow(3, 4 - level);
+            const grow = (depth, colour) => {
+                if (depth === 0) {
+                    out.push(['color', colour], ['forward', size]);
+                    return;
+                }
+                let part = 0;
+                for (const letter of RULE) {
+                    if (letter === 'F') grow(depth - 1, colour || RULE_PARTS[part++]);
+                    else if (letter === '+') out.push(['left', 25]);
+                    else if (letter === '-') out.push(['right', 25]);
+                    else if (letter === '[') out.push(['push']);
+                    else out.push(['pop']);
+                }
+            };
+            grow(level, level === 0 ? JOIN : null);
+            return out;
+        },
+        says(level) {
+            const letters = (n) => (n === 0 ? 1 : 5 * letters(n - 1) + 6);
+            if (level === 0) return 'Stufe 0: das Wort F, ein Strich.';
+            return 'Stufe ' + level + ': ein Wort aus ' + letters(level) + ' Zeichen. Jedes F der Regel F[+F]F[-F]F ist eine Pflanze der Stufe ' + (level - 1) + ', in fünf Farben; [ merkt sich die Stelle, ] kehrt dorthin zurück.';
         },
     };
 

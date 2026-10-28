@@ -21,11 +21,32 @@ function turtleCommands(host) {
         right: (angle) => send('right', number('right', angle)),
         penUp: () => send('pen_up'),
         penDown: () => send('pen_down'),
-        color: (name) => {
-            if (typeof name !== 'string') throw new TypeError('color braucht einen Text, zum Beispiel color("red"), nicht ' + JSON.stringify(name));
-            send('color', name);
+        // A colour by name ("red", "#ff8800"), by a number, its hue on the
+        // colour wheel (0 red, 120 green, 240 blue), or mixed from two:
+        // color("gold", "red", 0.25) is a quarter of the way from gold to
+        // red. The host gets one text: the name, "hue:200" or
+        // "mix:gold:red:0.25".
+        color: (name, other, amount) => {
+            if (typeof name === 'number' && other === undefined) send('color', 'hue:' + number('color', name));
+            else if (typeof name === 'string' && other === undefined) send('color', name);
+            else if (typeof name === 'string' && typeof other === 'string' && typeof amount === 'number') send('color', 'mix:' + name + ':' + other + ':' + number('color', amount));
+            else throw new TypeError('color braucht einen Namen wie color("red"), eine Zahl wie color(200) oder zwei Farben und einen Anteil wie color("gold", "red", 0.5)');
         },
         width: (size) => send('width', number('width', size)),
+        // Remembers where the turtle is, where it looks, its pen, colour
+        // and width; pop goes back to the last place remembered, without
+        // drawing.
+        push: () => send('push'),
+        pop: () => send('pop'),
+        // A random number from low to high: a whole one for whole numbers
+        // (random(1, 6) as a die), otherwise one with a fraction.
+        random: (low, high) => {
+            number('random', low);
+            number('random', high);
+            if (high < low) [low, high] = [high, low];
+            if (Number.isInteger(low) && Number.isInteger(high)) return low + Math.floor(Math.random() * (high - low + 1));
+            return low + Math.random() * (high - low);
+        },
     };
 }
 

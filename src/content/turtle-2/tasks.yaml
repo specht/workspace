@@ -935,123 +935,6 @@ tasks:
         tree(52, 10);
         ```
 
-  - id: own-tree
-    title: "Dein eigener Baum"
-    level: 2
-    prompt: |
-      Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
-    starter: |
-      def tree(size, depth)
-        # dein schöner Baum, wie du ihn willst
-      end
-
-      left 90
-      tree(60, 8)
-    check:
-      type: "turtle"
-      language: "ruby"
-      free: {}
-    hint:
-      - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
-      - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
-    solution: |
-      ```ruby
-      def tree(size, depth)
-        return if depth == 0
-        width depth
-        color depth <= 2 ? "orange" : "saddlebrown"
-        forward size
-        left 20
-        tree(size * 0.75, depth - 1)
-        right 50
-        tree(size * 0.7, depth - 1)
-        left 30
-        pen_up
-        back size
-        pen_down
-      end
-
-      left 90
-      tree(70, 8)
-      ```
-    python:
-      prompt: |
-        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
-      starter: |
-        def tree(size, depth):
-            # dein schöner Baum, wie du ihn willst
-            pass
-
-        left(90)
-        tree(60, 8)
-      check:
-        type: "turtle"
-        language: "python"
-        free: {}
-      hint:
-        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
-        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
-      solution: |
-        ```python
-        def tree(size, depth):
-            if depth == 0:
-                return
-            width(depth)
-            if depth <= 2:
-                color("orange")
-            else:
-                color("saddlebrown")
-            forward(size)
-            left(20)
-            tree(size * 0.75, depth - 1)
-            right(50)
-            tree(size * 0.7, depth - 1)
-            left(30)
-            pen_up()
-            back(size)
-            pen_down()
-
-        left(90)
-        tree(70, 8)
-        ```
-    javascript:
-      prompt: |
-        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
-      starter: |
-        function tree(size, depth) {
-          // dein schöner Baum, wie du ihn willst
-        }
-
-        left(90);
-        tree(60, 8);
-      check:
-        type: "turtle"
-        language: "javascript"
-        free: {}
-      hint:
-        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
-        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
-      solution: |
-        ```javascript
-        function tree(size, depth) {
-          if (depth === 0) return;
-          width(depth);
-          color(depth <= 2 ? "orange" : "saddlebrown");
-          forward(size);
-          left(20);
-          tree(size * 0.75, depth - 1);
-          right(50);
-          tree(size * 0.7, depth - 1);
-          left(30);
-          penUp();
-          back(size);
-          penDown();
-        }
-
-        left(90);
-        tree(70, 8);
-        ```
-
   - id: fern
     title: "Ein Farnblatt"
     level: 3
@@ -1868,4 +1751,121 @@ tasks:
         }
 
         hilbert(4, 90, 15);
+        ```
+
+  - id: own-tree
+    title: "Dein eigener Baum"
+    level: 2
+    prompt: |
+      Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
+    starter: |
+      def tree(size, depth)
+        # dein schöner Baum, wie du ihn willst
+      end
+
+      left 90
+      tree(60, 8)
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+    hint:
+      - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
+      - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
+    solution: |
+      ```ruby
+      def tree(size, depth)
+        return if depth == 0
+        width depth
+        color depth <= 2 ? "orange" : "saddlebrown"
+        forward size
+        left 20
+        tree(size * 0.75, depth - 1)
+        right 50
+        tree(size * 0.7, depth - 1)
+        left 30
+        pen_up
+        back size
+        pen_down
+      end
+
+      left 90
+      tree(70, 8)
+      ```
+    python:
+      prompt: |
+        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
+      starter: |
+        def tree(size, depth):
+            # dein schöner Baum, wie du ihn willst
+            pass
+
+        left(90)
+        tree(60, 8)
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+      hint:
+        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
+        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
+      solution: |
+        ```python
+        def tree(size, depth):
+            if depth == 0:
+                return
+            width(depth)
+            if depth <= 2:
+                color("orange")
+            else:
+                color("saddlebrown")
+            forward(size)
+            left(20)
+            tree(size * 0.75, depth - 1)
+            right(50)
+            tree(size * 0.7, depth - 1)
+            left(30)
+            pen_up()
+            back(size)
+            pen_down()
+
+        left(90)
+        tree(70, 8)
+        ```
+    javascript:
+      prompt: |
+        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
+      starter: |
+        function tree(size, depth) {
+          // dein schöner Baum, wie du ihn willst
+        }
+
+        left(90);
+        tree(60, 8);
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+      hint:
+        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
+        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
+      solution: |
+        ```javascript
+        function tree(size, depth) {
+          if (depth === 0) return;
+          width(depth);
+          color(depth <= 2 ? "orange" : "saddlebrown");
+          forward(size);
+          left(20);
+          tree(size * 0.75, depth - 1);
+          right(50);
+          tree(size * 0.7, depth - 1);
+          left(30);
+          penUp();
+          back(size);
+          penDown();
+        }
+
+        left(90);
+        tree(70, 8);
         ```
