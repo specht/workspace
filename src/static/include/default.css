@@ -10350,6 +10350,15 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
        window) stay inside it instead of widening the page */
     .kata-scroll[data-dir='-1'] { left: 0.25em; }
     .kata-scroll[data-dir='1'] { right: 0.25em; }
+    /* no fade: the strip ends at the screen's edge, and the neighbour
+       cut off there already says that more follows */
+    .kata-more-left .kata-track,
+    .kata-more-right .kata-track {
+        --kata-fade-left: 0em;
+        --kata-fade-right: 0em;
+        --kata-fade-from: 1;
+        --kata-fade-to: 1;
+    }
 }
 
 /* Katas handed in (KataHandIns, kata_hand_ins.js): the list on the class
