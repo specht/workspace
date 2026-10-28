@@ -1,0 +1,1258 @@
+# Aufgaben zu »Vom Gatter zum Rechenwerk«, in Ruby und in Python (unter python:).
+# Format: docs/aufgaben.md. Die Aufgaben mit gates: (GateCheck) lassen die Eingänge
+# nur durch die Gatter gehen. Eine Änderung an einer Aufgabe gehört in beide Sprachen.
+format: 1
+activity: logikgatter
+tasks:
+  - id: de-morgan
+    title: Zwei Schaltungen
+    prediction: true
+    prompt: |
+      Rechne beide Schaltungen für alle vier Kombinationen von `a` und `b` im Kopf
+      oder auf Papier durch. Für wie viele der vier Kombinationen liefern sie
+      dasselbe?
+    check:
+      type: choice
+      options:
+        - Für keine
+        - Für eine
+        - Für zwei
+        - Für alle vier
+      correct: 3
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Rechne eine Zeile von Hand, a = 0 und b = 0. Was liefert die erste Schaltung, was die zweite?
+      - when: { picked: 1 }
+        say: Rechne alle vier Zeilen. Eine Tabelle mit a, b und den beiden Ergebnissen nebeneinander hilft.
+      - when: { picked: 2 }
+        say: Rechne alle vier Zeilen. Eine Tabelle mit a, b und den beiden Ergebnissen nebeneinander hilft.
+    hint: |
+      Fang mit a = 0 und b = 0 an. Die erste Schaltung: 0 oder 0 ist 0, das NICHT
+      macht daraus 1. Die zweite: nicht 0 ist 1, zweimal, und 1 und 1 ist 1.
+    solution: |
+      Für alle vier: Beide liefern 1, wenn a und b beide 0 sind, und sonst 0.
+
+  - id: nand-not-and
+    title: "NICHT und UND aus NAND"
+    level: 1
+    prompt: |
+      Schreib `not_(a)` und `and_(a, b)` nur mit `nand`: Deine Funktionen geben ihre Eingänge an `nand` weiter und rechnen nicht selbst. Der Unterstrich ist nötig, weil `not` und `and` in Ruby schon Wörter der Sprache sind. Die Prüfung ruft `not_(0)`, `not_(1)` und `and_` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur `nand` lesen kann.
+    starter: |
+      # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+      def nand(a, b)
+        a == 1 && b == 1 ? 0 : 1
+      end
+
+      def not_(a)
+      end
+
+      def and_(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [nand]
+      cases:
+        - call: "not_(0)"
+          expect: "1"
+        - call: "not_(1)"
+          expect: "0"
+        - call: "and_(0, 0)"
+          expect: "0"
+        - call: "and_(0, 1)"
+          expect: "0"
+        - call: "and_(1, 0)"
+          expect: "0"
+        - call: "and_(1, 1)"
+          expect: "1"
+    feedback:
+      - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, 0)\nend\n\ndef and_(a, b)\n  not_(nand(a, b))\nend\n" }
+        say: "`nand(a, 0)` ist immer 1, was auch immer `a` ist: Eine 0 an einem Eingang reicht, und das UND im NAND ist 0. Was liefert `nand(a, a)`?"
+      - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef and_(a, b)\n  nand(a, b)\nend\n" }
+        say: "`and_` gibt noch das NAND selbst zurück, also genau das Gegenteil von UND. Dreh das Ergebnis mit deinem `not_` um."
+    hint:
+      - "Schau in die Wahrheitstabelle von NAND: Was kommt bei `nand(0, 0)` heraus und was bei `nand(1, 1)`, wenn also beide Eingänge gleich sind?"
+      - "`not_(a)` ist ein `nand`, an dessen beiden Eingängen `a` liegt. Und ein UND ist ein NAND, dessen Ergebnis umgedreht wird: Dafür hast du jetzt `not_`."
+    solution: |
+      ```ruby
+      # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+      def nand(a, b)
+        a == 1 && b == 1 ? 0 : 1
+      end
+
+      def not_(a)
+        nand(a, a)
+      end
+
+      def and_(a, b)
+        not_(nand(a, b))
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `not_(a)` und `and_(a, b)` nur mit `nand`: Deine Funktionen geben ihre Eingänge an `nand` weiter und rechnen nicht selbst. Der Unterstrich ist nötig, weil `not` und `and` in Python schon Wörter der Sprache sind. Die Prüfung ruft `not_(0)`, `not_(1)` und `and_` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur `nand` lesen kann.
+      starter: |
+        # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+        def nand(a, b):
+            return 0 if a == 1 and b == 1 else 1
+
+        def not_(a):
+            pass
+
+        def and_(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [nand]
+        cases:
+          - call: "not_(0)"
+            expect: "1"
+          - call: "not_(1)"
+            expect: "0"
+          - call: "and_(0, 0)"
+            expect: "0"
+          - call: "and_(0, 1)"
+            expect: "0"
+          - call: "and_(1, 0)"
+            expect: "0"
+          - call: "and_(1, 1)"
+            expect: "1"
+      feedback:
+        - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, 0)\n\ndef and_(a, b):\n    return not_(nand(a, b))\n" }
+          say: "`nand(a, 0)` ist immer 1, was auch immer `a` ist: Eine 0 an einem Eingang reicht, und das UND im NAND ist 0. Was liefert `nand(a, a)`?"
+        - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef and_(a, b):\n    return nand(a, b)\n" }
+          say: "`and_` gibt noch das NAND selbst zurück, also genau das Gegenteil von UND. Dreh das Ergebnis mit deinem `not_` um."
+      hint:
+        - "Schau in die Wahrheitstabelle von NAND: Was kommt bei `nand(0, 0)` heraus und was bei `nand(1, 1)`, wenn also beide Eingänge gleich sind?"
+        - "`not_(a)` ist ein `nand`, an dessen beiden Eingängen `a` liegt. Und ein UND ist ein NAND, dessen Ergebnis umgedreht wird: Dafür hast du jetzt `not_`."
+      solution: |
+        ```python
+        # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+        def nand(a, b):
+            return 0 if a == 1 and b == 1 else 1
+
+        def not_(a):
+            return nand(a, a)
+
+        def and_(a, b):
+            return not_(nand(a, b))
+        ```
+
+  - id: nand-or-xor
+    title: "ODER und XOR aus NAND"
+    level: 3
+    prompt: |
+      Schreib `or_(a, b)` und `xor_(a, b)`, wieder nur mit `nand`. Deine Funktionen `not_` und `and_` aus der Karte davor darfst du hierher kopieren und benutzen. Die Prüfung ruft `or_` und `xor_` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur `nand` lesen kann.
+    starter: |
+      # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+      def nand(a, b)
+        a == 1 && b == 1 ? 0 : 1
+      end
+
+      # Hier darfst du not_ und and_ aus der Karte davor einfügen.
+
+      def or_(a, b)
+      end
+
+      def xor_(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [nand]
+      cases:
+        - call: "or_(0, 0)"
+          expect: "0"
+        - call: "or_(0, 1)"
+          expect: "1"
+        - call: "or_(1, 0)"
+          expect: "1"
+        - call: "or_(1, 1)"
+          expect: "1"
+        - call: "xor_(0, 0)"
+          expect: "0"
+        - call: "xor_(0, 1)"
+          expect: "1"
+        - call: "xor_(1, 0)"
+          expect: "1"
+        - call: "xor_(1, 1)"
+          expect: "0"
+    feedback:
+      - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b)\n  a == 1 && b == 1 ? 0 : 1\nend\n\ndef not_(a)\n  nand(a, a)\nend\n\ndef or_(a, b)\n  nand(a, b)\nend\n\ndef xor_(a, b)\n  x = nand(a, b)\n  nand(nand(a, x), nand(b, x))\nend\n" }
+        say: "`nand(a, b)` liefert für 00 eine 1, das ODER dort aber 0. Was muss mit den beiden Eingängen passieren, bevor sie ins NAND gehen?"
+    hint:
+      - "Für das ODER: Erinnere dich an die Regel von De Morgan oben. Wann ist `a` oder `b` gleich 0, und wie sieht das als UND aus?"
+      - "a oder b ist dasselbe wie nicht ((nicht a) und (nicht b)). Welches Gatter rechnet »nicht (… und …)« in einem Schritt?"
+      - "Für das XOR: Es ist 1, wenn `a` oder `b` 1 ist, aber nicht beide. Mit deinen Funktionen: das ODER von `a` und `b`, UND das NAND von `a` und `b`."
+    solution: |
+      ```ruby
+      # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+      def nand(a, b)
+        a == 1 && b == 1 ? 0 : 1
+      end
+
+      def not_(a)
+        nand(a, a)
+      end
+
+      def or_(a, b)
+        nand(not_(a), not_(b))
+      end
+
+      def xor_(a, b)
+        x = nand(a, b)
+        nand(nand(a, x), nand(b, x))
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `or_(a, b)` und `xor_(a, b)`, wieder nur mit `nand`. Deine Funktionen `not_` und `and_` aus der Karte davor darfst du hierher kopieren und benutzen. Die Prüfung ruft `or_` und `xor_` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur `nand` lesen kann.
+      starter: |
+        # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+        def nand(a, b):
+            return 0 if a == 1 and b == 1 else 1
+
+        # Hier darfst du not_ und and_ aus der Karte davor einfügen.
+
+        def or_(a, b):
+            pass
+
+        def xor_(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [nand]
+        cases:
+          - call: "or_(0, 0)"
+            expect: "0"
+          - call: "or_(0, 1)"
+            expect: "1"
+          - call: "or_(1, 0)"
+            expect: "1"
+          - call: "or_(1, 1)"
+            expect: "1"
+          - call: "xor_(0, 0)"
+            expect: "0"
+          - call: "xor_(0, 1)"
+            expect: "1"
+          - call: "xor_(1, 0)"
+            expect: "1"
+          - call: "xor_(1, 1)"
+            expect: "0"
+      feedback:
+        - when: { same_as: "# Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.\ndef nand(a, b):\n    return 0 if a == 1 and b == 1 else 1\n\ndef not_(a):\n    return nand(a, a)\n\ndef or_(a, b):\n    return nand(a, b)\n\ndef xor_(a, b):\n    x = nand(a, b)\n    return nand(nand(a, x), nand(b, x))\n" }
+          say: "`nand(a, b)` liefert für 00 eine 1, das ODER dort aber 0. Was muss mit den beiden Eingängen passieren, bevor sie ins NAND gehen?"
+      hint:
+        - "Für das ODER: Erinnere dich an die Regel von De Morgan oben. Wann ist `a` oder `b` gleich 0, und wie sieht das als UND aus?"
+        - "a oder b ist dasselbe wie nicht ((nicht a) und (nicht b)). Welches Gatter rechnet »nicht (… und …)« in einem Schritt?"
+        - "Für das XOR: Es ist 1, wenn `a` oder `b` 1 ist, aber nicht beide. Mit deinen Funktionen: das ODER von `a` und `b`, UND das NAND von `a` und `b`."
+      solution: |
+        ```python
+        # Gegeben: das NAND-Gatter. Deine Funktionen geben ihre Eingänge nur an nand weiter.
+        def nand(a, b):
+            return 0 if a == 1 and b == 1 else 1
+
+        def not_(a):
+            return nand(a, a)
+
+        def or_(a, b):
+            return nand(not_(a), not_(b))
+
+        def xor_(a, b):
+            x = nand(a, b)
+            return nand(nand(a, x), nand(b, x))
+        ```
+
+  - id: half-adder-gates
+    title: Summe und Übertrag
+    prompt: |
+      Welche Gatter liefern die Summe `s` und den Übertrag `c`? Vergleich die
+      beiden Spalten der Tabelle mit den Wahrheitstabellen der Gatter oben.
+    check:
+      type: choice
+      options:
+        - "s: ODER, c: UND"
+        - "s: XOR, c: UND"
+        - "s: UND, c: XOR"
+        - "s: XOR, c: ODER"
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: ODER liefert für 1 und 1 eine 1, die Summe ist dort aber 0.
+      - when: { picked: 2 }
+        say: Umgekehrt. UND ist nur für 1 und 1 gleich 1. Welche der beiden Spalten ist das?
+      - when: { picked: 3 }
+        say: ODER liefert schon für 0 und 1 eine 1, einen Übertrag gibt es dort aber nicht.
+    solution: |
+      Die Summe ist XOR: 1, wenn genau eins der beiden Bits 1 ist. Der Übertrag ist
+      UND: 1 nur bei 1 + 1.
+
+  - id: half-adder
+    title: "Ein Halbaddierer"
+    level: 1
+    prompt: |
+      Schreib `half_adder(a, b)`. Es gibt eine Liste `[s, c]` zurück, die Summe und den Übertrag: `half_adder(1, 1)` ergibt `[0, 1]`. Die Gatter `not_`, `and_`, `or_` und `xor_` stehen schon da, und deine Funktion gibt ihre Eingänge nur an sie weiter. Die Prüfung ruft `half_adder` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+    starter: |
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def half_adder(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [not_, and_, or_, xor_]
+      cases:
+        - call: "half_adder(0, 0)"
+          expect: "[0, 0]"
+        - call: "half_adder(0, 1)"
+          expect: "[1, 0]"
+        - call: "half_adder(1, 0)"
+          expect: "[1, 0]"
+        - call: "half_adder(1, 1)"
+          expect: "[0, 1]"
+    feedback:
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [or_(a, b), and_(a, b)]\nend\n" }
+        say: "Mit ODER wäre die Summe von 1 und 1 gleich 1, im Zweiersystem ist 1 + 1 aber `10`: Summe 0, Übertrag 1."
+    hint:
+      - "Oben hast du herausgefunden, welches Gatter die Summe liefert und welches den Übertrag. Beide bekommen `a` und `b`."
+      - "Zurück kommt eine Liste mit zwei Einträgen: zuerst das Ergebnis des einen Gatters, dann das des anderen."
+    solution: |
+      ```ruby
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def half_adder(a, b)
+        [xor_(a, b), and_(a, b)]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `half_adder(a, b)`. Es gibt eine Liste `[s, c]` zurück, die Summe und den Übertrag: `half_adder(1, 1)` ergibt `[0, 1]`. Die Gatter `not_`, `and_`, `or_` und `xor_` stehen schon da, und deine Funktion gibt ihre Eingänge nur an sie weiter. Die Prüfung ruft `half_adder` für 00, 01, 10 und 11 auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+      starter: |
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def half_adder(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [not_, and_, or_, xor_]
+        cases:
+          - call: "half_adder(0, 0)"
+            expect: "[0, 0]"
+          - call: "half_adder(0, 1)"
+            expect: "[1, 0]"
+          - call: "half_adder(1, 0)"
+            expect: "[1, 0]"
+          - call: "half_adder(1, 1)"
+            expect: "[0, 1]"
+      feedback:
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return xor_(a, b), and_(a, b)\n" }
+          say: "`return s, c` gibt in Python ein Tupel `(s, c)` zurück, keine Liste. Die Aufgabe will eine Liste: `return [s, c]`."
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [or_(a, b), and_(a, b)]\n" }
+          say: "Mit ODER wäre die Summe von 1 und 1 gleich 1, im Zweiersystem ist 1 + 1 aber `10`: Summe 0, Übertrag 1."
+      hint:
+        - "Oben hast du herausgefunden, welches Gatter die Summe liefert und welches den Übertrag. Beide bekommen `a` und `b`."
+        - "Zurück kommt eine Liste mit zwei Einträgen: zuerst das Ergebnis des einen Gatters, dann das des anderen."
+      solution: |
+        ```python
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def half_adder(a, b):
+            return [xor_(a, b), and_(a, b)]
+        ```
+
+  - id: full-adder-rows
+    title: Wann gibt es einen Übertrag?
+    prompt: |
+      In wie vielen der acht Zeilen der Wahrheitstabelle eines Volladdierers ist
+      `c_out` gleich 1?
+    check:
+      type: number
+      expect: 4
+    feedback:
+      - when: { equals: 1 }
+        say: Nur bei 1 + 1 + 1? Auch 1 + 1 + 0 = 10 ergibt einen Übertrag.
+      - when: { equals: 3 }
+        say: Fast. Hast du 111 mitgezählt? 1 + 1 + 1 = 11 hat auch einen Übertrag.
+    hint: |
+      Schreib die acht Zeilen auf, von 000 bis 111, und rechne in jeder a + b + c_in
+      im Zweiersystem aus. Der Übertrag ist die linke Ziffer.
+    solution: |
+      In vier Zeilen: 011, 101, 110 und 111. Ein Übertrag entsteht, sobald
+      mindestens zwei der drei Bits 1 sind.
+
+  - id: full-adder
+    title: "Ein Volladdierer"
+    level: 2
+    prompt: |
+      Schreib `full_adder(a, b, c_in)`, das `[s, c_out]` zurückgibt: `full_adder(1, 1, 1)` ergibt `[1, 1]`, denn 1 + 1 + 1 ist im Zweiersystem `11`. Bau ihn aus zwei Halbaddierern; deinen `half_adder` darfst du dafür hierher kopieren. Die Prüfung ruft `full_adder` für alle acht Kombinationen auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+    starter: |
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      # Hier darfst du half_adder aus der Karte »Ein Halbaddierer« einfügen.
+
+      def full_adder(a, b, c_in)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [not_, and_, or_, xor_]
+      cases:
+        - call: "full_adder(0, 0, 0)"
+          expect: "[0, 0]"
+        - call: "full_adder(0, 0, 1)"
+          expect: "[1, 0]"
+        - call: "full_adder(0, 1, 0)"
+          expect: "[1, 0]"
+        - call: "full_adder(0, 1, 1)"
+          expect: "[0, 1]"
+        - call: "full_adder(1, 0, 0)"
+          expect: "[1, 0]"
+        - call: "full_adder(1, 0, 1)"
+          expect: "[0, 1]"
+        - call: "full_adder(1, 1, 0)"
+          expect: "[0, 1]"
+        - call: "full_adder(1, 1, 1)"
+          expect: "[1, 1]"
+    feedback:
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, and_(c1, c2)]\nend\n" }
+        say: "Mit UND ist `c_out` immer 0, denn die beiden Überträge sind nie zugleich 1. Einer von beiden reicht für den Übertrag nach links."
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, c2]\nend\n" }
+        say: "Ein Übertrag kann auch aus dem ersten Halbaddierer kommen: bei `a` = `b` = 1."
+    hint:
+      - "Rechne `full_adder(1, 0, 1)` von Hand mit zwei Halbaddierern: Der erste addiert `a` und `b`. Der zweite addiert die Summe des ersten und `c_in`."
+      - "Die Summe des zweiten Halbaddierers ist schon `s`. Für `c_out` hast du zwei Überträge, aus jedem Halbaddierer einen: Wann muss `c_out` 1 sein?"
+      - "Ein Gerüst:\n\n```ruby\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(…)\n  [s, …]    # hier: c1 und c2 zusammen\nend\n```"
+    solution: |
+      ```ruby
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def half_adder(a, b)
+        [xor_(a, b), and_(a, b)]
+      end
+
+      def full_adder(a, b, c_in)
+        s1, c1 = half_adder(a, b)
+        s, c2 = half_adder(s1, c_in)
+        [s, or_(c1, c2)]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `full_adder(a, b, c_in)`, das `[s, c_out]` zurückgibt: `full_adder(1, 1, 1)` ergibt `[1, 1]`, denn 1 + 1 + 1 ist im Zweiersystem `11`. Bau ihn aus zwei Halbaddierern; deinen `half_adder` darfst du dafür hierher kopieren. Die Prüfung ruft `full_adder` für alle acht Kombinationen auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+      starter: |
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        # Hier darfst du half_adder aus der Karte »Ein Halbaddierer« einfügen.
+
+        def full_adder(a, b, c_in):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [not_, and_, or_, xor_]
+        cases:
+          - call: "full_adder(0, 0, 0)"
+            expect: "[0, 0]"
+          - call: "full_adder(0, 0, 1)"
+            expect: "[1, 0]"
+          - call: "full_adder(0, 1, 0)"
+            expect: "[1, 0]"
+          - call: "full_adder(0, 1, 1)"
+            expect: "[0, 1]"
+          - call: "full_adder(1, 0, 0)"
+            expect: "[1, 0]"
+          - call: "full_adder(1, 0, 1)"
+            expect: "[0, 1]"
+          - call: "full_adder(1, 1, 0)"
+            expect: "[0, 1]"
+          - call: "full_adder(1, 1, 1)"
+            expect: "[1, 1]"
+      feedback:
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, and_(c1, c2)]\n" }
+          say: "Mit UND ist `c_out` immer 0, denn die beiden Überträge sind nie zugleich 1. Einer von beiden reicht für den Übertrag nach links."
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, c2]\n" }
+          say: "Ein Übertrag kann auch aus dem ersten Halbaddierer kommen: bei `a` = `b` = 1."
+      hint:
+        - "Rechne `full_adder(1, 0, 1)` von Hand mit zwei Halbaddierern: Der erste addiert `a` und `b`. Der zweite addiert die Summe des ersten und `c_in`."
+        - "Die Summe des zweiten Halbaddierers ist schon `s`. Für `c_out` hast du zwei Überträge, aus jedem Halbaddierer einen: Wann muss `c_out` 1 sein?"
+        - "Ein Gerüst:\n\n```python\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(…)\n    return [s, …]    # hier: c1 und c2 zusammen\n```"
+      solution: |
+        ```python
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def half_adder(a, b):
+            return [xor_(a, b), and_(a, b)]
+
+        def full_adder(a, b, c_in):
+            s1, c1 = half_adder(a, b)
+            s, c2 = half_adder(s1, c_in)
+            return [s, or_(c1, c2)]
+        ```
+
+  - id: overflow
+    title: Wenn die vier Bits nicht reichen
+    prediction: true
+    prompt: |
+      Was zeigt der Addierer für 4 Bit bei `1111` + `0001`?
+    check:
+      type: choice
+      options:
+        - Summe 0000, Übertrag 1
+        - Summe 1111, Übertrag 1
+        - Summe 0000, Übertrag 0
+        - Summe 1110, Übertrag 0
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "1111 ist die größte Zahl mit 4 Bit, aber + 1 lässt sie nicht stehen: Rechne die rechte Spalte, 1 + 1."
+      - when: { picked: 2 }
+        say: "Die vier Bits stimmen. Aber 15 + 1 = 16 passt nicht in 4 Bit: Wo bleibt die 1?"
+      - when: { picked: 3 }
+        say: "Das wäre 1111 − 0001. Rechne von rechts: 1 + 1 = 10, die 1 geht in die nächste Spalte."
+    hint: |
+      Rechne schriftlich von rechts nach links und schreib die Überträge darüber.
+    solution: |
+      Summe 0000, Übertrag 1: 15 + 1 = 16 ist im Zweiersystem 10000, und für die 1
+      vorn ist in vier Bits kein Platz mehr.
+
+  - id: add4
+    title: "Ein Addierer für 4 Bit"
+    level: 2
+    prompt: |
+      Schreib `add4(a, b)` für zwei Zahlen mit 4 Bit, als Listen mit dem höchsten Bit vorn. Zurück kommt `[s, c]`, die vier Bits der Summe und der Übertrag aus der linken Spalte: `add4([0, 1, 1, 0], [0, 1, 1, 1])` ergibt `[[1, 1, 0, 1], 0]`, und `add4([1, 1, 1, 1], [0, 0, 0, 1])` ergibt `[[0, 0, 0, 0], 1]`. Deine Funktionen `half_adder` und `full_adder` darfst du hierher kopieren. Die Prüfung ruft `add4` mit zehn Paaren auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+    starter: |
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      # Hier darfst du half_adder und full_adder aus den Karten davor einfügen.
+
+      def add4(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [not_, and_, or_, xor_]
+      cases:
+        - call: "add4([0, 1, 1, 0], [0, 1, 1, 1])"
+          expect: "[[1, 1, 0, 1], 0]"
+        - call: "add4([1, 1, 1, 1], [0, 0, 0, 1])"
+          expect: "[[0, 0, 0, 0], 1]"
+        - call: "add4([0, 0, 0, 0], [0, 0, 0, 0])"
+          expect: "[[0, 0, 0, 0], 0]"
+        - call: "add4([0, 1, 0, 1], [1, 0, 1, 0])"
+          expect: "[[1, 1, 1, 1], 0]"
+        - call: "add4([1, 0, 0, 1], [1, 0, 0, 1])"
+          expect: "[[0, 0, 1, 0], 1]"
+        - call: "add4([1, 0, 0, 0], [1, 0, 0, 0])"
+          expect: "[[0, 0, 0, 0], 1]"
+        - call: "add4([0, 0, 1, 1], [1, 1, 0, 0])"
+          expect: "[[1, 1, 1, 1], 0]"
+        - call: "add4([0, 1, 1, 1], [0, 0, 0, 1])"
+          expect: "[[1, 0, 0, 0], 0]"
+        - call: "add4([1, 0, 1, 1], [0, 1, 1, 0])"
+          expect: "[[0, 0, 0, 1], 1]"
+        - call: "add4([1, 1, 1, 1], [1, 1, 1, 1])"
+          expect: "[[1, 1, 1, 0], 1]"
+    feedback:
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4(a, b)\n  s = [0, 0, 0, 0]\n  c = 0\n  0.upto(3) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n" }
+        say: "Der Übertrag läuft bei dir von links nach rechts. Das höchste Bit steht beim Index 0: Fang beim Index 3 an und geh nach links."
+    hint:
+      - "Fang rechts an, beim Index 3, mit dem Übertrag 0, wie beim schriftlichen Addieren. Der Übertrag, der aus einer Spalte kommt, geht in die Spalte links davon."
+      - "Eine Schleife über die Indizes 3, 2, 1 und 0: `3.downto(0) do |i|`. In jeder Runde ein `full_adder` mit `a[i]`, `b[i]` und dem Übertrag."
+      - "Ein Gerüst:\n\n```ruby\ndef add4(a, b)\n  s = [0, 0, 0, 0]\n  c = 0\n  3.downto(0) do |i|\n    # hier: full_adder mit a[i], b[i] und c; das Bit nach s[i], der Übertrag nach c\n  end\n  [s, c]\nend\n```"
+    solution: |
+      ```ruby
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def half_adder(a, b)
+        [xor_(a, b), and_(a, b)]
+      end
+
+      def full_adder(a, b, c_in)
+        s1, c1 = half_adder(a, b)
+        s, c2 = half_adder(s1, c_in)
+        [s, or_(c1, c2)]
+      end
+
+      def add4(a, b)
+        s = [0, 0, 0, 0]
+        c = 0
+        3.downto(0) do |i|
+          s[i], c = full_adder(a[i], b[i], c)
+        end
+        [s, c]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `add4(a, b)` für zwei Zahlen mit 4 Bit, als Listen mit dem höchsten Bit vorn. Zurück kommt `[s, c]`, die vier Bits der Summe und der Übertrag aus der linken Spalte: `add4([0, 1, 1, 0], [0, 1, 1, 1])` ergibt `[[1, 1, 0, 1], 0]`, und `add4([1, 1, 1, 1], [0, 0, 0, 1])` ergibt `[[0, 0, 0, 0], 1]`. Deine Funktionen `half_adder` und `full_adder` darfst du hierher kopieren. Die Prüfung ruft `add4` mit zehn Paaren auf, erst mit 0 und 1 und dann mit Signalen, die nur die Gatter lesen können.
+      starter: |
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        # Hier darfst du half_adder und full_adder aus den Karten davor einfügen.
+
+        def add4(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [not_, and_, or_, xor_]
+        cases:
+          - call: "add4([0, 1, 1, 0], [0, 1, 1, 1])"
+            expect: "[[1, 1, 0, 1], 0]"
+          - call: "add4([1, 1, 1, 1], [0, 0, 0, 1])"
+            expect: "[[0, 0, 0, 0], 1]"
+          - call: "add4([0, 0, 0, 0], [0, 0, 0, 0])"
+            expect: "[[0, 0, 0, 0], 0]"
+          - call: "add4([0, 1, 0, 1], [1, 0, 1, 0])"
+            expect: "[[1, 1, 1, 1], 0]"
+          - call: "add4([1, 0, 0, 1], [1, 0, 0, 1])"
+            expect: "[[0, 0, 1, 0], 1]"
+          - call: "add4([1, 0, 0, 0], [1, 0, 0, 0])"
+            expect: "[[0, 0, 0, 0], 1]"
+          - call: "add4([0, 0, 1, 1], [1, 1, 0, 0])"
+            expect: "[[1, 1, 1, 1], 0]"
+          - call: "add4([0, 1, 1, 1], [0, 0, 0, 1])"
+            expect: "[[1, 0, 0, 0], 0]"
+          - call: "add4([1, 0, 1, 1], [0, 1, 1, 0])"
+            expect: "[[0, 0, 0, 1], 1]"
+          - call: "add4([1, 1, 1, 1], [1, 1, 1, 1])"
+            expect: "[[1, 1, 1, 0], 1]"
+      feedback:
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4(a, b):\n    s = [0, 0, 0, 0]\n    c = 0\n    for i in range(4):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n" }
+          say: "Der Übertrag läuft bei dir von links nach rechts. Das höchste Bit steht beim Index 0: Fang beim Index 3 an und geh nach links."
+      hint:
+        - "Fang rechts an, beim Index 3, mit dem Übertrag 0, wie beim schriftlichen Addieren. Der Übertrag, der aus einer Spalte kommt, geht in die Spalte links davon."
+        - "Eine Schleife über die Indizes 3, 2, 1 und 0: `for i in range(3, -1, -1):`. In jeder Runde ein `full_adder` mit `a[i]`, `b[i]` und dem Übertrag."
+        - "Ein Gerüst:\n\n```python\ndef add4(a, b):\n    s = [0, 0, 0, 0]\n    c = 0\n    for i in range(3, -1, -1):\n        # hier: full_adder mit a[i], b[i] und c; das Bit nach s[i], der Übertrag nach c\n        pass\n    return [s, c]\n```"
+      solution: |
+        ```python
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def half_adder(a, b):
+            return [xor_(a, b), and_(a, b)]
+
+        def full_adder(a, b, c_in):
+            s1, c1 = half_adder(a, b)
+            s, c2 = half_adder(s1, c_in)
+            return [s, or_(c1, c2)]
+
+        def add4(a, b):
+            s = [0, 0, 0, 0]
+            c = 0
+            for i in range(3, -1, -1):
+                s[i], c = full_adder(a[i], b[i], c)
+            return [s, c]
+        ```
+
+  - id: latch-hold
+    title: S kurz auf 1
+    prediction: true
+    prompt: |
+      S wird 1 und danach wieder 0. R bleibt die ganze Zeit 0. Was ist Q danach?
+    check:
+      type: choice
+      options:
+        - Q ist 1 und bleibt 1.
+        - Q ist wieder 0, wie am Anfang.
+        - Q wechselt immer weiter zwischen 0 und 1.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "Rechne nach, sobald S wieder 0 ist: Q quer = NOR(0, Q) und Q = NOR(0, Q quer). Mit Q = 1 von eben: Was ist Q quer, und was dann Q?"
+      - when: { picked: 2 }
+        say: "Setz Q = 1 und Q quer = 0 mit S = R = 0 in beide Gleichungen ein: Ändert sich noch etwas?"
+    hint: |
+      Solange S 1 ist: Q quer = NOR(1, Q) ist 0, also Q = NOR(0, 0) = 1. Was
+      ändert sich, wenn S zurück auf 0 geht?
+    solution: |
+      Q ist 1 und bleibt 1: Mit Q = 1 ist Q quer = NOR(0, 1) = 0, und damit ist
+      Q = NOR(0, 0) = 1. Die beiden Gatter halten sich gegenseitig.
+
+  - id: latch-both
+    title: S und R zugleich
+    prediction: true
+    prompt: |
+      Jetzt werden S und R beide 1, und danach im selben Augenblick beide wieder 0.
+      Was ist Q danach?
+    check:
+      type: choice
+      options:
+        - Q ist 1.
+        - Q ist 0.
+        - Q und Q quer sind beide 1.
+        - Das lässt sich nicht vorhersagen.
+      correct: 3
+    feedback:
+      - when: { picked: 0 }
+        say: "Rechne nach: Mit S = R = 1 sind Q und Q quer beide 0. Was liefern beide NOR, wenn S und R gleichzeitig 0 werden, und was im Schritt danach?"
+      - when: { picked: 1 }
+        say: "Rechne nach: Mit S = R = 1 sind Q und Q quer beide 0. Was liefern beide NOR, wenn S und R gleichzeitig 0 werden, und was im Schritt danach?"
+      - when: { picked: 2 }
+        say: Im ersten Augenblick stimmt das, denn beide NOR sehen zwei Nullen. Und im Schritt danach?
+    solution: |
+      Das lässt sich nicht vorhersagen. Beide NOR sehen zwei Nullen und schalten
+      gleichzeitig auf 1, dann sehen beide eine 1 und schalten auf 0, und so
+      weiter. Ein echtes Gatter ist ein wenig schneller als das andere, aber
+      welches, weiß man vorher nicht.
+
+  - id: d-latch
+    title: "Was das D-Flipflop speichert"
+    level: 1
+    prompt: |
+      Schreib `d_latch(d, clock, q)`: Es sagt, welches Bit das D-Flipflop nach einem Augenblick speichert. `q` ist das Bit, das es bisher gespeichert hat, `clock` der Takt. Ist `clock` 1, kommt `d` zurück; ist `clock` 0, kommt `q` zurück. Nur mit den Gattern, wie bisher: Ein `if clock == 1` merkt die Prüfung. Sie ruft `d_latch` für alle acht Kombinationen auf.
+    starter: |
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def d_latch(d, clock, q)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [not_, and_, or_, xor_]
+      cases:
+        - call: "d_latch(0, 0, 0)"
+          expect: "0"
+        - call: "d_latch(0, 0, 1)"
+          expect: "1"
+        - call: "d_latch(0, 1, 0)"
+          expect: "0"
+        - call: "d_latch(0, 1, 1)"
+          expect: "0"
+        - call: "d_latch(1, 0, 0)"
+          expect: "0"
+        - call: "d_latch(1, 0, 1)"
+          expect: "1"
+        - call: "d_latch(1, 1, 0)"
+          expect: "1"
+        - call: "d_latch(1, 1, 1)"
+          expect: "1"
+    feedback:
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef d_latch(d, clock, q)\n  and_(clock, d)\nend\n" }
+        say: "Ist der Takt 0, vergisst dein Flipflop sein Bit: Es muss dann `q` zurückgeben, nicht 0."
+    hint:
+      - "Zwei Fälle liefern eine 1: Der Takt ist 1 und `d` ist 1, oder der Takt ist 0 und `q` ist 1. Den ersten Fall rechnet `and_(clock, d)`."
+      - "Den zweiten Fall rechnet ein UND aus dem umgedrehten Takt und `q`. Beide Fälle zusammen verbindet ein ODER."
+    solution: |
+      ```ruby
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def d_latch(d, clock, q)
+        or_(and_(clock, d), and_(not_(clock), q))
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `d_latch(d, clock, q)`: Es sagt, welches Bit das D-Flipflop nach einem Augenblick speichert. `q` ist das Bit, das es bisher gespeichert hat, `clock` der Takt. Ist `clock` 1, kommt `d` zurück; ist `clock` 0, kommt `q` zurück. Nur mit den Gattern, wie bisher: Ein `if clock == 1` merkt die Prüfung. Sie ruft `d_latch` für alle acht Kombinationen auf.
+      starter: |
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def d_latch(d, clock, q):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [not_, and_, or_, xor_]
+        cases:
+          - call: "d_latch(0, 0, 0)"
+            expect: "0"
+          - call: "d_latch(0, 0, 1)"
+            expect: "1"
+          - call: "d_latch(0, 1, 0)"
+            expect: "0"
+          - call: "d_latch(0, 1, 1)"
+            expect: "0"
+          - call: "d_latch(1, 0, 0)"
+            expect: "0"
+          - call: "d_latch(1, 0, 1)"
+            expect: "1"
+          - call: "d_latch(1, 1, 0)"
+            expect: "1"
+          - call: "d_latch(1, 1, 1)"
+            expect: "1"
+      feedback:
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef d_latch(d, clock, q):\n    return and_(clock, d)\n" }
+          say: "Ist der Takt 0, vergisst dein Flipflop sein Bit: Es muss dann `q` zurückgeben, nicht 0."
+      hint:
+        - "Zwei Fälle liefern eine 1: Der Takt ist 1 und `d` ist 1, oder der Takt ist 0 und `q` ist 1. Den ersten Fall rechnet `and_(clock, d)`."
+        - "Den zweiten Fall rechnet ein UND aus dem umgedrehten Takt und `q`. Beide Fälle zusammen verbindet ein ODER."
+      solution: |
+        ```python
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def d_latch(d, clock, q):
+            return or_(and_(clock, d), and_(not_(clock), q))
+        ```
+
+  - id: sub-trick
+    title: Subtrahieren mit einem Addierer
+    prompt: |
+      Ein Rechenwerk hat nur einen Addierer. Wie rechnet es `0101` − `0011`, also
+      5 − 3, mit 4 Bit?
+    check:
+      type: choice
+      options:
+        - "0101 + 1100 + 1: b mit allen Bits umgedreht, und 1 dazu"
+        - "0101 + 1100: b mit allen Bits umgedreht"
+        - "0101 + 0011, danach alle Bits umdrehen"
+        - "Gar nicht: Dafür braucht es ein eigenes Subtrahierwerk."
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "Rechne nach: 0101 + 1100 = 1 0001, mit 4 Bit also 0001. Das ist um eins zu klein."
+      - when: { picked: 2 }
+        say: "0101 + 0011 = 1000, umgedreht 0111, also 7. Gesucht ist 2."
+      - when: { picked: 3 }
+        say: Es geht mit dem Addierer, dank des Zweierkomplements aus der Kata »Negative Zahlen in einem Byte«.
+    hint: |
+      Im Zweierkomplement mit 4 Bit ist −3 dasselbe wie 16 − 3 = 13, also 1101. Wie
+      kommst du von 0011 auf 1101?
+    solution: |
+      0101 + 1100 + 1 = 1 0010, mit 4 Bit 0010, also 2. 1100 + 1 = 1101 ist
+      16 − 3, das Zweierkomplement von 3.
+
+  - id: alu
+    title: "Ein Rechenwerk für 4 Bit"
+    level: 3
+    prompt: |
+      Schreib `alu(op, a, b)` für zwei Zahlen mit 4 Bit wie bei `add4`. `op` ist einer der Texte `'add'`, `'sub'`, `'and'`, `'or'` und `'xor'`. Zurück kommt `[r, zf, cf]`, das Ergebnis mit 4 Bit und die beiden Flags, so wie die CPU Sandbox sie setzt: `alu('sub', [0, 0, 1, 1], [0, 1, 0, 1])` ergibt `[[1, 1, 1, 0], 0, 1]`, denn für 3 − 5 muss geborgt werden. `op` ist kein Signal: Mit `if op == 'sub'` darfst du wählen, was gerechnet wird, wie der Multiplexer. Die Bits von `a` und `b` gehen nur durch Gatter. Deine Funktionen von vorher darfst du hierher kopieren. Die Prüfung ruft alle fünf Befehle mit 15 Paaren auf.
+    starter: |
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      # Hier darfst du half_adder, full_adder und add4 aus den Karten davor einfügen.
+
+      def alu(op, a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      gates: [not_, and_, or_, xor_]
+      cases:
+        - call: "alu('add', [0, 0, 1, 1], [0, 1, 0, 1])"
+          expect: "[[1, 0, 0, 0], 0, 0]"
+        - call: "alu('add', [1, 0, 0, 1], [1, 0, 0, 0])"
+          expect: "[[0, 0, 0, 1], 0, 1]"
+        - call: "alu('add', [1, 0, 0, 0], [1, 0, 0, 0])"
+          expect: "[[0, 0, 0, 0], 1, 1]"
+        - call: "alu('add', [1, 1, 1, 1], [0, 0, 0, 1])"
+          expect: "[[0, 0, 0, 0], 1, 1]"
+        - call: "alu('sub', [0, 1, 0, 1], [0, 0, 1, 1])"
+          expect: "[[0, 0, 1, 0], 0, 0]"
+        - call: "alu('sub', [0, 0, 1, 1], [0, 1, 0, 1])"
+          expect: "[[1, 1, 1, 0], 0, 1]"
+        - call: "alu('sub', [0, 1, 1, 0], [0, 1, 1, 0])"
+          expect: "[[0, 0, 0, 0], 1, 0]"
+        - call: "alu('sub', [0, 0, 0, 0], [0, 0, 0, 1])"
+          expect: "[[1, 1, 1, 1], 0, 1]"
+        - call: "alu('sub', [1, 1, 1, 1], [0, 0, 0, 0])"
+          expect: "[[1, 1, 1, 1], 0, 0]"
+        - call: "alu('and', [1, 1, 0, 0], [1, 0, 1, 0])"
+          expect: "[[1, 0, 0, 0], 0, 0]"
+        - call: "alu('and', [0, 1, 0, 1], [1, 0, 1, 0])"
+          expect: "[[0, 0, 0, 0], 1, 0]"
+        - call: "alu('or', [1, 1, 0, 0], [1, 0, 1, 0])"
+          expect: "[[1, 1, 1, 0], 0, 0]"
+        - call: "alu('or', [0, 0, 0, 0], [0, 0, 0, 0])"
+          expect: "[[0, 0, 0, 0], 1, 0]"
+        - call: "alu('xor', [1, 1, 0, 0], [1, 0, 1, 0])"
+          expect: "[[0, 1, 1, 0], 0, 0]"
+        - call: "alu('xor', [0, 1, 1, 1], [0, 1, 1, 1])"
+          expect: "[[0, 0, 0, 0], 1, 0]"
+    feedback:
+      - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a)\n  a == 1 ? 0 : 1\nend\n\ndef and_(a, b)\n  a == 1 && b == 1 ? 1 : 0\nend\n\ndef or_(a, b)\n  a == 1 || b == 1 ? 1 : 0\nend\n\ndef xor_(a, b)\n  a != b ? 1 : 0\nend\n\ndef half_adder(a, b)\n  [xor_(a, b), and_(a, b)]\nend\n\ndef full_adder(a, b, c_in)\n  s1, c1 = half_adder(a, b)\n  s, c2 = half_adder(s1, c_in)\n  [s, or_(c1, c2)]\nend\n\ndef add4c(a, b, c)\n  s = [0, 0, 0, 0]\n  3.downto(0) do |i|\n    s[i], c = full_adder(a[i], b[i], c)\n  end\n  [s, c]\nend\n\ndef alu(op, a, b)\n  if op == 'add' || op == 'sub'\n    sub = op == 'sub' ? 1 : 0\n    r, c = add4c(a, b.map { |bit| xor_(bit, sub) }, sub)\n    cf = c\n  else\n    r = (0..3).map do |i|\n      if op == 'and' then and_(a[i], b[i])\n      elsif op == 'or' then or_(a[i], b[i])\n      else xor_(a[i], b[i])\n      end\n    end\n    cf = 0\n  end\n  zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n  [r, zf, cf]\nend\n" }
+        say: "Bei `sub` ist CF 1, wenn geborgt werden musste, und das ist genau dann, wenn aus dem Addierer **kein** Übertrag kommt. Dreh den Übertrag bei `sub` um."
+    hint:
+      - "Fang mit `'and'`, `'or'` und `'xor'` an: ein Gatter für jeden Index, CF ist dabei 0. ZF ist 1, wenn kein Bit von `r` 1 ist: ein NICHT hinter drei ODER, die alle vier Bits verbinden."
+      - "Für `'add'` und `'sub'` brauchst du deinen Addierer mit einem Übertrag am Anfang: Kopier `add4` und gib ihm einen dritten Parameter `c` statt der festen 0. Bei `'sub'` drehst du jedes Bit von `b` mit `xor_(bit, 1)` um und fängst mit dem Übertrag 1 an."
+      - "CF ist bei `'add'` der Übertrag aus dem Addierer und bei `'sub'` sein Gegenteil. `xor_(c, sub)` mit `sub` = 1 bei `'sub'` und 0 bei `'add'` erledigt beides."
+    solution: |
+      ```ruby
+      # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+      def not_(a)
+        a == 1 ? 0 : 1
+      end
+
+      def and_(a, b)
+        a == 1 && b == 1 ? 1 : 0
+      end
+
+      def or_(a, b)
+        a == 1 || b == 1 ? 1 : 0
+      end
+
+      def xor_(a, b)
+        a != b ? 1 : 0
+      end
+
+      def half_adder(a, b)
+        [xor_(a, b), and_(a, b)]
+      end
+
+      def full_adder(a, b, c_in)
+        s1, c1 = half_adder(a, b)
+        s, c2 = half_adder(s1, c_in)
+        [s, or_(c1, c2)]
+      end
+
+      def add4c(a, b, c)
+        s = [0, 0, 0, 0]
+        3.downto(0) do |i|
+          s[i], c = full_adder(a[i], b[i], c)
+        end
+        [s, c]
+      end
+
+      def alu(op, a, b)
+        if op == 'add' || op == 'sub'
+          sub = op == 'sub' ? 1 : 0
+          r, c = add4c(a, b.map { |bit| xor_(bit, sub) }, sub)
+          cf = xor_(c, sub)
+        else
+          r = (0..3).map do |i|
+            if op == 'and' then and_(a[i], b[i])
+            elsif op == 'or' then or_(a[i], b[i])
+            else xor_(a[i], b[i])
+            end
+          end
+          cf = 0
+        end
+        zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))
+        [r, zf, cf]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `alu(op, a, b)` für zwei Zahlen mit 4 Bit wie bei `add4`. `op` ist einer der Texte `'add'`, `'sub'`, `'and'`, `'or'` und `'xor'`. Zurück kommt `[r, zf, cf]`, das Ergebnis mit 4 Bit und die beiden Flags, so wie die CPU Sandbox sie setzt: `alu('sub', [0, 0, 1, 1], [0, 1, 0, 1])` ergibt `[[1, 1, 1, 0], 0, 1]`, denn für 3 − 5 muss geborgt werden. `op` ist kein Signal: Mit `if op == 'sub'` darfst du wählen, was gerechnet wird, wie der Multiplexer. Die Bits von `a` und `b` gehen nur durch Gatter. Deine Funktionen von vorher darfst du hierher kopieren. Die Prüfung ruft alle fünf Befehle mit 15 Paaren auf.
+      starter: |
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        # Hier darfst du half_adder, full_adder und add4 aus den Karten davor einfügen.
+
+        def alu(op, a, b):
+            pass
+      check:
+        type: function
+        language: python
+        gates: [not_, and_, or_, xor_]
+        cases:
+          - call: "alu('add', [0, 0, 1, 1], [0, 1, 0, 1])"
+            expect: "[[1, 0, 0, 0], 0, 0]"
+          - call: "alu('add', [1, 0, 0, 1], [1, 0, 0, 0])"
+            expect: "[[0, 0, 0, 1], 0, 1]"
+          - call: "alu('add', [1, 0, 0, 0], [1, 0, 0, 0])"
+            expect: "[[0, 0, 0, 0], 1, 1]"
+          - call: "alu('add', [1, 1, 1, 1], [0, 0, 0, 1])"
+            expect: "[[0, 0, 0, 0], 1, 1]"
+          - call: "alu('sub', [0, 1, 0, 1], [0, 0, 1, 1])"
+            expect: "[[0, 0, 1, 0], 0, 0]"
+          - call: "alu('sub', [0, 0, 1, 1], [0, 1, 0, 1])"
+            expect: "[[1, 1, 1, 0], 0, 1]"
+          - call: "alu('sub', [0, 1, 1, 0], [0, 1, 1, 0])"
+            expect: "[[0, 0, 0, 0], 1, 0]"
+          - call: "alu('sub', [0, 0, 0, 0], [0, 0, 0, 1])"
+            expect: "[[1, 1, 1, 1], 0, 1]"
+          - call: "alu('sub', [1, 1, 1, 1], [0, 0, 0, 0])"
+            expect: "[[1, 1, 1, 1], 0, 0]"
+          - call: "alu('and', [1, 1, 0, 0], [1, 0, 1, 0])"
+            expect: "[[1, 0, 0, 0], 0, 0]"
+          - call: "alu('and', [0, 1, 0, 1], [1, 0, 1, 0])"
+            expect: "[[0, 0, 0, 0], 1, 0]"
+          - call: "alu('or', [1, 1, 0, 0], [1, 0, 1, 0])"
+            expect: "[[1, 1, 1, 0], 0, 0]"
+          - call: "alu('or', [0, 0, 0, 0], [0, 0, 0, 0])"
+            expect: "[[0, 0, 0, 0], 1, 0]"
+          - call: "alu('xor', [1, 1, 0, 0], [1, 0, 1, 0])"
+            expect: "[[0, 1, 1, 0], 0, 0]"
+          - call: "alu('xor', [0, 1, 1, 1], [0, 1, 1, 1])"
+            expect: "[[0, 0, 0, 0], 1, 0]"
+      feedback:
+        - when: { same_as: "# Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.\ndef not_(a):\n    return 0 if a == 1 else 1\n\ndef and_(a, b):\n    return 1 if a == 1 and b == 1 else 0\n\ndef or_(a, b):\n    return 1 if a == 1 or b == 1 else 0\n\ndef xor_(a, b):\n    return 1 if a != b else 0\n\ndef half_adder(a, b):\n    return [xor_(a, b), and_(a, b)]\n\ndef full_adder(a, b, c_in):\n    s1, c1 = half_adder(a, b)\n    s, c2 = half_adder(s1, c_in)\n    return [s, or_(c1, c2)]\n\ndef add4c(a, b, c):\n    s = [0, 0, 0, 0]\n    for i in range(3, -1, -1):\n        s[i], c = full_adder(a[i], b[i], c)\n    return [s, c]\n\ndef alu(op, a, b):\n    if op == 'add' or op == 'sub':\n        sub = 1 if op == 'sub' else 0\n        r, c = add4c(a, [xor_(bit, sub) for bit in b], sub)\n        cf = c\n    else:\n        r = []\n        for i in range(4):\n            if op == 'and':\n                r.append(and_(a[i], b[i]))\n            elif op == 'or':\n                r.append(or_(a[i], b[i]))\n            else:\n                r.append(xor_(a[i], b[i]))\n        cf = 0\n    zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))\n    return [r, zf, cf]\n" }
+          say: "Bei `sub` ist CF 1, wenn geborgt werden musste, und das ist genau dann, wenn aus dem Addierer **kein** Übertrag kommt. Dreh den Übertrag bei `sub` um."
+      hint:
+        - "Fang mit `'and'`, `'or'` und `'xor'` an: ein Gatter für jeden Index, CF ist dabei 0. ZF ist 1, wenn kein Bit von `r` 1 ist: ein NICHT hinter drei ODER, die alle vier Bits verbinden."
+        - "Für `'add'` und `'sub'` brauchst du deinen Addierer mit einem Übertrag am Anfang: Kopier `add4` und gib ihm einen dritten Parameter `c` statt der festen 0. Bei `'sub'` drehst du jedes Bit von `b` mit `xor_(bit, 1)` um und fängst mit dem Übertrag 1 an."
+        - "CF ist bei `'add'` der Übertrag aus dem Addierer und bei `'sub'` sein Gegenteil. `xor_(c, sub)` mit `sub` = 1 bei `'sub'` und 0 bei `'add'` erledigt beides."
+      solution: |
+        ```python
+        # Die Gatter sind schon da. Deine Funktion gibt ihre Eingänge nur an sie weiter.
+        def not_(a):
+            return 0 if a == 1 else 1
+
+        def and_(a, b):
+            return 1 if a == 1 and b == 1 else 0
+
+        def or_(a, b):
+            return 1 if a == 1 or b == 1 else 0
+
+        def xor_(a, b):
+            return 1 if a != b else 0
+
+        def half_adder(a, b):
+            return [xor_(a, b), and_(a, b)]
+
+        def full_adder(a, b, c_in):
+            s1, c1 = half_adder(a, b)
+            s, c2 = half_adder(s1, c_in)
+            return [s, or_(c1, c2)]
+
+        def add4c(a, b, c):
+            s = [0, 0, 0, 0]
+            for i in range(3, -1, -1):
+                s[i], c = full_adder(a[i], b[i], c)
+            return [s, c]
+
+        def alu(op, a, b):
+            if op == 'add' or op == 'sub':
+                sub = 1 if op == 'sub' else 0
+                r, c = add4c(a, [xor_(bit, sub) for bit in b], sub)
+                cf = xor_(c, sub)
+            else:
+                r = []
+                for i in range(4):
+                    if op == 'and':
+                        r.append(and_(a[i], b[i]))
+                    elif op == 'or':
+                        r.append(or_(a[i], b[i]))
+                    else:
+                        r.append(xor_(a[i], b[i]))
+                cf = 0
+            zf = not_(or_(or_(r[0], r[1]), or_(r[2], r[3])))
+            return [r, zf, cf]
+        ```

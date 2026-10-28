@@ -133,6 +133,84 @@ examples:
     javascript:
       pass:
         - answer: "const DIGITS = '0123456789abcdef';\n\nfunction convert(text, source, target) {\n  let n = 0;\n  for (const digit of text) {\n    n = n * source + DIGITS.indexOf(digit);\n  }\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % target] + result;\n    n = Math.floor(n / target);\n  }\n  return result;\n}\n"
+  add-digits:
+    pass:
+      - answer: "def add_digits(a, b, carry)\n  total = a + b + carry\n  [total % 2, total / 2]\nend\n"
+    fail:
+      - answer: "def add_digits(a, b, carry)\n  total = a + b\n  [total % 2, total / 2]\nend\n"
+        say: "zählt mit"
+    python:
+      pass:
+        - answer: "def add_digits(a, b, carry):\n    total = a + b + carry\n    return total % 2, total // 2\n"
+      fail:
+        - answer: "def add_digits(a, b, carry):\n    total = a + b + carry\n    return total // 2, total % 2\n"
+          say: "Erst das Bit"
+    javascript:
+      pass:
+        - answer: "function addDigits(a, b, carry) {\n  const total = a + b + carry;\n  return [total % 2, Math.floor(total / 2)];\n}\n"
+      fail:
+        - answer: "function addDigits(a, b, carry) {\n  const total = a + b;\n  return [total % 2, Math.floor(total / 2)];\n}\n"
+          say: "zählt mit"
+  add-binary:
+    pass:
+      - answer: "def add_binary(a, b)\n  result = ''\n  carry = 0\n  (a.length - 1).downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result = '1' + result if carry == 1\n  result\nend\n"
+    fail:
+      - answer: "def add_binary(a, b)\n  result = ''\n  carry = 0\n  (a.length - 1).downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result\nend\n"
+        say: "keine Stelle mehr"
+      - answer: "def add_binary(a, b)\n  (a.to_i(2) + b.to_i(2)).to_s(2).rjust(a.size, '0')\nend\n"
+        say: "String#to_i"
+    python:
+      pass:
+        - answer: "def add_binary(a, b):\n    result = ''\n    carry = 0\n    for i in range(len(a) - 1, -1, -1):\n        total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    if carry == 1:\n        result = '1' + result\n    return result\n"
+      fail:
+        - answer: "def add_binary(a, b):\n    result = ''\n    for i in range(len(a) - 1, -1, -1):\n        result = ('0' if a[i] == b[i] else '1') + result\n    return result\n"
+          say: "jede Stelle für sich"
+        - answer: "def add_binary(a, b):\n    return bin(int(a, 2) + int(b, 2))[2:].zfill(len(a))\n"
+          say: "benutzt"
+    javascript:
+      pass:
+        - answer: "function addBinary(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = a.length - 1; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  if (carry === 1) {\n    result = '1' + result;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function addBinary(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = a.length - 1; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  return result;\n}\n"
+          say: "keine Stelle mehr"
+        - answer: "function addBinary(a, b) {\n  return (BigInt('0b' + a) + BigInt('0b' + b)).toString(2).padStart(a.length, '0');\n}\n"
+          say: "BigInt"
+  add-byte:
+    pass:
+      - answer: "def add_byte(a, b)\n  result = ''\n  carry = 0\n  7.downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  [result, carry == 1]\nend\n"
+    fail:
+      - answer: "def add_byte(a, b)\n  result = ''\n  carry = 0\n  7.downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result = '1' + result if carry == 1\n  [result, carry == 1]\nend\n"
+        say: "acht Bits"
+    python:
+      pass:
+        - answer: "def add_byte(a, b):\n    result = ''\n    carry = 0\n    for i in range(7, -1, -1):\n        total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    return result, carry == 1\n"
+      fail:
+        - answer: "def add_byte(a, b):\n    result = ''\n    carry = 0\n    for i in range(7, -1, -1):\n        total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    if carry == 1:\n        result = '1' + result\n    return result, carry == 1\n"
+          say: "acht Bits"
+    javascript:
+      pass:
+        - answer: "function addByte(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = 7; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  return [result, carry === 1];\n}\n"
+      fail:
+        - answer: "function addByte(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = 7; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  if (carry === 1) {\n    result = '1' + result;\n  }\n  return [result, carry === 1];\n}\n"
+          say: "acht Bits"
+  negate:
+    pass:
+      - answer: "def negate(bits)\n  flipped = ''\n  bits.each_char do |bit|\n    flipped += (bit == '1' ? '0' : '1')\n  end\n  result = ''\n  carry = 1\n  7.downto(0) do |i|\n    total = (flipped[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result\nend\n"
+    fail:
+      - answer: "def negate(bits)\n  result = ''\n  bits.each_char do |bit|\n    result += (bit == '1' ? '0' : '1')\n  end\n  result\nend\n"
+        say: "Es fehlt die 1"
+    python:
+      pass:
+        - answer: "def negate(bits):\n    flipped = ''\n    for bit in bits:\n        flipped += '0' if bit == '1' else '1'\n    result = ''\n    carry = 1\n    for i in range(7, -1, -1):\n        total = (1 if flipped[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    return result\n"
+      fail:
+        - answer: "def negate(bits):\n    result = ''\n    for bit in bits:\n        result += '0' if bit == '1' else '1'\n    return result\n"
+          say: "Es fehlt die 1"
+    javascript:
+      pass:
+        - answer: "function negate(bits) {\n  let flipped = '';\n  for (const bit of bits) {\n    flipped += bit === '1' ? '0' : '1';\n  }\n  let result = '';\n  let carry = 1;\n  for (let i = 7; i >= 0; i--) {\n    const total = (flipped[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "function negate(bits) {\n  let result = '';\n  for (const bit of bits) {\n    result += bit === '1' ? '0' : '1';\n  }\n  return result;\n}\n"
+          say: "Es fehlt die 1"
   roman:
     pass:
       - answer: "SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]\n\ndef roman(n)\n  result = ''\n  SYMBOLS.each do |value, symbol|\n    while n >= value\n      result += symbol\n      n -= value\n    end\n  end\n  result\nend\n"

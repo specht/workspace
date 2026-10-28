@@ -28,6 +28,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1646 -->
+<!-- part: leibniz -->
+### Gottfried Wilhelm Leibniz
+
+<div class='person'>
+<img src='leibniz.webp' alt='Gottfried Wilhelm Leibniz um 1695, Gemälde von Christoph Bernhard Francke: ein Mann mit einer langen, dunklen Lockenperücke, einem weißen Halstuch und einem braunen Samtmantel.'>
+<p><strong>Gottfried Wilhelm Leibniz</strong> (1646–1716), deutscher Philosoph und Mathematiker, ab 1676 Bibliothekar und Hofrat in Hannover. 1673 zeigte er der Royal Society in London das hölzerne Modell einer Rechenmaschine. Sie war die erste, die alle vier Grundrechenarten konnte, und rechnete noch mit Zehnerziffern. Die einzige erhaltene steht heute in der Landesbibliothek in Hannover.</p>
+<p>1679 schrieb er zum ersten Mal auf, wie man nur mit 0 und 1 zählt und rechnet; gedruckt erschien es 1703 als <em>Explication de l'Arithmétique Binaire</em>. Darin deutet er auch die Zeichen des I Ging, Figuren aus sechs ganzen und gebrochenen Strichen, als Zahlen im Zweiersystem: Er hatte seine Art zu zählen dem Jesuiten Joachim Bouvet in Peking geschickt, und Bouvet erkannte darin diese alten chinesischen Figuren wieder. Wie in seinen Beispielen addierst du in den Katas zu Bits Stelle für Stelle mit Übertrag.</p>
+<p class='person-credit'>Gemälde: Christoph Bernhard Francke, um 1695, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Christoph_Bernhard_Francke_-_Bildnis_des_Philosophen_Leibniz_(ca._1695).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1707 -->
 <!-- part: euler -->
 ### Leonhard Euler
@@ -214,6 +226,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='shannon.webp' alt='Schwarzweißporträt von Claude Shannon als junger Mann in Anzug und Krawatte.'>
 <p><strong>Claude Shannon</strong> (1916–2001). Wie viele Bits eine Nachricht mindestens braucht, rechnete er 1948 aus und gründete damit die Informationstheorie; das Wort <em>Bit</em> machte er bekannt. Er fuhr Einrad, jonglierte und baute die Maus Theseus, die selbst lernte, durch ein Labyrinth zu finden.</p>
+<p>Schon als Student am MIT zeigte er 1937 in seiner Masterarbeit, dass sich Schaltungen aus Relais mit der Algebra von George Boole beschreiben und vereinfachen lassen, mit 1 und 0 für einen Kontakt, der geschlossen oder offen ist. Damit begann die Theorie der digitalen Schaltungen.</p>
 <p>Einen Code mit so wenigen Bits wie möglich suchten er und Robert Fano fast gleichzeitig, jeder für sich. Der Shannon-Fano-Code kam nah heran, aber nicht immer ganz.</p>
 <p>In derselben Arbeit von 1948 ließ er englische Texte Wort für Wort entstehen, jedes Wort nach dem vorigen aus einem Buch gezogen: ein winziges Sprachmodell, von Hand.</p>
 <p class='person-credit'>Foto: Tekniska museet, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:C.E._Shannon._Tekniska_museet_43069_(cropped).jpg'>Wikimedia Commons</a>)</p>

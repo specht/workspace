@@ -47,9 +47,18 @@ module PictureRights
         markdown[0, offset].scan(/<!--\s*part:\s*([a-z0-9-]+)\s*-->/).flatten.last
     end
 
-    # [{ file:, pages: [{ url:, title: }], credit:, credit_html:, box: }] for
-    # every picture that needs permission, found in the Markdown files below
-    # root. box is :person, :figure or :book.
+    # Whether the person whose part begins after offset has no published
+    # birth year: the Personen page orders by <!-- year: … --> and notes
+    # <!-- birth year not published; … --> above such a part
+    def self.birth_year_unknown?(markdown, offset)
+        before = markdown[0, offset]
+        before = before[(before.rindex('<!-- /part -->') || 0)..]
+        before.match?(/<!--\s*birth year not published/i)
+    end
+
+    # [{ file:, pages: [{ url:, title: }], credit:, credit_html:, box:,
+    # ask_birth_year: }] for every picture that needs permission, found in
+    # the Markdown files below root. box is :person, :figure or :book.
     def self.scan(root = ROOT)
         found = {}
         Dir.glob(File.join(root, '**', '*.md')).sort.each do |md|
@@ -84,7 +93,8 @@ module PictureRights
                     file = File.join(File.dirname(md.delete_prefix("#{root}/")), src)
                     part = part_at(markdown, match.begin(0))
                     link = page[:url] == '/reference/personen' && part ? "#{page[:url]}##{part}" : page[:url]
-                    entry = found[file] ||= { :file => file, :pages => [], :credit => credit, :credit_html => credit_html, :box => box }
+                    entry = found[file] ||= { :file => file, :pages => [], :credit => credit, :credit_html => credit_html, :box => box, :ask_birth_year => false }
+                    entry[:ask_birth_year] ||= box == :person && birth_year_unknown?(markdown, match.begin(0))
                     entry[:pages] << page.merge(:url => link) unless entry[:pages].any? { |p| p[:url] == link }
                 end
             end
@@ -185,14 +195,25 @@ module PictureRights
             :body => <<~'TEXT',
                 <%= r['greeting'] || 'Dear Sir or Madam' %>,
 
-                I teach computer science<%= s[:school].empty? ? '' : " at #{s[:school]}" %><%= s[:city].empty? ? '' : " in #{s[:city]}, Germany" %> and run the Hackschule Workspace, a free, non-commercial learning platform for school students (<%= root %>). There are no ads and no fees; students write programs in their browser and read short portraits of the people behind the ideas they learn.
+                I teach computer science<%= s[:school].empty? ? '' : " at #{s[:school]}" %><%= s[:city].empty? ? '' : " in #{s[:city]}, Germany" %> and run the Hackschule Workspace, a free, non-commercial learning platform for school students. There are no ads and no fees; students write programs in their browser and read short portraits of the people behind the ideas they learn.<% unless root.empty? %> You can see it here:
+
+                <%= root %><% end %>
 
                 On <%= pages.size == 1 ? 'this page' : 'these pages' %> we would like to show <%= r['picture_en'] || 'your picture' %><%= r['context_en'] ? ", #{r['context_en']}" : '' %>:
-                <%= pages.join("\n") %>
 
-                The picture comes from <%= r['source'] %>. We would credit it as »<%= credit %>« with a link to the source, or however you prefer.
+                <%= pages.join("\n\n") %>
+
+                <% if r['source'].to_s.start_with?('http') %>The picture comes from this page:
+
+                <%= r['source'] %>
+
+                We would credit it as<% else %>The picture comes from <%= r['source'] %>. We would credit it as<% end %> »<%= credit %>« with a link to the source, or however you prefer.
 
                 May we use it there? Until we hear from you, it is not shown on the site. If you would prefer another picture, we would gladly use one you send us instead. And if you would rather we didn't use one at all, a short reply is all it takes.
+                <% if picture[:ask_birth_year] -%>
+
+                One more question, only if you are happy to answer it: the portraits on our page give the year of birth next to the name and are ordered by it, and we could not find yours. Would you tell us the year, and may we show it there? If you would rather not have it shown, we would use it only for the order, or leave it out altogether, whichever you prefer.
+                <% end -%>
 
                 Thank you very much and kind regards,
                 <%= [s[:name], [s[:role], s[:school]].reject(&:empty?).join(', '), s[:email]].reject(&:empty?).join("\n") %>
@@ -203,14 +224,25 @@ module PictureRights
             :body => <<~'TEXT',
                 <%= r['greeting'] || 'Sehr geehrte Damen und Herren' %>,
 
-                ich unterrichte Informatik<%= s[:school].empty? ? '' : " an der Schule #{s[:school]}" %><%= s[:city].empty? ? '' : " in #{s[:city]}" %> und betreibe den Hackschule Workspace, eine kostenlose, nicht kommerzielle Lernplattform für Schülerinnen und Schüler (<%= root %>). Es gibt keine Werbung und keine Gebühren; die Schülerinnen und Schüler programmieren im Browser und lesen kurze Porträts der Menschen hinter dem, was sie lernen.
+                ich unterrichte Informatik<%= s[:school].empty? ? '' : " an der Schule #{s[:school]}" %><%= s[:city].empty? ? '' : " in #{s[:city]}" %> und betreibe den Hackschule Workspace, eine kostenlose, nicht kommerzielle Lernplattform für Schülerinnen und Schüler. Es gibt keine Werbung und keine Gebühren; die Schülerinnen und Schüler programmieren im Browser und lesen kurze Porträts der Menschen hinter dem, was sie lernen.<% unless root.empty? %> Sie finden sie hier:
+
+                <%= root %><% end %>
 
                 Auf <%= pages.size == 1 ? 'dieser Seite' : 'diesen Seiten' %> würden wir gern <%= r['picture_de'] || 'Ihr Bild' %> zeigen<%= r['context_de'] ? ", #{r['context_de']}" : '' %>:
-                <%= pages.join("\n") %>
 
-                Das Bild stammt von <%= r['source'] %>. Wir würden es »<%= credit %>« nennen, mit einem Link zur Quelle, oder so, wie Sie es wünschen.
+                <%= pages.join("\n\n") %>
+
+                <% if r['source'].to_s.start_with?('http') %>Das Bild stammt von dieser Seite:
+
+                <%= r['source'] %>
+
+                Wir würden es<% else %>Das Bild stammt von <%= r['source'] %>. Wir würden es<% end %> »<%= credit %>« nennen, mit einem Link zur Quelle, oder so, wie Sie es wünschen.
 
                 Dürfen wir es dort zeigen? Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen. Wenn Ihnen ein anderes Bild lieber ist, zeigen wir gern eines, das Sie uns schicken. Und wenn Sie gar keines zeigen möchten, genügt eine kurze Antwort.
+                <% if picture[:ask_birth_year] -%>
+
+                Noch eine Frage, nur wenn Sie sie gern beantworten: Die Porträts auf unserer Seite nennen das Geburtsjahr neben dem Namen und sind danach geordnet, und Ihres haben wir nicht gefunden. Würden Sie es uns nennen, und dürfen wir es dort zeigen? Wenn es nicht auf der Seite stehen soll, verwenden wir es nur für die Reihenfolge oder lassen es ganz weg, wie es Ihnen lieber ist.
+                <% end -%>
 
                 Vielen Dank und freundliche Grüße
                 <%= [s[:name], [s[:role], s[:school]].reject(&:empty?).join(', '), s[:email]].reject(&:empty?).join("\n") %>
@@ -226,7 +258,7 @@ module PictureRights
         pages = picture[:pages].map { |p| "#{root}#{p[:url]}" }
         credit = picture[:credit] || r['credit'] || ''
         b = binding
-        LETTERS[language].map { |_, template| ERB.new(template).result(b).strip }
+        LETTERS[language].map { |_, template| ERB.new(template, trim_mode: '-').result(b).strip }
     end
 
     def self.h(value)

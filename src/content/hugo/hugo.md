@@ -7,7 +7,7 @@ duration: 2 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Inhalt und Layout getrennt)"
 topics: [webseiten]
 requires: [static-website]
-reference: [yaml, html, css]
+reference: [yaml, html, css, webspace]
 </div>
 
 <div
@@ -588,7 +588,7 @@ _include(workspace#live-apps)
 
 ### Veröffentlichen
 
-Den Inhalt von `public` kopierst du auf deine Hackschule-Subdomain, genau wie eine selbst geschriebene Website. Wie du eine Subdomain bekommst und einrichtest, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain); hochladen geht dann mit `rsync`, von `public` aus. Ersetze `max` und `cobolultras` durch deinen Benutzernamen und deine Subdomain:
+Den Inhalt von `public` kopierst du auf deine Hackschule-Subdomain, genau wie eine selbst geschriebene Website. Wie du eine Subdomain bekommst und einrichtest, steht in der [Anleitung zum eigenen Webspace](/reference/webspace); hochladen geht dann mit `rsync`, von `public` aus. Ersetze `max` und `cobolultras` durch deinen Benutzernamen und deine Subdomain:
 
 ```bash
 rsync -avz public/ max@cobolultras.hackschule.de:cobolultras

@@ -32,6 +32,7 @@ const INPUTS = [
   'src/static/include/meeting_point.js', 'src/static/include/meeting_status.js', 'src/static/include/class_meeting.js',
   'src/ruby/include/student_home.rb', 'src/static/lehrplan.html', 'src/ruby/include/curriculum_graph.rb', 'src/ruby/include/curriculum_overview.rb',
   'src/content/static-website/lehrkraft.md',
+  'src/ruby/include/git_overview.rb', 'src/ruby/include/git_server.rb',
 ];
 const taken: string[] = [];
 
@@ -153,11 +154,27 @@ async function dress(page: Page, zoom = 1) {
     const nodes: Text[] = [];
     while (walker.nextNode()) nodes.push(walker.currentNode as Text);
     nodes.forEach((n) => { const t = fix(n.data); if (t !== n.data) n.data = t; });
+    // the search fields (searchable_select) show their choice as a value
+    document.querySelectorAll<HTMLInputElement>('input[type=text]').forEach((i) => { const t = fix(i.value); if (t !== i.value) i.value = t; });
     document.documentElement.style.zoom = String(z);
   }, [NAMES, zoom] as const);
   // the E2E teacher has no school and its group comes from a file: notes a
   // teacher of a school with a group of its own never sees
-  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; } .class-group-new-note, .class-group-files { display: none !important; }' });
+  await page.addStyleTag({ content: 'footer { display: none !important; } .class-board-intro { visibility: hidden; } .class-group-new-note, .class-group-files { display: none !important; }'
+    // whoever waits for a code, with an address: never on a picture (the
+    // teacher's page drops the codes, see quietCodes; this is a second guard)
+    + ' .class-login-codes { display: none !important; }' });
+}
+
+// No address of a test account on a picture: the names are dressed, an
+// address would give the accounts away (and is a real one on another
+// installation). Fails the run instead of writing the picture.
+async function noAddresses(page: Page, name: string) {
+  for (const frame of page.frames()) {
+    const text = await frame.evaluate(() => document.body ? document.body.innerText : '').catch(() => '');
+    const found = text.match(/[\w.+-]+@example\.\w+/);
+    expect(found, `${name}: an address on the page (${found?.[0]})`).toBeNull();
+  }
 }
 
 async function shoot(page: Page, name: string, anchor: string | null, out: string) {
@@ -168,6 +185,7 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
     }, anchor);
   }
   await page.waitForTimeout(300);
+  await noAddresses(page, name);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png });
   execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
@@ -179,6 +197,10 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
 // what one sentence of the guide is about rather than a whole screen.
 // every: each selector counts with all its matches, not only the first
 async function shootBox(page: Page, name: string, selectors: string[], out: string, room = { top: 16, bottom: 16 }, maxHeight = 1100, every = false) {
+  // settle first, then measure: what moves the page after the measuring
+  // (a line arriving over the WebSocket) would shift the picture's box
+  await page.waitForTimeout(300);
+  await noAddresses(page, name);
   const box = await page.evaluate(([sels, r, max, all]) => {
     const rects = (sels as string[]).flatMap((s) => {
       const found = all ? Array.from(document.querySelectorAll(s)) : [document.querySelector(s)].filter(Boolean);
@@ -192,7 +214,6 @@ async function shootBox(page: Page, name: string, selectors: string[], out: stri
     const right = Math.min(document.documentElement.clientWidth, Math.max(main.right, ...rects.map((b) => b.right)) + 8);
     return { x: left, y: Math.max(0, top), width: right - left, height: Math.min(bottom - top, max as number) };
   }, [selectors, room, maxHeight, every] as const);
-  await page.waitForTimeout(300);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png, fullPage: true, clip: box });
   execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
@@ -217,6 +238,11 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
   // point, and the pin unless the activity was pinned before
   let meetingSet = false;
   let pinnedHere = false;
+  // the Git server's picture: the group's key mode before, and whether the
+  // class quiz's repository was made for the picture
+  let gitKeysBefore: string | null = null;
+  let gitCreated = false;
+  let teacher: Page | null = null;
   const page2x = async (email: string) => {
     const p = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
     await loginAsE2eUser(p, email, testInfo);
@@ -228,6 +254,13 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       touched.add(`${email} static-website/${task}`);
       return result.status;
     };
+    // answers a run before left (its cleanup did not get through) would
+    // add to the wrong attempts on the board: away with them first
+    for (const email of Object.keys(STAGE)) {
+      for (const task of [...TASKS.map(([t]) => t), 'abgabe']) {
+        await (await as(email)).request.post('/api/task/delete', { data: { task: `static-website/${task}` } });
+      }
+    }
     for (const [email, stage] of Object.entries(STAGE)) {
       if (stage === 0) continue;
       writeStage(email, stage);
@@ -250,8 +283,35 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     const handIn = await (await workspace.request.post('/api/task/check', { data: { task: 'static-website/abgabe', answer: '' } })).json();
     expect(handIn.status, handIn.message).toBe('sent');
 
-    const teacher = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
+    teacher = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
     await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+    // no meeting point on the first picture, also when a run before ended
+    // without its cleanup
+    expect((await teacher.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: '' } })).ok()).toBeTruthy();
+    // The class page's WebSocket, for every picture of it: the codes others
+    // wait for are dropped (other tests leave login requests of the test
+    // accounts behind for some minutes: the panel with their addresses came
+    // up, the projector's example rows were drawn over, and a panel arriving
+    // late moved the board out of a picture's box); while loads is set, each
+    // Workspace gets a load of its own (LOADS) and the server SERVER's figures
+    let loads: string[] | null = null;
+    await teacher.routeWebSocket(/\/ws$/, (ws) => {
+      const server = ws.connectToServer();
+      ws.onMessage((message) => server.send(message));
+      server.onMessage((message) => {
+        let data;
+        try { data = JSON.parse(String(message)); } catch { ws.send(message); return; }
+        if (data.action === 'login_codes') return;
+        if (loads && data.stats) {
+          loads.forEach((tag, i) => {
+            const [cpu, mem] = LOADS[i % LOADS.length];
+            data.stats[tag] = { ...(data.stats[tag] || {}), stats: { CPUPerc: cpu.toFixed(2) + '%', MemUsage: mem.toFixed(1) + 'MiB / 4GiB' } };
+          });
+        }
+        if (loads && data.server_stats) data.server_stats = { ...data.server_stats, ...SERVER };
+        ws.send(JSON.stringify(data));
+      });
+    });
     await teacher.route('**/api/class/last_active', async (route) => {
       const now = Math.floor(Date.now() / 1000);
       const last = Object.fromEntries(Object.entries(LAST).map(([email, minutes]) => [email, now - minutes * 60 - 20]));
@@ -276,7 +336,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await expect(waiting.locator('button.meeting-away')).toHaveCount(1);
     await teacher.waitForTimeout(500);
     await dress(teacher);
-    await shootBox(teacher, 'klasse-treffpunkt', ['.class-meeting-control', '.class-meeting-status', 'table.class-board thead', 'table.class-board tbody tr:nth-child(4)'], out);
+    await shootBox(teacher, 'klasse-treffpunkt', ['.class-toolbar', '.class-meeting-status', 'table.class-board thead', 'table.class-board tbody tr:nth-child(4)'], out);
 
     // ... and what a student sees who is not there yet: the band after the task
     const mats = await page2x('e2e-3@example.com');
@@ -307,29 +367,14 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     // The class at work: each Workspace with a load of its own (LOADS)
     await teacher.goto('/klasse?group=E2E&tab=lernende');
     const tags = await teacher.locator('.class-ws-status').evaluateAll((cells) => cells.map((td) => (td as HTMLElement).dataset.fsTag!));
-    await teacher.routeWebSocket(/\/ws$/, (ws) => {
-      const server = ws.connectToServer();
-      ws.onMessage((message) => server.send(message));
-      server.onMessage((message) => {
-        let data;
-        try { data = JSON.parse(String(message)); } catch { ws.send(message); return; }
-        if (data.stats) {
-          tags.forEach((tag, i) => {
-            const [cpu, mem] = LOADS[i % LOADS.length];
-            data.stats[tag] = { ...(data.stats[tag] || {}), stats: { CPUPerc: cpu.toFixed(2) + '%', MemUsage: mem.toFixed(1) + 'MiB / 4GiB' } };
-          });
-        }
-        if (data.server_stats) data.server_stats = { ...data.server_stats, ...SERVER };
-        ws.send(JSON.stringify(data));
-      });
-    });
+    loads = tags;
     await teacher.reload();
     await expect(teacher.locator('.class-server-line')).toBeVisible({ timeout: 20_000 });
     await expect(teacher.locator('.class-people-table tr.class-ws-active')).toHaveCount(tags.filter((_, i) => LOADS[i % LOADS.length][0] >= 1).length, { timeout: 15_000 });
     await teacher.waitForTimeout(1500);
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-lernende', '.class-board-select', out);
-    await teacher.unrouteAll({ behavior: 'ignoreErrors' });
+    loads = null;
 
     await teacher.goto('/klasse?group=E2E&activity=static-website');
     await dress(teacher);
@@ -346,6 +391,33 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await teacher.goto('/klasse?group=E2E&tab=einstellungen');
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-einstellungen', '.class-board-select', out);
+
+    // Every repository of the teacher's groups (/git): the class quiz on the
+    // Workspace's Git server with automatic keys and a round pushed from
+    // Jonas's Workspace; only with GIT_SERVER, and only if the group has no
+    // address of its own for the quiz (taken back at the end)
+    const repos = teacher.locator('.class-repos');
+    gitKeysBefore = await repos.getAttribute('data-git-keys');
+    const quizBefore: string = JSON.parse((await repos.getAttribute('data-repos')) || '[]')
+      .find((entry: any) => entry.slug === 'class-quiz')?.address || '';
+    if (gitKeysBefore !== null && (quizBefore === '' || quizBefore.startsWith('git@git.workspace:'))) {
+      expect((await teacher.request.post('/api/git/set_keys', { data: { group: 'E2E', mode: 'auto' } })).ok()).toBeTruthy();
+      const created = await (await teacher.request.post('/api/git/create_repo', { data: { group: 'E2E', slug: 'class-quiz' } })).json();
+      expect(created.ok).toBe(true);
+      gitCreated = quizBefore === '';
+      const push = await container.exec(
+        `rm -rf /tmp/guide-quiz && git clone -q ${created.address} /tmp/guide-quiz && cd /tmp/guide-quiz `
+        + `&& git config user.name "E2E Worker 0" && git config user.email e2e-0@example.com `
+        + `&& printf '? Wie viele Bits hat ein Byte?\\n= 8\\n' > questions/bits.txt && echo questions/bits.txt >> rounds.txt `
+        + `&& git add -A && git commit -qm "Runde über Bits" && git push -q`,
+        { workdir: '/workspace', timeoutMs: 60_000 },
+      );
+      expect(push.exitCode, `${push.stdout}\n${push.stderr}`).toBe(0);
+      await teacher.goto('/git');
+      await expect(teacher.locator('table.git-overview .git-overview-author', { hasText: 'E2E Worker 0' })).toHaveCount(1);
+      await dress(teacher);
+      await shootBox(teacher, 'git-uebersicht', ['.git-overview-page h1', 'table.git-overview'], out, { top: 16, bottom: 24 });
+    }
 
     // What a pinned activity looks like for the class: at the top of the
     // front page (pinned only for the picture, unless it was before)
@@ -410,9 +482,17 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       inputs: INPUTS, hash: inputsHash(), pictures: [...taken].sort(),
     }, null, 2) + '\n');
   } finally {
-    const cleaner = await as('e2e-teacher@example.com');
+    // the development site restarts when its code changes: wait for it, and
+    // clean up with the pages already logged in where there are some
+    for (let i = 0; i < 30 && (await workspace.request.get('/').then((r) => r.status()).catch(() => 0)) !== 200; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+    const cleaner = teacher ?? await as('e2e-teacher@example.com');
     if (meetingSet) await cleaner.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: '' } });
     if (pinnedHere) await cleaner.request.post('/api/class/unpin', { data: { group: 'E2E', slug: 'static-website' } });
+    if (gitCreated) await cleaner.request.post('/api/git/delete_repo', { data: { group: 'E2E', slug: 'class-quiz' } });
+    if (gitKeysBefore && gitKeysBefore !== 'auto') await cleaner.request.post('/api/git/set_keys', { data: { group: 'E2E', mode: gitKeysBefore } });
+    await container.exec('rm -rf /tmp/guide-quiz', { workdir: '/workspace' }).catch(() => {});
     for (const key of touched) {
       const [email, task] = key.split(' ');
       await (await as(email)).request.post('/api/task/delete', { data: { task } });

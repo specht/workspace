@@ -6,7 +6,7 @@ language: HTML
 duration: 2 bis 3 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets)"
 topics: [webseiten]
-reference: [workspace, html, css, layout, shower]
+reference: [workspace, html, css, layout, shower, webspace]
 template: https://git.nhcham.org/specht/shower.js.git
 template_name: der shower.js-Vorlage
 </div>
@@ -151,7 +151,7 @@ _task(file-adresse)
 
 _include(workspace#live-apps)
 
-Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Hackschule. <a href="/custom-subdomain">Hier erfährst du, wie das geht.</a>
+Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Hackschule. <a href="/reference/webspace">Hier erfährst du, wie das geht.</a>
 
 ## Abgeben
 

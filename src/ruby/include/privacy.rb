@@ -174,8 +174,17 @@ module Privacy
                     'was jemand beigetragen hat, bleibt nach dem Löschen seines Kontos als Arbeit der Gruppe im Repository',
             },
             {
-                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt, ' \
-                    'einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
+                :data => 'Eigene Git-Repositorys zum Üben (höchstens zehn je Person): Dateien und die Geschichte der Commits, mit dem Namen und der ' \
+                    'E-Mail-Adresse, die jemand in seinen Commits angibt; dazu eine zufällige Kennung des Ordners am Konto',
+                :source => 'von der Person selbst angelegt und hochgeladen (git push)',
+                :categories => [:content],
+                :purpose => 'Üben mit Git',
+                :who => 'nur die Person selbst; die Administration sieht Name, Größe und Datum und kann ein Repository löschen, ohne hineinzusehen',
+                :how_long => 'bis die Person es löscht, bis zur Löschung des Kontos',
+            },
+            {
+                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt ' \
+                    'oder die Person es für ihre eigenen Repositorys wünscht, einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
                 :categories => [:account],
                 :purpose => 'Anmeldung am Git-Server des Workspace',
                 :who => 'Administration',
@@ -268,6 +277,16 @@ module Privacy
                 :purpose => 'Darstellung',
                 :who => 'die Person selbst',
                 :how_long => ACCOUNT_END,
+            },
+            {
+                :data => 'Bei Lehrkräften, freiwillig: Rückmeldungen zu einer Aktivität, die sie mit einer Gruppe gemacht haben ' \
+                    '(wie es lief, Dauer, Niveau, gewünschte Programmiersprachen, eigener Text, ob die Administration dazu schreiben darf), ' \
+                    'mit Gruppe, Aktivität und Datum; dazu, ob und bis wann die Frage danach ausgeblendet ist',
+                :source => 'von der Lehrkraft auf der Klassenseite eingetragen',
+                :categories => [:content],
+                :purpose => 'die Aktivitäten verbessern',
+                :who => 'die Lehrkraft selbst, Administration (die E-Mail-Adresse dazu nur, wenn die Lehrkraft es angekreuzt hat)',
+                :how_long => 'bis die Lehrkraft ihr Konto löscht oder es gelöscht wird; wird die Gruppe gelöscht, bleibt die Rückmeldung mit dem Namen der Gruppe',
             },
             {
                 :data => 'Workspace: eigene Dateien und Programme, Verlauf im Terminal, installierte Pakete und Erweiterungen',
@@ -603,6 +622,8 @@ module Privacy
             <p>
             Für den Unterricht, vor allem im Fach Informatik: Schülerinnen und Schüler programmieren in ihrem eigenen Workspace, bearbeiten Aufgaben,
             lassen sie automatisch prüfen und geben Ergebnisse ab; die Lehrkraft sieht den Stand der Lerngruppe und hilft bei Problemen.
+            Lehrkräfte können außerdem freiwillig zurückmelden, wie eine Aktivität in ihrer Gruppe lief; das dient nur dazu,
+            die Aktivitäten zu verbessern.
             Die Daten werden für keinen anderen Zweck verarbeitet: nicht für Noten, nicht für Werbung, nicht für Profile,
             nicht für Forschung, und sie werden an niemanden für eigene Zwecke weitergegeben.
             </p>

@@ -29,6 +29,16 @@ class AccountExportTest < Minitest::Test
         assert_equal '2026-10-18T12:00:00Z', data['exportiert']
     end
 
+    # A teacher's feedback on activities is part of what is stored about them.
+    def test_feedback_of_a_teacher_is_in_the_export
+        rows = { :user => { :email => 'lehrer@example.org' },
+                 :feedback => [{ :group => '9b', :activity => 'crypto', :overall => 'good', :languages => ['python'], :contact => true, :created_at => 5 }] }
+        data = JSON.parse(AccountExport.account_json(rows, :now => NOW))
+        assert_equal [{ 'group' => '9b', 'activity' => 'crypto', 'overall' => 'good', 'languages' => ['python'], 'contact' => true, 'created_at' => 5 }],
+            data['rueckmeldungen']
+        assert_equal [], JSON.parse(AccountExport.account_json({ :user => {} }, :now => NOW))['rueckmeldungen']
+    end
+
     def test_empty_account
         data = JSON.parse(AccountExport.account_json({}, :now => NOW))
         assert_equal [], data['aufgaben']

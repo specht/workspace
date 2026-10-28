@@ -27,6 +27,8 @@ class PictureRightsTest < Minitest::Test
         </div>
         <!-- /part -->
 
+        <!-- year: 1950 -->
+        <!-- birth year not published; placed by a degree -->
         <!-- part: pair -->
         ### Zwei
 
@@ -100,9 +102,37 @@ class PictureRightsTest < Minitest::Test
             assert_includes body, 'https://ws.example/neuron'
             assert_includes body, 'https://example.org/station'
             assert_includes body, '»Foto: Universität«'
+            # every address on a line of its own, easy to find and to click
+            assert_includes body, "Sie finden sie hier:\n\nhttps://ws.example\n\n"
+            assert_includes body, "von dieser Seite:\n\nhttps://example.org/station\n\nWir würden es"
+            # every address a paragraph of its own: an empty line before and after
+            body.split("\n\n").grep(/https?:/).each { |paragraph| assert_match(%r{\Ahttps?://\S+\z}, paragraph) }
             assert_includes body, 'Bis wir von Ihnen hören, ist es auf der Seite nicht zu sehen.'
             assert_includes body, 'zeigen wir gern eines, das Sie uns schicken'
             assert body.end_with?("N. N.\nLehrkraft, Schule X\nk@example.org")
+        end
+    end
+
+    def test_the_letter_asks_for_a_birth_year_not_published
+        with_content do |root|
+            found = PictureRights.scan(root)
+            two = found.find { |p| p[:file].end_with?('two.webp') }
+            hopper = found.find { |p| p[:file].end_with?('hopper.webp') }
+            assert two[:ask_birth_year]
+            refute hopper[:ask_birth_year]
+            sender = { :name => 'N. N.', :role => '', :school => '', :email => '', :city => '' }
+            _, asking = PictureRights.letter(two, {}, sender: sender, root: 'https://ws.example')
+            _, plain = PictureRights.letter(hopper, {}, sender: sender, root: 'https://ws.example')
+            assert_includes asking, "a short reply is all it takes.\n\nOne more question"
+            assert_includes asking, "whichever you prefer.\n\nThank you"
+            refute_includes plain, 'year of birth'
+            assert_includes asking, 'may we show it there?'
+            assert_includes plain, "a short reply is all it takes.\n\nThank you"
+            assert_includes plain, "You can see it here:\n\nhttps://ws.example\n\n"
+            plain.split("\n\n").grep(/https?:/).each { |paragraph| assert_match(%r{\Ahttps?://\S+\z}, paragraph) }
+            _, german = PictureRights.letter(two, { 'language' => 'de' }, sender: sender, root: 'https://ws.example')
+            assert_includes german, "genügt eine kurze Antwort.\n\nNoch eine Frage"
+            assert_includes german, "wie es Ihnen lieber ist.\n\nVielen Dank"
         end
     end
 

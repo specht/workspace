@@ -2,8 +2,8 @@
 image: teaser.webp:contain
 image_alt: "Ein ER-Diagramm mit den Tabellen continent, country und city und ihren Spalten"
 kind: grundlagen
-duration: 2 Doppelstunden
-curriculum: "Sek I: Datenbanken (Datensätze suchen); Oberstufe: Datenbanken und Datenschutz (ein relationales Datenbanksystem benutzen, einfache Abfragen mit SQL)"
+duration: 2 bis 3 Doppelstunden
+curriculum: "Sek I: Datenbanken (Datensätze suchen, einfügen, löschen, verändern); Oberstufe: Datenbanken und Datenschutz (ein relationales Datenbanksystem benutzen, einfache Abfragen mit SQL)"
 topics: [datenbanken-abfragen]
 age: Sek I
 language: SQL
@@ -19,7 +19,7 @@ reference: [sql, datensaetze]
 # Einführung in SQL
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten.
+In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten. Zum Schluss änderst du die Daten selbst: Du fügst Zeilen ein, änderst und löschst sie.
 </p>
 
 ## Vorbereitung
@@ -588,6 +588,254 @@ Mehr Beispiele, auch mit `GROUP BY` und `JOIN`, die später drankommen, hat der 
 
 _tool(query-stepper)
 
+## Daten ändern
+
+Bisher hast du die Daten nur gelesen. Drei weitere Befehle ändern sie: `INSERT` fügt Zeilen ein, `UPDATE` ändert Werte in Zeilen, die es schon gibt, und `DELETE` löscht Zeilen. Sie geben keine Tabelle aus, sondern melden, wie viele Zeilen sie getroffen haben, etwa `Query OK, 1 row affected`. Was sie ändern, ist damit gespeichert.
+
+<div class='hint'>
+Die Aufgaben zu <code>city</code> weiter oben brauchen die Tabelle so, wie du sie geladen hast. Solange deine neuen Zeilen darin stehen, fragen ihre Karten »Hast du etwas geändert?«. Die letzte Aufgabe dieses Kapitels löscht die neuen Zeilen wieder.
+</div>
+
+### Zeilen einfügen: INSERT
+
+In `city` stehen die Städte ab 100.000 Einwohnern und dazu alle Hauptstädte. Lüneburg fehlt: Dort lebten Ende 2024 74.785 Menschen. So fügst du die Stadt ein:
+
+```sql
+INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital)
+VALUES (4749, 'Lüneburg', 'DEU', 74785, 53.2525, 10.4144, 0);
+```
+
+<!-- tutorial-step
+# Daten ändern: die Aufgaben sind vor den Schritten der Seite nicht gelöst und danach gelöst
+check-task-fails: einfuegen
+press: Control+L
+terminal-run: INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital) VALUES (4749, 'Lüneburg', 'DEU', 74785, 53.2525, 10.4144, 0);
+sleep: 0.5
+-->
+
+Hinter dem Namen der Tabelle stehen in Klammern die Spalten, hinter `VALUES` die Werte in derselben Reihenfolge: Texte in einfachen Anführungszeichen, Zahlen ohne, Kommazahlen mit Punkt, und in `is_capital` eine `0`, weil Lüneburg keine Hauptstadt ist. Die Nummer in `id` vergibt die Datenbank in dieser Tabelle nicht selbst, du nimmst eine freie: `SELECT MAX(id) FROM city;` zeigt die größte, die schon vergeben ist, 4748. Ob Lüneburg angekommen ist, zeigt `SELECT * FROM city WHERE name = 'Lüneburg';`.
+
+`INSERT` kennst du schon von Atlantis oben: Dort hat MySQL die Zeile abgelehnt, weil es den Kontinent nicht gibt. Auch bei Städten wacht die Datenbank über die Schlüssel. Schreibst du `'GER'` statt `'DEU'`, verletzt die Zeile den Fremdschlüssel auf `country`. Gibst du denselben Befehl ein zweites Mal ein, meldet MySQL `Duplicate entry '4749' for key 'city.PRIMARY'`: Jeden Wert des Primärschlüssels gibt es nur einmal.
+
+Die Liste der Spalten darfst du weglassen. Dann erwartet MySQL einen Wert für jede Spalte, in der Reihenfolge, die `DESCRIBE city;` zeigt. Mit der Liste sieht man aber, welcher Wert wohin gehört, und eine Spalte, die nicht darin steht, bleibt leer (`NULL`), wenn sie das darf: In `city` darf `population` fehlen, `latitude` nicht (`Field 'latitude' doesn't have a default value`).
+
+Mehrere Zeilen fügt ein einziges `INSERT` ein: Hinter `VALUES` stehen dann mehrere Klammern, durch Kommas getrennt. So füllt `countries-basic.sql` die Tabellen, mit bis zu tausend Zeilen in einem Befehl; das Bild der Datei oben zeigt einen davon.
+
+<div class='hint own' data-check='einfuegen'>
+<strong>Jetzt bist du dran:</strong> Füge Weimar und Görlitz in <code>city</code> ein, mit einem einzigen <code>INSERT</code>. Beide liegen in Deutschland und sind keine Hauptstadt; die Einwohner sind die von Ende 2024.
+<div class='scroll-x'>
+<table class='table table-sm'>
+<thead>
+<tr><th>name</th><th>population</th><th>latitude</th><th>longitude</th></tr>
+</thead>
+<tbody>
+<tr><td>Weimar</td><td>65954</td><td>50.9811</td><td>11.3294</td></tr>
+<tr><td>Görlitz</td><td>55186</td><td>51.1563</td><td>14.9910</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- hint -->
+Welche Nummern sind frei? `SELECT MAX(id) FROM city;` zeigt die größte, die schon vergeben ist. Weimar und Görlitz bekommen die beiden nächsten.
+<!-- /hint -->
+<!-- hint -->
+Der Befehl für Lüneburg ist die Vorlage. Hinter `VALUES` stehen jetzt zwei Klammern mit je sieben Werten, durch ein Komma getrennt; das `;` kommt erst ganz ans Ende.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst:
+
+```sql
+INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital)
+VALUES (…, 'Weimar', …),
+       (…, 'Görlitz', …);
+```
+<!-- /hint -->
+
+<!-- solution -->
+```sql
+INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital)
+VALUES (4750, 'Weimar', 'DEU', 65954, 50.9811, 11.3294, 0),
+       (4751, 'Görlitz', 'DEU', 55186, 51.1563, 14.9910, 0);
+```
+<!-- /solution -->
+
+<!-- tutorial-step
+terminal-run: INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital) VALUES (4750, 'Weimar', 'DEU', 65954, 50.9811, 11.3294, 0), (4751, 'Görlitz', 'DEU', 55186, 51.1563, 14.9910, 0);
+sleep: 0.5
+check-task: einfuegen
+check-task-fails: aendern
+-->
+
+_task(einfuegen)
+
+### Zeilen ändern: UPDATE
+
+Ende 2025 hatte Lüneburg 74.502 Einwohner. `UPDATE` ändert den Wert in der Zeile, die es schon gibt:
+
+```sql
+UPDATE city SET population = 74502 WHERE id = 4749;
+```
+
+<!-- tutorial-step
+terminal-run: UPDATE city SET population = 74502 WHERE id = 4749;
+sleep: 0.5
+-->
+
+Hinter `SET` steht, welche Spalte welchen neuen Wert bekommt, mehrere durch Kommas getrennt (`SET population = 74502, is_capital = 0`). Hinter `WHERE` steht eine Bedingung, wie du sie von `SELECT` kennst: Sie sagt, welche Zeilen sich ändern. `id = 4749` trifft genau eine Zeile, denn `id` ist der Primärschlüssel.
+
+_task(ohne-where)
+
+<!-- after: ohne-where -->
+Ohne `WHERE` trifft `UPDATE` jede Zeile der Tabelle: Alle Städte hätten danach 74502 Einwohner, Chongqing wie Vaduz, und die richtigen Zahlen wären verloren. Im Workspace fragt `mycli` deshalb nach, bevor es ein `UPDATE` ohne `WHERE` ausführt:
+
+<!-- tutorial-step
+check-task: ohne-where <- 0
+-->
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: UPDATE city SET population = 74502;
+sleep: 1
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='update-without-where.webp' alt='mycli nach dem UPDATE ohne WHERE: You are about to run a destructive command. Do you want to proceed? (y/n)'>
+
+<!-- tutorial-step
+terminal-run: n
+sleep: 0.5
+check-task: einfuegen
+-->
+
+*You're about to run a destructive command* heißt: Der Befehl kann Daten zerstören. Mit <kbd>n</kbd> und <kbd>Enter</kbd> bricht `mycli` ab (*Wise choice!*), und nichts ändert sich; mit <kbd>y</kbd> führt es den Befehl aus (*Your call!*). Ein Programm, das SQL an die Datenbank schickt, fragt dagegen niemanden.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib <code>UPDATE city SET population = 74502;</code> ein und antworte mit <kbd>n</kbd>. Was antwortet <code>mycli</code>? Und welche Einwohnerzahl zeigt danach <code>SELECT name, population FROM city WHERE name = 'Berlin';</code>?
+</div>
+<!-- /after -->
+
+Damit ein `UPDATE` nur die Zeilen trifft, die du meinst, probierst du seine Bedingung zuerst mit `SELECT` aus:
+
+```sql
+SELECT * FROM city WHERE name = 'Lüneburg';
+```
+
+Zeigt das Ergebnis genau die Zeilen, die sich ändern sollen, holst du die Abfrage mit <kbd>↑</kbd> zurück und ersetzt ihren Anfang `SELECT * FROM city` durch `UPDATE city SET population = 74502`. Das `WHERE` bleibt, wie es ist.
+
+<div class='hint own' data-check='aendern'>
+<strong>Jetzt bist du dran:</strong> Ende 2025 hatte Weimar 65.566 Einwohner. Ändere die Zahl in deiner Zeile für Weimar; probier die Bedingung vorher mit <code>SELECT</code> aus.
+</div>
+
+<!-- hint -->
+Welche Zeile ist es? Ein `SELECT` mit einem `WHERE` auf den Namen oder die Nummer soll genau Weimar zeigen, keine Stadt mehr.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst: `UPDATE city SET population = … WHERE …;`
+<!-- /hint -->
+
+<!-- solution -->
+```sql
+UPDATE city SET population = 65566 WHERE name = 'Weimar';
+```
+<!-- /solution -->
+
+<!-- tutorial-step
+terminal-run: UPDATE city SET population = 65566 WHERE name = 'Weimar';
+sleep: 0.5
+check-task: aendern
+check-task-fails: loeschen
+-->
+
+_task(aendern)
+
+### Zeilen löschen: DELETE
+
+`DELETE` löscht jede Zeile, auf die das `WHERE` zutrifft; die Tabelle selbst bleibt. So verschwindet Lüneburg wieder:
+
+```sql
+DELETE FROM city WHERE id = 4749;
+```
+
+<!-- tutorial-step
+terminal-run: DELETE FROM city WHERE id = 4749;
+sleep: 1
+terminal-run: y
+sleep: 0.5
+-->
+
+Vor einem `DELETE` fragt `mycli` immer nach, auch mit `WHERE`. Weißt du, welche Zeilen du löschst, antwortest du mit <kbd>y</kbd>. Ohne `WHERE` löscht `DELETE FROM city;` alle Zeilen, und `city` ist leer.
+
+### Erst ausprobieren: Transaktionen
+
+Was `mycli` mit `Query OK` meldet, ist gespeichert; ein »Rückgängig« gibt es nicht. Willst du eine Änderung erst ansehen, bevor sie gilt, beginnst du eine Transaktion:
+
+```sql
+START TRANSACTION;
+DELETE FROM city;
+SELECT COUNT(*) FROM city;
+ROLLBACK;
+```
+
+<!-- tutorial-step
+terminal-run: START TRANSACTION;
+sleep: 0.5
+terminal-run: DELETE FROM city;
+sleep: 1
+terminal-run: y
+sleep: 0.5
+terminal-run: ROLLBACK;
+sleep: 0.5
+check-task: aendern
+-->
+
+Nach `START TRANSACTION` gilt eine Änderung erst, wenn du sie mit `COMMIT;` bestätigst; `ROLLBACK;` nimmt alles seit `START TRANSACTION` zurück. Bis dahin sieht nur dein `mycli` die Änderung, die Prüfung der Aufgaben noch nicht, und beendest du `mycli` vorher, ist die Änderung verworfen. `CREATE TABLE` und `DROP TABLE` lassen sich so nicht zurücknehmen: Sie beenden die Transaktion, und was bis dahin geändert war, gilt.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib die vier Befehle oben nacheinander ein; auf die Frage von <code>mycli</code> antwortest du mit <kbd>y</kbd>. Welche Zahl zeigt <code>COUNT(*)</code> nach dem <code>DELETE</code>, und welche ein zweites <code>SELECT COUNT(*) FROM city;</code> nach dem <code>ROLLBACK</code>? Lass <code>START TRANSACTION</code> nicht weg: Ohne die Transaktion ist <code>city</code> danach wirklich leer.
+</div>
+
+<div class='hint own' data-check='loeschen'>
+<strong>Jetzt bist du dran:</strong> In <code>city</code> sollen wieder nur Städte ab 100.000 Einwohnern und Hauptstädte stehen. Lösche mit einem einzigen <code>DELETE</code> alle Städte, die keine Hauptstadt sind und weniger als 100.000 Einwohner haben, ohne ihre Namen oder Nummern zu nennen.
+</div>
+
+<!-- hint -->
+Sieh erst nach, was eine einfache Bedingung trifft: `SELECT name, population, is_capital FROM city WHERE population < 100000;` Welche Städte findet sie? Sind Hauptstädte darunter?
+<!-- /hint -->
+<!-- hint -->
+Die Bedingung hat zwei Teile, die beide gelten müssen: weniger als 100.000 Einwohner, und keine Hauptstadt (`is_capital = 0`).
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst: `DELETE FROM city WHERE … AND …;` Sicher gehst du mit `START TRANSACTION;` davor: Zeigt `SELECT COUNT(*) FROM city;` danach 4748, bestätigst du mit `COMMIT;`, sonst nimmst du alles mit `ROLLBACK;` zurück.
+<!-- /hint -->
+
+<!-- solution -->
+```sql
+DELETE FROM city WHERE population < 100000 AND is_capital = 0;
+```
+<!-- /solution -->
+
+<!-- tutorial-step
+terminal-run: DELETE FROM city WHERE population < 100000 AND is_capital = 0;
+sleep: 1
+terminal-run: y
+sleep: 0.5
+check-task: loeschen
+-->
+
+_task(loeschen)
+
+### Die Daten neu laden
+
+Hast du doch zu viel geändert oder gelöscht, lädst du die Daten neu. Beende `mycli` mit `exit`, führe im Terminal den Import noch einmal aus, im Ordner `sql-einfuehrung`, in dem die Datei liegt, und starte `mycli` wieder:
+
+```bash
+mysql < countries-basic.sql
+mycli
+```
+
+`countries-basic.sql` löscht am Anfang die drei Tabellen (`DROP TABLE IF EXISTS`) und legt sie mit allen Zeilen neu an. Was du selbst eingefügt oder geändert hast, ist danach weg.
+
 ## Zusammenfassung
 
 Du kennst jetzt die wichtigsten Bausteine, die wir für die folgenden Aufgaben benötigen:
@@ -607,13 +855,17 @@ Du kennst jetzt die wichtigsten Bausteine, die wir für die folgenden Aufgaben b
 <tr><td><code>COUNT(*)</code></td><td>Wie viele Zeilen enthält das Ergebnis?</td></tr>
 <tr><td><code>LIKE</code></td><td>Welche Texte passen zu einem Muster?</td></tr>
 <tr><td><code>DISTINCT</code></td><td>Welche unterschiedlichen Werte kommen vor?</td></tr>
+<tr><td><code>INSERT&nbsp;INTO</code></td><td>Welche Zeilen kommen dazu?</td></tr>
+<tr><td><code>UPDATE&nbsp;…&nbsp;SET</code></td><td>Welche Werte ändern sich in den Zeilen, die <code>WHERE</code> trifft?</td></tr>
+<tr><td><code>DELETE&nbsp;FROM</code></td><td>Welche Zeilen fallen weg? Alle, die <code>WHERE</code> trifft.</td></tr>
+<tr><td><code>START&nbsp;TRANSACTION</code></td><td>Bis <code>COMMIT</code> nimmt <code>ROLLBACK</code> jede Änderung zurück.</td></tr>
 </tbody>
 </table>
 </div>
 
 Die Bausteine lassen sich kombinieren. Eine typische Abfrage kann beispielsweise filtern, sortieren und die Ausgabe anschließend begrenzen.
 
-Im Handbuch: _uses(mycli, select, where, sortieren, aggregieren)
+Im Handbuch: _uses(mycli, select, where, sortieren, aggregieren, insert, update-delete, transaktion)
 
 <div class='hint'>
 Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>Strg</kbd><kbd>D</kbd>.

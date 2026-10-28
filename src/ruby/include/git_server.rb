@@ -27,6 +27,14 @@ require 'tmpdir'
 # lets an account run git-upload-pack, git-receive-pack or
 # git-upload-archive on a repository in a folder it has a line for.
 #
+# A group's folder holds the repository of an activity (a class repository,
+# created on the class page) and free ones a teacher creates on /git. Every
+# person has a folder of their own too (User.git_id), for repositories to
+# practise with: only that person may clone, push and read them, not their
+# teachers and not the administration, who sees only that they exist and may
+# delete them (docs/plan-git-gruppen.md: practice is private; shared work
+# belongs in the class repositories).
+#
 # How students get a key is the teacher's choice per group
 # (GroupSetting.git_keys): KEYS_HANDED_IN, they create a key pair and hand in
 # the public key on the page; KEYS_AUTO, the site writes a key pair of its
@@ -67,6 +75,11 @@ module GitServer
         'core.logAllRefUpdates' => 'true',
     }.freeze
     STARTER_AUTHOR = ['Workspace', 'workspace@git.workspace'].freeze
+    # A person's own repositories, at most this many.
+    PERSONAL_MAX = 10
+    DESCRIPTION_MAX = 200
+    # What git init writes into description: no description.
+    NO_DESCRIPTION = /\AUnnamed repository/
 
     def self.enabled?
         defined?(GIT_SERVER) && GIT_SERVER == true
@@ -124,6 +137,46 @@ module GitServer
                 %(command="/usr/local/bin/git-gate #{account}",restrict #{line})
             end
         end.join("\n") + "\n"
+    end
+
+    # Who may use which folder, for access: the people of each group's folder
+    # (group_people: { git id => [accounts] }) and each person's own folder
+    # (personal: { git id => account }), which no one else gets, not a
+    # teacher of the person's group either. { account => [git ids] }
+    def self.access_map(group_people:, personal:)
+        map = Hash.new { |hash, key| hash[key] = [] }
+        group_people.each { |id, accounts| accounts.each { |account| map[account] << id } }
+        personal.each { |id, account| map[account] << id }
+        map
+    end
+
+    # May a person read a folder's repositories on the site? A group's folder:
+    # its members and teachers and the administration (group_reader); a
+    # person's own folder: that person alone (owner: whose it is).
+    def self.may_read?(owner:, group_reader:, email:)
+        owner ? owner == email : group_reader
+    end
+
+    # Why name cannot be a new repository in a folder, or nil. taken: the
+    # names there; reserved: names of activities with a class repository
+    # (their repository is made on the class page); limit: at most this many.
+    def self.name_problem(name, taken: [], reserved: [], limit: nil)
+        return "Du hast schon #{limit} Repositorys; lösche eins, bevor du ein neues anlegst." if limit && taken.size >= limit
+        return 'Gib dem Repository einen Namen.' if name.to_s.empty?
+        unless name.match?(NAME)
+            return 'Nur Kleinbuchstaben, Ziffern und Bindestriche, vorne ein Buchstabe oder eine Ziffer, höchstens 63 Zeichen.'
+        end
+        return 'Ein Repository mit diesem Namen gibt es hier schon.' if taken.include?(name)
+        if reserved.include?(name)
+            return 'So heißt eine Aktivität; ihr Repository legst du auf der Klassenseite an. Nimm einen anderen Namen.'
+        end
+
+        nil
+    end
+
+    # A description as one line, without control characters, cut at DESCRIPTION_MAX.
+    def self.clean_description(text)
+        text.to_s.gsub(/[[:cntrl:]]+/, ' ').squeeze(' ').strip[0, DESCRIPTION_MAX].to_s.strip
     end
 
     # access for the gate: { account => [git ids] }.
@@ -225,8 +278,10 @@ module GitServer
     end
 
     # A new bare repository, branch main, with REPO_CONFIG; with starter (a
-    # folder), a first commit of its files. Owned by the server's user.
-    def self.create_repo(git_id, name, starter: nil, root: REPOS, uid: UID)
+    # folder), a first commit of its files; with readme (a text), a first
+    # commit of a README.md; description in git's file of that name. Owned
+    # by the server's user.
+    def self.create_repo(git_id, name, starter: nil, readme: nil, description: nil, root: REPOS, uid: UID)
         path = repo_path(git_id, name, :root => root)
         raise 'exists' if File.exist?(path)
 
@@ -236,9 +291,14 @@ module GitServer
         # No sample hooks: the server runs none.
         FileUtils.rm_rf(File.join(path, 'hooks'))
         FileUtils.mkdir_p(File.join(path, 'hooks'))
-        if starter && File.directory?(starter)
+        File.write(File.join(path, 'description'), "#{clean_description(description)}\n")
+        if (starter && File.directory?(starter)) || readme
             Dir.mktmpdir('git-starter') do |work|
-                FileUtils.cp_r(File.join(starter, '.'), work)
+                if readme
+                    File.write(File.join(work, 'README.md'), readme)
+                else
+                    FileUtils.cp_r(File.join(starter, '.'), work)
+                end
                 author = { 'GIT_AUTHOR_NAME' => STARTER_AUTHOR[0], 'GIT_AUTHOR_EMAIL' => STARTER_AUTHOR[1],
                            'GIT_COMMITTER_NAME' => STARTER_AUTHOR[0], 'GIT_COMMITTER_EMAIL' => STARTER_AUTHOR[1] }
                 git('--git-dir', path, '--work-tree', work, 'add', '-A', :env => author)
@@ -260,7 +320,15 @@ module GitServer
         FileUtils.rm_rf(File.join(root, git_id))
     end
 
-    # The repositories in a group's folder: [{ name:, size:, last: Time or nil }].
+    # A repository's description, '' for none.
+    def self.description(path)
+        text = File.exist?(File.join(path, 'description')) ? File.read(File.join(path, 'description'), 1024).to_s.force_encoding('UTF-8').scrub : ''
+        text.match?(NO_DESCRIPTION) ? '' : clean_description(text)
+    end
+
+    # The repositories in a folder (a group's or a person's):
+    # [{ name:, size:, last: Time or nil, author: the last commit's author's name or nil, description: }].
+    # One git call per repository; names only, never an e-mail address.
     def self.repos(git_id, root: REPOS)
         return [] unless git_id.to_s.match?(GIT_ID)
 
@@ -268,14 +336,14 @@ module GitServer
             name = File.basename(path, '.git')
             next unless name.match?(NAME)
 
-            last = begin
-                stamp = git('--git-dir', path, 'log', '-1', '--format=%ct', '--all').strip
-                stamp.empty? ? nil : Time.at(stamp.to_i)
+            stamp, author = begin
+                git('--git-dir', path, 'log', '-1', '--format=%ct%x1f%an', '--all').strip.split("\x1f", 2)
             rescue RuntimeError
                 nil
             end
+            last = stamp.to_s.empty? ? nil : Time.at(stamp.to_i)
             size = Dir.glob(File.join(path, '**', '*')).sum { |f| File.file?(f) ? File.size(f) : 0 }
-            { :name => name, :size => size, :last => last }
+            { :name => name, :size => size, :last => last, :author => last ? author.to_s : nil, :description => description(path) }
         end
     end
 end

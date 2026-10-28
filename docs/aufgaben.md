@@ -396,7 +396,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) |
-| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend |
+| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Indizes, Zeilenzahl, Zeilen, die eine Bedingung erfüllen | `information_schema` | eigene MySQL-Datenbank, nur lesend |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server |
 | `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server |
 
@@ -921,6 +921,29 @@ Referenz. So besteht keine Tabelle der festen Fälle.
   feedback:
     - when: { same_as: "def gcd(a, b) = [a, b].min" }
       say: Die kleinere Zahl ist nur manchmal ein Teiler der größeren.
+```
+
+**Wo nur Gatter rechnen dürfen** (Logikgatter, Addierer, das Rechenwerk in
+»Vom Gatter zum Rechenwerk«), nennt `gates` die Gatter, die die Eingänge
+verknüpfen dürfen: `not_`, `and_`, `or_`, `xor_`, `nand` oder `nor`, nur in
+Ruby und Python (`GateCheck`). Jeder Fall läuft dann zweimal: erst wie
+immer, mit den Gattern aus dem `starter`, dann mit jeder 0 und 1 in den
+Argumenten (auch in Listen) als Signal, das nur die Gatter der Prüfung lesen
+können. Wer selbst rechnet oder vergleicht (`a & b`, `if a == 1`, eine
+Tabelle), besteht den ersten Lauf und nicht den zweiten, und die Rückmeldung
+sagt »Mit 0 und 1 stimmt …, kommen die Eingänge aber als Signale …«. Eine
+feste 0 oder 1 darf in ein Gatter (ein Übertrag, der bei 0 anfängt), und was
+keine 0 oder 1 ist (ein Text wie `'sub'`, der wählt, was gerechnet wird),
+bleibt, wie es ist. Jeder Fall ruft eine Funktion auf, `name(argumente)`,
+ohne Schritte und ohne `raises`.
+
+```yaml
+  check:
+    type: function
+    language: ruby
+    gates: [nand]
+    cases:
+      - and_(1, 1): 1
 ```
 
 **Typische Fehler** erkennt `feedback` mit `same_as`, dem Gegenstück zu
@@ -1506,6 +1529,30 @@ check:
 `indexes` verlangt für jede Liste einen Index der Tabelle, dessen erste
 Spalten genau diese sind; der Primärschlüssel zählt mit, und ein Index auf
 `(last_name, first_name)` genügt auch für `[last_name]`.
+
+`rows_where` zählt Zeilen, die eine Bedingung erfüllen, für Aufgaben, in
+denen Lernende Daten ändern (`INSERT`, `UPDATE`, `DELETE` in »Einführung in
+SQL«): Sie schreiben den Befehl in `mycli`, die Karte hat nur »Prüfen«. Die
+Bedingung ist die der Autorin, ohne `;`, und läuft wie der Rest nur lesend
+(`SELECT COUNT(*) FROM city WHERE …`); `say` ist die Meldung, wenn die Zahl
+nicht stimmt, sonst nennt die Karte Bedingung und Zahl. Unter der
+Rückmeldung steht zuerst, was gezählt wurde. Ein `UPDATE` ohne `WHERE` fällt
+auf, wenn eine Bedingung verlangt, dass nur eine Zeile den neuen Wert hat.
+Was eine Person in einer Transaktion ohne `COMMIT` geändert hat, sieht die
+Prüfung nicht.
+
+```yaml
+check:
+  type: schema
+  tables:
+    - name: city
+      rows_where:
+        - where: "name = 'Weimar' AND population = 65566"
+          rows: 1
+          say: Weimar hat noch nicht 65566 Einwohner.
+        - where: population = 65566
+          rows: 1                  # nicht alle Städte
+```
 
 Ein Fremdschlüssel ohne Spalte nach dem Punkt zeigt auf den Primärschlüssel
 der anderen Tabelle. `setup` steht dabei, wenn Tabellen fehlen. Unter der

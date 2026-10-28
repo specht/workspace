@@ -9,6 +9,7 @@
     Repositories klonen und die Live-Vorschau starten.
   entries:
     - workspace
+    - webspace
 
 - key: reference-shortcuts
   label: Shortcuts

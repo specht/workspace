@@ -14,7 +14,7 @@ what could fill each, in which form, what was decided and what is open.
 | Oberstufe: objektorientierte Programmierung | 1 | the same activity; later »Katas: Objekte« to practise the mechanics | activity, later a Kata set | large | `supermarkt`, live; Katas later |
 | Oberstufe: Vertiefung Künstliche Intelligenz | 3 | »Ein winziges Sprachmodell« (bigrams), »Ein Neuron lernt« (a perceptron from scratch), »Nächste Nachbarn« (classifying, and what biased data does) | section KI | large | done, live: `sprachmodell`, `perzeptron`, `naechste-nachbarn` |
 | Oberstufe: Vertiefung Theoretische Informatik | 3 | pushdown automata, Turing machines and the halting problem, grammars and the Chomsky hierarchy, after »Endliche Automaten« | activities | medium | done, live: `kellerautomat`, `turingmaschine`, `grammatiken`; complexity still only in `kata-search` and the sorting sandbox |
-| Oberstufe: Vertiefung Technische Informatik | 0 | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | a new sandbox widget | large | open |
+| Oberstufe: Vertiefung Technische Informatik | 0 (1 in development) | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. The parked `cable` (light signals between two rooms) belongs nearby | an activity with a circuit widget (below), later a free circuit editor | large | in progress, dev-only: `logikgatter` |
 | Oberstufe: Vertiefung Informatik und Gesellschaft | 4 | »Was eine Webseite über dich erfährt« (tracking in the students' own web server, cookie banners and dark patterns), the search engine's SEO section, the training data of the language model, a decision by neighbours | project, sections elsewhere | medium | done, live: `tracking`, `suchmaschine`, `sprachmodell`, `naechste-nachbarn` |
 | Sek I: Physical Computing | 0 | the Workspace cannot reach hardware, but it can build for it: MicroPython for Calliope mini or micro:bit, downloaded as a `.hex` and dragged onto the board's USB drive (the usual way to flash them); the image needs the build tools. Or a simulated board on the website | project, image change | medium | shelved: the schools have no boards (28 October 2026) |
 | Oberstufe: Vertiefung Applikative Programmierung | 1 (the Lisp portrait) | the planned Prolog page (TODO.md, »Later ideas«) for logic programming; a Kata strand with `map`, `filter`, `reduce` for functional programming | page, Kata strand | medium | open |
@@ -34,8 +34,8 @@ with the details of every `curriculum:` line and a search of the pages:
 | Name | Left out | Proposal |
 | --- | --- | --- |
 | Sek I: Leben in und mit vernetzten Systemen | Gefahren bei E-Mails (Phishing, Schadprogramme), Netiquette; Suchmaschinen and Datenschutz are covered now (`suchmaschine`, `tracking`) | »E-Mail und Phishing«: a mail server in the Workspace, a forged sender, what headers reveal |
-| Sek I: Information und Daten | QR-Code (only an outlook in `check-digits`), Sender-Empfänger-Modell (only in the parked `cable`), Rechnen mit Dualzahlen (`kata-bits` converts but never adds); Strichcode is covered now (`check-digits`) | the error correction of a QR code as a chapter of `check-digits`; binary addition and overflow in `kata-bits`; `cable` back |
-| Sek I: Datenbanken | Datensätze einfügen, löschen, verändern: `INSERT` appears only to show a key rejecting a row (`mysql`, `filmdatenbank`), `UPDATE` nowhere | a short chapter in `mysql` that adds, changes and deletes rows, then the line names it |
+| Sek I: Information und Daten | QR-Code (only an outlook in `check-digits`), Sender-Empfänger-Modell (only in the parked `cable`); Strichcode is covered now (`check-digits`), Rechnen mit Dualzahlen too (the chapter »Addieren« of `kata-bits`, 28 October 2026: written addition with a carry, overflow in a byte, negating in two's complement) | the error correction of a QR code as a chapter of `check-digits`; `cable` back |
+| Sek I: Datenbanken | nothing: Datensätze einfügen, löschen, verändern are covered now (the chapter »Daten ändern« of `mysql`, 28 October 2026: `INSERT` with one and several rows, `UPDATE` with a prediction on a missing `WHERE`, `DELETE`, transactions; the check `schema` counts rows with `rows_where`), and its line names them | |
 | Sek I: Geschichte der Informatik | only portraits of languages: no Rechenhilfsmittel, Rechnergenerationen, technische Entwicklung der Informationsübertragung | `cable` (Baudot); later a chapter in `sandbox-cpu` |
 | Sek I: Digitale Bilder und Visualisierung | Vektorgrafik only as 3D scenes; Manipulation von Bildern und Filmen; rekursive Algorithmen für Grafiken | an SVG chapter; a recursive tree in `drawing` |
 | Oberstufe: Algorithmen und Softwareentwicklung | nothing: Struktogramm and Pseudocode are covered now (`check-digits`); the Katas to functions, decisions and loops and the twelve language portraits name it since 27 October 2026 | |
@@ -61,7 +61,7 @@ full, also by bringing back parked activities or moving them:
 | Web | Web (3 → 6) | `hugo` back, `suchmaschine`, `tracking`: done, all live | Suchmaschinen, Datenschutz, Informatik und Gesellschaft |
 | Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
 | KI | a new section Künstliche Intelligenz (0 → 3) | `sprachmodell`, `perzeptron`, `naechste-nachbarn`: done, live | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
-| Rechnen | Wie Computer rechnen (6 → 9) | `kellerautomat`, `turingmaschine`, `grammatiken`: done, live; the logic sandbox and `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
+| Rechnen | Wie Computer rechnen (6 → 9) | `kellerautomat`, `turingmaschine`, `grammatiken`: done, live; the logic gates (`logikgatter`) dev-only; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
 State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
@@ -239,6 +239,41 @@ before XOR.
 
 Open: whether digits the class draws on the pad become a dataset of its
 own (an extra).
+
+## Logic gates: what exists and the next step
+
+`logikgatter` (»Vom Gatter zum Rechenwerk«, 28 October 2026, dev-only:
+`.logikgatter` first in »Wie Computer rechnen«, until the front page takes a
+tenth card there) is the first version: circuits to click
+(`logic_circuit.js`, gates as in DIN EN 60617), predictions before each
+circuit, and seven Katas that may only use gates (`gates:` in the check
+`function`, `GateCheck`): NOT and AND from NAND, OR and XOR from NAND, half
+adder, full adder, a 4-bit adder, the D flip-flop as a function, and a 4-bit
+ALU with ADD, SUB, AND, OR, XOR and the flags ZF and CF as the CPU Sandbox
+sets them (CF after SUB is the borrow). George Boole has a box in the page
+itself, since a box on the Personen page would need a visible page: when
+`logikgatter` goes live, he moves there (`_person(boole)`, with his sources).
+
+**The next step, not built yet: a circuit editor.** A sandbox where students
+place gates themselves and wire them, as in the simulator Digital
+(github.com/hneemann/Digital, rectangular DIN shapes by default) or
+Logisim-evolution, but on the page and with the same drawing and engine as
+`logic_circuit.js`:
+
+- a palette of gates (NOT, AND, OR, XOR, NAND, NOR, later the blocks of the
+  page: half adder, full adder, 4-bit adder as boxes), inputs and lamps,
+  placed on a grid and moved by dragging, also on a touch screen;
+- wires drawn from pin to pin, routed at right angles, a dot where one
+  branches; the engine's rounds as they are, with feedback allowed;
+- a circuit stored as text (a netlist in a code block, like the
+  Struktogramme), so that a page can show it and a student can save, share
+  and hand it in;
+- a check that reads such a circuit: its truth table against the expected
+  one, and the number of gates, so that a task can ask for »XOR with four
+  NAND«; with examples like every check;
+- open: whether it lives on the page (a widget, no Workspace needed) or as a
+  VS Code extension like the ER-Werkstatt, and whether circuits can be
+  nested (a full adder of the student's own as a box in the next circuit).
 
 ## Open questions for the maintainer
 

@@ -30,6 +30,8 @@ module AccountDeletion
         'Database' => '(u)-[:HAS]->(n:Database)',
         'LiveAppShare' => '(u)-[:SHARES_LIVE_APP]->(n:LiveAppShare)',
         'Test' => '(n:Test)-[:BELONGS_TO]->(u)',
+        # a teacher's feedback on activities (ActivityFeedback)
+        'ActivityFeedback' => '(n:ActivityFeedback)-[:BY]->(u)',
     }.freeze
 
     # Linked to a User, but not the person's own: the exam a student takes

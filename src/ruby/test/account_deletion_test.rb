@@ -19,6 +19,9 @@ class AccountDeletionTest < Minitest::Test
     def test_every_node_linked_to_a_user_is_deleted_or_not_owned
         labels = linked_labels
         assert_includes labels, ['QrLoginRequest', 'APPROVED_BY']
+        # a teacher's feedback on activities goes with the account
+        assert_includes labels, ['ActivityFeedback', 'BY']
+        assert_includes AccountDeletion.node_statements, 'MATCH (u:User {email: $email}) MATCH (n:ActivityFeedback)-[:BY]->(u) DETACH DELETE n;'
         labels.each do |label, relation|
             next if AccountDeletion::NOT_OWNED[label] == relation
 
@@ -122,4 +125,17 @@ class AccountDeletionTest < Minitest::Test
             assert_nil AccountDeletion.normalize_email(bad), bad.inspect
         end
     end
+
+    # A person's own Git repositories (»Meine Repositorys«, User.git_id)
+    # go with the account: Main#delete_account removes their folder before
+    # the User node.
+    def test_own_git_repositories_go_with_the_account
+        main = File.read(File.expand_path('../main.rb', __dir__))
+        body = main[/^    def delete_account\(email\)\n.*?^    end\n/m]
+        assert body, 'Main#delete_account'
+        assert_match(/u\.git_id AS id/, body)
+        assert_match(/GitServer\.delete_folder\(git_id\)/, body)
+        assert_operator body.index('GitServer.delete_folder'), :<, body.index('AccountDeletion.node_statements'), 'before the User node goes'
+    end
 end
+

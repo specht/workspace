@@ -88,6 +88,9 @@ module ClassRepos
     }.freeze
     VARIABLES = TOKENS.keys.freeze
     TOKEN = /#{TOKENS.values.join('|')}/
+    # The address of the repository's page on the site (/git/…), in the
+    # button mark_browse puts under the clone command; filled by Main#page_html.
+    BROWSE_TOKEN = 'HSVARGITBROWSEX'
 
     # The address without surrounding spaces if it is one of FORMS, else nil.
     def self.normalize(address)
@@ -247,6 +250,19 @@ module ClassRepos
             name = TOKENS.key(token)
             CGI.escapeHTML(values[name].to_s)
         end
+    end
+
+    # In a variant with the Workspace's own Git server (LOCAL_KEYS,
+    # LOCAL_AUTO): under each code block that clones the class repository,
+    # a button to its page on the site. root: the rendered page (Nokogiri).
+    def self.mark_browse(root)
+        root.css('pre').each do |pre|
+            next unless pre.text.include?("git clone #{TOKENS['class_repo']}")
+
+            pre.add_next_sibling("<p class='class-repo-browse'><a class='btn btn-sm btn-outline-secondary' href='#{BROWSE_TOKEN}'>" \
+                "<i class='bi bi-eye' aria-hidden='true'></i>Das Repository im Browser ansehen</a></p>")
+        end
+        root
     end
 
     # The tokens with the placeholders, for text that is not shown per

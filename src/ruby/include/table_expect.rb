@@ -10,17 +10,23 @@
 #       rows: 2740                           # schema only: exactly
 #       min_rows: 1                          # schema only: at least
 #       indexes: [[last_name, first_name]]   # schema only: each the start of an index
+#       rows_where:                          # schema only: rows that meet a condition
+#         - where: "name = 'Weimar' AND population = 65954"
+#           rows: 1                          # exactly so many
+#           say: Weimar fehlt noch.          # optional: the message when not
 #
 # actual: { name => { :columns => [[name, type]], :pk => [..],
 #                     :fks => [{ :cols => [..], :ref_table =>, :ref_cols => [..] }],
 #                     :indexes => [{ :name =>, :cols => [..] }] (schema only),
-#                     :rows => Integer or nil } }
+#                     :rows => Integer or nil,
+#                     :rows_where => [Integer, …] (schema only, one per condition) } }
 module TableExpect
     NAME = /\A[A-Za-z_][A-Za-z0-9_]*\z/
     FK = /\A\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*->\s*([A-Za-z_]\w*)(?:\s*\.\s*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*))?\s*\z/
-    KEYS = %w[name columns primary_key foreign_keys rows min_rows indexes].freeze
+    KEYS = %w[name columns primary_key foreign_keys rows min_rows indexes rows_where].freeze
     # What only the real database has, not a model
-    DATABASE_KEYS = %w[rows min_rows indexes].freeze
+    DATABASE_KEYS = %w[rows min_rows indexes rows_where].freeze
+    WHERE_KEYS = %w[where rows say].freeze
 
     # "genre_id -> genre.id" -> { cols: ['genre_id'], ref_table: 'genre', ref_cols: ['id'] }
     # (ref_cols nil: the referenced table's primary key).
@@ -62,8 +68,29 @@ module TableExpect
                                       t['indexes'].all? { |cols| cols.is_a?(Array) && !cols.empty? && cols.all? { |c| c.to_s =~ NAME } })
                 errors << "tables[#{i}].indexes must be a list of column lists, such as [[last_name, first_name]]"
             end
+            errors.concat(where_errors(t['rows_where'], "tables[#{i}].rows_where")) if t.key?('rows_where')
         end
         errors
+    end
+
+    # rows_where: a list of { where: condition, rows: count, say: text }. The
+    # condition is the author's, run read-only like the rest (SchemaCheck);
+    # one statement only, so no ;.
+    def self.where_errors(rules, label)
+        return ["#{label} must be a list of { where:, rows: }"] unless rules.is_a?(Array) && !rules.empty?
+
+        rules.each_with_index.flat_map do |rule, j|
+            next ["#{label}[#{j}] must be { where:, rows: }"] unless rule.is_a?(Hash)
+
+            errors = []
+            extra = rule.keys - WHERE_KEYS
+            errors << "#{label}[#{j}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
+            where = rule['where']
+            errors << "#{label}[#{j}].where must be a condition (text without ;)" unless where.is_a?(String) && !where.strip.empty? && !where.include?(';')
+            errors << "#{label}[#{j}].rows must be a whole number ≥ 0" unless rule['rows'].is_a?(Integer) && rule['rows'] >= 0
+            errors << "#{label}[#{j}].say must be text" if rule.key?('say') && !(rule['say'].is_a?(String) && !rule['say'].strip.empty?)
+            errors
+        end
     end
 
     def self.normalize(spec)
@@ -133,6 +160,12 @@ module TableExpect
             end
             if spec.key?('min_rows') && rows.to_i < spec['min_rows']
                 return [:rows, rows.to_i.zero? ? "#{label} ist noch leer." : "#{label} hat #{rows_text(rows)}, erwartet #{spec['min_rows'] == 1 ? 'ist mindestens eine' : "sind mindestens #{spec['min_rows']}"}."]
+            end
+            (spec['rows_where'] || []).each_with_index do |rule, j|
+                found = (table[:rows_where] || [])[j]
+                next if found == rule['rows']
+
+                return [:rows_where, rule['say'] || "#{label} hat #{rows_text(found)} mit `#{rule['where']}`, erwartet #{rule['rows'] == 1 ? 'ist eine' : "sind #{rule['rows']}"}."]
             end
         end
         nil

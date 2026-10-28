@@ -21,7 +21,8 @@ module AccountExport
                       Antwort, Versuche, Hinweise, wer in deinen Workspace
                       gesehen hat, geteilte Web-Apps, die Browser, in denen
                       du angemeldet bist (Tag der Anmeldung, Tag der letzten
-                      Nutzung, Gerät)
+                      Nutzung, Gerät); bei Lehrkräften ihre Rückmeldungen
+                      zu Aktivitäten
         workspace/    deine Dateien, wie im Explorer des Workspace (ohne den
                       Zwischenspeicher .cache)
         abgaben/      deine Abgaben, je Aufgabe ein Ordner mit den Dateien,
@@ -38,7 +39,7 @@ module AccountExport
     END_OF_TEXT
 
     # rows: :user (Hash), :groups (Array), :task_states, :attempts,
-    # :look_ins, :live_apps, :sessions (Arrays of Hashes, as Neo4j returns
+    # :look_ins, :live_apps, :sessions, :feedback (Arrays of Hashes, as Neo4j returns
     # them). Of a session only the days and the device: the sid logs in.
     def self.account_hash(rows, now: Time.now)
         user = rows[:user] || {}
@@ -53,6 +54,10 @@ module AccountExport
             'einsicht' => (rows[:look_ins] || []).map { |l| pick(l, %w[ts kind reason by_name]) },
             'geteilte_web_apps' => (rows[:live_apps] || []).map { |l| pick(l, %w[port active updated_at]) },
             'anmeldungen' => (rows[:sessions] || []).map { |s| pick(s, %w[created_on last_used_on device expires]) },
+            # a teacher's feedback on activities (ActivityFeedback)
+            'rueckmeldungen' => (rows[:feedback] || []).map do |f|
+                pick(f, %w[group former_group activity overall overall_text duration duration_planned level languages languages_text text contact created_at updated_at snoozed_until never])
+            end,
         }
     end
 

@@ -1,6 +1,19 @@
-# Deine eigene Subdomain
+<div class='meta'>
+kind: reference
+search: Subdomain, Webspace, veröffentlichen, rsync, hochladen, hackschule.de
+</div>
 
-Eine eigene Hackschule-Subdomain ist öffentlicher Webspace für deine **fertige, statische Website**. Im Gegensatz zu [Shared Live Apps](/profil#live-apps) ist deine Website damit auch ohne Workspace-Anmeldung erreichbar und bleibt online, wenn dein Workspace nicht läuft. Das Angebot ist kostenlos; du bekommst eine Subdomain von `hackschule.de`, keine selbst registrierte Domain.
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
+# Eigener Webspace
+
+<p class='abstract'>
+Eine eigene Hackschule-Subdomain ist öffentlicher Webspace für deine fertige, statische Website: HTML, CSS, Bilder und JavaScript, das im Browser läuft. Im Gegensatz zu den <a href='/profil#live-apps'>Shared Live Apps</a> ist sie auch ohne Anmeldung im Workspace erreichbar und bleibt online, wenn dein Workspace nicht läuft. Das Angebot ist kostenlos; du bekommst eine Subdomain von <code>hackschule.de</code>, keine selbst registrierte Domain.
+</p>
 
 ## Einverständniserklärung
 
@@ -8,24 +21,25 @@ Für die Subdomain unterschreibst du eine [Nutzungsvereinbarung](/datenschutz/we
 
 ## Schlüsselpaar erstellen
 
-Überprüfe, ob du bereits ein Schlüsselpaar hast:
+Im Workspace ist `~` dein Ordner `/workspace`, `~/.ssh` also `/workspace/.ssh`. Hast du schon einen Schlüssel für Git eingerichtet ([Handbuch: Git-Server](/reference/gitlab#ssh-schluessel)), nimmst du denselben. Überprüfe, ob du bereits ein Schlüsselpaar hast:
 
 ```bash
 ls ~/.ssh/*.pub
 ```
+
 Falls nicht, erstelle ein neues Schlüsselpaar:
 
 ```bash
 ssh-keygen
 ```
 
-Bestätige den Speicherort, eine Passphrase ist nicht nötig (du kannst aber natürlich ein Passphrase setzen, wenn du möchtest). Das Schlüsselpaar wird in `~/.ssh/id_ed25519` und `~/.ssh/id_ed25519.pub` gespeichert.
+Bestätige den Speicherort, eine Passphrase ist nicht nötig (du kannst aber eine setzen, wenn du möchtest). Das Schlüsselpaar wird in `~/.ssh/id_ed25519` und `~/.ssh/id_ed25519.pub` gespeichert.
 
 <div class="hint">
 Achtung: Dein Schlüsselpaar besteht aus zwei Dateien: <code>id_ed25519</code> (privat) und <code>id_ed25519.pub</code> (öffentlich). Teile niemals deinen privaten Schlüssel! Den öffentlichen Schlüssel kannst du jedoch mit anderen teilen, um ihnen Zugriff auf deine Ressourcen zu gewähren.
 </div>
 
-Lasse dir den öffentlichen Schlüssel anzeigen:
+Lass dir den öffentlichen Schlüssel anzeigen:
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
@@ -46,15 +60,15 @@ Wenn die Einverständniserklärung (sofern erforderlich) abgegeben ist, schicke 
 
 Wenn deine Subdomain eingerichtet ist, kannst du sie in deinem Browser aufrufen. Du wirst aber noch nichts sehen, da du noch keine Dateien hochgeladen hast.
 
-Bevor du Dateien hochladen kannst, musst du deine SSH-Konfiguration anpassen. Erstelle die Datei `/workspace/.ssh/config`:
+Bevor du Dateien hochladen kannst, musst du deine SSH-Konfiguration anpassen. Erstelle die Datei `~/.ssh/config`:
 
 ```bash
-touch /workspace/.ssh/config
+touch ~/.ssh/config
 ```
 
-…und öffne sie in einem Texteditor und füge Folgendes hinzu:
+Öffne sie im Editor und füge Folgendes hinzu:
 
-```bash
+```text
 Host cobolultras.hackschule.de
   User max
   IdentityFile ~/.ssh/id_ed25519
@@ -82,7 +96,7 @@ This key is not known by any other names
 Are you sure you want to continue connecting (yes/no/[fingerprint])?
 ```
 
-Du befindest dich jetzt auf einem anderen Server, aber auch hier kannst du ganz normal mit `ls` und `cd` arbeiten. Du findest ein Verzeichnis, das so heisst wie deine Subdomain (z. B. `cobolultras`). Das ist der Ort, an dem du deine Dateien ablegen kannst. Du kannst in dieses Verzeichnis wechseln:
+Du befindest dich jetzt auf einem anderen Server, aber auch hier kannst du ganz normal mit `ls` und `cd` arbeiten. Du findest ein Verzeichnis, das so heißt wie deine Subdomain (z. B. `cobolultras`). Das ist der Ort, an dem du deine Dateien ablegen kannst. Du kannst in dieses Verzeichnis wechseln:
 
 ```bash
 cd cobolultras
@@ -94,7 +108,7 @@ Du kannst auch Dateien erstellen, z. B. eine `index.html`:
 echo "<h1>Hallo Welt</h1>" > index.html
 ```
 
-Diese Datei kannst du jetzt in deinem Browser aufrufen, indem du die URL `http://cobolultras.hackschule.de` eingibst. Du solltest den Text "Hallo Welt" sehen.
+Diese Datei kannst du jetzt in deinem Browser aufrufen, indem du die URL `http://cobolultras.hackschule.de` eingibst. Du solltest den Text »Hallo Welt« sehen.
 
 ## Dateien mit rsync hochladen
 
@@ -110,7 +124,7 @@ Anschließend kannst du `rsync` verwenden, um die Dateien auf den Server zu kopi
 rsync -avz . max@cobolultras.hackschule.de:cobolultras
 ```
 
-Das `-a` steht für "archive" und sorgt dafür, dass die Dateien rekursiv (also mit allen Unterverzeichnissen) kopiert werden und die Dateiberechtigungen beibehalten werden. Das `-v` steht für "verbose" und zeigt dir an, welche Dateien kopiert werden. Das `-z` steht für "compress" und sorgt dafür, dass die Daten komprimiert übertragen werden, was die Übertragungsgeschwindigkeit erhöht.
+Das `-a` steht für »archive« und sorgt dafür, dass die Dateien rekursiv (also mit allen Unterverzeichnissen) kopiert werden und die Dateiberechtigungen beibehalten werden. Das `-v` steht für »verbose« und zeigt dir an, welche Dateien kopiert werden. Das `-z` steht für »compress« und sorgt dafür, dass die Daten komprimiert übertragen werden, was die Übertragungsgeschwindigkeit erhöht.
 
 Wenn du rsync mehrfach ausführst, werden nur die Dateien übertragen, die sich geändert haben. Das ist besonders nützlich, wenn du an deiner Website arbeitest und immer wieder neue Dateien hochladen möchtest.
 

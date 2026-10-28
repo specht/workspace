@@ -7,7 +7,7 @@ duration: 3 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets); Oberstufe: Sprachen und Automaten (zustandsorientierte Modellierung)"
 topics: [webseiten, zustaende]
 requires: [static-website]
-reference: [workspace, html, css, layout]
+reference: [workspace, html, css, layout, webspace]
 </div>
 
 <div
@@ -942,4 +942,4 @@ _include(workspace#live-apps)
 
 ### Deine Seite veröffentlichen
 
-Du kannst deine Webseite kostenlos unter einer Hackschule-Subdomain veröffentlichen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten Dateien aus `build`, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.
+Du kannst deine Webseite kostenlos unter einer Hackschule-Subdomain veröffentlichen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten Dateien aus `build`, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/reference/webspace) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.

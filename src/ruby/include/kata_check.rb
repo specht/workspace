@@ -4,6 +4,7 @@ require_relative 'python_check'
 require_relative 'ruby_check'
 require_relative 'javascript_check'
 require_relative 'recursion_check'
+require_relative 'gate_check'
 
 # Check type function (docs/aufgaben.md, docs/plan-katas.md): a Kata. The
 # code is typed into the card, not written in the Workspace; it runs in a
@@ -32,6 +33,8 @@ require_relative 'recursion_check'
 #     recursive: true             # the function must call itself, and
 #     loops: false                # use no loop (RecursionCheck, read from
 #                                 # the code once the cases pass)
+#     gates: [nand]               # only these gates may combine the 0s and
+#                                 # 1s of the arguments (GateCheck)
 #
 #   feedback:
 #     - when: { same_as: 'def gcd(a, b) = [a, b].min' }
@@ -88,6 +91,7 @@ module KataCheck
             end
         end
         errors.concat(random_errors(check['random'])) if check.key?('random')
+        errors.concat(GateCheck.spec_errors(check)) if check.key?('gates')
         errors << 'slow must be text' if check.key?('slow') && !(check['slow'].is_a?(String) && !check['slow'].strip.empty?)
         # read from the code once the cases pass (RecursionCheck)
         errors << 'recursive must be true' if check.key?('recursive') && check['recursive'] != true
@@ -184,6 +188,11 @@ module KataCheck
     # What runs before the harness when check forbids built-ins (the
     # JavaScript harness gets the list as an argument instead).
     def self.prelude(check)
+        gates = check['gates'] ? GateCheck.prelude(check['language'], check['gates']) : ''
+        gates + forbid_prelude(check)
+    end
+
+    def self.forbid_prelude(check)
         list = JSON.generate(check['forbid'] || [])
         return '' if list == '[]' || check['language'] == 'javascript'
 
@@ -259,6 +268,9 @@ module KataCheck
         file = FILES.fetch(language_name)
         harness = HARNESS_FILES.fetch(language_name)
         cases = language.cases(check) + random_cases(check, seed)
+        # with gates: every case once more, wired, after the plain ones
+        plain = cases.size
+        cases += GateCheck.wired(cases, language_name) if check['gates']
         alternatives = (task['feedback'] || []).select { |f| f.dig('when', 'same_as') }
         files = { file => code.to_s, harness => prelude(check) + language::HARNESS }
         alternatives.each_with_index { |f, i| files["alt#{i + 1}#{File.extname(file)}"] = f['when']['same_as'] }
@@ -284,8 +296,10 @@ module KataCheck
         outputs = result.too_long ? [] : result.stdout.split(/^(?=#{CallCheck::RESULT_MARK})/)
                                                   .select { |part| part.start_with?(CallCheck::RESULT_MARK) }
         mine = outputs.first.to_s
-        status, message, read = language.evaluate(task, check.merge('file' => nil), mine,
-            :timed_out => result.timed_out && outputs.empty?)
+        evaluate = lambda do |output|
+            language.evaluate(task, check.merge('file' => nil), output, :timed_out => result.timed_out && outputs.empty?)
+        end
+        status, message, read = check['gates'] ? GateCheck.evaluate(check, mine, plain, evaluate) : evaluate.call(mine)
         message = forbidden_message(message) if message.to_s.include?("#{FORBIDDEN}: ")
         message = check['slow'] if check['slow'] && result.timed_out && outputs.empty?
         if status == :wrong && !alternatives.empty?

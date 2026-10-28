@@ -301,7 +301,7 @@ class Main < Sinatra::Base
             io.puts "<h4 class='h6 mb-2'><i class='bi bi-globe2 me-1 text-body-secondary'></i>Eigene Website veröffentlichen</h4>"
             io.puts "<p class='small text-body-secondary mb-2'>Eine fertige statische Website kannst du dauerhaft und öffentlich unter einer eigenen Hackschule-Subdomain veröffentlichen – auch wenn dein Workspace nicht läuft.</p>"
             io.puts "<div class='d-flex flex-wrap gap-3'>"
-            io.puts "<a class='small' href='/custom-subdomain'>Anleitung zur Veröffentlichung &rarr;</a>"
+            io.puts "<a class='small' href='/reference/webspace'>Anleitung zur Veröffentlichung &rarr;</a>"
             io.puts "<a class='small' href='/datenschutz/webhosting'>Nutzungsvereinbarung zum Ausdrucken &rarr;</a>"
             io.puts "</div>"
             io.puts "</div>"

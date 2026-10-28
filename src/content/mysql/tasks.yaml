@@ -347,3 +347,125 @@ tasks:
       - when: { picked: 2 }
         say: Eine leere Spalte gibt es nicht; bei WHERE gibt es density schlicht noch gar nicht.
     solution: "Ein Fehler, in MySQL »Unknown column 'density' in 'where clause'«. Richtig ist `WHERE population / area > 1000`: der Ausdruck selbst statt des Namens."
+
+  # Daten ändern: INSERT, UPDATE und DELETE ändern die Tabelle city. Die
+  # Prüfung (schema mit rows_where) liest nur und zählt Zeilen, die eine
+  # Bedingung erfüllen. Am Ende löscht loeschen die neuen Städte wieder, dann
+  # hat city dieselben 4748 Zeilen wie nach dem Import, und die Aufgaben oben
+  # (tables: { city: 4748 }) gehen wieder.
+  - id: einfuegen
+    title: Weimar und Görlitz
+    prompt: |
+      Füge Weimar und Görlitz mit den Werten aus dem Kasten oben in die Tabelle
+      `city` ein, in `mycli`. Dann prüf hier: Die Prüfung liest deine Tabelle
+      `city` und sucht die beiden Zeilen.
+    check:
+      type: schema
+      tables:
+        - name: city
+          rows_where:
+            - where: "name = 'Weimar'"
+              rows: 1
+              say: Weimar steht noch nicht genau einmal in `city`. `SELECT * FROM city WHERE name = 'Weimar';` zeigt, was da ist.
+            - where: "name = 'Weimar' AND country_code = 'DEU' AND population = 65954 AND latitude = 50.9811 AND longitude = 11.3294 AND is_capital = 0"
+              rows: 1
+              say: "Weimar steht in `city`, aber nicht mit allen Werten aus dem Kasten. Vergleiche `SELECT * FROM city WHERE name = 'Weimar';` mit ihm: Stehen die Werte in derselben Reihenfolge wie die Spalten? Zum Neuanfang löscht `DELETE FROM city WHERE name = 'Weimar';` die Zeile wieder (mehr dazu gleich)."
+            - where: "name = 'Görlitz'"
+              rows: 1
+              say: Görlitz steht noch nicht genau einmal in `city`. `SELECT * FROM city WHERE name = 'Görlitz';` zeigt, was da ist.
+            - where: "name = 'Görlitz' AND country_code = 'DEU' AND population = 55186 AND latitude = 51.1563 AND longitude = 14.9910 AND is_capital = 0"
+              rows: 1
+              say: "Görlitz steht in `city`, aber nicht mit allen Werten aus dem Kasten. Vergleiche `SELECT * FROM city WHERE name = 'Görlitz';` mit ihm: Stehen die Werte in derselben Reihenfolge wie die Spalten? Zum Neuanfang löscht `DELETE FROM city WHERE name = 'Görlitz';` die Zeile wieder (mehr dazu gleich)."
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    solution: |
+      ```sql
+      INSERT INTO city (id, name, country_code, population, latitude, longitude, is_capital)
+      VALUES (4750, 'Weimar', 'DEU', 65954, 50.9811, 11.3294, 0),
+             (4751, 'Görlitz', 'DEU', 55186, 51.1563, 14.9910, 0);
+      ```
+      Ohne Lüneburg sind 4749 und 4750 die nächsten freien Nummern; jede freie Nummer geht.
+
+  - id: ohne-where
+    title: Ohne WHERE
+    prediction: true
+    prompt: |
+      Was passiert bei diesem Befehl, in dem das `WHERE` fehlt? Rate erst,
+      dann lies weiter.
+
+      ```sql
+      UPDATE city SET population = 74502;
+      ```
+    check:
+      type: choice
+      options:
+        - Jede Stadt in `city` hat danach 74502 Einwohner.
+        - Nur Lüneburg ändert sich, denn dort passt die Zahl.
+        - 'MySQL meldet einen Fehler: Ohne `WHERE` weiß es nicht, welche Zeile gemeint ist.'
+        - Nur die Zeile, die zuletzt eingefügt wurde, ändert sich.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "`UPDATE` sucht nicht nach einer Zeile, zu der der neue Wert passt. Welche Zeilen es trifft, sagt allein das `WHERE`."
+      - when: { picked: 2 }
+        say: Für MySQL ist das ein gültiger Befehl. Ohne `WHERE` gilt `SET` für jede Zeile.
+      - when: { picked: 3 }
+        say: Eine Tabelle merkt sich nicht, welche Zeile zuletzt kam. Welche Zeilen ein `UPDATE` trifft, sagt allein das `WHERE`.
+    solution: |
+      Ohne `WHERE` trifft `UPDATE` jede Zeile: Alle Städte, von Chongqing bis
+      Vaduz, hätten danach 74502 Einwohner. Im Workspace fragt `mycli` vorher
+      nach, und mit `n` passiert nichts.
+
+  - id: aendern
+    title: Weimar 2025
+    prompt: |
+      Ende 2025 hatte Weimar 65566 Einwohner. Ändere die Zahl in deiner Zeile
+      für Weimar, in `mycli`, dann prüf hier.
+    check:
+      type: schema
+      tables:
+        - name: city
+          rows_where:
+            - where: "name = 'Weimar'"
+              rows: 1
+              say: Weimar steht nicht genau einmal in `city`. Füge die Stadt zuerst ein (»Weimar und Görlitz« oben).
+            - where: "name = 'Weimar' AND population = 65566"
+              rows: 1
+              say: Weimar hat in deiner Tabelle noch nicht 65566 Einwohner. `SELECT name, population FROM city WHERE name = 'Weimar';` zeigt, was dort steht.
+            - where: population = 65566
+              rows: 1
+              say: Nicht nur Weimar hat jetzt 65566 Einwohner. Dein `UPDATE` hat mehr Zeilen getroffen als die eine; probier die Bedingung mit `SELECT` aus. Um die anderen Zahlen zurückzubekommen, lädst du die Daten neu (»Die Daten neu laden« unten) und fügst Weimar und Görlitz noch einmal ein.
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    solution: |
+      ```sql
+      UPDATE city SET population = 65566 WHERE name = 'Weimar';
+      ```
+      `WHERE id = 4750` (oder die Nummer, die du Weimar gegeben hast) trifft dieselbe Zeile.
+
+  - id: loeschen
+    title: Wieder wie geladen
+    prompt: |
+      Lösche in `mycli` mit einem einzigen `DELETE` die Städte, die nicht in
+      `city` gehören (Kasten oben). Dann prüf hier: Die Prüfung zählt die
+      Zeilen in `city`.
+    check:
+      type: schema
+      tables:
+        - name: city
+          rows_where:
+            - where: population < 100000 AND is_capital = 0
+              rows: 0
+              say: In `city` stehen noch Städte, die nicht hineingehören, zum Beispiel Weimar. Trifft deine Bedingung sie? Probier sie zuerst mit `SELECT * FROM city WHERE …;` aus. Hast du in einer Transaktion gelöscht, sieht die Prüfung es erst nach `COMMIT`.
+            - where: is_capital = 1
+              rows: 197
+              say: Es fehlen Hauptstädte. Dein `DELETE` hat auch Hauptstädte mit weniger als 100.000 Einwohnern getroffen, Vaduz oder die Vatikanstadt. Lade die Daten neu (»Die Daten neu laden« unten), füge Weimar noch einmal ein und lösche dann mit einer Bedingung, die Hauptstädte verschont.
+            - where: population >= 100000 AND is_capital = 0
+              rows: 4551
+              say: Es fehlen Städte mit 100.000 Einwohnern oder mehr. Dein `DELETE` hat zu viel getroffen; vergleiche `<` und `>=` in deiner Bedingung. Lade die Daten neu (»Die Daten neu laden« unten), füge Weimar noch einmal ein und versuch es dann wieder.
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    solution: |
+      ```sql
+      DELETE FROM city WHERE population < 100000 AND is_capital = 0;
+      ```
+      Ohne `AND is_capital = 0` wären auch 34 Hauptstädte verschwunden, von
+      Vaduz bis zur Vatikanstadt. `city` hat jetzt wieder 4748 Zeilen, wie
+      nach dem Import.

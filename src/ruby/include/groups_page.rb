@@ -326,7 +326,8 @@ class Main < Sinatra::Base
 
     # Renaming a group, by its teachers or an administrator. The name is also
     # the key of the pins on the start page (Pin, key »group|slug«), of the
-    # group's programming language and class repositories (GroupSetting) and of the teachers' last
+    # group's programming language and class repositories (GroupSetting), of the teachers'
+    # feedback on its activities (ActivityFeedback) and of the teachers' last
     # choice on the class page (User.class_prefs): all of them follow, in one
     # transaction.
     post '/api/groups/rename' do
@@ -350,6 +351,7 @@ class Main < Sinatra::Base
             $neo4j.neo4j_query('MATCH (p:Pin {group: $old}) SET p.group = $new, p.key = $new + "|" + p.slug;', :old => old_name, :new => new_name)
             $neo4j.neo4j_query('MATCH (m:MeetingPoint {group: $old}) SET m.group = $new, m.key = $new + "|" + m.activity;', :old => old_name, :new => new_name)
             $neo4j.neo4j_query('MATCH (s:GroupSetting {group: $old}) SET s.group = $new;', :old => old_name, :new => new_name)
+            $neo4j.neo4j_query('MATCH (f:ActivityFeedback {group: $old}) SET f.group = $new;', :old => old_name, :new => new_name)
             $neo4j.neo4j_query('UNWIND $rows AS r MATCH (u:User {email: r.email}) SET u.class_prefs = r.prefs;', :rows => prefs)
         end
         Main.note_roster_change!

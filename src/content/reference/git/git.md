@@ -196,6 +196,10 @@ Visual Studio Code zeigt über jedem Konflikt die Knöpfe »Accept Current Chang
 Hol mit `git pull`, bevor du anfängst, und schick mit `git push`, wenn du fertig bist. Lehnt Git deinen Push ab, weil jemand vor dir gepusht hat, steht unter [Wenn Git den Push ablehnt](/reference/gitlab#push-abgelehnt), was zu tun ist. Bricht `git pull` ab, weil du Dateien geändert hast, die auch in der neuen Version anders sind, hilft `git stash` wie unter [Eine neue Version der Vorlage holen](/reference/workspace#neue-version).
 <!-- /part -->
 
+### Eigene Repositorys zum Üben
+
+Hat deine Schule den Git-Server des Workspace, legst du unter [Git-Repositorys](/git) bei **Meine Repositorys** bis zu zehn eigene Repositorys an. Nur du kannst sie klonen, pushen und im Browser ansehen; deine Lehrkräfte sehen sie nicht. Dort steht auch die Adresse zum Klonen, und dort siehst du, ob dein Workspace schon einen Schlüssel für den Git-Server hat. Zum Ausprobieren von `git push`, Branches und Tags ist so ein Repository richtig; was ihr in der Klasse zusammen baut, gehört in das Repository eurer Gruppe.
+
 ## Zurückgehen und rückgängig machen
 
 <!-- part: git-zurueck -->

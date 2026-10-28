@@ -324,15 +324,76 @@ einem Git-Server im Netz braucht dann niemand.
   über 50 MB an. Nach jeder Änderung an den Gruppen, an einem Repository oder
   an einem Schlüssel schreibt das Backend die Liste der Schlüssel und der
   Zugriffe neu (`data/git-server/config`).
-- **Ansehen:** »Ansehen« neben dem Feld führt zu `/git/<Ordner>/<Seite>`: Dateien,
-  Verlauf, jeder Commit mit seinen Änderungen, alles als ZIP. Die Lernenden
-  der Gruppe sehen dieselben Seiten. Bilder werden gezeigt; HTML, SVG und
-  Markdown-HTML aus den Repositorys nie ausgeführt.
+- **Ansehen:** `/git/<Ordner>/<Seite>` (main.rb, »Reading a group's
+  repository in the browser«; `GitBrowse`, `git_browse.js`) ist ein
+  Code-Browser: links der Dateibaum des Stands (Ordner öffnen sich an Ort
+  und Stelle und bleiben beim Weiterklicken offen, Pfeiltasten und Enter,
+  `t` sucht eine Datei), rechts ein Ordner mit dem letzten Commit jedes
+  Eintrags und seinem README, eine Datei mit Zeilennummern und Links pro
+  Zeile (`#L12`), im Code-Stil der Seite, ein Bild (auch SVG, mit
+  »Quelltext«), der Verlauf nach Tagen (Tags markiert) oder ein Commit mit
+  seinen Änderungen. Oben Branches und Tags in einem Menü, »Klonen« (die
+  Adresse in einem Feld mit Kopierknopf) und »ZIP«; auf dem Handy liegt der
+  Baum über dem Inhalt. Hat ein Stand mehr als `GitBrowse::TREE_MAX`
+  Einträge, liest der Baum seine Ordner einzeln (`…/entries/<ref>/<Pfad>`,
+  JSON). Jeder git-Aufruf ist in Zeit und Ausgabe begrenzt. Dürfen:
+  Mitglieder und Lehrkräfte der Gruppe und Admins (`git_may_browse?`),
+  für Seiten, JSON und Dateien gleich. Dateien für sich (`…/raw/…`) kommen
+  als Bild oder Text mit `Content-Security-Policy: sandbox` und `nosniff`:
+  HTML, SVG und Markdown-HTML aus den Repositorys laufen nie. Ein README
+  zeigt nur Bilder aus dem Repository selbst; ein Bild von anderswo
+  verriete dessen Server, wer liest, statt seiner steht der Alt-Text.
+- **Wo man hinfindet:** Lernende über »Das Repository im Browser ansehen«
+  unter dem Klon-Befehl der Aktivität (nur in den Varianten für den
+  Git-Server des Workspace, `ClassRepos.mark_browse`); Lehrkräfte über
+  »Ansehen« neben dem Feld in den Einstellungen, »ansehen« in der Zeile
+  »Klassen-Repository« über der Aktivität, »Repository« neben »Zur Seite«
+  im Fortschritt der Klassenseite und die Übersicht `/git`. Ohne
+  Berechtigung oder ohne `GIT_SERVER` erscheint keiner dieser Links.
+- **Übersicht:** `/git` (`GitOverview` in `src/ruby/include/git_overview.rb`)
+  listet jedes Repository auf dem Server in den Gruppen der Lehrkraft
+  (`class_groups`, nur Gruppen mit einem Ordner): Gruppe, Aktivität,
+  Adresse, Art der Schlüssel, der letzte Commit mit dem Namen seines Autors
+  (nie die E-Mail-Adresse), »Ansehen« und »Einstellungen«
+  (`/klasse?group=…&repos=…`). »Nicht eingetragen« heißt, die Gruppe hat für
+  die Seite eine andere Adresse oder keine. Admins sehen alle Gruppen mit
+  einem Ordner und dazu deren Lehrkräfte; Lernende sehen die Repositorys
+  ihrer Gruppen zum Ansehen, ohne Einstellungen und ohne Löschen, ohne
+  `GIT_SERVER` gibt es die Seite nicht (404). Verlinkt unter den Feldern der
+  Einstellungen (»Übersicht«) und in der Kopfzeile jeder Seite eines
+  Repositorys (»Repositorys«). Ein Aufruf von git je Repository, kein Cache.
 - **Löschen:** »Löschen« neben dem Feld (nach einer Rückfrage) löscht das
   Repository mit allem darin. Wird eine Gruppe gelöscht oder fehlt sie im
   eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein
   Konto gelöscht, verschwinden seine Schlüssel; seine Commits bleiben als
   Arbeit der Gruppe in deren Repositorys.
+- **Freie Repositorys einer Gruppe:** »Neues Repository« auf `/git`
+  (Lehrkräfte und Admins, für ihre Gruppen; `/api/git/create_group_repo`):
+  Gruppe, Name (die Regeln der Adresse, einmal je Ordner, nicht der Name
+  einer Aktivität mit Klassen-Repository, `GitServer.name_problem`),
+  Beschreibung (in git's Datei `description`), leer oder mit einer
+  `README.md` (ein Commit von »Workspace«). Es liegt im Ordner der Gruppe
+  und gehört zu keiner Aktivität (»frei« in der Übersicht); Zugang wie bei
+  einem Klassen-Repository. Gelöscht wird es auf `/git` nach dem Eintippen
+  seines Namens (`/api/git/delete_group_repo`); eins einer Aktivität weiter
+  auf der Klassenseite.
+- **Eigene Repositorys zum Üben** (»Meine Repositorys« auf `/git` und im
+  Profil unter »Werkzeuge«, »Git«): jede Person, Lernende wie Lehrkräfte,
+  höchstens `GitServer::PERSONAL_MAX` (10), in einem eigenen Ordner
+  (`User.git_id`, angelegt beim ersten). **Nur die Person selbst** darf sie
+  klonen, pushen und ansehen; nicht die Lehrkräfte ihrer Gruppen, nicht
+  andere Lernende. Admins sehen auf `/git` nur, dass es sie gibt (Person,
+  Name, Größe, Datum) und können eins löschen, aber nicht hineinsehen. So
+  entschieden, weil Üben privat ist; was gemeinsam entsteht, gehört in ein
+  Repository der Gruppe (docs/plan-git-gruppen.md). Getestet in
+  `git_server_test.rb` (`access_map`, `may_read?`) und
+  `git-repos.browser.spec.ts`. Schlüssel: die, die die Person schon hat;
+  ohne einen legt der Workspace auf Wunsch ein Schlüsselpaar in ihrem
+  Workspace an (`/api/git/install_my_key`, wie bei »Automatisch«) oder sie
+  gibt einen öffentlichen Schlüssel ab. Gelöscht mit dem Konto
+  (`Main#delete_account`). Das Profil hat dazu »Git im Menü anzeigen«
+  (`show_git`), wie phpMyAdmin und Neo4j; alles davon nur mit
+  `GIT_SERVER`.
 - **Ein vorhandenes Repository umziehen:** ein leeres im Workspace anlegen,
   dann aus einem Klon des alten `git push --mirror` an die neue Adresse.
 
@@ -429,6 +490,65 @@ im Fortschritt) mit einem Balken, dazu »zuletzt« über alle Aktivitäten
 (`ClassBoard.overview`). Noten und Export gibt es nicht; die Zahlen sagen,
 wie weit jemand ist.
 
+## Rückmeldung zu einer Aktivität
+
+Lehrkräfte sagen der Administration, wie eine Aktivität mit einer Gruppe
+lief (`include/activity_feedback.rb`, die Seite in
+`include/activity_feedback_page.rb`, `activity_feedback.js`). Im Reiter
+»Fortschritt« steht dafür immer »Rückmeldung geben« (danach »Deine
+Rückmeldung«); es öffnet ein Formular über der Tabelle, nie ein Fenster
+von selbst. Die Fragen: wie es insgesamt lief (gut, teils, teils, nicht
+gut, dazu ein Satz), die Dauer gemessen an `duration:` (kürzer, passte,
+länger), das Niveau für die Gruppe (zu leicht, passend, zu schwer), in
+welcher der fünf Sprachen der Klassen (`CodeLanguages::LANGUAGES`) die
+Aktivität zusätzlich gewünscht ist (die, die sie schon hat, sind als »gibt
+es schon« gesperrt; dazu ein Feld für eine andere), was gefehlt, gestört
+oder gut funktioniert hat, und ob die Administration an die Adresse
+schreiben darf. Alles ist freiwillig, eine Antwort muss sein. Eine
+Rückmeldung je Lehrkraft, Gruppe und Aktivität; sie lässt sich ändern.
+
+**Wann die Seite fragt** (`ActivityFeedback.prompt`): Mindestens drei der
+Lernenden der Gruppe (in einer kleineren Gruppe alle; ohne Lehrkräfte,
+Admins und Testkonten) haben eine Aufgabe der Aktivität geprüft,
+beantwortet oder abgegeben, das neueste `updated` ihrer `TaskState`s ist
+höchstens 60 Tage alt, und die Klasse ist entweder weitergegangen und
+hier seit 7 Tagen still, oder hier seit 21 Tagen still (`QUIET_DAYS`,
+`QUIET_ALONE_DAYS`). Weitergegangen heißt: In einer anderen Aktivität
+haben mindestens die Hälfte der Lernenden, die hier gearbeitet haben, und
+mindestens drei eine Aufgabe nach der letzten von hier
+(`ActivityFeedback.moved_on_count`); ein paar, die anderswo stöbern,
+zählen nicht. Eine Woche Ferien oder eine ausgefallene Stunde mitten in
+einer Aktivität bringt die Karte also nicht. Dann steht über der Tabelle
+die Karte »Wie lief die Aktivität?« mit »Rückmeldung geben«, »Nicht jetzt«
+(14 Tage ausgeblendet, `snoozed_until`) und »Nicht mehr fragen« (`never`,
+für diese Gruppe und Aktivität). Ältere Aktivitäten fragen nicht mehr von
+selbst; der Knopf bleibt. Wartet eine Karte, zeigt die Startseite der
+Lehrkraft einen kleinen Hinweis, nur die neueste; »Nicht jetzt« dort blendet
+diese Karte 14 Tage aus und im selben Browser eine Woche lang jeden Hinweis
+auf der Startseite (lokaler Speicher).
+
+**Wer**: Rückmeldungen geben nur Lehrkräfte einer Gruppe (`+`), auch Admins
+nur für Gruppen, die sie selbst betreuen; nicht für Testgruppen und nicht
+beim Nachahmen (`feedback_group!` in `include/access.rb`, sonst 403). Lesen
+kann alle die Administration unter `/rueckmeldungen` (Menü
+»Administration«, unter »Inhalte«), um zu sehen, welche Aktivitäten Arbeit
+brauchen: zuerst je Aktivität eine Karte (wie es lief als Balken in Grün,
+Gelb und Rot mit Zeichen und Zahlen, Dauer und Niveau als »2× länger, 1×
+passte« mit der angesetzten Dauer, die gewünschten Sprachen), die neueste
+Rückmeldung zuerst; darunter jede Antwort mit ihren Texten, Gruppe,
+Lehrkraft und Datum, die Adresse nur, wenn das Häkchen gesetzt ist. Filter:
+Name der Aktivität, »Nur mit Text«, »Kontakt erwünscht«. Lernende sehen
+nichts davon.
+
+**Gespeichert** als `(:ActivityFeedback {group, activity, …})-[:BY]->(:User)`
+(Datenschutzerklärung, Verzeichnis und Löschkonzept aus `privacy.rb`). Sie
+geht mit dem Konto der Lehrkraft (`AccountDeletion`) und steht in ihrem
+Download unter `rueckmeldungen`. Beim Umbenennen der Gruppe zieht sie mit;
+wird die Gruppe gelöscht, bleibt eine beantwortete unter `former_group`
+(»Gruppe gelöscht« auf `/rueckmeldungen`, eine neue Gruppe gleichen Namens
+wird neu gefragt), »Nicht jetzt« und »Nicht mehr fragen« fallen weg
+(`GroupData`).
+
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
@@ -441,6 +561,8 @@ wie weit jemand ist.
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
+| Rückmeldung zu einer Aktivität geben und ändern (Klassenseite, »Fortschritt«) | | | ✓ eigene Gruppen | ✓ selbst betreute Gruppen |
+| Alle Rückmeldungen lesen (`/rueckmeldungen`) | | | | ✓ |
 | Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
 | Zeile des Lehrplans (`curriculum`, im Streifen über der Seite, in Lila) | | | ✓ | ✓ |
 | Die Übersicht `/lehrplan` (docs/lehrplan.md); Gäste wählen das Land über `?land=`, Lehrkräfte speichern es im Profil | ✓ | ✓ | ✓ | ✓ |

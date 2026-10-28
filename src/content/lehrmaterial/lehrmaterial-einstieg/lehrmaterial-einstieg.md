@@ -97,6 +97,10 @@ Mit **Treffpunkt** über der Tabelle legst du fest, bis zu welcher Aufgabe alle 
 
 <img class='full full-shadow shot' src='klasse-treffpunkt.webp' alt='Über der Tabelle im Reiter Fortschritt: Treffpunkt nach Aufgabe 1, »16 von 17 da«, darunter »Noch nicht da: 1« mit einem Namen und dem Knopf »fehlt heute«. In der Tabelle zeigt eine gestrichelte Linie nach der ersten Spalte, wo der Treffpunkt liegt.'>
 
+#### Rückmeldung
+
+Haben mindestens drei aus deiner Gruppe mit einer Aktivität gearbeitet, und ist deine Klasse danach zu einer anderen Aktivität weitergegangen (mindestens die Hälfte von ihnen, nicht nur ein paar, die anderswo stöbern), fragt eine Woche später eine Karte über der Tabelle (ohne neue Aktivität nach drei Wochen, damit Ferien oder eine ausgefallene Stunde sie nicht mitten in einer Aktivität bringen): **Wie lief die Aktivität?** Ein paar Klicks genügen: wie es insgesamt lief, ob die Dauer passte, ob das Niveau für die Gruppe passte, in welcher Programmiersprache du die Aktivität gern hättest, und was gefehlt oder gut funktioniert hat. Alles ist freiwillig, eine Antwort genügt. Lesen kann die Rückmeldung nur die Administration, die die Aktivitäten schreibt; deine Klasse sieht nichts davon. Eine E-Mail bekommst du dazu nur, wenn du es ankreuzt. **Nicht jetzt** blendet die Karte für 14 Tage aus, **Nicht mehr fragen** für diese Aktivität und Gruppe ganz. Früher antworten oder deine Antwort ändern kannst du jederzeit mit **Rückmeldung geben** über der Tabelle; wartet eine Karte, steht ein kurzer Hinweis darauf auch auf deiner Startseite.
+
 ### Überblick
 
 Hier steht jede Person der Gruppe mit allen Aktivitäten, an denen jemand aus der Gruppe gearbeitet hat; angeheftete kommen zuerst. In jeder Zelle steht, wie viele Aufgaben gelöst sind, von allen ohne Extras, mit einem schmalen Balken; ein Strich heißt: noch nichts bearbeitet. Ein Klick auf eine Spalte öffnet die Aktivität im Reiter **Fortschritt**. Ganz rechts steht, wann die Person zuletzt eine Aufgabe irgendeiner Aktivität geprüft hat. Noten sind das nicht: Die Zahlen sagen, wie weit jemand ist, nicht wie gut.
@@ -132,8 +136,47 @@ Hier steht, was für die ganze Gruppe gilt; jede Änderung ist sofort gespeicher
 
 - **Sprachen der Klasse:** Gibt es eine Aktivität in mehreren Programmiersprachen (etwa Ruby, Python und JavaScript), zeigt sie der Gruppe die erste Sprache dieser Liste, die sie anbietet. Du ordnest die Liste, indem du eine Sprache an ihren Platz ziehst oder mit den Pfeilen verschiebst, und holst Sprachen aus »Weitere Sprachen« dazu; ein Satz darunter sagt, was das für die Aktivitäten heißt. Lernende können auf der Seite selbst umschalten.
 - **Kopierknöpfe:** »An jedem Codeblock« setzt überall einen Kopierknopf. »Wo sinnvoll« lässt ihn nur dort, wo Abtippen nichts lehrt (Adressen, Befehle, große Dateien); alles andere tippt die Klasse ab.
-- **Git-Repositorys:** Für Aktivitäten, in denen die Klasse ein gemeinsames Repository klont, trägst du dessen Adresse ein oder legst es mit **Im Workspace anlegen** auf dem Git-Server des Workspace an. Die Lernenden sehen die Adresse dann im Befehl zum Klonen.
+- **Git-Repositorys:** die Adressen der Repositorys, die die Klasse gemeinsam klont, und wie die Lernenden zu ihren Schlüsseln kommen; mehr dazu im nächsten Abschnitt.
 - **Schule:** zu welcher Schule die Gruppe gehört, ob die Schule dem Einsatz zugestimmt hat, und der Weg zu den **Unterlagen für deine Schule** (mehr dazu unten).
+
+## Git-Repositorys der Klasse
+
+In einigen Aktivitäten arbeitet die ganze Klasse in einem gemeinsamen Git-Repository, etwa in [Im Team mit Git: das Klassenquiz](/class-quiz): Alle klonen dasselbe Repository, jede und jeder schreibt eine Runde Fragen und pusht sie, und dabei passiert, womit Teams jeden Tag umgehen: ein abgelehnter Push, ein Konflikt. Dafür braucht die Gruppe ein Repository. Du trägst seine Adresse in den **Einstellungen** unter **Git-Repositorys** ein; die Lernenden sehen sie dann auf der Seite im Befehl zum Klonen.
+
+Zu diesem Repository gibt es zwei Wege:
+
+- **Eine Adresse von draußen:** Hat deine Schule einen Git-Server (GitLab, Gitea, Forgejo) oder nutzt deine Klasse GitHub, legst du das Repository dort an, lädst die Lernenden ein und trägst die Adresse ins Feld ein. Die Konten dort verwaltest du selbst.
+- **Im Workspace anlegen:** Hat der Workspace deiner Schule einen eigenen Git-Server, steht dieser Knopf neben jedem Feld. Er legt das Repository dort an und trägt die Adresse gleich ein. Ein Konto braucht niemand. Hat die Aktivität Startdateien (beim Klassenquiz das Programm und die erste Runde), liegen sie schon als erster Commit darin.
+
+### Schlüssel
+
+Der Git-Server des Workspace erkennt die Lernenden an einem SSH-Schlüssel. Wie sie zu ihm kommen, wählst du für die Gruppe unter **Schlüssel**:
+
+- **Die Lernenden erzeugen ein Schlüsselpaar und geben den öffentlichen Schlüssel ab:** wie bei jedem Git-Server im Netz. Sie erzeugen im Terminal ein Schlüsselpaar und fügen die Zeile ihres öffentlichen Schlüssels in den Kasten auf der Seite [Git-Server: Zugang und Veröffentlichen](/reference/gitlab) im Handbuch ein; beim Klassenquiz steht derselbe Kasten auch auf der Seite der Aktivität. Einen privaten Schlüssel weist der Kasten zurück. Was sie dabei lernen, brauchen sie später bei GitHub oder GitLab genauso.
+- **Der Workspace richtet den Schlüssel für alle ein:** Für die Lernenden ist nichts zu tun. Der Workspace legt jedem Mitglied der Gruppe einen Schlüssel an: sofort in jedem Workspace, den es schon gibt, in den anderen vor ihrem nächsten Start. Dieser Schlüssel gilt nur für den Git-Server des Workspace. Das passt, wenn die Stunde von Git handeln soll und nicht von SSH.
+
+Ob alles klappt, prüfen die Lernenden im Terminal ihres Workspace:
+
+```bash
+ssh -T git@git.workspace
+```
+
+Der Server antwortet mit »Hallo! Dein Schlüssel ist eingetragen. Hier gibt es keine Shell, nur Git.« und zählt die Repositorys auf, die sie erreichen. Mit einem abgegebenen Schlüssel fragt SSH beim ersten Mal, ob es dem Server trauen soll; den Fingerabdruck zum Vergleichen zeigt der Kasten.
+
+### Ansehen, ablehnen, löschen
+
+- **Ansehen** neben dem Feld zeigt das Repository im Browser: links die Dateien als Baum, rechts den Code, den Verlauf, jeden Commit mit seinen Änderungen, Branches und Tags, und alles als ZIP zum Herunterladen. So siehst du nach der Stunde, wer was beigetragen hat, ohne selbst zu klonen. Dieselbe Seite erreichst du über **ansehen** in der Zeile »Klassen-Repository« über der Aktivität und im Fortschritt der Klasse über **Repository** neben »Zur Seite«. Die Lernenden der Gruppe sehen dieselben Seiten; sie finden sie unter dem Klon-Befehl der Aktivität (»Das Repository im Browser ansehen«).
+- **Was der Server ablehnt:** `git push --force`, das Löschen eines Branches auf dem Server und jeden Push über 50 MB. Was einmal gepusht ist, überschreibt also niemand; wer einen abgelehnten Push hat, holt sich erst den Stand der anderen mit `git pull`.
+- **Wer hinkommt:** Klonen und pushen geht nur aus den Workspaces der Lernenden und Lehrkräfte der Gruppe. Aus dem Internet ist der Git-Server nicht zu erreichen, auch nicht von deinem eigenen Rechner zu Hause. Im Browser liest du die Repositorys über **Ansehen**, sobald du angemeldet bist.
+- **Löschen** neben dem Feld fragt einmal nach (»Wirklich löschen? Alles darin ist weg.«) und löscht dann das Repository auf dem Server mit allem darin, auch mit allem, was die Klasse gepusht hat. War seine Adresse eingetragen, ist das Feld danach leer. Die Klone in den Workspaces der Lernenden bleiben, wie sie sind. Wird die Gruppe gelöscht, gehen ihre Repositorys mit.
+
+### Alle Repositorys auf einen Blick
+
+Unter [Git-Repositorys](/git) stehen alle Repositorys im Workspace aus allen deinen Gruppen: Gruppe, Aktivität, Adresse, wie die Gruppe zu ihren Schlüsseln kommt, der letzte Commit mit dem Namen der Person, die ihn geschrieben hat, und daneben **Ansehen** und **Einstellungen**. Du findest die Seite in den Einstellungen unter den Feldern (»Übersicht«) und auf jeder Seite eines Repositorys oben links (»Repositorys«). »Nicht eingetragen« heißt: Das Repository liegt noch auf dem Server, aber die Gruppe hat für die Aktivität eine andere Adresse eingetragen oder keine.
+
+Ein Repository ohne Aktivität, etwa für ein Projekt der Klasse, legst du dort mit **Neues Repository** an: Gruppe, Name, eine Beschreibung, leer oder mit einer Datei `README.md`. Es gehört der Gruppe wie ein Klassen-Repository. Außerdem kann jede und jeder, auch du, unter **Meine Repositorys** bis zu zehn eigene Repositorys zum Üben anlegen. Die sieht nur ihre Besitzerin oder ihr Besitzer, auch du als Lehrkraft nicht: Was die Klasse gemeinsam macht, gehört in ein Repository der Gruppe.
+
+<img class='full full-shadow shot' src='git-uebersicht.webp' alt='Die Seite Git-Repositorys: eine Zeile für das Klassenquiz der 9b mit der Adresse auf dem Git-Server des Workspace, den automatischen Schlüsseln, dem letzten Commit von Jonas Becker und den Knöpfen Ansehen und Einstellungen.'>
 
 ## Eine Aktivität finden: der Lehrplan
 
@@ -202,6 +245,7 @@ Steht an einer Aufgabe **Vorschau für Lehrkräfte**, sind Aufgaben auf eurer In
 - Für jede Aufgabe die letzte Antwort, ob sie stimmt und wie viele Versuche es waren. Lernende können ihre Antwort selbst löschen.
 - Abgaben als Kopie, bis die Person sie löscht oder neu abgibt.
 - Wer wann einen Workspace geöffnet oder jemanden nachgeahmt hat, mit deinem Satz dazu.
+- Deine Rückmeldungen zu Aktivitäten, bis dein Konto gelöscht wird.
 
 Daraus zeigt die Klassenseite auch, wann jemand zuletzt eine Aufgabe geprüft hat; eigens gespeichert wird dafür nichts.
 

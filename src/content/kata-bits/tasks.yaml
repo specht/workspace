@@ -1409,6 +1409,703 @@ tasks:
           return result;
         }
         ```
+  - id: add-by-hand
+    title: "Von Hand addieren"
+    level: 1
+    prediction: true
+    prompt: |
+      Rechne von Hand, wie oben: `1011 + 0110`. Welche Bits kommen heraus?
+    check:
+      type: answer
+      expect: ["10001", "1 0001"]
+    feedback:
+      - when: { equals: "0001" }
+        say: "Vorn fehlt der letzte Übertrag: Er kommt als neue Stelle dazu."
+      - when: { equals: "1101" }
+        say: "Das ist jede Stelle für sich, ohne Übertrag. 1 + 1 ist `10`: Die 1 geht zur nächsten Stelle links und zählt dort mit."
+      - when: { equals: "17" }
+        say: "Als Zahl stimmt es, gefragt sind aber die Bits."
+    solution: "`10001`: 11 + 6 = 17. Drei Überträge, der letzte wird eine neue Stelle vorn."
+  - id: add-digits
+    title: "Eine Stelle addieren"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `add_digits(a, b, carry)`, die zwei Bits und den Übertrag von der Stelle rechts davon addiert, alle drei 0 oder 1. Sie gibt zwei Zahlen zurück: das Bit, das an dieser Stelle stehen bleibt, und den Übertrag für die nächste Stelle links. `add_digits(1, 1, 0)` ergibt `[0, 1]`, denn 1 + 1 ist `10`.
+    starter: |
+      def add_digits(a, b, carry)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "add_digits(0, 0, 0)"
+          expect: "[0, 0]"
+        - call: "add_digits(1, 0, 0)"
+          expect: "[1, 0]"
+        - call: "add_digits(0, 1, 0)"
+          expect: "[1, 0]"
+        - call: "add_digits(1, 1, 0)"
+          expect: "[0, 1]"
+        - call: "add_digits(0, 0, 1)"
+          expect: "[1, 0]"
+          say: "Der Übertrag zählt mit: 0 + 0 + 1 ist 1."
+        - call: "add_digits(1, 0, 1)"
+          expect: "[0, 1]"
+        - call: "add_digits(0, 1, 1)"
+          expect: "[0, 1]"
+        - call: "add_digits(1, 1, 1)"
+          expect: "[1, 1]"
+          say: "1 + 1 + 1 ist 3, im Zweiersystem `11`: Bit 1, Übertrag 1."
+    feedback:
+      - when: { same_as: "def add_digits(a, b, carry)\n  total = a + b\n  [total % 2, total / 2]\nend\n" }
+        say: "Der Übertrag von der Stelle rechts zählt mit: Addiert werden alle drei, `a`, `b` und `carry`."
+      - when: { same_as: "def add_digits(a, b, carry)\n  total = a + b + carry\n  [total / 2, total % 2]\nend\n" }
+        say: "Erst das Bit, das stehen bleibt, dann der Übertrag: `add_digits(1, 0, 0)` ergibt `[1, 0]`."
+    hint:
+      - "Addiere alle drei. Es kommt 0, 1, 2 oder 3 heraus, im Zweiersystem `0`, `1`, `10` oder `11`: Die rechte Ziffer bleibt stehen, die linke ist der Übertrag."
+      - "Die rechte Ziffer ist der Rest beim Teilen durch 2, die linke das, was beim Teilen herauskommt, wie im ersten Kapitel."
+    solution: |
+      ```ruby
+      def add_digits(a, b, carry)
+        total = a + b + carry
+        [total % 2, total / 2]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `add_digits(a, b, carry)`, die zwei Bits und den Übertrag von der Stelle rechts davon addiert, alle drei 0 oder 1. Sie gibt zwei Zahlen als Paar zurück: das Bit, das an dieser Stelle stehen bleibt, und den Übertrag für die nächste Stelle links. `add_digits(1, 1, 0)` ergibt `(0, 1)`, denn 1 + 1 ist `10`.
+      starter: |
+        def add_digits(a, b, carry):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "add_digits(0, 0, 0)"
+            expect: "(0, 0)"
+          - call: "add_digits(1, 0, 0)"
+            expect: "(1, 0)"
+          - call: "add_digits(0, 1, 0)"
+            expect: "(1, 0)"
+          - call: "add_digits(1, 1, 0)"
+            expect: "(0, 1)"
+          - call: "add_digits(0, 0, 1)"
+            expect: "(1, 0)"
+            say: "Der Übertrag zählt mit: 0 + 0 + 1 ist 1."
+          - call: "add_digits(1, 0, 1)"
+            expect: "(0, 1)"
+          - call: "add_digits(0, 1, 1)"
+            expect: "(0, 1)"
+          - call: "add_digits(1, 1, 1)"
+            expect: "(1, 1)"
+            say: "1 + 1 + 1 ist 3, im Zweiersystem `11`: Bit 1, Übertrag 1."
+      feedback:
+        - when: { same_as: "def add_digits(a, b, carry):\n    total = a + b\n    return total % 2, total // 2\n" }
+          say: "Der Übertrag von der Stelle rechts zählt mit: Addiert werden alle drei, `a`, `b` und `carry`."
+        - when: { same_as: "def add_digits(a, b, carry):\n    total = a + b + carry\n    return total // 2, total % 2\n" }
+          say: "Erst das Bit, das stehen bleibt, dann der Übertrag: `add_digits(1, 0, 0)` ergibt `(1, 0)`."
+      hint:
+        - "Addiere alle drei. Es kommt 0, 1, 2 oder 3 heraus, im Zweiersystem `0`, `1`, `10` oder `11`: Die rechte Ziffer bleibt stehen, die linke ist der Übertrag."
+        - "Die rechte Ziffer ist der Rest beim Teilen durch 2, die linke das, was beim Teilen herauskommt (`//`), wie im ersten Kapitel. Zwei Werte gibst du mit `return x, y` als Paar zurück."
+      solution: |
+        ```python
+        def add_digits(a, b, carry):
+            total = a + b + carry
+            return total % 2, total // 2
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `addDigits(a, b, carry)`, die zwei Bits und den Übertrag von der Stelle rechts davon addiert, alle drei 0 oder 1. Sie gibt zwei Zahlen zurück: das Bit, das an dieser Stelle stehen bleibt, und den Übertrag für die nächste Stelle links. `addDigits(1, 1, 0)` ergibt `[0, 1]`, denn 1 + 1 ist `10`.
+      starter: |
+        function addDigits(a, b, carry) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "addDigits(0, 0, 0)"
+            expect: "[0, 0]"
+          - call: "addDigits(1, 0, 0)"
+            expect: "[1, 0]"
+          - call: "addDigits(0, 1, 0)"
+            expect: "[1, 0]"
+          - call: "addDigits(1, 1, 0)"
+            expect: "[0, 1]"
+          - call: "addDigits(0, 0, 1)"
+            expect: "[1, 0]"
+            say: "Der Übertrag zählt mit: 0 + 0 + 1 ist 1."
+          - call: "addDigits(1, 0, 1)"
+            expect: "[0, 1]"
+          - call: "addDigits(0, 1, 1)"
+            expect: "[0, 1]"
+          - call: "addDigits(1, 1, 1)"
+            expect: "[1, 1]"
+            say: "1 + 1 + 1 ist 3, im Zweiersystem `11`: Bit 1, Übertrag 1."
+      feedback:
+        - when: { same_as: "function addDigits(a, b, carry) {\n  const total = a + b;\n  return [total % 2, Math.floor(total / 2)];\n}\n" }
+          say: "Der Übertrag von der Stelle rechts zählt mit: Addiert werden alle drei, `a`, `b` und `carry`."
+        - when: { same_as: "function addDigits(a, b, carry) {\n  const total = a + b + carry;\n  return [Math.floor(total / 2), total % 2];\n}\n" }
+          say: "Erst das Bit, das stehen bleibt, dann der Übertrag: `addDigits(1, 0, 0)` ergibt `[1, 0]`."
+      hint:
+        - "Addiere alle drei. Es kommt 0, 1, 2 oder 3 heraus, im Zweiersystem `0`, `1`, `10` oder `11`: Die rechte Ziffer bleibt stehen, die linke ist der Übertrag."
+        - "Die rechte Ziffer ist der Rest beim Teilen durch 2, die linke das, was beim Teilen herauskommt (`Math.floor`), wie im ersten Kapitel."
+      solution: |
+        ```javascript
+        function addDigits(a, b, carry) {
+          const total = a + b + carry;
+          return [total % 2, Math.floor(total / 2)];
+        }
+        ```
+  - id: add-binary
+    title: "Bits addieren"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `add_binary(a, b)`, die zwei Texte aus Bits addiert, beide gleich lang, so wie von Hand: von rechts nach links, Stelle für Stelle, mit dem Übertrag. Das Ergebnis ist so lang wie `a`, oder eine Stelle länger, wenn am Ende ein Übertrag bleibt: `add_binary('0101', '0111')` ergibt `'1100'`, `add_binary('1111', '0001')` ergibt `'10000'`. Ohne `to_i(2)` und `to_s(2)`; `add_digits` darfst du mitbenutzen, wenn du es hier hineinschreibst.
+    starter: |
+      def add_binary(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf, String#to_i, String#hex, String#oct]
+      cases:
+        - call: "add_binary('0101', '0111')"
+          expect: "'1100'"
+        - call: "add_binary('1011', '0110')"
+          expect: "'10001'"
+        - call: "add_binary('0', '0')"
+          expect: "'0'"
+        - call: "add_binary('1', '1')"
+          expect: "'10'"
+          say: "Bleibt am Ende ein Übertrag, kommt vorn eine 1 dazu."
+        - call: "add_binary('0001', '0001')"
+          expect: "'0010'"
+          say: "Nullen vorn bleiben stehen: Das Ergebnis ist so lang wie `a`."
+        - call: "add_binary('11111111', '00000001')"
+          expect: "'100000000'"
+        - call: "add_binary('101010101010', '010101010101')"
+          expect: "'111111111111'"
+      random:
+        count: 4
+        call: "add_binary(a, b)"
+        args:
+          a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+          b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+        reference: "(a.to_i(2) + b.to_i(2)).to_s(2).rjust(a.size, '0')"
+    feedback:
+      - when: { same_as: "def add_binary(a, b)\n  result = ''\n  carry = 0\n  (a.length - 1).downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result\nend\n" }
+        say: "Am Ende bleibt ein Übertrag übrig, der keine Stelle mehr hat: Er kommt als 1 vorn dazu. `add_binary('1', '1')` ist `'10'`."
+      - when: { same_as: "def add_binary(a, b)\n  result = ''\n  (a.length - 1).downto(0) do |i|\n    result = (a[i] == b[i] ? '0' : '1') + result\n  end\n  result\nend\n" }
+        say: "Du addierst jede Stelle für sich. Wie von Hand geht bei 1 + 1 eine 1 als Übertrag zur nächsten Stelle links und zählt dort mit."
+    hint:
+      - "Rechne `011 + 011` erst von Hand: rechts 1 + 1 = `10`, schreib 0, Übertrag 1. Dann 1 + 1 + 1 = `11`, schreib 1, Übertrag 1. Dann 0 + 0 + 1 = 1. Ergebnis `110`, also 3 + 3 = 6."
+      - "Geh mit einem Index von hinten nach vorn, von `a.length - 1` bis 0, und merk dir den Übertrag in einer Variablen, die bei 0 anfängt. An jedem Index: beide Bits als Zahl (`a[i] == '1' ? 1 : 0`), mit dem Übertrag addieren, das Bit vorn an das Ergebnis."
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def add_binary(a, b)
+          result = ''
+          carry = 0
+          (a.length - 1).downto(0) do |i|
+            # hier: die Bits an Index i und carry addieren,
+            # das Bit vorn an result, den neuen Übertrag in carry
+          end
+          # hier: bleibt ein Übertrag, kommt vorn eine 1 dazu
+          result
+        end
+        ```
+    solution: |
+      ```ruby
+      def add_binary(a, b)
+        result = ''
+        carry = 0
+        (a.length - 1).downto(0) do |i|
+          total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry
+          result = (total % 2 == 1 ? '1' : '0') + result
+          carry = total / 2
+        end
+        result = '1' + result if carry == 1
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `add_binary(a, b)`, die zwei Texte aus Bits addiert, beide gleich lang, so wie von Hand: von rechts nach links, Stelle für Stelle, mit dem Übertrag. Das Ergebnis ist so lang wie `a`, oder eine Stelle länger, wenn am Ende ein Übertrag bleibt: `add_binary('0101', '0111')` ergibt `'1100'`, `add_binary('1111', '0001')` ergibt `'10000'`. Ohne `int` und `bin`; `add_digits` darfst du mitbenutzen, wenn du es hier hineinschreibst.
+      starter: |
+        def add_binary(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, int]
+        cases:
+          - call: "add_binary('0101', '0111')"
+            expect: "'1100'"
+          - call: "add_binary('1011', '0110')"
+            expect: "'10001'"
+          - call: "add_binary('0', '0')"
+            expect: "'0'"
+          - call: "add_binary('1', '1')"
+            expect: "'10'"
+            say: "Bleibt am Ende ein Übertrag, kommt vorn eine 1 dazu."
+          - call: "add_binary('0001', '0001')"
+            expect: "'0010'"
+            say: "Nullen vorn bleiben stehen: Das Ergebnis ist so lang wie `a`."
+          - call: "add_binary('11111111', '00000001')"
+            expect: "'100000000'"
+          - call: "add_binary('101010101010', '010101010101')"
+            expect: "'111111111111'"
+        random:
+          count: 4
+          call: "add_binary(a, b)"
+          args:
+            a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+            b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+          reference: "bin(int(a, 2) + int(b, 2))[2:].zfill(len(a))"
+      feedback:
+        - when: { same_as: "def add_binary(a, b):\n    result = ''\n    carry = 0\n    for i in range(len(a) - 1, -1, -1):\n        total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    return result\n" }
+          say: "Am Ende bleibt ein Übertrag übrig, der keine Stelle mehr hat: Er kommt als 1 vorn dazu. `add_binary('1', '1')` ist `'10'`."
+        - when: { same_as: "def add_binary(a, b):\n    result = ''\n    for i in range(len(a) - 1, -1, -1):\n        result = ('0' if a[i] == b[i] else '1') + result\n    return result\n" }
+          say: "Du addierst jede Stelle für sich. Wie von Hand geht bei 1 + 1 eine 1 als Übertrag zur nächsten Stelle links und zählt dort mit."
+      hint:
+        - "Rechne `011 + 011` erst von Hand: rechts 1 + 1 = `10`, schreib 0, Übertrag 1. Dann 1 + 1 + 1 = `11`, schreib 1, Übertrag 1. Dann 0 + 0 + 1 = 1. Ergebnis `110`, also 3 + 3 = 6."
+        - "Geh mit einem Index von hinten nach vorn, `for i in range(len(a) - 1, -1, -1):`, und merk dir den Übertrag in einer Variablen, die bei 0 anfängt. An jedem Index: beide Bits als Zahl (`1 if a[i] == '1' else 0`), mit dem Übertrag addieren, das Bit vorn an das Ergebnis."
+        - |
+          Ein Gerüst:
+
+          ```python
+          def add_binary(a, b):
+              result = ''
+              carry = 0
+              for i in range(len(a) - 1, -1, -1):
+                  # hier: die Bits an Index i und carry addieren,
+                  # das Bit vorn an result, den neuen Übertrag in carry
+                  ...
+              # hier: bleibt ein Übertrag, kommt vorn eine 1 dazu
+              return result
+          ```
+      solution: |
+        ```python
+        def add_binary(a, b):
+            result = ''
+            carry = 0
+            for i in range(len(a) - 1, -1, -1):
+                total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry
+                result = str(total % 2) + result
+                carry = total // 2
+            if carry == 1:
+                result = '1' + result
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `addBinary(a, b)`, die zwei Texte aus Bits addiert, beide gleich lang, so wie von Hand: von rechts nach links, Stelle für Stelle, mit dem Übertrag. Das Ergebnis ist so lang wie `a`, oder eine Stelle länger, wenn am Ende ein Übertrag bleibt: `addBinary('0101', '0111')` ergibt `'1100'`, `addBinary('1111', '0001')` ergibt `'10000'`. Ohne `parseInt` und `toString(2)`; `addDigits` darfst du mitbenutzen, wenn du es hier hineinschreibst.
+      starter: |
+        function addBinary(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.parseInt, Number.parseInt, globalThis.Number, globalThis.BigInt]
+        cases:
+          - call: "addBinary('0101', '0111')"
+            expect: "'1100'"
+          - call: "addBinary('1011', '0110')"
+            expect: "'10001'"
+          - call: "addBinary('0', '0')"
+            expect: "'0'"
+          - call: "addBinary('1', '1')"
+            expect: "'10'"
+            say: "Bleibt am Ende ein Übertrag, kommt vorn eine 1 dazu."
+          - call: "addBinary('0001', '0001')"
+            expect: "'0010'"
+            say: "Nullen vorn bleiben stehen: Das Ergebnis ist so lang wie `a`."
+          - call: "addBinary('11111111', '00000001')"
+            expect: "'100000000'"
+          - call: "addBinary('101010101010', '010101010101')"
+            expect: "'111111111111'"
+        random:
+          count: 4
+          call: "addBinary(a, b)"
+          args:
+            a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+            b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+          reference: "(parseInt(a, 2) + parseInt(b, 2)).toString(2).padStart(a.length, '0')"
+      feedback:
+        - when: { same_as: "function addBinary(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = a.length - 1; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  return result;\n}\n" }
+          say: "Am Ende bleibt ein Übertrag übrig, der keine Stelle mehr hat: Er kommt als 1 vorn dazu. `addBinary('1', '1')` ist `'10'`."
+        - when: { same_as: "function addBinary(a, b) {\n  let result = '';\n  for (let i = a.length - 1; i >= 0; i--) {\n    result = (a[i] === b[i] ? '0' : '1') + result;\n  }\n  return result;\n}\n" }
+          say: "Du addierst jede Stelle für sich. Wie von Hand geht bei 1 + 1 eine 1 als Übertrag zur nächsten Stelle links und zählt dort mit."
+      hint:
+        - "Rechne `011 + 011` erst von Hand: rechts 1 + 1 = `10`, schreib 0, Übertrag 1. Dann 1 + 1 + 1 = `11`, schreib 1, Übertrag 1. Dann 0 + 0 + 1 = 1. Ergebnis `110`, also 3 + 3 = 6."
+        - "Geh mit einem Index von hinten nach vorn, `for (let i = a.length - 1; i >= 0; i--)`, und merk dir den Übertrag in einer Variablen, die bei 0 anfängt. An jedem Index: beide Bits als Zahl (`a[i] === '1' ? 1 : 0`), mit dem Übertrag addieren, das Bit vorn an das Ergebnis."
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function addBinary(a, b) {
+            let result = '';
+            let carry = 0;
+            for (let i = a.length - 1; i >= 0; i--) {
+              // hier: die Bits an Index i und carry addieren,
+              // das Bit vorn an result, den neuen Übertrag in carry
+            }
+            // hier: bleibt ein Übertrag, kommt vorn eine 1 dazu
+            return result;
+          }
+          ```
+      solution: |
+        ```javascript
+        function addBinary(a, b) {
+          let result = '';
+          let carry = 0;
+          for (let i = a.length - 1; i >= 0; i--) {
+            const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;
+            result = (total % 2) + result;
+            carry = Math.floor(total / 2);
+          }
+          if (carry === 1) {
+            result = '1' + result;
+          }
+          return result;
+        }
+        ```
+  - id: byte-overflow
+    title: "200 + 100 in einem Byte"
+    level: 1
+    prediction: true
+    prompt: |
+      Der Rechner addiert 200 und 100 in einem Byte, `11001000 + 01100100`, Stelle für Stelle wie oben, und hat für das Ergebnis wieder nur ein Byte. Was steht danach darin?
+    check:
+      type: choice
+      options: ["300", "255: Mehr passt nicht hinein.", "44", "Nichts: Der Rechner bricht mit einem Fehler ab."]
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: "300 braucht neun Bits. Ein Byte hat acht."
+      - when: { picked: 1 }
+        say: "Das Addierwerk hält nicht bei 255 an: Es rechnet Stelle für Stelle weiter, wie du von Hand."
+      - when: { picked: 3 }
+        say: "Das Addierwerk rechnet einfach weiter, Stelle für Stelle. Ein Fehler ist es nur für den, der 300 erwartet."
+    solution: "44: 300 ist `100101100`, neun Bits. Das neunte fällt vorn heraus, im Byte bleibt `00101100`, also 300 − 256 = 44."
+  - id: add-byte
+    title: "Ein Byte addieren"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `add_byte(a, b)`, die zwei Bytes addiert, jedes als Text aus acht Bits, und zwei Werte zurückgibt: die acht Bits, die im Byte bleiben, und `true`, wenn vorn ein Übertrag herausgefallen ist, sonst `false`. `add_byte('00000101', '00000111')` ergibt `['00001100', false]`. Ohne `to_i(2)` und `to_s(2)`; was du in `add_binary` geschrieben hast, darfst du hier hineinschreiben.
+    starter: |
+      def add_byte(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf, String#to_i, String#hex, String#oct]
+      cases:
+        - call: "add_byte('00000101', '00000111')"
+          expect: "['00001100', false]"
+        - call: "add_byte('11001000', '01100100')"
+          expect: "['00101100', true]"
+          say: "200 + 100: Das neunte Bit fällt heraus, im Byte bleibt 44."
+        - call: "add_byte('11111111', '00000001')"
+          expect: "['00000000', true]"
+        - call: "add_byte('01111111', '00000001')"
+          expect: "['10000000', false]"
+          say: "127 + 1 = 128 passt noch in ein Byte."
+        - call: "add_byte('10000000', '10000000')"
+          expect: "['00000000', true]"
+        - call: "add_byte('00000000', '00000000')"
+          expect: "['00000000', false]"
+      random:
+        count: 4
+        call: "add_byte(a, b)"
+        args:
+          a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+          b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+        reference: "[((a.to_i(2) + b.to_i(2)) % 256).to_s(2).rjust(8, '0'), a.to_i(2) + b.to_i(2) > 255]"
+    feedback:
+      - when: { same_as: "def add_byte(a, b)\n  result = ''\n  carry = 0\n  7.downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result = '1' + result if carry == 1\n  [result, carry == 1]\nend\n" }
+        say: "Ein Byte hat acht Bits: Der Übertrag vorn bleibt nicht im Ergebnis, er fällt heraus. Gib die acht Bits zurück und dazu `true`."
+    hint:
+      - "Rechne wie in `add_binary`, nur genau achtmal, von Index 7 bis 0."
+      - "Was am Ende im Übertrag steht, ist das Bit, das herausfällt: `carry == 1` ist schon `true` oder `false`."
+    solution: |
+      ```ruby
+      def add_byte(a, b)
+        result = ''
+        carry = 0
+        7.downto(0) do |i|
+          total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry
+          result = (total % 2 == 1 ? '1' : '0') + result
+          carry = total / 2
+        end
+        [result, carry == 1]
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `add_byte(a, b)`, die zwei Bytes addiert, jedes als Text aus acht Bits, und zwei Werte als Paar zurückgibt: die acht Bits, die im Byte bleiben, und `True`, wenn vorn ein Übertrag herausgefallen ist, sonst `False`. `add_byte('00000101', '00000111')` ergibt `('00001100', False)`. Ohne `int` und `bin`; was du in `add_binary` geschrieben hast, darfst du hier hineinschreiben.
+      starter: |
+        def add_byte(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, int]
+        cases:
+          - call: "add_byte('00000101', '00000111')"
+            expect: "('00001100', False)"
+          - call: "add_byte('11001000', '01100100')"
+            expect: "('00101100', True)"
+            say: "200 + 100: Das neunte Bit fällt heraus, im Byte bleibt 44."
+          - call: "add_byte('11111111', '00000001')"
+            expect: "('00000000', True)"
+          - call: "add_byte('01111111', '00000001')"
+            expect: "('10000000', False)"
+            say: "127 + 1 = 128 passt noch in ein Byte."
+          - call: "add_byte('10000000', '10000000')"
+            expect: "('00000000', True)"
+          - call: "add_byte('00000000', '00000000')"
+            expect: "('00000000', False)"
+        random:
+          count: 4
+          call: "add_byte(a, b)"
+          args:
+            a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+            b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+          reference: "(format((int(a, 2) + int(b, 2)) % 256, '08b'), int(a, 2) + int(b, 2) > 255)"
+      feedback:
+        - when: { same_as: "def add_byte(a, b):\n    result = ''\n    carry = 0\n    for i in range(7, -1, -1):\n        total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry\n        result = str(total % 2) + result\n        carry = total // 2\n    if carry == 1:\n        result = '1' + result\n    return result, carry == 1\n" }
+          say: "Ein Byte hat acht Bits: Der Übertrag vorn bleibt nicht im Ergebnis, er fällt heraus. Gib die acht Bits zurück und dazu `True`."
+      hint:
+        - "Rechne wie in `add_binary`, nur genau achtmal, von Index 7 bis 0: `for i in range(7, -1, -1):`."
+        - "Was am Ende im Übertrag steht, ist das Bit, das herausfällt: `carry == 1` ist schon `True` oder `False`."
+      solution: |
+        ```python
+        def add_byte(a, b):
+            result = ''
+            carry = 0
+            for i in range(7, -1, -1):
+                total = (1 if a[i] == '1' else 0) + (1 if b[i] == '1' else 0) + carry
+                result = str(total % 2) + result
+                carry = total // 2
+            return result, carry == 1
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `addByte(a, b)`, die zwei Bytes addiert, jedes als Text aus acht Bits, und zwei Werte zurückgibt: die acht Bits, die im Byte bleiben, und `true`, wenn vorn ein Übertrag herausgefallen ist, sonst `false`. `addByte('00000101', '00000111')` ergibt `['00001100', false]`. Ohne `parseInt` und `toString(2)`; was du in `addBinary` geschrieben hast, darfst du hier hineinschreiben.
+      starter: |
+        function addByte(a, b) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.parseInt, Number.parseInt, globalThis.Number, globalThis.BigInt]
+        cases:
+          - call: "addByte('00000101', '00000111')"
+            expect: "['00001100', false]"
+          - call: "addByte('11001000', '01100100')"
+            expect: "['00101100', true]"
+            say: "200 + 100: Das neunte Bit fällt heraus, im Byte bleibt 44."
+          - call: "addByte('11111111', '00000001')"
+            expect: "['00000000', true]"
+          - call: "addByte('01111111', '00000001')"
+            expect: "['10000000', false]"
+            say: "127 + 1 = 128 passt noch in ein Byte."
+          - call: "addByte('10000000', '10000000')"
+            expect: "['00000000', true]"
+          - call: "addByte('00000000', '00000000')"
+            expect: "['00000000', false]"
+        random:
+          count: 4
+          call: "addByte(a, b)"
+          args:
+            a: ['00000010', '10000111', '00011011', '10111001', '01001110', '01011000', '00011110', '01110101', '10011101', '10110100', '11000110', '11001101', '00011101', '10000011']
+            b: ['10110111', '11001110', '00011100', '11100001', '11111010', '00001000', '01100001', '10001000', '01110000', '10010101', '10100010', '00110001', '00100111', '00011010']
+          reference: "[((parseInt(a, 2) + parseInt(b, 2)) % 256).toString(2).padStart(8, '0'), parseInt(a, 2) + parseInt(b, 2) > 255]"
+      feedback:
+        - when: { same_as: "function addByte(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = 7; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  if (carry === 1) {\n    result = '1' + result;\n  }\n  return [result, carry === 1];\n}\n" }
+          say: "Ein Byte hat acht Bits: Der Übertrag vorn bleibt nicht im Ergebnis, er fällt heraus. Gib die acht Bits zurück und dazu `true`."
+      hint:
+        - "Rechne wie in `addBinary`, nur genau achtmal, von Index 7 bis 0."
+        - "Was am Ende im Übertrag steht, ist das Bit, das herausfällt: `carry === 1` ist schon `true` oder `false`."
+      solution: |
+        ```javascript
+        function addByte(a, b) {
+          let result = '';
+          let carry = 0;
+          for (let i = 7; i >= 0; i--) {
+            const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;
+            result = (total % 2) + result;
+            carry = Math.floor(total / 2);
+          }
+          return [result, carry === 1];
+        }
+        ```
+  - id: negate
+    title: "Umdrehen und 1 addieren"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `negate(bits)`, die ein Byte aus acht Bits negiert: alle Bits umdrehen, dann 1 addieren; ein Übertrag vorn fällt weg. `negate('00000101')` ergibt `'11111011'`, also −5. Ohne `to_i(2)` und `to_s(2)`.
+    starter: |
+      def negate(bits)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Integer#to_s, Integer#digits, Integer#inspect, Kernel#format, Kernel#sprintf, String#to_i, String#hex, String#oct]
+      cases:
+        - call: "negate('00000101')"
+          expect: "'11111011'"
+        - call: "negate('11111011')"
+          expect: "'00000101'"
+          say: "Zweimal negiert ist es wieder die Zahl vom Anfang: −(−5) ist 5."
+        - call: "negate('00000001')"
+          expect: "'11111111'"
+        - call: "negate('01111111')"
+          expect: "'10000001'"
+        - call: "negate('00000000')"
+          expect: "'00000000'"
+          say: "Aus 0 wird 0: `11111111` plus 1 ist `100000000`, und die 1 vorn fällt heraus."
+        - call: "negate('10000000')"
+          expect: "'10000000'"
+          say: "−128 bleibt `10000000`: +128 hat in einem Byte mit Vorzeichen keinen Platz."
+      random:
+        count: 4
+        call: "negate(bits)"
+        args:
+          bits: ['01000101', '11110100', '01110001', '00111101', '00010010', '11111010', '11001010', '01110101', '00110000', '11010000', '10011110', '10010101', '01101010', '01100000']
+        reference: "((256 - bits.to_i(2)) % 256).to_s(2).rjust(8, '0')"
+    feedback:
+      - when: { same_as: "def negate(bits)\n  result = ''\n  bits.each_char do |bit|\n    result += (bit == '1' ? '0' : '1')\n  end\n  result\nend\n" }
+        say: "Nur umgedreht ist es noch nicht die negative Zahl: Aus 5 wird `11111010`, und das ist −6. Es fehlt die 1, die dazukommt."
+    hint:
+      - "Zwei Schritte. Erst umdrehen, Zeichen für Zeichen: aus `'0'` wird `'1'`, aus `'1'` wird `'0'`. Dann 1 addieren, wie in `add_byte` mit `'00000001'`."
+      - "Fürs Addieren von 1 genügt ein Übertrag, der bei 1 anfängt: Von rechts nach links wird jedes Bit mit dem Übertrag addiert, wie in `add_binary`, nur ohne zweite Zahl."
+    solution: |
+      ```ruby
+      def negate(bits)
+        flipped = ''
+        bits.each_char do |bit|
+          flipped += (bit == '1' ? '0' : '1')
+        end
+        result = ''
+        carry = 1
+        7.downto(0) do |i|
+          total = (flipped[i] == '1' ? 1 : 0) + carry
+          result = (total % 2 == 1 ? '1' : '0') + result
+          carry = total / 2
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `negate(bits)`, die ein Byte aus acht Bits negiert: alle Bits umdrehen, dann 1 addieren; ein Übertrag vorn fällt weg. `negate('00000101')` ergibt `'11111011'`, also −5. Ohne `int` und `bin`.
+      starter: |
+        def negate(bits):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [bin, oct, hex, format, str.format, int]
+        cases:
+          - call: "negate('00000101')"
+            expect: "'11111011'"
+          - call: "negate('11111011')"
+            expect: "'00000101'"
+            say: "Zweimal negiert ist es wieder die Zahl vom Anfang: −(−5) ist 5."
+          - call: "negate('00000001')"
+            expect: "'11111111'"
+          - call: "negate('01111111')"
+            expect: "'10000001'"
+          - call: "negate('00000000')"
+            expect: "'00000000'"
+            say: "Aus 0 wird 0: `11111111` plus 1 ist `100000000`, und die 1 vorn fällt heraus."
+          - call: "negate('10000000')"
+            expect: "'10000000'"
+            say: "−128 bleibt `10000000`: +128 hat in einem Byte mit Vorzeichen keinen Platz."
+        random:
+          count: 4
+          call: "negate(bits)"
+          args:
+            bits: ['01000101', '11110100', '01110001', '00111101', '00010010', '11111010', '11001010', '01110101', '00110000', '11010000', '10011110', '10010101', '01101010', '01100000']
+          reference: "format((256 - int(bits, 2)) % 256, '08b')"
+      feedback:
+        - when: { same_as: "def negate(bits):\n    result = ''\n    for bit in bits:\n        result += '0' if bit == '1' else '1'\n    return result\n" }
+          say: "Nur umgedreht ist es noch nicht die negative Zahl: Aus 5 wird `11111010`, und das ist −6. Es fehlt die 1, die dazukommt."
+      hint:
+        - "Zwei Schritte. Erst umdrehen, Zeichen für Zeichen: aus `'0'` wird `'1'`, aus `'1'` wird `'0'`. Dann 1 addieren, wie in `add_byte` mit `'00000001'`."
+        - "Fürs Addieren von 1 genügt ein Übertrag, der bei 1 anfängt: Von rechts nach links wird jedes Bit mit dem Übertrag addiert, wie in `add_binary`, nur ohne zweite Zahl."
+      solution: |
+        ```python
+        def negate(bits):
+            flipped = ''
+            for bit in bits:
+                flipped += '0' if bit == '1' else '1'
+            result = ''
+            carry = 1
+            for i in range(7, -1, -1):
+                total = (1 if flipped[i] == '1' else 0) + carry
+                result = str(total % 2) + result
+                carry = total // 2
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `negate(bits)`, die ein Byte aus acht Bits negiert: alle Bits umdrehen, dann 1 addieren; ein Übertrag vorn fällt weg. `negate('00000101')` ergibt `'11111011'`, also −5. Ohne `parseInt` und `toString(2)`.
+      starter: |
+        function negate(bits) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Number.prototype.toString, Number.prototype.toFixed, globalThis.parseInt, Number.parseInt, globalThis.Number, globalThis.BigInt]
+        cases:
+          - call: "negate('00000101')"
+            expect: "'11111011'"
+          - call: "negate('11111011')"
+            expect: "'00000101'"
+            say: "Zweimal negiert ist es wieder die Zahl vom Anfang: −(−5) ist 5."
+          - call: "negate('00000001')"
+            expect: "'11111111'"
+          - call: "negate('01111111')"
+            expect: "'10000001'"
+          - call: "negate('00000000')"
+            expect: "'00000000'"
+            say: "Aus 0 wird 0: `11111111` plus 1 ist `100000000`, und die 1 vorn fällt heraus."
+          - call: "negate('10000000')"
+            expect: "'10000000'"
+            say: "−128 bleibt `10000000`: +128 hat in einem Byte mit Vorzeichen keinen Platz."
+        random:
+          count: 4
+          call: "negate(bits)"
+          args:
+            bits: ['01000101', '11110100', '01110001', '00111101', '00010010', '11111010', '11001010', '01110101', '00110000', '11010000', '10011110', '10010101', '01101010', '01100000']
+          reference: "((256 - parseInt(bits, 2)) % 256).toString(2).padStart(8, '0')"
+      feedback:
+        - when: { same_as: "function negate(bits) {\n  let result = '';\n  for (const bit of bits) {\n    result += bit === '1' ? '0' : '1';\n  }\n  return result;\n}\n" }
+          say: "Nur umgedreht ist es noch nicht die negative Zahl: Aus 5 wird `11111010`, und das ist −6. Es fehlt die 1, die dazukommt."
+      hint:
+        - "Zwei Schritte. Erst umdrehen, Zeichen für Zeichen: aus `'0'` wird `'1'`, aus `'1'` wird `'0'`. Dann 1 addieren, wie in `addByte` mit `'00000001'`."
+        - "Fürs Addieren von 1 genügt ein Übertrag, der bei 1 anfängt: Von rechts nach links wird jedes Bit mit dem Übertrag addiert, wie in `addBinary`, nur ohne zweite Zahl."
+      solution: |
+        ```javascript
+        function negate(bits) {
+          let flipped = '';
+          for (const bit of bits) {
+            flipped += bit === '1' ? '0' : '1';
+          }
+          let result = '';
+          let carry = 1;
+          for (let i = 7; i >= 0; i--) {
+            const total = (flipped[i] === '1' ? 1 : 0) + carry;
+            result = (total % 2) + result;
+            carry = Math.floor(total / 2);
+          }
+          return result;
+        }
+        ```
   - id: roman
     title: "Römische Zahlen"
     extra: true

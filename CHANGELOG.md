@@ -21,6 +21,15 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Mit `GIT_SERVER`: Lehrkräfte legen auf `/git` Repositorys einer Gruppe ohne Aktivität an, und jede Person hat dort bis zu
+  zehn eigene Repositorys zum Üben, die nur sie selbst klonen, pushen und ansehen kann (`User.git_id`, ein Ordner je Person in
+  `data/git-repos`); sie gehen mit dem Konto, die Datenschutzerklärung und das Verzeichnis nennen sie. `/git` ist jetzt auch
+  für Lernende offen; im Profil gibt es »Git im Menü anzeigen«.
+- Lehrkräfte können auf der Klassenseite zurückmelden, wie eine Aktivität mit ihrer Gruppe lief; die Seite fragt
+  danach, wenn die Gruppe weitergegangen ist und eine Woche lang nichts mehr dazu geprüft hat (oder drei
+  Wochen lang gar nichts). Gespeichert wird es als `ActivityFeedback`
+  am Konto der Lehrkraft (gelöscht mit dem Konto), die Administration liest es unter `/rueckmeldungen`; die
+  Datenschutzerklärung und das Verzeichnis nennen es.
 - Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt
   (`GUARD_MODE=readonly`). Nach dem Update: `./config.rb build peer_firewall && ./config.rb up -d` und in
   `docker/traefik` `docker compose up -d` (startet `traefik-docker-guard` und Traefik neu). Traefik läuft dafür aus

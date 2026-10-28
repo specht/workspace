@@ -42,6 +42,15 @@ der Entwicklung berechnet und gespeichert. Berechne es auf dem Host mit
 Aktivität wegfällt oder ihr `requires:` sich ändert; `curriculum_graph_test.rb`
 schlägt fehl, solange das Bild veraltet ist.
 
+Eine neue Aktivität, die noch nicht für alle da sein soll, bekommt einen
+Punkt vor den Namen (`- .logikgatter`): Sie steht dann nur in der
+Entwicklung im Katalog, auf `/lehrplan`, in »Wie es weitergehen kann« und
+in »Wird verwendet in« des Handbuchs; in der Produktion steht sie in keiner
+Liste (`dev_only_test.rb`), und das gespeicherte Bild der Wege hat für die
+Produktion ein eigenes Layout ohne sie. Unter ihrer Adresse bleibt sie auch in
+der Produktion erreichbar, für den, der sie kennt (so wollte es der
+Maintainer: was nicht auf der Startseite steht, darf erreichbar sein).
+
 Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
 vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
 einen Link im Profil), bekommt er `hidden: true`, statt auskommentiert zu

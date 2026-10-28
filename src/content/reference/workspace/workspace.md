@@ -203,7 +203,7 @@ Solange dein Workspace läuft, kannst du anderen zeigen, was du gebaut hast. Sta
 <!-- short: Veröffentlichen: mit einer eigenen Hackschule-Subdomain (Anleitung zum eigenen Webspace). -->
 ### Veröffentlichen
 
-Dauerhaft und für alle, auch ohne Anmeldung, wird dein Projekt mit einer eigenen Hackschule-Subdomain, zum Beispiel `meinprojekt.hackschule.de`. Dorthin kopierst du die fertigen Dateien deines Projekts. Das geht mit allem, was ganz im Browser läuft, ohne ein Programm auf dem Server. Wie du die Subdomain bekommst und die Dateien hochlädst, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain).
+Dauerhaft und für alle, auch ohne Anmeldung, wird dein Projekt mit einer eigenen Hackschule-Subdomain, zum Beispiel `meinprojekt.hackschule.de`. Dorthin kopierst du die fertigen Dateien deines Projekts. Das geht mit allem, was ganz im Browser läuft, ohne ein Programm auf dem Server. Wie du die Subdomain bekommst und die Dateien hochlädst, steht in der [Anleitung zum eigenen Webspace](/reference/webspace).
 <!-- /part -->
 
 ## Erweiterungen
