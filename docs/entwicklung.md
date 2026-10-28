@@ -359,6 +359,7 @@ Zum schnellen Ausprobieren ohne neues Image: in einem laufenden Workspace
 ./build-image.sh      # Executor-Images, Erweiterungen, Toolchains, code-server-Image
 ./build-tic80.sh      # TIC-80 für den Browser (Version in TIC80_REF), nach jedem Wechsel der Version
 BRIDGE_ONLY=1 ./build-tic80.sh   # nur docker/tic80/hackschule-persistence.js neu davorsetzen
+./fetch-turtle-runtimes.sh   # Ruby und Python für die Turtle im Browser, nach jedem Wechsel der Versionen
 ```
 
 Das erste Bauen dauert lange und braucht mehrere Gigabyte. Wird der Platz

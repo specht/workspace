@@ -1,4 +1,4 @@
-/* »Datenübertragung per Kabel« (cable.js): the device with dial, lamps and
+/* »Datenübertragung per Funk« (cable.js): the device with dial, lamps and
    buttons, dark in both colour schemes like the original simulator, and the
    teacher's panel in the violet of the teacher note. */
 
@@ -245,6 +245,7 @@
 /* For teachers: the number of lamps for everyone, the frequencies in use,
    the words, the address for the projector. */
 .cable-teacher {
+    container: cable-teacher / inline-size;
     max-width: 52em;
     margin: 1.4em auto 0;
     padding: 0.9em 1em 1em;
@@ -332,7 +333,9 @@
 .cable-pending[hidden] { display: none; }
 
 .cable-freqs {
-    max-height: 16em;
+    max-height: 26em;
+    overflow-x: auto;
+    hyphens: none;
     overflow-y: auto;
     font-size: 0.9rem;
 }
@@ -388,6 +391,42 @@
 }
 
 .cable-word-count { color: var(--bs-secondary-color); margin-right: auto; }
+
+.cable-word-for { min-height: 1.3em; margin-bottom: 0.3em; font-size: 0.9rem; text-align: center; color: var(--bs-secondary-color); }
+
+/* Who got which word: the record to compare with what a receiver brings back. */
+.cable-given { margin-top: 0.7em; max-height: 14em; overflow-y: auto; font-size: 0.85rem; hyphens: none; }
+
+.cable-given h4 { margin: 0 0 0.3em; font-size: 0.9rem; font-weight: 600; }
+
+.cable-given table { width: 100%; border-collapse: collapse; }
+
+.cable-given td, .cable-given th { padding: 0.15em 0.3em; border-bottom: 1px solid var(--bs-border-color); text-align: left; }
+
+.cable-given td:nth-child(2), .cable-given-word { font-family: '0xProto Nerd Font Mono', monospace; }
+
+.cable-word-cell { display: flex; align-items: center; justify-content: space-between; gap: 0.4em; }
+
+.cable-row-word { font-family: '0xProto Nerd Font Mono', monospace; white-space: nowrap; }
+
+.cable-give { padding: 0.05em 0.4em; flex-shrink: 0; }
+
+.cable-freqs tr.idle td { color: var(--bs-secondary-color); }
+
+/* Narrow (a phone): the table must fit without scrolling the frequency away. */
+@container cable-teacher (max-width: 24em) {
+    .cable-freqs tr.mine td:first-child { font-weight: 700; }
+    .cable-freqs tr.mine td:first-child::after { content: none; }
+    .cable-freqs .cable-dot { width: 0.6em; height: 0.6em; }
+    .cable-freqs .cable-dots { gap: 0.12em; }
+    .cable-freqs td, .cable-freqs th { padding-left: 0.2em; padding-right: 0.2em; }
+}
+
+/* Wide enough: the frequencies on the right, beside lamps and words. */
+@container cable-teacher (min-width: 40em) {
+    .cable-teacher-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+    .cable-card-wide { grid-column: 2; grid-row: 1 / span 2; }
+}
 
 /* For the projector: the address and its QR code over the whole window. */
 .cable-projector {

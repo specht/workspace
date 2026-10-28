@@ -1,4 +1,4 @@
-// The card picture of »Datenübertragung per Kabel« (src/content/cable), from
+// The card picture of »Datenübertragung per Funk« (src/content/radio), from
 // the running development site:
 //
 //   cd e2e && HS_PICTURES=1 npx playwright test --project=pictures cable.pictures
@@ -16,7 +16,7 @@ import type { Browser, TestInfo } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-const ACTIVITY = path.resolve(__dirname, '../../src/content/cable');
+const ACTIVITY = path.resolve(__dirname, '../../src/content/radio');
 const REPO = path.resolve(__dirname, '../..');
 // What the picture shows comes from these files: when one changes,
 // src/scripts/recreate-screenshots.rb --status calls it stale.

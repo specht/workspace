@@ -11,7 +11,7 @@ kind: reference
 # ER-Modelle als Text
 
 <p class='abstract'>
-Wie du ein ER-Modell in einer <code>.er</code>-Datei schreibst, was die ER-Werkstatt daraus macht und wie sie Beziehungen in Tabellen übersetzt. Zum Nachschlagen; ein Feld zum Ausprobieren steht gleich darunter.
+Wie du ein ER-Modell in einer <code>.er</code>-Datei schreibst, was die ER-Werkstatt daraus macht und wie sie Beziehungen in Tabellen übersetzt. Zum Nachschlagen; ein Feld zum Ausprobieren steht am Ende.
 </p>
 
 _person(chen)
@@ -20,74 +20,6 @@ _person(chen)
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>The Entity-Relationship Model: Toward a Unified View of Data</strong>, Peter Chen, ACM Transactions on Database Systems, 1976. Der Aufsatz, mit dem das ER-Modell bekannt wurde, mit Diagrammen aus Rechtecken für Entitäten und Rauten für Beziehungen: <a href='https://doi.org/10.1145/320434.320440'>bei der ACM</a>.</p>
 </div>
-
-<!-- part: ausprobieren -->
-## Ausprobieren
-
-Schreib links ein Modell; rechts erscheint es als Diagramm, darunter die Tabellen und das SQL. Hier wird nichts gespeichert. Für deine eigenen Modelle nimmst du eine `.er`-Datei in VS Code.
-
-<div class='er-playground'>
-<textarea class='form-control er-playground-input' spellcheck='false' autocapitalize='off' aria-label='ER-Modell'>entity student
-  id: int, primary key
-  name: text
-
-entity course
-  id: int, primary key
-  title: text, unique
-
-relationship takes: student n:m course
-  grade: int, optional</textarea>
-<div class='er-playground-output'>
-<div class='btn-group btn-group-sm er-playground-kinds' role='group' aria-label='Darstellung'>
-<button type='button' class='btn btn-outline-secondary active' data-kind='chen'>Chen</button>
-<button type='button' class='btn btn-outline-secondary' data-kind='crowfoot'>Krähenfuß</button>
-<button type='button' class='btn btn-outline-secondary' data-kind='tables'>Tabellen</button>
-</div>
-<div class='er-playground-problems' aria-live='polite'></div>
-<div class='er-playground-diagram'></div>
-</div>
-<details class='er-playground-details'><summary>SQL</summary><pre class='er-playground-sql'></pre></details>
-<details class='er-playground-details'><summary>So wurde übersetzt</summary><ol class='er-playground-steps'></ol></details>
-</div>
-
-<script src='er-core.js'></script>
-<script>
-window.addEventListener('DOMContentLoaded', function () {
-    var core = window.ErCore;
-    var box = document.querySelector('.er-playground');
-    if (!core || !box) return;
-    var input = box.querySelector('.er-playground-input');
-    var diagram = box.querySelector('.er-playground-diagram');
-    var problems = box.querySelector('.er-playground-problems');
-    var sql = box.querySelector('.er-playground-sql');
-    var steps = box.querySelector('.er-playground-steps');
-    var kind = 'chen';
-    var esc = core.esc;
-    function code(text) { return esc(text).replace(/`([^`]+)`/g, '<code>$1</code>'); }
-    function draw() {
-        var text = input.value;
-        var compiled = core.compile(text);
-        var errors = compiled.model.errors;
-        problems.innerHTML = errors.length ? errors.slice().sort(function (a, b) { return a.line - b.line; }).map(function (p) {
-            return '<div>Zeile ' + p.line + ': ' + esc(p.msg) + '</div>';
-        }).join('') : '';
-        if (errors.length) return; // the last good diagram stays
-        diagram.innerHTML = core.diagram(text, kind, { background: null }).svg;
-        sql.textContent = core.toSQL(compiled.result.tables, { source: 'beispiel.er' });
-        steps.innerHTML = compiled.result.steps.map(function (s) { return '<li>' + code(s.text) + '</li>'; }).join('');
-    }
-    box.querySelectorAll('[data-kind]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            kind = button.dataset.kind;
-            box.querySelectorAll('[data-kind]').forEach(function (b) { b.classList.toggle('active', b === button); });
-            draw();
-        });
-    });
-    input.addEventListener('input', draw);
-    draw();
-});
-</script>
-<!-- /part -->
 
 ## Ein Modell schreiben
 
@@ -267,6 +199,74 @@ Ein **Schlüssel** ist hier jede kleinste Menge von Spalten, von der alle andere
 Kurz gesagt: Jede Nichtschlüsselspalte sagt etwas über den Schlüssel, den ganzen Schlüssel und nichts als den Schlüssel. So fasste William Kent die zweite und dritte Normalform 1983 zusammen. Spalten wie `actor_1`, `actor_2`, `actor_3` sind dieselbe Liste in anderer Form; viele Bücher zählen auch sie als Verstoß gegen die erste Normalform.
 
 Edgar F. Codd beschrieb die erste Normalform 1970, die zweite und dritte 1971. Es gibt weitere, strengere Normalformen (Boyce-Codd, vierte, fünfte); für die meisten Tabellen ist die dritte das Ziel.
+<!-- /part -->
+
+<!-- part: ausprobieren -->
+## Ausprobieren
+
+Schreib links ein Modell; rechts erscheint es als Diagramm, darunter die Tabellen und das SQL. Hier wird nichts gespeichert. Für deine eigenen Modelle nimmst du eine `.er`-Datei in VS Code.
+
+<div class='er-playground'>
+<textarea class='form-control er-playground-input' spellcheck='false' autocapitalize='off' aria-label='ER-Modell'>entity student
+  id: int, primary key
+  name: text
+
+entity course
+  id: int, primary key
+  title: text, unique
+
+relationship takes: student n:m course
+  grade: int, optional</textarea>
+<div class='er-playground-output'>
+<div class='btn-group btn-group-sm er-playground-kinds' role='group' aria-label='Darstellung'>
+<button type='button' class='btn btn-outline-secondary active' data-kind='chen'>Chen</button>
+<button type='button' class='btn btn-outline-secondary' data-kind='crowfoot'>Krähenfuß</button>
+<button type='button' class='btn btn-outline-secondary' data-kind='tables'>Tabellen</button>
+</div>
+<div class='er-playground-problems' aria-live='polite'></div>
+<div class='er-playground-diagram'></div>
+</div>
+<details class='er-playground-details'><summary>SQL</summary><pre class='er-playground-sql'></pre></details>
+<details class='er-playground-details'><summary>So wurde übersetzt</summary><ol class='er-playground-steps'></ol></details>
+</div>
+
+<script src='er-core.js'></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+    var core = window.ErCore;
+    var box = document.querySelector('.er-playground');
+    if (!core || !box) return;
+    var input = box.querySelector('.er-playground-input');
+    var diagram = box.querySelector('.er-playground-diagram');
+    var problems = box.querySelector('.er-playground-problems');
+    var sql = box.querySelector('.er-playground-sql');
+    var steps = box.querySelector('.er-playground-steps');
+    var kind = 'chen';
+    var esc = core.esc;
+    function code(text) { return esc(text).replace(/`([^`]+)`/g, '<code>$1</code>'); }
+    function draw() {
+        var text = input.value;
+        var compiled = core.compile(text);
+        var errors = compiled.model.errors;
+        problems.innerHTML = errors.length ? errors.slice().sort(function (a, b) { return a.line - b.line; }).map(function (p) {
+            return '<div>Zeile ' + p.line + ': ' + esc(p.msg) + '</div>';
+        }).join('') : '';
+        if (errors.length) return; // the last good diagram stays
+        diagram.innerHTML = core.diagram(text, kind, { background: null }).svg;
+        sql.textContent = core.toSQL(compiled.result.tables, { source: 'beispiel.er' });
+        steps.innerHTML = compiled.result.steps.map(function (s) { return '<li>' + code(s.text) + '</li>'; }).join('');
+    }
+    box.querySelectorAll('[data-kind]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            kind = button.dataset.kind;
+            box.querySelectorAll('[data-kind]').forEach(function (b) { b.classList.toggle('active', b === button); });
+            draw();
+        });
+    });
+    input.addEventListener('input', draw);
+    draw();
+});
+</script>
 <!-- /part -->
 
 ## Werkzeuge

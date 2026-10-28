@@ -32,13 +32,42 @@ function show_error_message(message) {
     button.on('click', function(e) { e.preventDefault(); $('.api_messages').hide(); });
 }
 
+// A page without the template's modal (a page of its own): an HTML <dialog>
+// with the same question, never the browser's confirm() (the maintainer:
+// no alert, confirm or prompt anywhere, no_native_dialogs_test.rb).
+function native_dialog(options, on_confirm) {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'native-dialog';
+    const title = document.createElement('h5');
+    title.textContent = options.title || '';
+    const text = document.createElement('p');
+    text.textContent = options.text || '';
+    const buttons = document.createElement('div');
+    buttons.className = 'd-flex justify-content-end gap-2';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn-outline-secondary';
+    cancel.textContent = 'Abbrechen';
+    const ok = document.createElement('button');
+    ok.type = 'button';
+    ok.className = 'btn ' + (options.danger ? 'btn-danger' : 'btn-primary');
+    ok.textContent = options.confirm || 'OK';
+    buttons.append(cancel, ok);
+    dialog.append(title, text, buttons);
+    document.body.appendChild(dialog);
+    cancel.addEventListener('click', () => dialog.close());
+    ok.addEventListener('click', () => { dialog.close(); on_confirm(); });
+    dialog.addEventListener('close', () => dialog.remove());
+    dialog.showModal();
+}
+
 // In-page confirmation instead of the browser's confirm(): the page's own
 // modal (#__template_modal, showTemplateModal in the page template).
 // options: { title, text, confirm, icon, danger }
 function confirm_dialog(options, on_confirm) {
     const esc = (t) => $('<div>').text(t || '').html();
     if (typeof showTemplateModal !== 'function' || $('#__template_modal').length === 0) {
-        if (window.confirm(options.text)) on_confirm();
+        native_dialog(options, on_confirm);
         return;
     }
     // A question needs a small dialog; the shared modal is large by default.

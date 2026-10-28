@@ -210,3 +210,119 @@ The code:
   checked by simulation: every shortest way escapes even turning left only,
   both wall-following plans of Teil 2 are caught, and the lamp sits at two
   thirds of the longest way, so that the way is long but not all corners.
+
+### Turtle
+
+An introduction to programming beside Pip, with pictures: a turtle on a
+sheet of paper that draws a line behind it (`turtle-1` and `turtle-2`, in
+development since 28 October 2026). What the maintainer decided and why:
+
+- **On the website, not in VS Code**, like the Katas: the code is typed into
+  a card and kept per language until the student deletes it.
+- **Dead simple:** the commands are plain functions (`forward 100`,
+  `left 90`, `pen_up`), no object, no class, no import; students write
+  their own functions later, never classes.
+- **It runs in the browser** (`turtle_worker.js`, one module worker per
+  language), live: the turtle draws while the program runs, until it ends or
+  »Stopp« ends the worker; endless programs are allowed. Ruby is ruby.wasm
+  without its standard library, Python is Pyodide, JavaScript runs as it is
+  (`fetch-turtle-runtimes.sh`, not in git; nginx serves them gzipped and
+  cached). Measured before deciding: about 6 MB for Python and 5 MB for Ruby
+  compressed, loaded once and only for the language that runs; a fresh Ruby
+  VM per run (40 to 230 ms) so that nothing of an earlier run is left over.
+  Pip's plans stay on the server: Pip's world answers questions, the turtle
+  only takes commands.
+- **The speed is pixels of line per second on the screen** (the maintainer,
+  at a fern that took ten minutes at »Schnell«): 100, 300 and 2000 at
+  »Langsam«, »Normal« and »Schnell«, measured on the paper as it is zoomed,
+  so a picture of 40000 short lines takes no longer than a square; turns
+  take no time, but at »Langsam« at most a quarter second, to watch the
+  turtle turn. The worker waits after each line too (a busy wait), at
+  60000 steps per second, faster than the page draws at »Schnell« even
+  zoomed far out: an endless program runs on for a while, and »Sofort« in
+  the middle of a run draws the rest at once.
+- **The check on the server:** a program that ends by itself sends its
+  commands; `TurtleWorld` replays them and compares the lines with the
+  task's picture by sampling both, so order, direction, pieces and rounding
+  do not matter. A determined student could fake the commands; for a card
+  that only says »gelöst« that is accepted. What is missing is drawn dashed,
+  what is too much in red. A stopped run only keeps the code; the card's
+  state stays (a solved card stays solved).
+- **One set of commands per language** (`turtle.rb`, `turtle.py`,
+  `turtle.js`), used by the worker and by the examples on the host
+  (`TurtleCheck.record`), so that both run the same code.
+- **The speed changes while a program runs** (the maintainer): the worker
+  paces as above, the page draws what came at the speed chosen now;
+  »Sofort« at the start sends everything at once. Shared memory
+  between page and worker would let the worker read the buttons itself, but
+  needs cross-origin isolation for the whole page.
+- **The paper fits the picture** (the maintainer, at the Koch curve that
+  used a quarter of it): centred on the picture asked for, at least ±150
+  steps, zooming out around everything drawn when a drawing goes past the
+  edge, gliding there in 0.6 s instead of jumping (the maintainer); the grid stays 50 steps apart and is left out where it would be
+  too dense. `show:` names the call whose picture a card shows.
+- **The commands at hand** above the paper, as Pip's (the maintainer); both
+  widgets show them in the editor's colours, with a quiet »Befehle«.
+- **Two pages** (the maintainer: the recursive parts later, when the
+  students are there): `turtle-1` after Pip 1, with commands, loops, own
+  functions, pen and colour, a variable that grows, stars, circles, one's
+  own picture to hand in; `turtle-2` after the Katas on recursion, with
+  trees (a beautiful one in brown and green, by the maintainer's wish), a
+  fern and curves: Sierpiński, Koch, Hilbert as an extra; its icon a
+  Hilbert curve (`images/icons/hilbert.svg`, the maintainer's idea). Two
+  predictions on the first page: the turn at a triangle's corner (120, not
+  60) and 91 instead of 90 degrees. A third, `turtle-3` »Pflanzen, Zufall
+  und Farbe« (the maintainer: a Kata set, not an activity of its own):
+  colour from a number (the hue) and mixed from two, `push` and `pop`
+  (given as commands, as a canvas has `save()` and `restore()`; the
+  maintainer: this is about drawing, not about building a stack), `random`,
+  and Lindenmayer systems, a word drawn letter by letter and grown by a
+  rule, with a level picture of the plant. Every page ends with a free
+  section (the maintainer), and turtle-1 lost its weaker cards (a hexagon
+  after the square loop, a pattern counted in lines, many-pointed stars).
+- **Not only tracing** (the maintainer): free cards with a goal instead of
+  a picture (`free:`, also with `max_lines`, which then asks for a loop):
+  one's own pattern, flower, tree and picture.
+- **A picture on its way is not »wrong«** (the maintainer: developing a fern
+  takes many runs, and a card should not say at each one that it is wrong
+  and where): a run that does not match yet gets one quiet sentence (status
+  `drawn`, neutral like a note; for a function, which call differs), and
+  the dashed and red differences with their sentence only on »Unterschiede
+  zeigen«. The stored state is still »noch nicht gelöst«.
+- **Colours to pick from** (the maintainer): the chips `color` and
+  `background` above the paper open a palette, Cling (the site's palette,
+  from Pixelflow and the 2D Game Studio) and some HTML names by hue; a click
+  puts the colour into the program where the cursor was, as a hex code or a
+  name, so that no new syntax is needed. `background` colours the paper,
+  with the same colours as `color` (the grid turns lighter on a dark one);
+  the comparison ignores it, a handed-in picture keeps it. Every card lists
+  its commands, so that turtle-1 does not show those of turtle-3.
+- **Several drawings on a free card** (the maintainer): on every card with
+  `free:` a row »Bild« lists the person's drawings by name, with Neu,
+  Umbenennen and Löschen; the open one is in the editor and is the card's
+  answer as before (`TaskState.sketches`, `/api/turtle/sketch`,
+  `TurtleSketches`). »Einreichen« hands in the open one, any number of
+  them: as its code and an SVG the server draws from the commands of its
+  last run, so that the class board shows pictures and no student's code
+  ever runs in someone else's browser (a worker running JavaScript or
+  Pyodide could call the site with the teacher's session).
+- **Solved, then free** (the maintainer: experiments are not punished): once
+  a card is solved, a run that draws something else keeps its code, the
+  card stays solved, and the card says that nothing is checked any more,
+  without the dashed and red differences (`/api/turtle/check`, status
+  `free`); a run that matches again says so as before.
+- **The picture asked for is a thin pencil line** under the ink (the
+  maintainer found it too dark and thick); it stays visible after drawing.
+- **Recursion is shown, not dictated** (the maintainer, at a Hilbert prompt
+  that was a recipe to transcribe): a level widget (`<div
+  class='turtle-levels' data-figure='hilbert'>`, turtle_canvas.js) draws
+  each level with the parts made of the level below in colour; the cards
+  then only say what to write, and the tips lead there. Each level fills
+  the paper (small ones zoomed in), the view glides from one level to the
+  next, and the level before stays faint behind (the maintainer); the
+  Hilbert curve's connecting lines are black, grey was too close to the
+  parts' colours. Trees also grow
+  unevenly and hang down to the ground (the maintainer).
+- **One speed for all cards of a page**, and a line on its way takes the
+  new speed at once (the maintainer: it did not react for a while); the
+  player draws at most about 12 ms per frame.

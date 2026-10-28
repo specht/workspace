@@ -1,4 +1,4 @@
-// »Datenübertragung per Kabel«: the lamp simulator on /cable and /ether.
+// »Datenübertragung per Funk«: the radio with five lamps on /radio and /ether.
 //
 // Every element with data-cable becomes a device: a frequency (10.0 to 99.9
 // kHz), up to five lamps and a button under each. A lamp is on while someone
@@ -393,7 +393,9 @@
 
         // ----- teacher -----
         let teacherBuilt = false;
-        let delayInput, delayOutput, countButtons, pendingLine, pendingText, freqBox, totalLine, wordBox, wordCount;
+        let delayInput, delayOutput, countButtons, pendingLine, pendingText, freqBox, totalLine, wordBox, wordFor, wordCount, givenBox;
+        let lastOverview = null;
+        const freqRows = new Map();  // frequency -> { row, people, dots, word }
 
         function buildTeacherPanel() {
             panel.hidden = false;
@@ -426,11 +428,22 @@
             totalLine = el('div', { class: 'cable-total' });
 
             wordBox = el('div', { class: 'cable-word', 'aria-live': 'polite', text: '–' });
+            wordFor = el('div', { class: 'cable-word-for' });
             wordCount = el('span', { class: 'cable-word-count' });
+            givenBox = el('div', { class: 'cable-given' });
             const next = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, [icon('bi-arrow-right-circle'), document.createTextNode('Nächstes Wort')]);
             const reshuffle = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' }, [icon('bi-shuffle'), document.createTextNode('Neu mischen')]);
-            next.addEventListener('click', nextWord);
-            reshuffle.addEventListener('click', () => { newDeck(); showWord(); });
+            next.addEventListener('click', () => giveWord(null));
+            reshuffle.addEventListener('click', () => {
+                const go = () => {
+                    newDeck();
+                    storageSet('cable-given', '[]');
+                    showWord();
+                    if (lastOverview) renderOverview(lastOverview);
+                };
+                if (given().length === 0) go();
+                else confirm_dialog({ title: 'Neu mischen?', text: 'Die Liste der vergebenen Wörter wird dabei geleert.', confirm: 'Neu mischen', icon: 'bi-shuffle' }, go);
+            });
 
             const beamer = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' }, [icon('bi-qr-code'), document.createTextNode('Für den Beamer: Adresse und QR-Code')]);
             beamer.addEventListener('click', openProjector);
@@ -440,17 +453,18 @@
                     el('span', {}, [icon('bi-person-video3'), document.createTextNode('Für Lehrkräfte')]),
                     beamer,
                 ]),
-                el('p', { class: 'cable-teacher-note', text: 'Die Zahl der Lampen gilt für alle, die das Kabel auf dieser Installation gerade benutzen, auch für andere Klassen. Ohne Anmeldung geht es unter ' + location.host + SHORT_PATH + '.' }),
+                el('p', { class: 'cable-teacher-note', text: 'Die Zahl der Lampen gilt für alle, die das Funkgerät auf dieser Installation gerade benutzen, auch für andere Klassen. Ohne Anmeldung geht es unter ' + location.host + SHORT_PATH + '. Ein Wort für ein Paar gibt der Knopf in der Zeile seiner Frequenz: Sagen Sie es der Senderseite, und schreiben Sie es auf ihr Blatt.' }),
                 el('div', { class: 'cable-teacher-grid' }, [
                     el('div', { class: 'cable-card' }, [
                         el('h3', { text: 'Lampen für alle' }),
                         el('div', { class: 'cable-delay' }, [el('label', { text: 'Wartezeit' }), delayOutput, delayInput]),
                         counts, pendingLine,
                     ]),
-                    el('div', { class: 'cable-card' }, [el('h3', { text: 'Frequenzen' }), totalLine, freqBox]),
+                    el('div', { class: 'cable-card cable-card-wide' }, [el('h3', { text: 'Frequenzen' }), totalLine, freqBox]),
                     el('div', { class: 'cable-card' }, [
-                        el('h3', { text: 'Wörter' }), wordBox,
+                        el('h3', { text: 'Wörter' }), wordBox, wordFor,
                         el('div', { class: 'cable-word-bar' }, [wordCount, next, reshuffle]),
+                        givenBox,
                     ]),
                 ]),
             );
@@ -486,29 +500,61 @@
             return box;
         }
 
+        // The rows stay and change in place: an overview comes with every lamp
+        // that goes on or off, and a rebuilt row would swallow a click.
         function renderOverview(message) {
             if (!freqBox) return;
+            lastOverview = message;
             lamps = message.lamps;
             const people = message.freqs.reduce((sum, entry) => sum + entry.people, 0);
             totalLine.textContent = message.clients + (message.clients === 1 ? ' Gerät verbunden' : ' Geräte verbunden') +
                 ', ' + people + ' auf ' + message.freqs.length + (message.freqs.length === 1 ? ' Frequenz' : ' Frequenzen');
-            if (message.freqs.length === 0) {
+            // Frequencies with a word stay in the list when nobody is on them.
+            const entries = new Map(message.freqs.map((entry) => [entry.f, entry]));
+            for (const g of given()) {
+                if (g.f !== null && !entries.has(g.f)) entries.set(g.f, { f: g.f, people: 0, on: [] });
+            }
+            if (entries.size === 0) {
+                freqRows.clear();
                 freqBox.replaceChildren(el('div', { class: 'cable-empty', text: 'Noch niemand auf einer Frequenz.' }));
                 return;
             }
-            const rows = message.freqs.map((entry) => {
-                const row = el('tr', { class: (entry.people > 2 ? 'crowded ' : '') + (entry.f === freq ? 'mine' : '') }, [
-                    el('td', { text: formatFreq(entry.f) }),
-                    el('td', { text: String(entry.people), title: entry.people > 2 ? 'mehr als zwei auf dieser Frequenz' : '' }),
+            let table = freqBox.querySelector('table');
+            if (!table) {
+                table = el('table', {}, [
+                    el('thead', {}, [el('tr', {}, [el('th', { text: 'kHz' }), el('th', { title: 'Personen', 'aria-label': 'Personen' }, [icon('bi-people')]), el('th', { text: 'Lampen' }), el('th', { text: 'Wort' })])]),
+                    el('tbody'),
                 ]);
-                row.appendChild(el('td', {}, [dots(entry.on, message.lamps)]));
-                return row;
+                freqRows.clear();
+                freqBox.replaceChildren(table);
+            }
+            const tbody = table.tBodies[0];
+            for (const f of Array.from(freqRows.keys())) {
+                if (!entries.has(f)) { freqRows.get(f).row.remove(); freqRows.delete(f); }
+            }
+            Array.from(entries.values()).sort((a, b) => a.f - b.f).forEach((entry, index) => {
+                const r = freqRows.get(entry.f) || freqRow(entry.f);
+                r.row.className = (entry.people > 2 ? 'crowded ' : '') + (entry.people === 0 ? 'idle ' : '') + (entry.f === freq ? 'mine' : '');
+                r.people.textContent = String(entry.people);
+                r.people.title = entry.people > 2 ? 'mehr als zwei auf dieser Frequenz' : '';
+                r.dots.replaceChildren(dots(entry.on, message.lamps));
+                const last = given().filter((g) => g.f === entry.f).pop();
+                r.word.textContent = last ? last.word : '';
+                if (tbody.children[index] !== r.row) tbody.insertBefore(r.row, tbody.children[index] || null);
             });
-            freqBox.replaceChildren(el('table', {}, [
-                el('thead', {}, [el('tr', {}, [el('th', { text: 'kHz' }), el('th', { text: 'Personen' }), el('th', { text: 'Lampen' })])]),
-                el('tbody', {}, rows),
-            ]));
             showCounts();
+        }
+
+        function freqRow(f) {
+            const give = el('button', {
+                type: 'button', class: 'btn btn-sm btn-outline-primary cable-give',
+                'aria-label': 'Ein Wort für ' + formatFreq(f) + ' kHz', title: 'Ein Wort für ' + formatFreq(f) + ' kHz',
+            }, [icon('bi-chat-quote')]);
+            give.addEventListener('click', () => giveWord(f));
+            const r = { people: el('td'), dots: el('td'), word: el('span', { class: 'cable-row-word' }) };
+            r.row = el('tr', {}, [el('td', { text: formatFreq(f) }), r.people, r.dots, el('td', {}, [el('div', { class: 'cable-word-cell' }, [r.word, give])])]);
+            freqRows.set(f, r);
+            return r;
         }
 
         // The words: shuffled in this browser, each once until all are used.
@@ -527,21 +573,59 @@
             return fresh;
         }
 
-        function showWord() {
-            const d = deck();
-            wordBox.textContent = d.next > 0 ? d.order[d.next - 1] : '–';
-            wordCount.textContent = d.next + ' von ' + d.order.length;
+        // The words given out, oldest first: { f (null without a frequency),
+        // word, lamps, at }. Kept in this browser only, like the deck.
+        function given() {
+            try {
+                const list = JSON.parse(storageGet('cable-given') || '[]');
+                return Array.isArray(list) ? list : [];
+            } catch (e) {
+                return [];
+            }
         }
 
-        function nextWord() {
+        function giveWord(f) {
             const d = deck();
             if (d.next >= d.order.length) {
                 wordBox.textContent = 'Alle verteilt';
+                wordFor.textContent = 'Neu mischen fängt von vorn an.';
                 return;
             }
+            const word = d.order[d.next];
             d.next += 1;
             storageSet('cable-words', JSON.stringify(d));
+            const list = given();
+            list.push({ f: f, word: word, lamps: lamps, at: Date.now() });
+            storageSet('cable-given', JSON.stringify(list.slice(-300)));
             showWord();
+            if (lastOverview) renderOverview(lastOverview);
+        }
+
+        function showWord() {
+            const d = deck();
+            const list = given();
+            const last = list[list.length - 1];
+            wordBox.textContent = last ? last.word : '–';
+            wordFor.textContent = last && last.f !== null ? 'für ' + formatFreq(last.f) + ' kHz' : '';
+            wordCount.textContent = d.next + ' von ' + d.order.length;
+            if (list.length === 0) {
+                givenBox.replaceChildren();
+                return;
+            }
+            const time = (at) => new Date(at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            const rows = list.slice().reverse().map((g) => el('tr', {}, [
+                el('td', { text: time(g.at) }),
+                el('td', { text: g.f === null ? '–' : formatFreq(g.f) }),
+                el('td', { class: 'cable-given-word', text: g.word }),
+                el('td', { text: String(g.lamps) }),
+            ]));
+            givenBox.replaceChildren(
+                el('h4', { text: 'Vergeben' }),
+                el('table', {}, [
+                    el('thead', {}, [el('tr', {}, [el('th', { text: 'Zeit' }), el('th', { text: 'kHz' }), el('th', { text: 'Wort' }), el('th', { text: 'Lampen' })])]),
+                    el('tbody', {}, rows),
+                ]),
+            );
         }
 
         function openProjector() {

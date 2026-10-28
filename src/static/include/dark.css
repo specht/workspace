@@ -558,6 +558,8 @@ html[data-bs-theme="dark"] {
     .task-feedback-correct { background-color: rgba(31, 157, 85, 0.18); }
     .task-feedback-wrong { background-color: rgba(224, 160, 48, 0.16); }
     .task-feedback-sent { background-color: rgba(64, 140, 255, 0.14); }
+    .task-feedback-drawn,
+    .task-feedback-free,
     .task-feedback-invalid,
     .task-feedback-unavailable { background-color: rgba(255, 255, 255, 0.05); }
     .task-options-note,

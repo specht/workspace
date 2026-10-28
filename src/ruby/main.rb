@@ -303,13 +303,14 @@ class Main < Sinatra::Base
     # ?grid_demo=1 in development: parked activities added to sections, to
     # see the pairs at the end of a section (main.rb, the catalog)
     GRID_DEMO = {
-        'networks' => ['cable'],
         'games' => ['feuerwerk'],
         'software' => ['cobol', 'smalltalk'],
     }.freeze
 
     MOVED_PAGES = {
         'videothek' => 'filmdatenbank',
+        # »Datenübertragung per Kabel« became »per Funk« (2026-10)
+        'cable' => 'radio',
         # the guide to the Hackschule subdomain became a Handbuch page (2026-10)
         'custom-subdomain' => 'reference/webspace',
         # Teacher pages that became part of their sandbox (2026-10): the app
@@ -693,6 +694,7 @@ class Main < Sinatra::Base
     require './include/login_sessions_page.rb'
     require './include/cable_page.rb'
     require './include/kata_page.rb'
+    require './include/turtle_page.rb'
     require './include/class_page.rb'
     require './include/activity_feedback_page.rb'
 
@@ -1119,6 +1121,22 @@ class Main < Sinatra::Base
                 location / {
                     root /usr/share/nginx/html;
                     try_files $uri @ruby;
+                }
+
+                # Python and Ruby for the turtle (fetch-turtle-runtimes.sh):
+                # gzipped beforehand, kept by the browser, as the version
+                # is in the path.
+                location ^~ /include/turtle/runtime/ {
+                    root /usr/share/nginx/html;
+                    gzip_static on;
+                    expires max;
+                    types {
+                        application/wasm wasm;
+                        text/javascript js mjs;
+                        application/json json;
+                        application/zip zip;
+                    }
+                    try_files $uri =404;
                 }
 
                 # nginx knows no type for .webmanifest.
@@ -5817,8 +5835,9 @@ class Main < Sinatra::Base
         # SQL and Cypher answers, and the code of a Kata, in the colours of
         # the code blocks, with the keyword lists of the same lexers
         # (code_input.js).
-        code = tasks[:on_page].any? { |id| %w[sql cypher function pip tests].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        code = tasks[:on_page].any? { |id| %w[sql cypher function pip tests turtle].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
         pip = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'pip' }
+        turtle = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'turtle' }
         code_input = if code
             keywords = {
                 :sql => Rouge::Lexers::SQL.keywords.to_a,
@@ -5840,6 +5859,7 @@ class Main < Sinatra::Base
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "#{code_input}" \
             "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
+            "#{turtle ? "<script src='/include/turtle/turtle_canvas.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" \
             "#{config[:meeting] && config[:meeting][:teacher] ? "<script src='/include/meeting_status.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{config[:meeting] ? "<script src='/include/meeting_point.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}"
@@ -6226,7 +6246,7 @@ class Main < Sinatra::Base
         solutions = {}
         tasks[:on_page].each do |id|
             task = tasks[:by_id][id]
-            next unless task && %w[function pip tests].include?(task.dig('check', 'type'))
+            next unless task && %w[function pip tests turtle].include?(task.dig('check', 'type'))
 
             [task, *CodeLanguages.variant_languages(task).map { |l| CodeLanguages.variant(task, l) }].each do |t|
                 next unless t['solution']

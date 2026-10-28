@@ -1,7 +1,7 @@
 require 'json'
 require 'set'
 
-# The ether of »Datenübertragung per Kabel« (/cable, /ether): one public room
+# The ether of »Datenübertragung per Funk« (/radio, /ether): one public room
 # for the whole installation, as in the original cable simulator. Everyone
 # picks a frequency (10.0 to 99.9 kHz, kept in tenths: 100 to 999) and sees
 # the lamps of that frequency; a lamp is on while at least one person on the

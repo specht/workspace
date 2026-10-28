@@ -20,6 +20,7 @@ require_relative 'ruby_check'
 require_relative 'kata_check'
 require_relative 'tests_check'
 require_relative 'pip_check'
+require_relative 'turtle_check'
 require_relative 'circuit_check'
 require_relative 'code_languages'
 
@@ -67,6 +68,7 @@ module TaskSpec
         'function' => 'M8',
         'pip' => 'M8',
         'tests' => 'M8',
+        'turtle' => 'M8',
         'circuit' => 'M8',
     }.freeze
 
@@ -120,6 +122,7 @@ module TaskSpec
         'function' => %w[same_as],
         'pip' => [],
         'tests' => [],
+        'turtle' => [],
         'circuit' => [],
     }.freeze
 
@@ -224,7 +227,7 @@ module TaskSpec
         type = check['type']
         errors.concat(validate_check(type, check).map { |e| "check: #{e}" })
         if task.key?('starter')
-            errors << 'starter only works with function, pip and tests' unless %w[function pip tests].include?(type)
+            errors << 'starter only works with function, pip, tests and turtle' unless %w[function pip tests turtle].include?(type)
             errors << 'starter must be text' unless task['starter'].is_a?(String)
             errors << "starter must be at most #{KataCheck::MAX_CODE} characters" if task['starter'].is_a?(String) && task['starter'].size > KataCheck::MAX_CODE
         end
@@ -591,6 +594,10 @@ module TaskSpec
             # round by round on the server (CircuitCheck).
             allowed += CircuitCheck::SPEC_KEYS
             errors.concat(CircuitCheck.spec_errors(check))
+        when 'turtle'
+            # A program that draws, run in the browser, its lines compared here (TurtleCheck).
+            allowed += %w[language draw cases free max_lines colors commands show]
+            errors.concat(TurtleCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).
             allowed += %w[language commands maps goal max_lines dry buttons]

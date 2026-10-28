@@ -1,0 +1,1747 @@
+# Aufgaben zu »Turtle: Pflanzen, Zufall und Farbe«. Format: docs/aufgaben.md (turtle).
+# Geschrieben von einem Skript aus einer Beschreibung je Aufgabe; die Bilder
+# (draw) sind Ruby mit denselben Befehlen, für alle drei Sprachen.
+format: 1
+activity: turtle-3
+tasks:
+
+  - id: sun
+    title: "Eine Sonne aus allen Farben"
+    level: 1
+    prompt: |
+      Die Sonne aus 36 Strahlen ist schon da, noch schwarz. Gib jedem Strahl seine eigene Farbe: Der erste ist rot, `color 0`, und jeder nächste liegt 10 Grad weiter im Farbkreis.
+    starter: |
+      36.times do |i|
+        forward 150
+        back 150
+        left 10
+      end
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        36.times do |i|
+          color i * 10
+          forward 150
+          back 150
+          left 10
+        end
+      colors: true
+      commands: [forward, back, left, right, hue]
+    hint:
+      - "Die Farbe kommt vor den Strahl, als erste Zeile in der Schleife. Ihre Zahl hängt davon ab, der wievielte Strahl es ist: `i`."
+      - "Strahl 0 hat die Farbe 0, Strahl 1 die Farbe 10, Strahl 2 die Farbe 20: `color i * 10`."
+    solution: |
+      ```ruby
+      36.times do |i|
+        color i * 10
+        forward 150
+        back 150
+        left 10
+      end
+      ```
+    python:
+      prompt: |
+        Die Sonne aus 36 Strahlen ist schon da, noch schwarz. Gib jedem Strahl seine eigene Farbe: Der erste ist rot, `color(0)`, und jeder nächste liegt 10 Grad weiter im Farbkreis.
+      starter: |
+        for i in range(36):
+            forward(150)
+            back(150)
+            left(10)
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          36.times do |i|
+            color i * 10
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Die Farbe kommt vor den Strahl, als erste Zeile in der Schleife. Ihre Zahl hängt davon ab, der wievielte Strahl es ist: `i`."
+        - "Strahl 0 hat die Farbe 0, Strahl 1 die Farbe 10, Strahl 2 die Farbe 20: `color(i * 10)`."
+      solution: |
+        ```python
+        for i in range(36):
+            color(i * 10)
+            forward(150)
+            back(150)
+            left(10)
+        ```
+    javascript:
+      prompt: |
+        Die Sonne aus 36 Strahlen ist schon da, noch schwarz. Gib jedem Strahl seine eigene Farbe: Der erste ist rot, `color(0)`, und jeder nächste liegt 10 Grad weiter im Farbkreis.
+      starter: |
+        for (let i = 0; i < 36; i++) {
+          forward(150);
+          back(150);
+          left(10);
+        }
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          36.times do |i|
+            color i * 10
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Die Farbe kommt vor den Strahl, als erste Zeile in der Schleife. Ihre Zahl hängt davon ab, der wievielte Strahl es ist: `i`."
+        - "Strahl 0 hat die Farbe 0, Strahl 1 die Farbe 10, Strahl 2 die Farbe 20: `color(i * 10)`."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 36; i++) {
+          color(i * 10);
+          forward(150);
+          back(150);
+          left(10);
+        }
+        ```
+
+  - id: rainbow-spiral
+    title: "Eine Spirale durch den Farbkreis"
+    level: 2
+    prompt: |
+      Zeichne eine Spirale aus 120 Linien: Linie `i` ist `2 * i` Schritte lang (die erste, Linie 0, also gar nicht), und nach jeder dreht sich die Schildkröte 59 Grad nach links. Die Farben laufen einmal durch den ganzen Farbkreis: Linie `i` hat die Farbe `3 * i`.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        120.times do |i|
+          color i * 3
+          forward i * 2
+          left 59
+        end
+      colors: true
+      commands: [forward, back, left, right, hue]
+    hint:
+      - "Eine Schleife mit 120 Durchläufen, die mitzählt, der wievielte es ist. Darin drei Befehle: die Farbe, die Linie, die Drehung."
+      - "Die Länge und die Farbe rechnest du aus `i` aus: `color i * 3` und `forward i * 2`."
+    solution: |
+      ```ruby
+      120.times do |i|
+        color i * 3
+        forward i * 2
+        left 59
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine Spirale aus 120 Linien: Linie `i` ist `2 * i` Schritte lang (die erste, Linie 0, also gar nicht), und nach jeder dreht sich die Schildkröte 59 Grad nach links. Die Farben laufen einmal durch den ganzen Farbkreis: Linie `i` hat die Farbe `3 * i`.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          120.times do |i|
+            color i * 3
+            forward i * 2
+            left 59
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Eine Schleife mit 120 Durchläufen, die mitzählt, der wievielte es ist. Darin drei Befehle: die Farbe, die Linie, die Drehung."
+        - "Die Länge und die Farbe rechnest du aus `i` aus: `color(i * 3)` und `forward(i * 2)`."
+      solution: |
+        ```python
+        for i in range(120):
+            color(i * 3)
+            forward(i * 2)
+            left(59)
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine Spirale aus 120 Linien: Linie `i` ist `2 * i` Schritte lang (die erste, Linie 0, also gar nicht), und nach jeder dreht sich die Schildkröte 59 Grad nach links. Die Farben laufen einmal durch den ganzen Farbkreis: Linie `i` hat die Farbe `3 * i`.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          120.times do |i|
+            color i * 3
+            forward i * 2
+            left 59
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Eine Schleife mit 120 Durchläufen, die mitzählt, der wievielte es ist. Darin drei Befehle: die Farbe, die Linie, die Drehung."
+        - "Die Länge und die Farbe rechnest du aus `i` aus: `color(i * 3)` und `forward(i * 2)`."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 120; i++) {
+          color(i * 3);
+          forward(i * 2);
+          left(59);
+        }
+        ```
+
+  - id: fan
+    title: "Ein Fächer von Gold nach Rot"
+    level: 2
+    prompt: |
+      Zeichne einen Fächer aus 19 Strahlen, jeder 150 Schritte lang und 10 Grad weiter gedreht als der davor: der erste nach rechts, der letzte nach links. Der erste Strahl ist ganz `"gold"`, der letzte ganz `"crimson"`, und dazwischen ändert sich die Farbe gleichmäßig.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        19.times do |i|
+          color "gold", "crimson", i / 18.0
+          forward 150
+          back 150
+          left 10
+        end
+      colors: true
+      commands: [forward, back, left, right, mix]
+    hint:
+      - "Wie die Sonne, nur mit 19 Strahlen und einer gemischten Farbe: `color \"gold\", \"crimson\", anteil`, mit dem Anteil 0 beim ersten Strahl und 1 beim letzten."
+      - "Der letzte Strahl ist Strahl 18. Der Anteil ist also `i / 18`. In Ruby ist `i / 18` eine ganze Zahl, fast immer 0: Schreib `i / 18.0`."
+    solution: |
+      ```ruby
+      19.times do |i|
+        color "gold", "crimson", i / 18.0
+        forward 150
+        back 150
+        left 10
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne einen Fächer aus 19 Strahlen, jeder 150 Schritte lang und 10 Grad weiter gedreht als der davor: der erste nach rechts, der letzte nach links. Der erste Strahl ist ganz `"gold"`, der letzte ganz `"crimson"`, und dazwischen ändert sich die Farbe gleichmäßig.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          19.times do |i|
+            color "gold", "crimson", i / 18.0
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, mix]
+      hint:
+        - "Wie die Sonne, nur mit 19 Strahlen und einer gemischten Farbe: `color(\"gold\", \"crimson\", anteil)`, mit dem Anteil 0 beim ersten Strahl und 1 beim letzten."
+        - "Der letzte Strahl ist Strahl 18. Der Anteil ist also `i / 18`."
+      solution: |
+        ```python
+        for i in range(19):
+            color("gold", "crimson", i / 18)
+            forward(150)
+            back(150)
+            left(10)
+        ```
+    javascript:
+      prompt: |
+        Zeichne einen Fächer aus 19 Strahlen, jeder 150 Schritte lang und 10 Grad weiter gedreht als der davor: der erste nach rechts, der letzte nach links. Der erste Strahl ist ganz `"gold"`, der letzte ganz `"crimson"`, und dazwischen ändert sich die Farbe gleichmäßig.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          19.times do |i|
+            color "gold", "crimson", i / 18.0
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, mix]
+      hint:
+        - "Wie die Sonne, nur mit 19 Strahlen und einer gemischten Farbe: `color(\"gold\", \"crimson\", anteil)`, mit dem Anteil 0 beim ersten Strahl und 1 beim letzten."
+        - "Der letzte Strahl ist Strahl 18. Der Anteil ist also `i / 18`."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 19; i++) {
+          color("gold", "crimson", i / 18);
+          forward(150);
+          back(150);
+          left(10);
+        }
+        ```
+
+  - id: pop-predict
+    title: Wo steht die Schildkröte?
+    prediction: true
+    prompt: |
+      Die Schildkröte schaut nach rechts. Das Programm: `forward 100`, `push`, `left 90`, `forward 50`, `pop`, `forward 50`. Wo steht sie am Ende, und wohin schaut sie?
+    check:
+      type: choice
+      options:
+        - Am Ende der kurzen Linie nach oben, und sie schaut nach oben.
+        - 150 Schritte rechts vom Anfang, und sie schaut nach rechts.
+        - 100 Schritte rechts vom Anfang, und sie schaut nach oben.
+        - Wieder am Anfang, und sie schaut nach rechts.
+      correct: 1
+
+  - id: tree-push
+    title: "Ein Baum ohne Rückweg"
+    level: 2
+    prompt: |
+      Schreib `tree(size, depth)` für den Baum aus »Bäume und Kurven« noch einmal, diesmal ohne `back` und ohne zurückzudrehen: Vor jedem Ast merkt sich die Schildkröte mit `push`, wo sie ist, und kehrt nach ihm mit `pop` dorthin zurück.
+    starter: |
+      def tree(size, depth)
+      end
+
+      left 90
+      tree(100, 5)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "left 90; tree(100, 1)"
+          draw: |
+            def tree(size, depth)
+              return if depth == 0
+              forward size
+              left 30
+              tree(size * 0.7, depth - 1)
+              right 60
+              tree(size * 0.7, depth - 1)
+              left 30
+              back size
+            end
+            left 90
+            tree(100, 1)
+        - call: "left 90; tree(100, 2)"
+          draw: |
+            def tree(size, depth)
+              return if depth == 0
+              forward size
+              left 30
+              tree(size * 0.7, depth - 1)
+              right 60
+              tree(size * 0.7, depth - 1)
+              left 30
+              back size
+            end
+            left 90
+            tree(100, 2)
+        - call: "left 90; tree(100, 5)"
+          draw: |
+            def tree(size, depth)
+              return if depth == 0
+              forward size
+              left 30
+              tree(size * 0.7, depth - 1)
+              right 60
+              tree(size * 0.7, depth - 1)
+              left 30
+              back size
+            end
+            left 90
+            tree(100, 5)
+      commands: [forward, left, right, push, pop]
+      show: 2
+    hint:
+      - "Bei der Tiefe 0 kehrt die Funktion zurück. Sonst zeichnet sie den Stamm, und an seinem Ende wachsen die beiden Äste."
+      - "Ein Ast: `push`, 30 Grad drehen, `tree(size * 0.7, depth - 1)`, `pop`. Nach dem `pop` steht die Schildkröte wieder oben am Stamm und schaut nach oben, bereit für den zweiten Ast."
+    solution: |
+      ```ruby
+      def tree(size, depth)
+        return if depth == 0
+        forward size
+        push
+        left 30
+        tree(size * 0.7, depth - 1)
+        pop
+        push
+        right 30
+        tree(size * 0.7, depth - 1)
+        pop
+      end
+
+      left 90
+      tree(100, 5)
+      ```
+    python:
+      prompt: |
+        Schreib `tree(size, depth)` für den Baum aus »Bäume und Kurven« noch einmal, diesmal ohne `back` und ohne zurückzudrehen: Vor jedem Ast merkt sich die Schildkröte mit `push`, wo sie ist, und kehrt nach ihm mit `pop` dorthin zurück.
+      starter: |
+        def tree(size, depth):
+            pass
+
+        left(90)
+        tree(100, 5)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, left, right, push, pop]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Funktion zurück. Sonst zeichnet sie den Stamm, und an seinem Ende wachsen die beiden Äste."
+        - "Ein Ast: `push()`, 30 Grad drehen, `tree(size * 0.7, depth - 1)`, `pop()`. Nach dem `pop` steht die Schildkröte wieder oben am Stamm und schaut nach oben, bereit für den zweiten Ast."
+      solution: |
+        ```python
+        def tree(size, depth):
+            if depth == 0:
+                return
+            forward(size)
+            push()
+            left(30)
+            tree(size * 0.7, depth - 1)
+            pop()
+            push()
+            right(30)
+            tree(size * 0.7, depth - 1)
+            pop()
+
+        left(90)
+        tree(100, 5)
+        ```
+    javascript:
+      prompt: |
+        Schreib `tree(size, depth)` für den Baum aus »Bäume und Kurven« noch einmal, diesmal ohne `back` und ohne zurückzudrehen: Vor jedem Ast merkt sich die Schildkröte mit `push`, wo sie ist, und kehrt nach ihm mit `pop` dorthin zurück.
+      starter: |
+        function tree(size, depth) {
+        }
+
+        left(90);
+        tree(100, 5);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, left, right, push, pop]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Funktion zurück. Sonst zeichnet sie den Stamm, und an seinem Ende wachsen die beiden Äste."
+        - "Ein Ast: `push()`, 30 Grad drehen, `tree(size * 0.7, depth - 1)`, `pop()`. Nach dem `pop` steht die Schildkröte wieder oben am Stamm und schaut nach oben, bereit für den zweiten Ast."
+      solution: |
+        ```javascript
+        function tree(size, depth) {
+          if (depth === 0) return;
+          forward(size);
+          push();
+          left(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+          push();
+          right(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+        }
+
+        left(90);
+        tree(100, 5);
+        ```
+
+  - id: walk
+    title: "Ein Spaziergang"
+    level: 1
+    prompt: |
+      Lass die Schildkröte 1000 kleine Schritte gehen, jeden 4 lang, und sich nach jedem zufällig ein wenig drehen, um `random(-30, 30)` Grad. Wer mag, lässt dabei die Farbe langsam durch den Farbkreis wandern.
+    starter: |
+      # 1000 Schritte
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, left, right, background, hue, random]
+    hint:
+      - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
+      - "Die Farbe des `i`-ten Schritts: `color i / 3.0`, so ist sie nach 1000 Schritten fast einmal herum."
+    solution: |
+      ```ruby
+      1000.times do |i|
+        color i / 3.0
+        forward 4
+        left random(-30, 30)
+      end
+      ```
+    python:
+      prompt: |
+        Lass die Schildkröte 1000 kleine Schritte gehen, jeden 4 lang, und sich nach jedem zufällig ein wenig drehen, um `random(-30, 30)` Grad. Wer mag, lässt dabei die Farbe langsam durch den Farbkreis wandern.
+      starter: |
+        # 1000 Schritte
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, left, right, background, hue, random]
+      hint:
+        - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
+        - "Die Farbe des `i`-ten Schritts: `color(i / 3)`, so ist sie nach 1000 Schritten fast einmal herum."
+      solution: |
+        ```python
+        for i in range(1000):
+            color(i / 3)
+            forward(4)
+            left(random(-30, 30))
+        ```
+    javascript:
+      prompt: |
+        Lass die Schildkröte 1000 kleine Schritte gehen, jeden 4 lang, und sich nach jedem zufällig ein wenig drehen, um `random(-30, 30)` Grad. Wer mag, lässt dabei die Farbe langsam durch den Farbkreis wandern.
+      starter: |
+        // 1000 Schritte
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, left, right, background, hue, random]
+      hint:
+        - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
+        - "Die Farbe des `i`-ten Schritts: `color(i / 3)`, so ist sie nach 1000 Schritten fast einmal herum."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 1000; i++) {
+          color(i / 3);
+          forward(4);
+          left(random(-30, 30));
+        }
+        ```
+
+  - id: wind-tree
+    title: "Ein Baum im Wind"
+    level: 2
+    prompt: |
+      Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
+    starter: |
+      def tree(size, depth)
+        return if depth == 0
+        forward size
+        push
+        left 30
+        tree(size * 0.7, depth - 1)
+        pop
+        push
+        right 30
+        tree(size * 0.7, depth - 1)
+        pop
+      end
+
+      # left 90
+      # tree(100, 5)
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, left, right, color, width, push, pop, random]
+    hint:
+      - "Statt `left 30` ein Winkel aus dem Zufall: `left random(10, 40)`, für jeden Ast neu."
+      - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
+      - "Dick und braun unten, dünn und grün an den Spitzen: `width depth` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+    solution: |
+      ```ruby
+      def tree(size, depth)
+        return if depth == 0
+        width depth
+        color depth <= 2 ? "forestgreen" : "saddlebrown"
+        forward size
+        push
+        left random(10, 40)
+        tree(size * random(0.6, 0.85), depth - 1)
+        pop
+        push
+        right random(10, 40)
+        tree(size * random(0.6, 0.85), depth - 1)
+        pop
+      end
+
+      left 90
+      tree(80, 9)
+      ```
+    python:
+      prompt: |
+        Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
+      starter: |
+        def tree(size, depth):
+            if depth == 0:
+                return
+            forward(size)
+            push()
+            left(30)
+            tree(size * 0.7, depth - 1)
+            pop()
+            push()
+            right(30)
+            tree(size * 0.7, depth - 1)
+            pop()
+
+        # left(90)
+        # tree(100, 5)
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, left, right, color, width, push, pop, random]
+      hint:
+        - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
+        - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width depth` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+      solution: |
+        ```python
+        def tree(size, depth):
+            if depth == 0:
+                return
+            width(depth)
+            if depth <= 2:
+                color("forestgreen")
+            else:
+                color("saddlebrown")
+            forward(size)
+            push()
+            left(random(10, 40))
+            tree(size * random(0.6, 0.85), depth - 1)
+            pop()
+            push()
+            right(random(10, 40))
+            tree(size * random(0.6, 0.85), depth - 1)
+            pop()
+
+        left(90)
+        tree(80, 9)
+        ```
+    javascript:
+      prompt: |
+        Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
+      starter: |
+        function tree(size, depth) {
+          if (depth === 0) return;
+          forward(size);
+          push();
+          left(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+          push();
+          right(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+        }
+
+        // left(90);
+        // tree(100, 5);
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, left, right, color, width, push, pop, random]
+      hint:
+        - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
+        - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width depth` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+      solution: |
+        ```javascript
+        function tree(size, depth) {
+          if (depth === 0) return;
+          width(depth);
+          color(depth <= 2 ? "forestgreen" : "saddlebrown");
+          forward(size);
+          push();
+          left(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+          push();
+          right(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+        }
+
+        left(90);
+        tree(80, 9);
+        ```
+
+  - id: meadow
+    title: "Eine Wiese"
+    level: 2
+    prompt: |
+      Zeichne eine Wiese aus vielen Grashalmen nebeneinander. Ein Halm ist eine Reihe kurzer Schritte, die sich immer ein wenig in dieselbe Richtung biegen; jeder Halm biegt sich anders, ist anders lang und anders grün.
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
+    hint:
+      - "Ein Halm: `push`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop`. Danach steht die Schildkröte wieder unten."
+      - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
+      - "Für jeden Halm neu: `bend = random(-3.0, 3.0)`, eine Länge mit `random(15, 40)` und ein Grün mit `color \"forestgreen\", \"yellowgreen\", random(0.0, 1.0)`."
+    solution: |
+      ```ruby
+      pen_up
+      back 250
+      pen_down
+      80.times do
+        push
+        left 90 + random(-10, 10)
+        color "forestgreen", "yellowgreen", random(0.0, 1.0)
+        bend = random(-3.0, 3.0)
+        random(15, 40).times do
+          forward 4
+          left bend
+        end
+        pop
+        pen_up
+        forward random(3, 9)
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine Wiese aus vielen Grashalmen nebeneinander. Ein Halm ist eine Reihe kurzer Schritte, die sich immer ein wenig in dieselbe Richtung biegen; jeder Halm biegt sich anders, ist anders lang und anders grün.
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
+      hint:
+        - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
+        - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
+        - "Für jeden Halm neu: `bend = random(-3.0, 3.0)`, eine Länge mit `random(15, 40)` und ein Grün mit `color(\"forestgreen\", \"yellowgreen\", random(0.0, 1.0))`."
+      solution: |
+        ```python
+        pen_up()
+        back(250)
+        pen_down()
+        for blade in range(80):
+            push()
+            left(90 + random(-10, 10))
+            color("forestgreen", "yellowgreen", random(0.0, 1.0))
+            bend = random(-3.0, 3.0)
+            for step in range(random(15, 40)):
+                forward(4)
+                left(bend)
+            pop()
+            pen_up()
+            forward(random(3, 9))
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine Wiese aus vielen Grashalmen nebeneinander. Ein Halm ist eine Reihe kurzer Schritte, die sich immer ein wenig in dieselbe Richtung biegen; jeder Halm biegt sich anders, ist anders lang und anders grün.
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
+      hint:
+        - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
+        - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
+        - "Für jeden Halm neu: `bend = random(-3.0, 3.0)`, eine Länge mit `random(15, 40)` und ein Grün mit `color(\"forestgreen\", \"yellowgreen\", random(0.0, 1.0))`."
+      solution: |
+        ```javascript
+        penUp();
+        back(250);
+        penDown();
+        for (let blade = 0; blade < 80; blade++) {
+          push();
+          left(90 + random(-10, 10));
+          color("forestgreen", "yellowgreen", random(0.0, 1.0));
+          const bend = random(-3.0, 3.0);
+          const steps = random(15, 40);
+          for (let step = 0; step < steps; step++) {
+            forward(4);
+            left(bend);
+          }
+          pop();
+          penUp();
+          forward(random(3, 9));
+          penDown();
+        }
+        ```
+
+  - id: draw-word
+    title: "Ein Wort als Bild"
+    level: 2
+    prompt: |
+      Schreib `draw_word(word, size, angle)`, die ein Wort Buchstabe für Buchstabe zeichnet: `F` ist `size` Schritte vorwärts, `+` ist `angle` Grad nach links, `-` ist `angle` Grad nach rechts, `[` ist `push` und `]` ist `pop`. Andere Buchstaben zeichnen nichts.
+    starter: |
+      def draw_word(word, size, angle)
+      end
+
+      left 90
+      draw_word("F[+F]F[-F]F", 60, 25)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "left 90; draw_word(\"F[+F]F[-F]F\", 60, 25)"
+          draw: |
+            def draw_word(word, size, angle)
+              word.each_char do |letter|
+                if letter == "F"
+                  forward size
+                elsif letter == "+"
+                  left angle
+                elsif letter == "-"
+                  right angle
+                elsif letter == "["
+                  push
+                elsif letter == "]"
+                  pop
+                end
+              end
+            end
+            left 90
+            draw_word('F[+F]F[-F]F', 60, 25)
+        - call: "draw_word(\"FF[++F][-F]X+F\", 40, 30)"
+          draw: |
+            def draw_word(word, size, angle)
+              word.each_char do |letter|
+                if letter == "F"
+                  forward size
+                elsif letter == "+"
+                  left angle
+                elsif letter == "-"
+                  right angle
+                elsif letter == "["
+                  push
+                elsif letter == "]"
+                  pop
+                end
+              end
+            end
+            draw_word('FF[++F][-F]X+F', 40, 30)
+      commands: [forward, left, right, push, pop]
+      show: 0
+    hint:
+      - "Eine Schleife über die Buchstaben: `word.each_char do |letter|`. Darin fragt sie, welcher Buchstabe es ist."
+      - "Für jeden der fünf Buchstaben eine Frage: `if letter == \"F\"`, dann `elsif letter == \"+\"` und so weiter, mit dem passenden Befehl darin."
+    solution: |
+      ```ruby
+      def draw_word(word, size, angle)
+        word.each_char do |letter|
+          if letter == "F"
+            forward size
+          elsif letter == "+"
+            left angle
+          elsif letter == "-"
+            right angle
+          elsif letter == "["
+            push
+          elsif letter == "]"
+            pop
+          end
+        end
+      end
+
+      left 90
+      draw_word("F[+F]F[-F]F", 60, 25)
+      ```
+    python:
+      prompt: |
+        Schreib `draw_word(word, size, angle)`, die ein Wort Buchstabe für Buchstabe zeichnet: `F` ist `size` Schritte vorwärts, `+` ist `angle` Grad nach links, `-` ist `angle` Grad nach rechts, `[` ist `push` und `]` ist `pop`. Andere Buchstaben zeichnen nichts.
+      starter: |
+        def draw_word(word, size, angle):
+            pass
+
+        left(90)
+        draw_word("F[+F]F[-F]F", 60, 25)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "left(90); draw_word(\"F[+F]F[-F]F\", 60, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              left 90
+              draw_word('F[+F]F[-F]F', 60, 25)
+          - call: "draw_word(\"FF[++F][-F]X+F\", 40, 30)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              draw_word('FF[++F][-F]X+F', 40, 30)
+        commands: [forward, left, right, push, pop]
+        show: 0
+      hint:
+        - "Eine Schleife über die Buchstaben: `for letter in word:`. Darin fragt sie, welcher Buchstabe es ist."
+        - "Für jeden der fünf Buchstaben eine Frage: `if letter == \"F\":`, dann `elif letter == \"+\":` und so weiter, mit dem passenden Befehl darin."
+      solution: |
+        ```python
+        def draw_word(word, size, angle):
+            for letter in word:
+                if letter == "F":
+                    forward(size)
+                elif letter == "+":
+                    left(angle)
+                elif letter == "-":
+                    right(angle)
+                elif letter == "[":
+                    push()
+                elif letter == "]":
+                    pop()
+
+        left(90)
+        draw_word("F[+F]F[-F]F", 60, 25)
+        ```
+    javascript:
+      prompt: |
+        Schreib `drawWord(word, size, angle)`, die ein Wort Buchstabe für Buchstabe zeichnet: `F` ist `size` Schritte vorwärts, `+` ist `angle` Grad nach links, `-` ist `angle` Grad nach rechts, `[` ist `push` und `]` ist `pop`. Andere Buchstaben zeichnen nichts.
+      starter: |
+        function drawWord(word, size, angle) {
+        }
+
+        left(90);
+        drawWord("F[+F]F[-F]F", 60, 25);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "left(90); drawWord(\"F[+F]F[-F]F\", 60, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              left 90
+              draw_word('F[+F]F[-F]F', 60, 25)
+          - call: "drawWord(\"FF[++F][-F]X+F\", 40, 30)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              draw_word('FF[++F][-F]X+F', 40, 30)
+        commands: [forward, left, right, push, pop]
+        show: 0
+      hint:
+        - "Eine Schleife über die Buchstaben: `for (const letter of word)`. Darin fragt sie, welcher Buchstabe es ist."
+        - "Für jeden der fünf Buchstaben eine Frage: `if (letter === \"F\")`, dann `else if (letter === \"+\")` und so weiter, mit dem passenden Befehl darin."
+      solution: |
+        ```javascript
+        function drawWord(word, size, angle) {
+          for (const letter of word) {
+            if (letter === "F") {
+              forward(size);
+            } else if (letter === "+") {
+              left(angle);
+            } else if (letter === "-") {
+              right(angle);
+            } else if (letter === "[") {
+              push();
+            } else if (letter === "]") {
+              pop();
+            }
+          }
+        }
+
+        left(90);
+        drawWord("F[+F]F[-F]F", 60, 25);
+        ```
+
+  - id: grow
+    title: "Ein Wort wächst"
+    level: 3
+    prompt: |
+      Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `draw_word` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
+    starter: |
+      def draw_word(word, size, angle)
+        word.each_char do |letter|
+          if letter == "F"
+            forward size
+          elsif letter == "+"
+            left angle
+          elsif letter == "-"
+            right angle
+          elsif letter == "["
+            push
+          elsif letter == "]"
+            pop
+          end
+        end
+      end
+
+      def grow(word, times)
+      end
+
+      left 90
+      draw_word(grow("F", 4), 4, 25)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "left 90; draw_word(grow(\"F\", 1), 40, 25)"
+          draw: |
+            def draw_word(word, size, angle)
+              word.each_char do |letter|
+                if letter == "F"
+                  forward size
+                elsif letter == "+"
+                  left angle
+                elsif letter == "-"
+                  right angle
+                elsif letter == "["
+                  push
+                elsif letter == "]"
+                  pop
+                end
+              end
+            end
+            def grow(word, times)
+              times.times do
+                word = word.gsub("F", "F[+F]F[-F]F")
+              end
+              word
+            end
+            left 90
+            draw_word(grow('F', 1), 40, 25)
+        - call: "left 90; draw_word(grow(\"F\", 4), 4, 25)"
+          draw: |
+            def draw_word(word, size, angle)
+              word.each_char do |letter|
+                if letter == "F"
+                  forward size
+                elsif letter == "+"
+                  left angle
+                elsif letter == "-"
+                  right angle
+                elsif letter == "["
+                  push
+                elsif letter == "]"
+                  pop
+                end
+              end
+            end
+            def grow(word, times)
+              times.times do
+                word = word.gsub("F", "F[+F]F[-F]F")
+              end
+              word
+            end
+            left 90
+            draw_word(grow('F', 4), 4, 25)
+      commands: [forward, left, right, push, pop]
+      show: 1
+    hint:
+      - "Eine Schleife, die `times`-mal läuft; in jedem Durchlauf wird das Wort durch ein neues ersetzt."
+      - "Jedes `F` auf einmal ersetzen: `word = word.gsub(\"F\", \"F[+F]F[-F]F\")`. Am Ende gibt die Funktion das Wort zurück."
+    solution: |
+      ```ruby
+      def draw_word(word, size, angle)
+        word.each_char do |letter|
+          if letter == "F"
+            forward size
+          elsif letter == "+"
+            left angle
+          elsif letter == "-"
+            right angle
+          elsif letter == "["
+            push
+          elsif letter == "]"
+            pop
+          end
+        end
+      end
+
+      def grow(word, times)
+        times.times do
+          word = word.gsub("F", "F[+F]F[-F]F")
+        end
+        word
+      end
+
+      left 90
+      draw_word(grow("F", 4), 4, 25)
+      ```
+    python:
+      prompt: |
+        Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `draw_word` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
+      starter: |
+        def draw_word(word, size, angle):
+            for letter in word:
+                if letter == "F":
+                    forward(size)
+                elif letter == "+":
+                    left(angle)
+                elif letter == "-":
+                    right(angle)
+                elif letter == "[":
+                    push()
+                elif letter == "]":
+                    pop()
+
+        def grow(word, times):
+            pass
+
+        left(90)
+        draw_word(grow("F", 4), 4, 25)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "left(90); draw_word(grow(\"F\", 1), 40, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 1), 40, 25)
+          - call: "left(90); draw_word(grow(\"F\", 4), 4, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 4), 4, 25)
+        commands: [forward, left, right, push, pop]
+        show: 1
+      hint:
+        - "Eine Schleife, die `times`-mal läuft; in jedem Durchlauf wird das Wort durch ein neues ersetzt."
+        - "Jedes `F` auf einmal ersetzen: `word = word.replace(\"F\", \"F[+F]F[-F]F\")`. Am Ende gibt die Funktion das Wort zurück."
+      solution: |
+        ```python
+        def draw_word(word, size, angle):
+            for letter in word:
+                if letter == "F":
+                    forward(size)
+                elif letter == "+":
+                    left(angle)
+                elif letter == "-":
+                    right(angle)
+                elif letter == "[":
+                    push()
+                elif letter == "]":
+                    pop()
+
+        def grow(word, times):
+            for i in range(times):
+                word = word.replace("F", "F[+F]F[-F]F")
+            return word
+
+        left(90)
+        draw_word(grow("F", 4), 4, 25)
+        ```
+    javascript:
+      prompt: |
+        Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `drawWord` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
+      starter: |
+        function drawWord(word, size, angle) {
+          for (const letter of word) {
+            if (letter === "F") {
+              forward(size);
+            } else if (letter === "+") {
+              left(angle);
+            } else if (letter === "-") {
+              right(angle);
+            } else if (letter === "[") {
+              push();
+            } else if (letter === "]") {
+              pop();
+            }
+          }
+        }
+
+        function grow(word, times) {
+        }
+
+        left(90);
+        drawWord(grow("F", 4), 4, 25);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "left(90); drawWord(grow(\"F\", 1), 40, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 1), 40, 25)
+          - call: "left(90); drawWord(grow(\"F\", 4), 4, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 4), 4, 25)
+        commands: [forward, left, right, push, pop]
+        show: 1
+      hint:
+        - "Eine Schleife, die `times`-mal läuft; in jedem Durchlauf wird das Wort durch ein neues ersetzt."
+        - "Jedes `F` auf einmal ersetzen: `word = word.replaceAll(\"F\", \"F[+F]F[-F]F\")`. Am Ende gibt die Funktion das Wort zurück."
+      solution: |
+        ```javascript
+        function drawWord(word, size, angle) {
+          for (const letter of word) {
+            if (letter === "F") {
+              forward(size);
+            } else if (letter === "+") {
+              left(angle);
+            } else if (letter === "-") {
+              right(angle);
+            } else if (letter === "[") {
+              push();
+            } else if (letter === "]") {
+              pop();
+            }
+          }
+        }
+
+        function grow(word, times) {
+          for (let i = 0; i < times; i++) {
+            word = word.replaceAll("F", "F[+F]F[-F]F");
+          }
+          return word;
+        }
+
+        left(90);
+        drawWord(grow("F", 4), 4, 25);
+        ```
+
+  - id: own-plant
+    title: "Deine Pflanze"
+    level: 3
+    prompt: |
+      Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
+    starter: |
+      def draw_word(word, size, angle)
+        word.each_char do |letter|
+          if letter == "F"
+            forward size
+          elsif letter == "+"
+            left angle
+          elsif letter == "-"
+            right angle
+          elsif letter == "["
+            push
+          elsif letter == "]"
+            pop
+          end
+        end
+      end
+
+      def grow(word, times)
+        times.times do
+          word = word.gsub("F", "F[+F]F[-F]F")
+        end
+        word
+      end
+
+      # left 90
+      # draw_word(grow("F", 4), 4, 25)
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+    hint:
+      - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
+      - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
+    solution: |
+      ```ruby
+      def draw_word(word, size, angle)
+        word.each_char do |letter|
+          if letter == "F"
+            forward size
+          elsif letter == "+"
+            left angle
+          elsif letter == "-"
+            right angle
+          elsif letter == "["
+            push
+          elsif letter == "]"
+            pop
+          end
+        end
+      end
+
+      def grow(word, times)
+        times.times do
+          new_word = ""
+          word.each_char do |letter|
+            if letter == "X"
+              new_word += "F+[[X]-X]-F[-FX]+X"
+            elsif letter == "F"
+              new_word += "FF"
+            else
+              new_word += letter
+            end
+          end
+          word = new_word
+        end
+        word
+      end
+
+      color "olivedrab"
+      left 70
+      draw_word(grow("X", 5), 4, 22.5)
+      ```
+    python:
+      prompt: |
+        Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
+      starter: |
+        def draw_word(word, size, angle):
+            for letter in word:
+                if letter == "F":
+                    forward(size)
+                elif letter == "+":
+                    left(angle)
+                elif letter == "-":
+                    right(angle)
+                elif letter == "[":
+                    push()
+                elif letter == "]":
+                    pop()
+
+        def grow(word, times):
+            for i in range(times):
+                word = word.replace("F", "F[+F]F[-F]F")
+            return word
+
+        # left(90)
+        # draw_word(grow("F", 4), 4, 25)
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
+        - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
+      solution: |
+        ```python
+        def draw_word(word, size, angle):
+            for letter in word:
+                if letter == "F":
+                    forward(size)
+                elif letter == "+":
+                    left(angle)
+                elif letter == "-":
+                    right(angle)
+                elif letter == "[":
+                    push()
+                elif letter == "]":
+                    pop()
+
+
+        def grow(word, times):
+            for i in range(times):
+                new_word = ""
+                for letter in word:
+                    if letter == "X":
+                        new_word += "F+[[X]-X]-F[-FX]+X"
+                    elif letter == "F":
+                        new_word += "FF"
+                    else:
+                        new_word += letter
+                word = new_word
+            return word
+
+
+        color("olivedrab")
+        left(70)
+        draw_word(grow("X", 5), 4, 22.5)
+        ```
+    javascript:
+      prompt: |
+        Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
+      starter: |
+        function drawWord(word, size, angle) {
+          for (const letter of word) {
+            if (letter === "F") {
+              forward(size);
+            } else if (letter === "+") {
+              left(angle);
+            } else if (letter === "-") {
+              right(angle);
+            } else if (letter === "[") {
+              push();
+            } else if (letter === "]") {
+              pop();
+            }
+          }
+        }
+
+        function grow(word, times) {
+          for (let i = 0; i < times; i++) {
+            word = word.replaceAll("F", "F[+F]F[-F]F");
+          }
+          return word;
+        }
+
+        // left(90);
+        // drawWord(grow("F", 4), 4, 25);
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
+        - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
+      solution: |
+        ```javascript
+        function drawWord(word, size, angle) {
+          for (const letter of word) {
+            if (letter === "F") {
+              forward(size);
+            } else if (letter === "+") {
+              left(angle);
+            } else if (letter === "-") {
+              right(angle);
+            } else if (letter === "[") {
+              push();
+            } else if (letter === "]") {
+              pop();
+            }
+          }
+        }
+
+        function grow(word, times) {
+          for (let i = 0; i < times; i++) {
+            let newWord = "";
+            for (const letter of word) {
+              if (letter === "X") {
+                newWord += "F+[[X]-X]-F[-FX]+X";
+              } else if (letter === "F") {
+                newWord += "FF";
+              } else {
+                newWord += letter;
+              }
+            }
+            word = newWord;
+          }
+          return word;
+        }
+
+        color("olivedrab");
+        left(70);
+        drawWord(grow("X", 5), 4, 22.5);
+        ```
+
+  - id: finale
+    title: "Dein Bild"
+    level: 2
+    prompt: |
+      Zeichne, was du willst, mit allem, was du jetzt kannst: einen Wald aus Bäumen im Wind, eine Wiese mit Blumen, eine Schneeflocke, einen Blitz, einen Sternenhimmel. Gefällt dir dein Bild, kannst du es einreichen.
+    starter: |
+      # Dein Bild
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+    hint:
+      - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
+      - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
+    solution: |
+      ```ruby
+      # ein Wald: drei Bäume im Wind nebeneinander
+      def tree(size, depth)
+        return if depth == 0
+        width depth
+        color depth <= 2 ? "forestgreen" : "saddlebrown"
+        forward size
+        push
+        left random(10, 40)
+        tree(size * random(0.6, 0.85), depth - 1)
+        pop
+        push
+        right random(10, 40)
+        tree(size * random(0.6, 0.85), depth - 1)
+        pop
+      end
+
+      pen_up
+      back 200
+      pen_down
+      3.times do
+        push
+        left 90
+        tree(random(40, 60), 8)
+        pop
+        pen_up
+        forward 200
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne, was du willst, mit allem, was du jetzt kannst: einen Wald aus Bäumen im Wind, eine Wiese mit Blumen, eine Schneeflocke, einen Blitz, einen Sternenhimmel. Gefällt dir dein Bild, kannst du es einreichen.
+      starter: |
+        # Dein Bild
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
+        - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
+      solution: |
+        ```python
+        # ein Wald: drei Bäume im Wind nebeneinander
+        def tree(size, depth):
+            if depth == 0:
+                return
+            width(depth)
+            if depth <= 2:
+                color("forestgreen")
+            else:
+                color("saddlebrown")
+            forward(size)
+            push()
+            left(random(10, 40))
+            tree(size * random(0.6, 0.85), depth - 1)
+            pop()
+            push()
+            right(random(10, 40))
+            tree(size * random(0.6, 0.85), depth - 1)
+            pop()
+
+        pen_up()
+        back(200)
+        pen_down()
+        for i in range(3):
+            push()
+            left(90)
+            tree(random(40, 60), 8)
+            pop()
+            pen_up()
+            forward(200)
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne, was du willst, mit allem, was du jetzt kannst: einen Wald aus Bäumen im Wind, eine Wiese mit Blumen, eine Schneeflocke, einen Blitz, einen Sternenhimmel. Gefällt dir dein Bild, kannst du es einreichen.
+      starter: |
+        // Dein Bild
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
+        - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
+      solution: |
+        ```javascript
+        // ein Wald: drei Bäume im Wind nebeneinander
+        function tree(size, depth) {
+          if (depth === 0) return;
+          width(depth);
+          color(depth <= 2 ? "forestgreen" : "saddlebrown");
+          forward(size);
+          push();
+          left(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+          push();
+          right(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+        }
+
+        penUp();
+        back(200);
+        penDown();
+        for (let i = 0; i < 3; i++) {
+          push();
+          left(90);
+          tree(random(40, 60), 8);
+          pop();
+          penUp();
+          forward(200);
+          penDown();
+        }
+        ```

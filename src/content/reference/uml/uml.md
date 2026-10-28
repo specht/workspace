@@ -11,77 +11,13 @@ kind: reference
 # Klassendiagramme als Text
 
 <p class='abstract'>
-Wie du ein UML-Klassendiagramm in einer <code>.uml</code>-Datei schreibst, wie du das Diagramm liest und was die UML-Werkstatt damit macht. Zum Nachschlagen; ein Feld zum Ausprobieren steht gleich darunter.
+Wie du ein UML-Klassendiagramm in einer <code>.uml</code>-Datei schreibst, wie du das Diagramm liest und was die UML-Werkstatt damit macht. Zum Nachschlagen; ein Feld zum Ausprobieren steht am Ende.
 </p>
 
 <div class='book'>
 <i class='bi bi-book'></i>
 <p><strong>UML Distilled</strong>, Martin Fowler, 3. Auflage, Addison-Wesley, 2003. Ein dünnes Buch über die Teile der UML, die man wirklich braucht, mit einem langen Kapitel zu Klassendiagrammen; auf Deutsch als »UML konzentriert«.</p>
 </div>
-
-<!-- part: ausprobieren -->
-## Ausprobieren
-
-Schreib ein Diagramm ins Feld; daneben oder darunter erscheint es, während du tippst. Hier wird nichts gespeichert. Für deine eigenen Diagramme nimmst du eine `.uml`-Datei in VS Code.
-
-<div class='uml-playground'>
-<textarea class='form-control uml-playground-input' wrap='off' spellcheck='false' autocapitalize='off' aria-label='Klassendiagramm'># Musik abspielen
-class Track (abstract)
-  - title: String
-  - seconds: int
-  + Track(title: String, seconds: int)
-  + label(): String
-
-class Song extends Track
-  - artist: String
-  + Song(title: String, seconds: int, artist: String)
-  + label(): String
-
-class Episode extends Track
-  - show: String
-  + Episode(title: String, seconds: int, show: String)
-  + label(): String
-
-class Playlist
-  - name: String
-  + Playlist(name: String)
-  + add(track: Track): void
-  + totalSeconds(): int
-
-association tracks: Playlist 0..* -- 0..* Track</textarea>
-<div class='uml-playground-output'>
-<div class='uml-playground-problems' aria-live='polite'></div>
-<div class='uml-playground-diagram'></div>
-</div>
-</div>
-
-<script src='uml-core.js'></script>
-<script>
-window.addEventListener('DOMContentLoaded', function () {
-    var core = window.UmlCore;
-    var box = document.querySelector('.uml-playground');
-    if (!core || !box) return;
-    var input = box.querySelector('.uml-playground-input');
-    var diagram = box.querySelector('.uml-playground-diagram');
-    var problems = box.querySelector('.uml-playground-problems');
-    var esc = core.esc;
-    function code(text) { return esc(text).replace(/`([^`]+)`/g, '<code>$1</code>'); }
-    function draw() {
-        var text = input.value;
-        var model = core.parse(text);
-        var errors = model.errors;
-        problems.innerHTML = errors.length ? errors.slice().sort(function (a, b) { return a.line - b.line; }).map(function (p) {
-            return '<div>Zeile ' + p.line + ': ' + code(p.msg) + '</div>';
-        }).join('') : '';
-        diagram.classList.toggle('uml-playground-stale', errors.length > 0);
-        if (errors.length) return; // the last good diagram stays, faded
-        diagram.innerHTML = core.diagram(text, { background: null }).svg;
-    }
-    input.addEventListener('input', draw);
-    draw();
-});
-</script>
-<!-- /part -->
 
 ## Ein Diagramm schreiben
 
@@ -235,6 +171,73 @@ Im Code wird aus einer Assoziation meist ein Attribut: Die Schule hat eine Liste
 ## Klassendiagramm oder ER-Modell?
 
 Beide zeigen Kästen mit Linien, aber sie beschreiben etwas anderes. Ein [ER-Modell](/reference/er-modelle) beschreibt, was in einer Datenbank gespeichert wird und lange bleibt. Ein Klassendiagramm beschreibt die Objekte eines laufenden Programms: was sie wissen und was sie tun. Darum hat ein Klassendiagramm Methoden und ein ER-Modell nicht. Viele Programme haben beides; dazwischen übersetzt oft eine Bibliothek, ein ORM (Object-Relational Mapping), Objekte in Zeilen einer Tabelle und zurück.
+<!-- /part -->
+
+<!-- part: ausprobieren -->
+## Ausprobieren
+
+Schreib ein Diagramm ins Feld; daneben oder darunter erscheint es, während du tippst. Hier wird nichts gespeichert. Für deine eigenen Diagramme nimmst du eine `.uml`-Datei in VS Code.
+
+<div class='uml-playground'>
+<textarea class='form-control uml-playground-input' wrap='off' spellcheck='false' autocapitalize='off' data-code-language='uml' aria-label='Klassendiagramm'># Musik abspielen
+class Track (abstract)
+  - title: String
+  - seconds: int
+  + Track(title: String, seconds: int)
+  + label(): String
+
+class Song extends Track
+  - artist: String
+  + Song(title: String, seconds: int, artist: String)
+  + label(): String
+
+class Episode extends Track
+  - show: String
+  + Episode(title: String, seconds: int, show: String)
+  + label(): String
+
+class Playlist
+  - name: String
+  + Playlist(name: String)
+  + add(track: Track): void
+  + totalSeconds(): int
+
+association tracks: Playlist 0..* -- 0..* Track</textarea>
+<div class='uml-playground-output'>
+<div class='uml-playground-problems' aria-live='polite'></div>
+<div class='uml-playground-diagram'></div>
+</div>
+</div>
+
+<script src='uml-core.js'></script>
+<script src='/include/code_input.js'></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+    var core = window.UmlCore;
+    var box = document.querySelector('.uml-playground');
+    if (!core || !box) return;
+    var input = box.querySelector('.uml-playground-input');
+    // in the colours of the code blocks below (code_input.js, as uml_lexer.rb)
+    if (window.CodeInput) window.CodeInput.attach(input);
+    var diagram = box.querySelector('.uml-playground-diagram');
+    var problems = box.querySelector('.uml-playground-problems');
+    var esc = core.esc;
+    function code(text) { return esc(text).replace(/`([^`]+)`/g, '<code>$1</code>'); }
+    function draw() {
+        var text = input.value;
+        var model = core.parse(text);
+        var errors = model.errors;
+        problems.innerHTML = errors.length ? errors.slice().sort(function (a, b) { return a.line - b.line; }).map(function (p) {
+            return '<div>Zeile ' + p.line + ': ' + code(p.msg) + '</div>';
+        }).join('') : '';
+        diagram.classList.toggle('uml-playground-stale', errors.length > 0);
+        if (errors.length) return; // the last good diagram stays, faded
+        diagram.innerHTML = core.diagram(text, { background: null }).svg;
+    }
+    input.addEventListener('input', draw);
+    draw();
+});
+</script>
 <!-- /part -->
 
 ## Werkzeuge

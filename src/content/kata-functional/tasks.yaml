@@ -136,104 +136,93 @@ tasks:
         }
         ```
 
-  - id: make-multiplier
-    title: "Eine Funktion zum Multiplizieren bauen"
-    level: 2
+  - id: make-counter
+    title: "Ein Zähler, der weiterzählt"
+    level: 3
     prompt: |
-      Schreib eine Funktion `make_multiplier(n)`, die ein Lambda zurückgibt, das seine Zahl mit `n` multipliziert: `make_multiplier(3).call(7)` ergibt `21`. Die Prüfung baut so mehrere Lambdas, auch zwei auf einmal, und ruft sie auf.
+      Schreib eine Funktion `make_counter`, die einen Zähler zurückgibt: ein Lambda ohne Parameter, das bei jedem Aufruf die nächste Zahl zurückgibt, beim ersten `1`, dann `2`, dann `3`. Zwei Zähler zählen jeder für sich: Wer `a` dreimal aufruft, ändert nichts an `b`.
     starter: |
-      def make_multiplier(n)
+      def make_counter
       end
     check:
       type: function
       language: ruby
       cases:
-        - call: "make_multiplier(3).call(7)"
-          expect: "21"
-        - call: "make_multiplier(0).call(5)"
-          expect: "0"
-        - call: "make_multiplier(-2).call(4)"
-          expect: "-8"
-        - call: "double = make_multiplier(2); triple = make_multiplier(3); double.call(10) + triple.call(10)"
-          expect: "50"
-          say: "Jedes Lambda merkt sich sein eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
-        - call: "make_multiplier(10).call(make_multiplier(10).call(1))"
-          expect: "100"
-    feedback:
-      - when: { same_as: "def make_multiplier(n)\n  n\nend\n" }
-        say: "`make_multiplier` gibt keine Funktion zurück, und mit `.call(7)` lässt sich nur eine Funktion aufrufen. Die letzte Zeile soll ein Lambda sein, `->(x) { … }`."
+        - call: "counter = make_counter; counter.call"
+          expect: "1"
+        - call: "counter = make_counter; [counter.call, counter.call, counter.call]"
+          expect: "[1, 2, 3]"
+        - call: "a = make_counter; b = make_counter; a.call; a.call; a.call; [a.call, b.call]"
+          expect: "[4, 1]"
+          say: "Jeder Aufruf von `make_counter` baut einen neuen Zähler mit einer eigenen Variablen, die bei 0 beginnt."
     hint:
-      - "Was gibt `make_multiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `.call(7)`."
-      - "`make_adder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf im Lambda stehen."
+      - "Der Zähler muss sich von einem Aufruf zum nächsten etwas merken. Wo kann diese Variable stehen, damit sie nicht bei jedem Aufruf wieder 0 ist?"
+      - "Leg die Variable in `make_counter` an, vor dem Lambda: `count = 0`. Das Lambda merkt sich sie wie `make_adder` sein `n`, und es darf sie auch ändern."
+      - "Im Lambda erhöht `count += 1` die Variable, und das ist zugleich sein Ergebnis: `-> { count += 1 }`."
     solution: |
       ```ruby
-      def make_multiplier(n)
-        ->(x) { x * n }
+      def make_counter
+        count = 0
+        -> { count += 1 }
       end
       ```
     python:
       prompt: |
-        Schreib eine Funktion `make_multiplier(n)`, die ein Lambda zurückgibt, das seine Zahl mit `n` multipliziert: `make_multiplier(3)(7)` ergibt `21`. Die Prüfung baut so mehrere Lambdas, auch zwei auf einmal, und ruft sie auf.
+        Schreib eine Funktion `make_counter`, die einen Zähler zurückgibt: eine Funktion ohne Parameter, die bei jedem Aufruf die nächste Zahl zurückgibt, beim ersten `1`, dann `2`, dann `3`. Zwei Zähler zählen jeder für sich: Wer `a` dreimal aufruft, ändert nichts an `b`. Ein Lambda darf in Python nichts zuweisen; schreib den Zähler deshalb mit `def` innerhalb von `make_counter`.
       starter: |
-        def make_multiplier(n):
+        def make_counter():
             pass
       check:
         type: function
         language: python
         cases:
-          - call: "make_multiplier(3)(7)"
-            expect: "21"
-          - call: "make_multiplier(0)(5)"
-            expect: "0"
-          - call: "make_multiplier(-2)(4)"
-            expect: "-8"
-          - call: "double = make_multiplier(2); triple = make_multiplier(3); double(10) + triple(10)"
-            expect: "50"
-            say: "Jedes Lambda merkt sich sein eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
-          - call: "make_multiplier(10)(make_multiplier(10)(1))"
-            expect: "100"
-      feedback:
-        - when: { same_as: "def make_multiplier(n):\n    return n\n" }
-          say: "`make_multiplier` gibt keine Funktion zurück, und mit `(7)` lässt sich nur eine Funktion aufrufen. Gib ein Lambda zurück, `lambda x: …`."
+          - call: "counter = make_counter(); counter()"
+            expect: "1"
+          - call: "counter = make_counter(); [counter(), counter(), counter()]"
+            expect: "[1, 2, 3]"
+          - call: "a = make_counter(); b = make_counter(); a(); a(); a(); [a(), b()]"
+            expect: "[4, 1]"
+            say: "Jeder Aufruf von `make_counter` baut einen neuen Zähler mit einer eigenen Variablen, die bei 0 beginnt."
       hint:
-        - "Was gibt `make_multiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `(7)`."
-        - "`make_adder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf im Lambda stehen."
+        - "Der Zähler muss sich von einem Aufruf zum nächsten etwas merken. Wo kann diese Variable stehen, damit sie nicht bei jedem Aufruf wieder 0 ist?"
+        - "Leg die Variable in `make_counter` an, vor der inneren Funktion: `count = 0`. Die innere Funktion merkt sich sie wie das Lambda von `make_adder` sein `n`."
+        - "Ändern darf die innere Funktion `count` erst, wenn sie mit `nonlocal count` sagt, dass sie die Variable von draußen meint; ohne das hält Python `count` für eine neue Variable der inneren Funktion."
       solution: |
         ```python
-        def make_multiplier(n):
-            return lambda x: x * n
+        def make_counter():
+            count = 0
+            def next_number():
+                nonlocal count
+                count += 1
+                return count
+            return next_number
         ```
     javascript:
       prompt: |
-        Schreib eine Funktion `makeMultiplier(n)`, die eine Funktion zurückgibt, die ihre Zahl mit `n` multipliziert: `makeMultiplier(3)(7)` ergibt `21`. Die Prüfung baut so mehrere Funktionen, auch zwei auf einmal, und ruft sie auf.
+        Schreib eine Funktion `makeCounter`, die einen Zähler zurückgibt: eine Funktion ohne Parameter, die bei jedem Aufruf die nächste Zahl zurückgibt, beim ersten `1`, dann `2`, dann `3`. Zwei Zähler zählen jeder für sich: Wer `a` dreimal aufruft, ändert nichts an `b`.
       starter: |
-        function makeMultiplier(n) {
+        function makeCounter() {
         }
       check:
         type: function
         language: javascript
         cases:
-          - call: "makeMultiplier(3)(7)"
-            expect: "21"
-          - call: "makeMultiplier(0)(5)"
-            expect: "0"
-          - call: "makeMultiplier(-2)(4)"
-            expect: "-8"
-          - call: "const double = makeMultiplier(2); const triple = makeMultiplier(3); double(10) + triple(10)"
-            expect: "50"
-            say: "Jede Funktion merkt sich ihr eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
-          - call: "makeMultiplier(10)(makeMultiplier(10)(1))"
-            expect: "100"
-      feedback:
-        - when: { same_as: "function makeMultiplier(n) {\n  return n;\n}\n" }
-          say: "`makeMultiplier` gibt keine Funktion zurück, und mit `(7)` lässt sich nur eine Funktion aufrufen. Gib eine Arrow Function zurück, `x => …`."
+          - call: "const counter = makeCounter(); counter()"
+            expect: "1"
+          - call: "const counter = makeCounter(); [counter(), counter(), counter()]"
+            expect: "[1, 2, 3]"
+          - call: "const a = makeCounter(); const b = makeCounter(); a(); a(); a(); [a(), b()]"
+            expect: "[4, 1]"
+            say: "Jeder Aufruf von `makeCounter` baut einen neuen Zähler mit einer eigenen Variablen, die bei 0 beginnt."
       hint:
-        - "Was gibt `makeMultiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `(7)`."
-        - "`makeAdder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf in der Arrow Function stehen."
+        - "Der Zähler muss sich von einem Aufruf zum nächsten etwas merken. Wo kann diese Variable stehen, damit sie nicht bei jedem Aufruf wieder 0 ist?"
+        - "Leg die Variable in `makeCounter` an, vor der Arrow Function: `let count = 0;`. Die Arrow Function merkt sich sie wie die von `makeAdder` ihr `n`, und sie darf sie auch ändern."
+        - "In der Arrow Function erhöht `count += 1` die Variable, und das ist zugleich ihr Ergebnis: `() => count += 1`."
       solution: |
         ```javascript
-        function makeMultiplier(n) {
-          return x => x * n;
+        function makeCounter() {
+          let count = 0;
+          return () => count += 1;
         }
         ```
 

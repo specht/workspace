@@ -28,8 +28,12 @@
 // Tab goes from part to part, the arrow keys move it, Enter or the space bar
 // toggles a switch, Entf deletes, V starts a wire from the part's output and
 // a digit ends it in that input of another part, a digit alone selects the
-// wire into that input; Strg+Z and Strg+Y undo and redo. On a phone the
-// circuit can only be looked at and switched.
+// wire into that input; Strg+Z and Strg+Y undo and redo. Several parts: a
+// frame dragged on the empty paper or Shift+click selects them, dragging
+// one of them moves them all, Entf deletes them, Strg+A selects all, Strg+D
+// doubles; a right click (or the menu key) opens a menu of what fits the
+// spot. The keys work wherever the focus is inside the editor. On a phone
+// the circuit can only be looked at and switched.
 (function () {
     'use strict';
 
@@ -347,6 +351,12 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
 .ce-svg .ce-part.ce-selected .ce-focus, .ce-svg .ce-part:focus-visible .ce-focus { opacity: 1; }
 .ce-svg .ce-wire-hit { fill: none; stroke: transparent; stroke-width: 12; cursor: pointer; }
 .ce-svg .lc-wire.ce-selected { stroke: var(--ce-select); stroke-width: 3.6; }
+.ce-svg:focus { outline: none; }
+.ce-svg .ce-frame { fill: color-mix(in srgb, var(--ce-select) 10%, transparent); stroke: var(--ce-select); stroke-width: 1.2; stroke-dasharray: 4 3; pointer-events: none; }
+.ce-menu { position: fixed; z-index: 1085; min-width: 14rem; display: block; }
+.ce-menu .dropdown-item { display: flex; align-items: center; gap: 0.6em; }
+.ce-menu .dropdown-item .bi { width: 1.1em; }
+.ce-menu .ce-menu-key { margin-left: auto; padding-left: 1.5em; font-size: 85%; color: var(--bs-secondary-color); }
 .ce-svg .ce-pin { fill: var(--lc-zero); pointer-events: none; }
 .ce-svg .ce-pin.lc-one { fill: var(--lc-one); }
 .ce-svg .ce-pin.ce-open { fill: var(--bs-body-bg); stroke: var(--lc-zero); stroke-width: 1.5; }
@@ -414,6 +424,13 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
     // The editor
 
     class Editor {
+        // one part or wire selected: never several parts as well
+        get sel() { return this._sel; }
+        set sel(value) {
+            this._sel = value;
+            if (this.many) this.many.clear();
+        }
+
         constructor(el) {
             this.el = el;
             this.mode = el.classList.contains('circuit-view') ? 'view' : el.dataset.free ? 'free' : 'task';
@@ -432,6 +449,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             this.future = [];
             this.inputs = {};         // the switches' bits by name
             this.values = {};
+            this.many = new Set();    // several parts selected (a frame, Shift+click)
             this.sel = null;          // { part: id } or { wire: [id, index] }
             this.pending = null;      // a wire begun: { from: [id, port] } or { to: [id, index] }
             this.timer = null;
@@ -574,7 +592,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
                 el.append(body, this.status);
             } else {
                 const note = D.html('p', { class: 'ce-phone-note', text: 'Zum Bauen brauchst du einen größeren Bildschirm, ein Tablet oder einen Computer. Hier kannst du die Schaltung ansehen und die Schalter umlegen.' });
-                const keys = D.html('p', { class: 'ce-keys', html: 'Tastatur: <kbd>Tab</kbd> zum nächsten Teil, Pfeiltasten schieben, <kbd>Entf</kbd> löscht, <kbd>V</kbd> und dann eine Ziffer am Ziel ziehen eine Leitung in diesen Eingang, <kbd>Strg</kbd>+<kbd>Z</kbd> nimmt zurück.' });
+                const keys = D.html('p', { class: 'ce-keys', html: 'Tastatur: <kbd>Tab</kbd> zum nächsten Teil, Pfeiltasten schieben, <kbd>Entf</kbd> löscht, <kbd>V</kbd> und dann eine Ziffer am Ziel ziehen eine Leitung in diesen Eingang, <kbd>Strg</kbd>+<kbd>Z</kbd> nimmt zurück. Mehrere Teile: einen Rahmen um sie ziehen oder mit <kbd>Umschalt</kbd> anklicken, <kbd>Strg</kbd>+<kbd>A</kbd> wählt alle, <kbd>Strg</kbd>+<kbd>D</kbd> verdoppelt. Ein Rechtsklick öffnet ein Menü.' });
                 el.append(note, this.palette, this.actions, this.form, body, this.status, keys);
                 this.buildActions();
                 this.renderPalette();
@@ -585,12 +603,11 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             this.canvas.addEventListener('touchstart', (e) => {
                 if (this.canEdit() && e.target.closest && e.target.closest('.ce-movable, .ce-pin-hit')) e.preventDefault();
             }, { passive: false });
-            el.addEventListener('keydown', (e) => {
-                if (!(e.ctrlKey || e.metaKey) || e.target.closest('input')) return;
-                const key = e.key.toLowerCase();
-                if (key === 'z' && !e.shiftKey) { e.preventDefault(); this.undo(); }
-                else if (key === 'y' || (key === 'z' && e.shiftKey)) { e.preventDefault(); this.redo(); }
-            });
+            this.svg.setAttribute('tabindex', '-1');
+            this.canvas.addEventListener('contextmenu', (e) => this.contextMenu(e));
+            // the keys wherever the focus is inside the editor: a part, a
+            // button, the paper after a click on a wire or on nothing
+            el.addEventListener('keydown', (e) => this.editorKey(e));
         }
 
         buildActions() {
@@ -865,7 +882,24 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
         }
 
         deleteSelection() {
-            if (!this.canEdit() || !this.sel) return;
+            if (!this.canEdit()) return;
+            if (this.many.size) {
+                const parts = this.selectedParts();
+                const gone = new Set(parts.filter((p) => !this.fixed(p)).map((p) => p.id));
+                if (!gone.size) {
+                    this.say('Die Schalter und Lampen der Aufgabe bleiben stehen; schieben kannst du sie.', true);
+                    return;
+                }
+                this.snapshot();
+                this.c.parts = this.c.parts.filter((q) => !gone.has(q.id));
+                for (const q of this.c.parts) q.src = q.src.map((s) => (s && gone.has(s.split('.')[0]) ? null : s));
+                this.sel = null;
+                this.after(true);
+                this.say(`${gone.size} Teile gelöscht.${gone.size < parts.length ? ' Die Schalter und Lampen der Aufgabe bleiben stehen.' : ''}`);
+                this.svg.focus({ preventScroll: true });
+                return;
+            }
+            if (!this.sel) return;
             if (this.sel.wire) {
                 const [id, i] = this.sel.wire;
                 const p = this.part(id);
@@ -891,6 +925,219 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             this.after(true);
             this.say(`${this.describe(p)} gelöscht.`);
             this.svg.focus();
+        }
+
+        // the parts selected: several, or the one
+        selectedParts() {
+            if (this.many.size) return [...this.many].map((id) => this.part(id)).filter(Boolean);
+            const p = this.sel && this.sel.part && this.part(this.sel.part);
+            return p ? [p] : [];
+        }
+
+        selectParts(ids) {
+            this.pending = null;
+            this.sel = ids.length === 1 ? { part: ids[0] } : null;
+            if (ids.length > 1) this.many = new Set(ids);
+        }
+
+        sayChosen() {
+            const parts = this.selectedParts();
+            if (parts.length > 1) this.say(`${parts.length} Teile ausgewählt: Ziehen verschiebt sie zusammen, Entf löscht sie, Strg+D verdoppelt sie.`);
+            else if (parts.length === 1) this.say(`${this.describe(parts[0])} ausgewählt.`);
+            else this.say('');
+        }
+
+        selectAll() {
+            if (!this.canEdit()) return;
+            this.selectParts(this.c.parts.map((p) => p.id));
+            this.render();
+            this.sayChosen();
+        }
+
+        // the parts selected once more, a little lower right, with the
+        // wires between them; the switches and lamps of a task stay single
+        duplicate() {
+            if (!this.canEdit()) return;
+            const parts = this.selectedParts().filter((p) => !this.fixed(p));
+            if (!parts.length) {
+                this.say('Wähle zuerst Gatter oder Bausteine aus, die du verdoppeln willst.', true);
+                return;
+            }
+            this.snapshot();
+            const ids = new Map();
+            const copies = parts.map((p) => {
+                const q = this.addPart(p.kind === 'block' ? { kind: 'block', block: p.block } : { kind: p.kind });
+                q.x = p.x + 6 * SNAP;
+                q.y = p.y + 6 * SNAP;
+                ids.set(p.id, q.id);
+                return [p, q];
+            });
+            for (const [p, q] of copies) {
+                q.src = p.src.map((src) => {
+                    if (!src) return null;
+                    const [id, port] = src.split('.');
+                    return ids.has(id) ? ids.get(id) + (port ? `.${port}` : '') : null;
+                });
+                this.keepInside(q);
+            }
+            this.selectParts(copies.map(([, q]) => q.id));
+            this.after(true);
+            this.say(copies.length === 1 ? `${this.describe(copies[0][1])} verdoppelt.` : `${copies.length} Teile verdoppelt, mit den Leitungen zwischen ihnen.`);
+        }
+
+        // Entf, Strg+Z and the others wherever the focus is in the editor;
+        // what a focused part does with a key (keyDown) comes first
+        editorKey(e) {
+            if (e.defaultPrevented || e.target.closest('input, textarea, select, .ce-form')) return;
+            if (this.menu && e.key === 'Escape') {
+                e.preventDefault();
+                this.closeMenu();
+                this.svg.focus({ preventScroll: true });
+                return;
+            }
+            if (!this.canEdit()) return;
+            const key = e.key.toLowerCase();
+            if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
+                e.preventDefault();
+                const target = document.activeElement && this.svg.contains(document.activeElement) ? document.activeElement : this.svg;
+                const r = target.getBoundingClientRect();
+                this.contextMenu({ target, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, preventDefault() {} });
+                return;
+            }
+            if (e.ctrlKey || e.metaKey) {
+                if (key === 'z' && !e.shiftKey) { e.preventDefault(); this.undo(); }
+                else if (key === 'y' || (key === 'z' && e.shiftKey)) { e.preventDefault(); this.redo(); }
+                else if (key === 'a' && !e.target.closest('button')) { e.preventDefault(); this.selectAll(); }
+                else if (key === 'd') { e.preventDefault(); this.duplicate(); }
+                return;
+            }
+            if (e.altKey || e.target.closest('button')) return;
+            if ((key === 'delete' || key === 'backspace') && (this.sel || this.many.size)) {
+                e.preventDefault();
+                this.deleteSelection();
+            } else if (key === 'escape' && (this.sel || this.many.size || this.pending)) {
+                this.pending = null;
+                this.sel = null;
+                this.render();
+                this.say('');
+            } else if (key.startsWith('arrow') && this.many.size) {
+                e.preventDefault();
+                this.moveParts(this.selectedParts(), key, e.shiftKey);
+            }
+        }
+
+        moveParts(parts, key, far) {
+            const step = far ? 4 * SNAP : SNAP;
+            this.snapshot();
+            for (const p of parts) {
+                if (key === 'arrowleft') p.x -= step;
+                if (key === 'arrowright') p.x += step;
+                if (key === 'arrowup') p.y -= step;
+                if (key === 'arrowdown') p.y += step;
+                this.keepInside(p);
+            }
+            this.after(false);
+        }
+
+        // ------------------------------------------------------------------
+        // The menu on a right click: what fits the part, the wire or the
+        // empty paper under the pointer
+
+        contextMenu(e) {
+            if (!this.canEdit()) return;
+            e.preventDefault();
+            const partEl = e.target.closest && e.target.closest('[data-part]');
+            const wire = e.target.closest && e.target.closest('[data-wire]');
+            const items = [];
+            if (partEl) {
+                const id = partEl.dataset.part;
+                if (!this.many.has(id) && !(this.sel && this.sel.part === id)) this.sel = { part: id };
+                this.render();
+                const parts = this.selectedParts();
+                const editable = parts.some((p) => !this.fixed(p));
+                items.push(['Verdoppeln', 'bi-copy', 'Strg+D', () => this.duplicate(), editable]);
+                if (parts.length === 1) {
+                    const p = parts[0];
+                    if (GATES[p.kind] && p.kind !== 'not') {
+                        items.push(['Ein Eingang mehr', 'bi-plus-lg', '+', () => this.changeInputs(1), p.src.length < N.LIMITS.maxInputs]);
+                        items.push(['Ein Eingang weniger', 'bi-dash-lg', '−', () => this.changeInputs(-1), p.src.length > 2]);
+                    }
+                    if (this.mode === 'free' && (p.kind === 'in' || p.kind === 'out')) items.push(['Umbenennen', 'bi-input-cursor-text', '', () => this.openRename(), true]);
+                }
+                items.push(null);
+                items.push([parts.length > 1 ? `${parts.length} Teile löschen` : 'Löschen', 'bi-trash', 'Entf', () => this.deleteSelection(), editable]);
+                this.sayChosen();
+            } else if (wire) {
+                const [wid, wi] = wire.dataset.wire.split(':');
+                this.sel = { wire: [wid, Number(wi)] };
+                this.render();
+                items.push(['Leitung löschen', 'bi-trash', 'Entf', () => this.deleteSelection(), true]);
+            } else {
+                items.push(['Rückgängig', 'bi-arrow-counterclockwise', 'Strg+Z', () => this.undo(), this.history.length > 0]);
+                items.push(['Wiederholen', 'bi-arrow-clockwise', 'Strg+Y', () => this.redo(), this.future.length > 0]);
+                items.push(['Alles auswählen', 'bi-bounding-box', 'Strg+A', () => this.selectAll(), this.c.parts.length > 0]);
+                items.push(null);
+                items.push(['Neu anfangen', 'bi-x-circle', '', () => this.clearAll(), this.c.parts.length > 0]);
+            }
+            this.openMenu(e.clientX, e.clientY, items);
+        }
+
+        openMenu(x, y, items) {
+            this.closeMenu();
+            const menu = D.html('div', { class: 'dropdown-menu ce-menu', role: 'menu' });
+            for (const item of items) {
+                if (!item) {
+                    if (menu.lastChild) menu.appendChild(D.html('hr', { class: 'dropdown-divider' }));
+                    continue;
+                }
+                const [label, iconName, keys, action, enabled] = item;
+                const b = D.html('button', { type: 'button', class: `dropdown-item${enabled ? '' : ' disabled'}`, role: 'menuitem' });
+                if (!enabled) b.setAttribute('aria-disabled', 'true');
+                b.append(icon(iconName), D.html('span', { text: label }));
+                if (keys) b.appendChild(D.html('span', { class: 'ce-menu-key', text: keys }));
+                b.addEventListener('click', () => {
+                    if (!enabled) return;
+                    this.closeMenu();
+                    action();
+                });
+                menu.appendChild(b);
+            }
+            document.body.appendChild(menu);
+            const r = menu.getBoundingClientRect();
+            menu.style.left = `${Math.max(4, Math.min(x, window.innerWidth - r.width - 4))}px`;
+            menu.style.top = `${Math.max(4, Math.min(y, window.innerHeight - r.height - 4))}px`;
+            const buttons = () => [...menu.querySelectorAll('.dropdown-item:not(.disabled)')];
+            menu.addEventListener('keydown', (e) => {
+                const list = buttons();
+                const i = list.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const next = list[(i + (e.key === 'ArrowDown' ? 1 : list.length - 1)) % list.length];
+                    if (next) next.focus();
+                } else if (e.key === 'Escape' || e.key === 'Tab') {
+                    e.preventDefault();
+                    this.closeMenu();
+                    this.svg.focus({ preventScroll: true });
+                }
+            });
+            const outside = (e) => { if (!menu.contains(e.target)) this.closeMenu(); };
+            const away = () => this.closeMenu();
+            document.addEventListener('pointerdown', outside, true);
+            window.addEventListener('scroll', away, { passive: true, once: true });
+            window.addEventListener('resize', away, { once: true });
+            this.menu = { menu, outside, away };
+            const first = buttons()[0];
+            if (first) first.focus({ preventScroll: true });
+        }
+
+        closeMenu() {
+            if (!this.menu) return;
+            const { menu, outside, away } = this.menu;
+            this.menu = null;
+            document.removeEventListener('pointerdown', outside, true);
+            window.removeEventListener('scroll', away);
+            window.removeEventListener('resize', away);
+            menu.remove();
         }
 
         changeInputs(delta) {
@@ -1209,7 +1456,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             for (const p of c.parts) {
                 const g = geoms.get(p.id);
                 const movable = this.canEdit();
-                const selected = this.sel && this.sel.part === p.id;
+                const selected = (this.sel && this.sel.part === p.id) || this.many.has(p.id);
                 const el = D.svg('g', { class: `ce-part${movable ? ' ce-movable' : ''}${selected ? ' ce-selected' : ''}`, 'data-part': p.id, tabindex: '0' }, layers.parts);
                 const [bx, by, bw, bh] = g.box;
                 D.svg('rect', { class: 'ce-focus', x: bx - 5, y: by - 5, width: bw + 10, height: bh + 10, rx: 6 }, el);
@@ -1331,7 +1578,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             const set = (b, on) => { if (b) b.setAttribute('aria-disabled', on && can ? 'false' : 'true'); };
             set(this.undoButton, this.history.length > 0);
             set(this.redoButton, this.future.length > 0);
-            set(this.deleteButton, !!(this.sel && (this.sel.wire || (p && !this.fixed(p)))));
+            set(this.deleteButton, !!(this.sel && (this.sel.wire || (p && !this.fixed(p)))) || this.selectedParts().some((q) => this.many.size && !this.fixed(q)));
             const gate = p && GATES[p.kind] && p.kind !== 'not';
             set(this.moreButton, gate && p.src.length < N.LIMITS.maxInputs);
             set(this.lessButton, gate && p.src.length > 2);
@@ -1455,6 +1702,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
 
         pointerDown(e) {
             if (e.button > 0) return;
+            this.closeMenu();
             const at = this.toModel(e);
             const pin = e.target.closest('[data-pin]');
             const wire = e.target.closest('[data-wire]');
@@ -1487,6 +1735,8 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
                 this.bindDrag();
                 return;
             }
+            // the paper takes the keys (Entf, Strg+Z) when no part has them
+            if (!partEl) this.svg.focus({ preventScroll: true });
             if (wire) {
                 const [wid, wi] = wire.dataset.wire.split(':');
                 this.sel = { wire: [wid, Number(wi)] };
@@ -1496,17 +1746,34 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             }
             if (id) {
                 e.preventDefault();
+                // Shift (or Strg) and a click: one part more or less
+                if (e.shiftKey || e.ctrlKey || e.metaKey) {
+                    const ids = this.selectedParts().map((q) => q.id);
+                    this.selectParts(ids.includes(id) ? ids.filter((x) => x !== id) : ids.concat([id]));
+                    this.render();
+                    this.sayChosen();
+                    this.focusPart(id);
+                    return;
+                }
+                // one of several selected: they move together
+                if (this.many.has(id)) {
+                    const from = new Map(this.selectedParts().map((q) => [q.id, [q.x, q.y]]));
+                    this.drag = { kind: 'group', id, from, at, start: [e.clientX, e.clientY], moved: false, pointer: e.pointerId, before: JSON.stringify(this.c) };
+                    this.canvas.setPointerCapture(e.pointerId);
+                    this.bindDrag();
+                    return;
+                }
                 const p = this.part(id);
                 this.drag = { kind: 'part', id, start: [e.clientX, e.clientY], from: [p.x, p.y], at, moved: false, pointer: e.pointerId, before: JSON.stringify(this.c) };
                 this.canvas.setPointerCapture(e.pointerId);
                 this.bindDrag();
                 return;
             }
-            // the empty canvas: nothing selected
-            if (this.sel) {
-                this.sel = null;
-                this.render();
-            }
+            // the empty paper: a frame selects what it touches, a click alone
+            // nothing (with Shift, the frame adds to what is selected)
+            this.drag = { kind: 'frame', at, start: [e.clientX, e.clientY], moved: false, pointer: e.pointerId, add: e.shiftKey ? this.selectedParts().map((q) => q.id) : [] };
+            this.canvas.setPointerCapture(e.pointerId);
+            this.bindDrag();
         }
 
         bindDrag() {
@@ -1528,6 +1795,24 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             if (!d.moved && Math.hypot(e.clientX - d.start[0], e.clientY - d.start[1]) < 5) return;
             d.moved = true;
             const at = this.toModel(e);
+            if (d.kind === 'frame') {
+                this.overLayer.replaceChildren();
+                D.svg('rect', { class: 'ce-frame', x: Math.min(d.at[0], at[0]), y: Math.min(d.at[1], at[1]), width: Math.abs(at[0] - d.at[0]), height: Math.abs(at[1] - d.at[1]) }, this.overLayer);
+                return;
+            }
+            if (d.kind === 'group') {
+                const dx = snap(at[0] - d.at[0]);
+                const dy = snap(at[1] - d.at[1]);
+                for (const [id, [x, y]] of d.from) {
+                    const p = this.part(id);
+                    if (!p) continue;
+                    p.x = x + dx;
+                    p.y = y + dy;
+                    this.keepInside(p);
+                }
+                this.render();
+                return;
+            }
             if (d.kind === 'part') {
                 const p = this.part(d.id);
                 let x = snap(d.from[0] + at[0] - d.at[0]);
@@ -1584,6 +1869,44 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             const d = this.drag;
             this.drag = null;
             if (!d) return;
+            if (d.kind === 'frame') {
+                if (this.overLayer) this.overLayer.replaceChildren();
+                if (!d.moved) {
+                    if (this.sel || this.many.size) {
+                        this.sel = null;
+                        this.render();
+                        this.say('');
+                    }
+                    return;
+                }
+                const at = this.toModel(e);
+                const [lx, hx] = [Math.min(d.at[0], at[0]), Math.max(d.at[0], at[0])];
+                const [ly, hy] = [Math.min(d.at[1], at[1]), Math.max(d.at[1], at[1])];
+                const inside = this.c.parts.filter((p) => {
+                    const [bx, by, bw, bh] = (this.geoms.get(p.id) || geom(this.c, p)).box;
+                    return bx < hx && bx + bw > lx && by < hy && by + bh > ly;
+                }).map((p) => p.id);
+                this.selectParts([...new Set(d.add.concat(inside))]);
+                this.render();
+                this.sayChosen();
+                this.svg.focus({ preventScroll: true });
+                return;
+            }
+            if (d.kind === 'group') {
+                if (d.moved) {
+                    this.history.push(d.before);
+                    if (this.history.length > MAX_HISTORY) this.history.shift();
+                    this.future = [];
+                    this.after(false);
+                } else {
+                    // a click on one of them: that one alone
+                    this.sel = { part: d.id };
+                    this.render();
+                    this.sayChosen();
+                }
+                this.focusPart(d.id);
+                return;
+            }
             if (d.kind === 'part') {
                 const p = this.part(d.id);
                 if (d.moved) {
@@ -1643,6 +1966,12 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
                 this.focusPart(p.id);
                 return;
             }
+            if (key.startsWith('Arrow') && this.many.has(p.id)) {
+                e.preventDefault();
+                this.moveParts(this.selectedParts(), key.toLowerCase(), e.shiftKey);
+                this.focusPart(p.id);
+                return;
+            }
             if (key.startsWith('Arrow')) {
                 e.preventDefault();
                 const step = e.shiftKey ? 4 * SNAP : SNAP;
@@ -1659,7 +1988,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             }
             if (key === 'Delete' || key === 'Backspace') {
                 e.preventDefault();
-                if (!this.sel || (this.sel.part !== p.id && !this.sel.wire)) this.sel = { part: p.id };
+                if (!this.many.has(p.id) && (!this.sel || (this.sel.part !== p.id && !this.sel.wire))) this.sel = { part: p.id };
                 this.deleteSelection();
                 return;
             }

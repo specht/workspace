@@ -20,13 +20,13 @@ Lernende geben Funktionen weiter wie Zahlen, direkt in den Karten der Seite, in 
 - <code>map</code> statt <code>filter</code>: Aus den geraden Zahlen wird eine Liste aus <code>true</code> und <code>false</code>. Die Vorhersage vor den Katas zu <code>map</code> bereitet darauf vor, die Rückmeldung verweist auf sie.
 - Beim Produkt fängt <code>reduce</code> bei 0 an, und alles bleibt 0; ohne Startwert gibt die leere Liste in Ruby <code>nil</code>, in Python und JavaScript einen Fehler.
 - Beim Eintragen in ein Dictionary gibt der Block die eingetragene Zahl zurück statt des Dictionarys (in Ruby die Zuweisung als letzte Zeile, in Python eine Funktion ohne <code>return</code>, in JavaScript eine Arrow Function ohne geschweifte Klammern); beim nächsten Element bricht es ab.
-- <code>make_multiplier</code> gibt eine Zahl zurück statt einer Funktion; <code>apply_n</code> ruft <code>f</code> auf und vergisst das Ergebnis.
+- <code>make_counter</code> legt <code>count = 0</code> im Lambda an statt davor und gibt immer 1 zurück, oder alle Zähler teilen sich eine globale Variable; in Python fehlt <code>nonlocal</code>. <code>apply_n</code> ruft <code>f</code> auf und vergisst das Ergebnis.
 - In JavaScript ist <code>-3 % 2</code> gleich <code>-1</code>: Wer nach <code>=== 1</code> fragt, verliert die negativen ungeraden Zahlen.
 - Beim Konto zählt genau 0 schon als Minus, oder die Schleife hört nicht auf und findet das letzte Mal statt des ersten.
 
 #### Die Aufgaben
 
-- Funktionen als Werte: die Vorhersage »Zweimal quadrieren«, `apply_n`, `make_multiplier`.
+- Funktionen als Werte: die Vorhersage »Zweimal quadrieren«, `apply_n`, `make_counter`, ein Zähler, der sich zwischen den Aufrufen etwas merkt.
 - `map`: die Vorhersage »Was macht map daraus?«, `with_tax`, `lengths`.
 - `filter`: `evens`, `with_letter`, `passed`.
 - `reduce`: die Vorhersage »Die leere Liste ohne Startwert«, `product`, `longest`, `totals`.

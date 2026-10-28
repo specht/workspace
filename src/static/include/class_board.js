@@ -418,7 +418,11 @@
     people.addEventListener('click', (e) => {
         const reset = e.target.closest('.bu-class-reset-test');
         if (!reset) return;
-        if (!confirm('Das Testkonto zurücksetzen? Sein Workspace, seine Datenbanken, Antworten und Abgaben sind danach weg.')) return;
+        confirm_dialog({ title: 'Testkonto zurücksetzen?', text: 'Sein Workspace, seine Datenbanken, Antworten und Abgaben sind danach weg.',
+            confirm: 'Zurücksetzen', icon: 'bi-arrow-counterclockwise', danger: true }, function () { resetTest(reset); });
+    });
+
+    function resetTest(reset) {
         reset.disabled = true;
         api_call('/api/reset_test_account', {}, function (data) {
             reset.disabled = false;
@@ -427,7 +431,7 @@
                 if (note) note.textContent = 'Zurückgesetzt. Beim nächsten Öffnen startet ein frischer Workspace.';
             }
         });
-    });
+    }
 
     people.addEventListener('click', (e) => {
         const button = e.target.closest('.bu-class-impersonate, .bu-class-open-workspace');

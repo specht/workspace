@@ -1,6 +1,6 @@
-# Aufgaben zu »Datenübertragung per Kabel«. Format: docs/aufgaben.md
+# Aufgaben zu »Datenübertragung per Funk«. Format: docs/aufgaben.md
 format: 1
-activity: cable
+activity: radio
 tasks:
   - id: protokoll
     title: Euer Protokoll

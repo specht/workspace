@@ -4360,12 +4360,16 @@ ul.task-teacher-list .task-teacher-answer {
 .task-feedback-correct .task-feedback-icon { color: #1f9d55; }
 .task-feedback-wrong .task-feedback-icon { color: #c98a10; }
 .task-feedback-sent .task-feedback-icon { color: #0b5ed7; }
+.task-feedback-drawn .task-feedback-icon,
+.task-feedback-free .task-feedback-icon,
 .task-feedback-invalid .task-feedback-icon,
 .task-feedback-unavailable .task-feedback-icon { color: #6c757d; }
 
 .task-feedback-correct { border-left-color: #1f9d55; }
 .task-feedback-wrong { border-left-color: #e0a030; }
 .task-feedback-sent { border-left-color: #0b5ed7; }
+.task-feedback-drawn,
+.task-feedback-free,
 .task-feedback-invalid,
 .task-feedback-unavailable { border-left-color: #adb5bd; }
 
@@ -4392,6 +4396,8 @@ ul.task-teacher-list .task-teacher-answer {
 .task-feedback-correct { background-color: rgba(31, 157, 85, 0.12); }
 .task-feedback-wrong { background-color: rgba(224, 160, 48, 0.16); }
 .task-feedback-sent { background-color: rgba(11, 94, 215, 0.08); }
+.task-feedback-drawn,
+.task-feedback-free,
 .task-feedback-invalid,
 .task-feedback-unavailable { background-color: rgba(33, 37, 41, 0.045); }
 
@@ -10536,6 +10542,15 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
     white-space: pre-wrap;
 }
 
+/* a drawing from a free turtle card (TurtleSketches): the picture the
+   server drew, as large as the screen allows */
+.kata-hand-in-picture svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: calc(92vh - 4em);
+}
+
 /* Pip unter Funkelbach (pip_world.js): the map and the player, seen from
    above at a slant (the 3/4 view). Each tile stands at (--x, --y) in tiles
    of --tile pixels; the pictures are strips of 24-pixel frames
@@ -11052,19 +11067,29 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
 .pip-commands {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35em;
+    align-items: center;
+    gap: 0.4em;
     margin: 0.5em 0 0.8em;
 }
-.pip-command {
-    padding: 0.1em 0.45em;
-    border-radius: 0.35em;
-    background: var(--bs-tertiary-bg);
-    color: var(--bs-body-color);
+.pip-commands-label {
+    margin-right: 0.15em;
     font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+/* the commands in the colours of the editor beside them, alike in both
+   themes (Pip and the turtle); a question in the yellow of the same palette */
+.pip-commands .pip-command {
+    padding: 0.2em 0.55em;
+    border-radius: 0.4em;
+    background: var(--code-bg, rgb(40, 40, 40));
+    color: #ebdbb2;
+    font-size: 0.9em;
+    line-height: 1.4;
+    white-space: nowrap;
     cursor: help;
 }
-.pip-command.pip-question {
-    color: var(--stepper-current);
+.pip-commands .pip-command.pip-question {
+    color: #fabd2f;
 }
 
 /* the first chapter: a button a command instead of the list, the plan
@@ -12611,4 +12636,232 @@ pre.git-code {
     .git-node {
         min-height: 44px;
     }
+}
+
+/* The turtle (turtle_canvas.js): its paper above the code, beside it on a
+   wide screen. The paper is square and light in both themes, like a sheet;
+   three canvases on top of each other: the paper with the picture asked
+   for, the ink, the turtle with what a check found. It is never higher
+   than about half the window, so that a card with its button fits a Full
+   HD school display, also at 125 %. */
+.turtle-layout {
+    --turtle-size: min(30em, 56vh);
+    margin-bottom: 0.6em;
+}
+
+.turtle-commands { margin-top: 0.2em; }
+/* a picture on its way: what differs, only when asked for (tasks.js) */
+.turtle-compare { padding: 0; font-size: inherit; vertical-align: baseline; }
+.turtle-compare-detail { margin-top: 0.3em; }
+
+.turtle-stage {
+    margin-bottom: 0.6em;
+}
+
+.turtle-frame {
+    position: relative;
+    width: 100%;
+    max-width: var(--turtle-size, 30em);
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 0.6em;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.turtle-frame canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.turtle-caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45em;
+    min-height: 1.6em;
+    margin-top: 0.35em;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-caption:empty { display: none; }
+
+.turtle-trace-toggle {
+    padding: 0 0 0 0.3em;
+    white-space: nowrap;
+    font-size: inherit;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+}
+
+.turtle-trace-toggle .bi { margin-right: 0.25em; }
+
+.turtle-swatch {
+    display: inline-block;
+    width: 1.4em;
+    height: 3px;
+    border-radius: 2px;
+    background: #d6cfbf;
+}
+
+.turtle-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em 0.8em;
+    margin-top: 0.4em;
+}
+
+.turtle-state {
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+@media (min-width: 992px) {
+    .turtle-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 1em;
+        align-items: start;
+    }
+    .turtle-layout > .turtle-stage { margin-bottom: 0; }
+    .turtle-layout .code-input-text,
+    .turtle-layout > textarea {
+        min-height: calc(var(--turtle-size) + 4.4em);
+    }
+}
+
+/* How a recursive figure is built (turtle_canvas.js, levels): the paper,
+   a button per level and a sentence about it, narrower than a card. */
+.turtle-levels {
+    max-width: 26em;
+    margin: 1em auto 1.4em;
+}
+
+.turtle-levels .turtle-frame {
+    max-width: min(26em, 50vh);
+}
+
+.turtle-levels-says {
+    min-height: 3em;
+    margin: 0.5em 0 0;
+    font-size: 90%;
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+/* a question on a page without the template's modal (native_dialog in
+   code.js), never the browser's confirm() */
+dialog.native-dialog {
+    max-width: min(28rem, calc(100vw - 32px));
+    padding: 1.2rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+dialog.native-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+
+/* several drawings on a free turtle card (tasks.js, sketchBook): their
+   names above the paper; »Meine Antwort löschen« would take all of them */
+.turtle-sketches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0.2em 0 0.6em;
+}
+
+.turtle-sketches-label {
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-sketches-label .bi { margin-right: 0.3em; }
+
+.turtle-sketches select {
+    width: auto;
+    min-width: 10em;
+    max-width: 100%;
+}
+
+.turtle-sketches .btn .bi { margin-right: 0.3em; }
+
+.task-card[data-sketches] .task-delete { display: none !important; }
+
+/* the colours to pick from under the color chip of a turtle card
+   (turtle_canvas.js): Cling and some HTML names; the chip itself a button */
+.turtle-commands { position: relative; }
+
+.pip-commands button.pip-command {
+    border: 0;
+    font-family: var(--bs-font-monospace);
+    cursor: pointer;
+}
+
+.pip-commands button.pip-command .bi {
+    margin-left: 0.45em;
+    color: #fabd2f;
+}
+
+.turtle-palette {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 0.3em);
+    left: 0;
+    width: min(23rem, calc(100vw - 32px));
+    padding: 0.6em 0.7em 0.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5em;
+    background: var(--bs-body-bg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.turtle-palette-title {
+    margin: 0.1em 0 0.3em;
+    font-size: 80%;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-palette-swatches {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin-bottom: 0.5em;
+}
+
+.turtle-palette-swatch {
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    background: var(--swatch);
+    cursor: pointer;
+}
+
+.turtle-palette-swatch:hover,
+.turtle-palette-swatch:focus-visible {
+    outline: 2px solid var(--bs-body-color);
+    outline-offset: 1px;
+}
+
+.turtle-palette-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6em;
+    font-size: 80%;
+    color: var(--bs-secondary-color);
+}
+
+.turtle-palette-value {
+    min-width: 7.5em;
+    font-size: 110%;
 }

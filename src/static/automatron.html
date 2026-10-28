@@ -293,8 +293,20 @@ document.addEventListener('DOMContentLoaded', function() {
     share.innerHTML = "<i class='bi bi-link-45deg'></i> Link kopieren";
     share.addEventListener('click', () => {
       const done = () => { share.innerHTML = "<i class='bi bi-check-lg'></i> Kopiert"; setTimeout(() => { share.innerHTML = "<i class='bi bi-link-45deg'></i> Link kopieren"; }, 1800); };
-      if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(done, () => prompt('Link:', location.href));
-      else prompt('Link:', location.href);
+      // without the clipboard: the link in a field below, selected
+      const show = () => {
+        let field = box.querySelector('.automatron-link');
+        if (!field) {
+          field = el('input', 'form-control form-control-sm automatron-link');
+          field.readOnly = true;
+          field.setAttribute('aria-label', 'Link zu diesem Ergebnis');
+          share.after(field);
+        }
+        field.value = location.href;
+        field.select();
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(done, show);
+      else show();
     });
     const nav = el('nav', 'automatron-toc');
     nav.setAttribute('aria-label', 'Teile des Ergebnisses');

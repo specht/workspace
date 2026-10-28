@@ -1,0 +1,1319 @@
+# Aufgaben zu »Turtle: Bilder aus Befehlen«. Format: docs/aufgaben.md (turtle).
+# Geschrieben von einem Skript aus einer Beschreibung je Aufgabe; die Bilder
+# (draw) sind Ruby mit denselben Befehlen, für alle drei Sprachen.
+format: 1
+activity: turtle-1
+tasks:
+
+  - id: steps
+    title: "Eine Treppe"
+    level: 1
+    prompt: |
+      Die Schildkröte soll eine Treppe mit drei Stufen zeichnen, jede 50 Schritte breit und 50 Schritte hoch. Die erste Stufe steht schon da: Ergänze die beiden anderen.
+    starter: |
+      forward 50
+      left 90
+      forward 50
+      right 90
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "3.times { forward 50; left 90; forward 50; right 90 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Eine Stufe sind vier Befehle: ein Stück nach rechts, eine Drehung nach oben, ein Stück nach oben und eine Drehung zurück."
+      - "Schreib die vier Zeilen der ersten Stufe noch zweimal darunter."
+    solution: |
+      ```ruby
+      forward 50
+      left 90
+      forward 50
+      right 90
+      forward 50
+      left 90
+      forward 50
+      right 90
+      forward 50
+      left 90
+      forward 50
+      right 90
+      ```
+    python:
+      prompt: |
+        Die Schildkröte soll eine Treppe mit drei Stufen zeichnen, jede 50 Schritte breit und 50 Schritte hoch. Die erste Stufe steht schon da: Ergänze die beiden anderen.
+      starter: |
+        forward(50)
+        left(90)
+        forward(50)
+        right(90)
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "3.times { forward 50; left 90; forward 50; right 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Stufe sind vier Befehle: ein Stück nach rechts, eine Drehung nach oben, ein Stück nach oben und eine Drehung zurück."
+        - "Schreib die vier Zeilen der ersten Stufe noch zweimal darunter."
+      solution: |
+        ```python
+        forward(50)
+        left(90)
+        forward(50)
+        right(90)
+        forward(50)
+        left(90)
+        forward(50)
+        right(90)
+        forward(50)
+        left(90)
+        forward(50)
+        right(90)
+        ```
+    javascript:
+      prompt: |
+        Die Schildkröte soll eine Treppe mit drei Stufen zeichnen, jede 50 Schritte breit und 50 Schritte hoch. Die erste Stufe steht schon da: Ergänze die beiden anderen.
+      starter: |
+        forward(50);
+        left(90);
+        forward(50);
+        right(90);
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "3.times { forward 50; left 90; forward 50; right 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Stufe sind vier Befehle: ein Stück nach rechts, eine Drehung nach oben, ein Stück nach oben und eine Drehung zurück."
+        - "Schreib die vier Zeilen der ersten Stufe noch zweimal darunter."
+      solution: |
+        ```javascript
+        forward(50);
+        left(90);
+        forward(50);
+        right(90);
+        forward(50);
+        left(90);
+        forward(50);
+        right(90);
+        forward(50);
+        left(90);
+        forward(50);
+        right(90);
+        ```
+
+  - id: square
+    title: "Ein Quadrat"
+    level: 1
+    prompt: |
+      Zeichne ein Quadrat mit der Seitenlänge 100. Es fängt dort an, wo die Schildkröte steht, und geht nach rechts und nach oben.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "4.times { forward 100; left 90 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Nach jeder Seite dreht sich die Schildkröte nach links, so dass die nächste Seite senkrecht auf der letzten steht."
+      - "100 Schritte vorwärts und 90 Grad nach links, und das viermal."
+    solution: |
+      ```ruby
+      forward 100
+      left 90
+      forward 100
+      left 90
+      forward 100
+      left 90
+      forward 100
+      left 90
+      ```
+    python:
+      prompt: |
+        Zeichne ein Quadrat mit der Seitenlänge 100. Es fängt dort an, wo die Schildkröte steht, und geht nach rechts und nach oben.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "4.times { forward 100; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Nach jeder Seite dreht sich die Schildkröte nach links, so dass die nächste Seite senkrecht auf der letzten steht."
+        - "100 Schritte vorwärts und 90 Grad nach links, und das viermal."
+      solution: |
+        ```python
+        forward(100)
+        left(90)
+        forward(100)
+        left(90)
+        forward(100)
+        left(90)
+        forward(100)
+        left(90)
+        ```
+    javascript:
+      prompt: |
+        Zeichne ein Quadrat mit der Seitenlänge 100. Es fängt dort an, wo die Schildkröte steht, und geht nach rechts und nach oben.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "4.times { forward 100; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Nach jeder Seite dreht sich die Schildkröte nach links, so dass die nächste Seite senkrecht auf der letzten steht."
+        - "100 Schritte vorwärts und 90 Grad nach links, und das viermal."
+      solution: |
+        ```javascript
+        forward(100);
+        left(90);
+        forward(100);
+        left(90);
+        forward(100);
+        left(90);
+        forward(100);
+        left(90);
+        ```
+
+  - id: triangle-angle
+    title: Die Ecke eines Dreiecks
+    prediction: true
+    prompt: |
+      Ein Dreieck mit drei gleich langen Seiten hat innen an jeder Ecke 60 Grad. Um wie viel Grad muss sich die Schildkröte an jeder Ecke drehen, damit sie es zeichnet?
+    check:
+      type: choice
+      options: ["60 Grad", "90 Grad", "120 Grad", "180 Grad"]
+      correct: 2
+
+  - id: triangle
+    title: "Ein Dreieck"
+    level: 1
+    prompt: |
+      Zeichne das Dreieck mit drei gleich langen Seiten, jede 150 Schritte lang.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "3.times { forward 150; left 120 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Wie beim Quadrat: eine Seite, eine Drehung, nur dreimal."
+      - "Um wie viel sich die Schildkröte dreht, steht oben unter der Vorhersage."
+    solution: |
+      ```ruby
+      forward 150
+      left 120
+      forward 150
+      left 120
+      forward 150
+      left 120
+      ```
+    python:
+      prompt: |
+        Zeichne das Dreieck mit drei gleich langen Seiten, jede 150 Schritte lang.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "3.times { forward 150; left 120 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie beim Quadrat: eine Seite, eine Drehung, nur dreimal."
+        - "Um wie viel sich die Schildkröte dreht, steht oben unter der Vorhersage."
+      solution: |
+        ```python
+        forward(150)
+        left(120)
+        forward(150)
+        left(120)
+        forward(150)
+        left(120)
+        ```
+    javascript:
+      prompt: |
+        Zeichne das Dreieck mit drei gleich langen Seiten, jede 150 Schritte lang.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "3.times { forward 150; left 120 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie beim Quadrat: eine Seite, eine Drehung, nur dreimal."
+        - "Um wie viel sich die Schildkröte dreht, steht oben unter der Vorhersage."
+      solution: |
+        ```javascript
+        forward(150);
+        left(120);
+        forward(150);
+        left(120);
+        forward(150);
+        left(120);
+        ```
+
+  - id: square-loop
+    title: "Viermal dasselbe"
+    level: 1
+    prompt: |
+      Zeichne das Quadrat noch einmal, aber in höchstens vier Zeilen: Was sich wiederholt, macht eine Schleife.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "4.times { forward 100; left 90 }"
+      max_lines: 4
+      commands: [forward, back, left, right]
+    hint:
+      - "Wiederholt werden zwei Befehle: 100 vorwärts und 90 nach links."
+      - "`4.times do`, darunter die beiden Befehle eingerückt, dann `end`."
+    solution: |
+      ```ruby
+      4.times do
+        forward 100
+        left 90
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne das Quadrat noch einmal, aber in höchstens drei Zeilen: Was sich wiederholt, macht eine Schleife.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "4.times { forward 100; left 90 }"
+        max_lines: 3
+        commands: [forward, back, left, right]
+      hint:
+        - "Wiederholt werden zwei Befehle: 100 vorwärts und 90 nach links."
+        - "`for i in range(4):`, darunter die beiden Befehle eingerückt."
+      solution: |
+        ```python
+        for i in range(4):
+            forward(100)
+            left(90)
+        ```
+    javascript:
+      prompt: |
+        Zeichne das Quadrat noch einmal, aber in höchstens vier Zeilen: Was sich wiederholt, macht eine Schleife.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "4.times { forward 100; left 90 }"
+        max_lines: 4
+        commands: [forward, back, left, right]
+      hint:
+        - "Wiederholt werden zwei Befehle: 100 vorwärts und 90 nach links."
+        - "`for (let i = 0; i < 4; i++) {`, darunter die beiden Befehle, dann `}`."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 4; i++) {
+          forward(100);
+          left(90);
+        }
+        ```
+
+  - id: square-function
+    title: "Quadrate jeder Größe"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `square(size)`, die ein Quadrat mit der Seitenlänge `size` zeichnet. Unten im Programm zeichnet `square(150)` eins.
+    starter: |
+      def square(size)
+      end
+
+      square(150)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "square(150)"
+          draw: "4.times { forward 150; left 90 }"
+        - call: "square(40)"
+          draw: "4.times { forward 40; left 90 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Das Quadrat mit der Schleife von eben gehört in die Funktion, eingerückt."
+      - "Statt `100` steht dort `size`: Dann zeichnet `square(40)` die Seiten 40 Schritte lang."
+    solution: |
+      ```ruby
+      def square(size)
+        4.times do
+          forward size
+          left 90
+        end
+      end
+
+      square(150)
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `square(size)`, die ein Quadrat mit der Seitenlänge `size` zeichnet. Unten im Programm zeichnet `square(150)` eins.
+      starter: |
+        def square(size):
+            pass
+
+        square(150)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "square(150)"
+            draw: "4.times { forward 150; left 90 }"
+          - call: "square(40)"
+            draw: "4.times { forward 40; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Das Quadrat mit der Schleife von eben gehört in die Funktion, eingerückt."
+        - "Statt `100` steht dort `size`: Dann zeichnet `square(40)` die Seiten 40 Schritte lang."
+      solution: |
+        ```python
+        def square(size):
+            for i in range(4):
+                forward(size)
+                left(90)
+
+        square(150)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `square(size)`, die ein Quadrat mit der Seitenlänge `size` zeichnet. Unten im Programm zeichnet `square(150)` eins.
+      starter: |
+        function square(size) {
+        }
+
+        square(150);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "square(150)"
+            draw: "4.times { forward 150; left 90 }"
+          - call: "square(40)"
+            draw: "4.times { forward 40; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Das Quadrat mit der Schleife von eben gehört in die Funktion, eingerückt."
+        - "Statt `100` steht dort `size`: Dann zeichnet `square(40)` die Seiten 40 Schritte lang."
+      solution: |
+        ```javascript
+        function square(size) {
+          for (let i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        square(150);
+        ```
+
+  - id: polygon
+    title: "Vielecke"
+    level: 3
+    prompt: |
+      Schreib eine Funktion `polygon(corners, side)`, die ein Vieleck mit `corners` Ecken und gleich langen Seiten der Länge `side` zeichnet: `polygon(5, 100)` ein Fünfeck, `polygon(8, 60)` ein Achteck.
+    starter: |
+      def polygon(corners, side)
+      end
+
+      polygon(5, 100)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "polygon(5, 100)"
+          draw: "5.times { forward 100; left 72 }"
+        - call: "polygon(8, 60)"
+          draw: "8.times { forward 60; left 45 }"
+        - call: "polygon(7, 80)"
+          draw: "7.times { forward 80; left 360.0 / 7 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Die Schleife läuft so oft, wie das Vieleck Ecken hat: `corners` mal."
+      - "An allen Ecken zusammen dreht sich die Schildkröte einmal ganz herum, um 360 Grad. An einer Ecke ist es also 360 geteilt durch die Zahl der Ecken."
+      - "In Ruby ist `360 / 7` eine ganze Zahl, 51, und das Siebeneck schließt sich nicht. Mit `360.0 / corners` rechnet Ruby mit Kommazahlen."
+    solution: |
+      ```ruby
+      def polygon(corners, side)
+        corners.times do
+          forward side
+          left 360.0 / corners
+        end
+      end
+
+      polygon(5, 100)
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `polygon(corners, side)`, die ein Vieleck mit `corners` Ecken und gleich langen Seiten der Länge `side` zeichnet: `polygon(5, 100)` ein Fünfeck, `polygon(8, 60)` ein Achteck.
+      starter: |
+        def polygon(corners, side):
+            pass
+
+        polygon(5, 100)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "polygon(5, 100)"
+            draw: "5.times { forward 100; left 72 }"
+          - call: "polygon(8, 60)"
+            draw: "8.times { forward 60; left 45 }"
+          - call: "polygon(7, 80)"
+            draw: "7.times { forward 80; left 360.0 / 7 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Die Schleife läuft so oft, wie das Vieleck Ecken hat: `corners` mal."
+        - "An allen Ecken zusammen dreht sich die Schildkröte einmal ganz herum, um 360 Grad. An einer Ecke ist es also 360 geteilt durch die Zahl der Ecken."
+        - "`360 / corners` ergibt in Python eine Kommazahl, auch bei 7 Ecken; `360 // corners` würde abrunden, und das Siebeneck schlösse sich nicht."
+      solution: |
+        ```python
+        def polygon(corners, side):
+            for i in range(corners):
+                forward(side)
+                left(360 / corners)
+
+        polygon(5, 100)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `polygon(corners, side)`, die ein Vieleck mit `corners` Ecken und gleich langen Seiten der Länge `side` zeichnet: `polygon(5, 100)` ein Fünfeck, `polygon(8, 60)` ein Achteck.
+      starter: |
+        function polygon(corners, side) {
+        }
+
+        polygon(5, 100);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "polygon(5, 100)"
+            draw: "5.times { forward 100; left 72 }"
+          - call: "polygon(8, 60)"
+            draw: "8.times { forward 60; left 45 }"
+          - call: "polygon(7, 80)"
+            draw: "7.times { forward 80; left 360.0 / 7 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Die Schleife läuft so oft, wie das Vieleck Ecken hat: `corners` mal."
+        - "An allen Ecken zusammen dreht sich die Schildkröte einmal ganz herum, um 360 Grad. An einer Ecke ist es also 360 geteilt durch die Zahl der Ecken."
+        - "`360 / corners` ergibt in JavaScript eine Kommazahl, auch bei 7 Ecken."
+      solution: |
+        ```javascript
+        function polygon(corners, side) {
+          for (let i = 0; i < corners; i++) {
+            forward(side);
+            left(360 / corners);
+          }
+        }
+
+        polygon(5, 100);
+        ```
+
+  - id: flower
+    title: "Eine Blume aus Quadraten"
+    level: 2
+    prompt: |
+      Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+    starter: |
+      def square(size)
+        # dein Quadrat von eben
+      end
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "12.times { 4.times { forward 100; left 90 }; left 30 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Zwölfmal dasselbe: ein Quadrat zeichnen, dann 30 Grad weiterdrehen."
+      - "In der Schleife stehen zwei Zeilen: `square(100)` und die Drehung um 30 Grad nach links."
+    solution: |
+      ```ruby
+      def square(size)
+        4.times do
+          forward size
+          left 90
+        end
+      end
+
+      12.times do
+        square(100)
+        left 30
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+      starter: |
+        def square(size):
+            # dein Quadrat von eben
+            pass
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "12.times { 4.times { forward 100; left 90 }; left 30 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zwölfmal dasselbe: ein Quadrat zeichnen, dann 30 Grad weiterdrehen."
+        - "In der Schleife stehen zwei Zeilen: `square(100)` und die Drehung um 30 Grad nach links."
+      solution: |
+        ```python
+        def square(size):
+            for i in range(4):
+                forward(size)
+                left(90)
+
+        for i in range(12):
+            square(100)
+            left(30)
+        ```
+    javascript:
+      prompt: |
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+      starter: |
+        function square(size) {
+          // dein Quadrat von eben
+        }
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "12.times { 4.times { forward 100; left 90 }; left 30 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zwölfmal dasselbe: ein Quadrat zeichnen, dann 30 Grad weiterdrehen."
+        - "In der Schleife stehen zwei Zeilen: `square(100)` und die Drehung um 30 Grad nach links."
+      solution: |
+        ```javascript
+        function square(size) {
+          for (let i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        for (let i = 0; i < 12; i++) {
+          square(100);
+          left(30);
+        }
+        ```
+
+  - id: own-flower
+    title: "Deine Blume"
+    level: 2
+    prompt: |
+      Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
+    starter: |
+      def polygon(corners, side)
+        # dein Vieleck von eben
+      end
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, back, left, right]
+    hint:
+      - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+      - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+    solution: |
+      ```ruby
+      def polygon(corners, side)
+        corners.times do
+          forward side
+          left 360.0 / corners
+        end
+      end
+
+      18.times do
+        polygon(6, 70)
+        left 20
+      end
+      ```
+    python:
+      prompt: |
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
+      starter: |
+        def polygon(corners, side):
+            # dein Vieleck von eben
+            pass
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+      solution: |
+        ```python
+        def polygon(corners, side):
+            for i in range(corners):
+                forward(side)
+                left(360 / corners)
+
+        for i in range(18):
+            polygon(6, 70)
+            left(20)
+        ```
+    javascript:
+      prompt: |
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
+      starter: |
+        function polygon(corners, side) {
+          // dein Vieleck von eben
+        }
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+      solution: |
+        ```javascript
+        function polygon(corners, side) {
+          for (let i = 0; i < corners; i++) {
+            forward(side);
+            left(360 / corners);
+          }
+        }
+
+        for (let i = 0; i < 18; i++) {
+          polygon(6, 70);
+          left(20);
+        }
+        ```
+
+  - id: dashes
+    title: "Eine gestrichelte Linie"
+    level: 1
+    prompt: |
+      Zeichne eine gestrichelte Linie nach rechts: zehn Striche, jeder 10 Schritte lang, und zwischen zwei Strichen 10 Schritte Lücke. Mit `pen_up` hebt die Schildkröte den Stift und geht weiter, ohne zu zeichnen; `pen_down` setzt ihn wieder auf.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
+    hint:
+      - "Ein Strich und eine Lücke wiederholen sich zehnmal."
+      - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
+    solution: |
+      ```ruby
+      10.times do
+        forward 10
+        pen_up
+        forward 10
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine gestrichelte Linie nach rechts: zehn Striche, jeder 10 Schritte lang, und zwischen zwei Strichen 10 Schritte Lücke. Mit `pen_up()` hebt die Schildkröte den Stift und geht weiter, ohne zu zeichnen; `pen_down()` setzt ihn wieder auf.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Strich und eine Lücke wiederholen sich zehnmal."
+        - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
+      solution: |
+        ```python
+        for i in range(10):
+            forward(10)
+            pen_up()
+            forward(10)
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine gestrichelte Linie nach rechts: zehn Striche, jeder 10 Schritte lang, und zwischen zwei Strichen 10 Schritte Lücke. Mit `penUp()` hebt die Schildkröte den Stift und geht weiter, ohne zu zeichnen; `penDown()` setzt ihn wieder auf.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Strich und eine Lücke wiederholen sich zehnmal."
+        - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 10; i++) {
+          forward(10);
+          penUp();
+          forward(10);
+          penDown();
+        }
+        ```
+
+  - id: colors
+    title: "Drei bunte Quadrate"
+    level: 2
+    prompt: |
+      Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
+    starter: |
+      def square(size)
+        4.times do
+          forward size
+          left 90
+        end
+      end
+
+      width 4
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        width 4
+        %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
+      colors: true
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
+    hint:
+      - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
+      - "Vor jedem Quadrat seine Farbe: `color \"red\"`. Wer mag, nimmt eine Schleife über die Farben: `[\"red\", \"gold\", \"blue\"].each do |name|`."
+    solution: |
+      ```ruby
+      def square(size)
+        4.times do
+          forward size
+          left 90
+        end
+      end
+
+      width 4
+      ["red", "gold", "blue"].each do |name|
+        color name
+        square(60)
+        pen_up
+        forward 80
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
+      starter: |
+        def square(size):
+            for i in range(4):
+                forward(size)
+                left(90)
+
+        width(4)
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          width 4
+          %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
+        - "Vor jedem Quadrat seine Farbe: `color(\"red\")`. Wer mag, nimmt eine Schleife über die Farben: `for name in [\"red\", \"gold\", \"blue\"]:`."
+      solution: |
+        ```python
+        def square(size):
+            for i in range(4):
+                forward(size)
+                left(90)
+
+        width(4)
+        for name in ["red", "gold", "blue"]:
+            color(name)
+            square(60)
+            pen_up()
+            forward(80)
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
+      starter: |
+        function square(size) {
+          for (let i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        width(4);
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          width 4
+          %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
+        - "Vor jedem Quadrat seine Farbe: `color(\"red\")`. Wer mag, nimmt eine Schleife über die Farben: `for (const name of [\"red\", \"gold\", \"blue\"]) {`."
+      solution: |
+        ```javascript
+        function square(size) {
+          for (let i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        width(4);
+        for (const name of ["red", "gold", "blue"]) {
+          color(name);
+          square(60);
+          penUp();
+          forward(80);
+          penDown();
+        }
+        ```
+
+  - id: spiral
+    title: "Eine eckige Spirale"
+    level: 2
+    prompt: |
+      Zeichne eine eckige Spirale aus 20 Linien: die erste 10 Schritte lang, jede weitere 10 Schritte länger als die davor, und nach jeder Linie eine Drehung um 90 Grad nach links.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "s = 10; 20.times { forward s; left 90; s += 10 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Eine Variable merkt sich, wie lang die nächste Linie wird. Sie beginnt bei 10."
+      - "In der Schleife: so weit vorwärts, wie die Variable sagt, 90 nach links, und dann die Variable um 10 größer machen."
+    solution: |
+      ```ruby
+      step = 10
+      20.times do
+        forward step
+        left 90
+        step = step + 10
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine eckige Spirale aus 20 Linien: die erste 10 Schritte lang, jede weitere 10 Schritte länger als die davor, und nach jeder Linie eine Drehung um 90 Grad nach links.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "s = 10; 20.times { forward s; left 90; s += 10 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Variable merkt sich, wie lang die nächste Linie wird. Sie beginnt bei 10."
+        - "In der Schleife: so weit vorwärts, wie die Variable sagt, 90 nach links, und dann die Variable um 10 größer machen."
+      solution: |
+        ```python
+        step = 10
+        for i in range(20):
+            forward(step)
+            left(90)
+            step = step + 10
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine eckige Spirale aus 20 Linien: die erste 10 Schritte lang, jede weitere 10 Schritte länger als die davor, und nach jeder Linie eine Drehung um 90 Grad nach links.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "s = 10; 20.times { forward s; left 90; s += 10 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Variable merkt sich, wie lang die nächste Linie wird. Sie beginnt bei 10."
+        - "In der Schleife: so weit vorwärts, wie die Variable sagt, 90 nach links, und dann die Variable um 10 größer machen."
+      solution: |
+        ```javascript
+        let step = 10;
+        for (let i = 0; i < 20; i++) {
+          forward(step);
+          left(90);
+          step = step + 10;
+        }
+        ```
+
+  - id: spiral-91
+    title: Ein Grad mehr
+    prediction: true
+    prompt: |
+      In deiner Spirale dreht sich die Schildkröte um 90 Grad. Was passiert, wenn sie sich stattdessen um 91 Grad dreht?
+    check:
+      type: choice
+      options:
+        - Die Spirale wird kleiner.
+        - Jede Ecke liegt ein wenig weiter gedreht als die davor, und die Arme der Spirale biegen sich zu einem Wirbel.
+        - Aus den Ecken werden Bögen.
+        - Man sieht keinen Unterschied, ein Grad ist zu wenig.
+      correct: 1
+
+  - id: star
+    title: "Ein Stern"
+    level: 3
+    prompt: |
+      Zeichne den Stern mit fünf Zacken, ohne den Stift abzusetzen: fünf Linien, jede 200 Schritte lang.
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: "5.times { forward 200; right 144 }"
+      commands: [forward, back, left, right]
+    hint:
+      - "Zeichne den Stern mit dem Finger auf dem Tisch nach, ohne abzusetzen. Wie oft drehst du dich dabei ganz herum, bis du wieder in die Richtung vom Anfang schaust?"
+      - "Zweimal: 720 Grad, auf fünf Spitzen verteilt."
+      - "144 Grad nach rechts an jeder Spitze. Nach links wird der Stern gespiegelt."
+    solution: |
+      ```ruby
+      5.times do
+        forward 200
+        right 144
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne den Stern mit fünf Zacken, ohne den Stift abzusetzen: fünf Linien, jede 200 Schritte lang.
+      check:
+        type: "turtle"
+        language: "python"
+        draw: "5.times { forward 200; right 144 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zeichne den Stern mit dem Finger auf dem Tisch nach, ohne abzusetzen. Wie oft drehst du dich dabei ganz herum, bis du wieder in die Richtung vom Anfang schaust?"
+        - "Zweimal: 720 Grad, auf fünf Spitzen verteilt."
+        - "144 Grad nach rechts an jeder Spitze. Nach links wird der Stern gespiegelt."
+      solution: |
+        ```python
+        for i in range(5):
+            forward(200)
+            right(144)
+        ```
+    javascript:
+      prompt: |
+        Zeichne den Stern mit fünf Zacken, ohne den Stift abzusetzen: fünf Linien, jede 200 Schritte lang.
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: "5.times { forward 200; right 144 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zeichne den Stern mit dem Finger auf dem Tisch nach, ohne abzusetzen. Wie oft drehst du dich dabei ganz herum, bis du wieder in die Richtung vom Anfang schaust?"
+        - "Zweimal: 720 Grad, auf fünf Spitzen verteilt."
+        - "144 Grad nach rechts an jeder Spitze. Nach links wird der Stern gespiegelt."
+      solution: |
+        ```javascript
+        for (let i = 0; i < 5; i++) {
+          forward(200);
+          right(144);
+        }
+        ```
+
+  - id: circle
+    title: "Ein Kreis"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+    starter: |
+      def circle(radius)
+      end
+
+      circle(80)
+    check:
+      type: "turtle"
+      language: "ruby"
+      cases:
+        - call: "circle(80)"
+          draw: |
+            def circle(radius)
+              36.times { forward 2 * Math::PI * radius / 36; left 10 }
+            end
+            circle(80)
+        - call: "circle(30)"
+          draw: |
+            def circle(radius)
+              36.times { forward 2 * Math::PI * radius / 36; left 10 }
+            end
+            circle(30)
+      commands: [forward, back, left, right]
+    hint:
+      - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+      - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+      - "π heißt in Ruby `Math::PI`."
+    solution: |
+      ```ruby
+      def circle(radius)
+        36.times do
+          forward 2 * Math::PI * radius / 36
+          left 10
+        end
+      end
+
+      circle(80)
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        import math
+
+        def circle(radius):
+            pass
+
+        circle(80)
+      check:
+        type: "turtle"
+        language: "python"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in Python `math.pi`; dafür steht `import math` oben."
+      solution: |
+        ```python
+        import math
+
+        def circle(radius):
+            for i in range(36):
+                forward(2 * math.pi * radius / 36)
+                left(10)
+
+        circle(80)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `circle(radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        function circle(radius) {
+        }
+
+        circle(80);
+      check:
+        type: "turtle"
+        language: "javascript"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in JavaScript `Math.PI`."
+      solution: |
+        ```javascript
+        function circle(radius) {
+          for (let i = 0; i < 36; i++) {
+            forward(2 * Math.PI * radius / 36);
+            left(10);
+          }
+        }
+
+        circle(80);
+        ```
+
+  - id: slinky
+    title: "Eine Feder"
+    level: 2
+    prompt: |
+      Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+    starter: |
+      def circle(radius)
+        # dein Kreis von eben
+      end
+    check:
+      type: "turtle"
+      language: "ruby"
+      draw: |
+        def circle(radius)
+          36.times { forward 2 * Math::PI * radius / 36; left 10 }
+        end
+        30.times { circle(50); pen_up; forward 8; pen_down }
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
+    hint:
+      - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+      - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+    solution: |
+      ```ruby
+      def circle(radius)
+        36.times do
+          forward 2 * Math::PI * radius / 36
+          left 10
+        end
+      end
+
+      30.times do
+        circle(50)
+        pen_up
+        forward 8
+        pen_down
+      end
+      ```
+    python:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        import math
+
+        def circle(radius):
+            # dein Kreis von eben
+            pass
+      check:
+        type: "turtle"
+        language: "python"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```python
+        import math
+
+        def circle(radius):
+            for i in range(36):
+                forward(2 * math.pi * radius / 36)
+                left(10)
+
+        for i in range(30):
+            circle(50)
+            pen_up()
+            forward(8)
+            pen_down()
+        ```
+    javascript:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        function circle(radius) {
+          // dein Kreis von eben
+        }
+      check:
+        type: "turtle"
+        language: "javascript"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```javascript
+        function circle(radius) {
+          for (let i = 0; i < 36; i++) {
+            forward(2 * Math.PI * radius / 36);
+            left(10);
+          }
+        }
+
+        for (let i = 0; i < 30; i++) {
+          circle(50);
+          penUp();
+          forward(8);
+          penDown();
+        }
+        ```
+
+  - id: own
+    title: "Dein eigenes Bild"
+    level: 2
+    prompt: |
+      Zeichne ein eigenes Bild, was immer du magst: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+    starter: |
+      # Dein Bild
+    check:
+      type: "turtle"
+      language: "ruby"
+      free: {}
+      commands: [forward, back, left, right, pen_up, pen_down, color, width]
+    hint:
+      - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+      - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
+    solution: |
+      ```ruby
+      def square(size)
+        4.times do
+          forward size
+          left 90
+        end
+      end
+
+      color "teal"
+      12.times do
+        square(100)
+        left 30
+      end
+      color "gold"
+      width 6
+      square(30)
+      ```
+    python:
+      prompt: |
+        Zeichne ein eigenes Bild, was immer du magst: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+      starter: |
+        # Dein Bild
+      check:
+        type: "turtle"
+        language: "python"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
+      solution: |
+        ```python
+        def square(size):
+            for i in range(4):
+                forward(size)
+                left(90)
+
+        color("teal")
+        for i in range(12):
+            square(100)
+            left(30)
+        color("gold")
+        width(6)
+        square(30)
+        ```
+    javascript:
+      prompt: |
+        Zeichne ein eigenes Bild, was immer du magst: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+      starter: |
+        // Dein Bild
+      check:
+        type: "turtle"
+        language: "javascript"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
+      solution: |
+        ```javascript
+        function square(size) {
+          for (let i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        color("teal");
+        for (let i = 0; i < 12; i++) {
+          square(100);
+          left(30);
+        }
+        color("gold");
+        width(6);
+        square(30);
+        ```

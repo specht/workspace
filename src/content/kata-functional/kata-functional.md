@@ -129,7 +129,7 @@ Das Lambda merkt sich das `n`, mit dem es gebaut wurde, auch wenn
 `make_adder` längst fertig ist. Eine Funktion, die sich so Variablen von
 draußen merkt, heißt **Closure**.
 
-_task(make-multiplier)
+_task(make-counter)
 
 ## map: jedes Element umwandeln
 

@@ -1,0 +1,205 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«), geschrieben vom selben Skript: die Lösung jeder
+# Sprache und ein typischer Fehler. Die Programme laufen dafür auf diesem
+# Rechner mit denselben Befehlen wie im Browser (TurtleCheck.record).
+format: 1
+activity: turtle-3
+examples:
+  sun:
+    pass:
+      - answer: "36.times do |i|\n  color i * 10\n  forward 150\n  back 150\n  left 10\nend\n"
+    fail:
+      - answer: "36.times do |i|\n  color i\n  forward 150\n  back 150\n  left 10\nend\n"
+        say: "Farben"
+    python:
+      pass:
+        - answer: "for i in range(36):\n    color(i * 10)\n    forward(150)\n    back(150)\n    left(10)\n"
+      fail:
+        - answer: "for i in range(36):\n    color(i)\n    forward(150)\n    back(150)\n    left(10)\n"
+          say: "Farben"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 36; i++) {\n  color(i * 10);\n  forward(150);\n  back(150);\n  left(10);\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 36; i++) {\n  color(i);\n  forward(150);\n  back(150);\n  left(10);\n}\n"
+          say: "Farben"
+  rainbow-spiral:
+    pass:
+      - answer: "120.times do |i|\n  color i * 3\n  forward i * 2\n  left 59\nend\n"
+    fail:
+      - answer: "120.times do |i|\n  color i\n  forward i * 2\n  left 59\nend\n"
+        say: "Farben"
+    python:
+      pass:
+        - answer: "for i in range(120):\n    color(i * 3)\n    forward(i * 2)\n    left(59)\n"
+      fail:
+        - answer: "for i in range(120):\n    color(i)\n    forward(i * 2)\n    left(59)\n"
+          say: "Farben"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 120; i++) {\n  color(i * 3);\n  forward(i * 2);\n  left(59);\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 120; i++) {\n  color(i);\n  forward(i * 2);\n  left(59);\n}\n"
+          say: "Farben"
+  fan:
+    pass:
+      - answer: "19.times do |i|\n  color \"gold\", \"crimson\", i / 18.0\n  forward 150\n  back 150\n  left 10\nend\n"
+    fail:
+      - answer: "19.times do |i|\n  color \"gold\", \"crimson\", i / 18\n  forward 150\n  back 150\n  left 10\nend\n"
+        say: "Farben"
+    python:
+      pass:
+        - answer: "for i in range(19):\n    color(\"gold\", \"crimson\", i / 18)\n    forward(150)\n    back(150)\n    left(10)\n"
+      fail:
+        - answer: "for i in range(19):\n    color(\"gold\", \"crimson\", i / 19)\n    forward(150)\n    back(150)\n    left(10)\n"
+          say: "Farben"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 19; i++) {\n  color(\"gold\", \"crimson\", i / 18);\n  forward(150);\n  back(150);\n  left(10);\n}\n"
+      fail:
+        - answer: "for (let i = 0; i < 19; i++) {\n  color(\"gold\", \"crimson\", i / 19);\n  forward(150);\n  back(150);\n  left(10);\n}\n"
+          say: "Farben"
+  tree-push:
+    pass:
+      - answer: "def tree(size, depth)\n  return if depth == 0\n  forward size\n  push\n  left 30\n  tree(size * 0.7, depth - 1)\n  pop\n  push\n  right 30\n  tree(size * 0.7, depth - 1)\n  pop\nend\n\nleft 90\ntree(100, 5)\n"
+    fail:
+      - answer: "def tree(size, depth)\n  return if depth == 0\n  forward size\n  push\n  left 30\n  tree(size * 0.7, depth - 1)\n  right 30\n  tree(size * 0.7, depth - 1)\n  pop\nend\n\nleft 90\ntree(100, 5)\n"
+        say: "tree"
+    python:
+      pass:
+        - answer: "def tree(size, depth):\n    if depth == 0:\n        return\n    forward(size)\n    push()\n    left(30)\n    tree(size * 0.7, depth - 1)\n    pop()\n    push()\n    right(30)\n    tree(size * 0.7, depth - 1)\n    pop()\n\nleft(90)\ntree(100, 5)\n"
+      fail:
+        - answer: "def tree(size, depth):\n    if depth == 0:\n        return\n    forward(size)\n    push()\n    left(30)\n    tree(size * 0.7, depth - 1)\n    right(30)\n    tree(size * 0.7, depth - 1)\n    pop()\n\nleft(90)\ntree(100, 5)\n"
+          say: "tree"
+    javascript:
+      pass:
+        - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  forward(size);\n  push();\n  left(30);\n  tree(size * 0.7, depth - 1);\n  pop();\n  push();\n  right(30);\n  tree(size * 0.7, depth - 1);\n  pop();\n}\n\nleft(90);\ntree(100, 5);\n"
+      fail:
+        - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  forward(size);\n  push();\n  left(30);\n  tree(size * 0.7, depth - 1);\n  right(30);\n  tree(size * 0.7, depth - 1);\n  pop();\n}\n\nleft(90);\ntree(100, 5);\n"
+          say: "tree"
+  walk:
+    pass:
+      - answer: "1000.times do |i|\n  color i / 3.0\n  forward 4\n  left random(-30, 30)\nend\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "for i in range(1000):\n    color(i / 3)\n    forward(4)\n    left(random(-30, 30))\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "for (let i = 0; i < 1000; i++) {\n  color(i / 3);\n  forward(4);\n  left(random(-30, 30));\n}\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+  wind-tree:
+    pass:
+      - answer: "def tree(size, depth)\n  return if depth == 0\n  width depth\n  color depth <= 2 ? \"forestgreen\" : \"saddlebrown\"\n  forward size\n  push\n  left random(10, 40)\n  tree(size * random(0.6, 0.85), depth - 1)\n  pop\n  push\n  right random(10, 40)\n  tree(size * random(0.6, 0.85), depth - 1)\n  pop\nend\n\nleft 90\ntree(80, 9)\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "def tree(size, depth):\n    if depth == 0:\n        return\n    width(depth)\n    if depth <= 2:\n        color(\"forestgreen\")\n    else:\n        color(\"saddlebrown\")\n    forward(size)\n    push()\n    left(random(10, 40))\n    tree(size * random(0.6, 0.85), depth - 1)\n    pop()\n    push()\n    right(random(10, 40))\n    tree(size * random(0.6, 0.85), depth - 1)\n    pop()\n\nleft(90)\ntree(80, 9)\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  width(depth);\n  color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n  forward(size);\n  push();\n  left(random(10, 40));\n  tree(size * random(0.6, 0.85), depth - 1);\n  pop();\n  push();\n  right(random(10, 40));\n  tree(size * random(0.6, 0.85), depth - 1);\n  pop();\n}\n\nleft(90);\ntree(80, 9);\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+  meadow:
+    pass:
+      - answer: "pen_up\nback 250\npen_down\n80.times do\n  push\n  left 90 + random(-10, 10)\n  color \"forestgreen\", \"yellowgreen\", random(0.0, 1.0)\n  bend = random(-3.0, 3.0)\n  random(15, 40).times do\n    forward 4\n    left bend\n  end\n  pop\n  pen_up\n  forward random(3, 9)\n  pen_down\nend\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "pen_up()\nback(250)\npen_down()\nfor blade in range(80):\n    push()\n    left(90 + random(-10, 10))\n    color(\"forestgreen\", \"yellowgreen\", random(0.0, 1.0))\n    bend = random(-3.0, 3.0)\n    for step in range(random(15, 40)):\n        forward(4)\n        left(bend)\n    pop()\n    pen_up()\n    forward(random(3, 9))\n    pen_down()\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "penUp();\nback(250);\npenDown();\nfor (let blade = 0; blade < 80; blade++) {\n  push();\n  left(90 + random(-10, 10));\n  color(\"forestgreen\", \"yellowgreen\", random(0.0, 1.0));\n  const bend = random(-3.0, 3.0);\n  const steps = random(15, 40);\n  for (let step = 0; step < steps; step++) {\n    forward(4);\n    left(bend);\n  }\n  pop();\n  penUp();\n  forward(random(3, 9));\n  penDown();\n}\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+  draw-word:
+    pass:
+      - answer: "def draw_word(word, size, angle)\n  word.each_char do |letter|\n    if letter == \"F\"\n      forward size\n    elsif letter == \"+\"\n      left angle\n    elsif letter == \"-\"\n      right angle\n    elsif letter == \"[\"\n      push\n    elsif letter == \"]\"\n      pop\n    end\n  end\nend\n\nleft 90\ndraw_word(\"F[+F]F[-F]F\", 60, 25)\n"
+    fail:
+      - answer: "def draw_word(word, size, angle)\n  word.each_char do |letter|\n    if letter == \"F\"\n      forward size\n    elsif letter == \"+\"\n      right angle\n    elsif letter == \"-\"\n      left angle\n    elsif letter == \"[\"\n      push\n    elsif letter == \"]\"\n      pop\n    end\n  end\nend\n"
+        say: "draw_word"
+    python:
+      pass:
+        - answer: "def draw_word(word, size, angle):\n    for letter in word:\n        if letter == \"F\":\n            forward(size)\n        elif letter == \"+\":\n            left(angle)\n        elif letter == \"-\":\n            right(angle)\n        elif letter == \"[\":\n            push()\n        elif letter == \"]\":\n            pop()\n\nleft(90)\ndraw_word(\"F[+F]F[-F]F\", 60, 25)\n"
+      fail:
+        - answer: "def draw_word(word, size, angle):\n    for letter in word:\n        if letter == \"F\":\n            forward(size)\n        elif letter == \"+\":\n            right(angle)\n        elif letter == \"-\":\n            left(angle)\n        elif letter == \"[\":\n            push()\n        elif letter == \"]\":\n            pop()\n"
+          say: "draw_word"
+    javascript:
+      pass:
+        - answer: "function drawWord(word, size, angle) {\n  for (const letter of word) {\n    if (letter === \"F\") {\n      forward(size);\n    } else if (letter === \"+\") {\n      left(angle);\n    } else if (letter === \"-\") {\n      right(angle);\n    } else if (letter === \"[\") {\n      push();\n    } else if (letter === \"]\") {\n      pop();\n    }\n  }\n}\n\nleft(90);\ndrawWord(\"F[+F]F[-F]F\", 60, 25);\n"
+      fail:
+        - answer: "function drawWord(word, size, angle) {\n  for (const letter of word) {\n    if (letter === \"F\") {\n      forward(size);\n    } else if (letter === \"+\") {\n      right(angle);\n    } else if (letter === \"-\") {\n      left(angle);\n    } else if (letter === \"[\") {\n      push();\n    } else if (letter === \"]\") {\n      pop();\n    }\n  }\n}\n"
+          say: "drawWord"
+  grow:
+    pass:
+      - answer: "def draw_word(word, size, angle)\n  word.each_char do |letter|\n    if letter == \"F\"\n      forward size\n    elsif letter == \"+\"\n      left angle\n    elsif letter == \"-\"\n      right angle\n    elsif letter == \"[\"\n      push\n    elsif letter == \"]\"\n      pop\n    end\n  end\nend\n\ndef grow(word, times)\n  times.times do\n    word = word.gsub(\"F\", \"F[+F]F[-F]F\")\n  end\n  word\nend\n\nleft 90\ndraw_word(grow(\"F\", 4), 4, 25)\n"
+    fail:
+      - answer: "def draw_word(word, size, angle)\n  word.each_char do |letter|\n    if letter == \"F\"\n      forward size\n    elsif letter == \"+\"\n      left angle\n    elsif letter == \"-\"\n      right angle\n    elsif letter == \"[\"\n      push\n    elsif letter == \"]\"\n      pop\n    end\n  end\nend\n\ndef grow(word, times)\n  1.times do\n    word = word.gsub(\"F\", \"F[+F]F[-F]F\")\n  end\n  word\nend\n\nleft 90\ndraw_word(grow(\"F\", 4), 4, 25)\n"
+        say: "grow"
+    python:
+      pass:
+        - answer: "def draw_word(word, size, angle):\n    for letter in word:\n        if letter == \"F\":\n            forward(size)\n        elif letter == \"+\":\n            left(angle)\n        elif letter == \"-\":\n            right(angle)\n        elif letter == \"[\":\n            push()\n        elif letter == \"]\":\n            pop()\n\ndef grow(word, times):\n    for i in range(times):\n        word = word.replace(\"F\", \"F[+F]F[-F]F\")\n    return word\n\nleft(90)\ndraw_word(grow(\"F\", 4), 4, 25)\n"
+      fail:
+        - answer: "def draw_word(word, size, angle):\n    for letter in word:\n        if letter == \"F\":\n            forward(size)\n        elif letter == \"+\":\n            left(angle)\n        elif letter == \"-\":\n            right(angle)\n        elif letter == \"[\":\n            push()\n        elif letter == \"]\":\n            pop()\n\ndef grow(word, times):\n    for i in range(1):\n        word = word.replace(\"F\", \"F[+F]F[-F]F\")\n    return word\n\nleft(90)\ndraw_word(grow(\"F\", 4), 4, 25)\n"
+          say: "grow"
+    javascript:
+      pass:
+        - answer: "function drawWord(word, size, angle) {\n  for (const letter of word) {\n    if (letter === \"F\") {\n      forward(size);\n    } else if (letter === \"+\") {\n      left(angle);\n    } else if (letter === \"-\") {\n      right(angle);\n    } else if (letter === \"[\") {\n      push();\n    } else if (letter === \"]\") {\n      pop();\n    }\n  }\n}\n\nfunction grow(word, times) {\n  for (let i = 0; i < times; i++) {\n    word = word.replaceAll(\"F\", \"F[+F]F[-F]F\");\n  }\n  return word;\n}\n\nleft(90);\ndrawWord(grow(\"F\", 4), 4, 25);\n"
+      fail:
+        - answer: "function drawWord(word, size, angle) {\n  for (const letter of word) {\n    if (letter === \"F\") {\n      forward(size);\n    } else if (letter === \"+\") {\n      left(angle);\n    } else if (letter === \"-\") {\n      right(angle);\n    } else if (letter === \"[\") {\n      push();\n    } else if (letter === \"]\") {\n      pop();\n    }\n  }\n}\n\nfunction grow(word, times) {\n  for (let i = 0; i < 1; i++) {\n    word = word.replaceAll(\"F\", \"F[+F]F[-F]F\");\n  }\n  return word;\n}\n\nleft(90);\ndrawWord(grow(\"F\", 4), 4, 25);\n"
+          say: "grow"
+  own-plant:
+    pass:
+      - answer: "def draw_word(word, size, angle)\n  word.each_char do |letter|\n    if letter == \"F\"\n      forward size\n    elsif letter == \"+\"\n      left angle\n    elsif letter == \"-\"\n      right angle\n    elsif letter == \"[\"\n      push\n    elsif letter == \"]\"\n      pop\n    end\n  end\nend\n\ndef grow(word, times)\n  times.times do\n    new_word = \"\"\n    word.each_char do |letter|\n      if letter == \"X\"\n        new_word += \"F+[[X]-X]-F[-FX]+X\"\n      elsif letter == \"F\"\n        new_word += \"FF\"\n      else\n        new_word += letter\n      end\n    end\n    word = new_word\n  end\n  word\nend\n\ncolor \"olivedrab\"\nleft 70\ndraw_word(grow(\"X\", 5), 4, 22.5)\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "def draw_word(word, size, angle):\n    for letter in word:\n        if letter == \"F\":\n            forward(size)\n        elif letter == \"+\":\n            left(angle)\n        elif letter == \"-\":\n            right(angle)\n        elif letter == \"[\":\n            push()\n        elif letter == \"]\":\n            pop()\n\n\ndef grow(word, times):\n    for i in range(times):\n        new_word = \"\"\n        for letter in word:\n            if letter == \"X\":\n                new_word += \"F+[[X]-X]-F[-FX]+X\"\n            elif letter == \"F\":\n                new_word += \"FF\"\n            else:\n                new_word += letter\n        word = new_word\n    return word\n\n\ncolor(\"olivedrab\")\nleft(70)\ndraw_word(grow(\"X\", 5), 4, 22.5)\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "function drawWord(word, size, angle) {\n  for (const letter of word) {\n    if (letter === \"F\") {\n      forward(size);\n    } else if (letter === \"+\") {\n      left(angle);\n    } else if (letter === \"-\") {\n      right(angle);\n    } else if (letter === \"[\") {\n      push();\n    } else if (letter === \"]\") {\n      pop();\n    }\n  }\n}\n\nfunction grow(word, times) {\n  for (let i = 0; i < times; i++) {\n    let newWord = \"\";\n    for (const letter of word) {\n      if (letter === \"X\") {\n        newWord += \"F+[[X]-X]-F[-FX]+X\";\n      } else if (letter === \"F\") {\n        newWord += \"FF\";\n      } else {\n        newWord += letter;\n      }\n    }\n    word = newWord;\n  }\n  return word;\n}\n\ncolor(\"olivedrab\");\nleft(70);\ndrawWord(grow(\"X\", 5), 4, 22.5);\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+  finale:
+    pass:
+      - answer: "# ein Wald: drei Bäume im Wind nebeneinander\ndef tree(size, depth)\n  return if depth == 0\n  width depth\n  color depth <= 2 ? \"forestgreen\" : \"saddlebrown\"\n  forward size\n  push\n  left random(10, 40)\n  tree(size * random(0.6, 0.85), depth - 1)\n  pop\n  push\n  right random(10, 40)\n  tree(size * random(0.6, 0.85), depth - 1)\n  pop\nend\n\npen_up\nback 200\npen_down\n3.times do\n  push\n  left 90\n  tree(random(40, 60), 8)\n  pop\n  pen_up\n  forward 200\n  pen_down\nend\n"
+    fail:
+      - answer: "left 90\n"
+        say: "nichts gezeichnet"
+    python:
+      pass:
+        - answer: "# ein Wald: drei Bäume im Wind nebeneinander\ndef tree(size, depth):\n    if depth == 0:\n        return\n    width(depth)\n    if depth <= 2:\n        color(\"forestgreen\")\n    else:\n        color(\"saddlebrown\")\n    forward(size)\n    push()\n    left(random(10, 40))\n    tree(size * random(0.6, 0.85), depth - 1)\n    pop()\n    push()\n    right(random(10, 40))\n    tree(size * random(0.6, 0.85), depth - 1)\n    pop()\n\npen_up()\nback(200)\npen_down()\nfor i in range(3):\n    push()\n    left(90)\n    tree(random(40, 60), 8)\n    pop()\n    pen_up()\n    forward(200)\n    pen_down()\n"
+      fail:
+        - answer: "left(90)\n"
+          say: "nichts gezeichnet"
+    javascript:
+      pass:
+        - answer: "// ein Wald: drei Bäume im Wind nebeneinander\nfunction tree(size, depth) {\n  if (depth === 0) return;\n  width(depth);\n  color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n  forward(size);\n  push();\n  left(random(10, 40));\n  tree(size * random(0.6, 0.85), depth - 1);\n  pop();\n  push();\n  right(random(10, 40));\n  tree(size * random(0.6, 0.85), depth - 1);\n  pop();\n}\n\npenUp();\nback(200);\npenDown();\nfor (let i = 0; i < 3; i++) {\n  push();\n  left(90);\n  tree(random(40, 60), 8);\n  pop();\n  penUp();\n  forward(200);\n  penDown();\n}\n"
+      fail:
+        - answer: "left(90);\n"
+          say: "nichts gezeichnet"

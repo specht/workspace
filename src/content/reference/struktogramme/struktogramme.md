@@ -21,67 +21,6 @@ Wie du einen Algorithmus aufschreibst, bevor du ihn programmierst: als Pseudocod
 
 <script src='/include/struktogramm.js'></script>
 
-<!-- part: ausprobieren -->
-## Ausprobieren
-
-Schreib Pseudocode ins Feld; daneben oder darunter erscheint das Struktogramm, während du tippst. Den Pfeil `←` tippst du als `<-`, das Feld macht ihn daraus. Hier wird nichts gespeichert; »Als SVG speichern« legt das Bild als Datei ab, für ein Arbeitsblatt oder eine Abgabe.
-
-<div class='struktogramm-playground'>
-<textarea class='form-control struktogramm-playground-input' wrap='off' spellcheck='false' autocapitalize='off' aria-label='Pseudocode'>count_vowels(word):
-    count ← 0
-    for each letter in word:
-        if letter in "aeiou":
-            count ← count + 1
-    return count</textarea>
-<div class='struktogramm-playground-output'>
-<div class='struktogramm-playground-problems' aria-live='polite'></div>
-<div class='struktogramm-playground-diagram'></div>
-<button type='button' class='btn btn-sm btn-outline-secondary struktogramm-playground-save'><i class='bi bi-download'></i> Als SVG speichern</button>
-</div>
-</div>
-
-<script>
-window.addEventListener('DOMContentLoaded', function () {
-    var S = window.Struktogramm;
-    var box = document.querySelector('.struktogramm-playground');
-    if (!S || !box) return;
-    var input = box.querySelector('.struktogramm-playground-input');
-    var diagram = box.querySelector('.struktogramm-playground-diagram');
-    var problems = box.querySelector('.struktogramm-playground-problems');
-    var measure = S.canvasMeasure();
-    function draw() {
-        var result = S.svg(input.value, { measure: measure });
-        problems.innerHTML = result.errors.map(function (p) {
-            return '<div>Zeile ' + p.line + ': ' + S.esc(p.msg) + '</div>';
-        }).join('');
-        diagram.classList.toggle('struktogramm-playground-stale', !result.svg);
-        if (result.svg) diagram.innerHTML = result.svg; // otherwise the last good one stays, faded
-    }
-    box.querySelector('.struktogramm-playground-save').addEventListener('click', function () {
-        var result = S.svg(input.value, { measure: measure, background: '#ffffff' });
-        if (!result.svg) return;
-        var name = (result.diagrams[0] && result.diagrams[0].title || 'struktogramm').replace(/\(.*$/, '');
-        var link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([result.svg], { type: 'image/svg+xml' }));
-        link.download = name + '.svg';
-        link.click();
-        URL.revokeObjectURL(link.href);
-    });
-    // ← has no key: <- becomes ← while typing, and the cursor stays where it was.
-    input.addEventListener('input', function () {
-        if (input.value.indexOf('<-') >= 0) {
-            var before = input.value.slice(0, input.selectionStart);
-            var moved = (before.match(/<-/g) || []).length;
-            input.value = input.value.replace(/<-/g, '←');
-            input.selectionStart = input.selectionEnd = before.length - moved;
-        }
-        draw();
-    });
-    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(draw);
-});
-</script>
-<!-- /part -->
-
 <!-- part: pseudocode -->
 ## Pseudocode
 
@@ -200,6 +139,67 @@ contains(list, wanted):
 </div>
 
 Vorsicht bei der Zählschleife: `for i from 0 to 11` zählt die 11 mit. Ruby schreibt das genauso (`0..11`), Pythons `range` hört dagegen eins vorher auf, darum `range(0, 12)`.
+<!-- /part -->
+
+<!-- part: ausprobieren -->
+## Ausprobieren
+
+Schreib Pseudocode ins Feld; daneben oder darunter erscheint das Struktogramm, während du tippst. Den Pfeil `←` tippst du als `<-`, das Feld macht ihn daraus. Hier wird nichts gespeichert; »Als SVG speichern« legt das Bild als Datei ab, für ein Arbeitsblatt oder eine Abgabe.
+
+<div class='struktogramm-playground'>
+<textarea class='form-control struktogramm-playground-input' wrap='off' spellcheck='false' autocapitalize='off' aria-label='Pseudocode'>count_vowels(word):
+    count ← 0
+    for each letter in word:
+        if letter in "aeiou":
+            count ← count + 1
+    return count</textarea>
+<div class='struktogramm-playground-output'>
+<div class='struktogramm-playground-problems' aria-live='polite'></div>
+<div class='struktogramm-playground-diagram'></div>
+<button type='button' class='btn btn-sm btn-outline-secondary struktogramm-playground-save'><i class='bi bi-download'></i> Als SVG speichern</button>
+</div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+    var S = window.Struktogramm;
+    var box = document.querySelector('.struktogramm-playground');
+    if (!S || !box) return;
+    var input = box.querySelector('.struktogramm-playground-input');
+    var diagram = box.querySelector('.struktogramm-playground-diagram');
+    var problems = box.querySelector('.struktogramm-playground-problems');
+    var measure = S.canvasMeasure();
+    function draw() {
+        var result = S.svg(input.value, { measure: measure });
+        problems.innerHTML = result.errors.map(function (p) {
+            return '<div>Zeile ' + p.line + ': ' + S.esc(p.msg) + '</div>';
+        }).join('');
+        diagram.classList.toggle('struktogramm-playground-stale', !result.svg);
+        if (result.svg) diagram.innerHTML = result.svg; // otherwise the last good one stays, faded
+    }
+    box.querySelector('.struktogramm-playground-save').addEventListener('click', function () {
+        var result = S.svg(input.value, { measure: measure, background: '#ffffff' });
+        if (!result.svg) return;
+        var name = (result.diagrams[0] && result.diagrams[0].title || 'struktogramm').replace(/\(.*$/, '');
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([result.svg], { type: 'image/svg+xml' }));
+        link.download = name + '.svg';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+    // ← has no key: <- becomes ← while typing, and the cursor stays where it was.
+    input.addEventListener('input', function () {
+        if (input.value.indexOf('<-') >= 0) {
+            var before = input.value.slice(0, input.selectionStart);
+            var moved = (before.match(/<-/g) || []).length;
+            input.value = input.value.replace(/<-/g, '←');
+            input.selectionStart = input.selectionEnd = before.length - moved;
+        }
+        draw();
+    });
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(draw);
+});
+</script>
 <!-- /part -->
 
 ## Zum Nachschlagen

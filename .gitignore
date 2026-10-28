@@ -26,6 +26,7 @@ src/scripts/collect-music-releases/cache
 src/scripts/dump-*.txt
 src/static/include/bootstrap*/node_modules
 src/static/tic80
+src/static/include/turtle/runtime
 src/tutorial-screenshots/node_modules
 temp
 src/scripts/collect-movies/movie-archive

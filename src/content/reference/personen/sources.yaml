@@ -763,6 +763,60 @@ turing:
       - url: https://en.wikipedia.org/wiki/Turing_Award
         quote: "It is generally recognized as the highest distinction in the field of computer science … The award is named after Alan Turing"
 
+baudot:
+  - text: Émile Baudot (1845–1903), französischer Telegrafeningenieur
+    sources:
+      - url: https://en.wikipedia.org/wiki/%C3%89mile_Baudot
+        quote: "Jean-Maurice-Émile Baudot (11 September 1845 – 28 March 1903) was a French telegraph engineer"
+  - text: baute ab 1874 einen Telegrafen, der jeden Buchstaben als fünf Zeichen auf einmal schickte, jedes Strom an oder Strom aus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Baudot_code
+        quote: "Baudot developed his first multiplexed telegraph in 1872 and patented it in 1874 … Each character in the alphabet is represented by a series of five bits"
+  - text: 32 Muster, genug für das Alphabet
+    none: Fünf Zeichen, jedes an oder aus, ergeben 2 hoch 5 = 32 Muster; das rechnet die Seite selbst nach.
+  - text: Getippt wurde mit fünf Tasten, zwei für die linke und drei für die rechte Hand
+    sources:
+      - url: https://en.wikipedia.org/wiki/Baudot_code
+        quote: "The code was entered on a keyboard which had just five piano-type keys and was operated using two fingers of the left hand and three fingers of the right hand."
+  - text: Nach ihm heißt das Baud
+    sources:
+      - url: https://en.wikipedia.org/wiki/Baud
+        quote: "It is the unit for symbol rate or modulation rate in symbols per second or pulses per second. … The baud unit is named after Émile Baudot, the inventor of the Baudot code for telegraphy."
+  - text: Stich von A. Delzers, vor 1903, gemeinfrei
+    sources:
+      - url: https://commons.wikimedia.org/wiki/File:Emile_Baudot.jpg
+        quote: "Engraving by A. Delzers (1873-1943) … before 1903 … This work is in the public domain in its country of origin and other countries and areas where the copyright term is the author's life plus 70 years or fewer."
+
+papert:
+  - text: Seymour Papert (1928–2016), Mathematiker aus Pretoria, ab 1963 am MIT
+    sources:
+      - url: https://en.wikipedia.org/wiki/Seymour_Papert
+        quote: "Born 29 February 1928, Pretoria, Union of South Africa … Papert died at his home in Blue Hill, Maine, on 31 July 2016 … becoming a research associate at MIT in 1963"
+  - text: 1967 entwickelte er mit Wally Feurzeig und Cynthia Solomon die Programmiersprache Logo, mit der Kinder spielerisch Probleme lösen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Logo_(programming_language)
+        quote: "Logo was created in 1967 at Bolt, Beranek and Newman (BBN) … by Wally Feurzeig, Cynthia Solomon, and Seymour Papert"
+      - url: https://en.wikipedia.org/wiki/Seymour_Papert
+        quote: "children were shown how to use it to solve simple problems in an environment of play"
+  - text: Die erste Schildkröte von 1969 war ein Roboter, der über den Boden fuhr und mit einem kleinen Stift zeichnen konnte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Logo_(programming_language)
+        quote: "The first working Logo turtle robot was created in 1969. … The first turtle was a tethered floor roamer … a small retractable pen"
+  - text: auf dem Foto steht einer vor ihm
+    none: Beschreibt das Foto der Box.
+  - text: Später lief sie über den Bildschirm, so wie hier
+    sources:
+      - url: https://en.wikipedia.org/wiki/Logo_(programming_language)
+        quote: "commands for movement and drawing produced line or vector graphics, either on screen"
+  - text: schrieb er 1980 in seinem Buch »Mindstorms«
+    sources:
+      - url: https://en.wikipedia.org/wiki/Seymour_Papert
+        quote: "Mindstorms: Children, Computers, and Powerful Ideas, 1980"
+  - text: Matematicamente.it, CC BY-SA 3.0
+    sources:
+      - url: https://commons.wikimedia.org/wiki/File:Seymour_Papert.jpg
+        quote: "Matematicamente.it … Creative Commons Attribution-Share Alike 3.0 Unported"
+
 shannon:
   - text: Claude Shannon (1916–2001).
     sources:

@@ -18,6 +18,7 @@ require_relative 'dart_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 require_relative 'circuit_check'
+require_relative 'turtle_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -33,7 +34,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests circuit]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests circuit turtle]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -87,7 +88,9 @@ module TaskCheck
     #              in a container of its own (function); nil if none
     # kata_seed:   for a Kata's random cases (KataCheck.seed)
     # kata_map:    Pip: the map the card shows, run first (PipCheck.check)
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil, kata: nil, kata_seed: 0, kata_map: 0)
+    # turtle:      what the browser reported of a turtle program's runs:
+    #              { 'runs' => [[[command, value], …], …], 'error', 'line' }
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil, kata: nil, kata_seed: 0, kata_map: 0, turtle: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -112,6 +115,7 @@ module TaskCheck
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_circuit(task, check, answer) if type == 'circuit'
+        return check_turtle(task, check, answer, turtle) if type == 'turtle'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -286,6 +290,25 @@ module TaskCheck
     def self.check_circuit(task, check, answer)
         status, message, read = CircuitCheck.check(task, check, answer)
         Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # turtle: a program that ran in the browser; its lines against the
+    # picture asked for (TurtleCheck). replay is what the card draws when
+    # the picture is not right.
+    def self.check_turtle(task, check, answer, report)
+        return Result.new(:status => :invalid, :message => TurtleCheck::EMPTY) if answer.to_s.strip.empty?
+        return Result.new(:status => :invalid, :message => 'Lass dein Programm zuerst bis zum Ende laufen.') unless report.is_a?(Hash)
+
+        if report['error']
+            line = report['line'].is_a?(Integer) ? " (Zeile #{report['line']})" : ''
+            message = "Dein Programm bricht ab#{line}: `#{report['error'].to_s[0, 200]}`"
+            explanation = KataCheck.explain(report['error'].to_s, check['language'])
+            message += "\n\n#{explanation}" if explanation
+            return Result.new(:status => :wrong, :message => message)
+        end
+        status, message, show = TurtleCheck.check(check, answer, report['runs'])
+        Result.new(:status => status, :message => message, :replay => show,
             :solution => status == :correct ? task['solution'] : nil)
     end
 

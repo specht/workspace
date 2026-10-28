@@ -1116,6 +1116,56 @@ Funktion selbst hinein, sagt die Prüfung, nur Tests zu schreiben, ohne etwas
 auszuführen. Der `starter` (ein erster Test) muss von selbst scheitern, wie
 bei `function`; in `task-examples.yaml` stehen Tests unter `answer:`.
 
+### turtle
+
+Ein Programm, das zeichnet (`TurtleCheck`, Übung »Turtle«): Eine
+Schildkröte läuft über ein Blatt und zieht eine Linie hinter sich her. Die
+Befehle sind schlichte Funktionen ohne Objekt, `forward`, `back`, `left`,
+`right`, `pen_up`, `pen_down`, `color`, `width` (in JavaScript `penUp`,
+`penDown`), dazu `push` und `pop` (merken sich Ort, Richtung, Stift, Farbe
+und Breite und kehren dorthin zurück) und `random(1, 6)` (eine ganze
+Zufallszahl, mit Kommazahlen eine Kommazahl); `color` nimmt einen Namen,
+eine Zahl (den Farbton im Farbkreis, `color 200`) oder zwei Farben und einen
+Anteil (`color "gold", "red", 0.25`), `background` dieselben Farben für das
+Papier. Ein Klick auf `color` oder `background` über dem Papier öffnet Farben
+zum Aussuchen (Cling und einige HTML-Namen), ein Klick auf eine setzt sie ins
+Programm. Sie stehen in
+`src/static/include/turtle/turtle.rb`, `.py` und `.js`; Browser und Server
+rechnen Farbton und Mischung gleich (`colorHex` in `turtle_worker.js`,
+`TurtleWorld.color_hex`). `commands:` wählt die Befehle über dem Papier aus,
+mit `hue`, `mix` und `random` für die Schreibweisen von `color` und für
+`random`. Das Programm läuft **im Browser** (`turtle_worker.js`, Ruby und
+Python als WebAssembly aus `./fetch-turtle-runtimes.sh`), live, bis es zu
+Ende ist oder jemand »Stopp« drückt. Endet es von selbst, gehen die Befehle
+an den Server; `TurtleWorld` zeichnet sie nach und vergleicht die Linien
+mit dem Bild der Aufgabe, gleich in welcher Reihenfolge, Richtung oder
+Stückelung sie entstanden sind.
+
+```yaml
+check:
+  type: turtle
+  language: ruby                 # ruby, python oder javascript; je Sprache als Variante
+  draw: |                        # das Bild, in Ruby mit denselben Befehlen; die Karte zeigt es hell
+    4.times { forward 100; left 90 }
+  max_lines: 4                   # optional: in höchstens so vielen Zeilen (eine Schleife)
+  colors: true                   # optional: die Farben zählen mit
+```
+
+Für eine eigene Funktion statt `draw` eine Liste `cases` mit `call` und
+`draw`: Jeder Aufruf läuft von vorn, das Programm vorher ohne zu zeichnen;
+die Karte zeigt das Bild des ersten. Für ein eigenes Bild `free: {}`: Es gilt
+jedes Bild mit wenigstens einer Linie, ohne Zählen (der Maintainer: frei
+zeichnen, nicht beurteilen); `min_lines` und `min_colors` verlangen, wo
+es zur Aufgabe gehört, so viele Linien oder Farben. Die Schildkröte beginnt in der Mitte und
+schaut nach rechts, x nach rechts, y nach oben, die Fläche reicht von −250
+bis 250. Stimmt das Bild noch nicht, sagt die Karte das in einem ruhigen Satz; das Fehlende gestrichelt und das Überzählige rot zeigt sie erst, wenn man auf »Unterschiede zeigen« klickt.
+Ein angehaltenes Programm wird nur gespeichert (`/api/turtle/save`), der
+Stand der Aufgabe bleibt. Ist eine Aufgabe gelöst, gilt ein Lauf, der etwas
+anderes zeichnet, als Ausprobieren: Der Code wird gespeichert, die Aufgabe
+bleibt gelöst, und die Karte zeigt keine Unterschiede. In `task-examples.yaml` steht das Programm unter
+`answer:`; es läuft dort mit ruby, python3 und node auf dem Rechner, mit
+denselben Befehlen (`TurtleCheck.record`).
+
 ### circuit
 
 Eine Schaltung aus der Logik-Werkstatt (`src/content/logikwerkstatt`,
