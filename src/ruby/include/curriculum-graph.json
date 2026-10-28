@@ -2,67 +2,67 @@
   "layouts": [
     {
       "name": "production",
-      "key": "e3fe478fc81e7316",
-      "cost": 159.53,
-      "quick": 289.61,
+      "key": "790e4d60b670dd72",
+      "cost": 163.6,
+      "quick": 319.33,
       "orders": [
         [
           0,
           [
-            "drawing",
-            "tcpip",
+            "mysql",
             "pixelram",
             "pip-1",
             "kata-functions",
-            "static-website",
-            "git",
             "working-with-files",
-            "mysql"
+            "git",
+            "drawing",
+            "tcpip",
+            "static-website"
           ]
         ],
         [
           1,
           [
-            "fire",
-            "wetter",
-            "crypto",
-            "dns",
-            "webserver",
-            "raytracing",
-            "raylib",
-            "pixelram>jpeg#1",
-            "pixelram>gif#1",
-            "pip-1>pip-2#1",
-            "raycaster",
-            "kata-decisions",
-            "svelte",
-            "hugo",
-            "class-quiz",
-            "terminal-mystery",
             "sql-index",
-            "bobby_tables",
+            "filmdatenbank",
             "sql-joins",
-            "filmdatenbank"
+            "bobby_tables",
+            "raycaster",
+            "raytracing",
+            "pixelram>gif#1",
+            "pixelram>jpeg#1",
+            "raylib",
+            "pip-1>pip-2#1",
+            "kata-decisions",
+            "terminal-mystery",
+            "class-quiz",
+            "fire",
+            "webserver",
+            "dns",
+            "crypto",
+            "wetter",
+            "svelte",
+            "hugo"
           ]
         ],
         [
           2,
           [
-            "totp",
-            "tracking",
-            "pixelwand",
-            "pixelram>jpeg#2",
+            "neo4j-filmdatenbank",
             "pixelram>gif#2",
+            "pixelram>jpeg#2",
             "pip-1>pip-2#2",
             "kata-loops",
-            "neo4j-filmdatenbank"
+            "pixelwand",
+            "tracking",
+            "totp"
           ]
         ],
         [
           3,
           [
-            "pixelram>jpeg#3",
             "pixelram>gif#3",
+            "pixelram>jpeg#3",
             "pip-2",
             "kata-texts"
           ]
@@ -70,8 +70,8 @@
         [
           4,
           [
-            "pixelram>jpeg#4",
             "pixelram>gif#4",
+            "pixelram>jpeg#4",
             "pip-2>pip-3#1",
             "kata-lists"
           ]
@@ -79,56 +79,57 @@
         [
           5,
           [
-            "pixelram>jpeg#5",
             "pixelram>gif#5",
+            "pixelram>jpeg#5",
             "pip-2>pip-3#2",
-            "perzeptron",
+            "check-digits",
+            "kata-dicts",
+            "naechste-nachbarn",
+            "sandbox-sortieren",
             "kata-lists>suchmaschine#1",
             "rle",
-            "kata-dicts",
-            "sandbox-sortieren",
-            "naechste-nachbarn",
-            "check-digits",
-            "supermarkt",
-            "kata-recursion"
+            "perzeptron",
+            "kata-recursion",
+            "supermarkt"
           ]
         ],
         [
           6,
           [
-            "pixelram>jpeg#6",
             "pixelram>gif#6",
+            "pixelram>jpeg#6",
             "pip-3",
-            "huffman",
-            "suchmaschine",
             "lzw",
-            "kata-bits",
+            "huffman",
             "sprachmodell",
-            "automata",
             "routenplaner",
-            "sandbox-datenstrukturen",
-            "kata-search"
+            "automata",
+            "kata-functional",
+            "suchmaschine",
+            "kata-bits",
+            "kata-search",
+            "sandbox-datenstrukturen"
           ]
         ],
         [
           7,
           [
-            "jpeg",
             "gif",
+            "jpeg",
+            "kellerautomat",
+            "turingmaschine",
+            "calculator",
+            "regex",
             "steganography",
             "logikgatter",
-            "regex",
-            "kellerautomat",
-            "calculator",
-            "turingmaschine",
             "kata-tests"
           ]
         ],
         [
           8,
           [
-            "logikwerkstatt",
-            "grammatiken"
+            "grammatiken",
+            "logikwerkstatt"
           ]
         ]
       ]

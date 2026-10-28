@@ -1,0 +1,1763 @@
+format: 1
+activity: kata-functional
+tasks:
+  - id: predict-twice
+    title: "Zweimal quadrieren"
+    level: 1
+    prediction: true
+    prompt: |
+      Was gibt `puts twice(->(x) { x * x }, 3)` aus?
+    check:
+      type: number
+      expect: 81
+    feedback:
+      - when: { equals: 9 }
+        say: "Das ist `x * x` einmal. `twice` ruft die Funktion zweimal auf: erst mit 3, dann mit dem, was dabei herauskam."
+      - when: { equals: 6 }
+        say: "Die Funktion multipliziert `x` mit sich selbst. Was ist 3 mal 3, und was ist das Ergebnis mal sich selbst?"
+      - when: { equals: 18 }
+        say: "`twice` verdoppelt nicht das Ergebnis, sondern ruft die Funktion ein zweites Mal auf, mit dem Ergebnis des ersten Aufrufs."
+    python:
+      prompt: |
+        Was gibt `print(twice(lambda x: x * x, 3))` aus?
+    javascript:
+      prompt: |
+        Was gibt `console.log(twice(x => x * x, 3))` aus?
+
+  - id: apply-n
+    title: "n-mal anwenden"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `apply_n(f, n, x)`, die die Funktion `f` `n`-mal hintereinander auf `x` anwendet und das Ergebnis zurückgibt: `apply_n(->(x) { x * 2 }, 3, 1)` ergibt `8`, denn aus 1 wird 2, dann 4, dann 8. Ist `n` gleich 0, kommt `x` unverändert zurück. Die Prüfung ruft deine Funktion mit verschiedenen Lambdas auf; eine Schleife ist hier erlaubt.
+    starter: |
+      def apply_n(f, n, x)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "apply_n(->(x) { x * 2 }, 3, 1)"
+          expect: "8"
+        - call: "apply_n(->(x) { x + 10 }, 0, 5)"
+          expect: "5"
+          say: "Ist `n` gleich 0, wird `f` gar nicht aufgerufen."
+        - call: "apply_n(->(x) { x - 1 }, 4, 10)"
+          expect: "6"
+        - call: "apply_n(->(s) { s + '!' }, 2, 'Hallo')"
+          expect: "'Hallo!!'"
+          say: "Auch ein String geht: Was `f` bekommt, entscheidet nur `f`."
+        - call: "apply_n(->(x) { x * x }, 1, 7)"
+          expect: "49"
+    feedback:
+      - when: { same_as: "def apply_n(f, n, x)\n  n.times { f.call(x) }\n  x\nend\n" }
+        say: "Du rufst `f` auf, aber das Ergebnis geht verloren. Merk es dir in `x`, damit der nächste Aufruf damit weiterrechnet."
+    hint:
+      - "Von Hand: `apply_n(->(x) { x * 2 }, 3, 1)` rechnet 1, 2, 4, 8. Jeder Aufruf von `f` bekommt das Ergebnis des vorigen."
+      - "Eine Schleife, die `n`-mal läuft, `n.times do … end`; in ihr wird `x` zu `f.call(x)`."
+    solution: |
+      ```ruby
+      def apply_n(f, n, x)
+        n.times do
+          x = f.call(x)
+        end
+        x
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `apply_n(f, n, x)`, die die Funktion `f` `n`-mal hintereinander auf `x` anwendet und das Ergebnis zurückgibt: `apply_n(lambda x: x * 2, 3, 1)` ergibt `8`, denn aus 1 wird 2, dann 4, dann 8. Ist `n` gleich 0, kommt `x` unverändert zurück. Die Prüfung ruft deine Funktion mit verschiedenen Lambdas auf; eine Schleife ist hier erlaubt.
+      starter: |
+        def apply_n(f, n, x):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "apply_n(lambda x: x * 2, 3, 1)"
+            expect: "8"
+          - call: "apply_n(lambda x: x + 10, 0, 5)"
+            expect: "5"
+            say: "Ist `n` gleich 0, wird `f` gar nicht aufgerufen."
+          - call: "apply_n(lambda x: x - 1, 4, 10)"
+            expect: "6"
+          - call: "apply_n(lambda s: s + '!', 2, 'Hallo')"
+            expect: "'Hallo!!'"
+            say: "Auch ein String geht: Was `f` bekommt, entscheidet nur `f`."
+          - call: "apply_n(lambda x: x * x, 1, 7)"
+            expect: "49"
+      feedback:
+        - when: { same_as: "def apply_n(f, n, x):\n    for _ in range(n):\n        f(x)\n    return x\n" }
+          say: "Du rufst `f` auf, aber das Ergebnis geht verloren. Merk es dir in `x`, damit der nächste Aufruf damit weiterrechnet."
+      hint:
+        - "Von Hand: `apply_n(lambda x: x * 2, 3, 1)` rechnet 1, 2, 4, 8. Jeder Aufruf von `f` bekommt das Ergebnis des vorigen."
+        - "Eine Schleife, die `n`-mal läuft, `for _ in range(n):`; in ihr wird `x` zu `f(x)`."
+      solution: |
+        ```python
+        def apply_n(f, n, x):
+            for _ in range(n):
+                x = f(x)
+            return x
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `applyN(f, n, x)`, die die Funktion `f` `n`-mal hintereinander auf `x` anwendet und das Ergebnis zurückgibt: `applyN(x => x * 2, 3, 1)` ergibt `8`, denn aus 1 wird 2, dann 4, dann 8. Ist `n` gleich 0, kommt `x` unverändert zurück. Die Prüfung ruft deine Funktion mit verschiedenen Arrow Functions auf; eine Schleife ist hier erlaubt.
+      starter: |
+        function applyN(f, n, x) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "applyN(x => x * 2, 3, 1)"
+            expect: "8"
+          - call: "applyN(x => x + 10, 0, 5)"
+            expect: "5"
+            say: "Ist `n` gleich 0, wird `f` gar nicht aufgerufen."
+          - call: "applyN(x => x - 1, 4, 10)"
+            expect: "6"
+          - call: "applyN(s => s + '!', 2, 'Hallo')"
+            expect: "'Hallo!!'"
+            say: "Auch ein String geht: Was `f` bekommt, entscheidet nur `f`."
+          - call: "applyN(x => x * x, 1, 7)"
+            expect: "49"
+      feedback:
+        - when: { same_as: "function applyN(f, n, x) {\n  for (let i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n" }
+          say: "Du rufst `f` auf, aber das Ergebnis geht verloren. Merk es dir in `x`, damit der nächste Aufruf damit weiterrechnet."
+      hint:
+        - "Von Hand: `applyN(x => x * 2, 3, 1)` rechnet 1, 2, 4, 8. Jeder Aufruf von `f` bekommt das Ergebnis des vorigen."
+        - "Eine Schleife, die `n`-mal läuft, `for (let i = 0; i < n; i++)`; in ihr wird `x` zu `f(x)`."
+      solution: |
+        ```javascript
+        function applyN(f, n, x) {
+          for (let i = 0; i < n; i++) {
+            x = f(x);
+          }
+          return x;
+        }
+        ```
+
+  - id: make-multiplier
+    title: "Eine Funktion zum Multiplizieren bauen"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `make_multiplier(n)`, die ein Lambda zurückgibt, das seine Zahl mit `n` multipliziert: `make_multiplier(3).call(7)` ergibt `21`. Die Prüfung baut so mehrere Lambdas, auch zwei auf einmal, und ruft sie auf.
+    starter: |
+      def make_multiplier(n)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "make_multiplier(3).call(7)"
+          expect: "21"
+        - call: "make_multiplier(0).call(5)"
+          expect: "0"
+        - call: "make_multiplier(-2).call(4)"
+          expect: "-8"
+        - call: "double = make_multiplier(2); triple = make_multiplier(3); double.call(10) + triple.call(10)"
+          expect: "50"
+          say: "Jedes Lambda merkt sich sein eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
+        - call: "make_multiplier(10).call(make_multiplier(10).call(1))"
+          expect: "100"
+    feedback:
+      - when: { same_as: "def make_multiplier(n)\n  n\nend\n" }
+        say: "`make_multiplier` gibt keine Funktion zurück, und mit `.call(7)` lässt sich nur eine Funktion aufrufen. Die letzte Zeile soll ein Lambda sein, `->(x) { … }`."
+    hint:
+      - "Was gibt `make_multiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `.call(7)`."
+      - "`make_adder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf im Lambda stehen."
+    solution: |
+      ```ruby
+      def make_multiplier(n)
+        ->(x) { x * n }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `make_multiplier(n)`, die ein Lambda zurückgibt, das seine Zahl mit `n` multipliziert: `make_multiplier(3)(7)` ergibt `21`. Die Prüfung baut so mehrere Lambdas, auch zwei auf einmal, und ruft sie auf.
+      starter: |
+        def make_multiplier(n):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "make_multiplier(3)(7)"
+            expect: "21"
+          - call: "make_multiplier(0)(5)"
+            expect: "0"
+          - call: "make_multiplier(-2)(4)"
+            expect: "-8"
+          - call: "double = make_multiplier(2); triple = make_multiplier(3); double(10) + triple(10)"
+            expect: "50"
+            say: "Jedes Lambda merkt sich sein eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
+          - call: "make_multiplier(10)(make_multiplier(10)(1))"
+            expect: "100"
+      feedback:
+        - when: { same_as: "def make_multiplier(n):\n    return n\n" }
+          say: "`make_multiplier` gibt keine Funktion zurück, und mit `(7)` lässt sich nur eine Funktion aufrufen. Gib ein Lambda zurück, `lambda x: …`."
+      hint:
+        - "Was gibt `make_multiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `(7)`."
+        - "`make_adder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf im Lambda stehen."
+      solution: |
+        ```python
+        def make_multiplier(n):
+            return lambda x: x * n
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `makeMultiplier(n)`, die eine Funktion zurückgibt, die ihre Zahl mit `n` multipliziert: `makeMultiplier(3)(7)` ergibt `21`. Die Prüfung baut so mehrere Funktionen, auch zwei auf einmal, und ruft sie auf.
+      starter: |
+        function makeMultiplier(n) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "makeMultiplier(3)(7)"
+            expect: "21"
+          - call: "makeMultiplier(0)(5)"
+            expect: "0"
+          - call: "makeMultiplier(-2)(4)"
+            expect: "-8"
+          - call: "const double = makeMultiplier(2); const triple = makeMultiplier(3); double(10) + triple(10)"
+            expect: "50"
+            say: "Jede Funktion merkt sich ihr eigenes `n`: `double` multipliziert mit 2, `triple` mit 3."
+          - call: "makeMultiplier(10)(makeMultiplier(10)(1))"
+            expect: "100"
+      feedback:
+        - when: { same_as: "function makeMultiplier(n) {\n  return n;\n}\n" }
+          say: "`makeMultiplier` gibt keine Funktion zurück, und mit `(7)` lässt sich nur eine Funktion aufrufen. Gib eine Arrow Function zurück, `x => …`."
+      hint:
+        - "Was gibt `makeMultiplier(3)` zurück? Keine Zahl, sondern eine Funktion, die ihre Zahl erst später bekommt, mit `(7)`."
+        - "`makeAdder` oben baut so eine Funktion. Hier multipliziert sie, und das `n` darf in der Arrow Function stehen."
+      solution: |
+        ```javascript
+        function makeMultiplier(n) {
+          return x => x * n;
+        }
+        ```
+
+  - id: predict-map
+    title: "Was macht map daraus?"
+    level: 1
+    prediction: true
+    prompt: |
+      Was gibt `p [3, 1, 2].map { |x| x > 1 }` aus?
+    check:
+      type: choice
+      options: ["[true, false, true]", "[3, 2]", "[3, 1, 2]", "2"]
+      correct: 0
+    python:
+      prompt: |
+        Was gibt `print(list(map(lambda x: x > 1, [3, 1, 2])))` aus?
+      check:
+        type: choice
+        options: ["[True, False, True]", "[3, 2]", "[3, 1, 2]", "2"]
+        correct: 0
+    javascript:
+      prompt: |
+        Was gibt `console.log([3, 1, 2].map(x => x > 1))` aus?
+
+  - id: with-tax
+    title: "Preise mit Steuer"
+    level: 1
+    prompt: |
+      Ein Laden speichert seine Preise ohne Mehrwertsteuer, in Cent. Schreib eine Funktion `with_tax(prices)`, die jeden Preis mit 19 % Mehrwertsteuer zurückgibt, als neue Liste: `with_tax([100, 300])` ergibt `[119, 357]`. Rechne mit ganzen Zahlen, `price * 119 / 100`; die Preise sind volle Euro, so geht es auf. Mit `map`, ohne eigene Schleife.
+    starter: |
+      def with_tax(prices)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "with_tax([100, 300, 1200])"
+          expect: "[119, 357, 1428]"
+        - call: "with_tax([])"
+          expect: "[]"
+          say: "Eine leere Liste bleibt leer."
+        - call: "with_tax([500])"
+          expect: "[595]"
+        - call: "with_tax([200, 200])"
+          expect: "[238, 238]"
+    feedback:
+      - when: { same_as: "def with_tax(prices)\n  result = []\n  prices.each { |price| result << price * 119 / 100 }\n  result\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times`, und das ist hier abgeschaltet. Nimm `map`: `prices.map { |price| … }` gibt die neue Liste gleich zurück."
+      - when: { same_as: "def with_tax(prices)\n  prices.map { |price| price * 19 / 100 }\nend\n" }
+        say: "Das ist nur die Steuer. Der Preis mit Steuer ist der Preis und die Steuer zusammen."
+    hint:
+      - "Für einen einzigen Preis: `100 * 119 / 100` ist 119. Dasselbe soll mit jedem Preis der Liste geschehen."
+      - "`prices.map { |price| … }` gibt die neue Liste zurück; in den Block kommt die Rechnung für einen Preis."
+    solution: |
+      ```ruby
+      def with_tax(prices)
+        prices.map { |price| price * 119 / 100 }
+      end
+      ```
+    python:
+      prompt: |
+        Ein Laden speichert seine Preise ohne Mehrwertsteuer, in Cent. Schreib eine Funktion `with_tax(prices)`, die jeden Preis mit 19 % Mehrwertsteuer zurückgibt, als neue Liste: `with_tax([100, 300])` ergibt `[119, 357]`. Rechne mit ganzen Zahlen, `price * 119 // 100`; die Preise sind volle Euro, so geht es auf. Mit `map` oder einer List Comprehension, ohne eigene Schleife.
+      starter: |
+        def with_tax(prices):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "with_tax([100, 300, 1200])"
+            expect: "[119, 357, 1428]"
+          - call: "with_tax([])"
+            expect: "[]"
+            say: "Eine leere Liste bleibt leer."
+          - call: "with_tax([500])"
+            expect: "[595]"
+          - call: "with_tax([200, 200])"
+            expect: "[238, 238]"
+      feedback:
+        - when: { same_as: "def with_tax(prices):\n    return list(map(lambda price: price * 19 // 100, prices))\n" }
+          say: "Das ist nur die Steuer. Der Preis mit Steuer ist der Preis und die Steuer zusammen."
+      hint:
+        - "Für einen einzigen Preis: `100 * 119 // 100` ist 119. Dasselbe soll mit jedem Preis der Liste geschehen."
+        - "`list(map(lambda price: …, prices))` gibt die neue Liste zurück; ohne `list(…)` ist es noch ein `map`-Objekt."
+      solution: |
+        ```python
+        def with_tax(prices):
+            return list(map(lambda price: price * 119 // 100, prices))
+        ```
+    javascript:
+      prompt: |
+        Ein Laden speichert seine Preise ohne Mehrwertsteuer, in Cent. Schreib eine Funktion `withTax(prices)`, die jeden Preis mit 19 % Mehrwertsteuer zurückgibt, als neue Liste: `withTax([100, 300])` ergibt `[119, 357]`. Rechne mit ganzen Zahlen, `price * 119 / 100`; die Preise sind volle Euro, so geht es auf. Mit `map`, ohne eigene Schleife.
+      starter: |
+        function withTax(prices) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "withTax([100, 300, 1200])"
+            expect: "[119, 357, 1428]"
+          - call: "withTax([])"
+            expect: "[]"
+            say: "Eine leere Liste bleibt leer."
+          - call: "withTax([500])"
+            expect: "[595]"
+          - call: "withTax([200, 200])"
+            expect: "[238, 238]"
+      feedback:
+        - when: { same_as: "function withTax(prices) {\n  const result = [];\n  prices.forEach(price => result.push(price * 119 / 100));\n  return result;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `map`: `prices.map(price => …)` gibt die neue Liste gleich zurück."
+        - when: { same_as: "function withTax(prices) {\n  return prices.map(price => price * 19 / 100);\n}\n" }
+          say: "Das ist nur die Steuer. Der Preis mit Steuer ist der Preis und die Steuer zusammen."
+      hint:
+        - "Für einen einzigen Preis: `100 * 119 / 100` ist 119. Dasselbe soll mit jedem Preis der Liste geschehen."
+        - "`prices.map(price => …)` gibt die neue Liste zurück; rechts vom Pfeil steht die Rechnung für einen Preis."
+      solution: |
+        ```javascript
+        function withTax(prices) {
+          return prices.map(price => price * 119 / 100);
+        }
+        ```
+
+  - id: lengths
+    title: "Wortlängen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `lengths(words)`, die zu jedem Wort seine Länge zurückgibt, als neue Liste: `lengths(['Igel', 'Wal'])` ergibt `[4, 3]`. Mit `map`, ohne eigene Schleife.
+    starter: |
+      def lengths(words)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "lengths(['Igel', 'Ameise', 'Wal'])"
+          expect: "[4, 6, 3]"
+        - call: "lengths([])"
+          expect: "[]"
+        - call: "lengths(['Straße'])"
+          expect: "[6]"
+        - call: "lengths(['', 'a'])"
+          expect: "[0, 1]"
+          say: "Das leere Wort hat die Länge 0."
+    feedback:
+      - when: { same_as: "def lengths(words)\n  result = []\n  words.each { |word| result << word.length }\n  result\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times`, und das ist hier abgeschaltet. Nimm `map`: `words.map { |word| … }` gibt die neue Liste gleich zurück."
+      - when: { same_as: "def lengths(words)\n  words.join.length\nend\n" }
+        say: "Du zählst alle Buchstaben zusammen. Gefragt ist eine Liste mit einer Länge für jedes Wort."
+    hint:
+      - "`'Igel'.length` ist 4. Was soll mit jedem Wort der Liste geschehen?"
+      - "`words.map { |word| … }`: In den Block kommt, was aus einem Wort werden soll."
+    solution: |
+      ```ruby
+      def lengths(words)
+        words.map { |word| word.length }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `lengths(words)`, die zu jedem Wort seine Länge zurückgibt, als neue Liste: `lengths(['Igel', 'Wal'])` ergibt `[4, 3]`. Mit `map` oder einer List Comprehension, ohne eigene Schleife.
+      starter: |
+        def lengths(words):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "lengths(['Igel', 'Ameise', 'Wal'])"
+            expect: "[4, 6, 3]"
+          - call: "lengths([])"
+            expect: "[]"
+          - call: "lengths(['Straße'])"
+            expect: "[6]"
+          - call: "lengths(['', 'a'])"
+            expect: "[0, 1]"
+            say: "Das leere Wort hat die Länge 0."
+      feedback:
+        - when: { same_as: "def lengths(words):\n    return len(''.join(words))\n" }
+          say: "Du zählst alle Buchstaben zusammen. Gefragt ist eine Liste mit einer Länge für jedes Wort."
+      hint:
+        - "`len('Igel')` ist 4. Was soll mit jedem Wort der Liste geschehen?"
+        - "`map` nimmt auch eine Funktion mit Namen, ohne Klammern dahinter: Welche Funktion gibt die Länge? Und `list(…)` drumherum."
+      solution: |
+        ```python
+        def lengths(words):
+            return list(map(len, words))
+        ```
+    javascript:
+      starter: |
+        function lengths(words) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "lengths(['Igel', 'Ameise', 'Wal'])"
+            expect: "[4, 6, 3]"
+          - call: "lengths([])"
+            expect: "[]"
+          - call: "lengths(['Straße'])"
+            expect: "[6]"
+          - call: "lengths(['', 'a'])"
+            expect: "[0, 1]"
+            say: "Das leere Wort hat die Länge 0."
+      feedback:
+        - when: { same_as: "function lengths(words) {\n  const result = [];\n  words.forEach(word => result.push(word.length));\n  return result;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `map`: `words.map(word => …)` gibt die neue Liste gleich zurück."
+        - when: { same_as: "function lengths(words) {\n  return words.join('').length;\n}\n" }
+          say: "Du zählst alle Buchstaben zusammen. Gefragt ist eine Liste mit einer Länge für jedes Wort."
+      hint:
+        - "`'Igel'.length` ist 4. Was soll mit jedem Wort der Liste geschehen?"
+        - "`words.map(word => …)`: Rechts vom Pfeil steht, was aus einem Wort werden soll."
+      solution: |
+        ```javascript
+        function lengths(words) {
+          return words.map(word => word.length);
+        }
+        ```
+
+  - id: evens
+    title: "Nur die geraden Zahlen"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `evens(numbers)`, die nur die geraden Zahlen der Liste behält, in ihrer Reihenfolge: `evens([1, 2, 3, 4])` ergibt `[2, 4]`. Mit `select`, ohne eigene Schleife.
+    starter: |
+      def evens(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "evens([1, 2, 3, 4, 5, 6])"
+          expect: "[2, 4, 6]"
+        - call: "evens([])"
+          expect: "[]"
+        - call: "evens([1, 3, 5])"
+          expect: "[]"
+        - call: "evens([0, -2, 7])"
+          expect: "[0, -2]"
+          say: "0 und -2 sind auch gerade."
+    feedback:
+      - when: { same_as: "def evens(numbers)\n  numbers.map { |x| x.even? }\nend\n" }
+        say: "Das ist `map`: Es gibt für jede Zahl `true` oder `false`, wie in der Vorhersage oben. Behalten, was passt, tut `select`."
+      - when: { same_as: "def evens(numbers)\n  result = []\n  numbers.each { |x| result << x if x.even? }\n  result\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times`, und das ist hier abgeschaltet. Nimm `select`: `numbers.select { |x| … }` gibt die neue Liste gleich zurück."
+    hint:
+      - "`select` fragt jede Zahl: Soll sie bleiben? Der Block gibt dafür `true` oder `false` zurück."
+      - "`x.even?` fragt, ob `x` gerade ist: `numbers.select { |x| … }`."
+    solution: |
+      ```ruby
+      def evens(numbers)
+        numbers.select { |x| x.even? }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `evens(numbers)`, die nur die geraden Zahlen der Liste behält, in ihrer Reihenfolge: `evens([1, 2, 3, 4])` ergibt `[2, 4]`. Mit `filter` oder einer List Comprehension, ohne eigene Schleife.
+      starter: |
+        def evens(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "evens([1, 2, 3, 4, 5, 6])"
+            expect: "[2, 4, 6]"
+          - call: "evens([])"
+            expect: "[]"
+          - call: "evens([1, 3, 5])"
+            expect: "[]"
+          - call: "evens([0, -2, 7])"
+            expect: "[0, -2]"
+            say: "0 und -2 sind auch gerade."
+      feedback:
+        - when: { same_as: "def evens(numbers):\n    return list(map(lambda x: x % 2 == 0, numbers))\n" }
+          say: "Das ist `map`: Es gibt für jede Zahl `True` oder `False`, wie in der Vorhersage oben. Behalten, was passt, tut `filter`."
+      hint:
+        - "`filter` fragt jede Zahl: Soll sie bleiben? Das Lambda gibt dafür `True` oder `False` zurück."
+        - "Gerade ist eine Zahl, wenn beim Teilen durch 2 kein Rest bleibt: `x % 2 == 0`. Und `list(…)` drumherum."
+      solution: |
+        ```python
+        def evens(numbers):
+            return list(filter(lambda x: x % 2 == 0, numbers))
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `evens(numbers)`, die nur die geraden Zahlen der Liste behält, in ihrer Reihenfolge: `evens([1, 2, 3, 4])` ergibt `[2, 4]`. Mit `filter`, ohne eigene Schleife.
+      starter: |
+        function evens(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "evens([1, 2, 3, 4, 5, 6])"
+            expect: "[2, 4, 6]"
+          - call: "evens([])"
+            expect: "[]"
+          - call: "evens([1, 3, 5])"
+            expect: "[]"
+          - call: "evens([0, -2, 7])"
+            expect: "[0, -2]"
+            say: "0 und -2 sind auch gerade."
+      feedback:
+        - when: { same_as: "function evens(numbers) {\n  return numbers.map(x => x % 2 === 0);\n}\n" }
+          say: "Das ist `map`: Es gibt für jede Zahl `true` oder `false`, wie in der Vorhersage oben. Behalten, was passt, tut `filter`."
+        - when: { same_as: "function evens(numbers) {\n  const result = [];\n  numbers.forEach(x => {\n    if (x % 2 === 0) {\n      result.push(x);\n    }\n  });\n  return result;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `filter`: `numbers.filter(x => …)` gibt die neue Liste gleich zurück."
+      hint:
+        - "`filter` fragt jede Zahl: Soll sie bleiben? Die Arrow Function gibt dafür `true` oder `false` zurück."
+        - "Gerade ist eine Zahl, wenn beim Teilen durch 2 kein Rest bleibt: `x % 2 === 0`."
+      solution: |
+        ```javascript
+        function evens(numbers) {
+          return numbers.filter(x => x % 2 === 0);
+        }
+        ```
+
+  - id: with-letter
+    title: "Wörter mit einem Buchstaben"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `with_letter(words, letter)`, die die Wörter behält, in denen `letter` vorkommt, in ihrer Reihenfolge: `with_letter(['Hund', 'Katze', 'Maus'], 'a')` ergibt `['Katze', 'Maus']`. Groß und klein zählt: `'A'` ist nicht `'a'`. Mit `select`, ohne eigene Schleife.
+    starter: |
+      def with_letter(words, letter)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "with_letter(['Hund', 'Katze', 'Maus'], 'a')"
+          expect: "['Katze', 'Maus']"
+        - call: "with_letter([], 'a')"
+          expect: "[]"
+        - call: "with_letter(['Igel', 'Wal'], 'x')"
+          expect: "[]"
+        - call: "with_letter(['Ameise', 'Wal'], 'a')"
+          expect: "['Wal']"
+          say: "Groß und klein sind verschiedene Zeichen: In 'Ameise' steht ein 'A', aber kein 'a'."
+        - call: "with_letter(['Ananas', 'Kiwi'], 'n')"
+          expect: "['Ananas']"
+          say: "Ein Wort kommt einmal ins Ergebnis, auch wenn der Buchstabe öfter darin steht."
+    feedback:
+      - when: { same_as: "def with_letter(words, letter)\n  words.select { |word| word.downcase.include?(letter) }\nend\n" }
+        say: "Du machst die Wörter klein, bevor du suchst. Hier zählt Groß und klein: `'A'` ist nicht `'a'`."
+      - when: { same_as: "def with_letter(words, letter)\n  result = []\n  words.each { |word| result << word if word.include?(letter) }\n  result\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times`, und das ist hier abgeschaltet. Nimm `select`: `words.select { |word| … }` gibt die neue Liste gleich zurück."
+    hint:
+      - "Der Block bekommt ein Wort und sagt `true` oder `false`: Steht `letter` darin?"
+      - "Im Block darfst du `letter` benutzen, obwohl es ein Parameter von `with_letter` ist: Der Block merkt es sich wie die Closure oben. `word.include?(letter)` fragt, ob es im Wort steht."
+    solution: |
+      ```ruby
+      def with_letter(words, letter)
+        words.select { |word| word.include?(letter) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `with_letter(words, letter)`, die die Wörter behält, in denen `letter` vorkommt, in ihrer Reihenfolge: `with_letter(['Hund', 'Katze', 'Maus'], 'a')` ergibt `['Katze', 'Maus']`. Groß und klein zählt: `'A'` ist nicht `'a'`. Mit `filter` oder einer List Comprehension, ohne eigene Schleife.
+      starter: |
+        def with_letter(words, letter):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "with_letter(['Hund', 'Katze', 'Maus'], 'a')"
+            expect: "['Katze', 'Maus']"
+          - call: "with_letter([], 'a')"
+            expect: "[]"
+          - call: "with_letter(['Igel', 'Wal'], 'x')"
+            expect: "[]"
+          - call: "with_letter(['Ameise', 'Wal'], 'a')"
+            expect: "['Wal']"
+            say: "Groß und klein sind verschiedene Zeichen: In 'Ameise' steht ein 'A', aber kein 'a'."
+          - call: "with_letter(['Ananas', 'Kiwi'], 'n')"
+            expect: "['Ananas']"
+            say: "Ein Wort kommt einmal ins Ergebnis, auch wenn der Buchstabe öfter darin steht."
+      feedback:
+        - when: { same_as: "def with_letter(words, letter):\n    return list(filter(lambda word: letter in word.lower(), words))\n" }
+          say: "Du machst die Wörter klein, bevor du suchst. Hier zählt Groß und klein: `'A'` ist nicht `'a'`."
+      hint:
+        - "Das Lambda bekommt ein Wort und sagt `True` oder `False`: Steht `letter` darin?"
+        - "Im Lambda darfst du `letter` benutzen, obwohl es ein Parameter von `with_letter` ist: Das Lambda merkt es sich wie die Closure oben. `letter in word` fragt, ob es im Wort steht."
+      solution: |
+        ```python
+        def with_letter(words, letter):
+            return list(filter(lambda word: letter in word, words))
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `withLetter(words, letter)`, die die Wörter behält, in denen `letter` vorkommt, in ihrer Reihenfolge: `withLetter(['Hund', 'Katze', 'Maus'], 'a')` ergibt `['Katze', 'Maus']`. Groß und klein zählt: `'A'` ist nicht `'a'`. Mit `filter`, ohne eigene Schleife.
+      starter: |
+        function withLetter(words, letter) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "withLetter(['Hund', 'Katze', 'Maus'], 'a')"
+            expect: "['Katze', 'Maus']"
+          - call: "withLetter([], 'a')"
+            expect: "[]"
+          - call: "withLetter(['Igel', 'Wal'], 'x')"
+            expect: "[]"
+          - call: "withLetter(['Ameise', 'Wal'], 'a')"
+            expect: "['Wal']"
+            say: "Groß und klein sind verschiedene Zeichen: In 'Ameise' steht ein 'A', aber kein 'a'."
+          - call: "withLetter(['Ananas', 'Kiwi'], 'n')"
+            expect: "['Ananas']"
+            say: "Ein Wort kommt einmal ins Ergebnis, auch wenn der Buchstabe öfter darin steht."
+      feedback:
+        - when: { same_as: "function withLetter(words, letter) {\n  return words.filter(word => word.toLowerCase().includes(letter));\n}\n" }
+          say: "Du machst die Wörter klein, bevor du suchst. Hier zählt Groß und klein: `'A'` ist nicht `'a'`."
+        - when: { same_as: "function withLetter(words, letter) {\n  const result = [];\n  words.forEach(word => {\n    if (word.includes(letter)) {\n      result.push(word);\n    }\n  });\n  return result;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `filter`: `words.filter(word => …)` gibt die neue Liste gleich zurück."
+      hint:
+        - "Die Funktion bekommt ein Wort und sagt `true` oder `false`: Steht `letter` darin?"
+        - "In der Arrow Function darfst du `letter` benutzen, obwohl es ein Parameter von `withLetter` ist: Sie merkt es sich wie die Closure oben. `word.includes(letter)` fragt, ob es im Wort steht."
+      solution: |
+        ```javascript
+        function withLetter(words, letter) {
+          return words.filter(word => word.includes(letter));
+        }
+        ```
+
+  - id: passed
+    title: "Bestanden"
+    level: 2
+    prompt: |
+      Jedes Ergebnis einer Klausur ist ein Paar aus Name und Punkten, von 0 bis 15. Schreib eine Funktion `passed(results)`, die die Namen derer zurückgibt, die bestanden haben, also mindestens 5 Punkte, in ihrer Reihenfolge: `passed([['Ada', 12], ['Alan', 4]])` ergibt `['Ada']`. Erst `select`, dann `map`, ohne eigene Schleife.
+    starter: |
+      def passed(results)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "passed([['Ada', 12], ['Alan', 4], ['Grace', 5]])"
+          expect: "['Ada', 'Grace']"
+        - call: "passed([])"
+          expect: "[]"
+        - call: "passed([['Linus', 0]])"
+          expect: "[]"
+        - call: "passed([['Edsger', 15], ['Barbara', 7]])"
+          expect: "['Edsger', 'Barbara']"
+    feedback:
+      - when: { same_as: "def passed(results)\n  results.select { |name, points| points > 5 }.map { |name, points| name }\nend\n" }
+        say: "Mit genau 5 Punkten ist die Klausur schon bestanden."
+      - when: { same_as: "def passed(results)\n  results.select { |name, points| points >= 5 }\nend\n" }
+        say: "Du gibst die ganzen Paare zurück. Gefragt sind nur die Namen: Nach `select` macht `map` aus jedem Paar seinen Namen."
+      - when: { same_as: "def passed(results)\n  names = []\n  results.each { |name, points| names << name if points >= 5 }\n  names\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times`, und das ist hier abgeschaltet. Nimm `select` und danach `map`."
+    hint:
+      - "Zwei Schritte: Erst behalten, wer bestanden hat; dann aus jedem übrigen Paar den Namen machen."
+      - "Ein Block darf ein Paar gleich in zwei Namen auspacken: `{ |name, points| … }`."
+    solution: |
+      ```ruby
+      def passed(results)
+        results
+          .select { |name, points| points >= 5 }
+          .map { |name, points| name }
+      end
+      ```
+    python:
+      prompt: |
+        Jedes Ergebnis einer Klausur ist ein Paar aus Name und Punkten, von 0 bis 15. Schreib eine Funktion `passed(results)`, die die Namen derer zurückgibt, die bestanden haben, also mindestens 5 Punkte, in ihrer Reihenfolge: `passed([['Ada', 12], ['Alan', 4]])` ergibt `['Ada']`. Erst `filter`, dann `map`, oder eine List Comprehension, ohne eigene Schleife.
+      starter: |
+        def passed(results):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "passed([['Ada', 12], ['Alan', 4], ['Grace', 5]])"
+            expect: "['Ada', 'Grace']"
+          - call: "passed([])"
+            expect: "[]"
+          - call: "passed([['Linus', 0]])"
+            expect: "[]"
+          - call: "passed([['Edsger', 15], ['Barbara', 7]])"
+            expect: "['Edsger', 'Barbara']"
+      feedback:
+        - when: { same_as: "def passed(results):\n    return [name for name, points in results if points > 5]\n" }
+          say: "Mit genau 5 Punkten ist die Klausur schon bestanden."
+        - when: { same_as: "def passed(results):\n    return list(filter(lambda result: result[1] >= 5, results))\n" }
+          say: "Du gibst die ganzen Paare zurück. Gefragt sind nur die Namen: Nach `filter` macht `map` aus jedem Paar seinen Namen."
+      hint:
+        - "Zwei Schritte: Erst behalten, wer bestanden hat; dann aus jedem übrigen Paar den Namen machen."
+        - "Ein Paar `result` hat den Namen in `result[0]` und die Punkte in `result[1]`. In einer List Comprehension kann man es gleich auspacken: `for name, points in results`."
+      solution: |
+        ```python
+        def passed(results):
+            good = filter(lambda result: result[1] >= 5, results)
+            return list(map(lambda result: result[0], good))
+        ```
+    javascript:
+      prompt: |
+        Jedes Ergebnis einer Klausur ist ein Paar aus Name und Punkten, von 0 bis 15. Schreib eine Funktion `passed(results)`, die die Namen derer zurückgibt, die bestanden haben, also mindestens 5 Punkte, in ihrer Reihenfolge: `passed([['Ada', 12], ['Alan', 4]])` ergibt `['Ada']`. Erst `filter`, dann `map`, ohne eigene Schleife.
+      starter: |
+        function passed(results) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "passed([['Ada', 12], ['Alan', 4], ['Grace', 5]])"
+            expect: "['Ada', 'Grace']"
+          - call: "passed([])"
+            expect: "[]"
+          - call: "passed([['Linus', 0]])"
+            expect: "[]"
+          - call: "passed([['Edsger', 15], ['Barbara', 7]])"
+            expect: "['Edsger', 'Barbara']"
+      feedback:
+        - when: { same_as: "function passed(results) {\n  return results.filter(([name, points]) => points > 5).map(([name, points]) => name);\n}\n" }
+          say: "Mit genau 5 Punkten ist die Klausur schon bestanden."
+        - when: { same_as: "function passed(results) {\n  return results.filter(([name, points]) => points >= 5);\n}\n" }
+          say: "Du gibst die ganzen Paare zurück. Gefragt sind nur die Namen: Nach `filter` macht `map` aus jedem Paar seinen Namen."
+        - when: { same_as: "function passed(results) {\n  const names = [];\n  results.forEach(([name, points]) => {\n    if (points >= 5) {\n      names.push(name);\n    }\n  });\n  return names;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `filter` und danach `map`."
+      hint:
+        - "Zwei Schritte: Erst behalten, wer bestanden hat; dann aus jedem übrigen Paar den Namen machen."
+        - "Eine Arrow Function darf ein Paar gleich in zwei Namen auspacken: `([name, points]) => …`."
+      solution: |
+        ```javascript
+        function passed(results) {
+          return results
+            .filter(([name, points]) => points >= 5)
+            .map(([name, points]) => name);
+        }
+        ```
+
+  - id: predict-empty
+    title: "Die leere Liste ohne Startwert"
+    level: 1
+    prediction: true
+    prompt: |
+      Was geschieht bei `p [].reduce { |sum, x| sum + x }`?
+    check:
+      type: choice
+      options: ["Es erscheint 0.", "Es erscheint nil.", "Das Programm bricht mit einem Fehler ab."]
+      correct: 1
+    python:
+      prompt: |
+        Was geschieht bei `print(reduce(lambda total, x: total + x, []))`?
+      check:
+        type: choice
+        options: ["Es erscheint 0.", "Es erscheint None.", "Das Programm bricht mit einem Fehler ab."]
+        correct: 2
+    javascript:
+      prompt: |
+        Was geschieht bei `console.log([].reduce((total, x) => total + x))`?
+      check:
+        type: choice
+        options: ["Es erscheint 0.", "Es erscheint undefined.", "Das Programm bricht mit einem Fehler ab."]
+        correct: 2
+
+  - id: product
+    title: "Das Produkt"
+    level: 1
+    prompt: |
+      Schreib eine Funktion `product(numbers)`, die alle Zahlen der Liste miteinander multipliziert, mit `reduce`: `product([2, 3, 4])` ergibt `24`. Für die leere Liste ergibt sie `1`.
+    starter: |
+      def product(numbers)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "product([2, 3, 4])"
+          expect: "24"
+        - call: "product([])"
+          expect: "1"
+          say: "Die leere Liste: Hat dein `reduce` einen Startwert, und zwar einen, der ein Produkt nicht verändert?"
+        - call: "product([7])"
+          expect: "7"
+        - call: "product([5, 0, 3])"
+          expect: "0"
+        - call: "product([-2, 3])"
+          expect: "-6"
+    feedback:
+      - when: { same_as: "def product(numbers)\n  numbers.reduce(0) { |result, x| result * x }\nend\n" }
+        say: "Du fängst bei 0 an, und 0 multipliziert mit jeder Zahl bleibt 0. Mit welcher Zahl kann man multiplizieren, ohne dass sich etwas ändert?"
+    hint:
+      - "Von Hand: ein Startwert, dann mal 2, mal 3, mal 4. Welcher Startwert lässt das Ergebnis 24, und was kommt dann bei der leeren Liste heraus?"
+      - "`numbers.reduce(…) { |result, x| result * x }`: Was gehört in die Klammer?"
+    solution: |
+      ```ruby
+      def product(numbers)
+        numbers.reduce(1) { |result, x| result * x }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `product(numbers)`, die alle Zahlen der Liste miteinander multipliziert, mit `reduce` aus `functools`: `product([2, 3, 4])` ergibt `24`. Für die leere Liste ergibt sie `1`. Ohne `math.prod`.
+      starter: |
+        from functools import reduce
+
+        def product(numbers):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [math.prod]
+        cases:
+          - call: "product([2, 3, 4])"
+            expect: "24"
+          - call: "product([])"
+            expect: "1"
+            say: "Die leere Liste: Hat dein `reduce` einen Startwert, und zwar einen, der ein Produkt nicht verändert?"
+          - call: "product([7])"
+            expect: "7"
+          - call: "product([5, 0, 3])"
+            expect: "0"
+          - call: "product([-2, 3])"
+            expect: "-6"
+      feedback:
+        - when: { same_as: "from functools import reduce\n\ndef product(numbers):\n    return reduce(lambda result, x: result * x, numbers, 0)\n" }
+          say: "Du fängst bei 0 an, und 0 multipliziert mit jeder Zahl bleibt 0. Mit welcher Zahl kann man multiplizieren, ohne dass sich etwas ändert?"
+      hint:
+        - "Von Hand: ein Startwert, dann mal 2, mal 3, mal 4. Welcher Startwert lässt das Ergebnis 24, und was kommt dann bei der leeren Liste heraus?"
+        - "`reduce(lambda result, x: result * x, numbers, …)`: Was gehört als letztes Argument hinein?"
+      solution: |
+        ```python
+        from functools import reduce
+
+        def product(numbers):
+            return reduce(lambda result, x: result * x, numbers, 1)
+        ```
+    javascript:
+      starter: |
+        function product(numbers) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "product([2, 3, 4])"
+            expect: "24"
+          - call: "product([])"
+            expect: "1"
+            say: "Die leere Liste: Hat dein `reduce` einen Startwert, und zwar einen, der ein Produkt nicht verändert?"
+          - call: "product([7])"
+            expect: "7"
+          - call: "product([5, 0, 3])"
+            expect: "0"
+          - call: "product([-2, 3])"
+            expect: "-6"
+      feedback:
+        - when: { same_as: "function product(numbers) {\n  return numbers.reduce((result, x) => result * x, 0);\n}\n" }
+          say: "Du fängst bei 0 an, und 0 multipliziert mit jeder Zahl bleibt 0. Mit welcher Zahl kann man multiplizieren, ohne dass sich etwas ändert?"
+      hint:
+        - "Von Hand: ein Startwert, dann mal 2, mal 3, mal 4. Welcher Startwert lässt das Ergebnis 24, und was kommt dann bei der leeren Liste heraus?"
+        - "`numbers.reduce((result, x) => result * x, …)`: Was gehört als letztes Argument hinein?"
+      solution: |
+        ```javascript
+        function product(numbers) {
+          return numbers.reduce((result, x) => result * x, 1);
+        }
+        ```
+
+  - id: longest
+    title: "Das längste Wort"
+    level: 2
+    prompt: |
+      Schreib eine Funktion `longest(words)`, die das längste Wort zurückgibt, mit `reduce`: `longest(['Igel', 'Ameise', 'Wal'])` ergibt `'Ameise'`. Sind mehrere gleich lang, gewinnt das erste. Die Liste ist nie leer. Ohne `max_by`, `max` und `sort`.
+    starter: |
+      def longest(words)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#max, Array#max_by, Array#min_by, Array#sort, Array#sort_by]
+      cases:
+        - call: "longest(['Igel', 'Ameise', 'Wal'])"
+          expect: "'Ameise'"
+        - call: "longest(['Hut'])"
+          expect: "'Hut'"
+        - call: "longest(['ab', 'cd', 'e'])"
+          expect: "'ab'"
+          say: "Zwei Wörter sind gleich lang: Das erste gewinnt."
+        - call: "longest(['a', 'bbb', 'cc', 'dddd'])"
+          expect: "'dddd'"
+          say: "Das längste Wort steht ganz hinten."
+    feedback:
+      - when: { same_as: "def longest(words)\n  words.reduce { |best, word| word.length >= best.length ? word : best }\nend\n" }
+        say: "Bei gleicher Länge nimmt dein Code das spätere Wort. Das erste soll bleiben: Nimm das neue Wort nur, wenn es wirklich länger ist."
+    hint:
+      - "Das Ergebnis bis hierher ist das längste Wort bis hierher. Was soll mit ihm geschehen, wenn das nächste Wort kommt?"
+      - "Ohne Startwert fängt `reduce` mit dem ersten Wort an; die Liste ist nie leer, das passt. Im Block vergleichst du zwei Längen und gibst eines der beiden Wörter zurück, nie eine Zahl."
+    solution: |
+      ```ruby
+      def longest(words)
+        words.reduce { |best, word| word.length > best.length ? word : best }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `longest(words)`, die das längste Wort zurückgibt, mit `reduce` aus `functools`: `longest(['Igel', 'Ameise', 'Wal'])` ergibt `'Ameise'`. Sind mehrere gleich lang, gewinnt das erste. Die Liste ist nie leer. Ohne `max` und `sorted`.
+      starter: |
+        from functools import reduce
+
+        def longest(words):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [max, sorted, list.sort]
+        cases:
+          - call: "longest(['Igel', 'Ameise', 'Wal'])"
+            expect: "'Ameise'"
+          - call: "longest(['Hut'])"
+            expect: "'Hut'"
+          - call: "longest(['ab', 'cd', 'e'])"
+            expect: "'ab'"
+            say: "Zwei Wörter sind gleich lang: Das erste gewinnt."
+          - call: "longest(['a', 'bbb', 'cc', 'dddd'])"
+            expect: "'dddd'"
+            say: "Das längste Wort steht ganz hinten."
+      feedback:
+        - when: { same_as: "from functools import reduce\n\ndef longest(words):\n    return reduce(lambda best, word: word if len(word) >= len(best) else best, words)\n" }
+          say: "Bei gleicher Länge nimmt dein Code das spätere Wort. Das erste soll bleiben: Nimm das neue Wort nur, wenn es wirklich länger ist."
+      hint:
+        - "Das Ergebnis bis hierher ist das längste Wort bis hierher. Was soll mit ihm geschehen, wenn das nächste Wort kommt?"
+        - "Ohne Startwert fängt `reduce` mit dem ersten Wort an; die Liste ist nie leer, das passt. Ein Lambda kann wählen: `a if bedingung else b`. Es gibt eines der beiden Wörter zurück, nie eine Zahl."
+      solution: |
+        ```python
+        from functools import reduce
+
+        def longest(words):
+            return reduce(lambda best, word: word if len(word) > len(best) else best, words)
+        ```
+    javascript:
+      starter: |
+        function longest(words) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.sort, Array.prototype.toSorted, Array.prototype.forEach, Math.max]
+        cases:
+          - call: "longest(['Igel', 'Ameise', 'Wal'])"
+            expect: "'Ameise'"
+          - call: "longest(['Hut'])"
+            expect: "'Hut'"
+          - call: "longest(['ab', 'cd', 'e'])"
+            expect: "'ab'"
+            say: "Zwei Wörter sind gleich lang: Das erste gewinnt."
+          - call: "longest(['a', 'bbb', 'cc', 'dddd'])"
+            expect: "'dddd'"
+            say: "Das längste Wort steht ganz hinten."
+      feedback:
+        - when: { same_as: "function longest(words) {\n  return words.reduce((best, word) => word.length >= best.length ? word : best);\n}\n" }
+          say: "Bei gleicher Länge nimmt dein Code das spätere Wort. Das erste soll bleiben: Nimm das neue Wort nur, wenn es wirklich länger ist."
+      hint:
+        - "Das Ergebnis bis hierher ist das längste Wort bis hierher. Was soll mit ihm geschehen, wenn das nächste Wort kommt?"
+        - "Ohne Startwert fängt `reduce` mit dem ersten Wort an; die Liste ist nie leer, das passt. Eine Arrow Function kann wählen: `bedingung ? a : b`. Sie gibt eines der beiden Wörter zurück, nie eine Zahl."
+      solution: |
+        ```javascript
+        function longest(words) {
+          return words.reduce((best, word) => word.length > best.length ? word : best);
+        }
+        ```
+
+  - id: totals
+    title: "Wer hat wie viel bezahlt?"
+    level: 3
+    prompt: |
+      Auf einer Klassenfahrt schreibt jemand jede Zahlung auf, als Paar aus Name und Betrag in Cent. Schreib eine Funktion `totals(payments)`, die mit `reduce` zusammenrechnet, wie viel jede Person bezahlt hat, als Hash: `totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])` ergibt `{ 'Ada' => 450, 'Alan' => 200 }`. Ohne `group_by` und `tally`.
+    starter: |
+      def totals(payments)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#group_by, Array#tally]
+      cases:
+        - call: "totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])"
+          expect: "{ 'Ada' => 450, 'Alan' => 200 }"
+        - call: "totals([])"
+          expect: "{}"
+          say: "Keine Zahlungen: ein leerer Hash."
+        - call: "totals([['Grace', 500]])"
+          expect: "{ 'Grace' => 500 }"
+        - call: "totals([['Ada', 100], ['Ada', 100], ['Ada', 100]])"
+          expect: "{ 'Ada' => 300 }"
+          say: "Kommt ein Name wieder, zählst du dazu."
+    feedback:
+      - when: { same_as: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = sums.fetch(name, 0) + amount\n  end\nend\n" }
+        say: "Dein Block gibt die Zahl zurück, die er gerade eingetragen hat, und die ist beim nächsten Element das Ergebnis bis hierher, statt des Hashes. Schreib `sums` in die letzte Zeile des Blocks."
+      - when: { same_as: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = amount\n    sums\n  end\nend\n" }
+        say: "Kommt ein Name ein zweites Mal, ersetzt dein Code den Betrag, statt ihn dazuzuzählen."
+    hint:
+      - "Der Startwert ist ein leerer Hash, `{}`. Was soll bei der ersten Zahlung, `['Ada', 300]`, in ihm stehen, und was danach bei `['Alan', 200]`?"
+      - "Im Block zählst du den Betrag zu dem dazu, was die Person schon hat; `sums.fetch(name, 0)` ist 0, wenn sie noch nicht darin steht. Das Paar packt der Block gleich aus: `|sums, (name, amount)|`."
+      - "Was der Block zurückgibt, ist beim nächsten Element `sums`. Das soll der Hash sein:\n\n```ruby\npayments.reduce({}) do |sums, (name, amount)|\n  # hier: den Betrag eintragen\n  sums\nend\n```"
+    solution: |
+      ```ruby
+      def totals(payments)
+        payments.reduce({}) do |sums, (name, amount)|
+          sums[name] = sums.fetch(name, 0) + amount
+          sums
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Auf einer Klassenfahrt schreibt jemand jede Zahlung auf, als Paar aus Name und Betrag in Cent. Schreib eine Funktion `totals(payments)`, die mit `reduce` aus `functools` zusammenrechnet, wie viel jede Person bezahlt hat, als Dictionary: `totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])` ergibt `{'Ada': 450, 'Alan': 200}`.
+      starter: |
+        from functools import reduce
+
+        def totals(payments):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])"
+            expect: "{'Ada': 450, 'Alan': 200}"
+          - call: "totals([])"
+            expect: "{}"
+            say: "Keine Zahlungen: ein leeres Dictionary."
+          - call: "totals([['Grace', 500]])"
+            expect: "{'Grace': 500}"
+          - call: "totals([['Ada', 100], ['Ada', 100], ['Ada', 100]])"
+            expect: "{'Ada': 300}"
+            say: "Kommt ein Name wieder, zählst du dazu."
+      feedback:
+        - when: { same_as: "from functools import reduce\n\ndef add(sums, payment):\n    name, amount = payment\n    sums[name] = sums.get(name, 0) + amount\n\ndef totals(payments):\n    return reduce(add, payments, {})\n" }
+          say: "Deine Funktion für `reduce` trägt ein, gibt aber nichts zurück; beim nächsten Element ist das Ergebnis bis hierher dann `None`. Schreib `return sums` an ihr Ende."
+        - when: { same_as: "from functools import reduce\n\ndef add(sums, payment):\n    name, amount = payment\n    sums[name] = amount\n    return sums\n\ndef totals(payments):\n    return reduce(add, payments, {})\n" }
+          say: "Kommt ein Name ein zweites Mal, ersetzt dein Code den Betrag, statt ihn dazuzuzählen."
+      hint:
+        - "Der Startwert ist ein leeres Dictionary, `{}`. Was soll bei der ersten Zahlung, `['Ada', 300]`, in ihm stehen, und was danach bei `['Alan', 200]`?"
+        - "In ein Lambda passt keine Zuweisung. Schreib darum eine kleine Funktion mit `def`, die `sums` und eine Zahlung bekommt, den Betrag dazuzählt und `sums` zurückgibt; `sums.get(name, 0)` ist 0, wenn die Person noch nicht darin steht. `reduce` bekommt sie ohne Klammern."
+        - "Ein Gerüst:\n\n```python\ndef add(sums, payment):\n    name, amount = payment\n    # hier: den Betrag eintragen\n    return sums\n\ndef totals(payments):\n    return reduce(add, payments, {})\n```"
+      solution: |
+        ```python
+        from functools import reduce
+
+        def add(sums, payment):
+            name, amount = payment
+            sums[name] = sums.get(name, 0) + amount
+            return sums
+
+        def totals(payments):
+            return reduce(add, payments, {})
+        ```
+    javascript:
+      prompt: |
+        Auf einer Klassenfahrt schreibt jemand jede Zahlung auf, als Paar aus Name und Betrag in Cent. Schreib eine Funktion `totals(payments)`, die mit `reduce` zusammenrechnet, wie viel jede Person bezahlt hat, als Objekt: `totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])` ergibt `{ Ada: 450, Alan: 200 }`. Ohne `Object.groupBy`.
+      starter: |
+        function totals(payments) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Object.groupBy, Array.prototype.forEach]
+        cases:
+          - call: "totals([['Ada', 300], ['Alan', 200], ['Ada', 150]])"
+            expect: "{ Ada: 450, Alan: 200 }"
+          - call: "totals([])"
+            expect: "{}"
+            say: "Keine Zahlungen: ein leeres Objekt."
+          - call: "totals([['Grace', 500]])"
+            expect: "{ Grace: 500 }"
+          - call: "totals([['Ada', 100], ['Ada', 100], ['Ada', 100]])"
+            expect: "{ Ada: 300 }"
+            say: "Kommt ein Name wieder, zählst du dazu."
+      feedback:
+        - when: { same_as: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => sums[name] = (sums[name] || 0) + amount, {});\n}\n" }
+          say: "Deine Funktion gibt die Zahl zurück, die sie gerade eingetragen hat, und die ist beim nächsten Element das Ergebnis bis hierher, statt des Objekts. Schreib die Funktion mit geschweiften Klammern und `return sums;` am Ende."
+        - when: { same_as: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => {\n    sums[name] = amount;\n    return sums;\n  }, {});\n}\n" }
+          say: "Kommt ein Name ein zweites Mal, ersetzt dein Code den Betrag, statt ihn dazuzuzählen."
+      hint:
+        - "Der Startwert ist ein leeres Objekt, `{}`. Was soll bei der ersten Zahlung, `['Ada', 300]`, in ihm stehen, und was danach bei `['Alan', 200]`?"
+        - "Die Arrow Function zählt den Betrag zu dem dazu, was die Person schon hat; `sums[name] || 0` ist 0, wenn sie noch nicht darin steht. Das Paar packt sie gleich aus: `(sums, [name, amount]) => …`."
+        - "Mit mehr als einem Ausdruck braucht die Arrow Function geschweifte Klammern und ein `return`:\n\n```javascript\npayments.reduce((sums, [name, amount]) => {\n  // hier: den Betrag eintragen\n  return sums;\n}, {});\n```"
+      solution: |
+        ```javascript
+        function totals(payments) {
+          return payments.reduce((sums, [name, amount]) => {
+            sums[name] = (sums[name] || 0) + amount;
+            return sums;
+          }, {});
+        }
+        ```
+
+  - id: category-total
+    title: "Was eine Art Ware kostet"
+    level: 3
+    prompt: |
+      Jede Ware im Warenkorb ist ein Hash mit Name, Art, Preis in Cent und Stückzahl. Schreib eine Funktion `category_total(items, category)`, die als Kette ausrechnet, was alle Waren einer Art zusammen kosten: behalten, was zur Art gehört, für jede Ware Preis mal Stückzahl, zusammenzählen. Die Prüfung ruft sie unter anderem mit diesem Warenkorb auf:
+
+      ```ruby
+      items = [
+        { 'name' => 'Heft', 'category' => 'Schreibwaren', 'price' => 120, 'count' => 5 },
+        { 'name' => 'Stift', 'category' => 'Schreibwaren', 'price' => 80, 'count' => 10 },
+        { 'name' => 'Apfel', 'category' => 'Obst', 'price' => 50, 'count' => 6 },
+      ]
+      ```
+
+      `category_total(items, 'Obst')` ergibt `300`, `category_total(items, 'Schreibwaren')` ergibt `1400`. Gibt es keine Ware der Art, ergibt sie `0`.
+    starter: |
+      def category_total(items, category)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "items = [{ 'name' => 'Heft', 'category' => 'Schreibwaren', 'price' => 120, 'count' => 5 }, { 'name' => 'Stift', 'category' => 'Schreibwaren', 'price' => 80, 'count' => 10 }, { 'name' => 'Apfel', 'category' => 'Obst', 'price' => 50, 'count' => 6 }]; category_total(items, 'Schreibwaren')"
+          expect: "1400"
+        - call: "items = [{ 'name' => 'Heft', 'category' => 'Schreibwaren', 'price' => 120, 'count' => 5 }, { 'name' => 'Stift', 'category' => 'Schreibwaren', 'price' => 80, 'count' => 10 }, { 'name' => 'Apfel', 'category' => 'Obst', 'price' => 50, 'count' => 6 }]; category_total(items, 'Obst')"
+          expect: "300"
+        - call: "category_total([{ 'name' => 'Birne', 'category' => 'Obst', 'price' => 70, 'count' => 2 }, { 'name' => 'Lineal', 'category' => 'Schreibwaren', 'price' => 250, 'count' => 1 }, { 'name' => 'Kiwi', 'category' => 'Obst', 'price' => 40, 'count' => 3 }], 'Obst')"
+          expect: "260"
+        - call: "category_total([{ 'name' => 'Apfel', 'category' => 'Obst', 'price' => 50, 'count' => 6 }], 'Spielzeug')"
+          expect: "0"
+          say: "Keine Ware dieser Art: Zusammen kostet sie 0."
+        - call: "category_total([], 'Obst')"
+          expect: "0"
+    feedback:
+      - when: { same_as: "def category_total(items, category)\n  items.select { |item| item['category'] == category }.map { |item| item['price'] }.sum\nend\n" }
+        say: "Du zählst jeden Preis einmal. Es sind aber `count` Stück: Eine Ware kostet ihren Preis multipliziert mit ihrer Stückzahl."
+    hint:
+      - "Drei Schritte, wie bei den Bestellungen oben: Welche Waren bleiben? Was wird aus jeder? Wie kommt aus der Liste eine Zahl?"
+      - "`item['category'] == category` fragt, ob eine Ware zur Art gehört. Danach macht `map` aus jeder Ware eine Zahl, und `sum` zählt die Zahlen zusammen."
+    solution: |
+      ```ruby
+      def category_total(items, category)
+        items
+          .select { |item| item['category'] == category }
+          .map { |item| item['price'] * item['count'] }
+          .sum
+      end
+      ```
+    python:
+      prompt: |
+        Jede Ware im Warenkorb ist ein Dictionary mit Name, Art, Preis in Cent und Stückzahl. Schreib eine Funktion `category_total(items, category)`, die als Kette ausrechnet, was alle Waren einer Art zusammen kosten: behalten, was zur Art gehört, für jede Ware Preis mal Stückzahl, zusammenzählen. Die Prüfung ruft sie unter anderem mit diesem Warenkorb auf:
+
+        ```python
+        items = [
+            {'name': 'Heft', 'category': 'Schreibwaren', 'price': 120, 'count': 5},
+            {'name': 'Stift', 'category': 'Schreibwaren', 'price': 80, 'count': 10},
+            {'name': 'Apfel', 'category': 'Obst', 'price': 50, 'count': 6},
+        ]
+        ```
+
+        `category_total(items, 'Obst')` ergibt `300`, `category_total(items, 'Schreibwaren')` ergibt `1400`. Gibt es keine Ware der Art, ergibt sie `0`.
+      starter: |
+        def category_total(items, category):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "items = [{'name': 'Heft', 'category': 'Schreibwaren', 'price': 120, 'count': 5}, {'name': 'Stift', 'category': 'Schreibwaren', 'price': 80, 'count': 10}, {'name': 'Apfel', 'category': 'Obst', 'price': 50, 'count': 6}]; category_total(items, 'Schreibwaren')"
+            expect: "1400"
+          - call: "items = [{'name': 'Heft', 'category': 'Schreibwaren', 'price': 120, 'count': 5}, {'name': 'Stift', 'category': 'Schreibwaren', 'price': 80, 'count': 10}, {'name': 'Apfel', 'category': 'Obst', 'price': 50, 'count': 6}]; category_total(items, 'Obst')"
+            expect: "300"
+          - call: "category_total([{'name': 'Birne', 'category': 'Obst', 'price': 70, 'count': 2}, {'name': 'Lineal', 'category': 'Schreibwaren', 'price': 250, 'count': 1}, {'name': 'Kiwi', 'category': 'Obst', 'price': 40, 'count': 3}], 'Obst')"
+            expect: "260"
+          - call: "category_total([{'name': 'Apfel', 'category': 'Obst', 'price': 50, 'count': 6}], 'Spielzeug')"
+            expect: "0"
+            say: "Keine Ware dieser Art: Zusammen kostet sie 0."
+          - call: "category_total([], 'Obst')"
+            expect: "0"
+      feedback:
+        - when: { same_as: "def category_total(items, category):\n    return sum(item['price'] for item in items if item['category'] == category)\n" }
+          say: "Du zählst jeden Preis einmal. Es sind aber `count` Stück: Eine Ware kostet ihren Preis multipliziert mit ihrer Stückzahl."
+      hint:
+        - "Drei Schritte, wie bei den Bestellungen oben: Welche Waren bleiben? Was wird aus jeder? Wie kommt aus der Liste eine Zahl?"
+        - "`item['category'] == category` fragt, ob eine Ware zur Art gehört. Danach macht `map` aus jeder Ware eine Zahl, und `sum` zählt die Zahlen zusammen."
+      solution: |
+        ```python
+        def category_total(items, category):
+            chosen = filter(lambda item: item['category'] == category, items)
+            prices = map(lambda item: item['price'] * item['count'], chosen)
+            return sum(prices)
+        ```
+    javascript:
+      prompt: |
+        Jede Ware im Warenkorb ist ein Objekt mit Name, Art, Preis in Cent und Stückzahl. Schreib eine Funktion `categoryTotal(items, category)`, die als Kette ausrechnet, was alle Waren einer Art zusammen kosten: behalten, was zur Art gehört, für jede Ware Preis mal Stückzahl, zusammenzählen. Die Prüfung ruft sie unter anderem mit diesem Warenkorb auf:
+
+        ```javascript
+        const items = [
+          { name: 'Heft', category: 'Schreibwaren', price: 120, count: 5 },
+          { name: 'Stift', category: 'Schreibwaren', price: 80, count: 10 },
+          { name: 'Apfel', category: 'Obst', price: 50, count: 6 },
+        ];
+        ```
+
+        `categoryTotal(items, 'Obst')` ergibt `300`, `categoryTotal(items, 'Schreibwaren')` ergibt `1400`. Gibt es keine Ware der Art, ergibt sie `0`.
+      starter: |
+        function categoryTotal(items, category) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "const items = [{ name: 'Heft', category: 'Schreibwaren', price: 120, count: 5 }, { name: 'Stift', category: 'Schreibwaren', price: 80, count: 10 }, { name: 'Apfel', category: 'Obst', price: 50, count: 6 }]; categoryTotal(items, 'Schreibwaren')"
+            expect: "1400"
+          - call: "const items = [{ name: 'Heft', category: 'Schreibwaren', price: 120, count: 5 }, { name: 'Stift', category: 'Schreibwaren', price: 80, count: 10 }, { name: 'Apfel', category: 'Obst', price: 50, count: 6 }]; categoryTotal(items, 'Obst')"
+            expect: "300"
+          - call: "categoryTotal([{ name: 'Birne', category: 'Obst', price: 70, count: 2 }, { name: 'Lineal', category: 'Schreibwaren', price: 250, count: 1 }, { name: 'Kiwi', category: 'Obst', price: 40, count: 3 }], 'Obst')"
+            expect: "260"
+          - call: "categoryTotal([{ name: 'Apfel', category: 'Obst', price: 50, count: 6 }], 'Spielzeug')"
+            expect: "0"
+            say: "Keine Ware dieser Art: Zusammen kostet sie 0. Hat dein `reduce` einen Startwert?"
+          - call: "categoryTotal([], 'Obst')"
+            expect: "0"
+      feedback:
+        - when: { same_as: "function categoryTotal(items, category) {\n  return items.filter(item => item.category === category).map(item => item.price).reduce((sum, x) => sum + x, 0);\n}\n" }
+          say: "Du zählst jeden Preis einmal. Es sind aber `count` Stück: Eine Ware kostet ihren Preis multipliziert mit ihrer Stückzahl."
+      hint:
+        - "Drei Schritte, wie bei den Bestellungen oben: Welche Waren bleiben? Was wird aus jeder? Wie kommt aus der Liste eine Zahl?"
+        - "`item.category === category` fragt, ob eine Ware zur Art gehört. Danach macht `map` aus jeder Ware eine Zahl, und `reduce` mit dem Startwert 0 zählt die Zahlen zusammen."
+      solution: |
+        ```javascript
+        function categoryTotal(items, category) {
+          return items
+            .filter(item => item.category === category)
+            .map(item => item.price * item.count)
+            .reduce((sum, x) => sum + x, 0);
+        }
+        ```
+
+  - id: rewrite-loop
+    title: "Eine Schleife als Kette"
+    level: 2
+    prompt: |
+      Diese Funktion zählt die Quadrate der ungeraden Zahlen einer Liste zusammen, mit einer Schleife:
+
+      ```ruby
+      def odd_square_sum(numbers)
+        total = 0
+        numbers.each do |n|
+          total += n * n if n.odd?
+        end
+        total
+      end
+      ```
+
+      `odd_square_sum([1, 2, 3])` ergibt `10`, denn 1 · 1 + 3 · 3 = 10. Schreib sie als Kette, ohne Schleife: mit `select`, `map` und `sum`. `each`, `for` und `times` sind abgeschaltet.
+    starter: |
+      def odd_square_sum(numbers)
+        # hier: eine Kette
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#each, Array#each_with_index, Array#each_index, Integer#times, Integer#upto, Integer#downto, Range#each, Kernel#loop]
+      cases:
+        - call: "odd_square_sum([1, 2, 3])"
+          expect: "10"
+        - call: "odd_square_sum([])"
+          expect: "0"
+        - call: "odd_square_sum([2, 4, 6])"
+          expect: "0"
+        - call: "odd_square_sum([-3, 5])"
+          expect: "34"
+          say: "-3 ist auch ungerade, und (-3) · (-3) ist 9."
+        - call: "odd_square_sum([1, 1, 1])"
+          expect: "3"
+    feedback:
+      - when: { same_as: "def odd_square_sum(numbers)\n  total = 0\n  numbers.each do |n|\n    total += n * n if n.odd?\n  end\n  total\nend\n" }
+        say: "Dein Code geht die Liste selbst durch, mit `each`, `for` oder `times` (auch `reduce` tut das in Ruby mit `each`), und das ist hier abgeschaltet. Nimm `select`, `map` und `sum`."
+    hint:
+      - "Lies die Schleife als Frage: Welche Zahlen zählen? Was wird aus jeder? Was geschieht am Ende mit allen?"
+      - "Jede der drei Antworten ist ein Schritt der Kette: `numbers.select { … }.map { … }.sum`."
+    solution: |
+      ```ruby
+      def odd_square_sum(numbers)
+        numbers
+          .select { |n| n.odd? }
+          .map { |n| n * n }
+          .sum
+      end
+      ```
+    python:
+      prompt: |
+        Diese Funktion zählt die Quadrate der ungeraden Zahlen einer Liste zusammen, mit einer Schleife:
+
+        ```python
+        def odd_square_sum(numbers):
+            total = 0
+            for n in numbers:
+                if n % 2 == 1:
+                    total += n * n
+            return total
+        ```
+
+        `odd_square_sum([1, 2, 3])` ergibt `10`, denn 1 · 1 + 3 · 3 = 10. Schreib sie als Kette, ohne Schleife: mit `filter`, `map` und `sum`, oder mit `sum` und einer Comprehension. Eine Schleife mit `for` kann die Prüfung nicht abschalten; die Kata ist erst gelöst, wenn keine mehr dasteht.
+      starter: |
+        def odd_square_sum(numbers):
+            # hier: eine Kette
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "odd_square_sum([1, 2, 3])"
+            expect: "10"
+          - call: "odd_square_sum([])"
+            expect: "0"
+          - call: "odd_square_sum([2, 4, 6])"
+            expect: "0"
+          - call: "odd_square_sum([-3, 5])"
+            expect: "34"
+            say: "-3 ist auch ungerade, und (-3) · (-3) ist 9."
+          - call: "odd_square_sum([1, 1, 1])"
+            expect: "3"
+      hint:
+        - "Lies die Schleife als Frage: Welche Zahlen zählen? Was wird aus jeder? Was geschieht am Ende mit allen?"
+        - "Jede der drei Antworten ist ein Schritt: `filter(…)`, darum `map(…)`, darum `sum(…)`. Von innen nach außen gelesen ist es die Reihenfolge der Schleife."
+      solution: |
+        ```python
+        def odd_square_sum(numbers):
+            odd = filter(lambda n: n % 2 == 1, numbers)
+            squares = map(lambda n: n * n, odd)
+            return sum(squares)
+        ```
+    javascript:
+      prompt: |
+        Diese Funktion zählt die Quadrate der ungeraden Zahlen einer Liste zusammen, mit einer Schleife:
+
+        ```javascript
+        function oddSquareSum(numbers) {
+          let total = 0;
+          numbers.forEach(n => {
+            if (n % 2 !== 0) {
+              total += n * n;
+            }
+          });
+          return total;
+        }
+        ```
+
+        `oddSquareSum([1, 2, 3])` ergibt `10`, denn 1 · 1 + 3 · 3 = 10. Schreib sie als Kette, ohne Schleife: mit `filter`, `map` und `reduce`. `forEach` ist abgeschaltet; eine Schleife mit `for` kann die Prüfung nicht abschalten, die Kata ist aber erst gelöst, wenn keine mehr dasteht.
+      starter: |
+        function oddSquareSum(numbers) {
+          // hier: eine Kette
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.forEach]
+        cases:
+          - call: "oddSquareSum([1, 2, 3])"
+            expect: "10"
+          - call: "oddSquareSum([])"
+            expect: "0"
+          - call: "oddSquareSum([2, 4, 6])"
+            expect: "0"
+          - call: "oddSquareSum([-3, 5])"
+            expect: "34"
+            say: "-3 ist auch ungerade, und (-3) · (-3) ist 9."
+          - call: "oddSquareSum([1, 1, 1])"
+            expect: "3"
+      feedback:
+        - when: { same_as: "function oddSquareSum(numbers) {\n  let total = 0;\n  numbers.forEach(n => {\n    if (n % 2 !== 0) {\n      total += n * n;\n    }\n  });\n  return total;\n}\n" }
+          say: "Dein Code geht die Liste mit `forEach` selbst durch, und das ist hier abgeschaltet. Nimm `filter`, `map` und `reduce`."
+        - when: { same_as: "function oddSquareSum(numbers) {\n  return numbers.filter(n => n % 2 === 1).map(n => n * n).reduce((sum, x) => sum + x, 0);\n}\n" }
+          say: "In JavaScript ist `-3 % 2` gleich `-1`, nicht `1`: Der Rest hat das Vorzeichen der Zahl. Frag darum, ob der Rest nicht 0 ist, `n % 2 !== 0`."
+      hint:
+        - "Lies die Schleife als Frage: Welche Zahlen zählen? Was wird aus jeder? Was geschieht am Ende mit allen?"
+        - "Jede der drei Antworten ist ein Schritt der Kette: `numbers.filter(…).map(…).reduce(…, 0)`."
+      solution: |
+        ```javascript
+        function oddSquareSum(numbers) {
+          return numbers
+            .filter(n => n % 2 !== 0)
+            .map(n => n * n)
+            .reduce((sum, x) => sum + x, 0);
+        }
+        ```
+
+  - id: first-overdraft
+    title: "Zum ersten Mal im Minus"
+    level: 3
+    prompt: |
+      Ein Konto steht am Anfang bei `balance` Cent. Jede Buchung in `bookings` ist ein Betrag: positiv für Geld, das hereinkommt, negativ für Geld, das hinausgeht. Schreib eine Funktion `first_overdraft(balance, bookings)`, die den Index der ersten Buchung zurückgibt, nach der das Konto im Minus ist, oder `-1`, wenn es nie ins Minus geht: `first_overdraft(100, [-30, -50, -40, 200])` ergibt `2`, denn nach den Buchungen steht das Konto bei 70, 20 und −20. Hier ist eine Schleife erlaubt, und sie ist klarer: Sie kann aufhören, sobald sie die Buchung gefunden hat.
+    starter: |
+      def first_overdraft(balance, bookings)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "first_overdraft(100, [-30, -50, -40, 200])"
+          expect: "2"
+        - call: "first_overdraft(0, [])"
+          expect: "-1"
+        - call: "first_overdraft(50, [-50, 10])"
+          expect: "-1"
+          say: "Bei genau 0 ist das Konto noch nicht im Minus."
+        - call: "first_overdraft(10, [-20, 100, -200])"
+          expect: "0"
+          say: "Schon nach der ersten Buchung, der mit dem Index 0, ist das Konto im Minus."
+        - call: "first_overdraft(20, [10, -40, 50, -100])"
+          expect: "1"
+          say: "Gesucht ist das erste Mal; danach geht das Konto noch einmal ins Minus."
+    feedback:
+      - when: { same_as: "def first_overdraft(balance, bookings)\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    return i if balance <= 0\n  end\n  -1\nend\n" }
+        say: "Bei genau 0 ist das Konto noch nicht im Minus: Frag, ob der Stand kleiner als 0 ist."
+      - when: { same_as: "def first_overdraft(balance, bookings)\n  found = -1\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    found = i if balance < 0\n  end\n  found\nend\n" }
+        say: "Dein Code findet das letzte Mal, nicht das erste. Hör auf, sobald du es gefunden hast, mit `return`."
+    hint:
+      - "Von Hand: Rechne den Kontostand nach jeder Buchung aus und schau, wann er zum ersten Mal unter 0 ist."
+      - "`bookings.each_with_index do |amount, i| … end` gibt dir jede Buchung mit ihrem Index. Der Stand ändert sich mit jeder Buchung, und `return i` hört auf, sobald er unter 0 ist; nach der Schleife kommt `-1`."
+    solution: |
+      ```ruby
+      def first_overdraft(balance, bookings)
+        bookings.each_with_index do |amount, i|
+          balance += amount
+          return i if balance < 0
+        end
+        -1
+      end
+      ```
+    python:
+      starter: |
+        def first_overdraft(balance, bookings):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "first_overdraft(100, [-30, -50, -40, 200])"
+            expect: "2"
+          - call: "first_overdraft(0, [])"
+            expect: "-1"
+          - call: "first_overdraft(50, [-50, 10])"
+            expect: "-1"
+            say: "Bei genau 0 ist das Konto noch nicht im Minus."
+          - call: "first_overdraft(10, [-20, 100, -200])"
+            expect: "0"
+            say: "Schon nach der ersten Buchung, der mit dem Index 0, ist das Konto im Minus."
+          - call: "first_overdraft(20, [10, -40, 50, -100])"
+            expect: "1"
+            say: "Gesucht ist das erste Mal; danach geht das Konto noch einmal ins Minus."
+      feedback:
+        - when: { same_as: "def first_overdraft(balance, bookings):\n    for i, amount in enumerate(bookings):\n        balance += amount\n        if balance <= 0:\n            return i\n    return -1\n" }
+          say: "Bei genau 0 ist das Konto noch nicht im Minus: Frag, ob der Stand kleiner als 0 ist."
+        - when: { same_as: "def first_overdraft(balance, bookings):\n    found = -1\n    for i, amount in enumerate(bookings):\n        balance += amount\n        if balance < 0:\n            found = i\n    return found\n" }
+          say: "Dein Code findet das letzte Mal, nicht das erste. Hör auf, sobald du es gefunden hast, mit `return`."
+      hint:
+        - "Von Hand: Rechne den Kontostand nach jeder Buchung aus und schau, wann er zum ersten Mal unter 0 ist."
+        - "`for i, amount in enumerate(bookings):` gibt dir jede Buchung mit ihrem Index. Der Stand ändert sich mit jeder Buchung, und `return i` hört auf, sobald er unter 0 ist; nach der Schleife kommt `return -1`."
+      solution: |
+        ```python
+        def first_overdraft(balance, bookings):
+            for i, amount in enumerate(bookings):
+                balance += amount
+                if balance < 0:
+                    return i
+            return -1
+        ```
+    javascript:
+      prompt: |
+        Ein Konto steht am Anfang bei `balance` Cent. Jede Buchung in `bookings` ist ein Betrag: positiv für Geld, das hereinkommt, negativ für Geld, das hinausgeht. Schreib eine Funktion `firstOverdraft(balance, bookings)`, die den Index der ersten Buchung zurückgibt, nach der das Konto im Minus ist, oder `-1`, wenn es nie ins Minus geht: `firstOverdraft(100, [-30, -50, -40, 200])` ergibt `2`, denn nach den Buchungen steht das Konto bei 70, 20 und −20. Hier ist eine Schleife erlaubt, und sie ist klarer: Sie kann aufhören, sobald sie die Buchung gefunden hat.
+      starter: |
+        function firstOverdraft(balance, bookings) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "firstOverdraft(100, [-30, -50, -40, 200])"
+            expect: "2"
+          - call: "firstOverdraft(0, [])"
+            expect: "-1"
+          - call: "firstOverdraft(50, [-50, 10])"
+            expect: "-1"
+            say: "Bei genau 0 ist das Konto noch nicht im Minus."
+          - call: "firstOverdraft(10, [-20, 100, -200])"
+            expect: "0"
+            say: "Schon nach der ersten Buchung, der mit dem Index 0, ist das Konto im Minus."
+          - call: "firstOverdraft(20, [10, -40, 50, -100])"
+            expect: "1"
+            say: "Gesucht ist das erste Mal; danach geht das Konto noch einmal ins Minus."
+      feedback:
+        - when: { same_as: "function firstOverdraft(balance, bookings) {\n  for (let i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance <= 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n" }
+          say: "Bei genau 0 ist das Konto noch nicht im Minus: Frag, ob der Stand kleiner als 0 ist."
+        - when: { same_as: "function firstOverdraft(balance, bookings) {\n  let found = -1;\n  for (let i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance < 0) {\n      found = i;\n    }\n  }\n  return found;\n}\n" }
+          say: "Dein Code findet das letzte Mal, nicht das erste. Hör auf, sobald du es gefunden hast, mit `return`."
+      hint:
+        - "Von Hand: Rechne den Kontostand nach jeder Buchung aus und schau, wann er zum ersten Mal unter 0 ist."
+        - "`for (let i = 0; i < bookings.length; i++)` gibt dir jeden Index. Der Stand ändert sich mit jeder Buchung, und `return i;` hört auf, sobald er unter 0 ist; nach der Schleife kommt `return -1;`."
+      solution: |
+        ```javascript
+        function firstOverdraft(balance, bookings) {
+          for (let i = 0; i < bookings.length; i++) {
+            balance += bookings[i];
+            if (balance < 0) {
+              return i;
+            }
+          }
+          return -1;
+        }
+        ```
+
+  - id: compose
+    title: "Zwei Funktionen zu einer"
+    level: 3
+    extra: true
+    prompt: |
+      Schreib eine Funktion `compose(f, g)`, die eine neue Funktion zurückgibt: Sie wendet erst `g` an und dann `f` auf das Ergebnis, wie f ∘ g in der Mathematik. `compose(->(x) { x + 1 }, ->(x) { x * 10 }).call(5)` ergibt `51`: erst 5 · 10 = 50, dann 50 + 1. Ruby hat dafür `f << g` fertig; schreib es hier selbst.
+    starter: |
+      def compose(f, g)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "compose(->(x) { x + 1 }, ->(x) { x * 10 }).call(5)"
+          expect: "51"
+        - call: "compose(->(x) { x * 10 }, ->(x) { x + 1 }).call(5)"
+          expect: "60"
+        - call: "compose(->(s) { s + '!' }, ->(s) { s.upcase }).call('hallo')"
+          expect: "'HALLO!'"
+        - call: "twice = compose(->(x) { x * 2 }, ->(x) { x * 2 }); compose(twice, twice).call(1)"
+          expect: "16"
+          say: "Was `compose` zurückgibt, ist wieder eine Funktion, und die lässt sich wieder zusammensetzen."
+    feedback:
+      - when: { same_as: "def compose(f, g)\n  ->(x) { g.call(f.call(x)) }\nend\n" }
+        say: "Dein Code wendet erst `f` an und dann `g`. Bei f ∘ g ist es umgekehrt: erst `g`, dann `f`."
+    hint:
+      - "Was gibt `compose` zurück? Eine Funktion, die ein `x` bekommt. Was rechnet sie mit diesem `x`, Schritt für Schritt?"
+      - "Wie `make_adder` gibt `compose` ein Lambda zurück; darin darfst du `f` und `g` aufrufen."
+    solution: |
+      ```ruby
+      def compose(f, g)
+        ->(x) { f.call(g.call(x)) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Funktion `compose(f, g)`, die eine neue Funktion zurückgibt: Sie wendet erst `g` an und dann `f` auf das Ergebnis, wie f ∘ g in der Mathematik. `compose(lambda x: x + 1, lambda x: x * 10)(5)` ergibt `51`: erst 5 · 10 = 50, dann 50 + 1.
+      starter: |
+        def compose(f, g):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "compose(lambda x: x + 1, lambda x: x * 10)(5)"
+            expect: "51"
+          - call: "compose(lambda x: x * 10, lambda x: x + 1)(5)"
+            expect: "60"
+          - call: "compose(lambda s: s + '!', lambda s: s.upper())('hallo')"
+            expect: "'HALLO!'"
+          - call: "twice = compose(lambda x: x * 2, lambda x: x * 2); compose(twice, twice)(1)"
+            expect: "16"
+            say: "Was `compose` zurückgibt, ist wieder eine Funktion, und die lässt sich wieder zusammensetzen."
+      feedback:
+        - when: { same_as: "def compose(f, g):\n    return lambda x: g(f(x))\n" }
+          say: "Dein Code wendet erst `f` an und dann `g`. Bei f ∘ g ist es umgekehrt: erst `g`, dann `f`."
+      hint:
+        - "Was gibt `compose` zurück? Eine Funktion, die ein `x` bekommt. Was rechnet sie mit diesem `x`, Schritt für Schritt?"
+        - "Wie `make_adder` gibt `compose` ein Lambda zurück; darin darfst du `f` und `g` aufrufen."
+      solution: |
+        ```python
+        def compose(f, g):
+            return lambda x: f(g(x))
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Funktion `compose(f, g)`, die eine neue Funktion zurückgibt: Sie wendet erst `g` an und dann `f` auf das Ergebnis, wie f ∘ g in der Mathematik. `compose(x => x + 1, x => x * 10)(5)` ergibt `51`: erst 5 · 10 = 50, dann 50 + 1.
+      starter: |
+        function compose(f, g) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "compose(x => x + 1, x => x * 10)(5)"
+            expect: "51"
+          - call: "compose(x => x * 10, x => x + 1)(5)"
+            expect: "60"
+          - call: "compose(s => s + '!', s => s.toUpperCase())('hallo')"
+            expect: "'HALLO!'"
+          - call: "const twice = compose(x => x * 2, x => x * 2); compose(twice, twice)(1)"
+            expect: "16"
+            say: "Was `compose` zurückgibt, ist wieder eine Funktion, und die lässt sich wieder zusammensetzen."
+      feedback:
+        - when: { same_as: "function compose(f, g) {\n  return x => g(f(x));\n}\n" }
+          say: "Dein Code wendet erst `f` an und dann `g`. Bei f ∘ g ist es umgekehrt: erst `g`, dann `f`."
+      hint:
+        - "Was gibt `compose` zurück? Eine Funktion, die ein `x` bekommt. Was rechnet sie mit diesem `x`, Schritt für Schritt?"
+        - "Wie `makeAdder` gibt `compose` eine Arrow Function zurück; darin darfst du `f` und `g` aufrufen."
+      solution: |
+        ```javascript
+        function compose(f, g) {
+          return x => f(g(x));
+        }
+        ```
+
+  - id: my-map
+    title: "map selbst schreiben"
+    level: 3
+    extra: true
+    prompt: |
+      Schreib `map` selbst: `my_map(items, f)` gibt eine neue Liste zurück, in der `f` auf jedes Element angewendet ist, `my_map([1, 2, 3], ->(x) { x * 2 })` ergibt `[2, 4, 6]`. Die Liste, die die Funktion bekommt, bleibt, wie sie ist. Ohne `map`, mit einer Schleife oder rekursiv wie McCarthys `maplist`.
+    starter: |
+      def my_map(items, f)
+      end
+    check:
+      type: function
+      language: ruby
+      forbid: [Array#map, Array#collect, Array#map!, Array#collect!, Array#flat_map, Array#filter_map]
+      cases:
+        - call: "my_map([1, 2, 3], ->(x) { x * 2 })"
+          expect: "[2, 4, 6]"
+        - call: "my_map([], ->(x) { x + 1 })"
+          expect: "[]"
+        - call: "my_map(['a', 'b'], ->(s) { s.upcase })"
+          expect: "['A', 'B']"
+        - call: "items = [1, 2]; my_map(items, ->(x) { x * 10 }); items"
+          expect: "[1, 2]"
+          say: "Die Liste, die `my_map` bekommt, bleibt, wie sie ist."
+        - call: "my_map([3], ->(x) { x - 3 })"
+          expect: "[0]"
+    feedback:
+      - when: { same_as: "def my_map(items, f)\n  items.each_index { |i| items[i] = f.call(items[i]) }\n  items\nend\n" }
+        say: "Dein Code ändert die Liste, die er bekommt. Bau eine neue und lass die alte, wie sie ist."
+    hint:
+      - "Mit einer Schleife: eine leere Liste, in die für jedes Element `f.call(item)` kommt."
+      - "Rekursiv wie McCarthy: Die leere Liste gibt die leere Liste. Sonst ist das Ergebnis `f` vom ersten Element, und dahinter `my_map` vom Rest, `items[1..]`."
+    solution: |
+      ```ruby
+      def my_map(items, f)
+        result = []
+        items.each do |item|
+          result << f.call(item)
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `map` selbst: `my_map(items, f)` gibt eine neue Liste zurück, in der `f` auf jedes Element angewendet ist, `my_map([1, 2, 3], lambda x: x * 2)` ergibt `[2, 4, 6]`. Die Liste, die die Funktion bekommt, bleibt, wie sie ist. Ohne `map`, mit einer Schleife oder rekursiv wie McCarthys `maplist`. Eine List Comprehension wäre auch ein `map`; die Prüfung kann sie nicht abschalten, schreib die Schleife trotzdem selbst.
+      starter: |
+        def my_map(items, f):
+            pass
+      check:
+        type: function
+        language: python
+        forbid: [map]
+        cases:
+          - call: "my_map([1, 2, 3], lambda x: x * 2)"
+            expect: "[2, 4, 6]"
+          - call: "my_map([], lambda x: x + 1)"
+            expect: "[]"
+          - call: "my_map(['a', 'b'], lambda s: s.upper())"
+            expect: "['A', 'B']"
+          - call: "items = [1, 2]; my_map(items, lambda x: x * 10); items"
+            expect: "[1, 2]"
+            say: "Die Liste, die `my_map` bekommt, bleibt, wie sie ist."
+          - call: "my_map([3], lambda x: x - 3)"
+            expect: "[0]"
+      feedback:
+        - when: { same_as: "def my_map(items, f):\n    for i in range(len(items)):\n        items[i] = f(items[i])\n    return items\n" }
+          say: "Dein Code ändert die Liste, die er bekommt. Bau eine neue und lass die alte, wie sie ist."
+      hint:
+        - "Mit einer Schleife: eine leere Liste, in die für jedes Element `f(item)` kommt."
+        - "Rekursiv wie McCarthy: Die leere Liste gibt die leere Liste. Sonst ist das Ergebnis `[f(items[0])]`, und dahinter `my_map` vom Rest, `items[1:]`."
+      solution: |
+        ```python
+        def my_map(items, f):
+            result = []
+            for item in items:
+                result.append(f(item))
+            return result
+        ```
+    javascript:
+      prompt: |
+        Schreib `map` selbst: `myMap(items, f)` gibt eine neue Liste zurück, in der `f` auf jedes Element angewendet ist, `myMap([1, 2, 3], x => x * 2)` ergibt `[2, 4, 6]`. Die Liste, die die Funktion bekommt, bleibt, wie sie ist. Ohne `map`, mit einer Schleife oder rekursiv wie McCarthys `maplist`.
+      starter: |
+        function myMap(items, f) {
+        }
+      check:
+        type: function
+        language: javascript
+        forbid: [Array.prototype.map, Array.prototype.flatMap, Array.from]
+        cases:
+          - call: "myMap([1, 2, 3], x => x * 2)"
+            expect: "[2, 4, 6]"
+          - call: "myMap([], x => x + 1)"
+            expect: "[]"
+          - call: "myMap(['a', 'b'], s => s.toUpperCase())"
+            expect: "['A', 'B']"
+          - call: "const items = [1, 2]; myMap(items, x => x * 10); items"
+            expect: "[1, 2]"
+            say: "Die Liste, die `myMap` bekommt, bleibt, wie sie ist."
+          - call: "myMap([3], x => x - 3)"
+            expect: "[0]"
+      feedback:
+        - when: { same_as: "function myMap(items, f) {\n  for (let i = 0; i < items.length; i++) {\n    items[i] = f(items[i]);\n  }\n  return items;\n}\n" }
+          say: "Dein Code ändert die Liste, die er bekommt. Bau eine neue und lass die alte, wie sie ist."
+      hint:
+        - "Mit einer Schleife: eine leere Liste, in die für jedes Element `f(item)` kommt."
+        - "Rekursiv wie McCarthy: Die leere Liste gibt die leere Liste. Sonst ist das Ergebnis `[f(items[0])]`, und dahinter `myMap` vom Rest, `items.slice(1)`."
+      solution: |
+        ```javascript
+        function myMap(items, f) {
+          const result = [];
+          for (const item of items) {
+            result.push(f(item));
+          }
+          return result;
+        }
+        ```
