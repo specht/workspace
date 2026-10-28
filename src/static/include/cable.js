@@ -435,11 +435,14 @@
             const reshuffle = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' }, [icon('bi-shuffle'), document.createTextNode('Neu mischen')]);
             next.addEventListener('click', () => giveWord(null));
             reshuffle.addEventListener('click', () => {
-                if (given().length > 0 && !window.confirm('Neu mischen und die Liste der vergebenen Wörter leeren?')) return;
-                newDeck();
-                storageSet('cable-given', '[]');
-                showWord();
-                if (lastOverview) renderOverview(lastOverview);
+                const go = () => {
+                    newDeck();
+                    storageSet('cable-given', '[]');
+                    showWord();
+                    if (lastOverview) renderOverview(lastOverview);
+                };
+                if (given().length === 0) go();
+                else confirm_dialog({ title: 'Neu mischen?', text: 'Die Liste der vergebenen Wörter wird dabei geleert.', confirm: 'Neu mischen', icon: 'bi-shuffle' }, go);
             });
 
             const beamer = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' }, [icon('bi-qr-code'), document.createTextNode('Für den Beamer: Adresse und QR-Code')]);
