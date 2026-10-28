@@ -40,6 +40,15 @@
       "state_hash": "603b05a14908c1dcb1196a84d3f08d012e0ceb3d7d24d05924d375cc34fe1144",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
+      "output_sha256": "7a0a0a7a0faf7b4fdf2eb6c3fddff939718a354b5b0fa77aaee96618d11ae1d4",
+      "state_hash": "f63c6df2c79d7bbeeeeb62082d6e07258850cc8990f572c7a81391006be75f7f",
+      "variants": {
+        "teaser-dark.webp": "d7b1f1eef0038c5e2420fcacb60723496bed6fbec8c45cd49fd689980d4ab740"
+      },
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1
