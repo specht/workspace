@@ -88,6 +88,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1815 -->
+<!-- part: boole -->
+### George Boole
+
+<div class='person'>
+<img src='boole.webp' alt='Stich von George Boole um 1864: ein Mann mit zurückgekämmtem dunklem Haar, hohem Kragen und Halsbinde, den Blick zur Seite.'>
+<p><strong>George Boole</strong> (1815–1864), englischer Mathematiker, Professor in Cork in Irland. In seinem Buch <em>The Laws of Thought</em> von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen. Nach ihm heißen <code>true</code> und <code>false</code> in vielen Sprachen Boolean, in Python ist es der Typ <code>bool</code>.</p>
+<p class='person-credit'>Bild: unbekannter Künstler, um 1864, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:George_Boole.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1831 -->
 <!-- part: maxwell -->
 ### James Clerk Maxwell
@@ -122,6 +133,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Andrei Markow</strong> (1856–1922), russischer Mathematiker in Sankt Petersburg. 1913 ging er die ersten 20 000 Buchstaben von Puschkins »Eugen Onegin« durch und zählte, wie oft auf einen Vokal ein Vokal folgt und wie oft ein Konsonant: Der nächste Buchstabe hängt vom vorigen ab, und mit dieser Abhängigkeit kann man rechnen.</p>
 <p>Eine Kette, in der jedes Glied nur vom vorigen abhängt, heißt nach ihm Markow-Kette. Auch ein Sprachmodell aus Wortpaaren ist eine Markow-Kette.</p>
 <p class='person-credit'>Foto: unbekannt, 1886, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Andrei_Markov.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1875 -->
+<!-- part: eccles-jordan -->
+### William Eccles und F. W. Jordan
+
+<div class='person'>
+<p><strong>William Eccles</strong> (1875–1966) und <strong>F. W. Jordan</strong>, britische Physiker. 1918 meldeten sie eine Schaltung aus zwei Elektronenröhren zum Patent an, die sich gegenseitig in ihrem Zustand halten: das erste elektronische Latch, ein Speicher für ein Bit. Sie hieß zuerst <em>Eccles–Jordan trigger circuit</em>, heute heißt sie Flipflop. 1943 steckte sie in Colossus, dem britischen Rechner, der im Krieg verschlüsselte Nachrichten knackte.</p>
+<p>Im RS-Flipflop aus zwei NOR-Gattern halten sich die beiden Gatter genauso gegenseitig fest wie die beiden Röhren.</p>
 </div>
 <!-- /part -->
 

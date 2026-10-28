@@ -53,6 +53,46 @@ leibniz:
   - text: Wie in seinen Beispielen addierst du in den Katas zu Bits Stelle für Stelle mit Übertrag
     none: Workspace
 
+boole:
+  - text: (1815–1864), englischer Mathematiker, Professor in Cork in Irland
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Boole/
+        quote: "Born: 2 November 1815, Lincoln, Lincolnshire, England. Died: 8 December 1864, Ballintemple, County Cork, Ireland … Boole was appointed to the chair of mathematics at Queens College, Cork in 1849."
+  - text: In seinem Buch The Laws of Thought von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Boole/
+        quote: "An investigation into the Laws of Thought … (1854) … Boole approached logic in a new way reducing it to a simple algebra, incorporating logic into mathematics."
+  - text: Nach ihm heißen true und false in vielen Sprachen Boolean, in Python ist es der Typ bool
+    sources:
+      - url: https://en.wikipedia.org/wiki/Boolean_data_type
+        quote: "It is named after George Boole, who first defined an algebraic system of logic in the mid-19th century. … Python, from version 2.3 forward, has a bool type which is a subclass of int"
+
+eccles-jordan:
+  - text: (1875–1966) und F. W. Jordan, britische Physiker
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Eccles
+        quote: "William Eccles (physicist) (1875–1966), British physicist and pioneer in the development of radio communication"
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The first electronic latch was invented in 1918 by the British physicists William Eccles and F. W. Jordan."
+  - text: 1918 meldeten sie eine Schaltung aus zwei Elektronenröhren zum Patent an, die sich gegenseitig in ihrem Zustand halten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "It was initially called the Eccles–Jordan trigger circuit and consisted of two active elements (vacuum tubes). … Schematics from the Eccles and Jordan trigger relay patent filed 1918, one drawn as a cascade of amplifiers with a positive feedback path, and the other as a symmetric cross-coupled pair"
+  - text: das erste elektronische Latch, ein Speicher für ein Bit
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The first electronic latch was invented in 1918"
+  - text: Sie hieß zuerst Eccles–Jordan trigger circuit, heute heißt sie Flipflop
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "It was initially called the Eccles–Jordan trigger circuit"
+  - text: 1943 steckte sie in Colossus, dem britischen Rechner, der im Krieg verschlüsselte Nachrichten knackte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Flip-flop_(electronics)#History
+        quote: "The design was used in the 1943 British Colossus codebreaking computer"
+  - text: Im RS-Flipflop aus zwei NOR-Gattern halten sich die beiden Gatter genauso gegenseitig fest wie die beiden Röhren
+    none: Workspace
+
 snellius:
   - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
     sources:
