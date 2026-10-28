@@ -129,7 +129,8 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <tr><td><code>datetime</code></td><td>Datum mit Uhrzeit</td><td><code>DATETIME</code></td></tr>
 <tr><td><code>bool</code></td><td>wahr oder falsch</td><td><code>BOOLEAN</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Markierung</th><th>Bedeutung</th></tr></thead>
@@ -138,7 +139,8 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <tr><td><code>optional</code></td><td>darf leer bleiben (<code>NULL</code>). Ohne die Markierung muss immer ein Wert da sein (<code>NOT NULL</code>).</td></tr>
 <tr><td><code>unique</code></td><td>kein Wert darf doppelt vorkommen</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 ```er
 entity book
@@ -166,7 +168,8 @@ Die Kardinalität sagt, mit wie vielen Datensätzen der anderen Seite einer verb
 <tr><td><code>n:1</code></td><td>wie <code>1:n</code>, nur andersherum geschrieben</td><td><code>relationship lives_in: student n:1 city</code></td></tr>
 <tr><td><code>n:m</code></td><td>auf beiden Seiten viele</td><td><code>relationship takes: student n:m course</code></td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Eine Beziehung kann eine Entität mit sich selbst verbinden: `relationship friend: person n:m person`.
 
@@ -204,7 +207,8 @@ So übersetzt die ER-Werkstatt ein Modell. In der Vorschau steht es für dein Mo
 <tr><td>Beziehung einer Entität mit sich selbst</td><td><code>n:m</code>: eine Tabelle mit dem Namen der Beziehung und den Spalten <code>from_…_id</code> und <code>to_…_id</code>. <code>1:n</code>: ein Fremdschlüssel wie <code>mentor_person_id</code> (Name der Beziehung, dann der Tabelle), der leer sein darf</td></tr>
 <tr><td>Attribut einer Beziehung</td><td>eine Spalte in der Tabelle, die die Beziehung speichert</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 
 Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüssel: `movie_id` zeigt auf `movie.id`.
 <!-- /part -->
@@ -219,7 +223,8 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 <tr><td>Krähenfuß</td><td>Kästen mit Attributen; am Linienende ein Strich für »eins«, ein Krähenfuß für »viele«. Eine n:m-Beziehung ist noch eine Linie.</td></tr>
 <tr><td>Tabellen</td><td>die Tabellen, wie sie in der Datenbank entstehen: jede n:m-Beziehung ist eine eigene Tabelle. <code>PK</code> = Primärschlüssel, <code>FK</code> = Fremdschlüssel.</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <!-- /part -->
 
 ## Normalformen
@@ -282,7 +287,8 @@ Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 <tr><td>Diagramm sichern</td><td>»Als SVG speichern« schreibt <code>name-chen.svg</code>, <code>name-crowfoot.svg</code> oder <code>name-tables.svg</code></td></tr>
 <tr><td>Schema als Text</td><td>Unter dem Diagramm steht eine Zeile pro Entitätstyp (bei Chen und Krähenfuß) oder pro Tabelle (bei Tabellen), der Schlüssel unterstrichen, ein Fremdschlüssel mit ↑. »Kopieren« legt sie als Text in die Zwischenablage, zum Einfügen in ein Arbeitsblatt.</td></tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <!-- /part -->
 
 <!-- part: kommandozeile -->
