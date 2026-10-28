@@ -424,6 +424,39 @@ only to look nice.
   sets the inputs. The circuits are a library in the script, laid out by
   hand; the engine runs without a page (`test/static/logic_circuit.test.cjs`,
   among others every ALU result against the flags of the CPU Sandbox).
+- **The circuit editor** (`circuit_editor.js`, »Logik-Werkstatt«): the same
+  drawing and the same engine as the circuits above (gates from
+  `logic_circuit.js`, its `settle` round by round, 110 ms a round), but the
+  students build. A palette of the six gates (in a task only those its check
+  allows), switches and lamps in the free editor, and the blocks a person
+  has saved; a click puts a part on a free place (switches on the left,
+  lamps right of the rest, gates column by column), dragging puts it where
+  it is dropped. Parts move on an 8 px grid and snap so that a wire becomes
+  straight; wires run at right angles from an output pin (right) to an
+  input pin (left), back to the left around below both parts, a dot where
+  one branches; an open input is an empty ring. A wire is dragged, or on a
+  touch screen tapped pin after pin. Keyboard: Tab from part to part, arrows
+  move, the space bar switches, Entf deletes, V and a digit draw a wire,
+  Strg+Z and Strg+Y undo and redo (100 steps). Beside it the circuit's own
+  truth table up to five switches (a row sets them), a note instead when a
+  wire feeds back. While building the drawing has its own size and the
+  canvas scrolls; to look at (a phone, `<div class='circuit-view'
+  data-netlist='…'>` in a page) it is as wide as there is room for, and on a
+  phone the editor only switches and says that building needs a larger
+  screen. A circuit is a netlist (`LogicCircuit.Netlist`: parse, format,
+  flatten, one line a part, `block NAME … end` for a block); flatten replaces
+  every block by its gates (ids `h1/g1`), so the engine runs it unchanged,
+  feedback through blocks included. »Als Baustein speichern« keeps the
+  circuit as a block, its switches its inputs and its lamps its outputs from
+  top to bottom; placing a block copies it from the library into the
+  circuit with the blocks inside it, so a circuit always carries what it
+  uses. Drafts and the library stay in the browser (localStorage, per
+  account like the tips); a checked circuit is the task's answer on the
+  server and brings its blocks back on another computer. The netlists of
+  `src/ruby/test/fixtures/circuits.json` run the same in the page
+  (`test/static/logic_circuit.test.cjs`) and on the server
+  (`circuit_check_test.rb`); the editor itself has
+  `e2e/tests/logic-workshop.browser.spec.ts`.
 - **What grows, grows from its middle** (`data-grow='22 21'` on a group
   drawn from its corner), and ends on its own transform, so that its next
   move slides instead of jumping.
