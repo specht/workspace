@@ -59,12 +59,19 @@
     function place(point) {
         const mine = cards().filter(function (card) { return idOf(card) === point.task; });
         const card = mine[mine.length - 1];
-        // up to the level of the chapter headings
+        // up to the level of the chapter headings, or of the body of an
+        // after block the task sits in (AfterTask): its point stays inside,
+        // hidden with the task until the prediction before it is answered
         let node = card;
-        while (node.parentElement && node.parentElement !== document.body && !node.parentElement.querySelector(':scope > h2')) node = node.parentElement;
+        while (node.parentElement && node.parentElement !== document.body && !node.parentElement.querySelector(':scope > h2') &&
+               !node.parentElement.matches('.after-task-body')) node = node.parentElement;
         if (node.parentElement === document.body) node = card;
-        // what gives the task's answer away belongs to it (AfterTask)
-        while (node.nextElementSibling && node.nextElementSibling.matches('.after-task')) node = node.nextElementSibling;
+        // what gives the task's answer away belongs to it (AfterTask), unless
+        // the block holds tasks of its own: then the point goes before it,
+        // where everyone has made the prediction (the tasks inside have
+        // their own points, at the end of the block)
+        while (node.nextElementSibling && node.nextElementSibling.matches('.after-task') &&
+               !node.nextElementSibling.querySelector('.task-card')) node = node.nextElementSibling;
         let next = node.nextElementSibling;
         while (next && next.tagName !== 'H2') {
             if (next.matches('.task-card') || next.querySelector('.task-card')) return { after: node };

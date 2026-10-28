@@ -100,3 +100,24 @@ test('a teacher places the meeting point on the activity page', async ({ page, b
   await expect(box).toHaveCount(0, { timeout: 10_000 });
   await teacherContext.close();
 });
+
+// A task inside the after block of a prediction (kata-bits: »Ein Byte
+// addieren« waits for »200 + 100 in einem Byte«) keeps its slot inside that
+// block, hidden with it; the prediction's slot goes before the block, so the
+// two never stand side by side, not even with the block open.
+test('a task inside an after block keeps its meeting slot inside it', async ({ browser }, testInfo) => {
+  test.setTimeout(60_000);
+  const teacherContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL });
+  const teacher = await teacherContext.newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  await teacher.goto('/klasse?group=E2E&tab=fortschritt&activity=kata-bits');
+  await teacher.goto('/kata-bits');
+  const after = teacher.locator(".after-task[data-after='byte-overflow']");
+  await expect(after).toHaveCount(1);
+  await expect(teacher.locator('.meeting-slot').first()).toBeAttached();
+  // the prediction's slot right before the block, the task's inside it at its end
+  await expect(teacher.locator(".meeting-slot + .after-task[data-after='byte-overflow']")).toHaveCount(1);
+  await expect(after.locator('.after-task-body .meeting-slot')).toHaveCount(1);
+  await expect(teacher.locator(".after-task[data-after='byte-overflow'] + .meeting-slot")).toHaveCount(0);
+  await teacherContext.close();
+});
