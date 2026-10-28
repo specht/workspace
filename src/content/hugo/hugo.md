@@ -1,5 +1,5 @@
 <div class='meta'>
-image: startseite.webp
+image: teaser.webp
 image_alt: "Die Startseite des Planetenlexikons »Unser Sonnensystem«: oben ein Kopf wie ein Nachthimmel mit der Navigation Jupiter, Mars und Saturn, darunter je eine Karte für die drei Planeten mit einem Foto und einem Satz über ihn"
 kind: projekt
 language: Hugo
@@ -504,6 +504,16 @@ check-task: navigation
 terminal-expect-no-text: ERROR
 -->
 <img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit einem Kopf wie ein Nachthimmel mit kleinen Sternen, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten, jede mit einem Foto des Planeten vor schwarzem Grund, seinem Namen und einer Beschreibung.'>
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: dieselbe Startseite in 16:9, so dass die
+# Karte nichts abschneidet (der Titel links, die Navigation rechts)
+tab: preview
+viewport: 960x540
+wait-for-text: Leichter als Wasser
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Die Startseite »Unser Sonnensystem« mit dem Titel in Orange, der Navigation Jupiter, Mars, Saturn und drei Karten mit Fotos der Planeten.'>
 
 _uses(regeln, selektoren)
 
