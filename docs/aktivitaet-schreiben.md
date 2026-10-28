@@ -586,6 +586,7 @@ Welche Prüfart für welchen Zweck:
 | Steht in der 3D-Szene, was verlangt ist? | `scene` |
 | Tut die Funktion im Workspace, was sie soll? | `ruby`, `python`, `c` |
 | Liefert die SQL-Abfrage das Richtige? | `sql` |
+| Baut die Schaltung, was sie soll? | `circuit` |
 
 Drei Faustregeln:
 

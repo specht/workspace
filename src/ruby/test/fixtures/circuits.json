@@ -1,0 +1,58 @@
+{
+  "_comment": "Netlists of the Logik-Werkstatt that the page (logic_circuit.js, test/static/logic_circuit.test.cjs) and the server (circuit_check.rb, circuit_check_test.rb) must read and run the same way: each with its truth table (the outputs of every row, the first input the highest bit, every row from a circuit whose gates are all 0), or the first message of a netlist that cannot be read.",
+  "tables": [
+    {
+      "name": "XOR from four NAND",
+      "text": "in a\nin b\nnand x a b\nnand l a x\nnand r x b\nnand g l r\nout y g\n",
+      "rows": [[0], [1], [1], [0]]
+    },
+    {
+      "name": "a gate with three inputs, positions and comments",
+      "text": "# majority\nin a @48,40; in b @48,104; in c @48,168\nand g1 a b @120,40\nand g2 a c\nand g3 b c\nor m g1 g2 g3 @240,80\nout y m @360,96\n",
+      "rows": [[0], [0], [0], [1], [0], [1], [1], [1]]
+    },
+    {
+      "name": "a full adder of two blocks",
+      "text": "block HA\n  in a\n  in b\n  xor x a b\n  and k a b\n  out s x\n  out c k\nend\nin a\nin b\nin c_in\nHA h1 a b\nHA h2 h1.s c_in\nor o h1.c h2.c\nout s h2.s\nout c_out o\n",
+      "rows": [[0, 0], [1, 0], [1, 0], [0, 1], [1, 0], [0, 1], [0, 1], [1, 1]]
+    },
+    {
+      "name": "blocks inside blocks, an output straight from an input",
+      "text": "block WIRE\n  in i\n  out o i\nend\nblock NOTW\n  in i\n  WIRE w i\n  not n w.o\n  out o n\nend\nin a\nNOTW t a\nWIRE u a\nout y t.o\nout z u.o\n",
+      "rows": [[1, 0], [0, 1]]
+    },
+    {
+      "name": "an input without a wire reads 0",
+      "text": "in a\nor g a -\nout y g\n",
+      "rows": [[0], [1]]
+    },
+    {
+      "name": "a gate that turns itself round never comes to rest",
+      "text": "in a\nnot n n\nout y n\n",
+      "unstable": true
+    }
+  ],
+  "sequences": [
+    {
+      "name": "a D latch of NOR, from all gates at 0",
+      "text": "in d; in takt; not nd d; and r nd takt; and s d takt; nor m r mn; nor mn m s; out q m",
+      "steps": [
+        { "set": { "d": 1, "takt": 1 }, "q": 1 },
+        { "set": { "takt": 0 }, "q": 1 },
+        { "set": { "d": 0 }, "q": 1 },
+        { "set": { "takt": 1 }, "q": 0 }
+      ]
+    }
+  ],
+  "errors": [
+    { "text": "in a\nfoo g a\nout y g\n", "message": "Den Baustein foo (g) gibt es nicht." },
+    { "text": "in a\n3and g a\nout y g\n", "message": "»3and« kenne ich nicht" },
+    { "text": "in a\nnand g a\nout y g\n", "message": "Ein NAND (g) hat 2 bis 4 Eingänge." },
+    { "text": "in a\nand g a q\nout y g\n", "message": "g: Die Quelle q gibt es nicht." },
+    { "text": "in a\nout y a\nout z y\n", "message": "z: y ist eine Lampe" },
+    { "text": "block X\n  in a\n  X x a\n  out o x.o\nend\nin a\nX x a\nout y x.o\n", "message": "Der Baustein X enthält sich selbst" },
+    { "text": "block A\n  in a\n  out s a\nblock B\nend\n", "message": "Ein Baustein steht nicht in einem anderen: A hat noch kein end." },
+    { "text": "in a\nin a\n", "message": "Den Namen a gibt es hier zweimal." },
+    { "text": "block HA\n  in a\n  out s a\nend\nin a\nHA h a\nout y h\n", "message": "Bei einem Baustein nennt die Quelle den Ausgang, etwa h.s." }
+  ]
+}

@@ -303,10 +303,10 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
-                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
+                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache; bei einer Schaltung aus der Logik-Werkstatt die Schaltung), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
                 :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft',
-                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code in der Karte nur das Ergebnis)',
+                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis)',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
@@ -680,7 +680,7 @@ module Privacy
             <p>
             Vor der Anmeldung setzt die Seite keine Cookies. Nach der Anmeldung setzt sie nur technisch notwendige: einen für die Sitzung
             und einen, mit dem der Browser den eigenen Workspace öffnen darf (für eine Lehrkraft, die in einen Workspace sieht, einen dritten).
-            Daneben speichert der Browser einige Einstellungen der Seite (lokaler Speicher), etwa ob ein Hinweis ausgeblendet ist oder welche Tipps einer Aufgabe schon aufgeklappt wurden (für jedes Konto getrennt), bei Lehrkräften, wer an einem Tag beim Treffpunkt einer Gruppe fehlt (bis Mitternacht),
+            Daneben speichert der Browser einige Einstellungen der Seite (lokaler Speicher), etwa ob ein Hinweis ausgeblendet ist oder welche Tipps einer Aufgabe schon aufgeklappt wurden (für jedes Konto getrennt), in der Logik-Werkstatt die Schaltungen, an denen jemand baut, und die eigenen Bausteine (ebenso je Konto), bei Lehrkräften, wer an einem Tag beim Treffpunkt einer Gruppe fehlt (bis Mitternacht),
             und der Editor speichert dort, welche Dateien geöffnet waren. Diese Angaben verlassen den Browser nicht.
             </p>
 

@@ -241,7 +241,17 @@
         box.appendChild(link);
     }
 
-    function writeAnswer(card, answer) {
+    function writeAnswer(card, answer, state) {
+        if (card.dataset.type === 'circuit') {
+            // the Logik-Werkstatt's editor (circuit_editor.js) loads the
+            // circuit itself; it compares the time with its draft
+            const field = card.querySelector('.circuit-answer');
+            field.value = answer || '';
+            field.dataset.updated = state && state.updated ? String(state.updated) : '';
+            field.dataset.loaded = 'true';
+            field.dispatchEvent(new CustomEvent('task-answer', { detail: { answer: answer || '', updated: state ? state.updated : null } }));
+            return;
+        }
         if (card.dataset.type === 'submit') {
             const select = card.querySelector('.task-pick');
             const parts = String(answer || '').split(/ · |: /);
@@ -427,6 +437,8 @@
                 setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                 card.querySelector('.task-delete').hidden = false;
                 if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
+                // the editor's draft now builds on this answer (circuit_editor.js)
+                if (card.dataset.type === 'circuit') card.querySelector('.circuit-answer').dispatchEvent(new CustomEvent('task-checked', { detail: data.state }));
             }
         }, { no_please_wait: true });
     }
@@ -640,7 +652,7 @@
             cards().forEach((card) => {
                 const state = (data.states || {})[cardId(card)];
                 if (!state) return;
-                writeAnswer(card, state.answer);
+                writeAnswer(card, state.answer, state);
                 setBadge(card, state.status);
                 showHandIn(card, state);
                 const del = card.querySelector('.task-delete');
@@ -736,7 +748,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'circuit'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

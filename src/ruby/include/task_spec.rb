@@ -20,6 +20,7 @@ require_relative 'ruby_check'
 require_relative 'kata_check'
 require_relative 'tests_check'
 require_relative 'pip_check'
+require_relative 'circuit_check'
 require_relative 'code_languages'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
@@ -66,6 +67,7 @@ module TaskSpec
         'function' => 'M8',
         'pip' => 'M8',
         'tests' => 'M8',
+        'circuit' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -118,6 +120,7 @@ module TaskSpec
         'function' => %w[same_as],
         'pip' => [],
         'tests' => [],
+        'circuit' => [],
     }.freeze
 
     class Error < StandardError
@@ -583,6 +586,11 @@ module TaskSpec
             # right and some broken versions (TestsCheck).
             allowed += %w[language function correct mutants]
             errors.concat(TestsCheck.spec_errors(check))
+        when 'circuit'
+            # A circuit from the Logik-Werkstatt's editor, as a netlist, run
+            # round by round on the server (CircuitCheck).
+            allowed += CircuitCheck::SPEC_KEYS
+            errors.concat(CircuitCheck.spec_errors(check))
         when 'pip'
             # A plan for Pip, run against the world on the server (PipCheck).
             allowed += %w[language commands maps goal max_lines dry buttons]

@@ -392,6 +392,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz |
 | `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server |
 | `tests` | eine Kata, in der die Lernenden Tests schreiben: Sie bestehen mit der richtigen Fassung einer Funktion und erkennen jede fehlerhafte | der Code der Karte | eigener Container ohne Netz |
+| `circuit` | eine Schaltung aus dem Editor der Logik-Werkstatt: ihre Wahrheitstabelle oder Schritte nacheinander, erlaubte Gatter, Zahl der Gatter und Bausteine | die Schaltung der Karte (Text) | Server |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend |
 | `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend |
@@ -1113,6 +1114,78 @@ die Rückmeldung. In Python ist `True` dabei nicht `1`. Schreibt jemand die
 Funktion selbst hinein, sagt die Prüfung, nur Tests zu schreiben, ohne etwas
 auszuführen. Der `starter` (ein erster Test) muss von selbst scheitern, wie
 bei `function`; in `task-examples.yaml` stehen Tests unter `answer:`.
+
+### circuit
+
+Eine Schaltung aus der Logik-Werkstatt (`src/content/logikwerkstatt`,
+`CircuitCheck`): Die Karte enthält einen Editor (`circuit_editor.js`), in dem
+die Lernenden Gatter setzen und Leitungen ziehen; die Schalter und Lampen der
+Aufgabe stehen schon da. »Prüfen« schickt die Schaltung als Text (eine
+Netlist, eine Zeile je Bauteil, siehe `logic_circuit.js`, »Netlists«). Der
+Server liest sie, ersetzt jeden Baustein durch seine Gatter und lässt sie
+Runde für Runde rechnen wie die Seite: jede Zeile der Wahrheitstabelle von
+einer Schaltung aus, deren Gatter alle 0 sind, oder bei einer Schaltung mit
+Speicher die Schritte der Aufgabe nacheinander. Ausgeführt wird dabei nichts.
+
+```yaml
+check:
+  type: circuit
+  inputs: [a, b]          # die Schalter, von oben nach unten
+  outputs: [y]            # die Lampen
+  expect:                 # je Lampe ein Ausdruck über die Schalter
+    y: a ^ b
+  gates: [nand]           # nur diese Gatter, auch in Bausteinen (sonst alle sechs)
+  max_gates: 4            # höchstens so viele Gatter, auch in Bausteinen gezählt
+  min_blocks: 2           # mindestens so viele Bausteine in der Schaltung selbst
+  blocks: false           # gar keine Bausteine
+  numbers:                # mehrere Schalter oder Lampen als eine Zahl, das höchste Bit vorn
+    a: [a1, a0]
+```
+
+Ein Ausdruck in `expect` kennt die Schalter, die Zahlen aus Schaltern, ganze
+Zahlen und `! ~ - * + - << >> < > <= >= == != & ^ |` und `c ? a : b`, mit den
+Vorrangregeln von C; eine Lampe zeigt das niedrigste Bit ihres Werts, eine
+Zahl aus Lampen so viele Bits, wie sie Lampen hat (`sum: a + b + c_in` für
+`sum: [c_out, s3, s2, s1, s0]`). Statt `expect` hat eine Schaltung mit
+Speicher `sequence`, Schritte nacheinander: die Schalter, die sich ändern,
+die Lampen, die stimmen müssen, und `say`, was in diesem Schritt gelten soll.
+
+```yaml
+  sequence:
+    - { d: 1, takt: 1, q: 1, say: "Ist der Takt 1, übernimmt das Flipflop D." }
+    - { takt: 0, q: 1 }
+```
+
+Die Rückmeldung nennt die erste Zeile, die nicht stimmt, und die erste Lampe
+darin: »Bei a = 1 und b = 0 leuchtet die Lampe y, sie sollte aus sein«, bei
+einer Zahl aus Lampen die ganze Zahl; bei `sequence` den Schritt mit allen
+Schaltern und dem `say`. Vorher prüft sie, dass Schalter und Lampen die der
+Aufgabe sind, jeder Eingang eines Gatters eine Leitung hat und nur erlaubte
+Gatter vorkommen; erst wenn die Tabelle stimmt, zählt sie Gatter und
+Bausteine. Kommt eine Schaltung in 64 Runden nicht zur Ruhe, sagt sie das.
+Unter »Was der Workspace gelesen hat« stehen Schalter, Lampen, Gatter und
+Bausteine.
+
+Gespeichert wird die Schaltung als Antwort der Aufgabe, mit den Bausteinen,
+die in ihr stecken; Lehrkräfte sehen im Klassenboard nur das Ergebnis. Was
+die Lernenden bauen, bevor sie prüfen, und ihre gespeicherten Bausteine hält
+nur der Browser (lokaler Speicher, je Konto). In `task-examples.yaml` steht
+die Schaltung unter `answer:`, als Netlist ohne Stellen (`@x,y`) oder mit
+`;` statt Zeilenumbrüchen; der Anfang des Editors, Schalter und Lampen ohne
+Leitung, wird von selbst als Gegenbeispiel geprüft:
+
+```yaml
+examples:
+  xor-nand:
+    pass:
+      - answer: "in a; in b; nand x a b; nand l a x; nand r x b; nand g l r; out y g"
+    fail:
+      - answer: "in a; in b; xor g a b; out y g"
+        say: "In dieser Aufgabe gibt es nur NAND."
+```
+
+Eine Schaltung, die man nur ansehen und schalten soll, steht im Text der
+Seite als `<div class='circuit-view' data-netlist='in a; in b; …'>`.
 
 ### c
 
@@ -1904,6 +1977,8 @@ In Neo4j, nur für Antworten, die zählen:
   dem Schlüssel des `TaskState`. Eine neue Abgabe ersetzt die alte erst, wenn
   sie vollständig geschrieben ist. Symbolische Links werden nicht mit
   abgegeben. Lernende laden ihre Abgabe auf der Karte herunter.
+- Bei einer Schaltung (`circuit`) ist die letzte Eingabe die Schaltung als
+  Text, mit den Bausteinen darin.
 - Bei einer Kata ist die letzte Eingabe der Code, für jede Sprache getrennt.
   Reicht jemand eine gelöste Kata ein (»Einreichen«), liegt eine Kopie des
   Codes ebenso unter `/internal/submissions/`, bis die Person sie

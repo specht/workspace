@@ -17,6 +17,7 @@ require_relative 'java_check'
 require_relative 'dart_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
+require_relative 'circuit_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -32,7 +33,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests circuit]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -109,6 +110,7 @@ module TaskCheck
         return check_pip(task, check, answer, kata, kata_seed, kata_map) if type == 'pip'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
+        return check_circuit(task, check, answer) if type == 'circuit'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -274,6 +276,14 @@ module TaskCheck
     def self.check_tests(task, check, answer, kata)
         kata ||= ->(**_) { nil }
         status, message, read = TestsCheck.check(task, check, answer, kata)
+        Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # circuit: a netlist from the Logik-Werkstatt, simulated on the server
+    # (CircuitCheck); nothing in it runs.
+    def self.check_circuit(task, check, answer)
+        status, message, read = CircuitCheck.check(task, check, answer)
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
     end
