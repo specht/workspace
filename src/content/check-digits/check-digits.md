@@ -1052,6 +1052,13 @@ Codewörtern, und dafür sind fast zwei Drittel seiner Codewörter Korrektur.
   deine Funktion für Strichcodes an einem Buch aus deinem Regal aus.
 - **Kontonummern:** Auch eine IBAN hat Prüfziffern, die dritte und vierte
   Stelle; gerechnet wird mit dem Rest bei der Division durch 97.
+- **Kreditkarten:** Die letzte Ziffer der meisten Kreditkartennummern ist eine
+  Prüfziffer nach dem Luhn-Algorithmus. Von rechts gesehen wird jede zweite
+  Ziffer verdoppelt, angefangen mit der neben der Prüfziffer; wird eine davon
+  größer als 9, zieht man 9 ab. Die Summe aller Ziffern muss durch 10 teilbar
+  sein. Damit fällt eine falsch getippte Ziffer auf und die meisten Dreher.
+
+_person(luhn)
 
 ## Zum Nachschlagen
 
