@@ -1672,6 +1672,16 @@ details.solution.hint-step-new > summary {
     transform: scale(0.7) translate(0, -0.1em);
 }
 
+/* A section heading with its icon: a long name that wraps on a phone
+   (»Algorithmen und Datenstrukturen«) stays beside the icon, not under it */
+h2:has(> .squircle) {
+    display: flex;
+    align-items: center;
+}
+h2 > .squircle {
+    flex-shrink: 0;
+}
+
 /* Primary auto-TOC */
 
 .autotoc {
