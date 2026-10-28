@@ -1,0 +1,10 @@
+# Beispiele für die Prüfungen (docs/aufgaben.md, »Beispiele für die
+# Prüfungen«). choice-Aufgaben prüft der Test von selbst. er, schema und sql
+# lesen das Modell im Workspace oder die eigene MySQL-Datenbank; ob die
+# Schritte der Seite sie lösen und der Stand davor nicht, prüfen check-task
+# und check-task-fails in den Rezepten am Ende von filmdatenbank.md.
+format: 1
+activity: filmdatenbank
+examples:
+  dritte-normalform:
+    skip: schema liest die eigene MySQL-Datenbank. Die Rezepte am Ende der Seite legen die Tabellen des Filmclubs so an wie die Seite und prüfen die Aufgabe vor club_director, nach dem CREATE TABLE ohne das ALTER TABLE (abgelehnt) und nach beiden Befehlen (angenommen).

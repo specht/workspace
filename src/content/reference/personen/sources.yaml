@@ -908,6 +908,12 @@ codd:
         quote: "issuing his paper \"A Relational Model of Data for Large Shared Data Banks\" in 1970"
       - url: https://www.ibm.com/history/edgar-codd
         quote: "organized information into tables that could be linked … users could access information without knowing the database's physical blueprint."
+  - text: Auch die Normalformen stammen von ihm, die erste von 1970, die zweite und dritte von 1971.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Database_normalization
+        quote: "Codd introduced the concept of normalization and what is now known as the first normal form (1NF) in 1970. Codd went on to define the second normal form (2NF) and third normal form (3NF) in 1971"
+      - url: https://en.wikipedia.org/wiki/Third_normal_form
+        quote: "Third normal form (3NF) is a level of database normalization defined by English computer scientist Edgar F. Codd"
   - text: IBM zögerte lange.
     sources:
       - url: https://en.wikipedia.org/wiki/Edgar_F._Codd

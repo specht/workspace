@@ -41,7 +41,7 @@ with the details of every `curriculum:` line and a search of the pages:
 | Oberstufe: Algorithmen und Softwareentwicklung | nothing: Struktogramm and Pseudocode are covered now (`check-digits`); the Katas to functions, decisions and loops and the twelve language portraits name it since 27 October 2026 | |
 | Oberstufe: Syntax und Semantik | nothing: `grammatiken` and `calculator` cover it, both live; the language portraits no longer claim it (27 October 2026) | |
 | Oberstufe: Sprachen und Automaten | regular expressions, only an outlook at the end of `automata` and the Handbuch page `reference/regex` | »Reguläre Ausdrücke« between automata and grammars: grep in a web server's log, groups in Ruby or Python, validating postcodes, dates and user names (and why not e-mail addresses), backtracking, regex to automaton with the Thompson construction and Kleene's theorem, no expression for brackets. Done, live: `regex` (28 October 2026), after `automata` in the section »Automaten und Sprachen« |
-| Oberstufe: Datenbanken | Normalisierung (Leistungskurs) | a chapter of `filmdatenbank` |
+| Oberstufe: Datenbanken | nothing: Normalisierung is covered now by an extra chapter of `filmdatenbank` (28 October 2026): a film club's wide table built from the students' own data, the three anomalies run in transactions, first to third normal form step by step (the third written by the students, checked by `schema` with `absent_columns`), back to the activity's six tables; the definitions once in the Handbuch (`er-modelle#normalformen`) | |
 | Oberstufe: Datenbanken und Datenschutz | Urheberrecht; Datenschutz is covered now (`tracking`) | a section on licences, perhaps with the picture rights of the Workspace's own pages |
 | Oberstufe: Computernetze, Vertiefung Computer-Netze | LAN, WLAN (Ethernet, MAC addresses, ARP); routing between networks | a chapter of `tcpip` |
 | Oberstufe: Softwareprojekt | Ergonomie | a chapter of the Git project below, or of `svelte` |
@@ -63,7 +63,7 @@ full, also by bringing back parked activities or moving them:
 | Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
 | KI | a new section Künstliche Intelligenz (0 → 3) | `sprachmodell`, `perzeptron`, `naechste-nachbarn`: done, live | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
 | Rechnen | Wie Computer rechnen (6 → 9), split on 28 October 2026 into Wie Computer rechnen (3), Algorithmen und Datenstrukturen (3), Automaten und Sprachen (6) | `kellerautomat`, `turingmaschine`, `grammatiken`, `logikgatter`, `logikwerkstatt`, `regex`: done, live; `cable` still open | Technische Informatik, Theoretische Informatik, Information und Daten |
-| Chapters | no new cards | Normalisierung in `filmdatenbank`, syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
+| Chapters | no new cards | Normalisierung in `filmdatenbank` (done), syntax diagrams in `calculator`, LAN and WLAN in `tcpip`, check digits and QR codes, an SVG chapter | the gaps inside names above |
 
 State of the package Software (27 October 2026; out of dev-only on 28 October 2026):
 `check-digits` (»Prüfziffern: erst planen, dann programmieren«: EAN-13 and

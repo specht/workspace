@@ -361,3 +361,144 @@ tasks:
         »leiht aus« mit dem Datum der Ausleihe und der Rückgabe; ein Kunde leiht
         im Lauf der Zeit viele Exemplare, ein Exemplar wird von vielen geliehen,
         also n:m.
+
+  # Normalisierung (Extra): die Tabellen des Filmclubs in der eigenen Datenbank
+  - id: vorhersage-geburtsjahr
+    title: Ein Geburtsjahr ändern
+    extra: true
+    prediction: true
+    prompt: |
+      Jemand im Filmclub ändert bei »Inception« das Geburtsjahr von
+      Christopher Nolan und vertippt sich:
+
+      ```sql
+      UPDATE club_list SET director_birth_year = 1907 WHERE movie_id = 1499;
+      ```
+
+      Was zeigt danach diese Abfrage?
+
+      ```sql
+      SELECT DISTINCT director, director_birth_year FROM club_list WHERE director = 'Christopher Nolan';
+      ```
+
+      Überleg zuerst. Dann probier es aus, in einer Transaktion: erst
+      `START TRANSACTION;`, dann das `UPDATE` und das `SELECT`, zum Schluss
+      `ROLLBACK;`.
+    check:
+      type: choice
+      options:
+        - 'Eine Zeile mit 1907: Das `UPDATE` ändert Nolans Geburtsjahr bei allen seinen Filmen.'
+        - 'Zwei Zeilen, eine mit 1970 und eine mit 1907: Nur die Zeile von »Inception« hat sich geändert.'
+        - 'Eine Zeile mit 1970: MySQL lehnt das `UPDATE` ab, weil Nolan sonst zwei Geburtsjahre hätte.'
+        - 'Dreizehn Zeilen, eine für jeden Film von Nolan.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Das `WHERE` trifft genau eine Zeile, die mit `movie_id = 1499`. Woher sollte MySQL wissen, dass die anderen zwölf Zeilen dieselbe Person meinen?'
+      - when: { picked: 2 }
+        say: 'Nichts in `club_list` sagt, dass `director_birth_year` in allen Zeilen von Nolan gleich sein muss: kein Schlüssel und keine andere Regel.'
+      - when: { picked: 3 }
+        say: '`DISTINCT` fasst gleiche Zeilen zusammen. Wie viele verschiedene Paare aus Name und Geburtsjahr gibt es nach dem `UPDATE`?'
+    solution: |
+      Zwei Zeilen: Das `UPDATE` ändert nur die Zeile von »Inception«, die
+      zwölf anderen Filme sagen weiter 1970. Die Tabelle widerspricht sich
+      selbst, eine Änderungsanomalie.
+
+  - id: dritte-normalform
+    title: Die Regie in eine eigene Tabelle
+    extra: true
+    prompt: |
+      Bring `club_movie` in die dritte Normalform: eine neue Tabelle
+      `club_director` mit den Spalten `id`, `name` und `birth_year` und dem
+      Primärschlüssel `id`, eine Zeile pro Person. In `club_movie` bleibt
+      `director_id` als Fremdschlüssel auf `club_director`; `director` und
+      `director_birth_year` stehen dort nicht mehr.
+    check:
+      type: schema
+      tables:
+        - name: club_director
+          columns: [id, name, birth_year]
+          primary_key: [id]
+          rows_where:
+            - where: "name = 'Christopher Nolan' AND birth_year = 1970"
+              rows: 1
+              say: In `club_director` fehlt die Zeile für Christopher Nolan, geboren 1970. Stehen Name und Geburtsjahr in den richtigen Spalten?
+        - name: club_movie
+          columns: [id, title, year, director_id]
+          absent_columns: [director, director_birth_year]
+          primary_key: [id]
+          foreign_keys: ["director_id -> club_director.id"]
+          min_rows: 1
+      setup: Lege zuerst `club_list`, `club_cast` und `club_movie` an, wie oben unter »Eine Liste für alles« und den beiden Normalformen davor beschrieben.
+    feedback:
+      - when: { problem: foreign_key }
+        say: "`club_movie` hat noch keinen Fremdschlüssel von `director_id` auf `club_director`. Das macht `ADD FOREIGN KEY (director_id) REFERENCES club_director (id)` in einem `ALTER TABLE club_movie`."
+    solution: |
+      ```sql
+      CREATE TABLE club_director (PRIMARY KEY (id)) AS
+      SELECT DISTINCT director_id AS id, director AS name, director_birth_year AS birth_year
+      FROM club_movie;
+
+      ALTER TABLE club_movie
+        DROP COLUMN director, DROP COLUMN director_birth_year,
+        ADD FOREIGN KEY (director_id) REFERENCES club_director (id);
+      ```
+
+  - id: welche-normalform
+    title: Genres mit Namen
+    extra: true
+    prompt: |
+      Jemand speichert zu jedem Film seine Genres gleich mit ihrem Namen, in
+      einer Tabelle `movie_genre_named` mit den Spalten `movie_id`,
+      `genre_id` und `genre_name`. Der Primärschlüssel besteht aus
+      `movie_id` und `genre_id`, eine Zeile ist zum Beispiel
+      `(233, 5, 'Comedy')`. Welche Normalform verletzt die Tabelle als
+      erste?
+    check:
+      type: choice
+      options:
+        - 'Die erste: `genre_name` ist kein einzelner Wert.'
+        - 'Die zweite: `genre_name` hängt schon von `genre_id` allein ab, einem Teil des Schlüssels.'
+        - 'Die dritte: `genre_name` hängt über die Nichtschlüsselspalte `genre_id` transitiv vom Schlüssel ab.'
+        - 'Keine: Die Tabelle ist in der dritten Normalform.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: In jeder Zelle von `genre_name` steht ein einziger Name, keine Liste.
+      - when: { picked: 2 }
+        say: '`genre_id` ist keine Nichtschlüsselspalte, sie gehört zum Schlüssel. Was heißt es, wenn eine Spalte schon von einem Teil des Schlüssels abhängt?'
+      - when: { picked: 3 }
+        say: 'Wie oft steht `Comedy` in der Tabelle, und was passiert, wenn jemand das Genre umbenennt?'
+    solution: |
+      Die zweite: Kennst du `genre_id`, kennst du `genre_name`, ganz gleich,
+      um welchen Film es geht. Der Name hängt von einem Teil des Schlüssels
+      ab und gehört in die Tabelle `genre`, so wie in deiner Datenbank.
+
+  - id: welche-normalform-sprache
+    title: Filme mit ihrer Sprache
+    extra: true
+    prompt: |
+      Eine Tabelle `movie_language` hat die Spalten `id`, `title`, `year`,
+      `language_code` und `language_name`, der Primärschlüssel ist `id`.
+      Jeder Film hat eine Originalsprache; eine Zeile ist zum Beispiel
+      `(1176, 'The Lives of Others', 2006, 'de', 'Deutsch')`. Welche
+      Normalform verletzt die Tabelle als erste?
+    check:
+      type: choice
+      options:
+        - 'Die erste: In `language_code` und `language_name` steht zweimal dieselbe Sprache.'
+        - 'Die zweite: `language_name` hängt nur von einem Teil des Schlüssels ab.'
+        - 'Die dritte: `language_name` hängt über `language_code` transitiv von `id` ab.'
+        - 'Keine: Die Tabelle ist in der dritten Normalform.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: In jeder Zelle steht ein einzelner Wert. Die erste Normalform fragt nicht, ob zwei Spalten zusammengehören.
+      - when: { picked: 1 }
+        say: Der Schlüssel ist eine einzige Spalte, `id`. Von einem Teil davon kann nichts abhängen.
+      - when: { picked: 3 }
+        say: 'Kennst du `language_code`, kennst du `language_name`. Wie oft steht `Deutsch` in der Tabelle?'
+    solution: |
+      Die dritte: `id → language_code → language_name`. Die Sprachen kommen
+      in eine eigene Tabelle `language(code, name)`, und in `movie_language`
+      bleibt `language_code` als Fremdschlüssel.

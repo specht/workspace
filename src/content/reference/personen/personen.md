@@ -285,7 +285,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Edgar F. Codd
 
 <div class='person'>
-<p><strong>Edgar F. Codd</strong> (1923–2003), britischer Mathematiker, im Zweiten Weltkrieg Pilot, dann bei IBM in den USA. 1970 schlug er vor, Daten in Tabellen zu speichern und mit Abfragen zu holen, ohne zu wissen, wie sie gespeichert sind: das relationale Modell.</p>
+<p><strong>Edgar F. Codd</strong> (1923–2003), britischer Mathematiker, im Zweiten Weltkrieg Pilot, dann bei IBM in den USA. 1970 schlug er vor, Daten in Tabellen zu speichern und mit Abfragen zu holen, ohne zu wissen, wie sie gespeichert sind: das relationale Modell. Auch die Normalformen stammen von ihm, die erste von 1970, die zweite und dritte von 1971.</p>
 <p>IBM zögerte lange. Zwei Kollegen, Donald Chamberlin und Raymond Boyce, entwickelten aus seiner Idee SQL; die erste SQL-Datenbank zu kaufen gab es 1979 von einer kleinen Firma, die heute Oracle heißt.</p>
 </div>
 <!-- /part -->

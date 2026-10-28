@@ -5,10 +5,12 @@ Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Model
 <li><b>1. Doppelstunde:</b> vom Datensatz zum Modell, mit der ER-Werkstatt (<code>film.er</code>).</li>
 <li><b>2. Doppelstunde:</b> vom Modell zur Datenbank (Tabellen anlegen, Daten laden) und der erste <code>JOIN</code>.</li>
 <li><b>3. Doppelstunde:</b> Menschen und Tätigkeiten, die Beziehung mit einer Rolle, und die Zusammenfassung.</li>
+<li><b>Extra, für den Leistungskurs etwa eine Doppelstunde:</b> Normalisierung. Eine breite Tabelle eines Filmclubs aus den eigenen Daten, die drei Anomalien, dann Schritt für Schritt erste, zweite und dritte Normalform bis zu den Tabellen der Aktivität. Der Grundkurs kann das Kapitel auslassen.</li>
 </ul></td></tr>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code>, von den Lernenden selbst angelegt; darin <code>film.er</code>, das erzeugte <code>film.sql</code> und die geladenen Datendateien</td></tr>
 <tr><th>Daten</th><td><code>movie-archive/movies-data-films.sql</code> und <code>movies-data-crew.sql</code> aus <code>specht/workspace-files</code>, gebaut mit <code>src/scripts/collect-movies</code>. Die Inhalte stammen aus Wikidata (CC0); die Auswahl der Filme steht in der <code>README.md</code> daneben</td></tr>
 <tr><th>Was gelesen wird</th><td>Aufgaben »Filme und Genres« und »Menschen und Tätigkeiten«: <code>film.er</code>, gelesen mit dem Kern der ER-Werkstatt im laufenden Workspace. Alle anderen: die eigene MySQL-Datenbank, angemeldet als die Person, nur lesend</td></tr>
+<tr><th>Normalisierung</th><td>Die Lernenden legen in ihrer eigenen Datenbank vier Tabellen an (<code>club_list</code>, <code>club_cast</code>, <code>club_movie</code>, <code>club_director</code>), mit <code>CREATE TABLE … AS SELECT</code> aus <code>movie</code>, <code>crew</code>, <code>job</code> und <code>movie_crew</code>. Sie stören <code>film.sql</code> und die anderen Aufgaben nicht; am Ende des Kapitels steht, wie man sie mit einem <code>DROP TABLE</code> wieder löscht</td></tr>
 <tr><th>Was nie passiert</th><td>Die Prüfungen legen keine Tabellen an und laden keine Daten. Das tun die Lernenden selbst im Terminal.</td></tr>
 </table>
 
@@ -31,3 +33,11 @@ Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wi
 #### Zum Weiterarbeiten
 
 Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinnen, Exemplaren und Ausleihen (mit Datum) ist ein gutes eigenes Modell: Es braucht eine 1:n-Beziehung und Attribute an einer Beziehung. Die Diagramme lassen sich mit »Als SVG speichern« für Präsentationen sichern.
+
+#### Normalisierung
+
+- Das Kapitel ist ein Extra: Seine vier Aufgaben zählen bei niemandem mit, die Seite ist ohne es vollständig. Die Begriffe (funktionale Abhängigkeit, Schlüssel, Nichtschlüsselspalte, erste bis dritte Normalform) stehen einmal im Handbuch unter »ER-Modelle als Text«, Abschnitt »Normalformen«, und die Seite bindet diesen Teil ein.
+- Die Anomalien probieren die Lernenden in Transaktionen aus (`START TRANSACTION`, `ROLLBACK`), wie im Kapitel »Daten ändern« der »Einführung in SQL«. Wer das `ROLLBACK` vergisst, hat Nolan mit zwei Geburtsjahren in der Tabelle; das fällt erst bei der dritten Normalform auf (`Duplicate entry '5048'`), und der Kasten »Jetzt bist du dran« sagt, wie man es repariert.
+- Die Aufteilung schreiben die Lernenden mit `CREATE TABLE … AS SELECT DISTINCT` und `ALTER TABLE … DROP COLUMN … ADD FOREIGN KEY`; die zweite Normalform macht die Seite vor, die dritte machen sie selbst. Die Karte »Die Regie in eine eigene Tabelle« prüft Spalten, Schlüssel und Fremdschlüssel und dass `director` und `director_birth_year` aus `club_movie` verschwunden sind. `mycli` fragt vor jedem `ALTER TABLE` und `DROP TABLE` nach; man antwortet mit `y`.
+- Für ein Unterrichtsgespräch: Die dritte Normalform ist nicht alles, was ein guter Entwurf braucht. Die Tabellen der Aktivität gehen weiter als die des Clubs (Personen mit `id` statt Namen, mehrere Regisseure pro Film über `movie_crew`), und das ER-Modell hat sie ohne einen eigenen Normalisierungsschritt dorthin gebracht.
+

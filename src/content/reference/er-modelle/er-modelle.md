@@ -222,6 +222,48 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 </table></div>
 <!-- /part -->
 
+## Normalformen
+
+<!-- part: anomalien -->
+### Anomalien
+
+Steht dieselbe Tatsache in mehreren Zeilen, etwa das Geburtsjahr einer Regisseurin bei jedem ihrer Filme, kann eine Tabelle sich selbst widersprechen. Drei Fälle haben Namen:
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Anomalie</th><th>Was passiert</th></tr></thead>
+<tbody>
+<tr><td>Änderungsanomalie (Update-Anomalie)</td><td>Ein <code>UPDATE</code> ändert die Tatsache nur in einem Teil der Zeilen; danach stehen zwei Werte für dasselbe in der Tabelle.</td></tr>
+<tr><td>Einfügeanomalie</td><td>Etwas lässt sich nicht eintragen, weil ein anderer Teil der Zeile fehlt: eine Regisseurin ohne Film, wenn der Film zum Primärschlüssel gehört.</td></tr>
+<tr><td>Löschanomalie</td><td>Ein <code>DELETE</code> löscht mehr als gemeint: Mit dem letzten Film einer Regisseurin verschwindet auch alles, was die Tabelle über sie wusste.</td></tr>
+</tbody>
+</table>
+</div>
+
+Normalisieren heißt, eine Tabelle so in mehrere aufzuteilen, dass jede Tatsache nur einmal gespeichert ist. Ein `JOIN` setzt sie für eine Abfrage wieder zusammen.
+<!-- /part -->
+
+<!-- part: normalformen -->
+### Funktionale Abhängigkeit und die drei Normalformen
+
+Eine Spalte B hängt **funktional** von Spalten A ab, geschrieben A → B, wenn in der Tabelle zu jedem Wert von A höchstens ein Wert von B gehört: Wer A kennt, kennt B. In `crew` gilt `id → birth_year`, aber nicht `name → birth_year`: In den Filmdaten heißen drei Personen John Morris, geboren 1926, 1969 und 1984.
+
+Ein **Schlüssel** ist hier jede kleinste Menge von Spalten, von der alle anderen Spalten funktional abhängen; der Primärschlüssel ist einer davon. Eine **Nichtschlüsselspalte** gehört zu keinem Schlüssel.
+
+<div class='scroll-x'><table class='table table-sm reference-table'>
+<thead><tr><th>Normalform</th><th>Verlangt</th><th>So wird die Tabelle aufgeteilt</th></tr></thead>
+<tbody>
+<tr><td>1. Normalform</td><td>In jeder Zelle steht ein einzelner Wert (atomar), keine Liste wie <code>Cillian Murphy, Elliot Page, …</code>.</td><td>eine Zeile pro Wert; die Spalte mit den einzelnen Werten wird Teil des Schlüssels</td></tr>
+<tr><td>2. Normalform</td><td>1. Normalform, und jede Nichtschlüsselspalte hängt vom ganzen Schlüssel ab, nicht schon von einem Teil davon. Verletzt ist sie nur bei einem Schlüssel aus mehreren Spalten.</td><td>was nur von einem Teil des Schlüssels abhängt, kommt mit diesem Teil in eine eigene Tabelle</td></tr>
+<tr><td>3. Normalform</td><td>2. Normalform, und keine Nichtschlüsselspalte hängt transitiv vom Schlüssel ab, also über Spalten, die selbst kein Schlüssel sind, wie in <code>movie_id → director_id → director_birth_year</code>.</td><td>die Spalte in der Mitte (<code>director_id</code>) bekommt eine eigene Tabelle mit allem, was von ihr abhängt, und bleibt als Fremdschlüssel zurück</td></tr>
+</tbody>
+</table>
+</div>
+
+Kurz gesagt: Jede Nichtschlüsselspalte sagt etwas über den Schlüssel, den ganzen Schlüssel und nichts als den Schlüssel. So fasste William Kent die zweite und dritte Normalform 1983 zusammen. Spalten wie `actor_1`, `actor_2`, `actor_3` sind dieselbe Liste in anderer Form; viele Bücher zählen auch sie als Verstoß gegen die erste Normalform.
+
+Edgar F. Codd beschrieb die erste Normalform 1970, die zweite und dritte 1971. Es gibt weitere, strengere Normalformen (Boyce-Codd, vierte, fünfte); für die meisten Tabellen ist die dritte das Ziel.
+<!-- /part -->
+
 ## Werkzeuge
 
 <!-- part: werkstatt -->
@@ -270,4 +312,5 @@ Die Schreibweise der `.er`-Dateien gehört zur ER-Werkstatt; eine Referenz auße
 
 - [CREATE TABLE](https://dev.mysql.com/doc/refman/8.4/en/create-table.html) im Handbuch von MySQL 8.4, auf Englisch: alles, was in einer Tabellendefinition stehen kann, auch `PRIMARY KEY` und `UNIQUE`.
 - [FOREIGN KEY Constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html): wie MySQL Fremdschlüssel prüft und was beim Löschen einer Zeile geschieht, auf die einer zeigt.
+- [A Simple Guide to Five Normal Forms in Relational Database Theory](https://www.bkent.net/Doc/simple5.htm), William Kent, 1983, auf Englisch: die Normalformen bis zur fünften, kurz und mit kleinen Beispielen.
 - Abfragen auf die fertigen Tabellen stehen bei [SQL](/reference/sql), die Datensätze der Aktivitäten bei [Datensätze](/reference/datensaetze).
