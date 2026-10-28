@@ -1,5 +1,5 @@
 <div class='meta'>
-image: start-page.webp:50:0
+image: start-page.webp
 image_alt: "Die Startseite des Workspace mit einem kurzen Text, daneben VS Code mit einem kleinen Python-Programm im Terminal"
 kind: grundlagen
 curriculum: "Sek I: Informatiksysteme (Bedienen von Hard- und Software); Oberstufe: Grundlagen informatischen Arbeitens (Arbeitsumgebung im Rechnernetz)"
@@ -56,10 +56,11 @@ Melde dich an und klicke oben auf »Workspace öffnen«. Der Workspace wird bei 
 Danach kannst du entweder einem Tutorial folgen oder direkt ein eigenes Projekt beginnen.
 
 <!-- tutorial-screenshot
-# Die Startseite, nicht angemeldet
+# Die Startseite, nicht angemeldet, für die Karte der Aktivität: in 16:9, so
+# dass die Karte nichts abschneidet
 open-site: /
 tab: preview
-viewport: 1029x640
+viewport: 1244x700
 hook: guest
 sleep: 1
 variants: dark
