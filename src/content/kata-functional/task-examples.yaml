@@ -24,26 +24,32 @@ examples:
       fail:
         - answer: "function applyN(f, n, x) {\n  for (let i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n"
           say: "das Ergebnis geht verloren"
-  make-multiplier:
+  make-counter:
     pass:
-      - answer: "def make_multiplier(n)\n  ->(x) { x * n }\nend\n"
+      - answer: "def make_counter\n  count = 0\n  -> { count += 1 }\nend\n"
+      - answer: "def make_counter\n  count = 0\n  lambda do\n    count = count + 1\n    count\n  end\nend\n"
     fail:
-      - answer: "def make_multiplier(n)\n  n * 2\nend\n"
-        say: "gibt keine Funktion zurück"
-      - answer: "def make_multiplier(n)\n  ->(x) { x * 2 }\nend\n"
-        say: "`make_multiplier(3).call(7)` ergibt `14`"
+      - answer: "def make_counter\n  -> { count = 0; count += 1 }\nend\n"
+        say: "ergibt `[1, 1, 1]`, richtig wäre `[1, 2, 3]`"
+      - answer: "def make_counter\n  $count = 0\n  -> { $count += 1 }\nend\n"
+        say: "Jeder Aufruf von `make_counter` baut einen neuen Zähler"
+      - answer: "def make_counter\nend\n"
+        say: "undefined method"
     python:
       pass:
-        - answer: "def make_multiplier(n):\n    return lambda x: x * n\n"
+        - answer: "def make_counter():\n    count = 0\n    def next_number():\n        nonlocal count\n        count += 1\n        return count\n    return next_number\n"
       fail:
-        - answer: "def make_multiplier(n):\n    return n\n"
-          say: "gibt keine Funktion zurück"
+        - answer: "def make_counter():\n    count = 0\n    def next_number():\n        count += 1\n        return count\n    return next_number\n"
+          say: "count"
     javascript:
       pass:
-        - answer: "function makeMultiplier(n) {\n  return x => x * n;\n}\n"
+        - answer: "function makeCounter() {\n  let count = 0;\n  return () => count += 1;\n}\n"
+        - answer: "function makeCounter() {\n  let count = 0;\n  return function () {\n    count++;\n    return count;\n  };\n}\n"
       fail:
-        - answer: "function makeMultiplier(n) {\n  return n;\n}\n"
-          say: "gibt keine Funktion zurück"
+        - answer: "function makeCounter() {\n  return () => {\n    let count = 0;\n    count += 1;\n    return count;\n  };\n}\n"
+          say: "ergibt `[1, 1, 1]`, richtig wäre `[1, 2, 3]`"
+        - answer: "let count = 0;\nfunction makeCounter() {\n  return () => count += 1;\n}\n"
+          say: "Jeder Aufruf von `makeCounter` baut einen neuen Zähler"
   with-tax:
     pass:
       - answer: "def with_tax(prices)\n  prices.map { |price| price * 119 / 100 }\nend\n"
