@@ -1,0 +1,205 @@
+# Aufgaben der Logik-Werkstatt: Schaltungen, im Editor der Karte gebaut und
+# auf dem Server Runde für Runde durchgerechnet (Prüfart circuit, CircuitCheck,
+# docs/aufgaben.md). inputs und outputs sind die Schalter und Lampen, die der
+# Editor der Karte schon mitbringt.
+format: 1
+activity: logikwerkstatt
+tasks:
+  - id: halbaddierer
+    title: Ein Halbaddierer
+    level: 1
+    prompt: |
+      Bau einen Halbaddierer: Er addiert die Bits `a` und `b` und zeigt an der Lampe `s` die Summe und an der Lampe `c` den Übertrag.
+
+      <div class='scroll-x'>
+      <table class='table table-sm lc-truth-table'>
+      <thead><tr><th>a</th><th>b</th><th class='lc-gap'>s</th><th>c</th></tr></thead>
+      <tbody>
+      <tr><td>0</td><td>0</td><td class='lc-gap'>0</td><td>0</td></tr>
+      <tr><td>0</td><td>1</td><td class='lc-gap'>1</td><td>0</td></tr>
+      <tr><td>1</td><td>0</td><td class='lc-gap'>1</td><td>0</td></tr>
+      <tr><td>1</td><td>1</td><td class='lc-gap'>0</td><td>1</td></tr>
+      </tbody>
+      </table>
+      </div>
+
+      Zwei Gatter reichen. Die Prüfung schaltet alle vier Zeilen ein und vergleicht die Lampen.
+    check:
+      type: circuit
+      inputs: [a, b]
+      outputs: [s, c]
+      expect:
+        s: a ^ b
+        c: a & b
+      max_gates: 2
+      blocks: false
+    hint:
+      - "Lies die Tabelle Spalte für Spalte: In welchen Zeilen ist `c` gleich 1? Und welches Gatter liefert genau dann eine 1?"
+      - "`s` ist 1, wenn genau einer der beiden Eingänge 1 ist. Das Gatter dafür hat `=1` im Rechteck."
+    solution: |
+      Ein XOR von `a` und `b` an `s`, ein UND von `a` und `b` an `c`. Von jedem Schalter gehen zwei Leitungen aus; wo sich eine Leitung teilt, sitzt ein Punkt.
+
+  - id: xor-nand
+    title: XOR aus vier NAND
+    level: 2
+    prompt: |
+      Bau ein XOR, nur aus NAND-Gattern: Die Lampe `y` leuchtet, wenn genau einer der Schalter `a` und `b` auf 1 steht. Vier NAND reichen; mehr lässt die Prüfung nicht gelten.
+    check:
+      type: circuit
+      inputs: [a, b]
+      outputs: [y]
+      expect:
+        y: a ^ b
+      gates: [nand]
+      max_gates: 4
+      blocks: false
+    hint:
+      - "Fang mit einem NAND aus `a` und `b` an; nenne seinen Ausgang für dich x. Wann ist x gleich 0?"
+      - "Ein NAND aus `a` und x ist 0 nur bei a = 1 und b = 0, eins aus x und `b` nur bei a = 0 und b = 1. Was brauchst du dahinter, damit `y` in genau diesen Zeilen 1 wird?"
+      - "Das letzte NAND bekommt die Ausgänge der beiden mittleren. Ein NAND liefert 1, sobald einer seiner Eingänge 0 ist."
+    solution: |
+      x = NAND(a, b), dann NAND(a, x) und NAND(x, b), und ein NAND aus diesen beiden an `y`. Der Ausgang x geht an zwei Gatter, `a` und `b` gehen je an zwei.
+
+  - id: multiplexer
+    title: Ein Multiplexer
+    level: 2
+    prompt: |
+      Ein **Multiplexer** wählt aus: Steht der Schalter `sel` auf 0, zeigt die Lampe `y`, was an `a` anliegt; steht er auf 1, was an `b` anliegt. Bau ihn aus höchstens vier Gattern.
+
+      <div class='scroll-x'>
+      <table class='table table-sm lc-truth-table'>
+      <thead><tr><th>sel</th><th class='lc-gap'>y</th></tr></thead>
+      <tbody>
+      <tr><td>0</td><td class='lc-gap'>a</td></tr>
+      <tr><td>1</td><td class='lc-gap'>b</td></tr>
+      </tbody>
+      </table>
+      </div>
+
+      Die Prüfung schaltet alle acht Kombinationen von `a`, `b` und `sel` ein.
+    check:
+      type: circuit
+      inputs: [a, b, sel]
+      outputs: [y]
+      expect:
+        y: "sel ? b : a"
+      max_gates: 4
+    hint:
+      - "Teil die Aufgabe in zwei Hälften: eine Leitung, die `a` ist, wenn `sel` 0 ist, und sonst 0; und eine, die `b` ist, wenn `sel` 1 ist, und sonst 0."
+      - "Ein UND lässt `b` durch, wenn sein anderer Eingang 1 ist, und liefert sonst 0. Für die Hälfte mit `a` braucht das UND ein umgedrehtes `sel`."
+      - "Höchstens eine der beiden Hälften ist 1. Ein ODER fasst sie zusammen."
+    solution: |
+      Ein NICHT dreht `sel` um. Ein UND aus `a` und nicht `sel`, ein UND aus `b` und `sel`, ein ODER aus beiden an `y`: y = (a und nicht sel) oder (b und sel).
+
+  - id: volladdierer
+    title: Ein Volladdierer aus zwei Halbaddierern
+    level: 2
+    prompt: |
+      Bau einen Volladdierer aus zwei Bausteinen `HA` und einem ODER: Er addiert `a`, `b` und den Übertrag `c_in` und zeigt die Summe an `s` und den Übertrag an `c_out`. Die Prüfung schaltet alle acht Zeilen ein und zählt die Bausteine und die Gatter darin: zwei Halbaddierer mit je zwei Gattern und das ODER, fünf zusammen.
+    check:
+      type: circuit
+      inputs: [a, b, c_in]
+      outputs: [s, c_out]
+      expect:
+        s: a ^ b ^ c_in
+        c_out: (a + b + c_in) >> 1
+      min_blocks: 2
+      max_gates: 5
+    hint:
+      - "Der erste HA bekommt `a` und `b`. Seine Summe `s` ist die Summe der beiden Bits, sein `c` ihr Übertrag."
+      - "Der zweite HA addiert zur Summe des ersten den Übertrag `c_in`. Seine Summe ist schon das `s` des Volladdierers."
+      - "Bleiben die beiden Überträge der Halbaddierer. Ein Übertrag nach links entsteht, wenn einer von beiden 1 ist."
+    solution: |
+      HA 1 bekommt `a` und `b`, HA 2 dessen `s` und `c_in`. Das `s` von HA 2 geht an die Lampe `s`, die beiden `c` durch ein ODER an `c_out`. Beide Überträge sind nie zugleich 1: Ist der erste 1, ist die Summe des ersten HA 0, und der zweite kann keinen Übertrag haben.
+
+  - id: vergleicher
+    title: Zwei Zahlen vergleichen
+    level: 3
+    prompt: |
+      Die Schalter `a1 a0` sind eine Zahl a mit zwei Bits, `b1 b0` eine Zahl b, das höhere Bit vorn: `a1 = 1, a0 = 0` ist 10, also 2. Bau einen Vergleicher: Die Lampe `eq` (equal) leuchtet, wenn a und b gleich sind, die Lampe `gt` (greater than), wenn a größer als b ist. Die Prüfung schaltet alle 16 Paare von a und b ein.
+    check:
+      type: circuit
+      inputs: [a1, a0, b1, b0]
+      outputs: [eq, gt]
+      numbers:
+        a: [a1, a0]
+        b: [b1, b0]
+      expect:
+        eq: a == b
+        gt: a > b
+    hint:
+      - "Gleich sind zwei Zahlen, wenn jedes Bit gleich ist. Welches Gatter liefert 1, wenn zwei Bits verschieden sind? Dreh sein Ergebnis um, dann hast du »gleich«."
+      - "Größer ist a, wenn schon das höhere Bit entscheidet (a1 = 1 und b1 = 0), oder wenn die höheren Bits gleich sind und das niedrigere entscheidet (a0 = 1 und b0 = 0)."
+      - "Ein Gerüst für `gt`: ein UND aus `a1` und nicht `b1`; ein UND aus »a1 gleich b1«, `a0` und nicht `b0` (ein UND mit drei Eingängen); ein ODER aus beiden. Die Gleichheit der höheren Bits hast du für `eq` schon gebaut."
+    solution: |
+      Je ein XOR mit einem NICHT dahinter für jedes Bitpaar: e1 = »a1 gleich b1«, e0 = »a0 gleich b0«, und `eq` ist das UND aus e1 und e0. `gt` = (a1 und nicht b1) oder (e1 und a0 und nicht b0). So vergleichen auch große Vergleicher: vom höchsten Bit an, und das erste Bit, das sich unterscheidet, entscheidet.
+
+  - id: addierer4
+    title: Ein Addierer für 4 Bit
+    level: 2
+    prompt: |
+      Bau aus vier Bausteinen `VA` einen Addierer für zwei Zahlen mit 4 Bit, a = `a3 a2 a1 a0` und b = `b3 b2 b1 b0`, dazu einen Übertrag `c_in` von rechts. Die Summe kommt an die Lampen `s3 s2 s1 s0`, der Übertrag aus der linken Spalte an `c_out`. Die Prüfung schaltet alle 512 Kombinationen ein, von 0000 + 0000 bis 1111 + 1111 + 1.
+    check:
+      type: circuit
+      inputs: [a3, a2, a1, a0, b3, b2, b1, b0, c_in]
+      outputs: [s3, s2, s1, s0, c_out]
+      numbers:
+        a: [a3, a2, a1, a0]
+        b: [b3, b2, b1, b0]
+        sum: [c_out, s3, s2, s1, s0]
+      expect:
+        sum: a + b + c_in
+      min_blocks: 4
+    hint:
+      - "Jeder VA rechnet eine Spalte der schriftlichen Addition: der rechte `a0`, `b0` und `c_in`."
+      - "Der Übertrag `c_out` eines VA ist der Übertrag `c_in` seines linken Nachbarn. Fang rechts an und arbeite dich nach links."
+    solution: |
+      VA 0 bekommt `a0`, `b0` und `c_in`, VA 1 `a1`, `b1` und das `c_out` von VA 0, und so weiter. Jedes `s` kommt an seine Lampe, das `c_out` von VA 3 an `c_out`. Das ist der Ripple-Carry-Addierer aus »Vom Gatter zum Rechenwerk«, diesmal aus deinen eigenen Bausteinen.
+
+  - id: ripple
+    title: Welche Lampe zuletzt?
+    prediction: true
+    prompt: |
+      Stell an deinem Addierer a = 0111 und b = 0000 ein, `c_in` auf 0. Gleich legst du `b0` auf 1 um, und 0111 + 0001 = 1000. Welche der Lampen `s3 s2 s1 s0` ändert sich als letzte?
+    check:
+      type: choice
+      options:
+        - "`s0`"
+        - "`s1`"
+        - "`s2`"
+        - "`s3`"
+        - Alle ändern sich in derselben Runde.
+      correct: 3
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: "`s0` hängt nur an `a0`, `b0` und `c_in`: Sie ändert sich als eine der ersten."
+      - when: { picked: 4 }
+        say: Jedes Gatter rechnet erst, wenn seine Eingänge sich geändert haben. Was braucht der VA der Spalte 3, bevor er rechnen kann?
+    hint: Ein VA weiß seine Summe erst, wenn sein Übertrag von rechts da ist.
+    solution: |
+      `s3`. Der Übertrag läuft von rechts nach links durch alle vier VA: Erst wenn VA 0 seinen Übertrag hat, kann VA 1 rechnen, und so weiter. Darum heißt diese Schaltung Ripple-Carry-Addierer.
+
+  - id: d-latch
+    title: Ein D-Flipflop
+    level: 3
+    prompt: |
+      Bau ein D-Flipflop mit Takt (ein D-Latch): Solange `takt` auf 1 steht, zeigt die Lampe `q`, was am Schalter `d` anliegt. Steht `takt` auf 0, behält `q` das Bit, egal was an `d` geschieht. Die Prüfung legt die Schalter Schritt für Schritt um: d = 1 und takt = 1, dann takt = 0, dann d = 0 (q muss 1 bleiben), dann takt = 1 (q folgt), und so weiter, sieben Schritte. Jedes Gatter steht am Anfang auf 0.
+    check:
+      type: circuit
+      inputs: [d, takt]
+      outputs: [q]
+      sequence:
+        - { d: 1, takt: 1, q: 1, say: "Ist der Takt 1, übernimmt das Flipflop D." }
+        - { takt: 0, q: 1, say: "Geht der Takt auf 0, behält Q, was es hatte." }
+        - { d: 0, q: 1, say: "Ist der Takt 0, ändert D nichts an Q." }
+        - { takt: 1, q: 0, say: "Ist der Takt wieder 1, folgt Q dem D." }
+        - { d: 1, q: 1, say: "Solange der Takt 1 ist, folgt Q jeder Änderung von D." }
+        - { takt: 0, q: 1, say: "Geht der Takt auf 0, behält Q, was es hatte." }
+        - { d: 0, q: 1, say: "Ist der Takt 0, ändert D nichts an Q." }
+    hint:
+      - "Der Speicher ist das RS-Flipflop aus zwei NOR, deren Ausgänge über Kreuz zurückführen: S = 1 setzt Q auf 1, R = 1 setzt es auf 0, sind beide 0, hält es."
+      - "Vor das Flipflop kommen zwei UND: S soll 1 sein, wenn takt und d 1 sind, R, wenn takt 1 und d 0 ist."
+      - "R braucht ein umgedrehtes d: ein NICHT vor dem einen UND. Achte darauf, welches NOR an R und welches an S hängt: Die Lampe q gehört an das NOR, an dem R anliegt."
+    solution: |
+      R = takt und nicht d, S = takt und d; Q = NOR(R, Q quer), Q quer = NOR(S, Q), die Lampe an Q. Ist der Takt 0, sind R und S beide 0, und das Flipflop hält sein Bit. Aus NAND geht es auch: vier NAND und ein NICHT.

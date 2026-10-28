@@ -196,6 +196,7 @@
     ein Routenplaner, der in echten Karten von Berlin den kürzesten Weg findet.
   entries:
     - .logikgatter
+    - .logikwerkstatt
     - sandbox-cpu
     - sandbox-sortieren
     - sandbox-datenstrukturen

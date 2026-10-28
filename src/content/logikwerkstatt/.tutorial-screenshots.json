@@ -1,0 +1,23 @@
+{
+  "screenshots": {
+    "editor.webp": {
+      "environment_fingerprint": "44f0c44c3ad4c21675d2311ed40c13214111606fe5b21b5c4a472e95b0069334",
+      "output_sha256": "1c86a607ab01c6ac1d13f441bc3a60c71330fa1264036dbded291fa77eff7a59",
+      "state_hash": "59b2bbb496bbef138f06a83074992b149a02de05f62091e82b101881accbf99a",
+      "variants": {
+        "editor-dark.webp": "800028e1045c409d9769adae500600c0e9750aa3415e3baf32c4ecaa7c6e2775"
+      },
+      "workspace_look": "4.140.0-ls368"
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "44f0c44c3ad4c21675d2311ed40c13214111606fe5b21b5c4a472e95b0069334",
+      "output_sha256": "e827fe627dbbf4dfeb884570f354aed1f221061f998c3ae58d43c97852e8528d",
+      "state_hash": "c16387ff5baf05d98ac878698bc9a8030986c7b19c623b9acd47911a045af4db",
+      "variants": {
+        "teaser-dark.webp": "cfb7248171fa61d4fd0bda58fa7f79c90b37e5af0af34a3c2256d7eb6a9cc1a4"
+      },
+      "workspace_look": "4.140.0-ls368"
+    }
+  },
+  "version": 1
+}
