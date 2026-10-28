@@ -37,6 +37,7 @@
     - kata-texts
     - kata-lists
     - kata-dicts
+    - kata-objects
     - kata-bits
     - kata-recursion
     - kata-functional

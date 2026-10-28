@@ -48,6 +48,8 @@ Norwegischen Rechenzentrum in Oslo, um Schlangen an Schaltern, Häfen und Fabrik
 nachzuspielen, und Simula 67 brachte Klassen, Objekte und Vererbung mit, die
 heute fast jede Sprache hat.
 
+_person(nygaard-dahl)
+
 Eine Simulation kann nicht alles nachspielen, was in der Geschichte vorkommt.
 Sie braucht die Gegenstände, mit denen sie arbeitet, und von denen gibt es meist
 viele: viele Kundinnen und Kunden, mehrere Kassen. Ein guter Anfang sind die

@@ -342,6 +342,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1926 -->
+<!-- part: nygaard-dahl -->
+### Kristen Nygaard und Ole-Johan Dahl
+
+<div class='person'>
+<p><strong>Kristen Nygaard</strong> (1926–2002) und <strong>Ole-Johan Dahl</strong> (1931–2002), norwegische Informatiker am Norwegischen Rechenzentrum in Oslo. In den 1960er-Jahren bauten sie Simula, eine Sprache, um Abläufe zu simulieren. In Simula 67 gab es zum ersten Mal Objekte, Klassen, Unterklassen und Vererbung.</p>
+<p>Smalltalk übernahm die Idee, später C++ und Java. Für Simula bekamen beide den Turing Award für 2001. Jede Klasse, die du schreibst, geht auf ihre Arbeit zurück.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1927 -->
 <!-- part: mccarthy -->
 ### John McCarthy

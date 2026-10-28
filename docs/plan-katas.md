@@ -35,12 +35,13 @@ the strip on the front page:
 | 6 | `kata-texts` Strings | strings, characters, building text | |
 | 7 | `kata-lists` Listen | going through a list, building one | the merge step |
 | 8 | `kata-dicts` Dictionaries | counting, grouping, looking up | |
-| 9 | `kata-bits` Bits und Zahlensysteme | bits and bases with `/` and `%` | |
-| 10 | `kata-recursion` Rekursion | a function that calls itself | `recursive: true`, `loops: false` |
-| 11 | `kata-functional` Funktionen als Werte | lambdas, closures, `map`, `filter`, `reduce`, chains | loop methods switched off with `forbid` where `map` or `filter` is the point |
-| 12 | `kata-search` Suchen | linear search, halving | building blocks of the Sorting Sandbox |
-| 13 | `pip-3` Der Mampfer | counting steps, the light, breadth-first search | `generate: chase`, `cave_map`, `facing` |
-| 14 | `kata-tests` Tests schreiben | tests that catch every broken version | check type `tests` |
+| 9 | `kata-objects` Objekte | classes, attributes, methods, an object that guards its state, objects in objects, the text form, inheritance and `super` | calls in several steps; a shape the check makes itself shows polymorphism |
+| 10 | `kata-bits` Bits und Zahlensysteme | bits and bases with `/` and `%` | |
+| 11 | `kata-recursion` Rekursion | a function that calls itself | `recursive: true`, `loops: false` |
+| 12 | `kata-functional` Funktionen als Werte | lambdas, closures, `map`, `filter`, `reduce`, chains | loop methods switched off with `forbid` where `map` or `filter` is the point |
+| 13 | `kata-search` Suchen | linear search, halving | building blocks of the Sorting Sandbox |
+| 14 | `pip-3` Der Mampfer | counting steps, the light, breadth-first search | `generate: chase`, `cave_map`, `facing` |
+| 15 | `kata-tests` Tests schreiben | tests that catch every broken version | check type `tests` |
 
 Each set has about ten core Katas at three levels (Einstieg, Übung, Knobelei)
 and two Extras (`extra: true`, counting for nobody), its teacher note, and a
