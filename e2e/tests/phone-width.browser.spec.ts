@@ -57,6 +57,7 @@ test('the Kata strip on a phone', async ({ page, e2eEmail }, testInfo) => {
   expect(box!.x).toBe(0);
   expect(box!.width).toBe(390);
   const first = await page.locator('.kata-set').first().boundingBox();
-  const text = await page.getByText('Kleine Programmieraufgaben').boundingBox();
+  // the section's short description: on a phone it stands instead of the long one
+  const text = await page.locator('.section-short').filter({ hasText: 'Kleine Programmieraufgaben' }).boundingBox();
   expect(Math.abs(first!.x - text!.x)).toBeLessThanOrEqual(2);
 });
