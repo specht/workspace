@@ -1,0 +1,28 @@
+class Room
+  - name: String
+  - description: String
+  + connect(direction: String, room: Room): void
+  + exit_to(direction: String): Room
+  + take(name: String): Item
+  + unlock(key_name: String): boolean
+  + describe(): String
+
+class Item
+  - name: String
+  - description: String
+  + use(player: Player): String
+
+class Key extends Item
+  + use(player: Player): String
+
+class Food extends Item
+  + use(player: Player): String
+
+class Player
+  + go(direction: String): String
+  + take(name: String): String
+  + use(name: String): String
+
+association room: Player 0..* -> 1 Room
+association inventory: Player 0..1 -> 0..* Item
+association items: Room 0..1 -> 0..* Item

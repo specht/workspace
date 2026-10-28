@@ -1,0 +1,762 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Der Startcode jeder Kata muss von selbst scheitern; das prüft der Test ohne Beispiel.
+format: 1
+activity: kata-objects
+examples:
+  rectangle:
+    pass:
+    - answer: |
+        class Rectangle
+          def initialize(width, height)
+            @width = width
+            @height = height
+          end
+
+          def area
+            @width * @height
+          end
+
+          def perimeter
+            2 * (@width + @height)
+          end
+        end
+    fail:
+    - answer: |
+        class Rectangle
+          def initialize(width, height)
+          end
+
+          def area
+            width * height
+          end
+        end
+      say: width
+    python:
+      pass:
+      - answer: |
+          class Rectangle:
+              def __init__(self, width, height):
+                  self.width = width
+                  self.height = height
+
+              def area(self):
+                  return self.width * self.height
+
+              def perimeter(self):
+                  return 2 * (self.width + self.height)
+      fail:
+      - answer: |
+          class Rectangle:
+              def __init__(self, width, height):
+                  self.width = width
+                  self.height = height
+
+              def area(self):
+                  return self.width * self.height
+
+              def perimeter(self):
+                  return self.width + self.height
+        say: '7'
+    javascript:
+      pass:
+      - answer: |
+          class Rectangle {
+            constructor(width, height) {
+              this.width = width;
+              this.height = height;
+            }
+
+            area() {
+              return this.width * this.height;
+            }
+
+            perimeter() {
+              return 2 * (this.width + this.height);
+            }
+          }
+      fail:
+      - answer: |
+          class Rectangle {
+            constructor(width, height) {
+              this.width = width;
+              this.height = height;
+            }
+
+            area() {
+              return this.width * this.height;
+            }
+
+            perimeter() {
+              return this.width + this.height;
+            }
+          }
+        say: '7'
+  account:
+    pass:
+    - answer: |
+        class Account
+          def initialize(balance)
+            @balance = balance
+          end
+
+          def deposit(amount)
+            @balance += amount
+          end
+
+          def withdraw(amount)
+            return false if amount > @balance
+            @balance -= amount
+            true
+          end
+
+          def balance
+            @balance
+          end
+        end
+    fail:
+    - answer: |
+        class Account
+          def initialize(balance)
+            @balance = balance
+          end
+
+          def deposit(amount)
+            @balance += amount
+          end
+
+          def withdraw(amount)
+            @balance -= amount
+            true
+          end
+
+          def balance
+            @balance
+          end
+        end
+      say: nichts
+    python:
+      pass:
+      - answer: |
+          class Account:
+              def __init__(self, balance):
+                  self.money = balance
+
+              def deposit(self, amount):
+                  self.money += amount
+
+              def withdraw(self, amount):
+                  if amount > self.money:
+                      return False
+                  self.money -= amount
+                  return True
+
+              def balance(self):
+                  return self.money
+      fail:
+      - answer: |
+          class Account:
+              def __init__(self, balance):
+                  self.money = balance
+
+              def deposit(self, amount):
+                  self.money += amount
+
+              def withdraw(self, amount):
+                  self.money -= amount
+                  if self.money < 0:
+                      return False
+                  return True
+
+              def balance(self):
+                  return self.money
+        say: Kontostand nicht ändern
+    javascript:
+      pass:
+      - answer: |
+          class Account {
+            constructor(balance) {
+              this.money = balance;
+            }
+
+            deposit(amount) {
+              this.money += amount;
+            }
+
+            withdraw(amount) {
+              if (amount > this.money) {
+                return false;
+              }
+              this.money -= amount;
+              return true;
+            }
+
+            balance() {
+              return this.money;
+            }
+          }
+      fail:
+      - answer: |
+          class Account {
+            constructor(balance) {
+              this.money = balance;
+            }
+
+            deposit(amount) {
+              this.money += amount;
+            }
+
+            withdraw(amount) {
+              if (amount >= this.money) {
+                return false;
+              }
+              this.money -= amount;
+              return true;
+            }
+
+            balance() {
+              return this.money;
+            }
+          }
+        say: Alles abheben
+  playlist:
+    pass:
+    - answer: |
+        class Song
+          attr_reader :title, :seconds
+
+          def initialize(title, seconds)
+            @title = title
+            @seconds = seconds
+          end
+        end
+
+        class Playlist
+          def initialize
+            @songs = []
+          end
+
+          def add(song)
+            @songs << song
+          end
+
+          def total_seconds
+            @songs.sum { |song| song.seconds }
+          end
+
+          def longest_title
+            longest = nil
+            @songs.each do |song|
+              longest = song if longest.nil? || song.seconds > longest.seconds
+            end
+            longest&.title
+          end
+        end
+    python:
+      pass:
+      - answer: |
+          class Song:
+              def __init__(self, title, seconds):
+                  self.title = title
+                  self.seconds = seconds
+
+          class Playlist:
+              def __init__(self):
+                  self.songs = []
+
+              def add(self, song):
+                  self.songs.append(song)
+
+              def total_seconds(self):
+                  return sum(song.seconds for song in self.songs)
+
+              def longest_title(self):
+                  longest = None
+                  for song in self.songs:
+                      if longest is None or song.seconds > longest.seconds:
+                          longest = song
+                  return longest.title if longest else None
+    javascript:
+      pass:
+      - answer: |
+          class Song {
+            constructor(title, seconds) {
+              this.title = title;
+              this.seconds = seconds;
+            }
+          }
+
+          class Playlist {
+            constructor() {
+              this.songs = [];
+            }
+
+            add(song) {
+              this.songs.push(song);
+            }
+
+            totalSeconds() {
+              let total = 0;
+              for (const song of this.songs) {
+                total += song.seconds;
+              }
+              return total;
+            }
+
+            longestTitle() {
+              let longest = null;
+              for (const song of this.songs) {
+                if (longest === null || song.seconds > longest.seconds) {
+                  longest = song;
+                }
+              }
+              return longest === null ? null : longest.title;
+            }
+          }
+  money:
+    pass:
+    - answer: |
+        class Money
+          def initialize(euros, cents)
+            @euros = euros
+            @cents = cents
+          end
+
+          def to_s
+            "#{@euros},#{format("%02d", @cents)} €"
+          end
+        end
+    fail:
+    - answer: |
+        class Money
+          def initialize(euros, cents)
+            @euros = euros
+            @cents = cents
+          end
+
+          def to_s
+            "#{@euros},#{@cents} €"
+          end
+        end
+      say: zwei Ziffern
+    python:
+      pass:
+      - answer: |
+          class Money:
+              def __init__(self, euros, cents):
+                  self.euros = euros
+                  self.cents = cents
+
+              def __str__(self):
+                  return f"{self.euros},{self.cents:02d} €"
+      fail:
+      - answer: |
+          class Money:
+              def __init__(self, euros, cents):
+                  self.euros = euros
+                  self.cents = cents
+
+              def text(self):
+                  return f"{self.euros},{self.cents:02d} €"
+    javascript:
+      pass:
+      - answer: |
+          class Money {
+            constructor(euros, cents) {
+              this.euros = euros;
+              this.cents = cents;
+            }
+
+            toString() {
+              return `${this.euros},${String(this.cents).padStart(2, "0")} €`;
+            }
+          }
+      fail:
+      - answer: |
+          class Money {
+            constructor(euros, cents) {
+              this.euros = euros;
+              this.cents = cents;
+            }
+
+            toString() {
+              return `${this.euros},${this.cents} €`;
+            }
+          }
+        say: zwei Ziffern
+  total-area:
+    pass:
+    - answer: |
+        class Square
+          def initialize(side)
+            @side = side
+          end
+
+          def area
+            @side * @side
+          end
+        end
+
+        class Rectangle
+          def initialize(width, height)
+            @width = width
+            @height = height
+          end
+
+          def area
+            @width * @height
+          end
+        end
+
+        def total_area(shapes)
+          shapes.sum { |shape| shape.area }
+        end
+    fail:
+    - answer: |
+        class Square
+          def initialize(side)
+            @side = side
+          end
+
+          def area
+            @side * @side
+          end
+        end
+
+        class Rectangle
+          def initialize(width, height)
+            @width = width
+            @height = height
+          end
+
+          def area
+            @width * @height
+          end
+        end
+
+        def total_area(shapes)
+          total = 0
+          shapes.each do |shape|
+            total += shape.area if shape.is_a?(Square) || shape.is_a?(Rectangle)
+          end
+          total
+        end
+      say: nur nach
+    python:
+      pass:
+      - answer: |
+          class Square:
+              def __init__(self, side):
+                  self.side = side
+
+              def area(self):
+                  return self.side * self.side
+
+          class Rectangle:
+              def __init__(self, width, height):
+                  self.width = width
+                  self.height = height
+
+              def area(self):
+                  return self.width * self.height
+
+          def total_area(shapes):
+              return sum(shape.area() for shape in shapes)
+    javascript:
+      pass:
+      - answer: |
+          class Square {
+            constructor(side) {
+              this.side = side;
+            }
+
+            area() {
+              return this.side * this.side;
+            }
+          }
+
+          class Rectangle {
+            constructor(width, height) {
+              this.width = width;
+              this.height = height;
+            }
+
+            area() {
+              return this.width * this.height;
+            }
+          }
+
+          function totalArea(shapes) {
+            let total = 0;
+            for (const shape of shapes) {
+              total += shape.area();
+            }
+            return total;
+          }
+  manager:
+    pass:
+    - answer: |
+        class Employee
+          attr_reader :name
+
+          def initialize(name, monthly)
+            @name = name
+            @monthly = monthly
+          end
+
+          def yearly
+            12 * @monthly
+          end
+        end
+
+        class Manager < Employee
+          def initialize(name, monthly, bonus)
+            super(name, monthly)
+            @bonus = bonus
+          end
+
+          def yearly
+            super + @bonus
+          end
+        end
+    fail:
+    - answer: |
+        class Employee
+          attr_reader :name
+
+          def initialize(name, monthly)
+            @name = name
+            @monthly = monthly
+          end
+
+          def yearly
+            12 * @monthly
+          end
+        end
+
+        class Manager < Employee
+          def initialize(name, monthly, bonus)
+            @monthly = monthly
+            @bonus = bonus
+          end
+
+          def yearly
+            12 * @monthly + @bonus
+          end
+        end
+      say: super
+    python:
+      pass:
+      - answer: |
+          class Employee:
+              def __init__(self, name, monthly):
+                  self.name = name
+                  self.monthly = monthly
+
+              def yearly(self):
+                  return 12 * self.monthly
+
+          class Manager(Employee):
+              def __init__(self, name, monthly, bonus):
+                  super().__init__(name, monthly)
+                  self.bonus = bonus
+
+              def yearly(self):
+                  return super().yearly() + self.bonus
+    javascript:
+      pass:
+      - answer: |
+          class Employee {
+            constructor(name, monthly) {
+              this.name = name;
+              this.monthly = monthly;
+            }
+
+            yearly() {
+              return 12 * this.monthly;
+            }
+          }
+
+          class Manager extends Employee {
+            constructor(name, monthly, bonus) {
+              super(name, monthly);
+              this.bonus = bonus;
+            }
+
+            yearly() {
+              return super.yearly() + this.bonus;
+            }
+          }
+  stack:
+    pass:
+    - answer: |
+        class Stack
+          def initialize
+            @items = []
+          end
+
+          def push(x)
+            @items.push(x)
+          end
+
+          def pop
+            @items.pop
+          end
+
+          def peek
+            @items.last
+          end
+
+          def size
+            @items.length
+          end
+        end
+    python:
+      pass:
+      - answer: |
+          class Stack:
+              def __init__(self):
+                  self.items = []
+
+              def push(self, x):
+                  self.items.append(x)
+
+              def pop(self):
+                  if not self.items:
+                      return None
+                  return self.items.pop()
+
+              def peek(self):
+                  if not self.items:
+                      return None
+                  return self.items[-1]
+
+              def size(self):
+                  return len(self.items)
+      fail:
+      - answer: |
+          class Stack:
+              def __init__(self):
+                  self.items = []
+
+              def push(self, x):
+                  self.items.append(x)
+
+              def pop(self):
+                  return self.items.pop()
+
+              def peek(self):
+                  return self.items[-1]
+
+              def size(self):
+                  return len(self.items)
+    javascript:
+      pass:
+      - answer: |
+          class Stack {
+            constructor() {
+              this.items = [];
+            }
+
+            push(x) {
+              this.items.push(x);
+            }
+
+            pop() {
+              if (this.items.length === 0) {
+                return null;
+              }
+              return this.items.pop();
+            }
+
+            peek() {
+              if (this.items.length === 0) {
+                return null;
+              }
+              return this.items[this.items.length - 1];
+            }
+
+            size() {
+              return this.items.length;
+            }
+          }
+  fraction:
+    pass:
+    - answer: |
+        class Fraction
+          attr_reader :numerator, :denominator
+
+          def initialize(numerator, denominator)
+            divisor = numerator.gcd(denominator)
+            @numerator = numerator / divisor
+            @denominator = denominator / divisor
+          end
+
+          def add(other)
+            Fraction.new(@numerator * other.denominator + other.numerator * @denominator,
+                         @denominator * other.denominator)
+          end
+
+          def to_s
+            "#{@numerator}/#{@denominator}"
+          end
+        end
+    fail:
+    - answer: |
+        class Fraction
+          attr_reader :numerator, :denominator
+
+          def initialize(numerator, denominator)
+            @numerator = numerator
+            @denominator = denominator
+          end
+
+          def add(other)
+            Fraction.new(@numerator * other.denominator + other.numerator * @denominator, @denominator * other.denominator)
+          end
+
+          def to_s
+            "#{@numerator}/#{@denominator}"
+          end
+        end
+      say: gekürzt
+    python:
+      pass:
+      - answer: |
+          import math
+
+          class Fraction:
+              def __init__(self, numerator, denominator):
+                  divisor = math.gcd(numerator, denominator)
+                  self.numerator = numerator // divisor
+                  self.denominator = denominator // divisor
+
+              def add(self, other):
+                  return Fraction(self.numerator * other.denominator + other.numerator * self.denominator,
+                                  self.denominator * other.denominator)
+
+              def __str__(self):
+                  return f"{self.numerator}/{self.denominator}"
+    javascript:
+      pass:
+      - answer: |
+          function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+          }
+
+          class Fraction {
+            constructor(numerator, denominator) {
+              const divisor = gcd(numerator, denominator);
+              this.numerator = numerator / divisor;
+              this.denominator = denominator / divisor;
+            }
+
+            add(other) {
+              return new Fraction(this.numerator * other.denominator + other.numerator * this.denominator,
+                                  this.denominator * other.denominator);
+            }
+
+            toString() {
+              return `${this.numerator}/${this.denominator}`;
+            }
+          }

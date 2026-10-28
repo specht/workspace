@@ -1,0 +1,100 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stufen in stufen/ sind der Code nach jedem Kapitel; was ein Kapitel
+# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler, in Ruby
+# und Python, je eine Änderung an der Lösung.
+format: 1
+activity: textadventure
+examples:
+  raum:
+    pass:
+      - { files: { textadventure/adventure.rb: stufen/1-raum/adventure.rb } }
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: stufen/1-raum/adventure.py } }
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+  gegenstaende:
+    pass:
+      - { files: { textadventure/adventure.rb: stufen/2-gegenstaende/adventure.rb } }
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/adventure.rb: stufen/1-raum/adventure.rb } }
+      - { files: { textadventure/adventure.rb: fehler/nimmt-nicht-heraus.rb }, say: "Was herausgenommen ist" }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: stufen/2-gegenstaende/adventure.py } }
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/adventure.py: stufen/1-raum/adventure.py } }
+        - { files: { textadventure/adventure.py: fehler/nimmt-nicht-heraus.py }, say: "Was herausgenommen ist" }
+  beschreibung:
+    pass:
+      - { files: { textadventure/adventure.rb: stufen/3-beschreibung/adventure.rb } }
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/adventure.rb: stufen/2-gegenstaende/adventure.rb } }
+      - { files: { textadventure/adventure.rb: fehler/leere-zeile.rb }, say: "fehlt die Zeile" }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: stufen/3-beschreibung/adventure.py } }
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/adventure.py: stufen/2-gegenstaende/adventure.py } }
+        - { files: { textadventure/adventure.py: fehler/leere-zeile.py }, say: "fehlt die Zeile" }
+  spielerin:
+    pass:
+      - { files: { textadventure/adventure.rb: stufen/4-spielerin/adventure.rb } }
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/adventure.rb: stufen/3-beschreibung/adventure.rb } }
+      - { files: { textadventure/adventure.rb: fehler/nimmt-nicht-heraus.rb }, say: "wechselt vom Raum in die Tasche" }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: stufen/4-spielerin/adventure.py } }
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/adventure.py: stufen/3-beschreibung/adventure.py } }
+        - { files: { textadventure/adventure.py: fehler/nimmt-nicht-heraus.py }, say: "wechselt vom Raum in die Tasche" }
+  schloss:
+    pass:
+      - { files: { textadventure/adventure.rb: stufen/5-schloss/adventure.rb } }
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/adventure.rb: stufen/4-spielerin/adventure.rb } }
+      - { files: { textadventure/adventure.rb: fehler/durch-die-tuer.rb }, say: "Vor einer verschlossenen Tür" }
+      - { files: { textadventure/adventure.rb: fehler/apfel-bleibt.rb }, say: "Gegessen ist gegessen" }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: stufen/5-schloss/adventure.py } }
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/adventure.py: stufen/4-spielerin/adventure.py } }
+        - { files: { textadventure/adventure.py: fehler/durch-die-tuer.py }, say: "Vor einer verschlossenen Tür" }
+        - { files: { textadventure/adventure.py: fehler/apfel-bleibt.py }, say: "Gegessen ist gegessen" }
+  welt:
+    pass:
+      - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
+    fail:
+      - { files: { textadventure/adventure.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/adventure.rb: stufen/5-schloss/adventure.rb } }
+      - { files: { textadventure/adventure.rb: fehler/ohne-schloss.rb }, say: "keine Tür verschlossen" }
+    python:
+      pass:
+        - { files: { textadventure/adventure.py: loesung/adventure.py } }
+      fail:
+        - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/adventure.py: stufen/5-schloss/adventure.py } }
+        - { files: { textadventure/adventure.py: fehler/ohne-schloss.py }, say: "keine Tür verschlossen" }

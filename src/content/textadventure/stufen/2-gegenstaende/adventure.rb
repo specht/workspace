@@ -1,0 +1,43 @@
+# Ein Textadventure aus Objekten: Räume, Gegenstände, eine Spielerin.
+
+class Room
+  attr_reader :name, :description, :items
+
+  def initialize(name, description)
+    @name = name
+    @description = description
+    @exits = {}
+    @items = []
+  end
+
+  def connect(direction, room)
+    @exits[direction] = room
+  end
+
+  def exit_to(direction)
+    @exits[direction]
+  end
+
+  def directions
+    @exits.keys
+  end
+
+  def add_item(item)
+    @items << item
+  end
+
+  def take(name)
+    item = @items.find { |i| i.name == name }
+    @items.delete(item) if item
+    item
+  end
+end
+
+class Item
+  attr_reader :name, :description
+
+  def initialize(name, description)
+    @name = name
+    @description = description
+  end
+end

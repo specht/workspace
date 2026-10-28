@@ -1,0 +1,775 @@
+format: 1
+activity: textadventure
+tasks:
+  - id: raum
+    title: Ein Raum mit Ausgängen
+    prompt: |
+      Schreib in `adventure.rb` eine Klasse `Room`. Ein Raum wird mit Namen und Beschreibung gebaut, `Room.new("Küche", "Es riecht nach Kaffee.")`; `name` und `description` geben sie zurück. `connect(direction, room)` legt einen Ausgang in eine Richtung an, `exit_to(direction)` gibt den Raum in dieser Richtung zurück oder `nil`, wenn es dort nicht weitergeht, und `directions` die Richtungen der Ausgänge, in der Reihenfolge, in der sie angelegt wurden.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "Room.new('Küche', 'Es riecht nach Kaffee.').name"
+          expect: "'Küche'"
+        - call: "Room.new('Küche', 'Es riecht nach Kaffee.').description"
+          expect: "'Es riecht nach Kaffee.'"
+        - call: "k = Room.new('Küche', ''); f = Room.new('Flur', ''); k.connect('süden', f); k.exit_to('süden').name"
+          expect: "'Flur'"
+        - call: "k = Room.new('Küche', ''); f = Room.new('Flur', ''); k.connect('süden', f); k.exit_to('süden').equal?(f)"
+          expect: "true"
+          say: "`exit_to` soll den Raum selbst zurückgeben, den `connect` bekommen hat, keine Kopie."
+        - call: "k = Room.new('Küche', ''); k.exit_to('norden')"
+          expect: "nil"
+          say: "Gibt es in einer Richtung keinen Ausgang, gibt `exit_to` `nil` zurück."
+        - call: "k = Room.new('Küche', ''); k.connect('süden', Room.new('Flur', '')); k.connect('osten', Room.new('Bad', '')); k.directions"
+          expect: "['süden', 'osten']"
+        - call: "Room.new('Küche', '').directions"
+          expect: "[]"
+    hint:
+      - "Die Ausgänge merkt sich der Raum in einem Dictionary, `@exits = {}` in `initialize`: die Richtung als Schlüssel, der Raum als Wert."
+      - "`connect` trägt ein, `@exits[direction] = room`; `exit_to` schlägt nach, `@exits[direction]`, und das ist von selbst `nil`, wenn es den Schlüssel nicht gibt. `@exits.keys` sind die Richtungen."
+    solution: |
+      ```ruby
+      class Room
+        attr_reader :name, :description
+
+        def initialize(name, description)
+          @name = name
+          @description = description
+          @exits = {}
+        end
+
+        def connect(direction, room)
+          @exits[direction] = room
+        end
+
+        def exit_to(direction)
+          @exits[direction]
+        end
+
+        def directions
+          @exits.keys
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `adventure.py` eine Klasse `Room`. Ein Raum wird mit Namen und Beschreibung gebaut, `Room("Küche", "Es riecht nach Kaffee.")`; die Attribute `name` und `description` halten sie. `connect(direction, room)` legt einen Ausgang in eine Richtung an, `exit_to(direction)` gibt den Raum in dieser Richtung zurück oder `None`, wenn es dort nicht weitergeht, und `directions()` die Richtungen der Ausgänge als Liste, in der Reihenfolge, in der sie angelegt wurden.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "Room('Küche', 'Es riecht nach Kaffee.').name"
+            expect: "'Küche'"
+          - call: "Room('Küche', 'Es riecht nach Kaffee.').description"
+            expect: "'Es riecht nach Kaffee.'"
+          - call: "k = Room('Küche', ''); f = Room('Flur', ''); k.connect('süden', f); k.exit_to('süden').name"
+            expect: "'Flur'"
+          - call: "k = Room('Küche', ''); f = Room('Flur', ''); k.connect('süden', f); k.exit_to('süden') is f"
+            expect: "True"
+            say: "`exit_to` soll den Raum selbst zurückgeben, den `connect` bekommen hat, keine Kopie."
+          - call: "k = Room('Küche', ''); k.exit_to('norden')"
+            expect: "None"
+            say: "Gibt es in einer Richtung keinen Ausgang, gibt `exit_to` `None` zurück, statt mit einem `KeyError` abzubrechen: `self.exits.get(direction)`."
+          - call: "k = Room('Küche', ''); k.connect('süden', Room('Flur', '')); k.connect('osten', Room('Bad', '')); k.directions()"
+            expect: "['süden', 'osten']"
+          - call: "Room('Küche', '').directions()"
+            expect: "[]"
+      hint:
+        - "Die Ausgänge merkt sich der Raum in einem Dictionary, `self.exits = {}` in `__init__`: die Richtung als Schlüssel, der Raum als Wert."
+        - "`connect` trägt ein, `self.exits[direction] = room`; `exit_to` schlägt mit `self.exits.get(direction)` nach, das `None` ergibt, wenn es den Schlüssel nicht gibt. `list(self.exits.keys())` sind die Richtungen."
+      solution: |
+        ```python
+        class Room:
+            def __init__(self, name, description):
+                self.name = name
+                self.description = description
+                self.exits = {}
+
+            def connect(self, direction, room):
+                self.exits[direction] = room
+
+            def exit_to(self, direction):
+                return self.exits.get(direction)
+
+            def directions(self):
+                return list(self.exits.keys())
+        ```
+
+  - id: einweg
+    title: Und zurück?
+    prediction: true
+    prompt: |
+      ```ruby
+      hall = Room.new("Flur", "")
+      kitchen = Room.new("Küche", "")
+      hall.connect("norden", kitchen)
+      ```
+
+      Was ergibt danach `kitchen.exit_to("süden")`?
+    check:
+      type: choice
+      options: ["den Flur", "nil", "einen Fehler"]
+      correct: 1
+    python:
+      prompt: |
+        ```python
+        hall = Room("Flur", "")
+        kitchen = Room("Küche", "")
+        hall.connect("norden", kitchen)
+        ```
+
+        Was ergibt danach `kitchen.exit_to("süden")`?
+      check:
+        type: choice
+        options: ["den Flur", "None", "einen Fehler"]
+        correct: 1
+
+  - id: gegenstaende
+    title: Gegenstände im Raum
+    prompt: |
+      Schreib eine Klasse `Item` für Gegenstände, gebaut mit Namen und Beschreibung, `Item.new("kiste", "Eine schwere Holzkiste.")`, mit `name` und `description`. Ein Raum bekommt eine Liste seiner Gegenstände: `items` gibt sie zurück, `add_item(item)` legt einen hinein, und `take(name)` nimmt den Gegenstand mit diesem Namen heraus und gibt ihn zurück, oder `nil`, wenn keiner so heißt.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "Item.new('kiste', 'Eine schwere Holzkiste.').description"
+          expect: "'Eine schwere Holzkiste.'"
+        - call: "Room.new('Keller', '').items"
+          expect: "[]"
+        - call: "r = Room.new('Keller', ''); r.add_item(Item.new('kiste', '')); r.add_item(Item.new('lampe', '')); r.items.map(&:name)"
+          expect: "['kiste', 'lampe']"
+        - call: "r = Room.new('Keller', ''); r.add_item(Item.new('kiste', '')); r.take('kiste').name"
+          expect: "'kiste'"
+        - call: "r = Room.new('Keller', ''); r.add_item(Item.new('kiste', '')); r.add_item(Item.new('lampe', '')); r.take('kiste'); r.items.map(&:name)"
+          expect: "['lampe']"
+          say: "Was herausgenommen ist, liegt nicht mehr im Raum: `take` entfernt es aus der Liste."
+        - call: "r = Room.new('Keller', ''); r.add_item(Item.new('kiste', '')); r.take('lampe')"
+          expect: "nil"
+        - call: "r = Room.new('Keller', ''); r.add_item(Item.new('kiste', '')); r.take('lampe'); r.items.map(&:name)"
+          expect: "['kiste']"
+          say: "Gibt es keinen Gegenstand mit dem Namen, bleibt die Liste, wie sie ist."
+    hint:
+      - "`Item` sieht aus wie der Anfang von `Room`: zwei Attribute und `attr_reader`. Der Raum bekommt in `initialize` `@items = []` und ein `:items` beim `attr_reader`."
+      - "In `take` suchst du den Gegenstand mit `@items.find { |item| item.name == name }`, nimmst ihn mit `@items.delete(item)` heraus, wenn es ihn gibt, und gibst ihn zurück."
+    solution: |
+      ```ruby
+      class Item
+        attr_reader :name, :description
+
+        def initialize(name, description)
+          @name = name
+          @description = description
+        end
+      end
+      ```
+
+      und in `Room`, neben `@items = []` in `initialize` und `:items` beim `attr_reader`:
+
+      ```ruby
+      def add_item(item)
+        @items << item
+      end
+
+      def take(name)
+        item = @items.find { |i| i.name == name }
+        @items.delete(item) if item
+        item
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Item` für Gegenstände, gebaut mit Namen und Beschreibung, `Item("kiste", "Eine schwere Holzkiste.")`, mit den Attributen `name` und `description`. Ein Raum bekommt eine Liste seiner Gegenstände im Attribut `items`: `add_item(item)` legt einen hinein, und `take(name)` nimmt den Gegenstand mit diesem Namen heraus und gibt ihn zurück, oder `None`, wenn keiner so heißt.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "Item('kiste', 'Eine schwere Holzkiste.').description"
+            expect: "'Eine schwere Holzkiste.'"
+          - call: "Room('Keller', '').items"
+            expect: "[]"
+          - call: "r = Room('Keller', ''); r.add_item(Item('kiste', '')); r.add_item(Item('lampe', '')); [i.name for i in r.items]"
+            expect: "['kiste', 'lampe']"
+          - call: "r = Room('Keller', ''); r.add_item(Item('kiste', '')); r.take('kiste').name"
+            expect: "'kiste'"
+          - call: "r = Room('Keller', ''); r.add_item(Item('kiste', '')); r.add_item(Item('lampe', '')); r.take('kiste'); [i.name for i in r.items]"
+            expect: "['lampe']"
+            say: "Was herausgenommen ist, liegt nicht mehr im Raum: `take` entfernt es aus der Liste."
+          - call: "r = Room('Keller', ''); r.add_item(Item('kiste', '')); r.take('lampe')"
+            expect: "None"
+          - call: "r = Room('Keller', ''); r.add_item(Item('kiste', '')); r.take('lampe'); [i.name for i in r.items]"
+            expect: "['kiste']"
+            say: "Gibt es keinen Gegenstand mit dem Namen, bleibt die Liste, wie sie ist."
+      hint:
+        - "`Item` sieht aus wie der Anfang von `Room`: zwei Attribute. Der Raum bekommt in `__init__` `self.items = []`."
+        - "In `take` gehst du durch `self.items`; hat ein Gegenstand den Namen, nimmst du ihn mit `self.items.remove(item)` heraus und gibst ihn zurück. Nach der Schleife gibst du `None` zurück."
+      solution: |
+        ```python
+        class Item:
+            def __init__(self, name, description):
+                self.name = name
+                self.description = description
+        ```
+
+        und in `Room`, neben `self.items = []` in `__init__`:
+
+        ```python
+        def add_item(self, item):
+            self.items.append(item)
+
+        def take(self, name):
+            for item in self.items:
+                if item.name == name:
+                    self.items.remove(item)
+                    return item
+            return None
+        ```
+
+  - id: beschreibung
+    title: Was die Spielerin sieht
+    prompt: |
+      Schreib in `Room` eine Methode `describe`, die den Raum als Text beschreibt, Zeile für Zeile: den Namen, die Beschreibung, dann `Hier liegt: ` mit den Namen der Gegenstände, durch Komma und Leerzeichen getrennt (die Zeile fehlt, wenn nichts da liegt), und zuletzt `Ausgänge: ` mit den Richtungen, ebenso getrennt, oder `Ausgänge: keine`. Die Zeilen trennt `"\n"`, wie im Beispiel oben auf der Seite.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "k = Room.new('Küche', 'Es riecht nach Kaffee.'); k.add_item(Item.new('schlüssel', '')); k.add_item(Item.new('apfel', '')); k.connect('süden', Room.new('Flur', '')); k.describe.split(\"\\n\")"
+          expect: "['Küche', 'Es riecht nach Kaffee.', 'Hier liegt: schlüssel, apfel', 'Ausgänge: süden']"
+        - call: "f = Room.new('Flur', 'Ein langer Flur.'); f.connect('norden', Room.new('Küche', '')); f.connect('osten', Room.new('Keller', '')); f.describe.split(\"\\n\")"
+          expect: "['Flur', 'Ein langer Flur.', 'Ausgänge: norden, osten']"
+          say: "Liegt nichts im Raum, fehlt die Zeile `Hier liegt:` ganz."
+        - call: "Room.new('Zelle', 'Kahl.').describe.split(\"\\n\")"
+          expect: "['Zelle', 'Kahl.', 'Ausgänge: keine']"
+          say: "Ohne Ausgänge heißt die letzte Zeile `Ausgänge: keine`."
+        - call: "Room.new('Zelle', 'Kahl.').describe.end_with?(\"\\n\")"
+          expect: "false"
+          say: "Nach der letzten Zeile kommt kein Zeilenumbruch mehr: `join(\"\\n\")` setzt ihn nur zwischen die Zeilen."
+    hint:
+      - "Sammle die Zeilen in einer Liste, `lines = [@name, @description]`, hänge die beiden anderen an und setz sie am Ende mit `lines.join(\"\\n\")` zusammen."
+      - "`@items.map(&:name).join(', ')` gibt die Namen mit Komma; die Zeile hängst du nur an, `unless @items.empty?`."
+      - "Für die Ausgänge: `directions.empty? ? 'keine' : directions.join(', ')`."
+    solution: |
+      ```ruby
+      def describe
+        lines = [@name, @description]
+        lines << "Hier liegt: #{@items.map(&:name).join(', ')}" unless @items.empty?
+        lines << "Ausgänge: #{directions.empty? ? 'keine' : directions.join(', ')}"
+        lines.join("\n")
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `Room` eine Methode `describe()`, die den Raum als Text beschreibt, Zeile für Zeile: den Namen, die Beschreibung, dann `Hier liegt: ` mit den Namen der Gegenstände, durch Komma und Leerzeichen getrennt (die Zeile fehlt, wenn nichts da liegt), und zuletzt `Ausgänge: ` mit den Richtungen, ebenso getrennt, oder `Ausgänge: keine`. Die Zeilen trennt `"\n"`, wie im Beispiel oben auf der Seite.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "k = Room('Küche', 'Es riecht nach Kaffee.'); k.add_item(Item('schlüssel', '')); k.add_item(Item('apfel', '')); k.connect('süden', Room('Flur', '')); k.describe().split(\"\\n\")"
+            expect: "['Küche', 'Es riecht nach Kaffee.', 'Hier liegt: schlüssel, apfel', 'Ausgänge: süden']"
+          - call: "f = Room('Flur', 'Ein langer Flur.'); f.connect('norden', Room('Küche', '')); f.connect('osten', Room('Keller', '')); f.describe().split(\"\\n\")"
+            expect: "['Flur', 'Ein langer Flur.', 'Ausgänge: norden, osten']"
+            say: "Liegt nichts im Raum, fehlt die Zeile `Hier liegt:` ganz."
+          - call: "Room('Zelle', 'Kahl.').describe().split(\"\\n\")"
+            expect: "['Zelle', 'Kahl.', 'Ausgänge: keine']"
+            say: "Ohne Ausgänge heißt die letzte Zeile `Ausgänge: keine`."
+          - call: "Room('Zelle', 'Kahl.').describe().endswith(\"\\n\")"
+            expect: "False"
+            say: "Nach der letzten Zeile kommt kein Zeilenumbruch mehr: `\"\\n\".join(lines)` setzt ihn nur zwischen die Zeilen."
+      hint:
+        - "Sammle die Zeilen in einer Liste, `lines = [self.name, self.description]`, hänge die beiden anderen an und setz sie am Ende mit `\"\\n\".join(lines)` zusammen."
+        - "`\", \".join(item.name for item in self.items)` gibt die Namen mit Komma; die Zeile hängst du nur an, `if self.items:`."
+        - "Für die Ausgänge: `\", \".join(self.directions())`, oder `keine`, wenn die Liste leer ist."
+      solution: |
+        ```python
+        def describe(self):
+            lines = [self.name, self.description]
+            if self.items:
+                lines.append("Hier liegt: " + ", ".join(item.name for item in self.items))
+            exits = self.directions()
+            lines.append("Ausgänge: " + (", ".join(exits) if exits else "keine"))
+            return "\n".join(lines)
+        ```
+
+  - id: spielerin
+    title: Die Spielerin geht und nimmt
+    prompt: |
+      Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player.new(hall)`. `room` gibt ihren Raum zurück, `inventory` ihre Tasche, eine Liste, anfangs leer. `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums zurück; gibt es dort keinen Ausgang, bleibt sie stehen, und `go` gibt `Da geht es nicht weiter.` zurück. `take(name)` nimmt einen Gegenstand aus dem Raum in die Tasche und gibt `Du nimmst schlüssel.` zurück, mit seinem Namen; liegt keiner mit diesem Namen da, `Hier liegt nichts mit dem Namen schlüssel.`
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "h = Room.new('Flur', ''); Player.new(h).room.name"
+          expect: "'Flur'"
+        - call: "Player.new(Room.new('Flur', '')).inventory"
+          expect: "[]"
+        - call: "h = Room.new('Flur', 'Lang.'); k = Room.new('Küche', 'Warm.'); h.connect('norden', k); p = Player.new(h); p.go('norden')"
+          expect: "\"Küche\\nWarm.\\nAusgänge: keine\""
+          say: "`go` gibt zurück, was der neue Raum über sich sagt: `@room.describe`."
+        - call: "h = Room.new('Flur', ''); k = Room.new('Küche', ''); h.connect('norden', k); p = Player.new(h); p.go('norden'); p.room.name"
+          expect: "'Küche'"
+        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.go('osten')"
+          expect: "'Da geht es nicht weiter.'"
+        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.go('osten'); p.room.name"
+          expect: "'Flur'"
+          say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel')"
+          expect: "'Du nimmst schlüssel.'"
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel'); [p.inventory.map(&:name), h.items.map(&:name)]"
+          expect: "[['schlüssel'], []]"
+          say: "Der Gegenstand wechselt vom Raum in die Tasche: `@room.take(name)` gibt ihn heraus, und er kommt in `@inventory`."
+        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.take('lampe')"
+          expect: "'Hier liegt nichts mit dem Namen lampe.'"
+    hint:
+      - "Die Spielerin merkt sich `@room` und `@inventory = []`. Beide braucht man von außen: `attr_reader :room, :inventory`."
+      - "In `go` fragst du `@room.exit_to(direction)`. Ist das `nil`, gibst du `Da geht es nicht weiter.` zurück; sonst weist du `@room` den neuen Raum zu und gibst `@room.describe` zurück."
+      - "In `take` holst du mit `@room.take(name)` den Gegenstand; ist er `nil`, gibst du die Meldung zurück, sonst legst du ihn in `@inventory`."
+    solution: |
+      ```ruby
+      class Player
+        attr_reader :room, :inventory
+
+        def initialize(room)
+          @room = room
+          @inventory = []
+        end
+
+        def go(direction)
+          target = @room.exit_to(direction)
+          return "Da geht es nicht weiter." if target.nil?
+          @room = target
+          @room.describe
+        end
+
+        def take(name)
+          item = @room.take(name)
+          return "Hier liegt nichts mit dem Namen #{name}." if item.nil?
+          @inventory << item
+          "Du nimmst #{item.name}."
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player(hall)`. Das Attribut `room` ist ihr Raum, `inventory` ihre Tasche, eine Liste, anfangs leer. `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums zurück; gibt es dort keinen Ausgang, bleibt sie stehen, und `go` gibt `Da geht es nicht weiter.` zurück. `take(name)` nimmt einen Gegenstand aus dem Raum in die Tasche und gibt `Du nimmst schlüssel.` zurück, mit seinem Namen; liegt keiner mit diesem Namen da, `Hier liegt nichts mit dem Namen schlüssel.`
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "h = Room('Flur', ''); Player(h).room.name"
+            expect: "'Flur'"
+          - call: "Player(Room('Flur', '')).inventory"
+            expect: "[]"
+          - call: "h = Room('Flur', 'Lang.'); k = Room('Küche', 'Warm.'); h.connect('norden', k); p = Player(h); p.go('norden')"
+            expect: "'Küche\\nWarm.\\nAusgänge: keine'"
+            say: "`go` gibt zurück, was der neue Raum über sich sagt: `self.room.describe()`."
+          - call: "h = Room('Flur', ''); k = Room('Küche', ''); h.connect('norden', k); p = Player(h); p.go('norden'); p.room.name"
+            expect: "'Küche'"
+          - call: "h = Room('Flur', ''); p = Player(h); p.go('osten')"
+            expect: "'Da geht es nicht weiter.'"
+          - call: "h = Room('Flur', ''); p = Player(h); p.go('osten'); p.room.name"
+            expect: "'Flur'"
+            say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
+          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); p = Player(h); p.take('schlüssel')"
+            expect: "'Du nimmst schlüssel.'"
+          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); p = Player(h); p.take('schlüssel'); [[i.name for i in p.inventory], [i.name for i in h.items]]"
+            expect: "[['schlüssel'], []]"
+            say: "Der Gegenstand wechselt vom Raum in die Tasche: `self.room.take(name)` gibt ihn heraus, und er kommt in `self.inventory`."
+          - call: "h = Room('Flur', ''); p = Player(h); p.take('lampe')"
+            expect: "'Hier liegt nichts mit dem Namen lampe.'"
+      hint:
+        - "Die Spielerin merkt sich `self.room` und `self.inventory = []`."
+        - "In `go` fragst du `self.room.exit_to(direction)`. Ist das `None`, gibst du `Da geht es nicht weiter.` zurück; sonst weist du `self.room` den neuen Raum zu und gibst `self.room.describe()` zurück."
+        - "In `take` holst du mit `self.room.take(name)` den Gegenstand; ist er `None`, gibst du die Meldung zurück, sonst hängst du ihn an `self.inventory`."
+      solution: |
+        ```python
+        class Player:
+            def __init__(self, room):
+                self.room = room
+                self.inventory = []
+
+            def go(self, direction):
+                target = self.room.exit_to(direction)
+                if target is None:
+                    return "Da geht es nicht weiter."
+                self.room = target
+                return self.room.describe()
+
+            def take(self, name):
+                item = self.room.take(name)
+                if item is None:
+                    return f"Hier liegt nichts mit dem Namen {name}."
+                self.inventory.append(item)
+                return f"Du nimmst {item.name}."
+        ```
+
+  - id: diagramm
+    title: Gegenstände, die etwas können
+    prompt: |
+      Leg `textadventure/textadventure.uml` an und zeichne darin die Klasse `Item` mit einer Methode `+ use(player: Player): String` und die Klassen `Key` und `Food`, die von `Item` erben und `use` überschreiben. Dazu die Klasse `Player` mit einer Methode `+ use(name: String): String`.
+    check:
+      type: classes
+      file: textadventure/textadventure.uml
+      classes:
+        - name: Item
+          methods: ["+ use(player: Player): String"]
+        - name: Key
+          extends: Item
+          overrides: ["+ use(player: Player): String"]
+        - name: Food
+          extends: Item
+          overrides: ["+ use(player: Player): String"]
+        - name: Player
+          methods: ["+ use(name: String): String"]
+    feedback:
+      - when: { problem: extends }
+        say: "Eine Klasse, die erbt, schreibt die UML-Werkstatt `class Key extends Item`."
+      - when: { problem: override }
+        say: "`Key` und `Food` erben `use` von `Item`, sollen es aber anders machen: Schreib `use` auch in ihren eigenen Kasten."
+    hint:
+      - "Eine Klasse, die erbt, beginnt mit `class Key extends Item`. Darunter, eingerückt, steht nur, was sie anders macht."
+      - "`use` steht dreimal: in `Item` mit dem, was ein gewöhnlicher Gegenstand tut, und in `Key` und `Food`, die es überschreiben."
+    solution: |
+      ```uml
+      class Item
+        - name: String
+        - description: String
+        + use(player: Player): String
+
+      class Key extends Item
+        + use(player: Player): String
+
+      class Food extends Item
+        + use(player: Player): String
+
+      class Player
+        + go(direction: String): String
+        + take(name: String): String
+        + use(name: String): String
+      ```
+
+  - id: schloss
+    title: Schlüssel, Schloss und Apfel
+    prompt: |
+      Jetzt der Code zum Diagramm, in `adventure.rb`:
+
+      - `Room` bekommt `lock(direction, key_name)`, das die Tür in dieser Richtung abschließt; der Schlüssel, der passt, heißt `key_name`. `locked?(direction)` sagt, ob sie verschlossen ist, und `unlock(key_name)` schließt alle Türen des Raums auf, zu denen dieser Schlüssel passt, und gibt `true` zurück, wenn es mindestens eine gab, sonst `false`. In `describe` steht hinter einer verschlossenen Richtung ` (verschlossen)`.
+      - `go` gibt bei einer verschlossenen Tür `Die Tür nach osten ist verschlossen.` zurück, mit der Richtung, und die Spielerin bleibt stehen.
+      - `Item` bekommt `use(player)`, das `Damit kannst du hier nichts anfangen.` zurückgibt. `Key` erbt von `Item`; sein `use` schließt im Raum der Spielerin die Türen auf, zu denen er passt (sein Name ist der Name des Schlüssels), und gibt `Du schließt die Tür auf.` zurück, sonst `Hier passt schlüssel in kein Schloss.`, mit seinem Namen. `Food` erbt auch von `Item`; sein `use` nimmt es aus der Tasche der Spielerin und gibt `Du isst apfel. Knackig und süß.` zurück, mit Namen und Beschreibung.
+      - `Player` bekommt `use(name)`: Es sucht den Gegenstand in der Tasche und ruft sein `use` auf; ist keiner mit diesem Namen da, gibt es `Du hast nichts mit dem Namen apfel.` zurück.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); h.locked?('osten')"
+          expect: "true"
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.locked?('osten')"
+          expect: "false"
+        - call: "h = Room.new('Flur', 'Lang.'); h.connect('norden', Room.new('Küche', '')); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); h.describe.split(\"\\n\").last"
+          expect: "'Ausgänge: norden, osten (verschlossen)'"
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); p = Player.new(h); [p.go('osten'), p.room.name]"
+          expect: "['Die Tür nach osten ist verschlossen.', 'Flur']"
+          say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen. Frag in `go` den Raum mit `locked?`, bevor du `@room` änderst."
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('dietrich'), h.unlock('schlüssel'), h.locked?('osten')]"
+          expect: "[false, true, false]"
+        - call: "Item.new('kiste', '').use(nil)"
+          expect: "'Damit kannst du hier nichts anfangen.'"
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); p = Player.new(h); h.add_item(Key.new('schlüssel', '')); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\").first]"
+          expect: "['Du schließt die Tür auf.', 'Keller']"
+        - call: "h = Room.new('Flur', ''); h.add_item(Key.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel'); p.use('schlüssel')"
+          expect: "'Hier passt schlüssel in kein Schloss.'"
+        - call: "h = Room.new('Flur', ''); h.add_item(Food.new('apfel', 'Knackig und süß.')); p = Player.new(h); p.take('apfel'); [p.use('apfel'), p.inventory]"
+          expect: "['Du isst apfel. Knackig und süß.', []]"
+          say: "Gegessen ist gegessen: `Food#use` nimmt sich selbst aus der Tasche, `player.inventory.delete(self)`."
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('kiste', '')); p = Player.new(h); p.take('kiste'); p.use('kiste')"
+          expect: "'Damit kannst du hier nichts anfangen.'"
+        - call: "p = Player.new(Room.new('Flur', '')); p.use('apfel')"
+          expect: "'Du hast nichts mit dem Namen apfel.'"
+        - call: "Key.new('schlüssel', '').is_a?(Item) && Food.new('apfel', '').is_a?(Item)"
+          expect: "true"
+          say: "`Key` und `Food` erben von `Item`: `class Key < Item`."
+    hint:
+      - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `@locks = {}`: die Richtung als Schlüssel, der Name des passenden Schlüssels als Wert. `locked?` fragt `@locks.key?(direction)`."
+      - "`unlock` sucht die Richtungen, deren Wert `key_name` ist, `@locks.select { |_, key| key == key_name }.keys`, löscht sie aus `@locks` und gibt zurück, ob es welche gab."
+      - "`Key#use(player)` ruft `player.room.unlock(name)` auf und gibt je nach Ergebnis die eine oder andere Meldung zurück. `Player#use(name)` findet den Gegenstand wie `Room#take`, nimmt ihn aber nicht heraus, und gibt `item.use(self)` zurück: `self` ist die Spielerin."
+    solution: |
+      In `Room`, neben `@locks = {}` in `initialize`:
+
+      ```ruby
+      def lock(direction, key_name)
+        @locks[direction] = key_name
+      end
+
+      def locked?(direction)
+        @locks.key?(direction)
+      end
+
+      def unlock(key_name)
+        doors = @locks.select { |_, key| key == key_name }.keys
+        doors.each { |direction| @locks.delete(direction) }
+        !doors.empty?
+      end
+      ```
+
+      in `describe` die Ausgänge mit `directions.map { |d| locked?(d) ? "#{d} (verschlossen)" : d }`, in `Player#go` vor dem Gehen `return "Die Tür nach #{direction} ist verschlossen." if @room.locked?(direction)`, und:
+
+      ```ruby
+      class Item
+        # …
+        def use(player)
+          "Damit kannst du hier nichts anfangen."
+        end
+      end
+
+      class Key < Item
+        def use(player)
+          if player.room.unlock(name)
+            "Du schließt die Tür auf."
+          else
+            "Hier passt #{name} in kein Schloss."
+          end
+        end
+      end
+
+      class Food < Item
+        def use(player)
+          player.inventory.delete(self)
+          "Du isst #{name}. #{description}"
+        end
+      end
+
+      class Player
+        # …
+        def use(name)
+          item = @inventory.find { |i| i.name == name }
+          return "Du hast nichts mit dem Namen #{name}." if item.nil?
+          item.use(self)
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Jetzt der Code zum Diagramm, in `adventure.py`:
+
+        - `Room` bekommt `lock(direction, key_name)`, das die Tür in dieser Richtung abschließt; der Schlüssel, der passt, heißt `key_name`. `is_locked(direction)` sagt, ob sie verschlossen ist, und `unlock(key_name)` schließt alle Türen des Raums auf, zu denen dieser Schlüssel passt, und gibt `True` zurück, wenn es mindestens eine gab, sonst `False`. In `describe()` steht hinter einer verschlossenen Richtung ` (verschlossen)`.
+        - `go` gibt bei einer verschlossenen Tür `Die Tür nach osten ist verschlossen.` zurück, mit der Richtung, und die Spielerin bleibt stehen.
+        - `Item` bekommt `use(player)`, das `Damit kannst du hier nichts anfangen.` zurückgibt. `Key` erbt von `Item`; sein `use` schließt im Raum der Spielerin die Türen auf, zu denen er passt (sein Name ist der Name des Schlüssels), und gibt `Du schließt die Tür auf.` zurück, sonst `Hier passt schlüssel in kein Schloss.`, mit seinem Namen. `Food` erbt auch von `Item`; sein `use` nimmt es aus der Tasche der Spielerin und gibt `Du isst apfel. Knackig und süß.` zurück, mit Namen und Beschreibung.
+        - `Player` bekommt `use(name)`: Es sucht den Gegenstand in der Tasche und ruft sein `use` auf; ist keiner mit diesem Namen da, gibt es `Du hast nichts mit dem Namen apfel.` zurück.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.is_locked('osten')"
+            expect: "True"
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.is_locked('osten')"
+            expect: "False"
+          - call: "h = Room('Flur', 'Lang.'); h.connect('norden', Room('Küche', '')); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.describe().split(\"\\n\")[-1]"
+            expect: "'Ausgänge: norden, osten (verschlossen)'"
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); p = Player(h); [p.go('osten'), p.room.name]"
+            expect: "['Die Tür nach osten ist verschlossen.', 'Flur']"
+            say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen. Frag in `go` den Raum mit `is_locked`, bevor du `self.room` änderst."
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('dietrich'), h.unlock('schlüssel'), h.is_locked('osten')]"
+            expect: "[False, True, False]"
+          - call: "Item('kiste', '').use(None)"
+            expect: "'Damit kannst du hier nichts anfangen.'"
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); p = Player(h); h.add_item(Key('schlüssel', '')); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\")[0]]"
+            expect: "['Du schließt die Tür auf.', 'Keller']"
+          - call: "h = Room('Flur', ''); h.add_item(Key('schlüssel', '')); p = Player(h); p.take('schlüssel'); p.use('schlüssel')"
+            expect: "'Hier passt schlüssel in kein Schloss.'"
+          - call: "h = Room('Flur', ''); h.add_item(Food('apfel', 'Knackig und süß.')); p = Player(h); p.take('apfel'); [p.use('apfel'), p.inventory]"
+            expect: "['Du isst apfel. Knackig und süß.', []]"
+            say: "Gegessen ist gegessen: `Food.use` nimmt sich selbst aus der Tasche, `player.inventory.remove(self)`."
+          - call: "h = Room('Flur', ''); h.add_item(Item('kiste', '')); p = Player(h); p.take('kiste'); p.use('kiste')"
+            expect: "'Damit kannst du hier nichts anfangen.'"
+          - call: "p = Player(Room('Flur', '')); p.use('apfel')"
+            expect: "'Du hast nichts mit dem Namen apfel.'"
+          - call: "isinstance(Key('schlüssel', ''), Item) and isinstance(Food('apfel', ''), Item)"
+            expect: "True"
+            say: "`Key` und `Food` erben von `Item`: `class Key(Item):`."
+      hint:
+        - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `self.locks = {}`: die Richtung als Schlüssel, der Name des passenden Schlüssels als Wert. `is_locked` fragt `direction in self.locks`."
+        - "`unlock` sucht die Richtungen, deren Wert `key_name` ist, `[d for d, key in self.locks.items() if key == key_name]`, löscht sie aus `self.locks` und gibt zurück, ob es welche gab."
+        - "`Key.use(self, player)` ruft `player.room.unlock(self.name)` auf und gibt je nach Ergebnis die eine oder andere Meldung zurück. `Player.use(self, name)` findet den Gegenstand in `self.inventory`, nimmt ihn aber nicht heraus, und gibt `item.use(self)` zurück: `self` ist die Spielerin."
+      solution: |
+        In `Room`, neben `self.locks = {}` in `__init__`:
+
+        ```python
+        def lock(self, direction, key_name):
+            self.locks[direction] = key_name
+
+        def is_locked(self, direction):
+            return direction in self.locks
+
+        def unlock(self, key_name):
+            doors = [d for d, key in self.locks.items() if key == key_name]
+            for direction in doors:
+                del self.locks[direction]
+            return len(doors) > 0
+        ```
+
+        in `describe` die Ausgänge mit `[f"{d} (verschlossen)" if self.is_locked(d) else d for d in self.directions()]`, in `Player.go` vor dem Gehen `if self.room.is_locked(direction): return f"Die Tür nach {direction} ist verschlossen."`, und:
+
+        ```python
+        class Item:
+            # …
+            def use(self, player):
+                return "Damit kannst du hier nichts anfangen."
+
+
+        class Key(Item):
+            def use(self, player):
+                if player.room.unlock(self.name):
+                    return "Du schließt die Tür auf."
+                return f"Hier passt {self.name} in kein Schloss."
+
+
+        class Food(Item):
+            def use(self, player):
+                player.inventory.remove(self)
+                return f"Du isst {self.name}. {self.description}"
+
+
+        class Player:
+            # …
+            def use(self, name):
+                for item in self.inventory:
+                    if item.name == name:
+                        return item.use(self)
+                return f"Du hast nichts mit dem Namen {name}."
+        ```
+
+  - id: welt
+    title: Deine eigene Welt
+    prompt: |
+      Schreib in `adventure.rb` eine Funktion `build_world`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt. Die Welt hat mindestens drei Räume, die man vom ersten Raum aus erreicht, mindestens eine verschlossene Tür und irgendwo einen Schlüssel. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
+
+      ```ruby
+      def all_rooms(start)
+        seen = [start]
+        queue = [start]
+        until queue.empty?
+          room = queue.shift
+          room.directions.each do |direction|
+            other = room.exit_to(direction)
+            next if seen.include?(other)
+            seen << other
+            queue << other
+          end
+        end
+        seen
+      end
+      ```
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "build_world.is_a?(Player)"
+          expect: "true"
+          say: "`build_world` gibt die Spielerin zurück, als Letztes: `Player.new(…)`."
+        - call: "all_rooms(build_world.room).length >= 3"
+          expect: "true"
+          say: "Vom ersten Raum aus erreicht man noch keine drei Räume. Verbinde sie mit `connect`, in beide Richtungen, wo man zurückgehen können soll."
+        - call: "all_rooms(build_world.room).any? { |r| r.directions.any? { |d| r.locked?(d) } }"
+          expect: "true"
+          say: "In deiner Welt ist keine Tür verschlossen: `lock(direction, key_name)` an einem Raum."
+        - call: "all_rooms(build_world.room).any? { |r| r.items.any? { |i| i.is_a?(Key) } }"
+          expect: "true"
+          say: "In keinem erreichbaren Raum liegt ein Schlüssel, `Key.new(…)`."
+    hint:
+      - "Zeichne deine Welt zuerst auf Papier: Kästen für die Räume, Pfeile für die Ausgänge, eine Tür, die verschlossen ist, und wo der Schlüssel liegt."
+      - "Die kleine Welt oben auf der Seite ist ein Anfang: Bau weitere Räume dazu, verbinde sie mit `connect` und schließ eine Tür mit `lock` ab. Der Name des Schlüssels, `Key.new(\"schlüssel\", …)`, ist derselbe wie der in `lock`."
+    solution: |
+      ```ruby
+      def build_world
+        hall = Room.new("Flur", "Ein langer Flur mit knarrenden Dielen.")
+        kitchen = Room.new("Küche", "Es riecht nach Kaffee.")
+        cellar = Room.new("Keller", "Kalt und feucht. In der Ecke steht eine Kiste.")
+        hall.connect("norden", kitchen)
+        kitchen.connect("süden", hall)
+        hall.connect("osten", cellar)
+        cellar.connect("westen", hall)
+        hall.lock("osten", "schlüssel")
+        kitchen.add_item(Key.new("schlüssel", "Ein kleiner Messingschlüssel."))
+        kitchen.add_item(Food.new("apfel", "Knackig und süß."))
+        cellar.add_item(Item.new("kiste", "Eine schwere Holzkiste."))
+        Player.new(hall)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `adventure.py` eine Funktion `build_world()`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt. Die Welt hat mindestens drei Räume, die man vom ersten Raum aus erreicht, mindestens eine verschlossene Tür und irgendwo einen Schlüssel. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
+
+        ```python
+        def all_rooms(start):
+            seen = [start]
+            queue = [start]
+            while queue:
+                room = queue.pop(0)
+                for direction in room.directions():
+                    other = room.exit_to(direction)
+                    if other not in seen:
+                        seen.append(other)
+                        queue.append(other)
+            return seen
+        ```
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "isinstance(build_world(), Player)"
+            expect: "True"
+            say: "`build_world` gibt die Spielerin zurück: `return Player(…)`."
+          - call: "len(all_rooms(build_world().room)) >= 3"
+            expect: "True"
+            say: "Vom ersten Raum aus erreicht man noch keine drei Räume. Verbinde sie mit `connect`, in beide Richtungen, wo man zurückgehen können soll."
+          - call: "any(r.is_locked(d) for r in all_rooms(build_world().room) for d in r.directions())"
+            expect: "True"
+            say: "In deiner Welt ist keine Tür verschlossen: `lock(direction, key_name)` an einem Raum."
+          - call: "any(isinstance(i, Key) for r in all_rooms(build_world().room) for i in r.items)"
+            expect: "True"
+            say: "In keinem erreichbaren Raum liegt ein Schlüssel, `Key(…)`."
+      hint:
+        - "Zeichne deine Welt zuerst auf Papier: Kästen für die Räume, Pfeile für die Ausgänge, eine Tür, die verschlossen ist, und wo der Schlüssel liegt."
+        - "Die kleine Welt oben auf der Seite ist ein Anfang: Bau weitere Räume dazu, verbinde sie mit `connect` und schließ eine Tür mit `lock` ab. Der Name des Schlüssels, `Key(\"schlüssel\", …)`, ist derselbe wie der in `lock`."
+      solution: |
+        ```python
+        def build_world():
+            hall = Room("Flur", "Ein langer Flur mit knarrenden Dielen.")
+            kitchen = Room("Küche", "Es riecht nach Kaffee.")
+            cellar = Room("Keller", "Kalt und feucht. In der Ecke steht eine Kiste.")
+            hall.connect("norden", kitchen)
+            kitchen.connect("süden", hall)
+            hall.connect("osten", cellar)
+            cellar.connect("westen", hall)
+            hall.lock("osten", "schlüssel")
+            kitchen.add_item(Key("schlüssel", "Ein kleiner Messingschlüssel."))
+            kitchen.add_item(Food("apfel", "Knackig und süß."))
+            cellar.add_item(Item("kiste", "Eine schwere Holzkiste."))
+            return Player(hall)
+        ```
+
+  - id: spieltest
+    title: Was beim Spieltest auffiel
+    prompt: |
+      Jemand aus deiner Klasse hat dein Spiel gespielt. Wo ist sie oder er hängen geblieben, und was änderst du deshalb an deiner Welt oder an deinen Klassen?
+    check:
+      type: reflection
+      min_words: 20
+    examples:
+      - |
+        Er hat den Schlüssel nicht gefunden, weil er nie in die Küche gegangen
+        ist: In der Beschreibung des Flurs stand der Ausgang nach Norden, aber
+        nichts machte neugierig. Ich schreibe in die Beschreibung, dass es aus
+        dem Norden nach Kaffee riecht.
+      - |
+        Sie hat »nimm Schlüssel« mit großem S getippt und bekam »Hier liegt
+        nichts«. Die Spielschleife macht alles klein, aber mein Schlüssel hieß
+        »Schlüssel«. Ich habe die Namen aller Gegenstände kleingeschrieben.
+
+  - id: abgabe
+    title: Dein Abenteuer
+    prompt: |
+      Gib den Ordner `textadventure` ab, mit deinen Klassen und deiner Welt. Deine Lehrkraft sieht genau diesen Stand und kann dein Spiel ausprobieren.
+    check:
+      type: submit
+      paths: [textadventure]
+      max_size: 1MB

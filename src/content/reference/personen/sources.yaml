@@ -93,6 +93,34 @@ eccles-jordan:
   - text: Im RS-Flipflop aus zwei NOR-Gattern halten sich die beiden Gatter genauso gegenseitig fest wie die beiden Röhren
     none: Workspace
 
+nygaard-dahl:
+  - text: (1926–2002) und Ole-Johan Dahl (1931–2002), norwegische Informatiker am Norwegischen Rechenzentrum in Oslo
+    sources:
+      - url: https://en.wikipedia.org/wiki/Kristen_Nygaard
+        quote: "Kristen Nygaard (27 August 1926 – 10 August 2002) was a Norwegian computer scientist"
+      - url: https://en.wikipedia.org/wiki/Ole-Johan_Dahl
+        quote: "Ole-Johan Dahl (12 October 1931 – 29 June 2002) was a Norwegian computer scientist."
+      - url: https://en.wikipedia.org/wiki/Simula
+        quote: "developed in the 1960s at the Norwegian Computing Center in Oslo, by Ole-Johan Dahl and Kristen Nygaard."
+  - text: In den 1960er-Jahren bauten sie Simula, eine Sprache, um Abläufe zu simulieren
+    sources:
+      - url: https://en.wikipedia.org/wiki/Simula
+        quote: "the first Simula version by 1962 was designed for doing simulations."
+  - text: In Simula 67 gab es zum ersten Mal Objekte, Klassen, Unterklassen und Vererbung
+    sources:
+      - url: https://en.wikipedia.org/wiki/Simula
+        quote: "Simula 67 introduced objects, classes, inheritance and subclasses, virtual procedures, coroutines, and discrete event simulation"
+  - text: Smalltalk übernahm die Idee, später C++ und Java
+    sources:
+      - url: https://en.wikipedia.org/wiki/Simula
+        quote: "Simula was influential in the development of Smalltalk … Bjarne Stroustrup, starter of C++, and James Gosling, the author of Java, have acknowledged Simula as a major influence."
+  - text: Für Simula bekamen beide den Turing Award für 2001
+    sources:
+      - url: https://en.wikipedia.org/wiki/Simula
+        quote: "Dahl and Nygaard … received the 2001 A. M. Turing Award"
+  - text: Jede Klasse, die du schreibst, geht auf ihre Arbeit zurück
+    none: Workspace
+
 snellius:
   - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
     sources:

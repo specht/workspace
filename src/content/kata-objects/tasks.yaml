@@ -1,0 +1,1356 @@
+format: 1
+activity: kata-objects
+tasks:
+  - id: predict-two-counters
+    title: "Zwei Zähler"
+    level: 1
+    prediction: true
+    prompt: |
+      Was gibt die letzte Zeile aus?
+
+      ```ruby
+      a = Counter.new
+      b = Counter.new
+      a.increment
+      a.increment
+      b.increment
+      puts a.value
+      ```
+    check:
+      type: number
+      expect: 2
+    feedback:
+      - when: { equals: 3 }
+        say: "Dann hätten `a` und `b` einen gemeinsamen Zähler. Jedes Objekt hat aber sein eigenes Attribut `value`: Wie oft wurde `a.increment` aufgerufen?"
+      - when: { equals: 1 }
+        say: "Das ist der Stand von `b`. Gefragt ist `a`."
+      - when: { equals: 0 }
+        say: "`increment` ändert das Attribut des Objekts, und das bleibt, wenn die Methode fertig ist."
+    python:
+      prompt: |
+        Was gibt die letzte Zeile aus?
+
+        ```python
+        a = Counter()
+        b = Counter()
+        a.increment()
+        a.increment()
+        b.increment()
+        print(a.value)
+        ```
+    javascript:
+      prompt: |
+        Was gibt die letzte Zeile aus?
+
+        ```javascript
+        const a = new Counter();
+        const b = new Counter();
+        a.increment();
+        a.increment();
+        b.increment();
+        console.log(a.value);
+        ```
+
+  - id: rectangle
+    title: "Ein Rechteck"
+    level: 1
+    prompt: |
+      Schreib eine Klasse `Rectangle`, deren Objekte mit Breite und Höhe gebaut werden, `Rectangle.new(3, 4)`, und die zwei Methoden hat: `area` gibt die Fläche zurück (`12`), `perimeter` den Umfang (`14`). Die Prüfung baut auch zwei Rechtecke nebeneinander.
+    starter: |
+      class Rectangle
+        def initialize(width, height)
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "Rectangle.new(3, 4).area"
+          expect: "12"
+        - call: "Rectangle.new(3, 4).perimeter"
+          expect: "14"
+        - call: "Rectangle.new(5, 5).area"
+          expect: "25"
+        - call: "r = Rectangle.new(2, 7); r.perimeter"
+          expect: "18"
+        - call: "a = Rectangle.new(1, 2); b = Rectangle.new(10, 20); a.area + b.area"
+          expect: "202"
+          say: "Jedes Rechteck merkt sich seine eigene Breite und Höhe, in seinen Attributen `@width` und `@height`."
+    hint:
+      - "`initialize` bekommt Breite und Höhe, aber die Parameter sind weg, wenn `initialize` fertig ist. Was muss das Objekt sich merken, damit `area` später daran kommt?"
+      - "Schreib in `initialize` `@width = width` und `@height = height`. Dann können `area` und `perimeter` mit `@width` und `@height` rechnen."
+    solution: |
+      ```ruby
+      class Rectangle
+        def initialize(width, height)
+          @width = width
+          @height = height
+        end
+
+        def area
+          @width * @height
+        end
+
+        def perimeter
+          2 * (@width + @height)
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Rectangle`, deren Objekte mit Breite und Höhe gebaut werden, `Rectangle(3, 4)`, und die zwei Methoden hat: `area()` gibt die Fläche zurück (`12`), `perimeter()` den Umfang (`14`). Die Prüfung baut auch zwei Rechtecke nebeneinander.
+      starter: |
+        class Rectangle:
+            def __init__(self, width, height):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "Rectangle(3, 4).perimeter()"
+            expect: "14"
+          - call: "Rectangle(5, 5).area()"
+            expect: "25"
+          - call: "r = Rectangle(2, 7); r.perimeter()"
+            expect: "18"
+          - call: "a = Rectangle(1, 2); b = Rectangle(10, 20); a.area() + b.area()"
+            expect: "202"
+            say: "Jedes Rechteck merkt sich seine eigene Breite und Höhe, in seinen Attributen `self.width` und `self.height`."
+      hint:
+        - "`__init__` bekommt Breite und Höhe, aber die Parameter sind weg, wenn `__init__` fertig ist. Was muss das Objekt sich merken, damit `area` später daran kommt?"
+        - "Schreib in `__init__` `self.width = width` und `self.height = height`. Dann können `area` und `perimeter` mit `self.width` und `self.height` rechnen."
+      solution: |
+        ```python
+        class Rectangle:
+            def __init__(self, width, height):
+                self.width = width
+                self.height = height
+
+            def area(self):
+                return self.width * self.height
+
+            def perimeter(self):
+                return 2 * (self.width + self.height)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Klasse `Rectangle`, deren Objekte mit Breite und Höhe gebaut werden, `new Rectangle(3, 4)`, und die zwei Methoden hat: `area()` gibt die Fläche zurück (`12`), `perimeter()` den Umfang (`14`). Die Prüfung baut auch zwei Rechtecke nebeneinander.
+      starter: |
+        class Rectangle {
+          constructor(width, height) {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "new Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "new Rectangle(3, 4).perimeter()"
+            expect: "14"
+          - call: "new Rectangle(5, 5).area()"
+            expect: "25"
+          - call: "const r = new Rectangle(2, 7); r.perimeter()"
+            expect: "18"
+          - call: "const a = new Rectangle(1, 2); const b = new Rectangle(10, 20); a.area() + b.area()"
+            expect: "202"
+            say: "Jedes Rechteck merkt sich seine eigene Breite und Höhe, in seinen Attributen `this.width` und `this.height`."
+      hint:
+        - "Der `constructor` bekommt Breite und Höhe, aber die Parameter sind weg, wenn er fertig ist. Was muss das Objekt sich merken, damit `area` später daran kommt?"
+        - "Schreib im `constructor` `this.width = width;` und `this.height = height;`. Dann können `area` und `perimeter` mit `this.width` und `this.height` rechnen."
+      solution: |
+        ```javascript
+        class Rectangle {
+          constructor(width, height) {
+            this.width = width;
+            this.height = height;
+          }
+
+          area() {
+            return this.width * this.height;
+          }
+
+          perimeter() {
+            return 2 * (this.width + this.height);
+          }
+        }
+        ```
+
+  - id: account
+    title: "Ein Konto, das nicht ins Minus geht"
+    level: 2
+    prompt: |
+      Schreib eine Klasse `Account` für ein Konto, das mit einem Kontostand gebaut wird, `Account.new(10)`. `deposit(amount)` zahlt ein, `balance` gibt den Kontostand zurück. `withdraw(amount)` hebt ab und gibt `true` zurück, aber nur, wenn genug da ist; sonst bleibt der Kontostand, wie er ist, und `withdraw` gibt `false` zurück.
+    starter: |
+      class Account
+        def initialize(balance)
+        end
+
+        def deposit(amount)
+        end
+
+        def withdraw(amount)
+        end
+
+        def balance
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "a = Account.new(10); a.deposit(5); a.balance"
+          expect: "15"
+        - call: "a = Account.new(10); a.withdraw(4)"
+          expect: "true"
+        - call: "a = Account.new(10); a.withdraw(4); a.balance"
+          expect: "6"
+        - call: "a = Account.new(10); a.withdraw(11)"
+          expect: "false"
+          say: "Auf dem Konto sind nur 10. Wer 11 abheben will, bekommt nichts, und `withdraw` sagt es mit `false`."
+        - call: "a = Account.new(10); a.withdraw(11); a.balance"
+          expect: "10"
+          say: "Ein Abheben, das nicht geht, darf den Kontostand nicht ändern: Prüf zuerst, ob genug da ist, und zieh erst dann ab."
+        - call: "a = Account.new(10); a.withdraw(10); a.balance"
+          expect: "0"
+          say: "Alles abheben geht: Danach steht das Konto auf 0, nicht im Minus."
+        - call: "a = Account.new(0); b = Account.new(0); a.deposit(3); b.balance"
+          expect: "0"
+    hint:
+      - "Das Konto merkt sich seinen Stand in einem Attribut, `@balance`. Alle vier Methoden arbeiten damit."
+      - "In `withdraw` kommt zuerst die Frage, ob `amount` größer ist als der Kontostand. Wenn ja: `return false`, ohne etwas zu ändern."
+      - "Sonst ziehst du ab und gibst `true` zurück: `@balance -= amount`, dann `true`."
+    solution: |
+      ```ruby
+      class Account
+        def initialize(balance)
+          @balance = balance
+        end
+
+        def deposit(amount)
+          @balance += amount
+        end
+
+        def withdraw(amount)
+          return false if amount > @balance
+          @balance -= amount
+          true
+        end
+
+        def balance
+          @balance
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Account` für ein Konto, das mit einem Kontostand gebaut wird, `Account(10)`. `deposit(amount)` zahlt ein, `balance()` gibt den Kontostand zurück. `withdraw(amount)` hebt ab und gibt `True` zurück, aber nur, wenn genug da ist; sonst bleibt der Kontostand, wie er ist, und `withdraw` gibt `False` zurück.
+      starter: |
+        class Account:
+            def __init__(self, balance):
+                pass
+
+            def deposit(self, amount):
+                pass
+
+            def withdraw(self, amount):
+                pass
+
+            def balance(self):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "a = Account(10); a.deposit(5); a.balance()"
+            expect: "15"
+          - call: "a = Account(10); a.withdraw(4)"
+            expect: "True"
+          - call: "a = Account(10); a.withdraw(4); a.balance()"
+            expect: "6"
+          - call: "a = Account(10); a.withdraw(11)"
+            expect: "False"
+            say: "Auf dem Konto sind nur 10. Wer 11 abheben will, bekommt nichts, und `withdraw` sagt es mit `False`."
+          - call: "a = Account(10); a.withdraw(11); a.balance()"
+            expect: "10"
+            say: "Ein Abheben, das nicht geht, darf den Kontostand nicht ändern: Prüf zuerst, ob genug da ist, und zieh erst dann ab."
+          - call: "a = Account(10); a.withdraw(10); a.balance()"
+            expect: "0"
+            say: "Alles abheben geht: Danach steht das Konto auf 0, nicht im Minus."
+          - call: "a = Account(0); b = Account(0); a.deposit(3); b.balance()"
+            expect: "0"
+      hint:
+        - "Das Konto merkt sich seinen Stand in einem Attribut. Nenn es nicht `self.balance`, denn so heißt schon die Methode; `self.amount` oder `self.money` geht."
+        - "In `withdraw` kommt zuerst die Frage, ob `amount` größer ist als der Kontostand. Wenn ja: `return False`, ohne etwas zu ändern."
+        - "Sonst ziehst du ab und gibst `True` zurück."
+      solution: |
+        ```python
+        class Account:
+            def __init__(self, balance):
+                self.money = balance
+
+            def deposit(self, amount):
+                self.money += amount
+
+            def withdraw(self, amount):
+                if amount > self.money:
+                    return False
+                self.money -= amount
+                return True
+
+            def balance(self):
+                return self.money
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Klasse `Account` für ein Konto, das mit einem Kontostand gebaut wird, `new Account(10)`. `deposit(amount)` zahlt ein, `balance()` gibt den Kontostand zurück. `withdraw(amount)` hebt ab und gibt `true` zurück, aber nur, wenn genug da ist; sonst bleibt der Kontostand, wie er ist, und `withdraw` gibt `false` zurück.
+      starter: |
+        class Account {
+          constructor(balance) {
+          }
+
+          deposit(amount) {
+          }
+
+          withdraw(amount) {
+          }
+
+          balance() {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "const a = new Account(10); a.deposit(5); a.balance()"
+            expect: "15"
+          - call: "const a = new Account(10); a.withdraw(4)"
+            expect: "true"
+          - call: "const a = new Account(10); a.withdraw(4); a.balance()"
+            expect: "6"
+          - call: "const a = new Account(10); a.withdraw(11)"
+            expect: "false"
+            say: "Auf dem Konto sind nur 10. Wer 11 abheben will, bekommt nichts, und `withdraw` sagt es mit `false`."
+          - call: "const a = new Account(10); a.withdraw(11); a.balance()"
+            expect: "10"
+            say: "Ein Abheben, das nicht geht, darf den Kontostand nicht ändern: Prüf zuerst, ob genug da ist, und zieh erst dann ab."
+          - call: "const a = new Account(10); a.withdraw(10); a.balance()"
+            expect: "0"
+            say: "Alles abheben geht: Danach steht das Konto auf 0, nicht im Minus."
+          - call: "const a = new Account(0); const b = new Account(0); a.deposit(3); b.balance()"
+            expect: "0"
+      hint:
+        - "Das Konto merkt sich seinen Stand in einem Attribut. Nenn es nicht `this.balance`, denn so heißt schon die Methode; `this.money` geht."
+        - "In `withdraw` kommt zuerst die Frage, ob `amount` größer ist als der Kontostand. Wenn ja: `return false;`, ohne etwas zu ändern."
+        - "Sonst ziehst du ab und gibst `true` zurück."
+      solution: |
+        ```javascript
+        class Account {
+          constructor(balance) {
+            this.money = balance;
+          }
+
+          deposit(amount) {
+            this.money += amount;
+          }
+
+          withdraw(amount) {
+            if (amount > this.money) {
+              return false;
+            }
+            this.money -= amount;
+            return true;
+          }
+
+          balance() {
+            return this.money;
+          }
+        }
+        ```
+
+  - id: playlist
+    title: "Die Playlist rechnet"
+    level: 2
+    prompt: |
+      Die Klassen `Song` und `Playlist` von oben stehen schon da. Schreib in `Playlist` zwei Methoden: `total_seconds` gibt zurück, wie lange alle Songs zusammen dauern, und `longest_title` den Titel des längsten Songs; dauern zwei gleich lang, den, der zuerst kam. In einer leeren Playlist ergibt `total_seconds` `0` und `longest_title` `nil`.
+    starter: |
+      class Song
+        attr_reader :title, :seconds
+
+        def initialize(title, seconds)
+          @title = title
+          @seconds = seconds
+        end
+      end
+
+      class Playlist
+        def initialize
+          @songs = []
+        end
+
+        def add(song)
+          @songs << song
+        end
+
+        def total_seconds
+        end
+
+        def longest_title
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "p = Playlist.new; p.add(Song.new('Intro', 95)); p.add(Song.new('Outro', 210)); p.total_seconds"
+          expect: "305"
+        - call: "p = Playlist.new; p.add(Song.new('Intro', 95)); p.add(Song.new('Outro', 210)); p.longest_title"
+          expect: "'Outro'"
+        - call: "p = Playlist.new; p.add(Song.new('A', 120)); p.add(Song.new('B', 300)); p.add(Song.new('C', 60)); p.longest_title"
+          expect: "'B'"
+        - call: "p = Playlist.new; p.add(Song.new('A', 100)); p.add(Song.new('B', 100)); p.longest_title"
+          expect: "'A'"
+          say: "Dauern zwei Songs gleich lang, gewinnt der erste: Nimm einen neuen nur, wenn er länger ist, nicht schon, wenn er gleich lang ist."
+        - call: "Playlist.new.total_seconds"
+          expect: "0"
+        - call: "Playlist.new.longest_title"
+          expect: "nil"
+          say: "In einer leeren Playlist gibt es keinen längsten Song."
+    hint:
+      - "Beide Methoden gehen durch `@songs`. Jeder Song kennt seine Länge, `song.seconds`, und seinen Titel, `song.title`."
+      - "Für `total_seconds` zählst du alle `song.seconds` zusammen, mit einer Schleife oder `@songs.sum { |song| song.seconds }`."
+      - "Für `longest_title` merkst du dir den längsten Song bisher, anfangs `nil`, und tauschst ihn nur, wenn ein Song länger ist. Am Ende gibst du seinen Titel zurück, oder `nil`, wenn es keinen gab."
+    solution: |
+      ```ruby
+      def total_seconds
+        @songs.sum { |song| song.seconds }
+      end
+
+      def longest_title
+        longest = nil
+        @songs.each do |song|
+          longest = song if longest.nil? || song.seconds > longest.seconds
+        end
+        longest&.title
+      end
+      ```
+    python:
+      prompt: |
+        Die Klassen `Song` und `Playlist` von oben stehen schon da. Schreib in `Playlist` zwei Methoden: `total_seconds()` gibt zurück, wie lange alle Songs zusammen dauern, und `longest_title()` den Titel des längsten Songs; dauern zwei gleich lang, den, der zuerst kam. In einer leeren Playlist ergibt `total_seconds()` `0` und `longest_title()` `None`.
+      starter: |
+        class Song:
+            def __init__(self, title, seconds):
+                self.title = title
+                self.seconds = seconds
+
+        class Playlist:
+            def __init__(self):
+                self.songs = []
+
+            def add(self, song):
+                self.songs.append(song)
+
+            def total_seconds(self):
+                pass
+
+            def longest_title(self):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "p = Playlist(); p.add(Song('Intro', 95)); p.add(Song('Outro', 210)); p.total_seconds()"
+            expect: "305"
+          - call: "p = Playlist(); p.add(Song('Intro', 95)); p.add(Song('Outro', 210)); p.longest_title()"
+            expect: "'Outro'"
+          - call: "p = Playlist(); p.add(Song('A', 120)); p.add(Song('B', 300)); p.add(Song('C', 60)); p.longest_title()"
+            expect: "'B'"
+          - call: "p = Playlist(); p.add(Song('A', 100)); p.add(Song('B', 100)); p.longest_title()"
+            expect: "'A'"
+            say: "Dauern zwei Songs gleich lang, gewinnt der erste: Nimm einen neuen nur, wenn er länger ist, nicht schon, wenn er gleich lang ist."
+          - call: "Playlist().total_seconds()"
+            expect: "0"
+          - call: "Playlist().longest_title()"
+            expect: "None"
+            say: "In einer leeren Playlist gibt es keinen längsten Song."
+      hint:
+        - "Beide Methoden gehen durch `self.songs`. Jeder Song kennt seine Länge, `song.seconds`, und seinen Titel, `song.title`."
+        - "Für `total_seconds` zählst du alle `song.seconds` zusammen, mit einer Schleife oder `sum(song.seconds for song in self.songs)`."
+        - "Für `longest_title` merkst du dir den längsten Song bisher, anfangs `None`, und tauschst ihn nur, wenn ein Song länger ist. Am Ende gibst du seinen Titel zurück, oder `None`, wenn es keinen gab."
+      solution: |
+        ```python
+        def total_seconds(self):
+            return sum(song.seconds for song in self.songs)
+
+        def longest_title(self):
+            longest = None
+            for song in self.songs:
+                if longest is None or song.seconds > longest.seconds:
+                    longest = song
+            return longest.title if longest else None
+        ```
+    javascript:
+      prompt: |
+        Die Klassen `Song` und `Playlist` von oben stehen schon da. Schreib in `Playlist` zwei Methoden: `totalSeconds()` gibt zurück, wie lange alle Songs zusammen dauern, und `longestTitle()` den Titel des längsten Songs; dauern zwei gleich lang, den, der zuerst kam. In einer leeren Playlist ergibt `totalSeconds()` `0` und `longestTitle()` `null`.
+      starter: |
+        class Song {
+          constructor(title, seconds) {
+            this.title = title;
+            this.seconds = seconds;
+          }
+        }
+
+        class Playlist {
+          constructor() {
+            this.songs = [];
+          }
+
+          add(song) {
+            this.songs.push(song);
+          }
+
+          totalSeconds() {
+          }
+
+          longestTitle() {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "const p = new Playlist(); p.add(new Song('Intro', 95)); p.add(new Song('Outro', 210)); p.totalSeconds()"
+            expect: "305"
+          - call: "const p = new Playlist(); p.add(new Song('Intro', 95)); p.add(new Song('Outro', 210)); p.longestTitle()"
+            expect: "'Outro'"
+          - call: "const p = new Playlist(); p.add(new Song('A', 120)); p.add(new Song('B', 300)); p.add(new Song('C', 60)); p.longestTitle()"
+            expect: "'B'"
+          - call: "const p = new Playlist(); p.add(new Song('A', 100)); p.add(new Song('B', 100)); p.longestTitle()"
+            expect: "'A'"
+            say: "Dauern zwei Songs gleich lang, gewinnt der erste: Nimm einen neuen nur, wenn er länger ist, nicht schon, wenn er gleich lang ist."
+          - call: "new Playlist().totalSeconds()"
+            expect: "0"
+          - call: "new Playlist().longestTitle()"
+            expect: "null"
+            say: "In einer leeren Playlist gibt es keinen längsten Song."
+      hint:
+        - "Beide Methoden gehen durch `this.songs`. Jeder Song kennt seine Länge, `song.seconds`, und seinen Titel, `song.title`."
+        - "Für `totalSeconds` zählst du alle `song.seconds` zusammen, mit einer Schleife oder mit `reduce`."
+        - "Für `longestTitle` merkst du dir den längsten Song bisher, anfangs `null`, und tauschst ihn nur, wenn ein Song länger ist. Am Ende gibst du seinen Titel zurück, oder `null`, wenn es keinen gab."
+      solution: |
+        ```javascript
+        totalSeconds() {
+          let total = 0;
+          for (const song of this.songs) {
+            total += song.seconds;
+          }
+          return total;
+        }
+
+        longestTitle() {
+          let longest = null;
+          for (const song of this.songs) {
+            if (longest === null || song.seconds > longest.seconds) {
+              longest = song;
+            }
+          }
+          return longest === null ? null : longest.title;
+        }
+        ```
+
+  - id: money
+    title: "Geld als Text"
+    level: 2
+    prompt: |
+      Schreib eine Klasse `Money`, deren Objekte mit Euro und Cent gebaut werden, `Money.new(3, 5)`, und die sich als Text so zeigt: `3,05 €`. Die Cent haben immer zwei Ziffern. Die Prüfung ruft `to_s` auf und setzt ein Objekt auch in einen Text ein.
+    starter: |
+      class Money
+        def initialize(euros, cents)
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "Money.new(3, 5).to_s"
+          expect: "'3,05 €'"
+          say: "Die Cent haben zwei Ziffern, auch wenn es weniger als 10 sind: 5 Cent werden zu `05`."
+        - call: "Money.new(12, 50).to_s"
+          expect: "'12,50 €'"
+        - call: "Money.new(0, 99).to_s"
+          expect: "'0,99 €'"
+        - call: "Money.new(7, 0).to_s"
+          expect: "'7,00 €'"
+        - call: "\"Preis: #{Money.new(1, 20)}\""
+          expect: "'Preis: 1,20 €'"
+          say: "In `\"#{…}\"` ruft Ruby `to_s` auf: Heißt deine Methode genau `to_s`?"
+    hint:
+      - "Merk dir Euro und Cent in zwei Attributen und schreib eine Methode `to_s`, die einen Text zurückgibt."
+      - "Die Cent bekommen mit `format(\"%02d\", @cents)` zwei Ziffern, mit einer 0 vorn, wo nötig."
+      - "`\"#{@euros},#{format(\"%02d\", @cents)} €\"` setzt alles zusammen."
+    solution: |
+      ```ruby
+      class Money
+        def initialize(euros, cents)
+          @euros = euros
+          @cents = cents
+        end
+
+        def to_s
+          "#{@euros},#{format("%02d", @cents)} €"
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Money`, deren Objekte mit Euro und Cent gebaut werden, `Money(3, 5)`, und die sich als Text so zeigt: `3,05 €`. Die Cent haben immer zwei Ziffern. Die Prüfung ruft `str()` auf und setzt ein Objekt auch in einen f-String ein.
+      starter: |
+        class Money:
+            def __init__(self, euros, cents):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "str(Money(3, 5))"
+            expect: "'3,05 €'"
+            say: "Die Cent haben zwei Ziffern, auch wenn es weniger als 10 sind: 5 Cent werden zu `05`."
+          - call: "str(Money(12, 50))"
+            expect: "'12,50 €'"
+          - call: "str(Money(0, 99))"
+            expect: "'0,99 €'"
+          - call: "str(Money(7, 0))"
+            expect: "'7,00 €'"
+          - call: "f\"Preis: {Money(1, 20)}\""
+            expect: "'Preis: 1,20 €'"
+            say: "Ein f-String ruft `__str__` auf: Heißt deine Methode genau `__str__`, mit zwei Unterstrichen auf jeder Seite?"
+      hint:
+        - "Merk dir Euro und Cent in zwei Attributen und schreib eine Methode `__str__`, die einen Text zurückgibt."
+        - "Die Cent bekommen mit `f\"{self.cents:02d}\"` zwei Ziffern, mit einer 0 vorn, wo nötig."
+        - "`f\"{self.euros},{self.cents:02d} €\"` setzt alles zusammen."
+      solution: |
+        ```python
+        class Money:
+            def __init__(self, euros, cents):
+                self.euros = euros
+                self.cents = cents
+
+            def __str__(self):
+                return f"{self.euros},{self.cents:02d} €"
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Klasse `Money`, deren Objekte mit Euro und Cent gebaut werden, `new Money(3, 5)`, und die sich als Text so zeigt: `3,05 €`. Die Cent haben immer zwei Ziffern. Die Prüfung ruft `String()` auf und setzt ein Objekt auch in einen Template-String ein.
+      starter: |
+        class Money {
+          constructor(euros, cents) {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "String(new Money(3, 5))"
+            expect: "'3,05 €'"
+            say: "Die Cent haben zwei Ziffern, auch wenn es weniger als 10 sind: 5 Cent werden zu `05`."
+          - call: "String(new Money(12, 50))"
+            expect: "'12,50 €'"
+          - call: "String(new Money(0, 99))"
+            expect: "'0,99 €'"
+          - call: "String(new Money(7, 0))"
+            expect: "'7,00 €'"
+          - call: "`Preis: ${new Money(1, 20)}`"
+            expect: "'Preis: 1,20 €'"
+            say: "Ein Template-String ruft `toString` auf: Heißt deine Methode genau `toString`?"
+      hint:
+        - "Merk dir Euro und Cent in zwei Attributen und schreib eine Methode `toString()`, die einen Text zurückgibt."
+        - "Die Cent bekommen mit `String(this.cents).padStart(2, \"0\")` zwei Ziffern, mit einer 0 vorn, wo nötig."
+        - "`` `${this.euros},${String(this.cents).padStart(2, \"0\")} €` `` setzt alles zusammen."
+      solution: |
+        ```javascript
+        class Money {
+          constructor(euros, cents) {
+            this.euros = euros;
+            this.cents = cents;
+          }
+
+          toString() {
+            return `${this.euros},${String(this.cents).padStart(2, "0")} €`;
+          }
+        }
+        ```
+
+  - id: predict-describe
+    title: "Wer sagt was?"
+    level: 2
+    prediction: true
+    prompt: |
+      Was gibt `puts Dog.new("Bello").describe` aus?
+    check:
+      type: choice
+      options: ["Bello sagt Wuff", "Bello sagt ...", "Bello sagt Miau", "einen Fehler: Dog hat kein describe"]
+      correct: 0
+    python:
+      prompt: |
+        Was gibt `print(Dog("Bello").describe())` aus?
+    javascript:
+      prompt: |
+        Was gibt `console.log(new Dog("Bello").describe())` aus?
+
+  - id: total-area
+    title: "Flächen zusammenzählen"
+    level: 3
+    prompt: |
+      Schreib zwei Klassen, `Square` (gebaut mit einer Seitenlänge) und `Rectangle` (mit Breite und Höhe), beide mit einer Methode `area`. Dann eine Funktion `total_area(shapes)`, die die Flächen aller Formen einer Liste zusammenzählt. `total_area` fragt jede Form nur nach `area`, ohne nachzusehen, von welcher Klasse sie ist: Die Prüfung gibt ihr auch eine Form, die du nicht kennst.
+    starter: |
+      class Square
+      end
+
+      class Rectangle
+      end
+
+      def total_area(shapes)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "Square.new(5).area"
+          expect: "25"
+        - call: "Rectangle.new(3, 4).area"
+          expect: "12"
+        - call: "total_area([Square.new(2), Rectangle.new(3, 4)])"
+          expect: "16"
+        - call: "total_area([Square.new(1), Square.new(1), Rectangle.new(1, 5)])"
+          expect: "7"
+        - call: "total_area([])"
+          expect: "0"
+        - call: "Triangle = Struct.new(:area); total_area([Triangle.new(6), Square.new(2)])"
+          expect: "10"
+          say: "Die Prüfung gibt `total_area` eine Form, die keine deiner Klassen ist, aber auch `area` kann. Frag jede Form nur nach `shape.area`, ohne nachzusehen, was sie ist."
+    hint:
+      - "Beide Klassen merken sich ihre Maße in `initialize` und haben eine Methode `area`, jede mit ihrer eigenen Rechnung."
+      - "`total_area` geht durch die Liste und zählt `shape.area` zusammen, mit einer Schleife oder `shapes.sum { |shape| shape.area }`."
+    solution: |
+      ```ruby
+      class Square
+        def initialize(side)
+          @side = side
+        end
+
+        def area
+          @side * @side
+        end
+      end
+
+      class Rectangle
+        def initialize(width, height)
+          @width = width
+          @height = height
+        end
+
+        def area
+          @width * @height
+        end
+      end
+
+      def total_area(shapes)
+        shapes.sum { |shape| shape.area }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib zwei Klassen, `Square` (gebaut mit einer Seitenlänge) und `Rectangle` (mit Breite und Höhe), beide mit einer Methode `area()`. Dann eine Funktion `total_area(shapes)`, die die Flächen aller Formen einer Liste zusammenzählt. `total_area` fragt jede Form nur nach `area()`, ohne nachzusehen, von welcher Klasse sie ist: Die Prüfung gibt ihr auch eine Form, die du nicht kennst.
+      starter: |
+        class Square:
+            pass
+
+        class Rectangle:
+            pass
+
+        def total_area(shapes):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "Square(5).area()"
+            expect: "25"
+          - call: "Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "total_area([Square(2), Rectangle(3, 4)])"
+            expect: "16"
+          - call: "total_area([Square(1), Square(1), Rectangle(1, 5)])"
+            expect: "7"
+          - call: "total_area([])"
+            expect: "0"
+          - call: "Triangle = type('Triangle', (), {'area': lambda self: 6}); total_area([Triangle(), Square(2)])"
+            expect: "10"
+            say: "Die Prüfung gibt `total_area` eine Form, die keine deiner Klassen ist, aber auch `area()` kann. Frag jede Form nur nach `shape.area()`, ohne nachzusehen, was sie ist."
+      hint:
+        - "Beide Klassen merken sich ihre Maße in `__init__` und haben eine Methode `area`, jede mit ihrer eigenen Rechnung."
+        - "`total_area` geht durch die Liste und zählt `shape.area()` zusammen, mit einer Schleife oder `sum(shape.area() for shape in shapes)`."
+      solution: |
+        ```python
+        class Square:
+            def __init__(self, side):
+                self.side = side
+
+            def area(self):
+                return self.side * self.side
+
+        class Rectangle:
+            def __init__(self, width, height):
+                self.width = width
+                self.height = height
+
+            def area(self):
+                return self.width * self.height
+
+        def total_area(shapes):
+            return sum(shape.area() for shape in shapes)
+        ```
+    javascript:
+      prompt: |
+        Schreib zwei Klassen, `Square` (gebaut mit einer Seitenlänge) und `Rectangle` (mit Breite und Höhe), beide mit einer Methode `area()`. Dann eine Funktion `totalArea(shapes)`, die die Flächen aller Formen einer Liste zusammenzählt. `totalArea` fragt jede Form nur nach `area()`, ohne nachzusehen, von welcher Klasse sie ist: Die Prüfung gibt ihr auch eine Form, die du nicht kennst.
+      starter: |
+        class Square {
+        }
+
+        class Rectangle {
+        }
+
+        function totalArea(shapes) {
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "new Square(5).area()"
+            expect: "25"
+          - call: "new Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "totalArea([new Square(2), new Rectangle(3, 4)])"
+            expect: "16"
+          - call: "totalArea([new Square(1), new Square(1), new Rectangle(1, 5)])"
+            expect: "7"
+          - call: "totalArea([])"
+            expect: "0"
+          - call: "const triangle = { area: () => 6 }; totalArea([triangle, new Square(2)])"
+            expect: "10"
+            say: "Die Prüfung gibt `totalArea` eine Form, die keine deiner Klassen ist, aber auch `area()` kann. Frag jede Form nur nach `shape.area()`, ohne nachzusehen, was sie ist."
+      hint:
+        - "Beide Klassen merken sich ihre Maße im `constructor` und haben eine Methode `area()`, jede mit ihrer eigenen Rechnung."
+        - "`totalArea` geht durch die Liste und zählt `shape.area()` zusammen, mit einer Schleife oder mit `reduce`."
+      solution: |
+        ```javascript
+        class Square {
+          constructor(side) {
+            this.side = side;
+          }
+
+          area() {
+            return this.side * this.side;
+          }
+        }
+
+        class Rectangle {
+          constructor(width, height) {
+            this.width = width;
+            this.height = height;
+          }
+
+          area() {
+            return this.width * this.height;
+          }
+        }
+
+        function totalArea(shapes) {
+          let total = 0;
+          for (const shape of shapes) {
+            total += shape.area();
+          }
+          return total;
+        }
+        ```
+
+  - id: manager
+    title: "Eine Managerin verdient mehr"
+    level: 3
+    prompt: |
+      Die Klasse `Employee` steht schon da: Eine Angestellte hat einen Namen und ein Gehalt im Monat, und `yearly` gibt das Gehalt im Jahr zurück. Schreib eine Klasse `Manager`, die von `Employee` erbt, dazu einen Bonus im Jahr bekommt, `Manager.new("Bo", 4000, 5000)`, und deren `yearly` den Bonus dazurechnet. Benutze dabei `super`, in `initialize` und in `yearly`, statt das Gehalt noch einmal selbst zu rechnen.
+    starter: |
+      class Employee
+        attr_reader :name
+
+        def initialize(name, monthly)
+          @name = name
+          @monthly = monthly
+        end
+
+        def yearly
+          12 * @monthly
+        end
+      end
+
+      class Manager < Employee
+        def initialize(name, monthly, bonus)
+        end
+
+        def yearly
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "Manager.new('Bo', 4000, 5000).yearly"
+          expect: "53000"
+        - call: "Manager.new('Bo', 4000, 0).yearly"
+          expect: "48000"
+        - call: "Manager.new('Bo', 4000, 5000).name"
+          expect: "'Bo'"
+          say: "Den Namen merkt sich `Employee`: Gib ihn in `initialize` mit `super(name, monthly)` weiter, dann setzt das `initialize` von `Employee` `@name`."
+        - call: "Employee.new('Ada', 3000).yearly"
+          expect: "36000"
+    hint:
+      - "`Manager` braucht nur den Bonus selbst. Name und Monatsgehalt gibt sein `initialize` mit `super(name, monthly)` an `Employee` weiter."
+      - "In `yearly` ruft `super` das `yearly` von `Employee` auf. Dazu kommt der Bonus."
+    solution: |
+      ```ruby
+      class Manager < Employee
+        def initialize(name, monthly, bonus)
+          super(name, monthly)
+          @bonus = bonus
+        end
+
+        def yearly
+          super + @bonus
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Die Klasse `Employee` steht schon da: Eine Angestellte hat einen Namen und ein Gehalt im Monat, und `yearly()` gibt das Gehalt im Jahr zurück. Schreib eine Klasse `Manager`, die von `Employee` erbt, dazu einen Bonus im Jahr bekommt, `Manager("Bo", 4000, 5000)`, und deren `yearly()` den Bonus dazurechnet. Benutze dabei `super()`, in `__init__` und in `yearly`, statt das Gehalt noch einmal selbst zu rechnen.
+      starter: |
+        class Employee:
+            def __init__(self, name, monthly):
+                self.name = name
+                self.monthly = monthly
+
+            def yearly(self):
+                return 12 * self.monthly
+
+        class Manager(Employee):
+            def __init__(self, name, monthly, bonus):
+                pass
+
+            def yearly(self):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "Manager('Bo', 4000, 5000).yearly()"
+            expect: "53000"
+          - call: "Manager('Bo', 4000, 0).yearly()"
+            expect: "48000"
+          - call: "Manager('Bo', 4000, 5000).name"
+            expect: "'Bo'"
+            say: "Den Namen merkt sich `Employee`: Gib ihn in `__init__` mit `super().__init__(name, monthly)` weiter, dann setzt das `__init__` von `Employee` `self.name`."
+          - call: "Employee('Ada', 3000).yearly()"
+            expect: "36000"
+      hint:
+        - "`Manager` braucht nur den Bonus selbst. Name und Monatsgehalt gibt sein `__init__` mit `super().__init__(name, monthly)` an `Employee` weiter."
+        - "In `yearly` ruft `super().yearly()` das `yearly` von `Employee` auf. Dazu kommt der Bonus."
+      solution: |
+        ```python
+        class Manager(Employee):
+            def __init__(self, name, monthly, bonus):
+                super().__init__(name, monthly)
+                self.bonus = bonus
+
+            def yearly(self):
+                return super().yearly() + self.bonus
+        ```
+    javascript:
+      prompt: |
+        Die Klasse `Employee` steht schon da: Eine Angestellte hat einen Namen und ein Gehalt im Monat, und `yearly()` gibt das Gehalt im Jahr zurück. Schreib eine Klasse `Manager`, die von `Employee` erbt, dazu einen Bonus im Jahr bekommt, `new Manager("Bo", 4000, 5000)`, und deren `yearly()` den Bonus dazurechnet. Benutze dabei `super`, im `constructor` und in `yearly`, statt das Gehalt noch einmal selbst zu rechnen.
+      starter: |
+        class Employee {
+          constructor(name, monthly) {
+            this.name = name;
+            this.monthly = monthly;
+          }
+
+          yearly() {
+            return 12 * this.monthly;
+          }
+        }
+
+        class Manager extends Employee {
+          constructor(name, monthly, bonus) {
+          }
+
+          yearly() {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "new Manager('Bo', 4000, 5000).yearly()"
+            expect: "53000"
+          - call: "new Manager('Bo', 4000, 0).yearly()"
+            expect: "48000"
+          - call: "new Manager('Bo', 4000, 5000).name"
+            expect: "'Bo'"
+            say: "Den Namen merkt sich `Employee`: Gib ihn im `constructor` mit `super(name, monthly)` weiter, dann setzt der `constructor` von `Employee` `this.name`."
+          - call: "new Employee('Ada', 3000).yearly()"
+            expect: "36000"
+      hint:
+        - "`Manager` braucht nur den Bonus selbst. Name und Monatsgehalt gibt sein `constructor` mit `super(name, monthly)` an `Employee` weiter; erst danach darf er `this` benutzen."
+        - "In `yearly` ruft `super.yearly()` das `yearly` von `Employee` auf. Dazu kommt der Bonus."
+      solution: |
+        ```javascript
+        class Manager extends Employee {
+          constructor(name, monthly, bonus) {
+            super(name, monthly);
+            this.bonus = bonus;
+          }
+
+          yearly() {
+            return super.yearly() + this.bonus;
+          }
+        }
+        ```
+
+  - id: stack
+    title: "Ein Stack als Klasse"
+    level: 3
+    extra: true
+    prompt: |
+      Schreib eine Klasse `Stack` für einen Stapel, bei dem nur das oberste Element zugänglich ist: `push(x)` legt `x` oben drauf, `pop` nimmt das oberste weg und gibt es zurück, `peek` gibt es zurück, ohne es wegzunehmen, `size` sagt, wie viele Elemente drauf liegen. Ist der Stack leer, geben `pop` und `peek` `nil` zurück.
+    starter: |
+      class Stack
+        def initialize
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "s = Stack.new; s.push(1); s.push(2); s.pop"
+          expect: "2"
+        - call: "s = Stack.new; s.push(1); s.push(2); s.pop; s.pop"
+          expect: "1"
+        - call: "s = Stack.new; s.push(1); s.push(2); s.peek"
+          expect: "2"
+        - call: "s = Stack.new; s.push(1); s.push(2); s.peek; s.size"
+          expect: "2"
+          say: "`peek` schaut nur nach, es nimmt nichts weg."
+        - call: "s = Stack.new; s.pop"
+          expect: "nil"
+        - call: "Stack.new.peek"
+          expect: "nil"
+        - call: "s = Stack.new; s.push('a'); s.pop; s.size"
+          expect: "0"
+    hint:
+      - "Der Stack merkt sich seine Elemente in einer Liste, `@items = []`. Oben ist ihr Ende."
+      - "`@items.push(x)` legt drauf, `@items.pop` nimmt das letzte weg und gibt es zurück, bei einer leeren Liste `nil`; `@items.last` schaut nur."
+    solution: |
+      ```ruby
+      class Stack
+        def initialize
+          @items = []
+        end
+
+        def push(x)
+          @items.push(x)
+        end
+
+        def pop
+          @items.pop
+        end
+
+        def peek
+          @items.last
+        end
+
+        def size
+          @items.length
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Stack` für einen Stapel, bei dem nur das oberste Element zugänglich ist: `push(x)` legt `x` oben drauf, `pop()` nimmt das oberste weg und gibt es zurück, `peek()` gibt es zurück, ohne es wegzunehmen, `size()` sagt, wie viele Elemente drauf liegen. Ist der Stack leer, geben `pop()` und `peek()` `None` zurück.
+      starter: |
+        class Stack:
+            def __init__(self):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "s = Stack(); s.push(1); s.push(2); s.pop()"
+            expect: "2"
+          - call: "s = Stack(); s.push(1); s.push(2); s.pop(); s.pop()"
+            expect: "1"
+          - call: "s = Stack(); s.push(1); s.push(2); s.peek()"
+            expect: "2"
+          - call: "s = Stack(); s.push(1); s.push(2); s.peek(); s.size()"
+            expect: "2"
+            say: "`peek` schaut nur nach, es nimmt nichts weg."
+          - call: "s = Stack(); s.pop()"
+            expect: "None"
+            say: "Bei einem leeren Stack gibt `pop()` `None` zurück, statt mit einem Fehler abzubrechen: Frag vorher, ob die Liste leer ist."
+          - call: "Stack().peek()"
+            expect: "None"
+          - call: "s = Stack(); s.push('a'); s.pop(); s.size()"
+            expect: "0"
+      hint:
+        - "Der Stack merkt sich seine Elemente in einer Liste, `self.items = []`. Oben ist ihr Ende."
+        - "`self.items.append(x)` legt drauf, `self.items.pop()` nimmt das letzte weg; bei einer leeren Liste bricht es mit einem Fehler ab, darum fragst du vorher `if not self.items:`. `self.items[-1]` schaut nur."
+      solution: |
+        ```python
+        class Stack:
+            def __init__(self):
+                self.items = []
+
+            def push(self, x):
+                self.items.append(x)
+
+            def pop(self):
+                if not self.items:
+                    return None
+                return self.items.pop()
+
+            def peek(self):
+                if not self.items:
+                    return None
+                return self.items[-1]
+
+            def size(self):
+                return len(self.items)
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Klasse `Stack` für einen Stapel, bei dem nur das oberste Element zugänglich ist: `push(x)` legt `x` oben drauf, `pop()` nimmt das oberste weg und gibt es zurück, `peek()` gibt es zurück, ohne es wegzunehmen, `size()` sagt, wie viele Elemente drauf liegen. Ist der Stack leer, geben `pop()` und `peek()` `null` zurück.
+      starter: |
+        class Stack {
+          constructor() {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "const s = new Stack(); s.push(1); s.push(2); s.pop()"
+            expect: "2"
+          - call: "const s = new Stack(); s.push(1); s.push(2); s.pop(); s.pop()"
+            expect: "1"
+          - call: "const s = new Stack(); s.push(1); s.push(2); s.peek()"
+            expect: "2"
+          - call: "const s = new Stack(); s.push(1); s.push(2); s.peek(); s.size()"
+            expect: "2"
+            say: "`peek` schaut nur nach, es nimmt nichts weg."
+          - call: "const s = new Stack(); s.pop()"
+            expect: "null"
+            say: "Bei einem leeren Stack gibt `pop()` `null` zurück, nicht `undefined`: Frag vorher, ob die Liste leer ist."
+          - call: "new Stack().peek()"
+            expect: "null"
+          - call: "const s = new Stack(); s.push('a'); s.pop(); s.size()"
+            expect: "0"
+      hint:
+        - "Der Stack merkt sich seine Elemente in einer Liste, `this.items = [];`. Oben ist ihr Ende."
+        - "`this.items.push(x)` legt drauf, `this.items.pop()` nimmt das letzte weg; bei einer leeren Liste gibt es `undefined`, darum fragst du vorher `if (this.items.length === 0)`. `this.items[this.items.length - 1]` schaut nur."
+      solution: |
+        ```javascript
+        class Stack {
+          constructor() {
+            this.items = [];
+          }
+
+          push(x) {
+            this.items.push(x);
+          }
+
+          pop() {
+            if (this.items.length === 0) {
+              return null;
+            }
+            return this.items.pop();
+          }
+
+          peek() {
+            if (this.items.length === 0) {
+              return null;
+            }
+            return this.items[this.items.length - 1];
+          }
+
+          size() {
+            return this.items.length;
+          }
+        }
+        ```
+
+  - id: fraction
+    title: "Ein Bruch, der rechnen kann"
+    level: 3
+    extra: true
+    prompt: |
+      Schreib eine Klasse `Fraction` für Brüche, gebaut mit Zähler und Nenner, `Fraction.new(2, 4)`, die sich gleich gekürzt merkt, also als 1/2. `to_s` zeigt sie als `1/2`, und `add(other)` gibt einen neuen, gekürzten Bruch mit der Summe zurück, ohne die beiden zu ändern. `Integer#gcd` gibt den größten gemeinsamen Teiler: `12.gcd(18)` ergibt `6`.
+    starter: |
+      class Fraction
+        def initialize(numerator, denominator)
+        end
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "Fraction.new(2, 4).to_s"
+          expect: "'1/2'"
+          say: "Der Bruch soll sich gleich gekürzt merken: Teil Zähler und Nenner in `initialize` durch ihren größten gemeinsamen Teiler."
+        - call: "Fraction.new(3, 5).to_s"
+          expect: "'3/5'"
+        - call: "Fraction.new(1, 2).add(Fraction.new(1, 3)).to_s"
+          expect: "'5/6'"
+        - call: "Fraction.new(1, 2).add(Fraction.new(1, 2)).to_s"
+          expect: "'1/1'"
+        - call: "Fraction.new(1, 6).add(Fraction.new(1, 3)).to_s"
+          expect: "'1/2'"
+        - call: "f = Fraction.new(1, 4); f.add(Fraction.new(1, 4)); f.to_s"
+          expect: "'1/4'"
+          say: "`add` gibt einen neuen Bruch zurück und lässt `f` selbst, wie er ist."
+    hint:
+      - "Für die Summe von a/b und c/d gilt: Zähler a·d + c·b, Nenner b·d. Danach kürzen."
+      - "Kürzt `initialize` schon, muss `add` nur `Fraction.new(…, …)` mit dem ungekürzten Ergebnis bauen; dafür braucht `add` Zähler und Nenner des anderen Bruchs, also zwei Methoden, die sie zurückgeben (`attr_reader`)."
+    solution: |
+      ```ruby
+      class Fraction
+        attr_reader :numerator, :denominator
+
+        def initialize(numerator, denominator)
+          divisor = numerator.gcd(denominator)
+          @numerator = numerator / divisor
+          @denominator = denominator / divisor
+        end
+
+        def add(other)
+          Fraction.new(@numerator * other.denominator + other.numerator * @denominator,
+                       @denominator * other.denominator)
+        end
+
+        def to_s
+          "#{@numerator}/#{@denominator}"
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Fraction` für Brüche, gebaut mit Zähler und Nenner, `Fraction(2, 4)`, die sich gleich gekürzt merkt, also als 1/2. `str()` zeigt sie als `1/2`, und `add(other)` gibt einen neuen, gekürzten Bruch mit der Summe zurück, ohne die beiden zu ändern. `math.gcd(12, 18)` gibt den größten gemeinsamen Teiler, `6`.
+      starter: |
+        import math
+
+        class Fraction:
+            def __init__(self, numerator, denominator):
+                pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "str(Fraction(2, 4))"
+            expect: "'1/2'"
+            say: "Der Bruch soll sich gleich gekürzt merken: Teil Zähler und Nenner in `__init__` durch ihren größten gemeinsamen Teiler."
+          - call: "str(Fraction(3, 5))"
+            expect: "'3/5'"
+          - call: "str(Fraction(1, 2).add(Fraction(1, 3)))"
+            expect: "'5/6'"
+          - call: "str(Fraction(1, 2).add(Fraction(1, 2)))"
+            expect: "'1/1'"
+          - call: "str(Fraction(1, 6).add(Fraction(1, 3)))"
+            expect: "'1/2'"
+          - call: "f = Fraction(1, 4); f.add(Fraction(1, 4)); str(f)"
+            expect: "'1/4'"
+            say: "`add` gibt einen neuen Bruch zurück und lässt `f` selbst, wie er ist."
+      hint:
+        - "Für die Summe von a/b und c/d gilt: Zähler a·d + c·b, Nenner b·d. Danach kürzen."
+        - "Kürzt `__init__` schon, muss `add` nur `Fraction(…, …)` mit dem ungekürzten Ergebnis bauen. Die Attribute des anderen Bruchs erreichst du mit `other.numerator`."
+      solution: |
+        ```python
+        import math
+
+        class Fraction:
+            def __init__(self, numerator, denominator):
+                divisor = math.gcd(numerator, denominator)
+                self.numerator = numerator // divisor
+                self.denominator = denominator // divisor
+
+            def add(self, other):
+                return Fraction(self.numerator * other.denominator + other.numerator * self.denominator,
+                                self.denominator * other.denominator)
+
+            def __str__(self):
+                return f"{self.numerator}/{self.denominator}"
+        ```
+    javascript:
+      prompt: |
+        Schreib eine Klasse `Fraction` für Brüche, gebaut mit Zähler und Nenner, `new Fraction(2, 4)`, die sich gleich gekürzt merkt, also als 1/2. `String()` zeigt sie als `1/2`, und `add(other)` gibt einen neuen, gekürzten Bruch mit der Summe zurück, ohne die beiden zu ändern. Den größten gemeinsamen Teiler gibt die Funktion `gcd`, die schon dasteht.
+      starter: |
+        function gcd(a, b) {
+          return b === 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+          constructor(numerator, denominator) {
+          }
+        }
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "String(new Fraction(2, 4))"
+            expect: "'1/2'"
+            say: "Der Bruch soll sich gleich gekürzt merken: Teil Zähler und Nenner im `constructor` durch ihren größten gemeinsamen Teiler."
+          - call: "String(new Fraction(3, 5))"
+            expect: "'3/5'"
+          - call: "String(new Fraction(1, 2).add(new Fraction(1, 3)))"
+            expect: "'5/6'"
+          - call: "String(new Fraction(1, 2).add(new Fraction(1, 2)))"
+            expect: "'1/1'"
+          - call: "String(new Fraction(1, 6).add(new Fraction(1, 3)))"
+            expect: "'1/2'"
+          - call: "const f = new Fraction(1, 4); f.add(new Fraction(1, 4)); String(f)"
+            expect: "'1/4'"
+            say: "`add` gibt einen neuen Bruch zurück und lässt `f` selbst, wie er ist."
+      hint:
+        - "Für die Summe von a/b und c/d gilt: Zähler a·d + c·b, Nenner b·d. Danach kürzen."
+        - "Kürzt der `constructor` schon, muss `add` nur `new Fraction(…, …)` mit dem ungekürzten Ergebnis bauen. Die Attribute des anderen Bruchs erreichst du mit `other.numerator`."
+      solution: |
+        ```javascript
+        function gcd(a, b) {
+          return b === 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+          constructor(numerator, denominator) {
+            const divisor = gcd(numerator, denominator);
+            this.numerator = numerator / divisor;
+            this.denominator = denominator / divisor;
+          }
+
+          add(other) {
+            return new Fraction(this.numerator * other.denominator + other.numerator * this.denominator,
+                                this.denominator * other.denominator);
+          }
+
+          toString() {
+            return `${this.numerator}/${this.denominator}`;
+          }
+        }
+        ```
