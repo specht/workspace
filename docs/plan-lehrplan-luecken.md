@@ -395,22 +395,17 @@ sources; a Handbuch page on the UML-Werkstatt's language like
 `er-modelle`; screenshots and the card picture from recipes; the
 UML-Werkstatt in the Workspace image.
 
-## Java and Dart for Katas later
+## Java and Dart for Katas
 
-Measured on 27 October 2026 in the Workspace image (OpenJDK 25.0.4, Dart
-3.13), a class with three calls, in a container like a Kata's (no network,
-read-only image, nobody):
+Built (docs/plan-katas.md, `kata_compiled.rb`): every Kata set except Tests
+schreiben and Pip has Dart and Java variants, run in the Kata containers
+with the limits of the other languages (0.5 CPU, 192 MB). Measured in those
+limits: a Dart card with its typical wrong solutions in about 1.4 to 2 s,
+a Java card in about 2.3 s; the sieve up to ten million takes 1.3 s in Dart
+and 2.5 s in Java, which gets 8 s instead of 6 for it.
 
-| Run | Limits | Time |
-| --- | --- | --- |
-| `dart harness.dart` (the SDK's own `/opt/flutter/bin/cache/dart-sdk/bin/dart`) | 0.5 CPU, 192 MB | 1.6 s |
-| `javac` both files, then `java` (`-XX:+UseSerialGC -XX:TieredStopAtLevel=1`) | 0.5 CPU, 256 MB | 2.5 s |
-| the same | 1 CPU, 384 MB | 0.9 s |
-
-- `dart` on the path is Flutter's wrapper, which tries to update its cache
-  and fails on a read-only image; the Kata runner calls the SDK's binary.
-- Java's launcher for source files (`java Harness.java`, several files since
-  Java 22) finds another class only in a file named after it; a person's
-  `Account` in `Kata.java` is not found, so it is `javac` and then `java`.
-- Java Katas would need more than today's 192 MB and half a core
-  (`KataRunner::MEMORY`, `CPUS`): limits per language.
+- The runner calls the Dart SDK's own binary (`DartCheck::DART`); `dart` on
+  the path is Flutter's wrapper, which fails on a read-only image.
+- Java's code goes into one class as members (a compact source file of Java
+  25), so a person's `Account` beside their methods is found; one `javac`
+  for the code and its typical wrong solutions, then `java` per target.
