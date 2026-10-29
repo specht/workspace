@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ruby:3.4.10-bookworm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Tools the task examples need
         # what the Workspace has for them: Pillow, chunky_png, and for the
         # WebSocket servers of PixelWand faye-websocket and rackup
