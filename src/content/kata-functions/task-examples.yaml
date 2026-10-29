@@ -19,6 +19,12 @@ examples:
         - answer: "function add(a, b) {\n  return a + b;\n}\n"
       fail:
         - answer: "function add(a, b) {\n  console.log(a + b);\n}\n"
+    dart:
+      pass:
+        - answer: "int add(int a, int b) {\n  return a + b;\n}\n"
+    java:
+      pass:
+        - answer: "int add(int a, int b) {\n    return a + b;\n}\n"
   double:
     pass:
       - answer: "def double(n)\n  2 * n\nend\n"
@@ -34,6 +40,12 @@ examples:
         - answer: "function double(n) {\n  return 2 * n;\n}\n"
       fail:
         - answer: "function double(n) {\n  return n + 2;\n}\n"
+    dart:
+      pass:
+        - answer: "double doubled(double n) {\n  return 2 * n;\n}\n"
+    java:
+      pass:
+        - answer: "double doubled(double n) {\n    return 2 * n;\n}\n"
   greet:
     pass:
       - answer: "def greet(name)\n  \"Hallo, #{name}!\"\nend\n"
@@ -49,6 +61,12 @@ examples:
         - answer: "function greet(name) {\n  return `Hallo, ${name}!`;\n}\n"
       fail:
         - answer: "function greet(name) {\n  return 'Hallo ' + name;\n}\n"
+    dart:
+      pass:
+        - answer: "String greet(String name) {\n  return 'Hallo, $name!';\n}\n"
+    java:
+      pass:
+        - answer: "String greet(String name) {\n    return \"Hallo, \" + name + \"!\";\n}\n"
   rectangle:
     pass:
       - answer: "def rectangle_area(width, height)\n  width * height\nend\n"
@@ -64,6 +82,16 @@ examples:
         - answer: "function rectangleArea(width, height) {\n  return width * height;\n}\n"
       fail:
         - answer: "function rectangleArea(width, height) {\n  return 2 * width + 2 * height;\n}\n"
+    dart:
+      pass:
+        - answer: "double rectangleArea(double width, double height) {\n  return width * height;\n}\n"
+      fail:
+        - answer: "double rectangleArea(double width, double height) {\n  return 2 * width + 2 * height;\n}\n"
+    java:
+      pass:
+        - answer: "double rectangleArea(double width, double height) {\n    return width * height;\n}\n"
+      fail:
+        - answer: "double rectangleArea(double width, double height) {\n    return 2 * width + 2 * height;\n}\n"
   fahrenheit:
     pass:
       - answer: "def fahrenheit(celsius)\n  celsius * 1.8 + 32\nend\n"
@@ -80,6 +108,16 @@ examples:
         - answer: "function fahrenheit(celsius) {\n  return celsius * 1.8 + 32;\n}\n"
       fail:
         - answer: "function fahrenheit(celsius) {\n  return (celsius + 32) * 1.8;\n}\n"
+    dart:
+      pass:
+        - answer: "double fahrenheit(double celsius) {\n  return celsius * 1.8 + 32;\n}\n"
+      fail:
+        - answer: "double fahrenheit(double celsius) {\n  return (celsius + 32) * 1.8;\n}\n"
+    java:
+      pass:
+        - answer: "double fahrenheit(double celsius) {\n    return celsius * 1.8 + 32;\n}\n"
+      fail:
+        - answer: "double fahrenheit(double celsius) {\n    return (celsius + 32) * 1.8;\n}\n"
   clock:
     pass:
       - answer: "def clock(seconds)\n  format('%d:%02d', seconds / 60, seconds % 60)\nend\n"
@@ -96,6 +134,17 @@ examples:
         - answer: "function clock(seconds) {\n  const minutes = Math.floor(seconds / 60);\n  return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;\n}\n"
       fail:
         - answer: "function clock(seconds) {\n  return `${Math.floor(seconds / 60)}:${seconds % 60}`;\n}\n"
+    dart:
+      pass:
+        - answer: "String clock(int seconds) {\n  final minutes = seconds ~/ 60;\n  return '$minutes:${(seconds % 60).toString().padLeft(2, '0')}';\n}\n"
+      fail:
+        - answer: "String clock(int seconds) {\n  return '${seconds ~/ 60}:${seconds % 60}';\n}\n"
+        - answer: "String clock(int seconds) {\n  return '${seconds / 60}:${(seconds % 60).toString().padLeft(2, '0')}';\n}\n"
+    java:
+      pass:
+        - answer: "String clock(int seconds) {\n    return String.format(\"%d:%02d\", seconds / 60, seconds % 60);\n}\n"
+      fail:
+        - answer: "String clock(int seconds) {\n    return seconds / 60 + \":\" + seconds % 60;\n}\n"
   average:
     pass:
       - answer: "def average(a, b, c)\n  (a + b + c) / 3.0\nend\n"
@@ -113,6 +162,16 @@ examples:
         - answer: "function average(a, b, c) {\n  return (a + b + c) / 3;\n}\n"
       fail:
         - answer: "function average(a, b, c) {\n  return a + b + c / 3;\n}\n"
+    dart:
+      pass:
+        - answer: "double average(double a, double b, double c) {\n  return (a + b + c) / 3;\n}\n"
+      fail:
+        - answer: "double average(double a, double b, double c) {\n  return a + b + c / 3;\n}\n"
+    java:
+      pass:
+        - answer: "double average(double a, double b, double c) {\n    return (a + b + c) / 3;\n}\n"
+      fail:
+        - answer: "double average(double a, double b, double c) {\n    return a + b + c / 3;\n}\n"
   price:
     pass:
       - answer: "def price(count, unit_price, discount)\n  total = count * unit_price\n  total - total * discount / 100.0\nend\n"
@@ -128,6 +187,18 @@ examples:
         - answer: "function price(count, unitPrice, discount) {\n  const total = count * unitPrice;\n  return total - total * discount / 100;\n}\n"
       fail:
         - answer: "function price(count, unitPrice, discount) {\n  return count * unitPrice - discount;\n}\n"
+    dart:
+      pass:
+        - answer: "double price(int count, double unitPrice, double discount) {\n  final total = count * unitPrice;\n  return total - total * discount / 100;\n}\n"
+      fail:
+        - answer: "double price(int count, double unitPrice, double discount) {\n  return count * unitPrice - discount;\n}\n"
+        - answer: "double price(int count, double unitPrice, double discount) {\n  return count * unitPrice * discount / 100;\n}\n"
+    java:
+      pass:
+        - answer: "double price(int count, double unitPrice, double discount) {\n    double total = count * unitPrice;\n    return total - total * discount / 100;\n}\n"
+      fail:
+        - answer: "double price(int count, double unitPrice, double discount) {\n    return count * unitPrice - discount;\n}\n"
+        - answer: "double price(int count, double unitPrice, double discount) {\n    return count * unitPrice * discount / 100;\n}\n"
   clock-after:
     pass:
       - answer: "def clock_after(hour, minute, minutes)\n  total = (hour * 60 + minute + minutes) % (24 * 60)\n  format('%02d:%02d', total / 60, total % 60)\nend\n"
@@ -143,6 +214,16 @@ examples:
         - answer: "function clockAfter(hour, minute, minutes) {\n  const total = (hour * 60 + minute + minutes) % (24 * 60);\n  const two = (n) => String(n).padStart(2, '0');\n  return `${two(Math.floor(total / 60))}:${two(total % 60)}`;\n}\n"
       fail:
         - answer: "function clockAfter(hour, minute, minutes) {\n  const t = hour * 60 + minute + minutes;\n  return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');\n}\n"
+    dart:
+      pass:
+        - answer: "String two(int n) => n.toString().padLeft(2, '0');\n\nString clockAfter(int hour, int minute, int minutes) {\n  final total = (hour * 60 + minute + minutes) % (24 * 60);\n  return '${two(total ~/ 60)}:${two(total % 60)}';\n}\n"
+      fail:
+        - answer: "String clockAfter(int hour, int minute, int minutes) {\n  final t = hour * 60 + minute + minutes;\n  return '${(t ~/ 60).toString().padLeft(2, '0')}:${(t % 60).toString().padLeft(2, '0')}';\n}\n"
+    java:
+      pass:
+        - answer: "String clockAfter(int hour, int minute, int minutes) {\n    int total = (hour * 60 + minute + minutes) % (24 * 60);\n    return String.format(\"%02d:%02d\", total / 60, total % 60);\n}\n"
+      fail:
+        - answer: "String clockAfter(int hour, int minute, int minutes) {\n    int t = hour * 60 + minute + minutes;\n    return String.format(\"%02d:%02d\", t / 60, t % 60);\n}\n"
   last-digit:
     pass:
       - answer: "def last_digit(n)\n  n.abs % 10\nend\n"
@@ -164,6 +245,16 @@ examples:
         - answer: "function lastDigit(n) {\n  return n % 10;\n}\n"
         - answer: "function lastDigit(n) {\n  return Number(n.toString().slice(-1));\n}\n"
           say: "benutzt `Number.prototype.toString`"
+    dart:
+      pass:
+        - answer: "int lastDigit(int n) {\n  return n.abs() % 10;\n}\n"
+      fail:
+        - answer: "int lastDigit(int n) {\n  return n % 10;\n}\n"
+    java:
+      pass:
+        - answer: "int lastDigit(int n) {\n    return Math.abs(n) % 10;\n}\n"
+      fail:
+        - answer: "int lastDigit(int n) {\n    return n % 10;\n}\n"
   reverse-digits:
     pass:
       - answer: "def reverse_digits(n)\n  ones = n % 10\n  tens = n / 10 % 10\n  hundreds = n / 100\n  return ones if n < 10\n  return ones * 10 + tens if n < 100\n  ones * 100 + tens * 10 + hundreds\nend\n"
@@ -185,6 +276,12 @@ examples:
         - answer: "function reverseDigits(n) {\n  return Number(String(n).split('').reverse().join(''));\n}\n"
           say: "benutzt `globalThis.String`"
         - answer: "function reverseDigits(n) {\n  return (n % 10) * 100 + (Math.floor(n / 10) % 10) * 10 + Math.floor(n / 100);\n}\n"
+    dart:
+      pass:
+        - answer: "int reverseDigits(int n) {\n  final ones = n % 10;\n  final tens = n ~/ 10 % 10;\n  final hundreds = n ~/ 100;\n  if (n < 10) {\n    return ones;\n  }\n  if (n < 100) {\n    return ones * 10 + tens;\n  }\n  return ones * 100 + tens * 10 + hundreds;\n}\n"
+    java:
+      pass:
+        - answer: "int reverseDigits(int n) {\n    int ones = n % 10;\n    int tens = n / 10 % 10;\n    int hundreds = n / 100;\n    if (n < 10) {\n        return ones;\n    }\n    if (n < 100) {\n        return ones * 10 + tens;\n    }\n    return ones * 100 + tens * 10 + hundreds;\n}\n"
   duration:
     pass:
       - answer: "def duration(seconds)\n  format('%d:%02d:%02d', seconds / 3600, seconds / 60 % 60, seconds % 60)\nend\n"
@@ -200,3 +297,9 @@ examples:
         - answer: "function duration(seconds) {\n  const two = (n) => String(n).padStart(2, '0');\n  return `${Math.floor(seconds / 3600)}:${two(Math.floor(seconds / 60) % 60)}:${two(seconds % 60)}`;\n}\n"
       fail:
         - answer: "function duration(seconds) {\n  const two = (n) => String(n).padStart(2, '0');\n  return `${Math.floor(seconds / 3600)}:${two(Math.floor(seconds / 60))}:${two(seconds % 60)}`;\n}\n"
+    dart:
+      pass:
+        - answer: "String two(int n) => n.toString().padLeft(2, '0');\n\nString duration(int seconds) {\n  return '${seconds ~/ 3600}:${two(seconds ~/ 60 % 60)}:${two(seconds % 60)}';\n}\n"
+    java:
+      pass:
+        - answer: "String duration(int seconds) {\n    return String.format(\"%d:%02d:%02d\", seconds / 3600, seconds / 60 % 60, seconds % 60);\n}\n"
