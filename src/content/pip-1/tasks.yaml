@@ -52,6 +52,46 @@ tasks:
               #....L#
               #######
         goal: { lamp: true }
+    dart:
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        buttons:
+        - move
+        - turn_left
+        maps:
+        - facing: south
+          map: |
+            #######
+            #P#####
+            #.#####
+            #....L#
+            #######
+        goal:
+          lamp: true
+    java:
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        buttons:
+        - move
+        - turn_left
+        maps:
+        - facing: south
+          map: |
+            #######
+            #P#####
+            #.#####
+            #....L#
+            #######
+        goal:
+          lamp: true
 
   - id: predict
     title: "Wo steht Pip?"
@@ -161,6 +201,94 @@ tasks:
         move();
         move();
         ```
+    dart:
+      prompt: 'Unten im Schacht steht die erste alte Lampe. Schreib Pip einen Plan mit
+        `move()` und `turnLeft()`, der Pip zur Lampe bringt. Der Plan steht in `void main()
+        { … }`, zwischen den geschweiften Klammern: Dort fängt ein Dart-Programm an.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###.###
+            ###.###
+            ###L###
+            #######
+        goal:
+          lamp: true
+      hint: 'Nach zwei Schritten muss Pip nach rechts abbiegen, aber Pip kann sich nur
+        nach links drehen. Wie oft nach links ergibt einmal rechts?
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          move();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          move();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Unten im Schacht steht die erste alte Lampe. Schreib Pip einen Plan mit
+        `move()` und `turnLeft()`, der Pip zur Lampe bringt. Der Plan steht in `void main()
+        { … }`, zwischen den geschweiften Klammern: Dort fängt ein Java-Programm an.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###.###
+            ###.###
+            ###L###
+            #######
+        goal:
+          lamp: true
+      hint: 'Nach zwei Schritten muss Pip nach rechts abbiegen, aber Pip kann sich nur
+        nach links drehen. Wie oft nach links ergibt einmal rechts?
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            move();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            move();
+            move();
+        }
+        ```
 
   - id: first-stone
     title: "Der erste Funkenstein"
@@ -261,6 +389,98 @@ tasks:
         take();
         move();
         move();
+        ```
+    dart:
+      prompt: 'Auf dem Weg nach unten liegt ein Funkenstein. Pip hebt ihn mit `take()`
+        auf, wenn Pip auf seinem Feld steht. Bring Pip mit dem Stein zur Lampe.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###o###
+            ###.###
+            ###L###
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Erst auf das Feld des Steins gehen, dann `take()`. Steht Pip daneben, greift
+        Pip ins Leere.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          move();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Auf dem Weg nach unten liegt ein Funkenstein. Pip hebt ihn mit `take()`
+        auf, wenn Pip auf seinem Feld steht. Bring Pip mit dem Stein zur Lampe.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P..###
+            ###o###
+            ###.###
+            ###L###
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Erst auf das Feld des Steins gehen, dann `take()`. Steht Pip daneben, greift
+        Pip ins Leere.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            move();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+            move();
+        }
         ```
 
   - id: few-stones
@@ -366,6 +586,102 @@ tasks:
         move();
         take();
         move();
+        ```
+    dart:
+      prompt: 'Drei Funkensteine liegen im Stollen. Sammle alle drei ein und bring Pip
+        zur Lampe.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #Po.o.#
+            ####o##
+            ####L##
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Geh den Weg auf der Karte mit dem Finger ab und schreib für jedes Feld auf,
+        was Pip dort tut. Am Ende des Stollens geht es nicht weiter: Pip biegt vorher
+        ab.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          take();
+          move();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Drei Funkensteine liegen im Stollen. Sammle alle drei ein und bring Pip
+        zur Lampe.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #Po.o.#
+            ####o##
+            ####L##
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Geh den Weg auf der Karte mit dem Finger ab und schreib für jedes Feld auf,
+        was Pip dort tut. Am Ende des Stollens geht es nicht weiter: Pip biegt vorher
+        ab.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            take();
+            move();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+        }
         ```
 
   - id: tunnel
@@ -543,6 +859,150 @@ tasks:
         move();
         take();
         move();
+        ```
+    dart:
+      prompt: 'Im langen Stollen liegen elf Funkensteine, einer auf jedem Feld bis zur
+        Lampe. Sammle alle ein.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ##########
+            #Poo######
+            ###o######
+            ###oooo###
+            ######o###
+            ###Looo###
+            ##########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Schreib den Plan Stück für Stück und probier ihn mit <em>Ausführen</em> aus,
+        sobald ein Stück fertig ist. Läuft Pip gegen eine Wand, zeigt die Wiedergabe,
+        in welcher Zeile.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          take();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+          take();
+          turnLeft();
+          move();
+          take();
+          move();
+          take();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+          take();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Im langen Stollen liegen elf Funkensteine, einer auf jedem Feld bis zur
+        Lampe. Sammle alle ein.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ##########
+            #Poo######
+            ###o######
+            ###oooo###
+            ######o###
+            ###Looo###
+            ##########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Schreib den Plan Stück für Stück und probier ihn mit <em>Ausführen</em> aus,
+        sobald ein Stück fertig ist. Läuft Pip gegen eine Wand, zeigt die Wiedergabe,
+        in welcher Zeile.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            take();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+            take();
+            turnLeft();
+            move();
+            take();
+            move();
+            take();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+            take();
+            move();
+        }
         ```
 
   - id: broken-plan
@@ -775,6 +1235,188 @@ tasks:
         take();
         move();
         ```
+    dart:
+      prompt: 'Der Wichtel hat einen Plan geschrieben, aber Pip läuft damit gegen eine
+        Wand. Lass ihn mit <em>Ausführen</em> laufen, such die falsche Stelle und repariere
+        sie, sodass Pip alle Steine einsammelt und zur Lampe kommt.
+
+        '
+      starter: |
+        void main() {
+          move();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          move();
+          turnLeft();
+          move();
+          take();
+          move();
+          move();
+          take();
+          move();
+          turnLeft();
+          move();
+          take();
+          move();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #########
+            #P.o#####
+            ###.#####
+            ###.o.o.#
+            #######o#
+            #####Lo.#
+            #########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Die Rückmeldung nennt die Zeile, in der Pip gegen die Wand läuft. Der Fehler
+        steht kurz davor: In welche Richtung schaut Pip dort, und in welche sollte Pip
+        schauen?
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          move();
+          take();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          move();
+          turnLeft();
+          move();
+          take();
+          move();
+          move();
+          take();
+          move();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+          turnLeft();
+          turnLeft();
+          turnLeft();
+          move();
+          take();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Der Wichtel hat einen Plan geschrieben, aber Pip läuft damit gegen eine
+        Wand. Lass ihn mit <em>Ausführen</em> laufen, such die falsche Stelle und repariere
+        sie, sodass Pip alle Steine einsammelt und zur Lampe kommt.
+
+        '
+      starter: |
+        void main() {
+            move();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            move();
+            turnLeft();
+            move();
+            take();
+            move();
+            move();
+            take();
+            move();
+            turnLeft();
+            move();
+            take();
+            move();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #########
+            #P.o#####
+            ###.#####
+            ###.o.o.#
+            #######o#
+            #####Lo.#
+            #########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Die Rückmeldung nennt die Zeile, in der Pip gegen die Wand läuft. Der Fehler
+        steht kurz davor: In welche Richtung schaut Pip dort, und in welche sollte Pip
+        schauen?
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            move();
+            take();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            move();
+            turnLeft();
+            move();
+            take();
+            move();
+            move();
+            take();
+            move();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+            turnLeft();
+            turnLeft();
+            turnLeft();
+            move();
+            take();
+            move();
+        }
+        ```
 
   - id: room
     title: "Vier Wände"
@@ -876,6 +1518,98 @@ tasks:
           turnLeft();
         }
         ```
+    dart:
+      prompt: 'In diesem Raum liegt an jeder Wand ein Funkenstein, an jeder an derselben
+        Stelle. Pip macht an jeder Wand dasselbe: Schreib es einmal in die Schleife, und
+        Pip wiederholt es viermal.
+
+        '
+      starter: |
+        void main() {
+          for (var i = 0; i < 4; i++) {
+            // was Pip an jeder Wand entlang macht
+          }
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ######
+            #.o..#
+            #...o#
+            #o...#
+            #P.o.#
+            ######
+        goal:
+          stones: all
+      hint: 'Schau dir die erste Wand an: Wie viele Schritte bis zum Stein, wie viele
+        danach bis zur Ecke? An der Ecke dreht sich Pip nach links.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 4; i++) {
+            move();
+            move();
+            take();
+            move();
+            turnLeft();
+          }
+        }
+        ```
+    java:
+      prompt: 'In diesem Raum liegt an jeder Wand ein Funkenstein, an jeder an derselben
+        Stelle. Pip macht an jeder Wand dasselbe: Schreib es einmal in die Schleife, und
+        Pip wiederholt es viermal.
+
+        '
+      starter: |
+        void main() {
+            for (int i = 0; i < 4; i++) {
+                // was Pip an jeder Wand entlang macht
+            }
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ######
+            #.o..#
+            #...o#
+            #o...#
+            #P.o.#
+            ######
+        goal:
+          stones: all
+      hint: 'Schau dir die erste Wand an: Wie viele Schritte bis zum Stein, wie viele
+        danach bis zur Ecke? An der Ecke dreht sich Pip nach links.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 4; i++) {
+                move();
+                move();
+                take();
+                move();
+                turnLeft();
+            }
+        }
+        ```
 
   - id: corridor
     title: "Acht in einer Reihe"
@@ -948,6 +1682,74 @@ tasks:
         for (let i = 0; i < 8; i++) {
           move();
           take();
+        }
+        ```
+    dart:
+      prompt: 'Acht Steine in einer Reihe. Sammle sie mit einer Schleife ein, nicht mit
+        sechzehn Zeilen.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #Poooooooo#
+            ###########
+        goal:
+          stones: all
+      hint: Was wiederholt sich? Ein Schritt und ein Griff, achtmal.
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 8; i++) {
+            move();
+            take();
+          }
+        }
+        ```
+    java:
+      prompt: 'Acht Steine in einer Reihe. Sammle sie mit einer Schleife ein, nicht mit
+        sechzehn Zeilen.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #Poooooooo#
+            ###########
+        goal:
+          stones: all
+      hint: Was wiederholt sich? Ein Schritt und ein Griff, achtmal.
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 8; i++) {
+                move();
+                take();
+            }
         }
         ```
 
@@ -1070,6 +1872,104 @@ tasks:
           turnLeft();
         }
         ```
+    dart:
+      prompt: 'Die Wendeltreppe windet sich von der Mitte nach außen: erst ein Feld, dann
+        zwei, dann drei, bis sechs, und nach jedem Stück eine Linksdrehung. Auf jedem
+        Feld liegt ein Stein.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+        goal:
+          stones: all
+      hint:
+      - 'Als lange Liste wären es über vierzig Zeilen. Die Stücke unterscheiden sich nur
+        in der Länge: 1, 2, 3, 4, 5, 6.'
+      - 'Eine Schleife mit Zählvariable: `for (var side = 1; side <= 6; side++) { … }`.
+        Darin wiederholt `for (var step = 0; step < side; step++)` so oft, wie das Stück
+        gerade lang ist.'
+      solution: |
+        ```dart
+        void main() {
+          for (var side = 1; side <= 6; side++) {
+            for (var step = 0; step < side; step++) {
+              move();
+              take();
+            }
+            turnLeft();
+          }
+        }
+        ```
+    java:
+      prompt: 'Die Wendeltreppe windet sich von der Mitte nach außen: erst ein Feld, dann
+        zwei, dann drei, bis sechs, und nach jedem Stück eine Linksdrehung. Auf jedem
+        Feld liegt ein Stein.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+        goal:
+          stones: all
+      hint:
+      - 'Als lange Liste wären es über vierzig Zeilen. Die Stücke unterscheiden sich nur
+        in der Länge: 1, 2, 3, 4, 5, 6.'
+      - 'Eine Schleife mit Zählvariable: `for (int side = 1; side <= 6; side++) { … }`.
+        Darin wiederholt `for (int step = 0; step < side; step++)` so oft, wie das Stück
+        gerade lang ist.'
+      solution: |
+        ```java
+        void main() {
+            for (int side = 1; side <= 6; side++) {
+                for (int step = 0; step < side; step++) {
+                    move();
+                    take();
+                }
+                turnLeft();
+            }
+        }
+        ```
 
   - id: spiral-short
     title: "Die Wendeltreppe in sieben Zeilen"
@@ -1174,6 +2074,102 @@ tasks:
             take();
           }
           turnLeft();
+        }
+        ```
+    dart:
+      prompt: 'Dieselbe Wendeltreppe, aber der Plan hat höchstens neun Zeilen, `void main()
+        {` und seine schließende Klammer mitgezählt. Kommentare und leere Zeilen zählen
+        nicht mit.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        max_lines: 9
+        maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+        goal:
+          stones: all
+      hint: 'Zwei Schleifen ineinander: Die äußere zählt die Länge des Stücks mit, die
+        innere läuft so oft, wie das Stück lang ist.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          for (var side = 1; side <= 6; side++) {
+            for (var step = 0; step < side; step++) {
+              move();
+              take();
+            }
+            turnLeft();
+          }
+        }
+        ```
+    java:
+      prompt: 'Dieselbe Wendeltreppe, aber der Plan hat höchstens neun Zeilen, `void main()
+        {` und seine schließende Klammer mitgezählt. Kommentare und leere Zeilen zählen
+        nicht mit.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        max_lines: 9
+        maps:
+        - facing: east
+          map: |
+            ########
+            ######o#
+            ######o#
+            #oooo#o#
+            #o##o#o#
+            #o#Po#o#
+            #o####o#
+            #oooooo#
+            ########
+        goal:
+          stones: all
+      hint: 'Zwei Schleifen ineinander: Die äußere zählt die Länge des Stücks mit, die
+        innere läuft so oft, wie das Stück lang ist.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            for (int side = 1; side <= 6; side++) {
+                for (int step = 0; step < side; step++) {
+                    move();
+                    take();
+                }
+                turnLeft();
+            }
         }
         ```
 
@@ -1310,6 +2306,128 @@ tasks:
           for (let j = 0; j < 3; j++) {
             turnLeft();
           }
+        }
+        ```
+    dart:
+      prompt: 'Auf der Pilzwiese liegt auf jedem Feld ein Funkenstein. Geh sie in Schlangenlinien
+        ab, Reihe für Reihe, und sammle alle ein. Die Lampe steht am Ende der letzten
+        Reihe.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #Loooo#
+            #ooooo#
+            #ooooo#
+            #Poooo#
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Zwei Reihen hin und zurück sind ein Stück, das sich wiederholt: hin, links
+        hoch, zurück, rechts hoch. Rechts ist dreimal links. Und sobald Pip die Lampe
+        erreicht, ist der Plan zu Ende, auch mitten in der Schleife.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 2; i++) {
+            for (var j = 0; j < 4; j++) {
+              move();
+              take();
+            }
+            turnLeft();
+            move();
+            take();
+            turnLeft();
+            for (var j = 0; j < 4; j++) {
+              move();
+              take();
+            }
+            for (var j = 0; j < 3; j++) {
+              turnLeft();
+            }
+            move();
+            take();
+            for (var j = 0; j < 3; j++) {
+              turnLeft();
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Auf der Pilzwiese liegt auf jedem Feld ein Funkenstein. Geh sie in Schlangenlinien
+        ab, Reihe für Reihe, und sammle alle ein. Die Lampe steht am Ende der letzten
+        Reihe.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        maps:
+        - facing: east
+          map: |
+            #######
+            #Loooo#
+            #ooooo#
+            #ooooo#
+            #Poooo#
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Zwei Reihen hin und zurück sind ein Stück, das sich wiederholt: hin, links
+        hoch, zurück, rechts hoch. Rechts ist dreimal links. Und sobald Pip die Lampe
+        erreicht, ist der Plan zu Ende, auch mitten in der Schleife.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 4; j++) {
+                    move();
+                    take();
+                }
+                turnLeft();
+                move();
+                take();
+                turnLeft();
+                for (int j = 0; j < 4; j++) {
+                    move();
+                    take();
+                }
+                for (int j = 0; j < 3; j++) {
+                    turnLeft();
+                }
+                move();
+                take();
+                for (int j = 0; j < 3; j++) {
+                    turnLeft();
+                }
+            }
         }
         ```
 
@@ -1508,6 +2626,176 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: 'Auf der Wiese liegen die Steine nicht mehr überall, und der Wichtel hat
+        drei Karten, auf jeder liegen sie woanders. Ein Plan für alle drei: Pip prüft
+        mit `onStone()`, ob auf dem Feld ein Stein liegt, und hebt ihn nur dann auf.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        maps:
+        - facing: east
+          map: |
+            #######
+            #L.o..#
+            #o...o#
+            #..o..#
+            #P.o..#
+            #######
+        - facing: east
+          map: |
+            #######
+            #L...o#
+            #.oo..#
+            #o...o#
+            #P...o#
+            #######
+        - facing: east
+          map: |
+            #######
+            #Lo...#
+            #...o.#
+            #.o..o#
+            #Po.o.#
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Dein Plan von »Reihe für Reihe« passt fast: Wo dort `take()` steht, nimmt
+        Pip jetzt nur auf, wenn `onStone()` wahr ist.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 2; i++) {
+            for (var j = 0; j < 4; j++) {
+              move();
+              if (onStone()) {
+                take();
+              }
+            }
+            turnLeft();
+            move();
+            if (onStone()) {
+              take();
+            }
+            turnLeft();
+            for (var j = 0; j < 4; j++) {
+              move();
+              if (onStone()) {
+                take();
+              }
+            }
+            for (var j = 0; j < 3; j++) {
+              turnLeft();
+            }
+            move();
+            if (onStone()) {
+              take();
+            }
+            for (var j = 0; j < 3; j++) {
+              turnLeft();
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Auf der Wiese liegen die Steine nicht mehr überall, und der Wichtel hat
+        drei Karten, auf jeder liegen sie woanders. Ein Plan für alle drei: Pip prüft
+        mit `onStone()`, ob auf dem Feld ein Stein liegt, und hebt ihn nur dann auf.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        maps:
+        - facing: east
+          map: |
+            #######
+            #L.o..#
+            #o...o#
+            #..o..#
+            #P.o..#
+            #######
+        - facing: east
+          map: |
+            #######
+            #L...o#
+            #.oo..#
+            #o...o#
+            #P...o#
+            #######
+        - facing: east
+          map: |
+            #######
+            #Lo...#
+            #...o.#
+            #.o..o#
+            #Po.o.#
+            #######
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Dein Plan von »Reihe für Reihe« passt fast: Wo dort `take()` steht, nimmt
+        Pip jetzt nur auf, wenn `onStone()` wahr ist.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 4; j++) {
+                    move();
+                    if (onStone()) {
+                        take();
+                    }
+                }
+                turnLeft();
+                move();
+                if (onStone()) {
+                    take();
+                }
+                turnLeft();
+                for (int j = 0; j < 4; j++) {
+                    move();
+                    if (onStone()) {
+                        take();
+                    }
+                }
+                for (int j = 0; j < 3; j++) {
+                    turnLeft();
+                }
+                move();
+                if (onStone()) {
+                    take();
+                }
+                for (int j = 0; j < 3; j++) {
+                    turnLeft();
+                }
+            }
+        }
+        ```
 
   - id: glibber
     title: "Der Glibber"
@@ -1609,6 +2897,100 @@ tasks:
         move();
         move();
         move();
+        ```
+    dart:
+      prompt: 'Ein Glibber wabert quer durch den Stollen, auf und ab, ein Feld pro Schritt.
+        Mit `wait()` bleibt Pip einen Schritt lang stehen. Bring Pip zur Lampe, ohne dass
+        der Glibber Pip erwischt.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - wait
+        maps:
+        - facing: east
+          map: |
+            #########
+            ####.####
+            ####.####
+            #P.....L#
+            ####g####
+            ####.####
+            #########
+        goal:
+          lamp: true
+      hint: 'Lass Pip erst einfach geradeaus laufen und schau in der Wiedergabe, wo sich
+        beide treffen. Ein oder zwei `wait()` an der richtigen Stelle, und der Glibber
+        ist schon vorbei.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          move();
+          move();
+          wait();
+          wait();
+          move();
+          move();
+          move();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Ein Glibber wabert quer durch den Stollen, auf und ab, ein Feld pro Schritt.
+        Mit `pause()` bleibt Pip einen Schritt lang stehen. Bring Pip zur Lampe, ohne dass
+        der Glibber Pip erwischt.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - wait
+        maps:
+        - facing: east
+          map: |
+            #########
+            ####.####
+            ####.####
+            #P.....L#
+            ####g####
+            ####.####
+            #########
+        goal:
+          lamp: true
+      hint: 'Lass Pip erst einfach geradeaus laufen und schau in der Wiedergabe, wo sich
+        beide treffen. Ein oder zwei `pause()` an der richtigen Stelle, und der Glibber
+        ist schon vorbei.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            move();
+            move();
+            pause();
+            pause();
+            move();
+            move();
+            move();
+            move();
+        }
         ```
 
   - id: glibbers
@@ -1762,5 +3144,135 @@ tasks:
           } else {
             move();
           }
+        }
+        ```
+    dart:
+      prompt: 'Zwei Glibber, und auf den drei Karten des Wichtels fangen sie an verschiedenen
+        Stellen an. Abzählen hilft nicht mehr. `glibberAhead()` sagt, ob auf dem nächsten
+        Feld ein Glibber ist oder gleich einer hinkommt: Dann wartet Pip, sonst geht Pip
+        weiter.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - wait
+        - glibber_ahead
+        maps:
+        - facing: east
+          map: |
+            #############
+            ####g###g####
+            ####.###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###g####
+            ####g###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###.####
+            ####.###.####
+            #P.........L#
+            ####g###g####
+            ####.###.####
+            #############
+        goal:
+          lamp: true
+      hint:
+      - 'In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft
+        die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss.'
+      - "`if (glibberAhead()) { … } else { … }` in einer Schleife."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 20; i++) {
+            if (glibberAhead()) {
+              wait();
+            } else {
+              move();
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Zwei Glibber, und auf den drei Karten des Wichtels fangen sie an verschiedenen
+        Stellen an. Abzählen hilft nicht mehr. `glibberAhead()` sagt, ob auf dem nächsten
+        Feld ein Glibber ist oder gleich einer hinkommt: Dann wartet Pip, sonst geht Pip
+        weiter.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan, ein Befehl pro Zeile
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - wait
+        - glibber_ahead
+        maps:
+        - facing: east
+          map: |
+            #############
+            ####g###g####
+            ####.###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###g####
+            ####g###.####
+            #P.........L#
+            ####.###.####
+            ####.###.####
+            #############
+        - facing: east
+          map: |
+            #############
+            ####.###.####
+            ####.###.####
+            #P.........L#
+            ####g###g####
+            ####.###.####
+            #############
+        goal:
+          lamp: true
+      hint:
+      - 'In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft
+        die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss.'
+      - "`if (glibberAhead()) { … } else { … }` in einer Schleife."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 20; i++) {
+                if (glibberAhead()) {
+                    pause();
+                } else {
+                    move();
+                }
+            }
         }
         ```

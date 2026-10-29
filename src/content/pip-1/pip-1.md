@@ -3,7 +3,7 @@ image: teaser.webp
 icon: /images/pip/icon-pip.png
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: "Pip mit einem Plan durch die Stollen schicken: Befehle nacheinander, Schleifen, Bedingungen"
 curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten, algorithmische Grundstrukturen: Sequenz, Wiederholung, Verzweigung)"
 topics: [miniwelt, grundstrukturen]
@@ -92,6 +92,28 @@ Die Klammern gehören dazu: Ohne sie macht Pip nichts.
 Die Klammern gehören dazu: Ohne sie macht Pip nichts. Das Semikolon am Ende
 schließt einen Befehl ab.
 <!-- /language -->
+<!-- language: dart -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>move();</code></td><td>geht ein Feld vorwärts, dorthin, wohin Pip schaut</td></tr>
+<tr><td><code>turnLeft();</code></td><td>dreht sich auf der Stelle um eine Vierteldrehung nach links</td></tr>
+<tr><td><code>say('Bello?');</code></td><td>sagt etwas in einer Sprechblase, ohne einen Schritt zu machen</td></tr>
+</table>
+
+Die Klammern gehören dazu: Ohne sie macht Pip nichts. Das Semikolon am Ende
+schließt einen Befehl ab.
+<!-- /language -->
+<!-- language: java -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>move();</code></td><td>geht ein Feld vorwärts, dorthin, wohin Pip schaut</td></tr>
+<tr><td><code>turnLeft();</code></td><td>dreht sich auf der Stelle um eine Vierteldrehung nach links</td></tr>
+<tr><td><code>say("Bello?");</code></td><td>sagt etwas in einer Sprechblase, ohne einen Schritt zu machen</td></tr>
+</table>
+
+Die Klammern gehören dazu: Ohne sie macht Pip nichts. Das Semikolon am Ende
+schließt einen Befehl ab.
+<!-- /language -->
 
 Bevor Pip losläuft: Auf dieser Karte schaut Pip nach rechts.
 
@@ -130,6 +152,34 @@ turnLeft();
 move();
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  move();
+  move();
+  turnLeft();
+  move();
+}
+```
+
+Ein Dart-Programm fängt in `void main() { … }` an: Der Plan steht zwischen
+den geschweiften Klammern. In den Beispielen weiter unten steht nur noch,
+was zwischen diese Klammern gehört.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    move();
+    move();
+    turnLeft();
+    move();
+}
+```
+
+Ein Java-Programm fängt in `void main() { … }` an: Der Plan steht zwischen
+den geschweiften Klammern. In den Beispielen weiter unten steht nur noch,
+was zwischen diese Klammern gehört.
+<!-- /language -->
 
 _task(predict)
 
@@ -163,6 +213,12 @@ Unten im Schacht glitzert etwas. Ein neuer Befehl hebt es auf:
 </table>
 <!-- /language -->
 <!-- language: javascript -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>take();</code></td><td>hebt den Funkenstein auf, auf dem Pip steht</td></tr>
+</table>
+<!-- /language -->
+<!-- language: dart, java -->
 <table class='table'>
 <tr><th>Befehl</th><th>Was Pip macht</th></tr>
 <tr><td><code>take();</code></td><td>hebt den Funkenstein auf, auf dem Pip steht</td></tr>
@@ -242,6 +298,31 @@ Was zwischen den geschweiften Klammern steht, macht Pip viermal
 hintereinander. Die Zählvariable `i` fängt bei 0 an, und nach jedem
 Durchlauf zählt `i++` eins weiter, solange `i < 4` gilt: 0, 1, 2, 3.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+for (var i = 0; i < 4; i++) {
+  move();
+  turnLeft();
+}
+```
+
+Was zwischen den geschweiften Klammern steht, macht Pip viermal
+hintereinander. Die Zählvariable `i` fängt bei 0 an, und nach jedem
+Durchlauf zählt `i++` eins weiter, solange `i < 4` gilt: 0, 1, 2, 3.
+<!-- /language -->
+<!-- language: java -->
+```java
+for (int i = 0; i < 4; i++) {
+    move();
+    turnLeft();
+}
+```
+
+Was zwischen den geschweiften Klammern steht, macht Pip viermal
+hintereinander. Die Zählvariable `i` ist eine ganze Zahl, ein `int`; sie
+fängt bei 0 an, und nach jedem Durchlauf zählt `i++` eins weiter, solange
+`i < 4` gilt: 0, 1, 2, 3.
+<!-- /language -->
 
 _task(room)
 
@@ -313,6 +394,50 @@ for (let side = 1; side <= 3; side++) {
 }
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+for (var side = 1; side <= 3; side++) {
+  say(side);
+}
+```
+
+`side` ist die Zählvariable: im ersten Durchlauf 1, dann 2, dann 3. Pip sagt
+der Reihe nach 1, 2, 3.
+
+In der Bedingung darf statt einer Zahl auch die Zählvariable stehen. Dann steht
+eine Schleife in der Schleife:
+
+```dart
+for (var side = 1; side <= 3; side++) {
+  for (var step = 0; step < side; step++) {
+    move();
+  }
+  turnLeft();
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+for (int side = 1; side <= 3; side++) {
+    say(side);
+}
+```
+
+`side` ist die Zählvariable: im ersten Durchlauf 1, dann 2, dann 3. Pip sagt
+der Reihe nach 1, 2, 3.
+
+In der Bedingung darf statt einer Zahl auch die Zählvariable stehen. Dann steht
+eine Schleife in der Schleife:
+
+```java
+for (int side = 1; side <= 3; side++) {
+    for (int step = 0; step < side; step++) {
+        move();
+    }
+    turnLeft();
+}
+```
+<!-- /language -->
 
 _task(nested-steps)
 
@@ -376,6 +501,28 @@ if (onStone()) {
 `true` oder `false`, und nur bei `true` macht Pip, was in den geschweiften
 Klammern steht.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+if (onStone()) {
+  take();
+}
+```
+
+`onStone()` ist eine Frage an die Karte: Liegt hier ein Stein? Die Antwort ist
+`true` oder `false`, ein `bool`, und nur bei `true` macht Pip, was in den
+geschweiften Klammern steht.
+<!-- /language -->
+<!-- language: java -->
+```java
+if (onStone()) {
+    take();
+}
+```
+
+`onStone()` ist eine Frage an die Karte: Liegt hier ein Stein? Die Antwort ist
+`true` oder `false`, ein `boolean`, und nur bei `true` macht Pip, was in den
+geschweiften Klammern steht.
+<!-- /language -->
 
 _task(meadow-stones)
 
@@ -407,6 +554,24 @@ auch ein Schritt, nur ohne Weg:
 <tr><td><code>glibberAhead()</code></td><td>fragt: Ist auf dem nächsten Feld ein Glibber, oder kommt gleich einer hin?</td></tr>
 </table>
 <!-- /language -->
+<!-- language: dart -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>wait();</code></td><td>bleibt einen Schritt lang stehen</td></tr>
+<tr><td><code>glibberAhead()</code></td><td>fragt: Ist auf dem nächsten Feld ein Glibber, oder kommt gleich einer hin?</td></tr>
+</table>
+<!-- /language -->
+<!-- language: java -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>pause();</code></td><td>bleibt einen Schritt lang stehen</td></tr>
+<tr><td><code>glibberAhead()</code></td><td>fragt: Ist auf dem nächsten Feld ein Glibber, oder kommt gleich einer hin?</td></tr>
+</table>
+
+In den anderen Sprachen heißt der Befehl `wait`. In Java hat jedes Objekt
+schon eine Methode `wait()`, mit einer ganz anderen Bedeutung; darum heißt
+Pips Befehl hier `pause()`.
+<!-- /language -->
 
 _task(glibber)
 
@@ -437,6 +602,24 @@ if (glibberAhead()) {
   say("Iiih!");
 } else {
   say("Frei!");
+}
+```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+if (glibberAhead()) {
+  say('Iiih!');
+} else {
+  say('Frei!');
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+if (glibberAhead()) {
+    say("Iiih!");
+} else {
+    say("Frei!");
 }
 ```
 <!-- /language -->

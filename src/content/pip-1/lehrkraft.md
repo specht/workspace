@@ -1,4 +1,4 @@
-Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python oder JavaScript, und schicken Pip damit durch die Stollen unter Funkelbach: zur Lampe, zu jedem Funkenstein, an Glibbern vorbei. Im ersten Kapitel klicken sie Pip zur Lampe und sehen den Plan dabei entstehen; danach läuft der Plan erst, wenn er fertig ist; die Karte der Stollen über dem Plan spielt den Lauf Schritt für Schritt ab und markiert die Zeile, bei der Pip gerade ist.
+Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python, JavaScript, Dart oder Java, und schicken Pip damit durch die Stollen unter Funkelbach: zur Lampe, zu jedem Funkenstein, an Glibbern vorbei. Im ersten Kapitel klicken sie Pip zur Lampe und sehen den Plan dabei entstehen; danach läuft der Plan erst, wenn er fertig ist; die Karte der Stollen über dem Plan spielt den Lauf Schritt für Schritt ab und markiert die Zeile, bei der Pip gerade ist.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine. Die Seite ist der Einstieg für eine Klasse, die noch nicht programmiert hat.</td></tr>
@@ -19,6 +19,9 @@ Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python
 - Links und rechts: Pip dreht sich von sich aus gesehen. Schaut Pip auf der Karte nach unten, ist links für Pip rechts auf dem Bildschirm. Die Vorhersage am Anfang greift das auf; ein Finger auf der Karte, der sich mitdreht, hilft.
 - `take` neben dem Stein statt darauf: Pip greift ins Leere, die Rückmeldung nennt die Zeile.
 - In Python und JavaScript fehlen die Klammern (`move` statt `move()`): Dann passiert nichts, und am Ende steht Pip noch am Anfang.
+- In Java meldet eine fehlende Klammer `not a statement`; die Rückmeldung erklärt es. In Dart passiert wie in Python nichts.
+- In Dart und Java steht der Plan in `void main() { … }`; fehlt es, ergänzt die Prüfung es, solange der Plan nur aus Befehlen besteht. Ein Plan mit eigenen Funktionen braucht es (ab dem zweiten Teil).
+- In Java heißt `wait` `pause()`: Jedes Objekt hat dort schon eine Methode `wait()`. Wer sie trotzdem schreibt, bekommt eine Meldung über `InterruptedException`, und die Rückmeldung nennt `pause()`.
 - Bei der Wendeltreppe zählt die innere Schleife nicht mit der äußeren mit, sondern immer gleich weit.
 - Bei den Glibbern ein Plan, der auf einer Karte passt, weil er abgezählt ist. Die Rückmeldung nennt die Karte, auf der er scheitert.
 
