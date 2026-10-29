@@ -51,6 +51,26 @@ class WordingTest < Minitest::Test
         assert_empty found
     end
 
+    # The answers of a choice are Markdown: a name with »_« or »*« outside
+    # backticks turns into italics (»johann_christoph und johann_jacob«
+    # shows »christoph und johann« slanted), so code goes in backticks.
+    def test_choice_options_keep_code_in_backticks
+        found = []
+        walk = lambda do |task, path, where|
+            next unless task.is_a?(Hash)
+            Array(task.dig('check', 'options')).each do |option|
+                text = option.is_a?(Hash) ? option['text'].to_s : option.to_s
+                bare = text.gsub(/`[^`]*`/, '').gsub(/<code\b.*?<\/code>/m, '')
+                found << "#{path.sub("#{CONTENT}/", '')} #{where}: #{text[0, 100]}" if bare.match?(/\w[_*]\w/)
+            end
+            task.each { |language, variant| walk.call(variant, path, "#{where} #{language}") if variant.is_a?(Hash) && variant['check'] }
+        end
+        Dir.glob(File.join(CONTENT, '**', 'tasks.yaml')).each do |path|
+            Array((YAML.safe_load(File.read(path), aliases: true) || {})['tasks']).each { |task| walk.call(task, path, task['id']) }
+        end
+        assert_empty found
+    end
+
     def test_multiplizieren_not_malnehmen
         assert_empty hits(/\bmal\s?(nehmen|genommen|nimmt|nimm)\b/i)
     end

@@ -78,10 +78,10 @@ tasks:
     check:
       type: choice
       options:
-        - "johann_christoph und johann_jacob"
-        - "johann_christoph, johann_jacob und johann_sebastian selbst, jeden zweimal"
-        - "johann_christoph, johann_jacob und johann_sebastian selbst, jeden einmal"
-        - "false"
+        - "`johann_christoph` und `johann_jacob`"
+        - "`johann_christoph`, `johann_jacob` und `johann_sebastian` selbst, jeden zweimal"
+        - "`johann_christoph`, `johann_jacob` und `johann_sebastian` selbst, jeden einmal"
+        - "`false`"
       correct: 1
 
   - id: geschwister
