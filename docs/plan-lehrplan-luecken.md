@@ -50,9 +50,11 @@ with the details of every `curriculum:` line and a search of the pages:
 
 On a wide screen the front page shows three cards in a row. Until
 29 October 2026 every section had to hold three or six (Fireworks and Hugo
-were parked for that, in eabe9ca9) and the language tiles fill rows of
-four; the maintainer dropped that rule then: a section takes as many
-activities as belong in it, and a row may end half full. Proposed on
+were parked for that, in eabe9ca9); the maintainer dropped that rule then
+for activities: a section takes as many activities as belong in it, and a
+row may end half full. The language tiles keep full rows of four (four,
+eight, sixteen, twenty tiles): a new language comes with others or takes
+the place of one that is parked. Proposed on
 27 October 2026, after the maintainer asked to close the gaps where
 appropriate, also by bringing back parked activities or moving them:
 
