@@ -1,4 +1,5 @@
 require 'json'
+require_relative 'tests_compiled'
 
 # Check type tests (docs/aufgaben.md, docs/plan-katas.md, set »Tests
 # schreiben«): the student writes tests instead of code, assertions typed
@@ -8,7 +9,7 @@ require 'json'
 #
 #   check:
 #     type: tests
-#     language: ruby                # ruby, python or javascript; per language as a variant
+#     language: ruby                # ruby, python, javascript, dart or java; per language as a variant
 #     function: even                # what the tests call: they must not define it
 #     correct: |                    # the right version
 #       def even(n) = n % 2 == 0
@@ -17,8 +18,8 @@ require 'json'
 #         say: Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests.
 #
 # A test is a line assert_equal(expected, actual) (assertEqual in
-# JavaScript), defined by the harness: no framework, the same in each
-# language. Every version runs in a run of its own (KataRunner), one after
+# JavaScript, Dart and Java), defined by the harness: no framework, the
+# same in each language. Dart and Java compile first (TestsCompiled). Every version runs in a run of its own (KataRunner), one after
 # the other in the same container: the version's file is loaded, then the
 # tests from tests.rb (.py, .js), and the harness prints what failed, with
 # the line in the tests, and how many assertions ran.
@@ -103,7 +104,7 @@ module TestsCheck
 
     def self.spec_errors(check)
         errors = []
-        errors << 'language must be ruby, python or javascript' unless FILES.key?(check['language'])
+        errors << 'language must be ruby, python, javascript, dart or java' unless FILES.key?(check['language']) || TestsCompiled::LANGUAGES.include?(check['language'])
         errors << 'function must name the function the tests call' unless check['function'].is_a?(String) && check['function'] =~ /\A[A-Za-z_]\w*\z/
         errors << 'correct must be the code of the right version' unless check['correct'].is_a?(String) && !check['correct'].strip.empty?
         mutants = check['mutants']
@@ -124,6 +125,7 @@ module TestsCheck
         n = Regexp.escape(name)
         case language
         when 'javascript' then code =~ /\bfunction\s+#{n}\b|\b(?:const|let|var)\s+#{n}\s*=/
+        when 'dart', 'java' then code =~ /\b#{n}\s*\([^()]*\)\s*(?:\{|=>)/
         else code =~ /^\s*def\s+#{n}\b/
         end
     end
@@ -138,14 +140,27 @@ module TestsCheck
             return [:wrong, "Schreib hier nur Tests, nicht die Funktion `#{name}` selbst: Die Prüfung bringt ihre eigenen Fassungen mit, eine richtige und fehlerhafte.", nil]
         end
 
-        ext = EXTENSIONS.fetch(language)
         versions = [check['correct']] + check['mutants'].map { |m| m['code'] }
-        files = { FILES.fetch(language) => code.to_s, "harness.#{ext}" => HARNESS.fetch(language) }
-        names = versions.each_index.map { |i| "version#{i}.#{ext}" }
-        versions.each_with_index { |v, i| files[names[i]] = v }
-        argv = ['sh', '-c', "for f in #{names.join(' ')}; do #{COMMANDS.fetch(language)} harness.#{ext} \"$f\"; echo; done"]
-        result = run.call(:files => files, :argv => argv, :timeout => [SECONDS * versions.size, KataCheck::MAX_SECONDS].min)
-        return [:unavailable, KataCheck::BUSY, nil] if result.nil?
+        if TestsCompiled::LANGUAGES.include?(language)
+            program = TestsCompiled.program(language, code, versions)
+            result = run.call(:files => program[:files], :argv => program[:argv], :timeout => program[:timeout])
+            return [:unavailable, KataCheck::BUSY, nil] if result.nil?
+            if (at = result.stdout.to_s.index(TestsCompiled::COMPILE_MARK))
+                errors = result.stdout.to_s[(at + TestsCompiled::COMPILE_MARK.size)..]
+                message = TestsCompiled.compile_problem(language, errors, program[:first], program[:last])
+                explanation = KataCheck.explain(errors, language)
+                message += "\n\n#{explanation}" if explanation
+                return [:wrong, message, nil]
+            end
+        else
+            ext = EXTENSIONS.fetch(language)
+            files = { FILES.fetch(language) => code.to_s, "harness.#{ext}" => HARNESS.fetch(language) }
+            names = versions.each_index.map { |i| "version#{i}.#{ext}" }
+            versions.each_with_index { |v, i| files[names[i]] = v }
+            argv = ['sh', '-c', "for f in #{names.join(' ')}; do #{COMMANDS.fetch(language)} harness.#{ext} \"$f\"; echo; done"]
+            result = run.call(:files => files, :argv => argv, :timeout => [SECONDS * versions.size, KataCheck::MAX_SECONDS].min)
+            return [:unavailable, KataCheck::BUSY, nil] if result.nil?
+        end
 
         reports = result.stdout.to_s.lines.filter_map { |l| l.start_with?(MARK) ? (JSON.parse(l[MARK.size..]) rescue nil) : nil }
         if reports.empty?
@@ -159,8 +174,12 @@ module TestsCheck
             line, error = right['error']
             return [:wrong, "Deine Tests brechen mit der richtigen Fassung ab#{line ? " (Zeile #{line})" : ''}: `#{error}`", nil]
         end
-        assert = language == 'javascript' ? 'assertEqual' : 'assert_equal'
-        return [:wrong, "Du hast noch keinen Test geschrieben: eine Zeile `#{assert}(erwartet, ergebnis)`.", nil] if right['count'].to_i.zero?
+        assert = case language
+            when 'javascript' then 'assertEqual(erwartet, ergebnis)'
+            when 'dart', 'java' then 'assertEqual(erwartet, ergebnis);'
+            else 'assert_equal(erwartet, ergebnis)'
+            end
+        return [:wrong, "Du hast noch keinen Test geschrieben: eine Zeile `#{assert}`.", nil] if right['count'].to_i.zero?
 
         unless right['failures'].empty?
             line, expected, actual = right['failures'].first
@@ -176,6 +195,8 @@ module TestsCheck
         end
 
         count = right['count'].to_i
-        [:correct, "Deine #{count == 1 ? 'Prüfung' : "#{count} Prüfungen"} bestehen mit der richtigen Fassung und erkennen alle #{check['mutants'].size} fehlerhaften.", nil]
+        mutants = check['mutants'].size
+        tests = count == 1 ? 'Deine Prüfung besteht mit der richtigen Fassung und erkennt' : "Deine #{count} Prüfungen bestehen mit der richtigen Fassung und erkennen"
+        [:correct, "#{tests} #{mutants == 1 ? 'die fehlerhafte' : "alle #{mutants} fehlerhaften"}.", nil]
     end
 end

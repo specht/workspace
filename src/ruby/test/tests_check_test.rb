@@ -24,6 +24,14 @@ class TestsCheckTest < Minitest::Test
                               'correct' => "function even(n) {\n  return n % 2 === 0;\n}\n",
                               'mutants' => [{ 'code' => "function even(n) {\n  return Math.abs(n % 2) === 1;\n}\n", 'say' => 'Vertauscht.' },
                                             { 'code' => "function even(n) {\n  return n > 0 && n % 2 === 0;\n}\n", 'say' => 'Bei 0 falsch.' }] },
+            'dart' => { 'type' => 'tests', 'language' => 'dart', 'function' => 'even',
+                        'correct' => "bool even(int n) {\n  return n % 2 == 0;\n}\n",
+                        'mutants' => [{ 'code' => "bool even(int n) {\n  return n % 2 == 1;\n}\n", 'say' => 'Vertauscht.' },
+                                      { 'code' => "bool even(int n) {\n  return n > 0 && n % 2 == 0;\n}\n", 'say' => 'Bei 0 falsch.' }] },
+            'java' => { 'type' => 'tests', 'language' => 'java', 'function' => 'even',
+                        'correct' => "boolean even(int n) {\n    return n % 2 == 0;\n}\n",
+                        'mutants' => [{ 'code' => "boolean even(int n) {\n    return Math.abs(n % 2) == 1;\n}\n", 'say' => 'Vertauscht.' },
+                                      { 'code' => "boolean even(int n) {\n    return n > 0 && n % 2 == 0;\n}\n", 'say' => 'Bei 0 falsch.' }] },
         }.fetch(language)
     end
 
@@ -55,6 +63,8 @@ class TestsCheckTest < Minitest::Test
             'javascript' => ["// noch nichts\n", "assertEqual(false, even(4));\n", "assertEqual(true, even(4));\nassertEqual(false, even(7));\n",
                              "assertEqual(true, even(4));\nassertEqual(false, even(7));\nassertEqual(true, even(0));\n"],
         }
+        # Dart and Java compile once for every version (TestsCompiled)
+        tests['dart'] = tests['java'] = tests['javascript']
         tests.each do |language, (none, wrong, partly, all)|
             c = check(language)
             assert_includes TestsCheck.check({}, c, none, RUN)[1], 'noch keinen Test', language
@@ -66,6 +76,20 @@ class TestsCheckTest < Minitest::Test
             assert_equal :correct, status, "#{language}: #{message}"
             assert_includes message, '3 Prüfungen', language
         end
+    end
+
+    # Dart and Java: tests that do not compile name the line; the function
+    # itself is refused there too
+    def test_dart_and_java_name_the_line_of_a_compiler_error
+        needs_docker
+        %w[dart java].each do |language|
+            status, message, = TestsCheck.check({}, check(language), "assertEqual(true, even(4));\nassertEqual(false, odd(7));\n", RUN)
+            assert_equal :wrong, status, language
+            assert_includes message, 'nicht übersetzen (Zeile 2)', language
+            refute_includes message, 'HsV', language
+        end
+        status, message, = TestsCheck.check({}, check('java'), "boolean even(int n) {\n    return true;\n}\n", ->(**_) { raise 'must not run' })
+        assert_includes message, 'nicht die Funktion `even` selbst'
     end
 
     # in Python True is not 1: a test expecting 1 does not pass a True
