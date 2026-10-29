@@ -44,6 +44,8 @@ class PrologCheckTest < Minitest::Test
         assert_includes message, '`G = a`'
         _, message, = PrologCheck.evaluate({}, CHECK, output([{ 'error' => 'time' }]))
         assert_includes message, 'hört nicht auf'
+        _, message, = PrologCheck.evaluate({}, CHECK, output([{ 'error' => 'stack' }]))
+        assert_includes message, 'hört nicht auf'
         _, message, = PrologCheck.evaluate({}, CHECK.merge('slow' => 'Zu langsam.'), output([{ 'error' => 'time' }]))
         assert_equal 'Zu langsam.', message
         _, message, = PrologCheck.evaluate({}, CHECK, output([{ 'error' => 'unknown', 'message' => 'grandparent/2' }]))
@@ -69,8 +71,9 @@ class PrologCheckTest < Minitest::Test
             assert data, out
             assert_equal ['G = a'], data['cases'][0]['answers']
             assert_equal ['false'], data['cases'][1]['answers']
-            # the left recursion runs into the time limit
-            assert_equal 'time', data['cases'][2]['error']
+            # the left recursion runs into the time limit, or on a fast
+            # machine fills the stack first
+            assert_includes %w[time stack], data['cases'][2]['error']
         end
     end
 end
