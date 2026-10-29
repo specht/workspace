@@ -3,7 +3,7 @@ image: teaser.webp
 icon: /images/pip/icon-bello.png
 kind: uebung
 duration: 3 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: "Pip findet Bello: Schleifen mit Bedingung, eigene Funktionen, Variablen, ein Algorithmus fürs Labyrinth"
 curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten, algorithmische Grundstrukturen, Variablenkonzept und Prozeduren); Oberstufe: Algorithmen und Datenstrukturen (ein Algorithmus fürs Labyrinth)"
 topics: [miniwelt, grundstrukturen, unterprogramme]
@@ -100,6 +100,44 @@ dreht sich Pip ewig; nach 1000 Schritten hält die Welt an.) `!`
 dreht eine Antwort um: `while (!onLamp())` wiederholt, bis Pip an der Lampe
 steht.
 <!-- /language -->
+<!-- language: dart -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>frontClear()</code></td><td>fragt: Ist das Feld vor Pip frei?</td></tr>
+<tr><td><code>onLamp()</code></td><td>fragt: Steht Pip an der Lampe?</td></tr>
+</table>
+
+```dart
+while (frontClear()) {
+  turnLeft();
+}
+```
+
+Solange vorn frei ist, dreht sich Pip. Schaut Pip auf eine Wand, ist die
+Bedingung falsch, und es geht nach der Schleife weiter. (Ist ringsum frei,
+dreht sich Pip ewig; nach 1000 Schritten hält die Welt an.) `!`
+dreht eine Antwort um: `while (!onLamp())` wiederholt, bis Pip an der Lampe
+steht.
+<!-- /language -->
+<!-- language: java -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>frontClear()</code></td><td>fragt: Ist das Feld vor Pip frei?</td></tr>
+<tr><td><code>onLamp()</code></td><td>fragt: Steht Pip an der Lampe?</td></tr>
+</table>
+
+```java
+while (frontClear()) {
+    turnLeft();
+}
+```
+
+Solange vorn frei ist, dreht sich Pip. Schaut Pip auf eine Wand, ist die
+Bedingung falsch, und es geht nach der Schleife weiter. (Ist ringsum frei,
+dreht sich Pip ewig; nach 1000 Schritten hält die Welt an.) `!`
+dreht eine Antwort um: `while (!onLamp())` wiederholt, bis Pip an der Lampe
+steht.
+<!-- /language -->
 
 _task(dark-tunnel)
 
@@ -165,6 +203,44 @@ hop();
 `function hop() { … }` bringt Pip den Spruch bei; dabei passiert noch nichts.
 Erst `hop();` weiter unten führt ihn aus, und zwar zweimal.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void hop() {
+  move();
+  move();
+}
+
+void main() {
+  hop();
+  turnLeft();
+  hop();
+}
+```
+
+`void hop() { … }` bringt Pip den Spruch bei; dabei passiert noch nichts.
+Erst `hop();` in `main` führt ihn aus, und zwar zweimal. `void` heißt: Der
+Spruch tut etwas, aber er gibt keine Antwort zurück. Er steht neben `main`,
+nicht darin.
+<!-- /language -->
+<!-- language: java -->
+```java
+void hop() {
+    move();
+    move();
+}
+
+void main() {
+    hop();
+    turnLeft();
+    hop();
+}
+```
+
+`void hop() { … }` bringt Pip den Spruch bei; dabei passiert noch nichts.
+Erst `hop();` in `main` führt ihn aus, und zwar zweimal. `void` heißt: Der
+Spruch tut etwas, aber er gibt keine Antwort zurück. Er steht neben `main`,
+nicht darin.
+<!-- /language -->
 
 Bei den ersten drei Katas ruft die Prüfung deinen Zauberspruch selbst auf, auf
 Karten, die sie dafür aufbaut. Was du unter den Spruch schreibst, um ihn
@@ -226,6 +302,13 @@ in den Fels hat jemand geritzt: »Dreimal ziehen. Nicht öfter.«
 <tr><td><code>onLever()</code></td><td>fragt: Steht hier ein Hebel?</td></tr>
 </table>
 <!-- /language -->
+<!-- language: dart, java -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>pull();</code></td><td>zieht am Hebel, auf dem Pip steht</td></tr>
+<tr><td><code>onLever()</code></td><td>fragt: Steht hier ein Hebel?</td></tr>
+</table>
+<!-- /language -->
 
 _task(one-lever)
 
@@ -257,6 +340,26 @@ let steps = 0;
 while (frontClear()) {
   move();
   steps++;
+}
+say(steps);
+```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+var steps = 0;
+while (frontClear()) {
+  move();
+  steps++;
+}
+say(steps);
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+int steps = 0;
+while (frontClear()) {
+    move();
+    steps++;
 }
 say(steps);
 ```
@@ -295,6 +398,18 @@ Zwei Fragen lassen sich verbinden: `a and b` ist wahr, wenn beide wahr sind,
 `a or b`, wenn mindestens eine wahr ist, und `not a` dreht eine um.
 <!-- /language -->
 <!-- language: javascript -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip macht</th></tr>
+<tr><td><code>puddleAhead()</code></td><td>fragt: Ist vor Pip eine Pfütze?</td></tr>
+<tr><td><code>trailAhead()</code></td><td>fragt: Sind auf dem Feld vor Pip Pfotenabdrücke? (Auch Bello selbst zählt.)</td></tr>
+<tr><td><code>belloHere()</code></td><td>fragt: Ist Bello hier?</td></tr>
+</table>
+
+Zwei Fragen lassen sich verbinden: `a && b` ist wahr, wenn beide wahr sind
+(und), `a || b`, wenn mindestens eine wahr ist (oder), und `!a` dreht eine um
+(nicht).
+<!-- /language -->
+<!-- language: dart, java -->
 <table class='table'>
 <tr><th>Befehl</th><th>Was Pip macht</th></tr>
 <tr><td><code>puddleAhead()</code></td><td>fragt: Ist vor Pip eine Pfütze?</td></tr>

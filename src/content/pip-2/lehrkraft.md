@@ -1,4 +1,4 @@
-Lernende steuern Pip mit Plänen, die selbst nachsehen, wo es weitergeht: Schleifen mit `while`, eigene Funktionen mit Parameter, eine Variable, die mitzählt, verknüpfte Bedingungen und die Hand an der Wand als erster Algorithmus, in Ruby, Python oder JavaScript.
+Lernende steuern Pip mit Plänen, die selbst nachsehen, wo es weitergeht: Schleifen mit `while`, eigene Funktionen mit Parameter, eine Variable, die mitzählt, verknüpfte Bedingungen und die Hand an der Wand als erster Algorithmus, in Ruby, Python, JavaScript, Dart oder Java.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/pip-1'>Pip unter Funkelbach: Hinab in die Stollen</a> und Schleifen mit Zählvariable, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
@@ -19,6 +19,7 @@ Ein Roboter auf einem Gitter, der sich nur nach links drehen kann und `turn_righ
 
 - `while` ohne Schritt in der Schleife: Die Bedingung ändert sich nie, nach 1000 Schritten oder zehn Sekunden hält die Prüfung an und fragt nach einer Endlosschleife.
 - Ein Zauberspruch, der definiert, aber nie aufgerufen wird, oder ein Aufruf über der Definition (in Python und Ruby kennt das Programm den Namen dann noch nicht).
+- In Dart und Java ein Zauberspruch in `main` statt daneben: Java meldet einen Fehler beim Übersetzen; in Dart läuft der Plan, aber die Karten, die einen Spruch selbst aufrufen, finden ihn nicht und melden, Pip kenne ihn nicht. Die Reihenfolge von Spruch und `main` ist dort egal.
 - An der Wand nur nach links drehen: In einem Stollen, der nach rechts abbiegt, läuft Pip zurück.
 - Bei den Hebeln an jedem Hebel ziehen: Mit vier Hebeln fahren die Stacheln danach wieder heraus.
 - Die Insel (Extra): Mit der linken Hand bleibt Pip an der Außenwand und läuft im Kreis. Wer am Anfang die Wand auf der anderen Seite nimmt, kommt hin. Gut zum Besprechen: Die Hand an der Wand findet nur, was an derselben Wand liegt.

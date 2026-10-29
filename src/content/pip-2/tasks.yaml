@@ -104,6 +104,98 @@ tasks:
           move();
         }
         ```
+    dart:
+      prompt: 'Drei Stollen, alle verschieden lang. Pip geht mit `while` vorwärts, solange
+        vorn frei ist: `frontClear()` sagt es.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P...L#
+            #######
+        - facing: east
+          map: |
+            ############
+            #P........L#
+            ############
+        - facing: east
+          map: |
+            #####
+            #P.L#
+            #####
+        goal:
+          lamp: true
+      hint: 'Was in der Schleife steht, macht Pip, solange die Frage `frontClear()` mit
+        Ja beantwortet wird. In der Schleife reicht ein Schritt.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          while (frontClear()) {
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'Drei Stollen, alle verschieden lang. Pip geht mit `while` vorwärts, solange
+        vorn frei ist: `frontClear()` sagt es.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            #######
+            #P...L#
+            #######
+        - facing: east
+          map: |
+            ############
+            #P........L#
+            ############
+        - facing: east
+          map: |
+            #####
+            #P.L#
+            #####
+        goal:
+          lamp: true
+      hint: 'Was in der Schleife steht, macht Pip, solange die Frage `frontClear()` mit
+        Ja beantwortet wird. In der Schleife reicht ein Schritt.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            while (frontClear()) {
+                move();
+            }
+        }
+        ```
 
   - id: dark-stones
     title: "Steine im Finstern"
@@ -209,6 +301,106 @@ tasks:
           if (onStone()) {
             take();
           }
+        }
+        ```
+    dart:
+      prompt: 'Dieselben Stollen, jetzt mit Funkensteinen, auf jeder Karte woanders. Sammle
+        sie auf dem Weg zur Lampe alle ein.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #P.o..oo.L#
+            ###########
+        - facing: east
+          map: |
+            #############
+            #Poo.....o.L#
+            #############
+        - facing: east
+          map: |
+            ########
+            #P..o.L#
+            ########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'In die Schleife kommt nach dem Schritt die Frage aus der Pilzwiese: Liegt
+        hier ein Stein?'
+      solution: |
+        ```dart
+        void main() {
+          while (frontClear()) {
+            move();
+            if (onStone()) {
+              take();
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Dieselben Stollen, jetzt mit Funkensteinen, auf jeder Karte woanders. Sammle
+        sie auf dem Weg zur Lampe alle ein.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #P.o..oo.L#
+            ###########
+        - facing: east
+          map: |
+            #############
+            #Poo.....o.L#
+            #############
+        - facing: east
+          map: |
+            ########
+            #P..o.L#
+            ########
+        goal:
+          lamp: true
+          stones: all
+      hint: 'In die Schleife kommt nach dem Schritt die Frage aus der Pilzwiese: Liegt
+        hier ein Stein?'
+      solution: |
+        ```java
+        void main() {
+            while (frontClear()) {
+                move();
+                if (onStone()) {
+                    take();
+                }
+            }
         }
         ```
 
@@ -367,6 +559,138 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: 'Diese Stollen biegen mal nach links, mal nach rechts ab. Pip geht, bis
+        `onLamp()` wahr ist: geradeaus, solange es geht, und an einer Wand dorthin, wo
+        es weitergeht.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            ##########
+            #P..######
+            ###.######
+            ###....###
+            ######.###
+            ######..L#
+            ##########
+        - facing: east
+          map: |
+            #########
+            #####L..#
+            #######.#
+            #P......#
+            #########
+        - facing: east
+          map: |
+            ###########
+            #P.#######
+            ##.#######
+            ##....####
+            #####.####
+            ##L...####
+            ###########
+        goal:
+          lamp: true
+      hint: 'An der Wand dreht sich Pip erst nach links. Ist dort auch Wand, geht es rechts
+        weiter: von links aus noch zwei Vierteldrehungen.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          while (!onLamp()) {
+            if (frontClear()) {
+              move();
+            } else {
+              turnLeft();
+              if (!frontClear()) {
+                turnLeft();
+                turnLeft();
+              }
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Diese Stollen biegen mal nach links, mal nach rechts ab. Pip geht, bis
+        `onLamp()` wahr ist: geradeaus, solange es geht, und an einer Wand dorthin, wo
+        es weitergeht.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            ##########
+            #P..######
+            ###.######
+            ###....###
+            ######.###
+            ######..L#
+            ##########
+        - facing: east
+          map: |
+            #########
+            #####L..#
+            #######.#
+            #P......#
+            #########
+        - facing: east
+          map: |
+            ###########
+            #P.#######
+            ##.#######
+            ##....####
+            #####.####
+            ##L...####
+            ###########
+        goal:
+          lamp: true
+      hint: 'An der Wand dreht sich Pip erst nach links. Ist dort auch Wand, geht es rechts
+        weiter: von links aus noch zwei Vierteldrehungen.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            while (!onLamp()) {
+                if (frontClear()) {
+                    move();
+                } else {
+                    turnLeft();
+                    if (!frontClear()) {
+                        turnLeft();
+                        turnLeft();
+                    }
+                }
+            }
+        }
+        ```
 
   - id: turn-right
     title: "Rechtsherum"
@@ -485,6 +809,100 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: 'Schreib den Zauberspruch `turnRight()`: Pip dreht sich eine Vierteldrehung
+        nach rechts. Die Prüfung stellt Pip auf zwei Karten und ruft `turnRight()` auf.
+
+        '
+      starter: |
+        void turnRight() {
+          // drei Vierteldrehungen nach links
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: turnRight();
+          expect:
+            facing: south
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: turnRight();
+          expect:
+            facing: east
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+      hint: Was im Schacht drei Zeilen waren, steht jetzt im Zauberspruch.
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+        ```
+    java:
+      prompt: 'Schreib den Zauberspruch `turnRight()`: Pip dreht sich eine Vierteldrehung
+        nach rechts. Die Prüfung stellt Pip auf zwei Karten und ruft `turnRight()` auf.
+
+        '
+      starter: |
+        void turnRight() {
+            // drei Vierteldrehungen nach links
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: turnRight();
+          expect:
+            facing: south
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: turnRight();
+          expect:
+            facing: east
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+      hint: Was im Schacht drei Zeilen waren, steht jetzt im Zauberspruch.
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+        ```
 
   - id: turn-around
     title: "Kehrt!"
@@ -596,6 +1014,94 @@ tasks:
         function turnAround() {
           turnLeft();
           turnLeft();
+        }
+        ```
+    dart:
+      prompt: 'Noch ein Zauberspruch: `turnAround()` dreht Pip in die Gegenrichtung.
+
+        '
+      starter: |
+        void turnAround() {
+          // Pip schaut danach in die Gegenrichtung
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: turnAround();
+          expect:
+            facing: west
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: turnAround();
+          expect:
+            facing: south
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+      solution: |
+        ```dart
+        void turnAround() {
+          turnLeft();
+          turnLeft();
+        }
+        ```
+    java:
+      prompt: 'Noch ein Zauberspruch: `turnAround()` dreht Pip in die Gegenrichtung.
+
+        '
+      starter: |
+        void turnAround() {
+            // Pip schaut danach in die Gegenrichtung
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: turnAround();
+          expect:
+            facing: west
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+        - facing: north
+          call: turnAround();
+          expect:
+            facing: south
+            moves: 0
+          map: |
+            #####
+            #...#
+            #.P.#
+            #...#
+            #####
+      solution: |
+        ```java
+        void turnAround() {
+            turnLeft();
+            turnLeft();
         }
         ```
 
@@ -740,6 +1246,117 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: "`walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)`
+        fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch
+        hat `n` diesen Wert. Du schreibst nur den Spruch; die Prüfung ruft ihn auf drei
+        Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`, und jeder Gang ist genau so
+        lang, wie Pip gehen soll.\n"
+      starter: |
+        void walk(int n) {
+          // n Felder vorwärts
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: walk(3);
+          expect:
+            moves: 3
+          map: |
+            ######
+            #P...#
+            ######
+        - facing: south
+          call: walk(5);
+          expect:
+            moves: 5
+          map: |
+            ###
+            #P#
+            #.#
+            #.#
+            #.#
+            #.#
+            #.#
+            ###
+        - facing: west
+          call: walk(1);
+          expect:
+            moves: 1
+          map: |
+            ####
+            #.P#
+            ####
+      hint: Eine Schleife, die so oft läuft, wie `n` groß ist.
+      solution: |
+        ```dart
+        void walk(int n) {
+          for (var i = 0; i < n; i++) {
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: "`walk(n)` lässt Pip `n` Felder vorwärts gehen: `walk(3)` drei, `walk(5)`
+        fünf. `n` ist ein Parameter: Beim Aufruf steht dort eine Zahl, und im Zauberspruch
+        hat `n` diesen Wert. Du schreibst nur den Spruch; die Prüfung ruft ihn auf drei
+        Karten auf, mit `walk(3)`, `walk(5)` und `walk(1)`, und jeder Gang ist genau so
+        lang, wie Pip gehen soll.\n"
+      starter: |
+        void walk(int n) {
+            // n Felder vorwärts
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        maps:
+        - facing: east
+          call: walk(3);
+          expect:
+            moves: 3
+          map: |
+            ######
+            #P...#
+            ######
+        - facing: south
+          call: walk(5);
+          expect:
+            moves: 5
+          map: |
+            ###
+            #P#
+            #.#
+            #.#
+            #.#
+            #.#
+            #.#
+            ###
+        - facing: west
+          call: walk(1);
+          expect:
+            moves: 1
+          map: |
+            ####
+            #.P#
+            ####
+      hint: Eine Schleife, die so oft läuft, wie `n` groß ist.
+      solution: |
+        ```java
+        void walk(int n) {
+            for (int i = 0; i < n; i++) {
+                move();
+            }
+        }
+        ```
+
   - id: stairs
     title: "Die Treppe"
     level: 3
@@ -919,6 +1536,154 @@ tasks:
           turnRight();
         }
         ```
+    dart:
+      prompt: 'Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch
+        wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur
+        noch eine Schleife.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void walk(int n) {
+          for (var i = 0; i < n; i++) {
+            move();
+          }
+        }
+
+        void main() {
+          // Die Treppe
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        max_lines: 20
+        maps:
+        - facing: east
+          map: |
+            #############
+            ###########L#
+            ###########.#
+            ###########.#
+            ###########.#
+            #######.....#
+            #######.#####
+            #######.#####
+            ####....#####
+            ####.########
+            ##...########
+            #P.##########
+            #############
+        goal:
+          lamp: true
+      hint: 'Jede Stufe ist: `n` Felder geradeaus, links hoch, `n` Felder, rechts wieder
+        in die alte Richtung. `n` zählt von 1 bis 4.
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void walk(int n) {
+          for (var i = 0; i < n; i++) {
+            move();
+          }
+        }
+
+        void main() {
+          for (var n = 1; n <= 4; n++) {
+            walk(n);
+            turnLeft();
+            walk(n);
+            turnRight();
+          }
+        }
+        ```
+    java:
+      prompt: 'Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch
+        wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur
+        noch eine Schleife.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void walk(int n) {
+            for (int i = 0; i < n; i++) {
+                move();
+            }
+        }
+
+        void main() {
+            // Die Treppe
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        max_lines: 20
+        maps:
+        - facing: east
+          map: |
+            #############
+            ###########L#
+            ###########.#
+            ###########.#
+            ###########.#
+            #######.....#
+            #######.#####
+            #######.#####
+            ####....#####
+            ####.########
+            ##...########
+            #P.##########
+            #############
+        goal:
+          lamp: true
+      hint: 'Jede Stufe ist: `n` Felder geradeaus, links hoch, `n` Felder, rechts wieder
+        in die alte Richtung. `n` zählt von 1 bis 4.
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void walk(int n) {
+            for (int i = 0; i < n; i++) {
+                move();
+            }
+        }
+
+        void main() {
+            for (int n = 1; n <= 4; n++) {
+                walk(n);
+                turnLeft();
+                walk(n);
+                turnRight();
+            }
+        }
+        ```
 
   - id: hand-on-wall
     title: "Die Hand an der Wand"
@@ -1044,6 +1809,122 @@ tasks:
             turnRight();
           }
           move();
+        }
+        ```
+    dart:
+      prompt: 'Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand
+        an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach
+        links und dann nach rechts, bis vorn frei ist.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: south
+          map: |
+            #########
+            #P#.....#
+            #.#.###.#
+            #.#...#.#
+            #.###.#.#
+            #.....#L#
+            #########
+        goal:
+          lamp: true
+      hint: 'In der Schleife: einmal `turnLeft()`, dann `turnRight()`, solange vorn kein
+        Weg ist, dann ein Schritt.
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          while (!onLamp()) {
+            turnLeft();
+            while (!frontClear()) {
+              turnRight();
+            }
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand
+        an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach
+        links und dann nach rechts, bis vorn frei ist.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: south
+          map: |
+            #########
+            #P#.....#
+            #.#.###.#
+            #.#...#.#
+            #.###.#.#
+            #.....#L#
+            #########
+        goal:
+          lamp: true
+      hint: 'In der Schleife: einmal `turnLeft()`, dann `turnRight()`, solange vorn kein
+        Weg ist, dann ein Schritt.
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            while (!onLamp()) {
+                turnLeft();
+                while (!frontClear()) {
+                    turnRight();
+                }
+                move();
+            }
         }
         ```
 
@@ -1197,6 +2078,144 @@ tasks:
           move();
         }
         ```
+    dart:
+      prompt: 'Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel
+        für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: south
+          map: |
+            #############
+            #P#L..#.....#
+            #.###.#.#.###
+            #...#.#.#...#
+            ###.#.#.###.#
+            #.#.#...#...#
+            #.#.#####.#.#
+            #.#.#.....#.#
+            #.#.#.#####.#
+            #.....#.....#
+            #############
+        - generate: maze
+          size:
+          - 6
+          - 5
+        - generate: maze
+          size:
+          - 6
+          - 5
+        goal:
+          lamp: true
+      hint: 'Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen:
+        Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          while (!onLamp()) {
+            turnLeft();
+            while (!frontClear()) {
+              turnRight();
+            }
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel
+        für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: south
+          map: |
+            #############
+            #P#L..#.....#
+            #.###.#.#.###
+            #...#.#.#...#
+            ###.#.#.###.#
+            #.#.#...#...#
+            #.#.#####.#.#
+            #.#.#.....#.#
+            #.#.#.#####.#
+            #.....#.....#
+            #############
+        - generate: maze
+          size:
+          - 6
+          - 5
+        - generate: maze
+          size:
+          - 6
+          - 5
+        goal:
+          lamp: true
+      hint: 'Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen:
+        Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            while (!onLamp()) {
+                turnLeft();
+                while (!frontClear()) {
+                    turnRight();
+                }
+                move();
+            }
+        }
+        ```
 
   - id: island
     title: "Die Insel"
@@ -1324,6 +2343,122 @@ tasks:
           move();
         }
         ```
+    dart:
+      prompt: 'In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis.
+        Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            #########
+            #..P....#
+            #.#####.#
+            #.#.L.#.#
+            #.#.#.#.#
+            #.......#
+            #########
+        goal:
+          lamp: true
+      hint: 'Die linke Hand bleibt an der Außenwand, und die läuft ringsherum. Die Lampe
+        liegt in der Mitte, an einer Wand, die mit der Außenwand nicht zusammenhängt.
+        Welche Wand hat Pip am Anfang auf der anderen Seite?
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          while (!onLamp()) {
+            turnRight();
+            while (!frontClear()) {
+              turnLeft();
+            }
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis.
+        Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            #########
+            #..P....#
+            #.#####.#
+            #.#.L.#.#
+            #.#.#.#.#
+            #.......#
+            #########
+        goal:
+          lamp: true
+      hint: 'Die linke Hand bleibt an der Außenwand, und die läuft ringsherum. Die Lampe
+        liegt in der Mitte, an einer Wand, die mit der Außenwand nicht zusammenhängt.
+        Welche Wand hat Pip am Anfang auf der anderen Seite?
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            while (!onLamp()) {
+                turnRight();
+                while (!frontClear()) {
+                    turnLeft();
+                }
+                move();
+            }
+        }
+        ```
 
   - id: one-lever
     title: "Der Hebel"
@@ -1407,6 +2542,82 @@ tasks:
         move();
         move();
         move();
+        ```
+    dart:
+      prompt: 'Vor der Lampe ragen Stacheln aus dem Boden; darauf tritt Pip nicht. Sie
+        versinken, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels.
+        Ein vierter Zug lässt sie wieder herausfahren.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - pull
+        maps:
+        - facing: east
+          map: |
+            ########
+            #P.HT.L#
+            ########
+        goal:
+          lamp: true
+      solution: |
+        ```dart
+        void main() {
+          move();
+          move();
+          pull();
+          pull();
+          pull();
+          move();
+          move();
+          move();
+        }
+        ```
+    java:
+      prompt: 'Vor der Lampe ragen Stacheln aus dem Boden; darauf tritt Pip nicht. Sie
+        versinken, wenn Pip genau dreimal am Hebel zieht: `pull()`, auf dem Feld des Hebels.
+        Ein vierter Zug lässt sie wieder herausfahren.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - pull
+        maps:
+        - facing: east
+          map: |
+            ########
+            #P.HT.L#
+            ########
+        goal:
+          lamp: true
+      solution: |
+        ```java
+        void main() {
+            move();
+            move();
+            pull();
+            pull();
+            pull();
+            move();
+            move();
+            move();
+        }
         ```
 
   - id: levers
@@ -1534,6 +2745,116 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: 'Auf diesen Karten stehen drei, vier oder fünf Hebel vor den Stacheln, und
+        jeder Zug zählt, egal an welchem. Pip prüft mit `onLever()`, ob auf dem Feld ein
+        Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+
+        '
+      starter: |
+        void main() {
+          var pulls = 0;
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - pull
+        - on_lever
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            #############
+            #P.H.H.H.T.L#
+            #############
+        - facing: east
+          map: |
+            ##############
+            #PH.HH..H.T.L#
+            ##############
+        - facing: east
+          map: |
+            ###############
+            #P.HHH.H.H.T.L#
+            ###############
+        goal:
+          lamp: true
+      hint: "`pulls` fängt bei 0 an. An einem Hebel zieht Pip nur, solange `pulls` kleiner
+        als 3 ist, und zählt dann eins weiter.\n"
+      solution: |
+        ```dart
+        void main() {
+          var pulls = 0;
+          while (frontClear()) {
+            move();
+            if (onLever()) {
+              if (pulls < 3) {
+                pull();
+                pulls++;
+              }
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Auf diesen Karten stehen drei, vier oder fünf Hebel vor den Stacheln, und
+        jeder Zug zählt, egal an welchem. Pip prüft mit `onLever()`, ob auf dem Feld ein
+        Hebel steht, und zählt in einer Variable mit, wie oft schon gezogen wurde.
+
+        '
+      starter: |
+        void main() {
+            int pulls = 0;
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - pull
+        - on_lever
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            #############
+            #P.H.H.H.T.L#
+            #############
+        - facing: east
+          map: |
+            ##############
+            #PH.HH..H.T.L#
+            ##############
+        - facing: east
+          map: |
+            ###############
+            #P.HHH.H.H.T.L#
+            ###############
+        goal:
+          lamp: true
+      hint: "`pulls` fängt bei 0 an. An einem Hebel zieht Pip nur, solange `pulls` kleiner
+        als 3 ist, und zählt dann eins weiter.\n"
+      solution: |
+        ```java
+        void main() {
+            int pulls = 0;
+            while (frontClear()) {
+                move();
+                if (onLever()) {
+                    if (pulls < 3) {
+                        pull();
+                        pulls++;
+                    }
+                }
+            }
+        }
+        ```
 
   - id: count-stones
     title: "Gezählt"
@@ -1648,6 +2969,108 @@ tasks:
           }
         }
         say(count);
+        ```
+    dart:
+      prompt: 'Der Wichtel will wissen, wie viele Funkensteine in jedem Stollen lagen.
+        Pip sammelt sie bis zur Wand ein, zählt mit und sagt am Ende mit `say()` die Zahl.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #Po..oo.o.#
+            ###########
+        - facing: east
+          map: |
+            ###############
+            #P.oo....o.ooo#
+            ###############
+        - facing: east
+          map: |
+            #######
+            #P...o#
+            #######
+        goal:
+          stones: all
+          say: stones
+      solution: |
+        ```dart
+        void main() {
+          var count = 0;
+          while (frontClear()) {
+            move();
+            if (onStone()) {
+              take();
+              count++;
+            }
+          }
+          say(count);
+        }
+        ```
+    java:
+      prompt: 'Der Wichtel will wissen, wie viele Funkensteine in jedem Stollen lagen.
+        Pip sammelt sie bis zur Wand ein, zählt mit und sagt am Ende mit `say()` die Zahl.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        - on_stone
+        - front_clear
+        maps:
+        - facing: east
+          map: |
+            ###########
+            #Po..oo.o.#
+            ###########
+        - facing: east
+          map: |
+            ###############
+            #P.oo....o.ooo#
+            ###############
+        - facing: east
+          map: |
+            #######
+            #P...o#
+            #######
+        goal:
+          stones: all
+          say: stones
+      solution: |
+        ```java
+        void main() {
+            int count = 0;
+            while (frontClear()) {
+                move();
+                if (onStone()) {
+                    take();
+                    count++;
+                }
+            }
+            say(count);
+        }
         ```
 
   - id: dry-feet
@@ -1849,6 +3272,178 @@ tasks:
             turnRight();
           }
           move();
+        }
+        ```
+    dart:
+      prompt: 'Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße.
+        `puddleAhead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze
+        für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es
+        nur, wo vorn frei ist und keine Pfütze.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - puddle_ahead
+        - on_lamp
+        dry: true
+        maps:
+        - facing: south
+          map: |
+            ###########
+            #P........#
+            #.###.###.#
+            #...#...#.#
+            ###.#.###~#
+            #..~#L#...#
+            #.#.###.#~#
+            #.......#.#
+            ###########
+        - facing: south
+          map: |
+            ###########
+            #P#.......#
+            #.#.#.###.#
+            #.#~#...#.#
+            #.#####~#~#
+            #.#.....#.#
+            #.#.#####.#
+            #....L....#
+            ###########
+        - facing: east
+          map: |
+            ###########
+            #P..#.....#
+            ###.#.###.#
+            #L#...#.#.#
+            #.#####~#.#
+            #...~...#.#
+            #~#.#.#.#.#
+            #.#...#...#
+            ###########
+        goal:
+          lamp: true
+      hint: 'Die Hand an der Wand, nur die Frage ist länger: Pip dreht sich weiter, solange
+        `!frontClear() || puddleAhead()` gilt, »vorn Wand oder Pfütze«. `||` ist »oder«,
+        `!` ist »nicht«.
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          while (!onLamp()) {
+            turnLeft();
+            while (!frontClear() || puddleAhead()) {
+              turnRight();
+            }
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße.
+        `puddleAhead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze
+        für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es
+        nur, wo vorn frei ist und keine Pfütze.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - front_clear
+        - puddle_ahead
+        - on_lamp
+        dry: true
+        maps:
+        - facing: south
+          map: |
+            ###########
+            #P........#
+            #.###.###.#
+            #...#...#.#
+            ###.#.###~#
+            #..~#L#...#
+            #.#.###.#~#
+            #.......#.#
+            ###########
+        - facing: south
+          map: |
+            ###########
+            #P#.......#
+            #.#.#.###.#
+            #.#~#...#.#
+            #.#####~#~#
+            #.#.....#.#
+            #.#.#####.#
+            #....L....#
+            ###########
+        - facing: east
+          map: |
+            ###########
+            #P..#.....#
+            ###.#.###.#
+            #L#...#.#.#
+            #.#####~#.#
+            #...~...#.#
+            #~#.#.#.#.#
+            #.#...#...#
+            ###########
+        goal:
+          lamp: true
+      hint: 'Die Hand an der Wand, nur die Frage ist länger: Pip dreht sich weiter, solange
+        `!frontClear() || puddleAhead()` gilt, »vorn Wand oder Pfütze«. `||` ist »oder«,
+        `!` ist »nicht«.
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            while (!onLamp()) {
+                turnLeft();
+                while (!frontClear() || puddleAhead()) {
+                    turnRight();
+                }
+                move();
+            }
         }
         ```
 
@@ -2057,6 +3652,182 @@ tasks:
             turnRight();
           }
           move();
+        }
+        ```
+    dart:
+      prompt: 'Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem
+        nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser
+        sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch:
+        Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis
+        `belloHere()` wahr ist.
+
+        '
+      starter: |
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - trail_ahead
+        - puddle_ahead
+        - bello_here
+        maps:
+        - facing: north
+          map: |
+            ##############
+            #.........ppp#
+            #......Bppp.~#
+            #...........p#
+            #pppppp..pp~p#
+            #p....p..p...#
+            #p....pppp...#
+            #p...........#
+            #P...........#
+            ##############
+        - facing: north
+          map: |
+            ##############
+            #........pppp#
+            #........p..p#
+            #........p..p#
+            #ppppppppp..p#
+            #p........ppp#
+            #p........p..#
+            #p........p..#
+            #P....Bp~~p..#
+            ##############
+        - facing: east
+          map: |
+            ##############
+            #pppp........#
+            #p..p........#
+            #p..ppppppB..#
+            #p...........#
+            #p.ppp.......#
+            #ppp.~.......#
+            #....p.......#
+            #Ppp~p.......#
+            ##############
+        goal:
+          bello: true
+      hint: 'Die Spur ist wie ein Gang ohne Wände: Die Hand an der Wand geht auch hier,
+        mit »Spur oder Pfütze vorn« statt »vorn frei«.
+
+        '
+      solution: |
+        ```dart
+        void turnRight() {
+          for (var i = 0; i < 3; i++) {
+            turnLeft();
+          }
+        }
+
+        void main() {
+          while (!belloHere()) {
+            turnLeft();
+            while (!(trailAhead() || puddleAhead())) {
+              turnRight();
+            }
+            move();
+          }
+        }
+        ```
+    java:
+      prompt: 'Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem
+        nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser
+        sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch:
+        Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis
+        `belloHere()` wahr ist.
+
+        '
+      starter: |
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            // Die Hand an der Wand
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - trail_ahead
+        - puddle_ahead
+        - bello_here
+        maps:
+        - facing: north
+          map: |
+            ##############
+            #.........ppp#
+            #......Bppp.~#
+            #...........p#
+            #pppppp..pp~p#
+            #p....p..p...#
+            #p....pppp...#
+            #p...........#
+            #P...........#
+            ##############
+        - facing: north
+          map: |
+            ##############
+            #........pppp#
+            #........p..p#
+            #........p..p#
+            #ppppppppp..p#
+            #p........ppp#
+            #p........p..#
+            #p........p..#
+            #P....Bp~~p..#
+            ##############
+        - facing: east
+          map: |
+            ##############
+            #pppp........#
+            #p..p........#
+            #p..ppppppB..#
+            #p...........#
+            #p.ppp.......#
+            #ppp.~.......#
+            #....p.......#
+            #Ppp~p.......#
+            ##############
+        goal:
+          bello: true
+      hint: 'Die Spur ist wie ein Gang ohne Wände: Die Hand an der Wand geht auch hier,
+        mit »Spur oder Pfütze vorn« statt »vorn frei«.
+
+        '
+      solution: |
+        ```java
+        void turnRight() {
+            for (int i = 0; i < 3; i++) {
+                turnLeft();
+            }
+        }
+
+        void main() {
+            while (!belloHere()) {
+                turnLeft();
+                while (!(trailAhead() || puddleAhead())) {
+                    turnRight();
+                }
+                move();
+            }
         }
         ```
 
@@ -2281,5 +4052,205 @@ tasks:
               turnLeft();
             }
           }
+        }
+        ```
+    dart:
+      prompt: 'Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer
+        durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe
+        ragen Stacheln aus dem Boden, die nur nach genau drei Zügen versinken, verteilt
+        auf zwei Hebel. Drei Karten, ein Plan.
+
+        '
+      starter: |
+        void main() {
+          // Dein Plan
+        }
+      check:
+        type: pip
+        language: dart
+        commands:
+        - move
+        - turn_left
+        - take
+        - wait
+        - pull
+        - on_stone
+        - on_lever
+        - front_clear
+        - glibber_ahead
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            ###############
+            #...o.......###
+            #.#########o###
+            #.####.####.###
+            #.####g##....g#
+            #.o.oH...##.###
+            ######.#.##...#
+            ######.#.####o#
+            ########.####.#
+            #P......H#L.T.#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ###############
+            ####g#.########
+            ####.#g########
+            #..o......#..o#
+            #H##.#.##H#T#o#
+            #o##.#.##.#.#o#
+            #.#######.#L#.#
+            #.#######.###.#
+            #P#######.....#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ######....H.###
+            #o.....####.###
+            #.#####g#.g...#
+            #H#####.###.###
+            #.#.........###
+            #.#o###.#######
+            #.#.###.##.T.L#
+            #.#o######.####
+            #P#..oo....####
+            ###############
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Fang mit dem Plan aus »Um die Ecken« an. Vor jedem Schritt: warten, solange
+        ein Glibber vor Pip ist. Nach jedem Schritt: Stein? Hebel? Und für die Hebel brauchst
+        du wieder eine Variable, die mitzählt.
+
+        '
+      solution: |
+        ```dart
+        void main() {
+          var pulls = 0;
+          while (!onLamp()) {
+            if (frontClear()) {
+              while (glibberAhead()) {
+                wait();
+              }
+              move();
+              if (onStone()) {
+                take();
+              }
+              while (onLever() && pulls < 3) {
+                pull();
+                pulls++;
+              }
+            } else {
+              turnLeft();
+              if (!frontClear()) {
+                turnLeft();
+                turnLeft();
+              }
+            }
+          }
+        }
+        ```
+    java:
+      prompt: 'Der Weg nach oben: ein langer, gewundener Stollen ohne Abzweigungen, quer
+        durch die Schächte der Glibber. Unterwegs liegen Funkensteine, und vor der Lampe
+        ragen Stacheln aus dem Boden, die nur nach genau drei Zügen versinken, verteilt
+        auf zwei Hebel. Drei Karten, ein Plan.
+
+        '
+      starter: |
+        void main() {
+            // Dein Plan
+        }
+      check:
+        type: pip
+        language: java
+        commands:
+        - move
+        - turn_left
+        - take
+        - wait
+        - pull
+        - on_stone
+        - on_lever
+        - front_clear
+        - glibber_ahead
+        - on_lamp
+        maps:
+        - facing: east
+          map: |
+            ###############
+            #...o.......###
+            #.#########o###
+            #.####.####.###
+            #.####g##....g#
+            #.o.oH...##.###
+            ######.#.##...#
+            ######.#.####o#
+            ########.####.#
+            #P......H#L.T.#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ###############
+            ####g#.########
+            ####.#g########
+            #..o......#..o#
+            #H##.#.##H#T#o#
+            #o##.#.##.#.#o#
+            #.#######.#L#.#
+            #.#######.###.#
+            #P#######.....#
+            ###############
+        - facing: north
+          map: |
+            ###############
+            ######....H.###
+            #o.....####.###
+            #.#####g#.g...#
+            #H#####.###.###
+            #.#.........###
+            #.#o###.#######
+            #.#.###.##.T.L#
+            #.#o######.####
+            #P#..oo....####
+            ###############
+        goal:
+          lamp: true
+          stones: all
+      hint: 'Fang mit dem Plan aus »Um die Ecken« an. Vor jedem Schritt: warten, solange
+        ein Glibber vor Pip ist. Nach jedem Schritt: Stein? Hebel? Und für die Hebel brauchst
+        du wieder eine Variable, die mitzählt.
+
+        '
+      solution: |
+        ```java
+        void main() {
+            int pulls = 0;
+            while (!onLamp()) {
+                if (frontClear()) {
+                    while (glibberAhead()) {
+                        pause();
+                    }
+                    move();
+                    if (onStone()) {
+                        take();
+                    }
+                    while (onLever() && pulls < 3) {
+                        pull();
+                        pulls++;
+                    }
+                } else {
+                    turnLeft();
+                    if (!frontClear()) {
+                        turnLeft();
+                        turnLeft();
+                    }
+                }
+            }
         }
         ```
