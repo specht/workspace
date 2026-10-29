@@ -2,7 +2,7 @@
 icon: /images/icons/lambda.svg
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Funktionen weitergeben, Listen umwandeln, sieben und zusammenfalten
 curriculum: "Oberstufe: Vertiefung Applikative Programmierung (funktional: Funktionen als Werte, map, filter, reduce)"
 topics: [funktional, listen]
@@ -72,6 +72,46 @@ eine Zahl. Rechts vom Pfeil steht, was sie zurückgibt; mit zwei Parametern
 schreibt man `(a, b) => a + b`. `f(…)` ruft sie auf. `twice` weiß nicht, was
 `f` tut; es ruft sie nur auf.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+int twice(int Function(int) f, int x) {
+  return f(f(x));
+}
+
+void main() {
+  final addThree = (int x) => x + 3;
+  print(addThree(4));          // 7
+  print(twice(addThree, 10));  // 16
+}
+```
+
+`(int x) => x + 3` ist eine Funktion ohne Namen, oft Lambda genannt, die
+man in eine Variable legen und weitergeben kann wie eine Zahl. Rechts vom
+Pfeil steht, was sie zurückgibt; mit zwei Parametern schreibt man
+`(a, b) => a + b`. Ihr Typ ist `int Function(int)`: Sie bekommt eine ganze
+Zahl und gibt eine zurück. `f(…)` ruft sie auf. `twice` weiß nicht, was `f`
+tut; es ruft sie nur auf.
+<!-- /language -->
+<!-- language: java -->
+```java
+int twice(Function<Integer, Integer> f, int x) {
+    return f.apply(f.apply(x));
+}
+
+void main() {
+    Function<Integer, Integer> addThree = x -> x + 3;
+    IO.println(addThree.apply(4));      // 7
+    IO.println(twice(addThree, 10));    // 16
+}
+```
+
+`x -> x + 3` ist ein **Lambda**: eine Funktion ohne Namen, die man in eine
+Variable legen und weitergeben kann wie eine Zahl. Rechts vom Pfeil steht,
+was sie zurückgibt; mit zwei Parametern schreibt man `(a, b) -> a + b`. Ihr
+Typ ist `Function<Integer, Integer>`: Sie bekommt eine ganze Zahl und gibt
+eine zurück. `f.apply(…)` ruft sie auf. `twice` weiß nicht, was `f` tut; es
+ruft sie nur auf.
+<!-- /language -->
 
 _task(predict-twice)
 
@@ -122,6 +162,32 @@ function makeAdder(n) {
 const addFive = makeAdder(5);
 console.log(addFive(10));        // 15
 console.log(makeAdder(100)(1));  // 101
+```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+int Function(int) makeAdder(int n) {
+  return (x) => x + n;
+}
+
+void main() {
+  final addFive = makeAdder(5);
+  print(addFive(10));        // 15
+  print(makeAdder(100)(1));  // 101
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+Function<Integer, Integer> makeAdder(int n) {
+    return x -> x + n;
+}
+
+void main() {
+    Function<Integer, Integer> addFive = makeAdder(5);
+    IO.println(addFive.apply(10));        // 15
+    IO.println(makeAdder(100).apply(1));  // 101
+}
 ```
 <!-- /language -->
 
@@ -185,6 +251,38 @@ console.log(words.map(word => word.toUpperCase())); // [ 'IGEL', 'AMEISE', 'WAL'
 `map` ruft die Funktion für jedes Element auf und baut aus den Ergebnissen
 eine neue Liste, so lang wie die alte; die alte bleibt, wie sie ist.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final numbers = [1, 2, 3];
+  print(numbers.map((x) => x * 10).toList());               // [10, 20, 30]
+  print(numbers);                                           // [1, 2, 3], unverändert
+  final words = ['Igel', 'Ameise', 'Wal'];
+  print(words.map((word) => word.toUpperCase()).toList());  // [IGEL, AMEISE, WAL]
+}
+```
+
+`map` ruft die Funktion für jedes Element auf; die alte Liste bleibt, wie sie
+ist. Es gibt noch keine Liste zurück, sondern eine Folge von Werten, die
+erst entstehen, wenn jemand sie braucht: `.toList()` macht daraus eine neue
+Liste, so lang wie die alte.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    List<Integer> numbers = List.of(1, 2, 3);
+    IO.println(numbers.stream().map(x -> x * 10).toList());               // [10, 20, 30]
+    IO.println(numbers);                                                  // [1, 2, 3], unverändert
+    List<String> words = List.of("Igel", "Ameise", "Wal");
+    IO.println(words.stream().map(word -> word.toUpperCase()).toList());  // [IGEL, AMEISE, WAL]
+}
+```
+
+`numbers.stream()` macht aus der Liste einen **Stream**, einen Strom von
+Werten, auf dem `map` läuft: Es ruft das Lambda für jedes Element auf.
+`.toList()` macht daraus eine neue Liste, so lang wie die alte; die alte
+bleibt, wie sie ist.
+<!-- /language -->
 
 _task(predict-map)
 
@@ -207,6 +305,12 @@ Ergebnis der Funktion, und `x > 1` ist `true` oder `false`. Die Liste ist
 so lang wie vorher. Elemente weglassen kann `map` nicht; das tut die nächste
 Funktion.
 <!-- /language -->
+<!-- language: dart, java -->
+Es erscheint `[true, false, true]`: `map` gibt für jedes Element das
+Ergebnis der Funktion, und `x > 1` ist `true` oder `false`. Die Liste ist
+so lang wie vorher. Elemente weglassen kann `map` nicht; das tut die nächste
+Funktion.
+<!-- /language -->
 <!-- /after -->
 
 <!-- language: ruby -->
@@ -221,6 +325,12 @@ nicht. Abschalten kann die Prüfung eine Schleife mit `for` nicht, schreib
 sie trotzdem nicht.
 <!-- /language -->
 <!-- language: javascript -->
+In den Katas dieses Kapitels und des nächsten tut `map` oder `filter` die
+Arbeit; eine eigene Schleife brauchst du nicht. `forEach` ist dafür
+abgeschaltet; eine Schleife mit `for` kann die Prüfung nicht abschalten,
+schreib sie trotzdem nicht.
+<!-- /language -->
+<!-- language: dart, java -->
 In den Katas dieses Kapitels und des nächsten tut `map` oder `filter` die
 Arbeit; eine eigene Schleife brauchst du nicht. `forEach` ist dafür
 abgeschaltet; eine Schleife mit `for` kann die Prüfung nicht abschalten,
@@ -271,6 +381,30 @@ console.log(numbers.filter(x => x <= 5));   // [ 4, 3 ]
 ```
 
 `filter` behält die Elemente, für die die Funktion `true` ergibt, in ihrer
+Reihenfolge.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final numbers = [4, 7, 10, 3];
+  print(numbers.where((x) => x > 5).toList());    // [7, 10]
+  print(numbers.where((x) => x <= 5).toList());   // [4, 3]
+}
+```
+
+In Dart heißt `filter` **`where`**: Es behält die Elemente, für die die
+Funktion `true` ergibt, in ihrer Reihenfolge.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    List<Integer> numbers = List.of(4, 7, 10, 3);
+    IO.println(numbers.stream().filter(x -> x > 5).toList());    // [7, 10]
+    IO.println(numbers.stream().filter(x -> x <= 5).toList());   // [4, 3]
+}
+```
+
+`filter` behält die Elemente, für die das Lambda `true` ergibt, in ihrer
 Reihenfolge.
 <!-- /language -->
 
@@ -324,6 +458,36 @@ zurückgibt, ist beim nächsten Element das Ergebnis bis hierher, und nach dem
 letzten Element das Ergebnis. Ohne Startwert fängt `reduce` mit dem ersten
 Element an.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final numbers = [3, 4, 5];
+  final sum = numbers.fold(0, (total, x) => total + x);
+  print(sum);                                        // 12
+  print(numbers.reduce((total, x) => total + x));    // 12
+}
+```
+
+In Dart heißt die Funktion mit Startwert **`fold`**; der Startwert ist ihr
+erstes Argument, hier 0. Was die Funktion zurückgibt, ist beim nächsten
+Element das Ergebnis bis hierher, und nach dem letzten Element das Ergebnis.
+`reduce` hat keinen Startwert und fängt mit dem ersten Element an.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    List<Integer> numbers = List.of(3, 4, 5);
+    IO.println(numbers.stream().reduce(0, (total, x) -> total + x));   // 12
+    IO.println(numbers.stream().reduce((total, x) -> total + x));      // Optional[12]
+}
+```
+
+Der Startwert ist das erste Argument, hier 0. Was das Lambda zurückgibt, ist
+beim nächsten Element das Ergebnis bis hierher, und nach dem letzten Element
+das Ergebnis. Ohne Startwert fängt `reduce` mit dem ersten Element an und
+gibt ein `Optional` zurück, einen Behälter für das Ergebnis; `.get()` holt
+die 12 heraus.
+<!-- /language -->
 
 Mit dem Startwert 0 läuft es so:
 
@@ -353,6 +517,18 @@ Das Programm bricht ab: `TypeError: Reduce of empty array with no initial
 value`. Ohne Startwert nimmt `reduce` das erste Element, und eine leere
 Liste hat keins. Mit dem Startwert 0 kommt 0 heraus, die Summe von nichts.
 <!-- /language -->
+<!-- language: dart -->
+Das Programm bricht ab: `Bad state: No element`. Ohne Startwert nimmt
+`reduce` das erste Element, und eine leere Liste hat keins. Mit `fold` und
+dem Startwert 0 kommt 0 heraus, die Summe von nichts.
+<!-- /language -->
+<!-- language: java -->
+Es erscheint `Optional.empty`: Ohne Startwert nimmt `reduce` das erste
+Element, und eine leere Liste hat keins; der Behälter bleibt leer. Erst wer
+mit `.get()` das Ergebnis herausholen will, bekommt einen Fehler,
+`NoSuchElementException: No value present`. Mit dem Startwert 0 kommt 0
+heraus, die Summe von nichts.
+<!-- /language -->
 
 Gib darum einen Startwert an, wo die Liste leer sein kann: den Wert, der
 herauskommen soll, wenn sie leer ist. Wer die [Katas zur
@@ -378,6 +554,16 @@ Dictionary mit allem, was schon eingetragen ist.
 Der Startwert muss keine Zahl sein. Ist er ein leeres Objekt, `{}`, trägt
 jedes Element etwas darin ein, und das Ergebnis bis hierher ist das Objekt
 mit allem, was schon eingetragen ist.
+<!-- /language -->
+<!-- language: dart -->
+Der Startwert muss keine Zahl sein. Ist er eine leere Map, `<String, int>{}`,
+trägt jedes Element etwas darin ein, und das Ergebnis bis hierher ist die
+Map mit allem, was schon eingetragen ist.
+<!-- /language -->
+<!-- language: java -->
+Am Ende muss keine Zahl herauskommen. Soll es eine Map sein, nimmt man in
+Java statt `reduce` aber `collect`: `collect(Collectors.toMap(…))` trägt
+jedes Element mit einem Schlüssel und einem Wert in eine neue Map ein.
 <!-- /language -->
 
 _task(totals)
@@ -453,6 +639,51 @@ Von oben nach unten liest sich die Kette wie die Frage: behalte die
 Bestellungen mit mindestens fünf Stück, rechne für jede den Preis aus, zähl
 zusammen.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final orders = [
+    (item: 'Heft', price: 120, count: 5),
+    (item: 'Stift', price: 80, count: 10),
+    (item: 'Lineal', price: 250, count: 1),
+  ];
+
+  final total = orders
+      .where((order) => order.count >= 5)
+      .map((order) => order.price * order.count)
+      .fold(0, (sum, x) => sum + x);
+  print(total);   // 1400
+}
+```
+
+Jede Bestellung ist ein Record mit Namen für seine Teile: `order.count` ist
+die Stückzahl. Von oben nach unten liest sich die Kette wie die Frage:
+behalte die Bestellungen mit mindestens fünf Stück, rechne für jede den Preis
+aus, zähl zusammen.
+<!-- /language -->
+<!-- language: java -->
+```java
+record Order(String item, int price, int count) {}
+
+void main() {
+    List<Order> orders = List.of(
+        new Order("Heft", 120, 5),
+        new Order("Stift", 80, 10),
+        new Order("Lineal", 250, 1));
+
+    int total = orders.stream()
+            .filter(order -> order.count() >= 5)
+            .map(order -> order.price() * order.count())
+            .reduce(0, (sum, x) -> sum + x);
+    IO.println(total);   // 1400
+}
+```
+
+Ein `record` ist eine Klasse in einer Zeile, nur mit Attributen:
+`order.count()` ist die Stückzahl. Von oben nach unten liest sich die Kette
+wie die Frage: behalte die Bestellungen mit mindestens fünf Stück, rechne für
+jede den Preis aus, zähl zusammen.
+<!-- /language -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Vertausch in der Kette die ersten beiden
@@ -520,6 +751,37 @@ function firstOverdraft(balance, bookings) {
   }, [balance, -1])[1];
 }
 ```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+int firstOverdraft(int balance, List<int> bookings) {
+  return bookings.indexed.fold((balance, -1), (state, entry) {
+    final (total, found) = state;
+    final (i, amount) = entry;
+    final now = total + amount;
+    return (now, found == -1 && now < 0 ? i : found);
+  }).$2;
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+record State(int total, int found) {}
+
+int firstOverdraft(int balance, List<Integer> bookings) {
+    return IntStream.range(0, bookings.size()).boxed().reduce(
+            new State(balance, -1),
+            (state, i) -> {
+                int now = state.total() + bookings.get(i);
+                return new State(now, state.found() == -1 && now < 0 ? i : state.found());
+            },
+            (a, b) -> a).found();
+}
+```
+
+Java verlangt hier sogar ein drittes Argument, das zwei Zwischenstände
+verbindet; gebraucht wird es nur, wenn der Stream auf mehreren Kernen
+zugleich läuft.
 <!-- /language -->
 
 Die Schleife mit einem `return` mittendrin sagt dasselbe in weniger
