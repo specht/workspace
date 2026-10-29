@@ -617,7 +617,7 @@ module TaskSpec
         when 'java', 'dart'
             # Calls into the person's Java classes or Dart file, through a
             # harness written around the calls (JavaCheck, DartCheck).
-            allowed += %w[file cases timeout setup]
+            allowed += %w[file cases timeout slow setup]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat((check['type'] == 'java' ? JavaCheck : DartCheck).spec_errors(check))
         when 'classes'

@@ -908,8 +908,9 @@ brauchen `dart` und `javac` auf der Maschine, wo sie laufen.
 
 **Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
 Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
-sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby` und
-`python`, die eine Datei der Lernenden aufrufen (»Wie lange dauert das?«).
+sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby`,
+`python`, `dart` und `java`, die eine Datei der Lernenden aufrufen (»Wie
+lange dauert das?«).
 
 **Wo eine Rekursion verlangt ist**, sagt `recursive: true`, dass die Funktion
 sich selbst aufrufen muss, und `loops: false`, dass sie keine Schleife

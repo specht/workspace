@@ -14,6 +14,10 @@ end
 places = sights.first(n)
 
 [[:best_tour, 'alle Reihenfolgen'], [:nearest_tour, 'nächster Ort']].each do |way, label|
+  unless respond_to?(way, true)
+    puts format('%-18s %s fehlt noch in laufzeit.rb', label, way)
+    next
+  end
   start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   tour = send(way, places)
   seconds = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
