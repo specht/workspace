@@ -258,6 +258,13 @@ language: Ruby / Python
 languages: [ruby, python]
 ```
 
+Dart und Java kommen genauso dazu (`languages: [ruby, python, dart, java]`,
+`language: Ruby / Python / Dart / Java`), JavaScript ebenso. Wer auf einer
+Seite eine dieser drei wählt, behält sie getrennt von der Wahl zwischen Ruby
+und Python; eine Klasse kann alle fünf ordnen. Wie eine Seite Dart und Java
+bekommt (Varianten, eigene typische Fehler, Starter, Zeiten je Sprache):
+[plan-dart-java.md](plan-dart-java.md), »How a page gets Dart and Java«.
+
 Was sich unterscheidet, steht zweimal im Text, eingefasst in Kommentare auf
 eigenen Zeilen:
 
@@ -274,7 +281,11 @@ Lege darin die Datei `lzw.py` an:
 
 Ein solcher Teil umfasst ganze Absätze, Listen oder Code-Blöcke, nie einen
 Teil davon, und keine Überschriften, sonst stünden sie zweimal im
-Inhaltsverzeichnis. Alles außerhalb gilt für beide Sprachen. Beide Fassungen
+Inhaltsverzeichnis. Auch nie zwischen den Zeilen einer Tabelle: Die
+Kommentare werden zu `div`-Elementen, die in einer Tabelle nicht stehen
+dürfen; eine Tabelle, die Code nennt, steht dann einmal je Gruppe von
+Sprachen (`<!-- language: ruby, python -->`, `<!-- language: dart, java -->`,
+wie in `laufzeit`). Alles außerhalb gilt für alle Sprachen. Beide Fassungen
 stehen in der Seite, und der Schalter zeigt die eine oder die andere, ohne
 die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
 `lzw/`.
@@ -655,7 +666,7 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
   tun: »Lernende bauen …, schreiben …, messen …«. Keine Aufzählung jeder
   Stufe; die steht im Ablauf.
 - **Eine Tabelle mit den Fakten**, je Zeile ein Stichwort: Voraussetzungen,
-  Sprache (bei Ruby und Python), Ablauf, Dateien, Prüfung, Abgabe, Lösung.
+  Sprache (wo es mehrere gibt), Ablauf, Dateien, Prüfung, Abgabe, Lösung.
   Hat eine Zelle mehr als zwei Sätze, wird sie eine Liste; der Ablauf ist
   eine Liste mit einem Punkt je Doppelstunde (`<b>1. Doppelstunde:</b>`) und
   einem für die Schnellen. Die Tabelle ist HTML, also in den Zellen `<code>`,

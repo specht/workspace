@@ -144,7 +144,7 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
-* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): next an activity on object orientation with a class diagram, in Ruby, Python, JavaScript, Dart and Java (five languages on an activity, Java and Dart checks, a class-diagram extension like the ER-Werkstatt); then a tiny language model (KI), a Turing machine, a logic sandbox; open questions there
+* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): object orientation, the language model, the Turing machine and the logic sandbox are built; open are Urheberrecht (a section on licences), Rechenhilfsmittel and Rechnergenerationen (a chapter in `sandbox-cpu`), manipulated pictures and Ergonomie
 
 * [ ] **Concurrency in Java and Dart** ([docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md)): a step-through widget for lost updates, locks and deadlock; Java threads, `synchronized` and the monitor; Dart's races at `await` and isolates. First the `dart` check must await a `Future`; place and name are the maintainer's
 * [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java

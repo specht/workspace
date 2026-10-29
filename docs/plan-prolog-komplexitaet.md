@@ -91,70 +91,51 @@ Robert Kowalski (the procedural reading of logic); a book box for Clocksin
 and Mellish, »Programming in Prolog«. Photos with a free licence to be found.
 About twelve tasks, three predictions, the puzzle as a free task.
 
-Open: whether Prolog also gets a tile among the language portraits (the
-section has room for four more, plan-lehrplan-luecken.md); whether the
-search widget is worth its effort or a printed trace with `trace/0` is
-enough at first.
+Prolog has a tile among the language portraits (`prolog-portrait`), and the
+search widget was built (`prolog_search.js`, a stepper through the search
+for one query).
 
 ## Complexity: »Wie lange dauert das?«
 
 An activity (`laufzeit`, kind `projekt`, three Doppelstunden and extras),
-Oberstufe, after `kata-search` and `kata-recursion`, in the section
-»Algorithmen und Datenstrukturen«; Ruby or Python.
+Oberstufe, after `kata-dicts` and `kata-recursion`, in the section
+»Algorithmen und Datenstrukturen«; in Ruby, Python, Dart and Java
+(docs/plan-dart-java.md). As built:
 
-### In the image
+1. **Dreimal dieselbe Frage.** How many different street names has Berlin?
+   The Routenplaner's dataset (`berlin.tsv.gz`, the third column, 102 763
+   lines, 11 772 names): a list of names already seen, sorting first, a set.
+2. **Messen.** A prediction (twice the names, four times the time for the
+   list), then the starter `messen` times all three for 1 000, 2 000, 4 000 …
+   names with the factor per doubling; a question on what the measurement
+   shows (four times at first, twice later, since most names are in the
+   list by then); `hyperfine` in a try box.
+3. **Zählen statt messen.** How often the inner line of two nested loops
+   runs (499 500 for n = 1 000), the O notation and a table from O(1) to
+   O(n!).
+4. **Wie schnell der Aufwand wächst.** A widget with n on a slider and the
+   time of each growth (`/include/growth_widget.js`); a prediction (n² and
+   ten times the input).
+5. **Schneller machen.** Fibonacci with a memo, a pair with a given sum with
+   a set; both checked with large inputs and a short `timeout`, and `slow:`
+   says what to change.
+6. **Eine Rundfahrt durch Berlin.** The sights of `berlin-places.tsv`: the
+   length of a round trip, the shortest by trying every order, a prediction
+   for 13 places, always the nearest place next, and an open question on
+   where waiting stops being worth it. The starter `rundfahrt` runs both for
+   the first n sights.
+7. **Schnell prüfen, langsam finden.** P and NP, Stephen Cook 1971, the
+   prize of the Clay Mathematics Institute. Extra: why sorting by comparing
+   needs n log n, and the halting problem, linked to `turingmaschine`.
 
-- `hyperfine` (Debian package) to time a whole program several times with a
-  warm-up and a mean, for the first chapter.
-- Nothing else: timing inside a program is in the languages
-  (`Process.clock_gettime`, `time.perf_counter`), and plots are drawn on the
-  website (below), not with matplotlib.
+Fourteen tasks: eight with code, four predictions, a question on the
+measurement and an open question.
 
-### The checks
+The checks are those of the languages (`ruby`, `python`, `dart`, `java`)
+on the student's file, with large inputs, `timeout` and `slow:`. Typical
+mistakes in `fehler/`: two are only too slow.
 
-The function checks that exist (`ruby`, `python`), with large inputs and the
-`timeout` the task spec already allows: a quadratic solution is right but
-too slow, and the message says so (»Für 200 000 Namen braucht dein Programm
-länger als 2 Sekunden: Geht es ohne die Schleife in der Schleife?«). A
-`measure` task takes the students' own measurements; a small chart on the
-card draws them against n (a new widget, plain SVG, the steps per doubling
-marked).
-
-### The chapters
-
-1. **The same answer, three times.** Are there two equal names in a list of
-   pupils of all Berlin schools? A loop in a loop, sorting first, a set. The
-   students time all three with `hyperfine` for 1 000, 10 000 and 100 000
-   names; the first goes from instant to minutes. The doubling experiment:
-   what happens to the time when n doubles (twice, four times, a little more
-   than twice, the same).
-2. **Counting instead of timing.** Seconds depend on the computer; steps do
-   not. Counting the comparisons of each program, the O notation from the
-   counts: one loop n, two nested n², halving log n, sorting n log n.
-   Predictions for small programs (how many steps for n = 1 000).
-3. **How fast things grow.** A widget with n on a slider and the steps of
-   1, log n, n, n log n, n², 2ⁿ and n! at a million steps per second, as
-   times (»2⁶⁰ Schritte: 36 000 Jahre«), and the question turned around: how
-   large may n be for one second?
-4. **Making slow things fast.** Fibonacci from `kata-recursion`, 2ⁿ calls, and
-   the same with a dictionary of results (memoisation), n calls; two numbers
-   that add up to a target, with two loops and with a set. The checks with the
-   timeout make the difference matter.
-5. **Problems nobody knows how to solve fast.** A class trip to eight, ten,
-   twelve places in Berlin, the shortest round trip by trying every order: the
-   students measure 8!, 10!, 12! and extrapolate to 20. Then a quick guess
-   (always go to the nearest place next) that is fast and not always best.
-   Checking a solution is easy, finding one is hard: P and NP, with a Sudoku
-   that is checked in a moment; the open question and its prize. Stephen Cook
-   (1971) and Richard Karp in person boxes.
-6. **Extras.** Why sorting by comparing needs at least n log n steps (a
-   decision tree of the possible orders); the halting problem as the step from
-   »slow« to »impossible«, linked to `turingmaschine`; amortised cost of a list
-   that grows by doubling.
-
-About fourteen tasks, four predictions, two of them with timeouts, and the
-students' own measurements as a chart.
-
-Open: whether the chart widget stores the measurements (a `measure` task) or
-only draws what is pasted; whether the TSP chapter uses real coordinates of
-Berlin schools (a dataset from `publish-datasets.rb`) or invented places.
+Open: the students' own measurements as a chart (a `measure` task and a
+small chart against n, planned, not built); person boxes for Stephen Cook
+and Richard Karp, and an amortised-cost Extra (a list that grows by
+doubling), both in the first plan.
