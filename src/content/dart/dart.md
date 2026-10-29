@@ -242,3 +242,5 @@ _task(absteigend)
 ## Zusammenfassung
 
 In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Dart-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Dart wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+
+Was in Dart anders aussieht als in Java, und wie dasselbe in beiden geht, steht im Handbuch unter [Dart und Java](/reference/dart-java).

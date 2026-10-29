@@ -206,4 +206,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 - Die Sinnbilder der Struktogramme sind in der Norm DIN 66261 (1985) festgelegt; sie ist nicht frei im Netz.
 - Pseudocode für viele Algorithmen, Schritt für Schritt zum Durchklicken: [Sortieren](/reference/sortieren), [Listen, Stack und Queue](/reference/listen), [Graphen](/reference/graphen).
-- Die Grundlagen beider Sprachen nebeneinander: [Ruby und Python](/reference/ruby-python).
+- Die Grundlagen zweier Sprachen nebeneinander: [Ruby und Python](/reference/ruby-python), [Dart und Java](/reference/dart-java).

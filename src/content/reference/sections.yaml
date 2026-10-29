@@ -49,6 +49,16 @@
   entries:
     - ruby-python
 
+- key: reference-dart-java
+  label: Dart und Java
+  icon: /images/coffee.png
+  description: |
+    Dasselbe in beiden Sprachen nebeneinander: Typen und null, Zahlen,
+    Text, Listen, Maps, Funktionen, Klassen, Dateien, und was die
+    Fehlermeldungen sagen.
+  entries:
+    - dart-java
+
 - key: reference-web
   label: HTML und CSS
   icon: /images/pen.png
