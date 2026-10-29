@@ -5,12 +5,12 @@ activity: prolog-portrait
 examples:
   hallo:
     pass:
-      - files: { hello.pl: hello.pl }
+      - files: { prolog/hello.pl: hello.pl }
     fail:
-      - files: { hello.pl: hello-error.pl }
+      - files: { prolog/hello.pl: hello-error.pl }
         say: "writeln('Hello, World!')"
-      - files: { hello.pl: { text: "" } }
-      - files: { hallo.pl: hello.pl }
+      - files: { prolog/hello.pl: { text: "" } }
+      - files: { prolog/hallo.pl: hello.pl }
   fehler:
     pass:
       - answer: writln/1
@@ -24,8 +24,8 @@ examples:
       - answer: catch/3
   absteigend:
     pass:
-      - files: { bubblesort.pl: fehler/bubblesort-absteigend.pl }
+      - files: { prolog/bubblesort.pl: fehler/bubblesort-absteigend.pl }
     fail:
-      - files: { bubblesort.pl: bubblesort.pl }
-      - files: { bubblesort.pl: fehler/bubblesort-gleich.pl }
+      - files: { prolog/bubblesort.pl: bubblesort.pl }
+      - files: { prolog/bubblesort.pl: fehler/bubblesort-gleich.pl }
         say: wenn zwei Zahlen gleich sind

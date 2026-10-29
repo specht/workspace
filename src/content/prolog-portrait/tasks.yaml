@@ -1,17 +1,18 @@
 # Aufgaben zu »Prolog«, der Seite unter den Programmiersprachen.
-# Format: docs/aufgaben.md. Alles liegt in /workspace.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/prolog, wo VS Code
+# eine .pl-Datei als Prolog zeigt (anderswo als Perl).
 format: 1
 activity: prolog-portrait
 tasks:
   - id: hallo
     title: Hello, World!
     prompt: |
-      Speichere dein erstes Programm als `/workspace/hello.pl` und führe es
-      mit `swipl hello.pl` aus.
-    file: hello.pl
+      Speichere dein erstes Programm als `/workspace/prolog/hello.pl` und führe
+      es dort mit `swipl hello.pl` aus.
+    file: prolog/hello.pl
     check:
       type: files
-      path: hello.pl
+      path: prolog/hello.pl
       expect:
         format: text
         contains:
@@ -19,7 +20,7 @@ tasks:
             say: "In `hello.pl` finde ich noch kein `writeln('Hello, World!')`. Steht es genau so da, mit den einfachen Anführungszeichen?"
     feedback:
       - when: { problem: missing }
-        say: Es gibt noch keine `/workspace/hello.pl`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.pl` eingegeben, mit `.pl` am Ende?
+        say: Es gibt noch keine `/workspace/prolog/hello.pl`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.pl` eingegeben, mit `.pl` am Ende?
       - when: { problem: wrong_format }
         say: '`hello.pl` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
     hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
@@ -72,12 +73,12 @@ tasks:
   - id: absteigend
     title: Die größte zuerst
     prompt: |
-      Ändere `bubblesort.pl` so, dass `bubble_sort` absteigend sortiert, die
+      Ändere `prolog/bubblesort.pl` so, dass `bubble_sort` absteigend sortiert, die
       größte Zahl zuerst.
-    file: bubblesort.pl
+    file: prolog/bubblesort.pl
     check:
       type: prolog
-      file: bubblesort.pl
+      file: prolog/bubblesort.pl
       slow: "`bubble_sort` hört nicht auf, wenn zwei Zahlen gleich sind: Mit `=<` oder `>=` vertauscht `swap` sie immer wieder. Vertauscht wird nur, was in der falschen Reihenfolge ist."
       cases:
         - query: "bubble_sort([3, 1, 2], S)"

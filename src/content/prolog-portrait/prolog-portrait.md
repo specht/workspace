@@ -44,28 +44,31 @@ Hinter `?-` wartet Prolog auf eine **Anfrage**. Gib `writeln('Hello, World!').` 
 
 ### Ein Programm in einer Datei
 
-Lege mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> eine neue Datei an, schreib hinein:
+Beende Prolog mit `halt.` und lege im Terminal einen Ordner für deine Prolog-Programme an:
+
+```bash_copy
+mkdir -p /workspace/prolog
+cd /workspace/prolog
+```
+
+Lege dann mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> eine neue Datei an, schreib hinein:
 
 _include_file(hello.pl, prolog)
 
-und speichere sie mit <kbd>Strg</kbd><kbd>S</kbd> als `/workspace/hello.pl`. Die erste Zeile sagt: Wenn die Datei geladen ist, rufe `main` auf und beende danach Prolog. `main :- …` ist eine **Regel**: `main` gilt, wenn `writeln('Hello, World!')` gilt.
+und speichere sie mit <kbd>Strg</kbd><kbd>S</kbd> als `/workspace/prolog/hello.pl`. Die erste Zeile sagt: Wenn die Datei geladen ist, rufe `main` auf und beende danach Prolog. `main :- …` ist eine **Regel**: `main` gilt, wenn `writeln('Hello, World!')` gilt.
 
-Visual Studio Code hält eine Datei mit der Endung `.pl` für Perl, eine ganz andere Sprache. Installiere die Erweiterung »Better Prolog Syntax«: <kbd>Strg</kbd><kbd>P</kbd> drücken, `ext install jeff-hykin.better-prolog-syntax` eingeben und <kbd>Enter</kbd> drücken. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«. Dann ist dein Programm farbig:
+Die Endung `.pl` benutzt auch Perl, eine ganz andere Sprache. Im Ordner `prolog` zeigt Visual Studio Code eine solche Datei als Prolog, farbig; anderswo hält es sie für Perl:
 
 <!-- tutorial-screenshot
-# Die Datei, die Erweiterung installieren, die Datei neu öffnen
-write-file: hello.pl <- file:hello.pl
-press: Control+p
-type: ext install jeff-hykin.better-prolog-syntax
-wait-for-text: Press Enter to install extension
-press: Enter
-# Der Herausgeber ist nicht verifiziert: VS Code fragt nach
-wait-for-text: Trust Publisher & Install
-click: Trust Publisher & Install
-sleep: 10
+# Prolog beenden, das Terminal schließen, die Datei im Ordner prolog
+# öffnen: dort farbig als Prolog
+terminal-run: halt.
+terminal-wait-for-prompt
+press: Control+j
+write-file: prolog/hello.pl <- file:hello.pl
 press: Control+o
 wait-for-input-value: /workspace/
-type: hello.pl
+type: prolog/hello.pl
 press: Enter
 wait-for-text: Hello, World!
 hide-left-sidebar
@@ -84,8 +87,7 @@ swipl hello.pl
 <!-- tutorial-screenshot
 terminal-open
 press: Control+l
-terminal-run: halt.
-terminal-run: clear
+terminal-run: cd /workspace/prolog && clear
 terminal-run: swipl hello.pl
 terminal-wait-for-prompt
 crop-terminal-lines: auto
@@ -104,7 +106,7 @@ _task(fehler)
 <!-- after: fehler -->
 
 <!-- tutorial-screenshot
-write-file: hello.pl <- file:hello-error.pl
+write-file: prolog/hello.pl <- file:hello-error.pl
 terminal-maximize
 terminal-run: clear
 terminal-run: swipl hello.pl
@@ -112,7 +114,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt='swipl meldet: ERROR: /workspace/hello.pl:1: user:main catch/3: Unknown procedure: writln/1, darunter: However, there are definitions for: writeln/1 und writeln/2.'>
+<img class='full' src='hello-error.webp' alt='swipl meldet: ERROR: /workspace/prolog/hello.pl:1: user:main catch/3: Unknown procedure: writln/1, darunter: However, there are definitions for: writeln/1 und writeln/2.'>
 
 Ein Prädikat heißt in Prolog mit seinem Namen und der Zahl seiner Argumente: `writln/1` ist `writln` mit einem Argument. Das gibt es nicht, aber SWI-Prolog kennt eines mit fast demselben Namen und schlägt es vor. Denk daran, den Fehler wieder zu beheben.
 
@@ -120,13 +122,13 @@ Ein Prädikat heißt in Prolog mit seinem Namen und der Zahl seiner Argumente: `
 
 ## Primfaktorzerlegung
 
-Im zweiten Beispiel zerlegt Prolog eine Zahl in ihre Primfaktoren. Statt einer Schleife gibt es Regeln, die sich selbst aufrufen: `factors(N, D, Fs)` probiert den Teiler `D`, und passt er nicht, ruft es sich mit `D + 1` wieder auf. Gerechnet wird mit `is`. Erstelle eine neue Datei `factor.pl`:
+Im zweiten Beispiel zerlegt Prolog eine Zahl in ihre Primfaktoren. Statt einer Schleife gibt es Regeln, die sich selbst aufrufen: `factors(N, D, Fs)` probiert den Teiler `D`, und passt er nicht, ruft es sich mit `D + 1` wieder auf. Gerechnet wird mit `is`. Erstelle im Ordner `prolog` eine neue Datei `factor.pl`:
 
 _include_file(factor.pl, prolog)
 
 <!-- tutorial-screenshot
-write-file: factor.pl <- file:factor.pl
-write-file: hello.pl <- file:hello.pl
+write-file: prolog/factor.pl <- file:factor.pl
+write-file: prolog/hello.pl <- file:hello.pl
 press: Control+l
 terminal-run: clear
 terminal-run: swipl factor.pl
@@ -154,10 +156,10 @@ Im dritten Beispiel sortiert Prolog eine Liste von zehn Zufallszahlen mit [Bubbl
 
 _include_file(bubblesort.pl, prolog)
 
-Speichere es als `bubblesort.pl` und führe es aus:
+Speichere es als `bubblesort.pl` im Ordner `prolog` und führe es aus:
 
 <!-- tutorial-screenshot
-write-file: bubblesort.pl <- file:bubblesort.pl
+write-file: prolog/bubblesort.pl <- file:bubblesort.pl
 press: Control+l
 terminal-run: clear
 terminal-run: swipl bubblesort.pl

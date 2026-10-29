@@ -2,7 +2,7 @@
   "screenshots": {
     "bubblesort.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "06553602aaa7860589a4e146abe389e376e81b518dd6c5cbbc33cbddbe966d35",
+      "output_sha256": "5379662b39cca4eb1b7554925c4bbd3b93d0baedc82fa1a426da8dc96dc3a69a",
       "state_hash": "05b37522d0c6e70924bf53efaa70631521f83a566b2b33b01a07db878cddfcc6",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
@@ -16,14 +16,14 @@
     },
     "hello.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "56c72e373b3eb79e206a54b03feb3f81d7ca50cfb6745cf88fefef235c99c177",
+      "output_sha256": "66ba250664b6bfcb741600639458b144a562b3eace15b0f4a7b1c4d385c0ffe3",
       "state_hash": "bfabc06c25421231c3d7b6349317ebf880fb5f4231d0aa8b82182d58af33d608",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "syntax-highlighting.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ef2ee26d6a9c7722620dea0e7b2c0420977d0d3a3e46dfb319e1e41e20d067c2",
+      "output_sha256": "ebca9de0a6447dad44d34923d613742a5a8a8aa992bff8d4e42e702be88a0362",
       "state_hash": "cbcfcc600818fdbef3f8523ae5e62e97383cbce71956b3c773132ff8c0c821dc",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560

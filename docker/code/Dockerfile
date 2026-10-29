@@ -775,6 +775,9 @@ COPY bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix \
 COPY ritwickdey.LiveServer.vsix \
     /app/extensions/ritwickdey.LiveServer.vsix
 
+COPY jeff-hykin.better-prolog-syntax.vsix \
+    /app/extensions/jeff-hykin.better-prolog-syntax.vsix
+
 COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
     /app/extensions/hackschule-er-${HACKSCHULE_ER_VERSION}.vsix
 

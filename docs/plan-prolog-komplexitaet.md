@@ -22,11 +22,11 @@ section of the programming languages or beside `grammatiken`, Oberstufe, after
 - `swi-prolog-nox` from Debian (SWI-Prolog without the GUI, about 40 MB):
   `swipl file.pl` for an interactive top level in the terminal, and
   `swipl -q -g goal -t halt file.pl` for the checks.
-- Open: a VS Code extension for syntax colours: »VSC-Prolog« from Open VSX,
-  if its licence allows bundling (to check), otherwise a small TextMate
-  grammar of our own in `src/vscode-extensions` (the ER and UML extensions
-  show how). Until then VS Code takes a `.pl` file for Perl and colours it
-  as such, which mostly fits.
+- Syntax colours in VS Code: »Better Prolog Syntax« (jeff-hykin, MIT, a
+  grammar without code) from Open VSX, bundled in the image like Live
+  Server. It claims every `.pl` file, which Perl uses too; the default
+  settings (`files.associations`) give `.pl` back to Perl except below a
+  folder `prolog`, where the activity and the Prolog tile keep their files.
 - On the website Rouge already colours `prolog` code blocks.
 
 ### The check: type `prolog`
