@@ -92,8 +92,11 @@ The code:
 - **JavaScript, Dart and Java are chosen apart.** A person's own switch stays
   Ruby or Python; a choice of JavaScript, Dart or Java is stored apart
   (`u.kata_code_language`), and a class can rank all five.
-- **Dart and Java have every set except Tests schreiben and Pip**, whose
-  check types (`tests`, `pip`) run only in Ruby, Python and JavaScript. A
+- **Dart and Java have every set except Tests schreiben**, whose check type
+  (`tests`) runs only in Ruby, Python and JavaScript; Pip unter Funkelbach
+  runs in all five (`pip_compiled.rb`: a plan is compiled once, then started
+  once a map, all maps in one container; a plan without `main` gets one, in
+  Java `wait` is `pause()`, since every object has `wait()`). A
   Dart or Java card uses that language's types in its signature, its own
   forbidden built-ins and its own typical mistakes (the remainder of a
   negative number differs in all three, Java compares texts with `equals`);

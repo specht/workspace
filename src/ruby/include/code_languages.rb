@@ -36,8 +36,8 @@ require 'cgi'
 # the class page's »Sprachen der Klasse«). A person's own switch picks
 # between Ruby and Python (OWN_LANGUAGES). JavaScript, Dart and Java are
 # offered where a page needs them: all three on the Katas
-# (docs/plan-katas.md), Dart and Java on the Textadventure and the check
-# digits, all five on the activity about classes
+# and Pip unter Funkelbach (docs/plan-katas.md), Dart and Java on the
+# Textadventure and the check digits, all five on the activity about classes
 # (docs/plan-lehrplan-luecken.md). Someone who picks one of these three keeps
 # it apart (u.kata_code_language) and still sees Ruby or Python elsewhere.
 #
