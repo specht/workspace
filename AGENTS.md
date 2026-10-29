@@ -52,6 +52,12 @@ address from `credentials.rb` and the code `123456`.
 - [docs/plan-prolog-komplexitaet.md](docs/plan-prolog-komplexitaet.md): two planned activities, logic
   programming with Prolog (SWI-Prolog in the image, a check type `prolog`) and run-time complexity
   (measuring, counting, growth, P and NP); both built (`prolog`, `laufzeit`), what is open
+- [docs/plan-dart-java.md](docs/plan-dart-java.md): where Dart and Java are offered (all Katas and Pip,
+  Textadventure, Prüfziffern, Laufzeit, Supermarkt), the pattern for giving a page both, what is open
+  (checks in a real Workspace, a whole class on the Java Katas, the own switch, the next activities)
+- [docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md): a planned activity on concurrency in
+  Java and Dart (a step-through widget, threads, locks, deadlock, the monitor; races at `await`,
+  isolates); what is decided, what the `dart` check still needs, the open questions
 - [docs/plan-git-gruppen.md](docs/plan-git-gruppen.md): Git repositories for groups kept by the Workspace
   itself (a mounted directory or an SSH container), browsable on the site; a plan, open questions
 - [docs/plan-treffpunkt.md](docs/plan-treffpunkt.md): a meeting point a teacher sets in an activity for
