@@ -48,13 +48,13 @@ with the details of every `curriculum:` line and a search of the pages:
 
 ## Packages for the front page
 
-On a wide screen the front page shows three cards in a row, and every
-section holds three or six (Fireworks and Hugo were parked for that, in
-eabe9ca9); the language tiles stand four in a row and fill four rows. So
-new activities come in threes per section, tiles in fours, and a chapter
-in an existing activity costs no place. Proposed on 27 October 2026, after
-the maintainer asked to close the gaps where appropriate, keeping the rows
-full, also by bringing back parked activities or moving them:
+On a wide screen the front page shows three cards in a row. Until
+29 October 2026 every section had to hold three or six (Fireworks and Hugo
+were parked for that, in eabe9ca9) and the language tiles fill rows of
+four; the maintainer dropped that rule then: a section takes as many
+activities as belong in it, and a row may end half full. Proposed on
+27 October 2026, after the maintainer asked to close the gaps where
+appropriate, also by bringing back parked activities or moving them:
 
 | Package | Section | Cards | Closes |
 | --- | --- | --- | --- |
@@ -153,8 +153,8 @@ written by the receiver. The code keeps the name `cable` (`cable.js`,
   examples use names of one word (`toggle`, `seats`). Types stay as in
   Java. Ruby's `accepts?` is the others' `accepts` too.
 - **Packages for the front page** (27 October 2026): close the gaps where
-  appropriate while every section keeps full rows; parked activities may
-  come back and activities may move. Software first (it lets `supermarkt`
+  appropriate; parked activities may come back and activities may move.
+  Full rows are no longer required (29 October 2026). Software first (it lets `supermarkt`
   go public); `cable` may come back (it did, as `radio`).
 - **Overriding in the diagram** (27 October 2026): since a class has what
   it inherits, a task can no longer see whether a subclass overrides a
