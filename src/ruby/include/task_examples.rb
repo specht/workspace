@@ -89,8 +89,8 @@ module TaskExamples
                 next if type == 'java' && !tool?('javac')
                 next if type == 'prolog' && !tool?('swipl')
                 next if type == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
-                next if type == 'function' && variant['check']['language'] == 'java' && !tool?('javac')
-                next if type == 'function' && variant['check']['language'] == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
+                next if %w[function pip].include?(type) && variant['check']['language'] == 'java' && !tool?('javac')
+                next if %w[function pip].include?(type) && variant['check']['language'] == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
 
                 given = examples[id] || {}
                 given = given[language] || {} if language
