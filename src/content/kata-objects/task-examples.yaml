@@ -92,6 +92,12 @@ examples:
             }
           }
         say: '7'
+    dart:
+      pass:
+        - answer: "class Rectangle {\n  final int width;\n  final int height;\n\n  Rectangle(this.width, this.height);\n\n  int area() {\n    return width * height;\n  }\n\n  int perimeter() {\n    return 2 * (width + height);\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Rectangle {\n    private int width;\n    private int height;\n\n    Rectangle(int width, int height) {\n        this.width = width;\n        this.height = height;\n    }\n\n    int area() {\n        return width * height;\n    }\n\n    int perimeter() {\n        return 2 * (width + height);\n    }\n}\n"
   account:
     pass:
     - answer: |
@@ -219,6 +225,12 @@ examples:
             }
           }
         say: Alles abheben
+    dart:
+      pass:
+        - answer: "class Account {\n  int _money;\n\n  Account(int balance) : _money = balance;\n\n  void deposit(int amount) {\n    _money += amount;\n  }\n\n  bool withdraw(int amount) {\n    if (amount > _money) {\n      return false;\n    }\n    _money -= amount;\n    return true;\n  }\n\n  int balance() {\n    return _money;\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Account {\n    private int money;\n\n    Account(int balance) {\n        money = balance;\n    }\n\n    void deposit(int amount) {\n        money += amount;\n    }\n\n    boolean withdraw(int amount) {\n        if (amount > money) {\n            return false;\n        }\n        money -= amount;\n        return true;\n    }\n\n    int balance() {\n        return money;\n    }\n}\n"
   playlist:
     pass:
     - answer: |
@@ -313,6 +325,12 @@ examples:
               return longest === null ? null : longest.title;
             }
           }
+    dart:
+      pass:
+        - answer: "class Song {\n  final String title;\n  final int seconds;\n\n  Song(this.title, this.seconds);\n}\n\nclass Playlist {\n  final songs = <Song>[];\n\n  void add(Song song) {\n    songs.add(song);\n  }\n\n  int totalSeconds() {\n    var total = 0;\n    for (final song in songs) {\n      total += song.seconds;\n    }\n    return total;\n  }\n\n  String? longestTitle() {\n    Song? longest;\n    for (final song in songs) {\n      if (longest == null || song.seconds > longest.seconds) {\n        longest = song;\n      }\n    }\n    return longest?.title;\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Song {\n    String title;\n    int seconds;\n\n    Song(String title, int seconds) {\n        this.title = title;\n        this.seconds = seconds;\n    }\n}\n\nclass Playlist {\n    List<Song> songs = new ArrayList<>();\n\n    void add(Song song) {\n        songs.add(song);\n    }\n\n    int totalSeconds() {\n        int total = 0;\n        for (Song song : songs) {\n            total += song.seconds;\n        }\n        return total;\n    }\n\n    String longestTitle() {\n        Song longest = null;\n        for (Song song : songs) {\n            if (longest == null || song.seconds > longest.seconds) {\n                longest = song;\n            }\n        }\n        return longest == null ? null : longest.title;\n    }\n}\n"
   money:
     pass:
     - answer: |
@@ -384,6 +402,12 @@ examples:
             }
           }
         say: zwei Ziffern
+    dart:
+      pass:
+        - answer: "class Money {\n  final int euros;\n  final int cents;\n\n  Money(this.euros, this.cents);\n\n  @override\n  String toString() {\n    return '$euros,${cents.toString().padLeft(2, '0')} €';\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Money {\n    private int euros;\n    private int cents;\n\n    Money(int euros, int cents) {\n        this.euros = euros;\n        this.cents = cents;\n    }\n\n    @Override\n    public String toString() {\n        return String.format(\"%d,%02d €\", euros, cents);\n    }\n}\n"
   total-area:
     pass:
     - answer: |
@@ -493,6 +517,12 @@ examples:
             }
             return total;
           }
+    dart:
+      pass:
+        - answer: "abstract class Shape {\n  int area();\n}\n\nclass Square extends Shape {\n  final int side;\n\n  Square(this.side);\n\n  @override\n  int area() {\n    return side * side;\n  }\n}\n\nclass Rectangle extends Shape {\n  final int width;\n  final int height;\n\n  Rectangle(this.width, this.height);\n\n  @override\n  int area() {\n    return width * height;\n  }\n}\n\nint totalArea(List<Shape> shapes) {\n  var total = 0;\n  for (final shape in shapes) {\n    total += shape.area();\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "abstract class Shape {\n    abstract int area();\n}\n\nclass Square extends Shape {\n    private int side;\n\n    Square(int side) {\n        this.side = side;\n    }\n\n    @Override\n    int area() {\n        return side * side;\n    }\n}\n\nclass Rectangle extends Shape {\n    private int width;\n    private int height;\n\n    Rectangle(int width, int height) {\n        this.width = width;\n        this.height = height;\n    }\n\n    @Override\n    int area() {\n        return width * height;\n    }\n}\n\nint totalArea(List<Shape> shapes) {\n    int total = 0;\n    for (Shape shape : shapes) {\n        total += shape.area();\n    }\n    return total;\n}\n"
   manager:
     pass:
     - answer: |
@@ -587,6 +617,12 @@ examples:
               return super.yearly() + this.bonus;
             }
           }
+    dart:
+      pass:
+        - answer: "class Employee {\n  final String name;\n  final int monthly;\n\n  Employee(this.name, this.monthly);\n\n  int yearly() {\n    return 12 * monthly;\n  }\n}\n\nclass Manager extends Employee {\n  final int bonus;\n\n  Manager(String name, int monthly, this.bonus) : super(name, monthly);\n\n  @override\n  int yearly() {\n    return super.yearly() + bonus;\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Employee {\n    String name;\n    int monthly;\n\n    Employee(String name, int monthly) {\n        this.name = name;\n        this.monthly = monthly;\n    }\n\n    int yearly() {\n        return 12 * monthly;\n    }\n}\n\nclass Manager extends Employee {\n    private int bonus;\n\n    Manager(String name, int monthly, int bonus) {\n        super(name, monthly);\n        this.bonus = bonus;\n    }\n\n    @Override\n    int yearly() {\n        return super.yearly() + bonus;\n    }\n}\n"
   stack:
     pass:
     - answer: |
@@ -680,6 +716,12 @@ examples:
               return this.items.length;
             }
           }
+    dart:
+      pass:
+        - answer: "class Stack {\n  final _items = <Object>[];\n\n  void push(Object x) {\n    _items.add(x);\n  }\n\n  Object? pop() {\n    if (_items.isEmpty) {\n      return null;\n    }\n    return _items.removeLast();\n  }\n\n  Object? peek() {\n    if (_items.isEmpty) {\n      return null;\n    }\n    return _items.last;\n  }\n\n  int size() {\n    return _items.length;\n  }\n}\n"
+    java:
+      pass:
+        - answer: "class Stack {\n    private List<Object> items = new ArrayList<>();\n\n    void push(Object x) {\n        items.add(x);\n    }\n\n    Object pop() {\n        if (items.isEmpty()) {\n            return null;\n        }\n        return items.remove(items.size() - 1);\n    }\n\n    Object peek() {\n        if (items.isEmpty()) {\n            return null;\n        }\n        return items.get(items.size() - 1);\n    }\n\n    int size() {\n        return items.size();\n    }\n}\n"
   fraction:
     pass:
     - answer: |
@@ -760,3 +802,9 @@ examples:
               return `${this.numerator}/${this.denominator}`;
             }
           }
+    dart:
+      pass:
+        - answer: "int gcd(int a, int b) {\n  return b == 0 ? a : gcd(b, a % b);\n}\n\nclass Fraction {\n  late final int numerator;\n  late final int denominator;\n\n  Fraction(int numerator, int denominator) {\n    final divisor = gcd(numerator, denominator);\n    this.numerator = numerator ~/ divisor;\n    this.denominator = denominator ~/ divisor;\n  }\n\n  Fraction add(Fraction other) {\n    return Fraction(numerator * other.denominator + other.numerator * denominator,\n        denominator * other.denominator);\n  }\n\n  @override\n  String toString() {\n    return '$numerator/$denominator';\n  }\n}\n"
+    java:
+      pass:
+        - answer: "int gcd(int a, int b) {\n    return b == 0 ? a : gcd(b, a % b);\n}\n\nclass Fraction {\n    private int numerator;\n    private int denominator;\n\n    Fraction(int numerator, int denominator) {\n        int divisor = gcd(numerator, denominator);\n        this.numerator = numerator / divisor;\n        this.denominator = denominator / divisor;\n    }\n\n    Fraction add(Fraction other) {\n        return new Fraction(numerator * other.denominator + other.numerator * denominator,\n                            denominator * other.denominator);\n    }\n\n    @Override\n    public String toString() {\n        return numerator + \"/\" + denominator;\n    }\n}\n"

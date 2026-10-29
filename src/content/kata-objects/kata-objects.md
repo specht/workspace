@@ -2,7 +2,7 @@
 icon: bi-boxes
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Klassen schreiben, Objekte bauen, Zustand hüten und vererben
 curriculum: "Sek I: Algorithmisches Problemlösen (Grundlagen der Objektorientierung); Oberstufe: objektorientierte Programmierung (Klassen, Objekte, Attribute, Methoden, Vererbung)"
 topics: [objektorientierung]
@@ -90,6 +90,50 @@ console.log(clicks.value);    // 1
 das Objekt selbst; `this.value` ist ein Attribut: Es gehört dem Objekt,
 nicht der Methode, und bleibt, wenn die Methode fertig ist.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+class Counter {
+  int value = 0;
+
+  void increment() {
+    value += 1;
+  }
+}
+
+void main() {
+  final clicks = Counter();
+  clicks.increment();
+  print(clicks.value);    // 1
+}
+```
+
+`Counter()` baut ein neues Objekt. `value` ist ein Attribut: Es gehört dem
+Objekt, nicht der Methode, und bleibt, wenn die Methode fertig ist. In den
+Methoden schreibt man es einfach `value`; wer es genauer sagen will,
+schreibt `this.value`, »das `value` dieses Objekts«.
+<!-- /language -->
+<!-- language: java -->
+```java
+class Counter {
+    int value = 0;
+
+    void increment() {
+        value += 1;
+    }
+}
+
+void main() {
+    Counter clicks = new Counter();
+    clicks.increment();
+    IO.println(clicks.value);    // 1
+}
+```
+
+`new Counter()` baut ein neues Objekt. `value` ist ein Attribut: Es gehört
+dem Objekt, nicht der Methode, und bleibt, wenn die Methode fertig ist. In
+den Methoden schreibt man es einfach `value`; wer es genauer sagen will,
+schreibt `this.value`, »das `value` dieses Objekts«.
+<!-- /language -->
 
 _task(predict-two-counters)
 
@@ -143,6 +187,51 @@ class Circle {
 
 console.log(new Circle(5).diameter());    // 10
 ```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+class Circle {
+  final int radius;
+
+  Circle(this.radius);
+
+  int diameter() {
+    return 2 * radius;
+  }
+}
+
+void main() {
+  print(Circle(5).diameter());    // 10
+}
+```
+
+`Circle(this.radius);` ist der Konstruktor: Er läuft, wenn `Circle(5)` ein
+Objekt baut, und setzt das Attribut `radius` gleich auf den Wert des
+Parameters.
+<!-- /language -->
+<!-- language: java -->
+```java
+class Circle {
+    private int radius;
+
+    Circle(int radius) {
+        this.radius = radius;
+    }
+
+    int diameter() {
+        return 2 * radius;
+    }
+}
+
+void main() {
+    IO.println(new Circle(5).diameter());    // 10
+}
+```
+
+`Circle(int radius) { … }` ist der Konstruktor: Er läuft, wenn
+`new Circle(5)` ein Objekt baut. `this.radius = radius;` setzt das Attribut
+auf den Wert des Parameters, der genauso heißt. `private` heißt: Nur die
+Methoden der Klasse kommen an das Attribut.
 <!-- /language -->
 
 _task(rectangle)
@@ -250,13 +339,75 @@ mix.add(new Song("Outro", 210));
 console.log(mix.count());    // 2
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+class Song {
+  final String title;
+  final int seconds;
+
+  Song(this.title, this.seconds);
+}
+
+class Playlist {
+  final songs = <Song>[];
+
+  void add(Song song) {
+    songs.add(song);
+  }
+
+  int count() {
+    return songs.length;
+  }
+}
+
+void main() {
+  final mix = Playlist();
+  mix.add(Song('Intro', 95));
+  mix.add(Song('Outro', 210));
+  print(mix.count());    // 2
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+class Song {
+    String title;
+    int seconds;
+
+    Song(String title, int seconds) {
+        this.title = title;
+        this.seconds = seconds;
+    }
+}
+
+class Playlist {
+    List<Song> songs = new ArrayList<>();
+
+    void add(Song song) {
+        songs.add(song);
+    }
+
+    int count() {
+        return songs.size();
+    }
+}
+
+void main() {
+    Playlist mix = new Playlist();
+    mix.add(new Song("Intro", 95));
+    mix.add(new Song("Outro", 210));
+    IO.println(mix.count());    // 2
+}
+```
+<!-- /language -->
 
 _task(playlist)
 
 ## Wie ein Objekt sich zeigt
 
 Macht man aus einem Objekt einfach Text, steht da wenig: in Ruby und Python
-die Klasse und wo das Objekt im Speicher liegt, in JavaScript nur
+die Klasse und wo das Objekt im Speicher liegt, in Java die Klasse und eine
+Kennzahl, in Dart `Instance of 'Point'`, in JavaScript nur
 `[object Object]`. Was ein Mensch lesen soll, bestimmt eine Methode mit
 einem festen Namen:
 
@@ -311,6 +462,56 @@ console.log(`${new Point(3, 4)}`);    // (3, 4)
 
 `String(p)` und `` `Punkt ${p}` `` rufen `toString` auf. `console.log(p)`
 allein zeigt dagegen die Attribute, nicht `toString`.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+class Point {
+  final int x;
+  final int y;
+
+  Point(this.x, this.y);
+
+  @override
+  String toString() {
+    return '($x, $y)';
+  }
+}
+
+void main() {
+  print(Point(3, 4));    // (3, 4)
+}
+```
+
+`print(p)` und `'Punkt $p'` rufen `toString` auf. Jedes Objekt hat schon
+eins, das `Instance of 'Point'` zurückgibt; `@override` sagt, dass deins es
+ersetzt.
+<!-- /language -->
+<!-- language: java -->
+```java
+class Point {
+    private int x;
+    private int y;
+
+    Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
+}
+
+void main() {
+    IO.println(new Point(3, 4));    // (3, 4)
+}
+```
+
+`IO.println(p)` und `"Punkt " + p` rufen `toString` auf. Jedes Objekt hat
+schon eins, das die Klasse und eine Kennzahl zurückgibt, `Point@1b6d3586`;
+`@Override` sagt, dass deins es ersetzt. Es muss `public` sein wie das, das
+es ersetzt.
 <!-- /language -->
 
 _task(money)
@@ -407,6 +608,90 @@ class Cat extends Animal {
 
 `class Dog extends Animal` heißt: `Dog` erbt von `Animal`.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+class Animal {
+  final String name;
+
+  Animal(this.name);
+
+  String sound() {
+    return '...';
+  }
+
+  String describe() {
+    return '$name sagt ${sound()}';
+  }
+}
+
+class Dog extends Animal {
+  Dog(super.name);
+
+  @override
+  String sound() {
+    return 'Wuff';
+  }
+}
+
+class Cat extends Animal {
+  Cat(super.name);
+
+  @override
+  String sound() {
+    return 'Miau';
+  }
+}
+```
+
+`class Dog extends Animal` heißt: `Dog` erbt von `Animal`. Konstruktoren
+erbt eine Klasse nicht; `Dog(super.name);` gibt den Namen an den
+Konstruktor von `Animal` weiter.
+<!-- /language -->
+<!-- language: java -->
+```java
+class Animal {
+    String name;
+
+    Animal(String name) {
+        this.name = name;
+    }
+
+    String sound() {
+        return "...";
+    }
+
+    String describe() {
+        return name + " sagt " + sound();
+    }
+}
+
+class Dog extends Animal {
+    Dog(String name) {
+        super(name);
+    }
+
+    @Override
+    String sound() {
+        return "Wuff";
+    }
+}
+
+class Cat extends Animal {
+    Cat(String name) {
+        super(name);
+    }
+
+    @Override
+    String sound() {
+        return "Miau";
+    }
+}
+```
+
+`class Dog extends Animal` heißt: `Dog` erbt von `Animal`. Konstruktoren
+erbt eine Klasse nicht; `super(name);` gibt den Namen an den Konstruktor
+von `Animal` weiter.
+<!-- /language -->
 
 _task(predict-describe)
 
@@ -462,6 +747,46 @@ console.log(new Puppy("Fips").describe());    // Fips sagt Wuff (leise)
 
 Im `constructor` gibt `super(name)` den Namen an den `constructor` der
 Oberklasse weiter; erst danach darf man `this` benutzen.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+class Puppy extends Dog {
+  Puppy(super.name);
+
+  @override
+  String sound() {
+    return '${super.sound()} (leise)';
+  }
+}
+
+void main() {
+  print(Puppy('Fips').describe());    // Fips sagt Wuff (leise)
+}
+```
+
+Im Konstruktor gibt `: super(name)` den Namen an den Konstruktor der
+Oberklasse weiter; `Puppy(super.name);` ist die kurze Form davon.
+<!-- /language -->
+<!-- language: java -->
+```java
+class Puppy extends Dog {
+    Puppy(String name) {
+        super(name);
+    }
+
+    @Override
+    String sound() {
+        return super.sound() + " (leise)";
+    }
+}
+
+void main() {
+    IO.println(new Puppy("Fips").describe());    // Fips sagt Wuff (leise)
+}
+```
+
+Im Konstruktor gibt `super(name);` den Namen an den Konstruktor der
+Oberklasse weiter; es steht in seiner ersten Zeile.
 <!-- /language -->
 
 _task(manager)

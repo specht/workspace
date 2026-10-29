@@ -42,6 +42,17 @@ class KataCompiledTest < Minitest::Test
         assert_includes read, 'Zeile 2: error'
     end
 
+    # the person's classes are members of HsKata; their names come without it
+    def test_the_class_around_the_code_is_not_named
+        code = "class Stack {\n}\n"
+        source, = KataCompiled.java_source('HsKata', code, [{ 'call' => 'new Stack().size()', 'expect' => '0' }])
+        assert_includes source, 'static String __hsBare'
+        errors = "HsKata.java:99: error: cannot find symbol\n        new Stack().size();\n  symbol:   method size()\n  location: class HsKata.Stack\n1 error\n"
+        _, message, read = KataCompiled.java_problem(code, [], errors)
+        assert_includes message, 'Methode `size`'
+        refute_includes read, 'HsKata.Stack'
+    end
+
     def test_each_target_has_its_section
         out = "\n__HS_TARGET__ kata\n\n__HS_RESULT__{}\n\n__HS_TARGET__ alt1\n__HS_COMPILE__\nalt1.dart:1:1: Error: x\n"
         sections = KataCompiled.sections(out)

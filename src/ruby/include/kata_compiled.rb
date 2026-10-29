@@ -110,7 +110,13 @@ module KataCompiled
             static java.io.PrintStream __HS_OUT;
             static final StringBuilder __HS_RESULT = new StringBuilder();
 
+            // the person's classes are members of this one: HsKata$Money -> Money
+            static String __hsBare(String s) {
+                return s.replaceAll("\\\\bHs(?:Kata|Alt\\\\d+)[$.]", "");
+            }
+
             static String __hsQuote(String s) {
+                s = __hsBare(s);
                 return "\\"" + s.replace("\\\\", "\\\\\\\\").replace("\\"", "\\\\\\"").replace("\\n", "\\\\n") + "\\"";
             }
 
@@ -136,7 +142,7 @@ module KataCompiled
                     for (Map.Entry<?, ?> e : m.entrySet()) j.add(__hsRepr(e.getKey()) + "=" + __hsRepr(e.getValue()));
                     return j.toString();
                 }
-                return String.valueOf(v);
+                return __hsBare(String.valueOf(v));
             }
 
             static boolean __hsSame(Object a, Object b) {
@@ -182,6 +188,7 @@ module KataCompiled
                         break;
                     }
                 }
+                text = __hsBare(text);
                 return text.length() > 300 ? text.substring(0, 300) : text;
             }
 
@@ -330,7 +337,7 @@ module KataCompiled
         lines = errors.to_s.lines.map(&:rstrip)
         shown = lines.map do |l|
             l.sub(/\AHsKata\.java:(\d+):/) { own.call($1.to_i) ? "Zeile #{$1.to_i - first + 1}:" : 'Prüfung:' }
-             .gsub(/ in class HsKata\b/, '').gsub(/\bclass HsKata\b/, 'deinem Code')
+             .gsub(/ in class HsKata\b/, '').gsub(/\bclass HsKata\b/, 'deinem Code').gsub(/\bHsKata\./, '')
         end
         read = read_block(shown)
         at = lines.index { |l| l =~ /\AHsKata\.java:\d+: error:/ }
@@ -338,7 +345,7 @@ module KataCompiled
 
         number, message = lines[at].match(/\AHsKata\.java:(\d+): error: (.*)\z/).captures
         number = number.to_i
-        message = message.gsub(/ in class HsKata\b/, '')
+        message = message.gsub(/ in class HsKata\b/, '').gsub(/\bHsKata\./, '')
         detail = lines[(at + 1)..(at + 6)].to_a
         field = ->(key) { detail.find { |l| l =~ /\A\s*#{key}:/ }.to_s.sub(/\A\s*#{key}:\s*/, '') }
         if own.call(number)
