@@ -1,20 +1,21 @@
-# Ein Textadventure aus Objekten: Räume, Gegenstände, eine Spielerin.
+# Ein Textadventure aus Objekten: Nachts in der Schule.
+
 
 class Room:
     def __init__(self, name, description):
         self.name = name
         self.description = description
-        self.exits = {}
+        self._exits = {}
         self.items = []
 
     def connect(self, direction, room):
-        self.exits[direction] = room
+        self._exits[direction] = room
 
     def exit_to(self, direction):
-        return self.exits.get(direction)
+        return self._exits.get(direction)
 
     def directions(self):
-        return list(self.exits.keys())
+        return list(self._exits.keys())
 
     def add_item(self, item):
         self.items.append(item)
@@ -44,18 +45,29 @@ class Item:
 class Player:
     def __init__(self, room):
         self.room = room
-        self.inventory = []
+        self._bag = []
+
+    def look(self):
+        return self.room.describe()
 
     def go(self, direction):
         target = self.room.exit_to(direction)
         if target is None:
             return "Da geht es nicht weiter."
         self.room = target
-        return self.room.describe()
+        return self.look()
 
     def take(self, name):
         item = self.room.take(name)
         if item is None:
             return f"Hier liegt nichts mit dem Namen {name}."
-        self.inventory.append(item)
+        self._bag.append(item)
         return f"Du nimmst {item.name}."
+
+    def has(self, name):
+        return any(item.name == name for item in self._bag)
+
+    def bag(self):
+        if not self._bag:
+            return "Deine Tasche ist leer."
+        return "In deiner Tasche: " + ", ".join(item.name for item in self._bag)

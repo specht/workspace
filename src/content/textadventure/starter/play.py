@@ -1,32 +1,21 @@
-# Die Spielschleife: liest Befehle und gibt sie an die Spielerin weiter.
-# Die Welt baut build_world in adventure.py.
-from adventure import build_world
+# Die Spielschleife: liest Befehle und gibt sie an das Spiel weiter.
+#   python3 play.py          spielt deine Welt (build_world in adventure.py)
+#   python3 play.py schule   spielt die Nacht in der Schule (schule.py)
+import sys
 
-player = build_world()
-print(player.room.describe())
+from adventure import Game
 
-while True:
+if len(sys.argv) > 1 and sys.argv[1] == "schule":
+    from schule import build_school
+    game = Game(build_school())
+else:
+    from adventure import build_world
+    game = Game(build_world())
+
+print(game.start())
+while not game.is_over():
     try:
         line = input("> ")
     except EOFError:
         break
-    words = line.strip().lower().split(" ", 1)
-    verb = words[0]
-    word = words[1] if len(words) > 1 else ""
-    if verb == "gehe":
-        print(player.go(word))
-    elif verb == "nimm":
-        print(player.take(word))
-    elif verb == "benutze":
-        print(player.use(word))
-    elif verb == "schau":
-        print(player.room.describe())
-    elif verb == "tasche":
-        names = [item.name for item in player.inventory]
-        print("In deiner Tasche: " + ", ".join(names) if names else "Deine Tasche ist leer.")
-    elif verb == "ende":
-        break
-    elif verb == "":
-        continue
-    else:
-        print("Das verstehe ich nicht. Befehle: gehe, nimm, benutze, schau, tasche, ende")
+    print(game.handle(line))

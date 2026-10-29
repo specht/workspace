@@ -1,21 +1,22 @@
-# Ein Textadventure aus Objekten: Räume, Gegenstände, eine Spielerin.
+# Ein Textadventure aus Objekten: Nachts in der Schule.
+
 
 class Room:
     def __init__(self, name, description):
         self.name = name
         self.description = description
-        self.exits = {}
-        self.locks = {}
+        self._exits = {}
+        self._locks = {}
         self.items = []
 
     def connect(self, direction, room):
-        self.exits[direction] = room
+        self._exits[direction] = room
 
     def exit_to(self, direction):
-        return self.exits.get(direction)
+        return self._exits.get(direction)
 
     def directions(self):
-        return list(self.exits.keys())
+        return list(self._exits.keys())
 
     def add_item(self, item):
         self.items.append(item)
@@ -28,24 +29,32 @@ class Room:
         return None
 
     def lock(self, direction, key_name):
-        self.locks[direction] = key_name
+        self._locks[direction] = key_name
 
     def is_locked(self, direction):
-        return direction in self.locks
+        return direction in self._locks
 
     def unlock(self, key_name):
-        doors = [d for d, key in self.locks.items() if key == key_name]
+        doors = [d for d, key in self._locks.items() if key == key_name]
         for direction in doors:
-            del self.locks[direction]
+            del self._locks[direction]
         return len(doors) > 0
+
+    def is_dark(self):
+        return False
 
     def describe(self):
         lines = [self.name, self.description]
         if self.items:
             lines.append("Hier liegt: " + ", ".join(item.name for item in self.items))
-        exits = [f"{d} (verschlossen)" if self.is_locked(d) else d for d in self.directions()]
+        exits = [d + " (verschlossen)" if self.is_locked(d) else d for d in self.directions()]
         lines.append("Ausgänge: " + (", ".join(exits) if exits else "keine"))
         return "\n".join(lines)
+
+
+class DarkRoom(Room):
+    def is_dark(self):
+        return True
 
 
 class Item:
@@ -55,6 +64,9 @@ class Item:
 
     def use(self, player):
         return "Damit kannst du hier nichts anfangen."
+
+    def shines(self):
+        return False
 
 
 class Key(Item):
@@ -66,14 +78,27 @@ class Key(Item):
 
 class Food(Item):
     def use(self, player):
-        player.inventory.remove(self)
+        player.remove(self)
         return f"Du isst {self.name}. {self.description}"
+
+
+class Lamp(Item):
+    def use(self, player):
+        return f"{self.name} leuchtet schon."
+
+    def shines(self):
+        return True
 
 
 class Player:
     def __init__(self, room):
         self.room = room
-        self.inventory = []
+        self._bag = []
+
+    def look(self):
+        if self.room.is_dark() and not self.has_light():
+            return "Es ist stockdunkel. Du siehst nichts."
+        return self.room.describe()
 
     def go(self, direction):
         target = self.room.exit_to(direction)
@@ -82,45 +107,33 @@ class Player:
         if self.room.is_locked(direction):
             return f"Die Tür nach {direction} ist verschlossen."
         self.room = target
-        return self.room.describe()
+        return self.look()
 
     def take(self, name):
+        if self.room.is_dark() and not self.has_light():
+            return "Im Dunkeln findest du nichts."
         item = self.room.take(name)
         if item is None:
             return f"Hier liegt nichts mit dem Namen {name}."
-        self.inventory.append(item)
+        self._bag.append(item)
         return f"Du nimmst {item.name}."
 
+    def has(self, name):
+        return any(item.name == name for item in self._bag)
+
+    def bag(self):
+        if not self._bag:
+            return "Deine Tasche ist leer."
+        return "In deiner Tasche: " + ", ".join(item.name for item in self._bag)
+
+    def remove(self, item):
+        self._bag.remove(item)
+
     def use(self, name):
-        for item in self.inventory:
+        for item in self._bag:
             if item.name == name:
                 return item.use(self)
         return f"Du hast nichts mit dem Namen {name}."
 
-
-# Alle Räume, die man von start aus erreicht, start zuerst (gegeben).
-def all_rooms(start):
-    seen = [start]
-    queue = [start]
-    while queue:
-        room = queue.pop(0)
-        for direction in room.directions():
-            other = room.exit_to(direction)
-            if other not in seen:
-                seen.append(other)
-                queue.append(other)
-    return seen
-
-
-def build_world():
-    hall = Room("Flur", "Ein langer Flur mit knarrenden Dielen.")
-    kitchen = Room("Küche", "Es riecht nach Kaffee.")
-    cellar = Room("Keller", "Kalt und feucht. In der Ecke steht eine Kiste.")
-    hall.connect("norden", kitchen)
-    kitchen.connect("süden", hall)
-    hall.connect("osten", cellar)
-    cellar.connect("westen", hall)
-    kitchen.add_item(Key("schlüssel", "Ein kleiner Messingschlüssel."))
-    kitchen.add_item(Food("apfel", "Knackig und süß."))
-    cellar.add_item(Item("kiste", "Eine schwere Holzkiste."))
-    return Player(hall)
+    def has_light(self):
+        return any(item.shines() for item in self._bag)
