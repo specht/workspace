@@ -12939,3 +12939,86 @@ dialog.native-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 }
 
 .adventure-restart .bi { margin-right: 0.35em; }
+
+/* how fast effort grows (growth_widget.js, content/laufzeit): a slider for
+   n and a table of steps, times and bars on a logarithmic scale */
+.growth-widget {
+    --widget: #5c677d; --widget-ink: #4a5264; --widget-chip: #ebecef; --widget-line: #dbdee3; --widget-tint: #fafafb;
+    margin: 1.75em 0;
+    padding: 0.9em 1.25em;
+    border: 1px solid var(--widget-line);
+    border-left: 5px solid var(--widget);
+    border-radius: 0.6em;
+    background: var(--widget-tint);
+}
+
+html[data-bs-theme="dark"] .growth-widget {
+    --widget: #858d9e; --widget-ink: #a5abb7; --widget-chip: #25272b; --widget-line: #2a2e34; --widget-tint: #1a1b1b;
+}
+
+.growth-widget::before {
+    content: 'Zum Ausprobieren: wie schnell der Aufwand wächst';
+    display: inline-block;
+    margin-bottom: 0.7em;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+}
+
+.growth-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+    margin-bottom: 0.6em;
+}
+
+.growth-label {
+    min-width: 9em;
+    font-weight: 600;
+}
+
+.growth-slider {
+    flex: 1 1 12em;
+    min-width: 10em;
+}
+
+.growth-table {
+    margin-bottom: 0.4em;
+    font-variant-numeric: tabular-nums;
+}
+
+.growth-table td,
+.growth-table th {
+    padding: 0.3em 0.6em;
+    vertical-align: middle;
+    background: transparent;
+}
+
+.growth-name {
+    font-family: var(--bs-font-monospace);
+    white-space: nowrap;
+}
+
+.growth-steps,
+.growth-max { text-align: right; white-space: nowrap; }
+
+.growth-bar-cell { width: 30%; min-width: 6em; }
+
+.growth-bar {
+    display: block;
+    height: 0.7em;
+    border-radius: 0.35em;
+    background: #12959f;
+}
+
+.growth-bar.growth-too-long { background: #ef4538; }
+
+.growth-note {
+    margin: 0;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}

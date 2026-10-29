@@ -212,16 +212,18 @@
 - key: algorithms
   compact: true
   label: Algorithmen und Datenstrukturen
-  short: Sortieren, Listen, Bäume und Heaps von innen, und der kürzeste Weg durch Berlin.
+  short: Sortieren, Listen, Bäume und Heaps von innen, der kürzeste Weg durch Berlin, und wie lange das alles dauert.
   icon: /images/bar-chart.png
   description: |
     Sortierverfahren und Datenstrukturen selbst bauen und Schritt für Schritt
-    zusehen, was sie tun, und ein Routenplaner, der in echten Karten von
-    Berlin den kürzesten Weg findet.
+    zusehen, was sie tun, ein Routenplaner, der in echten Karten von Berlin
+    den kürzesten Weg findet, und messen und abschätzen, wie lange ein
+    Programm braucht.
   entries:
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - routenplaner
+    - laufzeit
 
 - key: theory
   compact: true
