@@ -263,7 +263,6 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 
 ## Later ideas
 
-* **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals
 * **Git collaboration, further** – pull requests and basic CI on top of the class quiz (`class-quiz` has branches, merges, conflicts and a review)
