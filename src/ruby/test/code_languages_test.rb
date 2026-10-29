@@ -35,6 +35,20 @@ class CodeLanguagesTest < Minitest::Test
         CodeLanguages.wrap(Nokogiri::HTML(html))
     end
 
+    # a typical wrong solution is Ruby code; the Java variant does not get it
+    def test_a_variant_keeps_feedback_but_not_wrong_solutions_of_another_language
+        task = { 'id' => 'add', 'check' => { 'type' => 'function' },
+                 'feedback' => [{ 'when' => { 'same_as' => "def add(a, b)\nend\n" }, 'say' => 'Ruby' },
+                                { 'when' => { 'equals' => 3 }, 'say' => 'neutral' }],
+                 'java' => { 'check' => { 'type' => 'function', 'language' => 'java' } },
+                 'dart' => { 'check' => { 'type' => 'function', 'language' => 'dart' },
+                             'feedback' => [{ 'when' => { 'same_as' => "int add(int a, int b) {}\n" }, 'say' => 'Dart' }] } }
+        assert_equal ['neutral'], CodeLanguages.variant(task, 'java')['feedback'].map { |f| f['say'] }
+        assert_equal ['Dart'], CodeLanguages.variant(task, 'dart')['feedback'].map { |f| f['say'] }
+        assert_equal ['Ruby', 'neutral'], CodeLanguages.variant(task, 'ruby')['feedback'].map { |f| f['say'] }
+        refute CodeLanguages.variant(task.merge('feedback' => task['feedback'].first(1)), 'java').key?('feedback')
+    end
+
     def test_parts_are_wrapped_with_their_markdown
         root = render(PAGE)
         boxes = root.css('div.code-language')
