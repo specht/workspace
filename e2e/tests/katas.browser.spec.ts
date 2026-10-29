@@ -96,6 +96,35 @@ test('JavaScript on a Kata page, Ruby or Python elsewhere', async ({ page, e2eEm
   await page.locator(`.code-language-option[data-set-language="${before}"]`).click();
 });
 
+test('Dart and Java on a Kata page: compiled, with the line of a compiler error', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(120_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-lists');
+  const card = page.locator('.task-card[data-task="kata-lists/list-sum"]:visible');
+
+  await page.locator('.code-language-option[data-set-language="dart"]').click();
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'dart');
+  await expect(card.locator('.task-code')).toHaveValue(/int listSum\(List<int> numbers\)/);
+  await card.locator('.task-code').fill('int listSum(List<int> numbers) {\n  var total = 0;\n  for (final number in numbers) {\n    total += number;\n  }\n  return total;\n}\n\nvoid main() {\n  print(listSum([1, 2]));\n}\n');
+  await expect(card.locator('.code-input-view .kt').first()).toHaveText('int');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Alle 5 Aufrufe liefern, was sie sollen.', { timeout: 60_000 });
+  await expect(card.locator('.task-console')).toHaveText('3\n');
+
+  await page.locator('.code-language-option[data-set-language="java"]').click();
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'java');
+  await card.locator('.task-code').fill('int listSum(List<Integer> numbers) {\n    int total = 0\n    return total;\n}\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('In deinem Code, Zeile 2', { timeout: 60_000 });
+  await card.screenshot({ path: testInfo.outputPath('java-error.png') });
+  await card.locator('.task-code').fill('int listSum(List<Integer> numbers) {\n    int total = 0;\n    for (int number : numbers) {\n        total += number;\n    }\n    return total;\n}\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Alle 5 Aufrufe liefern, was sie sollen.', { timeout: 60_000 });
+
+  // back to Ruby for the other tests
+  await page.locator('.code-language-option[data-set-language="ruby"]').click();
+});
+
 test('a solved Kata is handed in and shown in class without the name', async ({ browser, page, e2eEmail }, testInfo) => {
   test.setTimeout(120_000);
   await loginAsE2eUser(page, e2eEmail, testInfo);
