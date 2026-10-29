@@ -397,9 +397,9 @@ UML-Werkstatt in the Workspace image.
 
 ## Java and Dart for Katas
 
-Built (docs/plan-katas.md, `kata_compiled.rb`, `pip_compiled.rb`): every
-Kata set except Tests schreiben, and the three parts of Pip, has Dart and
-Java variants, run in the Kata containers
+Built (docs/plan-katas.md, `kata_compiled.rb`, `pip_compiled.rb`,
+`tests_compiled.rb`): every Kata set, and the three parts of Pip, has Dart
+and Java variants, run in the Kata containers
 with the limits of the other languages (0.5 CPU, 192 MB). Measured in those
 limits: a Dart card with its typical wrong solutions in about 1.4 to 2 s,
 a Java card in about 2.3 s; the sieve up to ten million takes 1.3 s in Dart

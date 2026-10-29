@@ -1106,16 +1106,20 @@ gelöst ist.
 
 Eine Kata, in der man Tests schreibt statt einer Funktion (`TestsCheck`,
 Übung »Tests schreiben«). Die Tests sind Zeilen
-`assert_equal(erwartet, ergebnis)` (in JavaScript `assertEqual`), die die
+`assert_equal(erwartet, ergebnis)` (in JavaScript, Dart und Java
+`assertEqual`), die die
 Prüfung selbst bereitstellt, ohne Testbibliothek. Sie laufen gegen eine
 richtige Fassung der Funktion, bei der alle bestehen müssen, und gegen
 fehlerhafte, von denen jede an mindestens einem Test scheitern muss; jede
-Fassung läuft für sich, nacheinander im selben Container der Katas.
+Fassung läuft für sich, nacheinander im selben Container der Katas. In Dart
+und Java (`TestsCompiled`) werden alle Fassungen mit den Tests zusammen
+einmal übersetzt; die Tests sind dort Anweisungen ohne `main`, eine Zeile
+je Test, und ein Fehler beim Übersetzen nennt ihre Zeile.
 
 ```yaml
 check:
   type: tests
-  language: ruby                 # ruby, python oder javascript; je Sprache als Variante
+  language: ruby                 # ruby, python, javascript, dart oder java; je Sprache als Variante
   function: even                 # was die Tests aufrufen; sie dürfen es nicht selbst schreiben
   correct: |
     def even(n)
