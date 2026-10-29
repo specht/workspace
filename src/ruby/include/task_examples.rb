@@ -27,6 +27,8 @@ require_relative 'kata_runner'
 #         fail: …
 #
 # A file is copied from the activity's folder, or given as { text: … };
+# a folder (textadventure: loesung/java) puts every file in it below the
+# target, for a Java project with one file per class;
 # { from: …, executable: true } or { text: …, executable: true } also sets
 # its executable bit. archive: a .tar.gz, relative to the activity's
 # folder, unpacked into the example's /workspace before the files, for a
@@ -169,6 +171,17 @@ module TaskExamples
             end
             (example['files'] || {}).each do |target, source|
                 spec = source.is_a?(Hash) ? source : { 'from' => source.to_s }
+                # a folder: every file in it, below target (the class
+                # files of a Java project)
+                folder = !spec.key?('text') && File.directory?(File.join(dir, spec['from'].to_s)) ? File.join(dir, spec['from'].to_s) : nil
+                if folder
+                    Dir[File.join(folder, '**', '*')].select { |f| File.file?(f) }.each do |f|
+                        file = File.join(root, WorkspaceFiles.clean(File.join(target, f.delete_prefix(folder + '/'))))
+                        FileUtils.mkdir_p(File.dirname(file))
+                        File.binwrite(file, File.binread(f))
+                    end
+                    next
+                end
                 unless spec.key?('text') || File.file?(File.join(dir, spec['from'].to_s))
                     problems << "#{FILE}: #{id} #{kind} ##{index + 1}: no file #{spec['from']}"
                     outcome.ok = false

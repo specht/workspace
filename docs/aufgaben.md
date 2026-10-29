@@ -2154,7 +2154,9 @@ examples:
 
 - `files` legt Dateien in einen leeren Workspace-Ordner: links der Pfad, den
   die Prüfung liest, rechts eine Datei aus dem Ordner der Aktivität (meist aus
-  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen;
+  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen; ein
+  Ordner rechts (`textadventure: loesung/java`) legt jede Datei darin unter
+  den Pfad links, für ein Java-Projekt mit einer Datei je Klasse;
   `executable: true` dazu (`{ from: …, executable: true }`) macht sie
   ausführbar.
 - `archive` entpackt vorher ein `.tar.gz` aus dem Ordner der Aktivität in den
