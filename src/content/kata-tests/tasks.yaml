@@ -122,6 +122,71 @@ tasks:
         assertEqual(true, even(-4));
         assertEqual(true, even(100));
         ```
+    dart:
+      prompt: |
+        `bool even(int n)` soll `true` zurückgeben, wenn `n` gerade ist, und sonst `false`. Schreib Tests, die jede falsche Fassung entlarven: Die Prüfung hat eine richtige und drei, die sich in verschiedenen Fällen irren. Ein Test ist eine Zeile `assertEqual(erwartet, ergebnis);`; der erste steht schon da. Denk an die 0 und an negative Zahlen.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(true, even(4));
+      check:
+        type: tests
+        language: dart
+        function: even
+        correct: |
+          bool even(int n) {
+            return n % 2 == 0;
+          }
+        mutants:
+          - code: "bool even(int n) {\n  return n % 2 == 1;\n}\n"
+            say: "Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests. Prüf auch eine ungerade Zahl."
+          - code: "bool even(int n) {\n  return n > 0 && n % 2 == 0;\n}\n"
+            say: "Eine Fassung, die bei 0 und bei negativen Zahlen immer `false` sagt, besteht deine Tests. Ist 0 gerade? Und -4?"
+          - code: "bool even(int n) {\n  return [2, 4, 6, 8].contains(n);\n}\n"
+            say: "Eine Fassung, die nur 2, 4, 6 und 8 kennt, besteht deine Tests. Nimm auch eine größere gerade Zahl."
+      hint:
+        - "Was macht jede der falschen Fassungen anders? Sie irren sich bei ungeraden Zahlen, bei 0 und negativen Zahlen, oder bei großen Zahlen."
+        - "Für jede Art von Zahl ein Test: eine ungerade, die 0, eine negative gerade, eine große gerade."
+      solution: |
+        ```dart
+        assertEqual(true, even(4));
+        assertEqual(false, even(7));
+        assertEqual(true, even(0));
+        assertEqual(true, even(-4));
+        assertEqual(true, even(100));
+        ```
+    java:
+      prompt: |
+        `boolean even(int n)` soll `true` zurückgeben, wenn `n` gerade ist, und sonst `false`. Schreib Tests, die jede falsche Fassung entlarven: Die Prüfung hat eine richtige und drei, die sich in verschiedenen Fällen irren. Ein Test ist eine Zeile `assertEqual(erwartet, ergebnis);`; der erste steht schon da. Denk an die 0 und an negative Zahlen.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(true, even(4));
+      check:
+        type: tests
+        language: java
+        function: even
+        correct: |
+          boolean even(int n) {
+              return n % 2 == 0;
+          }
+        mutants:
+          - code: "boolean even(int n) {\n    return Math.abs(n % 2) == 1;\n}\n"
+            say: "Eine Fassung, die »gerade« und »ungerade« vertauscht, besteht deine Tests. Prüf auch eine ungerade Zahl."
+          - code: "boolean even(int n) {\n    return n > 0 && n % 2 == 0;\n}\n"
+            say: "Eine Fassung, die bei 0 und bei negativen Zahlen immer `false` sagt, besteht deine Tests. Ist 0 gerade? Und -4?"
+          - code: "boolean even(int n) {\n    return List.of(2, 4, 6, 8).contains(n);\n}\n"
+            say: "Eine Fassung, die nur 2, 4, 6 und 8 kennt, besteht deine Tests. Nimm auch eine größere gerade Zahl."
+      hint:
+        - "Was macht jede der falschen Fassungen anders? Sie irren sich bei ungeraden Zahlen, bei 0 und negativen Zahlen, oder bei großen Zahlen."
+        - "Für jede Art von Zahl ein Test: eine ungerade, die 0, eine negative gerade, eine große gerade."
+      solution: |
+        ```java
+        assertEqual(true, even(4));
+        assertEqual(false, even(7));
+        assertEqual(true, even(0));
+        assertEqual(true, even(-4));
+        assertEqual(true, even(100));
+        ```
+
   - id: test-max
     title: "Tests für die größere Zahl"
     level: 1
@@ -228,6 +293,61 @@ tasks:
         assertEqual(7, maxOfTwo(3, 7));
         assertEqual(9, maxOfTwo(9, 2));
         ```
+    dart:
+      prompt: |
+        `int maxOfTwo(int a, int b)` soll die größere der beiden Zahlen zurückgeben. Schreib Tests, die jede falsche Fassung entlarven; die Prüfung hat drei. Denk daran, in welcher Reihenfolge die Zahlen kommen können.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(7, maxOfTwo(3, 7));
+      check:
+        type: tests
+        language: dart
+        function: maxOfTwo
+        correct: |
+          int maxOfTwo(int a, int b) {
+            return a > b ? a : b;
+          }
+        mutants:
+          - code: "int maxOfTwo(int a, int b) {\n  return a;\n}\n"
+            say: "Eine Fassung, die immer die erste Zahl zurückgibt, besteht deine Tests. Wo steht die größere in deinen Tests?"
+          - code: "int maxOfTwo(int a, int b) {\n  return a < b ? a : b;\n}\n"
+            say: "Eine Fassung, die die kleinere zurückgibt, besteht deine Tests."
+          - code: "int maxOfTwo(int a, int b) {\n  return b;\n}\n"
+            say: "Eine Fassung, die immer die zweite Zahl zurückgibt, besteht deine Tests. Steht die größere auch einmal vorn?"
+      hint: "Eine Fassung gibt immer die erste Zahl zurück, eine immer die zweite. Wie viele Tests brauchst du, um beide zu erwischen?"
+      solution: |
+        ```dart
+        assertEqual(7, maxOfTwo(3, 7));
+        assertEqual(9, maxOfTwo(9, 2));
+        ```
+    java:
+      prompt: |
+        `int maxOfTwo(int a, int b)` soll die größere der beiden Zahlen zurückgeben. Schreib Tests, die jede falsche Fassung entlarven; die Prüfung hat drei. Denk daran, in welcher Reihenfolge die Zahlen kommen können.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(7, maxOfTwo(3, 7));
+      check:
+        type: tests
+        language: java
+        function: maxOfTwo
+        correct: |
+          int maxOfTwo(int a, int b) {
+              return a > b ? a : b;
+          }
+        mutants:
+          - code: "int maxOfTwo(int a, int b) {\n    return a;\n}\n"
+            say: "Eine Fassung, die immer die erste Zahl zurückgibt, besteht deine Tests. Wo steht die größere in deinen Tests?"
+          - code: "int maxOfTwo(int a, int b) {\n    return a < b ? a : b;\n}\n"
+            say: "Eine Fassung, die die kleinere zurückgibt, besteht deine Tests."
+          - code: "int maxOfTwo(int a, int b) {\n    return b;\n}\n"
+            say: "Eine Fassung, die immer die zweite Zahl zurückgibt, besteht deine Tests. Steht die größere auch einmal vorn?"
+      hint: "Eine Fassung gibt immer die erste Zahl zurück, eine immer die zweite. Wie viele Tests brauchst du, um beide zu erwischen?"
+      solution: |
+        ```java
+        assertEqual(7, maxOfTwo(3, 7));
+        assertEqual(9, maxOfTwo(9, 2));
+        ```
+
   - id: test-absolute
     title: "Tests für den Betrag"
     level: 1
@@ -334,6 +454,61 @@ tasks:
         assertEqual(5, absolute(-5));
         assertEqual(8, absolute(8));
         ```
+    dart:
+      prompt: |
+        `int absolute(int n)` soll den Betrag von `n` zurückgeben: die Zahl ohne ihr Minus, `absolute(-5)` ergibt `5`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(5, absolute(-5));
+      check:
+        type: tests
+        language: dart
+        function: absolute
+        correct: |
+          int absolute(int n) {
+            return n < 0 ? -n : n;
+          }
+        mutants:
+          - code: "int absolute(int n) {\n  return n;\n}\n"
+            say: "Eine Fassung, die jede Zahl so lässt, wie sie ist, besteht deine Tests. Prüf eine negative Zahl."
+          - code: "int absolute(int n) {\n  return -n;\n}\n"
+            say: "Eine Fassung, die jede Zahl umdreht, besteht deine Tests. Prüf auch eine positive Zahl."
+          - code: "int absolute(int n) {\n  return n < 0 ? -n : 1;\n}\n"
+            say: "Eine Fassung, die bei positiven Zahlen immer 1 zurückgibt, besteht deine Tests. Nimm eine positive Zahl, die nicht 1 ist."
+      hint: "Welche Arten von Zahlen gibt es für den Betrag? Negative, positive und die 0."
+      solution: |
+        ```dart
+        assertEqual(5, absolute(-5));
+        assertEqual(8, absolute(8));
+        ```
+    java:
+      prompt: |
+        `int absolute(int n)` soll den Betrag von `n` zurückgeben: die Zahl ohne ihr Minus, `absolute(-5)` ergibt `5`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(5, absolute(-5));
+      check:
+        type: tests
+        language: java
+        function: absolute
+        correct: |
+          int absolute(int n) {
+              return n < 0 ? -n : n;
+          }
+        mutants:
+          - code: "int absolute(int n) {\n    return n;\n}\n"
+            say: "Eine Fassung, die jede Zahl so lässt, wie sie ist, besteht deine Tests. Prüf eine negative Zahl."
+          - code: "int absolute(int n) {\n    return -n;\n}\n"
+            say: "Eine Fassung, die jede Zahl umdreht, besteht deine Tests. Prüf auch eine positive Zahl."
+          - code: "int absolute(int n) {\n    return n < 0 ? -n : 1;\n}\n"
+            say: "Eine Fassung, die bei positiven Zahlen immer 1 zurückgibt, besteht deine Tests. Nimm eine positive Zahl, die nicht 1 ist."
+      hint: "Welche Arten von Zahlen gibt es für den Betrag? Negative, positive und die 0."
+      solution: |
+        ```java
+        assertEqual(5, absolute(-5));
+        assertEqual(8, absolute(8));
+        ```
+
   - id: test-leap-year
     title: "Tests für Schaltjahre"
     level: 2
@@ -446,6 +621,65 @@ tasks:
         assertEqual(true, leapYear(2000));
         assertEqual(false, leapYear(2023));
         ```
+    dart:
+      prompt: |
+        `bool leapYear(int year)` soll sagen, ob ein Jahr ein Schaltjahr ist: Durch 4 teilbare Jahre sind es, außer die durch 100 teilbaren, außer wieder die durch 400 teilbaren. 2024 ist eins, 1900 nicht, 2000 schon. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(false, leapYear(2023));
+      check:
+        type: tests
+        language: dart
+        function: leapYear
+        correct: |
+          bool leapYear(int year) {
+            return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+          }
+        mutants:
+          - code: "bool leapYear(int year) {\n  return year % 4 == 0;\n}\n"
+            say: "Eine Fassung, die nur auf 4 schaut, besteht deine Tests. Was ist mit einem Jahr wie 1900?"
+          - code: "bool leapYear(int year) {\n  return year % 4 == 0 && year % 100 != 0;\n}\n"
+            say: "Eine Fassung, die die Regel für 400 vergisst, besteht deine Tests. Was ist mit 2000?"
+          - code: "bool leapYear(int year) {\n  return year % 400 == 0;\n}\n"
+            say: "Eine Fassung, die nur durch 400 teilbare Jahre kennt, besteht deine Tests. Ist 2024 bei dir dabei?"
+      hint: "Die Regel hat drei Teile. Für jeden Teil ein Jahr, an dem man sieht, ob er beachtet wird: eins durch 4, eins durch 100, eins durch 400."
+      solution: |
+        ```dart
+        assertEqual(true, leapYear(2024));
+        assertEqual(false, leapYear(1900));
+        assertEqual(true, leapYear(2000));
+        assertEqual(false, leapYear(2023));
+        ```
+    java:
+      prompt: |
+        `boolean leapYear(int year)` soll sagen, ob ein Jahr ein Schaltjahr ist: Durch 4 teilbare Jahre sind es, außer die durch 100 teilbaren, außer wieder die durch 400 teilbaren. 2024 ist eins, 1900 nicht, 2000 schon. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(false, leapYear(2023));
+      check:
+        type: tests
+        language: java
+        function: leapYear
+        correct: |
+          boolean leapYear(int year) {
+              return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+          }
+        mutants:
+          - code: "boolean leapYear(int year) {\n    return year % 4 == 0;\n}\n"
+            say: "Eine Fassung, die nur auf 4 schaut, besteht deine Tests. Was ist mit einem Jahr wie 1900?"
+          - code: "boolean leapYear(int year) {\n    return year % 4 == 0 && year % 100 != 0;\n}\n"
+            say: "Eine Fassung, die die Regel für 400 vergisst, besteht deine Tests. Was ist mit 2000?"
+          - code: "boolean leapYear(int year) {\n    return year % 400 == 0;\n}\n"
+            say: "Eine Fassung, die nur durch 400 teilbare Jahre kennt, besteht deine Tests. Ist 2024 bei dir dabei?"
+      hint: "Die Regel hat drei Teile. Für jeden Teil ein Jahr, an dem man sieht, ob er beachtet wird: eins durch 4, eins durch 100, eins durch 400."
+      solution: |
+        ```java
+        assertEqual(true, leapYear(2024));
+        assertEqual(false, leapYear(1900));
+        assertEqual(true, leapYear(2000));
+        assertEqual(false, leapYear(2023));
+        ```
+
   - id: test-slug
     title: "Tests für die Adresse"
     level: 2
@@ -558,6 +792,65 @@ tasks:
         assertEqual('hello-world', slug('Hello World!'));
         assertEqual('zwei-woerter', slug('zwei  woerter'));
         ```
+    dart:
+      prompt: |
+        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('hello', slug('hello'));
+      check:
+        type: tests
+        language: dart
+        function: slug
+        correct: |
+          String slug(String text) {
+            return text.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim().split(' ').where((w) => w.isNotEmpty).join('-');
+          }
+        mutants:
+          - code: "String slug(String text) {\n  return text.replaceAll(RegExp(r'[^A-Za-z0-9]+'), ' ').trim().split(' ').where((w) => w.isNotEmpty).join('-');\n}\n"
+            say: "Eine Fassung, die Großbuchstaben stehen lässt, besteht deine Tests."
+          - code: "String slug(String text) {\n  return text.toLowerCase().trim().split(' ').where((w) => w.isNotEmpty).join('-');\n}\n"
+            say: "Eine Fassung, die Satzzeichen wie `!` stehen lässt, besteht deine Tests."
+          - code: "String slug(String text) {\n  return text.toLowerCase().replaceAll(RegExp(r'[^a-z0-9 ]'), '').replaceAll(' ', '-');\n}\n"
+            say: "Eine Fassung, die aus zwei Leerzeichen zwei Striche macht, besteht deine Tests."
+      hint: "Jede falsche Fassung vergisst etwas anderes: groß und klein, Satzzeichen, mehrere Leerzeichen. Ein Titel, in dem alles vorkommt, kann mehrere auf einmal erwischen."
+      solution: |
+        ```dart
+        assertEqual('hello-world', slug('Hello World!'));
+        assertEqual('zwei-woerter', slug('zwei  woerter'));
+        ```
+    java:
+      prompt: |
+        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug("Hello World!")` ergibt `"hello-world"`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual("hello", slug("hello"));
+      check:
+        type: tests
+        language: java
+        function: slug
+        correct: |
+          String slug(String text) {
+              List<String> words = new ArrayList<>();
+              for (String w : text.toLowerCase().replaceAll("[^a-z0-9]+", " ").trim().split(" ")) {
+                  if (!w.isEmpty()) words.add(w);
+              }
+              return String.join("-", words);
+          }
+        mutants:
+          - code: "String slug(String text) {\n    List<String> words = new ArrayList<>();\n    for (String w : text.replaceAll(\"[^A-Za-z0-9]+\", \" \").trim().split(\" \")) {\n        if (!w.isEmpty()) words.add(w);\n    }\n    return String.join(\"-\", words);\n}\n"
+            say: "Eine Fassung, die Großbuchstaben stehen lässt, besteht deine Tests."
+          - code: "String slug(String text) {\n    List<String> words = new ArrayList<>();\n    for (String w : text.toLowerCase().trim().split(\" \")) {\n        if (!w.isEmpty()) words.add(w);\n    }\n    return String.join(\"-\", words);\n}\n"
+            say: "Eine Fassung, die Satzzeichen wie `!` stehen lässt, besteht deine Tests."
+          - code: "String slug(String text) {\n    return text.toLowerCase().replaceAll(\"[^a-z0-9 ]\", \"\").replace(\" \", \"-\");\n}\n"
+            say: "Eine Fassung, die aus zwei Leerzeichen zwei Striche macht, besteht deine Tests."
+      hint: "Jede falsche Fassung vergisst etwas anderes: groß und klein, Satzzeichen, mehrere Leerzeichen. Ein Titel, in dem alles vorkommt, kann mehrere auf einmal erwischen."
+      solution: |
+        ```java
+        assertEqual("hello-world", slug("Hello World!"));
+        assertEqual("zwei-woerter", slug("zwei  woerter"));
+        ```
+
   - id: test-fizzbuzz
     title: "Tests für FizzBuzz"
     level: 2
@@ -719,6 +1012,69 @@ tasks:
         assertEqual('Fizz', fizzbuzz(9));
         assertEqual('7', fizzbuzz(7));
         ```
+    dart:
+      prompt: |
+        `String fizzbuzz(int n)` soll für FizzBuzz zurückgeben, was man bei `n` sagt, als Text: `'Fizz'` bei durch 3 teilbaren, `'Buzz'` bei durch 5 teilbaren, `'FizzBuzz'` bei durch beide teilbaren, sonst die Zahl als Text. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('FizzBuzz', fizzbuzz(15));
+      check:
+        type: tests
+        language: dart
+        function: fizzbuzz
+        correct: |
+          String fizzbuzz(int n) {
+            if (n % 15 == 0) return 'FizzBuzz';
+            if (n % 3 == 0) return 'Fizz';
+            if (n % 5 == 0) return 'Buzz';
+            return '$n';
+          }
+        mutants:
+          - code: "String fizzbuzz(int n) {\n  if (n % 3 == 0) return 'Fizz';\n  if (n % 5 == 0) return 'Buzz';\n  if (n % 15 == 0) return 'FizzBuzz';\n  return '$n';\n}\n"
+            say: "Eine Fassung, die bei 15 nur `'Fizz'` sagt, besteht deine Tests."
+          - code: "String fizzbuzz(int n) {\n  if (n % 15 == 0) return 'FizzBuzz';\n  if (n % 3 == 0) return 'Fizz';\n  if (n % 5 == 0) return 'Buzz';\n  return '';\n}\n"
+            say: "Eine Fassung, die bei allen anderen Zahlen einen leeren Text zurückgibt, besteht deine Tests."
+          - code: "String fizzbuzz(int n) {\n  if (n % 15 == 0) return 'FizzBuzz';\n  if (n % 3 == 0) return 'Buzz';\n  if (n % 5 == 0) return 'Fizz';\n  return '$n';\n}\n"
+            say: "Eine Fassung, die »Fizz« und »Buzz« vertauscht, besteht deine Tests."
+      hint: "Vier Arten von Zahlen, vier Antworten. Welche davon prüfst du schon?"
+      solution: |
+        ```dart
+        assertEqual('FizzBuzz', fizzbuzz(15));
+        assertEqual('Fizz', fizzbuzz(9));
+        assertEqual('7', fizzbuzz(7));
+        ```
+    java:
+      prompt: |
+        `String fizzbuzz(int n)` soll für FizzBuzz zurückgeben, was man bei `n` sagt, als Text: `"Fizz"` bei durch 3 teilbaren, `"Buzz"` bei durch 5 teilbaren, `"FizzBuzz"` bei durch beide teilbaren, sonst die Zahl als Text. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual("FizzBuzz", fizzbuzz(15));
+      check:
+        type: tests
+        language: java
+        function: fizzbuzz
+        correct: |
+          String fizzbuzz(int n) {
+              if (n % 15 == 0) return "FizzBuzz";
+              if (n % 3 == 0) return "Fizz";
+              if (n % 5 == 0) return "Buzz";
+              return String.valueOf(n);
+          }
+        mutants:
+          - code: "String fizzbuzz(int n) {\n    if (n % 3 == 0) return \"Fizz\";\n    if (n % 5 == 0) return \"Buzz\";\n    if (n % 15 == 0) return \"FizzBuzz\";\n    return String.valueOf(n);\n}\n"
+            say: "Eine Fassung, die bei 15 nur `\"Fizz\"` sagt, besteht deine Tests."
+          - code: "String fizzbuzz(int n) {\n    if (n % 15 == 0) return \"FizzBuzz\";\n    if (n % 3 == 0) return \"Fizz\";\n    if (n % 5 == 0) return \"Buzz\";\n    return \"\";\n}\n"
+            say: "Eine Fassung, die bei allen anderen Zahlen einen leeren Text zurückgibt, besteht deine Tests."
+          - code: "String fizzbuzz(int n) {\n    if (n % 15 == 0) return \"FizzBuzz\";\n    if (n % 3 == 0) return \"Buzz\";\n    if (n % 5 == 0) return \"Fizz\";\n    return String.valueOf(n);\n}\n"
+            say: "Eine Fassung, die »Fizz« und »Buzz« vertauscht, besteht deine Tests."
+      hint: "Vier Arten von Zahlen, vier Antworten. Welche davon prüfst du schon?"
+      solution: |
+        ```java
+        assertEqual("FizzBuzz", fizzbuzz(15));
+        assertEqual("Fizz", fizzbuzz(9));
+        assertEqual("7", fizzbuzz(7));
+        ```
+
   - id: test-binary-search
     title: "Tests für die binäre Suche"
     level: 3
@@ -927,6 +1283,87 @@ tasks:
         assertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));
         assertEqual(null, binarySearch([1, 3, 5], 4));
         ```
+    dart:
+      prompt: |
+        `int? binarySearch(List<int> numbers, int wanted)` soll in einer aufsteigend sortierten Liste verschiedener Zahlen den Index von `wanted` zurückgeben, und `null`, wenn die Zahl nicht darin steht. Schreib Tests, die jede der drei falschen Fassungen entlarven. Die Fehler stecken in den Rändern.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));
+      check:
+        type: tests
+        language: dart
+        function: binarySearch
+        correct: |
+          int? binarySearch(List<int> numbers, int wanted) {
+            var low = 0;
+            var high = numbers.length - 1;
+            while (low <= high) {
+              final middle = (low + high) ~/ 2;
+              if (numbers[middle] == wanted) return middle;
+              if (numbers[middle] < wanted) {
+                low = middle + 1;
+              } else {
+                high = middle - 1;
+              }
+            }
+            return null;
+          }
+        mutants:
+          - code: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low < high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) return middle;\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+            say: "Eine Fassung, die aufhört, wenn noch ein Feld übrig ist, besteht deine Tests. Such in einer Liste mit nur einer Zahl, oder ganz am Rand."
+          - code: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 2;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) return middle;\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+            say: "Eine Fassung, die die letzte Zahl nie ansieht, besteht deine Tests. Such die letzte."
+          - code: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) return middle;\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return 0;\n}\n"
+            say: "Eine Fassung, die bei einer fehlenden Zahl 0 statt `null` zurückgibt, besteht deine Tests. Such eine Zahl, die nicht darin steht."
+      hint: "Fehler in einer Suche stecken an den Rändern: die erste Zahl, die letzte, eine Liste mit nur einer Zahl, eine Zahl, die fehlt."
+      solution: |
+        ```dart
+        assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));
+        assertEqual(0, binarySearch([4], 4));
+        assertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));
+        assertEqual(null, binarySearch([1, 3, 5], 4));
+        ```
+    java:
+      prompt: |
+        `Integer binarySearch(List<Integer> numbers, int wanted)` soll in einer aufsteigend sortierten Liste verschiedener Zahlen den Index von `wanted` zurückgeben, und `null`, wenn die Zahl nicht darin steht. Schreib Tests, die jede der drei falschen Fassungen entlarven. Die Fehler stecken in den Rändern.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(2, binarySearch(List.of(1, 3, 5, 7, 9), 5));
+      check:
+        type: tests
+        language: java
+        function: binarySearch
+        correct: |
+          Integer binarySearch(List<Integer> numbers, int wanted) {
+              int low = 0;
+              int high = numbers.size() - 1;
+              while (low <= high) {
+                  int middle = (low + high) / 2;
+                  if (numbers.get(middle) == wanted) return middle;
+                  if (numbers.get(middle) < wanted) {
+                      low = middle + 1;
+                  } else {
+                      high = middle - 1;
+                  }
+              }
+              return null;
+          }
+        mutants:
+          - code: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low < high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) return middle;\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n"
+            say: "Eine Fassung, die aufhört, wenn noch ein Feld übrig ist, besteht deine Tests. Such in einer Liste mit nur einer Zahl, oder ganz am Rand."
+          - code: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 2;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) return middle;\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n"
+            say: "Eine Fassung, die die letzte Zahl nie ansieht, besteht deine Tests. Such die letzte."
+          - code: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) return middle;\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return 0;\n}\n"
+            say: "Eine Fassung, die bei einer fehlenden Zahl 0 statt `null` zurückgibt, besteht deine Tests. Such eine Zahl, die nicht darin steht."
+      hint: "Fehler in einer Suche stecken an den Rändern: die erste Zahl, die letzte, eine Liste mit nur einer Zahl, eine Zahl, die fehlt."
+      solution: |
+        ```java
+        assertEqual(2, binarySearch(List.of(1, 3, 5, 7, 9), 5));
+        assertEqual(0, binarySearch(List.of(4), 4));
+        assertEqual(4, binarySearch(List.of(1, 3, 5, 7, 9), 9));
+        assertEqual(null, binarySearch(List.of(1, 3, 5), 4));
+        ```
+
   - id: test-merge
     title: "Tests fürs Mischen"
     level: 3
@@ -1087,6 +1524,83 @@ tasks:
         assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));
         assertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));
         ```
+    dart:
+      prompt: |
+        `List<int> mergeSorted(List<int> a, List<int> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual([1, 2], mergeSorted([1], [2]));
+      check:
+        type: tests
+        language: dart
+        function: mergeSorted
+        correct: |
+          List<int> mergeSorted(List<int> a, List<int> b) {
+            final result = <int>[];
+            var i = 0;
+            var j = 0;
+            while (i < a.length && j < b.length) {
+              if (a[i] <= b[j]) {
+                result.add(a[i++]);
+              } else {
+                result.add(b[j++]);
+              }
+            }
+            return [...result, ...a.sublist(i), ...b.sublist(j)];
+          }
+        mutants:
+          - code: "List<int> mergeSorted(List<int> a, List<int> b) {\n  final result = <int>[];\n  var i = 0;\n  var j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.add(a[i++]);\n    } else {\n      result.add(b[j++]);\n    }\n  }\n  return result;\n}\n"
+            say: "Eine Fassung, die den Rest der längeren Liste vergisst, besteht deine Tests. Nimm zwei Listen, von denen eine früher zu Ende ist."
+          - code: "List<int> mergeSorted(List<int> a, List<int> b) {\n  return [...a, ...b];\n}\n"
+            say: "Eine Fassung, die die Listen nur hintereinanderhängt, besteht deine Tests. Nimm Listen, deren Zahlen sich abwechseln."
+          - code: "List<int> mergeSorted(List<int> a, List<int> b) {\n  return {...a, ...b}.toList()..sort();\n}\n"
+            say: "Eine Fassung, die doppelte Zahlen weglässt, besteht deine Tests. Nimm eine Zahl, die in beiden Listen steht."
+      hint: "Jede falsche Fassung scheitert an einer anderen Art von Listen: verschieden lang, ineinander verschränkt, mit einer Zahl in beiden. Ein Test mit allem zugleich erwischt mehrere."
+      solution: |
+        ```dart
+        assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));
+        assertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));
+        ```
+    java:
+      prompt: |
+        `List<Integer> mergeSorted(List<Integer> a, List<Integer> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted(List.of(1, 4), List.of(2, 3))` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(List.of(1, 2), mergeSorted(List.of(1), List.of(2)));
+      check:
+        type: tests
+        language: java
+        function: mergeSorted
+        correct: |
+          List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {
+              List<Integer> result = new ArrayList<>();
+              int i = 0;
+              int j = 0;
+              while (i < a.size() && j < b.size()) {
+                  if (a.get(i) <= b.get(j)) {
+                      result.add(a.get(i++));
+                  } else {
+                      result.add(b.get(j++));
+                  }
+              }
+              result.addAll(a.subList(i, a.size()));
+              result.addAll(b.subList(j, b.size()));
+              return result;
+          }
+        mutants:
+          - code: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>();\n    int i = 0;\n    int j = 0;\n    while (i < a.size() && j < b.size()) {\n        if (a.get(i) <= b.get(j)) {\n            result.add(a.get(i++));\n        } else {\n            result.add(b.get(j++));\n        }\n    }\n    return result;\n}\n"
+            say: "Eine Fassung, die den Rest der längeren Liste vergisst, besteht deine Tests. Nimm zwei Listen, von denen eine früher zu Ende ist."
+          - code: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>(a);\n    result.addAll(b);\n    return result;\n}\n"
+            say: "Eine Fassung, die die Listen nur hintereinanderhängt, besteht deine Tests. Nimm Listen, deren Zahlen sich abwechseln."
+          - code: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    TreeSet<Integer> numbers = new TreeSet<>(a);\n    numbers.addAll(b);\n    return new ArrayList<>(numbers);\n}\n"
+            say: "Eine Fassung, die doppelte Zahlen weglässt, besteht deine Tests. Nimm eine Zahl, die in beiden Listen steht."
+      hint: "Jede falsche Fassung scheitert an einer anderen Art von Listen: verschieden lang, ineinander verschränkt, mit einer Zahl in beiden. Ein Test mit allem zugleich erwischt mehrere."
+      solution: |
+        ```java
+        assertEqual(List.of(1, 2, 3, 4), mergeSorted(List.of(1, 4), List.of(2, 3)));
+        assertEqual(List.of(1, 2, 2, 3, 9), mergeSorted(List.of(2, 9), List.of(1, 2, 3)));
+        ```
+
   - id: find-the-bug
     title: "Finde den Fehler"
     extra: true
@@ -1205,6 +1719,77 @@ tasks:
         ```javascript
         assertEqual(5, maxOfThree(5, 5, 1));
         ```
+    dart:
+      prompt: |
+        Diese Fassung von `int maxOfThree(int a, int b, int c)` soll die größte der drei Zahlen zurückgeben, hat aber einen Fehler. Finde ihn, indem du einen Test schreibst, an dem sie scheitert und den eine richtige Fassung besteht.
+
+        ```dart
+        int maxOfThree(int a, int b, int c) {
+          if (a > b && a > c) {
+            return a;
+          } else if (b > a && b > c) {
+            return b;
+          } else {
+            return c;
+          }
+        }
+        ```
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(9, maxOfThree(9, 2, 1));
+      check:
+        type: tests
+        language: dart
+        function: maxOfThree
+        correct: |
+          int maxOfThree(int a, int b, int c) {
+            if (a >= b && a >= c) return a;
+            if (b >= c) return b;
+            return c;
+          }
+        mutants:
+          - code: "int maxOfThree(int a, int b, int c) {\n  if (a > b && a > c) {\n    return a;\n  } else if (b > a && b > c) {\n    return b;\n  } else {\n    return c;\n  }\n}\n"
+            say: "Die Fassung oben besteht deine Tests noch. Wann gilt keine der beiden Bedingungen, obwohl `c` nicht die größte ist?"
+      hint: "Bei verschiedenen Zahlen stimmt sie. Was ist, wenn zwei Zahlen gleich sind?"
+      solution: |
+        ```dart
+        assertEqual(5, maxOfThree(5, 5, 1));
+        ```
+    java:
+      prompt: |
+        Diese Fassung von `int maxOfThree(int a, int b, int c)` soll die größte der drei Zahlen zurückgeben, hat aber einen Fehler. Finde ihn, indem du einen Test schreibst, an dem sie scheitert und den eine richtige Fassung besteht.
+
+        ```java
+        int maxOfThree(int a, int b, int c) {
+            if (a > b && a > c) {
+                return a;
+            } else if (b > a && b > c) {
+                return b;
+            } else {
+                return c;
+            }
+        }
+        ```
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual(9, maxOfThree(9, 2, 1));
+      check:
+        type: tests
+        language: java
+        function: maxOfThree
+        correct: |
+          int maxOfThree(int a, int b, int c) {
+              return Math.max(a, Math.max(b, c));
+          }
+        mutants:
+          - code: "int maxOfThree(int a, int b, int c) {\n    if (a > b && a > c) {\n        return a;\n    } else if (b > a && b > c) {\n        return b;\n    } else {\n        return c;\n    }\n}\n"
+            say: "Die Fassung oben besteht deine Tests noch. Wann gilt keine der beiden Bedingungen, obwohl `c` nicht die größte ist?"
+      hint: "Bei verschiedenen Zahlen stimmt sie. Was ist, wenn zwei Zahlen gleich sind?"
+      solution: |
+        ```java
+        assertEqual(5, maxOfThree(5, 5, 1));
+        ```
+
   - id: test-caesar
     title: "Tests für Caesar"
     extra: true
@@ -1376,4 +1961,80 @@ tasks:
         assertEqual('abc', caesar('xyz', 3));
         assertEqual('Def!', caesar('Abc!', 3));
         assertEqual('zab', caesar('abc', -1));
+        ```
+    dart:
+      prompt: |
+        `String caesar(String text, int shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual('def', caesar('abc', 3));
+      check:
+        type: tests
+        language: dart
+        function: caesar
+        correct: |
+          String caesar(String text, int shift) {
+            var out = '';
+            for (final code in text.codeUnits) {
+              if (code >= 97 && code <= 122) {
+                out += String.fromCharCode((code - 97 + shift) % 26 + 97);
+              } else if (code >= 65 && code <= 90) {
+                out += String.fromCharCode((code - 65 + shift) % 26 + 65);
+              } else {
+                out += String.fromCharCode(code);
+              }
+            }
+            return out;
+          }
+        mutants:
+          - code: "String caesar(String text, int shift) {\n  var out = '';\n  for (final code in text.codeUnits) {\n    if ((code >= 97 && code <= 122) || (code >= 65 && code <= 90)) {\n      out += String.fromCharCode(code + shift);\n    } else {\n      out += String.fromCharCode(code);\n    }\n  }\n  return out;\n}\n"
+            say: "Eine Fassung, die nach `z` nicht wieder bei `a` anfängt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n  var out = '';\n  for (final code in text.codeUnits) {\n    if (code >= 97 && code <= 122) {\n      out += String.fromCharCode((code - 97 + shift) % 26 + 97);\n    } else {\n      out += String.fromCharCode(code);\n    }\n  }\n  return out;\n}\n"
+            say: "Eine Fassung, die Großbuchstaben nicht verschiebt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n  var out = '';\n  for (final code in text.codeUnits) {\n    if (code >= 97 && code <= 122) {\n      out += String.fromCharCode((code - 97 + shift.abs()) % 26 + 97);\n    } else if (code >= 65 && code <= 90) {\n      out += String.fromCharCode((code - 65 + shift.abs()) % 26 + 65);\n    } else {\n      out += String.fromCharCode(code);\n    }\n  }\n  return out;\n}\n"
+            say: "Eine Fassung, die auch bei einem negativen `shift` vorwärts rückt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n  var out = '';\n  for (final code in text.codeUnits) {\n    if (code >= 97 && code <= 122) {\n      out += String.fromCharCode((code - 97 + shift) % 26 + 97);\n    } else if (code >= 65 && code <= 90) {\n      out += String.fromCharCode((code - 65 + shift) % 26 + 65);\n    }\n  }\n  return out;\n}\n"
+            say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
+      hint: "Vier Fehler, vier Fälle, die eine Verschlüsselung beherrschen muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      solution: |
+        ```dart
+        assertEqual('abc', caesar('xyz', 3));
+        assertEqual('Def!', caesar('Abc!', 3));
+        assertEqual('zab', caesar('abc', -1));
+        ```
+    java:
+      prompt: |
+        `String caesar(String text, int shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+      starter: |
+        // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
+        assertEqual("def", caesar("abc", 3));
+      check:
+        type: tests
+        language: java
+        function: caesar
+        correct: |
+          String caesar(String text, int shift) {
+              String out = "";
+              for (char c : text.toCharArray()) {
+                  if (c >= 'a' && c <= 'z') out += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');
+                  else if (c >= 'A' && c <= 'Z') out += (char) (((c - 'A' + shift) % 26 + 26) % 26 + 'A');
+                  else out += c;
+              }
+              return out;
+          }
+        mutants:
+          - code: "String caesar(String text, int shift) {\n    String out = \"\";\n    for (char c : text.toCharArray()) {\n        if (Character.isLetter(c)) out += (char) (c + shift);\n        else out += c;\n    }\n    return out;\n}\n"
+            say: "Eine Fassung, die nach `z` nicht wieder bei `a` anfängt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n    String out = \"\";\n    for (char c : text.toCharArray()) {\n        if (c >= 'a' && c <= 'z') out += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');\n        else out += c;\n    }\n    return out;\n}\n"
+            say: "Eine Fassung, die Großbuchstaben nicht verschiebt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n    String out = \"\";\n    for (char c : text.toCharArray()) {\n        if (c >= 'a' && c <= 'z') out += (char) ((c - 'a' + Math.abs(shift)) % 26 + 'a');\n        else if (c >= 'A' && c <= 'Z') out += (char) ((c - 'A' + Math.abs(shift)) % 26 + 'A');\n        else out += c;\n    }\n    return out;\n}\n"
+            say: "Eine Fassung, die auch bei einem negativen `shift` vorwärts rückt, besteht deine Tests."
+          - code: "String caesar(String text, int shift) {\n    String out = \"\";\n    for (char c : text.toCharArray()) {\n        if (c >= 'a' && c <= 'z') out += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');\n        else if (c >= 'A' && c <= 'Z') out += (char) (((c - 'A' + shift) % 26 + 26) % 26 + 'A');\n    }\n    return out;\n}\n"
+            say: "Eine Fassung, die Leerzeichen und Satzzeichen weglässt, besteht deine Tests."
+      hint: "Vier Fehler, vier Fälle, die eine Verschlüsselung beherrschen muss: über `z` hinaus, Großbuchstaben, rückwärts, alles andere stehen lassen."
+      solution: |
+        ```java
+        assertEqual("abc", caesar("xyz", 3));
+        assertEqual("Def!", caesar("Abc!", 3));
+        assertEqual("zab", caesar("abc", -1));
         ```

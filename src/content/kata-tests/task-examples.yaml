@@ -19,6 +19,18 @@ examples:
         - answer: "assertEqual(true, even(4));\nassertEqual(false, even(7));\nassertEqual(true, even(0));\nassertEqual(true, even(-4));\nassertEqual(true, even(100));\n"
       fail:
         - answer: "function even(n) {\n  return n % 2 === 0;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(true, even(4));\nassertEqual(false, even(7));\nassertEqual(true, even(0));\nassertEqual(true, even(-4));\nassertEqual(true, even(100));\n"
+      fail:
+        - answer: "bool even(int n) {\n  return n % 2 == 0;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(true, even(4));\nassertEqual(false, even(7));\nassertEqual(true, even(0));\nassertEqual(true, even(-4));\nassertEqual(true, even(100));\n"
+      fail:
+        - answer: "boolean even(int n) {\n    return n % 2 == 0;\n}\n"
+          say: "nicht die Funktion"
   test-max:
     pass:
       - answer: "assert_equal(7, max_of_two(3, 7))\nassert_equal(9, max_of_two(9, 2))\n"
@@ -34,6 +46,18 @@ examples:
         - answer: "assertEqual(7, maxOfTwo(3, 7));\nassertEqual(9, maxOfTwo(9, 2));\n"
       fail:
         - answer: "function maxOfTwo(a, b) {\n  return a > b ? a : b;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(7, maxOfTwo(3, 7));\nassertEqual(9, maxOfTwo(9, 2));\n"
+      fail:
+        - answer: "int maxOfTwo(int a, int b) {\n  return a > b ? a : b;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(7, maxOfTwo(3, 7));\nassertEqual(9, maxOfTwo(9, 2));\n"
+      fail:
+        - answer: "int maxOfTwo(int a, int b) {\n    return a > b ? a : b;\n}\n"
+          say: "nicht die Funktion"
   test-absolute:
     pass:
       - answer: "assert_equal(5, absolute(-5))\nassert_equal(8, absolute(8))\n"
@@ -49,6 +73,18 @@ examples:
         - answer: "assertEqual(5, absolute(-5));\nassertEqual(8, absolute(8));\n"
       fail:
         - answer: "function absolute(n) {\n  return n < 0 ? -n : n;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(5, absolute(-5));\nassertEqual(8, absolute(8));\n"
+      fail:
+        - answer: "int absolute(int n) {\n  return n < 0 ? -n : n;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(5, absolute(-5));\nassertEqual(8, absolute(8));\n"
+      fail:
+        - answer: "int absolute(int n) {\n    return n < 0 ? -n : n;\n}\n"
+          say: "nicht die Funktion"
   test-leap-year:
     pass:
       - answer: "assert_equal(true, leap_year(2024))\nassert_equal(false, leap_year(1900))\nassert_equal(true, leap_year(2000))\nassert_equal(false, leap_year(2023))\n"
@@ -64,6 +100,18 @@ examples:
         - answer: "assertEqual(true, leapYear(2024));\nassertEqual(false, leapYear(1900));\nassertEqual(true, leapYear(2000));\nassertEqual(false, leapYear(2023));\n"
       fail:
         - answer: "function leapYear(year) {\n  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(true, leapYear(2024));\nassertEqual(false, leapYear(1900));\nassertEqual(true, leapYear(2000));\nassertEqual(false, leapYear(2023));\n"
+      fail:
+        - answer: "bool leapYear(int year) {\n  return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(true, leapYear(2024));\nassertEqual(false, leapYear(1900));\nassertEqual(true, leapYear(2000));\nassertEqual(false, leapYear(2023));\n"
+      fail:
+        - answer: "boolean leapYear(int year) {\n    return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;\n}\n"
+          say: "nicht die Funktion"
   test-slug:
     pass:
       - answer: "assert_equal('hello-world', slug('Hello World!'))\nassert_equal('zwei-woerter', slug('zwei  woerter'))\n"
@@ -79,6 +127,18 @@ examples:
         - answer: "assertEqual('hello-world', slug('Hello World!'));\nassertEqual('zwei-woerter', slug('zwei  woerter'));\n"
       fail:
         - answer: "function slug(text) {\n  return text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter((w) => w).join('-');\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual('hello-world', slug('Hello World!'));\nassertEqual('zwei-woerter', slug('zwei  woerter'));\n"
+      fail:
+        - answer: "String slug(String text) {\n  return text.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim().split(' ').where((w) => w.isNotEmpty).join('-');\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(\"hello-world\", slug(\"Hello World!\"));\nassertEqual(\"zwei-woerter\", slug(\"zwei  woerter\"));\n"
+      fail:
+        - answer: "String slug(String text) {\n    List<String> words = new ArrayList<>();\n    for (String w : text.toLowerCase().replaceAll(\"[^a-z0-9]+\", \" \").trim().split(\" \")) {\n        if (!w.isEmpty()) words.add(w);\n    }\n    return String.join(\"-\", words);\n}\n"
+          say: "nicht die Funktion"
   test-fizzbuzz:
     pass:
       - answer: "assert_equal('FizzBuzz', fizzbuzz(15))\nassert_equal('Fizz', fizzbuzz(9))\nassert_equal('7', fizzbuzz(7))\n"
@@ -94,6 +154,18 @@ examples:
         - answer: "assertEqual('FizzBuzz', fizzbuzz(15));\nassertEqual('Fizz', fizzbuzz(9));\nassertEqual('7', fizzbuzz(7));\n"
       fail:
         - answer: "function fizzbuzz(n) {\n  if (n % 15 === 0) return 'FizzBuzz';\n  if (n % 3 === 0) return 'Fizz';\n  if (n % 5 === 0) return 'Buzz';\n  return String(n);\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual('FizzBuzz', fizzbuzz(15));\nassertEqual('Fizz', fizzbuzz(9));\nassertEqual('7', fizzbuzz(7));\n"
+      fail:
+        - answer: "String fizzbuzz(int n) {\n  if (n % 15 == 0) return 'FizzBuzz';\n  if (n % 3 == 0) return 'Fizz';\n  if (n % 5 == 0) return 'Buzz';\n  return '$n';\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(\"FizzBuzz\", fizzbuzz(15));\nassertEqual(\"Fizz\", fizzbuzz(9));\nassertEqual(\"7\", fizzbuzz(7));\n"
+      fail:
+        - answer: "String fizzbuzz(int n) {\n    if (n % 15 == 0) return \"FizzBuzz\";\n    if (n % 3 == 0) return \"Fizz\";\n    if (n % 5 == 0) return \"Buzz\";\n    return String.valueOf(n);\n}\n"
+          say: "nicht die Funktion"
   test-binary-search:
     pass:
       - answer: "assert_equal(2, binary_search([1, 3, 5, 7, 9], 5))\nassert_equal(0, binary_search([4], 4))\nassert_equal(4, binary_search([1, 3, 5, 7, 9], 9))\nassert_equal(nil, binary_search([1, 3, 5], 4))\n"
@@ -109,6 +181,18 @@ examples:
         - answer: "assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));\nassertEqual(0, binarySearch([4], 4));\nassertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));\nassertEqual(null, binarySearch([1, 3, 5], 4));\n"
       fail:
         - answer: "function binarySearch(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low <= high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) return middle;\n    if (numbers[middle] < wanted) low = middle + 1;\n    else high = middle - 1;\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(2, binarySearch([1, 3, 5, 7, 9], 5));\nassertEqual(0, binarySearch([4], 4));\nassertEqual(4, binarySearch([1, 3, 5, 7, 9], 9));\nassertEqual(null, binarySearch([1, 3, 5], 4));\n"
+      fail:
+        - answer: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) return middle;\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(2, binarySearch(List.of(1, 3, 5, 7, 9), 5));\nassertEqual(0, binarySearch(List.of(4), 4));\nassertEqual(4, binarySearch(List.of(1, 3, 5, 7, 9), 9));\nassertEqual(null, binarySearch(List.of(1, 3, 5), 4));\n"
+      fail:
+        - answer: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) return middle;\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n"
+          say: "nicht die Funktion"
   test-merge:
     pass:
       - answer: "assert_equal([1, 2, 3, 4], merge_sorted([1, 4], [2, 3]))\nassert_equal([1, 2, 2, 3, 9], merge_sorted([2, 9], [1, 2, 3]))\n"
@@ -124,6 +208,18 @@ examples:
         - answer: "assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));\nassertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));\n"
       fail:
         - answer: "function mergeSorted(a, b) {\n  const result = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) result.push(a[i++]);\n    else result.push(b[j++]);\n  }\n  return result.concat(a.slice(i), b.slice(j));\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual([1, 2, 3, 4], mergeSorted([1, 4], [2, 3]));\nassertEqual([1, 2, 2, 3, 9], mergeSorted([2, 9], [1, 2, 3]));\n"
+      fail:
+        - answer: "List<int> mergeSorted(List<int> a, List<int> b) {\n  final result = <int>[];\n  var i = 0;\n  var j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.add(a[i++]);\n    } else {\n      result.add(b[j++]);\n    }\n  }\n  return [...result, ...a.sublist(i), ...b.sublist(j)];\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(List.of(1, 2, 3, 4), mergeSorted(List.of(1, 4), List.of(2, 3)));\nassertEqual(List.of(1, 2, 2, 3, 9), mergeSorted(List.of(2, 9), List.of(1, 2, 3)));\n"
+      fail:
+        - answer: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>();\n    int i = 0;\n    int j = 0;\n    while (i < a.size() && j < b.size()) {\n        if (a.get(i) <= b.get(j)) {\n            result.add(a.get(i++));\n        } else {\n            result.add(b.get(j++));\n        }\n    }\n    result.addAll(a.subList(i, a.size()));\n    result.addAll(b.subList(j, b.size()));\n    return result;\n}\n"
+          say: "nicht die Funktion"
   find-the-bug:
     pass:
       - answer: "assert_equal(5, max_of_three(5, 5, 1))\n"
@@ -139,6 +235,18 @@ examples:
         - answer: "assertEqual(5, maxOfThree(5, 5, 1));\n"
       fail:
         - answer: "function maxOfThree(a, b, c) {\n  return Math.max(a, b, c);\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual(5, maxOfThree(5, 5, 1));\n"
+      fail:
+        - answer: "int maxOfThree(int a, int b, int c) {\n  if (a >= b && a >= c) return a;\n  if (b >= c) return b;\n  return c;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(5, maxOfThree(5, 5, 1));\n"
+      fail:
+        - answer: "int maxOfThree(int a, int b, int c) {\n    return Math.max(a, Math.max(b, c));\n}\n"
+          say: "nicht die Funktion"
   test-caesar:
     pass:
       - answer: "assert_equal('abc', caesar('xyz', 3))\nassert_equal('Def!', caesar('Abc!', 3))\nassert_equal('zab', caesar('abc', -1))\n"
@@ -154,3 +262,15 @@ examples:
         - answer: "assertEqual('abc', caesar('xyz', 3));\nassertEqual('Def!', caesar('Abc!', 3));\nassertEqual('zab', caesar('abc', -1));\n"
       fail:
         - answer: "function caesar(text, shift) {\n  let out = '';\n  for (const c of text) {\n    if (c >= 'a' && c <= 'z') out += String.fromCharCode(((c.charCodeAt(0) - 97 + shift) % 26 + 26) % 26 + 97);\n    else if (c >= 'A' && c <= 'Z') out += String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26 + 26) % 26 + 65);\n    else out += c;\n  }\n  return out;\n}\n"
+    dart:
+      pass:
+        - answer: "assertEqual('abc', caesar('xyz', 3));\nassertEqual('Def!', caesar('Abc!', 3));\nassertEqual('zab', caesar('abc', -1));\n"
+      fail:
+        - answer: "String caesar(String text, int shift) {\n  var out = '';\n  for (final code in text.codeUnits) {\n    if (code >= 97 && code <= 122) {\n      out += String.fromCharCode((code - 97 + shift) % 26 + 97);\n    } else if (code >= 65 && code <= 90) {\n      out += String.fromCharCode((code - 65 + shift) % 26 + 65);\n    } else {\n      out += String.fromCharCode(code);\n    }\n  }\n  return out;\n}\n"
+          say: "nicht die Funktion"
+    java:
+      pass:
+        - answer: "assertEqual(\"abc\", caesar(\"xyz\", 3));\nassertEqual(\"Def!\", caesar(\"Abc!\", 3));\nassertEqual(\"zab\", caesar(\"abc\", -1));\n"
+      fail:
+        - answer: "String caesar(String text, int shift) {\n    String out = \"\";\n    for (char c : text.toCharArray()) {\n        if (c >= 'a' && c <= 'z') out += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');\n        else if (c >= 'A' && c <= 'Z') out += (char) (((c - 'A' + shift) % 26 + 26) % 26 + 'A');\n        else out += c;\n    }\n    return out;\n}\n"
+          say: "nicht die Funktion"
