@@ -94,6 +94,65 @@ tasks:
           return n % 2 === 0;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `bool even(int n)`, die `true` zurückgibt, wenn eine Zahl gerade ist, sonst `false`: `even(4)` ergibt `true`, `even(7)` ergibt `false`.
+      starter: |
+        bool even(int n) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "even(4)"
+            expect: "true"
+          - call: "even(7)"
+            expect: "false"
+          - call: "even(0)"
+            expect: "true"
+          - call: "even(-2)"
+            expect: "true"
+          - call: "even(-3)"
+            expect: "false"
+      hint: "Eine gerade Zahl lässt bei der Division durch 2 keinen Rest. Den Rest liefert `%`. Verglichen wird in Dart mit `==`, und ein Vergleich ist selbst `true` oder `false`."
+      solution: |
+        ```dart
+        bool even(int n) {
+          return n % 2 == 0;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `boolean even(int n)`, die `true` zurückgibt, wenn eine Zahl gerade ist, sonst `false`: `even(4)` ergibt `true`, `even(7)` ergibt `false`.
+      starter: |
+        boolean even(int n) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "even(4)"
+            expect: "true"
+          - call: "even(7)"
+            expect: "false"
+          - call: "even(0)"
+            expect: "true"
+          - call: "even(-2)"
+            expect: "true"
+          - call: "even(-3)"
+            expect: "false"
+      feedback:
+        - when: { same_as: "boolean even(int n) {\n    return n % 2 != 1;\n}\n" }
+          say: "In Java ist `-3 % 2` nicht `1`, sondern `-1`: Der Rest hat das Vorzeichen der Zahl. Frag, ob der Rest 0 ist."
+      hint: "Eine gerade Zahl lässt bei der Division durch 2 keinen Rest. Den Rest liefert `%`. Verglichen wird in Java mit `==`, und ein Vergleich ist selbst `true` oder `false`."
+      solution: |
+        ```java
+        boolean even(int n) {
+            return n % 2 == 0;
+        }
+        ```
 
   - id: max-of-two
     title: "Die größere Zahl"
@@ -206,6 +265,82 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int maxOfTwo(int a, int b)`, die die größere der beiden Zahlen zurückgibt: `maxOfTwo(3, 7)` ergibt `7`. Ohne `max`: mit `if`.
+      starter: |
+        int maxOfTwo(int a, int b) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [max, .reduce, .sort]
+        random:
+          count: 4
+          call: "maxOfTwo(a, b)"
+          args: { a: "-1000..1000", b: "-1000..1000" }
+          reference: "a > b ? a : b"
+        cases:
+          - call: "maxOfTwo(3, 7)"
+            expect: "7"
+          - call: "maxOfTwo(7, 3)"
+            expect: "7"
+          - call: "maxOfTwo(-1, -5)"
+            expect: "-1"
+          - call: "maxOfTwo(4, 4)"
+            expect: "4"
+      feedback:
+        - when: { same_as: "int maxOfTwo(int a, int b) {\n  return a;\n}\n" }
+          say: "Gib nicht immer `a` zurück: Wenn `b` größer ist, ist `b` die Antwort. Dafür ist `if` da."
+      solution: |
+        ```dart
+        int maxOfTwo(int a, int b) {
+          if (a > b) {
+            return a;
+          } else {
+            return b;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int maxOfTwo(int a, int b)`, die die größere der beiden Zahlen zurückgibt: `maxOfTwo(3, 7)` ergibt `7`. Ohne `Math.max`: mit `if`.
+      starter: |
+        int maxOfTwo(int a, int b) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.max, Collections.max, .sort, .max]
+        random:
+          count: 4
+          call: "maxOfTwo(a, b)"
+          args: { a: "-1000..1000", b: "-1000..1000" }
+          reference: "a > b ? a : b"
+        cases:
+          - call: "maxOfTwo(3, 7)"
+            expect: "7"
+          - call: "maxOfTwo(7, 3)"
+            expect: "7"
+          - call: "maxOfTwo(-1, -5)"
+            expect: "-1"
+          - call: "maxOfTwo(4, 4)"
+            expect: "4"
+      feedback:
+        - when: { same_as: "int maxOfTwo(int a, int b) {\n    return a;\n}\n" }
+          say: "Gib nicht immer `a` zurück: Wenn `b` größer ist, ist `b` die Antwort. Dafür ist `if` da."
+      solution: |
+        ```java
+        int maxOfTwo(int a, int b) {
+            if (a > b) {
+                return a;
+            } else {
+                return b;
+            }
+        }
+        ```
 
   - id: absolute
     title: "Der Betrag"
@@ -294,6 +429,70 @@ tasks:
           return n < 0 ? -n : n;
         }
         ```
+    dart:
+      prompt: |
+        Der Betrag einer Zahl ist ihr Abstand von 0: Er ist nie negativ. Schreib eine Funktion `double absolute(double n)`: `absolute(-5)` ergibt `5`, `absolute(5)` ergibt `5`. Ohne `abs`.
+      starter: |
+        double absolute(double n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.abs]
+        cases:
+          - call: "absolute(-5)"
+            expect: "5"
+          - call: "absolute(5)"
+            expect: "5"
+          - call: "absolute(0)"
+            expect: "0"
+          - call: "absolute(-2.5)"
+            expect: "2.5"
+      feedback:
+        - when: { same_as: "double absolute(double n) {\n  return -n;\n}\n" }
+          say: "Eine positive Zahl bleibt, wie sie ist: Nur eine negative bekommt das Minus weg."
+      solution: |
+        ```dart
+        double absolute(double n) {
+          if (n < 0) {
+            return -n;
+          }
+          return n;
+        }
+        ```
+    java:
+      prompt: |
+        Der Betrag einer Zahl ist ihr Abstand von 0: Er ist nie negativ. Schreib eine Methode `double absolute(double n)`: `absolute(-5)` ergibt `5`, `absolute(5)` ergibt `5`. Ohne `Math.abs`.
+      starter: |
+        double absolute(double n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.abs]
+        cases:
+          - call: "absolute(-5)"
+            expect: "5"
+          - call: "absolute(5)"
+            expect: "5"
+          - call: "absolute(0)"
+            expect: "0"
+          - call: "absolute(-2.5)"
+            expect: "2.5"
+      feedback:
+        - when: { same_as: "double absolute(double n) {\n    return -n;\n}\n" }
+          say: "Eine positive Zahl bleibt, wie sie ist: Nur eine negative bekommt das Minus weg."
+      solution: |
+        ```java
+        double absolute(double n) {
+            if (n < 0) {
+                return -n;
+            }
+            return n;
+        }
+        ```
 
   - id: adult
     title: "Volljährig?"
@@ -378,6 +577,64 @@ tasks:
         ```javascript
         function adult(age) {
           return age >= 18;
+        }
+        ```
+    dart:
+      prompt: |
+        In Deutschland ist man mit 18 Jahren volljährig. Schreib eine Funktion `bool adult(int age)`, die `true` oder `false` zurückgibt: `adult(30)` ergibt `true`, `adult(12)` ergibt `false`.
+      starter: |
+        bool adult(int age) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "adult(30)"
+            expect: "true"
+          - call: "adult(12)"
+            expect: "false"
+          - call: "adult(17)"
+            expect: "false"
+          - call: "adult(18)"
+            expect: "true"
+            say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      feedback:
+        - when: { same_as: "bool adult(int age) {\n  return age > 18;\n}\n" }
+          say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      solution: |
+        ```dart
+        bool adult(int age) {
+          return age >= 18;
+        }
+        ```
+    java:
+      prompt: |
+        In Deutschland ist man mit 18 Jahren volljährig. Schreib eine Methode `boolean adult(int age)`, die `true` oder `false` zurückgibt: `adult(30)` ergibt `true`, `adult(12)` ergibt `false`.
+      starter: |
+        boolean adult(int age) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "adult(30)"
+            expect: "true"
+          - call: "adult(12)"
+            expect: "false"
+          - call: "adult(17)"
+            expect: "false"
+          - call: "adult(18)"
+            expect: "true"
+            say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      feedback:
+        - when: { same_as: "boolean adult(int age) {\n    return age > 18;\n}\n" }
+          say: "Mit 18 ist man volljährig: `>=` statt `>`."
+      solution: |
+        ```java
+        boolean adult(int age) {
+            return age >= 18;
         }
         ```
 
@@ -496,6 +753,86 @@ tasks:
         ```javascript
         function leapYear(year) {
           return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+        }
+        ```
+    dart:
+      prompt: |
+        Ein Jahr ist ein Schaltjahr, wenn es durch 4 teilbar ist, außer volle Jahrhunderte wie 1900. Davon sind wieder die ausgenommen, die durch 400 teilbar sind: 2000 war ein Schaltjahr. Schreib eine Funktion `bool leapYear(int year)`, die sagt, ob ein Jahr ein Schaltjahr ist.
+      starter: |
+        bool leapYear(int year) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "leapYear(2024)"
+            expect: "true"
+          - call: "leapYear(2023)"
+            expect: "false"
+          - call: "leapYear(1900)"
+            expect: "false"
+            say: "1900 war kein Schaltjahr: Volle Jahrhunderte sind keine Schaltjahre …"
+          - call: "leapYear(2000)"
+            expect: "true"
+            say: "… außer, sie sind durch 400 teilbar: 2000 war ein Schaltjahr."
+          - call: "leapYear(2100)"
+            expect: "false"
+          - call: "leapYear(1996)"
+            expect: "true"
+      feedback:
+        - when: { same_as: "bool leapYear(int year) {\n  return year % 4 == 0;\n}\n" }
+          say: "Durch 4 teilbar genügt nicht: 1900 war kein Schaltjahr. Volle Jahrhunderte (durch 100 teilbar) sind ausgenommen, außer durch 400 teilbare."
+        - when: { same_as: "bool leapYear(int year) {\n  return year % 4 == 0 && year % 100 != 0;\n}\n" }
+          say: "Fast: 2000 war doch ein Schaltjahr, weil es durch 400 teilbar ist."
+      hint:
+        - "Geh 1996, 1900 und 2000 von Hand durch: Welche Regel entscheidet jeweils?"
+        - "Prüf von der speziellsten Regel zur allgemeinsten: erst 400, dann 100, dann 4."
+        - "Mit `&&` und `||` geht es auch in einer Zeile: durch 4 teilbar und (nicht durch 100 teilbar oder durch 400 teilbar)."
+      solution: |
+        ```dart
+        bool leapYear(int year) {
+          return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
+        }
+        ```
+    java:
+      prompt: |
+        Ein Jahr ist ein Schaltjahr, wenn es durch 4 teilbar ist, außer volle Jahrhunderte wie 1900. Davon sind wieder die ausgenommen, die durch 400 teilbar sind: 2000 war ein Schaltjahr. Schreib eine Methode `boolean leapYear(int year)`, die sagt, ob ein Jahr ein Schaltjahr ist.
+      starter: |
+        boolean leapYear(int year) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "leapYear(2024)"
+            expect: "true"
+          - call: "leapYear(2023)"
+            expect: "false"
+          - call: "leapYear(1900)"
+            expect: "false"
+            say: "1900 war kein Schaltjahr: Volle Jahrhunderte sind keine Schaltjahre …"
+          - call: "leapYear(2000)"
+            expect: "true"
+            say: "… außer, sie sind durch 400 teilbar: 2000 war ein Schaltjahr."
+          - call: "leapYear(2100)"
+            expect: "false"
+          - call: "leapYear(1996)"
+            expect: "true"
+      feedback:
+        - when: { same_as: "boolean leapYear(int year) {\n    return year % 4 == 0;\n}\n" }
+          say: "Durch 4 teilbar genügt nicht: 1900 war kein Schaltjahr. Volle Jahrhunderte (durch 100 teilbar) sind ausgenommen, außer durch 400 teilbare."
+        - when: { same_as: "boolean leapYear(int year) {\n    return year % 4 == 0 && year % 100 != 0;\n}\n" }
+          say: "Fast: 2000 war doch ein Schaltjahr, weil es durch 400 teilbar ist."
+      hint:
+        - "Geh 1996, 1900 und 2000 von Hand durch: Welche Regel entscheidet jeweils?"
+        - "Prüf von der speziellsten Regel zur allgemeinsten: erst 400, dann 100, dann 4."
+        - "Mit `&&` und `||` geht es auch in einer Zeile: durch 4 teilbar und (nicht durch 100 teilbar oder durch 400 teilbar)."
+      solution: |
+        ```java
+        boolean leapYear(int year) {
+            return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
         }
         ```
 
@@ -670,6 +1007,102 @@ tasks:
           return 6;
         }
         ```
+    dart:
+      prompt: |
+        In einer Klassenarbeit gibt es höchstens 100 Punkte. Ab 92 Punkten gibt es eine 1, ab 81 eine 2, ab 67 eine 3, ab 50 eine 4, ab 30 eine 5, darunter eine 6. Schreib eine Funktion `int grade(int points)`, die die Note zurückgibt: `grade(85)` ergibt `2`.
+      starter: |
+        int grade(int points) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "grade(100)", expect: "1" }
+          - { call: "grade(92)", expect: "1" }
+          - { call: "grade(91)", expect: "2", say: "Die Grenze gehört zur besseren Note: Ab 92 Punkten ist es eine 1, mit 91 eine 2." }
+          - { call: "grade(81)", expect: "2" }
+          - { call: "grade(80)", expect: "3" }
+          - { call: "grade(67)", expect: "3" }
+          - { call: "grade(66)", expect: "4" }
+          - { call: "grade(50)", expect: "4" }
+          - { call: "grade(49)", expect: "5" }
+          - { call: "grade(30)", expect: "5" }
+          - { call: "grade(29)", expect: "6" }
+          - { call: "grade(0)", expect: "6" }
+      feedback:
+        - when: { same_as: "int grade(int points) {\n  if (points > 92) return 1;\n  if (points > 81) return 2;\n  if (points > 67) return 3;\n  if (points > 50) return 4;\n  if (points > 30) return 5;\n  return 6;\n}\n" }
+          say: "»Ab 92« heißt: 92 gehört dazu. `>=` statt `>`."
+        - when: { same_as: "int grade(int points) {\n  if (points >= 30) return 5;\n  if (points >= 50) return 4;\n  if (points >= 67) return 3;\n  if (points >= 81) return 2;\n  if (points >= 92) return 1;\n  return 6;\n}\n" }
+          say: "Die erste passende Bedingung gewinnt: Wer 95 Punkte hat, hat auch mehr als 30. Fang bei der besten Note an."
+      hint:
+        - "Was ist `grade(85)`, was `grade(81)`, was `grade(80)`? Schreib die drei auf, bevor du programmierst."
+        - "`if … else if … else` prüft der Reihe nach und nimmt die erste Bedingung, die stimmt. In welcher Reihenfolge müssen die Grenzen stehen?"
+      solution: |
+        ```dart
+        int grade(int points) {
+          if (points >= 92) {
+            return 1;
+          } else if (points >= 81) {
+            return 2;
+          } else if (points >= 67) {
+            return 3;
+          } else if (points >= 50) {
+            return 4;
+          } else if (points >= 30) {
+            return 5;
+          }
+          return 6;
+        }
+        ```
+    java:
+      prompt: |
+        In einer Klassenarbeit gibt es höchstens 100 Punkte. Ab 92 Punkten gibt es eine 1, ab 81 eine 2, ab 67 eine 3, ab 50 eine 4, ab 30 eine 5, darunter eine 6. Schreib eine Methode `int grade(int points)`, die die Note zurückgibt: `grade(85)` ergibt `2`.
+      starter: |
+        int grade(int points) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "grade(100)", expect: "1" }
+          - { call: "grade(92)", expect: "1" }
+          - { call: "grade(91)", expect: "2", say: "Die Grenze gehört zur besseren Note: Ab 92 Punkten ist es eine 1, mit 91 eine 2." }
+          - { call: "grade(81)", expect: "2" }
+          - { call: "grade(80)", expect: "3" }
+          - { call: "grade(67)", expect: "3" }
+          - { call: "grade(66)", expect: "4" }
+          - { call: "grade(50)", expect: "4" }
+          - { call: "grade(49)", expect: "5" }
+          - { call: "grade(30)", expect: "5" }
+          - { call: "grade(29)", expect: "6" }
+          - { call: "grade(0)", expect: "6" }
+      feedback:
+        - when: { same_as: "int grade(int points) {\n    if (points > 92) return 1;\n    if (points > 81) return 2;\n    if (points > 67) return 3;\n    if (points > 50) return 4;\n    if (points > 30) return 5;\n    return 6;\n}\n" }
+          say: "»Ab 92« heißt: 92 gehört dazu. `>=` statt `>`."
+        - when: { same_as: "int grade(int points) {\n    if (points >= 30) return 5;\n    if (points >= 50) return 4;\n    if (points >= 67) return 3;\n    if (points >= 81) return 2;\n    if (points >= 92) return 1;\n    return 6;\n}\n" }
+          say: "Die erste passende Bedingung gewinnt: Wer 95 Punkte hat, hat auch mehr als 30. Fang bei der besten Note an."
+      hint:
+        - "Was ist `grade(85)`, was `grade(81)`, was `grade(80)`? Schreib die drei auf, bevor du programmierst."
+        - "`if … else if … else` prüft der Reihe nach und nimmt die erste Bedingung, die stimmt. In welcher Reihenfolge müssen die Grenzen stehen?"
+      solution: |
+        ```java
+        int grade(int points) {
+            if (points >= 92) {
+                return 1;
+            } else if (points >= 81) {
+                return 2;
+            } else if (points >= 67) {
+                return 3;
+            } else if (points >= 50) {
+                return 4;
+            } else if (points >= 30) {
+                return 5;
+            }
+            return 6;
+        }
+        ```
 
   - id: ticket-price
     title: "Eintritt ins Schwimmbad"
@@ -795,6 +1228,72 @@ tasks:
           if (age < 18) return 5;
           if (age >= 65) return 6;
           return 9;
+        }
+        ```
+    dart:
+      prompt: |
+        Im Schwimmbad zahlen Kinder unter 6 Jahren nichts, Kinder und Jugendliche unter 18 zahlen 5 Euro, Seniorinnen und Senioren ab 65 zahlen 6 Euro, alle anderen 9 Euro. Schreib eine Funktion `int ticketPrice(int age)`: `ticketPrice(12)` ergibt `5`.
+      starter: |
+        int ticketPrice(int age) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "ticketPrice(5)", expect: "0" }
+          - { call: "ticketPrice(6)", expect: "5", say: "Mit 6 Jahren zahlt man schon: Kostenlos ist es nur unter 6." }
+          - { call: "ticketPrice(17)", expect: "5" }
+          - { call: "ticketPrice(18)", expect: "9" }
+          - { call: "ticketPrice(64)", expect: "9" }
+          - { call: "ticketPrice(65)", expect: "6", say: "Ab 65 gilt der Preis für Senioren." }
+          - { call: "ticketPrice(80)", expect: "6" }
+      feedback:
+        - when: { same_as: "int ticketPrice(int age) {\n  if (age <= 6) return 0;\n  if (age < 18) return 5;\n  if (age >= 65) return 6;\n  return 9;\n}\n" }
+          say: "»Unter 6« heißt: 6 gehört nicht mehr dazu. Mit 6 Jahren zahlt man 5 Euro."
+      hint:
+        - "Zeichne einen Zahlenstrahl von 0 bis 100 und trag die Grenzen ein. Welche Bereiche gibt es?"
+        - "Prüf die Bereiche von unten nach oben: unter 6, unter 18, dann ab 65."
+      solution: |
+        ```dart
+        int ticketPrice(int age) {
+          if (age < 6) return 0;
+          if (age < 18) return 5;
+          if (age >= 65) return 6;
+          return 9;
+        }
+        ```
+    java:
+      prompt: |
+        Im Schwimmbad zahlen Kinder unter 6 Jahren nichts, Kinder und Jugendliche unter 18 zahlen 5 Euro, Seniorinnen und Senioren ab 65 zahlen 6 Euro, alle anderen 9 Euro. Schreib eine Methode `int ticketPrice(int age)`: `ticketPrice(12)` ergibt `5`.
+      starter: |
+        int ticketPrice(int age) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "ticketPrice(5)", expect: "0" }
+          - { call: "ticketPrice(6)", expect: "5", say: "Mit 6 Jahren zahlt man schon: Kostenlos ist es nur unter 6." }
+          - { call: "ticketPrice(17)", expect: "5" }
+          - { call: "ticketPrice(18)", expect: "9" }
+          - { call: "ticketPrice(64)", expect: "9" }
+          - { call: "ticketPrice(65)", expect: "6", say: "Ab 65 gilt der Preis für Senioren." }
+          - { call: "ticketPrice(80)", expect: "6" }
+      feedback:
+        - when: { same_as: "int ticketPrice(int age) {\n    if (age <= 6) return 0;\n    if (age < 18) return 5;\n    if (age >= 65) return 6;\n    return 9;\n}\n" }
+          say: "»Unter 6« heißt: 6 gehört nicht mehr dazu. Mit 6 Jahren zahlt man 5 Euro."
+      hint:
+        - "Zeichne einen Zahlenstrahl von 0 bis 100 und trag die Grenzen ein. Welche Bereiche gibt es?"
+        - "Prüf die Bereiche von unten nach oben: unter 6, unter 18, dann ab 65."
+      solution: |
+        ```java
+        int ticketPrice(int age) {
+            if (age < 6) return 0;
+            if (age < 18) return 5;
+            if (age >= 65) return 6;
+            return 9;
         }
         ```
 
@@ -932,6 +1431,84 @@ tasks:
           if (b > largest) largest = b;
           if (c > largest) largest = c;
           return largest;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int maxOfThree(int a, int b, int c)`, die die größte von drei Zahlen zurückgibt: `maxOfThree(3, 1, 5)` ergibt `5`. Ohne `max`.
+      starter: |
+        int maxOfThree(int a, int b, int c) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [max, .reduce, .sort]
+        random:
+          count: 4
+          call: "maxOfThree(a, b, c)"
+          args: { a: "-100..100", b: "-100..100", c: "-100..100" }
+          reference: "a > b ? (a > c ? a : c) : (b > c ? b : c)"
+        cases:
+          - { call: "maxOfThree(1, 2, 3)", expect: "3" }
+          - { call: "maxOfThree(3, 2, 1)", expect: "3" }
+          - { call: "maxOfThree(2, 3, 1)", expect: "3" }
+          - { call: "maxOfThree(3, 1, 5)", expect: "5" }
+          - { call: "maxOfThree(4, 4, 1)", expect: "4" }
+          - { call: "maxOfThree(-1, -2, -3)", expect: "-1" }
+          - { call: "maxOfThree(7, 7, 7)", expect: "7" }
+      feedback:
+        - when: { same_as: "int maxOfThree(int a, int b, int c) {\n  if (a > b) return a;\n  if (b > c) return b;\n  return c;\n}\n" }
+          say: "Wenn `a` größer ist als `b`, kann `c` trotzdem noch größer sein als `a`: Bei `3, 1, 5` ist es 5."
+      hint:
+        - "Probier deine Lösung von Hand mit `3, 1, 5`, mit `1, 5, 3` und mit `5, 3, 1`."
+        - "Ein Weg: Merk dir die größte bisher, fang mit `a` an, und vergleiche sie dann mit `b` und mit `c`."
+      solution: |
+        ```dart
+        int maxOfThree(int a, int b, int c) {
+          var largest = a;
+          if (b > largest) largest = b;
+          if (c > largest) largest = c;
+          return largest;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int maxOfThree(int a, int b, int c)`, die die größte von drei Zahlen zurückgibt: `maxOfThree(3, 1, 5)` ergibt `5`. Ohne `Math.max`.
+      starter: |
+        int maxOfThree(int a, int b, int c) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.max, Collections.max, .sort, .max]
+        random:
+          count: 4
+          call: "maxOfThree(a, b, c)"
+          args: { a: "-100..100", b: "-100..100", c: "-100..100" }
+          reference: "Math.max(a, Math.max(b, c))"
+        cases:
+          - { call: "maxOfThree(1, 2, 3)", expect: "3" }
+          - { call: "maxOfThree(3, 2, 1)", expect: "3" }
+          - { call: "maxOfThree(2, 3, 1)", expect: "3" }
+          - { call: "maxOfThree(3, 1, 5)", expect: "5" }
+          - { call: "maxOfThree(4, 4, 1)", expect: "4" }
+          - { call: "maxOfThree(-1, -2, -3)", expect: "-1" }
+          - { call: "maxOfThree(7, 7, 7)", expect: "7" }
+      feedback:
+        - when: { same_as: "int maxOfThree(int a, int b, int c) {\n    if (a > b) return a;\n    if (b > c) return b;\n    return c;\n}\n" }
+          say: "Wenn `a` größer ist als `b`, kann `c` trotzdem noch größer sein als `a`: Bei `3, 1, 5` ist es 5."
+      hint:
+        - "Probier deine Lösung von Hand mit `3, 1, 5`, mit `1, 5, 3` und mit `5, 3, 1`."
+        - "Ein Weg: Merk dir die größte bisher, fang mit `a` an, und vergleiche sie dann mit `b` und mit `c`."
+      solution: |
+        ```java
+        int maxOfThree(int a, int b, int c) {
+            int largest = a;
+            if (b > largest) largest = b;
+            if (c > largest) largest = c;
+            return largest;
         }
         ```
 
@@ -1086,6 +1663,90 @@ tasks:
             return 'Buzz';
           }
           return String(n);
+        }
+        ```
+    dart:
+      prompt: |
+        Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
+      starter: |
+        String fizzbuzz(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "fizzbuzz(n)"
+          args: { n: "1..1000" }
+          reference: "n % 15 == 0 ? 'FizzBuzz' : n % 3 == 0 ? 'Fizz' : n % 5 == 0 ? 'Buzz' : n.toString()"
+        cases:
+          - { call: "fizzbuzz(3)", expect: "'Fizz'" }
+          - { call: "fizzbuzz(10)", expect: "'Buzz'" }
+          - { call: "fizzbuzz(15)", expect: "'FizzBuzz'", say: "15 ist durch 3 und durch 5 teilbar: `FizzBuzz`. Prüf das zuerst, sonst gewinnt schon die 3." }
+          - { call: "fizzbuzz(7)", expect: "'7'", say: "Die Zahl selbst kommt als Text zurück." }
+          - { call: "fizzbuzz(30)", expect: "'FizzBuzz'" }
+          - { call: "fizzbuzz(9)", expect: "'Fizz'" }
+          - { call: "fizzbuzz(1)", expect: "'1'" }
+      feedback:
+        - when: { same_as: "String fizzbuzz(int n) {\n  if (n % 3 == 0) return 'Fizz';\n  if (n % 5 == 0) return 'Buzz';\n  if (n % 15 == 0) return 'FizzBuzz';\n  return n.toString();\n}\n" }
+          say: "Bei 15 gewinnt schon die erste Bedingung, `n % 3 == 0`, und `FizzBuzz` kommt nie dran. Welche Bedingung muss zuerst stehen?"
+      hint:
+        - "Was sagt man bei 3, bei 5, bei 15 und bei 7? Welche Zahlen sind durch 3 und durch 5 teilbar?"
+        - "Die Reihenfolge der Bedingungen entscheidet: Was durch 15 teilbar ist, ist auch durch 3 teilbar. Aus der Zahl `7` macht `n.toString()` den Text `'7'`."
+      solution: |
+        ```dart
+        String fizzbuzz(int n) {
+          if (n % 15 == 0) {
+            return 'FizzBuzz';
+          } else if (n % 3 == 0) {
+            return 'Fizz';
+          } else if (n % 5 == 0) {
+            return 'Buzz';
+          }
+          return n.toString();
+        }
+        ```
+    java:
+      prompt: |
+        Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Methode `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `"Fizz"`, `fizzbuzz(7)` ergibt `"7"`.
+      starter: |
+        String fizzbuzz(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "fizzbuzz(n)"
+          args: { n: "1..1000" }
+          reference: "n % 15 == 0 ? \"FizzBuzz\" : n % 3 == 0 ? \"Fizz\" : n % 5 == 0 ? \"Buzz\" : String.valueOf(n)"
+        cases:
+          - { call: "fizzbuzz(3)", expect: "\"Fizz\"" }
+          - { call: "fizzbuzz(10)", expect: "\"Buzz\"" }
+          - { call: "fizzbuzz(15)", expect: "\"FizzBuzz\"", say: "15 ist durch 3 und durch 5 teilbar: `FizzBuzz`. Prüf das zuerst, sonst gewinnt schon die 3." }
+          - { call: "fizzbuzz(7)", expect: "\"7\"", say: "Die Zahl selbst kommt als Text zurück." }
+          - { call: "fizzbuzz(30)", expect: "\"FizzBuzz\"" }
+          - { call: "fizzbuzz(9)", expect: "\"Fizz\"" }
+          - { call: "fizzbuzz(1)", expect: "\"1\"" }
+      feedback:
+        - when: { same_as: "String fizzbuzz(int n) {\n    if (n % 3 == 0) return \"Fizz\";\n    if (n % 5 == 0) return \"Buzz\";\n    if (n % 15 == 0) return \"FizzBuzz\";\n    return String.valueOf(n);\n}\n" }
+          say: "Bei 15 gewinnt schon die erste Bedingung, `n % 3 == 0`, und `FizzBuzz` kommt nie dran. Welche Bedingung muss zuerst stehen?"
+      hint:
+        - "Was sagt man bei 3, bei 5, bei 15 und bei 7? Welche Zahlen sind durch 3 und durch 5 teilbar?"
+        - "Die Reihenfolge der Bedingungen entscheidet: Was durch 15 teilbar ist, ist auch durch 3 teilbar. Aus der Zahl `7` macht `String.valueOf(n)` den Text `\"7\"`."
+      solution: |
+        ```java
+        String fizzbuzz(int n) {
+            if (n % 15 == 0) {
+                return "FizzBuzz";
+            } else if (n % 3 == 0) {
+                return "Fizz";
+            } else if (n % 5 == 0) {
+                return "Buzz";
+            }
+            return String.valueOf(n);
         }
         ```
 
@@ -1255,6 +1916,98 @@ tasks:
           return 'ungleichseitig';
         }
         ```
+    dart:
+      prompt: |
+        Aus drei Stäben der Längen `a`, `b` und `c` lässt sich nur dann ein Dreieck legen, wenn je zwei zusammen länger sind als der dritte. Schreib eine Funktion `String triangle(int a, int b, int c)`, die `'keins'` zurückgibt, wenn es nicht geht, sonst `'gleichseitig'` (alle drei gleich lang), `'gleichschenklig'` (zwei gleich lang) oder `'ungleichseitig'`.
+      starter: |
+        String triangle(int a, int b, int c) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "triangle(3, 3, 3)", expect: "'gleichseitig'" }
+          - { call: "triangle(3, 3, 5)", expect: "'gleichschenklig'" }
+          - { call: "triangle(5, 3, 3)", expect: "'gleichschenklig'" }
+          - { call: "triangle(3, 5, 3)", expect: "'gleichschenklig'" }
+          - { call: "triangle(3, 4, 5)", expect: "'ungleichseitig'" }
+          - { call: "triangle(1, 2, 5)", expect: "'keins'", say: "Zwei Seiten mit 1 und 2 reichen nicht über eine Seite mit 5 hinweg: Das ist kein Dreieck." }
+          - { call: "triangle(5, 1, 2)", expect: "'keins'" }
+          - { call: "triangle(1, 2, 3)", expect: "'keins'", say: "Mit 1 + 2 = 3 liegen alle drei Ecken auf einer Linie: Ein Dreieck braucht zwei Seiten, die zusammen länger sind als die dritte." }
+      feedback:
+        - when: { same_as: "String triangle(int a, int b, int c) {\n  if (a + b < c) return 'keins';\n  if (a == b && b == c) return 'gleichseitig';\n  if (a == b || b == c || a == c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n" }
+          say: "Jede Seite kann die längste sein: Prüf alle drei Paare, nicht nur `a + b` gegen `c`."
+        - when: { same_as: "String triangle(int a, int b, int c) {\n  if (a + b <= c || a + c <= b || b + c <= a) return 'keins';\n  if (a == b && b == c) return 'gleichseitig';\n  if (a == b || b == c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n" }
+          say: "Auch `a` und `c` können die beiden gleich langen Seiten sein: bei `3, 5, 3`."
+      hint:
+        - "Lege die Beispiele im Kopf: 3, 4, 5 geht, 1, 2, 5 nicht. Was ist mit 1, 2, 3?"
+        - "Erst prüfen, ob es überhaupt ein Dreieck ist (alle drei Paare), dann von gleichseitig zu ungleichseitig."
+        - |
+          Ein Gerüst:
+
+          ```dart
+          String triangle(int a, int b, int c) {
+            if (/* eine Bedingung für jedes Paar, mit || */) return 'keins';
+            if (/* … */) return 'gleichseitig';
+            // …
+          }
+          ```
+      solution: |
+        ```dart
+        String triangle(int a, int b, int c) {
+          if (a + b <= c || a + c <= b || b + c <= a) return 'keins';
+          if (a == b && b == c) return 'gleichseitig';
+          if (a == b || b == c || a == c) return 'gleichschenklig';
+          return 'ungleichseitig';
+        }
+        ```
+    java:
+      prompt: |
+        Aus drei Stäben der Längen `a`, `b` und `c` lässt sich nur dann ein Dreieck legen, wenn je zwei zusammen länger sind als der dritte. Schreib eine Methode `String triangle(int a, int b, int c)`, die `"keins"` zurückgibt, wenn es nicht geht, sonst `"gleichseitig"` (alle drei gleich lang), `"gleichschenklig"` (zwei gleich lang) oder `"ungleichseitig"`.
+      starter: |
+        String triangle(int a, int b, int c) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "triangle(3, 3, 3)", expect: "\"gleichseitig\"" }
+          - { call: "triangle(3, 3, 5)", expect: "\"gleichschenklig\"" }
+          - { call: "triangle(5, 3, 3)", expect: "\"gleichschenklig\"" }
+          - { call: "triangle(3, 5, 3)", expect: "\"gleichschenklig\"" }
+          - { call: "triangle(3, 4, 5)", expect: "\"ungleichseitig\"" }
+          - { call: "triangle(1, 2, 5)", expect: "\"keins\"", say: "Zwei Seiten mit 1 und 2 reichen nicht über eine Seite mit 5 hinweg: Das ist kein Dreieck." }
+          - { call: "triangle(5, 1, 2)", expect: "\"keins\"" }
+          - { call: "triangle(1, 2, 3)", expect: "\"keins\"", say: "Mit 1 + 2 = 3 liegen alle drei Ecken auf einer Linie: Ein Dreieck braucht zwei Seiten, die zusammen länger sind als die dritte." }
+      feedback:
+        - when: { same_as: "String triangle(int a, int b, int c) {\n    if (a + b < c) return \"keins\";\n    if (a == b && b == c) return \"gleichseitig\";\n    if (a == b || b == c || a == c) return \"gleichschenklig\";\n    return \"ungleichseitig\";\n}\n" }
+          say: "Jede Seite kann die längste sein: Prüf alle drei Paare, nicht nur `a + b` gegen `c`."
+        - when: { same_as: "String triangle(int a, int b, int c) {\n    if (a + b <= c || a + c <= b || b + c <= a) return \"keins\";\n    if (a == b && b == c) return \"gleichseitig\";\n    if (a == b || b == c) return \"gleichschenklig\";\n    return \"ungleichseitig\";\n}\n" }
+          say: "Auch `a` und `c` können die beiden gleich langen Seiten sein: bei `3, 5, 3`."
+      hint:
+        - "Lege die Beispiele im Kopf: 3, 4, 5 geht, 1, 2, 5 nicht. Was ist mit 1, 2, 3?"
+        - "Erst prüfen, ob es überhaupt ein Dreieck ist (alle drei Paare), dann von gleichseitig zu ungleichseitig."
+        - |
+          Ein Gerüst:
+
+          ```java
+          String triangle(int a, int b, int c) {
+              if (/* eine Bedingung für jedes Paar, mit || */) return "keins";
+              if (/* … */) return "gleichseitig";
+              // …
+          }
+          ```
+      solution: |
+        ```java
+        String triangle(int a, int b, int c) {
+            if (a + b <= c || a + c <= b || b + c <= a) return "keins";
+            if (a == b && b == c) return "gleichseitig";
+            if (a == b || b == c || a == c) return "gleichschenklig";
+            return "ungleichseitig";
+        }
+        ```
 
   - id: pythagorean
     title: "Ein rechter Winkel"
@@ -1362,6 +2115,66 @@ tasks:
         ```javascript
         function pythagorean(a, b, c) {
           return a * a + b * b === c * c || a * a + c * c === b * b || b * b + c * c === a * a;
+        }
+        ```
+    dart:
+      prompt: |
+        Drei Seiten bilden ein rechtwinkliges Dreieck, wenn die Quadrate der beiden kürzeren zusammen das Quadrat der längsten ergeben (Pythagoras): 3² + 4² = 5². Schreib eine Funktion `bool pythagorean(int a, int b, int c)`, die das prüft, in welcher Reihenfolge die Seiten auch kommen.
+      starter: |
+        bool pythagorean(int a, int b, int c) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "pythagorean(3, 4, 5)", expect: "true" }
+          - { call: "pythagorean(5, 12, 13)", expect: "true" }
+          - { call: "pythagorean(2, 3, 4)", expect: "false" }
+          - { call: "pythagorean(5, 3, 4)", expect: "true", say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck." }
+          - { call: "pythagorean(13, 5, 12)", expect: "true" }
+          - { call: "pythagorean(1, 1, 1)", expect: "false" }
+          - { call: "pythagorean(6, 8, 10)", expect: "true" }
+      feedback:
+        - when: { same_as: "bool pythagorean(int a, int b, int c) {\n  return a * a + b * b == c * c;\n}\n" }
+          say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+      hint:
+        - "Teste mit `5, 3, 4`: Welche Seite ist hier die längste?"
+        - "Entweder du prüfst alle drei Möglichkeiten, welche Seite die längste ist, mit `||`, oder du sortierst die drei Seiten erst."
+      solution: |
+        ```dart
+        bool pythagorean(int a, int b, int c) {
+          return a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a;
+        }
+        ```
+    java:
+      prompt: |
+        Drei Seiten bilden ein rechtwinkliges Dreieck, wenn die Quadrate der beiden kürzeren zusammen das Quadrat der längsten ergeben (Pythagoras): 3² + 4² = 5². Schreib eine Methode `boolean pythagorean(int a, int b, int c)`, die das prüft, in welcher Reihenfolge die Seiten auch kommen.
+      starter: |
+        boolean pythagorean(int a, int b, int c) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "pythagorean(3, 4, 5)", expect: "true" }
+          - { call: "pythagorean(5, 12, 13)", expect: "true" }
+          - { call: "pythagorean(2, 3, 4)", expect: "false" }
+          - { call: "pythagorean(5, 3, 4)", expect: "true", say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck." }
+          - { call: "pythagorean(13, 5, 12)", expect: "true" }
+          - { call: "pythagorean(1, 1, 1)", expect: "false" }
+          - { call: "pythagorean(6, 8, 10)", expect: "true" }
+      feedback:
+        - when: { same_as: "boolean pythagorean(int a, int b, int c) {\n    return a * a + b * b == c * c;\n}\n" }
+          say: "Die längste Seite muss nicht die letzte sein: 3, 4 und 5 bilden in jeder Reihenfolge ein rechtwinkliges Dreieck."
+      hint:
+        - "Teste mit `5, 3, 4`: Welche Seite ist hier die längste?"
+        - "Entweder du prüfst alle drei Möglichkeiten, welche Seite die längste ist, mit `||`, oder du sortierst die drei Seiten erst."
+      solution: |
+        ```java
+        boolean pythagorean(int a, int b, int c) {
+            return a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a;
         }
         ```
 
@@ -1482,6 +2295,69 @@ tasks:
           return BEATS[first] === second ? 1 : 2;
         }
         ```
+    dart:
+      prompt: |
+        Zwei spielen Schere, Stein, Papier: Stein schlägt Schere, Schere schlägt Papier, Papier schlägt Stein. Schreib eine Funktion `int rockPaperScissors(String first, String second)`, die `1` zurückgibt, wenn die erste Hand gewinnt, `2`, wenn die zweite gewinnt, und `0` bei einem Unentschieden: `rockPaperScissors('Stein', 'Schere')` ergibt `1`. Geht es mit weniger als neun Fällen?
+      starter: |
+        int rockPaperScissors(String first, String second) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "rockPaperScissors('Stein', 'Schere')", expect: "1" }
+          - { call: "rockPaperScissors('Schere', 'Papier')", expect: "1" }
+          - { call: "rockPaperScissors('Papier', 'Stein')", expect: "1" }
+          - { call: "rockPaperScissors('Schere', 'Stein')", expect: "2" }
+          - { call: "rockPaperScissors('Papier', 'Schere')", expect: "2" }
+          - { call: "rockPaperScissors('Stein', 'Papier')", expect: "2" }
+          - { call: "rockPaperScissors('Stein', 'Stein')", expect: "0" }
+          - { call: "rockPaperScissors('Papier', 'Papier')", expect: "0" }
+          - { call: "rockPaperScissors('Schere', 'Schere')", expect: "0" }
+      hint: "Wer gewinnt, hängt nur davon ab, welche Hand die andere schlägt. Eine Map `{'Stein': 'Schere', …}` sagt das für jede Hand."
+      solution: |
+        ```dart
+        const beats = {'Stein': 'Schere', 'Schere': 'Papier', 'Papier': 'Stein'};
+
+        int rockPaperScissors(String first, String second) {
+          if (first == second) return 0;
+          return beats[first] == second ? 1 : 2;
+        }
+        ```
+    java:
+      prompt: |
+        Zwei spielen Schere, Stein, Papier: Stein schlägt Schere, Schere schlägt Papier, Papier schlägt Stein. Schreib eine Methode `int rockPaperScissors(String first, String second)`, die `1` zurückgibt, wenn die erste Hand gewinnt, `2`, wenn die zweite gewinnt, und `0` bei einem Unentschieden: `rockPaperScissors("Stein", "Schere")` ergibt `1`. Geht es mit weniger als neun Fällen?
+      starter: |
+        int rockPaperScissors(String first, String second) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "rockPaperScissors(\"Stein\", \"Schere\")", expect: "1" }
+          - { call: "rockPaperScissors(\"Schere\", \"Papier\")", expect: "1" }
+          - { call: "rockPaperScissors(\"Papier\", \"Stein\")", expect: "1" }
+          - { call: "rockPaperScissors(\"Schere\", \"Stein\")", expect: "2" }
+          - { call: "rockPaperScissors(\"Papier\", \"Schere\")", expect: "2" }
+          - { call: "rockPaperScissors(\"Stein\", \"Papier\")", expect: "2" }
+          - { call: "rockPaperScissors(\"Stein\", \"Stein\")", expect: "0" }
+          - { call: "rockPaperScissors(\"Papier\", \"Papier\")", expect: "0" }
+          - { call: "rockPaperScissors(\"Schere\", \"Schere\")", expect: "0" }
+      hint:
+        - "Wer gewinnt, hängt nur davon ab, welche Hand die andere schlägt. Eine Map, `Map.of(\"Stein\", \"Schere\", …)`, sagt das für jede Hand."
+        - "Texte vergleicht man in Java mit `equals`: `first.equals(second)`. `==` fragt nur, ob es dasselbe Objekt ist."
+      solution: |
+        ```java
+        Map<String, String> beats = Map.of("Stein", "Schere", "Schere", "Papier", "Papier", "Stein");
+
+        int rockPaperScissors(String first, String second) {
+            if (first.equals(second)) return 0;
+            return beats.get(first).equals(second) ? 1 : 2;
+        }
+        ```
+
   - id: bread
     title: "Brot"
     extra: true
@@ -1609,5 +2485,75 @@ tasks:
             return 'Brot';
           }
           return String(n);
+        }
+        ```
+    dart:
+      prompt: |
+        Ein Zählspiel aus der Grundschule: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist oder eine 3 enthält, sagt man »Brot«. Bei 13 heißt es also »Brot«, obwohl 13 nicht durch 3 teilbar ist. Schreib eine Funktion `String bread(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `bread(6)` ergibt `'Brot'`, `bread(31)` ergibt `'Brot'`, `bread(7)` ergibt `'7'`.
+      starter: |
+        String bread(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "bread(n)"
+          args: { n: "1..1000" }
+          reference: "n % 3 == 0 || n.toString().contains('3') ? 'Brot' : n.toString()"
+        cases:
+          - { call: "bread(6)", expect: "'Brot'" }
+          - { call: "bread(7)", expect: "'7'", say: "Die Zahl selbst kommt als Text zurück." }
+          - { call: "bread(13)", expect: "'Brot'", say: "13 ist nicht durch 3 teilbar, aber in 13 steht eine 3." }
+          - { call: "bread(31)", expect: "'Brot'", say: "Auch eine 3 vorne zählt: In 31 steht eine 3." }
+          - { call: "bread(20)", expect: "'20'" }
+          - { call: "bread(303)", expect: "'Brot'" }
+          - { call: "bread(1)", expect: "'1'" }
+      hint:
+        - "Zwei Fragen: Ist `n` durch 3 teilbar? Steht in `n` eine 3? Wenn eine davon mit Ja beantwortet wird, heißt es »Brot«."
+        - "Ob eine Ziffer in einer Zahl steht, siehst du am Text der Zahl: `n.toString()` macht aus `13` den Text `'13'`, und `contains` fragt, ob ein Text einen anderen enthält."
+      solution: |
+        ```dart
+        String bread(int n) {
+          if (n % 3 == 0 || n.toString().contains('3')) {
+            return 'Brot';
+          }
+          return n.toString();
+        }
+        ```
+    java:
+      prompt: |
+        Ein Zählspiel aus der Grundschule: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist oder eine 3 enthält, sagt man »Brot«. Bei 13 heißt es also »Brot«, obwohl 13 nicht durch 3 teilbar ist. Schreib eine Methode `String bread(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `bread(6)` ergibt `"Brot"`, `bread(31)` ergibt `"Brot"`, `bread(7)` ergibt `"7"`.
+      starter: |
+        String bread(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "bread(n)"
+          args: { n: "1..1000" }
+          reference: "n % 3 == 0 || String.valueOf(n).contains(\"3\") ? \"Brot\" : String.valueOf(n)"
+        cases:
+          - { call: "bread(6)", expect: "\"Brot\"" }
+          - { call: "bread(7)", expect: "\"7\"", say: "Die Zahl selbst kommt als Text zurück." }
+          - { call: "bread(13)", expect: "\"Brot\"", say: "13 ist nicht durch 3 teilbar, aber in 13 steht eine 3." }
+          - { call: "bread(31)", expect: "\"Brot\"", say: "Auch eine 3 vorne zählt: In 31 steht eine 3." }
+          - { call: "bread(20)", expect: "\"20\"" }
+          - { call: "bread(303)", expect: "\"Brot\"" }
+          - { call: "bread(1)", expect: "\"1\"" }
+      hint:
+        - "Zwei Fragen: Ist `n` durch 3 teilbar? Steht in `n` eine 3? Wenn eine davon mit Ja beantwortet wird, heißt es »Brot«."
+        - "Ob eine Ziffer in einer Zahl steht, siehst du am Text der Zahl: `String.valueOf(n)` macht aus `13` den Text `\"13\"`, und `contains` fragt, ob ein Text einen anderen enthält."
+      solution: |
+        ```java
+        String bread(int n) {
+            if (n % 3 == 0 || String.valueOf(n).contains("3")) {
+                return "Brot";
+            }
+            return String.valueOf(n);
         }
         ```
