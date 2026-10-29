@@ -827,8 +827,8 @@ Java und Dart schreiben die Schritte in den Code, den sie erzeugen (unten).
 ### function
 
 Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
-Workspace, sondern wird in der Karte geschrieben, in Ruby, Python oder
-JavaScript, mit
+Workspace, sondern wird in der Karte geschrieben, in Ruby, Python,
+JavaScript, Dart oder Java, mit
 den Farben der Codeblöcke, Einrückung mit <kbd>Tab</kbd> und
 <kbd>Strg</kbd>+<kbd>Enter</kbd> zum Ausführen. Ein Knopf, **Ausführen**:
 Er startet den Code einmal und zeigt, was er ausgibt, wenn er außer den
@@ -876,7 +876,10 @@ selbst darf sie weiter benutzen. In Python eine eingebaute Funktion
 Typen und ihre Methoden lassen sich in Python nicht abschalten, darum genügt
 es, wenn der Name im Code vorkommt. In JavaScript eine Funktion oder Methode
 mit ihrem Pfad (`Math.max`, `Array.prototype.sort`, `globalThis.String`),
-wie in Ruby nur für den Code der Lernenden.
+wie in Ruby nur für den Code der Lernenden. In Dart und Java wird der Text
+des Codes gelesen, ohne Strings und Kommentare: eine Funktion (`max`), eine
+Methode jedes Objekts (`.reduce`, `.stream`) oder eine statische Methode
+(`Math.max`); kommt sie vor, läuft der Code gar nicht erst.
 
 **JavaScript gibt es nur für Katas** (die Einstellung »Sprache« einer Klasse
 bleibt bei Ruby und Python): Eine Seite mit
@@ -887,6 +890,20 @@ in einem eigenen Kontext (`JavascriptCheck`); verglichen wird mit
 `util.isDeepStrictEqual`, Listen und Objekte also nach ihrem Inhalt. Namen
 aus mehreren Wörtern schreibt man in JavaScript zusammen (`maxOfTwo`), die
 Varianten der Aufgabe nennen ihre Funktionen so.
+
+**Dart und Java** (`language: dart`, `java`) werden übersetzt, bevor sie
+laufen (`KataCompiled`). In Dart ist der Code eine Bibliothek mit
+Funktionen und Klassen, die der Prüfscript von `DartCheck` importiert. In
+Java schreiben die Lernenden Methoden und Klassen ohne eine Klasse darum,
+wie in einer kompakten Quelldatei von Java 25 (`java kata.java` führt sie auf
+»Ausführen« aus, mit `void main()`); zum Prüfen kommt der Code als
+Mitglieder in eine eigene Klasse, und die Aufrufe sind deren Methoden.
+Fehler des Compilers nennen die Zeile im Code der Lernenden. Die Aufrufe
+und erwarteten Werte sind Dart oder Java (`List.of(3, 4, 5)`); Listen
+vergleicht die Prüfung nach ihrem Inhalt, Arrays wie Listen. Eine Prüfung
+dauert etwa zwei Sekunden, mit einer typischen falschen Lösung (`same_as`)
+in Dart etwas länger. `gates` gibt es in beiden nicht. Die Beispiele
+brauchen `dart` und `javac` auf der Maschine, wo sie laufen.
 
 **Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
 Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen

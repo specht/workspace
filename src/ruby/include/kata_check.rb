@@ -5,6 +5,7 @@ require_relative 'ruby_check'
 require_relative 'javascript_check'
 require_relative 'recursion_check'
 require_relative 'gate_check'
+require_relative 'kata_compiled'
 
 # Check type function (docs/aufgaben.md, docs/plan-katas.md): a Kata. The
 # code is typed into the card, not written in the Workspace; it runs in a
@@ -15,7 +16,7 @@ require_relative 'gate_check'
 #
 #   check:
 #     type: function
-#     language: ruby              # ruby, python or javascript; per language as a variant
+#     language: ruby              # ruby, python, javascript, dart or java; per language as a variant
 #     forbid: [Integer#gcd]       # built-ins that are no help here
 #     cases:
 #       - gcd(60, 48): 12
@@ -46,15 +47,18 @@ require_relative 'gate_check'
 # built-in type (str) or a method of one (list.sort); types and their
 # methods cannot be switched off and are looked for in the code instead; in
 # JavaScript a function or method by its path (Math.max,
-# Array.prototype.sort), made to fail like in Ruby (JavascriptCheck). random: the values come from a seed per
+# Array.prototype.sort), made to fail like in Ruby (JavascriptCheck); in
+# Dart and Java found in the text of the code (KataCompiled), which runs
+# them differently, compiled. random: the values come from a seed per
 # person and task version, so a second check has the same cases and a table
 # of answers does not pass; the message names the value the reference gave.
 # same_as: a typical wrong solution, written by the author and never shown,
 # runs on the same cases; if the person's results are its results, its say
 # replaces the message.
 module KataCheck
-    CHECKS = { 'python' => PythonCheck, 'ruby' => RubyCheck, 'javascript' => JavascriptCheck }.freeze
-    FILES = { 'python' => 'kata.py', 'ruby' => 'kata.rb', 'javascript' => 'kata.js' }.freeze
+    CHECKS = { 'python' => PythonCheck, 'ruby' => RubyCheck, 'javascript' => JavascriptCheck,
+               'dart' => DartCheck, 'java' => JavaCheck }.freeze
+    FILES = { 'python' => 'kata.py', 'ruby' => 'kata.rb', 'javascript' => 'kata.js', 'dart' => 'kata.dart', 'java' => 'kata.java' }.freeze
     HARNESS_FILES = { 'python' => 'harness.py', 'ruby' => 'harness.rb', 'javascript' => 'harness.js' }.freeze
     # What runs on »Ausführen«: the program as it is, top-level code included.
     PROGRAMS = { 'python' => %w[python3 -I -B kata.py], 'ruby' => %w[ruby -W0 kata.rb], 'javascript' => %w[node kata.js] }.freeze
@@ -82,7 +86,9 @@ module KataCheck
         language = check['language']
         errors << "language must be #{CHECKS.keys.join(' or ')}" unless CHECKS.key?(language)
         errors.concat(CallCheck.spec_errors(check, ''))
-        if check.key?('forbid')
+        if check.key?('forbid') && KataCompiled::LANGUAGES.include?(language)
+            errors.concat(KataCompiled.forbid_errors(check['forbid']))
+        elsif check.key?('forbid')
             pattern = { 'python' => PYTHON_FORBID, 'javascript' => JAVASCRIPT_FORBID }.fetch(language, RUBY_FORBID)
             unless check['forbid'].is_a?(Array) && !check['forbid'].empty? && check['forbid'].all? { |f| f.is_a?(String) && f =~ pattern }
                 errors << { 'python' => 'forbid must list names like sorted, math.gcd or list.sort',
@@ -92,6 +98,7 @@ module KataCheck
         end
         errors.concat(random_errors(check['random'])) if check.key?('random')
         errors.concat(GateCheck.spec_errors(check)) if check.key?('gates')
+        errors << 'gates are not available in Dart and Java' if check.key?('gates') && KataCompiled::LANGUAGES.include?(language)
         errors << 'slow must be text' if check.key?('slow') && !(check['slow'].is_a?(String) && !check['slow'].strip.empty?)
         # read from the code once the cases pass (RecursionCheck)
         errors << 'recursive must be true' if check.key?('recursive') && check['recursive'] != true
@@ -146,6 +153,8 @@ module KataCheck
 
     # A value as a literal of the language.
     def self.literal(value, language)
+        return KataCompiled.literal(value, language) if KataCompiled::LANGUAGES.include?(language)
+
         case value
         when true then language == 'python' ? 'True' : 'true'
         when false then language == 'python' ? 'False' : 'false'
@@ -174,7 +183,9 @@ module KataCheck
             shown = values.transform_values { |v| literal(v, language) }
             call = random['call'].gsub(/\b(#{names.map { |n| Regexp.escape(n) }.join('|')})\b/) { shown[$1] }
             arguments = names.map { |n| shown[n] }.join(', ')
-            expect = if language == 'python'
+            expect = if KataCompiled::LANGUAGES.include?(language)
+                KataCompiled.reference(random['reference'], shown)
+            elsif language == 'python'
                 "(lambda #{names.join(', ')}: #{random['reference']})(#{arguments})"
             elsif language == 'javascript'
                 "((#{names.join(', ')}) => (#{random['reference']}))(#{arguments})"
@@ -264,6 +275,8 @@ module KataCheck
         return [:invalid, EMPTY, nil] if code.to_s.strip.empty?
 
         language_name = check['language']
+        return compiled_check(task, check, code, run, seed) if KataCompiled::LANGUAGES.include?(language_name)
+
         language = CHECKS.fetch(language_name)
         file = FILES.fetch(language_name)
         harness = HARNESS_FILES.fetch(language_name)
@@ -315,6 +328,41 @@ module KataCheck
         [status, message, read]
     end
 
+    # Dart and Java (KataCompiled): the code and the typical wrong solutions
+    # compiled and run in one go, each target's output in a section.
+    def self.compiled_check(task, check, code, run, seed)
+        language_name = check['language']
+        if (found = KataCompiled.forbidden(code, check['forbid']))
+            return [:wrong, "Dein Code (Zeile #{found[1]}) benutzt `#{found[0]}`. Das gibt es in dieser Aufgabe nicht: Du schreibst es gerade selbst.", nil]
+        end
+
+        language = CHECKS.fetch(language_name)
+        cases = language.cases(check) + random_cases(check, seed)
+        alternatives = (task['feedback'] || []).select { |f| f.dig('when', 'same_as') }
+        program = KataCompiled.program(language_name, code, alternatives.map { |f| f['when']['same_as'] }, cases)
+        seconds = check['timeout'] || 10
+        timeout = [seconds * program[:targets].size, MAX_SECONDS].min
+        result = run.call(:files => program[:files], :argv => program[:argv], :timeout => timeout)
+        return [:unavailable, BUSY, nil] if result.nil?
+
+        sections = result.too_long ? {} : KataCompiled.sections(result.stdout)
+        mine = sections[program[:targets].first]
+        timed_out = result.timed_out && !(mine && CallCheck.parse(mine))
+        status, message, read = KataCompiled.evaluate(language_name, check, code, cases, mine.to_s, :timed_out => timed_out)
+        message = check['slow'] if check['slow'] && timed_out
+        if status == :wrong && !alternatives.empty?
+            others = program[:targets].drop(1).map { |t| sections[t].to_s }
+            say = same_as(mine.to_s, others, alternatives)
+            message = say if say
+        end
+        explanation = status == :wrong ? explain(message, language_name) : nil
+        message = "#{message}\n\n#{explanation}" if explanation
+        if status == :correct && (problem = RecursionCheck.problem(check, code, RecursionCheck.function_name(check)))
+            return [:wrong, problem, read]
+        end
+        [status, message, read]
+    end
+
     # Error messages that stop a beginner, each with a line in German that
     # says what usually lies behind it; the original stays above it.
     # [language, pattern, explanation]; the name in the pattern's first
@@ -342,6 +390,22 @@ module KataCheck
          'Hier ist ein Wert `undefined` oder `null`, also nichts, und der hat kein `%s`. Gibt eine Funktion vielleicht nichts mit `return` zurück?'],
         ['javascript', /Unexpected end of input|missing \) after argument list|Unexpected token '\}'/,
          'Die Klammern passen nicht: Jede `{` und jede `(` braucht ihr Gegenstück.'],
+        ['dart', /Expected ';' after this/,
+         'In Dart endet jede Anweisung mit einem Semikolon `;`.'],
+        ['dart', /A value of type '[^']+' can't be returned from (?:a function|the function|the method)/,
+         'Was die Funktion zurückgibt, passt nicht zu dem Typ, der vor ihrem Namen steht.'],
+        ['dart', /The body might complete normally, causing 'null' to be returned/,
+         'Deine Funktion kommt ans Ende, ohne etwas mit `return` zurückzugeben: Wo fehlt ein `return`?'],
+        ['java', /';' expected/,
+         'In Java endet jede Anweisung mit einem Semikolon `;`.'],
+        ['java', /missing return statement/,
+         'Deine Methode kommt ans Ende, ohne etwas mit `return` zurückzugeben: Wo fehlt ein `return`?'],
+        ['java', /incompatible types: (\S+) cannot be converted/,
+         'Ein Wert vom Typ `%s` steht dort, wo Java einen anderen Typ erwartet. Passt der Typ vor dem Namen der Methode oder der Variablen?'],
+        ['java', /StackOverflowError/,
+         'Deine Methode ruft sich so oft selbst auf, dass der Speicher dafür ausgeht. Erreicht sie den kleinsten Fall, in dem sie ohne Aufruf fertig ist?'],
+        ['dart', /Stack Overflow/,
+         'Deine Funktion ruft sich so oft selbst auf, dass der Speicher dafür ausgeht. Erreicht sie den kleinsten Fall, in dem sie ohne Aufruf fertig ist?'],
         ['ruby', /String can't be coerced into Integer|no implicit conversion of Integer into String/,
          'Text und Zahl lassen sich nicht mit `+` aneinanderhängen. `zahl.to_s` macht aus der Zahl einen Text, oder du schreibst `"…#{zahl}…"`.'],
     ].freeze
@@ -401,6 +465,8 @@ module KataCheck
     }.freeze
 
     def self.top_level?(code, language)
+        return KataCompiled.has_main?(code) if KataCompiled::LANGUAGES.include?(language)
+
         defining = DEFINING[language] or return true
         code.to_s.each_line.any? do |line|
             next false if line =~ /\A\s/ || line.strip.empty? || line.start_with?('#')
@@ -415,7 +481,8 @@ module KataCheck
     def self.run_program(language, code, run)
         return { :status => :invalid, :output => '', :message => EMPTY } if code.to_s.strip.empty?
 
-        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => PROGRAMS.fetch(language), :timeout => RUN_SECONDS)
+        argv = KataCompiled::LANGUAGES.include?(language) ? KataCompiled.run_argv(language) : PROGRAMS.fetch(language)
+        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv, :timeout => RUN_SECONDS)
         return { :status => :unavailable, :output => '', :message => BUSY } if result.nil?
 
         output = result.stdout + result.stderr
