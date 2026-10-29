@@ -347,6 +347,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         guile-${GUILE_VERSION} \
         host \
         htop \
+        hyperfine \
         imagemagick \
         iputils-ping \
         iputils-tracepath \
@@ -400,6 +401,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         rsync \
         sbcl \
         software-properties-common \
+        swi-prolog-nox \
         tar \
         telnet \
         traceroute \

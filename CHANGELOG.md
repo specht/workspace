@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Workspace-Image enthält SWI-Prolog und `hyperfine` (für »Logisch programmieren mit Prolog« und »Wie lange dauert
+  das?«): Nach dem Update das Image neu bauen (`./build-image.sh`). Der Ruby-Dienst braucht SWI-Prolog für die
+  Beispiele der neuen Prüfart `prolog`: `./config.rb build ruby && ./config.rb up -d ruby`.
 - Die Turtle-Grafik führt Ruby und Python im Browser aus: Nach dem Update einmal `./fetch-turtle-runtimes.sh`
   ausführen (lädt Pyodide und ruby.wasm in festen Versionen nach `src/static/include/turtle/runtime`, nicht in git).
   nginx liefert sie vorkomprimiert und lange gecacht aus (`gzip_static`); die Konfiguration schreibt der Ruby-Dienst
