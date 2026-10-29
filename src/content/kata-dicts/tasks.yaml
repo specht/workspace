@@ -113,6 +113,83 @@ tasks:
           return 'unbekannt';
         }
         ```
+    dart:
+      prompt: |
+        Ein Telefonbuch ordnet jedem Namen eine Nummer zu: `{'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}`. Schreib eine Funktion `String phoneNumber(Map<String, String> book, String name)`, die die Nummer zurückgibt, und `'unbekannt'`, wenn der Name nicht darin steht: `phoneNumber(book, 'Ada')` ergibt `'030 1815'`.
+      starter: |
+        String phoneNumber(Map<String, String> book, String name) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Ada')"
+            expect: "'030 1815'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Grace')"
+            expect: "'089 1906'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'Linus')"
+            expect: "'unbekannt'"
+            say: "Steht der Name nicht im Telefonbuch, kommt `'unbekannt'` zurück."
+          - call: "phoneNumber({}, 'Ada')"
+            expect: "'unbekannt'"
+          - call: "phoneNumber({'Ada': '030 1815', 'Alan': '040 1912', 'Grace': '089 1906'}, 'ada')"
+            expect: "'unbekannt'"
+            say: "Groß und klein zählen hier: `'ada'` steht nicht darin."
+      feedback:
+        - when: { same_as: "String phoneNumber(Map<String, String> book, String name) {\n  return book[name]!;\n}\n" }
+          say: "Steht ein Name nicht darin, ist `book[name]` `null`, und das `!` bricht dann ab. Frag vorher mit `book.containsKey(name)`, ob er darin steht."
+      hint:
+        - "`book['Ada']` ist die Nummer, die zum Schlüssel `'Ada'` gehört, oder `null`, wenn es ihn nicht gibt."
+        - "`book.containsKey(name)` fragt, ob der Name darin steht. Kürzer: `book[name] ?? 'unbekannt'` nimmt den Text rechts, wenn links `null` steht."
+      solution: |
+        ```dart
+        String phoneNumber(Map<String, String> book, String name) {
+          if (book.containsKey(name)) {
+            return book[name]!;
+          }
+          return 'unbekannt';
+        }
+        ```
+    java:
+      prompt: |
+        Ein Telefonbuch ordnet jedem Namen eine Nummer zu: `Map.of("Ada", "030 1815", "Alan", "040 1912", "Grace", "089 1906")`. Schreib eine Methode `String phoneNumber(Map<String, String> book, String name)`, die die Nummer zurückgibt, und `"unbekannt"`, wenn der Name nicht darin steht: `phoneNumber(book, "Ada")` ergibt `"030 1815"`.
+      starter: |
+        String phoneNumber(Map<String, String> book, String name) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "phoneNumber(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\", \"Grace\", \"089 1906\"), \"Ada\")"
+            expect: "\"030 1815\""
+          - call: "phoneNumber(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\", \"Grace\", \"089 1906\"), \"Grace\")"
+            expect: "\"089 1906\""
+          - call: "phoneNumber(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\", \"Grace\", \"089 1906\"), \"Linus\")"
+            expect: "\"unbekannt\""
+            say: "Steht der Name nicht im Telefonbuch, kommt `\"unbekannt\"` zurück."
+          - call: "phoneNumber(Map.of(), \"Ada\")"
+            expect: "\"unbekannt\""
+          - call: "phoneNumber(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\", \"Grace\", \"089 1906\"), \"ada\")"
+            expect: "\"unbekannt\""
+            say: "Groß und klein zählen hier: `\"ada\"` steht nicht darin."
+      feedback:
+        - when: { same_as: "String phoneNumber(Map<String, String> book, String name) {\n    return book.get(name);\n}\n" }
+          say: "Steht ein Name nicht darin, gibt `book.get(name)` `null` zurück. Frag vorher mit `book.containsKey(name)`, ob er darin steht."
+      hint:
+        - "`book.get(\"Ada\")` ist die Nummer, die zum Schlüssel `\"Ada\"` gehört, oder `null`, wenn es ihn nicht gibt."
+        - "`book.containsKey(name)` fragt, ob der Name darin steht. Kürzer: `book.getOrDefault(name, \"unbekannt\")`."
+      solution: |
+        ```java
+        String phoneNumber(Map<String, String> book, String name) {
+            if (book.containsKey(name)) {
+                return book.get(name);
+            }
+            return "unbekannt";
+        }
+        ```
+
   - id: count-items
     title: "Strichliste"
     level: 1
@@ -227,6 +304,84 @@ tasks:
           return counts;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `Map<Object, int> countItems(List<Object> items)`, die zählt, wie oft jedes Element in der Liste steht, und das als Map zurückgibt: `countItems(['Apfel', 'Birne', 'Apfel'])` ergibt `{'Apfel': 2, 'Birne': 1}`.
+      starter: |
+        Map<Object, int> countItems(List<Object> items) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.fold, .where]
+        cases:
+          - call: "countItems(['Apfel', 'Birne', 'Apfel'])"
+            expect: "{'Apfel': 2, 'Birne': 1}"
+          - call: "countItems([])"
+            expect: "{}"
+            say: "Eine leere Liste gibt ein leeres Ergebnis."
+          - call: "countItems(['a', 'a', 'a'])"
+            expect: "{'a': 3}"
+            say: "Kommt ein Element wieder, zählst du weiter."
+          - call: "countItems([3, 1, 3, 3])"
+            expect: "{3: 3, 1: 1}"
+            say: "Auch Zahlen lassen sich zählen."
+      feedback:
+        - when: { same_as: "Map<Object, int> countItems(List<Object> items) {\n  final counts = <Object, int>{};\n  for (final item in items) {\n    counts[item] = 1;\n  }\n  return counts;\n}\n" }
+          say: "Kommt ein Element ein zweites Mal, fängt dein Code wieder bei 1 an. Zähl weiter, wo du warst."
+      hint:
+        - "Fang mit einer leeren Map an, `<Object, int>{}`. Für jedes Element erhöhst du seinen Zähler um 1."
+        - "Beim ersten Mal hat das Element noch keinen Zähler: `counts[item]` ist dann `null`, und `counts[item] ?? 0` ist 0."
+      solution: |
+        ```dart
+        Map<Object, int> countItems(List<Object> items) {
+          final counts = <Object, int>{};
+          for (final item in items) {
+            counts[item] = (counts[item] ?? 0) + 1;
+          }
+          return counts;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Map<String, Integer> countItems(List<String> items)`, die zählt, wie oft jedes Element in der Liste steht, und das als Map zurückgibt: `countItems(List.of("Apfel", "Birne", "Apfel"))` ergibt `{Apfel=2, Birne=1}`. Ohne Streams.
+      starter: |
+        Map<String, Integer> countItems(List<String> items) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors, Collections.frequency]
+        cases:
+          - call: "countItems(List.of(\"Apfel\", \"Birne\", \"Apfel\"))"
+            expect: "Map.of(\"Apfel\", 2, \"Birne\", 1)"
+          - call: "countItems(List.of())"
+            expect: "Map.of()"
+            say: "Eine leere Liste gibt ein leeres Ergebnis."
+          - call: "countItems(List.of(\"a\", \"a\", \"a\"))"
+            expect: "Map.of(\"a\", 3)"
+            say: "Kommt ein Element wieder, zählst du weiter."
+          - call: "countItems(List.of(\"rot\", \"blau\", \"rot\", \"rot\"))"
+            expect: "Map.of(\"rot\", 3, \"blau\", 1)"
+      feedback:
+        - when: { same_as: "Map<String, Integer> countItems(List<String> items) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String item : items) {\n        counts.put(item, 1);\n    }\n    return counts;\n}\n" }
+          say: "Kommt ein Element ein zweites Mal, fängt dein Code wieder bei 1 an. Zähl weiter, wo du warst."
+      hint:
+        - "Fang mit einer leeren Map an, `new HashMap<>()`. Für jedes Element erhöhst du seinen Zähler um 1."
+        - "Beim ersten Mal hat das Element noch keinen Zähler: `counts.getOrDefault(item, 0)` ist dann 0. `counts.put(item, …)` schreibt den neuen Zähler hinein."
+      solution: |
+        ```java
+        Map<String, Integer> countItems(List<String> items) {
+            Map<String, Integer> counts = new HashMap<>();
+            for (String item : items) {
+                counts.put(item, counts.getOrDefault(item, 0) + 1);
+            }
+            return counts;
+        }
+        ```
+
   - id: total-price
     title: "Was kostet der Einkauf?"
     level: 1
@@ -329,6 +484,77 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        Im Schulkiosk hat alles seinen Preis, in Cent: `{'Brötchen': 50, 'Brezel': 80, 'Saft': 150}`. Schreib eine Funktion `int totalPrice(Map<String, int> prices, List<String> cart)`, die zusammenrechnet, was die Liste `cart` kostet: `totalPrice(prices, ['Brezel', 'Saft', 'Brezel'])` ergibt `310`.
+      starter: |
+        int totalPrice(Map<String, int> prices, List<String> cart) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brezel', 'Saft', 'Brezel'])"
+            expect: "310"
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, [])"
+            expect: "0"
+            say: "Ein leerer Einkauf kostet nichts."
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Saft'])"
+            expect: "150"
+          - call: "totalPrice({'Brötchen': 50, 'Brezel': 80, 'Saft': 150}, ['Brötchen', 'Brötchen', 'Brötchen', 'Brötchen'])"
+            expect: "200"
+            say: "Was mehrmals im Einkauf steht, zählt mehrmals."
+      feedback:
+        - when: { same_as: "int totalPrice(Map<String, int> prices, List<String> cart) {\n  var total = 0;\n  for (final item in prices.keys) {\n    if (cart.contains(item)) {\n      total += prices[item]!;\n    }\n  }\n  return total;\n}\n" }
+          say: "Du gehst die Preisliste durch und zählst jedes Produkt einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+      hint: "Geh den Einkauf durch, nicht die Preisliste. `prices['Saft']!` ist der Preis eines Safts; das `!` sagt Dart, dass es ihn sicher gibt."
+      solution: |
+        ```dart
+        int totalPrice(Map<String, int> prices, List<String> cart) {
+          var total = 0;
+          for (final item in cart) {
+            total += prices[item]!;
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Im Schulkiosk hat alles seinen Preis, in Cent: `Map.of("Brötchen", 50, "Brezel", 80, "Saft", 150)`. Schreib eine Methode `int totalPrice(Map<String, Integer> prices, List<String> cart)`, die zusammenrechnet, was die Liste `cart` kostet: `totalPrice(prices, List.of("Brezel", "Saft", "Brezel"))` ergibt `310`.
+      starter: |
+        int totalPrice(Map<String, Integer> prices, List<String> cart) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "totalPrice(Map.of(\"Brötchen\", 50, \"Brezel\", 80, \"Saft\", 150), List.of(\"Brezel\", \"Saft\", \"Brezel\"))"
+            expect: "310"
+          - call: "totalPrice(Map.of(\"Brötchen\", 50, \"Brezel\", 80, \"Saft\", 150), List.of())"
+            expect: "0"
+            say: "Ein leerer Einkauf kostet nichts."
+          - call: "totalPrice(Map.of(\"Brötchen\", 50, \"Brezel\", 80, \"Saft\", 150), List.of(\"Saft\"))"
+            expect: "150"
+          - call: "totalPrice(Map.of(\"Brötchen\", 50, \"Brezel\", 80, \"Saft\", 150), List.of(\"Brötchen\", \"Brötchen\", \"Brötchen\", \"Brötchen\"))"
+            expect: "200"
+            say: "Was mehrmals im Einkauf steht, zählt mehrmals."
+      feedback:
+        - when: { same_as: "int totalPrice(Map<String, Integer> prices, List<String> cart) {\n    int total = 0;\n    for (String item : prices.keySet()) {\n        if (cart.contains(item)) {\n            total += prices.get(item);\n        }\n    }\n    return total;\n}\n" }
+          say: "Du gehst die Preisliste durch und zählst jedes Produkt einmal. Geh den Einkauf durch: Was zweimal darin steht, kostet zweimal."
+      hint: "Geh den Einkauf durch, nicht die Preisliste. `prices.get(\"Saft\")` ist der Preis eines Safts."
+      solution: |
+        ```java
+        int totalPrice(Map<String, Integer> prices, List<String> cart) {
+            int total = 0;
+            for (String item : cart) {
+                total += prices.get(item);
+            }
+            return total;
+        }
+        ```
+
   - id: keys-with-value
     title: "Wer hat so viele Punkte?"
     level: 1
@@ -422,6 +648,73 @@ tasks:
           return names;
         }
         ```
+    dart:
+      prompt: |
+        `scores` ordnet jedem Namen seine Punkte zu. Schreib eine Funktion `List<String> keysWithValue(Map<String, int> scores, int value)`, die die Namen mit genau `value` Punkten als Liste zurückgibt, in der Reihenfolge, in der sie in `scores` stehen: `keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)` ergibt `['Ada', 'Grace']`.
+      starter: |
+        List<String> keysWithValue(Map<String, int> scores, int value) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 7)"
+            expect: "['Ada', 'Grace']"
+          - call: "keysWithValue({'Ada': 7, 'Alan': 5, 'Grace': 7}, 3)"
+            expect: "[]"
+            say: "Hat niemand so viele Punkte, ist die Liste leer."
+          - call: "keysWithValue({}, 1)"
+            expect: "[]"
+          - call: "keysWithValue({'Linus': 0, 'Margaret': 0}, 0)"
+            expect: "['Linus', 'Margaret']"
+      hint: "`for (final name in scores.keys) { … }` geht die Schlüssel der Reihe nach durch; `scores[name]` ist der Wert."
+      solution: |
+        ```dart
+        List<String> keysWithValue(Map<String, int> scores, int value) {
+          final names = <String>[];
+          for (final name in scores.keys) {
+            if (scores[name] == value) {
+              names.add(name);
+            }
+          }
+          return names;
+        }
+        ```
+    java:
+      prompt: |
+        `scores` ordnet jedem Namen seine Punkte zu. Schreib eine Methode `List<String> keysWithValue(Map<String, Integer> scores, int value)`, die die Namen mit genau `value` Punkten als Liste zurückgibt, in der Reihenfolge, in der sie in `scores` stehen: Bei Ada mit 7, Alan mit 5 und Grace mit 7 Punkten ergibt `keysWithValue(scores, 7)` die Liste `[Ada, Grace]`. Die Prüfung gibt dir dafür eine `LinkedHashMap`: Sie behält die Reihenfolge, in der die Paare hineinkamen.
+      starter: |
+        List<String> keysWithValue(Map<String, Integer> scores, int value) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "Map<String, Integer> scores = new LinkedHashMap<>(); scores.put(\"Ada\", 7); scores.put(\"Alan\", 5); scores.put(\"Grace\", 7); keysWithValue(scores, 7)"
+            expect: "List.of(\"Ada\", \"Grace\")"
+          - call: "Map<String, Integer> scores = new LinkedHashMap<>(); scores.put(\"Ada\", 7); scores.put(\"Alan\", 5); scores.put(\"Grace\", 7); keysWithValue(scores, 3)"
+            expect: "List.of()"
+            say: "Hat niemand so viele Punkte, ist die Liste leer."
+          - call: "keysWithValue(Map.of(), 1)"
+            expect: "List.of()"
+          - call: "Map<String, Integer> scores = new LinkedHashMap<>(); scores.put(\"Linus\", 0); scores.put(\"Margaret\", 0); keysWithValue(scores, 0)"
+            expect: "List.of(\"Linus\", \"Margaret\")"
+      hint: "`for (String name : scores.keySet()) { … }` geht die Schlüssel der Reihe nach durch; `scores.get(name)` ist der Wert."
+      solution: |
+        ```java
+        List<String> keysWithValue(Map<String, Integer> scores, int value) {
+            List<String> names = new ArrayList<>();
+            for (String name : scores.keySet()) {
+                if (scores.get(name) == value) {
+                    names.add(name);
+                }
+            }
+            return names;
+        }
+        ```
+
   - id: letter-count
     title: "Wie oft jeder Buchstabe?"
     level: 2
@@ -536,6 +829,90 @@ tasks:
           return counts;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `Map<String, int> letterCount(String text)`, die zählt, wie oft jeder Buchstabe von `a` bis `z` im Text vorkommt; groß und klein zählen gemeinsam, alles andere zählt nicht: `letterCount('Anna!')` ergibt `{'a': 2, 'n': 2}`.
+      starter: |
+        Map<String, int> letterCount(String text) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "letterCount('Anna!')"
+            expect: "{'a': 2, 'n': 2}"
+            say: "Groß und klein zählen gemeinsam."
+          - call: "letterCount('')"
+            expect: "{}"
+          - call: "letterCount('Hallo Welt')"
+            expect: "{'h': 1, 'a': 1, 'l': 3, 'o': 1, 'w': 1, 'e': 1, 't': 1}"
+            say: "Ein Leerzeichen ist kein Buchstabe."
+          - call: "letterCount('123')"
+            expect: "{}"
+          - call: "letterCount('Zz')"
+            expect: "{'z': 2}"
+      feedback:
+        - when: { same_as: "Map<String, int> letterCount(String text) {\n  final counts = <String, int>{};\n  for (final char in text.split('')) {\n    if ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.contains(char)) {\n      counts[char] = (counts[char] ?? 0) + 1;\n    }\n  }\n  return counts;\n}\n" }
+          say: "`'A'` und `'a'` sind bei dir zwei Schlüssel. Mach den Text vorher klein."
+      hint:
+        - "Wie die Strichliste, nur über die Buchstaben des Textes: `text.split('')` ist die Liste seiner Zeichen. Welche Zeichen lässt du aus?"
+        - "`'abcdefghijklmnopqrstuvwxyz'.contains(char)` fragt, ob ein Zeichen ein kleiner Buchstabe ist; `text.toLowerCase()` macht den Text klein."
+      solution: |
+        ```dart
+        Map<String, int> letterCount(String text) {
+          final counts = <String, int>{};
+          for (final char in text.toLowerCase().split('')) {
+            if ('abcdefghijklmnopqrstuvwxyz'.contains(char)) {
+              counts[char] = (counts[char] ?? 0) + 1;
+            }
+          }
+          return counts;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Map<Character, Integer> letterCount(String text)`, die zählt, wie oft jeder Buchstabe von `a` bis `z` im Text vorkommt; groß und klein zählen gemeinsam, alles andere zählt nicht: `letterCount("Anna!")` ergibt `{a=2, n=2}`. Ein einzelnes Zeichen ist ein `char`, als Schlüssel einer Map ein `Character`.
+      starter: |
+        Map<Character, Integer> letterCount(String text) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.chars, .stream, Collectors]
+        cases:
+          - call: "letterCount(\"Anna!\")"
+            expect: "Map.of('a', 2, 'n', 2)"
+            say: "Groß und klein zählen gemeinsam."
+          - call: "letterCount(\"\")"
+            expect: "Map.of()"
+          - call: "letterCount(\"Hallo Welt\")"
+            expect: "Map.of('h', 1, 'a', 1, 'l', 3, 'o', 1, 'w', 1, 'e', 1, 't', 1)"
+            say: "Ein Leerzeichen ist kein Buchstabe."
+          - call: "letterCount(\"123\")"
+            expect: "Map.of()"
+          - call: "letterCount(\"Zz\")"
+            expect: "Map.of('z', 2)"
+      feedback:
+        - when: { same_as: "Map<Character, Integer> letterCount(String text) {\n    Map<Character, Integer> counts = new HashMap<>();\n    for (char c : text.toCharArray()) {\n        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n    }\n    return counts;\n}\n" }
+          say: "`'A'` und `'a'` sind bei dir zwei Schlüssel. Mach den Text vorher klein."
+      hint:
+        - "Wie die Strichliste, nur über die Zeichen des Textes: `for (char c : text.toCharArray())`. Welche Zeichen lässt du aus?"
+        - "Zeichen lassen sich vergleichen: `c >= 'a' && c <= 'z'` fragt, ob `c` ein kleiner Buchstabe ist; `text.toLowerCase()` macht den Text klein."
+      solution: |
+        ```java
+        Map<Character, Integer> letterCount(String text) {
+            Map<Character, Integer> counts = new HashMap<>();
+            for (char c : text.toLowerCase().toCharArray()) {
+                if (c >= 'a' && c <= 'z') {
+                    counts.put(c, counts.getOrDefault(c, 0) + 1);
+                }
+            }
+            return counts;
+        }
+        ```
+
   - id: most-frequent
     title: "Das häufigste Wort"
     level: 2
@@ -660,6 +1037,96 @@ tasks:
           return best;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String mostFrequent(List<String> words)`, die das Wort zurückgibt, das in der Liste am häufigsten vorkommt: `mostFrequent(['ja', 'nein', 'ja'])` ergibt `'ja'`. Kommen mehrere gleich oft vor, gewinnt das, das zuerst in der Liste steht. Die Liste ist nie leer.
+      starter: |
+        String mostFrequent(List<String> words) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "mostFrequent(['ja', 'nein', 'ja'])"
+            expect: "'ja'"
+          - call: "mostFrequent(['eins'])"
+            expect: "'eins'"
+          - call: "mostFrequent(['a', 'b', 'a', 'b'])"
+            expect: "'a'"
+            say: "Gleich oft: Es gewinnt das Wort, das zuerst in der Liste steht."
+          - call: "mostFrequent(['x', 'y', 'y', 'z'])"
+            expect: "'y'"
+          - call: "mostFrequent(['rot', 'grün', 'blau', 'grün', 'rot', 'grün'])"
+            expect: "'grün'"
+      feedback:
+        - when: { same_as: "String mostFrequent(List<String> words) {\n  final counts = <String, int>{};\n  for (final word in words) {\n    counts[word] = (counts[word] ?? 0) + 1;\n  }\n  var best = words[0];\n  for (final word in words) {\n    if (counts[word]! >= counts[best]!) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
+          say: "Bei gleich vielen gewinnt das erste Wort. Mit `>=` nimmt dein Code das letzte; nur ein häufigeres soll das bisher beste ersetzen."
+      hint:
+        - "Zwei Schritte: Zähl zuerst wie bei der Strichliste. Dann such das Wort mit dem größten Zähler, wie bei der größten Zahl einer Liste."
+        - "Geh beim Suchen die Wörter der Liste der Reihe nach durch, dann gewinnt bei gleich vielen das erste. `counts[word]!` ist der Zähler eines Worts, das sicher darin steht."
+      solution: |
+        ```dart
+        String mostFrequent(List<String> words) {
+          final counts = <String, int>{};
+          for (final word in words) {
+            counts[word] = (counts[word] ?? 0) + 1;
+          }
+          var best = words[0];
+          for (final word in words) {
+            if (counts[word]! > counts[best]!) {
+              best = word;
+            }
+          }
+          return best;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String mostFrequent(List<String> words)`, die das Wort zurückgibt, das in der Liste am häufigsten vorkommt: `mostFrequent(List.of("ja", "nein", "ja"))` ergibt `"ja"`. Kommen mehrere gleich oft vor, gewinnt das, das zuerst in der Liste steht. Die Liste ist nie leer.
+      starter: |
+        String mostFrequent(List<String> words) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors, Collections.frequency]
+        cases:
+          - call: "mostFrequent(List.of(\"ja\", \"nein\", \"ja\"))"
+            expect: "\"ja\""
+          - call: "mostFrequent(List.of(\"eins\"))"
+            expect: "\"eins\""
+          - call: "mostFrequent(List.of(\"a\", \"b\", \"a\", \"b\"))"
+            expect: "\"a\""
+            say: "Gleich oft: Es gewinnt das Wort, das zuerst in der Liste steht."
+          - call: "mostFrequent(List.of(\"x\", \"y\", \"y\", \"z\"))"
+            expect: "\"y\""
+          - call: "mostFrequent(List.of(\"rot\", \"grün\", \"blau\", \"grün\", \"rot\", \"grün\"))"
+            expect: "\"grün\""
+      feedback:
+        - when: { same_as: "String mostFrequent(List<String> words) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String word : words) {\n        counts.put(word, counts.getOrDefault(word, 0) + 1);\n    }\n    String best = words.get(0);\n    for (String word : words) {\n        if (counts.get(word) >= counts.get(best)) {\n            best = word;\n        }\n    }\n    return best;\n}\n" }
+          say: "Bei gleich vielen gewinnt das erste Wort. Mit `>=` nimmt dein Code das letzte; nur ein häufigeres soll das bisher beste ersetzen."
+      hint:
+        - "Zwei Schritte: Zähl zuerst wie bei der Strichliste. Dann such das Wort mit dem größten Zähler, wie bei der größten Zahl einer Liste."
+        - "Geh beim Suchen die Wörter der Liste der Reihe nach durch, dann gewinnt bei gleich vielen das erste."
+      solution: |
+        ```java
+        String mostFrequent(List<String> words) {
+            Map<String, Integer> counts = new HashMap<>();
+            for (String word : words) {
+                counts.put(word, counts.getOrDefault(word, 0) + 1);
+            }
+            String best = words.get(0);
+            for (String word : words) {
+                if (counts.get(word) > counts.get(best)) {
+                    best = word;
+                }
+            }
+            return best;
+        }
+        ```
+
   - id: group-by-length
     title: "Nach Länge sortiert"
     level: 2
@@ -774,6 +1241,87 @@ tasks:
           return groups;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `Map<int, List<String>> groupByLength(List<String> words)`, die die Wörter nach ihrer Länge in Gruppen ordnet: Der Schlüssel ist die Länge, der Wert die Liste der Wörter mit dieser Länge, in ihrer Reihenfolge. `groupByLength(['ich', 'du', 'wir'])` ergibt `{3: ['ich', 'wir'], 2: ['du']}`.
+      starter: |
+        Map<int, List<String>> groupByLength(List<String> words) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.where]
+        cases:
+          - call: "groupByLength(['ich', 'du', 'wir'])"
+            expect: "{3: ['ich', 'wir'], 2: ['du']}"
+          - call: "groupByLength([])"
+            expect: "{}"
+          - call: "groupByLength(['a', 'bb', 'c', 'dd', 'eee'])"
+            expect: "{1: ['a', 'c'], 2: ['bb', 'dd'], 3: ['eee']}"
+            say: "Die Wörter einer Gruppe bleiben in ihrer Reihenfolge."
+          - call: "groupByLength(['Haus'])"
+            expect: "{4: ['Haus']}"
+      feedback:
+        - when: { same_as: "Map<int, List<String>> groupByLength(List<String> words) {\n  final groups = <int, List<String>>{};\n  for (final word in words) {\n    groups[word.length] = [word];\n  }\n  return groups;\n}\n" }
+          say: "Kommt ein zweites Wort derselben Länge, ersetzt es bei dir die ganze Gruppe. Leg die Liste nur beim ersten Mal an und häng danach an."
+      hint:
+        - "Die Werte sind Listen. Beim ersten Wort einer Länge gibt es seine Liste noch nicht: Leg sie an, wenn `groups.containsKey(word.length)` noch nicht stimmt."
+        - "Danach hängst du das Wort an: `groups[word.length]!.add(word)`."
+      solution: |
+        ```dart
+        Map<int, List<String>> groupByLength(List<String> words) {
+          final groups = <int, List<String>>{};
+          for (final word in words) {
+            if (!groups.containsKey(word.length)) {
+              groups[word.length] = [];
+            }
+            groups[word.length]!.add(word);
+          }
+          return groups;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Map<Integer, List<String>> groupByLength(List<String> words)`, die die Wörter nach ihrer Länge in Gruppen ordnet: Der Schlüssel ist die Länge, der Wert die Liste der Wörter mit dieser Länge, in ihrer Reihenfolge. `groupByLength(List.of("ich", "du", "wir"))` ergibt `{2=[du], 3=[ich, wir]}`. Ohne Streams.
+      starter: |
+        Map<Integer, List<String>> groupByLength(List<String> words) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors]
+        cases:
+          - call: "groupByLength(List.of(\"ich\", \"du\", \"wir\"))"
+            expect: "Map.of(3, List.of(\"ich\", \"wir\"), 2, List.of(\"du\"))"
+          - call: "groupByLength(List.of())"
+            expect: "Map.of()"
+          - call: "groupByLength(List.of(\"a\", \"bb\", \"c\", \"dd\", \"eee\"))"
+            expect: "Map.of(1, List.of(\"a\", \"c\"), 2, List.of(\"bb\", \"dd\"), 3, List.of(\"eee\"))"
+            say: "Die Wörter einer Gruppe bleiben in ihrer Reihenfolge."
+          - call: "groupByLength(List.of(\"Haus\"))"
+            expect: "Map.of(4, List.of(\"Haus\"))"
+      feedback:
+        - when: { same_as: "Map<Integer, List<String>> groupByLength(List<String> words) {\n    Map<Integer, List<String>> groups = new HashMap<>();\n    for (String word : words) {\n        groups.put(word.length(), new ArrayList<>(List.of(word)));\n    }\n    return groups;\n}\n" }
+          say: "Kommt ein zweites Wort derselben Länge, ersetzt es bei dir die ganze Gruppe. Leg die Liste nur beim ersten Mal an und häng danach an."
+      hint:
+        - "Die Werte sind Listen. Beim ersten Wort einer Länge gibt es seine Liste noch nicht: Leg mit `new ArrayList<>()` eine an, wenn `groups.containsKey(word.length())` noch nicht stimmt."
+        - "Danach hängst du das Wort an: `groups.get(word.length()).add(word)`."
+      solution: |
+        ```java
+        Map<Integer, List<String>> groupByLength(List<String> words) {
+            Map<Integer, List<String>> groups = new HashMap<>();
+            for (String word : words) {
+                if (!groups.containsKey(word.length())) {
+                    groups.put(word.length(), new ArrayList<>());
+                }
+                groups.get(word.length()).add(word);
+            }
+            return groups;
+        }
+        ```
+
   - id: merge-counts
     title: "Zwei Strichlisten zusammen"
     level: 2
@@ -879,6 +1427,79 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Zwei Klassen haben gezählt, welches Obst sie mögen. Schreib eine Funktion `Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b)`, die beide Zählungen zu einer zusammenrechnet: `mergeCounts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})` ergibt `{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}`. Die beiden Zählungen bleiben, wie sie sind.
+      starter: |
+        Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "mergeCounts({'Apfel': 3, 'Birne': 1}, {'Apfel': 2, 'Kiwi': 4})"
+            expect: "{'Apfel': 5, 'Birne': 1, 'Kiwi': 4}"
+            say: "Steht ein Schlüssel in beiden, zählen beide zusammen."
+          - call: "mergeCounts({}, {'Kiwi': 1})"
+            expect: "{'Kiwi': 1}"
+          - call: "mergeCounts({'Kiwi': 1}, {})"
+            expect: "{'Kiwi': 1}"
+          - call: "mergeCounts({'a': 1}, {'a': 1})"
+            expect: "{'a': 2}"
+      feedback:
+        - when: { same_as: "Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b) {\n  return {...a, ...b};\n}\n" }
+          say: "Bei einem Schlüssel, der in beiden steht, gewinnt so der Wert aus `b`, und der aus `a` ist weg. Zähl die beiden zusammen."
+      hint:
+        - "Fang mit einer Kopie von `a` an, `{...a}`, und geh die Schlüssel von `b` durch."
+        - "Steht der Schlüssel aus `b` schon darin? `result[key] ?? 0` ist sein Zähler oder 0."
+      solution: |
+        ```dart
+        Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b) {
+          final result = {...a};
+          for (final key in b.keys) {
+            result[key] = (result[key] ?? 0) + b[key]!;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Zwei Klassen haben gezählt, welches Obst sie mögen. Schreib eine Methode `Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b)`, die beide Zählungen zu einer zusammenrechnet: Aus Apfel 3, Birne 1 und Apfel 2, Kiwi 4 wird `{Apfel=5, Birne=1, Kiwi=4}`. Die beiden Zählungen bleiben, wie sie sind.
+      starter: |
+        Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "mergeCounts(Map.of(\"Apfel\", 3, \"Birne\", 1), Map.of(\"Apfel\", 2, \"Kiwi\", 4))"
+            expect: "Map.of(\"Apfel\", 5, \"Birne\", 1, \"Kiwi\", 4)"
+            say: "Steht ein Schlüssel in beiden, zählen beide zusammen."
+          - call: "mergeCounts(Map.of(), Map.of(\"Kiwi\", 1))"
+            expect: "Map.of(\"Kiwi\", 1)"
+          - call: "mergeCounts(Map.of(\"Kiwi\", 1), Map.of())"
+            expect: "Map.of(\"Kiwi\", 1)"
+          - call: "mergeCounts(Map.of(\"a\", 1), Map.of(\"a\", 1))"
+            expect: "Map.of(\"a\", 2)"
+      feedback:
+        - when: { same_as: "Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b) {\n    Map<String, Integer> result = new HashMap<>(a);\n    result.putAll(b);\n    return result;\n}\n" }
+          say: "Bei einem Schlüssel, der in beiden steht, gewinnt so der Wert aus `b`, und der aus `a` ist weg. Zähl die beiden zusammen."
+      hint:
+        - "Fang mit einer Kopie von `a` an, `new HashMap<>(a)`, und geh die Schlüssel von `b` durch. `a` selbst lässt sich hier nicht ändern: `Map.of(…)` legt eine Map an, die bleibt, wie sie ist."
+        - "Steht der Schlüssel aus `b` schon darin? `result.getOrDefault(key, 0)` ist sein Zähler oder 0."
+      solution: |
+        ```java
+        Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b) {
+            Map<String, Integer> result = new HashMap<>(a);
+            for (String key : b.keySet()) {
+                result.put(key, result.getOrDefault(key, 0) + b.get(key));
+            }
+            return result;
+        }
+        ```
+
   - id: invert
     title: "Umgekehrt nachschlagen"
     level: 3
@@ -988,6 +1609,84 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        `colors` ordnet jedem Obst seine Farbe zu. Schreib eine Funktion `Map<String, List<String>> invert(Map<String, String> colors)`, die umgekehrt jeder Farbe die Liste ihrer Obstsorten zuordnet, in ihrer Reihenfolge: `invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})` ergibt `{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}`.
+      starter: |
+        Map<String, List<String>> invert(Map<String, String> colors) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "invert({'Kiwi': 'grün', 'Banane': 'gelb', 'Apfel': 'grün'})"
+            expect: "{'grün': ['Kiwi', 'Apfel'], 'gelb': ['Banane']}"
+            say: "Haben zwei Obstsorten dieselbe Farbe, stehen beide in ihrer Liste."
+          - call: "invert({})"
+            expect: "{}"
+          - call: "invert({'Kirsche': 'rot'})"
+            expect: "{'rot': ['Kirsche']}"
+          - call: "invert({'a': 'x', 'b': 'y', 'c': 'x', 'd': 'y'})"
+            expect: "{'x': ['a', 'c'], 'y': ['b', 'd']}"
+      feedback:
+        - when: { same_as: "Map<String, List<String>> invert(Map<String, String> colors) {\n  final result = <String, List<String>>{};\n  for (final fruit in colors.keys) {\n    result[colors[fruit]!] = [fruit];\n  }\n  return result;\n}\n" }
+          say: "Haben zwei Obstsorten dieselbe Farbe, bleibt bei dir nur die letzte. Häng an die Liste an, statt sie zu ersetzen."
+      hint: "Geh die Paare durch: Jetzt ist die Farbe der Schlüssel, und das Obst kommt in ihre Liste. Wie bei den Längen der Wörter."
+      solution: |
+        ```dart
+        Map<String, List<String>> invert(Map<String, String> colors) {
+          final result = <String, List<String>>{};
+          for (final fruit in colors.keys) {
+            final color = colors[fruit]!;
+            if (!result.containsKey(color)) {
+              result[color] = [];
+            }
+            result[color]!.add(fruit);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        `colors` ordnet jedem Obst seine Farbe zu. Schreib eine Methode `Map<String, List<String>> invert(Map<String, String> colors)`, die umgekehrt jeder Farbe die Liste ihrer Obstsorten zuordnet, in ihrer Reihenfolge: Aus Kiwi grün, Banane gelb, Apfel grün wird `{grün=[Kiwi, Apfel], gelb=[Banane]}`. Die Prüfung gibt dir `colors` als `LinkedHashMap`, die ihre Reihenfolge behält. Ohne Streams.
+      starter: |
+        Map<String, List<String>> invert(Map<String, String> colors) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors]
+        cases:
+          - call: "Map<String, String> colors = new LinkedHashMap<>(); colors.put(\"Kiwi\", \"grün\"); colors.put(\"Banane\", \"gelb\"); colors.put(\"Apfel\", \"grün\"); invert(colors)"
+            expect: "Map.of(\"grün\", List.of(\"Kiwi\", \"Apfel\"), \"gelb\", List.of(\"Banane\"))"
+            say: "Haben zwei Obstsorten dieselbe Farbe, stehen beide in ihrer Liste."
+          - call: "invert(Map.of())"
+            expect: "Map.of()"
+          - call: "invert(Map.of(\"Kirsche\", \"rot\"))"
+            expect: "Map.of(\"rot\", List.of(\"Kirsche\"))"
+          - call: "Map<String, String> colors = new LinkedHashMap<>(); colors.put(\"a\", \"x\"); colors.put(\"b\", \"y\"); colors.put(\"c\", \"x\"); colors.put(\"d\", \"y\"); invert(colors)"
+            expect: "Map.of(\"x\", List.of(\"a\", \"c\"), \"y\", List.of(\"b\", \"d\"))"
+      feedback:
+        - when: { same_as: "Map<String, List<String>> invert(Map<String, String> colors) {\n    Map<String, List<String>> result = new HashMap<>();\n    for (String fruit : colors.keySet()) {\n        result.put(colors.get(fruit), new ArrayList<>(List.of(fruit)));\n    }\n    return result;\n}\n" }
+          say: "Haben zwei Obstsorten dieselbe Farbe, bleibt bei dir nur die letzte. Häng an die Liste an, statt sie zu ersetzen."
+      hint: "Geh die Paare durch: Jetzt ist die Farbe der Schlüssel, und das Obst kommt in ihre Liste. Wie bei den Längen der Wörter."
+      solution: |
+        ```java
+        Map<String, List<String>> invert(Map<String, String> colors) {
+            Map<String, List<String>> result = new HashMap<>();
+            for (String fruit : colors.keySet()) {
+                String color = colors.get(fruit);
+                if (!result.containsKey(color)) {
+                    result.put(color, new ArrayList<>());
+                }
+                result.get(color).add(fruit);
+            }
+            return result;
+        }
+        ```
+
   - id: averages
     title: "Der Durchschnitt je Fach"
     level: 3
@@ -1107,6 +1806,93 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        `grades` ist eine Liste von Noten, jede als Paar aus Fach und Note: `[('Mathe', 2), ('Kunst', 1), ('Mathe', 3)]`. Schreib eine Funktion `Map<String, double> averages(List<(String, int)> grades)`, die für jedes Fach den Durchschnitt seiner Noten zurückgibt: Für diese Liste ergibt es `{'Mathe': 2.5, 'Kunst': 1.0}`. `(String, int)` ist ein Paar aus einem Text und einer Zahl, ein Record.
+      starter: |
+        Map<String, double> averages(List<(String, int)> grades) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "averages([('Mathe', 2), ('Kunst', 1), ('Mathe', 3)])"
+            expect: "{'Mathe': 2.5, 'Kunst': 1.0}"
+          - call: "averages([])"
+            expect: "{}"
+          - call: "averages([('Musik', 1), ('Musik', 2)])"
+            expect: "{'Musik': 1.5}"
+            say: "Der Durchschnitt von 1 und 2 ist 1.5, nicht 1."
+          - call: "averages([('Deutsch', 4), ('Sport', 1), ('Deutsch', 2), ('Deutsch', 3)])"
+            expect: "{'Deutsch': 3.0, 'Sport': 1.0}"
+      feedback:
+        - when: { same_as: "Map<String, double> averages(List<(String, int)> grades) {\n  final sums = <String, int>{};\n  final counts = <String, int>{};\n  for (final (subject, grade) in grades) {\n    sums[subject] = (sums[subject] ?? 0) + grade;\n    counts[subject] = (counts[subject] ?? 0) + 1;\n  }\n  final result = <String, double>{};\n  for (final subject in sums.keys) {\n    result[subject] = (sums[subject]! ~/ counts[subject]!).toDouble();\n  }\n  return result;\n}\n" }
+          say: "`~/` teilt ganzzahlig: `3 ~/ 2` ist `1`. `/` teilt genau und ergibt eine Kommazahl, ein `double`."
+      hint:
+        - "Für den Durchschnitt brauchst du je Fach zwei Zahlen: die Summe der Noten und wie viele es sind. Zwei Maps, `<String, int>{}`."
+        - "`for (final (subject, grade) in grades)` nimmt jedes Paar gleich auseinander. Am Ende teilst du je Fach die Summe durch die Anzahl."
+      solution: |
+        ```dart
+        Map<String, double> averages(List<(String, int)> grades) {
+          final sums = <String, int>{};
+          final counts = <String, int>{};
+          for (final (subject, grade) in grades) {
+            sums[subject] = (sums[subject] ?? 0) + grade;
+            counts[subject] = (counts[subject] ?? 0) + 1;
+          }
+          final result = <String, double>{};
+          for (final subject in sums.keys) {
+            result[subject] = sums[subject]! / counts[subject]!;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        `grades` ist eine Liste von Noten, jede als Paar aus Fach und Note: `List.of(Map.entry("Mathe", 2), Map.entry("Kunst", 1), Map.entry("Mathe", 3))`. Schreib eine Methode `Map<String, Double> averages(List<Map.Entry<String, Integer>> grades)`, die für jedes Fach den Durchschnitt seiner Noten zurückgibt: Für diese Liste ergibt es `{Mathe=2.5, Kunst=1.0}`. Ein `Map.Entry` ist ein Paar aus Schlüssel und Wert; `getKey()` und `getValue()` geben seine beiden Teile.
+      starter: |
+        Map<String, Double> averages(List<Map.Entry<String, Integer>> grades) {
+            return new HashMap<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors]
+        cases:
+          - call: "averages(List.of(Map.entry(\"Mathe\", 2), Map.entry(\"Kunst\", 1), Map.entry(\"Mathe\", 3)))"
+            expect: "Map.of(\"Mathe\", 2.5, \"Kunst\", 1.0)"
+          - call: "averages(List.of())"
+            expect: "Map.of()"
+          - call: "averages(List.of(Map.entry(\"Musik\", 1), Map.entry(\"Musik\", 2)))"
+            expect: "Map.of(\"Musik\", 1.5)"
+            say: "Der Durchschnitt von 1 und 2 ist 1.5, nicht 1."
+          - call: "averages(List.of(Map.entry(\"Deutsch\", 4), Map.entry(\"Sport\", 1), Map.entry(\"Deutsch\", 2), Map.entry(\"Deutsch\", 3)))"
+            expect: "Map.of(\"Deutsch\", 3.0, \"Sport\", 1.0)"
+      feedback:
+        - when: { same_as: "Map<String, Double> averages(List<Map.Entry<String, Integer>> grades) {\n    Map<String, Integer> sums = new HashMap<>();\n    Map<String, Integer> counts = new HashMap<>();\n    for (Map.Entry<String, Integer> grade : grades) {\n        String subject = grade.getKey();\n        sums.put(subject, sums.getOrDefault(subject, 0) + grade.getValue());\n        counts.put(subject, counts.getOrDefault(subject, 0) + 1);\n    }\n    Map<String, Double> result = new HashMap<>();\n    for (String subject : sums.keySet()) {\n        result.put(subject, (double) (sums.get(subject) / counts.get(subject)));\n    }\n    return result;\n}\n" }
+          say: "In Java ist `3 / 2` gleich `1`: Zwei ganze Zahlen geteilt ergeben eine ganze, und das `(double)` danach macht daraus nur noch `1.0`. Mach eine davon vor dem Teilen zur Kommazahl: `(double) sum / count`."
+      hint:
+        - "Für den Durchschnitt brauchst du je Fach zwei Zahlen: die Summe der Noten und wie viele es sind. Zwei Maps, `Map<String, Integer>`."
+        - "`for (Map.Entry<String, Integer> grade : grades)` geht die Paare durch. Am Ende teilst du je Fach die Summe durch die Anzahl; zwei `int` geteilt ergeben in Java wieder ein `int`, `(double) sum / count` eine Kommazahl."
+      solution: |
+        ```java
+        Map<String, Double> averages(List<Map.Entry<String, Integer>> grades) {
+            Map<String, Integer> sums = new HashMap<>();
+            Map<String, Integer> counts = new HashMap<>();
+            for (Map.Entry<String, Integer> grade : grades) {
+                String subject = grade.getKey();
+                sums.put(subject, sums.getOrDefault(subject, 0) + grade.getValue());
+                counts.put(subject, counts.getOrDefault(subject, 0) + 1);
+            }
+            Map<String, Double> result = new HashMap<>();
+            for (String subject : sums.keySet()) {
+                result.put(subject, (double) sums.get(subject) / counts.get(subject));
+            }
+            return result;
+        }
+        ```
+
   - id: first-repeat
     title: "Die erste Wiederholung"
     level: 3
@@ -1221,6 +2007,87 @@ tasks:
           return null;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int? firstRepeat(List<int> numbers)`, die die erste Zahl zurückgibt, die zum zweiten Mal kommt: `firstRepeat([2, 5, 5, 2])` ergibt `5`, denn die zweite 5 kommt vor der zweiten 2. Kommt keine Zahl zweimal, ist das Ergebnis `null`; das `?` in `int?` erlaubt es. Die Prüfung gibt auch eine Liste mit 100 000 Zahlen: Geht es, ohne bei jeder Zahl die Liste von vorn durchzusehen?
+      starter: |
+        int? firstRepeat(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        timeout: 10
+        slow: "Bei 100 000 Zahlen ist dein Code zu langsam: Er sieht bei jeder Zahl alle vorher durch. Merk dir die Zahlen, die schon da waren, in einem Set oder einer Map: Nachsehen geht dort sofort."
+        cases:
+          - call: "firstRepeat([2, 5, 5, 2])"
+            expect: "5"
+            say: "Es zählt, welche Zahl zuerst zum zweiten Mal kommt, nicht welche zuerst da war."
+          - call: "firstRepeat([1, 2, 3])"
+            expect: "null"
+          - call: "firstRepeat([])"
+            expect: "null"
+          - call: "firstRepeat([7, 7])"
+            expect: "7"
+          - call: "firstRepeat([for (var i = 1; i <= 100000; i++) i, 99999])"
+            expect: "99999"
+      hint:
+        - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
+        - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Set, einer Map nur aus Schlüsseln, geht es sofort: `final seen = <int>{};`, `seen.contains(number)`, `seen.add(number)`."
+      solution: |
+        ```dart
+        int? firstRepeat(List<int> numbers) {
+          final seen = <int>{};
+          for (final number in numbers) {
+            if (seen.contains(number)) {
+              return number;
+            }
+            seen.add(number);
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Integer firstRepeat(List<Integer> numbers)`, die die erste Zahl zurückgibt, die zum zweiten Mal kommt: `firstRepeat(List.of(2, 5, 5, 2))` ergibt `5`, denn die zweite 5 kommt vor der zweiten 2. Kommt keine Zahl zweimal, ist das Ergebnis `null`; ein `Integer` darf `null` sein, ein `int` nicht. Die Prüfung gibt auch eine Liste mit 100 000 Zahlen: Geht es, ohne bei jeder Zahl die Liste von vorn durchzusehen?
+      starter: |
+        Integer firstRepeat(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        timeout: 10
+        slow: "Bei 100 000 Zahlen ist dein Code zu langsam: Er sieht bei jeder Zahl alle vorher durch. Merk dir die Zahlen, die schon da waren, in einem Set oder einer Map: Nachsehen geht dort sofort."
+        cases:
+          - call: "firstRepeat(List.of(2, 5, 5, 2))"
+            expect: "5"
+            say: "Es zählt, welche Zahl zuerst zum zweiten Mal kommt, nicht welche zuerst da war."
+          - call: "firstRepeat(List.of(1, 2, 3))"
+            expect: "null"
+          - call: "firstRepeat(List.of())"
+            expect: "null"
+          - call: "firstRepeat(List.of(7, 7))"
+            expect: "7"
+          - call: "List<Integer> big = new ArrayList<>(); for (int i = 1; i <= 100000; i++) big.add(i); big.add(99999); firstRepeat(big)"
+            expect: "99999"
+      hint:
+        - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
+        - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Set, einer Map nur aus Schlüsseln, geht es sofort: `Set<Integer> seen = new HashSet<>();`, `seen.contains(number)`, `seen.add(number)`."
+      solution: |
+        ```java
+        Integer firstRepeat(List<Integer> numbers) {
+            Set<Integer> seen = new HashSet<>();
+            for (int number : numbers) {
+                if (seen.contains(number)) {
+                    return number;
+                }
+                seen.add(number);
+            }
+            return null;
+        }
+        ```
+
   - id: lru-misses
     title: "Ein kleiner Cache"
     extra: true
@@ -1354,6 +2221,97 @@ tasks:
           return misses;
         }
         ```
+    dart:
+      prompt: |
+        Ein Cache hält die letzten Seiten bereit, die jemand aufgerufen hat, höchstens `capacity` viele. Wird eine Seite verlangt, die nicht darin ist, ist das ein Fehlschlag: Sie kommt hinein, und ist der Cache voll, fliegt die, die am längsten nicht mehr verlangt wurde (»least recently used«). Schreib `int lruMisses(int capacity, List<String> requests)`, die die Fehlschläge zählt: `lruMisses(2, ['a', 'b', 'a', 'c', 'b'])` ergibt `4`.
+      starter: |
+        int lruMisses(int capacity, List<String> requests) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "lruMisses(2, ['a', 'b', 'a', 'c', 'b'])"
+            expect: "4"
+            say: "Bei `c` fliegt `b` hinaus, denn `a` wurde gerade erst verlangt."
+          - call: "lruMisses(1, ['a', 'a', 'a'])"
+            expect: "1"
+          - call: "lruMisses(3, [])"
+            expect: "0"
+          - call: "lruMisses(2, ['a', 'b', 'c', 'a', 'b', 'c'])"
+            expect: "6"
+          - call: "lruMisses(3, ['a', 'b', 'c', 'a', 'd', 'b', 'e', 'a'])"
+            expect: "7"
+      feedback:
+        - when: { same_as: "int lruMisses(int capacity, List<String> requests) {\n  final cache = <String>[];\n  var misses = 0;\n  for (final page in requests) {\n    if (cache.contains(page)) {\n      continue;\n    }\n    misses++;\n    if (cache.length == capacity) {\n      cache.removeAt(0);\n    }\n    cache.add(page);\n  }\n  return misses;\n}\n" }
+          say: "Dein Cache wirft die Seite hinaus, die zuerst kam, auch wenn sie gerade wieder verlangt wurde. Eine verlangte Seite rückt nach hinten, zu den frischen."
+      hint:
+        - "Eine Liste reicht: vorn die Seite, die am längsten nicht verlangt wurde, hinten die frischeste. Wird eine Seite verlangt, kommt sie nach hinten."
+        - "`cache.remove(page)` nimmt sie heraus und sagt mit `true`, ob sie darin war; `cache.add(page)` hängt sie hinten an, `cache.removeAt(0)` wirft die vorderste hinaus."
+      solution: |
+        ```dart
+        int lruMisses(int capacity, List<String> requests) {
+          final cache = <String>[];
+          var misses = 0;
+          for (final page in requests) {
+            if (!cache.remove(page)) {
+              misses++;
+              if (cache.length == capacity) {
+                cache.removeAt(0);
+              }
+            }
+            cache.add(page);
+          }
+          return misses;
+        }
+        ```
+    java:
+      prompt: |
+        Ein Cache hält die letzten Seiten bereit, die jemand aufgerufen hat, höchstens `capacity` viele. Wird eine Seite verlangt, die nicht darin ist, ist das ein Fehlschlag: Sie kommt hinein, und ist der Cache voll, fliegt die, die am längsten nicht mehr verlangt wurde (»least recently used«). Schreib `int lruMisses(int capacity, List<String> requests)`, die die Fehlschläge zählt: `lruMisses(2, List.of("a", "b", "a", "c", "b"))` ergibt `4`.
+      starter: |
+        int lruMisses(int capacity, List<String> requests) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "lruMisses(2, List.of(\"a\", \"b\", \"a\", \"c\", \"b\"))"
+            expect: "4"
+            say: "Bei `c` fliegt `b` hinaus, denn `a` wurde gerade erst verlangt."
+          - call: "lruMisses(1, List.of(\"a\", \"a\", \"a\"))"
+            expect: "1"
+          - call: "lruMisses(3, List.of())"
+            expect: "0"
+          - call: "lruMisses(2, List.of(\"a\", \"b\", \"c\", \"a\", \"b\", \"c\"))"
+            expect: "6"
+          - call: "lruMisses(3, List.of(\"a\", \"b\", \"c\", \"a\", \"d\", \"b\", \"e\", \"a\"))"
+            expect: "7"
+      feedback:
+        - when: { same_as: "int lruMisses(int capacity, List<String> requests) {\n    List<String> cache = new ArrayList<>();\n    int misses = 0;\n    for (String page : requests) {\n        if (cache.contains(page)) {\n            continue;\n        }\n        misses++;\n        if (cache.size() == capacity) {\n            cache.remove(0);\n        }\n        cache.add(page);\n    }\n    return misses;\n}\n" }
+          say: "Dein Cache wirft die Seite hinaus, die zuerst kam, auch wenn sie gerade wieder verlangt wurde. Eine verlangte Seite rückt nach hinten, zu den frischen."
+      hint:
+        - "Eine Liste reicht: vorn die Seite, die am längsten nicht verlangt wurde, hinten die frischeste. Wird eine Seite verlangt, kommt sie nach hinten."
+        - "`cache.remove(page)` nimmt sie heraus und sagt mit `true`, ob sie darin war; `cache.add(page)` hängt sie hinten an, `cache.remove(0)` wirft die vorderste hinaus."
+      solution: |
+        ```java
+        int lruMisses(int capacity, List<String> requests) {
+            List<String> cache = new ArrayList<>();
+            int misses = 0;
+            for (String page : requests) {
+                if (!cache.remove(page)) {
+                    misses++;
+                    if (cache.size() == capacity) {
+                        cache.remove(0);
+                    }
+                }
+                cache.add(page);
+            }
+            return misses;
+        }
+        ```
+
   - id: anagram-groups
     title: "Anagramme sammeln"
     extra: true
@@ -1461,5 +2419,86 @@ tasks:
             groups.get(key).push(word);
           }
           return [...groups.values()];
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<List<String>> anagramGroups(List<String> words)`, die die Wörter in Gruppen von Anagrammen teilt, in der Reihenfolge, in der die erste jeder Gruppe vorkommt: `anagramGroups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])` ergibt `[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]`. Die Wörter sind klein geschrieben.
+      starter: |
+        List<List<String>> anagramGroups(List<String> words) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "anagramGroups(['lampe', 'regen', 'palme', 'ampel', 'gerne'])"
+            expect: "[['lampe', 'palme', 'ampel'], ['regen', 'gerne']]"
+          - call: "anagramGroups([])"
+            expect: "[]"
+          - call: "anagramGroups(['abc'])"
+            expect: "[['abc']]"
+          - call: "anagramGroups(['ab', 'ba', 'ab'])"
+            expect: "[['ab', 'ba', 'ab']]"
+            say: "Auch dasselbe Wort zweimal gehört in dieselbe Gruppe."
+          - call: "anagramGroups(['eis', 'see', 'sie'])"
+            expect: "[['eis', 'sie'], ['see']]"
+      hint:
+        - "Was haben alle Anagramme gemeinsam? Ihre sortierten Buchstaben: aus `'palme'` und `'ampel'` wird beide Male `'aelmp'`. Das ist ein guter Schlüssel: `(word.split('')..sort()).join()`."
+        - "Wie beim Gruppieren nach der Länge, nur mit diesem Schlüssel. Eine Map in Dart behält die Reihenfolge, in der die Schlüssel dazukommen; `groups.values.toList()` sind am Ende die Listen."
+      solution: |
+        ```dart
+        List<List<String>> anagramGroups(List<String> words) {
+          final groups = <String, List<String>>{};
+          for (final word in words) {
+            final key = (word.split('')..sort()).join();
+            if (!groups.containsKey(key)) {
+              groups[key] = [];
+            }
+            groups[key]!.add(word);
+          }
+          return groups.values.toList();
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<List<String>> anagramGroups(List<String> words)`, die die Wörter in Gruppen von Anagrammen teilt, in der Reihenfolge, in der die erste jeder Gruppe vorkommt: `anagramGroups(List.of("lampe", "regen", "palme", "ampel", "gerne"))` ergibt `[[lampe, palme, ampel], [regen, gerne]]`. Die Wörter sind klein geschrieben.
+      starter: |
+        List<List<String>> anagramGroups(List<String> words) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, Collectors]
+        cases:
+          - call: "anagramGroups(List.of(\"lampe\", \"regen\", \"palme\", \"ampel\", \"gerne\"))"
+            expect: "List.of(List.of(\"lampe\", \"palme\", \"ampel\"), List.of(\"regen\", \"gerne\"))"
+          - call: "anagramGroups(List.of())"
+            expect: "List.of()"
+          - call: "anagramGroups(List.of(\"abc\"))"
+            expect: "List.of(List.of(\"abc\"))"
+          - call: "anagramGroups(List.of(\"ab\", \"ba\", \"ab\"))"
+            expect: "List.of(List.of(\"ab\", \"ba\", \"ab\"))"
+            say: "Auch dasselbe Wort zweimal gehört in dieselbe Gruppe."
+          - call: "anagramGroups(List.of(\"eis\", \"see\", \"sie\"))"
+            expect: "List.of(List.of(\"eis\", \"sie\"), List.of(\"see\"))"
+      hint:
+        - "Was haben alle Anagramme gemeinsam? Ihre sortierten Buchstaben: aus `\"palme\"` und `\"ampel\"` wird beide Male `\"aelmp\"`. Das ist ein guter Schlüssel: `char[] letters = word.toCharArray();`, `Arrays.sort(letters);`, `new String(letters)`."
+        - "Wie beim Gruppieren nach der Länge, nur mit diesem Schlüssel. Eine `LinkedHashMap` behält die Reihenfolge, in der die Schlüssel dazukommen, eine `HashMap` nicht; `new ArrayList<>(groups.values())` sind am Ende die Listen."
+      solution: |
+        ```java
+        List<List<String>> anagramGroups(List<String> words) {
+            Map<String, List<String>> groups = new LinkedHashMap<>();
+            for (String word : words) {
+                char[] letters = word.toCharArray();
+                Arrays.sort(letters);
+                String key = new String(letters);
+                if (!groups.containsKey(key)) {
+                    groups.put(key, new ArrayList<>());
+                }
+                groups.get(key).add(word);
+            }
+            return new ArrayList<>(groups.values());
         }
         ```
