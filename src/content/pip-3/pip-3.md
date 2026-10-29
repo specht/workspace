@@ -2,7 +2,7 @@
 icon: /images/pip/icon-mampfer.png
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: "Dem Mampfer entkommen: Schritte zählen, das Licht nutzen und den kürzesten Weg mit einer Breitensuche finden"
 curriculum: "Sek I: Algorithmisches Problemlösen (Miniwelten); Oberstufe: Algorithmen und Datenstrukturen (Graphen, Breitensuche)"
 topics: [miniwelt, graphen]
@@ -162,6 +162,37 @@ console.log(cave[1][5]);   // L: Zeile 1, Spalte 5
 const pip = [1, 1];        // eine Position: [x, y]
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+final cave = ['#######',
+              '#P..#L#',
+              '#.#...#',
+              '#######'];
+print(cave[1][5]);   // L: Zeile 1, Spalte 5
+final pip = (1, 1);  // eine Position als Record: (x, y)
+```
+
+Positionen sind hier Records aus zwei Zahlen, `(int, int)`: Zwei Records mit
+denselben Zahlen sind gleich, darum kann ein Record Schlüssel einer Map sein,
+und die Suche braucht Maps mit Positionen. `pip.$1` ist die erste Zahl,
+`pip.$2` die zweite.
+<!-- /language -->
+<!-- language: java -->
+```java
+List<String> cave = List.of("#######",
+                            "#P..#L#",
+                            "#.#...#",
+                            "#######");
+IO.println(cave.get(1).charAt(5));   // L: Zeile 1, Spalte 5
+List<Integer> pip = List.of(1, 1);   // eine Position: [x, y]
+```
+
+In Java holt `cave.get(y)` die Zeile und `charAt(x)` darin das Zeichen, ein
+`char`, den man mit `'#'` vergleicht. Positionen sind hier Listen aus zwei
+Zahlen: Zwei Listen mit denselben Zahlen sind gleich (`equals`), darum kann
+eine Liste Schlüssel einer `HashMap` sein, und die Suche braucht Maps mit
+Positionen.
+<!-- /language -->
 
 Erst kommt die Zeile, `cave[y]`, dann in ihr die Spalte, `cave[y][x]`.
 
@@ -198,6 +229,13 @@ Wie die anderen Fragen kosten sie keinen Schritt.
 <tr><th>Befehl</th><th>Was Pip bekommt</th></tr>
 <tr><td><code>caveMap()</code></td><td>die Karte, wie sie gerade ist, als Liste von Zeilen, mit Pip und dem Mampfer, wo sie jetzt stehen</td></tr>
 <tr><td><code>facing()</code></td><td>wohin Pip schaut: <code>"east"</code>, <code>"north"</code>, <code>"west"</code> oder <code>"south"</code></td></tr>
+</table>
+<!-- /language -->
+<!-- language: dart, java -->
+<table class='table'>
+<tr><th>Befehl</th><th>Was Pip bekommt</th></tr>
+<tr><td><code>caveMap()</code></td><td>die Karte, wie sie gerade ist, als Liste von Zeilen, <code>List&lt;String&gt;</code>, mit Pip und dem Mampfer, wo sie jetzt stehen</td></tr>
+<tr><td><code>facing()</code></td><td>wohin Pip schaut: <code>"east"</code>, <code>"north"</code>, <code>"west"</code> oder <code>"south"</code>, ein <code>String</code></td></tr>
 </table>
 <!-- /language -->
 
