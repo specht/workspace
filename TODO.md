@@ -146,6 +146,8 @@ Plus, from the review:
 
 * [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): next an activity on object orientation with a class diagram, in Ruby, Python, JavaScript, Dart and Java (five languages on an activity, Java and Dart checks, a class-diagram extension like the ER-Werkstatt); then a tiny language model (KI), a Turing machine, a logic sandbox; open questions there
 
+* [ ] **Concurrency in Java and Dart** ([docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md)): a step-through widget for lost updates, locks and deadlock; Java threads, `synchronized` and the monitor; Dart's races at `await` and isolates. First the `dart` check must await a `Future`; place and name are the maintainer's
+* [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
@@ -193,6 +195,7 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 * [ ] `/images/white.webp`, the picture of a card without one, is missing (404)
 * [ ] The activity »Testen«: tests as files in the Workspace (`pytest`, `minitest`), red-green-refactor, with the check type `tests` reading files (`file:`, `against:`, mutants as files)
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
+* [ ] `kata-functional`: the JavaScript examples of `make-counter` fail on a host with Node 20, which prints lists as `[ 1, 1, 1 ]`. Make the comparison independent of Node's formatting, or require a newer Node for the examples
 
 ## Existing pages
 
