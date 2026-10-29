@@ -1,0 +1,10 @@
+% Listen: ein Kopf und ein Rest.
+
+is_in(X, [X | _]).
+is_in(X, [_ | Rest]) :- is_in(X, Rest).
+
+size([], 0).
+size([_ | Rest], N) :- size(Rest, M), N = M + 1.
+
+joined([], Ys, Ys).
+joined([X | Xs], Ys, [X | Zs]) :- joined(Xs, Ys, Zs).

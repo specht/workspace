@@ -48,9 +48,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python javascript c java dart command choice number answer function pip tests circuit turtle].freeze
+    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit turtle].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python javascript c java dart command function pip tests circuit turtle].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit turtle].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say variables].freeze
 
@@ -85,6 +85,7 @@ module TaskExamples
                 # Java and Dart likewise: their examples wait for a machine with javac or dart
                 next if type == 'javascript' && !node?
                 next if type == 'java' && !tool?('javac')
+                next if type == 'prolog' && !tool?('swipl')
                 next if type == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
 
                 given = examples[id] || {}
@@ -208,13 +209,22 @@ module TaskExamples
         outcome
     end
 
+    # Every local run goes through timeout(1), as RUN_SCRIPT does in a
+    # Workspace: the program ends a little after its time even if the test
+    # that started it is gone (a stopped run left a harness computing
+    # fast_fibonacci(70) for 32 hours in the Ruby container). The group kill
+    # below ends it on time while the test is there.
+    def self.bounded(argv, seconds)
+        ['timeout', '-k', '2', (seconds.to_i + 2).to_s, *argv]
+    end
+
     # Runs a check's command in the example folder, the way the guest runs
     # it in /workspace.
     def self.local_runner(root)
         lambda do |command, seconds|
             output = +''
             timed_out = false
-            Open3.popen2e('sh', '-c', command, :chdir => root, :pgroup => true) do |_stdin, out, wait|
+            Open3.popen2e(*bounded(['sh', '-c', command], seconds), :chdir => root, :pgroup => true) do |_stdin, out, wait|
                 begin
                     Timeout.timeout(seconds) { output << out.read }
                 rescue Timeout::Error
@@ -260,7 +270,7 @@ module TaskExamples
             stderr = +''
             timed_out = false
             status = nil
-            Open3.popen3(*argv, :chdir => root, :pgroup => true) do |stdin, out, err, wait|
+            Open3.popen3(*bounded(argv, timeout), :chdir => root, :pgroup => true) do |stdin, out, err, wait|
                 stdin.close
                 reader = Thread.new { stderr << err.read.to_s }
                 begin
@@ -284,7 +294,7 @@ module TaskExamples
         stderr = +''
         timed_out = false
         status = nil
-        Open3.popen3(*argv, :chdir => root, :pgroup => true) do |stdin, out, err, wait|
+        Open3.popen3(*bounded(argv, timeout), :chdir => root, :pgroup => true) do |stdin, out, err, wait|
             reader = Thread.new { stderr << err.read.to_s }
             begin
                 Timeout.timeout(timeout) do

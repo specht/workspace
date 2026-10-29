@@ -1,0 +1,95 @@
+# Aufgaben zum Steckbrief »Perl«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.pl,
+# factor.pl, bubblesort.pl), so wie die Seite sie speichern lässt.
+format: 1
+activity: perl
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Skript als `/workspace/hello.pl` und führe es mit
+      `perl hello.pl` aus.
+    file: hello.pl
+    check:
+      type: files
+      path: hello.pl
+      expect:
+        format: text
+        contains:
+          - pattern: 'print\s*\(?\s*"Hello, World!(\\n)?"'
+            say: 'In `hello.pl` finde ich noch kein `print "Hello, World!\n"`. Steht es genau so da, mit doppelten Anführungszeichen?'
+          - pattern: 'use\s+strict\s*;'
+            say: 'In `hello.pl` fehlt die Zeile `use strict;`. Sie gehört an den Anfang jedes Perl-Skripts.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.pl`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.pl` eingegeben, mit `.pl` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.pl` ist noch leer. Schreib das Skript hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Wo ist der Fehler?
+    prompt: |
+      In welcher Zeile von `hello.pl` findet Perl den Fehler? Die Zahl steht
+      in der Meldung hinter `line`.
+    check:
+      type: number
+      expect: 4
+      tolerance: 0
+    hint: 'Die Meldung endet mit `at hello.pl line …, near …`.'
+    solution: |
+      In Zeile 4, der Zeile mit `pritn`. Perl kennt kein `pritn` und weiß
+      nicht, was ein Text direkt dahinter soll: `String found where operator
+      expected`. Weil Perl das ganze Skript liest, bevor es etwas ausführt,
+      läuft dann gar nichts.
+
+  - id: plus-oder-punkt
+    title: Drei und vier
+    prediction: true
+    prompt: |
+      Was gibt `print "3" + "4";` aus? Überleg erst, dann probier es aus:
+      `perl -e 'print "3" + "4", "\n"'` im Terminal.
+    check:
+      type: choice
+      options:
+        - '`34`'
+        - '`7`'
+        - 'Einen Fehler, weil man Texte nicht addieren kann.'
+        - '`3+4`'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: In vielen Sprachen hängt `+` zwei Texte aneinander. Probier aus, was Perl macht.
+      - when: { picked: 2 }
+        say: In Python wäre das ein Fehler. Probier aus, was Perl macht.
+      - when: { picked: 3 }
+        say: Probier es aus.
+    solution: |
+      `7`. In Perl entscheidet der Operator, nicht der Wert: `+` rechnet immer
+      und macht aus jedem Text eine Zahl, `.` hängt immer Texte aneinander.
+      `"3" . "4"` ergibt `34`.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.pl` so, dass die größte Zahl zuerst kommt, und
+      starte das Skript noch einmal.
+    file: bubblesort.pl
+    check:
+      type: files
+      path: bubblesort.pl
+      expect:
+        format: text
+        contains:
+          - pattern: '\$list\[\s*\$i\s*\]\s*<\s*\$list\[\s*\$i\s*\+\s*1\s*\]|\$list\[\s*\$i\s*\+\s*1\s*\]\s*>\s*\$list\[\s*\$i\s*\]'
+            say: 'In `bubblesort.pl` vertauscht das Skript zwei Nachbarn noch, wenn der linke größer ist. Dann landet die größte Zahl hinten.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.pl`. Speichere das Skript unter diesem Namen.
+    hint:
+      - 'Die Zeile, die entscheidet, steht in der inneren Schleife: `if ($list[$i] > $list[$i + 1])`.'
+      - Ein einziges Zeichen in dieser Zeile entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      `if ($list[$i] < $list[$i + 1])`. Jetzt vertauscht das Skript zwei
+      Nachbarn, wenn der rechte größer ist, und die größte Zahl wandert nach
+      vorn.

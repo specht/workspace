@@ -62,6 +62,7 @@ module CallCheck
             end
         end
         errors << 'timeout must be 1 to 30 seconds' if check.key?('timeout') && !(check['timeout'].is_a?(Integer) && check['timeout'].between?(1, 30))
+        errors << 'slow must be text' if check.key?('slow') && !(check['slow'].is_a?(String) && !check['slow'].strip.empty?)
         errors
     end
 
@@ -123,6 +124,9 @@ module CallCheck
         name = names(file)
         seconds = check['timeout'] || 10
         if timed_out
+            # where speed is the point (a large input, timeout small), slow:
+            # says what to change instead of asking for an endless loop
+            return [:wrong, check['slow'], nil] if check['slow']
             return [:wrong, "#{name[:it]} lief länger als #{seconds} Sekunden und wurde abgebrochen. Steckt irgendwo eine Endlosschleife?", nil]
         end
 

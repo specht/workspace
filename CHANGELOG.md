@@ -21,6 +21,12 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die zurückgestellte Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) ist entfernt; `/feuerwerk` führt zur Startseite.
+  Beim ersten Start nach dem Update löscht der Ruby-Dienst, was Lernende dazu gespeichert und abgegeben haben
+  (Ergebnisse, Versuche, Abgaben).
+- Das Workspace-Image enthält SWI-Prolog, `hyperfine` und die Erweiterung »Better Prolog Syntax« (für »Logisch
+  programmieren mit Prolog« und »Wie lange dauert das?«): Nach dem Update das Image neu bauen (`./build-image.sh`). Der Ruby-Dienst braucht SWI-Prolog für die
+  Beispiele der neuen Prüfart `prolog`: `./config.rb build ruby && ./config.rb up -d ruby`.
 - Die Turtle-Grafik führt Ruby und Python im Browser aus: Nach dem Update einmal `./fetch-turtle-runtimes.sh`
   ausführen (lädt Pyodide und ruby.wasm in festen Versionen nach `src/static/include/turtle/runtime`, nicht in git).
   nginx liefert sie vorkomprimiert und lange gecacht aus (`gzip_static`); die Konfiguration schreibt der Ruby-Dienst

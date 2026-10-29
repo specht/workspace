@@ -137,3 +137,12 @@ tracking/cover-zuboff.webp:
   status: granted
   answered: 2026-10-27
   note: "Book cover, taken from the publisher: on the book's page at Campus Verlag under »Downloads › Cover« (https://media.pim.beltz.de/Produktdaten/Cover/9783593509303.jpg), read 27 October 2026. The page states no terms for it; the press area (campus.de/presse) says »In unserem Pressebereich finden Sie alle Informationen, die Sie für Ihre Berichterstattung benötigen«. Not a written permission: if Campus objects, the cover goes."
+
+reference/personen/colmerauer.webp:
+  holder: the family of Alain Colmerauer (1941-2017) or the Association Prolog Heritage in Marseille, which keeps his web site
+  contact: alain.colmerauer@free.fr
+  source: http://alain.colmerauer.free.fr/ (the photo »australie.jpg« at the top of the menu)
+  greeting: Dear family of Alain Colmerauer, dear members of Prolog Heritage
+  picture_en: the portrait of Alain Colmerauer from his web site (the photo taken in Australia)
+  context_en: in a short portrait of him on the page where our students write their first Prolog programs, with facts and rules about the Bach family
+  note: "The address is the one on his own site; whether anyone still reads it is unknown. If it bounces, ask the Association for Logic Programming (logicprogramming.org), which awards the Alain Colmerauer Prize together with Prolog Heritage, for a contact. Free instead, used before: Alaindavid2, 1988, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:A-Colmerauer_web-800x423.jpg), dark, with a cut-out background."

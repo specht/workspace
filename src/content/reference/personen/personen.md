@@ -563,6 +563,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1940 -->
+<!-- part: kay-goldberg-ingalls -->
+### Alan Kay, Adele Goldberg und Dan Ingalls
+
+<div class='person pair'>
+<div class='portraits'><img src='kay.webp' alt='Alan Kay 2008: ein Mann mit grauem, wuscheligem Haar und Schnurrbart vor dunklem Hintergrund, nachdenklich.'><img src='goldberg.webp' alt='Adele Goldberg 2007 an einem Rednerpult: eine Frau mit rotem Haar und Brille, lächelnd.'><img src='ingalls.webp' alt='Dan Ingalls: ein lächelnder Mann mit grauem Bart und Brille in einem braunen Cordsakko.'></div>
+<p><strong>Alan Kay</strong> (geboren 1940), <strong>Adele Goldberg</strong> (geboren 1945) und <strong>Dan Ingalls</strong> (geboren 1944) bauten Smalltalk in den 1970er Jahren am Forschungszentrum von Xerox in Palo Alto. Kay träumte vom Dynabook, einem Rechner so groß wie ein Buch, mit dem schon Kinder programmieren. Dafür sollte alles ein Objekt sein, das Nachrichten bekommt und beantwortet. Ingalls schrieb die Umsetzungen, auf denen Smalltalk lief, Goldberg leitete die Gruppe, probierte Smalltalk mit Schulkindern aus und schrieb mit David Robson das Buch, mit dem Smalltalk-80 1983 in die Welt ging.</p>
+<p>Smalltalk lief auf einem Bildschirm mit Fenstern, Symbolen und einer Maus. 1979 sah Steve Jobs das bei Xerox, und wenige Jahre später hatten der Apple Lisa und der Macintosh eine solche Oberfläche. Kay bekam 2003 den Turing Award.</p>
+<p class='person-credit'>Fotos: Marcin Wichary, 2008, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Alan_Kay_(3097597186)_(cropped).jpg'>Wikimedia Commons</a>); Terry Hancock, 2007, CC BY-SA 2.5, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Adele_Goldberg_at_PyCon_2007.jpg'>Wikimedia Commons</a>); ein Freund von Dan Ingalls, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Dan_Ingalls.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1941 -->
 <!-- part: ritchie -->
 ### Dennis Ritchie
@@ -583,6 +595,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Wolfgang Straßer</strong> (1941–2015), deutscher Informatiker. Er studierte an der TU Berlin und schrieb dort 1974 seine Doktorarbeit über schnelle Kurven und Flächen auf dem Bildschirm. Darin steht, einige Monate vor Edwin Catmull und unabhängig von ihm, der Tiefenpuffer: Für jeden Bildpunkt wird auch die Z-Koordinate gespeichert, und ein neuer Punkt wird nur gezeichnet, wenn er näher liegt. Diesen Vergleich schaltet <code>BeginMode3D</code> in der Klötzchenwelt ein.</p>
 <p>Die Idee steht ganz hinten, unter »Zukünftige Arbeiten«, mit dem Satz: »Beim augenblicklichen Stand der Preise und der Technologie der Halbleiterspeicher ist dieses Verfahren […] nicht realisierbar.« Heute hat jede Grafikkarte einen Tiefenpuffer, auch die in deinem Handy. Ab 1986 war Straßer Professor in Tübingen.</p>
 <p class='person-credit'>Foto: MA2710, 2011, CC BY-SA 3.0 de, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Wolfgang-Stra%C3%9Fer-2011.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1941 -->
+<!-- part: colmerauer -->
+### Alain Colmerauer
+
+<div class='person'>
+<img src='colmerauer.webp' alt='Alain Colmerauer, älter, mit Brille und einem leichten Lächeln, unter dem blauen Sonnendach eines Boots, hinter ihm rote Masten.'>
+<p><strong>Alain Colmerauer</strong> (1941–2017), französischer Informatiker, Professor in Marseille. Er wollte, dass ein Computer Fragen auf Französisch versteht und aus Sätzen wie »Katzen töten Mäuse« und »Tom ist eine Katze« selbst schließt, was Tom tut. Dafür schrieb er 1972 mit Philippe Roussel eine Sprache, in der ein Programm aus solchen Aussagen besteht: Prolog, von »programmation en logique«. Wie man logische Aussagen als Programm lesen kann, hatte Robert Kowalski in Edinburgh gezeigt, mit dem er 1971 und 1972 in Marseille zusammenarbeitete.</p>
+<p>Später baute Colmerauer Prolog so aus, dass es auch mit Zahlen und Bedingungen rechnet, wie in einem Sudoku, das Prolog nicht durch Ausprobieren löst, sondern indem es unmögliche Zahlen streicht.</p>
+<p class='person-credit'>Foto: von seiner Website, zugeschnitten (<a href='http://alain.colmerauer.free.fr/'>alain.colmerauer.free.fr</a>)</p>
 </div>
 <!-- /part -->
 
@@ -781,6 +805,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Jim Kajiya</strong> (geboren 1951), amerikanischer Informatiker, von 1979 bis 1994 am Caltech, danach bei Microsoft Research. 1986 schrieb er in einer Gleichung auf, wie viel Licht von einem Punkt einer Fläche ausgeht: was sie selbst leuchtet und was aus allen Richtungen auf sie fällt und weitergeworfen wird, die Rendering Equation. Genau lösen kann sie kein Computer. Kajiya kam ihr mit dem Zufall nahe, mit einem einzigen Strahl von Fläche zu Fläche statt eines ganzen Baums von Strahlen, und nannte das Path Tracing: Das macht <code>bounce</code> in deinem Raytracer.</p>
 <p>1989 zeigten er und Timothy Kay, wie man Fell rechnet, ein Problem, an dem die Computergrafik lange festhing. Kay baute damit in seiner Doktorarbeit bei Kajiya einen Teddybären.</p>
 <p class='person-credit'>Foto: Dcoetzee, 2009, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Jim_Kajiya.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1954 -->
+<!-- part: wall -->
+### Larry Wall
+
+<div class='person'>
+<img src='wall.webp' alt='Larry Wall 2007: ein Mann mit langem rotblondem Haar, Brille und Schnurrbart in einem hellen T-Shirt, die Arme verschränkt.'>
+<p><strong>Larry Wall</strong> (geboren 1954), amerikanischer Programmierer, hat Sprachwissenschaft studiert. 1987 veröffentlichte er Perl, weil er Berichte aus vielen Textdateien zusammenstellen musste und die Werkzeuge dafür zu umständlich fand. Man merkt Perl seine Sprachwissenschaft an: Wie in einer natürlichen Sprache gibt es für fast alles mehrere Arten, es zu sagen (»There's more than one way to do it«), und Variablen tragen ein Zeichen vor dem Namen, das wie ein Artikel sagt, was gemeint ist: <code>$</code> für einen einzelnen Wert, <code>@</code> für eine Liste.</p>
+<p>Vor Perl hatte er schon <code>patch</code> geschrieben, das Programm, das Änderungen an Dateien einspielt und das es bis heute auf jedem Linux-System gibt. Aus seinem Plan für ein Perl 6 wurde eine eigene Sprache, die seit 2019 Raku heißt.</p>
+<p class='person-credit'>Foto: Randal Schwartz, 2007, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Larry_Wall_YAPC_2007.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

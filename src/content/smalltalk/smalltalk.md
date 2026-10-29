@@ -1,6 +1,8 @@
 <div class='meta'>
 image: smalltalk-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: objektorientierte Programmierung (alles ist ein Objekt, Nachrichten an Objekte)"
+topics: [programmiersprachen, geschichte, objektorientierung]
 needs_contrast: light
 </div>
 
@@ -12,20 +14,17 @@ needs_contrast: light
 
 # Smalltalk <span style='font-size: 80%;'>(1980)</span>
 
-<div class='floatright fr-wide' style='width: 40em;'>
-    <img src='smalltalk-team.webp' alt='Drei Porträtfotos nebeneinander, Alan Kay, Adele Goldberg und Dan Ingalls'>
-    <p>Alan Kay, Adele Goldberg und Dan Ingalls</p>
-</div>
-
 <p class='abstract'>
-Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt, 1980 als Smalltalk-80 veröffentlicht und gilt als eine der ersten objektorientierten Programmiersprachen. Smalltalk wurde ursprünglich für die Entwicklung von grafischen Benutzeroberflächen und interaktiven Anwendungen verwendet.
+Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt, 1980 als Smalltalk-80 veröffentlicht und gilt als eine der ersten objektorientierten Programmiersprachen. In Smalltalk ist alles ein Objekt, auch eine Zahl, und alles geschieht, indem man einem Objekt eine Nachricht schickt.
 </p>
 
-Ein bekanntes Beispiel ist das erste grafische Benutzerinterface des Xerox Alto Computers. Heutzutage ist Smalltalk weniger verbreitet, aber immer noch relevant in bestimmten Nischen, insbesondere in der Forschung und Lehre zur objektorientierten Programmierung. Es wird auch in einigen spezialisierten industriellen Anwendungen und von Enthusiasten verwendet, die die Sprache für ihre Einfachheit und Eleganz schätzen.
+_person(kay-goldberg-ingalls)
+
+Auf dem Rechner Xerox Alto lief mit Smalltalk eine der ersten Oberflächen mit Fenstern, Menüs und Maus. Viele Ideen aus Smalltalk stecken heute in anderen Sprachen: Klassen und Nachrichten in Objective-C und Ruby, die Entwicklungsumgebung, in der man ein laufendes Programm ändert, in Pharo, einem heutigen Smalltalk. Hier benutzt du GNU Smalltalk, das im Terminal läuft.
 
 ## Hello, world!
 
-Smalltalk ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Du hast zwei Möglichkeiten, Smalltalk-Code auszuführen:
+GNU Smalltalk (`gst`) übersetzt deinen Code in Befehle für eine virtuelle Maschine und führt ihn gleich aus; du kannst es also benutzen wie eine Skriptsprache. Du hast zwei Möglichkeiten, Smalltalk-Code auszuführen:
 
 1. Du kannst Smalltalk-Code direkt in der Smalltalk-Shell ausführen.
 2. Du kannst Smalltalk-Code in einer Textdatei speichern und dann ausführen.
@@ -55,7 +54,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='gst.webp' alt='Im Terminal läuft gst, meldet »GNU Smalltalk ready« und wartet mit st&gt; auf Smalltalk-Code.'>
 
-Jetzt kannst du Smalltalk-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `Transcript show: 'Hello, World!'; cr.` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
+Jetzt kannst du Smalltalk-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `Transcript show: 'Hello, World!'; cr.` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, World!` sehen.
 
 Du kannst die Smalltalk-Shell wieder beenden, indem du `ObjectMemory quit` eingibst und <kbd>Enter</kbd> drückst oder einfach <kbd>Strg</kbd><kbd>D</kbd> drückst.
 
@@ -193,6 +192,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt gst hello.st die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Smalltalk eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `show` das Wort `sho` zu schreiben:
@@ -211,7 +212,11 @@ gst hello.st
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Smalltalk sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Smalltalk sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -223,9 +228,11 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt='gst meldet zu hello.st: TextCollector error: did not understand #sho, mit hello.st:1 in der letzten Zeile.'>
+<img class='full' src='hello-error.webp' alt='gst meldet zu hello.st: TextCollector error: did not understand #sho:, mit hello.st:1 in der letzten Zeile.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ### Shebang `#!`
 
@@ -267,7 +274,7 @@ sleep: 0.5
 
 ## Primfaktorzerlegung
 
-Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Smalltalk Benutzereingaben verarbeitet und Schleifen verwendet.
+Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Smalltalk Benutzereingaben verarbeitet und Schleifen schreibt. Eine Schleife ist dabei auch eine Nachricht: `[Bedingung] whileTrue: [Anweisungen]` schickt dem Block in den ersten eckigen Klammern die Nachricht `whileTrue:`, und er führt den zweiten Block aus, solange er selbst `true` ergibt. Text in doppelten Anführungszeichen ist ein Kommentar.
 Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
 _include_file(factor.st, smalltalk)
@@ -293,17 +300,25 @@ crop-terminal-lines: auto
 
 <img class='full' src='try-factor.webp' alt='gst factor.st fragt nach einer Zahl und gibt für 123 die Faktoren 3 und 41 aus.'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Smalltalk auch Zahlen wie 3000000000 und 123456789123456789 in Sekundenbruchteilen zerlegen, allerdings beendet sich das Programm nicht (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen). Falls du einen sachdienlichen Hinweis hast, schreib bitte eine E-Mail an <a href='mailto:${contact_email}'>${contact_email}</a>.
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Smalltalk rechnet mit beliebig großen ganzen Zahlen: Auch 3000000000 und 123456789123456789 zerlegt es in Sekundenbruchteilen, ohne dass du am Programm etwas ändern musst.
+
+In Smalltalk ist alles eine Nachricht an ein Objekt, auch <code>+</code> und <code>*</code>:
+
+_task(rechnen)
+
+<!-- after: rechnen -->
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> In Smalltalk ist alles eine Nachricht an ein Objekt, auch <code>+</code> und <code>*</code>. Starte <code>gst</code> ohne Dateinamen und gib <code>(3 + 4 * 2) printNl</code> ein. Was kommt heraus, und warum nicht 11? Probier auch <code>(100 factorial) printNl</code>. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>gst</code>.
+<strong>Ausprobieren:</strong> Smalltalk rechnet mit beliebig großen ganzen Zahlen. Gib in <code>gst</code> noch <code>(100 factorial) printNl</code> ein und achte darauf, wie lang die Zahl ist. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>gst</code>.
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zahlen sortieren, die im Programm stehen. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
 
-An diesem Beispiel kannst du sehen, wie man in Smalltalk Arrays verwendet, Funktionen verwendet und Schleifen verschachtelt.
+An diesem Beispiel kannst du sehen, wie man in Smalltalk Arrays verwendet und Schleifen verschachtelt. `swap` ist ein Block mit zwei Parametern, `[:indexOne :indexTwo | …]`, in einer Variablen: Mit `swap value: index value: index + 1` führt das Programm ihn aus, wie eine Funktion.
 
 Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 
@@ -324,12 +339,10 @@ crop-terminal-lines: auto
 Das Programm hat eine Liste von 10 Zahlen sortiert.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.st</code> und starte das Skript noch einmal:
-<ul>
-<li>Schreib weitere Zahlen in das Array, auch große und negative. Musst du sonst noch etwas ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Schreib weitere Zahlen in das Array in <code>bubblesort.st</code>, auch große und negative, und starte das Skript noch einmal. Achte darauf, ob du außer dem Array noch etwas ändern musst.
 </div>
+
+_task(absteigend)
 
 ## Zusammenfassung
 

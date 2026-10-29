@@ -129,7 +129,6 @@ the answer, explanations after solving (docs/didaktik.md). Open from that pass:
 
 * [ ] Try boxes and tips in class: is a minute between tips right (`HintSteps::DELAY_SECONDS`), do students work with a tip or wait for the next?
 * [ ] raylib's five `c` checks ran only against raylib 6.0's headers outside a Workspace; confirm them in a real one (the recipes on stages 2 to 5 run them with `check-task`)
-* [ ] Feuerwerk is parked (hidden in `sections.yaml`): before it goes into the catalog it needs a `lehrkraft.md`, a try in class, and its screenshots rendered
 * [ ] Web server »Eine Umfrage« still looks for words in `server.rb`; a `command` check against the running server (`curl -si -d choice=curry localhost:8000/vote`, expect `303` and `Location: /results`) needs an output mode where one line has to match, not all
 * [ ] Checks that only look for words where running the code is not possible yet: LaTeX, TIC-80 (no Lua in the Workspace), raylib's light, torches and textures, Pixelwand (a WebSocket client in the check), Wetter (network)
 * [ ] GLSL: no check looks at a shader; a compile check (`glslangValidator` in the Workspace) would at least catch errors before the preview does
@@ -149,7 +148,7 @@ Plus, from the review:
 
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
-* [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), William Reeves (particle systems, `feuerwerk` is parked), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
+* [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
 * [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers
 
 #### Flutter
@@ -211,7 +210,7 @@ Platform-wide:
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] A dark card picture for the activities that have none (`audit-activities.rb`, column »Karte«: »nicht dunkel«), from `variants: dark` or `render-svg.rb`
-* [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM and Feuerwerk shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
+* [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
@@ -263,7 +262,6 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 
 ## Later ideas
 
-* **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals
 * **Git collaboration, further** – pull requests and basic CI on top of the class quiz (`class-quiz` has branches, merges, conflicts and a review)

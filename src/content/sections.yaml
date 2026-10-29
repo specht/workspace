@@ -212,26 +212,29 @@
 - key: algorithms
   compact: true
   label: Algorithmen und Datenstrukturen
-  short: Sortieren, Listen, Bäume und Heaps von innen, und der kürzeste Weg durch Berlin.
+  short: Sortieren, Listen, Bäume und Heaps von innen, der kürzeste Weg durch Berlin, und wie lange das alles dauert.
   icon: /images/bar-chart.png
   description: |
     Sortierverfahren und Datenstrukturen selbst bauen und Schritt für Schritt
-    zusehen, was sie tun, und ein Routenplaner, der in echten Karten von
-    Berlin den kürzesten Weg findet.
+    zusehen, was sie tun, ein Routenplaner, der in echten Karten von Berlin
+    den kürzesten Weg findet, und messen und abschätzen, wie lange ein
+    Programm braucht.
   entries:
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - routenplaner
+    - laufzeit
 
 - key: theory
   compact: true
   label: Automaten und Sprachen
-  short: Vom endlichen Automaten über reguläre Ausdrücke bis zu Grammatiken und Turingmaschinen.
+  short: Vom endlichen Automaten über reguläre Ausdrücke bis zu Grammatiken, Turingmaschinen und Prolog.
   icon: /images/robot.png
   description: |
     Was Maschinen erkennen können und was nicht: endliche Automaten, reguläre
-    Ausdrücke, Kellerautomaten und die Turingmaschine, dann Grammatiken und
-    ein Rechner, der Ausdrücke versteht.
+    Ausdrücke, Kellerautomaten und die Turingmaschine, dann Grammatiken,
+    ein Rechner, der Ausdrücke versteht, und Prolog, in dem ein Programm aus
+    Fakten und Regeln besteht.
   entries:
     - automata
     - regex
@@ -239,6 +242,7 @@
     - turingmaschine
     - grammatiken
     - calculator
+    - prolog
 
 # Software entwerfen (docs/plan-lehrplan-luecken.md, »Software«): erst
 # planen, dann programmieren; Klassen und ihre Diagramme; ein Projekt der
@@ -273,19 +277,6 @@
     - git
     - terminal-mystery
 
-# Parked for now, so that the sections above fill rows of three (and the
-# programming languages rows of four): not in the catalog, but the pages stay
-# reachable by direct links (static-website links to Hugo).
-
-- key: parked
-  hidden: true
-  label: Zurückgestellt
-  icon: /images/bookmark.png
-  entries:
-    - feuerwerk
-    - cobol
-    - smalltalk
-
 # Hidden: not in the catalog and not pinnable; the pages are found by their
 # address (the Backrooms, level-0-…: by typing noclip on the 404 page).
 
@@ -314,12 +305,15 @@
   icon: /images/keyboard.png
   entries:
     - fortran
+    - cobol
     - basic
     - pascal
     - c
+    - prolog-portrait
+    - smalltalk
     - cpp
     - clisp
-    # - perl
+    - perl
     - python
     - lua
     # - php

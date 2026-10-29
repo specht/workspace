@@ -13,11 +13,11 @@ what could fill each, in which form, what was decided and what is open.
 | Oberstufe: objektorientierte Modellierung | 1 | an activity: a short story becomes a class diagram, then classes (below) | activity, a class-diagram extension | large | `supermarkt`, live; `textadventure` (28 October 2026), with a small class diagram of `Item`, `Key` and `Food` |
 | Oberstufe: objektorientierte Programmierung | 2 | the same activity; »Katas: Objekte« to practise the mechanics | activity, Kata set | large | `supermarkt`, live; `kata-objects` (28 October 2026); `textadventure` (28 October 2026), a project with rooms, items and a player, inheritance with `use` |
 | Oberstufe: Vertiefung Künstliche Intelligenz | 3 | »Ein winziges Sprachmodell« (bigrams), »Ein Neuron lernt« (a perceptron from scratch), »Nächste Nachbarn« (classifying, and what biased data does) | section KI | large | done, live: `sprachmodell`, `perzeptron`, `naechste-nachbarn` |
-| Oberstufe: Vertiefung Theoretische Informatik | 3 | pushdown automata, Turing machines and the halting problem, grammars and the Chomsky hierarchy, after »Endliche Automaten« | activities | medium | done, live: `kellerautomat`, `turingmaschine`, `grammatiken`; complexity still only in `kata-search` and the sorting sandbox |
+| Oberstufe: Vertiefung Theoretische Informatik | 3 | pushdown automata, Turing machines and the halting problem, grammars and the Chomsky hierarchy, after »Endliche Automaten« | activities | medium | done, live: `kellerautomat`, `turingmaschine`, `grammatiken`; complexity in `laufzeit` (»Wie lange dauert das?«, 29 October 2026: measuring, counting steps, growth, a round trip through Berlin, P and NP) |
 | Oberstufe: Vertiefung Technische Informatik | 2 | a logic sandbox like the CPU sandbox: gates, half adder, full adder, a 4-bit adder, a flip-flop, ending in the ALU of `sandbox-cpu`. `radio` (light signals between two rooms, formerly `cable`) belongs nearby | an activity with a circuit widget, then one with a circuit editor (below) | large | done, live: `logikgatter`, `logikwerkstatt` (28 October 2026) |
 | Oberstufe: Vertiefung Informatik und Gesellschaft | 4 | »Was eine Webseite über dich erfährt« (tracking in the students' own web server, cookie banners and dark patterns), the search engine's SEO section, the training data of the language model, a decision by neighbours | project, sections elsewhere | medium | done, live: `tracking`, `suchmaschine`, `sprachmodell`, `naechste-nachbarn` |
 | Sek I: Physical Computing | 0 | the Workspace cannot reach hardware, but it can build for it: MicroPython for Calliope mini or micro:bit, downloaded as a `.hex` and dragged onto the board's USB drive (the usual way to flash them); the image needs the build tools. Or a simulated board on the website | project, image change | medium | shelved: the schools have no boards (28 October 2026) |
-| Oberstufe: Vertiefung Applikative Programmierung | 2 | the planned Prolog page (TODO.md, »Later ideas«) for logic programming; a Kata strand with `map`, `filter`, `reduce` for functional programming | page, Kata strand | medium | functional done, live: `kata-functional` (»Katas: Funktionen als Werte«, 28 October 2026: lambdas, a closure, `map`, `filter`, `reduce`, chains, a loop rewritten and one where the loop stays clearer, beside the Lisp portrait); Prolog open |
+| Oberstufe: Vertiefung Applikative Programmierung | 2 | the planned Prolog page (TODO.md, »Later ideas«) for logic programming; a Kata strand with `map`, `filter`, `reduce` for functional programming | page, Kata strand | medium | functional done, live: `kata-functional` (»Katas: Funktionen als Werte«, 28 October 2026: lambdas, a closure, `map`, `filter`, `reduce`, chains, a loop rewritten and one where the loop stays clearer, beside the Lisp portrait); logic done, live: `prolog` (»Logisch programmieren mit Prolog«, 29 October 2026: facts and rules about the Bach family, recursion, lists, Berlin in four colours, the check type `prolog`) and the Prolog tile |
 | Sek I: Projektmanagement, Oberstufe: Softwareprojekt | 2, 4 | the Git collaboration and testing | activities | medium | done, live: `class-quiz` (a quiz in the class repository with real merge conflicts), `git`, `kata-tests`, `hugo` |
 | Oberstufe: Datenbanken und Datenschutz | 2 | Datenschutz in `tracking`; Urheberrecht and the modelling chapter of the database sequence (TODO.md) still open | chapter | medium | in part: `mysql`, `tracking` |
 | Sek I: Standardsoftware | 1 (LaTeX) | left as it is: office programs are not what the Workspace is for | | | decided |
@@ -33,7 +33,7 @@ with the details of every `curriculum:` line and a search of the pages:
 
 | Name | Left out | Proposal |
 | --- | --- | --- |
-| Sek I: Leben in und mit vernetzten Systemen | Gefahren bei E-Mails (Phishing, Schadprogramme), Netiquette; Suchmaschinen and Datenschutz are covered now (`suchmaschine`, `tracking`) | »E-Mail und Phishing«: a mail server in the Workspace, a forged sender, what headers reveal |
+| Sek I: Leben in und mit vernetzten Systemen | Gefahren bei E-Mails (Phishing, Schadprogramme), Netiquette; Suchmaschinen and Datenschutz are covered now (`suchmaschine`, `tracking`) | »E-Mail und Phishing«: a mail server in the Workspace, a forged sender, what headers reveal. Shelved (29 October 2026, the maintainer): it is unclear what students could do there that is not very complicated |
 | Sek I: Information und Daten | Sender-Empfänger-Modell, covered now by `radio` (28 October 2026: the parked `cable` back as radio, Shannon's model at its end); Strichcode and QR-Code are covered now (`check-digits`; the chapter »Wenn der Code beschädigt ist: QR-Codes«, 28 October 2026: the parts of a QR code, a code to paint over that jsQR reads in the browser, the levels L to H, Reed-Solomon as values on a line, a grid with parity bits in Ruby or Python), Rechnen mit Dualzahlen too (the chapter »Addieren« of `kata-bits`, 28 October 2026: written addition with a carry, overflow in a byte, negating in two's complement) | done |
 | Sek I: Datenbanken | nothing: Datensätze einfügen, löschen, verändern are covered now (the chapter »Daten ändern« of `mysql`, 28 October 2026: `INSERT` with one and several rows, `UPDATE` with a prediction on a missing `WHERE`, `DELETE`, transactions; the check `schema` counts rows with `rows_where`), and its line names them | |
 | Sek I: Geschichte der Informatik | Rechenhilfsmittel, Rechnergenerationen; technische Entwicklung der Informationsübertragung is covered now by `radio` (Morse and CW, Baudot's telegraph and his person box) | a chapter in `sandbox-cpu` |
@@ -48,19 +48,21 @@ with the details of every `curriculum:` line and a search of the pages:
 
 ## Packages for the front page
 
-On a wide screen the front page shows three cards in a row, and every
-section holds three or six (Fireworks and Hugo were parked for that, in
-eabe9ca9); the language tiles stand four in a row and fill four rows. So
-new activities come in threes per section, tiles in fours, and a chapter
-in an existing activity costs no place. Proposed on 27 October 2026, after
-the maintainer asked to close the gaps where appropriate, keeping the rows
-full, also by bringing back parked activities or moving them:
+On a wide screen the front page shows three cards in a row. Until
+29 October 2026 every section had to hold three or six (Fireworks and Hugo
+were parked for that, in eabe9ca9); the maintainer dropped that rule then
+for activities: a section takes as many activities as belong in it, and a
+row may end half full. The language tiles keep full rows of four (four,
+eight, sixteen, twenty tiles): a new language comes with others or takes
+the place of one that is parked. Proposed on
+27 October 2026, after the maintainer asked to close the gaps where
+appropriate, also by bringing back parked activities or moving them:
 
 | Package | Section | Cards | Closes |
 | --- | --- | --- | --- |
 | Software | Software entwerfen | `check-digits`, `supermarkt`, `class-quiz`: done, all live | objektorientierte Modellierung and Programmierung, Algorithmen und Softwareentwicklung, Projektmanagement, Softwareprojekt |
 | Web | Web (3 → 6) | `hugo` back, `suchmaschine`, `tracking`: done, all live | Suchmaschinen, Datenschutz, Informatik und Gesellschaft |
-| Sprachen | Programmiersprachen (16 → 20 tiles) | `smalltalk` and `cobol` back; Prolog (logic); Haskell (functional). Smalltalk and COBOL run in the image; Prolog (`swi-prolog`) and Haskell (`ghc`) do not yet | Applikative Programmierung; Smalltalk beside the supermarket |
+| Sprachen | Programmiersprachen (16 → 20 tiles) | done, live (29 October 2026): `smalltalk` and `cobol` back with tasks, `prolog-portrait` (SWI-Prolog is in the image now) and `perl` instead of Haskell, whose `ghc` is not in the image | Applikative Programmierung; Smalltalk beside the supermarket |
 | KI | a new section Künstliche Intelligenz (0 → 3) | `sprachmodell`, `perzeptron`, `naechste-nachbarn`: done, live | Vertiefung Künstliche Intelligenz, Informatik und Gesellschaft |
 | Rechnen | Wie Computer rechnen (6 → 9), split on 28 October 2026 into Wie Computer rechnen (3), Algorithmen und Datenstrukturen (3), Automaten und Sprachen (6) | `kellerautomat`, `turingmaschine`, `grammatiken`, `logikgatter`, `logikwerkstatt`, `regex`: done, live; `cable` came back as `radio` in Netze & Sicherheit instead (28 October 2026) | Technische Informatik, Theoretische Informatik, Information und Daten |
 | Chapters | no new cards | Normalisierung in `filmdatenbank` (done), syntax diagrams in `calculator`, LAN and WLAN in `tcpip` (done), QR codes in `check-digits` (done), an SVG chapter | the gaps inside names above |
@@ -85,8 +87,7 @@ happens for real; then branches, pull before push, reviewing a classmate's
 commit, a `TODO.md` as the task board. Without a class repository the page
 simulates a teammate locally, as the Git activity does.
 
-Fireworks (`feuerwerk`) could join Spiele & 3D-Welten with two more cards;
-it still needs a teacher note, a try in class and its screenshots (TODO.md).
+Fireworks (`feuerwerk`) was removed on 29 October 2026 (the maintainer).
 `cable` was parked on purpose (fa0f2c81) and came back on 28 October
 2026 as `radio`, »Datenübertragung per Funk«, first in Netze & Sicherheit
 (`/cable` redirects there). The device is a radio now, five channels keyed on
@@ -153,8 +154,8 @@ written by the receiver. The code keeps the name `cable` (`cable.js`,
   examples use names of one word (`toggle`, `seats`). Types stay as in
   Java. Ruby's `accepts?` is the others' `accepts` too.
 - **Packages for the front page** (27 October 2026): close the gaps where
-  appropriate while every section keeps full rows; parked activities may
-  come back and activities may move. Software first (it lets `supermarkt`
+  appropriate; parked activities may come back and activities may move.
+  Full rows are no longer required (29 October 2026). Software first (it lets `supermarkt`
   go public); `cable` may come back (it did, as `radio`).
 - **Overriding in the diagram** (27 October 2026): since a class has what
   it inherits, a task can no longer see whether a subclass overrides a

@@ -32,6 +32,10 @@
         "**/.build": true,
         "**/*.synctex.gz": true
     },
+    "files.associations": {
+        "*.pl": "perl",
+        "**/prolog/**/*.pl": "prolog"
+    },
 
     "html.autoClosingTags": false,
     "js/ts.autoClosingTags.enabled": false,

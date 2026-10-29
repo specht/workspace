@@ -1,0 +1,98 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«). In fehler/ stehen häufige Fehler, je eine Änderung an
+# der Lösung: zwei sind nur zu langsam, die Prüfung bricht sie nach ihrer Zeit ab.
+format: 1
+activity: laufzeit
+examples:
+  distinct-list:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+  distinct-sorted:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+      - { files: { laufzeit/laufzeit.rb: fehler/erster-fehlt.rb } }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.py: fehler/erster-fehlt.py } }
+  distinct-set:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+      - { files: { laufzeit/laufzeit.rb: fehler/set-mit-liste.rb }, say: "Eine Menge" }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.py: fehler/set-mit-liste.py }, say: "Eine Menge" }
+  fib-memo:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+      - { files: { laufzeit/laufzeit.rb: fehler/fib-ohne-gedaechtnis.rb }, say: "dauert zu lange" }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.py: fehler/fib-ohne-gedaechtnis.py }, say: "dauert zu lange" }
+  pair-with-sum:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+      - { files: { laufzeit/laufzeit.rb: fehler/paar-doppelt.rb }, say: "Eine Zahl zählt nur einmal" }
+      - { files: { laufzeit/laufzeit.rb: fehler/paar-langsam.rb }, say: "zu lange" }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.py: fehler/paar-doppelt.py }, say: "Eine Zahl zählt nur einmal" }
+        - { files: { laufzeit/laufzeit.py: fehler/paar-langsam.py }, say: "zu lange" }
+  tour-length:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+      - { files: { laufzeit/laufzeit.rb: fehler/ohne-rueckweg.rb }, say: "Weg zurück" }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.py: fehler/ohne-rueckweg.py }, say: "Weg zurück" }
+  best-tour:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+  nearest-tour:
+    pass:
+      - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
+    fail:
+      - { files: { laufzeit/laufzeit.rb: { text: "# noch leer\n" } } }
+    python:
+      pass:
+        - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
+      fail:
+        - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }

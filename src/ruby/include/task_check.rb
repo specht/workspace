@@ -11,6 +11,7 @@ require_relative 'er_check'
 require_relative 'classes_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
+require_relative 'prolog_check'
 require_relative 'c_check'
 require_relative 'javascript_check'
 require_relative 'java_check'
@@ -34,7 +35,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby javascript c java dart function pip tests circuit turtle]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit turtle]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -105,6 +106,7 @@ module TaskCheck
         return check_classes(task, check, workspace, runner) if type == 'classes'
         return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
         return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
+        return check_calls(task, check, workspace, guest_runner, PrologCheck) if type == 'prolog'
         return check_calls(task, check, workspace, guest_runner, JavascriptCheck) if type == 'javascript'
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
         return check_calls(task, check, workspace, guest_runner, JavaCheck) if type == 'java'

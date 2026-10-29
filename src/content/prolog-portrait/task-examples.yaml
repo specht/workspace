@@ -1,0 +1,31 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: prolog-portrait
+examples:
+  hallo:
+    pass:
+      - files: { prolog/hello.pl: hello.pl }
+    fail:
+      - files: { prolog/hello.pl: hello-error.pl }
+        say: "writeln('Hello, World!')"
+      - files: { prolog/hello.pl: { text: "" } }
+      - files: { prolog/hallo.pl: hello.pl }
+  fehler:
+    pass:
+      - answer: writln/1
+      - answer: "Unknown procedure: writln/1"
+      - answer: WRITLN / 1
+    fail:
+      - answer: writln
+        say: Schrägstrich
+      - answer: writeln/1
+        say: vorschlägt
+      - answer: catch/3
+  absteigend:
+    pass:
+      - files: { prolog/bubblesort.pl: fehler/bubblesort-absteigend.pl }
+    fail:
+      - files: { prolog/bubblesort.pl: bubblesort.pl }
+      - files: { prolog/bubblesort.pl: fehler/bubblesort-gleich.pl }
+        say: wenn zwei Zahlen gleich sind

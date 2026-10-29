@@ -101,6 +101,8 @@ module CodeHighlight
                 lexer = Rouge::Lexers::C.new
             when 'clisp'
                 lexer = Rouge::Lexers::CommonLisp.new
+            when 'cobol'
+                lexer = Rouge::Lexers::COBOL.new
             when 'cpp'
                 lexer = Rouge::Lexers::Cpp.new
             when 'cs'
@@ -154,10 +156,14 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Nasm.new
             when 'pascal'
                 lexer = Rouge::Lexers::Pascal.new
+            when 'perl'
+                lexer = Rouge::Lexers::Perl.new
             when 'php'
                 # A whole file starts with <?php and may hold HTML around the
                 # PHP; a snippet is PHP from the first character.
                 lexer = Rouge::Lexers::PHP.new(:start_inline => !code.text.include?('<?'))
+            when 'prolog'
+                lexer = Rouge::Lexers::Prolog.new
             when 'pseudocode'
                 # The Handbuch's pseudocode (Rouge::Lexers::Pseudocode)
                 lexer = Rouge::Lexers::Pseudocode.new

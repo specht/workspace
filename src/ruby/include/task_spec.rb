@@ -17,6 +17,7 @@ require_relative 'java_check'
 require_relative 'dart_check'
 require_relative 'hint_steps'
 require_relative 'ruby_check'
+require_relative 'prolog_check'
 require_relative 'kata_check'
 require_relative 'tests_check'
 require_relative 'pip_check'
@@ -61,6 +62,7 @@ module TaskSpec
         'keyboard' => 'M7',
         'python' => 'M7',
         'ruby' => 'M7',
+        'prolog' => 'M8',
         'javascript' => 'M8',
         'c' => 'M7',
         'java' => 'M8',
@@ -566,14 +568,19 @@ module TaskSpec
             errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
         when 'python'
             # Calls into the person's Python file, run as the guest (PythonCheck).
-            allowed += %w[file cases timeout]
+            allowed += %w[file cases timeout slow]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(PythonCheck.spec_errors(check))
         when 'ruby'
             # Calls into the person's Ruby file, run as the guest (RubyCheck).
-            allowed += %w[file cases timeout]
+            allowed += %w[file cases timeout slow]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(RubyCheck.spec_errors(check))
+        when 'prolog'
+            # Queries to the person's Prolog file, run as the guest (PrologCheck).
+            allowed += %w[file cases timeout slow]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(PrologCheck.spec_errors(check))
         when 'javascript'
             # Calls into the person's JavaScript file, run with node as the guest (JavascriptCheck).
             allowed += %w[file cases timeout]

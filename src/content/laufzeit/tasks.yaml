@@ -1,0 +1,562 @@
+# Aufgaben zu »Wie lange dauert das? Laufzeit und Aufwand«. Format: docs/aufgaben.md.
+format: 1
+activity: laufzeit
+tasks:
+  - id: distinct-list
+    title: Mit einer Liste
+    prompt: |
+      Schreib in `laufzeit.rb` eine Funktion `distinct_list(names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      cases:
+        - call: "distinct_list(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+          expect: "2"
+        - call: "distinct_list([])"
+          expect: "0"
+        - call: "distinct_list(['Dorfstraße'] * 5)"
+          expect: "1"
+        - call: "distinct_list(%w[a b c d e f])"
+          expect: "6"
+    hint:
+      - "Eine leere Liste `seen = []`; für jeden Namen: Steht er noch nicht darin, `seen.include?(name)`, kommt er hinein."
+      - "Am Ende ist die Zahl der verschiedenen Namen `seen.size`."
+    solution: |
+      ```ruby
+      def distinct_list(names)
+        seen = []
+        names.each do |name|
+          seen << name unless seen.include?(name)
+        end
+        seen.size
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `laufzeit.py` eine Funktion `distinct_list(names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        cases:
+          - call: "distinct_list(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+            expect: "2"
+          - call: "distinct_list([])"
+            expect: "0"
+          - call: "distinct_list(['Dorfstraße'] * 5)"
+            expect: "1"
+          - call: "distinct_list(list('abcdef'))"
+            expect: "6"
+      hint:
+        - "Eine leere Liste `seen = []`; für jeden Namen: Steht er noch nicht darin, `if name not in seen:`, kommt er hinein."
+        - "Am Ende ist die Zahl der verschiedenen Namen `len(seen)`."
+      solution: |
+        ```python
+        def distinct_list(names):
+            seen = []
+            for name in names:
+                if name not in seen:
+                    seen.append(name)
+            return len(seen)
+        ```
+
+  - id: distinct-sorted
+    title: Erst sortieren
+    prompt: |
+      Schreib `distinct_sorted(names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 10
+      slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Vergleicht sie jeden Namen nur mit dem davor, nachdem sie sortiert hat?"
+      cases:
+        - call: "distinct_sorted(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+          expect: "2"
+        - call: "distinct_sorted([])"
+          expect: "0"
+        - call: "distinct_sorted(['b', 'a', 'b', 'a', 'c'])"
+          expect: "3"
+        - call: "distinct_sorted((1..300_000).map(&:to_s))"
+          expect: "300000"
+    hint:
+      - "`sorted = names.sort` gibt eine sortierte Kopie. Gezählt wird jeder Name, der anders ist als der davor, und der erste."
+      - "`sorted.each_with_index do |name, i|` gibt jeden Namen mit seinem Index; der davor ist `sorted[i - 1]`, und beim ersten, `i == 0`, gibt es keinen davor."
+    solution: |
+      ```ruby
+      def distinct_sorted(names)
+        sorted = names.sort
+        count = 0
+        sorted.each_with_index do |name, i|
+          count += 1 if i == 0 || name != sorted[i - 1]
+        end
+        count
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `distinct_sorted(names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 10
+        slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Vergleicht sie jeden Namen nur mit dem davor, nachdem sie sortiert hat?"
+        cases:
+          - call: "distinct_sorted(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+            expect: "2"
+          - call: "distinct_sorted([])"
+            expect: "0"
+          - call: "distinct_sorted(['b', 'a', 'b', 'a', 'c'])"
+            expect: "3"
+          - call: "distinct_sorted([str(i) for i in range(300000)])"
+            expect: "300000"
+      hint:
+        - "`ordered = sorted(names)` gibt eine sortierte Kopie. Gezählt wird jeder Name, der anders ist als der davor, und der erste."
+        - "`for i, name in enumerate(ordered):` gibt jeden Namen mit seinem Index; der davor ist `ordered[i - 1]`, und beim ersten, `i == 0`, gibt es keinen davor."
+      solution: |
+        ```python
+        def distinct_sorted(names):
+            ordered = sorted(names)
+            count = 0
+            for i, name in enumerate(ordered):
+                if i == 0 or name != ordered[i - 1]:
+                    count += 1
+            return count
+        ```
+
+  - id: distinct-set
+    title: Mit einer Menge
+    prompt: |
+      Schreib `distinct_set(names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 10
+      slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Fragt sie eine Liste, ob ein Name schon darin steht? Eine Menge (`Set`) weiß es sofort."
+      cases:
+        - call: "distinct_set(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+          expect: "2"
+        - call: "distinct_set([])"
+          expect: "0"
+        - call: "distinct_set((1..300_000).map(&:to_s))"
+          expect: "300000"
+    hint:
+      - "Ganz oben in der Datei `require 'set'`, dann `seen = Set.new`."
+      - "Jeder Name kommt mit `seen << name` hinein; ein Name, der schon darin ist, kommt nicht zweimal hinein. Am Ende ist `seen.size` die Antwort."
+    solution: |
+      ```ruby
+      require 'set'
+
+      def distinct_set(names)
+        seen = Set.new
+        names.each { |name| seen << name }
+        seen.size
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `distinct_set(names)`, die die Namen in eine Menge legt, ein `set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 10
+        slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Fragt sie eine Liste, ob ein Name schon darin steht? Eine Menge (`set`) weiß es sofort."
+        cases:
+          - call: "distinct_set(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])"
+            expect: "2"
+          - call: "distinct_set([])"
+            expect: "0"
+          - call: "distinct_set([str(i) for i in range(300000)])"
+            expect: "300000"
+      hint:
+        - "Eine leere Menge ist `seen = set()`."
+        - "Jeder Name kommt mit `seen.add(name)` hinein; ein Name, der schon darin ist, kommt nicht zweimal hinein. Am Ende ist `len(seen)` die Antwort."
+      solution: |
+        ```python
+        def distinct_set(names):
+            seen = set()
+            for name in names:
+                seen.add(name)
+            return len(seen)
+        ```
+
+  - id: verdoppeln
+    title: Doppelt so viele Namen
+    prediction: true
+    prompt: |
+      Wie viel länger braucht `distinct_list` für 2000 Namen als für 1000, wenn alle Namen verschieden sind?
+    check:
+      type: choice
+      options: ["etwa gleich lange", "etwa doppelt so lange", "etwa viermal so lange", "etwa achtmal so lange"]
+      correct: 2
+
+  - id: beobachtung
+    title: Was die Messung zeigt
+    prompt: |
+      Lass `messen` laufen und sieh dir die Spalte »Faktor« von `distinct_list` an: Um wie viel wächst die Zeit, wenn sich die Zahl der Namen verdoppelt?
+    check:
+      type: choice
+      options:
+        - "Immer etwa um das Vierfache, so lange es läuft."
+        - "Zuerst etwa um das Vierfache, bei vielen Namen nur noch etwa um das Doppelte."
+        - "Immer etwa um das Doppelte, wie bei den beiden anderen."
+        - "Gar nicht: Die Zeit bleibt gleich."
+      correct: 1
+
+  - id: schritte
+    title: Wie oft läuft die innere Zeile?
+    prediction: true
+    prompt: |
+      ```ruby
+      count = 0
+      (0...n).each do |i|
+        (0...i).each do |j|
+          count += 1
+        end
+      end
+      ```
+
+      Welchen Wert hat `count` am Ende, wenn `n` gleich 1000 ist?
+    check:
+      type: choice
+      options: ["1 000", "2 000", "499 500", "1 000 000"]
+      correct: 2
+    python:
+      prompt: |
+        ```python
+        count = 0
+        for i in range(n):
+            for j in range(i):
+                count += 1
+        ```
+
+        Welchen Wert hat `count` am Ende, wenn `n` gleich 1000 ist?
+      check:
+        type: choice
+        options: ["1 000", "2 000", "499 500", "1 000 000"]
+        correct: 2
+
+  - id: hochrechnen
+    title: Zehnmal so viel
+    prediction: true
+    prompt: |
+      Ein Programm mit einem Aufwand von n² braucht für 1000 Namen eine Sekunde. Wie lange braucht es für 10 000?
+    check:
+      type: choice
+      options: ["10 Sekunden", "20 Sekunden", "100 Sekunden", "1000 Sekunden"]
+      correct: 2
+
+  - id: fib-memo
+    title: Fibonacci mit Gedächtnis
+    prompt: |
+      Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `fib_memo(n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fib_memo(90)` sofort fertig ist.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 5
+      slow: "`fib_memo(90)` dauert zu lange: Rechnet deine Funktion dieselben Zahlen immer wieder aus? Merk dir jede in einem Dictionary, sobald du sie hast, und schau dort zuerst nach."
+      cases:
+        - call: "[fib_memo(0), fib_memo(1), fib_memo(2), fib_memo(10)]"
+          expect: "[0, 1, 1, 55]"
+        - call: "fib_memo(90)"
+          expect: "2880067194370816120"
+    hint:
+      - "Das Gedächtnis ist ein Dictionary, `memo = {}`, das jeder Aufruf weitergibt: `def fib_memo(n, memo = {})` und innen `fib_memo(n - 1, memo)`."
+      - "Steht `n` schon in `memo`, gibt die Funktion den Wert von dort zurück; sonst rechnet sie ihn aus und trägt ihn ein: `memo[n] ||= fib_memo(n - 1, memo) + fib_memo(n - 2, memo)`."
+    solution: |
+      ```ruby
+      def fib_memo(n, memo = {})
+        return n if n < 2
+        memo[n] ||= fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+      end
+      ```
+    python:
+      prompt: |
+        Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `fib_memo(n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fib_memo(90)` sofort fertig ist.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 5
+        slow: "`fib_memo(90)` dauert zu lange: Rechnet deine Funktion dieselben Zahlen immer wieder aus? Merk dir jede in einem Dictionary, sobald du sie hast, und schau dort zuerst nach."
+        cases:
+          - call: "[fib_memo(0), fib_memo(1), fib_memo(2), fib_memo(10)]"
+            expect: "[0, 1, 1, 55]"
+          - call: "fib_memo(90)"
+            expect: "2880067194370816120"
+      hint:
+        - "Das Gedächtnis ist ein Dictionary, das jeder Aufruf weitergibt: `def fib_memo(n, memo=None):`, beim ersten Aufruf `memo = {}`, und innen `fib_memo(n - 1, memo)`. (Ein `memo={}` als Vorgabe würde Python nur einmal anlegen und für alle Aufrufe behalten.)"
+        - "Steht `n` schon in `memo`, gibt die Funktion `memo[n]` zurück; sonst rechnet sie den Wert aus, trägt ihn ein und gibt ihn zurück."
+      solution: |
+        ```python
+        def fib_memo(n, memo=None):
+            if memo is None:
+                memo = {}
+            if n < 2:
+                return n
+            if n not in memo:
+                memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+            return memo[n]
+        ```
+
+  - id: pair-with-sum
+    title: Zwei, die zusammenpassen
+    prompt: |
+      Schreib `pair_with_sum?(numbers, target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 5
+      slow: "Für 200 000 Zahlen braucht deine Funktion zu lange. Zwei Schleifen ineinander sind 20 Milliarden Paare: Merk dir in einer Menge, was du gesehen hast, und frag bei jeder Zahl, ob `target - x` schon darin ist."
+      cases:
+        - call: "pair_with_sum?([3, 5, 8], 11)"
+          expect: "true"
+        - call: "pair_with_sum?([3, 5, 8], 10)"
+          expect: "false"
+          say: "Eine Zahl zählt nur einmal: 5 und 5 an derselben Stelle ergeben kein Paar."
+        - call: "pair_with_sum?([5, 1, 5], 10)"
+          expect: "true"
+        - call: "pair_with_sum?([], 0)"
+          expect: "false"
+        - call: "pair_with_sum?((1..200_000).to_a, 399_999)"
+          expect: "true"
+        - call: "pair_with_sum?((1..200_000).map { |x| 2 * x }, 7)"
+          expect: "false"
+    hint:
+      - "Für jede Zahl `x` passt genau eine andere: `target - x`. Die Frage ist nur, ob sie schon vorkam."
+      - "Eine Menge `seen = Set.new`; für jede Zahl: Ist `target - x` in `seen`, gibt es ein Paar; sonst kommt `x` hinein. Erst danach, so zählt keine Zahl doppelt."
+    solution: |
+      ```ruby
+      def pair_with_sum?(numbers, target)
+        seen = Set.new
+        numbers.each do |x|
+          return true if seen.include?(target - x)
+          seen << x
+        end
+        false
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `has_pair_with_sum(numbers, target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 5
+        slow: "Für 200 000 Zahlen braucht deine Funktion zu lange. Zwei Schleifen ineinander sind 20 Milliarden Paare: Merk dir in einer Menge, was du gesehen hast, und frag bei jeder Zahl, ob `target - x` schon darin ist."
+        cases:
+          - call: "has_pair_with_sum([3, 5, 8], 11)"
+            expect: "True"
+          - call: "has_pair_with_sum([3, 5, 8], 10)"
+            expect: "False"
+            say: "Eine Zahl zählt nur einmal: 5 und 5 an derselben Stelle ergeben kein Paar."
+          - call: "has_pair_with_sum([5, 1, 5], 10)"
+            expect: "True"
+          - call: "has_pair_with_sum([], 0)"
+            expect: "False"
+          - call: "has_pair_with_sum(list(range(1, 200001)), 399999)"
+            expect: "True"
+          - call: "has_pair_with_sum([2 * x for x in range(1, 200001)], 7)"
+            expect: "False"
+      hint:
+        - "Für jede Zahl `x` passt genau eine andere: `target - x`. Die Frage ist nur, ob sie schon vorkam."
+        - "Eine Menge `seen = set()`; für jede Zahl: Ist `target - x in seen`, gibt es ein Paar; sonst kommt `x` hinein. Erst danach, so zählt keine Zahl doppelt."
+      solution: |
+        ```python
+        def has_pair_with_sum(numbers, target):
+            seen = set()
+            for x in numbers:
+                if target - x in seen:
+                    return True
+                seen.add(x)
+            return False
+        ```
+
+  - id: tour-length
+    title: Wie lang ist eine Rundfahrt?
+    prompt: |
+      Ein Ort ist eine Liste aus Namen, Länge und Breite, `["Brandenburger Tor", 13.377705, 52.516276]`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier die Funktion `distance(a, b)` von oben in `laufzeit.rb` und schreib `tour_length(tour, places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      cases:
+        - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505]]; distance(P[0], P[1]).round(2)"
+          expect: "2.21"
+          say: "`distance` kopierst du von oben, so wie sie dort steht."
+        - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505]]; tour_length([0, 1, 2], P).round(2)"
+          expect: "8.17"
+          say: "Zur Rundfahrt gehört der Weg zurück zum ersten Ort."
+        - call: "P = [['A', 13.4, 52.5], ['B', 13.5, 52.5]]; [tour_length([0, 1], P).round(2), tour_length([1, 0], P).round(2)]"
+          expect: "[13.55, 13.55]"
+    hint:
+      - "Gezählt wird jeder Schritt von einem Ort zum nächsten in der Liste: vom Ort `tour[i]` zum Ort `tour[i + 1]`."
+      - "Der letzte Schritt geht zurück zum ersten Ort: `tour[(i + 1) % tour.size]` ist beim letzten Index wieder `tour[0]`."
+    solution: |
+      ```ruby
+      def tour_length(tour, places)
+        total = 0.0
+        tour.each_with_index do |from, i|
+          to = tour[(i + 1) % tour.size]
+          total += distance(places[from], places[to])
+        end
+        total
+      end
+      ```
+    python:
+      prompt: |
+        Ein Ort ist eine Liste aus Namen, Länge und Breite, `["Brandenburger Tor", 13.377705, 52.516276]`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier die Funktion `distance(a, b)` von oben in `laufzeit.py` und schreib `tour_length(tour, places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        cases:
+          - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505]]; round(distance(P[0], P[1]), 2)"
+            expect: "2.21"
+            say: "`distance` kopierst du von oben, so wie sie dort steht."
+          - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505]]; round(tour_length([0, 1, 2], P), 2)"
+            expect: "8.17"
+            say: "Zur Rundfahrt gehört der Weg zurück zum ersten Ort."
+          - call: "P = [['A', 13.4, 52.5], ['B', 13.5, 52.5]]; [round(tour_length([0, 1], P), 2), round(tour_length([1, 0], P), 2)]"
+            expect: "[13.55, 13.55]"
+      hint:
+        - "Gezählt wird jeder Schritt von einem Ort zum nächsten in der Liste: vom Ort `tour[i]` zum Ort `tour[i + 1]`."
+        - "Der letzte Schritt geht zurück zum ersten Ort: `tour[(i + 1) % len(tour)]` ist beim letzten Index wieder `tour[0]`."
+      solution: |
+        ```python
+        def tour_length(tour, places):
+            total = 0.0
+            for i, here in enumerate(tour):
+                there = tour[(i + 1) % len(tour)]
+                total += distance(places[here], places[there])
+            return total
+        ```
+
+  - id: best-tour
+    title: Alle Reihenfolgen
+    prompt: |
+      Schreib `best_tour(places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 10
+      cases:
+        - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505], ['Rotes Rathaus', 13.408482, 52.518329], ['Checkpoint Charlie', 13.390381, 52.507432], ['Berliner Dom', 13.400966, 52.519082]]; t = best_tour(P); [t.first, t.sort, tour_length(t, P).round(2)]"
+          expect: "[0, [0, 1, 2, 3, 4, 5], 8.93]"
+          say: "Die Rundfahrt beginnt mit dem Ort 0 und besucht jeden Ort genau einmal; die kürzeste ist 8,93 km lang."
+        - call: "P = [['A', 13.4, 52.5], ['B', 13.5, 52.5]]; best_tour(P)"
+          expect: "[0, 1]"
+    hint:
+      - "`(1...places.size).to_a.permutation` gibt alle Reihenfolgen der Orte außer dem ersten. Vor jede kommt die 0."
+      - "Von allen Rundfahrten die mit der kleinsten Länge: `min_by { |tour| tour_length(tour, places) }`."
+    solution: |
+      ```ruby
+      def best_tour(places)
+        rest = (1...places.size).to_a
+        rest.permutation.map { |order| [0] + order }.min_by { |tour| tour_length(tour, places) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `best_tour(places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 10
+        cases:
+          - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505], ['Rotes Rathaus', 13.408482, 52.518329], ['Checkpoint Charlie', 13.390381, 52.507432], ['Berliner Dom', 13.400966, 52.519082]]; t = best_tour(P); [t[0], sorted(t), round(tour_length(t, P), 2)]"
+            expect: "[0, [0, 1, 2, 3, 4, 5], 8.93]"
+            say: "Die Rundfahrt beginnt mit dem Ort 0 und besucht jeden Ort genau einmal; die kürzeste ist 8,93 km lang."
+          - call: "P = [['A', 13.4, 52.5], ['B', 13.5, 52.5]]; list(best_tour(P))"
+            expect: "[0, 1]"
+      hint:
+        - "Ganz oben `import itertools`; `itertools.permutations(range(1, len(places)))` gibt alle Reihenfolgen der Orte außer dem ersten. Vor jede kommt die 0: `[0] + list(order)`."
+        - "Von allen Rundfahrten die mit der kleinsten Länge: `min(tours, key=lambda tour: tour_length(tour, places))`."
+      solution: |
+        ```python
+        import itertools
+
+
+        def best_tour(places):
+            tours = ([0] + list(order) for order in itertools.permutations(range(1, len(places))))
+            return min(tours, key=lambda tour: tour_length(tour, places))
+        ```
+
+  - id: fakultaet
+    title: Drei Orte mehr
+    prediction: true
+    prompt: |
+      Für zehn Orte probiert `best_tour` 9 · 8 · 7 · … · 1 = 362 880 Reihenfolgen aus und braucht dafür etwa anderthalb Sekunden. Wie lange braucht es für 13 Orte?
+    check:
+      type: choice
+      options: ["etwa 5 Sekunden", "etwa eine Minute", "etwa eine Dreiviertelstunde", "etwa ein Jahr"]
+      correct: 2
+
+  - id: nearest-tour
+    title: Immer zum nächsten Ort
+    prompt: |
+      Schreib `nearest_tour(places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+    check:
+      type: ruby
+      file: laufzeit/laufzeit.rb
+      timeout: 10
+      cases:
+        - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505], ['Rotes Rathaus', 13.408482, 52.518329], ['Checkpoint Charlie', 13.390381, 52.507432], ['Berliner Dom', 13.400966, 52.519082]]; nearest_tour(P)"
+          expect: "[0, 4, 5, 3, 1, 2]"
+          say: "Vom Brandenburger Tor ist Checkpoint Charlie am nächsten, von dort der Dom, dann das Rote Rathaus, der Fernsehturm und zuletzt die Siegessäule."
+        - call: "P = (0...300).map { |i| [i.to_s, 13.0 + i * 0.001, 52.5] }; t = nearest_tour(P); [t.first(3), t.size]"
+          expect: "[[0, 1, 2], 300]"
+    hint:
+      - "Die Rundfahrt beginnt mit `[0]`; eine zweite Liste hält die Orte, an denen sie noch nicht war, `left = (1...places.size).to_a`."
+      - "Solange `left` nicht leer ist: der nächste Ort zum letzten der Rundfahrt, `left.min_by { |i| distance(places[tour.last], places[i]) }`, kommt hinten an die Rundfahrt und aus `left` heraus."
+    solution: |
+      ```ruby
+      def nearest_tour(places)
+        tour = [0]
+        left = (1...places.size).to_a
+        until left.empty?
+          here = places[tour.last]
+          nearest = left.min_by { |i| distance(here, places[i]) }
+          tour << nearest
+          left.delete(nearest)
+        end
+        tour
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `nearest_tour(places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+      check:
+        type: python
+        file: laufzeit/laufzeit.py
+        timeout: 10
+        cases:
+          - call: "P = [['Brandenburger Tor', 13.377705, 52.516276], ['Berliner Fernsehturm', 13.409423, 52.520825], ['Siegessäule', 13.3501, 52.514505], ['Rotes Rathaus', 13.408482, 52.518329], ['Checkpoint Charlie', 13.390381, 52.507432], ['Berliner Dom', 13.400966, 52.519082]]; nearest_tour(P)"
+            expect: "[0, 4, 5, 3, 1, 2]"
+            say: "Vom Brandenburger Tor ist Checkpoint Charlie am nächsten, von dort der Dom, dann das Rote Rathaus, der Fernsehturm und zuletzt die Siegessäule."
+          - call: "P = [[str(i), 13.0 + i * 0.001, 52.5] for i in range(300)]; t = nearest_tour(P); [t[:3], len(t)]"
+            expect: "[[0, 1, 2], 300]"
+      hint:
+        - "Die Rundfahrt beginnt mit `[0]`; eine zweite Liste hält die Orte, an denen sie noch nicht war, `left = list(range(1, len(places)))`."
+        - "Solange `left` nicht leer ist: der nächste Ort zum letzten der Rundfahrt, `min(left, key=lambda i: distance(places[tour[-1]], places[i]))`, kommt hinten an die Rundfahrt und aus `left` heraus."
+      solution: |
+        ```python
+        def nearest_tour(places):
+            tour = [0]
+            left = list(range(1, len(places)))
+            while left:
+                here = places[tour[-1]]
+                nearest = min(left, key=lambda i: distance(here, places[i]))
+                tour.append(nearest)
+                left.remove(nearest)
+            return tour
+        ```
+
+  - id: grenze
+    title: Wo es aufhört
+    prompt: |
+      Probier `rundfahrt` mit 8, 9, 10 und 11 Orten aus. Ab wie vielen Orten würdest du nicht mehr warten wollen, und was würdest du jemandem raten, der eine Rundfahrt zu allen 36 Sehenswürdigkeiten Berlins planen will?
+    check:
+      type: reflection
+      min_words: 25
+    examples:
+      - |
+        Bei 11 Orten hat es schon 17 Sekunden gedauert, bei 12 wären es mehr als
+        drei Minuten. Für 36 Orte würde ich nicht alle Reihenfolgen ausprobieren,
+        sondern immer zum nächsten Ort gehen und danach schauen, ob sich zwei
+        Strecken kreuzen, die man tauschen kann.

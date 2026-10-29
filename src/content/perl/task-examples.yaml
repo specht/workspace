@@ -1,0 +1,27 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: perl
+examples:
+  hallo:
+    pass:
+      - files: { hello.pl: hello.pl }
+    fail:
+      - files: { hello.pl: hello-error.pl }
+        say: 'print "Hello, World!\n"'
+      - files: { hello.pl: { text: "print \"Hello, World!\\n\";\n" } }
+        say: use strict
+      - files: { hello.pl: { text: "" } }
+      - files: { hallo.pl: hello.pl }
+  fehler:
+    pass:
+      - answer: "4"
+    fail:
+      - answer: "1"
+  absteigend:
+    pass:
+      - files: { bubblesort.pl: { text: "        if ($list[$i] < $list[$i + 1]) {\n" } }
+      - files: { bubblesort.pl: { text: "        if ($list[$i+1] > $list[$i]) {\n" } }
+    fail:
+      - files: { bubblesort.pl: bubblesort.pl }
+        say: wenn der linke größer ist

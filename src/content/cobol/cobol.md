@@ -1,6 +1,8 @@
 <div class='meta'>
 image: cobol-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Algorithmen und Softwareentwicklung (ein Programm übersetzen, Fehlermeldungen lesen, Zahlen mit einer festen Zahl von Ziffern, Bubblesort ändern)"
+topics: [programmiersprachen, geschichte]
 </div>
 
 <div
@@ -53,7 +55,7 @@ crop-bottom: 77%
 
 Schreibe nun den folgenden Code in die Datei:
 
-_include_file(hello.cbl, c)
+_include_file(hello.cbl, cobol)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um COBOL-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
@@ -155,7 +157,7 @@ cobc -x hello.cbl -o hello
 Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>cobc -x he</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>hello.cbl</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
-Falls du die Warnung _»line not terminated b a newline«_ erhältst, ist dies nicht weiter schlimm - sie bedeutet nur, dass die letzte Zeile deines Programms keinen Zeilenumbruch am Ende hat. Du kannst sie einfach ignorieren. Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
+Falls du die Warnung _»line not terminated by a newline«_ erhältst, ist dies nicht weiter schlimm - sie bedeutet nur, dass die letzte Zeile deines Programms keinen Zeilenumbruch am Ende hat. Du kannst sie einfach ignorieren. Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
 
 <!-- tutorial-screenshot
 # Die Warnung von cobc und ls passen nur ins ganze Terminal
@@ -186,11 +188,15 @@ cobc -x hello.cbl -o hello && ./hello
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+_task(hallo)
+
+_task(uebersetzt)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `DISPLAY` das Wort `DISPLY` zu schreiben:
 
-```c
+```cobol
 ~ IDENTIFICATION DIVISION.
 ~ PROGRAM-ID. HELLO-WORLD.
 ~
@@ -209,7 +215,11 @@ cobc -x hello.cbl -o hello
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -225,12 +235,14 @@ crop-terminal-lines: auto
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 5) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
+<!-- /after -->
+
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in COBOL Benutzereingaben verarbeitet und Schleifen verwendet.
 Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
-_include_file(factor.cbl, c)
+_include_file(factor.cbl, cobol)
 
 Speichere die Datei unter dem Namen `factor.cbl`. Kompiliere das Programm:
 
@@ -269,7 +281,7 @@ An diesem Beispiel kannst du sehen, wie man in COBOL Arrays verwendet und Schlei
 
 Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 
-_include_file(bubblesort.cbl, c)
+_include_file(bubblesort.cbl, cobol)
 
 Speichere die Datei unter dem Namen `bubblesort.cbl`. Kompiliere das Programm:
 
@@ -296,10 +308,13 @@ Das Programm hat eine Liste von 10 Zahlen sortiert.
 <strong>Ausprobieren:</strong> Ändere <code>bubblesort.cbl</code>, übersetze neu und starte das Programm:
 <ul>
 <li>Füge eine elfte Zahl hinzu. Was musst du außer einer Zeile <code>MOVE … TO ITEM (11)</code> noch ändern?</li>
-<li>Ändere eine der Zahlen zu <code>123</code>. Was meldet <code>cobc</code>, und welche Zahl steht danach in der Ausgabe? Was bedeutet wohl <code>PIC 99</code>?</li>
 <li>Wie viele Zahlen kann das Programm höchstens sortieren?</li>
 </ul>
 </div>
+
+_task(zwei-stellen)
+
+_task(absteigend)
 
 ## Zusammenfassung
 

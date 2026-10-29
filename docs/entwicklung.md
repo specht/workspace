@@ -336,6 +336,7 @@ Die eigenen Erweiterungen liegen in `src/vscode-extensions/`. Jede baut ihre
 | `uml` (UML-Werkstatt) | `npm run package` oder ohne npm: `node --test test/*.test.cjs core/*.test.cjs && node pack.cjs` | `hackschule-uml-<version>.vsix` |
 | `backrooms` (Farben für `.room`) | `npm run package` oder ohne npm: `node --test test/*.test.cjs && node pack.cjs` | `hackschule-backrooms-<version>.vsix` |
 | `live-server` | fremde Erweiterung, liegt fertig bei | `ritwickdey.LiveServer-5.7.10.vsix` |
+| `better-prolog-syntax` (Farben für Prolog) | fremde Erweiterung von Open VSX (MIT), liegt fertig bei; sie nimmt jede `.pl`-Datei für Prolog, `files.associations` in `default-vscode-settings.json` gibt sie Perl zurück außer in einem Ordner `prolog` | `jeff-hykin.better-prolog-syntax-0.3.3.vsix` |
 
 Ins Workspace-Image kommt eine neue `.vsix` so:
 

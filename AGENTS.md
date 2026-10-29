@@ -51,7 +51,7 @@ address from `credentials.rb` and the code `123456`.
   modelling, in five languages) and what is open
 - [docs/plan-prolog-komplexitaet.md](docs/plan-prolog-komplexitaet.md): two planned activities, logic
   programming with Prolog (SWI-Prolog in the image, a check type `prolog`) and run-time complexity
-  (measuring, counting, growth, P and NP); proposals, nothing built
+  (measuring, counting, growth, P and NP); both built (`prolog`, `laufzeit`), what is open
 - [docs/plan-git-gruppen.md](docs/plan-git-gruppen.md): Git repositories for groups kept by the Workspace
   itself (a mounted directory or an SSH container), browsable on the site; a plan, open questions
 - [docs/plan-treffpunkt.md](docs/plan-treffpunkt.md): a meeting point a teacher sets in an activity for

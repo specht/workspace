@@ -347,6 +347,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         guile-${GUILE_VERSION} \
         host \
         htop \
+        hyperfine \
         imagemagick \
         iputils-ping \
         iputils-tracepath \
@@ -400,6 +401,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         rsync \
         sbcl \
         software-properties-common \
+        swi-prolog-nox \
         tar \
         telnet \
         traceroute \
@@ -772,6 +774,9 @@ COPY bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix \
 
 COPY ritwickdey.LiveServer.vsix \
     /app/extensions/ritwickdey.LiveServer.vsix
+
+COPY jeff-hykin.better-prolog-syntax.vsix \
+    /app/extensions/jeff-hykin.better-prolog-syntax.vsix
 
 COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
     /app/extensions/hackschule-er-${HACKSCHULE_ER_VERSION}.vsix

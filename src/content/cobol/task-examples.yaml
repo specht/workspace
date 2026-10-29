@@ -1,0 +1,38 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: cobol
+examples:
+  hallo:
+    pass:
+      - files: { hello.cbl: hello.cbl }
+    fail:
+      - files: { hello.cbl: hello-error.cbl }
+        say: 'DISPLAY "Hello, World!"'
+      - files: { hello.cbl: { text: "       DISPLAY \"Hello, World!\".\n" } }
+        say: PROCEDURE DIVISION
+      - files: { hello.cbl: { text: "" } }
+      - files: { hallo.cbl: hello.cbl }
+  uebersetzt:
+    pass:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00", executable: true } }
+    fail:
+      - files: { hello: { text: "\x7FELF\x02\x01\x01\x00" } }
+        say: ausführbar
+      - files: { hello: { from: hello.cbl, executable: true } }
+        say: kein übersetztes Programm
+      - files: { hello.cbl: hello.cbl }
+        say: noch kein Programm
+  fehler:
+    pass:
+      - answer: "5"
+    fail:
+      - answer: "4"
+  absteigend:
+    pass:
+      - files: { bubblesort.cbl: { text: "                 IF ITEM (ITEM-INDEX) < ITEM (ITEM-INDEX + 1)\n" } }
+      - files: { bubblesort.cbl: { text: "                 if item (item-index + 1) > item (item-index)\n" } }
+      - files: { bubblesort.cbl: { text: "                 IF ITEM (ITEM-INDEX) LESS THAN ITEM (ITEM-INDEX + 1)\n" } }
+    fail:
+      - files: { bubblesort.cbl: bubblesort.cbl }
+        say: wenn der linke größer ist

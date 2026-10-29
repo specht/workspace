@@ -1,0 +1,65 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«). In fehler/ stehen häufige Fehler, je eine Änderung an
+# der Lösung. Das Färben, das erst alle Bezirke färbt und dann prüft, ist
+# langsamer, aber richtig: Es geht durch.
+format: 1
+activity: prolog
+examples:
+  kinder:
+    pass:
+      - { files: { prolog/familie.pl: loesung/familie.pl } }
+    fail:
+      - { files: { prolog/familie.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/familie.pl: starter/familie.pl }, say: "keine Antwort" }
+  regeln:
+    pass:
+      - { files: { prolog/familie.pl: loesung/familie.pl } }
+    fail:
+      - { files: { prolog/familie.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/familie.pl: starter/familie.pl } }
+      - { files: { prolog/familie.pl: fehler/grosseltern-falsch.pl } }
+  geschwister:
+    pass:
+      - { files: { prolog/familie.pl: loesung/familie.pl } }
+    fail:
+      - { files: { prolog/familie.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/familie.pl: fehler/geschwister-selbst.pl }, say: "X \\= Y" }
+  vorfahren:
+    pass:
+      - { files: { prolog/familie.pl: loesung/familie.pl } }
+    fail:
+      - { files: { prolog/familie.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/familie.pl: fehler/vorfahren-links.pl }, say: "hört nicht auf" }
+  is-in:
+    pass:
+      - { files: { prolog/listen.pl: loesung/listen.pl } }
+    fail:
+      - { files: { prolog/listen.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/listen.pl: starter/listen.pl } }
+      - { files: { prolog/listen.pl: fehler/is-in-nur-kopf.pl } }
+  size:
+    pass:
+      - { files: { prolog/listen.pl: loesung/listen.pl } }
+    fail:
+      - { files: { prolog/listen.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/listen.pl: fehler/size-ohne-is.pl }, say: "is" }
+  joined:
+    pass:
+      - { files: { prolog/listen.pl: loesung/listen.pl } }
+    fail:
+      - { files: { prolog/listen.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/listen.pl: fehler/joined-falsch.pl } }
+  bezirke:
+    pass:
+      - { files: { prolog/bezirke.pl: loesung/bezirke.pl } }
+      - { files: { prolog/bezirke.pl: fehler/bezirke-erst-faerben.pl } }
+    fail:
+      - { files: { prolog/bezirke.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/bezirke.pl: starter/bezirke.pl } }
+      - { files: { prolog/bezirke.pl: fehler/bezirk-fehlt.pl }, say: "dieselbe Farbe" }
+  sudoku:
+    pass:
+      - { files: { prolog/sudoku.pl: loesung/sudoku.pl } }
+    fail:
+      - { files: { prolog/sudoku.pl: { text: "% noch leer\n" } } }
+      - { files: { prolog/sudoku.pl: starter/sudoku.pl } }
