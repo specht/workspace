@@ -1,8 +1,9 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
 # Die Stufen in stufen/ sind der Code nach jedem Kapitel; was ein Kapitel
-# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler, in Ruby
-# und Python, je eine Änderung an der Lösung. Stufen, Lösung und Fehler
+# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler, in Ruby,
+# Python und Dart, je eine Änderung an der Lösung; in Java (eine Datei je
+# Klasse) liegen Stufen, Lösung und Fehler als Ordner in java/. Stufen, Lösung und Fehler
 # schreibt src/scripts/textadventure/gen.py aus einer Quelle je Sprache.
 format: 1
 activity: textadventure
@@ -30,6 +31,18 @@ examples:
         - { files: { textadventure/adventure.py: loesung/adventure.py } }
       fail:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/1-raum/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+    java:
+      pass:
+        - { files: { textadventure: stufen/1-raum/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Room.java: { text: "// noch leer\n" } } }
   gegenstaende:
     pass:
       - { files: { textadventure/adventure.rb: stufen/2-gegenstaende/adventure.rb } }
@@ -46,6 +59,22 @@ examples:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
         - { files: { textadventure/adventure.py: stufen/1-raum/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/nimmt-nicht-heraus.py }, say: "Was herausgenommen ist" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/2-gegenstaende/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/1-raum/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/nimmt-nicht-heraus.dart }, say: "Was herausgenommen ist" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/2-gegenstaende/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Item.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/1-raum/java } }
+        - { files: { textadventure: fehler/java/nimmt-nicht-heraus }, say: "Was herausgenommen ist" }
   beschreibung:
     pass:
       - { files: { textadventure/adventure.rb: stufen/3-beschreibung/adventure.rb } }
@@ -62,6 +91,22 @@ examples:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
         - { files: { textadventure/adventure.py: stufen/2-gegenstaende/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/leere-zeile.py }, say: "'Ausgänge: süden', ''" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/3-beschreibung/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/2-gegenstaende/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/leere-zeile.dart }, say: "'Ausgänge: süden', ''" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/3-beschreibung/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Room.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/2-gegenstaende/java } }
+        - { files: { textadventure: fehler/java/leere-zeile }, say: "kein Zeilenumbruch" }
   spielerin:
     pass:
       - { files: { textadventure/adventure.rb: stufen/4-spielerin/adventure.rb } }
@@ -78,6 +123,22 @@ examples:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
         - { files: { textadventure/adventure.py: stufen/3-beschreibung/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/nimmt-nicht-heraus.py }, say: "wechselt vom Raum in die Tasche" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/4-spielerin/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/3-beschreibung/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/nimmt-nicht-heraus.dart }, say: "wechselt vom Raum in die Tasche" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/4-spielerin/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Player.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/3-beschreibung/java } }
+        - { files: { textadventure: fehler/java/nimmt-nicht-heraus }, say: "wechselt vom Raum in die Tasche" }
   schloss:
     pass:
       - { files: { textadventure/adventure.rb: stufen/5-schloss/adventure.rb } }
@@ -96,6 +157,24 @@ examples:
         - { files: { textadventure/adventure.py: stufen/4-spielerin/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/durch-die-tuer.py }, say: "bleibt die Spielerin stehen" }
         - { files: { textadventure/adventure.py: fehler/apfel-bleibt.py }, say: "player.remove(self)" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/5-schloss/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/4-spielerin/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/durch-die-tuer.dart }, say: "bleibt die Spielerin stehen" }
+        - { files: { textadventure/adventure.dart: fehler/apfel-bleibt.dart }, say: "player.remove(this)" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/5-schloss/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Key.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/4-spielerin/java } }
+        - { files: { textadventure: fehler/java/durch-die-tuer }, say: "bleibt die Spielerin stehen" }
+        - { files: { textadventure: fehler/java/apfel-bleibt }, say: "player.remove(this)" }
   dunkel:
     pass:
       - { files: { textadventure/adventure.rb: stufen/6-dunkel/adventure.rb } }
@@ -112,6 +191,22 @@ examples:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
         - { files: { textadventure/adventure.py: stufen/5-schloss/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/sieht-im-dunkeln.py }, say: "stockdunkel" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/6-dunkel/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/5-schloss/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/sieht-im-dunkeln.dart }, say: "stockdunkel" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/6-dunkel/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Lamp.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/5-schloss/java } }
+        - { files: { textadventure: fehler/java/sieht-im-dunkeln }, say: "stockdunkel" }
   spiel:
     pass:
       - { files: { textadventure/adventure.rb: stufen/7-spiel/adventure.rb } }
@@ -130,6 +225,24 @@ examples:
         - { files: { textadventure/adventure.py: stufen/6-dunkel/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/gross-klein.py }, say: "klein" }
         - { files: { textadventure/adventure.py: fehler/ziel-endet-nicht.py }, say: "GoalRoom" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: stufen/7-spiel/adventure.dart } }
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/6-dunkel/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/gross-klein.dart }, say: "klein" }
+        - { files: { textadventure/adventure.dart: fehler/ziel-endet-nicht.dart }, say: "GoalRoom" }
+    java:
+      pass:
+        - { files: { textadventure: stufen/7-spiel/java } }
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Game.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/6-dunkel/java } }
+        - { files: { textadventure: fehler/java/gross-klein }, say: "klein" }
+        - { files: { textadventure: fehler/java/ziel-endet-nicht }, say: "GoalRoom" }
   welt:
     pass:
       - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
@@ -146,6 +259,22 @@ examples:
         - { files: { textadventure/adventure.py: stufen/7-spiel/adventure.py } }
         - { files: { textadventure/adventure.py: fehler/weg-fehlt-schritt.py }, say: "kommt nicht ans Ziel" }
         - { files: { textadventure/adventure.py: fehler/tuer-abseits.py }, say: "Ohne `benutze`" }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/7-spiel/adventure.dart } }
+        - { files: { textadventure/adventure.dart: fehler/weg-fehlt-schritt.dart }, say: "kommt nicht ans Ziel" }
+        - { files: { textadventure/adventure.dart: fehler/tuer-abseits.dart }, say: "Ohne `benutze`" }
+    java:
+      pass:
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/World.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/7-spiel/java } }
+        - { files: { textadventure: fehler/java/weg-fehlt-schritt }, say: "kommt nicht ans Ziel" }
+        - { files: { textadventure: fehler/java/tuer-abseits }, say: "Ohne `benutze`" }
   kiste:
     pass:
       - { files: { textadventure/adventure.rb: loesung/adventure.rb } }
@@ -158,3 +287,15 @@ examples:
       fail:
         - { files: { textadventure/adventure.py: { text: "# noch leer\n" } } }
         - { files: { textadventure/adventure.py: stufen/7-spiel/adventure.py } }
+    dart:
+      pass:
+        - { files: { textadventure/adventure.dart: loesung/adventure.dart } }
+      fail:
+        - { files: { textadventure/adventure.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/adventure.dart: stufen/7-spiel/adventure.dart } }
+    java:
+      pass:
+        - { files: { textadventure: loesung/java } }
+      fail:
+        - { files: { textadventure/Chest.java: { text: "// noch leer\n" } } }
+        - { files: { textadventure: stufen/7-spiel/java } }

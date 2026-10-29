@@ -133,6 +133,115 @@ tasks:
             def directions(self):
                 return list(self._exits.keys())
         ```
+    dart:
+      prompt: |
+        Schreib in `adventure.dart` eine Klasse `Room`. Ein Raum wird mit Namen und Beschreibung gebaut, `Room('Küche', 'Es riecht nach Kaffee.')`; `name` und `description` halten sie. `connect(direction, room)` legt einen Ausgang in eine Richtung an, `exitTo(direction)` gibt den Raum in dieser Richtung zurück oder `null`, wenn es dort nicht weitergeht (darum ist sein Rückgabetyp `Room?`), und der Getter `directions` gibt die Richtungen der Ausgänge als Liste, in der Reihenfolge, in der sie angelegt wurden.
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "Room('Küche', 'Es riecht nach Kaffee.').name"
+            expect: "'Küche'"
+          - call: "Room('Küche', 'Es riecht nach Kaffee.').description"
+            expect: "'Es riecht nach Kaffee.'"
+          - call: "final k = Room('Küche', ''); final f = Room('Flur', ''); k.connect('süden', f); k.exitTo('süden')?.name"
+            expect: "'Flur'"
+          - call: "final k = Room('Küche', ''); final f = Room('Flur', ''); k.connect('süden', f); identical(k.exitTo('süden'), f)"
+            expect: "true"
+            say: "`exitTo` soll den Raum selbst zurückgeben, den `connect` bekommen hat, keine Kopie."
+          - call: "Room('Küche', '').exitTo('norden')"
+            expect: "null"
+            say: "Gibt es in einer Richtung keinen Ausgang, gibt `exitTo` `null` zurück: Das tut `_exits[direction]` von selbst, wenn es den Schlüssel nicht gibt."
+          - call: "final k = Room('Küche', ''); k.connect('süden', Room('Flur', '')); k.connect('osten', Room('Bad', '')); k.directions"
+            expect: "['süden', 'osten']"
+          - call: "Room('Küche', '').directions"
+            expect: "[]"
+      hint:
+        - "Die Ausgänge merkt sich der Raum in einer Map, `final Map<String, Room> _exits = {};`: die Richtung als Schlüssel, der Raum als Wert. Der Unterstrich macht sie privat: Außerhalb deiner Datei kommt niemand an sie heran (mehr dazu bei der Kapselung)."
+        - "`connect` trägt ein, `_exits[direction] = room;`; `exitTo` schlägt nach, `Room? exitTo(String direction) => _exits[direction];`, und das ist `null`, wenn es den Schlüssel nicht gibt. `_exits.keys.toList()` sind die Richtungen."
+      solution: |
+        ```dart
+        class Room {
+          final String name;
+          final String description;
+          final Map<String, Room> _exits = {};
+
+          Room(this.name, this.description);
+
+          void connect(String direction, Room room) {
+            _exits[direction] = room;
+          }
+
+          Room? exitTo(String direction) => _exits[direction];
+
+          List<String> get directions => _exits.keys.toList();
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Room.java` die Klasse `Room`. Ein Raum wird mit Namen und Beschreibung gebaut, `new Room("Küche", "Es riecht nach Kaffee.")`; `getName()` und `getDescription()` geben sie zurück. `connect(direction, room)` legt einen Ausgang in eine Richtung an, `exitTo(direction)` gibt den Raum in dieser Richtung zurück oder `null`, wenn es dort nicht weitergeht, und `getDirections()` gibt die Richtungen der Ausgänge als `List<String>`, in der Reihenfolge, in der sie angelegt wurden.
+      check:
+        type: java
+        file: textadventure/Room.java
+        cases:
+          - call: 'new Room("Küche", "Es riecht nach Kaffee.").getName()'
+            expect: '"Küche"'
+          - call: 'new Room("Küche", "Es riecht nach Kaffee.").getDescription()'
+            expect: '"Es riecht nach Kaffee."'
+          - call: 'Room k = new Room("Küche", ""); Room f = new Room("Flur", ""); k.connect("süden", f); k.exitTo("süden").getName()'
+            expect: '"Flur"'
+          - call: 'Room k = new Room("Küche", ""); Room f = new Room("Flur", ""); k.connect("süden", f); k.exitTo("süden") == f'
+            expect: 'true'
+            say: "`exitTo` soll den Raum selbst zurückgeben, den `connect` bekommen hat, keine Kopie."
+          - call: 'new Room("Küche", "").exitTo("norden")'
+            expect: 'null'
+            say: "Gibt es in einer Richtung keinen Ausgang, gibt `exitTo` `null` zurück: Das tut `exits.get(direction)` von selbst, wenn es den Schlüssel nicht gibt."
+          - call: 'Room k = new Room("Küche", ""); k.connect("süden", new Room("Flur", "")); k.connect("osten", new Room("Bad", "")); k.connect("norden", new Room("Hof", "")); k.getDirections()'
+            expect: 'List.of("süden", "osten", "norden")'
+            say: "Die Richtungen kommen in der Reihenfolge, in der sie angelegt wurden. Eine `HashMap` merkt sich keine Reihenfolge, eine `LinkedHashMap` schon."
+          - call: 'new Room("Küche", "").getDirections()'
+            expect: 'List.of()'
+      hint:
+        - "Die Ausgänge merkt sich der Raum in einer Map, `private final Map<String, Room> exits = new LinkedHashMap<>();`: die Richtung als Schlüssel, der Raum als Wert. Eine `LinkedHashMap` behält die Reihenfolge, in der eingetragen wurde. Dazu kommen oben in die Datei `import java.util.LinkedHashMap;` und die anderen Klassen aus `java.util`, die du benutzt."
+        - "`connect` trägt ein, `exits.put(direction, room);`; `exitTo` gibt `exits.get(direction)` zurück, und das ist `null`, wenn es den Schlüssel nicht gibt. `new ArrayList<>(exits.keySet())` ist die Liste der Richtungen."
+      solution: |
+        ```java
+        import java.util.ArrayList;
+        import java.util.LinkedHashMap;
+        import java.util.List;
+        import java.util.Map;
+
+        public class Room {
+            private final String name;
+            private final String description;
+            private final Map<String, Room> exits = new LinkedHashMap<>();
+
+            public Room(String name, String description) {
+                this.name = name;
+                this.description = description;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public String getDescription() {
+                return description;
+            }
+
+            public void connect(String direction, Room room) {
+                exits.put(direction, room);
+            }
+
+            public Room exitTo(String direction) {
+                return exits.get(direction);
+            }
+
+            public List<String> getDirections() {
+                return new ArrayList<>(exits.keySet());
+            }
+        }
+        ```
 
   - id: einweg
     title: Und zurück?
@@ -161,6 +270,32 @@ tasks:
       check:
         type: choice
         options: ["den Flur", "None", "einen Fehler"]
+        correct: 1
+    dart:
+      prompt: |
+        ```dart
+        final hall = Room('Flur', '');
+        final kitchen = Room('Küche', '');
+        hall.connect('norden', kitchen);
+        ```
+
+        Was ergibt danach `kitchen.exitTo('süden')`?
+      check:
+        type: choice
+        options: ["den Flur", "null", "einen Fehler"]
+        correct: 1
+    java:
+      prompt: |
+        ```java
+        Room hall = new Room("Flur", "");
+        Room kitchen = new Room("Küche", "");
+        hall.connect("norden", kitchen);
+        ```
+
+        Was ergibt danach `kitchen.exitTo("süden")`?
+      check:
+        type: choice
+        options: ["den Flur", "null", "einen Fehler"]
         correct: 1
 
   - id: gegenstaende
@@ -262,6 +397,129 @@ tasks:
                     return item
             return None
         ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Item` für Gegenstände, gebaut mit Namen und Beschreibung, `Item('kiste', 'Eine schwere Holzkiste.')`, mit `name` und `description`. Ein Raum bekommt eine Liste seiner Gegenstände, `items`: `addItem(item)` legt einen hinein, und `take(name)` nimmt den Gegenstand mit diesem Namen heraus und gibt ihn zurück, oder `null`, wenn keiner so heißt (Rückgabetyp `Item?`).
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "Item('kiste', 'Eine schwere Holzkiste.').description"
+            expect: "'Eine schwere Holzkiste.'"
+          - call: "Room('Keller', '').items"
+            expect: "[]"
+          - call: "final r = Room('Keller', ''); r.addItem(Item('kiste', '')); r.addItem(Item('lampe', '')); r.items.map((i) => i.name).toList()"
+            expect: "['kiste', 'lampe']"
+          - call: "final r = Room('Keller', ''); r.addItem(Item('kiste', '')); r.take('kiste')?.name"
+            expect: "'kiste'"
+          - call: "final r = Room('Keller', ''); r.addItem(Item('kiste', '')); r.addItem(Item('lampe', '')); r.take('kiste'); r.items.map((i) => i.name).toList()"
+            expect: "['lampe']"
+            say: "Was herausgenommen ist, liegt nicht mehr im Raum: `take` entfernt es aus der Liste."
+          - call: "final r = Room('Keller', ''); r.addItem(Item('kiste', '')); r.take('lampe')"
+            expect: "null"
+          - call: "final r = Room('Keller', ''); r.addItem(Item('kiste', '')); r.take('lampe'); r.items.map((i) => i.name).toList()"
+            expect: "['kiste']"
+            say: "Gibt es keinen Gegenstand mit dem Namen, bleibt die Liste, wie sie ist."
+      hint:
+        - "`Item` sieht aus wie der Anfang von `Room`: zwei Attribute und ein Konstruktor `Item(this.name, this.description);`. Der Raum bekommt `final List<Item> items = [];`."
+        - "In `take` gehst du mit `for (final item in items)` durch die Liste; hat ein Gegenstand den Namen, nimmst du ihn mit `items.remove(item)` heraus und gibst ihn sofort zurück. Nach der Schleife gibst du `null` zurück."
+      solution: |
+        ```dart
+        class Item {
+          final String name;
+          final String description;
+
+          Item(this.name, this.description);
+        }
+        ```
+
+        und in `Room`, neben `final List<Item> items = [];`:
+
+        ```dart
+        void addItem(Item item) {
+          items.add(item);
+        }
+
+        Item? take(String name) {
+          for (final item in items) {
+            if (item.name == name) {
+              items.remove(item);
+              return item;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Item.java` eine Klasse `Item` für Gegenstände, gebaut mit Namen und Beschreibung, `new Item("kiste", "Eine schwere Holzkiste.")`, mit `getName()` und `getDescription()`. Ein Raum bekommt eine Liste seiner Gegenstände: `getItems()` gibt sie zurück, `addItem(item)` legt einen hinein, und `take(name)` nimmt den Gegenstand mit diesem Namen heraus und gibt ihn zurück, oder `null`, wenn keiner so heißt.
+      check:
+        type: java
+        file: textadventure/Item.java
+        cases:
+          - call: 'new Item("kiste", "Eine schwere Holzkiste.").getDescription()'
+            expect: '"Eine schwere Holzkiste."'
+          - call: 'new Room("Keller", "").getItems()'
+            expect: 'List.of()'
+          - call: 'Room r = new Room("Keller", ""); r.addItem(new Item("kiste", "")); r.addItem(new Item("lampe", "")); r.getItems().stream().map(Item::getName).toList()'
+            expect: 'List.of("kiste", "lampe")'
+          - call: 'Room r = new Room("Keller", ""); r.addItem(new Item("kiste", "")); r.take("kiste").getName()'
+            expect: '"kiste"'
+          - call: 'Room r = new Room("Keller", ""); r.addItem(new Item("kiste", "")); r.addItem(new Item("lampe", "")); r.take("kiste"); r.getItems().stream().map(Item::getName).toList()'
+            expect: 'List.of("lampe")'
+            say: "Was herausgenommen ist, liegt nicht mehr im Raum: `take` entfernt es aus der Liste."
+          - call: 'Room r = new Room("Keller", ""); r.addItem(new Item("kiste", "")); r.take("lampe")'
+            expect: 'null'
+          - call: 'Room r = new Room("Keller", ""); r.addItem(new Item("kiste", "")); r.take("lampe"); r.getItems().stream().map(Item::getName).toList()'
+            expect: 'List.of("kiste")'
+            say: "Gibt es keinen Gegenstand mit dem Namen, bleibt die Liste, wie sie ist."
+      hint:
+        - "`Item` sieht aus wie der Anfang von `Room`: zwei private Attribute, ein Konstruktor und zwei Getter. Der Raum bekommt `private final List<Item> items = new ArrayList<>();`."
+        - "In `take` gehst du mit `for (Item item : items)` durch die Liste; hat ein Gegenstand den Namen (`item.getName().equals(name)`, Texte vergleicht man in Java mit `equals`), nimmst du ihn mit `items.remove(item)` heraus und gibst ihn sofort zurück. Nach der Schleife gibst du `null` zurück."
+      solution: |
+        `Item.java`:
+
+        ```java
+        public class Item {
+            private final String name;
+            private final String description;
+
+            public Item(String name, String description) {
+                this.name = name;
+                this.description = description;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public String getDescription() {
+                return description;
+            }
+        }
+        ```
+
+        und in `Room`, neben `private final List<Item> items = new ArrayList<>();`:
+
+        ```java
+        public List<Item> getItems() {
+            return items;
+        }
+
+        public void addItem(Item item) {
+            items.add(item);
+        }
+
+        public Item take(String name) {
+            for (Item item : items) {
+                if (item.getName().equals(name)) {
+                    items.remove(item);
+                    return item;
+                }
+            }
+            return null;
+        }
+        ```
 
   - id: beschreibung
     title: Was die Spielerin sieht
@@ -326,6 +584,80 @@ tasks:
             exits = self.directions()
             lines.append("Ausgänge: " + (", ".join(exits) if exits else "keine"))
             return "\n".join(lines)
+        ```
+    dart:
+      prompt: |
+        Schreib in `Room` eine Methode `describe()`, die den Raum als Text beschreibt, Zeile für Zeile: den Namen, die Beschreibung, dann `Hier liegt: ` mit den Namen der Gegenstände, durch Komma und Leerzeichen getrennt (die Zeile fehlt, wenn nichts da liegt), und zuletzt `Ausgänge: ` mit den Richtungen, ebenso getrennt, oder `Ausgänge: keine`. Die Zeilen trennt `'\n'`, wie im Beispiel oben auf der Seite.
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "final k = Room('Küche', 'Es riecht nach Kaffee.'); k.addItem(Item('schlüssel', '')); k.addItem(Item('apfel', '')); k.connect('süden', Room('Flur', '')); k.describe().split('\\n')"
+            expect: "['Küche', 'Es riecht nach Kaffee.', 'Hier liegt: schlüssel, apfel', 'Ausgänge: süden']"
+          - call: "final f = Room('Flur', 'Ein langer Flur.'); f.connect('norden', Room('Küche', '')); f.connect('osten', Room('Keller', '')); f.describe().split('\\n')"
+            expect: "['Flur', 'Ein langer Flur.', 'Ausgänge: norden, osten']"
+            say: "Liegt nichts im Raum, fehlt die Zeile `Hier liegt:` ganz."
+          - call: "Room('Zelle', 'Kahl.').describe().split('\\n')"
+            expect: "['Zelle', 'Kahl.', 'Ausgänge: keine']"
+            say: "Ohne Ausgänge heißt die letzte Zeile `Ausgänge: keine`."
+          - call: "Room('Zelle', 'Kahl.').describe().endsWith('\\n')"
+            expect: "false"
+            say: "Nach der letzten Zeile kommt kein Zeilenumbruch mehr: `lines.join('\\n')` setzt ihn nur zwischen die Zeilen."
+      hint:
+        - "Sammle die Zeilen in einer Liste, `final lines = [name, description];`, hänge die beiden anderen mit `lines.add(…)` an und setz sie am Ende mit `lines.join('\\n')` zusammen."
+        - "`items.map((item) => item.name).join(', ')` gibt die Namen mit Komma; die Zeile hängst du nur an, `if (items.isNotEmpty)`."
+        - "Für die Ausgänge: `directions.isEmpty ? 'keine' : directions.join(', ')`. In einem Text mit `${…}` darin darf das stehen, was du sonst schreibst: `\"Ausgänge: ${…}\"`."
+      solution: |
+        ```dart
+        String describe() {
+          final lines = [name, description];
+          if (items.isNotEmpty) {
+            lines.add("Hier liegt: ${items.map((item) => item.name).join(', ')}");
+          }
+          final exits = directions;
+          lines.add("Ausgänge: ${exits.isEmpty ? 'keine' : exits.join(', ')}");
+          return lines.join('\n');
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Room` eine Methode `describe()`, die den Raum als Text beschreibt, Zeile für Zeile: den Namen, die Beschreibung, dann `Hier liegt: ` mit den Namen der Gegenstände, durch Komma und Leerzeichen getrennt (die Zeile fehlt, wenn nichts da liegt), und zuletzt `Ausgänge: ` mit den Richtungen, ebenso getrennt, oder `Ausgänge: keine`. Die Zeilen trennt `"\n"`, wie im Beispiel oben auf der Seite.
+      check:
+        type: java
+        file: textadventure/Room.java
+        cases:
+          - call: 'Room k = new Room("Küche", "Es riecht nach Kaffee."); k.addItem(new Item("schlüssel", "")); k.addItem(new Item("apfel", "")); k.connect("süden", new Room("Flur", "")); List.of(k.describe().split("\n"))'
+            expect: 'List.of("Küche", "Es riecht nach Kaffee.", "Hier liegt: schlüssel, apfel", "Ausgänge: süden")'
+          - call: 'Room f = new Room("Flur", "Ein langer Flur."); f.connect("norden", new Room("Küche", "")); f.connect("osten", new Room("Keller", "")); List.of(f.describe().split("\n"))'
+            expect: 'List.of("Flur", "Ein langer Flur.", "Ausgänge: norden, osten")'
+            say: "Liegt nichts im Raum, fehlt die Zeile `Hier liegt:` ganz."
+          - call: 'List.of(new Room("Zelle", "Kahl.").describe().split("\n"))'
+            expect: 'List.of("Zelle", "Kahl.", "Ausgänge: keine")'
+            say: "Ohne Ausgänge heißt die letzte Zeile `Ausgänge: keine`."
+          - call: 'new Room("Zelle", "Kahl.").describe().endsWith("\n")'
+            expect: 'false'
+            say: "Nach der letzten Zeile kommt kein Zeilenumbruch mehr: `String.join(\"\\n\", lines)` setzt ihn nur zwischen die Zeilen."
+      hint:
+        - "Sammle die Zeilen in einer Liste, `List<String> lines = new ArrayList<>();`, füge mit `lines.add(…)` Namen, Beschreibung und die beiden anderen hinzu und setz sie am Ende mit `String.join(\"\\n\", lines)` zusammen."
+        - "Für die Zeile mit den Gegenständen sammelst du ihre Namen in einer zweiten Liste und setzt sie mit `String.join(\", \", names)` zusammen; die Zeile kommt nur hinzu, `if (!items.isEmpty())`."
+        - "Für die Ausgänge: `ways.isEmpty() ? \"keine\" : String.join(\", \", ways)`, mit `List<String> ways = getDirections();`. Nenn die Liste nicht `exits`: So heißt schon die Map des Raums."
+      solution: |
+        ```java
+        public String describe() {
+            List<String> lines = new ArrayList<>();
+            lines.add(name);
+            lines.add(description);
+            if (!items.isEmpty()) {
+                List<String> names = new ArrayList<>();
+                for (Item item : items) {
+                    names.add(item.getName());
+                }
+                lines.add("Hier liegt: " + String.join(", ", names));
+            }
+            List<String> ways = getDirections();
+            lines.add("Ausgänge: " + (ways.isEmpty() ? "keine" : String.join(", ", ways)));
+            return String.join("\n", lines);
+        }
         ```
 
   - id: spielerin
@@ -473,6 +805,182 @@ tasks:
                     return "Deine Tasche ist leer."
                 return "In deiner Tasche: " + ", ".join(item.name for item in self._bag)
         ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player(hall)`; der Getter `room` gibt ihn zurück. Was die Spielerin tut, gibt einen Text zurück, den das Spiel später zeigt:
+
+        - `look()` gibt die Beschreibung ihres Raums.
+        - `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums. Gibt es dort keinen Ausgang, bleibt sie stehen: `Da geht es nicht weiter.`
+        - `take(name)` nimmt einen Gegenstand aus dem Raum in ihre Tasche: `Du nimmst schlüssel.`, oder `Hier liegt nichts mit dem Namen schlüssel.`
+        - `has(name)` sagt, ob ein Gegenstand dieses Namens in ihrer Tasche ist, und `bag()` gibt `In deiner Tasche: schlüssel, apfel` zurück oder `Deine Tasche ist leer.`
+
+        Die Tasche selbst, die Liste, heißt `_bag`: Mit dem Unterstrich ist sie privat, und außerhalb deiner Datei kommt niemand an sie heran. Wer etwas über sie wissen will, fragt die Spielerin.
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "Player(Room('Flur', '')).room.name"
+            expect: "'Flur'"
+          - call: "Player(Room('Flur', 'Lang.')).look()"
+            expect: "'Flur\\nLang.\\nAusgänge: keine'"
+            say: "`look` gibt zurück, was der Raum über sich sagt: `_room.describe()`."
+          - call: "final h = Room('Flur', 'Lang.'); final k = Room('Küche', 'Warm.'); h.connect('norden', k); final p = Player(h); [p.go('norden'), p.room.name]"
+            expect: "['Küche\\nWarm.\\nAusgänge: keine', 'Küche']"
+          - call: "final h = Room('Flur', ''); final p = Player(h); [p.go('osten'), p.room.name]"
+            expect: "['Da geht es nicht weiter.', 'Flur']"
+            say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
+          - call: "final h = Room('Flur', ''); h.addItem(Item('schlüssel', '')); final p = Player(h); [p.take('schlüssel'), p.has('schlüssel'), h.items.length]"
+            expect: "['Du nimmst schlüssel.', true, 0]"
+            say: "Der Gegenstand wechselt vom Raum in die Tasche: `_room.take(name)` gibt ihn heraus, und er kommt in `_bag`."
+          - call: "final h = Room('Flur', ''); final p = Player(h); [p.take('lampe'), p.has('lampe')]"
+            expect: "['Hier liegt nichts mit dem Namen lampe.', false]"
+          - call: "Player(Room('Flur', '')).bag()"
+            expect: "'Deine Tasche ist leer.'"
+          - call: "final h = Room('Flur', ''); h.addItem(Item('schlüssel', '')); h.addItem(Item('apfel', '')); final p = Player(h); p.take('schlüssel'); p.take('apfel'); p.bag()"
+            expect: "'In deiner Tasche: schlüssel, apfel'"
+      hint:
+        - "Die Spielerin merkt sich `Room _room;` und `final List<Item> _bag = [];`, gebaut mit `Player(this._room);`. Den Raum gibt ein Getter heraus, `Room get room => _room;`, die Tasche nicht."
+        - "`look` ist `_room.describe()`. In `go` fragst du `_room.exitTo(direction)`; ist das `null`, kommt die Meldung, sonst weist du `_room` den neuen Raum zu und gibst `look()` zurück."
+        - "`take` holt mit `_room.take(name)` den Gegenstand und legt ihn in `_bag`. `has` ist `_bag.any((item) => item.name == name)`, `bag` setzt die Namen mit `join(', ')` zusammen."
+      solution: |
+        ```dart
+        class Player {
+          Room _room;
+          final List<Item> _bag = [];
+
+          Player(this._room);
+
+          Room get room => _room;
+
+          String look() {
+            return _room.describe();
+          }
+
+          String go(String direction) {
+            final target = _room.exitTo(direction);
+            if (target == null) {
+              return 'Da geht es nicht weiter.';
+            }
+            _room = target;
+            return look();
+          }
+
+          String take(String name) {
+            final item = _room.take(name);
+            if (item == null) {
+              return 'Hier liegt nichts mit dem Namen $name.';
+            }
+            _bag.add(item);
+            return 'Du nimmst ${item.name}.';
+          }
+
+          bool has(String name) => _bag.any((item) => item.name == name);
+
+          String bag() {
+            if (_bag.isEmpty) {
+              return 'Deine Tasche ist leer.';
+            }
+            return "In deiner Tasche: ${_bag.map((item) => item.name).join(', ')}";
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Player.java` eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `new Player(hall)`; `getRoom()` gibt ihn zurück. Was die Spielerin tut, gibt einen Text zurück, den das Spiel später zeigt:
+
+        - `look()` gibt die Beschreibung ihres Raums.
+        - `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums. Gibt es dort keinen Ausgang, bleibt sie stehen: `Da geht es nicht weiter.`
+        - `take(name)` nimmt einen Gegenstand aus dem Raum in ihre Tasche: `Du nimmst schlüssel.`, oder `Hier liegt nichts mit dem Namen schlüssel.`
+        - `has(name)` sagt, ob ein Gegenstand dieses Namens in ihrer Tasche ist, und `bag()` gibt `In deiner Tasche: schlüssel, apfel` zurück oder `Deine Tasche ist leer.`
+
+        Die Tasche selbst, die Liste, ist `private` und hat keinen Getter: Wer etwas über sie wissen will, fragt die Spielerin.
+      check:
+        type: java
+        file: textadventure/Player.java
+        cases:
+          - call: 'new Player(new Room("Flur", "")).getRoom().getName()'
+            expect: '"Flur"'
+          - call: 'new Player(new Room("Flur", "Lang.")).look()'
+            expect: '"Flur\nLang.\nAusgänge: keine"'
+            say: "`look` gibt zurück, was der Raum über sich sagt: `room.describe()`."
+          - call: 'Room h = new Room("Flur", "Lang."); Room k = new Room("Küche", "Warm."); h.connect("norden", k); Player p = new Player(h); List.of(p.go("norden"), p.getRoom().getName())'
+            expect: 'List.of("Küche\nWarm.\nAusgänge: keine", "Küche")'
+          - call: 'Room h = new Room("Flur", ""); Player p = new Player(h); List.of(p.go("osten"), p.getRoom().getName())'
+            expect: 'List.of("Da geht es nicht weiter.", "Flur")'
+            say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Item("schlüssel", "")); Player p = new Player(h); List.of(p.take("schlüssel"), p.has("schlüssel"), h.getItems().size())'
+            expect: 'List.of("Du nimmst schlüssel.", true, 0)'
+            say: "Der Gegenstand wechselt vom Raum in die Tasche: `room.take(name)` gibt ihn heraus, und er kommt in `bag`."
+          - call: 'Room h = new Room("Flur", ""); Player p = new Player(h); List.of(p.take("lampe"), p.has("lampe"))'
+            expect: 'List.of("Hier liegt nichts mit dem Namen lampe.", false)'
+          - call: 'new Player(new Room("Flur", "")).bag()'
+            expect: '"Deine Tasche ist leer."'
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Item("schlüssel", "")); h.addItem(new Item("apfel", "")); Player p = new Player(h); p.take("schlüssel"); p.take("apfel"); p.bag()'
+            expect: '"In deiner Tasche: schlüssel, apfel"'
+      hint:
+        - "Die Spielerin merkt sich `private Room room;` und `private final List<Item> bag = new ArrayList<>();`. Nur den Raum gibt ein Getter heraus, `getRoom()`."
+        - "`look` ist `room.describe()`. In `go` fragst du `room.exitTo(direction)`; ist das `null`, kommt die Meldung, sonst weist du `room` den neuen Raum zu und gibst `look()` zurück."
+        - "`take` holt mit `room.take(name)` den Gegenstand und legt ihn in `bag`. `has` geht durch die Tasche und vergleicht die Namen mit `equals`; `bag()` sammelt die Namen und setzt sie mit `String.join(\", \", names)` zusammen."
+      solution: |
+        ```java
+        import java.util.ArrayList;
+        import java.util.List;
+
+        public class Player {
+            private Room room;
+            private final List<Item> bag = new ArrayList<>();
+
+            public Player(Room room) {
+                this.room = room;
+            }
+
+            public Room getRoom() {
+                return room;
+            }
+
+            public String look() {
+                return room.describe();
+            }
+
+            public String go(String direction) {
+                Room target = room.exitTo(direction);
+                if (target == null) {
+                    return "Da geht es nicht weiter.";
+                }
+                room = target;
+                return look();
+            }
+
+            public String take(String name) {
+                Item item = room.take(name);
+                if (item == null) {
+                    return "Hier liegt nichts mit dem Namen " + name + ".";
+                }
+                bag.add(item);
+                return "Du nimmst " + item.getName() + ".";
+            }
+
+            public boolean has(String name) {
+                for (Item item : bag) {
+                    if (item.getName().equals(name)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public String bag() {
+                if (bag.isEmpty()) {
+                    return "Deine Tasche ist leer.";
+                }
+                List<String> names = new ArrayList<>();
+                for (Item item : bag) {
+                    names.add(item.getName());
+                }
+                return "In deiner Tasche: " + String.join(", ", names);
+            }
+        }
+        ```
 
   - id: wegraeumen
     title: Wer räumt den Apfel weg?
@@ -486,6 +994,28 @@ tasks:
         - "Die Spielschleife löscht nach jedem `benutze` den Gegenstand, der benutzt wurde."
         - "Der Apfel bekommt ein Attribut `eaten`, und alle, die die Tasche zeigen, überspringen gegessene Äpfel."
       correct: 1
+    dart:
+      prompt: |
+        Bald kann man einen Apfel essen. Danach soll er nicht mehr in der Tasche der Spielerin sein. Wer nimmt ihn heraus?
+      check:
+        type: choice
+        options:
+          - "Der Apfel holt sich die Liste der Tasche und löscht sich selbst daraus."
+          - "Der Apfel bittet die Spielerin, ihn herauszunehmen: `player.remove(this)`."
+          - "Die Spielschleife löscht nach jedem `benutze` den Gegenstand, der benutzt wurde."
+          - "Der Apfel bekommt ein Attribut `eaten`, und alle, die die Tasche zeigen, überspringen gegessene Äpfel."
+        correct: 1
+    java:
+      prompt: |
+        Bald kann man einen Apfel essen. Danach soll er nicht mehr in der Tasche der Spielerin sein. Wer nimmt ihn heraus?
+      check:
+        type: choice
+        options:
+          - "Der Apfel holt sich die Liste der Tasche und löscht sich selbst daraus."
+          - "Der Apfel bittet die Spielerin, ihn herauszunehmen: `player.remove(this)`."
+          - "Die Spielschleife löscht nach jedem `benutze` den Gegenstand, der benutzt wurde."
+          - "Der Apfel bekommt ein Attribut `eaten`, und alle, die die Tasche zeigen, überspringen gegessene Äpfel."
+        correct: 1
 
   - id: diagramm
     title: Gegenstände und Räume, die etwas können
@@ -749,6 +1279,226 @@ tasks:
                     return item.use(self)
             return f"Du hast nichts mit dem Namen {name}."
         ```
+    dart:
+      prompt: |
+        Jetzt der Code zu `Key` und `Food`, in `adventure.dart`. So soll es sich anfühlen:
+
+        ```text
+        > gehe norden
+        Die Tür nach norden ist verschlossen.
+        > benutze apfel
+        Du isst apfel. Knackig und süß.
+        > benutze lehrerschlüssel
+        Du schließt die Tür auf.
+        ```
+
+        - Ein Raum schließt mit `lock(direction, keyName)` die Tür in einer Richtung ab; `isLocked(direction)` sagt, ob sie zu ist, und `unlock(keyName)` schließt alle Türen auf, zu denen der Schlüssel passt, und gibt `true` zurück, wenn es mindestens eine gab. `describe` schreibt ` (verschlossen)` hinter eine verschlossene Richtung, und `go` lässt die Spielerin nicht hindurch.
+        - Ein gewöhnlicher Gegenstand antwortet auf `use(player)` mit `Damit kannst du hier nichts anfangen.` Ein Schlüssel heißt wie sein Schloss und schließt im Raum der Spielerin auf; passt er nirgends: `Hier passt lehrerschlüssel in kein Schloss.` Ein Apfel bittet die Spielerin mit `remove`, ihn aus der Tasche zu nehmen.
+        - `use(name)` der Spielerin sucht den Gegenstand in der Tasche und ruft sein `use` auf, sonst: `Du hast nichts mit dem Namen apfel.`
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "final h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.isLocked('osten'), h.isLocked('norden')]"
+            expect: "[true, false]"
+          - call: "final h = Room('Flur', 'Lang.'); h.connect('norden', Room('Küche', '')); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.describe().split('\\n').last"
+            expect: "'Ausgänge: norden, osten (verschlossen)'"
+          - call: "final h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); final p = Player(h); [p.go('osten'), p.room.name]"
+            expect: "['Die Tür nach osten ist verschlossen.', 'Flur']"
+            say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen: `go` fragt `_room.isLocked(direction)`, bevor sie den Raum wechselt."
+          - call: "final h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('schlüssel'), h.isLocked('osten'), h.unlock('schlüssel')]"
+            expect: "[true, false, false]"
+          - call: "Item('stein', '').use(Player(Room('Flur', '')))"
+            expect: "'Damit kannst du hier nichts anfangen.'"
+          - call: "final h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.addItem(Key('schlüssel', '')); final p = Player(h); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split('\\n').first]"
+            expect: "['Du schließt die Tür auf.', 'Keller']"
+          - call: "final h = Room('Flur', ''); h.addItem(Key('schlüssel', '')); final p = Player(h); p.take('schlüssel'); p.use('schlüssel')"
+            expect: "'Hier passt schlüssel in kein Schloss.'"
+          - call: "final h = Room('Flur', ''); h.addItem(Food('apfel', 'Knackig und süß.')); final p = Player(h); p.take('apfel'); [p.use('apfel'), p.has('apfel'), p.bag()]"
+            expect: "['Du isst apfel. Knackig und süß.', false, 'Deine Tasche ist leer.']"
+            say: "Wer gegessen hat, hat den Apfel nicht mehr: `use` in `Food` bittet die Spielerin mit `player.remove(this)`, ihn herauszunehmen."
+          - call: "Player(Room('Flur', '')).use('apfel')"
+            expect: "'Du hast nichts mit dem Namen apfel.'"
+          - call: "<Object>[Key('a', ''), Food('b', '')].every((thing) => thing is Item)"
+            expect: "true"
+            say: "`Key` und `Food` erben von `Item`: `class Key extends Item`."
+      hint:
+        - "Der Raum merkt sich die Schlösser in einer zweiten Map, `final Map<String, String> _locks = {};`: Richtung und Name des Schlüssels. `isLocked` ist `_locks.containsKey(direction)`; `unlock` löscht mit `_locks.removeWhere((direction, key) => key == keyName)` und vergleicht, ob die Map danach kleiner ist."
+        - "`class Key extends Item` und `class Food extends Item` bekommen einen Konstruktor, der Namen und Beschreibung an `Item` weitergibt, `Key(super.name, super.description);`, und ihr eigenes `use` mit `@override` davor. Der Schlüssel fragt `player.room.unlock(name)`; der Apfel ruft `player.remove(this)` auf, und die Spielerin bekommt eine Methode `remove(item)`, die `_bag.remove(item)` tut."
+        - "In `go` kommt nach der Frage nach dem Ausgang eine zweite: `if (_room.isLocked(direction)) { return 'Die Tür nach $direction ist verschlossen.'; }`."
+      solution: |
+        ```dart
+        // in Room, neben final Map<String, String> _locks = {};
+        void lock(String direction, String keyName) {
+          _locks[direction] = keyName;
+        }
+
+        bool isLocked(String direction) => _locks.containsKey(direction);
+
+        bool unlock(String keyName) {
+          final before = _locks.length;
+          _locks.removeWhere((direction, key) => key == keyName);
+          return _locks.length < before;
+        }
+
+        // in describe:
+        final exits = directions.map((d) => isLocked(d) ? '$d (verschlossen)' : d).toList();
+
+        // in Item:
+        String use(Player player) => 'Damit kannst du hier nichts anfangen.';
+
+        class Key extends Item {
+          Key(super.name, super.description);
+
+          @override
+          String use(Player player) {
+            if (player.room.unlock(name)) {
+              return 'Du schließt die Tür auf.';
+            }
+            return 'Hier passt $name in kein Schloss.';
+          }
+        }
+
+        class Food extends Item {
+          Food(super.name, super.description);
+
+          @override
+          String use(Player player) {
+            player.remove(this);
+            return 'Du isst $name. $description';
+          }
+        }
+
+        // in Player:
+        void remove(Item item) {
+          _bag.remove(item);
+        }
+
+        String use(String name) {
+          for (final item in _bag) {
+            if (item.name == name) {
+              return item.use(this);
+            }
+          }
+          return 'Du hast nichts mit dem Namen $name.';
+        }
+        ```
+    java:
+      prompt: |
+        Jetzt der Code zu `Key` und `Food`, jede Klasse in ihrer eigenen Datei. So soll es sich anfühlen:
+
+        ```text
+        > gehe norden
+        Die Tür nach norden ist verschlossen.
+        > benutze apfel
+        Du isst apfel. Knackig und süß.
+        > benutze lehrerschlüssel
+        Du schließt die Tür auf.
+        ```
+
+        - Ein Raum schließt mit `lock(direction, keyName)` die Tür in einer Richtung ab; `isLocked(direction)` sagt, ob sie zu ist, und `unlock(keyName)` schließt alle Türen auf, zu denen der Schlüssel passt, und gibt `true` zurück, wenn es mindestens eine gab. `describe` schreibt ` (verschlossen)` hinter eine verschlossene Richtung, und `go` lässt die Spielerin nicht hindurch.
+        - Ein gewöhnlicher Gegenstand antwortet auf `use(player)` mit `Damit kannst du hier nichts anfangen.` Ein Schlüssel heißt wie sein Schloss und schließt im Raum der Spielerin auf; passt er nirgends: `Hier passt lehrerschlüssel in kein Schloss.` Ein Apfel bittet die Spielerin mit `remove`, ihn aus der Tasche zu nehmen.
+        - `use(name)` der Spielerin sucht den Gegenstand in der Tasche und ruft sein `use` auf, sonst: `Du hast nichts mit dem Namen apfel.`
+      check:
+        type: java
+        file: textadventure/Key.java
+        cases:
+          - call: 'Room h = new Room("Flur", ""); h.connect("osten", new Room("Keller", "")); h.lock("osten", "schlüssel"); List.of(h.isLocked("osten"), h.isLocked("norden"))'
+            expect: 'List.of(true, false)'
+          - call: 'Room h = new Room("Flur", "Lang."); h.connect("norden", new Room("Küche", "")); h.connect("osten", new Room("Keller", "")); h.lock("osten", "schlüssel"); h.describe().endsWith("Ausgänge: norden, osten (verschlossen)")'
+            expect: 'true'
+            say: "Hinter einer verschlossenen Richtung steht in `describe` ` (verschlossen)`: Die letzte Zeile heißt dann `Ausgänge: norden, osten (verschlossen)`."
+          - call: 'Room h = new Room("Flur", ""); h.connect("osten", new Room("Keller", "")); h.lock("osten", "schlüssel"); Player p = new Player(h); List.of(p.go("osten"), p.getRoom().getName())'
+            expect: 'List.of("Die Tür nach osten ist verschlossen.", "Flur")'
+            say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen: `go` fragt `room.isLocked(direction)`, bevor sie den Raum wechselt."
+          - call: 'Room h = new Room("Flur", ""); h.connect("osten", new Room("Keller", "")); h.lock("osten", "schlüssel"); List.of(h.unlock("schlüssel"), h.isLocked("osten"), h.unlock("schlüssel"))'
+            expect: 'List.of(true, false, false)'
+          - call: 'new Item("stein", "").use(new Player(new Room("Flur", "")))'
+            expect: '"Damit kannst du hier nichts anfangen."'
+          - call: 'Room h = new Room("Flur", ""); h.connect("osten", new Room("Keller", "")); h.lock("osten", "schlüssel"); h.addItem(new Key("schlüssel", "")); Player p = new Player(h); p.take("schlüssel"); List.of(p.use("schlüssel"), p.go("osten").split("\n")[0])'
+            expect: 'List.of("Du schließt die Tür auf.", "Keller")'
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Key("schlüssel", "")); Player p = new Player(h); p.take("schlüssel"); p.use("schlüssel")'
+            expect: '"Hier passt schlüssel in kein Schloss."'
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Food("apfel", "Knackig und süß.")); Player p = new Player(h); p.take("apfel"); List.of(p.use("apfel"), p.has("apfel"), p.bag())'
+            expect: 'List.of("Du isst apfel. Knackig und süß.", false, "Deine Tasche ist leer.")'
+            say: "Wer gegessen hat, hat den Apfel nicht mehr: `use` in `Food` bittet die Spielerin mit `player.remove(this)`, ihn herauszunehmen."
+          - call: 'new Player(new Room("Flur", "")).use("apfel")'
+            expect: '"Du hast nichts mit dem Namen apfel."'
+          - call: 'List.of(Item.class.isAssignableFrom(Key.class), Item.class.isAssignableFrom(Food.class))'
+            expect: 'List.of(true, true)'
+            say: "`Key` und `Food` erben von `Item`: `public class Key extends Item`."
+      hint:
+        - "Der Raum merkt sich die Schlösser in einer zweiten Map, `private final Map<String, String> locks = new HashMap<>();`: Richtung und Name des Schlüssels. `isLocked` ist `locks.containsKey(direction)`; `unlock` kann alle passenden Einträge auf einmal löschen: `locks.values().removeIf(key -> key.equals(keyName))` gibt `true` zurück, wenn es einen gab."
+        - "`public class Key extends Item` und `public class Food extends Item` brauchen je einen Konstruktor, der mit `super(name, description);` den von `Item` aufruft, und ihr eigenes `use` mit `@Override` davor. Der Schlüssel fragt `player.getRoom().unlock(getName())`; der Apfel ruft `player.remove(this)` auf, und die Spielerin bekommt eine Methode `remove(item)`, die `bag.remove(item)` tut."
+        - "In `go` kommt nach der Frage nach dem Ausgang eine zweite: `if (room.isLocked(direction)) { return \"Die Tür nach \" + direction + \" ist verschlossen.\"; }`."
+      solution: |
+        In `Room`, neben `private final Map<String, String> locks = new HashMap<>();`:
+
+        ```java
+        public void lock(String direction, String keyName) {
+            locks.put(direction, keyName);
+        }
+
+        public boolean isLocked(String direction) {
+            return locks.containsKey(direction);
+        }
+
+        public boolean unlock(String keyName) {
+            return locks.values().removeIf(key -> key.equals(keyName));
+        }
+        ```
+
+        und in `describe`:
+
+        ```java
+        List<String> ways = new ArrayList<>();
+        for (String direction : getDirections()) {
+            ways.add(isLocked(direction) ? direction + " (verschlossen)" : direction);
+        }
+        ```
+
+        In `Item`:
+
+        ```java
+        public String use(Player player) {
+            return "Damit kannst du hier nichts anfangen.";
+        }
+        ```
+
+        `Key.java` (und `Food.java` ebenso, mit `player.remove(this);` und `return "Du isst " + getName() + ". " + getDescription();`):
+
+        ```java
+        public class Key extends Item {
+            public Key(String name, String description) {
+                super(name, description);
+            }
+
+            @Override
+            public String use(Player player) {
+                if (player.getRoom().unlock(getName())) {
+                    return "Du schließt die Tür auf.";
+                }
+                return "Hier passt " + getName() + " in kein Schloss.";
+            }
+        }
+        ```
+
+        In `Player`:
+
+        ```java
+        public void remove(Item item) {
+            bag.remove(item);
+        }
+
+        public String use(String name) {
+            for (Item item : bag) {
+                if (item.getName().equals(name)) {
+                    return item.use(this);
+                }
+            }
+            return "Du hast nichts mit dem Namen " + name + ".";
+        }
+        ```
 
   - id: leuchten
     title: Wer leuchtet?
@@ -779,6 +1529,36 @@ tasks:
       check:
         type: choice
         options: ["[False, True, False]", "[False, True, None]", "ein Fehler, weil Key kein shines hat", "[True, True, True]"]
+        correct: 0
+    dart:
+      prompt: |
+        `Item` hat einen Getter `shines`, der `false` zurückgibt, und `Lamp` überschreibt ihn mit `true`. `Key` schreibt keinen eigenen.
+
+        ```dart
+        final things = [Item('zettel', ''), Lamp('taschenlampe', ''), Key('schlüssel', '')];
+        things.map((thing) => thing.shines).toList()
+        ```
+
+        Was kommt heraus?
+      check:
+        type: choice
+        options: ["[false, true, false]", "[false, true, null]", "ein Fehler, weil Key kein shines hat", "[true, true, true]"]
+        correct: 0
+    java:
+      prompt: |
+        `Item` hat `shines()`, das `false` zurückgibt, und `Lamp` überschreibt es mit `true`. `Key` schreibt kein eigenes `shines()`.
+
+        ```java
+        List<Item> things = List.of(new Item("zettel", ""), new Lamp("taschenlampe", ""), new Key("schlüssel", ""));
+        for (Item thing : things) {
+            System.out.println(thing.shines());
+        }
+        ```
+
+        Was gibt die Schleife aus?
+      check:
+        type: choice
+        options: ["false, true, false", "false, true, null", "einen Fehler, weil Key kein shines() hat", "true, true, true"]
         correct: 0
 
   - id: dunkel
@@ -930,6 +1710,179 @@ tasks:
                 return "Im Dunkeln findest du nichts."
             # weiter wie bisher
         ```
+    dart:
+      prompt: |
+        Schreib `Lamp` und `DarkRoom` nach deinem Diagramm:
+
+        - `Item` bekommt einen Getter `shines`, der `false` zurückgibt. `Lamp` erbt von `Item`, leuchtet (`true`) und antwortet auf `use` mit `taschenlampe leuchtet schon.`, mit ihrem Namen.
+        - `Room` bekommt einen Getter `isDark`, der `false` zurückgibt; `DarkRoom` erbt von `Room` und ist dunkel.
+        - Die Spielerin hat Licht (Getter `hasLight`), wenn etwas in ihrer Tasche leuchtet. In einem dunklen Raum ohne Licht antwortet `look` mit `Es ist stockdunkel. Du siehst nichts.` und `take` mit `Im Dunkeln findest du nichts.` Weil `go` am Ende `look` aufruft, sieht sie den Keller so auch beim Hineingehen nicht.
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "[Item('zettel', '').shines, Lamp('taschenlampe', '').shines, Key('schlüssel', '').shines]"
+            expect: "[false, true, false]"
+          - call: "Lamp('taschenlampe', '').use(Player(Room('Flur', '')))"
+            expect: "'taschenlampe leuchtet schon.'"
+          - call: "[Room('Flur', '').isDark, DarkRoom('Keller', '').isDark, <Object>[DarkRoom('Keller', '')].every((room) => room is Room)]"
+            expect: "[false, true, true]"
+          - call: "Player(DarkRoom('Keller', 'Rohre.')).look()"
+            expect: "'Es ist stockdunkel. Du siehst nichts.'"
+          - call: "final e = Room('Halle', ''); final c = DarkRoom('Keller', 'Rohre.'); e.connect('unten', c); Player(e).go('unten')"
+            expect: "'Es ist stockdunkel. Du siehst nichts.'"
+            say: "`go` gibt `look()` zurück, und `look` fragt den Raum, ob er dunkel ist."
+          - call: "final c = DarkRoom('Keller', ''); c.addItem(Key('schlüssel', '')); final p = Player(c); [p.take('schlüssel'), c.items.map((i) => i.name).toList()]"
+            expect: "['Im Dunkeln findest du nichts.', ['schlüssel']]"
+          - call: "final e = Room('Halle', ''); final c = DarkRoom('Keller', 'Rohre.'); e.connect('unten', c); c.addItem(Key('schlüssel', '')); e.addItem(Lamp('taschenlampe', '')); final p = Player(e); p.take('taschenlampe'); [p.hasLight, p.go('unten').split('\\n').first, p.take('schlüssel')]"
+            expect: "[true, 'Keller', 'Du nimmst schlüssel.']"
+            say: "Mit einer Lampe in der Tasche ist der Keller zu sehen: `hasLight` fragt jeden Gegenstand der Tasche, ob er leuchtet."
+          - call: "Player(Room('Flur', 'Hell.')).look()"
+            expect: "'Flur\\nHell.\\nAusgänge: keine'"
+      hint:
+        - "Zwei kleine Paare von Gettern: `bool get shines => false;` in `Item` und mit `true` in `Lamp`, `bool get isDark => false;` in `Room` und mit `true` in `DarkRoom`, jedes Mal mit `@override` davor, wo eine Klasse den Getter ihrer Oberklasse überschreibt."
+        - "`hasLight` fragt jeden Gegenstand: `bool get hasLight => _bag.any((item) => item.shines);`. Die Spielerin fragt nicht, ob etwas eine Lampe ist, sondern ob es leuchtet."
+        - "`look` und `take` beginnen mit derselben Frage: `if (_room.isDark && !hasLight) { return '…'; }`."
+      solution: |
+        ```dart
+        // in Item:
+        bool get shines => false;
+
+        class Lamp extends Item {
+          Lamp(super.name, super.description);
+
+          @override
+          String use(Player player) => '$name leuchtet schon.';
+
+          @override
+          bool get shines => true;
+        }
+
+        // in Room:
+        bool get isDark => false;
+
+        class DarkRoom extends Room {
+          DarkRoom(super.name, super.description);
+
+          @override
+          bool get isDark => true;
+        }
+
+        // in Player:
+        bool get hasLight => _bag.any((item) => item.shines);
+
+        String look() {
+          if (_room.isDark && !hasLight) {
+            return 'Es ist stockdunkel. Du siehst nichts.';
+          }
+          return _room.describe();
+        }
+
+        String take(String name) {
+          if (_room.isDark && !hasLight) {
+            return 'Im Dunkeln findest du nichts.';
+          }
+          // weiter wie bisher
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `Lamp` und `DarkRoom` nach deinem Diagramm, jede Klasse in ihrer eigenen Datei:
+
+        - `Item` bekommt `shines()`, das `false` zurückgibt. `Lamp` erbt von `Item`, leuchtet (`true`) und antwortet auf `use` mit `taschenlampe leuchtet schon.`, mit ihrem Namen.
+        - `Room` bekommt `isDark()`, das `false` zurückgibt; `DarkRoom` erbt von `Room` und ist dunkel.
+        - Die Spielerin hat Licht (`hasLight()`), wenn etwas in ihrer Tasche leuchtet. In einem dunklen Raum ohne Licht antwortet `look` mit `Es ist stockdunkel. Du siehst nichts.` und `take` mit `Im Dunkeln findest du nichts.` Weil `go` am Ende `look` aufruft, sieht sie den Keller so auch beim Hineingehen nicht.
+      check:
+        type: java
+        file: textadventure/Lamp.java
+        cases:
+          - call: 'List.of(new Item("zettel", "").shines(), new Lamp("taschenlampe", "").shines(), new Key("schlüssel", "").shines())'
+            expect: 'List.of(false, true, false)'
+          - call: 'new Lamp("taschenlampe", "").use(new Player(new Room("Flur", "")))'
+            expect: '"taschenlampe leuchtet schon."'
+          - call: 'List.of(new Room("Flur", "").isDark(), new DarkRoom("Keller", "").isDark(), Room.class.isAssignableFrom(DarkRoom.class))'
+            expect: 'List.of(false, true, true)'
+          - call: 'new Player(new DarkRoom("Keller", "Rohre.")).look()'
+            expect: '"Es ist stockdunkel. Du siehst nichts."'
+          - call: 'Room e = new Room("Halle", ""); Room c = new DarkRoom("Keller", "Rohre."); e.connect("unten", c); new Player(e).go("unten")'
+            expect: '"Es ist stockdunkel. Du siehst nichts."'
+            say: "`go` gibt `look()` zurück, und `look` fragt den Raum, ob er dunkel ist."
+          - call: 'Room c = new DarkRoom("Keller", ""); c.addItem(new Key("schlüssel", "")); Player p = new Player(c); List.of(p.take("schlüssel"), c.getItems().size())'
+            expect: 'List.of("Im Dunkeln findest du nichts.", 1)'
+          - call: 'Room e = new Room("Halle", ""); Room c = new DarkRoom("Keller", "Rohre."); e.connect("unten", c); c.addItem(new Key("schlüssel", "")); e.addItem(new Lamp("taschenlampe", "")); Player p = new Player(e); p.take("taschenlampe"); List.of(p.hasLight(), p.go("unten").split("\n")[0], p.take("schlüssel"))'
+            expect: 'List.of(true, "Keller", "Du nimmst schlüssel.")'
+            say: "Mit einer Lampe in der Tasche ist der Keller zu sehen: `hasLight()` fragt jeden Gegenstand der Tasche, ob er leuchtet."
+          - call: 'new Player(new Room("Flur", "Hell.")).look()'
+            expect: '"Flur\nHell.\nAusgänge: keine"'
+      hint:
+        - "Zwei kleine Paare von Methoden: `shines()` in `Item` mit `false` und in `Lamp` mit `true`, `isDark()` in `Room` mit `false` und in `DarkRoom` mit `true`, jedes Mal mit `@Override` davor, wo eine Klasse die Methode ihrer Oberklasse überschreibt. `DarkRoom` braucht wie `Key` einen Konstruktor mit `super(name, description);`."
+        - "`hasLight()` fragt jeden Gegenstand der Tasche: Ist bei einem `item.shines()`, gibt es `true` zurück. Die Spielerin fragt nicht, ob etwas eine Lampe ist, sondern ob es leuchtet."
+        - "`look` und `take` beginnen mit derselben Frage: `if (room.isDark() && !hasLight()) { return \"…\"; }`."
+      solution: |
+        In `Item`:
+
+        ```java
+        public boolean shines() {
+            return false;
+        }
+        ```
+
+        `Lamp.java`:
+
+        ```java
+        public class Lamp extends Item {
+            public Lamp(String name, String description) {
+                super(name, description);
+            }
+
+            @Override
+            public String use(Player player) {
+                return getName() + " leuchtet schon.";
+            }
+
+            @Override
+            public boolean shines() {
+                return true;
+            }
+        }
+        ```
+
+        In `Room` ein `isDark()` mit `return false;`, und `DarkRoom.java`:
+
+        ```java
+        public class DarkRoom extends Room {
+            public DarkRoom(String name, String description) {
+                super(name, description);
+            }
+
+            @Override
+            public boolean isDark() {
+                return true;
+            }
+        }
+        ```
+
+        In `Player`:
+
+        ```java
+        public boolean hasLight() {
+            for (Item item : bag) {
+                if (item.shines()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String look() {
+            if (room.isDark() && !hasLight()) {
+                return "Es ist stockdunkel. Du siehst nichts.";
+            }
+            return room.describe();
+        }
+        ```
+
+        und am Anfang von `take` dieselbe Frage mit `return "Im Dunkeln findest du nichts.";`.
 
   - id: spiel
     title: Das Spiel als Objekt
@@ -1112,6 +2065,201 @@ tasks:
                     self._over = True
                 return text
         ```
+    dart:
+      prompt: |
+        Schreib die Klasse `Game`, gebaut mit der Spielerin, `Game(player)`. Sie ist das, was zwischen dem Terminal und deinen Objekten vermittelt:
+
+        - `start()` gibt zurück, was die Spielerin am Anfang sieht.
+        - `handle(line)` nimmt eine getippte Zeile, klein geschrieben und ohne Leerzeichen außen, und gibt die Antwort zurück: `gehe`, `nimm`, `benutze`, `schau` und `tasche` wie bisher, dazu der neue Befehl `untersuche`, für den die Spielerin `examine(name)` bekommt: die Beschreibung eines Gegenstands in ihrer Tasche oder im Raum, sonst `Hier gibt es nichts mit dem Namen zettel.` `ende` antwortet `Bis bald.` und beendet das Spiel, jedes andere Wort `Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende`.
+        - Der Getter `isOver` sagt, ob das Spiel zu Ende ist, `isWon`, ob die Spielerin am Ziel steht. Das Ziel ist ein `GoalRoom`, ein Raum, dessen Getter `isGoal` `true` ist (`Room` sagt `false`); wer ihn betritt, hat gewonnen, und das Spiel ist zu Ende.
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "Game(Player(Room('Flur', 'Lang.'))).start()"
+            expect: "'Flur\\nLang.\\nAusgänge: keine'"
+          - call: "final h = Room('Flur', ''); final k = Room('Küche', 'Warm.'); h.connect('norden', k); final g = Game(Player(h)); [g.handle('gehe norden'), g.isOver]"
+            expect: "['Küche\\nWarm.\\nAusgänge: keine', false]"
+          - call: "final h = Room('Flur', ''); h.addItem(Item('schlüssel', '')); final g = Game(Player(h)); [g.handle('  Nimm Schlüssel  '), g.handle('tasche')]"
+            expect: "['Du nimmst schlüssel.', 'In deiner Tasche: schlüssel']"
+            say: "`handle` schreibt die Zeile klein und nimmt die Leerzeichen außen weg, bevor es Verb und Wort trennt: `line.trim().toLowerCase()`."
+          - call: "final h = Room('Flur', ''); h.addItem(Item('zettel', 'Kaffee um drei.')); final g = Game(Player(h)); [g.handle('untersuche zettel'), g.handle('nimm zettel'), g.handle('untersuche zettel'), g.handle('untersuche lampe')]"
+            expect: "['Kaffee um drei.', 'Du nimmst zettel.', 'Kaffee um drei.', 'Hier gibt es nichts mit dem Namen lampe.']"
+          - call: "final g = Game(Player(Room('Flur', ''))); g.handle('tanze')"
+            expect: "'Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende'"
+          - call: "final g = Game(Player(Room('Flur', ''))); [g.isOver, g.handle('ende'), g.isOver, g.isWon]"
+            expect: "[false, 'Bis bald.', true, false]"
+          - call: "final h = Room('Halle', ''); final out = GoalRoom('Schulhof', 'Geschafft!'); h.connect('süden', out); final g = Game(Player(h)); g.handle('gehe süden'); [g.isWon, g.isOver, Room('x', '').isGoal, <Object>[out].every((room) => room is Room)]"
+            expect: "[true, true, false, true]"
+            say: "Wer einen `GoalRoom` betritt, hat gewonnen: `isWon` fragt den Raum der Spielerin, `isGoal`, und nach jedem Befehl ist das Spiel zu Ende, wenn er es ist."
+      hint:
+        - "`Game` merkt sich die Spielerin, `final Player _player;`, und `bool _over = false;`. `handle` trennt die Zeile: `final parts = line.trim().toLowerCase().split(' ');`; das Verb ist `parts.first`, das Wort der Rest, `parts.skip(1).join(' ')`."
+        - "Ein `if (verb == 'gehe')` mit einem `else if` je Befehl; jeder ruft die Methode der Spielerin auf und merkt sich ihre Antwort. Bei `ende` setzt du `_over = true;`."
+        - "`isWon` ist `_player.room.isGoal`. Am Ende von `handle` setzt du `_over = true`, wenn `isWon`, und gibst die Antwort zurück."
+      solution: |
+        ```dart
+        // in Room:
+        bool get isGoal => false;
+
+        class GoalRoom extends Room {
+          GoalRoom(super.name, super.description);
+
+          @override
+          bool get isGoal => true;
+        }
+
+        // in Player:
+        String examine(String name) {
+          for (final item in [..._bag, ..._room.items]) {
+            if (item.name == name) {
+              return item.description;
+            }
+          }
+          return 'Hier gibt es nichts mit dem Namen $name.';
+        }
+
+        class Game {
+          final Player _player;
+          bool _over = false;
+
+          Game(this._player);
+
+          String start() => _player.look();
+
+          bool get isOver => _over;
+
+          bool get isWon => _player.room.isGoal;
+
+          String handle(String line) {
+            final parts = line.trim().toLowerCase().split(' ');
+            final verb = parts.first;
+            final word = parts.skip(1).join(' ');
+            String answer;
+            if (verb == 'gehe') {
+              answer = _player.go(word);
+            } else if (verb == 'nimm') {
+              answer = _player.take(word);
+            } else if (verb == 'benutze') {
+              answer = _player.use(word);
+            } else if (verb == 'untersuche') {
+              answer = _player.examine(word);
+            } else if (verb == 'schau') {
+              answer = _player.look();
+            } else if (verb == 'tasche') {
+              answer = _player.bag();
+            } else if (verb == 'ende') {
+              _over = true;
+              answer = 'Bis bald.';
+            } else {
+              answer = 'Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende';
+            }
+            if (isWon) {
+              _over = true;
+            }
+            return answer;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Game.java` die Klasse `Game`, gebaut mit der Spielerin, `new Game(player)`. Sie ist das, was zwischen dem Terminal und deinen Objekten vermittelt:
+
+        - `start()` gibt zurück, was die Spielerin am Anfang sieht.
+        - `handle(line)` nimmt eine getippte Zeile, klein geschrieben und ohne Leerzeichen außen, und gibt die Antwort zurück: `gehe`, `nimm`, `benutze`, `schau` und `tasche` wie bisher, dazu der neue Befehl `untersuche`, für den die Spielerin `examine(name)` bekommt: die Beschreibung eines Gegenstands in ihrer Tasche oder im Raum, sonst `Hier gibt es nichts mit dem Namen zettel.` `ende` antwortet `Bis bald.` und beendet das Spiel, jedes andere Wort `Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende`.
+        - `isOver()` sagt, ob das Spiel zu Ende ist, `isWon()`, ob die Spielerin am Ziel steht. Das Ziel ist ein `GoalRoom`, ein Raum, dessen `isGoal()` `true` ist (`Room` sagt `false`); wer ihn betritt, hat gewonnen, und das Spiel ist zu Ende.
+      check:
+        type: java
+        file: textadventure/Game.java
+        cases:
+          - call: 'new Game(new Player(new Room("Flur", "Lang."))).start()'
+            expect: '"Flur\nLang.\nAusgänge: keine"'
+          - call: 'Room h = new Room("Flur", ""); Room k = new Room("Küche", "Warm."); h.connect("norden", k); Game g = new Game(new Player(h)); List.of(g.handle("gehe norden"), g.isOver())'
+            expect: 'List.of("Küche\nWarm.\nAusgänge: keine", false)'
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Item("schlüssel", "")); Game g = new Game(new Player(h)); List.of(g.handle("  Nimm Schlüssel  "), g.handle("tasche"))'
+            expect: 'List.of("Du nimmst schlüssel.", "In deiner Tasche: schlüssel")'
+            say: "`handle` schreibt die Zeile klein und nimmt die Leerzeichen außen weg, bevor es Verb und Wort trennt: `line.strip().toLowerCase()`."
+          - call: 'Room h = new Room("Flur", ""); h.addItem(new Item("zettel", "Kaffee um drei.")); Game g = new Game(new Player(h)); List.of(g.handle("untersuche zettel"), g.handle("nimm zettel"), g.handle("untersuche zettel"), g.handle("untersuche lampe"))'
+            expect: 'List.of("Kaffee um drei.", "Du nimmst zettel.", "Kaffee um drei.", "Hier gibt es nichts mit dem Namen lampe.")'
+          - call: 'Game g = new Game(new Player(new Room("Flur", ""))); g.handle("tanze")'
+            expect: '"Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende"'
+          - call: 'Game g = new Game(new Player(new Room("Flur", ""))); List.of(g.isOver(), g.handle("ende"), g.isOver(), g.isWon())'
+            expect: 'List.of(false, "Bis bald.", true, false)'
+          - call: 'Room h = new Room("Halle", ""); Room out = new GoalRoom("Schulhof", "Geschafft!"); h.connect("süden", out); Game g = new Game(new Player(h)); g.handle("gehe süden"); List.of(g.isWon(), g.isOver(), new Room("x", "").isGoal(), Room.class.isAssignableFrom(GoalRoom.class))'
+            expect: 'List.of(true, true, false, true)'
+            say: "Wer einen `GoalRoom` betritt, hat gewonnen: `isWon()` fragt den Raum der Spielerin, `isGoal()`, und nach jedem Befehl ist das Spiel zu Ende, wenn er es ist."
+      hint:
+        - "`Game` merkt sich die Spielerin, `private final Player player;`, und `private boolean over = false;`. `handle` trennt die Zeile: `String[] parts = line.strip().toLowerCase().split(\" \", 2);`; das Verb ist `parts[0]`, das Wort `parts[1]`, wenn es eines gibt (`parts.length > 1`), sonst `\"\"`."
+        - "Ein `if (verb.equals(\"gehe\"))` mit einem `else if` je Befehl; jeder ruft die Methode der Spielerin auf und merkt sich ihre Antwort. Bei `ende` setzt du `over = true;`."
+        - "`isWon()` ist `player.getRoom().isGoal()`. Am Ende von `handle` setzt du `over = true`, wenn `isWon()`, und gibst die Antwort zurück."
+      solution: |
+        In `Room` ein `isGoal()` mit `return false;`, in `GoalRoom.java` wie bei `DarkRoom` eines mit `return true;`. In `Player`:
+
+        ```java
+        public String examine(String name) {
+            List<Item> visible = new ArrayList<>(bag);
+            visible.addAll(room.getItems());
+            for (Item item : visible) {
+                if (item.getName().equals(name)) {
+                    return item.getDescription();
+                }
+            }
+            return "Hier gibt es nichts mit dem Namen " + name + ".";
+        }
+        ```
+
+        `Game.java`:
+
+        ```java
+        public class Game {
+            private final Player player;
+            private boolean over = false;
+
+            public Game(Player player) {
+                this.player = player;
+            }
+
+            public String start() {
+                return player.look();
+            }
+
+            public boolean isOver() {
+                return over;
+            }
+
+            public boolean isWon() {
+                return player.getRoom().isGoal();
+            }
+
+            public String handle(String line) {
+                String[] parts = line.strip().toLowerCase().split(" ", 2);
+                String verb = parts[0];
+                String word = parts.length > 1 ? parts[1] : "";
+                String answer;
+                if (verb.equals("gehe")) {
+                    answer = player.go(word);
+                } else if (verb.equals("nimm")) {
+                    answer = player.take(word);
+                } else if (verb.equals("benutze")) {
+                    answer = player.use(word);
+                } else if (verb.equals("untersuche")) {
+                    answer = player.examine(word);
+                } else if (verb.equals("schau")) {
+                    answer = player.look();
+                } else if (verb.equals("tasche")) {
+                    answer = player.bag();
+                } else if (verb.equals("ende")) {
+                    over = true;
+                    answer = "Bis bald.";
+                } else {
+                    answer = "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende";
+                }
+                if (isWon()) {
+                    over = true;
+                }
+                return answer;
+            }
+        }
+        ```
 
   - id: welt
     title: Deine eigene Welt
@@ -1243,6 +2391,140 @@ tasks:
             "benutze kastenschlüssel", "gehe kasten",
         ]
         ```
+    dart:
+      prompt: |
+        Schreib in `adventure.dart` eine Funktion `buildWorld()`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt, und eine Liste `walkthrough` mit dem Weg zum Ziel, Befehl für Befehl, so wie man ihn tippt, `const walkthrough = ['nimm kerze', …];`. Deine Welt hat mindestens vier Räume, die man vom ersten aus erreicht, ein Ziel, und auf dem Weg dorthin eine verschlossene Tür, deren Schlüssel man vorher finden muss. Die Prüfung spielt deinen Weg durch. Die Funktion `allRooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
+
+        ```dart
+        List<Room> allRooms(Room start) {
+          final seen = [start];
+          final queue = [start];
+          while (queue.isNotEmpty) {
+            final room = queue.removeAt(0);
+            for (final direction in room.directions) {
+              final other = room.exitTo(direction)!;
+              if (!seen.contains(other)) {
+                seen.add(other);
+                queue.add(other);
+              }
+            }
+          }
+          return seen;
+        }
+        ```
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "allRooms(buildWorld().room).length >= 4"
+            expect: "true"
+            say: "Deine Welt braucht mindestens vier Räume, die man vom ersten aus erreicht. Sind alle mit `connect` verbunden, und gibt `buildWorld` die Spielerin in deinem ersten Raum zurück?"
+          - call: "allRooms(buildWorld().room).any((r) => r.directions.any((d) => r.isLocked(d)))"
+            expect: "true"
+            say: "In deiner Welt fehlt eine verschlossene Tür: `lock(richtung, schluesselName)`."
+          - call: "final g = Game(buildWorld()); for (final line in walkthrough) g.handle(line); g.isWon"
+            expect: "true"
+            say: "Dein `walkthrough` kommt nicht ans Ziel. Spiel ihn mit `dart run play.dart` selbst Zeile für Zeile durch: Wo antwortet das Spiel etwas anderes, als du erwartest?"
+          - call: "final g = Game(buildWorld()); for (final line in walkthrough) if (!line.trim().startsWith('benutze')) g.handle(line); g.isWon"
+            expect: "false"
+            say: "Ohne `benutze` kommt man auch ans Ziel: Die verschlossene Tür liegt nicht auf dem Weg dorthin."
+      hint:
+        - "Fang mit einer Skizze auf Papier an: Räume als Kästen, Ausgänge als Pfeile, wo das Ziel ist und wo der Schlüssel liegt. Dann wird jeder Kasten ein `Room(…)`, jeder Pfeil ein `connect`."
+        - "`walkthrough` ist eine Liste von Texten, `const walkthrough = ['nimm kerze', 'gehe flur', …];`, außerhalb jeder Klasse und Funktion. Spiel dein Spiel mit `dart run play.dart` einmal durch und schreib dabei mit, was du tippst."
+      solution: |
+        ```dart
+        Player buildWorld() {
+          final room = Room('Zimmer 3', 'Dein Zimmer im Wohnheim. Der Strom ist weg.');
+          final corridor = DarkRoom('Gang', 'Ein langer Gang mit Türen links und rechts.');
+          final kitchen = Room('Küche', 'Im Kühlschrank brummt nichts mehr.');
+          final fuse = GoalRoom('Sicherungskasten', 'Du legst den Schalter um, und überall geht das Licht an. Geschafft!');
+          room.connect('flur', corridor);
+          corridor.connect('zimmer', room);
+          corridor.connect('küche', kitchen);
+          kitchen.connect('flur', corridor);
+          corridor.connect('kasten', fuse);
+          corridor.lock('kasten', 'kastenschlüssel');
+          room.addItem(Lamp('kerze', 'Eine Kerze, die schon brennt.'));
+          kitchen.addItem(Key('kastenschlüssel', 'Ein kleiner Schlüssel mit einem Blitz darauf.'));
+          kitchen.addItem(Food('keks', 'Ein bisschen weich, aber gut.'));
+          return Player(room);
+        }
+
+        const walkthrough = [
+          'nimm kerze', 'gehe flur', 'gehe küche', 'nimm kastenschlüssel', 'gehe flur',
+          'benutze kastenschlüssel', 'gehe kasten',
+        ];
+        ```
+    java:
+      prompt: |
+        Schreib in `World.java` eine Klasse `World` mit einer Methode `public static Player build()`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt, und einer Liste `public static final List<String> WALKTHROUGH` mit dem Weg zum Ziel, Befehl für Befehl, so wie man ihn tippt, `List.of("nimm kerze", …)`. Deine Welt hat mindestens vier Räume, die man vom ersten aus erreicht, ein Ziel, und auf dem Weg dorthin eine verschlossene Tür, deren Schlüssel man vorher finden muss. Die Prüfung spielt deinen Weg durch. Die Methode `allRooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in die Klasse:
+
+        ```java
+        public static List<Room> allRooms(Room start) {
+            List<Room> seen = new ArrayList<>(List.of(start));
+            List<Room> queue = new ArrayList<>(List.of(start));
+            while (!queue.isEmpty()) {
+                Room room = queue.remove(0);
+                for (String direction : room.getDirections()) {
+                    Room other = room.exitTo(direction);
+                    if (!seen.contains(other)) {
+                        seen.add(other);
+                        queue.add(other);
+                    }
+                }
+            }
+            return seen;
+        }
+        ```
+      check:
+        type: java
+        file: textadventure/World.java
+        cases:
+          - call: 'World.allRooms(World.build().getRoom()).size() >= 4'
+            expect: 'true'
+            say: "Deine Welt braucht mindestens vier Räume, die man vom ersten aus erreicht. Sind alle mit `connect` verbunden, und gibt `build()` die Spielerin in deinem ersten Raum zurück?"
+          - call: 'World.allRooms(World.build().getRoom()).stream().anyMatch(r -> r.getDirections().stream().anyMatch(d -> r.isLocked(d)))'
+            expect: 'true'
+            say: "In deiner Welt fehlt eine verschlossene Tür: `lock(richtung, schluesselName)`."
+          - call: 'Game g = new Game(World.build()); for (String line : World.WALKTHROUGH) g.handle(line); g.isWon()'
+            expect: 'true'
+            say: "Dein `WALKTHROUGH` kommt nicht ans Ziel. Spiel ihn mit `java Play.java` selbst Zeile für Zeile durch: Wo antwortet das Spiel etwas anderes, als du erwartest?"
+          - call: 'Game g = new Game(World.build()); for (String line : World.WALKTHROUGH) if (!line.strip().startsWith("benutze")) g.handle(line); g.isWon()'
+            expect: 'false'
+            say: "Ohne `benutze` kommt man auch ans Ziel: Die verschlossene Tür liegt nicht auf dem Weg dorthin."
+      hint:
+        - "Fang mit einer Skizze auf Papier an: Räume als Kästen, Ausgänge als Pfeile, wo das Ziel ist und wo der Schlüssel liegt. Dann wird jeder Kasten ein `new Room(…)`, jeder Pfeil ein `connect`."
+        - "`WALKTHROUGH` ist eine Liste von Texten, `public static final List<String> WALKTHROUGH = List.of(\"nimm kerze\", \"gehe flur\", …);`. Oben in `World.java` stehen `import java.util.ArrayList;` und `import java.util.List;`. Spiel dein Spiel mit `java Play.java` einmal durch und schreib dabei mit, was du tippst."
+      solution: |
+        ```java
+        import java.util.ArrayList;
+        import java.util.List;
+
+        public class World {
+            public static final List<String> WALKTHROUGH = List.of(
+                "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+                "benutze kastenschlüssel", "gehe kasten");
+
+            public static Player build() {
+                Room room = new Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.");
+                Room corridor = new DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.");
+                Room kitchen = new Room("Küche", "Im Kühlschrank brummt nichts mehr.");
+                Room fuse = new GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!");
+                room.connect("flur", corridor);
+                corridor.connect("zimmer", room);
+                corridor.connect("küche", kitchen);
+                kitchen.connect("flur", corridor);
+                corridor.connect("kasten", fuse);
+                corridor.lock("kasten", "kastenschlüssel");
+                room.addItem(new Lamp("kerze", "Eine Kerze, die schon brennt."));
+                kitchen.addItem(new Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."));
+                kitchen.addItem(new Food("keks", "Ein bisschen weich, aber gut."));
+                return new Player(room);
+            }
+
+            // allRooms wie oben
+        }
+        ```
 
   - id: spieltest
     title: Was beim Spieltest auffiel
@@ -1353,4 +2635,102 @@ tasks:
                     player.room.add_item(item)
                 self._contents = []
                 return f"Du öffnest {self.name}. Darin: {names}"
+        ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Chest`, die von `Item` erbt: eine Kiste, in die man beim Bauen der Welt mit `put(item)` Gegenstände legt. Benutzt die Spielerin sie, kommt ihr Inhalt in den Raum: `Du öffnest kiste. Darin: münze, karte`, mit ihrem Namen und den Namen des Inhalts. Danach ist die Kiste leer: `kiste ist leer.`
+      check:
+        type: dart
+        file: textadventure/adventure.dart
+        cases:
+          - call: "<Object>[Chest('kiste', '')].every((thing) => thing is Item)"
+            expect: "true"
+            say: "`Chest` erbt von `Item`: `class Chest extends Item`."
+          - call: "final r = Room('Keller', ''); final c = Chest('kiste', ''); c.put(Item('münze', '')); c.put(Item('karte', '')); r.addItem(c); final p = Player(r); p.take('kiste'); [p.use('kiste'), r.items.map((i) => i.name).toList()]"
+            expect: "['Du öffnest kiste. Darin: münze, karte', ['münze', 'karte']]"
+            say: "Der Inhalt kommt in den Raum der Spielerin: `player.room.addItem(item)` für jeden."
+          - call: "final r = Room('Keller', ''); final c = Chest('kiste', ''); c.put(Item('münze', '')); r.addItem(c); final p = Player(r); p.take('kiste'); p.use('kiste'); p.use('kiste')"
+            expect: "'kiste ist leer.'"
+            say: "Nach dem Öffnen ist die Kiste leer: Ihre Liste wird geleert, nachdem der Inhalt im Raum liegt."
+          - call: "final r = Room('Keller', ''); final c = Chest('kiste', ''); r.addItem(c); final p = Player(r); p.take('kiste'); p.use('kiste')"
+            expect: "'kiste ist leer.'"
+      hint:
+        - "Die Kiste ist ein Gegenstand, der eine Liste von Gegenständen hat: `final List<Item> _contents = [];`, gebaut mit `Chest(super.name, super.description);`."
+        - "In `use` merkst du dir zuerst die Namen für die Antwort, legst dann jeden Gegenstand mit `player.room.addItem(item)` in den Raum und leerst die Liste mit `_contents.clear()`."
+      solution: |
+        ```dart
+        class Chest extends Item {
+          final List<Item> _contents = [];
+
+          Chest(super.name, super.description);
+
+          void put(Item item) {
+            _contents.add(item);
+          }
+
+          @override
+          String use(Player player) {
+            if (_contents.isEmpty) {
+              return '$name ist leer.';
+            }
+            final names = _contents.map((item) => item.name).join(', ');
+            for (final item in _contents) {
+              player.room.addItem(item);
+            }
+            _contents.clear();
+            return 'Du öffnest $name. Darin: $names';
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Chest.java` eine Klasse `Chest`, die von `Item` erbt: eine Kiste, in die man beim Bauen der Welt mit `put(item)` Gegenstände legt. Benutzt die Spielerin sie, kommt ihr Inhalt in den Raum: `Du öffnest kiste. Darin: münze, karte`, mit ihrem Namen und den Namen des Inhalts. Danach ist die Kiste leer: `kiste ist leer.`
+      check:
+        type: java
+        file: textadventure/Chest.java
+        cases:
+          - call: 'Item.class.isAssignableFrom(Chest.class)'
+            expect: 'true'
+            say: "`Chest` erbt von `Item`: `public class Chest extends Item`."
+          - call: 'Room r = new Room("Keller", ""); Chest c = new Chest("kiste", ""); c.put(new Item("münze", "")); c.put(new Item("karte", "")); r.addItem(c); Player p = new Player(r); p.take("kiste"); List.of(p.use("kiste"), r.getItems().stream().map(Item::getName).toList())'
+            expect: 'List.of("Du öffnest kiste. Darin: münze, karte", List.of("münze", "karte"))'
+            say: "Der Inhalt kommt in den Raum der Spielerin: `player.getRoom().addItem(item)` für jeden."
+          - call: 'Room r = new Room("Keller", ""); Chest c = new Chest("kiste", ""); c.put(new Item("münze", "")); r.addItem(c); Player p = new Player(r); p.take("kiste"); p.use("kiste"); p.use("kiste")'
+            expect: '"kiste ist leer."'
+            say: "Nach dem Öffnen ist die Kiste leer: Ihre Liste wird geleert, nachdem der Inhalt im Raum liegt."
+          - call: 'Room r = new Room("Keller", ""); Chest c = new Chest("kiste", ""); r.addItem(c); Player p = new Player(r); p.take("kiste"); p.use("kiste")'
+            expect: '"kiste ist leer."'
+      hint:
+        - "Die Kiste ist ein Gegenstand, der eine Liste von Gegenständen hat: `private final List<Item> contents = new ArrayList<>();`, und einen Konstruktor, der mit `super(name, description);` den von `Item` aufruft."
+        - "In `use` gehst du durch den Inhalt, merkst dir jeden Namen für die Antwort und legst jeden Gegenstand mit `player.getRoom().addItem(item)` in den Raum; danach leerst du die Liste mit `contents.clear()`."
+      solution: |
+        ```java
+        import java.util.ArrayList;
+        import java.util.List;
+
+        public class Chest extends Item {
+            private final List<Item> contents = new ArrayList<>();
+
+            public Chest(String name, String description) {
+                super(name, description);
+            }
+
+            public void put(Item item) {
+                contents.add(item);
+            }
+
+            @Override
+            public String use(Player player) {
+                if (contents.isEmpty()) {
+                    return getName() + " ist leer.";
+                }
+                List<String> names = new ArrayList<>();
+                for (Item item : contents) {
+                    names.add(item.getName());
+                    player.getRoom().addItem(item);
+                }
+                contents.clear();
+                return "Du öffnest " + getName() + ". Darin: " + String.join(", ", names);
+            }
+        }
         ```

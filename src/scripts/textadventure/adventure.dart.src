@@ -1,0 +1,296 @@
+// Ein Textadventure aus Objekten: Nachts in der Schule.
+
+class Room {
+  final String name;
+  final String description;
+  final Map<String, Room> _exits = {};
+@5   final Map<String, String> _locks = {};
+@2   final List<Item> items = [];
+
+  Room(this.name, this.description);
+
+  void connect(String direction, Room room) {
+    _exits[direction] = room;
+  }
+
+  Room? exitTo(String direction) => _exits[direction];
+
+  List<String> get directions => _exits.keys.toList();
+@2
+@2   void addItem(Item item) {
+@2     items.add(item);
+@2   }
+@2
+@2   Item? take(String name) {
+@2     for (final item in items) {
+@2       if (item.name == name) {
+@2         items.remove(item);
+@2         return item;
+@2       }
+@2     }
+@2     return null;
+@2   }
+@5
+@5   void lock(String direction, String keyName) {
+@5     _locks[direction] = keyName;
+@5   }
+@5
+@5   bool isLocked(String direction) => _locks.containsKey(direction);
+@5
+@5   bool unlock(String keyName) {
+@5     final before = _locks.length;
+@5     _locks.removeWhere((direction, key) => key == keyName);
+@5     return _locks.length < before;
+@5   }
+@6
+@6   bool get isDark => false;
+@7
+@7   bool get isGoal => false;
+@3
+@3   String describe() {
+@3     final lines = [name, description];
+@3     if (items.isNotEmpty) {
+@3       lines.add("Hier liegt: ${items.map((item) => item.name).join(', ')}");
+@3     }
+@3-4     final exits = directions;
+@5     final exits = directions.map((d) => isLocked(d) ? '$d (verschlossen)' : d).toList();
+@3     lines.add("Ausgänge: ${exits.isEmpty ? 'keine' : exits.join(', ')}");
+@3     return lines.join('\n');
+@3   }
+}
+@6
+@6 class DarkRoom extends Room {
+@6   DarkRoom(super.name, super.description);
+@6
+@6   @override
+@6   bool get isDark => true;
+@6 }
+@7
+@7 class GoalRoom extends Room {
+@7   GoalRoom(super.name, super.description);
+@7
+@7   @override
+@7   bool get isGoal => true;
+@7 }
+@2
+@2 class Item {
+@2   final String name;
+@2   final String description;
+@2
+@2   Item(this.name, this.description);
+@5
+@5   String use(Player player) => 'Damit kannst du hier nichts anfangen.';
+@6
+@6   bool get shines => false;
+@2 }
+@5
+@5 class Key extends Item {
+@5   Key(super.name, super.description);
+@5
+@5   @override
+@5   String use(Player player) {
+@5     if (player.room.unlock(name)) {
+@5       return 'Du schließt die Tür auf.';
+@5     }
+@5     return 'Hier passt $name in kein Schloss.';
+@5   }
+@5 }
+@5
+@5 class Food extends Item {
+@5   Food(super.name, super.description);
+@5
+@5   @override
+@5   String use(Player player) {
+@5     player.remove(this);
+@5     return 'Du isst $name. $description';
+@5   }
+@5 }
+@6
+@6 class Lamp extends Item {
+@6   Lamp(super.name, super.description);
+@6
+@6   @override
+@6   String use(Player player) => '$name leuchtet schon.';
+@6
+@6   @override
+@6   bool get shines => true;
+@6 }
+@8
+@8 class Chest extends Item {
+@8   final List<Item> _contents = [];
+@8
+@8   Chest(super.name, super.description);
+@8
+@8   void put(Item item) {
+@8     _contents.add(item);
+@8   }
+@8
+@8   @override
+@8   String use(Player player) {
+@8     if (_contents.isEmpty) {
+@8       return '$name ist leer.';
+@8     }
+@8     final names = _contents.map((item) => item.name).join(', ');
+@8     for (final item in _contents) {
+@8       player.room.addItem(item);
+@8     }
+@8     _contents.clear();
+@8     return 'Du öffnest $name. Darin: $names';
+@8   }
+@8 }
+@4
+@4 class Player {
+@4   Room _room;
+@4   final List<Item> _bag = [];
+@4
+@4   Player(this._room);
+@4
+@4   Room get room => _room;
+@4
+@4   String look() {
+@6     if (_room.isDark && !hasLight) {
+@6       return 'Es ist stockdunkel. Du siehst nichts.';
+@6     }
+@4     return _room.describe();
+@4   }
+@4
+@4   String go(String direction) {
+@4     final target = _room.exitTo(direction);
+@4     if (target == null) {
+@4       return 'Da geht es nicht weiter.';
+@4     }
+@5     if (_room.isLocked(direction)) {
+@5       return 'Die Tür nach $direction ist verschlossen.';
+@5     }
+@4     _room = target;
+@4     return look();
+@4   }
+@4
+@4   String take(String name) {
+@6     if (_room.isDark && !hasLight) {
+@6       return 'Im Dunkeln findest du nichts.';
+@6     }
+@4     final item = _room.take(name);
+@4     if (item == null) {
+@4       return 'Hier liegt nichts mit dem Namen $name.';
+@4     }
+@4     _bag.add(item);
+@4     return 'Du nimmst ${item.name}.';
+@4   }
+@4
+@4   bool has(String name) => _bag.any((item) => item.name == name);
+@4
+@4   String bag() {
+@4     if (_bag.isEmpty) {
+@4       return 'Deine Tasche ist leer.';
+@4     }
+@4     return "In deiner Tasche: ${_bag.map((item) => item.name).join(', ')}";
+@4   }
+@5
+@5   void remove(Item item) {
+@5     _bag.remove(item);
+@5   }
+@5
+@5   String use(String name) {
+@5     for (final item in _bag) {
+@5       if (item.name == name) {
+@5         return item.use(this);
+@5       }
+@5     }
+@5     return 'Du hast nichts mit dem Namen $name.';
+@5   }
+@6
+@6   bool get hasLight => _bag.any((item) => item.shines);
+@7
+@7   String examine(String name) {
+@7     for (final item in [..._bag, ..._room.items]) {
+@7       if (item.name == name) {
+@7         return item.description;
+@7       }
+@7     }
+@7     return 'Hier gibt es nichts mit dem Namen $name.';
+@7   }
+@4 }
+@7
+@7 class Game {
+@7   final Player _player;
+@7   bool _over = false;
+@7
+@7   Game(this._player);
+@7
+@7   String start() => _player.look();
+@7
+@7   bool get isOver => _over;
+@7
+@7   bool get isWon => _player.room.isGoal;
+@7
+@7   String handle(String line) {
+@7     final parts = line.trim().toLowerCase().split(' ');
+@7     final verb = parts.first;
+@7     final word = parts.skip(1).join(' ');
+@7     String answer;
+@7     if (verb == 'gehe') {
+@7       answer = _player.go(word);
+@7     } else if (verb == 'nimm') {
+@7       answer = _player.take(word);
+@7     } else if (verb == 'benutze') {
+@7       answer = _player.use(word);
+@7     } else if (verb == 'untersuche') {
+@7       answer = _player.examine(word);
+@7     } else if (verb == 'schau') {
+@7       answer = _player.look();
+@7     } else if (verb == 'tasche') {
+@7       answer = _player.bag();
+@7     } else if (verb == 'ende') {
+@7       _over = true;
+@7       answer = 'Bis bald.';
+@7     } else {
+@7       answer = 'Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende';
+@7     }
+@7     if (isWon) {
+@7       _over = true;
+@7     }
+@7     return answer;
+@7   }
+@7 }
+@8
+@8 // Alle Räume, die man von start aus erreicht, start zuerst (gegeben).
+@8 List<Room> allRooms(Room start) {
+@8   final seen = [start];
+@8   final queue = [start];
+@8   while (queue.isNotEmpty) {
+@8     final room = queue.removeAt(0);
+@8     for (final direction in room.directions) {
+@8       final other = room.exitTo(direction)!;
+@8       if (!seen.contains(other)) {
+@8         seen.add(other);
+@8         queue.add(other);
+@8       }
+@8     }
+@8   }
+@8   return seen;
+@8 }
+@8
+@8 // Deine Welt: ein Wohnheim, in dem das Licht ausgefallen ist.
+@8 Player buildWorld() {
+@8   final room = Room('Zimmer 3', 'Dein Zimmer im Wohnheim. Der Strom ist weg.');
+@8   final corridor = DarkRoom('Gang', 'Ein langer Gang mit Türen links und rechts.');
+@8   final kitchen = Room('Küche', 'Im Kühlschrank brummt nichts mehr.');
+@8   final fuse = GoalRoom('Sicherungskasten', 'Du legst den Schalter um, und überall geht das Licht an. Geschafft!');
+@8   room.connect('flur', corridor);
+@8   corridor.connect('zimmer', room);
+@8   corridor.connect('küche', kitchen);
+@8   kitchen.connect('flur', corridor);
+@8   corridor.connect('kasten', fuse);
+@8   corridor.lock('kasten', 'kastenschlüssel');
+@8   room.addItem(Lamp('kerze', 'Eine Kerze, die schon brennt.'));
+@8   kitchen.addItem(Key('kastenschlüssel', 'Ein kleiner Schlüssel mit einem Blitz darauf.'));
+@8   kitchen.addItem(Food('keks', 'Ein bisschen weich, aber gut.'));
+@8   return Player(room);
+@8 }
+@8
+@8 // Der Weg zum Ziel, Befehl für Befehl: Game spielt ihn durch.
+@8 const walkthrough = [
+@8   'nimm kerze', 'gehe flur', 'gehe küche', 'nimm kastenschlüssel', 'gehe flur',
+@8   'benutze kastenschlüssel', 'gehe kasten',
+@8 ];
