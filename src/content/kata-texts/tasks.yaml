@@ -118,6 +118,73 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String reverseText(String text)`, die den Text rückwärts zurückgibt: `reverseText('Hallo')` ergibt `'ollaH'`. Mit einer Schleife über die Buchstaben, ohne `reversed`.
+      starter: |
+        String reverseText(String text) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reversed]
+        cases:
+          - { call: "reverseText('Hallo')", expect: "'ollaH'" }
+          - { call: "reverseText('Anna')", expect: "'annA'" }
+          - { call: "reverseText('a b')", expect: "'b a'", say: "Auch ein Leerzeichen ist ein Zeichen und dreht sich mit." }
+          - { call: "reverseText('')", expect: "''", say: "Ein leerer Text bleibt leer." }
+          - { call: "reverseText('Workspace')", expect: "'ecapskroW'" }
+      feedback:
+        - when: { same_as: "String reverseText(String text) {\n  var result = '';\n  for (final char in text.split('')) {\n    result = result + char;\n  }\n  return result;\n}\n" }
+          say: "Du hängst jeden Buchstaben hinten an, so kommt derselbe Text heraus. Wohin muss der neue Buchstabe?"
+      hint:
+        - "`for (final char in text.split('')) { … }` geht die Buchstaben der Reihe nach durch. Wo muss jeder neue Buchstabe im Ergebnis stehen, vorn oder hinten?"
+        - "`char + result` setzt den Buchstaben vor das, was du schon hast."
+      solution: |
+        ```dart
+        String reverseText(String text) {
+          var result = '';
+          for (final char in text.split('')) {
+            result = char + result;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String reverseText(String text)`, die den Text rückwärts zurückgibt: `reverseText("Hallo")` ergibt `"ollaH"`. Mit einer Schleife über die Buchstaben, ohne `reverse`.
+      starter: |
+        String reverseText(String text) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.reverse, .reversed, Collections.reverse]
+        cases:
+          - { call: "reverseText(\"Hallo\")", expect: "\"ollaH\"" }
+          - { call: "reverseText(\"Anna\")", expect: "\"annA\"" }
+          - { call: "reverseText(\"a b\")", expect: "\"b a\"", say: "Auch ein Leerzeichen ist ein Zeichen und dreht sich mit." }
+          - { call: "reverseText(\"\")", expect: "\"\"", say: "Ein leerer Text bleibt leer." }
+          - { call: "reverseText(\"Workspace\")", expect: "\"ecapskroW\"" }
+      feedback:
+        - when: { same_as: "String reverseText(String text) {\n    String result = \"\";\n    for (char c : text.toCharArray()) {\n        result = result + c;\n    }\n    return result;\n}\n" }
+          say: "Du hängst jeden Buchstaben hinten an, so kommt derselbe Text heraus. Wohin muss der neue Buchstabe?"
+      hint:
+        - "`for (char c : text.toCharArray()) { … }` geht die Buchstaben der Reihe nach durch. Wo muss jeder neue Buchstabe im Ergebnis stehen, vorn oder hinten?"
+        - "`c + result` setzt den Buchstaben vor das, was du schon hast."
+      solution: |
+        ```java
+        String reverseText(String text) {
+            String result = "";
+            for (char c : text.toCharArray()) {
+                result = c + result;
+            }
+            return result;
+        }
+        ```
+
   - id: count-vowels
     title: "Vokale zählen"
     level: 1
@@ -230,6 +297,75 @@ tasks:
           return count;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int countVowels(String text)`, die zählt, wie viele Vokale im Text stehen, also `a`, `e`, `i`, `o` und `u`, klein oder groß: `countVowels('Hallo Welt')` ergibt `3`.
+      starter: |
+        int countVowels(String text) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "countVowels('Hallo Welt')", expect: "3" }
+          - { call: "countVowels('AEIOU')", expect: "5", say: "Große Vokale zählen auch." }
+          - { call: "countVowels('xyz')", expect: "0" }
+          - { call: "countVowels('')", expect: "0" }
+          - { call: "countVowels('Programmieren')", expect: "5" }
+      feedback:
+        - when: { same_as: "int countVowels(String text) {\n  var count = 0;\n  for (final char in text.split('')) {\n    if ('aeiou'.contains(char)) {\n      count++;\n    }\n  }\n  return count;\n}\n" }
+          say: "In `'AEIOU'` zählt dein Code keinen Vokal. Wie wird aus einem großen Buchstaben ein kleiner?"
+      hint:
+        - "Geh die Buchstaben durch und zähle mit, wie bei den Schleifen. `'aeiou'.contains(char)` fragt, ob `char` ein Vokal ist."
+        - "`text.toLowerCase()` macht alle Buchstaben klein; dann reicht der Vergleich mit den kleinen Vokalen."
+      solution: |
+        ```dart
+        int countVowels(String text) {
+          var count = 0;
+          for (final char in text.toLowerCase().split('')) {
+            if ('aeiou'.contains(char)) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int countVowels(String text)`, die zählt, wie viele Vokale im Text stehen, also `a`, `e`, `i`, `o` und `u`, klein oder groß: `countVowels("Hallo Welt")` ergibt `3`.
+      starter: |
+        int countVowels(String text) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "countVowels(\"Hallo Welt\")", expect: "3" }
+          - { call: "countVowels(\"AEIOU\")", expect: "5", say: "Große Vokale zählen auch." }
+          - { call: "countVowels(\"xyz\")", expect: "0" }
+          - { call: "countVowels(\"\")", expect: "0" }
+          - { call: "countVowels(\"Programmieren\")", expect: "5" }
+      feedback:
+        - when: { same_as: "int countVowels(String text) {\n    int count = 0;\n    for (char c : text.toCharArray()) {\n        if (\"aeiou\".indexOf(c) >= 0) {\n            count++;\n        }\n    }\n    return count;\n}\n" }
+          say: "In `\"AEIOU\"` zählt dein Code keinen Vokal. Wie wird aus einem großen Buchstaben ein kleiner?"
+      hint:
+        - "Geh die Buchstaben durch und zähle mit, wie bei den Schleifen. `\"aeiou\".indexOf(c)` ist der Index von `c` in `\"aeiou\"`, oder -1, wenn es nicht darin steht."
+        - "`text.toLowerCase()` macht alle Buchstaben klein; dann reicht der Vergleich mit den kleinen Vokalen."
+      solution: |
+        ```java
+        int countVowels(String text) {
+            int count = 0;
+            for (char c : text.toLowerCase().toCharArray()) {
+                if ("aeiou".indexOf(c) >= 0) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        ```
+
   - id: initials
     title: "Anfangsbuchstaben"
     level: 1
@@ -332,6 +468,75 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String initials(String text)`, die den ersten Buchstaben jedes Wortes zurückgibt, als einen Text: `initials('Hackschule Workspace')` ergibt `'HW'`. Wörter stehen zwischen Leerzeichen, manchmal auch zwischen mehreren.
+      starter: |
+        String initials(String text) {
+          return '?';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "initials('Hackschule Workspace')", expect: "'HW'" }
+          - { call: "initials('ein kleiner Test')", expect: "'ekT'" }
+          - { call: "initials('Ada')", expect: "'A'" }
+          - { call: "initials('Grace  Hopper')", expect: "'GH'", say: "Zwei Leerzeichen hintereinander trennen auch nur zwei Wörter." }
+          - { call: "initials('')", expect: "''", say: "Ein leerer Text hat keine Wörter." }
+      feedback:
+        - when: { same_as: "String initials(String text) {\n  var result = '';\n  for (final word in text.split(' ')) {\n    result += word[0];\n  }\n  return result;\n}\n" }
+          say: "Zwischen zwei Leerzeichen liefert `split(' ')` ein leeres Wort, und bei `word[0]` bricht dein Code dort ab: Ein leeres Wort hat keinen ersten Buchstaben. Überspring die leeren Wörter."
+      hint:
+        - "`text.split(' ')` zerlegt den Text an jedem Leerzeichen in eine Liste. `word[0]` ist der erste Buchstabe."
+        - "Zwischen zwei Leerzeichen steht ein leeres Wort, `''`. Das hat keinen ersten Buchstaben: Frag vorher mit `word.isNotEmpty`."
+      solution: |
+        ```dart
+        String initials(String text) {
+          var result = '';
+          for (final word in text.split(' ')) {
+            if (word.isNotEmpty) {
+              result += word[0];
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String initials(String text)`, die den ersten Buchstaben jedes Wortes zurückgibt, als einen Text: `initials("Hackschule Workspace")` ergibt `"HW"`. Wörter stehen zwischen Leerzeichen, manchmal auch zwischen mehreren.
+      starter: |
+        String initials(String text) {
+            return "?";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "initials(\"Hackschule Workspace\")", expect: "\"HW\"" }
+          - { call: "initials(\"ein kleiner Test\")", expect: "\"ekT\"" }
+          - { call: "initials(\"Ada\")", expect: "\"A\"" }
+          - { call: "initials(\"Grace  Hopper\")", expect: "\"GH\"", say: "Zwei Leerzeichen hintereinander trennen auch nur zwei Wörter." }
+          - { call: "initials(\"\")", expect: "\"\"", say: "Ein leerer Text hat keine Wörter." }
+      feedback:
+        - when: { same_as: "String initials(String text) {\n    String result = \"\";\n    for (String word : text.split(\" \")) {\n        result += word.charAt(0);\n    }\n    return result;\n}\n" }
+          say: "Zwischen zwei Leerzeichen liefert `split(\" \")` ein leeres Wort, und bei `word.charAt(0)` bricht dein Code dort ab: Ein leeres Wort hat keinen ersten Buchstaben. Überspring die leeren Wörter."
+      hint:
+        - "`text.split(\" \")` zerlegt den Text an jedem Leerzeichen in ein Array. `word.charAt(0)` ist der erste Buchstabe."
+        - "Zwischen zwei Leerzeichen steht ein leeres Wort, `\"\"`. Das hat keinen ersten Buchstaben: Frag vorher mit `!word.isEmpty()`."
+      solution: |
+        ```java
+        String initials(String text) {
+            String result = "";
+            for (String word : text.split(" ")) {
+                if (!word.isEmpty()) {
+                    result += word.charAt(0);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: shout
     title: "Großbuchstaben"
     level: 1
@@ -457,6 +662,81 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String shout(String text)`, die jeden Kleinbuchstaben von `a` bis `z` groß macht und alles andere lässt, wie es ist: `shout('Hallo, Welt!')` ergibt `'HALLO, WELT!'`. Ohne `toUpperCase`: Jedes Zeichen hat eine Nummer, `'A'.codeUnitAt(0)` ist 65, `'a'.codeUnitAt(0)` ist 97.
+      starter: |
+        String shout(String text) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toUpperCase]
+        cases:
+          - { call: "shout('hallo')", expect: "'HALLO'" }
+          - { call: "shout('Hallo, Welt!')", expect: "'HALLO, WELT!'", say: "Ein Komma, ein Leerzeichen und ein Großbuchstabe bleiben, wie sie sind." }
+          - { call: "shout('123 abc')", expect: "'123 ABC'" }
+          - { call: "shout('')", expect: "''" }
+          - { call: "shout('xyz')", expect: "'XYZ'" }
+      feedback:
+        - when: { same_as: "String shout(String text) {\n  var result = '';\n  for (final code in text.codeUnits) {\n    result += String.fromCharCode(code - 32);\n  }\n  return result;\n}\n" }
+          say: "Nur die Kleinbuchstaben `a` bis `z` werden groß. Was ist ein Komma minus 32?"
+      hint:
+        - "`for (final code in text.codeUnits)` geht die Nummern der Zeichen durch. Ein großer Buchstabe hat eine um 32 kleinere Nummer als sein kleiner: 97 - 32 ist 65. `String.fromCharCode(65)` macht aus der Nummer wieder ein Zeichen."
+        - "`code >= 97 && code <= 122` fragt, ob ein Zeichen ein Kleinbuchstabe ist. Nur dann rechnest du."
+      solution: |
+        ```dart
+        String shout(String text) {
+          var result = '';
+          for (final code in text.codeUnits) {
+            if (code >= 97 && code <= 122) {
+              result += String.fromCharCode(code - 32);
+            } else {
+              result += String.fromCharCode(code);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String shout(String text)`, die jeden Kleinbuchstaben von `a` bis `z` groß macht und alles andere lässt, wie es ist: `shout("Hallo, Welt!")` ergibt `"HALLO, WELT!"`. Ohne `toUpperCase`: Jedes Zeichen hat eine Nummer, `(int) 'A'` ist 65, `(int) 'a'` ist 97, und `(char) 65` macht aus der Nummer wieder ein Zeichen.
+      starter: |
+        String shout(String text) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.toUpperCase, Character.toUpperCase]
+        cases:
+          - { call: "shout(\"hallo\")", expect: "\"HALLO\"" }
+          - { call: "shout(\"Hallo, Welt!\")", expect: "\"HALLO, WELT!\"", say: "Ein Komma, ein Leerzeichen und ein Großbuchstabe bleiben, wie sie sind." }
+          - { call: "shout(\"123 abc\")", expect: "\"123 ABC\"" }
+          - { call: "shout(\"\")", expect: "\"\"" }
+          - { call: "shout(\"xyz\")", expect: "\"XYZ\"" }
+      feedback:
+        - when: { same_as: "String shout(String text) {\n    String result = \"\";\n    for (char c : text.toCharArray()) {\n        result += (char) (c - 32);\n    }\n    return result;\n}\n" }
+          say: "Nur die Kleinbuchstaben `a` bis `z` werden groß. Was ist ein Komma minus 32?"
+      hint:
+        - "Ein großer Buchstabe hat eine um 32 kleinere Nummer als sein kleiner: `'a' - 32` ist 65. Mit `(char) (c - 32)` wird die Nummer wieder ein Zeichen."
+        - "Zeichen lassen sich vergleichen: `c >= 'a' && c <= 'z'` fragt, ob `c` ein Kleinbuchstabe ist. Nur dann rechnest du."
+      solution: |
+        ```java
+        String shout(String text) {
+            String result = "";
+            for (char c : text.toCharArray()) {
+                if (c >= 'a' && c <= 'z') {
+                    result += (char) (c - 32);
+                } else {
+                    result += c;
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: palindrome
     title: "Palindrom"
     level: 2
@@ -567,6 +847,67 @@ tasks:
           return lower === [...lower].reverse().join('');
         }
         ```
+    dart:
+      prompt: |
+        Ein Palindrom liest sich vorwärts wie rückwärts, wenn man nicht auf groß und klein achtet: »Anna«, »Otto«, »Reliefpfeiler«. Schreib eine Funktion `bool palindrome(String text)`: `palindrome('Anna')` ergibt `true`.
+      starter: |
+        bool palindrome(String text) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "palindrome('Anna')", expect: "true", say: "Groß und klein zählen nicht: `'Anna'` ist ein Palindrom." }
+          - { call: "palindrome('Otto')", expect: "true" }
+          - { call: "palindrome('Hallo')", expect: "false" }
+          - { call: "palindrome('Reliefpfeiler')", expect: "true" }
+          - { call: "palindrome('')", expect: "true", say: "Ein leerer Text liest sich rückwärts genauso." }
+          - { call: "palindrome('ab')", expect: "false" }
+      feedback:
+        - when: { same_as: "bool palindrome(String text) {\n  return text == text.split('').reversed.join();\n}\n" }
+          say: "`'Anna'` rückwärts ist `'annA'`, und das ist für den Vergleich ein anderer Text. Mach vorher alles klein."
+      hint:
+        - "Jetzt darfst du `reversed` benutzen: `text.split('').reversed.join()` ist der Text rückwärts. Vergleiche ihn mit dem Text."
+        - "`text.toLowerCase()` macht vorher alles klein."
+      solution: |
+        ```dart
+        bool palindrome(String text) {
+          final lower = text.toLowerCase();
+          return lower == lower.split('').reversed.join();
+        }
+        ```
+    java:
+      prompt: |
+        Ein Palindrom liest sich vorwärts wie rückwärts, wenn man nicht auf groß und klein achtet: »Anna«, »Otto«, »Reliefpfeiler«. Schreib eine Methode `boolean palindrome(String text)`: `palindrome("Anna")` ergibt `true`.
+      starter: |
+        boolean palindrome(String text) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "palindrome(\"Anna\")", expect: "true", say: "Groß und klein zählen nicht: `\"Anna\"` ist ein Palindrom." }
+          - { call: "palindrome(\"Otto\")", expect: "true" }
+          - { call: "palindrome(\"Hallo\")", expect: "false" }
+          - { call: "palindrome(\"Reliefpfeiler\")", expect: "true" }
+          - { call: "palindrome(\"\")", expect: "true", say: "Ein leerer Text liest sich rückwärts genauso." }
+          - { call: "palindrome(\"ab\")", expect: "false" }
+      feedback:
+        - when: { same_as: "boolean palindrome(String text) {\n    return text.equals(new StringBuilder(text).reverse().toString());\n}\n" }
+          say: "`\"Anna\"` rückwärts ist `\"annA\"`, und das ist für den Vergleich ein anderer Text. Mach vorher alles klein."
+      hint:
+        - "Jetzt darfst du `reverse` benutzen: `new StringBuilder(text).reverse().toString()` ist der Text rückwärts. Vergleiche ihn mit `equals`; `==` fragt bei Texten nur, ob es dasselbe Objekt ist."
+        - "`text.toLowerCase()` macht vorher alles klein."
+      solution: |
+        ```java
+        boolean palindrome(String text) {
+            String lower = text.toLowerCase();
+            return lower.equals(new StringBuilder(lower).reverse().toString());
+        }
+        ```
+
   - id: word-count
     title: "Wörter zählen"
     level: 2
@@ -668,6 +1009,71 @@ tasks:
           return count;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int wordCount(String text)`, die zählt, wie viele Wörter im Text stehen: `wordCount('Ich lerne Dart')` ergibt `3`. Zwischen den Wörtern können mehrere Leerzeichen stehen, auch am Anfang und am Ende.
+      starter: |
+        int wordCount(String text) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "wordCount('Ich lerne Dart')", expect: "3" }
+          - { call: "wordCount('eins')", expect: "1" }
+          - { call: "wordCount('')", expect: "0", say: "Ein leerer Text hat kein Wort." }
+          - { call: "wordCount('  zwei   Wörter ')", expect: "2", say: "Mehrere Leerzeichen trennen nur zwei Wörter." }
+          - { call: "wordCount('a b c d e')", expect: "5" }
+      feedback:
+        - when: { same_as: "int wordCount(String text) {\n  return text.split(' ').length;\n}\n" }
+          say: "`split(' ')` liefert zwischen zwei Leerzeichen ein leeres Wort, und für einen leeren Text eine Liste mit einem leeren Wort. Zähl nur die Wörter, die nicht leer sind."
+      hint: "Wie bei den Anfangsbuchstaben: `text.split(' ')` zerlegt den Text an jedem Leerzeichen. Zähl die Stücke, die nicht leer sind."
+      solution: |
+        ```dart
+        int wordCount(String text) {
+          var count = 0;
+          for (final word in text.split(' ')) {
+            if (word.isNotEmpty) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int wordCount(String text)`, die zählt, wie viele Wörter im Text stehen: `wordCount("Ich lerne Java")` ergibt `3`. Zwischen den Wörtern können mehrere Leerzeichen stehen, auch am Anfang und am Ende.
+      starter: |
+        int wordCount(String text) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "wordCount(\"Ich lerne Java\")", expect: "3" }
+          - { call: "wordCount(\"eins\")", expect: "1" }
+          - { call: "wordCount(\"\")", expect: "0", say: "Ein leerer Text hat kein Wort." }
+          - { call: "wordCount(\"  zwei   Wörter \")", expect: "2", say: "Mehrere Leerzeichen trennen nur zwei Wörter." }
+          - { call: "wordCount(\"a b c d e\")", expect: "5" }
+      feedback:
+        - when: { same_as: "int wordCount(String text) {\n    return text.split(\" \").length;\n}\n" }
+          say: "`split(\" \")` liefert zwischen zwei Leerzeichen ein leeres Wort, und für einen leeren Text ein Array mit einem leeren Wort. Zähl nur die Wörter, die nicht leer sind."
+      hint: "Wie bei den Anfangsbuchstaben: `text.split(\" \")` zerlegt den Text an jedem Leerzeichen. Zähl die Stücke, die nicht leer sind."
+      solution: |
+        ```java
+        int wordCount(String text) {
+            int count = 0;
+            for (String word : text.split(" ")) {
+                if (!word.isEmpty()) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        ```
+
   - id: longest-word
     title: "Das längste Wort"
     level: 2
@@ -780,6 +1186,75 @@ tasks:
           return best;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String longestWord(String text)`, die das längste Wort im Text zurückgibt: `longestWord('Ich lerne Programmieren')` ergibt `'Programmieren'`. Sind mehrere gleich lang, gewinnt das erste. Ein leerer Text hat kein Wort: Dann kommt `''` zurück.
+      starter: |
+        String longestWord(String text) {
+          return '?';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "longestWord('Ich lerne Programmieren')", expect: "'Programmieren'" }
+          - { call: "longestWord('ab cd')", expect: "'ab'", say: "Bei gleich langen Wörtern gewinnt das erste." }
+          - { call: "longestWord('eins')", expect: "'eins'" }
+          - { call: "longestWord('')", expect: "''" }
+          - { call: "longestWord('Der Workspace prüft Katas')", expect: "'Workspace'" }
+      feedback:
+        - when: { same_as: "String longestWord(String text) {\n  var best = '';\n  for (final word in text.split(' ')) {\n    if (word.length >= best.length) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
+          say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
+      hint:
+        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "`word.length` ist die Länge eines Wortes."
+      solution: |
+        ```dart
+        String longestWord(String text) {
+          var best = '';
+          for (final word in text.split(' ')) {
+            if (word.length > best.length) {
+              best = word;
+            }
+          }
+          return best;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String longestWord(String text)`, die das längste Wort im Text zurückgibt: `longestWord("Ich lerne Programmieren")` ergibt `"Programmieren"`. Sind mehrere gleich lang, gewinnt das erste. Ein leerer Text hat kein Wort: Dann kommt `""` zurück.
+      starter: |
+        String longestWord(String text) {
+            return "?";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "longestWord(\"Ich lerne Programmieren\")", expect: "\"Programmieren\"" }
+          - { call: "longestWord(\"ab cd\")", expect: "\"ab\"", say: "Bei gleich langen Wörtern gewinnt das erste." }
+          - { call: "longestWord(\"eins\")", expect: "\"eins\"" }
+          - { call: "longestWord(\"\")", expect: "\"\"" }
+          - { call: "longestWord(\"Der Workspace prüft Katas\")", expect: "\"Workspace\"" }
+      feedback:
+        - when: { same_as: "String longestWord(String text) {\n    String best = \"\";\n    for (String word : text.split(\" \")) {\n        if (word.length() >= best.length()) {\n            best = word;\n        }\n    }\n    return best;\n}\n" }
+          say: "Bei `\"ab cd\"` gewinnt `\"cd\"`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
+      hint:
+        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "`word.length()` ist die Länge eines Wortes."
+      solution: |
+        ```java
+        String longestWord(String text) {
+            String best = "";
+            for (String word : text.split(" ")) {
+                if (word.length() > best.length()) {
+                    best = word;
+                }
+            }
+            return best;
+        }
+        ```
+
   - id: slug
     title: "Ein Text für die Adresse"
     level: 2
@@ -907,6 +1382,85 @@ tasks:
           return clean.split(' ').filter((word) => word !== '').join('-');
         }
         ```
+    dart:
+      prompt: |
+        Eine Adresse im Netz hat keine Leerzeichen und keine Satzzeichen: Aus dem Titel »Hello World!« wird `hello-world`. Schreib eine Funktion `String slug(String text)`, die alles klein macht, nur Buchstaben von `a` bis `z` und Ziffern behält und die Wörter mit `-` verbindet: `slug('Hello World!')` ergibt `'hello-world'`. Umlaute kommen nicht vor.
+      starter: |
+        String slug(String text) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "slug('Hello World!')", expect: "'hello-world'", say: "Satzzeichen wie `!` fallen weg." }
+          - { call: "slug('Katas: Strings')", expect: "'katas-strings'" }
+          - { call: "slug('  Viel   Platz ')", expect: "'viel-platz'", say: "Mehrere Leerzeichen werden ein `-`, und am Anfang und am Ende steht keins." }
+          - { call: "slug('Hackschule 2026')", expect: "'hackschule-2026'", say: "Ziffern bleiben." }
+          - { call: "slug('ein-Wort')", expect: "'ein-wort'", say: "Ein `-` im Titel trennt Wörter wie ein Leerzeichen." }
+      feedback:
+        - when: { same_as: "String slug(String text) {\n  return text.toLowerCase().split(' ').where((word) => word.isNotEmpty).join('-');\n}\n" }
+          say: "Satzzeichen wie `!` und `:` gehören nicht in die Adresse. Mach aus jedem Zeichen, das kein Buchstabe und keine Ziffer ist, ein Leerzeichen, bevor du die Wörter verbindest."
+      hint:
+        - "In zwei Schritten: Mach zuerst aus jedem Zeichen, das kein kleiner Buchstabe und keine Ziffer ist, ein Leerzeichen. `'abcdefghijklmnopqrstuvwxyz0123456789'.contains(char)` fragt, ob ein Zeichen bleiben darf."
+        - "`clean.split(' ')` zerlegt an den Leerzeichen, `where((word) => word.isNotEmpty)` lässt die leeren Stücke weg, `join('-')` verbindet mit `-`."
+      solution: |
+        ```dart
+        String slug(String text) {
+          var clean = '';
+          for (final char in text.toLowerCase().split('')) {
+            if ('abcdefghijklmnopqrstuvwxyz0123456789'.contains(char)) {
+              clean += char;
+            } else {
+              clean += ' ';
+            }
+          }
+          return clean.split(' ').where((word) => word.isNotEmpty).join('-');
+        }
+        ```
+    java:
+      prompt: |
+        Eine Adresse im Netz hat keine Leerzeichen und keine Satzzeichen: Aus dem Titel »Hello World!« wird `hello-world`. Schreib eine Methode `String slug(String text)`, die alles klein macht, nur Buchstaben von `a` bis `z` und Ziffern behält und die Wörter mit `-` verbindet: `slug("Hello World!")` ergibt `"hello-world"`. Umlaute kommen nicht vor.
+      starter: |
+        String slug(String text) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "slug(\"Hello World!\")", expect: "\"hello-world\"", say: "Satzzeichen wie `!` fallen weg." }
+          - { call: "slug(\"Katas: Strings\")", expect: "\"katas-strings\"" }
+          - { call: "slug(\"  Viel   Platz \")", expect: "\"viel-platz\"", say: "Mehrere Leerzeichen werden ein `-`, und am Anfang und am Ende steht keins." }
+          - { call: "slug(\"Hackschule 2026\")", expect: "\"hackschule-2026\"", say: "Ziffern bleiben." }
+          - { call: "slug(\"ein-Wort\")", expect: "\"ein-wort\"", say: "Ein `-` im Titel trennt Wörter wie ein Leerzeichen." }
+      feedback:
+        - when: { same_as: "String slug(String text) {\n    List<String> words = new ArrayList<>();\n    for (String word : text.toLowerCase().split(\" \")) {\n        if (!word.isEmpty()) {\n            words.add(word);\n        }\n    }\n    return String.join(\"-\", words);\n}\n" }
+          say: "Satzzeichen wie `!` und `:` gehören nicht in die Adresse. Mach aus jedem Zeichen, das kein Buchstabe und keine Ziffer ist, ein Leerzeichen, bevor du die Wörter verbindest."
+      hint:
+        - "In zwei Schritten: Mach zuerst aus jedem Zeichen, das kein kleiner Buchstabe und keine Ziffer ist, ein Leerzeichen. `(c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')` fragt, ob ein Zeichen bleiben darf."
+        - "Dann zerlegt `clean.split(\" \")` an den Leerzeichen; die Stücke, die nicht leer sind, sammelst du in einer Liste, und `String.join(\"-\", words)` verbindet sie mit `-`."
+      solution: |
+        ```java
+        String slug(String text) {
+            String clean = "";
+            for (char c : text.toLowerCase().toCharArray()) {
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                    clean += c;
+                } else {
+                    clean += ' ';
+                }
+            }
+            List<String> words = new ArrayList<>();
+            for (String word : clean.split(" ")) {
+                if (!word.isEmpty()) {
+                    words.add(word);
+                }
+            }
+            return String.join("-", words);
+        }
+        ```
+
   - id: caesar
     title: "Die Caesar-Verschlüsselung"
     level: 3
@@ -1055,6 +1609,95 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Caesar soll seine Briefe so verschlüsselt haben: Jeder Buchstabe rückt im Alphabet um dieselbe Zahl weiter, nach `z` geht es bei `a` weiter. Schreib eine Funktion `String caesar(String text, int shift)`: Klein- und Großbuchstaben rücken um `shift` weiter, alles andere bleibt. `caesar('Hallo', 3)` ergibt `'Kdoor'`, `caesar('xyz', 3)` ergibt `'abc'`; mit einem negativen `shift` geht es zurück.
+      starter: |
+        String caesar(String text, int shift) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "caesar('Programmieren macht Spass', n)"
+          args: { n: "0..25" }
+          reference: "String.fromCharCodes('Programmieren macht Spass'.codeUnits.map((c) => c >= 97 && c <= 122 ? (c - 97 + n) % 26 + 97 : c >= 65 && c <= 90 ? (c - 65 + n) % 26 + 65 : c))"
+        cases:
+          - { call: "caesar('Hallo', 3)", expect: "'Kdoor'" }
+          - { call: "caesar('xyz', 3)", expect: "'abc'", say: "Nach `z` geht es wieder bei `a` weiter." }
+          - { call: "caesar('Hallo, Welt!', 13)", expect: "'Unyyb, Jryg!'" }
+          - { call: "caesar('abc', 26)", expect: "'abc'" }
+          - { call: "caesar('Kdoor', -3)", expect: "'Hallo'" }
+          - { call: "caesar('abc', -1)", expect: "'zab'", say: "Auch rückwärts geht es über das Ende: vor `a` kommt `z`." }
+      feedback:
+        - when: { same_as: "String caesar(String text, int shift) {\n  var result = '';\n  for (final code in text.codeUnits) {\n    if ((code >= 97 && code <= 122) || (code >= 65 && code <= 90)) {\n      result += String.fromCharCode(code + shift);\n    } else {\n      result += String.fromCharCode(code);\n    }\n  }\n  return result;\n}\n" }
+          say: "Nach `z` geht es wieder bei `a` weiter, sonst kommen Zeichen wie `{` heraus. Zähl die Buchstaben von 0 bis 25 und nimm den Rest mit `% 26`."
+      hint:
+        - "Zähl die Buchstaben von 0 bis 25: `code - 97` ist 0 für `'a'`. Dann rückst du weiter, und `% 26` bringt dich nach 25 wieder auf 0."
+        - "In Dart ist der Rest nie negativ: `-1 % 26` ist `25`. Damit geht es auch rückwärts von selbst über das Ende."
+      solution: |
+        ```dart
+        String caesar(String text, int shift) {
+          var result = '';
+          for (final code in text.codeUnits) {
+            if (code >= 97 && code <= 122) {
+              result += String.fromCharCode((code - 97 + shift) % 26 + 97);
+            } else if (code >= 65 && code <= 90) {
+              result += String.fromCharCode((code - 65 + shift) % 26 + 65);
+            } else {
+              result += String.fromCharCode(code);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Caesar soll seine Briefe so verschlüsselt haben: Jeder Buchstabe rückt im Alphabet um dieselbe Zahl weiter, nach `z` geht es bei `a` weiter. Schreib eine Methode `String caesar(String text, int shift)`: Klein- und Großbuchstaben rücken um `shift` weiter, alles andere bleibt. `caesar("Hallo", 3)` ergibt `"Kdoor"`, `caesar("xyz", 3)` ergibt `"abc"`; mit einem negativen `shift` geht es zurück.
+      starter: |
+        String caesar(String text, int shift) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "caesar(\"Programmieren macht Spass\", n)"
+          args: { n: "0..25" }
+          reference: "\"Programmieren macht Spass\".chars().map(c -> c >= 'a' && c <= 'z' ? (c - 'a' + n) % 26 + 'a' : c >= 'A' && c <= 'Z' ? (c - 'A' + n) % 26 + 'A' : c).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString()"
+        cases:
+          - { call: "caesar(\"Hallo\", 3)", expect: "\"Kdoor\"" }
+          - { call: "caesar(\"xyz\", 3)", expect: "\"abc\"", say: "Nach `z` geht es wieder bei `a` weiter." }
+          - { call: "caesar(\"Hallo, Welt!\", 13)", expect: "\"Unyyb, Jryg!\"" }
+          - { call: "caesar(\"abc\", 26)", expect: "\"abc\"" }
+          - { call: "caesar(\"Kdoor\", -3)", expect: "\"Hallo\"" }
+          - { call: "caesar(\"abc\", -1)", expect: "\"zab\"", say: "Auch rückwärts geht es über das Ende: vor `a` kommt `z`." }
+      feedback:
+        - when: { same_as: "String caesar(String text, int shift) {\n    String result = \"\";\n    for (char c : text.toCharArray()) {\n        if (c >= 'a' && c <= 'z') {\n            result += (char) ((c - 'a' + shift) % 26 + 'a');\n        } else if (c >= 'A' && c <= 'Z') {\n            result += (char) ((c - 'A' + shift) % 26 + 'A');\n        } else {\n            result += c;\n        }\n    }\n    return result;\n}\n" }
+          say: "Vorwärts stimmt es, rückwärts nicht: In Java ist `-1 % 26` gleich `-1`, nicht `25`. Zähl 26 dazu, bevor du den Rest nimmst."
+      hint:
+        - "Zähl die Buchstaben von 0 bis 25: `c - 'a'` ist 0 für `'a'`. Dann rückst du weiter, und `% 26` bringt dich nach 25 wieder auf 0. `(char) (… + 'a')` macht daraus wieder einen Buchstaben."
+        - "In Java bleibt der Rest einer negativen Zahl negativ: `-1 % 26` ist `-1`. `(x % 26 + 26) % 26` ist immer zwischen 0 und 25."
+      solution: |
+        ```java
+        String caesar(String text, int shift) {
+            String result = "";
+            for (char c : text.toCharArray()) {
+                if (c >= 'a' && c <= 'z') {
+                    result += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');
+                } else if (c >= 'A' && c <= 'Z') {
+                    result += (char) (((c - 'A' + shift) % 26 + 26) % 26 + 'A');
+                } else {
+                    result += c;
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: anagram
     title: "Anagramme"
     level: 3
@@ -1166,6 +1809,75 @@ tasks:
           return letters(a) === letters(b);
         }
         ```
+    dart:
+      prompt: |
+        Zwei Wörter sind Anagramme, wenn sie aus genau denselben Buchstaben bestehen, jeder gleich oft: »Lampe« und »Palme«. Schreib eine Funktion `bool anagram(String a, String b)`; groß und klein und Leerzeichen zählen nicht. `anagram('Lampe', 'Palme')` ergibt `true`.
+      starter: |
+        bool anagram(String a, String b) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "anagram('Lampe', 'Palme')", expect: "true" }
+          - { call: "anagram('Ampel', 'Lampe')", expect: "true" }
+          - { call: "anagram('abc', 'abd')", expect: "false" }
+          - { call: "anagram('aab', 'abb')", expect: "false", say: "Jeder Buchstabe muss gleich oft vorkommen: `'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft." }
+          - { call: "anagram('Dormitory', 'dirty room')", expect: "true", say: "Groß und klein und Leerzeichen zählen nicht." }
+          - { call: "anagram('Hallo', 'Hall')", expect: "false" }
+      feedback:
+        - when: { same_as: "String letters(String text) {\n  return (text.toLowerCase().replaceAll(' ', '').split('').toSet().toList()..sort()).join();\n}\n\nbool anagram(String a, String b) {\n  return letters(a) == letters(b);\n}\n" }
+          say: "`'aab'` und `'abb'` haben dieselben Buchstaben, aber nicht gleich oft. Ein `Set` vergisst, wie oft ein Buchstabe vorkommt."
+      hint:
+        - "Wenn man die Buchstaben beider Wörter sortiert, was kommt bei Anagrammen heraus?"
+        - "`text.split('')..sort()` sortiert die Buchstaben einer Liste und gibt die Liste zurück, `join()` macht wieder einen Text daraus; `toLowerCase()` und `replaceAll(' ', '')` machen vorher klein und nehmen die Leerzeichen weg."
+      solution: |
+        ```dart
+        String letters(String text) {
+          return (text.toLowerCase().replaceAll(' ', '').split('')..sort()).join();
+        }
+
+        bool anagram(String a, String b) {
+          return letters(a) == letters(b);
+        }
+        ```
+    java:
+      prompt: |
+        Zwei Wörter sind Anagramme, wenn sie aus genau denselben Buchstaben bestehen, jeder gleich oft: »Lampe« und »Palme«. Schreib eine Methode `boolean anagram(String a, String b)`; groß und klein und Leerzeichen zählen nicht. `anagram("Lampe", "Palme")` ergibt `true`.
+      starter: |
+        boolean anagram(String a, String b) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "anagram(\"Lampe\", \"Palme\")", expect: "true" }
+          - { call: "anagram(\"Ampel\", \"Lampe\")", expect: "true" }
+          - { call: "anagram(\"abc\", \"abd\")", expect: "false" }
+          - { call: "anagram(\"aab\", \"abb\")", expect: "false", say: "Jeder Buchstabe muss gleich oft vorkommen: `\"aab\"` und `\"abb\"` haben dieselben Buchstaben, aber nicht gleich oft." }
+          - { call: "anagram(\"Dormitory\", \"dirty room\")", expect: "true", say: "Groß und klein und Leerzeichen zählen nicht." }
+          - { call: "anagram(\"Hallo\", \"Hall\")", expect: "false" }
+      feedback:
+        - when: { same_as: "String letters(String text) {\n    Set<Character> set = new TreeSet<>();\n    for (char c : text.toLowerCase().replace(\" \", \"\").toCharArray()) {\n        set.add(c);\n    }\n    return set.toString();\n}\n\nboolean anagram(String a, String b) {\n    return letters(a).equals(letters(b));\n}\n" }
+          say: "`\"aab\"` und `\"abb\"` haben dieselben Buchstaben, aber nicht gleich oft. Ein `Set` vergisst, wie oft ein Buchstabe vorkommt."
+      hint:
+        - "Wenn man die Buchstaben beider Wörter sortiert, was kommt bei Anagrammen heraus?"
+        - "`char[] chars = text.toCharArray();`, `Arrays.sort(chars);` sortiert die Buchstaben, `new String(chars)` macht wieder einen Text daraus; `toLowerCase()` und `replace(\" \", \"\")` machen vorher klein und nehmen die Leerzeichen weg."
+      solution: |
+        ```java
+        String letters(String text) {
+            char[] chars = text.toLowerCase().replace(" ", "").toCharArray();
+            Arrays.sort(chars);
+            return new String(chars);
+        }
+
+        boolean anagram(String a, String b) {
+            return letters(a).equals(letters(b));
+        }
+        ```
+
   - id: format-name
     title: "Namen schreiben"
     level: 3
@@ -1283,6 +1995,75 @@ tasks:
           return words.join(' ');
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String formatName(String text)`, die jedes Wort mit einem großen Buchstaben anfangen lässt und den Rest klein schreibt; zwischen den Wörtern steht danach genau ein Leerzeichen. `formatName('max mustermann')` ergibt `'Max Mustermann'`, `formatName('ADA LOVELACE')` ergibt `'Ada Lovelace'`.
+      starter: |
+        String formatName(String text) {
+          return '?';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "formatName('max mustermann')", expect: "'Max Mustermann'" }
+          - { call: "formatName('ADA LOVELACE')", expect: "'Ada Lovelace'", say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`." }
+          - { call: "formatName('grace')", expect: "'Grace'" }
+          - { call: "formatName('  alan   turing ')", expect: "'Alan Turing'", say: "Zwischen den Wörtern steht danach genau ein Leerzeichen, am Anfang und am Ende keins." }
+          - { call: "formatName('')", expect: "''" }
+      feedback:
+        - when: { same_as: "String formatName(String text) {\n  final words = <String>[];\n  for (final word in text.split(' ')) {\n    if (word.isNotEmpty) {\n      words.add(word[0].toUpperCase() + word.substring(1));\n    }\n  }\n  return words.join(' ');\n}\n" }
+          say: "Der Rest jedes Wortes wird klein: aus `'ADA'` wird `'Ada'`."
+      hint:
+        - "Ein Wort besteht aus seinem ersten Buchstaben, `word[0]`, und dem Rest, `word.substring(1)`. Der eine wird groß (`toUpperCase()`), der andere klein (`toLowerCase()`)."
+        - "Sammle die Wörter in einer Liste und verbinde sie mit `join(' ')`; leere Stücke aus `split(' ')` lässt du weg."
+      solution: |
+        ```dart
+        String formatName(String text) {
+          final words = <String>[];
+          for (final word in text.split(' ')) {
+            if (word.isNotEmpty) {
+              words.add(word[0].toUpperCase() + word.substring(1).toLowerCase());
+            }
+          }
+          return words.join(' ');
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String formatName(String text)`, die jedes Wort mit einem großen Buchstaben anfangen lässt und den Rest klein schreibt; zwischen den Wörtern steht danach genau ein Leerzeichen. `formatName("max mustermann")` ergibt `"Max Mustermann"`, `formatName("ADA LOVELACE")` ergibt `"Ada Lovelace"`.
+      starter: |
+        String formatName(String text) {
+            return "?";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "formatName(\"max mustermann\")", expect: "\"Max Mustermann\"" }
+          - { call: "formatName(\"ADA LOVELACE\")", expect: "\"Ada Lovelace\"", say: "Der Rest jedes Wortes wird klein: aus `\"ADA\"` wird `\"Ada\"`." }
+          - { call: "formatName(\"grace\")", expect: "\"Grace\"" }
+          - { call: "formatName(\"  alan   turing \")", expect: "\"Alan Turing\"", say: "Zwischen den Wörtern steht danach genau ein Leerzeichen, am Anfang und am Ende keins." }
+          - { call: "formatName(\"\")", expect: "\"\"" }
+      feedback:
+        - when: { same_as: "String formatName(String text) {\n    List<String> words = new ArrayList<>();\n    for (String word : text.split(\" \")) {\n        if (!word.isEmpty()) {\n            words.add(word.substring(0, 1).toUpperCase() + word.substring(1));\n        }\n    }\n    return String.join(\" \", words);\n}\n" }
+          say: "Der Rest jedes Wortes wird klein: aus `\"ADA\"` wird `\"Ada\"`."
+      hint:
+        - "Ein Wort besteht aus seinem ersten Buchstaben, `word.substring(0, 1)`, und dem Rest, `word.substring(1)`. Der eine wird groß (`toUpperCase()`), der andere klein (`toLowerCase()`)."
+        - "Sammle die Wörter in einer Liste und verbinde sie mit `String.join(\" \", words)`; leere Stücke aus `split(\" \")` lässt du weg."
+      solution: |
+        ```java
+        String formatName(String text) {
+            List<String> words = new ArrayList<>();
+            for (String word : text.split(" ")) {
+                if (!word.isEmpty()) {
+                    words.add(word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase());
+                }
+            }
+            return String.join(" ", words);
+        }
+        ```
+
   - id: vigenere
     title: "Die Vigenère-Verschlüsselung"
     extra: true
@@ -1440,6 +2221,105 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Bei Caesar rückt jeder Buchstabe gleich weit. Vigenère nimmt ein Schlüsselwort aus Kleinbuchstaben: Der erste Buchstabe des Textes rückt so weit wie der erste des Schlüssels (`a` um 0, `b` um 1 …), der zweite wie der zweite, und ist der Schlüssel zu Ende, fängt er von vorn an. Was kein Buchstabe ist, bleibt und verbraucht keinen Buchstaben des Schlüssels. Schreib `String vigenere(String text, String key)`: `vigenere('hallo welt', 'abc')` ergibt `'hbnlp yemv'`. Deine Caesar-Funktion darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+      starter: |
+        String vigenere(String text, String key) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "vigenere('hallo welt', 'abc')", expect: "'hbnlp yemv'", say: "Das Leerzeichen bleibt und verbraucht keinen Buchstaben des Schlüssels." }
+          - { call: "vigenere('Angriff im Morgengrauen', 'key')", expect: "'Krebmdp mk Wspqilqvyeil'", say: "Großbuchstaben rücken auch und bleiben groß." }
+          - { call: "vigenere('abc', 'a')", expect: "'abc'" }
+          - { call: "vigenere('zzz', 'b')", expect: "'aaa'" }
+          - { call: "vigenere('Hallo!', 'zz')", expect: "'Gzkkn!'" }
+      hint:
+        - "Zähl in einer eigenen Variablen mit, wie viele Buchstaben des Textes schon verschlüsselt sind: `key[i % key.length]` ist der Buchstabe des Schlüssels, der dran ist."
+        - "Wie weit er rückt: `key.codeUnitAt(i % key.length) - 97`. Damit rufst du deine Caesar-Funktion für den einen Buchstaben auf."
+      solution: |
+        ```dart
+        String caesar(String text, int shift) {
+          var result = '';
+          for (final code in text.codeUnits) {
+            if (code >= 97 && code <= 122) {
+              result += String.fromCharCode((code - 97 + shift) % 26 + 97);
+            } else if (code >= 65 && code <= 90) {
+              result += String.fromCharCode((code - 65 + shift) % 26 + 65);
+            } else {
+              result += String.fromCharCode(code);
+            }
+          }
+          return result;
+        }
+
+        String vigenere(String text, String key) {
+          var result = '';
+          var i = 0;
+          for (final char in text.split('')) {
+            if (char.toLowerCase() != char.toUpperCase()) {
+              result += caesar(char, key.codeUnitAt(i % key.length) - 97);
+              i++;
+            } else {
+              result += char;
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Bei Caesar rückt jeder Buchstabe gleich weit. Vigenère nimmt ein Schlüsselwort aus Kleinbuchstaben: Der erste Buchstabe des Textes rückt so weit wie der erste des Schlüssels (`a` um 0, `b` um 1 …), der zweite wie der zweite, und ist der Schlüssel zu Ende, fängt er von vorn an. Was kein Buchstabe ist, bleibt und verbraucht keinen Buchstaben des Schlüssels. Schreib `String vigenere(String text, String key)`: `vigenere("hallo welt", "abc")` ergibt `"hbnlp yemv"`. Deine Caesar-Methode darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+      starter: |
+        String vigenere(String text, String key) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "vigenere(\"hallo welt\", \"abc\")", expect: "\"hbnlp yemv\"", say: "Das Leerzeichen bleibt und verbraucht keinen Buchstaben des Schlüssels." }
+          - { call: "vigenere(\"Angriff im Morgengrauen\", \"key\")", expect: "\"Krebmdp mk Wspqilqvyeil\"", say: "Großbuchstaben rücken auch und bleiben groß." }
+          - { call: "vigenere(\"abc\", \"a\")", expect: "\"abc\"" }
+          - { call: "vigenere(\"zzz\", \"b\")", expect: "\"aaa\"" }
+          - { call: "vigenere(\"Hallo!\", \"zz\")", expect: "\"Gzkkn!\"" }
+      hint:
+        - "Zähl in einer eigenen Variablen mit, wie viele Buchstaben des Textes schon verschlüsselt sind: `key.charAt(i % key.length())` ist der Buchstabe des Schlüssels, der dran ist."
+        - "Wie weit er rückt: `key.charAt(i % key.length()) - 'a'`. Damit rufst du deine Caesar-Methode für den einen Buchstaben auf, `caesar(String.valueOf(c), …)`."
+      solution: |
+        ```java
+        String caesar(String text, int shift) {
+            String result = "";
+            for (char c : text.toCharArray()) {
+                if (c >= 'a' && c <= 'z') {
+                    result += (char) (((c - 'a' + shift) % 26 + 26) % 26 + 'a');
+                } else if (c >= 'A' && c <= 'Z') {
+                    result += (char) (((c - 'A' + shift) % 26 + 26) % 26 + 'A');
+                } else {
+                    result += c;
+                }
+            }
+            return result;
+        }
+
+        String vigenere(String text, String key) {
+            String result = "";
+            int i = 0;
+            for (char c : text.toCharArray()) {
+                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                    result += caesar(String.valueOf(c), key.charAt(i % key.length()) - 'a');
+                    i++;
+                } else {
+                    result += c;
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: strong-password
     title: "Ein sicheres Passwort?"
     extra: true
@@ -1567,5 +2447,71 @@ tasks:
             if (char >= '0' && char <= '9') digit = true;
           }
           return password.length >= 8 && lower && upper && digit;
+        }
+        ```
+    dart:
+      prompt: |
+        Viele Seiten nehmen ein Passwort nur, wenn es mindestens acht Zeichen hat und darin mindestens ein Kleinbuchstabe, ein Großbuchstabe und eine Ziffer vorkommen. Schreib `bool strongPassword(String password)`: `strongPassword('Passwort1')` ergibt `true`. Ob so eine Regel ein Passwort wirklich sicher macht, ist eine andere Frage.
+      starter: |
+        bool strongPassword(String password) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "strongPassword('Passwort1')", expect: "true" }
+          - { call: "strongPassword('passwort1')", expect: "false", say: "Ein Großbuchstabe fehlt." }
+          - { call: "strongPassword('PASSWORT1')", expect: "false", say: "Ein Kleinbuchstabe fehlt." }
+          - { call: "strongPassword('Passwort')", expect: "false", say: "Eine Ziffer fehlt." }
+          - { call: "strongPassword('Pw1')", expect: "false" }
+          - { call: "strongPassword('Ab345678')", expect: "true", say: "Acht Zeichen reichen: Es heißt mindestens acht." }
+      feedback:
+        - when: { same_as: "bool strongPassword(String password) {\n  var lower = false, upper = false, digit = false;\n  for (final code in password.codeUnits) {\n    if (code >= 97 && code <= 122) lower = true;\n    if (code >= 65 && code <= 90) upper = true;\n    if (code >= 48 && code <= 57) digit = true;\n  }\n  return password.length > 8 && lower && upper && digit;\n}\n" }
+          say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch. Die Nummern: `a` bis `z` sind 97 bis 122, `A` bis `Z` 65 bis 90, `0` bis `9` 48 bis 57."
+      solution: |
+        ```dart
+        bool strongPassword(String password) {
+          var lower = false, upper = false, digit = false;
+          for (final code in password.codeUnits) {
+            if (code >= 97 && code <= 122) lower = true;
+            if (code >= 65 && code <= 90) upper = true;
+            if (code >= 48 && code <= 57) digit = true;
+          }
+          return password.length >= 8 && lower && upper && digit;
+        }
+        ```
+    java:
+      prompt: |
+        Viele Seiten nehmen ein Passwort nur, wenn es mindestens acht Zeichen hat und darin mindestens ein Kleinbuchstabe, ein Großbuchstabe und eine Ziffer vorkommen. Schreib `boolean strongPassword(String password)`: `strongPassword("Passwort1")` ergibt `true`. Ob so eine Regel ein Passwort wirklich sicher macht, ist eine andere Frage.
+      starter: |
+        boolean strongPassword(String password) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "strongPassword(\"Passwort1\")", expect: "true" }
+          - { call: "strongPassword(\"passwort1\")", expect: "false", say: "Ein Großbuchstabe fehlt." }
+          - { call: "strongPassword(\"PASSWORT1\")", expect: "false", say: "Ein Kleinbuchstabe fehlt." }
+          - { call: "strongPassword(\"Passwort\")", expect: "false", say: "Eine Ziffer fehlt." }
+          - { call: "strongPassword(\"Pw1\")", expect: "false" }
+          - { call: "strongPassword(\"Ab345678\")", expect: "true", say: "Acht Zeichen reichen: Es heißt mindestens acht." }
+      feedback:
+        - when: { same_as: "boolean strongPassword(String password) {\n    boolean lower = false, upper = false, digit = false;\n    for (char c : password.toCharArray()) {\n        if (c >= 'a' && c <= 'z') lower = true;\n        if (c >= 'A' && c <= 'Z') upper = true;\n        if (c >= '0' && c <= '9') digit = true;\n    }\n    return password.length() > 8 && lower && upper && digit;\n}\n" }
+          say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      solution: |
+        ```java
+        boolean strongPassword(String password) {
+            boolean lower = false, upper = false, digit = false;
+            for (char c : password.toCharArray()) {
+                if (c >= 'a' && c <= 'z') lower = true;
+                if (c >= 'A' && c <= 'Z') upper = true;
+                if (c >= '0' && c <= '9') digit = true;
+            }
+            return password.length() >= 8 && lower && upper && digit;
         }
         ```
