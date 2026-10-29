@@ -228,12 +228,13 @@
 - key: theory
   compact: true
   label: Automaten und Sprachen
-  short: Vom endlichen Automaten über reguläre Ausdrücke bis zu Grammatiken und Turingmaschinen.
+  short: Vom endlichen Automaten über reguläre Ausdrücke bis zu Grammatiken, Turingmaschinen und Prolog.
   icon: /images/robot.png
   description: |
     Was Maschinen erkennen können und was nicht: endliche Automaten, reguläre
-    Ausdrücke, Kellerautomaten und die Turingmaschine, dann Grammatiken und
-    ein Rechner, der Ausdrücke versteht.
+    Ausdrücke, Kellerautomaten und die Turingmaschine, dann Grammatiken,
+    ein Rechner, der Ausdrücke versteht, und Prolog, in dem ein Programm aus
+    Fakten und Regeln besteht.
   entries:
     - automata
     - regex
@@ -241,6 +242,7 @@
     - turingmaschine
     - grammatiken
     - calculator
+    - prolog
 
 # Software entwerfen (docs/plan-lehrplan-luecken.md, »Software«): erst
 # planen, dann programmieren; Klassen und ihre Diagramme; ein Projekt der

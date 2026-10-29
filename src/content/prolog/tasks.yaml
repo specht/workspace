@@ -1,0 +1,302 @@
+# Aufgaben zu »Logisch programmieren mit Prolog«. Format: docs/aufgaben.md (prolog).
+format: 1
+activity: prolog
+tasks:
+  - id: eltern-von
+    title: Wer sind die Eltern?
+    prediction: true
+    prompt: |
+      Wie viele Antworten gibt Prolog auf `?- parent(X, johann_sebastian).`, wenn du nach jeder mit `;` nach der nächsten fragst?
+    check:
+      type: choice
+      options: ["eine", "zwei", "drei", "keine, weil X kein Name ist"]
+      correct: 1
+
+  - id: kinder
+    title: Die Kinder von Anna Magdalena
+    prompt: |
+      In `familie.pl` fehlen die Kinder von Johann Sebastian und seiner zweiten Frau Anna Magdalena: `gottfried_heinrich`, `elisabeth_juliane_friederica`, `johann_christoph_friedrich` und `johann_christian`. Trag sie als Fakten ein, für beide Eltern.
+    check:
+      type: prolog
+      file: prolog/familie.pl
+      cases:
+        - query: "parent(anna_magdalena, X)"
+          answers: ["X = gottfried_heinrich", "X = elisabeth_juliane_friederica", "X = johann_christoph_friedrich", "X = johann_christian"]
+        - query: "parent(johann_sebastian, X)"
+          answers: ["X = catharina_dorothea", "X = wilhelm_friedemann", "X = carl_philipp_emanuel", "X = johann_gottfried_bernhard", "X = gottfried_heinrich", "X = elisabeth_juliane_friederica", "X = johann_christoph_friedrich", "X = johann_christian"]
+          say: "Jedes Kind hat zwei Eltern: Für jedes kommt ein Fakt mit `johann_sebastian` und einer mit `anna_magdalena` dazu."
+    hint:
+      - "Ein Fakt sieht aus wie die anderen in der Datei: `parent(anna_magdalena, johann_christian).`, mit einem Punkt am Ende."
+      - "Vier Kinder, zwei Eltern: acht neue Zeilen. Am besten stehen sie bei den anderen `parent`-Fakten."
+    solution: |
+      ```prolog
+      parent(johann_sebastian, gottfried_heinrich).
+      parent(johann_sebastian, elisabeth_juliane_friederica).
+      parent(johann_sebastian, johann_christoph_friedrich).
+      parent(johann_sebastian, johann_christian).
+      parent(anna_magdalena, gottfried_heinrich).
+      parent(anna_magdalena, elisabeth_juliane_friederica).
+      parent(anna_magdalena, johann_christoph_friedrich).
+      parent(anna_magdalena, johann_christian).
+      ```
+
+  - id: regeln
+    title: Vater, Mutter, Großeltern
+    prompt: |
+      Schreib drei Regeln in `familie.pl`: `father(F, C)`, wenn `F` ein Elternteil von `C` und männlich ist, `mother(M, C)` ebenso mit weiblich, und `grandparent(G, C)`, wenn `G` ein Elternteil eines Elternteils von `C` ist.
+    check:
+      type: prolog
+      file: prolog/familie.pl
+      cases:
+        - query: "father(X, johann_sebastian)"
+          answers: ["X = johann_ambrosius"]
+        - query: "mother(X, carl_philipp_emanuel)"
+          answers: ["X = maria_barbara"]
+        - query: "mother(X, johann_christian)"
+          answers: ["X = anna_magdalena"]
+          say: "Die Mutter von Johann Christian ist Anna Magdalena: Stehen ihre Kinder schon in der Datei?"
+        - query: "grandparent(X, wilhelm_friedemann)"
+          answers: ["X = johann_ambrosius", "X = maria_elisabeth", "X = johann_michael"]
+        - query: "grandparent(johann_sebastian, X)"
+          answers: ["X = johann_sebastian_der_juengere", "X = wilhelm_friedrich_ernst"]
+    hint:
+      - "Eine Regel hat einen Kopf und, nach `:-`, die Bedingungen, durch Komma getrennt: `father(F, C) :- parent(F, C), male(F).`"
+      - "Für die Großeltern gibt es dazwischen eine Person, die in beiden Bedingungen vorkommt: `grandparent(G, C) :- parent(G, P), parent(P, C).`"
+    solution: |
+      ```prolog
+      father(F, C) :- parent(F, C), male(F).
+      mother(M, C) :- parent(M, C), female(M).
+
+      grandparent(G, C) :- parent(G, P), parent(P, C).
+      ```
+
+  - id: geschwister-vorhersage
+    title: Geschwister, erster Versuch
+    prediction: true
+    prompt: |
+      Jemand schreibt `sibling(X, Y) :- parent(P, X), parent(P, Y).`: Geschwister haben einen gemeinsamen Elternteil. Was antwortet Prolog auf `?- sibling(johann_sebastian, Y).`, wenn man mit `;` nach allen Antworten fragt?
+    check:
+      type: choice
+      options:
+        - "johann_christoph und johann_jacob"
+        - "johann_christoph, johann_jacob und johann_sebastian selbst, jeden zweimal"
+        - "johann_christoph, johann_jacob und johann_sebastian selbst, jeden einmal"
+        - "false"
+      correct: 1
+
+  - id: geschwister
+    title: Geschwister
+    prompt: |
+      Schreib `sibling(X, Y)`, das sagt, ob `X` und `Y` Geschwister sind: Sie haben einen gemeinsamen Elternteil und sind nicht dieselbe Person. Halbgeschwister zählen mit.
+    check:
+      type: prolog
+      file: prolog/familie.pl
+      cases:
+        - query: "sibling(johann_sebastian, Y)"
+          answers: ["Y = johann_christoph", "Y = johann_jacob"]
+          say: "Niemand ist sein eigenes Geschwister: `X \\= Y` sagt, dass X und Y verschieden sein müssen."
+        - query: "sibling(wilhelm_friedemann, Y)"
+          answers: ["Y = catharina_dorothea", "Y = carl_philipp_emanuel", "Y = johann_gottfried_bernhard", "Y = gottfried_heinrich", "Y = elisabeth_juliane_friederica", "Y = johann_christoph_friedrich", "Y = johann_christian"]
+        - query: "sibling(johann_sebastian, johann_sebastian)"
+          answers: [false]
+    hint:
+      - "Die Regel aus der Vorhersage ist fast richtig: `parent(P, X), parent(P, Y)` findet alle, die einen Elternteil mit X teilen, X selbst eingeschlossen."
+      - "Eine dritte Bedingung schließt X selbst aus: `X \\= Y`, verschieden."
+    solution: |
+      ```prolog
+      sibling(X, Y) :- parent(P, X), parent(P, Y), X \= Y.
+      ```
+
+  - id: vorfahren-vorhersage
+    title: Zuerst die Rekursion
+    prediction: true
+    prompt: |
+      ```prolog
+      ancestor(A, D) :- ancestor(A, P), parent(P, D).
+      ancestor(A, D) :- parent(A, D).
+      ```
+
+      Was passiert bei `?- ancestor(christoph, X).`?
+    check:
+      type: choice
+      options:
+        - "Prolog nennt alle Nachkommen von christoph."
+        - "Prolog nennt nur das Kind von christoph."
+        - "Prolog hört nicht auf, bis ihm der Speicher ausgeht."
+        - "false"
+      correct: 2
+
+  - id: vorfahren
+    title: Vorfahren
+    prompt: |
+      Schreib `ancestor(A, D)`: `A` ist ein Vorfahr von `D`, wenn `A` ein Elternteil von `D` ist, oder ein Elternteil eines Vorfahren von `D`, so weit zurück, wie die Familie reicht.
+    check:
+      type: prolog
+      file: prolog/familie.pl
+      slow: "Deine Regel hört nicht auf: Ruft sich `ancestor` selbst auf, bevor `parent` einen Schritt weiterkommt? Erst `parent(A, P)`, dann `ancestor(P, D)`."
+      cases:
+        - query: "ancestor(christoph, wilhelm_friedrich_ernst)"
+          answers: [true]
+        - query: "ancestor(X, johann_sebastian_der_juengere)"
+          answers: ["X = carl_philipp_emanuel", "X = johann_sebastian", "X = maria_barbara", "X = johann_ambrosius", "X = maria_elisabeth", "X = johann_michael", "X = christoph"]
+        - query: "ancestor(johann_christian, X)"
+          answers: [false]
+    hint:
+      - "Zwei Klauseln: eine für den einfachen Fall, `ancestor(A, D) :- parent(A, D).`, und eine für den Weg über eine Generation mehr."
+      - "Die zweite geht erst einen Schritt hinunter und fragt dann weiter: `ancestor(A, D) :- parent(A, P), ancestor(P, D).` So kommt jede Rekursion eine Generation näher an D."
+    solution: |
+      ```prolog
+      ancestor(A, D) :- parent(A, D).
+      ancestor(A, D) :- parent(A, P), ancestor(P, D).
+      ```
+
+  - id: is-in
+    title: Ist es in der Liste?
+    prompt: |
+      Schreib in `listen.pl` das Prädikat `is_in(X, List)`: `X` ist ein Element der Liste. Zwei Klauseln: `X` ist der Kopf der Liste, oder `X` ist im Rest.
+    check:
+      type: prolog
+      file: prolog/listen.pl
+      cases:
+        - query: "is_in(b, [a, b, c])"
+          answers: [true]
+        - query: "is_in(d, [a, b, c])"
+          answers: [false]
+        - query: "is_in(X, [a, b, c])"
+          answers: ["X = a", "X = b", "X = c"]
+          ordered: true
+        - query: "is_in(a, [])"
+          answers: [false]
+    hint:
+      - "Die erste Klausel ist ein Fakt: `is_in(X, [X | _]).` Wo zweimal `X` steht, muss beide Male dasselbe stehen."
+      - "Die zweite sieht im Rest nach: `is_in(X, [_ | Rest]) :- is_in(X, Rest).` Die leere Liste braucht keine Klausel: Dort ist nichts, und Prolog sagt false."
+    solution: |
+      ```prolog
+      is_in(X, [X | _]).
+      is_in(X, [_ | Rest]) :- is_in(X, Rest).
+      ```
+
+  - id: size
+    title: Wie lang ist die Liste?
+    prompt: |
+      Schreib `size(List, N)`: `N` ist die Zahl der Elemente der Liste. Die leere Liste hat 0 Elemente, jede andere eines mehr als ihr Rest. Gerechnet wird mit `is`: `N is M + 1`.
+    check:
+      type: prolog
+      file: prolog/listen.pl
+      cases:
+        - query: "size([], N)"
+          answers: ["N = 0"]
+        - query: "size([a, b, c], N)"
+          answers: ["N = 3"]
+          say: "`N = M + 1` rechnet nicht, es macht einen Term daraus: Rechnen tut `is`."
+        - query: "size([x], 1)"
+          answers: [true]
+    hint:
+      - "Ein Fakt für die leere Liste, `size([], 0).`, und eine Regel für eine Liste mit Kopf und Rest."
+      - "Erst die Länge des Rests, dann eins mehr: `size([_ | Rest], N) :- size(Rest, M), N is M + 1.`"
+    solution: |
+      ```prolog
+      size([], 0).
+      size([_ | Rest], N) :- size(Rest, M), N is M + 1.
+      ```
+
+  - id: joined
+    title: Zwei Listen hintereinander
+    prompt: |
+      Schreib `joined(Xs, Ys, Zs)`: `Zs` ist die Liste `Xs` und dahinter `Ys`. Hängt man an die leere Liste etwas an, kommt das Angehängte heraus; sonst ist der Kopf von `Xs` auch der Kopf des Ergebnisses.
+    check:
+      type: prolog
+      file: prolog/listen.pl
+      cases:
+        - query: "joined([1, 2], [3], Zs)"
+          answers: ["Zs = [1,2,3]"]
+        - query: "joined([], [a], Zs)"
+          answers: ["Zs = [a]"]
+        - query: "joined(Xs, [3], [1, 2, 3])"
+          answers: ["Xs = [1,2]"]
+        - query: "joined(Xs, Ys, [1, 2])"
+          answers: ["Xs = [], Ys = [1,2]", "Xs = [1], Ys = [2]", "Xs = [1,2], Ys = []"]
+          ordered: true
+    hint:
+      - "Der Fakt: `joined([], Ys, Ys).` An eine leere Liste angehängt, bleibt `Ys`, wie es ist."
+      - "Die Regel nimmt den Kopf mit: `joined([X | Xs], Ys, [X | Zs]) :- joined(Xs, Ys, Zs).`"
+    solution: |
+      ```prolog
+      joined([], Ys, Ys).
+      joined([X | Xs], Ys, [X | Zs]) :- joined(Xs, Ys, Zs).
+      ```
+
+  - id: rueckwaerts
+    title: Rückwärts gefragt
+    prediction: true
+    prompt: |
+      Wie viele Antworten gibt `?- joined(Xs, Ys, [a, b, c]).`?
+    check:
+      type: choice
+      options: ["keine, weil Xs und Ys unbekannt sind", "eine", "drei", "vier"]
+      correct: 3
+
+  - id: bezirke
+    title: Berlin in vier Farben
+    prompt: |
+      Schreib in `bezirke.pl` die Regel `berlin(Cw, Fk, Li, Mh, Mi, Nk, Pa, Re, Sp, Sz, Ts, Tk)`, eine Variable für jeden Bezirk, wie in der Datei beschrieben. Jeder Bezirk bekommt eine der vier Farben, und keine zwei Nachbarn aus der Tabelle oben haben dieselbe.
+    check:
+      type: prolog
+      file: prolog/bezirke.pl
+      timeout: 20
+      slow: "Deine Regel braucht zu lange. Färbt sie erst alle zwölf Bezirke und prüft dann? Das sind 16 Millionen Färbungen. Prüf jedes Nachbarpaar, sobald beide eine Farbe haben."
+      cases:
+        - query: "\\+ \\+ (once(berlin(Cw, Fk, Li, Mh, Mi, Nk, Pa, Re, Sp, Sz, Ts, Tk)), colour(Cw), colour(Mh), Cw \\= Mi, Cw \\= Re, Cw \\= Sp, Cw \\= Sz, Cw \\= Ts, Fk \\= Li, Fk \\= Mi, Fk \\= Nk, Fk \\= Pa, Fk \\= Ts, Fk \\= Tk, Li \\= Mh, Li \\= Pa, Li \\= Tk, Mh \\= Tk, Mi \\= Pa, Mi \\= Re, Mi \\= Ts, Nk \\= Ts, Nk \\= Tk, Pa \\= Re, Re \\= Sp, Sp \\= Sz, Sz \\= Ts)"
+          answers: [true]
+          say: "Die erste Färbung, die deine Regel findet, gibt zwei Nachbarn dieselbe Farbe, oder ein Bezirk bekommt keine: Fehlt ein Paar aus der Tabelle?"
+        - query: "aggregate_all(count, berlin(_, _, _, _, _, _, _, _, _, _, _, _), N)"
+          answers: ["N = 3408"]
+          seconds: 8
+          say: "Mit vier Farben gibt es genau 3408 Färbungen. Sind es mehr, fehlt ein Nachbarpaar; sind es weniger, steht eines zu viel da oder eine Farbe fehlt."
+    hint:
+      - "Jeder Bezirk bekommt seine Farbe mit `colour(Mi)`. Zwei Nachbarn sind verschieden: `Mi \\= Pa`. 24 Nachbarpaare stehen in der Tabelle."
+      - "`\\=` kann erst prüfen, wenn beide Seiten eine Farbe haben. Schreib jede Prüfung direkt hinter das zweite `colour` ihres Paares: Dann scheitert eine falsche Farbe sofort, statt erst, wenn alle zwölf gefärbt sind."
+    solution: |
+      ```prolog
+      berlin(Cw, Fk, Li, Mh, Mi, Nk, Pa, Re, Sp, Sz, Ts, Tk) :-
+          colour(Mi),
+          colour(Pa), Pa \= Mi,
+          colour(Re), Re \= Mi, Re \= Pa,
+          colour(Cw), Cw \= Mi, Cw \= Re,
+          colour(Fk), Fk \= Mi, Fk \= Pa,
+          colour(Ts), Ts \= Mi, Ts \= Cw, Ts \= Fk,
+          colour(Li), Li \= Fk, Li \= Pa,
+          colour(Nk), Nk \= Fk, Nk \= Ts,
+          colour(Sp), Sp \= Cw, Sp \= Re,
+          colour(Sz), Sz \= Cw, Sz \= Sp, Sz \= Ts,
+          colour(Tk), Tk \= Fk, Tk \= Li, Tk \= Nk,
+          colour(Mh), Mh \= Li, Mh \= Tk.
+      ```
+
+  - id: sudoku
+    title: Ein Sudoku ohne Ausprobieren
+    extra: true
+    prompt: |
+      In `sudoku.pl` fehlen die Blöcke. Schreib `blocks(Zeile1, Zeile2, Zeile3)`, das in drei Zeilen die drei Blöcke nebeneinander nimmt, die ersten drei Zahlen jeder Zeile, dann die nächsten drei und so weiter, und für jeden Block verlangt, dass seine neun Zahlen verschieden sind.
+    check:
+      type: prolog
+      file: prolog/sudoku.pl
+      timeout: 20
+      cases:
+        - query: "\\+ \\+ (puzzle(P), sudoku(P), maplist(labeling([ff]), P), P == [[5,3,4,6,7,8,9,1,2],[6,7,2,1,9,5,3,4,8],[1,9,8,3,4,2,5,6,7],[8,5,9,7,6,1,4,2,3],[4,2,6,8,5,3,7,9,1],[7,1,3,9,2,4,8,5,6],[9,6,1,5,3,7,2,8,4],[2,8,7,4,1,9,6,3,5],[3,4,5,2,8,6,1,7,9]])"
+          answers: [true]
+          seconds: 8
+          say: "Das Sudoku aus der Datei hat genau eine Lösung; deine Regel findet eine andere oder keine."
+        - query: "\\+ sudoku([[1,2,3,4,5,6,7,8,9],[2,3,4,5,6,7,8,9,1],[3,4,5,6,7,8,9,1,2],[4,5,6,7,8,9,1,2,3],[5,6,7,8,9,1,2,3,4],[6,7,8,9,1,2,3,4,5],[7,8,9,1,2,3,4,5,6],[8,9,1,2,3,4,5,6,7],[9,1,2,3,4,5,6,7,8]])"
+          answers: [true]
+          say: "In diesem Gitter sind alle Zeilen und Spalten verschieden, aber nicht die Blöcke: Deine Regel lässt es durch."
+    hint:
+      - "Ein Fakt für drei leere Zeilen, `blocks([], [], []).`, und eine Regel, die von jeder Zeile drei Zahlen nimmt: `blocks([N1, N2, N3 | Rest1], [N4, N5, N6 | Rest2], [N7, N8, N9 | Rest3])`."
+      - "Darin verlangt `all_distinct([N1, N2, N3, N4, N5, N6, N7, N8, N9])` einen Block ohne doppelte Zahl, und `blocks(Rest1, Rest2, Rest3)` macht mit den nächsten drei Zahlen weiter."
+    solution: |
+      ```prolog
+      blocks([], [], []).
+      blocks([N1, N2, N3 | Rest1], [N4, N5, N6 | Rest2], [N7, N8, N9 | Rest3]) :-
+          all_distinct([N1, N2, N3, N4, N5, N6, N7, N8, N9]),
+          blocks(Rest1, Rest2, Rest3).
+      ```

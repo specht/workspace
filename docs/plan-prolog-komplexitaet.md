@@ -5,7 +5,11 @@ the logical half of »Oberstufe: Vertiefung Applikative Programmierung
 (funktional oder logisch)«, and »Aufwand« in »Algorithmen und Datenstrukturen«
 with complexity in »Vertiefung Theoretische Informatik«, which so far appear
 only in `kata-search` (counting guesses) and `sandbox-sortieren` (steps in a
-race). Both are proposals as of 29 October 2026; nothing is built.
+race). Both are built as of 29 October 2026: `src/content/prolog` (»Logisch
+programmieren mit Prolog«, in »Automaten und Sprachen« after `calculator`,
+with the check type `prolog`, docs/aufgaben.md) and `src/content/laufzeit`
+(»Wie lange dauert das?«, in »Algorithmen und Datenstrukturen«). What is
+still open is marked »Open« below; the rest describes what was built.
 
 ## Prolog: »Logisch programmieren: Wer ist mit wem verwandt?«
 
@@ -18,9 +22,11 @@ section of the programming languages or beside `grammatiken`, Oberstufe, after
 - `swi-prolog-nox` from Debian (SWI-Prolog without the GUI, about 40 MB):
   `swipl file.pl` for an interactive top level in the terminal, and
   `swipl -q -g goal -t halt file.pl` for the checks.
-- A VS Code extension for syntax colours: »VSC-Prolog« from Open VSX, if its
-  licence allows bundling (to check), otherwise a small TextMate grammar of our
-  own in `src/vscode-extensions` (the ER and UML extensions show how).
+- Open: a VS Code extension for syntax colours: »VSC-Prolog« from Open VSX,
+  if its licence allows bundling (to check), otherwise a small TextMate
+  grammar of our own in `src/vscode-extensions` (the ER and UML extensions
+  show how). Until then VS Code takes a `.pl` file for Perl and colours it
+  as such, which mostly fits.
 - On the website Rouge already colours `prolog` code blocks.
 
 ### The check: type `prolog`

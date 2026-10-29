@@ -13022,3 +13022,166 @@ html[data-bs-theme="dark"] .growth-widget {
     font-size: 85%;
     color: var(--bs-secondary-color);
 }
+
+/* how Prolog searches (prolog_search.js, »Logisch programmieren mit Prolog«) */
+.prolog-search {
+    --widget: #5c677d; --widget-ink: #4a5264; --widget-chip: #ebecef; --widget-line: #dbdee3; --widget-tint: #fafafb;
+    margin: 1.75em 0;
+    padding: 0.9em 1.25em;
+    border: 1px solid var(--widget-line);
+    border-left: 5px solid var(--widget);
+    border-radius: 0.6em;
+    background: var(--widget-tint);
+}
+
+html[data-bs-theme="dark"] .prolog-search {
+    --widget: #858d9e; --widget-ink: #a5abb7; --widget-chip: #25272b; --widget-line: #2a2e34; --widget-tint: #1a1b1b;
+}
+
+.prolog-search::before {
+    content: 'Zum Ausprobieren: wie Prolog sucht';
+    display: inline-block;
+    margin-bottom: 0.7em;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+}
+
+.prolog-search-title {
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.prolog-search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 0.6em;
+}
+
+.prolog-search-count {
+    margin-left: 0.5em;
+    color: var(--bs-secondary-color);
+    font-size: 90%;
+    font-variant-numeric: tabular-nums;
+}
+
+.prolog-search-say {
+    min-height: 3em;
+    margin-bottom: 0.8em;
+    padding: 0.5em 0.8em;
+    border-radius: 0.4em;
+    background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
+}
+
+.prolog-search-say[data-kind='fail'] {
+    background: color-mix(in srgb, #ef4538 12%, transparent);
+}
+
+.prolog-search-say[data-kind='answer'] {
+    background: color-mix(in srgb, #12959f 14%, transparent);
+}
+
+.prolog-search-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 1em;
+}
+
+@media (max-width: 700px) {
+    .prolog-search-body { grid-template-columns: minmax(0, 1fr); }
+}
+
+.prolog-search-part {
+    margin-bottom: 0.7em;
+}
+
+.prolog-search-label {
+    margin-bottom: 0.25em;
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.prolog-search-part code {
+    display: inline-block;
+    margin: 0 0.3em 0.3em 0;
+    padding: 0.1em 0.45em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.3em;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.prolog-search-part code.current {
+    border-color: var(--stepper-current);
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
+}
+
+.prolog-search-part code.prolog-answer {
+    border-color: #12959f;
+}
+
+.prolog-choice {
+    font-family: var(--bs-font-monospace);
+    font-size: 85%;
+}
+
+.prolog-none {
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+
+.prolog-search-program {
+    max-height: 22em;
+    overflow-y: auto;
+    position: relative;
+    margin: 0;
+    padding: 0.4em 0;
+    list-style: none;
+    counter-reset: prolog-line;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    background: var(--bs-body-bg);
+    font-size: 85%;
+}
+
+.prolog-search-program li {
+    padding: 0.05em 0.6em 0.05em 0;
+    color: var(--bs-secondary-color);
+    counter-increment: prolog-line;
+    white-space: nowrap;
+}
+
+/* the number inside the line, so that the marked line keeps it */
+.prolog-search-program li::before {
+    content: counter(prolog-line);
+    display: inline-block;
+    width: 2.4em;
+    padding-right: 0.7em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.prolog-search-program li code.prolog-line {
+    padding: 0;
+    background: none;
+    color: var(--bs-body-color);
+    white-space: pre;
+}
+
+.prolog-search-program li.current {
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
+}
+
+.prolog-search-program li.current code.prolog-line {
+    color: var(--stepper-current-ink);
+}
