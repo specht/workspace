@@ -228,6 +228,7 @@ class CurriculumGraphTest < Minitest::Test
     def test_series_keep_their_second_part
         assert_equal 'Kata: Listen', CurriculumGraph.short('Katas: Listen')
         assert_equal 'Pip: Der Mampfer', CurriculumGraph.short('Pip unter Funkelbach: Der Mampfer')
+        assert_equal 'Turtle: Bäume und Kurven', CurriculumGraph.short('Turtle: Bäume und Kurven')
         assert_equal 'DNS', CurriculumGraph.short('DNS: Wie aus einem Namen eine Adresse wird')
     end
 

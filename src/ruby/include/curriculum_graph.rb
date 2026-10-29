@@ -481,7 +481,7 @@ module CurriculumGraph
 
     # Series whose pages share the first part of their titles: on a box their
     # short name and the second part (»Kata: Listen«)
-    SERIES = { 'Katas' => 'Kata', 'Pip unter Funkelbach' => 'Pip' }.freeze
+    SERIES = { 'Katas' => 'Kata', 'Pip unter Funkelbach' => 'Pip', 'Turtle' => 'Turtle' }.freeze
 
     # The title on a box, in two lines at most: up to a colon (a series'
     # pages: its short name and what follows), at most 40 characters
