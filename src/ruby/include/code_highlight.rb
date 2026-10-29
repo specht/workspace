@@ -158,6 +158,8 @@ module CodeHighlight
                 # A whole file starts with <?php and may hold HTML around the
                 # PHP; a snippet is PHP from the first character.
                 lexer = Rouge::Lexers::PHP.new(:start_inline => !code.text.include?('<?'))
+            when 'prolog'
+                lexer = Rouge::Lexers::Prolog.new
             when 'pseudocode'
                 # The Handbuch's pseudocode (Rouge::Lexers::Pseudocode)
                 lexer = Rouge::Lexers::Pseudocode.new

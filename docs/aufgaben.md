@@ -390,6 +390,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast |
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast |
 | `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast |
+| `prolog` | Anfragen an eine Prolog-Datei der Lernenden und ihre Antworten, mit SWI-Prolog | eine `.pl`-Datei | Workspace, als Gast |
 | `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz |
 | `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server |
 | `tests` | eine Kata, in der die Lernenden Tests schreiben: Sie bestehen mit der richtigen Fassung einer Funktion und erkennen jede fehlerhafte | der Code der Karte | eigener Container ohne Netz |
@@ -889,7 +890,8 @@ Varianten der Aufgabe nennen ihre Funktionen so.
 
 **Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
 Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
-sagt, statt nach einer Endlosschleife zu fragen.
+sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby` und
+`python`, die eine Datei der Lernenden aufrufen (»Wie lange dauert das?«).
 
 **Wo eine Rekursion verlangt ist**, sagt `recursive: true`, dass die Funktion
 sich selbst aufrufen muss, und `loops: false`, dass sie keine Schleife
@@ -1298,6 +1300,59 @@ Zeile und die Meldung des Compilers; fehlt eine Funktion, heißt es »In
 (andere Parameter), nennt sie den Aufruf. `setup` ist für Hilfsfunktionen, die
 mehrere Aufrufe lesbar machen; was darin nicht zum Programm passt, meldet die
 Prüfung als »Die Prüfung passt noch nicht zu deinem Programm«.
+
+### prolog
+
+Seit M8. Beispiele stehen in `src/content/prolog/tasks.yaml` (»Logisch
+programmieren mit Prolog«, die Familie Bach und die Bezirke Berlins).
+
+```yaml
+check:
+  type: prolog
+  file: prolog/familie.pl
+  timeout: 20                  # die ganze Prüfung, 1 bis 30 Sekunden
+  slow: Ruft sich `ancestor` selbst auf, bevor `parent` einen Schritt weiterkommt?
+  cases:
+    - query: "grandparent(X, wilhelm_friedemann)"
+      answers: ["X = johann_ambrosius", "X = maria_elisabeth", "X = johann_michael"]
+    - query: "ancestor(christoph, wilhelm_friedrich_ernst)"
+      answers: [true]          # ohne Variablen: true oder false
+    - query: "is_in(X, [a, b, c])"
+      answers: ["X = a", "X = b", "X = c"]
+      ordered: true            # in dieser Reihenfolge, doppelte zählen
+    - query: "aggregate_all(count, berlin(_, _, _, _, _, _, _, _, _, _, _, _), N)"
+      answers: ["N = 3408"]
+      seconds: 8               # für diese Anfrage, 1 bis 20 (sonst 2)
+      say: Mit vier Farben gibt es genau 3408 Färbungen.
+```
+
+Ein festes Prüfprogramm in Prolog lädt die Datei mit SWI-Prolog im Workspace
+der Person, als Gast, der `/workspace` lesen, aber nicht ändern kann. Es
+steht in einem eigenen Modul, damit sich seine Prädikate nie mit denen der
+Lernenden treffen; die Anfragen laufen im Modul `user`. Jede Anfrage läuft
+mit `call_with_time_limit` und sammelt höchstens 500 Antworten. Eine Antwort
+ist so geschrieben wie im Terminal von Prolog: die Variablen der Anfrage,
+die einen Wert bekommen haben, in ihrer Reihenfolge, `X = a, Y = b`, Werte
+wie `writeq` sie schreibt (Listen ohne Leerzeichen, `[1,2,3]`); hat keine
+einen Wert bekommen, ist es `true`. Ohne Antwort ist es `false`. Nach den
+Antworten beendet es Prolog: Ein Programm, das mit
+`:- initialization(main, main).` sein `main` aufruft, läuft bei der Prüfung
+nicht mit.
+
+Ohne `ordered` zählen die Antworten als Menge: in beliebiger Reihenfolge,
+eine doppelt gefundene einmal. Die Rückmeldung nennt, was die Anfrage
+ergibt, was fehlt und was zu viel ist, dazu `say`. Bei einer Anfrage, die
+länger als 80 Zeichen ist (etwa eine ganze Prüfung mit `\+ \+ (…)`), steht
+`say` allein. Eine Anfrage, die ihre Zeit überschreitet, bekommt `slow` oder
+eine Frage nach einer Regel, die sich selbst aufruft, bevor sie etwas
+festlegt; ebenso die ganze Prüfung nach `timeout`. Kann Prolog die Datei
+nicht lesen, nennt die Karte die Zeile und die Meldung von SWI-Prolog;
+fragt eine Anfrage nach einem Prädikat, das es nicht gibt, nennt sie es.
+
+Was die Lernenden geschrieben haben, wird bei jeder Prüfung frisch geladen;
+ein `make.` in ihrem eigenen Prolog ist dafür nicht nötig. Prüfen, ob eine
+Färbung gilt, statt eine bestimmte zu verlangen: `\+ \+ (once(berlin(…)),
+Cw \= Mi, …)` mit `answers: [true]`, so zählt jede richtige Lösung.
 
 ### javascript
 

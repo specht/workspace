@@ -320,6 +320,9 @@ module TaskCard
         when 'python', 'ruby'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
+        when 'prolog'
+            n = (check['cases'] || []).size
+            "Lädt #{path.(check['file'])} mit SWI-Prolog in deinem Workspace, als Gast, der nichts verändern kann, und stellt #{n == 1 ? 'eine Anfrage' : "#{n} Anfragen"}"
         when 'c'
             n = (check['cases'] || []).size
             "Übersetzt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, startet nicht dein <code>main</code>, sondern probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
