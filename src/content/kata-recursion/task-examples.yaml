@@ -19,6 +19,12 @@ examples:
         - answer: "function factorial(n) {\n  if (n === 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n"
       fail:
         - answer: "function factorial(n) {\n  let result = 1;\n  for (let i = 1; i <= n; i++) {\n    result *= i;\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "int factorial(int n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n"
+    java:
+      pass:
+        - answer: "long factorial(int n) {\n    if (n == 0) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n"
   total:
     pass:
       - answer: "def total(numbers)\n  return 0 if numbers.empty?\n  numbers[0] + total(numbers[1..])\nend\n"
@@ -28,6 +34,12 @@ examples:
     javascript:
       pass:
         - answer: "function total(numbers) {\n  if (numbers.length === 0) {\n    return 0;\n  }\n  return numbers[0] + total(numbers.slice(1));\n}\n"
+    dart:
+      pass:
+        - answer: "int total(List<int> numbers) {\n  if (numbers.isEmpty) {\n    return 0;\n  }\n  return numbers[0] + total(numbers.sublist(1));\n}\n"
+    java:
+      pass:
+        - answer: "int total(List<Integer> numbers) {\n    if (numbers.isEmpty()) {\n        return 0;\n    }\n    return numbers.get(0) + total(numbers.subList(1, numbers.size()));\n}\n"
   countdown:
     pass:
       - answer: "def countdown(n)\n  return [] if n == 0\n  [n] + countdown(n - 1)\nend\n"
@@ -43,6 +55,16 @@ examples:
         - answer: "function countdown(n) {\n  if (n === 0) {\n    return [];\n  }\n  return [n].concat(countdown(n - 1));\n}\n"
       fail:
         - answer: "function countdown(n) {\n  if (n === 0) {\n    return [];\n  }\n  return countdown(n - 1).concat([n]);\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> countdown(int n) {\n  if (n == 0) {\n    return [];\n  }\n  return [n, ...countdown(n - 1)];\n}\n"
+      fail:
+        - answer: "List<int> countdown(int n) {\n  if (n == 0) {\n    return [];\n  }\n  return [...countdown(n - 1), n];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> countdown(int n) {\n    List<Integer> result = new ArrayList<>();\n    if (n == 0) {\n        return result;\n    }\n    result.add(n);\n    result.addAll(countdown(n - 1));\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> countdown(int n) {\n    if (n == 0) {\n        return new ArrayList<>();\n    }\n    List<Integer> result = countdown(n - 1);\n    result.add(n);\n    return result;\n}\n"
   text-length:
     pass:
       - answer: "def text_length(text)\n  return 0 if text == ''\n  1 + text_length(text[1..])\nend\n"
@@ -52,6 +74,12 @@ examples:
     javascript:
       pass:
         - answer: "function textLength(text) {\n  if (text === '') {\n    return 0;\n  }\n  return 1 + textLength(text.slice(1));\n}\n"
+    dart:
+      pass:
+        - answer: "int textLength(String text) {\n  if (text.isEmpty) {\n    return 0;\n  }\n  return 1 + textLength(text.substring(1));\n}\n"
+    java:
+      pass:
+        - answer: "int textLength(String text) {\n    if (text.isEmpty()) {\n        return 0;\n    }\n    return 1 + textLength(text.substring(1));\n}\n"
   power:
     pass:
       - answer: "def power(base, exponent)\n  return 1 if exponent == 0\n  base * power(base, exponent - 1)\nend\n"
@@ -63,6 +91,16 @@ examples:
     javascript:
       pass:
         - answer: "function power(base, exponent) {\n  if (exponent === 0) {\n    return 1;\n  }\n  return base * power(base, exponent - 1);\n}\n"
+    dart:
+      pass:
+        - answer: "int power(int base, int exponent) {\n  if (exponent == 0) {\n    return 1;\n  }\n  return base * power(base, exponent - 1);\n}\n"
+      fail:
+        - answer: "int power(int base, int exponent) {\n  if (exponent == 1) {\n    return base;\n  }\n  return base * power(base, exponent - 1);\n}\n"
+    java:
+      pass:
+        - answer: "int power(int base, int exponent) {\n    if (exponent == 0) {\n        return 1;\n    }\n    return base * power(base, exponent - 1);\n}\n"
+      fail:
+        - answer: "int power(int base, int exponent) {\n    if (exponent == 1) {\n        return base;\n    }\n    return base * power(base, exponent - 1);\n}\n"
   fibonacci:
     pass:
       - answer: "def fibonacci(n)\n  return n if n < 2\n  fibonacci(n - 1) + fibonacci(n - 2)\nend\n"
@@ -78,6 +116,16 @@ examples:
         - answer: "function fibonacci(n) {\n  if (n < 2) {\n    return n;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
       fail:
         - answer: "function fibonacci(n) {\n  if (n < 2) {\n    return 1;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
+    dart:
+      pass:
+        - answer: "int fibonacci(int n) {\n  if (n < 2) {\n    return n;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
+      fail:
+        - answer: "int fibonacci(int n) {\n  if (n < 2) {\n    return 1;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
+    java:
+      pass:
+        - answer: "int fibonacci(int n) {\n    if (n < 2) {\n        return n;\n    }\n    return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
+      fail:
+        - answer: "int fibonacci(int n) {\n    if (n < 2) {\n        return 1;\n    }\n    return fibonacci(n - 1) + fibonacci(n - 2);\n}\n"
   palindrome:
     pass:
       - answer: "def palindrome(text)\n  return true if text.length < 2\n  text[0] == text[-1] && palindrome(text[1...-1])\nend\n"
@@ -93,6 +141,16 @@ examples:
         - answer: "function palindrome(text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] === text[text.length - 1] && palindrome(text.slice(1, -1));\n}\n"
       fail:
         - answer: "function palindrome(text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] === text[text.length - 1];\n}\n"
+    dart:
+      pass:
+        - answer: "bool palindrome(String text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] == text[text.length - 1] && palindrome(text.substring(1, text.length - 1));\n}\n"
+      fail:
+        - answer: "bool palindrome(String text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] == text[text.length - 1];\n}\n"
+    java:
+      pass:
+        - answer: "boolean palindrome(String text) {\n    if (text.length() < 2) {\n        return true;\n    }\n    return text.charAt(0) == text.charAt(text.length() - 1) && palindrome(text.substring(1, text.length() - 1));\n}\n"
+      fail:
+        - answer: "boolean palindrome(String text) {\n    if (text.length() < 2) {\n        return true;\n    }\n    return text.charAt(0) == text.charAt(text.length() - 1);\n}\n"
   count-char:
     pass:
       - answer: "def count_char(text, char)\n  return 0 if text == ''\n  (text[0] == char ? 1 : 0) + count_char(text[1..], char)\nend\n"
@@ -102,6 +160,12 @@ examples:
     javascript:
       pass:
         - answer: "function countChar(text, char) {\n  if (text === '') {\n    return 0;\n  }\n  return (text[0] === char ? 1 : 0) + countChar(text.slice(1), char);\n}\n"
+    dart:
+      pass:
+        - answer: "int countChar(String text, String letter) {\n  if (text.isEmpty) {\n    return 0;\n  }\n  return (text[0] == letter ? 1 : 0) + countChar(text.substring(1), letter);\n}\n"
+    java:
+      pass:
+        - answer: "int countChar(String text, char letter) {\n    if (text.isEmpty()) {\n        return 0;\n    }\n    return (text.charAt(0) == letter ? 1 : 0) + countChar(text.substring(1), letter);\n}\n"
   hanoi:
     pass:
       - answer: "def hanoi(n, source, target, spare)\n  return [] if n == 0\n  hanoi(n - 1, source, spare, target) + [[source, target]] + hanoi(n - 1, spare, target, source)\nend\n"
@@ -117,6 +181,16 @@ examples:
         - answer: "function hanoi(n, source, target, spare) {\n  if (n === 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, spare, target), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n"
       fail:
         - answer: "function hanoi(n, source, target, spare) {\n  if (n === 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, target, spare), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n"
+    dart:
+      pass:
+        - answer: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n  if (n == 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, spare, target), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n"
+      fail:
+        - answer: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n  if (n == 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, target, spare), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n"
+    java:
+      pass:
+        - answer: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n    List<List<String>> moves = new ArrayList<>();\n    if (n == 0) {\n        return moves;\n    }\n    moves.addAll(hanoi(n - 1, source, spare, target));\n    moves.add(List.of(source, target));\n    moves.addAll(hanoi(n - 1, spare, target, source));\n    return moves;\n}\n"
+      fail:
+        - answer: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n    List<List<String>> moves = new ArrayList<>();\n    if (n == 0) {\n        return moves;\n    }\n    moves.addAll(hanoi(n - 1, source, target, spare));\n    moves.add(List.of(source, target));\n    moves.addAll(hanoi(n - 1, spare, target, source));\n    return moves;\n}\n"
   flatten:
     pass:
       - answer: "def flatten(items)\n  result = []\n  items.each do |item|\n    if item.is_a?(Array)\n      result += flatten(item)\n    else\n      result << item\n    end\n  end\n  result\nend\n"
@@ -132,6 +206,16 @@ examples:
         - answer: "function flatten(items) {\n  const result = [];\n  for (const item of items) {\n    if (Array.isArray(item)) {\n      result.push(...flatten(item));\n    } else {\n      result.push(item);\n    }\n  }\n  return result;\n}\n"
       fail:
         - answer: "function flatten(items) {\n  const result = [];\n  for (const item of items) {\n    if (Array.isArray(item)) {\n      result.push(...item);\n    } else {\n      result.push(item);\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> flatten(List<Object> items) {\n  final result = <int>[];\n  for (final item in items) {\n    if (item is List) {\n      result.addAll(flatten(item.cast<Object>()));\n    } else if (item is int) {\n      result.add(item);\n    }\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "List<int> flatten(List<Object> items) {\n  final result = <int>[];\n  for (final item in items) {\n    if (item is List) {\n      for (final inner in item) {\n        if (inner is int) {\n          result.add(inner);\n        }\n      }\n    } else if (item is int) {\n      result.add(item);\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> flatten(List<?> items) {\n    List<Integer> result = new ArrayList<>();\n    for (Object item : items) {\n        if (item instanceof List<?> inner) {\n            result.addAll(flatten(inner));\n        } else if (item instanceof Integer n) {\n            result.add(n);\n        }\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> flatten(List<?> items) {\n    List<Integer> result = new ArrayList<>();\n    for (Object item : items) {\n        if (item instanceof List<?> inner) {\n            for (Object x : inner) {\n                if (x instanceof Integer n) {\n                    result.add(n);\n                }\n            }\n        } else if (item instanceof Integer n) {\n            result.add(n);\n        }\n    }\n    return result;\n}\n"
   permutations:
     pass:
       - answer: "def permutations(text)\n  return [''] if text == ''\n  result = []\n  text.length.times do |i|\n    rest = text[0...i] + text[(i + 1)..]\n    permutations(rest).each do |order|\n      result << text[i] + order\n    end\n  end\n  result\nend\n"
@@ -147,6 +231,16 @@ examples:
         - answer: "function permutations(text) {\n  if (text === '') {\n    return [''];\n  }\n  const result = [];\n  for (let i = 0; i < text.length; i++) {\n    const rest = text.slice(0, i) + text.slice(i + 1);\n    for (const order of permutations(rest)) {\n      result.push(text[i] + order);\n    }\n  }\n  return result;\n}\n"
       fail:
         - answer: "function permutations(text) {\n  if (text === '') {\n    return [];\n  }\n  const result = [];\n  for (let i = 0; i < text.length; i++) {\n    const rest = text.slice(0, i) + text.slice(i + 1);\n    for (const order of permutations(rest)) {\n      result.push(text[i] + order);\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<String> permutations(String text) {\n  if (text.isEmpty) {\n    return [''];\n  }\n  final result = <String>[];\n  for (var i = 0; i < text.length; i++) {\n    final rest = text.substring(0, i) + text.substring(i + 1);\n    for (final order in permutations(rest)) {\n      result.add(text[i] + order);\n    }\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "List<String> permutations(String text) {\n  if (text.isEmpty) {\n    return [];\n  }\n  final result = <String>[];\n  for (var i = 0; i < text.length; i++) {\n    final rest = text.substring(0, i) + text.substring(i + 1);\n    for (final order in permutations(rest)) {\n      result.add(text[i] + order);\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<String> permutations(String text) {\n    List<String> result = new ArrayList<>();\n    if (text.isEmpty()) {\n        result.add(\"\");\n        return result;\n    }\n    for (int i = 0; i < text.length(); i++) {\n        String rest = text.substring(0, i) + text.substring(i + 1);\n        for (String order : permutations(rest)) {\n            result.add(text.charAt(i) + order);\n        }\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "List<String> permutations(String text) {\n    List<String> result = new ArrayList<>();\n    if (text.isEmpty()) {\n        return result;\n    }\n    for (int i = 0; i < text.length(); i++) {\n        String rest = text.substring(0, i) + text.substring(i + 1);\n        for (String order : permutations(rest)) {\n            result.add(text.charAt(i) + order);\n        }\n    }\n    return result;\n}\n"
   fast-fibonacci:
     pass:
       - answer: "MEMO = {}\n\ndef fast_fibonacci(n)\n  return n if n < 2\n  MEMO[n] ||= fast_fibonacci(n - 1) + fast_fibonacci(n - 2)\nend\n"
@@ -162,6 +256,12 @@ examples:
         - answer: "const memo = {};\n\nfunction fastFibonacci(n) {\n  if (n < 2) {\n    return n;\n  }\n  if (!(n in memo)) {\n    memo[n] = fastFibonacci(n - 1) + fastFibonacci(n - 2);\n  }\n  return memo[n];\n}\n"
       fail:
         - answer: "function fastFibonacci(n) {\n  if (n < 2) {\n    return n;\n  }\n  return fastFibonacci(n - 1) + fastFibonacci(n - 2);\n}\n"
+    dart:
+      pass:
+        - answer: "final memo = <int, int>{};\n\nint fastFibonacci(int n) {\n  if (n < 2) {\n    return n;\n  }\n  if (!memo.containsKey(n)) {\n    memo[n] = fastFibonacci(n - 1) + fastFibonacci(n - 2);\n  }\n  return memo[n]!;\n}\n"
+    java:
+      pass:
+        - answer: "Map<Integer, Long> memo = new HashMap<>();\n\nlong fastFibonacci(int n) {\n    if (n < 2) {\n        return n;\n    }\n    if (!memo.containsKey(n)) {\n        memo.put(n, fastFibonacci(n - 1) + fastFibonacci(n - 2));\n    }\n    return memo.get(n);\n}\n"
   subset-sum:
     pass:
       - answer: "def subset_sum(numbers, target)\n  return true if target == 0\n  return false if numbers.empty? || target < 0\n  rest = numbers[1..]\n  subset_sum(rest, target - numbers[0]) || subset_sum(rest, target)\nend\n"
@@ -171,3 +271,9 @@ examples:
     javascript:
       pass:
         - answer: "function subsetSum(numbers, target) {\n  if (target === 0) {\n    return true;\n  }\n  if (numbers.length === 0 || target < 0) {\n    return false;\n  }\n  const rest = numbers.slice(1);\n  return subsetSum(rest, target - numbers[0]) || subsetSum(rest, target);\n}\n"
+    dart:
+      pass:
+        - answer: "bool subsetSum(List<int> numbers, int target) {\n  if (target == 0) {\n    return true;\n  }\n  if (numbers.isEmpty || target < 0) {\n    return false;\n  }\n  final rest = numbers.sublist(1);\n  return subsetSum(rest, target - numbers[0]) || subsetSum(rest, target);\n}\n"
+    java:
+      pass:
+        - answer: "boolean subsetSum(List<Integer> numbers, int target) {\n    if (target == 0) {\n        return true;\n    }\n    if (numbers.isEmpty() || target < 0) {\n        return false;\n    }\n    List<Integer> rest = numbers.subList(1, numbers.size());\n    return subsetSum(rest, target - numbers.get(0)) || subsetSum(rest, target);\n}\n"

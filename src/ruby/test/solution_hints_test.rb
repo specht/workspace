@@ -26,6 +26,45 @@ class SolutionHintsTest < Minitest::Test
         end
     end
 
+    OPEN = /^\s*<!--\s*language:\s*([^>]*?)\s*-->\s*$/
+    CLOSE = /^\s*<!--\s*\/language\s*-->\s*$/
+
+    # The last line with text before a solution. Tips shared by several
+    # languages (<!-- language: dart, java -->) may come before the
+    # solution's own block and the blocks of the other languages, so
+    # language markers and whole blocks without the solution's language are
+    # passed over.
+    def line_before(lines)
+        own = nil
+        depth = 0
+        lines.reverse_each do |l|
+            if l =~ CLOSE
+                depth += 1
+            elsif l =~ OPEN
+                if depth.zero?
+                    own ||= $1.split(/\s*,\s*/)
+                else
+                    depth -= 1
+                end
+            end
+        end
+        index = lines.size - 1
+        while index >= 0
+            l = lines[index]
+            if l =~ CLOSE
+                start = (index - 1).downto(0).find { |j| lines[j] =~ OPEN }
+                if start && own && (lines[start][OPEN, 1].split(/\s*,\s*/) & own).empty?
+                    index = start - 1
+                    next
+                end
+            elsif l.strip != '' && l !~ OPEN
+                return l
+            end
+            index -= 1
+        end
+        nil
+    end
+
     def test_every_solution_has_tips_before_it
         missing = []
         pages.each do |path|
@@ -33,7 +72,7 @@ class SolutionHintsTest < Minitest::Test
             lines.each_with_index do |(line, number), i|
                 next unless line =~ /^\s*<!--\s*solution\s*-->\s*$/
 
-                before = lines[0...i].map(&:first).reverse.find { |l| l.strip != '' }
+                before = line_before(lines[0...i].map(&:first))
                 missing << "#{File.basename(path)}:#{number}" unless before.to_s =~ /^\s*<!--\s*\/hint\s*-->\s*$/
             end
         end

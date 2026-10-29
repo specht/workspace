@@ -164,6 +164,6 @@ module RecursionCheck
         end
         keyword = body[/\b(for|while|do)\b/, 1]
         method = body[/\.(#{TYPED_LOOP_METHODS.join('|')})\s*\(/, 1]
-        { :calls_itself => body.match?(/(?<![\w$.])#{n}\s*\(/), :loop => keyword ? "`#{keyword}`" : (method && "`#{method}`") }
+        { :calls_itself => body.match?(/(?:(?<![\w$.])|(?<=\.\.\.))#{n}\s*\(/), :loop => keyword ? "`#{keyword}`" : (method && "`#{method}`") }
     end
 end
