@@ -112,6 +112,71 @@ tasks:
           return null;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int? linearSearch(List<int> items, int wanted)`, die den Index zurückgibt, an dem `wanted` zum ersten Mal in der Liste steht, und `null`, wenn es nicht darin steht: `linearSearch([4, 8, 15, 8], 8)` ergibt `1`. Das `?` in `int?` erlaubt das `null`. Mit einer Schleife, ohne `indexOf`.
+      starter: |
+        int? linearSearch(List<int> items, int wanted) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.indexOf, .indexWhere, .lastIndexOf]
+        cases:
+          - { call: "linearSearch([4, 8, 15, 8], 8)", expect: "1", say: "Es zählt das erste Mal." }
+          - { call: "linearSearch([4, 8, 15], 16)", expect: "null" }
+          - { call: "linearSearch([], 1)", expect: "null" }
+          - { call: "linearSearch([7], 7)", expect: "0" }
+          - { call: "linearSearch([1, 2, 3], 3)", expect: "2", say: "Auch der letzte Index." }
+      feedback:
+        - when: { same_as: "int? linearSearch(List<int> items, int wanted) {\n  int? result;\n  for (var i = 0; i < items.length; i++) {\n    if (items[i] == wanted) {\n      result = i;\n    }\n  }\n  return result;\n}\n" }
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+      hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for (var i = 0; i < items.length; i++)` zählt die Indizes durch."
+      solution: |
+        ```dart
+        int? linearSearch(List<int> items, int wanted) {
+          for (var i = 0; i < items.length; i++) {
+            if (items[i] == wanted) {
+              return i;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Integer linearSearch(List<Integer> items, int wanted)`, die den Index zurückgibt, an dem `wanted` zum ersten Mal in der Liste steht, und `null`, wenn es nicht darin steht: `linearSearch(List.of(4, 8, 15, 8), 8)` ergibt `1`. Ein `Integer` darf `null` sein, ein `int` nicht. Mit einer Schleife, ohne `indexOf`.
+      starter: |
+        Integer linearSearch(List<Integer> items, int wanted) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.indexOf, .lastIndexOf]
+        cases:
+          - { call: "linearSearch(List.of(4, 8, 15, 8), 8)", expect: "1", say: "Es zählt das erste Mal." }
+          - { call: "linearSearch(List.of(4, 8, 15), 16)", expect: "null" }
+          - { call: "linearSearch(List.of(), 1)", expect: "null" }
+          - { call: "linearSearch(List.of(7), 7)", expect: "0" }
+          - { call: "linearSearch(List.of(1, 2, 3), 3)", expect: "2", say: "Auch der letzte Index." }
+      feedback:
+        - when: { same_as: "Integer linearSearch(List<Integer> items, int wanted) {\n    Integer result = null;\n    for (int i = 0; i < items.size(); i++) {\n        if (items.get(i) == wanted) {\n            result = i;\n        }\n    }\n    return result;\n}\n" }
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+      hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for (int i = 0; i < items.size(); i++)` zählt die Indizes durch."
+      solution: |
+        ```java
+        Integer linearSearch(List<Integer> items, int wanted) {
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i) == wanted) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        ```
+
   - id: min-index
     title: "Wo steht die kleinste?"
     level: 1
@@ -224,6 +289,73 @@ tasks:
           return best;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int minIndex(List<int> numbers)`, die den Index der kleinsten Zahl zurückgibt; kommt sie mehrmals vor, den ersten: `minIndex([5, 2, 9, 2])` ergibt `1`. Die Liste ist nie leer. Ohne `min` und `indexOf`.
+      starter: |
+        int minIndex(List<int> numbers) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [min, .reduce, .indexOf, .sort]
+        cases:
+          - { call: "minIndex([5, 2, 9, 2])", expect: "1", say: "Kommt die kleinste mehrmals vor, zählt die erste." }
+          - { call: "minIndex([7])", expect: "0" }
+          - { call: "minIndex([3, 1])", expect: "1" }
+          - { call: "minIndex([-1, -5, 0])", expect: "1" }
+          - { call: "minIndex([1, 2, 3])", expect: "0", say: "Die kleinste kann auch vorn stehen." }
+      feedback:
+        - when: { same_as: "int minIndex(List<int> numbers) {\n  var best = 0;\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n" }
+          say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
+      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
+      solution: |
+        ```dart
+        int minIndex(List<int> numbers) {
+          var best = 0;
+          for (var i = 1; i < numbers.length; i++) {
+            if (numbers[i] < numbers[best]) {
+              best = i;
+            }
+          }
+          return best;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int minIndex(List<Integer> numbers)`, die den Index der kleinsten Zahl zurückgibt; kommt sie mehrmals vor, den ersten: `minIndex(List.of(5, 2, 9, 2))` ergibt `1`. Die Liste ist nie leer. Ohne `Collections.min` und `indexOf`.
+      starter: |
+        int minIndex(List<Integer> numbers) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Collections.min, .indexOf, .sort, .min, .stream]
+        cases:
+          - { call: "minIndex(List.of(5, 2, 9, 2))", expect: "1", say: "Kommt die kleinste mehrmals vor, zählt die erste." }
+          - { call: "minIndex(List.of(7))", expect: "0" }
+          - { call: "minIndex(List.of(3, 1))", expect: "1" }
+          - { call: "minIndex(List.of(-1, -5, 0))", expect: "1" }
+          - { call: "minIndex(List.of(1, 2, 3))", expect: "0", say: "Die kleinste kann auch vorn stehen." }
+      feedback:
+        - when: { same_as: "int minIndex(List<Integer> numbers) {\n    int best = 0;\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) <= numbers.get(best)) {\n            best = i;\n        }\n    }\n    return best;\n}\n" }
+          say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
+      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers.get(i)` mit `numbers.get(best)`."
+      solution: |
+        ```java
+        int minIndex(List<Integer> numbers) {
+            int best = 0;
+            for (int i = 1; i < numbers.size(); i++) {
+                if (numbers.get(i) < numbers.get(best)) {
+                    best = i;
+                }
+            }
+            return best;
+        }
+        ```
+
   - id: last-index
     title: "Von hinten gesucht"
     level: 1
@@ -334,6 +466,71 @@ tasks:
           return null;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int? lastIndex(List<int> items, int wanted)`, die den Index zurückgibt, an dem `wanted` zum letzten Mal steht, und `null`, wenn es nicht darin steht: `lastIndex([4, 8, 15, 8], 8)` ergibt `3`. Such von hinten, dann bist du beim ersten Fund fertig. Ohne `lastIndexOf`.
+      starter: |
+        int? lastIndex(List<int> items, int wanted) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.lastIndexOf, .indexOf, .lastIndexWhere, .reversed]
+        cases:
+          - { call: "lastIndex([4, 8, 15, 8], 8)", expect: "3" }
+          - { call: "lastIndex([4, 8, 15], 16)", expect: "null" }
+          - { call: "lastIndex([], 1)", expect: "null" }
+          - { call: "lastIndex([7, 7, 7], 7)", expect: "2" }
+          - { call: "lastIndex([1, 2, 3], 1)", expect: "0", say: "Auch der Index 0, wenn es nur vorn steht." }
+      feedback:
+        - when: { same_as: "int? lastIndex(List<int> items, int wanted) {\n  for (var i = items.length - 1; i > 0; i--) {\n    if (items[i] == wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n" }
+          say: "Mit `i > 0` kommt der Index 0 nie dran: `[1, 2, 3]` findet die 1 nicht."
+      hint: "Zähl vom letzten Index, `items.length - 1`, herunter bis 0."
+      solution: |
+        ```dart
+        int? lastIndex(List<int> items, int wanted) {
+          for (var i = items.length - 1; i >= 0; i--) {
+            if (items[i] == wanted) {
+              return i;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Integer lastIndex(List<Integer> items, int wanted)`, die den Index zurückgibt, an dem `wanted` zum letzten Mal steht, und `null`, wenn es nicht darin steht: `lastIndex(List.of(4, 8, 15, 8), 8)` ergibt `3`. Such von hinten, dann bist du beim ersten Fund fertig. Ohne `lastIndexOf`.
+      starter: |
+        Integer lastIndex(List<Integer> items, int wanted) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.lastIndexOf, .indexOf, .reversed, Collections.reverse]
+        cases:
+          - { call: "lastIndex(List.of(4, 8, 15, 8), 8)", expect: "3" }
+          - { call: "lastIndex(List.of(4, 8, 15), 16)", expect: "null" }
+          - { call: "lastIndex(List.of(), 1)", expect: "null" }
+          - { call: "lastIndex(List.of(7, 7, 7), 7)", expect: "2" }
+          - { call: "lastIndex(List.of(1, 2, 3), 1)", expect: "0", say: "Auch der Index 0, wenn es nur vorn steht." }
+      feedback:
+        - when: { same_as: "Integer lastIndex(List<Integer> items, int wanted) {\n    for (int i = items.size() - 1; i > 0; i--) {\n        if (items.get(i) == wanted) {\n            return i;\n        }\n    }\n    return null;\n}\n" }
+          say: "Mit `i > 0` kommt der Index 0 nie dran: `[1, 2, 3]` findet die 1 nicht."
+      hint: "Zähl vom letzten Index, `items.size() - 1`, herunter bis 0."
+      solution: |
+        ```java
+        Integer lastIndex(List<Integer> items, int wanted) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                if (items.get(i) == wanted) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        ```
+
   - id: first-greater
     title: "Die erste darüber"
     level: 1
@@ -442,6 +639,71 @@ tasks:
           return null;
         }
         ```
+    dart:
+      prompt: |
+        Die Temperaturen eines Tages stehen in einer Liste, eine je Stunde. Schreib eine Funktion `int? firstGreater(List<int> numbers, int limit)`, die den Index der ersten zurückgibt, die über `limit` liegt, und `null`, wenn keine es tut: `firstGreater([12, 15, 21, 25, 19], 20)` ergibt `2`.
+      starter: |
+        int? firstGreater(List<int> numbers, int limit) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.indexWhere, .indexOf]
+        cases:
+          - { call: "firstGreater([12, 15, 21, 25, 19], 20)", expect: "2" }
+          - { call: "firstGreater([12, 15], 20)", expect: "null" }
+          - { call: "firstGreater([20, 21], 20)", expect: "1", say: "»Über« heißt: größer, nicht gleich." }
+          - { call: "firstGreater([], 0)", expect: "null" }
+          - { call: "firstGreater([30, 10], 5)", expect: "0" }
+      feedback:
+        - when: { same_as: "int? firstGreater(List<int> numbers, int limit) {\n  for (var i = 0; i < numbers.length; i++) {\n    if (numbers[i] >= limit) {\n      return i;\n    }\n  }\n  return null;\n}\n" }
+          say: "»Über« heißt größer: Bei `[20, 21]` und 20 ist es die 21, nicht die 20."
+      hint: "Wie die lineare Suche, nur fragst du nicht nach Gleichheit, sondern ob die Zahl größer ist."
+      solution: |
+        ```dart
+        int? firstGreater(List<int> numbers, int limit) {
+          for (var i = 0; i < numbers.length; i++) {
+            if (numbers[i] > limit) {
+              return i;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Die Temperaturen eines Tages stehen in einer Liste, eine je Stunde. Schreib eine Methode `Integer firstGreater(List<Integer> numbers, int limit)`, die den Index der ersten zurückgibt, die über `limit` liegt, und `null`, wenn keine es tut: `firstGreater(List.of(12, 15, 21, 25, 19), 20)` ergibt `2`.
+      starter: |
+        Integer firstGreater(List<Integer> numbers, int limit) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.indexOf, .stream]
+        cases:
+          - { call: "firstGreater(List.of(12, 15, 21, 25, 19), 20)", expect: "2" }
+          - { call: "firstGreater(List.of(12, 15), 20)", expect: "null" }
+          - { call: "firstGreater(List.of(20, 21), 20)", expect: "1", say: "»Über« heißt: größer, nicht gleich." }
+          - { call: "firstGreater(List.of(), 0)", expect: "null" }
+          - { call: "firstGreater(List.of(30, 10), 5)", expect: "0" }
+      feedback:
+        - when: { same_as: "Integer firstGreater(List<Integer> numbers, int limit) {\n    for (int i = 0; i < numbers.size(); i++) {\n        if (numbers.get(i) >= limit) {\n            return i;\n        }\n    }\n    return null;\n}\n" }
+          say: "»Über« heißt größer: Bei `[20, 21]` und 20 ist es die 21, nicht die 20."
+      hint: "Wie die lineare Suche, nur fragst du nicht nach Gleichheit, sondern ob die Zahl größer ist."
+      solution: |
+        ```java
+        Integer firstGreater(List<Integer> numbers, int limit) {
+            for (int i = 0; i < numbers.size(); i++) {
+                if (numbers.get(i) > limit) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        ```
+
   - id: binary-search
     title: "Binäre Suche"
     level: 2
@@ -594,6 +856,95 @@ tasks:
           return null;
         }
         ```
+    dart:
+      prompt: |
+        In einer sortierten Liste geht es schneller: Schau in die Mitte. Ist die Zahl dort kleiner als die gesuchte, kann diese nur rechts davon stehen, sonst links; so halbierst du den Bereich, bis du sie hast oder er leer ist. Schreib `int? binarySearch(List<int> numbers, int wanted)` für eine aufsteigend sortierte Liste verschiedener Zahlen: der Index oder `null`. `binarySearch([2, 5, 8, 12, 16, 23], 12)` ergibt `3`. Ohne `indexOf`.
+      starter: |
+        int? binarySearch(List<int> numbers, int wanted) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.indexOf, .contains, .indexWhere]
+        cases:
+          - { call: "binarySearch([2, 5, 8, 12, 16, 23], 12)", expect: "3" }
+          - { call: "binarySearch([2, 5, 8, 12, 16, 23], 2)", expect: "0", say: "Ganz links." }
+          - { call: "binarySearch([2, 5, 8, 12, 16, 23], 23)", expect: "5", say: "Ganz rechts." }
+          - { call: "binarySearch([2, 5, 8, 12, 16, 23], 9)", expect: "null" }
+          - { call: "binarySearch([], 4)", expect: "null" }
+          - { call: "binarySearch([4], 4)", expect: "0" }
+          - { call: "binarySearch([for (var i = 0; i < 1000; i++) 2 * i], 1234)", expect: "617" }
+      feedback:
+        - when: { same_as: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low < high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return middle;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n" }
+          say: "Mit `low < high` hört die Suche auf, wenn noch ein Feld übrig ist, und genau dort kann die Zahl stehen: Bei `[4]` findet dein Code die 4 nicht. Such, solange `low <= high`."
+      hint:
+        - "Zwei Zahlen grenzen den Bereich ein, in dem die gesuchte noch stehen kann: `low = 0` und `high = numbers.length - 1`. Die Mitte ist `(low + high) ~/ 2`."
+        - "Ist `numbers[middle]` zu klein, rückt `low` hinter die Mitte, ist sie zu groß, rückt `high` davor. Solange `low <= high`, ist noch etwas übrig."
+      solution: |
+        ```dart
+        int? binarySearch(List<int> numbers, int wanted) {
+          var low = 0;
+          var high = numbers.length - 1;
+          while (low <= high) {
+            final middle = (low + high) ~/ 2;
+            if (numbers[middle] == wanted) {
+              return middle;
+            }
+            if (numbers[middle] < wanted) {
+              low = middle + 1;
+            } else {
+              high = middle - 1;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        In einer sortierten Liste geht es schneller: Schau in die Mitte. Ist die Zahl dort kleiner als die gesuchte, kann diese nur rechts davon stehen, sonst links; so halbierst du den Bereich, bis du sie hast oder er leer ist. Schreib `Integer binarySearch(List<Integer> numbers, int wanted)` für eine aufsteigend sortierte Liste verschiedener Zahlen: der Index oder `null`. `binarySearch(List.of(2, 5, 8, 12, 16, 23), 12)` ergibt `3`. Ohne `indexOf`.
+      starter: |
+        Integer binarySearch(List<Integer> numbers, int wanted) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.indexOf, .contains, Collections.binarySearch]
+        cases:
+          - { call: "binarySearch(List.of(2, 5, 8, 12, 16, 23), 12)", expect: "3" }
+          - { call: "binarySearch(List.of(2, 5, 8, 12, 16, 23), 2)", expect: "0", say: "Ganz links." }
+          - { call: "binarySearch(List.of(2, 5, 8, 12, 16, 23), 23)", expect: "5", say: "Ganz rechts." }
+          - { call: "binarySearch(List.of(2, 5, 8, 12, 16, 23), 9)", expect: "null" }
+          - { call: "binarySearch(List.of(), 4)", expect: "null" }
+          - { call: "binarySearch(List.of(4), 4)", expect: "0" }
+          - { call: "List<Integer> even = new ArrayList<>(); for (int i = 0; i < 1000; i++) even.add(2 * i); binarySearch(even, 1234)", expect: "617" }
+      feedback:
+        - when: { same_as: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low < high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return middle;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n" }
+          say: "Mit `low < high` hört die Suche auf, wenn noch ein Feld übrig ist, und genau dort kann die Zahl stehen: Bei `[4]` findet dein Code die 4 nicht. Such, solange `low <= high`."
+      hint:
+        - "Zwei Zahlen grenzen den Bereich ein, in dem die gesuchte noch stehen kann: `low = 0` und `high = numbers.size() - 1`. Die Mitte ist `(low + high) / 2`; Java teilt zwei `int` ganzzahlig."
+        - "Ist `numbers.get(middle)` zu klein, rückt `low` hinter die Mitte, ist sie zu groß, rückt `high` davor. Solange `low <= high`, ist noch etwas übrig."
+      solution: |
+        ```java
+        Integer binarySearch(List<Integer> numbers, int wanted) {
+            int low = 0;
+            int high = numbers.size() - 1;
+            while (low <= high) {
+                int middle = (low + high) / 2;
+                if (numbers.get(middle) == wanted) {
+                    return middle;
+                }
+                if (numbers.get(middle) < wanted) {
+                    low = middle + 1;
+                } else {
+                    high = middle - 1;
+                }
+            }
+            return null;
+        }
+        ```
+
   - id: guesses
     title: "Zahlenraten"
     level: 2
@@ -706,6 +1057,77 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: |
+        Jemand denkt sich eine Zahl von `low` bis `high`, du rätst, und es heißt »größer« oder »kleiner«. Geschickt rät man immer die Mitte, abgerundet. Schreib `List<int> guesses(int secret, int low, int high)`, die die Liste deiner Tipps zurückgibt, bis du `secret` triffst: `guesses(7, 1, 10)` ergibt `[5, 8, 6, 7]`.
+      starter: |
+        List<int> guesses(int secret, int low, int high) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "guesses(7, 1, 10)", expect: "[5, 8, 6, 7]" }
+          - { call: "guesses(5, 1, 10)", expect: "[5]", say: "Gleich der erste Tipp trifft." }
+          - { call: "guesses(1, 1, 100)", expect: "[50, 25, 12, 6, 3, 1]" }
+          - { call: "guesses(100, 1, 100)", expect: "[50, 75, 88, 94, 97, 99, 100]" }
+          - { call: "guesses(42, 1, 1000)", expect: "[500, 250, 125, 62, 31, 46, 38, 42]" }
+      hint: "Wie die binäre Suche, nur ohne Liste: Der Bereich ist von `low` bis `high`, die Mitte `(low + high) ~/ 2` dein Tipp."
+      solution: |
+        ```dart
+        List<int> guesses(int secret, int low, int high) {
+          final tips = <int>[];
+          while (true) {
+            final guess = (low + high) ~/ 2;
+            tips.add(guess);
+            if (guess == secret) {
+              return tips;
+            }
+            if (guess < secret) {
+              low = guess + 1;
+            } else {
+              high = guess - 1;
+            }
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Jemand denkt sich eine Zahl von `low` bis `high`, du rätst, und es heißt »größer« oder »kleiner«. Geschickt rät man immer die Mitte, abgerundet. Schreib `List<Integer> guesses(int secret, int low, int high)`, die die Liste deiner Tipps zurückgibt, bis du `secret` triffst: `guesses(7, 1, 10)` ergibt `[5, 8, 6, 7]`.
+      starter: |
+        List<Integer> guesses(int secret, int low, int high) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "guesses(7, 1, 10)", expect: "List.of(5, 8, 6, 7)" }
+          - { call: "guesses(5, 1, 10)", expect: "List.of(5)", say: "Gleich der erste Tipp trifft." }
+          - { call: "guesses(1, 1, 100)", expect: "List.of(50, 25, 12, 6, 3, 1)" }
+          - { call: "guesses(100, 1, 100)", expect: "List.of(50, 75, 88, 94, 97, 99, 100)" }
+          - { call: "guesses(42, 1, 1000)", expect: "List.of(500, 250, 125, 62, 31, 46, 38, 42)" }
+      hint: "Wie die binäre Suche, nur ohne Liste: Der Bereich ist von `low` bis `high`, die Mitte `(low + high) / 2` dein Tipp."
+      solution: |
+        ```java
+        List<Integer> guesses(int secret, int low, int high) {
+            List<Integer> tips = new ArrayList<>();
+            while (true) {
+                int guess = (low + high) / 2;
+                tips.add(guess);
+                if (guess == secret) {
+                    return tips;
+                }
+                if (guess < secret) {
+                    low = guess + 1;
+                } else {
+                    high = guess - 1;
+                }
+            }
+        }
+        ```
+
   - id: first-at-least
     title: "Ab wo?"
     level: 2
@@ -829,6 +1251,79 @@ tasks:
           return low;
         }
         ```
+    dart:
+      prompt: |
+        In einer aufsteigend sortierten Liste stehen erst alle Zahlen unter `limit`, dann alle ab `limit`. Schreib `int firstAtLeast(List<int> numbers, int limit)`, die den ersten Index ab `limit` zurückgibt, und die Länge der Liste, wenn keine Zahl so groß ist: `firstAtLeast([1, 3, 3, 5, 8], 3)` ergibt `1`. Mit Halbieren: Bleib bei zwei Grenzen, bis sie sich treffen.
+      starter: |
+        int firstAtLeast(List<int> numbers, int limit) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.indexWhere, .indexOf]
+        cases:
+          - { call: "firstAtLeast([1, 3, 3, 5, 8], 3)", expect: "1", say: "Bei gleichen Zahlen zählt die erste." }
+          - { call: "firstAtLeast([1, 3, 3, 5, 8], 4)", expect: "3" }
+          - { call: "firstAtLeast([1, 3, 3, 5, 8], 9)", expect: "5", say: "Keine ist so groß: Dann ist es die Länge der Liste." }
+          - { call: "firstAtLeast([1, 3, 3, 5, 8], 0)", expect: "0" }
+          - { call: "firstAtLeast([], 1)", expect: "0" }
+      hint:
+        - "Die Antwort liegt zwischen `low = 0` und `high = numbers.length`. Ist die Zahl in der Mitte kleiner als `limit`, liegt die Antwort rechts davon; sonst kann es die Mitte selbst sein: `high = middle`."
+        - "Wenn `low` und `high` gleich sind, ist das die Antwort."
+      solution: |
+        ```dart
+        int firstAtLeast(List<int> numbers, int limit) {
+          var low = 0;
+          var high = numbers.length;
+          while (low < high) {
+            final middle = (low + high) ~/ 2;
+            if (numbers[middle] < limit) {
+              low = middle + 1;
+            } else {
+              high = middle;
+            }
+          }
+          return low;
+        }
+        ```
+    java:
+      prompt: |
+        In einer aufsteigend sortierten Liste stehen erst alle Zahlen unter `limit`, dann alle ab `limit`. Schreib `int firstAtLeast(List<Integer> numbers, int limit)`, die den ersten Index ab `limit` zurückgibt, und die Länge der Liste, wenn keine Zahl so groß ist: `firstAtLeast(List.of(1, 3, 3, 5, 8), 3)` ergibt `1`. Mit Halbieren: Bleib bei zwei Grenzen, bis sie sich treffen.
+      starter: |
+        int firstAtLeast(List<Integer> numbers, int limit) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.indexOf, Collections.binarySearch]
+        cases:
+          - { call: "firstAtLeast(List.of(1, 3, 3, 5, 8), 3)", expect: "1", say: "Bei gleichen Zahlen zählt die erste." }
+          - { call: "firstAtLeast(List.of(1, 3, 3, 5, 8), 4)", expect: "3" }
+          - { call: "firstAtLeast(List.of(1, 3, 3, 5, 8), 9)", expect: "5", say: "Keine ist so groß: Dann ist es die Länge der Liste." }
+          - { call: "firstAtLeast(List.of(1, 3, 3, 5, 8), 0)", expect: "0" }
+          - { call: "firstAtLeast(List.of(), 1)", expect: "0" }
+      hint:
+        - "Die Antwort liegt zwischen `low = 0` und `high = numbers.size()`. Ist die Zahl in der Mitte kleiner als `limit`, liegt die Antwort rechts davon; sonst kann es die Mitte selbst sein: `high = middle`."
+        - "Wenn `low` und `high` gleich sind, ist das die Antwort."
+      solution: |
+        ```java
+        int firstAtLeast(List<Integer> numbers, int limit) {
+            int low = 0;
+            int high = numbers.size();
+            while (low < high) {
+                int middle = (low + high) / 2;
+                if (numbers.get(middle) < limit) {
+                    low = middle + 1;
+                } else {
+                    high = middle;
+                }
+            }
+            return low;
+        }
+        ```
+
   - id: int-sqrt
     title: "Die Wurzel durch Halbieren"
     level: 2
@@ -966,6 +1461,91 @@ tasks:
           return low;
         }
         ```
+    dart:
+      prompt: |
+        Schreib `int intSqrt(int n)`, die die größte ganze Zahl `k` zurückgibt, für die `k · k` höchstens `n` ist: `intSqrt(20)` ergibt `4`, denn 4 · 4 = 16 und 5 · 5 = 25. Für `n` bis eine Billion, durch Halbieren zwischen 0 und `n`, ohne `sqrt`.
+      starter: |
+        int intSqrt(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [sqrt, pow, .sqrt]
+        timeout: 5
+        slow: "Bei einer Billion dauert es zu lange, alle Zahlen durchzuprobieren. Halbier den Bereich zwischen 0 und `n`, wie bei der binären Suche."
+        cases:
+          - { call: "intSqrt(20)", expect: "4" }
+          - { call: "intSqrt(16)", expect: "4", say: "Bei einer Quadratzahl genau ihre Wurzel." }
+          - { call: "intSqrt(0)", expect: "0" }
+          - { call: "intSqrt(1)", expect: "1" }
+          - { call: "intSqrt(1000000000000)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht." }
+          - { call: "intSqrt(999999999999)", expect: "999999" }
+      feedback:
+        - when: { same_as: "int intSqrt(int n) {\n  var low = 0;\n  var high = n;\n  while (low < high) {\n    final middle = (low + high + 1) ~/ 2;\n    if (middle * middle <= n) {\n      low = middle;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return low;\n}\n" }
+          say: "Bei einer Billion ist die erste Mitte 500 Milliarden, und ihr Quadrat ist größer als jede ganze Zahl, die Dart kennt (bis etwa 9,2 Trillionen): Die Rechnung läuft über und gibt Unsinn. Frag stattdessen `middle <= n ~/ middle`."
+      hint:
+        - "Die Antwort liegt zwischen `low = 0` und `high = n`. Ist `middle * middle <= n`, kann `middle` die Antwort sein oder eine größere: `low = middle`. Sonst ist sie kleiner: `high = middle - 1`. Nimm die Mitte aufgerundet, `(low + high + 1) ~/ 2`, sonst bleibt `low = middle` bei zwei Zahlen stehen."
+        - "Bei einer Billion wird `middle * middle` zu groß für ein `int`. `middle <= n ~/ middle` fragt dasselbe, ohne so groß zu werden."
+      solution: |
+        ```dart
+        int intSqrt(int n) {
+          var low = 0;
+          var high = n;
+          while (low < high) {
+            final middle = (low + high + 1) ~/ 2;
+            if (middle <= n ~/ middle) {
+              low = middle;
+            } else {
+              high = middle - 1;
+            }
+          }
+          return low;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `long intSqrt(long n)`, die die größte ganze Zahl `k` zurückgibt, für die `k · k` höchstens `n` ist: `intSqrt(20)` ergibt `4`, denn 4 · 4 = 16 und 5 · 5 = 25. Für `n` bis eine Billion, durch Halbieren zwischen 0 und `n`, ohne `Math.sqrt`. Eine Billion passt nicht in ein `int`, darum `long`; als Zahl im Code schreibt man sie `1000000000000L`.
+      starter: |
+        long intSqrt(long n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.sqrt, Math.pow, Math.cbrt]
+        timeout: 8
+        slow: "Bei einer Billion dauert es zu lange, alle Zahlen durchzuprobieren. Halbier den Bereich zwischen 0 und `n`, wie bei der binären Suche."
+        cases:
+          - { call: "intSqrt(20)", expect: "4" }
+          - { call: "intSqrt(16)", expect: "4", say: "Bei einer Quadratzahl genau ihre Wurzel." }
+          - { call: "intSqrt(0)", expect: "0" }
+          - { call: "intSqrt(1)", expect: "1" }
+          - { call: "intSqrt(1000000000000L)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht." }
+          - { call: "intSqrt(999999999999L)", expect: "999999" }
+      feedback:
+        - when: { same_as: "long intSqrt(long n) {\n    long low = 0;\n    long high = n;\n    while (low < high) {\n        long middle = (low + high + 1) / 2;\n        if (middle * middle <= n) {\n            low = middle;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return low;\n}\n" }
+          say: "Bei einer Billion ist die erste Mitte 500 Milliarden, und ihr Quadrat ist größer als jedes `long` (bis etwa 9,2 Trillionen): Die Rechnung läuft über und gibt Unsinn. Frag stattdessen `middle <= n / middle`."
+      hint:
+        - "Die Antwort liegt zwischen `low = 0` und `high = n`. Ist `middle * middle <= n`, kann `middle` die Antwort sein oder eine größere: `low = middle`. Sonst ist sie kleiner: `high = middle - 1`. Nimm die Mitte aufgerundet, `(low + high + 1) / 2`, sonst bleibt `low = middle` bei zwei Zahlen stehen."
+        - "Bei einer Billion wird `middle * middle` zu groß für ein `long`. `middle <= n / middle` fragt dasselbe, ohne so groß zu werden."
+      solution: |
+        ```java
+        long intSqrt(long n) {
+            long low = 0;
+            long high = n;
+            while (low < high) {
+                long middle = (low + high + 1) / 2;
+                if (middle <= n / middle) {
+                    low = middle;
+                } else {
+                    high = middle - 1;
+                }
+            }
+            return low;
+        }
+        ```
+
   - id: insert-sorted
     title: "Einsortieren"
     level: 3
@@ -1073,6 +1653,69 @@ tasks:
           return [...numbers.slice(0, i), value, ...numbers.slice(i)];
         }
         ```
+    dart:
+      prompt: |
+        Schreib `List<int> insertSorted(List<int> numbers, int value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Position der aufsteigend sortierten Liste `numbers` steht: `insertSorted([1, 4, 9], 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Position und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
+      starter: |
+        List<int> insertSorted(List<int> numbers, int value) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.sort]
+        cases:
+          - { call: "insertSorted([1, 4, 9], 5)", expect: "[1, 4, 5, 9]" }
+          - { call: "insertSorted([1, 4, 9], 0)", expect: "[0, 1, 4, 9]", say: "Ganz nach vorn." }
+          - { call: "insertSorted([1, 4, 9], 10)", expect: "[1, 4, 9, 10]", say: "Ganz nach hinten." }
+          - { call: "insertSorted([], 3)", expect: "[3]" }
+          - { call: "insertSorted([2, 2, 2], 2)", expect: "[2, 2, 2, 2]" }
+      hint:
+        - "Zwei Schritte: Such den ersten Index, an dem eine Zahl nicht mehr kleiner als `value` ist (oder das Ende); dann setz die Liste aus den drei Teilen davor, `value` und danach zusammen."
+        - "`numbers.sublist(0, i)` ist alles vor dem Index `i`, `numbers.sublist(i)` alles ab ihm; `[...a, value, ...b]` setzt sie zusammen."
+      solution: |
+        ```dart
+        List<int> insertSorted(List<int> numbers, int value) {
+          var i = 0;
+          while (i < numbers.length && numbers[i] < value) {
+            i++;
+          }
+          return [...numbers.sublist(0, i), value, ...numbers.sublist(i)];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `List<Integer> insertSorted(List<Integer> numbers, int value)`, die eine neue Liste zurückgibt, in der `value` an der richtigen Position der aufsteigend sortierten Liste `numbers` steht: `insertSorted(List.of(1, 4, 9), 5)` ergibt `[1, 4, 5, 9]`. Ohne zu sortieren: Such die Position und setz die Zahl dort ein. So arbeitet Insertion Sort, Zahl für Zahl.
+      starter: |
+        List<Integer> insertSorted(List<Integer> numbers, int value) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.sort, Collections.sort, .sorted]
+        cases:
+          - { call: "insertSorted(List.of(1, 4, 9), 5)", expect: "List.of(1, 4, 5, 9)" }
+          - { call: "insertSorted(List.of(1, 4, 9), 0)", expect: "List.of(0, 1, 4, 9)", say: "Ganz nach vorn." }
+          - { call: "insertSorted(List.of(1, 4, 9), 10)", expect: "List.of(1, 4, 9, 10)", say: "Ganz nach hinten." }
+          - { call: "insertSorted(List.of(), 3)", expect: "List.of(3)" }
+          - { call: "insertSorted(List.of(2, 2, 2), 2)", expect: "List.of(2, 2, 2, 2)" }
+      hint:
+        - "Zwei Schritte: Such den ersten Index, an dem eine Zahl nicht mehr kleiner als `value` ist (oder das Ende); dann setz die Zahl dort ein."
+        - "`new ArrayList<>(numbers)` ist eine Kopie, die du ändern kannst; `result.add(i, value)` setzt `value` an den Index `i`, und alles ab dort rückt eins nach hinten."
+      solution: |
+        ```java
+        List<Integer> insertSorted(List<Integer> numbers, int value) {
+            int i = 0;
+            while (i < numbers.size() && numbers.get(i) < value) {
+                i++;
+            }
+            List<Integer> result = new ArrayList<>(numbers);
+            result.add(i, value);
+            return result;
+        }
+        ```
+
   - id: is-permutation
     title: "Nur anders sortiert?"
     level: 3
@@ -1191,6 +1834,86 @@ tasks:
           return Object.values(counts).every((c) => c === 0);
         }
         ```
+    dart:
+      prompt: |
+        Schreib `bool isPermutation(List<int> a, List<int> b)`, die `true` zurückgibt, wenn `b` dieselben Zahlen wie `a` enthält, jede gleich oft, nur vielleicht in anderer Reihenfolge, und sonst `false`: `isPermutation([3, 1, 2], [1, 2, 3])` ergibt `true`. Ohne zu sortieren: Zähl, wie in einer Strichliste.
+      starter: |
+        bool isPermutation(List<int> a, List<int> b) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.sort]
+        cases:
+          - { call: "isPermutation([3, 1, 2], [1, 2, 3])", expect: "true" }
+          - { call: "isPermutation([1, 1, 2], [1, 2, 2])", expect: "false", say: "Dieselben Zahlen reichen nicht: Jede muss gleich oft vorkommen." }
+          - { call: "isPermutation([], [])", expect: "true" }
+          - { call: "isPermutation([1, 2], [1, 2, 3])", expect: "false" }
+          - { call: "isPermutation([5, 5], [5, 5])", expect: "true" }
+      feedback:
+        - when: { same_as: "bool isPermutation(List<int> a, List<int> b) {\n  return a.length == b.length && a.every((x) => b.contains(x));\n}\n" }
+          say: "`[1, 1, 2]` und `[1, 2, 2]` sind gleich lang, und jede Zahl der einen steht in der anderen. Aber nicht gleich oft: Zähl."
+      hint: "Eine Strichliste aus den Dictionaries, eine Map `<int, int>{}`: für `a` hochzählen, für `b` herunterzählen. Was bleibt bei einer Permutation übrig?"
+      solution: |
+        ```dart
+        bool isPermutation(List<int> a, List<int> b) {
+          if (a.length != b.length) {
+            return false;
+          }
+          final counts = <int, int>{};
+          for (final x in a) {
+            counts[x] = (counts[x] ?? 0) + 1;
+          }
+          for (final x in b) {
+            counts[x] = (counts[x] ?? 0) - 1;
+          }
+          return counts.values.every((c) => c == 0);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `boolean isPermutation(List<Integer> a, List<Integer> b)`, die `true` zurückgibt, wenn `b` dieselben Zahlen wie `a` enthält, jede gleich oft, nur vielleicht in anderer Reihenfolge, und sonst `false`: `isPermutation(List.of(3, 1, 2), List.of(1, 2, 3))` ergibt `true`. Ohne zu sortieren: Zähl, wie in einer Strichliste.
+      starter: |
+        boolean isPermutation(List<Integer> a, List<Integer> b) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.sort, Collections.sort, .sorted]
+        cases:
+          - { call: "isPermutation(List.of(3, 1, 2), List.of(1, 2, 3))", expect: "true" }
+          - { call: "isPermutation(List.of(1, 1, 2), List.of(1, 2, 2))", expect: "false", say: "Dieselben Zahlen reichen nicht: Jede muss gleich oft vorkommen." }
+          - { call: "isPermutation(List.of(), List.of())", expect: "true" }
+          - { call: "isPermutation(List.of(1, 2), List.of(1, 2, 3))", expect: "false" }
+          - { call: "isPermutation(List.of(5, 5), List.of(5, 5))", expect: "true" }
+      feedback:
+        - when: { same_as: "boolean isPermutation(List<Integer> a, List<Integer> b) {\n    return a.size() == b.size() && b.containsAll(a);\n}\n" }
+          say: "`[1, 1, 2]` und `[1, 2, 2]` sind gleich lang, und jede Zahl der einen steht in der anderen. Aber nicht gleich oft: Zähl."
+      hint: "Eine Strichliste aus den Dictionaries, eine `HashMap<Integer, Integer>`: für `a` hochzählen, für `b` herunterzählen. Was bleibt bei einer Permutation übrig?"
+      solution: |
+        ```java
+        boolean isPermutation(List<Integer> a, List<Integer> b) {
+            if (a.size() != b.size()) {
+                return false;
+            }
+            Map<Integer, Integer> counts = new HashMap<>();
+            for (int x : a) {
+                counts.put(x, counts.getOrDefault(x, 0) + 1);
+            }
+            for (int x : b) {
+                counts.put(x, counts.getOrDefault(x, 0) - 1);
+            }
+            for (int c : counts.values()) {
+                if (c != 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ```
+
   - id: rotation-point
     title: "Wo fängt es wieder an?"
     level: 3
@@ -1311,6 +2034,77 @@ tasks:
           return low;
         }
         ```
+    dart:
+      prompt: |
+        Eine aufsteigend sortierte Liste verschiedener Zahlen wurde gedreht: Ein Stück vom Anfang ist ans Ende gewandert, aus `[1, 2, 3, 4, 5, 6]` wurde `[4, 5, 6, 1, 2, 3]`. Schreib `int rotationPoint(List<int> numbers)`, die den Index der kleinsten Zahl zurückgibt, dort, wo es wieder anfängt: hier `3`. Mit Halbieren: Ist die Zahl in der Mitte größer als die letzte, liegt der Anfang rechts von ihr.
+      starter: |
+        int rotationPoint(List<int> numbers) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [min, .reduce, .indexOf, .sort, .indexWhere]
+        cases:
+          - { call: "rotationPoint([4, 5, 6, 1, 2, 3])", expect: "3" }
+          - { call: "rotationPoint([1, 2, 3])", expect: "0", say: "Gar nicht gedreht: Der Anfang ist vorn." }
+          - { call: "rotationPoint([2, 1])", expect: "1" }
+          - { call: "rotationPoint([5])", expect: "0" }
+          - { call: "rotationPoint([30, 40, 50, 10, 20])", expect: "3" }
+          - { call: "rotationPoint([2, 3, 4, 5, 6, 7, 8, 1])", expect: "7" }
+      hint: "Wie bei »Ab wo?«: zwei Grenzen, bis sie sich treffen. Vergleich die Mitte mit `numbers[high]`."
+      solution: |
+        ```dart
+        int rotationPoint(List<int> numbers) {
+          var low = 0;
+          var high = numbers.length - 1;
+          while (low < high) {
+            final middle = (low + high) ~/ 2;
+            if (numbers[middle] > numbers[high]) {
+              low = middle + 1;
+            } else {
+              high = middle;
+            }
+          }
+          return low;
+        }
+        ```
+    java:
+      prompt: |
+        Eine aufsteigend sortierte Liste verschiedener Zahlen wurde gedreht: Ein Stück vom Anfang ist ans Ende gewandert, aus `[1, 2, 3, 4, 5, 6]` wurde `[4, 5, 6, 1, 2, 3]`. Schreib `int rotationPoint(List<Integer> numbers)`, die den Index der kleinsten Zahl zurückgibt, dort, wo es wieder anfängt: hier `3`. Mit Halbieren: Ist die Zahl in der Mitte größer als die letzte, liegt der Anfang rechts von ihr.
+      starter: |
+        int rotationPoint(List<Integer> numbers) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Collections.min, .indexOf, .sort, .min, .stream]
+        cases:
+          - { call: "rotationPoint(List.of(4, 5, 6, 1, 2, 3))", expect: "3" }
+          - { call: "rotationPoint(List.of(1, 2, 3))", expect: "0", say: "Gar nicht gedreht: Der Anfang ist vorn." }
+          - { call: "rotationPoint(List.of(2, 1))", expect: "1" }
+          - { call: "rotationPoint(List.of(5))", expect: "0" }
+          - { call: "rotationPoint(List.of(30, 40, 50, 10, 20))", expect: "3" }
+          - { call: "rotationPoint(List.of(2, 3, 4, 5, 6, 7, 8, 1))", expect: "7" }
+      hint: "Wie bei »Ab wo?«: zwei Grenzen, bis sie sich treffen. Vergleich die Mitte mit `numbers.get(high)`."
+      solution: |
+        ```java
+        int rotationPoint(List<Integer> numbers) {
+            int low = 0;
+            int high = numbers.size() - 1;
+            while (low < high) {
+                int middle = (low + high) / 2;
+                if (numbers.get(middle) > numbers.get(high)) {
+                    low = middle + 1;
+                } else {
+                    high = middle;
+                }
+            }
+            return low;
+        }
+        ```
+
   - id: search-steps
     title: "Wie viele Schritte?"
     extra: true
@@ -1440,6 +2234,85 @@ tasks:
           return steps;
         }
         ```
+    dart:
+      prompt: |
+        Schreib deine binäre Suche so um, dass sie zählt, wie oft sie in eine Mitte schaut, bis sie die Zahl hat oder der Bereich leer ist: `searchSteps([2, 5, 8, 12, 16, 23], 12)` ergibt `3`. Probier sie dann an langen Listen aus: Wie viele Schritte braucht sie bei 1000 Zahlen, bei einer Million? Wie viele die lineare Suche?
+      starter: |
+        int searchSteps(List<int> numbers, int wanted) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "searchSteps([2, 5, 8, 12, 16, 23], 12)", expect: "3" }
+          - { call: "searchSteps([2, 5, 8, 12, 16, 23], 8)", expect: "1", say: "Gleich die erste Mitte." }
+          - { call: "searchSteps([2, 5, 8, 12, 16, 23], 1)", expect: "2" }
+          - { call: "searchSteps([], 4)", expect: "0" }
+          - { call: "searchSteps([for (var i = 0; i < 1000; i++) i], 999)", expect: "10" }
+          - { call: "searchSteps([for (var i = 0; i < 1024; i++) i], -1)", expect: "10" }
+      hint: "Deine binäre Suche mit einem Zähler, der in jedem Durchlauf der Schleife um eins wächst."
+      solution: |
+        ```dart
+        int searchSteps(List<int> numbers, int wanted) {
+          var low = 0;
+          var high = numbers.length - 1;
+          var steps = 0;
+          while (low <= high) {
+            steps++;
+            final middle = (low + high) ~/ 2;
+            if (numbers[middle] == wanted) {
+              return steps;
+            }
+            if (numbers[middle] < wanted) {
+              low = middle + 1;
+            } else {
+              high = middle - 1;
+            }
+          }
+          return steps;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib deine binäre Suche so um, dass sie zählt, wie oft sie in eine Mitte schaut, bis sie die Zahl hat oder der Bereich leer ist: `searchSteps(List.of(2, 5, 8, 12, 16, 23), 12)` ergibt `3`. Probier sie dann an langen Listen aus: Wie viele Schritte braucht sie bei 1000 Zahlen, bei einer Million? Wie viele die lineare Suche?
+      starter: |
+        int searchSteps(List<Integer> numbers, int wanted) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "searchSteps(List.of(2, 5, 8, 12, 16, 23), 12)", expect: "3" }
+          - { call: "searchSteps(List.of(2, 5, 8, 12, 16, 23), 8)", expect: "1", say: "Gleich die erste Mitte." }
+          - { call: "searchSteps(List.of(2, 5, 8, 12, 16, 23), 1)", expect: "2" }
+          - { call: "searchSteps(List.of(), 4)", expect: "0" }
+          - { call: "List<Integer> numbers = new ArrayList<>(); for (int i = 0; i < 1000; i++) numbers.add(i); searchSteps(numbers, 999)", expect: "10" }
+          - { call: "List<Integer> numbers = new ArrayList<>(); for (int i = 0; i < 1024; i++) numbers.add(i); searchSteps(numbers, -1)", expect: "10" }
+      hint: "Deine binäre Suche mit einem Zähler, der in jedem Durchlauf der Schleife um eins wächst."
+      solution: |
+        ```java
+        int searchSteps(List<Integer> numbers, int wanted) {
+            int low = 0;
+            int high = numbers.size() - 1;
+            int steps = 0;
+            while (low <= high) {
+                steps++;
+                int middle = (low + high) / 2;
+                if (numbers.get(middle) == wanted) {
+                    return steps;
+                }
+                if (numbers.get(middle) < wanted) {
+                    low = middle + 1;
+                } else {
+                    high = middle - 1;
+                }
+            }
+            return steps;
+        }
+        ```
+
   - id: count-found
     title: "Hunderttausend Suchen"
     extra: true
@@ -1579,5 +2452,101 @@ tasks:
             }
           }
           return count;
+        }
+        ```
+    dart:
+      prompt: |
+        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<int> numbers, List<int> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als fünf Sekunden. Mit der linearen Suche dauert es Stunden.
+      starter: |
+        int countFound(List<int> numbers, List<int> queries) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [Set, .toSet]
+        timeout: 5
+        slow: "Zu langsam: Bei jeder Suche gehst du die ganze Liste durch, hunderttausendmal hunderttausend Vergleiche. Die binäre Suche braucht für jede Suche nur etwa 17."
+        cases:
+          - { call: "countFound([1, 3, 5], [1, 2, 3])", expect: "2" }
+          - { call: "countFound([], [1])", expect: "0" }
+          - { call: "countFound([2, 4], [])", expect: "0" }
+          - { call: "countFound([for (var i = 0; i < 100000; i++) i * 3], [for (var i = 0; i < 100000; i++) i])", expect: "33334", say: "Alle Vielfachen von 3 unter 100 000." }
+      hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Funktion von vorhin darfst du hier hineinschreiben und aufrufen."
+      solution: |
+        ```dart
+        bool binarySearch(List<int> numbers, int wanted) {
+          var low = 0;
+          var high = numbers.length - 1;
+          while (low <= high) {
+            final middle = (low + high) ~/ 2;
+            if (numbers[middle] == wanted) {
+              return true;
+            }
+            if (numbers[middle] < wanted) {
+              low = middle + 1;
+            } else {
+              high = middle - 1;
+            }
+          }
+          return false;
+        }
+
+        int countFound(List<int> numbers, List<int> queries) {
+          var count = 0;
+          for (final wanted in queries) {
+            if (binarySearch(numbers, wanted)) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<Integer> numbers, List<Integer> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als acht Sekunden. Mit der linearen Suche dauert es Stunden.
+      starter: |
+        int countFound(List<Integer> numbers, List<Integer> queries) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Set, HashSet, TreeSet, Collections.binarySearch, Arrays.binarySearch]
+        timeout: 8
+        slow: "Zu langsam: Bei jeder Suche gehst du die ganze Liste durch, hunderttausendmal hunderttausend Vergleiche. Die binäre Suche braucht für jede Suche nur etwa 17."
+        cases:
+          - { call: "countFound(List.of(1, 3, 5), List.of(1, 2, 3))", expect: "2" }
+          - { call: "countFound(List.of(), List.of(1))", expect: "0" }
+          - { call: "countFound(List.of(2, 4), List.of())", expect: "0" }
+          - { call: "List<Integer> numbers = new ArrayList<>(); List<Integer> queries = new ArrayList<>(); for (int i = 0; i < 100000; i++) { numbers.add(i * 3); queries.add(i); }; countFound(numbers, queries)", expect: "33334", say: "Alle Vielfachen von 3 unter 100 000." }
+      hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Methode von vorhin darfst du hier hineinschreiben und aufrufen."
+      solution: |
+        ```java
+        boolean binarySearch(List<Integer> numbers, int wanted) {
+            int low = 0;
+            int high = numbers.size() - 1;
+            while (low <= high) {
+                int middle = (low + high) / 2;
+                if (numbers.get(middle) == wanted) {
+                    return true;
+                }
+                if (numbers.get(middle) < wanted) {
+                    low = middle + 1;
+                } else {
+                    high = middle - 1;
+                }
+            }
+            return false;
+        }
+
+        int countFound(List<Integer> numbers, List<Integer> queries) {
+            int count = 0;
+            for (int wanted : queries) {
+                if (binarySearch(numbers, wanted)) {
+                    count++;
+                }
+            }
+            return count;
         }
         ```
