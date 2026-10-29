@@ -355,12 +355,12 @@ check-task-fails: lock python
 - `terminal-expect-no-text: TEXT` does the same for the Workspace's terminals,
   whatever tab the recipe captures: `error:` after a compiler, `***` after
   `make`.
-- `check-task: ID [ruby|python]` runs the check of task `ID` from the
+- `check-task: ID [ruby|python|javascript|dart|java]` runs the check of task `ID` from the
   tutorial's own `tasks.yaml` exactly as the »Prüfen« button does, as the
   screenshot user against their Workspace, in the given language variant
   (without one: the task as written). The render fails unless the task
   passes. Like »Prüfen«, it records the result for the screenshot user.
-- `check-task-fails: ID [ruby|python]` expects the check to reject: the step
+- `check-task-fails: ID [ruby|python|javascript|dart|java]` expects the check to reject: the step
   before the task must not already solve it.
 - After `<-` comes what a student types into the card, for `command`,
   `answer`, `number` and `choice` tasks (an option by its number, from 0):

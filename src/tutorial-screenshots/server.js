@@ -700,7 +700,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.actions.push({ type: 'terminal-expect-no-text', text: match[1] });
         } else if ((match = line.match(/^expect-no-text:\s*(.+)$/))) {
             recipe.actions.push({ type: 'expect-no-text', text: match[1] });
-        } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python))?(?:\s+<-\s*(.*))?$/))) {
+        } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python|javascript|dart|java))?(?:\s+<-\s*(.*))?$/))) {
             // The task lives in the tutorial's own tasks.yaml: activity/id.
             // After <- comes what a student types into the card: a command,
             // an answer, the number of an option.
