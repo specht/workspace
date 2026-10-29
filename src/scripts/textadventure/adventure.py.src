@@ -1,0 +1,251 @@
+# Ein Textadventure aus Objekten: Nachts in der Schule.
+
+
+class Room:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self._exits = {}
+@5         self._locks = {}
+@2         self.items = []
+
+    def connect(self, direction, room):
+        self._exits[direction] = room
+
+    def exit_to(self, direction):
+        return self._exits.get(direction)
+
+    def directions(self):
+        return list(self._exits.keys())
+@2 
+@2     def add_item(self, item):
+@2         self.items.append(item)
+@2 
+@2     def take(self, name):
+@2         for item in self.items:
+@2             if item.name == name:
+@2                 self.items.remove(item)
+@2                 return item
+@2         return None
+@5 
+@5     def lock(self, direction, key_name):
+@5         self._locks[direction] = key_name
+@5 
+@5     def is_locked(self, direction):
+@5         return direction in self._locks
+@5 
+@5     def unlock(self, key_name):
+@5         doors = [d for d, key in self._locks.items() if key == key_name]
+@5         for direction in doors:
+@5             del self._locks[direction]
+@5         return len(doors) > 0
+@6 
+@6     def is_dark(self):
+@6         return False
+@7 
+@7     def is_goal(self):
+@7         return False
+@3 
+@3     def describe(self):
+@3         lines = [self.name, self.description]
+@3         if self.items:
+@3             lines.append("Hier liegt: " + ", ".join(item.name for item in self.items))
+@3-4         exits = self.directions()
+@5         exits = [d + " (verschlossen)" if self.is_locked(d) else d for d in self.directions()]
+@3         lines.append("Ausgänge: " + (", ".join(exits) if exits else "keine"))
+@3         return "\n".join(lines)
+@6 
+@6 
+@6 class DarkRoom(Room):
+@6     def is_dark(self):
+@6         return True
+@7 
+@7 
+@7 class GoalRoom(Room):
+@7     def is_goal(self):
+@7         return True
+@2 
+@2 
+@2 class Item:
+@2     def __init__(self, name, description):
+@2         self.name = name
+@2         self.description = description
+@5 
+@5     def use(self, player):
+@5         return "Damit kannst du hier nichts anfangen."
+@6 
+@6     def shines(self):
+@6         return False
+@5 
+@5 
+@5 class Key(Item):
+@5     def use(self, player):
+@5         if player.room.unlock(self.name):
+@5             return "Du schließt die Tür auf."
+@5         return f"Hier passt {self.name} in kein Schloss."
+@5 
+@5 
+@5 class Food(Item):
+@5     def use(self, player):
+@5         player.remove(self)
+@5         return f"Du isst {self.name}. {self.description}"
+@6 
+@6 
+@6 class Lamp(Item):
+@6     def use(self, player):
+@6         return f"{self.name} leuchtet schon."
+@6 
+@6     def shines(self):
+@6         return True
+@8 
+@8 
+@8 class Chest(Item):
+@8     def __init__(self, name, description):
+@8         super().__init__(name, description)
+@8         self._contents = []
+@8 
+@8     def put(self, item):
+@8         self._contents.append(item)
+@8 
+@8     def use(self, player):
+@8         if not self._contents:
+@8             return f"{self.name} ist leer."
+@8         names = ", ".join(item.name for item in self._contents)
+@8         for item in self._contents:
+@8             player.room.add_item(item)
+@8         self._contents = []
+@8         return f"Du öffnest {self.name}. Darin: {names}"
+@4 
+@4 
+@4 class Player:
+@4     def __init__(self, room):
+@4         self.room = room
+@4         self._bag = []
+@4 
+@4     def look(self):
+@6         if self.room.is_dark() and not self.has_light():
+@6             return "Es ist stockdunkel. Du siehst nichts."
+@4         return self.room.describe()
+@4 
+@4     def go(self, direction):
+@4         target = self.room.exit_to(direction)
+@4         if target is None:
+@4             return "Da geht es nicht weiter."
+@5         if self.room.is_locked(direction):
+@5             return f"Die Tür nach {direction} ist verschlossen."
+@4         self.room = target
+@4         return self.look()
+@4 
+@4     def take(self, name):
+@6         if self.room.is_dark() and not self.has_light():
+@6             return "Im Dunkeln findest du nichts."
+@4         item = self.room.take(name)
+@4         if item is None:
+@4             return f"Hier liegt nichts mit dem Namen {name}."
+@4         self._bag.append(item)
+@4         return f"Du nimmst {item.name}."
+@4 
+@4     def has(self, name):
+@4         return any(item.name == name for item in self._bag)
+@4 
+@4     def bag(self):
+@4         if not self._bag:
+@4             return "Deine Tasche ist leer."
+@4         return "In deiner Tasche: " + ", ".join(item.name for item in self._bag)
+@5 
+@5     def remove(self, item):
+@5         self._bag.remove(item)
+@5 
+@5     def use(self, name):
+@5         for item in self._bag:
+@5             if item.name == name:
+@5                 return item.use(self)
+@5         return f"Du hast nichts mit dem Namen {name}."
+@6 
+@6     def has_light(self):
+@6         return any(item.shines() for item in self._bag)
+@7 
+@7     def examine(self, name):
+@7         for item in self._bag + self.room.items:
+@7             if item.name == name:
+@7                 return item.description
+@7         return f"Hier gibt es nichts mit dem Namen {name}."
+@7 
+@7 
+@7 class Game:
+@7     def __init__(self, player):
+@7         self._player = player
+@7         self._over = False
+@7 
+@7     def start(self):
+@7         return self._player.look()
+@7 
+@7     def is_over(self):
+@7         return self._over
+@7 
+@7     def is_won(self):
+@7         return self._player.room.is_goal()
+@7 
+@7     def handle(self, line):
+@7         parts = line.strip().lower().split(" ", 1)
+@7         verb = parts[0]
+@7         word = parts[1] if len(parts) > 1 else ""
+@7         if verb == "gehe":
+@7             text = self._player.go(word)
+@7         elif verb == "nimm":
+@7             text = self._player.take(word)
+@7         elif verb == "benutze":
+@7             text = self._player.use(word)
+@7         elif verb == "untersuche":
+@7             text = self._player.examine(word)
+@7         elif verb == "schau":
+@7             text = self._player.look()
+@7         elif verb == "tasche":
+@7             text = self._player.bag()
+@7         elif verb == "ende":
+@7             self._over = True
+@7             text = "Bis bald."
+@7         else:
+@7             text = "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende"
+@7         if self.is_won():
+@7             self._over = True
+@7         return text
+@8 
+@8 
+@8 # Alle Räume, die man von start aus erreicht, start zuerst (gegeben).
+@8 def all_rooms(start):
+@8     seen = [start]
+@8     queue = [start]
+@8     while queue:
+@8         room = queue.pop(0)
+@8         for direction in room.directions():
+@8             other = room.exit_to(direction)
+@8             if other not in seen:
+@8                 seen.append(other)
+@8                 queue.append(other)
+@8     return seen
+@8 
+@8 
+@8 # Deine Welt: ein Wohnheim, in dem das Licht ausgefallen ist.
+@8 def build_world():
+@8     room = Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+@8     corridor = DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.")
+@8     kitchen = Room("Küche", "Im Kühlschrank brummt nichts mehr.")
+@8     fuse = GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+@8     room.connect("flur", corridor)
+@8     corridor.connect("zimmer", room)
+@8     corridor.connect("küche", kitchen)
+@8     kitchen.connect("flur", corridor)
+@8     corridor.connect("kasten", fuse)
+@8     corridor.lock("kasten", "kastenschlüssel")
+@8     room.add_item(Lamp("kerze", "Eine Kerze, die schon brennt."))
+@8     kitchen.add_item(Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+@8     kitchen.add_item(Food("keks", "Ein bisschen weich, aber gut."))
+@8     return Player(room)
+@8 
+@8 
+@8 # Der Weg zum Ziel, Befehl für Befehl: Game spielt ihn durch.
+@8 WALKTHROUGH = [
+@8     "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+@8     "benutze kastenschlüssel", "gehe kasten",
+@8 ]

@@ -1,4 +1,4 @@
-# Ein Textadventure aus Objekten: Räume, Gegenstände, eine Spielerin.
+# Ein Textadventure aus Objekten: Nachts in der Schule.
 
 class Room
   attr_reader :name, :description, :items
@@ -51,24 +51,37 @@ class Item
 end
 
 class Player
-  attr_reader :room, :inventory
+  attr_reader :room
 
   def initialize(room)
     @room = room
-    @inventory = []
+    @bag = []
+  end
+
+  def look
+    @room.describe
   end
 
   def go(direction)
     target = @room.exit_to(direction)
     return "Da geht es nicht weiter." if target.nil?
     @room = target
-    @room.describe
+    look
   end
 
   def take(name)
     item = @room.take(name)
     return "Hier liegt nichts mit dem Namen #{name}." if item.nil?
-    @inventory << item
+    @bag << item
     "Du nimmst #{item.name}."
+  end
+
+  def has?(name)
+    @bag.any? { |item| item.name == name }
+  end
+
+  def bag
+    return "Deine Tasche ist leer." if @bag.empty?
+    "In deiner Tasche: #{@bag.map(&:name).join(', ')}"
   end
 end

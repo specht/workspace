@@ -1,0 +1,280 @@
+# Ein Textadventure aus Objekten: Nachts in der Schule.
+
+class Room
+@1-1   attr_reader :name, :description
+@2   attr_reader :name, :description, :items
+
+  def initialize(name, description)
+    @name = name
+    @description = description
+    @exits = {}
+@5     @locks = {}
+@2     @items = []
+  end
+
+  def connect(direction, room)
+    @exits[direction] = room
+  end
+
+  def exit_to(direction)
+    @exits[direction]
+  end
+
+  def directions
+    @exits.keys
+  end
+@2 
+@2   def add_item(item)
+@2     @items << item
+@2   end
+@2 
+@2   def take(name)
+@2     item = @items.find { |i| i.name == name }
+@2     @items.delete(item) if item
+@2     item
+@2   end
+@5 
+@5   def lock(direction, key_name)
+@5     @locks[direction] = key_name
+@5   end
+@5 
+@5   def locked?(direction)
+@5     @locks.key?(direction)
+@5   end
+@5 
+@5   def unlock(key_name)
+@5     doors = @locks.select { |_, key| key == key_name }.keys
+@5     doors.each { |direction| @locks.delete(direction) }
+@5     !doors.empty?
+@5   end
+@6 
+@6   def dark?
+@6     false
+@6   end
+@7 
+@7   def goal?
+@7     false
+@7   end
+@3 
+@3   def describe
+@3     lines = [@name, @description]
+@3     lines << "Hier liegt: #{@items.map(&:name).join(', ')}" unless @items.empty?
+@3-4     exits = directions
+@5     exits = directions.map { |d| locked?(d) ? "#{d} (verschlossen)" : d }
+@3     lines << "Ausgänge: #{exits.empty? ? 'keine' : exits.join(', ')}"
+@3     lines.join("\n")
+@3   end
+end
+@6 
+@6 class DarkRoom < Room
+@6   def dark?
+@6     true
+@6   end
+@6 end
+@7 
+@7 class GoalRoom < Room
+@7   def goal?
+@7     true
+@7   end
+@7 end
+@2 
+@2 class Item
+@2   attr_reader :name, :description
+@2 
+@2   def initialize(name, description)
+@2     @name = name
+@2     @description = description
+@2   end
+@5 
+@5   def use(player)
+@5     "Damit kannst du hier nichts anfangen."
+@5   end
+@6 
+@6   def shines?
+@6     false
+@6   end
+@2 end
+@5 
+@5 class Key < Item
+@5   def use(player)
+@5     if player.room.unlock(name)
+@5       "Du schließt die Tür auf."
+@5     else
+@5       "Hier passt #{name} in kein Schloss."
+@5     end
+@5   end
+@5 end
+@5 
+@5 class Food < Item
+@5   def use(player)
+@5     player.remove(self)
+@5     "Du isst #{name}. #{description}"
+@5   end
+@5 end
+@6 
+@6 class Lamp < Item
+@6   def use(player)
+@6     "#{name} leuchtet schon."
+@6   end
+@6 
+@6   def shines?
+@6     true
+@6   end
+@6 end
+@8 
+@8 class Chest < Item
+@8   def initialize(name, description)
+@8     super(name, description)
+@8     @contents = []
+@8   end
+@8 
+@8   def put(item)
+@8     @contents << item
+@8   end
+@8 
+@8   def use(player)
+@8     return "#{name} ist leer." if @contents.empty?
+@8     names = @contents.map(&:name).join(", ")
+@8     @contents.each { |item| player.room.add_item(item) }
+@8     @contents = []
+@8     "Du öffnest #{name}. Darin: #{names}"
+@8   end
+@8 end
+@4 
+@4 class Player
+@4   attr_reader :room
+@4 
+@4   def initialize(room)
+@4     @room = room
+@4     @bag = []
+@4   end
+@4 
+@4   def look
+@6     return "Es ist stockdunkel. Du siehst nichts." if @room.dark? && !has_light?
+@4     @room.describe
+@4   end
+@4 
+@4   def go(direction)
+@4     target = @room.exit_to(direction)
+@4     return "Da geht es nicht weiter." if target.nil?
+@5     return "Die Tür nach #{direction} ist verschlossen." if @room.locked?(direction)
+@4     @room = target
+@4     look
+@4   end
+@4 
+@4   def take(name)
+@6     return "Im Dunkeln findest du nichts." if @room.dark? && !has_light?
+@4     item = @room.take(name)
+@4     return "Hier liegt nichts mit dem Namen #{name}." if item.nil?
+@4     @bag << item
+@4     "Du nimmst #{item.name}."
+@4   end
+@4 
+@4   def has?(name)
+@4     @bag.any? { |item| item.name == name }
+@4   end
+@4 
+@4   def bag
+@4     return "Deine Tasche ist leer." if @bag.empty?
+@4     "In deiner Tasche: #{@bag.map(&:name).join(', ')}"
+@4   end
+@5 
+@5   def remove(item)
+@5     @bag.delete(item)
+@5   end
+@5 
+@5   def use(name)
+@5     item = @bag.find { |i| i.name == name }
+@5     return "Du hast nichts mit dem Namen #{name}." if item.nil?
+@5     item.use(self)
+@5   end
+@6 
+@6   def has_light?
+@6     @bag.any?(&:shines?)
+@6   end
+@7 
+@7   def examine(name)
+@7     item = @bag.find { |i| i.name == name } || @room.items.find { |i| i.name == name }
+@7     return "Hier gibt es nichts mit dem Namen #{name}." if item.nil?
+@7     item.description
+@7   end
+@4 end
+@7 
+@7 class Game
+@7   def initialize(player)
+@7     @player = player
+@7     @over = false
+@7   end
+@7 
+@7   def start
+@7     @player.look
+@7   end
+@7 
+@7   def over?
+@7     @over
+@7   end
+@7 
+@7   def won?
+@7     @player.room.goal?
+@7   end
+@7 
+@7   def handle(line)
+@7     verb, word = line.strip.downcase.split(" ", 2)
+@7     word = word.to_s
+@7     text = case verb
+@7            when "gehe" then @player.go(word)
+@7            when "nimm" then @player.take(word)
+@7            when "benutze" then @player.use(word)
+@7            when "untersuche" then @player.examine(word)
+@7            when "schau" then @player.look
+@7            when "tasche" then @player.bag
+@7            when "ende"
+@7              @over = true
+@7              "Bis bald."
+@7            else
+@7              "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende"
+@7            end
+@7     @over = true if won?
+@7     text
+@7   end
+@7 end
+@8 
+@8 # Alle Räume, die man von start aus erreicht, start zuerst (gegeben).
+@8 def all_rooms(start)
+@8   seen = [start]
+@8   queue = [start]
+@8   until queue.empty?
+@8     room = queue.shift
+@8     room.directions.each do |direction|
+@8       other = room.exit_to(direction)
+@8       next if seen.include?(other)
+@8       seen << other
+@8       queue << other
+@8     end
+@8   end
+@8   seen
+@8 end
+@8 
+@8 # Deine Welt: ein Wohnheim, in dem das Licht ausgefallen ist.
+@8 def build_world
+@8   room = Room.new("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+@8   corridor = DarkRoom.new("Gang", "Ein langer Gang mit Türen links und rechts.")
+@8   kitchen = Room.new("Küche", "Im Kühlschrank brummt nichts mehr.")
+@8   fuse = GoalRoom.new("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+@8   room.connect("flur", corridor)
+@8   corridor.connect("zimmer", room)
+@8   corridor.connect("küche", kitchen)
+@8   kitchen.connect("flur", corridor)
+@8   corridor.connect("kasten", fuse)
+@8   corridor.lock("kasten", "kastenschlüssel")
+@8   room.add_item(Lamp.new("kerze", "Eine Kerze, die schon brennt."))
+@8   kitchen.add_item(Key.new("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+@8   kitchen.add_item(Food.new("keks", "Ein bisschen weich, aber gut."))
+@8   Player.new(room)
+@8 end
+@8 
+@8 # Der Weg zum Ziel, Befehl für Befehl: Game spielt ihn durch.
+@8 WALKTHROUGH = [
+@8   "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+@8   "benutze kastenschlüssel", "gehe kasten",
+@8 ].freeze

@@ -1,4 +1,4 @@
-# Ein Textadventure aus Objekten: Räume, Gegenstände, eine Spielerin.
+# Ein Textadventure aus Objekten: Nachts in der Schule.
 
 class Room
   attr_reader :name, :description

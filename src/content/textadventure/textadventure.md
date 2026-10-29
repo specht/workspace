@@ -1,10 +1,10 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein Terminal, in dem das Textadventure läuft: die Spielerin schließt mit dem Schlüssel die Tür nach Osten auf und steht im Keller"
+image_alt: "Ein Terminal, in dem das Textadventure »Nachts in der Schule« läuft: die Spielerin schließt mit dem Haustürschlüssel die Glastür auf und steht auf dem Schulhof"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
-duration: 3 Doppelstunden
+duration: 4 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (Grundlagen der Objektorientierung); Oberstufe: objektorientierte Modellierung (UML-Klassendiagramme), objektorientierte Programmierung (Objekte, die Objekte kennen, Kapselung, Vererbung, Polymorphie)"
 topics: [objektorientierung]
 requires: [kata-objects]
@@ -20,35 +20,28 @@ reference: [uml, terminal]
 # Ein Textadventure aus Objekten
 
 <p class='abstract'>
-Du baust ein Spiel, das man im Terminal spielt: Räume mit Ausgängen,
-Gegenstände, die man aufheben und benutzen kann, eine verschlossene Tür und
-einen Schlüssel dazu. Jeder Raum, jeder Gegenstand und die Spielerin sind
-Objekte, die einander kennen. Zum Schluss baust du deine eigene Welt, und
-jemand aus deiner Klasse spielt sie.
+Du bist nach der letzten Stunde eingeschlafen, und jetzt ist die Schule
+abgeschlossen. Dieses Spiel spielst du zuerst, dann baust du es nach: aus
+Räumen, die einander kennen, Gegenständen, die etwas können, einer
+Spielerin mit einer Tasche und einem Spiel, das Befehle versteht. Zum
+Schluss baust du deine eigene Welt, und jemand aus deiner Klasse spielt
+sie.
 </p>
 
 ## Das Spiel
 
-So soll es am Ende aussehen. Was hinter `>` steht, tippt man selbst:
+Probier es aus. Du tippst, was du tun willst, etwa `gehe westen`,
+`nimm zettel` oder `untersuche zettel`, und drückst Enter:
 
-```text
-Flur
-Ein langer Flur mit knarrenden Dielen.
-Ausgänge: norden, osten (verschlossen)
-> gehe norden
-Küche
-Es riecht nach Kaffee.
-Hier liegt: schlüssel, apfel
-Ausgänge: süden
-> nimm schlüssel
-Du nimmst schlüssel.
-> gehe süden
-Flur
-Ein langer Flur mit knarrenden Dielen.
-Ausgänge: norden, osten (verschlossen)
-> benutze schlüssel
-Du schließt die Tür auf.
-```
+<div class='adventure-demo'></div>
+<script src='/include/textadventure_demo.js'></script>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Spiel, bis du draußen bist. Achte darauf,
+was dich weiterbringt: eine Beschreibung, die neugierig macht, ein
+Gegenstand, den du erst später brauchst, ein Raum, in dem du zuerst
+nichts siehst.
+</div>
 
 Solche Spiele heißen **Textadventures**. Das erste bekannte, »Colossal Cave
 Adventure«, schrieb Will Crowther 1975 und 1976, nach seinen eigenen Karten
@@ -75,6 +68,34 @@ touch adventure.py
 
 Deine Klassen schreibst du in `adventure.py`.
 <!-- /language -->
+
+## Erst der Plan
+
+Bevor du programmierst, such die Objekte im Spiel. Ein Ausschnitt:
+
+```text
+Raum 204
+Du bist über deinem Heft eingeschlafen. Draußen ist es dunkel, die Schule ist still.
+Hier liegt: zettel, apfel
+Ausgänge: westen
+> nimm zettel
+Du nimmst zettel.
+> gehe westen
+Flur
+Nur die grünen Notausgangsschilder leuchten.
+Ausgänge: osten, norden (verschlossen), unten
+```
+
+Die Hauptwörter, die immer wieder vorkommen, werden Klassen: der Raum, der
+Gegenstand und die, die spielt, die Spielerin. Was ein Objekt über sich
+weiß, wird ein Attribut: Ein Raum hat einen Namen und eine Beschreibung.
+Was es tut, wird eine Methode: Die Spielerin geht und nimmt. Und wer wen
+kennt, wird eine Beziehung: Ein Raum kennt seine Gegenstände, die
+Spielerin kennt den Raum, in dem sie steht. Zeichne das als
+Klassendiagramm in der UML-Werkstatt (wie sie funktioniert, steht im
+[Handbuch](/reference/uml)):
+
+_task(modell)
 
 ## Ein Raum
 
@@ -122,7 +143,43 @@ Richtung, fragt sie ihren Raum nach dem Ausgang; gibt es einen, steht sie
 danach im nächsten Raum. Ihr Raum ist ein Attribut wie jedes andere: Sie
 wechselt den Raum, indem sie dem Attribut einen anderen Raum zuweist.
 
+Ihre Tasche gibt sie dagegen nicht heraus. Wer wissen will, ob sie einen
+Schlüssel hat, fragt sie, und sie schaut selbst nach.
+
 _task(spielerin)
+
+## Was nur die Spielerin angeht
+
+Die Tasche ist eine Liste, und eine Liste ließe sich von überall ändern,
+wenn man an sie herankäme. Dann könnte jede Klasse Gegenstände hinein- und
+herausnehmen, und wenn die Tasche einmal anders gebaut wird, als
+Dictionary oder mit einer Grenze, wie viel hineinpasst, müsste man jede
+dieser Stellen finden. Darum bleibt sie bei der Spielerin: Wer etwas von
+der Tasche will, bittet die Spielerin darum, und nur sie ändert die Liste.
+Das heißt **Kapselung**.
+
+<!-- language: ruby -->
+In Ruby kommt ohnehin niemand von außen an `@bag`, solange es keinen
+`attr_reader :bag` gibt.
+<!-- /language -->
+<!-- language: python -->
+In Python kommt jeder an jedes Attribut. Ein Unterstrich am Anfang,
+`self._bag`, ist die Abmachung, dass nur die eigene Klasse es anfasst:
+Python verbietet es nicht, aber wer `player._bag` schreibt, sieht, dass er
+etwas tut, das nicht vorgesehen ist.
+<!-- /language -->
+
+_task(wegraeumen)
+
+<!-- after: wegraeumen -->
+Der Apfel bittet die Spielerin: `player.remove(self)`. Er weiß, dass er
+gegessen wird, die Spielerin weiß, wie ihre Tasche gebaut ist. Holte er
+sich die Liste und löschte sich selbst, hinge er davon ab, wie die Tasche
+gebaut ist. Die Spielschleife wüsste nicht, ob ein Gegenstand beim
+Benutzen verschwindet, ein Schlüssel tut es ja nicht. Und ein gegessener
+Apfel, der in der Tasche bleibt, müsste von allen übersprungen werden, die
+sie zeigen.
+<!-- /after -->
 
 ## Verschlossene Türen
 
@@ -131,10 +188,8 @@ passenden Schlüssel. Ein Apfel lässt sich essen. Beide sind Gegenstände,
 aber `benutze` tut bei jedem etwas anderes. Darum bekommt jede Art von
 Gegenstand eine eigene Klasse, die von `Item` erbt und die Methode `use`
 überschreibt: Die Spielerin ruft nur `use` auf und muss nicht wissen, was
-sie in der Hand hat.
-
-Zeichne den Plan zuerst, in der UML-Werkstatt (wie sie funktioniert, steht
-im [Handbuch](/reference/uml)):
+sie in der Hand hat. Dasselbe gilt im nächsten Kapitel für eine
+Taschenlampe und einen dunklen Raum. Zeichne den Plan für beide zuerst:
 
 _task(diagramm)
 
@@ -145,62 +200,135 @@ bittet ihn, aufzuschließen.
 
 _task(schloss)
 
-## Deine Welt
+## Im Dunkeln
 
-Die Spielschleife, die Befehle liest und an die Spielerin weitergibt, ist
-schon fertig:
+Der Keller ist dunkel: Ohne Licht sieht man dort nichts und findet nichts.
+Ob die Spielerin Licht hat, könnte sie herausfinden, indem sie in ihrer
+Tasche nach einem Gegenstand der Klasse `Lamp` sucht. Dann aber hätte ein
+Handy oder eine Kerze, die man später erfindet, kein Licht, bis jemand
+die Spielerin ändert. Besser fragt sie jeden Gegenstand, ob er leuchtet,
+und jeder antwortet für sich: `Item` sagt nein, `Lamp` sagt ja, und eine
+Kerze, die später dazukommt, sagt es selbst. Ebenso fragt die Spielerin
+ihren Raum, ob er dunkel ist, statt nach seiner Klasse.
+
+Dass derselbe Aufruf bei jedem Objekt das tut, was zu seiner Klasse passt,
+heißt **Polymorphie**: Die Spielerin ruft `use` oder das Leuchten auf, und
+was dabei geschieht, entscheidet das Objekt.
+
+_task(leuchten)
+
+<!-- after: leuchten -->
+`Key` hat kein eigenes Leuchten und erbt es von `Item`: Ein Schlüssel
+leuchtet nicht, ohne dass jemand es ihm sagen muss. Nur wer etwas anders
+macht als die Klasse über ihm, schreibt es selbst.
+<!-- /after -->
+
+_task(dunkel)
+
+## Das Spiel als Objekt
+
+Noch fehlt, was die getippten Zeilen versteht und an die Spielerin
+weitergibt. Auch das wird ein Objekt, ein `Game`: Es bekommt eine Zeile und
+gibt die Antwort zurück. Dass es selbst nichts liest und nichts ausgibt,
+macht es prüfbar: Man kann ihm einen ganzen Lösungsweg geben, ohne zu
+tippen. Und es weiß, wann das Spiel zu Ende ist: wenn jemand `ende` tippt
+oder die Spielerin am Ziel steht.
+
+_task(spiel)
+
+Jetzt kannst du spielen, mit deinen eigenen Klassen. Die Spielschleife und
+die Nacht in der Schule sind fertig:
 
 <!-- language: ruby -->
 ```bash_copy
 cd /workspace/textadventure
 wget ${web_root}/textadventure/starter/play.rb
+wget ${web_root}/textadventure/starter/schule.rb
+ruby play.rb schule
 ```
 
-`play.rb` holt sich mit `require_relative 'adventure'` deine Klassen und
-ruft `build_world` auf, eine Funktion in `adventure.rb`, die die Welt baut
-und die Spielerin in ihren ersten Raum stellt. So sieht eine kleine Welt
-aus, mit zwei Räumen:
-
-<!-- page-code: own -->
-```ruby
-def build_world
-  hall = Room.new("Flur", "Ein langer Flur mit knarrenden Dielen.")
-  kitchen = Room.new("Küche", "Es riecht nach Kaffee.")
-  hall.connect("norden", kitchen)
-  kitchen.connect("süden", hall)
-  kitchen.add_item(Food.new("apfel", "Knackig und süß."))
-  Player.new(hall)
-end
-```
-
-Spielen kannst du mit `ruby play.rb`.
+`play.rb` holt sich mit `require_relative 'adventure'` deine Klassen und mit
+`require_relative 'schule'` die Welt aus `schule.rb`, die aus deinen Klassen
+gebaut ist. Dann liest es Zeile für Zeile und gibt jede an `game.handle`.
 <!-- /language -->
 <!-- language: python -->
 ```bash_copy
 cd /workspace/textadventure
 wget ${web_root}/textadventure/starter/play.py
+wget ${web_root}/textadventure/starter/schule.py
+python3 play.py schule
 ```
 
-`play.py` holt sich mit `from adventure import build_world` die Funktion
-`build_world` aus `adventure.py`, die die Welt baut und die Spielerin in ihren
-ersten Raum stellt. So sieht eine kleine Welt aus, mit zwei Räumen:
+`play.py` holt sich mit `from adventure import Game` deine Klassen und mit
+`from schule import build_school` die Welt aus `schule.py`, die aus deinen
+Klassen gebaut ist. Dann liest es Zeile für Zeile und gibt jede an
+`game.handle`.
+<!-- /language -->
 
+Es ist dasselbe Spiel wie oben auf der Seite, nur dass jetzt dein Code es
+spielt. Antwortet es irgendwo anders, liegt der Unterschied in deinen
+Klassen.
+
+## Deine Welt
+
+Jetzt erfindest du deine eigene. So sieht eine kleine Welt aus, mit vier
+Räumen, einem dunklen Gang, einem Ziel und dem Weg dorthin:
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+def build_world
+  room = Room.new("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+  corridor = DarkRoom.new("Gang", "Ein langer Gang mit Türen links und rechts.")
+  kitchen = Room.new("Küche", "Im Kühlschrank brummt nichts mehr.")
+  fuse = GoalRoom.new("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+  room.connect("flur", corridor)
+  corridor.connect("zimmer", room)
+  corridor.connect("küche", kitchen)
+  kitchen.connect("flur", corridor)
+  corridor.connect("kasten", fuse)
+  corridor.lock("kasten", "kastenschlüssel")
+  room.add_item(Lamp.new("kerze", "Eine Kerze, die schon brennt."))
+  kitchen.add_item(Key.new("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+  Player.new(room)
+end
+
+WALKTHROUGH = ["nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel",
+               "gehe flur", "benutze kastenschlüssel", "gehe kasten"].freeze
+```
+
+Spielen kannst du sie mit `ruby play.rb`, ohne `schule`.
+<!-- /language -->
+<!-- language: python -->
 <!-- page-code: own -->
 ```python
 def build_world():
-    hall = Room("Flur", "Ein langer Flur mit knarrenden Dielen.")
-    kitchen = Room("Küche", "Es riecht nach Kaffee.")
-    hall.connect("norden", kitchen)
-    kitchen.connect("süden", hall)
-    kitchen.add_item(Food("apfel", "Knackig und süß."))
-    return Player(hall)
+    room = Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+    corridor = DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.")
+    kitchen = Room("Küche", "Im Kühlschrank brummt nichts mehr.")
+    fuse = GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+    room.connect("flur", corridor)
+    corridor.connect("zimmer", room)
+    corridor.connect("küche", kitchen)
+    kitchen.connect("flur", corridor)
+    corridor.connect("kasten", fuse)
+    corridor.lock("kasten", "kastenschlüssel")
+    room.add_item(Lamp("kerze", "Eine Kerze, die schon brennt."))
+    kitchen.add_item(Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+    return Player(room)
+
+
+WALKTHROUGH = ["nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel",
+               "gehe flur", "benutze kastenschlüssel", "gehe kasten"]
 ```
 
-Spielen kannst du mit `python3 play.py`.
+Spielen kannst du sie mit `python3 play.py`, ohne `schule`.
 <!-- /language -->
 
-Die Befehle sind `gehe`, `nimm`, `benutze`, `schau`, `tasche` und `ende`.
-Die Namen der Gegenstände schreibst du klein, so wie man sie im Spiel tippt.
+Die Namen der Gegenstände schreibst du klein, so wie man sie im Spiel tippt,
+und die Richtungen auch: Das Spiel schreibt alles klein, was getippt wird.
+Eine Richtung muss keine Himmelsrichtung sein, `flur` oder `kasten` geht
+genauso.
 
 _task(welt)
 
@@ -217,13 +345,24 @@ _task(spieltest)
 
 _task(abgabe)
 
+<!-- extra -->
+## Eine Kiste mit Inhalt
+
+Gegenstände können selbst Gegenstände enthalten: eine Kiste, ein Rucksack,
+ein Schrank. Eine Kiste ist ein Gegenstand, der eine Liste hat, wie ein
+Raum. Öffnet man sie, legt sie ihren Inhalt in den Raum.
+
+_task(kiste)
+
 ## Wie geht es weiter?
 
-- **Ein Ziel:** Ein Raum, in dem das Spiel endet, wenn man ihn betritt, mit
-  einer Nachricht. Wer weiß, ob er erreicht ist: der Raum, die Spielerin oder
-  `play`?
-- **Eine Lampe:** dunkle Räume, deren Beschreibung man nur sieht, wenn man
-  eine Lampe in der Tasche hat. Welche Klasse fragt wen?
+- **Figuren:** ein Hausmeister, der im Keller sitzt und nur gegen einen
+  Apfel den Schlüssel herausgibt. Wer kennt wen, und welche Klasse
+  bekommt den neuen Befehl `gib`?
+- **Punkte:** Jeder Gegenstand, den man zum ersten Mal findet, bringt
+  Punkte. Wer zählt mit, die Spielerin, das Spiel oder jeder Gegenstand?
+- **Eine Karte:** `all_rooms` findet alle Räume. Wie ließe sich daraus eine
+  Karte zeichnen, die zeigt, wo man schon war?
 - **Speichern:** Wie ließe sich ein Spielstand in eine Datei schreiben und
   wieder laden, mit allen Räumen, die aufeinander zeigen?
 
@@ -240,36 +379,60 @@ _task(abgabe)
 # dabei prüft es jede Aufgabe mit Code an der Lösung
 write-file: textadventure/adventure.rb <- file:loesung/adventure.rb
 write-file: textadventure/play.rb <- file:starter/play.rb
+write-file: textadventure/schule.rb <- file:starter/schule.rb
 write-file: textadventure/adventure.py <- file:loesung/adventure.py
+write-file: textadventure/play.py <- file:starter/play.py
+write-file: textadventure/schule.py <- file:starter/schule.py
 write-file: textadventure/textadventure.uml <- file:loesung/textadventure.uml
 viewport: 1029x579
 zoom: 1.4
 hide-left-sidebar
 terminal-maximize
 terminal-run: cd /workspace/textadventure && clear
-terminal-run: ruby play.rb
-wait-for-text: knarrenden
-terminal-run: gehe norden
-terminal-run: nimm schlüssel
-terminal-run: gehe süden
-terminal-run: benutze schlüssel
+terminal-run: ruby play.rb schule
+wait-for-text: eingeschlafen
+terminal-run: gehe westen
+terminal-run: gehe unten
+terminal-run: gehe unten
+terminal-run: gehe westen
+terminal-run: nimm taschenlampe
 terminal-run: gehe osten
-wait-for-text: Hier liegt: kiste
+terminal-run: gehe unten
+terminal-run: nimm lehrerschlüssel
+terminal-run: gehe oben
+terminal-run: gehe oben
+terminal-run: gehe oben
+terminal-run: benutze lehrerschlüssel
+terminal-run: gehe norden
+terminal-run: nimm haustürschlüssel
+terminal-run: gehe süden
+terminal-run: gehe unten
+terminal-run: gehe unten
+terminal-run: benutze haustürschlüssel
+terminal-run: gehe süden
+wait-for-text: Geschafft
 sleep: 1
+check-task: modell
 check-task: raum
 check-task: gegenstaende
 check-task: beschreibung
 check-task: spielerin
 check-task: diagramm
 check-task: schloss
+check-task: dunkel
+check-task: spiel
 check-task: welt
+check-task: kiste
 check-task: raum python
 check-task: gegenstaende python
 check-task: beschreibung python
 check-task: spielerin python
 check-task: schloss python
+check-task: dunkel python
+check-task: spiel python
 check-task: welt python
+check-task: kiste python
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Der Workspace mit dem Terminal in großer Schrift, in dem das Textadventure läuft: Im Flur ist der Ausgang nach Osten verschlossen; nach »benutze schlüssel« antwortet das Spiel »Du schließt die Tür auf.«, und nach »gehe osten« steht die Spielerin im Keller, in dem eine Kiste liegt.'>
+<img class='teaser' hidden src='teaser.webp' alt='Der Workspace mit dem Terminal in großer Schrift, in dem das Textadventure »Nachts in der Schule« läuft: In der Eingangshalle schließt die Spielerin mit dem Haustürschlüssel die Glastür auf, geht nach Süden und steht auf dem Schulhof: »Kühle Nachtluft. Du bist draußen. Geschafft!«'>
 
 <!-- /tutorial-scope -->

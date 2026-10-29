@@ -1,6 +1,44 @@
+# Aufgaben zu »Ein Textadventure aus Objekten: Nachts in der Schule«. Format: docs/aufgaben.md.
 format: 1
 activity: textadventure
 tasks:
+  - id: modell
+    title: Erst der Plan
+    prompt: |
+      Leg `textadventure/textadventure.uml` an und zeichne darin die drei Klassen, die du im Spiel gefunden hast: `Room`, `Item` und `Player`, jede mit den Attributen, die sie braucht, und die Beziehungen zwischen ihnen. Ein Raum hat Gegenstände, die Spielerin steht in einem Raum und hat eine Tasche mit Gegenständen.
+    check:
+      type: classes
+      file: textadventure/textadventure.uml
+      classes:
+        - name: Room
+          attributes: [name, description]
+        - name: Item
+          attributes: [name, description]
+        - name: Player
+      associations:
+        - between: [Room, Item]
+        - between: [Player, Room]
+        - between: [Player, Item]
+    hint:
+      - "Jede Klasse ist ein Kasten: `class Room`, darunter eingerückt die Attribute, `- name: String`. Raum und Gegenstand haben einen Namen und eine Beschreibung."
+      - "Eine Beziehung ist eine Zeile für sich, `association items: Room 0..1 -> 0..* Item`: ein Raum kennt beliebig viele Gegenstände. Die Spielerin kennt genau einen Raum und beliebig viele Gegenstände in ihrer Tasche."
+    solution: |
+      ```uml
+      class Room
+        - name: String
+        - description: String
+
+      class Item
+        - name: String
+        - description: String
+
+      class Player
+
+      association items: Room 0..1 -> 0..* Item
+      association room: Player 0..* -> 1 Room
+      association bag: Player 0..1 -> 0..* Item
+      ```
+
   - id: raum
     title: Ein Raum mit Ausgängen
     prompt: |
@@ -70,30 +108,30 @@ tasks:
             say: "`exit_to` soll den Raum selbst zurückgeben, den `connect` bekommen hat, keine Kopie."
           - call: "k = Room('Küche', ''); k.exit_to('norden')"
             expect: "None"
-            say: "Gibt es in einer Richtung keinen Ausgang, gibt `exit_to` `None` zurück, statt mit einem `KeyError` abzubrechen: `self.exits.get(direction)`."
+            say: "Gibt es in einer Richtung keinen Ausgang, gibt `exit_to` `None` zurück, statt mit einem `KeyError` abzubrechen: `self._exits.get(direction)`."
           - call: "k = Room('Küche', ''); k.connect('süden', Room('Flur', '')); k.connect('osten', Room('Bad', '')); k.directions()"
             expect: "['süden', 'osten']"
           - call: "Room('Küche', '').directions()"
             expect: "[]"
       hint:
-        - "Die Ausgänge merkt sich der Raum in einem Dictionary, `self.exits = {}` in `__init__`: die Richtung als Schlüssel, der Raum als Wert."
-        - "`connect` trägt ein, `self.exits[direction] = room`; `exit_to` schlägt mit `self.exits.get(direction)` nach, das `None` ergibt, wenn es den Schlüssel nicht gibt. `list(self.exits.keys())` sind die Richtungen."
+        - "Die Ausgänge merkt sich der Raum in einem Dictionary, `self._exits = {}` in `__init__`: die Richtung als Schlüssel, der Raum als Wert. Der Unterstrich sagt: Das geht nur den Raum selbst etwas an (mehr dazu bei der Kapselung)."
+        - "`connect` trägt ein, `self._exits[direction] = room`; `exit_to` schlägt mit `self._exits.get(direction)` nach, das `None` ergibt, wenn es den Schlüssel nicht gibt. `list(self._exits.keys())` sind die Richtungen."
       solution: |
         ```python
         class Room:
             def __init__(self, name, description):
                 self.name = name
                 self.description = description
-                self.exits = {}
+                self._exits = {}
 
             def connect(self, direction, room):
-                self.exits[direction] = room
+                self._exits[direction] = room
 
             def exit_to(self, direction):
-                return self.exits.get(direction)
+                return self._exits.get(direction)
 
             def directions(self):
-                return list(self.exits.keys())
+                return list(self._exits.keys())
         ```
 
   - id: einweg
@@ -293,147 +331,201 @@ tasks:
   - id: spielerin
     title: Die Spielerin geht und nimmt
     prompt: |
-      Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player.new(hall)`. `room` gibt ihren Raum zurück, `inventory` ihre Tasche, eine Liste, anfangs leer. `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums zurück; gibt es dort keinen Ausgang, bleibt sie stehen, und `go` gibt `Da geht es nicht weiter.` zurück. `take(name)` nimmt einen Gegenstand aus dem Raum in die Tasche und gibt `Du nimmst schlüssel.` zurück, mit seinem Namen; liegt keiner mit diesem Namen da, `Hier liegt nichts mit dem Namen schlüssel.`
+      Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player.new(hall)`; `room` gibt ihn zurück. Was die Spielerin tut, gibt einen Text zurück, den das Spiel später zeigt:
+
+      - `look` gibt die Beschreibung ihres Raums.
+      - `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums. Gibt es dort keinen Ausgang, bleibt sie stehen: `Da geht es nicht weiter.`
+      - `take(name)` nimmt einen Gegenstand aus dem Raum in ihre Tasche: `Du nimmst schlüssel.`, oder `Hier liegt nichts mit dem Namen schlüssel.`
+      - `has?(name)` sagt, ob ein Gegenstand dieses Namens in ihrer Tasche ist, und `bag` gibt `In deiner Tasche: schlüssel, apfel` zurück oder `Deine Tasche ist leer.`
+
+      Die Tasche selbst, die Liste, gibt sie nicht heraus: Wer etwas über sie wissen will, fragt sie.
     check:
       type: ruby
       file: textadventure/adventure.rb
       cases:
-        - call: "h = Room.new('Flur', ''); Player.new(h).room.name"
+        - call: "Player.new(Room.new('Flur', '')).room.name"
           expect: "'Flur'"
-        - call: "Player.new(Room.new('Flur', '')).inventory"
-          expect: "[]"
-        - call: "h = Room.new('Flur', 'Lang.'); k = Room.new('Küche', 'Warm.'); h.connect('norden', k); p = Player.new(h); p.go('norden')"
-          expect: "\"Küche\\nWarm.\\nAusgänge: keine\""
-          say: "`go` gibt zurück, was der neue Raum über sich sagt: `@room.describe`."
-        - call: "h = Room.new('Flur', ''); k = Room.new('Küche', ''); h.connect('norden', k); p = Player.new(h); p.go('norden'); p.room.name"
-          expect: "'Küche'"
-        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.go('osten')"
-          expect: "'Da geht es nicht weiter.'"
-        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.go('osten'); p.room.name"
-          expect: "'Flur'"
+        - call: "Player.new(Room.new('Flur', 'Lang.')).look"
+          expect: "\"Flur\\nLang.\\nAusgänge: keine\""
+          say: "`look` gibt zurück, was der Raum über sich sagt: `@room.describe`."
+        - call: "h = Room.new('Flur', 'Lang.'); k = Room.new('Küche', 'Warm.'); h.connect('norden', k); p = Player.new(h); [p.go('norden'), p.room.name]"
+          expect: "[\"Küche\\nWarm.\\nAusgänge: keine\", 'Küche']"
+        - call: "h = Room.new('Flur', ''); p = Player.new(h); [p.go('osten'), p.room.name]"
+          expect: "['Da geht es nicht weiter.', 'Flur']"
           say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
-        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel')"
-          expect: "'Du nimmst schlüssel.'"
-        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel'); [p.inventory.map(&:name), h.items.map(&:name)]"
-          expect: "[['schlüssel'], []]"
-          say: "Der Gegenstand wechselt vom Raum in die Tasche: `@room.take(name)` gibt ihn heraus, und er kommt in `@inventory`."
-        - call: "h = Room.new('Flur', ''); p = Player.new(h); p.take('lampe')"
-          expect: "'Hier liegt nichts mit dem Namen lampe.'"
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); p = Player.new(h); [p.take('schlüssel'), p.has?('schlüssel'), h.items.map(&:name)]"
+          expect: "['Du nimmst schlüssel.', true, []]"
+          say: "Der Gegenstand wechselt vom Raum in die Tasche: `@room.take(name)` gibt ihn heraus, und er kommt in `@bag`."
+        - call: "h = Room.new('Flur', ''); p = Player.new(h); [p.take('lampe'), p.has?('lampe')]"
+          expect: "['Hier liegt nichts mit dem Namen lampe.', false]"
+        - call: "Player.new(Room.new('Flur', '')).bag"
+          expect: "'Deine Tasche ist leer.'"
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); h.add_item(Item.new('apfel', '')); p = Player.new(h); p.take('schlüssel'); p.take('apfel'); p.bag"
+          expect: "'In deiner Tasche: schlüssel, apfel'"
     hint:
-      - "Die Spielerin merkt sich `@room` und `@inventory = []`. Beide braucht man von außen: `attr_reader :room, :inventory`."
-      - "In `go` fragst du `@room.exit_to(direction)`. Ist das `nil`, gibst du `Da geht es nicht weiter.` zurück; sonst weist du `@room` den neuen Raum zu und gibst `@room.describe` zurück."
-      - "In `take` holst du mit `@room.take(name)` den Gegenstand; ist er `nil`, gibst du die Meldung zurück, sonst legst du ihn in `@inventory`."
+      - "Die Spielerin merkt sich `@room` und `@bag = []`. Nur den Raum braucht man von außen: `attr_reader :room`."
+      - "`look` ist `@room.describe`. In `go` fragst du `@room.exit_to(direction)`; ist das `nil`, kommt die Meldung, sonst weist du `@room` den neuen Raum zu und gibst `look` zurück."
+      - "`take` holt mit `@room.take(name)` den Gegenstand und legt ihn in `@bag`. `has?` ist `@bag.any? { |item| item.name == name }`, `bag` setzt die Namen mit `join(', ')` zusammen."
     solution: |
       ```ruby
       class Player
-        attr_reader :room, :inventory
+        attr_reader :room
 
         def initialize(room)
           @room = room
-          @inventory = []
+          @bag = []
+        end
+
+        def look
+          @room.describe
         end
 
         def go(direction)
           target = @room.exit_to(direction)
           return "Da geht es nicht weiter." if target.nil?
           @room = target
-          @room.describe
+          look
         end
 
         def take(name)
           item = @room.take(name)
           return "Hier liegt nichts mit dem Namen #{name}." if item.nil?
-          @inventory << item
+          @bag << item
           "Du nimmst #{item.name}."
+        end
+
+        def has?(name)
+          @bag.any? { |item| item.name == name }
+        end
+
+        def bag
+          return "Deine Tasche ist leer." if @bag.empty?
+          "In deiner Tasche: #{@bag.map(&:name).join(', ')}"
         end
       end
       ```
     python:
       prompt: |
-        Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player(hall)`. Das Attribut `room` ist ihr Raum, `inventory` ihre Tasche, eine Liste, anfangs leer. `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums zurück; gibt es dort keinen Ausgang, bleibt sie stehen, und `go` gibt `Da geht es nicht weiter.` zurück. `take(name)` nimmt einen Gegenstand aus dem Raum in die Tasche und gibt `Du nimmst schlüssel.` zurück, mit seinem Namen; liegt keiner mit diesem Namen da, `Hier liegt nichts mit dem Namen schlüssel.`
+        Schreib eine Klasse `Player`, gebaut mit dem Raum, in dem die Spielerin anfängt, `Player(hall)`; das Attribut `room` hält ihn. Was die Spielerin tut, gibt einen Text zurück, den das Spiel später zeigt:
+
+        - `look()` gibt die Beschreibung ihres Raums.
+        - `go(direction)` geht in diese Richtung und gibt die Beschreibung des neuen Raums. Gibt es dort keinen Ausgang, bleibt sie stehen: `Da geht es nicht weiter.`
+        - `take(name)` nimmt einen Gegenstand aus dem Raum in ihre Tasche: `Du nimmst schlüssel.`, oder `Hier liegt nichts mit dem Namen schlüssel.`
+        - `has(name)` sagt, ob ein Gegenstand dieses Namens in ihrer Tasche ist, und `bag()` gibt `In deiner Tasche: schlüssel, apfel` zurück oder `Deine Tasche ist leer.`
+
+        Die Tasche selbst, die Liste, heißt `self._bag`: Der Unterstrich sagt, dass nur die Spielerin sie anfasst. Wer etwas über sie wissen will, fragt sie.
       check:
         type: python
         file: textadventure/adventure.py
         cases:
-          - call: "h = Room('Flur', ''); Player(h).room.name"
+          - call: "Player(Room('Flur', '')).room.name"
             expect: "'Flur'"
-          - call: "Player(Room('Flur', '')).inventory"
-            expect: "[]"
-          - call: "h = Room('Flur', 'Lang.'); k = Room('Küche', 'Warm.'); h.connect('norden', k); p = Player(h); p.go('norden')"
-            expect: "'Küche\\nWarm.\\nAusgänge: keine'"
-            say: "`go` gibt zurück, was der neue Raum über sich sagt: `self.room.describe()`."
-          - call: "h = Room('Flur', ''); k = Room('Küche', ''); h.connect('norden', k); p = Player(h); p.go('norden'); p.room.name"
-            expect: "'Küche'"
-          - call: "h = Room('Flur', ''); p = Player(h); p.go('osten')"
-            expect: "'Da geht es nicht weiter.'"
-          - call: "h = Room('Flur', ''); p = Player(h); p.go('osten'); p.room.name"
-            expect: "'Flur'"
+          - call: "Player(Room('Flur', 'Lang.')).look()"
+            expect: "\"Flur\\nLang.\\nAusgänge: keine\""
+            say: "`look` gibt zurück, was der Raum über sich sagt: `self.room.describe()`."
+          - call: "h = Room('Flur', 'Lang.'); k = Room('Küche', 'Warm.'); h.connect('norden', k); p = Player(h); [p.go('norden'), p.room.name]"
+            expect: "[\"Küche\\nWarm.\\nAusgänge: keine\", 'Küche']"
+          - call: "h = Room('Flur', ''); p = Player(h); [p.go('osten'), p.room.name]"
+            expect: "['Da geht es nicht weiter.', 'Flur']"
             say: "Gibt es keinen Ausgang, bleibt die Spielerin, wo sie ist."
-          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); p = Player(h); p.take('schlüssel')"
-            expect: "'Du nimmst schlüssel.'"
-          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); p = Player(h); p.take('schlüssel'); [[i.name for i in p.inventory], [i.name for i in h.items]]"
-            expect: "[['schlüssel'], []]"
-            say: "Der Gegenstand wechselt vom Raum in die Tasche: `self.room.take(name)` gibt ihn heraus, und er kommt in `self.inventory`."
-          - call: "h = Room('Flur', ''); p = Player(h); p.take('lampe')"
-            expect: "'Hier liegt nichts mit dem Namen lampe.'"
+          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); p = Player(h); [p.take('schlüssel'), p.has('schlüssel'), [i.name for i in h.items]]"
+            expect: "['Du nimmst schlüssel.', True, []]"
+            say: "Der Gegenstand wechselt vom Raum in die Tasche: `self.room.take(name)` gibt ihn heraus, und er kommt in `self._bag`."
+          - call: "h = Room('Flur', ''); p = Player(h); [p.take('lampe'), p.has('lampe')]"
+            expect: "['Hier liegt nichts mit dem Namen lampe.', False]"
+          - call: "Player(Room('Flur', '')).bag()"
+            expect: "'Deine Tasche ist leer.'"
+          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); h.add_item(Item('apfel', '')); p = Player(h); p.take('schlüssel'); p.take('apfel'); p.bag()"
+            expect: "'In deiner Tasche: schlüssel, apfel'"
       hint:
-        - "Die Spielerin merkt sich `self.room` und `self.inventory = []`."
-        - "In `go` fragst du `self.room.exit_to(direction)`. Ist das `None`, gibst du `Da geht es nicht weiter.` zurück; sonst weist du `self.room` den neuen Raum zu und gibst `self.room.describe()` zurück."
-        - "In `take` holst du mit `self.room.take(name)` den Gegenstand; ist er `None`, gibst du die Meldung zurück, sonst hängst du ihn an `self.inventory`."
+        - "Die Spielerin merkt sich `self.room` und `self._bag = []`."
+        - "`look` ist `self.room.describe()`. In `go` fragst du `self.room.exit_to(direction)`; ist das `None`, kommt die Meldung, sonst weist du `self.room` den neuen Raum zu und gibst `self.look()` zurück."
+        - "`take` holt mit `self.room.take(name)` den Gegenstand und legt ihn in `self._bag`. `has` ist `any(item.name == name for item in self._bag)`, `bag` setzt die Namen mit `\", \".join(…)` zusammen."
       solution: |
         ```python
         class Player:
             def __init__(self, room):
                 self.room = room
-                self.inventory = []
+                self._bag = []
+
+            def look(self):
+                return self.room.describe()
 
             def go(self, direction):
                 target = self.room.exit_to(direction)
                 if target is None:
                     return "Da geht es nicht weiter."
                 self.room = target
-                return self.room.describe()
+                return self.look()
 
             def take(self, name):
                 item = self.room.take(name)
                 if item is None:
                     return f"Hier liegt nichts mit dem Namen {name}."
-                self.inventory.append(item)
+                self._bag.append(item)
                 return f"Du nimmst {item.name}."
+
+            def has(self, name):
+                return any(item.name == name for item in self._bag)
+
+            def bag(self):
+                if not self._bag:
+                    return "Deine Tasche ist leer."
+                return "In deiner Tasche: " + ", ".join(item.name for item in self._bag)
         ```
 
-  - id: diagramm
-    title: Gegenstände, die etwas können
+  - id: wegraeumen
+    title: Wer räumt den Apfel weg?
     prompt: |
-      Leg `textadventure/textadventure.uml` an und zeichne darin die Klasse `Item` mit einer Methode `+ use(player: Player): String` und die Klassen `Key` und `Food`, die von `Item` erben und `use` überschreiben. Dazu die Klasse `Player` mit einer Methode `+ use(name: String): String`.
+      Bald kann man einen Apfel essen. Danach soll er nicht mehr in der Tasche der Spielerin sein. Wer nimmt ihn heraus?
+    check:
+      type: choice
+      options:
+        - "Der Apfel holt sich die Liste der Tasche und löscht sich selbst daraus."
+        - "Der Apfel bittet die Spielerin, ihn herauszunehmen: `player.remove(self)`."
+        - "Die Spielschleife löscht nach jedem `benutze` den Gegenstand, der benutzt wurde."
+        - "Der Apfel bekommt ein Attribut `eaten`, und alle, die die Tasche zeigen, überspringen gegessene Äpfel."
+      correct: 1
+
+  - id: diagramm
+    title: Gegenstände und Räume, die etwas können
+    prompt: |
+      Ergänze `textadventure/textadventure.uml` um die Pläne der nächsten beiden Kapitel. `Item` bekommt `+ use(player: Player): String` und `+ shines(): boolean`; `Key`, `Food` und `Lamp` erben von `Item`, alle drei mit ihrem eigenen `use`, und `Lamp` dazu mit ihrem eigenen `shines`. `Room` bekommt `+ isDark(): boolean`, und `DarkRoom` erbt von `Room` und überschreibt es. `Player` bekommt `+ use(name: String): String`, `+ remove(item: Item): void` und `+ hasLight(): boolean`.
     check:
       type: classes
       file: textadventure/textadventure.uml
       classes:
         - name: Item
-          methods: ["+ use(player: Player): String"]
+          methods: ["+ use(player: Player): String", "+ shines(): boolean"]
         - name: Key
           extends: Item
           overrides: ["+ use(player: Player): String"]
         - name: Food
           extends: Item
           overrides: ["+ use(player: Player): String"]
+        - name: Lamp
+          extends: Item
+          overrides: ["+ use(player: Player): String", "+ shines(): boolean"]
+        - name: DarkRoom
+          extends: Room
+          overrides: ["+ isDark(): boolean"]
         - name: Player
-          methods: ["+ use(name: String): String"]
+          methods: ["+ use(name: String): String", "+ remove(item: Item): void", "+ hasLight(): boolean"]
     feedback:
       - when: { problem: extends }
         say: "Eine Klasse, die erbt, schreibt die UML-Werkstatt `class Key extends Item`."
       - when: { problem: override }
-        say: "`Key` und `Food` erben `use` von `Item`, sollen es aber anders machen: Schreib `use` auch in ihren eigenen Kasten."
+        say: "Eine Klasse, die eine geerbte Methode anders macht, schreibt sie in ihren eigenen Kasten noch einmal."
     hint:
       - "Eine Klasse, die erbt, beginnt mit `class Key extends Item`. Darunter, eingerückt, steht nur, was sie anders macht."
-      - "`use` steht dreimal: in `Item` mit dem, was ein gewöhnlicher Gegenstand tut, und in `Key` und `Food`, die es überschreiben."
+      - "`use` steht viermal: in `Item` mit dem, was ein gewöhnlicher Gegenstand tut, und in `Key`, `Food` und `Lamp`. `shines` steht in `Item` und in `Lamp`, `isDark` in `Room` und in `DarkRoom`."
     solution: |
       ```uml
       class Item
         - name: String
         - description: String
         + use(player: Player): String
+        + shines(): boolean
 
       class Key extends Item
         + use(player: Player): String
@@ -441,60 +533,75 @@ tasks:
       class Food extends Item
         + use(player: Player): String
 
+      class Lamp extends Item
+        + use(player: Player): String
+        + shines(): boolean
+
+      class Room
+        - name: String
+        - description: String
+        + isDark(): boolean
+
+      class DarkRoom extends Room
+        + isDark(): boolean
+
       class Player
-        + go(direction: String): String
-        + take(name: String): String
         + use(name: String): String
+        + remove(item: Item): void
+        + hasLight(): boolean
       ```
 
   - id: schloss
     title: Schlüssel, Schloss und Apfel
     prompt: |
-      Jetzt der Code zum Diagramm, in `adventure.rb`:
+      Jetzt der Code zu `Key` und `Food`, in `adventure.rb`. So soll es sich anfühlen:
 
-      - `Room` bekommt `lock(direction, key_name)`, das die Tür in dieser Richtung abschließt; der Schlüssel, der passt, heißt `key_name`. `locked?(direction)` sagt, ob sie verschlossen ist, und `unlock(key_name)` schließt alle Türen des Raums auf, zu denen dieser Schlüssel passt, und gibt `true` zurück, wenn es mindestens eine gab, sonst `false`. In `describe` steht hinter einer verschlossenen Richtung ` (verschlossen)`.
-      - `go` gibt bei einer verschlossenen Tür `Die Tür nach osten ist verschlossen.` zurück, mit der Richtung, und die Spielerin bleibt stehen.
-      - `Item` bekommt `use(player)`, das `Damit kannst du hier nichts anfangen.` zurückgibt. `Key` erbt von `Item`; sein `use` schließt im Raum der Spielerin die Türen auf, zu denen er passt (sein Name ist der Name des Schlüssels), und gibt `Du schließt die Tür auf.` zurück, sonst `Hier passt schlüssel in kein Schloss.`, mit seinem Namen. `Food` erbt auch von `Item`; sein `use` nimmt es aus der Tasche der Spielerin und gibt `Du isst apfel. Knackig und süß.` zurück, mit Namen und Beschreibung.
-      - `Player` bekommt `use(name)`: Es sucht den Gegenstand in der Tasche und ruft sein `use` auf; ist keiner mit diesem Namen da, gibt es `Du hast nichts mit dem Namen apfel.` zurück.
+      ```text
+      > gehe norden
+      Die Tür nach norden ist verschlossen.
+      > benutze apfel
+      Du isst apfel. Knackig und süß.
+      > benutze lehrerschlüssel
+      Du schließt die Tür auf.
+      ```
+
+      - Ein Raum schließt mit `lock(direction, key_name)` die Tür in einer Richtung ab; `locked?(direction)` sagt, ob sie zu ist, und `unlock(key_name)` schließt alle Türen auf, zu denen der Schlüssel passt, und gibt `true` zurück, wenn es mindestens eine gab. `describe` schreibt ` (verschlossen)` hinter eine verschlossene Richtung, und `go` lässt die Spielerin nicht hindurch.
+      - Ein gewöhnlicher Gegenstand antwortet auf `use(player)` mit `Damit kannst du hier nichts anfangen.` Ein Schlüssel heißt wie sein Schloss und schließt im Raum der Spielerin auf; passt er nirgends: `Hier passt lehrerschlüssel in kein Schloss.` Ein Apfel bittet die Spielerin mit `remove`, ihn aus der Tasche zu nehmen.
+      - `use(name)` der Spielerin sucht den Gegenstand in der Tasche und ruft sein `use` auf, sonst: `Du hast nichts mit dem Namen apfel.`
     check:
       type: ruby
       file: textadventure/adventure.rb
       cases:
-        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); h.locked?('osten')"
-          expect: "true"
-        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.locked?('osten')"
-          expect: "false"
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); [h.locked?('osten'), h.locked?('norden')]"
+          expect: "[true, false]"
         - call: "h = Room.new('Flur', 'Lang.'); h.connect('norden', Room.new('Küche', '')); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); h.describe.split(\"\\n\").last"
           expect: "'Ausgänge: norden, osten (verschlossen)'"
         - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); p = Player.new(h); [p.go('osten'), p.room.name]"
           expect: "['Die Tür nach osten ist verschlossen.', 'Flur']"
-          say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen. Frag in `go` den Raum mit `locked?`, bevor du `@room` änderst."
-        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('dietrich'), h.unlock('schlüssel'), h.locked?('osten')]"
-          expect: "[false, true, false]"
-        - call: "Item.new('kiste', '').use(nil)"
+          say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen: `go` fragt `@room.locked?(direction)`, bevor sie den Raum wechselt."
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('schlüssel'), h.locked?('osten'), h.unlock('schlüssel')]"
+          expect: "[true, false, false]"
+        - call: "Item.new('stein', '').use(Player.new(Room.new('Flur', '')))"
           expect: "'Damit kannst du hier nichts anfangen.'"
-        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); p = Player.new(h); h.add_item(Key.new('schlüssel', '')); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\").first]"
+        - call: "h = Room.new('Flur', ''); h.connect('osten', Room.new('Keller', '')); h.lock('osten', 'schlüssel'); h.add_item(Key.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\").first]"
           expect: "['Du schließt die Tür auf.', 'Keller']"
         - call: "h = Room.new('Flur', ''); h.add_item(Key.new('schlüssel', '')); p = Player.new(h); p.take('schlüssel'); p.use('schlüssel')"
           expect: "'Hier passt schlüssel in kein Schloss.'"
-        - call: "h = Room.new('Flur', ''); h.add_item(Food.new('apfel', 'Knackig und süß.')); p = Player.new(h); p.take('apfel'); [p.use('apfel'), p.inventory]"
-          expect: "['Du isst apfel. Knackig und süß.', []]"
-          say: "Gegessen ist gegessen: `Food#use` nimmt sich selbst aus der Tasche, `player.inventory.delete(self)`."
-        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('kiste', '')); p = Player.new(h); p.take('kiste'); p.use('kiste')"
-          expect: "'Damit kannst du hier nichts anfangen.'"
-        - call: "p = Player.new(Room.new('Flur', '')); p.use('apfel')"
+        - call: "h = Room.new('Flur', ''); h.add_item(Food.new('apfel', 'Knackig und süß.')); p = Player.new(h); p.take('apfel'); [p.use('apfel'), p.has?('apfel'), p.bag]"
+          expect: "['Du isst apfel. Knackig und süß.', false, 'Deine Tasche ist leer.']"
+          say: "Wer gegessen hat, hat den Apfel nicht mehr: `Food#use` bittet die Spielerin mit `player.remove(self)`, ihn herauszunehmen."
+        - call: "Player.new(Room.new('Flur', '')).use('apfel')"
           expect: "'Du hast nichts mit dem Namen apfel.'"
-        - call: "Key.new('schlüssel', '').is_a?(Item) && Food.new('apfel', '').is_a?(Item)"
-          expect: "true"
+        - call: "[Key.superclass, Food.superclass]"
+          expect: "[Item, Item]"
           say: "`Key` und `Food` erben von `Item`: `class Key < Item`."
     hint:
-      - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `@locks = {}`: die Richtung als Schlüssel, der Name des passenden Schlüssels als Wert. `locked?` fragt `@locks.key?(direction)`."
-      - "`unlock` sucht die Richtungen, deren Wert `key_name` ist, `@locks.select { |_, key| key == key_name }.keys`, löscht sie aus `@locks` und gibt zurück, ob es welche gab."
-      - "`Key#use(player)` ruft `player.room.unlock(name)` auf und gibt je nach Ergebnis die eine oder andere Meldung zurück. `Player#use(name)` findet den Gegenstand wie `Room#take`, nimmt ihn aber nicht heraus, und gibt `item.use(self)` zurück: `self` ist die Spielerin."
+      - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `@locks = {}`: Richtung und Name des Schlüssels. `locked?` ist `@locks.key?(direction)`; `unlock` sucht die Richtungen, deren Schlüssel passt, und löscht sie aus `@locks`."
+      - "`class Key < Item` und `class Food < Item` schreiben nur ihr eigenes `use`. Der Schlüssel fragt `player.room.unlock(name)`; der Apfel ruft `player.remove(self)` auf, und die Spielerin bekommt eine Methode `remove(item)`, die `@bag.delete(item)` tut."
+      - "In `go` kommt nach der Frage nach dem Ausgang eine zweite: `return \"Die Tür nach #{direction} ist verschlossen.\" if @room.locked?(direction)`."
     solution: |
-      In `Room`, neben `@locks = {}` in `initialize`:
-
       ```ruby
+      # in Room, neben @locks = {} in initialize:
       def lock(direction, key_name)
         @locks[direction] = key_name
       end
@@ -508,13 +615,12 @@ tasks:
         doors.each { |direction| @locks.delete(direction) }
         !doors.empty?
       end
-      ```
 
-      in `describe` die Ausgänge mit `directions.map { |d| locked?(d) ? "#{d} (verschlossen)" : d }`, in `Player#go` vor dem Gehen `return "Die Tür nach #{direction} ist verschlossen." if @room.locked?(direction)`, und:
+      # in describe:
+      exits = directions.map { |d| locked?(d) ? "#{d} (verschlossen)" : d }
 
-      ```ruby
       class Item
-        # …
+        # wie bisher, dazu:
         def use(player)
           "Damit kannst du hier nichts anfangen."
         end
@@ -532,85 +638,90 @@ tasks:
 
       class Food < Item
         def use(player)
-          player.inventory.delete(self)
+          player.remove(self)
           "Du isst #{name}. #{description}"
         end
       end
 
-      class Player
-        # …
-        def use(name)
-          item = @inventory.find { |i| i.name == name }
-          return "Du hast nichts mit dem Namen #{name}." if item.nil?
-          item.use(self)
-        end
+      # in Player:
+      def remove(item)
+        @bag.delete(item)
+      end
+
+      def use(name)
+        item = @bag.find { |i| i.name == name }
+        return "Du hast nichts mit dem Namen #{name}." if item.nil?
+        item.use(self)
       end
       ```
     python:
       prompt: |
-        Jetzt der Code zum Diagramm, in `adventure.py`:
+        Jetzt der Code zu `Key` und `Food`, in `adventure.py`. So soll es sich anfühlen:
 
-        - `Room` bekommt `lock(direction, key_name)`, das die Tür in dieser Richtung abschließt; der Schlüssel, der passt, heißt `key_name`. `is_locked(direction)` sagt, ob sie verschlossen ist, und `unlock(key_name)` schließt alle Türen des Raums auf, zu denen dieser Schlüssel passt, und gibt `True` zurück, wenn es mindestens eine gab, sonst `False`. In `describe()` steht hinter einer verschlossenen Richtung ` (verschlossen)`.
-        - `go` gibt bei einer verschlossenen Tür `Die Tür nach osten ist verschlossen.` zurück, mit der Richtung, und die Spielerin bleibt stehen.
-        - `Item` bekommt `use(player)`, das `Damit kannst du hier nichts anfangen.` zurückgibt. `Key` erbt von `Item`; sein `use` schließt im Raum der Spielerin die Türen auf, zu denen er passt (sein Name ist der Name des Schlüssels), und gibt `Du schließt die Tür auf.` zurück, sonst `Hier passt schlüssel in kein Schloss.`, mit seinem Namen. `Food` erbt auch von `Item`; sein `use` nimmt es aus der Tasche der Spielerin und gibt `Du isst apfel. Knackig und süß.` zurück, mit Namen und Beschreibung.
-        - `Player` bekommt `use(name)`: Es sucht den Gegenstand in der Tasche und ruft sein `use` auf; ist keiner mit diesem Namen da, gibt es `Du hast nichts mit dem Namen apfel.` zurück.
+        ```text
+        > gehe norden
+        Die Tür nach norden ist verschlossen.
+        > benutze apfel
+        Du isst apfel. Knackig und süß.
+        > benutze lehrerschlüssel
+        Du schließt die Tür auf.
+        ```
+
+        - Ein Raum schließt mit `lock(direction, key_name)` die Tür in einer Richtung ab; `is_locked(direction)` sagt, ob sie zu ist, und `unlock(key_name)` schließt alle Türen auf, zu denen der Schlüssel passt, und gibt `True` zurück, wenn es mindestens eine gab. `describe` schreibt ` (verschlossen)` hinter eine verschlossene Richtung, und `go` lässt die Spielerin nicht hindurch.
+        - Ein gewöhnlicher Gegenstand antwortet auf `use(player)` mit `Damit kannst du hier nichts anfangen.` Ein Schlüssel heißt wie sein Schloss und schließt im Raum der Spielerin auf; passt er nirgends: `Hier passt lehrerschlüssel in kein Schloss.` Ein Apfel bittet die Spielerin mit `remove`, ihn aus der Tasche zu nehmen.
+        - `use(name)` der Spielerin sucht den Gegenstand in der Tasche und ruft sein `use` auf, sonst: `Du hast nichts mit dem Namen apfel.`
       check:
         type: python
         file: textadventure/adventure.py
         cases:
-          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.is_locked('osten')"
-            expect: "True"
-          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.is_locked('osten')"
-            expect: "False"
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.is_locked('osten'), h.is_locked('norden')]"
+            expect: "[True, False]"
           - call: "h = Room('Flur', 'Lang.'); h.connect('norden', Room('Küche', '')); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.describe().split(\"\\n\")[-1]"
             expect: "'Ausgänge: norden, osten (verschlossen)'"
           - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); p = Player(h); [p.go('osten'), p.room.name]"
             expect: "['Die Tür nach osten ist verschlossen.', 'Flur']"
-            say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen. Frag in `go` den Raum mit `is_locked`, bevor du `self.room` änderst."
-          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('dietrich'), h.unlock('schlüssel'), h.is_locked('osten')]"
-            expect: "[False, True, False]"
-          - call: "Item('kiste', '').use(None)"
+            say: "Vor einer verschlossenen Tür bleibt die Spielerin stehen: `go` fragt `self.room.is_locked(direction)`, bevor sie den Raum wechselt."
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); [h.unlock('schlüssel'), h.is_locked('osten'), h.unlock('schlüssel')]"
+            expect: "[True, False, False]"
+          - call: "Item('stein', '').use(Player(Room('Flur', '')))"
             expect: "'Damit kannst du hier nichts anfangen.'"
-          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); p = Player(h); h.add_item(Key('schlüssel', '')); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\")[0]]"
+          - call: "h = Room('Flur', ''); h.connect('osten', Room('Keller', '')); h.lock('osten', 'schlüssel'); h.add_item(Key('schlüssel', '')); p = Player(h); p.take('schlüssel'); [p.use('schlüssel'), p.go('osten').split(\"\\n\")[0]]"
             expect: "['Du schließt die Tür auf.', 'Keller']"
           - call: "h = Room('Flur', ''); h.add_item(Key('schlüssel', '')); p = Player(h); p.take('schlüssel'); p.use('schlüssel')"
             expect: "'Hier passt schlüssel in kein Schloss.'"
-          - call: "h = Room('Flur', ''); h.add_item(Food('apfel', 'Knackig und süß.')); p = Player(h); p.take('apfel'); [p.use('apfel'), p.inventory]"
-            expect: "['Du isst apfel. Knackig und süß.', []]"
-            say: "Gegessen ist gegessen: `Food.use` nimmt sich selbst aus der Tasche, `player.inventory.remove(self)`."
-          - call: "h = Room('Flur', ''); h.add_item(Item('kiste', '')); p = Player(h); p.take('kiste'); p.use('kiste')"
-            expect: "'Damit kannst du hier nichts anfangen.'"
-          - call: "p = Player(Room('Flur', '')); p.use('apfel')"
+          - call: "h = Room('Flur', ''); h.add_item(Food('apfel', 'Knackig und süß.')); p = Player(h); p.take('apfel'); [p.use('apfel'), p.has('apfel'), p.bag()]"
+            expect: "['Du isst apfel. Knackig und süß.', False, 'Deine Tasche ist leer.']"
+            say: "Wer gegessen hat, hat den Apfel nicht mehr: `Food.use` bittet die Spielerin mit `player.remove(self)`, ihn herauszunehmen."
+          - call: "Player(Room('Flur', '')).use('apfel')"
             expect: "'Du hast nichts mit dem Namen apfel.'"
-          - call: "isinstance(Key('schlüssel', ''), Item) and isinstance(Food('apfel', ''), Item)"
-            expect: "True"
+          - call: "[issubclass(Key, Item), issubclass(Food, Item)]"
+            expect: "[True, True]"
             say: "`Key` und `Food` erben von `Item`: `class Key(Item):`."
       hint:
-        - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `self.locks = {}`: die Richtung als Schlüssel, der Name des passenden Schlüssels als Wert. `is_locked` fragt `direction in self.locks`."
-        - "`unlock` sucht die Richtungen, deren Wert `key_name` ist, `[d for d, key in self.locks.items() if key == key_name]`, löscht sie aus `self.locks` und gibt zurück, ob es welche gab."
-        - "`Key.use(self, player)` ruft `player.room.unlock(self.name)` auf und gibt je nach Ergebnis die eine oder andere Meldung zurück. `Player.use(self, name)` findet den Gegenstand in `self.inventory`, nimmt ihn aber nicht heraus, und gibt `item.use(self)` zurück: `self` ist die Spielerin."
+        - "Der Raum merkt sich die Schlösser in einem zweiten Dictionary, `self._locks = {}`: Richtung und Name des Schlüssels. `is_locked` ist `direction in self._locks`; `unlock` sucht die Richtungen, deren Schlüssel passt, und löscht sie mit `del`."
+        - "`class Key(Item):` und `class Food(Item):` schreiben nur ihr eigenes `use`. Der Schlüssel fragt `player.room.unlock(self.name)`; der Apfel ruft `player.remove(self)` auf, und die Spielerin bekommt eine Methode `remove(item)`, die `self._bag.remove(item)` tut."
+        - "In `go` kommt nach der Frage nach dem Ausgang eine zweite: Ist `self.room.is_locked(direction)`, gibt sie `f\"Die Tür nach {direction} ist verschlossen.\"` zurück."
       solution: |
-        In `Room`, neben `self.locks = {}` in `__init__`:
-
         ```python
+        # in Room, neben self._locks = {} in __init__:
         def lock(self, direction, key_name):
-            self.locks[direction] = key_name
+            self._locks[direction] = key_name
 
         def is_locked(self, direction):
-            return direction in self.locks
+            return direction in self._locks
 
         def unlock(self, key_name):
-            doors = [d for d, key in self.locks.items() if key == key_name]
+            doors = [d for d, key in self._locks.items() if key == key_name]
             for direction in doors:
-                del self.locks[direction]
+                del self._locks[direction]
             return len(doors) > 0
-        ```
 
-        in `describe` die Ausgänge mit `[f"{d} (verschlossen)" if self.is_locked(d) else d for d in self.directions()]`, in `Player.go` vor dem Gehen `if self.room.is_locked(direction): return f"Die Tür nach {direction} ist verschlossen."`, und:
+        # in describe:
+        exits = [d + " (verschlossen)" if self.is_locked(d) else d for d in self.directions()]
 
-        ```python
+
         class Item:
-            # …
+            # wie bisher, dazu:
             def use(self, player):
                 return "Damit kannst du hier nichts anfangen."
 
@@ -624,23 +735,388 @@ tasks:
 
         class Food(Item):
             def use(self, player):
-                player.inventory.remove(self)
+                player.remove(self)
                 return f"Du isst {self.name}. {self.description}"
 
 
-        class Player:
-            # …
-            def use(self, name):
-                for item in self.inventory:
-                    if item.name == name:
-                        return item.use(self)
-                return f"Du hast nichts mit dem Namen {name}."
+        # in Player:
+        def remove(self, item):
+            self._bag.remove(item)
+
+        def use(self, name):
+            for item in self._bag:
+                if item.name == name:
+                    return item.use(self)
+            return f"Du hast nichts mit dem Namen {name}."
+        ```
+
+  - id: leuchten
+    title: Wer leuchtet?
+    prediction: true
+    prompt: |
+      `Item` hat `shines?`, das `false` zurückgibt, und `Lamp` überschreibt es mit `true`. `Key` schreibt kein eigenes `shines?`.
+
+      ```ruby
+      things = [Item.new("zettel", ""), Lamp.new("taschenlampe", ""), Key.new("schlüssel", "")]
+      things.map(&:shines?)
+      ```
+
+      Was kommt heraus?
+    check:
+      type: choice
+      options: ["[false, true, false]", "[false, true, nil]", "ein Fehler, weil Key kein shines? hat", "[true, true, true]"]
+      correct: 0
+    python:
+      prompt: |
+        `Item` hat `shines()`, das `False` zurückgibt, und `Lamp` überschreibt es mit `True`. `Key` schreibt kein eigenes `shines`.
+
+        ```python
+        things = [Item("zettel", ""), Lamp("taschenlampe", ""), Key("schlüssel", "")]
+        [thing.shines() for thing in things]
+        ```
+
+        Was kommt heraus?
+      check:
+        type: choice
+        options: ["[False, True, False]", "[False, True, None]", "ein Fehler, weil Key kein shines hat", "[True, True, True]"]
+        correct: 0
+
+  - id: dunkel
+    title: Der dunkle Keller
+    prompt: |
+      Schreib `Lamp` und `DarkRoom` nach deinem Diagramm:
+
+      - `Item` bekommt `shines?`, das `false` zurückgibt. `Lamp` erbt von `Item`, leuchtet (`true`) und antwortet auf `use` mit `taschenlampe leuchtet schon.`, mit ihrem Namen.
+      - `Room` bekommt `dark?`, das `false` zurückgibt; `DarkRoom` erbt von `Room` und ist dunkel.
+      - Die Spielerin hat Licht (`has_light?`), wenn etwas in ihrer Tasche leuchtet. In einem dunklen Raum ohne Licht antwortet `look` mit `Es ist stockdunkel. Du siehst nichts.` und `take` mit `Im Dunkeln findest du nichts.` Weil `go` am Ende `look` aufruft, sieht sie den Keller so auch beim Hineingehen nicht.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "[Item.new('zettel', '').shines?, Lamp.new('taschenlampe', '').shines?, Key.new('schlüssel', '').shines?]"
+          expect: "[false, true, false]"
+        - call: "Lamp.new('taschenlampe', '').use(Player.new(Room.new('Flur', '')))"
+          expect: "'taschenlampe leuchtet schon.'"
+        - call: "[Room.new('Flur', '').dark?, DarkRoom.new('Keller', '').dark?, DarkRoom.superclass]"
+          expect: "[false, true, Room]"
+        - call: "Player.new(DarkRoom.new('Keller', 'Rohre.')).look"
+          expect: "'Es ist stockdunkel. Du siehst nichts.'"
+        - call: "e = Room.new('Halle', ''); c = DarkRoom.new('Keller', 'Rohre.'); e.connect('unten', c); Player.new(e).go('unten')"
+          expect: "'Es ist stockdunkel. Du siehst nichts.'"
+          say: "`go` gibt `look` zurück, und `look` fragt den Raum, ob er dunkel ist."
+        - call: "c = DarkRoom.new('Keller', ''); c.add_item(Key.new('schlüssel', '')); p = Player.new(c); [p.take('schlüssel'), c.items.map(&:name)]"
+          expect: "['Im Dunkeln findest du nichts.', ['schlüssel']]"
+        - call: "e = Room.new('Halle', ''); c = DarkRoom.new('Keller', 'Rohre.'); e.connect('unten', c); c.add_item(Key.new('schlüssel', '')); e.add_item(Lamp.new('taschenlampe', '')); p = Player.new(e); p.take('taschenlampe'); [p.has_light?, p.go('unten').split(\"\\n\").first, p.take('schlüssel')]"
+          expect: "[true, 'Keller', 'Du nimmst schlüssel.']"
+          say: "Mit einer Lampe in der Tasche ist der Keller zu sehen: `has_light?` fragt jeden Gegenstand der Tasche, ob er leuchtet."
+        - call: "Player.new(Room.new('Flur', 'Hell.')).look"
+          expect: "\"Flur\\nHell.\\nAusgänge: keine\""
+    hint:
+      - "Zwei kleine Paare von Methoden: `shines?` in `Item` mit `false` und in `Lamp` mit `true`, `dark?` in `Room` mit `false` und in `DarkRoom` mit `true`."
+      - "`has_light?` fragt jeden Gegenstand: `@bag.any?(&:shines?)`. Die Spielerin fragt nicht, ob etwas eine Lampe ist, sondern ob es leuchtet."
+      - "`look` und `take` beginnen mit derselben Frage: `return \"…\" if @room.dark? && !has_light?`."
+    solution: |
+      ```ruby
+      # in Item:
+      def shines?
+        false
+      end
+
+      class Lamp < Item
+        def use(player)
+          "#{name} leuchtet schon."
+        end
+
+        def shines?
+          true
+        end
+      end
+
+      # in Room:
+      def dark?
+        false
+      end
+
+      class DarkRoom < Room
+        def dark?
+          true
+        end
+      end
+
+      # in Player:
+      def has_light?
+        @bag.any?(&:shines?)
+      end
+
+      def look
+        return "Es ist stockdunkel. Du siehst nichts." if @room.dark? && !has_light?
+        @room.describe
+      end
+
+      def take(name)
+        return "Im Dunkeln findest du nichts." if @room.dark? && !has_light?
+        # weiter wie bisher
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `Lamp` und `DarkRoom` nach deinem Diagramm:
+
+        - `Item` bekommt `shines()`, das `False` zurückgibt. `Lamp` erbt von `Item`, leuchtet (`True`) und antwortet auf `use` mit `taschenlampe leuchtet schon.`, mit ihrem Namen.
+        - `Room` bekommt `is_dark()`, das `False` zurückgibt; `DarkRoom` erbt von `Room` und ist dunkel.
+        - Die Spielerin hat Licht (`has_light()`), wenn etwas in ihrer Tasche leuchtet. In einem dunklen Raum ohne Licht antwortet `look` mit `Es ist stockdunkel. Du siehst nichts.` und `take` mit `Im Dunkeln findest du nichts.` Weil `go` am Ende `look` aufruft, sieht sie den Keller so auch beim Hineingehen nicht.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "[Item('zettel', '').shines(), Lamp('taschenlampe', '').shines(), Key('schlüssel', '').shines()]"
+            expect: "[False, True, False]"
+          - call: "Lamp('taschenlampe', '').use(Player(Room('Flur', '')))"
+            expect: "'taschenlampe leuchtet schon.'"
+          - call: "[Room('Flur', '').is_dark(), DarkRoom('Keller', '').is_dark(), issubclass(DarkRoom, Room)]"
+            expect: "[False, True, True]"
+          - call: "Player(DarkRoom('Keller', 'Rohre.')).look()"
+            expect: "'Es ist stockdunkel. Du siehst nichts.'"
+          - call: "e = Room('Halle', ''); c = DarkRoom('Keller', 'Rohre.'); e.connect('unten', c); Player(e).go('unten')"
+            expect: "'Es ist stockdunkel. Du siehst nichts.'"
+            say: "`go` gibt `self.look()` zurück, und `look` fragt den Raum, ob er dunkel ist."
+          - call: "c = DarkRoom('Keller', ''); c.add_item(Key('schlüssel', '')); p = Player(c); [p.take('schlüssel'), [i.name for i in c.items]]"
+            expect: "['Im Dunkeln findest du nichts.', ['schlüssel']]"
+          - call: "e = Room('Halle', ''); c = DarkRoom('Keller', 'Rohre.'); e.connect('unten', c); c.add_item(Key('schlüssel', '')); e.add_item(Lamp('taschenlampe', '')); p = Player(e); p.take('taschenlampe'); [p.has_light(), p.go('unten').split(\"\\n\")[0], p.take('schlüssel')]"
+            expect: "[True, 'Keller', 'Du nimmst schlüssel.']"
+            say: "Mit einer Lampe in der Tasche ist der Keller zu sehen: `has_light` fragt jeden Gegenstand der Tasche, ob er leuchtet."
+          - call: "Player(Room('Flur', 'Hell.')).look()"
+            expect: "\"Flur\\nHell.\\nAusgänge: keine\""
+      hint:
+        - "Zwei kleine Paare von Methoden: `shines` in `Item` mit `False` und in `Lamp` mit `True`, `is_dark` in `Room` mit `False` und in `DarkRoom` mit `True`."
+        - "`has_light` fragt jeden Gegenstand: `any(item.shines() for item in self._bag)`. Die Spielerin fragt nicht, ob etwas eine Lampe ist, sondern ob es leuchtet."
+        - "`look` und `take` beginnen mit derselben Frage: `if self.room.is_dark() and not self.has_light():`."
+      solution: |
+        ```python
+        # in Item:
+        def shines(self):
+            return False
+
+
+        class Lamp(Item):
+            def use(self, player):
+                return f"{self.name} leuchtet schon."
+
+            def shines(self):
+                return True
+
+
+        # in Room:
+        def is_dark(self):
+            return False
+
+
+        class DarkRoom(Room):
+            def is_dark(self):
+                return True
+
+
+        # in Player:
+        def has_light(self):
+            return any(item.shines() for item in self._bag)
+
+        def look(self):
+            if self.room.is_dark() and not self.has_light():
+                return "Es ist stockdunkel. Du siehst nichts."
+            return self.room.describe()
+
+        def take(self, name):
+            if self.room.is_dark() and not self.has_light():
+                return "Im Dunkeln findest du nichts."
+            # weiter wie bisher
+        ```
+
+  - id: spiel
+    title: Das Spiel als Objekt
+    prompt: |
+      Schreib die Klasse `Game`, gebaut mit der Spielerin, `Game.new(player)`. Sie ist das, was zwischen dem Terminal und deinen Objekten vermittelt:
+
+      - `start` gibt zurück, was die Spielerin am Anfang sieht.
+      - `handle(line)` nimmt eine getippte Zeile, klein geschrieben und ohne Leerzeichen außen, und gibt die Antwort zurück: `gehe`, `nimm`, `benutze`, `schau` und `tasche` wie bisher, dazu der neue Befehl `untersuche`, für den die Spielerin `examine(name)` bekommt: die Beschreibung eines Gegenstands in ihrer Tasche oder im Raum, sonst `Hier gibt es nichts mit dem Namen zettel.` `ende` antwortet `Bis bald.` und beendet das Spiel, jedes andere Wort `Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende`.
+      - `over?` sagt, ob das Spiel zu Ende ist, `won?`, ob die Spielerin am Ziel steht. Das Ziel ist ein `GoalRoom`, ein Raum, dessen `goal?` `true` ist (`Room` sagt `false`); wer ihn betritt, hat gewonnen, und das Spiel ist zu Ende.
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "Game.new(Player.new(Room.new('Flur', 'Lang.'))).start"
+          expect: "\"Flur\\nLang.\\nAusgänge: keine\""
+        - call: "h = Room.new('Flur', ''); k = Room.new('Küche', 'Warm.'); h.connect('norden', k); g = Game.new(Player.new(h)); [g.handle('gehe norden'), g.over?]"
+          expect: "[\"Küche\\nWarm.\\nAusgänge: keine\", false]"
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('schlüssel', '')); g = Game.new(Player.new(h)); [g.handle('  Nimm Schlüssel  '), g.handle('tasche')]"
+          expect: "['Du nimmst schlüssel.', 'In deiner Tasche: schlüssel']"
+          say: "`handle` schreibt die Zeile klein und nimmt die Leerzeichen außen weg, bevor es Verb und Wort trennt: `line.strip.downcase.split(\" \", 2)`."
+        - call: "h = Room.new('Flur', ''); h.add_item(Item.new('zettel', 'Kaffee um drei.')); g = Game.new(Player.new(h)); [g.handle('untersuche zettel'), g.handle('nimm zettel'), g.handle('untersuche zettel'), g.handle('untersuche lampe')]"
+          expect: "['Kaffee um drei.', 'Du nimmst zettel.', 'Kaffee um drei.', 'Hier gibt es nichts mit dem Namen lampe.']"
+        - call: "g = Game.new(Player.new(Room.new('Flur', ''))); g.handle('tanze')"
+          expect: "'Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende'"
+        - call: "g = Game.new(Player.new(Room.new('Flur', ''))); [g.over?, g.handle('ende'), g.over?, g.won?]"
+          expect: "[false, 'Bis bald.', true, false]"
+        - call: "h = Room.new('Halle', ''); out = GoalRoom.new('Schulhof', 'Geschafft!'); h.connect('süden', out); g = Game.new(Player.new(h)); g.handle('gehe süden'); [g.won?, g.over?, Room.new('x', '').goal?, GoalRoom.superclass]"
+          expect: "[true, true, false, Room]"
+          say: "Wer einen `GoalRoom` betritt, hat gewonnen: `won?` fragt den Raum der Spielerin, `goal?`, und nach jedem Befehl ist das Spiel zu Ende, wenn er es ist."
+    hint:
+      - "`Game` merkt sich die Spielerin und `@over = false`. `handle` trennt die Zeile in Verb und Wort, `verb, word = line.strip.downcase.split(\" \", 2)`, und `word` wird mit `word.to_s` ein Text, auch wenn nach dem Verb nichts kam."
+      - "Ein `case verb` mit einem `when` je Befehl; jeder ruft die Methode der Spielerin auf und gibt ihre Antwort zurück. Bei `ende` setzt du `@over = true`."
+      - "`won?` ist `@player.room.goal?`. Nach dem `case` setzt du `@over = true if won?` und gibst den Text zurück."
+    solution: |
+      ```ruby
+      # in Room:
+      def goal?
+        false
+      end
+
+      class GoalRoom < Room
+        def goal?
+          true
+        end
+      end
+
+      # in Player:
+      def examine(name)
+        item = @bag.find { |i| i.name == name } || @room.items.find { |i| i.name == name }
+        return "Hier gibt es nichts mit dem Namen #{name}." if item.nil?
+        item.description
+      end
+
+      class Game
+        def initialize(player)
+          @player = player
+          @over = false
+        end
+
+        def start
+          @player.look
+        end
+
+        def over?
+          @over
+        end
+
+        def won?
+          @player.room.goal?
+        end
+
+        def handle(line)
+          verb, word = line.strip.downcase.split(" ", 2)
+          word = word.to_s
+          text = case verb
+                 when "gehe" then @player.go(word)
+                 when "nimm" then @player.take(word)
+                 when "benutze" then @player.use(word)
+                 when "untersuche" then @player.examine(word)
+                 when "schau" then @player.look
+                 when "tasche" then @player.bag
+                 when "ende"
+                   @over = true
+                   "Bis bald."
+                 else
+                   "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende"
+                 end
+          @over = true if won?
+          text
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib die Klasse `Game`, gebaut mit der Spielerin, `Game(player)`. Sie ist das, was zwischen dem Terminal und deinen Objekten vermittelt:
+
+        - `start()` gibt zurück, was die Spielerin am Anfang sieht.
+        - `handle(line)` nimmt eine getippte Zeile, klein geschrieben und ohne Leerzeichen außen, und gibt die Antwort zurück: `gehe`, `nimm`, `benutze`, `schau` und `tasche` wie bisher, dazu der neue Befehl `untersuche`, für den die Spielerin `examine(name)` bekommt: die Beschreibung eines Gegenstands in ihrer Tasche oder im Raum, sonst `Hier gibt es nichts mit dem Namen zettel.` `ende` antwortet `Bis bald.` und beendet das Spiel, jedes andere Wort `Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende`.
+        - `is_over()` sagt, ob das Spiel zu Ende ist, `is_won()`, ob die Spielerin am Ziel steht. Das Ziel ist ein `GoalRoom`, ein Raum, dessen `is_goal()` `True` ist (`Room` sagt `False`); wer ihn betritt, hat gewonnen, und das Spiel ist zu Ende.
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "Game(Player(Room('Flur', 'Lang.'))).start()"
+            expect: "\"Flur\\nLang.\\nAusgänge: keine\""
+          - call: "h = Room('Flur', ''); k = Room('Küche', 'Warm.'); h.connect('norden', k); g = Game(Player(h)); [g.handle('gehe norden'), g.is_over()]"
+            expect: "[\"Küche\\nWarm.\\nAusgänge: keine\", False]"
+          - call: "h = Room('Flur', ''); h.add_item(Item('schlüssel', '')); g = Game(Player(h)); [g.handle('  Nimm Schlüssel  '), g.handle('tasche')]"
+            expect: "['Du nimmst schlüssel.', 'In deiner Tasche: schlüssel']"
+            say: "`handle` schreibt die Zeile klein und nimmt die Leerzeichen außen weg, bevor es Verb und Wort trennt: `line.strip().lower().split(\" \", 1)`."
+          - call: "h = Room('Flur', ''); h.add_item(Item('zettel', 'Kaffee um drei.')); g = Game(Player(h)); [g.handle('untersuche zettel'), g.handle('nimm zettel'), g.handle('untersuche zettel'), g.handle('untersuche lampe')]"
+            expect: "['Kaffee um drei.', 'Du nimmst zettel.', 'Kaffee um drei.', 'Hier gibt es nichts mit dem Namen lampe.']"
+          - call: "g = Game(Player(Room('Flur', ''))); g.handle('tanze')"
+            expect: "'Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende'"
+          - call: "g = Game(Player(Room('Flur', ''))); [g.is_over(), g.handle('ende'), g.is_over(), g.is_won()]"
+            expect: "[False, 'Bis bald.', True, False]"
+          - call: "h = Room('Halle', ''); out = GoalRoom('Schulhof', 'Geschafft!'); h.connect('süden', out); g = Game(Player(h)); g.handle('gehe süden'); [g.is_won(), g.is_over(), Room('x', '').is_goal(), issubclass(GoalRoom, Room)]"
+            expect: "[True, True, False, True]"
+            say: "Wer einen `GoalRoom` betritt, hat gewonnen: `is_won` fragt den Raum der Spielerin, `is_goal()`, und nach jedem Befehl ist das Spiel zu Ende, wenn er es ist."
+      hint:
+        - "`Game` merkt sich die Spielerin, `self._player`, und `self._over = False`. `handle` trennt die Zeile: `parts = line.strip().lower().split(\" \", 1)`; das Verb ist `parts[0]`, das Wort `parts[1]`, wenn es eines gibt, sonst `\"\"`."
+        - "Ein `if verb == \"gehe\":` mit einem `elif` je Befehl; jeder ruft die Methode der Spielerin auf. Bei `ende` setzt du `self._over = True`."
+        - "`is_won` ist `self._player.room.is_goal()`. Am Ende von `handle` setzt du `self._over = True`, wenn `self.is_won()`, und gibst den Text zurück."
+      solution: |
+        ```python
+        # in Room:
+        def is_goal(self):
+            return False
+
+
+        class GoalRoom(Room):
+            def is_goal(self):
+                return True
+
+
+        # in Player:
+        def examine(self, name):
+            for item in self._bag + self.room.items:
+                if item.name == name:
+                    return item.description
+            return f"Hier gibt es nichts mit dem Namen {name}."
+
+
+        class Game:
+            def __init__(self, player):
+                self._player = player
+                self._over = False
+
+            def start(self):
+                return self._player.look()
+
+            def is_over(self):
+                return self._over
+
+            def is_won(self):
+                return self._player.room.is_goal()
+
+            def handle(self, line):
+                parts = line.strip().lower().split(" ", 1)
+                verb = parts[0]
+                word = parts[1] if len(parts) > 1 else ""
+                if verb == "gehe":
+                    text = self._player.go(word)
+                elif verb == "nimm":
+                    text = self._player.take(word)
+                elif verb == "benutze":
+                    text = self._player.use(word)
+                elif verb == "untersuche":
+                    text = self._player.examine(word)
+                elif verb == "schau":
+                    text = self._player.look()
+                elif verb == "tasche":
+                    text = self._player.bag()
+                elif verb == "ende":
+                    self._over = True
+                    text = "Bis bald."
+                else:
+                    text = "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende"
+                if self.is_won():
+                    self._over = True
+                return text
         ```
 
   - id: welt
     title: Deine eigene Welt
     prompt: |
-      Schreib in `adventure.rb` eine Funktion `build_world`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt. Die Welt hat mindestens drei Räume, die man vom ersten Raum aus erreicht, mindestens eine verschlossene Tür und irgendwo einen Schlüssel. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
+      Schreib in `adventure.rb` eine Funktion `build_world`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt, und eine Liste `WALKTHROUGH` mit dem Weg zum Ziel, Befehl für Befehl, so wie man ihn tippt. Deine Welt hat mindestens vier Räume, die man vom ersten aus erreicht, ein Ziel, und auf dem Weg dorthin eine verschlossene Tür, deren Schlüssel man vorher finden muss. Die Prüfung spielt deinen Weg durch. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
 
       ```ruby
       def all_rooms(start)
@@ -664,39 +1140,49 @@ tasks:
       cases:
         - call: "build_world.is_a?(Player)"
           expect: "true"
-          say: "`build_world` gibt die Spielerin zurück, als Letztes: `Player.new(…)`."
-        - call: "all_rooms(build_world.room).length >= 3"
+          say: "`build_world` gibt die Spielerin zurück, die in deinem ersten Raum steht: Die letzte Zeile ist `Player.new(erster_raum)`."
+        - call: "all_rooms(build_world.room).size >= 4"
           expect: "true"
-          say: "Vom ersten Raum aus erreicht man noch keine drei Räume. Verbinde sie mit `connect`, in beide Richtungen, wo man zurückgehen können soll."
+          say: "Deine Welt braucht mindestens vier Räume, die man vom ersten aus erreicht. Sind alle mit `connect` verbunden?"
         - call: "all_rooms(build_world.room).any? { |r| r.directions.any? { |d| r.locked?(d) } }"
           expect: "true"
-          say: "In deiner Welt ist keine Tür verschlossen: `lock(direction, key_name)` an einem Raum."
-        - call: "all_rooms(build_world.room).any? { |r| r.items.any? { |i| i.is_a?(Key) } }"
+          say: "In deiner Welt fehlt eine verschlossene Tür: `lock(richtung, schluessel_name)`."
+        - call: "g = Game.new(build_world); WALKTHROUGH.each { |line| g.handle(line) }; g.won?"
           expect: "true"
-          say: "In keinem erreichbaren Raum liegt ein Schlüssel, `Key.new(…)`."
+          say: "Dein `WALKTHROUGH` kommt nicht ans Ziel. Spiel ihn mit `ruby play.rb` selbst Zeile für Zeile durch: Wo antwortet das Spiel etwas anderes, als du erwartest?"
+        - call: "g = Game.new(build_world); WALKTHROUGH.reject { |line| line.strip.start_with?('benutze') }.each { |line| g.handle(line) }; g.won?"
+          expect: "false"
+          say: "Ohne `benutze` kommt man auch ans Ziel: Die verschlossene Tür liegt nicht auf dem Weg dorthin."
     hint:
-      - "Zeichne deine Welt zuerst auf Papier: Kästen für die Räume, Pfeile für die Ausgänge, eine Tür, die verschlossen ist, und wo der Schlüssel liegt."
-      - "Die kleine Welt oben auf der Seite ist ein Anfang: Bau weitere Räume dazu, verbinde sie mit `connect` und schließ eine Tür mit `lock` ab. Der Name des Schlüssels, `Key.new(\"schlüssel\", …)`, ist derselbe wie der in `lock`."
+      - "Fang mit einer Skizze auf Papier an: Räume als Kästen, Ausgänge als Pfeile, wo das Ziel ist und wo der Schlüssel liegt. Dann wird jeder Kasten ein `Room.new`, jeder Pfeil ein `connect`."
+      - "`WALKTHROUGH` ist eine Liste von Texten, `WALKTHROUGH = [\"nimm kerze\", \"gehe flur\", …]`. Spiel dein Spiel mit `ruby play.rb` einmal durch und schreib dabei mit, was du tippst."
     solution: |
       ```ruby
       def build_world
-        hall = Room.new("Flur", "Ein langer Flur mit knarrenden Dielen.")
-        kitchen = Room.new("Küche", "Es riecht nach Kaffee.")
-        cellar = Room.new("Keller", "Kalt und feucht. In der Ecke steht eine Kiste.")
-        hall.connect("norden", kitchen)
-        kitchen.connect("süden", hall)
-        hall.connect("osten", cellar)
-        cellar.connect("westen", hall)
-        hall.lock("osten", "schlüssel")
-        kitchen.add_item(Key.new("schlüssel", "Ein kleiner Messingschlüssel."))
-        kitchen.add_item(Food.new("apfel", "Knackig und süß."))
-        cellar.add_item(Item.new("kiste", "Eine schwere Holzkiste."))
-        Player.new(hall)
+        room = Room.new("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+        corridor = DarkRoom.new("Gang", "Ein langer Gang mit Türen links und rechts.")
+        kitchen = Room.new("Küche", "Im Kühlschrank brummt nichts mehr.")
+        fuse = GoalRoom.new("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+        room.connect("flur", corridor)
+        corridor.connect("zimmer", room)
+        corridor.connect("küche", kitchen)
+        kitchen.connect("flur", corridor)
+        corridor.connect("kasten", fuse)
+        corridor.lock("kasten", "kastenschlüssel")
+        room.add_item(Lamp.new("kerze", "Eine Kerze, die schon brennt."))
+        kitchen.add_item(Key.new("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+        kitchen.add_item(Food.new("keks", "Ein bisschen weich, aber gut."))
+        Player.new(room)
       end
+
+      WALKTHROUGH = [
+        "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+        "benutze kastenschlüssel", "gehe kasten",
+      ].freeze
       ```
     python:
       prompt: |
-        Schreib in `adventure.py` eine Funktion `build_world()`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt. Die Welt hat mindestens drei Räume, die man vom ersten Raum aus erreicht, mindestens eine verschlossene Tür und irgendwo einen Schlüssel. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
+        Schreib in `adventure.py` eine Funktion `build_world()`, die deine eigene Welt baut und die Spielerin in ihrem ersten Raum zurückgibt, und eine Liste `WALKTHROUGH` mit dem Weg zum Ziel, Befehl für Befehl, so wie man ihn tippt. Deine Welt hat mindestens vier Räume, die man vom ersten aus erreicht, ein Ziel, und auf dem Weg dorthin eine verschlossene Tür, deren Schlüssel man vorher finden muss. Die Prüfung spielt deinen Weg durch. Die Funktion `all_rooms(start)`, die alle erreichbaren Räume findet, kopierst du dazu in deine Datei:
 
         ```python
         def all_rooms(start):
@@ -717,59 +1203,154 @@ tasks:
         cases:
           - call: "isinstance(build_world(), Player)"
             expect: "True"
-            say: "`build_world` gibt die Spielerin zurück: `return Player(…)`."
-          - call: "len(all_rooms(build_world().room)) >= 3"
+            say: "`build_world` gibt die Spielerin zurück, die in deinem ersten Raum steht: Die letzte Zeile ist `return Player(erster_raum)`."
+          - call: "len(all_rooms(build_world().room)) >= 4"
             expect: "True"
-            say: "Vom ersten Raum aus erreicht man noch keine drei Räume. Verbinde sie mit `connect`, in beide Richtungen, wo man zurückgehen können soll."
+            say: "Deine Welt braucht mindestens vier Räume, die man vom ersten aus erreicht. Sind alle mit `connect` verbunden?"
           - call: "any(r.is_locked(d) for r in all_rooms(build_world().room) for d in r.directions())"
             expect: "True"
-            say: "In deiner Welt ist keine Tür verschlossen: `lock(direction, key_name)` an einem Raum."
-          - call: "any(isinstance(i, Key) for r in all_rooms(build_world().room) for i in r.items)"
+            say: "In deiner Welt fehlt eine verschlossene Tür: `lock(richtung, schluessel_name)`."
+          - call: "g = Game(build_world()); [g.handle(line) for line in WALKTHROUGH]; g.is_won()"
             expect: "True"
-            say: "In keinem erreichbaren Raum liegt ein Schlüssel, `Key(…)`."
+            say: "Dein `WALKTHROUGH` kommt nicht ans Ziel. Spiel ihn mit `python3 play.py` selbst Zeile für Zeile durch: Wo antwortet das Spiel etwas anderes, als du erwartest?"
+          - call: "g = Game(build_world()); [g.handle(line) for line in WALKTHROUGH if not line.strip().startswith('benutze')]; g.is_won()"
+            expect: "False"
+            say: "Ohne `benutze` kommt man auch ans Ziel: Die verschlossene Tür liegt nicht auf dem Weg dorthin."
       hint:
-        - "Zeichne deine Welt zuerst auf Papier: Kästen für die Räume, Pfeile für die Ausgänge, eine Tür, die verschlossen ist, und wo der Schlüssel liegt."
-        - "Die kleine Welt oben auf der Seite ist ein Anfang: Bau weitere Räume dazu, verbinde sie mit `connect` und schließ eine Tür mit `lock` ab. Der Name des Schlüssels, `Key(\"schlüssel\", …)`, ist derselbe wie der in `lock`."
+        - "Fang mit einer Skizze auf Papier an: Räume als Kästen, Ausgänge als Pfeile, wo das Ziel ist und wo der Schlüssel liegt. Dann wird jeder Kasten ein `Room(…)`, jeder Pfeil ein `connect`."
+        - "`WALKTHROUGH` ist eine Liste von Texten, `WALKTHROUGH = [\"nimm kerze\", \"gehe flur\", …]`. Spiel dein Spiel mit `python3 play.py` einmal durch und schreib dabei mit, was du tippst."
       solution: |
         ```python
         def build_world():
-            hall = Room("Flur", "Ein langer Flur mit knarrenden Dielen.")
-            kitchen = Room("Küche", "Es riecht nach Kaffee.")
-            cellar = Room("Keller", "Kalt und feucht. In der Ecke steht eine Kiste.")
-            hall.connect("norden", kitchen)
-            kitchen.connect("süden", hall)
-            hall.connect("osten", cellar)
-            cellar.connect("westen", hall)
-            hall.lock("osten", "schlüssel")
-            kitchen.add_item(Key("schlüssel", "Ein kleiner Messingschlüssel."))
-            kitchen.add_item(Food("apfel", "Knackig und süß."))
-            cellar.add_item(Item("kiste", "Eine schwere Holzkiste."))
-            return Player(hall)
+            room = Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.")
+            corridor = DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.")
+            kitchen = Room("Küche", "Im Kühlschrank brummt nichts mehr.")
+            fuse = GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!")
+            room.connect("flur", corridor)
+            corridor.connect("zimmer", room)
+            corridor.connect("küche", kitchen)
+            kitchen.connect("flur", corridor)
+            corridor.connect("kasten", fuse)
+            corridor.lock("kasten", "kastenschlüssel")
+            room.add_item(Lamp("kerze", "Eine Kerze, die schon brennt."))
+            kitchen.add_item(Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."))
+            kitchen.add_item(Food("keks", "Ein bisschen weich, aber gut."))
+            return Player(room)
+
+
+        WALKTHROUGH = [
+            "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+            "benutze kastenschlüssel", "gehe kasten",
+        ]
         ```
 
   - id: spieltest
     title: Was beim Spieltest auffiel
     prompt: |
-      Jemand aus deiner Klasse hat dein Spiel gespielt. Wo ist sie oder er hängen geblieben, und was änderst du deshalb an deiner Welt oder an deinen Klassen?
+      Jemand aus deiner Klasse hat dein Spiel gespielt, ohne deinen `WALKTHROUGH` zu kennen. Wo ist sie oder er hängen geblieben, und was änderst du deshalb an deiner Welt oder an deinen Klassen?
     check:
       type: reflection
       min_words: 20
     examples:
       - |
         Er hat den Schlüssel nicht gefunden, weil er nie in die Küche gegangen
-        ist: In der Beschreibung des Flurs stand der Ausgang nach Norden, aber
-        nichts machte neugierig. Ich schreibe in die Beschreibung, dass es aus
-        dem Norden nach Kaffee riecht.
+        ist: In der Beschreibung des Flurs stand der Ausgang, aber nichts machte
+        neugierig. Ich schreibe in die Beschreibung, dass es aus der Küche nach
+        Kaffee riecht.
       - |
-        Sie hat »nimm Schlüssel« mit großem S getippt und bekam »Hier liegt
-        nichts«. Die Spielschleife macht alles klein, aber mein Schlüssel hieß
-        »Schlüssel«. Ich habe die Namen aller Gegenstände kleingeschrieben.
+        Sie stand im dunklen Keller und wusste nicht, dass sie eine Lampe
+        braucht. Ich lege einen Zettel in den ersten Raum, auf dem steht, dass
+        der Keller kein Licht hat, und die Taschenlampe beschreibe ich so, dass
+        man sie mitnehmen will.
 
   - id: abgabe
     title: Dein Abenteuer
     prompt: |
-      Gib den Ordner `textadventure` ab, mit deinen Klassen und deiner Welt. Deine Lehrkraft sieht genau diesen Stand und kann dein Spiel ausprobieren.
+      Gib den Ordner `textadventure` ab, mit deinen Klassen, deiner Welt und deinem Lösungsweg. Deine Lehrkraft sieht genau diesen Stand und kann dein Spiel ausprobieren.
     check:
       type: submit
       paths: [textadventure]
       max_size: 1MB
+
+  - id: kiste
+    title: Eine Kiste mit Inhalt
+    extra: true
+    prompt: |
+      Schreib eine Klasse `Chest`, die von `Item` erbt: eine Kiste, in die man beim Bauen der Welt mit `put(item)` Gegenstände legt. Benutzt die Spielerin sie, kommt ihr Inhalt in den Raum: `Du öffnest kiste. Darin: münze, karte`, mit ihrem Namen und den Namen des Inhalts. Danach ist die Kiste leer: `kiste ist leer.`
+    check:
+      type: ruby
+      file: textadventure/adventure.rb
+      cases:
+        - call: "Chest.superclass"
+          expect: "Item"
+        - call: "r = Room.new('Keller', ''); c = Chest.new('kiste', ''); c.put(Item.new('münze', '')); c.put(Item.new('karte', '')); r.add_item(c); p = Player.new(r); p.take('kiste'); [p.use('kiste'), r.items.map(&:name)]"
+          expect: "['Du öffnest kiste. Darin: münze, karte', ['münze', 'karte']]"
+          say: "Der Inhalt kommt in den Raum der Spielerin: `player.room.add_item(item)` für jeden."
+        - call: "r = Room.new('Keller', ''); c = Chest.new('kiste', ''); c.put(Item.new('münze', '')); r.add_item(c); p = Player.new(r); p.take('kiste'); p.use('kiste'); p.use('kiste')"
+          expect: "'kiste ist leer.'"
+          say: "Nach dem Öffnen ist die Kiste leer: Ihre Liste wird geleert, nachdem der Inhalt im Raum liegt."
+        - call: "r = Room.new('Keller', ''); c = Chest.new('kiste', ''); r.add_item(c); p = Player.new(r); p.take('kiste'); p.use('kiste')"
+          expect: "'kiste ist leer.'"
+    hint:
+      - "Die Kiste ist ein Gegenstand, der eine Liste von Gegenständen hat: `@contents = []` in ihrem `initialize`, das mit `super(name, description)` zuerst das von `Item` aufruft."
+      - "In `use` legst du jeden Gegenstand mit `player.room.add_item(item)` in den Raum, merkst dir die Namen für die Antwort und leerst die Liste."
+    solution: |
+      ```ruby
+      class Chest < Item
+        def initialize(name, description)
+          super(name, description)
+          @contents = []
+        end
+
+        def put(item)
+          @contents << item
+        end
+
+        def use(player)
+          return "#{name} ist leer." if @contents.empty?
+          names = @contents.map(&:name).join(", ")
+          @contents.each { |item| player.room.add_item(item) }
+          @contents = []
+          "Du öffnest #{name}. Darin: #{names}"
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib eine Klasse `Chest`, die von `Item` erbt: eine Kiste, in die man beim Bauen der Welt mit `put(item)` Gegenstände legt. Benutzt die Spielerin sie, kommt ihr Inhalt in den Raum: `Du öffnest kiste. Darin: münze, karte`, mit ihrem Namen und den Namen des Inhalts. Danach ist die Kiste leer: `kiste ist leer.`
+      check:
+        type: python
+        file: textadventure/adventure.py
+        cases:
+          - call: "issubclass(Chest, Item)"
+            expect: "True"
+          - call: "r = Room('Keller', ''); c = Chest('kiste', ''); c.put(Item('münze', '')); c.put(Item('karte', '')); r.add_item(c); p = Player(r); p.take('kiste'); [p.use('kiste'), [i.name for i in r.items]]"
+            expect: "['Du öffnest kiste. Darin: münze, karte', ['münze', 'karte']]"
+            say: "Der Inhalt kommt in den Raum der Spielerin: `player.room.add_item(item)` für jeden."
+          - call: "r = Room('Keller', ''); c = Chest('kiste', ''); c.put(Item('münze', '')); r.add_item(c); p = Player(r); p.take('kiste'); p.use('kiste'); p.use('kiste')"
+            expect: "'kiste ist leer.'"
+            say: "Nach dem Öffnen ist die Kiste leer: Ihre Liste wird geleert, nachdem der Inhalt im Raum liegt."
+          - call: "r = Room('Keller', ''); c = Chest('kiste', ''); r.add_item(c); p = Player(r); p.take('kiste'); p.use('kiste')"
+            expect: "'kiste ist leer.'"
+      hint:
+        - "Die Kiste ist ein Gegenstand, der eine Liste von Gegenständen hat: `self._contents = []` in ihrem `__init__`, das mit `super().__init__(name, description)` zuerst das von `Item` aufruft."
+        - "In `use` legst du jeden Gegenstand mit `player.room.add_item(item)` in den Raum, merkst dir die Namen für die Antwort und leerst die Liste."
+      solution: |
+        ```python
+        class Chest(Item):
+            def __init__(self, name, description):
+                super().__init__(name, description)
+                self._contents = []
+
+            def put(self, item):
+                self._contents.append(item)
+
+            def use(self, player):
+                if not self._contents:
+                    return f"{self.name} ist leer."
+                names = ", ".join(item.name for item in self._contents)
+                for item in self._contents:
+                    player.room.add_item(item)
+                self._contents = []
+                return f"Du öffnest {self.name}. Darin: {names}"
+        ```

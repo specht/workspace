@@ -5,12 +5,21 @@ class Room
   + exit_to(direction: String): Room
   + take(name: String): Item
   + unlock(key_name: String): boolean
+  + isDark(): boolean
+  + isGoal(): boolean
   + describe(): String
+
+class DarkRoom extends Room
+  + isDark(): boolean
+
+class GoalRoom extends Room
+  + isGoal(): boolean
 
 class Item
   - name: String
   - description: String
   + use(player: Player): String
+  + shines(): boolean
 
 class Key extends Item
   + use(player: Player): String
@@ -18,11 +27,22 @@ class Key extends Item
 class Food extends Item
   + use(player: Player): String
 
+class Lamp extends Item
+  + use(player: Player): String
+  + shines(): boolean
+
 class Player
+  + look(): String
   + go(direction: String): String
   + take(name: String): String
   + use(name: String): String
+  + remove(item: Item): void
+  + hasLight(): boolean
 
-association room: Player 0..* -> 1 Room
-association inventory: Player 0..1 -> 0..* Item
+class Game
+  + handle(line: String): String
+
 association items: Room 0..1 -> 0..* Item
+association room: Player 0..* -> 1 Room
+association bag: Player 0..1 -> 0..* Item
+association player: Game 1 -> 1 Player
