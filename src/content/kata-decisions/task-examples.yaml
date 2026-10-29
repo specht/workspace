@@ -21,6 +21,14 @@ examples:
         - answer: "function even(n) {\n  return n % 2 === 0;\n}\n"
       fail:
         - answer: "function even(n) {\n  return n % 2;\n}\n"
+    dart:
+      pass:
+        - answer: "bool even(int n) {\n  return n % 2 == 0;\n}\n"
+    java:
+      pass:
+        - answer: "boolean even(int n) {\n    return n % 2 == 0;\n}\n"
+      fail:
+        - answer: "boolean even(int n) {\n    return n % 2 != 1;\n}\n"
   max-of-two:
     pass:
       - answer: "def max_of_two(a, b)\n  if a > b\n    a\n  else\n    b\n  end\nend\n"
@@ -42,6 +50,16 @@ examples:
         - answer: "function maxOfTwo(a, b) {\n  return Math.max(a, b);\n}\n"
           say: "benutzt `Math.max`"
         - answer: "function maxOfTwo(a, b) {\n  return a;\n}\n"
+    dart:
+      pass:
+        - answer: "int maxOfTwo(int a, int b) {\n  if (a > b) {\n    return a;\n  } else {\n    return b;\n  }\n}\n"
+      fail:
+        - answer: "int maxOfTwo(int a, int b) {\n  return a;\n}\n"
+    java:
+      pass:
+        - answer: "int maxOfTwo(int a, int b) {\n    if (a > b) {\n        return a;\n    } else {\n        return b;\n    }\n}\n"
+      fail:
+        - answer: "int maxOfTwo(int a, int b) {\n    return a;\n}\n"
   absolute:
     pass:
       - answer: "def absolute(n)\n  n < 0 ? -n : n\nend\n"
@@ -63,6 +81,16 @@ examples:
         - answer: "function absolute(n) {\n  return -n;\n}\n"
         - answer: "function absolute(n) {\n  return Math.abs(n);\n}\n"
           say: "benutzt `Math.abs`"
+    dart:
+      pass:
+        - answer: "double absolute(double n) {\n  if (n < 0) {\n    return -n;\n  }\n  return n;\n}\n"
+      fail:
+        - answer: "double absolute(double n) {\n  return -n;\n}\n"
+    java:
+      pass:
+        - answer: "double absolute(double n) {\n    if (n < 0) {\n        return -n;\n    }\n    return n;\n}\n"
+      fail:
+        - answer: "double absolute(double n) {\n    return -n;\n}\n"
   adult:
     pass:
       - answer: "def adult(age)\n  age >= 18\nend\n"
@@ -78,6 +106,16 @@ examples:
         - answer: "function adult(age) {\n  return age >= 18;\n}\n"
       fail:
         - answer: "function adult(age) {\n  return age > 18;\n}\n"
+    dart:
+      pass:
+        - answer: "bool adult(int age) {\n  return age >= 18;\n}\n"
+      fail:
+        - answer: "bool adult(int age) {\n  return age > 18;\n}\n"
+    java:
+      pass:
+        - answer: "boolean adult(int age) {\n    return age >= 18;\n}\n"
+      fail:
+        - answer: "boolean adult(int age) {\n    return age > 18;\n}\n"
   leap-year:
     pass:
       - answer: "def leap_year(year)\n  year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)\nend\n"
@@ -96,6 +134,18 @@ examples:
       fail:
         - answer: "function leapYear(year) {\n  return year % 4 === 0;\n}\n"
         - answer: "function leapYear(year) {\n  return year % 4 === 0 && year % 100 !== 0;\n}\n"
+    dart:
+      pass:
+        - answer: "bool leapYear(int year) {\n  return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);\n}\n"
+      fail:
+        - answer: "bool leapYear(int year) {\n  return year % 4 == 0;\n}\n"
+        - answer: "bool leapYear(int year) {\n  return year % 4 == 0 && year % 100 != 0;\n}\n"
+    java:
+      pass:
+        - answer: "boolean leapYear(int year) {\n    return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);\n}\n"
+      fail:
+        - answer: "boolean leapYear(int year) {\n    return year % 4 == 0;\n}\n"
+        - answer: "boolean leapYear(int year) {\n    return year % 4 == 0 && year % 100 != 0;\n}\n"
   grade:
     pass:
       - answer: "def grade(points)\n  if points >= 92 then 1\n  elsif points >= 81 then 2\n  elsif points >= 67 then 3\n  elsif points >= 50 then 4\n  elsif points >= 30 then 5\n  else 6\n  end\nend\n"
@@ -111,6 +161,18 @@ examples:
         - answer: "function grade(points) {\n  if (points >= 92) {\n    return 1;\n  } else if (points >= 81) {\n    return 2;\n  } else if (points >= 67) {\n    return 3;\n  } else if (points >= 50) {\n    return 4;\n  } else if (points >= 30) {\n    return 5;\n  }\n  return 6;\n}\n"
       fail:
         - answer: "function grade(points) {\n  if (points > 92) return 1;\n  if (points > 81) return 2;\n  if (points > 67) return 3;\n  if (points > 50) return 4;\n  if (points > 30) return 5;\n  return 6;\n}\n"
+    dart:
+      pass:
+        - answer: "int grade(int points) {\n  if (points >= 92) {\n    return 1;\n  } else if (points >= 81) {\n    return 2;\n  } else if (points >= 67) {\n    return 3;\n  } else if (points >= 50) {\n    return 4;\n  } else if (points >= 30) {\n    return 5;\n  }\n  return 6;\n}\n"
+      fail:
+        - answer: "int grade(int points) {\n  if (points > 92) return 1;\n  if (points > 81) return 2;\n  if (points > 67) return 3;\n  if (points > 50) return 4;\n  if (points > 30) return 5;\n  return 6;\n}\n"
+        - answer: "int grade(int points) {\n  if (points >= 30) return 5;\n  if (points >= 50) return 4;\n  if (points >= 67) return 3;\n  if (points >= 81) return 2;\n  if (points >= 92) return 1;\n  return 6;\n}\n"
+    java:
+      pass:
+        - answer: "int grade(int points) {\n    if (points >= 92) {\n        return 1;\n    } else if (points >= 81) {\n        return 2;\n    } else if (points >= 67) {\n        return 3;\n    } else if (points >= 50) {\n        return 4;\n    } else if (points >= 30) {\n        return 5;\n    }\n    return 6;\n}\n"
+      fail:
+        - answer: "int grade(int points) {\n    if (points > 92) return 1;\n    if (points > 81) return 2;\n    if (points > 67) return 3;\n    if (points > 50) return 4;\n    if (points > 30) return 5;\n    return 6;\n}\n"
+        - answer: "int grade(int points) {\n    if (points >= 30) return 5;\n    if (points >= 50) return 4;\n    if (points >= 67) return 3;\n    if (points >= 81) return 2;\n    if (points >= 92) return 1;\n    return 6;\n}\n"
   ticket-price:
     pass:
       - answer: "def ticket_price(age)\n  if age < 6 then 0\n  elsif age < 18 then 5\n  elsif age >= 65 then 6\n  else 9\n  end\nend\n"
@@ -126,6 +188,16 @@ examples:
         - answer: "function ticketPrice(age) {\n  if (age < 6) return 0;\n  if (age < 18) return 5;\n  if (age >= 65) return 6;\n  return 9;\n}\n"
       fail:
         - answer: "function ticketPrice(age) {\n  if (age <= 6) return 0;\n  if (age < 18) return 5;\n  if (age >= 65) return 6;\n  return 9;\n}\n"
+    dart:
+      pass:
+        - answer: "int ticketPrice(int age) {\n  if (age < 6) return 0;\n  if (age < 18) return 5;\n  if (age >= 65) return 6;\n  return 9;\n}\n"
+      fail:
+        - answer: "int ticketPrice(int age) {\n  if (age <= 6) return 0;\n  if (age < 18) return 5;\n  if (age >= 65) return 6;\n  return 9;\n}\n"
+    java:
+      pass:
+        - answer: "int ticketPrice(int age) {\n    if (age < 6) return 0;\n    if (age < 18) return 5;\n    if (age >= 65) return 6;\n    return 9;\n}\n"
+      fail:
+        - answer: "int ticketPrice(int age) {\n    if (age <= 6) return 0;\n    if (age < 18) return 5;\n    if (age >= 65) return 6;\n    return 9;\n}\n"
   max-of-three:
     pass:
       - answer: "def max_of_three(a, b, c)\n  largest = a\n  largest = b if b > largest\n  largest = c if c > largest\n  largest\nend\n"
@@ -147,6 +219,16 @@ examples:
         - answer: "function maxOfThree(a, b, c) {\n  if (a > b) return a;\n  if (b > c) return b;\n  return c;\n}\n"
         - answer: "function maxOfThree(a, b, c) {\n  return Math.max(a, b, c);\n}\n"
           say: "benutzt `Math.max`"
+    dart:
+      pass:
+        - answer: "int maxOfThree(int a, int b, int c) {\n  var largest = a;\n  if (b > largest) largest = b;\n  if (c > largest) largest = c;\n  return largest;\n}\n"
+      fail:
+        - answer: "int maxOfThree(int a, int b, int c) {\n  if (a > b) return a;\n  if (b > c) return b;\n  return c;\n}\n"
+    java:
+      pass:
+        - answer: "int maxOfThree(int a, int b, int c) {\n    int largest = a;\n    if (b > largest) largest = b;\n    if (c > largest) largest = c;\n    return largest;\n}\n"
+      fail:
+        - answer: "int maxOfThree(int a, int b, int c) {\n    if (a > b) return a;\n    if (b > c) return b;\n    return c;\n}\n"
   fizzbuzz:
     pass:
       - answer: "def fizzbuzz(n)\n  if n % 15 == 0\n    'FizzBuzz'\n  elsif n % 3 == 0\n    'Fizz'\n  elsif n % 5 == 0\n    'Buzz'\n  else\n    n.to_s\n  end\nend\n"
@@ -162,6 +244,16 @@ examples:
         - answer: "function fizzbuzz(n) {\n  if (n % 15 === 0) {\n    return 'FizzBuzz';\n  } else if (n % 3 === 0) {\n    return 'Fizz';\n  } else if (n % 5 === 0) {\n    return 'Buzz';\n  }\n  return String(n);\n}\n"
       fail:
         - answer: "function fizzbuzz(n) {\n  if (n % 3 === 0) return 'Fizz';\n  if (n % 5 === 0) return 'Buzz';\n  if (n % 15 === 0) return 'FizzBuzz';\n  return String(n);\n}\n"
+    dart:
+      pass:
+        - answer: "String fizzbuzz(int n) {\n  if (n % 15 == 0) {\n    return 'FizzBuzz';\n  } else if (n % 3 == 0) {\n    return 'Fizz';\n  } else if (n % 5 == 0) {\n    return 'Buzz';\n  }\n  return n.toString();\n}\n"
+      fail:
+        - answer: "String fizzbuzz(int n) {\n  if (n % 3 == 0) return 'Fizz';\n  if (n % 5 == 0) return 'Buzz';\n  if (n % 15 == 0) return 'FizzBuzz';\n  return n.toString();\n}\n"
+    java:
+      pass:
+        - answer: "String fizzbuzz(int n) {\n    if (n % 15 == 0) {\n        return \"FizzBuzz\";\n    } else if (n % 3 == 0) {\n        return \"Fizz\";\n    } else if (n % 5 == 0) {\n        return \"Buzz\";\n    }\n    return String.valueOf(n);\n}\n"
+      fail:
+        - answer: "String fizzbuzz(int n) {\n    if (n % 3 == 0) return \"Fizz\";\n    if (n % 5 == 0) return \"Buzz\";\n    if (n % 15 == 0) return \"FizzBuzz\";\n    return String.valueOf(n);\n}\n"
   triangle:
     pass:
       - answer: "def triangle(a, b, c)\n  return 'keins' if a + b <= c || a + c <= b || b + c <= a\n  return 'gleichseitig' if a == b && b == c\n  return 'gleichschenklig' if a == b || b == c || a == c\n  'ungleichseitig'\nend\n"
@@ -177,6 +269,18 @@ examples:
         - answer: "function triangle(a, b, c) {\n  if (a + b <= c || a + c <= b || b + c <= a) return 'keins';\n  if (a === b && b === c) return 'gleichseitig';\n  if (a === b || b === c || a === c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n"
       fail:
         - answer: "function triangle(a, b, c) {\n  if (a + b < c) return 'keins';\n  if (a === b && b === c) return 'gleichseitig';\n  if (a === b || b === c || a === c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n"
+    dart:
+      pass:
+        - answer: "String triangle(int a, int b, int c) {\n  if (a + b <= c || a + c <= b || b + c <= a) return 'keins';\n  if (a == b && b == c) return 'gleichseitig';\n  if (a == b || b == c || a == c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n"
+      fail:
+        - answer: "String triangle(int a, int b, int c) {\n  if (a + b < c) return 'keins';\n  if (a == b && b == c) return 'gleichseitig';\n  if (a == b || b == c || a == c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n"
+        - answer: "String triangle(int a, int b, int c) {\n  if (a + b <= c || a + c <= b || b + c <= a) return 'keins';\n  if (a == b && b == c) return 'gleichseitig';\n  if (a == b || b == c) return 'gleichschenklig';\n  return 'ungleichseitig';\n}\n"
+    java:
+      pass:
+        - answer: "String triangle(int a, int b, int c) {\n    if (a + b <= c || a + c <= b || b + c <= a) return \"keins\";\n    if (a == b && b == c) return \"gleichseitig\";\n    if (a == b || b == c || a == c) return \"gleichschenklig\";\n    return \"ungleichseitig\";\n}\n"
+      fail:
+        - answer: "String triangle(int a, int b, int c) {\n    if (a + b < c) return \"keins\";\n    if (a == b && b == c) return \"gleichseitig\";\n    if (a == b || b == c || a == c) return \"gleichschenklig\";\n    return \"ungleichseitig\";\n}\n"
+        - answer: "String triangle(int a, int b, int c) {\n    if (a + b <= c || a + c <= b || b + c <= a) return \"keins\";\n    if (a == b && b == c) return \"gleichseitig\";\n    if (a == b || b == c) return \"gleichschenklig\";\n    return \"ungleichseitig\";\n}\n"
   pythagorean:
     pass:
       - answer: "def pythagorean(a, b, c)\n  a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a\nend\n"
@@ -192,6 +296,16 @@ examples:
         - answer: "function pythagorean(a, b, c) {\n  return a * a + b * b === c * c || a * a + c * c === b * b || b * b + c * c === a * a;\n}\n"
       fail:
         - answer: "function pythagorean(a, b, c) {\n  return a * a + b * b === c * c;\n}\n"
+    dart:
+      pass:
+        - answer: "bool pythagorean(int a, int b, int c) {\n  return a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a;\n}\n"
+      fail:
+        - answer: "bool pythagorean(int a, int b, int c) {\n  return a * a + b * b == c * c;\n}\n"
+    java:
+      pass:
+        - answer: "boolean pythagorean(int a, int b, int c) {\n    return a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a;\n}\n"
+      fail:
+        - answer: "boolean pythagorean(int a, int b, int c) {\n    return a * a + b * b == c * c;\n}\n"
   rock-paper-scissors:
     pass:
       - answer: "BEATS = { 'Stein' => 'Schere', 'Schere' => 'Papier', 'Papier' => 'Stein' }\n\ndef rock_paper_scissors(first, second)\n  return 0 if first == second\n  BEATS[first] == second ? 1 : 2\nend\n"
@@ -207,6 +321,12 @@ examples:
         - answer: "const BEATS = { Stein: 'Schere', Schere: 'Papier', Papier: 'Stein' };\n\nfunction rockPaperScissors(first, second) {\n  if (first === second) return 0;\n  return BEATS[first] === second ? 1 : 2;\n}\n"
       fail:
         - answer: "function rockPaperScissors(first, second) {\n  return first === second ? 0 : 1;\n}\n"
+    dart:
+      pass:
+        - answer: "const beats = {'Stein': 'Schere', 'Schere': 'Papier', 'Papier': 'Stein'};\n\nint rockPaperScissors(String first, String second) {\n  if (first == second) return 0;\n  return beats[first] == second ? 1 : 2;\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, String> beats = Map.of(\"Stein\", \"Schere\", \"Schere\", \"Papier\", \"Papier\", \"Stein\");\n\nint rockPaperScissors(String first, String second) {\n    if (first.equals(second)) return 0;\n    return beats.get(first).equals(second) ? 1 : 2;\n}\n"
   bread:
     pass:
       - answer: "def bread(n)\n  if n % 3 == 0 || n.to_s.include?('3')\n    'Brot'\n  else\n    n.to_s\n  end\nend\n"
@@ -222,3 +342,9 @@ examples:
         - answer: "function bread(n) {\n  if (n % 3 === 0 || String(n).includes('3')) {\n    return 'Brot';\n  }\n  return String(n);\n}\n"
       fail:
         - answer: "function bread(n) {\n  return n % 3 === 0 ? 'Brot' : String(n);\n}\n"
+    dart:
+      pass:
+        - answer: "String bread(int n) {\n  if (n % 3 == 0 || n.toString().contains('3')) {\n    return 'Brot';\n  }\n  return n.toString();\n}\n"
+    java:
+      pass:
+        - answer: "String bread(int n) {\n    if (n % 3 == 0 || String.valueOf(n).contains(\"3\")) {\n        return \"Brot\";\n    }\n    return String.valueOf(n);\n}\n"

@@ -123,22 +123,22 @@ contains(list, wanted):
 ## Vom Pseudocode zum Code
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
-<thead><tr><th>Pseudocode</th><th>Ruby</th><th>Python</th></tr></thead>
+<thead><tr><th>Pseudocode</th><th>Ruby</th><th>Python</th><th>Dart</th><th>Java</th></tr></thead>
 <tbody>
-<tr><th><code>sum ← 0</code></th><td><code>sum = 0</code></td><td><code>sum = 0</code></td></tr>
-<tr><th><code>a == b and not c</code></th><td><code>a == b &amp;&amp; !c</code></td><td><code>a == b and not c</code></td></tr>
-<tr><th><code>a mod b</code>, <code>a div b</code></th><td><code>a % b</code>, <code>a / b</code> (bei ganzen Zahlen)</td><td><code>a % b</code>, <code>a // b</code></td></tr>
-<tr><th><code>if x &lt; 0:</code> … <code>else if x == 0:</code> … <code>else:</code></th><td><code>if x &lt; 0</code> … <code>elsif x == 0</code> … <code>else</code> … <code>end</code></td><td><code>if x &lt; 0:</code> … <code>elif x == 0:</code> … <code>else:</code></td></tr>
-<tr><th><code>while n &gt; 0:</code></th><td><code>while n &gt; 0</code> … <code>end</code></td><td><code>while n &gt; 0:</code></td></tr>
-<tr><th><code>for i from 0 to 11:</code></th><td><code>(0..11).each do |i|</code> … <code>end</code></td><td><code>for i in range(0, 12):</code></td></tr>
-<tr><th><code>for each x in list:</code></th><td><code>list.each do |x|</code> … <code>end</code></td><td><code>for x in list:</code></td></tr>
-<tr><th><code>repeat:</code> … <code>until done</code></th><td><code>loop do</code> … <code>break if done</code> <code>end</code></td><td><code>while True:</code> … <code>if done: break</code></td></tr>
-<tr><th><code>name(a, b):</code> … <code>return x</code></th><td><code>def name(a, b)</code> … <code>return x</code> <code>end</code></td><td><code>def name(a, b):</code> … <code>return x</code></td></tr>
+<tr><th><code>sum ← 0</code></th><td><code>sum = 0</code></td><td><code>sum = 0</code></td><td><code>var sum = 0;</code></td><td><code>int sum = 0;</code></td></tr>
+<tr><th><code>a == b and not c</code></th><td><code>a == b &amp;&amp; !c</code></td><td><code>a == b and not c</code></td><td><code>a == b &amp;&amp; !c</code></td><td><code>a == b &amp;&amp; !c</code></td></tr>
+<tr><th><code>a mod b</code>, <code>a div b</code></th><td><code>a % b</code>, <code>a / b</code> (bei ganzen Zahlen)</td><td><code>a % b</code>, <code>a // b</code></td><td><code>a % b</code>, <code>a ~/ b</code></td><td><code>a % b</code>, <code>a / b</code> (bei ganzen Zahlen)</td></tr>
+<tr><th><code>if x &lt; 0:</code> … <code>else if x == 0:</code> … <code>else:</code></th><td><code>if x &lt; 0</code> … <code>elsif x == 0</code> … <code>else</code> … <code>end</code></td><td><code>if x &lt; 0:</code> … <code>elif x == 0:</code> … <code>else:</code></td><td colspan='2'><code>if (x &lt; 0) {</code> … <code>} else if (x == 0) {</code> … <code>} else {</code> … <code>}</code></td></tr>
+<tr><th><code>while n &gt; 0:</code></th><td><code>while n &gt; 0</code> … <code>end</code></td><td><code>while n &gt; 0:</code></td><td colspan='2'><code>while (n &gt; 0) {</code> … <code>}</code></td></tr>
+<tr><th><code>for i from 0 to 11:</code></th><td><code>(0..11).each do |i|</code> … <code>end</code></td><td><code>for i in range(0, 12):</code></td><td><code>for (var i = 0; i &lt;= 11; i++) {</code> … <code>}</code></td><td><code>for (int i = 0; i &lt;= 11; i++) {</code> … <code>}</code></td></tr>
+<tr><th><code>for each x in list:</code></th><td><code>list.each do |x|</code> … <code>end</code></td><td><code>for x in list:</code></td><td><code>for (final x in list) {</code> … <code>}</code></td><td><code>for (int x : list) {</code> … <code>}</code></td></tr>
+<tr><th><code>repeat:</code> … <code>until done</code></th><td><code>loop do</code> … <code>break if done</code> <code>end</code></td><td><code>while True:</code> … <code>if done: break</code></td><td colspan='2'><code>do {</code> … <code>} while (!done);</code></td></tr>
+<tr><th><code>name(a, b):</code> … <code>return x</code></th><td><code>def name(a, b)</code> … <code>return x</code> <code>end</code></td><td><code>def name(a, b):</code> … <code>return x</code></td><td colspan='2'><code>int name(int a, int b) {</code> … <code>return x;</code> <code>}</code></td></tr>
 </tbody>
 </table>
 </div>
 
-Vorsicht bei der Zählschleife: `for i from 0 to 11` zählt die 11 mit. Ruby schreibt das genauso (`0..11`), Pythons `range` hört dagegen eins vorher auf, darum `range(0, 12)`.
+Vorsicht bei der Zählschleife: `for i from 0 to 11` zählt die 11 mit. Ruby schreibt das genauso (`0..11`), Pythons `range` hört dagegen eins vorher auf, darum `range(0, 12)`. In Dart und Java steht die Bedingung selbst in der Schleife: `i <= 11` zählt die 11 mit, `i < 12` ebenso. Dort hat auch jede Variable und jede Funktion einen Typ: `int` für ganze Zahlen; in Java schreibt man bei `for (int x : list)` den Typ der Elemente dazu, Dart findet ihn mit `final` selbst.
 <!-- /part -->
 
 <!-- part: ausprobieren -->
@@ -206,4 +206,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 - Die Sinnbilder der Struktogramme sind in der Norm DIN 66261 (1985) festgelegt; sie ist nicht frei im Netz.
 - Pseudocode für viele Algorithmen, Schritt für Schritt zum Durchklicken: [Sortieren](/reference/sortieren), [Listen, Stack und Queue](/reference/listen), [Graphen](/reference/graphen).
-- Die Grundlagen beider Sprachen nebeneinander: [Ruby und Python](/reference/ruby-python).
+- Die Grundlagen zweier Sprachen nebeneinander: [Ruby und Python](/reference/ruby-python), [Dart und Java](/reference/dart-java).

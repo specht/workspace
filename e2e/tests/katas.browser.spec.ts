@@ -96,6 +96,35 @@ test('JavaScript on a Kata page, Ruby or Python elsewhere', async ({ page, e2eEm
   await page.locator(`.code-language-option[data-set-language="${before}"]`).click();
 });
 
+test('Dart and Java on a Kata page: compiled, with the line of a compiler error', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(120_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-lists');
+  const card = page.locator('.task-card[data-task="kata-lists/list-sum"]:visible');
+
+  await page.locator('.code-language-option[data-set-language="dart"]').click();
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'dart');
+  await expect(card.locator('.task-code')).toHaveValue(/int listSum\(List<int> numbers\)/);
+  await card.locator('.task-code').fill('int listSum(List<int> numbers) {\n  var total = 0;\n  for (final number in numbers) {\n    total += number;\n  }\n  return total;\n}\n\nvoid main() {\n  print(listSum([1, 2]));\n}\n');
+  await expect(card.locator('.code-input-view .kt').first()).toHaveText('int');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Alle 5 Aufrufe liefern, was sie sollen.', { timeout: 60_000 });
+  await expect(card.locator('.task-console')).toHaveText('3\n');
+
+  await page.locator('.code-language-option[data-set-language="java"]').click();
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'java');
+  await card.locator('.task-code').fill('int listSum(List<Integer> numbers) {\n    int total = 0\n    return total;\n}\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('In deinem Code, Zeile 2', { timeout: 60_000 });
+  await card.screenshot({ path: testInfo.outputPath('java-error.png') });
+  await card.locator('.task-code').fill('int listSum(List<Integer> numbers) {\n    int total = 0;\n    for (int number : numbers) {\n        total += number;\n    }\n    return total;\n}\n');
+  await card.locator('.task-submit').click();
+  await expect(card.locator('.task-feedback')).toContainText('Alle 5 Aufrufe liefern, was sie sollen.', { timeout: 60_000 });
+
+  // back to Ruby for the other tests
+  await page.locator('.code-language-option[data-set-language="ruby"]').click();
+});
+
 test('a solved Kata is handed in and shown in class without the name', async ({ browser, page, e2eEmail }, testInfo) => {
   test.setTimeout(120_000);
   await loginAsE2eUser(page, e2eEmail, testInfo);
@@ -225,6 +254,45 @@ test('Pip walks a plan, and a wall names the line', async ({ browser, page, e2eE
 // The first chapter: the plan is clicked, one line a click, and only
 // watched; a wall writes nothing, »Zurück« takes the last line back, the
 // lamp checks the plan by itself (pip_world.js, PipButtons).
+// Dart and Java compile a plan once for all maps (PipCompiled): the click
+// card writes bare lines and gets a main, a typed plan names its own lines
+test('Pip in Dart and Java: main around the plan, the lines its own', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(180_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/pip-1');
+
+  await page.locator('.code-language-option[data-set-language="java"]').click();
+  const entrance = page.locator('.task-card[data-task="pip-1/entrance"]:visible');
+  await expect(entrance.locator('.task-code')).toHaveAttribute('data-code-language', 'java');
+  const undo = entrance.locator('.pip-undo');
+  while (await undo.isEnabled()) await undo.click();
+  const forward = entrance.locator('.pip-button[data-command="move"]');
+  const left = entrance.locator('.pip-button[data-command="turn_left"]');
+  for (const button of [forward, forward, left]) await button.click();
+  await expect(entrance.locator('.task-code')).toHaveValue('move();\nmove();\nturnLeft();\n');
+  for (const button of [forward, forward, forward, forward]) await button.click();
+  await expect(entrance.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 60_000 });
+  // the Java glibber card knows pause(), not wait()
+  const glibber = page.locator('.task-card[data-task="pip-1/glibber"]:visible');
+  await expect(glibber.locator('.pip-command', { hasText: 'pause()' })).toHaveCount(1);
+  await expect(glibber.locator('.pip-command', { hasText: 'wait()' })).toHaveCount(0);
+
+  await page.locator('.code-language-option[data-set-language="dart"]').click();
+  const shaft = page.locator('.task-card[data-task="pip-1/shaft"]:visible');
+  await expect(shaft.locator('.task-code')).toHaveValue(/void main\(\) \{/);
+  await shaft.locator('.task-code').fill('void main() {\n  move();\n  turnLeft();\n  move();\n}\n');
+  await shaft.locator('.task-submit').click();
+  await expect(shaft.locator('.task-feedback')).toContainText('Hier in Zeile 4 läuft Pip gegen die Wand.', { timeout: 60_000 });
+  await shaft.locator('.task-code').fill('void main() {\n  move();\n  move();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n}\n');
+  await shaft.locator('.task-submit').click();
+  await expect(shaft.locator('.task-feedback')).toContainText('Pip schafft es.', { timeout: 60_000 });
+  await expect(shaft.locator('.pip-status')).toHaveText('Schritt 8 von 8, Zeile 9', { timeout: 20_000 });
+  await shaft.screenshot({ path: testInfo.outputPath('pip-dart.png') });
+
+  // back to Ruby for the other tests
+  await page.locator('.code-language-option[data-set-language="ruby"]').click();
+});
+
 test('Pip is clicked to the first lamp', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/pip-1');

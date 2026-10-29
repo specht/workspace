@@ -24,6 +24,16 @@ examples:
       fail:
         - answer: "function applyN(f, n, x) {\n  for (let i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n"
           say: "das Ergebnis geht verloren"
+    dart:
+      pass:
+        - answer: "int applyN(int Function(int) f, int n, int x) {\n  for (var i = 0; i < n; i++) {\n    x = f(x);\n  }\n  return x;\n}\n"
+      fail:
+        - answer: "int applyN(int Function(int) f, int n, int x) {\n  for (var i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n"
+    java:
+      pass:
+        - answer: "int applyN(Function<Integer, Integer> f, int n, int x) {\n    for (int i = 0; i < n; i++) {\n        x = f.apply(x);\n    }\n    return x;\n}\n"
+      fail:
+        - answer: "int applyN(Function<Integer, Integer> f, int n, int x) {\n    for (int i = 0; i < n; i++) {\n        f.apply(x);\n    }\n    return x;\n}\n"
   make-counter:
     pass:
       - answer: "def make_counter\n  count = 0\n  -> { count += 1 }\nend\n"
@@ -50,6 +60,12 @@ examples:
           say: "ergibt `[1, 1, 1]`, richtig wäre `[1, 2, 3]`"
         - answer: "let count = 0;\nfunction makeCounter() {\n  return () => count += 1;\n}\n"
           say: "Jeder Aufruf von `makeCounter` baut einen neuen Zähler"
+    dart:
+      pass:
+        - answer: "int Function() makeCounter() {\n  var count = 0;\n  return () => ++count;\n}\n"
+    java:
+      pass:
+        - answer: "Supplier<Integer> makeCounter() {\n    int[] count = {0};\n    return () -> ++count[0];\n}\n"
   with-tax:
     pass:
       - answer: "def with_tax(prices)\n  prices.map { |price| price * 119 / 100 }\nend\n"
@@ -73,6 +89,16 @@ examples:
       fail:
         - answer: "function withTax(prices) {\n  const result = [];\n  prices.forEach(price => {\n    result.push(price * 119 / 100);\n  });\n  return result;\n}\n"
           say: "das ist hier abgeschaltet"
+    dart:
+      pass:
+        - answer: "List<int> withTax(List<int> prices) {\n  return prices.map((price) => price * 119 ~/ 100).toList();\n}\n"
+      fail:
+        - answer: "List<int> withTax(List<int> prices) {\n  return prices.map((price) => price * 19 ~/ 100).toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> withTax(List<Integer> prices) {\n    return prices.stream().map(price -> price * 119 / 100).toList();\n}\n"
+      fail:
+        - answer: "List<Integer> withTax(List<Integer> prices) {\n    return prices.stream().map(price -> price * 19 / 100).toList();\n}\n"
   lengths:
     pass:
       - answer: "def lengths(words)\n  words.map { |word| word.length }\nend\n"
@@ -94,6 +120,12 @@ examples:
       fail:
         - answer: "function lengths(words) {\n  return words.join('').length;\n}\n"
           say: "Du zählst alle Buchstaben zusammen"
+    dart:
+      pass:
+        - answer: "List<int> lengths(List<String> words) {\n  return words.map((word) => word.length).toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> lengths(List<String> words) {\n    return words.stream().map(word -> word.length()).toList();\n}\n"
   evens:
     pass:
       - answer: "def evens(numbers)\n  numbers.select { |x| x.even? }\nend\n"
@@ -115,6 +147,12 @@ examples:
       fail:
         - answer: "function evens(numbers) {\n  return numbers.map(x => x % 2 === 0);\n}\n"
           say: "Das ist `map`"
+    dart:
+      pass:
+        - answer: "List<int> evens(List<int> numbers) {\n  return numbers.where((x) => x % 2 == 0).toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> evens(List<Integer> numbers) {\n    return numbers.stream().filter(x -> x % 2 == 0).toList();\n}\n"
   with-letter:
     pass:
       - answer: "def with_letter(words, letter)\n  words.select { |word| word.include?(letter) }\nend\n"
@@ -134,6 +172,16 @@ examples:
       fail:
         - answer: "function withLetter(words, letter) {\n  return words.filter(word => word.toLowerCase().includes(letter));\n}\n"
           say: "Du machst die Wörter klein"
+    dart:
+      pass:
+        - answer: "List<String> withLetter(List<String> words, String letter) {\n  return words.where((word) => word.contains(letter)).toList();\n}\n"
+      fail:
+        - answer: "List<String> withLetter(List<String> words, String letter) {\n  return words.where((word) => word.toLowerCase().contains(letter)).toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<String> withLetter(List<String> words, String letter) {\n    return words.stream().filter(word -> word.contains(letter)).toList();\n}\n"
+      fail:
+        - answer: "List<String> withLetter(List<String> words, String letter) {\n    return words.stream().filter(word -> word.toLowerCase().contains(letter)).toList();\n}\n"
   passed:
     pass:
       - answer: "def passed(results)\n  results\n    .select { |name, points| points >= 5 }\n    .map { |name, points| name }\nend\n"
@@ -157,6 +205,16 @@ examples:
           say: "Mit genau 5 Punkten"
         - answer: "function passed(results) {\n  const names = [];\n  results.forEach(([name, points]) => {\n    if (points >= 5) names.push(name);\n  });\n  return names;\n}\n"
           say: "das ist hier abgeschaltet"
+    dart:
+      pass:
+        - answer: "List<String> passed(List<(String, int)> results) {\n  return results\n      .where((result) => result.$2 >= 5)\n      .map((result) => result.$1)\n      .toList();\n}\n"
+      fail:
+        - answer: "List<String> passed(List<(String, int)> results) {\n  return results.where((result) => result.$2 > 5).map((result) => result.$1).toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<String> passed(List<Map.Entry<String, Integer>> results) {\n    return results.stream()\n            .filter(result -> result.getValue() >= 5)\n            .map(result -> result.getKey())\n            .toList();\n}\n"
+      fail:
+        - answer: "List<String> passed(List<Map.Entry<String, Integer>> results) {\n    return results.stream().filter(result -> result.getValue() > 5).map(result -> result.getKey()).toList();\n}\n"
   product:
     pass:
       - answer: "def product(numbers)\n  numbers.reduce(1) { |result, x| result * x }\nend\n"
@@ -180,6 +238,16 @@ examples:
       fail:
         - answer: "function product(numbers) {\n  return numbers.reduce((result, x) => result * x);\n}\n"
           say: "Hat dein `reduce` einen Startwert"
+    dart:
+      pass:
+        - answer: "int product(List<int> numbers) {\n  return numbers.fold(1, (result, x) => result * x);\n}\n"
+      fail:
+        - answer: "int product(List<int> numbers) {\n  return numbers.fold(0, (result, x) => result * x);\n}\n"
+    java:
+      pass:
+        - answer: "int product(List<Integer> numbers) {\n    return numbers.stream().reduce(1, (result, x) -> result * x);\n}\n"
+      fail:
+        - answer: "int product(List<Integer> numbers) {\n    return numbers.stream().reduce(0, (result, x) -> result * x);\n}\n"
   longest:
     pass:
       - answer: "def longest(words)\n  words.reduce { |best, word| word.length > best.length ? word : best }\nend\n"
@@ -202,6 +270,16 @@ examples:
       fail:
         - answer: "function longest(words) {\n  return words.reduce((best, word) => word.length >= best.length ? word : best);\n}\n"
           say: "das spätere Wort"
+    dart:
+      pass:
+        - answer: "String longest(List<String> words) {\n  return words.reduce((best, word) => word.length > best.length ? word : best);\n}\n"
+      fail:
+        - answer: "String longest(List<String> words) {\n  return words.reduce((best, word) => word.length >= best.length ? word : best);\n}\n"
+    java:
+      pass:
+        - answer: "String longest(List<String> words) {\n    return words.stream().reduce(\"\", (best, word) -> word.length() > best.length() ? word : best);\n}\n"
+      fail:
+        - answer: "String longest(List<String> words) {\n    return words.stream().reduce(\"\", (best, word) -> word.length() >= best.length() ? word : best);\n}\n"
   totals:
     pass:
       - answer: "def totals(payments)\n  payments.reduce({}) do |sums, (name, amount)|\n    sums[name] = sums.fetch(name, 0) + amount\n    sums\n  end\nend\n"
@@ -225,6 +303,16 @@ examples:
           say: "geschweiften Klammern"
         - answer: "function totals(payments) {\n  return payments.reduce((sums, [name, amount]) => {\n    sums[name] = amount;\n    return sums;\n  }, {});\n}\n"
           say: "ersetzt dein Code den Betrag"
+    dart:
+      pass:
+        - answer: "Map<String, int> totals(List<(String, int)> payments) {\n  return payments.fold(<String, int>{}, (sums, payment) {\n    final (name, amount) = payment;\n    sums[name] = (sums[name] ?? 0) + amount;\n    return sums;\n  });\n}\n"
+      fail:
+        - answer: "Map<String, int> totals(List<(String, int)> payments) {\n  return payments.fold(<String, int>{}, (sums, payment) {\n    sums[payment.$1] = payment.$2;\n    return sums;\n  });\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments) {\n    return payments.stream()\n            .collect(Collectors.toMap(payment -> payment.getKey(), payment -> payment.getValue(), (a, b) -> a + b));\n}\n"
+      fail:
+        - answer: "Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments) {\n    return payments.stream().collect(Collectors.toMap(payment -> payment.getKey(), payment -> payment.getValue()));\n}\n"
   category-total:
     pass:
       - answer: "def category_total(items, category)\n  items\n    .select { |item| item['category'] == category }\n    .map { |item| item['price'] * item['count'] }\n    .sum\nend\n"
@@ -243,6 +331,16 @@ examples:
       fail:
         - answer: "function categoryTotal(items, category) {\n  return items\n    .filter(item => item.category === category)\n    .map(item => item.price * item.count)\n    .reduce((sum, x) => sum + x);\n}\n"
           say: "Hat dein `reduce` einen Startwert"
+    dart:
+      pass:
+        - answer: "typedef Item = ({String name, String category, int price, int count});\n\nint categoryTotal(List<Item> items, String category) {\n  return items\n      .where((item) => item.category == category)\n      .map((item) => item.price * item.count)\n      .fold(0, (sum, x) => sum + x);\n}\n"
+      fail:
+        - answer: "typedef Item = ({String name, String category, int price, int count});\n\nint categoryTotal(List<Item> items, String category) {\n  return items.where((item) => item.category == category).map((item) => item.price).fold(0, (sum, x) => sum + x);\n}\n"
+    java:
+      pass:
+        - answer: "record Item(String name, String category, int price, int count) {}\n\nint categoryTotal(List<Item> items, String category) {\n    return items.stream()\n            .filter(item -> item.category().equals(category))\n            .map(item -> item.price() * item.count())\n            .reduce(0, (sum, x) -> sum + x);\n}\n"
+      fail:
+        - answer: "record Item(String name, String category, int price, int count) {}\n\nint categoryTotal(List<Item> items, String category) {\n    return items.stream().filter(item -> item.category().equals(category)).map(item -> item.price()).reduce(0, (sum, x) -> sum + x);\n}\n"
   rewrite-loop:
     pass:
       - answer: "def odd_square_sum(numbers)\n  numbers\n    .select { |n| n.odd? }\n    .map { |n| n * n }\n    .sum\nend\n"
@@ -266,6 +364,14 @@ examples:
           say: "`-3 % 2` gleich `-1`"
         - answer: "function oddSquareSum(numbers) {\n  let total = 0;\n  numbers.forEach(n => {\n    if (n % 2 !== 0) {\n      total += n * n;\n    }\n  });\n  return total;\n}\n"
           say: "das ist hier abgeschaltet"
+    dart:
+      pass:
+        - answer: "int oddSquareSum(List<int> numbers) {\n  return numbers\n      .where((n) => n % 2 != 0)\n      .map((n) => n * n)\n      .fold(0, (sum, x) => sum + x);\n}\n"
+    java:
+      pass:
+        - answer: "int oddSquareSum(List<Integer> numbers) {\n    return numbers.stream()\n            .filter(n -> n % 2 != 0)\n            .map(n -> n * n)\n            .reduce(0, (sum, x) -> sum + x);\n}\n"
+      fail:
+        - answer: "int oddSquareSum(List<Integer> numbers) {\n    return numbers.stream().filter(n -> n % 2 == 1).map(n -> n * n).reduce(0, (sum, x) -> sum + x);\n}\n"
   first-overdraft:
     pass:
       - answer: "def first_overdraft(balance, bookings)\n  bookings.each_with_index do |amount, i|\n    balance += amount\n    return i if balance < 0\n  end\n  -1\nend\n"
@@ -289,6 +395,18 @@ examples:
       fail:
         - answer: "function firstOverdraft(balance, bookings) {\n  for (let i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance <= 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n"
           say: "Bei genau 0"
+    dart:
+      pass:
+        - answer: "int firstOverdraft(int balance, List<int> bookings) {\n  for (var i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance < 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n"
+      fail:
+        - answer: "int firstOverdraft(int balance, List<int> bookings) {\n  for (var i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance <= 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n"
+        - answer: "int firstOverdraft(int balance, List<int> bookings) {\n  var found = -1;\n  for (var i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance < 0) {\n      found = i;\n    }\n  }\n  return found;\n}\n"
+    java:
+      pass:
+        - answer: "int firstOverdraft(int balance, List<Integer> bookings) {\n    for (int i = 0; i < bookings.size(); i++) {\n        balance += bookings.get(i);\n        if (balance < 0) {\n            return i;\n        }\n    }\n    return -1;\n}\n"
+      fail:
+        - answer: "int firstOverdraft(int balance, List<Integer> bookings) {\n    for (int i = 0; i < bookings.size(); i++) {\n        balance += bookings.get(i);\n        if (balance <= 0) {\n            return i;\n        }\n    }\n    return -1;\n}\n"
+        - answer: "int firstOverdraft(int balance, List<Integer> bookings) {\n    int found = -1;\n    for (int i = 0; i < bookings.size(); i++) {\n        balance += bookings.get(i);\n        if (balance < 0) {\n            found = i;\n        }\n    }\n    return found;\n}\n"
   compose:
     pass:
       - answer: "def compose(f, g)\n  ->(x) { f.call(g.call(x)) }\nend\n"
@@ -307,6 +425,16 @@ examples:
       fail:
         - answer: "function compose(f, g) {\n  return x => g(f(x));\n}\n"
           say: "erst `g`, dann `f`"
+    dart:
+      pass:
+        - answer: "T Function(T) compose<T>(T Function(T) f, T Function(T) g) {\n  return (x) => f(g(x));\n}\n"
+      fail:
+        - answer: "T Function(T) compose<T>(T Function(T) f, T Function(T) g) {\n  return (x) => g(f(x));\n}\n"
+    java:
+      pass:
+        - answer: "<T> Function<T, T> compose(Function<T, T> f, Function<T, T> g) {\n    return x -> f.apply(g.apply(x));\n}\n"
+      fail:
+        - answer: "<T> Function<T, T> compose(Function<T, T> f, Function<T, T> g) {\n    return x -> g.apply(f.apply(x));\n}\n"
   my-map:
     pass:
       - answer: "def my_map(items, f)\n  result = []\n  items.each do |item|\n    result << f.call(item)\n  end\n  result\nend\n"
@@ -329,3 +457,9 @@ examples:
       fail:
         - answer: "function myMap(items, f) {\n  return items.map(f);\n}\n"
           say: "Array.prototype.map"
+    dart:
+      pass:
+        - answer: "List<R> myMap<T, R>(List<T> items, R Function(T) f) {\n  final result = <R>[];\n  for (final item in items) {\n    result.add(f(item));\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "<T, R> List<R> myMap(List<T> items, Function<T, R> f) {\n    List<R> result = new ArrayList<>();\n    for (T item : items) {\n        result.add(f.apply(item));\n    }\n    return result;\n}\n"

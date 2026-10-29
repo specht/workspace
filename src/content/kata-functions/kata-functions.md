@@ -2,7 +2,7 @@
 icon: bi-braces
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Werte bekommen, rechnen, ein Ergebnis zurückgeben
 curriculum: "Sek I: Algorithmisches Problemlösen (Variablenkonzept und Prozeduren); Oberstufe: Algorithmen und Softwareentwicklung (Variablenkonzept, Parameterkonzept)"
 topics: [grundstrukturen, unterprogramme]
@@ -63,6 +63,42 @@ außerhalb der Funktion: Sie ruft die Funktion zum Ausprobieren auf und
 schreibt ihr Ergebnis in die Ausgabe. Namen aus mehreren Wörtern schreibt man
 in JavaScript zusammen, jedes weitere Wort groß: `rectangleArea`.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+int triple(int n) {
+  return 3 * n;
+}
+
+void main() {
+  print(triple(14));
+}
+```
+
+`return` gibt das Ergebnis zurück. Ein Dart-Programm beginnt in `main`: Die
+Zeile `print(triple(14));` ruft die Funktion zum Ausprobieren auf und schreibt
+ihr Ergebnis in die Ausgabe. Vor jeder Funktion steht, was sie zurückgibt,
+hier eine ganze Zahl, `int`; vor jedem Parameter, was er ist. Namen aus
+mehreren Wörtern schreibt man zusammen, jedes weitere Wort groß:
+`rectangleArea`.
+<!-- /language -->
+<!-- language: java -->
+```java
+int triple(int n) {
+    return 3 * n;
+}
+
+void main() {
+    IO.println(triple(14));
+}
+```
+
+`return` gibt das Ergebnis zurück. Ein Java-Programm beginnt in `main`: Die
+Zeile `IO.println(triple(14));` ruft die Methode zum Ausprobieren auf und
+schreibt ihr Ergebnis in die Ausgabe. Eine Funktion heißt in Java
+**Methode**. Vor jeder steht, was sie zurückgibt, hier eine ganze Zahl,
+`int`; vor jedem Parameter, was er ist. Namen aus mehreren Wörtern schreibt
+man zusammen, jedes weitere Wort groß: `rectangleArea`.
+<!-- /language -->
 
 _task(predict-triple)
 
@@ -112,6 +148,34 @@ console.log(badge('Bello', 3));
 Der Text steht zwischen Backticks (`` ` ``). Zwischen `${` und `}` steht Code,
 und JavaScript setzt seinen Wert in den Text ein.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+String badge(String name, int age) {
+  return '$name ist $age Jahre alt';
+}
+
+void main() {
+  print(badge('Bello', 3));
+}
+```
+
+Ein `$` vor einem Namen setzt seinen Wert in den Text ein; eine Rechnung
+steht dafür in `${…}`, etwa `'${age + 1}'`.
+<!-- /language -->
+<!-- language: java -->
+```java
+String badge(String name, int age) {
+    return name + " ist " + age + " Jahre alt";
+}
+
+void main() {
+    IO.println(badge("Bello", 3));
+}
+```
+
+Ein Text steht in Java in doppelten Anführungszeichen. `+` hängt Texte
+aneinander, und eine Zahl dazwischen wird dabei zum Text.
+<!-- /language -->
 
 _task(predict-badge)
 
@@ -132,6 +196,15 @@ Es erscheint `Bello ist 3 Jahre alt`: `name` ist `'Bello'`, `age` ist `3`.
 In normalen Anführungszeichen setzt JavaScript nichts ein; dort stünde
 `${name}` wörtlich im Text. Zwei Texte kannst du auch mit `+`
 aneinanderhängen: `'Hallo, ' + name`.
+<!-- /language -->
+<!-- language: dart -->
+Es erscheint `Bello ist 3 Jahre alt`: `name` ist `'Bello'`, `age` ist `3`.
+Ohne das `$` setzt Dart nichts ein; dort stünde `name` wörtlich im Text.
+Zwei Texte kannst du auch mit `+` aneinanderhängen: `'Hallo, ' + name`.
+<!-- /language -->
+<!-- language: java -->
+Es erscheint `Bello ist 3 Jahre alt`: `name` ist `"Bello"`, `age` ist `3`.
+Stünde `name` mit in den Anführungszeichen, käme es wörtlich in den Text.
 <!-- /language -->
 <!-- /after -->
 
@@ -184,6 +257,24 @@ console.log(17 % 5);
 console.log(17 / 5);
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  print(17 ~/ 5);
+  print(17 % 5);
+  print(17 / 5);
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    IO.println(17 / 5);
+    IO.println(17 % 5);
+    IO.println(17 / 5.0);
+}
+```
+<!-- /language -->
 
 _task(predict-rest)
 
@@ -204,6 +295,17 @@ Die Zeilen ergeben `3`, `2` und `3.4`. 17 durch 5 ist 3, Rest 2. `/` teilt
 in JavaScript immer mit Komma; `Math.floor` rundet ab und lässt so den Rest
 weg. `%` gibt genau diesen Rest.
 <!-- /language -->
+<!-- language: dart -->
+Die Zeilen ergeben `3`, `2` und `3.4`. 17 durch 5 ist 3, Rest 2. `~/` teilt
+ganz und lässt den Rest weg, `%` gibt genau diesen Rest, und `/` teilt immer
+mit Komma.
+<!-- /language -->
+<!-- language: java -->
+Die Zeilen ergeben `3`, `2` und `3.4`. 17 durch 5 ist 3, Rest 2. Teilst du
+in Java zwei ganze Zahlen, ist das Ergebnis eine ganze Zahl, und der Rest
+fällt weg. `%` gibt genau diesen Rest. Steht eine Kommazahl in der Rechnung,
+etwa `5.0`, kommt eine Kommazahl heraus.
+<!-- /language -->
 
 Soll eine Zahl immer zwei Ziffern haben, wie die Sekunden einer Uhr,
 schreibst du vorne eine Null dazu:
@@ -216,6 +318,12 @@ schreibst du vorne eine Null dazu:
 <!-- /language -->
 <!-- language: javascript -->
 `String(5).padStart(2, '0')` ergibt den Text `'05'`.
+<!-- /language -->
+<!-- language: dart -->
+`5.toString().padLeft(2, '0')` ergibt den Text `'05'`.
+<!-- /language -->
+<!-- language: java -->
+`String.format("%02d", 5)` ergibt den Text `"05"`.
 <!-- /language -->
 <!-- /after -->
 

@@ -1,0 +1,421 @@
+//// Room.java @1
+import java.util.ArrayList;
+@5 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+// Ein Raum mit seinen Ausgängen und Gegenständen.
+public class Room {
+    private final String name;
+    private final String description;
+    private final Map<String, Room> exits = new LinkedHashMap<>();
+@5     private final Map<String, String> locks = new HashMap<>();
+@2     private final List<Item> items = new ArrayList<>();
+
+    public Room(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void connect(String direction, Room room) {
+        exits.put(direction, room);
+    }
+
+    public Room exitTo(String direction) {
+        return exits.get(direction);
+    }
+
+    public List<String> getDirections() {
+        return new ArrayList<>(exits.keySet());
+    }
+@2
+@2     public List<Item> getItems() {
+@2         return items;
+@2     }
+@2
+@2     public void addItem(Item item) {
+@2         items.add(item);
+@2     }
+@2
+@2     public Item take(String name) {
+@2         for (Item item : items) {
+@2             if (item.getName().equals(name)) {
+@2                 items.remove(item);
+@2                 return item;
+@2             }
+@2         }
+@2         return null;
+@2     }
+@5
+@5     public void lock(String direction, String keyName) {
+@5         locks.put(direction, keyName);
+@5     }
+@5
+@5     public boolean isLocked(String direction) {
+@5         return locks.containsKey(direction);
+@5     }
+@5
+@5     public boolean unlock(String keyName) {
+@5         return locks.values().removeIf(key -> key.equals(keyName));
+@5     }
+@6
+@6     public boolean isDark() {
+@6         return false;
+@6     }
+@7
+@7     public boolean isGoal() {
+@7         return false;
+@7     }
+@3
+@3     public String describe() {
+@3         List<String> lines = new ArrayList<>();
+@3         lines.add(name);
+@3         lines.add(description);
+@3         if (!items.isEmpty()) {
+@3             List<String> names = new ArrayList<>();
+@3             for (Item item : items) {
+@3                 names.add(item.getName());
+@3             }
+@3             lines.add("Hier liegt: " + String.join(", ", names));
+@3         }
+@3-4         List<String> ways = getDirections();
+@5         List<String> ways = new ArrayList<>();
+@5         for (String direction : getDirections()) {
+@5             ways.add(isLocked(direction) ? direction + " (verschlossen)" : direction);
+@5         }
+@3         lines.add("Ausgänge: " + (ways.isEmpty() ? "keine" : String.join(", ", ways)));
+@3         return String.join("\n", lines);
+@3     }
+}
+//// DarkRoom.java @6
+// Ein Raum, in dem man ohne Licht nichts sieht.
+public class DarkRoom extends Room {
+    public DarkRoom(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public boolean isDark() {
+        return true;
+    }
+}
+//// GoalRoom.java @7
+// Das Ziel: Wer diesen Raum betritt, hat gewonnen.
+public class GoalRoom extends Room {
+    public GoalRoom(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public boolean isGoal() {
+        return true;
+    }
+}
+//// Item.java @2
+// Ein Gegenstand, den man aufheben kann.
+public class Item {
+    private final String name;
+    private final String description;
+
+    public Item(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+@5
+@5     public String use(Player player) {
+@5         return "Damit kannst du hier nichts anfangen.";
+@5     }
+@6
+@6     public boolean shines() {
+@6         return false;
+@6     }
+}
+//// Key.java @5
+// Ein Schlüssel heißt wie sein Schloss.
+public class Key extends Item {
+    public Key(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public String use(Player player) {
+        if (player.getRoom().unlock(getName())) {
+            return "Du schließt die Tür auf.";
+        }
+        return "Hier passt " + getName() + " in kein Schloss.";
+    }
+}
+//// Food.java @5
+// Etwas zu essen: Danach ist es weg.
+public class Food extends Item {
+    public Food(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public String use(Player player) {
+        player.remove(this);
+        return "Du isst " + getName() + ". " + getDescription();
+    }
+}
+//// Lamp.java @6
+// Eine Lampe leuchtet, solange man sie trägt.
+public class Lamp extends Item {
+    public Lamp(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public String use(Player player) {
+        return getName() + " leuchtet schon.";
+    }
+
+    @Override
+    public boolean shines() {
+        return true;
+    }
+}
+//// Chest.java @8
+import java.util.ArrayList;
+import java.util.List;
+
+// Eine Kiste mit Inhalt: Öffnet man sie, liegt der Inhalt im Raum.
+public class Chest extends Item {
+    private final List<Item> contents = new ArrayList<>();
+
+    public Chest(String name, String description) {
+        super(name, description);
+    }
+
+    public void put(Item item) {
+        contents.add(item);
+    }
+
+    @Override
+    public String use(Player player) {
+        if (contents.isEmpty()) {
+            return getName() + " ist leer.";
+        }
+        List<String> names = new ArrayList<>();
+        for (Item item : contents) {
+            names.add(item.getName());
+            player.getRoom().addItem(item);
+        }
+        contents.clear();
+        return "Du öffnest " + getName() + ". Darin: " + String.join(", ", names);
+    }
+}
+//// Player.java @4
+import java.util.ArrayList;
+import java.util.List;
+
+// Die Spielerin: Sie steht in einem Raum und hat eine Tasche.
+public class Player {
+    private Room room;
+    private final List<Item> bag = new ArrayList<>();
+
+    public Player(Room room) {
+        this.room = room;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public String look() {
+@6         if (room.isDark() && !hasLight()) {
+@6             return "Es ist stockdunkel. Du siehst nichts.";
+@6         }
+        return room.describe();
+    }
+
+    public String go(String direction) {
+        Room target = room.exitTo(direction);
+        if (target == null) {
+            return "Da geht es nicht weiter.";
+        }
+@5         if (room.isLocked(direction)) {
+@5             return "Die Tür nach " + direction + " ist verschlossen.";
+@5         }
+        room = target;
+        return look();
+    }
+
+    public String take(String name) {
+@6         if (room.isDark() && !hasLight()) {
+@6             return "Im Dunkeln findest du nichts.";
+@6         }
+        Item item = room.take(name);
+        if (item == null) {
+            return "Hier liegt nichts mit dem Namen " + name + ".";
+        }
+        bag.add(item);
+        return "Du nimmst " + item.getName() + ".";
+    }
+
+    public boolean has(String name) {
+        for (Item item : bag) {
+            if (item.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String bag() {
+        if (bag.isEmpty()) {
+            return "Deine Tasche ist leer.";
+        }
+        List<String> names = new ArrayList<>();
+        for (Item item : bag) {
+            names.add(item.getName());
+        }
+        return "In deiner Tasche: " + String.join(", ", names);
+    }
+@5
+@5     public void remove(Item item) {
+@5         bag.remove(item);
+@5     }
+@5
+@5     public String use(String name) {
+@5         for (Item item : bag) {
+@5             if (item.getName().equals(name)) {
+@5                 return item.use(this);
+@5             }
+@5         }
+@5         return "Du hast nichts mit dem Namen " + name + ".";
+@5     }
+@6
+@6     public boolean hasLight() {
+@6         for (Item item : bag) {
+@6             if (item.shines()) {
+@6                 return true;
+@6             }
+@6         }
+@6         return false;
+@6     }
+@7
+@7     public String examine(String name) {
+@7         List<Item> visible = new ArrayList<>(bag);
+@7         visible.addAll(room.getItems());
+@7         for (Item item : visible) {
+@7             if (item.getName().equals(name)) {
+@7                 return item.getDescription();
+@7             }
+@7         }
+@7         return "Hier gibt es nichts mit dem Namen " + name + ".";
+@7     }
+}
+//// Game.java @7
+// Das Spiel: versteht eine getippte Zeile und gibt die Antwort zurück.
+public class Game {
+    private final Player player;
+    private boolean over = false;
+
+    public Game(Player player) {
+        this.player = player;
+    }
+
+    public String start() {
+        return player.look();
+    }
+
+    public boolean isOver() {
+        return over;
+    }
+
+    public boolean isWon() {
+        return player.getRoom().isGoal();
+    }
+
+    public String handle(String line) {
+        String[] parts = line.strip().toLowerCase().split(" ", 2);
+        String verb = parts[0];
+        String word = parts.length > 1 ? parts[1] : "";
+        String answer;
+        if (verb.equals("gehe")) {
+            answer = player.go(word);
+        } else if (verb.equals("nimm")) {
+            answer = player.take(word);
+        } else if (verb.equals("benutze")) {
+            answer = player.use(word);
+        } else if (verb.equals("untersuche")) {
+            answer = player.examine(word);
+        } else if (verb.equals("schau")) {
+            answer = player.look();
+        } else if (verb.equals("tasche")) {
+            answer = player.bag();
+        } else if (verb.equals("ende")) {
+            over = true;
+            answer = "Bis bald.";
+        } else {
+            answer = "Das verstehe ich nicht. Befehle: gehe, nimm, benutze, untersuche, schau, tasche, ende";
+        }
+        if (isWon()) {
+            over = true;
+        }
+        return answer;
+    }
+}
+//// World.java @8
+import java.util.ArrayList;
+import java.util.List;
+
+// Deine Welt: ein Wohnheim, in dem das Licht ausgefallen ist.
+public class World {
+    // Der Weg zum Ziel, Befehl für Befehl: Game spielt ihn durch.
+    public static final List<String> WALKTHROUGH = List.of(
+        "nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel", "gehe flur",
+        "benutze kastenschlüssel", "gehe kasten");
+
+    public static Player build() {
+        Room room = new Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.");
+        Room corridor = new DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.");
+        Room kitchen = new Room("Küche", "Im Kühlschrank brummt nichts mehr.");
+        Room fuse = new GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!");
+        room.connect("flur", corridor);
+        corridor.connect("zimmer", room);
+        corridor.connect("küche", kitchen);
+        kitchen.connect("flur", corridor);
+        corridor.connect("kasten", fuse);
+        corridor.lock("kasten", "kastenschlüssel");
+        room.addItem(new Lamp("kerze", "Eine Kerze, die schon brennt."));
+        kitchen.addItem(new Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."));
+        kitchen.addItem(new Food("keks", "Ein bisschen weich, aber gut."));
+        return new Player(room);
+    }
+
+    // Alle Räume, die man von start aus erreicht, start zuerst (gegeben).
+    public static List<Room> allRooms(Room start) {
+        List<Room> seen = new ArrayList<>(List.of(start));
+        List<Room> queue = new ArrayList<>(List.of(start));
+        while (!queue.isEmpty()) {
+            Room room = queue.remove(0);
+            for (String direction : room.getDirections()) {
+                Room other = room.exitTo(direction);
+                if (!seen.contains(other)) {
+                    seen.add(other);
+                    queue.add(other);
+                }
+            }
+        }
+        return seen;
+    }
+}

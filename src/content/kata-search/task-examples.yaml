@@ -19,6 +19,16 @@ examples:
         - answer: "function linearSearch(items, wanted) {\n  for (let i = 0; i < items.length; i++) {\n    if (items[i] === wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
       fail:
         - answer: "function linearSearch(items, wanted) {\n  let result = null;\n  for (let i = 0; i < items.length; i++) {\n    if (items[i] === wanted) {\n      result = i;\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "int? linearSearch(List<int> items, int wanted) {\n  for (var i = 0; i < items.length; i++) {\n    if (items[i] == wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "int? linearSearch(List<int> items, int wanted) {\n  int? result;\n  for (var i = 0; i < items.length; i++) {\n    if (items[i] == wanted) {\n      result = i;\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "Integer linearSearch(List<Integer> items, int wanted) {\n    for (int i = 0; i < items.size(); i++) {\n        if (items.get(i) == wanted) {\n            return i;\n        }\n    }\n    return null;\n}\n"
+      fail:
+        - answer: "Integer linearSearch(List<Integer> items, int wanted) {\n    Integer result = null;\n    for (int i = 0; i < items.size(); i++) {\n        if (items.get(i) == wanted) {\n            result = i;\n        }\n    }\n    return result;\n}\n"
   min-index:
     pass:
       - answer: "def min_index(numbers)\n  best = 0\n  (1...numbers.length).each do |i|\n    best = i if numbers[i] < numbers[best]\n  end\n  best\nend\n"
@@ -34,6 +44,16 @@ examples:
         - answer: "function minIndex(numbers) {\n  let best = 0;\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] < numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n"
       fail:
         - answer: "function minIndex(numbers) {\n  let best = 0;\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n"
+    dart:
+      pass:
+        - answer: "int minIndex(List<int> numbers) {\n  var best = 0;\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] < numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n"
+      fail:
+        - answer: "int minIndex(List<int> numbers) {\n  var best = 0;\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n"
+    java:
+      pass:
+        - answer: "int minIndex(List<Integer> numbers) {\n    int best = 0;\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) < numbers.get(best)) {\n            best = i;\n        }\n    }\n    return best;\n}\n"
+      fail:
+        - answer: "int minIndex(List<Integer> numbers) {\n    int best = 0;\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) <= numbers.get(best)) {\n            best = i;\n        }\n    }\n    return best;\n}\n"
   last-index:
     pass:
       - answer: "def last_index(items, wanted)\n  i = items.length - 1\n  while i >= 0\n    return i if items[i] == wanted\n    i -= 1\n  end\n  nil\nend\n"
@@ -49,6 +69,16 @@ examples:
         - answer: "function lastIndex(items, wanted) {\n  for (let i = items.length - 1; i >= 0; i--) {\n    if (items[i] === wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
       fail:
         - answer: "function lastIndex(items, wanted) {\n  for (let i = items.length - 1; i > 0; i--) {\n    if (items[i] === wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "int? lastIndex(List<int> items, int wanted) {\n  for (var i = items.length - 1; i >= 0; i--) {\n    if (items[i] == wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "int? lastIndex(List<int> items, int wanted) {\n  for (var i = items.length - 1; i > 0; i--) {\n    if (items[i] == wanted) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "Integer lastIndex(List<Integer> items, int wanted) {\n    for (int i = items.size() - 1; i >= 0; i--) {\n        if (items.get(i) == wanted) {\n            return i;\n        }\n    }\n    return null;\n}\n"
+      fail:
+        - answer: "Integer lastIndex(List<Integer> items, int wanted) {\n    for (int i = items.size() - 1; i > 0; i--) {\n        if (items.get(i) == wanted) {\n            return i;\n        }\n    }\n    return null;\n}\n"
   first-greater:
     pass:
       - answer: "def first_greater(numbers, limit)\n  numbers.each_with_index do |number, i|\n    return i if number > limit\n  end\n  nil\nend\n"
@@ -64,6 +94,16 @@ examples:
         - answer: "function firstGreater(numbers, limit) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers[i] > limit) {\n      return i;\n    }\n  }\n  return null;\n}\n"
       fail:
         - answer: "function firstGreater(numbers, limit) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers[i] >= limit) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "int? firstGreater(List<int> numbers, int limit) {\n  for (var i = 0; i < numbers.length; i++) {\n    if (numbers[i] > limit) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "int? firstGreater(List<int> numbers, int limit) {\n  for (var i = 0; i < numbers.length; i++) {\n    if (numbers[i] >= limit) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "Integer firstGreater(List<Integer> numbers, int limit) {\n    for (int i = 0; i < numbers.size(); i++) {\n        if (numbers.get(i) > limit) {\n            return i;\n        }\n    }\n    return null;\n}\n"
+      fail:
+        - answer: "Integer firstGreater(List<Integer> numbers, int limit) {\n    for (int i = 0; i < numbers.size(); i++) {\n        if (numbers.get(i) >= limit) {\n            return i;\n        }\n    }\n    return null;\n}\n"
   binary-search:
     pass:
       - answer: "def binary_search(numbers, wanted)\n  low = 0\n  high = numbers.length - 1\n  while low <= high\n    middle = (low + high) / 2\n    return middle if numbers[middle] == wanted\n    if numbers[middle] < wanted\n      low = middle + 1\n    else\n      high = middle - 1\n    end\n  end\n  nil\nend\n"
@@ -79,6 +119,16 @@ examples:
         - answer: "function binarySearch(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low <= high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) {\n      return middle;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
       fail:
         - answer: "function binarySearch(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low < high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) {\n      return middle;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return middle;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "int? binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low < high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return middle;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return middle;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n"
+      fail:
+        - answer: "Integer binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low < high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return middle;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return null;\n}\n"
   guesses:
     pass:
       - answer: "def guesses(secret, low, high)\n  tips = []\n  loop do\n    guess = (low + high) / 2\n    tips << guess\n    return tips if guess == secret\n    if guess < secret\n      low = guess + 1\n    else\n      high = guess - 1\n    end\n  end\nend\n"
@@ -90,6 +140,12 @@ examples:
     javascript:
       pass:
         - answer: "function guesses(secret, low, high) {\n  const tips = [];\n  while (true) {\n    const guess = Math.floor((low + high) / 2);\n    tips.push(guess);\n    if (guess === secret) {\n      return tips;\n    }\n    if (guess < secret) {\n      low = guess + 1;\n    } else {\n      high = guess - 1;\n    }\n  }\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> guesses(int secret, int low, int high) {\n  final tips = <int>[];\n  while (true) {\n    final guess = (low + high) ~/ 2;\n    tips.add(guess);\n    if (guess == secret) {\n      return tips;\n    }\n    if (guess < secret) {\n      low = guess + 1;\n    } else {\n      high = guess - 1;\n    }\n  }\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> guesses(int secret, int low, int high) {\n    List<Integer> tips = new ArrayList<>();\n    while (true) {\n        int guess = (low + high) / 2;\n        tips.add(guess);\n        if (guess == secret) {\n            return tips;\n        }\n        if (guess < secret) {\n            low = guess + 1;\n        } else {\n            high = guess - 1;\n        }\n    }\n}\n"
   first-at-least:
     pass:
       - answer: "def first_at_least(numbers, limit)\n  low = 0\n  high = numbers.length\n  while low < high\n    middle = (low + high) / 2\n    if numbers[middle] < limit\n      low = middle + 1\n    else\n      high = middle\n    end\n  end\n  low\nend\n"
@@ -99,6 +155,12 @@ examples:
     javascript:
       pass:
         - answer: "function firstAtLeast(numbers, limit) {\n  let low = 0;\n  let high = numbers.length;\n  while (low < high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] < limit) {\n      low = middle + 1;\n    } else {\n      high = middle;\n    }\n  }\n  return low;\n}\n"
+    dart:
+      pass:
+        - answer: "int firstAtLeast(List<int> numbers, int limit) {\n  var low = 0;\n  var high = numbers.length;\n  while (low < high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] < limit) {\n      low = middle + 1;\n    } else {\n      high = middle;\n    }\n  }\n  return low;\n}\n"
+    java:
+      pass:
+        - answer: "int firstAtLeast(List<Integer> numbers, int limit) {\n    int low = 0;\n    int high = numbers.size();\n    while (low < high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) < limit) {\n            low = middle + 1;\n        } else {\n            high = middle;\n        }\n    }\n    return low;\n}\n"
   int-sqrt:
     pass:
       - answer: "def int_sqrt(n)\n  low = 0\n  high = n\n  while low < high\n    middle = (low + high + 1) / 2\n    if middle * middle <= n\n      low = middle\n    else\n      high = middle - 1\n    end\n  end\n  low\nend\n"
@@ -108,6 +170,16 @@ examples:
     javascript:
       pass:
         - answer: "function intSqrt(n) {\n  let low = 0;\n  let high = n;\n  while (low < high) {\n    const middle = Math.floor((low + high + 1) / 2);\n    if (middle * middle <= n) {\n      low = middle;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return low;\n}\n"
+    dart:
+      pass:
+        - answer: "int intSqrt(int n) {\n  var low = 0;\n  var high = n;\n  while (low < high) {\n    final middle = (low + high + 1) ~/ 2;\n    if (middle <= n ~/ middle) {\n      low = middle;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return low;\n}\n"
+      fail:
+        - answer: "int intSqrt(int n) {\n  var low = 0;\n  var high = n;\n  while (low < high) {\n    final middle = (low + high + 1) ~/ 2;\n    if (middle * middle <= n) {\n      low = middle;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return low;\n}\n"
+    java:
+      pass:
+        - answer: "long intSqrt(long n) {\n    long low = 0;\n    long high = n;\n    while (low < high) {\n        long middle = (low + high + 1) / 2;\n        if (middle <= n / middle) {\n            low = middle;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return low;\n}\n"
+      fail:
+        - answer: "long intSqrt(long n) {\n    long low = 0;\n    long high = n;\n    while (low < high) {\n        long middle = (low + high + 1) / 2;\n        if (middle * middle <= n) {\n            low = middle;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return low;\n}\n"
   insert-sorted:
     pass:
       - answer: "def insert_sorted(numbers, value)\n  i = 0\n  i += 1 while i < numbers.length && numbers[i] < value\n  numbers[0...i] + [value] + numbers[i..]\nend\n"
@@ -119,6 +191,12 @@ examples:
     javascript:
       pass:
         - answer: "function insertSorted(numbers, value) {\n  let i = 0;\n  while (i < numbers.length && numbers[i] < value) {\n    i++;\n  }\n  return [...numbers.slice(0, i), value, ...numbers.slice(i)];\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> insertSorted(List<int> numbers, int value) {\n  var i = 0;\n  while (i < numbers.length && numbers[i] < value) {\n    i++;\n  }\n  return [...numbers.sublist(0, i), value, ...numbers.sublist(i)];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> insertSorted(List<Integer> numbers, int value) {\n    int i = 0;\n    while (i < numbers.size() && numbers.get(i) < value) {\n        i++;\n    }\n    List<Integer> result = new ArrayList<>(numbers);\n    result.add(i, value);\n    return result;\n}\n"
   is-permutation:
     pass:
       - answer: "def is_permutation(a, b)\n  return false if a.length != b.length\n  counts = Hash.new(0)\n  a.each { |x| counts[x] += 1 }\n  b.each { |x| counts[x] -= 1 }\n  counts.values.all?(&:zero?)\nend\n"
@@ -134,6 +212,16 @@ examples:
         - answer: "function isPermutation(a, b) {\n  if (a.length !== b.length) {\n    return false;\n  }\n  const counts = {};\n  for (const x of a) {\n    counts[x] = (counts[x] || 0) + 1;\n  }\n  for (const x of b) {\n    counts[x] = (counts[x] || 0) - 1;\n  }\n  return Object.values(counts).every((c) => c === 0);\n}\n"
       fail:
         - answer: "function isPermutation(a, b) {\n  return a.length === b.length && a.every((x) => b.includes(x));\n}\n"
+    dart:
+      pass:
+        - answer: "bool isPermutation(List<int> a, List<int> b) {\n  if (a.length != b.length) {\n    return false;\n  }\n  final counts = <int, int>{};\n  for (final x in a) {\n    counts[x] = (counts[x] ?? 0) + 1;\n  }\n  for (final x in b) {\n    counts[x] = (counts[x] ?? 0) - 1;\n  }\n  return counts.values.every((c) => c == 0);\n}\n"
+      fail:
+        - answer: "bool isPermutation(List<int> a, List<int> b) {\n  return a.length == b.length && a.every((x) => b.contains(x));\n}\n"
+    java:
+      pass:
+        - answer: "boolean isPermutation(List<Integer> a, List<Integer> b) {\n    if (a.size() != b.size()) {\n        return false;\n    }\n    Map<Integer, Integer> counts = new HashMap<>();\n    for (int x : a) {\n        counts.put(x, counts.getOrDefault(x, 0) + 1);\n    }\n    for (int x : b) {\n        counts.put(x, counts.getOrDefault(x, 0) - 1);\n    }\n    for (int c : counts.values()) {\n        if (c != 0) {\n            return false;\n        }\n    }\n    return true;\n}\n"
+      fail:
+        - answer: "boolean isPermutation(List<Integer> a, List<Integer> b) {\n    return a.size() == b.size() && b.containsAll(a);\n}\n"
   rotation-point:
     pass:
       - answer: "def rotation_point(numbers)\n  low = 0\n  high = numbers.length - 1\n  while low < high\n    middle = (low + high) / 2\n    if numbers[middle] > numbers[high]\n      low = middle + 1\n    else\n      high = middle\n    end\n  end\n  low\nend\n"
@@ -143,6 +231,12 @@ examples:
     javascript:
       pass:
         - answer: "function rotationPoint(numbers) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low < high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] > numbers[high]) {\n      low = middle + 1;\n    } else {\n      high = middle;\n    }\n  }\n  return low;\n}\n"
+    dart:
+      pass:
+        - answer: "int rotationPoint(List<int> numbers) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low < high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] > numbers[high]) {\n      low = middle + 1;\n    } else {\n      high = middle;\n    }\n  }\n  return low;\n}\n"
+    java:
+      pass:
+        - answer: "int rotationPoint(List<Integer> numbers) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low < high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) > numbers.get(high)) {\n            low = middle + 1;\n        } else {\n            high = middle;\n        }\n    }\n    return low;\n}\n"
   search-steps:
     pass:
       - answer: "def search_steps(numbers, wanted)\n  low = 0\n  high = numbers.length - 1\n  steps = 0\n  while low <= high\n    steps += 1\n    middle = (low + high) / 2\n    return steps if numbers[middle] == wanted\n    if numbers[middle] < wanted\n      low = middle + 1\n    else\n      high = middle - 1\n    end\n  end\n  steps\nend\n"
@@ -152,6 +246,12 @@ examples:
     javascript:
       pass:
         - answer: "function searchSteps(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  let steps = 0;\n  while (low <= high) {\n    steps++;\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) {\n      return steps;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return steps;\n}\n"
+    dart:
+      pass:
+        - answer: "int searchSteps(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  var steps = 0;\n  while (low <= high) {\n    steps++;\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return steps;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return steps;\n}\n"
+    java:
+      pass:
+        - answer: "int searchSteps(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    int steps = 0;\n    while (low <= high) {\n        steps++;\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return steps;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return steps;\n}\n"
   count-found:
     pass:
       - answer: "def count_found(numbers, queries)\n  queries.count do |wanted|\n    low = 0\n    high = numbers.length - 1\n    found = false\n    while low <= high && !found\n      middle = (low + high) / 2\n      if numbers[middle] == wanted\n        found = true\n      elsif numbers[middle] < wanted\n        low = middle + 1\n      else\n        high = middle - 1\n      end\n    end\n    found\n  end\nend\n"
@@ -167,3 +267,9 @@ examples:
         - answer: "function binarySearch(numbers, wanted) {\n  let low = 0;\n  let high = numbers.length - 1;\n  while (low <= high) {\n    const middle = Math.floor((low + high) / 2);\n    if (numbers[middle] === wanted) {\n      return true;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return false;\n}\n\nfunction countFound(numbers, queries) {\n  let count = 0;\n  for (const wanted of queries) {\n    if (binarySearch(numbers, wanted)) {\n      count++;\n    }\n  }\n  return count;\n}\n"
       fail:
         - answer: "function countFound(numbers, queries) {\n  return queries.filter((wanted) => numbers.includes(wanted)).length;\n}\n"
+    dart:
+      pass:
+        - answer: "bool binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return true;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return false;\n}\n\nint countFound(List<int> numbers, List<int> queries) {\n  var count = 0;\n  for (final wanted in queries) {\n    if (binarySearch(numbers, wanted)) {\n      count++;\n    }\n  }\n  return count;\n}\n"
+    java:
+      pass:
+        - answer: "boolean binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return true;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return false;\n}\n\nint countFound(List<Integer> numbers, List<Integer> queries) {\n    int count = 0;\n    for (int wanted : queries) {\n        if (binarySearch(numbers, wanted)) {\n            count++;\n        }\n    }\n    return count;\n}\n"

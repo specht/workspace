@@ -1,4 +1,4 @@
-Lernende bringen Pip an einem Monster vorbei, das nach jedem Schritt den kürzesten Weg zu Pip geht: zuerst mit gezählten Schritten und dem Licht der alten Lampen, dann mit einer eigenen Breitensuche auf der Karte, in Ruby, Python oder JavaScript.
+Lernende bringen Pip an einem Monster vorbei, das nach jedem Schritt den kürzesten Weg zu Pip geht: zuerst mit gezählten Schritten und dem Licht der alten Lampen, dann mit einer eigenen Breitensuche auf der Karte, in Ruby, Python, JavaScript, Dart oder Java.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/pip-2'>Pip unter Funkelbach: Bellos Spur</a>, Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und <a href='/kata-dicts'>Katas: Dictionaries</a>. Die Breitensuche steht im Handbuch unter <a href='/reference/graphen'>Graphen</a>.</td></tr>
@@ -15,6 +15,7 @@ Lernende bringen Pip an einem Monster vorbei, das nach jedem Schritt den kürzes
 - Drehungen nicht mitzählen: Eine Drehung nach rechts sind drei Schritte, in denen der Mampfer drei Felder näher kommt.
 - Im Licht warten wollen, bis der Mampfer weggeht: Er bleibt am Rand des Lichts stehen, solange Pip darin ist, und geht nicht weg.
 - In Python Positionen als Listen: Eine Liste kann kein Schlüssel eines Dictionarys sein (»unhashable type: 'list'«), und die Prüfung erwartet Tupel. In JavaScript wird ein Array als Schlüssel eines Objekts zum Text <code>'3,1'</code>; das geht, solange alle Positionen Arrays von Zahlen sind.
+- In Dart sind Positionen Records, `(1, 1)`, in Java Listen, `List.of(1, 1)`: Beide sind gleich, wenn ihre Zahlen gleich sind, und taugen so als Schlüssel einer Map. In Java vergleicht `facing() != direction` zwei Texte als Objekte und stimmt nie; Pip dreht sich dann bis zur Grenze der Schritte. Richtig ist `!facing().equals(direction)`, und der zweite Tipp bei `face` sagt es.
 - <code>[y, x]</code> statt <code>[x, y]</code>: Die Karte wird als <code>cave[y][x]</code> gelesen, die Position aber zuerst mit der Spalte geschrieben.
 - Ein Feld erst beim Herausnehmen aus der Queue als gefunden merken: Dann kommt es mehrmals hinein; auf den kleinen Karten fällt das nicht auf, ist aber eine gute Frage im Gespräch.
 - Die Hand an der Wand aus Teil 2 im letzten Plan: In Höhlen mit Rundwegen läuft sie Umwege oder im Kreis, und der Mampfer holt Pip ein.

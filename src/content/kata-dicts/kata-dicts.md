@@ -2,7 +2,7 @@
 icon: bi-book
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Nachschlagen, zählen und gruppieren mit Schlüsseln und Werten
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen mit Schlüsseln und Werten); Oberstufe: Algorithmen und Datenstrukturen (Hash Table)"
 topics: [datenstrukturen]
@@ -67,6 +67,53 @@ for (const name in ages) {
 
 Die Schlüssel eines Objekts sind immer Texte; eine Zahl als Schlüssel wird zu
 einem Text. Wer etwas anderes als Schlüssel braucht, nimmt eine `Map`.
+<!-- /language -->
+<!-- language: dart -->
+In Dart heißt das eine **Map**:
+
+```dart
+void main() {
+  final ages = {'Ada': 36, 'Alan': 41};
+  print(ages['Ada']);                // 36
+  ages['Grace'] = 85;                // ein neues Paar
+  print(ages.containsKey('Linus'));  // false: diesen Schlüssel gibt es nicht
+  print(ages['Linus'] ?? 0);         // 0, wenn es ihn nicht gibt
+  for (final name in ages.keys) {
+    print('$name wurde ${ages[name]}');
+  }
+}
+```
+
+`{'Ada': 36, 'Alan': 41}` ist eine `Map<String, int>`: Texte als
+Schlüssel, Zahlen als Werte. `ages['Linus']` ist `null`, wenn es den
+Schlüssel nicht gibt; `??` nimmt dann den Wert rechts davon. Weiß man, dass
+es ihn gibt, schreibt man `ages['Ada']!`. Eine Map in Dart behält die
+Reihenfolge, in der die Paare hineinkamen.
+<!-- /language -->
+<!-- language: java -->
+In Java heißt das eine **Map**:
+
+```java
+void main() {
+    Map<String, Integer> ages = new HashMap<>();
+    ages.put("Ada", 36);
+    ages.put("Alan", 41);
+    IO.println(ages.get("Ada"));                // 36
+    ages.put("Grace", 85);                      // ein neues Paar
+    IO.println(ages.containsKey("Linus"));      // false: diesen Schlüssel gibt es nicht
+    IO.println(ages.getOrDefault("Linus", 0));  // 0, wenn es ihn nicht gibt
+    for (String name : ages.keySet()) {
+        IO.println(name + " wurde " + ages.get(name));
+    }
+}
+```
+
+`Map<String, Integer>` hat Texte als Schlüssel und Zahlen als Werte;
+`get` gibt `null` zurück, wenn es den Schlüssel nicht gibt. Eine `HashMap`
+merkt sich keine Reihenfolge: Die Namen kommen in irgendeiner heraus. Eine
+`LinkedHashMap` behält die Reihenfolge, in der die Paare hineinkamen.
+`Map.of("Ada", 36, "Alan", 41)` legt eine Map an, die sich nicht mehr
+ändern lässt.
 <!-- /language -->
 
 Nachschlagen geht in einem Dictionary sofort, ganz gleich, wie viele Paare

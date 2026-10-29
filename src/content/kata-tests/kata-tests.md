@@ -2,7 +2,7 @@
 icon: bi-check2-square
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Tests schreiben, die jeden Fehler finden
 curriculum: "Oberstufe: Softwareprojekt (systematische Softwareentwicklung: Testen)"
 topics: [testen]
@@ -39,6 +39,26 @@ assert_equal(7, gcd(7, 7))
 assertEqual(12, gcd(60, 48));    // erwartet 12
 assertEqual(7, gcd(7, 7));
 ```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+assertEqual(12, gcd(60, 48));    // erwartet 12
+assertEqual(7, gcd(7, 7));
+```
+
+Jeder Test ist eine Anweisung und endet mit einem Semikolon. Die Prüfung
+stellt deine Zeilen selbst in eine Funktion; ein `main` brauchst du hier
+nicht.
+<!-- /language -->
+<!-- language: java -->
+```java
+assertEqual(12, gcd(60, 48));    // erwartet 12
+assertEqual(7, gcd(7, 7));
+```
+
+Jeder Test ist eine Anweisung und endet mit einem Semikolon. Die Prüfung
+stellt deine Zeilen selbst in eine Funktion; ein `main` brauchst du hier
+nicht.
 <!-- /language -->
 
 Zuerst steht, was herauskommen soll, dann der Aufruf. Ein guter Test sucht

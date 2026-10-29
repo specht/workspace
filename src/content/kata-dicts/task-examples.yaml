@@ -19,6 +19,16 @@ examples:
         - answer: "function phoneNumber(book, name) {\n  if (name in book) {\n    return book[name];\n  }\n  return 'unbekannt';\n}\n"
       fail:
         - answer: "function phoneNumber(book, name) {\n  return book[name];\n}\n"
+    dart:
+      pass:
+        - answer: "String phoneNumber(Map<String, String> book, String name) {\n  if (book.containsKey(name)) {\n    return book[name]!;\n  }\n  return 'unbekannt';\n}\n"
+      fail:
+        - answer: "String phoneNumber(Map<String, String> book, String name) {\n  return book[name]!;\n}\n"
+    java:
+      pass:
+        - answer: "String phoneNumber(Map<String, String> book, String name) {\n    if (book.containsKey(name)) {\n        return book.get(name);\n    }\n    return \"unbekannt\";\n}\n"
+      fail:
+        - answer: "String phoneNumber(Map<String, String> book, String name) {\n    return book.get(name);\n}\n"
   count-items:
     pass:
       - answer: "def count_items(items)\n  counts = {}\n  items.each do |item|\n    counts[item] = counts.fetch(item, 0) + 1\n  end\n  counts\nend\n"
@@ -34,6 +44,16 @@ examples:
         - answer: "function countItems(items) {\n  const counts = {};\n  for (const item of items) {\n    counts[item] = (counts[item] || 0) + 1;\n  }\n  return counts;\n}\n"
       fail:
         - answer: "function countItems(items) {\n  const counts = {};\n  for (const item of items) {\n    counts[item] = 1;\n  }\n  return counts;\n}\n"
+    dart:
+      pass:
+        - answer: "Map<Object, int> countItems(List<Object> items) {\n  final counts = <Object, int>{};\n  for (final item in items) {\n    counts[item] = (counts[item] ?? 0) + 1;\n  }\n  return counts;\n}\n"
+      fail:
+        - answer: "Map<Object, int> countItems(List<Object> items) {\n  final counts = <Object, int>{};\n  for (final item in items) {\n    counts[item] = 1;\n  }\n  return counts;\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, Integer> countItems(List<String> items) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String item : items) {\n        counts.put(item, counts.getOrDefault(item, 0) + 1);\n    }\n    return counts;\n}\n"
+      fail:
+        - answer: "Map<String, Integer> countItems(List<String> items) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String item : items) {\n        counts.put(item, 1);\n    }\n    return counts;\n}\n"
   total-price:
     pass:
       - answer: "def total_price(prices, cart)\n  total = 0\n  cart.each do |item|\n    total += prices[item]\n  end\n  total\nend\n"
@@ -49,6 +69,16 @@ examples:
         - answer: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item of cart) {\n    total += prices[item];\n  }\n  return total;\n}\n"
       fail:
         - answer: "function totalPrice(prices, cart) {\n  let total = 0;\n  for (const item in prices) {\n    if (cart.includes(item)) {\n      total += prices[item];\n    }\n  }\n  return total;\n}\n"
+    dart:
+      pass:
+        - answer: "int totalPrice(Map<String, int> prices, List<String> cart) {\n  var total = 0;\n  for (final item in cart) {\n    total += prices[item]!;\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "int totalPrice(Map<String, int> prices, List<String> cart) {\n  var total = 0;\n  for (final item in prices.keys) {\n    if (cart.contains(item)) {\n      total += prices[item]!;\n    }\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "int totalPrice(Map<String, Integer> prices, List<String> cart) {\n    int total = 0;\n    for (String item : cart) {\n        total += prices.get(item);\n    }\n    return total;\n}\n"
+      fail:
+        - answer: "int totalPrice(Map<String, Integer> prices, List<String> cart) {\n    int total = 0;\n    for (String item : prices.keySet()) {\n        if (cart.contains(item)) {\n            total += prices.get(item);\n        }\n    }\n    return total;\n}\n"
   keys-with-value:
     pass:
       - answer: "def keys_with_value(scores, value)\n  names = []\n  scores.each do |name, points|\n    names << name if points == value\n  end\n  names\nend\n"
@@ -58,6 +88,12 @@ examples:
     javascript:
       pass:
         - answer: "function keysWithValue(scores, value) {\n  const names = [];\n  for (const name in scores) {\n    if (scores[name] === value) {\n      names.push(name);\n    }\n  }\n  return names;\n}\n"
+    dart:
+      pass:
+        - answer: "List<String> keysWithValue(Map<String, int> scores, int value) {\n  final names = <String>[];\n  for (final name in scores.keys) {\n    if (scores[name] == value) {\n      names.add(name);\n    }\n  }\n  return names;\n}\n"
+    java:
+      pass:
+        - answer: "List<String> keysWithValue(Map<String, Integer> scores, int value) {\n    List<String> names = new ArrayList<>();\n    for (String name : scores.keySet()) {\n        if (scores.get(name) == value) {\n            names.add(name);\n        }\n    }\n    return names;\n}\n"
   letter-count:
     pass:
       - answer: "def letter_count(text)\n  counts = {}\n  text.downcase.each_char do |char|\n    next unless char >= 'a' && char <= 'z'\n    counts[char] = counts.fetch(char, 0) + 1\n  end\n  counts\nend\n"
@@ -73,6 +109,16 @@ examples:
         - answer: "function letterCount(text) {\n  const counts = {};\n  for (const char of text.toLowerCase()) {\n    if (char >= 'a' && char <= 'z') {\n      counts[char] = (counts[char] || 0) + 1;\n    }\n  }\n  return counts;\n}\n"
       fail:
         - answer: "function letterCount(text) {\n  const counts = {};\n  for (const char of text) {\n    if ((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')) {\n      counts[char] = (counts[char] || 0) + 1;\n    }\n  }\n  return counts;\n}\n"
+    dart:
+      pass:
+        - answer: "Map<String, int> letterCount(String text) {\n  final counts = <String, int>{};\n  for (final char in text.toLowerCase().split('')) {\n    if ('abcdefghijklmnopqrstuvwxyz'.contains(char)) {\n      counts[char] = (counts[char] ?? 0) + 1;\n    }\n  }\n  return counts;\n}\n"
+      fail:
+        - answer: "Map<String, int> letterCount(String text) {\n  final counts = <String, int>{};\n  for (final char in text.split('')) {\n    if ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.contains(char)) {\n      counts[char] = (counts[char] ?? 0) + 1;\n    }\n  }\n  return counts;\n}\n"
+    java:
+      pass:
+        - answer: "Map<Character, Integer> letterCount(String text) {\n    Map<Character, Integer> counts = new HashMap<>();\n    for (char c : text.toLowerCase().toCharArray()) {\n        if (c >= 'a' && c <= 'z') {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n    }\n    return counts;\n}\n"
+      fail:
+        - answer: "Map<Character, Integer> letterCount(String text) {\n    Map<Character, Integer> counts = new HashMap<>();\n    for (char c : text.toCharArray()) {\n        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {\n            counts.put(c, counts.getOrDefault(c, 0) + 1);\n        }\n    }\n    return counts;\n}\n"
   most-frequent:
     pass:
       - answer: "def most_frequent(words)\n  counts = {}\n  words.each do |word|\n    counts[word] = counts.fetch(word, 0) + 1\n  end\n  best = words[0]\n  words.each do |word|\n    best = word if counts[word] > counts[best]\n  end\n  best\nend\n"
@@ -88,6 +134,16 @@ examples:
         - answer: "function mostFrequent(words) {\n  const counts = {};\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  let best = words[0];\n  for (const word of words) {\n    if (counts[word] > counts[best]) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
       fail:
         - answer: "function mostFrequent(words) {\n  const counts = {};\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  let best = words[0];\n  for (const word of words) {\n    if (counts[word] >= counts[best]) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
+    dart:
+      pass:
+        - answer: "String mostFrequent(List<String> words) {\n  final counts = <String, int>{};\n  for (final word in words) {\n    counts[word] = (counts[word] ?? 0) + 1;\n  }\n  var best = words[0];\n  for (final word in words) {\n    if (counts[word]! > counts[best]!) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
+      fail:
+        - answer: "String mostFrequent(List<String> words) {\n  final counts = <String, int>{};\n  for (final word in words) {\n    counts[word] = (counts[word] ?? 0) + 1;\n  }\n  var best = words[0];\n  for (final word in words) {\n    if (counts[word]! >= counts[best]!) {\n      best = word;\n    }\n  }\n  return best;\n}\n"
+    java:
+      pass:
+        - answer: "String mostFrequent(List<String> words) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String word : words) {\n        counts.put(word, counts.getOrDefault(word, 0) + 1);\n    }\n    String best = words.get(0);\n    for (String word : words) {\n        if (counts.get(word) > counts.get(best)) {\n            best = word;\n        }\n    }\n    return best;\n}\n"
+      fail:
+        - answer: "String mostFrequent(List<String> words) {\n    Map<String, Integer> counts = new HashMap<>();\n    for (String word : words) {\n        counts.put(word, counts.getOrDefault(word, 0) + 1);\n    }\n    String best = words.get(0);\n    for (String word : words) {\n        if (counts.get(word) >= counts.get(best)) {\n            best = word;\n        }\n    }\n    return best;\n}\n"
   group-by-length:
     pass:
       - answer: "def group_by_length(words)\n  groups = {}\n  words.each do |word|\n    groups[word.length] ||= []\n    groups[word.length] << word\n  end\n  groups\nend\n"
@@ -103,6 +159,16 @@ examples:
         - answer: "function groupByLength(words) {\n  const groups = {};\n  for (const word of words) {\n    if (!(word.length in groups)) {\n      groups[word.length] = [];\n    }\n    groups[word.length].push(word);\n  }\n  return groups;\n}\n"
       fail:
         - answer: "function groupByLength(words) {\n  const groups = {};\n  for (const word of words) {\n    groups[word.length] = [word];\n  }\n  return groups;\n}\n"
+    dart:
+      pass:
+        - answer: "Map<int, List<String>> groupByLength(List<String> words) {\n  final groups = <int, List<String>>{};\n  for (final word in words) {\n    if (!groups.containsKey(word.length)) {\n      groups[word.length] = [];\n    }\n    groups[word.length]!.add(word);\n  }\n  return groups;\n}\n"
+      fail:
+        - answer: "Map<int, List<String>> groupByLength(List<String> words) {\n  final groups = <int, List<String>>{};\n  for (final word in words) {\n    groups[word.length] = [word];\n  }\n  return groups;\n}\n"
+    java:
+      pass:
+        - answer: "Map<Integer, List<String>> groupByLength(List<String> words) {\n    Map<Integer, List<String>> groups = new HashMap<>();\n    for (String word : words) {\n        if (!groups.containsKey(word.length())) {\n            groups.put(word.length(), new ArrayList<>());\n        }\n        groups.get(word.length()).add(word);\n    }\n    return groups;\n}\n"
+      fail:
+        - answer: "Map<Integer, List<String>> groupByLength(List<String> words) {\n    Map<Integer, List<String>> groups = new HashMap<>();\n    for (String word : words) {\n        groups.put(word.length(), new ArrayList<>(List.of(word)));\n    }\n    return groups;\n}\n"
   merge-counts:
     pass:
       - answer: "def merge_counts(a, b)\n  result = a.dup\n  b.each do |key, count|\n    result[key] = result.fetch(key, 0) + count\n  end\n  result\nend\n"
@@ -118,6 +184,16 @@ examples:
         - answer: "function mergeCounts(a, b) {\n  const result = { ...a };\n  for (const key in b) {\n    result[key] = (result[key] || 0) + b[key];\n  }\n  return result;\n}\n"
       fail:
         - answer: "function mergeCounts(a, b) {\n  return { ...a, ...b };\n}\n"
+    dart:
+      pass:
+        - answer: "Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b) {\n  final result = {...a};\n  for (final key in b.keys) {\n    result[key] = (result[key] ?? 0) + b[key]!;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "Map<String, int> mergeCounts(Map<String, int> a, Map<String, int> b) {\n  return {...a, ...b};\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b) {\n    Map<String, Integer> result = new HashMap<>(a);\n    for (String key : b.keySet()) {\n        result.put(key, result.getOrDefault(key, 0) + b.get(key));\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "Map<String, Integer> mergeCounts(Map<String, Integer> a, Map<String, Integer> b) {\n    Map<String, Integer> result = new HashMap<>(a);\n    result.putAll(b);\n    return result;\n}\n"
   invert:
     pass:
       - answer: "def invert(colors)\n  result = {}\n  colors.each do |fruit, color|\n    result[color] ||= []\n    result[color] << fruit\n  end\n  result\nend\n"
@@ -133,6 +209,16 @@ examples:
         - answer: "function invert(colors) {\n  const result = {};\n  for (const fruit in colors) {\n    const color = colors[fruit];\n    if (!(color in result)) {\n      result[color] = [];\n    }\n    result[color].push(fruit);\n  }\n  return result;\n}\n"
       fail:
         - answer: "function invert(colors) {\n  const result = {};\n  for (const fruit in colors) {\n    result[colors[fruit]] = [fruit];\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "Map<String, List<String>> invert(Map<String, String> colors) {\n  final result = <String, List<String>>{};\n  for (final fruit in colors.keys) {\n    final color = colors[fruit]!;\n    if (!result.containsKey(color)) {\n      result[color] = [];\n    }\n    result[color]!.add(fruit);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "Map<String, List<String>> invert(Map<String, String> colors) {\n  final result = <String, List<String>>{};\n  for (final fruit in colors.keys) {\n    result[colors[fruit]!] = [fruit];\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, List<String>> invert(Map<String, String> colors) {\n    Map<String, List<String>> result = new HashMap<>();\n    for (String fruit : colors.keySet()) {\n        String color = colors.get(fruit);\n        if (!result.containsKey(color)) {\n            result.put(color, new ArrayList<>());\n        }\n        result.get(color).add(fruit);\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "Map<String, List<String>> invert(Map<String, String> colors) {\n    Map<String, List<String>> result = new HashMap<>();\n    for (String fruit : colors.keySet()) {\n        result.put(colors.get(fruit), new ArrayList<>(List.of(fruit)));\n    }\n    return result;\n}\n"
   averages:
     pass:
       - answer: "def averages(grades)\n  sums = {}\n  counts = {}\n  grades.each do |subject, grade|\n    sums[subject] = sums.fetch(subject, 0) + grade\n    counts[subject] = counts.fetch(subject, 0) + 1\n  end\n  result = {}\n  sums.each do |subject, sum|\n    result[subject] = sum.to_f / counts[subject]\n  end\n  result\nend\n"
@@ -146,6 +232,16 @@ examples:
     javascript:
       pass:
         - answer: "function averages(grades) {\n  const sums = {};\n  const counts = {};\n  for (const [subject, grade] of grades) {\n    sums[subject] = (sums[subject] || 0) + grade;\n    counts[subject] = (counts[subject] || 0) + 1;\n  }\n  const result = {};\n  for (const subject in sums) {\n    result[subject] = sums[subject] / counts[subject];\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "Map<String, double> averages(List<(String, int)> grades) {\n  final sums = <String, int>{};\n  final counts = <String, int>{};\n  for (final (subject, grade) in grades) {\n    sums[subject] = (sums[subject] ?? 0) + grade;\n    counts[subject] = (counts[subject] ?? 0) + 1;\n  }\n  final result = <String, double>{};\n  for (final subject in sums.keys) {\n    result[subject] = sums[subject]! / counts[subject]!;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "Map<String, double> averages(List<(String, int)> grades) {\n  final sums = <String, int>{};\n  final counts = <String, int>{};\n  for (final (subject, grade) in grades) {\n    sums[subject] = (sums[subject] ?? 0) + grade;\n    counts[subject] = (counts[subject] ?? 0) + 1;\n  }\n  final result = <String, double>{};\n  for (final subject in sums.keys) {\n    result[subject] = (sums[subject]! ~/ counts[subject]!).toDouble();\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "Map<String, Double> averages(List<Map.Entry<String, Integer>> grades) {\n    Map<String, Integer> sums = new HashMap<>();\n    Map<String, Integer> counts = new HashMap<>();\n    for (Map.Entry<String, Integer> grade : grades) {\n        String subject = grade.getKey();\n        sums.put(subject, sums.getOrDefault(subject, 0) + grade.getValue());\n        counts.put(subject, counts.getOrDefault(subject, 0) + 1);\n    }\n    Map<String, Double> result = new HashMap<>();\n    for (String subject : sums.keySet()) {\n        result.put(subject, (double) sums.get(subject) / counts.get(subject));\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "Map<String, Double> averages(List<Map.Entry<String, Integer>> grades) {\n    Map<String, Integer> sums = new HashMap<>();\n    Map<String, Integer> counts = new HashMap<>();\n    for (Map.Entry<String, Integer> grade : grades) {\n        String subject = grade.getKey();\n        sums.put(subject, sums.getOrDefault(subject, 0) + grade.getValue());\n        counts.put(subject, counts.getOrDefault(subject, 0) + 1);\n    }\n    Map<String, Double> result = new HashMap<>();\n    for (String subject : sums.keySet()) {\n        result.put(subject, (double) (sums.get(subject) / counts.get(subject)));\n    }\n    return result;\n}\n"
   first-repeat:
     pass:
       - answer: "def first_repeat(numbers)\n  seen = {}\n  numbers.each do |number|\n    return number if seen.key?(number)\n    seen[number] = true\n  end\n  nil\nend\n"
@@ -161,6 +257,12 @@ examples:
         - answer: "function firstRepeat(numbers) {\n  const seen = {};\n  for (const number of numbers) {\n    if (number in seen) {\n      return number;\n    }\n    seen[number] = true;\n  }\n  return null;\n}\n"
       fail:
         - answer: "function firstRepeat(numbers) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers.slice(i + 1).includes(numbers[i])) {\n      return numbers[i];\n    }\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "int? firstRepeat(List<int> numbers) {\n  final seen = <int>{};\n  for (final number in numbers) {\n    if (seen.contains(number)) {\n      return number;\n    }\n    seen.add(number);\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "Integer firstRepeat(List<Integer> numbers) {\n    Set<Integer> seen = new HashSet<>();\n    for (int number : numbers) {\n        if (seen.contains(number)) {\n            return number;\n        }\n        seen.add(number);\n    }\n    return null;\n}\n"
   lru-misses:
     pass:
       - answer: "def lru_misses(capacity, requests)\n  cache = []\n  misses = 0\n  requests.each do |page|\n    if cache.include?(page)\n      cache.delete(page)\n    else\n      misses += 1\n      cache.shift if cache.length == capacity\n    end\n    cache << page\n  end\n  misses\nend\n"
@@ -176,6 +278,16 @@ examples:
         - answer: "function lruMisses(capacity, requests) {\n  const cache = [];\n  let misses = 0;\n  for (const page of requests) {\n    const i = cache.indexOf(page);\n    if (i >= 0) {\n      cache.splice(i, 1);\n    } else {\n      misses++;\n      if (cache.length === capacity) {\n        cache.shift();\n      }\n    }\n    cache.push(page);\n  }\n  return misses;\n}\n"
       fail:
         - answer: "function lruMisses(capacity, requests) {\n  const cache = [];\n  let misses = 0;\n  for (const page of requests) {\n    if (cache.includes(page)) {\n      continue;\n    }\n    misses++;\n    if (cache.length === capacity) {\n      cache.shift();\n    }\n    cache.push(page);\n  }\n  return misses;\n}\n"
+    dart:
+      pass:
+        - answer: "int lruMisses(int capacity, List<String> requests) {\n  final cache = <String>[];\n  var misses = 0;\n  for (final page in requests) {\n    if (!cache.remove(page)) {\n      misses++;\n      if (cache.length == capacity) {\n        cache.removeAt(0);\n      }\n    }\n    cache.add(page);\n  }\n  return misses;\n}\n"
+      fail:
+        - answer: "int lruMisses(int capacity, List<String> requests) {\n  final cache = <String>[];\n  var misses = 0;\n  for (final page in requests) {\n    if (cache.contains(page)) {\n      continue;\n    }\n    misses++;\n    if (cache.length == capacity) {\n      cache.removeAt(0);\n    }\n    cache.add(page);\n  }\n  return misses;\n}\n"
+    java:
+      pass:
+        - answer: "int lruMisses(int capacity, List<String> requests) {\n    List<String> cache = new ArrayList<>();\n    int misses = 0;\n    for (String page : requests) {\n        if (!cache.remove(page)) {\n            misses++;\n            if (cache.size() == capacity) {\n                cache.remove(0);\n            }\n        }\n        cache.add(page);\n    }\n    return misses;\n}\n"
+      fail:
+        - answer: "int lruMisses(int capacity, List<String> requests) {\n    List<String> cache = new ArrayList<>();\n    int misses = 0;\n    for (String page : requests) {\n        if (cache.contains(page)) {\n            continue;\n        }\n        misses++;\n        if (cache.size() == capacity) {\n            cache.remove(0);\n        }\n        cache.add(page);\n    }\n    return misses;\n}\n"
   anagram-groups:
     pass:
       - answer: "def anagram_groups(words)\n  groups = {}\n  words.each do |word|\n    key = word.chars.sort.join\n    groups[key] ||= []\n    groups[key] << word\n  end\n  groups.values\nend\n"
@@ -185,3 +297,9 @@ examples:
     javascript:
       pass:
         - answer: "function anagramGroups(words) {\n  const groups = new Map();\n  for (const word of words) {\n    const key = [...word].sort().join('');\n    if (!groups.has(key)) {\n      groups.set(key, []);\n    }\n    groups.get(key).push(word);\n  }\n  return [...groups.values()];\n}\n"
+    dart:
+      pass:
+        - answer: "List<List<String>> anagramGroups(List<String> words) {\n  final groups = <String, List<String>>{};\n  for (final word in words) {\n    final key = (word.split('')..sort()).join();\n    if (!groups.containsKey(key)) {\n      groups[key] = [];\n    }\n    groups[key]!.add(word);\n  }\n  return groups.values.toList();\n}\n"
+    java:
+      pass:
+        - answer: "List<List<String>> anagramGroups(List<String> words) {\n    Map<String, List<String>> groups = new LinkedHashMap<>();\n    for (String word : words) {\n        char[] letters = word.toCharArray();\n        Arrays.sort(letters);\n        String key = new String(letters);\n        if (!groups.containsKey(key)) {\n            groups.put(key, new ArrayList<>());\n        }\n        groups.get(key).add(word);\n    }\n    return new ArrayList<>(groups.values());\n}\n"

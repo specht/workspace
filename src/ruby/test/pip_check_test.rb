@@ -43,6 +43,8 @@ class PipCheckTest < Minitest::Test
             'ruby' => "move\nmove\ntake\nturn_left\nturn_left\nturn_left\nmove\nmove\n",
             'python' => "move()\nmove()\ntake()\nfor i in range(3):\n    turn_left()\nmove()\nmove()\n",
             'javascript' => "move();\nmove();\ntake();\nfor (let i = 0; i < 3; i++) turnLeft();\nmove();\nmove();\n",
+            'dart' => "void main() {\n  move();\n  move();\n  take();\n  for (var i = 0; i < 3; i++) turnLeft();\n  move();\n  move();\n}\n",
+            'java' => "void main() {\n    move();\n    move();\n    take();\n    for (int i = 0; i < 3; i++) turnLeft();\n    move();\n    move();\n}\n",
         }
         plans.each do |language, plan|
             status, message, _, replay = PipCheck.check({}, check(language), plan, RUN)
@@ -75,6 +77,30 @@ class PipCheckTest < Minitest::Test
         refute_includes message, 'from '
     end
 
+    # Dart and Java compile once for all maps (PipCompiled); their errors
+    # name the person's own lines, with or without main around the plan
+    def test_dart_and_java_name_their_lines
+        needs_docker
+        { 'dart' => '  ', 'java' => '    ' }.each do |language, i|
+            status, message, _, replay = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}turnLeft();\n#{i}move();\n}\n", RUN)
+            assert_equal 'Hier in Zeile 4 läuft Pip gegen die Wand.', message, language
+            assert_equal :wall, replay[:ended]
+            status, message, = PipCheck.check({}, check(language), "move();\nturnLeft();\nmove();\n", RUN)
+            assert_equal 'Hier in Zeile 3 läuft Pip gegen die Wand.', message, "#{language} without main"
+            status, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}jump();\n}\n", RUN)
+            assert_includes message, 'Pip kennt `jump` nicht.', language
+            status, message, read = PipCheck.check({}, check(language), "void main() {\n#{i}move()\n}\n", RUN)
+            assert_includes message, 'ließ sich nicht übersetzen (Zeile 2)', language
+            assert_includes read, 'Zeile 2', language
+            refute_includes read, 'HsPip'
+            crash = language == 'dart' ? 'final x = [1][3];' : 'int x = 1 / 0;'
+            status, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}#{crash}\n}\n", RUN)
+            assert_includes message, 'Hier bricht dein Plan ab (Zeile 3)', language
+            status, message, = PipCheck.check({}, check(language), "void walk() {\n#{i}move();\n}\nwalk();\n", RUN)
+            assert_includes message, 'kein `void main() { … }`', language
+        end
+    end
+
     def test_several_maps_need_a_general_plan
         needs_docker
         maps = [{ 'map' => "######\n#Po..#\n######" }, { 'map' => "######\n#P.o.#\n######" }]
@@ -101,11 +127,14 @@ class PipCheckTest < Minitest::Test
     def test_a_function_of_ones_own_is_called_on_each_map
         needs_docker
         room = "#####\n#...#\n#.P.#\n#...#\n#####"
-        calls = { 'ruby' => 'turn_right', 'python' => 'turn_right()', 'javascript' => 'turnRight();' }
+        calls = { 'ruby' => 'turn_right', 'python' => 'turn_right()', 'javascript' => 'turnRight();', 'dart' => 'turnRight();', 'java' => 'turnRight();' }
         plans = {
             'ruby' => "def turn_right\n  3.times { turn_left }\nend\n\nturn_right\nmove\n",
             'python' => "def turn_right():\n    for i in range(3):\n        turn_left()\n\nturn_right()\nmove()\n",
             'javascript' => "function turnRight() {\n  for (let i = 0; i < 3; i++) turnLeft();\n}\n\nturnRight();\nmove();\n",
+            # Dart and Java: main is not run for a call
+            'dart' => "void turnRight() {\n  for (var i = 0; i < 3; i++) turnLeft();\n}\n\nvoid main() {\n  turnRight();\n  move();\n}\n",
+            'java' => "void turnRight() {\n    for (int i = 0; i < 3; i++) turnLeft();\n}\n",
         }
         plans.each do |language, plan|
             maps = [{ 'map' => room, 'facing' => 'east', 'call' => calls[language], 'expect' => { 'facing' => 'south', 'moves' => 0 } },
@@ -157,13 +186,15 @@ class PipCheckTest < Minitest::Test
             'ruby' => "row = cave_map[1]\n(row.index('L') - row.index('P')).times { move }\n",
             'python' => "row = cave_map()[1]\nfor _ in range(row.index('L') - row.index('P')):\n    move()\n",
             'javascript' => "const row = caveMap()[1];\nfor (let i = 0; i < row.indexOf('L') - row.indexOf('P'); i++) move();\n",
+            'dart' => "final row = caveMap()[1];\nfor (var i = 0; i < row.indexOf('L') - row.indexOf('P'); i++) move();\n",
+            'java' => "String row = caveMap().get(1);\nfor (int i = 0; i < row.indexOf('L') - row.indexOf('P'); i++) move();\n",
         }
         plans.each do |language, plan|
             c = check(language, :maps => corridor, :commands => %w[move cave_map facing], :goal => { 'lamp' => true })
             assert_empty PipCheck.spec_errors(c)
             status, message, = PipCheck.check({}, c, plan, RUN)
             assert_equal :correct, status, "#{language}: #{message}"
-            said = { 'ruby' => 'say facing', 'python' => 'say(facing())', 'javascript' => 'say(facing());' }[language]
+            said = { 'ruby' => 'say facing', 'python' => 'say(facing())', 'javascript' => 'say(facing());', 'dart' => 'say(facing());', 'java' => 'say(facing());' }[language]
             replay = PipCheck.check({}, c, "#{said}\n#{plan}", RUN)[3]
             assert_equal ['east'], replay[:said], language
         end

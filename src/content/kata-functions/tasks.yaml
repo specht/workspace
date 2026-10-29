@@ -145,6 +145,72 @@ tasks:
           return a + b;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int add(int a, int b)`, die die Summe der beiden Zahlen zurückgibt: `add(2, 3)` ergibt `5`. Das `int` vorn sagt, dass sie eine ganze Zahl zurückgibt, die beiden in den Klammern, dass sie zwei ganze Zahlen bekommt.
+      starter: |
+        int add(int a, int b) {
+          return 0;
+        }
+
+        void main() {
+          print(add(2, 3));
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "add(a, b)"
+          args: { a: "-100..100", b: "-100..100" }
+          reference: "a + b"
+        cases:
+          - call: "add(2, 3)"
+            expect: "5"
+          - call: "add(-4, 4)"
+            expect: "0"
+          - call: "add(0, 0)"
+            expect: "0"
+      hint: "`return` gibt das Ergebnis zurück. `print` schreibt es nur hin; das macht schon die Zeile in `main`."
+      solution: |
+        ```dart
+        int add(int a, int b) {
+          return a + b;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int add(int a, int b)`, die die Summe der beiden Zahlen zurückgibt: `add(2, 3)` ergibt `5`. Das `int` vorn sagt, dass sie eine ganze Zahl zurückgibt, die beiden in den Klammern, dass sie zwei ganze Zahlen bekommt.
+      starter: |
+        int add(int a, int b) {
+            return 0;
+        }
+
+        void main() {
+            IO.println(add(2, 3));
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "add(a, b)"
+          args: { a: "-100..100", b: "-100..100" }
+          reference: "a + b"
+        cases:
+          - call: "add(2, 3)"
+            expect: "5"
+          - call: "add(-4, 4)"
+            expect: "0"
+          - call: "add(0, 0)"
+            expect: "0"
+      hint: "`return` gibt das Ergebnis zurück. `IO.println` schreibt es nur hin; das macht schon die Zeile in `main`."
+      solution: |
+        ```java
+        int add(int a, int b) {
+            return a + b;
+        }
+        ```
 
   - id: double
     title: "Verdoppeln"
@@ -213,6 +279,58 @@ tasks:
         ```javascript
         function double(n) {
           return 2 * n;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `double doubled(double n)`, die das Doppelte einer Zahl zurückgibt: `doubled(21)` ergibt `42`. `double` heißt in Dart eine Kommazahl; darum heißt die Funktion `doubled`, »verdoppelt«.
+      starter: |
+        double doubled(double n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "doubled(21)"
+            expect: "42"
+          - call: "doubled(0)"
+            expect: "0"
+          - call: "doubled(-3)"
+            expect: "-6"
+          - call: "doubled(2.5)"
+            expect: "5"
+      hint: "Mal schreibst du mit `*`."
+      solution: |
+        ```dart
+        double doubled(double n) {
+          return 2 * n;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `double doubled(double n)`, die das Doppelte einer Zahl zurückgibt: `doubled(21)` ergibt `42`. `double` heißt in Java eine Kommazahl; darum heißt die Methode `doubled`, »verdoppelt«.
+      starter: |
+        double doubled(double n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "doubled(21)"
+            expect: "42"
+          - call: "doubled(0)"
+            expect: "0"
+          - call: "doubled(-3)"
+            expect: "-6"
+          - call: "doubled(2.5)"
+            expect: "5"
+      hint: "Mal schreibst du mit `*`."
+      solution: |
+        ```java
+        double doubled(double n) {
+            return 2 * n;
         }
         ```
 
@@ -294,6 +412,64 @@ tasks:
           return `Hallo, ${name}!`;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String greet(String name)`, die eine Begrüßung zurückgibt: `greet('Ada')` ergibt `'Hallo, Ada!'`.
+      starter: |
+        String greet(String name) {
+          return '';
+        }
+
+        void main() {
+          print(greet('Ada'));
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "greet('Ada')"
+            expect: "'Hallo, Ada!'"
+          - call: "greet('Grace')"
+            expect: "'Hallo, Grace!'"
+          - call: "greet('')"
+            expect: "'Hallo, !'"
+            say: "Auch ein leerer Name bekommt seinen Gruß."
+      hint: "Zwei Texte hängst du mit `+` aneinander. Oder du setzt den Namen mit `'Hallo, $name!'` mitten in den Text: Ein `$` vor einem Namen setzt seinen Wert ein."
+      solution: |
+        ```dart
+        String greet(String name) {
+          return 'Hallo, $name!';
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String greet(String name)`, die eine Begrüßung zurückgibt: `greet("Ada")` ergibt `"Hallo, Ada!"`.
+      starter: |
+        String greet(String name) {
+            return "";
+        }
+
+        void main() {
+            IO.println(greet("Ada"));
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "greet(\"Ada\")"
+            expect: "\"Hallo, Ada!\""
+          - call: "greet(\"Grace\")"
+            expect: "\"Hallo, Grace!\""
+          - call: "greet(\"\")"
+            expect: "\"Hallo, !\""
+            say: "Auch ein leerer Name bekommt seinen Gruß."
+      hint: "Zwei Texte hängst du mit `+` aneinander: `\"Hallo, \" + name`, und dahinter noch das Ausrufezeichen."
+      solution: |
+        ```java
+        String greet(String name) {
+            return "Hallo, " + name + "!";
+        }
+        ```
 
   - id: rectangle
     title: "Die Fläche eines Rechtecks"
@@ -367,6 +543,58 @@ tasks:
         ```javascript
         function rectangleArea(width, height) {
           return width * height;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `double rectangleArea(double width, double height)`, die die Fläche eines Rechtecks zurückgibt: `rectangleArea(3, 4)` ergibt `12`.
+      starter: |
+        double rectangleArea(double width, double height) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "rectangleArea(3, 4)"
+            expect: "12"
+          - call: "rectangleArea(10, 1)"
+            expect: "10"
+          - call: "rectangleArea(2.5, 2)"
+            expect: "5"
+      feedback:
+        - when: { same_as: "double rectangleArea(double width, double height) {\n  return 2 * width + 2 * height;\n}\n" }
+          say: "Das ist der Umfang, einmal um das Rechteck herum. Die Fläche ist Breite mal Höhe."
+      solution: |
+        ```dart
+        double rectangleArea(double width, double height) {
+          return width * height;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `double rectangleArea(double width, double height)`, die die Fläche eines Rechtecks zurückgibt: `rectangleArea(3, 4)` ergibt `12`.
+      starter: |
+        double rectangleArea(double width, double height) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "rectangleArea(3, 4)"
+            expect: "12"
+          - call: "rectangleArea(10, 1)"
+            expect: "10"
+          - call: "rectangleArea(2.5, 2)"
+            expect: "5"
+      feedback:
+        - when: { same_as: "double rectangleArea(double width, double height) {\n    return 2 * width + 2 * height;\n}\n" }
+          say: "Das ist der Umfang, einmal um das Rechteck herum. Die Fläche ist Breite mal Höhe."
+      solution: |
+        ```java
+        double rectangleArea(double width, double height) {
+            return width * height;
         }
         ```
 
@@ -462,6 +690,72 @@ tasks:
         ```javascript
         function fahrenheit(celsius) {
           return celsius * 1.8 + 32;
+        }
+        ```
+    dart:
+      prompt: |
+        In den USA misst man die Temperatur in Grad Fahrenheit. Man rechnet um, indem man die Grad Celsius mit 1,8 multipliziert und 32 addiert. Schreib eine Funktion `double fahrenheit(double celsius)`: `fahrenheit(100)` ergibt `212`, `fahrenheit(37.5)` ergibt `99.5`.
+      starter: |
+        double fahrenheit(double celsius) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "fahrenheit(100)"
+            expect: "212"
+          - call: "fahrenheit(0)"
+            expect: "32"
+          - call: "fahrenheit(-40)"
+            expect: "-40"
+          - call: "fahrenheit(37.5)"
+            expect: "99.5"
+          - call: "fahrenheit(1)"
+            expect: "33.8"
+      feedback:
+        - when: { same_as: "double fahrenheit(double celsius) {\n  return (celsius + 32) * 1.8;\n}\n" }
+          say: "Erst multiplizieren, dann 32 addieren: Punkt- vor Strichrechnung, oder Klammern an der richtigen Stelle."
+      hint:
+        - "Rechne `fahrenheit(10)` von Hand: 10 mal 1,8 ist 18, dazu 32 macht 50."
+        - "Ein Komma schreibst du in Dart als Punkt: `1.8`."
+      solution: |
+        ```dart
+        double fahrenheit(double celsius) {
+          return celsius * 1.8 + 32;
+        }
+        ```
+    java:
+      prompt: |
+        In den USA misst man die Temperatur in Grad Fahrenheit. Man rechnet um, indem man die Grad Celsius mit 1,8 multipliziert und 32 addiert. Schreib eine Methode `double fahrenheit(double celsius)`: `fahrenheit(100)` ergibt `212`, `fahrenheit(37.5)` ergibt `99.5`.
+      starter: |
+        double fahrenheit(double celsius) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "fahrenheit(100)"
+            expect: "212"
+          - call: "fahrenheit(0)"
+            expect: "32"
+          - call: "fahrenheit(-40)"
+            expect: "-40"
+          - call: "fahrenheit(37.5)"
+            expect: "99.5"
+          - call: "fahrenheit(1)"
+            expect: "33.8"
+      feedback:
+        - when: { same_as: "double fahrenheit(double celsius) {\n    return (celsius + 32) * 1.8;\n}\n" }
+          say: "Erst multiplizieren, dann 32 addieren: Punkt- vor Strichrechnung, oder Klammern an der richtigen Stelle."
+      hint:
+        - "Rechne `fahrenheit(10)` von Hand: 10 mal 1,8 ist 18, dazu 32 macht 50."
+        - "Ein Komma schreibst du in Java als Punkt: `1.8`."
+      solution: |
+        ```java
+        double fahrenheit(double celsius) {
+            return celsius * 1.8 + 32;
         }
         ```
 
@@ -561,6 +855,75 @@ tasks:
           return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
         }
         ```
+    dart:
+      prompt: |
+        Ein Video ist 125 Sekunden lang. Ein Player zeigt das als `2:05`: zwei Minuten und fünf Sekunden. Schreib eine Funktion `String clock(int seconds)`, die diesen Text zurückgibt; die Sekunden immer mit zwei Ziffern.
+      starter: |
+        String clock(int seconds) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "clock(125)"
+            expect: "'2:05'"
+          - call: "clock(59)"
+            expect: "'0:59'"
+          - call: "clock(600)"
+            expect: "'10:00'"
+          - call: "clock(61)"
+            expect: "'1:01'"
+            say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`."
+      feedback:
+        - when: { same_as: "String clock(int seconds) {\n  return '${seconds ~/ 60}:${seconds % 60}';\n}\n" }
+          say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`. `zahl.toString().padLeft(2, '0')` füllt vorne mit einer Null auf."
+        - when: { same_as: "String clock(int seconds) {\n  return '${seconds / 60}:${(seconds % 60).toString().padLeft(2, '0')}';\n}\n" }
+          say: "In Dart ergibt `125 / 60` eine Kommazahl, `2.0833…`. Die ganzen Minuten gibt `125 ~/ 60`."
+      hint:
+        - "Wie viele ganze Minuten stecken in 125 Sekunden, und wie viele Sekunden bleiben übrig?"
+        - "`seconds ~/ 60` gibt die ganzen Minuten, `%` den Rest."
+        - "Zwei Ziffern bekommst du mit `zahl.toString().padLeft(2, '0')`; Rechnungen setzt du mit `${…}` in einen Text ein."
+      solution: |
+        ```dart
+        String clock(int seconds) {
+          final minutes = seconds ~/ 60;
+          return '$minutes:${(seconds % 60).toString().padLeft(2, '0')}';
+        }
+        ```
+    java:
+      prompt: |
+        Ein Video ist 125 Sekunden lang. Ein Player zeigt das als `2:05`: zwei Minuten und fünf Sekunden. Schreib eine Methode `String clock(int seconds)`, die diesen Text zurückgibt; die Sekunden immer mit zwei Ziffern.
+      starter: |
+        String clock(int seconds) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "clock(125)"
+            expect: "\"2:05\""
+          - call: "clock(59)"
+            expect: "\"0:59\""
+          - call: "clock(600)"
+            expect: "\"10:00\""
+          - call: "clock(61)"
+            expect: "\"1:01\""
+            say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`."
+      feedback:
+        - when: { same_as: "String clock(int seconds) {\n    return seconds / 60 + \":\" + seconds % 60;\n}\n" }
+          say: "Die Sekunden haben immer zwei Ziffern: `1:01`, nicht `1:1`. `String.format(\"%02d\", zahl)` füllt vorne mit einer Null auf."
+      hint:
+        - "Wie viele ganze Minuten stecken in 125 Sekunden, und wie viele Sekunden bleiben übrig?"
+        - "Teilst du in Java zwei ganze Zahlen, fällt der Rest weg: `seconds / 60` gibt die ganzen Minuten, `%` den Rest."
+        - "`String.format(\"%d:%02d\", minuten, sekunden)` setzt den Text zusammen; `%02d` schreibt eine Zahl mit mindestens zwei Ziffern."
+      solution: |
+        ```java
+        String clock(int seconds) {
+            return String.format("%d:%02d", seconds / 60, seconds % 60);
+        }
+        ```
 
   - id: average
     title: "Der Durchschnitt"
@@ -652,6 +1015,68 @@ tasks:
         ```javascript
         function average(a, b, c) {
           return (a + b + c) / 3;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `double average(double a, double b, double c)`, die den Durchschnitt dreier Zahlen zurückgibt: `average(1, 2, 3)` ergibt `2`, `average(1, 2, 4)` ergibt etwa `2.333`.
+      starter: |
+        double average(double a, double b, double c) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "average(1, 2, 3)"
+            expect: "2"
+          - call: "average(90, 85, 95)"
+            expect: "90"
+          - call: "average(1, 2, 4.5)"
+            expect: "2.5"
+          - call: "average(1, 2, 4)"
+            expect: "7 / 3"
+      feedback:
+        - when: { same_as: "double average(double a, double b, double c) {\n  return a + b + c / 3;\n}\n" }
+          say: "Ohne Klammern teilst du nur `c` durch 3. Die Summe kommt in Klammern: `(a + b + c)`."
+      hint:
+        - "Der Durchschnitt ist die Summe geteilt durch die Anzahl."
+        - "Achte darauf, was zuerst gerechnet wird."
+      solution: |
+        ```dart
+        double average(double a, double b, double c) {
+          return (a + b + c) / 3;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `double average(double a, double b, double c)`, die den Durchschnitt dreier Zahlen zurückgibt: `average(1, 2, 3)` ergibt `2`, `average(1, 2, 4)` ergibt etwa `2.333`.
+      starter: |
+        double average(double a, double b, double c) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "average(1, 2, 3)"
+            expect: "2"
+          - call: "average(90, 85, 95)"
+            expect: "90"
+          - call: "average(1, 2, 4.5)"
+            expect: "2.5"
+          - call: "average(1, 2, 4)"
+            expect: "7.0 / 3"
+      feedback:
+        - when: { same_as: "double average(double a, double b, double c) {\n    return a + b + c / 3;\n}\n" }
+          say: "Ohne Klammern teilst du nur `c` durch 3. Die Summe kommt in Klammern: `(a + b + c)`."
+      hint:
+        - "Der Durchschnitt ist die Summe geteilt durch die Anzahl."
+        - "Achte darauf, was zuerst gerechnet wird."
+      solution: |
+        ```java
+        double average(double a, double b, double c) {
+            return (a + b + c) / 3;
         }
         ```
 
@@ -751,6 +1176,74 @@ tasks:
         function price(count, unitPrice, discount) {
           const total = count * unitPrice;
           return total - total * discount / 100;
+        }
+        ```
+    dart:
+      prompt: |
+        Im Schulkiosk kostet ein Brötchen `unitPrice` Euro. Wer mehrere kauft, bekommt `discount` Prozent Rabatt auf alles. Schreib eine Funktion `double price(int count, double unitPrice, double discount)`: `price(3, 2.5, 10)` ergibt `6.75`, denn 3 Brötchen kosten 7,50 Euro, und 10 Prozent davon sind 75 Cent.
+      starter: |
+        double price(int count, double unitPrice, double discount) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "price(3, 2.5, 10)"
+            expect: "6.75"
+          - call: "price(1, 2, 0)"
+            expect: "2"
+          - call: "price(4, 1.5, 50)"
+            expect: "3"
+          - call: "price(10, 1, 25)"
+            expect: "7.5"
+      feedback:
+        - when: { same_as: "double price(int count, double unitPrice, double discount) {\n  return count * unitPrice - discount;\n}\n" }
+          say: "Der Rabatt ist in Prozent: 10 Prozent von 7,50 Euro sind 75 Cent, nicht 10 Euro."
+        - when: { same_as: "double price(int count, double unitPrice, double discount) {\n  return count * unitPrice * discount / 100;\n}\n" }
+          say: "So kommt der Rabatt selbst heraus, nicht der Preis. Was bleibt nach dem Abzug übrig?"
+      hint:
+        - "Rechne das Beispiel Schritt für Schritt: erst der Preis ohne Rabatt, dann der Rabatt in Euro, dann der Unterschied."
+        - "Der Rabatt in Euro ist Preis mal `discount` durch 100."
+      solution: |
+        ```dart
+        double price(int count, double unitPrice, double discount) {
+          final total = count * unitPrice;
+          return total - total * discount / 100;
+        }
+        ```
+    java:
+      prompt: |
+        Im Schulkiosk kostet ein Brötchen `unitPrice` Euro. Wer mehrere kauft, bekommt `discount` Prozent Rabatt auf alles. Schreib eine Methode `double price(int count, double unitPrice, double discount)`: `price(3, 2.5, 10)` ergibt `6.75`, denn 3 Brötchen kosten 7,50 Euro, und 10 Prozent davon sind 75 Cent.
+      starter: |
+        double price(int count, double unitPrice, double discount) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "price(3, 2.5, 10)"
+            expect: "6.75"
+          - call: "price(1, 2, 0)"
+            expect: "2"
+          - call: "price(4, 1.5, 50)"
+            expect: "3"
+          - call: "price(10, 1, 25)"
+            expect: "7.5"
+      feedback:
+        - when: { same_as: "double price(int count, double unitPrice, double discount) {\n    return count * unitPrice - discount;\n}\n" }
+          say: "Der Rabatt ist in Prozent: 10 Prozent von 7,50 Euro sind 75 Cent, nicht 10 Euro."
+        - when: { same_as: "double price(int count, double unitPrice, double discount) {\n    return count * unitPrice * discount / 100;\n}\n" }
+          say: "So kommt der Rabatt selbst heraus, nicht der Preis. Was bleibt nach dem Abzug übrig?"
+      hint:
+        - "Rechne das Beispiel Schritt für Schritt: erst der Preis ohne Rabatt, dann der Rabatt in Euro, dann der Unterschied."
+        - "Der Rabatt in Euro ist Preis mal `discount` durch 100."
+      solution: |
+        ```java
+        double price(int count, double unitPrice, double discount) {
+            double total = count * unitPrice;
+            return total - total * discount / 100;
         }
         ```
 
@@ -874,6 +1367,90 @@ tasks:
           return `${two(Math.floor(total / 60))}:${two(total % 60)}`;
         }
         ```
+    dart:
+      prompt: |
+        Es ist 23:50 Uhr. Wie spät ist es 25 Minuten später? Schreib eine Funktion `String clockAfter(int hour, int minute, int minutes)`, die die Uhrzeit nach `minutes` Minuten als Text mit zwei Ziffern für Stunden und Minuten zurückgibt: `clockAfter(23, 50, 25)` ergibt `'00:15'`.
+      starter: |
+        String clockAfter(int hour, int minute, int minutes) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "clockAfter(h, m, n)"
+          args: { h: "0..23", m: "0..59", n: "0..3000" }
+          reference: "'${((h * 60 + m + n) % 1440 ~/ 60).toString().padLeft(2, '0')}:${((h * 60 + m + n) % 60).toString().padLeft(2, '0')}'"
+        cases:
+          - call: "clockAfter(23, 50, 25)"
+            expect: "'00:15'"
+          - call: "clockAfter(8, 0, 45)"
+            expect: "'08:45'"
+          - call: "clockAfter(9, 30, 90)"
+            expect: "'11:00'"
+          - call: "clockAfter(12, 0, 0)"
+            expect: "'12:00'"
+          - call: "clockAfter(22, 15, 1500)"
+            expect: "'23:15'"
+            say: "1500 Minuten sind einen ganzen Tag und eine Stunde. Nach Mitternacht beginnt die Uhr wieder bei 0."
+      feedback:
+        - when: { same_as: "String clockAfter(int hour, int minute, int minutes) {\n  final t = hour * 60 + minute + minutes;\n  return '${(t ~/ 60).toString().padLeft(2, '0')}:${(t % 60).toString().padLeft(2, '0')}';\n}\n" }
+          say: "Nach 23:59 kommt 00:00: Die Stunden fangen nach Mitternacht wieder bei 0 an. `% 24` (oder `% 1440` für die Minuten eines Tages) sorgt dafür."
+      hint:
+        - "Zähl alles in Minuten seit Mitternacht: 23:50 Uhr sind 23 · 60 + 50 = 1430 Minuten."
+        - "Ein Tag hat 1440 Minuten. Was liefert `% 1440`, wenn die Summe darüber liegt?"
+        - "Aus den Minuten seit Mitternacht werden mit `~/ 60` und `% 60` wieder Stunden und Minuten; `zahl.toString().padLeft(2, '0')` schreibt sie mit zwei Ziffern."
+      solution: |
+        ```dart
+        String two(int n) => n.toString().padLeft(2, '0');
+
+        String clockAfter(int hour, int minute, int minutes) {
+          final total = (hour * 60 + minute + minutes) % (24 * 60);
+          return '${two(total ~/ 60)}:${two(total % 60)}';
+        }
+        ```
+    java:
+      prompt: |
+        Es ist 23:50 Uhr. Wie spät ist es 25 Minuten später? Schreib eine Methode `String clockAfter(int hour, int minute, int minutes)`, die die Uhrzeit nach `minutes` Minuten als Text mit zwei Ziffern für Stunden und Minuten zurückgibt: `clockAfter(23, 50, 25)` ergibt `"00:15"`.
+      starter: |
+        String clockAfter(int hour, int minute, int minutes) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "clockAfter(h, m, n)"
+          args: { h: "0..23", m: "0..59", n: "0..3000" }
+          reference: "String.format(\"%02d:%02d\", (h * 60 + m + n) % 1440 / 60, (h * 60 + m + n) % 60)"
+        cases:
+          - call: "clockAfter(23, 50, 25)"
+            expect: "\"00:15\""
+          - call: "clockAfter(8, 0, 45)"
+            expect: "\"08:45\""
+          - call: "clockAfter(9, 30, 90)"
+            expect: "\"11:00\""
+          - call: "clockAfter(12, 0, 0)"
+            expect: "\"12:00\""
+          - call: "clockAfter(22, 15, 1500)"
+            expect: "\"23:15\""
+            say: "1500 Minuten sind einen ganzen Tag und eine Stunde. Nach Mitternacht beginnt die Uhr wieder bei 0."
+      feedback:
+        - when: { same_as: "String clockAfter(int hour, int minute, int minutes) {\n    int t = hour * 60 + minute + minutes;\n    return String.format(\"%02d:%02d\", t / 60, t % 60);\n}\n" }
+          say: "Nach 23:59 kommt 00:00: Die Stunden fangen nach Mitternacht wieder bei 0 an. `% 24` (oder `% 1440` für die Minuten eines Tages) sorgt dafür."
+      hint:
+        - "Zähl alles in Minuten seit Mitternacht: 23:50 Uhr sind 23 · 60 + 50 = 1430 Minuten."
+        - "Ein Tag hat 1440 Minuten. Was liefert `% 1440`, wenn die Summe darüber liegt?"
+        - "Aus den Minuten seit Mitternacht werden mit `/ 60` und `% 60` wieder Stunden und Minuten; `String.format(\"%02d:%02d\", stunden, minuten)` schreibt sie mit zwei Ziffern."
+      solution: |
+        ```java
+        String clockAfter(int hour, int minute, int minutes) {
+            int total = (hour * 60 + minute + minutes) % (24 * 60);
+            return String.format("%02d:%02d", total / 60, total % 60);
+        }
+        ```
 
   - id: last-digit
     title: "Die letzte Ziffer"
@@ -968,6 +1545,72 @@ tasks:
         ```javascript
         function lastDigit(n) {
           return Math.abs(n) % 10;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int lastDigit(int n)`, die die letzte Ziffer einer ganzen Zahl zurückgibt, auch bei negativen Zahlen: `lastDigit(1234)` ergibt `4`, `lastDigit(-57)` ergibt `7`. Ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int lastDigit(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toString, .toStringAsFixed, .split, .substring]
+        cases:
+          - call: "lastDigit(1234)"
+            expect: "4"
+          - call: "lastDigit(7)"
+            expect: "7"
+          - call: "lastDigit(90)"
+            expect: "0"
+          - call: "lastDigit(-57)"
+            expect: "7"
+            say: "In Dart ist `-57 % 10` nicht 7, sondern 3: Der Rest ist nie negativ, -57 ist -60 plus 3. Mit dem Betrag `n.abs()` wird die Zahl erst positiv."
+      feedback:
+        - when: { same_as: "int lastDigit(int n) {\n  return n % 10;\n}\n" }
+          say: "In Dart ist `-57 % 10` nicht 7, sondern 3: Der Rest ist nie negativ, -57 ist -60 plus 3. Mit dem Betrag `n.abs()` wird die Zahl erst positiv."
+      hint:
+        - "Was bleibt übrig, wenn du 1234 durch 10 teilst?"
+        - "Bei negativen Zahlen hilft der Betrag: `n.abs()`."
+      solution: |
+        ```dart
+        int lastDigit(int n) {
+          return n.abs() % 10;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int lastDigit(int n)`, die die letzte Ziffer einer ganzen Zahl zurückgibt, auch bei negativen Zahlen: `lastDigit(1234)` ergibt `4`, `lastDigit(-57)` ergibt `7`. Ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int lastDigit(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [String.valueOf, Integer.toString, .toString, .charAt, .substring]
+        cases:
+          - call: "lastDigit(1234)"
+            expect: "4"
+          - call: "lastDigit(7)"
+            expect: "7"
+          - call: "lastDigit(90)"
+            expect: "0"
+          - call: "lastDigit(-57)"
+            expect: "7"
+            say: "In Java ist `-57 % 10` nicht 7, sondern -7: Der Rest hat das Vorzeichen der Zahl. Mit dem Betrag `Math.abs(n)` wird die Zahl erst positiv."
+      feedback:
+        - when: { same_as: "int lastDigit(int n) {\n    return n % 10;\n}\n" }
+          say: "In Java ist `-57 % 10` nicht 7, sondern -7: Der Rest hat das Vorzeichen der Zahl. Mit dem Betrag `Math.abs(n)` wird die Zahl erst positiv."
+      hint:
+        - "Was bleibt übrig, wenn du 1234 durch 10 teilst?"
+        - "Bei negativen Zahlen hilft der Betrag: `Math.abs(n)`."
+      solution: |
+        ```java
+        int lastDigit(int n) {
+            return Math.abs(n) % 10;
         }
         ```
 
@@ -1079,6 +1722,86 @@ tasks:
           return ones * 100 + tens * 10 + hundreds;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int reverseDigits(int n)`, die die Ziffern einer höchstens dreistelligen Zahl umdreht: `reverseDigits(123)` ergibt `321`, `reverseDigits(45)` ergibt `54`. Nur mit Rechnen, ohne Texte und ohne Schleife.
+      starter: |
+        int reverseDigits(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toString, .split, .substring, .reversed]
+        cases:
+          - call: "reverseDigits(123)"
+            expect: "321"
+          - call: "reverseDigits(45)"
+            expect: "54"
+          - call: "reverseDigits(7)"
+            expect: "7"
+          - call: "reverseDigits(100)"
+            expect: "1"
+          - call: "reverseDigits(908)"
+            expect: "809"
+      hint:
+        - "Die Einer bekommst du mit `% 10`. Wie bekommst du die Zehner und die Hunderter? `~/` teilt ganzzahlig."
+        - "Bei zweistelligen Zahlen sind die Hunderter 0. Schreib die Zahl erst so, als hätte sie immer drei Ziffern, und lass dann die Nullen weg, die vorne stehen würden."
+      solution: |
+        ```dart
+        int reverseDigits(int n) {
+          final ones = n % 10;
+          final tens = n ~/ 10 % 10;
+          final hundreds = n ~/ 100;
+          if (n < 10) {
+            return ones;
+          }
+          if (n < 100) {
+            return ones * 10 + tens;
+          }
+          return ones * 100 + tens * 10 + hundreds;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int reverseDigits(int n)`, die die Ziffern einer höchstens dreistelligen Zahl umdreht: `reverseDigits(123)` ergibt `321`, `reverseDigits(45)` ergibt `54`. Nur mit Rechnen, ohne Texte und ohne Schleife.
+      starter: |
+        int reverseDigits(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [String.valueOf, Integer.toString, .toString, .charAt, StringBuilder]
+        cases:
+          - call: "reverseDigits(123)"
+            expect: "321"
+          - call: "reverseDigits(45)"
+            expect: "54"
+          - call: "reverseDigits(7)"
+            expect: "7"
+          - call: "reverseDigits(100)"
+            expect: "1"
+          - call: "reverseDigits(908)"
+            expect: "809"
+      hint:
+        - "Die Einer bekommst du mit `% 10`. Wie bekommst du die Zehner und die Hunderter? Zwei `int` teilt `/` ganzzahlig."
+        - "Bei zweistelligen Zahlen sind die Hunderter 0. Schreib die Zahl erst so, als hätte sie immer drei Ziffern, und lass dann die Nullen weg, die vorne stehen würden."
+      solution: |
+        ```java
+        int reverseDigits(int n) {
+            int ones = n % 10;
+            int tens = n / 10 % 10;
+            int hundreds = n / 100;
+            if (n < 10) {
+                return ones;
+            }
+            if (n < 100) {
+                return ones * 10 + tens;
+            }
+            return ones * 100 + tens * 10 + hundreds;
+        }
+        ```
 
   - id: duration
     title: "Stunden, Minuten, Sekunden"
@@ -1166,5 +1889,69 @@ tasks:
         function duration(seconds) {
           const two = (n) => String(n).padStart(2, '0');
           return `${Math.floor(seconds / 3600)}:${two(Math.floor(seconds / 60) % 60)}:${two(seconds % 60)}`;
+        }
+        ```
+    dart:
+      prompt: |
+        Ein Film dauert 7385 Sekunden. Schreib eine Funktion `String duration(int seconds)`, die daraus `'2:03:05'` macht: Stunden, dann Minuten und Sekunden mit je zwei Ziffern.
+      starter: |
+        String duration(int seconds) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "duration(s)"
+          args: { s: "0..100000" }
+          reference: "'${s ~/ 3600}:${(s ~/ 60 % 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}'"
+        cases:
+          - call: "duration(7385)"
+            expect: "'2:03:05'"
+          - call: "duration(59)"
+            expect: "'0:00:59'"
+          - call: "duration(3600)"
+            expect: "'1:00:00'"
+          - call: "duration(36000)"
+            expect: "'10:00:00'"
+      hint: "Wie viele ganze Stunden stecken in 7385 Sekunden? Was bleibt danach übrig?"
+      solution: |
+        ```dart
+        String two(int n) => n.toString().padLeft(2, '0');
+
+        String duration(int seconds) {
+          return '${seconds ~/ 3600}:${two(seconds ~/ 60 % 60)}:${two(seconds % 60)}';
+        }
+        ```
+    java:
+      prompt: |
+        Ein Film dauert 7385 Sekunden. Schreib eine Methode `String duration(int seconds)`, die daraus `"2:03:05"` macht: Stunden, dann Minuten und Sekunden mit je zwei Ziffern.
+      starter: |
+        String duration(int seconds) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "duration(s)"
+          args: { s: "0..100000" }
+          reference: "String.format(\"%d:%02d:%02d\", s / 3600, s / 60 % 60, s % 60)"
+        cases:
+          - call: "duration(7385)"
+            expect: "\"2:03:05\""
+          - call: "duration(59)"
+            expect: "\"0:00:59\""
+          - call: "duration(3600)"
+            expect: "\"1:00:00\""
+          - call: "duration(36000)"
+            expect: "\"10:00:00\""
+      hint: "Wie viele ganze Stunden stecken in 7385 Sekunden? Was bleibt danach übrig?"
+      solution: |
+        ```java
+        String duration(int seconds) {
+            return String.format("%d:%02d:%02d", seconds / 3600, seconds / 60 % 60, seconds % 60);
         }
         ```

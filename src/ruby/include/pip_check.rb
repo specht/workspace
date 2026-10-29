@@ -3,12 +3,14 @@ require_relative 'pip_world'
 require_relative 'pip_maps'
 require_relative 'kata_runner'
 require_relative 'kata_check'
+require_relative 'pip_compiled'
 
 # Check type pip (docs/plan-katas.md, section 2): a plan for Pip, the whole
 # program typed into the card. It runs in a container of its own
 # (KataRunner, through KataQueue); a prelude, invisible to the student,
 # defines Pip's commands as ordinary functions (Ruby: move, front_clear?;
-# Python: move(), front_clear(); JavaScript: move(), frontClear()). Each one
+# Python: move(), front_clear(); JavaScript, Dart and Java: move(),
+# frontClear(); Dart and Java compile first, PipCompiled). Each one
 # writes a line to the world on the server (PipWorld, through KataRunner's
 # dialog) and waits for its answer, so the world decides everything and
 # nothing can be faked. The student's code runs from its own file: line
@@ -57,7 +59,11 @@ module PipCheck
                           'on_stone' => 'onStone', 'on_lever' => 'onLever', 'front_clear' => 'frontClear', 'glibber_ahead' => 'glibberAhead',
                           'on_lamp' => 'onLamp', 'trail_ahead' => 'trailAhead', 'puddle_ahead' => 'puddleAhead', 'bello_here' => 'belloHere',
                           'cave_map' => 'caveMap', 'facing' => 'facing', 'say' => 'say' },
-    }.freeze
+    }.tap do |names|
+        names['dart'] = names['javascript']
+        # every Java class has Object.wait(), final: Pip's wait is pause()
+        names['java'] = names['javascript'].merge('wait' => 'pause')
+    end.freeze
     COMMANDS = NAMES['ruby'].keys.freeze
     # What each command does, for the card's list of commands (TaskCard).
     DESCRIPTIONS = {
@@ -102,7 +108,7 @@ module PipCheck
 
     def self.spec_errors(check)
         errors = []
-        errors << 'language must be ruby, python or javascript' unless NAMES.key?(check['language'])
+        errors << 'language must be ruby, python, javascript, dart or java' unless NAMES.key?(check['language'])
         commands = check['commands']
         unless commands.is_a?(Array) && !commands.empty? && (commands - COMMANDS).empty?
             errors << "commands must list some of #{COMMANDS.join(', ')}"
@@ -265,14 +271,41 @@ module PipCheck
     def self.run_map(check, code, map, run)
         world = PipWorld.new(map['map'], :facing => map['facing'] || 'east', :dry => check['dry'] == true)
         world.quiet = true if map['call']
+        dialog = dialog(check, ->(_request) { [world, map] })
+        language = check['language']
+        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv(language, check['commands'], map['call']),
+                          :timeout => SECONDS, :dialog => dialog)
+        return nil if result.nil?
+
+        finish(check, map, world, result.stderr, result.status, result.timed_out)
+        { :world => world, :output => result.stdout, :errors => result.stderr, :timed_out => result.timed_out, :status => result.status }
+    end
+
+    # After a run: a plan that ends early is not the end of the run: Pip
+    # stands still, and the Mampfer comes (PipWorld#chase). Not after a
+    # crash, which is its own message, nor for a call of a function.
+    def self.finish(check, map, world, errors, status, timed_out)
+        return if world.ended || timed_out
+
+        crashed = !(errors.to_s.strip.empty? || status == 0)
+        world.chase unless crashed || map['call'] || goal_missing(check['goal'] || {}, world).nil?
+        world.done
+    end
+
+    # The dialog with the world of a map: each line of the program is a
+    # command; the world answers. world: a lambda giving the current world
+    # and its map (PipCompiled switches it with »_map«).
+    def self.dialog(check, current)
         allowed = check['commands'] + ['say']
-        dialog = lambda do |line|
+        lambda do |line|
             request = JSON.parse(line) rescue nil
-            if request.is_a?(Hash) && request['c'] == '_loaded' && map['call']
+            world, map = current.call(request)
+            next 'ok' if world == :switched
+            if request.is_a?(Hash) && request['c'] == '_loaded' && map && map['call']
                 world.quiet = false
                 next 'ok'
             end
-            next 'end' unless request.is_a?(Hash) && allowed.include?(request['c'])
+            next 'end' unless world && request.is_a?(Hash) && allowed.include?(request['c'])
 
             answer = world.command(request['c'], :line => request['l'], :text => request['t'])
             # cave_map and facing: data, as JSON (the prelude reads it back)
@@ -280,20 +313,44 @@ module PipCheck
 
             answer == true || answer == false ? answer.to_s : answer
         end
+    end
+
+    # Dart and Java: every map of order in one run (PipCompiled). nil when
+    # no run was possible; { compile: [message, read] } when the plan does
+    # not compile; else { runs: index => what run_map gives }.
+    def self.run_compiled(check, code, maps, order, run)
         language = check['language']
-        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv(language, check['commands'], map['call']),
-                          :timeout => SECONDS, :dialog => dialog)
+        program = PipCompiled.program(check, code, maps, order)
+        worlds = maps.map do |m|
+            world = PipWorld.new(m['map'], :facing => m['facing'] || 'east', :dry => check['dry'] == true)
+            world.quiet = true if m['call']
+            world
+        end
+        index = nil
+        current = lambda do |request|
+            if request.is_a?(Hash) && request['c'] == '_map'
+                index = request['t'].to_i
+                next [:switched, nil]
+            end
+            index && worlds[index] ? [worlds[index], maps[index]] : [nil, nil]
+        end
+        result = run.call(:files => program[:files], :argv => program[:argv], :timeout => program[:timeout], :dialog => dialog(check, current))
         return nil if result.nil?
 
-        unless world.ended || result.timed_out
-            # a plan that ends early is not the end of the run: Pip stands
-            # still, and the Mampfer comes (PipWorld#chase). Not after a
-            # crash, which is its own message, nor for a call of a function.
-            crashed = !(result.stderr.to_s.strip.empty? || result.status == 0)
-            world.chase unless crashed || map['call'] || goal_missing(check['goal'] || {}, world).nil?
-            world.done
+        sections = PipCompiled.sections(result.stdout)
+        if sections[:compile]
+            return { :compile => PipCompiled.compile_problem(language, code, sections[:compile], program[:first], program[:last]) }
         end
-        { :world => world, :output => result.stdout, :errors => result.stderr, :timed_out => result.timed_out, :status => result.status }
+
+        runs = {}
+        sections[:maps].each do |i, ran|
+            next unless worlds[i]
+
+            errors = PipCompiled.tidy(language, ran[:errors], program[:first], program[:last])
+            finish(check, maps[i], worlds[i], errors, ran[:status], ran[:timed_out])
+            runs[i] = { :world => worlds[i], :output => ran[:output], :errors => errors, :timed_out => ran[:timed_out], :status => ran[:status] }
+        end
+        { :runs => runs }
     end
 
     # [status, message, read, replay]
@@ -341,9 +398,41 @@ module PipCheck
         maps = maps(check, seed)
         selected = 0 unless selected.is_a?(Integer) && selected.between?(0, maps.size - 1)
         order = [selected] + ((0...maps.size).to_a - [selected])
+        compiled = nil
+        if PipCompiled::LANGUAGES.include?(check['language'])
+            unstarted = lambda do
+                world = PipWorld.new(maps[selected]['map'], :facing => maps[selected]['facing'] || 'east')
+                with_runs.call(replay(world, selected, check['maps'].size, ''))
+            end
+            if (missing = PipCompiled.main_missing(check['language'], code, maps))
+                return [:wrong, missing, nil, unstarted.call]
+            end
+            compiled = run_compiled(check, code, maps, order, run)
+            return [:unavailable, KataCheck::BUSY, nil, nil] if compiled.nil?
+            if compiled[:compile]
+                message, read = compiled[:compile]
+                if (name = PipCompiled.unknown_name(read)) && !NAMES.fetch(check['language']).value?(name)
+                    known = (check['commands'] + ['say']).map { |c| "`#{NAMES.fetch(check['language'])[c]}`" }
+                    message = "Pip kennt `#{name}` nicht. Ist es anders geschrieben, oder fehlt eine eigene Funktion? " \
+                              "In diesem Kapitel versteht Pip #{known[0..-2].join(', ')} und #{known[-1]}."
+                end
+                explanation = KataCheck.explain(read.to_s, check['language'])
+                message += "\n\n#{explanation}" if explanation
+                return [:wrong, message, read, unstarted.call]
+            end
+        end
         order.each do |i|
             map = maps[i]
-            ran = run_map(check, code, map, run)
+            where = check['maps'].size > 1 ? "In Karte #{i + 1}" : 'Hier'
+            if compiled
+                ran = compiled[:runs][i]
+                # the run stopped before this map: it took too long as a whole
+                if ran.nil?
+                    return [:wrong, "#{where} lief dein Plan zu lange. Steckt irgendwo eine Endlosschleife?", nil, first]
+                end
+            else
+                ran = run_map(check, code, map, run)
+            end
             return [:unavailable, KataCheck::BUSY, nil, nil] if ran.nil?
 
             world = ran[:world]
@@ -351,12 +440,11 @@ module PipCheck
             runs[i] = replay
             replay = with_runs.call(replay)
             first ||= replay
-            where = check['maps'].size > 1 ? "In Karte #{i + 1}" : 'Hier'
             if ran[:timed_out]
                 return [:wrong, "#{where} lief dein Plan länger als #{SECONDS} Sekunden. Steckt irgendwo eine Endlosschleife?", nil, replay]
             end
             unless ran[:errors].to_s.strip.empty? || ran[:status] == 0
-                line = ran[:errors][/kata\.(?:rb|py|js)"?(?:, line |:)(\d+)/, 1]
+                line = ran[:errors][/kata\.(?:rb|py|js|dart|java)"?(?:, line |:)(\d+)/, 1]
                 at = line ? " (Zeile #{line})" : ''
                 # ein Name, den Pip nicht kennt (forward statt move): sagen, was Pip hier versteht
                 if (name = unknown_name(ran[:errors])) && !NAMES.fetch(check['language'], {}).value?(name)

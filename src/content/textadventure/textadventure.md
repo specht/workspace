@@ -2,8 +2,7 @@
 image: teaser.webp
 image_alt: "Ein Terminal, in dem das Textadventure »Nachts in der Schule« läuft: die Spielerin schließt mit dem Haustürschlüssel die Glastür auf und steht auf dem Schulhof"
 kind: projekt
-language: Ruby / Python
-languages: [ruby, python]
+languages: [ruby, python, dart, java]
 duration: 4 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (Grundlagen der Objektorientierung); Oberstufe: objektorientierte Modellierung (UML-Klassendiagramme), objektorientierte Programmierung (Objekte, die Objekte kennen, Kapselung, Vererbung, Polymorphie)"
 topics: [objektorientierung]
@@ -68,6 +67,25 @@ touch adventure.py
 
 Deine Klassen schreibst du in `adventure.py`.
 <!-- /language -->
+<!-- language: dart -->
+```bash_copy
+mkdir /workspace/textadventure
+cd /workspace/textadventure
+touch adventure.dart
+```
+
+Deine Klassen schreibst du in `adventure.dart`.
+<!-- /language -->
+<!-- language: java -->
+```bash_copy
+mkdir /workspace/textadventure
+cd /workspace/textadventure
+```
+
+Jede Klasse schreibst du in eine eigene Datei, die heißt wie sie: `Room`
+in `Room.java`, `Player` in `Player.java`. Alle liegen im Ordner
+`textadventure`, so finden sie einander.
+<!-- /language -->
 
 ## Erst der Plan
 
@@ -101,11 +119,19 @@ _task(modell)
 
 Ein Raum hat einen Namen und eine Beschreibung. Und er kennt seine Ausgänge:
 In jeder Richtung, in der es weitergeht, liegt ein anderer Raum. Ein
-Ausgang ist also ein Paar aus einer Richtung und einem Raum, und dafür gibt
-es ein Dictionary: Die Richtung ist der Schlüssel, der Raum der Wert. Im
-Dictionary steht dabei nicht eine Kopie des anderen Raums, sondern der Raum
-selbst: Zwei Räume, die einander kennen, sind zwei Objekte, die aufeinander
-zeigen.
+Ausgang ist also ein Paar aus einer Richtung und einem Raum.
+<!-- language: ruby, python -->
+Dafür gibt es ein Dictionary: Die Richtung ist der Schlüssel, der Raum der
+Wert. Im Dictionary steht dabei nicht eine Kopie des anderen Raums, sondern
+der Raum selbst.
+<!-- /language -->
+<!-- language: dart, java -->
+Dafür gibt es eine Map: Die Richtung ist der Schlüssel, der Raum der Wert.
+In der Map steht dabei nicht eine Kopie des anderen Raums, sondern der Raum
+selbst.
+<!-- /language -->
+
+Zwei Räume, die einander kennen, sind zwei Objekte, die aufeinander zeigen.
 
 _task(raum)
 
@@ -152,8 +178,8 @@ _task(spielerin)
 
 Die Tasche ist eine Liste, und eine Liste ließe sich von überall ändern,
 wenn man an sie herankäme. Dann könnte jede Klasse Gegenstände hinein- und
-herausnehmen, und wenn die Tasche einmal anders gebaut wird, als
-Dictionary oder mit einer Grenze, wie viel hineinpasst, müsste man jede
+herausnehmen, und wenn die Tasche einmal anders gebaut wird, nach Namen
+sortiert oder mit einer Grenze, wie viel hineinpasst, müsste man jede
 dieser Stellen finden. Darum bleibt sie bei der Spielerin: Wer etwas von
 der Tasche will, bittet die Spielerin darum, und nur sie ändert die Liste.
 Das heißt **Kapselung**.
@@ -167,6 +193,16 @@ In Python kommt jeder an jedes Attribut. Ein Unterstrich am Anfang,
 `self._bag`, ist die Abmachung, dass nur die eigene Klasse es anfasst:
 Python verbietet es nicht, aber wer `player._bag` schreibt, sieht, dass er
 etwas tut, das nicht vorgesehen ist.
+<!-- /language -->
+<!-- language: dart -->
+In Dart ist alles privat, was mit einem Unterstrich beginnt: An `_bag` kommt
+außerhalb der Datei `adventure.dart` niemand heran, und die Spielerin gibt
+die Liste mit keinem Getter heraus.
+<!-- /language -->
+<!-- language: java -->
+In Java sagt `private`, dass nur die eigene Klasse ein Attribut anfasst; der
+Compiler hält sich daran. Solange `Player` keinen Getter für `bag` hat,
+kommt niemand von außen an die Liste.
 <!-- /language -->
 
 _task(wegraeumen)
@@ -264,6 +300,30 @@ python3 play.py schule
 Klassen gebaut ist. Dann liest es Zeile für Zeile und gibt jede an
 `game.handle`.
 <!-- /language -->
+<!-- language: dart -->
+```bash_copy
+cd /workspace/textadventure
+wget ${web_root}/textadventure/starter/schule.dart
+dart run schule.dart
+```
+
+`schule.dart` holt sich mit `import 'adventure.dart';` deine Klassen und
+baut aus ihnen die Schule. Sein `main` liest Zeile für Zeile und gibt jede an
+`game.handle`. Dart übersetzt das ganze Programm, bevor es losgeht: Fehlt
+in `adventure.dart` noch etwas, das die Schule braucht, sagt es das zuerst.
+<!-- /language -->
+<!-- language: java -->
+```bash_copy
+cd /workspace/textadventure
+wget ${web_root}/textadventure/starter/School.java
+java School.java
+```
+
+`School.java` baut aus deinen Klassen die Schule. Sein `main` liest Zeile
+für Zeile und gibt jede an `game.handle`. `java School.java` übersetzt die
+Datei und findet die Klassen, die sie braucht, in den anderen Dateien des
+Ordners; fehlt dort noch etwas, sagt der Compiler das zuerst.
+<!-- /language -->
 
 Es ist dasselbe Spiel wie oben auf der Seite, nur dass jetzt dein Code es
 spielt. Antwortet es irgendwo anders, liegt der Unterschied in deinen
@@ -323,6 +383,72 @@ WALKTHROUGH = ["nimm kerze", "gehe flur", "gehe küche", "nimm kastenschlüssel"
 ```
 
 Spielen kannst du sie mit `python3 play.py`, ohne `schule`.
+<!-- /language -->
+<!-- language: dart -->
+<!-- page-code: own -->
+```dart
+Player buildWorld() {
+  final room = Room('Zimmer 3', 'Dein Zimmer im Wohnheim. Der Strom ist weg.');
+  final corridor = DarkRoom('Gang', 'Ein langer Gang mit Türen links und rechts.');
+  final kitchen = Room('Küche', 'Im Kühlschrank brummt nichts mehr.');
+  final fuse = GoalRoom('Sicherungskasten', 'Du legst den Schalter um, und überall geht das Licht an. Geschafft!');
+  room.connect('flur', corridor);
+  corridor.connect('zimmer', room);
+  corridor.connect('küche', kitchen);
+  kitchen.connect('flur', corridor);
+  corridor.connect('kasten', fuse);
+  corridor.lock('kasten', 'kastenschlüssel');
+  room.addItem(Lamp('kerze', 'Eine Kerze, die schon brennt.'));
+  kitchen.addItem(Key('kastenschlüssel', 'Ein kleiner Schlüssel mit einem Blitz darauf.'));
+  return Player(room);
+}
+
+const walkthrough = ['nimm kerze', 'gehe flur', 'gehe küche', 'nimm kastenschlüssel',
+    'gehe flur', 'benutze kastenschlüssel', 'gehe kasten'];
+```
+
+Spielen kannst du sie mit `play.dart`, das sein `main` hat wie `schule.dart`,
+aber deine Welt baut:
+
+```bash_copy
+wget ${web_root}/textadventure/starter/play.dart
+dart run play.dart
+```
+<!-- /language -->
+<!-- language: java -->
+<!-- page-code: own -->
+```java
+import java.util.List;
+
+public class World {
+    public static final List<String> WALKTHROUGH = List.of("nimm kerze", "gehe flur",
+        "gehe küche", "nimm kastenschlüssel", "gehe flur", "benutze kastenschlüssel", "gehe kasten");
+
+    public static Player build() {
+        Room room = new Room("Zimmer 3", "Dein Zimmer im Wohnheim. Der Strom ist weg.");
+        Room corridor = new DarkRoom("Gang", "Ein langer Gang mit Türen links und rechts.");
+        Room kitchen = new Room("Küche", "Im Kühlschrank brummt nichts mehr.");
+        Room fuse = new GoalRoom("Sicherungskasten", "Du legst den Schalter um, und überall geht das Licht an. Geschafft!");
+        room.connect("flur", corridor);
+        corridor.connect("zimmer", room);
+        corridor.connect("küche", kitchen);
+        kitchen.connect("flur", corridor);
+        corridor.connect("kasten", fuse);
+        corridor.lock("kasten", "kastenschlüssel");
+        room.addItem(new Lamp("kerze", "Eine Kerze, die schon brennt."));
+        kitchen.addItem(new Key("kastenschlüssel", "Ein kleiner Schlüssel mit einem Blitz darauf."));
+        return new Player(room);
+    }
+}
+```
+
+Spielen kannst du sie mit `Play.java`, das sein `main` hat wie
+`School.java`, aber deine Welt baut:
+
+```bash_copy
+wget ${web_root}/textadventure/starter/Play.java
+java Play.java
+```
 <!-- /language -->
 
 Die Namen der Gegenstände schreibst du klein, so wie man sie im Spiel tippt,
@@ -384,6 +510,18 @@ write-file: textadventure/adventure.py <- file:loesung/adventure.py
 write-file: textadventure/play.py <- file:starter/play.py
 write-file: textadventure/schule.py <- file:starter/schule.py
 write-file: textadventure/textadventure.uml <- file:loesung/textadventure.uml
+write-file: textadventure/adventure.dart <- file:loesung/adventure.dart
+write-file: textadventure/Room.java <- file:loesung/java/Room.java
+write-file: textadventure/DarkRoom.java <- file:loesung/java/DarkRoom.java
+write-file: textadventure/GoalRoom.java <- file:loesung/java/GoalRoom.java
+write-file: textadventure/Item.java <- file:loesung/java/Item.java
+write-file: textadventure/Key.java <- file:loesung/java/Key.java
+write-file: textadventure/Food.java <- file:loesung/java/Food.java
+write-file: textadventure/Lamp.java <- file:loesung/java/Lamp.java
+write-file: textadventure/Chest.java <- file:loesung/java/Chest.java
+write-file: textadventure/Player.java <- file:loesung/java/Player.java
+write-file: textadventure/Game.java <- file:loesung/java/Game.java
+write-file: textadventure/World.java <- file:loesung/java/World.java
 viewport: 1029x579
 zoom: 1.4
 hide-left-sidebar
@@ -432,6 +570,24 @@ check-task: dunkel python
 check-task: spiel python
 check-task: welt python
 check-task: kiste python
+check-task: raum dart
+check-task: gegenstaende dart
+check-task: beschreibung dart
+check-task: spielerin dart
+check-task: schloss dart
+check-task: dunkel dart
+check-task: spiel dart
+check-task: welt dart
+check-task: kiste dart
+check-task: raum java
+check-task: gegenstaende java
+check-task: beschreibung java
+check-task: spielerin java
+check-task: schloss java
+check-task: dunkel java
+check-task: spiel java
+check-task: welt java
+check-task: kiste java
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Der Workspace mit dem Terminal in großer Schrift, in dem das Textadventure »Nachts in der Schule« läuft: In der Eingangshalle schließt die Spielerin mit dem Haustürschlüssel die Glastür auf, geht nach Süden und steht auf dem Schulhof: »Kühle Nachtluft. Du bist draußen. Geschafft!«'>
 

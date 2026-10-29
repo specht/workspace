@@ -23,6 +23,12 @@ tasks:
     javascript:
       prompt: |
         Was gibt `console.log(twice(x => x * x, 3))` aus?
+    dart:
+      prompt: |
+        Was gibt `print(twice((x) => x * x, 3))` aus?
+    java:
+      prompt: |
+        Was gibt `IO.println(twice(x -> x * x, 3))` aus?
 
   - id: apply-n
     title: "n-mal anwenden"
@@ -135,6 +141,68 @@ tasks:
           return x;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int applyN(int Function(int) f, int n, int x)`, die die Funktion `f` `n`-mal hintereinander auf `x` anwendet und das Ergebnis zurückgibt: `applyN((x) => x * 2, 3, 1)` ergibt `8`, denn aus 1 wird 2, dann 4, dann 8. Ist `n` gleich 0, kommt `x` unverändert zurück. `int Function(int)` ist der Typ einer Funktion, die eine ganze Zahl bekommt und eine zurückgibt. Die Prüfung ruft deine Funktion mit verschiedenen solchen Funktionen auf; eine Schleife ist hier erlaubt.
+      starter: |
+        int applyN(int Function(int) f, int n, int x) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "applyN((x) => x * 2, 3, 1)", expect: "8" }
+          - { call: "applyN((x) => x + 10, 0, 5)", expect: "5", say: "Ist `n` gleich 0, wird `f` gar nicht aufgerufen." }
+          - { call: "applyN((x) => x - 1, 4, 10)", expect: "6" }
+          - { call: "applyN((x) => x * 10 + 1, 2, 0)", expect: "11", say: "Erst wird aus 0 die 1, dann aus 1 die 11: Jeder Aufruf bekommt das Ergebnis des vorigen." }
+          - { call: "applyN((x) => x * x, 1, 7)", expect: "49" }
+      feedback:
+        - when: { same_as: "int applyN(int Function(int) f, int n, int x) {\n  for (var i = 0; i < n; i++) {\n    f(x);\n  }\n  return x;\n}\n" }
+          say: "Du rufst `f` auf, aber das Ergebnis geht verloren. Merk es dir in `x`, damit der nächste Aufruf damit weiterrechnet."
+      hint:
+        - "Von Hand: `applyN((x) => x * 2, 3, 1)` rechnet 1, 2, 4, 8. Jeder Aufruf von `f` bekommt das Ergebnis des vorigen."
+        - "Eine Schleife, die `n`-mal läuft, `for (var i = 0; i < n; i++)`; in ihr wird `x` zu `f(x)`."
+      solution: |
+        ```dart
+        int applyN(int Function(int) f, int n, int x) {
+          for (var i = 0; i < n; i++) {
+            x = f(x);
+          }
+          return x;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int applyN(Function<Integer, Integer> f, int n, int x)`, die die Funktion `f` `n`-mal hintereinander auf `x` anwendet und das Ergebnis zurückgibt: `applyN(x -> x * 2, 3, 1)` ergibt `8`, denn aus 1 wird 2, dann 4, dann 8. Ist `n` gleich 0, kommt `x` unverändert zurück. `Function<Integer, Integer>` ist der Typ einer Funktion, die eine ganze Zahl bekommt und eine zurückgibt; `f.apply(x)` ruft sie auf. Die Prüfung ruft deine Methode mit verschiedenen Lambdas auf; eine Schleife ist hier erlaubt.
+      starter: |
+        int applyN(Function<Integer, Integer> f, int n, int x) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "applyN(x -> x * 2, 3, 1)", expect: "8" }
+          - { call: "applyN(x -> x + 10, 0, 5)", expect: "5", say: "Ist `n` gleich 0, wird `f` gar nicht aufgerufen." }
+          - { call: "applyN(x -> x - 1, 4, 10)", expect: "6" }
+          - { call: "applyN(x -> x * 10 + 1, 2, 0)", expect: "11", say: "Erst wird aus 0 die 1, dann aus 1 die 11: Jeder Aufruf bekommt das Ergebnis des vorigen." }
+          - { call: "applyN(x -> x * x, 1, 7)", expect: "49" }
+      feedback:
+        - when: { same_as: "int applyN(Function<Integer, Integer> f, int n, int x) {\n    for (int i = 0; i < n; i++) {\n        f.apply(x);\n    }\n    return x;\n}\n" }
+          say: "Du rufst `f` auf, aber das Ergebnis geht verloren. Merk es dir in `x`, damit der nächste Aufruf damit weiterrechnet."
+      hint:
+        - "Von Hand: `applyN(x -> x * 2, 3, 1)` rechnet 1, 2, 4, 8. Jeder Aufruf von `f` bekommt das Ergebnis des vorigen."
+        - "Eine Schleife, die `n`-mal läuft, `for (int i = 0; i < n; i++)`; in ihr wird `x` zu `f.apply(x)`."
+      solution: |
+        ```java
+        int applyN(Function<Integer, Integer> f, int n, int x) {
+            for (int i = 0; i < n; i++) {
+                x = f.apply(x);
+            }
+            return x;
+        }
+        ```
 
   - id: make-counter
     title: "Ein Zähler, der weiterzählt"
@@ -225,6 +293,56 @@ tasks:
           return () => count += 1;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int Function() makeCounter()`, die einen Zähler zurückgibt: eine Funktion ohne Parameter, die bei jedem Aufruf die nächste Zahl zurückgibt, beim ersten `1`, dann `2`, dann `3`. Zwei Zähler zählen jeder für sich: Wer `a` dreimal aufruft, ändert nichts an `b`.
+      starter: |
+        int Function() makeCounter() {
+          return () => 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "final counter = makeCounter(); counter()", expect: "1" }
+          - { call: "final counter = makeCounter(); [counter(), counter(), counter()]", expect: "[1, 2, 3]" }
+          - { call: "final a = makeCounter(); final b = makeCounter(); a(); a(); a(); [a(), b()]", expect: "[4, 1]", say: "Jeder Aufruf von `makeCounter` baut einen neuen Zähler mit einer eigenen Variablen, die bei 0 beginnt." }
+      hint:
+        - "Der Zähler muss sich von einem Aufruf zum nächsten etwas merken. Wo kann diese Variable stehen, damit sie nicht bei jedem Aufruf wieder 0 ist?"
+        - "Leg die Variable in `makeCounter` an, vor der Funktion, die du zurückgibst: `var count = 0;`. Die Funktion merkt sich sie wie die von `makeAdder` ihr `n`, und sie darf sie auch ändern."
+        - "`++count` erhöht die Variable, und das ist zugleich ihr Wert: `() => ++count`."
+      solution: |
+        ```dart
+        int Function() makeCounter() {
+          var count = 0;
+          return () => ++count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `Supplier<Integer> makeCounter()`, die einen Zähler zurückgibt: eine Funktion ohne Parameter, die bei jedem Aufruf (`counter.get()`) die nächste Zahl zurückgibt, beim ersten `1`, dann `2`, dann `3`. Ein `Supplier<Integer>` ist eine Funktion, die nichts bekommt und eine Zahl liefert. Zwei Zähler zählen jeder für sich: Wer `a` dreimal aufruft, ändert nichts an `b`.
+      starter: |
+        Supplier<Integer> makeCounter() {
+            return () -> 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "Supplier<Integer> counter = makeCounter(); counter.get()", expect: "1" }
+          - { call: "Supplier<Integer> counter = makeCounter(); List.of(counter.get(), counter.get(), counter.get())", expect: "List.of(1, 2, 3)" }
+          - { call: "Supplier<Integer> a = makeCounter(); Supplier<Integer> b = makeCounter(); a.get(); a.get(); a.get(); List.of(a.get(), b.get())", expect: "List.of(4, 1)", say: "Jeder Aufruf von `makeCounter` baut einen neuen Zähler mit einer eigenen Variablen, die bei 0 beginnt." }
+      hint:
+        - "Der Zähler muss sich von einem Aufruf zum nächsten etwas merken. Wo kann diese Variable stehen, damit sie nicht bei jedem Aufruf wieder 0 ist?"
+        - "Eine Variable in `makeCounter`, `int count = 0;`, kann das Lambda lesen, aber nicht ändern: Java meldet dann `local variables referenced from a lambda expression must be final or effectively final`."
+        - "Ändern darf das Lambda den Inhalt eines Objekts, auf das die Variable zeigt: `int[] count = {0};` ist ein Array mit einem Platz, und `++count[0]` erhöht seinen Inhalt und ist zugleich sein neuer Wert."
+      solution: |
+        ```java
+        Supplier<Integer> makeCounter() {
+            int[] count = {0};
+            return () -> ++count[0];
+        }
+        ```
 
   - id: predict-map
     title: "Was macht map daraus?"
@@ -246,6 +364,12 @@ tasks:
     javascript:
       prompt: |
         Was gibt `console.log([3, 1, 2].map(x => x > 1))` aus?
+    dart:
+      prompt: |
+        Was gibt `print([3, 1, 2].map((x) => x > 1).toList())` aus?
+    java:
+      prompt: |
+        Was gibt `IO.println(List.of(3, 1, 2).stream().map(x -> x > 1).toList())` aus?
 
   - id: with-tax
     title: "Preise mit Steuer"
@@ -347,6 +471,62 @@ tasks:
           return prices.map(price => price * 119 / 100);
         }
         ```
+    dart:
+      prompt: |
+        Ein Laden speichert seine Preise ohne Mehrwertsteuer, in Cent. Schreib eine Funktion `List<int> withTax(List<int> prices)`, die jeden Preis mit 19 % Mehrwertsteuer zurückgibt, als neue Liste: `withTax([100, 300])` ergibt `[119, 357]`. Rechne mit ganzen Zahlen, `price * 119 ~/ 100`; die Preise sind volle Euro, so geht es auf. Mit `map`, ohne eigene Schleife.
+      starter: |
+        List<int> withTax(List<int> prices) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "withTax([100, 300, 1200])", expect: "[119, 357, 1428]" }
+          - { call: "withTax([])", expect: "[]", say: "Eine leere Liste bleibt leer." }
+          - { call: "withTax([500])", expect: "[595]" }
+          - { call: "withTax([200, 200])", expect: "[238, 238]" }
+      feedback:
+        - when: { same_as: "List<int> withTax(List<int> prices) {\n  return prices.map((price) => price * 19 ~/ 100).toList();\n}\n" }
+          say: "Das ist nur die Steuer. Der Preis mit Steuer ist der Preis und die Steuer zusammen."
+      hint:
+        - "Für einen einzigen Preis: `100 * 119 ~/ 100` ist 119. Dasselbe soll mit jedem Preis der Liste geschehen."
+        - "`prices.map((price) => …)` geht jeden Preis durch; rechts vom Pfeil steht die Rechnung für einen Preis. `map` gibt noch keine Liste, sondern eine Folge von Werten: `.toList()` macht eine Liste daraus."
+      solution: |
+        ```dart
+        List<int> withTax(List<int> prices) {
+          return prices.map((price) => price * 119 ~/ 100).toList();
+        }
+        ```
+    java:
+      prompt: |
+        Ein Laden speichert seine Preise ohne Mehrwertsteuer, in Cent. Schreib eine Methode `List<Integer> withTax(List<Integer> prices)`, die jeden Preis mit 19 % Mehrwertsteuer zurückgibt, als neue Liste: `withTax(List.of(100, 300))` ergibt `[119, 357]`. Rechne mit ganzen Zahlen, `price * 119 / 100`; die Preise sind volle Euro, so geht es auf. Mit `map`, ohne eigene Schleife.
+      starter: |
+        List<Integer> withTax(List<Integer> prices) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "withTax(List.of(100, 300, 1200))", expect: "List.of(119, 357, 1428)" }
+          - { call: "withTax(List.of())", expect: "List.of()", say: "Eine leere Liste bleibt leer." }
+          - { call: "withTax(List.of(500))", expect: "List.of(595)" }
+          - { call: "withTax(List.of(200, 200))", expect: "List.of(238, 238)" }
+      feedback:
+        - when: { same_as: "List<Integer> withTax(List<Integer> prices) {\n    return prices.stream().map(price -> price * 19 / 100).toList();\n}\n" }
+          say: "Das ist nur die Steuer. Der Preis mit Steuer ist der Preis und die Steuer zusammen."
+      hint:
+        - "Für einen einzigen Preis: `100 * 119 / 100` ist 119. Dasselbe soll mit jedem Preis der Liste geschehen."
+        - "`prices.stream()` macht aus der Liste einen Strom von Werten, `.map(price -> …)` rechnet jeden um, `.toList()` macht wieder eine Liste daraus."
+      solution: |
+        ```java
+        List<Integer> withTax(List<Integer> prices) {
+            return prices.stream().map(price -> price * 119 / 100).toList();
+        }
+        ```
 
   - id: lengths
     title: "Wortlängen"
@@ -444,6 +624,56 @@ tasks:
         ```javascript
         function lengths(words) {
           return words.map(word => word.length);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> lengths(List<String> words)`, die zu jedem Wort seine Länge zurückgibt, als neue Liste: `lengths(['Igel', 'Wal'])` ergibt `[4, 3]`. Mit `map`, ohne eigene Schleife.
+      starter: |
+        List<int> lengths(List<String> words) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "lengths(['Igel', 'Ameise', 'Wal'])", expect: "[4, 6, 3]" }
+          - { call: "lengths([])", expect: "[]" }
+          - { call: "lengths(['Straße'])", expect: "[6]" }
+          - { call: "lengths(['', 'a'])", expect: "[0, 1]", say: "Das leere Wort hat die Länge 0." }
+      hint:
+        - "`'Igel'.length` ist 4. Was soll mit jedem Wort der Liste geschehen?"
+        - "`words.map((word) => …).toList()`: Rechts vom Pfeil steht, was aus einem Wort werden soll."
+      solution: |
+        ```dart
+        List<int> lengths(List<String> words) {
+          return words.map((word) => word.length).toList();
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> lengths(List<String> words)`, die zu jedem Wort seine Länge zurückgibt, als neue Liste: `lengths(List.of("Igel", "Wal"))` ergibt `[4, 3]`. Mit `map`, ohne eigene Schleife.
+      starter: |
+        List<Integer> lengths(List<String> words) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "lengths(List.of(\"Igel\", \"Ameise\", \"Wal\"))", expect: "List.of(4, 6, 3)" }
+          - { call: "lengths(List.of())", expect: "List.of()" }
+          - { call: "lengths(List.of(\"Straße\"))", expect: "List.of(6)" }
+          - { call: "lengths(List.of(\"\", \"a\"))", expect: "List.of(0, 1)", say: "Das leere Wort hat die Länge 0." }
+      hint:
+        - "`\"Igel\".length()` ist 4. Was soll mit jedem Wort der Liste geschehen?"
+        - "`words.stream().map(word -> …).toList()`: Rechts vom Pfeil steht, was aus einem Wort werden soll."
+      solution: |
+        ```java
+        List<Integer> lengths(List<String> words) {
+            return words.stream().map(word -> word.length()).toList();
         }
         ```
 
@@ -545,6 +775,56 @@ tasks:
         ```javascript
         function evens(numbers) {
           return numbers.filter(x => x % 2 === 0);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> evens(List<int> numbers)`, die nur die geraden Zahlen der Liste behält, in ihrer Reihenfolge: `evens([1, 2, 3, 4])` ergibt `[2, 4]`. In Dart heißt `filter` `where`. Mit `where`, ohne eigene Schleife.
+      starter: |
+        List<int> evens(List<int> numbers) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "evens([1, 2, 3, 4, 5, 6])", expect: "[2, 4, 6]" }
+          - { call: "evens([])", expect: "[]" }
+          - { call: "evens([1, 3, 5])", expect: "[]" }
+          - { call: "evens([0, -2, 7])", expect: "[0, -2]", say: "0 und -2 sind auch gerade." }
+      hint:
+        - "`where` fragt jede Zahl: Soll sie bleiben? Die Funktion gibt dafür `true` oder `false` zurück."
+        - "Gerade ist eine Zahl, wenn beim Teilen durch 2 kein Rest bleibt: `x % 2 == 0`. Am Ende macht `.toList()` eine Liste daraus."
+      solution: |
+        ```dart
+        List<int> evens(List<int> numbers) {
+          return numbers.where((x) => x % 2 == 0).toList();
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> evens(List<Integer> numbers)`, die nur die geraden Zahlen der Liste behält, in ihrer Reihenfolge: `evens(List.of(1, 2, 3, 4))` ergibt `[2, 4]`. Mit `filter`, ohne eigene Schleife.
+      starter: |
+        List<Integer> evens(List<Integer> numbers) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "evens(List.of(1, 2, 3, 4, 5, 6))", expect: "List.of(2, 4, 6)" }
+          - { call: "evens(List.of())", expect: "List.of()" }
+          - { call: "evens(List.of(1, 3, 5))", expect: "List.of()" }
+          - { call: "evens(List.of(0, -2, 7))", expect: "List.of(0, -2)", say: "0 und -2 sind auch gerade." }
+      hint:
+        - "`filter` fragt jede Zahl: Soll sie bleiben? Das Lambda gibt dafür `true` oder `false` zurück."
+        - "Gerade ist eine Zahl, wenn beim Teilen durch 2 kein Rest bleibt: `x % 2 == 0`. `numbers.stream().filter(…).toList()`."
+      solution: |
+        ```java
+        List<Integer> evens(List<Integer> numbers) {
+            return numbers.stream().filter(x -> x % 2 == 0).toList();
         }
         ```
 
@@ -657,6 +937,64 @@ tasks:
           return words.filter(word => word.includes(letter));
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<String> withLetter(List<String> words, String letter)`, die die Wörter behält, in denen `letter` vorkommt, in ihrer Reihenfolge: `withLetter(['Hund', 'Katze', 'Maus'], 'a')` ergibt `['Katze', 'Maus']`. Groß und klein zählt: `'A'` ist nicht `'a'`. Mit `where`, ohne eigene Schleife.
+      starter: |
+        List<String> withLetter(List<String> words, String letter) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "withLetter(['Hund', 'Katze', 'Maus'], 'a')", expect: "['Katze', 'Maus']" }
+          - { call: "withLetter([], 'a')", expect: "[]" }
+          - { call: "withLetter(['Igel', 'Wal'], 'x')", expect: "[]" }
+          - { call: "withLetter(['Ameise', 'Wal'], 'a')", expect: "['Wal']", say: "Groß und klein sind verschiedene Zeichen: In 'Ameise' steht ein 'A', aber kein 'a'." }
+          - { call: "withLetter(['Ananas', 'Kiwi'], 'n')", expect: "['Ananas']", say: "Ein Wort kommt einmal ins Ergebnis, auch wenn der Buchstabe öfter darin steht." }
+      feedback:
+        - when: { same_as: "List<String> withLetter(List<String> words, String letter) {\n  return words.where((word) => word.toLowerCase().contains(letter)).toList();\n}\n" }
+          say: "Du machst die Wörter klein, bevor du suchst. Hier zählt Groß und klein: `'A'` ist nicht `'a'`."
+      hint:
+        - "Die Funktion bekommt ein Wort und sagt `true` oder `false`: Steht `letter` darin?"
+        - "In der Funktion darfst du `letter` benutzen, obwohl es ein Parameter von `withLetter` ist: Sie merkt es sich wie die Closure oben. `word.contains(letter)` fragt, ob es im Wort steht."
+      solution: |
+        ```dart
+        List<String> withLetter(List<String> words, String letter) {
+          return words.where((word) => word.contains(letter)).toList();
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<String> withLetter(List<String> words, String letter)`, die die Wörter behält, in denen `letter` vorkommt, in ihrer Reihenfolge: `withLetter(List.of("Hund", "Katze", "Maus"), "a")` ergibt `[Katze, Maus]`. Groß und klein zählt: `"A"` ist nicht `"a"`. Mit `filter`, ohne eigene Schleife.
+      starter: |
+        List<String> withLetter(List<String> words, String letter) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "withLetter(List.of(\"Hund\", \"Katze\", \"Maus\"), \"a\")", expect: "List.of(\"Katze\", \"Maus\")" }
+          - { call: "withLetter(List.of(), \"a\")", expect: "List.of()" }
+          - { call: "withLetter(List.of(\"Igel\", \"Wal\"), \"x\")", expect: "List.of()" }
+          - { call: "withLetter(List.of(\"Ameise\", \"Wal\"), \"a\")", expect: "List.of(\"Wal\")", say: "Groß und klein sind verschiedene Zeichen: In \"Ameise\" steht ein \"A\", aber kein \"a\"." }
+          - { call: "withLetter(List.of(\"Ananas\", \"Kiwi\"), \"n\")", expect: "List.of(\"Ananas\")", say: "Ein Wort kommt einmal ins Ergebnis, auch wenn der Buchstabe öfter darin steht." }
+      feedback:
+        - when: { same_as: "List<String> withLetter(List<String> words, String letter) {\n    return words.stream().filter(word -> word.toLowerCase().contains(letter)).toList();\n}\n" }
+          say: "Du machst die Wörter klein, bevor du suchst. Hier zählt Groß und klein: `\"A\"` ist nicht `\"a\"`."
+      hint:
+        - "Das Lambda bekommt ein Wort und sagt `true` oder `false`: Steht `letter` darin?"
+        - "Im Lambda darfst du `letter` benutzen, obwohl es ein Parameter von `withLetter` ist: Es merkt sich ihn wie die Closure oben. `word.contains(letter)` fragt, ob es im Wort steht."
+      solution: |
+        ```java
+        List<String> withLetter(List<String> words, String letter) {
+            return words.stream().filter(word -> word.contains(letter)).toList();
+        }
+        ```
 
   - id: passed
     title: "Bestanden"
@@ -766,6 +1104,68 @@ tasks:
             .map(([name, points]) => name);
         }
         ```
+    dart:
+      prompt: |
+        Jedes Ergebnis einer Klausur ist ein Paar aus Name und Punkten, von 0 bis 15, ein Record `('Ada', 12)`. Schreib eine Funktion `List<String> passed(List<(String, int)> results)`, die die Namen derer zurückgibt, die bestanden haben, also mindestens 5 Punkte, in ihrer Reihenfolge: `passed([('Ada', 12), ('Alan', 4)])` ergibt `['Ada']`. Erst `where`, dann `map`, ohne eigene Schleife.
+      starter: |
+        List<String> passed(List<(String, int)> results) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "passed([('Ada', 12), ('Alan', 4), ('Grace', 5)])", expect: "['Ada', 'Grace']" }
+          - { call: "passed([])", expect: "[]" }
+          - { call: "passed([('Linus', 0)])", expect: "[]" }
+          - { call: "passed([('Edsger', 15), ('Barbara', 7)])", expect: "['Edsger', 'Barbara']" }
+      feedback:
+        - when: { same_as: "List<String> passed(List<(String, int)> results) {\n  return results.where((result) => result.$2 > 5).map((result) => result.$1).toList();\n}\n" }
+          say: "Mit genau 5 Punkten ist die Klausur schon bestanden."
+      hint:
+        - "Zwei Schritte: Erst behalten, wer bestanden hat; dann aus jedem übrigen Paar den Namen machen."
+        - "Bei einem Record ist `result.$1` der erste Teil, der Name, und `result.$2` der zweite, die Punkte."
+      solution: |
+        ```dart
+        List<String> passed(List<(String, int)> results) {
+          return results
+              .where((result) => result.$2 >= 5)
+              .map((result) => result.$1)
+              .toList();
+        }
+        ```
+    java:
+      prompt: |
+        Jedes Ergebnis einer Klausur ist ein Paar aus Name und Punkten, von 0 bis 15, ein `Map.entry("Ada", 12)`. Schreib eine Methode `List<String> passed(List<Map.Entry<String, Integer>> results)`, die die Namen derer zurückgibt, die bestanden haben, also mindestens 5 Punkte, in ihrer Reihenfolge: `passed(List.of(Map.entry("Ada", 12), Map.entry("Alan", 4)))` ergibt `[Ada]`. Erst `filter`, dann `map`, ohne eigene Schleife.
+      starter: |
+        List<String> passed(List<Map.Entry<String, Integer>> results) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "passed(List.of(Map.entry(\"Ada\", 12), Map.entry(\"Alan\", 4), Map.entry(\"Grace\", 5)))", expect: "List.of(\"Ada\", \"Grace\")" }
+          - { call: "passed(List.of())", expect: "List.of()" }
+          - { call: "passed(List.of(Map.entry(\"Linus\", 0)))", expect: "List.of()" }
+          - { call: "passed(List.of(Map.entry(\"Edsger\", 15), Map.entry(\"Barbara\", 7)))", expect: "List.of(\"Edsger\", \"Barbara\")" }
+      feedback:
+        - when: { same_as: "List<String> passed(List<Map.Entry<String, Integer>> results) {\n    return results.stream().filter(result -> result.getValue() > 5).map(result -> result.getKey()).toList();\n}\n" }
+          say: "Mit genau 5 Punkten ist die Klausur schon bestanden."
+      hint:
+        - "Zwei Schritte: Erst behalten, wer bestanden hat; dann aus jedem übrigen Paar den Namen machen."
+        - "Bei einem `Map.Entry` ist `result.getKey()` der Name und `result.getValue()` die Punkte."
+      solution: |
+        ```java
+        List<String> passed(List<Map.Entry<String, Integer>> results) {
+            return results.stream()
+                    .filter(result -> result.getValue() >= 5)
+                    .map(result -> result.getKey())
+                    .toList();
+        }
+        ```
 
   - id: predict-empty
     title: "Die leere Liste ohne Startwert"
@@ -791,6 +1191,26 @@ tasks:
         type: choice
         options: ["Es erscheint 0.", "Es erscheint undefined.", "Das Programm bricht mit einem Fehler ab."]
         correct: 2
+    dart:
+      prompt: |
+        Was geschieht bei `print(<int>[].reduce((total, x) => total + x))`?
+      check:
+        type: choice
+        options:
+          - "Es erscheint 0."
+          - "Es erscheint null."
+          - "Das Programm bricht mit einem Fehler ab."
+        correct: 2
+    java:
+      prompt: |
+        Was gibt `IO.println(List.<Integer>of().stream().reduce((total, x) -> total + x))` aus?
+      check:
+        type: choice
+        options:
+          - "Es erscheint 0."
+          - "Es erscheint Optional.empty."
+          - "Das Programm bricht mit einem Fehler ab."
+        correct: 1
 
   - id: product
     title: "Das Produkt"
@@ -896,6 +1316,64 @@ tasks:
           return numbers.reduce((result, x) => result * x, 1);
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int product(List<int> numbers)`, die alle Zahlen der Liste miteinander multipliziert, mit `fold`: `product([2, 3, 4])` ergibt `24`. Für die leere Liste ergibt sie `1`.
+      starter: |
+        int product(List<int> numbers) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "product([2, 3, 4])", expect: "24" }
+          - { call: "product([])", expect: "1", say: "Die leere Liste: Hat dein `fold` einen Startwert, der ein Produkt nicht verändert?" }
+          - { call: "product([7])", expect: "7" }
+          - { call: "product([5, 0, 3])", expect: "0" }
+          - { call: "product([-2, 3])", expect: "-6" }
+      feedback:
+        - when: { same_as: "int product(List<int> numbers) {\n  return numbers.fold(0, (result, x) => result * x);\n}\n" }
+          say: "Du fängst bei 0 an, und 0 multipliziert mit jeder Zahl bleibt 0. Mit welcher Zahl kann man multiplizieren, ohne dass sich etwas ändert?"
+      hint:
+        - "Von Hand: ein Startwert, dann mal 2, mal 3, mal 4. Welcher Startwert lässt das Ergebnis 24, und was kommt dann bei der leeren Liste heraus?"
+        - "`numbers.fold(…, (result, x) => result * x)`: Was gehört als erstes Argument hinein?"
+      solution: |
+        ```dart
+        int product(List<int> numbers) {
+          return numbers.fold(1, (result, x) => result * x);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int product(List<Integer> numbers)`, die alle Zahlen der Liste miteinander multipliziert, mit `reduce` und einem Startwert: `product(List.of(2, 3, 4))` ergibt `24`. Für die leere Liste ergibt sie `1`.
+      starter: |
+        int product(List<Integer> numbers) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "product(List.of(2, 3, 4))", expect: "24" }
+          - { call: "product(List.of())", expect: "1", say: "Die leere Liste: Hat dein `reduce` einen Startwert, der ein Produkt nicht verändert?" }
+          - { call: "product(List.of(7))", expect: "7" }
+          - { call: "product(List.of(5, 0, 3))", expect: "0" }
+          - { call: "product(List.of(-2, 3))", expect: "-6" }
+      feedback:
+        - when: { same_as: "int product(List<Integer> numbers) {\n    return numbers.stream().reduce(0, (result, x) -> result * x);\n}\n" }
+          say: "Du fängst bei 0 an, und 0 multipliziert mit jeder Zahl bleibt 0. Mit welcher Zahl kann man multiplizieren, ohne dass sich etwas ändert?"
+      hint:
+        - "Von Hand: ein Startwert, dann mal 2, mal 3, mal 4. Welcher Startwert lässt das Ergebnis 24, und was kommt dann bei der leeren Liste heraus?"
+        - "`numbers.stream().reduce(…, (result, x) -> result * x)`: Was gehört als erstes Argument hinein? Mit einem Startwert gibt `reduce` gleich die Zahl zurück, kein `Optional`."
+      solution: |
+        ```java
+        int product(List<Integer> numbers) {
+            return numbers.stream().reduce(1, (result, x) -> result * x);
+        }
+        ```
 
   - id: longest
     title: "Das längste Wort"
@@ -997,6 +1475,62 @@ tasks:
         ```javascript
         function longest(words) {
           return words.reduce((best, word) => word.length > best.length ? word : best);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String longest(List<String> words)`, die das längste Wort zurückgibt, mit `reduce`: `longest(['Igel', 'Ameise', 'Wal'])` ergibt `'Ameise'`. Sind mehrere gleich lang, gewinnt das erste. Die Liste ist nie leer. Ohne `sort`.
+      starter: |
+        String longest(List<String> words) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.sort, .forEach, max]
+        cases:
+          - { call: "longest(['Igel', 'Ameise', 'Wal'])", expect: "'Ameise'" }
+          - { call: "longest(['Hut'])", expect: "'Hut'" }
+          - { call: "longest(['ab', 'cd', 'e'])", expect: "'ab'", say: "Zwei Wörter sind gleich lang: Das erste gewinnt." }
+          - { call: "longest(['a', 'bbb', 'cc', 'dddd'])", expect: "'dddd'", say: "Das längste Wort steht ganz hinten." }
+      feedback:
+        - when: { same_as: "String longest(List<String> words) {\n  return words.reduce((best, word) => word.length >= best.length ? word : best);\n}\n" }
+          say: "Bei gleicher Länge nimmt dein Code das spätere Wort. Das erste soll bleiben: Nimm das neue Wort nur, wenn es wirklich länger ist."
+      hint:
+        - "Das Ergebnis bis hierher ist das längste Wort bis hierher. Was soll mit ihm geschehen, wenn das nächste Wort kommt?"
+        - "`reduce` fängt ohne Startwert mit dem ersten Wort an; die Liste ist nie leer, das passt. Eine Funktion kann wählen: `bedingung ? a : b`. Sie gibt eines der beiden Wörter zurück, nie eine Zahl."
+      solution: |
+        ```dart
+        String longest(List<String> words) {
+          return words.reduce((best, word) => word.length > best.length ? word : best);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String longest(List<String> words)`, die das längste Wort zurückgibt, mit `reduce`: `longest(List.of("Igel", "Ameise", "Wal"))` ergibt `"Ameise"`. Sind mehrere gleich lang, gewinnt das erste. Die Liste ist nie leer. Ohne `sorted` und `max`.
+      starter: |
+        String longest(List<String> words) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.sort, .sorted, .forEach, .max, Collections.max, Comparator]
+        cases:
+          - { call: "longest(List.of(\"Igel\", \"Ameise\", \"Wal\"))", expect: "\"Ameise\"" }
+          - { call: "longest(List.of(\"Hut\"))", expect: "\"Hut\"" }
+          - { call: "longest(List.of(\"ab\", \"cd\", \"e\"))", expect: "\"ab\"", say: "Zwei Wörter sind gleich lang: Das erste gewinnt." }
+          - { call: "longest(List.of(\"a\", \"bbb\", \"cc\", \"dddd\"))", expect: "\"dddd\"", say: "Das längste Wort steht ganz hinten." }
+      feedback:
+        - when: { same_as: "String longest(List<String> words) {\n    return words.stream().reduce(\"\", (best, word) -> word.length() >= best.length() ? word : best);\n}\n" }
+          say: "Bei gleicher Länge nimmt dein Code das spätere Wort. Das erste soll bleiben: Nimm das neue Wort nur, wenn es wirklich länger ist."
+      hint:
+        - "Das Ergebnis bis hierher ist das längste Wort bis hierher. Was soll mit ihm geschehen, wenn das nächste Wort kommt?"
+        - "Mit dem leeren Text als Startwert, `reduce(\"\", …)`, ist jedes Wort länger als der Anfang. Ein Lambda kann wählen: `bedingung ? a : b`. Es gibt eines der beiden Wörter zurück, nie eine Zahl."
+      solution: |
+        ```java
+        String longest(List<String> words) {
+            return words.stream().reduce("", (best, word) -> word.length() > best.length() ? word : best);
         }
         ```
 
@@ -1121,6 +1655,76 @@ tasks:
             sums[name] = (sums[name] || 0) + amount;
             return sums;
           }, {});
+        }
+        ```
+    dart:
+      prompt: |
+        Auf einer Klassenfahrt schreibt jemand jede Zahlung auf, als Paar aus Name und Betrag in Cent. Schreib eine Funktion `Map<String, int> totals(List<(String, int)> payments)`, die mit `fold` zusammenrechnet, wie viel jede Person bezahlt hat, als Map: `totals([('Ada', 300), ('Alan', 200), ('Ada', 150)])` ergibt `{'Ada': 450, 'Alan': 200}`.
+      starter: |
+        Map<String, int> totals(List<(String, int)> payments) {
+          return {};
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "totals([('Ada', 300), ('Alan', 200), ('Ada', 150)])", expect: "{'Ada': 450, 'Alan': 200}" }
+          - { call: "totals([])", expect: "{}", say: "Keine Zahlungen: eine leere Map." }
+          - { call: "totals([('Grace', 500)])", expect: "{'Grace': 500}" }
+          - { call: "totals([('Ada', 100), ('Ada', 100), ('Ada', 100)])", expect: "{'Ada': 300}", say: "Kommt ein Name wieder, zählst du dazu." }
+      feedback:
+        - when: { same_as: "Map<String, int> totals(List<(String, int)> payments) {\n  return payments.fold(<String, int>{}, (sums, payment) {\n    sums[payment.$1] = payment.$2;\n    return sums;\n  });\n}\n" }
+          say: "Kommt ein Name ein zweites Mal, ersetzt dein Code den Betrag, statt ihn dazuzuzählen."
+      hint:
+        - "Der Startwert ist eine leere Map, `<String, int>{}`. Was soll bei der ersten Zahlung, `('Ada', 300)`, in ihr stehen, und was danach bei `('Alan', 200)`?"
+        - "Die Funktion zählt den Betrag, `payment.$2`, zu dem dazu, was die Person `payment.$1` schon hat; `sums[name] ?? 0` ist 0, wenn sie noch nicht darin steht."
+        - |
+          Mit mehr als einem Ausdruck braucht die Funktion geschweifte Klammern und ein `return`:
+
+          ```dart
+          payments.fold(<String, int>{}, (sums, payment) {
+            // hier: den Betrag eintragen
+            return sums;
+          });
+          ```
+      solution: |
+        ```dart
+        Map<String, int> totals(List<(String, int)> payments) {
+          return payments.fold(<String, int>{}, (sums, payment) {
+            final (name, amount) = payment;
+            sums[name] = (sums[name] ?? 0) + amount;
+            return sums;
+          });
+        }
+        ```
+    java:
+      prompt: |
+        Auf einer Klassenfahrt schreibt jemand jede Zahlung auf, als Paar aus Name und Betrag in Cent. Schreib eine Methode `Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments)`, die zusammenrechnet, wie viel jede Person bezahlt hat, als Map: Aus Ada 300, Alan 200 und Ada 150 wird `{Ada=450, Alan=200}`. Eine Map baut man in Java nicht mit `reduce`, sondern mit `collect(Collectors.toMap(…))`: Es trägt jedes Element mit einem Schlüssel und einem Wert in eine neue Map ein. Ohne `groupingBy`.
+      starter: |
+        Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments) {
+            return Map.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach, Collectors.groupingBy]
+        cases:
+          - { call: "totals(List.of(Map.entry(\"Ada\", 300), Map.entry(\"Alan\", 200), Map.entry(\"Ada\", 150)))", expect: "Map.of(\"Ada\", 450, \"Alan\", 200)" }
+          - { call: "totals(List.of())", expect: "Map.of()", say: "Keine Zahlungen: eine leere Map." }
+          - { call: "totals(List.of(Map.entry(\"Grace\", 500)))", expect: "Map.of(\"Grace\", 500)" }
+          - { call: "totals(List.of(Map.entry(\"Ada\", 100), Map.entry(\"Ada\", 100), Map.entry(\"Ada\", 100)))", expect: "Map.of(\"Ada\", 300)", say: "Kommt ein Name wieder, zählst du dazu." }
+      feedback:
+        - when: { same_as: "Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments) {\n    return payments.stream().collect(Collectors.toMap(payment -> payment.getKey(), payment -> payment.getValue()));\n}\n" }
+          say: "Kommt ein Name ein zweites Mal, weiß `toMap` nicht, was es mit den beiden Beträgen tun soll, und bricht ab (`Duplicate key`). Ein drittes Argument sagt es: `(a, b) -> a + b` zählt sie zusammen."
+      hint:
+        - "`Collectors.toMap(payment -> payment.getKey(), payment -> payment.getValue())` trägt jede Zahlung ein: der Name als Schlüssel, der Betrag als Wert."
+        - "Kommt ein Schlüssel zweimal, braucht `toMap` ein drittes Argument, das die beiden Werte verbindet: `(a, b) -> a + b`."
+      solution: |
+        ```java
+        Map<String, Integer> totals(List<Map.Entry<String, Integer>> payments) {
+            return payments.stream()
+                    .collect(Collectors.toMap(payment -> payment.getKey(), payment -> payment.getValue(), (a, b) -> a + b));
         }
         ```
 
@@ -1261,6 +1865,97 @@ tasks:
             .filter(item => item.category === category)
             .map(item => item.price * item.count)
             .reduce((sum, x) => sum + x, 0);
+        }
+        ```
+    dart:
+      prompt: |
+        Jede Ware im Warenkorb ist ein Record mit Name, Art, Preis in Cent und Stückzahl; der Typ `Item` steht schon da. Schreib eine Funktion `int categoryTotal(List<Item> items, String category)`, die als Kette ausrechnet, was alle Waren einer Art zusammen kosten: behalten, was zur Art gehört, für jede Ware Preis mal Stückzahl, zusammenzählen. Die Prüfung ruft sie unter anderem mit diesem Warenkorb auf:
+
+        ```dart
+        final items = [
+          (name: 'Heft', category: 'Schreibwaren', price: 120, count: 5),
+          (name: 'Stift', category: 'Schreibwaren', price: 80, count: 10),
+          (name: 'Apfel', category: 'Obst', price: 50, count: 6),
+        ];
+        ```
+
+        `categoryTotal(items, 'Obst')` ergibt `300`, `categoryTotal(items, 'Schreibwaren')` ergibt `1400`. Gibt es keine Ware der Art, ergibt sie `0`.
+      starter: |
+        typedef Item = ({String name, String category, int price, int count});
+
+        int categoryTotal(List<Item> items, String category) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "final items = [(name: 'Heft', category: 'Schreibwaren', price: 120, count: 5), (name: 'Stift', category: 'Schreibwaren', price: 80, count: 10), (name: 'Apfel', category: 'Obst', price: 50, count: 6)]; categoryTotal(items, 'Schreibwaren')", expect: "1400" }
+          - { call: "final items = [(name: 'Heft', category: 'Schreibwaren', price: 120, count: 5), (name: 'Stift', category: 'Schreibwaren', price: 80, count: 10), (name: 'Apfel', category: 'Obst', price: 50, count: 6)]; categoryTotal(items, 'Obst')", expect: "300" }
+          - { call: "categoryTotal([(name: 'Birne', category: 'Obst', price: 70, count: 2), (name: 'Lineal', category: 'Schreibwaren', price: 250, count: 1), (name: 'Kiwi', category: 'Obst', price: 40, count: 3)], 'Obst')", expect: "260" }
+          - { call: "categoryTotal([(name: 'Apfel', category: 'Obst', price: 50, count: 6)], 'Spielzeug')", expect: "0", say: "Keine Ware dieser Art: Zusammen kostet sie 0. Hat dein `fold` einen Startwert?" }
+          - { call: "categoryTotal([], 'Obst')", expect: "0" }
+      feedback:
+        - when: { same_as: "typedef Item = ({String name, String category, int price, int count});\n\nint categoryTotal(List<Item> items, String category) {\n  return items.where((item) => item.category == category).map((item) => item.price).fold(0, (sum, x) => sum + x);\n}\n" }
+          say: "Du zählst jeden Preis einmal. Es sind aber `count` Stück: Eine Ware kostet ihren Preis multipliziert mit ihrer Stückzahl."
+      hint:
+        - "Drei Schritte, wie bei den Bestellungen oben: Welche Waren bleiben? Was wird aus jeder? Wie kommt aus der Liste eine Zahl?"
+        - "`item.category == category` fragt, ob eine Ware zur Art gehört. Danach macht `map` aus jeder Ware eine Zahl, und `fold` mit dem Startwert 0 zählt die Zahlen zusammen."
+      solution: |
+        ```dart
+        typedef Item = ({String name, String category, int price, int count});
+
+        int categoryTotal(List<Item> items, String category) {
+          return items
+              .where((item) => item.category == category)
+              .map((item) => item.price * item.count)
+              .fold(0, (sum, x) => sum + x);
+        }
+        ```
+    java:
+      prompt: |
+        Jede Ware im Warenkorb hat Name, Art, Preis in Cent und Stückzahl; der `record Item` steht schon da, `item.price()` ist ihr Preis. Schreib eine Methode `int categoryTotal(List<Item> items, String category)`, die als Kette ausrechnet, was alle Waren einer Art zusammen kosten: behalten, was zur Art gehört, für jede Ware Preis mal Stückzahl, zusammenzählen. Die Prüfung ruft sie unter anderem mit diesem Warenkorb auf:
+
+        ```java
+        List<Item> items = List.of(
+            new Item("Heft", "Schreibwaren", 120, 5),
+            new Item("Stift", "Schreibwaren", 80, 10),
+            new Item("Apfel", "Obst", 50, 6));
+        ```
+
+        `categoryTotal(items, "Obst")` ergibt `300`, `categoryTotal(items, "Schreibwaren")` ergibt `1400`. Gibt es keine Ware der Art, ergibt sie `0`.
+      starter: |
+        record Item(String name, String category, int price, int count) {}
+
+        int categoryTotal(List<Item> items, String category) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "List<Item> items = List.of(new Item(\"Heft\", \"Schreibwaren\", 120, 5), new Item(\"Stift\", \"Schreibwaren\", 80, 10), new Item(\"Apfel\", \"Obst\", 50, 6)); categoryTotal(items, \"Schreibwaren\")", expect: "1400" }
+          - { call: "List<Item> items = List.of(new Item(\"Heft\", \"Schreibwaren\", 120, 5), new Item(\"Stift\", \"Schreibwaren\", 80, 10), new Item(\"Apfel\", \"Obst\", 50, 6)); categoryTotal(items, \"Obst\")", expect: "300" }
+          - { call: "categoryTotal(List.of(new Item(\"Birne\", \"Obst\", 70, 2), new Item(\"Lineal\", \"Schreibwaren\", 250, 1), new Item(\"Kiwi\", \"Obst\", 40, 3)), \"Obst\")", expect: "260" }
+          - { call: "categoryTotal(List.of(new Item(\"Apfel\", \"Obst\", 50, 6)), \"Spielzeug\")", expect: "0", say: "Keine Ware dieser Art: Zusammen kostet sie 0. Hat dein `reduce` einen Startwert?" }
+          - { call: "categoryTotal(List.of(), \"Obst\")", expect: "0" }
+      feedback:
+        - when: { same_as: "record Item(String name, String category, int price, int count) {}\n\nint categoryTotal(List<Item> items, String category) {\n    return items.stream().filter(item -> item.category().equals(category)).map(item -> item.price()).reduce(0, (sum, x) -> sum + x);\n}\n" }
+          say: "Du zählst jeden Preis einmal. Es sind aber `count` Stück: Eine Ware kostet ihren Preis multipliziert mit ihrer Stückzahl."
+      hint:
+        - "Drei Schritte, wie bei den Bestellungen oben: Welche Waren bleiben? Was wird aus jeder? Wie kommt aus der Liste eine Zahl?"
+        - "`item.category().equals(category)` fragt, ob eine Ware zur Art gehört; Texte vergleicht man mit `equals`. Danach macht `map` aus jeder Ware eine Zahl, und `reduce` mit dem Startwert 0 zählt die Zahlen zusammen."
+      solution: |
+        ```java
+        record Item(String name, String category, int price, int count) {}
+
+        int categoryTotal(List<Item> items, String category) {
+            return items.stream()
+                    .filter(item -> item.category().equals(category))
+                    .map(item -> item.price() * item.count())
+                    .reduce(0, (sum, x) -> sum + x);
         }
         ```
 
@@ -1413,6 +2108,97 @@ tasks:
             .reduce((sum, x) => sum + x, 0);
         }
         ```
+    dart:
+      prompt: |
+        Diese Funktion zählt die Quadrate der ungeraden Zahlen einer Liste zusammen, mit einer Schleife:
+
+        ```dart
+        int oddSquareSum(List<int> numbers) {
+          var total = 0;
+          numbers.forEach((n) {
+            if (n % 2 != 0) {
+              total += n * n;
+            }
+          });
+          return total;
+        }
+        ```
+
+        `oddSquareSum([1, 2, 3])` ergibt `10`, denn 1 · 1 + 3 · 3 = 10. Schreib sie als Kette, ohne Schleife: mit `where`, `map` und `fold`. `forEach` ist abgeschaltet; eine Schleife mit `for` kann die Prüfung nicht abschalten, die Kata ist aber erst gelöst, wenn keine mehr dasteht.
+      starter: |
+        int oddSquareSum(List<int> numbers) {
+          // hier: eine Kette
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.forEach]
+        cases:
+          - { call: "oddSquareSum([1, 2, 3])", expect: "10" }
+          - { call: "oddSquareSum([])", expect: "0" }
+          - { call: "oddSquareSum([2, 4, 6])", expect: "0" }
+          - { call: "oddSquareSum([-3, 5])", expect: "34", say: "-3 ist auch ungerade, und (-3) · (-3) ist 9." }
+          - { call: "oddSquareSum([1, 1, 1])", expect: "3" }
+      hint:
+        - "Lies die Schleife als Frage: Welche Zahlen zählen? Was wird aus jeder? Was geschieht am Ende mit allen?"
+        - "Jede der drei Antworten ist ein Schritt der Kette: `numbers.where(…).map(…).fold(0, …)`."
+      solution: |
+        ```dart
+        int oddSquareSum(List<int> numbers) {
+          return numbers
+              .where((n) => n % 2 != 0)
+              .map((n) => n * n)
+              .fold(0, (sum, x) => sum + x);
+        }
+        ```
+    java:
+      prompt: |
+        Diese Methode zählt die Quadrate der ungeraden Zahlen einer Liste zusammen, mit einer Schleife:
+
+        ```java
+        int oddSquareSum(List<Integer> numbers) {
+            int total = 0;
+            for (int n : numbers) {
+                if (n % 2 != 0) {
+                    total += n * n;
+                }
+            }
+            return total;
+        }
+        ```
+
+        `oddSquareSum(List.of(1, 2, 3))` ergibt `10`, denn 1 · 1 + 3 · 3 = 10. Schreib sie als Kette, ohne Schleife: mit `filter`, `map` und `reduce`. `forEach` ist abgeschaltet; eine Schleife mit `for` kann die Prüfung nicht abschalten, die Kata ist aber erst gelöst, wenn keine mehr dasteht.
+      starter: |
+        int oddSquareSum(List<Integer> numbers) {
+            // hier: eine Kette
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.forEach]
+        cases:
+          - { call: "oddSquareSum(List.of(1, 2, 3))", expect: "10" }
+          - { call: "oddSquareSum(List.of())", expect: "0" }
+          - { call: "oddSquareSum(List.of(2, 4, 6))", expect: "0" }
+          - { call: "oddSquareSum(List.of(-3, 5))", expect: "34", say: "-3 ist auch ungerade, und (-3) · (-3) ist 9." }
+          - { call: "oddSquareSum(List.of(1, 1, 1))", expect: "3" }
+      feedback:
+        - when: { same_as: "int oddSquareSum(List<Integer> numbers) {\n    return numbers.stream().filter(n -> n % 2 == 1).map(n -> n * n).reduce(0, (sum, x) -> sum + x);\n}\n" }
+          say: "In Java ist `-3 % 2` gleich `-1`, nicht `1`: Der Rest hat das Vorzeichen der Zahl. Frag darum, ob der Rest nicht 0 ist, `n % 2 != 0`."
+      hint:
+        - "Lies die Schleife als Frage: Welche Zahlen zählen? Was wird aus jeder? Was geschieht am Ende mit allen?"
+        - "Jede der drei Antworten ist ein Schritt der Kette: `numbers.stream().filter(…).map(…).reduce(0, …)`."
+      solution: |
+        ```java
+        int oddSquareSum(List<Integer> numbers) {
+            return numbers.stream()
+                    .filter(n -> n % 2 != 0)
+                    .map(n -> n * n)
+                    .reduce(0, (sum, x) -> sum + x);
+        }
+        ```
 
   - id: first-overdraft
     title: "Zum ersten Mal im Minus"
@@ -1538,6 +2324,78 @@ tasks:
           return -1;
         }
         ```
+    dart:
+      prompt: |
+        Ein Konto steht am Anfang bei `balance` Cent. Jede Buchung in `bookings` ist ein Betrag: positiv für Geld, das hereinkommt, negativ für Geld, das hinausgeht. Schreib eine Funktion `int firstOverdraft(int balance, List<int> bookings)`, die den Index der ersten Buchung zurückgibt, nach der das Konto im Minus ist, oder `-1`, wenn es nie ins Minus geht: `firstOverdraft(100, [-30, -50, -40, 200])` ergibt `2`, denn nach den Buchungen steht das Konto bei 70, 20 und −20. Hier ist eine Schleife erlaubt, und sie ist klarer: Sie kann aufhören, sobald sie die Buchung gefunden hat.
+      starter: |
+        int firstOverdraft(int balance, List<int> bookings) {
+          return -2;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "firstOverdraft(100, [-30, -50, -40, 200])", expect: "2" }
+          - { call: "firstOverdraft(0, [])", expect: "-1" }
+          - { call: "firstOverdraft(50, [-50, 10])", expect: "-1", say: "Bei genau 0 ist das Konto noch nicht im Minus." }
+          - { call: "firstOverdraft(10, [-20, 100, -200])", expect: "0", say: "Schon nach der ersten Buchung, der mit dem Index 0, ist das Konto im Minus." }
+          - { call: "firstOverdraft(20, [10, -40, 50, -100])", expect: "1", say: "Gesucht ist das erste Mal; danach geht das Konto noch einmal ins Minus." }
+      feedback:
+        - when: { same_as: "int firstOverdraft(int balance, List<int> bookings) {\n  for (var i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance <= 0) {\n      return i;\n    }\n  }\n  return -1;\n}\n" }
+          say: "Bei genau 0 ist das Konto noch nicht im Minus: Frag, ob der Stand kleiner als 0 ist."
+        - when: { same_as: "int firstOverdraft(int balance, List<int> bookings) {\n  var found = -1;\n  for (var i = 0; i < bookings.length; i++) {\n    balance += bookings[i];\n    if (balance < 0) {\n      found = i;\n    }\n  }\n  return found;\n}\n" }
+          say: "Dein Code findet das letzte Mal, nicht das erste. Hör auf, sobald du es gefunden hast, mit `return`."
+      hint:
+        - "Von Hand: Rechne den Kontostand nach jeder Buchung aus und schau, wann er zum ersten Mal unter 0 ist."
+        - "`for (var i = 0; i < bookings.length; i++)` gibt dir jeden Index. Der Stand ändert sich mit jeder Buchung, und `return i;` hört auf, sobald er unter 0 ist; nach der Schleife kommt `return -1;`."
+      solution: |
+        ```dart
+        int firstOverdraft(int balance, List<int> bookings) {
+          for (var i = 0; i < bookings.length; i++) {
+            balance += bookings[i];
+            if (balance < 0) {
+              return i;
+            }
+          }
+          return -1;
+        }
+        ```
+    java:
+      prompt: |
+        Ein Konto steht am Anfang bei `balance` Cent. Jede Buchung in `bookings` ist ein Betrag: positiv für Geld, das hereinkommt, negativ für Geld, das hinausgeht. Schreib eine Methode `int firstOverdraft(int balance, List<Integer> bookings)`, die den Index der ersten Buchung zurückgibt, nach der das Konto im Minus ist, oder `-1`, wenn es nie ins Minus geht: `firstOverdraft(100, List.of(-30, -50, -40, 200))` ergibt `2`, denn nach den Buchungen steht das Konto bei 70, 20 und −20. Hier ist eine Schleife erlaubt, und sie ist klarer: Sie kann aufhören, sobald sie die Buchung gefunden hat.
+      starter: |
+        int firstOverdraft(int balance, List<Integer> bookings) {
+            return -2;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "firstOverdraft(100, List.of(-30, -50, -40, 200))", expect: "2" }
+          - { call: "firstOverdraft(0, List.of())", expect: "-1" }
+          - { call: "firstOverdraft(50, List.of(-50, 10))", expect: "-1", say: "Bei genau 0 ist das Konto noch nicht im Minus." }
+          - { call: "firstOverdraft(10, List.of(-20, 100, -200))", expect: "0", say: "Schon nach der ersten Buchung, der mit dem Index 0, ist das Konto im Minus." }
+          - { call: "firstOverdraft(20, List.of(10, -40, 50, -100))", expect: "1", say: "Gesucht ist das erste Mal; danach geht das Konto noch einmal ins Minus." }
+      feedback:
+        - when: { same_as: "int firstOverdraft(int balance, List<Integer> bookings) {\n    for (int i = 0; i < bookings.size(); i++) {\n        balance += bookings.get(i);\n        if (balance <= 0) {\n            return i;\n        }\n    }\n    return -1;\n}\n" }
+          say: "Bei genau 0 ist das Konto noch nicht im Minus: Frag, ob der Stand kleiner als 0 ist."
+        - when: { same_as: "int firstOverdraft(int balance, List<Integer> bookings) {\n    int found = -1;\n    for (int i = 0; i < bookings.size(); i++) {\n        balance += bookings.get(i);\n        if (balance < 0) {\n            found = i;\n        }\n    }\n    return found;\n}\n" }
+          say: "Dein Code findet das letzte Mal, nicht das erste. Hör auf, sobald du es gefunden hast, mit `return`."
+      hint:
+        - "Von Hand: Rechne den Kontostand nach jeder Buchung aus und schau, wann er zum ersten Mal unter 0 ist."
+        - "`for (int i = 0; i < bookings.size(); i++)` gibt dir jeden Index. Der Stand ändert sich mit jeder Buchung, und `return i;` hört auf, sobald er unter 0 ist; nach der Schleife kommt `return -1;`."
+      solution: |
+        ```java
+        int firstOverdraft(int balance, List<Integer> bookings) {
+            for (int i = 0; i < bookings.size(); i++) {
+                balance += bookings.get(i);
+                if (balance < 0) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        ```
 
   - id: compose
     title: "Zwei Funktionen zu einer"
@@ -1632,6 +2490,61 @@ tasks:
         ```javascript
         function compose(f, g) {
           return x => f(g(x));
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `compose`, die aus zwei Funktionen eine neue macht: Sie wendet erst `g` an und dann `f` auf das Ergebnis, wie f ∘ g in der Mathematik. `compose((int x) => x + 1, (int x) => x * 10)(5)` ergibt `51`: erst 5 · 10 = 50, dann 50 + 1. Damit sie mit Zahlen wie mit Texten geht, hat sie einen Typparameter `T`: `T Function(T) compose<T>(T Function(T) f, T Function(T) g)`.
+      starter: |
+        T Function(T) compose<T>(T Function(T) f, T Function(T) g) {
+          return (x) => x;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "compose((int x) => x + 1, (int x) => x * 10)(5)", expect: "51" }
+          - { call: "compose((int x) => x * 10, (int x) => x + 1)(5)", expect: "60" }
+          - { call: "compose((String s) => s + '!', (String s) => s.toUpperCase())('hallo')", expect: "'HALLO!'" }
+          - { call: "final twice = compose((int x) => x * 2, (int x) => x * 2); compose(twice, twice)(1)", expect: "16", say: "Was `compose` zurückgibt, ist wieder eine Funktion, und die lässt sich wieder zusammensetzen." }
+      feedback:
+        - when: { same_as: "T Function(T) compose<T>(T Function(T) f, T Function(T) g) {\n  return (x) => g(f(x));\n}\n" }
+          say: "Dein Code wendet erst `f` an und dann `g`. Bei f ∘ g ist es umgekehrt: erst `g`, dann `f`."
+      hint:
+        - "Was gibt `compose` zurück? Eine Funktion, die ein `x` bekommt. Was rechnet sie mit diesem `x`, Schritt für Schritt?"
+        - "Wie `makeAdder` gibt `compose` eine Funktion zurück, `(x) => …`; darin darfst du `f` und `g` aufrufen."
+      solution: |
+        ```dart
+        T Function(T) compose<T>(T Function(T) f, T Function(T) g) {
+          return (x) => f(g(x));
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `compose`, die aus zwei Funktionen eine neue macht: Sie wendet erst `g` an und dann `f` auf das Ergebnis, wie f ∘ g in der Mathematik. `compose((Integer x) -> x + 1, (Integer x) -> x * 10).apply(5)` ergibt `51`: erst 5 · 10 = 50, dann 50 + 1. Damit sie mit Zahlen wie mit Texten geht, hat sie einen Typparameter `T`: `<T> Function<T, T> compose(Function<T, T> f, Function<T, T> g)`. Ohne `compose` und `andThen`, die `Function` schon hat.
+      starter: |
+        <T> Function<T, T> compose(Function<T, T> f, Function<T, T> g) {
+            return x -> x;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.compose, .andThen]
+        cases:
+          - { call: "compose((Integer x) -> x + 1, (Integer x) -> x * 10).apply(5)", expect: "51" }
+          - { call: "compose((Integer x) -> x * 10, (Integer x) -> x + 1).apply(5)", expect: "60" }
+          - { call: "compose((String s) -> s + \"!\", (String s) -> s.toUpperCase()).apply(\"hallo\")", expect: "\"HALLO!\"" }
+          - { call: "Function<Integer, Integer> twice = compose((Integer x) -> x * 2, (Integer x) -> x * 2); compose(twice, twice).apply(1)", expect: "16", say: "Was `compose` zurückgibt, ist wieder eine Funktion, und die lässt sich wieder zusammensetzen." }
+      feedback:
+        - when: { same_as: "<T> Function<T, T> compose(Function<T, T> f, Function<T, T> g) {\n    return x -> g.apply(f.apply(x));\n}\n" }
+          say: "Dein Code wendet erst `f` an und dann `g`. Bei f ∘ g ist es umgekehrt: erst `g`, dann `f`."
+      hint:
+        - "Was gibt `compose` zurück? Eine Funktion, die ein `x` bekommt. Was rechnet sie mit diesem `x`, Schritt für Schritt?"
+        - "Wie `makeAdder` gibt `compose` ein Lambda zurück, `x -> …`; darin darfst du `f.apply(…)` und `g.apply(…)` aufrufen."
+      solution: |
+        ```java
+        <T> Function<T, T> compose(Function<T, T> f, Function<T, T> g) {
+            return x -> f.apply(g.apply(x));
         }
         ```
 
@@ -1748,5 +2661,67 @@ tasks:
             result.push(f(item));
           }
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `map` selbst: `myMap(items, f)` gibt eine neue Liste zurück, in der `f` auf jedes Element angewendet ist, `myMap([1, 2, 3], (x) => x * 2)` ergibt `[2, 4, 6]`. Die Liste, die die Funktion bekommt, bleibt, wie sie ist. Damit es mit jeder Art von Elementen geht, hat sie zwei Typparameter: `List<R> myMap<T, R>(List<T> items, R Function(T) f)`, `T` für die Elemente vorher, `R` für die Ergebnisse. Ohne `map`, mit einer Schleife oder rekursiv wie McCarthys `maplist`.
+      starter: |
+        List<R> myMap<T, R>(List<T> items, R Function(T) f) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.map, .expand, List.generate]
+        cases:
+          - { call: "myMap([1, 2, 3], (x) => x * 2)", expect: "[2, 4, 6]" }
+          - { call: "myMap(<int>[], (x) => x + 1)", expect: "[]" }
+          - { call: "myMap(['a', 'b'], (s) => s.toUpperCase())", expect: "['A', 'B']" }
+          - { call: "final items = [1, 2]; myMap(items, (x) => x * 10); items", expect: "[1, 2]", say: "Die Liste, die `myMap` bekommt, bleibt, wie sie ist." }
+          - { call: "myMap([3], (x) => x - 3)", expect: "[0]" }
+          - { call: "myMap(['Igel', 'Wal'], (s) => s.length)", expect: "[4, 3]", say: "Die Ergebnisse dürfen eine andere Art haben als die Elemente: aus Texten werden Zahlen." }
+      hint:
+        - "Mit einer Schleife: eine leere Liste, `<R>[]`, in die für jedes Element `f(item)` kommt."
+        - "Rekursiv wie McCarthy: Die leere Liste gibt die leere Liste. Sonst ist das Ergebnis `[f(items[0])]`, und dahinter `myMap` vom Rest, `items.sublist(1)`."
+      solution: |
+        ```dart
+        List<R> myMap<T, R>(List<T> items, R Function(T) f) {
+          final result = <R>[];
+          for (final item in items) {
+            result.add(f(item));
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `map` selbst: `myMap(items, f)` gibt eine neue Liste zurück, in der `f` auf jedes Element angewendet ist, `myMap(List.of(1, 2, 3), x -> x * 2)` ergibt `[2, 4, 6]`. Die Liste, die die Methode bekommt, bleibt, wie sie ist. Damit es mit jeder Art von Elementen geht, hat sie zwei Typparameter: `<T, R> List<R> myMap(List<T> items, Function<T, R> f)`, `T` für die Elemente vorher, `R` für die Ergebnisse. Ohne `map` und Streams, mit einer Schleife oder rekursiv wie McCarthys `maplist`.
+      starter: |
+        <T, R> List<R> myMap(List<T> items, Function<T, R> f) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, .map, .replaceAll]
+        cases:
+          - { call: "myMap(List.of(1, 2, 3), x -> x * 2)", expect: "List.of(2, 4, 6)" }
+          - { call: "myMap(List.<Integer>of(), x -> x + 1)", expect: "List.of()" }
+          - { call: "myMap(List.of(\"a\", \"b\"), s -> s.toUpperCase())", expect: "List.of(\"A\", \"B\")" }
+          - { call: "List<Integer> items = new ArrayList<>(List.of(1, 2)); myMap(items, x -> x * 10); items", expect: "List.of(1, 2)", say: "Die Liste, die `myMap` bekommt, bleibt, wie sie ist." }
+          - { call: "myMap(List.of(3), x -> x - 3)", expect: "List.of(0)" }
+          - { call: "myMap(List.of(\"Igel\", \"Wal\"), s -> s.length())", expect: "List.of(4, 3)", say: "Die Ergebnisse dürfen eine andere Art haben als die Elemente: aus Texten werden Zahlen." }
+      hint:
+        - "Mit einer Schleife: eine leere Liste, `List<R> result = new ArrayList<>();`, in die für jedes Element `f.apply(item)` kommt."
+        - "Rekursiv wie McCarthy: Die leere Liste gibt die leere Liste. Sonst kommt `f.apply(items.get(0))` vorn hin und dahinter `myMap` vom Rest, `items.subList(1, items.size())`."
+      solution: |
+        ```java
+        <T, R> List<R> myMap(List<T> items, Function<T, R> f) {
+            List<R> result = new ArrayList<>();
+            for (T item : items) {
+                result.add(f.apply(item));
+            }
+            return result;
         }
         ```

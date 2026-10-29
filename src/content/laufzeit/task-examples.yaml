@@ -14,6 +14,16 @@ examples:
         - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
   distinct-sorted:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -26,6 +36,19 @@ examples:
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
         - { files: { laufzeit/laufzeit.py: fehler/erster-fehlt.py } }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.dart: fehler/erster-fehlt.dart } }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/erster-fehlt.java } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/sortiert-mit-gleich.java }, say: "equals" }
   distinct-set:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -38,6 +61,18 @@ examples:
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
         - { files: { laufzeit/laufzeit.py: fehler/set-mit-liste.py }, say: "Eine Menge" }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.dart: fehler/set-mit-liste.dart }, say: "Eine Menge" }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/set-mit-liste.java }, say: "Eine Menge" }
   fib-memo:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -50,6 +85,18 @@ examples:
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
         - { files: { laufzeit/laufzeit.py: fehler/fib-ohne-gedaechtnis.py }, say: "dauert zu lange" }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.dart: fehler/fib-ohne-gedaechtnis.dart }, say: "dauert zu lange" }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/fib-ohne-gedaechtnis.java }, say: "dauert zu lange" }
   pair-with-sum:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -64,6 +111,20 @@ examples:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
         - { files: { laufzeit/laufzeit.py: fehler/paar-doppelt.py }, say: "Eine Zahl zählt nur einmal" }
         - { files: { laufzeit/laufzeit.py: fehler/paar-langsam.py }, say: "zu lange" }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.dart: fehler/paar-doppelt.dart }, say: "Eine Zahl zählt nur einmal" }
+        - { files: { laufzeit/laufzeit.dart: fehler/paar-langsam.dart }, say: "zu lange" }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/paar-doppelt.java }, say: "Eine Zahl zählt nur einmal" }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/paar-langsam.java }, say: "zu lange" }
   tour-length:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -76,6 +137,18 @@ examples:
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
         - { files: { laufzeit/laufzeit.py: fehler/ohne-rueckweg.py }, say: "Weg zurück" }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/laufzeit.dart: fehler/ohne-rueckweg.dart }, say: "Weg zurück" }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
+        - { files: { laufzeit/Laufzeit.java: fehler/java/ohne-rueckweg.java }, say: "Weg zurück" }
   best-tour:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -86,6 +159,16 @@ examples:
         - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }
   nearest-tour:
     pass:
       - { files: { laufzeit/laufzeit.rb: loesung/laufzeit.rb } }
@@ -96,3 +179,13 @@ examples:
         - { files: { laufzeit/laufzeit.py: loesung/laufzeit.py } }
       fail:
         - { files: { laufzeit/laufzeit.py: { text: "# noch leer\n" } } }
+    dart:
+      pass:
+        - { files: { laufzeit/laufzeit.dart: loesung/laufzeit.dart } }
+      fail:
+        - { files: { laufzeit/laufzeit.dart: { text: "// noch leer\n" } } }
+    java:
+      pass:
+        - { files: { laufzeit/Laufzeit.java: loesung/Laufzeit.java } }
+      fail:
+        - { files: { laufzeit/Laufzeit.java: { text: "// noch leer\n" } } }

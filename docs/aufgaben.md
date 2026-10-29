@@ -827,8 +827,8 @@ Java und Dart schreiben die Schritte in den Code, den sie erzeugen (unten).
 ### function
 
 Eine Kata (docs/plan-katas.md): Der Code steht nicht in einer Datei im
-Workspace, sondern wird in der Karte geschrieben, in Ruby, Python oder
-JavaScript, mit
+Workspace, sondern wird in der Karte geschrieben, in Ruby, Python,
+JavaScript, Dart oder Java, mit
 den Farben der Codeblöcke, Einrückung mit <kbd>Tab</kbd> und
 <kbd>Strg</kbd>+<kbd>Enter</kbd> zum Ausführen. Ein Knopf, **Ausführen**:
 Er startet den Code einmal und zeigt, was er ausgibt, wenn er außer den
@@ -876,7 +876,11 @@ selbst darf sie weiter benutzen. In Python eine eingebaute Funktion
 Typen und ihre Methoden lassen sich in Python nicht abschalten, darum genügt
 es, wenn der Name im Code vorkommt. In JavaScript eine Funktion oder Methode
 mit ihrem Pfad (`Math.max`, `Array.prototype.sort`, `globalThis.String`),
-wie in Ruby nur für den Code der Lernenden.
+wie in Ruby nur für den Code der Lernenden. In Dart und Java wird der Text
+des Codes gelesen, ohne Strings und Kommentare: eine Funktion (`max`), eine
+Methode jedes Objekts (`.reduce`, `.stream`), eine statische Methode
+(`Math.max`) oder ein Typ (`HashSet`); kommt sie vor, läuft der Code gar
+nicht erst.
 
 **JavaScript gibt es nur für Katas** (die Einstellung »Sprache« einer Klasse
 bleibt bei Ruby und Python): Eine Seite mit
@@ -888,10 +892,25 @@ in einem eigenen Kontext (`JavascriptCheck`); verglichen wird mit
 aus mehreren Wörtern schreibt man in JavaScript zusammen (`maxOfTwo`), die
 Varianten der Aufgabe nennen ihre Funktionen so.
 
+**Dart und Java** (`language: dart`, `java`) werden übersetzt, bevor sie
+laufen (`KataCompiled`). In Dart ist der Code eine Bibliothek mit
+Funktionen und Klassen, die der Prüfscript von `DartCheck` importiert. In
+Java schreiben die Lernenden Methoden und Klassen ohne eine Klasse darum,
+wie in einer kompakten Quelldatei von Java 25 (`java kata.java` führt sie auf
+»Ausführen« aus, mit `void main()`); zum Prüfen kommt der Code als
+Mitglieder in eine eigene Klasse, und die Aufrufe sind deren Methoden.
+Fehler des Compilers nennen die Zeile im Code der Lernenden. Die Aufrufe
+und erwarteten Werte sind Dart oder Java (`List.of(3, 4, 5)`); Listen
+vergleicht die Prüfung nach ihrem Inhalt, Arrays wie Listen. Eine Prüfung
+dauert etwa zwei Sekunden, mit einer typischen falschen Lösung (`same_as`)
+in Dart etwas länger. `gates` gibt es in beiden nicht. Die Beispiele
+brauchen `dart` und `javac` auf der Maschine, wo sie laufen.
+
 **Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
 Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
-sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby` und
-`python`, die eine Datei der Lernenden aufrufen (»Wie lange dauert das?«).
+sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby`,
+`python`, `dart` und `java`, die eine Datei der Lernenden aufrufen (»Wie
+lange dauert das?«).
 
 **Wo eine Rekursion verlangt ist**, sagt `recursive: true`, dass die Funktion
 sich selbst aufrufen muss, und `loops: false`, dass sie keine Schleife
@@ -1088,16 +1107,20 @@ gelöst ist.
 
 Eine Kata, in der man Tests schreibt statt einer Funktion (`TestsCheck`,
 Übung »Tests schreiben«). Die Tests sind Zeilen
-`assert_equal(erwartet, ergebnis)` (in JavaScript `assertEqual`), die die
+`assert_equal(erwartet, ergebnis)` (in JavaScript, Dart und Java
+`assertEqual`), die die
 Prüfung selbst bereitstellt, ohne Testbibliothek. Sie laufen gegen eine
 richtige Fassung der Funktion, bei der alle bestehen müssen, und gegen
 fehlerhafte, von denen jede an mindestens einem Test scheitern muss; jede
-Fassung läuft für sich, nacheinander im selben Container der Katas.
+Fassung läuft für sich, nacheinander im selben Container der Katas. In Dart
+und Java (`TestsCompiled`) werden alle Fassungen mit den Tests zusammen
+einmal übersetzt; die Tests sind dort Anweisungen ohne `main`, eine Zeile
+je Test, und ein Fehler beim Übersetzen nennt ihre Zeile.
 
 ```yaml
 check:
   type: tests
-  language: ruby                 # ruby, python oder javascript; je Sprache als Variante
+  language: ruby                 # ruby, python, javascript, dart oder java; je Sprache als Variante
   function: even                 # was die Tests aufrufen; sie dürfen es nicht selbst schreiben
   correct: |
     def even(n)
@@ -2154,7 +2177,9 @@ examples:
 
 - `files` legt Dateien in einen leeren Workspace-Ordner: links der Pfad, den
   die Prüfung liest, rechts eine Datei aus dem Ordner der Aktivität (meist aus
-  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen;
+  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen; ein
+  Ordner rechts (`textadventure: loesung/java`) legt jede Datei darin unter
+  den Pfad links, für ein Java-Projekt mit einer Datei je Klasse;
   `executable: true` dazu (`{ from: …, executable: true }`) macht sie
   ausführbar.
 - `archive` entpackt vorher ein `.tar.gz` aus dem Ordner der Aktivität in den

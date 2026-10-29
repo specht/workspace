@@ -1,5 +1,5 @@
 # Aufgaben zu »Prüfziffern: erst planen, dann programmieren«, in Ruby und,
-# unter python:, in Python. Format: docs/aufgaben.md. Alles liegt in
+# unter python:, dart: und java:, in Python, Dart und Java. Format: docs/aufgaben.md. Alles liegt in
 # /workspace/check-digits.
 format: 1
 activity: check-digits
@@ -172,6 +172,65 @@ tasks:
             else:
                 return 3
         ```
+    dart:
+      prompt: |
+        Schreib in `check-digits/check_digits.dart` die Funktion `int weight(int index)`:
+        Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
+        Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+      check:
+        type: dart
+        file: check-digits/check_digits.dart
+        cases:
+          - call: 'weight(0)'
+            expect: 1
+            say: Der Index 0 gehört zur ersten Ziffer, und die zählt einfach.
+          - call: 'weight(1)'
+            expect: 3
+          - call: 'weight(4)'
+            expect: 1
+          - call: 'weight(11)'
+            expect: 3
+      solution: |
+        ```dart
+        int weight(int index) {
+          if (index % 2 == 0) {
+            return 1;
+          } else {
+            return 3;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `check-digits/CheckDigits.java` eine Klasse `CheckDigits` und
+        darin die Methode `public static int weight(int index)`: Sie gibt für einen
+        geraden Index 1 zurück und für einen ungeraden 3. Die Prüfung ruft
+        `CheckDigits.weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+      check:
+        type: java
+        file: check-digits/CheckDigits.java
+        cases:
+          - call: 'CheckDigits.weight(0)'
+            expect: 1
+            say: Der Index 0 gehört zur ersten Ziffer, und die zählt einfach.
+          - call: 'CheckDigits.weight(1)'
+            expect: 3
+          - call: 'CheckDigits.weight(4)'
+            expect: 1
+          - call: 'CheckDigits.weight(11)'
+            expect: 3
+      solution: |
+        ```java
+        public class CheckDigits {
+            public static int weight(int index) {
+                if (index % 2 == 0) {
+                    return 1;
+                } else {
+                    return 3;
+                }
+            }
+        }
+        ```
 
   - id: pruefziffer
     title: Die Prüfziffer
@@ -228,6 +287,68 @@ tasks:
             for i in range(0, 12):
                 total = total + weight(i) * digits[i]
             return (10 - total % 10) % 10
+        ```
+    dart:
+      prompt: |
+        Schreib `int checkDigit(List<int> digits)` nach dem Struktogramm. `digits`
+        ist eine Liste von zwölf Zahlen. Die Prüfung ruft die Funktion mit den
+        Ziffern von `4 260111 02043` auf, mit zwölf Nullen und mit
+        `[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]`.
+      check:
+        type: dart
+        file: check-digits/check_digits.dart
+        cases:
+          - call: 'checkDigit([4, 2, 6, 0, 1, 1, 1, 0, 2, 0, 4, 3])'
+            expect: 4
+            say: Für diese Ziffern hast du die Prüfziffer schon von Hand gerechnet.
+          - call: 'checkDigit([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])'
+            expect: 0
+            say: Bei zwölf Nullen ist total 0, und 10 − 0 ist 10, keine Ziffer. Denk an das zweite `mod 10`.
+          - call: 'checkDigit([4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])'
+            expect: 0
+            say: Hier ist total 10. Denk an das zweite `mod 10`.
+          - call: 'checkDigit([5, 9, 0, 1, 2, 3, 4, 1, 2, 3, 4, 5])'
+            expect: 7
+      solution: |
+        ```dart
+        int checkDigit(List<int> digits) {
+          var total = 0;
+          for (var i = 0; i <= 11; i++) {
+            total = total + weight(i) * digits[i];
+          }
+          return (10 - total % 10) % 10;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `CheckDigits` die Methode `public static int checkDigit(int[] digits)`
+        nach dem Struktogramm. `digits` ist ein Array von zwölf Zahlen. Die
+        Prüfung ruft sie mit den Ziffern von `4 260111 02043` auf, mit zwölf Nullen
+        und mit `{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}`.
+      check:
+        type: java
+        file: check-digits/CheckDigits.java
+        cases:
+          - call: 'CheckDigits.checkDigit(new int[] {4, 2, 6, 0, 1, 1, 1, 0, 2, 0, 4, 3})'
+            expect: 4
+            say: Für diese Ziffern hast du die Prüfziffer schon von Hand gerechnet.
+          - call: 'CheckDigits.checkDigit(new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})'
+            expect: 0
+            say: Bei zwölf Nullen ist total 0, und 10 − 0 ist 10, keine Ziffer. Denk an das zweite `mod 10`.
+          - call: 'CheckDigits.checkDigit(new int[] {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2})'
+            expect: 0
+            say: Hier ist total 10. Denk an das zweite `mod 10`.
+          - call: 'CheckDigits.checkDigit(new int[] {5, 9, 0, 1, 2, 3, 4, 1, 2, 3, 4, 5})'
+            expect: 7
+      solution: |
+        ```java
+        public static int checkDigit(int[] digits) {
+            int total = 0;
+            for (int i = 0; i <= 11; i++) {
+                total = total + weight(i) * digits[i];
+            }
+            return (10 - total % 10) % 10;
+        }
         ```
 
   - id: ean
@@ -305,6 +426,100 @@ tasks:
             digits = [int(c) for c in code]
             return check_digit(digits[0:12]) == digits[12]
         ```
+    dart:
+      prompt: |
+        Schreib `bool isValidEan(String code)`: Sie bekommt einen Code als String und
+        gibt `true` zurück, wenn er aus genau 13 Ziffern besteht und die letzte
+        die richtige Prüfziffer ist, sonst `false`. Die Prüfung ruft sie mit
+        gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
+        solchen mit Buchstaben.
+      check:
+        type: dart
+        file: check-digits/check_digits.dart
+        cases:
+          - call: "isValidEan('4260111020434')"
+            expect: true
+          - call: "isValidEan('4260111020834')"
+            expect: false
+            say: In `4260111020834` ist eine Ziffer falsch abgetippt; die Prüfziffer passt nicht mehr.
+          - call: "isValidEan('5901234123457')"
+            expect: true
+          - call: "isValidEan('426011102043')"
+            expect: false
+            say: Zwölf Ziffern sind zu wenig für einen Code.
+          - call: "isValidEan('42601110204340')"
+            expect: false
+            say: Vierzehn Ziffern sind zu viel, auch wenn die ersten dreizehn passen.
+          - call: "isValidEan('426011102043A')"
+            expect: false
+            say: Ein Buchstabe ist keine Ziffer.
+      solution: |
+        ```dart
+        bool isValidEan(String code) {
+          // nicht genau 13 Zeichen: false
+          if (code.length != 13) {
+            return false;
+          }
+          // ein Zeichen ist keine Ziffer: false
+          for (final c in code.split('')) {
+            if (!'0123456789'.contains(c)) {
+              return false;
+            }
+          }
+          // die 13 Zeichen als Zahlen
+          final digits = code.split('').map(int.parse).toList();
+          // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+          return checkDigit(digits.sublist(0, 12)) == digits[12];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `CheckDigits` die Methode `public static boolean isValidEan(String code)`:
+        Sie bekommt einen Code als String und gibt `true` zurück, wenn er aus genau
+        13 Ziffern besteht und die letzte die richtige Prüfziffer ist, sonst
+        `false`. Die Prüfung ruft sie mit gültigen und ungültigen Codes auf, auch
+        mit zu kurzen, zu langen und solchen mit Buchstaben.
+      check:
+        type: java
+        file: check-digits/CheckDigits.java
+        cases:
+          - call: 'CheckDigits.isValidEan("4260111020434")'
+            expect: true
+          - call: 'CheckDigits.isValidEan("4260111020834")'
+            expect: false
+            say: In `4260111020834` ist eine Ziffer falsch abgetippt; die Prüfziffer passt nicht mehr.
+          - call: 'CheckDigits.isValidEan("5901234123457")'
+            expect: true
+          - call: 'CheckDigits.isValidEan("426011102043")'
+            expect: false
+            say: Zwölf Ziffern sind zu wenig für einen Code.
+          - call: 'CheckDigits.isValidEan("42601110204340")'
+            expect: false
+            say: Vierzehn Ziffern sind zu viel, auch wenn die ersten dreizehn passen.
+          - call: 'CheckDigits.isValidEan("426011102043A")'
+            expect: false
+            say: Ein Buchstabe ist keine Ziffer.
+      solution: |
+        ```java
+        public static boolean isValidEan(String code) {
+            // nicht genau 13 Zeichen: false
+            if (code.length() != 13) {
+                return false;
+            }
+            // jedes Zeichen eine Ziffer, als Zahl in ein Array
+            int[] digits = new int[13];
+            for (int i = 0; i < 13; i++) {
+                char c = code.charAt(i);
+                if (c < '0' || c > '9') {
+                    return false;
+                }
+                digits[i] = c - '0';
+            }
+            // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+            // (checkDigit liest nur die ersten zwölf)
+            return checkDigit(digits) == digits[12];
+        }
+        ```
 
   - id: plan-isbn
     title: Dein Plan für die ISBN
@@ -341,6 +556,14 @@ tasks:
       prompt: |
         Kopier die Kommentare deines Plans für `is_valid_isbn` hierher, bevor
         du den Code dazu schreibst. Deine Lehrkraft sieht sie.
+    dart:
+      prompt: |
+        Kopier die Kommentare deines Plans für `isValidIsbn` hierher, bevor du
+        den Code dazu schreibst. Deine Lehrkraft sieht sie.
+    java:
+      prompt: |
+        Kopier die Kommentare deines Plans für `isValidIsbn` hierher, bevor du
+        den Code dazu schreibst. Deine Lehrkraft sieht sie.
 
   - id: isbn
     title: Bücher prüfen
@@ -436,6 +659,109 @@ tasks:
                 total = total + (10 - i) * value
             return total % 11 == 0
         ```
+    dart:
+      prompt: |
+        Schreib `bool isValidIsbn(String isbn)` nach deinem Plan. Die Prüfung ruft
+        sie mit ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit
+        einem X an der falschen Stelle und mit falschen Ziffern.
+      check:
+        type: dart
+        file: check-digits/check_digits.dart
+        cases:
+          - call: "isValidIsbn('3-12-345678-1')"
+            expect: true
+            say: Die Bindestriche zählen nicht mit; nimm sie vor dem Rechnen heraus.
+          - call: "isValidIsbn('3123456781')"
+            expect: true
+          - call: "isValidIsbn('3-12-345603-X')"
+            expect: true
+            say: Am Ende steht hier X für 10.
+          - call: "isValidIsbn('3-12-345603-0')"
+            expect: false
+          - call: "isValidIsbn('3-12-345687-1')"
+            expect: false
+            say: Zwei Ziffern sind vertauscht; die Summe ist dann nicht mehr durch 11 teilbar.
+          - call: "isValidIsbn('3-12-34X603-0')"
+            expect: false
+            say: Ein X darf nur am Ende stehen.
+          - call: "isValidIsbn('3-12-34567-1')"
+            expect: false
+            say: Neun Ziffern sind zu wenig.
+      solution: |
+        ```dart
+        bool isValidIsbn(String isbn) {
+          final text = isbn.replaceAll('-', '');
+          if (text.length != 10) {
+            return false;
+          }
+          var total = 0;
+          for (var i = 0; i < 10; i++) {
+            final c = text[i];
+            int value;
+            if (c == 'X' && i == 9) {
+              value = 10;
+            } else if ('0123456789'.contains(c)) {
+              value = int.parse(c);
+            } else {
+              return false;
+            }
+            total = total + (10 - i) * value;
+          }
+          return total % 11 == 0;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static boolean isValidIsbn(String isbn)` in `CheckDigits`
+        nach deinem Plan. Die Prüfung ruft sie mit ISBNs mit und ohne
+        Bindestriche auf, mit einem X am Ende, mit einem X an der falschen Stelle
+        und mit falschen Ziffern.
+      check:
+        type: java
+        file: check-digits/CheckDigits.java
+        cases:
+          - call: 'CheckDigits.isValidIsbn("3-12-345678-1")'
+            expect: true
+            say: Die Bindestriche zählen nicht mit; nimm sie vor dem Rechnen heraus.
+          - call: 'CheckDigits.isValidIsbn("3123456781")'
+            expect: true
+          - call: 'CheckDigits.isValidIsbn("3-12-345603-X")'
+            expect: true
+            say: Am Ende steht hier X für 10.
+          - call: 'CheckDigits.isValidIsbn("3-12-345603-0")'
+            expect: false
+          - call: 'CheckDigits.isValidIsbn("3-12-345687-1")'
+            expect: false
+            say: Zwei Ziffern sind vertauscht; die Summe ist dann nicht mehr durch 11 teilbar.
+          - call: 'CheckDigits.isValidIsbn("3-12-34X603-0")'
+            expect: false
+            say: Ein X darf nur am Ende stehen.
+          - call: 'CheckDigits.isValidIsbn("3-12-34567-1")'
+            expect: false
+            say: Neun Ziffern sind zu wenig.
+      solution: |
+        ```java
+        public static boolean isValidIsbn(String isbn) {
+            String text = isbn.replace("-", "");
+            if (text.length() != 10) {
+                return false;
+            }
+            int total = 0;
+            for (int i = 0; i < 10; i++) {
+                char c = text.charAt(i);
+                int value;
+                if (c == 'X' && i == 9) {
+                    value = 10;
+                } else if (c >= '0' && c <= '9') {
+                    value = c - '0';
+                } else {
+                    return false;
+                }
+                total = total + (10 - i) * value;
+            }
+            return total % 11 == 0;
+        }
+        ```
 
   - id: zahlendreher-vorhersage
     title: Zahlendreher
@@ -481,6 +807,24 @@ tasks:
           say: Läuft dein Programm über alle 90 Paare? Und vertauscht es wirklich die ersten beiden Ziffern des gültigen Codes?
         - when: { equals: 90 }
           say: Dann hält `is_valid_ean` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
+    dart:
+      prompt: |
+        Wie viele der 90 Zahlendreher aus zwei verschiedenen Ziffern merkt
+        `isValidEan` nicht?
+      feedback:
+        - when: { equals: 0 }
+          say: Läuft dein Programm über alle 90 Paare? Und vertauscht es wirklich die ersten beiden Ziffern des gültigen Codes?
+        - when: { equals: 90 }
+          say: Dann hält `isValidEan` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
+    java:
+      prompt: |
+        Wie viele der 90 Zahlendreher aus zwei verschiedenen Ziffern merkt
+        `isValidEan` nicht?
+      feedback:
+        - when: { equals: 0 }
+          say: Läuft dein Programm über alle 90 Paare? Und vertauscht es wirklich die ersten beiden Ziffern des gültigen Codes?
+        - when: { equals: 90 }
+          say: Dann hält `isValidEan` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
 
   - id: isbn-dreher
     title: Und bei Büchern?
@@ -646,6 +990,66 @@ tasks:
                 ones = ones + bit
             return ones % 2
         ```
+    dart:
+      prompt: |
+        Schreib in `check-digits/parity_grid.dart` die Funktion `int parity(List<int> bits)`.
+        Die Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
+        `parity([1])` und `parity([])` auf.
+      check:
+        type: dart
+        file: check-digits/parity_grid.dart
+        cases:
+          - call: 'parity([1, 0, 1, 1])'
+            expect: 1
+            say: Drei Einsen sind eine ungerade Zahl. Die Parität ist 0 oder 1, der Rest bei der Division durch 2.
+          - call: 'parity([1, 1, 0, 0])'
+            expect: 0
+          - call: 'parity([1])'
+            expect: 1
+          - call: 'parity([])'
+            expect: 0
+            say: Eine leere Liste hat keine Einsen, und 0 ist gerade.
+      solution: |
+        ```dart
+        int parity(List<int> bits) {
+          var ones = 0;
+          for (final bit in bits) {
+            ones = ones + bit;
+          }
+          return ones % 2;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `check-digits/ParityGrid.java` eine Klasse `ParityGrid` mit der
+        Methode `public static int parity(int[] bits)`. Die Prüfung ruft sie mit
+        `{1, 0, 1, 1}`, `{1, 1, 0, 0}`, `{1}` und einem leeren Array auf.
+      check:
+        type: java
+        file: check-digits/ParityGrid.java
+        cases:
+          - call: 'ParityGrid.parity(new int[] {1, 0, 1, 1})'
+            expect: 1
+            say: Drei Einsen sind eine ungerade Zahl. Die Parität ist 0 oder 1, der Rest bei der Division durch 2.
+          - call: 'ParityGrid.parity(new int[] {1, 1, 0, 0})'
+            expect: 0
+          - call: 'ParityGrid.parity(new int[] {1})'
+            expect: 1
+          - call: 'ParityGrid.parity(new int[] {})'
+            expect: 0
+            say: Ein leeres Array hat keine Einsen, und 0 ist gerade.
+      solution: |
+        ```java
+        public class ParityGrid {
+            public static int parity(int[] bits) {
+                int ones = 0;
+                for (int bit : bits) {
+                    ones = ones + bit;
+                }
+                return ones % 2;
+            }
+        }
+        ```
 
   - id: bit-finden
     title: Das gekippte Bit
@@ -726,6 +1130,101 @@ tasks:
             if row is None or column is None:
                 return None
             return [row, column]
+        ```
+    dart:
+      prompt: |
+        Schreib `List<int>? findError(List<List<int>> grid)` in
+        `check-digits/parity_grid.dart`. Die Prüfung ruft sie mit einem Gitter aus
+        fünf Zeilen und fünf Spalten auf: ohne Fehler, mit einem gekippten Bit in
+        Zeile 1 und Spalte 2 und mit einem gekippten Paritätsbit in Zeile 3 und
+        Spalte 4 (gezählt ab 0); dazu mit einem kleineren Gitter aus drei Zeilen
+        und vier Spalten.
+      check:
+        type: dart
+        file: check-digits/parity_grid.dart
+        cases:
+          - call: 'findError([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+            expect: 'null'
+            say: In diesem Gitter haben alle Zeilen und Spalten eine gerade Zahl von Einsen; dann gibt es keinen Fehler.
+          - call: 'findError([[1, 0, 1, 1, 1], [0, 1, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 0], [0, 0, 1, 0, 1]])'
+            expect: '[1, 2]'
+            say: Die Spalte findest du, wenn du aus jeder Zeile das Element mit demselben Index nimmst.
+          - call: 'findError([[1, 0, 1, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 0, 0], [0, 0, 1, 1, 1], [0, 0, 1, 0, 1]])'
+            expect: '[3, 4]'
+            say: Auch ein Paritätsbit kann kippen; dieses steht in der letzten Spalte.
+          - call: 'findError([[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0]])'
+            expect: '[2, 0]'
+            say: Dieses Gitter hat drei Zeilen und vier Spalten. Wie viele Spalten es gibt, sagt die Länge einer Zeile.
+      solution: |
+        ```dart
+        List<int>? findError(List<List<int>> grid) {
+          int? row;
+          for (var r = 0; r < grid.length; r++) {
+            if (parity(grid[r]) == 1) {
+              row = r;
+            }
+          }
+          int? column;
+          for (var c = 0; c < grid[0].length; c++) {
+            final bits = grid.map((line) => line[c]).toList();
+            if (parity(bits) == 1) {
+              column = c;
+            }
+          }
+          if (row == null || column == null) {
+            return null;
+          }
+          return [row, column];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static int[] findError(int[][] grid)` in `ParityGrid`. Sie
+        gibt `{row, column}` zurück oder `null`. Die Prüfung ruft sie mit einem
+        Gitter aus fünf Zeilen und fünf Spalten auf: ohne Fehler, mit einem
+        gekippten Bit in Zeile 1 und Spalte 2 und mit einem gekippten Paritätsbit
+        in Zeile 3 und Spalte 4 (gezählt ab 0); dazu mit einem kleineren Gitter
+        aus drei Zeilen und vier Spalten.
+      check:
+        type: java
+        file: check-digits/ParityGrid.java
+        cases:
+          - call: 'ParityGrid.findError(new int[][] {{1, 0, 1, 1, 1}, {0, 1, 1, 0, 0}, {1, 1, 0, 0, 0}, {0, 0, 1, 1, 0}, {0, 0, 1, 0, 1}})'
+            expect: 'null'
+            say: In diesem Gitter haben alle Zeilen und Spalten eine gerade Zahl von Einsen; dann gibt es keinen Fehler.
+          - call: 'ParityGrid.findError(new int[][] {{1, 0, 1, 1, 1}, {0, 1, 0, 0, 0}, {1, 1, 0, 0, 0}, {0, 0, 1, 1, 0}, {0, 0, 1, 0, 1}})'
+            expect: 'new int[] {1, 2}'
+            say: Die Spalte findest du, wenn du aus jeder Zeile das Element mit demselben Index nimmst.
+          - call: 'ParityGrid.findError(new int[][] {{1, 0, 1, 1, 1}, {0, 1, 1, 0, 0}, {1, 1, 0, 0, 0}, {0, 0, 1, 1, 1}, {0, 0, 1, 0, 1}})'
+            expect: 'new int[] {3, 4}'
+            say: Auch ein Paritätsbit kann kippen; dieses steht in der letzten Spalte.
+          - call: 'ParityGrid.findError(new int[][] {{1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 1, 0}})'
+            expect: 'new int[] {2, 0}'
+            say: Dieses Gitter hat drei Zeilen und vier Spalten. Wie viele Spalten es gibt, sagt die Länge einer Zeile.
+      solution: |
+        ```java
+        public static int[] findError(int[][] grid) {
+            int row = -1;
+            for (int r = 0; r < grid.length; r++) {
+                if (parity(grid[r]) == 1) {
+                    row = r;
+                }
+            }
+            int column = -1;
+            for (int c = 0; c < grid[0].length; c++) {
+                int[] bits = new int[grid.length];
+                for (int r = 0; r < grid.length; r++) {
+                    bits[r] = grid[r][c];
+                }
+                if (parity(bits) == 1) {
+                    column = c;
+                }
+            }
+            if (row == -1 || column == -1) {
+                return null;
+            }
+            return new int[] {row, column};
+        }
         ```
 
   - id: zwei-bits

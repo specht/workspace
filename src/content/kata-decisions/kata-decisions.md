@@ -2,7 +2,7 @@
 icon: bi-signpost-split
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Je nach Wert etwas anderes tun
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung); Oberstufe: Algorithmen und Softwareentwicklung (Auswahl)"
 topics: [grundstrukturen]
@@ -86,6 +86,54 @@ kürzere `==` gibt es auch, aber es hält `'5' == 5` für wahr. Zwei Bedingungen
 verbinden `&&` (beide) und `||` (mindestens eine), `!` dreht eine um. Ein
 Vergleich ist selbst ein Wert, `true` oder `false`: `degrees >= 25` kann eine
 Funktion auch direkt zurückgeben.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+String weather(int degrees) {
+  if (degrees >= 25) {
+    return 'Baden!';
+  } else if (degrees >= 15) {
+    return 'Spazieren';
+  } else {
+    return 'Lesen';
+  }
+}
+
+void main() {
+  print(weather(28));
+}
+```
+
+Dart prüft die Bedingungen der Reihe nach und nimmt die erste, die stimmt.
+Verglichen wird mit `==`, `!=`, `<`, `<=`, `>` und `>=`, bei Zahlen wie bei
+Texten. Zwei Bedingungen verbinden `&&` (beide) und `||` (mindestens eine),
+`!` dreht eine um. Ein Vergleich ist selbst ein Wert, `true` oder `false`,
+vom Typ `bool`: `degrees >= 25` kann eine Funktion auch direkt zurückgeben.
+<!-- /language -->
+<!-- language: java -->
+```java
+String weather(int degrees) {
+    if (degrees >= 25) {
+        return "Baden!";
+    } else if (degrees >= 15) {
+        return "Spazieren";
+    } else {
+        return "Lesen";
+    }
+}
+
+void main() {
+    IO.println(weather(28));
+}
+```
+
+Java prüft die Bedingungen der Reihe nach und nimmt die erste, die stimmt.
+Zahlen vergleicht man mit `==`, `!=`, `<`, `<=`, `>` und `>=`; zwei Texte
+mit `equals`, `first.equals(second)`, denn `==` fragt bei ihnen, ob es
+dasselbe Objekt ist. Zwei Bedingungen verbinden `&&` (beide) und `||`
+(mindestens eine), `!` dreht eine um. Ein Vergleich ist selbst ein Wert,
+`true` oder `false`, vom Typ `boolean`: `degrees >= 25` kann eine Methode
+auch direkt zurückgeben.
 <!-- /language -->
 
 ## Einstieg

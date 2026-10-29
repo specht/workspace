@@ -11,13 +11,17 @@ require 'prism'
 # indented under its def (Python) or between the braces after its head
 # (JavaScript, a function declaration or const name = … =>). A loop there
 # is for or while, in JavaScript also do and the methods of Array that
-# take a function (forEach, map …).
+# take a function (forEach, map …). Dart and Java are read like JavaScript:
+# the body after the head »type name(…) {« (in Dart also »=> …;«); a loop is
+# for, while, do, or a method that takes a function (forEach, map, where,
+# fold, reduce; in Java also stream).
 #
 # Plain Ruby, tested on its own (test/recursion_check_test.rb).
 module RecursionCheck
     NOT_RECURSIVE = 'Deine Funktion ruft sich nicht selbst auf. Hier soll sie es tun: Was ist der kleinste Fall, in dem du sofort fertig bist, und wie hilft dir sonst ein Aufruf mit etwas Kleinerem?'
     LOOP = 'Deine Funktion benutzt eine Schleife (%s). Hier soll sie ohne auskommen und sich stattdessen selbst aufrufen.'
     JS_LOOP_METHODS = %w[forEach map filter reduce reduceRight some every find findIndex flatMap].freeze
+    TYPED_LOOP_METHODS = %w[forEach map where fold reduce any every expand firstWhere stream].freeze
 
     # The message for code whose function name does not do what check asks,
     # or nil. A function the code does not define is left to the cases.
@@ -30,6 +34,7 @@ module RecursionCheck
             when 'ruby' then ruby(code.to_s, name)
             when 'python' then python(code.to_s, name)
             when 'javascript' then javascript(code.to_s, name)
+            when 'dart', 'java' then typed(code.to_s, name)
             end
         return nil if found.nil?
 
@@ -129,5 +134,36 @@ module RecursionCheck
         # its own name called, also in a spread (...hanoi(…)), but not as
         # the method of something (list.flatten(…))
         { :calls_itself => body.match?(/(?:\A|[^\w$.]|\.\.\.)#{n}\s*\(/), :loop => loop }
+    end
+
+    # Dart and Java: »type name(…) {« with the body up to its brace, or in
+    # Dart »type name(…) => …;«.
+    def self.typed(code, name)
+        text = blank(code, :javascript)
+        n = Regexp.escape(name)
+        head = text.match(/[\w>\]?]\s+#{n}\s*\([^)]*\)\s*(\{|=>)/) or return nil
+
+        if head[1] == '=>'
+            depth = 0
+            i = head.end(0)
+            while i < text.size && !(depth.zero? && text[i] == ';')
+                depth += 1 if '([{'.include?(text[i])
+                depth -= 1 if ')]}'.include?(text[i])
+                i += 1
+            end
+            body = text[head.end(0)...i]
+        else
+            depth = 1
+            i = head.end(0)
+            while i < text.size && depth > 0
+                depth += 1 if text[i] == '{'
+                depth -= 1 if text[i] == '}'
+                i += 1
+            end
+            body = text[head.end(0)...(i - 1)]
+        end
+        keyword = body[/\b(for|while|do)\b/, 1]
+        method = body[/\.(#{TYPED_LOOP_METHODS.join('|')})\s*\(/, 1]
+        { :calls_itself => body.match?(/(?:(?<![\w$.])|(?<=\.\.\.))#{n}\s*\(/), :loop => keyword ? "`#{keyword}`" : (method && "`#{method}`") }
     end
 end

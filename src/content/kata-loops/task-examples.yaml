@@ -23,6 +23,16 @@ examples:
         - answer: "function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i <= n; i++) {\n    total += i;\n  }\n  return total;\n}\n"
       fail:
         - answer: "function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i < n; i++) total += i;\n  return total;\n}\n"
+    dart:
+      pass:
+        - answer: "int sumTo(int n) {\n  var total = 0;\n  for (var i = 1; i <= n; i++) {\n    total += i;\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "int sumTo(int n) {\n  var total = 0;\n  for (var i = 1; i < n; i++) total += i;\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "int sumTo(int n) {\n    int total = 0;\n    for (int i = 1; i <= n; i++) {\n        total += i;\n    }\n    return total;\n}\n"
+      fail:
+        - answer: "int sumTo(int n) {\n    int total = 0;\n    for (int i = 1; i < n; i++) total += i;\n    return total;\n}\n"
   numbers:
     pass:
       - answer: "def numbers(n)\n  result = []\n  (1..n).each do |i|\n    result << i\n  end\n  result\nend\n"
@@ -44,6 +54,12 @@ examples:
         - answer: "function numbers(n) {\n  const result = [];\n  for (let i = 0; i <= n; i++) result.push(i);\n  return result;\n}\n"
         - answer: "function numbers(n) {\n  return Array.from({ length: n }, (_, i) => i + 1);\n}\n"
           say: "benutzt `Array.from`"
+    dart:
+      pass:
+        - answer: "List<int> numbers(int n) {\n  final result = <int>[];\n  for (var i = 1; i <= n; i++) {\n    result.add(i);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> numbers(int n) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = 1; i <= n; i++) {\n        result.add(i);\n    }\n    return result;\n}\n"
   squares:
     pass:
       - answer: "def squares(n)\n  result = []\n  (1..n).each { |i| result << i * i }\n  result\nend\n"
@@ -59,6 +75,12 @@ examples:
         - answer: "function squares(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) result.push(i * i);\n  return result;\n}\n"
       fail:
         - answer: "function squares(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) result.push(i * 2);\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> squares(int n) {\n  final result = <int>[];\n  for (var i = 1; i <= n; i++) {\n    result.add(i * i);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> squares(int n) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = 1; i <= n; i++) {\n        result.add(i * i);\n    }\n    return result;\n}\n"
   countdown:
     pass:
       - answer: "def countdown(n)\n  result = []\n  n.downto(0) { |i| result << i }\n  result\nend\n"
@@ -74,6 +96,12 @@ examples:
         - answer: "function countdown(n) {\n  const result = [];\n  for (let i = n; i >= 0; i--) result.push(i);\n  return result;\n}\n"
       fail:
         - answer: "function countdown(n) {\n  const result = [];\n  for (let i = n; i > 0; i--) result.push(i);\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> countdown(int n) {\n  final result = <int>[];\n  for (var i = n; i >= 0; i--) {\n    result.add(i);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> countdown(int n) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = n; i >= 0; i--) {\n        result.add(i);\n    }\n    return result;\n}\n"
   factorial:
     pass:
       - answer: "def factorial(n)\n  product = 1\n  (1..n).each { |i| product *= i }\n  product\nend\n"
@@ -93,6 +121,17 @@ examples:
         - answer: "function factorial(n) {\n  let product = 1;\n  for (let i = 1; i <= n; i++) product *= i;\n  return product;\n}\n"
       fail:
         - answer: "function factorial(n) {\n  let product = 0;\n  for (let i = 1; i <= n; i++) product *= i;\n  return product;\n}\n"
+    dart:
+      pass:
+        - answer: "int factorial(int n) {\n  var product = 1;\n  for (var i = 1; i <= n; i++) {\n    product *= i;\n  }\n  return product;\n}\n"
+      fail:
+        - answer: "int factorial(int n) {\n  var product = 0;\n  for (var i = 1; i <= n; i++) product *= i;\n  return product;\n}\n"
+    java:
+      pass:
+        - answer: "long factorial(int n) {\n    long product = 1;\n    for (int i = 1; i <= n; i++) {\n        product *= i;\n    }\n    return product;\n}\n"
+      fail:
+        - answer: "long factorial(int n) {\n    long product = 0;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n"
+        - answer: "long factorial(int n) {\n    int product = 1;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n"
   digit-sum:
     pass:
       - answer: "def digit_sum(n)\n  total = 0\n  while n > 0\n    total += n % 10\n    n /= 10\n  end\n  total\nend\n"
@@ -114,6 +153,12 @@ examples:
         - answer: "function digitSum(n) {\n  return String(n).split('').reduce((s, d) => s + Number(d), 0);\n}\n"
           say: "benutzt `globalThis.String`"
         - answer: "function digitSum(n) {\n  return n % 10;\n}\n"
+    dart:
+      pass:
+        - answer: "int digitSum(int n) {\n  var total = 0;\n  while (n > 0) {\n    total += n % 10;\n    n = n ~/ 10;\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "int digitSum(int n) {\n    int total = 0;\n    while (n > 0) {\n        total += n % 10;\n        n = n / 10;\n    }\n    return total;\n}\n"
   fibonacci:
     pass:
       - answer: "def fibonacci(n)\n  a, b = 0, 1\n  n.times { a, b = b, a + b }\n  a\nend\n"
@@ -129,6 +174,12 @@ examples:
         - answer: "function fibonacci(n) {\n  let a = 0;\n  let b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}\n"
       fail:
         - answer: "function fibonacci(n) {\n  let a = 1, b = 1;\n  for (let i = 0; i < n; i++) [a, b] = [b, a + b];\n  return a;\n}\n"
+    dart:
+      pass:
+        - answer: "int fibonacci(int n) {\n  var a = 0;\n  var b = 1;\n  for (var i = 0; i < n; i++) {\n    (a, b) = (b, a + b);\n  }\n  return a;\n}\n"
+    java:
+      pass:
+        - answer: "long fibonacci(int n) {\n    long a = 0;\n    long b = 1;\n    for (int i = 0; i < n; i++) {\n        long next = a + b;\n        a = b;\n        b = next;\n    }\n    return a;\n}\n"
   divisors:
     pass:
       - answer: "def count_divisors(n)\n  count = 0\n  (1..n).each { |d| count += 1 if n % d == 0 }\n  count\nend\n"
@@ -144,6 +195,16 @@ examples:
         - answer: "function countDivisors(n) {\n  let count = 0;\n  for (let d = 1; d <= n; d++) {\n    if (n % d === 0) count++;\n  }\n  return count;\n}\n"
       fail:
         - answer: "function countDivisors(n) {\n  let count = 0;\n  for (let d = 1; d < n; d++) if (n % d === 0) count++;\n  return count;\n}\n"
+    dart:
+      pass:
+        - answer: "int countDivisors(int n) {\n  var count = 0;\n  for (var d = 1; d <= n; d++) {\n    if (n % d == 0) count++;\n  }\n  return count;\n}\n"
+      fail:
+        - answer: "int countDivisors(int n) {\n  var count = 0;\n  for (var d = 1; d < n; d++) if (n % d == 0) count++;\n  return count;\n}\n"
+    java:
+      pass:
+        - answer: "int countDivisors(int n) {\n    int count = 0;\n    for (int d = 1; d <= n; d++) {\n        if (n % d == 0) count++;\n    }\n    return count;\n}\n"
+      fail:
+        - answer: "int countDivisors(int n) {\n    int count = 0;\n    for (int d = 1; d < n; d++) if (n % d == 0) count++;\n    return count;\n}\n"
   prime:
     pass:
       - answer: "def prime(n)\n  return false if n < 2\n  d = 2\n  while d * d <= n\n    return false if n % d == 0\n    d += 1\n  end\n  true\nend\n"
@@ -159,6 +220,16 @@ examples:
         - answer: "function prime(n) {\n  if (n < 2) return false;\n  for (let d = 2; d * d <= n; d++) {\n    if (n % d === 0) return false;\n  }\n  return true;\n}\n"
       fail:
         - answer: "function prime(n) {\n  for (let d = 2; d < n; d++) if (n % d === 0) return false;\n  return true;\n}\n"
+    dart:
+      pass:
+        - answer: "bool prime(int n) {\n  if (n < 2) return false;\n  for (var d = 2; d * d <= n; d++) {\n    if (n % d == 0) return false;\n  }\n  return true;\n}\n"
+      fail:
+        - answer: "bool prime(int n) {\n  for (var d = 2; d < n; d++) if (n % d == 0) return false;\n  return true;\n}\n"
+    java:
+      pass:
+        - answer: "boolean prime(int n) {\n    if (n < 2) return false;\n    for (int d = 2; d * d <= n; d++) {\n        if (n % d == 0) return false;\n    }\n    return true;\n}\n"
+      fail:
+        - answer: "boolean prime(int n) {\n    for (int d = 2; d < n; d++) if (n % d == 0) return false;\n    return true;\n}\n"
   gcd:
     pass:
       - answer: "def gcd(a, b)\n  while b != 0\n    a, b = b, a % b\n  end\n  a\nend\n"
@@ -178,6 +249,16 @@ examples:
         - answer: "function gcd(a, b) {\n  while (b !== 0) {\n    [a, b] = [b, a % b];\n  }\n  return a;\n}\n"
       fail:
         - answer: "function gcd(a, b) {\n  return Math.min(a, b);\n}\n"
+    dart:
+      pass:
+        - answer: "int gcd(int a, int b) {\n  while (b != 0) {\n    (a, b) = (b, a % b);\n  }\n  return a;\n}\n"
+      fail:
+        - answer: "int gcd(int a, int b) {\n  return a < b ? a : b;\n}\n"
+    java:
+      pass:
+        - answer: "int gcd(int a, int b) {\n    while (b != 0) {\n        int rest = a % b;\n        a = b;\n        b = rest;\n    }\n    return a;\n}\n"
+      fail:
+        - answer: "int gcd(int a, int b) {\n    return Math.min(a, b);\n}\n"
   collatz:
     pass:
       - answer: "def collatz_steps(n)\n  steps = 0\n  while n != 1\n    n = n.even? ? n / 2 : 3 * n + 1\n    steps += 1\n  end\n  steps\nend\n"
@@ -193,6 +274,12 @@ examples:
         - answer: "function collatzSteps(n) {\n  let steps = 0;\n  while (n !== 1) {\n    n = n % 2 === 0 ? n / 2 : 3 * n + 1;\n    steps++;\n  }\n  return steps;\n}\n"
       fail:
         - answer: "function collatzSteps(n) {\n  let steps = 1;\n  while (n !== 1) {\n    n = n % 2 === 0 ? n / 2 : 3 * n + 1;\n    steps++;\n  }\n  return steps;\n}\n"
+    dart:
+      pass:
+        - answer: "int collatzSteps(int n) {\n  var steps = 0;\n  while (n != 1) {\n    n = n % 2 == 0 ? n ~/ 2 : 3 * n + 1;\n    steps++;\n  }\n  return steps;\n}\n"
+    java:
+      pass:
+        - answer: "int collatzSteps(int n) {\n    int steps = 0;\n    while (n != 1) {\n        n = n % 2 == 0 ? n / 2 : 3 * n + 1;\n        steps++;\n    }\n    return steps;\n}\n"
   perfect:
     pass:
       - answer: "def divisor_sum(n)\n  total = 0\n  (1..n / 2).each { |d| total += d if n % d == 0 }\n  total\nend\n\ndef perfect_numbers(limit)\n  (2..limit).select { |n| divisor_sum(n) == n }\nend\n"
@@ -208,6 +295,12 @@ examples:
         - answer: "function divisorSum(n) {\n  let total = 0;\n  for (let d = 1; d <= n / 2; d++) if (n % d === 0) total += d;\n  return total;\n}\n\nfunction perfectNumbers(limit) {\n  const result = [];\n  for (let n = 2; n <= limit; n++) if (divisorSum(n) === n) result.push(n);\n  return result;\n}\n"
       fail:
         - answer: "function perfectNumbers(limit) {\n  return [6, 28];\n}\n"
+    dart:
+      pass:
+        - answer: "int divisorSum(int n) {\n  var total = 0;\n  for (var d = 1; d <= n ~/ 2; d++) {\n    if (n % d == 0) total += d;\n  }\n  return total;\n}\n\nList<int> perfectNumbers(int limit) {\n  final result = <int>[];\n  for (var n = 2; n <= limit; n++) {\n    if (divisorSum(n) == n) result.add(n);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "int divisorSum(int n) {\n    int total = 0;\n    for (int d = 1; d <= n / 2; d++) {\n        if (n % d == 0) total += d;\n    }\n    return total;\n}\n\nList<Integer> perfectNumbers(int limit) {\n    List<Integer> result = new ArrayList<>();\n    for (int n = 2; n <= limit; n++) {\n        if (divisorSum(n) == n) result.add(n);\n    }\n    return result;\n}\n"
   primes-up-to:
     pass:
       - answer: "def primes_up_to(n)\n  return [] if n < 2\n  prime = Array.new(n + 1, true)\n  prime[0] = prime[1] = false\n  p = 2\n  while p * p <= n\n    (p * p).step(n, p) { |m| prime[m] = false } if prime[p]\n    p += 1\n  end\n  (2..n).select { |i| prime[i] }\nend\n"
@@ -226,3 +319,9 @@ examples:
       fail:
         - answer: "function primesUpTo(n) {\n  const result = [];\n  for (let m = 2; m <= n; m++) {\n    let prime = true;\n    for (let d = 2; d < m; d++) if (m % d === 0) { prime = false; break; }\n    if (prime) result.push(m);\n  }\n  return result;\n}\n"
           say: "Sieb des Eratosthenes"
+    dart:
+      pass:
+        - answer: "List<int> primesUpTo(int n) {\n  if (n < 2) return [];\n  final prime = List.filled(n + 1, true);\n  prime[0] = false;\n  prime[1] = false;\n  for (var p = 2; p * p <= n; p++) {\n    if (!prime[p]) continue;\n    for (var m = p * p; m <= n; m += p) {\n      prime[m] = false;\n    }\n  }\n  final result = <int>[];\n  for (var i = 2; i <= n; i++) {\n    if (prime[i]) result.add(i);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> primesUpTo(int n) {\n    List<Integer> result = new ArrayList<>();\n    boolean[] composite = new boolean[n + 1];\n    for (int p = 2; (long) p * p <= n; p++) {\n        if (composite[p]) continue;\n        for (int m = p * p; m <= n; m += p) {\n            composite[m] = true;\n        }\n    }\n    for (int i = 2; i <= n; i++) {\n        if (!composite[i]) result.add(i);\n    }\n    return result;\n}\n"

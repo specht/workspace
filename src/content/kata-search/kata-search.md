@@ -2,7 +2,7 @@
 icon: bi-search
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Suchen, Schritt für Schritt und durch Halbieren
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (lineare und binäre Suche, Effizienz)"
 topics: [suchen-sortieren]
@@ -57,6 +57,34 @@ const middle = Math.floor((low + high) / 2);   // 2: numbers[2] ist 8
 
 `Math.floor` rundet ab: Die Mitte zwischen den Indizes 0 und 5 ist 2.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final numbers = [2, 5, 8, 12, 16, 23];
+  var low = 0;
+  var high = numbers.length - 1;
+  final middle = (low + high) ~/ 2;   // 2: numbers[2] ist 8
+  print(numbers[middle]);
+}
+```
+
+`~/` teilt ganzzahlig und lässt den Rest weg: Die Mitte zwischen den Indizes
+0 und 5 ist 2.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    List<Integer> numbers = List.of(2, 5, 8, 12, 16, 23);
+    int low = 0;
+    int high = numbers.size() - 1;
+    int middle = (low + high) / 2;   // 2: numbers.get(2) ist 8
+    IO.println(numbers.get(middle));
+}
+```
+
+Zwei `int` teilt `/` ganzzahlig und lässt den Rest weg: Die Mitte zwischen
+den Indizes 0 und 5 ist 2.
+<!-- /language -->
 
 Wer findet, gibt den Index zurück; wer nichts findet, sagt das mit
 <!-- language: ruby -->
@@ -67,6 +95,13 @@ Wer findet, gibt den Index zurück; wer nichts findet, sagt das mit
 <!-- /language -->
 <!-- language: javascript -->
 `null`.
+<!-- /language -->
+<!-- language: dart -->
+`null`; der Rückgabetyp heißt dann `int?`, eine ganze Zahl oder `null`.
+<!-- /language -->
+<!-- language: java -->
+`null`; der Rückgabetyp heißt dann `Integer` statt `int`, denn ein `int`
+kann nicht `null` sein.
 <!-- /language -->
 
 ## Einstieg

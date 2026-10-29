@@ -139,7 +139,7 @@ module TaskCard
                     io << "<div class='pip-buttons' aria-label='Pip steuern'>"
                     buttons.each do |command|
                         icon, label = PipCheck::BUTTON_LABELS.fetch(command)
-                        line = PipCheck.spelling(check['language'], command) + (check['language'] == 'javascript' ? ';' : '')
+                        line = PipCheck.spelling(check['language'], command) + (%w[javascript dart java].include?(check['language']) ? ';' : '')
                         io << "<button type='button' class='btn btn-outline-success pip-button' data-command='#{h.(command)}' data-line='#{h.(line)}'>" \
                               "<i class='bi #{icon}' aria-hidden='true'></i>#{h.(label)}</button>"
                     end

@@ -19,6 +19,16 @@ examples:
         - answer: "move();\nmove();\nmove();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\n"
       fail:
         - answer: "move();\nmove();\nmove();\nturnLeft();\nmove();\nmove();\nmove();\n"
+    dart:
+      pass:
+        - answer: "void main() {\n  move();\n  move();\n  move();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n}\n"
+      fail:
+        - answer: "void main() {\n  move();\n  move();\n  move();\n  turnLeft();\n  move();\n  move();\n  move();\n}\n"
+    java:
+      pass:
+        - answer: "void main() {\n    move();\n    move();\n    move();\n    turnLeft();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n}\n"
+      fail:
+        - answer: "void main() {\n    move();\n    move();\n    move();\n    turnLeft();\n    move();\n    move();\n    move();\n}\n"
   stone-in-the-dark:
     pass:
       - answer: "move\nmove\nmove\ntake\nturn_left\nturn_left\nmove\nmove\nmove\nmove\n"
@@ -37,6 +47,18 @@ examples:
       fail:
         - answer: "turnLeft();\nturnLeft();\nmove();\n"
         - answer: "move();\nmove();\nmove();\ntake();\nturnLeft();\nturnLeft();\nturnLeft();\nturnLeft();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\n"
+    dart:
+      pass:
+        - answer: "void main() {\n  move();\n  move();\n  move();\n  take();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n}\n"
+      fail:
+        - answer: "void main() {\n  turnLeft();\n  turnLeft();\n  move();\n}\n"
+        - answer: "void main() {\n  move();\n  move();\n  move();\n  take();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n}\n"
+    java:
+      pass:
+        - answer: "void main() {\n    move();\n    move();\n    move();\n    take();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n}\n"
+      fail:
+        - answer: "void main() {\n    turnLeft();\n    turnLeft();\n    move();\n}\n"
+        - answer: "void main() {\n    move();\n    move();\n    move();\n    take();\n    turnLeft();\n    turnLeft();\n    turnLeft();\n    turnLeft();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n}\n"
   both-sides:
     pass:
       - answer: "move\nmove\nmove\ntake\nturn_left\nturn_left\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\ntake\nturn_left\nturn_left\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\n"
@@ -52,6 +74,16 @@ examples:
         - answer: "move();\nmove();\nmove();\ntake();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\ntake();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\n"
       fail:
         - answer: "turnLeft();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\nmove();\ntake();\nturnLeft();\nturnLeft();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\nmove();\n"
+    dart:
+      pass:
+        - answer: "void main() {\n  move();\n  move();\n  move();\n  take();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  take();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n}\n"
+      fail:
+        - answer: "void main() {\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n  move();\n  take();\n  turnLeft();\n  turnLeft();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n  move();\n}\n"
+    java:
+      pass:
+        - answer: "void main() {\n    move();\n    move();\n    move();\n    take();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    take();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n}\n"
+      fail:
+        - answer: "void main() {\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n    move();\n    take();\n    turnLeft();\n    turnLeft();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n    move();\n}\n"
   find:
     pass:
       - answer: "def find(cave, tile)\n  cave.each_with_index do |row, y|\n    x = row.index(tile)\n    return [x, y] if x\n  end\n  nil\nend\n"
@@ -67,6 +99,16 @@ examples:
         - answer: "function find(cave, tile) {\n  for (let y = 0; y < cave.length; y++) {\n    const x = cave[y].indexOf(tile);\n    if (x !== -1) return [x, y];\n  }\n  return null;\n}\n"
       fail:
         - answer: "function find(cave, tile) {\n  for (let y = 0; y < cave.length; y++) {\n    const x = cave[y].indexOf(tile);\n    if (x !== -1) return [y, x];\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "(int, int)? find(List<String> cave, String tile) {\n  for (var y = 0; y < cave.length; y++) {\n    final x = cave[y].indexOf(tile);\n    if (x != -1) return (x, y);\n  }\n  return null;\n}\n"
+      fail:
+        - answer: "(int, int)? find(List<String> cave, String tile) {\n  for (var y = 0; y < cave.length; y++) {\n    final x = cave[y].indexOf(tile);\n    if (x != -1) return (y, x);\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> find(List<String> cave, String tile) {\n    for (int y = 0; y < cave.size(); y++) {\n        int x = cave.get(y).indexOf(tile);\n        if (x != -1) return List.of(x, y);\n    }\n    return null;\n}\n"
+      fail:
+        - answer: "List<Integer> find(List<String> cave, String tile) {\n    for (int y = 0; y < cave.size(); y++) {\n        int x = cave.get(y).indexOf(tile);\n        if (x != -1) return List.of(y, x);\n    }\n    return null;\n}\n"
   neighbors:
     pass:
       - answer: "def neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n"
@@ -82,6 +124,16 @@ examples:
         - answer: "function neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n"
       fail:
         - answer: "function neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, -1), (-1, 0), (0, 1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "List<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, 1), (-1, 0), (0, -1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "List<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n"
   distance:
     pass:
       - answer: "def neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n\ndef distance(cave, start, goal)\n  steps = { start => 0 }\n  queue = [start]\n  until queue.empty?\n    node = queue.shift\n    return steps[node] if node == goal\n    neighbors(cave, *node).each do |neighbor|\n      next if steps.key?(neighbor)\n      steps[neighbor] = steps[node] + 1\n      queue << neighbor\n    end\n  end\n  nil\nend\n"
@@ -91,6 +143,12 @@ examples:
     javascript:
       pass:
         - answer: "function neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n\nfunction distance(cave, start, goal) {\n  const steps = { [start]: 0 };\n  const queue = [start];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    if (node[0] === goal[0] && node[1] === goal[1]) return steps[node];\n    for (const neighbor of neighbors(cave, node[0], node[1])) {\n      if (neighbor in steps) continue;\n      steps[neighbor] = steps[node] + 1;\n      queue.push(neighbor);\n    }\n  }\n  return null;\n}\n"
+    dart:
+      pass:
+        - answer: "List<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, -1), (-1, 0), (0, 1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n\nint? distance(List<String> cave, (int, int) start, (int, int) goal) {\n  final steps = {start: 0};\n  final queue = [start];\n  while (queue.isNotEmpty) {\n    final node = queue.removeAt(0);\n    if (node == goal) return steps[node];\n    for (final neighbor in neighbors(cave, node.$1, node.$2)) {\n      if (steps.containsKey(neighbor)) continue;\n      steps[neighbor] = steps[node]! + 1;\n      queue.add(neighbor);\n    }\n  }\n  return null;\n}\n"
+    java:
+      pass:
+        - answer: "List<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n\nInteger distance(List<String> cave, List<Integer> start, List<Integer> goal) {\n    Map<List<Integer>, Integer> steps = new HashMap<>();\n    steps.put(start, 0);\n    ArrayDeque<List<Integer>> queue = new ArrayDeque<>();\n    queue.add(start);\n    while (!queue.isEmpty()) {\n        List<Integer> node = queue.poll();\n        if (node.equals(goal)) return steps.get(node);\n        for (List<Integer> neighbor : neighbors(cave, node.get(0), node.get(1))) {\n            if (steps.containsKey(neighbor)) continue;\n            steps.put(neighbor, steps.get(node) + 1);\n            queue.add(neighbor);\n        }\n    }\n    return null;\n}\n"
   way:
     pass:
       - answer: "def neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n\ndef way(cave, start, goal)\n  predecessor = { start => nil }\n  queue = [start]\n  until queue.empty?\n    node = queue.shift\n    break if node == goal\n    neighbors(cave, *node).each do |neighbor|\n      next if predecessor.key?(neighbor)\n      predecessor[neighbor] = node\n      queue << neighbor\n    end\n  end\n  return nil unless predecessor.key?(goal)\n\n  path = []\n  node = goal\n  while node\n    path.unshift(node)\n    node = predecessor[node]\n  end\n  path\nend\n"
@@ -100,6 +158,12 @@ examples:
     javascript:
       pass:
         - answer: "function neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n\nfunction way(cave, start, goal) {\n  const predecessor = { [start]: null };\n  const queue = [start];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    if (node[0] === goal[0] && node[1] === goal[1]) break;\n    for (const neighbor of neighbors(cave, node[0], node[1])) {\n      if (neighbor in predecessor) continue;\n      predecessor[neighbor] = node;\n      queue.push(neighbor);\n    }\n  }\n  if (!(goal in predecessor)) return null;\n  const path = [];\n  for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);\n  return path;\n}\n"
+    dart:
+      pass:
+        - answer: "List<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, -1), (-1, 0), (0, 1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n\nList<(int, int)>? way(List<String> cave, (int, int) start, (int, int) goal) {\n  final predecessor = <(int, int), (int, int)?>{start: null};\n  final queue = [start];\n  while (queue.isNotEmpty) {\n    final node = queue.removeAt(0);\n    if (node == goal) break;\n    for (final neighbor in neighbors(cave, node.$1, node.$2)) {\n      if (predecessor.containsKey(neighbor)) continue;\n      predecessor[neighbor] = node;\n      queue.add(neighbor);\n    }\n  }\n  if (!predecessor.containsKey(goal)) return null;\n  final path = <(int, int)>[];\n  for ((int, int)? node = goal; node != null; node = predecessor[node]) {\n    path.insert(0, node);\n  }\n  return path;\n}\n"
+    java:
+      pass:
+        - answer: "List<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n\nList<List<Integer>> way(List<String> cave, List<Integer> start, List<Integer> goal) {\n    Map<List<Integer>, List<Integer>> predecessor = new HashMap<>();\n    predecessor.put(start, null);\n    ArrayDeque<List<Integer>> queue = new ArrayDeque<>();\n    queue.add(start);\n    while (!queue.isEmpty()) {\n        List<Integer> node = queue.poll();\n        if (node.equals(goal)) break;\n        for (List<Integer> neighbor : neighbors(cave, node.get(0), node.get(1))) {\n            if (predecessor.containsKey(neighbor)) continue;\n            predecessor.put(neighbor, node);\n            queue.add(neighbor);\n        }\n    }\n    if (!predecessor.containsKey(goal)) return null;\n    List<List<Integer>> path = new ArrayList<>();\n    for (List<Integer> node = goal; node != null; node = predecessor.get(node)) {\n        path.add(0, node);\n    }\n    return path;\n}\n"
   face:
     pass:
       - answer: "def face(direction)\n  turn_left until facing == direction\nend\n"
@@ -115,6 +179,15 @@ examples:
         - answer: "function face(direction) {\n  while (facing() !== direction) turnLeft();\n}\n"
       fail:
         - answer: "function face(direction) {\n  turnLeft();\n}\n"
+    dart:
+      pass:
+        - answer: "void face(String direction) {\n  while (facing() != direction) {\n    turnLeft();\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void face(String direction) {\n    while (!facing().equals(direction)) {\n        turnLeft();\n    }\n}\n"
+      fail:
+        - answer: "void face(String direction) {\n    while (facing() != direction) {\n        turnLeft();\n    }\n}\n"
+          say: "hält Pip nach"
   escape:
     pass:
       - answer: "def find(cave, tile)\n  cave.each_with_index do |row, y|\n    x = row.index(tile)\n    return [x, y] if x\n  end\n  nil\nend\n\ndef neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n\ndef way(cave, start, goal)\n  predecessor = { start => nil }\n  queue = [start]\n  until queue.empty?\n    node = queue.shift\n    break if node == goal\n    neighbors(cave, *node).each do |neighbor|\n      next if predecessor.key?(neighbor)\n      predecessor[neighbor] = node\n      queue << neighbor\n    end\n  end\n  return nil unless predecessor.key?(goal)\n\n  path = []\n  node = goal\n  while node\n    path.unshift(node)\n    node = predecessor[node]\n  end\n  path\nend\n\ndef face(direction)\n  turn_left until facing == direction\nend\n\nDIRECTIONS = { [1, 0] => 'east', [0, -1] => 'north', [-1, 0] => 'west', [0, 1] => 'south' }\n\ncave = cave_map\npath = way(cave, find(cave, 'P'), find(cave, 'L'))\npath.each_cons(2) do |(x1, y1), (x2, y2)|\n  face(DIRECTIONS[[x2 - x1, y2 - y1]])\n  move\nend\n"
@@ -543,6 +616,12 @@ examples:
     javascript:
       pass:
         - answer: "function find(cave, tile) {\n  for (let y = 0; y < cave.length; y++) {\n    const x = cave[y].indexOf(tile);\n    if (x !== -1) return [x, y];\n  }\n  return null;\n}\n\nfunction neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n\nfunction way(cave, start, goal) {\n  const predecessor = { [start]: null };\n  const queue = [start];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    if (node[0] === goal[0] && node[1] === goal[1]) break;\n    for (const neighbor of neighbors(cave, node[0], node[1])) {\n      if (neighbor in predecessor) continue;\n      predecessor[neighbor] = node;\n      queue.push(neighbor);\n    }\n  }\n  if (!(goal in predecessor)) return null;\n  const path = [];\n  for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);\n  return path;\n}\n\nfunction face(direction) {\n  while (facing() !== direction) turnLeft();\n}\n\nconst DIRECTIONS = { '1,0': 'east', '0,-1': 'north', '-1,0': 'west', '0,1': 'south' };\n\nconst cave = caveMap();\nconst path = way(cave, find(cave, 'P'), find(cave, 'L'));\nfor (let i = 1; i < path.length; i++) {\n  face(DIRECTIONS[[path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]]]);\n  move();\n}\n"
+    dart:
+      pass:
+        - answer: "(int, int)? find(List<String> cave, String tile) {\n  for (var y = 0; y < cave.length; y++) {\n    final x = cave[y].indexOf(tile);\n    if (x != -1) return (x, y);\n  }\n  return null;\n}\n\nList<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, -1), (-1, 0), (0, 1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n\nList<(int, int)>? way(List<String> cave, (int, int) start, (int, int) goal) {\n  final predecessor = <(int, int), (int, int)?>{start: null};\n  final queue = [start];\n  while (queue.isNotEmpty) {\n    final node = queue.removeAt(0);\n    if (node == goal) break;\n    for (final neighbor in neighbors(cave, node.$1, node.$2)) {\n      if (predecessor.containsKey(neighbor)) continue;\n      predecessor[neighbor] = node;\n      queue.add(neighbor);\n    }\n  }\n  if (!predecessor.containsKey(goal)) return null;\n  final path = <(int, int)>[];\n  for ((int, int)? node = goal; node != null; node = predecessor[node]) {\n    path.insert(0, node);\n  }\n  return path;\n}\n\nvoid face(String direction) {\n  while (facing() != direction) {\n    turnLeft();\n  }\n}\n\nconst directions = {(1, 0): 'east', (0, -1): 'north', (-1, 0): 'west', (0, 1): 'south'};\n\nvoid main() {\n  final cave = caveMap();\n  final path = way(cave, find(cave, 'P')!, find(cave, 'L')!)!;\n  for (var i = 1; i < path.length; i++) {\n    face(directions[(path[i].$1 - path[i - 1].$1, path[i].$2 - path[i - 1].$2)]!);\n    move();\n  }\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> find(List<String> cave, String tile) {\n    for (int y = 0; y < cave.size(); y++) {\n        int x = cave.get(y).indexOf(tile);\n        if (x != -1) return List.of(x, y);\n    }\n    return null;\n}\n\nList<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n\nList<List<Integer>> way(List<String> cave, List<Integer> start, List<Integer> goal) {\n    Map<List<Integer>, List<Integer>> predecessor = new HashMap<>();\n    predecessor.put(start, null);\n    ArrayDeque<List<Integer>> queue = new ArrayDeque<>();\n    queue.add(start);\n    while (!queue.isEmpty()) {\n        List<Integer> node = queue.poll();\n        if (node.equals(goal)) break;\n        for (List<Integer> neighbor : neighbors(cave, node.get(0), node.get(1))) {\n            if (predecessor.containsKey(neighbor)) continue;\n            predecessor.put(neighbor, node);\n            queue.add(neighbor);\n        }\n    }\n    if (!predecessor.containsKey(goal)) return null;\n    List<List<Integer>> path = new ArrayList<>();\n    for (List<Integer> node = goal; node != null; node = predecessor.get(node)) {\n        path.add(0, node);\n    }\n    return path;\n}\n\nvoid face(String direction) {\n    while (!facing().equals(direction)) {\n        turnLeft();\n    }\n}\n\nMap<List<Integer>, String> directions = Map.of(List.of(1, 0), \"east\", List.of(0, -1), \"north\", List.of(-1, 0), \"west\", List.of(0, 1), \"south\");\n\nvoid main() {\n    List<String> cave = caveMap();\n    List<List<Integer>> path = way(cave, find(cave, \"P\"), find(cave, \"L\"));\n    for (int i = 1; i < path.size(); i++) {\n        face(directions.get(List.of(path.get(i).get(0) - path.get(i - 1).get(0), path.get(i).get(1) - path.get(i - 1).get(1))));\n        move();\n    }\n}\n"
   next-step:
     pass:
       - answer: "def find(cave, tile)\n  cave.each_with_index do |row, y|\n    x = row.index(tile)\n    return [x, y] if x\n  end\n  nil\nend\n\ndef neighbors(cave, x, y)\n  result = []\n  [[1, 0], [0, -1], [-1, 0], [0, 1]].each do |dx, dy|\n    result << [x + dx, y + dy] if cave[y + dy][x + dx] != '#'\n  end\n  result\nend\n\ndef way(cave, start, goal)\n  predecessor = { start => nil }\n  queue = [start]\n  until queue.empty?\n    node = queue.shift\n    break if node == goal\n    neighbors(cave, *node).each do |neighbor|\n      next if predecessor.key?(neighbor)\n      predecessor[neighbor] = node\n      queue << neighbor\n    end\n  end\n  return nil unless predecessor.key?(goal)\n\n  path = []\n  node = goal\n  while node\n    path.unshift(node)\n    node = predecessor[node]\n  end\n  path\nend\n\ndef next_step(cave)\n  mampfer = find(cave, 'M')\n  path = way(cave, find(cave, 'P'), mampfer)\n  path ? path[-2] : mampfer\nend\n"
@@ -552,6 +631,12 @@ examples:
     javascript:
       pass:
         - answer: "function find(cave, tile) {\n  for (let y = 0; y < cave.length; y++) {\n    const x = cave[y].indexOf(tile);\n    if (x !== -1) return [x, y];\n  }\n  return null;\n}\n\nfunction neighbors(cave, x, y) {\n  const result = [];\n  for (const [dx, dy] of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {\n    if (cave[y + dy][x + dx] !== '#') result.push([x + dx, y + dy]);\n  }\n  return result;\n}\n\nfunction way(cave, start, goal) {\n  const predecessor = { [start]: null };\n  const queue = [start];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    if (node[0] === goal[0] && node[1] === goal[1]) break;\n    for (const neighbor of neighbors(cave, node[0], node[1])) {\n      if (neighbor in predecessor) continue;\n      predecessor[neighbor] = node;\n      queue.push(neighbor);\n    }\n  }\n  if (!(goal in predecessor)) return null;\n  const path = [];\n  for (let node = goal; node !== null; node = predecessor[node]) path.unshift(node);\n  return path;\n}\n\nfunction nextStep(cave) {\n  const mampfer = find(cave, 'M');\n  const path = way(cave, find(cave, 'P'), mampfer);\n  return path ? path[path.length - 2] : mampfer;\n}\n"
+    dart:
+      pass:
+        - answer: "(int, int)? find(List<String> cave, String tile) {\n  for (var y = 0; y < cave.length; y++) {\n    final x = cave[y].indexOf(tile);\n    if (x != -1) return (x, y);\n  }\n  return null;\n}\n\nList<(int, int)> neighbors(List<String> cave, int x, int y) {\n  final result = <(int, int)>[];\n  for (final (dx, dy) in [(1, 0), (0, -1), (-1, 0), (0, 1)]) {\n    if (cave[y + dy][x + dx] != '#') result.add((x + dx, y + dy));\n  }\n  return result;\n}\n\nList<(int, int)>? way(List<String> cave, (int, int) start, (int, int) goal) {\n  final predecessor = <(int, int), (int, int)?>{start: null};\n  final queue = [start];\n  while (queue.isNotEmpty) {\n    final node = queue.removeAt(0);\n    if (node == goal) break;\n    for (final neighbor in neighbors(cave, node.$1, node.$2)) {\n      if (predecessor.containsKey(neighbor)) continue;\n      predecessor[neighbor] = node;\n      queue.add(neighbor);\n    }\n  }\n  if (!predecessor.containsKey(goal)) return null;\n  final path = <(int, int)>[];\n  for ((int, int)? node = goal; node != null; node = predecessor[node]) {\n    path.insert(0, node);\n  }\n  return path;\n}\n\n(int, int) nextStep(List<String> cave) {\n  final mampfer = find(cave, 'M')!;\n  final path = way(cave, find(cave, 'P')!, mampfer);\n  return path == null ? mampfer : path[path.length - 2];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> find(List<String> cave, String tile) {\n    for (int y = 0; y < cave.size(); y++) {\n        int x = cave.get(y).indexOf(tile);\n        if (x != -1) return List.of(x, y);\n    }\n    return null;\n}\n\nList<List<Integer>> neighbors(List<String> cave, int x, int y) {\n    List<List<Integer>> result = new ArrayList<>();\n    int[][] moves = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};\n    for (int[] m : moves) {\n        if (cave.get(y + m[1]).charAt(x + m[0]) != '#') result.add(List.of(x + m[0], y + m[1]));\n    }\n    return result;\n}\n\nList<List<Integer>> way(List<String> cave, List<Integer> start, List<Integer> goal) {\n    Map<List<Integer>, List<Integer>> predecessor = new HashMap<>();\n    predecessor.put(start, null);\n    ArrayDeque<List<Integer>> queue = new ArrayDeque<>();\n    queue.add(start);\n    while (!queue.isEmpty()) {\n        List<Integer> node = queue.poll();\n        if (node.equals(goal)) break;\n        for (List<Integer> neighbor : neighbors(cave, node.get(0), node.get(1))) {\n            if (predecessor.containsKey(neighbor)) continue;\n            predecessor.put(neighbor, node);\n            queue.add(neighbor);\n        }\n    }\n    if (!predecessor.containsKey(goal)) return null;\n    List<List<Integer>> path = new ArrayList<>();\n    for (List<Integer> node = goal; node != null; node = predecessor.get(node)) {\n        path.add(0, node);\n    }\n    return path;\n}\n\nList<Integer> nextStep(List<String> cave) {\n    List<Integer> mampfer = find(cave, \"M\");\n    List<List<Integer>> path = way(cave, find(cave, \"P\"), mampfer);\n    return path == null ? mampfer : path.get(path.size() - 2);\n}\n"
   steps:
     pass:
       - answer: "def steps(path, facing)\n  directions = { [1, 0] => 'east', [0, -1] => 'north', [-1, 0] => 'west', [0, 1] => 'south' }\n  order = %w[east north west south]\n  total = 0\n  path.each_cons(2) do |(x1, y1), (x2, y2)|\n    want = directions[[x2 - x1, y2 - y1]]\n    total += (order.index(want) - order.index(facing)) % 4 + 1\n    facing = want\n  end\n  total\nend\n"
@@ -561,3 +646,9 @@ examples:
     javascript:
       pass:
         - answer: "function steps(path, facing) {\n  const directions = { '1,0': 'east', '0,-1': 'north', '-1,0': 'west', '0,1': 'south' };\n  const order = ['east', 'north', 'west', 'south'];\n  let total = 0;\n  for (let i = 1; i < path.length; i++) {\n    const want = directions[[path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]]];\n    total += (order.indexOf(want) - order.indexOf(facing) + 4) % 4 + 1;\n    facing = want;\n  }\n  return total;\n}\n"
+    dart:
+      pass:
+        - answer: "int steps(List<(int, int)> path, String facing) {\n  const directions = {(1, 0): 'east', (0, -1): 'north', (-1, 0): 'west', (0, 1): 'south'};\n  const order = ['east', 'north', 'west', 'south'];\n  var total = 0;\n  for (var i = 1; i < path.length; i++) {\n    final want = directions[(path[i].$1 - path[i - 1].$1, path[i].$2 - path[i - 1].$2)]!;\n    total += (order.indexOf(want) - order.indexOf(facing)) % 4 + 1;\n    facing = want;\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "int steps(List<List<Integer>> path, String facing) {\n    Map<List<Integer>, String> directions = Map.of(List.of(1, 0), \"east\", List.of(0, -1), \"north\", List.of(-1, 0), \"west\", List.of(0, 1), \"south\");\n    List<String> order = List.of(\"east\", \"north\", \"west\", \"south\");\n    int total = 0;\n    for (int i = 1; i < path.size(); i++) {\n        String want = directions.get(List.of(path.get(i).get(0) - path.get(i - 1).get(0), path.get(i).get(1) - path.get(i - 1).get(1)));\n        total += (order.indexOf(want) - order.indexOf(facing) + 4) % 4 + 1;\n        facing = want;\n    }\n    return total;\n}\n"

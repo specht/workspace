@@ -1,4 +1,4 @@
-Lernende schreiben Tests statt Funktionen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Zeilen wie <code>assert_equal(erwartet, ergebnis)</code>, die mit einer richtigen Fassung bestehen und jede von mehreren fehlerhaften entlarven, so dass sie lernen, an den Rändern und bei den Ausnahmen zu suchen.
+Lernende schreiben Tests statt Funktionen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Zeilen wie <code>assert_equal(erwartet, ergebnis)</code>, die mit einer richtigen Fassung bestehen und jede von mehreren fehlerhaften entlarven, so dass sie lernen, an den Rändern und bei den Ausnahmen zu suchen.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die Funktionen, die getestet werden, kennen die Lernenden aus den Katas: gerade Zahlen und Schaltjahre aus den <a href='/kata-decisions'>Entscheidungen</a>, die Adresse und Caesar aus den <a href='/kata-texts'>Texten</a>, das Mischen aus den <a href='/kata-lists'>Listen</a>, die binäre Suche aus dem <a href='/kata-search'>Suchen</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Tests statt Funktionen, direkt in die Karten der Seite, in Ru
 <li>Extras (2): einen gezeigten Fehler mit einem Test finden, Tests für Caesar.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Die Tests laufen gegen eine richtige Fassung, bei der alle bestehen müssen, und gegen drei oder vier fehlerhafte, von denen jede an mindestens einem Test scheitern muss (Prüfart <code>tests</code>). Kommt eine durch, sagt die Rückmeldung, was diese Fassung anders macht; scheitert ein Test an der richtigen, nennt sie die Zeile und den Wert. Wer die Funktion selbst hineinschreibt, bekommt den Hinweis, nur Tests zu schreiben.</td></tr>
-<tr><th>Gespeichert</th><td>Die Tests jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Die Tests jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript, Dart, Java), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht
@@ -17,6 +17,7 @@ Lernende schreiben Tests statt Funktionen, direkt in die Karten der Seite, in Ru
 - Nur das Erwartbare prüfen: eine gerade Zahl, ein gewöhnliches Jahr. Die fehlerhaften Fassungen irren sich bei 0, bei negativen Zahlen, bei 1900 und 2000, an den Rändern einer Liste.
 - Den erwarteten Wert falsch ausrechnen: Dann scheitert der Test an der richtigen Fassung, und die Rückmeldung zeigt, was sie wirklich ergibt.
 - In Python ist <code>True</code> nicht dasselbe wie <code>1</code>; die Rückmeldung nennt den Typ.
+- In Dart und Java übersetzt die Prüfung die Tests zuerst: Fehlt ein Semikolon oder heißt eine Funktion anders, sagt die Rückmeldung die Zeile, bevor ein Test läuft. Die FizzBuzz-Fassung, die eine Zahl statt eines Textes zurückgibt, gibt es dort nicht, weil der Rückgabetyp <code>String</code> sie verbietet; an ihrer Stelle steht eine, die bei den anderen Zahlen einen leeren Text zurückgibt.
 - Die Funktion selbst hineinschreiben, statt sie zu testen.
 
 #### Die Aufgaben

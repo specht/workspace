@@ -113,6 +113,85 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int listSum(List<int> numbers)`, die alle Zahlen einer Liste zusammenzählt: `listSum([3, 4, 5])` ergibt `12`. Mit einer Schleife, ohne `reduce` und `fold`.
+      starter: |
+        int listSum(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reduce, .fold]
+        cases:
+          - call: "listSum([3, 4, 5])"
+            expect: "12"
+          - call: "listSum([10])"
+            expect: "10"
+          - call: "listSum([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0."
+          - call: "listSum([-2, 2, 7])"
+            expect: "7"
+          - call: "listSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])"
+            expect: "55"
+      feedback:
+        - when: { same_as: "int listSum(List<int> numbers) {\n  var total = 0;\n  for (final number in numbers) {\n    total += number;\n  }\n  return 0;\n}\n" }
+          say: "Deine Funktion rechnet, gibt aber `0` zurück statt der Summe: In die letzte Zeile gehört `return total;`."
+      hint:
+        - "Wie bei `sumTo` aus den Schleifen: eine Variable, die bei 0 anfängt, und in der Schleife kommt jede Zahl dazu."
+        - "`for (final number in numbers) { … }` geht die Zahlen der Liste der Reihe nach durch."
+      solution: |
+        ```dart
+        int listSum(List<int> numbers) {
+          var total = 0;
+          for (final number in numbers) {
+            total += number;
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int listSum(List<Integer> numbers)`, die alle Zahlen einer Liste zusammenzählt: `listSum(List.of(3, 4, 5))` ergibt `12`. Mit einer Schleife, ohne Streams.
+      starter: |
+        int listSum(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream]
+        cases:
+          - call: "listSum(List.of(3, 4, 5))"
+            expect: "12"
+          - call: "listSum(List.of(10))"
+            expect: "10"
+          - call: "listSum(List.of())"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0."
+          - call: "listSum(List.of(-2, 2, 7))"
+            expect: "7"
+          - call: "listSum(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))"
+            expect: "55"
+      feedback:
+        - when: { same_as: "int listSum(List<Integer> numbers) {\n    int total = 0;\n    for (int number : numbers) {\n        total += number;\n    }\n    return 0;\n}\n" }
+          say: "Deine Methode rechnet, gibt aber `0` zurück statt der Summe: In die letzte Zeile gehört `return total;`."
+      hint:
+        - "Wie bei `sumTo` aus den Schleifen: eine Variable, die bei 0 anfängt, und in der Schleife kommt jede Zahl dazu."
+        - "`for (int number : numbers) { … }` geht die Zahlen der Liste der Reihe nach durch."
+      solution: |
+        ```java
+        int listSum(List<Integer> numbers) {
+            int total = 0;
+            for (int number : numbers) {
+                total += number;
+            }
+            return total;
+        }
+        ```
+
   - id: list-max
     title: "Die größte Zahl"
     level: 1
@@ -233,6 +312,91 @@ tasks:
           return best;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int listMax(List<int> numbers)`, die die größte Zahl einer Liste zurückgibt: `listMax([3, 9, 4])` ergibt `9`. Die Liste ist nie leer. Ohne `max`, `reduce` und `sort`.
+      starter: |
+        int listMax(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [max, .reduce, .fold, .sort]
+        cases:
+          - call: "listMax([3, 9, 4])"
+            expect: "9"
+          - call: "listMax([7])"
+            expect: "7"
+          - call: "listMax([-3, -1, -7])"
+            expect: "-1"
+            say: "Lauter negative Zahlen: Die größte ist `-1`."
+          - call: "listMax([5, 5, 2])"
+            expect: "5"
+          - call: "listMax([1, 2, 3, 100])"
+            expect: "100"
+            say: "Die größte Zahl steht ganz hinten."
+      feedback:
+        - when: { same_as: "int listMax(List<int> numbers) {\n  var best = 0;\n  for (final number in numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n" }
+          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+      hint:
+        - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
+        - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
+      solution: |
+        ```dart
+        int listMax(List<int> numbers) {
+          var best = numbers[0];
+          for (final number in numbers) {
+            if (number > best) {
+              best = number;
+            }
+          }
+          return best;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int listMax(List<Integer> numbers)`, die die größte Zahl einer Liste zurückgibt: `listMax(List.of(3, 9, 4))` ergibt `9`. Die Liste ist nie leer. Ohne `Math.max`, `Collections.max`, `sort` und Streams.
+      starter: |
+        int listMax(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.max, Collections.max, .sort, .stream]
+        cases:
+          - call: "listMax(List.of(3, 9, 4))"
+            expect: "9"
+          - call: "listMax(List.of(7))"
+            expect: "7"
+          - call: "listMax(List.of(-3, -1, -7))"
+            expect: "-1"
+            say: "Lauter negative Zahlen: Die größte ist `-1`."
+          - call: "listMax(List.of(5, 5, 2))"
+            expect: "5"
+          - call: "listMax(List.of(1, 2, 3, 100))"
+            expect: "100"
+            say: "Die größte Zahl steht ganz hinten."
+      feedback:
+        - when: { same_as: "int listMax(List<Integer> numbers) {\n    int best = 0;\n    for (int number : numbers) {\n        if (number > best) {\n            best = number;\n        }\n    }\n    return best;\n}\n" }
+          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+      hint:
+        - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
+        - "Womit fängst du an? `numbers.get(0)` ist die Zahl mit dem Index 0, die erste."
+      solution: |
+        ```java
+        int listMax(List<Integer> numbers) {
+            int best = numbers.get(0);
+            for (int number : numbers) {
+                if (number > best) {
+                    best = number;
+                }
+            }
+            return best;
+        }
+        ```
+
   - id: count-even
     title: "Gerade Zahlen zählen"
     level: 1
@@ -339,6 +503,83 @@ tasks:
           return count;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int countEven(List<int> numbers)`, die zählt, wie viele gerade Zahlen in der Liste stehen: `countEven([1, 2, 3, 4])` ergibt `2`. Ohne `where`.
+      starter: |
+        int countEven(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.where]
+        cases:
+          - call: "countEven([1, 2, 3, 4])"
+            expect: "2"
+          - call: "countEven([1, 3, 5])"
+            expect: "0"
+          - call: "countEven([])"
+            expect: "0"
+          - call: "countEven([0, -2, 7])"
+            expect: "2"
+            say: "0 und -2 sind auch gerade."
+          - call: "countEven([2, 2, 2, 2])"
+            expect: "4"
+      hint:
+        - "Zählen wie bei den Vokalen: eine Variable, die bei 0 anfängt. Wann ist eine Zahl gerade?"
+        - "`number % 2 == 0` fragt, ob beim Teilen durch 2 nichts übrig bleibt."
+      solution: |
+        ```dart
+        int countEven(List<int> numbers) {
+          var count = 0;
+          for (final number in numbers) {
+            if (number % 2 == 0) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int countEven(List<Integer> numbers)`, die zählt, wie viele gerade Zahlen in der Liste stehen: `countEven(List.of(1, 2, 3, 4))` ergibt `2`. Ohne Streams.
+      starter: |
+        int countEven(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream]
+        cases:
+          - call: "countEven(List.of(1, 2, 3, 4))"
+            expect: "2"
+          - call: "countEven(List.of(1, 3, 5))"
+            expect: "0"
+          - call: "countEven(List.of())"
+            expect: "0"
+          - call: "countEven(List.of(0, -2, 7))"
+            expect: "2"
+            say: "0 und -2 sind auch gerade."
+          - call: "countEven(List.of(2, 2, 2, 2))"
+            expect: "4"
+      hint:
+        - "Zählen wie bei den Vokalen: eine Variable, die bei 0 anfängt. Wann ist eine Zahl gerade?"
+        - "`number % 2 == 0` fragt, ob beim Teilen durch 2 nichts übrig bleibt."
+      solution: |
+        ```java
+        int countEven(List<Integer> numbers) {
+            int count = 0;
+            for (int number : numbers) {
+                if (number % 2 == 0) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        ```
+
   - id: contains
     title: "Ist es dabei?"
     level: 1
@@ -456,6 +697,89 @@ tasks:
           return false;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `bool contains(List<int> items, int wanted)`, die `true` zurückgibt, wenn `wanted` in der Liste steht, und sonst `false`: `contains([4, 8, 15], 8)` ergibt `true`. Mit einer Schleife, ohne `contains`, `indexOf` und `any` der Liste.
+      starter: |
+        bool contains(List<int> items, int wanted) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.contains, .indexOf, .lastIndexOf, .any, .firstWhere, .where]
+        cases:
+          - call: "contains([4, 8, 15], 8)"
+            expect: "true"
+          - call: "contains([4, 8, 15], 16)"
+            expect: "false"
+          - call: "contains([], 1)"
+            expect: "false"
+            say: "In der leeren Liste steht nichts."
+          - call: "contains([4, 8, 15], 15)"
+            expect: "true"
+            say: "Auch das letzte Element zählt."
+          - call: "contains([7], 7)"
+            expect: "true"
+      feedback:
+        - when: { same_as: "bool contains(List<int> items, int wanted) {\n  for (final item in items) {\n    if (item == wanted) {\n      return true;\n    } else {\n      return false;\n    }\n  }\n  return false;\n}\n" }
+          say: "Dein Code entscheidet schon beim ersten Element. `false` steht erst fest, wenn die ganze Liste durch ist: nach der Schleife."
+      hint:
+        - "Geh die Liste durch. Findest du `wanted`, bist du sofort fertig: `return true;` beendet die Funktion mitten in der Schleife."
+        - "Und wenn die Schleife zu Ende ist, ohne dass du es gefunden hast?"
+      solution: |
+        ```dart
+        bool contains(List<int> items, int wanted) {
+          for (final item in items) {
+            if (item == wanted) {
+              return true;
+            }
+          }
+          return false;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `boolean contains(List<Integer> items, int wanted)`, die `true` zurückgibt, wenn `wanted` in der Liste steht, und sonst `false`: `contains(List.of(4, 8, 15), 8)` ergibt `true`. Mit einer Schleife, ohne `contains` und `indexOf` der Liste und ohne Streams.
+      starter: |
+        boolean contains(List<Integer> items, int wanted) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.contains, .indexOf, .lastIndexOf, .stream]
+        cases:
+          - call: "contains(List.of(4, 8, 15), 8)"
+            expect: "true"
+          - call: "contains(List.of(4, 8, 15), 16)"
+            expect: "false"
+          - call: "contains(List.of(), 1)"
+            expect: "false"
+            say: "In der leeren Liste steht nichts."
+          - call: "contains(List.of(4, 8, 15), 15)"
+            expect: "true"
+            say: "Auch das letzte Element zählt."
+          - call: "contains(List.of(7), 7)"
+            expect: "true"
+      feedback:
+        - when: { same_as: "boolean contains(List<Integer> items, int wanted) {\n    for (int item : items) {\n        if (item == wanted) {\n            return true;\n        } else {\n            return false;\n        }\n    }\n    return false;\n}\n" }
+          say: "Dein Code entscheidet schon beim ersten Element. `false` steht erst fest, wenn die ganze Liste durch ist: nach der Schleife."
+      hint:
+        - "Geh die Liste durch. Findest du `wanted`, bist du sofort fertig: `return true;` beendet die Methode mitten in der Schleife."
+        - "Und wenn die Schleife zu Ende ist, ohne dass du es gefunden hast?"
+      solution: |
+        ```java
+        boolean contains(List<Integer> items, int wanted) {
+            for (int item : items) {
+                if (item == wanted) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        ```
+
   - id: reverse-list
     title: "Rückwärts"
     level: 2
@@ -571,6 +895,83 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> reverseList(List<int> items)`, die eine neue Liste zurückgibt, mit denselben Elementen in umgekehrter Reihenfolge: `reverseList([1, 2, 3])` ergibt `[3, 2, 1]`. Ohne `reversed`.
+      starter: |
+        List<int> reverseList(List<int> items) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reversed]
+        cases:
+          - call: "reverseList([1, 2, 3])"
+            expect: "[3, 2, 1]"
+          - call: "reverseList([])"
+            expect: "[]"
+          - call: "reverseList([5])"
+            expect: "[5]"
+          - call: "reverseList([1, 2, 3, 4])"
+            expect: "[4, 3, 2, 1]"
+          - call: "reverseList([9, 9, 1])"
+            expect: "[1, 9, 9]"
+      feedback:
+        - when: { same_as: "List<int> reverseList(List<int> items) {\n  final result = <int>[];\n  for (var i = items.length - 1; i > 0; i--) {\n    result.add(items[i]);\n  }\n  return result;\n}\n" }
+          say: "Mit `i > 0` kommt der Index 0 nicht mehr dran: Das erste Element fehlt."
+      hint:
+        - "Der letzte Index einer Liste ist `items.length - 1`. Zähl von dort herunter bis 0 und häng jedes Element mit `add` an eine neue Liste an."
+        - "`for (var i = items.length - 1; i >= 0; i--)` zählt vom letzten Index bis 0 herunter. Eine leere Liste für Zahlen legt `<int>[]` an."
+      solution: |
+        ```dart
+        List<int> reverseList(List<int> items) {
+          final result = <int>[];
+          for (var i = items.length - 1; i >= 0; i--) {
+            result.add(items[i]);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> reverseList(List<Integer> items)`, die eine neue Liste zurückgibt, mit denselben Elementen in umgekehrter Reihenfolge: `reverseList(List.of(1, 2, 3))` ergibt `[3, 2, 1]`. Ohne `Collections.reverse` und `reversed`.
+      starter: |
+        List<Integer> reverseList(List<Integer> items) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Collections.reverse, .reversed]
+        cases:
+          - call: "reverseList(List.of(1, 2, 3))"
+            expect: "List.of(3, 2, 1)"
+          - call: "reverseList(List.of())"
+            expect: "List.of()"
+          - call: "reverseList(List.of(5))"
+            expect: "List.of(5)"
+          - call: "reverseList(List.of(1, 2, 3, 4))"
+            expect: "List.of(4, 3, 2, 1)"
+          - call: "reverseList(List.of(9, 9, 1))"
+            expect: "List.of(1, 9, 9)"
+      feedback:
+        - when: { same_as: "List<Integer> reverseList(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = items.size() - 1; i > 0; i--) {\n        result.add(items.get(i));\n    }\n    return result;\n}\n" }
+          say: "Mit `i > 0` kommt der Index 0 nicht mehr dran: Das erste Element fehlt."
+      hint:
+        - "Der letzte Index einer Liste ist `items.size() - 1`. Zähl von dort herunter bis 0 und häng jedes Element mit `add` an eine neue `ArrayList` an."
+        - "`for (int i = items.size() - 1; i >= 0; i--)` zählt vom letzten Index bis 0 herunter, `items.get(i)` ist das Element mit dem Index `i`."
+      solution: |
+        ```java
+        List<Integer> reverseList(List<Integer> items) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = items.size() - 1; i >= 0; i--) {
+                result.add(items.get(i));
+            }
+            return result;
+        }
+        ```
+
   - id: swap-ends
     title: "Erstes und letztes tauschen"
     level: 2
@@ -687,6 +1088,89 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> swapEnds(List<int> items)`, die eine neue Liste zurückgibt, in der das erste und das letzte Element die Plätze getauscht haben: `swapEnds([1, 2, 3, 4])` ergibt `[4, 2, 3, 1]`. Eine Liste mit weniger als zwei Elementen bleibt, wie sie ist.
+      starter: |
+        List<int> swapEnds(List<int> items) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "swapEnds([1, 2, 3, 4])"
+            expect: "[4, 2, 3, 1]"
+          - call: "swapEnds([1, 2])"
+            expect: "[2, 1]"
+          - call: "swapEnds([7])"
+            expect: "[7]"
+            say: "Mit einem Element gibt es nichts zu tauschen."
+          - call: "swapEnds([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "swapEnds([5, 6, 7])"
+            expect: "[7, 6, 5]"
+      feedback:
+        - when: { same_as: "List<int> swapEnds(List<int> items) {\n  final result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n" }
+          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+      hint:
+        - "`[...items]` ist eine Kopie der Liste. `items[items.length - 1]` ist das letzte Element."
+        - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
+      solution: |
+        ```dart
+        List<int> swapEnds(List<int> items) {
+          final result = [...items];
+          if (items.length < 2) {
+            return result;
+          }
+          result[0] = items[items.length - 1];
+          result[items.length - 1] = items[0];
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> swapEnds(List<Integer> items)`, die eine neue Liste zurückgibt, in der das erste und das letzte Element die Plätze getauscht haben: `swapEnds(List.of(1, 2, 3, 4))` ergibt `[4, 2, 3, 1]`. Eine Liste mit weniger als zwei Elementen bleibt, wie sie ist.
+      starter: |
+        List<Integer> swapEnds(List<Integer> items) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "swapEnds(List.of(1, 2, 3, 4))"
+            expect: "List.of(4, 2, 3, 1)"
+          - call: "swapEnds(List.of(1, 2))"
+            expect: "List.of(2, 1)"
+          - call: "swapEnds(List.of(7))"
+            expect: "List.of(7)"
+            say: "Mit einem Element gibt es nichts zu tauschen."
+          - call: "swapEnds(List.of())"
+            expect: "List.of()"
+            say: "Die leere Liste bleibt leer."
+          - call: "swapEnds(List.of(5, 6, 7))"
+            expect: "List.of(7, 6, 5)"
+      feedback:
+        - when: { same_as: "List<Integer> swapEnds(List<Integer> items) {\n    List<Integer> result = new ArrayList<>(items);\n    if (items.size() < 2) {\n        return result;\n    }\n    result.set(0, result.get(result.size() - 1));\n    result.set(result.size() - 1, result.get(0));\n    return result;\n}\n" }
+          say: "Nach `result.set(0, …)` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+      hint:
+        - "`new ArrayList<>(items)` ist eine Kopie der Liste, die sich ändern lässt. `items.get(items.size() - 1)` ist das letzte Element, `result.set(i, wert)` ersetzt das Element mit dem Index `i`."
+        - "Wenn du das Element mit dem Index 0 ersetzt, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
+      solution: |
+        ```java
+        List<Integer> swapEnds(List<Integer> items) {
+            List<Integer> result = new ArrayList<>(items);
+            if (items.size() < 2) {
+                return result;
+            }
+            result.set(0, items.get(items.size() - 1));
+            result.set(items.size() - 1, items.get(0));
+            return result;
+        }
+        ```
+
   - id: rotate-left
     title: "Einen Platz nach links"
     level: 2
@@ -811,6 +1295,92 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<Object> rotateLeft(List<Object> items)`, die alle Elemente um einen Platz nach links rückt; das erste kommt ans Ende: `rotateLeft([1, 2, 3, 4])` ergibt `[2, 3, 4, 1]`. `Object` steht für jede Art von Wert, Zahlen wie Texte.
+      starter: |
+        List<Object> rotateLeft(List<Object> items) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "rotateLeft([1, 2, 3, 4])"
+            expect: "[2, 3, 4, 1]"
+          - call: "rotateLeft([7])"
+            expect: "[7]"
+          - call: "rotateLeft([])"
+            expect: "[]"
+            say: "Die leere Liste bleibt leer."
+          - call: "rotateLeft([1, 2])"
+            expect: "[2, 1]"
+          - call: "rotateLeft(['a', 'b', 'c'])"
+            expect: "['b', 'c', 'a']"
+            say: "Auch Texte rücken."
+      feedback:
+        - when: { same_as: "List<Object> rotateLeft(List<Object> items) {\n  if (items.isEmpty) {\n    return [];\n  }\n  return [items[items.length - 1], ...items.sublist(0, items.length - 1)];\n}\n" }
+          say: "Das rückt nach rechts: Das letzte Element kommt nach vorn. Nach links heißt: Das erste geht ans Ende."
+      hint:
+        - "Die neue Liste besteht aus allen Elementen ab dem Index 1 und danach dem Element mit dem Index 0."
+        - "Denk an die leere Liste: Sie hat kein erstes Element (`items.isEmpty`)."
+      solution: |
+        ```dart
+        List<Object> rotateLeft(List<Object> items) {
+          if (items.isEmpty) {
+            return [];
+          }
+          final result = <Object>[];
+          for (var i = 1; i < items.length; i++) {
+            result.add(items[i]);
+          }
+          result.add(items[0]);
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> rotateLeft(List<Integer> items)`, die alle Elemente um einen Platz nach links rückt; das erste kommt ans Ende: `rotateLeft(List.of(1, 2, 3, 4))` ergibt `[2, 3, 4, 1]`.
+      starter: |
+        List<Integer> rotateLeft(List<Integer> items) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "rotateLeft(List.of(1, 2, 3, 4))"
+            expect: "List.of(2, 3, 4, 1)"
+          - call: "rotateLeft(List.of(7))"
+            expect: "List.of(7)"
+          - call: "rotateLeft(List.of())"
+            expect: "List.of()"
+            say: "Die leere Liste bleibt leer."
+          - call: "rotateLeft(List.of(1, 2))"
+            expect: "List.of(2, 1)"
+          - call: "rotateLeft(List.of(8, 9, 10))"
+            expect: "List.of(9, 10, 8)"
+      feedback:
+        - when: { same_as: "List<Integer> rotateLeft(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    if (items.isEmpty()) {\n        return result;\n    }\n    result.add(items.get(items.size() - 1));\n    for (int i = 0; i < items.size() - 1; i++) {\n        result.add(items.get(i));\n    }\n    return result;\n}\n" }
+          say: "Das rückt nach rechts: Das letzte Element kommt nach vorn. Nach links heißt: Das erste geht ans Ende."
+      hint:
+        - "Die neue Liste besteht aus allen Elementen ab dem Index 1 und danach dem Element mit dem Index 0."
+        - "Denk an die leere Liste: Sie hat kein erstes Element (`items.isEmpty()`)."
+      solution: |
+        ```java
+        List<Integer> rotateLeft(List<Integer> items) {
+            List<Integer> result = new ArrayList<>();
+            if (items.isEmpty()) {
+                return result;
+            }
+            for (int i = 1; i < items.size(); i++) {
+                result.add(items.get(i));
+            }
+            result.add(items.get(0));
+            return result;
+        }
+        ```
+
   - id: ascending
     title: "Aufsteigend sortiert?"
     level: 2
@@ -935,6 +1505,95 @@ tasks:
           return true;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `bool ascending(List<int> numbers)`, die `true` zurückgibt, wenn jede Zahl mindestens so groß ist wie die vor ihr, und sonst `false`: `ascending([1, 3, 3, 8])` ergibt `true`, `ascending([1, 5, 2])` ergibt `false`. Ohne zu sortieren.
+      starter: |
+        bool ascending(List<int> numbers) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.sort]
+        cases:
+          - call: "ascending([1, 3, 3, 8])"
+            expect: "true"
+            say: "Gleiche Zahlen nebeneinander sind erlaubt."
+          - call: "ascending([1, 5, 2])"
+            expect: "false"
+          - call: "ascending([])"
+            expect: "true"
+            say: "Eine leere Liste ist sortiert."
+          - call: "ascending([4])"
+            expect: "true"
+          - call: "ascending([2, 1])"
+            expect: "false"
+          - call: "ascending([1, 2, 3, 4, 0])"
+            expect: "false"
+            say: "Auch der letzte Schritt zählt."
+      feedback:
+        - when: { same_as: "bool ascending(List<int> numbers) {\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n" }
+          say: "Gleiche Zahlen nebeneinander sind erlaubt: `[1, 3, 3, 8]` ist aufsteigend. `<=` sagt schon bei gleichen Zahlen nein."
+      hint:
+        - "Vergleich jede Zahl mit der vor ihr: `numbers[i]` mit `numbers[i - 1]`. Bei welchem `i` fängst du an?"
+        - "Ein einziger Schritt abwärts reicht für `false`. Erst wenn alle Schritte stimmen, ist es `true`, wie bei `contains`."
+      solution: |
+        ```dart
+        bool ascending(List<int> numbers) {
+          for (var i = 1; i < numbers.length; i++) {
+            if (numbers[i] < numbers[i - 1]) {
+              return false;
+            }
+          }
+          return true;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `boolean ascending(List<Integer> numbers)`, die `true` zurückgibt, wenn jede Zahl mindestens so groß ist wie die vor ihr, und sonst `false`: `ascending(List.of(1, 3, 3, 8))` ergibt `true`, `ascending(List.of(1, 5, 2))` ergibt `false`. Ohne zu sortieren.
+      starter: |
+        boolean ascending(List<Integer> numbers) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.sort, Collections.sort, .stream]
+        cases:
+          - call: "ascending(List.of(1, 3, 3, 8))"
+            expect: "true"
+            say: "Gleiche Zahlen nebeneinander sind erlaubt."
+          - call: "ascending(List.of(1, 5, 2))"
+            expect: "false"
+          - call: "ascending(List.of())"
+            expect: "true"
+            say: "Eine leere Liste ist sortiert."
+          - call: "ascending(List.of(4))"
+            expect: "true"
+          - call: "ascending(List.of(2, 1))"
+            expect: "false"
+          - call: "ascending(List.of(1, 2, 3, 4, 0))"
+            expect: "false"
+            say: "Auch der letzte Schritt zählt."
+      feedback:
+        - when: { same_as: "boolean ascending(List<Integer> numbers) {\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) <= numbers.get(i - 1)) {\n            return false;\n        }\n    }\n    return true;\n}\n" }
+          say: "Gleiche Zahlen nebeneinander sind erlaubt: `[1, 3, 3, 8]` ist aufsteigend. `<=` sagt schon bei gleichen Zahlen nein."
+      hint:
+        - "Vergleich jede Zahl mit der vor ihr: `numbers.get(i)` mit `numbers.get(i - 1)`. Bei welchem `i` fängst du an?"
+        - "Ein einziger Schritt abwärts reicht für `false`. Erst wenn alle Schritte stimmen, ist es `true`, wie bei `contains`."
+      solution: |
+        ```java
+        boolean ascending(List<Integer> numbers) {
+            for (int i = 1; i < numbers.size(); i++) {
+                if (numbers.get(i) < numbers.get(i - 1)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ```
+
   - id: remove-duplicates
     title: "Ohne Doppelte"
     level: 3
@@ -1052,6 +1711,89 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<Object> removeDuplicates(List<Object> items)`, die eine neue Liste zurückgibt, in der jedes Element nur einmal vorkommt, dort, wo es zum ersten Mal stand: `removeDuplicates([3, 1, 3, 2, 1])` ergibt `[3, 1, 2]`. Ohne `Set`.
+      starter: |
+        List<Object> removeDuplicates(List<Object> items) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toSet, Set]
+        cases:
+          - call: "removeDuplicates([3, 1, 3, 2, 1])"
+            expect: "[3, 1, 2]"
+            say: "Die Reihenfolge bleibt: Jedes Element steht dort, wo es zum ersten Mal vorkam."
+          - call: "removeDuplicates([])"
+            expect: "[]"
+          - call: "removeDuplicates([5, 5, 5])"
+            expect: "[5]"
+          - call: "removeDuplicates([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "removeDuplicates(['b', 'a', 'b'])"
+            expect: "['b', 'a']"
+      feedback:
+        - when: { same_as: "List<Object> removeDuplicates(List<Object> items) {\n  final result = <Object>[];\n  for (var i = 0; i < items.length; i++) {\n    if (i == items.length - 1 || items[i] != items[i + 1]) {\n      result.add(items[i]);\n    }\n  }\n  return result;\n}\n" }
+          say: "Du vergleichst nur mit dem Nachbarn. Doppelte können auch weit auseinander stehen: Schau nach, ob das Element schon in deinem Ergebnis ist."
+      hint:
+        - "Bau eine neue Liste auf. Bevor ein Element hineinkommt: Steht es schon darin? Das ist deine Kata `contains`, und hier darfst du `contains` der Liste benutzen."
+        - "`if (!result.contains(item))` und dann `add`."
+      solution: |
+        ```dart
+        List<Object> removeDuplicates(List<Object> items) {
+          final result = <Object>[];
+          for (final item in items) {
+            if (!result.contains(item)) {
+              result.add(item);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> removeDuplicates(List<Integer> items)`, die eine neue Liste zurückgibt, in der jede Zahl nur einmal vorkommt, dort, wo sie zum ersten Mal stand: `removeDuplicates(List.of(3, 1, 3, 2, 1))` ergibt `[3, 1, 2]`. Ohne `Set` und Streams.
+      starter: |
+        List<Integer> removeDuplicates(List<Integer> items) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Set, HashSet, LinkedHashSet, TreeSet, .stream]
+        cases:
+          - call: "removeDuplicates(List.of(3, 1, 3, 2, 1))"
+            expect: "List.of(3, 1, 2)"
+            say: "Die Reihenfolge bleibt: Jede Zahl steht dort, wo sie zum ersten Mal vorkam."
+          - call: "removeDuplicates(List.of())"
+            expect: "List.of()"
+          - call: "removeDuplicates(List.of(5, 5, 5))"
+            expect: "List.of(5)"
+          - call: "removeDuplicates(List.of(1, 2, 3))"
+            expect: "List.of(1, 2, 3)"
+          - call: "removeDuplicates(List.of(8, 4, 8, 8))"
+            expect: "List.of(8, 4)"
+      feedback:
+        - when: { same_as: "List<Integer> removeDuplicates(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = 0; i < items.size(); i++) {\n        if (i == items.size() - 1 || !items.get(i).equals(items.get(i + 1))) {\n            result.add(items.get(i));\n        }\n    }\n    return result;\n}\n" }
+          say: "Du vergleichst nur mit dem Nachbarn. Doppelte können auch weit auseinander stehen: Schau nach, ob die Zahl schon in deinem Ergebnis ist."
+      hint:
+        - "Bau eine neue Liste auf. Bevor eine Zahl hineinkommt: Steht sie schon darin? Das ist deine Kata `contains`, und hier darfst du `contains` der Liste benutzen."
+        - "`if (!result.contains(item))` und dann `add`."
+      solution: |
+        ```java
+        List<Integer> removeDuplicates(List<Integer> items) {
+            List<Integer> result = new ArrayList<>();
+            for (int item : items) {
+                if (!result.contains(item)) {
+                    result.add(item);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: missing-number
     title: "Die fehlende Zahl"
     level: 3
@@ -1176,6 +1918,93 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        In der Liste stehen die Zahlen von 1 bis n, durcheinander, und genau eine fehlt. Die Liste hat also n - 1 Zahlen. Schreib eine Funktion `int missingNumber(List<int> numbers)`, die die fehlende Zahl zurückgibt: `missingNumber([3, 1, 5, 2])` ergibt `4`. Geht es ohne zu suchen?
+      starter: |
+        int missingNumber(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "missingNumber([3, 1, 5, 2])"
+            expect: "4"
+          - call: "missingNumber([2, 3, 4])"
+            expect: "1"
+            say: "Auch die 1 kann fehlen."
+          - call: "missingNumber([1, 2, 3])"
+            expect: "4"
+            say: "Auch die größte kann fehlen: Hier ist n gleich 4."
+          - call: "missingNumber([])"
+            expect: "1"
+            say: "Die leere Liste: n ist 1, und die 1 fehlt."
+          - call: "missingNumber([7, 2, 1, 6, 3, 5])"
+            expect: "4"
+          - call: "missingNumber([1])"
+            expect: "2"
+      feedback:
+        - when: { same_as: "int missingNumber(List<int> numbers) {\n  final n = numbers.length;\n  var total = n * (n + 1) ~/ 2;\n  for (final number in numbers) {\n    total -= number;\n  }\n  return total;\n}\n" }
+          say: "In der Liste fehlt eine Zahl: n ist um eins größer als die Länge der Liste."
+      hint:
+        - "Wie groß ist n? Die Liste hat n - 1 Zahlen."
+        - "Du weißt, was alle Zahlen von 1 bis n zusammen ergeben: `sumTo(n)` aus den Schleifen, oder n · (n + 1) / 2, in Dart ganzzahlig geteilt mit `~/`. Was fehlt, wenn du die Zahlen der Liste davon abziehst?"
+      solution: |
+        ```dart
+        int missingNumber(List<int> numbers) {
+          final n = numbers.length + 1;
+          var total = n * (n + 1) ~/ 2;
+          for (final number in numbers) {
+            total -= number;
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        In der Liste stehen die Zahlen von 1 bis n, durcheinander, und genau eine fehlt. Die Liste hat also n - 1 Zahlen. Schreib eine Methode `int missingNumber(List<Integer> numbers)`, die die fehlende Zahl zurückgibt: `missingNumber(List.of(3, 1, 5, 2))` ergibt `4`. Geht es ohne zu suchen?
+      starter: |
+        int missingNumber(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "missingNumber(List.of(3, 1, 5, 2))"
+            expect: "4"
+          - call: "missingNumber(List.of(2, 3, 4))"
+            expect: "1"
+            say: "Auch die 1 kann fehlen."
+          - call: "missingNumber(List.of(1, 2, 3))"
+            expect: "4"
+            say: "Auch die größte kann fehlen: Hier ist n gleich 4."
+          - call: "missingNumber(List.of())"
+            expect: "1"
+            say: "Die leere Liste: n ist 1, und die 1 fehlt."
+          - call: "missingNumber(List.of(7, 2, 1, 6, 3, 5))"
+            expect: "4"
+          - call: "missingNumber(List.of(1))"
+            expect: "2"
+      feedback:
+        - when: { same_as: "int missingNumber(List<Integer> numbers) {\n    int n = numbers.size();\n    int total = n * (n + 1) / 2;\n    for (int number : numbers) {\n        total -= number;\n    }\n    return total;\n}\n" }
+          say: "In der Liste fehlt eine Zahl: n ist um eins größer als die Länge der Liste."
+      hint:
+        - "Wie groß ist n? Die Liste hat n - 1 Zahlen."
+        - "Du weißt, was alle Zahlen von 1 bis n zusammen ergeben: `sumTo(n)` aus den Schleifen, oder n · (n + 1) / 2. Was fehlt, wenn du die Zahlen der Liste davon abziehst?"
+      solution: |
+        ```java
+        int missingNumber(List<Integer> numbers) {
+            int n = numbers.size() + 1;
+            int total = n * (n + 1) / 2;
+            for (int number : numbers) {
+                total -= number;
+            }
+            return total;
+        }
+        ```
+
   - id: merge-sorted
     title: "Zwei sortierte Listen mischen"
     level: 3
@@ -1320,6 +2149,111 @@ tasks:
           return result.concat(a.slice(i), b.slice(j));
         }
         ```
+    dart:
+      prompt: |
+        `a` und `b` sind aufsteigend sortiert. Schreib eine Funktion `List<int> mergeSorted(List<int> a, List<int> b)`, die daraus eine sortierte Liste macht, ohne zu sortieren: Schau immer auf die vorderste Zahl beider Listen und nimm die kleinere. `mergeSorted([1, 4, 6], [2, 3, 7])` ergibt `[1, 2, 3, 4, 6, 7]`.
+      starter: |
+        List<int> mergeSorted(List<int> a, List<int> b) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.sort, min, max]
+        cases:
+          - call: "mergeSorted([1, 4, 6], [2, 3, 7])"
+            expect: "[1, 2, 3, 4, 6, 7]"
+          - call: "mergeSorted([], [1, 2])"
+            expect: "[1, 2]"
+          - call: "mergeSorted([5], [])"
+            expect: "[5]"
+          - call: "mergeSorted([1, 2], [2, 3])"
+            expect: "[1, 2, 2, 3]"
+            say: "Gleiche Zahlen kommen beide hinein."
+          - call: "mergeSorted([1, 2, 3], [10, 20])"
+            expect: "[1, 2, 3, 10, 20]"
+            say: "Ist eine Liste zu Ende, gehört der Rest der anderen noch dazu."
+          - call: "mergeSorted([8, 9], [1])"
+            expect: "[1, 8, 9]"
+      feedback:
+        - when: { same_as: "List<int> mergeSorted(List<int> a, List<int> b) {\n  final result = <int>[];\n  var i = 0;\n  var j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.add(a[i]);\n      i++;\n    } else {\n      result.add(b[j]);\n      j++;\n    }\n  }\n  return result;\n}\n" }
+          say: "Ist eine Liste zu Ende, hört deine Schleife auf, aber in der anderen stehen noch Zahlen. Die gehören noch dazu."
+      hint:
+        - "Zwei Zählvariablen, `i` für `a` und `j` für `b`, zeigen auf die vorderste Zahl, die noch nicht im Ergebnis ist. Die kleinere von `a[i]` und `b[j]` kommt hinein, und ihre Zählvariable rückt weiter."
+        - "Das geht, solange beide Listen noch Zahlen haben. Was ist danach mit dem Rest? `a.sublist(i)` ist alles ab dem Index `i`, und `addAll` hängt eine ganze Liste an."
+      solution: |
+        ```dart
+        List<int> mergeSorted(List<int> a, List<int> b) {
+          final result = <int>[];
+          var i = 0;
+          var j = 0;
+          while (i < a.length && j < b.length) {
+            if (a[i] <= b[j]) {
+              result.add(a[i]);
+              i++;
+            } else {
+              result.add(b[j]);
+              j++;
+            }
+          }
+          result.addAll(a.sublist(i));
+          result.addAll(b.sublist(j));
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        `a` und `b` sind aufsteigend sortiert. Schreib eine Methode `List<Integer> mergeSorted(List<Integer> a, List<Integer> b)`, die daraus eine sortierte Liste macht, ohne zu sortieren: Schau immer auf die vorderste Zahl beider Listen und nimm die kleinere. `mergeSorted(List.of(1, 4, 6), List.of(2, 3, 7))` ergibt `[1, 2, 3, 4, 6, 7]`.
+      starter: |
+        List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.sort, Collections.sort, Math.min, Math.max, .stream]
+        cases:
+          - call: "mergeSorted(List.of(1, 4, 6), List.of(2, 3, 7))"
+            expect: "List.of(1, 2, 3, 4, 6, 7)"
+          - call: "mergeSorted(List.of(), List.of(1, 2))"
+            expect: "List.of(1, 2)"
+          - call: "mergeSorted(List.of(5), List.of())"
+            expect: "List.of(5)"
+          - call: "mergeSorted(List.of(1, 2), List.of(2, 3))"
+            expect: "List.of(1, 2, 2, 3)"
+            say: "Gleiche Zahlen kommen beide hinein."
+          - call: "mergeSorted(List.of(1, 2, 3), List.of(10, 20))"
+            expect: "List.of(1, 2, 3, 10, 20)"
+            say: "Ist eine Liste zu Ende, gehört der Rest der anderen noch dazu."
+          - call: "mergeSorted(List.of(8, 9), List.of(1))"
+            expect: "List.of(1, 8, 9)"
+      feedback:
+        - when: { same_as: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>();\n    int i = 0;\n    int j = 0;\n    while (i < a.size() && j < b.size()) {\n        if (a.get(i) <= b.get(j)) {\n            result.add(a.get(i));\n            i++;\n        } else {\n            result.add(b.get(j));\n            j++;\n        }\n    }\n    return result;\n}\n" }
+          say: "Ist eine Liste zu Ende, hört deine Schleife auf, aber in der anderen stehen noch Zahlen. Die gehören noch dazu."
+      hint:
+        - "Zwei Zählvariablen, `i` für `a` und `j` für `b`, zeigen auf die vorderste Zahl, die noch nicht im Ergebnis ist. Die kleinere von `a.get(i)` und `b.get(j)` kommt hinein, und ihre Zählvariable rückt weiter."
+        - "Das geht, solange beide Listen noch Zahlen haben. Was ist danach mit dem Rest? `a.subList(i, a.size())` ist alles ab dem Index `i`, und `addAll` hängt eine ganze Liste an."
+      solution: |
+        ```java
+        List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {
+            List<Integer> result = new ArrayList<>();
+            int i = 0;
+            int j = 0;
+            while (i < a.size() && j < b.size()) {
+                if (a.get(i) <= b.get(j)) {
+                    result.add(a.get(i));
+                    i++;
+                } else {
+                    result.add(b.get(j));
+                    j++;
+                }
+            }
+            result.addAll(a.subList(i, a.size()));
+            result.addAll(b.subList(j, b.size()));
+            return result;
+        }
+        ```
+
   - id: two-sum
     title: "Zwei, die zusammenpassen"
     extra: true
@@ -1443,6 +2377,95 @@ tasks:
           return [];
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> twoSum(List<int> numbers, int target)`, die die Indizes der ersten zwei Zahlen zurückgibt, die zusammen `target` ergeben, als Liste `[i, j]` mit `i < j`: `twoSum([2, 7, 11, 15], 9)` ergibt `[0, 1]`. »Die ersten« heißt: mit dem kleinsten `j`, und bei gleichem `j` mit dem kleinsten `i`. Gibt es keine, kommt `[]` zurück.
+      starter: |
+        List<int> twoSum(List<int> numbers, int target) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "twoSum([2, 7, 11, 15], 9)"
+            expect: "[0, 1]"
+          - call: "twoSum([3, 2, 4], 6)"
+            expect: "[1, 2]"
+            say: "Eine Zahl zählt nicht doppelt: `3 + 3` geht nur mit zwei Dreien."
+          - call: "twoSum([3, 3], 6)"
+            expect: "[0, 1]"
+          - call: "twoSum([1, 2, 3], 7)"
+            expect: "[]"
+          - call: "twoSum([], 1)"
+            expect: "[]"
+          - call: "twoSum([5, 1, 4, 2], 6)"
+            expect: "[0, 1]"
+            say: "Am kleinsten `j` erkennt man das erste Paar: `5 + 1`."
+      feedback:
+        - when: { same_as: "List<int> twoSum(List<int> numbers, int target) {\n  for (var i = 0; i < numbers.length; i++) {\n    for (var j = 0; j < numbers.length; j++) {\n      if (numbers[i] + numbers[j] == target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n" }
+          say: "Bei `[3, 2, 4]` und 6 nimmt dein Code die 3 zweimal. `j` muss hinter `i` liegen."
+      hint:
+        - "Zwei Schleifen ineinander: die äußere für `j`, die innere für alle `i` vor `j`."
+        - "Mit einer `Map`, die sich merkt, welche Zahl an welchem Index stand, geht es mit einer einzigen Schleife. Das kommt bei den Dictionaries."
+      solution: |
+        ```dart
+        List<int> twoSum(List<int> numbers, int target) {
+          for (var j = 1; j < numbers.length; j++) {
+            for (var i = 0; i < j; i++) {
+              if (numbers[i] + numbers[j] == target) {
+                return [i, j];
+              }
+            }
+          }
+          return [];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> twoSum(List<Integer> numbers, int target)`, die die Indizes der ersten zwei Zahlen zurückgibt, die zusammen `target` ergeben, als Liste `[i, j]` mit `i < j`: `twoSum(List.of(2, 7, 11, 15), 9)` ergibt `[0, 1]`. »Die ersten« heißt: mit dem kleinsten `j`, und bei gleichem `j` mit dem kleinsten `i`. Gibt es keine, kommt eine leere Liste zurück.
+      starter: |
+        List<Integer> twoSum(List<Integer> numbers, int target) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "twoSum(List.of(2, 7, 11, 15), 9)"
+            expect: "List.of(0, 1)"
+          - call: "twoSum(List.of(3, 2, 4), 6)"
+            expect: "List.of(1, 2)"
+            say: "Eine Zahl zählt nicht doppelt: `3 + 3` geht nur mit zwei Dreien."
+          - call: "twoSum(List.of(3, 3), 6)"
+            expect: "List.of(0, 1)"
+          - call: "twoSum(List.of(1, 2, 3), 7)"
+            expect: "List.of()"
+          - call: "twoSum(List.of(), 1)"
+            expect: "List.of()"
+          - call: "twoSum(List.of(5, 1, 4, 2), 6)"
+            expect: "List.of(0, 1)"
+            say: "Am kleinsten `j` erkennt man das erste Paar: `5 + 1`."
+      feedback:
+        - when: { same_as: "List<Integer> twoSum(List<Integer> numbers, int target) {\n    for (int i = 0; i < numbers.size(); i++) {\n        for (int j = 0; j < numbers.size(); j++) {\n            if (numbers.get(i) + numbers.get(j) == target) {\n                return List.of(i, j);\n            }\n        }\n    }\n    return new ArrayList<>();\n}\n" }
+          say: "Bei `[3, 2, 4]` und 6 nimmt dein Code die 3 zweimal. `j` muss hinter `i` liegen."
+      hint:
+        - "Zwei Schleifen ineinander: die äußere für `j`, die innere für alle `i` vor `j`. `List.of(i, j)` ist die Liste mit beiden."
+        - "Mit einer `Map`, die sich merkt, welche Zahl an welchem Index stand, geht es mit einer einzigen Schleife. Das kommt bei den Dictionaries."
+      solution: |
+        ```java
+        List<Integer> twoSum(List<Integer> numbers, int target) {
+            for (int j = 1; j < numbers.size(); j++) {
+                for (int i = 0; i < j; i++) {
+                    if (numbers.get(i) + numbers.get(j) == target) {
+                        return List.of(i, j);
+                    }
+                }
+            }
+            return new ArrayList<>();
+        }
+        ```
+
   - id: chunks
     title: "In Stücke teilen"
     extra: true
@@ -1549,5 +2572,78 @@ tasks:
             result.push(items.slice(i, i + size));
           }
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<List<int>> chunks(List<int> items, int size)`, die die Liste in Stücke von je `size` Elementen teilt; das letzte Stück darf kürzer sein: `chunks([1, 2, 3, 4, 5], 2)` ergibt `[[1, 2], [3, 4], [5]]`.
+      starter: |
+        List<List<int>> chunks(List<int> items, int size) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "chunks([1, 2, 3, 4, 5], 2)"
+            expect: "[[1, 2], [3, 4], [5]]"
+            say: "Das letzte Stück darf kürzer sein."
+          - call: "chunks([1, 2, 3, 4], 2)"
+            expect: "[[1, 2], [3, 4]]"
+          - call: "chunks([], 3)"
+            expect: "[]"
+            say: "Die leere Liste hat keine Stücke."
+          - call: "chunks([1, 2, 3], 5)"
+            expect: "[[1, 2, 3]]"
+          - call: "chunks([1, 2, 3], 1)"
+            expect: "[[1], [2], [3]]"
+      hint:
+        - "Der Anfang jedes Stücks liegt bei den Indizes 0, `size`, `2 * size` … `items.sublist(i, ende)` sind die Elemente ab dem Index `i` bis vor `ende`; am Ende darf `ende` nicht hinter der Liste liegen."
+        - "Eine Schleife, in der `i` jedes Mal um `size` wächst: `i += size`. Das Ende des Stücks ist `i + size`, höchstens aber `items.length`."
+      solution: |
+        ```dart
+        List<List<int>> chunks(List<int> items, int size) {
+          final result = <List<int>>[];
+          for (var i = 0; i < items.length; i += size) {
+            final end = i + size < items.length ? i + size : items.length;
+            result.add(items.sublist(i, end));
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<List<Integer>> chunks(List<Integer> items, int size)`, die die Liste in Stücke von je `size` Elementen teilt; das letzte Stück darf kürzer sein: `chunks(List.of(1, 2, 3, 4, 5), 2)` ergibt `[[1, 2], [3, 4], [5]]`.
+      starter: |
+        List<List<Integer>> chunks(List<Integer> items, int size) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "chunks(List.of(1, 2, 3, 4, 5), 2)"
+            expect: "List.of(List.of(1, 2), List.of(3, 4), List.of(5))"
+            say: "Das letzte Stück darf kürzer sein."
+          - call: "chunks(List.of(1, 2, 3, 4), 2)"
+            expect: "List.of(List.of(1, 2), List.of(3, 4))"
+          - call: "chunks(List.of(), 3)"
+            expect: "List.of()"
+            say: "Die leere Liste hat keine Stücke."
+          - call: "chunks(List.of(1, 2, 3), 5)"
+            expect: "List.of(List.of(1, 2, 3))"
+          - call: "chunks(List.of(1, 2, 3), 1)"
+            expect: "List.of(List.of(1), List.of(2), List.of(3))"
+      hint:
+        - "Der Anfang jedes Stücks liegt bei den Indizes 0, `size`, `2 * size` … `items.subList(i, ende)` sind die Elemente ab dem Index `i` bis vor `ende`; am Ende darf `ende` nicht hinter der Liste liegen."
+        - "Eine Schleife, in der `i` jedes Mal um `size` wächst: `i += size`. Das Ende des Stücks ist `Math.min(i + size, items.size())`."
+      solution: |
+        ```java
+        List<List<Integer>> chunks(List<Integer> items, int size) {
+            List<List<Integer>> result = new ArrayList<>();
+            for (int i = 0; i < items.size(); i += size) {
+                result.add(new ArrayList<>(items.subList(i, Math.min(i + size, items.size()))));
+            }
+            return result;
         }
         ```

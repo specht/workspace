@@ -2,8 +2,8 @@
 image: teaser.webp
 image_alt: "Ein Terminal, in dem messen.rb läuft: eine Tabelle mit der Zahl der Straßennamen, den drei Arten zu zählen und ihren Zeiten; die Liste braucht für 64 000 Namen zwei Sekunden, die Menge ein Hundertstel davon"
 kind: projekt
-language: Ruby / Python
-languages: [ruby, python]
+language: Ruby / Python / Dart / Java
+languages: [ruby, python, dart, java]
 duration: 3 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Aufwand, Laufzeit messen und abschätzen, Mengen und Dictionaries), Vertiefung Theoretische Informatik (Komplexität, P und NP)"
 topics: [suchen-sortieren, datenstrukturen, berechenbarkeit]
@@ -54,6 +54,13 @@ Deine Funktionen schreibst du in `laufzeit.rb`.
 <!-- language: python -->
 Deine Funktionen schreibst du in `laufzeit.py`.
 <!-- /language -->
+<!-- language: dart -->
+Deine Funktionen schreibst du in `laufzeit.dart`.
+<!-- /language -->
+<!-- language: java -->
+Deine Methoden schreibst du in `Laufzeit.java`, in eine Klasse `Laufzeit`.
+Oben in die Datei gehört `import java.util.*;`, für Listen, Mengen und Maps.
+<!-- /language -->
 
 ## Dreimal dieselbe Frage
 
@@ -82,7 +89,7 @@ Alle drei geben dieselbe Zahl. Aber wie lange brauchen sie? Bevor du misst:
 _task(verdoppeln)
 
 <!-- after: verdoppeln -->
-Für jeden neuen Namen fragt `distinct_list` die Liste, und die Liste sieht
+Bei jedem neuen Namen fragt die erste Art ihre Liste, und die Liste sieht
 jeden Namen an, den sie schon hat. Bei doppelt so vielen Namen sind es
 doppelt so viele Fragen, und jede dauert doppelt so lange, weil die Liste
 doppelt so lang ist: zusammen viermal so lange.
@@ -103,6 +110,18 @@ ruby messen.rb
 ```bash_copy
 wget ${web_root}/laufzeit/starter/messen.py
 python3 messen.py
+```
+<!-- /language -->
+<!-- language: dart -->
+```bash_copy
+wget ${web_root}/laufzeit/starter/messen.dart
+dart run messen.dart
+```
+<!-- /language -->
+<!-- language: java -->
+```bash_copy
+wget ${web_root}/laufzeit/starter/Messen.java
+java Messen.java
 ```
 <!-- /language -->
 
@@ -128,7 +147,18 @@ etwa <code>hyperfine 'ruby messen.rb'</code>.
 <!-- language: python -->
 etwa <code>hyperfine 'python3 messen.py'</code>.
 <!-- /language -->
+<!-- language: dart -->
+etwa <code>hyperfine 'dart run messen.dart'</code>.
+<!-- /language -->
+<!-- language: java -->
+etwa <code>hyperfine 'java Messen.java'</code>.
+<!-- /language -->
 Achte darauf, wie weit die einzelnen Läufe auseinanderliegen.
+<!-- language: dart, java -->
+Bei den ersten, kleinen Zeilen von <code>messen</code> ist der Faktor oft
+seltsam, manchmal kleiner als 1: Ein Programm in dieser Sprache wird beim
+Laufen noch einmal übersetzt, und Code, der oft läuft, wird dabei schneller.
+<!-- /language -->
 </div>
 
 ## Zählen statt messen
@@ -153,6 +183,7 @@ schnell wie n², bis auf einen festen Faktor. Die Hälfte von n² ist auch
 O(n²), und O(n²) heißt immer: doppelt so viel Eingabe, viermal so viel
 Arbeit.
 
+<!-- language: ruby, python -->
 <table class='table'>
 <tr><th>Aufwand</th><th>woran man ihn erkennt</th><th>Beispiel</th></tr>
 <tr><td>O(1)</td><td>keine Schleife über die Eingabe</td><td>in einer Menge nachsehen</td></tr>
@@ -163,6 +194,19 @@ Arbeit.
 <tr><td>O(2ⁿ)</td><td>jede Teilmenge ausprobieren, zwei Aufrufe in jeder Rekursion</td><td><code>fib</code> ohne Gedächtnis</td></tr>
 <tr><td>O(n!)</td><td>jede Reihenfolge ausprobieren</td><td>die Rundfahrt unten</td></tr>
 </table>
+<!-- /language -->
+<!-- language: dart, java -->
+<table class='table'>
+<tr><th>Aufwand</th><th>woran man ihn erkennt</th><th>Beispiel</th></tr>
+<tr><td>O(1)</td><td>keine Schleife über die Eingabe</td><td>in einer Menge nachsehen</td></tr>
+<tr><td>O(log n)</td><td>bei jedem Schritt bleibt die Hälfte</td><td>binäre Suche</td></tr>
+<tr><td>O(n)</td><td>eine Schleife über die Eingabe</td><td><code>distinctSet</code></td></tr>
+<tr><td>O(n log n)</td><td>gutes Sortieren</td><td><code>distinctSorted</code></td></tr>
+<tr><td>O(n²)</td><td>eine Schleife in einer Schleife</td><td><code>distinctList</code>, wenn alle Namen verschieden sind</td></tr>
+<tr><td>O(2ⁿ)</td><td>jede Teilmenge ausprobieren, zwei Aufrufe in jeder Rekursion</td><td><code>fib</code> ohne Gedächtnis</td></tr>
+<tr><td>O(n!)</td><td>jede Reihenfolge ausprobieren</td><td>die Rundfahrt unten</td></tr>
+</table>
+<!-- /language -->
 
 ## Wie schnell der Aufwand wächst
 
@@ -207,6 +251,26 @@ def fib(n):
     return fib(n - 1) + fib(n - 2)
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+int fib(int n) {
+  if (n < 2) {
+    return n;
+  }
+  return fib(n - 1) + fib(n - 2);
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+public static long fib(int n) {
+    if (n < 2) {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2);
+}
+```
+<!-- /language -->
 
 `fib(40)` ruft `fib(39)` und `fib(38)` auf, `fib(39)` wieder `fib(38)`, und
 so rechnet das Programm dieselben Zahlen viele Millionen Mal aus. Probier
@@ -247,6 +311,36 @@ def distance(a, b):
 
 Dazu steht `import math` oben in der Datei.
 <!-- /language -->
+<!-- language: dart -->
+Ein Ort ist ein Record aus Namen, Länge und Breite, mit einem Namen für
+seinen Typ:
+
+```dart
+typedef Place = ({String name, double lon, double lat});
+
+double distance(Place a, Place b) {
+  final dx = (b.lon - a.lon) * 111.32 * cos((a.lat + b.lat) / 2 * pi / 180);
+  final dy = (b.lat - a.lat) * 110.57;
+  return sqrt(dx * dx + dy * dy);
+}
+```
+
+Dazu steht `import 'dart:math';` oben in der Datei.
+<!-- /language -->
+<!-- language: java -->
+Ein Ort ist ein Record aus Namen, Länge und Breite; beides gehört in die
+Klasse `Laufzeit`:
+
+```java
+public record Place(String name, double lon, double lat) {}
+
+public static double distance(Place a, Place b) {
+    double dx = (b.lon() - a.lon()) * 111.32 * Math.cos((a.lat() + b.lat()) / 2 * Math.PI / 180);
+    double dy = (b.lat() - a.lat()) * 110.57;
+    return Math.hypot(dx, dy);
+}
+```
+<!-- /language -->
 
 Ein Grad Breite ist überall etwa 110,6 km lang, ein Grad Länge in Berlin nur
 knapp 68 km, weil die Längenkreise zu den Polen hin zusammenlaufen; darum der
@@ -274,16 +368,71 @@ wget ${web_root}/laufzeit/starter/rundfahrt.py
 python3 rundfahrt.py 8
 ```
 <!-- /language -->
+<!-- language: dart -->
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/street-archive/berlin-places.tsv
+wget ${web_root}/laufzeit/starter/rundfahrt.dart
+dart run rundfahrt.dart 8
+```
+<!-- /language -->
+<!-- language: java -->
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/street-archive/berlin-places.tsv
+wget ${web_root}/laufzeit/starter/Rundfahrt.java
+java Rundfahrt.java 8
+```
+<!-- /language -->
+<!-- language: dart -->
+`rundfahrt` ruft auch `nearestTour` auf, die du erst gleich schreibst, und
+ohne sie lässt es sich nicht übersetzen. Bis dahin genügt eine, die die
+kürzeste zurückgibt:
+
+```dart
+List<int> nearestTour(List<Place> places) => bestTour(places);
+```
+<!-- /language -->
+<!-- language: java -->
+`Rundfahrt.java` ruft auch `nearestTour` auf, die du erst gleich schreibst,
+und ohne sie lässt es sich nicht übersetzen. Die Prüfung übersetzt jede
+Java-Datei im Ordner, also auch diese. Bis dahin genügt eine, die die
+kürzeste zurückgibt:
+
+```java
+public static List<Integer> nearestTour(List<Place> places) {
+    return bestTour(places);
+}
+```
+<!-- /language -->
 
 Noch fehlt die zweite Art. Vorher:
 
 _task(fakultaet)
 
 <!-- after: fakultaet -->
+<!-- language: ruby, python -->
 Bei 11 Orten sind es zehnmal so viele Reihenfolgen wie bei 10, bei 12 noch
-einmal elfmal so viele, bei 13 zwölfmal: 1,5 s · 11 · 12 · 13, rund 43
-Minuten. Mit 20 Orten wären es Zehntausende Jahre. O(n!) wächst schneller
-als alles in der Tabelle oben.
+einmal elfmal so viele, bei 13 zwölfmal. Dazu hat jede Rundfahrt 13 statt
+10 Strecken, die zusammengezählt werden: 10 · 11 · 12 · 13 / 10, also
+11 · 12 · 13 = 1716-mal so viel Arbeit,
+1,5 s · 1716, rund 43 Minuten. Mit 20 Orten wären es Zehntausende
+Jahre. O(n!) wächst schneller als alles in der Tabelle oben.
+<!-- /language -->
+<!-- language: dart -->
+Bei 11 Orten sind es zehnmal so viele Reihenfolgen wie bei 10, bei 12 noch
+einmal elfmal so viele, bei 13 zwölfmal. Dazu hat jede Rundfahrt 13 statt
+10 Strecken, die zusammengezählt werden: 10 · 11 · 12 · 13 / 10, also
+11 · 12 · 13 = 1716-mal so viel Arbeit,
+0,5 s · 1716, rund eine Viertelstunde. Mit 20 Orten wären es Zehntausende
+Jahre. O(n!) wächst schneller als alles in der Tabelle oben.
+<!-- /language -->
+<!-- language: java -->
+Bei 11 Orten sind es zehnmal so viele Reihenfolgen wie bei 10, bei 12 noch
+einmal elfmal so viele, bei 13 zwölfmal. Dazu hat jede Rundfahrt 13 statt
+10 Strecken, die zusammengezählt werden: 10 · 11 · 12 · 13 / 10, also
+11 · 12 · 13 = 1716-mal so viel Arbeit,
+1 s · 1716, rund eine halbe Stunde. Mit 20 Orten wären es Zehntausende
+Jahre. O(n!) wächst schneller als alles in der Tabelle oben.
+<!-- /language -->
 <!-- /after -->
 
 _task(nearest-tour)
@@ -299,7 +448,7 @@ _task(grenze)
 ## Schnell prüfen, langsam finden
 
 Bei der Rundfahrt fällt etwas auf: Ob eine Rundfahrt kürzer als 20 km ist,
-prüft man in einem Augenblick, mit `tour_length`. Eine zu finden, ist
+prüft man in einem Augenblick: Man rechnet ihre Länge aus. Eine zu finden, ist
 schwer. Das gilt für viele Probleme: einen Stundenplan ohne
 Überschneidungen, ein Sudoku, die beste Packung eines Koffers. Eine Lösung
 zu prüfen geht schnell, in **polynomieller** Zeit, O(n²) oder O(n³) etwa.
@@ -311,8 +460,8 @@ schnell prüfen lässt, sich auch schnell finden lässt, weiß niemand. Die
 meisten Fachleute glauben es nicht. Gefragt hat es zuerst Stephen Cook 1971,
 und heute ist es eine der sieben Fragen, für deren Antwort das Clay
 Mathematics Institute eine Million Dollar ausgesetzt hat. Bis dahin hilft,
-was du mit `nearest_tour` gebaut hast: eine Lösung, die gut genug ist, statt
-der besten.
+was du mit der Rundfahrt zum nächsten Ort gebaut hast: eine Lösung, die gut
+genug ist, statt der besten.
 
 <!-- extra -->
 ## Schneller geht es nicht

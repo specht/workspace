@@ -2,7 +2,7 @@
 icon: bi-diagram-3
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Funktionen, die sich selbst aufrufen, mit einem Fall, der aufhört
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (rekursive Verfahren)"
 topics: [rekursion]
@@ -57,6 +57,38 @@ function halvings(n) {
 
 console.log(halvings(20));                 // 4: 20, 10, 5, 2, 1
 ```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+int halvings(int n) {
+  if (n <= 1) {                // sofort fertig
+    return 0;
+  }
+  return 1 + halvings(n ~/ 2); // dasselbe, eine Nummer kleiner
+}
+
+void main() {
+  print(halvings(20));         // 4: 20, 10, 5, 2, 1
+}
+```
+
+`~/` teilt ganzzahlig: `5 ~/ 2` ist 2.
+<!-- /language -->
+<!-- language: java -->
+```java
+int halvings(int n) {
+    if (n <= 1) {                  // sofort fertig
+        return 0;
+    }
+    return 1 + halvings(n / 2);    // dasselbe, eine Nummer kleiner
+}
+
+void main() {
+    IO.println(halvings(20));      // 4: 20, 10, 5, 2, 1
+}
+```
+
+Zwei `int` teilt `/` ganzzahlig: `5 / 2` ist 2.
 <!-- /language -->
 
 `halvings(20)` wartet auf `halvings(10)`, das auf `halvings(5)`, bis

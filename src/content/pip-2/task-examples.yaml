@@ -22,6 +22,18 @@ examples:
       fail:
         - answer: "for (let i = 0; i < 4; i++) {\n  move();\n}\n"
           say: "In Karte 2"
+    dart:
+      pass:
+        - answer: "void main() {\n  while (frontClear()) {\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  for (var i = 0; i < 4; i++) {\n    move();\n  }\n}\n"
+          say: "In Karte 2"
+    java:
+      pass:
+        - answer: "void main() {\n    while (frontClear()) {\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    for (int i = 0; i < 4; i++) {\n        move();\n    }\n}\n"
+          say: "In Karte 2"
   dark-stones:
     pass:
       - answer: "while front_clear?\n  move\n  take if on_stone?\nend\n"
@@ -40,6 +52,18 @@ examples:
       fail:
         - answer: "while (frontClear()) {\n  move();\n}\n"
           say: "Funkenstein"
+    dart:
+      pass:
+        - answer: "void main() {\n  while (frontClear()) {\n    move();\n    if (onStone()) {\n      take();\n    }\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  while (frontClear()) {\n    move();\n  }\n}\n"
+          say: "Funkenstein"
+    java:
+      pass:
+        - answer: "void main() {\n    while (frontClear()) {\n        move();\n        if (onStone()) {\n            take();\n        }\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    while (frontClear()) {\n        move();\n    }\n}\n"
+          say: "Funkenstein"
   winding:
     pass:
       - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n    unless front_clear?\n      turn_left\n      turn_left\n    end\n  end\nend\n"
@@ -55,6 +79,16 @@ examples:
         - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
       fail:
         - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+    dart:
+      pass:
+        - answer: "void main() {\n  while (!onLamp()) {\n    if (frontClear()) {\n      move();\n    } else {\n      turnLeft();\n      if (!frontClear()) {\n        turnLeft();\n        turnLeft();\n      }\n    }\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  while (!onLamp()) {\n    if (frontClear()) {\n      move();\n    } else {\n      turnLeft();\n    }\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void main() {\n    while (!onLamp()) {\n        if (frontClear()) {\n            move();\n        } else {\n            turnLeft();\n            if (!frontClear()) {\n                turnLeft();\n                turnLeft();\n            }\n        }\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    while (!onLamp()) {\n        if (frontClear()) {\n            move();\n        } else {\n            turnLeft();\n        }\n    }\n}\n"
   turn-right:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n"
@@ -72,6 +106,18 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
       fail:
         - answer: "function turnRight() {\n  turnLeft();\n}\n"
+          say: "nach oben statt nach unten"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n  turnLeft();\n}\n"
+          say: "nach oben statt nach unten"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n    turnLeft();\n}\n"
           say: "nach oben statt nach unten"
   turn-around:
     pass:
@@ -91,6 +137,18 @@ examples:
       fail:
         - answer: "function turnAround() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
           say: "statt nach links"
+    dart:
+      pass:
+        - answer: "void turnAround() {\n  turnLeft();\n  turnLeft();\n}\n"
+      fail:
+        - answer: "void turnAround() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n"
+          say: "statt nach links"
+    java:
+      pass:
+        - answer: "void turnAround() {\n    turnLeft();\n    turnLeft();\n}\n"
+      fail:
+        - answer: "void turnAround() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n"
+          say: "statt nach links"
   walk:
     pass:
       - answer: "def walk(n)\n  n.times do\n    move\n  end\nend\n"
@@ -109,6 +167,18 @@ examples:
       fail:
         - answer: "function walk(n) {\n  for (let i = 0; i < 3; i++) {\n    move();\n  }\n}\n"
           say: "In Karte 2"
+    dart:
+      pass:
+        - answer: "void walk(int n) {\n  for (var i = 0; i < n; i++) {\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void walk(int n) {\n  for (var i = 0; i < 3; i++) {\n    move();\n  }\n}\n"
+          say: "In Karte 2"
+    java:
+      pass:
+        - answer: "void walk(int n) {\n    for (int i = 0; i < n; i++) {\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void walk(int n) {\n    for (int i = 0; i < 3; i++) {\n        move();\n    }\n}\n"
+          say: "In Karte 2"
   stairs:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\ndef walk(n)\n  n.times do\n    move\n  end\nend\n\n(1..4).each do |n|\n  walk(n)\n  turn_left\n  walk(n)\n  turn_right\nend\n"
@@ -124,6 +194,16 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nfunction walk(n) {\n  for (let i = 0; i < n; i++) {\n    move();\n  }\n}\n\nfor (let n = 1; n <= 4; n++) {\n  walk(n);\n  turnLeft();\n  walk(n);\n  turnRight();\n}\n"
       fail:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nfunction walk(n) {\n  for (let i = 0; i < n; i++) {\n    move();\n  }\n}\n\nfor (let n = 1; n <= 3; n++) {\n  walk(n);\n  turnLeft();\n  walk(n);\n  turnRight();\n}\n"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid walk(int n) {\n  for (var i = 0; i < n; i++) {\n    move();\n  }\n}\n\nvoid main() {\n  for (var n = 1; n <= 4; n++) {\n    walk(n);\n    turnLeft();\n    walk(n);\n    turnRight();\n  }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid walk(int n) {\n  for (var i = 0; i < n; i++) {\n    move();\n  }\n}\n\nvoid main() {\n  for (var n = 1; n <= 3; n++) {\n    walk(n);\n    turnLeft();\n    walk(n);\n    turnRight();\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid walk(int n) {\n    for (int i = 0; i < n; i++) {\n        move();\n    }\n}\n\nvoid main() {\n    for (int n = 1; n <= 4; n++) {\n        walk(n);\n        turnLeft();\n        walk(n);\n        turnRight();\n    }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid walk(int n) {\n    for (int i = 0; i < n; i++) {\n        move();\n    }\n}\n\nvoid main() {\n    for (int n = 1; n <= 3; n++) {\n        walk(n);\n        turnLeft();\n        walk(n);\n        turnRight();\n    }\n}\n"
   hand-on-wall:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
@@ -139,6 +219,16 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
       fail:
         - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnLeft();\n    while (!frontClear()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  while (!onLamp()) {\n    if (frontClear()) {\n      move();\n    } else {\n      turnLeft();\n    }\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnLeft();\n        while (!frontClear()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    while (!onLamp()) {\n        if (frontClear()) {\n            move();\n        } else {\n            turnLeft();\n        }\n    }\n}\n"
   maze:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
@@ -154,6 +244,16 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
       fail:
         - answer: "while (!onLamp()) {\n  if (frontClear()) {\n    move();\n  } else {\n    turnLeft();\n  }\n}\n"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnLeft();\n    while (!frontClear()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  while (!onLamp()) {\n    if (frontClear()) {\n      move();\n    } else {\n      turnLeft();\n    }\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnLeft();\n        while (!frontClear()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    while (!onLamp()) {\n        if (frontClear()) {\n            move();\n        } else {\n            turnLeft();\n        }\n    }\n}\n"
   island:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right\n  turn_left until front_clear?\n  move\nend\n"
@@ -171,6 +271,18 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnRight();\n  while (!frontClear()) {\n    turnLeft();\n  }\n  move();\n}\n"
       fail:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
+          say: "Läuft Pip im Kreis?"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnRight();\n    while (!frontClear()) {\n      turnLeft();\n    }\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnLeft();\n    while (!frontClear()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+          say: "Läuft Pip im Kreis?"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnRight();\n        while (!frontClear()) {\n            turnLeft();\n        }\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnLeft();\n        while (!frontClear()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
           say: "Läuft Pip im Kreis?"
   one-lever:
     pass:
@@ -190,6 +302,18 @@ examples:
       fail:
         - answer: "move();\nmove();\npull();\npull();\npull();\npull();\nmove();\nmove();\nmove();\n"
           say: "vor den Stacheln"
+    dart:
+      pass:
+        - answer: "void main() {\n  move();\n  move();\n  pull();\n  pull();\n  pull();\n  move();\n  move();\n  move();\n}\n"
+      fail:
+        - answer: "void main() {\n  move();\n  move();\n  pull();\n  pull();\n  pull();\n  pull();\n  move();\n  move();\n  move();\n}\n"
+          say: "vor den Stacheln"
+    java:
+      pass:
+        - answer: "void main() {\n    move();\n    move();\n    pull();\n    pull();\n    pull();\n    move();\n    move();\n    move();\n}\n"
+      fail:
+        - answer: "void main() {\n    move();\n    move();\n    pull();\n    pull();\n    pull();\n    pull();\n    move();\n    move();\n    move();\n}\n"
+          say: "vor den Stacheln"
   levers:
     pass:
       - answer: "pulls = 0\nwhile front_clear?\n  move\n  if on_lever?\n    if pulls < 3\n      pull\n      pulls += 1\n    end\n  end\nend\n"
@@ -207,6 +331,18 @@ examples:
         - answer: "let pulls = 0;\nwhile (frontClear()) {\n  move();\n  if (onLever()) {\n    if (pulls < 3) {\n      pull();\n      pulls++;\n    }\n  }\n}\n"
       fail:
         - answer: "while (frontClear()) {\n  move();\n  if (onLever()) {\n    pull();\n  }\n}\n"
+          say: "In Karte 2"
+    dart:
+      pass:
+        - answer: "void main() {\n  var pulls = 0;\n  while (frontClear()) {\n    move();\n    if (onLever()) {\n      if (pulls < 3) {\n        pull();\n        pulls++;\n      }\n    }\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  while (frontClear()) {\n    move();\n    if (onLever()) {\n      pull();\n    }\n  }\n}\n"
+          say: "In Karte 2"
+    java:
+      pass:
+        - answer: "void main() {\n    int pulls = 0;\n    while (frontClear()) {\n        move();\n        if (onLever()) {\n            if (pulls < 3) {\n                pull();\n                pulls++;\n            }\n        }\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    while (frontClear()) {\n        move();\n        if (onLever()) {\n            pull();\n        }\n    }\n}\n"
           say: "In Karte 2"
   count-stones:
     pass:
@@ -226,6 +362,18 @@ examples:
       fail:
         - answer: "let count = 0;\nwhile (frontClear()) {\n  move();\n  if (onStone()) {\n    take();\n    count++;\n  }\n}\nsay(5);\n"
           say: "aber Pip hat"
+    dart:
+      pass:
+        - answer: "void main() {\n  var count = 0;\n  while (frontClear()) {\n    move();\n    if (onStone()) {\n      take();\n      count++;\n    }\n  }\n  say(count);\n}\n"
+      fail:
+        - answer: "void main() {\n  var count = 0;\n  while (frontClear()) {\n    move();\n    if (onStone()) {\n      take();\n      count++;\n    }\n  }\n  say(5);\n}\n"
+          say: "aber Pip hat"
+    java:
+      pass:
+        - answer: "void main() {\n    int count = 0;\n    while (frontClear()) {\n        move();\n        if (onStone()) {\n            take();\n            count++;\n        }\n    }\n    say(count);\n}\n"
+      fail:
+        - answer: "void main() {\n    int count = 0;\n    while (frontClear()) {\n        move();\n        if (onStone()) {\n            take();\n            count++;\n        }\n    }\n    say(5);\n}\n"
+          say: "aber Pip hat"
   dry-feet:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear? && !puddle_ahead?\n  move\nend\n"
@@ -244,6 +392,18 @@ examples:
       fail:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
           say: "Pfütze"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnLeft();\n    while (!frontClear() || puddleAhead()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!onLamp()) {\n    turnLeft();\n    while (!frontClear()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+          say: "Pfütze"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnLeft();\n        while (!frontClear() || puddleAhead()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!onLamp()) {\n        turnLeft();\n        while (!frontClear()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
+          say: "Pfütze"
   trail:
     pass:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil bello_here?\n  turn_left\n  turn_right until trail_ahead? || puddle_ahead?\n  move\nend\n"
@@ -259,6 +419,16 @@ examples:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!belloHere()) {\n  turnLeft();\n  while (!(trailAhead() || puddleAhead())) {\n    turnRight();\n  }\n  move();\n}\n"
       fail:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!belloHere()) {\n  turnLeft();\n  while (!trailAhead()) {\n    turnRight();\n  }\n  move();\n}\n"
+    dart:
+      pass:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!belloHere()) {\n    turnLeft();\n    while (!(trailAhead() || puddleAhead())) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n  for (var i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nvoid main() {\n  while (!belloHere()) {\n    turnLeft();\n    while (!trailAhead()) {\n      turnRight();\n    }\n    move();\n  }\n}\n"
+    java:
+      pass:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!belloHere()) {\n        turnLeft();\n        while (!(trailAhead() || puddleAhead())) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
+      fail:
+        - answer: "void turnRight() {\n    for (int i = 0; i < 3; i++) {\n        turnLeft();\n    }\n}\n\nvoid main() {\n    while (!belloHere()) {\n        turnLeft();\n        while (!trailAhead()) {\n            turnRight();\n        }\n        move();\n    }\n}\n"
   way-out:
     pass:
       - answer: "pulls = 0\nuntil on_lamp?\n  if front_clear?\n    wait while glibber_ahead?\n    move\n    take if on_stone?\n    while on_lever? && pulls < 3\n      pull\n      pulls += 1\n    end\n  else\n    turn_left\n    unless front_clear?\n      turn_left\n      turn_left\n    end\n  end\nend\n"
@@ -276,4 +446,16 @@ examples:
         - answer: "let pulls = 0;\nwhile (!onLamp()) {\n  if (frontClear()) {\n    while (glibberAhead()) {\n      wait();\n    }\n    move();\n    if (onStone()) {\n      take();\n    }\n    while (onLever() && pulls < 3) {\n      pull();\n      pulls++;\n    }\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
       fail:
         - answer: "let pulls = 0;\nwhile (!onLamp()) {\n  if (frontClear()) {\n    move();\n    if (onStone()) {\n      take();\n    }\n    while (onLever() && pulls < 3) {\n      pull();\n      pulls++;\n    }\n  } else {\n    turnLeft();\n    if (!frontClear()) {\n      turnLeft();\n      turnLeft();\n    }\n  }\n}\n"
+          say: "Glibber"
+    dart:
+      pass:
+        - answer: "void main() {\n  var pulls = 0;\n  while (!onLamp()) {\n    if (frontClear()) {\n      while (glibberAhead()) {\n        wait();\n      }\n      move();\n      if (onStone()) {\n        take();\n      }\n      while (onLever() && pulls < 3) {\n        pull();\n        pulls++;\n      }\n    } else {\n      turnLeft();\n      if (!frontClear()) {\n        turnLeft();\n        turnLeft();\n      }\n    }\n  }\n}\n"
+      fail:
+        - answer: "void main() {\n  var pulls = 0;\n  while (!onLamp()) {\n    if (frontClear()) {\n      move();\n      if (onStone()) {\n        take();\n      }\n      while (onLever() && pulls < 3) {\n        pull();\n        pulls++;\n      }\n    } else {\n      turnLeft();\n      if (!frontClear()) {\n        turnLeft();\n        turnLeft();\n      }\n    }\n  }\n}\n"
+          say: "Glibber"
+    java:
+      pass:
+        - answer: "void main() {\n    int pulls = 0;\n    while (!onLamp()) {\n        if (frontClear()) {\n            while (glibberAhead()) {\n                pause();\n            }\n            move();\n            if (onStone()) {\n                take();\n            }\n            while (onLever() && pulls < 3) {\n                pull();\n                pulls++;\n            }\n        } else {\n            turnLeft();\n            if (!frontClear()) {\n                turnLeft();\n                turnLeft();\n            }\n        }\n    }\n}\n"
+      fail:
+        - answer: "void main() {\n    int pulls = 0;\n    while (!onLamp()) {\n        if (frontClear()) {\n            move();\n            if (onStone()) {\n                take();\n            }\n            while (onLever() && pulls < 3) {\n                pull();\n                pulls++;\n            }\n        } else {\n            turnLeft();\n            if (!frontClear()) {\n                turnLeft();\n                turnLeft();\n            }\n        }\n    }\n}\n"
           say: "Glibber"

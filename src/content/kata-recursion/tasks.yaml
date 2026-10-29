@@ -100,6 +100,100 @@ tasks:
           return n * factorial(n - 1);
         }
         ```
+    dart:
+      prompt: |
+        Die Fakultät kennst du aus den Schleifen: 5! = 5 · 4 · 3 · 2 · 1. Es geht auch so: 5! = 5 · 4!, und 0! = 1. Schreib `int factorial(int n)` genau so: Die Funktion ruft sich selbst mit `n - 1` auf, bis `n` 0 ist. `factorial(5)` ergibt `120`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int factorial(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        loops: false
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: Dort hört die Rekursion auf."
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(10)"
+            expect: "3628800"
+          - call: "factorial(20)"
+            expect: "2432902008176640000"
+      hint:
+        - "Zwei Fälle: Wann bist du sofort fertig? Und wie hilft dir `factorial(n - 1)` sonst?"
+        - |
+          Ein Gerüst:
+
+          ```dart
+          int factorial(int n) {
+            if (n == 0) {
+              return 1;
+            }
+            // n mal die Fakultät von n - 1
+          }
+          ```
+      solution: |
+        ```dart
+        int factorial(int n) {
+          if (n == 0) {
+            return 1;
+          }
+          return n * factorial(n - 1);
+        }
+        ```
+    java:
+      prompt: |
+        Die Fakultät kennst du aus den Schleifen: 5! = 5 · 4 · 3 · 2 · 1. Es geht auch so: 5! = 5 · 4!, und 0! = 1. Schreib `long factorial(int n)` genau so: Die Methode ruft sich selbst mit `n - 1` auf, bis `n` 0 ist. `factorial(5)` ergibt `120`. Sie gibt `long` zurück, weil 20! nicht mehr in ein `int` passt. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        long factorial(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        loops: false
+        cases:
+          - call: "factorial(5)"
+            expect: "120"
+          - call: "factorial(0)"
+            expect: "1"
+            say: "0! ist 1: Dort hört die Rekursion auf."
+          - call: "factorial(1)"
+            expect: "1"
+          - call: "factorial(10)"
+            expect: "3628800"
+          - call: "factorial(20)"
+            expect: "2432902008176640000L"
+            say: "20! passt nicht in ein `int`: Gibt deine Methode `long` zurück?"
+      hint:
+        - "Zwei Fälle: Wann bist du sofort fertig? Und wie hilft dir `factorial(n - 1)` sonst?"
+        - |
+          Ein Gerüst:
+
+          ```java
+          long factorial(int n) {
+              if (n == 0) {
+                  return 1;
+              }
+              // n mal die Fakultät von n - 1
+          }
+          ```
+      solution: |
+        ```java
+        long factorial(int n) {
+            if (n == 0) {
+                return 1;
+            }
+            return n * factorial(n - 1);
+        }
+        ```
+
   - id: total
     title: "Die Summe, rekursiv"
     level: 1
@@ -200,6 +294,77 @@ tasks:
           return numbers[0] + total(numbers.slice(1));
         }
         ```
+    dart:
+      prompt: |
+        Die Summe einer Liste ist ihre erste Zahl plus die Summe des Rests; die leere Liste hat die Summe 0. Schreib `int total(List<int> numbers)` so: `total([3, 4, 5])` ergibt `12`. `numbers.sublist(1)` ist der Rest der Liste. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int total(List<int> numbers) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reduce, .fold, .forEach]
+        recursive: true
+        loops: false
+        cases:
+          - call: "total([3, 4, 5])"
+            expect: "12"
+          - call: "total([])"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0: Dort hört die Rekursion auf."
+          - call: "total([7])"
+            expect: "7"
+          - call: "total([1, -1, 1, -1, 10])"
+            expect: "10"
+      hint:
+        - "Wann bist du sofort fertig? Bei der leeren Liste, `numbers.isEmpty`."
+        - "Sonst: die erste Zahl, `numbers[0]`, plus `total` vom Rest."
+      solution: |
+        ```dart
+        int total(List<int> numbers) {
+          if (numbers.isEmpty) {
+            return 0;
+          }
+          return numbers[0] + total(numbers.sublist(1));
+        }
+        ```
+    java:
+      prompt: |
+        Die Summe einer Liste ist ihre erste Zahl plus die Summe des Rests; die leere Liste hat die Summe 0. Schreib `int total(List<Integer> numbers)` so: `total(List.of(3, 4, 5))` ergibt `12`. `numbers.subList(1, numbers.size())` ist der Rest der Liste. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int total(List<Integer> numbers) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, .forEach]
+        recursive: true
+        loops: false
+        cases:
+          - call: "total(List.of(3, 4, 5))"
+            expect: "12"
+          - call: "total(List.of())"
+            expect: "0"
+            say: "Die leere Liste hat die Summe 0: Dort hört die Rekursion auf."
+          - call: "total(List.of(7))"
+            expect: "7"
+          - call: "total(List.of(1, -1, 1, -1, 10))"
+            expect: "10"
+      hint:
+        - "Wann bist du sofort fertig? Bei der leeren Liste, `numbers.isEmpty()`."
+        - "Sonst: die erste Zahl, `numbers.get(0)`, plus `total` vom Rest."
+      solution: |
+        ```java
+        int total(List<Integer> numbers) {
+            if (numbers.isEmpty()) {
+                return 0;
+            }
+            return numbers.get(0) + total(numbers.subList(1, numbers.size()));
+        }
+        ```
+
   - id: countdown
     title: "Countdown, rekursiv"
     level: 1
@@ -299,6 +464,82 @@ tasks:
           return [n].concat(countdown(n - 1));
         }
         ```
+    dart:
+      prompt: |
+        Schreib `List<int> countdown(int n)`, die die Liste von `n` herunter bis 1 zurückgibt: `countdown(3)` ergibt `[3, 2, 1]`, `countdown(0)` ergibt `[]`. Der Countdown von 3 ist die 3 und dann der Countdown von 2. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        List<int> countdown(int n) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [List.generate, .reversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countdown(3)"
+            expect: "[3, 2, 1]"
+          - call: "countdown(0)"
+            expect: "[]"
+            say: "Bei 0 ist die Liste leer: Dort hört die Rekursion auf."
+          - call: "countdown(1)"
+            expect: "[1]"
+          - call: "countdown(6)"
+            expect: "[6, 5, 4, 3, 2, 1]"
+      feedback:
+        - when: { same_as: "List<int> countdown(int n) {\n  if (n == 0) {\n    return [];\n  }\n  return [...countdown(n - 1), n];\n}\n" }
+          say: "So zählt es hinauf: Die Zahl `n` steht hinter dem Rest. Wohin gehört sie?"
+      hint: "`[n, ...andereListe]` ist eine Liste mit `n` vorn und dahinter den Elementen der anderen."
+      solution: |
+        ```dart
+        List<int> countdown(int n) {
+          if (n == 0) {
+            return [];
+          }
+          return [n, ...countdown(n - 1)];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `List<Integer> countdown(int n)`, die die Liste von `n` herunter bis 1 zurückgibt: `countdown(3)` ergibt `[3, 2, 1]`, `countdown(0)` eine leere Liste. Der Countdown von 3 ist die 3 und dann der Countdown von 2. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        List<Integer> countdown(int n) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [IntStream, .reversed, .stream]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countdown(3)"
+            expect: "List.of(3, 2, 1)"
+          - call: "countdown(0)"
+            expect: "List.of()"
+            say: "Bei 0 ist die Liste leer: Dort hört die Rekursion auf."
+          - call: "countdown(1)"
+            expect: "List.of(1)"
+          - call: "countdown(6)"
+            expect: "List.of(6, 5, 4, 3, 2, 1)"
+      feedback:
+        - when: { same_as: "List<Integer> countdown(int n) {\n    if (n == 0) {\n        return new ArrayList<>();\n    }\n    List<Integer> result = countdown(n - 1);\n    result.add(n);\n    return result;\n}\n" }
+          say: "So zählt es hinauf: Die Zahl `n` steht hinter dem Rest. Wohin gehört sie?"
+      hint: "Eine neue `ArrayList`, zuerst `add(n)`, dann `addAll(countdown(n - 1))`: So steht `n` vorn."
+      solution: |
+        ```java
+        List<Integer> countdown(int n) {
+            List<Integer> result = new ArrayList<>();
+            if (n == 0) {
+                return result;
+            }
+            result.add(n);
+            result.addAll(countdown(n - 1));
+            return result;
+        }
+        ```
+
   - id: text-length
     title: "Wie lang, ohne zu messen?"
     level: 1
@@ -398,6 +639,77 @@ tasks:
           return 1 + textLength(text.slice(1));
         }
         ```
+    dart:
+      prompt: |
+        Schreib `int textLength(String text)`, die die Zeichen eines Textes zählt, ohne `length`; `text.substring(1)` ist der Text ohne sein erstes Zeichen: Ein leerer Text hat die Länge 0, jeder andere ist um eins länger als der Text ohne sein erstes Zeichen. `textLength('Hallo')` ergibt `5`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int textLength(String text) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.length, .runes, .codeUnits]
+        recursive: true
+        loops: false
+        cases:
+          - call: "textLength('Hallo')"
+            expect: "5"
+          - call: "textLength('')"
+            expect: "0"
+            say: "Ein leerer Text hat die Länge 0: Dort hört die Rekursion auf."
+          - call: "textLength('a')"
+            expect: "1"
+          - call: "textLength('Rekursion')"
+            expect: "9"
+      hint:
+        - "Wann bist du sofort fertig? Beim leeren Text, `text.isEmpty`."
+        - "Sonst: 1 plus die Länge des Rests."
+      solution: |
+        ```dart
+        int textLength(String text) {
+          if (text.isEmpty) {
+            return 0;
+          }
+          return 1 + textLength(text.substring(1));
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `int textLength(String text)`, die die Zeichen eines Textes zählt, ohne `length()`; `text.substring(1)` ist der Text ohne sein erstes Zeichen: Ein leerer Text hat die Länge 0, jeder andere ist um eins länger als der Text ohne sein erstes Zeichen. `textLength("Hallo")` ergibt `5`. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int textLength(String text) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.length, .toCharArray, .chars]
+        recursive: true
+        loops: false
+        cases:
+          - call: "textLength(\"Hallo\")"
+            expect: "5"
+          - call: "textLength(\"\")"
+            expect: "0"
+            say: "Ein leerer Text hat die Länge 0: Dort hört die Rekursion auf."
+          - call: "textLength(\"a\")"
+            expect: "1"
+          - call: "textLength(\"Rekursion\")"
+            expect: "9"
+      hint:
+        - "Wann bist du sofort fertig? Beim leeren Text, `text.isEmpty()`."
+        - "Sonst: 1 plus die Länge des Rests."
+      solution: |
+        ```java
+        int textLength(String text) {
+            if (text.isEmpty()) {
+                return 0;
+            }
+            return 1 + textLength(text.substring(1));
+        }
+        ```
+
   - id: power
     title: "Potenz"
     level: 2
@@ -499,6 +811,83 @@ tasks:
           return base * power(base, exponent - 1);
         }
         ```
+    dart:
+      prompt: |
+        Schreib `int power(int base, int exponent)` für einen Exponenten ab 0: `power(2, 10)` ergibt `1024`. Jede Zahl hoch 0 ist 1, und base hoch n ist base mal base hoch n - 1. Ohne `pow`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int power(int base, int exponent) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [pow]
+        recursive: true
+        loops: false
+        cases:
+          - call: "power(2, 10)"
+            expect: "1024"
+          - call: "power(5, 0)"
+            expect: "1"
+            say: "Hoch 0 ist 1: Dort hört die Rekursion auf."
+          - call: "power(3, 1)"
+            expect: "3"
+          - call: "power(10, 6)"
+            expect: "1000000"
+          - call: "power(-2, 3)"
+            expect: "-8"
+      feedback:
+        - when: { same_as: "int power(int base, int exponent) {\n  if (exponent == 1) {\n    return base;\n  }\n  return base * power(base, exponent - 1);\n}\n" }
+          say: "Bei `power(5, 0)` kommt dein Code nie zum Ende: Er hört erst bei 1 auf und zählt an 0 vorbei. Fang bei 0 an."
+      hint: "Wie bei der Fakultät: ein Fall, in dem du sofort fertig bist, und einer, der sich selbst mit einer kleineren Zahl aufruft."
+      solution: |
+        ```dart
+        int power(int base, int exponent) {
+          if (exponent == 0) {
+            return 1;
+          }
+          return base * power(base, exponent - 1);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `int power(int base, int exponent)` für einen Exponenten ab 0: `power(2, 10)` ergibt `1024`. Jede Zahl hoch 0 ist 1, und base hoch n ist base mal base hoch n - 1. Ohne `Math.pow`. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int power(int base, int exponent) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Math.pow]
+        recursive: true
+        loops: false
+        cases:
+          - call: "power(2, 10)"
+            expect: "1024"
+          - call: "power(5, 0)"
+            expect: "1"
+            say: "Hoch 0 ist 1: Dort hört die Rekursion auf."
+          - call: "power(3, 1)"
+            expect: "3"
+          - call: "power(10, 6)"
+            expect: "1000000"
+          - call: "power(-2, 3)"
+            expect: "-8"
+      feedback:
+        - when: { same_as: "int power(int base, int exponent) {\n    if (exponent == 1) {\n        return base;\n    }\n    return base * power(base, exponent - 1);\n}\n" }
+          say: "Bei `power(5, 0)` kommt dein Code nie zum Ende: Er hört erst bei 1 auf und zählt an 0 vorbei. Fang bei 0 an."
+      hint: "Wie bei der Fakultät: ein Fall, in dem du sofort fertig bist, und einer, der sich selbst mit einer kleineren Zahl aufruft."
+      solution: |
+        ```java
+        int power(int base, int exponent) {
+            if (exponent == 0) {
+                return 1;
+            }
+            return base * power(base, exponent - 1);
+        }
+        ```
+
   - id: fibonacci
     title: "Fibonacci, rekursiv"
     level: 2
@@ -604,6 +993,83 @@ tasks:
           return fibonacci(n - 1) + fibonacci(n - 2);
         }
         ```
+    dart:
+      prompt: |
+        Jede Fibonacci-Zahl ist die Summe der beiden davor; die nullte ist 0, die erste 1. Schreib `int fibonacci(int n)` genau so, mit zwei Aufrufen von sich selbst: `fibonacci(10)` ergibt `55`. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int fibonacci(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        loops: false
+        cases:
+          - call: "fibonacci(10)"
+            expect: "55"
+          - call: "fibonacci(0)"
+            expect: "0"
+            say: "Die nullte ist 0."
+          - call: "fibonacci(1)"
+            expect: "1"
+            say: "Die erste ist 1."
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(20)"
+            expect: "6765"
+      feedback:
+        - when: { same_as: "int fibonacci(int n) {\n  if (n < 2) {\n    return 1;\n  }\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n" }
+          say: "Die nullte Fibonacci-Zahl ist 0, nicht 1. Dann verschiebt sich die ganze Reihe."
+      hint: "Zwei Zahlen stehen fest, `fibonacci(0)` und `fibonacci(1)`. Jede andere ist `fibonacci(n - 1) + fibonacci(n - 2)`."
+      solution: |
+        ```dart
+        int fibonacci(int n) {
+          if (n < 2) {
+            return n;
+          }
+          return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+        ```
+    java:
+      prompt: |
+        Jede Fibonacci-Zahl ist die Summe der beiden davor; die nullte ist 0, die erste 1. Schreib `int fibonacci(int n)` genau so, mit zwei Aufrufen von sich selbst: `fibonacci(10)` ergibt `55`. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int fibonacci(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        loops: false
+        cases:
+          - call: "fibonacci(10)"
+            expect: "55"
+          - call: "fibonacci(0)"
+            expect: "0"
+            say: "Die nullte ist 0."
+          - call: "fibonacci(1)"
+            expect: "1"
+            say: "Die erste ist 1."
+          - call: "fibonacci(2)"
+            expect: "1"
+          - call: "fibonacci(20)"
+            expect: "6765"
+      feedback:
+        - when: { same_as: "int fibonacci(int n) {\n    if (n < 2) {\n        return 1;\n    }\n    return fibonacci(n - 1) + fibonacci(n - 2);\n}\n" }
+          say: "Die nullte Fibonacci-Zahl ist 0, nicht 1. Dann verschiebt sich die ganze Reihe."
+      hint: "Zwei Zahlen stehen fest, `fibonacci(0)` und `fibonacci(1)`. Jede andere ist `fibonacci(n - 1) + fibonacci(n - 2)`."
+      solution: |
+        ```java
+        int fibonacci(int n) {
+            if (n < 2) {
+                return n;
+            }
+            return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+        ```
+
   - id: palindrome
     title: "Palindrom, rekursiv"
     level: 2
@@ -717,6 +1183,87 @@ tasks:
           return text[0] === text[text.length - 1] && palindrome(text.slice(1, -1));
         }
         ```
+    dart:
+      prompt: |
+        Ein Text ist ein Palindrom, wenn sein erstes und sein letztes Zeichen gleich sind und das, was dazwischen steht, wieder ein Palindrom ist; ein Text mit weniger als zwei Zeichen ist immer eins. Schreib `bool palindrome(String text)` so, ohne den Text umzudrehen: `palindrome('rentner')` ergibt `true`. Die Texte sind klein geschrieben. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        bool palindrome(String text) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "palindrome('rentner')"
+            expect: "true"
+          - call: "palindrome('')"
+            expect: "true"
+          - call: "palindrome('a')"
+            expect: "true"
+          - call: "palindrome('ab')"
+            expect: "false"
+          - call: "palindrome('abba')"
+            expect: "true"
+          - call: "palindrome('abca')"
+            expect: "false"
+            say: "Das erste und das letzte Zeichen sind gleich, aber `'bc'` ist kein Palindrom."
+      feedback:
+        - when: { same_as: "bool palindrome(String text) {\n  if (text.length < 2) {\n    return true;\n  }\n  return text[0] == text[text.length - 1];\n}\n" }
+          say: "Das erste und das letzte Zeichen reichen nicht: Bei `'abca'` stimmen sie, aber dazwischen steht `'bc'`. Frag für das, was dazwischen steht, wieder `palindrome`."
+      hint: "`text[0]` ist das erste Zeichen, `text[text.length - 1]` das letzte, `text.substring(1, text.length - 1)` das, was dazwischen steht."
+      solution: |
+        ```dart
+        bool palindrome(String text) {
+          if (text.length < 2) {
+            return true;
+          }
+          return text[0] == text[text.length - 1] && palindrome(text.substring(1, text.length - 1));
+        }
+        ```
+    java:
+      prompt: |
+        Ein Text ist ein Palindrom, wenn sein erstes und sein letztes Zeichen gleich sind und das, was dazwischen steht, wieder ein Palindrom ist; ein Text mit weniger als zwei Zeichen ist immer eins. Schreib `boolean palindrome(String text)` so, ohne den Text umzudrehen: `palindrome("rentner")` ergibt `true`. Die Texte sind klein geschrieben. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        boolean palindrome(String text) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [StringBuilder, StringBuffer, .reversed]
+        recursive: true
+        loops: false
+        cases:
+          - call: "palindrome(\"rentner\")"
+            expect: "true"
+          - call: "palindrome(\"\")"
+            expect: "true"
+          - call: "palindrome(\"a\")"
+            expect: "true"
+          - call: "palindrome(\"ab\")"
+            expect: "false"
+          - call: "palindrome(\"abba\")"
+            expect: "true"
+          - call: "palindrome(\"abca\")"
+            expect: "false"
+            say: "Das erste und das letzte Zeichen sind gleich, aber `\"bc\"` ist kein Palindrom."
+      feedback:
+        - when: { same_as: "boolean palindrome(String text) {\n    if (text.length() < 2) {\n        return true;\n    }\n    return text.charAt(0) == text.charAt(text.length() - 1);\n}\n" }
+          say: "Das erste und das letzte Zeichen reichen nicht: Bei `\"abca\"` stimmen sie, aber dazwischen steht `\"bc\"`. Frag für das, was dazwischen steht, wieder `palindrome`."
+      hint: "`text.charAt(0)` ist das erste Zeichen, `text.charAt(text.length() - 1)` das letzte, `text.substring(1, text.length() - 1)` das, was dazwischen steht. Zeichen (`char`) vergleicht man mit `==`."
+      solution: |
+        ```java
+        boolean palindrome(String text) {
+            if (text.length() < 2) {
+                return true;
+            }
+            return text.charAt(0) == text.charAt(text.length() - 1) && palindrome(text.substring(1, text.length() - 1));
+        }
+        ```
+
   - id: count-char
     title: "Wie oft kommt es vor?"
     level: 2
@@ -815,6 +1362,77 @@ tasks:
           return (text[0] === char ? 1 : 0) + countChar(text.slice(1), char);
         }
         ```
+    dart:
+      prompt: |
+        Schreib `int countChar(String text, String letter)`, die zählt, wie oft das Zeichen `letter` im Text steht: `countChar('banane', 'n')` ergibt `2`. Wie bei der Länge, nur zählt das erste Zeichen nur dann, wenn es `letter` ist. Ohne Schleife: Die Funktion ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int countChar(String text, String letter) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.split, .allMatches, .where]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countChar('banane', 'n')"
+            expect: "2"
+          - call: "countChar('', 'a')"
+            expect: "0"
+          - call: "countChar('aaa', 'a')"
+            expect: "3"
+          - call: "countChar('Abend', 'a')"
+            expect: "0"
+            say: "Groß und klein sind verschiedene Zeichen."
+          - call: "countChar('xyz', 'a')"
+            expect: "0"
+      hint: "Wie `textLength`, nur zählt das erste Zeichen 1 oder 0: `(text[0] == letter ? 1 : 0)`."
+      solution: |
+        ```dart
+        int countChar(String text, String letter) {
+          if (text.isEmpty) {
+            return 0;
+          }
+          return (text[0] == letter ? 1 : 0) + countChar(text.substring(1), letter);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `int countChar(String text, char letter)`, die zählt, wie oft das Zeichen `letter` im Text steht: `countChar("banane", 'n')` ergibt `2`. Ein einzelnes Zeichen, ein `char`, steht in einfachen Anführungszeichen. Wie bei der Länge, nur zählt das erste Zeichen nur dann, wenn es `letter` ist. Ohne Schleife: Die Methode ruft sich selbst auf; die Prüfung sieht nach.
+      starter: |
+        int countChar(String text, char letter) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.split, .chars, .replace]
+        recursive: true
+        loops: false
+        cases:
+          - call: "countChar(\"banane\", 'n')"
+            expect: "2"
+          - call: "countChar(\"\", 'a')"
+            expect: "0"
+          - call: "countChar(\"aaa\", 'a')"
+            expect: "3"
+          - call: "countChar(\"Abend\", 'a')"
+            expect: "0"
+            say: "Groß und klein sind verschiedene Zeichen."
+          - call: "countChar(\"xyz\", 'a')"
+            expect: "0"
+      hint: "Wie `textLength`, nur zählt das erste Zeichen 1 oder 0: `(text.charAt(0) == letter ? 1 : 0)`."
+      solution: |
+        ```java
+        int countChar(String text, char letter) {
+            if (text.isEmpty()) {
+                return 0;
+            }
+            return (text.charAt(0) == letter ? 1 : 0) + countChar(text.substring(1), letter);
+        }
+        ```
+
   - id: hanoi
     title: "Die Türme von Hanoi"
     level: 3
@@ -926,6 +1544,91 @@ tasks:
           return [...hanoi(n - 1, source, spare, target), [source, target], ...hanoi(n - 1, spare, target, source)];
         }
         ```
+    dart:
+      prompt: |
+        Auf dem Stab `source` liegen `n` Scheiben, die größte unten. Sie sollen auf den Stab `target`; eine Scheibe nach der anderen, nie eine größere auf eine kleinere, und `spare` hilft. Schreib `List<List<String>> hanoi(int n, String source, String target, String spare)`, die die Züge als Liste zurückgibt, jeden Zug als Paar `[von, nach]`: `hanoi(2, 'A', 'C', 'B')` ergibt `[['A', 'B'], ['A', 'C'], ['B', 'C']]`. Der Trick: Die oberen `n - 1` Scheiben sind ein kleinerer Turm.
+      starter: |
+        List<List<String>> hanoi(int n, String source, String target, String spare) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        loops: false
+        cases:
+          - call: "hanoi(1, 'A', 'C', 'B')"
+            expect: "[['A', 'C']]"
+          - call: "hanoi(2, 'A', 'C', 'B')"
+            expect: "[['A', 'B'], ['A', 'C'], ['B', 'C']]"
+          - call: "hanoi(0, 'A', 'C', 'B')"
+            expect: "[]"
+            say: "Ohne Scheiben gibt es nichts zu tun."
+          - call: "hanoi(3, 'A', 'C', 'B')"
+            expect: "[['A', 'C'], ['A', 'B'], ['C', 'B'], ['A', 'C'], ['B', 'A'], ['B', 'C'], ['A', 'C']]"
+          - call: "hanoi(3, 'X', 'Y', 'Z')"
+            expect: "[['X', 'Y'], ['X', 'Z'], ['Y', 'Z'], ['X', 'Y'], ['Z', 'X'], ['Z', 'Y'], ['X', 'Y']]"
+            say: "Die Stäbe können auch anders heißen."
+      feedback:
+        - when: { same_as: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n  if (n == 0) {\n    return [];\n  }\n  return [...hanoi(n - 1, source, target, spare), [source, target], ...hanoi(n - 1, spare, target, source)];\n}\n" }
+          say: "Die oberen Scheiben müssen zuerst aus dem Weg, auf den Hilfsstab `spare`, nicht auf `target`: Dorthin soll ja gleich die größte."
+      hint:
+        - "Drei Schritte: den Turm aus `n - 1` Scheiben aus dem Weg räumen, die größte Scheibe ziehen, den kleineren Turm wieder darauf."
+        - "Wohin kommt der kleinere Turm zuerst, und welcher Stab hilft ihm dabei? Jeder Schritt ist ein Aufruf von `hanoi` mit anderen Stäben; `[...a, zug, ...b]` setzt die Züge zusammen."
+      solution: |
+        ```dart
+        List<List<String>> hanoi(int n, String source, String target, String spare) {
+          if (n == 0) {
+            return [];
+          }
+          return [...hanoi(n - 1, source, spare, target), [source, target], ...hanoi(n - 1, spare, target, source)];
+        }
+        ```
+    java:
+      prompt: |
+        Auf dem Stab `source` liegen `n` Scheiben, die größte unten. Sie sollen auf den Stab `target`; eine Scheibe nach der anderen, nie eine größere auf eine kleinere, und `spare` hilft. Schreib `List<List<String>> hanoi(int n, String source, String target, String spare)`, die die Züge als Liste zurückgibt, jeden Zug als Paar `List.of(von, nach)`: `hanoi(2, "A", "C", "B")` ergibt `[[A, B], [A, C], [B, C]]`. Der Trick: Die oberen `n - 1` Scheiben sind ein kleinerer Turm.
+      starter: |
+        List<List<String>> hanoi(int n, String source, String target, String spare) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        loops: false
+        cases:
+          - call: "hanoi(1, \"A\", \"C\", \"B\")"
+            expect: "List.of(List.of(\"A\", \"C\"))"
+          - call: "hanoi(2, \"A\", \"C\", \"B\")"
+            expect: "List.of(List.of(\"A\", \"B\"), List.of(\"A\", \"C\"), List.of(\"B\", \"C\"))"
+          - call: "hanoi(0, \"A\", \"C\", \"B\")"
+            expect: "List.of()"
+            say: "Ohne Scheiben gibt es nichts zu tun."
+          - call: "hanoi(3, \"A\", \"C\", \"B\")"
+            expect: "List.of(List.of(\"A\", \"C\"), List.of(\"A\", \"B\"), List.of(\"C\", \"B\"), List.of(\"A\", \"C\"), List.of(\"B\", \"A\"), List.of(\"B\", \"C\"), List.of(\"A\", \"C\"))"
+          - call: "hanoi(3, \"X\", \"Y\", \"Z\")"
+            expect: "List.of(List.of(\"X\", \"Y\"), List.of(\"X\", \"Z\"), List.of(\"Y\", \"Z\"), List.of(\"X\", \"Y\"), List.of(\"Z\", \"X\"), List.of(\"Z\", \"Y\"), List.of(\"X\", \"Y\"))"
+            say: "Die Stäbe können auch anders heißen."
+      feedback:
+        - when: { same_as: "List<List<String>> hanoi(int n, String source, String target, String spare) {\n    List<List<String>> moves = new ArrayList<>();\n    if (n == 0) {\n        return moves;\n    }\n    moves.addAll(hanoi(n - 1, source, target, spare));\n    moves.add(List.of(source, target));\n    moves.addAll(hanoi(n - 1, spare, target, source));\n    return moves;\n}\n" }
+          say: "Die oberen Scheiben müssen zuerst aus dem Weg, auf den Hilfsstab `spare`, nicht auf `target`: Dorthin soll ja gleich die größte."
+      hint:
+        - "Drei Schritte: den Turm aus `n - 1` Scheiben aus dem Weg räumen, die größte Scheibe ziehen, den kleineren Turm wieder darauf."
+        - "Wohin kommt der kleinere Turm zuerst, und welcher Stab hilft ihm dabei? Jeder Schritt ist ein Aufruf von `hanoi` mit anderen Stäben; `addAll` hängt seine Züge an, `add(List.of(source, target))` den Zug der größten Scheibe."
+      solution: |
+        ```java
+        List<List<String>> hanoi(int n, String source, String target, String spare) {
+            List<List<String>> moves = new ArrayList<>();
+            if (n == 0) {
+                return moves;
+            }
+            moves.addAll(hanoi(n - 1, source, spare, target));
+            moves.add(List.of(source, target));
+            moves.addAll(hanoi(n - 1, spare, target, source));
+            return moves;
+        }
+        ```
+
   - id: flatten
     title: "Listen in Listen"
     level: 3
@@ -1056,6 +1759,97 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        In einer Liste können wieder Listen stehen, beliebig tief: `[1, [2, [3, 4]], 5]`. Schreib `List<int> flatten(List<Object> items)`, die alle Zahlen in einer flachen Liste zurückgibt, in ihrer Reihenfolge: `[1, 2, 3, 4, 5]`. Ohne `expand`.
+      starter: |
+        List<int> flatten(List<Object> items) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.expand]
+        recursive: true
+        cases:
+          - call: "flatten([1, [2, [3, 4]], 5])"
+            expect: "[1, 2, 3, 4, 5]"
+          - call: "flatten([])"
+            expect: "[]"
+          - call: "flatten([[[[7]]]])"
+            expect: "[7]"
+            say: "Auch ganz tief drinnen."
+          - call: "flatten([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "flatten([[], [1, []], 2])"
+            expect: "[1, 2]"
+            say: "Leere Listen geben nichts."
+      feedback:
+        - when: { same_as: "List<int> flatten(List<Object> items) {\n  final result = <int>[];\n  for (final item in items) {\n    if (item is List) {\n      for (final inner in item) {\n        if (inner is int) {\n          result.add(inner);\n        }\n      }\n    } else if (item is int) {\n      result.add(item);\n    }\n  }\n  return result;\n}\n" }
+          say: "Das macht nur eine Ebene flach: In `[2, [3, 4]]` bleibt `[3, 4]` eine Liste. Ruf für jede Liste in der Liste wieder `flatten` auf."
+      hint:
+        - "Geh die Elemente durch. `item is List` fragt, ob ein Element selbst eine Liste ist, `item is int`, ob es eine Zahl ist."
+        - "Ist es eine Liste, machst du sie mit `flatten(item.cast<Object>())` flach und hängst das Ergebnis mit `addAll` an."
+      solution: |
+        ```dart
+        List<int> flatten(List<Object> items) {
+          final result = <int>[];
+          for (final item in items) {
+            if (item is List) {
+              result.addAll(flatten(item.cast<Object>()));
+            } else if (item is int) {
+              result.add(item);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        In einer Liste können wieder Listen stehen, beliebig tief: `[1, [2, [3, 4]], 5]`. Schreib `List<Integer> flatten(List<?> items)`, die alle Zahlen in einer flachen Liste zurückgibt, in ihrer Reihenfolge: `[1, 2, 3, 4, 5]`. `List<?>` ist eine Liste, in der alles Mögliche stehen kann.
+      starter: |
+        List<Integer> flatten(List<?> items) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, .flatMap]
+        recursive: true
+        cases:
+          - call: "flatten(List.of(1, List.of(2, List.of(3, 4)), 5))"
+            expect: "List.of(1, 2, 3, 4, 5)"
+          - call: "flatten(List.of())"
+            expect: "List.of()"
+          - call: "flatten(List.of(List.of(List.of(List.of(7)))))"
+            expect: "List.of(7)"
+            say: "Auch ganz tief drinnen."
+          - call: "flatten(List.of(1, 2, 3))"
+            expect: "List.of(1, 2, 3)"
+          - call: "flatten(List.of(List.of(), List.of(1, List.of()), 2))"
+            expect: "List.of(1, 2)"
+            say: "Leere Listen geben nichts."
+      feedback:
+        - when: { same_as: "List<Integer> flatten(List<?> items) {\n    List<Integer> result = new ArrayList<>();\n    for (Object item : items) {\n        if (item instanceof List<?> inner) {\n            for (Object x : inner) {\n                if (x instanceof Integer n) {\n                    result.add(n);\n                }\n            }\n        } else if (item instanceof Integer n) {\n            result.add(n);\n        }\n    }\n    return result;\n}\n" }
+          say: "Das macht nur eine Ebene flach: In `[2, [3, 4]]` bleibt `[3, 4]` eine Liste. Ruf für jede Liste in der Liste wieder `flatten` auf."
+      hint:
+        - "Geh die Elemente durch, `for (Object item : items)`. `item instanceof List<?> inner` fragt, ob ein Element selbst eine Liste ist, und nennt sie gleich `inner`; `item instanceof Integer n` ebenso für eine Zahl."
+        - "Ist es eine Liste, machst du sie mit `flatten(inner)` flach und hängst das Ergebnis mit `addAll` an."
+      solution: |
+        ```java
+        List<Integer> flatten(List<?> items) {
+            List<Integer> result = new ArrayList<>();
+            for (Object item : items) {
+                if (item instanceof List<?> inner) {
+                    result.addAll(flatten(inner));
+                } else if (item instanceof Integer n) {
+                    result.add(n);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: permutations
     title: "Alle Reihenfolgen"
     level: 3
@@ -1186,6 +1980,98 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib `List<String> permutations(String text)`, die alle Reihenfolgen der Zeichen zurückgibt: `permutations('abc')` ergibt `['abc', 'acb', 'bac', 'bca', 'cab', 'cba']`. Der Reihe nach kommt jedes Zeichen einmal nach vorn, und dahinter stehen alle Reihenfolgen der übrigen. Der leere Text hat eine Reihenfolge, `['']`.
+      starter: |
+        List<String> permutations(String text) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        cases:
+          - call: "permutations('abc')"
+            expect: "['abc', 'acb', 'bac', 'bca', 'cab', 'cba']"
+          - call: "permutations('')"
+            expect: "['']"
+            say: "Der leere Text hat eine Reihenfolge: sich selbst."
+          - call: "permutations('a')"
+            expect: "['a']"
+          - call: "permutations('ab')"
+            expect: "['ab', 'ba']"
+          - call: "permutations('abcd')"
+            expect: "['abcd', 'abdc', 'acbd', 'acdb', 'adbc', 'adcb', 'bacd', 'badc', 'bcad', 'bcda', 'bdac', 'bdca', 'cabd', 'cadb', 'cbad', 'cbda', 'cdab', 'cdba', 'dabc', 'dacb', 'dbac', 'dbca', 'dcab', 'dcba']"
+      feedback:
+        - when: { same_as: "List<String> permutations(String text) {\n  if (text.isEmpty) {\n    return [];\n  }\n  final result = <String>[];\n  for (var i = 0; i < text.length; i++) {\n    final rest = text.substring(0, i) + text.substring(i + 1);\n    for (final order in permutations(rest)) {\n      result.add(text[i] + order);\n    }\n  }\n  return result;\n}\n" }
+          say: "Gibt der leere Text keine Reihenfolge zurück, hat am Ende auch kein anderer eine. Er hat genau eine: `['']`."
+      hint:
+        - "Für jedes Zeichen: Nimm es heraus, `text.substring(0, i) + text.substring(i + 1)` ist der Rest, und setz es vor jede Reihenfolge des Rests."
+        - "Eine Schleife über die Zeichen darfst du hier benutzen; die Rekursion steckt in `permutations(rest)`."
+      solution: |
+        ```dart
+        List<String> permutations(String text) {
+          if (text.isEmpty) {
+            return [''];
+          }
+          final result = <String>[];
+          for (var i = 0; i < text.length; i++) {
+            final rest = text.substring(0, i) + text.substring(i + 1);
+            for (final order in permutations(rest)) {
+              result.add(text[i] + order);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `List<String> permutations(String text)`, die alle Reihenfolgen der Zeichen zurückgibt: `permutations("abc")` ergibt `[abc, acb, bac, bca, cab, cba]`. Der Reihe nach kommt jedes Zeichen einmal nach vorn, und dahinter stehen alle Reihenfolgen der übrigen. Der leere Text hat eine Reihenfolge: eine Liste mit dem leeren Text.
+      starter: |
+        List<String> permutations(String text) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        cases:
+          - call: "permutations(\"abc\")"
+            expect: "List.of(\"abc\", \"acb\", \"bac\", \"bca\", \"cab\", \"cba\")"
+          - call: "permutations(\"\")"
+            expect: "List.of(\"\")"
+            say: "Der leere Text hat eine Reihenfolge: sich selbst."
+          - call: "permutations(\"a\")"
+            expect: "List.of(\"a\")"
+          - call: "permutations(\"ab\")"
+            expect: "List.of(\"ab\", \"ba\")"
+          - call: "permutations(\"abcd\")"
+            expect: "List.of(\"abcd\", \"abdc\", \"acbd\", \"acdb\", \"adbc\", \"adcb\", \"bacd\", \"badc\", \"bcad\", \"bcda\", \"bdac\", \"bdca\", \"cabd\", \"cadb\", \"cbad\", \"cbda\", \"cdab\", \"cdba\", \"dabc\", \"dacb\", \"dbac\", \"dbca\", \"dcab\", \"dcba\")"
+      feedback:
+        - when: { same_as: "List<String> permutations(String text) {\n    List<String> result = new ArrayList<>();\n    if (text.isEmpty()) {\n        return result;\n    }\n    for (int i = 0; i < text.length(); i++) {\n        String rest = text.substring(0, i) + text.substring(i + 1);\n        for (String order : permutations(rest)) {\n            result.add(text.charAt(i) + order);\n        }\n    }\n    return result;\n}\n" }
+          say: "Gibt der leere Text keine Reihenfolge zurück, hat am Ende auch kein anderer eine. Er hat genau eine: die Liste mit dem leeren Text."
+      hint:
+        - "Für jedes Zeichen: Nimm es heraus, `text.substring(0, i) + text.substring(i + 1)` ist der Rest, und setz es vor jede Reihenfolge des Rests: `text.charAt(i) + order`."
+        - "Eine Schleife über die Zeichen darfst du hier benutzen; die Rekursion steckt in `permutations(rest)`."
+      solution: |
+        ```java
+        List<String> permutations(String text) {
+            List<String> result = new ArrayList<>();
+            if (text.isEmpty()) {
+                result.add("");
+                return result;
+            }
+            for (int i = 0; i < text.length(); i++) {
+                String rest = text.substring(0, i) + text.substring(i + 1);
+                for (String order : permutations(rest)) {
+                    result.add(text.charAt(i) + order);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: fast-fibonacci
     title: "Fibonacci mit Gedächtnis"
     extra: true
@@ -1300,6 +2186,89 @@ tasks:
           return memo[n];
         }
         ```
+    dart:
+      prompt: |
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `int fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
+      starter: |
+        int fastFibonacci(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        timeout: 6
+        slow: "Zu langsam: Dein Code rechnet dieselben Zahlen immer wieder aus. Schau im Gedächtnis nach, bevor du rechnest, und schreib jedes Ergebnis hinein."
+        cases:
+          - call: "fastFibonacci(70)"
+            expect: "190392490709135"
+          - call: "fastFibonacci(0)"
+            expect: "0"
+          - call: "fastFibonacci(1)"
+            expect: "1"
+          - call: "fastFibonacci(10)"
+            expect: "55"
+          - call: "fastFibonacci(50)"
+            expect: "12586269025"
+      hint:
+        - "Eine Map außerhalb der Funktion, `final memo = <int, int>{};`, merkt sich die Zahlen. Steht `n` schon darin, gibst du sie gleich zurück."
+        - "Erst nachsehen (`memo.containsKey(n)`), sonst rechnen und hineinschreiben."
+      solution: |
+        ```dart
+        final memo = <int, int>{};
+
+        int fastFibonacci(int n) {
+          if (n < 2) {
+            return n;
+          }
+          if (!memo.containsKey(n)) {
+            memo[n] = fastFibonacci(n - 1) + fastFibonacci(n - 2);
+          }
+          return memo[n]!;
+        }
+        ```
+    java:
+      prompt: |
+        Deine rekursive Fibonacci-Methode rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `long fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
+      starter: |
+        long fastFibonacci(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        timeout: 8
+        slow: "Zu langsam: Dein Code rechnet dieselben Zahlen immer wieder aus. Schau im Gedächtnis nach, bevor du rechnest, und schreib jedes Ergebnis hinein."
+        cases:
+          - call: "fastFibonacci(70)"
+            expect: "190392490709135L"
+          - call: "fastFibonacci(0)"
+            expect: "0"
+          - call: "fastFibonacci(1)"
+            expect: "1"
+          - call: "fastFibonacci(10)"
+            expect: "55"
+          - call: "fastFibonacci(50)"
+            expect: "12586269025L"
+      hint:
+        - "Eine Map außerhalb der Methode, `Map<Integer, Long> memo = new HashMap<>();`, merkt sich die Zahlen. Steht `n` schon darin, gibst du sie gleich zurück."
+        - "Erst nachsehen (`memo.containsKey(n)`), sonst rechnen und mit `memo.put(n, …)` hineinschreiben."
+      solution: |
+        ```java
+        Map<Integer, Long> memo = new HashMap<>();
+
+        long fastFibonacci(int n) {
+            if (n < 2) {
+                return n;
+            }
+            if (!memo.containsKey(n)) {
+                memo.put(n, fastFibonacci(n - 1) + fastFibonacci(n - 2));
+            }
+            return memo.get(n);
+        }
+        ```
+
   - id: subset-sum
     title: "Geht die Summe auf?"
     extra: true
@@ -1419,5 +2388,91 @@ tasks:
           }
           const rest = numbers.slice(1);
           return subsetSum(rest, target - numbers[0]) || subsetSum(rest, target);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `bool subsetSum(List<int> numbers, int target)`, die `true` zurückgibt, wenn einige der Zahlen zusammen genau `target` ergeben, jede höchstens einmal, und sonst `false`: `subsetSum([3, 34, 4, 12, 5, 2], 9)` ergibt `true` (4 + 5). Für die erste Zahl gibt es zwei Möglichkeiten: Sie ist dabei, oder nicht. Die Zahlen sind größer als 0.
+      starter: |
+        bool subsetSum(List<int> numbers, int target) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        recursive: true
+        loops: false
+        cases:
+          - call: "subsetSum([3, 34, 4, 12, 5, 2], 9)"
+            expect: "true"
+          - call: "subsetSum([3, 34, 4, 12, 5, 2], 30)"
+            expect: "false"
+          - call: "subsetSum([], 0)"
+            expect: "true"
+            say: "Nichts zusammen ergibt 0."
+          - call: "subsetSum([], 5)"
+            expect: "false"
+          - call: "subsetSum([7], 7)"
+            expect: "true"
+          - call: "subsetSum([2, 4, 6], 5)"
+            expect: "false"
+            say: "Lauter gerade Zahlen geben keine ungerade Summe."
+      hint:
+        - "Zwei Fälle, in denen du sofort fertig bist: `target` ist 0 (dann ja), oder es sind keine Zahlen mehr übrig (dann nein)."
+        - "Sonst: mit der ersten Zahl, `subsetSum(rest, target - numbers[0])`, oder ohne sie, `subsetSum(rest, target)`. Geht eins davon, geht es."
+      solution: |
+        ```dart
+        bool subsetSum(List<int> numbers, int target) {
+          if (target == 0) {
+            return true;
+          }
+          if (numbers.isEmpty || target < 0) {
+            return false;
+          }
+          final rest = numbers.sublist(1);
+          return subsetSum(rest, target - numbers[0]) || subsetSum(rest, target);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `boolean subsetSum(List<Integer> numbers, int target)`, die `true` zurückgibt, wenn einige der Zahlen zusammen genau `target` ergeben, jede höchstens einmal, und sonst `false`: `subsetSum(List.of(3, 34, 4, 12, 5, 2), 9)` ergibt `true` (4 + 5). Für die erste Zahl gibt es zwei Möglichkeiten: Sie ist dabei, oder nicht. Die Zahlen sind größer als 0.
+      starter: |
+        boolean subsetSum(List<Integer> numbers, int target) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        recursive: true
+        loops: false
+        cases:
+          - call: "subsetSum(List.of(3, 34, 4, 12, 5, 2), 9)"
+            expect: "true"
+          - call: "subsetSum(List.of(3, 34, 4, 12, 5, 2), 30)"
+            expect: "false"
+          - call: "subsetSum(List.of(), 0)"
+            expect: "true"
+            say: "Nichts zusammen ergibt 0."
+          - call: "subsetSum(List.of(), 5)"
+            expect: "false"
+          - call: "subsetSum(List.of(7), 7)"
+            expect: "true"
+          - call: "subsetSum(List.of(2, 4, 6), 5)"
+            expect: "false"
+            say: "Lauter gerade Zahlen geben keine ungerade Summe."
+      hint:
+        - "Zwei Fälle, in denen du sofort fertig bist: `target` ist 0 (dann ja), oder es sind keine Zahlen mehr übrig (dann nein)."
+        - "Sonst: mit der ersten Zahl, `subsetSum(rest, target - numbers.get(0))`, oder ohne sie, `subsetSum(rest, target)`, mit `rest = numbers.subList(1, numbers.size())`. Geht eins davon, geht es."
+      solution: |
+        ```java
+        boolean subsetSum(List<Integer> numbers, int target) {
+            if (target == 0) {
+                return true;
+            }
+            if (numbers.isEmpty() || target < 0) {
+                return false;
+            }
+            List<Integer> rest = numbers.subList(1, numbers.size());
+            return subsetSum(rest, target - numbers.get(0)) || subsetSum(rest, target);
         }
         ```

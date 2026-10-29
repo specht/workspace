@@ -35,8 +35,9 @@ require 'cgi'
 # A class ranks any of the five (GROUP_LANGUAGES; g.code_languages, a list,
 # the class page's »Sprachen der Klasse«). A person's own switch picks
 # between Ruby and Python (OWN_LANGUAGES). JavaScript, Dart and Java are
-# offered where a page needs them: JavaScript on the Katas
-# (docs/plan-katas.md), all five on the activity about classes
+# offered where a page needs them: all three on the Katas
+# and Pip unter Funkelbach (docs/plan-katas.md), Dart and Java on the
+# Textadventure and the check digits, all five on the activity about classes
 # (docs/plan-lehrplan-luecken.md). Someone who picks one of these three keeps
 # it apart (u.kata_code_language) and still sees Ruby or Python elsewhere.
 #
@@ -145,10 +146,19 @@ module CodeLanguages
 
     # The task as it is in one language: the variant's fields over the
     # task's own, without the variants themselves.
+    # A typical wrong solution (feedback with same_as) is code in the task's
+    # own language: a variant without feedback of its own does not inherit it.
     def self.variant(task, language)
         base = task.reject { |k, _| LANGUAGES.include?(k) }
         own = task[language.to_s]
-        own.is_a?(Hash) ? base.merge(own) : base
+        return base unless own.is_a?(Hash)
+
+        merged = base.merge(own)
+        unless own.key?('feedback')
+            kept = (base['feedback'] || []).reject { |f| f.is_a?(Hash) && f['when'].is_a?(Hash) && f['when'].key?('same_as') }
+            kept.empty? ? merged.delete('feedback') : merged['feedback'] = kept
+        end
+        merged
     end
 
     # A class's ranked languages as stored: a list (g.code_languages), or

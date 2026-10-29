@@ -50,6 +50,30 @@ tasks:
         b.increment();
         console.log(a.value);
         ```
+    dart:
+      prompt: |
+        Was gibt die letzte Zeile aus?
+
+        ```dart
+        final a = Counter();
+        final b = Counter();
+        a.increment();
+        a.increment();
+        b.increment();
+        print(a.value);
+        ```
+    java:
+      prompt: |
+        Was gibt die letzte Zeile aus?
+
+        ```java
+        Counter a = new Counter();
+        Counter b = new Counter();
+        a.increment();
+        a.increment();
+        b.increment();
+        IO.println(a.value);
+        ```
 
   - id: rectangle
     title: "Ein Rechteck"
@@ -175,6 +199,94 @@ tasks:
           perimeter() {
             return 2 * (this.width + this.height);
           }
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Rectangle`, deren Objekte mit Breite und Höhe gebaut werden, `Rectangle(3, 4)`, und die zwei Methoden hat: `area()` gibt die Fläche zurück (`12`), `perimeter()` den Umfang (`14`). Die Prüfung baut auch zwei Rechtecke nebeneinander.
+      starter: |
+        class Rectangle {
+          Rectangle(int width, int height);
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "Rectangle(3, 4).perimeter()"
+            expect: "14"
+          - call: "Rectangle(5, 5).area()"
+            expect: "25"
+          - call: "final r = Rectangle(2, 7); r.perimeter()"
+            expect: "18"
+          - call: "final a = Rectangle(1, 2); final b = Rectangle(10, 20); a.area() + b.area()"
+            expect: "202"
+            say: "Jedes Rechteck merkt sich seine eigene Breite und Höhe, in seinen Attributen `width` und `height`."
+      hint:
+        - "Der Konstruktor bekommt Breite und Höhe, aber die Parameter sind weg, wenn er fertig ist. Was muss das Objekt sich merken, damit `area` später daran kommt?"
+        - "Zwei Attribute, `final int width;` und `final int height;`, und der Konstruktor `Rectangle(this.width, this.height);` setzt sie gleich mit den Parametern. Dann können `area` und `perimeter` mit `width` und `height` rechnen."
+      solution: |
+        ```dart
+        class Rectangle {
+          final int width;
+          final int height;
+
+          Rectangle(this.width, this.height);
+
+          int area() {
+            return width * height;
+          }
+
+          int perimeter() {
+            return 2 * (width + height);
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Klasse `Rectangle`, deren Objekte mit Breite und Höhe gebaut werden, `new Rectangle(3, 4)`, und die zwei Methoden hat: `area()` gibt die Fläche zurück (`12`), `perimeter()` den Umfang (`14`). Die Prüfung baut auch zwei Rechtecke nebeneinander.
+      starter: |
+        class Rectangle {
+            Rectangle(int width, int height) {
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "new Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "new Rectangle(3, 4).perimeter()"
+            expect: "14"
+          - call: "new Rectangle(5, 5).area()"
+            expect: "25"
+          - call: "Rectangle r = new Rectangle(2, 7); r.perimeter()"
+            expect: "18"
+          - call: "Rectangle a = new Rectangle(1, 2); Rectangle b = new Rectangle(10, 20); a.area() + b.area()"
+            expect: "202"
+            say: "Jedes Rechteck merkt sich seine eigene Breite und Höhe, in seinen Attributen `this.width` und `this.height`."
+      hint:
+        - "Der Konstruktor bekommt Breite und Höhe, aber die Parameter sind weg, wenn er fertig ist. Was muss das Objekt sich merken, damit `area` später daran kommt?"
+        - "Zwei Attribute, `private int width;` und `private int height;`, und im Konstruktor `this.width = width;` und `this.height = height;`. Dann können `area` und `perimeter` mit `width` und `height` rechnen."
+      solution: |
+        ```java
+        class Rectangle {
+            private int width;
+            private int height;
+
+            Rectangle(int width, int height) {
+                this.width = width;
+                this.height = height;
+            }
+
+            int area() {
+                return width * height;
+            }
+
+            int perimeter() {
+                return 2 * (width + height);
+            }
         }
         ```
 
@@ -369,6 +481,143 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Account` für ein Konto, das mit einem Kontostand gebaut wird, `Account(10)`. `deposit(amount)` zahlt ein, `balance()` gibt den Kontostand zurück. `withdraw(amount)` hebt ab und gibt `true` zurück, aber nur, wenn genug da ist; sonst bleibt der Kontostand, wie er ist, und `withdraw` gibt `false` zurück.
+      starter: |
+        class Account {
+          Account(int balance);
+
+          void deposit(int amount) {
+          }
+
+          bool withdraw(int amount) {
+            return false;
+          }
+
+          int balance() {
+            return 0;
+          }
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "final a = Account(10); a.deposit(5); a.balance()"
+            expect: "15"
+          - call: "final a = Account(10); a.withdraw(4)"
+            expect: "true"
+          - call: "final a = Account(10); a.withdraw(4); a.balance()"
+            expect: "6"
+          - call: "final a = Account(10); a.withdraw(11)"
+            expect: "false"
+            say: "Auf dem Konto sind nur 10. Wer 11 abheben will, bekommt nichts, und `withdraw` sagt es mit `false`."
+          - call: "final a = Account(10); a.withdraw(11); a.balance()"
+            expect: "10"
+            say: "Ein Abheben, das nicht geht, darf den Kontostand nicht ändern: Prüf zuerst, ob genug da ist, und zieh erst dann ab."
+          - call: "final a = Account(10); a.withdraw(10); a.balance()"
+            expect: "0"
+            say: "Alles abheben geht: Danach steht das Konto auf 0, nicht im Minus."
+          - call: "final a = Account(0); final b = Account(0); a.deposit(3); b.balance()"
+            expect: "0"
+      hint:
+        - "Das Konto merkt sich seinen Stand in einem Attribut. Nenn es nicht `balance`, denn so heißt schon die Methode; `_money` geht. Der Unterstrich vorn macht es privat: Nur der Code in dieser Datei kommt daran, wer das Konto benutzt, nimmt die Methoden."
+        - "`int _money;` und der Konstruktor `Account(int balance) : _money = balance;` setzen den Anfangsstand. In `withdraw` kommt zuerst die Frage, ob `amount` größer ist als der Kontostand. Wenn ja: `return false;`, ohne etwas zu ändern."
+        - "Sonst ziehst du ab und gibst `true` zurück."
+      solution: |
+        ```dart
+        class Account {
+          int _money;
+
+          Account(int balance) : _money = balance;
+
+          void deposit(int amount) {
+            _money += amount;
+          }
+
+          bool withdraw(int amount) {
+            if (amount > _money) {
+              return false;
+            }
+            _money -= amount;
+            return true;
+          }
+
+          int balance() {
+            return _money;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Klasse `Account` für ein Konto, das mit einem Kontostand gebaut wird, `new Account(10)`. `deposit(amount)` zahlt ein, `balance()` gibt den Kontostand zurück. `withdraw(amount)` hebt ab und gibt `true` zurück, aber nur, wenn genug da ist; sonst bleibt der Kontostand, wie er ist, und `withdraw` gibt `false` zurück.
+      starter: |
+        class Account {
+            Account(int balance) {
+            }
+
+            void deposit(int amount) {
+            }
+
+            boolean withdraw(int amount) {
+                return false;
+            }
+
+            int balance() {
+                return 0;
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "Account a = new Account(10); a.deposit(5); a.balance()"
+            expect: "15"
+          - call: "Account a = new Account(10); a.withdraw(4)"
+            expect: "true"
+          - call: "Account a = new Account(10); a.withdraw(4); a.balance()"
+            expect: "6"
+          - call: "Account a = new Account(10); a.withdraw(11)"
+            expect: "false"
+            say: "Auf dem Konto sind nur 10. Wer 11 abheben will, bekommt nichts, und `withdraw` sagt es mit `false`."
+          - call: "Account a = new Account(10); a.withdraw(11); a.balance()"
+            expect: "10"
+            say: "Ein Abheben, das nicht geht, darf den Kontostand nicht ändern: Prüf zuerst, ob genug da ist, und zieh erst dann ab."
+          - call: "Account a = new Account(10); a.withdraw(10); a.balance()"
+            expect: "0"
+            say: "Alles abheben geht: Danach steht das Konto auf 0, nicht im Minus."
+          - call: "Account a = new Account(0); Account b = new Account(0); a.deposit(3); b.balance()"
+            expect: "0"
+      hint:
+        - "Das Konto merkt sich seinen Stand in einem Attribut, `private int money;`. `private` heißt: Nur die Methoden der Klasse kommen daran, wer das Konto benutzt, nimmt die Methoden."
+        - "In `withdraw` kommt zuerst die Frage, ob `amount` größer ist als der Kontostand. Wenn ja: `return false;`, ohne etwas zu ändern."
+        - "Sonst ziehst du ab und gibst `true` zurück."
+      solution: |
+        ```java
+        class Account {
+            private int money;
+
+            Account(int balance) {
+                money = balance;
+            }
+
+            void deposit(int amount) {
+                money += amount;
+            }
+
+            boolean withdraw(int amount) {
+                if (amount > money) {
+                    return false;
+                }
+                money -= amount;
+                return true;
+            }
+
+            int balance() {
+                return money;
+            }
+        }
+        ```
 
   - id: playlist
     title: "Die Playlist rechnet"
@@ -559,6 +808,145 @@ tasks:
           return longest === null ? null : longest.title;
         }
         ```
+    dart:
+      prompt: |
+        Die Klassen `Song` und `Playlist` von oben stehen schon da. Schreib in `Playlist` zwei Methoden: `totalSeconds()` gibt zurück, wie lange alle Songs zusammen dauern, und `longestTitle()` den Titel des längsten Songs; dauern zwei gleich lang, den, der zuerst kam. In einer leeren Playlist ergibt `totalSeconds()` `0` und `longestTitle()` `null`; darum gibt sie `String?` zurück.
+      starter: |
+        class Song {
+          final String title;
+          final int seconds;
+
+          Song(this.title, this.seconds);
+        }
+
+        class Playlist {
+          final songs = <Song>[];
+
+          void add(Song song) {
+            songs.add(song);
+          }
+
+          int totalSeconds() {
+            return -1;
+          }
+
+          String? longestTitle() {
+            return '';
+          }
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "final p = Playlist(); p.add(Song('Intro', 95)); p.add(Song('Outro', 210)); p.totalSeconds()"
+            expect: "305"
+          - call: "final p = Playlist(); p.add(Song('Intro', 95)); p.add(Song('Outro', 210)); p.longestTitle()"
+            expect: "'Outro'"
+          - call: "final p = Playlist(); p.add(Song('A', 120)); p.add(Song('B', 300)); p.add(Song('C', 60)); p.longestTitle()"
+            expect: "'B'"
+          - call: "final p = Playlist(); p.add(Song('A', 100)); p.add(Song('B', 100)); p.longestTitle()"
+            expect: "'A'"
+            say: "Dauern zwei Songs gleich lang, gewinnt der erste: Nimm einen neuen nur, wenn er länger ist, nicht schon, wenn er gleich lang ist."
+          - call: "Playlist().totalSeconds()"
+            expect: "0"
+          - call: "Playlist().longestTitle()"
+            expect: "null"
+            say: "In einer leeren Playlist gibt es keinen längsten Song."
+      hint:
+        - "Beide Methoden gehen durch `songs`. Jeder Song kennt seine Länge, `song.seconds`, und seinen Titel, `song.title`."
+        - "Für `totalSeconds` zählst du alle `song.seconds` zusammen, mit einer Schleife."
+        - "Für `longestTitle` merkst du dir den längsten Song bisher, `Song? longest;`, anfangs `null`, und tauschst ihn nur, wenn ein Song länger ist. Am Ende gibt `longest?.title` seinen Titel zurück, oder `null`, wenn es keinen gab."
+      solution: |
+        ```dart
+        int totalSeconds() {
+          var total = 0;
+          for (final song in songs) {
+            total += song.seconds;
+          }
+          return total;
+        }
+
+        String? longestTitle() {
+          Song? longest;
+          for (final song in songs) {
+            if (longest == null || song.seconds > longest.seconds) {
+              longest = song;
+            }
+          }
+          return longest?.title;
+        }
+        ```
+    java:
+      prompt: |
+        Die Klassen `Song` und `Playlist` von oben stehen schon da. Schreib in `Playlist` zwei Methoden: `totalSeconds()` gibt zurück, wie lange alle Songs zusammen dauern, und `longestTitle()` den Titel des längsten Songs; dauern zwei gleich lang, den, der zuerst kam. In einer leeren Playlist ergibt `totalSeconds()` `0` und `longestTitle()` `null`.
+      starter: |
+        class Song {
+            String title;
+            int seconds;
+
+            Song(String title, int seconds) {
+                this.title = title;
+                this.seconds = seconds;
+            }
+        }
+
+        class Playlist {
+            List<Song> songs = new ArrayList<>();
+
+            void add(Song song) {
+                songs.add(song);
+            }
+
+            int totalSeconds() {
+                return -1;
+            }
+
+            String longestTitle() {
+                return "";
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "Playlist p = new Playlist(); p.add(new Song(\"Intro\", 95)); p.add(new Song(\"Outro\", 210)); p.totalSeconds()"
+            expect: "305"
+          - call: "Playlist p = new Playlist(); p.add(new Song(\"Intro\", 95)); p.add(new Song(\"Outro\", 210)); p.longestTitle()"
+            expect: "\"Outro\""
+          - call: "Playlist p = new Playlist(); p.add(new Song(\"A\", 120)); p.add(new Song(\"B\", 300)); p.add(new Song(\"C\", 60)); p.longestTitle()"
+            expect: "\"B\""
+          - call: "Playlist p = new Playlist(); p.add(new Song(\"A\", 100)); p.add(new Song(\"B\", 100)); p.longestTitle()"
+            expect: "\"A\""
+            say: "Dauern zwei Songs gleich lang, gewinnt der erste: Nimm einen neuen nur, wenn er länger ist, nicht schon, wenn er gleich lang ist."
+          - call: "new Playlist().totalSeconds()"
+            expect: "0"
+          - call: "new Playlist().longestTitle()"
+            expect: "null"
+            say: "In einer leeren Playlist gibt es keinen längsten Song."
+      hint:
+        - "Beide Methoden gehen durch `songs`. Jeder Song kennt seine Länge, `song.seconds`, und seinen Titel, `song.title`."
+        - "Für `totalSeconds` zählst du alle `song.seconds` zusammen, mit einer Schleife."
+        - "Für `longestTitle` merkst du dir den längsten Song bisher, `Song longest = null;`, und tauschst ihn nur, wenn ein Song länger ist. Am Ende gibst du seinen Titel zurück, oder `null`, wenn es keinen gab."
+      solution: |
+        ```java
+        int totalSeconds() {
+            int total = 0;
+            for (Song song : songs) {
+                total += song.seconds;
+            }
+            return total;
+        }
+
+        String longestTitle() {
+            Song longest = null;
+            for (Song song : songs) {
+                if (longest == null || song.seconds > longest.seconds) {
+                    longest = song;
+                }
+            }
+            return longest == null ? null : longest.title;
+        }
+        ```
 
   - id: money
     title: "Geld als Text"
@@ -681,6 +1069,92 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Money`, deren Objekte mit Euro und Cent gebaut werden, `Money(3, 5)`, und die sich als Text so zeigt: `3,05 €`. Die Cent haben immer zwei Ziffern. Die Prüfung ruft `toString()` auf und setzt ein Objekt auch mit `${…}` in einen Text ein.
+      starter: |
+        class Money {
+          Money(int euros, int cents);
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "Money(3, 5).toString()"
+            expect: "'3,05 €'"
+            say: "Die Cent haben zwei Ziffern, auch wenn es weniger als 10 sind: 5 Cent werden zu `05`."
+          - call: "Money(12, 50).toString()"
+            expect: "'12,50 €'"
+          - call: "Money(0, 99).toString()"
+            expect: "'0,99 €'"
+          - call: "Money(7, 0).toString()"
+            expect: "'7,00 €'"
+          - call: "'Preis: ${Money(1, 20)}'"
+            expect: "'Preis: 1,20 €'"
+            say: "`${…}` in einem Text ruft `toString` auf: Heißt deine Methode genau `toString`?"
+      hint:
+        - "Merk dir Euro und Cent in zwei Attributen und schreib eine Methode `String toString()`, die einen Text zurückgibt. Davor steht `@override`: Jedes Objekt hat schon ein `toString`, und deins ersetzt es."
+        - "Die Cent bekommen mit `cents.toString().padLeft(2, '0')` zwei Ziffern, mit einer 0 vorn, wo nötig."
+        - "`'$euros,${cents.toString().padLeft(2, '0')} €'` setzt alles zusammen."
+      solution: |
+        ```dart
+        class Money {
+          final int euros;
+          final int cents;
+
+          Money(this.euros, this.cents);
+
+          @override
+          String toString() {
+            return '$euros,${cents.toString().padLeft(2, '0')} €';
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Klasse `Money`, deren Objekte mit Euro und Cent gebaut werden, `new Money(3, 5)`, und die sich als Text so zeigt: `3,05 €`. Die Cent haben immer zwei Ziffern. Die Prüfung ruft `toString()` auf und hängt ein Objekt auch mit `+` an einen Text.
+      starter: |
+        class Money {
+            Money(int euros, int cents) {
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "new Money(3, 5).toString()"
+            expect: "\"3,05 €\""
+            say: "Die Cent haben zwei Ziffern, auch wenn es weniger als 10 sind: 5 Cent werden zu `05`."
+          - call: "new Money(12, 50).toString()"
+            expect: "\"12,50 €\""
+          - call: "new Money(0, 99).toString()"
+            expect: "\"0,99 €\""
+          - call: "new Money(7, 0).toString()"
+            expect: "\"7,00 €\""
+          - call: "\"Preis: \" + new Money(1, 20)"
+            expect: "\"Preis: 1,20 €\""
+            say: "`+` mit einem Text ruft `toString` auf: Heißt deine Methode genau `toString`, und ist sie `public`?"
+      hint:
+        - "Merk dir Euro und Cent in zwei Attributen und schreib eine Methode `public String toString()`, die einen Text zurückgibt. Davor steht `@Override`: Jedes Objekt hat schon ein `toString`, und deins ersetzt es."
+        - "`String.format(\"%02d\", cents)` gibt die Cent mit zwei Ziffern, mit einer 0 vorn, wo nötig."
+        - "`String.format(\"%d,%02d €\", euros, cents)` setzt alles zusammen."
+      solution: |
+        ```java
+        class Money {
+            private int euros;
+            private int cents;
+
+            Money(int euros, int cents) {
+                this.euros = euros;
+                this.cents = cents;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("%d,%02d €", euros, cents);
+            }
+        }
+        ```
 
   - id: predict-describe
     title: "Wer sagt was?"
@@ -698,6 +1172,12 @@ tasks:
     javascript:
       prompt: |
         Was gibt `console.log(new Dog("Bello").describe())` aus?
+    dart:
+      prompt: |
+        Was gibt `print(Dog('Bello').describe());` aus?
+    java:
+      prompt: |
+        Was gibt `IO.println(new Dog("Bello").describe());` aus?
 
   - id: total-area
     title: "Flächen zusammenzählen"
@@ -875,6 +1355,156 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        Die Klasse `Shape` steht schon da: eine Form mit einer Methode `area()`, die erst eine Unterklasse ausfüllt. Schreib zwei Klassen, die von `Shape` erben, `Square` (gebaut mit einer Seitenlänge) und `Rectangle` (mit Breite und Höhe). Dann eine Funktion `int totalArea(List<Shape> shapes)`, die die Flächen aller Formen einer Liste zusammenzählt. `totalArea` fragt jede Form nur nach `area()`, ohne nachzusehen, von welcher Klasse sie ist.
+      starter: |
+        abstract class Shape {
+          int area();
+        }
+
+        class Square {
+        }
+
+        class Rectangle {
+        }
+
+        int totalArea(List<Shape> shapes) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "Square(5).area()"
+            expect: "25"
+          - call: "Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "totalArea([Square(2), Rectangle(3, 4)])"
+            expect: "16"
+          - call: "totalArea([Square(1), Square(1), Rectangle(1, 5)])"
+            expect: "7"
+          - call: "totalArea([])"
+            expect: "0"
+      hint:
+        - "`class Square extends Shape { … }` erbt von `Shape`. Beide Klassen merken sich ihre Maße im Konstruktor und haben eine Methode `int area()`, jede mit ihrer eigenen Rechnung, mit `@override` davor."
+        - "`totalArea` geht durch die Liste und zählt `shape.area()` zusammen."
+      solution: |
+        ```dart
+        abstract class Shape {
+          int area();
+        }
+
+        class Square extends Shape {
+          final int side;
+
+          Square(this.side);
+
+          @override
+          int area() {
+            return side * side;
+          }
+        }
+
+        class Rectangle extends Shape {
+          final int width;
+          final int height;
+
+          Rectangle(this.width, this.height);
+
+          @override
+          int area() {
+            return width * height;
+          }
+        }
+
+        int totalArea(List<Shape> shapes) {
+          var total = 0;
+          for (final shape in shapes) {
+            total += shape.area();
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Die Klasse `Shape` steht schon da: eine Form mit einer Methode `area()`, die erst eine Unterklasse ausfüllt. Schreib zwei Klassen, die von `Shape` erben, `Square` (gebaut mit einer Seitenlänge) und `Rectangle` (mit Breite und Höhe). Dann eine Methode `int totalArea(List<Shape> shapes)`, die die Flächen aller Formen einer Liste zusammenzählt. `totalArea` fragt jede Form nur nach `area()`, ohne nachzusehen, von welcher Klasse sie ist: Die Prüfung gibt ihr auch eine Form, die du nicht kennst.
+      starter: |
+        abstract class Shape {
+            abstract int area();
+        }
+
+        class Square {
+        }
+
+        class Rectangle {
+        }
+
+        int totalArea(List<Shape> shapes) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "new Square(5).area()"
+            expect: "25"
+          - call: "new Rectangle(3, 4).area()"
+            expect: "12"
+          - call: "totalArea(List.of(new Square(2), new Rectangle(3, 4)))"
+            expect: "16"
+          - call: "totalArea(List.of(new Square(1), new Square(1), new Rectangle(1, 5)))"
+            expect: "7"
+          - call: "totalArea(List.of())"
+            expect: "0"
+          - call: "Shape triangle = new Shape() { int area() { return 6; } }; totalArea(List.of(triangle, new Square(2)))"
+            expect: "10"
+            say: "Die Prüfung gibt `totalArea` eine Form, die keine deiner Klassen ist, aber auch `area()` kann. Frag jede Form nur nach `shape.area()`, ohne nachzusehen, was sie ist."
+      hint:
+        - "`class Square extends Shape { … }` erbt von `Shape`. Beide Klassen merken sich ihre Maße im Konstruktor und haben eine Methode `int area()`, jede mit ihrer eigenen Rechnung, mit `@Override` davor."
+        - "`totalArea` geht durch die Liste und zählt `shape.area()` zusammen."
+      solution: |
+        ```java
+        abstract class Shape {
+            abstract int area();
+        }
+
+        class Square extends Shape {
+            private int side;
+
+            Square(int side) {
+                this.side = side;
+            }
+
+            @Override
+            int area() {
+                return side * side;
+            }
+        }
+
+        class Rectangle extends Shape {
+            private int width;
+            private int height;
+
+            Rectangle(int width, int height) {
+                this.width = width;
+                this.height = height;
+            }
+
+            @Override
+            int area() {
+                return width * height;
+            }
+        }
+
+        int totalArea(List<Shape> shapes) {
+            int total = 0;
+            for (Shape shape : shapes) {
+                total += shape.area();
+            }
+            return total;
+        }
+        ```
 
   - id: manager
     title: "Eine Managerin verdient mehr"
@@ -1024,6 +1654,117 @@ tasks:
           yearly() {
             return super.yearly() + this.bonus;
           }
+        }
+        ```
+    dart:
+      prompt: |
+        Die Klasse `Employee` steht schon da: Eine Angestellte hat einen Namen und ein Gehalt im Monat, und `yearly()` gibt das Gehalt im Jahr zurück. Schreib eine Klasse `Manager`, die von `Employee` erbt, dazu einen Bonus im Jahr bekommt, `Manager('Bo', 4000, 5000)`, und deren `yearly()` den Bonus dazurechnet. Benutze dabei `super`, im Konstruktor und in `yearly`, statt das Gehalt noch einmal selbst zu rechnen.
+      starter: |
+        class Employee {
+          final String name;
+          final int monthly;
+
+          Employee(this.name, this.monthly);
+
+          int yearly() {
+            return 12 * monthly;
+          }
+        }
+
+        class Manager extends Employee {
+          Manager(String name, int monthly, int bonus);
+
+          @override
+          int yearly() {
+            return 0;
+          }
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "Manager('Bo', 4000, 5000).yearly()"
+            expect: "53000"
+          - call: "Manager('Bo', 4000, 0).yearly()"
+            expect: "48000"
+          - call: "Manager('Bo', 4000, 5000).name"
+            expect: "'Bo'"
+            say: "Den Namen merkt sich `Employee`: Gib ihn im Konstruktor mit `: super(name, monthly)` weiter, dann setzt der Konstruktor von `Employee` `name`."
+          - call: "Employee('Ada', 3000).yearly()"
+            expect: "36000"
+      hint:
+        - "`Manager` braucht nur den Bonus selbst, `final int bonus;`. Name und Monatsgehalt gibt sein Konstruktor an `Employee` weiter: `Manager(String name, int monthly, this.bonus) : super(name, monthly);`. Ohne das sagt Dart, `Employee` habe keinen Konstruktor ohne Parameter."
+        - "In `yearly` ruft `super.yearly()` das `yearly` von `Employee` auf. Dazu kommt der Bonus."
+      solution: |
+        ```dart
+        class Manager extends Employee {
+          final int bonus;
+
+          Manager(String name, int monthly, this.bonus) : super(name, monthly);
+
+          @override
+          int yearly() {
+            return super.yearly() + bonus;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Die Klasse `Employee` steht schon da: Eine Angestellte hat einen Namen und ein Gehalt im Monat, und `yearly()` gibt das Gehalt im Jahr zurück. Schreib eine Klasse `Manager`, die von `Employee` erbt, dazu einen Bonus im Jahr bekommt, `new Manager("Bo", 4000, 5000)`, und deren `yearly()` den Bonus dazurechnet. Benutze dabei `super`, im Konstruktor und in `yearly`, statt das Gehalt noch einmal selbst zu rechnen.
+      starter: |
+        class Employee {
+            String name;
+            int monthly;
+
+            Employee(String name, int monthly) {
+                this.name = name;
+                this.monthly = monthly;
+            }
+
+            int yearly() {
+                return 12 * monthly;
+            }
+        }
+
+        class Manager extends Employee {
+            Manager(String name, int monthly, int bonus) {
+            }
+
+            @Override
+            int yearly() {
+                return 0;
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "new Manager(\"Bo\", 4000, 5000).yearly()"
+            expect: "53000"
+          - call: "new Manager(\"Bo\", 4000, 0).yearly()"
+            expect: "48000"
+          - call: "new Manager(\"Bo\", 4000, 5000).name"
+            expect: "\"Bo\""
+            say: "Den Namen merkt sich `Employee`: Gib ihn im Konstruktor mit `super(name, monthly);` weiter, dann setzt der Konstruktor von `Employee` `this.name`."
+          - call: "new Employee(\"Ada\", 3000).yearly()"
+            expect: "36000"
+      hint:
+        - "`Manager` braucht nur den Bonus selbst, `private int bonus;`. Name und Monatsgehalt gibt sein Konstruktor mit `super(name, monthly);` an `Employee` weiter, in seiner ersten Zeile. Ohne das sagt Java, der Konstruktor von `Employee` passe nicht zu den Typen (»cannot be applied to given types«)."
+        - "In `yearly` ruft `super.yearly()` das `yearly` von `Employee` auf. Dazu kommt der Bonus."
+      solution: |
+        ```java
+        class Manager extends Employee {
+            private int bonus;
+
+            Manager(String name, int monthly, int bonus) {
+                super(name, monthly);
+                this.bonus = bonus;
+            }
+
+            @Override
+            int yearly() {
+                return super.yearly() + bonus;
+            }
         }
         ```
 
@@ -1197,6 +1938,120 @@ tasks:
           }
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Stack` für einen Stapel, bei dem nur das oberste Element zugänglich ist: `push(x)` legt `x` oben drauf, `pop()` nimmt das oberste weg und gibt es zurück, `peek()` gibt es zurück, ohne es wegzunehmen, `size()` sagt, wie viele Elemente drauf liegen. Ist der Stack leer, geben `pop()` und `peek()` `null` zurück. Die Elemente können alles sein, `Object`.
+      starter: |
+        class Stack {
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "final s = Stack(); s.push(1); s.push(2); s.pop()"
+            expect: "2"
+          - call: "final s = Stack(); s.push(1); s.push(2); s.pop(); s.pop()"
+            expect: "1"
+          - call: "final s = Stack(); s.push(1); s.push(2); s.peek()"
+            expect: "2"
+          - call: "final s = Stack(); s.push(1); s.push(2); s.peek(); s.size()"
+            expect: "2"
+            say: "`peek` schaut nur nach, es nimmt nichts weg."
+          - call: "final s = Stack(); s.pop()"
+            expect: "null"
+            say: "Bei einem leeren Stack gibt `pop()` `null` zurück: Frag vorher, ob die Liste leer ist."
+          - call: "Stack().peek()"
+            expect: "null"
+          - call: "final s = Stack(); s.push('a'); s.pop(); s.size()"
+            expect: "0"
+      hint:
+        - "Der Stack merkt sich seine Elemente in einer Liste, `final _items = <Object>[];`. Oben ist ihr Ende. `pop` und `peek` geben `Object?` zurück: ein Element oder `null`."
+        - "`_items.add(x)` legt drauf, `_items.removeLast()` nimmt das letzte weg, `_items.last` schaut nur. Bei einer leeren Liste brechen beide ab; darum fragst du vorher `if (_items.isEmpty)`."
+      solution: |
+        ```dart
+        class Stack {
+          final _items = <Object>[];
+
+          void push(Object x) {
+            _items.add(x);
+          }
+
+          Object? pop() {
+            if (_items.isEmpty) {
+              return null;
+            }
+            return _items.removeLast();
+          }
+
+          Object? peek() {
+            if (_items.isEmpty) {
+              return null;
+            }
+            return _items.last;
+          }
+
+          int size() {
+            return _items.length;
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Klasse `Stack` für einen Stapel, bei dem nur das oberste Element zugänglich ist: `push(x)` legt `x` oben drauf, `pop()` nimmt das oberste weg und gibt es zurück, `peek()` gibt es zurück, ohne es wegzunehmen, `size()` sagt, wie viele Elemente drauf liegen. Ist der Stack leer, geben `pop()` und `peek()` `null` zurück. Die Elemente können alles sein, `Object`. Java hat schon eine Klasse `Stack`; deine heißt genauso und gilt hier statt ihrer.
+      starter: |
+        class Stack {
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "Stack s = new Stack(); s.push(1); s.push(2); s.pop()"
+            expect: "2"
+          - call: "Stack s = new Stack(); s.push(1); s.push(2); s.pop(); s.pop()"
+            expect: "1"
+          - call: "Stack s = new Stack(); s.push(1); s.push(2); s.peek()"
+            expect: "2"
+          - call: "Stack s = new Stack(); s.push(1); s.push(2); s.peek(); s.size()"
+            expect: "2"
+            say: "`peek` schaut nur nach, es nimmt nichts weg."
+          - call: "Stack s = new Stack(); s.pop()"
+            expect: "null"
+            say: "Bei einem leeren Stack gibt `pop()` `null` zurück: Frag vorher, ob die Liste leer ist."
+          - call: "new Stack().peek()"
+            expect: "null"
+          - call: "Stack s = new Stack(); s.push(\"a\"); s.pop(); s.size()"
+            expect: "0"
+      hint:
+        - "Der Stack merkt sich seine Elemente in einer Liste, `private List<Object> items = new ArrayList<>();`. Oben ist ihr Ende."
+        - "`items.add(x)` legt drauf, `items.remove(items.size() - 1)` nimmt das letzte weg und gibt es zurück, `items.get(items.size() - 1)` schaut nur. Bei einer leeren Liste brechen beide ab; darum fragst du vorher `if (items.isEmpty())`."
+      solution: |
+        ```java
+        class Stack {
+            private List<Object> items = new ArrayList<>();
+
+            void push(Object x) {
+                items.add(x);
+            }
+
+            Object pop() {
+                if (items.isEmpty()) {
+                    return null;
+                }
+                return items.remove(items.size() - 1);
+            }
+
+            Object peek() {
+                if (items.isEmpty()) {
+                    return null;
+                }
+                return items.get(items.size() - 1);
+            }
+
+            int size() {
+                return items.size();
+            }
+        }
+        ```
 
   - id: fraction
     title: "Ein Bruch, der rechnen kann"
@@ -1352,5 +2207,124 @@ tasks:
           toString() {
             return `${this.numerator}/${this.denominator}`;
           }
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Klasse `Fraction` für Brüche, gebaut mit Zähler und Nenner, `Fraction(2, 4)`, die sich gleich gekürzt merkt, also als 1/2. `toString()` zeigt sie als `1/2`, und `add(other)` gibt einen neuen, gekürzten Bruch mit der Summe zurück, ohne die beiden zu ändern. Den größten gemeinsamen Teiler gibt die Funktion `gcd`, die schon dasteht.
+      starter: |
+        int gcd(int a, int b) {
+          return b == 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+          Fraction(int numerator, int denominator);
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "Fraction(2, 4).toString()"
+            expect: "'1/2'"
+            say: "Der Bruch soll sich gleich gekürzt merken: Teil Zähler und Nenner im Konstruktor durch ihren größten gemeinsamen Teiler."
+          - call: "Fraction(3, 5).toString()"
+            expect: "'3/5'"
+          - call: "Fraction(1, 2).add(Fraction(1, 3)).toString()"
+            expect: "'5/6'"
+          - call: "Fraction(1, 2).add(Fraction(1, 2)).toString()"
+            expect: "'1/1'"
+          - call: "Fraction(1, 6).add(Fraction(1, 3)).toString()"
+            expect: "'1/2'"
+          - call: "final f = Fraction(1, 4); f.add(Fraction(1, 4)); f.toString()"
+            expect: "'1/4'"
+            say: "`add` gibt einen neuen Bruch zurück und lässt `f` selbst, wie er ist."
+      hint:
+        - "Für die Summe von a/b und c/d gilt: Zähler a·d + c·b, Nenner b·d. Danach kürzen."
+        - "`late final int numerator;` ist ein Attribut, das der Konstruktor in seinem Rumpf einmal setzt; `~/` teilt ganzzahlig. Kürzt der Konstruktor schon, muss `add` nur `Fraction(…, …)` mit dem ungekürzten Ergebnis bauen. Die Attribute des anderen Bruchs erreichst du mit `other.numerator`."
+      solution: |
+        ```dart
+        int gcd(int a, int b) {
+          return b == 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+          late final int numerator;
+          late final int denominator;
+
+          Fraction(int numerator, int denominator) {
+            final divisor = gcd(numerator, denominator);
+            this.numerator = numerator ~/ divisor;
+            this.denominator = denominator ~/ divisor;
+          }
+
+          Fraction add(Fraction other) {
+            return Fraction(numerator * other.denominator + other.numerator * denominator,
+                denominator * other.denominator);
+          }
+
+          @override
+          String toString() {
+            return '$numerator/$denominator';
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Klasse `Fraction` für Brüche, gebaut mit Zähler und Nenner, `new Fraction(2, 4)`, die sich gleich gekürzt merkt, also als 1/2. `toString()` zeigt sie als `1/2`, und `add(other)` gibt einen neuen, gekürzten Bruch mit der Summe zurück, ohne die beiden zu ändern. Den größten gemeinsamen Teiler gibt die Methode `gcd`, die schon dasteht.
+      starter: |
+        int gcd(int a, int b) {
+            return b == 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+            Fraction(int numerator, int denominator) {
+            }
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "new Fraction(2, 4).toString()"
+            expect: "\"1/2\""
+            say: "Der Bruch soll sich gleich gekürzt merken: Teil Zähler und Nenner im Konstruktor durch ihren größten gemeinsamen Teiler."
+          - call: "new Fraction(3, 5).toString()"
+            expect: "\"3/5\""
+          - call: "new Fraction(1, 2).add(new Fraction(1, 3)).toString()"
+            expect: "\"5/6\""
+          - call: "new Fraction(1, 2).add(new Fraction(1, 2)).toString()"
+            expect: "\"1/1\""
+          - call: "new Fraction(1, 6).add(new Fraction(1, 3)).toString()"
+            expect: "\"1/2\""
+          - call: "Fraction f = new Fraction(1, 4); f.add(new Fraction(1, 4)); f.toString()"
+            expect: "\"1/4\""
+            say: "`add` gibt einen neuen Bruch zurück und lässt `f` selbst, wie er ist."
+      hint:
+        - "Für die Summe von a/b und c/d gilt: Zähler a·d + c·b, Nenner b·d. Danach kürzen."
+        - "Kürzt der Konstruktor schon, muss `add` nur `new Fraction(…, …)` mit dem ungekürzten Ergebnis bauen. Die Attribute des anderen Bruchs erreichst du mit `other.numerator`, auch wenn sie `private` sind: Es ist dieselbe Klasse. `toString` ist `public` und hat `@Override` davor."
+      solution: |
+        ```java
+        int gcd(int a, int b) {
+            return b == 0 ? a : gcd(b, a % b);
+        }
+
+        class Fraction {
+            private int numerator;
+            private int denominator;
+
+            Fraction(int numerator, int denominator) {
+                int divisor = gcd(numerator, denominator);
+                this.numerator = numerator / divisor;
+                this.denominator = denominator / divisor;
+            }
+
+            Fraction add(Fraction other) {
+                return new Fraction(numerator * other.denominator + other.numerator * denominator,
+                                    denominator * other.denominator);
+            }
+
+            @Override
+            public String toString() {
+                return numerator + "/" + denominator;
+            }
         }
         ```

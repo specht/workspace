@@ -43,6 +43,10 @@ class RecursionCheckTest < Minitest::Test
         assert_nil RecursionCheck.problem(check('javascript'), hanoi, 'factorial')
         method = "function factorial(n) {\n  return Math.factorial(n);\n}\n"
         assert_equal RecursionCheck::NOT_RECURSIVE, RecursionCheck.problem(check('javascript'), method, 'factorial')
+        dart = "List<int> factorial(int n) {\n  return n == 0 ? [] : [n, ...factorial(n - 1)];\n}\n"
+        assert_nil RecursionCheck.problem(check('dart'), dart, 'factorial')
+        dart_method = "int factorial(int n) {\n  return math.factorial(n);\n}\n"
+        assert_equal RecursionCheck::NOT_RECURSIVE, RecursionCheck.problem(check('dart'), dart_method, 'factorial')
     end
 
     # recursive with a loop where loops are allowed (all orders of a text)

@@ -2,7 +2,7 @@
 icon: bi-quote
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Buchstaben zählen, umdrehen, umwandeln und verschlüsseln
 curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung), Information und Daten (Codierung, Verschlüsselung)"
 topics: [zeichenketten, codierung, verschluesselung]
@@ -83,6 +83,58 @@ console.log(String.fromCharCode(98));   // b
 `for (const char of text) { … }` geht die Zeichen der Reihe nach durch,
 `result += …` hängt hinten an. `text.split(' ')` zerlegt einen Text an jedem
 Leerzeichen in eine Liste, `words.join(' ')` verbindet sie wieder.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+String bracket(String text) {
+  var result = '';
+  for (final char in text.split('')) {
+    result += '[' + char + ']';
+  }
+  return result;
+}
+
+void main() {
+  print(bracket('Hallo'));           // [H][a][l][l][o]
+  print('Hallo'.length);             // 5
+  print('Hallo'[0]);                 // H, das Zeichen mit dem Index 0
+  print('a'.codeUnitAt(0));          // 97, die Nummer des Zeichens
+  print(String.fromCharCode(98));    // b
+}
+```
+
+`text.split('')` ist die Liste der Zeichen, `for (final char in …) { … }`
+geht sie der Reihe nach durch, `result += …` hängt hinten an. `text.split(' ')`
+zerlegt einen Text an jedem Leerzeichen in eine Liste, `words.join(' ')`
+verbindet sie wieder. `text.codeUnits` ist die Liste der Nummern aller
+Zeichen.
+<!-- /language -->
+<!-- language: java -->
+```java
+String bracket(String text) {
+    String result = "";
+    for (char c : text.toCharArray()) {
+        result += "[" + c + "]";
+    }
+    return result;
+}
+
+void main() {
+    IO.println(bracket("Hallo"));      // [H][a][l][l][o]
+    IO.println("Hallo".length());      // 5
+    IO.println("Hallo".charAt(0));     // H, das Zeichen mit dem Index 0
+    IO.println((int) 'a');             // 97, die Nummer des Zeichens
+    IO.println((char) 98);             // b
+}
+```
+
+Ein einzelnes Zeichen ist in Java ein `char` und steht in einfachen
+Anführungszeichen, ein Text ein `String` in doppelten. `text.toCharArray()`
+ist ein Array der Zeichen, `for (char c : …) { … }` geht sie der Reihe nach
+durch, `result += …` hängt hinten an. Zeichen lassen sich vergleichen wie
+Zahlen: `c >= 'a' && c <= 'z'`. `text.split(" ")` zerlegt einen Text an jedem
+Leerzeichen in ein Array, `String.join(" ", words)` verbindet die Wörter
+wieder.
 <!-- /language -->
 
 Jedes Zeichen hat eine Nummer: `A` ist 65, `B` 66 und so weiter, `a` ist 97.

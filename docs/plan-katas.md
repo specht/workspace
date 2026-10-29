@@ -1,7 +1,7 @@
 # Katas and Pip unter Funkelbach
 
 **Katas** are short programming exercises typed straight into a card on the
-page, in Ruby, Python or JavaScript, without terminal and files: a way to start
+page, in Ruby, Python, JavaScript, Dart or Java, without terminal and files: a way to start
 coding before the Workspace's tools, and to practise alongside them. They
 replace Code Bites (removed on 2026-10-18; the old code is in
 `git show 8a6bead5^:src/codebites/…`). **Pip unter Funkelbach** is the way
@@ -55,8 +55,11 @@ The code:
 - **Checks:** `kata_check.rb` with the harnesses of `ruby_check.rb`,
   `python_check.rb` and `javascript_check.rb` (cases, `random` with a seed per
   person, `forbid`, `same_as` feedback, explained beginner errors);
-  `recursion_check.rb` (Prism for Ruby, blanked text for Python and
-  JavaScript); `tests_check.rb`; `pip_check.rb` with `pip_world.rb` (the world
+  `kata_compiled.rb` for Dart and Java, which compile before they run (the
+  code as a library for DartCheck's harness, or as members of a class as in
+  a compact source file of Java 25; one compiler run for the code and its
+  typical wrong solutions); `recursion_check.rb` (Prism for Ruby, blanked
+  text for Python, JavaScript, Dart and Java); `tests_check.rb`; `pip_check.rb` with `pip_world.rb` (the world
   on the server, which answers every command and records the trace) and
   `pip_maps.rb` (mazes from the seed).
 - **Pages:** `kata_page.rb` (tickets and polling, hand-ins), `kata_map.rb` (the
@@ -86,8 +89,20 @@ The code:
   zeigen« and not »Abgeben«, the label of hand-in tasks): their own choice,
   taken back at any time with »Zurücknehmen«, shown numbered and without
   names until the teacher switches them on.
-- **JavaScript is a language of the Katas only.** The class setting stays Ruby
-  or Python; a choice of JavaScript is stored apart (`u.kata_code_language`).
+- **JavaScript, Dart and Java are chosen apart.** A person's own switch stays
+  Ruby or Python; a choice of JavaScript, Dart or Java is stored apart
+  (`u.kata_code_language`), and a class can rank all five.
+- **Dart and Java have every set.** Tests schreiben compiles every version
+  with the person's tests once (`tests_compiled.rb`), then runs each
+  version as a process of its own; Pip unter Funkelbach runs in all five
+  (`pip_compiled.rb`: a plan is compiled once, then started
+  once a map, all maps in one container; a plan without `main` gets one, in
+  Java `wait` is `pause()`, since every object has `wait()`). A
+  Dart or Java card uses that language's types in its signature, its own
+  forbidden built-ins and its own typical mistakes (the remainder of a
+  negative number differs in all three, Java compares texts with `equals`);
+  a typical wrong solution must compile, since in Java one that does not
+  stops the person's own code too.
 - **The catalogue follows ideas, not data types** (Code Bites sorted by
   numbers, strings, arrays), in the order of »Algorithmisches Problemlösen«
   in the Sek I plan. A class with no programming starts with Pip; nothing is

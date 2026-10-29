@@ -58,6 +58,62 @@ tasks:
                     seen.append(name)
             return len(seen)
         ```
+    dart:
+      prompt: |
+        Schreib in `laufzeit.dart` eine Funktion `int distinctList(List<String> names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        cases:
+          - { call: "distinctList(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])", expect: 2 }
+          - { call: "distinctList([])", expect: 0 }
+          - { call: "distinctList(List.filled(5, 'Dorfstraße'))", expect: 1 }
+          - { call: "distinctList(['a', 'b', 'c', 'd', 'e', 'f'])", expect: 6 }
+      hint:
+        - "Eine leere Liste `final seen = <String>[];`; für jeden Namen: Steht er noch nicht darin, `!seen.contains(name)`, kommt er hinein."
+        - "Am Ende ist die Zahl der verschiedenen Namen `seen.length`."
+      solution: |
+        ```dart
+        int distinctList(List<String> names) {
+          final seen = <String>[];
+          for (final name in names) {
+            if (!seen.contains(name)) {
+              seen.add(name);
+            }
+          }
+          return seen.length;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Laufzeit.java`, in der Klasse `Laufzeit`, eine Methode `public static int distinctList(List<String> names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        cases:
+          - { call: "Laufzeit.distinctList(List.of(\"Waldstraße\", \"Bahnhofstraße\", \"Waldstraße\"))", expect: 2 }
+          - { call: "Laufzeit.distinctList(List.of())", expect: 0 }
+          - { call: "Laufzeit.distinctList(Collections.nCopies(5, \"Dorfstraße\"))", expect: 1 }
+          - { call: "Laufzeit.distinctList(List.of(\"a\", \"b\", \"c\", \"d\", \"e\", \"f\"))", expect: 6 }
+      hint:
+        - "Eine leere Liste `List<String> seen = new ArrayList<>();`; für jeden Namen: Steht er noch nicht darin, `!seen.contains(name)`, kommt er hinein. Oben in die Datei gehört `import java.util.*;`."
+        - "Am Ende ist die Zahl der verschiedenen Namen `seen.size()`."
+      solution: |
+        ```java
+        import java.util.*;
+
+        public class Laufzeit {
+            public static int distinctList(List<String> names) {
+                List<String> seen = new ArrayList<>();
+                for (String name : names) {
+                    if (!seen.contains(name)) {
+                        seen.add(name);
+                    }
+                }
+                return seen.size();
+            }
+        }
+        ```
 
   - id: distinct-sorted
     title: Erst sortieren
@@ -121,6 +177,66 @@ tasks:
                     count += 1
             return count
         ```
+    dart:
+      prompt: |
+        Schreib `int distinctSorted(List<String> names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 15
+        slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Vergleicht sie jeden Namen nur mit dem davor, nachdem sie sortiert hat?"
+        cases:
+          - { call: "distinctSorted(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])", expect: 2 }
+          - { call: "distinctSorted([])", expect: 0 }
+          - { call: "distinctSorted(['b', 'a', 'b', 'a', 'c'])", expect: 3 }
+          - { call: "distinctSorted([for (var i = 1; i <= 300000; i++) '$i'])", expect: 300000 }
+      hint:
+        - "`final sorted = [...names]..sort();` ist eine sortierte Kopie. Gezählt wird jeder Name, der anders ist als der davor, und der erste."
+        - "`for (var i = 0; i < sorted.length; i++)` gibt jeden Index; der Name davor ist `sorted[i - 1]`, und beim ersten, `i == 0`, gibt es keinen davor."
+      solution: |
+        ```dart
+        int distinctSorted(List<String> names) {
+          final sorted = [...names]..sort();
+          var count = 0;
+          for (var i = 0; i < sorted.length; i++) {
+            if (i == 0 || sorted[i] != sorted[i - 1]) {
+              count++;
+            }
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static int distinctSorted(List<String> names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 20
+        slow: "Für 300 000 verschiedene Namen braucht deine Methode zu lange. Vergleicht sie jeden Namen nur mit dem davor, nachdem sie sortiert hat?"
+        cases:
+          - { call: "Laufzeit.distinctSorted(List.of(\"Waldstraße\", \"Bahnhofstraße\", \"Waldstraße\"))", expect: 2 }
+          - { call: "Laufzeit.distinctSorted(List.of())", expect: 0 }
+          - { call: "Laufzeit.distinctSorted(List.of(\"b\", \"a\", \"b\", \"a\", \"c\"))", expect: 3 }
+          - { call: "Laufzeit.distinctSorted(List.of(new String(\"Dorfstraße\"), new String(\"Dorfstraße\")))", expect: 1, say: "Zwei gleiche Namen aus einer Datei sind zwei verschiedene Objekte: `==` und `!=` fragen, ob es dasselbe Objekt ist, `equals`, ob derselbe Text darin steht." }
+          - { call: "List<String> names = new ArrayList<>(); for (int i = 1; i <= 300000; i++) names.add(String.valueOf(i)); Laufzeit.distinctSorted(names)", expect: 300000 }
+      hint:
+        - "`List<String> sorted = new ArrayList<>(names);` ist eine Kopie, `Collections.sort(sorted);` sortiert sie. Gezählt wird jeder Name, der anders ist als der davor, und der erste."
+        - "`for (int i = 0; i < sorted.size(); i++)` gibt jeden Index; der Name davor ist `sorted.get(i - 1)`, und beim ersten, `i == 0`, gibt es keinen davor. Texte vergleicht man mit `equals`."
+      solution: |
+        ```java
+        public static int distinctSorted(List<String> names) {
+            List<String> sorted = new ArrayList<>(names);
+            Collections.sort(sorted);
+            int count = 0;
+            for (int i = 0; i < sorted.size(); i++) {
+                if (i == 0 || !sorted.get(i).equals(sorted.get(i - 1))) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        ```
 
   - id: distinct-set
     title: Mit einer Menge
@@ -177,6 +293,56 @@ tasks:
                 seen.add(name)
             return len(seen)
         ```
+    dart:
+      prompt: |
+        Schreib `int distinctSet(List<String> names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 15
+        slow: "Für 300 000 verschiedene Namen braucht deine Funktion zu lange. Fragt sie eine Liste, ob ein Name schon darin steht? Eine Menge (`Set`) weiß es sofort."
+        cases:
+          - { call: "distinctSet(['Waldstraße', 'Bahnhofstraße', 'Waldstraße'])", expect: 2 }
+          - { call: "distinctSet([])", expect: 0 }
+          - { call: "distinctSet([for (var i = 1; i <= 300000; i++) '$i'])", expect: 300000 }
+      hint:
+        - "Eine leere Menge ist `<String>{}`."
+        - "Jeder Name kommt mit `seen.add(name)` hinein; ein Name, der schon darin ist, kommt nicht zweimal hinein. Am Ende ist `seen.length` die Antwort."
+      solution: |
+        ```dart
+        int distinctSet(List<String> names) {
+          final seen = <String>{};
+          for (final name in names) {
+            seen.add(name);
+          }
+          return seen.length;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static int distinctSet(List<String> names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 20
+        slow: "Für 300 000 verschiedene Namen braucht deine Methode zu lange. Fragt sie eine Liste, ob ein Name schon darin steht? Eine Menge (`Set`) weiß es sofort."
+        cases:
+          - { call: "Laufzeit.distinctSet(List.of(\"Waldstraße\", \"Bahnhofstraße\", \"Waldstraße\"))", expect: 2 }
+          - { call: "Laufzeit.distinctSet(List.of())", expect: 0 }
+          - { call: "List<String> names = new ArrayList<>(); for (int i = 1; i <= 300000; i++) names.add(String.valueOf(i)); Laufzeit.distinctSet(names)", expect: 300000 }
+      hint:
+        - "Eine leere Menge ist `Set<String> seen = new HashSet<>();`."
+        - "Jeder Name kommt mit `seen.add(name)` hinein; ein Name, der schon darin ist, kommt nicht zweimal hinein. Am Ende ist `seen.size()` die Antwort."
+      solution: |
+        ```java
+        public static int distinctSet(List<String> names) {
+            Set<String> seen = new HashSet<>();
+            for (String name : names) {
+                seen.add(name);
+            }
+            return seen.size();
+        }
+        ```
 
   - id: verdoppeln
     title: Doppelt so viele Namen
@@ -187,6 +353,12 @@ tasks:
       type: choice
       options: ["etwa gleich lange", "etwa doppelt so lange", "etwa viermal so lange", "etwa achtmal so lange"]
       correct: 2
+    dart:
+      prompt: |
+        Wie viel länger braucht `distinctList` für 2000 Namen als für 1000, wenn alle Namen verschieden sind?
+    java:
+      prompt: |
+        Wie viel länger braucht `distinctList` für 2000 Namen als für 1000, wenn alle Namen verschieden sind?
 
   - id: beobachtung
     title: Was die Messung zeigt
@@ -200,6 +372,12 @@ tasks:
         - "Immer etwa um das Doppelte, wie bei den beiden anderen."
         - "Gar nicht: Die Zeit bleibt gleich."
       correct: 1
+    dart:
+      prompt: |
+        Lass `messen` laufen und sieh dir die Spalte »Faktor« von `distinctList` an: Um wie viel wächst die Zeit, wenn sich die Zahl der Namen verdoppelt?
+    java:
+      prompt: |
+        Lass `messen` laufen und sieh dir die Spalte »Faktor« von `distinctList` an: Um wie viel wächst die Zeit, wenn sich die Zahl der Namen verdoppelt?
 
   - id: schritte
     title: Wie oft läuft die innere Zeile?
@@ -233,6 +411,30 @@ tasks:
         type: choice
         options: ["1 000", "2 000", "499 500", "1 000 000"]
         correct: 2
+    dart:
+      prompt: |
+        ```dart
+        var count = 0;
+        for (var i = 0; i < n; i++) {
+          for (var j = 0; j < i; j++) {
+            count++;
+          }
+        }
+        ```
+
+        Welchen Wert hat `count` am Ende, wenn `n` gleich 1000 ist?
+    java:
+      prompt: |
+        ```java
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                count++;
+            }
+        }
+        ```
+
+        Welchen Wert hat `count` am Ende, wenn `n` gleich 1000 ist?
 
   - id: hochrechnen
     title: Zehnmal so viel
@@ -294,6 +496,60 @@ tasks:
             if n not in memo:
                 memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
             return memo[n]
+        ```
+    dart:
+      prompt: |
+        Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `int fibMemo(int n, [Map<int, int>? memo])`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fibMemo(90)` sofort fertig ist. `[…]` macht `memo` zu einem Parameter, den man weglassen darf.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 10
+        slow: "`fibMemo(90)` dauert zu lange: Rechnet deine Funktion dieselben Zahlen immer wieder aus? Merk dir jede in einer Map, sobald du sie hast, und schau dort zuerst nach."
+        cases:
+          - { call: "[fibMemo(0), fibMemo(1), fibMemo(2), fibMemo(10)]", expect: "[0, 1, 1, 55]" }
+          - { call: "fibMemo(90)", expect: 2880067194370816120 }
+      hint:
+        - "Das Gedächtnis ist eine Map, die jeder Aufruf weitergibt: Beim ersten Aufruf fehlt sie, `memo ??= {};` legt dann eine an, und innen ruft die Funktion `fibMemo(n - 1, memo)` auf."
+        - "Steht `n` schon in `memo`, gibt die Funktion den Wert von dort zurück; sonst rechnet sie ihn aus und trägt ihn ein: `return memo[n] ??= fibMemo(n - 1, memo) + fibMemo(n - 2, memo);`."
+      solution: |
+        ```dart
+        int fibMemo(int n, [Map<int, int>? memo]) {
+          memo ??= {};
+          if (n < 2) {
+            return n;
+          }
+          return memo[n] ??= fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+        }
+        ```
+    java:
+      prompt: |
+        Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `public static long fibMemo(int n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fibMemo(90)` sofort fertig ist. Sie gibt `long` zurück, denn `fib(90)` passt nicht in ein `int`.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 15
+        slow: "`fibMemo(90)` dauert zu lange: Rechnet deine Methode dieselben Zahlen immer wieder aus? Merk dir jede in einer Map, sobald du sie hast, und schau dort zuerst nach."
+        cases:
+          - { call: "List.of(Laufzeit.fibMemo(0), Laufzeit.fibMemo(1), Laufzeit.fibMemo(2), Laufzeit.fibMemo(10))", expect: "List.of(0, 1, 1, 55)" }
+          - { call: "Laufzeit.fibMemo(90)", expect: "2880067194370816120L" }
+      hint:
+        - "Das Gedächtnis ist eine Map, die jeder Aufruf weitergibt: `fibMemo(n)` ruft eine zweite Methode `fibMemo(int n, Map<Integer, Long> memo)` mit `new HashMap<>()` auf, und die ruft sich selbst mit derselben Map auf."
+        - "Steht `n` noch nicht in `memo`, rechnet sie den Wert aus und trägt ihn ein, `memo.put(n, …)`; dann gibt sie `memo.get(n)` zurück."
+      solution: |
+        ```java
+        public static long fibMemo(int n) {
+            return fibMemo(n, new HashMap<>());
+        }
+
+        static long fibMemo(int n, Map<Integer, Long> memo) {
+            if (n < 2) {
+                return n;
+            }
+            if (!memo.containsKey(n)) {
+                memo.put(n, fibMemo(n - 1, memo) + fibMemo(n - 2, memo));
+            }
+            return memo.get(n);
+        }
         ```
 
   - id: pair-with-sum
@@ -368,6 +624,68 @@ tasks:
                 seen.add(x)
             return False
         ```
+    dart:
+      prompt: |
+        Schreib `bool pairWithSum(List<int> numbers, int target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 10
+        slow: "Für 200 000 Zahlen braucht deine Funktion zu lange. Zwei Schleifen ineinander sind 20 Milliarden Paare: Merk dir in einer Menge, was du gesehen hast, und frag bei jeder Zahl, ob `target - x` schon darin ist."
+        cases:
+          - { call: "pairWithSum([3, 5, 8], 11)", expect: true }
+          - { call: "pairWithSum([3, 5, 8], 10)", expect: false, say: "Eine Zahl zählt nur einmal: 5 und 5 an derselben Stelle ergeben kein Paar." }
+          - { call: "pairWithSum([5, 1, 5], 10)", expect: true }
+          - { call: "pairWithSum([], 0)", expect: false }
+          - { call: "pairWithSum([for (var i = 1; i <= 200000; i++) i], 399999)", expect: true }
+          - { call: "pairWithSum([for (var i = 1; i <= 200000; i++) 2 * i], 7)", expect: false }
+      hint:
+        - "Für jede Zahl `x` passt genau eine andere: `target - x`. Die Frage ist nur, ob sie schon vorkam."
+        - "Eine Menge `final seen = <int>{};`; für jede Zahl: Ist `target - x` in `seen`, gibt es ein Paar; sonst kommt `x` hinein. Erst danach, so zählt keine Zahl doppelt."
+      solution: |
+        ```dart
+        bool pairWithSum(List<int> numbers, int target) {
+          final seen = <int>{};
+          for (final x in numbers) {
+            if (seen.contains(target - x)) {
+              return true;
+            }
+            seen.add(x);
+          }
+          return false;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static boolean pairWithSum(List<Integer> numbers, int target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Methode 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 15
+        slow: "Für 200 000 Zahlen braucht deine Methode zu lange. Zwei Schleifen ineinander sind 20 Milliarden Paare: Merk dir in einer Menge, was du gesehen hast, und frag bei jeder Zahl, ob `target - x` schon darin ist."
+        cases:
+          - { call: "Laufzeit.pairWithSum(List.of(3, 5, 8), 11)", expect: true }
+          - { call: "Laufzeit.pairWithSum(List.of(3, 5, 8), 10)", expect: false, say: "Eine Zahl zählt nur einmal: 5 und 5 an derselben Stelle ergeben kein Paar." }
+          - { call: "Laufzeit.pairWithSum(List.of(5, 1, 5), 10)", expect: true }
+          - { call: "Laufzeit.pairWithSum(List.of(), 0)", expect: false }
+          - { call: "List<Integer> numbers = new ArrayList<>(); for (int i = 1; i <= 200000; i++) numbers.add(i); Laufzeit.pairWithSum(numbers, 399999)", expect: true }
+          - { call: "List<Integer> numbers = new ArrayList<>(); for (int i = 1; i <= 200000; i++) numbers.add(2 * i); Laufzeit.pairWithSum(numbers, 7)", expect: false }
+      hint:
+        - "Für jede Zahl `x` passt genau eine andere: `target - x`. Die Frage ist nur, ob sie schon vorkam."
+        - "Eine Menge `Set<Integer> seen = new HashSet<>();`; für jede Zahl: Ist `target - x` in `seen`, gibt es ein Paar; sonst kommt `x` hinein. Erst danach, so zählt keine Zahl doppelt."
+      solution: |
+        ```java
+        public static boolean pairWithSum(List<Integer> numbers, int target) {
+            Set<Integer> seen = new HashSet<>();
+            for (int x : numbers) {
+                if (seen.contains(target - x)) {
+                    return true;
+                }
+                seen.add(x);
+            }
+            return false;
+        }
+        ```
 
   - id: tour-length
     title: Wie lang ist eine Rundfahrt?
@@ -426,6 +744,66 @@ tasks:
                 total += distance(places[here], places[there])
             return total
         ```
+    dart:
+      prompt: |
+        Ein Ort ist ein Record aus Namen, Länge und Breite, `(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276)`, vom Typ `Place`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier `Place` und die Funktion `distance(a, b)` von oben in `laufzeit.dart` und schreib `double tourLength(List<int> tour, List<Place> places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        cases:
+          - call: "final places = [(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276), (name: 'Berliner Fernsehturm', lon: 13.409423, lat: 52.520825), (name: 'Siegessäule', lon: 13.3501, lat: 52.514505)]; (distance(places[0], places[1]) * 100).round() / 100"
+            expect: 2.21
+            say: "`distance` kopierst du von oben, so wie sie dort steht."
+          - call: "final places = [(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276), (name: 'Berliner Fernsehturm', lon: 13.409423, lat: 52.520825), (name: 'Siegessäule', lon: 13.3501, lat: 52.514505)]; (tourLength([0, 1, 2], places) * 100).round() / 100"
+            expect: 8.17
+            say: "Zur Rundfahrt gehört der Weg zurück zum ersten Ort."
+          - call: "final places = [(name: 'A', lon: 13.4, lat: 52.5), (name: 'B', lon: 13.5, lat: 52.5)]; [(tourLength([0, 1], places) * 100).round() / 100, (tourLength([1, 0], places) * 100).round() / 100]"
+            expect: "[13.55, 13.55]"
+      hint:
+        - "Gezählt wird jeder Schritt von einem Ort zum nächsten in der Liste: vom Ort `tour[i]` zum Ort `tour[i + 1]`."
+        - "Der letzte Schritt geht zurück zum ersten Ort: `tour[(i + 1) % tour.length]` ist beim letzten Index wieder `tour[0]`."
+      solution: |
+        ```dart
+        double tourLength(List<int> tour, List<Place> places) {
+          var total = 0.0;
+          for (var i = 0; i < tour.length; i++) {
+            final from = tour[i];
+            final to = tour[(i + 1) % tour.length];
+            total += distance(places[from], places[to]);
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Ein Ort ist ein `Place` aus Namen, Länge und Breite, `new Place("Brandenburger Tor", 13.377705, 52.516276)`, und eine Rundfahrt eine Liste der Nummern der Orte, `List.of(0, 2, 1)`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier `Place` und die Methode `distance(a, b)` von oben in die Klasse `Laufzeit` und schreib `public static double tourLength(List<Integer> tour, List<Place> places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        cases:
+          - call: "List<Laufzeit.Place> places = List.of(new Laufzeit.Place(\"Brandenburger Tor\", 13.377705, 52.516276), new Laufzeit.Place(\"Berliner Fernsehturm\", 13.409423, 52.520825), new Laufzeit.Place(\"Siegessäule\", 13.3501, 52.514505)); Math.round(Laufzeit.distance(places.get(0), places.get(1)) * 100) / 100.0"
+            expect: 2.21
+            say: "`distance` kopierst du von oben, so wie sie dort steht."
+          - call: "List<Laufzeit.Place> places = List.of(new Laufzeit.Place(\"Brandenburger Tor\", 13.377705, 52.516276), new Laufzeit.Place(\"Berliner Fernsehturm\", 13.409423, 52.520825), new Laufzeit.Place(\"Siegessäule\", 13.3501, 52.514505)); Math.round(Laufzeit.tourLength(List.of(0, 1, 2), places) * 100) / 100.0"
+            expect: 8.17
+            say: "Zur Rundfahrt gehört der Weg zurück zum ersten Ort."
+          - call: "List<Laufzeit.Place> places = List.of(new Laufzeit.Place(\"A\", 13.4, 52.5), new Laufzeit.Place(\"B\", 13.5, 52.5)); List.of(Math.round(Laufzeit.tourLength(List.of(0, 1), places) * 100) / 100.0, Math.round(Laufzeit.tourLength(List.of(1, 0), places) * 100) / 100.0)"
+            expect: "List.of(13.55, 13.55)"
+      hint:
+        - "Gezählt wird jeder Schritt von einem Ort zum nächsten in der Liste: vom Ort `tour.get(i)` zum Ort `tour.get(i + 1)`."
+        - "Der letzte Schritt geht zurück zum ersten Ort: `tour.get((i + 1) % tour.size())` ist beim letzten Index wieder `tour.get(0)`."
+      solution: |
+        ```java
+        public static double tourLength(List<Integer> tour, List<Place> places) {
+            double total = 0;
+            for (int i = 0; i < tour.size(); i++) {
+                int from = tour.get(i);
+                int to = tour.get((i + 1) % tour.size());
+                total += distance(places.get(from), places.get(to));
+            }
+            return total;
+        }
+        ```
 
   - id: best-tour
     title: Alle Reihenfolgen
@@ -476,6 +854,104 @@ tasks:
             tours = ([0] + list(order) for order in itertools.permutations(range(1, len(places))))
             return min(tours, key=lambda tour: tour_length(tour, places))
         ```
+    dart:
+      prompt: |
+        Schreib `List<int> bestTour(List<Place> places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 15
+        cases:
+          - call: "final places = [(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276), (name: 'Berliner Fernsehturm', lon: 13.409423, lat: 52.520825), (name: 'Siegessäule', lon: 13.3501, lat: 52.514505), (name: 'Rotes Rathaus', lon: 13.408482, lat: 52.518329), (name: 'Checkpoint Charlie', lon: 13.390381, lat: 52.507432), (name: 'Berliner Dom', lon: 13.400966, lat: 52.519082)]; final t = bestTour(places); [t.first, [...t]..sort(), (tourLength(t, places) * 100).round() / 100]"
+            expect: "[0, [0, 1, 2, 3, 4, 5], 8.93]"
+            say: "Die Rundfahrt beginnt mit dem Ort 0 und besucht jeden Ort genau einmal; die kürzeste ist 8,93 km lang."
+          - { call: "bestTour([(name: 'A', lon: 13.4, lat: 52.5), (name: 'B', lon: 13.5, lat: 52.5)])", expect: "[0, 1]" }
+      hint:
+        - "Alle Reihenfolgen einer Liste: eine Funktion `Iterable<List<int>> permutations(List<int> items) sync*`, rekursiv wie die Reihenfolgen eines Textes in den Katas zur Rekursion. Mit `sync*` gibt sie jede Reihenfolge mit `yield` heraus, sobald sie fertig ist, statt alle in einer Liste zu sammeln. Für die Orte `1` bis `places.length - 1`; vor jede kommt die 0."
+        - "Von allen Rundfahrten die mit der kleinsten Länge: Merk dir die bisher kürzeste und ihre Länge, und nimm eine neue nur, wenn sie kürzer ist."
+      solution: |
+        ```dart
+        Iterable<List<int>> permutations(List<int> items) sync* {
+          if (items.isEmpty) {
+            yield [];
+            return;
+          }
+          for (var i = 0; i < items.length; i++) {
+            final rest = [...items.sublist(0, i), ...items.sublist(i + 1)];
+            for (final order in permutations(rest)) {
+              yield [items[i], ...order];
+            }
+          }
+        }
+
+        List<int> bestTour(List<Place> places) {
+          final rest = [for (var i = 1; i < places.length; i++) i];
+          var best = <int>[];
+          var shortest = double.infinity;
+          for (final order in permutations(rest)) {
+            final tour = [0, ...order];
+            final length = tourLength(tour, places);
+            if (length < shortest) {
+              best = tour;
+              shortest = length;
+            }
+          }
+          return best;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static List<Integer> bestTour(List<Place> places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 20
+        cases:
+          - call: "List<Laufzeit.Place> places = List.of(new Laufzeit.Place(\"Brandenburger Tor\", 13.377705, 52.516276), new Laufzeit.Place(\"Berliner Fernsehturm\", 13.409423, 52.520825), new Laufzeit.Place(\"Siegessäule\", 13.3501, 52.514505), new Laufzeit.Place(\"Rotes Rathaus\", 13.408482, 52.518329), new Laufzeit.Place(\"Checkpoint Charlie\", 13.390381, 52.507432), new Laufzeit.Place(\"Berliner Dom\", 13.400966, 52.519082)); List<Integer> t = Laufzeit.bestTour(places); List.of(t.get(0), t.stream().sorted().toList(), Math.round(Laufzeit.tourLength(t, places) * 100) / 100.0)"
+            expect: "List.of(0, List.of(0, 1, 2, 3, 4, 5), 8.93)"
+            say: "Die Rundfahrt beginnt mit dem Ort 0 und besucht jeden Ort genau einmal; die kürzeste ist 8,93 km lang."
+          - { call: "Laufzeit.bestTour(List.of(new Laufzeit.Place(\"A\", 13.4, 52.5), new Laufzeit.Place(\"B\", 13.5, 52.5)))", expect: "List.of(0, 1)" }
+      hint:
+        - "Alle Reihenfolgen einer Liste: eine Methode `static List<List<Integer>> permutations(List<Integer> items)`, rekursiv wie die Reihenfolgen eines Textes in den Katas zur Rekursion. Für die Orte `1` bis `places.size() - 1`; vor jede kommt die 0."
+        - "Von allen Rundfahrten die mit der kleinsten Länge: Merk dir die bisher kürzeste und ihre Länge, und nimm eine neue nur, wenn sie kürzer ist."
+      solution: |
+        ```java
+        static List<List<Integer>> permutations(List<Integer> items) {
+            List<List<Integer>> result = new ArrayList<>();
+            if (items.isEmpty()) {
+                result.add(new ArrayList<>());
+                return result;
+            }
+            for (int i = 0; i < items.size(); i++) {
+                List<Integer> rest = new ArrayList<>(items);
+                int first = rest.remove(i);
+                for (List<Integer> order : permutations(rest)) {
+                    order.add(0, first);
+                    result.add(order);
+                }
+            }
+            return result;
+        }
+
+        public static List<Integer> bestTour(List<Place> places) {
+            List<Integer> rest = new ArrayList<>();
+            for (int i = 1; i < places.size(); i++) {
+                rest.add(i);
+            }
+            List<Integer> best = null;
+            double shortest = Double.POSITIVE_INFINITY;
+            for (List<Integer> order : permutations(rest)) {
+                List<Integer> tour = new ArrayList<>(List.of(0));
+                tour.addAll(order);
+                double length = tourLength(tour, places);
+                if (length < shortest) {
+                    best = tour;
+                    shortest = length;
+                }
+            }
+            return best;
+        }
+        ```
 
   - id: fakultaet
     title: Drei Orte mehr
@@ -486,6 +962,20 @@ tasks:
       type: choice
       options: ["etwa 5 Sekunden", "etwa eine Minute", "etwa eine Dreiviertelstunde", "etwa ein Jahr"]
       correct: 2
+    dart:
+      prompt: |
+        Für zehn Orte probiert `bestTour` 9 · 8 · 7 · … · 1 = 362 880 Reihenfolgen aus und braucht dafür etwa eine halbe Sekunde. Wie lange braucht es für 13 Orte?
+      check:
+        type: choice
+        options: ["etwa 2 Sekunden", "etwa eine Minute", "etwa eine Viertelstunde", "etwa ein Jahr"]
+        correct: 2
+    java:
+      prompt: |
+        Für zehn Orte probiert `bestTour` 9 · 8 · 7 · … · 1 = 362 880 Reihenfolgen aus und braucht dafür etwa eine Sekunde. Wie lange braucht es für 13 Orte?
+      check:
+        type: choice
+        options: ["etwa 4 Sekunden", "etwa eine Minute", "etwa eine halbe Stunde", "etwa ein Jahr"]
+        correct: 2
 
   - id: nearest-tour
     title: Immer zum nächsten Ort
@@ -545,6 +1035,77 @@ tasks:
                 tour.append(nearest)
                 left.remove(nearest)
             return tour
+        ```
+    dart:
+      prompt: |
+        Schreib `List<int> nearestTour(List<Place> places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+      check:
+        type: dart
+        file: laufzeit/laufzeit.dart
+        timeout: 15
+        cases:
+          - call: "nearestTour([(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276), (name: 'Berliner Fernsehturm', lon: 13.409423, lat: 52.520825), (name: 'Siegessäule', lon: 13.3501, lat: 52.514505), (name: 'Rotes Rathaus', lon: 13.408482, lat: 52.518329), (name: 'Checkpoint Charlie', lon: 13.390381, lat: 52.507432), (name: 'Berliner Dom', lon: 13.400966, lat: 52.519082)])"
+            expect: "[0, 4, 5, 3, 1, 2]"
+            say: "Vom Brandenburger Tor ist Checkpoint Charlie am nächsten, von dort der Dom, dann das Rote Rathaus, der Fernsehturm und zuletzt die Siegessäule."
+          - { call: "final places = [for (var i = 0; i < 300; i++) (name: '$i', lon: 13.0 + i * 0.001, lat: 52.5)]; final t = nearestTour(places); [t.sublist(0, 3), t.length]", expect: "[[0, 1, 2], 300]" }
+      hint:
+        - "Die Rundfahrt beginnt mit `[0]`; eine zweite Liste hält die Orte, an denen sie noch nicht war: `final left = [for (var i = 1; i < places.length; i++) i];`."
+        - "Solange `left` nicht leer ist: Such in `left` den Ort, der dem letzten der Rundfahrt, `places[tour.last]`, am nächsten liegt; er kommt hinten an die Rundfahrt und mit `left.remove(nearest)` aus `left` heraus."
+      solution: |
+        ```dart
+        List<int> nearestTour(List<Place> places) {
+          final tour = [0];
+          final left = [for (var i = 1; i < places.length; i++) i];
+          while (left.isNotEmpty) {
+            final here = places[tour.last];
+            var nearest = left.first;
+            for (final i in left) {
+              if (distance(here, places[i]) < distance(here, places[nearest])) {
+                nearest = i;
+              }
+            }
+            tour.add(nearest);
+            left.remove(nearest);
+          }
+          return tour;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib `public static List<Integer> nearestTour(List<Place> places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+      check:
+        type: java
+        file: laufzeit/Laufzeit.java
+        timeout: 20
+        cases:
+          - call: "Laufzeit.nearestTour(List.of(new Laufzeit.Place(\"Brandenburger Tor\", 13.377705, 52.516276), new Laufzeit.Place(\"Berliner Fernsehturm\", 13.409423, 52.520825), new Laufzeit.Place(\"Siegessäule\", 13.3501, 52.514505), new Laufzeit.Place(\"Rotes Rathaus\", 13.408482, 52.518329), new Laufzeit.Place(\"Checkpoint Charlie\", 13.390381, 52.507432), new Laufzeit.Place(\"Berliner Dom\", 13.400966, 52.519082)))"
+            expect: "List.of(0, 4, 5, 3, 1, 2)"
+            say: "Vom Brandenburger Tor ist Checkpoint Charlie am nächsten, von dort der Dom, dann das Rote Rathaus, der Fernsehturm und zuletzt die Siegessäule."
+          - { call: "List<Laufzeit.Place> places = new ArrayList<>(); for (int i = 0; i < 300; i++) places.add(new Laufzeit.Place(String.valueOf(i), 13.0 + i * 0.001, 52.5)); List<Integer> t = Laufzeit.nearestTour(places); List.of(t.subList(0, 3), t.size())", expect: "List.of(List.of(0, 1, 2), 300)" }
+      hint:
+        - "Die Rundfahrt beginnt mit der 0, `new ArrayList<>(List.of(0))`; eine zweite Liste hält die Orte, an denen sie noch nicht war, die Nummern 1 bis `places.size() - 1`."
+        - "Solange `left` nicht leer ist: Such in `left` den Ort, der dem letzten der Rundfahrt, `places.get(tour.getLast())`, am nächsten liegt; er kommt hinten an die Rundfahrt und mit `left.remove(Integer.valueOf(nearest))` aus `left` heraus. Ohne `Integer.valueOf` nähme `remove` den Index, nicht die Zahl."
+      solution: |
+        ```java
+        public static List<Integer> nearestTour(List<Place> places) {
+            List<Integer> tour = new ArrayList<>(List.of(0));
+            List<Integer> left = new ArrayList<>();
+            for (int i = 1; i < places.size(); i++) {
+                left.add(i);
+            }
+            while (!left.isEmpty()) {
+                Place here = places.get(tour.getLast());
+                int nearest = left.getFirst();
+                for (int i : left) {
+                    if (distance(here, places.get(i)) < distance(here, places.get(nearest))) {
+                        nearest = i;
+                    }
+                }
+                tour.add(nearest);
+                left.remove(Integer.valueOf(nearest));
+            }
+            return tour;
+        }
         ```
 
   - id: grenze

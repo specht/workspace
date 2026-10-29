@@ -1,4 +1,5 @@
-// SQL and Cypher answers, and the code of a Kata (Ruby, Python), in the
+// SQL and Cypher answers, and the code of a Kata (Ruby, Python, JavaScript,
+// Dart, Java), in the
 // colours of the page's code blocks. The
 // textarea's own text is transparent; a <pre> underneath shows the same text
 // with Rouge's token classes, so the gruvbox theme (scope pre) and the
@@ -234,6 +235,41 @@
         ]);
     }
 
+    // Dart and Java, as Rouge's lexers mark them: keywords k, types kt (int,
+    // String, List and every name with a capital), true/false/null kc,
+    // annotations nd (@override), a name before a parenthesis nf.
+    function typed(keywords, types, constants) {
+        return (text) => scan(text, [
+            [/\s+/y, null],
+            [/\/\/.*/y, 'c1'],
+            [/\/\*[\s\S]*?(?:\*\/|$)/y, 'cm'],
+            [/'''[\s\S]*?(?:'''|$)|"""[\s\S]*?(?:"""|$)/y, 's2'],
+            [/"(?:\\[\s\S]|[^"\\\n])*"?/y, 's2'],
+            [/'(?:\\[\s\S]|[^'\\\n])*'?/y, 's1'],
+            [/@[A-Za-z_]\w*/y, 'nd'],
+            [/\d+\.\d+/y, 'mf'],
+            [/\d+[lL]?/y, 'mi'],
+            [/[A-Za-z_$][\w$]*(?=\s*\()/y, (w) => keywords.has(w) ? 'k' : 'nf'],
+            [/[A-Za-z_$][\w$]*/y, (w) => keywords.has(w) ? 'k' : constants.has(w) ? 'kc'
+                : types.has(w) || /^[A-Z]/.test(w) ? 'kt' : 'n'],
+            [/[+*/<>=~!&|%^?-]+/y, 'o'],
+            [/[;:()[\]{},.]/y, 'p'],
+            [/[\s\S]/y, null],
+        ]);
+    }
+    const dart = typed(
+        new Set(('if else for while do return break continue new in is as switch case default throw try catch finally '
+            + 'this super class extends implements with abstract static final const var late required import async await '
+            + 'yield get set operator enum mixin factory typedef assert').split(' ')),
+        new Set('int double num bool void dynamic Object'.split(' ')),
+        new Set(['true', 'false', 'null']));
+    const java = typed(
+        new Set(('if else for while do return break continue new instanceof switch case default throw throws try catch '
+            + 'finally this super class extends implements interface abstract static final var import public private '
+            + 'protected record enum yield').split(' ')),
+        new Set('int long double float boolean char byte short void'.split(' ')),
+        new Set(['true', 'false', 'null']));
+
     // Class diagrams of the UML-Werkstatt (```uml), line by line as
     // Rouge::Lexers::UML (src/ruby/include/uml_lexer.rb): a class header,
     // a member (+ or - and a name), an association, a comment.
@@ -276,8 +312,8 @@
         }).join('\n');
     }
 
-    const HIGHLIGHT = { sql, cypher, ruby, python, javascript, uml };
-    const INDENT = { python: '    ', ruby: '  ', javascript: '  ', uml: '  ' };
+    const HIGHLIGHT = { sql, cypher, ruby, python, javascript, dart, java, uml };
+    const INDENT = { python: '    ', ruby: '  ', javascript: '  ', dart: '  ', java: '    ', uml: '  ' };
 
     // Writing code: Tab indents (the selected lines, or at the cursor),
     // Shift+Tab takes it back, Enter keeps the line's indentation and adds
@@ -286,7 +322,7 @@
     // Ctrl+Z still undoes them.
     function opensBlock(language, line) {
         if (language === 'uml') return /^class\b/.test(line);
-        if (language === 'javascript') return /[{([]$/.test(line.replace(/\/\/.*$/, '').trimEnd());
+        if (['javascript', 'dart', 'java'].includes(language)) return /[{([]$/.test(line.replace(/\/\/.*$/, '').trimEnd());
         const code = line.replace(/#.*$/, '').trimEnd();
         if (language === 'python') return code.endsWith(':');
         return /^\s*(def|class|module|if|unless|while|until|for|case|when|begin|else|elsif|rescue|ensure)\b/.test(code)
@@ -309,6 +345,8 @@
         ruby: /^(end|else|elsif|when|rescue|ensure)$/,
         python: /^(else|elif\b.*|except\b.*|finally):$/,
         javascript: /^\}$/,
+        dart: /^\}$/,
+        java: /^\}$/,
     };
 
     function outdent(textarea, language) {
@@ -503,5 +541,5 @@
         update();
     }
 
-    window.CodeInput = { attach, sql, cypher, ruby, python, javascript, uml };
+    window.CodeInput = { attach, sql, cypher, ruby, python, javascript, dart, java, uml };
 })();

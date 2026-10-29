@@ -19,6 +19,16 @@ examples:
         - answer: "function listSum(numbers) {\n  let total = 0;\n  for (const number of numbers) {\n    total += number;\n  }\n  return total;\n}\n"
       fail:
         - answer: "function listSum(numbers) {\n  let total = 0;\n  for (const number of numbers) {\n    total += number;\n  }\n}\n"
+    dart:
+      pass:
+        - answer: "int listSum(List<int> numbers) {\n  var total = 0;\n  for (final number in numbers) {\n    total += number;\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "int listSum(List<int> numbers) {\n  var total = 0;\n  for (final number in numbers) {\n    total += number;\n  }\n  return 0;\n}\n"
+    java:
+      pass:
+        - answer: "int listSum(List<Integer> numbers) {\n    int total = 0;\n    for (int number : numbers) {\n        total += number;\n    }\n    return total;\n}\n"
+      fail:
+        - answer: "int listSum(List<Integer> numbers) {\n    int total = 0;\n    for (int number : numbers) {\n        total += number;\n    }\n    return 0;\n}\n"
   list-max:
     pass:
       - answer: "def list_max(numbers)\n  best = numbers[0]\n  numbers.each do |number|\n    best = number if number > best\n  end\n  best\nend\n"
@@ -34,6 +44,16 @@ examples:
         - answer: "function listMax(numbers) {\n  let best = numbers[0];\n  for (const number of numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n"
       fail:
         - answer: "function listMax(numbers) {\n  let best = 0;\n  for (const number of numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n"
+    dart:
+      pass:
+        - answer: "int listMax(List<int> numbers) {\n  var best = numbers[0];\n  for (final number in numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n"
+      fail:
+        - answer: "int listMax(List<int> numbers) {\n  var best = 0;\n  for (final number in numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n"
+    java:
+      pass:
+        - answer: "int listMax(List<Integer> numbers) {\n    int best = numbers.get(0);\n    for (int number : numbers) {\n        if (number > best) {\n            best = number;\n        }\n    }\n    return best;\n}\n"
+      fail:
+        - answer: "int listMax(List<Integer> numbers) {\n    int best = 0;\n    for (int number : numbers) {\n        if (number > best) {\n            best = number;\n        }\n    }\n    return best;\n}\n"
   count-even:
     pass:
       - answer: "def count_even(numbers)\n  count = 0\n  numbers.each do |number|\n    count += 1 if number % 2 == 0\n  end\n  count\nend\n"
@@ -43,6 +63,12 @@ examples:
     javascript:
       pass:
         - answer: "function countEven(numbers) {\n  let count = 0;\n  for (const number of numbers) {\n    if (number % 2 === 0) {\n      count++;\n    }\n  }\n  return count;\n}\n"
+    dart:
+      pass:
+        - answer: "int countEven(List<int> numbers) {\n  var count = 0;\n  for (final number in numbers) {\n    if (number % 2 == 0) {\n      count++;\n    }\n  }\n  return count;\n}\n"
+    java:
+      pass:
+        - answer: "int countEven(List<Integer> numbers) {\n    int count = 0;\n    for (int number : numbers) {\n        if (number % 2 == 0) {\n            count++;\n        }\n    }\n    return count;\n}\n"
   contains:
     pass:
       - answer: "def contains(items, wanted)\n  items.each do |item|\n    return true if item == wanted\n  end\n  false\nend\n"
@@ -58,6 +84,16 @@ examples:
         - answer: "function contains(items, wanted) {\n  for (const item of items) {\n    if (item === wanted) {\n      return true;\n    }\n  }\n  return false;\n}\n"
       fail:
         - answer: "function contains(items, wanted) {\n  for (const item of items) {\n    if (item === wanted) {\n      return true;\n    } else {\n      return false;\n    }\n  }\n  return false;\n}\n"
+    dart:
+      pass:
+        - answer: "bool contains(List<int> items, int wanted) {\n  for (final item in items) {\n    if (item == wanted) {\n      return true;\n    }\n  }\n  return false;\n}\n"
+      fail:
+        - answer: "bool contains(List<int> items, int wanted) {\n  for (final item in items) {\n    if (item == wanted) {\n      return true;\n    } else {\n      return false;\n    }\n  }\n  return false;\n}\n"
+    java:
+      pass:
+        - answer: "boolean contains(List<Integer> items, int wanted) {\n    for (int item : items) {\n        if (item == wanted) {\n            return true;\n        }\n    }\n    return false;\n}\n"
+      fail:
+        - answer: "boolean contains(List<Integer> items, int wanted) {\n    for (int item : items) {\n        if (item == wanted) {\n            return true;\n        } else {\n            return false;\n        }\n    }\n    return false;\n}\n"
   reverse-list:
     pass:
       - answer: "def reverse_list(items)\n  result = []\n  i = items.length - 1\n  while i >= 0\n    result << items[i]\n    i -= 1\n  end\n  result\nend\n"
@@ -73,6 +109,16 @@ examples:
         - answer: "function reverseList(items) {\n  const result = [];\n  for (let i = items.length - 1; i >= 0; i--) {\n    result.push(items[i]);\n  }\n  return result;\n}\n"
       fail:
         - answer: "function reverseList(items) {\n  const result = [];\n  for (let i = items.length - 1; i > 0; i--) {\n    result.push(items[i]);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> reverseList(List<int> items) {\n  final result = <int>[];\n  for (var i = items.length - 1; i >= 0; i--) {\n    result.add(items[i]);\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "List<int> reverseList(List<int> items) {\n  final result = <int>[];\n  for (var i = items.length - 1; i > 0; i--) {\n    result.add(items[i]);\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> reverseList(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = items.size() - 1; i >= 0; i--) {\n        result.add(items.get(i));\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> reverseList(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = items.size() - 1; i > 0; i--) {\n        result.add(items.get(i));\n    }\n    return result;\n}\n"
   swap-ends:
     pass:
       - answer: "def swap_ends(items)\n  return items.dup if items.length < 2\n  result = items.dup\n  result[0] = items[-1]\n  result[-1] = items[0]\n  result\nend\n"
@@ -88,6 +134,16 @@ examples:
         - answer: "function swapEnds(items) {\n  const result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = items[items.length - 1];\n  result[items.length - 1] = items[0];\n  return result;\n}\n"
       fail:
         - answer: "function swapEnds(items) {\n  const result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> swapEnds(List<int> items) {\n  final result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = items[items.length - 1];\n  result[items.length - 1] = items[0];\n  return result;\n}\n"
+      fail:
+        - answer: "List<int> swapEnds(List<int> items) {\n  final result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> swapEnds(List<Integer> items) {\n    List<Integer> result = new ArrayList<>(items);\n    if (items.size() < 2) {\n        return result;\n    }\n    result.set(0, items.get(items.size() - 1));\n    result.set(items.size() - 1, items.get(0));\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> swapEnds(List<Integer> items) {\n    List<Integer> result = new ArrayList<>(items);\n    if (items.size() < 2) {\n        return result;\n    }\n    result.set(0, result.get(result.size() - 1));\n    result.set(result.size() - 1, result.get(0));\n    return result;\n}\n"
   rotate-left:
     pass:
       - answer: "def rotate_left(items)\n  return [] if items.empty?\n  result = []\n  (1...items.length).each do |i|\n    result << items[i]\n  end\n  result << items[0]\n  result\nend\n"
@@ -103,6 +159,16 @@ examples:
         - answer: "function rotateLeft(items) {\n  if (items.length === 0) {\n    return [];\n  }\n  const result = [];\n  for (let i = 1; i < items.length; i++) {\n    result.push(items[i]);\n  }\n  result.push(items[0]);\n  return result;\n}\n"
       fail:
         - answer: "function rotateLeft(items) {\n  if (items.length === 0) {\n    return [];\n  }\n  return [items[items.length - 1], ...items.slice(0, -1)];\n}\n"
+    dart:
+      pass:
+        - answer: "List<Object> rotateLeft(List<Object> items) {\n  if (items.isEmpty) {\n    return [];\n  }\n  final result = <Object>[];\n  for (var i = 1; i < items.length; i++) {\n    result.add(items[i]);\n  }\n  result.add(items[0]);\n  return result;\n}\n"
+      fail:
+        - answer: "List<Object> rotateLeft(List<Object> items) {\n  if (items.isEmpty) {\n    return [];\n  }\n  return [items[items.length - 1], ...items.sublist(0, items.length - 1)];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> rotateLeft(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    if (items.isEmpty()) {\n        return result;\n    }\n    for (int i = 1; i < items.size(); i++) {\n        result.add(items.get(i));\n    }\n    result.add(items.get(0));\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> rotateLeft(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    if (items.isEmpty()) {\n        return result;\n    }\n    result.add(items.get(items.size() - 1));\n    for (int i = 0; i < items.size() - 1; i++) {\n        result.add(items.get(i));\n    }\n    return result;\n}\n"
   ascending:
     pass:
       - answer: "def ascending(numbers)\n  (1...numbers.length).each do |i|\n    return false if numbers[i] < numbers[i - 1]\n  end\n  true\nend\n"
@@ -118,6 +184,16 @@ examples:
         - answer: "function ascending(numbers) {\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] < numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n"
       fail:
         - answer: "function ascending(numbers) {\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n"
+    dart:
+      pass:
+        - answer: "bool ascending(List<int> numbers) {\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] < numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n"
+      fail:
+        - answer: "bool ascending(List<int> numbers) {\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[i - 1]) {\n      return false;\n    }\n  }\n  return true;\n}\n"
+    java:
+      pass:
+        - answer: "boolean ascending(List<Integer> numbers) {\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) < numbers.get(i - 1)) {\n            return false;\n        }\n    }\n    return true;\n}\n"
+      fail:
+        - answer: "boolean ascending(List<Integer> numbers) {\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) <= numbers.get(i - 1)) {\n            return false;\n        }\n    }\n    return true;\n}\n"
   remove-duplicates:
     pass:
       - answer: "def remove_duplicates(items)\n  result = []\n  items.each do |item|\n    result << item unless result.include?(item)\n  end\n  result\nend\n"
@@ -133,6 +209,16 @@ examples:
         - answer: "function removeDuplicates(items) {\n  const result = [];\n  for (const item of items) {\n    if (!result.includes(item)) {\n      result.push(item);\n    }\n  }\n  return result;\n}\n"
       fail:
         - answer: "function removeDuplicates(items) {\n  const result = [];\n  for (let i = 0; i < items.length; i++) {\n    if (items[i] !== items[i + 1]) {\n      result.push(items[i]);\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<Object> removeDuplicates(List<Object> items) {\n  final result = <Object>[];\n  for (final item in items) {\n    if (!result.contains(item)) {\n      result.add(item);\n    }\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "List<Object> removeDuplicates(List<Object> items) {\n  final result = <Object>[];\n  for (var i = 0; i < items.length; i++) {\n    if (i == items.length - 1 || items[i] != items[i + 1]) {\n      result.add(items[i]);\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> removeDuplicates(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int item : items) {\n        if (!result.contains(item)) {\n            result.add(item);\n        }\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> removeDuplicates(List<Integer> items) {\n    List<Integer> result = new ArrayList<>();\n    for (int i = 0; i < items.size(); i++) {\n        if (i == items.size() - 1 || !items.get(i).equals(items.get(i + 1))) {\n            result.add(items.get(i));\n        }\n    }\n    return result;\n}\n"
   missing-number:
     pass:
       - answer: "def missing_number(numbers)\n  n = numbers.length + 1\n  total = n * (n + 1) / 2\n  numbers.each do |number|\n    total -= number\n  end\n  total\nend\n"
@@ -148,6 +234,16 @@ examples:
         - answer: "function missingNumber(numbers) {\n  const n = numbers.length + 1;\n  let total = n * (n + 1) / 2;\n  for (const number of numbers) {\n    total -= number;\n  }\n  return total;\n}\n"
       fail:
         - answer: "function missingNumber(numbers) {\n  const n = numbers.length;\n  let total = n * (n + 1) / 2;\n  for (const number of numbers) {\n    total -= number;\n  }\n  return total;\n}\n"
+    dart:
+      pass:
+        - answer: "int missingNumber(List<int> numbers) {\n  final n = numbers.length + 1;\n  var total = n * (n + 1) ~/ 2;\n  for (final number in numbers) {\n    total -= number;\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "int missingNumber(List<int> numbers) {\n  final n = numbers.length;\n  var total = n * (n + 1) ~/ 2;\n  for (final number in numbers) {\n    total -= number;\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "int missingNumber(List<Integer> numbers) {\n    int n = numbers.size() + 1;\n    int total = n * (n + 1) / 2;\n    for (int number : numbers) {\n        total -= number;\n    }\n    return total;\n}\n"
+      fail:
+        - answer: "int missingNumber(List<Integer> numbers) {\n    int n = numbers.size();\n    int total = n * (n + 1) / 2;\n    for (int number : numbers) {\n        total -= number;\n    }\n    return total;\n}\n"
   merge-sorted:
     pass:
       - answer: "def merge_sorted(a, b)\n  result = []\n  i = 0\n  j = 0\n  while i < a.length && j < b.length\n    if a[i] <= b[j]\n      result << a[i]\n      i += 1\n    else\n      result << b[j]\n      j += 1\n    end\n  end\n  result + a[i..] + b[j..]\nend\n"
@@ -163,6 +259,16 @@ examples:
         - answer: "function mergeSorted(a, b) {\n  const result = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.push(a[i]);\n      i++;\n    } else {\n      result.push(b[j]);\n      j++;\n    }\n  }\n  return result.concat(a.slice(i), b.slice(j));\n}\n"
       fail:
         - answer: "function mergeSorted(a, b) {\n  const result = [];\n  let i = 0;\n  let j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.push(a[i]);\n      i++;\n    } else {\n      result.push(b[j]);\n      j++;\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> mergeSorted(List<int> a, List<int> b) {\n  final result = <int>[];\n  var i = 0;\n  var j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.add(a[i]);\n      i++;\n    } else {\n      result.add(b[j]);\n      j++;\n    }\n  }\n  result.addAll(a.sublist(i));\n  result.addAll(b.sublist(j));\n  return result;\n}\n"
+      fail:
+        - answer: "List<int> mergeSorted(List<int> a, List<int> b) {\n  final result = <int>[];\n  var i = 0;\n  var j = 0;\n  while (i < a.length && j < b.length) {\n    if (a[i] <= b[j]) {\n      result.add(a[i]);\n      i++;\n    } else {\n      result.add(b[j]);\n      j++;\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>();\n    int i = 0;\n    int j = 0;\n    while (i < a.size() && j < b.size()) {\n        if (a.get(i) <= b.get(j)) {\n            result.add(a.get(i));\n            i++;\n        } else {\n            result.add(b.get(j));\n            j++;\n        }\n    }\n    result.addAll(a.subList(i, a.size()));\n    result.addAll(b.subList(j, b.size()));\n    return result;\n}\n"
+      fail:
+        - answer: "List<Integer> mergeSorted(List<Integer> a, List<Integer> b) {\n    List<Integer> result = new ArrayList<>();\n    int i = 0;\n    int j = 0;\n    while (i < a.size() && j < b.size()) {\n        if (a.get(i) <= b.get(j)) {\n            result.add(a.get(i));\n            i++;\n        } else {\n            result.add(b.get(j));\n            j++;\n        }\n    }\n    return result;\n}\n"
   two-sum:
     pass:
       - answer: "def two_sum(numbers, target)\n  (1...numbers.length).each do |j|\n    (0...j).each do |i|\n      return [i, j] if numbers[i] + numbers[j] == target\n    end\n  end\n  []\nend\n"
@@ -178,6 +284,16 @@ examples:
         - answer: "function twoSum(numbers, target) {\n  for (let j = 1; j < numbers.length; j++) {\n    for (let i = 0; i < j; i++) {\n      if (numbers[i] + numbers[j] === target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n"
       fail:
         - answer: "function twoSum(numbers, target) {\n  for (let i = 0; i < numbers.length; i++) {\n    for (let j = 0; j < numbers.length; j++) {\n      if (numbers[i] + numbers[j] === target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n"
+    dart:
+      pass:
+        - answer: "List<int> twoSum(List<int> numbers, int target) {\n  for (var j = 1; j < numbers.length; j++) {\n    for (var i = 0; i < j; i++) {\n      if (numbers[i] + numbers[j] == target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n"
+      fail:
+        - answer: "List<int> twoSum(List<int> numbers, int target) {\n  for (var i = 0; i < numbers.length; i++) {\n    for (var j = 0; j < numbers.length; j++) {\n      if (numbers[i] + numbers[j] == target) {\n        return [i, j];\n      }\n    }\n  }\n  return [];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> twoSum(List<Integer> numbers, int target) {\n    for (int j = 1; j < numbers.size(); j++) {\n        for (int i = 0; i < j; i++) {\n            if (numbers.get(i) + numbers.get(j) == target) {\n                return List.of(i, j);\n            }\n        }\n    }\n    return new ArrayList<>();\n}\n"
+      fail:
+        - answer: "List<Integer> twoSum(List<Integer> numbers, int target) {\n    for (int i = 0; i < numbers.size(); i++) {\n        for (int j = 0; j < numbers.size(); j++) {\n            if (numbers.get(i) + numbers.get(j) == target) {\n                return List.of(i, j);\n            }\n        }\n    }\n    return new ArrayList<>();\n}\n"
   chunks:
     pass:
       - answer: "def chunks(items, size)\n  result = []\n  i = 0\n  while i < items.length\n    result << items[i, size]\n    i += size\n  end\n  result\nend\n"
@@ -187,3 +303,9 @@ examples:
     javascript:
       pass:
         - answer: "function chunks(items, size) {\n  const result = [];\n  for (let i = 0; i < items.length; i += size) {\n    result.push(items.slice(i, i + size));\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "List<List<int>> chunks(List<int> items, int size) {\n  final result = <List<int>>[];\n  for (var i = 0; i < items.length; i += size) {\n    final end = i + size < items.length ? i + size : items.length;\n    result.add(items.sublist(i, end));\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "List<List<Integer>> chunks(List<Integer> items, int size) {\n    List<List<Integer>> result = new ArrayList<>();\n    for (int i = 0; i < items.size(); i += size) {\n        result.add(new ArrayList<>(items.subList(i, Math.min(i + size, items.size()))));\n    }\n    return result;\n}\n"
