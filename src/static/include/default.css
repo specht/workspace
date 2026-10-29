@@ -12979,6 +12979,7 @@ html[data-bs-theme="dark"] .growth-widget {
 .growth-label {
     min-width: 9em;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 .growth-slider {
@@ -12986,10 +12987,20 @@ html[data-bs-theme="dark"] .growth-widget {
     min-width: 10em;
 }
 
+/* The columns have fixed widths and every cell one line, so that nothing
+   moves while the slider moves; on a narrow screen the table scrolls
+   sideways in its .table-container instead of wrapping. */
 .growth-table {
+    table-layout: fixed;
+    min-width: 43em;
     margin-bottom: 0.4em;
     font-variant-numeric: tabular-nums;
 }
+
+.growth-col-name { width: 6.3em; }
+.growth-col-steps { width: 9em; }
+.growth-col-time { width: 15em; }
+.growth-col-max { width: 8.5em; }
 
 .growth-table td,
 .growth-table th {
@@ -12997,6 +13008,20 @@ html[data-bs-theme="dark"] .growth-widget {
     vertical-align: middle;
     background: transparent;
 }
+
+.growth-table td {
+    height: 2.4em;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.growth-table th {
+    white-space: normal;
+    vertical-align: bottom;
+}
+
+.growth-table th.growth-right { text-align: right; }
 
 .growth-name {
     font-family: var(--bs-font-monospace);
@@ -13006,7 +13031,6 @@ html[data-bs-theme="dark"] .growth-widget {
 .growth-steps,
 .growth-max { text-align: right; white-space: nowrap; }
 
-.growth-bar-cell { width: 30%; min-width: 6em; }
 
 .growth-bar {
     display: block;

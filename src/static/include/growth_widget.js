@@ -103,10 +103,14 @@
         });
         head.append(label, slider, quick);
 
+        // fixed column widths (CSS), so that nothing moves while n changes
         const table = el('table', 'table growth-table');
+        const columns = el('colgroup');
+        ['name', 'steps', 'time', 'bar', 'max'].forEach((c) => columns.appendChild(el('col', 'growth-col-' + c)));
+        table.appendChild(columns);
         const thead = el('thead');
         const tr = el('tr');
-        ['wächst wie', 'Schritte', 'Zeit', '', 'in einer Sekunde bis n ='].forEach((t) => tr.appendChild(el('th', '', t)));
+        ['wächst wie', 'Schritte', 'Zeit', '', 'in einer Sekunde bis n ='].forEach((t, i) => tr.appendChild(el('th', i === 1 || i === 4 ? 'growth-right' : '', t)));
         thead.appendChild(tr);
         const tbody = el('tbody');
         const cells = ROWS.map((row) => {
