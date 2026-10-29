@@ -603,10 +603,10 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Alain Colmerauer
 
 <div class='person'>
-<img src='colmerauer.webp' alt='Alain Colmerauer, älter, mit Brille und einem leichten Lächeln, unter dem blauen Sonnendach eines Boots, hinter ihm rote Masten.'>
+<img src='colmerauer.webp' alt='Alain Colmerauer um 1970 in Montreal: ein junger Mann mit braunem Haar, lächelnd, in einem dunklen Pullover über einem rosa Hemd.'>
 <p><strong>Alain Colmerauer</strong> (1941–2017), französischer Informatiker, Professor in Marseille. Er wollte, dass ein Computer Fragen auf Französisch versteht und aus Sätzen wie »Katzen töten Mäuse« und »Tom ist eine Katze« selbst schließt, was Tom tut. Dafür schrieb er 1972 mit Philippe Roussel eine Sprache, in der ein Programm aus solchen Aussagen besteht: Prolog, von »programmation en logique«. Wie man logische Aussagen als Programm lesen kann, hatte Robert Kowalski in Edinburgh gezeigt, mit dem er 1971 und 1972 in Marseille zusammenarbeitete.</p>
-<p>Später baute Colmerauer Prolog so aus, dass es auch mit Zahlen und Bedingungen rechnet, wie in einem Sudoku, das Prolog nicht durch Ausprobieren löst, sondern indem es unmögliche Zahlen streicht.</p>
-<p class='person-credit'>Foto: von seiner Website, zugeschnitten (<a href='http://alain.colmerauer.free.fr/'>alain.colmerauer.free.fr</a>)</p>
+<p>Das Foto zeigt ihn um 1970 in Montreal, in der Gruppe, mit der er an einem Programm zum Übersetzen zwischen Englisch und Französisch arbeitete; er hält gerade eine Ausgabe seiner Q-Systeme in der Hand, aus denen später Prolog wurde. Noch später baute er Prolog so aus, dass es auch mit Zahlen und Bedingungen rechnet, wie in einem Sudoku, das Prolog nicht durch Ausprobieren löst, sondern indem es unmögliche Zahlen streicht.</p>
+<p class='person-credit'>Foto: um 1970, aus dem Blog von Brian Harris, zugeschnitten (<a href='https://unprofessionaltranslation.blogspot.com/2017/06/alain-colmerauer-machine-translation.html'>Unprofessional Translation</a>)</p>
 </div>
 <!-- /part -->
 
