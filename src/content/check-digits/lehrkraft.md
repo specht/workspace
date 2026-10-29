@@ -1,14 +1,14 @@
-Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Zum Schluss bekleben sie einen QR-Code auf der Seite, bis er unlesbar wird, sehen, wie er Fehler repariert statt sie nur zu finden, und programmieren ein Gitter mit Paritätsbits, das ein gekipptes Bit findet. Ruby oder Python.
+Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Zum Schluss bekleben sie einen QR-Code auf der Seite, bis er unlesbar wird, sehen, wie er Fehler repariert statt sie nur zu finden, und programmieren ein Gitter mit Paritätsbits, das ein gekipptes Bit findet. Ruby, Python, Dart oder Java.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen mit Parametern und Rückgabewert, Verzweigungen, eine Zählschleife, Listen mit Index; etwa nach den Katas zu Funktionen, Entscheidungen, Schleifen und Listen. Struktogramme und Pseudocode erklärt die Seite, ausführlicher das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a>.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein. Pseudocode und Struktogramme sind für beide gleich.</td></tr>
+<tr><th>Sprache</th><td>Die Sprache stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein: Ruby, Python, Dart oder Java. Pseudocode und Struktogramme sind für alle gleich. In Dart und Java heißen die Funktionen wie in der Sprache üblich (<code>checkDigit</code>, <code>isValidEan</code>); in Java stehen sie als <code>public static</code> in den Klassen <code>CheckDigits</code> und <code>ParityGrid</code> und bekommen Arrays statt Listen. Ausprobiert wird in Dart mit einem eigenen <code>main</code>, in Java mit <code>jshell</code>.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die Geschichte, die Prüfziffer von Hand, ein Struktogramm lesen, das Struktogramm der Prüfziffer, <code>weight</code> und <code>check_digit</code>.</li>
 <li><b>2. Doppelstunde:</b> erst planen, dann programmieren: der gültige Strichcode, die ISBN mit eigenem Plan, die Zahlendreher.</li>
 <li><b>3. Doppelstunde:</b> der QR-Code: woraus er besteht, die Aufkleber auf dem Code zum Bemalen, die Stufen der Korrektur, die Idee von Reed-Solomon mit einer Geraden, dann <code>parity</code> und <code>find_error</code> für ein Gitter mit Paritätsbits.</li>
 </ul></td></tr>
-<tr><th>Dateien</th><td>Alles in <code>/workspace/check-digits</code>: <code>check_digits.rb</code> oder <code>check_digits.py</code> mit den Funktionen für Strichcodes und ISBNs, <code>swaps.rb</code> oder <code>swaps.py</code> für die Zahlendreher und <code>parity_grid.rb</code> oder <code>parity_grid.py</code> für das Gitter. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
+<tr><th>Dateien</th><td>Alles in <code>/workspace/check-digits</code>: <code>check_digits.rb</code>, <code>.py</code> oder <code>.dart</code> (in Java <code>CheckDigits.java</code>) mit den Funktionen für Strichcodes und ISBNs, <code>swaps.rb</code>, <code>.py</code>, <code>.dart</code> oder <code>Swaps.java</code> für die Zahlendreher und <code>parity_grid.rb</code>, <code>.py</code>, <code>.dart</code> oder <code>ParityGrid.java</code> für das Gitter. Keine Vorlage: Die Lernenden legen alles selbst an.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Sechs Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe; die Aufgabe sagt jeweils, womit.</li>
 <li>Der Plan für die ISBN ist eine offene Aufgabe: Die Lernenden kopieren die Kommentare ihres Plans hinein, bevor sie den Code schreiben; er geht ans Klassenboard. Unter der Aufgabe sehen nur Lehrkräfte ein Beispiel für einen guten Plan.</li>
@@ -37,7 +37,9 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 
 #### Was schiefgeht
 
-- **<code>irb</code> oder Python kennen eine geänderte Funktion nicht:** Sie haben die Datei beim Start geladen; nach einer Änderung neu starten.
+- **<code>irb</code> oder Python kennen eine geänderte Funktion nicht:** Sie haben die Datei beim Start geladen; nach einer Änderung neu starten. In <code>jshell</code> lädt <code>/open CheckDigits.java</code> die Datei neu; <code>/reload</code> liest sie nicht noch einmal.
+- **Java: ein Zeichen als Zahl:** <code>code.charAt(i)</code> ist ein <code>char</code>; <code>'7' - '0'</code> ist 7, aber <code>(int) '7'</code> ist 55, der Code des Zeichens. Der Tipp zur EAN nennt <code>c - '0'</code>.
+- **Java: <code>findError</code> gibt nichts zurück, wenn kein Fehler da ist:** Ohne Fehler gibt sie <code>null</code> zurück, nicht ein leeres Array; wer in <code>jshell</code> <code>Arrays.toString(…)</code> ausgibt, sieht dann <code>null</code>.
 - **Ruby: <code>valid_isbn?("3-12-345603-X")</code> gibt <code>false</code>:** <code>"X".to_i</code> ist 0, ohne Fehlermeldung; das X muss eigens behandelt werden.
 - **<code>swaps</code> findet 0:** Meist wird der ursprüngliche Code geprüft statt des vertauschten.
 

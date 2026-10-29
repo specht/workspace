@@ -1,7 +1,8 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
 # Die Stufen in stufen/ sind der Code nach jedem Kapitel; was ein Kapitel
-# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler.
+# verlangt, fehlt der Stufe davor. In fehler/ stehen häufige Fehler, die in
+# Java in fehler/java/.
 format: 1
 activity: check-digits
 examples:
@@ -19,6 +20,20 @@ examples:
       fail:
         - { files: { check-digits/check_digits.py: { text: "# noch leer\n" } } }
         - { files: { check-digits/check_digits.py: fehler/gewicht-vertauscht.py } }
+    dart:
+      pass:
+        - { files: { check-digits/check_digits.dart: stufen/1-gewicht/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: loesung/check_digits.dart } }
+      fail:
+        - { files: { check-digits/check_digits.dart: { text: "// noch leer\n" } } }
+        - { files: { check-digits/check_digits.dart: fehler/gewicht-vertauscht.dart } }
+    java:
+      pass:
+        - { files: { check-digits/CheckDigits.java: stufen/1-gewicht/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: loesung/CheckDigits.java } }
+      fail:
+        - { files: { check-digits/CheckDigits.java: { text: "// noch leer\n" } } }
+        - { files: { check-digits/CheckDigits.java: fehler/java/gewicht-vertauscht.java } }
   pruefziffer:
     pass:
       - { files: { check-digits/check_digits.rb: stufen/2-pruefziffer/check_digits.rb } }
@@ -33,6 +48,20 @@ examples:
       fail:
         - { files: { check-digits/check_digits.py: stufen/1-gewicht/check_digits.py } }
         - { files: { check-digits/check_digits.py: fehler/ohne-mod.py }, say: das zweite }
+    dart:
+      pass:
+        - { files: { check-digits/check_digits.dart: stufen/2-pruefziffer/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: loesung/check_digits.dart } }
+      fail:
+        - { files: { check-digits/check_digits.dart: stufen/1-gewicht/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: fehler/ohne-mod.dart }, say: das zweite }
+    java:
+      pass:
+        - { files: { check-digits/CheckDigits.java: stufen/2-pruefziffer/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: loesung/CheckDigits.java } }
+      fail:
+        - { files: { check-digits/CheckDigits.java: stufen/1-gewicht/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: fehler/java/ohne-mod.java }, say: das zweite }
   ean:
     pass:
       - { files: { check-digits/check_digits.rb: stufen/3-ean/check_digits.rb } }
@@ -47,6 +76,20 @@ examples:
       fail:
         - { files: { check-digits/check_digits.py: stufen/2-pruefziffer/check_digits.py } }
         - { files: { check-digits/check_digits.py: fehler/ohne-laenge.py }, say: zu wenig }
+    dart:
+      pass:
+        - { files: { check-digits/check_digits.dart: stufen/3-ean/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: loesung/check_digits.dart } }
+      fail:
+        - { files: { check-digits/check_digits.dart: stufen/2-pruefziffer/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: fehler/ohne-laenge.dart }, say: zu wenig }
+    java:
+      pass:
+        - { files: { check-digits/CheckDigits.java: stufen/3-ean/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: loesung/CheckDigits.java } }
+      fail:
+        - { files: { check-digits/CheckDigits.java: stufen/2-pruefziffer/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: fehler/java/ohne-laenge.java }, say: zu wenig }
   isbn:
     pass:
       - { files: { check-digits/check_digits.rb: loesung/check_digits.rb } }
@@ -59,6 +102,18 @@ examples:
       fail:
         - { files: { check-digits/check_digits.py: stufen/3-ean/check_digits.py } }
         - { files: { check-digits/check_digits.py: fehler/isbn-ohne-x.py }, say: X für 10 }
+    dart:
+      pass:
+        - { files: { check-digits/check_digits.dart: loesung/check_digits.dart } }
+      fail:
+        - { files: { check-digits/check_digits.dart: stufen/3-ean/check_digits.dart } }
+        - { files: { check-digits/check_digits.dart: fehler/isbn-ohne-x.dart }, say: X für 10 }
+    java:
+      pass:
+        - { files: { check-digits/CheckDigits.java: loesung/CheckDigits.java } }
+      fail:
+        - { files: { check-digits/CheckDigits.java: stufen/3-ean/CheckDigits.java } }
+        - { files: { check-digits/CheckDigits.java: fehler/java/isbn-ohne-x.java }, say: X für 10 }
   paritaet:
     pass:
       - { files: { check-digits/parity_grid.rb: loesung/parity_grid.rb } }
@@ -71,6 +126,18 @@ examples:
       fail:
         - { files: { check-digits/parity_grid.py: { text: "# noch leer\n" } } }
         - { files: { check-digits/parity_grid.py: fehler/parity-sum.py }, say: Rest bei der Division durch 2 }
+    dart:
+      pass:
+        - { files: { check-digits/parity_grid.dart: loesung/parity_grid.dart } }
+      fail:
+        - { files: { check-digits/parity_grid.dart: { text: "// noch leer\n" } } }
+        - { files: { check-digits/parity_grid.dart: fehler/parity-sum.dart }, say: Rest bei der Division durch 2 }
+    java:
+      pass:
+        - { files: { check-digits/ParityGrid.java: loesung/ParityGrid.java } }
+      fail:
+        - { files: { check-digits/ParityGrid.java: { text: "// noch leer\n" } } }
+        - { files: { check-digits/ParityGrid.java: fehler/java/parity-sum.java }, say: Rest bei der Division durch 2 }
   bit-finden:
     pass:
       - { files: { check-digits/parity_grid.rb: loesung/parity_grid.rb } }
@@ -83,3 +150,15 @@ examples:
       fail:
         - { files: { check-digits/parity_grid.py: fehler/parity-sum.py } }
         - { files: { check-digits/parity_grid.py: fehler/column-from-row.py }, say: Element mit demselben Index }
+    dart:
+      pass:
+        - { files: { check-digits/parity_grid.dart: loesung/parity_grid.dart } }
+      fail:
+        - { files: { check-digits/parity_grid.dart: fehler/parity-sum.dart } }
+        - { files: { check-digits/parity_grid.dart: fehler/column-from-row.dart }, say: Element mit demselben Index }
+    java:
+      pass:
+        - { files: { check-digits/ParityGrid.java: loesung/ParityGrid.java } }
+      fail:
+        - { files: { check-digits/ParityGrid.java: fehler/java/parity-sum.java } }
+        - { files: { check-digits/ParityGrid.java: fehler/java/column-from-row.java }, say: Element mit demselben Index }

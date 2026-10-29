@@ -3,7 +3,7 @@ image: teaser.webp:25:50
 image_alt: "Ein Strichcode mit den Ziffern 4 260111 020434 auf einem weißen Etikett, daneben das Struktogramm der Funktion check_digit mit einer Zählschleife von 0 bis 11."
 kind: projekt
 duration: 3 Doppelstunden
-languages: [ruby, python]
+languages: [ruby, python, dart, java]
 curriculum: "Sek I: Algorithmisches Problemlösen (Eigenschaften und Darstellung von Algorithmen, Implementieren von Algorithmen), Information und Daten (Codierung: Strichcode, QR-Code); Oberstufe: Algorithmen und Softwareentwicklung (Struktogramm, Pseudocode)"
 topics: [fehlererkennung, codierung, darstellung]
 age: Sek I
@@ -239,6 +239,51 @@ Dort tippst du einen Aufruf wie `weight(3)` und siehst, was er zurückgibt. Nach
 einer Änderung an der Datei beendest du Python mit <kbd>Strg</kbd><kbd>D</kbd>
 und startest es neu.
 <!-- /language -->
+<!-- language: dart -->
+Lege im Workspace einen Ordner und darin eine Datei für die Funktionen an:
+
+```bash
+mkdir -p ~/check-digits
+cd ~/check-digits
+touch check_digits.dart
+```
+
+Öffne `check_digits.dart` im Editor. Ausprobieren kannst du deine Funktionen
+mit einem `main` am Ende der Datei, das sie aufruft und ausgibt, etwa
+`void main() { print(weight(3)); }`, und
+
+```bash
+dart run check_digits.dart
+```
+
+Die Prüfung ruft deine Funktionen selbst auf; dein `main` stört sie nicht.
+<!-- /language -->
+<!-- language: java -->
+Lege im Workspace einen Ordner an. In Java steht jede Methode in einer Klasse;
+deine Methoden kommen als `public static` in eine Klasse `CheckDigits`, in der
+Datei `CheckDigits.java`:
+
+```bash
+mkdir -p ~/check-digits
+cd ~/check-digits
+```
+
+```java
+public class CheckDigits {
+    // hier kommen die Methoden hin
+}
+```
+
+Ausprobieren kannst du deine Methoden in `jshell`, das die Datei vorher lädt:
+
+```bash
+jshell CheckDigits.java
+```
+
+Dort tippst du einen Aufruf wie `CheckDigits.weight(3)` und siehst, was er
+zurückgibt. Nach einer Änderung an der Datei lädt `/open CheckDigits.java` sie
+neu; `/exit` beendet `jshell`.
+<!-- /language -->
 
 ### Das Gewicht
 
@@ -310,6 +355,53 @@ def weight(index):
 ```
 <!-- /solution -->
 <!-- /language -->
+<!-- language: dart, java -->
+<!-- hint -->
+Ob eine Zahl gerade ist, sagt der Rest bei der Division durch 2: `index % 2`
+ist 0 oder 1.
+<!-- /hint -->
+
+<!-- hint -->
+Als Struktogramm ist es eine Verzweigung mit zwei Spalten, in jeder ein
+`return`:
+
+```struktogramm
+weight(index):
+    if index mod 2 == 0:
+        return 1
+    else:
+        return 3
+```
+<!-- /hint -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- solution -->
+```dart
+int weight(int index) {
+  if (index % 2 == 0) {
+    return 1;
+  } else {
+    return 3;
+  }
+}
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: java -->
+<!-- solution -->
+```java
+public class CheckDigits {
+    public static int weight(int index) {
+        if (index % 2 == 0) {
+            return 1;
+        } else {
+            return 3;
+        }
+    }
+}
+```
+<!-- /solution -->
+<!-- /language -->
 
 _task(gewicht)
 
@@ -372,6 +464,63 @@ def check_digit(digits):
 die 1 aus der Tabelle oben. Nimm dann das letzte <code>% 10</code> weg, starte
 neu und ruf <code>check_digit([4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])</code> auf. Achte darauf,
 ob das Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wieder ein.
+</div>
+<!-- /language -->
+<!-- language: dart -->
+<!-- hint -->
+In Dart schreibt man Namen aus mehreren Wörtern zusammen, das zweite groß:
+`checkDigit` statt `check_digit`. `digits` ist eine Liste von Zahlen, `List<int>`. Die Bausteine:
+`←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist
+`for (var i = 0; i <= 11; i++)`.
+<!-- /hint -->
+
+<!-- solution -->
+```dart
+int checkDigit(List<int> digits) {
+  var total = 0;
+  for (var i = 0; i <= 11; i++) {
+    total = total + weight(i) * digits[i];
+  }
+  return (10 - total % 10) % 10;
+}
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib in deinem <code>main</code>
+<code>checkDigit([4, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</code> aus; heraus kommt
+die 1 aus der Tabelle oben. Nimm dann das letzte <code>% 10</code> weg und gib
+<code>checkDigit([4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])</code> aus. Achte darauf,
+ob das Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wieder ein.
+</div>
+<!-- /language -->
+<!-- language: java -->
+<!-- hint -->
+In Java schreibt man Namen aus mehreren Wörtern zusammen, das zweite groß:
+`checkDigit` statt `check_digit`. `digits` ist ein Array, `int[] digits`. Die
+Bausteine: `←` ist `=`, `mod` ist `%`, und `for i from 0 to 11` ist
+`for (int i = 0; i <= 11; i++)`.
+<!-- /hint -->
+
+<!-- solution -->
+```java
+public static int checkDigit(int[] digits) {
+    int total = 0;
+    for (int i = 0; i <= 11; i++) {
+        total = total + weight(i) * digits[i];
+    }
+    return (10 - total % 10) % 10;
+}
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ruf in <code>jshell</code>
+<code>CheckDigits.checkDigit(new int[] {4, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9})</code>
+auf; heraus kommt die 1 aus der Tabelle oben. Nimm dann das letzte
+<code>% 10</code> weg, lade mit <code>/open CheckDigits.java</code> neu und ruf es mit
+<code>{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}</code> auf. Achte darauf, ob das
+Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wieder ein.
 </div>
 <!-- /language -->
 
@@ -497,6 +646,121 @@ def is_valid_ean(code):
 ```
 <!-- /solution -->
 <!-- /language -->
+<!-- language: dart -->
+<div class='hint own' data-check='ean'>
+<strong>Jetzt bist du dran:</strong> Leg die Funktion <code>bool isValidEan(String code)</code>
+an und schreib zuerst deinen Plan als Kommentare hinein, dann den Code dazu.
+Sie gibt <code>true</code> oder <code>false</code> zurück und benutzt
+<code>checkDigit</code>.
+</div>
+
+<!-- hint -->
+Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
+zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
+dann gleich `false` zurück.
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt. Damit Dart die Funktion schon jetzt
+annimmt, gibt sie vorerst `false` zurück:
+
+```dart
+bool isValidEan(String code) {
+  // nicht genau 13 Zeichen: false
+  // ein Zeichen ist keine Ziffer: false
+  // die 13 Zeichen als Zahlen
+  // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+  return false;
+}
+```
+<!-- /hint -->
+
+<!-- hint -->
+Für die Einzelheiten in Dart: `code.length` ist die Zahl der Zeichen,
+`code.split('')` die Liste der Zeichen, `'0123456789'.contains(c)` sagt, ob `c`
+eine Ziffer ist, `int.parse(c)` macht aus `'7'` die Zahl 7, und
+`digits.sublist(0, 12)` sind die ersten zwölf Elemente einer Liste.
+<!-- /hint -->
+
+<!-- solution -->
+```dart
+bool isValidEan(String code) {
+  // nicht genau 13 Zeichen: false
+  if (code.length != 13) {
+    return false;
+  }
+  // ein Zeichen ist keine Ziffer: false
+  for (final c in code.split('')) {
+    if (!'0123456789'.contains(c)) {
+      return false;
+    }
+  }
+  // die 13 Zeichen als Zahlen
+  final digits = code.split('').map(int.parse).toList();
+  // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+  return checkDigit(digits.sublist(0, 12)) == digits[12];
+}
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: java -->
+<div class='hint own' data-check='ean'>
+<strong>Jetzt bist du dran:</strong> Leg die Methode <code>public static boolean isValidEan(String code)</code>
+an und schreib zuerst deinen Plan als Kommentare hinein, dann den Code dazu.
+Sie gibt <code>true</code> oder <code>false</code> zurück und benutzt
+<code>checkDigit</code>.
+</div>
+
+<!-- hint -->
+Was macht einen Code sicher ungültig, bevor man rechnet? Wenn er zu kurz oder
+zu lang ist, und wenn ein Zeichen keine Ziffer ist. Prüf das zuerst und gib
+dann gleich `false` zurück.
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt. Damit Java die Methode schon jetzt
+übersetzt, gibt sie vorerst `false` zurück:
+
+```java
+public static boolean isValidEan(String code) {
+    // nicht genau 13 Zeichen: false
+    // jedes Zeichen eine Ziffer, als Zahl in ein Array; sonst false
+    // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+    return false;
+}
+```
+<!-- /hint -->
+
+<!-- hint -->
+Für die Einzelheiten in Java: `code.length()` ist die Zahl der Zeichen,
+`code.charAt(i)` das Zeichen mit dem Index `i`, ein `char`. Ein Zeichen ist
+eine Ziffer, wenn `c >= '0' && c <= '9'`, und `c - '0'` macht aus `'7'` die
+Zahl 7. Ein Array für 13 Zahlen legt `new int[13]` an; `checkDigit` liest davon
+nur die ersten zwölf.
+<!-- /hint -->
+
+<!-- solution -->
+```java
+public static boolean isValidEan(String code) {
+    // nicht genau 13 Zeichen: false
+    if (code.length() != 13) {
+        return false;
+    }
+    // jedes Zeichen eine Ziffer, als Zahl in ein Array; sonst false
+    int[] digits = new int[13];
+    for (int i = 0; i < 13; i++) {
+        char c = code.charAt(i);
+        if (c < '0' || c > '9') {
+            return false;
+        }
+        digits[i] = c - '0';
+    }
+    // gültig, wenn die Prüfziffer der ersten zwölf gleich der dreizehnten ist
+    return checkDigit(digits) == digits[12];
+}
+```
+<!-- /solution -->
+<!-- /language -->
 
 _task(ean)
 
@@ -527,6 +791,12 @@ noch `X` ist?
 <!-- /language -->
 <!-- language: python -->
 Diesmal steht kein Plan auf der Seite. Leg `is_valid_isbn(isbn)` an und schreib
+deinen Plan als Kommentare hinein, bevor du Code schreibst: Was geschieht mit
+den Bindestrichen, was mit einem `X`, was mit einem Zeichen, das weder Ziffer
+noch `X` ist?
+<!-- /language -->
+<!-- language: dart, java -->
+Diesmal steht kein Plan auf der Seite. Leg `isValidIsbn(isbn)` an und schreib
 deinen Plan als Kommentare hinein, bevor du Code schreibst: Was geschieht mit
 den Bindestrichen, was mit einem `X`, was mit einem Zeichen, das weder Ziffer
 noch `X` ist?
@@ -636,6 +906,106 @@ print(f"Unbemerkt: {missed} von 90")
 
 ```bash
 python3 swaps.py
+```
+<!-- /language -->
+<!-- language: dart -->
+<div class='hint own' data-check='zahlendreher'>
+<strong>Jetzt bist du dran:</strong> Schreib in eine neue Datei
+<code>swaps.dart</code> ein Programm, das die 90 Paare durchgeht und zählt, wie
+viele Zahlendreher <code>isValidEan</code> nicht bemerkt. Die erste Zeile
+<code>import 'check_digits.dart';</code> holt deine Funktionen dazu; das Programm
+steht in <code>void main() { … }</code>.
+</div>
+
+<!-- hint -->
+Zwei Schleifen ineinander gehen alle Paare durch: außen `a` von 0 bis 9, innen
+`b` von 0 bis 9; ist `a == b`, geht es mit dem nächsten weiter (`continue`).
+<!-- /hint -->
+
+<!-- hint -->
+Für ein Paar: `final digits = [a, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];`, dann ist
+`[...digits, checkDigit(digits)].join()` ein gültiger Code.
+`code[1] + code[0] + code.substring(2)` ist derselbe Code mit vertauschten
+ersten Ziffern.
+<!-- /hint -->
+
+<!-- solution -->
+```dart
+import 'check_digits.dart';
+
+void main() {
+  var missed = 0;
+  for (var a = 0; a <= 9; a++) {
+    for (var b = 0; b <= 9; b++) {
+      if (a == b) {
+        continue;
+      }
+      final digits = [a, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      final code = [...digits, checkDigit(digits)].join();
+      final swapped = code[1] + code[0] + code.substring(2);
+      if (isValidEan(swapped)) {
+        missed = missed + 1;
+      }
+    }
+  }
+  print('Unbemerkt: $missed von 90');
+}
+```
+<!-- /solution -->
+
+```bash
+dart run swaps.dart
+```
+<!-- /language -->
+<!-- language: java -->
+<div class='hint own' data-check='zahlendreher'>
+<strong>Jetzt bist du dran:</strong> Schreib in eine neue Datei
+<code>Swaps.java</code> eine Klasse <code>Swaps</code> mit einem
+<code>main</code>, das die 90 Paare durchgeht und zählt, wie viele Zahlendreher
+<code>CheckDigits.isValidEan</code> nicht bemerkt.
+</div>
+
+<!-- hint -->
+Zwei Schleifen ineinander gehen alle Paare durch: außen `a` von 0 bis 9, innen
+`b` von 0 bis 9; ist `a == b`, geht es mit dem nächsten weiter (`continue`).
+<!-- /hint -->
+
+<!-- hint -->
+Für ein Paar: `int[] digits = {a, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};`, dann ist
+`"" + a + b + "0000000000" + CheckDigits.checkDigit(digits)` ein gültiger Code
+als String. `code.substring(1, 2) + code.substring(0, 1) + code.substring(2)`
+ist derselbe Code mit vertauschten ersten Ziffern.
+<!-- /hint -->
+
+<!-- solution -->
+```java
+public class Swaps {
+    public static void main(String[] args) {
+        int missed = 0;
+        for (int a = 0; a <= 9; a++) {
+            for (int b = 0; b <= 9; b++) {
+                if (a == b) {
+                    continue;
+                }
+                int[] digits = {a, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                String code = "" + a + b + "0000000000" + CheckDigits.checkDigit(digits);
+                String swapped = code.substring(1, 2) + code.substring(0, 1) + code.substring(2);
+                if (CheckDigits.isValidEan(swapped)) {
+                    missed = missed + 1;
+                }
+            }
+        }
+        System.out.println("Unbemerkt: " + missed + " von 90");
+    }
+}
+```
+<!-- /solution -->
+
+`java Swaps.java` übersetzt die Datei und findet `CheckDigits` im selben
+Ordner:
+
+```bash
+java Swaps.java
 ```
 <!-- /language -->
 
@@ -852,6 +1222,26 @@ grid = [[1, 1, 0, 0, 0], [0, 1, 0, 1, 0], [1, 1, 1, 0, 1], [0, 0, 1, 1, 0], [0, 
 kommen in eine neue Datei `parity_grid.py` im Ordner `check-digits`;
 ausprobieren kannst du sie mit `python3 -i parity_grid.py`.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+final grid = [[1, 1, 0, 0, 0], [0, 1, 0, 1, 0], [1, 1, 1, 0, 1], [0, 0, 1, 1, 0], [0, 1, 0, 0, 1]];
+```
+
+`grid[2]` ist die dritte Zeile, `grid[2][0]` ihr erstes Bit; das ganze Gitter
+ist eine Liste von Listen, `List<List<int>>`. Die Funktionen kommen in eine neue Datei
+`parity_grid.dart` im Ordner `check-digits`; ausprobieren kannst du sie wieder
+mit einem `main` und `dart run parity_grid.dart`.
+<!-- /language -->
+<!-- language: java -->
+```java
+int[][] grid = {{1, 1, 0, 0, 0}, {0, 1, 0, 1, 0}, {1, 1, 1, 0, 1}, {0, 0, 1, 1, 0}, {0, 1, 0, 0, 1}};
+```
+
+`grid[2]` ist die dritte Zeile, ein `int[]`, `grid[2][0]` ihr erstes Bit. Die
+Methoden kommen als `public static` in eine neue Klasse `ParityGrid`, in der
+Datei `ParityGrid.java` im Ordner `check-digits`; ausprobieren kannst du sie
+mit `jshell ParityGrid.java`.
+<!-- /language -->
 
 <!-- language: ruby -->
 <div class='hint own' data-check='paritaet'>
@@ -898,6 +1288,47 @@ def parity(bits):
     for bit in bits:
         ones = ones + bit
     return ones % 2
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: dart, java -->
+<div class='hint own' data-check='paritaet'>
+<strong>Jetzt bist du dran:</strong> Schreib die Funktion
+<code>parity(bits)</code>: Sie bekommt Nullen und Einsen und gibt 0 zurück,
+wenn darin eine gerade Zahl von Einsen steht, sonst 1.
+</div>
+
+<!-- hint -->
+Zähl die Einsen: Weil jedes Bit 0 oder 1 ist, ist ihre Zahl die Summe aller
+Bits. Ob sie gerade ist, sagt der Rest bei der Division durch 2, wie bei
+`weight`: `% 2`.
+<!-- /hint -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- solution -->
+```dart
+int parity(List<int> bits) {
+  var ones = 0;
+  for (final bit in bits) {
+    ones = ones + bit;
+  }
+  return ones % 2;
+}
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: java -->
+<!-- solution -->
+```java
+public class ParityGrid {
+    public static int parity(int[] bits) {
+        int ones = 0;
+        for (int bit : bits) {
+            ones = ones + bit;
+        }
+        return ones % 2;
+    }
+}
 ```
 <!-- /solution -->
 <!-- /language -->
@@ -1022,6 +1453,149 @@ def find_error(grid):
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Leg in Python das Gitter von oben an, ruf
 <code>find_error(grid)</code> auf, dreh mit
+<code>grid[3][1] = 1 - grid[3][1]</code> ein Bit um und ruf es noch einmal auf.
+Achte darauf, ob auch ein gekipptes Paritätsbit gefunden wird, etwa
+<code>grid[4][4]</code>.
+</div>
+<!-- /language -->
+<!-- language: dart -->
+<div class='hint own' data-check='bit-finden'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>List&lt;int&gt;? findError(List&lt;List&lt;int&gt;&gt; grid)</code>:
+Sie gibt <code>[row, column]</code> zurück, die Zeile und die Spalte des gekippten
+Bits, und <code>null</code>, wenn alle Zeilen und Spalten eine gerade Zahl von
+Einsen haben; darum das Fragezeichen am Rückgabetyp. Schreib zuerst deinen Plan
+als Kommentare hinein.
+</div>
+
+<!-- hint -->
+Probier es zuerst von Hand: Dreh im Gitter oben das Bit `grid[1][2]` um. Welche
+Zeile hat jetzt eine ungerade Zahl von Einsen, welche Spalte?
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt:
+
+```dart
+List<int>? findError(List<List<int>> grid) {
+  // für jeden Index einer Zeile: Parität 1? Index merken
+  // für jeden Index einer Spalte: die Spalte als Liste, Parität 1? Index merken
+  // keine Zeile oder keine Spalte gefunden: null
+  // sonst [Zeile, Spalte]
+  return null;
+}
+```
+<!-- /hint -->
+
+<!-- hint -->
+Eine Spalte ist keine Liste im Gitter; du baust sie, indem du aus jeder Zeile
+das Element mit demselben Index nimmst: `grid.map((line) => line[c]).toList()`.
+Wie viele Spalten es gibt, sagt `grid[0].length`. Zeile und Spalte merkst du dir
+in `int? row;` und `int? column;`, die mit `null` beginnen.
+<!-- /hint -->
+
+<!-- solution -->
+```dart
+List<int>? findError(List<List<int>> grid) {
+  // die Zeile mit einer ungeraden Zahl von Einsen
+  int? row;
+  for (var r = 0; r < grid.length; r++) {
+    if (parity(grid[r]) == 1) {
+      row = r;
+    }
+  }
+  // die Spalte mit einer ungeraden Zahl von Einsen
+  int? column;
+  for (var c = 0; c < grid[0].length; c++) {
+    final bits = grid.map((line) => line[c]).toList();
+    if (parity(bits) == 1) {
+      column = c;
+    }
+  }
+  // alles gerade: kein Fehler
+  if (row == null || column == null) {
+    return null;
+  }
+  return [row, column];
+}
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg in deinem <code>main</code> das Gitter von
+oben an, gib <code>findError(grid)</code> aus, dreh mit
+<code>grid[3][1] = 1 - grid[3][1];</code> ein Bit um und gib es noch einmal aus.
+Achte darauf, ob auch ein gekipptes Paritätsbit gefunden wird, etwa
+<code>grid[4][4]</code>.
+</div>
+<!-- /language -->
+<!-- language: java -->
+<div class='hint own' data-check='bit-finden'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>public static int[] findError(int[][] grid)</code>:
+Sie gibt <code>{row, column}</code> zurück, die Zeile und die Spalte des
+gekippten Bits, und <code>null</code>, wenn alle Zeilen und Spalten eine gerade
+Zahl von Einsen haben. Schreib zuerst deinen Plan als Kommentare hinein.
+</div>
+
+<!-- hint -->
+Probier es zuerst von Hand: Dreh im Gitter oben das Bit `grid[1][2]` um. Welche
+Zeile hat jetzt eine ungerade Zahl von Einsen, welche Spalte?
+<!-- /hint -->
+
+<!-- hint -->
+Ein Plan, dem noch der Code fehlt:
+
+```java
+public static int[] findError(int[][] grid) {
+    // für jeden Index einer Zeile: Parität 1? Index merken
+    // für jeden Index einer Spalte: die Spalte als Array, Parität 1? Index merken
+    // keine Zeile oder keine Spalte gefunden: null
+    // sonst {Zeile, Spalte}
+    return null;
+}
+```
+<!-- /hint -->
+
+<!-- hint -->
+Eine Spalte ist kein Array im Gitter; du baust sie, indem du aus jeder Zeile das
+Element mit demselben Index nimmst: ein neues `int[] bits = new int[grid.length];`
+und `bits[r] = grid[r][c]` für jede Zeile. Wie viele Spalten es gibt, sagt
+`grid[0].length`. Zeile und Spalte merkst du dir in `int row = -1;` und
+`int column = -1;`: -1 heißt, noch keine gefunden.
+<!-- /hint -->
+
+<!-- solution -->
+```java
+public static int[] findError(int[][] grid) {
+    // die Zeile mit einer ungeraden Zahl von Einsen
+    int row = -1;
+    for (int r = 0; r < grid.length; r++) {
+        if (parity(grid[r]) == 1) {
+            row = r;
+        }
+    }
+    // die Spalte mit einer ungeraden Zahl von Einsen
+    int column = -1;
+    for (int c = 0; c < grid[0].length; c++) {
+        int[] bits = new int[grid.length];
+        for (int r = 0; r < grid.length; r++) {
+            bits[r] = grid[r][c];
+        }
+        if (parity(bits) == 1) {
+            column = c;
+        }
+    }
+    // alles gerade: kein Fehler
+    if (row == -1 || column == -1) {
+        return null;
+    }
+    return new int[] {row, column};
+}
+```
+<!-- /solution -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg in <code>jshell</code> das Gitter von oben an,
+ruf <code>Arrays.toString(ParityGrid.findError(grid))</code> auf, dreh mit
 <code>grid[3][1] = 1 - grid[3][1]</code> ein Bit um und ruf es noch einmal auf.
 Achte darauf, ob auch ein gekipptes Paritätsbit gefunden wird, etwa
 <code>grid[4][4]</code>.
