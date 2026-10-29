@@ -1368,7 +1368,9 @@ ergibt, was fehlt und was zu viel ist, dazu `say`. Bei einer Anfrage, die
 länger als 80 Zeichen ist (etwa eine ganze Prüfung mit `\+ \+ (…)`), steht
 `say` allein. Eine Anfrage, die ihre Zeit überschreitet, bekommt `slow` oder
 eine Frage nach einer Regel, die sich selbst aufruft, bevor sie etwas
-festlegt; ebenso die ganze Prüfung nach `timeout`. Kann Prolog die Datei
+festlegt; ebenso die ganze Prüfung nach `timeout`. Füllt eine solche Regel
+den Speicher, bevor die Zeit um ist (auf einem schnellen Rechner), kommt
+dieselbe Frage, ohne `slow`. Kann Prolog die Datei
 nicht lesen, nennt die Karte die Zeile und die Meldung von SWI-Prolog;
 fragt eine Anfrage nach einem Prädikat, das es nicht gibt, nennt sie es.
 

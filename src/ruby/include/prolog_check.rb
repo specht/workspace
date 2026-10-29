@@ -85,6 +85,8 @@ module PrologCheck
                 Out = _{query: Query, answers: Answers}
             ;   E = time_limit_exceeded
             ->  Out = _{query: Query, error: "time"}
+            ;   E = error(resource_error(_), _)
+            ->  Out = _{query: Query, error: "stack"}
             ;   E = error(existence_error(procedure, PI), _)
             ->  format(string(P), "~q", [PI]),
                 Out = _{query: Query, error: "unknown", message: P}
@@ -239,6 +241,8 @@ module PrologCheck
     def self.error_text(result, seconds = QUERY_SECONDS)
         case result['error']
         when 'time' then "hört nicht auf: Nach #{seconds} Sekunden war noch keine Antwort fertig. Ruft sich eine Regel selbst auf, bevor sie etwas festlegt?"
+        # a left recursion that fills the stack before the time is up
+        when 'stack' then "hört nicht auf: Sie ruft sich immer tiefer selbst auf, bis kein Speicher mehr frei ist. Ruft sich eine Regel selbst auf, bevor sie etwas festlegt?"
         when 'unknown' then "fragt nach `#{result['message']}`, und das gibt es in deiner Datei nicht."
         when 'syntax' then "lässt sich nicht lesen."
         else "bricht ab: `#{result['message'].to_s.lines.first.to_s.strip[0, 200]}`"
