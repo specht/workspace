@@ -2,7 +2,7 @@
 icon: bi-list-ol
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Listen durchgehen, zusammenrechnen, umbauen und mischen
 curriculum: "Sek I: Algorithmisches Problemlösen (Implementieren von Algorithmen auf Listen); Oberstufe: Algorithmen und Datenstrukturen (Listen)"
 topics: [listen]
@@ -87,6 +87,57 @@ durch, `result.push(…)` hängt hinten an. Wer den Index braucht, zählt
 selbst: `for (let i = 0; i < numbers.length; i++)` läuft mit `i` von 0 bis
 zum letzten Index.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+List<int> doubled(List<int> numbers) {
+  final result = <int>[];
+  for (final number in numbers) {
+    result.add(number * 2);
+  }
+  return result;
+}
+
+void main() {
+  print(doubled([3, 4, 5]));          // [6, 8, 10]
+  final numbers = [3, 4, 5];
+  print(numbers.length);              // 3
+  print(numbers[0]);                  // 3, das Element mit dem Index 0
+  print(numbers[numbers.length - 1]); // 5, das letzte
+}
+```
+
+`List<int>` ist eine Liste von ganzen Zahlen. `for (final number in numbers)
+{ … }` geht die Elemente der Reihe nach durch, `result.add(…)` hängt hinten
+an; `<int>[]` ist eine leere Liste für Zahlen. Wer den Index braucht, zählt
+selbst: `for (var i = 0; i < numbers.length; i++)` läuft mit `i` von 0 bis
+zum letzten Index.
+<!-- /language -->
+<!-- language: java -->
+```java
+List<Integer> doubled(List<Integer> numbers) {
+    List<Integer> result = new ArrayList<>();
+    for (int number : numbers) {
+        result.add(number * 2);
+    }
+    return result;
+}
+
+void main() {
+    IO.println(doubled(List.of(3, 4, 5)));            // [6, 8, 10]
+    List<Integer> numbers = List.of(3, 4, 5);
+    IO.println(numbers.size());                       // 3
+    IO.println(numbers.get(0));                       // 3, das Element mit dem Index 0
+    IO.println(numbers.get(numbers.size() - 1));      // 5, das letzte
+}
+```
+
+`List<Integer>` ist eine Liste von ganzen Zahlen; `List.of(3, 4, 5)` legt
+eine an, die sich nicht mehr ändern lässt, `new ArrayList<>()` eine leere, an
+die `add(…)` hinten anhängt. `for (int number : numbers) { … }` geht die
+Elemente der Reihe nach durch, `numbers.get(i)` ist das Element mit dem
+Index `i`. Wer den Index braucht, zählt selbst:
+`for (int i = 0; i < numbers.size(); i++)`.
+<!-- /language -->
 
 Die Katas geben eine neue Liste zurück und lassen die, die sie bekommen,
 wie sie ist.
@@ -108,9 +159,10 @@ _task(reverse-list)
 _task(swap-ends)
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere in <code>swap_ends</code> die
+<strong>Ausprobieren:</strong> Ändere in deiner Funktion zum Tauschen die
 Liste, die du bekommst, statt einer Kopie, und gib sie aus, nachdem du die
-Funktion aufgerufen hast. Was ist mit der Liste draußen passiert?
+Funktion aufgerufen hast. Achte darauf, was mit der Liste draußen passiert
+(und in Java, was eine Liste aus <code>List.of</code> dazu sagt).
 </div>
 
 _task(rotate-left)

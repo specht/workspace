@@ -878,8 +878,9 @@ es, wenn der Name im Code vorkommt. In JavaScript eine Funktion oder Methode
 mit ihrem Pfad (`Math.max`, `Array.prototype.sort`, `globalThis.String`),
 wie in Ruby nur für den Code der Lernenden. In Dart und Java wird der Text
 des Codes gelesen, ohne Strings und Kommentare: eine Funktion (`max`), eine
-Methode jedes Objekts (`.reduce`, `.stream`) oder eine statische Methode
-(`Math.max`); kommt sie vor, läuft der Code gar nicht erst.
+Methode jedes Objekts (`.reduce`, `.stream`), eine statische Methode
+(`Math.max`) oder ein Typ (`HashSet`); kommt sie vor, läuft der Code gar
+nicht erst.
 
 **JavaScript gibt es nur für Katas** (die Einstellung »Sprache« einer Klasse
 bleibt bei Ruby und Python): Eine Seite mit

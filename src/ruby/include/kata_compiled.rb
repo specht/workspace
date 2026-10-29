@@ -22,8 +22,8 @@ require_relative 'java_check'
 #
 # forbid: what the code may not use, found in its text with strings and
 # comments blanked (RecursionCheck.blank): a function (max), a method of
-# any object (.reduce) or a static method (Math.max). The code then does not
-# run at all.
+# any object (.reduce), a static method (Math.max) or a type (HashSet). The
+# code then does not run at all.
 #
 # The run prints, per target, a line with TARGET_MARK and the target, then
 # the result of DartCheck's or JavaCheck's kind, or COMPILE_MARK and what the
@@ -33,7 +33,7 @@ module KataCompiled
     TARGET_MARK = '__HS_TARGET__'
     COMPILE_MARK = '__HS_COMPILE__'
     RESULT_MARK = CallCheck::RESULT_MARK
-    FORBID = /\A(?:[A-Z]\w*)?\.?[a-z_]\w*\z/
+    FORBID = /\A(?:(?:[A-Z]\w*)?\.?[a-z_]\w*|[A-Z]\w*)\z/
     MAX_ERROR_LINES = 6
     JVM = JavaCheck::JVM
 
@@ -47,7 +47,7 @@ module KataCompiled
     def self.forbid_errors(list)
         return [] if list.is_a?(Array) && !list.empty? && list.all? { |f| f.is_a?(String) && f =~ FORBID }
 
-        ['forbid must list functions (max), methods of any object (.reduce) or static methods (Math.max)']
+        ['forbid must list functions (max), methods of any object (.reduce), static methods (Math.max) or types (HashSet)']
     end
 
     # [name, line] of the first forbidden use in code, or nil.
@@ -57,6 +57,7 @@ module KataCompiled
             pattern = case entry
                 when /\A\.(\w+)\z/ then /\.\s*#{Regexp.escape($1)}\b/
                 when /\A([A-Z]\w*)\.(\w+)\z/ then /\b#{Regexp.escape($1)}\s*\.\s*#{Regexp.escape($2)}\b/
+                when /\A[A-Z]\w*\z/ then /(?<![\w.$])#{Regexp.escape(entry)}\b/
                 else /(?<![\w.$])#{Regexp.escape(entry)}\s*\(/
                 end
             m = text.match(pattern) or next
@@ -97,7 +98,9 @@ module KataCompiled
         lines = code.to_s.gsub("\r\n", "\n").split("\n", -1)
         imports = lines.select { |l| l =~ IMPORT }.map(&:strip)
         lines = lines.map { |l| l =~ IMPORT ? '' : l }
-        source = +"import java.util.*;\n#{imports.join("\n")}\n\npublic class #{name} {\n"
+        # what a compact source file imports by itself (java.base), as far
+        # as a Kata needs it
+        source = +"import java.util.*;\nimport java.util.function.*;\nimport java.util.stream.*;\nimport java.math.*;\n#{imports.join("\n")}\n\npublic class #{name} {\n"
         first = source.count("\n") + 1
         source << lines.join("\n") << "\n"
         last = first + lines.size - 1

@@ -12,10 +12,11 @@ class KataCompiledTest < Minitest::Test
         assert_equal ['Math.max', 2], KataCompiled.forbidden("int m(int a, int b) {\n    return Math.max(a, b);\n}\n", ['Math.max'])
         assert_equal ['max', 1], KataCompiled.forbidden("int m(int a, int b) => max(a, b);\n", ['max'])
         assert_nil KataCompiled.forbidden("int m(int a, int b) => a.max;\n", ['max'])
+        assert_equal ['HashSet', 2], KataCompiled.forbidden("List<Integer> f(List<Integer> a) {\n    return new ArrayList<>(new HashSet<>(a));\n}\n", ['HashSet'])
     end
 
     def test_forbid_entries_have_three_forms
-        assert_empty KataCompiled.forbid_errors(['max', '.reduce', 'Math.max'])
+        assert_empty KataCompiled.forbid_errors(['max', '.reduce', 'Math.max', 'HashSet'])
         refute_empty KataCompiled.forbid_errors(['Array#sum'])
         refute_empty KataCompiled.forbid_errors([])
     end
@@ -24,7 +25,7 @@ class KataCompiledTest < Minitest::Test
         code = "import java.util.function.Function;\n\nint twice(int n) {\n    return 2 * n;\n}\n"
         source, first, last, ranges = KataCompiled.java_source('HsKata', code, [{ 'call' => 'twice(2)', 'expect' => '4' }])
         lines = source.lines
-        assert_match(/\Aimport java\.util\.function\.Function;/, lines[1])
+        assert(lines.first(first).any? { |l| l.start_with?("import java.util.function.Function;") })
         assert_equal "int twice(int n) {\n", lines[first + 1]
         assert_equal code.split("\n", -1).size, last - first + 1
         assert_includes lines[ranges.first.first - 1], 'void __hsCase0()'
