@@ -22,8 +22,11 @@ what could fill each, in which form, what was decided and what is open.
 | Oberstufe: Datenbanken und Datenschutz | 2 | Datenschutz in `tracking`; Urheberrecht and the modelling chapter of the database sequence (TODO.md) still open | chapter | medium | in part: `mysql`, `tracking` |
 | Sek I: Standardsoftware | 1 (LaTeX) | left as it is: office programs are not what the Workspace is for | | | decided |
 
-The order proposed: Computernetze (done), object orientation, the language
-model, the Turing machine, the logic sandbox, then the rest.
+The order proposed was Computernetze, object orientation, the language
+model, the Turing machine, the logic sandbox; all of them are built. Open
+are the rows »in part« above and the proposals of the next table that are
+not done: Urheberrecht, Rechenhilfsmittel and Rechnergenerationen, the
+manipulation of pictures, Ergonomie.
 
 ### Gaps inside names that have activities
 
@@ -303,11 +306,10 @@ a readable source turn up.
   later.
 - The order of the rest.
 
-## The object-oriented activity (draft)
+## The object-oriented activity
 
-Working title »Klassen entwerfen«. A short story (a library with books,
-members and loans; a music playlist; an inventory in a small game; to be
-chosen) is read for its nouns and verbs; classes with attributes and
+Built as `supermarkt` (the outline below), live since 28 October 2026. The
+first draft: a short story is read for its nouns and verbs; classes with attributes and
 methods come out of it, drawn as a class diagram, then written as code and
 checked; then relationships: »hat ein« (association, with multiplicities)
 and »ist ein« (inheritance).
@@ -319,9 +321,9 @@ What it needs, in this order (state on 27 October 2026 after each):
    and JavaScript, and an activity offers Ruby and Python (a class sets one
    of them, `GROUP_LANGUAGES`). Dart and Java join `LANGUAGES` (with names,
    the switch, syntax highlighting of code blocks and code inputs); whether
-   the class setting offers them stays the maintainer's call. JavaScript is
-   so far a language of the Katas only (plan-katas.md); this page would be
-   the first activity with it.
+   the class setting offers them stays the maintainer's call (a class can
+   rank all five now). JavaScript was then a language of the Katas only;
+   this page was the first activity with it, Turtle followed.
 2. **Checks of Java and Dart files in the Workspace** (done: check types
    `java` and `dart`, docs/aufgaben.md, tried on real classes in the
    Workspace image; and `javascript` for a file in the Workspace, which
@@ -361,7 +363,7 @@ What it needs, in this order (state on 27 October 2026 after each):
 
 Slug `supermarkt`, title »Klassen entwerfen: die Expresskasse« (shortened on 28 October 2026 from »… Lohnt sich eine Expresskasse?«),
 kind `projekt`, languages `[ruby, python, javascript, dart, java]`, about
-three Doppelstunden, dev-only for now. No starter repository: students make
+three Doppelstunden. No starter repository: students make
 a folder `supermarkt` with `supermarkt.uml` and their code (one file, in
 Java one file per class); the simulation itself is given on the page, and
 `customers.csv` (171 made-up customers of a Saturday morning, seeded) comes

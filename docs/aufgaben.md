@@ -281,11 +281,16 @@ tasks:
 
 ### In mehreren Sprachen
 
-Auf einer Seite mit `languages: [ruby, python]` (siehe
+Auf einer Seite mit `languages: [ruby, python]` oder mehr Sprachen
+(`javascript`, `dart`, `java`; siehe
 [aktivitaet-schreiben.md](aktivitaet-schreiben.md#in-ruby-und-in-python))
 kann eine Aufgabe für eine Sprache anders sein. Unter dem Namen der Sprache
 steht nur, was sich ändert: `prompt`, `check`, `hint`, `solution`,
-`feedback`, `file` oder `starter`. Alles andere gilt für beide.
+`feedback`, `file` oder `starter`. Alles andere gilt für alle. Nur die
+typischen Fehler (`feedback` mit `same_as`) erbt eine Variante nicht, denn
+ihr Code ist in der Sprache der Aufgabe geschrieben: Eine Variante ohne
+eigenes `feedback` behält nur die Rückmeldungen ohne `same_as`
+(`CodeLanguages.variant`).
 
 ```yaml
   - id: kompressor
@@ -310,7 +315,7 @@ Nummer, und die Prüfung nimmt die Fassung der Karte. Die Aufgabe behält ihre
 `id` und hat eine einzige Version, die aus allen `check` zusammen berechnet
 wird: Wer sie in Ruby gelöst hat, hat sie auch in Python gelöst, und die
 Klassenübersicht zählt sie einmal. Ändert sich der `check` einer Sprache,
-ändert sich die Version für beide.
+ändert sich die Version für alle.
 
 ### Variablen
 
@@ -848,7 +853,7 @@ Rückmeldung sagt »dein Code« statt eines Dateinamens.
     end
   check:
     type: function
-    language: ruby                # ruby, python oder javascript
+    language: ruby                # ruby, python, javascript, dart oder java
     cases:
       - gcd(60, 48): 12
       - call: gcd(7, 7)
@@ -882,11 +887,11 @@ Methode jedes Objekts (`.reduce`, `.stream`), eine statische Methode
 (`Math.max`) oder ein Typ (`HashSet`); kommt sie vor, läuft der Code gar
 nicht erst.
 
-**JavaScript gibt es nur für Katas** (die Einstellung »Sprache« einer Klasse
-bleibt bei Ruby und Python): Eine Seite mit
+**JavaScript** gibt es auf den Katas, bei Pip und bei Turtle: Eine Seite mit
 `languages: [ruby, python, javascript]` bietet es im Umschalter an, und wer
-dort JavaScript wählt, behält auf anderen Seiten Ruby oder Python
-(`u.kata_code_language` neben `u.code_language`). Der Code läuft mit `node`
+dort JavaScript (oder Dart oder Java) wählt, behält auf anderen Seiten Ruby
+oder Python (`u.kata_code_language` neben `u.code_language`); eine Klasse
+kann alle fünf Sprachen ordnen (»Sprachen der Klasse«). Der Code läuft mit `node`
 in einem eigenen Kontext (`JavascriptCheck`); verglichen wird mit
 `util.isDeepStrictEqual`, Listen und Objekte also nach ihrem Inhalt. Namen
 aus mehreren Wörtern schreibt man in JavaScript zusammen (`maxOfTwo`), die
@@ -1008,7 +1013,7 @@ Pip unter Funkelbach (plan-katas.md, Abschnitt 2): Die Karte enthält einen
 Plan, das ganze Programm ohne Klasse und ohne `import`, und schickt Pip damit
 über eine Karte der Stollen. Ein unsichtbarer Vorspann macht die Befehle des
 Kapitels zu gewöhnlichen Funktionen (Ruby `move`, `on_stone?`; Python
-`move()`, `on_stone()`; JavaScript `move()`, `onStone()`). Jeder Befehl geht
+`move()`, `on_stone()`; JavaScript, Dart und Java `move()`, `onStone()`). Jeder Befehl geht
 als Zeile an die Welt auf dem Server (`PipWorld`), die ihn ausführt und
 antwortet; der Plan kann sie nur über diese Befehle ändern. Die Welt
 schreibt jeden Schritt auf, die Prüfung urteilt danach, und die Karte spielt
@@ -1093,6 +1098,17 @@ maps:
       #.P.#
       #####
 ```
+
+**Dart und Java** (`PipCompiled`) werden übersetzt: einmal für alle Karten
+einer Aufgabe in einem Kata-Container, dann startet das Programm einmal je
+Karte. Der Plan ist ein Programm mit `void main() { … }`, eigene Funktionen
+stehen daneben; einem Plan ohne `main` und ohne eigene Funktionen legt die
+Prüfung `main` herum, einer mit eigenen Funktionen bekommt eine Rückmeldung,
+die `main` verlangt. Karten mit `call` brauchen kein `main`. Die Befehle
+heißen wie in JavaScript (`move()`, `onStone()`, `caveMap()` als
+`List<String>`, `facing()` als String); in Java heißt `wait` `pause()`, weil
+jedes Objekt schon `wait()` hat, und Texte vergleicht man mit `equals`.
+Fehler des Compilers nennen die Zeile des Plans.
 
 In `prompt`, `starter`, `hint` und `solution` schreibt jede Sprache die
 Befehle auf ihre Art; in `task-examples.yaml` steht der Plan unter `answer:`

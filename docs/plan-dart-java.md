@@ -54,10 +54,12 @@ The pattern of the three activities above:
   and Laufzeit's recipe checks only Ruby and Python: `check-task: … dart`
   and `… java` lines (with `write-file:` of `loesung/laufzeit.dart` and
   `loesung/Laufzeit.java`) would run them on the next render.
-- **A class at once.** A Java Kata card compiles in about 4 s in a Kata
-  container (0.5 CPU), a Dart card in about 1.5 s. Nobody has checked yet
-  what thirty students pressing »Prüfen« in the same minute do to the host.
-  Measure before a Java class uses the Katas.
+- **A class at once.** In a Kata container (0.5 CPU) a Java Kata card with
+  its typical wrong solutions takes about 2.3 s, a Dart card 1.4 to 2 s, a
+  Pip card with three maps about 3 s (measured, plan-lehrplan-luecken.md,
+  »Java and Dart for Katas«). Nobody has checked yet what thirty students pressing »Prüfen« in
+  the same minute do to the host. Measure before a Java class uses the
+  Katas.
 - **The own switch.** Should a student be able to pick Dart or Java
   themselves for every page, not only through the class? Now only Ruby and
   Python (`OWN_LANGUAGES`). The maintainer decides.
