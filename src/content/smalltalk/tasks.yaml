@@ -1,0 +1,97 @@
+# Aufgaben zum Steckbrief »Smalltalk«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.st,
+# factor.st, bubblesort.st), so wie die Seite sie speichern lässt.
+format: 1
+activity: smalltalk
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.st` und führe es
+      mit `gst hello.st` aus.
+    file: hello.st
+    check:
+      type: files
+      path: hello.st
+      expect:
+        format: text
+        contains:
+          - pattern: "Transcript\\s+show:\\s*'Hello, World!'"
+            say: "In `hello.st` finde ich noch kein `Transcript show: 'Hello, World!'`. Steht es genau so da, mit dem Doppelpunkt hinter `show` und einfachen Anführungszeichen?"
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.st`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.st` eingegeben, mit `.st` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.st` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Eine Nachricht, die niemand versteht
+    prompt: |
+      `gst` meldet, dass ein Objekt eine Nachricht nicht versteht. Welche
+      Nachricht ist es? Sie steht in der ersten Zeile hinter
+      `did not understand`.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\W*#?sho:\s*$'
+    feedback:
+      - when: { matches: '^\W*#?sho\s*$' }
+        say: Fast. Zum Namen der Nachricht gehört noch ein Zeichen, das in der Meldung direkt dahinter steht.
+      - when: { matches: '(?i)textcollector' }
+        say: '`TextCollector` ist das Objekt, das die Nachricht bekommen hat, die Klasse von `Transcript`. Gesucht ist die Nachricht.'
+      - when: { matches: '(?i)doesnotunderstand' }
+        say: '`doesNotUnderstand:` schickt Smalltalk selbst, wenn ein Objekt eine Nachricht nicht kennt. Gesucht ist die Nachricht, die es nicht kennt.'
+    hint: 'Die erste Zeile endet mit `error: did not understand #…`. Gesucht ist, was hinter dem `#` steht.'
+    solution: |
+      `sho:`. In Smalltalk ruft man keine Funktionen auf, man schickt einem
+      Objekt eine Nachricht: `Transcript show: 'Hello, World!'` schickt dem
+      Objekt `Transcript` die Nachricht `show:` mit dem Text. Kennt das Objekt
+      die Nachricht nicht, antwortet es mit `doesNotUnderstand:`, und der
+      Doppelpunkt gehört zum Namen der Nachricht.
+
+  - id: rechnen
+    title: Drei plus vier mal zwei
+    prediction: true
+    prompt: |
+      Was gibt `gst` für `(3 + 4 * 2) printNl` aus? Überleg erst, dann
+      probier es aus: Starte `gst` ohne Dateinamen und gib den Ausdruck ein.
+    check:
+      type: choice
+      options: ['`11`', '`14`', '`10`', 'Einen Fehler, weil `+` keine Nachricht ist.']
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So rechnet man in der Schule, Punkt vor Strich. Probier aus, was Smalltalk macht.
+      - when: { picked: 3 }
+        say: In Smalltalk ist auch `+` eine Nachricht. Probier es aus.
+    solution: |
+      `14`. `+` und `*` sind Nachrichten an Zahlen wie alle anderen auch, und
+      Smalltalk schickt sie der Reihe nach von links nach rechts: erst `3 + 4`,
+      das ergibt 7, dann `7 * 2`. Wer Punkt vor Strich will, setzt Klammern:
+      `3 + (4 * 2)`.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.st` so, dass das Programm absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.st
+    check:
+      type: files
+      path: bubblesort.st
+      expect:
+        format: text
+        contains:
+          - pattern: '\(\s*item\s+at:\s*index\s*\)\s*<\s*\(\s*item\s+at:\s*index\s*\+\s*1\s*\)|\(\s*item\s+at:\s*index\s*\+\s*1\s*\)\s*>\s*\(\s*item\s+at:\s*index\s*\)'
+            say: 'In `bubblesort.st` vertauscht das Programm zwei Nachbarn noch, wenn der linke größer ist. Dann landet die größte Zahl hinten.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.st`. Speichere das Skript unter diesem Namen.
+    hint:
+      - 'Die Zeile, die entscheidet, steht in der Schleife: `(item at: index) > (item at: index + 1) ifTrue:`.'
+      - Ein einziges Zeichen in dieser Zeile entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      `(item at: index) < (item at: index + 1) ifTrue:`. Jetzt vertauscht das
+      Programm zwei Nachbarn, wenn der rechte größer ist, und die größte Zahl
+      wandert nach vorn.

@@ -1,0 +1,119 @@
+# Aufgaben zum Steckbrief »COBOL«. Format: docs/aufgaben.md.
+# Die Dateien liegen ohne geöffneten Ordner direkt in /workspace (hello.cbl,
+# factor.cbl, bubblesort.cbl), so wie die Seite sie speichern lässt.
+format: 1
+activity: cobol
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.cbl`.
+    file: hello.cbl
+    check:
+      type: files
+      path: hello.cbl
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)DISPLAY\s+"Hello, World!"'
+            say: 'In `hello.cbl` finde ich noch kein `DISPLAY "Hello, World!"`. Steht es genau so da, mit doppelten Anführungszeichen?'
+          - pattern: '(?i)PROCEDURE\s+DIVISION\s*\.'
+            say: 'In `hello.cbl` fehlt die Zeile `PROCEDURE DIVISION.`, mit dem Punkt am Ende. Erst dahinter stehen die Befehle des Programms.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.cbl`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.cbl` eingegeben, mit `.cbl` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.cbl` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: uebersetzt
+    title: Ein übersetztes Programm
+    prompt: |
+      Übersetze `hello.cbl` mit `cobc`, sodass `./hello` im Ordner `/workspace`
+      `Hello, World!` ausgibt.
+    file: hello
+    check:
+      type: files
+      path: hello
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein Programm `/workspace/hello`. Hat `cobc -x hello.cbl -o hello` einen Fehler gemeldet? Dann entsteht keine ausführbare Datei; eine Warnung allein schadet nicht.
+      - when: { problem: wrong_format }
+        say: '`hello` ist kein übersetztes Programm. Hast du den Quelltext unter diesem Namen gespeichert? Er gehört in `hello.cbl`, das Programm macht `cobc -x hello.cbl -o hello`.'
+    hint:
+      - Das Terminal muss im Ordner `/workspace` stehen, dort, wo `hello.cbl` liegt. `ls` zeigt, welche Dateien da sind.
+      - '`-x` sagt `cobc`, dass ein Programm zum Ausführen entstehen soll, und hinter `-o` steht sein Name.'
+    solution: |
+      `cobc -x hello.cbl -o hello` übersetzt den COBOL-Quelltext erst in C
+      und dann in Maschinencode und schreibt ihn in die Datei `hello`.
+
+  - id: fehler
+    title: Wo ist der Fehler?
+    prompt: |
+      In welcher Zeile von `hello.cbl` findet `cobc` den Fehler? Die Zahl
+      steht in der Meldung hinter dem Dateinamen.
+    check:
+      type: number
+      expect: 5
+      tolerance: 0
+    hint: 'Die Meldung beginnt mit `hello.cbl:` und einer Zahl, dann kommt `error:`.'
+    solution: |
+      In Zeile 5. `cobc` meldet `hello.cbl:5: error: unknown statement
+      'DISPLY'`: Den Befehl `DISPLY` gibt es nicht.
+
+  - id: zwei-stellen
+    title: Eine Zahl mit drei Ziffern
+    prediction: true
+    prompt: |
+      Jedes Element von `ITEM` ist als `PIC 99` beschrieben. Du machst in
+      `bubblesort.cbl` aus `MOVE 28 TO ITEM (1)` ein `MOVE 123 TO ITEM (1)`.
+      Welche Zahl gibt das Programm dann statt 28 aus? Überleg erst, dann
+      probier es aus.
+    check:
+      type: choice
+      options:
+        - '`123`'
+        - '`99`, die größte Zahl, die passt'
+        - '`23`'
+        - 'Nichts: `cobc` meldet einen Fehler.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Schau dir an, was `PIC 99` bedeutet. Dann probier es aus.
+      - when: { picked: 1 }
+        say: Das wäre eine vernünftige Idee. Probier aus, was COBOL wirklich macht.
+      - when: { picked: 3 }
+        say: '`cobc` übersetzt das Programm. Probier es aus.'
+    solution: |
+      `23`. `PIC 99` heißt: zwei Ziffern. COBOL legt die Zahl rechtsbündig
+      hinein, und die Ziffer, die nicht mehr passt, fällt vorn weg, ohne
+      Warnung und ohne Fehler. In COBOL hat jede Zahl so viele Ziffern, wie
+      ihre Beschreibung sagt, wie in einem Formular.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `BUBBLE-SORT` in `bubblesort.cbl` so, dass die größte Zahl
+      zuerst kommt, übersetze neu und starte das Programm noch einmal.
+    file: bubblesort.cbl
+    check:
+      type: files
+      path: bubblesort.cbl
+      expect:
+        format: text
+        contains:
+          - pattern: '(?i)IF\s+ITEM\s*\(\s*ITEM-INDEX\s*\)\s*(<|LESS\s+THAN)\s*ITEM\s*\(\s*ITEM-INDEX\s*\+\s*1\s*\)|IF\s+ITEM\s*\(\s*ITEM-INDEX\s*\+\s*1\s*\)\s*(>|GREATER\s+THAN)\s*ITEM\s*\(\s*ITEM-INDEX\s*\)'
+            say: 'In `bubblesort.cbl` vertauscht `BUBBLE-SORT` zwei Nachbarn noch, wenn der linke größer ist. Dann landet die größte Zahl hinten.'
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/bubblesort.cbl`. Speichere das Programm unter diesem Namen.
+    hint:
+      - 'Die Zeile, die entscheidet, steht in `BUBBLE-SORT`: `IF ITEM (ITEM-INDEX) > ITEM (ITEM-INDEX + 1)`.'
+      - Ein einziges Zeichen in dieser Zeile entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      `IF ITEM (ITEM-INDEX) < ITEM (ITEM-INDEX + 1)`. Jetzt vertauscht das
+      Programm zwei Nachbarn, wenn der rechte größer ist, und die größte Zahl
+      wandert nach vorn.

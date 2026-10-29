@@ -277,9 +277,9 @@
     - git
     - terminal-mystery
 
-# Parked for now, so that the sections above fill rows of three (and the
-# programming languages rows of four): not in the catalog, but the pages stay
-# reachable by direct links (static-website links to Hugo).
+# Parked for now: not in the catalog, but the pages stay reachable by direct
+# links. The programming languages fill rows of four tiles (the maintainer,
+# 29 October 2026); sections of activities take any number.
 
 - key: parked
   hidden: true
@@ -287,8 +287,6 @@
   icon: /images/bookmark.png
   entries:
     - feuerwerk
-    - cobol
-    - smalltalk
 
 # Hidden: not in the catalog and not pinnable; the pages are found by their
 # address (the Backrooms, level-0-…: by typing noclip on the 404 page).
@@ -318,12 +316,15 @@
   icon: /images/keyboard.png
   entries:
     - fortran
+    - cobol
     - basic
     - pascal
     - c
+    - prolog-portrait
+    - smalltalk
     - cpp
     - clisp
-    # - perl
+    - perl
     - python
     - lua
     # - php

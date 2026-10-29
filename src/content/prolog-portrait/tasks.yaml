@@ -1,0 +1,96 @@
+# Aufgaben zu »Prolog«, der Seite unter den Programmiersprachen.
+# Format: docs/aufgaben.md. Alles liegt in /workspace.
+format: 1
+activity: prolog-portrait
+tasks:
+  - id: hallo
+    title: Hello, World!
+    prompt: |
+      Speichere dein erstes Programm als `/workspace/hello.pl` und führe es
+      mit `swipl hello.pl` aus.
+    file: hello.pl
+    check:
+      type: files
+      path: hello.pl
+      expect:
+        format: text
+        contains:
+          - pattern: "writeln\\(\\s*'Hello, World!'\\s*\\)"
+            say: "In `hello.pl` finde ich noch kein `writeln('Hello, World!')`. Steht es genau so da, mit den einfachen Anführungszeichen?"
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/hello.pl`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `hello.pl` eingegeben, mit `.pl` am Ende?
+      - when: { problem: wrong_format }
+        say: '`hello.pl` ist noch leer. Schreib das Programm hinein und speichere mit <kbd>Strg</kbd><kbd>S</kbd>.'
+    hint: Ein weißer Punkt am Reiter der Datei heißt, dass sie noch nicht gespeichert ist.
+
+  - id: fehler
+    title: Was es nicht gibt
+    prompt: |
+      SWI-Prolog meldet `Unknown procedure:` und dahinter, was es nicht
+      kennt. Was steht dort, mit dem Schrägstrich?
+    check:
+      type: answer
+      compare: regex
+      expect: '(?i)^\W*(unknown\s+procedure:?\s*)?writln\s*/\s*1\W*$'
+    feedback:
+      - when: { matches: '(?i)^\W*writln\W*$' }
+        say: Fast. Hinter dem Namen steht noch etwas, mit einem Schrägstrich.
+      - when: { matches: '(?i)writeln' }
+        say: '`writeln` ist das, was SWI-Prolog vorschlägt. Gesucht ist das, was es nicht kennt.'
+    hint: Die Meldung steht in der ersten Zeile, die mit `ERROR:` beginnt.
+    solution: |
+      `writln/1`: das Prädikat `writln` mit einem Argument. In Prolog gehört
+      die Zahl der Argumente zum Namen; `writeln/1` und `writeln/2` sind zwei
+      verschiedene Prädikate.
+
+  - id: rechnen
+    title: Eins plus zwei
+    prediction: true
+    prompt: |
+      Was antwortet Prolog auf `?- X = 1 + 2.`? Überleg erst, dann probier es
+      in `swipl` aus.
+    check:
+      type: choice
+      options:
+        - '`X = 3.`'
+        - '`X = 1+2.`'
+        - '`false.`'
+        - 'Einen Fehler, weil `X` noch keinen Wert hat.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So rechnen die meisten Sprachen. Probier aus, was Prolog mit `=` macht.
+      - when: { picked: 2 }
+        say: '`X` hat noch keinen Wert, also kann Prolog es zu allem machen. Probier es aus.'
+      - when: { picked: 3 }
+        say: Eine Variable ohne Wert ist in Prolog kein Fehler, sie wartet auf einen. Probier es aus.
+    solution: |
+      `X = 1+2.` `=` rechnet nicht, es macht beide Seiten gleich: `X` wird
+      zum Term `1+2`. Rechnen tut `is`: `X is 1 + 2.` ergibt `X = 3`.
+
+  - id: absteigend
+    title: Die größte zuerst
+    prompt: |
+      Ändere `bubblesort.pl` so, dass `bubble_sort` absteigend sortiert, die
+      größte Zahl zuerst.
+    file: bubblesort.pl
+    check:
+      type: prolog
+      file: bubblesort.pl
+      slow: "`bubble_sort` hört nicht auf, wenn zwei Zahlen gleich sind: Mit `=<` oder `>=` vertauscht `swap` sie immer wieder. Vertauscht wird nur, was in der falschen Reihenfolge ist."
+      cases:
+        - query: "bubble_sort([3, 1, 2], S)"
+          answers: ["S = [3,2,1]"]
+        - query: "bubble_sort([1, 5, 1, 4], S)"
+          answers: ["S = [5,4,1,1]"]
+    hint:
+      - '`swap` vertauscht ein Paar `X, Y`, wenn `X > Y` gilt. Welche Bedingung braucht es, damit die größere Zahl nach vorn kommt?'
+      - Ein einziges Zeichen in der Klausel von `swap` mit `X > Y` entscheidet, wann zwei Nachbarn vertauscht werden.
+    solution: |
+      In `swap` aus `X > Y` ein `X < Y` machen:
+
+      ```prolog
+      swap([X, Y | Rest], [Y, X | Rest]) :-
+          X < Y.
+      ```

@@ -1,6 +1,8 @@
 <div class='meta'>
 image: smalltalk-logo.png
 kind: steckbrief
+curriculum: "Sek I: Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: objektorientierte Programmierung (alles ist ein Objekt, Nachrichten an Objekte)"
+topics: [programmiersprachen, geschichte, objektorientierung]
 needs_contrast: light
 </div>
 
@@ -12,14 +14,11 @@ needs_contrast: light
 
 # Smalltalk <span style='font-size: 80%;'>(1980)</span>
 
-<div class='floatright fr-wide' style='width: 40em;'>
-    <img src='smalltalk-team.webp' alt='Drei Porträtfotos nebeneinander, Alan Kay, Adele Goldberg und Dan Ingalls'>
-    <p>Alan Kay, Adele Goldberg und Dan Ingalls</p>
-</div>
-
 <p class='abstract'>
 Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt, 1980 als Smalltalk-80 veröffentlicht und gilt als eine der ersten objektorientierten Programmiersprachen. Smalltalk wurde ursprünglich für die Entwicklung von grafischen Benutzeroberflächen und interaktiven Anwendungen verwendet.
 </p>
+
+_person(kay-goldberg-ingalls)
 
 Ein bekanntes Beispiel ist das erste grafische Benutzerinterface des Xerox Alto Computers. Heutzutage ist Smalltalk weniger verbreitet, aber immer noch relevant in bestimmten Nischen, insbesondere in der Forschung und Lehre zur objektorientierten Programmierung. Es wird auch in einigen spezialisierten industriellen Anwendungen und von Enthusiasten verwendet, die die Sprache für ihre Einfachheit und Eleganz schätzen.
 
@@ -193,6 +192,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='hello.webp' alt='Im Terminal gibt gst hello.st die Zeile Hello, World! aus.'>
 
+_task(hallo)
+
 ### Fehler finden und beheben
 
 Wenn du einen Fehler im Code machst, wird Smalltalk eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `show` das Wort `sho` zu schreiben:
@@ -211,7 +212,11 @@ gst hello.st
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Smalltalk sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Smalltalk sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden. Lies sie in deinem Terminal:
+
+_task(fehler)
+
+<!-- after: fehler -->
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
@@ -226,6 +231,8 @@ crop-terminal-lines: auto
 <img class='full' src='hello-error.webp' alt='gst meldet zu hello.st: TextCollector error: did not understand #sho, mit hello.st:1 in der letzten Zeile.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+
+<!-- /after -->
 
 ### Shebang `#!`
 
@@ -295,9 +302,17 @@ crop-terminal-lines: auto
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Smalltalk auch Zahlen wie 3000000000 und 123456789123456789 in Sekundenbruchteilen zerlegen, allerdings beendet sich das Programm nicht (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen). Falls du einen sachdienlichen Hinweis hast, schreib bitte eine E-Mail an <a href='mailto:${contact_email}'>${contact_email}</a>.
 
+In Smalltalk ist alles eine Nachricht an ein Objekt, auch <code>+</code> und <code>*</code>:
+
+_task(rechnen)
+
+<!-- after: rechnen -->
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> In Smalltalk ist alles eine Nachricht an ein Objekt, auch <code>+</code> und <code>*</code>. Starte <code>gst</code> ohne Dateinamen und gib <code>(3 + 4 * 2) printNl</code> ein. Was kommt heraus, und warum nicht 11? Probier auch <code>(100 factorial) printNl</code>. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>gst</code>.
+<strong>Ausprobieren:</strong> Smalltalk rechnet mit beliebig großen ganzen Zahlen. Gib in <code>gst</code> noch <code>(100 factorial) printNl</code> ein und achte darauf, wie lang die Zahl ist. Mit <kbd>Strg</kbd><kbd>D</kbd> beendest du <code>gst</code>.
 </div>
+
+<!-- /after -->
 
 ## Bubblesort
 
@@ -324,12 +339,10 @@ crop-terminal-lines: auto
 Das Programm hat eine Liste von 10 Zahlen sortiert.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere <code>bubblesort.st</code> und starte das Skript noch einmal:
-<ul>
-<li>Schreib weitere Zahlen in das Array, auch große und negative. Musst du sonst noch etwas ändern?</li>
-<li>Sortiere absteigend, die größte Zahl zuerst: Welches Zeichen musst du dafür ändern?</li>
-</ul>
+<strong>Ausprobieren:</strong> Schreib weitere Zahlen in das Array in <code>bubblesort.st</code>, auch große und negative, und starte das Skript noch einmal. Achte darauf, ob du außer dem Array noch etwas ändern musst.
 </div>
+
+_task(absteigend)
 
 ## Zusammenfassung
 

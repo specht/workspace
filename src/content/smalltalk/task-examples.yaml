@@ -1,0 +1,31 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: smalltalk
+examples:
+  hallo:
+    pass:
+      - files: { hello.st: hello.st }
+      - files: { hello.st: hello-shebang.st }
+    fail:
+      - files: { hello.st: hello-error.st }
+        say: "Transcript show: 'Hello, World!'"
+      - files: { hello.st: { text: "" } }
+      - files: { hallo.st: hello.st }
+  fehler:
+    pass:
+      - answer: "sho:"
+      - answer: "#sho:"
+    fail:
+      - answer: sho
+        say: noch ein Zeichen
+      - answer: TextCollector
+        say: Klasse von `Transcript`
+      - answer: "show:"
+  absteigend:
+    pass:
+      - files: { bubblesort.st: { text: "\t(item at: index) < (item at: index + 1) ifTrue:\n" } }
+      - files: { bubblesort.st: { text: "\t(item at: index + 1) > (item at: index) ifTrue:\n" } }
+    fail:
+      - files: { bubblesort.st: bubblesort.st }
+        say: wenn der linke größer ist

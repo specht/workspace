@@ -30,12 +30,7 @@ Berlins mit vier Farben.
 
 ## Was Prolog anders macht
 
-<div class='person'>
-<img src='colmerauer.webp' alt='Alain Colmerauer, älter, mit Brille und einem leichten Lächeln, unter dem blauen Sonnendach eines Boots, hinter ihm rote Masten.'>
-<p><strong>Alain Colmerauer</strong> (1941–2017), französischer Informatiker, Professor in Marseille. Er wollte, dass ein Computer Fragen auf Französisch versteht und aus Sätzen wie »Katzen töten Mäuse« und »Tom ist eine Katze« selbst schließt, was Tom tut. Dafür schrieb er 1972 mit Philippe Roussel eine Sprache, in der ein Programm aus solchen Aussagen besteht: Prolog, von »programmation en logique«. Wie man logische Aussagen als Programm lesen kann, hatte Robert Kowalski in Edinburgh gezeigt, mit dem er 1971 und 1972 in Marseille zusammenarbeitete.</p>
-<p>Später baute Colmerauer Prolog so aus, dass es auch mit Zahlen und Bedingungen rechnet, wie in der Sudoku-Aufgabe am Ende dieser Seite.</p>
-<p class='person-credit'>Foto: von seiner Website, zugeschnitten (<a href='http://alain.colmerauer.free.fr/'>alain.colmerauer.free.fr</a>)</p>
-</div>
+_person(colmerauer)
 
 Ein Prolog-Programm besteht aus **Fakten**, die einfach gelten, und
 **Regeln**, die sagen, wann etwas gilt. Ein Programm läuft nicht von oben
