@@ -2,7 +2,7 @@
 icon: bi-arrow-repeat
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Zählen, sammeln und suchen mit Schleifen
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Wiederholung); Oberstufe: Algorithmen und Softwareentwicklung (Wiederholung)"
 topics: [grundstrukturen]
@@ -81,6 +81,51 @@ der Schleife bei 0 an, und `count++` macht es um 1 größer, wenn die Bedingung
 gilt. So eine Variable sammelt das Ergebnis; `let` erlaubt, sie zu ändern,
 `const` nicht.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+int sevens(int n) {
+  var count = 0;
+  for (var i = 1; i <= n; i++) {
+    if (i % 7 == 0) {
+      count++;
+    }
+  }
+  return count;
+}
+
+void main() {
+  print(sevens(50));
+}
+```
+
+`for (var i = 1; i <= n; i++)` fängt mit `i` bei 1 an, läuft, solange
+`i <= n` gilt, und zählt nach jedem Durchlauf eins weiter. `count` fängt vor
+der Schleife bei 0 an, und `count++` macht es um 1 größer, wenn die Bedingung
+gilt. So eine Variable sammelt das Ergebnis; mit `var` lässt sie sich ändern,
+mit `final` nicht.
+<!-- /language -->
+<!-- language: java -->
+```java
+int sevens(int n) {
+    int count = 0;
+    for (int i = 1; i <= n; i++) {
+        if (i % 7 == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
+void main() {
+    IO.println(sevens(50));
+}
+```
+
+`for (int i = 1; i <= n; i++)` fängt mit `i` bei 1 an, läuft, solange
+`i <= n` gilt, und zählt nach jedem Durchlauf eins weiter. `count` fängt vor
+der Schleife bei 0 an, und `count++` macht es um 1 größer, wenn die Bedingung
+gilt. So eine Variable sammelt das Ergebnis.
+<!-- /language -->
 
 _task(predict-sevens)
 
@@ -116,6 +161,26 @@ for (let i = 3; i >= 1; i--) {
 console.log('Los!');
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  for (var i = 3; i >= 1; i--) {
+    print(i);
+  }
+  print('Los!');
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    for (int i = 3; i >= 1; i--) {
+        IO.println(i);
+    }
+    IO.println("Los!");
+}
+```
+<!-- /language -->
 
 _task(predict-countdown)
 
@@ -132,6 +197,11 @@ Die letzte Zeile ist nicht eingerückt, steht also außerhalb der Schleife und
 kommt nur einmal.
 <!-- /language -->
 <!-- language: javascript -->
+Es erscheinen 3, 2, 1 und dann `Los!`: `i--` macht `i` nach jedem Durchlauf
+um 1 kleiner, und bei 0 gilt `i >= 1` nicht mehr. Die letzte Zeile steht nach
+der schließenden Klammer, außerhalb der Schleife, und kommt nur einmal.
+<!-- /language -->
+<!-- language: dart, java -->
 Es erscheinen 3, 2, 1 und dann `Los!`: `i--` macht `i` nach jedem Durchlauf
 um 1 kleiner, und bei 0 gilt `i >= 1` nicht mehr. Die letzte Zeile steht nach
 der schließenden Klammer, außerhalb der Schleife, und kommt nur einmal.
@@ -174,6 +244,32 @@ while (n > 1) {
   steps++;
 }
 console.log(steps);
+```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  var n = 100;
+  var steps = 0;
+  while (n > 1) {
+    n = n ~/ 2;
+    steps++;
+  }
+  print(steps);
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    int n = 100;
+    int steps = 0;
+    while (n > 1) {
+        n = n / 2;
+        steps++;
+    }
+    IO.println(steps);
+}
 ```
 <!-- /language -->
 
@@ -226,6 +322,36 @@ console.log(result);
 `[]` ist eine leere Liste, und `push` hängt einen Wert hinten an. Das
 Programm zeigt `[ 10, 20, 30 ]`. `const` passt hier: `result` bleibt dieselbe
 Liste, nur ihr Inhalt wächst.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  final result = <int>[];
+  for (var i = 1; i <= 3; i++) {
+    result.add(i * 10);
+  }
+  print(result);
+}
+```
+
+`<int>[]` ist eine leere Liste für ganze Zahlen, und `add` hängt einen Wert
+hinten an. Das Programm zeigt `[10, 20, 30]`. `final` passt hier: `result`
+bleibt dieselbe Liste, nur ihr Inhalt wächst.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    List<Integer> result = new ArrayList<>();
+    for (int i = 1; i <= 3; i++) {
+        result.add(i * 10);
+    }
+    IO.println(result);
+}
+```
+
+`new ArrayList<>()` ist eine leere Liste, `List<Integer>` heißt: eine Liste
+von ganzen Zahlen. `add` hängt einen Wert hinten an. Das Programm zeigt
+`[10, 20, 30]`.
 <!-- /language -->
 
 Mehr über Listen kommt in den [Katas zu Listen](/kata-lists); für die Katas hier reicht das.

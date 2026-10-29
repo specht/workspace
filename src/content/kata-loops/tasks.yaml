@@ -165,6 +165,80 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int sumTo(int n)`, die alle Zahlen von 1 bis `n` zusammenzählt: `sumTo(4)` ergibt `10`, denn 1 + 2 + 3 + 4 = 10. Mit einer Schleife.
+      starter: |
+        int sumTo(int n) {
+          var total = 0;
+          // hier: eine Schleife
+          return total;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.fold, .reduce, List.generate]
+        random:
+          count: 4
+          call: "sumTo(n)"
+          args: { n: "1..2000" }
+          reference: "n * (n + 1) ~/ 2"
+        cases:
+          - { call: "sumTo(4)", expect: "10" }
+          - { call: "sumTo(1)", expect: "1" }
+          - { call: "sumTo(0)", expect: "0" }
+          - { call: "sumTo(100)", expect: "5050" }
+      feedback:
+        - when: { same_as: "int sumTo(int n) {\n  var total = 0;\n  for (var i = 1; i < n; i++) total += i;\n  return total;\n}\n" }
+          say: "`i < n` hört vor `n` auf. Damit `n` dabei ist, brauchst du `i <= n`."
+      hint: "`for (var i = 1; i <= n; i++) { … }` läuft mit `i` von 1 bis `n`. In der Schleife addierst du `i` zu `total`."
+      solution: |
+        ```dart
+        int sumTo(int n) {
+          var total = 0;
+          for (var i = 1; i <= n; i++) {
+            total += i;
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int sumTo(int n)`, die alle Zahlen von 1 bis `n` zusammenzählt: `sumTo(4)` ergibt `10`, denn 1 + 2 + 3 + 4 = 10. Mit einer Schleife.
+      starter: |
+        int sumTo(int n) {
+            int total = 0;
+            // hier: eine Schleife
+            return total;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.stream, IntStream, .sum, .reduce]
+        random:
+          count: 4
+          call: "sumTo(n)"
+          args: { n: "1..2000" }
+          reference: "n * (n + 1) / 2"
+        cases:
+          - { call: "sumTo(4)", expect: "10" }
+          - { call: "sumTo(1)", expect: "1" }
+          - { call: "sumTo(0)", expect: "0" }
+          - { call: "sumTo(100)", expect: "5050" }
+      feedback:
+        - when: { same_as: "int sumTo(int n) {\n    int total = 0;\n    for (int i = 1; i < n; i++) total += i;\n    return total;\n}\n" }
+          say: "`i < n` hört vor `n` auf. Damit `n` dabei ist, brauchst du `i <= n`."
+      hint: "`for (int i = 1; i <= n; i++) { … }` läuft mit `i` von 1 bis `n`. In der Schleife addierst du `i` zu `total`."
+      solution: |
+        ```java
+        int sumTo(int n) {
+            int total = 0;
+            for (int i = 1; i <= n; i++) {
+                total += i;
+            }
+            return total;
+        }
+        ```
 
   - id: numbers
     title: "Eine Zahlenreihe"
@@ -257,6 +331,62 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> numbers(int n)`, die eine Liste der Zahlen von 1 bis `n` zurückgibt: `numbers(4)` ergibt `[1, 2, 3, 4]`. Mit einer Schleife, die die Liste Zahl für Zahl füllt.
+      starter: |
+        List<int> numbers(int n) {
+          final result = <int>[];
+          // hier: eine Schleife
+          return result;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [List.generate, List.filled]
+        cases:
+          - { call: "numbers(4)", expect: "[1, 2, 3, 4]" }
+          - { call: "numbers(1)", expect: "[1]" }
+          - { call: "numbers(0)", expect: "[]", say: "Bis 0 gibt es keine Zahl: eine leere Liste." }
+      hint: "`result.add(i)` hängt `i` hinten an die Liste an."
+      solution: |
+        ```dart
+        List<int> numbers(int n) {
+          final result = <int>[];
+          for (var i = 1; i <= n; i++) {
+            result.add(i);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> numbers(int n)`, die eine Liste der Zahlen von 1 bis `n` zurückgibt: `numbers(4)` ergibt `[1, 2, 3, 4]`. Mit einer Schleife, die die Liste Zahl für Zahl füllt.
+      starter: |
+        List<Integer> numbers(int n) {
+            List<Integer> result = new ArrayList<>();
+            // hier: eine Schleife
+            return result;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [IntStream, .stream, Collections.nCopies]
+        cases:
+          - { call: "numbers(4)", expect: "List.of(1, 2, 3, 4)" }
+          - { call: "numbers(1)", expect: "List.of(1)" }
+          - { call: "numbers(0)", expect: "List.of()", say: "Bis 0 gibt es keine Zahl: eine leere Liste." }
+      hint: "`result.add(i)` hängt `i` hinten an die Liste an."
+      solution: |
+        ```java
+        List<Integer> numbers(int n) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = 1; i <= n; i++) {
+                result.add(i);
+            }
+            return result;
+        }
+        ```
 
   - id: squares
     title: "Quadratzahlen"
@@ -332,6 +462,58 @@ tasks:
           const result = [];
           for (let i = 1; i <= n; i++) result.push(i * i);
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> squares(int n)`, die die Quadratzahlen von 1² bis n² als Liste zurückgibt: `squares(4)` ergibt `[1, 4, 9, 16]`.
+      starter: |
+        List<int> squares(int n) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "squares(4)", expect: "[1, 4, 9, 16]" }
+          - { call: "squares(1)", expect: "[1]" }
+          - { call: "squares(0)", expect: "[]" }
+          - { call: "squares(10).last", expect: "100" }
+      hint: "Wie die Zahlenreihe, nur hängst du `i * i` an."
+      solution: |
+        ```dart
+        List<int> squares(int n) {
+          final result = <int>[];
+          for (var i = 1; i <= n; i++) {
+            result.add(i * i);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> squares(int n)`, die die Quadratzahlen von 1² bis n² als Liste zurückgibt: `squares(4)` ergibt `[1, 4, 9, 16]`.
+      starter: |
+        List<Integer> squares(int n) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "squares(4)", expect: "List.of(1, 4, 9, 16)" }
+          - { call: "squares(1)", expect: "List.of(1)" }
+          - { call: "squares(0)", expect: "List.of()" }
+          - { call: "squares(10).getLast()", expect: "100" }
+      hint: "Wie die Zahlenreihe, nur hängst du `i * i` an."
+      solution: |
+        ```java
+        List<Integer> squares(int n) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = 1; i <= n; i++) {
+                result.add(i * i);
+            }
+            return result;
         }
         ```
 
@@ -411,6 +593,58 @@ tasks:
           const result = [];
           for (let i = n; i >= 0; i--) result.push(i);
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> countdown(int n)`, die von `n` bis 0 herunterzählt und die Zahlen als Liste zurückgibt: `countdown(3)` ergibt `[3, 2, 1, 0]`.
+      starter: |
+        List<int> countdown(int n) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.reversed, List.generate]
+        cases:
+          - { call: "countdown(3)", expect: "[3, 2, 1, 0]" }
+          - { call: "countdown(0)", expect: "[0]" }
+          - { call: "countdown(10).length", expect: "11" }
+      hint: "`for (var i = n; i >= 0; i--)` zählt herunter bis 0."
+      solution: |
+        ```dart
+        List<int> countdown(int n) {
+          final result = <int>[];
+          for (var i = n; i >= 0; i--) {
+            result.add(i);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> countdown(int n)`, die von `n` bis 0 herunterzählt und die Zahlen als Liste zurückgibt: `countdown(3)` ergibt `[3, 2, 1, 0]`.
+      starter: |
+        List<Integer> countdown(int n) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.reversed, Collections.reverse, IntStream]
+        cases:
+          - { call: "countdown(3)", expect: "List.of(3, 2, 1, 0)" }
+          - { call: "countdown(0)", expect: "List.of(0)" }
+          - { call: "countdown(10).size()", expect: "11" }
+      hint: "`for (int i = n; i >= 0; i--)` zählt herunter bis 0."
+      solution: |
+        ```java
+        List<Integer> countdown(int n) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = n; i >= 0; i--) {
+                result.add(i);
+            }
+            return result;
         }
         ```
 
@@ -527,6 +761,82 @@ tasks:
           let product = 1;
           for (let i = 1; i <= n; i++) product *= i;
           return product;
+        }
+        ```
+    dart:
+      prompt: |
+        Die Fakultät `n!` ist das Produkt aller Zahlen von 1 bis `n`: 5! = 1 · 2 · 3 · 4 · 5 = 120. Und 0! ist 1. Schreib eine Funktion `int factorial(int n)`: `factorial(5)` ergibt `120`.
+      starter: |
+        int factorial(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.fold, .reduce]
+        random:
+          count: 4
+          call: "factorial(n)"
+          args: { n: "2..18" }
+          reference: "List.generate(n, (i) => i + 1).fold<int>(1, (a, b) => a * b)"
+        cases:
+          - { call: "factorial(5)", expect: "120" }
+          - { call: "factorial(1)", expect: "1" }
+          - { call: "factorial(0)", expect: "1", say: "0! ist 1: das Produkt von gar keiner Zahl." }
+          - { call: "factorial(10)", expect: "3628800" }
+      feedback:
+        - when: { same_as: "int factorial(int n) {\n  var product = 0;\n  for (var i = 1; i <= n; i++) product *= i;\n  return product;\n}\n" }
+          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+      hint:
+        - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
+        - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
+      solution: |
+        ```dart
+        int factorial(int n) {
+          var product = 1;
+          for (var i = 1; i <= n; i++) {
+            product *= i;
+          }
+          return product;
+        }
+        ```
+    java:
+      prompt: |
+        Die Fakultät `n!` ist das Produkt aller Zahlen von 1 bis `n`: 5! = 1 · 2 · 3 · 4 · 5 = 120. Und 0! ist 1. Schreib eine Methode `long factorial(int n)`: `factorial(5)` ergibt `120`. Sie gibt `long` zurück, eine ganze Zahl mit 64 Bit, denn schon 13! passt nicht mehr in ein `int`.
+      starter: |
+        long factorial(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [.reduce, .stream, LongStream, IntStream]
+        random:
+          count: 4
+          call: "factorial(n)"
+          args: { n: "2..18" }
+          reference: "LongStream.rangeClosed(1, n).reduce(1, (x, y) -> x * y)"
+        cases:
+          - { call: "factorial(5)", expect: "120" }
+          - { call: "factorial(1)", expect: "1" }
+          - { call: "factorial(0)", expect: "1", say: "0! ist 1: das Produkt von gar keiner Zahl." }
+          - { call: "factorial(10)", expect: "3628800" }
+      feedback:
+        - when: { same_as: "long factorial(int n) {\n    long product = 0;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n" }
+          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+        - when: { same_as: "long factorial(int n) {\n    int product = 1;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n" }
+          say: "Ein `int` reicht nur bis 2 147 483 647; schon 13! ist größer, und dann rechnet ein `int` falsch weiter. Nimm für das Produkt ein `long`."
+      hint:
+        - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
+        - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen? Und es braucht den Typ `long`."
+      solution: |
+        ```java
+        long factorial(int n) {
+            long product = 1;
+            for (int i = 1; i <= n; i++) {
+                product *= i;
+            }
+            return product;
         }
         ```
 
@@ -682,6 +992,102 @@ tasks:
           return total;
         }
         ```
+    dart:
+      prompt: |
+        Die Quersumme einer Zahl ist die Summe ihrer Ziffern: Die Quersumme von 1234 ist 1 + 2 + 3 + 4 = 10. Schreib eine Funktion `int digitSum(int n)`, nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int digitSum(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toString, .split, .codeUnits]
+        random:
+          count: 4
+          call: "digitSum(n)"
+          args: { n: "0..1000000" }
+          reference: "n.toString().split('').fold<int>(0, (s, d) => s + int.parse(d))"
+        cases:
+          - { call: "digitSum(1234)", expect: "10" }
+          - { call: "digitSum(7)", expect: "7" }
+          - { call: "digitSum(0)", expect: "0" }
+          - { call: "digitSum(9999)", expect: "36" }
+          - { call: "digitSum(1000)", expect: "1" }
+      hint:
+        - "`1234 % 10` ist 4, die letzte Ziffer. Und `1234 ~/ 10`?"
+        - "Wiederhole: letzte Ziffer zur Summe, dann die Zahl durch 10 teilen. Bis wann?"
+        - |
+          Ein Gerüst:
+
+          ```dart
+          int digitSum(int n) {
+            var total = 0;
+            while (n > 0) {
+              // hier: letzte Ziffer dazu, dann n kleiner machen
+            }
+            return total;
+          }
+          ```
+      solution: |
+        ```dart
+        int digitSum(int n) {
+          var total = 0;
+          while (n > 0) {
+            total += n % 10;
+            n = n ~/ 10;
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Die Quersumme einer Zahl ist die Summe ihrer Ziffern: Die Quersumme von 1234 ist 1 + 2 + 3 + 4 = 10. Schreib eine Methode `int digitSum(int n)`, nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int digitSum(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [String.valueOf, Integer.toString, .toString, .chars, .charAt]
+        random:
+          count: 4
+          call: "digitSum(n)"
+          args: { n: "0..1000000" }
+          reference: "String.valueOf(n).chars().map(c -> c - '0').sum()"
+        cases:
+          - { call: "digitSum(1234)", expect: "10" }
+          - { call: "digitSum(7)", expect: "7" }
+          - { call: "digitSum(0)", expect: "0" }
+          - { call: "digitSum(9999)", expect: "36" }
+          - { call: "digitSum(1000)", expect: "1" }
+      hint:
+        - "`1234 % 10` ist 4, die letzte Ziffer. Und `1234 / 10`, wenn Java zwei ganze Zahlen teilt?"
+        - "Wiederhole: letzte Ziffer zur Summe, dann die Zahl durch 10 teilen. Bis wann?"
+        - |
+          Ein Gerüst:
+
+          ```java
+          int digitSum(int n) {
+              int total = 0;
+              while (n > 0) {
+                  // hier: letzte Ziffer dazu, dann n kleiner machen
+              }
+              return total;
+          }
+          ```
+      solution: |
+        ```java
+        int digitSum(int n) {
+            int total = 0;
+            while (n > 0) {
+                total += n % 10;
+                n = n / 10;
+            }
+            return total;
+        }
+        ```
 
   - id: fibonacci
     title: "Fibonacci"
@@ -790,6 +1196,78 @@ tasks:
             [a, b] = [b, a + b];
           }
           return a;
+        }
+        ```
+    dart:
+      prompt: |
+        Die Fibonacci-Zahlen beginnen mit 0 und 1, und jede weitere ist die Summe der beiden davor: 0, 1, 1, 2, 3, 5, 8, 13 … Schreib eine Funktion `int fibonacci(int n)`, die die `n`-te zurückgibt, gezählt ab 0: `fibonacci(0)` ergibt `0`, `fibonacci(7)` ergibt `13`.
+      starter: |
+        int fibonacci(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "fibonacci(n)"
+          args: { n: "15..60" }
+          reference: "List.generate(n, (i) => i).fold([0, 1], (p, _) => [p[1], p[0] + p[1]])[0]"
+        cases:
+          - { call: "fibonacci(0)", expect: "0" }
+          - { call: "fibonacci(1)", expect: "1" }
+          - { call: "fibonacci(2)", expect: "1" }
+          - { call: "fibonacci(7)", expect: "13" }
+          - { call: "fibonacci(10)", expect: "55" }
+      hint:
+        - "Schreib die Folge bis `fibonacci(7)` auf und zeig mit dem Finger auf die beiden Zahlen, die du gerade addierst."
+        - "Zwei Variablen merken sich die letzten beiden Zahlen, `a` und `b`. Wie sehen sie nach einem Schritt aus? `(a, b) = (b, a + b);` belegt beide auf einmal neu."
+      solution: |
+        ```dart
+        int fibonacci(int n) {
+          var a = 0;
+          var b = 1;
+          for (var i = 0; i < n; i++) {
+            (a, b) = (b, a + b);
+          }
+          return a;
+        }
+        ```
+    java:
+      prompt: |
+        Die Fibonacci-Zahlen beginnen mit 0 und 1, und jede weitere ist die Summe der beiden davor: 0, 1, 1, 2, 3, 5, 8, 13 … Schreib eine Methode `long fibonacci(int n)`, die die `n`-te zurückgibt, gezählt ab 0: `fibonacci(0)` ergibt `0`, `fibonacci(7)` ergibt `13`. Sie gibt `long` zurück, denn die Prüfung fragt bis `fibonacci(60)`, und das passt nicht in ein `int`.
+      starter: |
+        long fibonacci(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "fibonacci(n)"
+          args: { n: "15..60" }
+          reference: "Stream.iterate(new long[]{0, 1}, p -> new long[]{p[1], p[0] + p[1]}).skip(n).findFirst().get()[0]"
+        cases:
+          - { call: "fibonacci(0)", expect: "0" }
+          - { call: "fibonacci(1)", expect: "1" }
+          - { call: "fibonacci(2)", expect: "1" }
+          - { call: "fibonacci(7)", expect: "13" }
+          - { call: "fibonacci(10)", expect: "55" }
+      hint:
+        - "Schreib die Folge bis `fibonacci(7)` auf und zeig mit dem Finger auf die beiden Zahlen, die du gerade addierst."
+        - "Zwei Variablen merken sich die letzten beiden Zahlen, `a` und `b`, beide `long`. Wie sehen sie nach einem Schritt aus? Für das neue `b` brauchst du das alte `a`: Merk dir die Summe erst in einer dritten Variable."
+      solution: |
+        ```java
+        long fibonacci(int n) {
+            long a = 0;
+            long b = 1;
+            for (int i = 0; i < n; i++) {
+                long next = a + b;
+                a = b;
+                b = next;
+            }
+            return a;
         }
         ```
 
@@ -908,6 +1386,78 @@ tasks:
             if (n % d === 0) count++;
           }
           return count;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int countDivisors(int n)`, die zählt, durch wie viele Zahlen `n` ohne Rest teilbar ist: 12 hat die Teiler 1, 2, 3, 4, 6 und 12, `countDivisors(12)` ergibt also `6`.
+      starter: |
+        int countDivisors(int n) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "countDivisors(n)"
+          args: { n: "1..1000" }
+          reference: "List.generate(n, (i) => i + 1).where((d) => n % d == 0).length"
+        cases:
+          - { call: "countDivisors(12)", expect: "6" }
+          - { call: "countDivisors(1)", expect: "1" }
+          - { call: "countDivisors(7)", expect: "2" }
+          - { call: "countDivisors(36)", expect: "9", say: "36 hat auch 6 als Teiler, 6 · 6 = 36: einmal gezählt." }
+      feedback:
+        - when: { same_as: "int countDivisors(int n) {\n  var count = 0;\n  for (var d = 1; d < n; d++) if (n % d == 0) count++;\n  return count;\n}\n" }
+          say: "Die Zahl selbst ist auch ein Teiler: `d <= n`."
+      hint:
+        - "Probier jede Zahl von 1 bis `n` aus: Lässt sie einen Rest?"
+        - "Ein Zähler fängt bei 0 an und wird bei jedem Teiler um 1 größer."
+      solution: |
+        ```dart
+        int countDivisors(int n) {
+          var count = 0;
+          for (var d = 1; d <= n; d++) {
+            if (n % d == 0) count++;
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int countDivisors(int n)`, die zählt, durch wie viele Zahlen `n` ohne Rest teilbar ist: 12 hat die Teiler 1, 2, 3, 4, 6 und 12, `countDivisors(12)` ergibt also `6`.
+      starter: |
+        int countDivisors(int n) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "countDivisors(n)"
+          args: { n: "1..1000" }
+          reference: "IntStream.rangeClosed(1, n).filter(d -> n % d == 0).count()"
+        cases:
+          - { call: "countDivisors(12)", expect: "6" }
+          - { call: "countDivisors(1)", expect: "1" }
+          - { call: "countDivisors(7)", expect: "2" }
+          - { call: "countDivisors(36)", expect: "9", say: "36 hat auch 6 als Teiler, 6 · 6 = 36: einmal gezählt." }
+      feedback:
+        - when: { same_as: "int countDivisors(int n) {\n    int count = 0;\n    for (int d = 1; d < n; d++) if (n % d == 0) count++;\n    return count;\n}\n" }
+          say: "Die Zahl selbst ist auch ein Teiler: `d <= n`."
+      hint:
+        - "Probier jede Zahl von 1 bis `n` aus: Lässt sie einen Rest?"
+        - "Ein Zähler fängt bei 0 an und wird bei jedem Teiler um 1 größer."
+      solution: |
+        ```java
+        int countDivisors(int n) {
+            int count = 0;
+            for (int d = 1; d <= n; d++) {
+                if (n % d == 0) count++;
+            }
+            return count;
         }
         ```
 
@@ -1056,6 +1606,86 @@ tasks:
             if (n % d === 0) return false;
           }
           return true;
+        }
+        ```
+    dart:
+      prompt: |
+        Eine Primzahl hat genau zwei Teiler, 1 und sich selbst: 2, 3, 5, 7, 11 … Schreib eine Funktion `bool prime(int n)`, die sagt, ob `n` eine Primzahl ist.
+      starter: |
+        bool prime(int n) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "prime(n)"
+          args: { n: "1..2000" }
+          reference: "n > 1 && List.generate(n, (i) => i).skip(2).takeWhile((d) => d * d <= n).every((d) => n % d != 0)"
+        cases:
+          - { call: "prime(2)", expect: "true" }
+          - { call: "prime(3)", expect: "true" }
+          - { call: "prime(9)", expect: "false" }
+          - { call: "prime(97)", expect: "true" }
+          - { call: "prime(91)", expect: "false", say: "91 ist 7 mal 13." }
+          - { call: "prime(1)", expect: "false", say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler, 1 und sich selbst." }
+          - { call: "prime(0)", expect: "false" }
+      feedback:
+        - when: { same_as: "bool prime(int n) {\n  for (var d = 2; d < n; d++) if (n % d == 0) return false;\n  return true;\n}\n" }
+          say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler. Für `n` kleiner als 2 gibt es kein `true`."
+      hint:
+        - "Teilt irgendeine Zahl zwischen 2 und `n - 1` die Zahl `n` ohne Rest? Dann ist `n` keine Primzahl."
+        - "Sobald du einen Teiler gefunden hast, steht die Antwort fest: `return false`. Und was gilt für 0 und 1?"
+        - "Es reicht, bis zur Wurzel von `n` zu suchen: Hat `n` einen Teiler, der größer ist, hat es auch einen kleineren."
+      solution: |
+        ```dart
+        bool prime(int n) {
+          if (n < 2) return false;
+          for (var d = 2; d * d <= n; d++) {
+            if (n % d == 0) return false;
+          }
+          return true;
+        }
+        ```
+    java:
+      prompt: |
+        Eine Primzahl hat genau zwei Teiler, 1 und sich selbst: 2, 3, 5, 7, 11 … Schreib eine Methode `boolean prime(int n)`, die sagt, ob `n` eine Primzahl ist.
+      starter: |
+        boolean prime(int n) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "prime(n)"
+          args: { n: "1..2000" }
+          reference: "n > 1 && IntStream.rangeClosed(2, (int) Math.sqrt(n)).allMatch(d -> n % d != 0)"
+        cases:
+          - { call: "prime(2)", expect: "true" }
+          - { call: "prime(3)", expect: "true" }
+          - { call: "prime(9)", expect: "false" }
+          - { call: "prime(97)", expect: "true" }
+          - { call: "prime(91)", expect: "false", say: "91 ist 7 mal 13." }
+          - { call: "prime(1)", expect: "false", say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler, 1 und sich selbst." }
+          - { call: "prime(0)", expect: "false" }
+      feedback:
+        - when: { same_as: "boolean prime(int n) {\n    for (int d = 2; d < n; d++) if (n % d == 0) return false;\n    return true;\n}\n" }
+          say: "1 ist keine Primzahl: Eine Primzahl hat genau zwei Teiler. Für `n` kleiner als 2 gibt es kein `true`."
+      hint:
+        - "Teilt irgendeine Zahl zwischen 2 und `n - 1` die Zahl `n` ohne Rest? Dann ist `n` keine Primzahl."
+        - "Sobald du einen Teiler gefunden hast, steht die Antwort fest: `return false`. Und was gilt für 0 und 1?"
+        - "Es reicht, bis zur Wurzel von `n` zu suchen: Hat `n` einen Teiler, der größer ist, hat es auch einen kleineren."
+      solution: |
+        ```java
+        boolean prime(int n) {
+            if (n < 2) return false;
+            for (int d = 2; d * d <= n; d++) {
+                if (n % d == 0) return false;
+            }
+            return true;
         }
         ```
 
@@ -1211,6 +1841,104 @@ tasks:
           return a;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int gcd(int a, int b)`, die den größten gemeinsamen Teiler zweier Zahlen zurückgibt: die größte Zahl, die beide ohne Rest teilt. `gcd(60, 48)` ergibt `12`. Ohne die Methode `gcd`, die Dart schon hat.
+      starter: |
+        int gcd(int a, int b) {
+          return 0;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.gcd]
+        random:
+          count: 4
+          call: "gcd(a, b)"
+          args: { a: "1..1000", b: "1..1000" }
+          reference: "a.gcd(b)"
+        cases:
+          - { call: "gcd(60, 48)", expect: "12" }
+          - { call: "gcd(48, 60)", expect: "12" }
+          - { call: "gcd(17, 5)", expect: "1" }
+          - { call: "gcd(7, 7)", expect: "7", say: "Der größte Teiler einer Zahl mit sich selbst ist sie selbst." }
+          - { call: "gcd(100, 25)", expect: "25" }
+      feedback:
+        - when: { same_as: "int gcd(int a, int b) {\n  return a < b ? a : b;\n}\n" }
+          say: "Die kleinere Zahl ist nur manchmal ein Teiler der größeren. Probier `gcd(12, 8)` von Hand."
+      hint:
+        - "Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?"
+        - "Euklid: Was `a` und `b` teilt, teilt auch den Rest `a % b`. Was passiert, wenn du `a, b` durch `b, a % b` ersetzt, bis `b` 0 ist? `(a, b) = (b, a % b);` belegt beide auf einmal neu."
+        - |
+          Ein Gerüst:
+
+          ```dart
+          int gcd(int a, int b) {
+            while (b != 0) {
+              // hier: a und b neu belegen
+            }
+            return a;
+          }
+          ```
+      solution: |
+        ```dart
+        int gcd(int a, int b) {
+          while (b != 0) {
+            (a, b) = (b, a % b);
+          }
+          return a;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int gcd(int a, int b)`, die den größten gemeinsamen Teiler zweier Zahlen zurückgibt: die größte Zahl, die beide ohne Rest teilt. `gcd(60, 48)` ergibt `12`.
+      starter: |
+        int gcd(int a, int b) {
+            return 0;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [BigInteger, .gcd]
+        random:
+          count: 4
+          call: "gcd(a, b)"
+          args: { a: "1..1000", b: "1..1000" }
+          reference: "BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).intValue()"
+        cases:
+          - { call: "gcd(60, 48)", expect: "12" }
+          - { call: "gcd(48, 60)", expect: "12" }
+          - { call: "gcd(17, 5)", expect: "1" }
+          - { call: "gcd(7, 7)", expect: "7", say: "Der größte Teiler einer Zahl mit sich selbst ist sie selbst." }
+          - { call: "gcd(100, 25)", expect: "25" }
+      feedback:
+        - when: { same_as: "int gcd(int a, int b) {\n    return Math.min(a, b);\n}\n" }
+          say: "Die kleinere Zahl ist nur manchmal ein Teiler der größeren. Probier `gcd(12, 8)` von Hand."
+      hint:
+        - "Rechne `gcd(60, 48)` von Hand. Welche Zahlen teilen beide?"
+        - "Euklid: Was `a` und `b` teilt, teilt auch den Rest `a % b`. Was passiert, wenn du `a, b` durch `b, a % b` ersetzt, bis `b` 0 ist? Für das neue `b` brauchst du das alte `a`: Merk dir den Rest erst in einer dritten Variable."
+        - |
+          Ein Gerüst:
+
+          ```java
+          int gcd(int a, int b) {
+              while (b != 0) {
+                  // hier: a und b neu belegen
+              }
+              return a;
+          }
+          ```
+      solution: |
+        ```java
+        int gcd(int a, int b) {
+            while (b != 0) {
+                int rest = a % b;
+                a = b;
+                b = rest;
+            }
+            return a;
+        }
+        ```
 
   - id: collatz
     title: "Die Collatz-Folge"
@@ -1320,6 +2048,66 @@ tasks:
           return steps;
         }
         ```
+    dart:
+      prompt: |
+        Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst multipliziere sie mit 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `int collatzSteps(int n)`, die die Schritte bis zur 1 zählt.
+      starter: |
+        int collatzSteps(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "collatzSteps(1)", expect: "0", say: "Bei 1 ist man schon am Ziel: null Schritte." }
+          - { call: "collatzSteps(2)", expect: "1" }
+          - { call: "collatzSteps(6)", expect: "8" }
+          - { call: "collatzSteps(7)", expect: "16" }
+          - { call: "collatzSteps(27)", expect: "111" }
+      hint:
+        - "Geh die Folge von 6 mit dem Finger durch und zähl mit: Wann hörst du auf zu zählen?"
+        - "Eine `while`-Schleife läuft, solange `n` nicht 1 ist; jeder Durchlauf ist ein Schritt. Halbieren ohne Komma: `n ~/ 2`."
+      solution: |
+        ```dart
+        int collatzSteps(int n) {
+          var steps = 0;
+          while (n != 1) {
+            n = n % 2 == 0 ? n ~/ 2 : 3 * n + 1;
+            steps++;
+          }
+          return steps;
+        }
+        ```
+    java:
+      prompt: |
+        Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst multipliziere sie mit 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Methode `int collatzSteps(int n)`, die die Schritte bis zur 1 zählt.
+      starter: |
+        int collatzSteps(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "collatzSteps(1)", expect: "0", say: "Bei 1 ist man schon am Ziel: null Schritte." }
+          - { call: "collatzSteps(2)", expect: "1" }
+          - { call: "collatzSteps(6)", expect: "8" }
+          - { call: "collatzSteps(7)", expect: "16" }
+          - { call: "collatzSteps(27)", expect: "111" }
+      hint:
+        - "Geh die Folge von 6 mit dem Finger durch und zähl mit: Wann hörst du auf zu zählen?"
+        - "Eine `while`-Schleife läuft, solange `n` nicht 1 ist; jeder Durchlauf ist ein Schritt."
+      solution: |
+        ```java
+        int collatzSteps(int n) {
+            int steps = 0;
+            while (n != 1) {
+                n = n % 2 == 0 ? n / 2 : 3 * n + 1;
+                steps++;
+            }
+            return steps;
+        }
+        ```
 
   - id: perfect
     title: "Vollkommene Zahlen"
@@ -1411,6 +2199,72 @@ tasks:
           const result = [];
           for (let n = 2; n <= limit; n++) if (divisorSum(n) === n) result.push(n);
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Eine Zahl ist vollkommen, wenn sie die Summe ihrer Teiler ist, ohne sich selbst: 6 = 1 + 2 + 3. Schreib eine Funktion `List<int> perfectNumbers(int limit)`, die alle vollkommenen Zahlen bis `limit` als Liste zurückgibt. Bis 10000 sind es vier.
+      starter: |
+        List<int> perfectNumbers(int limit) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "perfectNumbers(10)", expect: "[6]" }
+          - { call: "perfectNumbers(30)", expect: "[6, 28]" }
+          - { call: "perfectNumbers(10000)", expect: "[6, 28, 496, 8128]" }
+      hint: "Eine Funktion, die die Teiler einer Zahl zusammenzählt, und eine Schleife über alle Zahlen bis `limit`. Teiler gibt es höchstens bis zur Hälfte der Zahl."
+      solution: |
+        ```dart
+        int divisorSum(int n) {
+          var total = 0;
+          for (var d = 1; d <= n ~/ 2; d++) {
+            if (n % d == 0) total += d;
+          }
+          return total;
+        }
+
+        List<int> perfectNumbers(int limit) {
+          final result = <int>[];
+          for (var n = 2; n <= limit; n++) {
+            if (divisorSum(n) == n) result.add(n);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Eine Zahl ist vollkommen, wenn sie die Summe ihrer Teiler ist, ohne sich selbst: 6 = 1 + 2 + 3. Schreib eine Methode `List<Integer> perfectNumbers(int limit)`, die alle vollkommenen Zahlen bis `limit` als Liste zurückgibt. Bis 10000 sind es vier.
+      starter: |
+        List<Integer> perfectNumbers(int limit) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "perfectNumbers(10)", expect: "List.of(6)" }
+          - { call: "perfectNumbers(30)", expect: "List.of(6, 28)" }
+          - { call: "perfectNumbers(10000)", expect: "List.of(6, 28, 496, 8128)" }
+      hint: "Eine Methode, die die Teiler einer Zahl zusammenzählt, und eine Schleife über alle Zahlen bis `limit`. Teiler gibt es höchstens bis zur Hälfte der Zahl."
+      solution: |
+        ```java
+        int divisorSum(int n) {
+            int total = 0;
+            for (int d = 1; d <= n / 2; d++) {
+                if (n % d == 0) total += d;
+            }
+            return total;
+        }
+
+        List<Integer> perfectNumbers(int limit) {
+            List<Integer> result = new ArrayList<>();
+            for (int n = 2; n <= limit; n++) {
+                if (divisorSum(n) == n) result.add(n);
+            }
+            return result;
         }
         ```
 
@@ -1523,5 +2377,78 @@ tasks:
           const result = [];
           for (let i = 2; i <= n; i++) if (prime[i]) result.push(i);
           return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+      starter: |
+        List<int> primesUpTo(int n) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        timeout: 6
+        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        cases:
+          - { call: "primesUpTo(20)", expect: "[2, 3, 5, 7, 11, 13, 17, 19]" }
+          - { call: "primesUpTo(2)", expect: "[2]" }
+          - { call: "primesUpTo(1)", expect: "[]" }
+          - { call: "primesUpTo(10000000).length", expect: "664579" }
+      hint: "Eine Liste `final prime = List.filled(n + 1, true);` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`."
+      solution: |
+        ```dart
+        List<int> primesUpTo(int n) {
+          if (n < 2) return [];
+          final prime = List.filled(n + 1, true);
+          prime[0] = false;
+          prime[1] = false;
+          for (var p = 2; p * p <= n; p++) {
+            if (!prime[p]) continue;
+            for (var m = p * p; m <= n; m += p) {
+              prime[m] = false;
+            }
+          }
+          final result = <int>[];
+          for (var i = 2; i <= n; i++) {
+            if (prime[i]) result.add(i);
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code acht Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+      starter: |
+        List<Integer> primesUpTo(int n) {
+            return new ArrayList<>();
+        }
+      check:
+        type: function
+        language: java
+        timeout: 8
+        slow: "Dein Code brauchte länger als 8 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        cases:
+          - { call: "primesUpTo(20)", expect: "List.of(2, 3, 5, 7, 11, 13, 17, 19)" }
+          - { call: "primesUpTo(2)", expect: "List.of(2)" }
+          - { call: "primesUpTo(1)", expect: "List.of()" }
+          - { call: "primesUpTo(10_000_000).size()", expect: "664579" }
+      hint: "Ein Array `boolean[] composite = new boolean[n + 1];` sagt für jede Zahl, ob sie schon gestrichen ist; am Anfang ist alles `false`. Für jede Zahl `p`, die noch nicht gestrichen ist, streichst du `p * p`, `p * p + p`, … bis `n`."
+      solution: |
+        ```java
+        List<Integer> primesUpTo(int n) {
+            List<Integer> result = new ArrayList<>();
+            boolean[] composite = new boolean[n + 1];
+            for (int p = 2; (long) p * p <= n; p++) {
+                if (composite[p]) continue;
+                for (int m = p * p; m <= n; m += p) {
+                    composite[m] = true;
+                }
+            }
+            for (int i = 2; i <= n; i++) {
+                if (!composite[i]) result.add(i);
+            }
+            return result;
         }
         ```
