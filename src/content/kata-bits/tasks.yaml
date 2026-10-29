@@ -145,6 +145,93 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String toBinary(int n)`, die eine Zahl ab 0 als Text aus Nullen und Einsen zurückgibt, so wie sie im Rechner steht: `toBinary(13)` ergibt `'1101'`, denn 13 = 8 + 4 + 1. Ohne `toRadixString(2)`.
+      starter: |
+        String toBinary(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString]
+        random:
+          count: 4
+          call: "toBinary(n)"
+          args: { n: "1..100000" }
+          reference: "n.toRadixString(2)"
+        cases:
+          - { call: "toBinary(13)", expect: "'1101'" }
+          - { call: "toBinary(0)", expect: "'0'", say: "Die 0 ist `'0'`, nicht ein leerer Text." }
+          - { call: "toBinary(1)", expect: "'1'" }
+          - { call: "toBinary(8)", expect: "'1000'" }
+          - { call: "toBinary(255)", expect: "'11111111'" }
+          - { call: "toBinary(1024)", expect: "'10000000000'" }
+      feedback:
+        - when: { same_as: "String toBinary(int n) {\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result += '${n % 2}';\n    n = n ~/ 2;\n  }\n  return result;\n}\n" }
+          say: "Der Rest beim Teilen durch 2 ist das letzte Bit, das ganz rechts. Dein Code hängt jedes neue Bit hinten an, so stehen sie verkehrt herum: Aus 13 wird `'1011'`."
+      hint:
+        - "`n % 2` ist das letzte Bit, das ganz rechts. `n ~/ 2` streicht es weg. Wiederhole, bis nichts mehr übrig ist, wie bei der Quersumme."
+        - "Jedes neue Bit gehört vor die, die du schon hast: `'${n % 2}' + result`."
+      solution: |
+        ```dart
+        String toBinary(int n) {
+          if (n == 0) {
+            return '0';
+          }
+          var result = '';
+          while (n > 0) {
+            result = '${n % 2}' + result;
+            n = n ~/ 2;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String toBinary(int n)`, die eine Zahl ab 0 als Text aus Nullen und Einsen zurückgibt, so wie sie im Rechner steht: `toBinary(13)` ergibt `"1101"`, denn 13 = 8 + 4 + 1. Ohne `Integer.toBinaryString`.
+      starter: |
+        String toBinary(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toBinaryString, Integer.toString, Long.toBinaryString, Long.toString]
+        random:
+          count: 4
+          call: "toBinary(n)"
+          args: { n: "1..100000" }
+          reference: "Integer.toBinaryString(n)"
+        cases:
+          - { call: "toBinary(13)", expect: "\"1101\"" }
+          - { call: "toBinary(0)", expect: "\"0\"", say: "Die 0 ist `\"0\"`, nicht ein leerer Text." }
+          - { call: "toBinary(1)", expect: "\"1\"" }
+          - { call: "toBinary(8)", expect: "\"1000\"" }
+          - { call: "toBinary(255)", expect: "\"11111111\"" }
+          - { call: "toBinary(1024)", expect: "\"10000000000\"" }
+      feedback:
+        - when: { same_as: "String toBinary(int n) {\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result += n % 2;\n        n = n / 2;\n    }\n    return result;\n}\n" }
+          say: "Der Rest beim Teilen durch 2 ist das letzte Bit, das ganz rechts. Dein Code hängt jedes neue Bit hinten an, so stehen sie verkehrt herum: Aus 13 wird `\"1011\"`."
+      hint:
+        - "`n % 2` ist das letzte Bit, das ganz rechts. `n / 2` streicht es weg, denn Java teilt zwei `int` ganzzahlig. Wiederhole, bis nichts mehr übrig ist, wie bei der Quersumme."
+        - "Jedes neue Bit gehört vor die, die du schon hast: `n % 2 + result` hängt eine Zahl vor einen Text."
+      solution: |
+        ```java
+        String toBinary(int n) {
+            if (n == 0) {
+                return "0";
+            }
+            String result = "";
+            while (n > 0) {
+                result = n % 2 + result;
+                n = n / 2;
+            }
+            return result;
+        }
+        ```
+
   - id: from-binary
     title: "Bits zurück in eine Zahl"
     level: 1
@@ -259,6 +346,71 @@ tasks:
           return value;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int fromBinary(String bits)`, die einen Text aus Nullen und Einsen in die Zahl zurückverwandelt: `fromBinary('1101')` ergibt `13`. Ohne `int.parse`.
+      starter: |
+        int fromBinary(String bits) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.parse, .tryParse]
+        cases:
+          - { call: "fromBinary('1101')", expect: "13" }
+          - { call: "fromBinary('0')", expect: "0" }
+          - { call: "fromBinary('1')", expect: "1" }
+          - { call: "fromBinary('10000000')", expect: "128" }
+          - { call: "fromBinary('11111111')", expect: "255" }
+          - { call: "fromBinary('0011')", expect: "3", say: "Nullen vorn ändern nichts." }
+      feedback:
+        - when: { same_as: "int fromBinary(String bits) {\n  var value = 0;\n  for (final bit in bits.split('')) {\n    if (bit == '1') {\n      value += 1;\n    }\n  }\n  return value;\n}\n" }
+          say: "Du zählst die Einsen. Aber eine Eins ist umso mehr wert, je weiter links sie steht: Mit jeder Stelle nach rechts verdoppelt sich, was schon da ist."
+      hint: "Lies von links nach rechts. Bei jedem Bit verdoppelt sich, was du schon hast, und das neue Bit kommt dazu: `'110'` ist 1, dann 1·2 + 1 = 3, dann 3·2 + 0 = 6."
+      solution: |
+        ```dart
+        int fromBinary(String bits) {
+          var value = 0;
+          for (final bit in bits.split('')) {
+            value = value * 2 + (bit == '1' ? 1 : 0);
+          }
+          return value;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int fromBinary(String bits)`, die einen Text aus Nullen und Einsen in die Zahl zurückverwandelt: `fromBinary("1101")` ergibt `13`. Ohne `Integer.parseInt`.
+      starter: |
+        int fromBinary(String bits) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.parseInt, Integer.valueOf, Long.parseLong, Integer.decode]
+        cases:
+          - { call: "fromBinary(\"1101\")", expect: "13" }
+          - { call: "fromBinary(\"0\")", expect: "0" }
+          - { call: "fromBinary(\"1\")", expect: "1" }
+          - { call: "fromBinary(\"10000000\")", expect: "128" }
+          - { call: "fromBinary(\"11111111\")", expect: "255" }
+          - { call: "fromBinary(\"0011\")", expect: "3", say: "Nullen vorn ändern nichts." }
+      feedback:
+        - when: { same_as: "int fromBinary(String bits) {\n    int value = 0;\n    for (char bit : bits.toCharArray()) {\n        if (bit == '1') {\n            value += 1;\n        }\n    }\n    return value;\n}\n" }
+          say: "Du zählst die Einsen. Aber eine Eins ist umso mehr wert, je weiter links sie steht: Mit jeder Stelle nach rechts verdoppelt sich, was schon da ist."
+      hint: "Lies von links nach rechts. Bei jedem Bit verdoppelt sich, was du schon hast, und das neue Bit kommt dazu: `\"110\"` ist 1, dann 1·2 + 1 = 3, dann 3·2 + 0 = 6."
+      solution: |
+        ```java
+        int fromBinary(String bits) {
+            int value = 0;
+            for (char bit : bits.toCharArray()) {
+                value = value * 2 + (bit == '1' ? 1 : 0);
+            }
+            return value;
+        }
+        ```
+
   - id: bit
     title: "Ein einzelnes Bit"
     level: 1
@@ -379,6 +531,73 @@ tasks:
           return n % 2;
         }
         ```
+    dart:
+      prompt: |
+        Die Bits einer Zahl zählt man von rechts, beim Bit 0. Schreib eine Funktion `int bit(int n, int i)`, die das Bit `i` von `n` zurückgibt, 0 oder 1: `bit(13, 2)` ergibt `1`, denn 13 ist `1101`. Nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int bit(int n, int i) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .toString]
+        random:
+          count: 4
+          call: "bit(n, 5)"
+          args: { n: "0..1000" }
+          reference: "(n >> 5) & 1"
+        cases:
+          - { call: "bit(13, 0)", expect: "1", say: "Bit 0 ist das ganz rechts." }
+          - { call: "bit(13, 1)", expect: "0" }
+          - { call: "bit(13, 2)", expect: "1" }
+          - { call: "bit(13, 3)", expect: "1" }
+          - { call: "bit(13, 4)", expect: "0", say: "Weiter links stehen nur noch Nullen." }
+          - { call: "bit(1024, 10)", expect: "1" }
+      hint: "`n % 2` ist Bit 0. Teilst du `n` ganzzahlig durch 2, `n ~/ 2`, rücken alle Bits einen Platz nach rechts, und Bit 1 wird zu Bit 0."
+      solution: |
+        ```dart
+        int bit(int n, int i) {
+          for (var k = 0; k < i; k++) {
+            n = n ~/ 2;
+          }
+          return n % 2;
+        }
+        ```
+    java:
+      prompt: |
+        Die Bits einer Zahl zählt man von rechts, beim Bit 0. Schreib eine Methode `int bit(int n, int i)`, die das Bit `i` von `n` zurückgibt, 0 oder 1: `bit(13, 2)` ergibt `1`, denn 13 ist `1101`. Nur mit Rechnen, ohne die Zahl in einen Text zu verwandeln.
+      starter: |
+        int bit(int n, int i) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toBinaryString, Integer.toString, String.valueOf, .toString]
+        random:
+          count: 4
+          call: "bit(n, 5)"
+          args: { n: "0..1000" }
+          reference: "(n >> 5) & 1"
+        cases:
+          - { call: "bit(13, 0)", expect: "1", say: "Bit 0 ist das ganz rechts." }
+          - { call: "bit(13, 1)", expect: "0" }
+          - { call: "bit(13, 2)", expect: "1" }
+          - { call: "bit(13, 3)", expect: "1" }
+          - { call: "bit(13, 4)", expect: "0", say: "Weiter links stehen nur noch Nullen." }
+          - { call: "bit(1024, 10)", expect: "1" }
+      hint: "`n % 2` ist Bit 0. Teilst du `n` durch 2, ganzzahlig wie immer bei zwei `int`, rücken alle Bits einen Platz nach rechts, und Bit 1 wird zu Bit 0."
+      solution: |
+        ```java
+        int bit(int n, int i) {
+            for (int k = 0; k < i; k++) {
+                n = n / 2;
+            }
+            return n % 2;
+        }
+        ```
+
   - id: binary-length
     title: "Wie viele Bits?"
     level: 1
@@ -512,6 +731,83 @@ tasks:
           return length;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int binaryLength(int n)`, die zählt, wie viele Bits `n` braucht: `binaryLength(13)` ergibt `4`, denn 13 ist `1101`. Die 0 braucht ein Bit. Nur mit Rechnen, ohne `bitLength`, das Dart schon hat.
+      starter: |
+        int binaryLength(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .toString, .bitLength, log]
+        random:
+          count: 4
+          call: "binaryLength(n)"
+          args: { n: "1..1000000" }
+          reference: "n.toRadixString(2).length"
+        cases:
+          - { call: "binaryLength(13)", expect: "4" }
+          - { call: "binaryLength(0)", expect: "1", say: "Die 0 braucht ein Bit." }
+          - { call: "binaryLength(1)", expect: "1" }
+          - { call: "binaryLength(8)", expect: "4", say: "Die 8 ist `1000`: vier Bits." }
+          - { call: "binaryLength(255)", expect: "8" }
+          - { call: "binaryLength(256)", expect: "9" }
+      feedback:
+        - when: { same_as: "int binaryLength(int n) {\n  var length = 0;\n  while (n > 0) {\n    n = n ~/ 2;\n    length++;\n  }\n  return length;\n}\n" }
+          say: "Fast: Bei der 0 läuft deine Schleife nie, und es kommt 0 heraus. Die 0 braucht aber ein Bit."
+      hint: "Wie oft kann man `n` durch 2 teilen, bis 1 übrig ist? Jedes Teilen streicht ein Bit."
+      solution: |
+        ```dart
+        int binaryLength(int n) {
+          var length = 1;
+          while (n > 1) {
+            n = n ~/ 2;
+            length++;
+          }
+          return length;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int binaryLength(int n)`, die zählt, wie viele Bits `n` braucht: `binaryLength(13)` ergibt `4`, denn 13 ist `1101`. Die 0 braucht ein Bit. Nur mit Rechnen.
+      starter: |
+        int binaryLength(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toBinaryString, Integer.numberOfLeadingZeros, Integer.highestOneBit, Math.log, String.valueOf, .toString]
+        random:
+          count: 4
+          call: "binaryLength(n)"
+          args: { n: "1..1000000" }
+          reference: "Integer.toBinaryString(n).length()"
+        cases:
+          - { call: "binaryLength(13)", expect: "4" }
+          - { call: "binaryLength(0)", expect: "1", say: "Die 0 braucht ein Bit." }
+          - { call: "binaryLength(1)", expect: "1" }
+          - { call: "binaryLength(8)", expect: "4", say: "Die 8 ist `1000`: vier Bits." }
+          - { call: "binaryLength(255)", expect: "8" }
+          - { call: "binaryLength(256)", expect: "9" }
+      feedback:
+        - when: { same_as: "int binaryLength(int n) {\n    int length = 0;\n    while (n > 0) {\n        n = n / 2;\n        length++;\n    }\n    return length;\n}\n" }
+          say: "Fast: Bei der 0 läuft deine Schleife nie, und es kommt 0 heraus. Die 0 braucht aber ein Bit."
+      hint: "Wie oft kann man `n` durch 2 teilen, bis 1 übrig ist? Jedes Teilen streicht ein Bit."
+      solution: |
+        ```java
+        int binaryLength(int n) {
+            int length = 1;
+            while (n > 1) {
+                n = n / 2;
+                length++;
+            }
+            return length;
+        }
+        ```
+
   - id: count-ones
     title: "Einsen zählen"
     level: 2
@@ -624,6 +920,75 @@ tasks:
           return count;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int countOnes(int n)`, die zählt, wie viele Bits von `n` eine 1 sind: `countOnes(13)` ergibt `3`. Nur mit Rechnen.
+      starter: |
+        int countOnes(int n) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .toString]
+        random:
+          count: 4
+          call: "countOnes(n)"
+          args: { n: "0..1000000" }
+          reference: "n.toRadixString(2).split('').where((c) => c == '1').length"
+        cases:
+          - { call: "countOnes(13)", expect: "3" }
+          - { call: "countOnes(0)", expect: "0" }
+          - { call: "countOnes(255)", expect: "8" }
+          - { call: "countOnes(256)", expect: "1" }
+          - { call: "countOnes(1023)", expect: "10" }
+      hint: "Wie bei der Quersumme, nur im Zweiersystem: `n % 2` ist das letzte Bit, `n ~/ 2` streicht es."
+      solution: |
+        ```dart
+        int countOnes(int n) {
+          var count = 0;
+          while (n > 0) {
+            count += n % 2;
+            n = n ~/ 2;
+          }
+          return count;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int countOnes(int n)`, die zählt, wie viele Bits von `n` eine 1 sind: `countOnes(13)` ergibt `3`. Nur mit Rechnen, ohne `Integer.bitCount`.
+      starter: |
+        int countOnes(int n) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.bitCount, Long.bitCount, Integer.toBinaryString, String.valueOf, .toString]
+        random:
+          count: 4
+          call: "countOnes(n)"
+          args: { n: "0..1000000" }
+          reference: "Integer.bitCount(n)"
+        cases:
+          - { call: "countOnes(13)", expect: "3" }
+          - { call: "countOnes(0)", expect: "0" }
+          - { call: "countOnes(255)", expect: "8" }
+          - { call: "countOnes(256)", expect: "1" }
+          - { call: "countOnes(1023)", expect: "10" }
+      hint: "Wie bei der Quersumme, nur im Zweiersystem: `n % 2` ist das letzte Bit, `n / 2` streicht es."
+      solution: |
+        ```java
+        int countOnes(int n) {
+            int count = 0;
+            while (n > 0) {
+                count += n % 2;
+                n = n / 2;
+            }
+            return count;
+        }
+        ```
+
   - id: to-hex
     title: "Hexadezimal"
     level: 2
@@ -765,6 +1130,90 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Im Sechzehnersystem gibt es sechzehn Ziffern: `0` bis `9`, dann `a` bis `f` für 10 bis 15. Farben im Netz schreibt man so (`#ff8800`). Schreib eine Funktion `String toHex(int n)`, die `n` als Text im Sechzehnersystem zurückgibt, mit kleinen Buchstaben: `toHex(255)` ergibt `'ff'`. Ohne `toRadixString(16)`.
+      starter: |
+        String toHex(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString]
+        random:
+          count: 4
+          call: "toHex(n)"
+          args: { n: "1..1000000" }
+          reference: "n.toRadixString(16)"
+        cases:
+          - { call: "toHex(255)", expect: "'ff'" }
+          - { call: "toHex(0)", expect: "'0'" }
+          - { call: "toHex(10)", expect: "'a'", say: "Zehn ist die Ziffer `a`." }
+          - { call: "toHex(16)", expect: "'10'" }
+          - { call: "toHex(4096)", expect: "'1000'" }
+          - { call: "toHex(48879)", expect: "'beef'" }
+      hint:
+        - "Genau wie bei den Bits, nur mit 16 statt 2."
+        - "Für die Ziffer hilft ein Text mit allen sechzehn: `'0123456789abcdef'[11]` ist `'b'`."
+      solution: |
+        ```dart
+        const digits = '0123456789abcdef';
+
+        String toHex(int n) {
+          if (n == 0) {
+            return '0';
+          }
+          var result = '';
+          while (n > 0) {
+            result = digits[n % 16] + result;
+            n = n ~/ 16;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Im Sechzehnersystem gibt es sechzehn Ziffern: `0` bis `9`, dann `a` bis `f` für 10 bis 15. Farben im Netz schreibt man so (`#ff8800`). Schreib eine Methode `String toHex(int n)`, die `n` als Text im Sechzehnersystem zurückgibt, mit kleinen Buchstaben: `toHex(255)` ergibt `"ff"`. Ohne `Integer.toHexString`.
+      starter: |
+        String toHex(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toHexString, Integer.toString, Long.toHexString, String.format, .formatted, HexFormat]
+        random:
+          count: 4
+          call: "toHex(n)"
+          args: { n: "1..1000000" }
+          reference: "Integer.toHexString(n)"
+        cases:
+          - { call: "toHex(255)", expect: "\"ff\"" }
+          - { call: "toHex(0)", expect: "\"0\"" }
+          - { call: "toHex(10)", expect: "\"a\"", say: "Zehn ist die Ziffer `a`." }
+          - { call: "toHex(16)", expect: "\"10\"" }
+          - { call: "toHex(4096)", expect: "\"1000\"" }
+          - { call: "toHex(48879)", expect: "\"beef\"" }
+      hint:
+        - "Genau wie bei den Bits, nur mit 16 statt 2."
+        - "Für die Ziffer hilft ein Text mit allen sechzehn: `\"0123456789abcdef\".charAt(11)` ist `'b'`."
+      solution: |
+        ```java
+        String toHex(int n) {
+            String digits = "0123456789abcdef";
+            if (n == 0) {
+                return "0";
+            }
+            String result = "";
+            while (n > 0) {
+                result = digits.charAt(n % 16) + result;
+                n = n / 16;
+            }
+            return result;
+        }
+        ```
+
   - id: from-hex
     title: "Hexadezimal zurück"
     level: 2
@@ -879,6 +1328,68 @@ tasks:
           return value;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `int fromHex(String text)`, die eine Zahl im Sechzehnersystem, mit kleinen Buchstaben, in die Zahl zurückverwandelt: `fromHex('ff')` ergibt `255`. Ohne `int.parse`.
+      starter: |
+        int fromHex(String text) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.parse, .tryParse]
+        cases:
+          - { call: "fromHex('ff')", expect: "255" }
+          - { call: "fromHex('0')", expect: "0" }
+          - { call: "fromHex('a')", expect: "10" }
+          - { call: "fromHex('10')", expect: "16", say: "Eine 1 vorn ist sechzehnmal so viel wert." }
+          - { call: "fromHex('beef')", expect: "48879" }
+          - { call: "fromHex('ff8800')", expect: "16746496", say: "Das Orange von `#ff8800`." }
+      hint: "Wie bei den Bits: von links nach rechts, mal 16 und die neue Ziffer dazu. `'0123456789abcdef'.indexOf('b')` ist 11."
+      solution: |
+        ```dart
+        const digits = '0123456789abcdef';
+
+        int fromHex(String text) {
+          var value = 0;
+          for (final digit in text.split('')) {
+            value = value * 16 + digits.indexOf(digit);
+          }
+          return value;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `int fromHex(String text)`, die eine Zahl im Sechzehnersystem, mit kleinen Buchstaben, in die Zahl zurückverwandelt: `fromHex("ff")` ergibt `255`. Ohne `Integer.parseInt`.
+      starter: |
+        int fromHex(String text) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.parseInt, Integer.valueOf, Long.parseLong, Integer.decode, HexFormat]
+        cases:
+          - { call: "fromHex(\"ff\")", expect: "255" }
+          - { call: "fromHex(\"0\")", expect: "0" }
+          - { call: "fromHex(\"a\")", expect: "10" }
+          - { call: "fromHex(\"10\")", expect: "16", say: "Eine 1 vorn ist sechzehnmal so viel wert." }
+          - { call: "fromHex(\"beef\")", expect: "48879" }
+          - { call: "fromHex(\"ff8800\")", expect: "16746496", say: "Das Orange von `#ff8800`." }
+      hint: "Wie bei den Bits: von links nach rechts, mal 16 und die neue Ziffer dazu. `\"0123456789abcdef\".indexOf('b')` ist 11."
+      solution: |
+        ```java
+        int fromHex(String text) {
+            String digits = "0123456789abcdef";
+            int value = 0;
+            for (char digit : text.toCharArray()) {
+                value = value * 16 + digits.indexOf(digit);
+            }
+            return value;
+        }
+        ```
+
   - id: power-of-two
     title: "Eine Zweierpotenz?"
     level: 2
@@ -1006,6 +1517,79 @@ tasks:
           return n === 1;
         }
         ```
+    dart:
+      prompt: |
+        1, 2, 4, 8, 16 … sind Zweierpotenzen: Im Zweiersystem haben sie genau eine 1. Schreib eine Funktion `bool powerOfTwo(int n)`, die `true` zurückgibt, wenn `n` eine Zweierpotenz ist, und sonst `false`: `powerOfTwo(64)` ergibt `true`, `powerOfTwo(12)` ergibt `false`.
+      starter: |
+        bool powerOfTwo(int n) {
+          return false;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "powerOfTwo(64)", expect: "true" }
+          - { call: "powerOfTwo(12)", expect: "false" }
+          - { call: "powerOfTwo(1)", expect: "true", say: "1 ist 2 hoch 0, also auch eine Zweierpotenz." }
+          - { call: "powerOfTwo(0)", expect: "false", say: "0 ist keine Zweierpotenz." }
+          - { call: "powerOfTwo(1024)", expect: "true" }
+          - { call: "powerOfTwo(1023)", expect: "false" }
+          - { call: "powerOfTwo(6)", expect: "false" }
+      feedback:
+        - when: { same_as: "bool powerOfTwo(int n) {\n  return n % 2 == 0;\n}\n" }
+          say: "Gerade ist nicht genug: 12 ist gerade, aber keine Zweierpotenz. Und 1 ist eine, obwohl sie ungerade ist."
+      hint:
+        - "Teil `n` durch 2, solange es gerade ist. Was bleibt bei einer Zweierpotenz übrig?"
+        - "Denk an die 0: Sie ist immer wieder gerade."
+      solution: |
+        ```dart
+        bool powerOfTwo(int n) {
+          if (n < 1) {
+            return false;
+          }
+          while (n % 2 == 0) {
+            n = n ~/ 2;
+          }
+          return n == 1;
+        }
+        ```
+    java:
+      prompt: |
+        1, 2, 4, 8, 16 … sind Zweierpotenzen: Im Zweiersystem haben sie genau eine 1. Schreib eine Methode `boolean powerOfTwo(int n)`, die `true` zurückgibt, wenn `n` eine Zweierpotenz ist, und sonst `false`: `powerOfTwo(64)` ergibt `true`, `powerOfTwo(12)` ergibt `false`.
+      starter: |
+        boolean powerOfTwo(int n) {
+            return false;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "powerOfTwo(64)", expect: "true" }
+          - { call: "powerOfTwo(12)", expect: "false" }
+          - { call: "powerOfTwo(1)", expect: "true", say: "1 ist 2 hoch 0, also auch eine Zweierpotenz." }
+          - { call: "powerOfTwo(0)", expect: "false", say: "0 ist keine Zweierpotenz." }
+          - { call: "powerOfTwo(1024)", expect: "true" }
+          - { call: "powerOfTwo(1023)", expect: "false" }
+          - { call: "powerOfTwo(6)", expect: "false" }
+      feedback:
+        - when: { same_as: "boolean powerOfTwo(int n) {\n    return n % 2 == 0;\n}\n" }
+          say: "Gerade ist nicht genug: 12 ist gerade, aber keine Zweierpotenz. Und 1 ist eine, obwohl sie ungerade ist."
+      hint:
+        - "Teil `n` durch 2, solange es gerade ist. Was bleibt bei einer Zweierpotenz übrig?"
+        - "Denk an die 0: Sie ist immer wieder gerade."
+      solution: |
+        ```java
+        boolean powerOfTwo(int n) {
+            if (n < 1) {
+                return false;
+            }
+            while (n % 2 == 0) {
+                n = n / 2;
+            }
+            return n == 1;
+        }
+        ```
+
   - id: twos-complement
     title: "Negative Zahlen in einem Byte"
     level: 3
@@ -1150,6 +1734,93 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Ein Byte hat acht Bits. Für Zahlen von -128 bis 127 nimmt der Rechner das Zweierkomplement: Eine Zahl ab 0 steht wie gewohnt da, eine negative Zahl `n` als `256 + n`. Schreib eine Funktion `String twosComplement(int n)`, die die acht Bits als Text zurückgibt, mit Nullen vorn: `twosComplement(5)` ergibt `'00000101'`, `twosComplement(-1)` ergibt `'11111111'`. Ohne `toRadixString(2)`.
+      starter: |
+        String twosComplement(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString]
+        random:
+          count: 4
+          call: "twosComplement(n)"
+          args: { n: "-128..127" }
+          reference: "((n + 256) % 256).toRadixString(2).padLeft(8, '0')"
+        cases:
+          - { call: "twosComplement(5)", expect: "'00000101'", say: "Vorn stehen Nullen, bis es acht Bits sind." }
+          - { call: "twosComplement(-1)", expect: "'11111111'" }
+          - { call: "twosComplement(-128)", expect: "'10000000'" }
+          - { call: "twosComplement(127)", expect: "'01111111'" }
+          - { call: "twosComplement(0)", expect: "'00000000'" }
+          - { call: "twosComplement(-5)", expect: "'11111011'" }
+      feedback:
+        - when: { same_as: "String twosComplement(int n) {\n  if (n < 0) {\n    n += 256;\n  }\n  var result = '';\n  while (n > 0) {\n    result = '${n % 2}' + result;\n    n = n ~/ 2;\n  }\n  return result;\n}\n" }
+          say: "Ein Byte hat immer acht Bits: 5 ist `'00000101'`, nicht `'101'`. Füll vorn mit Nullen auf, oder rechne genau achtmal."
+      hint:
+        - "Erst die Zahl, die im Byte steht: bei einer negativen `256 + n`. Dann ihre Bits wie in der ersten Kata."
+        - "Rechne genau achtmal, dann stehen vorn von selbst Nullen: `for (var i = 0; i < 8; i++)`."
+      solution: |
+        ```dart
+        String twosComplement(int n) {
+          if (n < 0) {
+            n += 256;
+          }
+          var result = '';
+          for (var i = 0; i < 8; i++) {
+            result = '${n % 2}' + result;
+            n = n ~/ 2;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Ein Byte hat acht Bits. Für Zahlen von -128 bis 127 nimmt der Rechner das Zweierkomplement: Eine Zahl ab 0 steht wie gewohnt da, eine negative Zahl `n` als `256 + n`. Schreib eine Methode `String twosComplement(int n)`, die die acht Bits als Text zurückgibt, mit Nullen vorn: `twosComplement(5)` ergibt `"00000101"`, `twosComplement(-1)` ergibt `"11111111"`. Ohne `Integer.toBinaryString`.
+      starter: |
+        String twosComplement(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toBinaryString, Integer.toString, String.format, .formatted]
+        random:
+          count: 4
+          call: "twosComplement(n)"
+          args: { n: "-128..127" }
+          reference: "String.format(\"%8s\", Integer.toBinaryString((n + 256) % 256)).replace(' ', '0')"
+        cases:
+          - { call: "twosComplement(5)", expect: "\"00000101\"", say: "Vorn stehen Nullen, bis es acht Bits sind." }
+          - { call: "twosComplement(-1)", expect: "\"11111111\"" }
+          - { call: "twosComplement(-128)", expect: "\"10000000\"" }
+          - { call: "twosComplement(127)", expect: "\"01111111\"" }
+          - { call: "twosComplement(0)", expect: "\"00000000\"" }
+          - { call: "twosComplement(-5)", expect: "\"11111011\"" }
+      feedback:
+        - when: { same_as: "String twosComplement(int n) {\n    if (n < 0) {\n        n += 256;\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = n % 2 + result;\n        n = n / 2;\n    }\n    return result;\n}\n" }
+          say: "Ein Byte hat immer acht Bits: 5 ist `\"00000101\"`, nicht `\"101\"`. Füll vorn mit Nullen auf, oder rechne genau achtmal."
+      hint:
+        - "Erst die Zahl, die im Byte steht: bei einer negativen `256 + n`. Dann ihre Bits wie in der ersten Kata."
+        - "Rechne genau achtmal, dann stehen vorn von selbst Nullen: `for (int i = 0; i < 8; i++)`."
+      solution: |
+        ```java
+        String twosComplement(int n) {
+            if (n < 0) {
+                n += 256;
+            }
+            String result = "";
+            for (int i = 0; i < 8; i++) {
+                result = n % 2 + result;
+                n = n / 2;
+            }
+            return result;
+        }
+        ```
+
   - id: to-base
     title: "Jedes Zahlensystem"
     level: 3
@@ -1285,6 +1956,86 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String toBase(int n, int base)`, die eine Zahl ab 0 in einem Zahlensystem mit der Basis `base` von 2 bis 16 schreibt, mit den Ziffern `0` bis `9` und `a` bis `f`: `toBase(255, 2)` ergibt `'11111111'`, `toBase(255, 8)` ergibt `'377'`. Ohne `toRadixString`.
+      starter: |
+        String toBase(int n, int base) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString]
+        random:
+          count: 4
+          call: "toBase(n, 7)"
+          args: { n: "1..100000" }
+          reference: "n.toRadixString(7)"
+        cases:
+          - { call: "toBase(255, 2)", expect: "'11111111'" }
+          - { call: "toBase(255, 8)", expect: "'377'" }
+          - { call: "toBase(255, 16)", expect: "'ff'" }
+          - { call: "toBase(0, 7)", expect: "'0'" }
+          - { call: "toBase(100, 10)", expect: "'100'", say: "In der Basis 10 kommt die gewohnte Zahl heraus." }
+          - { call: "toBase(35, 3)", expect: "'1022'" }
+      hint: "Was du für 2 und für 16 geschrieben hast, geht mit jeder Basis: Rest beim Teilen durch `base`, dann durch `base` teilen."
+      solution: |
+        ```dart
+        const digits = '0123456789abcdef';
+
+        String toBase(int n, int base) {
+          if (n == 0) {
+            return '0';
+          }
+          var result = '';
+          while (n > 0) {
+            result = digits[n % base] + result;
+            n = n ~/ base;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String toBase(int n, int base)`, die eine Zahl ab 0 in einem Zahlensystem mit der Basis `base` von 2 bis 16 schreibt, mit den Ziffern `0` bis `9` und `a` bis `f`: `toBase(255, 2)` ergibt `"11111111"`, `toBase(255, 8)` ergibt `"377"`. Ohne `Integer.toString(n, base)`.
+      starter: |
+        String toBase(int n, int base) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toString, Long.toString, Integer.toBinaryString, Integer.toOctalString, Integer.toHexString]
+        random:
+          count: 4
+          call: "toBase(n, 7)"
+          args: { n: "1..100000" }
+          reference: "Integer.toString(n, 7)"
+        cases:
+          - { call: "toBase(255, 2)", expect: "\"11111111\"" }
+          - { call: "toBase(255, 8)", expect: "\"377\"" }
+          - { call: "toBase(255, 16)", expect: "\"ff\"" }
+          - { call: "toBase(0, 7)", expect: "\"0\"" }
+          - { call: "toBase(100, 10)", expect: "\"100\"", say: "In der Basis 10 kommt die gewohnte Zahl heraus." }
+          - { call: "toBase(35, 3)", expect: "\"1022\"" }
+      hint: "Was du für 2 und für 16 geschrieben hast, geht mit jeder Basis: Rest beim Teilen durch `base`, dann durch `base` teilen."
+      solution: |
+        ```java
+        String toBase(int n, int base) {
+            String digits = "0123456789abcdef";
+            if (n == 0) {
+                return "0";
+            }
+            String result = "";
+            while (n > 0) {
+                result = digits.charAt(n % base) + result;
+                n = n / base;
+            }
+            return result;
+        }
+        ```
+
   - id: convert
     title: "Von einem System ins andere"
     level: 3
@@ -1409,6 +2160,84 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String convert(String text, int source, int target)`, die eine Zahl, im System mit der Basis `source` geschrieben, im System mit der Basis `target` zurückgibt: `convert('ff', 16, 2)` ergibt `'11111111'`. Deine Funktionen von eben darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+      starter: |
+        String convert(String text, int source, int target) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .parse, .tryParse]
+        cases:
+          - { call: "convert('ff', 16, 2)", expect: "'11111111'" }
+          - { call: "convert('11111111', 2, 10)", expect: "'255'" }
+          - { call: "convert('377', 8, 16)", expect: "'ff'" }
+          - { call: "convert('0', 5, 3)", expect: "'0'" }
+          - { call: "convert('beef', 16, 10)", expect: "'48879'" }
+          - { call: "convert('100', 10, 7)", expect: "'202'" }
+      hint: "Zwei Schritte: erst lesen, wie bei `fromHex`, nur mit `source`; dann schreiben wie bei `toBase`, mit `target`."
+      solution: |
+        ```dart
+        const digits = '0123456789abcdef';
+
+        String convert(String text, int source, int target) {
+          var n = 0;
+          for (final digit in text.split('')) {
+            n = n * source + digits.indexOf(digit);
+          }
+          if (n == 0) {
+            return '0';
+          }
+          var result = '';
+          while (n > 0) {
+            result = digits[n % target] + result;
+            n = n ~/ target;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String convert(String text, int source, int target)`, die eine Zahl, im System mit der Basis `source` geschrieben, im System mit der Basis `target` zurückgibt: `convert("ff", 16, 2)` ergibt `"11111111"`. Deine Methoden von eben darfst du mitbenutzen, wenn du sie hier hineinschreibst.
+      starter: |
+        String convert(String text, int source, int target) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.toString, Integer.parseInt, Integer.valueOf, Long.parseLong, Long.toString, Integer.toBinaryString, Integer.toHexString]
+        cases:
+          - { call: "convert(\"ff\", 16, 2)", expect: "\"11111111\"" }
+          - { call: "convert(\"11111111\", 2, 10)", expect: "\"255\"" }
+          - { call: "convert(\"377\", 8, 16)", expect: "\"ff\"" }
+          - { call: "convert(\"0\", 5, 3)", expect: "\"0\"" }
+          - { call: "convert(\"beef\", 16, 10)", expect: "\"48879\"" }
+          - { call: "convert(\"100\", 10, 7)", expect: "\"202\"" }
+      hint: "Zwei Schritte: erst lesen, wie bei `fromHex`, nur mit `source`; dann schreiben wie bei `toBase`, mit `target`."
+      solution: |
+        ```java
+        String convert(String text, int source, int target) {
+            String digits = "0123456789abcdef";
+            int n = 0;
+            for (char digit : text.toCharArray()) {
+                n = n * source + digits.indexOf(digit);
+            }
+            if (n == 0) {
+                return "0";
+            }
+            String result = "";
+            while (n > 0) {
+                result = digits.charAt(n % target) + result;
+                n = n / target;
+            }
+            return result;
+        }
+        ```
+
   - id: add-by-hand
     title: "Von Hand addieren"
     level: 1
@@ -1556,6 +2385,75 @@ tasks:
           return [total % 2, Math.floor(total / 2)];
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `List<int> addDigits(int a, int b, int carry)`, die zwei Bits und den Übertrag von der Stelle rechts davon addiert, alle drei 0 oder 1. Sie gibt zwei Zahlen zurück: das Bit, das an dieser Stelle stehen bleibt, und den Übertrag für die nächste Stelle links. `addDigits(1, 1, 0)` ergibt `[0, 1]`, denn 1 + 1 ist `10`.
+      starter: |
+        List<int> addDigits(int a, int b, int carry) {
+          return [];
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "addDigits(0, 0, 0)", expect: "[0, 0]" }
+          - { call: "addDigits(1, 0, 0)", expect: "[1, 0]" }
+          - { call: "addDigits(0, 1, 0)", expect: "[1, 0]" }
+          - { call: "addDigits(1, 1, 0)", expect: "[0, 1]" }
+          - { call: "addDigits(0, 0, 1)", expect: "[1, 0]", say: "Der Übertrag zählt mit: 0 + 0 + 1 ist 1." }
+          - { call: "addDigits(1, 0, 1)", expect: "[0, 1]" }
+          - { call: "addDigits(0, 1, 1)", expect: "[0, 1]" }
+          - { call: "addDigits(1, 1, 1)", expect: "[1, 1]", say: "1 + 1 + 1 ist 3, im Zweiersystem `11`: Bit 1, Übertrag 1." }
+      feedback:
+        - when: { same_as: "List<int> addDigits(int a, int b, int carry) {\n  final total = a + b;\n  return [total % 2, total ~/ 2];\n}\n" }
+          say: "Der Übertrag von der Stelle rechts zählt mit: Addiert werden alle drei, `a`, `b` und `carry`."
+        - when: { same_as: "List<int> addDigits(int a, int b, int carry) {\n  final total = a + b + carry;\n  return [total ~/ 2, total % 2];\n}\n" }
+          say: "Erst das Bit, das stehen bleibt, dann der Übertrag: `addDigits(1, 0, 0)` ergibt `[1, 0]`."
+      hint:
+        - "Addiere alle drei. Es kommt 0, 1, 2 oder 3 heraus, im Zweiersystem `0`, `1`, `10` oder `11`: Die rechte Ziffer bleibt stehen, die linke ist der Übertrag."
+        - "Die rechte Ziffer ist der Rest beim Teilen durch 2, die linke das, was beim ganzzahligen Teilen herauskommt (`~/`), wie im ersten Kapitel."
+      solution: |
+        ```dart
+        List<int> addDigits(int a, int b, int carry) {
+          final total = a + b + carry;
+          return [total % 2, total ~/ 2];
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Integer> addDigits(int a, int b, int carry)`, die zwei Bits und den Übertrag von der Stelle rechts davon addiert, alle drei 0 oder 1. Sie gibt zwei Zahlen zurück: das Bit, das an dieser Stelle stehen bleibt, und den Übertrag für die nächste Stelle links. `addDigits(1, 1, 0)` ergibt `[0, 1]`, denn 1 + 1 ist `10`.
+      starter: |
+        List<Integer> addDigits(int a, int b, int carry) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "addDigits(0, 0, 0)", expect: "List.of(0, 0)" }
+          - { call: "addDigits(1, 0, 0)", expect: "List.of(1, 0)" }
+          - { call: "addDigits(0, 1, 0)", expect: "List.of(1, 0)" }
+          - { call: "addDigits(1, 1, 0)", expect: "List.of(0, 1)" }
+          - { call: "addDigits(0, 0, 1)", expect: "List.of(1, 0)", say: "Der Übertrag zählt mit: 0 + 0 + 1 ist 1." }
+          - { call: "addDigits(1, 0, 1)", expect: "List.of(0, 1)" }
+          - { call: "addDigits(0, 1, 1)", expect: "List.of(0, 1)" }
+          - { call: "addDigits(1, 1, 1)", expect: "List.of(1, 1)", say: "1 + 1 + 1 ist 3, im Zweiersystem `11`: Bit 1, Übertrag 1." }
+      feedback:
+        - when: { same_as: "List<Integer> addDigits(int a, int b, int carry) {\n    int total = a + b;\n    return List.of(total % 2, total / 2);\n}\n" }
+          say: "Der Übertrag von der Stelle rechts zählt mit: Addiert werden alle drei, `a`, `b` und `carry`."
+        - when: { same_as: "List<Integer> addDigits(int a, int b, int carry) {\n    int total = a + b + carry;\n    return List.of(total / 2, total % 2);\n}\n" }
+          say: "Erst das Bit, das stehen bleibt, dann der Übertrag: `addDigits(1, 0, 0)` ergibt `[1, 0]`."
+      hint:
+        - "Addiere alle drei. Es kommt 0, 1, 2 oder 3 heraus, im Zweiersystem `0`, `1`, `10` oder `11`: Die rechte Ziffer bleibt stehen, die linke ist der Übertrag."
+        - "Die rechte Ziffer ist der Rest beim Teilen durch 2, die linke das, was beim Teilen herauskommt, wie im ersten Kapitel. `List.of(x, y)` gibt beide zurück."
+      solution: |
+        ```java
+        List<Integer> addDigits(int a, int b, int carry) {
+            int total = a + b + carry;
+            return List.of(total % 2, total / 2);
+        }
+        ```
+
   - id: add-binary
     title: "Bits addieren"
     level: 2
@@ -1771,6 +2669,137 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String addBinary(String a, String b)`, die zwei Texte aus Bits addiert, beide gleich lang, so wie von Hand: von rechts nach links, Stelle für Stelle, mit dem Übertrag. Das Ergebnis ist so lang wie `a`, oder eine Stelle länger, wenn am Ende ein Übertrag bleibt: `addBinary('0101', '0111')` ergibt `'1100'`, `addBinary('1111', '0001')` ergibt `'10000'`. Ohne `int.parse` und `toRadixString`; `addDigits` darfst du mitbenutzen, wenn du es hier hineinschreibst.
+      starter: |
+        String addBinary(String a, String b) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .parse, .tryParse, BigInt]
+        random:
+          count: 4
+          call: "addBinary(a, b)"
+          args:
+            a: ["00000010", "10000111", "00011011", "10111001", "01001110", "01011000", "00011110", "01110101", "10011101", "10110100", "11000110", "11001101", "00011101", "10000011"]
+            b: ["10110111", "11001110", "00011100", "11100001", "11111010", "00001000", "01100001", "10001000", "01110000", "10010101", "10100010", "00110001", "00100111", "00011010"]
+          reference: "(int.parse(a, radix: 2) + int.parse(b, radix: 2)).toRadixString(2).padLeft(a.length, '0')"
+        cases:
+          - { call: "addBinary('0101', '0111')", expect: "'1100'" }
+          - { call: "addBinary('1011', '0110')", expect: "'10001'" }
+          - { call: "addBinary('0', '0')", expect: "'0'" }
+          - { call: "addBinary('1', '1')", expect: "'10'", say: "Bleibt am Ende ein Übertrag, kommt vorn eine 1 dazu." }
+          - { call: "addBinary('0001', '0001')", expect: "'0010'", say: "Nullen vorn bleiben stehen: Das Ergebnis ist so lang wie `a`." }
+          - { call: "addBinary('11111111', '00000001')", expect: "'100000000'" }
+          - { call: "addBinary('101010101010', '010101010101')", expect: "'111111111111'" }
+      feedback:
+        - when: { same_as: "String addBinary(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = a.length - 1; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  return result;\n}\n" }
+          say: "Am Ende bleibt ein Übertrag übrig, der keine Stelle mehr hat: Er kommt als 1 vorn dazu. `addBinary('1', '1')` ist `'10'`."
+        - when: { same_as: "String addBinary(String a, String b) {\n  var result = '';\n  for (var i = a.length - 1; i >= 0; i--) {\n    result = (a[i] == b[i] ? '0' : '1') + result;\n  }\n  return result;\n}\n" }
+          say: "Du addierst jede Stelle für sich. Wie von Hand geht bei 1 + 1 eine 1 als Übertrag zur nächsten Stelle links und zählt dort mit."
+      hint:
+        - "Rechne `011 + 011` erst von Hand: rechts 1 + 1 = `10`, schreib 0, Übertrag 1. Dann 1 + 1 + 1 = `11`, schreib 1, Übertrag 1. Dann 0 + 0 + 1 = 1. Ergebnis `110`, also 3 + 3 = 6."
+        - "Geh mit einem Index von hinten nach vorn, `for (var i = a.length - 1; i >= 0; i--)`, und merk dir den Übertrag in einer Variablen, die bei 0 anfängt. An jedem Index: beide Bits als Zahl (`a[i] == '1' ? 1 : 0`), mit dem Übertrag addieren, das Bit vorn an das Ergebnis."
+        - |
+          Ein Gerüst:
+
+          ```dart
+          String addBinary(String a, String b) {
+            var result = '';
+            var carry = 0;
+            for (var i = a.length - 1; i >= 0; i--) {
+              // hier: die Bits an Index i und carry addieren,
+              // das Bit vorn an result, den neuen Übertrag in carry
+            }
+            // hier: bleibt ein Übertrag, kommt vorn eine 1 dazu
+            return result;
+          }
+          ```
+      solution: |
+        ```dart
+        String addBinary(String a, String b) {
+          var result = '';
+          var carry = 0;
+          for (var i = a.length - 1; i >= 0; i--) {
+            final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;
+            result = '${total % 2}' + result;
+            carry = total ~/ 2;
+          }
+          if (carry == 1) {
+            result = '1' + result;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String addBinary(String a, String b)`, die zwei Texte aus Bits addiert, beide gleich lang, so wie von Hand: von rechts nach links, Stelle für Stelle, mit dem Übertrag. Das Ergebnis ist so lang wie `a`, oder eine Stelle länger, wenn am Ende ein Übertrag bleibt: `addBinary("0101", "0111")` ergibt `"1100"`, `addBinary("1111", "0001")` ergibt `"10000"`. Ohne `Integer.parseInt` und `Integer.toBinaryString`; `addDigits` darfst du mitbenutzen, wenn du es hier hineinschreibst.
+      starter: |
+        String addBinary(String a, String b) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.parseInt, Integer.valueOf, Integer.toBinaryString, Integer.toString, Long.parseLong, BigInteger]
+        random:
+          count: 4
+          call: "addBinary(a, b)"
+          args:
+            a: ["00000010", "10000111", "00011011", "10111001", "01001110", "01011000", "00011110", "01110101", "10011101", "10110100", "11000110", "11001101", "00011101", "10000011"]
+            b: ["10110111", "11001110", "00011100", "11100001", "11111010", "00001000", "01100001", "10001000", "01110000", "10010101", "10100010", "00110001", "00100111", "00011010"]
+          reference: "String.format(\"%\" + a.length() + \"s\", Integer.toBinaryString(Integer.parseInt(a, 2) + Integer.parseInt(b, 2))).replace(' ', '0')"
+        cases:
+          - { call: "addBinary(\"0101\", \"0111\")", expect: "\"1100\"" }
+          - { call: "addBinary(\"1011\", \"0110\")", expect: "\"10001\"" }
+          - { call: "addBinary(\"0\", \"0\")", expect: "\"0\"" }
+          - { call: "addBinary(\"1\", \"1\")", expect: "\"10\"", say: "Bleibt am Ende ein Übertrag, kommt vorn eine 1 dazu." }
+          - { call: "addBinary(\"0001\", \"0001\")", expect: "\"0010\"", say: "Nullen vorn bleiben stehen: Das Ergebnis ist so lang wie `a`." }
+          - { call: "addBinary(\"11111111\", \"00000001\")", expect: "\"100000000\"" }
+          - { call: "addBinary(\"101010101010\", \"010101010101\")", expect: "\"111111111111\"" }
+      feedback:
+        - when: { same_as: "String addBinary(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = a.length() - 1; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    return result;\n}\n" }
+          say: "Am Ende bleibt ein Übertrag übrig, der keine Stelle mehr hat: Er kommt als 1 vorn dazu. `addBinary(\"1\", \"1\")` ist `\"10\"`."
+        - when: { same_as: "String addBinary(String a, String b) {\n    String result = \"\";\n    for (int i = a.length() - 1; i >= 0; i--) {\n        result = (a.charAt(i) == b.charAt(i) ? \"0\" : \"1\") + result;\n    }\n    return result;\n}\n" }
+          say: "Du addierst jede Stelle für sich. Wie von Hand geht bei 1 + 1 eine 1 als Übertrag zur nächsten Stelle links und zählt dort mit."
+      hint:
+        - "Rechne `011 + 011` erst von Hand: rechts 1 + 1 = `10`, schreib 0, Übertrag 1. Dann 1 + 1 + 1 = `11`, schreib 1, Übertrag 1. Dann 0 + 0 + 1 = 1. Ergebnis `110`, also 3 + 3 = 6."
+        - "Geh mit einem Index von hinten nach vorn, `for (int i = a.length() - 1; i >= 0; i--)`, und merk dir den Übertrag in einer Variablen, die bei 0 anfängt. An jedem Index: beide Bits als Zahl (`a.charAt(i) == '1' ? 1 : 0`), mit dem Übertrag addieren, das Bit vorn an das Ergebnis."
+        - |
+          Ein Gerüst:
+
+          ```java
+          String addBinary(String a, String b) {
+              String result = "";
+              int carry = 0;
+              for (int i = a.length() - 1; i >= 0; i--) {
+                  // hier: die Bits an Index i und carry addieren,
+                  // das Bit vorn an result, den neuen Übertrag in carry
+              }
+              // hier: bleibt ein Übertrag, kommt vorn eine 1 dazu
+              return result;
+          }
+          ```
+      solution: |
+        ```java
+        String addBinary(String a, String b) {
+            String result = "";
+            int carry = 0;
+            for (int i = a.length() - 1; i >= 0; i--) {
+                int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;
+                result = total % 2 + result;
+                carry = total / 2;
+            }
+            if (carry == 1) {
+                result = "1" + result;
+            }
+            return result;
+        }
+        ```
+
   - id: byte-overflow
     title: "200 + 100 in einem Byte"
     level: 1
@@ -1942,6 +2971,95 @@ tasks:
           return [result, carry === 1];
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `(String, bool) addByte(String a, String b)`, die zwei Bytes addiert, jedes als Text aus acht Bits, und zwei Werte zurückgibt: die acht Bits, die im Byte bleiben, und `true`, wenn vorn ein Übertrag herausgefallen ist, sonst `false`. `(String, bool)` ist ein Paar, ein Record; `return (result, true);` gibt eins zurück. `addByte('00000101', '00000111')` ergibt `('00001100', false)`. Ohne `int.parse` und `toRadixString`; was du in `addBinary` geschrieben hast, darfst du hier hineinschreiben.
+      starter: |
+        (String, bool) addByte(String a, String b) {
+          return ('', false);
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .parse, .tryParse, BigInt]
+        random:
+          count: 4
+          call: "addByte(a, b)"
+          args:
+            a: ["00000010", "10000111", "00011011", "10111001", "01001110", "01011000", "00011110", "01110101", "10011101", "10110100", "11000110", "11001101", "00011101", "10000011"]
+            b: ["10110111", "11001110", "00011100", "11100001", "11111010", "00001000", "01100001", "10001000", "01110000", "10010101", "10100010", "00110001", "00100111", "00011010"]
+          reference: "(((int.parse(a, radix: 2) + int.parse(b, radix: 2)) % 256).toRadixString(2).padLeft(8, '0'), int.parse(a, radix: 2) + int.parse(b, radix: 2) > 255)"
+        cases:
+          - { call: "addByte('00000101', '00000111')", expect: "('00001100', false)" }
+          - { call: "addByte('11001000', '01100100')", expect: "('00101100', true)", say: "200 + 100: Das neunte Bit fällt heraus, im Byte bleibt 44." }
+          - { call: "addByte('11111111', '00000001')", expect: "('00000000', true)" }
+          - { call: "addByte('01111111', '00000001')", expect: "('10000000', false)", say: "127 + 1 = 128 passt noch in ein Byte." }
+          - { call: "addByte('10000000', '10000000')", expect: "('00000000', true)" }
+          - { call: "addByte('00000000', '00000000')", expect: "('00000000', false)" }
+      feedback:
+        - when: { same_as: "(String, bool) addByte(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = 7; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  if (carry == 1) {\n    result = '1' + result;\n  }\n  return (result, carry == 1);\n}\n" }
+          say: "Ein Byte hat acht Bits: Der Übertrag vorn bleibt nicht im Ergebnis, er fällt heraus. Gib die acht Bits zurück und dazu `true`."
+      hint:
+        - "Rechne wie in `addBinary`, nur genau achtmal, von Index 7 bis 0."
+        - "Was am Ende im Übertrag steht, ist das Bit, das herausfällt: `carry == 1` ist schon `true` oder `false`."
+      solution: |
+        ```dart
+        (String, bool) addByte(String a, String b) {
+          var result = '';
+          var carry = 0;
+          for (var i = 7; i >= 0; i--) {
+            final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;
+            result = '${total % 2}' + result;
+            carry = total ~/ 2;
+          }
+          return (result, carry == 1);
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `List<Object> addByte(String a, String b)`, die zwei Bytes addiert, jedes als Text aus acht Bits, und zwei Werte zurückgibt, als Liste: die acht Bits, die im Byte bleiben, und `true`, wenn vorn ein Übertrag herausgefallen ist, sonst `false`. `addByte("00000101", "00000111")` ergibt `[00001100, false]`; `List.of(result, true)` gibt eine solche Liste zurück. Ohne `Integer.parseInt` und `Integer.toBinaryString`; was du in `addBinary` geschrieben hast, darfst du hier hineinschreiben.
+      starter: |
+        List<Object> addByte(String a, String b) {
+            return List.of();
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.parseInt, Integer.valueOf, Integer.toBinaryString, Integer.toString, Long.parseLong, BigInteger]
+        random:
+          count: 4
+          call: "addByte(a, b)"
+          args:
+            a: ["00000010", "10000111", "00011011", "10111001", "01001110", "01011000", "00011110", "01110101", "10011101", "10110100", "11000110", "11001101", "00011101", "10000011"]
+            b: ["10110111", "11001110", "00011100", "11100001", "11111010", "00001000", "01100001", "10001000", "01110000", "10010101", "10100010", "00110001", "00100111", "00011010"]
+          reference: "List.of(String.format(\"%8s\", Integer.toBinaryString((Integer.parseInt(a, 2) + Integer.parseInt(b, 2)) % 256)).replace(' ', '0'), Integer.parseInt(a, 2) + Integer.parseInt(b, 2) > 255)"
+        cases:
+          - { call: "addByte(\"00000101\", \"00000111\")", expect: "List.of(\"00001100\", false)" }
+          - { call: "addByte(\"11001000\", \"01100100\")", expect: "List.of(\"00101100\", true)", say: "200 + 100: Das neunte Bit fällt heraus, im Byte bleibt 44." }
+          - { call: "addByte(\"11111111\", \"00000001\")", expect: "List.of(\"00000000\", true)" }
+          - { call: "addByte(\"01111111\", \"00000001\")", expect: "List.of(\"10000000\", false)", say: "127 + 1 = 128 passt noch in ein Byte." }
+          - { call: "addByte(\"10000000\", \"10000000\")", expect: "List.of(\"00000000\", true)" }
+          - { call: "addByte(\"00000000\", \"00000000\")", expect: "List.of(\"00000000\", false)" }
+      feedback:
+        - when: { same_as: "List<Object> addByte(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = 7; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    if (carry == 1) {\n        result = \"1\" + result;\n    }\n    return List.of(result, carry == 1);\n}\n" }
+          say: "Ein Byte hat acht Bits: Der Übertrag vorn bleibt nicht im Ergebnis, er fällt heraus. Gib die acht Bits zurück und dazu `true`."
+      hint:
+        - "Rechne wie in `addBinary`, nur genau achtmal, von Index 7 bis 0."
+        - "Was am Ende im Übertrag steht, ist das Bit, das herausfällt: `carry == 1` ist schon `true` oder `false`."
+      solution: |
+        ```java
+        List<Object> addByte(String a, String b) {
+            String result = "";
+            int carry = 0;
+            for (int i = 7; i >= 0; i--) {
+                int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;
+                result = total % 2 + result;
+                carry = total / 2;
+            }
+            return List.of(result, carry == 1);
+        }
+        ```
+
   - id: negate
     title: "Umdrehen und 1 addieren"
     level: 3
@@ -2106,6 +3224,101 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `String negate(String bits)`, die ein Byte aus acht Bits negiert: alle Bits umdrehen, dann 1 addieren; ein Übertrag vorn fällt weg. `negate('00000101')` ergibt `'11111011'`, also −5. Ohne `int.parse` und `toRadixString`.
+      starter: |
+        String negate(String bits) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        forbid: [.toRadixString, .parse, .tryParse, BigInt]
+        random:
+          count: 4
+          call: "negate(bits)"
+          args:
+            bits: ["01000101", "11110100", "01110001", "00111101", "00010010", "11111010", "11001010", "01110101", "00110000", "11010000", "10011110", "10010101", "01101010", "01100000"]
+          reference: "((256 - int.parse(bits, radix: 2)) % 256).toRadixString(2).padLeft(8, '0')"
+        cases:
+          - { call: "negate('00000101')", expect: "'11111011'" }
+          - { call: "negate('11111011')", expect: "'00000101'", say: "Zweimal negiert ist es wieder die Zahl vom Anfang: −(−5) ist 5." }
+          - { call: "negate('00000001')", expect: "'11111111'" }
+          - { call: "negate('01111111')", expect: "'10000001'" }
+          - { call: "negate('00000000')", expect: "'00000000'", say: "Aus 0 wird 0: `11111111` plus 1 ist `100000000`, und die 1 vorn fällt heraus." }
+          - { call: "negate('10000000')", expect: "'10000000'", say: "−128 bleibt `10000000`: +128 hat in einem Byte mit Vorzeichen keinen Platz." }
+      feedback:
+        - when: { same_as: "String negate(String bits) {\n  var result = '';\n  for (final bit in bits.split('')) {\n    result += bit == '1' ? '0' : '1';\n  }\n  return result;\n}\n" }
+          say: "Nur umgedreht ist es noch nicht die negative Zahl: Aus 5 wird `11111010`, und das ist −6. Es fehlt die 1, die dazukommt."
+      hint:
+        - "Zwei Schritte. Erst umdrehen, Zeichen für Zeichen: aus `'0'` wird `'1'`, aus `'1'` wird `'0'`. Dann 1 addieren, wie in `addByte` mit `'00000001'`."
+        - "Fürs Addieren von 1 genügt ein Übertrag, der bei 1 anfängt: Von rechts nach links wird jedes Bit mit dem Übertrag addiert, wie in `addBinary`, nur ohne zweite Zahl."
+      solution: |
+        ```dart
+        String negate(String bits) {
+          var flipped = '';
+          for (final bit in bits.split('')) {
+            flipped += bit == '1' ? '0' : '1';
+          }
+          var result = '';
+          var carry = 1;
+          for (var i = 7; i >= 0; i--) {
+            final total = (flipped[i] == '1' ? 1 : 0) + carry;
+            result = '${total % 2}' + result;
+            carry = total ~/ 2;
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `String negate(String bits)`, die ein Byte aus acht Bits negiert: alle Bits umdrehen, dann 1 addieren; ein Übertrag vorn fällt weg. `negate("00000101")` ergibt `"11111011"`, also −5. Ohne `Integer.parseInt` und `Integer.toBinaryString`.
+      starter: |
+        String negate(String bits) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        forbid: [Integer.parseInt, Integer.valueOf, Integer.toBinaryString, Integer.toString, Long.parseLong, BigInteger]
+        random:
+          count: 4
+          call: "negate(bits)"
+          args:
+            bits: ["01000101", "11110100", "01110001", "00111101", "00010010", "11111010", "11001010", "01110101", "00110000", "11010000", "10011110", "10010101", "01101010", "01100000"]
+          reference: "String.format(\"%8s\", Integer.toBinaryString((256 - Integer.parseInt(bits, 2)) % 256)).replace(' ', '0')"
+        cases:
+          - { call: "negate(\"00000101\")", expect: "\"11111011\"" }
+          - { call: "negate(\"11111011\")", expect: "\"00000101\"", say: "Zweimal negiert ist es wieder die Zahl vom Anfang: −(−5) ist 5." }
+          - { call: "negate(\"00000001\")", expect: "\"11111111\"" }
+          - { call: "negate(\"01111111\")", expect: "\"10000001\"" }
+          - { call: "negate(\"00000000\")", expect: "\"00000000\"", say: "Aus 0 wird 0: `11111111` plus 1 ist `100000000`, und die 1 vorn fällt heraus." }
+          - { call: "negate(\"10000000\")", expect: "\"10000000\"", say: "−128 bleibt `10000000`: +128 hat in einem Byte mit Vorzeichen keinen Platz." }
+      feedback:
+        - when: { same_as: "String negate(String bits) {\n    String result = \"\";\n    for (char bit : bits.toCharArray()) {\n        result += bit == '1' ? '0' : '1';\n    }\n    return result;\n}\n" }
+          say: "Nur umgedreht ist es noch nicht die negative Zahl: Aus 5 wird `11111010`, und das ist −6. Es fehlt die 1, die dazukommt."
+      hint:
+        - "Zwei Schritte. Erst umdrehen, Zeichen für Zeichen: aus `'0'` wird `'1'`, aus `'1'` wird `'0'`. Dann 1 addieren, wie in `addByte` mit `\"00000001\"`."
+        - "Fürs Addieren von 1 genügt ein Übertrag, der bei 1 anfängt: Von rechts nach links wird jedes Bit mit dem Übertrag addiert, wie in `addBinary`, nur ohne zweite Zahl."
+      solution: |
+        ```java
+        String negate(String bits) {
+            String flipped = "";
+            for (char bit : bits.toCharArray()) {
+                flipped += bit == '1' ? '0' : '1';
+            }
+            String result = "";
+            int carry = 1;
+            for (int i = 7; i >= 0; i--) {
+                int total = (flipped.charAt(i) == '1' ? 1 : 0) + carry;
+                result = total % 2 + result;
+                carry = total / 2;
+            }
+            return result;
+        }
+        ```
+
   - id: roman
     title: "Römische Zahlen"
     extra: true
@@ -2236,6 +3449,85 @@ tasks:
           return result;
         }
         ```
+    dart:
+      prompt: |
+        Die Römer schrieben `I` für 1, `V` für 5, `X` für 10, `L` für 50, `C` für 100, `D` für 500 und `M` für 1000; vier gleiche Zeichen hintereinander gibt es nicht, statt `IIII` schreibt man `IV` (eins vor fünf), ebenso `IX`, `XL`, `XC`, `CD` und `CM`. Schreib eine Funktion `String roman(int n)` für 1 bis 3999: `roman(1994)` ergibt `'MCMXCIV'`.
+      starter: |
+        String roman(int n) {
+          return '';
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "roman(1994)", expect: "'MCMXCIV'" }
+          - { call: "roman(4)", expect: "'IV'" }
+          - { call: "roman(9)", expect: "'IX'" }
+          - { call: "roman(40)", expect: "'XL'" }
+          - { call: "roman(3999)", expect: "'MMMCMXCIX'" }
+          - { call: "roman(2026)", expect: "'MMXXVI'" }
+          - { call: "roman(1)", expect: "'I'" }
+      feedback:
+        - when: { same_as: "const symbols = [(1000, 'M'), (500, 'D'), (100, 'C'), (50, 'L'), (10, 'X'), (5, 'V'), (1, 'I')];\n\nString roman(int n) {\n  var result = '';\n  for (final (value, symbol) in symbols) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n" }
+          say: "Aus 4 wird bei dir `IIII`. Nimm die Paare `IV`, `IX`, `XL`, `XC`, `CD` und `CM` mit ihren Werten in deine Liste auf, an der richtigen Stelle."
+      hint:
+        - "Nimm immer das größte Zeichen, das noch hineinpasst, wie beim Herausgeben von Wechselgeld: 1994 ist 1000, dann 900, 90, 4."
+        - "Die Paare wie `CM` sind eigene Zeichen mit eigenem Wert. Eine Liste von Paaren aus Wert und Zeichen, vom größten zum kleinsten, macht den Rest einfach: `[(1000, 'M'), (900, 'CM'), …]`, durchgegangen mit `for (final (value, symbol) in symbols)`."
+      solution: |
+        ```dart
+        const symbols = [(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')];
+
+        String roman(int n) {
+          var result = '';
+          for (final (value, symbol) in symbols) {
+            while (n >= value) {
+              result += symbol;
+              n -= value;
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Die Römer schrieben `I` für 1, `V` für 5, `X` für 10, `L` für 50, `C` für 100, `D` für 500 und `M` für 1000; vier gleiche Zeichen hintereinander gibt es nicht, statt `IIII` schreibt man `IV` (eins vor fünf), ebenso `IX`, `XL`, `XC`, `CD` und `CM`. Schreib eine Methode `String roman(int n)` für 1 bis 3999: `roman(1994)` ergibt `"MCMXCIV"`.
+      starter: |
+        String roman(int n) {
+            return "";
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "roman(1994)", expect: "\"MCMXCIV\"" }
+          - { call: "roman(4)", expect: "\"IV\"" }
+          - { call: "roman(9)", expect: "\"IX\"" }
+          - { call: "roman(40)", expect: "\"XL\"" }
+          - { call: "roman(3999)", expect: "\"MMMCMXCIX\"" }
+          - { call: "roman(2026)", expect: "\"MMXXVI\"" }
+          - { call: "roman(1)", expect: "\"I\"" }
+      feedback:
+        - when: { same_as: "String roman(int n) {\n    int[] values = {1000, 500, 100, 50, 10, 5, 1};\n    String[] symbols = {\"M\", \"D\", \"C\", \"L\", \"X\", \"V\", \"I\"};\n    String result = \"\";\n    for (int i = 0; i < values.length; i++) {\n        while (n >= values[i]) {\n            result += symbols[i];\n            n -= values[i];\n        }\n    }\n    return result;\n}\n" }
+          say: "Aus 4 wird bei dir `IIII`. Nimm die Paare `IV`, `IX`, `XL`, `XC`, `CD` und `CM` mit ihren Werten in deine Liste auf, an der richtigen Stelle."
+      hint:
+        - "Nimm immer das größte Zeichen, das noch hineinpasst, wie beim Herausgeben von Wechselgeld: 1994 ist 1000, dann 900, 90, 4."
+        - "Die Paare wie `CM` sind eigene Zeichen mit eigenem Wert. Zwei Arrays, `int[] values = {1000, 900, …};` und `String[] symbols = {\"M\", \"CM\", …};`, vom größten zum kleinsten, machen den Rest einfach: Derselbe Index gehört zusammen."
+      solution: |
+        ```java
+        String roman(int n) {
+            int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+            String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+            String result = "";
+            for (int i = 0; i < values.length; i++) {
+                while (n >= values[i]) {
+                    result += symbols[i];
+                    n -= values[i];
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: from-roman
     title: "Römische Zahlen lesen"
     extra: true
@@ -2360,5 +3652,81 @@ tasks:
             }
           }
           return total;
+        }
+        ```
+    dart:
+      prompt: |
+        Und zurück: Schreib eine Funktion `int fromRoman(String text)`, die eine römische Zahl in die gewohnte verwandelt: `fromRoman('MCMXCIV')` ergibt `1994`. Steht ein Zeichen vor einem größeren, wird es abgezogen, sonst dazugezählt.
+      starter: |
+        int fromRoman(String text) {
+          return -1;
+        }
+      check:
+        type: function
+        language: dart
+        cases:
+          - { call: "fromRoman('MCMXCIV')", expect: "1994" }
+          - { call: "fromRoman('IV')", expect: "4" }
+          - { call: "fromRoman('VI')", expect: "6" }
+          - { call: "fromRoman('MMXXVI')", expect: "2026" }
+          - { call: "fromRoman('XL')", expect: "40" }
+          - { call: "fromRoman('MMMCMXCIX')", expect: "3999" }
+      feedback:
+        - when: { same_as: "const values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000};\n\nint fromRoman(String text) {\n  var total = 0;\n  for (final char in text.split('')) {\n    total += values[char]!;\n  }\n  return total;\n}\n" }
+          say: "`IV` ist 4, nicht 6: Ein Zeichen vor einem größeren wird abgezogen. Schau beim Zeichen auf das nächste."
+      hint: "Eine Map ordnet jedem Zeichen seinen Wert zu, `{'I': 1, 'V': 5, …}`. Geh die Zeichen mit ihrem Index durch, dann kannst du das nächste ansehen: `text[i + 1]`."
+      solution: |
+        ```dart
+        const values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000};
+
+        int fromRoman(String text) {
+          var total = 0;
+          for (var i = 0; i < text.length; i++) {
+            final value = values[text[i]]!;
+            if (i + 1 < text.length && values[text[i + 1]]! > value) {
+              total -= value;
+            } else {
+              total += value;
+            }
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Und zurück: Schreib eine Methode `int fromRoman(String text)`, die eine römische Zahl in die gewohnte verwandelt: `fromRoman("MCMXCIV")` ergibt `1994`. Steht ein Zeichen vor einem größeren, wird es abgezogen, sonst dazugezählt.
+      starter: |
+        int fromRoman(String text) {
+            return -1;
+        }
+      check:
+        type: function
+        language: java
+        cases:
+          - { call: "fromRoman(\"MCMXCIV\")", expect: "1994" }
+          - { call: "fromRoman(\"IV\")", expect: "4" }
+          - { call: "fromRoman(\"VI\")", expect: "6" }
+          - { call: "fromRoman(\"MMXXVI\")", expect: "2026" }
+          - { call: "fromRoman(\"XL\")", expect: "40" }
+          - { call: "fromRoman(\"MMMCMXCIX\")", expect: "3999" }
+      feedback:
+        - when: { same_as: "Map<Character, Integer> values = Map.of('I', 1, 'V', 5, 'X', 10, 'L', 50, 'C', 100, 'D', 500, 'M', 1000);\n\nint fromRoman(String text) {\n    int total = 0;\n    for (char c : text.toCharArray()) {\n        total += values.get(c);\n    }\n    return total;\n}\n" }
+          say: "`IV` ist 4, nicht 6: Ein Zeichen vor einem größeren wird abgezogen. Schau beim Zeichen auf das nächste."
+      hint: "Eine Map ordnet jedem Zeichen seinen Wert zu, `Map.of('I', 1, 'V', 5, …)`. Geh die Zeichen mit ihrem Index durch, dann kannst du das nächste ansehen: `text.charAt(i + 1)`."
+      solution: |
+        ```java
+        Map<Character, Integer> values = Map.of('I', 1, 'V', 5, 'X', 10, 'L', 50, 'C', 100, 'D', 500, 'M', 1000);
+
+        int fromRoman(String text) {
+            int total = 0;
+            for (int i = 0; i < text.length(); i++) {
+                int value = values.get(text.charAt(i));
+                if (i + 1 < text.length() && values.get(text.charAt(i + 1)) > value) {
+                    total -= value;
+                } else {
+                    total += value;
+                }
+            }
+            return total;
         }
         ```

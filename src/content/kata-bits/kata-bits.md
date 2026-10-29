@@ -2,7 +2,7 @@
 icon: bi-toggles
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Zahlen in Bits, im Sechzehnersystem und in jedem anderen, und Addieren mit Übertrag
 curriculum: "Sek I: Information und Daten (Zahlensysteme, Rechnen mit Dualzahlen, Codierung)"
 topics: [zahlensysteme, codierung]
@@ -55,6 +55,30 @@ console.log(Math.floor(1234 / 10));   // 123
 ```
 
 `/` gibt eine Kommazahl; `Math.floor` rundet ab.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  print(13 % 2);        // 1, das letzte Bit
+  print(13 ~/ 2);       // 6: das letzte Bit ist weg, 6 ist 110
+  print(1234 % 10);     // 4, die letzte Ziffer
+  print(1234 ~/ 10);    // 123
+}
+```
+
+`~/` teilt ganzzahlig und lässt den Rest weg.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    IO.println(13 % 2);        // 1, das letzte Bit
+    IO.println(13 / 2);        // 6: das letzte Bit ist weg, 6 ist 110
+    IO.println(1234 % 10);     // 4, die letzte Ziffer
+    IO.println(1234 / 10);     // 123
+}
+```
+
+Zwei `int` teilt `/` ganzzahlig und lässt den Rest weg.
 <!-- /language -->
 
 Teilt man immer wieder und sammelt die Reste, hat man alle Ziffern, von
@@ -153,7 +177,8 @@ _task(add-binary)
 ### Überlauf
 
 In Ruby und Python bekommt eine ganze Zahl einfach mehr Bits, wenn sie welche
-braucht. Der Prozessor darunter rechnet in Registern mit fester Breite, 8, 16,
+braucht. In Java und Dart hat sie eine feste Breite: ein `int` in Java 32 Bits,
+in Dart 64. Der Prozessor darunter rechnet in Registern mit fester Breite, 8, 16,
 32 oder 64 Bits, und ein Byte hat acht.
 
 _task(byte-overflow)

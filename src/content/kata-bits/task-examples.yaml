@@ -19,6 +19,16 @@ examples:
         - answer: "function toBinary(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
       fail:
         - answer: "function toBinary(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result += (n % 2);\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "String toBinary(int n) {\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result = '${n % 2}' + result;\n    n = n ~/ 2;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "String toBinary(int n) {\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result += '${n % 2}';\n    n = n ~/ 2;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String toBinary(int n) {\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = n % 2 + result;\n        n = n / 2;\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "String toBinary(int n) {\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result += n % 2;\n        n = n / 2;\n    }\n    return result;\n}\n"
   from-binary:
     pass:
       - answer: "def from_binary(bits)\n  value = 0\n  bits.each_char do |bit|\n    value = value * 2 + (bit == '1' ? 1 : 0)\n  end\n  value\nend\n"
@@ -34,6 +44,16 @@ examples:
         - answer: "function fromBinary(bits) {\n  let value = 0;\n  for (const bit of bits) {\n    value = value * 2 + (bit === '1' ? 1 : 0);\n  }\n  return value;\n}\n"
       fail:
         - answer: "function fromBinary(bits) {\n  let value = 0;\n  for (const bit of bits) {\n    if (bit === '1') {\n      value += 1;\n    }\n  }\n  return value;\n}\n"
+    dart:
+      pass:
+        - answer: "int fromBinary(String bits) {\n  var value = 0;\n  for (final bit in bits.split('')) {\n    value = value * 2 + (bit == '1' ? 1 : 0);\n  }\n  return value;\n}\n"
+      fail:
+        - answer: "int fromBinary(String bits) {\n  var value = 0;\n  for (final bit in bits.split('')) {\n    if (bit == '1') {\n      value += 1;\n    }\n  }\n  return value;\n}\n"
+    java:
+      pass:
+        - answer: "int fromBinary(String bits) {\n    int value = 0;\n    for (char bit : bits.toCharArray()) {\n        value = value * 2 + (bit == '1' ? 1 : 0);\n    }\n    return value;\n}\n"
+      fail:
+        - answer: "int fromBinary(String bits) {\n    int value = 0;\n    for (char bit : bits.toCharArray()) {\n        if (bit == '1') {\n            value += 1;\n        }\n    }\n    return value;\n}\n"
   bit:
     pass:
       - answer: "def bit(n, i)\n  i.times do\n    n /= 2\n  end\n  n % 2\nend\n"
@@ -43,6 +63,12 @@ examples:
     javascript:
       pass:
         - answer: "function bit(n, i) {\n  for (let k = 0; k < i; k++) {\n    n = Math.floor(n / 2);\n  }\n  return n % 2;\n}\n"
+    dart:
+      pass:
+        - answer: "int bit(int n, int i) {\n  for (var k = 0; k < i; k++) {\n    n = n ~/ 2;\n  }\n  return n % 2;\n}\n"
+    java:
+      pass:
+        - answer: "int bit(int n, int i) {\n    for (int k = 0; k < i; k++) {\n        n = n / 2;\n    }\n    return n % 2;\n}\n"
   binary-length:
     pass:
       - answer: "def binary_length(n)\n  length = 1\n  while n > 1\n    n /= 2\n    length += 1\n  end\n  length\nend\n"
@@ -58,6 +84,16 @@ examples:
         - answer: "function binaryLength(n) {\n  let length = 1;\n  while (n > 1) {\n    n = Math.floor(n / 2);\n    length++;\n  }\n  return length;\n}\n"
       fail:
         - answer: "function binaryLength(n) {\n  let length = 0;\n  while (n > 0) {\n    n = Math.floor(n / 2);\n    length++;\n  }\n  return length;\n}\n"
+    dart:
+      pass:
+        - answer: "int binaryLength(int n) {\n  var length = 1;\n  while (n > 1) {\n    n = n ~/ 2;\n    length++;\n  }\n  return length;\n}\n"
+      fail:
+        - answer: "int binaryLength(int n) {\n  var length = 0;\n  while (n > 0) {\n    n = n ~/ 2;\n    length++;\n  }\n  return length;\n}\n"
+    java:
+      pass:
+        - answer: "int binaryLength(int n) {\n    int length = 1;\n    while (n > 1) {\n        n = n / 2;\n        length++;\n    }\n    return length;\n}\n"
+      fail:
+        - answer: "int binaryLength(int n) {\n    int length = 0;\n    while (n > 0) {\n        n = n / 2;\n        length++;\n    }\n    return length;\n}\n"
   count-ones:
     pass:
       - answer: "def count_ones(n)\n  count = 0\n  while n > 0\n    count += n % 2\n    n /= 2\n  end\n  count\nend\n"
@@ -67,6 +103,12 @@ examples:
     javascript:
       pass:
         - answer: "function countOnes(n) {\n  let count = 0;\n  while (n > 0) {\n    count += n % 2;\n    n = Math.floor(n / 2);\n  }\n  return count;\n}\n"
+    dart:
+      pass:
+        - answer: "int countOnes(int n) {\n  var count = 0;\n  while (n > 0) {\n    count += n % 2;\n    n = n ~/ 2;\n  }\n  return count;\n}\n"
+    java:
+      pass:
+        - answer: "int countOnes(int n) {\n    int count = 0;\n    while (n > 0) {\n        count += n % 2;\n        n = n / 2;\n    }\n    return count;\n}\n"
   to-hex:
     pass:
       - answer: "DIGITS = '0123456789abcdef'\n\ndef to_hex(n)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % 16] + result\n    n /= 16\n  end\n  result\nend\n"
@@ -76,6 +118,12 @@ examples:
     javascript:
       pass:
         - answer: "const DIGITS = '0123456789abcdef';\n\nfunction toHex(n) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % 16] + result;\n    n = Math.floor(n / 16);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "const digits = '0123456789abcdef';\n\nString toHex(int n) {\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result = digits[n % 16] + result;\n    n = n ~/ 16;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String toHex(int n) {\n    String digits = \"0123456789abcdef\";\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = digits.charAt(n % 16) + result;\n        n = n / 16;\n    }\n    return result;\n}\n"
   from-hex:
     pass:
       - answer: "DIGITS = '0123456789abcdef'\n\ndef from_hex(text)\n  value = 0\n  text.each_char do |digit|\n    value = value * 16 + DIGITS.index(digit)\n  end\n  value\nend\n"
@@ -85,6 +133,12 @@ examples:
     javascript:
       pass:
         - answer: "const DIGITS = '0123456789abcdef';\n\nfunction fromHex(text) {\n  let value = 0;\n  for (const digit of text) {\n    value = value * 16 + DIGITS.indexOf(digit);\n  }\n  return value;\n}\n"
+    dart:
+      pass:
+        - answer: "const digits = '0123456789abcdef';\n\nint fromHex(String text) {\n  var value = 0;\n  for (final digit in text.split('')) {\n    value = value * 16 + digits.indexOf(digit);\n  }\n  return value;\n}\n"
+    java:
+      pass:
+        - answer: "int fromHex(String text) {\n    String digits = \"0123456789abcdef\";\n    int value = 0;\n    for (char digit : text.toCharArray()) {\n        value = value * 16 + digits.indexOf(digit);\n    }\n    return value;\n}\n"
   power-of-two:
     pass:
       - answer: "def power_of_two(n)\n  return false if n < 1\n  n /= 2 while n % 2 == 0\n  n == 1\nend\n"
@@ -100,6 +154,16 @@ examples:
         - answer: "function powerOfTwo(n) {\n  if (n < 1) {\n    return false;\n  }\n  while (n % 2 === 0) {\n    n /= 2;\n  }\n  return n === 1;\n}\n"
       fail:
         - answer: "function powerOfTwo(n) {\n  return n % 2 === 0;\n}\n"
+    dart:
+      pass:
+        - answer: "bool powerOfTwo(int n) {\n  if (n < 1) {\n    return false;\n  }\n  while (n % 2 == 0) {\n    n = n ~/ 2;\n  }\n  return n == 1;\n}\n"
+      fail:
+        - answer: "bool powerOfTwo(int n) {\n  return n % 2 == 0;\n}\n"
+    java:
+      pass:
+        - answer: "boolean powerOfTwo(int n) {\n    if (n < 1) {\n        return false;\n    }\n    while (n % 2 == 0) {\n        n = n / 2;\n    }\n    return n == 1;\n}\n"
+      fail:
+        - answer: "boolean powerOfTwo(int n) {\n    return n % 2 == 0;\n}\n"
   twos-complement:
     pass:
       - answer: "def twos_complement(n)\n  n += 256 if n < 0\n  result = ''\n  8.times do\n    result = (n % 2 == 1 ? '1' : '0') + result\n    n /= 2\n  end\n  result\nend\n"
@@ -115,6 +179,16 @@ examples:
         - answer: "function twosComplement(n) {\n  if (n < 0) {\n    n += 256;\n  }\n  let result = '';\n  for (let i = 0; i < 8; i++) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
       fail:
         - answer: "function twosComplement(n) {\n  if (n < 0) {\n    n += 256;\n  }\n  let result = '';\n  while (n > 0) {\n    result = (n % 2) + result;\n    n = Math.floor(n / 2);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "String twosComplement(int n) {\n  if (n < 0) {\n    n += 256;\n  }\n  var result = '';\n  for (var i = 0; i < 8; i++) {\n    result = '${n % 2}' + result;\n    n = n ~/ 2;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "String twosComplement(int n) {\n  if (n < 0) {\n    n += 256;\n  }\n  var result = '';\n  while (n > 0) {\n    result = '${n % 2}' + result;\n    n = n ~/ 2;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String twosComplement(int n) {\n    if (n < 0) {\n        n += 256;\n    }\n    String result = \"\";\n    for (int i = 0; i < 8; i++) {\n        result = n % 2 + result;\n        n = n / 2;\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "String twosComplement(int n) {\n    if (n < 0) {\n        n += 256;\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = n % 2 + result;\n        n = n / 2;\n    }\n    return result;\n}\n"
   to-base:
     pass:
       - answer: "DIGITS = '0123456789abcdef'\n\ndef to_base(n, base)\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % base] + result\n    n /= base\n  end\n  result\nend\n"
@@ -124,6 +198,12 @@ examples:
     javascript:
       pass:
         - answer: "const DIGITS = '0123456789abcdef';\n\nfunction toBase(n, base) {\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % base] + result;\n    n = Math.floor(n / base);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "const digits = '0123456789abcdef';\n\nString toBase(int n, int base) {\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result = digits[n % base] + result;\n    n = n ~/ base;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String toBase(int n, int base) {\n    String digits = \"0123456789abcdef\";\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = digits.charAt(n % base) + result;\n        n = n / base;\n    }\n    return result;\n}\n"
   convert:
     pass:
       - answer: "DIGITS = '0123456789abcdef'\n\ndef convert(text, source, target)\n  n = 0\n  text.each_char do |digit|\n    n = n * source + DIGITS.index(digit)\n  end\n  return '0' if n == 0\n  result = ''\n  while n > 0\n    result = DIGITS[n % target] + result\n    n /= target\n  end\n  result\nend\n"
@@ -133,6 +213,12 @@ examples:
     javascript:
       pass:
         - answer: "const DIGITS = '0123456789abcdef';\n\nfunction convert(text, source, target) {\n  let n = 0;\n  for (const digit of text) {\n    n = n * source + DIGITS.indexOf(digit);\n  }\n  if (n === 0) {\n    return '0';\n  }\n  let result = '';\n  while (n > 0) {\n    result = DIGITS[n % target] + result;\n    n = Math.floor(n / target);\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "const digits = '0123456789abcdef';\n\nString convert(String text, int source, int target) {\n  var n = 0;\n  for (final digit in text.split('')) {\n    n = n * source + digits.indexOf(digit);\n  }\n  if (n == 0) {\n    return '0';\n  }\n  var result = '';\n  while (n > 0) {\n    result = digits[n % target] + result;\n    n = n ~/ target;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String convert(String text, int source, int target) {\n    String digits = \"0123456789abcdef\";\n    int n = 0;\n    for (char digit : text.toCharArray()) {\n        n = n * source + digits.indexOf(digit);\n    }\n    if (n == 0) {\n        return \"0\";\n    }\n    String result = \"\";\n    while (n > 0) {\n        result = digits.charAt(n % target) + result;\n        n = n / target;\n    }\n    return result;\n}\n"
   add-digits:
     pass:
       - answer: "def add_digits(a, b, carry)\n  total = a + b + carry\n  [total % 2, total / 2]\nend\n"
@@ -151,6 +237,18 @@ examples:
       fail:
         - answer: "function addDigits(a, b, carry) {\n  const total = a + b;\n  return [total % 2, Math.floor(total / 2)];\n}\n"
           say: "zählt mit"
+    dart:
+      pass:
+        - answer: "List<int> addDigits(int a, int b, int carry) {\n  final total = a + b + carry;\n  return [total % 2, total ~/ 2];\n}\n"
+      fail:
+        - answer: "List<int> addDigits(int a, int b, int carry) {\n  final total = a + b;\n  return [total % 2, total ~/ 2];\n}\n"
+        - answer: "List<int> addDigits(int a, int b, int carry) {\n  final total = a + b + carry;\n  return [total ~/ 2, total % 2];\n}\n"
+    java:
+      pass:
+        - answer: "List<Integer> addDigits(int a, int b, int carry) {\n    int total = a + b + carry;\n    return List.of(total % 2, total / 2);\n}\n"
+      fail:
+        - answer: "List<Integer> addDigits(int a, int b, int carry) {\n    int total = a + b;\n    return List.of(total % 2, total / 2);\n}\n"
+        - answer: "List<Integer> addDigits(int a, int b, int carry) {\n    int total = a + b + carry;\n    return List.of(total / 2, total % 2);\n}\n"
   add-binary:
     pass:
       - answer: "def add_binary(a, b)\n  result = ''\n  carry = 0\n  (a.length - 1).downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result = '1' + result if carry == 1\n  result\nend\n"
@@ -175,6 +273,18 @@ examples:
           say: "keine Stelle mehr"
         - answer: "function addBinary(a, b) {\n  return (BigInt('0b' + a) + BigInt('0b' + b)).toString(2).padStart(a.length, '0');\n}\n"
           say: "BigInt"
+    dart:
+      pass:
+        - answer: "String addBinary(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = a.length - 1; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  if (carry == 1) {\n    result = '1' + result;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "String addBinary(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = a.length - 1; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  return result;\n}\n"
+        - answer: "String addBinary(String a, String b) {\n  var result = '';\n  for (var i = a.length - 1; i >= 0; i--) {\n    result = (a[i] == b[i] ? '0' : '1') + result;\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String addBinary(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = a.length() - 1; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    if (carry == 1) {\n        result = \"1\" + result;\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "String addBinary(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = a.length() - 1; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    return result;\n}\n"
+        - answer: "String addBinary(String a, String b) {\n    String result = \"\";\n    for (int i = a.length() - 1; i >= 0; i--) {\n        result = (a.charAt(i) == b.charAt(i) ? \"0\" : \"1\") + result;\n    }\n    return result;\n}\n"
   add-byte:
     pass:
       - answer: "def add_byte(a, b)\n  result = ''\n  carry = 0\n  7.downto(0) do |i|\n    total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  [result, carry == 1]\nend\n"
@@ -193,6 +303,16 @@ examples:
       fail:
         - answer: "function addByte(a, b) {\n  let result = '';\n  let carry = 0;\n  for (let i = 7; i >= 0; i--) {\n    const total = (a[i] === '1' ? 1 : 0) + (b[i] === '1' ? 1 : 0) + carry;\n    result = (total % 2) + result;\n    carry = Math.floor(total / 2);\n  }\n  if (carry === 1) {\n    result = '1' + result;\n  }\n  return [result, carry === 1];\n}\n"
           say: "acht Bits"
+    dart:
+      pass:
+        - answer: "(String, bool) addByte(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = 7; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  return (result, carry == 1);\n}\n"
+      fail:
+        - answer: "(String, bool) addByte(String a, String b) {\n  var result = '';\n  var carry = 0;\n  for (var i = 7; i >= 0; i--) {\n    final total = (a[i] == '1' ? 1 : 0) + (b[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  if (carry == 1) {\n    result = '1' + result;\n  }\n  return (result, carry == 1);\n}\n"
+    java:
+      pass:
+        - answer: "List<Object> addByte(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = 7; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    return List.of(result, carry == 1);\n}\n"
+      fail:
+        - answer: "List<Object> addByte(String a, String b) {\n    String result = \"\";\n    int carry = 0;\n    for (int i = 7; i >= 0; i--) {\n        int total = (a.charAt(i) == '1' ? 1 : 0) + (b.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    if (carry == 1) {\n        result = \"1\" + result;\n    }\n    return List.of(result, carry == 1);\n}\n"
   negate:
     pass:
       - answer: "def negate(bits)\n  flipped = ''\n  bits.each_char do |bit|\n    flipped += (bit == '1' ? '0' : '1')\n  end\n  result = ''\n  carry = 1\n  7.downto(0) do |i|\n    total = (flipped[i] == '1' ? 1 : 0) + carry\n    result = (total % 2 == 1 ? '1' : '0') + result\n    carry = total / 2\n  end\n  result\nend\n"
@@ -211,6 +331,16 @@ examples:
       fail:
         - answer: "function negate(bits) {\n  let result = '';\n  for (const bit of bits) {\n    result += bit === '1' ? '0' : '1';\n  }\n  return result;\n}\n"
           say: "Es fehlt die 1"
+    dart:
+      pass:
+        - answer: "String negate(String bits) {\n  var flipped = '';\n  for (final bit in bits.split('')) {\n    flipped += bit == '1' ? '0' : '1';\n  }\n  var result = '';\n  var carry = 1;\n  for (var i = 7; i >= 0; i--) {\n    final total = (flipped[i] == '1' ? 1 : 0) + carry;\n    result = '${total % 2}' + result;\n    carry = total ~/ 2;\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "String negate(String bits) {\n  var result = '';\n  for (final bit in bits.split('')) {\n    result += bit == '1' ? '0' : '1';\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String negate(String bits) {\n    String flipped = \"\";\n    for (char bit : bits.toCharArray()) {\n        flipped += bit == '1' ? '0' : '1';\n    }\n    String result = \"\";\n    int carry = 1;\n    for (int i = 7; i >= 0; i--) {\n        int total = (flipped.charAt(i) == '1' ? 1 : 0) + carry;\n        result = total % 2 + result;\n        carry = total / 2;\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "String negate(String bits) {\n    String result = \"\";\n    for (char bit : bits.toCharArray()) {\n        result += bit == '1' ? '0' : '1';\n    }\n    return result;\n}\n"
   roman:
     pass:
       - answer: "SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]\n\ndef roman(n)\n  result = ''\n  SYMBOLS.each do |value, symbol|\n    while n >= value\n      result += symbol\n      n -= value\n    end\n  end\n  result\nend\n"
@@ -226,6 +356,16 @@ examples:
         - answer: "const SYMBOLS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];\n\nfunction roman(n) {\n  let result = '';\n  for (const [value, symbol] of SYMBOLS) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
       fail:
         - answer: "const SYMBOLS = [[1000, 'M'], [500, 'D'], [100, 'C'], [50, 'L'], [10, 'X'], [5, 'V'], [1, 'I']];\n\nfunction roman(n) {\n  let result = '';\n  for (const [value, symbol] of SYMBOLS) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
+    dart:
+      pass:
+        - answer: "const symbols = [(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')];\n\nString roman(int n) {\n  var result = '';\n  for (final (value, symbol) in symbols) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
+      fail:
+        - answer: "const symbols = [(1000, 'M'), (500, 'D'), (100, 'C'), (50, 'L'), (10, 'X'), (5, 'V'), (1, 'I')];\n\nString roman(int n) {\n  var result = '';\n  for (final (value, symbol) in symbols) {\n    while (n >= value) {\n      result += symbol;\n      n -= value;\n    }\n  }\n  return result;\n}\n"
+    java:
+      pass:
+        - answer: "String roman(int n) {\n    int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};\n    String[] symbols = {\"M\", \"CM\", \"D\", \"CD\", \"C\", \"XC\", \"L\", \"XL\", \"X\", \"IX\", \"V\", \"IV\", \"I\"};\n    String result = \"\";\n    for (int i = 0; i < values.length; i++) {\n        while (n >= values[i]) {\n            result += symbols[i];\n            n -= values[i];\n        }\n    }\n    return result;\n}\n"
+      fail:
+        - answer: "String roman(int n) {\n    int[] values = {1000, 500, 100, 50, 10, 5, 1};\n    String[] symbols = {\"M\", \"D\", \"C\", \"L\", \"X\", \"V\", \"I\"};\n    String result = \"\";\n    for (int i = 0; i < values.length; i++) {\n        while (n >= values[i]) {\n            result += symbols[i];\n            n -= values[i];\n        }\n    }\n    return result;\n}\n"
   from-roman:
     pass:
       - answer: "VALUES = { 'I' => 1, 'V' => 5, 'X' => 10, 'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000 }\n\ndef from_roman(text)\n  total = 0\n  text.each_char.with_index do |char, i|\n    value = VALUES[char]\n    if i + 1 < text.length && VALUES[text[i + 1]] > value\n      total -= value\n    else\n      total += value\n    end\n  end\n  total\nend\n"
@@ -241,3 +381,13 @@ examples:
         - answer: "const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n\nfunction fromRoman(text) {\n  let total = 0;\n  for (let i = 0; i < text.length; i++) {\n    const value = VALUES[text[i]];\n    if (i + 1 < text.length && VALUES[text[i + 1]] > value) {\n      total -= value;\n    } else {\n      total += value;\n    }\n  }\n  return total;\n}\n"
       fail:
         - answer: "const VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };\n\nfunction fromRoman(text) {\n  let total = 0;\n  for (const char of text) {\n    total += VALUES[char];\n  }\n  return total;\n}\n"
+    dart:
+      pass:
+        - answer: "const values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000};\n\nint fromRoman(String text) {\n  var total = 0;\n  for (var i = 0; i < text.length; i++) {\n    final value = values[text[i]]!;\n    if (i + 1 < text.length && values[text[i + 1]]! > value) {\n      total -= value;\n    } else {\n      total += value;\n    }\n  }\n  return total;\n}\n"
+      fail:
+        - answer: "const values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000};\n\nint fromRoman(String text) {\n  var total = 0;\n  for (final char in text.split('')) {\n    total += values[char]!;\n  }\n  return total;\n}\n"
+    java:
+      pass:
+        - answer: "Map<Character, Integer> values = Map.of('I', 1, 'V', 5, 'X', 10, 'L', 50, 'C', 100, 'D', 500, 'M', 1000);\n\nint fromRoman(String text) {\n    int total = 0;\n    for (int i = 0; i < text.length(); i++) {\n        int value = values.get(text.charAt(i));\n        if (i + 1 < text.length() && values.get(text.charAt(i + 1)) > value) {\n            total -= value;\n        } else {\n            total += value;\n        }\n    }\n    return total;\n}\n"
+      fail:
+        - answer: "Map<Character, Integer> values = Map.of('I', 1, 'V', 5, 'X', 10, 'L', 50, 'C', 100, 'D', 500, 'M', 1000);\n\nint fromRoman(String text) {\n    int total = 0;\n    for (char c : text.toCharArray()) {\n        total += values.get(c);\n    }\n    return total;\n}\n"
