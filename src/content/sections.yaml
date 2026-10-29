@@ -277,17 +277,6 @@
     - git
     - terminal-mystery
 
-# Parked for now: not in the catalog, but the pages stay reachable by direct
-# links. The programming languages fill rows of four tiles (the maintainer,
-# 29 October 2026); sections of activities take any number.
-
-- key: parked
-  hidden: true
-  label: Zurückgestellt
-  icon: /images/bookmark.png
-  entries:
-    - feuerwerk
-
 # Hidden: not in the catalog and not pinnable; the pages are found by their
 # address (the Backrooms, level-0-…: by typing noclip on the 404 page).
 

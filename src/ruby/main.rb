@@ -111,9 +111,13 @@ MODULE_LABELS = {
     :git        => 'Git',
 }
 
-# Activities that were removed, with what was stored about them
-# (SetupDatabase#remove_code_bites); their addresses lead to the start page.
-REMOVED_ACTIVITIES = %w[uebung-zahlen uebung-arrays uebung-strings].freeze
+# Activities that were removed, with what was stored about them: results,
+# attempts and hand-ins (SetupDatabase#remove_code_bites); their addresses
+# lead to the start page.
+REMOVED_ACTIVITIES = %w[uebung-zahlen uebung-arrays uebung-strings feuerwerk].freeze
+
+# Hand-ins, one archive per person and task (Main#submission_path)
+SUBMISSIONS_ROOT = '/internal/submissions'
 
 class Neo4jGlobal
     include Neo4jBolt
@@ -275,7 +279,14 @@ class SetupDatabase
         %w[Submission Solved Code Task Language].each do |label|
             neo4j_query("MATCH (n:#{label}) DETACH DELETE n;")
         end
-        neo4j_query(<<~END_OF_QUERY, :prefixes => REMOVED_ACTIVITIES.map { |slug| "#{slug}/" })
+        prefixes = REMOVED_ACTIVITIES.map { |slug| "#{slug}/" }
+        neo4j_query(<<~END_OF_QUERY, :prefixes => prefixes).each do |row|
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState) WHERE any(p IN $prefixes WHERE s.task STARTS WITH p)
+            RETURN u.email AS email, s.task AS task;
+        END_OF_QUERY
+            FileUtils.rm_f(File.join(SUBMISSIONS_ROOT, "#{TaskStore.state_key(row['email'], row['task'])}.tar.gz"))
+        end
+        neo4j_query(<<~END_OF_QUERY, :prefixes => prefixes)
             MATCH (n) WHERE (n:TaskState OR n:TaskAttempt) AND any(p IN $prefixes WHERE n.task STARTS WITH p)
             DETACH DELETE n;
         END_OF_QUERY
@@ -300,13 +311,6 @@ class Main < Sinatra::Base
     ].to_h { |id| ["mysql/#{id}", "sql-joins/#{id}"] }.freeze
 
     # Pages that were renamed; old links and bookmarks lead to the new page.
-    # ?grid_demo=1 in development: parked activities added to sections, to
-    # see the pairs at the end of a section (main.rb, the catalog)
-    GRID_DEMO = {
-        'games' => ['feuerwerk'],
-        'software' => ['cobol', 'smalltalk'],
-    }.freeze
-
     MOVED_PAGES = {
         'videothek' => 'filmdatenbank',
         # »Datenübertragung per Kabel« became »per Funk« (2026-10)
@@ -6073,8 +6077,6 @@ class Main < Sinatra::Base
         TaskHtml.render(markdown, :lineno => lineno)
     end
 
-    SUBMISSIONS_ROOT = '/internal/submissions'
-
     # The student's Workspace folder on the server, read-only, or nil if the
     # Workspace was never opened.
     def task_workspace_files
@@ -7100,12 +7102,6 @@ class Main < Sinatra::Base
                     end
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
-                    end
-                    # Development only, ?grid_demo=1: parked activities fill
-                    # some sections to 7, 4 and 5 cards, to look at the pairs
-                    # that end a section whose last row would not be full
-                    if DEVELOPMENT && params['grid_demo'] && (extra = GRID_DEMO[section_key])
-                        entries += extra.select { |slug| @@content[slug] }
                     end
                     # carousel: true (Katas): one strip of the sets with the
                     # person's progress instead of cards (KataMap)

@@ -69,13 +69,6 @@ const HAND_INS: HandIn[] = [
     folders: ['bild.rb', 'bild.png'],
   },
   {
-    task: 'feuerwerk/abgabe',
-    setup: (c) => write(c, 'feuerwerk/feuerwerk.c', '#include <pixelram.h>\n\nint main(void)\n{\n    return 0;\n}\n'),
-    answer: 'feuerwerk/feuerwerk.c',
-    shown: { code: '#include <pixelram.h>' },
-    folders: ['feuerwerk'],
-  },
-  {
     task: 'hugo/abgabe',
     // the source of the site, without a built public/: its HTML files are
     // templates, so the viewer starts with hugo.yaml

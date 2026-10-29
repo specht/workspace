@@ -14,7 +14,7 @@ async function scrollDown(page: Page) {
 
 test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  for (const path of ['/', '/feuerwerk', '/reference/farben']) {
+  for (const path of ['/', '/prolog', '/reference/farben']) {
     await page.goto(path);
     const bar = page.locator('nav.autotoc');
     await expect(bar).toHaveJSProperty('inert', true);

@@ -35,6 +35,6 @@ class CloneFoldersTest < Minitest::Test
     def test_the_pixelram_activities_have_their_own_folders
         found = folders
         assert_equal ['pixelram'], found['pixelram-starter']
-        %w[gif jpeg feuerwerk].each { |slug| assert_equal [slug], found[slug], slug }
+        %w[gif jpeg].each { |slug| assert_equal [slug], found[slug], slug }
     end
 end

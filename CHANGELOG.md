@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die zurückgestellte Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) ist entfernt; `/feuerwerk` führt zur Startseite.
+  Beim ersten Start nach dem Update löscht der Ruby-Dienst, was Lernende dazu gespeichert und abgegeben haben
+  (Ergebnisse, Versuche, Abgaben).
 - Das Workspace-Image enthält SWI-Prolog, `hyperfine` und die Erweiterung »Better Prolog Syntax« (für »Logisch
   programmieren mit Prolog« und »Wie lange dauert das?«): Nach dem Update das Image neu bauen (`./build-image.sh`). Der Ruby-Dienst braucht SWI-Prolog für die
   Beispiele der neuen Prüfart `prolog`: `./config.rb build ruby && ./config.rb up -d ruby`.

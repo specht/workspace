@@ -87,8 +87,7 @@ happens for real; then branches, pull before push, reviewing a classmate's
 commit, a `TODO.md` as the task board. Without a class repository the page
 simulates a teammate locally, as the Git activity does.
 
-Fireworks (`feuerwerk`) could join Spiele & 3D-Welten with two more cards;
-it still needs a teacher note, a try in class and its screenshots (TODO.md).
+Fireworks (`feuerwerk`) was removed on 29 October 2026 (the maintainer).
 `cable` was parked on purpose (fa0f2c81) and came back on 28 October
 2026 as `radio`, »Datenübertragung per Funk«, first in Netze & Sicherheit
 (`/cable` redirects there). The device is a radio now, five channels keyed on
