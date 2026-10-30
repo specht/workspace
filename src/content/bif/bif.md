@@ -929,6 +929,8 @@ Du musst auch nicht jede Funktion von BIF verwenden. Eine kleine Geschichte mit 
 
 _include(workspace#live-apps)
 
+Teilen lohnt sich schon, bevor die Geschichte fertig ist. Lass jemanden aus deiner Klasse die ersten Seiten durchspielen, ohne etwas zu erklären, und schau zu. Achte darauf, wo die Person zögert, welche Entscheidung sie anders trifft, als du erwartet hast, und ob sie auf einer Seite landet, die noch nicht weitergeht.
+
 Wie aus deiner Geschichte eine fertige Website wird, die auch ohne Workspace läuft, steht in der [Anleitung von BIF](https://github.com/specht/bif#readme) (auf Englisch).
 
 _include(workspace#subdomain)
