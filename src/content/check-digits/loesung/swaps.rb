@@ -1,7 +1,5 @@
 require_relative 'check_digits'
 
-# Zwei verschiedene Ziffern a und b vorn in einem Code, die Prüfziffer dazu,
-# dann a und b vertauscht: Merkt valid_ean? den Zahlendreher?
 missed = 0
 (0..9).each do |a|
   (0..9).each do |b|

@@ -403,6 +403,19 @@ public class CheckDigits {
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/1-gewicht/check_digits.rb as check_digits.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/1-gewicht/check_digits.py as check_digits.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/1-gewicht/check_digits.dart as check_digits.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/1-gewicht/CheckDigits.java as CheckDigits.java -->
+<!-- /language -->
+
 _task(gewicht)
 
 ### Die Prüfziffer
@@ -522,6 +535,19 @@ auf; heraus kommt die 1 aus der Tabelle oben. Nimm dann das letzte
 <code>{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}</code> auf. Achte darauf, ob das
 Ergebnis noch eine Ziffer ist, und setz das <code>% 10</code> danach wieder ein.
 </div>
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/2-pruefziffer/check_digits.rb as check_digits.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/2-pruefziffer/check_digits.py as check_digits.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/2-pruefziffer/check_digits.dart as check_digits.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/2-pruefziffer/CheckDigits.java as CheckDigits.java -->
 <!-- /language -->
 
 _task(pruefziffer)
@@ -762,6 +788,19 @@ public static boolean isValidEan(String code) {
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/3-ean/check_digits.rb as check_digits.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/3-ean/check_digits.py as check_digits.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/3-ean/check_digits.dart as check_digits.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/3-ean/CheckDigits.java as CheckDigits.java -->
+<!-- /language -->
+
 _task(ean)
 
 ### Bücher: die ISBN
@@ -803,6 +842,19 @@ noch `X` ist?
 <!-- /language -->
 
 _task(plan-isbn)
+
+<!-- language: ruby -->
+<!-- stage: loesung/check_digits.rb as check_digits.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/check_digits.py as check_digits.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/check_digits.dart as check_digits.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/CheckDigits.java as CheckDigits.java -->
+<!-- /language -->
 
 _task(isbn)
 
@@ -1007,6 +1059,19 @@ Ordner:
 ```bash
 java Swaps.java
 ```
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: loesung/swaps.rb as swaps.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/swaps.py as swaps.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/swaps.dart as swaps.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/Swaps.java as Swaps.java -->
 <!-- /language -->
 
 _task(zahlendreher)
@@ -1331,6 +1396,19 @@ public class ParityGrid {
 }
 ```
 <!-- /solution -->
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: loesung/parity_grid.rb as parity_grid.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/parity_grid.py as parity_grid.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/parity_grid.dart as parity_grid.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/ParityGrid.java as ParityGrid.java -->
 <!-- /language -->
 
 _task(paritaet)

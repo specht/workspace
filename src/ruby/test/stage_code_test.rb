@@ -237,10 +237,9 @@ class StageCodeTest < Minitest::Test
 
     # Where students program in files in the Workspace, a teacher gets the
     # code up to each step (docs/checkliste.md). Not where queries are typed
-    # into a terminal (SQL) or a team works in Git; OPEN still lacks them.
+    # into a terminal (SQL) or a team works in Git.
     CODE_CHECKS = %w[ruby python c java dart javascript prolog].freeze
     NO_FILES = %w[mysql filmdatenbank class-quiz].freeze
-    OPEN = %w[check-digits].freeze
 
     def test_activities_where_students_program_have_steps
         content = File.expand_path('../../content', __dir__)
@@ -256,7 +255,6 @@ class StageCodeTest < Minitest::Test
             next false unless programs
             StageCode.mark(markdown, File.dirname(page))[1].empty?
         end
-        assert_empty without - NO_FILES - OPEN, "Activities where students program, without code up to a step for teachers:\n#{(without - NO_FILES - OPEN).join("\n")}"
-        assert_empty OPEN - without, "Remove these from OPEN, they have steps now: #{(OPEN - without).join(', ')}"
+        assert_empty without - NO_FILES, "Activities where students program, without code up to a step for teachers:\n#{(without - NO_FILES).join("\n")}"
     end
 end
