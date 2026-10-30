@@ -45,6 +45,7 @@ tasks:
       path: glsl-starter/shader.frag
       expect:
         format: text
+        compile: glsl
         contains:
           - { pattern: '\bd\s*=\s*(?:length\s*\(\s*p\s*\)|distance\s*\(\s*p\s*,\s*vec2\s*\(\s*0(?:\.0*)?\s*\)\s*\))', say: 'In `shader.frag` finde ich `d` noch nicht, den Abstand des Pixels zur Mitte: `length(p)`.' }
           - { pattern: '\binside\s*=.*smoothstep\s*\(\s*0?\.50*\s*-\s*pixel\s*,\s*0?\.50*\s*\+\s*pixel\s*,\s*d\s*\)', say: 'Für den Rand fehlt noch `smoothstep` mit `d`: von einem Pixel innen, `0.5 - pixel`, bis einem Pixel außen, `0.5 + pixel`.' }
@@ -126,6 +127,7 @@ tasks:
       path: glsl-starter/shader.frag
       expect:
         format: text
+        compile: glsl
         contains:
           - { pattern: '(?:length\s*\(\s*(?:p\s*-\s*vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)|vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)\s*-\s*p)\s*\)|distance\s*\(\s*(?:p\s*,\s*vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)|vec3\s*\(\s*(?:0(?:\.0*)?|\.0+)\s*,\s*0?\.60*\s*,\s*(?:0(?:\.0*)?|\.0+)\s*\)\s*,\s*p)\s*\))\s*-\s*0?\.50*(?!\d)', say: 'In `ball` finde ich den Abstand zur Kugel noch nicht: die Länge von `p` minus dem Mittelpunkt `vec3(0.0, 0.6, 0.0)`, weniger den Radius `0.5`.' }
           - { pattern: '\bmin\s*\(\s*(?:ball\s*\(\s*p\s*\)\s*,\s*p\.y|p\.y\s*,\s*ball\s*\(\s*p\s*\))\s*\)', say: '`map` gibt noch nicht den Abstand zur näheren der beiden Flächen zurück: der kleinere von `ball(p)` und dem Abstand zum Boden, `p.y`.' }
@@ -145,6 +147,7 @@ tasks:
       path: glsl-starter/shader.frag
       expect:
         format: text
+        compile: glsl
         contains:
           - { pattern: '\bfor\s*\(\s*int\s+\w+\s*=\s*0\s*;\s*\w+\s*<\s*100\s*;', say: 'In `march` finde ich noch keine Schleife mit höchstens 100 Schritten: `for (int i = 0; i < 100; i++)`.' }
           - { pattern: '\bmap\s*\(\s*(?:from\s*\+\s*(?:dir\s*\*\s*t|t\s*\*\s*dir)|(?:dir\s*\*\s*t|t\s*\*\s*dir)\s*\+\s*from)\s*\)', say: 'Der Strahl fragt `map` noch nicht am Punkt `from + dir * t`.' }
@@ -207,6 +210,7 @@ tasks:
       path: glsl-starter/shader.frag
       expect:
         format: text
+        compile: glsl
         contains:
           - { pattern: '\bp\s*\*=\s*3\.0*(?![\d.])|\bp\s*\*\s*3\.0*(?![\d.])|\b3\.0*\s*\*\s*p\b', say: 'In `carpet` wird `p` noch nicht mit `3.0` multipliziert. In GLSL mit Punkt, sonst meldet die Vorschau einen Fehler.' }
           - { pattern: '\bfloor\s*\(', say: 'Noch fehlt die Nummer der Kachel: `floor`.' }
@@ -250,6 +254,7 @@ tasks:
       path: glsl-starter/shader.frag
       expect:
         format: text
+        compile: glsl
         contains:
           - { pattern: '\bmod\s*\(', say: 'In `sponge` finde ich noch kein `mod`: Die erste Zeile rechnet `vec3 q` aus, die Lage von `p` im Würfel dieser Stufe.' }
           - { pattern: '\bmod\s*\(\s*p\s*\+\s*(?:size\s*/\s*2\.0*|size\s*\*\s*0?\.50*|0?\.50*\s*\*\s*size|\(\s*size\s*/\s*2\.0*\s*\)|(?!size\b)[A-Za-z_]\w*)\s*,\s*size\s*\)\s*-\s*(?:size\s*/\s*2\.0*|size\s*\*\s*0?\.50*|0?\.50*\s*\*\s*size|\(\s*size\s*/\s*2\.0*\s*\)|(?!size\b)[A-Za-z_]\w*)', say: '`q` soll die Lage im Würfel sein, mit seiner Mitte bei 0. Verschieb `p` vor `mod` um eine halbe Kantenlänge und zieh sie danach wieder ab.' }

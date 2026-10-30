@@ -20,6 +20,7 @@ require_relative 'schema_check'
 require_relative 'keyboard_check'
 require_relative 'circuit_check'
 require_relative 'turtle_check'
+require_relative 'glsl_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -427,6 +428,13 @@ module TaskCheck
                 :read => GitCheck.describe(repo, state), :warnings => [])
         else
             outcome = FileChecks.send(type, check, workspace)
+        end
+
+        # a shader that has what is looked for must also compile (GlslCheck)
+        if outcome.ok && type == 'files' && check.dig('expect', 'compile') == 'glsl' && runner
+            message = GlslCheck.check(check['path'], runner)
+            outcome = FileChecks::Outcome.new(:ok => false, :problem => :compile_error, :message => message,
+                :read => outcome.read, :warnings => outcome.warnings) if message
         end
 
         if outcome.ok

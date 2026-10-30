@@ -158,7 +158,10 @@ RUN tlmgr install ly1 \
 
 # pgfplots for diagrams from measured data, csquotes for the quotation
 # marks biblatex asks for; a layer of their own, so those above stay cached.
-RUN tlmgr install pgfplots csquotes \
+# Cached, they may hold a tlmgr older than the repository's, which then
+# refuses to install: tlmgr updates itself first (only itself, not --all).
+RUN tlmgr update --self \
+    && tlmgr install pgfplots csquotes \
     && kpsewhich pgfplots.sty csquotes.sty
 
 RUN set -eu; \
@@ -346,6 +349,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         gfortran \
         ghostscript \
         git \
+        glslang-tools \
         gnucobol${GNUCOBOL_MAJOR} \
         gnupg \
         graphviz \
