@@ -517,7 +517,7 @@ Noam Chomsky, ein Sprachwissenschaftler, hat 1956 Grammatiken danach geordnet, w
 <tr><td>0</td><td>beliebige Regeln</td><td>eine <a href='/turingmaschine'>Turingmaschine</a></td><td>alles, was ein Programm überhaupt erkennen kann</td></tr>
 </table>
 
-Diese Ordnung heißt **Chomsky-Hierarchie**. Jede Stufe enthält die darunter: Eine reguläre Grammatik ist auch kontextfrei. Alle Grammatiken auf dieser Seite sind kontextfrei; was Programmiersprachen brauchen, liegt auf Stufe 2.
+Diese Ordnung heißt **Chomsky-Hierarchie**. Jede Stufe enthält die darunter: Eine reguläre Grammatik ist auch kontextfrei. Zu einem regulären Ausdruck zeichnet [Automatron](/automatron) die endlichen Automaten und schreibt die reguläre Grammatik dazu. Alle Grammatiken auf dieser Seite sind kontextfrei; was Programmiersprachen brauchen, liegt auf Stufe 2.
 
 _person(chomsky)
 

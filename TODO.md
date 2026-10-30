@@ -217,7 +217,6 @@ Platform-wide:
 * [ ] Mention Shared Live Apps in BIF for peer-testing unfinished stories, and wherever sharing a running app helps
 * [ ] Review the remaining manually authored homepage image alt attributes
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
-* [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
 
 
