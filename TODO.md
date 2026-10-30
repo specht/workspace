@@ -204,7 +204,6 @@ Open findings from the October 2026 review:
 Platform-wide:
 
 * [ ] The opening »Ordner schließen, New File, Text File, speichern unter /workspace/…« is written out by hand on 21 pages (the 18 language profiles, Feuer, MySQL, the static website); cloning already uses the Handbuch part `workspace#repository-klonen` everywhere but Basics (which explains the interface on purpose). A part `neue-datei` in `reference/workspace` would serve them, but each page's screenshots show its own file name: the part needs the name as a parameter, or one picture for all
-* [ ] Java in the form of Java 25 (`void main()`, `IO.println`) on the profile only so far: the Handbuch »Dart und Java« and the Java variants of Prüfziffern and Supermarkt still write `public static void main(String[] args)` and `System.out.println`; the Java Katas too. Classes stay where checks call them (`BubbleSort.bubbleSort`), but `main` and the output could follow; decide per page
 * [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] A dark card picture for the activities that have none (`audit-activities.rb`, column »Karte«: »nicht dunkel«), from `variants: dark` or `render-svg.rb`

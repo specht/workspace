@@ -143,4 +143,21 @@ class WordingTest < Minitest::Test
             assert_empty named, "the series »#{series}« is named outside its section"
         end
     end
+
+    # Java in the form of Java 25 (docs/checkliste.md): main without a class
+    # around it or as static void main(), output with IO.println. Only the
+    # Java profile shows the classic form beside it, its examples accept it,
+    # and the Handbuch names it as what came before.
+    CLASSIC_JAVA = /public static void main\(String|System\.out\.print/
+    CLASSIC_JAVA_ALLOWED = %w[java/java.md java/lehrkraft.md java/task-examples.yaml reference/dart-java/dart-java.md].freeze
+
+    def test_java_in_the_form_of_java_25
+        paths = Dir.glob(File.join(CONTENT, '**', '*.{md,yaml,java}')).reject { |path| path.include?('/_drafts/') }
+        found = paths.flat_map do |path|
+            name = path.sub("#{CONTENT}/", '')
+            next [] if CLASSIC_JAVA_ALLOWED.include?(name)
+            File.read(path).lines.each_with_index.filter_map { |line, i| "#{name}:#{i + 1}: #{line.strip[0, 120]}" if line.match?(CLASSIC_JAVA) }
+        end
+        assert_empty found
+    end
 end

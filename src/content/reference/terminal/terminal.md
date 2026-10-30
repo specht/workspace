@@ -349,7 +349,7 @@ So schreibt jede Sprache ESC und damit ein grünes »Hallo«:
 <tr><td>Python</td><td><code>\033</code> (oktal) oder <code>\x1b</code></td><td><code>print("\033[32mHallo\033[0m")</code></td></tr>
 <tr><td>JavaScript</td><td><code>\x1b</code></td><td><code>console.log("\x1b[32mHallo\x1b[0m");</code></td></tr>
 <tr><td>Dart</td><td><code>\x1B</code></td><td><code>print('\x1B[32mHallo\x1B[0m');</code></td></tr>
-<tr><td>Java</td><td><code>\u001B</code></td><td><code>System.out.println("\u001B[32mHallo\u001B[0m");</code></td></tr>
+<tr><td>Java</td><td><code>\u001B</code></td><td><code>IO.println("\u001B[32mHallo\u001B[0m");</code></td></tr>
 <tr><td>C</td><td><code>\033</code> (oktal)</td><td><code>printf("\033[32mHallo\033[0m\n");</code></td></tr>
 </tbody>
 </table>
