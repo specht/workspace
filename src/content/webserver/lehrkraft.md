@@ -39,3 +39,11 @@ Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sech
 #### Weiter
 
 Die Pixelwand baut auf diesem Server auf und ergänzt WebSockets. Für ein Gespräch über Sicherheit eignet sich die Prüfung mit `start_with?` (Python: `startswith`): Die Seite lässt den Angriff mit `curl --path-as-is localhost:8000/../server.rb` (oder `server.py`) ausprobieren, einmal mit und einmal ohne die Prüfung; ohne sie liefert der Server seinen Quelltext aus. Browser und normales `curl` entfernen `..` selbst, darum fällt die Lücke beim bloßen Klicken nicht auf.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden einen Server, den sie ganz verstehen. Daraus wird eine kleine eigene Anwendung; bewertet wird beim Vorführen im Browser und mit `curl` und am Erklären, welche Zeile welchen Teil der Anfrage liest.
+
+- **Eine kleine Anwendung mit Datei** (eine Doppelstunde bis ein Projekt): ein Gästebuch, eine Wunschliste für die Klassenfahrt, eine Ausleihe für Bücher der Klasse. Was der Server sich merkt, kommt in eine Datei, damit es einen Neustart übersteht; das Formular aus [»Was ein Formular schickt«](#was-ein-formular-schickt) und die Abstimmung kommen wieder.
+- **Eine Schnittstelle für die Klasse** (eine Doppelstunde): Der Server antwortet nicht mit HTML, sondern mit JSON, etwa mit dem Stundenplan oder einer Frage des Tages, und die anderen fragen ihn mit `curl` ab wie in [»Wetter«](/wetter). So sehen die Lernenden beide Seiten einer API.
+- **Gegenseitig prüfen** (eine Doppelstunde): Paare tauschen ihre Server und suchen Lücken, nur im eigenen Workspace: Pfade mit `..` wie in [»Ein Angriff mit `..`«](#ein-angriff-mit), sehr lange Zeilen, Formulare mit seltsamen Zeichen. Abgegeben wird eine Liste der Funde mit dem, was jeweils dagegen hilft.

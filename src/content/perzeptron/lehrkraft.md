@@ -40,3 +40,11 @@ Lernende bauen ein Perzeptron, ein einzelnes künstliches Neuron, ohne Bibliothe
 - Pinguine: K. B. Gorman, T. D. Williams, W. R. Fraser, <a href='https://doi.org/10.1371/journal.pone.0090081'>PLOS ONE 2014</a>, über das Paket <a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a> unter CC0; <code>penguins.csv</code> lässt die zwei Pinguine ohne Schnabelmaße weg.
 - Ziffern: E. Alpaydin, C. Kaynak, <a href='https://archive.ics.uci.edu/dataset/80/optical+recognition+of+handwritten+digits'>Optical Recognition of Handwritten Digits</a>, UCI Machine Learning Repository, 1998, CC BY 4.0; <code>digits-train.csv</code> und <code>digits-test.csv</code> sind <code>optdigits.tra</code> und <code>optdigits.tes</code> unverändert.
 - Beide baut <code>src/scripts/collect-perzeptron/collect-perzeptron.rb</code> neu.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden ein Neuron, das aus Messungen lernt. Die Ideen geben ihm eigene Daten oder eine neue Frage; bewertet wird an der Gerade, die das Neuron findet, und daran, ob die Lernenden erklären können, warum es sich bei manchen Messungen irrt.
+
+- **Eigene Messungen** (eine Doppelstunde): Blätter von zwei Baumarten vom Schulhof, Länge und Breite gemessen, oder zwei Sorten Nudeln, gewogen und vermessen. Die Klasse sammelt, das Neuron lernt; wer Messfehler macht oder eine dritte Art einschmuggelt, sieht es am Bild. Messungen an Menschen sind kein gutes Beispiel.
+- **Drei Arten mit drei Neuronen** (eine Doppelstunde): Ein Neuron je Art, das nur fragt »diese oder eine andere?«, und am Ende gewinnt das sicherste. So kommen die Zügelpinguine aus [»Wo ein Neuron nicht weiterkommt«](#wo-ein-neuron-nicht-weiterkommt) doch noch zu ihrem Recht; XOR bleibt trotzdem unlösbar, und die Lernenden sollen erklären, warum.
+- **Ein Neuron für Zeichen der Klasse** (ein Projekt): Wie in [»Deine eigene Handschrift«](#deine-eigene-handschrift), aber mit einem selbst gesammelten Satz an Bildern, etwa Kreuz gegen Kreis, von allen in der Klasse gezeichnet. Bewertet wird, wie gut es an Zeichnungen von Leuten abschneidet, deren Bilder es nicht gelernt hat.

@@ -50,3 +50,11 @@ Lernende schreiben ein Programm, das nach den k nächsten Nachbarn entscheidet, 
 
 - Pinguine: K. B. Gorman, T. D. Williams, W. R. Fraser, <a href='https://doi.org/10.1371/journal.pone.0090081'>PLOS ONE 2014</a>, über das Paket <a href='https://allisonhorst.github.io/palmerpenguins/'>palmerpenguins</a> unter CC0; dieselbe Datei wie in »Ein Neuron lernt«.
 - Fahrradverleih: ausgedacht von <code>src/scripts/collect-naechste-nachbarn/collect-naechste-nachbarn.rb</code>, das beide Dateien neu baut.
+
+#### Eigene Projekte
+
+Nach der Seite können die Lernenden ein Programm nach Nachbarn entscheiden lassen und nachzählen, wen es trifft. Die Ideen führen beides weiter; bewertet wird an der gemessenen Trefferquote und an der Begründung.
+
+- **Eigene Daten** (eine Doppelstunde): Blätter vom Schulhof, Getränke nach Zucker und Preis, Steine aus dem Erdkundeunterricht, mit zwei oder drei Maßen, die die Klasse selbst erhebt. Wie in [»Wie oft liegt es richtig?«](#wie-oft-liegt-es-richtig) wird gezählt, ob das Programm Neues richtig einordnet. Daten über Menschen aus der Klasse sind kein gutes Beispiel.
+- **Das beste k** (eine Doppelstunde): Die Lernenden probieren alle `k` von 1 bis 15 durch, jedes Mal an Daten, die nicht zum Lernen dienten, und zeichnen die Trefferquote als Kurve. Warum ein sehr kleines und ein sehr großes `k` beide schlecht sind, erklären sie an einem Beispiel.
+- **Ein Fall aus der Wirklichkeit** (ein Projekt, mit Politik oder Ethik): eine Entscheidung, die heute ein Programm trifft, die Kreditwürdigkeit, die Auswahl von Bewerbungen, die Vergabe von Kitaplätzen. Wie in [»Wen trifft es?«](#wen-trifft-es) fragen die Lernenden, wer die Fehler abbekommt; abgegeben wird ein kurzer Vortrag mit Quellen.

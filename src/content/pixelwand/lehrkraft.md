@@ -47,3 +47,11 @@ Die ganze Klasse malt an einem Bild, live: Lernende schreiben einen Server in Ru
 #### Weiter
 
 Die Ideen am Ende der Seite, vor allem die Wartezeit pro Verbindung (wie »r/place«), entstehen meist von selbst, sobald die ersten das Bild übermalen.
+
+#### Eigene Projekte
+
+Nach der Seite hat die Klasse einen gemeinsamen Zustand, den jede Änderung an alle verteilt. Die Ideen bauen darauf; bewertet wird beim gemeinsamen Ausprobieren und am Erklären, was der Server bei einer Nachricht tut.
+
+- **Ein Programm, das malt** (eine Doppelstunde): ein Client ohne Browser, der ein Bild aus einer Datei Pixel für Pixel an die Wand schickt. Sobald zwei solche Programme gegeneinander malen, wird die Wartezeit pro Verbindung zur Frage der Fairness; das Lock aus [»Ein Lock«](#ein-lock) zeigt, was der Server dabei aushalten muss.
+- **Ein Bild nach Plan** (eine Stunde): Die Klasse einigt sich vorher auf ein Motiv und teilt die Wand in Bereiche auf. Was beim Malen schiefgeht, wer in fremde Bereiche malt und wie man sich abspricht, ist dasselbe Problem wie bei Software, an der viele zugleich arbeiten.
+- **Ein Spiel auf der Wand** (ein Projekt): ein Spiel, das alle zugleich spielen, etwa Felder erobern in Teamfarben oder ein Bild, das man gemeinsam erraten muss. Neu ist, dass der Server Regeln prüft, bevor er ein Pixel annimmt, und nicht mehr alles weitergibt.

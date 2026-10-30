@@ -43,3 +43,11 @@ Steganographie in Ruby oder Python: Lernende verstecken Text in den untersten Bi
 - »Gruppen statt Paare« prüft den Test mit `width` an kleinen Bildern.
 - »Das Fundstück« fragt das Codewort STRANDKORB ab, »Das zweite Fundstück« LEUCHTTURM, »Wie viel passt?« die 57.596 Bytes.
 - »Ab wann sieht man es?« und »Am Test vorbei?« sind Vermutungen, »Stellen mit wechselnder Basis« eine Rechnung von Hand.
+
+#### Eigene Projekte
+
+Nach der Seite können die Lernenden verstecken und entdecken. Daraus wird ein Spiel zwischen beiden Seiten oder ein Verfahren für ein anderes Medium; bewertet wird daran, ob die Botschaft wieder herauskommt und ob der Test sie findet.
+
+- **Verstecken und Suchen** (eine Doppelstunde): Jede Gruppe gibt fünf Bilder ab, in manchen steckt etwas, in manchen nicht. Die anderen suchen mit Bitebenen und dem [Chi-Quadrat-Test](#der-chi-quadrat-test), ohne zu wissen, wo; gewonnen hat, wessen Verfahren am seltensten auffällt, etwa mit einem Schlüssel für die Reihenfolge der Pixel.
+- **Eine Botschaft in einem Ton** (eine Doppelstunde): Eine WAV-Datei ist eine Liste von Zahlen wie ein Bild, nur in der Zeit; das unterste Bit hört man so wenig, wie man es in [»Das unterste Bit«](#das-unterste-bit) sieht. Zum Vorführen spielt der Ton vorher und nachher.
+- **Eine Botschaft in einem Text** (eine Doppelstunde): Leerzeichen am Zeilenende, unsichtbare Zeichen aus Unicode oder die Wahl zwischen zwei gleichbedeutenden Wörtern. Wer gewinnt, wenn jemand den Text abtippt oder kopiert? Das zeigt, wie zerbrechlich ein Versteck ist.

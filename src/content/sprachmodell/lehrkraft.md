@@ -38,3 +38,11 @@ Lernende bauen ein Sprachmodell aus Wortpaaren: Sie zerlegen die Märchen der Br
 #### Woher der Text kommt
 
 <code>maerchen.txt</code> baut <code>src/scripts/collect-maerchen/collect-maerchen.rb</code> aus dem E-Book <a href='https://www.gutenberg.org/ebooks/77905'>Nr. 77905 von Project Gutenberg</a>, »Deutsche Märchen gesammelt durch die Brüder Grimm« (Langewiesche-Brandt 1921, gemeinfrei): nur der Text der Märchen, ein Absatz je Zeile, ohne Titel, Anmerkungen und die Lizenz von Project Gutenberg, ohne die vier Märchen auf Plattdeutsch.
+
+#### Eigene Projekte
+
+Die Seite endet mit einem eigenen Text für das Modell. Die Ideen hier verändern das Modell selbst; bewertet wird an dem, was es schreibt, und daran, dass die Lernenden erklären, warum es das schreibt.
+
+- **Buchstaben statt Wörter** (eine Doppelstunde): Dasselbe Programm zählt, welcher Buchstabe auf welche zwei folgt, und erfindet damit Namen, die es nicht gibt, etwa neue Ortsnamen aus einer Liste echter. Mit einem Buchstaben Kontext klingt es nach nichts, mit drei schon nach einer Sprache; das ist derselbe Schritt wie in [»Abgeschrieben?«](#abgeschrieben), nur kleiner und schneller zu sehen.
+- **Wer hat das geschrieben?** (ein Projekt): ein Modell je Autorin oder Autor, aus Büchern von Project Gutenberg. Für einen neuen Satz rechnet jedes Modell aus, wie wahrscheinlich er ihm ist, und das wahrscheinlichste rät, von wem er stammt. Bewertet wird, wie oft es richtig rät, an Sätzen, die es nicht gelernt hat.
+- **Wie viel Kontext ist zu viel?** (eine Doppelstunde): drei oder vier Wörter statt zwei. Die Lernenden messen, wie oft das Modell ganze Sätze wörtlich übernimmt, und schreiben auf, was das für große Sprachmodelle bedeutet, die mit sehr viel mehr Kontext arbeiten.
