@@ -559,6 +559,8 @@ printf '\e[1mFlur\e[0m\nAusgänge: \e[34mosten\e[0m, \e[34munten\e[0m\n'
 <tr><td><code>31</code></td><td>rot</td><td><code>36</code></td><td>türkis</td></tr>
 </table>
 
+Alle Zahlen, auch helle Farben, Hintergründe und jede Farbe aus Rot, Grün und Blau, stehen im Handbuch unter [Farben im Terminal](/reference/terminal#farben).
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>34</code> in <code>31</code>
 oder <code>33</code> und <code>1</code> in <code>4</code>. Lass dann das

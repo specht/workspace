@@ -230,6 +230,66 @@ _person(fox)
 
 <!-- /part -->
 
+<!-- part: farben -->
+## Farben im Terminal
+
+Nicht jedes Zeichen, das ein Programm ausgibt, zeigt das Terminal an. Das Zeichen ESC (Nummer 27) leitet eine Anweisung ein: `ESC[32m` heißt »ab hier grün«, `ESC[1m` »ab hier fett«, `ESC[0m` »zurück zum Normalen«. Solche Folgen heißen **ANSI-Escape-Sequenzen**, nach der Norm, die sie 1979 festschrieb. Mehrere Zahlen trennt ein Semikolon: `ESC[1;32m` ist fett und grün.
+
+<table class='table table-sm reference-table'>
+<thead>
+<tr><th>Zahl</th><th>ab hier</th></tr>
+</thead>
+<tbody>
+<tr><td><code>0</code></td><td>wieder normal: alle Farben und Schriftarten aus</td></tr>
+<tr><td><code>1</code>, <code>2</code>, <code>3</code>, <code>4</code></td><td>fett, blass, kursiv, unterstrichen</td></tr>
+<tr><td><code>7</code></td><td>Schrift und Hintergrund vertauscht</td></tr>
+<tr><td><code>30</code> bis <code>37</code></td><td>Schriftfarbe: schwarz, rot, grün, gelb, blau, magenta, türkis, weiß</td></tr>
+<tr><td><code>90</code> bis <code>97</code></td><td>dieselben acht Farben, hell</td></tr>
+<tr><td><code>40</code> bis <code>47</code>, <code>100</code> bis <code>107</code></td><td>Hintergrund in denselben Farben</td></tr>
+<tr><td><code>39</code>, <code>49</code></td><td>Schrift- oder Hintergrundfarbe wieder die des Terminals</td></tr>
+<tr><td><code>38;5;n</code></td><td>Schriftfarbe <code>n</code> aus einer Palette von 256 (<code>48;5;n</code> für den Hintergrund)</td></tr>
+<tr><td><code>38;2;r;g;b</code></td><td>jede Farbe aus Rot, Grün und Blau, je 0 bis 255 (<code>48;2;r;g;b</code> für den Hintergrund)</td></tr>
+</tbody>
+</table>
+
+Wie die acht Farben genau aussehen, legt das Terminal fest; im dunklen und im hellen Farbschema von VS Code ist Gelb nicht dasselbe Gelb. Wer eine bestimmte Farbe will, nimmt `38;2;r;g;b`.
+
+So schreibt jede Sprache ESC und damit ein grünes »Hallo«:
+
+```bash
+printf '\e[32mHallo\e[0m\n'
+```
+
+```ruby
+puts "\e[32mHallo\e[0m"
+```
+
+```python
+print("\033[32mHallo\033[0m")
+```
+
+```javascript
+console.log("\x1b[32mHallo\x1b[0m");
+```
+
+```dart
+print('\x1B[32mHallo\x1B[0m');
+```
+
+```java
+System.out.println("\u001B[32mHallo\u001B[0m");
+```
+
+```c
+printf("\033[32mHallo\033[0m\n");
+```
+
+<div class='hint'>
+Schließ jede Farbe mit <code>ESC[0m</code> ab, sonst färbt sie alles danach mit, bis ins Terminal hinein, nachdem das Programm beendet ist. Leitest du die Ausgabe in eine Datei um, stehen die Sequenzen als Zeichen darin; <code>less -R</code> zeigt sie farbig an. Viele Programme lassen die Farben weg, wenn die Variable <code>NO_COLOR</code> gesetzt ist (<a href='https://no-color.org/'>no-color.org</a>).
+</div>
+
+<!-- /part -->
+
 ## Zum Nachschlagen
 
 Ausführlicher als `man`, mit Beispielen und zum Durchblättern, auf Englisch:
