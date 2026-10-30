@@ -224,6 +224,10 @@ Die Sprache a<sup>n</sup>b<sup>n</sup>c<sup>n</sup>, alle Wörter aus einer Reih
 
 Diese Maschine hält auf zwei Arten an: im Zustand q<sub>J</sub> (»ja«), wenn sie das Wort annimmt, oder wenn es für ihren Zustand und das gelesene Zeichen keinen Übergang gibt; dann lehnt sie es ab.
 
+Im Bild die Maschine aus dem Code darunter: Die Runde über q<sub>0</sub>, q<sub>1</sub>, q<sub>2</sub> und q<sub>3</sub> streicht ein a, ein b und ein c durch und kehrt zurück, q<sub>4</sub> prüft am Ende, dass hinter den a nur noch Y und Z stehen.
+
+<div class='automaton-drawing' role='img' aria-label='Sechs Zustände: q0 mit Startpfeil, q1, q2, q3, q4 und qJ mit doppeltem Rand. Von q0 führt a / X, R nach q1, Y / Y, R nach q4 und _ / _, R nach qJ. q1 bleibt bei a und Y und geht bei b / Y, R nach q2. q2 bleibt bei b und Z und geht bei c / Z, L nach q3. q3 läuft nach links über a, b, Y und Z und geht bei X / X, R zurück nach q0. q4 bleibt bei Y und Z und geht bei _ / _, L nach qJ.' data-states='q0 q1 q2 q3 q4 qJ' data-start='q0' data-accept='qJ' data-arrows='q0 | a / X, R | q1; q0 | Y / Y, R | q4; q0 | _ / _, R | qJ; q1 | a / a, R | q1; q1 | Y / Y, R | q1; q1 | b / Y, R | q2; q2 | b / b, R | q2; q2 | Z / Z, R | q2; q2 | c / Z, L | q3; q3 | a / a, L | q3; q3 | b / b, L | q3; q3 | Y / Y, L | q3; q3 | Z / Z, L | q3; q3 | X / X, R | q0; q4 | Y / Y, R | q4; q4 | Z / Z, R | q4; q4 | _ / _, L | qJ'></div>
+
 <!-- language: ruby -->
 Lege `anbncn.rb` an. `show` ist dasselbe wie in `plus_one.rb`:
 
