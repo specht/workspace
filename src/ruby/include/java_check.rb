@@ -81,7 +81,7 @@ module JavaCheck
                 static final StringBuilder RESULT = new StringBuilder();
 
                 static String quote(String s) {
-                    return "\\"" + s.replace("\\\\", "\\\\\\\\").replace("\\"", "\\\\\\"").replace("\\n", "\\\\n") + "\\"";
+                    return "\\"" + s.replace("\\\\", "\\\\\\\\").replace("\\"", "\\\\\\"").replace("\\n", "\\\\n").replace("\\u001B", "\\\\u001B") + "\\"";
                 }
 
                 static List<Object> listOf(Object array) {

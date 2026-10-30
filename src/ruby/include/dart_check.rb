@@ -74,7 +74,7 @@ module DartCheck
 
             String _repr(Object? v) {
               if (v == null) return 'null';
-              if (v is String) return "'${v.replaceAll(r'\\', r'\\\\').replaceAll("'", r"\\'").replaceAll('\\n', r'\\n')}'";
+              if (v is String) return "'${v.replaceAll(r'\\', r'\\\\').replaceAll("'", r"\\'").replaceAll('\\n', r'\\n').replaceAll('\\x1B', r'\\x1B')}'";
               if (v is List) return '[${v.map(_repr).join(', ')}]';
               if (v is Set) return '{${v.map(_repr).join(', ')}}';
               if (v is Map) return '{${v.entries.map((e) => '${_repr(e.key)}: ${_repr(e.value)}').join(', ')}}';
