@@ -17,6 +17,27 @@ class TaskCardTest < Minitest::Test
         TaskCard.html(tasks[id], activity: 'tcpip', number: number, render: RENDER)
     end
 
+    # An option is one line: »#{name} ist …« is text, not a heading, and a
+    # number, a dash or a quote mark at its start make no list or quote
+    def test_an_option_stays_one_line_of_text
+        begin
+            require 'redcarpet'
+        rescue LoadError
+            skip 'redcarpet is in the Ruby container'
+        end
+        markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+        {
+            '#{name} ist #{age} Jahre alt' => '#{name} ist #{age} Jahre alt',
+            '1. Platz' => '1. Platz',
+            '- 5' => '- 5',
+            '> 3' => '&gt; 3',
+            'Bello ist 3 Jahre alt' => 'Bello ist 3 Jahre alt',
+            '`#{x}` im Text' => '<code>#{x}</code> im Text',
+        }.each do |option, shown|
+            assert_equal shown, TaskCard.inline(markdown.render(TaskCard.inline_markdown(option))), option
+        end
+    end
+
     def test_mark_slots
         md = "Text\n\n_task(adresse)\n\nMehr\n  _task( loopback )  \nim Satz _task(nein) bleibt\n"
         out, ids = TaskCard.mark_slots(md)

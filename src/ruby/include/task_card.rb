@@ -81,7 +81,7 @@ module TaskCard
                     id = "#{field}-#{i}"
                     io << "<div class='form-check'>"
                     io << "<input class='form-check-input' type='#{multiple ? 'checkbox' : 'radio'}' name='#{h.(field)}' id='#{h.(id)}' value='#{i}'>"
-                    io << "<label class='form-check-label' for='#{h.(id)}'>#{inline(render.(option))}</label>"
+                    io << "<label class='form-check-label' for='#{h.(id)}'>#{inline(render.(inline_markdown(option)))}</label>"
                     io << '</div>'
                 end
                 io << '</fieldset>'
@@ -373,6 +373,14 @@ module TaskCard
     # Shown where _task(id) names a task that tasks.yaml does not have.
     def self.missing_html(id)
         "<div class='task-missing'>Aufgabe »#{CGI.escapeHTML(id.to_s)}« fehlt in tasks.yaml.</div>"
+    end
+
+    # An option is one line of text: a mark at its start that Markdown reads
+    # as a block (a heading, a list, a quote) stays a character, so that
+    # »#{name} ist #{age} Jahre alt« is that text and not a heading.
+    def self.inline_markdown(text)
+        text.to_s.sub(/\A(\s*)(#|>|[-+*](?=\s))/) { "#{$1}\\#{$2}" }
+            .sub(/\A(\s*\d+)([.)])(?=\s)/) { "#{$1}\\#{$2}" }
     end
 
     # Option labels are rendered as Markdown but must stay inline.
