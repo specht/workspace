@@ -86,7 +86,7 @@ module TaskExamples
                 next if %w[function pip tests turtle].include?(type) && variant['check']['language'] == 'javascript' && !node?
                 # Java and Dart likewise: their examples wait for a machine with javac or dart
                 next if type == 'javascript' && !node?
-                next if type == 'java' && !tool?('javac')
+                next if type == 'java' && !java?
                 next if type == 'prolog' && !tool?('swipl')
                 next if type == 'dart' && !(File.executable?(DartCheck::DART) || tool?('dart'))
                 next if %w[function pip tests].include?(type) && variant['check']['language'] == 'java' && !tool?('javac')
@@ -274,6 +274,23 @@ module TaskExamples
     # where the Katas run. An older one formats some values differently
     # (Node 20 writes a list as [ 1, 1, 1 ]), so its examples wait too.
     NODE_MAJOR = 24
+
+    # The Java of the Workspace image (JAVA_VERSION in docker/code/Dockerfile):
+    # the Java pages use what is new in it (void main() without a class, IO),
+    # which an older javac does not know, so their examples wait for it.
+    JAVA_MAJOR = 25
+
+    def self.java?
+        if @java.nil?
+            version = begin
+                IO.popen(['javac', '-version'], :err => [:child, :out], &:read).to_s
+            rescue SystemCallError
+                ''
+            end
+            @java = version[/javac (\d+)/, 1].to_i >= JAVA_MAJOR
+        end
+        @java
+    end
 
     def self.node?
         if @node.nil?

@@ -64,7 +64,7 @@ sleep: 0.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit der Klasse HelloWorld, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit void main() und IO.println, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `HelloWorld.java` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/HelloWorld.java`.
 
@@ -88,7 +88,17 @@ sleep: 1.5
 crop-bottom: 56%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei HelloWorld.java mit farbiger Syntax, public class HelloWorld mit der Methode main.'>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei HelloWorld.java mit farbiger Syntax: die Methode main mit IO.println.'>
+
+Das Programm beginnt bei `main`, und `IO.println` gibt eine Zeile aus. So kurz geht es seit Java 25. In älteren Büchern und im Netz steht um dasselbe noch eine Klasse herum, mit `public static void main(String[] args)` und `System.out.println`; auch das übersetzt `javac` weiterhin:
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
 
 _task(hallo)
 
@@ -147,6 +157,14 @@ javac HelloWorld.java && java HelloWorld
 Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
 </div>
 
+Java kennt zwei Wege, ein Programm zu starten:
+
+- **Übersetzen, dann starten:** `javac HelloWorld.java` schreibt den Bytecode in `HelloWorld.class`, und `java HelloWorld` startet ihn, so oft du willst, ohne neu zu übersetzen. So arbeiten größere Programme.
+- **Gleich starten:** `java HelloWorld.java` übersetzt die Datei bei jedem Start im Speicher und führt sie sofort aus; eine `.class`-Datei entsteht dabei nicht. Seit Java 22 geht das auch, wenn das Programm aus mehreren Dateien im selben Ordner besteht.
+
+Für die kleinen Programme auf dieser Seite gehen beide Wege. Die nächste Aufgabe will die Datei `HelloWorld.class` sehen, also übersetze mindestens einmal mit `javac`.
+
+
 _task(uebersetzt)
 
 ### Fehler finden und beheben
@@ -154,10 +172,8 @@ _task(uebersetzt)
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `println` das Wort `printn` zu schreiben:
 
 ```java
-~ public class HelloWorld {
-~     public static void main(String[] args) {
-        System.out.printn("Hello, World!");
-~     }
+~ void main() {
+    IO.printn("Hello, World!");
 ~ }
 ```
 
@@ -185,9 +201,9 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt='javac meldet HelloWorld.java:3: error: cannot find symbol, zeigt System.out.printn("Hello, World!") und nennt symbol: method printn(String).'>
+<img class='full' src='hello-error.webp' alt='javac meldet HelloWorld.java:2: error: cannot find symbol, zeigt IO.printn("Hello, World!") und nennt symbol: method printn(String) und location: class IO.'>
 
-Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
 ## Primfaktorzerlegung
 
@@ -225,11 +241,11 @@ Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben.
 _task(int-grenze)
 
 <!-- after: int-grenze -->
-`nextInt` liest ein `int`: 32 Bit, höchstens 2147483647. 3000000000 passt nicht hinein. Anders als C rechnet Java dann nicht mit einer falschen Zahl weiter, sondern bricht mit einer Exception ab und nennt die Eingabe, die nicht passte.
+`IO.readln` liest den Text, den du eintippst, und `Integer.parseInt` macht daraus ein `int`: 32 Bit, höchstens 2147483647. 3000000000 passt nicht hinein. Anders als C rechnet Java dann nicht mit einer falschen Zahl weiter, sondern bricht mit einer Exception ab und nennt die Eingabe, die nicht passte.
 <!-- /after -->
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere die Zeile mit <code>nextInt</code> zu <code>long number = scanner.nextLong();</code>, übersetze neu und probier <code>3000000000</code> noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
+<strong>Ausprobieren:</strong> Ändere die Zeile mit <code>Integer.parseInt</code> zu <code>long number = Long.parseLong(IO.readln("Enter a number: "));</code>, übersetze neu und probier <code>3000000000</code> noch einmal. Was ist bei <code>long</code> anders als bei <code>int</code>?
 </div>
 
 ## Bubblesort
@@ -241,6 +257,8 @@ An diesem Beispiel kannst du sehen, wie man in Java Arrays verwendet, Funktionen
 Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 
 _include_file(BubbleSort.java, java)
+
+Anders als `HelloWorld.java` und `Factor.java` steht dieses Programm in einer Klasse, `class BubbleSort`. So können auch andere Programme seine Methode aufrufen, als `BubbleSort.bubbleSort(…)`; ein Programm ohne Klasse hat keinen Namen, unter dem man es von außen ansprechen könnte. `static` heißt, dass die Methoden zur Klasse gehören und kein Objekt brauchen. Und eine Klasse braucht `import` für das, was sie aus anderen Paketen nimmt (`Arrays`, `Random`); ein Programm ohne Klasse bekommt alles aus den Grundpaketen von Java (dem Modul `java.base`) von selbst.
 
 Speichere die Datei unter dem Namen `BubbleSort.java`. Kompiliere das Programm:
 

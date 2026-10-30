@@ -16,10 +16,10 @@ tasks:
       expect:
         format: text
         contains:
-          - pattern: 'System\.out\.println\s*\(\s*"Hello, World!"\s*\)'
-            say: 'In `HelloWorld.java` finde ich noch kein `System.out.println("Hello, World!")`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
-          - pattern: 'public\s+class\s+HelloWorld\b'
-            say: 'Die Klasse in `HelloWorld.java` muss `HelloWorld` heißen, genau wie die Datei: `public class HelloWorld`.'
+          - pattern: '(?:IO|System\.out)\.println\s*\(\s*"Hello, World!"\s*\)'
+            say: 'In `HelloWorld.java` finde ich noch kein `IO.println("Hello, World!")`. Steht es genau so da, mit Komma, Ausrufezeichen und Anführungszeichen?'
+          - pattern: '\bvoid\s+main\s*\('
+            say: 'In `HelloWorld.java` fehlt noch `void main()`: Dort beginnt das Programm, und `IO.println` steht zwischen den geschweiften Klammern darunter.'
     feedback:
       - when: { problem: missing }
         say: Es gibt noch keine `/workspace/HelloWorld.java`. Hast du beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd> den Namen `HelloWorld.java` eingegeben, mit großem H und großem W?
@@ -80,20 +80,20 @@ tasks:
     check:
       type: answer
       compare: regex
-      expect: '(?i)^\W*(java\.util\.)?InputMismatchException\W*$'
+      expect: '(?i)^\W*(java\.lang\.)?NumberFormatException\W*$'
     feedback:
-      - when: { matches: '(?i)NumberFormatException' }
-        say: '`NumberFormatException` käme von `Integer.parseInt`. Dieses Programm liest mit einem `Scanner`; schau in die erste Zeile der Meldung.'
+      - when: { matches: '(?i)InputMismatchException' }
+        say: '`InputMismatchException` käme von einem `Scanner`. Dieses Programm liest mit `IO.readln` und `Integer.parseInt`; schau in die erste Zeile der Meldung.'
       - when: { matches: '(?i)^\W*Exception\W*$' }
         say: Gesucht ist der ganze Name, das Wort vor `Exception` gehört dazu.
       - when: { matches: '(?i)main' }
         say: '`main` ist der Thread, in dem es passiert ist. Der Name der Exception steht dahinter.'
     hint: Die erste Zeile lautet `Exception in thread "main" …`, und dahinter steht der Name.
     solution: |
-      `java.util.InputMismatchException`: `nextInt` liest ein `int`, 32 Bit,
-      höchstens 2147483647. 3000000000 passt nicht hinein. Anders als C rechnet
-      Java nicht mit einer falschen Zahl weiter, sondern bricht ab und sagt,
-      welche Eingabe nicht passte.
+      `java.lang.NumberFormatException`: `Integer.parseInt` macht aus dem Text
+      ein `int`, 32 Bit, höchstens 2147483647. 3000000000 passt nicht hinein.
+      Anders als C rechnet Java nicht mit einer falschen Zahl weiter, sondern
+      bricht ab und nennt den Text, der nicht passte.
 
   - id: absteigend
     title: Absteigend sortieren

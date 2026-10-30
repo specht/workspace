@@ -6,11 +6,13 @@ examples:
   hallo:
     pass:
       - files: { HelloWorld.java: HelloWorld.java }
+      # die Form mit Klasse aus älteren Büchern geht auch
+      - files: { HelloWorld.java: { text: "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n" } }
     fail:
       - files: { HelloWorld.java: error-HelloWorld.java }
-        say: System.out.println
-      - files: { HelloWorld.java: { text: "public class Hello {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n" } }
-        say: genau wie die Datei
+        say: IO.println
+      - files: { HelloWorld.java: { text: "IO.println(\"Hello, World!\");\n" } }
+        say: void main
       - files: { HelloWorld.java: { text: "" } }
       - files: { helloworld.java: HelloWorld.java }
   uebersetzt:
@@ -30,10 +32,10 @@ examples:
       - answer: String
   int-grenze:
     pass:
-      - answer: InputMismatchException
-      - answer: java.util.InputMismatchException
-    fail:
       - answer: NumberFormatException
+      - answer: java.lang.NumberFormatException
+    fail:
+      - answer: InputMismatchException
       - answer: Exception
       - answer: main
   absteigend:
