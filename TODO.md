@@ -36,7 +36,6 @@ page and the start page (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes for the language pages (Steckbriefe): every activity in a catalog has a `lehrkraft.md`, they have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 
 
