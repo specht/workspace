@@ -81,6 +81,17 @@ _task(eltern-von)
 
 _task(kinder)
 
+<!-- after: kinder -->
+So sieht die Familie in `familie.pl` jetzt aus, die Kinder von Anna
+Magdalena in Blau. Jeder Pfeil ist ein Fakt `parent(Elternteil, Kind)`;
+eine Anfrage wie `parent(X, johann_sebastian)` sucht die Pfeile, die bei
+Johann Sebastian ankommen.
+
+<div class='gallery single'>
+<figure><img src='stammbaum.webp' alt='Die Familie Bach als Graph, von links nach rechts in Generationen: christoph mit einem Pfeil zu johann_ambrosius; johann_ambrosius und maria_elisabeth mit Pfeilen zu johann_christoph, johann_jacob und johann_sebastian; johann_michael zu maria_barbara; johann_sebastian und maria_barbara zu catharina_dorothea, wilhelm_friedemann, carl_philipp_emanuel und johann_gottfried_bernhard; johann_sebastian und anna_magdalena in Blau zu gottfried_heinrich, elisabeth_juliane_friederica, johann_christoph_friedrich und johann_christian; carl_philipp_emanuel zu johann_sebastian_der_juengere, johann_christoph_friedrich zu wilhelm_friedrich_ernst.'><figcaption>Jeder Pfeil ein Fakt <code>parent(P, K)</code>; blau, was du eingetragen hast</figcaption></figure>
+</div>
+<!-- /after -->
+
 ### Regeln
 
 Eine Regel sagt, wann etwas gilt. `:-` liest man »wenn«, das Komma »und«:
@@ -210,7 +221,11 @@ Jede Landkarte lässt sich mit vier Farben so färben, dass keine zwei
 Nachbarn dieselbe haben. Bewiesen haben das Kenneth Appel und Wolfgang
 Haken 1976, als einen der ersten großen Beweise mit Hilfe eines Computers.
 Hier färbt Prolog die zwölf Bezirke Berlins. Nachbarn sind Bezirke mit
-einer gemeinsamen Grenze:
+einer gemeinsamen Grenze; im Bild verbindet sie eine Linie:
+
+<div class='gallery single'>
+<figure><img src='bezirke.webp' alt='Die zwölf Bezirke Berlins als Kreise mit ihrer Variablen, ungefähr da, wo sie liegen: Spandau im Westen, Reinickendorf und Pankow im Norden, Charlottenburg-Wilmersdorf, Mitte und Friedrichshain-Kreuzberg in der Mitte, Lichtenberg und Marzahn-Hellersdorf im Osten, Steglitz-Zehlendorf, Tempelhof-Schöneberg, Neukölln und Treptow-Köpenick im Süden; eine Linie zwischen je zwei Nachbarn, wie in der Tabelle.'><figcaption>Die Bezirke und ihre Nachbarn, noch ohne Farben</figcaption></figure>
+</div>
 
 <table class='table'>
 <tr><th>Bezirk</th><th>Variable</th><th>Nachbarn</th></tr>
@@ -238,6 +253,17 @@ wget ${web_root}/prolog/starter/bezirke.pl
 ```
 
 _task(bezirke)
+
+<!-- after: bezirke -->
+Mit der Lösung findet Prolog zuerst diese Färbung. Stehen deine
+Bedingungen oder die Farben in anderer Reihenfolge, kann deine erste
+Antwort eine andere sein; richtig ist jede, in der keine Linie zwei Kreise
+derselben Farbe verbindet.
+
+<div class='gallery single'>
+<figure><img src='bezirke-farben.webp' alt='Dieselben zwölf Bezirke, jeder Kreis mit einem Ring in seiner Farbe: Charlottenburg-Wilmersdorf, Pankow und Treptow-Köpenick gelb; Friedrichshain-Kreuzberg, Marzahn-Hellersdorf, Reinickendorf und Steglitz-Zehlendorf grün; Lichtenberg, Mitte, Neukölln und Spandau rot; Tempelhof-Schöneberg blau. Keine Linie verbindet zwei Kreise derselben Farbe.'><figcaption>Die erste Färbung, die Prolog findet: vier Farben, keine zwei Nachbarn gleich</figcaption></figure>
+</div>
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schreib die Regel einmal so, dass sie erst

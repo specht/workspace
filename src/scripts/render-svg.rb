@@ -32,6 +32,7 @@ DARK = {
     '#fdfdfd' => '#fdfdfd', # a printed label (a barcode): white in both modes
     '#fde68a' => '#fde68a', # a yellow sticker on a printed label (a QR code): the same in both modes
     '#7c3aed' => '#a78bfa', # purple: a fourth colour beside blue, green and amber (branches in a commit graph)
+    '#eab308' => '#facc15', # yellow: a colour by name beside red, green and blue (a map in four colours)
 }.freeze
 
 svg_path = ARGV[0] or abort "usage: #{$PROGRAM_NAME} FILE.svg [WIDTH]"
