@@ -47,6 +47,8 @@ Adventure«, schrieb Will Crowther 1975 und 1976, nach seinen eigenen Karten
 der Mammoth Cave in Kentucky, durch die er selbst gekrochen war; nach ihm
 heißt die ganze Gattung Adventure.
 
+_person(crowther)
+
 Leg einen Ordner für dieses Projekt an:
 
 <!-- language: ruby -->

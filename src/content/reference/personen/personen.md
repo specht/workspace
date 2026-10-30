@@ -507,6 +507,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1936 -->
+<!-- part: crowther -->
+### Will Crowther
+
+<div class='person'>
+<img src='crowther.webp' alt='Will Crowther 2012: ein Mann mit weißem Haar, weißem Vollbart und Brille in einer roten Fleecejacke vor herbstlichem Wald, lächelnd.'>
+<p><strong>Will Crowther</strong> (geboren 1936), amerikanischer Programmierer und Höhlenforscher. Bei der Firma BBN schrieb er 1969 die Software der Interface Message Processors, der ersten Router des ARPANET. In seiner Freizeit vermaß er mit seiner Frau Patricia die Gänge der Mammoth Cave.</p>
+<p>»Colossal Cave Adventure« schrieb er für seine beiden Töchter, in FORTRAN auf einem PDP-10. Sein Spiel verstand Befehle aus zwei Wörtern, ein Verb und ein Gegenstand wie <code>GET LAMP</code>, so wie deines <code>nimm apfel</code> versteht. Don Woods baute es 1977 aus, und mit ihm verbreitete es sich über das ARPANET.</p>
+<p class='person-credit'>Foto: Nancyscrowther, 2012, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Will_Crowther_Fall_2012.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1938 -->
 <!-- part: knuth-lamport -->
 ### Donald Knuth und Leslie Lamport
