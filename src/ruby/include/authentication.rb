@@ -1,3 +1,4 @@
+require 'digest'
 require 'securerandom'
 require 'uri'
 
@@ -40,6 +41,14 @@ module Authentication
 
     def self.valid_qr_login_secret?(secret)
         secret.is_a?(String) && secret.match?(/\A[0-9a-z]{32}\z/)
+    end
+
+    # What the database stores of a session: the SHA-256 of the sid in the
+    # cookie, so that a dump of the database logs nobody in. The sid is
+    # random enough (24 characters of 31) that a plain hash cannot be
+    # reversed by trying.
+    def self.session_key(sid)
+        Digest::SHA256.hexdigest(sid.to_s)
     end
 
     def self.session_cookie_name(development:)

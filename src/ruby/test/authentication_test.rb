@@ -6,6 +6,16 @@ class AuthenticationTest < Minitest::Test
         assert_equal '123456', Authentication.generate_login_code(:development => true)
     end
 
+    # The database stores the hash; the cookie's sid is not in it.
+    def test_session_key_is_the_sha256_of_the_sid
+        sid = 'abcdefghijklmnopqrstuvwx'
+        key = Authentication.session_key(sid)
+        assert_equal Digest::SHA256.hexdigest(sid), key
+        assert_equal 64, key.size
+        refute_includes key, sid
+        refute_equal key, Authentication.session_key('abcdefghijklmnopqrstuvwy')
+    end
+
     def test_production_login_codes_are_six_digits
         25.times do
             assert_match(/\A[0-9]{6}\z/, Authentication.generate_login_code(:development => false))

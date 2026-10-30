@@ -272,6 +272,20 @@ class SetupDatabase
         end
     end
 
+    # A Session stores the hash of the sid in the cookie
+    # (Authentication.session_key) since 2026-10-30; before, the sid itself.
+    # A sid has 24 characters, a hash 64: the first start after the change
+    # hashes the old ones, so nobody is logged out. It runs before the first
+    # request, and on every start after that finds nothing.
+    def hash_session_sids
+        sids = neo4j_query('MATCH (s:Session) WHERE size(s.sid) <> 64 RETURN s.sid AS sid;').map { |row| row['sid'] }
+        sids.each_slice(500) do |slice|
+            pairs = slice.map { |sid| { 'from' => sid, 'to' => Authentication.session_key(sid) } }
+            neo4j_query('UNWIND $pairs AS p MATCH (s:Session {sid: p.from}) SET s.sid = p.to;', :pairs => pairs)
+        end
+        STDERR.puts "Hashed the sids of #{sids.size} sessions" unless sids.empty?
+    end
+
     # Code Bites is gone (2026-10-18), with its practice sets: what it stored
     # goes too, so the Datenschutzerklärung need not mention it. Runs on every
     # start and finds something once.
@@ -358,14 +372,6 @@ class Main < Sinatra::Base
     def self.test_demo_tag(email, test_tag)
         digest = Digest::SHA2.hexdigest("#{email}:#{test_tag}")
         "demo#{digest[0, 20]}"
-    end
-
-    def self.tag_for_sid(sid)
-        Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16].to_i(16).to_s(36)[0, 8].downcase
-    end
-
-    def tag_for_sid(sid)
-        Main.tag_for_sid(sid)
     end
 
     # Shell/Docker command timeouts.
@@ -2594,6 +2600,7 @@ class Main < Sinatra::Base
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         setup.migrate_moved_tasks(MOVED_TASKS)
         setup.remove_code_bites
+        setup.hash_session_sids
         self.reconcile_live_apps!(:refresh_nginx => false)
         # The invitations first: the nginx map decides who may reach a running
         # Workspace (may_use_workspace?), and without them it would allow none.
@@ -2735,7 +2742,8 @@ class Main < Sinatra::Base
         @session_user = nil
         sid = current_session_sid
         if sid && sid.match?(/\A[0-9A-Za-z]+\z/)
-            results = neo4j_query(<<~END_OF_QUERY, :sid => sid).to_a
+            key = Authentication.session_key(sid)
+            results = neo4j_query(<<~END_OF_QUERY, :sid => key).to_a
                 MATCH (s:Session {sid: $sid})-[:FOR]->(u:User)
                 RETURN s, u;
             END_OF_QUERY
@@ -2752,13 +2760,13 @@ class Main < Sinatra::Base
                 if session_expiry && session_expiry > DateTime.now && !Main.may_use_workspace?(results.first['u'][:email].to_s.downcase, results.first['u'])
                     # No longer invited: the session ends now, not in a year.
                     STDERR.puts "Session ended: #{results.first['u'][:email]} is no longer invited"
-                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => sid)
+                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => key)
                 elsif session_expiry && session_expiry > DateTime.now && session[:impersonated_by] &&
                       !Main.may_still_look_in?(session[:impersonated_by], results.first['u'][:email].to_s.downcase)
                     # A teacher imitating a student who left its groups, or who lost its
                     # own access meanwhile: the session ends, not at »Zurück«.
                     STDERR.puts "Session ended: #{session[:impersonated_by]} may no longer imitate #{results.first['u'][:email]}"
-                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => sid)
+                    neo4j_query('MATCH (s:Session {sid: $sid}) DETACH DELETE s;', :sid => key)
                 elsif session_expiry && session_expiry > DateTime.now
                     email = results.first['u'][:email]
                     @session_user = {
@@ -2781,7 +2789,7 @@ class Main < Sinatra::Base
                     today = Date.today.to_s
                     if @impersonated_by.nil? && (@session_user[:last_seen] != today || session[:last_used_on] != today)
                         neo4j_query('MATCH (s:Session {sid: $sid})-[:FOR]->(u:User {email: $email}) SET u.last_seen = $today, s.last_used_on = $today;',
-                            :sid => sid, :email => email, :today => today)
+                            :sid => key, :email => email, :today => today)
                         @session_user[:last_seen] = today
                     end
 
@@ -2795,7 +2803,7 @@ class Main < Sinatra::Base
                         set_server_sid_cookie(server_sid, expires)
                     end
                 else
-                    neo4j_query(<<~END_OF_QUERY, :sid => sid)
+                    neo4j_query(<<~END_OF_QUERY, :sid => key)
                         MATCH (s:Session {sid: $sid})
                         DETACH DELETE s;
                     END_OF_QUERY
@@ -2859,6 +2867,12 @@ class Main < Sinatra::Base
         return nil unless raw.is_a?(String)
 
         raw.split(',').first
+    end
+
+    # The session's sid as the database stores it (Authentication.session_key).
+    def current_session_key
+        sid = current_session_sid
+        sid && Authentication.session_key(sid)
     end
 
     def session_cookie_expiry
@@ -3110,6 +3124,8 @@ class Main < Sinatra::Base
             :browser_secret_sha256 => Digest::SHA256.hexdigest(browser_secret),
             :now => Time.now.to_i,
         }
+        # the cookie gets the sid, the database its hash (Authentication.session_key)
+        sid = RandomTag::generate(24)
         qr_result = @@qr_login_mutex.synchronize do
             cleanup_qr_login_requests
             row = neo4j_query(<<~END_OF_QUERY, lookup_params).to_a.first
@@ -3126,11 +3142,10 @@ class Main < Sinatra::Base
                 next { :status => :pending, :expires_at => row['expires_at'].to_i }
             end
 
-            sid = RandomTag::generate(24)
             session_expires = (DateTime.now + Authentication::SESSION_LIFETIME_DAYS).to_s
             complete_params = lookup_params.merge(
                 :email => row['approved_email'],
-                :sid => sid,
+                :sid => Authentication.session_key(sid),
                 :session_expires => session_expires,
                 :session_info => new_session_fields,
             )
@@ -3144,7 +3159,7 @@ class Main < Sinatra::Base
                 WITH u
                 CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
                 SET s += $session_info
-                RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
+                RETURN u.email AS email, u.server_sid AS server_sid;
             END_OF_QUERY
             next { :status => :expired } unless login_result
 
@@ -3156,7 +3171,7 @@ class Main < Sinatra::Base
             respond(:status => 'pending', :expires_at => qr_result[:expires_at])
         when :approved
             expires = session_cookie_expiry
-            set_session_cookie(qr_result[:login_result]['sid'], expires)
+            set_session_cookie(sid, expires)
             server_sid = qr_result[:login_result]['server_sid']
             set_server_sid_cookie(server_sid, expires) if server_sid
             respond(:status => 'approved')
@@ -3448,6 +3463,8 @@ class Main < Sinatra::Base
             halt 401, { :error => 'invalid_login_code' }.to_json
         end
 
+        # the cookie gets the sid, the database its hash (Authentication.session_key)
+        sid = RandomTag::generate(24)
         login_result = @@login_request_mutex.synchronize do
             now = Time.now.to_i
             row = neo4j_query(<<~END_OF_QUERY, :tag => tag).to_a.first
@@ -3486,14 +3503,13 @@ class Main < Sinatra::Base
                 next nil
             end
 
-            sid = RandomTag::generate(24)
             session_expires = (DateTime.now + Authentication::SESSION_LIFETIME_DAYS).to_s
             complete_params = {
                 :tag => tag,
                 :code => code,
                 :now => now,
                 :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
-                :sid => sid,
+                :sid => Authentication.session_key(sid),
                 :session_expires => session_expires,
                 :session_info => new_session_fields,
             }
@@ -3506,7 +3522,7 @@ class Main < Sinatra::Base
                 REMOVE u.login_request_created_at
                 CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
                 SET s += $session_info
-                RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
+                RETURN u.email AS email, u.server_sid AS server_sid;
             END_OF_QUERY
         end
 
@@ -3518,7 +3534,7 @@ class Main < Sinatra::Base
         end
 
         expires = session_cookie_expiry
-        set_session_cookie(login_result['sid'], expires)
+        set_session_cookie(sid, expires)
         set_server_sid_cookie(login_result['server_sid'], expires) if login_result['server_sid']
         respond(:ok => 'yay')
     end
@@ -3587,8 +3603,7 @@ class Main < Sinatra::Base
         halt 403 unless may_look_in?(email)
         record_look_in(email, 'impersonate', data[:reason])
         ensure_user_account(email)
-        sid = current_session_sid
-        neo4j_query(<<~END_OF_STRING, {:sid => sid, :email => email, :by => @session_user[:email]})
+        neo4j_query(<<~END_OF_STRING, {:sid => current_session_key, :email => email, :by => @session_user[:email]})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r
             CREATE (s)-[:FOR]->(u)
@@ -3601,7 +3616,7 @@ class Main < Sinatra::Base
     post '/api/stop_impersonation' do
         assert(user_logged_in?)
         halt 400 unless @impersonated_by
-        neo4j_query(<<~END_OF_STRING, {:sid => current_session_sid, :email => @impersonated_by})
+        neo4j_query(<<~END_OF_STRING, {:sid => current_session_key, :email => @impersonated_by})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r
             CREATE (s)-[:FOR]->(u)
@@ -3667,7 +3682,7 @@ class Main < Sinatra::Base
         return 0 unless user_logged_in?
 
         neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.sid <> $sid AND s.impersonated_by IS NULL RETURN count(s) AS n;',
-            :email => @session_user[:email], :sid => current_session_sid.to_s).first['n'].to_i
+            :email => @session_user[:email], :sid => current_session_key.to_s).first['n'].to_i
     end
 
     post '/api/sign_out_elsewhere' do
@@ -3675,7 +3690,7 @@ class Main < Sinatra::Base
         halt 403 if @impersonated_by
         n = other_sessions_count
         neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.sid <> $sid AND s.impersonated_by IS NULL DETACH DELETE s;',
-            :email => @session_user[:email], :sid => current_session_sid.to_s)
+            :email => @session_user[:email], :sid => current_session_key.to_s)
         STDERR.puts "#{@session_user[:email]} signed out #{n} other sessions"
         respond(:ended => n)
     end
@@ -10509,7 +10524,7 @@ class Main < Sinatra::Base
         end
         if path[0, 7] == '/logout'
             path = '/index.html'
-            sid = current_session_sid
+            sid = current_session_key
             # A new Workspace credential, so one that leaked stops working;
             # other devices of this person get the new one on their next
             # request (before filter).

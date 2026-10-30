@@ -262,7 +262,7 @@ module Privacy
                 :how_long => "#{login_minutes} Minuten (Anmeldung per QR-Code: #{qr_minutes} Minuten) oder bis zur Anmeldung",
             },
             {
-                :data => 'Sitzungen: eine zufällige Kennung je angemeldetem Browser; dazu der Tag der Anmeldung und der Tag der letzten Nutzung ' \
+                :data => 'Sitzungen: eine zufällige Kennung je angemeldetem Browser, die im Cookie des Browsers steht; gespeichert wird nur ein Hashwert davon; dazu der Tag der Anmeldung und der Tag der letzten Nutzung ' \
                     '(nur das Datum, ohne Uhrzeit; nicht, während jemand anderes in das Konto sieht) und eine grobe Angabe des Geräts, ' \
                     'die bei der Anmeldung aus der Kennung des Browsers gebildet wird (etwa »Firefox auf Windows«); ' \
                     'die vollständige Kennung des Browsers und die IP-Adresse werden nicht gespeichert',
@@ -420,6 +420,7 @@ module Privacy
                 "Anmeldung mit einem Code per E-Mail, der nur zusammen mit dem Browser gilt, der ihn angefordert hat; der Code gilt #{login_minutes} Minuten und höchstens 5 Versuche lang. Es gibt keine Passwörter, die erraten oder wiederverwendet werden könnten.",
                 'Anfragen zur Anmeldung sind je E-Mail-Adresse und je Internetanschluss begrenzt; die Zählung steht nur im Arbeitsspeicher und wird nirgends gespeichert.',
                 'Sitzungs-Cookies sind HttpOnly, Secure und SameSite=Lax.',
+                'Von einer Sitzung speichert die Datenbank nur einen Hashwert der Kennung im Cookie; wer die Datenbank liest, kann sich damit nicht anmelden.',
             ],
             'Trennung und Berechtigungen' => [
                 'Jede Person hat einen eigenen Workspace in einem eigenen Container und eigene Datenbanken mit eigenen Zugangsdaten.',

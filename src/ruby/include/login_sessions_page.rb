@@ -23,7 +23,7 @@ class Main < Sinatra::Base
     def login_sessions_html(limit: 10)
         return '' unless user_logged_in? && @impersonated_by.nil?
 
-        LoginSessions.list_html(own_login_sessions, :current_sid => current_session_sid.to_s, :limit => limit)
+        LoginSessions.list_html(own_login_sessions, :current_sid => current_session_key.to_s, :limit => limit)
     end
 
     post '/api/login_sessions' do
@@ -37,7 +37,7 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:id])
         status, sid = LoginSessions.sid_to_end(own_login_sessions, data[:id].to_s,
-            :owner => @session_user[:email], :current_sid => current_session_sid.to_s, :impersonating => !@impersonated_by.nil?)
+            :owner => @session_user[:email], :current_sid => current_session_key.to_s, :impersonating => !@impersonated_by.nil?)
         case status
         when :impersonating then halt 403, { :error => 'impersonating' }.to_json
         when :invalid then halt 400, { :error => 'invalid_id' }.to_json

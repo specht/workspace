@@ -21,6 +21,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Der Workspace steht unter der AGPL-3.0-or-later (`LICENSE`): Wer eine geänderte Fassung betreibt, macht den
+  geänderten Quellcode den Nutzerinnen und Nutzern zugänglich.
+- Sitzungen speichern nur noch den SHA-256 der Kennung im Cookie. Beim ersten Start nach dem Update rechnet der
+  Ruby-Dienst die bestehenden Sitzungen um, bevor er Anfragen annimmt; niemand wird abgemeldet. Nach einem Zurückgehen
+  auf eine ältere Version sind alle abgemeldet. Sicherungen von vor dem Update enthalten die Kennungen noch.
 - Die zurückgestellte Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) ist entfernt; `/feuerwerk` führt zur Startseite.
   Beim ersten Start nach dem Update löscht der Ruby-Dienst, was Lernende dazu gespeichert und abgegeben haben
   (Ergebnisse, Versuche, Abgaben).
