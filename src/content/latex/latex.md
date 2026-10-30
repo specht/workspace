@@ -189,6 +189,14 @@ Unter die Einleitung kommen die anderen Kapitel. Schreib die Überschriften jetz
 
 _task(gliederung)
 
+<!-- after: gliederung -->
+Aus `\section` und `\subsection` setzt LaTeX das Inhaltsverzeichnis selbst zusammen, mit Nummern und Seitenzahlen. In der fertigen Facharbeit sieht es so aus:
+
+<div class='gallery centered'>
+<figure><img class='invert-dark border' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Das Inhaltsverzeichnis der fertigen Facharbeit</figcaption></figure>
+</div>
+<!-- /after -->
+
 _task(nummern)
 
 ### Eine Formel
@@ -219,7 +227,7 @@ von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
 - `equation` setzt eine Formel in eine eigene Zeile, mit einer Nummer am Rand. `\frac{l}{g}` ist ein Bruch, `\sqrt{…}` eine Wurzel, `\pi` das π.
 - `\label{eq:schwingungsdauer}` gibt der Formel einen Namen. `\eqref{eq:schwingungsdauer}` schreibt dann ihre Nummer, »(1)«. Kommt später eine Formel davor dazu, ändern sich Nummer und Verweis von selbst.
 - `\footnote{…}` macht eine Fußnote.
-- `\parencite{…}` gibt eine Quelle an. Das kennt LaTeX erst, wenn das Kapitel [Quellen](#9-quellen) eingerichtet ist: Lass die beiden `\parencite{…}` bis dahin weg, sonst meldet LaTeX »Undefined control sequence«.
+- `\parencite{…}` gibt eine Quelle an. Das kennt LaTeX erst, wenn der Abschnitt [Quellen](#quellen) eingerichtet ist: Lass die beiden `\parencite{…}` bis dahin weg, sonst meldet LaTeX »Undefined control sequence«.
 
 Damit Formeln zur Schrift passen und `\ang{20}` funktioniert (der Winkel 20°), brauchen sie Pakete. Ergänze die Präambel:
 
@@ -238,6 +246,14 @@ Damit Formeln zur Schrift passen und `\ang{20}` funktioniert (der Winkel 20°), 
 `siunitx` setzt Zahlen und Einheiten richtig, mit Komma und dem richtigen Abstand. Die Formelzeichen, die du sonst noch brauchst, stehen im Handbuch unter [Formelzeichen](/reference/latex#formelzeichen).
 
 _task(formel)
+
+<!-- after: formel -->
+So steht die Formel in der fertigen Facharbeit, abgesetzt und mit ihrer Nummer am rechten Rand:
+
+<div class='gallery centered'>
+<figure><img class='invert-dark border' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Die Formel auf ihrer Seite, mit Nummer am Rand</figcaption></figure>
+</div>
+<!-- /after -->
 
 _task(schwingungsdauer)
 
@@ -348,6 +364,14 @@ Die Linien kommen aus einem Paket. Ergänze die Präambel um:
 ```
 
 _task(tabelle)
+
+<!-- after: tabelle -->
+Bild und Tabelle in der fertigen Facharbeit: Beide tragen eine Nummer und eine Unterschrift, und LaTeX setzt sie dorthin, wo sie auf die Seite passen.
+
+<div class='gallery centered'>
+<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung und Tabelle, jede mit Nummer und Unterschrift</figcaption></figure>
+</div>
+<!-- /after -->
 
 ### Ein Diagramm
 
@@ -487,6 +511,14 @@ Jetzt kannst du die Quellen im Text zitieren: Setze die beiden `\parencite{…}`
 Im Verzeichnis stehen nur die Quellen, die du zitiert hast, alphabetisch sortiert und einheitlich gesetzt, mit Autor, Titel, Verlag und Jahr. Willst du lieber Nummern wie [1], schreibst du `style=numeric`. Frag deine Lehrkraft, welche Form sie erwartet.
 
 _task(quellen)
+
+<!-- after: quellen -->
+Das Diagramm und das Literaturverzeichnis in der fertigen Facharbeit. Das Verzeichnis setzt `biblatex` aus der Datei mit den Quellen zusammen; es steht nur darin, was im Text zitiert wird.
+
+<div class='gallery centered'>
+<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit und Literaturverzeichnis</figcaption></figure>
+</div>
+<!-- /after -->
 
 Mit derselben Idee verweist du auch im Text: `Abbildung~\ref{fig:aufbau}` schreibt die Nummer der Abbildung, `Tabelle~\ref{tab:messwerte}` die der Tabelle. Füge im Kapitel Aufbau und in der Auswertung solche Verweise ein, wie oben in den Code-Beispielen.
 
