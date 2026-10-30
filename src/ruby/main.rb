@@ -368,14 +368,6 @@ class Main < Sinatra::Base
         Main.tag_for_sid(sid)
     end
 
-    def self.server_sid_for_email(email)
-        return Digest::SHA2.hexdigest(LOGIN_CODE_SALT + email)
-    end
-
-    def server_sid_for_email(email)
-        Main.server_sid_for_email(email)
-    end
-
     # Shell/Docker command timeouts.
     #
     # All values are seconds and can be overridden through environment variables:
@@ -8030,6 +8022,65 @@ class Main < Sinatra::Base
 
         "<a style='#{@session_user[:show_git] ? '' : 'display: none;'}' href='/git' data-menu-module='git' class='btn btn-menu'>" \
             "<i class='bi bi-git'></i>Git</a>"
+    end
+
+    # The menu (_template.html): one strong button (open the Workspace or
+    # log in), then the tools. What the visitor may not use is left out of
+    # the page, not hidden, so an anonymous page names no tool, class or
+    # admin page. A tool switched off in the profile stays in the page,
+    # hidden: the profile switches it on and off in place (profil.html).
+    def menu_tool_buttons_html(path)
+        if @session_user.nil?
+            return "<a class=\"btn btn-success #{path == '/login.html' ? 'active' : ''}\" href=\"/login\"><i class='bi bi-box-arrow-in-right'></i>Anmelden</a>"
+        end
+        hidden = ->(key) { @session_user[key] ? '' : " style='display: none;'" }
+        io = []
+        io << "<button id='bu_launch' class=\"btn btn-success bu-launch-workspace\"><i class='bi bi-code-slash'></i>Workspace öffnen</button>" if @session_user[:show_workspace]
+        io << "<button#{hidden.(:show_phpmyadmin)} id='bu_phpmyadmin' data-menu-module='phpmyadmin' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-database'></i>phpMyAdmin</button>"
+        io << "<button#{hidden.(:show_neo4j)} id='bu_neo4j' data-menu-module='neo4j' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-diagram-3'></i>Neo4j</button>"
+        io << "<a#{hidden.(:show_tic80)} href=\"/tic80/\" data-menu-module='tic80' class=\"btn btn-menu\" target=\"_blank\"><svg class='bi bi-tic80' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg>TIC-80</a>"
+        io << git_menu_button_html
+        io.join("\n")
+    end
+
+    # The menu after »Handbuch«: »Klassen« for teachers, »Administration«
+    # for administrators, the profile for everyone logged in, and
+    # »Abmelden« only on the profile page, beside the name, with its label:
+    # a login lasts a year, and the profile is where one looks for it (and
+    # signs out elsewhere). Teachers manage their groups on the class page
+    # (tab »Gruppe«); /gruppen is the administration's overview.
+    def menu_account_buttons_html
+        return '' if @session_user.nil?
+        here = ->(p) { request.path == p ? " aria-current='page'" : '' }
+        active = ->(p) { request.path == p ? 'active' : '' }
+        io = []
+        if teacher_logged_in? || teacher_account_logged_in?
+            io << "<a href='/klasse' class=\"btn btn-menu #{active.('/klasse')}\"#{here.('/klasse')}><i class='bi bi-people'></i>Klassen</a>"
+        end
+        if admin_logged_in?
+            # what the site shows: picture rights (picture_rights.rb), the
+            # teachers' feedback on activities (activity_feedback.rb) and,
+            # in development only, the sources of the person boxes
+            item = ->(p, icon, label) { "<li><a class=\"dropdown-item #{active.(p)}\" href='#{p}'#{here.(p)}><i class='bi bi-#{icon} me-2'></i>#{label}</a></li>" }
+            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen'].include?(request.path)
+            io << "<div class='btn-group'>"
+            io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i>Administration</button>"
+            io << "<ul class='dropdown-menu'>"
+            io << item.('/admin', 'speedometer2', 'Betrieb')
+            io << item.('/gruppen', 'person-lines-fill', 'Gruppen')
+            io << item.('/personen', 'building', 'Personen und Schulen')
+            io << "<li><hr class='dropdown-divider'></li><li><h6 class='dropdown-header'>Inhalte</h6></li>"
+            io << item.('/picture-rights', 'image', 'Bildrechte')
+            io << item.('/rueckmeldungen', 'chat-square-text', 'Rückmeldungen')
+            io << item.('/person-sources', 'patch-check', 'Belege der Personen') if DEVELOPMENT
+            io << "</ul></div>"
+        end
+        name = (@@invitations[@session_user[:email]] || {})[:name].to_s.strip
+        io << "<a href='/profil' class=\"btn btn-menu btn-menu-profile #{active.('/profil')}\" title='Profil'><i class='bi bi-person-badge'></i>#{CGI.escapeHTML(name.empty? ? @session_user[:email].to_s : name)}</a>"
+        if request.path == '/profil'
+            io << "<a href='/logout' class=\"btn btn-menu btn-menu-logout\"><i class='bi bi-box-arrow-right' aria-hidden='true'></i>Abmelden</a>"
+        end
+        io.join("\n")
     end
 
     # The profile's »Git« (under »Werkzeuge«, a tool like the TIC-80): the
