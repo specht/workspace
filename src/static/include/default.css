@@ -12902,9 +12902,29 @@ pre.git-code {
         align-items: start;
     }
     .turtle-layout > .turtle-stage { margin-bottom: 0; }
+    /* the code as high as the paper with its bar beside it, never higher:
+       a longer program scrolls in its field, its colours and numbers along
+       (code_input.js), as Pip's plan beside the map */
     .turtle-layout .code-input-text,
     .turtle-layout > textarea {
         min-height: calc(var(--turtle-size) + 4.4em);
+        max-height: calc(var(--turtle-size) + 4.4em);
+    }
+    .turtle-layout .code-input .code-input-text {
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .turtle-layout .code-input-text,
+    .turtle-layout .code-input-view,
+    .turtle-layout .code-input-mirror {
+        scrollbar-gutter: stable;
+    }
+    .turtle-layout .code-input-mirror,
+    .turtle-layout .code-input-gutter {
+        overflow: hidden;
+    }
+    .turtle-layout .code-input-gutter {
+        padding-bottom: calc(0.375rem + 1px);
     }
 }
 
