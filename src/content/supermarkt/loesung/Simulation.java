@@ -13,9 +13,9 @@ public class Simulation {
         return supermarket.averageWait();
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(simulate(List.of(new Checkout(), new Checkout(), new Checkout())));
-        System.out.println(simulate(List.of(new Checkout(), new Checkout(), new ExpressCheckout())));
-        System.out.println(simulate(List.of(new Checkout(), new Checkout(), new SelfCheckout(), new SelfCheckout())));
+    static void main() throws Exception {
+        IO.println(simulate(List.of(new Checkout(), new Checkout(), new Checkout())));
+        IO.println(simulate(List.of(new Checkout(), new Checkout(), new ExpressCheckout())));
+        IO.println(simulate(List.of(new Checkout(), new Checkout(), new SelfCheckout(), new SelfCheckout())));
     }
 }

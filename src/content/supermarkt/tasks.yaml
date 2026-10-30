@@ -1164,7 +1164,7 @@ tasks:
         ```java
         Customer customer = new Customer(20, 0);
         for (Checkout checkout : List.of(new Checkout(), new ExpressCheckout(), new SelfCheckout())) {
-            System.out.println(checkout.serviceTime(customer));
+            IO.println(checkout.serviceTime(customer));
         }
         ```
 

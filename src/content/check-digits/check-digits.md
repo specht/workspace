@@ -1032,7 +1032,7 @@ ist derselbe Code mit vertauschten ersten Ziffern.
 <!-- solution -->
 ```java
 public class Swaps {
-    public static void main(String[] args) {
+    static void main() {
         int missed = 0;
         for (int a = 0; a <= 9; a++) {
             for (int b = 0; b <= 9; b++) {
@@ -1047,7 +1047,7 @@ public class Swaps {
                 }
             }
         }
-        System.out.println("Unbemerkt: " + missed + " von 90");
+        IO.println("Unbemerkt: " + missed + " von 90");
     }
 }
 ```

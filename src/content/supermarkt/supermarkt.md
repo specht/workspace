@@ -477,7 +477,7 @@ gib ihre Artikel aus, <code>dart supermarket.dart</code> im Ordner
 <!-- language: java -->
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schreib eine Klasse <code>Main</code> in
-<code>Main.java</code> mit <code>public static void main(String[] args)</code>,
+<code>Main.java</code> mit <code>static void main()</code>,
 leg darin zwei Kundinnen an und gib ihre Artikel aus. Starte sie im Terminal im
 Ordner <code>supermarkt</code> mit <code>java Main.java</code>. Ändere danach
 in <code>Main</code> die Artikel direkt, <code>anna.items = 3;</code>: Was sagt
@@ -1471,8 +1471,8 @@ public class Simulation {
         return supermarket.averageWait();
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(simulate(List.of(new Checkout(), new Checkout(), new Checkout())));
+    static void main() throws Exception {
+        IO.println(simulate(List.of(new Checkout(), new Checkout(), new Checkout())));
     }
 }
 ```
