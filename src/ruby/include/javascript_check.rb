@@ -30,9 +30,15 @@ module JavascriptCheck
         const cases = JSON.parse(payload);
         const full = path.resolve(file);
         const result = { cases: [] };
+        // an array as Ruby and Python show it, [1, 2, 3], so that what came
+        // out and what is right read alike in one message; util.inspect would
+        // write [ 1, 2, 3 ]
+        const inspect = (value, depth) => Array.isArray(value) && depth < 4
+            ? '[' + value.map((item) => inspect(item, depth + 1)).join(', ') + ']'
+            : util.inspect(value, { depth: 4 - depth, breakLength: Infinity });
         const short = (value) => {
             let shown;
-            try { shown = util.inspect(value, { depth: 4, breakLength: Infinity }); } catch (e) { shown = String(value); }
+            try { shown = inspect(value, 0); } catch (e) { shown = String(value); }
             return shown.length <= 200 ? shown : shown.slice(0, 200) + '…';
         };
         const text = (error) => ((error && error.name ? error.name : 'Error') + ': ' +

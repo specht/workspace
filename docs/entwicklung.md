@@ -211,8 +211,12 @@ Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
 `reference_index_test.rb`, die Lexer-Tests und einige mehr (`grep -l
 "nokogiri\|redcarpet\|rouge" test/*_test.rb include/*.rb` zeigt sie).
 `c_check_test.rb` braucht `cc` und wird ohne übersprungen; die Beispiele der
-JavaScript-Katas in `task_examples_test.rb` brauchen `node` in der Version des Images (24, `NODE_MAJOR` in `docker/code/Dockerfile`) und laufen darum
-nur auf dem eigenen Rechner; ebenso ein Beispiel einer `python`-Prüfung, deren
+JavaScript-Katas in `task_examples_test.rb` brauchen `node` in der Version des Images (24, `NODE_MAJOR` in `docker/code/Dockerfile`), die der
+Java-Prüfungen Java 25; mit älteren Versionen werden sie übersprungen.
+Alle Beispiele laufen im Image selbst mit
+`src/scripts/task-examples-in-image.rb` (der Befehl steht oben in der Datei;
+mit Namen von Aktivitäten nur diese, ohne alle, das dauert über eine
+Stunde); ebenso ein Beispiel einer `python`-Prüfung, deren
 Datei ein Modul lädt, das der Rechner nicht hat (`websockets` im
 Ruby-Container, die Pixelwand).
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
