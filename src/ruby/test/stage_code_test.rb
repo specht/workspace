@@ -131,8 +131,35 @@ class StageCodeTest < Minitest::Test
         files = [StageCode::File_.new(:target => 'main.c', :source => 'a', :text => 'a'),
                  StageCode::File_.new(:target => 'light.fs', :source => 'b', :text => 'b')]
         html = StageCode.buttons(files)
-        assert_includes html, "</i>main.c</button>"
-        assert_includes html, "</i>light.fs</button>"
+        assert_includes html, "</i>main.c bis hier</button>"
+        assert_includes html, "</i>light.fs bis hier</button>"
+    end
+
+    LONG = (1..12).map { |i| "line #{i}\n" }.join
+
+    def test_markers_in_a_row_share_a_row_of_buttons
+        Dir.mktmpdir do |dir|
+            Dir.mkdir(File.join(dir, 'stufen'))
+            %w[model-1.rb story-1.rb model-2.rb].each { |f| File.write(File.join(dir, 'stufen', f), "# #{f}\n" + LONG) }
+            page = "Text\n\n<!-- stage: stufen/model-1.rb as model.rb -->\n<!-- stage: stufen/story-1.rb as story.rb -->\n\nMehr\n\n" \
+                   "<!-- stage: stufen/model-2.rb as model.rb -->\n\nEnde\n"
+            _, points = StageCode.mark(page, dir)
+            assert_equal [%w[model.rb story.rb], %w[model.rb]], points.map { |files| files.map(&:target) }
+        end
+    end
+
+    def test_a_page_with_several_files_names_the_file_on_every_button
+        one = [StageCode::File_.new(:target => 'model.rb', :source => 'a', :text => 'a')]
+        two = [StageCode::File_.new(:target => 'story.rb', :source => 'b', :text => 'b')]
+        root = Nokogiri::HTML::DocumentFragment.parse("<div class='stage-code-slot' data-stage='0'></div><div class='stage-code-slot' data-stage='1'></div>")
+        StageCode.insert(root, [one, two])
+        assert_includes root.to_html, '</i>model.rb bis hier</button>'
+        assert_includes root.to_html, '</i>story.rb bis hier</button>'
+        # the same file in two languages is one file
+        root = Nokogiri::HTML::DocumentFragment.parse("<div class='stage-code-slot' data-stage='0'></div><div class='stage-code-slot' data-stage='1'></div>")
+        StageCode.insert(root, [one, [StageCode::File_.new(:target => 'model.py', :source => 'c', :text => 'c')]])
+        refute_includes root.to_html, '</i>model.rb bis hier</button>'
+        assert_includes root.to_html, '</i>Code bis hier</button>'
     end
 
     def test_a_real_page_gets_buttons

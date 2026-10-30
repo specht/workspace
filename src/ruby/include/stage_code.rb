@@ -108,6 +108,8 @@ module StageCode
         end
         lines.each do |line|
             stripped = line.strip
+            # markers in a row are one step: their buttons share a row
+            place.call if wait == :marker && !fence && !in_recipe && !stripped.empty? && !stripped.match?(MARKER)
             if fence
                 if stripped.start_with?('```')
                     # the generator reads the page's own file, without the
@@ -166,7 +168,7 @@ module StageCode
                 out << line
                 file = read(page_dir, m[1], m[2] || File.basename(m[1]))
                 collect.call([file]) if file
-                place.call
+                wait = :marker if pending
                 next
             end
             # a heading or a task card ends the step: the box comes before it
@@ -219,22 +221,26 @@ module StageCode
 
     # Replaces the slots in root (Nokogiri) with the buttons.
     def self.insert(root, points)
+        # a page with more than one file (model.rb and story.rb, not the
+        # same file in two languages) names the file on every button
+        named = points.flatten.map { |f| File.basename(f.target, '.*') }.uniq.size > 1
         root.css('div.stage-code-slot').each do |slot|
             files = points[slot['data-stage'].to_i] || []
             if files.empty?
                 slot.remove
             else
-                slot.replace(Nokogiri::HTML::DocumentFragment.parse(buttons(files)))
+                slot.replace(Nokogiri::HTML::DocumentFragment.parse(buttons(files, :named => named)))
             end
         end
     end
 
     # A small button at the side for each file: it copies the whole file
     # (_template.html, .stage-code-copy); the text waits in a <template>.
-    def self.buttons(files)
+    # Several files of one step stand side by side, each with its name.
+    def self.buttons(files, named: false)
         list = files.map do |f|
             name = CGI.escapeHTML(File.basename(f.target))
-            label = files.size == 1 ? 'Code bis hier' : name
+            label = named || files.size > 1 ? "#{name} bis hier" : 'Code bis hier'
             "<button type='button' class='stage-code-copy' title='Für Lehrkräfte: den ganzen Code von #{name} bis hier kopieren'>" \
                 "<i class='bi bi-copy' aria-hidden='true'></i>#{label}</button>" \
                 "<template>#{CGI.escapeHTML(f.text)}</template>"
