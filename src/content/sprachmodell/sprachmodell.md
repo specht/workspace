@@ -141,6 +141,13 @@ Satzzeichen. `random` brauchst du später.
 auf. Achte darauf, was mit dem Punkt am Ende passiert.
 </div>
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-1.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-1.py as model.py -->
+<!-- /language -->
+
 _task(woerter)
 
 ## Wer folgt auf wen
@@ -273,6 +280,13 @@ def follow_counts(tokens):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-2.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-2.py as model.py -->
+<!-- /language -->
+
 _task(zaehlen)
 
 ### In die Märchen schauen
@@ -323,6 +337,13 @@ folgt. Achte darauf, wie oft ein Satzzeichen unter den Nachfolgern ganz oben
 steht.
 </div>
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-3.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-3.py as model.py -->
+<!-- /language -->
+
 _task(nach-sprach)
 
 ## Ein Märchen schreiben
@@ -372,6 +393,13 @@ def most_likely(counts, word):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-4.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-4.py as model.py -->
+<!-- /language -->
+
 _task(haeufigstes)
 
 Zum Schreiben noch eine Funktion, die eine Liste von Wörtern wieder als Text
@@ -391,6 +419,13 @@ end
 def text(tokens):
     return re.sub(r" ([.,;:!?])", r"\1", " ".join(tokens))
 ```
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/model-5.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-5.py as model.py -->
 <!-- /language -->
 
 _task(immer-das-haeufigste)
@@ -440,6 +475,13 @@ Auf »ich« folgt am häufigsten »will«, auf »will« am häufigsten »ich«: 
 Modell ist in einer Schleife gefangen und kommt nie wieder heraus. Und es
 schreibt jedes Mal genau diesen Text, denn es entscheidet nie anders.
 <!-- /after -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/story-1.rb as story.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/story-1.py as story.py -->
+<!-- /language -->
 
 ## Würfeln statt immer das Häufigste
 
@@ -550,6 +592,13 @@ zieht genauso. Hier war es dein Code.
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-6.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-6.py as model.py -->
+<!-- /language -->
+
 _task(wuerfeln)
 
 <div class='hint own' data-check='schreiben'>
@@ -602,6 +651,13 @@ def generate(counts, start, n):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-7.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-7.py as model.py -->
+<!-- /language -->
+
 _task(schreiben)
 
 <!-- language: ruby -->
@@ -636,6 +692,13 @@ Zum Beispiel:
 Text Wort für Wort: Passen zwei Wörter nebeneinander zusammen? Und lies ihn dann
 als Ganzes: Ergibt er einen Sinn?
 </div>
+
+<!-- language: ruby -->
+<!-- stage: stufen/story-2.rb as story.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/story-2.py as story.py -->
+<!-- /language -->
 
 _task(gedaechtnis)
 
@@ -722,6 +785,13 @@ def pair_counts(tokens):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/model-8.rb as model.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/model-8.py as model.py -->
+<!-- /language -->
+
 _task(paare)
 
 _task(zwei-woerter)
@@ -744,6 +814,8 @@ def generate_pairs(counts, first, second, n)
 end
 ```
 
+<!-- stage: stufen/model-9.rb as model.rb -->
+
 Und in `story.rb`:
 
 ```ruby
@@ -753,6 +825,8 @@ pairs = pair_counts(words(File.read("maerchen.txt")))
   puts
 end
 ```
+
+<!-- stage: stufen/story-3.rb as story.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -767,6 +841,8 @@ def generate_pairs(counts, first, second, n):
     return tokens
 ```
 
+<!-- stage: stufen/model-9.py as model.py -->
+
 Und in `story.py`:
 
 ```python
@@ -775,6 +851,8 @@ for _ in range(3):
     print(text(generate_pairs(pairs, "Es", "war", 30)))
     print()
 ```
+
+<!-- stage: stufen/story-3.py as story.py -->
 <!-- /language -->
 
 <!-- after: zwei-woerter -->

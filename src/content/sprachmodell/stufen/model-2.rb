@@ -1,0 +1,16 @@
+# Der Text als Liste von Wörtern und Satzzeichen
+def words(text)
+  text.scan(/\p{L}+|[.,;:!?]/)
+end
+
+# Für jedes Wort: welche Wörter darauf folgen, und wie oft
+def follow_counts(tokens)
+  counts = {}
+  (0...tokens.size - 1).each do |i|
+    word = tokens[i]
+    following = tokens[i + 1]
+    counts[word] ||= {}
+    counts[word][following] = (counts[word][following] || 0) + 1
+  end
+  counts
+end

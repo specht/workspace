@@ -634,6 +634,8 @@ puts paint(game.start)
 ~ end
 ```
 
+<!-- stage: farbe/play.rb as play.rb -->
+
 Dann spielst du wie vorher, mit `ruby play.rb schule`.
 <!-- /language -->
 <!-- language: python -->
@@ -654,6 +656,8 @@ print(paint(game.start()))
 ~         break
     print(paint(game.handle(line)))
 ```
+
+<!-- stage: farbe/play.py as play.py -->
 
 Dann spielst du wie vorher, mit `python3 play.py schule`.
 <!-- /language -->
@@ -676,6 +680,9 @@ import 'colors.dart';
 ~   }
 ```
 
+<!-- stage: farbe/schule.dart as schule.dart -->
+<!-- stage: farbe/play.dart as play.dart -->
+
 Dann spielst du wie vorher, mit `dart run schule.dart`.
 <!-- /language -->
 <!-- language: java -->
@@ -693,6 +700,9 @@ ausgeben; `Colors` liegt im selben Ordner und braucht kein `import`:
             System.out.println(Colors.paint(game.handle(input.nextLine())));
 ~         }
 ```
+
+<!-- stage: farbe/School.java as School.java -->
+<!-- stage: farbe/Play.java as Play.java -->
 
 Dann spielst du wie vorher, mit `java School.java`.
 <!-- /language -->
