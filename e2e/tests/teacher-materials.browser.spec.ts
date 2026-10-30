@@ -26,7 +26,7 @@ test('designated teacher reaches the onboarding from /lehrmaterial', async ({ pa
 test('group administrator keeps the class page, not the admin page', async ({ page }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
   await page.goto('/profil');
-  await expect(page.getByRole('link', { name: 'Klassen', exact: true })).toBeVisible();
+  await expect(page.locator('.menu').getByRole('link', { name: 'Klassen', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Administration' })).toHaveCount(0);
   const response = await page.request.get('/admin');
   expect(response.status()).toBe(403);
