@@ -1,0 +1,12 @@
+{
+  "screenshots": {
+    "uml-werkstatt.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "b04633b3ed3e26a60e777bd37a25cc14bc206f08dfbee2e8d13f1d488fe7d6c3",
+      "state_hash": "28a4c607acfa373318e51dac49ca64536cfde3e2e4493ecace042a809bee70c7",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    }
+  },
+  "version": 1
+}

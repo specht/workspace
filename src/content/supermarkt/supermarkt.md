@@ -152,6 +152,24 @@ egal in welcher Sprache du nachher programmierst: Ein Klassendiagramm
 beschreibt einen Entwurf, keinen Code. Die Namen schreibst du so wie
 nachher im Code, dann findest du jede Methode aus dem Diagramm dort wieder.
 
+So sieht die Lampe in der UML-Werkstatt aus, links der Text in
+`supermarkt.uml`, rechts das Diagramm:
+
+<!-- tutorial-screenshot
+# Die Lampe in der UML-Werkstatt: der Text links, das Diagramm rechts
+write-file: supermarkt/supermarkt.uml <- code:class Lamp
+press: Control+O
+wait-for-input-value: /workspace/
+type: supermarkt/supermarkt.uml
+press: Enter
+sleep: 2
+hide-left-sidebar
+click: selector:.editor-actions [aria-label^="Klassendiagramm anzeigen"]
+sleep: 3
+-->
+
+<img class='full' src='uml-werkstatt.webp' alt='Die Datei supermarkt.uml mit der Klasse Lamp als Text, rechts daneben das Diagramm der UML-Werkstatt: ein Kasten mit Lamp oben, darunter die Attribute color und brightness mit Minuszeichen, darunter der Konstruktor und toggle mit Pluszeichen.'>
+
 Eine Kundin oder ein Kunde bringt in die Simulation zwei Werte mit: wie viele
 Artikel im Wagen liegen, und wann sie an den Kassen ankommt, in Sekunden nach
 neun Uhr.
