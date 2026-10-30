@@ -160,3 +160,17 @@ Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn v
 Wer Zugang bekommt, in welchen Gruppen Lernende und Lehrkräfte stehen und was Lehrkräfte sehen dürfen, steht in [docs/teacher-access.md](docs/teacher-access.md).
 
 Falls du mit dem Gedanken spielst, einen eigenen Workspace für deine Schule aufzusetzen und es einfach mal ausprobieren möchtest, findest du [hier eine Schnellstart-Anleitung](bootstrap/README.hetzner.centos.md).
+
+## Lizenz
+
+Der Code des Workspace steht unter der [GNU Affero General Public License,
+Version 3 oder später](LICENSE) (AGPL-3.0-or-later): Jede Schule darf ihn
+betreiben, ändern und weitergeben. Wer eine geänderte Fassung als Dienst
+anbietet, muss den Nutzerinnen und Nutzern den geänderten Quellcode
+zugänglich machen.
+
+Mitgelieferte Bibliotheken (unter anderem Bootstrap, Monaco, jQuery) und
+Bilder anderer stehen unter ihren eigenen Lizenzen; bei Bildern steht sie an
+der Stelle, an der das Bild verwendet wird. Bilder ohne freie Lizenz sind in
+`src/content/picture-rights.yaml` aufgeführt und erscheinen erst auf den
+Seiten, wenn die Erlaubnis vorliegt.
