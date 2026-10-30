@@ -6581,19 +6581,26 @@ html[data-bs-theme="dark"] .usage-row {
     border-color: #86b7fe;
 }
 
-/* the editor is dark in both schemes: a scrollbar in its colours, a soft
-   light thumb on no track, instead of the browser's light one (Safari
-   ignores scrollbar-color and takes the ::-webkit-scrollbar parts) */
-.code-input .code-input-text {
+/* A box that stays dark in the light scheme scrolls with a scrollbar in
+   its colours: a soft light thumb on no track, never the browser's light
+   one (docs/checkliste.md, »Oberfläche«). Code blocks (but the light one in
+   a template notice), the Kata's console and editor, the text adventure;
+   a new dark box that scrolls joins the list. Safari ignores
+   scrollbar-color and takes the ::-webkit-scrollbar parts. */
+pre:not(.template-notice-body pre), .task-console, .code-input .code-input-text, .adventure-screen {
     scrollbar-color: rgba(251, 241, 199, 0.28) transparent;
 }
-.code-input .code-input-text::-webkit-scrollbar {
+pre:not(.template-notice-body pre)::-webkit-scrollbar, .task-console::-webkit-scrollbar,
+.code-input .code-input-text::-webkit-scrollbar, .adventure-screen::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
-.code-input .code-input-text::-webkit-scrollbar-track {
+pre:not(.template-notice-body pre)::-webkit-scrollbar-track, .task-console::-webkit-scrollbar-track,
+.code-input .code-input-text::-webkit-scrollbar-track, .adventure-screen::-webkit-scrollbar-track {
     background: transparent;
 }
-.code-input .code-input-text::-webkit-scrollbar-thumb {
+pre:not(.template-notice-body pre)::-webkit-scrollbar-thumb, .task-console::-webkit-scrollbar-thumb,
+.code-input .code-input-text::-webkit-scrollbar-thumb, .adventure-screen::-webkit-scrollbar-thumb {
     background: rgba(251, 241, 199, 0.28);
     border: 2px solid transparent;
     border-radius: 4px;
