@@ -348,9 +348,9 @@ einem Git-Server im Netz braucht dann niemand.
   Git-Server des Workspace, `ClassRepos.mark_browse`); Lehrkräfte über
   »Ansehen« neben dem Feld in den Einstellungen, »ansehen« in der Zeile
   »Klassen-Repository« über der Aktivität, »Repository« neben »Zur Seite«
-  im Fortschritt der Klassenseite und die Übersicht `/git`. Ohne
+  im Fortschritt der Klassenseite und die Übersicht `/repos`. Ohne
   Berechtigung oder ohne `GIT_SERVER` erscheint keiner dieser Links.
-- **Übersicht:** `/git` (`GitOverview` in `src/ruby/include/git_overview.rb`)
+- **Übersicht:** `/repos` (`GitOverview` in `src/ruby/include/git_overview.rb`)
   listet jedes Repository auf dem Server in den Gruppen der Lehrkraft
   (`class_groups`, nur Gruppen mit einem Ordner): Gruppe, Aktivität,
   Adresse, Art der Schlüssel, der letzte Commit mit dem Namen seines Autors
@@ -367,22 +367,22 @@ einem Git-Server im Netz braucht dann niemand.
   eingelesenen Verzeichnis, gehen ihre Repositorys mit (`GroupData`). Wird ein
   Konto gelöscht, verschwinden seine Schlüssel; seine Commits bleiben als
   Arbeit der Gruppe in deren Repositorys.
-- **Freie Repositorys einer Gruppe:** »Neues Repository« auf `/git`
+- **Freie Repositorys einer Gruppe:** »Neues Repository« auf `/repos`
   (Lehrkräfte und Admins, für ihre Gruppen; `/api/git/create_group_repo`):
   Gruppe, Name (die Regeln der Adresse, einmal je Ordner, nicht der Name
   einer Aktivität mit Klassen-Repository, `GitServer.name_problem`),
   Beschreibung (in git's Datei `description`), leer oder mit einer
   `README.md` (ein Commit von »Workspace«). Es liegt im Ordner der Gruppe
   und gehört zu keiner Aktivität (»frei« in der Übersicht); Zugang wie bei
-  einem Klassen-Repository. Gelöscht wird es auf `/git` nach dem Eintippen
+  einem Klassen-Repository. Gelöscht wird es auf `/repos` nach dem Eintippen
   seines Namens (`/api/git/delete_group_repo`); eins einer Aktivität weiter
   auf der Klassenseite.
-- **Eigene Repositorys zum Üben** (»Meine Repositorys« auf `/git` und im
+- **Eigene Repositorys zum Üben** (»Meine Repositorys« auf `/repos` und im
   Profil unter »Werkzeuge«, »Git«): jede Person, Lernende wie Lehrkräfte,
   höchstens `GitServer::PERSONAL_MAX` (10), in einem eigenen Ordner
   (`User.git_id`, angelegt beim ersten). **Nur die Person selbst** darf sie
   klonen, pushen und ansehen; nicht die Lehrkräfte ihrer Gruppen, nicht
-  andere Lernende. Admins sehen auf `/git` nur, dass es sie gibt (Person,
+  andere Lernende. Admins sehen auf `/repos` nur, dass es sie gibt (Person,
   Name, Größe, Datum) und können eins löschen, aber nicht hineinsehen. So
   entschieden, weil Üben privat ist; was gemeinsam entsteht, gehört in ein
   Repository der Gruppe (docs/plan-git-gruppen.md). Getestet in

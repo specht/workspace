@@ -6877,9 +6877,9 @@ class Main < Sinatra::Base
               :starter => File.directory?(File.join('/src/content', slug, 'starter')) }
         end
         git = GitServer.enabled? ? " data-git-server='1' data-git-keys='#{h.((Main.git_groups[group] || {})[:keys] || GitServer::KEYS_HANDED_IN)}'" : ''
-        # every repository in the teacher's groups at once: /git (GitOverview)
+        # every repository in the teacher's groups at once: /repos (GitOverview)
         overview = GitServer.enabled? ? "<p class='class-repos-overview'><i class='bi bi-git' aria-hidden='true'></i>" \
-            "Alle Repositorys deiner Gruppen im Workspace: <a href='#{WEB_ROOT}/git'>Übersicht</a></p>" : ''
+            "Alle Repositorys deiner Gruppen im Workspace: <a href='#{WEB_ROOT}/repos'>Übersicht</a></p>" : ''
         "<section class='class-setting class-setting-repos'><h3 class='class-setting-title'>Git-Repositorys</h3>" \
             "<div class='class-repos' data-group='#{h.(group)}' data-repos='#{h.(entries.to_json)}'#{git}></div>#{overview}</section>"
     end
@@ -8030,12 +8030,12 @@ class Main < Sinatra::Base
         respond(:deleted => deleted)
     end
 
-    # The menu's button to /git, for those who chose it on the profile
+    # The menu's button to /repos, for those who chose it on the profile
     # (show_git); none without the Workspace's own Git server.
     def git_menu_button_html
         return '' unless GitServer.enabled? && @session_user
 
-        "<a style='#{@session_user[:show_git] ? '' : 'display: none;'}' href='/git' data-menu-module='git' class='btn btn-menu'>" \
+        "<a style='#{@session_user[:show_git] ? '' : 'display: none;'}' href='/repos' data-menu-module='git' class='btn btn-menu'>" \
             "<i class='bi bi-git'></i>Git</a>"
     end
 
@@ -8132,7 +8132,7 @@ class Main < Sinatra::Base
         end
         io << "<p class='git-profile-groups'><i class='bi bi-people' aria-hidden='true'></i>" \
             "#{shared.zero? ? 'Deine Gruppen haben noch keine Repositorys im Workspace.' : "In deinen Gruppen: #{shared == 1 ? 'ein Repository' : "#{shared} Repositorys"}."} " \
-            "<a href='/git'>Alle Repositorys</a></p>"
+            "<a href='/repos'>Alle Repositorys</a></p>"
         cache = "#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"
         io << "<script src='/include/git_repos.js?#{cache}' defer></script><script src='/include/git_key.js?#{cache}' defer></script></div>"
     end
@@ -8981,7 +8981,7 @@ class Main < Sinatra::Base
         "# #{name}\n#{description.empty? ? '' : "\n#{description}\n"}"
     end
 
-    # A free repository of a group, not tied to an activity, made on /git:
+    # A free repository of a group, not tied to an activity, made on /repos:
     # in the group's folder, for its members and teachers like a class
     # repository, with the group's keys.
     post '/api/git/create_group_repo' do
@@ -9471,9 +9471,9 @@ class Main < Sinatra::Base
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         tab_ref ||= ref
         io = +"<nav class='git-crumbs' aria-label='Repository'><i class='bi bi-git' aria-hidden='true'></i>"
-        # the overview of every repository first, for those who have one (/git)
-        io << "<a href='#{WEB_ROOT}/git'>Repositorys</a><span class='git-crumb-sep'>/</span>"
-        io << (@git[:owner] ? "<a href='#{WEB_ROOT}/git#meine'>Meine Repositorys</a>" : "<span>#{h.(@git[:group])}</span>")
+        # the overview of every repository first, for those who have one (/repos)
+        io << "<a href='#{WEB_ROOT}/repos'>Repositorys</a><span class='git-crumb-sep'>/</span>"
+        io << (@git[:owner] ? "<a href='#{WEB_ROOT}/repos#meine'>Meine Repositorys</a>" : "<span>#{h.(@git[:group])}</span>")
         io << "<span class='git-crumb-sep'>/</span><a href='#{h.(git_url)}'><strong>#{h.(@git[:name])}</strong></a></nav>"
         io << "<div class='git-toolbar'><div class='git-toolbar-start'>"
         if ref
@@ -9814,7 +9814,8 @@ class Main < Sinatra::Base
     # a free one made here, and the person's own repositories for practice;
     # for an administrator, that such exist. One git call per repository,
     # for its last commit.
-    get %r{/git/?} do
+    # /repos, not /git: that is the activity »Versionsverwaltung mit Git«
+    get %r{/repos/?} do
         this_is_a_page_for_logged_in_users!
         halt 404 unless GitServer.enabled?
         teacher = teacher_account_logged_in? || admin_logged_in?

@@ -392,7 +392,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await dress(teacher, 0.78);
     await shoot(teacher, 'klasse-einstellungen', '.class-board-select', out);
 
-    // Every repository of the teacher's groups (/git): the class quiz on the
+    // Every repository of the teacher's groups (/repos): the class quiz on the
     // Workspace's Git server with automatic keys and a round pushed from
     // Jonas's Workspace; only with GIT_SERVER, and only if the group has no
     // address of its own for the quiz (taken back at the end)
@@ -413,7 +413,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
         { workdir: '/workspace', timeoutMs: 60_000 },
       );
       expect(push.exitCode, `${push.stdout}\n${push.stderr}`).toBe(0);
-      await teacher.goto('/git');
+      await teacher.goto('/repos');
       await expect(teacher.locator('table.git-overview .git-overview-author', { hasText: 'E2E Worker 0' })).toHaveCount(1);
       await dress(teacher);
       await shootBox(teacher, 'git-uebersicht', ['.git-overview-page h1', 'table.git-overview'], out, { top: 16, bottom: 24 });

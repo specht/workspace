@@ -39,9 +39,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 - Bei den eigenen Bildern der Turtle-Grafik legt eine Person mehrere Bilder mit Namen an (gespeichert am Stand der Aufgabe,
   `TaskState.sketches`, auch im Export des Kontos) und reicht beliebig viele davon ein; die Abgabe ist dann eine Datei
   `bilder.json` mit Name, Code und einem Bild, das der Server aus den Befehlen zeichnet. Die Datenschutzerklärung nennt es.
-- Mit `GIT_SERVER`: Lehrkräfte legen auf `/git` Repositorys einer Gruppe ohne Aktivität an, und jede Person hat dort bis zu
+- Mit `GIT_SERVER`: Lehrkräfte legen auf `/repos` Repositorys einer Gruppe ohne Aktivität an, und jede Person hat dort bis zu
   zehn eigene Repositorys zum Üben, die nur sie selbst klonen, pushen und ansehen kann (`User.git_id`, ein Ordner je Person in
-  `data/git-repos`); sie gehen mit dem Konto, die Datenschutzerklärung und das Verzeichnis nennen sie. `/git` ist jetzt auch
+  `data/git-repos`); sie gehen mit dem Konto, die Datenschutzerklärung und das Verzeichnis nennen sie. `/repos` ist jetzt auch
   für Lernende offen; im Profil gibt es »Git im Menü anzeigen«.
 - Lehrkräfte können auf der Klassenseite zurückmelden, wie eine Aktivität mit ihrer Gruppe lief; die Seite fragt
   danach, wenn die Gruppe weitergegangen ist und eine Woche lang nichts mehr dazu geprüft hat (oder drei

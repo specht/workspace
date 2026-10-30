@@ -28,7 +28,7 @@ require 'tmpdir'
 # git-upload-archive on a repository in a folder it has a line for.
 #
 # A group's folder holds the repository of an activity (a class repository,
-# created on the class page) and free ones a teacher creates on /git. Every
+# created on the class page) and free ones a teacher creates on /repos. Every
 # person has a folder of their own too (User.git_id), for repositories to
 # practise with: only that person may clone, push and read them, not their
 # teachers and not the administration, who sees only that they exist and may

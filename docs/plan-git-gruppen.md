@@ -138,7 +138,7 @@ the better choice only if setup for students must be zero.
   docs/teacher-access.md »Repositorys im Workspace« and docs/entwicklung.md
   »Der Git-Server der Gruppen« describe it; the repositories live in
   `data/git-repos`, not `data/git` (the backend's container mounts the
-  site's own `.git` at `/git`).
+  site's own `.git` at `/repos`).
 - **Keys, the teacher's choice per group:** students create a key pair and
   hand in the public key on the page, or the Workspace sets up a key of its
   own for every member (`~/.ssh/workspace_git`, with `~/.ssh/config` and
@@ -158,10 +158,10 @@ the better choice only if setup for students must be zero.
   own work (`git push --mirror` into a new empty repository).
 
 - **Free repositories of a group (28 October 2026):** a teacher makes one
-  on `/git` with »Neues Repository«, in the group's folder, not tied to an
+  on `/repos` with »Neues Repository«, in the group's folder, not tied to an
   activity (its name may not be an activity's with a class repository);
   members and teachers reach it like a class repository, with the group's
-  keys. Deleted on `/git` after typing its name.
+  keys. Deleted on `/repos` after typing its name.
 - **Own repositories for practice (28 October 2026), private to their
   owner, decided by the maintainer:** every person may keep up to
   `GitServer::PERSONAL_MAX` (10) repositories in a folder of their own

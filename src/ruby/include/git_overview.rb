@@ -1,7 +1,7 @@
 require 'cgi'
 require_relative 'git_server'
 
-# The page /git: every repository on the Workspace's Git server in the
+# The page /repos: every repository on the Workspace's Git server in the
 # groups a teacher teaches (an administrator: in all groups, with their
 # teachers; a student: in their own groups), one table, with its address,
 # how the group's students get their keys, the last commit and the way to

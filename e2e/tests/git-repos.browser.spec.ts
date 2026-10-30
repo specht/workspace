@@ -1,16 +1,16 @@
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-// New repositories on /git (docs/teacher-access.md, »Freie Repositorys
+// New repositories on /repos (docs/teacher-access.md, »Freie Repositorys
 // einer Gruppe«, »Eigene Repositorys zum Üben«): a teacher makes one for the
 // group and deletes it again; a student makes one of their own, which only
 // they may read, not the teacher of their group and not another student;
 // the profile puts Git into the menu. Needs GIT_SERVER = true.
-test('repositories made on /git: one of the group, and one of a student that stays private', async ({ browser, page, e2eEmail }, testInfo) => {
+test('repositories made on /repos: one of the group, and one of a student that stays private', async ({ browser, page, e2eEmail }, testInfo) => {
   test.setTimeout(180_000);
   const teacher = await (await browser.newContext()).newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-  const first = await teacher.goto('/git');
+  const first = await teacher.goto('/repos');
   test.skip(first?.status() === 404, 'GIT_SERVER is off in this installation');
   let ownUrl = '';
 
@@ -23,7 +23,7 @@ test('repositories made on /git: one of the group, and one of a student that sta
     await teacher.locator("[data-git-new='group'] [type=submit]").click();
     await expect(teacher).toHaveURL(/\/git\/[a-z0-9]{10}\/e2e-projekt$/);
     await expect(teacher.locator('.git-readme h1')).toHaveText('e2e-projekt');
-    await teacher.goto('/git');
+    await teacher.goto('/repos');
     const row = teacher.locator('table.git-overview tbody tr', { hasText: 'e2e-projekt' });
     await expect(row).toContainText('frei');
     await expect(row).toContainText('Ein Projekt der Klasse');
@@ -35,7 +35,7 @@ test('repositories made on /git: one of the group, and one of a student that sta
 
     // The student: an own repository, the page of it.
     await loginAsE2eUser(page, e2eEmail, testInfo);
-    await page.goto('/git');
+    await page.goto('/repos');
     await expect(page.locator('table.git-overview tbody tr', { hasText: 'e2e-projekt' })).toBeVisible();
     await expect(page.locator('table.git-overview').first()).not.toContainText('Einstellungen');
     await page.locator('#meine').getByRole('button', { name: 'Neues Repository' }).click();
@@ -52,7 +52,7 @@ test('repositories made on /git: one of the group, and one of a student that sta
     const other = await (await browser.newContext()).newPage();
     await loginAsE2eUser(other, 'e2e-materials-teacher+test@example.com', testInfo);
     expect((await other.request.get(ownUrl)).status()).toBe(403);
-    await teacher.goto('/git');
+    await teacher.goto('/repos');
     await expect(teacher.locator('body')).not.toContainText('e2e-uebung');
 
     // The profile: Git in the menu, and back.
@@ -67,7 +67,7 @@ test('repositories made on /git: one of the group, and one of a student that sta
     await expect(menu).toBeVisible({ visible: shown });
 
     // Deleting after typing the name: the student's, then the teacher's.
-    await page.goto('/git');
+    await page.goto('/repos');
     await page.locator("[data-git-delete='mine'][data-name='e2e-uebung']").click();
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByRole('button', { name: 'Endgültig löschen' })).toBeDisabled();
@@ -75,7 +75,7 @@ test('repositories made on /git: one of the group, and one of a student that sta
     await dialog.getByRole('button', { name: 'Endgültig löschen' }).click();
     await expect(page.locator('#meine')).not.toContainText('e2e-uebung');
     ownUrl = '';
-    await teacher.goto('/git');
+    await teacher.goto('/repos');
     await teacher.locator("[data-git-delete='group'][data-name='e2e-projekt']").click();
     await teacher.getByRole('dialog').getByLabel('Zum Bestätigen den Namen eintippen').fill('e2e-projekt');
     await teacher.getByRole('dialog').getByRole('button', { name: 'Endgültig löschen' }).click();
