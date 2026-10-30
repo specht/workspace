@@ -224,6 +224,8 @@ _task(falsche-antwort)
 
 Wie ernst das ist, zeigte 2008 Dan Kaminsky. Ein DNS-Server, der weiterfragt, erkennt die passende Antwort an einer Nummer, die er der Frage mitgibt, und davon gibt es nur 65.536. Kaminsky fand einen Weg, gefälschte Antworten so oft zu schicken, bis eine die Nummer trifft, und das bei fast jedem DNS-Server der Welt. Im Geheimen arbeitete er mit den Herstellern zusammen, und am 8. Juli 2008 erschien die Abhilfe für alle gleichzeitig: Seitdem fragt ein Server von einem zufälligen Port aus, und ein Angreifer muss auch den erraten.
 
+<img class='drawing' style='width: 41em' src='kaminsky.webp' alt='Drei Beteiligte nebeneinander, die Zeit läuft nach unten: der DNS-Server, der Angreifer und der Nameserver von hackschule.de. Der DNS-Server fragt den Nameserver »Wo ist hackschule.de? Nummer 4711«. Dann schickt der Angreifer Antworten mit geratenen Nummern: Nr. 4709 und Nr. 4710 werden verworfen, Nr. 4711 mit der Adresse 203.0.113.66 wird geglaubt. Danach kommt die echte Antwort des Nameservers mit Nr. 4711, zu spät.'>
+
 Dagegen gibt es zweierlei. **DNSSEC** unterschreibt die Antworten, und wer nachprüft, merkt eine Fälschung; das sind die Einträge, die `+nodnssec` eben weggelassen hat. Und bei `https://` zeigt der Server ein Zertifikat für seinen Namen vor: Ein falscher Server, zu dem eine gefälschte Antwort führt, hat keins für `hackschule.de`, und der Browser warnt. Wie solche Zertifikate und Signaturen funktionieren, zeigt [Kryptographie im Terminal](/crypto).
 
 ## Zusammenfassung
