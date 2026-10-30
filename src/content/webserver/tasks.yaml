@@ -396,32 +396,32 @@ tasks:
     title: Eine Umfrage
     prompt: |
       Lass deinen Server Stimmen mit `POST` annehmen, sie unter einem Lock
-      zählen und mit `303 See Other` auf das Ergebnis weiterleiten, und
-      speichere.
-    file: webserver/server.rb
+      zählen und mit `303 See Other` auf das Ergebnis weiterleiten. Starte ihn
+      neu, stimme mit `curl -si -d choice=curry localhost:8000/vote` ab und
+      trag den Befehl hier ein. Der Workspace führt ihn aus und sieht nach,
+      was dein Server antwortet.
     check:
-      type: files
-      path: webserver/server.rb
-      expect:
-        format: text
-        contains:
-          - { pattern: "'POST'|\"POST\"", say: 'Noch fragt `server.rb` nicht, ob die Anfrage ein `POST` ist.' }
-          - { pattern: '(?i)content-length', say: 'Noch liest `server.rb` den Header `Content-Length` nicht, und ohne ihn weiß der Server nicht, wie lang der Body ist.' }
-          - { pattern: 'client\.read', say: 'Noch liest `server.rb` den Body nicht: `client.read(…)` mit der Länge aus `Content-Length`.' }
-          - { pattern: '303', say: 'Noch leitet `server.rb` nach einer Stimme nicht mit `303 See Other` weiter.' }
-
-    python:
-      file: webserver/server.py
-      check:
-        type: files
-        path: webserver/server.py
-        expect:
-          format: text
-          contains:
-            - { pattern: "'POST'|\"POST\"", say: 'Noch fragt `server.py` nicht, ob die Anfrage ein `POST` ist.' }
-            - { pattern: '(?i)content-length', say: 'Noch liest `server.py` den Header `Content-Length` nicht, und ohne ihn weiß der Server nicht, wie lang der Body ist.' }
-            - { pattern: 'reader\.read\(', say: 'Noch liest `server.py` den Body nicht: `reader.read(…)` mit der Länge aus `Content-Length`.' }
-            - { pattern: '303', say: 'Noch leitet `server.py` nach einer Stimme nicht mit `303 See Other` weiter.' }
+      type: command
+      timeout: 10
+      output:
+        containing:
+          - '^HTTP/1\.[01] 303\b'
+          - '^(?i:location):\s*/results\s*$'
+    feedback:
+      - when: { output_matches: '(Failed to connect|Couldn.t connect|Connection refused)' }
+        say: 'Unter Port 8000 antwortet gerade niemand. Starte deinen Server im linken Terminal und prüfe dann noch einmal.'
+      - when: { output_matches: '% Total' }
+        say: 'Ohne `-s` schreibt `curl` hier eine Fortschrittsanzeige dazu. Schreib `curl -si …`.'
+      - when: { output_matches: '^HTTP/1\.[01] 303\b' }
+        say: 'Die Weiterleitung mit `303` kommt an, aber ohne die Zeile `Location: /results`. Wohin soll der Browser danach gehen?'
+      - when: { output_matches: '^HTTP/1\.[01] 404\b' }
+        say: 'Dein Server kennt `/vote` noch nicht und sucht eine Datei. Hast du ihn nach der Änderung neu gestartet?'
+      - when: { output_matches: '^HTTP/1\.[01] 200\b' }
+        say: 'Dein Server antwortet auf die Stimme mit `200` und einer Seite. Gefragt ist eine Weiterleitung mit `303 See Other` auf `/results`.'
+      - when: { output_matches: '^<' }
+        say: 'Ohne `-i` zeigt `curl` nur den Body, nicht die Statuszeile und die Header. Schreib `curl -si …`.'
+    hint: 'Ohne `-i` sieht der Workspace die Statuszeile nicht. Läuft dein Server nicht, gibt `curl -s` gar nichts aus.'
+    solution: '`curl -si -d choice=curry localhost:8000/vote` zeigt `HTTP/1.1 303 See Other` und `Location: /results`: Dein Server hat die Stimme angenommen, gezählt und weitergeleitet. Wie oft gezählt wurde, zeigt `curl localhost:8000/results`.'
 
   - id: body
     title: Wie lang ist der Body?

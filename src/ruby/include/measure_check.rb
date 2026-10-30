@@ -214,6 +214,10 @@ module MeasureCheck
             'Die Ausgabe sieht noch nicht so aus wie verlangt.'
         elsif expect['not_matching'] && lines.any? { |l| Regexp.new(expect['not_matching'], timeout: 0.5).match?(l) }
             'Die Ausgabe sieht noch nicht so aus wie verlangt.'
+        # containing: each of these matches at least one line (a status line
+        # and a header in an answer of curl -i, say)
+        elsif Array(expect['containing']).any? { |p| lines.none? { |l| Regexp.new(p, timeout: 0.5).match?(l) } }
+            'Die Ausgabe sieht noch nicht so aus wie verlangt.'
         elsif lines.empty?
             'Der Befehl hat nichts ausgegeben.'
         end

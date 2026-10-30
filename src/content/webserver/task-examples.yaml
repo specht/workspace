@@ -99,23 +99,4 @@ examples:
                     client.sendall(f'HTTP/1.1 303 See Other\r\nLocation: {location}\r\nContent-Length: 0\r\nConnection: close\r\n'.encode())
           say: leere Zeile
   umfrage:
-    pass:
-      - files: { webserver/server.rb: stufen/6.rb }
-    fail:
-      - files: { webserver/server.rb: stufen/5.rb }
-        say: POST
-    python:
-      pass:
-        - files: { webserver/server.py: stufen/6.py }
-      fail:
-        - files: { webserver/server.py: stufen/5.py }
-          say: POST
-        # f.read() beim Ausliefern einer Datei ist noch kein Lesen des Bodys
-        - files:
-            webserver/server.py:
-              text: |
-                if method == 'POST':
-                    length = int(headers.get('content-length', 0))
-                    body = open('public/poll.html').read()
-                    send(client, '303 See Other')
-          say: reader.read
+    skip: Der Befehl fragt den Server, der dafür im Workspace laufen muss. Dass die Schritte der Seite die Aufgabe lösen, prüfen die Rezepte mit check-task.

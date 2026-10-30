@@ -1443,7 +1443,7 @@ terminal-run: curl -i -d choice=curry localhost:8000/vote
 sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
-check-task: umfrage
+check-task: umfrage <- curl -si -d choice=curry localhost:8000/vote
 -->
 <img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
 <!-- /language -->
@@ -1469,7 +1469,7 @@ terminal-run: curl -i -d choice=curry localhost:8000/vote
 sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
-check-task: umfrage python
+check-task: umfrage python <- curl -si -d choice=curry localhost:8000/vote
 expect-no-text: Traceback
 -->
 <img class='full' src='post-curl-python.webp' alt='Rechts antwortet der Python-Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>

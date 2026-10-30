@@ -497,6 +497,15 @@ check:
       - { pattern: 'sfx\(', say: 'Noch kein Ton: `sfx(0)` gehört dorthin, wo ein Stern gefangen wird.' }
 ```
 
+`compile: glsl`: Hat die Datei alles, wonach `contains` sucht, übersetzt der
+Workspace sie noch als Fragment-Shader, so eingerahmt wie in der Vorschau der
+GLSL-Vorlage (WebGL 2: `#version 300 es`, `iResolution`, `iTime`, `iMouse`,
+ein `main`, das `mainImage` aufruft), mit `glslangValidator` aus dem
+Workspace-Image (`GlslCheck`). Ein Fehler nennt die Zeile in der Datei der
+Lernenden (Problem `compile_error`). Läuft der Workspace nicht oder fehlt der
+Compiler (ein Workspace mit einem älteren Image), zählt die Aufgabe ohne diese
+Prüfung.
+
 ### html, css, references
 
 ```yaml
@@ -676,8 +685,11 @@ Er kann lesen und ins Netz, aber in `/workspace` nichts anlegen, ändern oder
 löschen, und keine Prozesse der Person beenden. Ein `rm -rf ~` in der Karte
 scheitert an fehlenden Rechten (Regel 1). Dateien, die nur für die Person
 lesbar sind (etwa `~/.ssh`), sieht der Gast nicht. Die
-Ausgabe (höchstens 64 kB) wird mit `output` verglichen: `lines`, `matching`,
-`not_matching`; Rückmeldungen mit `when: { output_matches: … }`. Unter »Was
+Ausgabe (höchstens 64 kB) wird mit `output` verglichen: `lines` (so viele
+Zeilen), `matching` (jede Zeile passt), `not_matching` (keine Zeile passt),
+`containing` (eine Liste: jeder Ausdruck passt auf mindestens eine Zeile, etwa
+Statuszeile und Header einer Antwort von `curl -i`); Rückmeldungen mit
+`when: { output_matches: … }`. Unter »Was
 der Workspace gelesen hat« steht der Befehl mit seiner Ausgabe.
 
 `scene` (seit M6): prüft eine Szene des Anaglyph-Viewers. Der Server liest
@@ -1873,7 +1885,7 @@ die eingebaute Rückmeldung für einen Fall.
 
 | Art | Codes |
 | --- | --- |
-| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `missing_text`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
+| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `missing_text`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big`, `compile_error` |
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
 | `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |

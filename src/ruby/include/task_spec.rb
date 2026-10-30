@@ -85,7 +85,7 @@ module TaskSpec
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops dns_answers].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
-    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains].freeze
+    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains compile].freeze
     HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
@@ -322,12 +322,19 @@ module TaskSpec
             end
             output = check['output']
             if output.is_a?(Hash) && !output.empty?
-                extra = output.keys - %w[lines matching not_matching]
+                extra = output.keys - %w[lines matching not_matching containing]
                 errors << "output: unknown keys: #{extra.join(', ')}" unless extra.empty?
                 errors << 'output.lines must be a positive whole number' if output.key?('lines') && !(output['lines'].is_a?(Integer) && output['lines'] > 0)
                 %w[matching not_matching].each { |k| errors.concat(regex_errors(output[k], "output.#{k}")) if output.key?(k) }
+                if output.key?('containing')
+                    if output['containing'].is_a?(Array) && !output['containing'].empty?
+                        output['containing'].each { |p| errors.concat(regex_errors(p, 'output.containing')) }
+                    else
+                        errors << 'output.containing must be a list of regular expressions'
+                    end
+                end
             else
-                errors << 'output must say what the output looks like (lines, matching, not_matching)'
+                errors << 'output must say what the output looks like (lines, matching, not_matching, containing)'
             end
             errors << 'timeout must be 1 to 30 seconds' if check.key?('timeout') && !(check['timeout'].is_a?(Integer) && check['timeout'].between?(1, 30))
         when 'files'
