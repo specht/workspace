@@ -256,33 +256,22 @@ Wie die acht Farben genau aussehen, legt das Terminal fest; im dunklen und im he
 
 So schreibt jede Sprache ESC und damit ein grünes »Hallo«:
 
-```bash
-printf '\e[32mHallo\e[0m\n'
-```
-
-```ruby
-puts "\e[32mHallo\e[0m"
-```
-
-```python
-print("\033[32mHallo\033[0m")
-```
-
-```javascript
-console.log("\x1b[32mHallo\x1b[0m");
-```
-
-```dart
-print('\x1B[32mHallo\x1B[0m');
-```
-
-```java
-System.out.println("\u001B[32mHallo\u001B[0m");
-```
-
-```c
-printf("\033[32mHallo\033[0m\n");
-```
+<div class='scroll-x'>
+<table class='table table-sm reference-table'>
+<thead>
+<tr><th>Sprache</th><th>ESC</th><th>Ein grünes »Hallo«</th></tr>
+</thead>
+<tbody>
+<tr><td>Bash</td><td><code>\e</code></td><td><code>printf '\e[32mHallo\e[0m\n'</code></td></tr>
+<tr><td>Ruby</td><td><code>\e</code></td><td><code>puts "\e[32mHallo\e[0m"</code></td></tr>
+<tr><td>Python</td><td><code>\033</code> (oktal) oder <code>\x1b</code></td><td><code>print("\033[32mHallo\033[0m")</code></td></tr>
+<tr><td>JavaScript</td><td><code>\x1b</code></td><td><code>console.log("\x1b[32mHallo\x1b[0m");</code></td></tr>
+<tr><td>Dart</td><td><code>\x1B</code></td><td><code>print('\x1B[32mHallo\x1B[0m');</code></td></tr>
+<tr><td>Java</td><td><code>\u001B</code></td><td><code>System.out.println("\u001B[32mHallo\u001B[0m");</code></td></tr>
+<tr><td>C</td><td><code>\033</code> (oktal)</td><td><code>printf("\033[32mHallo\033[0m\n");</code></td></tr>
+</tbody>
+</table>
+</div>
 
 <div class='hint'>
 Schließ jede Farbe mit <code>ESC[0m</code> ab, sonst färbt sie alles danach mit, bis ins Terminal hinein, nachdem das Programm beendet ist. Leitest du die Ausgabe in eine Datei um, stehen die Sequenzen als Zeichen darin; <code>less -R</code> zeigt sie farbig an. Viele Programme lassen die Farben weg, wenn die Variable <code>NO_COLOR</code> gesetzt ist (<a href='https://no-color.org/'>no-color.org</a>).
