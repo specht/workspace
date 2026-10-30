@@ -29,6 +29,8 @@ sie.
 
 ## Das Spiel
 
+### Nachts in der Schule
+
 Probier es aus. Du tippst, was du tun willst, etwa `gehe westen`,
 `nimm zettel` oder `untersuche zettel`, und drückst Enter:
 
@@ -48,6 +50,8 @@ der Mammoth Cave in Kentucky, durch die er selbst gekrochen war; nach ihm
 heißt die ganze Gattung Adventure.
 
 _person(crowther)
+
+### Ein Ordner für das Projekt
 
 Leg einen Ordner für dieses Projekt an:
 
@@ -117,7 +121,9 @@ Klassendiagramm in der UML-Werkstatt (wie sie funktioniert, steht im
 
 _task(modell)
 
-## Ein Raum
+## Räume und Gegenstände
+
+### Ein Raum
 
 Ein Raum hat einen Namen und eine Beschreibung. Und er kennt seine Ausgänge:
 In jeder Richtung, in der es weitergeht, liegt ein anderer Raum. Ein
@@ -145,9 +151,17 @@ jetzt die Küche, die Küche aber nicht den Flur. Soll man auch zurückgehen
 können, verbindet man beide Räume: `kitchen.connect("süden", hall)`. Das
 ist kein Fehler, sondern eine Möglichkeit: Eine Rutsche in den Keller führt
 nur nach unten.
+
+So hängt die Schule zusammen, in der du oben gespielt hast: Jeder Pfeil ist
+ein `connect`, zwischen zwei Räumen sind es also meist zwei. Vom Schulhof
+führt keiner zurück; wer draußen ist, hat gewonnen.
+
+<div class='gallery single'>
+<figure><img src='schule-karte.webp' alt='Die Räume der Schule als Kästen, verbunden durch Pfeile, an jedem seine Richtung: Raum 204 und Flur mit westen und osten, Flur und Lehrerzimmer mit norden (verschlossen, in Orange) und süden, Flur und Treppenhaus, Treppenhaus und Eingangshalle mit unten und oben, Eingangshalle und Hausmeisterraum mit westen und osten, Eingangshalle und der dunkle Keller mit unten und oben, und von der Eingangshalle ein einzelner Pfeil süden (verschlossen) zum blau umrandeten Schulhof.'><figcaption>Die Nacht in der Schule: jeder Pfeil ein <code>connect</code>, verschlossene Türen in Orange, der Keller dunkel, das Ziel blau umrandet</figcaption></figure>
+</div>
 <!-- /after -->
 
-## Gegenstände
+### Gegenstände
 
 Ein Gegenstand hat einen Namen und eine Beschreibung, wie ein Raum. Ein Raum
 hat eine Liste seiner Gegenstände. Hebt jemand etwas auf, nimmt der Raum es
@@ -155,7 +169,7 @@ aus seiner Liste und gibt es heraus.
 
 _task(gegenstaende)
 
-## Ein Raum beschreibt sich
+### Ein Raum beschreibt sich
 
 Was die Spielerin sieht, wenn sie einen Raum betritt, setzt der Raum selbst
 zusammen, aus seinem Namen, seiner Beschreibung, seinen Gegenständen und
@@ -165,6 +179,8 @@ Text.
 _task(beschreibung)
 
 ## Die Spielerin
+
+### Gehen und die Tasche
 
 Die Spielerin steht in einem Raum und hat eine Tasche. Geht sie in eine
 Richtung, fragt sie ihren Raum nach dem Ausgang; gibt es einen, steht sie
@@ -176,7 +192,7 @@ Schlüssel hat, fragt sie, und sie schaut selbst nach.
 
 _task(spielerin)
 
-## Was nur die Spielerin angeht
+### Was nur die Spielerin angeht
 
 Die Tasche ist eine Liste, und eine Liste ließe sich von überall ändern,
 wenn man an sie herankäme. Dann könnte jede Klasse Gegenstände hinein- und
@@ -219,14 +235,16 @@ Apfel, der in der Tasche bleibt, müsste von allen übersprungen werden, die
 sie zeigen.
 <!-- /after -->
 
-## Verschlossene Türen
+## Gegenstände, die etwas können
+
+### Verschlossene Türen
 
 Jetzt wird es ein Spiel: Eine Tür ist verschlossen, und man braucht den
 passenden Schlüssel. Ein Apfel lässt sich essen. Beide sind Gegenstände,
 aber `benutze` tut bei jedem etwas anderes. Darum bekommt jede Art von
 Gegenstand eine eigene Klasse, die von `Item` erbt und die Methode `use`
 überschreibt: Die Spielerin ruft nur `use` auf und muss nicht wissen, was
-sie in der Hand hat. Dasselbe gilt im nächsten Kapitel für eine
+sie in der Hand hat. Dasselbe gilt im nächsten Abschnitt für eine
 Taschenlampe und einen dunklen Raum. Zeichne den Plan für beide zuerst:
 
 _task(diagramm)
@@ -238,7 +256,7 @@ bittet ihn, aufzuschließen.
 
 _task(schloss)
 
-## Im Dunkeln
+### Im Dunkeln
 
 Der Keller ist dunkel: Ohne Licht sieht man dort nichts und findet nichts.
 Ob die Spielerin Licht hat, könnte sie herausfinden, indem sie in ihrer
@@ -265,6 +283,8 @@ _task(dunkel)
 
 ## Das Spiel als Objekt
 
+### Zeilen verstehen
+
 Noch fehlt, was die getippten Zeilen versteht und an die Spielerin
 weitergibt. Auch das wird ein Objekt, ein `Game`: Es bekommt eine Zeile und
 gibt die Antwort zurück. Dass es selbst nichts liest und nichts ausgibt,
@@ -273,6 +293,8 @@ tippen. Und es weiß, wann das Spiel zu Ende ist: wenn jemand `ende` tippt
 oder die Spielerin am Ziel steht.
 
 _task(spiel)
+
+### Mit deinen Klassen spielen
 
 Jetzt kannst du spielen, mit deinen eigenen Klassen. Die Spielschleife und
 die Nacht in der Schule sind fertig:
@@ -331,10 +353,36 @@ Es ist dasselbe Spiel wie oben auf der Seite, nur dass jetzt dein Code es
 spielt. Antwortet es irgendwo anders, liegt der Unterschied in deinen
 Klassen.
 
+Was mit einer Zeile geschieht, die du tippst, zeigt das Bild: Die
+Spielschleife gibt sie dem Spiel, das Spiel der Spielerin, die Spielerin
+fragt ihren Raum nach dem Ausgang und den neuen Raum nach seiner
+Beschreibung. Der Text geht denselben Weg zurück, und erst die
+Spielschleife gibt ihn aus.
+
+<!-- language: ruby, python -->
+<div class='gallery single'>
+<figure><img src='eine-zeile.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exit_to("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
+</div>
+<!-- /language -->
+<!-- language: dart, java -->
+<div class='gallery single'>
+<figure><img src='eine-zeile-camel.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exitTo("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
+</div>
+<!-- /language -->
+
 ## Deine Welt
 
+### Eine kleine Welt
+
 Jetzt erfindest du deine eigene. So sieht eine kleine Welt aus, mit vier
-Räumen, einem dunklen Gang, einem Ziel und dem Weg dorthin:
+Räumen, einem dunklen Gang, einem Ziel hinter einer verschlossenen Tür und
+dem Weg dorthin, zuerst als Karte:
+
+<div class='gallery single'>
+<figure><img src='welt-karte.webp' alt='Vier Räume als Kästen: Zimmer 3, der dunkle Gang und die Küche nebeneinander, zwischen ihnen je zwei Pfeile, flur und zimmer, küche und flur; vom Gang ein einzelner orangefarbener Pfeil kasten (verschlossen) nach unten zum blau umrandeten Sicherungskasten.'><figcaption>Eine kleine Welt: Zeichne deine zuerst so, ein Pfeil je <code>connect</code></figcaption></figure>
+</div>
+
+Und als Code:
 
 <!-- language: ruby -->
 <!-- page-code: own -->
@@ -460,6 +508,8 @@ genauso.
 
 _task(welt)
 
+### Spieltest
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Lass jemanden aus deiner Klasse dein Spiel
 spielen, ohne etwas zu erklären. Achte darauf, wo sie oder er hängen bleibt:
@@ -481,6 +531,175 @@ ein Schrank. Eine Kiste ist ein Gegenstand, der eine Liste hat, wie ein
 Raum. Öffnet man sie, legt sie ihren Inhalt in den Raum.
 
 _task(kiste)
+
+<!-- extra -->
+## Farbe im Terminal
+
+Im Spiel oben auf der Seite ist der Name eines Raums fett, die Gegenstände
+sind grün und die Ausgänge blau: Man sieht auf einen Blick, was man nehmen
+und wohin man gehen kann. Das Terminal kann das auch.
+
+### Escape-Sequenzen
+
+Nicht jedes Zeichen, das ein Programm ausgibt, zeigt das Terminal an. Das
+Zeichen ESC (Nummer 27) leitet eine Anweisung ein: `ESC[32m` heißt »ab hier
+grün«, `ESC[1m` »ab hier fett« und `ESC[0m` »zurück zum Normalen«. Solche
+Folgen heißen **ANSI-Escape-Sequenzen**; die Zahl sagt, was sich ändert.
+`printf` schreibt ESC als `\e`:
+
+```bash_copy
+printf '\e[1mFlur\e[0m\nAusgänge: \e[34mosten\e[0m, \e[34munten\e[0m\n'
+```
+
+<table class='table'>
+<tr><th>Zahl</th><th>ab hier</th><th>Zahl</th><th>ab hier</th></tr>
+<tr><td><code>0</code></td><td>wieder normal</td><td><code>32</code></td><td>grün</td></tr>
+<tr><td><code>1</code></td><td>fett</td><td><code>33</code></td><td>gelb</td></tr>
+<tr><td><code>4</code></td><td>unterstrichen</td><td><code>34</code></td><td>blau</td></tr>
+<tr><td><code>31</code></td><td>rot</td><td><code>36</code></td><td>türkis</td></tr>
+</table>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere <code>34</code> in <code>31</code>
+oder <code>33</code> und <code>1</code> in <code>4</code>. Lass dann das
+<code>\e[0m</code> hinter <code>osten</code> weg. Achte darauf, welche
+Zeichen danach blau sind.
+</div>
+
+### Wohin gehört die Farbe?
+
+_task(farbe-wohin)
+
+<!-- after: farbe-wohin -->
+In die Spielschleife. Die Prüfungen vergleichen die Texte von `describe`
+und `handle` genau; mit Escape-Sequenzen darin stimmte keiner mehr. Und
+nicht nur sie lesen diese Texte: Eine Webseite, die das Spiel zeigt, oder
+ein Programm, das es vorliest, könnte mit ESC nichts anfangen. Farbe gehört
+zur Ausgabe, und ausgeben tut nur die Spielschleife, ganz links im Bild
+von oben. Sie bemalt, was sie ins Terminal schreibt; das Spiel bleibt, wie
+es ist.
+<!-- /after -->
+
+### Farbe um einen Text
+
+Zuerst eine kleine Funktion, die einen Text in eine Farbe setzt und danach
+zurückschaltet. Sie kommt in eine neue Datei neben deine Klassen:
+<!-- language: ruby -->
+`colors.rb`. Ruby schreibt ESC in einem String mit doppelten
+Anführungszeichen als `\e`.
+<!-- /language -->
+<!-- language: python -->
+`colors.py`. Python schreibt ESC in einem String als `\033`.
+<!-- /language -->
+<!-- language: dart -->
+`colors.dart`. Dart schreibt ESC in einem String als `\x1B`.
+<!-- /language -->
+<!-- language: java -->
+`Colors.java`, als Methode der Klasse `Colors`. Java schreibt ESC in einem
+String als `\u001B`.
+<!-- /language -->
+
+_task(farbe)
+
+### Eine Antwort bemalen
+
+Die Antworten des Spiels haben eine feste Form: Ein Raum beschreibt sich mit
+seinem Namen in der ersten Zeile und `Ausgänge:` in der letzten, die Tasche
+beginnt mit `In deiner Tasche:`. Daran erkennt `paint`, was es bemalt, ohne
+das Spiel zu fragen.
+
+_task(bemalen)
+
+### In der Spielschleife
+
+Jetzt bemalt die Spielschleife alles, was sie ausgibt.
+<!-- language: ruby -->
+In `play.rb` ändern sich die beiden Zeilen, die ausgeben, und eine kommt
+dazu:
+
+```ruby
+~ require_relative 'adventure'
+require_relative 'colors'
+```
+
+```ruby
+puts paint(game.start)
+~ until game.over?
+~   print "> "
+~   line = $stdin.gets
+~   break if line.nil?
+  puts paint(game.handle(line))
+~ end
+```
+
+Dann spielst du wie vorher, mit `ruby play.rb schule`.
+<!-- /language -->
+<!-- language: python -->
+In `play.py` ändern sich die beiden Zeilen, die ausgeben, und eine kommt
+dazu:
+
+```python
+~ from adventure import Game
+from colors import paint
+```
+
+```python
+print(paint(game.start()))
+~ while not game.is_over():
+~     try:
+~         line = input("> ")
+~     except EOFError:
+~         break
+    print(paint(game.handle(line)))
+```
+
+Dann spielst du wie vorher, mit `python3 play.py schule`.
+<!-- /language -->
+<!-- language: dart -->
+In `schule.dart` und ebenso in `play.dart` ändern sich die beiden Zeilen, die
+ausgeben, und eine kommt dazu:
+
+```dart
+~ import 'adventure.dart';
+import 'colors.dart';
+```
+
+```dart
+  print(paint(game.start()));
+~   while (!game.isOver) {
+~     stdout.write('> ');
+~     final line = stdin.readLineSync();
+~     if (line == null) break;
+    print(paint(game.handle(line)));
+~   }
+```
+
+Dann spielst du wie vorher, mit `dart run schule.dart`.
+<!-- /language -->
+<!-- language: java -->
+In `School.java` und ebenso in `Play.java` ändern sich die beiden Zeilen, die
+ausgeben; `Colors` liegt im selben Ordner und braucht kein `import`:
+
+```java
+        System.out.println(Colors.paint(game.start()));
+~         Scanner input = new Scanner(System.in);
+~         while (!game.isOver()) {
+~             System.out.print("> ");
+~             if (!input.hasNextLine()) {
+~                 break;
+~             }
+            System.out.println(Colors.paint(game.handle(input.nextLine())));
+~         }
+```
+
+Dann spielst du wie vorher, mit `java School.java`.
+<!-- /language -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Färbe <code>(verschlossen)</code> hinter
+einem Ausgang rot (<code>31</code>) statt blau. Achte darauf, dass das
+Komma danach wieder ohne Farbe ist.
+</div>
 
 ## Wie geht es weiter?
 
@@ -524,6 +743,10 @@ write-file: textadventure/Chest.java <- file:loesung/java/Chest.java
 write-file: textadventure/Player.java <- file:loesung/java/Player.java
 write-file: textadventure/Game.java <- file:loesung/java/Game.java
 write-file: textadventure/World.java <- file:loesung/java/World.java
+write-file: textadventure/colors.rb <- file:farbe/colors.rb
+write-file: textadventure/colors.py <- file:farbe/colors.py
+write-file: textadventure/colors.dart <- file:farbe/colors.dart
+write-file: textadventure/Colors.java <- file:farbe/Colors.java
 viewport: 1029x579
 zoom: 1.4
 hide-left-sidebar
@@ -563,6 +786,8 @@ check-task: dunkel
 check-task: spiel
 check-task: welt
 check-task: kiste
+check-task: farbe
+check-task: bemalen
 check-task: raum python
 check-task: gegenstaende python
 check-task: beschreibung python
@@ -572,6 +797,8 @@ check-task: dunkel python
 check-task: spiel python
 check-task: welt python
 check-task: kiste python
+check-task: farbe python
+check-task: bemalen python
 check-task: raum dart
 check-task: gegenstaende dart
 check-task: beschreibung dart
@@ -581,6 +808,8 @@ check-task: dunkel dart
 check-task: spiel dart
 check-task: welt dart
 check-task: kiste dart
+check-task: farbe dart
+check-task: bemalen dart
 check-task: raum java
 check-task: gegenstaende java
 check-task: beschreibung java
@@ -590,6 +819,8 @@ check-task: dunkel java
 check-task: spiel java
 check-task: welt java
 check-task: kiste java
+check-task: farbe java
+check-task: bemalen java
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Der Workspace mit dem Terminal in großer Schrift, in dem das Textadventure »Nachts in der Schule« läuft: In der Eingangshalle schließt die Spielerin mit dem Haustürschlüssel die Glastür auf, geht nach Süden und steht auf dem Schulhof: »Kühle Nachtluft. Du bist draußen. Geschafft!«'>
 

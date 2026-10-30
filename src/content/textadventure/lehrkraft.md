@@ -7,18 +7,19 @@ Ein Projekt zur Objektorientierung: Lernende spielen zuerst ein kleines Textadve
 <li><b>1. Doppelstunde:</b> das Spiel auf der Seite spielen, die Klassen im Spieltext finden und als Diagramm zeichnen, ein Raum mit Ausgängen und die Vorhersage, ob ein Ausgang zurückführt, Gegenstände, die Beschreibung eines Raums.</li>
 <li><b>2. Doppelstunde:</b> die Spielerin mit ihrer Tasche, Kapselung (wer den gegessenen Apfel aus der Tasche nimmt), das Diagramm der Unterklassen, Schlüssel, Schloss und Apfel.</li>
 <li><b>3. Doppelstunde:</b> Polymorphie im Dunkeln (die Vorhersage, ob ein Schlüssel leuchtet, die Taschenlampe, der dunkle Keller), das Spiel als Objekt mit einem neuen Befehl; danach spielen die Lernenden die Schule mit ihren eigenen Klassen.</li>
-<li><b>4. Doppelstunde:</b> die eigene Welt mit Lösungsweg, der Spieltest in Paaren, die Abgabe. Wer früher fertig ist: eine Kiste mit Inhalt (Extra).</li>
+<li><b>4. Doppelstunde:</b> die eigene Welt mit Lösungsweg, der Spieltest in Paaren, die Abgabe. Wer früher fertig ist: eine Kiste mit Inhalt oder Farbe im Terminal (Extras).</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td>Alles in <code>/workspace/textadventure</code>, mit dem Diagramm <code>textadventure.uml</code>:<ul>
 <li><b>Ruby, Python:</b> die Klassen, die eigene Welt (<code>build_world</code>) und der Lösungsweg (<code>WALKTHROUGH</code>) in <code>adventure.rb</code> oder <code>adventure.py</code>, dazu die Spielschleife <code>play.rb</code> oder <code>play.py</code> und die Schule <code>schule.rb</code> oder <code>schule.py</code>.</li>
 <li><b>Dart:</b> alles in <code>adventure.dart</code> (<code>buildWorld</code>, <code>walkthrough</code>), dazu <code>schule.dart</code> und später <code>play.dart</code>, jede mit ihrem eigenen <code>main</code>: Dart übersetzt das ganze Programm vor dem Start, und die Schule soll laufen, bevor es eine eigene Welt gibt.</li>
 <li><b>Java:</b> eine Datei je Klasse (<code>Room.java</code>, <code>Player.java</code>, …), die eigene Welt in <code>World.java</code> (<code>build()</code>, <code>WALKTHROUGH</code>), dazu <code>School.java</code> und später <code>Play.java</code>, gestartet mit <code>java School.java</code>, das die anderen Klassen im Ordner von selbst übersetzt.</li>
+<li><b>Extra »Farbe im Terminal«:</b> <code>colors.rb</code>, <code>colors.py</code>, <code>colors.dart</code> oder <code>Colors.java</code> mit <code>color</code> und <code>paint</code>; die Spielschleife bemalt damit, was sie ausgibt.</li>
 </ul>Die Klassen schreiben die Lernenden selbst; nur die Spielschleife, die Schule und <code>all_rooms</code> sind fertig.</td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Acht Aufgaben und das Extra rufen den Code der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann: Sie bauen Räume, legen Gegenstände hinein, schicken eine Spielerin los oder geben dem Spiel Zeilen und vergleichen die Texte genau, die zurückkommen. Der Workspace muss dafür laufen.</li>
+<li>Acht Aufgaben und drei Extras (die Kiste, die Farbe um einen Text, eine Antwort bemalen) rufen den Code der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann: Sie bauen Räume, legen Gegenstände hinein, schicken eine Spielerin los oder geben dem Spiel Zeilen und vergleichen die Texte genau, die zurückkommen. Der Workspace muss dafür laufen.</li>
 <li>Die eigene Welt prüft, dass man vom ersten Raum aus mindestens vier erreicht, dass es eine verschlossene Tür gibt, dass der Lösungsweg im Spiel ans Ziel kommt, und dass er es ohne seine <code>benutze</code>-Zeilen nicht tut: Die Tür liegt also auf dem Weg, und der Schlüssel ist vorher zu finden.</li>
 <li>Zwei Diagramme liest die UML-Werkstatt: die drei Klassen mit ihren Beziehungen, dann die Unterklassen, die <code>use</code>, das Leuchten und das Dunkelsein überschreiben.</li>
-<li>Zwei Vorhersagen, eine Frage zur Kapselung, eine offene Frage zum Spieltest und die Abgabe des Ordners.</li>
+<li>Zwei Vorhersagen, eine Frage zur Kapselung, im Extra eine Frage, wohin die Farbe gehört, eine offene Frage zum Spieltest und die Abgabe des Ordners.</li>
 </ul></td></tr>
 <tr><th>Gespeichert</th><td>Die Abgabe: der Ordner <code>textadventure</code> in dem Stand, in dem er abgegeben wurde (höchstens 1 MB), und die Antwort auf die Frage zum Spieltest.</td></tr>
 </table>
@@ -30,7 +31,8 @@ Ein Projekt zur Objektorientierung: Lernende spielen zuerst ein kleines Textadve
 - »Wer räumt den Apfel weg?« ist der Kern der Kapselung: Der Apfel bittet die Spielerin, `remove`, statt sich selbst aus ihrer Liste zu löschen. Die Antwort, dass die Spielschleife aufräumt, ist ein guter Anlass zu fragen, woher sie wüsste, welche Gegenstände verschwinden.
 - »Wer leuchtet?« zeigt, dass eine Unterklasse erbt, was sie nicht selbst schreibt: Der Schlüssel leuchtet nicht, ohne dass er es sagen muss. Die Seite begründet, warum die Spielerin jeden Gegenstand fragt, statt nach `Lamp` zu suchen: Eine Kerze, die später dazukommt, leuchtet dann von selbst mit.
 - Eine Tür ist kein eigenes Objekt: Der Raum merkt sich, welche Richtung verschlossen ist und welcher Schlüssel passt. Wer eine Klasse `Door` vorschlägt, hat einen guten Einwand: Dann wäre eine Tür von beiden Seiten verschlossen, was hier jede Seite für sich regelt.
-- `Game` liest und schreibt nichts selbst; die Spielschleife gibt ihm Zeilen. Darum kann die Prüfung einen ganzen Lösungsweg durchspielen, und darum lässt sich die Schule mit den Klassen der Lernenden spielen.
+- `Game` liest und schreibt nichts selbst; die Spielschleife gibt ihm Zeilen. Darum kann die Prüfung einen ganzen Lösungsweg durchspielen, und darum lässt sich die Schule mit den Klassen der Lernenden spielen. Das Sequenzdiagramm danach zeigt den Weg einer Zeile durch die Objekte und zurück.
+- »Wohin gehört die Farbe?« (Extra) fragt dasselbe noch einmal von der anderen Seite: Escape-Sequenzen gehören in die Spielschleife, die ausgibt. Wer `describe` wählt, hat einen nachvollziehbaren Grund (der Raum kennt alles, was gefärbt wird); dann hilft die Frage, was die Prüfung von `describe` danach sagen würde und was eine Webseite mit dem Spiel anfinge.
 
 #### Was schiefgeht
 

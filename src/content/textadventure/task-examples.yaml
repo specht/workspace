@@ -299,3 +299,47 @@ examples:
       fail:
         - { files: { textadventure/Chest.java: { text: "// noch leer\n" } } }
         - { files: { textadventure: stufen/7-spiel/java } }
+  farbe:
+    pass:
+      - { files: { textadventure/colors.rb: farbe/colors.rb } }
+    fail:
+      - { files: { textadventure/colors.rb: { text: "# noch leer\n" } } }
+      - { files: { textadventure/colors.rb: { text: "def color(text, code)\n  \"\\e[#{code}m#{text}\"\nend\n" } } }
+    python:
+      pass:
+        - { files: { textadventure/colors.py: farbe/colors.py } }
+      fail:
+        - { files: { textadventure/colors.py: { text: "# noch leer\n" } } }
+        - { files: { textadventure/colors.py: { text: "def color(text, code):\n    return f\"\\033[{code}m{text}\"\n" } } }
+    dart:
+      pass:
+        - { files: { textadventure/colors.dart: farbe/colors.dart } }
+      fail:
+        - { files: { textadventure/colors.dart: { text: "// noch leer\n" } } }
+        - { files: { textadventure/colors.dart: { text: "String color(String text, int code) => '\\x1B[${code}m$text';\n" } } }
+    java:
+      pass:
+        - { files: { textadventure/Colors.java: farbe/Colors.java } }
+      fail:
+        - { files: { textadventure/Colors.java: { text: "public class Colors {\n    public static String color(String text, int code) {\n        return \"\\u001B[\" + code + \"m\" + text;\n    }\n}\n" } } }
+  bemalen:
+    pass:
+      - { files: { textadventure/colors.rb: farbe/colors.rb } }
+    fail:
+      - { files: { textadventure/colors.rb: { text: "def color(text, code)\n  \"\\e[#{code}m#{text}\\e[0m\"\nend\n\ndef paint(answer)\n  answer\nend\n" } } }
+      - { files: { textadventure/colors.rb: { text: "def color(text, code)\n  \"\\e[#{code}m#{text}\\e[0m\"\nend\n\ndef paint(answer)\n  lines = answer.split(\"\\n\")\n  lines[0] = color(lines[0], 1) unless lines.empty?\n  lines.join(\"\\n\")\nend\n" } } }
+    python:
+      pass:
+        - { files: { textadventure/colors.py: farbe/colors.py } }
+      fail:
+        - { files: { textadventure/colors.py: { text: "def color(text, code):\n    return f\"\\033[{code}m{text}\\033[0m\"\n\n\ndef paint(answer):\n    return answer\n" } } }
+    dart:
+      pass:
+        - { files: { textadventure/colors.dart: farbe/colors.dart } }
+      fail:
+        - { files: { textadventure/colors.dart: { text: "String color(String text, int code) => '\\x1B[${code}m$text\\x1B[0m';\n\nString paint(String answer) => answer;\n" } } }
+    java:
+      pass:
+        - { files: { textadventure/Colors.java: farbe/Colors.java } }
+      fail:
+        - { files: { textadventure/Colors.java: { text: "public class Colors {\n    public static String color(String text, int code) {\n        return \"\\u001B[\" + code + \"m\" + text + \"\\u001B[0m\";\n    }\n\n    public static String paint(String answer) {\n        return answer;\n    }\n}\n" } } }

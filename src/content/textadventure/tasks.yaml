@@ -2734,3 +2734,437 @@ tasks:
             }
         }
         ```
+
+  - id: farbe-wohin
+    title: Wohin gehört die Farbe?
+    extra: true
+    prompt: |
+      Im Terminal soll der Name eines Raums fett erscheinen, Gegenstände grün und Ausgänge blau. Wo kommen die Escape-Sequenzen in den Text?
+    check:
+      type: choice
+      options:
+        - "In `describe`: Der Raum kennt seinen Namen, seine Gegenstände und seine Ausgänge, also färbt er sie gleich mit."
+        - "In `handle`: Das Spiel gibt jede Antwort zurück, also färbt es sie, bevor es sie zurückgibt."
+        - "In die Spielschleife: Sie gibt aus, also färbt sie, was sie ausgibt."
+        - "In jede Klasse, die Text zurückgibt: Jede färbt ihren eigenen Text."
+      correct: 2
+
+  - id: farbe
+    title: Farbe um einen Text
+    extra: true
+    prompt: |
+      Schreib in einer neuen Datei `colors.rb` eine Methode `color(text, code)`, die `text` in die Escape-Sequenz für `code` setzt und danach alles zurückschaltet: `color("apfel", 32)` gibt `"\e[32mapfel\e[0m"` zurück.
+    check:
+      type: ruby
+      file: textadventure/colors.rb
+      cases:
+        - call: 'color("apfel", 32)'
+          expect: '"\e[32mapfel\e[0m"'
+        - call: 'color("Flur", 1)'
+          expect: '"\e[1mFlur\e[0m"'
+          say: "Die Zahl kommt zwischen `\\e[` und `m`, welche es auch ist."
+        - call: 'color("osten", 34).end_with?("\e[0m")'
+          expect: 'true'
+          say: "Nach dem Text schaltet `\\e[0m` zurück; sonst bleibt alles danach farbig, auch das, was die Spielerin tippt."
+    hint: "Das Zeichen ESC schreibt Ruby in einem String mit doppelten Anführungszeichen als `\\e`; die Zahl setzt du mit `#{code}` ein."
+    solution: |
+      ```ruby
+      def color(text, code)
+        "\e[#{code}m#{text}\e[0m"
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in einer neuen Datei `colors.py` eine Funktion `color(text, code)`, die `text` in die Escape-Sequenz für `code` setzt und danach alles zurückschaltet: `color("apfel", 32)` gibt `"\033[32mapfel\033[0m"` zurück.
+      check:
+        type: python
+        file: textadventure/colors.py
+        cases:
+          - call: 'color("apfel", 32)'
+            expect: '"\033[32mapfel\033[0m"'
+          - call: 'color("Flur", 1)'
+            expect: '"\033[1mFlur\033[0m"'
+            say: "Die Zahl kommt zwischen `\\033[` und `m`, welche es auch ist."
+          - call: 'color("osten", 34).endswith("\033[0m")'
+            expect: 'True'
+            say: "Nach dem Text schaltet `\\033[0m` zurück; sonst bleibt alles danach farbig, auch das, was die Spielerin tippt."
+      hint: "Das Zeichen ESC schreibt Python in einem String als `\\033`; die Zahl setzt du in einem f-String mit `{code}` ein."
+      solution: |
+        ```python
+        def color(text, code):
+            return f"\033[{code}m{text}\033[0m"
+        ```
+    dart:
+      prompt: |
+        Schreib in einer neuen Datei `colors.dart` eine Funktion `String color(String text, int code)`, die `text` in die Escape-Sequenz für `code` setzt und danach alles zurückschaltet: `color('apfel', 32)` gibt `'\x1B[32mapfel\x1B[0m'` zurück.
+      check:
+        type: dart
+        file: textadventure/colors.dart
+        cases:
+          - call: 'color("apfel", 32)'
+            expect: '"\x1B[32mapfel\x1B[0m"'
+          - call: 'color("Flur", 1)'
+            expect: '"\x1B[1mFlur\x1B[0m"'
+            say: "Die Zahl kommt zwischen `\\x1B[` und `m`, welche es auch ist: `${code}`, mit geschweiften Klammern, weil direkt ein `m` folgt."
+          - call: 'color("osten", 34).endsWith("\x1B[0m")'
+            expect: 'true'
+            say: "Nach dem Text schaltet `\\x1B[0m` zurück; sonst bleibt alles danach farbig, auch das, was die Spielerin tippt."
+      hint: "Das Zeichen ESC schreibt Dart in einem String als `\\x1B`. Die Zahl setzt du mit `${code}` ein; ohne die Klammern läse Dart `$codem` als einen Namen."
+      solution: |
+        ```dart
+        String color(String text, int code) => '\x1B[${code}m$text\x1B[0m';
+        ```
+    java:
+      prompt: |
+        Schreib in einer neuen Datei `Colors.java` eine Klasse `Colors` mit einer Methode `public static String color(String text, int code)`, die `text` in die Escape-Sequenz für `code` setzt und danach alles zurückschaltet: `Colors.color("apfel", 32)` gibt `"\u001B[32mapfel\u001B[0m"` zurück.
+      check:
+        type: java
+        file: textadventure/Colors.java
+        cases:
+          - call: 'Colors.color("apfel", 32)'
+            expect: '"\u001B[32mapfel\u001B[0m"'
+          - call: 'Colors.color("Flur", 1)'
+            expect: '"\u001B[1mFlur\u001B[0m"'
+            say: "Die Zahl kommt zwischen `\\u001B[` und `m`, welche es auch ist."
+          - call: 'Colors.color("osten", 34).endsWith("\u001B[0m")'
+            expect: 'true'
+            say: "Nach dem Text schaltet `\\u001B[0m` zurück; sonst bleibt alles danach farbig, auch das, was die Spielerin tippt."
+      hint: "Das Zeichen ESC schreibt Java in einem String als `\\u001B`; die Zahl hängst du mit `+` an: `\"\\u001B[\" + code + \"m\"`."
+      solution: |
+        ```java
+        public class Colors {
+            public static String color(String text, int code) {
+                return "\u001B[" + code + "m" + text + "\u001B[0m";
+            }
+        }
+        ```
+
+  - id: bemalen
+    title: Eine Antwort bemalen
+    extra: true
+    prompt: |
+      Schreib in `colors.rb` eine Methode `paint(answer)`, die eine Antwort des Spiels Zeile für Zeile bemalt und den Rest lässt, wie er ist:
+
+      - Hat die Antwort eine Zeile, die mit `Ausgänge: ` beginnt, beschreibt sie einen Raum: Ihre erste Zeile, der Name, wird fett (`1`).
+      - In einer Zeile, die mit `Hier liegt: ` oder `In deiner Tasche: ` beginnt, wird jeder Name grün (`32`).
+      - In einer Zeile, die mit `Ausgänge: ` beginnt, wird jede Richtung blau (`34`); `Ausgänge: keine` bleibt, wie es ist.
+
+      Die Namen trennt `", "`; Etikett, Komma und Leerzeichen bleiben ohne Farbe.
+    check:
+      type: ruby
+      file: textadventure/colors.rb
+      cases:
+        - call: 'paint("Flur\nEin langer Flur.\nAusgänge: osten, unten")'
+          expect: '"\e[1mFlur\e[0m\nEin langer Flur.\nAusgänge: \e[34mosten\e[0m, \e[34munten\e[0m"'
+        - call: 'paint("Raum 204\nStill.\nHier liegt: zettel, apfel\nAusgänge: westen")'
+          expect: '"\e[1mRaum 204\e[0m\nStill.\nHier liegt: \e[32mzettel\e[0m, \e[32mapfel\e[0m\nAusgänge: \e[34mwesten\e[0m"'
+          say: "Jeder Name bekommt seine eigene Farbe; Komma und Leerzeichen dazwischen bleiben ohne."
+        - call: 'paint("In deiner Tasche: apfel, taschenlampe")'
+          expect: '"In deiner Tasche: \e[32mapfel\e[0m, \e[32mtaschenlampe\e[0m"'
+          say: "Fett wird nur der Name eines Raums, die erste Zeile einer Antwort mit `Ausgänge: `; die Tasche ist kein Raum."
+        - call: 'paint("Zelle\nKahl.\nAusgänge: keine")'
+          expect: '"\e[1mZelle\e[0m\nKahl.\nAusgänge: keine"'
+          say: "`keine` ist kein Ausgang und bleibt ohne Farbe."
+        - call: 'paint("Da geht es nicht weiter.")'
+          expect: '"Da geht es nicht weiter."'
+          say: "Eine Antwort ohne Raum und ohne Liste bleibt, wie sie ist."
+    hint:
+      - "Zerleg die Antwort mit `split(\"\\n\")` in Zeilen. Ob sie einen Raum beschreibt, sagt dir `lines.any? { |line| line.start_with?('Ausgänge: ') }`, bevor du die erste Zeile bemalst."
+      - "Für eine Zeile mit einer Liste: Das Etikett schneidest du mit `delete_prefix` ab, den Rest zerlegst du mit `split(', ')`, bemalst jeden Namen mit `color` und setzt alles mit `join(', ')` wieder zusammen, das Etikett davor."
+      - |
+        Das Gerüst, ein Fall je Zweig:
+        ```ruby
+        def paint(answer)
+          lines = answer.split("\n")
+          room = lines.any? { |line| line.start_with?('Ausgänge: ') }
+          lines.each_with_index.map do |line, i|
+            if i == 0 && room
+              # der Name, fett
+            elsif line.start_with?('Hier liegt: ') # … und die beiden anderen Listen
+              # Etikett + bemalte Namen
+            else
+              line
+            end
+          end.join("\n")
+        end
+        ```
+    solution: |
+      ```ruby
+      BOLD = 1
+      GREEN = 32
+      BLUE = 34
+
+      LISTS = { 'Hier liegt: ' => GREEN, 'In deiner Tasche: ' => GREEN, 'Ausgänge: ' => BLUE }
+
+      def paint(answer)
+        lines = answer.split("\n")
+        room = lines.any? { |line| line.start_with?('Ausgänge: ') }
+        lines.each_with_index.map do |line, i|
+          label, code = LISTS.find { |start, _| line.start_with?(start) }
+          if i == 0 && room
+            color(line, BOLD)
+          elsif label && line != 'Ausgänge: keine'
+            label + line.delete_prefix(label).split(', ').map { |name| color(name, code) }.join(', ')
+          else
+            line
+          end
+        end.join("\n")
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `colors.py` eine Funktion `paint(answer)`, die eine Antwort des Spiels Zeile für Zeile bemalt und den Rest lässt, wie er ist:
+
+        - Hat die Antwort eine Zeile, die mit `Ausgänge: ` beginnt, beschreibt sie einen Raum: Ihre erste Zeile, der Name, wird fett (`1`).
+        - In einer Zeile, die mit `Hier liegt: ` oder `In deiner Tasche: ` beginnt, wird jeder Name grün (`32`).
+        - In einer Zeile, die mit `Ausgänge: ` beginnt, wird jede Richtung blau (`34`); `Ausgänge: keine` bleibt, wie es ist.
+
+        Die Namen trennt `", "`; Etikett, Komma und Leerzeichen bleiben ohne Farbe.
+      check:
+        type: python
+        file: textadventure/colors.py
+        cases:
+          - call: 'paint("Flur\nEin langer Flur.\nAusgänge: osten, unten")'
+            expect: '"\033[1mFlur\033[0m\nEin langer Flur.\nAusgänge: \033[34mosten\033[0m, \033[34munten\033[0m"'
+          - call: 'paint("Raum 204\nStill.\nHier liegt: zettel, apfel\nAusgänge: westen")'
+            expect: '"\033[1mRaum 204\033[0m\nStill.\nHier liegt: \033[32mzettel\033[0m, \033[32mapfel\033[0m\nAusgänge: \033[34mwesten\033[0m"'
+            say: "Jeder Name bekommt seine eigene Farbe; Komma und Leerzeichen dazwischen bleiben ohne."
+          - call: 'paint("In deiner Tasche: apfel, taschenlampe")'
+            expect: '"In deiner Tasche: \033[32mapfel\033[0m, \033[32mtaschenlampe\033[0m"'
+            say: "Fett wird nur der Name eines Raums, die erste Zeile einer Antwort mit `Ausgänge: `; die Tasche ist kein Raum."
+          - call: 'paint("Zelle\nKahl.\nAusgänge: keine")'
+            expect: '"\033[1mZelle\033[0m\nKahl.\nAusgänge: keine"'
+            say: "`keine` ist kein Ausgang und bleibt ohne Farbe."
+          - call: 'paint("Da geht es nicht weiter.")'
+            expect: '"Da geht es nicht weiter."'
+            say: "Eine Antwort ohne Raum und ohne Liste bleibt, wie sie ist."
+      hint:
+        - "Zerleg die Antwort mit `split(\"\\n\")` in Zeilen. Ob sie einen Raum beschreibt, sagt dir `any(line.startswith(\"Ausgänge: \") for line in lines)`, bevor du die erste Zeile bemalst."
+        - "Für eine Zeile mit einer Liste: Das Etikett schneidest du mit `line[len(label):]` ab, den Rest zerlegst du mit `split(\", \")`, bemalst jeden Namen mit `color` und setzt alles mit `\", \".join(…)` wieder zusammen, das Etikett davor."
+        - |
+          Das Gerüst, ein Fall je Zweig:
+          ```python
+          def paint(answer):
+              lines = answer.split("\n")
+              room = any(line.startswith("Ausgänge: ") for line in lines)
+              painted = []
+              for i, line in enumerate(lines):
+                  if i == 0 and room:
+                      ...  # der Name, fett
+                  elif line.startswith("Hier liegt: "):  # … und die beiden anderen Listen
+                      ...  # Etikett + bemalte Namen
+                  else:
+                      painted.append(line)
+              return "\n".join(painted)
+          ```
+      solution: |
+        ```python
+        BOLD = 1
+        GREEN = 32
+        BLUE = 34
+
+        LISTS = {"Hier liegt: ": GREEN, "In deiner Tasche: ": GREEN, "Ausgänge: ": BLUE}
+
+
+        def paint(answer):
+            lines = answer.split("\n")
+            room = any(line.startswith("Ausgänge: ") for line in lines)
+            painted = []
+            for i, line in enumerate(lines):
+                label = next((start for start in LISTS if line.startswith(start)), None)
+                if i == 0 and room:
+                    painted.append(color(line, BOLD))
+                elif label and line != "Ausgänge: keine":
+                    names = line[len(label):].split(", ")
+                    painted.append(label + ", ".join(color(name, LISTS[label]) for name in names))
+                else:
+                    painted.append(line)
+            return "\n".join(painted)
+        ```
+    dart:
+      prompt: |
+        Schreib in `colors.dart` eine Funktion `String paint(String answer)`, die eine Antwort des Spiels Zeile für Zeile bemalt und den Rest lässt, wie er ist:
+
+        - Hat die Antwort eine Zeile, die mit `Ausgänge: ` beginnt, beschreibt sie einen Raum: Ihre erste Zeile, der Name, wird fett (`1`).
+        - In einer Zeile, die mit `Hier liegt: ` oder `In deiner Tasche: ` beginnt, wird jeder Name grün (`32`).
+        - In einer Zeile, die mit `Ausgänge: ` beginnt, wird jede Richtung blau (`34`); `Ausgänge: keine` bleibt, wie es ist.
+
+        Die Namen trennt `', '`; Etikett, Komma und Leerzeichen bleiben ohne Farbe.
+      check:
+        type: dart
+        file: textadventure/colors.dart
+        cases:
+          - call: 'paint("Flur\nEin langer Flur.\nAusgänge: osten, unten")'
+            expect: '"\x1B[1mFlur\x1B[0m\nEin langer Flur.\nAusgänge: \x1B[34mosten\x1B[0m, \x1B[34munten\x1B[0m"'
+          - call: 'paint("Raum 204\nStill.\nHier liegt: zettel, apfel\nAusgänge: westen")'
+            expect: '"\x1B[1mRaum 204\x1B[0m\nStill.\nHier liegt: \x1B[32mzettel\x1B[0m, \x1B[32mapfel\x1B[0m\nAusgänge: \x1B[34mwesten\x1B[0m"'
+            say: "Jeder Name bekommt seine eigene Farbe; Komma und Leerzeichen dazwischen bleiben ohne."
+          - call: 'paint("In deiner Tasche: apfel, taschenlampe")'
+            expect: '"In deiner Tasche: \x1B[32mapfel\x1B[0m, \x1B[32mtaschenlampe\x1B[0m"'
+            say: "Fett wird nur der Name eines Raums, die erste Zeile einer Antwort mit `Ausgänge: `; die Tasche ist kein Raum."
+          - call: 'paint("Zelle\nKahl.\nAusgänge: keine")'
+            expect: '"\x1B[1mZelle\x1B[0m\nKahl.\nAusgänge: keine"'
+            say: "`keine` ist kein Ausgang und bleibt ohne Farbe."
+          - call: 'paint("Da geht es nicht weiter.")'
+            expect: '"Da geht es nicht weiter."'
+            say: "Eine Antwort ohne Raum und ohne Liste bleibt, wie sie ist."
+      hint:
+        - "Zerleg die Antwort mit `split('\\n')` in Zeilen. Ob sie einen Raum beschreibt, sagt dir `lines.any((line) => line.startsWith('Ausgänge: '))`, bevor du die erste Zeile bemalst."
+        - "Für eine Zeile mit einer Liste: Das Etikett schneidest du mit `substring(label.length)` ab, den Rest zerlegst du mit `split(', ')`, bemalst jeden Namen mit `color` und setzt alles mit `join(', ')` wieder zusammen, das Etikett davor."
+        - |
+          Das Gerüst, ein Fall je Zweig:
+          ```dart
+          String paint(String answer) {
+            final lines = answer.split('\n');
+            final room = lines.any((line) => line.startsWith('Ausgänge: '));
+            final painted = <String>[];
+            for (var i = 0; i < lines.length; i++) {
+              final line = lines[i];
+              if (i == 0 && room) {
+                // der Name, fett
+              } else if (line.startsWith('Hier liegt: ')) { // … und die beiden anderen Listen
+                // Etikett + bemalte Namen
+              } else {
+                painted.add(line);
+              }
+            }
+            return painted.join('\n');
+          }
+          ```
+      solution: |
+        ```dart
+        const bold = 1;
+        const green = 32;
+        const blue = 34;
+
+        const lists = {'Hier liegt: ': green, 'In deiner Tasche: ': green, 'Ausgänge: ': blue};
+
+        String paint(String answer) {
+          final lines = answer.split('\n');
+          final room = lines.any((line) => line.startsWith('Ausgänge: '));
+          final painted = <String>[];
+          for (var i = 0; i < lines.length; i++) {
+            final line = lines[i];
+            final label = lists.keys.where((start) => line.startsWith(start)).firstOrNull;
+            if (i == 0 && room) {
+              painted.add(color(line, bold));
+            } else if (label != null && line != 'Ausgänge: keine') {
+              final names = line.substring(label.length).split(', ');
+              painted.add(label + names.map((name) => color(name, lists[label]!)).join(', '));
+            } else {
+              painted.add(line);
+            }
+          }
+          return painted.join('\n');
+        }
+        ```
+    java:
+      prompt: |
+        Schreib in `Colors` eine Methode `public static String paint(String answer)`, die eine Antwort des Spiels Zeile für Zeile bemalt und den Rest lässt, wie er ist:
+
+        - Hat die Antwort eine Zeile, die mit `Ausgänge: ` beginnt, beschreibt sie einen Raum: Ihre erste Zeile, der Name, wird fett (`1`).
+        - In einer Zeile, die mit `Hier liegt: ` oder `In deiner Tasche: ` beginnt, wird jeder Name grün (`32`).
+        - In einer Zeile, die mit `Ausgänge: ` beginnt, wird jede Richtung blau (`34`); `Ausgänge: keine` bleibt, wie es ist.
+
+        Die Namen trennt `", "`; Etikett, Komma und Leerzeichen bleiben ohne Farbe.
+      check:
+        type: java
+        file: textadventure/Colors.java
+        cases:
+          - call: 'Colors.paint("Flur\nEin langer Flur.\nAusgänge: osten, unten")'
+            expect: '"\u001B[1mFlur\u001B[0m\nEin langer Flur.\nAusgänge: \u001B[34mosten\u001B[0m, \u001B[34munten\u001B[0m"'
+          - call: 'Colors.paint("Raum 204\nStill.\nHier liegt: zettel, apfel\nAusgänge: westen")'
+            expect: '"\u001B[1mRaum 204\u001B[0m\nStill.\nHier liegt: \u001B[32mzettel\u001B[0m, \u001B[32mapfel\u001B[0m\nAusgänge: \u001B[34mwesten\u001B[0m"'
+            say: "Jeder Name bekommt seine eigene Farbe; Komma und Leerzeichen dazwischen bleiben ohne."
+          - call: 'Colors.paint("In deiner Tasche: apfel, taschenlampe")'
+            expect: '"In deiner Tasche: \u001B[32mapfel\u001B[0m, \u001B[32mtaschenlampe\u001B[0m"'
+            say: "Fett wird nur der Name eines Raums, die erste Zeile einer Antwort mit `Ausgänge: `; die Tasche ist kein Raum."
+          - call: 'Colors.paint("Zelle\nKahl.\nAusgänge: keine")'
+            expect: '"\u001B[1mZelle\u001B[0m\nKahl.\nAusgänge: keine"'
+            say: "`keine` ist kein Ausgang und bleibt ohne Farbe."
+          - call: 'Colors.paint("Da geht es nicht weiter.")'
+            expect: '"Da geht es nicht weiter."'
+            say: "Eine Antwort ohne Raum und ohne Liste bleibt, wie sie ist."
+      hint:
+        - "Zerleg die Antwort mit `answer.split(\"\\n\")` in Zeilen. Ob sie einen Raum beschreibt, findest du mit einer Schleife, die nach einer Zeile mit `startsWith(\"Ausgänge: \")` sucht, bevor du die erste Zeile bemalst."
+        - "Für eine Zeile mit einer Liste: Das Etikett schneidest du mit `substring(label.length())` ab, den Rest zerlegst du mit `split(\", \")`, bemalst jeden Namen mit `color` und setzt alles mit `String.join(\", \", …)` wieder zusammen, das Etikett davor."
+        - |
+          Das Gerüst, ein Fall je Zweig:
+          ```java
+          public static String paint(String answer) {
+              String[] lines = answer.split("\n");
+              boolean room = false;
+              for (String line : lines) {
+                  // room = true, wenn eine Zeile mit "Ausgänge: " beginnt
+              }
+              List<String> painted = new ArrayList<>();
+              for (int i = 0; i < lines.length; i++) {
+                  String line = lines[i];
+                  if (i == 0 && room) {
+                      // der Name, fett
+                  } else if (line.startsWith("Hier liegt: ")) { // … und die beiden anderen Listen
+                      // Etikett + bemalte Namen
+                  } else {
+                      painted.add(line);
+                  }
+              }
+              return String.join("\n", painted);
+          }
+          ```
+      solution: |
+        ```java
+        import java.util.ArrayList;
+        import java.util.LinkedHashMap;
+        import java.util.List;
+        import java.util.Map;
+
+        public class Colors {
+            public static final int BOLD = 1;
+            public static final int GREEN = 32;
+            public static final int BLUE = 34;
+
+            private static final Map<String, Integer> LISTS = new LinkedHashMap<>();
+
+            static {
+                LISTS.put("Hier liegt: ", GREEN);
+                LISTS.put("In deiner Tasche: ", GREEN);
+                LISTS.put("Ausgänge: ", BLUE);
+            }
+
+            public static String color(String text, int code) {
+                return "\u001B[" + code + "m" + text + "\u001B[0m";
+            }
+
+            public static String paint(String answer) {
+                String[] lines = answer.split("\n", -1);
+                boolean room = false;
+                for (String line : lines) {
+                    if (line.startsWith("Ausgänge: ")) {
+                        room = true;
+                    }
+                }
+                List<String> painted = new ArrayList<>();
+                for (int i = 0; i < lines.length; i++) {
+                    String line = lines[i];
+                    String label = null;
+                    for (String start : LISTS.keySet()) {
+                        if (line.startsWith(start)) {
+                            label = start;
+                        }
+                    }
+                    if (i == 0 && room) {
+                        painted.add(color(line, BOLD));
+                    } else if (label != null && !line.equals("Ausgänge: keine")) {
+                        List<String> names = new ArrayList<>();
+                        for (String name : line.substring(label.length()).split(", ")) {
+                            names.add(color(name, LISTS.get(label)));
+                        }
+                        painted.add(label + String.join(", ", names));
+                    } else {
+                        painted.add(line);
+                    }
+                }
+                return String.join("\n", painted);
+            }
+        }
+        ```

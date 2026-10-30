@@ -183,6 +183,35 @@
         return node;
     }
 
+    // An answer in colour, as the activity's step »Farbe im Terminal«
+    // paints it (paint in loesung/colors.rb): the room's name (the first
+    // line of an answer with »Ausgänge:«), the items after »Hier liegt:«
+    // and »In deiner Tasche:«, the exits after »Ausgänge:«. The game's text
+    // stays as it is; only the display changes.
+    const LISTS = [['Hier liegt: ', 'item'], ['In deiner Tasche: ', 'item'], ['Ausgänge: ', 'exit']];
+
+    function paint(text) {
+        const lines = text.split('\n');
+        const room = lines.some((line) => line.startsWith('Ausgänge: '));
+        const out = document.createDocumentFragment();
+        lines.forEach((line, i) => {
+            if (i > 0) out.append('\n');
+            const list = LISTS.find(([label]) => line.startsWith(label));
+            if (i === 0 && room) {
+                out.append(el('span', 'adventure-room', line));
+            } else if (list && line !== 'Ausgänge: keine') {
+                out.append(list[0]);
+                line.slice(list[0].length).split(', ').forEach((name, k) => {
+                    if (k > 0) out.append(', ');
+                    out.append(el('span', 'adventure-' + list[1], name));
+                });
+            } else {
+                out.append(line);
+            }
+        });
+        return out;
+    }
+
     function mount(box) {
         const screen = el('div', 'adventure-screen');
         screen.setAttribute('role', 'log');
@@ -208,7 +237,10 @@
 
         let game;
         const print = (text, kind) => {
-            screen.appendChild(el('div', 'adventure-' + kind, text));
+            const line = el('div', 'adventure-' + kind);
+            if (kind === 'answer') line.append(paint(text));
+            else line.textContent = text;
+            screen.appendChild(line);
             screen.scrollTop = screen.scrollHeight;
         };
         const begin = () => {

@@ -12912,6 +12912,11 @@ dialog.native-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 .adventure-answer { margin-bottom: 0.55em; }
 .adventure-command { color: #fabd2f; }
 .adventure-end { color: #b8bb26; font-weight: 600; margin-top: 0.3em; }
+/* as the terminal paints them in »Farbe im Terminal«: the room bold,
+   items green, exits blue (ANSI 1, 32, 34), in the editor's colours */
+.adventure-room { color: #fbf1c7; font-weight: 700; }
+.adventure-item { color: #b8bb26; }
+.adventure-exit { color: #83a598; }
 
 .adventure-demo .adventure-line {
     display: flex;
