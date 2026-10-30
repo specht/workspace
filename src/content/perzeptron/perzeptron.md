@@ -179,6 +179,13 @@ def predict(weights, bias, features):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/neuron-1.rb as neuron.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/neuron-1.py as neuron.py -->
+<!-- /language -->
+
 _task(vorhersage)
 
 Damit das Neuron die Pinguine sieht, liest diese Funktion die Datei. Sie gibt
@@ -198,6 +205,8 @@ def penguins(path, species)
   end
 end
 ```
+
+<!-- stage: stufen/neuron-2.rb as neuron.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -210,6 +219,8 @@ def penguins(path, species):
             examples.append([[float(length), float(depth)], 1 if name == species[1] else 0])
     return examples
 ```
+
+<!-- stage: stufen/neuron-2.py as neuron.py -->
 <!-- /language -->
 
 ### Lernen aus Fehlern
@@ -255,6 +266,7 @@ nicht 0 ist, die Gewichte und den Bias ändern und den Fehler zählen.
 <!-- /hint -->
 
 <!-- hint -->
+<!-- page-code: own -->
 ```ruby
 def train(examples, epochs)
   weights = Array.new(examples[0][0].size, 0.0)
@@ -313,6 +325,7 @@ nicht 0 ist, die Gewichte und den Bias ändern und den Fehler zählen.
 <!-- /hint -->
 
 <!-- hint -->
+<!-- page-code: own -->
 ```python
 def train(examples, epochs):
     weights = [0.0] * len(examples[0][0])
@@ -354,6 +367,13 @@ def train(examples, epochs):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/neuron-3.rb as neuron.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/neuron-3.py as neuron.py -->
+<!-- /language -->
+
 _task(lernen)
 
 _task(fehlerfrei)
@@ -372,6 +392,8 @@ puts "Gewichte: #{weights.map { |w| w.round(1) }}, Bias: #{bias.round(1)}"
 ```bash
 ruby learn.rb
 ```
+
+<!-- stage: stufen/learn-1.rb as learn.rb -->
 <!-- /language -->
 <!-- language: python -->
 Schreib das Programm in `learn.py`:
@@ -387,6 +409,8 @@ print(f"Gewichte: {[round(w, 1) for w in weights]}, Bias: {round(bias, 1)}")
 ```bash
 python3 learn.py
 ```
+
+<!-- stage: stufen/learn-1.py as learn.py -->
 <!-- /language -->
 
 <!-- after: fehlerfrei -->
@@ -409,7 +433,7 @@ Niemand hat dem Neuron das gesagt; es hat die Regel aus 274 Beispielen.
 
 Die Pinguine, für die die Summe genau 0 ist, liegen auf einer Geraden. Auf der
 einen Seite sagt das Neuron 0, auf der anderen 1. Diese Funktion zeichnet die
-Pinguine und die Gerade in eine Datei `plot.svg`, die VS Code als Bild öffnet.
+Pinguine und die Gerade in eine Datei `plot.svg`, die VS Code als Bild öffnet; sie gehört wie die anderen Funktionen in `neuron.rb` (in Python `neuron.py`).
 Ein SVG-Bild ist Text, Kreise und Linien mit ihren Koordinaten; wie es aufgebaut
 ist, steht im Handbuch unter [SVG](/reference/svg):
 
@@ -442,6 +466,9 @@ Und am Ende von `learn.rb`:
 ```ruby
 plot(examples, weights, bias, "plot.svg")
 ```
+
+<!-- stage: stufen/neuron-4.rb as neuron.rb -->
+<!-- stage: stufen/learn-2.rb as learn.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -472,6 +499,9 @@ Und am Ende von `learn.py`:
 ```python
 plot(examples, weights, bias, "plot.svg")
 ```
+
+<!-- stage: stufen/neuron-4.py as neuron.py -->
+<!-- stage: stufen/learn-2.py as learn.py -->
 <!-- /language -->
 
 <!-- after: epochen -->
@@ -536,6 +566,13 @@ def accuracy(weights, bias, examples):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/neuron-5.rb as neuron.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/neuron-5.py as neuron.py -->
+<!-- /language -->
+
 _task(genauigkeit)
 
 <!-- language: ruby -->
@@ -548,6 +585,8 @@ test = examples.select.with_index { |_, i| i.odd? }
 weights, bias = train(training, 100)
 puts "Richtig bei Pinguinen, die es nie gesehen hat: #{(accuracy(weights, bias, test) * 100).round(1)} %"
 ```
+
+<!-- stage: stufen/learn-3.rb as learn.rb -->
 <!-- /language -->
 <!-- language: python -->
 In `learn.py`, statt aus allen Pinguinen zu lernen:
@@ -559,6 +598,8 @@ test = examples[1::2]
 weights, bias = train(training, 100)
 print(f"Richtig bei Pinguinen, die es nie gesehen hat: {round(accuracy(weights, bias, test) * 100, 1)} %")
 ```
+
+<!-- stage: stufen/learn-3.py as learn.py -->
 <!-- /language -->
 
 _task(nie-gesehen)
@@ -642,6 +683,8 @@ def digits(path, a, b)
   end
 end
 ```
+
+<!-- stage: stufen/neuron-6.rb as neuron.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -654,6 +697,8 @@ def digits(path, a, b):
             examples.append([values[:64], 1 if values[64] == b else 0])
     return examples
 ```
+
+<!-- stage: stufen/neuron-6.py as neuron.py -->
 <!-- /language -->
 
 _task(nullen-und-einsen)
@@ -667,6 +712,8 @@ test = digits("digits-test.csv", 0, 1)
 weights, bias = train(training, 100)
 puts "Richtig bei fremden Handschriften: #{(accuracy(weights, bias, test) * 100).round(1)} %"
 ```
+
+<!-- stage: stufen/learn-4.rb as learn.rb -->
 <!-- /language -->
 <!-- language: python -->
 In `learn.py`, statt der Pinguine:
@@ -677,6 +724,8 @@ test = digits("digits-test.csv", 0, 1)
 weights, bias = train(training, 100)
 print(f"Richtig bei fremden Handschriften: {round(accuracy(weights, bias, test) * 100, 1)} %")
 ```
+
+<!-- stage: stufen/learn-4.py as learn.py -->
 <!-- /language -->
 
 <!-- after: nullen-und-einsen -->
@@ -692,7 +741,8 @@ _task(drei-und-acht)
 Die 64 Gewichte gehören zu den 64 Kästchen. Ein großes positives Gewicht heißt:
 Ist dieses Kästchen dunkel, spricht das für die zweite Ziffer; ein negatives:
 für die erste. Zeichnest du die Gewichte als 8 mal 8 Kästchen, blau für positiv
-und orange für negativ, siehst du, worauf das Neuron achtet.
+und orange für negativ, siehst du, worauf das Neuron achtet. Auch diese Funktion
+gehört in `neuron.rb` (in Python `neuron.py`):
 
 <!-- language: ruby -->
 ```ruby
@@ -709,6 +759,8 @@ def picture(weights, path)
   File.write(path, svg.join("\n"))
 end
 ```
+
+<!-- stage: stufen/neuron-7.rb as neuron.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -724,6 +776,8 @@ def picture(weights, path):
     with open(path, "w") as f:
         f.write("\n".join(svg))
 ```
+
+<!-- stage: stufen/neuron-7.py as neuron.py -->
 <!-- /language -->
 
 <div class='hint try'>
@@ -744,11 +798,15 @@ eine Zeile mit 65 Zahlen; schreib dazu ans Ende deines Programms:
 ```ruby
 puts (weights + [bias]).join(" ")
 ```
+
+<!-- stage: stufen/learn-5.rb as learn.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
 print(" ".join(str(v) for v in weights + [bias]))
 ```
+
+<!-- stage: stufen/learn-5.py as learn.py -->
 <!-- /language -->
 
 Dann:
