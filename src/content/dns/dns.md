@@ -28,7 +28,9 @@ Diese Aktivität setzt [TCP/IP-Verbindungen](/tcpip) fort: Was eine IP-Adresse i
 
 _include(workspace#terminal-oeffnen)
 
-## Einen Namen nachschlagen
+## Nachschlagen
+
+### Einen Namen nachschlagen
 
 In [TCP/IP-Verbindungen](/tcpip) hat `ping hackschule.de` einfach funktioniert. Dabei kennt das Netz nur Zahlen: Bevor das erste Paket losgeht, fragt dein Rechner einen **DNS-Server** (Domain Name System), welche Adresse zu dem Namen gehört. Diese Frage kannst du selbst stellen, mit `dig`:
 
@@ -62,7 +64,7 @@ Nur die Antwort, ohne alles drumherum, gibt `dig +short` aus. Schreib damit eine
 
 _task(nur-adresse)
 
-## Nicht nur Adressen
+### Nicht nur Adressen
 
 Ein Name kann mehrere Einträge haben, jeder mit einem **Typ**. Den Typ schreibst du vor den Namen:
 
@@ -100,7 +102,9 @@ crop-terminal-lines: auto
 
 _task(mailserver)
 
-## Wer kennt die Antwort?
+## Wie DNS die Antwort findet
+
+### Wer kennt die Antwort?
 
 Kein Server der Welt kennt alle Namen. Stattdessen ist jeder Name ein Pfad, von rechts nach links gelesen, und für jedes Stück ist jemand anderes zuständig:
 
@@ -148,7 +152,7 @@ _person(mockapetris)
 <p><strong>Domain Names – Concepts and Facilities</strong> (RFC 882) und <strong>Domain Names – Implementation and Specification</strong> (RFC 883), Paul Mockapetris, November 1983. Die beiden Texte, in denen das DNS zum ersten Mal beschrieben ist, als reiner Text wie damals üblich: <a href='https://www.rfc-editor.org/rfc/rfc882'>RFC 882</a> und <a href='https://www.rfc-editor.org/rfc/rfc883'>RFC 883</a>.</p>
 </div>
 
-## Den ganzen Weg auf einmal
+### Den ganzen Weg auf einmal
 
 `dig +trace` geht den Weg von oben selbst ab und zeigt jede Station:
 
@@ -171,7 +175,7 @@ Vier Blöcke, und unter jedem steht, von wem er kam (`Received … from`): die L
 
 _task(verteilt)
 
-## Gemerkt ist schneller: die TTL
+### Gemerkt ist schneller: die TTL
 
 Den ganzen Weg muss niemand bei jeder Frage gehen. Der DNS-Server, den dein Workspace fragt, merkt sich jede Antwort, so lange, wie ihre TTL sagt. Bevor du es ausprobierst:
 
@@ -200,7 +204,7 @@ Darum dauert es eine Weile, bis eine geänderte Adresse überall ankommt: Wer di
 <strong>Ausprobieren:</strong> Frag statt des DNS-Servers deines Workspace direkt einen der Nameserver, die für <code>hackschule.de</code> zuständig sind (<code>dig +short NS hackschule.de</code>), zum Beispiel <code>dig @joel.ns.cloudflare.com hackschule.de</code>, mehrmals hintereinander. Welche TTL nennt er jedes Mal? Warum zählt sie bei ihm nicht herunter, beim DNS-Server deines Workspace aber schon?
 </div>
 
-## Rückwärts: von der Adresse zum Namen
+### Rückwärts: von der Adresse zum Namen
 
 Auch zu einer Adresse kann ein Name gehören, ein Eintrag vom Typ `PTR`. `dig -x` fragt danach:
 

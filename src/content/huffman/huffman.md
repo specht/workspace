@@ -121,7 +121,9 @@ reference: [heap, baeume, bits-und-bytes, ruby-python]
 Im Morsecode ist E ein einziger kurzer Ton und Q ein langes Lang-lang-kurz-lang, weil E so viel häufiger vorkommt. Huffman-Codes machen dasselbe mit Bytes, aber so, dass man keine Pausen braucht, um zu wissen, wo ein Code aufhört. Du baust den Baum, aus dem die Codes kommen, in Ruby oder Python, codierst und decodierst damit und findest heraus, wie JPEG seine Huffman-Tabellen mit ein paar Bytes speichert.
 </p>
 
-## Kurze Codes für häufige Zeichen
+## Die Idee
+
+### Kurze Codes für häufige Zeichen
 
 Jedes Byte hat 8 Bits, ob es ein »e« ist, in einem deutschen Text etwa jeder sechste Buchstabe, oder ein »q«, das kaum vorkommt. Das ist bequem, aber verschwenderisch. Samuel Morse und Alfred Vail haben das schon in den 1830er Jahren besser gemacht: Im Morsecode ist E ein einziger kurzer Ton (·), T ein langer (−), und seltene Buchstaben wie Q (−−·−) sind lang. Im Mittel wird eine Nachricht so kürzer.
 
@@ -144,7 +146,7 @@ Mit dieser Tabelle ist `0101100` eindeutig: `0` ist A, dann `10` ist B, `110` is
 
 _task(praefix)
 
-## Der Baum
+### Der Baum
 
 Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie möglich braucht? Diese Frage stellte Robert Fano 1951 seinen Studierenden am MIT als Hausarbeit, statt einer Prüfung. Er selbst kannte nur ein Verfahren, das gute, aber nicht immer die besten Codes findet. David Huffman fand nach Monaten eins, das immer die besten findet, und es ist erstaunlich einfach:
 
@@ -279,7 +281,9 @@ check-task-fails: kanonisch python
 
 Die Bits schreiben wir der Einfachheit halber als String aus den Zeichen `0` und `1`. Echte Programme packen je 8 davon in ein Byte, wie GIF und JPEG es tun; gezählt wird hier trotzdem in Bits.
 
-## Zählen
+## Huffman programmieren
+
+### Zählen
 
 <!-- language: ruby -->
 Schreib `frequencies`. Es gibt einen Hash zurück, der für jedes Byte des Texts sagt, wie oft es vorkommt.
@@ -299,7 +303,7 @@ Schreib `frequencies`. Es gibt ein `dict` zurück, das für jedes Byte des Texts
 
 _task(zaehlen)
 
-## Den Baum bauen
+### Den Baum bauen
 
 <!-- language: ruby -->
 Schreib `build_tree` nach den drei Schritten von oben. Ein Blatt ist das Byte selbst, eine Zahl; ein Knoten ist ein Array aus seinen beiden Kindern. Für »ABRACADABRA« könnte der Baum so aussehen: `[65, [[67, 68], [66, 82]]]`.
@@ -330,7 +334,7 @@ Ein Sonderfall: Besteht der Text aus einem einzigen Byte, immer wieder, ist der 
 
 _task(baum)
 
-## Codieren und decodieren
+### Codieren und decodieren
 
 <!-- language: ruby -->
 `encode` ist kurz: Für jedes Byte der Code aus der Tabelle, alle hintereinander. `join` hängt eine Liste von Strings aneinander.

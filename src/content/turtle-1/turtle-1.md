@@ -11,7 +11,7 @@ topics: [grundstrukturen, unterprogramme, computergrafik, geschichte]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Turtle: Bilder aus Befehlen
@@ -84,7 +84,9 @@ Drehungen ergeben zusammen 360 Grad.
 
 _task(triangle)
 
-## Wiederholen
+## Bausteine
+
+### Wiederholen
 
 Beim Quadrat hast du zweimal dieselben zwei Zeilen geschrieben, und noch
 zweimal. Was sich wiederholt, macht eine **Schleife**. Diese zeichnet eine
@@ -150,7 +152,7 @@ um 1 Grad drehen. Achte darauf, ob du die Ecken noch siehst, und wie groß
 der Kreis wird, wenn sie 3 Schritte geht.
 </div>
 
-## Eigene Befehle
+### Eigene Befehle
 
 Die Schildkröte kennt nur ein paar Befehle, aber du kannst ihr neue
 beibringen: Eine **Funktion** bekommt einen Namen und die Befehle, die sie
@@ -224,7 +226,7 @@ _task(flower)
 
 _task(own-flower)
 
-## Stift und Farbe
+### Stift und Farbe
 
 <!-- language: ruby -->
 Mit `pen_up` hebt die Schildkröte ihren Stift: Sie geht weiter, ohne zu
@@ -295,7 +297,9 @@ _task(dashes)
 
 _task(colors)
 
-## Spiralen
+## Figuren
+
+### Spiralen
 
 Eine **Variable** merkt sich einen Wert unter einem Namen, und der Wert
 darf sich ändern. Hier wird jede Stufe 10 Schritte größer als die davor:
@@ -356,7 +360,7 @@ laufen und probier als Drehung 89, 91, 120, 121 und 144. Achte darauf, in
 welche Richtung sich die Arme drehen und wie viele Arme es sind.
 </div>
 
-## Sterne
+### Sterne
 
 _task(star)
 
@@ -375,7 +379,7 @@ Schildkröte, laufen ein Quadrat ab und schreiben dann auf, was sie getan
 haben.</p>
 </div>
 
-## Kreise und Federn
+### Kreise und Federn
 
 Einen echten Kreis kann die Schildkröte nicht zeichnen, nur gerade Linien.
 Aber ein Vieleck mit vielen Ecken sieht aus wie ein Kreis, wenn seine

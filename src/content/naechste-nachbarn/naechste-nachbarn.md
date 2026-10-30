@@ -105,7 +105,9 @@ species,island,bill_length_mm,bill_depth_mm,flipper_length_mm,body_mass_g
 Adelie,Torgersen,39.1,18.7,181,3750
 ```
 
-## Wie weit zwei Pinguine auseinanderliegen
+## Pinguine bestimmen
+
+### Wie weit zwei Pinguine auseinanderliegen
 
 Trägst du die zwei Maße eines Schnabels als Punkt in ein Diagramm ein, die Länge
 nach rechts und die Höhe nach oben, dann ist »ähnlich« dasselbe wie »nah«. Wie
@@ -179,7 +181,7 @@ def distance(a, b):
 
 _task(abstand)
 
-## Die nächsten Nachbarn
+### Die nächsten Nachbarn
 
 Ein Beispiel ist ein Paar: die Merkmale und die Antwort, die dazugehört. Bei
 einem Pinguin sind das die zwei Maße des Schnabels und seine Art:
@@ -235,7 +237,7 @@ def nearest(examples, features, k):
 
 _task(nachbarn)
 
-## Die Nachbarn stimmen ab
+### Die Nachbarn stimmen ab
 
 Jetzt fehlt die Abstimmung: Welche Antwort kommt unter den `k` nächsten
 Nachbarn am häufigsten vor? Kommen zwei gleich oft vor, gewinnt die, die unter
@@ -349,7 +351,7 @@ python3 penguins.py
 
 _task(unbekannt)
 
-## Wie oft liegt es richtig?
+### Wie oft liegt es richtig?
 
 Gelernt hat das Programm eigentlich nichts. Es hebt alle Beispiele auf und sieht
 bei jeder Frage nach. Ob das reicht, zeigt sich an Pinguinen, deren Art es
@@ -446,7 +448,9 @@ liegt. Dazwischen liegt das k, mit dem das Programm am besten ist, und das muss
 man ausprobieren.
 <!-- /after -->
 
-## Ein Fahrradverleih entscheidet
+## Wenn ein Programm über Menschen entscheidet
+
+### Ein Fahrradverleih entscheidet
 
 Ab hier ist alles ausgedacht. In einer Stadt, durch die ein Fluss fließt,
 verleiht ein Laden Fahrräder. Wer ein Rad leiht, zahlt manchmal 50 Euro
@@ -558,7 +562,7 @@ kannten.
 
 _task(uebereinstimmung)
 
-## Wen trifft es?
+### Wen trifft es?
 
 Eine Kaution von jemandem zu verlangen, der jedes Rad pünktlich zurückbringt,
 ist ein Fehler zu seinen Lasten: Er muss 50 Euro haben, die er für nichts
@@ -711,7 +715,7 @@ steht, heißt **Stellvertreter** (englisch proxy). Ein Programm kann so eine
 Gruppe benachteiligen, ohne dass in seinen Daten steht, wer zu ihr gehört.
 <!-- /after -->
 
-## Was der Laden tun könnte
+### Was der Laden tun könnte
 
 Das Programm macht genau das, was es soll: entscheiden wie der Laden. Der Fehler
 steckt in den Beispielen, aus denen es lernt. Daraus folgt einiges, was der
@@ -744,7 +748,7 @@ Entscheidung für einen Vertrag nötig ist; dann muss ein Mensch sie auf Wunsch
 Entscheidung anfechten. Ein Mensch bleibt verantwortlich, auch wenn ein Programm
 entscheidet.
 
-## Wenn es wirklich passiert
+### Wenn es wirklich passiert
 
 Was dein Programm mit ausgedachten Kunden macht, passiert mit echten Menschen.
 Die Informatikerin Joy Buolamwini hat es an Programmen gezeigt, die Gesichter

@@ -130,7 +130,9 @@ Ein paar Zeichen haben in LaTeX eine eigene Bedeutung: `%` beginnt einen Komment
 
 _task(sonderzeichen)
 
-## Gliederung
+## Bausteine einer Facharbeit
+
+### Gliederung
 
 Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Ersetze `\section{Einleitung}` durch:
 
@@ -189,7 +191,7 @@ _task(gliederung)
 
 _task(nummern)
 
-## Eine Formel
+### Eine Formel
 
 Im Kapitel Theorie steht die Formel, um die es geht:
 
@@ -239,7 +241,7 @@ _task(formel)
 
 _task(schwingungsdauer)
 
-## Ein Bild
+### Ein Bild
 
 Eine Facharbeit zeigt, wie der Versuch aufgebaut war. Lege dafür ein Bild `aufbau.png` (oder `.jpg`) in den Ordner `facharbeit`: ein Foto von deinem Versuch, eine eigene Zeichnung, zum Beispiel aus dem [2D Game Studio](https://2d.hackschule.de/) (»Funktionen« › »Sprite« › »Als Bild speichern«), oder ein Bild aus dem Internet, dessen Quelle du angibst. Ziehe die Datei aus deinem Download-Ordner einfach in den Explorer des Workspace.
 
@@ -284,7 +286,7 @@ _task(bild)
 <strong>Ausprobieren:</strong> Lösch <code>[H]</code> hinter <code>\begin{figure}</code> und speichere: Wo setzt LaTeX die Abbildung jetzt, und stimmt der Verweis »Abbildung 1« im Text trotzdem? Ändere auch <code>width=0.45\textwidth</code> in <code>width=\textwidth</code>. Stell danach beides wieder her.
 </div>
 
-## Eine Tabelle
+### Eine Tabelle
 
 Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in eine Tabelle:
 
@@ -347,7 +349,7 @@ Die Linien kommen aus einem Paket. Ergänze die Präambel um:
 
 _task(tabelle)
 
-## Ein Diagramm
+### Ein Diagramm
 
 Messwerte versteht man am besten in einem Diagramm. Mit dem Paket TikZ zeichnest du es in LaTeX selbst, mit Koordinaten statt mit der Maus. Das Kapitel Auswertung:
 
@@ -435,7 +437,7 @@ sich die Schwingungsdauer. Die Messungen bestätigen die Theorie.
 ~ \end{document}
 ```
 
-## Quellen
+### Quellen
 
 Jede Facharbeit gibt an, woher ihr Wissen kommt. In LaTeX stehen die Quellen in einer eigenen Datei. Lege neben `facharbeit.tex` die Datei `literatur.bib` an:
 

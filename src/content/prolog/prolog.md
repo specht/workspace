@@ -14,7 +14,7 @@ reference: [terminal]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Logisch programmieren mit Prolog
@@ -68,7 +68,9 @@ Prolog die erste und wartet: `;` holt die nächste, Enter hört auf. Hast du
 `familie.pl` im Editor geändert, lädt `make.` sie neu; `halt.` beendet
 Prolog.
 
-## Fakten und Anfragen
+## Fakten und Regeln
+
+### Fakten und Anfragen
 
 Jede Zeile `parent(johann_ambrosius, johann_sebastian).` in `familie.pl` ist
 ein Fakt: Johann Ambrosius ist ein Elternteil von Johann Sebastian. Eine
@@ -79,7 +81,7 @@ _task(eltern-von)
 
 _task(kinder)
 
-## Regeln
+### Regeln
 
 Eine Regel sagt, wann etwas gilt. `:-` liest man »wenn«, das Komma »und«:
 
@@ -106,6 +108,8 @@ nirgends steht, dass niemand sein eigenes Geschwister ist.
 _task(geschwister)
 
 ## Wie Prolog sucht
+
+### Unifikation und Backtracking
 
 Wie findet Prolog die Großeltern von Wilhelm Friedemann? Es nimmt das erste
 Ziel, die Anfrage, und sucht von oben eine Klausel, deren Kopf dazu passt.
@@ -153,7 +157,7 @@ Die Merkpunkte sind ein Stack: Prolog geht immer zum zuletzt gemerkten
 zurück. Darum findet es die Antworten in der Reihenfolge, in der die Fakten
 in der Datei stehen.
 
-## Rekursion
+### Rekursion
 
 Ein Vorfahr ist ein Elternteil, oder ein Elternteil eines Vorfahren. Diese
 Regel benutzt sich selbst, wie eine rekursive Funktion. Auf die Reihenfolge

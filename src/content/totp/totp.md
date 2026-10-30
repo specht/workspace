@@ -125,7 +125,9 @@ check-task-fails: hotp python
 Mit `python3 totp.py` läuft das Programm unten in der Datei; die Prüfungen der Aufgaben laden nur deine Funktionen und rufen sie direkt auf.
 <!-- /language -->
 
-## Der Schlüssel in Base32
+## Der Code Schritt für Schritt
+
+### Der Schlüssel in Base32
 
 Der Schlüssel sind 20 zufällige Bytes. Damit man ihn auch abtippen kann, wenn der QR-Code nicht geht, schreiben Apps ihn in **Base32**: 32 Zeichen, die Großbuchstaben `A` bis `Z` und die Ziffern `2` bis `7`. Die 0, die 1, die 8 und die 9 fehlen mit Absicht, weil man sie mit O, I und l, B und g verwechseln kann. Und Groß- und Kleinschreibung spielt keine Rolle.
 
@@ -142,7 +144,7 @@ Am einfachsten rechnest du mit den Bits als Text aus Nullen und Einsen: `format(
 
 _task(base32)
 
-## Ein Code aus Schlüssel und Zähler
+### Ein Code aus Schlüssel und Zähler
 
 Der Code kommt aus einer **HMAC**. Das ist eine Prüfsumme wie SHA-1 aus [Kryptographie im Terminal](/crypto), nur mit einem Schlüssel gemischt: Wer den Schlüssel nicht kennt, kann sie nicht ausrechnen, und an der Prüfsumme sieht man dem Schlüssel nichts an. Für einen Zähler, der bei jeder Anmeldung um 1 weiterzählt, geht **HOTP** so:
 
@@ -162,7 +164,7 @@ Mit dem Schlüssel `12345678901234567890` aus dem Standard und dem Zähler 1 ist
 
 _task(hotp)
 
-## Der Zähler ist die Uhr
+### Der Zähler ist die Uhr
 
 Ein Zähler, der nur bei jeder Anmeldung weiterzählt, hat einen Haken: Handy und Server müssen sich einig sein, wie weit er schon ist. TOTP nimmt stattdessen die Uhrzeit als Zähler. Computer zählen die Zeit in Sekunden seit dem 1. Januar 1970, der **Unix-Zeit**; `date +%s` im Terminal zeigt sie. Geteilt durch 30 und abgerundet ist das der Zähler: Er wird alle 30 Sekunden um 1 größer, und genau so oft wechselt der Code in deiner App.
 
@@ -170,7 +172,9 @@ Schreib `totp(key, time)`, das mit deinem `hotp` den Code für eine Unix-Zeit au
 
 _task(totp)
 
-## Mit dem Handy
+## Dein Programm und die App
+
+### Mit dem Handy
 
 Jetzt kommt dein Programm mit einer echten App zusammen. Es braucht dafür einen eigenen Schlüssel und einen QR-Code, den die App scannen kann. Im QR-Code steht eine Adresse, die jede Authenticator-App versteht:
 
@@ -323,7 +327,7 @@ Scanne den QR-Code mit einer Authenticator-App auf deinem Handy, zum Beispiel Fr
 <strong>Ausprobieren:</strong> Ändere in <code>secret.txt</code> ein einziges Zeichen in ein anderes aus dem Alphabet und starte das Programm neu. Wie viele der sechs Ziffern stimmen noch mit der App überein? Schreib danach statt eines Großbuchstabens denselben Buchstaben klein: Was passiert jetzt, und warum? Stell <code>secret.txt</code> danach wieder her.
 </div>
 
-## Prüfen wie ein Server
+### Prüfen wie ein Server
 
 Der Server hat dieselbe Rechnung und prüft, ob der eingetippte Code stimmt. Ganz so einfach ist es aber nicht.
 

@@ -179,7 +179,9 @@ check-task-fails: bytes python
 -->
 <!-- /language -->
 
-## Als Text
+## RLE für Text
+
+### Als Text
 
 Schreib `rle`. Es geht den Text Zeichen für Zeichen durch, zählt, wie oft dasselbe Zeichen hintereinander kommt, und schreibt für jeden Lauf die Zahl und das Zeichen hin.
 
@@ -209,7 +211,7 @@ Dann `unrle`, andersherum: aus `'6W3B4W'` wieder `'WWWWWWBBBWWWW'`. Eine Zahl ka
 
 _task(unrle)
 
-## Wenn Ziffern im Text stehen
+### Wenn Ziffern im Text stehen
 
 _task(ziffern)
 

@@ -82,7 +82,9 @@ Lös den Fall im Terminal. Du könntest jede Datei in VS Code öffnen, aber 1500
 
 Schreib dir unterwegs auf, was du herausfindest, zum Beispiel in eine Datei `notizen.txt`. Wie man die Ausgabe eines Befehls direkt dort hineinschreibt, kommt gleich.
 
-## Der Tatort
+## Den Spuren nach
+
+### Der Tatort
 
 _uses(grep, pipelines)
 
@@ -141,7 +143,7 @@ _task(gross-klein)
 
 Lies die fünf Hinweise genau. Jeder führt in einen anderen Teil der Akten.
 
-## Die Zeugin
+### Die Zeugin
 
 In `strassen/` liegt eine Datei für jede Straße. Jede Zeile ist ein Haus, in der Reihenfolge der Hausnummern: Zeile 1 ist Hausnummer 1, Zeile 2 Hausnummer 2. Jede Straße fängt bei 1 an, keine Nummer fehlt, auch wenn niemand zu Hause war, und es gibt kein 1a oder 1b: Hausnummer 23 steht also in Zeile 23. Die ersten drei Häuser der Hafenstraße:
 
@@ -176,7 +178,7 @@ check-task: zeugin <- head -n 23 strassen/moewenweg.txt | tail -n 1
 
 Die Zeile nennt die Datei mit ihrer Befragung. Lies sie mit `cat` und schreib dir auf, was die Zeugin gesehen hat.
 
-## Der Nachtwächter
+### Der Nachtwächter
 
 Welche der 1500 Befragungen die des Nachtwächters ist, hat niemand notiert. `grep` kann in vielen Dateien auf einmal suchen. Wer hatte Besuch aus Hamburg?
 
@@ -219,7 +221,7 @@ check-task-fails: nachtwaechter <- 3315
 check-task: nachtwaechter <- 1290
 -->
 
-## Das Auto
+### Das Auto
 
 In `fahrzeuge.txt` steht jedes Auto der Stadt in einer Zeile: Kennzeichen, Farbe, Art und wem es gehört.
 
@@ -254,7 +256,7 @@ check-task: autos <- grep '^BS-K' fahrzeuge.txt | grep gelb | grep '7 '
 
 Vier Autos, vier Leute: Wer von ihnen könnte es gewesen sein?
 
-## Die Vereine
+### Die Vereine
 
 In `vereine/` liegen die Mitgliederlisten von vier Vereinen, ein Name pro Zeile, in der Reihenfolge, in der die Leute eingetreten sind.
 
@@ -291,7 +293,7 @@ Leg die Namen neben die vier Autobesitzer. Wer steht auf beiden Listen?
 
 _task(verdaechtige)
 
-## Die Alarmanlage
+### Die Alarmanlage
 
 Zwei Verdächtige, und beide passen zu allem, was du bisher weißt. Was jetzt noch fehlt, weiß die Alarmanlage. Sie schreibt jeden Zugang mit einer Schlüsselkarte in eine Datei und macht dafür sofort einen Commit, in einem Git-Repository:
 

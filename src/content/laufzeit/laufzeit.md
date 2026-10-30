@@ -15,7 +15,7 @@ reference: [terminal]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Wie lange dauert das? Laufzeit und Aufwand
@@ -82,7 +82,9 @@ rechnet aus dem Namen aus, wo er liegen müsste, und schaut nur dort nach.
 
 _task(distinct-set)
 
-## Messen
+## Messen und zählen
+
+### Messen
 
 Alle drei geben dieselbe Zahl. Aber wie lange brauchen sie? Bevor du misst:
 
@@ -161,7 +163,7 @@ Laufen noch einmal übersetzt, und Code, der oft läuft, wird dabei schneller.
 <!-- /language -->
 </div>
 
-## Zählen statt messen
+### Zählen statt messen
 
 Sekunden hängen vom Rechner ab, von der Sprache und davon, was nebenher
 läuft. Wie viele Schritte ein Programm macht, hängt nur vom Programm und
@@ -208,7 +210,7 @@ Arbeit.
 </table>
 <!-- /language -->
 
-## Wie schnell der Aufwand wächst
+### Wie schnell der Aufwand wächst
 
 Wie groß der Unterschied wird, siehst du hier. Schieb n größer und schau,
 in welcher Zeile die Zeit zuerst unbrauchbar wird:
@@ -281,7 +283,9 @@ _task(fib-memo)
 
 _task(pair-with-sum)
 
-## Eine Rundfahrt durch Berlin
+## Ein schweres Problem
+
+### Eine Rundfahrt durch Berlin
 
 Jetzt ein Problem, für das niemand eine schnelle Lösung kennt: Du willst
 mehrere Sehenswürdigkeiten besuchen und am Ende wieder am Anfang sein. In
@@ -445,7 +449,7 @@ kürzeste, und wie viel schneller sie fertig ist.
 
 _task(grenze)
 
-## Schnell prüfen, langsam finden
+### Schnell prüfen, langsam finden
 
 Bei der Rundfahrt fällt etwas auf: Ob eine Rundfahrt kürzer als 20 km ist,
 prüft man in einem Augenblick: Man rechnet ihre Länge aus. Eine zu finden, ist

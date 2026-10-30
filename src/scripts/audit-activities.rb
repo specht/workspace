@@ -7,7 +7,9 @@
 #
 # Columns: Aufgaben (tasks in tasks.yaml; not for the pages in TASKLESS),
 # Gliederung (## and ### headings; »flach« when a chapter of more than
-# LONG_CHAPTER words of prose has no ###), Sprachen (languages of the page),
+# LONG_CHAPTER words of prose has no ###, or when more than FLAT_RUN
+# chapters in a row have none: a long list of short chapters, snippet, task,
+# snippet, task), Sprachen (languages of the page),
 # Notiz (lehrkraft.md opens with »Lernende«), generiert / von Hand (pictures
 # from recipes and others; »von Hand« counts photos and diagrams too),
 # dunkel (dark variants among the generated pictures), Karte (whether the card
@@ -23,6 +25,7 @@ CONTENT = File.join(ROOT, 'src/content')
 # what the Workspace is and how to work in it: pages to read, nothing to check
 TASKLESS = %w[about basics].freeze
 LONG_CHAPTER = 800
+FLAT_RUN = 6
 
 def catalog
     YAML.load_file(File.join(CONTENT, 'sections.yaml')).reject { |section| section['hidden'] }
@@ -70,9 +73,13 @@ def audit(slug)
     prose = markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '').gsub(%r{<(script|style)\b.*?</\1>}m, '').gsub(/<!--.*?-->/m, '')
     h2 = prose.scan(/^## /).size
     h3 = prose.scan(/^### /).size
-    flat = prose.split(/^(?=## )/).any? do |chapter|
-        chapter.start_with?('## ') && !chapter.match?(/^### /) && chapter.gsub(/<[^>]+>/, ' ').split.size > LONG_CHAPTER
+    chapters = prose.split(/^(?=## )/).select { |chapter| chapter.start_with?('## ') }
+    long = chapters.any? do |chapter|
+        !chapter.match?(/^### /) && chapter.gsub(/<[^>]+>/, ' ').split.size > LONG_CHAPTER
     end
+    run = chapters.chunk_while { |a, b| !a.match?(/^### /) && !b.match?(/^### /) }
+        .map { |group| group.count { |chapter| !chapter.match?(/^### /) } }.max.to_i
+    flat = long || run > FLAT_RUN
     languages = meta[/^languages:\s*\[(.*?)\]/, 1]&.split(',')&.map(&:strip) || [meta[/^language:\s*(.+)$/, 1].to_s.strip].reject(&:empty?)
     note = File.join(dir, 'lehrkraft.md')
     note_ok = File.file?(note) && File.read(note).strip.split(/\n\s*\n/).first.to_s.include?('Lernende')

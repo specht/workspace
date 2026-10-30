@@ -123,7 +123,9 @@ reference: [bits-und-bytes, ruby-python]
 Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es sich kürzer sagen. LZW merkt sich beim Lesen jede Folge von Bytes, die schon einmal vorkam, und schreibt beim nächsten Mal nur noch eine Nummer. Das Wörterbuch dafür wird nie mitgeschickt: Wer entpackt, baut es beim Lesen selbst noch einmal. Du schreibst beides selbst, in Ruby oder Python, den Kompressor und den Entpacker, und probierst sie an Texten, Fotos und der Spezifikation von GIF aus.
 </p>
 
-## Wiederholungen
+## Die Idee
+
+### Wiederholungen
 
 Ein Text wiederholt sich ständig: Buchstabenfolgen wie »ch«, »sch«, »ein« und »der« kommen auf jeder Seite dutzendfach vor, ganze Wörter auch. Ein Programm, das komprimiert, sucht solche Wiederholungen und ersetzt sie durch etwas Kürzeres. Beim Entpacken muss genau das Original zurückkommen, Byte für Byte; das heißt **verlustfrei**.
 
@@ -135,7 +137,7 @@ Das Verfahren auf dieser Seite haben Abraham Lempel und Jacob Ziv 1978 erfunden 
 - Jedes Mal, wenn das Programm einen Code ausgibt, kommt ein neuer Eintrag dazu, mit dem nächsten freien Code: 256, 257, 258, …
 - Ein Code steht also für eine immer längere Folge, und wo sich etwas wiederholt, ersetzt ein einziger Code mehrere Bytes.
 
-## Komprimieren
+### Komprimieren
 
 Der Kompressor liest den Text Byte für Byte und merkt sich das **Präfix**, das er gerade aufbaut: den Anfang des restlichen Texts, der schon im Wörterbuch steht. Für jedes Byte gilt:
 
@@ -235,7 +237,9 @@ check-task-fails: entpacker python
 `b'ABABABA'` ist kein Text, sondern eine Folge von **Bytes**, Zahlen von 0 bis 255. Was unten außerhalb der Funktionen steht, ist dein Programm: Es läuft, wenn du die Datei startest, mit `python3 lzw.py`. Die Prüfungen der Aufgaben laden nur deine Funktionen und rufen sie direkt auf; dein Programm läuft dabei nicht. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 <!-- /language -->
 
-## Der Kompressor
+## LZW programmieren
+
+### Der Kompressor
 
 <!-- language: ruby -->
 Schreib `compress` nach den drei Regeln oben. Was du aus Ruby dafür brauchst:
@@ -267,7 +271,7 @@ _task(kompressor)
 </div>
 <!-- /language -->
 
-## Entpacken
+### Entpacken
 
 Der Entpacker bekommt nur die Codes. Die Codes unter 256 versteht er sofort, sie sind einzelne Bytes. Für alle anderen baut er das Wörterbuch selbst nach, so wie der Kompressor es gebaut hat, nur einen Schritt später:
 

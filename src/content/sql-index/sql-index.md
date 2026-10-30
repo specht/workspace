@@ -39,7 +39,9 @@ press: Enter
 sleep: 1
 -->
 
-## Ein Telefonbuch mit einer Million Einträgen
+## Langsam suchen
+
+### Ein Telefonbuch mit einer Million Einträgen
 
 Damit sich ein Unterschied messen lässt, braucht es viele Zeilen. Die Datei unten legt in deiner Datenbank die Tabelle `person` an und füllt sie mit einer Million ausgedachter Menschen, mit Vorname, Nachname, Wohnort, Geburtsjahr und Telefonnummer. Ausgedacht, aber bei allen gleich: Die Namen kommen nicht aus dem Zufall, sondern aus einer Prüfsumme der Zeilennummer (`CRC32`), und jede Telefonnummer gibt es genau einmal.
 
@@ -126,7 +128,7 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='person-limit.webp' alt='mycli zeigt die ersten fünf Zeilen von person, mit id, first_name, last_name, city, birth_year und phone, etwa David Wagner aus Stuttgart, 2006, 0151 0007919.'>
 
-## Eine Nummer suchen
+### Eine Nummer suchen
 
 Wem gehört die Nummer `0151 9500000`?
 
@@ -149,7 +151,7 @@ Unter dem Ergebnis steht, wie lange die Abfrage gedauert hat: etwa eine Drittels
 
 _task(wessen-nummer)
 
-## Der Datenbank zusehen: EXPLAIN
+### Der Datenbank zusehen: EXPLAIN
 
 Wie die Datenbank eine Abfrage ausführen will, sagt `EXPLAIN` davor. Mit `\G` am Ende statt `;` schreibt `mycli` jede Spalte des Ergebnisses in eine eigene Zeile, das ist hier übersichtlicher:
 
@@ -185,6 +187,8 @@ Stell dir ein Telefonbuch vor, in dem die Einträge in der Reihenfolge stehen, i
 <!-- /after -->
 
 ## Ein Index
+
+### Einen Index anlegen
 
 Ein **Index** ist ein zweites, sortiertes Verzeichnis neben der Tabelle: alle Telefonnummern der Reihe nach, und bei jeder, in welcher Zeile sie steht. So wie das Register am Ende eines Buchs, das zu jedem Stichwort die Seite nennt. Lege einen an:
 
@@ -235,7 +239,7 @@ Jetzt steht bei `key` der Index `by_phone`, bei `rows` eine 1, und bei `type` st
 
 _task(index-telefon)
 
-## Wie ein Index aufgebaut ist: der B-Baum
+### Wie ein Index aufgebaut ist: der B-Baum
 
 Eine sortierte Liste mit einer Million Nummern ließe sich mit binärer Suche durchsuchen, in etwa 20 Schritten. Eine Datenbank liest aber nicht einzelne Nummern von der Festplatte, sondern ganze Blöcke von 16 KB auf einmal, und jeder Block, den sie liest, kostet Zeit. Darum ist ihr Index ein **B-Baum**: ein Baum, in dessen Knoten nicht ein Schlüssel steht, sondern Hunderte, so viele, wie in einen Block passen.
 
@@ -254,7 +258,7 @@ _person(bayer-mccreight)
 <p><strong>Organization and Maintenance of Large Ordered Indexes</strong>, Rudolf Bayer und Edward M. McCreight, Acta Informatica, 1972; eine erste Fassung erschien schon 1970 im Band eines Workshops der ACM. Darin steht der B-Baum, für Indexe, die nicht in den Arbeitsspeicher passen: Jeder Knoten ist ein Block auf der Platte, und eine Suche liest nur wenige davon. Der Aufsatz steht <a href='https://doi.org/10.1007/BF00288683'>bei Springer</a>.</p>
 </div>
 
-## Der Primärschlüssel ist schon ein Index
+### Der Primärschlüssel ist schon ein Index
 
 Sieh dir an, was `EXPLAIN` zur Suche nach der Nummer einer Zeile sagt:
 
@@ -283,7 +287,9 @@ _task(primaerschluessel)
 `key: PRIMARY`: Für den Primärschlüssel legt MySQL beim Anlegen der Tabelle selbst einen Index an, und bei InnoDB ist die Tabelle sogar in diesem B-Baum gespeichert, sortiert nach `id`. `type: const` heißt, dass es höchstens eine passende Zeile geben kann: Ein Primärschlüssel kommt nie zweimal vor.
 <!-- /after -->
 
-## Wann ein Index nicht hilft
+## Wann ein Index hilft und was er kostet
+
+### Wann ein Index nicht hilft
 
 Der Index `by_phone` ist nach den Nummern sortiert, von vorn nach hinten gelesen. Überlege, bevor du weiterliest:
 
@@ -314,7 +320,7 @@ sleep: 0.5
 <strong>Ausprobieren:</strong> Miss es auch. <code>SELECT COUNT(*) FROM person WHERE phone LIKE '0151 95%';</code> zählt die Nummern mit diesem Anfang, <code>SELECT COUNT(*) FROM person WHERE phone LIKE '%500000';</code> die mit diesem Ende. Die erste findet fast zehntausend Zeilen, die zweite eine einzige. Welche ist trotzdem schneller fertig, und warum?
 </div>
 
-## Zwei Spalten in einem Index
+### Zwei Spalten in einem Index
 
 Ein echtes Telefonbuch ist nach dem Nachnamen sortiert, und bei gleichem Nachnamen nach dem Vornamen. So ein Index geht auch über zwei Spalten:
 
@@ -340,7 +346,7 @@ _task(nur-vorname)
 <strong>Ausprobieren:</strong> Prüf deine Antwort mit <code>EXPLAIN SELECT * FROM person WHERE first_name = 'Ada'\G</code>. Ein sortiertes Verzeichnis kann auch beim Sortieren helfen. Vergleiche <code>EXPLAIN SELECT * FROM person ORDER BY last_name, first_name LIMIT 10\G</code> mit <code>EXPLAIN SELECT * FROM person ORDER BY first_name, last_name LIMIT 10\G</code>: Was steht jeweils bei <code>key</code>, bei <code>rows</code> und bei <code>Extra</code>?
 </div>
 
-## Was ein Index kostet
+### Was ein Index kostet
 
 Ein Index ist nicht umsonst. Er braucht Platz, und wie viel, zeigt `information_schema`, nachdem `ANALYZE TABLE` die Zahlen aufgefrischt hat:
 

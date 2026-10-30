@@ -35,7 +35,9 @@ Ein **Static Site Generator** wie Hugo trennt zwei Teile einer Website:
 
 Hugo setzt beides zusammen und schreibt für jede Seite eine fertige HTML-Datei. Das Ergebnis ist eine ganz normale statische Website wie deine Seite aus »Statische Webseiten«: Dateien, die jeder Webserver ausliefern kann.
 
-## Eine neue Website
+## Eine Website anlegen
+
+### Eine neue Website
 
 Lege im Terminal eine neue Website an:
 
@@ -110,7 +112,7 @@ _uses(yaml-aufbau)
 
 _task(einstellungen)
 
-## Die erste Seite
+### Die erste Seite
 
 Eine Seite ist eine Markdown-Datei in `content`. Lege `content/mars.md` an:
 
@@ -157,7 +159,9 @@ Hugo hat die Seite gelesen, weiß aber noch nicht, wie daraus HTML werden soll: 
 
 _task(yaml-titel)
 
-## Ein Layout für alle Seiten
+## Layouts
+
+### Ein Layout für alle Seiten
 
 Ein Layout ist HTML mit Lücken. Die Lücken stehen in doppelten geschweiften Klammern, `{{ … }}`, und Hugo füllt sie für jede Seite. Lege zuerst das Grundgerüst an, das jede Seite bekommt, `layouts/baseof.html`:
 
@@ -230,7 +234,7 @@ _task(content)
 <strong>Ausprobieren:</strong> Bau den Fehler aus der Aufgabe »Ein Doppelpunkt zu viel« absichtlich ein: Ändere in <code>content/mars.md</code> den Titel zu <code>title: Mars: der rote Planet</code> und speichere. Was meldet <code>hugo server</code> im Terminal, und woran erkennst du, in welcher Datei und Zeile der Fehler steckt? Was zeigt die Vorschau nach dem Neuladen? Setz den Titel danach in Anführungszeichen, <code>title: "Mars: der rote Planet"</code>, und dann wieder auf <code>title: Mars</code>.
 </div>
 
-## Mehr Seiten und eine Navigation
+### Mehr Seiten und eine Navigation
 
 Jetzt zeigt sich, wofür das gut ist. Lege zwei weitere Seiten an, `content/jupiter.md`:
 
@@ -304,7 +308,7 @@ _task(navigation)
 <strong>Ausprobieren:</strong> Schreib in die Front Matter von <code>content/saturn.md</code> die Zeile <code>draft: true</code> (ein Entwurf) und speichere. Wo ist der Saturn jetzt noch zu finden, in der Navigation, unter <code>/saturn/</code>? Nimm die Zeile wieder heraus und setz stattdessen <code>date</code> beim Saturn auf ein Datum in der Zukunft, etwa <code>2030-01-01</code>: Was passiert jetzt, und wozu könnte das gut sein? Stell danach das alte Datum wieder her.
 </div>
 
-## Die Startseite
+### Die Startseite
 
 Die Startseite ist eine besondere Seite: `content/_index.md`. Der Unterstrich sagt Hugo, dass sie zum ganzen Ordner gehört, nicht zu einem einzelnen Planeten:
 

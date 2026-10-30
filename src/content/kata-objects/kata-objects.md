@@ -18,7 +18,9 @@ Zustand auf, kennt andere Objekte, zeigt sich als Text und erbt von einer
 Klasse, was es nicht selbst anders macht.
 </p>
 
-## Eine Klasse, viele Objekte
+## Klassen und Objekte
+
+### Eine Klasse, viele Objekte
 
 Eine **Klasse** ist ein Bauplan. Aus ihm baut man **Objekte**, so viele man
 will, und jedes hat seine eigenen Daten, die **Attribute**. Was ein Objekt
@@ -236,7 +238,7 @@ Methoden der Klasse kommen an das Attribut.
 
 _task(rectangle)
 
-## Ein Objekt passt auf sich auf
+### Ein Objekt passt auf sich auf
 
 Ein Objekt ändert seine Attribute nur in seinen Methoden. Darum kann es
 Regeln durchsetzen: Ein Konto lässt sich nicht ins Minus bringen, wenn die
@@ -246,7 +248,7 @@ nicht kennen; er ruft die Methode auf, und das Objekt entscheidet. Das heißt
 
 _task(account)
 
-## Objekte, die Objekte kennen
+### Objekte, die Objekte kennen
 
 Ein Attribut kann auch ein anderes Objekt sein, oder eine Liste von
 Objekten. Eine Playlist kennt ihre Songs, und jeder Song kennt seinen Titel
@@ -403,7 +405,7 @@ void main() {
 
 _task(playlist)
 
-## Wie ein Objekt sich zeigt
+### Wie ein Objekt sich zeigt
 
 Macht man aus einem Objekt einfach Text, steht da wenig: in Ruby und Python
 die Klasse und wo das Objekt im Speicher liegt, in Java die Klasse und eine

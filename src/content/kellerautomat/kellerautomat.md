@@ -50,7 +50,9 @@ Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du
 Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du im Terminal mit `python3` und dem Namen der Datei.
 <!-- /language -->
 
-## Klammern zählen
+## Klammern prüfen
+
+### Klammern zählen
 
 Für runde Klammern allein reicht ein Zähler. Jede `(` zählt eins hoch, jede `)` eins herunter. Fällt der Zähler unter 0, schließt eine Klammer, die nie geöffnet wurde. Am Ende muss er wieder bei 0 sein.
 
@@ -131,7 +133,7 @@ _task(zaehler)
 Zwei Zähler wissen, wie viele Klammern jeder Sorte offen sind, aber nicht, in welcher Reihenfolge sie geöffnet wurden. Genau darauf kommt es an: Die zuletzt geöffnete Klammer muss als erste zugehen.
 <!-- /after -->
 
-## Ein Stack für die Klammern
+### Ein Stack für die Klammern
 
 Ein **Stack** ist eine Liste, an der man nur an einem Ende arbeitet, oben: `push` legt einen Wert oben drauf, `pop` nimmt den obersten wieder herunter. Was zuletzt hineinkam, kommt als Erstes wieder heraus, wie bei einem Stapel Teller. Wie ein Stack aufgebaut ist, steht im Handbuch unter [Der Stack](/reference/listen#stack).
 
@@ -293,7 +295,9 @@ _task(eckig)
 </div>
 <!-- /language -->
 
-## Erst a, dann gleich viele b
+## Mehr, als ein endlicher Automat kann
+
+### Erst a, dann gleich viele b
 
 Die Sprache a<sup>n</sup>b<sup>n</sup> ist die einfachste Sprache, an der endliche Automaten scheitern: alle Wörter aus einer Reihe a und dahinter genauso vielen b. Dazu gehören das leere Wort, `ab`, `aabb` und `aaabbb`, nicht aber `aab`, `abb` oder `abab`. Sie sieht aus wie die Klammern mit a für `(` und b für `)`, mit einer Regel mehr: Nach dem ersten b kommt kein a mehr.
 
@@ -321,7 +325,7 @@ Auf den Stack darf jedes Zeichen außer `#`, auch eines, das im Wort gar nicht v
 
 _task(anbn)
 
-## Warum ein endlicher Automat es nicht kann
+### Warum ein endlicher Automat es nicht kann
 
 Kellerautomaten können also mehr als endliche Automaten. Aber vielleicht hat nur noch niemand den richtigen endlichen Automaten für a<sup>n</sup>b<sup>n</sup> gefunden, einen mit sehr vielen Zuständen? Dass es ihn nicht geben kann, zeigt eine Überlegung, die mit Briefen und Fächern anfängt: Steckst du 5 Briefe in 4 Fächer, landen in einem Fach mindestens zwei. Das heißt **Schubfachprinzip**.
 

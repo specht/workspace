@@ -14,7 +14,7 @@ template_name: der shower.js-Vorlage
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 <!-- Die Beispiele aus dem Handbuch erscheinen hier als Folie (media_variants.js). -->
@@ -32,7 +32,9 @@ In diesem Tutorial erstellst du eine Präsentation mit [shower.js](https://githu
 
 Hast du schon eine [Webseite mit HTML und CSS](/static-website) gebaut, kennst du das meiste. Die Abschnitte aus dem Handbuch, die du dort schon gelesen hast, stehen hier nur noch als eine Zeile.
 
-## Repository klonen
+## Einrichten
+
+### Repository klonen
 
 Wir holen uns eine Vorlage mit Hilfe von Git, damit du gleich loslegen kannst.
 
@@ -62,7 +64,7 @@ sleep: 1
 
 _task(vorlage)
 
-## Vorschau starten
+### Vorschau starten
 
 _include(workspace#live-server)
 
@@ -89,7 +91,9 @@ beside: preview
 
 _task(adresse)
 
-## Folien schreiben
+## Die Präsentation
+
+### Folien schreiben
 
 Für eine Präsentation brauchst du zwei Sprachen: **HTML** beschreibt den Inhalt (Überschriften, Texte, Listen, Bilder), **CSS** das Aussehen (Farben, Größen, Abstände). In der Vorlage stehen deine Folien in `index.html`, ihr Aussehen in `styles.css`.
 
@@ -111,7 +115,7 @@ _task(fuenf-folien)
 
 Mehr zum Text auf Folien: _uses(text, hervorheben, links)
 
-## Bilder
+### Bilder
 
 _task(umbenennen)
 
@@ -125,7 +129,7 @@ _task(bild-auf-folie)
 
 Bild neben Text, als Hintergrund, im Zuschnitt: _uses(vorlage, bildgroesse)
 
-## Gestalten
+### Gestalten
 
 Die Vorlage hat schon eine `styles.css` mit den Regeln des Themes. Deine eigenen Regeln gehören ans Ende der Datei, unter den Kommentar »Eigene CSS-Regeln«.
 

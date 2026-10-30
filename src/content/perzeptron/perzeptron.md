@@ -129,7 +129,9 @@ species,island,bill_length_mm,bill_depth_mm,flipper_length_mm,body_mass_g
 Adelie,Torgersen,39.1,18.7,181,3750
 ```
 
-## Das Neuron entscheidet
+## Ein Neuron lernt
+
+### Das Neuron entscheidet
 
 <div class='hint own' data-check='vorhersage'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>predict(weights, bias, features)</code>:
@@ -208,7 +210,7 @@ def penguins(path, species):
 ```
 <!-- /language -->
 
-## Lernen aus Fehlern
+### Lernen aus Fehlern
 
 Woher kommen die Gewichte? Am Anfang sind alle 0, und das Neuron sagt zu jedem
 Pinguin 0. Dann geht es die Pinguine einen nach dem anderen durch und
@@ -389,7 +391,7 @@ python3 learn.py
 _task(epochen)
 <!-- /after -->
 
-## Was das Neuron gelernt hat
+### Was das Neuron gelernt hat
 
 <!-- after: epochen -->
 Nach zwölf Epochen ordnet das Neuron alle 274 Pinguine richtig ein, mit den
@@ -476,7 +478,9 @@ auf 1, dann auf 3, und öffne <code>plot.svg</code> jedes Mal neu. Achte darauf,
 wie die Gerade sich von Epoche zu Epoche zwischen die beiden Gruppen schiebt.
 </div>
 
-## Pinguine, die das Neuron nie gesehen hat
+## Was das Neuron kann und was nicht
+
+### Pinguine, die das Neuron nie gesehen hat
 
 Dass das Neuron alle Pinguine richtig einordnet, aus denen es gelernt hat, sagt
 noch nicht viel: Vielleicht hat es sich nur genau diese gemerkt. Ob es die Regel
@@ -550,7 +554,7 @@ print(f"Richtig bei Pinguinen, die es nie gesehen hat: {round(accuracy(weights, 
 
 _task(nie-gesehen)
 
-## Wo ein Neuron nicht weiterkommt
+### Wo ein Neuron nicht weiterkommt
 
 Auf der Insel Dream lebt eine dritte Art, der Zügelpinguin (englisch
 Chinstrap). Kann das Neuron ihn vom Adéliepinguin unterscheiden?
