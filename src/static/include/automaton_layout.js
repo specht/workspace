@@ -6,9 +6,10 @@
 // Every arrow bends to the left of its direction: an arrow forward a
 // little above, an arrow back below, two arrows between the same states
 // apart. An arrow that would pass a state bends further until it keeps
-// clear. Loops sit on top of their state, or below when a state is right
-// above. Labels stand outside their arrow, where they keep clear of every
-// arrow, state and label.
+// clear. Loops sit on the side of their state with less in their way, on
+// top when both are alike. Labels stand outside their arrow, where they keep
+// clear of every arrow, state and label. Of the tries alike without their
+// labels, the one that reads best with them is kept.
 //
 //   AutomatonLayout.svg({ states: [{ id, label }], start, accept: [ids],
 //                         edges: [{ from, to, label }] })  → SVG string
@@ -57,10 +58,23 @@
         // choices nest (the lock's ten digits)
         const modes = a.columns === 'order' ? ['order', 'distance'] : ['distance'];
         let best = null;
+        const tried = [];
         for (const mode of modes) for (let variant = 0; variant < tries; variant++) {
             const L = layoutOnce(a, options, variant, false, mode);
+            tried.push({ score: L.score, variant, mode });
             if (!best || L.score < best.score) best = { score: L.score, variant, mode };
             if (best.score === 0) break;
+        }
+        // tries alike without their labels can differ with them (a label on
+        // an arrow counts once it is placed): among the best, the one that
+        // reads best with its labels
+        const ties = tried.filter((t) => t.score === best.score);
+        if (ties.length > 1 && best.score > 0) {
+            let least = Infinity;
+            for (const t of ties.slice(0, 6)) {
+                const score = layoutOnce(a, options, t.variant, true, t.mode).score;
+                if (score < least) { least = score; best = t; }
+            }
         }
         // labels hard to tell apart (as near to another arrow as to their
         // own): the same drawing with more room between its rows, if that
@@ -325,6 +339,13 @@
         const MIN = (22 * Math.PI) / 180;
         const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
         for (const end of [...ends.values()].flat()) if (end.base === undefined) end.base = end.angle;
+        // an arrow bent far away from the straight line (a way back below a
+        // row) arrives from where it bends, not from where its state is: its
+        // order among the ends follows its own direction
+        const BENT = (40 * Math.PI) / 180;
+        for (const end of [...ends.values()].flat()) {
+            if (!end.fixed && Math.abs(Math.atan2(Math.sin(end.angle - end.base), Math.cos(end.angle - end.base))) > BENT) end.base = end.angle;
+        }
         for (const list of ends.values()) {
             // Ends towards different states keep the order of those states:
             // two arrows that bend towards each other (from a state to two
@@ -428,6 +449,29 @@
                 }
             }
         }
+        // A loop sits on the side of its state with less in its way: the
+        // arrows and states where it and its label would go, counted above
+        // and below (above when both are alike). The first guess (above,
+        // unless a state is right above) misses an arrow running under a
+        // row, such as a way back below it
+        let flipped = false;
+        for (const path of paths.filter((o) => o.loop)) {
+            const e = path.e;
+            const p = pos.get(e.from);
+            const { w, h } = labelSize(e.label);
+            const cost = (s) => {
+                const reach = R + 64 + h + 6;
+                const b = { x0: p[0] - Math.max(40, w / 2 + 4), x1: p[0] + Math.max(40, w / 2 + 4),
+                    y0: s < 0 ? p[1] - reach : p[1] + R, y1: s < 0 ? p[1] - R : p[1] + reach };
+                let n = 0;
+                for (const o of paths) if (!o.loop) n += o.own.filter((pt) => inside(b, pt)).length;
+                for (const [id, st] of pos) if (id !== e.from && inside(boundsOf([[b.x0, b.y0], [b.x1, b.y1]], R), st)) n += 50;
+                return n;
+            };
+            const side = cost(-1) <= cost(1) ? -1 : 1;
+            if (side !== e.side) { e.side = side; flipped = true; }
+        }
+        if (flipped) shape();
         if (!labels) return { score: badness(paths, pos) };
         // labels: outside their arrow (to its left), moved out until clear;
         // else on the other side; level, or along the arrows (curved, below),

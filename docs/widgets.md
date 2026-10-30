@@ -390,7 +390,9 @@ only to look nice.
   class='automaton-drawing'>`, and Automatron): the states in columns by
   their distance from the start, every arrow bent to its left (forward
   above, back below), arcs within a row nested as in an arc diagram, arcs
-  within a column beside it, loops on top; the gaps grow with the longest
+  within a column beside it, loops on top or, where less is in their way,
+  below; an arrow bent far from the straight line (a way back) takes its
+  place among the ends of its state by where it arrives; the gaps grow with the longest
   label; ends of arrows to different states keep the order of those states,
   so that neighbouring arrows do not cross; every arrow is checked as it is
   drawn and bends further where it would pass a state; several orders inside
