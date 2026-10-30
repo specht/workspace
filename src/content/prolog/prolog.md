@@ -81,6 +81,8 @@ _task(eltern-von)
 
 _task(kinder)
 
+<!-- stage: stufen/familie-1.pl as prolog/familie.pl -->
+
 <!-- after: kinder -->
 So sieht die Familie in `familie.pl` jetzt aus, die Kinder von Anna
 Magdalena in Blau. Jeder Pfeil ist ein Fakt `parent(Elternteil, Kind)`;
@@ -106,6 +108,8 @@ das in `parent(P, S)`.
 
 _task(regeln)
 
+<!-- stage: stufen/familie-2.pl as prolog/familie.pl -->
+
 _task(geschwister-vorhersage)
 
 <!-- after: geschwister-vorhersage -->
@@ -117,6 +121,8 @@ nirgends steht, dass niemand sein eigenes Geschwister ist.
 <!-- /after -->
 
 _task(geschwister)
+
+<!-- stage: stufen/familie-3.pl as prolog/familie.pl -->
 
 ## Wie Prolog sucht
 
@@ -187,6 +193,8 @@ Schritt gehen, dann weiterfragen: Das endet, weil die Familie endlich ist.
 
 _task(vorfahren)
 
+<!-- stage: loesung/familie.pl as prolog/familie.pl -->
+
 ## Listen
 
 Eine Liste schreibt man `[a, b, c]`. Prolog sieht sie als **Kopf** und
@@ -201,9 +209,15 @@ wget ${web_root}/prolog/starter/listen.pl
 
 _task(is-in)
 
+<!-- stage: stufen/listen-1.pl as prolog/listen.pl -->
+
 _task(size)
 
+<!-- stage: stufen/listen-2.pl as prolog/listen.pl -->
+
 _task(joined)
+
+<!-- stage: loesung/listen.pl as prolog/listen.pl -->
 
 _task(rueckwaerts)
 
@@ -254,6 +268,8 @@ wget ${web_root}/prolog/starter/bezirke.pl
 
 _task(bezirke)
 
+<!-- stage: loesung/bezirke.pl as prolog/bezirke.pl -->
+
 <!-- after: bezirke -->
 Mit der Lösung findet Prolog zuerst diese Färbung. Stehen deine
 Bedingungen oder die Farben in anderer Reihenfolge, kann deine erste
@@ -288,6 +304,8 @@ wget ${web_root}/prolog/starter/sudoku.pl
 ```
 
 _task(sudoku)
+
+<!-- stage: loesung/sudoku.pl as prolog/sudoku.pl -->
 
 ## Wie geht es weiter?
 

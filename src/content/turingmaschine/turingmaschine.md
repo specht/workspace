@@ -175,6 +175,13 @@ for word in ['0', '1', '1011', '111']:
 Das Band ist ein `dict` von der Nummer des Feldes zum Zeichen darin. `tape.get(i, '_')` gibt für jedes Feld, in das noch nie etwas geschrieben wurde, `_` zurück; so ist das Band ohne Ende, auch nach links, wo die Nummern negativ werden. `run` macht Schritte, bis die Maschine in `HALT` ist, und gibt dann das Band ohne die leeren Felder am Rand zurück. Mit `trace=True` zeigt es nach jedem Schritt den Zustand und das Band, den Kopf in eckigen Klammern. Nach `max_steps` Schritten gibt `run` auf.
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/plus_one.rb as turingmaschine/plus_one.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/plus_one.py as turingmaschine/plus_one.py -->
+<!-- /language -->
+
 Bevor du es startest: Die letzte Zeile lässt die Maschine auch auf `111` los.
 
 _task(vorhersage-plus)
@@ -212,11 +219,25 @@ In q<sub>0</sub> läuft der Kopf nach rechts, ohne etwas zu ändern, bis er auf 
 
 _task(minus-eins)
 
+<!-- language: ruby -->
+<!-- stage: loesung/minus_one.rb as turingmaschine/minus_one.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/minus_one.py as turingmaschine/minus_one.py -->
+<!-- /language -->
+
 ### Rechnen mit Strichlisten
 
 Turingmaschinen rechnen nicht nur mit Binärzahlen. Am einfachsten ist es mit Strichlisten, wie beim Zählen von Stimmen an der Tafel: `111` ist 3. Schreibt man zwei davon mit einem `+` dazwischen auf das Band, kann eine Maschine sie addieren.
 
 _task(addieren)
+
+<!-- language: ruby -->
+<!-- stage: loesung/add.rb as turingmaschine/add.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/add.py as turingmaschine/add.py -->
+<!-- /language -->
 
 ## Gleich viele a, b und c
 
@@ -365,6 +386,13 @@ accepts('aabbcc', trace=True)
 for word in ['abc', 'aabbcc', 'aabbc', 'abcabc', '']:
     print(repr(word), accepts(word))
 ```
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/anbncn.rb as turingmaschine/anbncn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/anbncn.py as turingmaschine/anbncn.py -->
 <!-- /language -->
 
 Starte es und lies die Spur mit: Wo steht der Kopf, wenn ein b durchgestrichen wird, und wie weit läuft er danach zurück? Am Ende der Spur steht, wie viele Schritte die Maschine für `aabbcc` gebraucht hat: 23.

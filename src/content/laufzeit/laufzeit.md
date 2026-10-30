@@ -70,17 +70,56 @@ bei jedem Namen nachsehen, ob er darin steht.
 
 _task(distinct-list)
 
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-1.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-1.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-1.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-1.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
+
 Die zweite Art sortiert zuerst. Danach muss niemand mehr suchen: Gleiche
 Namen stehen nebeneinander, und es genügt, jeden mit dem davor zu
 vergleichen.
 
 _task(distinct-sorted)
 
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-2.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-2.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-2.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-2.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
+
 Die dritte Art nimmt eine **Menge**, die jeden Namen nur einmal enthält. Wie
 ein Dictionary findet sie einen Namen, ohne die anderen anzusehen: Sie
 rechnet aus dem Namen aus, wo er liegen müsste, und schaut nur dort nach.
 
 _task(distinct-set)
+
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-3.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-3.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-3.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-3.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
 
 ## Messen und zählen
 
@@ -238,6 +277,7 @@ Die Fibonacci-Zahlen aus den [Katas zur Rekursion](/kata-recursion), so
 wie man sie zuerst schreibt:
 
 <!-- language: ruby -->
+<!-- page-code: own -->
 ```ruby
 def fib(n)
   return n if n < 2
@@ -246,6 +286,7 @@ end
 ```
 <!-- /language -->
 <!-- language: python -->
+<!-- page-code: own -->
 ```python
 def fib(n):
     if n < 2:
@@ -254,6 +295,7 @@ def fib(n):
 ```
 <!-- /language -->
 <!-- language: dart -->
+<!-- page-code: own -->
 ```dart
 int fib(int n) {
   if (n < 2) {
@@ -264,6 +306,7 @@ int fib(int n) {
 ```
 <!-- /language -->
 <!-- language: java -->
+<!-- page-code: own -->
 ```java
 public static long fib(int n) {
     if (n < 2) {
@@ -288,7 +331,33 @@ das schon einmal ausgerechnet wurde, mit allem, was unter ihnen hängt.
 
 _task(fib-memo)
 
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-4.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-4.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-4.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-4.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
+
 _task(pair-with-sum)
+
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-5.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-5.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-5.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-5.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
 
 ## Ein schweres Problem
 
@@ -359,7 +428,33 @@ Kosinus.
 
 _task(tour-length)
 
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-6.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-6.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-6.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-6.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
+
 _task(best-tour)
+
+<!-- language: ruby -->
+<!-- stage: stufen/laufzeit-7.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/laufzeit-7.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/laufzeit-7.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/Laufzeit-7.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
 
 `rundfahrt` holt die Sehenswürdigkeiten aus dem Datensatz der Orte und plant
 mit deinen Funktionen eine Rundfahrt zu den ersten n davon, auf beide Arten,
@@ -447,6 +542,19 @@ Jahre. O(n!) wächst schneller als alles in der Tabelle oben.
 <!-- /after -->
 
 _task(nearest-tour)
+
+<!-- language: ruby -->
+<!-- stage: loesung/laufzeit.rb as laufzeit/laufzeit.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/laufzeit.py as laufzeit/laufzeit.py -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/laufzeit.dart as laufzeit/laufzeit.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/Laufzeit.java as laufzeit/Laufzeit.java -->
+<!-- /language -->
 
 <!-- after: nearest-tour -->
 So sehen beide Rundfahrten für die ersten zehn Orte aus, beide vom

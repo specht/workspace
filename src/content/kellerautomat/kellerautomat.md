@@ -125,6 +125,13 @@ python3 count.py
 ```
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/count.rb as kellerautomat/count.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/count.py as kellerautomat/count.py -->
+<!-- /language -->
+
 Das leere Wort, ganz ohne Klammern, ist auch richtig: Es gibt nichts, das offen bleibt. Ein Zähler kann beliebig groß werden, darum ist er schon mehr, als ein endlicher Automat hat. Aber reicht er auch, wenn es mehrere Sorten von Klammern gibt?
 
 _task(zaehler)
@@ -164,6 +171,13 @@ for word in ['([]{})', '([)]', '((', '']:
 <!-- /language -->
 
 _task(stack)
+
+<!-- language: ruby -->
+<!-- stage: loesung/brackets.rb as kellerautomat/brackets.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/brackets.py as kellerautomat/brackets.py -->
+<!-- /language -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Lass <code>balanced</code> nach jedem Zeichen den Stack ausgeben und starte es mit <code>([)]</code>. Achte darauf, was oben liegt, wenn die <code>)</code> kommt.
@@ -262,6 +276,13 @@ for word in ['(()())', '(()', '())(', '']:
 `accepts` nimmt bei jedem Zeichen das oberste Zeichen mit `pop` vom Stack und schlägt mit Zustand, Zeichen und diesem obersten Zeichen in `TRANSITIONS` nach. Was dort steht, kommt mit `extend` wieder oben drauf, Zeichen für Zeichen. Starte es mit `python3 pda.py`.
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/pda.rb as kellerautomat/pda.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/pda.py as kellerautomat/pda.py -->
+<!-- /language -->
+
 Als Bild hat dieser Kellerautomat einen einzigen Zustand q<sub>0</sub>, und alle drei Übergänge führen zu ihm zurück. Jede Zeile am Pfeil ist ein Übergang aus `TRANSITIONS`:
 
 <div class='automaton-drawing' role='img' aria-label='Ein Zustand q0 mit Startpfeil und doppeltem Rand, ein Pfeil führt im Bogen zu ihm zurück. Daran stehen untereinander drei Übergänge: »(, # / #(«, »(, ( / ((« und »), ( / ε«.' data-states='q0' data-start='q0' data-accept='q0' data-arrows='q0 | (, # / #( | q0; q0 | (, ( / (( | q0; q0 | ), ( / ε | q0'></div>
@@ -283,6 +304,13 @@ Die Ausgabe mit `trace` zeigt nach jedem Zeichen den Zustand und den Stack, von 
 Die Höhe des Stacks ist der Zähler aus `count`. Der Stack kann sich aber mehr merken als eine Zahl: welche Klammern in welcher Reihenfolge offen sind.
 
 _task(eckig)
+
+<!-- language: ruby -->
+<!-- stage: loesung/pda.rb as kellerautomat/pda.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/pda.py as kellerautomat/pda.py -->
+<!-- /language -->
 
 <!-- language: ruby -->
 <div class='hint try'>
@@ -321,9 +349,23 @@ for word in ['ab', 'aabb', 'aab', 'abab', 'ba', '']:
 ```
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/anbn.rb as kellerautomat/anbn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/anbn.py as kellerautomat/anbn.py -->
+<!-- /language -->
+
 Auf den Stack darf jedes Zeichen außer `#`, auch eines, das im Wort gar nicht vorkommt, etwa ein großes `A` für jedes gelesene a.
 
 _task(anbn)
+
+<!-- language: ruby -->
+<!-- stage: loesung/anbn.rb as kellerautomat/anbn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/anbn.py as kellerautomat/anbn.py -->
+<!-- /language -->
 
 ### Warum ein endlicher Automat es nicht kann
 

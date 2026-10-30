@@ -246,6 +246,13 @@ for word in ['(())()', '(()', '())', '']:
 "" true
 ```
 
+<!-- language: ruby -->
+<!-- stage: stufen/brackets.rb as grammatiken/brackets.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/brackets.py as grammatiken/brackets.py -->
+<!-- /language -->
+
 Bei `())` liest `brackets` ein Paar und hört vor der zweiten `)` auf, weil danach keine `(` mehr kommt. Es gibt 2 zurück, das Wort ist aber 3 Zeichen lang: Darum prüft `accepts`, ob das ganze Wort gelesen ist.
 
 _task(tiefe)
@@ -401,6 +408,13 @@ def number(word, i):
 
 _task(number)
 
+<!-- language: ruby -->
+<!-- stage: loesung/number.rb as grammatiken/number.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/number.py as grammatiken/number.py -->
+<!-- /language -->
+
 ## Ausdrücke
 
 Jetzt eine Sprache, die schon nach Programmieren aussieht: Ausdrücke aus Zahlen mit `+`, `*` und runden Klammern, ohne Leerzeichen, etwa `2+3*4` oder `(1+2)*3`.
@@ -444,6 +458,13 @@ for word in ['2+3*4', '(1+2)*3', '2+', '(1+2', '2*+3']:
 <!-- /language -->
 
 _task(ausdruck)
+
+<!-- language: ruby -->
+<!-- stage: loesung/expression.rb as grammatiken/expression.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/expression.py as grammatiken/expression.py -->
+<!-- /language -->
 
 <!-- language: ruby -->
 <div class='hint try'>
