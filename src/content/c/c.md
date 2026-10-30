@@ -26,27 +26,18 @@ Heutzutage ist C immer noch äußerst relevant und weit verbreitet. Sie bildet d
 
 C-Programme werden in Textdateien mit der Endung `.c` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU C Compiler« `gcc` verwenden, der auf den meisten Systemen verfügbar ist.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<!-- tutorial-screenshot
-# Ein frischer Workspace ohne Ordner
-show-left-sidebar
--->
-
-<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
-
 ### Quelltext schreiben
 
-Klicke auf »New File« und wähle als Dateityp »Text File«.
+_include(workspace#neue-datei)
 
-<!-- tutorial-screenshot
+<!-- tutorial-step
+# Wie im Handbuch »Workspace« (oben eingebunden): kein Ordner offen,
+# »New File...«, »Text File«
+show-left-sidebar
 click: New File...
 wait-for-text: Text File
 sleep: 0.5
-crop-bottom: 77%
 -->
-
-<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 

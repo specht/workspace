@@ -203,7 +203,6 @@ Open findings from the October 2026 review:
 
 Platform-wide:
 
-* [ ] The opening »Ordner schließen, New File, Text File, speichern unter /workspace/…« is written out by hand on 21 pages (the 18 language profiles, Feuer, MySQL, the static website); cloning already uses the Handbuch part `workspace#repository-klonen` everywhere but Basics (which explains the interface on purpose). A part `neue-datei` in `reference/workspace` would serve them, but each page's screenshots show its own file name: the part needs the name as a parameter, or one picture for all
 * [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] PixelRAM's pictures are 1350 px wide and stretched by `class='full'` (100 % wide, at least 1000 px). The recipes with `viewport: 1600x900` come out 1350 px wide too, so the size is set elsewhere (the crop of `#canvas`, or the PixelRAM shell's layout); `zoom:` does not help, it divides the viewport

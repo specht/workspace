@@ -25,28 +25,18 @@ Java wird häufig für die Entwicklung von Unternehmensanwendungen, mobilen Anwe
 
 Java-Programme werden in Textdateien mit der Endung `.java` geschrieben. Diese Dateien werden dann mit dem Java-Compiler `javac` kompiliert, um ausführbare Dateien zu erzeugen. Diese ausführbaren Dateien haben die Endung `.class` und können mit dem Java-Interpreter `java` ausgeführt werden.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<!-- tutorial-screenshot
-# Ein frischer Workspace ohne Ordner
-show-left-sidebar
-sleep: 0.5
--->
-
-<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
-
 ### Quelltext schreiben
 
-Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+_include(workspace#neue-datei)
 
-<!-- tutorial-screenshot
+<!-- tutorial-step
+# Wie im Handbuch »Workspace« (oben eingebunden): kein Ordner offen,
+# »New File...«, »Text File«
+show-left-sidebar
 click: New File...
 wait-for-text: Text File
 sleep: 0.5
-crop-bottom: 77%
 -->
-
-<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 

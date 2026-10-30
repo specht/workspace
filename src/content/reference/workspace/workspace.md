@@ -12,7 +12,7 @@ kind: reference
 # Workspace: Grundlagen
 
 <p class='abstract'>
-Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen, eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
+Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen, eine neue Datei anlegen, eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
 </p>
 
 _person(gamma)
@@ -59,6 +59,35 @@ keep-only: .workbench-hover-pointer
 Mit dem Symbol rechts oben im Terminal kannst du es maximieren. Die linke Seitenleiste blendest du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein und aus.
 
 <div style='clear: both;'></div>
+<!-- /part -->
+
+<!-- part: neue-datei -->
+<!-- short: Ordner schließen (<kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>), dann »New File…« und »Text File«. -->
+### Eine neue Datei anlegen
+
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+
+<img class='full' src='fresh-start.webp' alt='Ein leerer Workspace ohne geöffneten Ordner.'>
+
+Klicke rechts auf »New File…« und wähle als Dateityp »Text File«, oder bestätige einfach mit <kbd>Enter</kbd>. Es öffnet sich eine leere Datei ohne Namen. Den Namen gibst du ihr erst beim Speichern mit <kbd>Strg</kbd><kbd>S</kbd>; an der Endung erkennt Visual Studio Code dann die Sprache und färbt den Code.
+
+<!-- tutorial-screenshot
+# Wie auf den Seiten, die diesen Teil einbinden: das Terminal zu, die
+# Seitenleiste auf, »New File...« auf der Willkommensseite
+hide-bottom-panel
+show-left-sidebar
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
+
+<img class='full' src='new-file.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
+
+<!-- tutorial-step
+# Die Auswahl wieder zu, für die nächsten Abschnitte
+press: Escape
+-->
 <!-- /part -->
 
 ## Vorlagen

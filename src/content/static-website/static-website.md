@@ -28,24 +28,18 @@ In diesem Tutorial bauen wir als Beispiel eine kleine Seite über **Axolotl**. D
 
 ## Projekt anlegen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<img class='full' src='../reference/workspace/fresh-start.webp' alt='Ein leerer Workspace ohne geöffneten Ordner; rechts die Willkommensseite mit »New File…«.'>
-
 ### HTML-Datei anlegen
 
-Klicke auf »New File« und wähle als Dateityp »Text File« oder bestätige einfach mit <kbd>Enter</kbd>.
+_include(workspace#neue-datei)
 
-<!-- tutorial-screenshot
-# Die Schritte der Seite in einem frischen Workspace: neue Datei, speichern
-# in einen neuen Ordner, den Ordner öffnen
+<!-- tutorial-step
+# Wie im Handbuch »Workspace« (oben eingebunden): kein Ordner offen,
+# »New File...«, »Text File«
+show-left-sidebar
 click: New File...
 wait-for-text: Text File
 sleep: 0.5
-crop-bottom: 77%
 -->
-
-<img class='full' src='choose-filename.webp' alt='Oben öffnet sich die Auswahl »Select File Type or Enter File Name« mit »Text File« als erstem Eintrag.'>
 
 Schreibe nun diesen Code in die neue Datei:
 

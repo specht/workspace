@@ -61,32 +61,22 @@ Du kannst die Lua-Shell wieder beenden, indem du <kbd>Strg</kbd><kbd>D</kbd> dr�
 
 Lua-Programme werden in Textdateien mit der Endung `.lua` geschrieben. Der Lua-Interpreter liest anschließend den Quelltext und führt ihn aus.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+### Quelltext schreiben
 
-<!-- tutorial-screenshot
-# Die Shell wieder verlassen, das Terminal schließen
+_include(workspace#neue-datei)
+
+<!-- tutorial-step
+# Wie im Handbuch »Workspace« (oben eingebunden): kein Ordner offen,
+# »New File...«, »Text File«
 press: Control+d
 terminal-wait-for-prompt
 press: Control+l
 press: Control+j
 show-left-sidebar
-sleep: 0.5
--->
-
-<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
-
-### Quelltext schreiben
-
-Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
-
-<!-- tutorial-screenshot
 click: New File...
 wait-for-text: Text File
 sleep: 0.5
-crop-bottom: 77%
 -->
-
-<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
