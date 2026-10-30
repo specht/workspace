@@ -36,6 +36,10 @@ jeden davon baust du hier selbst:
   Stichwortverzeichnis hinten in einem Buch.
 - Ein **Ranking** ordnet die Treffer: Was oben steht, wird gelesen.
 
+<div class='gallery single'>
+<figure><img src='drei-teile.webp' alt='Drei Kästen hintereinander: der Crawler, der den Links folgt, gibt die Seiten an den Index, der zu jedem Wort die Seiten kennt; der Index gibt die Treffer an das Ranking, das sie ordnet. Links davon steht das Web, rechts du.'><figcaption>Vom Web zu dir: Crawler, Index und Ranking</figcaption></figure>
+</div>
+
 Deine Suchmaschine durchsucht das »Kleine Tierlexikon«, eine Website mit elf
 Seiten.
 
@@ -834,6 +838,16 @@ Such noch einmal nach »katze«: Jetzt steht die Hauskatze oben, die Anzeige
 unten.
 
 _task(startseite-links)
+
+<!-- after: startseite-links -->
+So hängt das Tierlexikon zusammen. Fast jede Seite verlinkt die Startseite,
+und die Startseite alle Tiere; die Anzeige verlinkt nur sich selbst, und auf
+`geheim.html` führt kein Link.
+
+<div class='gallery single'>
+<figure><img src='tierlexikon-links.webp' alt='Die Seiten des Tierlexikons als Kästen mit der Zahl ihrer eingehenden Links: index.html in der Mitte mit 8, darum katze.html, amsel.html, eule.html und fledermaus.html mit je 3, hund.html und igel.html mit 2, pinguin.html, impressum.html und katzenfutter-billig.html mit 1. Pfeile mit zwei Spitzen verbinden die Startseite mit jeder Tierseite und dem Impressum und benachbarte Tiere miteinander; hund.html verlinkt katzenfutter-billig.html, das auf sich selbst verlinkt. Abseits, gestrichelt, geheim.html: kein Link führt hin.'><figcaption>Jeder Pfeil ein Link; die Zahl sagt, wie viele andere Seiten auf eine Seite verlinken</figcaption></figure>
+</div>
+<!-- /after -->
 
 ### PageRank
 
