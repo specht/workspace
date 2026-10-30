@@ -51,26 +51,27 @@ tasks:
   - id: von-hand
     title: Von Hand gezählt
     prompt: |
-      Was steht im Dictionary des Textes »Der Wolf kam. Der Jäger kam. Der Wolf
-      lief.« unter »kam«?
+      Was steht im Dictionary des Textes »Es war einmal ein König. Der König
+      war alt. Es war kalt.« unter »war«?
     check:
       type: choice
       options:
-        - »Der« zweimal
+        - »einmal«, »alt« und »kalt«, jedes einmal
+        - »Es« zweimal und »König« einmal
+        - »einmal« dreimal
         - ».« zweimal
-        - »Wolf« einmal und »Jäger« einmal
-        - »Der« dreimal
-      correct: 1
+      correct: 0
     feedback:
-      - when: { picked: 0 }
-        say: Nach »kam« kommt zuerst der Punkt; »Der« folgt erst auf den Punkt.
+      - when: { picked: 1 }
+        say: Das sind die Wörter, die vor »war« stehen. Gezählt wird, was danach kommt.
       - when: { picked: 2 }
-        say: Das sind die Wörter, die vor »kam« stehen. Gezählt wird, was danach kommt.
+        say: »war« kommt dreimal vor, aber nicht jedes Mal mit demselben Wort danach. Was steht hinter jedem »war«?
       - when: { picked: 3 }
-        say: Unter jedem Wort steht, was direkt danach kommt. Was steht direkt hinter »kam«?
+        say: Der Punkt kommt nach »alt« und nach »kalt«, nicht direkt nach »war«.
     solution: |
-      Nach »kam« kommt beide Male der Punkt: ».« zweimal. Der Punkt ist für das
-      Modell ein Wort wie jedes andere.
+      Hinter den drei »war« stehen »einmal«, »alt« und »kalt«, jedes einmal.
+      Unter »war« steht also ein Dictionary mit drei Einträgen, jeder mit der
+      Anzahl 1.
 
   - id: zaehlen
     title: Wer folgt auf wen
