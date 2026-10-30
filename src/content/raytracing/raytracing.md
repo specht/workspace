@@ -1887,7 +1887,7 @@ In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild f�
 
 <div class='gallery columns-3'>
 <figure>
-<img src='point-blank-on-a-roll.webp' alt='Ein Plattencover: oben in blauer Schrift »Point Blank« und »On a Roll«. Ein hellblau-weißes Schachbrett biegt sich wie ein Trichter zu einem Strudel oben rechts. Darüber fliegen eine große rote, eine gelbe und eine kleine grüne glänzende Kugel, die rote mit einem bunten Schweif wie ein Komet, dazu bunte, spitze Splitter. Die rote Kugel hat ihren hellen Glanzpunkt oben rechts, die gelbe oben links. Unten links liegt ein dunkler, durchscheinender ovaler Fleck auf dem Brett, unten in der Mitte ein dunkles Dreieck.'>
+<img src='point-blank-on-a-roll.webp' alt='Ein Plattencover: oben in blauer Schrift »Point Blank« und »On a Roll«. Ein hellblau-weißes Schachbrett biegt sich wie ein Trichter zu einem Strudel oben rechts. Darüber fliegen eine große rote, eine gelbe und eine kleine grüne glänzende Kugel, die rote mit einem bunten Schweif wie ein Komet, dazu bunte, spitze Splitter. Beide großen Kugeln haben ihren hellen Glanzpunkt oben rechts, zum Rand hin werden sie dunkel. Unten links liegt ein dunkler, durchscheinender ovaler Fleck auf dem Brett, unten in der Mitte ein dunkles Dreieck.'>
 <figcaption>Point Blank: »On a Roll«, 1982</figcaption>
 </figure>
 <figure>
