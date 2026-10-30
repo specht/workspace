@@ -69,7 +69,7 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
     await expect(row).not.toContainText('e2e-worker@example.com');
     await row.getByRole('link', { name: 'Ansehen' }).click();
     await expect(teacher).toHaveURL(new RegExp(browsePath + '$'));
-    await expect(teacher.locator('.git-crumbs a', { hasText: 'Repositorys' })).toHaveAttribute('href', /\/git$/);
+    await expect(teacher.locator('.git-crumbs a', { hasText: 'Repositorys' })).toHaveAttribute('href', /\/repos$/);
     expect((await workspace.request.get('/repos')).status()).toBe(403);
 
     // Without a login, nothing of it.
