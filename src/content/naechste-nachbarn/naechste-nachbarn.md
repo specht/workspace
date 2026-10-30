@@ -181,6 +181,13 @@ def distance(a, b):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/knn-1.rb as knn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/knn-1.py as knn.py -->
+<!-- /language -->
+
 _task(abstand)
 
 ### Die nächsten Nachbarn
@@ -235,6 +242,13 @@ def nearest(examples, features, k):
     return sorted(examples, key=lambda example: distance(example[0], features))[:k]
 ```
 <!-- /solution -->
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/knn-2.rb as knn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/knn-2.py as knn.py -->
 <!-- /language -->
 
 _task(nachbarn)
@@ -296,6 +310,13 @@ def classify(examples, features, k):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/knn-3.rb as knn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/knn-3.py as knn.py -->
+<!-- /language -->
+
 _task(abstimmen)
 
 Damit das Programm die Pinguine kennt, liest diese Funktion die Datei. Sie gibt
@@ -325,6 +346,9 @@ puts classify(examples, [46.0, 18.0], 5)
 ```bash
 ruby penguins.rb
 ```
+
+<!-- stage: stufen/knn-4.rb as knn.rb -->
+<!-- stage: stufen/penguins-1.rb as penguins.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -349,6 +373,9 @@ print(classify(examples, [46.0, 18.0], 5))
 ```bash
 python3 penguins.py
 ```
+
+<!-- stage: stufen/knn-4.py as knn.py -->
+<!-- stage: stufen/penguins-1.py as penguins.py -->
 <!-- /language -->
 
 _task(unbekannt)
@@ -408,6 +435,13 @@ def accuracy(training, test, k):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/knn-5.rb as knn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/knn-5.py as knn.py -->
+<!-- /language -->
+
 _task(genauigkeit)
 
 <!-- language: ruby -->
@@ -419,6 +453,8 @@ training = examples.select.with_index { |_, i| i.even? }
 test = examples.select.with_index { |_, i| i.odd? }
 puts "Richtig: #{(accuracy(training, test, 3) * 100).round(1)} %"
 ```
+
+<!-- stage: stufen/penguins-2.rb as penguins.rb -->
 <!-- /language -->
 <!-- language: python -->
 In `penguins.py`, statt den einen Pinguin einzuordnen:
@@ -429,6 +465,8 @@ training = examples[0::2]
 test = examples[1::2]
 print(f"Richtig: {round(accuracy(training, test, 3) * 100, 1)} %")
 ```
+
+<!-- stage: stufen/penguins-2.py as penguins.py -->
 <!-- /language -->
 
 _task(pinguine)
@@ -517,6 +555,9 @@ puts "Gleich entschieden wie der Laden: #{(accuracy(training, test, 5) * 100).ro
 ```bash
 ruby deposit.rb
 ```
+
+<!-- stage: stufen/knn-6.rb as knn.rb -->
+<!-- stage: stufen/deposit-1.rb as deposit.rb -->
 <!-- /language -->
 <!-- language: python -->
 ```python
@@ -555,6 +596,9 @@ print(f"Gleich entschieden wie der Laden: {round(accuracy(training, test, 5) * 1
 ```bash
 python3 deposit.py
 ```
+
+<!-- stage: stufen/knn-6.py as knn.py -->
+<!-- stage: stufen/deposit-1.py as deposit.py -->
 <!-- /language -->
 
 Für die neuen Kundinnen und Kunden weiß man, wie der Laden entschieden hätte;
@@ -588,6 +632,7 @@ Beispiels gibt, sondern wo es 1 gibt.
 <!-- /hint -->
 
 <!-- hint -->
+<!-- page-code: own -->
 ```ruby
 def deposit_share(training, test, k)
   deposits = test.count { |features, _label| … }
@@ -613,6 +658,7 @@ Beispiels gibt, sondern wo es 1 gibt.
 <!-- /hint -->
 
 <!-- hint -->
+<!-- page-code: own -->
 ```python
 def deposit_share(training, test, k):
     deposits = sum(1 for features, _label in test if ...)
@@ -630,6 +676,13 @@ def deposit_share(training, test, k):
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/knn-7.rb as knn.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/knn-7.py as knn.py -->
+<!-- /language -->
+
 _task(kaution-anteil)
 
 <!-- language: ruby -->
@@ -644,6 +697,8 @@ Programm eine Kaution zahlen sollen:
   puts "#{district}: #{(share * 100).round(1)} % der Pünktlichen sollen Kaution zahlen"
 end
 ```
+
+<!-- stage: stufen/deposit-2.rb as deposit.rb -->
 <!-- /language -->
 <!-- language: python -->
 Am Ende von `deposit.py`: für jeden Stadtteil die neuen Kundinnen und Kunden,
@@ -656,6 +711,8 @@ for district in ["Altstadt", "Lindenhof", "Bahnhofsviertel", "Sandberg"]:
     share = deposit_share(training, examples(punctual, columns), 5)
     print(f"{district}: {round(share * 100, 1)} % der Pünktlichen sollen Kaution zahlen")
 ```
+
+<!-- stage: stufen/deposit-2.py as deposit.py -->
 <!-- /language -->
 
 _task(sandberg)
