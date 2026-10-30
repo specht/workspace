@@ -245,9 +245,7 @@ tasks:
     prompt: |
       Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width depth`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
     starter: |
-      def tree(size, depth)
-        # dein Baum von eben, schöner
-      end
+      {{own tree tree}}
 
       left 90
       tree(80, 7)
@@ -322,9 +320,7 @@ tasks:
       prompt: |
         Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
       starter: |
-        def tree(size, depth):
-            # dein Baum von eben, schöner
-            pass
+        {{own tree tree}}
 
         left(90)
         tree(80, 7)
@@ -402,9 +398,7 @@ tasks:
       prompt: |
         Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
       starter: |
-        function tree(size, depth) {
-          // dein Baum von eben, schöner
-        }
+        {{own tree tree}}
 
         left(90);
         tree(80, 7);
@@ -482,9 +476,7 @@ tasks:
     prompt: |
       Echte Bäume wachsen nicht gleichmäßig. Ändere deinen schönen Baum: Der linke Ast dreht sich um 15 Grad und wird 0,8-mal so lang, der rechte dreht sich um 40 Grad und wird 0,6-mal so lang. Breite und Farben bleiben wie eben.
     starter: |
-      def tree(size, depth)
-        # dein schöner Baum, anders gewachsen
-      end
+      {{own tree tree}}
 
       left 90
       tree(80, 9)
@@ -558,9 +550,7 @@ tasks:
       prompt: |
         Echte Bäume wachsen nicht gleichmäßig. Ändere deinen schönen Baum: Der linke Ast dreht sich um 15 Grad und wird 0,8-mal so lang, der rechte dreht sich um 40 Grad und wird 0,6-mal so lang. Breite und Farben bleiben wie eben.
       starter: |
-        def tree(size, depth):
-            # dein schöner Baum, anders gewachsen
-            pass
+        {{own tree tree}}
 
         left(90)
         tree(80, 9)
@@ -637,9 +627,7 @@ tasks:
       prompt: |
         Echte Bäume wachsen nicht gleichmäßig. Ändere deinen schönen Baum: Der linke Ast dreht sich um 15 Grad und wird 0,8-mal so lang, der rechte dreht sich um 40 Grad und wird 0,6-mal so lang. Breite und Farben bleiben wie eben.
       starter: |
-        function tree(size, depth) {
-          // dein schöner Baum, anders gewachsen
-        }
+        {{own tree tree}}
 
         left(90);
         tree(80, 9);
@@ -716,9 +704,7 @@ tasks:
     prompt: |
       Dreht sich jeder Ast weit genug und wird er nur wenig kürzer, biegen sich die äußeren Äste bis zum Boden. Ändere deinen schönen Baum: Beide Äste drehen sich um 36 Grad und werden 0,84-mal so lang; die Breite ist `depth * 0.7`, die Äste mit einer Tiefe bis 3 sind `"olivedrab"`, die anderen `"sienna"`. Er beginnt mit `tree(52, 10)`.
     starter: |
-      def tree(size, depth)
-        # dein schöner Baum, anders gewachsen
-      end
+      {{own tree tree}}
 
       left 90
       tree(52, 10)
@@ -792,9 +778,7 @@ tasks:
       prompt: |
         Dreht sich jeder Ast weit genug und wird er nur wenig kürzer, biegen sich die äußeren Äste bis zum Boden. Ändere deinen schönen Baum: Beide Äste drehen sich um 36 Grad und werden 0,84-mal so lang; die Breite ist `depth * 0.7`, die Äste mit einer Tiefe bis 3 sind `"olivedrab"`, die anderen `"sienna"`. Er beginnt mit `tree(52, 10)`.
       starter: |
-        def tree(size, depth):
-            # dein schöner Baum, anders gewachsen
-            pass
+        {{own tree tree}}
 
         left(90)
         tree(52, 10)
@@ -871,9 +855,7 @@ tasks:
       prompt: |
         Dreht sich jeder Ast weit genug und wird er nur wenig kürzer, biegen sich die äußeren Äste bis zum Boden. Ändere deinen schönen Baum: Beide Äste drehen sich um 36 Grad und werden 0,84-mal so lang; die Breite ist `depth * 0.7`, die Äste mit einer Tiefe bis 3 sind `"olivedrab"`, die anderen `"sienna"`. Er beginnt mit `tree(52, 10)`.
       starter: |
-        function tree(size, depth) {
-          // dein schöner Baum, anders gewachsen
-        }
+        {{own tree tree}}
 
         left(90);
         tree(52, 10);
@@ -1771,9 +1753,7 @@ tasks:
     prompt: |
       Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
     starter: |
-      def tree(size, depth)
-        # dein schöner Baum, wie du ihn willst
-      end
+      {{own tree tree}}
 
       left 90
       tree(60, 8)
@@ -1809,9 +1789,7 @@ tasks:
       prompt: |
         Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
       starter: |
-        def tree(size, depth):
-            # dein schöner Baum, wie du ihn willst
-            pass
+        {{own tree tree}}
 
         left(90)
         tree(60, 8)
@@ -1850,9 +1828,7 @@ tasks:
       prompt: |
         Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
       starter: |
-        function tree(size, depth) {
-          // dein schöner Baum, wie du ihn willst
-        }
+        {{own tree tree}}
 
         left(90);
         tree(60, 8);

@@ -2,6 +2,7 @@ require 'digest'
 require 'json'
 require 'set'
 require 'yaml'
+require_relative 'own_functions'
 require_relative 'sql_check'
 require_relative 'cypher_check'
 require_relative 'er_check'
@@ -142,7 +143,13 @@ module TaskSpec
         data = YAML.safe_load(File.read(path, encoding: 'UTF-8'), permitted_classes: [], aliases: false)
         errors = validate(data, activity: activity)
         raise Error.new(errors.map { |e| "#{path}: #{e}" }) unless errors.empty?
-        data
+        # a starter that names a function of an earlier task gets its empty
+        # frame here (OwnFunctions); the person's own comes with the states
+        begin
+            OwnFunctions.prepare!(data)
+        rescue ArgumentError => e
+            raise Error.new(["#{path}: #{e.message}"])
+        end
     end
 
     # Returns a list of error messages; empty means valid.

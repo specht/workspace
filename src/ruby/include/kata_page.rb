@@ -206,6 +206,8 @@ class Main < Sinatra::Base
             END_OF_QUERY
             answer = KataCheck.stored_answer(previous && previous['answer'], language, ticket.data[:code])
             state = store_task_result(found, result.status.to_s, answer, ticket.owner, :max => KataCheck::MAX_STORED)
+            remember_correct_code(found, ticket.owner, ticket.data[:code]) if result.status.to_s == 'correct'
+            remember_own_filled(found, ticket.owner)
             state[:handed_in] = File.file?(submission_path(found[:key], ticket.owner))
         end
         {

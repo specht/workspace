@@ -1363,17 +1363,9 @@ tasks:
     prompt: |
       Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
-      def walk(n)
-        n.times do
-          move
-        end
-      end
+      {{own walk walk}}
 
       # Die Treppe
     check:
@@ -1425,13 +1417,9 @@ tasks:
       prompt: |
         Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
-        def walk(n):
-            for i in range(n):
-                move()
+        {{own walk walk}}
 
         # Die Treppe
       check:
@@ -1478,17 +1466,9 @@ tasks:
       prompt: |
         Eine Treppe nach oben: eine Stufe, dann zwei, drei und vier, jede so hoch wie breit. Deine Zaubersprüche stehen schon da; der Plan darunter braucht nur noch eine Schleife.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
-        function walk(n) {
-          for (let i = 0; i < n; i++) {
-            move();
-          }
-        }
+        {{own walk walk}}
 
         // Die Treppe
       check:
@@ -1543,17 +1523,9 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
-        void walk(int n) {
-          for (var i = 0; i < n; i++) {
-            move();
-          }
-        }
+        {{own walk walk}}
 
         void main() {
           // Die Treppe
@@ -1617,17 +1589,9 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
-        void walk(int n) {
-            for (int i = 0; i < n; i++) {
-                move();
-            }
-        }
+        {{own walk walk}}
 
         void main() {
             // Die Treppe
@@ -1691,11 +1655,7 @@ tasks:
     prompt: |
       Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
       # Die Hand an der Wand
     check:
@@ -1733,9 +1693,7 @@ tasks:
       prompt: |
         Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
         # Die Hand an der Wand
       check:
@@ -1771,11 +1729,7 @@ tasks:
       prompt: |
         Ein kleines Labyrinth. Der Trick des Wichtels: Pip legt die linke Hand an die Wand und nimmt sie nie weg. Bei jedem Schritt dreht sich Pip erst nach links und dann nach rechts, bis vorn frei ist.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         // Die Hand an der Wand
       check:
@@ -1818,11 +1772,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
           // Die Hand an der Wand
@@ -1876,11 +1826,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
             // Die Hand an der Wand
@@ -1934,11 +1880,7 @@ tasks:
     prompt: |
       Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
       # Die Hand an der Wand
     check:
@@ -1984,9 +1926,7 @@ tasks:
       prompt: |
         Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
         # Die Hand an der Wand
       check:
@@ -2030,11 +1970,7 @@ tasks:
       prompt: |
         Drei Labyrinthe: eines siehst du hier, die anderen zwei baut der Wichtel für dich, jedes Mal dieselben, aber für jede Person andere. Ein Plan für alle.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         // Die Hand an der Wand
       check:
@@ -2084,11 +2020,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
           // Die Hand an der Wand
@@ -2153,11 +2085,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
             // Die Hand an der Wand
@@ -2223,11 +2151,7 @@ tasks:
     prompt: |
       In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
       # Die Hand an der Wand
     check:
@@ -2265,9 +2189,7 @@ tasks:
       prompt: |
         In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
         # Die Hand an der Wand
       check:
@@ -2303,11 +2225,7 @@ tasks:
       prompt: |
         In diesem Labyrinth läuft Pip mit der linken Hand an der Wand ewig im Kreis. Probier es aus und finde heraus, warum. Dann bring Pip trotzdem zur Lampe.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         // Die Hand an der Wand
       check:
@@ -2349,11 +2267,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
           // Die Hand an der Wand
@@ -2407,11 +2321,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
             // Die Hand an der Wand
@@ -3079,11 +2989,7 @@ tasks:
     prompt: |
       Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddle_ahead?` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
       # Die Hand an der Wand
     check:
@@ -3146,9 +3052,7 @@ tasks:
       prompt: |
         Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddle_ahead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
         # Die Hand an der Wand
       check:
@@ -3209,11 +3113,7 @@ tasks:
       prompt: |
         Das Wasser in diesem Gang ist eiskalt, und Pip will keine nassen Füße. `puddleAhead()` sagt, ob vorn eine Pfütze ist. In dieser Aufgabe zählt eine Pfütze für Pip wie eine Wand, und ein Schritt hinein beendet den Lauf: Weiter geht es nur, wo vorn frei ist und keine Pfütze.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         // Die Hand an der Wand
       check:
@@ -3282,11 +3182,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
           // Die Hand an der Wand
@@ -3368,11 +3264,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
             // Die Hand an der Wand
@@ -3453,11 +3345,7 @@ tasks:
     prompt: |
       Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead?` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `bello_here?` wahr ist.
     starter: |
-      def turn_right
-        3.times do
-          turn_left
-        end
-      end
+      {{own turn-right turn_right}}
 
       # Die Hand an der Wand
     check:
@@ -3522,9 +3410,7 @@ tasks:
       prompt: |
         Auf dem Boden der Höhle: Pfotenabdrücke. `trail_ahead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `bello_here()` wahr ist.
       starter: |
-        def turn_right():
-            for i in range(3):
-                turn_left()
+        {{own turn-right turn_right}}
 
         # Die Hand an der Wand
       check:
@@ -3587,11 +3473,7 @@ tasks:
       prompt: |
         Auf dem Boden der Höhle: Pfotenabdrücke. `trailAhead()` sagt, ob auf dem nächsten Feld welche sind. Wo Bello durch eine Pfütze gelaufen ist, hat das Wasser sie weggewaschen; dort geht die Spur trotzdem weiter. Hier läuft Pip mitten durch: Eine Pfütze ist diesmal keine Wand, nasse Füße sind egal. Folge der Spur, bis `belloHere()` wahr ist.
       starter: |
-        function turnRight() {
-          for (let i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         // Die Hand an der Wand
       check:
@@ -3663,11 +3545,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-          for (var i = 0; i < 3; i++) {
-            turnLeft();
-          }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
           // Die Hand an der Wand
@@ -3751,11 +3629,7 @@ tasks:
 
         '
       starter: |
-        void turnRight() {
-            for (int i = 0; i < 3; i++) {
-                turnLeft();
-            }
-        }
+        {{own turn-right turnRight}}
 
         void main() {
             // Die Hand an der Wand

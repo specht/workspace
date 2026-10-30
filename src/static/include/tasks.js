@@ -285,6 +285,9 @@
             try { codes = JSON.parse(answer || '{}') || {}; } catch (e) { codes = {}; }
             const code = codes[input.dataset.codeLanguage];
             input.value = typeof code === 'string' ? code : (input.dataset.starter || '');
+            // what the server knows of this card, so that a later refresh
+            // of its own functions can tell unsaved changes (loadStates)
+            card.shownCode = input.value;
         } else if (input) {
             input.value = answer || '';
         }
@@ -502,7 +505,9 @@
                     setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                     card.querySelector('.task-delete').hidden = false;
                     showHandIn(card, data.state);
+                    card.shownCode = answer;
                 }
+                if (data.status === 'correct') loadStates(true);
             };
             // Pip: the run plays first, the result comes when it is over (or
             // stopped, or skipped to its end); what the plan printed below
@@ -583,6 +588,7 @@
             select.value = data.current;
             if (switched) {
                 editor.value = data.code;
+                card.shownCode = data.code;
                 if (editor.codeInputUpdate) editor.codeInputUpdate();
                 card.turtle.blank();
                 const feedback = card.querySelector('.task-feedback');
@@ -622,6 +628,7 @@
         send('load');
         return {
             showHandIn: showHandIn,
+            reload: function () { send('load'); },
             handIn: function () {
                 if (book.handed.indexOf(book.current) >= 0) {
                     send('take_back', { code: editor.value });
@@ -664,6 +671,7 @@
                 feedback.innerHTML = '';
             },
             save: (code) => request('/api/turtle/save', { answer: code }, function (data) {
+                if (data.success) card.shownCode = code;
                 if (data.success && data.state && !card.dataset.status) {
                     setBadge(card, data.state.status, false);
                     card.querySelector('.task-delete').hidden = false;
@@ -697,7 +705,9 @@
                     setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                     card.querySelector('.task-delete').hidden = false;
                     showHandIn(card, data.state);
+                    card.shownCode = code;
                 }
+                if (data.status === 'correct') loadStates(true);
                 if (data.replay && data.status !== 'drawn') card.turtle.showResult(data.replay);
             }),
             invalid: (message) => {
@@ -776,6 +786,8 @@
             showAfterTasks();
             card.querySelector('.task-delete').hidden = true;
             showFeedback(card, 'sent', '<p>Gelöscht.</p>');
+            // later cards no longer have this card's functions
+            loadStates(true);
         }, { no_please_wait: true });
     }
 
@@ -850,12 +862,32 @@
         });
     }
 
-    function loadStates() {
+    // ownOnly: after a card passed, only the cards that build on functions
+    // of earlier ones (OwnFunctions on the server) take the new code, and
+    // only where nothing was typed since they were loaded or checked.
+    function loadStates(ownOnly) {
         api_call('/api/task/states', { activity: page.activity }, function (data) {
             if (!data.success) return;
             cards().forEach((card) => {
                 const state = (data.states || {})[cardId(card)];
+                const input = card.querySelector('.task-code');
+                const starters = (data.starters || {})[cardId(card)];
+                const starter = starters && input ? starters[input.dataset.codeLanguage] : null;
+                if (ownOnly && (typeof starter !== 'string' || input.value !== card.shownCode)) return;
+                // a free turtle card: its open drawing, from the server
+                if (ownOnly && card.sketches) {
+                    card.sketches.reload();
+                    return;
+                }
+                if (typeof starter === 'string') {
+                    input.dataset.starter = starter;
+                    if (!state) writeAnswer(card, null, null);
+                }
                 if (!state) return;
+                if (ownOnly) {
+                    writeAnswer(card, state.answer, state);
+                    return;
+                }
                 writeAnswer(card, state.answer, state);
                 setBadge(card, state.status);
                 showHandIn(card, state);

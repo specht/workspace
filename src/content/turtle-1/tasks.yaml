@@ -503,11 +503,9 @@ tasks:
     title: "Eine Blume aus Quadraten"
     level: 2
     prompt: |
-      Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+      Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben steht schon da und hilft dabei.
     starter: |
-      def square(size)
-        # dein Quadrat von eben
-      end
+      {{own square-function square}}
     check:
       type: "turtle"
       language: "ruby"
@@ -532,11 +530,9 @@ tasks:
       ```
     python:
       prompt: |
-        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben steht schon da und hilft dabei.
       starter: |
-        def square(size):
-            # dein Quadrat von eben
-            pass
+        {{own square-function square}}
       check:
         type: "turtle"
         language: "python"
@@ -558,11 +554,9 @@ tasks:
         ```
     javascript:
       prompt: |
-        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben hilft dabei: Kopier sie in die Zeilen oben.
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben steht schon da und hilft dabei.
       starter: |
-        function square(size) {
-          // dein Quadrat von eben
-        }
+        {{own square-function square}}
       check:
         type: "turtle"
         language: "javascript"
@@ -592,9 +586,7 @@ tasks:
     prompt: |
       Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
     starter: |
-      def polygon(corners, side)
-        # dein Vieleck von eben
-      end
+      {{own polygon polygon}}
     check:
       type: "turtle"
       language: "ruby"
@@ -621,9 +613,7 @@ tasks:
       prompt: |
         Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
       starter: |
-        def polygon(corners, side):
-            # dein Vieleck von eben
-            pass
+        {{own polygon polygon}}
       check:
         type: "turtle"
         language: "python"
@@ -647,9 +637,7 @@ tasks:
       prompt: |
         Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
       starter: |
-        function polygon(corners, side) {
-          // dein Vieleck von eben
-        }
+        {{own polygon polygon}}
       check:
         type: "turtle"
         language: "javascript"
@@ -741,12 +729,7 @@ tasks:
     prompt: |
       Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
     starter: |
-      def square(size)
-        4.times do
-          forward size
-          left 90
-        end
-      end
+      {{own square-function square}}
 
       width 4
     check:
@@ -782,10 +765,7 @@ tasks:
       prompt: |
         Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
       starter: |
-        def square(size):
-            for i in range(4):
-                forward(size)
-                left(90)
+        {{own square-function square}}
 
         width(4)
       check:
@@ -818,12 +798,7 @@ tasks:
       prompt: |
         Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
       starter: |
-        function square(size) {
-          for (let i = 0; i < 4; i++) {
-            forward(size);
-            left(90);
-          }
-        }
+        {{own square-function square}}
 
         width(4);
       check:
@@ -1122,9 +1097,7 @@ tasks:
     prompt: |
       Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
     starter: |
-      def circle(radius)
-        # dein Kreis von eben
-      end
+      {{own circle circle}}
     check:
       type: "turtle"
       language: "ruby"
@@ -1159,9 +1132,7 @@ tasks:
       starter: |
         import math
 
-        def circle(radius):
-            # dein Kreis von eben
-            pass
+        {{own circle circle}}
       check:
         type: "turtle"
         language: "python"
@@ -1193,9 +1164,7 @@ tasks:
       prompt: |
         Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
       starter: |
-        function circle(radius) {
-          // dein Kreis von eben
-        }
+        {{own circle circle}}
       check:
         type: "turtle"
         language: "javascript"

@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Aufgaben mit Code in der Karte speichern zusätzlich den letzten Code, der die Prüfung bestanden hat
+  (`TaskState.correct_answer`), und bei späteren Aufgaben, welche Fassung der eigenen Funktionen sie beim Speichern
+  enthielten (`TaskState.own_filled`): Spätere Karten von Pip und der Turtle übernehmen daraus die Funktionen, die
+  jemand schon geschrieben hat, statt sie vorzugeben. Beides steht im Export des Kontos und in der Datenschutzerklärung.
 - Der Workspace steht unter der AGPL-3.0-or-later (`LICENSE`): Wer eine geänderte Fassung betreibt, macht den
   geänderten Quellcode den Nutzerinnen und Nutzern zugänglich.
 - Sitzungen speichern nur noch den SHA-256 der Kennung im Cookie. Beim ersten Start nach dem Update rechnet der

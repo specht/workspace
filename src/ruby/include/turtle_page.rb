@@ -94,8 +94,10 @@ class Main < Sinatra::Base
             else
                 answer = KataCheck.stored_answer(previous && previous['answer'], task['check']['language'], code)
                 state = store_task_result(found, status, answer, email, :max => KataCheck::MAX_STORED)
+                remember_correct_code(found, email, code) if status == 'correct'
             end
             turtle_sync_sketch(found, email, code, previous)
+            remember_own_filled(found, email)
             state[:handed_in] = File.file?(submission_path(found[:key], email))
         end
         if status == 'free'
@@ -126,6 +128,7 @@ class Main < Sinatra::Base
         previous = turtle_previous(email, found[:key])
         state = turtle_keep_code(found, email, data[:answer], previous)
         turtle_sync_sketch(found, email, data[:answer], previous)
+        remember_own_filled(found, email)
         respond(:saved => true, :state => state)
     end
 
@@ -169,7 +172,10 @@ class Main < Sinatra::Base
 
         email = @session_user[:email]
         language = found[:task]['check']['language']
-        starter = found[:task]['starter'].to_s
+        # own functions of earlier cards (OwnFunctions): the person's own
+        own = own_functions_for(found, email)
+        fill = own && own[:fill]
+        starter = fill ? fill.call(nil) : found[:task]['starter'].to_s
         previous = turtle_previous(email, found[:key])
         books = TurtleSketches.parse(previous && previous['sketches'])
         book = books[language] || { 'current' => '', 'list' => [] }
@@ -258,8 +264,9 @@ class Main < Sinatra::Base
                 MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
                 SET s.sketches = $sketches;
             END_OF_QUERY
+            remember_own_filled(found, email)
         end
-        respond(:list => list.map { |e| e['name'] }, :current => book['current'], :code => current['code'],
+        respond(:list => list.map { |e| e['name'] }, :current => book['current'], :code => fill ? fill.call(current['code'].to_s) : current['code'],
                 :handed => handed_names, :error => error, :state => state)
     end
 end

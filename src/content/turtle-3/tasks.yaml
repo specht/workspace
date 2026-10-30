@@ -587,18 +587,7 @@ tasks:
     prompt: |
       Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
     starter: |
-      def tree(size, depth)
-        return if depth == 0
-        forward size
-        push
-        left 30
-        tree(size * 0.7, depth - 1)
-        pop
-        push
-        right 30
-        tree(size * 0.7, depth - 1)
-        pop
-      end
+      {{own tree-push tree}}
 
       # left 90
       # tree(100, 5)
@@ -635,18 +624,7 @@ tasks:
       prompt: |
         Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
       starter: |
-        def tree(size, depth):
-            if depth == 0:
-                return
-            forward(size)
-            push()
-            left(30)
-            tree(size * 0.7, depth - 1)
-            pop()
-            push()
-            right(30)
-            tree(size * 0.7, depth - 1)
-            pop()
+        {{own tree-push tree}}
 
         # left(90)
         # tree(100, 5)
@@ -686,18 +664,7 @@ tasks:
       prompt: |
         Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
       starter: |
-        function tree(size, depth) {
-          if (depth === 0) return;
-          forward(size);
-          push();
-          left(30);
-          tree(size * 0.7, depth - 1);
-          pop();
-          push();
-          right(30);
-          tree(size * 0.7, depth - 1);
-          pop();
-        }
+        {{own tree-push tree}}
 
         // left(90);
         // tree(100, 5);
@@ -1063,21 +1030,7 @@ tasks:
     prompt: |
       Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `draw_word` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
     starter: |
-      def draw_word(word, size, angle)
-        word.each_char do |letter|
-          if letter == "F"
-            forward size
-          elsif letter == "+"
-            left angle
-          elsif letter == "-"
-            right angle
-          elsif letter == "["
-            push
-          elsif letter == "]"
-            pop
-          end
-        end
-      end
+      {{own draw-word draw_word}}
 
       def grow(word, times)
       end
@@ -1175,18 +1128,7 @@ tasks:
       prompt: |
         Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `draw_word` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
       starter: |
-        def draw_word(word, size, angle):
-            for letter in word:
-                if letter == "F":
-                    forward(size)
-                elif letter == "+":
-                    left(angle)
-                elif letter == "-":
-                    right(angle)
-                elif letter == "[":
-                    push()
-                elif letter == "]":
-                    pop()
+        {{own draw-word draw_word}}
 
         def grow(word, times):
             pass
@@ -1279,21 +1221,7 @@ tasks:
       prompt: |
         Schreib `grow(word, times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `drawWord` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
       starter: |
-        function drawWord(word, size, angle) {
-          for (const letter of word) {
-            if (letter === "F") {
-              forward(size);
-            } else if (letter === "+") {
-              left(angle);
-            } else if (letter === "-") {
-              right(angle);
-            } else if (letter === "[") {
-              push();
-            } else if (letter === "]") {
-              pop();
-            }
-          }
-        }
+        {{own draw-word drawWord}}
 
         function grow(word, times) {
         }
@@ -1394,28 +1322,9 @@ tasks:
     prompt: |
       Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
     starter: |
-      def draw_word(word, size, angle)
-        word.each_char do |letter|
-          if letter == "F"
-            forward size
-          elsif letter == "+"
-            left angle
-          elsif letter == "-"
-            right angle
-          elsif letter == "["
-            push
-          elsif letter == "]"
-            pop
-          end
-        end
-      end
+      {{own draw-word draw_word}}
 
-      def grow(word, times)
-        times.times do
-          word = word.gsub("F", "F[+F]F[-F]F")
-        end
-        word
-      end
+      {{own grow grow}}
 
       # left 90
       # draw_word(grow("F", 4), 4, 25)
@@ -1470,23 +1379,9 @@ tasks:
       prompt: |
         Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
       starter: |
-        def draw_word(word, size, angle):
-            for letter in word:
-                if letter == "F":
-                    forward(size)
-                elif letter == "+":
-                    left(angle)
-                elif letter == "-":
-                    right(angle)
-                elif letter == "[":
-                    push()
-                elif letter == "]":
-                    pop()
+        {{own draw-word draw_word}}
 
-        def grow(word, times):
-            for i in range(times):
-                word = word.replace("F", "F[+F]F[-F]F")
-            return word
+        {{own grow grow}}
 
         # left(90)
         # draw_word(grow("F", 4), 4, 25)
@@ -1536,28 +1431,9 @@ tasks:
       prompt: |
         Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
       starter: |
-        function drawWord(word, size, angle) {
-          for (const letter of word) {
-            if (letter === "F") {
-              forward(size);
-            } else if (letter === "+") {
-              left(angle);
-            } else if (letter === "-") {
-              right(angle);
-            } else if (letter === "[") {
-              push();
-            } else if (letter === "]") {
-              pop();
-            }
-          }
-        }
+        {{own draw-word drawWord}}
 
-        function grow(word, times) {
-          for (let i = 0; i < times; i++) {
-            word = word.replaceAll("F", "F[+F]F[-F]F");
-          }
-          return word;
-        }
+        {{own grow grow}}
 
         // left(90);
         // drawWord(grow("F", 4), 4, 25);

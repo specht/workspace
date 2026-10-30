@@ -6149,6 +6149,77 @@ class Main < Sinatra::Base
         TaskStore.public_state(props, found[:version])
     end
 
+    # The code of a stored task state that passed, per language, for the
+    # own functions of later cards; solved before it was kept: the last
+    # answer.
+    def correct_codes(stored)
+        OwnFunctions.parse_codes(stored[:correct_answer] || (stored[:status] == 'correct' ? stored[:last_answer] : nil))
+    end
+
+    # For a card whose starter names own functions (OwnFunctions), for one
+    # person: :fill, a lambda that fills their own into code (nil: into the
+    # starter), and :filled, what the card gives for each function now; nil
+    # for any other card.
+    def own_functions_for(found, email)
+        activity, id = found[:key].split('/', 2)
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        tasks = entry[:tasks][:by_id]
+        language = found[:task]['check']['language'] || 'ruby'
+        _, part = OwnFunctions.parts(tasks[id]).find { |l, _| l == language }
+        return nil unless part
+
+        correct = {}
+        given = {}
+        neo4j_query(<<~END_OF_QUERY, :email => email, :prefix => "#{activity}/").each do |row|
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.task STARTS WITH $prefix
+            RETURN s;
+        END_OF_QUERY
+            task_id = row['s'][:task].to_s.split('/', 2)[1]
+            correct[task_id] = correct_codes(row['s'])
+            given = OwnFunctions.parse_codes(row['s'][:own_filled])[language] || {} if task_id == id
+        end
+        mine = OwnFunctions.mine(correct, language)
+        {
+            :language => language,
+            :fill => ->(code) { OwnFunctions.personal(code, part['starter_own'], language, tasks, :mine => mine, :filled => given) },
+            :filled => OwnFunctions.filled(part['starter_own'], language, tasks, :mine => mine),
+        }
+    end
+
+    # With a card's code saved: what it gave for each own function then
+    # (TaskState.own_filled, per language), so that a function the person
+    # changed in the card stays theirs (OwnFunctions.personal).
+    def remember_own_filled(found, email)
+        own = own_functions_for(found, email) or return
+        key = TaskStore.state_key(email, found[:key])
+        previous = neo4j_query(<<~END_OF_QUERY, :email => email, :key => key).first
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            RETURN s.own_filled AS filled;
+        END_OF_QUERY
+        filled = OwnFunctions.parse_codes(previous && previous['filled']).merge(own[:language] => own[:filled])
+        neo4j_query(<<~END_OF_QUERY, :email => email, :key => key, :filled => JSON.generate(filled))
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            SET s.own_filled = $filled;
+        END_OF_QUERY
+    end
+
+    # A Kata's code that passed its check, per language
+    # (TaskState.correct_answer): later cards fill in their own functions
+    # from it (OwnFunctions), also after a run that did not pass.
+    def remember_correct_code(found, email, code)
+        key = TaskStore.state_key(email, found[:key])
+        previous = neo4j_query(<<~END_OF_QUERY, :email => email, :key => key).first
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            RETURN s.correct_answer AS correct;
+        END_OF_QUERY
+        answer = KataCheck.stored_answer(previous && previous['correct'], found[:task]['check']['language'] || 'ruby', code)
+        neo4j_query(<<~END_OF_QUERY, :email => email, :key => key, :answer => answer)
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            SET s.correct_answer = $answer;
+        END_OF_QUERY
+    end
+
     # The teacher note of a page (lehrkraft.md), for teachers only: a small
     # button at the right end of the page strip, so the page can be shown on
     # a projector as it is, and the note itself below it, closed; on a wide
@@ -7892,6 +7963,8 @@ class Main < Sinatra::Base
         halt 404 if entry.nil?
 
         states = {}
+        correct = {}
+        given = {}
         neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefix => "#{activity}/").each do |row|
             MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
             WHERE s.task STARTS WITH $prefix
@@ -7902,10 +7975,18 @@ class Main < Sinatra::Base
             task = entry[:tasks][:by_id][id]
             next if task.nil?
             states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
+            next unless Main::KATA_TYPES.include?(task['check']['type'])
+
             # a Kata handed in to be shown in class (KataHandIns)
-            states[id][:handed_in] = File.file?(submission_path(stored[:task].to_s)) if Main::KATA_TYPES.include?(task['check']['type'])
+            states[id][:handed_in] = File.file?(submission_path(stored[:task].to_s))
+            correct[id] = correct_codes(stored)
+            given[id] = stored[:own_filled] if stored[:own_filled]
         end
-        respond(:states => states)
+        # Cards that build on functions of earlier ones (OwnFunctions): the
+        # person's own functions in their starters and answers.
+        starters, answers = OwnFunctions.for_person(entry[:tasks][:by_id], correct, states.transform_values { |s| s[:answer] }.compact, given)
+        answers.each { |id, answer| states[id][:answer] = answer }
+        respond(:states => states, :starters => starters)
     end
 
     # The answers of a group to the open tasks of an activity, for the

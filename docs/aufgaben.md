@@ -273,7 +273,7 @@ tasks:
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
-| `starter` | nein | Nur bei `function`, `pip` und `tests`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern |
+| `starter` | nein | Nur bei `function`, `pip`, `tests` und `turtle`: der Code, mit dem die Karte beginnt (höchstens 4000 Zeichen); er muss von selbst scheitern. Eine Zeile `{{own aufgaben-id name}}` steht für die Funktion `name` aus einer früheren Karte derselben Datei: Die Seite zeigt ihren leeren Rahmen (die erste Zeile aus der Lösung jener Karte und woher sie kommt), wer jene Karte gelöst hat, den eigenen Code, der zuletzt bestanden hat (`OwnFunctions`, docs/checkliste.md) |
 | `level` | nein | Nur für Katas gedacht: `1` Einstieg, `2` Übung, `3` Knobelei; die Karte zeigt das Wort mit so vielen Balken |
 | `extra` | nein | `true`: für Schnelle und Neugierige; zählt bei niemandem mit (»8 von 10 erledigt, dazu 2 Extras«), die Karte zeigt »Extra«, das Klassenboard die Spalte heller und rechnet sie nicht zu »gelöst«. Eine Aufgabe in einem Extra-Kapitel muss eine sein |
 | `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |

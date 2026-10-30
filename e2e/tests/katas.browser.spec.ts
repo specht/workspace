@@ -342,22 +342,37 @@ test('Pip is clicked to the first lamp', async ({ page, e2eEmail }, testInfo) =>
 });
 
 // Teil 2: a function of one's own; the check calls it on its own maps and
-// says where Pip looks afterwards.
+// says where Pip looks afterwards. A later card (the stairs) shows only the
+// frame of turn_right until it is solved, then the student's own, at once
+// and after a reload (OwnFunctions).
 test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
+  for (const task of ['pip-2/turn-right', 'pip-2/stairs']) {
+    await page.request.post('/api/task/delete', { data: { task } });
+  }
   await page.goto('/pip-2');
   const card = page.locator('.task-card[data-task="pip-2/turn-right"]:visible');
+  const stairs = page.locator('.task-card[data-task="pip-2/stairs"]:visible .task-code');
+  // Ruby, whatever language an earlier run left
+  await page.locator('.code-language-option[data-set-language="ruby"]').click();
+  await expect(card.locator('.task-code')).toHaveAttribute('data-code-language', 'ruby');
   const language = await languageOf(card);
+  await expect(stairs).toHaveValue(/noch leer: deine Lösung aus »Rechtsherum«/);
+  await expect(stairs).not.toHaveValue(/turn_left/);
   const wrong = language === 'ruby' ? 'def turn_right\n  turn_left\nend\n' : 'def turn_right():\n    turn_left()\n';
   await card.locator('.task-code').fill(wrong);
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('nach oben statt nach unten', { timeout: 30_000 });
   const right = language === 'ruby'
-    ? 'def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nmove\n'
-    : 'def turn_right():\n    for i in range(3):\n        turn_left()\n\nmove()\n';
+    ? 'def turn_right\n  turn_left\n  turn_left\n  turn_left\nend\n\nmove\n'
+    : 'def turn_right():\n    turn_left()\n    turn_left()\n    turn_left()\n\nmove()\n';
+  const own = language === 'ruby'
+    ? 'def turn_right\n  turn_left\n  turn_left\n  turn_left\nend\n'
+    : 'def turn_right():\n    turn_left()\n    turn_left()\n    turn_left()\n';
   await card.locator('.task-code').fill(right);
   await card.locator('.task-submit').click();
   await expect(card.locator('.task-feedback')).toContainText('Pip schafft alle 2 Karten.', { timeout: 30_000 });
+  await expect(stairs).toHaveValue(new RegExp('^' + own.replace(/[()]/g, '\\$&')));
   // the replay: three turns, the plan's own move left out
   await expect(card.locator('.pip-status')).toHaveText(/^Karte 1 von 2, Schritt 3 von 3/, { timeout: 20_000 });
   await expect(card.locator('.pip-pip')).toHaveAttribute('data-facing', 'south');
@@ -370,6 +385,10 @@ test('Pip learns turn_right, and the check calls it', async ({ page, e2eEmail },
   await card.locator('.task-submit').click();
   await expect(card.locator('.pip-bubble')).toHaveText('Rechts!', { timeout: 30_000 });
   await expect(card.locator('.task-code')).toBeFocused();
+
+  await page.reload();
+  await expect(stairs).toHaveValue(/turn_left/);
+  await expect(stairs).not.toHaveValue(/noch leer: deine Lösung aus »Rechtsherum«/);
 });
 
 // What Pip says comes sentence by sentence while the run plays, each long
