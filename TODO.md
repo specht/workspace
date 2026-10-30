@@ -203,7 +203,6 @@ Open findings from the October 2026 review:
 
 Platform-wide:
 
-* [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German

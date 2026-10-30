@@ -194,6 +194,7 @@ _task(scheibe)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/02-kreis.frag
+check-task: scheibe
 tab: preview
 viewport: 800x450
 hook: open 2.5
@@ -209,6 +210,8 @@ Früher oder später steht unten in der Vorschau eine rote Meldung. Der Grafikch
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:bilder/fehler.frag
+# Übersetzt nicht (Zeile 10): die Prüfung von scheibe muss es merken
+check-task-fails: scheibe
 tab: preview
 viewport: 800x450
 hook: open 2.5 error
@@ -628,6 +631,8 @@ _task(march)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/06-raymarching.frag
+check-task: abstaende
+check-task: march
 tab: preview
 viewport: 800x450
 hook: open 2.5
@@ -1059,6 +1064,7 @@ _task(carpet)
 <figure>
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/10-teppich.frag
+check-task: carpet
 tab: preview
 viewport: 800x450
 hook: open 0.5
@@ -1306,6 +1312,7 @@ _task(sponge)
 
 <!-- tutorial-screenshot
 write-file: shader.frag <- file:stufen/11-schwamm.frag
+check-task: sponge
 tab: preview
 viewport: 800x450
 hook: open 2
