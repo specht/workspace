@@ -212,7 +212,6 @@ Platform-wide:
 * [ ] PixelRAM's pictures are 1350 px wide and stretched by `class='full'` (100 % wide, at least 1000 px). The recipes with `viewport: 1600x900` come out 1350 px wide too, so the size is set elsewhere (the crop of `#canvas`, or the PixelRAM shell's layout); `zoom:` does not help, it divides the viewport
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
-* [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
 

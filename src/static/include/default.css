@@ -13439,3 +13439,12 @@ html[data-bs-theme="dark"] .prolog-search {
         transition-property: background-color, color, border-color, opacity, visibility;
     }
 }
+
+/* On a phone a line holds only a few words. Justified, the gaps between them
+   grow wide even with hyphens, so there the text is ragged on the right. */
+@media (max-width: 560px) {
+    p,
+    .hint {
+        text-align: left;
+    }
+}
