@@ -12,7 +12,7 @@ needs_contrast: light
     data-levels="h2,h3">
 </div>
 
-# Smalltalk <span style='font-size: 80%;'>(1980)</span>
+# Smalltalk <span style='font-size: 80%;'>(1972)</span>
 
 <p class='abstract'>
 Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt, 1980 als Smalltalk-80 veröffentlicht und gilt als eine der ersten objektorientierten Programmiersprachen. In Smalltalk ist alles ein Objekt, auch eine Zahl, und alles geschieht, indem man einem Objekt eine Nachricht schickt.

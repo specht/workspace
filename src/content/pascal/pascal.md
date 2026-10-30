@@ -11,10 +11,10 @@ topics: [programmiersprachen, geschichte]
     data-levels="h2,h3">
 </div>
 
-# Pascal <span style='font-size: 80%;'>(1970)</span>
+# Pascal <span style='font-size: 80%;'>(1968)</span>
 
 <p class='abstract'>
-Die Programmiersprache Pascal wurde 1970 von Niklaus Wirth entwickelt und ist eine imperative und strukturierte Programmiersprache. Pascal wurde ursprünglich als Sprache für die Lehre entwickelt und hat eine klare und einfache Syntax. Die Sprache wurde nach dem französischen Mathematiker und Philosophen Blaise Pascal benannt.
+Die Programmiersprache Pascal wurde ab 1968 von Niklaus Wirth entwickelt, 1970 veröffentlicht und ist eine imperative und strukturierte Programmiersprache. Pascal wurde ursprünglich als Sprache für die Lehre entwickelt und hat eine klare und einfache Syntax. Die Sprache wurde nach dem französischen Mathematiker und Philosophen Blaise Pascal benannt.
 </p>
 
 _person(wirth)

@@ -11,7 +11,7 @@ topics: [programmiersprachen]
     data-levels="h2,h3">
 </div>
 
-# Rust <span style='font-size: 80%;'>(2015)</span>
+# Rust <span style='font-size: 80%;'>(2006)</span>
 
 <p class='abstract'>
 Rust, ab 2006 von Graydon Hoare entwickelt und 2015 als Version 1.0 veröffentlicht, ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware konzipiert wurde. Rust legt besonderen Wert auf Sicherheit, Geschwindigkeit und Parallelität, was sie ideal für die Entwicklung von Betriebssystemen, Browser-Engines und anderen leistungsintensiven Anwendungen macht.

@@ -12,10 +12,10 @@ topics: [programmiersprachen, grundstrukturen]
     data-levels="h2,h3">
 </div>
 
-# Ruby <span style='font-size: 80%;'>(1995)</span>
+# Ruby <span style='font-size: 80%;'>(1993)</span>
 
 <p class='abstract'>
-Ruby, entwickelt Mitte der 1990er Jahre von Yukihiro "Matz" Matsumoto, ist eine dynamische, objektorientierte Programmiersprache, die für ihre Einfachheit und Produktivität bekannt ist.
+Ruby, ab 1993 entwickelt von Yukihiro "Matz" Matsumoto und 1995 veröffentlicht, ist eine dynamische, objektorientierte Programmiersprache, die für ihre Einfachheit und Produktivität bekannt ist.
 </p>
 
 _person(matsumoto)

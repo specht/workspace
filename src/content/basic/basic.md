@@ -11,7 +11,7 @@ topics: [programmiersprachen, geschichte]
     data-levels="h2,h3">
 </div>
 
-# BASIC <span style='font-size: 80%;'>(1964)</span>
+# BASIC <span style='font-size: 80%;'>(1963)</span>
 
 <p class='abstract'>
 BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny und Thomas E. Kurtz am Dartmouth College entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für "Beginner's All-purpose Symbolic Instruction Code". BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.

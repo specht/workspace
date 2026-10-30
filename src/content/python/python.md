@@ -12,10 +12,10 @@ topics: [programmiersprachen, grundstrukturen]
     data-levels="h2,h3">
 </div>
 
-# Python <span style='font-size: 80%;'>(1991)</span>
+# Python <span style='font-size: 80%;'>(1989)</span>
 
 <p class='abstract'>
-Python, entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist eine der beliebtesten Programmiersprachen der Welt. Python wird aufgrund seiner Einfachheit und Lesbarkeit in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen.
+Python, ab Dezember 1989 entwickelt von Guido van Rossum und 1991 veröffentlicht, ist eine der beliebtesten Programmiersprachen der Welt. Python wird aufgrund seiner Einfachheit und Lesbarkeit in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen.
 </p>
 
 _person(van-rossum)

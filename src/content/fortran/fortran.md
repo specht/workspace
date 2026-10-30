@@ -11,10 +11,10 @@ topics: [programmiersprachen, geschichte]
     data-levels="h2,h3">
 </div>
 
-# Fortran <span style='font-size: 80%;'>(1957)</span>
+# Fortran <span style='font-size: 80%;'>(1953)</span>
 
 <p class='abstract'>
-FORTRAN, kurz für "Formula Translation," wurde 1957 von einem Team um John Backus bei IBM entwickelt und ist eine der ältesten Programmiersprachen. Sie wurde ursprünglich für wissenschaftliche und technische Anwendungen entwickelt und wird heute noch in diesen Bereichen eingesetzt. Fortran ist eine imperative Programmiersprache, die speziell für numerische Berechnungen optimiert ist. Sie bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
+FORTRAN, kurz für "Formula Translation," wurde ab 1953 von einem Team um John Backus bei IBM entwickelt; der erste Compiler kam 1957 und ist eine der ältesten Programmiersprachen. Sie wurde ursprünglich für wissenschaftliche und technische Anwendungen entwickelt und wird heute noch in diesen Bereichen eingesetzt. Fortran ist eine imperative Programmiersprache, die speziell für numerische Berechnungen optimiert ist. Sie bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
 </p>
 
 _person(backus)

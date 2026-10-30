@@ -11,10 +11,10 @@ topics: [programmiersprachen]
     data-levels="h2,h3">
 </div>
 
-# Java <span style='font-size: 80%;'>(1995)</span>
+# Java <span style='font-size: 80%;'>(1991)</span>
 
 <p class='abstract'>
-Java, entwickelt von James Gosling und seinem Team bei Sun Microsystems und erstmals 1995 veröffentlicht, ist eine objektorientierte Programmiersprache, die für ihre Plattformunabhängigkeit bekannt ist.
+Java, ab 1991 entwickelt von James Gosling und seinem Team bei Sun Microsystems, zuerst unter dem Namen Oak, und 1995 veröffentlicht, ist eine objektorientierte Programmiersprache, die für ihre Plattformunabhängigkeit bekannt ist.
 </p>
 
 _person(gosling)

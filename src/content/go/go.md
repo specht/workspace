@@ -11,7 +11,7 @@ topics: [programmiersprachen]
     data-levels="h2,h3">
 </div>
 
-# Go <span style='font-size: 80%;'>(2009)</span>
+# Go <span style='font-size: 80%;'>(2007)</span>
 
 <p class='abstract'>
 Go, auch bekannt als Golang, wurde ab 2007 von Robert Griesemer, Rob Pike und Ken Thompson bei Google entwickelt und 2009 veröffentlicht. Die Programmiersprache wurde für die Entwicklung von Systemsoftware und Webanwendungen konzipiert und zeichnet sich durch ihre einfache Syntax, effiziente Kompilierung und integrierte Unterstützung für Nebenläufigkeit aus.

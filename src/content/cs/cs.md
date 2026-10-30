@@ -11,10 +11,10 @@ topics: [programmiersprachen]
     data-levels="h2,h3">
 </div>
 
-# C&#35; <span style='font-size: 80%;'>(2000)</span>
+# C&#35; <span style='font-size: 80%;'>(1999)</span>
 
 <p class='abstract'>
-C#, entwickelt von Anders Hejlsberg und seinem Team bei Microsoft und erstmals im Jahr 2000 veröffentlicht, ist eine moderne, objektorientierte Programmiersprache, die Teil des .NET-Frameworks ist.
+C#, ab 1999 entwickelt von Anders Hejlsberg und seinem Team bei Microsoft und im Jahr 2000 vorgestellt, ist eine moderne, objektorientierte Programmiersprache, die Teil des .NET-Frameworks ist.
 </p>
 
 _person(hejlsberg)
