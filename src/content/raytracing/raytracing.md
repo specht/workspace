@@ -1,5 +1,5 @@
 <div class='meta'>
-image: raytracer.webp
+image: raytracer-gross.webp
 image_alt: "Ein gerendertes Bild: ein gestreifter Planet, eine Spiegelkugel, eine volle und eine hohle Glaskugel, glänzende bunte Kugeln und Kugeln aus Gold und Kupfer auf einem Schachbrett unter hellem Himmel, mit weichen Schatten"
 kind: projekt
 language: C
@@ -24,7 +24,7 @@ template_name: des PixelRAM-Starters
 Ein Raytracer schickt für jeden Pixel einen Strahl in eine Szene und rechnet aus, was der Strahl trifft. Du baust einen in C mit PixelRAM, Schritt für Schritt: eine Kugel, Licht, ein Schachbrett als Boden, Schatten, eine Kamera, die um die Szene kreist, einen gestreiften Planeten, eine Spiegelkugel, eine volle und eine hohle Glaskugel, Lack und Metall und am Ende ein Bild ohne Treppenstufen, mit weichen Schatten. Dafür brauchst du nur Vektoren: addieren, multiplizieren und das Skalarprodukt.
 </p>
 
-<img class='full fit-width' src='raytracer.webp' alt='Das fertige Bild: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, links vorn eine hohle Glaskugel, durch die es fast gerade weiterläuft, in der Mitte vorn eine lackierte rote und eine blaue Kugel mit Glanzpunkten, rechts kleine Kugeln aus Gold und Kupfer; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
+<img class='full fit-width' src='raytracer-gross.webp' alt='Das fertige Bild, mit dem Raytracer dieser Seite in 1920 × 1080 Pixeln und über 3000 Durchgängen gerechnet: links ein gestreifter Planet mit rotem Fleck, in der Mitte eine Spiegelkugel, in der sich die ganze Szene spiegelt, rechts eine Glaskugel, durch die das Schachbrett verzerrt und auf dem Kopf zu sehen ist, links vorn eine hohle Glaskugel, durch die es fast gerade weiterläuft, in der Mitte vorn eine lackierte rote und eine blaue Kugel mit Glanzpunkten, rechts kleine Kugeln aus Gold und Kupfer; alle werfen weiche Schatten auf das Schachbrett, das zum Horizont hin im Dunst verschwindet.'>
 
 
 So sieht dein Raytracer am Ende aus. Kein Bild davon ist gemalt: Jeder Pixel ist das Ergebnis einer Rechnung, die einem Lichtstrahl rückwärts folgt, vom Auge in die Szene, dort vielleicht von einer Kugel zur nächsten und dann zur Sonne. Genau so, nur mit viel mehr Strahlen, entstehen die Bilder in Animationsfilmen, und seit einigen Jahren auch in Spielen, mit Grafikkarten, die Strahlen in eigener Hardware verfolgen.
