@@ -98,7 +98,7 @@ crop-element: #canvas
 <img class='full' src='green-dot.webp' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
 
 <div class='hint'>
-<strong>Röhrenbildschirm:</strong> Fährst du mit der Maus über das Bild, erscheinen unten rechts drei Knöpfe. Der mittlere schaltet den CRT-Filter ein (oder <kbd>F6</kbd>): Scanlines und die gewölbte Scheibe eines alten Röhrenbildschirms, passend zu den großen Pixeln. Die Bilder auf dieser Seite haben dafür oben rechts einen eigenen Knopf mit demselben Zeichen <svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>.
+<strong>Röhrenbildschirm:</strong> Fährst du mit der Maus über das Bild, erscheinen unten rechts vier Knöpfe. Der dritte schaltet den CRT-Filter ein (oder <kbd>F6</kbd>): Scanlines und die gewölbte Scheibe eines alten Röhrenbildschirms, passend zu den großen Pixeln. Die Bilder auf dieser Seite haben dafür oben rechts einen eigenen Knopf mit demselben Zeichen <svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>. Der erste Knopf mit der Kamera (oder <kbd>F9</kbd>) lädt das Bild als PNG herunter, in der Größe, die dein Programm hat, ohne CRT-Filter; fehlt er, holt <code>make pixelram-update</code> die neueste Fassung von PixelRAM.
 </div>
 
 <div class='hint'>

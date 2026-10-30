@@ -1883,6 +1883,8 @@ crop-element: #canvas
 
 Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht das Bild; lässt du los, wird es in ein paar Sekunden glatt, die matte Kupferkugel zuletzt.
 
+Gefällt dir eine Ansicht, behalte sie: Fährst du mit der Maus über das Bild, erscheinen unten rechts Knöpfe, und der erste mit der Kamera (oder <kbd>F9</kbd>) lädt das Bild als PNG herunter, mit den Pixeln, die dein Programm rechnet, ohne CRT-Filter. Mit `W` und `H` wird es größer, nur jeder Durchgang dauert länger. Fehlt der Knopf, holt `make pixelram-update` im Terminal die neueste Fassung von PixelRAM.
+
 ### Kugeln auf Plattencovern
 
 In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild für Computergrafik schlechthin. Whitteds Bild von 1979 zeigte genau das, und bald tauchten solche Kugeln auch auf Plattencovern auf: 1982 bei der Rockband Point Blank, 1985 auf dem zweiten Album von Modern Talking und 1986 bei dem Geiger Jerry Goodman. Ob die Bilder gemalt, fotografiert oder gerechnet sind, steht auf keinem. Mit dem, was du über Strahlen weißt, siehst du aber, was daran nicht stimmen kann.
