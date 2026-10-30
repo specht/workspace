@@ -681,7 +681,9 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
   Tipps in Stufen. Ihr Inhalt ist eine Liste, ein Punkt je Fehler
   oder Aufgabe, mit dem Stichwort fett vorn (`- **Das Bild ist gespiegelt.**
   …`).
-- **Zuletzt `#### Eigene Projekte`**: drei bis fünf Ideen, mit denen die
+- **Zuletzt `#### Eigene Projekte`**, wo die Aktivität zu einem eigenen
+  Projekt führen kann (nicht bei Katas, »Erste Schritte« oder Seiten, die
+  nur erklären): drei bis fünf Ideen, mit denen die
   Lehrkraft aus der Aktivität etwas Eigenes der Lernenden macht, damit sie
   nicht als abgearbeitete Anleitung endet. Jede Idee in zwei, drei Sätzen:
   was entsteht, was von der Seite wiederkommt (die DDA, die Kamera-Ebene,

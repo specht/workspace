@@ -46,6 +46,11 @@ Weicht eine Zahl ab, liegt es fast immer an der Wahl der Kasse: Die Kundin geht 
 - **Java: <code>class Checkout is public, should be declared in a file named Checkout.java</code>:** Jede öffentliche Klasse in ihrer eigenen Datei, die heißt wie sie.
 - **Ausgaben aus dem Ausprobieren erscheinen in der Simulation:** Die Zeilen zum Ausprobieren unten in der Datei der Klassen laufen bei jedem <code>require</code> oder <code>import</code> mit; die Seite sagt, sie zu löschen.
 
-#### Weiter
+#### Eigene Projekte
 
-Die Ideen am Ende (Wartezeiten getrennt nach Wagen, eine andere Grenze für die Expresskasse, die längste Wartezeit, eine echte Queue) eignen sich als kleines Projekt, das wieder im Diagramm beginnt. Wer in einer zweiten Sprache denselben Entwurf schreibt, sieht, was am Entwurf liegt und was an der Sprache.
+Die Simulation beantwortet eine Frage; die Ideen hier lassen die Lernenden eigene stellen. Jede beginnt wieder im Diagramm, und bewertet wird, was sie vorher vermutet haben, was die Simulation sagt und ob sie erklären können, warum.
+
+- **Eine eigene Frage an den Samstag** (eine Doppelstunde): die Wartezeit getrennt nach Wagen, die Expresskasse bis fünf oder bis fünfzehn Artikel, die längste statt der mittleren Wartezeit. Erst die Vermutung aufschreiben, dann rechnen lassen; abgegeben wird eine kleine Tabelle mit ein paar Sätzen dazu.
+- **Was das Modell weglässt** (eine Doppelstunde): eins von dem, was [»Was die Simulation nicht weiß«](#was-die-simulation-nicht-weiß) aufzählt, ins Modell holen: Kundinnen, die nur die Schlange sehen und die kürzeste wählen (eine [Queue](/reference/listen#queue) je Kasse), Hilfe an der Selbstbedienungskasse, die ab und zu nötig ist. Die Frage dazu: Ändert sich die Antwort der Geschichte?
+- **Eine andere Schlange** (ein Projekt): eine Warteschlange aus dem eigenen Alltag, die Mensa, der Skilift, die Ausleihe in der Bibliothek, der Bürgerservice. Von der eigenen kurzen Geschichte über das Klassendiagramm zur Simulation, mit einer Frage, die jemand dort wirklich hat; die Vererbung aus [»Vererbung«](#vererbung) kommt wieder, wo es verschiedene Schalter gibt. Bewertet werden Diagramm, Code und die Antwort im Vergleich zur Vermutung.
+- **Derselbe Entwurf in einer zweiten Sprache** (eine Doppelstunde): das Diagramm bleibt, der Code entsteht noch einmal, etwa in Java nach Ruby. Wer beides nebeneinanderlegt, sieht, was am Entwurf liegt und was an der Sprache (Getter, Typen, eine Datei je Klasse); das erklären die Lernenden zum Schluss an ihrem eigenen Code.

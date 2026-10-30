@@ -43,6 +43,10 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 - **Ruby: <code>valid_isbn?("3-12-345603-X")</code> gibt <code>false</code>:** <code>"X".to_i</code> ist 0, ohne Fehlermeldung; das X muss eigens behandelt werden.
 - **<code>swaps</code> findet 0:** Meist wird der ursprüngliche Code geprüft statt des vertauschten.
 
-#### Weiter
+#### Eigene Projekte
 
-Die IBAN (Rest bei der Division durch 97) eignet sich als eigene Aufgabe mit derselben Planung: erst der Plan, dann der Code.
+Nach der Seite können die Lernenden ein Prüfverfahren planen, programmieren und durchprobieren. Die Ideen nehmen das wieder auf, mit einem Verfahren, das jede und jeder selbst wählt oder erfindet; bewertet wird am Struktogramm, am Code und am Erklären, welche Fehler das Verfahren findet und welche nicht.
+
+- **Ein Verfahren aus dem Alltag** (eine Doppelstunde): die IBAN (Rest bei der Division durch 97), der Luhn-Algorithmus der Kreditkarten oder die Nummer des Personalausweises mit den Gewichten 7, 3, 1. Erst der Plan als Struktogramm wie in [»Die Prüfziffer als Struktogramm«](#die-prüfziffer-als-struktogramm), dann der Code; getestet wird mit Beispielnummern, die Banken und Behörden dafür veröffentlichen, nie mit echten Nummern der Lernenden oder ihrer Familien.
+- **Ein eigenes Verfahren, das andere angreifen** (eine Doppelstunde): eine Prüfziffer für eine erfundene Nummer, etwa für Schülerausweise, mit eigenen Gewichten. Das Programm aus [»Was die Prüfziffer findet«](#aufgabe-zahlendreher-vorhersage), das alle Zahlendreher durchprobiert, misst, wie gut sie ist; danach sucht jemand aus der Klasse einen Tippfehler, den sie nicht bemerkt. Wer verstehen will, warum Gewichte wie 1 und 3 bei 10 nicht alle Dreher finden, landet beim Rest von Divisionen.
+- **Ein Gitter, das mehr repariert** (ein Projekt, für Starke): Das Gitter aus [»Jetzt bist du dran: ein Gitter, das ein Bit repariert«](#jetzt-bist-du-dran-ein-gitter-das-ein-bit-repariert) wird größer oder klüger, etwa als Hamming-Code, der in sieben Bits eines repariert, oder für ein kleines Schwarz-Weiß-Bild, in dem das Programm zufällig Bits umkippt und wieder geradebiegt. Zum Vorführen zerstört jemand aus der Klasse Bits nach Wahl.
