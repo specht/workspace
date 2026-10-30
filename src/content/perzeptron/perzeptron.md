@@ -68,6 +68,8 @@ $$2 \cdot 50 + (-5) \cdot 15 + 10 = 100 - 75 + 10 = 35$$
 
 35 ist größer als 0: Das Neuron sagt 1, ein Eselspinguin.
 
+<img class='drawing' style='width: 36em' src='neuron.webp' alt='Zwei Kästen links, »Länge 50 mm« und »Höhe 15 mm«, mit Pfeilen zu einem Kreis »Summe 35«. Am oberen Pfeil steht »· 2 = 100«, am unteren »· (−5) = −75«, von oben kommt »Bias + 10«. Vom Kreis führt ein Pfeil zu einem Kasten »> 0 ?« und mit »ja« weiter zu einem Kreis mit 1, darunter »Eselspinguin«.'>
+
 _task(von-hand)
 
 Das erste solche Neuron beschrieben der Neurologe Warren McCulloch und der
@@ -471,6 +473,13 @@ Und am Ende von `learn.py`:
 plot(examples, weights, bias, "plot.svg")
 ```
 <!-- /language -->
+
+<!-- after: epochen -->
+Nach zwölf Epochen sieht `plot.svg` ungefähr so aus, blau die Eselspinguine,
+orange die Adéliepinguine:
+
+<img class='drawing' style='width: 36em' src='teaser.webp' alt='Punkte für 274 Pinguine in einem Diagramm, nach rechts die Länge des Schnabels, nach oben seine Höhe: orange Adéliepinguine oben links, blaue Eselspinguine unten rechts, dazwischen die Gerade, die das Neuron gelernt hat, ohne einen Pinguin auf der falschen Seite.'>
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere in <code>train</code> die Zahl der Epochen

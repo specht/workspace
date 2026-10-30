@@ -1,0 +1,30 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 250' width='720' height='250'>
+  <!-- Das Neuron mit dem Beispiel der Seite; gemacht von bilder/pictures.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/perzeptron/neuron.svg 1440 -->
+<rect width='720' height='250' fill='#ffffff'/>
+<rect x='35' y='40' width='120' height='60' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/>
+<text x='95' y='62' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='400' fill='#6b7280'>Länge</text>
+<text x='95' y='89' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' font-weight='400' fill='#1f2937'>50 mm</text>
+<line x1='155.0' y1='70.0' x2='319.0' y2='115.8' stroke='#6b7280' stroke-width='2.5'/><polygon points='331.5,119.2 320.7,109.5 317.2,122.0' fill='#6b7280'/>
+<text x='226' y='60' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' font-weight='600' fill='#2b5fb4'>· 2</text>
+<text x='226' y='84' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='16' font-weight='400' fill='#6b7280'>= 100</text>
+<rect x='35' y='160' width='120' height='60' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/>
+<text x='95' y='182' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='400' fill='#6b7280'>Höhe</text>
+<text x='95' y='209' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' font-weight='400' fill='#1f2937'>15 mm</text>
+<line x1='155.0' y1='190.0' x2='319.0' y2='144.2' stroke='#6b7280' stroke-width='2.5'/><polygon points='331.5,140.8 317.2,138.0 320.7,150.5' fill='#6b7280'/>
+<text x='232' y='196' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' font-weight='600' fill='#2b5fb4'>· (−5)</text>
+<text x='232' y='220' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='16' font-weight='400' fill='#6b7280'>= −75</text>
+<text x='370' y='30' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='19' font-weight='600' fill='#2b5fb4'>Bias + 10</text>
+<line x1='370.0' y1='40.0' x2='370.0' y2='77.0' stroke='#6b7280' stroke-width='2.5'/><polygon points='370.0,90.0 376.5,77.0 363.5,77.0' fill='#6b7280'/>
+<circle cx='370' cy='130' r='40' fill='#ffffff' stroke='#1f2937' stroke-width='2'/>
+<text x='370' y='126' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='13' font-weight='400' fill='#6b7280'>Summe</text>
+<text x='370' y='150' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='22' font-weight='400' fill='#1f2937'>35</text>
+<line x1='410.0' y1='130.0' x2='467.0' y2='130.0' stroke='#6b7280' stroke-width='2.5'/><polygon points='480.0,130.0 467.0,123.5 467.0,136.5' fill='#6b7280'/>
+<rect x='480' y='102' width='100' height='56' rx='10' fill='#ffffff' stroke='#1f2937' stroke-width='2'/>
+<text x='530' y='137' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' font-weight='400' fill='#1f2937'>&gt; 0 ?</text>
+<line x1='580.0' y1='130.0' x2='612.0' y2='130.0' stroke='#6b7280' stroke-width='2.5'/><polygon points='625.0,130.0 612.0,123.5 612.0,136.5' fill='#6b7280'/>
+<circle cx='655' cy='130' r='30' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2.5'/>
+<text x='655' y='138' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='24' font-weight='600' fill='#1f2937'>1</text>
+<text x='655' y='188' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='400' fill='#6b7280'>Eselspinguin</text>
+<text x='592' y='118' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='14' font-weight='400' fill='#6b7280'>ja</text>
+</svg>
