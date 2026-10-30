@@ -223,7 +223,7 @@ Platform-wide:
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
-* [ ] PixelRAM: save the picture as a PNG from the web shell (a button and F9, at the program's own resolution, without CRT); a patch for `specht/pixelram` is prepared, then a release and the new version in the Workspace; check that the download gets through from the Workspace's preview
+* [ ] PixelRAM 0.1.24 saves the picture as a PNG (a button in the shell's control bar and F9); new projects from `pixelram-starter` get it, existing ones with `make pixelram-update`. Still to check: whether the download gets through from the Workspace's preview; if so, mention F9 where pages show pictures (Raytracing, PixelRAM, Raycaster)
 * [ ] Pictures or diagrams for the pages the October 2026 review found to be text with little structure in between (as Textadventure was): Nächste Nachbarn, Perzeptron, Kellerautomat, Huffman, DNS, Sprachmodell
 
 
