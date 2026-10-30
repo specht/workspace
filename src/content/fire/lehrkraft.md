@@ -22,3 +22,11 @@ Lernende programmieren in Ruby einen Feuer-Effekt, wie ihn die Demoszene der 90e
 <li>Die Programme dazu liegen als <code>stufen/form.rb</code>, <code>stufen/gluehen.rb</code> und <code>stufen/leuchten.rb</code> bei.</li>
 </ul></td></tr>
 </table>
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden eine Palette, eine Animationsschleife und einen Filterkernel. Daraus entsteht ein eigener Effekt; bewertet wird beim Vorführen und daran, welchen Teil des Feuers die Lernenden wiederverwendet haben und warum.
+
+- **Ein anderer Effekt aus der Demoszene** (eine Doppelstunde): ein Plasma aus Sinuswellen, die sich überlagern, ein Sternenfeld, das auf die Zuschauer zufliegt, oder ein Tunnel. Die Palette aus [»Die Palette anzeigen«](#die-palette-anzeigen) bleibt; ein Plasma wird lebendig, wenn die Palette weiterrückt statt der Pixel.
+- **Wasser statt Feuer** (eine Doppelstunde): Wellen, die sich von einem Tropfen aus ausbreiten und an den Rändern zurückkommen. Wie beim Feuer rechnet jedes Pixel aus seinen Nachbarn, nur mit zwei Bildern statt einem, dem jetzigen und dem davor; der Unterschied zu [»Der Filterkernel für Feuer«](#der-filterkernel-für-feuer) ist das Stück zum Erklären.
+- **Feuer, das man anfasst** (eine Stunde): Die Maus legt Glut, wo sie ist, oder bläst das Feuer zur Seite. Mausereignisse liefert `fetch_events` aus der Dokumentation des Gems; der Rest ist das Feuer der Seite.

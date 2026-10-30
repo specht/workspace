@@ -35,10 +35,12 @@ Die Lichtspur ist zu zweit an einer Tastatur gespielt ein guter Stundeneinstieg;
 - Dazu gehört, warum Röhrenbildschirme so etwas früher von selbst weicher machten.
 - Der Aufwand ist gemessen (WebAssembly, Interferenz): Ein Bild braucht mit `LEVELS 1` etwa 2,5-mal so lange wie ohne Glätten, mit 2 gut 5-mal, mit 3 elfmal. Für Bewegung ist 1 empfohlen; ruckelt es auf schwachen Rechnern, ist das der Grund.
 
-#### Größere Projekte
+#### Eigene Projekte
 
-PixelRAM ist schnell genug für Vorhaben, die über mehrere Wochen tragen und an denen sich Mathematik und Informatik treffen:
+PixelRAM ist schnell genug für Vorhaben, die über mehrere Wochen tragen und an denen sich Mathematik und Informatik treffen. Bewertet wird beim Vorführen und am Erklären des eigenen Codes.
 
-- **[Raycaster](/raycaster):** Eine Gitterkarte aus Wänden, für jede Bildschirmspalte ein Strahl, die Wandhöhe aus dem Abstand. Verbindet beide Teile der Seite: Pixelrechnung und Tastatursteuerung.
-- **[Raytracer](/raytracing):** Für jedes Pixel ein Strahl in eine Szene aus Kugeln und Ebenen, Schnittpunkte über quadratische Gleichungen, Licht, Schatten, Spiegelungen. Mit `pixel_rgb24` sind beliebige Farben möglich, ein einzelnes Bild darf Sekunden dauern.
-- **Bilddecoder:** [GIF](/gif) (Palette mit bis zu 256 Farben, passt genau zu `pixel_indexed8`; LZW-Kompression) oder [JPEG](/jpeg) (Huffman-Codierung, diskrete Kosinustransformation, YCbCr nach RGB). Die Bilddatei kommt mit `--embed-file` beim `emcc`-Aufruf im Makefile ins Programm und lässt sich dann mit `fopen` lesen.
+- **Ein eigenes Spiel aus Pixeln** (eine Doppelstunde bis ein Projekt): ein Höhlenflug, eine Schlange, ein Spiel, in dem man Farben ausweichen muss. Wie in [»Wände und Zusammenstöße«](#wände-und-zusammenstöße) erkennt `get_pixel` den Zusammenstoß an der Farbe, ohne eine Liste aller Hindernisse; zum Vorführen spielt jemand aus der Klasse.
+
+- **[Raycaster](/raycaster)** (ein Projekt): Eine Gitterkarte aus Wänden, für jede Bildschirmspalte ein Strahl, die Wandhöhe aus dem Abstand. Verbindet beide Teile der Seite: Pixelrechnung und Tastatursteuerung.
+- **[Raytracer](/raytracing)** (ein Projekt): Für jedes Pixel ein Strahl in eine Szene aus Kugeln und Ebenen, Schnittpunkte über quadratische Gleichungen, Licht, Schatten, Spiegelungen. Mit `pixel_rgb24` sind beliebige Farben möglich, ein einzelnes Bild darf Sekunden dauern.
+- **Bilddecoder** (ein Projekt, für Starke): [GIF](/gif) (Palette mit bis zu 256 Farben, passt genau zu `pixel_indexed8`; LZW-Kompression) oder [JPEG](/jpeg) (Huffman-Codierung, diskrete Kosinustransformation, YCbCr nach RGB). Die Bilddatei kommt mit `--embed-file` beim `emcc`-Aufruf im Makefile ins Programm und lässt sich dann mit `fopen` lesen.

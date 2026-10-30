@@ -46,6 +46,12 @@ Lernende schreiben Fragment-Shader in GLSL, im Stil von Shadertoy (`mainImage`, 
 
 Vektoren mit Komponenten (`p.xy`, `p.xz`), der Abstand als Länge eines Vektors, Polarkoordinaten mit `atan`, Sinus und Kosinus für Bahnen und Paletten, eine geometrische Reihe (`fbm`), die Normale als Richtung des stärksten Anstiegs (ein Gradient, mit Differenzenquotienten genähert). Raymarching ist eine Gelegenheit für die Frage, warum ein Strahl nie zu weit springt: Der Abstand zur nächsten Fläche ist ein Radius, in dem nichts liegt.
 
-#### Weiter
+#### Eigene Projekte
 
-Die Seite endet mit Ideen für einen eigenen Shader und verweist auf das Handbuch ([GLSL](/reference/glsl), [Prozedurale Texturen](/reference/prozedurale-texturen)), die [Klötzchenwelt](/raylib) mit Vertex- und Fragment-Shader für Dreiecke, The Book of Shaders, Shadertoy und die Artikel von Íñigo Quílez. Wer den [Raytracer](/raytracing) gebaut hat, kann vergleichen: dieselben Strahlen, dort mit einer Formel je Form auf dem Prozessor, hier mit Abstandsfunktionen auf dem Grafikchip.
+Die Seite endet mit einem eigenen Shader. Die Ideen hier geben ihm ein Ziel; bewertet wird beim Vorführen und daran, dass die Lernenden eine Zeile ihres Shaders erklären, die sie selbst verändert haben.
+
+- **Eine Landschaft aus Formeln** (eine Doppelstunde): Himmel, Sonne, Berge und Wolken, ohne ein einziges Bild, mit dem Rauschen aus [»Wolken aus Rauschen«](#wolken-aus-rauschen) für die Berge und einer Tageszeit, die mit `iTime` vergeht.
+- **Eine eigene Szene aus Abständen** (ein Projekt): ein Schneemann, eine Tasse, ein Roboter, aus Kugeln, Zylindern und Quadern, die mit dem weichen Verschmelzen aus [»Tropfen, die ineinanderfließen«](#tropfen-die-ineinanderfließen) zusammenwachsen. Wer will, vergleicht mit dem [Raytracer](/raytracing): dieselben Strahlen, dort mit einer Formel je Form auf dem Prozessor, hier mit Abstandsfunktionen auf dem Grafikchip.
+- **Eine eigene Symmetrie** (eine Stunde): Das [Kaleidoskop](#ein-kaleidoskop) mit einer anderen Zahl von Spiegeln, ein Kachelmuster, das sich drehend wiederholt, ein Muster nach einem Fliesenboden aus dem Kunstunterricht. Zum Vorführen erklärt jemand, an welcher Stelle der Raum gefaltet wird.
+
+Weiter führen das Handbuch ([GLSL](/reference/glsl), [Prozedurale Texturen](/reference/prozedurale-texturen)), die [Klötzchenwelt](/raylib) mit Vertex- und Fragment-Shader für Dreiecke, The Book of Shaders, Shadertoy und die Artikel von Íñigo Quílez.
