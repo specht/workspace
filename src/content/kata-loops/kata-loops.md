@@ -379,6 +379,8 @@ _task(digit-sum)
 
 _task(fibonacci)
 
+_person(fibonacci)
+
 _task(divisors)
 
 <div class='hint try'>
@@ -396,7 +398,11 @@ _task(prime)
 
 _task(gcd)
 
+_person(euklid)
+
 _task(collatz)
+
+_person(collatz)
 
 <!-- extra -->
 ## Extras
@@ -407,3 +413,5 @@ dein Code ist.
 _task(perfect)
 
 _task(primes-up-to)
+
+_person(eratosthenes)

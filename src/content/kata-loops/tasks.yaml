@@ -1944,7 +1944,7 @@ tasks:
     title: "Die Collatz-Folge"
     level: 3
     prompt: |
-      Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst nimm sie mal 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatz_steps(n)`, die die Schritte bis zur 1 zählt.
+      Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst multipliziere sie mit 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatz_steps(n)`, die die Schritte bis zur 1 zählt.
     starter: |
       def collatz_steps(n)
       end
@@ -2015,7 +2015,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst nimm sie mal 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatzSteps(n)`, die die Schritte bis zur 1 zählt.
+        Nimm eine Zahl. Ist sie gerade, halbiere sie, sonst multipliziere sie mit 3 und addiere 1. Wiederhole das. Aus 6 wird 3, 10, 5, 16, 8, 4, 2, 1: acht Schritte bis zur 1. Bisher kam jede Zahl, die man probiert hat, irgendwann bei 1 an; ob das für alle gilt, weiß niemand. Schreib eine Funktion `collatzSteps(n)`, die die Schritte bis zur 1 zählt.
       starter: |
         function collatzSteps(n) {
         }

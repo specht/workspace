@@ -183,7 +183,7 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 * [ ] The output of a run while it runs (live, over the page's WebSocket); now it comes when the run ends
 * [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
 * [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
-* [ ] Person boxes for Euklid, Fibonacci, Collatz and Eratosthenes (Schleifen); Richard E. Pattis (Karel the Robot) once a source gives his year of birth
+* [ ] Person box for Richard E. Pattis (Karel the Robot) once a source gives his year of birth
 * [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, live since 28 October 2026): screenshots of the UML-Werkstatt and of the Git server's key box from recipes, a person box for Dahl and Nygaard (Simula) in `supermarkt`, a try in class. The other packages for the curriculum's gaps: docs/plan-lehrplan-luecken.md
 * [ ] The activity »Testen«: tests as files in the Workspace (`pytest`, `minitest`), red-green-refactor, with the check type `tests` reading files (`file:`, `against:`, mutants as files)
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte

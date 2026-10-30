@@ -121,6 +121,114 @@ nygaard-dahl:
   - text: Jede Klasse, die du schreibst, geht auf ihre Arbeit zurück
     none: Workspace
 
+euklid:
+  - text: (um 300 v. Chr.), griechischer Mathematiker in Alexandria
+    sources:
+      - url: https://en.wikipedia.org/wiki/Euclidean_algorithm
+        quote: "It appears in Euclid's Elements (c. 300 BC), specifically in Book 7 (Propositions 1–2)"
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Euclid/
+        quote: "Born: about 325 BC (probably) Alexandria, Egypt. Died: about 265 BC, Alexandria, Egypt"
+  - text: Er schrieb die Elemente, dreizehn Bücher
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Euclid/
+        quote: "The Elements is divided into 13 books."
+  - text: Im siebten Buch steht das Verfahren für den größten gemeinsamen Teiler, nach dem die Kata fragt
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Euclid/
+        quote: "book seven is a self-contained introduction to number theory and contains the Euclidean algorithm for finding the greatest common divisor of two numbers"
+  - text: Euklid zog dafür die kleinere Zahl immer wieder von der größeren ab
+    sources:
+      - url: https://en.wikipedia.org/wiki/Euclidean_algorithm
+        quote: "In Euclid's original version of the algorithm, the quotient and remainder are found by repeated subtraction"
+  - text: Donald Knuth nennt es den ältesten nicht ganz einfachen Algorithmus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Euclidean_algorithm
+        quote: "it is the oldest nontrivial algorithm that has survived to the present day. (Knuth, The Art of Computer Programming, Vol. 2, 2nd ed., 1981, p. 318)"
+
+eratosthenes:
+  - text: (um 276 – um 194 v. Chr.), griechischer Gelehrter aus Kyrene
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "Born: 276 BC, Cyrene, North Africa (now Shahhat, Libya). Died: 194 BC, Alexandria, Egypt"
+  - text: der dritte Bibliothekar der Bibliothek von Alexandria
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "Eratosthenes became the third librarian at Alexandria, in the library in a temple of the Muses called the Mouseion."
+  - text: Das Sieb, das die Vielfachen jeder Primzahl auf einmal streicht, trägt seinen Namen
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "the 'Sieve of Eratosthenes' which, in modified form, is still an important tool in number theory research"
+  - text: In veränderter Form ist es bis heute ein wichtiges Werkzeug der Zahlentheorie
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "the 'Sieve of Eratosthenes' which, in modified form, is still an important tool in number theory research"
+  - text: Er hat auch den Umfang der Erde bestimmt
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "Eratosthenes made a surprisingly accurate measurement of the circumference of the Earth."
+  - text: Dafür verglich er den Schatten, den die Sonne mittags im Hochsommer in Syene warf, mit dem in Alexandria
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "Eratosthenes compared the noon shadow at midsummer between Syene (now Aswan on the Nile in Egypt) and Alexandria. He assumed that the sun was so far away that its rays were essentially parallel, and then with a knowledge of the distance between Syene and Alexandria, he gave the length of the circumference of the Earth as 250,000 stadia."
+  - text: Wie genau das war, hängt davon ab, wie lang ein Stadion war
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Eratosthenes/
+        quote: "Of course how accurate this value is depends on the length of the stadium and scholars have argued over this for a long time."
+
+fibonacci:
+  - text: (um 1170 – um 1250), italienischer Mathematiker
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Fibonacci/
+        quote: "Born: 1170 (probably) Pisa (now Italy). Died: 1250 (possibly) Pisa (now Italy)"
+  - text: Leonardo von Pisa, bekannt als Fibonacci
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Fibonacci/
+        quote: "Leonardo Pisano is better known by his nickname Fibonacci."
+  - text: Sein Buch Liber abaci von 1202 brachte die indisch-arabischen Ziffern und das Rechnen mit Stellenwerten nach Europa
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Fibonacci/
+        quote: "Liber abaci, published in 1202 after Fibonacci's return to Italy … introduced the Hindu-Arabic place-valued decimal system and the use of Arabic numerals into Europe"
+  - text: Darin steht eine Aufgabe über ein Paar Kaninchen
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Fibonacci/
+        quote: "A certain man put a pair of rabbits in a place surrounded on all sides by a wall. How many pairs of rabbits can be produced from that pair in a year if it is supposed that every month each pair begets a new pair which from the second month on becomes productive?"
+  - text: Die Antwort führt auf 1, 1, 2, 3, 5, 8, 13
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Fibonacci/
+        quote: "The resulting sequence is 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ..."
+  - text: die Folge aus der Kata ohne die 0 am Anfang
+    none: Workspace
+
+collatz:
+  - text: (1910–1990), deutscher Mathematiker aus Arnsberg in Westfalen
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Collatz/
+        quote: "Born: 6 July 1910, Arnsberg, Westphalia, Germany. Died: 26 September 1990, Varna, Bulgaria"
+  - text: Ab 1952 lehrte er an der Universität Hamburg und gründete dort das Institut für Angewandte Mathematik
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Collatz/
+        quote: "in 1952 he moved to the University of Hamburg. There he founded the Institute of Applied Mathematics."
+  - text: 1937 stellte er die Frage, nach der die Kata rechnet
+    sources:
+      - url: https://mathshistory.st-andrews.ac.uk/Biographies/Collatz/
+        quote: "this problem has intrigued mathematicians ever since he proposed it in 1937"
+  - text: Kommt man so von jeder Zahl aus irgendwann bei 1 an?
+    sources:
+      - url: https://en.wikipedia.org/wiki/Collatz_conjecture
+        quote: "The conjecture asks whether repeating two simple arithmetic operations will eventually transform every positive integer into 1."
+  - text: Mit Computern ist es für alle Zahlen bis etwa 2,36 × 1021 nachgeprüft, einen Beweis gibt es nicht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Collatz_conjecture
+        quote: "The conjecture has been shown to hold for all positive integers up to 2.36×10^21, but no general proof has been found."
+  - text: Die Vermutung gilt als eines der berühmtesten ungelösten Probleme der Mathematik
+    sources:
+      - url: https://en.wikipedia.org/wiki/Collatz_conjecture
+        quote: "The Collatz conjecture is one of the most famous unsolved problems in mathematics."
+  - text: Paul Erdős meinte dazu
+    sources:
+      - url: https://en.wikipedia.org/wiki/Collatz_conjecture
+        quote: "Paul Erdős said about the Collatz conjecture: \"Mathematics may not be ready for such problems.\""
+
 snellius:
   - text: (1580–1626), niederländischer Mathematiker, Professor in Leiden
     sources:

@@ -16,6 +16,42 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 
 ## Geboren vor 1920
 
+<!-- year: -325 -->
+<!-- part: euklid -->
+### Euklid
+
+<div class='person'>
+<img src='euklid.webp' alt='Euklid, wie ihn Justus van Gent um 1474 erdacht hat: ein Mann mit dunklem Bart und einem weißen Stirnband, in einem roten Umhang über einem gelben Gewand, der mit einem Zirkel auf einer Tafel misst.'>
+<p><strong>Euklid</strong> (um 300 v. Chr.), griechischer Mathematiker in Alexandria. Er schrieb die <em>Elemente</em>, dreizehn Bücher. Im siebten Buch steht das Verfahren für den größten gemeinsamen Teiler, nach dem die Kata fragt. Euklid zog dafür die kleinere Zahl immer wieder von der größeren ab.</p>
+<p>Donald Knuth nennt es den ältesten nicht ganz einfachen Algorithmus, der bis heute überlebt hat.</p>
+<p class='person-credit'>Gemälde: Justus van Gent, um 1474, ein erdachtes Bildnis mit der Aufschrift »Euclidi Megaren«, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Euklid2.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: -276 -->
+<!-- part: eratosthenes -->
+### Eratosthenes
+
+<div class='person'>
+<img src='eratosthenes.webp' alt='Eratosthenes, wie ihn Bernardo Strozzi 1635 gemalt hat: ein alter Mann mit Glatze, weißem Bart und rotem Gewand, der sich über ein aufgeschlagenes Buch beugt und mit dem Finger auf eine Stelle zeigt.'>
+<p><strong>Eratosthenes</strong> (um 276 – um 194 v. Chr.), griechischer Gelehrter aus Kyrene, der dritte Bibliothekar der Bibliothek von Alexandria. Das Sieb, das die Vielfachen jeder Primzahl auf einmal streicht, trägt seinen Namen. In veränderter Form ist es bis heute ein wichtiges Werkzeug der Zahlentheorie.</p>
+<p>Er hat auch den Umfang der Erde bestimmt. Dafür verglich er den Schatten, den die Sonne mittags im Hochsommer in Syene warf, mit dem in Alexandria, nahm an, dass die Sonnenstrahlen fast parallel ankommen, und kam mit dem Abstand der beiden Städte auf 250 000 Stadien. Wie genau das war, hängt davon ab, wie lang ein Stadion war, und darüber sind sich die Gelehrten nicht einig.</p>
+<p class='person-credit'>Gemälde: Bernardo Strozzi, 1635, »Eratosthenes lehrt in Alexandria«, Ausschnitt, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Eratosthenes_Teaching_in_Alexandria_(Bernardo_Strozzi,_Montreal).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1170 -->
+<!-- part: fibonacci -->
+### Leonardo Fibonacci
+
+<div class='person'>
+<img src='fibonacci.webp' alt='Fibonacci auf einem Stich von 1850, ein erdachtes Bildnis: ein junger Mann ohne Bart mit einem Tuch um den Kopf, das über die Schultern fällt, in einem dunklen Gewand.'>
+<p><strong>Leonardo von Pisa</strong>, bekannt als <strong>Fibonacci</strong> (um 1170 – um 1250), italienischer Mathematiker. Sein Buch <em>Liber abaci</em> von 1202 brachte die indisch-arabischen Ziffern und das Rechnen mit Stellenwerten nach Europa, so wie du heute Zahlen schreibst.</p>
+<p>Darin steht eine Aufgabe über ein Paar Kaninchen an einem Ort, der rundum von einer Mauer umgeben ist: Wie viele Paare werden in einem Jahr daraus, wenn jedes Paar ab seinem zweiten Monat jeden Monat ein neues bekommt? Die Antwort führt auf 1, 1, 2, 3, 5, 8, 13 …, die Folge aus der Kata ohne die 0 am Anfang.</p>
+<p class='person-credit'>Stich aus <em>I benefattori dell'umanità</em>, 1850, ein erdachtes Bildnis, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Fibonacci2.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1580 -->
 <!-- part: snellius -->
 ### Willebrord Snellius
@@ -246,6 +282,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <p><strong>Pierre Bézier</strong> (1910–1999), französischer Ingenieur bei Renault. Ab den 1960er Jahren beschrieb er die Formen von Autokarosserien mit diesen Kurven, damit Maschinen sie fräsen können. Paul de Casteljau hatte sie bei Citroën schon 1959 gefunden, aber Citroën hielt sie geheim; darum heißen sie nach Bézier.</p>
 <p>Jeder Buchstabe einer Schrift auf deinem Bildschirm ist aus Bézierkurven gebaut, und die meisten Kurven in SVG auch.</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1910 -->
+<!-- part: collatz -->
+### Lothar Collatz
+
+<div class='person'>
+<img src='collatz.webp' alt='Lothar Collatz 1984: ein älterer Mann mit weißem, kurzem Haar, lächelnd, in einem grauen Mantel über einem weißen Hemd, vor einer hellen Wand.'>
+<p><strong>Lothar Collatz</strong> (1910–1990), deutscher Mathematiker aus Arnsberg in Westfalen. Ab 1952 lehrte er an der Universität Hamburg und gründete dort das Institut für Angewandte Mathematik. 1937 stellte er die Frage, nach der die Kata rechnet: Halbiere eine gerade Zahl, multipliziere eine ungerade mit 3 und addiere 1. Kommt man so von jeder Zahl aus irgendwann bei 1 an?</p>
+<p>Mit Computern ist es für alle Zahlen bis etwa 2,36 × 10<sup>21</sup> nachgeprüft, einen Beweis gibt es nicht. Die Vermutung gilt als eines der berühmtesten ungelösten Probleme der Mathematik. Paul Erdős meinte dazu: »Die Mathematik ist für solche Probleme vielleicht noch nicht bereit.«</p>
+<p class='person-credit'>Foto: Wikipeter-HH, 1984, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Lothar_Collatz_1984.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
