@@ -102,7 +102,8 @@ def audit(slug)
         card: if card.nil?
                   meta.match?(/^icon:\s*\S/) ? 'Icon' : 'fehlt!'
               else
-                  dark_card = File.file?(File.join(dir, card.sub(/(\.\w+)\z/, '-dark\1')))
+                  # named as main.rb looks for it: box-anaglyph.webp → box-dark-anaglyph.webp
+                  dark_card = File.file?(File.join(dir, card.sub(/(-anaglyph)?(\.\w+)\z/) { "-dark#{$1}#{$2}" }))
                   (generated.include?(card) ? 'Rezept' : 'kein Rezept') + (dark_card ? '' : ', nicht dunkel') +
                       card_ratio_note(dir, meta, card)
               end
