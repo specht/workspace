@@ -576,6 +576,17 @@ kein `_task()` in einem Extra steht. Markiert werden nur ganze Kapitel
 (`##`), keine Abschnitte, und die Notiz für Lehrkräfte nennt die Extras im
 Ablauf.
 
+
+### Wie geht es weiter?
+
+Ein Abschnitt `## Wie geht es weiter?` am Ende ist von Hand geschrieben und
+sagt, was keine Liste sagt: warum ein nächster Schritt folgt (»Ein Band statt
+eines Stacks«), ein Nachbarthema oder Ideen, das eigene Programm
+weiterzubauen. Eine bloße Aufzählung der Aktivitäten, die auf dieser
+aufbauen, gehört nicht hinein; die steht auf der Startseite und für
+Lehrkräfte in der Notiz. Jeder Link darin führt zu einer Aktivität des
+Katalogs, einer Handbuch-Seite oder einem Werkzeug (`next_steps_test.rb`).
+
 ## 3. Aufgaben schreiben
 
 Aufgaben stehen in `tasks.yaml` neben der Seite und werden mit

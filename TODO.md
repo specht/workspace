@@ -35,7 +35,6 @@ Activities, Handbuch pages and tasks with checks are in place, as are the class
 page and the start page (`docs/aufgaben.md`).
 Still open:
 
-* [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
 
 
 ## Roadmap
