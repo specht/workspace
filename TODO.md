@@ -199,9 +199,8 @@ Open findings from the October 2026 review:
 | Page | Action |
 | --- | --- |
 | Fire | add tasks (blue flame, wind direction) |
-| Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
-| Git/GitHub | mark low-level internals as optional/advanced |
-| Programming languages | fact-check history, creator/date and lineage claims; one convention for the year in headings |
+| Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student |
+| Programming languages | one convention for the year in the title: most give the first public appearance (Go 2009, Dart 2011), Rust gives version 1.0 (2015), Smalltalk the release of Smalltalk-80 (1980), C++ the name (1983); the maintainer decides which, then each year is checked against a source |
 
 Platform-wide:
 

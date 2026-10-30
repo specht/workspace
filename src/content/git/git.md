@@ -185,6 +185,10 @@ check-task: erster-commit
 
 <img class='full' src='first-commit.webp' alt='git commit -m "initial commit" meldet einen root-commit auf main, 1 file changed, 1 insertion, create mode 100644 hello.txt.'>
 
+<div class='hint info'>
+Ab hier zeigt die Seite nach jedem Schritt, wie Git seine Daten im Verzeichnis <code>.git</code> speichert. Für die Arbeit mit Git genügt davon wenig: Jeder Commit ist ein Stand aller Dateien und kennt den Commit davor, und <code>main</code> und <code>HEAD</code> zeigen auf Commits. Blobs, Trees und ihre IDs sind zum Vertiefen da. Keine Aufgabe fragt nach ihnen, und beim ersten Lesen kannst du die Absätze über sie überspringen.
+</div>
+
 Im `.git`-Verzeichnis ist jetzt ein [gerichteter, azyklischer Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) entstanden, der mehrere Knoten enthält, wobei jeder Knoten durch eine eindeutige SHA-1-Hash-ID identifiziert wird. Diese Knoten repräsentieren die verschiedenen Objekte in Git: Blobs, Trees und Commits.
 
 <!-- tutorial-screenshot
