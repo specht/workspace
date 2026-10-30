@@ -14,12 +14,12 @@ topics: [programmiersprachen]
 # Rust <span style='font-size: 80%;'>(2015)</span>
 
 <p class='abstract'>
-Rust, ab 2006 von Graydon Hoare entwickelt und 2015 als Version 1.0 veröffentlicht, ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware und Webanwendungen konzipiert wurde. Rust legt besonderen Wert auf Sicherheit, Geschwindigkeit und Parallelität, was sie ideal für die Entwicklung von Betriebssystemen, Browser-Engines und anderen leistungsintensiven Anwendungen macht.
+Rust, ab 2006 von Graydon Hoare entwickelt und 2015 als Version 1.0 veröffentlicht, ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware konzipiert wurde. Rust legt besonderen Wert auf Sicherheit, Geschwindigkeit und Parallelität, was sie ideal für die Entwicklung von Betriebssystemen, Browser-Engines und anderen leistungsintensiven Anwendungen macht.
 </p>
 
 _person(graydon-hoare)
 
-Bekannte Beispiele für die Verwendung von Rust sind der Browser-Engine-Teil von Mozilla Firefox, genannt Servo, und das Betriebssystem Redox. Heutzutage ist Rust äußerst relevant, da sie von einer aktiven Community unterstützt wird und eine wachsende Anzahl von Bibliotheken und Frameworks bietet, die die Entwicklung sicherer und effizienter Software ermöglichen.
+Bekannte Beispiele für die Verwendung von Rust sind die Browser-Engine Servo, aus der Teile wie die CSS-Engine Stylo in Mozilla Firefox stecken, und das Betriebssystem Redox. Heutzutage ist Rust äußerst relevant, da sie von einer aktiven Community unterstützt wird und eine wachsende Anzahl von Bibliotheken und Frameworks bietet, die die Entwicklung sicherer und effizienter Software ermöglichen.
 
 ## Hello, world!
 

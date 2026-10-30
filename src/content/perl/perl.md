@@ -14,7 +14,7 @@ topics: [programmiersprachen, geschichte]
 # Perl <span style='font-size: 80%;'>(1987)</span>
 
 <p class='abstract'>
-Perl entstand 1987, als Larry Wall bei einer Firma in Kalifornien Berichte aus vielen Textdateien zusammenstellen musste und die Werkzeuge dafür zu umständlich fand. Perl ist eine Skriptsprache, die besonders gut mit Text umgehen kann: Zeilen lesen, Muster darin finden, umbauen und ausgeben. In den 1990er Jahren liefen große Teile des frühen Webs mit Perl, weil Webserver damit Seiten erzeugen konnten, und Systemadministratoren schrieben ihre Werkzeuge damit. Bis heute ist Perl auf fast jedem Linux-System installiert, auch in deinem Workspace.
+Perl entstand 1987, als Larry Wall bei der Firma Unisys Berichte aus vielen Textdateien zusammenstellen musste und die Werkzeuge dafür zu umständlich fand. Perl ist eine Skriptsprache, die besonders gut mit Text umgehen kann: Zeilen lesen, Muster darin finden, umbauen und ausgeben. In den 1990er Jahren liefen große Teile des frühen Webs mit Perl, weil Webserver damit Seiten erzeugen konnten, und Systemadministratoren schrieben ihre Werkzeuge damit. Bis heute ist Perl auf fast jedem Linux-System installiert, auch in deinem Workspace.
 </p>
 
 _person(wall)

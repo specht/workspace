@@ -14,14 +14,14 @@ topics: [programmiersprachen]
 # Go <span style='font-size: 80%;'>(2009)</span>
 
 <p class='abstract'>
-Go, auch bekannt als Golang, wurde 2009 von Robert Griesemer, Rob Pike und Ken Thompson bei Google entwickelt. Die Programmiersprache wurde für die Entwicklung von Systemsoftware und Webanwendungen konzipiert und zeichnet sich durch ihre einfache Syntax, effiziente Kompilierung und integrierte Unterstützung für Nebenläufigkeit aus.
+Go, auch bekannt als Golang, wurde ab 2007 von Robert Griesemer, Rob Pike und Ken Thompson bei Google entwickelt und 2009 veröffentlicht. Die Programmiersprache wurde für die Entwicklung von Systemsoftware und Webanwendungen konzipiert und zeichnet sich durch ihre einfache Syntax, effiziente Kompilierung und integrierte Unterstützung für Nebenläufigkeit aus.
 </p>
 
 _person(griesemer-pike)
 
 _person(thompson)
 
-Bekannte Beispiele für Anwendungen, die in Go entwickelt wurden, sind Docker, Kubernetes und das Web-Framework Hugo. Heutzutage ist Go immer noch äußerst relevant, insbesondere in der Cloud- und Server-Backend-Entwicklung, da es eine hohe Leistung und Skalierbarkeit bietet und von einer aktiven Entwickler-Community unterstützt wird.
+Bekannte Beispiele für Anwendungen, die in Go entwickelt wurden, sind Docker, Kubernetes und Hugo, ein Generator für statische Websites. Heutzutage ist Go immer noch äußerst relevant, insbesondere in der Cloud- und Server-Backend-Entwicklung, da es eine hohe Leistung und Skalierbarkeit bietet und von einer aktiven Entwickler-Community unterstützt wird.
 
 <!-- ## Eigenschaften
 

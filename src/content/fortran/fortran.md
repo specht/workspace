@@ -14,7 +14,7 @@ topics: [programmiersprachen, geschichte]
 # Fortran <span style='font-size: 80%;'>(1957)</span>
 
 <p class='abstract'>
-FORTRAN, kurz für "Formula Translation," wurde 1957 von John Backus bei IBM entwickelt und ist eine der ältesten Programmiersprachen. Sie wurde ursprünglich für wissenschaftliche und technische Anwendungen entwickelt und wird heute noch in diesen Bereichen eingesetzt. Fortran ist eine imperative Programmiersprache, die speziell für numerische Berechnungen optimiert ist. Sie bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
+FORTRAN, kurz für "Formula Translation," wurde 1957 von einem Team um John Backus bei IBM entwickelt und ist eine der ältesten Programmiersprachen. Sie wurde ursprünglich für wissenschaftliche und technische Anwendungen entwickelt und wird heute noch in diesen Bereichen eingesetzt. Fortran ist eine imperative Programmiersprache, die speziell für numerische Berechnungen optimiert ist. Sie bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
 </p>
 
 _person(backus)
@@ -24,7 +24,7 @@ _person(backus)
 <p><strong>The FORTRAN Automatic Coding System</strong>, John Backus und andere, Western Joint Computer Conference, 1957. Der Aufsatz, in dem sie ihr fertiges System für den IBM 704 vorstellten: die Sprache, und wie der Übersetzer daraus Programme macht, die so gut sein sollten wie von Hand geschrieben. Das Computer History Museum hat ihn als <a href='https://archive.computerhistory.org/resources/text/Fortran/102663113.05.01.acc.pdf'>PDF</a> frei ins Netz gestellt.</p>
 </div>
 
-FORTRAN wurde vor allem in Bereichen eingesetzt, die intensive numerische Berechnungen erfordern, wie zum Beispiel in der Wettervorhersage, der numerischen Strömungsmechanik und der linearen Algebra. Ein bekanntes Softwareprojekt, das FORTRAN verwenden, ist das Weather Research and Forecasting (WRF) Model, das zur Wettervorhersage und Klimaforschung eingesetzt wird. FORTRAN wird auch in der Hochenergiephysik, der Astronomie und der Chemie eingesetzt.
+FORTRAN wurde vor allem in Bereichen eingesetzt, die intensive numerische Berechnungen erfordern, wie zum Beispiel in der Wettervorhersage, der numerischen Strömungsmechanik und der linearen Algebra. Ein bekanntes Programm in Fortran ist das Weather Research and Forecasting (WRF) Model, das zur Wettervorhersage und Klimaforschung eingesetzt wird. FORTRAN wird auch in der Hochenergiephysik, der Astronomie und der Chemie eingesetzt.
 
 ## Hello, world!
 

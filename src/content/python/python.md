@@ -20,7 +20,7 @@ Python, entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist e
 
 _person(van-rossum)
 
-Bekannte Beispiele für Anwendungen, die in Python entwickelt wurden, sind das Web-Framework Django, die Datenanalysebibliothek Pandas und das maschinelle Lernframework TensorFlow. Heutzutage ist Python äußerst relevant und weit verbreitet, da es eine aktive Community und eine Vielzahl von Bibliotheken und Frameworks bietet, die die Entwicklung in verschiedenen Domänen unterstützen.
+Bekannte Beispiele für Anwendungen, die in Python entwickelt wurden, sind das Web-Framework Django und die Datenanalysebibliothek Pandas; Bibliotheken für maschinelles Lernen wie TensorFlow und PyTorch benutzt man meistens aus Python. Heutzutage ist Python äußerst relevant und weit verbreitet, da es eine aktive Community und eine Vielzahl von Bibliotheken und Frameworks bietet, die die Entwicklung in verschiedenen Domänen unterstützen.
 
 ## Hello, world!
 

@@ -19,7 +19,7 @@ Dart, entwickelt von Lars Bak und Kasper Lund bei Google und erstmals 2011 verö
 
 _person(bak-lund)
 
-Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die mobilen Apps Google Pay, Google Earth, Google Classroom und die App von Alibaba. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
+Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die App Google Pay und Xianyu, eine App von Alibaba für gebrauchte Waren. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
 
 ## Hello, world!
 

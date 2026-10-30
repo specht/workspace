@@ -14,7 +14,7 @@ topics: [programmiersprachen]
 # C++ <span style='font-size: 80%;'>(1983)</span>
 
 <p class='abstract'>
-C++ wurde in den frühen 1980er Jahren von Bjarne Stroustrup als Erweiterung der Programmiersprache C entwickelt, um objektorientierte Programmierkonzepte zu unterstützen und gleichzeitig die Effizienz und Leistungsfähigkeit von C beizubehalten. C++ wurde in zahlreichen bekannten Softwareprojekten verwendet, darunter die Entwicklung des Betriebssystems Microsoft Windows, der Webbrowser Mozilla Firefox, das Grafik-Rendering-Framework Unreal Engine und die Datenbanksoftware MySQL.
+C++ wurde in den frühen 1980er Jahren von Bjarne Stroustrup als Erweiterung der Programmiersprache C entwickelt, um objektorientierte Programmierkonzepte zu unterstützen und gleichzeitig die Effizienz und Leistungsfähigkeit von C beizubehalten. C++ wurde in zahlreichen bekannten Softwareprojekten verwendet, darunter Teile des Betriebssystems Microsoft Windows, der Webbrowser Mozilla Firefox, die Spiel-Engine Unreal Engine und die Datenbanksoftware MySQL.
 </p>
 
 _person(stroustrup)

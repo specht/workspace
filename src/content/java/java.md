@@ -19,7 +19,7 @@ Java, entwickelt von James Gosling und seinem Team bei Sun Microsystems und erst
 
 _person(gosling)
 
-Java wird häufig für die Entwicklung von Unternehmensanwendungen, mobilen Anwendungen (insbesondere Android-Apps), Webanwendungen und großen Systemen verwendet. Bekannte Beispiele für Anwendungen und Plattformen, die in Java entwickelt wurden, sind die Android-Betriebssysteme, die Apache Hadoop-Frameworks für Big Data und die Unternehmenssoftware von Unternehmen wie LinkedIn und Netflix. Heutzutage ist Java immer noch äußerst relevant und weit verbreitet, da es eine robuste, skalierbare und sichere Umgebung für die Entwicklung bietet und eine große Entwickler-Community sowie eine Vielzahl von Bibliotheken und Frameworks unterstützt.
+Java wird häufig für die Entwicklung von Unternehmensanwendungen, mobilen Anwendungen (insbesondere Android-Apps), Webanwendungen und großen Systemen verwendet. Bekannte Beispiele für Anwendungen und Plattformen, die in Java entwickelt wurden, sind viele Apps für Android, das Framework Apache Hadoop für Big Data und Server von Unternehmen wie LinkedIn und Netflix. Heutzutage ist Java immer noch äußerst relevant und weit verbreitet, da es eine robuste, skalierbare und sichere Umgebung für die Entwicklung bietet und eine große Entwickler-Community sowie eine Vielzahl von Bibliotheken und Frameworks unterstützt.
 
 ## Hello, world!
 
