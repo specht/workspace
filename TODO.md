@@ -209,7 +209,7 @@ Platform-wide:
 * [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] A dark card picture for the activities that have none (`audit-activities.rb`, column »Karte«: »nicht dunkel«), from `variants: dark` or `render-svg.rb`
-* [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
+* [ ] PixelRAM's pictures are 1350 px wide and stretched by `class='full'` (100 % wide, at least 1000 px). The recipes with `viewport: 1600x900` come out 1350 px wide too, so the size is set elsewhere (the crop of `#canvas`, or the PixelRAM shell's layout); `zoom:` does not help, it divides the viewport
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text

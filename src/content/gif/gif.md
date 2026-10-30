@@ -1124,7 +1124,7 @@ _task(pruefsumme-markt)
 
 Sieh dir das Bild aus der Nähe an. Hier ist ein Ausschnitt, achtmal vergrößert: links aus dem Original, einem JPEG, das für den Vergleich auf dieselben 640 Pixel Breite verkleinert ist, rechts aus `markt.gif`:
 
-<img class='full' src='dithering.webp' alt='Zwei achtfach vergrößerte Ausschnitte mit dem Gesicht eines jungen Mannes mit Maske. Links, aus dem JPEG, gehen die Farben glatt ineinander über; rechts, aus dem GIF, bestehen Maske und Haut aus einem Muster einzelner Pixel in wenigen Farben.'>
+<img class='full' style='image-rendering: pixelated;' src='dithering.webp' alt='Zwei achtfach vergrößerte Ausschnitte mit dem Gesicht eines jungen Mannes mit Maske. Links, aus dem JPEG, gehen die Farben glatt ineinander über; rechts, aus dem GIF, bestehen Maske und Haut aus einem Muster einzelner Pixel in wenigen Farben.'>
 
 _task(koernig)
 
