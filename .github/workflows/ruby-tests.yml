@@ -16,13 +16,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Tools the task examples need
-        # what the Workspace has for them: Pillow, chunky_png, SWI-Prolog
-        # for the prolog checks, and for the WebSocket servers of PixelWand
-        # faye-websocket and rackup
+        # what the Workspace has for them: Pillow, and SWI-Prolog for the
+        # prolog checks
         run: |
           apt-get update -qq
-          apt-get install -y -qq python3-pil swi-prolog-nox
-          gem install --no-document minitest minitest-mock rouge nokogiri redcarpet chunky_png faye-websocket rackup
+          apt-get install -y -qq python3-pil swi-prolog-nox default-libmysqlclient-dev
+      - name: Gems as in the Ruby container
+        # the versions of Gemfile.lock, so the tests see what production runs;
+        # bundler and chunky_png as in docker/ruby/Dockerfile
+        working-directory: src/ruby
+        run: |
+          gem install --no-document bundler --version 4.0.17
+          gem install --no-document chunky_png --version 1.4.0
+          bundle config set frozen true
+          bundle install
       - name: Run every test file
         working-directory: src/ruby
         run: |
