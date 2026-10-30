@@ -223,10 +223,13 @@ preview-port: 1313 /mars/
 tab: preview
 wait-for-text: Was ihn besonders macht
 sleep: 1
+check-task: mars-online
 -->
 <img class='full border' src='erste-seite.webp' alt='Die Seite Mars im Browser, noch ohne CSS: oben der Link »Unser Sonnensystem«, darunter Überschrift, Text, eine Liste und der Fuß »Gebaut mit Hugo im Hackschule Workspace«.'>
 
 Noch ohne CSS, aber eine Seite: Der Kopf mit »Unser Sonnensystem« und der Fuß kommen aus `baseof.html`, die Überschrift aus `page.html`, alles andere aus `mars.md`. Lade die Vorschau nach dem Speichern neu, um eine Änderung zu sehen.
+
+_task(mars-online)
 
 _task(content)
 

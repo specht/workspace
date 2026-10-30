@@ -36,7 +36,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit turtle]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit turtle]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -99,7 +99,7 @@ module TaskCheck
             return Result.new(:status => :unavailable,
                 :message => 'Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.')
         end
-        return check_run(task, check, answer, type == 'command' ? guest_runner : runner) if %w[measure command].include?(type)
+        return check_run(task, check, answer, %w[command server].include?(type) ? guest_runner : runner) if %w[measure command server].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_cypher(task, check, answer, cypher) if type == 'cypher'
@@ -153,12 +153,14 @@ module TaskCheck
         message.lstrip.start_with?('```', '<') ? "#{WRONG_PREDICTION}\n\n#{message}" : "#{WRONG_PREDICTION} #{message}"
     end
 
-    # measure and command run in the person's Workspace (MeasureCheck);
-    # command, typed by the person, only ever with the guest runner (rule 1).
+    # measure, command and server run in the person's Workspace (MeasureCheck);
+    # command, typed by the person, and server only ever with the guest runner (rule 1).
     def self.check_run(task, check, answer, runner)
         runner ||= ->(_command, _timeout) { nil }
         status, message, read = if check['type'] == 'measure'
             MeasureCheck.measure(check, answer, runner)
+        elsif check['type'] == 'server'
+            MeasureCheck.server(task, check, runner)
         else
             MeasureCheck.command(task, check, answer, runner)
         end

@@ -1,7 +1,7 @@
 require 'json'
 require 'shellwords'
 
-# Check types measure and command (docs/aufgaben.md).
+# Check types measure, command and server (docs/aufgaben.md).
 #
 # measure: the student measures something in their Workspace (ping,
 # traceroute, curl) and types in the value; the server runs the same
@@ -230,5 +230,49 @@ module MeasureCheck
         [:wrong, say ? say['say'] : problem, read]
     rescue RegexpError, Regexp::TimeoutError
         [:wrong, 'Die Ausgabe sieht noch nicht so aus wie verlangt.', read]
+    end
+
+    # server: is a server running in the person's Workspace, and does it show
+    # the page? The task names the port, the path and what the page contains;
+    # the command is the task's, never the person's, and runs as the guest.
+    # curl follows redirects; the last line it prints is the status code,
+    # 000 when nothing answers on the port.
+    def self.server_url(check)
+        "http://localhost:#{check['port'].to_i}#{check['path'] || '/'}"
+    end
+
+    def self.server_command(check)
+        "curl -sL -m 5 -w '\\n%{http_code}' #{Shellwords.escape(server_url(check).sub('//localhost:', '//127.0.0.1:'))}"
+    end
+
+    # Returns [status, message, read].
+    def self.server(task, check, runner)
+        port, path = check['port'].to_i, check['path'] || '/'
+        result = runner.call(server_command(check), 10)
+        return [:unavailable, 'Starte zuerst deinen Workspace. Ich frage die Seite in deinem Workspace ab.', nil] if result.nil?
+
+        lines = result[:output].to_s.lines.map(&:chomp)
+        code = lines.pop.to_s.strip
+        lines.pop while lines.any? && lines.last.strip.empty?
+        shown = lines.first(MAX_SHOWN_LINES).join("\n")
+        more = lines.size > MAX_SHOWN_LINES ? "\n… (#{lines.size - MAX_SHOWN_LINES} weitere Zeilen)" : ''
+        answered = code.match?(/\A[1-9]\d\d\z/)
+        read = "`curl #{server_url(check)}` in deinem Workspace: " +
+            (answered ? "Statuscode #{code}\n\n```\n#{shown.empty? ? '(leer)' : shown}#{more}\n```" : 'keine Antwort')
+        missing = answered && code.start_with?('2') &&
+            Array(check['contains']).find { |c| lines.none? { |l| Regexp.new(c['pattern'], timeout: 0.5).match?(l) } }
+        problem, message = if !answered || result[:timed_out]
+            ['not_running', "Auf Port #{port} antwortet in deinem Workspace noch nichts. Läuft dein Server noch im Terminal?"]
+        elsif !code.start_with?('2')
+            ['status', "Auf Port #{port} antwortet ein Server, aber für `#{path}` mit dem Statuscode #{code}."]
+        elsif missing
+            ['content', missing['say'] || "Die Seite `#{path}` kommt an, aber es steht noch nicht darauf, was die Aufgabe verlangt."]
+        end
+        return [:correct, 'Passt.', read] if problem.nil?
+
+        say = (task['feedback'] || []).find { |entry| entry['when']['problem'] == problem }
+        [:wrong, say ? say['say'] : message, read]
+    rescue RegexpError, Regexp::TimeoutError
+        [:wrong, 'Die Seite sieht noch nicht so aus wie verlangt.', read]
     end
 end

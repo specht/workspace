@@ -54,6 +54,7 @@ module TaskSpec
         'git' => 'M3',
         'measure' => 'M6',
         'command' => 'M6',
+        'server' => 'M6',
         'scene' => 'M6',
         'sql' => 'M6',
         'cypher' => 'M7',
@@ -101,6 +102,7 @@ module TaskSpec
         'number' => %w[equals between],
         'measure' => %w[field between],
         'command' => %w[output_matches],
+        'server' => %w[problem],
         'scene' => %w[found missing source_matches problem],
         'html' => %w[problem],
         'css' => %w[problem],
@@ -314,6 +316,25 @@ module TaskSpec
             errors << 'compare must be number or text' if check.key?('compare') && !%w[number text].include?(check['compare'])
             %w[tolerance tolerance_percent].each do |key|
                 errors << "#{key} must be a number >= 0" if check.key?(key) && !(check[key].is_a?(Numeric) && check[key] >= 0)
+            end
+        when 'server'
+            allowed += %w[port path contains]
+            errors << 'port must be a whole number from 1 to 65535' unless check['port'].is_a?(Integer) && check['port'].between?(1, 65535)
+            if check.key?('path') && !(check['path'].is_a?(String) && check['path'].match?(%r{\A/[A-Za-z0-9_./~%?=&-]*\z}))
+                errors << 'path must start with / and hold only letters, digits and _./~%?=&-'
+            end
+            if check.key?('contains')
+                if check['contains'].is_a?(Array) && !check['contains'].empty?
+                    check['contains'].each_with_index do |entry, i|
+                        unless entry.is_a?(Hash) && nonempty_string?(entry['pattern']) && (entry.keys - %w[pattern say]).empty?
+                            errors << "contains[#{i}] needs pattern (and say)"
+                            next
+                        end
+                        errors.concat(regex_errors(entry['pattern'], "contains[#{i}].pattern"))
+                    end
+                else
+                    errors << 'contains must be a non-empty list'
+                end
             end
         when 'command'
             allowed += %w[timeout output placeholder dir]

@@ -301,6 +301,7 @@ module TaskCard
         size = ->(text) { h.(text.to_s.sub(/\A(\d+(?:\.\d+)?)\s*(B|kB|MB)\z/, '\\1 \\2')) }
         case check['type']
         when 'files' then "Sieht nach in #{path.(check['path'])}"
+        when 'server' then "Fragt in deinem Workspace <code>#{h.(MeasureCheck.server_url(check))}</code> ab, als Gast, und ändert nichts"
         when 'keyboard' then "Liest #{path.('.hs-kbd-tutorial/.state.json')}, den Fortschritt des Keyboard-Tutorials"
         when 'html', 'css' then "Liest #{path.(check['file'])}"
         when 'story' then "Liest #{path.("#{check['project']}/.story-tools/analysis.json")}, was BIF über deine Geschichte herausgefunden hat"

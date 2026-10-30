@@ -6,7 +6,7 @@ Lernende bauen mit Hugo eine kleine Website ohne fertiges Theme, ein Lexikon üb
 <li><b>2. Doppelstunde:</b> Startseite, CSS, Schlagwörter, <code>hugo</code> und <code>public</code>, Veröffentlichen, eigenes Thema.</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td>Alles liegt in <code>/workspace/solar-system</code>. Die fertige Website steht in diesem Repository unter <code>src/content/hugo/stufen/solar-system/</code>, die Zwischenstände der Layouts als <code>baseof-1.html</code> und <code>page-1.html</code> daneben. Hugo ist im Workspace installiert.</td></tr>
-<tr><th>Vorschau</th><td><code>hugo server</code> läuft auf Port 1313; die Adresse steht im Reiter »Ports«. Das automatische Neuladen von Hugo erreicht den Browser durch die Weiterleitung nicht; nach dem Speichern lädt man die Vorschau selbst neu. <code>baseURL: /</code> in <code>hugo.yaml</code> sorgt dafür, dass alle Links in der Vorschau und auf der Subdomain stimmen.</td></tr>
+<tr><th>Vorschau</th><td><code>hugo server</code> läuft auf Port 1313; die Adresse steht im Reiter »Ports«. Das automatische Neuladen von Hugo erreicht den Browser durch die Weiterleitung nicht; nach dem Speichern lädt man die Vorschau selbst neu. <code>baseURL: /</code> in <code>hugo.yaml</code> sorgt dafür, dass alle Links in der Vorschau und auf der Subdomain stimmen. Die Aufgabe »Die Seite ist da« fragt <code>localhost:1313/mars/</code> im Workspace der Lernenden selbst ab: Sie unterscheidet, ob gar kein Server läuft, ob Hugo die Seite nicht hat oder ob die Überschrift aus <code>page.html</code> fehlt.</td></tr>
 </table>
 
 #### Was schiefgeht

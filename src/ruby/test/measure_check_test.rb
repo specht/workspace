@@ -134,4 +134,44 @@ class MeasureCheckTest < Minitest::Test
         assert_includes message, 'meine Messung ergibt gerade cheryl.ns.cloudflare.com, joel.ns.cloudflare.com'
         assert_empty TaskSpec.validate_check('measure', check)
     end
+
+    # server: the task's curl, as the guest; the last line is the status code
+    def test_server
+        task = {
+            'id' => 'mars', 'title' => 'Mars',
+            'check' => {
+                'type' => 'server', 'port' => 1313, 'path' => '/mars/',
+                'contains' => [{ 'pattern' => '<h1>Mars</h1>', 'say' => 'Auf der Seite steht noch keine Überschrift Mars.' }],
+            },
+            'feedback' => [{ 'when' => { 'problem' => 'not_running' }, 'say' => 'Starte hugo server.' }],
+        }
+        assert_empty TaskSpec.validate_check('server', task['check'])
+        commands = []
+        out = lambda { |text| ->(command, _timeout) { commands << command; { :output => text, :status => 0 } } }
+        ok = TaskCheck.check(task, '', variables: {}, guest_runner: out.("<html>\n<h1>Mars</h1>\n</html>\n200"))
+        assert_equal :correct, ok.status
+        assert_includes ok.read, 'Statuscode 200'
+        assert_includes commands.last, 'http://127.0.0.1:1313/mars/'
+        assert_includes commands.last, 'curl -sL -m 5'
+
+        down = TaskCheck.check(task, '', variables: {}, guest_runner: out.("\n000"))
+        assert_equal :wrong, down.status
+        assert_equal 'Starte hugo server.', down.message
+        assert_includes down.read, 'keine Antwort'
+
+        missing = TaskCheck.check(task, '', variables: {}, guest_runner: out.("<h1>Venus</h1>\n200"))
+        assert_equal 'Auf der Seite steht noch keine Überschrift Mars.', missing.message
+        assert_match(/Statuscode 404/, TaskCheck.check(task, '', variables: {}, guest_runner: out.("Not found\n404")).message)
+
+        # the command is the task's and runs as the guest, never as the person
+        student = ->(_c, _t) { raise 'must not run as the student' }
+        assert_equal :unavailable, TaskCheck.check(task, '', variables: {}, runner: student).status
+    end
+
+    def test_server_spec
+        assert_includes TaskSpec.validate_check('server', { 'type' => 'server' }).join, 'port'
+        assert_includes TaskSpec.validate_check('server', { 'type' => 'server', 'port' => 80, 'path' => 'mars' }).join, 'path'
+        assert_includes TaskSpec.validate_check('server', { 'type' => 'server', 'port' => 80, 'contains' => ['x'] }).join, 'contains[0]'
+        assert_empty TaskSpec.validate_check('server', { 'type' => 'server', 'port' => 5173 })
+    end
 end

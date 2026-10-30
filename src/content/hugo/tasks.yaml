@@ -37,6 +37,24 @@ tasks:
         say: 'In YAML trennt `: ` einen Namen von seinem Wert. Was macht YAML mit einem zweiten `: ` in derselben Zeile?'
     solution: 'YAML liest `title: Pluto` und stößt dann auf ein zweites `: `, das an dieser Stelle nicht erlaubt ist. Hugo baut dann gar keine Seite mehr und meldet »mapping value is not allowed in this context« mit Datei und Zeile. Richtig ist `title: "Pluto: Planet oder nicht?"`, in Anführungszeichen.'
 
+  - id: mars-online
+    title: Die Seite ist da
+    prompt: |
+      Lass `hugo server` laufen und speichere beide Layouts. Dann holt der
+      Workspace die Seite selbst ab, `localhost:1313/mars/`, und sucht ihre
+      Überschrift.
+    check:
+      type: server
+      port: 1313
+      path: /mars/
+      contains:
+        - { pattern: '<h1>Mars</h1>', say: 'Die Seite kommt an, aber ohne die Überschrift `<h1>Mars</h1>`. Steht sie so in `layouts/page.html`, mit `{{ .Title }}`?' }
+    feedback:
+      - when: { problem: not_running }
+        say: 'Auf Port 1313 antwortet in deinem Workspace nichts. Läuft `hugo server` noch im Terminal, im Ordner `solar-system`?'
+      - when: { problem: status }
+        say: 'Hugo läuft, hat aber keine Seite `/mars/`. Heißt die Datei `content/mars.md`, und hast du sie gespeichert?'
+
   - id: content
     title: Was in die Lücke kommt
     prompt: |

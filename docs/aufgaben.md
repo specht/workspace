@@ -391,6 +391,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server |
 | `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace |
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace |
+| `server` | ob ein Server im Workspace auf einem Port antwortet und die Seite zeigt | Antwort von `curl` | Workspace, als Gast |
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast |
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast |
 | `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast |
@@ -653,7 +654,7 @@ ansieht. Dafür schickt der Viewer seine Nachrichten in einem leeren Ursprung an
 `'*'` (seit `specht/anaglyph` 114bc3b); der Server ergänzt beim Ausliefern nur
 einen Ersatz für `sessionStorage`, der in einem leeren Ursprung sonst fehlt.
 
-### measure, command, scene
+### measure, command, server, scene
 
 Beispiele stehen in `src/content/tcpip/tasks.yaml` und
 `src/content/anaglyph/tasks.yaml`.
@@ -691,6 +692,29 @@ Zeilen), `matching` (jede Zeile passt), `not_matching` (keine Zeile passt),
 Statuszeile und Header einer Antwort von `curl -i`); Rückmeldungen mit
 `when: { output_matches: … }`. Unter »Was
 der Workspace gelesen hat« steht der Befehl mit seiner Ausgabe.
+
+`server`: Läuft ein Server im Workspace, und zeigt er die Seite? Für die
+Schritte, in denen eine Aktivität einen Server startet (`hugo server`,
+`npm run dev`, ein eigener Webserver). Die Aufgabe nennt den Port, den Pfad
+und was auf der Seite stehen muss; der Server des Workspace fragt die Seite
+mit `curl` im Workspace der Person ab, als Gast, folgt Weiterleitungen und
+wartet höchstens 5 Sekunden. Lernende tippen nichts, die Karte hat nur den
+Knopf. Antwortet auf dem Port nichts, heißt das Problem `not_running`, ist der
+Statuscode nicht 2xx `status`, fehlt ein Text `content` (mit dem `say` des
+Eintrags, sonst einer allgemeinen Rückmeldung). Beispiele in
+`task-examples.yaml` braucht er nicht, die Tests sind in `measure_check_test.rb`.
+
+```yaml
+check:
+  type: server
+  port: 1313
+  path: /mars/                  # Standard: /
+  contains:                     # optional, jeder Ausdruck auf einer Zeile
+    - { pattern: '<h1>Mars</h1>', say: 'Die Seite kommt an, aber ohne die Überschrift Mars.' }
+feedback:
+  - when: { problem: not_running }
+    say: Läuft `hugo server` noch im Terminal?
+```
 
 `scene` (seit M6): prüft eine Szene des Anaglyph-Viewers. Der Server liest
 dafür nichts selbst aus: Er schickt ein kleines Skript (`scene_dump.js`) mit
@@ -1886,6 +1910,7 @@ die eingebaute Rückmeldung für einen Fall.
 | Art | Codes |
 | --- | --- |
 | `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `missing_text`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big`, `compile_error` |
+| `server` | `not_running`, `status`, `content` |
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
 | `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |

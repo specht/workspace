@@ -36,7 +36,6 @@ page and the start page (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 
 
 ## Roadmap
