@@ -19,109 +19,10 @@ template_name: des PixelRAM-Starters
 </div>
 
 <style>
-    :root {
-        --color-m0: #ffe617;
-        --color-m1: #f4951b;
-        --color-m2: #bc2326;
-        --color-m3: #f384ae;
-        --color-m4: #7b67ae;
-        --color-m5: #238acc;
-        --color-m6: #12959f;
-        --color-m7: #73a946;
-        --color-m8: #bf9b6b;
-        --color-mg: #ddd;
-    }
-
-    html[data-bs-theme="dark"] {
-        --color-m0: #7a6a00;
-        --color-m1: #8a4e00;
-        --color-m2: #7a1618;
-        --color-m3: #7a2f55;
-        --color-m4: #4a3f7a;
-        --color-m5: #165a8a;
-        --color-m6: #0d646b;
-        --color-m7: #4a6f2b;
-        --color-m8: #6d5233;
-        --color-mg: #555;
-    }
-
-    pre.spec {
-        background: none;
-        color: #333;
-        line-height: 135%;
-    }
-
-    pre.hexdump {
-        line-height: 135%;
-
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
-            position: relative;
-        }
-
-        .m0::before, .m1::before, .m2::before,
-        .m3::before, .m4::before, .m5::before,
-        .m6::before, .m7::before, .m8::before, .mg::before {
-            content: "";
-            position: absolute;
-            left: -0.2em;
-            right: -0.2em;
-            bottom: 0.05em;
-            height: 1.2em;
-            z-index: -1;
-            border-radius: 0.25em;
-            opacity: 0.75;
-        }
-
-        .m0::before { background-color: var(--color-m0); }
-        .m1::before { background-color: var(--color-m1); }
-        .m2::before { background-color: var(--color-m2); }
-        .m3::before { background-color: var(--color-m3); }
-        .m4::before { background-color: var(--color-m4); }
-        .m5::before { background-color: var(--color-m5); }
-        .m6::before { background-color: var(--color-m6); }
-        .m7::before { background-color: var(--color-m7); }
-        .m8::before { background-color: var(--color-m8); }
-        .mg::before { background-color: var(--color-mg); }
-    }
-
-    p, td {
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
-            padding: 0 0.25em;
-            border-radius: 0.25em;
-        }
-        .m0 { background-color: color-mix(in srgb, var(--color-m0) 75%, transparent); }
-        .m1 { background-color: color-mix(in srgb, var(--color-m1) 75%, transparent); }
-        .m2 { background-color: color-mix(in srgb, var(--color-m2) 75%, transparent); }
-        .m3 { background-color: color-mix(in srgb, var(--color-m3) 75%, transparent); }
-        .m4 { background-color: color-mix(in srgb, var(--color-m4) 75%, transparent); }
-        .m5 { background-color: color-mix(in srgb, var(--color-m5) 75%, transparent); }
-        .m6 { background-color: color-mix(in srgb, var(--color-m6) 75%, transparent); }
-        .m7 { background-color: color-mix(in srgb, var(--color-m7) 75%, transparent); }
-        .m8 { background-color: color-mix(in srgb, var(--color-m8) 75%, transparent); }
-        .mg { background-color: color-mix(in srgb, var(--color-mg) 75%, transparent); }
-    }
-
-    td {
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
-            padding: 0.25em 0.5em;
-            code {
-                background: transparent;
-                color: inherit;
-            }
-        }
-    }
-
     /* Bytes in the first column of the explanation tables stay on one line. */
     table.bytes td:first-child {
         white-space: nowrap;
         width: 1%;
-    }
-
-    p.expl {
-        font-style: italic;
-        font-size: 0.9em;
-        opacity: 0.6;
-        margin: 0;
     }
 
     .swatch {
