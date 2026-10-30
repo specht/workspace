@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Workspace-Image enthält die LaTeX-Pakete `pgfplots` und `csquotes`: Nach dem Update das Image neu bauen
+  (`./build-image.sh`).
 - Aufgaben mit Code in der Karte speichern zusätzlich den letzten Code, der die Prüfung bestanden hat
   (`TaskState.correct_answer`), und bei späteren Aufgaben, welche Fassung der eigenen Funktionen sie beim Speichern
   enthielten (`TaskState.own_filled`): Spätere Karten von Pip und der Turtle übernehmen daraus die Funktionen, die

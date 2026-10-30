@@ -156,6 +156,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN tlmgr install ly1 \
     && kpsewhich texnansi.enc
 
+# pgfplots for diagrams from measured data, csquotes for the quotation
+# marks biblatex asks for; a layer of their own, so those above stay cached.
+RUN tlmgr install pgfplots csquotes \
+    && kpsewhich pgfplots.sty csquotes.sty
+
 RUN set -eu; \
     git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial; \
     cd /tmp/latex-tutorial; \

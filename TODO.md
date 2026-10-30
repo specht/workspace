@@ -233,7 +233,6 @@ Platform-wide:
 
 ### TeX Live
 
-* [ ] Add `pgfplots` and `csquotes` to the TeX Live toolchain (`docker/code/Dockerfile`, the `tlmgr install` step); the LaTeX activity draws its diagram with TikZ meanwhile, and biblatex works without csquotes
 
 ### Dependency and image verification
 
@@ -252,7 +251,6 @@ Keep tutorial tests focused on whether the documented student workflow actually 
 
 ### Deployment visibility
 
-* [ ] Show the deployed short Git commit SHA in the admin area
 
 ### Ruby cleanup
 
