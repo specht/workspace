@@ -211,7 +211,7 @@ Dort brechen die Tests mit einem `LoadError` ab, die die Seiten rendern
 `reference_index_test.rb`, die Lexer-Tests und einige mehr (`grep -l
 "nokogiri\|redcarpet\|rouge" test/*_test.rb include/*.rb` zeigt sie).
 `c_check_test.rb` braucht `cc` und wird ohne übersprungen; die Beispiele der
-JavaScript-Katas in `task_examples_test.rb` brauchen `node` und laufen darum
+JavaScript-Katas in `task_examples_test.rb` brauchen `node` in der Version des Images (24, `NODE_MAJOR` in `docker/code/Dockerfile`) und laufen darum
 nur auf dem eigenen Rechner; ebenso ein Beispiel einer `python`-Prüfung, deren
 Datei ein Modul lädt, das der Rechner nicht hat (`websockets` im
 Ruby-Container, die Pixelwand).

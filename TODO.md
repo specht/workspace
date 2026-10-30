@@ -195,7 +195,6 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 * [ ] `/images/white.webp`, the picture of a card without one, is missing (404)
 * [ ] The activity »Testen«: tests as files in the Workspace (`pytest`, `minitest`), red-green-refactor, with the check type `tests` reading files (`file:`, `against:`, mutants as files)
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
-* [ ] `kata-functional`: the JavaScript examples of `make-counter` fail on a host with Node 20, which prints lists as `[ 1, 1, 1 ]`. Make the comparison independent of Node's formatting, or require a newer Node for the examples
 
 ## Existing pages
 

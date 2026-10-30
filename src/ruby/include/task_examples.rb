@@ -81,8 +81,8 @@ module TaskExamples
                 type = variant['check']['type']
                 next unless FAST_TYPES.include?(type)
                 # A Kata in JavaScript runs with the local node; where there is
-                # none (the Ruby container), its examples wait for a machine
-                # that has it.
+                # none (the Ruby container) or an older one than in the image,
+                # its examples wait for a machine that has it.
                 next if %w[function pip tests turtle].include?(type) && variant['check']['language'] == 'javascript' && !node?
                 # Java and Dart likewise: their examples wait for a machine with javac or dart
                 next if type == 'javascript' && !node?
@@ -270,8 +270,20 @@ module TaskExamples
         @tools[name]
     end
 
+    # The Node of the Workspace image (NODE_MAJOR in docker/code/Dockerfile),
+    # where the Katas run. An older one formats some values differently
+    # (Node 20 writes a list as [ 1, 1, 1 ]), so its examples wait too.
+    NODE_MAJOR = 24
+
     def self.node?
-        @node = system('node', '--version', :out => File::NULL, :err => File::NULL) if @node.nil?
+        if @node.nil?
+            version = begin
+                IO.popen(['node', '--version'], :err => File::NULL, &:read).to_s
+            rescue SystemCallError
+                ''
+            end
+            @node = version[/\Av(\d+)/, 1].to_i >= NODE_MAJOR
+        end
         @node
     end
 
