@@ -1551,7 +1551,7 @@ tasks:
         ```java
         List<Item> things = List.of(new Item("zettel", ""), new Lamp("taschenlampe", ""), new Key("schlüssel", ""));
         for (Item thing : things) {
-            System.out.println(thing.shines());
+            IO.println(thing.shines());
         }
         ```
 

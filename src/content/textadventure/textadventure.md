@@ -690,14 +690,13 @@ In `School.java` und ebenso in `Play.java` ändern sich die beiden Zeilen, die
 ausgeben; `Colors` liegt im selben Ordner und braucht kein `import`:
 
 ```java
-        System.out.println(Colors.paint(game.start()));
-~         Scanner input = new Scanner(System.in);
+        IO.println(Colors.paint(game.start()));
 ~         while (!game.isOver()) {
-~             System.out.print("> ");
-~             if (!input.hasNextLine()) {
+~             String line = IO.readln("> ");
+~             if (line == null) {
 ~                 break;
 ~             }
-            System.out.println(Colors.paint(game.handle(input.nextLine())));
+            IO.println(Colors.paint(game.handle(line)));
 ~         }
 ```
 

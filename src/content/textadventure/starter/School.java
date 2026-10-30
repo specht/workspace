@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 // Nachts in der Schule: eine Welt aus deinen Klassen. Spielen mit
 // java School.java.
 public class School {
@@ -40,16 +38,15 @@ public class School {
     }
 
     // Die Spielschleife: liest Befehle und gibt sie an das Spiel weiter.
-    public static void main(String[] args) {
+    static void main() {
         Game game = new Game(build());
-        System.out.println(game.start());
-        Scanner input = new Scanner(System.in);
+        IO.println(game.start());
         while (!game.isOver()) {
-            System.out.print("> ");
-            if (!input.hasNextLine()) {
+            String line = IO.readln("> ");
+            if (line == null) {
                 break;
             }
-            System.out.println(game.handle(input.nextLine()));
+            IO.println(game.handle(line));
         }
     }
 }

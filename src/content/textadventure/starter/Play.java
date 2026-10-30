@@ -1,19 +1,16 @@
-import java.util.Scanner;
-
 // Die Spielschleife für deine Welt (World.build): liest Befehle und gibt
 // sie an das Spiel weiter.
 //   java Play.java
 public class Play {
-    public static void main(String[] args) {
+    static void main() {
         Game game = new Game(World.build());
-        System.out.println(game.start());
-        Scanner input = new Scanner(System.in);
+        IO.println(game.start());
         while (!game.isOver()) {
-            System.out.print("> ");
-            if (!input.hasNextLine()) {
+            String line = IO.readln("> ");
+            if (line == null) {
                 break;
             }
-            System.out.println(game.handle(input.nextLine()));
+            IO.println(game.handle(line));
         }
     }
 }
