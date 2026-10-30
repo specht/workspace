@@ -124,7 +124,6 @@ Do not turn PixelRAM into a second raylib by adding drawing primitives for conve
 the answer, explanations after solving (docs/didaktik.md). Open from that pass:
 
 * [ ] Try boxes and tips in class: is a minute between tips right (`HintSteps::DELAY_SECONDS`), do students work with a tip or wait for the next?
-* [ ] raylib's five `c` checks ran only against raylib 6.0's headers outside a Workspace; confirm them in a real one (the recipes on stages 2 to 5 run them with `check-task`)
 * [ ] Checks that only look for words where running the code is not possible yet: LaTeX, TIC-80 (no Lua in the Workspace), raylib's light, torches and textures, Pixelwand (a WebSocket client in the check), Wetter (network)
 
 
