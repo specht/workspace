@@ -60,7 +60,8 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
 
     // The teacher's overview of the group's repositories: the row with the
     // address, the last commit's author (no e-mail) and the way to look at
-    // it; the student is refused the page.
+    // it. Students have the page too, with their groups' repositories and
+    // their own (CHANGELOG, »Mit GIT_SERVER«).
     await teacher.goto('/repos');
     const row = teacher.locator('table.git-overview tbody tr', { hasText: address });
     await expect(row).toHaveCount(1);
@@ -70,7 +71,7 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
     await row.getByRole('link', { name: 'Ansehen' }).click();
     await expect(teacher).toHaveURL(new RegExp(browsePath + '$'));
     await expect(teacher.locator('.git-crumbs a', { hasText: 'Repositorys' })).toHaveAttribute('href', /\/repos$/);
-    expect((await workspace.request.get('/repos')).status()).toBe(403);
+    expect((await workspace.request.get('/repos')).status()).toBe(200);
 
     // Without a login, nothing of it.
     const anonymous = await (await browser.newContext()).request.get(browsePath, { maxRedirects: 0 });
