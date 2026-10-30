@@ -1891,11 +1891,11 @@ In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild f�
 <figcaption>Point Blank: »On a Roll«, 1982</figcaption>
 </figure>
 <figure>
-<img src='modern-talking.webp' alt='Ein Plattencover: oben »Let’s Talk About Love« und in geschwungener goldener Schrift »Modern Talking«, oben links ein Preisaufkleber. Darunter ein schwarz-weiß-goldenes Schachbrett, das als schmaler Streifen nach hinten in den Himmel läuft, mit sechs glänzenden, durchsichtigen Kugeln in Blau, Rot und Rosa darauf; in ihnen sind nur dunkle Flecken und helle Glanzpunkte zu sehen. Unten »The 2nd Album«.'>
+<img src='modern-talking.webp' alt='Ein Plattencover: oben »Let’s Talk About Love« und in geschwungener goldener Schrift »Modern Talking«, oben links ein Preisaufkleber. Darunter ein schwarz-weiß-goldenes Schachbrett, das als Streifen nach hinten schmal wird; darüber fächert ein blasseres Schachbrett wieder auf. Auf dem Brett liegen sechs glänzende Kugeln in Blau, Rot und Rosa, die wie aus Glas aussehen; in ihnen sind nur dunkle Flecken und helle Glanzpunkte zu sehen. Unten »The 2nd Album«.'>
 <figcaption>Modern Talking: »Let’s Talk About Love«, 1985</figcaption>
 </figure>
 <figure>
-<img src='jerry-goodman-ariel.webp' alt='Ein Plattencover: oben »Ariel« in weit auseinandergezogenen Buchstaben und »Jerry Goodman«. Vor einem dunklen, wolkigen Himmel steht eine große dunkle Kugel auf einem braun-schwarzen Schachbrett, das bis nach vorn reicht. In der unteren Hälfte der Kugel ist das Schachbrett zu sehen, zum Rand hin gebogen und zusammengedrückt, unter ihr liegt ihr Schatten. Um die Kugel schwimmen sieben rosa Fische durch die Luft, zwei davon links direkt vor ihr.'>
+<img src='jerry-goodman-ariel.webp' alt='Ein Plattencover: oben »Ariel« in weit auseinandergezogenen Buchstaben und »Jerry Goodman«. Vor einem dunklen, wolkigen Himmel steht eine große dunkle Kugel auf einem braun-schwarzen Schachbrett, das bis nach vorn reicht. In der unteren Hälfte der Kugel ist das Schachbrett zu sehen, zum Rand hin gebogen und zusammengedrückt, unter ihr liegt ihr Schatten. Um die Kugel schwimmen sieben rosa Fische durch die Luft, zwei davon links am Rand der Kugel.'>
 <figcaption>Jerry Goodman: »Ariel«, 1986</figcaption>
 </figure>
 </div>
