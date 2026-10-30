@@ -424,6 +424,22 @@ public class Customer {
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/1-kunde/supermarket.rb as supermarket.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/1-kunde/supermarket.py as supermarket.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/1-kunde/supermarket.js as supermarket.js -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/1-kunde/supermarket.dart as supermarket.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/1-kunde/Customer.java as Customer.java -->
+<!-- /language -->
+
 _task(kunde)
 
 <!-- language: ruby -->
@@ -710,6 +726,23 @@ public class Checkout {
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: stufen/2-kasse/supermarket.rb as supermarket.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/2-kasse/supermarket.py as supermarket.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/2-kasse/supermarket.js as supermarket.js -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/2-kasse/supermarket.dart as supermarket.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/2-kasse/Customer.java as Customer.java -->
+<!-- stage: stufen/2-kasse/Checkout.java as Checkout.java -->
+<!-- /language -->
+
 _task(kasse)
 
 ## Der Supermarkt
@@ -973,6 +1006,24 @@ public class Supermarket {
 }
 ```
 <!-- /solution -->
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/3-supermarkt/supermarket.rb as supermarket.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/3-supermarkt/supermarket.py as supermarket.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/3-supermarkt/supermarket.js as supermarket.js -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: stufen/3-supermarkt/supermarket.dart as supermarket.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: stufen/3-supermarkt/Customer.java as Customer.java -->
+<!-- stage: stufen/3-supermarkt/Checkout.java as Checkout.java -->
+<!-- stage: stufen/3-supermarkt/Supermarket.java as Supermarket.java -->
 <!-- /language -->
 
 _task(supermarkt)
@@ -1250,6 +1301,26 @@ if (checkout.accepts(customer) && (best == null || checkout.getFreeAt() < best.g
 <!-- /solution -->
 <!-- /language -->
 
+<!-- language: ruby -->
+<!-- stage: loesung/supermarket.rb as supermarket.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/supermarket.py as supermarket.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: loesung/supermarket.js as supermarket.js -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/supermarket.dart as supermarket.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/Customer.java as Customer.java -->
+<!-- stage: loesung/Checkout.java as Checkout.java -->
+<!-- stage: loesung/ExpressCheckout.java as ExpressCheckout.java -->
+<!-- stage: loesung/SelfCheckout.java as SelfCheckout.java -->
+<!-- stage: loesung/Supermarket.java as Supermarket.java -->
+<!-- /language -->
+
 _task(kassen)
 
 <!-- language: dart java -->
@@ -1407,6 +1478,22 @@ public class Simulation {
 ```
 
 Starte sie im Ordner `supermarkt` mit `java Simulation.java`.
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: loesung/simulation.rb as simulation.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: loesung/simulation.py as simulation.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: loesung/simulation.js as simulation.js -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/simulation.dart as simulation.dart -->
+<!-- /language -->
+<!-- language: java -->
+<!-- stage: loesung/Simulation.java as Simulation.java -->
 <!-- /language -->
 
 _task(drei-kassen)

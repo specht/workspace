@@ -240,7 +240,7 @@ class StageCodeTest < Minitest::Test
     # into a terminal (SQL) or a team works in Git; OPEN still lacks them.
     CODE_CHECKS = %w[ruby python c java dart javascript prolog].freeze
     NO_FILES = %w[mysql filmdatenbank class-quiz].freeze
-    OPEN = %w[supermarkt check-digits].freeze
+    OPEN = %w[check-digits].freeze
 
     def test_activities_where_students_program_have_steps
         content = File.expand_path('../../content', __dir__)
