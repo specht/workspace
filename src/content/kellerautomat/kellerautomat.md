@@ -334,6 +334,10 @@ _task(schubfach)
 <!-- after: schubfach -->
 Für einen Automaten heißt das: Hat er k Zustände und liest er k a, war er in k + 1 Zuständen, mit dem Startzustand. Also war er zweimal im selben Zustand, sagen wir nach i a und nach j a, mit i kleiner als j.
 
+Ein Automat mit vier Zuständen, wie er für die a aussehen könnte: Nach einem a ist er in q<sub>1</sub>, nach vier a wieder, hier ist also i = 1 und j = 4.
+
+<div class='automaton-drawing' role='img' aria-label='Vier Zustände q0 bis q3. Vom Start q0 führt a nach q1, von dort a nach q2, a nach q3 und von q3 mit a zurück nach q1: eine Schleife aus q1, q2 und q3.' data-states='q0 q1 q2 q3' data-start='q0' data-transitions='q0 a q1, q1 a q2, q2 a q3, q3 a q1'></div>
+
 Von da an weiß der Automat nicht mehr, ob er i oder j a gelesen hat; er ist ja im selben Zustand. Liest er jetzt i b, macht er in beiden Fällen dasselbe und landet im selben Zustand. Er nimmt also a<sup>i</sup>b<sup>i</sup> und a<sup>j</sup>b<sup>i</sup> beide an oder beide nicht. Richtig wäre aber, das erste anzunehmen und das zweite nicht. Das gilt für jedes k, also für jeden endlichen Automaten: Keiner prüft a<sup>n</sup>b<sup>n</sup>.
 
 Der Weg vom Zustand nach i a zum selben Zustand nach j a ist eine Schleife im Automaten. Man kann sie beliebig oft durchlaufen, »aufpumpen«, ohne dass er es merkt. Daher hat der Satz, der diese Überlegung für alle Sprachen fasst, seinen Namen: **Pumping-Lemma**.
