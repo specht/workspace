@@ -223,6 +223,9 @@ Platform-wide:
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
+* [ ] Raytracing shows no picture at high resolution: proposed, not yet decided by the maintainer, one large picture (about 1920 px wide, many passes) of the finished raytracer (`stufen/17-belichtung.c`) with glass, metal, soft shadows and depth of field, at the top as what the page leads to, rendered by a recipe in the background
+* [ ] Pictures or diagrams for the pages the October 2026 review found to be text with little structure in between (as Textadventure was): Nächste Nachbarn, Perzeptron, Kellerautomat, Huffman, DNS, Sprachmodell
+* [ ] »Eigene Projekte« in the remaining teacher notes, as in Raycaster and Raytracing (ideas that make an activity a project of the student's own)
 
 
 ## Infrastructure and operations
