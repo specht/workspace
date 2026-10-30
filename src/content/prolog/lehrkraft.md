@@ -27,3 +27,11 @@ Ein Projekt zur logischen Programmierung: Lernende schreiben in SWI-Prolog Fakte
 - Was Prolog unter »false« versteht: nicht »falsch«, sondern »nicht beweisbar aus dem, was in der Datei steht« (die Annahme einer geschlossenen Welt).
 - Warum <code>joined</code> rückwärts rechnet, eine Funktion in Ruby oder Python aber nicht: eine Beziehung zwischen drei Listen statt einer Rechnung von zwei Listen zu einer.
 - Wo logische Programmierung heute steckt: in Typprüfern, in Datenbankabfragen (Datalog), in Planungs- und Konfigurationssystemen, und in Bedingungslösern wie beim Sudoku.
+
+#### Eigene Projekte
+
+Nach der Seite können die Lernenden Wissen als Fakten und Regeln aufschreiben und Prolog suchen lassen. Die Ideen geben dem eine eigene Welt; bewertet wird an Anfragen, die eine Antwort finden, die die Lernenden nicht selbst hineingeschrieben haben, und am Erklären, wie Prolog sie gefunden hat.
+
+- **Ein eigenes Logikrätsel** (eine Doppelstunde): fünf Häuser, fünf Haustiere, fünf Getränke, und Hinweise, die nur eine Lösung zulassen, wie bei den vier Farben für Berlin. Die Lernenden erfinden das Rätsel selbst; ob es genau eine Lösung hat, sagt ihnen Prolog, bevor die Klasse es von Hand versucht.
+- **Wege im eigenen Netz** (eine Doppelstunde): die Bus- und Bahnlinien um die Schule als Fakten, eine Regel für einen Weg, die sich merkt, wo sie schon war, wie die [Rekursion](#rekursion) der Seite. Neu ist, auch die Zahl der Umstiege mitzuzählen.
+- **Ein Stammbaum aus einer Sage** (eine Stunde): die griechischen Götter oder ein Herrscherhaus aus dem Geschichtsunterricht, mit Regeln für Großeltern, Geschwister und Vorfahren wie in [»Regeln«](#regeln). Spannend wird es bei den Verwandtschaften, die die Sage selbst durcheinanderbringt.

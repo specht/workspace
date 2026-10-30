@@ -30,10 +30,6 @@ Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wi
 
 »Viel Regie« hat zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
 
-#### Zum Weiterarbeiten
-
-Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinnen, Exemplaren und Ausleihen (mit Datum) ist ein gutes eigenes Modell: Es braucht eine 1:n-Beziehung und Attribute an einer Beziehung. Die Diagramme lassen sich mit »Als SVG speichern« für Präsentationen sichern.
-
 #### Normalisierung
 
 - Das Kapitel ist ein Extra: Seine vier Aufgaben zählen bei niemandem mit, die Seite ist ohne es vollständig. Die Begriffe (funktionale Abhängigkeit, Schlüssel, Nichtschlüsselspalte, erste bis dritte Normalform) stehen einmal im Handbuch unter »ER-Modelle als Text«, Abschnitt »Normalformen«, und die Seite bindet diesen Teil ein.
@@ -41,3 +37,10 @@ Die letzte Aufgabe sammelt Ideen für Erweiterungen. Eine Videothek mit Kundinne
 - Die Aufteilung schreiben die Lernenden mit `CREATE TABLE … AS SELECT DISTINCT` und `ALTER TABLE … DROP COLUMN … ADD FOREIGN KEY`; die zweite Normalform macht die Seite vor, die dritte machen sie selbst. Die Karte »Die Regie in eine eigene Tabelle« prüft Spalten, Schlüssel und Fremdschlüssel und dass `director` und `director_birth_year` aus `club_movie` verschwunden sind. `mycli` fragt vor jedem `ALTER TABLE` und `DROP TABLE` nach; man antwortet mit `y`.
 - Für ein Unterrichtsgespräch: Die dritte Normalform ist nicht alles, was ein guter Entwurf braucht. Die Tabellen der Aktivität gehen weiter als die des Clubs (Personen mit `id` statt Namen, mehrere Regisseure pro Film über `movie_crew`), und das ER-Modell hat sie ohne einen eigenen Normalisierungsschritt dorthin gebracht.
 
+#### Eigene Projekte
+
+Die letzte Aufgabe sammelt Ideen für Erweiterungen. Die Ideen hier führen sie zu einem eigenen Modell; jede beginnt wieder beim Diagramm, und bewertet wird am Modell, an den Tabellen und an Abfragen, die eine echte Frage beantworten. Die Diagramme lassen sich mit »Als SVG speichern« für eine Präsentation sichern.
+
+- **Eine Videothek** (eine Doppelstunde): Kundinnen, Exemplare und Ausleihen mit Datum. Das Modell braucht eine 1:n-Beziehung und Attribute an einer Beziehung; ob ein Film mehrmals im Regal steht, entscheidet, ob das Exemplar eine eigene Tabelle wird.
+- **Eine Datenbank für die Schule** (ein Projekt): die Schulbibliothek, die AGs mit ihren Terminen, die Ausleihe von Tablets. Erst das Modell, dann die Tabellen, dann die Normalformen wie in [»Zurück zu deinen Tabellen«](#zurück-zu-deinen-tabellen); erfundene Daten statt echter Namen.
+- **Ein Filmquiz aus Abfragen** (eine Doppelstunde): Die Lernenden denken sich Fragen an die Filmdaten aus, »Wer hat mit den meisten anderen gespielt?«, »In welchem Jahrzehnt gab es die meisten Krimis?«, und beantworten sie mit JOIN und [»Zählen pro Gruppe«](#zählen-pro-gruppe). Die Klasse rät zuerst, dann zeigt die Abfrage die Antwort.

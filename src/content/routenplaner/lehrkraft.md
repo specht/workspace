@@ -34,3 +34,11 @@ Jede Aufgabe, in der eine Funktion entsteht, hat zwei oder drei Tipps: ein Beisp
 - Nach jeder Änderung an `routes.rb` muss der Server neu starten (<kbd>Strg</kbd><kbd>C</kbd>, dann `ruby server.rb`).
 - Ein Fehler in einer Suche steht im Terminal, die Seite sagt nur, dass etwas schiefging.
 - `Math.cos` rechnet im Bogenmaß; wer Grad hineingibt, bekommt nach Osten falsche Abstände, und die Prüfung sagt das.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden drei Suchen auf einer echten Karte. Die Ideen stellen eine eigene Frage an diese Karte; bewertet wird beim Vorführen auf der Karte und daran, dass die Lernenden erklären, was sie an Gewichten oder Suche geändert haben.
+
+- **Der schönste Schulweg** (eine Doppelstunde): nicht der kürzeste, sondern der ruhigste oder der mit den wenigsten großen Straßen. Dafür bekommt jede Kante ein anderes Gewicht als ihre Länge, wie in [»Zu Fuß, mit dem Rad, mit dem Auto«](#zu-fuß-mit-dem-rad-mit-dem-auto); die Lernenden begründen ihre Gewichte und zeigen, wie sich der Weg ändert.
+- **Wie weit komme ich in zehn Minuten?** (eine Doppelstunde): [Dijkstra](#dijkstra) ohne Ziel, der aufhört, wenn die Zeit um ist, und alle erreichten Kreuzungen einfärbt. Zu Fuß, mit dem Rad und mit dem Auto entstehen drei verschiedene Flecken um die Schule.
+- **Suchen im Vergleich** (eine Doppelstunde): Breitensuche, Dijkstra und [A*](#a-mit-dem-ziel-vor-augen) auf zwanzig zufälligen Paaren von Orten, gezählt wird, wie viele Kreuzungen jede besucht. Abgegeben wird eine Tabelle mit einer Erklärung, wann A* viel spart und wann kaum.

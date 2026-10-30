@@ -12,3 +12,11 @@ Lernende bauen einen Rechner, der Ausdrücke wie `2 + 3 * (4 - 1)` versteht, in 
 #### Tipps in Stufen
 
 »Zerlegen«, »Ein Baum aus Tokens«, »Ausrechnen«, »Fehler«, »Hoch« und »Variablen« haben zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden eine Grammatik, einen Parser und einen Baum, den sie ausrechnen. Die Ideen erweitern die Sprache; jede beginnt mit der neuen Regel in der Grammatik, und bewertet wird an Beispielen, die die Lernenden vorher aufschreiben, mit dem Ergebnis, das sie erwarten.
+
+- **Funktionen** (eine Doppelstunde): `sqrt(16)` und `max(3, 7)`. Die Grammatik bekommt eine Regel für einen Aufruf mit einer Liste von Ausdrücken; zu klären ist, was `max()` ohne Argumente tun soll.
+- **Rechnen mit Einheiten** (ein Projekt): `3 km + 200 m` ergibt `3.2 km`, `5 m * 2 s` eine neue Einheit, `3 km + 2 s` einen Fehler. Jeder Wert im Baum trägt dann eine Zahl und eine Einheit; die Fehlermeldungen aus [»Fehler«](#fehler) bekommen neue Fälle.
+- **Eine kleine Programmiersprache** (ein Projekt, für Starke): Vergleiche, `if` und eine Schleife; aus `evaluate` wird ein Interpreter, der mit den [Variablen](#variablen) schon ein Gedächtnis hat. Zum Vorführen läuft ein kleines Programm, das jemand anderes geschrieben hat.

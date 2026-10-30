@@ -37,6 +37,12 @@ Lernende bauen Schaltungen selbst in einem Editor auf der Seite: vom Halbaddiere
 - **Ein Baustein fehlt in der Leiste:** Bausteine merkt sich der Browser. An einem anderen Rechner kommen sie mit einer geprüften Schaltung zurück, in der sie stecken; sonst den Halbaddierer noch einmal speichern.
 - **Q an der falschen Seite:** Liegt die Lampe an dem NOR, an dem S hängt, zeigt sie Q quer; die Rückmeldung nennt schon den ersten Schritt.
 
-#### Weiter
+#### Eigene Projekte
 
-Die [CPU Sandbox](/sandbox-cpu): ein Prozessor aus genau solchen Bauteilen. Für größere Schaltungen die Simulatoren [Digital](https://github.com/hneemann/Digital) und [Logisim-evolution](https://github.com/logisim-evolution/logisim-evolution).
+Nach der Seite können die Lernenden in Schichten bauen: aus Gattern Bausteine, aus Bausteinen größere. Die Ideen nehmen das wieder auf; bewertet wird an der Schaltung, an ihrer Wahrheitstabelle und daran, dass die Lernenden einen Baustein erklären.
+
+- **Eine Anzeige für Ziffern** (eine Doppelstunde): eine Schaltung, die aus vier Bits die sieben Striche einer Ziffernanzeige ansteuert. Erst die Wahrheitstabelle für jeden Strich, dann die Gatter; wer geschickt ist, findet Striche, die sich Teile teilen.
+- **Ein Zähler** (ein Projekt, für Starke): ein Register aus vier Bits und der [Addierer für 4 Bit](#der-addierer-für-4-bit), der bei jedem Takt eins dazuzählt. Das [D-Flipflop](#das-d-flipflop) der Seite allein reicht dafür nicht: Solange der Takt 1 ist, lässt es durch, und die Summe liefe gleich wieder durch den Addierer. Zwei davon hintereinander mit umgekehrtem Takt (Master-Slave) übernehmen nur beim Wechsel; das herauszufinden ist der Kern. Zum Vorführen klickt jemand den Takt, und die Zahl läuft hoch, bis sie bei 15 wieder auf 0 springt.
+- **Mit möglichst wenig NAND** (eine Stunde): Wie in [»Alles aus NAND«](#alles-aus-nand), aber als Wettbewerb: der Multiplexer oder der Vergleich zweier Zahlen mit so wenigen NAND wie möglich. Die Klasse vergleicht und erklärt, wo sich etwas sparen ließ.
+
+Wer weiter will: die [CPU Sandbox](/sandbox-cpu), ein Prozessor aus genau solchen Bauteilen, und für größere Schaltungen die Simulatoren [Digital](https://github.com/hneemann/Digital) und [Logisim-evolution](https://github.com/logisim-evolution/logisim-evolution).

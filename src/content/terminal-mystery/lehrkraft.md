@@ -66,3 +66,11 @@ Hat die Installation den Fallserver eingeschaltet (`CASE_SERVER = true`, docs/en
 - Ein Gesicht sieht man nie: Die Bilder belegen die Zeiten und das Auto.
 - Ohne die Anführungszeichen setzt die eigene Shell das `*` ein, findet nichts und gibt es zum Glück unverändert weiter; das klappt, ist aber Zufall und lohnt eine Frage im Unterricht.
 - Geöffnet werden die Bilder im Explorer von VS Code, nicht im Terminal. Die Bilder entstanden mit ChatGPT, wie, steht in `beispiele/cctv/`.
+
+#### Eigene Projekte
+
+Nach dem Fall kennen die Lernenden `grep`, `head`, `sort` und Pipes. Am meisten lernen sie, wenn sie selbst einen Fall bauen, den andere nur mit diesen Befehlen lösen können; bewertet wird daran, ob eine andere Gruppe ihn löst und an welcher Stelle sie hängen bleibt.
+
+- **Ein eigener Fall** (ein Projekt): ein verschwundenes Klassenbuch, ein verstellter Wecker im Lehrerzimmer, mit Dateien voller Zeugenaussagen, Listen und Protokolle. Jeder Hinweis führt zum nächsten Befehl, und die Lösung soll sich nicht mit einem einzigen `grep` finden lassen. Die Gruppe schreibt den Lösungsweg auf, bevor jemand anderes ihn versucht.
+- **Ein Fall in einem Repository** (eine Doppelstunde): Die Spur liegt in der Geschichte eines Git-Repositorys, in einem Commit, der eine Zeile entfernt hat, wie bei `git log -S`. Gut für alle, die [»Versionsverwaltung mit Git«](/git) schon kennen.
+- **Ein Fall für die Jüngeren** (eine Doppelstunde): ein kleiner Fall nur mit `cd`, `ls` und `cat`, für eine jüngere Klasse oder den Tag der offenen Tür. Die Lernenden merken dabei, was sie selbst am Anfang nicht wussten, und schreiben dafür Hinweise.
