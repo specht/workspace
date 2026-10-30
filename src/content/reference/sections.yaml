@@ -168,7 +168,7 @@
 
 - key: reference-c-grafik
   label: Grafik und Spiele in C
-  icon: /images/star.png
+  icon: /images/video-game.png
   description: |
     C selbst zum Nachschlagen: Typen, Rechnen, Arrays, Structs, Bits, Zeiger,
     Dateien und Fehlermeldungen. Vektoren für Punkte, Richtungen, Licht und

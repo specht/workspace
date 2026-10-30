@@ -115,7 +115,6 @@ generated screenshots:
 * [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5, steganography 3, crime story 2, calculator 2 double lessons; TCP/IP 2 after its rework)
 * [ ] Case server: try the SSH chapter with a whole class (1000 accounts, per-account limits, everyone on `museum.bitstein` at once) before switching it on elsewhere
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
-* [ ] raylib: an icon of its own for the Handbuch section (now the star)
 
 Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
 
