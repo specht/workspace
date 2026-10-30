@@ -91,7 +91,7 @@ Klicke unten rechts auf »Go Live«. Im neuen Tab siehst du die Dateien des Proj
 go-live
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
@@ -168,7 +168,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
@@ -316,7 +316,7 @@ terminal-expect-no-text: ***
 check-task: kreise
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
@@ -374,7 +374,7 @@ terminal-expect-no-text: ***
 check-task: wellen
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
@@ -703,7 +703,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open main.html
 # nach 7,2 Sekunden: die beiden Quellen nah beieinander, ein ruhiges Muster
 hook: at 7.2
@@ -799,7 +799,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open lichtspur.html
 # Die Spur fährt los, sobald die Seite geladen ist: neu laden, dann gleich lenken.
 preview-reload
@@ -1102,7 +1102,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open lichtspur.html
 # Runde 1: Türkis fährt in die Wand. Runde 2: beide kurven, Orange fährt in die türkise Spur.
 hook: play Space 0.5 ArrowUp 2.5 Space 0.3 KeyW ArrowDown 0.8 KeyD ArrowLeft 0.9 KeyS ArrowUp 0.6 KeyD ArrowLeft 0.8 KeyS ArrowDown 0.7 KeyA 0.6 ArrowRight 0.5 KeyS ArrowUp 3
@@ -1218,7 +1218,7 @@ terminal-expect-no-text: error:
 terminal-expect-no-text: ***
 tab: preview
 variants: crt
-viewport: 800x450
+viewport: 1600x900
 hook: open spiele/crystal.html
 click: selector:#canvas
 sleep: 3

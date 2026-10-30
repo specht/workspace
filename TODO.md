@@ -205,7 +205,6 @@ Platform-wide:
 
 * [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
-* [ ] PixelRAM's pictures are 1350 px wide and stretched by `class='full'` (100 % wide, at least 1000 px). A forced render with today's generator (30 October 2026) gives the same 1350 x 760, for `viewport: 800x450` and `1600x900` alike, so the size follows neither the viewport nor `zoom:`. The capture is the CSS box of `#canvas` times the preview's scale (1.203 x 2), so the canvas measures about 561 CSS px; the shell's `layoutScreen` (fills the stage minus 28 px) would give about 615 at 800x450. Next: measure `#canvas` and the stage in the preview during a run (a hook that logs their boxes and `innerWidth`)
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
