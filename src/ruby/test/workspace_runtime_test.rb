@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'stringio'
 require 'open3'
+require 'shellwords'
 require_relative '../include/workspace_runtime'
 
 class WorkspaceRuntimeTest < Minitest::Test
@@ -96,18 +97,21 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_equal 'docker inspect m1 n1', @captures[1][0]
 
         command, options = @oks.first
-        assert_includes command, 'docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256'
-        assert_includes command, '-e WORKSPACE_USER=max.mustermann'
-        assert_includes command, '-v /srv/workspace/user/abcdefghijklmnop/config:/config'
-        assert_includes command, '-v /srv/workspace/user/abcdefghijklmnop/workspace:/workspace'
-        assert_includes command, '--network workspace_user'
-        assert_includes command, '-v /dev/null:/etc/resolv.conf:ro'
-        assert_includes command, '--add-host mysql:172.20.0.4'
-        assert_includes command, '--add-host neo4j:172.20.0.2'
-        assert_includes command, '-e DOTNET_CLI_TELEMETRY_OPTOUT=1'
-        assert_includes command, '--cap-drop NET_RAW'
-        assert_includes command, '--security-opt no-new-privileges'
-        assert command.end_with?('--name hs_code_abcdefghijklmnop hs_code_server')
+        args = Shellwords.split(command)
+        assert_equal %w[docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256], args.first(6)
+        assert_option args, '-e', 'WORKSPACE_USER=max.mustermann'
+        assert_option args, '-e', 'MYSQL_HOST=mysql'
+        assert_option args, '-e', 'NEO4J_URI=neo4j://neo4j:7687'
+        assert_option args, '-v', '/srv/workspace/user/abcdefghijklmnop/config:/config'
+        assert_option args, '-v', '/srv/workspace/user/abcdefghijklmnop/workspace:/workspace'
+        assert_option args, '--network', 'workspace_user'
+        assert_option args, '-v', '/dev/null:/etc/resolv.conf:ro'
+        assert_option args, '--add-host', 'mysql:172.20.0.4'
+        assert_option args, '--add-host', 'neo4j:172.20.0.2'
+        assert_option args, '-e', 'DOTNET_CLI_TELEMETRY_OPTOUT=1'
+        assert_option args, '--cap-drop', 'NET_RAW'
+        assert_option args, '--security-opt', 'no-new-privileges'
+        assert_equal %w[--name hs_code_abcdefghijklmnop hs_code_server], args.last(3)
         assert_equal 60, options[:timeout]
     end
 
@@ -127,14 +131,37 @@ class WorkspaceRuntimeTest < Minitest::Test
         )
         command, options = @oks.first
         %w[mysql-secret neo4j-secret case-secret].each { |secret| refute_includes command, secret }
-        assert_includes command, '-e MYSQL_PASSWORD -e'
-        assert_includes command, '-e NEO4J_PASSWORD -e'
-        assert_includes command, '-e CASE_USER -e CASE_PASSWORD '
+        args = Shellwords.split(command)
+        %w[MYSQL_PASSWORD NEO4J_PASSWORD CASE_USER CASE_PASSWORD].each { |name| assert_option args, '-e', name }
+        refute_includes args, '/dev/null:/etc/resolv.conf:ro'
         assert_equal(
             { 'MYSQL_PASSWORD' => 'mysql-secret', 'NEO4J_PASSWORD' => 'neo4j-secret',
               'CASE_USER' => 'e042', 'CASE_PASSWORD' => 'case-secret' },
             options[:env],
         )
+    end
+
+    # Every value is one argument, whatever it contains: none reaches the
+    # shell as syntax.
+    def test_start_workspace_escapes_every_value
+        env = {
+            'MYSQL_HOST' => 'mysql', 'MYSQL_USER' => 'student', 'MYSQL_DATABASE' => 'a"; touch /tmp/x; "',
+            'NEO4J_URI' => 'neo4j://neo4j:7687', 'NEO4J_USERNAME' => 'student', 'NEO4J_DATABASE' => '$(id)',
+        }
+        @runtime.start_workspace(
+            :fs_tag => 'abcdefghijklmnop', :workspace_login => 'max mustermann',
+            :database_environment => env, :host_data_path => '/srv/work space', :test_mode => false,
+        )
+        args = Shellwords.split(@oks.first[0])
+        assert_option args, '-e', 'MYSQL_DATABASE=a"; touch /tmp/x; "'
+        assert_option args, '-e', 'NEO4J_DATABASE=$(id)'
+        assert_option args, '-e', 'WORKSPACE_USER=max mustermann'
+        assert_option args, '-v', '/srv/work space/user/abcdefghijklmnop/config:/config'
+        assert_equal 'hs_code_server', args.last
+    end
+
+    def assert_option(args, flag, value)
+        assert args.each_cons(2).include?([flag, value]), "expected #{flag} #{value} in #{args.inspect}"
     end
 
     def test_stop_workspace_is_best_effort_like_current_code
