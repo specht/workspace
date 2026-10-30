@@ -12,6 +12,7 @@ Lernende bauen ein Sprachmodell aus Wortpaaren: Sie zerlegen die Märchen der Br
 <li>Fünf Aufgaben rufen die Funktionen der Lernenden in ihrem Workspace auf, als Gast, der nichts verändern kann, und vergleichen die Rückgabe mit kleinen, ausgedachten Dictionaries; die Aufgabe sagt jeweils, womit. <code>next_word</code> wird 4000-mal aufgerufen und muss ungefähr im richtigen Verhältnis ziehen.</li>
 <li>Dazu zwei Zahlen aus den Märchen, zwei Fragen und vier Vorhersagen. Der Workspace muss für die Prüfungen laufen.</li>
 </ul></td></tr>
+<tr><th>Lösung</th><td>Im Repository unter <a href='https://github.com/specht/workspace/blob/main/src/content/sprachmodell/loesung/model.rb'><code>src/content/sprachmodell/loesung/model.rb</code></a> und <a href='https://github.com/specht/workspace/blob/main/src/content/sprachmodell/loesung/model.py'><code>model.py</code></a>: alle Funktionen der Seite, von <code>words</code> bis <code>generate_pairs</code>; die Beispiele der Aufgaben prüfen, dass sie jede Programmieraufgabe lösen. Die Lösungen der Programmieraufgaben sehen Lernende nach einer richtigen Antwort auch auf der Karte. Auf der Seite steht der Code jeder Funktion unter »Lösung anzeigen«; er öffnet sich nach allen Tipps und der Pause danach oder sobald die Aufgabe gelöst ist.</td></tr>
 </table>
 
 #### Die Zahlen
