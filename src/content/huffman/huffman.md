@@ -104,6 +104,24 @@ reference: [heap, baeume, bits-und-bytes, ruby-python]
         font-size: 11px;
         fill: var(--bs-secondary-color);
     }
+    .hf-tree {
+        --hf-accent: #6741d9;
+        margin: 0.6em 0 1.2em;
+    }
+    html[data-bs-theme="dark"] .hf-tree {
+        --hf-accent: #b197fc;
+    }
+    .hf-forest.hf-tree svg {
+        width: auto;
+        max-width: 100%;
+    }
+    .hf-forest path.edge.way {
+        stroke: var(--hf-accent);
+        stroke-width: 3;
+    }
+    .hf-forest text.bit.way {
+        fill: var(--hf-accent);
+    }
     .hf-table td, .hf-table th {
         font-family: '0xProto Nerd Font Mono', monospace;
     }
@@ -155,6 +173,10 @@ Wie findet man die besten Codes, also die, mit denen ein Text so wenige Bits wie
 3. Wiederhole Schritt 2, bis nur noch ein Baum übrig ist.
 
 Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links eine 0, rechts eine 1. Seltene Bytes werden früh zusammengefasst und landen tief unten, mit langen Codes; häufige kommen spät dazu und bleiben oben, mit kurzen. Und weil jedes Byte an einem Blatt hängt und nie auf dem Weg zu einem anderen liegt, ist die Tabelle von selbst präfixfrei.
+
+Die Tabelle von oben ist so ein Baum. Der Weg zu R geht nach rechts, rechts und links, und das ist sein Code `110`. Keiner der fünf Buchstaben liegt auf dem Weg zu einem anderen:
+
+<div class='hf-forest hf-tree' data-codes='A:0 B:10 R:110 C:1110 D:1111' data-path='110' role='img' aria-label='Die Tabelle als Baum: Von der Wurzel geht links eine 0 zum Blatt A, rechts eine 1 weiter nach unten. Dort führt links eine 0 zu B, rechts eine 1 weiter, dann links eine 0 zu R und rechts eine 1 zu einem Knoten mit C links und D rechts. Der Weg zu R ist hervorgehoben: 1, 1, 0.'></div>
 
 _person(huffman)
 
@@ -311,6 +333,10 @@ Schreib `build_tree` nach den drei Schritten von oben. Ein Blatt ist das Byte se
 <!-- language: python -->
 Schreib `build_tree` nach den drei Schritten von oben. Ein Blatt ist das Byte selbst, eine Zahl; ein Knoten ist ein Tupel aus seinen beiden Kindern. Für »ABRACADABRA« könnte der Baum so aussehen: `(65, ((67, 68), (66, 82)))`.
 <!-- /language -->
+
+Als Bild: Jede Klammer ist ein Knoten mit zwei Kindern, links das erste, rechts das zweite, und unter jedem Blatt steht sein Byte als Zahl.
+
+<div class='hf-forest hf-tree' data-nested='[65, [[67, 68], [66, 82]]]' role='img' aria-label='Der Baum zu dieser Schachtelung: Von der Wurzel geht links eine 0 zum Blatt A mit dem Byte 65, rechts eine 1 zu einem Knoten. Dessen linkes Kind hat die Blätter C (67) und D (68), sein rechtes die Blätter B (66) und R (82).'></div>
 
 <!-- language: ruby -->
 - Beim Bauen brauchst du zu jedem Baum sein Gewicht. Halte deshalb eine Liste von Paaren `[weight, tree]`, am Anfang eines für jedes Byte.
@@ -557,9 +583,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const k = key(n);
             svg.appendChild(make('circle', { 'data-key': `node-${k}`, 'data-grow': '', ...up(k), class: n.left ? 'node' : 'leaf', cx: p.x, cy: p.y, r: n.left ? 14 : 15 }));
             // the label comes with its node
-            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', ...up(k), ...(n.left ? counts(k) : {}), x: p.x, y: p.y }, n.left ? String(n.weight) : label(n.byte)));
+            svg.appendChild(make('text', { 'data-key': `label-${k}`, 'data-grow': '', ...up(k), ...(n.left ? counts(k) : {}), x: p.x, y: p.y }, n.left ? (n.weight === undefined ? '' : String(n.weight)) : label(n.byte)));
             // the count under a leaf, clear of the ring around it
-            if (!n.left) svg.appendChild(make('text', { 'data-key': `weight-${k}`, ...up(k), ...counts(k), class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
+            if (!n.left && n.weight !== undefined) svg.appendChild(make('text', { 'data-key': `weight-${k}`, ...up(k), ...counts(k), class: 'weight', x: p.x, y: p.y + 33 }, String(n.weight)));
         });
         // the rings in front, staying on their node while they fade
         picks.forEach((t) => {
@@ -677,6 +703,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     input.addEventListener('input', refresh);
     refresh();
+
+    // Still trees beside the text (.hf-tree), drawn like the stepper's:
+    // data-codes='A:0 B:10 …' the tree of a code table, data-nested the
+    // tree of build_tree as a nested array with the byte under each leaf;
+    // data-path marks the way to one leaf, edge by edge.
+    function codeTree(spec) {
+        const top = {};
+        spec.trim().split(/\s+/).forEach((pair) => {
+            const [ch, code] = pair.split(':');
+            let n = top;
+            for (const bit of code) {
+                const side = bit === '0' ? 'left' : 'right';
+                n = n[side] = n[side] || {};
+            }
+            n.byte = ch.charCodeAt(0);
+        });
+        return top;
+    }
+    function nestedTree(v) {
+        return Array.isArray(v) ? { left: nestedTree(v[0]), right: nestedTree(v[1]) } : { byte: v, weight: v };
+    }
+    document.querySelectorAll('.hf-tree').forEach((box) => {
+        const tree = box.dataset.codes ? codeTree(box.dataset.codes) : nestedTree(JSON.parse(box.dataset.nested));
+        let made = 0;
+        (function number(n) { if (n.left) { number(n.left); number(n.right); } n.made = made++; })(tree);
+        const placed = layout([tree], depth(tree));
+        // a little larger than the stepper's, which fills its column
+        const svg = make('svg', { width: Math.round(placed.width * 1.3), height: Math.round(placed.height * 1.3) });
+        draw(svg, placed, [], placed);
+        // a finished tree: nothing is joined anew, no number is pale
+        svg.querySelectorAll('[opacity]').forEach((e) => e.removeAttribute('opacity'));
+        // the way to one leaf: its edges and bits in the accent colour
+        let n = tree;
+        for (const bit of box.dataset.path || '') {
+            const c = bit === '0' ? n.left : n.right;
+            svg.querySelector(`[data-key='edge-${key(n)}-${key(c)}']`).classList.add('way');
+            svg.querySelector(`[data-key='bit-${key(c)}']`).classList.add('way');
+            n = c;
+        }
+        box.appendChild(svg);
+    });
 });
 </script>
 
