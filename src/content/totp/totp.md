@@ -135,6 +135,16 @@ Der Schlüssel sind 20 zufällige Bytes. Damit man ihn auch abtippen kann, wenn 
 
 _task(bytes)
 
+<!-- after: bytes -->
+16 Zeichen zu je 5 Bits sind 80 Bits, also 10 Bytes. Die ersten acht
+Zeichen dieses Schlüssels, `JBSWY3DP`, sind 40 Bits und damit genau 5
+Bytes, und diese 5 Bytes sind zufällig ein Wort:
+
+<div class='gallery single'>
+<figure><img src='base32-bits.webp' alt='Die Zeichen J, B, S, W, Y, 3, D und P, jedes über seinen 5 Bits; darunter die 40 Bits in einer Reihe; darunter dieselben Bits zu je 8 als Bytes 72, 101, 108, 108 und 111, darunter die Buchstaben H, e, l, l, o. Die Grenzen der Bytes liegen mitten in den Zeichen.'><figcaption>Aus 5 Bits je Zeichen werden 8 Bits je Byte: <code>JBSWY3DP</code> ist <code>Hello</code></figcaption></figure>
+</div>
+<!-- /after -->
+
 <!-- language: ruby -->
 Am einfachsten rechnest du mit den Bits als Text aus Nullen und Einsen: `5.to_s(2).rjust(5, '0')` ist `"00101"`, und `"01001000".to_i(2)` ist 72. `scan(/.{8}/)` teilt einen Text in Stücke zu 8 Zeichen, `pack('C*')` macht aus einer Liste von Zahlen Bytes. Kleinbuchstaben, Leerzeichen und `=` am Ende, die in echten Schlüsseln vorkommen, sollen dich nicht stören.
 <!-- /language -->
@@ -155,6 +165,10 @@ Der Code kommt aus einer **HMAC**. Das ist eine Prüfsumme wie SHA-1 aus [Krypto
 
 Mit dem Schlüssel `12345678901234567890` aus dem Standard und dem Zähler 1 ist die HMAC `75a48a19d4cbe100644e8ac1397eea747a2d33ab`. Das letzte Byte ist `ab`, seine untersten 4 Bits sind `b`, also 11. Die 4 Bytes ab Byte 11 sind `c1 39 7e ea`; ohne das oberste Bit wird aus `c1` eine `41`, und `41397eea` ist 1094287082. Der Code ist **287082**.
 
+<div class='gallery single'>
+<figure><img src='hmac-offset.webp' alt='Die 20 Bytes der HMAC in einer Reihe, mit ihrem Index darüber: 75 a4 8a 19 d4 cb e1 00 64 4e 8a c1 39 7e ea 74 7a 2d 33 ab. Das letzte Byte ab ist orange umrandet; ein Pfeil führt von ihm zu Index 11: Seine unteren 4 Bits b sind 11. Die Bytes c1 39 7e ea ab Index 11 sind blau; darunter c1 39 7e ea, ohne oberstes Bit 41397eea, das ist 1094287082, der Code 287082.'><figcaption>Das letzte Byte sagt, wo die 4 Bytes für den Code stehen</figcaption></figure>
+</div>
+
 <!-- language: ruby -->
 `OpenSSL::HMAC.digest('SHA1', key, data)` rechnet die HMAC aus. Den Zähler als 8 Bytes macht `[counter].pack('Q>')`, und `bytes[o, 4].unpack1('N')` liest 4 Bytes ab Index `o` als Zahl, das höchste zuerst. Das oberste Bit löschst du mit `& 0x7fffffff`.
 <!-- /language -->
@@ -167,6 +181,10 @@ _task(hotp)
 ### Der Zähler ist die Uhr
 
 Ein Zähler, der nur bei jeder Anmeldung weiterzählt, hat einen Haken: Handy und Server müssen sich einig sein, wie weit er schon ist. TOTP nimmt stattdessen die Uhrzeit als Zähler. Computer zählen die Zeit in Sekunden seit dem 1. Januar 1970, der **Unix-Zeit**; `date +%s` im Terminal zeigt sie. Geteilt durch 30 und abgerundet ist das der Zähler: Er wird alle 30 Sekunden um 1 größer, und genau so oft wechselt der Code in deiner App.
+
+<div class='gallery single'>
+<figure><img src='zeitfenster.webp' alt='Eine Zeitachse von 0 bis 150 Sekunden, in Fenster zu 30 Sekunden geteilt: Zähler 0 bis Zähler 4. Eine blaue Linie bei 59 Sekunden steht im Fenster von Zähler 1: 59 geteilt durch 30, abgerundet, ist 1.'><figcaption>Jedes Fenster von 30 Sekunden ist ein Wert des Zählers; zur Zeit 59 gilt Zähler 1</figcaption></figure>
+</div>
 
 Schreib `totp(key, time)`, das mit deinem `hotp` den Code für eine Unix-Zeit ausrechnet; ohne Zeit nimmt es die aktuelle. Die Prüfung vergleicht mit den [Testwerten aus RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#appendix-B).
 
