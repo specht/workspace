@@ -13416,3 +13416,26 @@ html[data-bs-theme="dark"] .prolog-search {
 .prolog-search-program li.current code.prolog-line {
     color: var(--stepper-current-ink);
 }
+
+/* Less motion for those who ask for it (prefers-reduced-motion): what
+   slides, turns, grows or walks jumps to where it ends; colours still fade.
+   Animations have their own rules beside them (task ticks, Pip's sprites). */
+@media (prefers-reduced-motion: reduce) {
+    .autotoc,
+    .autotoc > .progress_sm,
+    details.solution > summary::before,
+    .hint-steps > details.hint-step > summary::before,
+    .group-card > summary::before,
+    .git-twisty,
+    .git-side-bar .bi,
+    div[data-stepper] .stepper-timeline > span::before,
+    .pip-tile.actor,
+    .pip-glow.pip-glow-actor {
+        transition: none;
+    }
+    .autotoc-up,
+    .autotoc-secondary-up,
+    .task-options .form-check {
+        transition-property: background-color, color, border-color, opacity, visibility;
+    }
+}

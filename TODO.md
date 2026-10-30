@@ -213,7 +213,6 @@ Platform-wide:
 * [ ] E2E coverage for TCP/IP (the Git checks run in its screenshot recipes)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
-* [ ] A small `prefers-reduced-motion` pass for Workspace-owned transitions and animations
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
 
