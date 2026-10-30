@@ -194,6 +194,8 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 
 ## Existing pages
 
+* [ ] Code up to each step for teachers (docs/checkliste.md) still missing on Supermarkt (five languages, Java a file per class) and Prüfziffern (four languages, 17 boxes); `OPEN` in `stage_code_test.rb` names them. Laufzeit, Prolog, Kellerautomat, Turingmaschine and Grammatiken have one step only, for many tasks
+
 Open findings from the October 2026 review:
 
 | Page | Action |

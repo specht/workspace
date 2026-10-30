@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'yaml'
 require 'tmpdir'
 require 'fileutils'
 require_relative '../include/stage_code'
@@ -232,5 +233,30 @@ class StageCodeTest < Minitest::Test
         md = "```markdown\n# Seite\n```\n\n" + recipe('pages/1.md <- previous-code') + "<img src='a.webp' alt=''>\n"
         _, points = StageCode.mark(md, @dir)
         assert_empty points
+    end
+
+    # Where students program in files in the Workspace, a teacher gets the
+    # code up to each step (docs/checkliste.md). Not where queries are typed
+    # into a terminal (SQL) or a team works in Git; OPEN still lacks them.
+    CODE_CHECKS = %w[ruby python c java dart javascript prolog].freeze
+    NO_FILES = %w[mysql filmdatenbank class-quiz].freeze
+    OPEN = %w[supermarkt check-digits].freeze
+
+    def test_activities_where_students_program_have_steps
+        content = File.expand_path('../../content', __dir__)
+        catalog = YAML.load_file(File.join(content, 'sections.yaml')).reject { |s| s['hidden'] }
+            .flat_map { |s| s['entries'] || [] }.map(&:to_s)
+        without = catalog.select do |slug|
+            page = File.join(content, slug, "#{slug}.md")
+            next false unless File.file?(page)
+            markdown = File.read(page)
+            next false if markdown[/^kind:\s*(\S+)/, 1] == 'steckbrief' || slug =~ /\A(?:kata-|pip-|turtle-)/
+            tasks = (YAML.load_file(File.join(content, slug, 'tasks.yaml'))['tasks'] rescue nil) || []
+            programs = tasks.any? { |t| CODE_CHECKS.include?(t.dig('check', 'type')) } || markdown.include?("class='hint own'")
+            next false unless programs
+            StageCode.mark(markdown, File.dirname(page))[1].empty?
+        end
+        assert_empty without - NO_FILES - OPEN, "Activities where students program, without code up to a step for teachers:\n#{(without - NO_FILES - OPEN).join("\n")}"
+        assert_empty OPEN - without, "Remove these from OPEN, they have steps now: #{(OPEN - without).join(', ')}"
     end
 end
