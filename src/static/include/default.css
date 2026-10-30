@@ -3240,6 +3240,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     border-top: 1px solid var(--bs-border-color);
 }
 
+/* a note that ends with its facts: the table's last line is the rule */
+.teacher-note-body .table:has(+ .teacher-note-next) {
+    margin-bottom: 0;
+}
+
+.teacher-note-body .table + .teacher-note-next {
+    margin-top: 0;
+    border-top: 0;
+}
+
 .teacher-note-next > .bi {
     flex: none;
     margin-top: 0.1em;
