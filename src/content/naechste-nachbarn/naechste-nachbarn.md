@@ -117,6 +117,8 @@ Hypotenuse.
 
 $$d = \sqrt{(a\_1 - b\_1)^2 + (a\_2 - b\_2)^2}$$
 
+<img class='drawing' style='width: 28em' src='abstand.webp' alt='Ein Diagramm mit Länge nach rechts und Höhe nach oben. Zwei Punkte: b = (b1, b2) unten links, a = (a1, a2) oben rechts, verbunden durch eine blaue Linie d. Gestrichelt darunter die waagrechte Kathete a1 − b1 und rechts die senkrechte a2 − b2, mit einem rechten Winkel zwischen ihnen.'>
+
 Bei mehr als zwei Merkmalen kommt für jedes ein Quadrat unter die Wurzel dazu.
 Die Formel bleibt dieselbe, nur zeichnen kann man den Raum dann nicht mehr.
 

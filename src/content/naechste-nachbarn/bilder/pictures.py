@@ -14,13 +14,20 @@
   decision, and a new customer in Sandberg with lines to the five nearest,
   most of them asked for a deposit.
 
+- abstand.svg: two penguins as points a and b, the differences of their
+  measures as the legs of a right triangle, the distance d its hypotenuse
+  (»Wie weit zwei Pinguine auseinanderliegen«), labels typeset by LaTeX.
+
 Render each with src/scripts/render-svg.rb, the teaser and the card at 1280,
-the maps at 900."""
+the maps at 900, abstand at 1120."""
 
 import math
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(HERE.parent.parent / 'scripts'))
+from diagram_labels import math as tex  # noqa: E402
 STATIC = HERE.parent.parent / "static" / "naechste-nachbarn"
 SANS = "'IBM Plex Sans', system-ui, sans-serif"
 TEXT, BLUE, AMBER, PURPLE, GREY, LINE, WATER, WHITE = (
@@ -69,7 +76,7 @@ def teaser():
     out.append(f"<circle cx='{ux:.1f}' cy='{uy:.1f}' r='22' fill='{WHITE}' stroke='{TEXT}' stroke-width='5'/>")
     out.append(text(ux, uy + 11, "?", 32, TEXT, weight="bold"))
     # the legend, in the top right corner
-    for i, (species, label) in enumerate([("Adelie", "Adéliepinguin"), ("Chinstrap", "Zügelpinguin"), ("Gentoo", "Eselspinguin")]):
+    for i, (species, label) in enumerate([("Adelie", "Adélie"), ("Chinstrap", "Zügelpinguin"), ("Gentoo", "Eselspinguin")]):
         y = top + 30 + i * 46
         out.append(f"<rect x='{right - 280}' y='{y - 32}' width='280' height='46' fill='{WHITE}'/>")
         out.append(f"<circle cx='{right - 260}' cy='{y - 9}' r='11' fill='{COLOURS[species]}'/>")
@@ -181,7 +188,42 @@ def card():
     (HERE / "karte.svg").write_text("\n".join(out) + "\n")
 
 
+
+def abstand():
+    w, h = 560, 300
+    left, bottom = 50, 262
+    a, b = (420, 70), (140, 210)
+    corner = (a[0], b[1])
+    out = [f"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 {w} {h}' width='{w}' height='{h}'>",
+           "  <!-- Der Abstand zweier Pinguine als Hypotenuse; gemacht von bilder/pictures.py, als Bild:\n"
+           "       ruby src/scripts/render-svg.rb src/content/naechste-nachbarn/abstand.svg 1120 -->",
+           f"<rect width='{w}' height='{h}' fill='{WHITE}'/>",
+           # the axes, pale, as in the other pictures
+           f"<line x1='{left}' y1='{bottom}' x2='{w - 30}' y2='{bottom}' stroke='{LINE}' stroke-width='2'/>",
+           f"<line x1='{left}' y1='{bottom}' x2='{left}' y2='20' stroke='{LINE}' stroke-width='2'/>",
+           text(w - 30, bottom + 26, "Länge", 16, GREY, "end"),
+           f"<text x='{left - 14}' y='30' text-anchor='end' font-family=\"{SANS}\" font-size='16' fill='{GREY}' "
+           f"transform='rotate(-90 {left - 14} 30)'>Höhe</text>",
+           # the legs, and the right angle at their corner: an arc with a dot
+           f"<line x1='{b[0]}' y1='{b[1]}' x2='{corner[0]}' y2='{corner[1]}' stroke='{GREY}' stroke-width='2' stroke-dasharray='7 5'/>",
+           f"<line x1='{corner[0]}' y1='{corner[1]}' x2='{a[0]}' y2='{a[1]}' stroke='{GREY}' stroke-width='2' stroke-dasharray='7 5'/>",
+           f"<path d='M{corner[0] - 26} {corner[1]} A26 26 0 0 1 {corner[0]} {corner[1] - 26}' fill='none' stroke='{GREY}' stroke-width='1.5'/>",
+           f"<circle cx='{corner[0] - 9}' cy='{corner[1] - 9}' r='2.5' fill='{GREY}'/>",
+           # the distance
+           f"<line x1='{b[0]}' y1='{b[1]}' x2='{a[0]}' y2='{a[1]}' stroke='{BLUE}' stroke-width='3.5'/>",
+           f"<circle cx='{a[0]}' cy='{a[1]}' r='8' fill='{TEXT}'/>",
+           f"<circle cx='{b[0]}' cy='{b[1]}' r='8' fill='{TEXT}'/>",
+           tex(r'a = (a_1, a_2)', a[0] + 16, a[1] + 6, 19),
+           tex(r'b = (b_1, b_2)', b[0] - 16, b[1] + 26, 19, anchor='end'),
+           tex(r'a_1 - b_1', (b[0] + corner[0]) / 2, corner[1] + 30, 19, color=GREY, anchor='middle'),
+           tex(r'a_2 - b_2', corner[0] + 14, (a[1] + corner[1]) / 2 + 6, 19, color=GREY),
+           tex(r'd', (a[0] + b[0]) / 2 - 16, (a[1] + b[1]) / 2 - 10, 22, color=BLUE, anchor='end'),
+           "</svg>"]
+    (HERE / "abstand.svg").write_text("\n".join(out) + "\n")
+
+
 teaser()
 town("stadt.svg", False)
 town("stadt-kaution.svg", True)
 card()
+abstand()
