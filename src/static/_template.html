@@ -629,6 +629,8 @@ function install_secondary_autotoc() {
     }
 
     autotoc_secondary = nav;
+    // the teacher note can take its place beside the text (teacher_note.js)
+    document.dispatchEvent(new CustomEvent('autotoc-secondary-ready'));
 
     function update_active_secondary_autotoc() {
         autotoc_secondary_ticking = false;

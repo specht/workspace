@@ -690,7 +690,13 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
   Erklären des eigenen Codes. Das Ergebnis ist offen, bei jeder und jedem
   anders; keine Schritte, keine Bildschirmfotos, keine Lösung, nur der
   Ausgangspunkt. Was die Idee braucht und auf der Seite nicht steht, sagt
-  sie in einem Satz (eine Karte, die sich ändern lässt). Vorbilder: die
+  sie in einem Satz (eine Karte, die sich ändern lässt). Eine Stelle der
+  Seite verlinkt sie mit dem Text ihrer Überschrift ohne Nummer,
+  `[»Ein Planet«](#ein-planet)`, oder mit einer Aufgabe, `#aufgabe-march`:
+  Auf einem breiten Bildschirm steht die Notiz neben dem Text, und der Link
+  bewegt nur den Text (`teacher_note.js`); die Nummer eines Kapitels ändert
+  sich, wenn Kapitel dazukommen. `heading_anchors_test.rb` prüft jeden
+  solchen Link. Vorbilder: die
   Notizen zum [Raycaster](../src/content/raycaster/lehrkraft.md) und zum
   [Raytracer](../src/content/raytracing/lehrkraft.md).
 

@@ -3051,6 +3051,176 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     background-color: #f7f2fc;
 }
 
+/* Beside the text (teacher_note.js): from 1500 px an open note is a third
+   column of the side table of contents' layout, or on a page without it (a
+   Kata) the second column of a layout of its own around the page. The
+   layout grows from its centred width to the whole window (the left margin
+   goes) and the note's column from nothing to its width, both lengths, so
+   both move; the note stays at the side at full height and scrolls on its
+   own, the text scrolls with the window. A teacher's layout always has the
+   note's column, empty while the note is closed, and one gap more, so that
+   the text keeps its width. */
+@media (min-width: 1500px) {
+    body.has-teacher-note {
+        --teacher-note-width: 0px;
+    }
+    body.has-teacher-note.teacher-note-side {
+        --teacher-note-width: clamp(24rem, 30vw, 36rem);
+    }
+    body.has-autotoc-secondary.has-teacher-note {
+        --autotoc-layout-width: calc(
+            var(--autotoc-secondary-width)
+            + 2 * var(--autotoc-secondary-gap)
+            + var(--autotoc-article-width)
+        );
+    }
+    body.has-teacher-note .autotoc-secondary-layout {
+        grid-template-columns:
+            var(--autotoc-secondary-width)
+            minmax(0, 1fr)
+            var(--teacher-note-width);
+        transition: width 320ms ease, grid-template-columns 320ms ease;
+    }
+    .teacher-note-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) var(--teacher-note-width);
+        column-gap: 1.75rem;
+        align-items: start;
+        width: min(calc(100vw - 2rem), calc(1320px + 1.75rem));
+        margin-right: auto;
+        margin-left: auto;
+        transition: width 320ms ease, grid-template-columns 320ms ease;
+    }
+    .teacher-note-layout > .container {
+        width: 100%;
+        max-width: none;
+    }
+    body.teacher-note-side :is(.autotoc-secondary-layout, .teacher-note-layout) {
+        width: calc(100vw - 2rem);
+    }
+    body.teacher-note-side .autotoc-secondary-main {
+        max-width: none;
+    }
+    :is(.autotoc-secondary-layout, .teacher-note-layout) > .teacher-note {
+        position: sticky;
+        /* below the bar with the chapters, which a page without the side
+           table of contents (a Kata) shows when scrolled */
+        top: var(--autotoc-secondary-top, 4.2rem);
+        height: calc(100vh - var(--autotoc-secondary-top, 4.2rem) - var(--autotoc-secondary-bottom, 1.9rem));
+        margin: 1rem 0 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+@media (min-width: 1500px) and (prefers-reduced-motion: reduce) {
+    body.has-teacher-note :is(.autotoc-secondary-layout, .teacher-note-layout) {
+        transition: none;
+    }
+}
+/* Where the note is narrow (on a phone, beside the text), each label of
+   its table stands above its text instead of in a column of its own,
+   which would leave a strip of white under it */
+.teacher-note {
+    container: teacher-note / inline-size;
+}
+@container teacher-note (max-width: 40rem) {
+    .teacher-note .teacher-note-body .table,
+    .teacher-note .teacher-note-body .table tbody,
+    .teacher-note .teacher-note-body .table tr,
+    .teacher-note .teacher-note-body .table th,
+    .teacher-note .teacher-note-body .table td {
+        display: block;
+        width: auto;
+    }
+    .teacher-note .teacher-note-body .table th {
+        padding-top: 0.7em;
+        padding-bottom: 0.1em;
+        padding-left: 0;
+        border-bottom: none;
+        font-size: 0.85em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+    .teacher-note .teacher-note-body .table td {
+        padding-top: 0;
+        padding-bottom: 0.7em;
+        padding-left: 0;
+    }
+}
+/* a scrollbar in the note's colours, as the pin menu beside it */
+.teacher-note {
+    scrollbar-width: thin;
+    scrollbar-color: #d9c9ee transparent;
+}
+.teacher-note::-webkit-scrollbar {
+    width: 8px;
+}
+.teacher-note::-webkit-scrollbar-track {
+    background: transparent;
+}
+.teacher-note::-webkit-scrollbar-thumb {
+    background: #d9c9ee;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-clip: padding-box;
+}
+/* its head, only beside the text: the strip's button has scrolled away */
+.teacher-note-side-head {
+    display: none;
+}
+:is(.autotoc-secondary-layout, .teacher-note-layout) > .teacher-note .teacher-note-side-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55em 0.6em 0.55em 1.25em;
+    border-bottom: 1px solid #d9c9ee;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 90%;
+    font-weight: 600;
+}
+.teacher-note-side-head .bi-person-video3 {
+    margin-right: 0.45em;
+}
+.teacher-note-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+}
+.teacher-note-close .bi,
+.teacher-note-close .bi::before {
+    display: block;
+    line-height: 1;
+    vertical-align: 0;
+}
+.teacher-note-close:hover,
+.teacher-note-close:focus-visible {
+    background-color: rgba(91, 47, 143, 0.12);
+}
+/* where a link in the note led: marked for a moment, then as before */
+.teacher-note-target {
+    animation: teacher-note-target 2.4s ease-out;
+}
+@keyframes teacher-note-target {
+    0%, 35% { background-color: rgba(240, 160, 0, 0.28); }
+    100% { background-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .teacher-note-target {
+        animation-duration: 0.01s;
+    }
+}
+
 /* The note reads like a sheet of facts: the opening paragraph a little
    larger, the facts a table with their label in a column of its own
    (above the text on a phone), the sections under small headings, and
@@ -3456,26 +3626,6 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     .reference-table {
         display: block;
         overflow-x: auto;
-    }
-    .teacher-note-body .table,
-    .teacher-note-body .table tbody,
-    .teacher-note-body .table tr,
-    .teacher-note-body .table th,
-    .teacher-note-body .table td {
-        display: block;
-        width: auto;
-    }
-    .teacher-note-body .table th {
-        padding-top: 0.7em;
-        padding-bottom: 0.1em;
-        border-bottom: none;
-        font-size: 0.85em;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-    }
-    .teacher-note-body .table td {
-        padding-top: 0;
-        padding-bottom: 0.7em;
     }
 }
 

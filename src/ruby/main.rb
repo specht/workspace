@@ -6183,7 +6183,8 @@ class Main < Sinatra::Base
 
     # The teacher note of a page (lehrkraft.md), for teachers only: a small
     # button at the right end of the page strip, so the page can be shown on
-    # a projector as it is, and the note itself below it, closed.
+    # a projector as it is, and the note itself below it, closed; on a wide
+    # screen it opens beside the text (teacher_note.js).
     def teacher_note?(slug)
         !(@@content[slug] || {})[:teacher_note].nil? && teacher_account_logged_in?
     end
@@ -6207,10 +6208,9 @@ class Main < Sinatra::Base
             (after.empty? ? "Keine andere Aktivität baut auf dieser auf. Wie die Aktivitäten aufeinander aufbauen, zeigt der <a href='/lehrplan?zeige=#{h.(slug)}#wege'>Lehrplan</a>." :
                 "Auf dieser Aktivität #{after.size == 1 ? 'baut' : 'bauen'} #{PageKinds.join_and(after.map { |s, t| "<a href='/#{h.(s)}'>#{h.(CGI.unescapeHTML(t))}</a>" })} auf (#{show}).") +
             '</div></div>'
+        # opened above the text or, on a wide screen, beside it (teacher_note.js)
         "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}#{next_html}</div></div>" \
-            "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
-            "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
-            "document.getElementById('teacher-note').hidden = !open; });</script>"
+            "<script src='/include/teacher_note.js'></script>"
     end
 
     # --- Answers under open tasks (docs/aufgaben.md) ---------------------------

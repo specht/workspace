@@ -90,6 +90,36 @@ class HeadingAnchorsTest < Minitest::Test
             'link the part (#code) instead of a numbered chapter'
     end
 
+    # A heading as a teacher note may name it: its text without its number,
+    # spelled as an id (teacher_note.js, key), #die-karte-von-oben
+    def self.heading_keys(markdown)
+        prose = markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '').gsub(/<!--.*?-->/m, '')
+        prose.scan(/^\#{2,4} (.+)$/).flatten.map do |text|
+            slugify(text.gsub(/`([^`]*)`/, '\1').gsub(/\[([^\]]*)\]\([^)]*\)/, '\1').gsub(/<[^>]+>/, '').delete('*'))
+        end
+    end
+
+    # A teacher note (lehrkraft.md) links to its page: a task (#aufgabe-…),
+    # an id there, or a heading by its text, which stays when chapters move.
+    def test_every_link_in_a_teacher_note_finds_its_place
+        broken = Dir[File.join(CONTENT, '*', 'lehrkraft.md')].filter_map do |file|
+            dir = File.dirname(file)
+            slug = File.basename(dir)
+            page = File.join(dir, "#{slug}.md")
+            next unless File.file?(page)
+
+            markdown = File.read(page)
+            tasks = File.file?(File.join(dir, 'tasks.yaml')) ? File.read(File.join(dir, 'tasks.yaml')).scan(/^  - id: (\S+)/).flatten : []
+            ids = HeadingAnchorsTest.ids(markdown)
+            keys = HeadingAnchorsTest.heading_keys(markdown)
+            missing = HeadingAnchorsTest.links(File.read(file)).reject do |id|
+                ids.key?(id) || keys.include?(id) || tasks.include?(id.delete_prefix('aufgabe-'))
+            end
+            "#{slug}/lehrkraft.md: #{missing.map { |id| "##{id}" }.join(', ')}" unless missing.empty?
+        end
+        assert_empty broken, 'a link in a teacher note to a place that is not on its page'
+    end
+
     def test_every_link_on_a_page_finds_its_place
         broken = Dir[File.join(CONTENT, '*', '*.md')].filter_map do |file|
             slug = File.basename(File.dirname(file))

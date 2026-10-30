@@ -591,7 +591,16 @@ html[data-bs-theme="dark"] {
     .teacher-note {
         border-color: #4a3a63;
         background-color: #221b2d;
+        scrollbar-color: #4a3a63 transparent;
     }
+    .teacher-note::-webkit-scrollbar-thumb { background: #4a3a63; background-clip: padding-box; }
+    :is(.autotoc-secondary-layout, .teacher-note-layout) > .teacher-note .teacher-note-side-head {
+        border-color: #4a3a63;
+        background-color: #221b2d;
+        color: #cdb0f2;
+    }
+    .teacher-note-close:hover,
+    .teacher-note-close:focus-visible { background-color: rgba(205, 176, 242, 0.14); }
     .teacher-note-body h4,
     .teacher-note-body .table th { color: #cdb0f2; }
     .teacher-note-body .table,
