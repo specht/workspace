@@ -211,7 +211,6 @@ Platform-wide:
 * [ ] Java in the form of Java 25 (`void main()`, `IO.println`) on the profile only so far: the Handbuch »Dart und Java« and the Java variants of Prüfziffern and Supermarkt still write `public static void main(String[] args)` and `System.out.println`; the Java Katas too. Classes stay where checks call them (`BubbleSort.bubbleSort`), but `main` and the output could follow; decide per page
 * [ ] Check end to end in a real Workspace: the web server's »Eine Umfrage« as a command check (the recipes run `check-task: umfrage <- curl -si …`; recreate the page's screenshots), and the GLSL compile check (`compile: glsl`, tried only in a container of the image)
 * [ ] Pictures made by scripts that the last screenshot run (30 October 2026) reported stale: about (`e2e/tests/activity-tour.pictures.ts`), lehrmaterial-einstieg (`teacher-guide.pictures.ts`), radio (`cable.pictures.ts`)
-* [ ] Raycaster: mention saving the picture with the camera button or F9 (PixelRAM 0.1.24), as Raytracing and PixelRAM do
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] A dark card picture for the activities that have none (`audit-activities.rb`, column »Karte«: »nicht dunkel«), from `variants: dark` or `render-svg.rb`
 * [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
@@ -232,10 +231,6 @@ Platform-wide:
 
 * [ ] Audit command/error logging so secrets and credentials cannot appear in logs
 * [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
-
-### Image build
-
-* [ ] `docker/code/check-root-space.sh` refuses a stage only below 1 GiB free on Docker's disk; a single step (the .NET SDK) failed for lack of space mid-build. Raise the minimum (`MIN_ROOT_FREE_GIB`) to what a build needs, perhaps 20 GiB
 
 ### Dependency and image verification
 

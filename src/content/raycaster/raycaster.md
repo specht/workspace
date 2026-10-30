@@ -1812,6 +1812,8 @@ crop-element: #canvas
 </figure>
 </div>
 
+Ein Bild deiner Welt behältst du so: Fährst du mit der Maus über das Bild, erscheinen unten rechts Knöpfe, und der erste mit der Kamera (oder <kbd>F9</kbd>) lädt das Bild als PNG herunter, mit den Pixeln, die dein Programm zeichnet, ohne CRT-Filter. Fehlt der Knopf, holt `make pixelram-update` im Terminal die neueste Fassung von PixelRAM.
+
 <!-- extra -->
 ## Nach Wolfenstein: DOOM
 

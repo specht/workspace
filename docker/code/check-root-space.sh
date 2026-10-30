@@ -3,7 +3,9 @@ set -euo pipefail
 
 # A guard between stages, not a quota: individual Docker RUN commands can
 # consume multiple GB. Keep df -h / open while building and abort if needed.
-min_gib="${MIN_ROOT_FREE_GIB:-1}"
+# a single step of the image (the .NET SDK, Flutter with Android) takes
+# several GiB, and layers are written on top: 20 GiB before each stage
+min_gib="${MIN_ROOT_FREE_GIB:-20}"
 case "$min_gib" in
     ''|*[!0-9]*) echo 'MIN_ROOT_FREE_GIB must be a nonnegative integer' >&2; exit 2 ;;
 esac
