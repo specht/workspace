@@ -54,6 +54,14 @@ Lernende schreiben in C mit PixelRAM einen Raycaster wie Wolfenstein 3D, Schritt
 - Die Palette aus 16 Farbtönen vom Abschnitt »Licht« wird dabei ersetzt; die Aufgabe dazu bleibt dort. `make` übersetzt auch neu, wenn sich nur `palette.h` geändert hat.
 - Das Werkzeug liegt auch unter `src/content/raycaster/werkzeug/`, die alten Texturen aus Code unter `bilder/texturen-aus-code.c`.
 
-#### Weiter
+#### Eigene Projekte
 
-Türen, Sprites mit einem Abstandspuffer je Spalte, die Maus zum Umsehen, Licht je Kästchen. Das Gegenstück ohne Echtzeit und mit echten Farben ist der [Raytracer](/raytracing).
+Nach der Seite haben die Lernenden ein Programm, das sie ganz verstehen. Daraus wird ein eigenes Spiel: Jede Idee nimmt etwas von der Seite wieder auf, sieht bei jeder und jedem anders aus und lässt sich ohne Prüfung bewerten, beim Vorführen und beim Erklären des eigenen Codes.
+
+- **Ein Level mit Ziel** (eine Doppelstunde): eine eigene Karte mit einem Ausgang und einem Schalter oder Schlüssel, der eine Wand verschwinden lässt. Neu ist nur Spiellogik auf der Karte: Ein Kästchen ändert seinen Wert, und der nächste Strahl sieht dort keine Wand mehr. Dafür muss die Karte änderbar sein; als `const char *map[]` zeigt sie auf feste Texte, ein Schreiben darin bricht das Programm ab. `char map[MAP_H][MAP_W + 1]` mit denselben Zeilen geht. Zum Vorführen spielt jemand aus der Klasse das Level, ohne die Karte zu kennen.
+- **Türen, die sich schieben** (eine Doppelstunde): eine Wandart, deren Wandscheibe in der Mitte ihres Kästchens steht und zur Seite gleitet, wenn man davorsteht. Der Strahl geht dafür ein halbes Kästchen weiter, und das `u` aus »Wo trifft der Strahl die Wand?« entscheidet, ob er die Tür trifft oder an ihr vorbeigeht. Wer das erklären kann, hat die DDA verstanden.
+- **Gegenstände und Gegner** (ein Projekt über zwei, drei Doppelstunden): Bilder aus dem 2D Game Studio, die mitten im Raum stehen (Sprites). Die Kamera-Ebene kommt umgekehrt wieder vor: Aus der Lage eines Sprites zur Figur wird eine Bildspalte. Dazu schreibt `draw_view` je Spalte den Abstand der Wand in ein Array, einen Abstandspuffer; ein Sprite erscheint nur dort, wo er näher ist. Wer Gegner bewegt, braucht die Kollision ein zweites Mal.
+- **Ein Labyrinth vom Computer** (eine Doppelstunde; mit Graphen ein Projekt): Die Karte entsteht beim Start aus einem Algorithmus, etwa einer Tiefensuche, die Gänge gräbt, und jeder Start ist ein neues Level. Dazu passt die Breitensuche aus dem [Routenplaner](/routenplaner), die den kürzesten Weg zum Ausgang findet.
+- **Licht an Orten** (eine Doppelstunde): Jedes Kästchen bekommt ein eigenes Licht, eine Fackel an der Wand, ein dunkler Gang. Die Schattentabelle bleibt; nur der Index, mit dem man in ihr nachschlägt, kommt aus der Karte statt allein aus dem Abstand. Zu bewerten ist, wie jemand die Helligkeit an den Grenzen der Kästchen weich macht.
+
+Das Gegenstück ohne Echtzeit und mit echten Farben ist der [Raytracer](/raytracing).

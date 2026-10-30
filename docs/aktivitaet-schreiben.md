@@ -678,9 +678,21 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
   stehen, wie sie sind.
 - **Abschnitte mit `####`** für das, was nicht in eine Zeile passt: Was
   schiefgeht, Die Aufgaben (welche Rückmeldung welchen Fehler erkennt),
-  Tipps in Stufen, Weiter. Ihr Inhalt ist eine Liste, ein Punkt je Fehler
+  Tipps in Stufen. Ihr Inhalt ist eine Liste, ein Punkt je Fehler
   oder Aufgabe, mit dem Stichwort fett vorn (`- **Das Bild ist gespiegelt.**
   …`).
+- **Zuletzt `#### Eigene Projekte`**: drei bis fünf Ideen, mit denen die
+  Lehrkraft aus der Aktivität etwas Eigenes der Lernenden macht, damit sie
+  nicht als abgearbeitete Anleitung endet. Jede Idee in zwei, drei Sätzen:
+  was entsteht, was von der Seite wiederkommt (die DDA, die Kamera-Ebene,
+  die Kapselung), wie groß sie ist (`(eine Doppelstunde)`, `(ein Projekt)`)
+  und woran man sie ohne Prüfung bewertet: Vorführen, ein Spieltest, das
+  Erklären des eigenen Codes. Das Ergebnis ist offen, bei jeder und jedem
+  anders; keine Schritte, keine Bildschirmfotos, keine Lösung, nur der
+  Ausgangspunkt. Was die Idee braucht und auf der Seite nicht steht, sagt
+  sie in einem Satz (eine Karte, die sich ändern lässt). Vorbilder: die
+  Notizen zum [Raycaster](../src/content/raycaster/lehrkraft.md) und zum
+  [Raytracer](../src/content/raytracing/lehrkraft.md).
 
 Auf dem Handy steht das Stichwort einer Zeile über ihrem Text, und kurzer
 Code (`01-karte.c`) bricht nicht am Bindestrich um. `teacher_note_test.rb`

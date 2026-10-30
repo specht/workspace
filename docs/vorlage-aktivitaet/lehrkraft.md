@@ -20,3 +20,9 @@ Lernende … (ein, zwei Sätze: was sie tun und was am Ende dasteht). Lernende s
 #### Die Aufgaben
 
 - …
+
+#### Eigene Projekte
+
+- **…** (eine Doppelstunde): was entsteht, was von der Seite wiederkommt, woran man es bewertet.
+- **…** (ein Projekt): …
+- **…** (eine Stunde): …
