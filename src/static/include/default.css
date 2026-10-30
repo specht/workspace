@@ -3189,19 +3189,19 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     width: 2em;
     height: 2em;
     padding: 0;
+    line-height: 0;
     border: 0;
     border-radius: 50%;
     background: none;
     color: inherit;
 }
-.teacher-note-close .bi,
-.teacher-note-close .bi::before {
+.teacher-note-close svg {
     display: block;
-    line-height: 1;
-    vertical-align: 0;
+    flex: none;
 }
 .teacher-note-close:hover,
 .teacher-note-close:focus-visible {

@@ -28,7 +28,11 @@
     head.className = 'teacher-note-side-head';
     head.innerHTML = "<span><i class='bi bi-person-video3' aria-hidden='true'></i>Notiz für Lehrkräfte</span>" +
         "<button type='button' class='teacher-note-close' title='Notiz schließen' aria-label='Notiz schließen'>" +
-        "<i class='bi bi-x-lg' aria-hidden='true'></i></button>";
+        // the icon as a drawing (Bootstrap Icons, x-lg), not a glyph: the
+        // font's line height set it off the middle of its circle in some
+        // browsers
+        "<svg viewBox='0 0 16 16' width='14' height='14' fill='currentColor' aria-hidden='true'>" +
+        "<path d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z'/></svg></button>";
     note.insertBefore(head, note.firstChild);
     head.querySelector('button').addEventListener('click', () => { set(false); toggle.focus(); });
 

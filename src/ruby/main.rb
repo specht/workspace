@@ -6210,7 +6210,7 @@ class Main < Sinatra::Base
             '</div></div>'
         # opened above the text or, on a wide screen, beside it (teacher_note.js)
         "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}#{next_html}</div></div>" \
-            "<script src='/include/teacher_note.js'></script>"
+            "<script src='/include/teacher_note.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # --- Answers under open tasks (docs/aufgaben.md) ---------------------------
