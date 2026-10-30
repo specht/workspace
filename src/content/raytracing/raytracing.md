@@ -1895,7 +1895,7 @@ In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild f�
 <figcaption>Modern Talking: »Let’s Talk About Love«, 1985</figcaption>
 </figure>
 <figure>
-<img src='jerry-goodman-ariel.webp' alt='Ein Plattencover: oben »Ariel« in weit auseinandergezogenen Buchstaben und »Jerry Goodman«. Vor einem dunklen, wolkigen Himmel steht eine große dunkle Kugel auf einem braun-schwarzen Schachbrett, das bis nach vorn reicht. In der unteren Hälfte der Kugel setzt sich das Schachbrett fort, Feld für Feld so, wie es um sie herum liegt. Um die Kugel schwimmen sieben rosa Fische durch die Luft.'>
+<img src='jerry-goodman-ariel.webp' alt='Ein Plattencover: oben »Ariel« in weit auseinandergezogenen Buchstaben und »Jerry Goodman«. Vor einem dunklen, wolkigen Himmel steht eine große dunkle Kugel auf einem braun-schwarzen Schachbrett, das bis nach vorn reicht. In der unteren Hälfte der Kugel ist das Schachbrett zu sehen, zum Rand hin gebogen und zusammengedrückt, unter ihr liegt ihr Schatten. Um die Kugel schwimmen sieben rosa Fische durch die Luft, zwei davon links direkt vor ihr.'>
 <figcaption>Jerry Goodman: »Ariel«, 1986</figcaption>
 </figure>
 </div>
