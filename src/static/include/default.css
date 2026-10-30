@@ -509,6 +509,14 @@ pre.long-code {
     user-select: none;
 }
 
+/* the pre of the line numbers and that of the code inside the listing
+   (_include_file): the room for the copy button is the outer pre's, they
+   need none of their own, or the code stands far right of its numbers */
+.rouge-table pre {
+    padding: 0;
+    margin: 0;
+}
+
 kbd {
     position: relative;
     top: -0.05em;
