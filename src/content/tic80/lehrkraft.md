@@ -22,6 +22,11 @@ Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: C
 
 »Fallen und fangen« sucht die Zeilen aus dem Kasten »Jetzt bist du dran« (oben). »Im Workspace gespeichert«, »Ein Stern fällt«, »Viele Sterne«, »Ein Ton beim Fangen« und »Ein Himmel« lesen `TIC-80/stars.lua` und suchen typische Bausteine (`function TIC`, `math.random`, `for`, `sfx(`, `pix(`); die Karte nennt die Zeile, in der sie etwas gefunden hat. »Deine Figur« sieht nach, ob Sprite 1 anders aussieht als die mitgelieferte Figur. »Ohne cls« ist eine Vorhersage.
 
-#### Weiter
+#### Eigene Projekte
 
-Für alle, die schneller sind, sind die Ideen am Ende der Seite gedacht; der Rekord mit `pmem` und eine Karte im Map-Editor sind die ergiebigsten. Gute Spiele von anderen gibt es auf [tic80.com](https://tic80.com/play): Dort lässt sich jedes Spiel auch im Code-Editor ansehen.
+Die Seite endet mit einem eigenen Spiel; für Schnelle sind die Ideen dort gedacht, der Rekord mit `pmem` und eine Karte im Map-Editor sind die ergiebigsten. Die Ideen hier machen daraus ein größeres Stück. Bewertet wird am Spieltest, bei dem jemand aus der Klasse zwei Minuten spielt, ohne Erklärung, und daran, dass die Lernenden einen Teil ihres Codes erklären. Gute Spiele von anderen gibt es auf [tic80.com](https://tic80.com/play), jedes auch im Code-Editor zu lesen.
+
+- **Ein Spiel zu einem Thema** (eine Doppelstunde bis ein Projekt): Wie bei einem Game Jam steht zu Beginn ein Thema fest, »nur ein Knopf«, »rückwärts«, »zu klein«, und jedes Spiel deutet es anders. Die Grenzen von TIC-80, 240 × 136 Pixel und 16 Farben, zwingen zu Entscheidungen; zum Schluss spielt die Klasse alle Spiele reihum.
+- **Ein Jump-’n’-Run auf einer Karte** (ein Projekt): Die Welt kommt aus dem Map-Editor, und `mget` sagt, welche Kachel unter den Füßen liegt: Boden, Stachel oder Ziel. Die Figur aus [»Die Figur«](#die-figur) bekommt Schwerkraft und einen Sprung; die Kamera folgt ihr, wenn die Karte größer ist als der Bildschirm.
+- **Zu zweit an einer Tastatur** (eine Doppelstunde): `btn` kennt die Knöpfe eines zweiten Spielers (8 bis 15). Daraus wird ein Spiel gegeneinander oder miteinander, und der Spieltest ist gleich zu zweit.
+- **Ein Spiel zum Lernen** (ein Projekt): Kopfrechnen, Vokabeln oder Hauptstädte für eine jüngere Klasse, verpackt in ein Spiel mit fallenden Antworten wie die Sterne. Die Fragen stehen in einer Lua-Tabelle; getestet wird mit den Jüngeren selbst.

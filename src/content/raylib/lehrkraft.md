@@ -47,6 +47,11 @@ Bis Kapitel »Licht« zeichnet das Programm jeden sichtbaren Block als ganzen W�
 - »Von oben« und »Kleben oder gleiten?« sind Vorhersagen.
 - Die Rechenaufgaben (Felder des Arrays, Schritt pro Bild, Sprunghöhe, Seiten einer Wiese, Skalarprodukt der Sonne, Abfall des Fackellichts) haben eine Lösung mit Rechenweg.
 
-#### Weiter
+#### Eigene Projekte
 
-Die Ideen am Ende der Seite reichen von neuen Blockarten bis zu einem kleinen Spiel mit Zeitmessung. Wer weiter will, findet unter [raylib.com/examples](https://www.raylib.com/examples.html) Beispiele zu Modellen, Texturen, Tönen und Schatten, die alle mit derselben Vorlage übersetzen.
+Die Seite endet mit eigenen Ideen für die Welt, von Blockarten bis zur Goldsuche auf Zeit. Die Ideen hier sind größer; jede nimmt etwas von der Seite wieder auf. Bewertet wird beim Vorführen und am Erklären des eigenen Codes. Beispiele zu Modellen, Tönen und Schatten gibt es unter [raylib.com/examples](https://www.raylib.com/examples.html); sie übersetzen mit derselben Vorlage.
+
+- **Ein Spiel in der Blockwelt** (ein Projekt): ein Parcours mit Startblock, Zielblock und Zeit, ein Labyrinth unter der Erde oder eine Insel, auf der man vor der Nacht ein Haus bauen muss. Der Strahl aus [»Wohin zielst du?«](#wohin-zielst-du) und die Kollision aus [»Fest oder nicht?«](#fest-oder-nicht) kommen wieder, dazu Spielregeln, die die Lernenden selbst erfinden. Zum Vorführen spielt jemand aus der Klasse.
+- **Blöcke, die sich bewegen** (eine Doppelstunde): Sand, der rieselt, Wasser, das in Löcher fließt, Gras, das sich ausbreitet. Wie bei einem zellulären Automaten schaut jeder Block bei jedem Takt auf seine Nachbarn im Array aus [»Die Welt ist ein Array«](#die-welt-ist-ein-array); schwierig ist, dass ein Block im selben Takt nicht zweimal fällt.
+- **Die Welt speichern** (eine Doppelstunde): Die Welt wird in eine Datei geschrieben und beim Start wieder geladen. Sie besteht zum großen Teil aus Luft und Stein in langen Reihen; mit der Lauflängenkodierung aus [»Komprimieren mit Lauflängen«](/rle) wird die Datei ein Bruchteil so groß, und die Lernenden messen, wie viel.
+- **Ein eigener Shader-Effekt** (eine Doppelstunde): Wasser, das sich bewegt, ein Unterwasserblau unter der Wasserlinie, Blitze in der Nacht. Der Shader aus [»Ein Shader rechnet das Licht«](#ein-shader-rechnet-das-licht) bekommt dafür einen Wert mehr, die Zeit oder die Höhe der Kamera.
