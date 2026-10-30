@@ -366,8 +366,11 @@ ohne Bild da, nur mit dem Text, ohne Silhouette und ohne Platzhalter: Ein
 Schattenriss sähe aus wie ein Bild, das nicht geladen hat. Ohne `<img>` zeigt
 der Kasten den Text über die ganze Breite.
 
-Zwei Menschen in einem Kasten: `<div class='person pair'>` mit
-`<div class='portraits'>` um die beiden Fotos. Haben mehrere eine Sache
+Mehrere Menschen in einem Kasten: `<div class='person pair'>` mit
+`<div class='portraits'>` um die Fotos, jedes in
+`<div class='portrait'>` mit dem Namen darunter (`<span>Alan Kay</span>`),
+damit man sieht, wer wer ist. Zwei stehen neben dem Text, drei und mehr in
+einer Reihe darüber, auf dem Handy auch zwei. Haben mehrere eine Sache
 gemacht und nur einer ein Foto (A*: Hart, Nilsson, Raphael), steht dieses
 eine Foto im Kasten, und der Text sagt, wer darauf ist. Das Foto darf unter
 jeder Lizenz stehen, unter der wir es kostenlos zeigen dürfen (gemeinfrei,

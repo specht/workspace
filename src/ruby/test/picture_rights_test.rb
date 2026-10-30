@@ -33,7 +33,7 @@ class PictureRightsTest < Minitest::Test
         ### Zwei
 
         <div class='person pair'>
-        <div class='portraits'><img src='one.webp' alt='Eins'><img src='two.webp' alt='Zwei'></div>
+        <div class='portraits'><div class='portrait'><img src='one.webp' alt='Eins'><span>Eins</span></div><div class='portrait'><img src='two.webp' alt='Zwei'><span>Zwei</span></div></div>
         <p>Zwei Menschen.</p>
         <p class='person-credit'>Foto: Archiv der Firma, zugeschnitten</p>
         </div>
@@ -182,12 +182,14 @@ class PictureRightsTest < Minitest::Test
             md = File.join(root, 'reference', 'personen', 'personen.md')
             html = "<div class='person'><img src='ada.webp'><p class='person-credit'>Bild: gemeinfrei</p></div>" \
                    "<div class='person'><img src='hopper.webp'><p>Grace</p></div>" \
-                   "<div class='person pair'><div class='portraits'><img src='one.webp'><img src='two.webp'></div>" \
+                   "<div class='person pair'><div class='portraits'><div class='portrait'><img src='one.webp'><span>Eins</span></div>" \
+                   "<div class='portrait'><img src='two.webp'><span>Zwei</span></div></div>" \
                    "<p class='person-credit'>Foto: Archiv der Firma</p></div>"
             live = Nokogiri::HTML(html)
             PictureRights.withhold(live, md, root: root)
             assert_equal ['ada.webp'], live.css('img').map { |i| i['src'] }
             assert_empty live.css('div.portraits')
+            refute_includes live.text, 'Eins', 'the name goes with its portrait'
             assert_equal ['Bild: gemeinfrei'], live.css('p.person-credit').map(&:text)
 
             development = Nokogiri::HTML(html)

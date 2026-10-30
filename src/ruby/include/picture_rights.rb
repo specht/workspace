@@ -144,7 +144,8 @@ module PictureRights
                 book.css('p.book-credit').each(&:remove)
                 book['class'] = book['class'].to_s.sub(/\s*with-cover/, '')
             elsif box
-                img.remove
+                # in a box of several, the portrait goes with its name
+                (img.ancestors('div.portrait').first || img).remove
                 box.css('div.portraits').each { |d| d.remove if d.css('img').empty? }
                 box.css('p.person-credit').each(&:remove) if box.css('img').empty?
             elsif figure
