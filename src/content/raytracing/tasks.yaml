@@ -494,26 +494,32 @@ tasks:
   - id: cover
     title: Was stimmt hier nicht?
     prompt: |
-      Sieh dir das Cover von »Let's Talk About Love« genau an und vergleiche
-      es mit deinem Raytracer: mit den Spiegelkugeln, den Schatten und dem
-      Schachbrett. Was kann so nicht stimmen? Nenne mindestens drei Fehler und
-      sag jeweils, wie es richtig aussehen müsste.
+      Sieh dir die drei Cover genau an und vergleiche sie mit deinem
+      Raytracer: mit den Spiegel- und Glaskugeln, den Schatten, dem Licht und
+      dem Schachbrett. Was kann so nicht stimmen? Nenne bei jedem Cover
+      mindestens einen Fehler und sag jeweils, wie es richtig aussehen müsste.
     check:
       type: reflection
-      min_words: 30
+      min_words: 45
     examples:
       - |
-        Die Kugeln spiegeln das Schachbrett nicht, auf dem sie liegen: Ihre
-        untere Hälfte müsste schwarze und weiße Felder zeigen, wie bei meiner
-        Spiegelkugel. Sie werfen auch keine Schatten, darum scheinen sie zu
-        schweben. Und die hellen Glanzpunkte sitzen bei jeder Kugel woanders,
-        als hätte jede ihre eigene Sonne.
+        Bei »On a Roll« hat die rote Kugel ihren Glanzpunkt oben rechts, die
+        gelbe oben links, als gäbe es zwei Sonnen; bei einer Sonne sitzen sie
+        auf derselben Seite. Die Kugeln spiegeln auch das blaue Brett nicht,
+        und der dunkle Fleck unten links ist ein Schatten von nichts. Bei
+        Modern Talking spiegeln die Kugeln das Schachbrett nicht, auf dem sie
+        liegen, und werfen keine Schatten. Die Kugel auf »Ariel« zeigt unten
+        das Brett, als wäre sie ein Loch: Eine Spiegelkugel würde es zum Rand
+        hin zusammengedrückt zeigen, und die Fische müssten sich darin
+        spiegeln.
       - |
-        Das Schachbrett ist nur ein ausgeschnittener Streifen, der in den
-        Himmel läuft, kein Boden bis zum Horizont, und sein linker und
-        rechter Rand passen nicht zusammen: Sie laufen nicht auf denselben
-        Punkt zu. Die Spiegelungen in den Kugeln zeigen weder das Brett noch
-        die anderen Kugeln, nur dunkle Flecken.
+        Bei Modern Talking ist das Schachbrett nur ein Streifen, der in den
+        Himmel läuft, und seine Ränder laufen nicht auf denselben Punkt zu.
+        Durch die Glaskugeln müsste man das Brett dahinter auf dem Kopf sehen,
+        nicht nur dunkle Flecken. Bei »Ariel« werfen weder die Kugel noch die
+        Fische einen Schatten aufs Brett, und oben spiegelt die Kugel die
+        Wolken nicht. Bei Point Blank fliegen Kugeln über dem Brett, aber kein
+        Schatten liegt unter ihnen.
 
   - id: eigene-szene
     title: Deine Szene

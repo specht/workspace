@@ -1883,9 +1883,22 @@ Kreise mit den Pfeiltasten um die Szene. Solange du eine Taste hältst, rauscht 
 
 ### Kugeln auf Plattencovern
 
-In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild für Computergrafik schlechthin. Whitteds Bild von 1979 zeigte genau das, und bald tauchten solche Kugeln auch auf Plattencovern auf. Dieses ist von 1985, das zweite Album von Modern Talking, hier in der Ausgabe von Amiga, dem Plattenlabel der DDR. Ob das Bild gemalt, fotografiert oder gerechnet ist, steht nirgends. Mit dem, was du über Strahlen weißt, siehst du aber, was daran nicht stimmen kann.
+In den 1980er Jahren waren glänzende Kugeln über einem Schachbrett das Bild für Computergrafik schlechthin. Whitteds Bild von 1979 zeigte genau das, und bald tauchten solche Kugeln auch auf Plattencovern auf: 1982 bei der Rockband Point Blank, 1985 auf dem zweiten Album von Modern Talking und 1986 bei dem Geiger Jerry Goodman. Ob die Bilder gemalt, fotografiert oder gerechnet sind, steht auf keinem. Mit dem, was du über Strahlen weißt, siehst du aber, was daran nicht stimmen kann.
 
-<img class='drawing' src='modern-talking.webp' alt='Ein Plattencover: oben in geschwungener Schrift »Modern Talking« und »Let’s Talk About Love«, darunter ein schwarz-weiß-goldenes Schachbrett, das als schmaler Streifen nach hinten in den Himmel läuft, mit sechs glänzenden Kugeln in Blau, Orange und Rosa darauf, unten »The 2nd Album«.'>
+<div class='gallery columns-3'>
+<figure>
+<img src='point-blank-on-a-roll.webp' alt='Ein Plattencover: oben in blauer Schrift »Point Blank« und »On a Roll«. Ein hellblau-weißes Schachbrett biegt sich wie ein Trichter zu einem Strudel oben rechts. Darüber fliegen eine große rote, eine gelbe und eine kleine grüne glänzende Kugel, die rote mit einem bunten Schweif wie ein Komet, dazu bunte, spitze Splitter. Die rote Kugel hat ihren hellen Glanzpunkt oben rechts, die gelbe oben links. Unten links liegt ein dunkler, durchscheinender ovaler Fleck auf dem Brett, unten in der Mitte ein dunkles Dreieck.'>
+<figcaption>Point Blank: »On a Roll«, 1982</figcaption>
+</figure>
+<figure>
+<img src='modern-talking.webp' alt='Ein Plattencover: oben »Let’s Talk About Love« und in geschwungener goldener Schrift »Modern Talking«, oben links ein Preisaufkleber. Darunter ein schwarz-weiß-goldenes Schachbrett, das als schmaler Streifen nach hinten in den Himmel läuft, mit sechs glänzenden, durchsichtigen Kugeln in Blau, Rot und Rosa darauf; in ihnen sind nur dunkle Flecken und helle Glanzpunkte zu sehen. Unten »The 2nd Album«.'>
+<figcaption>Modern Talking: »Let’s Talk About Love«, 1985</figcaption>
+</figure>
+<figure>
+<img src='jerry-goodman-ariel.webp' alt='Ein Plattencover: oben »Ariel« in weit auseinandergezogenen Buchstaben und »Jerry Goodman«. Vor einem dunklen, wolkigen Himmel steht eine große dunkle Kugel auf einem braun-schwarzen Schachbrett, das bis nach vorn reicht. In der unteren Hälfte der Kugel setzt sich das Schachbrett fort, Feld für Feld so, wie es um sie herum liegt. Um die Kugel schwimmen sieben rosa Fische durch die Luft.'>
+<figcaption>Jerry Goodman: »Ariel«, 1986</figcaption>
+</figure>
+</div>
 
 _task(cover)
 
