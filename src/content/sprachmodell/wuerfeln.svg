@@ -1,0 +1,37 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 190' width='640' height='190'>
+  <!-- Die Zufallszahlen 0 bis 9 für war, ist und trug; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/sprachmodell/wuerfeln.svg 1280 -->
+<rect width='640' height='190' fill='#ffffff'/>
+<rect x='60' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='86.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>0</text>
+<rect x='112' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='138.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>1</text>
+<rect x='164' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='190.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>2</text>
+<rect x='216' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='242.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>3</text>
+<rect x='268' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='294.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>4</text>
+<rect x='320' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='346.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>5</text>
+<rect x='372' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='398.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>6</text>
+<rect x='424' y='70' width='52' height='52' fill='#eef3fb' stroke='#7c3aed' stroke-width='3'/>
+<text x='450.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>7</text>
+<rect x='476' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='502.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>8</text>
+<rect x='528' y='70' width='52' height='52' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='554.0' y='103.0' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>9</text>
+<rect x='424' y='70' width='52' height='52' fill='none' stroke='#7c3aed' stroke-width='3'/>
+<text x='450.0' y='36' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='16' fill='#7c3aed'>gezogen: 7</text>
+<line x1='450.0' y1='44' x2='450.0' y2='53.8' stroke='#7c3aed' stroke-width='2'/><polygon points='450.0,66.0 457.1,53.8 442.9,53.8' fill='#7c3aed'/>
+<path d='M64 128 L64 134 L368 134 L368 128' fill='none' stroke='#2b5fb4' stroke-width='2'/>
+<text x='216.0' y='162' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>war</text>
+<text x='216.0' y='184' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='600' fill='#6b7280'>6-mal</text>
+<path d='M376 128 L376 134 L524 134 L524 128' fill='none' stroke='#2b5fb4' stroke-width='2'/>
+<text x='450.0' y='162' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>ist</text>
+<text x='450.0' y='184' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='600' fill='#6b7280'>3-mal</text>
+<path d='M532 128 L532 134 L576 134 L576 128' fill='none' stroke='#2b5fb4' stroke-width='2'/>
+<text x='554.0' y='162' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>trug</text>
+<text x='554.0' y='184' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' font-weight='600' fill='#6b7280'>1-mal</text>
+</svg>

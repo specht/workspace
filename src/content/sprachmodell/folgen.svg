@@ -1,0 +1,27 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 275' width='720' height='275'>
+  <!-- Das Dictionary von »Der Wolf kam. Der Wolf fraß. Der Jäger kam.« als Graph; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/sprachmodell/folgen.svg 1440 -->
+<rect width='720' height='275' fill='#ffffff'/>
+<line x1='122.0' y1='109.8' x2='199.0' y2='82.0' stroke='#2b5fb4' stroke-width='7.0' stroke-linecap='round'/><polygon points='218.0,75.2 194.4,69.2 203.6,94.8' fill='#2b5fb4'/>
+<text x='158' y='76' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>2</text>
+<line x1='122.0' y1='140.2' x2='198.8' y2='167.9' stroke='#2b5fb4' stroke-width='4.5' stroke-linecap='round'/><polygon points='214.0,173.4 202.3,158.2 195.2,177.6' fill='#2b5fb4'/>
+<text x='158' y='182' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>1</text>
+<line x1='302.0' y1='60.0' x2='391.8' y2='60.0' stroke='#2b5fb4' stroke-width='4.5' stroke-linecap='round'/><polygon points='408.0,60.0 391.8,49.6 391.8,70.3' fill='#2b5fb4'/>
+<text x='355' y='48' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>1</text>
+<line x1='293.6' y1='83.0' x2='403.0' y2='157.9' stroke='#2b5fb4' stroke-width='4.5' stroke-linecap='round'/><polygon points='416.4,167.0 408.9,149.3 397.2,166.4' fill='#2b5fb4'/>
+<text x='372' y='117' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>1</text>
+<line x1='306.0' y1='190.0' x2='391.8' y2='190.0' stroke='#2b5fb4' stroke-width='4.5' stroke-linecap='round'/><polygon points='408.0,190.0 391.8,179.7 391.8,200.3' fill='#2b5fb4'/>
+<text x='355' y='178' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>1</text>
+<line x1='492.0' y1='75.2' x2='587.8' y2='109.7' stroke='#2b5fb4' stroke-width='4.5' stroke-linecap='round'/><polygon points='603.0,115.2 591.3,100.0 584.2,119.5' fill='#2b5fb4'/>
+<text x='553' y='77' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>1</text>
+<line x1='492.0' y1='174.8' x2='584.0' y2='141.6' stroke='#2b5fb4' stroke-width='7.0' stroke-linecap='round'/><polygon points='603.0,134.8 579.4,128.8 588.6,154.4' fill='#2b5fb4'/>
+<text x='555' y='182' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>2</text>
+<path d='M630 148.0 C630 290 80 290 80.0 168.2' fill='none' stroke='#2b5fb4' stroke-width='7.0' stroke-linecap='round'/><polygon points='80.0,148.0 66.4,168.2 93.6,168.2' fill='#2b5fb4'/>
+<text x='355' y='238' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='17' font-weight='600' fill='#6b7280'>2</text>
+<rect x='38.0' y='102.0' width='84' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='80' y='132.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>Der</text>
+<rect x='218.0' y='37.0' width='84' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='260' y='67.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>Wolf</text>
+<rect x='214.0' y='167.0' width='92' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='260' y='197.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>Jäger</text>
+<rect x='408.0' y='37.0' width='84' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='450' y='67.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>fraß</text>
+<rect x='408.0' y='167.0' width='84' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='450' y='197.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>kam</text>
+<rect x='603.0' y='102.0' width='54' height='46' rx='10' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2'/><text x='630' y='132.5' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='21' fill='#1f2937'>.</text>
+</svg>

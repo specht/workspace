@@ -1,0 +1,29 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 230' width='440' height='230'>
+  <!-- Ein und zwei Wörter Kontext; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/sprachmodell/kontext.svg 1280 -->
+<rect width='440' height='230' fill='#ffffff'/>
+<rect x='40' y='40' width='62' height='40' rx='8' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='71.0' y='67' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>Da</text>
+<rect x='116' y='40' width='104' height='40' rx='8' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='168.0' y='67' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>sprach</text>
+<rect x='234' y='40' width='66' height='40' rx='8' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2.5'/>
+<text x='267.0' y='67' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>der</text>
+<rect x='314' y='40' width='84' height='40' rx='8' fill='#ffffff' stroke='#7c3aed' stroke-width='2.5'/>
+<text x='356.0' y='67' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>Wolf</text>
+<path d='M238 85 L238 90 L296 90 L296 85' fill='none' stroke='#2b5fb4' stroke-width='2'/>
+<text x='267.0' y='112' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' fill='#2b5fb4'>Kontext</text>
+<text x='356.0' y='112' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' fill='#7c3aed'>danach</text>
+<path d='M267.0 36 C267.0 10 326.0 6 350.2 25.3' fill='none' stroke='#7c3aed' stroke-width='2'/><polygon points='356.0,36.0 356.4,21.9 343.9,28.7' fill='#7c3aed'/>
+<rect x='40' y='150' width='62' height='40' rx='8' fill='#ffffff' stroke='#1f2937' stroke-width='1.5'/>
+<text x='71.0' y='177' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>Da</text>
+<rect x='116' y='150' width='104' height='40' rx='8' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2.5'/>
+<text x='168.0' y='177' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>sprach</text>
+<rect x='234' y='150' width='66' height='40' rx='8' fill='#eef3fb' stroke='#2b5fb4' stroke-width='2.5'/>
+<text x='267.0' y='177' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>der</text>
+<rect x='314' y='150' width='84' height='40' rx='8' fill='#ffffff' stroke='#7c3aed' stroke-width='2.5'/>
+<text x='356.0' y='177' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='20' fill='#1f2937'>Wolf</text>
+<path d='M120 195 L120 200 L296 200 L296 195' fill='none' stroke='#2b5fb4' stroke-width='2'/>
+<text x='208.0' y='222' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' fill='#2b5fb4'>Kontext</text>
+<text x='356.0' y='222' text-anchor='middle' font-family="'IBM Plex Sans', system-ui, sans-serif" font-size='15' fill='#7c3aed'>danach</text>
+<path d='M208.0 146 C208.0 120 326.0 116 350.2 135.3' fill='none' stroke='#7c3aed' stroke-width='2'/><polygon points='356.0,146.0 356.4,131.9 343.9,138.7' fill='#7c3aed'/>
+</svg>
