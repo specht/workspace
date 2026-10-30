@@ -170,7 +170,8 @@ anbietet, muss den Nutzerinnen und Nutzern den geänderten Quellcode
 zugänglich machen.
 
 Mitgelieferte Bibliotheken (unter anderem Bootstrap, Monaco, jQuery) und
-Bilder anderer stehen unter ihren eigenen Lizenzen; bei Bildern steht sie an
-der Stelle, an der das Bild verwendet wird. Bilder ohne freie Lizenz sind in
-`src/content/picture-rights.yaml` aufgeführt und erscheinen erst auf den
-Seiten, wenn die Erlaubnis vorliegt.
+Bilder anderer stehen unter ihren eigenen Lizenzen; Bilder anderer tragen
+eine Quellenangabe mit ihrer Lizenz. Bilder, deren Quellenangabe keine freie
+Lizenz nennt, listet die Seite `/picture-rights` auf
+(`src/ruby/include/picture_rights.rb`); sie erscheinen erst auf den Seiten,
+wenn die Erlaubnis vorliegt.
