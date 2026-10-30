@@ -217,6 +217,8 @@ _task(sx)
 
 Wie groß die Scheibe ist, legen `W` und `H` fest: Weil `sx` und `sy` durch `H` geteilt werden, ist sie 1 hoch und `W / H` breit, 320 / 180 ≈ 1,78. Sie hat also dasselbe Seitenverhältnis 16 : 9 wie das Bild aus 320 × 180 Pixeln. Zusammen mit dem Abstand 1 bestimmt diese Größe, wie viel von der Szene ins Bild passt: Von der Unterkante bis zur Oberkante sieht das Auge einen Winkel von 2 · arctan(0,5) ≈ 53°. Wäre die Scheibe nur halb so hoch, zeigte das Bild weniger von der Szene, dafür größer, wie ein Teleobjektiv.
 
+Weil nur das Verhältnis von `W` zu `H` die Scheibe bestimmt, zeigt ein größeres Bild dieselbe Szene, nur feiner: Mit `#define W 1280` und `#define H 720` hat es in jede Richtung viermal so viele Pixel und braucht für jeden Durchgang 16-mal so lange. Schreib die Zahlen dabei aus. `#define W 320 * 4` geht schief, denn der Präprozessor setzt den Text ein, wie er dasteht: Aus `(H / 2.0 - y) / H` wird `(180 * 4 / 2.0 - y) / 180 * 4`, also erst durch 180 geteilt und dann mit 4 multipliziert. Die Scheibe wird viermal so breit und viermal so hoch, und das Bild zeigt die Szene winzig wie durch ein extremes Weitwinkelobjektiv. Wer rechnen lassen will, setzt Klammern: `#define W (320 * 4)`.
+
 `sky` mischt mit `mix` zwei Farben: das helle Weiß am Horizont und das Blau ganz oben. Wie viel von welcher, entscheidet `dir.y`, wie steil der Strahl nach oben zeigt. Farben sind hier Zahlen von 0 bis 1 für Rot, Grün und Blau; erst `to_byte` macht daraus die Werte 0 bis 255 für PixelRAM.
 
 <div class='hint try'>
