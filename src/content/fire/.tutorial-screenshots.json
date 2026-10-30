@@ -33,19 +33,19 @@
     "form.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "cb34136be75dd974ff8729294e0728d6f0577ab69d0a64f34e2c34969a1b2131",
-      "state_hash": "2472036b4b90078cff4f3f3b77697ed40cfcf37b3aa333ccd5836effacdea629",
+      "state_hash": "efe80498217cd723c87eaa9832012d9ac3bb060d7a3f2dcfda49325c604b19d2",
       "workspace_look": "4.140.0-ls368"
     },
     "gluehen.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "dcccc84612c2e01b26208d7e38d438b0557e3c36d0a22a65aa4edac57b302865",
-      "state_hash": "fe3ed2849943b0d4efb0232e47f7d2d01573e9e53949b61b49c2c4172286f61e",
+      "state_hash": "f6396901cac65e5743b833b26687bf8a0d4018f8fa78ca73a1c36717256f11bc",
       "workspace_look": "4.140.0-ls368"
     },
     "leuchten.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "536e0975562f5791244d09f3e6b483618be133c917374ebadc2e564ac03a0343",
-      "state_hash": "48e417882f3377369f8dc251ec75d4b730192725ca7447f6303c9b0261725a85",
+      "state_hash": "9fc767c9ac116f2d79f41d7e7c9342eda7323f9e6d231e71454556b4fa899c23",
       "workspace_look": "4.140.0-ls368"
     },
     "ramp0.webp": {
@@ -76,6 +76,12 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "076a216782e10cc03975605335c5b14678a64d6f3a6bb18b638299b5a02ca694",
       "state_hash": "f85eb5e07f5182041ceb2cadfd7082d08741b280f1a8e17d73e12bad4f3829a0",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "wind.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "83d1ba0d4f958a15f0ef065d0d517d45d5b0f0afb18a21d74a1ad9ac92107591",
+      "state_hash": "136b9e5a2fdf9111052015d17bd6786293e66904cd7626be808cbed2fd9d5c41",
       "workspace_look": "4.140.0-ls368"
     }
   },

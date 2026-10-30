@@ -568,15 +568,61 @@ _task(kaelter)
 <ul>
 <li>Probier auch <code>rand(7) - 2</code>: Wie hoch schlagen die Flammen jetzt?</li>
 <li>Ändere die Glut: In <code>fire.rb</code> legen <code>set_color(63)</code> und <code>fill_rect(10, 126, 245, 127)</code> sie an den unteren Rand. Mit <code>fill_rect(100, 126, 155, 127)</code> wird sie schmaler, mit <code>set_color(40)</code> kühler. Wie sieht das Feuer dann aus?</li>
-<li>Vertausche in den vier <code>set_palette</code>-Zeilen jeweils den Wert für Rot und den für Blau. Warum brennt das Feuer jetzt blau, obwohl du an der Animation nichts geändert hast?</li>
+<li>Vertausche in den vier <code>set_palette</code>-Zeilen jeweils den Wert für Rot und den für Blau. Achte darauf, ob sich die Flammen anders bewegen als vorher.</li>
 </ul>
 </div>
+
+_task(blaues-feuer)
 
 ### Das ganze Programm
 
 Das gesamte Programm sieht nun so aus:
 
 _include_file(fire.rb, ruby)
+
+### Wind
+
+Bisher steigt jede Flamme gerade nach oben: Ein Pixel bekommt seine Wärme vor allem von dem Pixel direkt darunter, das doppelt zählt. Weht Wind von links, kommt die warme Luft schräg von links unten.
+
+Kopiere `fire.rb` nach `wind.rb`, zum Beispiel mit `cp fire.rb wind.rb` im Terminal. So bleibt `fire.rb`, wie es ist, für den nächsten Abschnitt.
+
+<div class='hint own' data-check='wind'>
+<strong>Jetzt bist du dran:</strong> Ändere in <code>wind.rb</code> den Kernel so, dass die Flammen nach rechts wehen, als käme der Wind von links. Starte es mit <code>ruby wind.rb</code>.
+</div>
+
+<!-- hint -->
+Welche Koordinaten hat das Pixel, das links unter (x, y) liegt? Das Pixel darunter hat das größere y, das Pixel links das kleinere x.
+<!-- /hint -->
+<!-- hint -->
+Es genügt, eine einzige Zeile zu ändern: die mit dem Pixel, das doppelt zählt.
+<!-- /hint -->
+
+<!-- solution -->
+```ruby
+c = get_pixel(x - 1, y + 1) * 2
+```
+<!-- /solution -->
+
+_task(wind)
+
+<!-- after: wind -->
+So sieht es aus, wenn der Wind von links kommt:
+
+<!-- tutorial-screenshot
+# Wind von links: die Wärme von links unten
+write-file: fire-steps/wind.rb <- file:stufen/wind.rb
+terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb wind.rb
+terminal-wait-for-prompt: 180
+image-file: fire-steps/step.png 4
+-->
+<img src='wind.webp' class='full' alt='Das Feuer steigt schräg nach rechts oben auf, in Streifen von links unten nach rechts oben. Links über der Glut bleibt ein dunkler Keil, rechts reichen die Flammen bis an den Rand des Bildes.'>
+
+Die Wärme wandert in jedem Bild eine Zeile nach oben und dabei vor allem eine Spalte nach rechts. So steigen die Flammen schräg auf: Links über der Glut bleibt ein dunkler Keil, und rechts laufen sie über den Rand des Bildes hinaus.
+<!-- /after -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Nimm statt des Pixels links unten das Pixel zwei Spalten weiter links, <code>get_pixel(x - 2, y + 1)</code>. Achte darauf, wie schräg die Flammen jetzt stehen.
+</div>
 
 <!-- extra -->
 ## Eine Form, die brennt

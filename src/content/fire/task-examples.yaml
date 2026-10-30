@@ -100,6 +100,27 @@ examples:
                   end
               end
         say: zählt noch nicht doppelt
+  wind:
+    pass:
+      - files: { wind.rb: stufen/wind.rb }
+      # stärkerer Wind, zwei Spalten
+      - files:
+          wind.rb:
+            text: |
+              c = get_pixel(x - 2, y + 1) * 2
+              c += get_pixel(x - 1, y)
+              c += get_pixel(x + 1, y)
+    fail:
+      # nur kopiert, der Kernel wie in fire.rb
+      - files: { wind.rb: fire.rb }
+      # der Wind von rechts
+      - files:
+          wind.rb:
+            text: |
+              c = get_pixel(x + 1, y + 1) * 2
+              c += get_pixel(x - 1, y)
+              c += get_pixel(x + 1, y)
+      - files: {}
   quadrat:
     pass:
       - files: { fire.rb: stufen/form.rb }

@@ -198,7 +198,6 @@ Open findings from the October 2026 review:
 
 | Page | Action |
 | --- | --- |
-| Fire | add tasks (blue flame, wind direction) |
 | Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student |
 
 Platform-wide:

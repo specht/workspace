@@ -199,6 +199,52 @@ tasks:
       summiert sich auf dem Weg nach oben. Mit `rand(7) - 2` füllt das Feuer
       dagegen bald das ganze Bild.
 
+  - id: blaues-feuer
+    title: Warum blau?
+    prompt: |
+      Du vertauschst in den vier `set_palette`-Zeilen Rot und Blau, und das
+      Feuer brennt blau. Die Flammen bewegen sich aber genau wie vorher.
+      Warum?
+    check:
+      type: choice
+      options:
+        - Die Animation rechnet nur mit den Nummern der Farben. Welche Farbe zu einer Nummer gehört, steht allein in der Palette.
+        - Pixelflow Canvas vertauscht Rot und Blau erst beim Anzeigen.
+        - Der Kernel rechnet jetzt mit den Blauwerten statt mit den Rotwerten.
+        - Blaues Feuer ist heißer, darum steigen die Flammen anders auf.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Pixelflow Canvas zeigt jede Nummer in der Farbe, die `set_palette` ihr gibt. Wer hat hier Rot und Blau vertauscht?'
+      - when: { picked: 2 }
+        say: 'Schau dir an, was `get_pixel` zurückgibt: einen Farbwert oder eine Nummer von 0 bis 63?'
+      - when: { picked: 3 }
+        say: 'Bewegen sich die Flammen denn anders? Der Kernel weiß nichts von Rot oder Blau, er rechnet mit Nummern.'
+    solution: |
+      `get_pixel` und `set_pixel` arbeiten mit Nummern von 0 bis 63, und der
+      Kernel rechnet nur mit diesen Nummern. Welche Farbe Nummer 63 auf dem
+      Bildschirm hat, legt allein `set_palette` fest. Tauschst du dort Rot und
+      Blau, laufen dieselben Nummern durch dieselbe Animation, nur in anderen
+      Farben.
+
+  - id: wind
+    title: Wind von links
+    prompt: |
+      Ändere in `wind.rb` den Kernel so, dass die Flammen nach rechts wehen,
+      als käme der Wind von links, und speichere.
+    file: wind.rb
+    check:
+      type: files
+      path: wind.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '\A(?![\s\S]*get_pixel\s*\(\s*x\s*\+\s*\d+\s*,\s*y\s*\+\s*1\s*\))', say: 'In `wind.rb` kommt die Wärme jetzt von rechts unten, `get_pixel(x + 1, y + 1)`, und die Flammen wehen nach links. Der Wind soll von links kommen.' }
+          - { pattern: 'get_pixel\s*\(\s*x\s*-\s*\d+\s*,\s*y\s*\+\s*1\s*\)', say: 'In `wind.rb` kommt die Wärme noch von direkt darunter. Nimm statt `get_pixel(x, y + 1)` das Pixel links darunter.' }
+    feedback:
+      - when: { problem: missing }
+        say: 'Ich finde `/workspace/wind.rb` nicht. Hast du `fire.rb` nach `wind.rb` kopiert, etwa mit `cp fire.rb wind.rb`?'
+
   - id: quadrat
     title: Ein Quadrat, das sich dreht
     extra: true
