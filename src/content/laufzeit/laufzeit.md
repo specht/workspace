@@ -279,6 +279,13 @@ so rechnet das Programm dieselben Zahlen viele Millionen Mal aus. Probier
 `fib(30)`, `fib(35)` und `fib(40)` aus und achte darauf, um wie viel es
 jedes Mal länger dauert.
 
+Schon bei `fib(5)` sieht man es: 15 Aufrufe, und drei davon rechnen etwas aus,
+das schon einmal ausgerechnet wurde, mit allem, was unter ihnen hängt.
+
+<div class='gallery single'>
+<figure><img src='fib-aufrufe.webp' alt='Die Aufrufe von fib(5) als Baum: fib(5) ruft fib(4) und fib(3), fib(4) ruft fib(3) und fib(2), und so weiter bis zu fib(1) und fib(0). Der zweite fib(3) und die beiden späteren fib(2) sind orange umrandet: Sie wurden schon einmal ausgerechnet.'><figcaption>Die Aufrufe von <code>fib(5)</code>; orange, was schon einmal ausgerechnet wurde, grau die Fälle <code>n &lt; 2</code></figcaption></figure>
+</div>
+
 _task(fib-memo)
 
 _task(pair-with-sum)
@@ -440,6 +447,17 @@ Jahre. O(n!) wächst schneller als alles in der Tabelle oben.
 <!-- /after -->
 
 _task(nearest-tour)
+
+<!-- after: nearest-tour -->
+So sehen beide Rundfahrten für die ersten zehn Orte aus, beide vom
+Brandenburger Tor aus. Wer immer zum nächsten Ort geht, lässt Schloss
+Charlottenburg im Westen bis zuletzt liegen und muss am Ende den ganzen Weg
+zurück.
+
+<div class='gallery single'>
+<figure><img src='rundfahrten.webp' alt='Zwei Karten der ersten zehn Sehenswürdigkeiten, Schloss Charlottenburg weit im Westen, die übrigen in der Mitte nahe beieinander. Oben die kürzeste Rundfahrt, 16,8 km: vom Brandenburger Tor über Reichstagsgebäude, Schloss Bellevue und Schloss Charlottenburg, zurück über Siegessäule, Checkpoint Charlie, Gendarmenmarkt, Rotes Rathaus, Fernsehturm und Dom. Unten die Rundfahrt immer zum nächsten Ort, 18,0 km: erst durch die Mitte, zuletzt über Schloss Bellevue und Siegessäule zum Schloss Charlottenburg und von dort zurück zum Brandenburger Tor.'><figcaption>Oben alle Reihenfolgen ausprobiert, unten immer zum nächsten Ort</figcaption></figure>
+</div>
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Vergleiche beide Arten für 8, 9 und 10 Orte.
