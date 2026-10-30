@@ -8081,11 +8081,12 @@ img.picture-withheld {
     opacity: 0.5;
 }
 /* several people in one box (Lempel and Ziv; Kay, Goldberg and Ingalls),
-   each portrait with the name below it, so that one sees who is who. Two
-   stand beside the text, as wide as their portraits; three and more stand
-   in a row above it (on a phone every box does, below): the text keeps the
-   width of the box, and no empty column runs down beside it */
-.person.pair { grid-template-columns: auto minmax(0, 1fr); }
+   each portrait with the name below it, so that one sees who is who. The
+   portraits float at the top left and the text runs beside them and then
+   on below them over the whole width: no empty column under the portraits,
+   no empty space beside a row of them */
+.person.pair { display: flow-root; }
+.person.pair .portraits { float: left; margin: 0.2em 1.1em 0.4em 0; }
 .person .portraits { display: flex; gap: 0.6em; align-items: flex-start; }
 .person .portrait { width: 6.5em; }
 .person .portrait span {
@@ -8097,8 +8098,6 @@ img.picture-withheld {
     text-align: center;
     hyphens: manual;
 }
-.person.pair:has(.portrait:nth-child(3)) { display: block; }
-.person.pair:has(.portrait:nth-child(3)) .portraits { margin-bottom: 0.9em; }
 .person .person-credit { font-size: 0.85em; color: var(--bs-secondary-color); margin: 0; }
 /* on the Personen page: where the person appears; the heading above each
    box is there for the search and the table of contents, the box shows the
@@ -8156,6 +8155,8 @@ h3:has(+ .person) {
     .person { display: flow-root; padding: 0.8em 0.9em; }
     .person > img { float: left; width: 5em; margin: 0.25em 0.9em 0.3em 0; }
     .person .portraits { margin: 0 0 0.6em; }
+    /* beside two or three portraits, the text would be a narrow strip */
+    .person.pair .portraits { float: none; }
     .person .portrait, .person .portraits > img { width: 5em; }
 }
 
