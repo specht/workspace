@@ -105,19 +105,4 @@
         const button = event.target.closest('[data-git-delete]');
         if (button) confirmDelete(button);
     });
-
-    // --- a key pair in one's own Workspace -------------------------------------
-    document.querySelectorAll('[data-git-install-key]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            button.disabled = true;
-            api_call('/api/git/install_my_key', {}, function (r) {
-                if (r.success && r.ok) { window.location.reload(); return; }
-                button.disabled = false;
-                const note = document.createElement('p');
-                note.className = 'git-key-warning';
-                note.textContent = (r && r.error) || 'Das hat nicht geklappt.';
-                button.parentNode.after(note);
-            }, { no_please_wait: true });
-        });
-    });
 })();

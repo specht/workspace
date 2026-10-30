@@ -28,7 +28,6 @@ class GitOverviewTest < Minitest::Test
         assert_equal [%w[10a class-quiz], %w[9b class-quiz], %w[9b sandbox]], list.map { |r| [r[:group], r[:name]] }
         refute(list.any? { |r| r[:group] == 'other' })
         assert_equal 'git@git.workspace:a1b2c3d4e5/class-quiz.git', list[1][:address]
-        assert_equal 'auto', list[1][:keys]
         assert_nil list[2][:title], 'a repository without a page of that name keeps its name'
     end
 
@@ -99,7 +98,7 @@ class GitOverviewTest < Minitest::Test
         assert_includes html, "href='/klasse?group=9b&amp;repos=class-quiz'"
         assert_includes html, '<span class=\'git-overview-author\'>Ada</span>'
         assert_includes html, 'noch kein Commit'
-        assert_includes html, ">automatisch</td>"
+        refute_includes html, '<th>Schlüssel</th>', 'how keys come is no choice any more'
         refute_includes html, 'Lehrkräfte', 'teachers only for an administrator'
         refute_match(/[\w.+-]+@(?!git\.workspace)/, html, 'no e-mail address in the table, only the server\'s')
     end

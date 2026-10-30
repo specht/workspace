@@ -102,22 +102,6 @@ Beim ersten Mal fragt SSH, ob du dem Server vertraust, und zeigt seinen Fingerab
 Meldet SSH `Permission denied (publickey)`, hast du den Schlüssel noch nicht eingefügt, eine andere Zeile kopiert als die aus `id_ed25519.pub`, oder danach einen neuen erzeugt; dann füg ihn noch einmal ein.
 <!-- /part -->
 
-<!-- part: ssh-workspace-auto -->
-### Der Schlüssel für den Git-Server des Workspace
-
-Euer Repository liegt auf dem Git-Server des Workspace, `git.workspace`. Er erkennt dich an einem SSH-Schlüssel, den deine Lehrkraft für deinen Workspace hat einrichten lassen. Er liegt in `~/.ssh/workspace_git`, und `~/.ssh/config` sagt SSH, dass es ihn für diesen Server nehmen soll.
-
-<div class='git-key' data-git-key></div>
-<script src='/include/git_key.js'></script>
-
-Teste die Verbindung:
-
-```bash
-ssh -T git@git.workspace
-```
-
-Der Server begrüßt dich und nennt die Repositorys, die du benutzen darfst. Meldet SSH `Permission denied (publickey)`, kennt der Server deinen Schlüssel noch nicht; sag deiner Lehrkraft Bescheid.
-<!-- /part -->
 <!-- /feature -->
 
 <!-- part: https-anmelden -->

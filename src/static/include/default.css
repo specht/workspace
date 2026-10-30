@@ -11518,7 +11518,6 @@ table.git-overview code > span {
 }
 
 .git-new .btn .bi,
-.git-mine-nokey .btn .bi,
 .git-overview-actions .btn .bi {
     margin-right: 0.35em;
 }
@@ -11616,34 +11615,27 @@ table.git-overview code > span {
     font-size: 0.85em;
 }
 
-.git-mine-key,
-.git-mine-nokey {
-    text-align: left;
-    hyphens: manual;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.5em;
-    padding: 0.6em 0.9em;
-    overflow-wrap: anywhere;
+/* /repos: under each heading, by which role the person sees that part */
+.git-overview-role {
+    margin: -0.2em 0 0.6em;
+    color: var(--bs-secondary-color);
+    font-size: 0.88em;
 }
-
-.git-mine-key .bi,
-.git-mine-nokey > p:first-child .bi {
-    color: #d9822b;
+.git-overview-role .bi {
     margin-right: 0.4em;
 }
 
-.git-mine-nokey p:last-of-type {
-    margin-bottom: 0.4em;
-}
-
-.git-mine-nokey .btn {
-    white-space: normal;
+/* »Meine Repositorys«: how to make a key, above the box to hand it in
+   (git_key.js), which has its own frame */
+.git-mine-key {
     text-align: left;
+    hyphens: manual;
+    overflow-wrap: anywhere;
 }
 
-.git-mine-handin summary {
-    cursor: pointer;
-    margin-bottom: 0.4em;
+.git-mine-key > p .bi {
+    color: #d9822b;
+    margin-right: 0.4em;
 }
 
 .git-overview-actions {

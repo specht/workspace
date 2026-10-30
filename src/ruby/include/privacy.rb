@@ -183,8 +183,8 @@ module Privacy
                 :how_long => 'bis die Person es löscht, bis zur Löschung des Kontos',
             },
             {
-                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace: der abgegebene oder, wenn die Lehrkraft es so einstellt ' \
-                    'oder die Person es für ihre eigenen Repositorys wünscht, einer, den der Workspace selbst erzeugt (der private Schlüssel liegt nur im eigenen Workspace)',
+                :data => 'Öffentlicher SSH-Schlüssel für den Git-Server des Workspace, den die Person in ihrem Workspace erzeugt und abgibt; ' \
+                    'der Workspace erzeugt keinen (der private Schlüssel liegt nur im eigenen Workspace)',
                 :categories => [:account],
                 :purpose => 'Anmeldung am Git-Server des Workspace',
                 :who => 'Administration',

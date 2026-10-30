@@ -139,11 +139,12 @@ the better choice only if setup for students must be zero.
   »Der Git-Server der Gruppen« describe it; the repositories live in
   `data/git-repos`, not `data/git` (the backend's container mounts the
   site's own `.git` at `/repos`).
-- **Keys, the teacher's choice per group:** students create a key pair and
-  hand in the public key on the page, or the Workspace sets up a key of its
-  own for every member (`~/.ssh/workspace_git`, with `~/.ssh/config` and
-  `known_hosts`). Pages have a variant for each (`class_repo_local_keys`,
-  `class_repo_local_auto`).
+- **Keys:** students create a key pair in their Workspace and hand in the
+  public key on the page, as on any Git server, and can take it back. The
+  Workspace never makes a key (the maintainer's decision, 30 Oct 2026; it
+  could once set one up for a whole group, `~/.ssh/workspace_git`, and keys
+  made then stay valid until taken back). Pages have the variant
+  `class_repo_local_keys`.
 - **Browsing:** built into the site as planned, with the maintainer's wish
   for a light GitHub: files, history (also of a file), commits with their
   diff, branches, a zip.

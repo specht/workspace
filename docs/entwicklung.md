@@ -535,7 +535,7 @@ Workspace«; der Plan: docs/plan-git-gruppen.md).
   Schlüssel nicht (StrictModes).
 - **Im Backend** (`/git-repos`, `/git-server`): Anlegen und Löschen
   (`GitServer`), das Ansehen unter `/git/…` (`GitBrowse`, nur lesend), die
-  automatischen Schlüssel.
+  abgegebenen Schlüssel.
 - **Tests:** `git_server_test.rb` (Schlüssel, die Dateien des Servers, ein
   Repository samt abgelehntem `--force`), `git_browse_test.rb`,
   `class_repos_test.rb` (die Fassungen der Seiten). Den ganzen Weg durch den

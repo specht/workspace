@@ -167,10 +167,9 @@ einem `class_repo_ssh`-Teil und beginnt danach neu.
 
 Liegt das Repository auf dem Git-Server des Workspace (`git@git.workspace:…`,
 docs/teacher-access.md, »Repositorys im Workspace«), gilt
-`<!-- if: class_repo_local -->`, dazu `class_repo_local_keys`, wenn die
-Lernenden ihren Schlüssel selbst abgeben (`_include(gitlab#ssh-workspace)`
-mit dem Kasten zum Abgeben), oder `class_repo_local_auto`, wenn der Workspace
-ihn einrichtet (`_include(gitlab#ssh-workspace-auto)`). `class_repo_ssh` gilt
+`<!-- if: class_repo_local -->` und `class_repo_local_keys`: Die Lernenden
+erzeugen ihren Schlüssel selbst und geben ihn ab (`_include(gitlab#ssh-workspace)`
+mit dem Kasten zum Abgeben); der Workspace legt nie einen an. `class_repo_ssh` gilt
 dann nicht: Es meint einen Git-Server im Netz. Was nur für einen Server im
 Netz gilt (die Einladung, das Konto dort), steht in
 `<!-- if: class_repo_outside -->`, für SSH und HTTPS.

@@ -57,35 +57,6 @@ class GitServerTest < Minitest::Test
         end
     end
 
-    def test_blocks_in_ssh_files
-        mine = "Host github.com\n    User git\n"
-        once = GitServer.replace_block(mine, ['Host git.workspace'])
-        assert_includes once, mine
-        assert_includes once, GitServer::BEGIN_MARK
-        assert_equal once, GitServer.replace_block(once, ['Host git.workspace'])
-        assert_equal mine, GitServer.replace_block(once, nil)
-        assert_equal "#{GitServer::BEGIN_MARK}\nx\n#{GitServer::END_MARK}\n", GitServer.replace_block('', ['x'])
-    end
-
-    def test_auto_key_in_a_workspace
-        Dir.mktmpdir do |home|
-            File.write(File.join(home, 'keep'), '')
-            FileUtils.mkdir_p(File.join(home, '.ssh'))
-            File.write(File.join(home, '.ssh', 'config'), "Host github.com\n    User git\n")
-            line = GitServer.install_auto_key(home, :host_key_text => KEY, :uid => Process.uid)
-            assert GitServer.parse_key(line)
-            assert_equal line, GitServer.install_auto_key(home, :host_key_text => KEY, :uid => Process.uid), 'an existing key stays'
-            config = File.read(File.join(home, '.ssh', 'config'))
-            assert_includes config, 'Host github.com'
-            assert_includes config, "IdentityFile ~/.ssh/#{GitServer::AUTO_KEY}"
-            assert_equal 1, config.scan(GitServer::BEGIN_MARK).size
-            assert_includes File.read(File.join(home, '.ssh', 'known_hosts')), 'git.workspace ssh-ed25519 AAAA'
-            assert_equal '600', format('%o', File.stat(File.join(home, '.ssh', GitServer::AUTO_KEY)).mode & 0o777)
-        end
-    rescue Errno::ENOENT
-        skip 'no ssh-keygen'
-    end
-
     def test_repositories
         Dir.mktmpdir do |root|
             Dir.mktmpdir do |starter|

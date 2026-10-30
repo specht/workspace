@@ -305,19 +305,15 @@ einem Git-Server im Netz braucht dann niemand.
   Klassen-Repository der Seite eingetragen; alles andere wie oben.
 - **Der Ordner der Gruppe** ist eine zufällige Kennung (`GroupSetting.git_id`),
   nicht ihr Name: Eine umbenannte Gruppe behält ihre Adressen.
-- **Schlüssel:** Die Lehrkraft wählt je Gruppe (`GroupSetting.git_keys`).
-  »Abgeben«: Lernende erzeugen ein Schlüsselpaar und fügen die Zeile ihres
+- **Schlüssel:** Lernende erzeugen ein Schlüsselpaar und fügen die Zeile ihres
   öffentlichen Schlüssels (`~/.ssh/id_ed25519.pub`) in den Kasten auf der
   Seite ein, wie bei jedem Git-Server; einen privaten Schlüssel weist der
   Kasten zurück, ohne ihn zu speichern. Liegt im Workspace ein anderer
   öffentlicher Schlüssel als der abgegebene, sagt der Kasten das; beim ersten `ssh -T` vergleichen sie den
-  Fingerabdruck des Servers mit dem im Kasten. »Automatisch«: Der Workspace
-  schreibt jedem Mitglied ein Schlüsselpaar `~/.ssh/workspace_git`, einen
-  Abschnitt für `git.workspace` in `~/.ssh/config` und den Schlüssel des
-  Servers in `~/.ssh/known_hosts`, beide Abschnitte zwischen Markierungen
-  (`# >>> Workspace-Git …`). Er tut das sofort für jeden, der schon einen
-  Workspace hat, nach jedem Einlesen der Gruppen und vor jedem Start eines
-  Workspace; vorhandene Schlüssel bleiben.
+  Fingerabdruck des Servers mit dem im Kasten. Mit »Zurückziehen« nimmt die
+  Person ihren Schlüssel wieder heraus. Der Workspace legt nie einen
+  Schlüssel an; ein Schlüssel, den er früher für eine Gruppe angelegt hat
+  (`~/.ssh/workspace_git`), gilt, bis die Person ihn zurückzieht.
 - **Wer darf:** Mitglieder und Lehrkräfte der Gruppe, nur mit Git (clone,
   fetch, pull, push); keine Shell, keine Weiterleitung. Der Server lehnt
   `git push --force` und das Löschen eines Branches ab und nimmt keinen Push
@@ -387,10 +383,9 @@ einem Git-Server im Netz braucht dann niemand.
   entschieden, weil Üben privat ist; was gemeinsam entsteht, gehört in ein
   Repository der Gruppe (docs/plan-git-gruppen.md). Getestet in
   `git_server_test.rb` (`access_map`, `may_read?`) und
-  `git-repos.browser.spec.ts`. Schlüssel: die, die die Person schon hat;
-  ohne einen legt der Workspace auf Wunsch ein Schlüsselpaar in ihrem
-  Workspace an (`/api/git/install_my_key`, wie bei »Automatisch«) oder sie
-  gibt einen öffentlichen Schlüssel ab. Gelöscht mit dem Konto
+  `git-repos.browser.spec.ts`. Schlüssel: der, den die Person abgegeben
+  hat; ohne einen sagt die Seite, wie sie ihn im Workspace erzeugt
+  (`ssh-keygen`), und hat den Kasten zum Abgeben. Gelöscht mit dem Konto
   (`Main#delete_account`). Das Profil hat dazu »Git im Menü anzeigen«
   (`show_git`), wie phpMyAdmin und Neo4j; alles davon nur mit
   `GIT_SERVER`.

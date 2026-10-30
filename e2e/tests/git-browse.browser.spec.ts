@@ -12,9 +12,9 @@ test('a student of the group browses the class repository, others may not', asyn
   const group = 'E2E';
   const teacher = await (await browser.newContext()).newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-  const keys = await teacher.request.post('/api/git/set_keys', { data: { group, mode: 'auto' } });
-  test.skip(keys.status() === 404, 'GIT_SERVER is off in this installation');
-  const created = await (await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } })).json();
+  const response = await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } });
+  test.skip(response.status() === 404, 'GIT_SERVER is off in this installation');
+  const created = await response.json();
   expect(created.ok).toBe(true);
   const browsePath = '/git/' + (created.address as string).replace(/^git@git\.workspace:/, '').replace(/\.git$/, '');
   const at = (rest: string) => new RegExp(browsePath.replace(/[/.]/g, '\\$&') + rest + '$');
@@ -75,6 +75,5 @@ test('a student of the group browses the class repository, others may not', asyn
     expect(anonymous.status()).not.toBe(200);
   } finally {
     await teacher.request.post('/api/git/delete_repo', { data: { group, slug: 'class-quiz' } });
-    await teacher.request.post('/api/git/set_keys', { data: { group, mode: 'handed_in' } });
   }
 });

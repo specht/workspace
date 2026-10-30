@@ -3,9 +3,9 @@ import { loginAsE2eUser } from './workspace';
 import { WorkspaceContainer } from './workspace-container';
 
 // The Git server of the groups (docs/teacher-access.md, »Repositorys im
-// Workspace«), the whole way: a teacher has the Workspace set up keys for
-// the group and creates the class quiz's repository from its starter
-// files; a student's Workspace greets the server, clones, pushes a round
+// Workspace«), the whole way: a teacher creates the class quiz's repository
+// from its starter files; a student makes a key pair in the Workspace and
+// hands in its public key (the site never makes one), greets the server, clones, pushes a round
 // and is refused a force push; the student's page shows the variant for
 // the Workspace's server; student and teacher read the commit on the site.
 // Needs GIT_SERVER = true (skipped otherwise).
@@ -15,10 +15,9 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
   const teacher = await (await browser.newContext()).newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
 
-  const keys = await teacher.request.post('/api/git/set_keys', { data: { group, mode: 'auto' } });
-  test.skip(keys.status() === 404, 'GIT_SERVER is off in this installation');
-  expect((await keys.json()).ok).toBe(true);
-  const created = await (await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } })).json();
+  const response = await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } });
+  test.skip(response.status() === 404, 'GIT_SERVER is off in this installation');
+  const created = await response.json();
   expect(created.ok).toBe(true);
   const address: string = created.address;
   expect(address).toMatch(/^git@git\.workspace:[a-z0-9]{10}\/class-quiz\.git$/);
@@ -28,8 +27,12 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
   await container.waitUntilRunning();
   const run = (command: string) => container.exec(command, { workdir: '/workspace', timeoutMs: 60_000 });
   try {
-    // The automatic key is in the Workspace, with the server's key in known_hosts.
-    const hello = await run('ssh -T git@git.workspace');
+    // The student's own key, handed in as on any Git server.
+    const keygen = await run('mkdir -p ~/.ssh && rm -f ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub && ssh-keygen -q -t ed25519 -N "" -C "E2E Worker" -f ~/.ssh/id_ed25519');
+    expect(keygen.exitCode, keygen.stderr).toBe(0);
+    const handIn = await workspace.request.post('/api/git/hand_in_key', { data: { key: (await run('cat ~/.ssh/id_ed25519.pub')).stdout } });
+    expect((await handIn.json()).ok).toBe(true);
+    const hello = await run('ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes -T git@git.workspace');
     expect(hello.exitCode, hello.stderr).toBe(0);
     expect(hello.stdout).toContain('Dein Schlüssel ist eingetragen');
     expect(hello.stdout).toContain(address);
@@ -45,10 +48,12 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
     expect(force.exitCode).not.toBe(0);
     expect(force.stdout + force.stderr).toMatch(/non-fast-forward/);
 
-    // The student's page: the address and the box for the automatic key.
+    // The student's page: the address, how to make a key, and the box with
+    // the key handed in.
     await workspace.goto('/class-quiz');
     await expect(workspace.locator('pre', { hasText: `git clone ${address}` })).toHaveCount(1);
-    await expect(workspace.locator('[data-git-key]')).toContainText('workspace_git');
+    await expect(workspace.locator('pre', { hasText: 'ssh-keygen' }).first()).toBeVisible();
+    await expect(workspace.locator('[data-git-key]').first()).toContainText('Abgegeben');
 
     // The student reads the history, the teacher the commit.
     await workspace.goto(browsePath + '/commits/main');
@@ -78,8 +83,8 @@ test('a repository in the Workspace: created by a teacher, pushed to by a studen
     expect(anonymous.status()).not.toBe(200);
   } finally {
     await run('rm -rf e2e-quiz');
+    await workspace.request.post('/api/git/remove_key');
     await teacher.request.post('/api/git/delete_repo', { data: { group, slug: 'class-quiz' } });
-    await teacher.request.post('/api/git/set_keys', { data: { group, mode: 'handed_in' } });
   }
 });
 
@@ -91,9 +96,9 @@ test('a student hands in a key and reaches the Git server with it', async ({ fre
   const group = 'E2E';
   const teacher = await (await browser.newContext()).newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-  const keys = await teacher.request.post('/api/git/set_keys', { data: { group, mode: 'handed_in' } });
-  test.skip(keys.status() === 404, 'GIT_SERVER is off in this installation');
-  const created = await (await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } })).json();
+  const response = await teacher.request.post('/api/git/create_repo', { data: { group, slug: 'class-quiz' } });
+  test.skip(response.status() === 404, 'GIT_SERVER is off in this installation');
+  const created = await response.json();
   expect(created.ok).toBe(true);
 
   const container = new WorkspaceContainer(e2eEmail);

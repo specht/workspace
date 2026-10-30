@@ -272,6 +272,14 @@ class SetupDatabase
         end
     end
 
+    # The site no longer makes Git keys for a group (GitServer); a group set
+    # to them hands in keys from now on. Keys made before stay valid until
+    # their owner takes them back. Runs on every start and finds something
+    # once.
+    def no_automatic_git_keys
+        neo4j_query("MATCH (g:GroupSetting {git_keys: 'auto'}) SET g.git_keys = 'handed_in';")
+    end
+
     # A Session stores the hash of the sid in the cookie
     # (Authentication.session_key) since 2026-10-30; before, the sid itself.
     # A sid has 24 characters, a hash 64: the first start after the change
@@ -2144,7 +2152,7 @@ class Main < Sinatra::Base
                     insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
                     ExternalLinks.mark(root)    # also the links in the task cards
                     StageCode.insert(root, stage_points) unless stage_points.empty?
-                    ClassRepos.mark_browse(root) if [ClassRepos::LOCAL_KEYS, ClassRepos::LOCAL_AUTO].include?(variant)
+                    ClassRepos.mark_browse(root) if variant == ClassRepos::LOCAL_KEYS
                     # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
                     outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
                     search_sections = outline ? ReferenceIndex.search_sections(root) : nil
@@ -2447,7 +2455,9 @@ class Main < Sinatra::Base
         GitServer.write_config('access', GitServer.access(GitServer.access_map(:group_people => group_people, :personal => personal)))
     end
 
-    # The keys for the server: the one each person handed in, the automatic one.
+    # The keys for the server: the one each person handed in, and one the
+    # site had made in someone's Workspace before it stopped doing so
+    # (git_auto_key), until that person takes it back.
     def self.git_refresh_keys
         entries = Hash.new { |hash, key| hash[key] = [] }
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
@@ -2459,38 +2469,11 @@ class Main < Sinatra::Base
         GitServer.write_config('authorized_keys', GitServer.authorized_keys(entries))
     end
 
-    # The people of the groups whose teachers chose automatic keys.
-    def self.git_auto_emails
-        git_groups.select { |_, data| data[:keys] == GitServer::KEYS_AUTO }.keys.flat_map { |group| git_group_emails(group) }.uniq
-    end
-
-    # KEYS_AUTO: the key pair in the Workspace folder of each of these
-    # people that has one (anyone who has logged in), its public key on the
-    # account. Returns how many got one.
-    def self.git_install_auto_keys(emails)
-        return 0 unless GitServer.enabled? && File.exist?(GitServer::HOST_KEY)
-
-        host_key = File.read(GitServer::HOST_KEY)
-        count = 0
-        emails.each do |email|
-            home = File.join('/user', fs_tag_for_email(email), 'workspace')
-            next unless File.directory?(home)
-
-            line = GitServer.install_auto_key(home, :host_key_text => host_key)
-            $neo4j.neo4j_query('MATCH (u:User {email: $email}) SET u.git_auto_key = $key;', :email => email, :key => line)
-            count += 1
-        rescue StandardError => e
-            STDERR.puts "Git: the automatic key for a Workspace failed: #{e.class}: #{e.message}"
-        end
-        count
-    end
-
     # Everything the server reads, afresh: after the roster was read, a
     # repository or a key changed, an account was deleted.
-    def self.git_refresh!(auto: true)
+    def self.git_refresh!
         return unless GitServer.enabled?
 
-        git_install_auto_keys(git_auto_emails) if auto
         git_refresh_keys
         git_refresh_access
     rescue StandardError => e
@@ -2600,6 +2583,7 @@ class Main < Sinatra::Base
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         setup.migrate_moved_tasks(MOVED_TASKS)
         setup.remove_code_bites
+        setup.no_automatic_git_keys
         setup.hash_session_sids
         self.reconcile_live_apps!(:refresh_nginx => false)
         # The invitations first: the nginx map decides who may reach a running
@@ -4276,13 +4260,6 @@ class Main < Sinatra::Base
 
             # STDERR.puts ">>> Workspace login is #{workspace_login}, database login is #{database_login}"
 
-            # A group with automatic Git keys (GitServer): the key pair is in
-            # the Workspace before it starts.
-            if GitServer.enabled? && test_tag.nil? && Main.git_auto_emails.include?(email)
-                Main.git_install_auto_keys([email])
-                Main.git_refresh!(:auto => false)
-            end
-
             with_timing("start_server #{container_name}: docker run") do
                 workspace_runtime.start_workspace(
                     :fs_tag => container_name,
@@ -4695,7 +4672,7 @@ class Main < Sinatra::Base
         GitServer.delete_folder(git_id) if git_id.to_s.match?(GitServer::GIT_ID)
         AccountDeletion.node_statements.each { |statement| neo4j_query(statement, :email => email) }
         # The key goes with the account; the server forgets it at once.
-        Main.git_refresh!(:auto => false)
+        Main.git_refresh!
         note_deletion(email)
         Main.refresh_nginx_config()
 
@@ -5653,19 +5630,10 @@ class Main < Sinatra::Base
             :local => git_local_mode)
     end
 
-    # For ClassRepos.variant: :auto or :keys for an address on the
-    # Workspace's Git server, after how its group's students get their
-    # keys; nil for other addresses.
+    # For ClassRepos.variant: true for an address on the Workspace's Git
+    # server, where the students hand in a key of their own.
     def git_local_mode
-        @git_local_mode ||= begin
-            modes = GitServer.enabled? ? Main.git_groups.values.to_h { |data| [data[:id], data[:keys]] } : {}
-            lambda do |address|
-                parsed = GitServer.parse_address(address)
-                next nil unless parsed
-
-                modes[parsed[0]] == GitServer::KEYS_AUTO ? :auto : :keys
-            end
-        end
+        @git_local_mode ||= lambda { |address| GitServer.parse_address(address) ? true : nil }
     end
 
     # The variant of a page this person sees (nil: the page as it is);
@@ -6876,7 +6844,7 @@ class Main < Sinatra::Base
               # with the Workspace's own Git server: a starter folder fills a new repository
               :starter => File.directory?(File.join('/src/content', slug, 'starter')) }
         end
-        git = GitServer.enabled? ? " data-git-server='1' data-git-keys='#{h.((Main.git_groups[group] || {})[:keys] || GitServer::KEYS_HANDED_IN)}'" : ''
+        git = GitServer.enabled? ? " data-git-server='1'" : ''
         # every repository in the teacher's groups at once: /repos (GitOverview)
         overview = GitServer.enabled? ? "<p class='class-repos-overview'><i class='bi bi-git' aria-hidden='true'></i>" \
             "Alle Repositorys deiner Gruppen im Workspace: <a href='#{WEB_ROOT}/repos'>Übersicht</a></p>" : ''
@@ -9058,7 +9026,7 @@ class Main < Sinatra::Base
         id ||= git_personal_id(email, :create => true)
         description = GitServer.clean_description(data[:description])
         GitServer.create_repo(id, name, :description => description, :readme => data[:readme] == true ? git_readme(name, description) : nil)
-        Main.git_refresh!(:auto => false)
+        Main.git_refresh!
         respond(:ok => true, :address => GitServer.address(id, name), :url => "#{WEB_ROOT}/git/#{id}/#{name}")
     end
 
@@ -9095,49 +9063,19 @@ class Main < Sinatra::Base
 
     # A key pair for the Workspace's Git server in one's own Workspace (as
     # a group in »Automatisch« gets it), for one's own repositories.
-    post '/api/git/install_my_key' do
-        assert(user_logged_in?)
-        halt 404 unless GitServer.enabled? && File.exist?(GitServer::HOST_KEY)
-        email = @session_user[:email]
-        home = File.join('/user', fs_tag_for_email(email), 'workspace')
-        return respond(:ok => false, :error => 'Starte zuerst einmal deinen Workspace; dann gibt es den Ordner, in den der Schlüssel kommt.') unless File.directory?(home)
-
-        line = GitServer.install_auto_key(home, :host_key_text => File.read(GitServer::HOST_KEY))
-        neo4j_query('MATCH (u:User {email: $email}) SET u.git_auto_key = $key;', :email => email, :key => line)
-        Main.git_refresh!(:auto => false)
-        respond(:ok => true)
-    end
-
-    # What the server knows of this person's keys, for »Meine Repositorys«.
+    # »Meine Repositorys«: the key for the Git server, which the person
+    # makes in their Workspace and hands in, as on any Git server; the site
+    # never makes one. The box shows the key handed in and takes it back
+    # (git_key.js); without one, how to make it first.
     def git_my_key_html(email)
         row = neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_key AS key, u.git_auto_key AS auto;', :email => email).first || {}
-        auto = row['auto'] && File.exist?(File.join('/user', fs_tag_for_email(email), 'workspace', '.ssh', GitServer::AUTO_KEY))
-        if auto
-            return "<p class='git-mine-key'><i class='bi bi-key' aria-hidden='true'></i>Dein Workspace hat einen Schlüssel für den Git-Server: " \
-                "<code>~/.ssh/#{GitServer::AUTO_KEY}</code>. Damit klonst und pushst du deine Repositorys.</p>"
-        end
-        if row['key']
-            return "<p class='git-mine-key'><i class='bi bi-key' aria-hidden='true'></i>Du hast einen öffentlichen Schlüssel abgegeben " \
-                "(<code>#{CGI.escapeHTML(GitServer.fingerprint(row['key']).to_s)}</code>); mit ihm klonst und pushst du deine Repositorys.</p>"
-        end
-        "<div class='git-mine-nokey'><p><i class='bi bi-key' aria-hidden='true'></i>Zum Klonen und Pushen braucht dein Workspace einen Schlüssel für den Git-Server. " \
-            'Der Workspace legt dir einen an, oder du gibst den öffentlichen Schlüssel eines eigenen Schlüsselpaars ab.</p>' \
-            "<p><button type='button' class='btn btn-outline-secondary' data-git-install-key><i class='bi bi-key' aria-hidden='true'></i>" \
-            "Schlüssel in meinem Workspace anlegen</button></p>" \
-            "<details class='git-mine-handin'><summary>Einen eigenen öffentlichen Schlüssel abgeben</summary><div class='git-key' data-git-key></div></details></div>"
-    end
-
-    # How the group's students get their keys: handed in, or automatic.
-    post '/api/git/set_keys' do
-        data = parse_request_data(:required_keys => [:group, :mode], :max_value_lengths => { :group => 256, :mode => 20 })
-        group, mode = data[:group], data[:mode]
-        git_teacher_of!(group)
-        halt 400 unless GitServer::KEY_MODES.include?(mode)
-        neo4j_query('MERGE (g:GroupSetting {group: $group}) SET g.git_keys = $mode;', :group => group, :mode => mode)
-        count = mode == GitServer::KEYS_AUTO ? Main.git_install_auto_keys(Main.git_group_emails(group)) : 0
-        Main.git_refresh!(:auto => false)
-        STDERR.puts "Git: keys of #{group} set to #{mode} by #{@session_user[:email]}"
-        respond(:ok => true, :mode => mode, :installed => count)
+        guide = row['key'] || row['auto'] ? '' :
+            "<p><i class='bi bi-key' aria-hidden='true'></i>Zum Klonen und Pushen braucht der Git-Server den öffentlichen Schlüssel deines Workspace. " \
+            'Erzeuge im Terminal deines Workspace ein Schlüsselpaar mit <code>ssh-keygen -t ed25519</code> und bestätige jede Frage mit Enter. ' \
+            'Zeige dann den öffentlichen Schlüssel mit <code>cat ~/.ssh/id_ed25519.pub</code> an und füge die ganze Zeile unten ein. ' \
+            'Den privaten Schlüssel, <code>~/.ssh/id_ed25519</code> ohne <code>.pub</code>, gibst du nie weiter. ' \
+            "Mehr dazu im <a href='/reference/gitlab#ssh-workspace'>Handbuch</a>.</p>"
+        "<div class='git-mine-key'>#{guide}<div class='git-key' data-git-key></div></div>"
     end
 
     # The person's public key in their Workspace, if there is one.
@@ -9163,7 +9101,7 @@ class Main < Sinatra::Base
         host = File.exist?(GitServer::HOST_KEY) ? GitServer.fingerprint(File.read(GitServer::HOST_KEY)) : nil
         respond(:handed_in => row['key'] && GitServer.fingerprint(row['key']),
                 :workspace => workspace && { :file => workspace[:file], :fingerprint => GitServer.fingerprint(workspace[:line]) },
-                :auto => Main.git_auto_emails.include?(email) && !row['auto'].nil?,
+                :auto => !row['auto'].nil?,
                 :host => host, :host_name => GitServer::HOST)
     end
 
@@ -9181,15 +9119,22 @@ class Main < Sinatra::Base
         return respond(:ok => false, :error => 'invalid') unless key && text.lines.size == 1
 
         neo4j_query('MATCH (u:User {email: $email}) SET u.git_key = $key;', :email => @session_user[:email], :key => key[:line])
-        Main.git_refresh!(:auto => false)
+        Main.git_refresh!
         respond(:ok => true, :fingerprint => GitServer.fingerprint(key[:line]))
     end
 
     post '/api/git/remove_key' do
         assert(user_logged_in?)
         halt 404 unless GitServer.enabled?
-        neo4j_query('MATCH (u:User {email: $email}) REMOVE u.git_key;', :email => @session_user[:email])
-        Main.git_refresh!(:auto => false)
+        # auto: the key the site made earlier (git_auto_key), else the one
+        # handed in; each is taken back by itself
+        # without a body (an older page, a script): the key handed in
+        body = request.body.read
+        request.body.rewind
+        data = body.strip.empty? ? {} : parse_request_data(:optional_keys => [:auto])
+        field = data[:auto] ? 'git_auto_key' : 'git_key'
+        neo4j_query("MATCH (u:User {email: $email}) REMOVE u.#{field};", :email => @session_user[:email])
+        Main.git_refresh!
         respond(:ok => true)
     end
 
@@ -9838,13 +9783,21 @@ class Main < Sinatra::Base
         email = @session_user[:email]
         id = git_personal_id(email)
         mine = id ? GitServer.repos(id) : []
+        # every section says why this person sees it: by which role
+        role = ->(icon, text) { "<p class='git-overview-role'><i class='bi bi-#{icon}' aria-hidden='true'></i>#{text}</p>" }
+        names = groups.empty? ? '' : " (#{h.(groups.join(', '))})"
+        why = if admin then role.('shield-lock', 'Du siehst diesen Teil als Administration: alle Gruppen, mit ihren Lehrkräften.')
+              elsif teacher then role.('person-video3', "Du siehst diesen Teil als Lehrkraft: die Gruppen, die du unterrichtest#{names}.")
+              else role.('people', "Du siehst diesen Teil als Mitglied deiner Gruppen#{names}.")
+              end
         page = +"<div class='container git-overview-page'><h1>Git-Repositorys</h1>"
         page << "<section class='git-overview-section'><div class='git-overview-head'><h2>Repositorys der Gruppen</h2>"
         page << GitOverview.new_form_html(:groups => class_groups) if teacher && !class_groups.empty?
-        page << "</div>#{GitOverview.html(rows, :admin => admin, :student => !teacher, :web_root => WEB_ROOT)}</section>"
+        page << "</div>#{why}#{GitOverview.html(rows, :admin => admin, :student => !teacher, :web_root => WEB_ROOT)}</section>"
         full = mine.size >= GitServer::PERSONAL_MAX ? "Du hast schon #{GitServer::PERSONAL_MAX} Repositorys." : nil
         page << "<section class='git-overview-section' id='meine'><div class='git-overview-head'><h2>Meine Repositorys</h2>"
         page << "#{GitOverview.new_form_html(:disabled => full)}</div>"
+        page << role.('person', 'Diesen Teil hat jede Person für sich, in jeder Rolle.')
         page << "<p class='git-overview-intro'>Zum Üben, nur für dich: Niemand sonst kann sie klonen, pushen oder ansehen, auch deine Lehrkräfte nicht. " \
             "Was ihr gemeinsam macht, gehört in ein Repository der Gruppe. #{mine.size} von #{GitServer::PERSONAL_MAX}.</p>"
         page << git_my_key_html(email)
@@ -9857,6 +9810,7 @@ class Main < Sinatra::Base
                 GitServer.repos(row['id']).map { |r| r.merge(:owner => name, :id => row['id']) }
             end.sort_by { |r| [r[:owner].downcase, r[:name]] }
             page << "<section class='git-overview-section'><h2>Eigene Repositorys der Personen</h2>"
+            page << role.('shield-lock', 'Diesen Teil sieht nur die Administration.')
             page << "<p class='git-overview-intro'>Repositorys, die jemand für sich zum Üben angelegt hat. Hineinsehen kann nur die Person selbst; " \
                 'du siehst, dass es sie gibt, und kannst eins löschen, etwa wenn der Platz knapp wird.</p>'
             page << GitOverview.personal_admin_html(personal) << '</section>'

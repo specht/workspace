@@ -1,5 +1,5 @@
 // The key box for the Workspace's own Git server (GitServer in main.rb;
-// Handbuch »Git-Server«, parts ssh-workspace and ssh-workspace-auto):
+// Handbuch »Git-Server«, part ssh-workspace; »Meine Repositorys« on /repos):
 //
 //   <div class='git-key' data-git-key></div>
 //
@@ -7,9 +7,10 @@
 // (~/.ssh/id_ed25519.pub) and adds it; the private key never leaves the
 // Workspace. The box asks the server once what it knows
 // (/api/git/key_state): the key handed in, the public key in the person's
-// Workspace (only to say when the two differ), whether their teacher had a
-// key set up for them, and the fingerprint of the server's own key, to
-// compare when SSH asks the first time.
+// Workspace (only to say when the two differ), a key the site made in
+// their Workspace before it stopped doing so (it can be taken back like any
+// other), and the fingerprint of the server's own key, to compare when SSH
+// asks the first time. The site never makes a key.
 (function () {
     'use strict';
 
@@ -22,10 +23,15 @@
 
     function render(box, state, error) {
         let html = '';
+        // a key the site made before it stopped doing so: it counts until
+        // taken back, beside one handed in
         if (state.auto) {
-            html += `<p><i class='bi bi-check-lg' aria-hidden='true'></i>Deine Lehrkraft hat für deinen Workspace einen Schlüssel einrichten lassen: `
-                + `<code>~/.ssh/workspace_git</code>. Du musst nichts abgeben.</p>`;
-        } else {
+            html += `<p><i class='bi bi-check-lg' aria-hidden='true'></i>Für deinen Workspace wurde früher ein Schlüssel eingerichtet: `
+                + `<code>~/.ssh/workspace_git</code>. Er gilt, bis du ihn zurückziehst.</p>`
+                + `<div class='git-key-buttons'><button type='button' class='btn btn-outline-secondary git-key-remove' data-auto='1'>`
+                + `<i class='bi bi-x-lg' aria-hidden='true'></i>Zurückziehen</button></div>`;
+        }
+        {
             if (state.handed_in) {
                 html += `<p><i class='bi bi-check-lg' aria-hidden='true'></i>Abgegeben: ein öffentlicher Schlüssel mit dem Fingerabdruck `
                     + `<code>${esc(state.handed_in)}</code>.</p>`;
@@ -77,7 +83,7 @@
                 }, { no_please_wait: true });
             } else if (target.classList.contains('git-key-remove')) {
                 target.disabled = true;
-                api_call('/api/git/remove_key', {}, function () { load(box); }, { no_please_wait: true });
+                api_call('/api/git/remove_key', target.dataset.auto ? { auto: true } : {}, function () { load(box); }, { no_please_wait: true });
             }
         });
     }

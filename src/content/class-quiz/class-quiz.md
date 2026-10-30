@@ -70,10 +70,6 @@ _include(gitlab#ssh-workspace)
 
 _task(ssh-schluessel)
 <!-- /if -->
-<!-- if: class_repo_local_auto -->
-
-_include(gitlab#ssh-workspace-auto)
-<!-- /if -->
 <!-- if: class_repo_https -->
 
 _include(gitlab#https-anmelden)

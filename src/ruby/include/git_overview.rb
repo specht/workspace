@@ -4,7 +4,7 @@ require_relative 'git_server'
 # The page /repos: every repository on the Workspace's Git server in the
 # groups a teacher teaches (an administrator: in all groups, with their
 # teachers; a student: in their own groups), one table, with its address,
-# how the group's students get their keys, the last commit and the way to
+# the last commit and the way to
 # look at it and to the group's settings; a repository of an activity
 # (class repository) or a free one a teacher made here. Below, the person's
 # own repositories for practice, and for an administrator that such exist
@@ -12,20 +12,15 @@ require_relative 'git_server'
 # on its own (test/git_overview_test.rb); main.rb decides whose groups and
 # passes what it knows.
 module GitOverview
-    KEY_LABELS = {
-        GitServer::KEYS_AUTO => 'automatisch',
-        GitServer::KEYS_HANDED_IN => 'abgegeben',
-    }.freeze
-
     # groups: the groups the person may see, in their order.
-    # git_groups: { group => { id:, keys: } } (Main.git_groups).
+    # git_groups: { group => { id: } } (Main.git_groups).
     # repos: ->(git_id) { [{ name:, size:, last:, author: }] } (GitServer.repos).
     # titles: ->(slug) { title or nil }: the activity a repository belongs
     # to (a class repository); nil for a free one.
     # class_repos: { group => { slug => address } }, to tell whether a
     # repository is the group's class repository of its page.
     # teachers: { group => [names] }, for an administrator; nil otherwise.
-    # Returns [{ group:, id:, name:, title:, free:, description:, address:, keys:, last:, author:, size:, in_use:, teachers: }].
+    # Returns [{ group:, id:, name:, title:, free:, description:, address:, last:, author:, size:, in_use:, teachers: }].
     def self.rows(groups:, git_groups:, repos:, titles:, class_repos: {}, teachers: nil)
         groups.flat_map do |group|
             data = git_groups[group]
@@ -35,7 +30,7 @@ module GitOverview
                 address = GitServer.address(data[:id], repo[:name])
                 title = titles.call(repo[:name])
                 { :group => group, :id => data[:id], :name => repo[:name], :title => title, :free => title.nil?,
-                  :description => repo[:description].to_s, :address => address, :keys => data[:keys] || GitServer::KEYS_HANDED_IN,
+                  :description => repo[:description].to_s, :address => address,
                   :last => repo[:last], :author => repo[:author], :size => repo[:size],
                   :in_use => (class_repos[group] || {})[repo[:name]] == address,
                   :teachers => teachers && (teachers[group] || []) }
@@ -74,7 +69,7 @@ module GitOverview
         end
 
         io << "<div class='git-overview-scroll'><table class='table git-overview'><thead><tr><th>Gruppe</th><th>Repository</th>" \
-            "<th>Adresse</th>#{student ? '' : '<th>Schlüssel</th>'}<th>Zuletzt</th>#{admin ? '<th>Lehrkräfte</th>' : ''}<th></th></tr></thead><tbody>"
+            "<th>Adresse</th><th>Zuletzt</th>#{admin ? '<th>Lehrkräfte</th>' : ''}<th></th></tr></thead><tbody>"
         rows.each do |r|
             title = if r[:free]
                         "<strong>#{h(r[:name])}</strong><span class='git-overview-free' title='Ein Repository der Gruppe ohne Aktivität'>frei</span>"
@@ -88,7 +83,6 @@ module GitOverview
             # data-label: the column's name, shown above each value on a phone (default.css)
             io << "<tr><td data-label='Gruppe'>#{h(r[:group])}</td><td data-label='Repository'>#{title}#{unused}</td>" \
                 "<td data-label='Adresse'>#{address_html(r[:address])}</td>"
-            io << "<td data-label='Schlüssel'>#{h(KEY_LABELS[r[:keys]] || r[:keys])}</td>" unless student
             io << "<td data-label='Zuletzt'>#{last}</td>"
             io << "<td data-label='Lehrkräfte'>#{(r[:teachers] || []).map { |t| h(t) }.join(', ')}</td>" if admin
             io << "<td><div class='git-overview-actions'><a class='btn btn-sm btn-outline-secondary' href='#{h(web_root)}/git/#{h(r[:id])}/#{h(r[:name])}'>" \

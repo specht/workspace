@@ -238,10 +238,10 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
   // point, and the pin unless the activity was pinned before
   let meetingSet = false;
   let pinnedHere = false;
-  // the Git server's picture: the group's key mode before, and whether the
-  // class quiz's repository was made for the picture
-  let gitKeysBefore: string | null = null;
+  // the Git server's picture: whether the class quiz's repository was made
+  // for the picture, and whether a key was handed in for it
   let gitCreated = false;
+  let gitKeyHandedIn = false;
   let teacher: Page | null = null;
   const page2x = async (email: string) => {
     const p = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();
@@ -393,20 +393,25 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await shoot(teacher, 'klasse-einstellungen', '.class-board-select', out);
 
     // Every repository of the teacher's groups (/repos): the class quiz on the
-    // Workspace's Git server with automatic keys and a round pushed from
-    // Jonas's Workspace; only with GIT_SERVER, and only if the group has no
-    // address of its own for the quiz (taken back at the end)
+    // Workspace's Git server and a round pushed from Jonas's Workspace with
+    // a key he made and handed in (the site never makes one); only with
+    // GIT_SERVER, and only if the group has no address of its own for the
+    // quiz (taken back at the end)
     const repos = teacher.locator('.class-repos');
-    gitKeysBefore = await repos.getAttribute('data-git-keys');
+    const gitServer = await repos.getAttribute('data-git-server');
     const quizBefore: string = JSON.parse((await repos.getAttribute('data-repos')) || '[]')
       .find((entry: any) => entry.slug === 'class-quiz')?.address || '';
-    if (gitKeysBefore !== null && (quizBefore === '' || quizBefore.startsWith('git@git.workspace:'))) {
-      expect((await teacher.request.post('/api/git/set_keys', { data: { group: 'E2E', mode: 'auto' } })).ok()).toBeTruthy();
+    if (gitServer !== null && (quizBefore === '' || quizBefore.startsWith('git@git.workspace:'))) {
+      const keygen = await container.exec('mkdir -p ~/.ssh && test -f ~/.ssh/id_ed25519.pub || ssh-keygen -q -t ed25519 -N "" -C "E2E Worker 0" -f ~/.ssh/id_ed25519', { workdir: '/workspace' });
+      expect(keygen.exitCode, keygen.stderr).toBe(0);
+      const pub = (await container.exec('cat ~/.ssh/id_ed25519.pub', { workdir: '/workspace' })).stdout;
+      expect((await (await (await as('e2e-0@example.com')).request.post('/api/git/hand_in_key', { data: { key: pub } })).json()).ok).toBe(true);
+      gitKeyHandedIn = true;
       const created = await (await teacher.request.post('/api/git/create_repo', { data: { group: 'E2E', slug: 'class-quiz' } })).json();
       expect(created.ok).toBe(true);
       gitCreated = quizBefore === '';
       const push = await container.exec(
-        `rm -rf /tmp/guide-quiz && git clone -q ${created.address} /tmp/guide-quiz && cd /tmp/guide-quiz `
+        `rm -rf /tmp/guide-quiz && GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=accept-new' git clone -q ${created.address} /tmp/guide-quiz && cd /tmp/guide-quiz `
         + `&& git config user.name "E2E Worker 0" && git config user.email e2e-0@example.com `
         + `&& printf '? Wie viele Bits hat ein Byte?\\n= 8\\n' > questions/bits.txt && echo questions/bits.txt >> rounds.txt `
         + `&& git add -A && git commit -qm "Runde über Bits" && git push -q`,
@@ -491,7 +496,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     if (meetingSet) await cleaner.request.post('/api/class/meeting', { data: { group: 'E2E', activity: 'static-website', task: '' } });
     if (pinnedHere) await cleaner.request.post('/api/class/unpin', { data: { group: 'E2E', slug: 'static-website' } });
     if (gitCreated) await cleaner.request.post('/api/git/delete_repo', { data: { group: 'E2E', slug: 'class-quiz' } });
-    if (gitKeysBefore && gitKeysBefore !== 'auto') await cleaner.request.post('/api/git/set_keys', { data: { group: 'E2E', mode: gitKeysBefore } });
+    if (gitKeyHandedIn) await (await as('e2e-0@example.com')).request.post('/api/git/remove_key');
     await container.exec('rm -rf /tmp/guide-quiz', { workdir: '/workspace' }).catch(() => {});
     for (const key of touched) {
       const [email, task] = key.split(' ');

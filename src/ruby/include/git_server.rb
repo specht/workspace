@@ -35,11 +35,10 @@ require 'tmpdir'
 # delete them (docs/plan-git-gruppen.md: practice is private; shared work
 # belongs in the class repositories).
 #
-# How students get a key is the teacher's choice per group
-# (GroupSetting.git_keys): KEYS_HANDED_IN, they create a key pair and hand in
-# the public key on the page; KEYS_AUTO, the site writes a key pair of its
-# own into each student's Workspace (~/.ssh/workspace_git) with a block in
-# ~/.ssh/config and the server's key in ~/.ssh/known_hosts.
+# Students make a key pair in their Workspace and hand in the public key on
+# the page, as on any Git server; the site never makes a key for anyone
+# (GroupSetting.git_keys is KEYS_HANDED_IN; a group once set to automatic
+# keys was moved to it, and keys made then count until taken back).
 #
 # Plain Ruby around git and ssh-keygen, tested on its own
 # (test/git_server_test.rb).
@@ -53,13 +52,6 @@ module GitServer
     CONFIG = '/git-server/config'
     HOST_KEY = '/git-server/host/ssh_host_ed25519_key.pub'
     KEYS_HANDED_IN = 'handed_in'
-    KEYS_AUTO = 'auto'
-    KEY_MODES = [KEYS_HANDED_IN, KEYS_AUTO].freeze
-    # The key pair the site writes in KEYS_AUTO, in the student's ~/.ssh.
-    AUTO_KEY = 'workspace_git'
-    # Marks the block the site manages in ~/.ssh/config and ~/.ssh/known_hosts.
-    BEGIN_MARK = '# >>> Workspace-Git (von der Website eingetragen)'
-    END_MARK = '# <<< Workspace-Git'
     KEY_TYPES = %w[ssh-ed25519 ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 ssh-rsa
                    sk-ssh-ed25519@openssh.com sk-ecdsa-sha2-nistp256@openssh.com].freeze
     GIT_ID = /\A[a-z0-9]{10}\z/
@@ -199,65 +191,6 @@ module GitServer
         File.write(temp, text)
         File.chmod(0o644, temp)
         File.rename(temp, path)
-    end
-
-    # The line for known_hosts, from the server's public host key.
-    def self.known_hosts_line(host_key_text)
-        key = parse_key(host_key_text)
-        key && "#{HOST} #{key[:line]}"
-    end
-
-    # text with the block between BEGIN_MARK and END_MARK replaced by lines
-    # (or added at the end); nil lines removes the block.
-    def self.replace_block(text, lines)
-        kept = []
-        inside = false
-        text.to_s.each_line(chomp: true) do |line|
-            if line == BEGIN_MARK
-                inside = true
-            elsif line == END_MARK && inside
-                inside = false
-            elsif !inside
-                kept << line
-            end
-        end
-        kept.pop while kept.last == ''
-        kept += ['', BEGIN_MARK, *lines, END_MARK] if lines
-        kept.shift while kept.first == ''
-        kept.empty? ? '' : kept.join("\n") + "\n"
-    end
-
-    def self.ssh_config_lines
-        ["Host #{HOST}", "    User #{USER}", "    IdentityFile ~/.ssh/#{AUTO_KEY}", '    IdentitiesOnly yes']
-    end
-
-    # KEYS_AUTO: the key pair, the block in ~/.ssh/config and the host key
-    # in ~/.ssh/known_hosts, in a Workspace's folder (home, as the backend
-    # sees it). An existing key pair stays. Returns the public key's line.
-    def self.install_auto_key(home, host_key_text:, uid: UID)
-        ssh = File.join(home, '.ssh')
-        FileUtils.mkdir_p(ssh)
-        File.chmod(0o700, ssh)
-        private_key = File.join(ssh, AUTO_KEY)
-        unless File.exist?(private_key) && File.exist?("#{private_key}.pub")
-            FileUtils.rm_f([private_key, "#{private_key}.pub"])
-            _, status = Open3.capture2e('ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'Workspace-Git', '-f', private_key)
-            raise 'ssh-keygen failed' unless status.success?
-        end
-        config = File.join(ssh, 'config')
-        File.write(config, replace_block(File.exist?(config) ? File.read(config) : '', ssh_config_lines))
-        known = known_hosts_line(host_key_text)
-        if known
-            hosts = File.join(ssh, 'known_hosts')
-            File.write(hosts, replace_block(File.exist?(hosts) ? File.read(hosts) : '', [known]))
-        end
-        File.chmod(0o600, private_key)
-        File.chmod(0o644, "#{private_key}.pub")
-        File.chmod(0o600, config)
-        [ssh, private_key, "#{private_key}.pub", config, File.join(ssh, 'known_hosts')].each do |path|
-            File.chown(uid, uid, path) if File.exist?(path)
-        end
-        parse_key(File.read("#{private_key}.pub"))[:line]
     end
 
     # --- repositories ------------------------------------------------------------

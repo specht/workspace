@@ -703,18 +703,12 @@ document.addEventListener('click', function (e) {
         set_actions(list.find((e) => e.slug === slug));
     }
 
+    // The keys: every student makes a key pair and hands in its public key,
+    // as on any Git server; the site never makes one (main.rb, GitServer)
     function git_keys_html() {
         if (!git_server) return '';
-        const mode = box.dataset.gitKeys || 'handed_in';
-        const option = (value, label, hint) => `<div class='form-check'>`
-            + `<input class='form-check-input' type='radio' name='class-repos-keys' id='class-repos-keys-${value}' value='${value}'${mode === value ? ' checked' : ''}>`
-            + `<label class='form-check-label' for='class-repos-keys-${value}'>${label}<span class='class-repos-keys-hint'>${hint}</span></label></div>`;
-        return `<fieldset class='class-repos-keys'><legend class='class-setting-subtitle'>Schlüssel</legend>`
-            + option('handed_in', 'Die Lernenden erzeugen ein Schlüsselpaar und geben den öffentlichen Schlüssel ab',
-                'wie bei einem Git-Server im Netz; die Seiten zeigen, wie es geht')
-            + option('auto', 'Der Workspace richtet den Schlüssel für alle ein',
-                'für die Lernenden ist nichts zu tun; er gilt nur für den Git-Server des Workspace')
-            + `</fieldset>`;
+        return `<p class='class-setting-hint'><i class='bi bi-key' aria-hidden='true'></i>Die Lernenden erzeugen in ihrem Workspace ein Schlüsselpaar `
+            + `und geben den öffentlichen Schlüssel ab, wie bei einem Git-Server im Netz; die Seiten zeigen, wie es geht.</p>`;
     }
 
     function render() {
@@ -744,17 +738,6 @@ document.addEventListener('click', function (e) {
 
     box.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && e.target.classList.contains('class-repo-input')) { e.preventDefault(); save(); }
-    });
-    box.addEventListener('change', function (e) {
-        if (e.target.name !== 'class-repos-keys') return;
-        const mode = e.target.value;
-        api_call('/api/git/set_keys', { group: group, mode: mode }, function (r) {
-            if (!r.success || !r.ok) return;
-            box.dataset.gitKeys = mode;
-            show_success_message(mode === 'auto'
-                ? `Der Workspace richtet die Schlüssel ein: ${r.installed === 1 ? 'ein Workspace' : `${r.installed} Workspaces`} sofort, die anderen beim nächsten Start.`
-                : 'Die Lernenden geben ihre Schlüssel selbst ab.');
-        }, { no_please_wait: true });
     });
     box.addEventListener('click', function (e) {
         const target = e.target.closest('button');
