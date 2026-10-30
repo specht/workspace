@@ -201,7 +201,6 @@ Platform-wide:
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
-* [ ] The section icons in `src/static/images/` (rocket, keyboard, joystick, video-game …) are Google's Noto Emoji under the Apache License 2.0, credited nowhere on the site; decide where the notice goes (Impressum, About, a page of licences)
 * [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
 
 

@@ -588,7 +588,20 @@ module Privacy
         out << "<p>Quelltext: <a href='https://github.com/specht/workspace'>https://github.com/specht/workspace</a></p>\n"
         out << "<p><strong>Für Lehrkräfte:</strong> Wie eine Lehrkraft ihre Klasse hier anmeldet oder den Workspace auf einem eigenen oder gemieteten Server betreibt, " \
             "steht unter <a href='/about#lehrkraefte'>»Für Lehrkräfte«</a>.</p>\n"
+        out << pictures_html
         out
+    end
+
+    # The images of the site itself that are someone else's (src/static/images);
+    # pictures on the pages name their source where they stand.
+    def self.pictures_html
+        "<h2 id='bildnachweise'>Bildnachweise</h2>\n" \
+            "<p>Die farbigen Symbole des Workspace, etwa vor den Abschnitten des Katalogs, stammen aus " \
+            "<a href='https://github.com/googlefonts/noto-emoji'>Noto Emoji</a> von Google, unter der " \
+            "<a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License 2.0</a>. " \
+            "Das Git-Logo ist von Jason Long, unter <a href='https://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a> " \
+            "(<a href='https://git-scm.com/downloads/logos'>git-scm.com</a>). " \
+            "Der kleine Computer für TIC-80 ist das Logo des <a href='https://github.com/nesbox/TIC-80'>TIC-80-Projekts</a>, unter der MIT-Lizenz.</p>\n"
     end
 
     # The schools whose Schulleitung decided the same: each has its own
