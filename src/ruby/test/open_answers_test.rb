@@ -44,4 +44,15 @@ class OpenAnswersTest < Minitest::Test
         assert_equal 'Weil es so ist.', answers['warum'].last[:answer]
         assert_equal 20, answers['warum'].last[:updated]
     end
+
+    def test_an_example_in_one_language_names_it
+        assert_equal 'ruby', OpenAnswers.example_language("```ruby\ndef valid_isbn?(isbn)\nend\n```\n")
+        assert_equal 'python', OpenAnswers.example_language("  ```python\ndef f():\n    pass\n```")
+        assert_equal 'javascript', OpenAnswers.example_language("```js\nlet a = 1;\n```")
+        # text, two blocks, or a language no page switches to: for every language
+        assert_nil OpenAnswers.example_language("Die Kugeln spiegeln nichts.")
+        assert_nil OpenAnswers.example_language("```ruby\na\n```\n\n```python\nb\n```")
+        assert_nil OpenAnswers.example_language("```sql\nSELECT 1;\n```")
+        assert_nil OpenAnswers.example_language("Erst Text, dann\n```ruby\na\n```")
+    end
 end

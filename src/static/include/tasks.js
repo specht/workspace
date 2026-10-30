@@ -1090,8 +1090,12 @@
 
     function examplesHtml(card) {
         const examples = (teacher.examples || {})[cardId(card)] || [];
-        return "<ol class='task-teacher-list'>" + examples.map((html) =>
-            "<li class='task-teacher-answer task-teacher-example'>" + html + '</li>').join('') + '</ol>';
+        // an example in one language shows only while the page is in it
+        // (data-language, the CSS of .code-language)
+        return "<ol class='task-teacher-list'>" + examples.map((example) => {
+            const language = example.language ? " code-language' data-language='" + example.language : '';
+            return "<li class='task-teacher-answer task-teacher-example" + language + "'>" + example.html + '</li>';
+        }).join('') + '</ol>';
     }
 
     function groupHtml(card) {

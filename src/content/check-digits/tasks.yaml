@@ -552,6 +552,30 @@ tasks:
             # gültig, wenn die Summe durch 11 teilbar ist
             pass
         ```
+      - |
+        ```dart
+        bool isValidIsbn(String isbn) {
+          // die Bindestriche herausnehmen
+          // nicht genau 10 Zeichen: false
+          // für jedes Zeichen mit seinem Index:
+          //   ein X nur am Ende, es zählt 10
+          //   sonst eine Ziffer, oder false
+          //   die Zahl mal (10 - Index) zur Summe
+          // gültig, wenn die Summe durch 11 teilbar ist
+        }
+        ```
+      - |
+        ```java
+        public static boolean isValidIsbn(String isbn) {
+            // die Bindestriche herausnehmen
+            // nicht genau 10 Zeichen: false
+            // für jedes Zeichen mit seinem Index:
+            //   ein X nur am Ende, es zählt 10
+            //   sonst eine Ziffer, oder false
+            //   die Zahl mal (10 - Index) zur Summe
+            // gültig, wenn die Summe durch 11 teilbar ist
+        }
+        ```
     python:
       prompt: |
         Kopier die Kommentare deines Plans für `is_valid_isbn` hierher, bevor

@@ -1,3 +1,4 @@
+require_relative 'code_languages'
 # What a teacher sees under an open task (reflection) on the activity page
 # (docs/aufgaben.md, »Antworten unter offenen Aufgaben«): the example
 # answers from tasks.yaml or the answers of the current group. Plain Ruby,
@@ -13,6 +14,17 @@ module OpenAnswers
     # The view to open with: the one chosen last if it can be shown,
     # otherwise closed. Nothing opens by itself under the cards, so the page
     # can go on a projector as it is.
+    # The language of an example answer that is nothing but one code block
+    # in one of the page languages (```ruby … ```), else nil: on a page in
+    # Ruby, the example in Python is no help.
+    def self.example_language(markdown)
+        m = markdown.to_s.strip.match(/\A```([a-z]+)\n.*\n```\z/m)
+        return nil unless m && !m[0][3..-4].include?('```')
+
+        language = { 'js' => 'javascript' }.fetch(m[1], m[1])
+        CodeLanguages::LANGUAGES.include?(language) ? language : nil
+    end
+
     def self.view(wanted, examples:, groups:)
         possible = VIEWS.select { |v| v == 'off' || (v == 'examples' && examples) || (v == 'group' && groups) }
         possible.include?(wanted) ? wanted : 'off'

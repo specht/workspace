@@ -6280,7 +6280,9 @@ class Main < Sinatra::Base
             :groups => groups.map { |g| { :name => g, :size => (@@group_members[g] || []).size } },
             :group => groups.include?(prefs['group']) ? prefs['group'] : (groups.find { |g| pinned.include?(g) } || groups.first),
             :pinned => groups.select { |g| pinned.include?(g) },
-            :examples => examples ? ids.to_h { |id| [id, (tasks[:by_id][id]['examples'] || []).map { |e| render_task_markdown(e) }] } : nil,
+            # an example that is code in one language shows only while the
+            # page is in that language (tasks.js, the CSS of .code-language)
+            :examples => examples ? ids.to_h { |id| [id, (tasks[:by_id][id]['examples'] || []).map { |e| { :html => render_task_markdown(e), :language => OpenAnswers.example_language(e) } }] } : nil,
         }
     end
 
