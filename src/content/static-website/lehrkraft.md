@@ -13,3 +13,11 @@ Die Aufgaben lesen nur Dateien in `/workspace/website-test` und entscheiden selb
 </table>
 
 »Dein eigenes Bild« ist die Stelle, an der die meisten hängen: Bild nicht neben `index.html`, `.JPG` statt `.jpg`, oder ein `.png`, das eigentlich ein JPEG ist. Die Karte nennt jeweils, was sie gefunden hat. Die zweite häufige Stelle ist »Gestaltet mit CSS«: Die Regeln stehen in `styles.css`, aber der `<link>` im `<head>` fehlt oder nennt einen anderen Dateinamen; die Karte sagt das jetzt ausdrücklich.
+
+#### Eigene Projekte
+
+Die Seite macht aus der Vorlage eine eigene Seite. Die Ideen hier geben ihr einen Zweck außerhalb des Unterrichts; bewertet wird an der Seite selbst, auf dem Rechner und auf dem Handy, und am Erklären einer CSS-Regel, die die Lernenden selbst geschrieben haben.
+
+- **Eine Seite für jemand anderen** (ein Projekt): für einen Verein, eine AG, eine Klassenfahrt. Am Anfang steht ein kurzes Gespräch mit der Person, die die Seite haben will, und eine Liste, was hineinsoll; am Ende sagt diese Person, ob sie bekommen hat, was sie wollte. Fotos und Namen anderer kommen nur mit deren Erlaubnis auf eine Seite, die veröffentlicht wird.
+- **Von der Skizze zur Seite** (eine Doppelstunde): Jemand zeichnet ein Layout auf Papier, jemand anderes baut es mit [»Layout mit Flexbox«](#layout-mit-flexbox) nach, und beide vergleichen, auch auf einem schmalen Bildschirm wie in [»Auf kleinen Bildschirmen«](#auf-kleinen-bildschirmen).
+- **Eine Seite für alle** (eine Doppelstunde): die eigene Seite auf Barrierefreiheit durchgehen, mit den Werkzeugen des Browsers: Haben alle Bilder einen Alternativtext, reicht der Kontrast, lässt sich alles mit der Tastatur erreichen? Abgegeben wird die Liste der Funde und die verbesserte Seite.

@@ -45,3 +45,11 @@ Lernende bauen eine Suchmaschine für eine kleine Website, das »Kleine Tierlexi
 - EuGH, <a href='https://curia.europa.eu/juris/liste.jsf?num=C-131/12'>Google Spain</a> (C-131/12, 13. Mai 2014): Eine Suchmaschine muss auf Antrag Links zu einem Namen entfernen, wenn das Recht der Person überwiegt; seit 2018 Art. 17 DSGVO.
 - Sergey Brin, Lawrence Page: <a href='https://doi.org/10.1016/S0169-7552(98)00110-X'>The Anatomy of a Large-Scale Hypertextual Web Search Engine</a>, Computer Networks and ISDN Systems 30 (1998).
 - <a href='https://www.rfc-editor.org/rfc/rfc9309'>RFC 9309</a>: das Robots Exclusion Protocol, <code>robots.txt</code>.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden einen Crawler, einen Index und zwei Rankings. Die Ideen verbessern eins davon; bewertet wird mit Suchanfragen, die die Lernenden vorher aufschreiben, mit dem Ergebnis, das sie erwarten, und daran, ob die Änderung es besser macht.
+
+- **Ein besseres Ranking** (eine Doppelstunde): Wörter, die auf fast jeder Seite stehen, zählen weniger als seltene (TF-IDF), oder ein Wort in der Überschrift zählt mehr als eins im Text. Verglichen wird mit dem Zählen aus [»Suchen«](#suchen) und den Links aus [»Links als Stimmen«](#links-als-stimmen), an denselben Anfragen.
+- **Ein Ausschnitt zum Treffer** (eine Doppelstunde): Unter jedem Treffer steht der Satz, in dem das Wort vorkommt, mit dem Wort hervorgehoben, wie bei großen Suchmaschinen. Dafür muss der Index mehr wissen als nur, auf welcher Seite ein Wort steht.
+- **Eine Suche, die Tippfehler verzeiht** (ein Projekt): »Elefnat« findet den Elefanten. Die Lernenden messen, wie ähnlich zwei Wörter sind, etwa mit der Zahl der Buchstaben, die man ändern muss (Levenshtein-Abstand), und schlagen das nächste Wort aus dem Index vor.

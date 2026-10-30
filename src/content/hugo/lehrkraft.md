@@ -24,3 +24,11 @@ Lernende bauen mit Hugo eine kleine Website ohne fertiges Theme, ein Lexikon üb
 #### Veröffentlichen
 
 Die Seite verweist auf die Anleitung zum eigenen Webspace (`/reference/webspace`) und lädt `public/` mit `rsync` hoch. Minderjährige brauchen dafür die unterschriebene Einverständniserklärung.
+
+#### Eigene Projekte
+
+Nach der Seite haben die Lernenden ein eigenes Layout, Inhalte in Markdown und Schlagwörter. Die Ideen geben dem einen eigenen Inhalt; bewertet wird an der fertigen Website in `public` und daran, dass die Lernenden erklären, welche Datei welche Seite erzeugt.
+
+- **Ein Lexikon zu einem eigenen Thema** (eine Doppelstunde bis ein Projekt): Vögel im Schulgarten, die Bauwerke einer Stadt, die Figuren eines Romans aus dem Deutschunterricht. Die Schlagwörter ordnen die Einträge auf eine zweite Art, etwa nach Lebensraum oder Epoche; was in das Front Matter gehört und was in den Text, entscheiden die Lernenden selbst.
+- **Ein Projekttagebuch** (über ein anderes Projekt hinweg): ein Eintrag je Doppelstunde zu einem größeren Vorhaben, etwa der [Klötzchenwelt](/raylib), mit Datum, Bildschirmfoto und einem Satz, was schiefging. Hugo sortiert nach Datum; die Lehrkraft sieht den Weg und nicht nur das Ergebnis.
+- **Eine Seite in zwei Sprachen** (ein Projekt, für Starke): Hugo kann mehrsprachige Websites; jeder Eintrag gibt es dann auf Deutsch und auf Englisch, mit einem Umschalter im Layout. Gut zusammen mit dem Englischunterricht.

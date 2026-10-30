@@ -34,3 +34,11 @@ Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS un
 #### Versionen
 
 Die Seite folgt SvelteKit 3: Die Einstellungen, auch der Adapter, stehen in `vite.config.js`; eine `svelte.config.js` gibt es nicht mehr. Ältere Anleitungen im Netz nennen noch diese Datei.
+
+#### Eigene Projekte
+
+Die Stoppuhr ist ein Zustandsautomat mit einer Oberfläche. Die Ideen nehmen beides wieder auf; jede beginnt mit dem Diagramm der Zustände wie in [»Modellierung«](#modellierung), und bewertet wird an Diagramm und Vorführung.
+
+- **Ein eigener Automat mit Oberfläche** (eine Doppelstunde bis ein Projekt): eine Uhr für Referate, die nach der Zeit rot wird, ein Pomodoro-Timer mit Arbeit und Pause, ein Quiz mit Frage, Antwort und Auswertung. Erst die Zustände und Übergänge, dann die Komponente; wer etwas vergessen hat, findet es beim Vorführen, wenn jemand die Knöpfe in einer anderen Reihenfolge drückt.
+- **Bestzeiten** (eine Doppelstunde): Die Stoppuhr merkt sich ihre Zeiten im Browser (`localStorage`), zeigt die beste und den Durchschnitt der letzten fünf, wie bei Wettkämpfen mit dem Zauberwürfel üblich, ohne die beste und die schlechteste. Neu ist Zustand, der das Neuladen der Seite übersteht.
+- **In Komponenten zerlegen** (eine Doppelstunde): Anzeige, Knöpfe und Liste der Zeiten werden eigene Komponenten, die Werte aneinander weitergeben. Zu erklären ist, welche Komponente welchen Zustand besitzt und warum nicht jede alles weiß.

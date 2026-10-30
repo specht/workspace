@@ -41,4 +41,11 @@ Lernende fragen eine echte API, den freien Wetterdienst Open-Meteo: erst mit `cu
 
 - Im Programm für jeden Ort fehlen zwei Stellen, die die Lernenden zuerst selbst schreiben: die Meldung, wenn die Geocoding-API keinen Ort findet (die Antwort ohne `results` kennen sie aus »Wenn etwas schiefgeht«), und die Zeile für jeden der drei Tage aus den parallelen Listen in `daily`; »Drei Tage, und kein Xyzzy« prüft beides an der Ausgabe. Beim Cache zeigt die Seite nur, was in `fetch_json` dazukommt, mit Kontextzeilen; die Prüfung, ob eine gespeicherte Antwort noch frisch ist, und das Schreiben in die Datei schreiben die Lernenden selbst, »Ein Cache« prüft sie. Die Seite geht danach mit ihrem eigenen Code weiter.
 - Vor dem Code der Seite stehen Tipps, ein Denkanstoß und ein Gerüst mit Lücken. Jede Stufe erscheint erst eine Minute nach der vorigen, ohne Uhr, damit die Lernenden mit dem Tipp arbeiten, statt auf den nächsten zu warten; der Code der Seite ist die letzte Stufe. Wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst.
-- Wer mehr will: stündliche Werte als Kurve auf einem `<canvas>`, ein Vergleich mehrerer Städte oder eine andere freie API. Über API-Schlüssel und warum sie nicht in eine Webseite gehören, lohnt sich ein kurzes Gespräch.
+
+#### Eigene Projekte
+
+Die Seite endet mit einer eigenen Wetterseite. Die Ideen hier gehen darüber hinaus; bewertet wird beim Vorführen und daran, dass die Lernenden zeigen können, welche Anfrage ihr Programm stellt und was in der Antwort steht.
+
+- **Eine Kurve statt einer Tabelle** (eine Doppelstunde): die stündlichen Werte des Tages als Kurve auf einem `<canvas>`, Temperatur und Regen übereinander. Neu ist, Werte in Pixel umzurechnen; die Achsen beschriften die Lernenden selbst.
+- **Mehrere Orte vergleichen** (eine Doppelstunde): wo es morgen am wärmsten ist, unter fünf Städten. Mehrere Anfragen nacheinander sind die Gelegenheit, [»Wenn die API nicht mehr will«](#wenn-die-api-nicht-mehr-will) ernst zu nehmen: Der Cache spart Anfragen, und die Lernenden zählen, wie viele.
+- **Eine andere freie API** (ein Projekt): Open-Meteo hat auch Luftqualität und Pollenflug, andere Dienste kennen Abfahrten, Bücher oder Wikipedia-Artikel. Die Lernenden lesen selbst die Dokumentation, bauen die erste Anfrage mit `curl` und erst dann das Programm. Über API-Schlüssel und warum sie nicht in eine Webseite gehören, lohnt sich vorher ein kurzes Gespräch.
