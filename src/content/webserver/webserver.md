@@ -313,9 +313,44 @@ _task(bytes)
 
 Jetzt der Browser. Visual Studio Code leitet Port 8000 an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf, und dein Server antwortet in einem neuen Tab.
 
+<!-- tutorial-screenshot
+# Der Browser fragt den Server über die weitergeleitete Adresse (Stufe 2)
+preview-port: 8000
+tab: preview
+viewport: 900x160
+wait-for-text: Hallo aus meinem eigenen Server
+sleep: 1
+-->
+<img class='shot border' src='browser-hallo.webp' alt='Im Browser steht nur eine Zeile Text: Hallo aus meinem eigenen Server!'>
+
 Oder du schreibst die Anfrage selbst, Zeile für Zeile: Öffne die [TCP-Konsole](/tcp-console) und verbinde dich mit `localhost`, Port 8000. Die Konsole beginnt in deinem Workspace, also landet sie bei deinem Server. Tippe `GET / HTTP/1.1`, `Host: localhost` und eine leere Zeile. Im Terminal siehst du, wie dein Server die Zeilen liest, in der Konsole, was er antwortet. Probier auch, was passiert, wenn du die leere Zeile weglässt oder statt einer Anfrage einfach `Hallo` schickst.
 
 _tool(tcp-console)
+
+<!-- tutorial-screenshot
+# TCP-Konsole: GET an den eigenen Server, localhost Port 8000, ohne TLS
+open-site: /tcp-console
+tab: preview
+viewport: 1029x1100
+click: selector:#tcp-host
+press: Control+a
+type: localhost
+click: selector:#tcp-port
+press: Control+a
+type: 8000
+click: selector:#tcp-connect-button
+wait-for-text: Verbunden mit localhost
+click: selector:#tcp-line
+type: GET / HTTP/1.1
+press: Enter
+type: Host: localhost
+press: Enter
+press: Enter
+wait-for-text: HTTP/1.1 200
+sleep: 2
+crop-element: #tcp-log
+-->
+<img class='full' src='tcp-konsole-hallo.webp' alt='Die TCP-Konsole wie ein Chat: oben »Verbunden mit localhost (127.0.0.1), Port 8000, unverschlüsselt«. Rechts in einer blauen Sprechblase die Anfrage, GET / HTTP/1.1 und Host: localhost mit der leeren Zeile. Links die Antwort des Servers: HTTP/1.1 200 OK, die Header Content-Type, Content-Length und Connection und der Text »Hallo aus meinem eigenen Server!«. Unten: »Getrennt nach 1,0 s. Der Server hat die Verbindung geschlossen.«'>
 
 ## Pfade und 404
 
