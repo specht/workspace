@@ -1,5 +1,7 @@
 # Hackschule Workspace
 
+[![Ruby tests](https://github.com/specht/workspace/actions/workflows/ruby-tests.yml/badge.svg?branch=main)](https://github.com/specht/workspace/actions/workflows/ruby-tests.yml)
+
 Der Hackschule Workspace ist eine browserbasierte Entwicklungsumgebung für den Informatikunterricht. Schülerinnen und Schüler arbeiten mit einem echten Linux-System, Visual Studio Code, Terminal, Git, Compilern, Datenbanken und weiteren Werkzeugen – ohne auf dem eigenen Rechner etwas installieren zu müssen. Dateien und Einstellungen bleiben erhalten, sodass in der Schule und zu Hause dieselbe Arbeitsumgebung zur Verfügung steht.
 
 Zum Workspace gehören außerdem zahlreiche Aktivitäten, die direkt mit den vorhandenen Werkzeugen arbeiten: von den ersten Schritten mit Dateien und Git über Webentwicklung und Datenbanken bis zu Computergrafik, interaktiven Geschichten und systemnaher Programmierung. Ein Handbuch zum Nachschlagen begleitet sie. Viele Aktivitäten enthalten Aufgaben, die der Workspace selbst prüft; auf der Klassenseite sehen Lehrkräfte, wer wo steht.
