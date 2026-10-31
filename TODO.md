@@ -65,10 +65,6 @@ Done: the SQL introduction with checked tasks, the ER-Werkstatt in the
 Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 »Filmdatenbank als Graph mit Neo4j« with Cypher tasks.
 
-#### SQL introduction (`/mysql`)
-
-* [ ] Shorten the opening (close folder, new folder, terminal) and link the Workspace Handbuch instead
-
 #### ER-Werkstatt
 
 * [ ] `_include_er(model.er, chen|crowsfoot|tables)` for pages, so ER diagrams on the website are generated from the model instead of screenshots

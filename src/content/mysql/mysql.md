@@ -26,18 +26,11 @@ In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Daz
 
 ### Einen Ordner anlegen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Schließe zuerst einen geöffneten Ordner: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>. Öffne dann mit <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>O</kbd> den Ordner `sql-einfuehrung`. Weil es ihn noch nicht gibt, fragt VS Code, ob er angelegt werden soll; bestätige mit <kbd>Enter</kbd>.
 
 <!-- tutorial-screenshot
-# Workspace ohne geöffneten Ordner
+close-folder
 show-left-sidebar
--->
-
-<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links die leere Seitenleiste mit dem Knopf Open Folder.'>
-
-Wir erstellen nun ein Verzeichnis für unser MySQL-Experiment. Klicke dazu auf »Open Folder« und gib `sql-einfuehrung` ein:
-
-<!-- tutorial-screenshot
 press: Control+K
 press: Control+O
 wait-for-input-value: /workspace/
@@ -47,29 +40,16 @@ crop-bottom: 55%
 
 <img class='full' src='open-folder.webp' alt='Der Dialog zum Öffnen eines Ordners, im Eingabefeld steht /workspace/sql-einfuehrung.'>
 
-Da das Verzeichnis noch nicht existiert, wirst du gefragt, ob das Verzeichnis erstellt werden soll. Bestätige die Frage mit <kbd>Enter</kbd>:
-
-<!-- tutorial-screenshot
+<!-- tutorial-step
+# The folder is created and opened, and a terminal below it
 press: Enter
 wait-for-text: create it
-crop-bottom: 83%
--->
-
-<img class='full' src='open-folder-confirm.webp' alt='Die Rückfrage, ob der Ordner sql-einfuehrung angelegt werden soll.'>
-
-Öffne anschließend das Terminal:
-
-<!-- tutorial-screenshot
 press: Enter
 sleep: 1
 terminal-open
 -->
 
-<img class='full' src='got-terminal.webp' alt='Der Workspace mit dem geöffneten Ordner sql-einfuehrung und einem Terminal im unteren Bereich.'>
-
-<img src='../reference/workspace/maximize-terminal.webp' class='r' style='width: 25em;' alt='Rechts oben im Terminal das Symbol zum Maximieren, der Mauszeiger darauf, darunter der Hinweis »Maximize Panel«.'>
-
-Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst.
+Öffne dann das Terminal mit <kbd>Strg</kbd><kbd>J</kbd>. Wie das aussieht und wie du es größer machst, zeigt das Handbuch unter [Terminal öffnen](/reference/workspace#terminal-oeffnen).
 
 ### Beispieldaten laden
 

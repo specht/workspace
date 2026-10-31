@@ -14,20 +14,6 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
-    "fresh-start.webp": {
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5da8b49651d62fb568e1d7db9b03db6eadb3ab4ed93e4062820ffae337703aa1",
-      "state_hash": "59c3087c9088e63d6bbed8098f62b3e08e841d8cfea0a9ffa3dedb03abf7f63e",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
-    "got-terminal.webp": {
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "7c80a4e70068fc2f1641b5660da5af7eddf55a7c8a0f5f31b382459428eb7860",
-      "state_hash": "b7caee2dc2f04e00a01b3d40e7ba28c06cf2bc0cdf3d9289a1136a7786b9c8e5",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
     "insert-foreign-key.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "61f2773d8b092649e807f5ab6c38635d5a8af6e1b1451770ae77ef8015b4cbdf",
@@ -39,13 +25,6 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "f051fa34ba6369f6605c81109f718f27f9936ea7c3904806dd0bf236f9e459bf",
       "state_hash": "8f22b55dc659a7510b01b080c6d7ad9570ff7e6f9cb66c28d50d61dd28553162",
-      "workspace_look": "4.140.0-ls368",
-      "workspace_window": 560
-    },
-    "open-folder-confirm.webp": {
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "d0179baf5b8ee7f299bb4d1e6e025f454460d20eefd869e553898c629194df2a",
-      "state_hash": "011919570274549b9e4edc518b4019bffd94ff18fe4e23cd9fe98077065fd1f4",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
