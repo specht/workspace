@@ -3715,11 +3715,20 @@ class Main < Sinatra::Base
         Main.db_login_for_email(email)
     end
 
+    # The root clients of MySQL and Neo4j, for statements on standard input.
+    # The password goes in the environment (docker exec -e NAME takes the
+    # value from here): on a command line every ps on the host and Docker's
+    # own events (exec_create) would show it.
+    MYSQL_ROOT_CLIENT = 'docker exec -i -e MYSQL_PWD workspace_mysql_1 mysql --user=root'
+    MYSQL_ROOT_ENV = { 'MYSQL_PWD' => MYSQL_ROOT_PASSWORD }.freeze
+    NEO4J_ROOT_CLIENT = 'docker exec -i -e NEO4J_PASSWORD workspace_neo4j_1 bin/cypher-shell -u neo4j'
+    NEO4J_ROOT_ENV = { 'NEO4J_PASSWORD' => NEO4J_ROOT_PASSWORD }.freeze
+
     def self.init_mysql(email, db_login)
         DatabaseIdentity.validate!(db_login)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
         STDERR.puts "Setting up MySQL user #{db_login} with database #{db_login}"
-        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(MYSQL_ROOT_ENV, MYSQL_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             DatabaseProvisioning.mysql_statements(db_login, mysql_password)
                 .each { |statement| stdin.puts statement }
             stdin.close
@@ -3735,7 +3744,7 @@ class Main < Sinatra::Base
     def reset_mysql(email)
         db_login = db_login_for_email(email)
         STDERR.puts "Removing database for MySQL user #{db_login}"
-        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(MYSQL_ROOT_ENV, MYSQL_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             stdin.puts "DROP DATABASE IF EXISTS `#{db_login}`;"
             stdin.close
             status = wait_thr.value
@@ -3749,7 +3758,7 @@ class Main < Sinatra::Base
         neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
         STDERR.puts "Setting up Neo4j user #{db_login} with database #{db_login}"
 
-        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(NEO4J_ROOT_ENV, NEO4J_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             DatabaseProvisioning.neo4j_statements(db_login, neo4j_password)
                 .each { |statement| stdin.puts statement }
             stdin.close
@@ -3765,7 +3774,7 @@ class Main < Sinatra::Base
     def reset_neo4j(email)
         db_login = db_login_for_email(email)
         role = DatabaseProvisioning.neo4j_role_name(db_login)
-        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(NEO4J_ROOT_ENV, NEO4J_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 DROP DATABASE `#{db_login}` IF EXISTS;
                 DROP USER `#{db_login}` IF EXISTS;
@@ -3784,14 +3793,14 @@ class Main < Sinatra::Base
         DatabaseIdentity.validate!(db_login)
         database_email = "#{email}-#{demo_tag}"
 
-        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(MYSQL_ROOT_ENV, MYSQL_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             stdin.puts "DROP DATABASE IF EXISTS `#{db_login}`;"
             stdin.close
             status = wait_thr.value
             raise "MySQL test demo reset failed for #{db_login}" unless status.success?
         end
 
-        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2(NEO4J_ROOT_ENV, NEO4J_ROOT_CLIENT) do |stdin, stdout, wait_thr|
             stdin.puts "DROP DATABASE `#{db_login}` IF EXISTS;"
             stdin.close
             status = wait_thr.value
@@ -4606,7 +4615,7 @@ class Main < Sinatra::Base
     end
 
     def run_mysql_statements(statements)
-        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, _stdout, wait_thr|
+        Open3.popen2(MYSQL_ROOT_ENV, MYSQL_ROOT_CLIENT) do |stdin, _stdout, wait_thr|
             statements.each { |statement| stdin.puts statement }
             stdin.close
             raise 'MySQL statements failed' unless wait_thr.value.success?
@@ -4614,7 +4623,7 @@ class Main < Sinatra::Base
     end
 
     def run_neo4j_statements(statements)
-        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, _stdout, wait_thr|
+        Open3.popen2(NEO4J_ROOT_ENV, NEO4J_ROOT_CLIENT) do |stdin, _stdout, wait_thr|
             statements.each { |statement| stdin.puts statement }
             stdin.close
             raise 'Neo4j statements failed' unless wait_thr.value.success?
@@ -5063,7 +5072,7 @@ class Main < Sinatra::Base
             missing = []
             ([login] + extra).each do |database|
                 target = File.join(dir, 'mysql', "#{database}.sql")
-                next if system('docker', 'exec', 'workspace_mysql_1', 'mysqldump', '--user=root', "--password=#{MYSQL_ROOT_PASSWORD}", database,
+                next if system(MYSQL_ROOT_ENV, 'docker', 'exec', '-e', 'MYSQL_PWD', 'workspace_mysql_1', 'mysqldump', '--user=root', database,
                     :out => target, :err => File::NULL)
 
                 FileUtils.rm_f(target)
