@@ -64,10 +64,6 @@ Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwi
 Die Typen sind die Tätigkeiten aus der Tabelle `job`, nur in Großbuchstaben, so wie man sie in Cypher üblicherweise schreibt.
 <!-- /after -->
 
-<div class='hint'>
-Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen. Wir wählen dieses Modell, weil bei unseren Filmdaten gerade die Verbindungen zwischen Filmen, Genres und Personen interessant sind.
-</div>
-
 ### Knoten haben Eigenschaften
 
 Ein Knoten hat ein **Label**, das sagt, was er darstellt, und **Eigenschaften** mit Werten. »Back to the Future« sieht im Graphen ungefähr so aus:
@@ -97,6 +93,37 @@ Eine Beziehung verbindet zwei Knoten und zeigt in eine Richtung:
 ```
 
 Runde Klammern stehen für Knoten, eckige für Beziehungen. Der Name hinter dem Doppelpunkt ist bei einem Knoten sein Label, bei einer Beziehung ihr Typ. Das ist schon Cypher: Genau so schreibst du gleich deine Abfragen.
+
+### Knoten, Beziehung oder Eigenschaft?
+
+Aus sechs Tabellen sind drei Arten von Knoten geworden. Eine Tabelle wird also nicht einfach ein Knoten: `movie_genre` und `movie_crew` sind Beziehungen geworden, und `job` steckt im Typ der Beziehung. Wie würdest du die Videothek aus der Filmdatenbank als Graph speichern, die Exemplare, die Kundschaft und die Ausleihen?
+
+_task(ausleihe-graph)
+
+<!-- after: ausleihe-graph -->
+Ein Datum gehört zu einer einzelnen Ausleihe, also zur Verbindung von Kunde und Exemplar. Im Graphen hat diese Verbindung selbst Eigenschaften, genau wie ein Knoten:
+
+```cypher
+(:Customer { id: 7 })-[:BORROWED { loan_date: date("2026-05-21"), return_date: date("2026-05-22") }]->(:Copy { id: 31, format: "DVD" })-[:COPY_OF]->(:Movie { title: "Back to the Future" })
+```
+
+Leiht dieselbe Person dasselbe Exemplar ein zweites Mal aus, kommt eine zweite Beziehung `BORROWED` zwischen denselben beiden Knoten dazu, mit ihrem eigenen Datum. In MySQL musste `loan_date` dafür zum Primärschlüssel von `loan` gehören; im Graphen dürfen zwei Knoten beliebig viele Beziehungen haben. Fehlt `return_date`, ist das Exemplar noch ausgeliehen.
+
+Für jede Information entscheidest du, was sie wird:
+
+<table class='table table-sm'>
+<thead>
+<tr><th>Wird</th><th>wenn</th><th>Beispiel</th></tr>
+</thead>
+<tbody>
+<tr><td>Knoten</td><td>es um ein Objekt geht, nach dem man für sich fragt und das mit vielen anderen verbunden ist</td><td>Film, Person, Genre, Exemplar</td></tr>
+<tr><td>Beziehung</td><td>sie zwei Objekte verbindet; ihr Typ sagt, wie</td><td><code>IN_GENRE</code>, <code>DIRECTOR</code>, <code>BORROWED</code></td></tr>
+<tr><td>Eigenschaft</td><td>es ein Wert ist, den man liest, vergleicht oder sortiert</td><td><code>year</code> und <code>runtime</code> am Film, <code>loan_date</code> an der Ausleihe</td></tr>
+</tbody>
+</table>
+
+Die Grenzen sind eine Entscheidung. Das Genre könnte auch eine Eigenschaft sein, eine Liste am Film; als Knoten verbindet es alle Filme desselben Genres, und die Frage, welche Filme ein Genre mit »Back to the Future« gemeinsam haben, wird ein kurzes Muster. Und eine Ausleihe wird ein eigener Knoten `Loan`, sobald sie selbst mit mehr als zwei Knoten verbunden ist, etwa mit der Person an der Kasse oder mit einer Mahnung: Eine Beziehung hat immer genau einen Anfang und ein Ende.
+<!-- /after -->
 
 _person(eifrem-svensson-neubauer)
 
@@ -632,6 +659,8 @@ Eine Graphdatenbank ist nicht besser als eine relationale. MySQL hat dir mit Tab
 
 <!-- tutorial-step
 # Jede Cypher-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab
+check-task: ausleihe-graph <- 2
+check-task-fails: ausleihe-graph <- 0
 check-task: zweimal-create <- 1
 check-task-fails: zweimal-create <- 0
 check-task: koenig-der-loewen <- MATCH (m:Movie {title: 'The Lion King', year: 1994}) RETURN m.runtime, m.german_title

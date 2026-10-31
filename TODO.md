@@ -86,7 +86,6 @@ Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 
 #### Neo4j
 
-* [ ] Graph modelling choices instead of converting every table to a node
 * [ ] The Discogs music graph (`MEMBER_OF`, `RELEASED`, `HAS_TRACK`) as the second dataset
 * [ ] The recipe of `neo4j-load.webp` no longer renders: `terminal-wait-for-prompt` after `wget` returns at once (also with a time limit), `neo4j_bolt load` is typed during the download and the picture shows the load at 73 %. The committed picture is still right; find out why the prompt is not waited for in this recipe
 

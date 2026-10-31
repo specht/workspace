@@ -20,6 +20,10 @@ Lernende fragen dieselben Filmdaten wie in der »Filmdatenbank mit MySQL« als G
 
 Die Pfeilrichtung (eine Abfrage in die falsche Richtung liefert nichts, ohne Fehler) und dass gleiche Namen im Muster denselben Knoten bedeuten. Die Aufgaben »Die Pfeilrichtung« und »Das richtige Muster« zielen darauf. Bei den Paaren hilft es, die Vorhersage (sechs Zeilen für drei Personen) an der Tafel aufzulösen, bevor `a.id < b.id` erklärt wird.
 
+#### Knoten, Beziehung oder Eigenschaft?
+
+Die Vorhersage »Die Ausleihe im Graphen« greift die Videothek aus der Filmdatenbank auf: Ausleih- und Rückgabedatum gehören an die Beziehung `BORROWED`, und zwei Ausleihen desselben Exemplars sind zwei Beziehungen, wo MySQL `loan_date` im Schlüssel brauchte. Die Tabelle danach gibt eine Faustregel; für ein Unterrichtsgespräch eignet sich, wann das Genre besser eine Eigenschaft wäre und wann eine Ausleihe ein eigener Knoten. Die Videothek steht nicht in `movies-neo4j.dump`; das Kapitel bleibt ein Gedankenexperiment.
+
 #### Der kleine Graph von Hand
 
 Vor dem Laden legen die Lernenden im Neo4j Browser vier Knoten und drei Beziehungen mit `CREATE` an (Labels, Eigenschaften, Richtung). Die Vorhersage »Zemeckis noch einmal« zeigt, dass ein zweites `CREATE` mit demselben Namen einen zweiten Knoten anlegt; danach löschen sie den doppelten mit `DETACH DELETE` und hängen den Film mit `MATCH … CREATE` an den vorhandenen. Das Kapitel »Regeln für den Graphen« greift das mit `NODE KEY` wieder auf.

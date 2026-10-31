@@ -53,6 +53,34 @@ tasks:
       Graphen ist sie der Typ der Beziehung: `(:Person)-[:DIRECTOR]->(:Movie)`.
       Wer mitgespielt hat, hängt mit `ACTOR` am Film.
 
+  - id: ausleihe-graph
+    title: Die Ausleihe im Graphen
+    prediction: true
+    prompt: |
+      In der Videothek der Filmdatenbank leiht eine Person ein Exemplar an
+      einem Tag aus (`loan_date`) und bringt es an einem anderen zurück
+      (`return_date`). Exemplare und Kundschaft werden Knoten. Wo gehören die
+      beiden Daten im Graphen hin?
+    check:
+      type: choice
+      options:
+        - 'An den Knoten des Exemplars: Es ist ja das Exemplar, das ausgeliehen wird.'
+        - 'An den Knoten der Person, die ausleiht.'
+        - 'An die Beziehung zwischen Person und Exemplar, zum Beispiel `BORROWED`.'
+        - 'In einen eigenen Knoten `Date` für jeden Tag, mit Beziehungen dorthin.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Ein Exemplar wird viele Male ausgeliehen, von verschiedenen Personen. Welches Datum stünde dann am Exemplar?'
+      - when: { picked: 1 }
+        say: 'Eine Person leiht viele Exemplare aus, jedes an einem anderen Tag. Zu welcher Ausleihe gehörte das Datum an der Person?'
+      - when: { picked: 3 }
+        say: 'Ein Tag ist ein Wert, nach dem man vergleicht und sortiert, kein Objekt mit eigenen Verbindungen. Und wo stünde dann, ob es der Tag der Ausleihe oder der Rückgabe war?'
+    solution: |
+      An die Beziehung: Das Datum gehört zu einer einzelnen Ausleihe, also zur
+      Verbindung von Person und Exemplar. Beziehungen können Eigenschaften
+      haben wie Knoten.
+
   - id: zweimal-create
     title: Zemeckis noch einmal
     prediction: true
