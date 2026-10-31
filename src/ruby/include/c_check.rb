@@ -22,13 +22,15 @@ require_relative 'call_check'
 # since a plain inline function in C has no definition to link against.
 #
 # Every case runs in a child process of its own (fork) with a time limit of
-# CASE_SECONDS, so a crash, an endless loop or an exit() in one call costs
-# only that case. Output of the person's code goes to /dev/null.
+# CASE_SECONDS (seconds: in the check, for a case that does much, such as a
+# whole JPEG decoded), so a crash, an endless loop or an exit() in one call
+# costs only that case. Output of the person's code goes to /dev/null.
 #
 #   check:
 #     type: c
 #     file: raytracer/raytracer.c
 #     tolerance: 0.001                 # for numbers with a decimal point; default 1e-6
+#     seconds: 10                      # per case; default 2, at most 20
 #     setup: |                         # optional: C code before the calls, helpers
 #       double floor_color(double x, double z)
 #       {
@@ -55,6 +57,7 @@ module CCheck
     CASE_MARK = '__HS_CASE__'
     COMPILE_MARK = '__HS_COMPILE__'
     CASE_SECONDS = 2
+    MAX_CASE_SECONDS = 20
     # where the Workspace image installs raylib (docker/code/Dockerfile)
     RAYLIB_INCLUDE = '/opt/emsdk/upstream/emscripten/cache/sysroot/include'
     DEFAULT_TOLERANCE = 1e-6
@@ -65,7 +68,6 @@ module CCheck
         8 => 'bricht mit einem Rechenfehler ab, etwa einer Division durch null bei ganzen Zahlen',
         11 => 'greift auf Speicher zu, der ihm nicht gehört (Segmentation fault)',
         7 => 'greift auf Speicher zu, der ihm nicht gehört (Bus error)',
-        14 => "läuft länger als #{CASE_SECONDS} Sekunden. Steckt irgendwo eine Endlosschleife?",
     }.freeze
 
     # The cases of a check as [{ 'call' =>, 'expect' => (C), 'say' => }].
@@ -97,6 +99,9 @@ module CCheck
             errors << 'tolerance must be a number of at least 0'
         end
         errors << 'setup must be C code (text)' if check.key?('setup') && !(check['setup'].is_a?(String) && !check['setup'].strip.empty?)
+        if check.key?('seconds') && !(check['seconds'].is_a?(Integer) && check['seconds'].between?(1, MAX_CASE_SECONDS))
+            errors << "seconds must be 1 to #{MAX_CASE_SECONDS}"
+        end
         errors
     end
 
@@ -104,7 +109,7 @@ module CCheck
     # case and a main that runs each case in a child process. Returns
     # [source, lines, setup_lines], lines giving for each case the line of its
     # call in the source, setup_lines the range of the setup.
-    def self.harness(cases, tolerance, setup = nil)
+    def self.harness(cases, tolerance, setup = nil, seconds = CASE_SECONDS)
         lines = []
         source = +<<~C
             #define main hs_student_main
@@ -175,7 +180,7 @@ module CCheck
                     pid_t pid = fork();
                     if (pid == 0)
                     {
-                        alarm(#{CASE_SECONDS});
+                        alarm(#{seconds.to_i});
                         cases[i]();
                         _exit(42);
                     }
@@ -194,11 +199,11 @@ module CCheck
 
     # The command that prints the result, run in /workspace as the guest.
     def self.command_for_check(check)
-        command(check['file'], cases(check), check['tolerance'] || DEFAULT_TOLERANCE, check['setup'])
+        command(check['file'], cases(check), check['tolerance'] || DEFAULT_TOLERANCE, check['setup'], check['seconds'] || CASE_SECONDS)
     end
 
-    def self.command(file, cases, tolerance = DEFAULT_TOLERANCE, setup = nil)
-        source, = harness(cases, tolerance, setup)
+    def self.command(file, cases, tolerance = DEFAULT_TOLERANCE, setup = nil, seconds = CASE_SECONDS)
+        source, = harness(cases, tolerance, setup, seconds)
         quoted = Shellwords.escape(file)
         <<~SH
             f="$PWD/"#{quoted}
@@ -258,7 +263,11 @@ module CCheck
                     entry['got'] = entry['got'] == '1' ? 'true' : 'false'
                 end
             when 'signal'
-                entry['error'] = SIGNALS[value.to_i] || "bricht mit dem Signal #{value} ab"
+                entry['error'] = if value.to_i == 14
+                    "läuft länger als #{check['seconds'] || CASE_SECONDS} Sekunden. Steckt irgendwo eine Endlosschleife?"
+                else
+                    SIGNALS[value.to_i] || "bricht mit dem Signal #{value} ab"
+                end
             when 'exit'
                 entry['error'] = "beendet das Programm mit exit(#{value})"
             end

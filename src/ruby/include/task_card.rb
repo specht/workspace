@@ -341,7 +341,9 @@ module TaskCard
             "Lädt #{path.(check['file'])} mit SWI-Prolog in deinem Workspace, als Gast, der nichts verändern kann, und stellt #{n == 1 ? 'eine Anfrage' : "#{n} Anfragen"}"
         when 'c'
             n = (check['cases'] || []).size
-            "Übersetzt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, startet nicht dein <code>main</code>, sondern probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
+            # a setup that calls the person's main (the JPEG decoder as a whole)
+            main = check['setup'].to_s.include?('hs_student_main') ? 'startet dein <code>main</code> aus der Prüfung heraus, ohne Bildschirm, und' : 'startet nicht dein <code>main</code>, sondern'
+            "Übersetzt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, #{main} probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
         when 'schema'
             counts = (check['tables'] || []).any? { |t| t.is_a?(Hash) && t['rows_where'] }
             counts ? 'Zählt Zeilen in deiner MySQL-Datenbank, angemeldet als du, und ändert nichts' : 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'

@@ -1378,6 +1378,7 @@ check:
   type: c
   file: raytracer/raytracer.c
   tolerance: 0.0001                       # für Kommazahlen; Standard 1e-6
+  seconds: 10                             # je Aufruf; Standard 2, höchstens 20
   setup: |                                # C-Code vor den Aufrufen, für Hilfsfunktionen
     double floor_color(double x, double z)
     {
@@ -1405,15 +1406,27 @@ unendlich mit demselben Vorzeichen. Texte vergleicht `strcmp`. Ein Vergleich
 in C ist ein `int`; mit `true` oder `false` als Ergebnis zeigt die Rückmeldung
 ihn als `true` oder `false`. `raises` gibt es in C nicht.
 
-Jeder Aufruf läuft in einem eigenen Prozess, höchstens zwei Sekunden: Ein
-Absturz (»greift auf Speicher zu, der ihm nicht gehört«), eine Endlosschleife
-oder ein `exit` trifft nur diesen Aufruf. Was das Programm ausgibt,
+Jeder Aufruf läuft in einem eigenen Prozess, höchstens zwei Sekunden (mit
+`seconds` mehr, für einen Aufruf, der viel tut; `timeout` gilt für die ganze
+Prüfung samt Übersetzen): Ein Absturz (»greift auf Speicher zu, der ihm nicht
+gehört«), eine Endlosschleife oder ein `exit` trifft nur diesen Aufruf. Was das Programm ausgibt,
 verschwindet. Lässt sich die Datei nicht übersetzen, nennt die Rückmeldung die
 Zeile und die Meldung des Compilers; fehlt eine Funktion, heißt es »In
 `raytracer.c` gibt es `reflect` noch nicht«, passt ein Aufruf nicht zu ihr
 (andere Parameter), nennt sie den Aufruf. `setup` ist für Hilfsfunktionen, die
 mehrere Aufrufe lesbar machen; was darin nicht zum Programm passt, meldet die
 Prüfung als »Die Prüfung passt noch nicht zu deinem Programm«.
+
+`setup` kann auch das ganze Programm laufen lassen: Das `main` der Lernenden
+heißt im Harness `hs_student_main`, und Funktionen von PixelRAM, die `setup`
+selbst schreibt (`screen_open`, `set_pixel_rgb`, `get_pixel_rgb` …), ersetzen
+den Bildschirm durch ein Bild im Speicher. So prüft »Eine JPEG-Datei
+decodieren« den ganzen Decoder (`decoder` in `src/content/jpeg/tasks.yaml`):
+`main` decodiert beide Fotos, die Aufrufe zählen Pixel, die mehr als 4 von
+einem richtigen Decoder abweichen, in der Helligkeit (gleich, ob Cb und Cr
+für vier Pixel gelten oder weich hochgerechnet sind) und in der Farbe an
+gleichmäßig gefärbten Pixeln. Die Zeile »Was passiert beim Prüfen?« sagt dann,
+dass `main` läuft.
 
 ### prolog
 

@@ -11,6 +11,7 @@ class CCheckTest < Minitest::Test
         #include <stdio.h>
         #include <stdlib.h>
         #include <stdbool.h>
+        #include <unistd.h>
 
         typedef struct { double x, y; } vec;
 
@@ -23,6 +24,7 @@ class CCheckTest < Minitest::Test
         int spin(void) { volatile int i = 0; for (;;) i++; return i; }
         int quit(void) { exit(3); }
         int noisy(void) { printf("Zwischenstand\\n"); return 7; }
+        int slow(void) { sleep(3); return 1; }
 
         int main(void)
         {
@@ -91,6 +93,15 @@ class CCheckTest < Minitest::Test
         assert_includes read, 'Endlosschleife'
         assert_includes read, 'exit(3)'
         assert_includes read, '`square(3)` → `9`'
+    end
+
+    # seconds: a case that does much (a whole JPEG decoded) gets more time
+    def test_seconds_per_case
+        status, _, read = run_check(check([{ 'slow()' => 1 }]))
+        assert_equal :wrong, status
+        assert_includes read, 'läuft länger als 2 Sekunden'
+        status, = run_check(check([{ 'slow()' => 1 }], 'seconds' => 4))
+        assert_equal :correct, status
     end
 
     def test_a_function_that_is_not_there
@@ -179,5 +190,8 @@ class CCheckTest < Minitest::Test
         refute_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }], 'tolerance' => -1))
         refute_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }]).merge('file' => 'p/main.py'))
         refute_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }], 'setup' => 3))
+        assert_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }], 'seconds' => 10))
+        refute_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }], 'seconds' => 0))
+        refute_empty CCheck.spec_errors(check([{ 'square(2)' => 4 }], 'seconds' => 21))
     end
 end

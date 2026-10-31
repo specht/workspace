@@ -654,7 +654,7 @@ module TaskSpec
             errors.concat(PipCheck.spec_errors(check))
         when 'c'
             # Calls functions in the person's C file, compiled and run as the guest (CCheck).
-            allowed += %w[file cases timeout tolerance setup]
+            allowed += %w[file cases timeout tolerance setup seconds]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(CCheck.spec_errors(check))
         when 'java', 'dart'

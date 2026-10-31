@@ -1512,6 +1512,10 @@ Die Mittelwerte prüfen vor allem die DC-Koeffizienten und die Farben. Ob auch d
 
 _task(pixel)
 
+Ob dein Decoder als Ganzes stimmt, für beide Fotos und überall im Bild, prüft der Workspace auch selbst:
+
+_task(decoder)
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Jetzt kannst du sehen, was JPEG beim Speichern weglässt.
 <ul>
@@ -1838,13 +1842,15 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- tutorial-step
 # Die Aufgaben mit Werten aus dem Decoder: Er muss ausgeben, was die Aufgabe
 # erwartet, in ihrer Toleranz (tasks.yaml). Für »pixel« kommt die Zeile dazu,
-# die die Aufgabe verlangt.
+# die die Aufgabe verlangt. »decoder« prüft den ganzen Decoder mit beiden
+# Fotos.
 write-file: 91-baseline.jpg <- file:beispiele/91-baseline.jpg
 hook: pixel-print 800 350
 terminal-open
 terminal-run: clear
 terminal-run: make PROGRAM=jpeg ARGS=44-baseline.jpg
 terminal-wait-for-prompt: 180
+check-task: decoder
 -->
 
 <!-- tutorial-step
