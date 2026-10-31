@@ -47,3 +47,130 @@ tasks:
         B: ["lock n", "lock m", "y ← y - 3", "x ← x + 3", "unlock m", "unlock n"]
       goal: deadlock
     hint: Jeder Thread braucht beide Locks. Was passiert, wenn jeder schon einen hat?
+
+  - id: was-kommt-heraus
+    title: Was kommt heraus?
+    prediction: true
+    prompt: |
+      Was gibt das Programm `Race` aus? Überleg zuerst, dann probier es mehrmals
+      aus: Leg `Race.java` in `/workspace/nebenlaeufigkeit` und führe es mit
+      `java Race.java` aus.
+    check:
+      type: choice
+      options:
+        - 'Immer 200000: Jeder Thread zählt hunderttausendmal.'
+        - 'Bei jedem Lauf eine andere Zahl, meist weniger als 200000.'
+        - 'Immer 100000: Die beiden Threads zählen dieselben Erhöhungen.'
+        - 'Eine Fehlermeldung, weil zwei Threads dieselbe Variable ändern.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Denk an das Widget: Aus wie vielen Schritten besteht `count++`, und was passiert, wenn beide Threads zwischen Lesen und Schreiben aufeinandertreffen?'
+      - when: { picked: 3 }
+        say: 'Java meldet keinen Fehler. Es merkt nicht, dass eine Erhöhung verloren geht. Probier es aus.'
+    solution: |
+      Eine andere Zahl bei jedem Lauf, meist weniger als 200000: Jedes Mal,
+      wenn beide Threads zwischen Lesen und Schreiben aufeinandertreffen,
+      geht eine Erhöhung verloren.
+    dart:
+      prompt: |
+        Was gibt `print(balance)` aus, nachdem `Future.wait([deposit(5), deposit(7)])`
+        fertig ist? Überleg zuerst, dann probier es aus, in einer Datei
+        `/workspace/nebenlaeufigkeit/bank.dart` mit einem `main`, das
+        `async` ist, und `dart run bank.dart`.
+      check:
+        type: choice
+        options:
+          - '12: Beide Einzahlungen kommen an.'
+          - '7, bei jedem Lauf.'
+          - 'Mal 5, mal 7, je nachdem, welche Einzahlung zuerst fertig wird.'
+          - 'Eine Fehlermeldung, weil zwei Aufrufe dieselbe Variable ändern.'
+        correct: 1
+      feedback:
+        - when: { picked: 0 }
+          say: 'Was hat `deposit(7)` in `before` gelesen, als es angefangen hat? War `deposit(5)` da schon fertig?'
+        - when: { picked: 2 }
+          say: 'Dart macht immer nur eins auf einmal, und `save` braucht für beide gleich lang. Welche Einzahlung schreibt zuletzt?'
+      solution: |
+        7, jedes Mal: Beide lesen 0, bevor eine zurückschreibt; die zweite
+        schreibt zuletzt.
+
+  - id: sicherer-zaehler
+    title: Ein Zähler, der nichts verliert
+    prompt: |
+      Schreib in `/workspace/nebenlaeufigkeit/Counter.java` eine Klasse `Counter`
+      mit einer Methode `increment()`, die den Zähler um eins erhöht, und einer
+      Methode `get()`, die ihn zurückgibt; beide `synchronized`. Dazu
+      `public static int countWithThreads(int threads, int times)`: Sie
+      startet `threads` Threads, von denen jeder `times`-mal `increment()` auf
+      demselben `Counter` aufruft, wartet mit `join()` auf alle und gibt dann
+      den Zählerstand zurück.
+    check:
+      type: java
+      file: nebenlaeufigkeit/Counter.java
+      timeout: 20
+      cases:
+        - { call: "Counter.countWithThreads(1, 10)", expect: 10 }
+        - { call: "Counter.countWithThreads(2, 100000)", expect: 200000, say: "Zwei Threads, je 100000-mal: Geht eine Erhöhung verloren, ist `increment` nicht `synchronized`, oder es wird gezählt, bevor alle Threads fertig sind." }
+        - { call: "Counter.countWithThreads(4, 100000)", expect: 400000, say: "Vier Threads, je 100000-mal: Geht eine Erhöhung verloren, ist `increment` nicht `synchronized`, oder es wird gezählt, bevor alle Threads fertig sind." }
+        - { call: "Counter.countWithThreads(4, 100000)", expect: 400000, say: "Ein zweiter Lauf mit vier Threads: Ein Lost Update zeigt sich nicht bei jedem Lauf." }
+    hint:
+      - "Ein Thread bekommt seine Arbeit als Lambda: `new Thread(() -> { for (int i = 0; i < times; i++) counter.increment(); })`. Merk dir alle Threads in einem Array `Thread[]`, damit du danach auf jeden mit `join()` warten kannst."
+      - "Erst alle starten, dann auf alle warten: zwei Schleifen. Weil `join()` unterbrochen werden kann, braucht `countWithThreads` `throws InterruptedException`."
+    solution: |
+      ```java
+      public class Counter {
+          private int count = 0;
+
+          public synchronized void increment() {
+              count++;
+          }
+
+          public synchronized int get() {
+              return count;
+          }
+
+          public static int countWithThreads(int threads, int times) throws InterruptedException {
+              Counter counter = new Counter();
+              Thread[] all = new Thread[threads];
+              for (int t = 0; t < threads; t++) {
+                  all[t] = new Thread(() -> {
+                      for (int i = 0; i < times; i++) {
+                          counter.increment();
+                      }
+                  });
+                  all[t].start();
+              }
+              for (Thread thread : all) {
+                  thread.join();
+              }
+              return counter.get();
+          }
+      }
+      ```
+    dart:
+      prompt: |
+        Schreib in `/workspace/nebenlaeufigkeit/bank.dart`, unter `balance`, `save`
+        und `deposit` von oben, eine Funktion `Future<int> depositAll(List<int> amounts)`:
+        Sie setzt `balance` auf 0, zahlt jeden Betrag mit `deposit` ein, ohne
+        dass einer verloren geht, und gibt dann `balance` zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/bank.dart
+        cases:
+          - { call: "depositAll([5, 7])", expect: 12, say: "Mit 5 und 7 müssen 12 auf dem Konto sein. Laufen die Einzahlungen zugleich, mit `Future.wait`, liest jede den alten Stand." }
+          - { call: "depositAll([1, 2, 3, 4])", expect: 10 }
+          - { call: "depositAll([])", expect: 0 }
+      hint:
+        - "Starte die nächste Einzahlung erst, wenn die vorige fertig ist."
+        - "Eine Schleife `for (final amount in amounts)` mit `await deposit(amount);` darin."
+      solution: |
+        ```dart
+        Future<int> depositAll(List<int> amounts) async {
+          balance = 0;
+          for (final amount in amounts) {
+            await deposit(amount);
+          }
+          return balance;
+        }
+        ```

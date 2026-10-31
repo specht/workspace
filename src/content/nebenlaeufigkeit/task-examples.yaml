@@ -17,3 +17,14 @@ examples:
     fail:
       - answer: A A A A A A B B B B B B
       - answer: A A
+  sicherer-zaehler:
+    pass:
+      - { files: { nebenlaeufigkeit/Counter.java: loesung/Counter.java } }
+    fail:
+      - { files: { nebenlaeufigkeit/Counter.java: { text: "public class Counter {\n    public static int countWithThreads(int threads, int times) { return 0; }\n}\n" } } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/bank.dart: loesung/bank.dart } }
+      fail:
+        # all deposits at once: one is lost, every time
+        - { files: { nebenlaeufigkeit/bank.dart: loesung/bank-parallel.dart } }

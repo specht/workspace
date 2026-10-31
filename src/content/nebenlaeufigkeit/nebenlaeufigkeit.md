@@ -63,3 +63,66 @@ _task(deadlock)
 <!-- after: deadlock -->
 Hält jeder Thread einen Lock und wartet auf den des anderen, kommt keiner mehr weiter: ein **Deadlock**. Es hilft, wenn alle Threads ihre Locks in derselben Reihenfolge nehmen, hier immer erst `m`, dann `n`. Dann kann der zweite gar nicht erst einen Lock halten, auf den der erste wartet.
 <!-- /after -->
+
+## Im Code
+
+<!-- language: java -->
+In Java ist ein Thread ein Objekt der Klasse `Thread`. Ihm gibst du mit, was er tun soll, als Lambda; `start()` lässt ihn loslaufen, `join()` wartet, bis er fertig ist. Dieses Programm lässt zwei Threads je hunderttausendmal `count++` ausführen:
+
+```java
+int count = 0;
+
+void main() throws InterruptedException {
+    Thread a = new Thread(() -> { for (int i = 0; i < 100000; i++) count++; });
+    Thread b = new Thread(() -> { for (int i = 0; i < 100000; i++) count++; });
+    a.start();
+    b.start();
+    a.join();
+    b.join();
+    IO.println(count);
+}
+```
+<!-- /language -->
+<!-- language: dart -->
+Dart hat keine Threads, die sich Variablen teilen. Ein Dart-Programm macht immer nur eins auf einmal. Trotzdem kann eine Erhöhung verloren gehen: an einem `await`. Dort hält eine `async`-Funktion an, bis etwas fertig ist, etwa das Speichern, und in der Zwischenzeit läuft anderer Code weiter. Diese Funktion zahlt Geld auf ein Konto ein und speichert dabei:
+
+```dart
+var balance = 0;
+
+Future<void> save() => Future.delayed(const Duration(milliseconds: 10));
+
+Future<void> deposit(int amount) async {
+  final before = balance;
+  await save();
+  balance = before + amount;
+}
+```
+
+`Future.wait` startet mehrere solche Aufrufe und wartet, bis alle fertig sind:
+
+```dart
+balance = 0;
+await Future.wait([deposit(5), deposit(7)]);
+print(balance);
+```
+<!-- /language -->
+
+_task(was-kommt-heraus)
+
+<!-- after: was-kommt-heraus -->
+<!-- language: java -->
+Bei jedem Lauf kommt eine andere Zahl heraus, fast immer weniger als 200000. `count++` ist in Java genau die drei Schritte aus dem Widget: lesen, eins dazu, zurückschreiben. Die beiden Threads laufen auf zwei Kernen wirklich gleichzeitig, und jedes Mal, wenn sie zwischen Lesen und Schreiben aufeinandertreffen, geht eine Erhöhung verloren. Wie oft das passiert, hängt davon ab, wann der Rechner welchen Thread laufen lässt. Darum ist der Fehler so tückisch: Ein Lauf kann auch einmal stimmen.
+<!-- /language -->
+<!-- language: dart -->
+Es kommt 7 heraus, bei jedem Lauf. `deposit(5)` liest 0 und hält am `await` an; dann liest `deposit(7)` ebenfalls 0 und hält an. Danach schreibt der erste 5 zurück, der zweite 7. Genau wie im Widget haben beide gelesen, bevor einer geschrieben hat. Anders als bei Threads passiert das in Dart immer an derselben Stelle, am `await`, und darum jedes Mal gleich.
+<!-- /language -->
+<!-- /after -->
+
+<!-- language: java -->
+Ein Lock heißt in Java oft einfach `synchronized`. Eine Methode mit diesem Wort kann immer nur ein Thread zugleich ausführen; jeder andere wartet, bis sie wieder frei ist. Das ist der Lock aus dem Widget, um die ganze Methode herum.
+<!-- /language -->
+<!-- language: dart -->
+Damit nichts verloren geht, darf eine Einzahlung erst beginnen, wenn die vorige fertig ist. In einer Schleife mit `await` geht das: Jedes `await deposit(…)` wartet, bis diese Einzahlung gespeichert ist.
+<!-- /language -->
+
+_task(sicherer-zaehler)
