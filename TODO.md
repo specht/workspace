@@ -116,7 +116,7 @@ Plus, from the review:
 * [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The branch `passwords` with a first attempt no longer exists (31 October 2026, neither local nor on GitHub); stored passwords with salt are already in »Kryptographie im Terminal«, so this page would be about guessing
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
-* [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers
+* [ ] **JPEG, further**: a check that runs the student's decoder instead of asking for numbers; the Huffman and dequantisation steppers still show only the first block (the iDCT stepper and the MCU widget take any MCU of the photo, `jpeg_image.js`)
 
 #### Flutter
 

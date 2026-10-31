@@ -9356,6 +9356,119 @@ div[data-stepper] .stepper-word { display: none; }
     color: var(--bs-primary-text-emphasis);
 }
 
+/* The demo photo of »JPEG« to choose an MCU on (jpeg_image.js, picker):
+   the photo, beside it a magnifier of the MCUs around the chosen one, under
+   both where it is. Pixels stay pixels when they are enlarged. */
+.jpeg-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+    gap: 0.4em 0.8em;
+    align-items: start;
+    max-width: 40em;
+}
+.jpeg-picker canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.3em;
+    cursor: crosshair;
+    image-rendering: pixelated;
+}
+.jpeg-picker canvas:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+.jpeg-picker-where {
+    grid-column: 1 / -1;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+
+/* the iDCT stepper with the photo (idct_stepper.js, data-src): the picker,
+   then the blocks of the chosen MCU */
+.idct-stepper .idct-choose {
+    margin-bottom: 1em;
+}
+.idct-stepper .jpeg-picker {
+    max-width: 32em;
+}
+.idct-stepper .idct-blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+    margin-top: 0.5em;
+}
+.idct-stepper .idct-blocks button[aria-pressed='true'],
+.jpeg-mcu button[aria-pressed='true'] {
+    color: var(--bs-btn-active-color, #fff);
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+}
+
+/* One MCU taken apart (jpeg_mcu.js): Y, Cb, Cr and the colours, four
+   squares; four in a row, two by two or one below the other. */
+.jpeg-mcu {
+    container-type: inline-size;
+    margin: 1em 0 1.5em;
+}
+.jpeg-mcu-panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 16em));
+    gap: 1em 0.8em;
+    margin-top: 1em;
+}
+@container (min-width: 50em) {
+    .jpeg-mcu-panels { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.jpeg-mcu figure {
+    margin: 0;
+}
+.jpeg-mcu-panels canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--bs-border-color);
+    cursor: crosshair;
+    image-rendering: pixelated;
+}
+.jpeg-mcu-panels canvas:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+.jpeg-mcu figcaption {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    margin-top: 0.3em;
+}
+.jpeg-mcu-readout {
+    margin-top: 1em;
+    min-height: 8.5em;
+}
+.jpeg-mcu-pixel {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+.jpeg-mcu-swatch {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    border-radius: 0.25em;
+    border: 1px solid var(--bs-border-color);
+}
+/* each formula, then its numbers: beside it where there is room */
+.jpeg-mcu-formulas {
+    display: grid;
+    gap: 0.3em;
+    margin-top: 0.5em;
+}
+.jpeg-mcu-formulas > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1em 0.4em;
+}
+
 /* A colour space in 3D (color_solid.js): the solid on a soft stage, below
    it a bar with the section, two toggles and, for the cubes, how far apart. */
 .color-solid {

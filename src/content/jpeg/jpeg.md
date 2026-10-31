@@ -19,7 +19,9 @@ template_name: des PixelRAM-Starters
 </div>
 
 <script src="/include/huffman_decode.js"></script>
+<script src="/include/jpeg_image.js"></script>
 <script src="/include/idct_stepper.js"></script>
+<script src="/include/jpeg_mcu.js"></script>
 
 <style>
     table.center td, table.center th {
@@ -1422,9 +1424,11 @@ Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liege
 
 Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechnest. Jeder Koeffizient gehört zu einem **Basisbild**, einem Muster aus Kosinuswellen: (0, 0) ist überall gleich hell, (1, 0) ein Verlauf von links nach rechts, (0, 1) einer von oben nach unten, und je größer u und v, desto feiner das Muster. Der Block ist die Summe aller Basisbilder, jedes mit seinem Koeffizienten multipliziert. Unten wird der Block aus dem Beispiel so zusammengesetzt, in der Zick-Zack-Reihenfolge, mit den Koeffizienten nach der Dequantisierung von oben. Die meisten sind 0 und tragen nichts bei:
 
-<div class='idct-stepper' data-stepper data-coef='-600 27 9 0 7 0 0 0 -88 -12 4 6 0 0 0 0 24 -20 -10 0 0 0 0 0 8 5 -14 -9 0 0 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
+<div class='idct-stepper' data-stepper data-src='/jpeg/44-baseline.jpg' data-coef='-600 27 9 0 7 0 0 0 -88 -12 4 6 0 0 0 0 24 -20 -10 0 0 0 0 0 8 5 -14 -9 0 0 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
 
 Schon nach wenigen Schritten sieht der Block fast fertig aus: Die großen Koeffizienten stehen vorn, die feinen Muster am Ende tragen wenig bei. Genau das nutzt JPEG aus. Die Quantisierung macht die hinteren Koeffizienten klein oder 0, und das Auge vermisst sie kaum.
+
+Über der Zeitlupe kannst du auf dem Foto eine andere MCU wählen, mit einem Klick oder den Pfeiltasten, und darin einen ihrer sechs Blöcke. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift auf der roten Tafel liegt: Wie viele Koeffizienten sind nicht 0, und wie weit hinten im Zick-Zack stehen sie?
 
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
@@ -1462,6 +1466,10 @@ Anschließend müssen die RGB-Werte noch einmal auf den Bereich von 0 bis 255 be
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Rechne mit <code>double</code>, runde und begrenze jeden Wert auf 0 bis 255, dann setzt <code>set_pixel_rgb(x, y, r, g, b)</code> das Pixel. Sind Hauttöne grün und Himmel rot, sind Cb und Cr vertauscht.
 </div>
+
+Hier ist eine MCU von `44-baseline.jpg` auseinandergenommen, so wie dein Decoder sie zusammensetzt: die vier Y-Blöcke an ihren Plätzen, Cb und Cr, und die Farben, die daraus werden. Cb und Cr sind als Farbe gezeigt, die sie bei mittlerer Helligkeit ergeben. Zeig auf ein Pixel oder wähle es mit den Pfeiltasten: Darunter steht, wie seine Farbe aus Y, Cb und Cr entsteht. Achte an der weißen Schrift auf der roten Tafel darauf, wo die Kanten im Y-Bild scharf sind und wo in Cb und Cr: Je vier Pixel teilen sich dort eine Farbe.
+
+<div class='jpeg-mcu' data-src='/jpeg/44-baseline.jpg' data-mcu='13 17'></div>
 
 ## Prüfen
 

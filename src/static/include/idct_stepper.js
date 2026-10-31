@@ -6,6 +6,9 @@
 //
 // <div class='idct-stepper' data-stepper data-coef='-600 27 9 …'></div>
 // with the 64 dequantised coefficients in natural order (row by row: v * 8 + u).
+// With data-src='/jpeg/44-baseline.jpg' (and jpeg_image.js on the page) a
+// picker above it chooses any block of the photo: an MCU on the photo, then
+// one of its blocks; data-coef is the block shown first.
 
 (function (root) {
     'use strict';
@@ -24,13 +27,14 @@
     });
     const pixels = (sum) => sum.map((s) => Math.max(0, Math.min(255, Math.round(s + 128))));
 
-    // The steps: one for every coefficient that is not zero, in zig-zag order.
+    // The steps: one for every coefficient that is not zero, in zig-zag
+    // order, and always one for the DC coefficient, even when it is 0.
     function steps(coef) {
         const sum = new Array(64).fill(0);
         const out = [];
         ZIGZAG.forEach((natural, k) => {
             const value = coef[natural];
-            if (!value) return;
+            if (!value && k > 0) return;
             const u = natural % 8, v = Math.floor(natural / 8);
             const b = basis(u, v);
             for (let i = 0; i < 64; i++) sum[i] += value * b[i];
@@ -62,9 +66,10 @@
     }
 
     function mount(element) {
-        const coef = element.dataset.coef.trim().split(/\s+/).map(Number);
-        const list = steps(coef);
+        let coef = element.dataset.coef.trim().split(/\s+/).map(Number);
+        let list = steps(coef);
         element.innerHTML = `
+            ${element.dataset.src ? `<div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
                 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -85,8 +90,13 @@
         let current = 0;
         // The grey picture of the block stretched to the range of the finished
         // block, so that small changes show; the numbers stay as they are.
-        const final = list[list.length - 1].block;
-        const low = Math.min(...final), high = Math.max(...final);
+        let low = 0, high = 255;
+        const range = () => {
+            const final = list[list.length - 1].block;
+            low = Math.min(...final);
+            high = Math.max(...final);
+        };
+        range();
         const stretch = (p) => Math.max(0, Math.min(255, Math.round((p - low) / Math.max(1, high - low) * 235 + 10)));
 
         function draw() {
@@ -124,6 +134,52 @@
         go('next').addEventListener('click', () => to(current + 1));
         go('last').addEventListener('click', () => to(list.length - 1));
         draw();
+        if (element.dataset.src && root.JpegImage) choose(element, (c) => { coef = c; list = steps(coef); range(); to(0); });
+    }
+
+    // The picker above the stepper: the MCU on the photo, then one of its
+    // blocks, in the order of the file. Starts at the first block of the
+    // first MCU, which data-coef shows before the photo is loaded.
+    function choose(element, show) {
+        const pickBox = element.querySelector('.idct-pick');
+        const blocks = element.querySelector('.idct-blocks');
+        pickBox.textContent = 'Das Foto wird geladen …';
+        root.JpegImage.load(element.dataset.src).then((image) => {
+            let mx = 0, my = 0, comp = 0, index = 0;
+            const names = [];
+            image.comps.forEach((c, ci) => {
+                for (let i = 0; i < c.h * c.v; i++) names.push({ comp: ci, index: i, label: c.h * c.v > 1 ? `${c.name}<sub>${i}</sub>` : c.name });
+            });
+            blocks.innerHTML = names.map((n, i) => `<button type='button' class='btn btn-sm btn-outline-secondary' data-block='${i}' aria-pressed='${i === 0}'>${n.label}</button>`).join('');
+            // the chosen block, outlined in the magnifier
+            const mark = (ctx, zoom) => {
+                const c = image.comps[comp];
+                const sw = image.hmax / c.h * 8 * zoom, sh = image.vmax / c.v * 8 * zoom;
+                const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
+                ctx.setLineDash([6, 4]);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ffd43b';
+                ctx.strokeRect(x + 5, y + 5, sw - 10, sh - 10);
+            };
+            const picker = root.JpegImage.picker(pickBox, image, {
+                mx, my, mark,
+                onPick: (x, y) => { mx = x; my = y; update(); },
+            });
+            function update() {
+                blocks.querySelectorAll('button').forEach((b) => {
+                    const n = names[Number(b.dataset.block)];
+                    b.setAttribute('aria-pressed', String(n.comp === comp && n.index === index));
+                });
+                picker.redraw();
+                show(image.block(comp, mx, my, index));
+            }
+            blocks.addEventListener('click', (event) => {
+                const button = event.target.closest('button[data-block]');
+                if (!button) return;
+                ({ comp, index } = names[Number(button.dataset.block)]);
+                update();
+            });
+        }).catch((error) => { pickBox.textContent = `Das Foto ließ sich nicht laden: ${error.message}`; });
     }
 
     const api = { ZIGZAG, basis, steps, mount };
