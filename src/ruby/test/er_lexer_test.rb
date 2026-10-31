@@ -38,6 +38,13 @@ class ErLexerTest < Minitest::Test
         assert_includes t, ['Keyword.Type', 'date']
     end
 
+    def test_min_max_cardinalities
+        t = tokens("relationship has_copy: movie (0,n) : (1,1) copy\n")
+        assert_includes t, ['Literal.Number', '(0,n)']
+        assert_includes t, ['Literal.Number', '(1,1)']
+        assert_includes t, ['Name.Class', 'copy']
+    end
+
     def test_every_er_block_in_the_content_lexes_without_errors
         Dir[File.expand_path('../../content/**/*.md', __dir__)].each do |file|
             File.read(file, encoding: 'UTF-8').scan(/^```er\n(.*?)^```/m).each do |(block)|

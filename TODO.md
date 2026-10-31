@@ -69,7 +69,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 #### ER-Werkstatt
 
 * [ ] `_include_er(model.er, chen|crowsfoot|tables)` for pages, so ER diagrams on the website are generated from the model instead of screenshots
-* [ ] Min–max cardinalities (`movie (1,1) : (0,n) copy`) → `NULL`/`NOT NULL` and crow's-foot circle and bar
 * [ ] Requirement checks that run inserts against the generated schema: "a film can have several genres" (two inserts succeed), "a loan needs an existing copy" (insert fails)
 * [ ] Later, if the curriculum needs them: weak entities, generalisation
 

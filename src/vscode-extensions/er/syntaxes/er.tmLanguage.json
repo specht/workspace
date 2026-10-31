@@ -31,6 +31,7 @@
       "patterns": [
         { "include": "#comment" },
         { "match": "\\b[1nm]\\s*:\\s*[1nm]\\b", "name": "constant.numeric.cardinality.er" },
+        { "match": "\\(\\s*[01]\\s*,\\s*[1nm*]\\s*\\)", "name": "constant.numeric.cardinality.er" },
         { "match": "\\bas\\b", "name": "keyword.control.er" },
         { "match": ",", "name": "punctuation.separator.er" },
         { "match": "[\\p{L}_][\\p{L}\\p{N}_]*", "name": "entity.name.type.er" }

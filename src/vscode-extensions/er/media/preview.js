@@ -43,7 +43,7 @@
 
     const HINTS = {
         chen: 'Chen: Rechteck = Entität, Raute = Beziehung, Ellipse = Attribut, unterstrichen = Schlüssel. Kästen lassen sich verschieben.',
-        crowfoot: 'Krähenfuß: | = eins, Krähenfuß = viele. n:m-Beziehungen sind hier noch eine einzige Linie.',
+        crowfoot: 'Krähenfuß: | = eins, Krähenfuß = viele; mit (min,max) weiter außen ein Kreis für mindestens 0, ein Strich für mindestens 1. n:m-Beziehungen sind hier noch eine einzige Linie.',
         tables: 'Tabellen: So entstehen die Tabellen in der Datenbank. Jede n:m-Beziehung ist jetzt eine eigene Tabelle. PK = Primärschlüssel, FK = Fremdschlüssel.',
     };
 

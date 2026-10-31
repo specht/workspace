@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die ER-Werkstatt 0.4.0 kennt Minimum und Maximum, `relationship has_copy: movie (0,n) : (1,1) copy`, mit Kreis und
+  Strich im Krähenfuß: Nach dem Update das Image neu bauen (`./build-image.sh`).
 - Das Workspace-Image enthält die LaTeX-Pakete `pgfplots` und `csquotes` und `glslangValidator`, mit dem die Aufgaben
   zu GLSL-Shadern prüfen, ob sie sich übersetzen lassen: Nach dem Update das Image neu bauen (`./build-image.sh`).
 - Aufgaben mit Code in der Karte speichern zusätzlich den letzten Code, der die Prüfung bestanden hat

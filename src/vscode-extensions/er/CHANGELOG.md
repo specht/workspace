@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0
+
+- Min–max cardinalities: `relationship has_copy: movie (0,n) : (1,1) copy`.
+  Each (min,max) stands next to its own entity and says how often that
+  entity takes part (participation, as in German textbooks); the 1:n reading
+  follows from the two maxima. A foreign key may be empty (NULL) exactly
+  when the entity that holds it has the minimum 0; a minimum of 1 on the
+  other side is named in »So wurde übersetzt« as something the tables
+  cannot enforce.
+- Crow's foot: with (min,max), each end shows the participation of the
+  other entity, the maximum next to the box (bar or crow), the minimum
+  further out (circle for 0, bar for 1); in the tables view on the lines of
+  the foreign keys too. Chen writes (min,max) next to its own entity, beside
+  the line. Models without (min,max) are drawn as before.
+
 ## 0.3.0
 
 - Krähenfuß and Tabellen in layers, as Mermaid draws them: a table that

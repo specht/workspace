@@ -111,6 +111,14 @@ Eine Beziehung kann eine Entität mit sich selbst verbinden: `relationship frien
 relationship credit: movie, crew, job as movie_crew
 ```
 
+**Minimum und Maximum** schreibst du als `(min,max)` neben jede Entität. Das Paar sagt, wie oft **diese** Entität an der Beziehung teilnimmt: Das Minimum ist 0 oder 1, das Maximum 1 oder `n`.
+
+```er
+relationship has_copy: movie (0,n) : (1,1) copy
+```
+
+Ein Film hat beliebig viele Exemplare, auch keines: `(0,n)` bei `movie`. Ein Exemplar gehört zu genau einem Film: `(1,1)` bei `copy`. Das ist dieselbe Beziehung wie `movie 1:n copy`, nur genauer. Vorsicht: Die beiden Schreibweisen lesen sich verschieden herum. Bei `1:n` steht neben `movie` die Zahl der Filme pro Exemplar (`1`), bei `(min,max)` steht neben `movie`, wie oft ein Film teilnimmt (`(0,n)`).
+
 **Attribute einer Beziehung** stehen eingerückt darunter, wie bei einer Entität. Sie landen in der Tabelle, die die Beziehung speichert:
 
 ```er
@@ -132,7 +140,7 @@ So übersetzt die ER-Werkstatt ein Modell. In der Vorschau steht es für dein Mo
 <thead><tr><th>Im Modell</th><th>In der Datenbank</th></tr></thead>
 <tbody>
 <tr><td>Entität</td><td>eine Tabelle mit demselben Namen; die Attribute mit <code>primary key</code> bilden den Primärschlüssel</td></tr>
-<tr><td><code>1:n</code> oder <code>n:1</code></td><td>keine eigene Tabelle. Die Tabelle auf der n-Seite bekommt einen Fremdschlüssel auf die 1-Seite, z. B. <code>city_id</code> in <code>student</code>. Er darf nicht leer sein.</td></tr>
+<tr><td><code>1:n</code> oder <code>n:1</code></td><td>keine eigene Tabelle. Die Tabelle auf der n-Seite bekommt einen Fremdschlüssel auf die 1-Seite, z. B. <code>city_id</code> in <code>student</code>. Er darf nicht leer sein; mit <code>(min,max)</code> darf er es genau dann, wenn das Minimum der n-Seite 0 ist.</td></tr>
 <tr><td><code>1:1</code></td><td>keine eigene Tabelle. Die zweite Entität bekommt einen Fremdschlüssel auf die erste, mit <code>UNIQUE</code></td></tr>
 <tr><td><code>n:m</code></td><td>eine eigene Tabelle <code>a_b</code> (z. B. <code>movie_genre</code>) mit den Schlüsseln beider Seiten als Fremdschlüssel; zusammen sind sie der Primärschlüssel</td></tr>
 <tr><td>drei oder mehr Entitäten</td><td>eine eigene Tabelle, benannt nach allen Entitäten oder nach <code>as</code>; alle Fremdschlüssel zusammen sind der Primärschlüssel</td></tr>
@@ -151,8 +159,8 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Ansicht</th><th>Was du siehst</th></tr></thead>
 <tbody>
-<tr><td>Chen</td><td>Rechteck = Entität, Raute = Beziehung, Ellipse = Attribut, unterstrichen = Schlüssel. An den Linien steht die Kardinalität.</td></tr>
-<tr><td>Krähenfuß</td><td>Kästen mit Attributen; am Linienende ein Strich für »eins«, ein Krähenfuß für »viele«. Eine n:m-Beziehung ist noch eine Linie.</td></tr>
+<tr><td>Chen</td><td>Rechteck = Entität, Raute = Beziehung, Ellipse = Attribut, unterstrichen = Schlüssel. An den Linien steht die Kardinalität, mit <code>(min,max)</code> das Paar neben seiner Entität.</td></tr>
+<tr><td>Krähenfuß</td><td>Kästen mit Attributen; am Linienende ein Strich für »eins«, ein Krähenfuß für »viele«. Mit <code>(min,max)</code> steht weiter außen das Minimum: ein Kreis für 0, ein Strich für 1. Jedes Linienende zeigt, wie viele es von <strong>dieser</strong> Entität zu einem Partner gibt, also das <code>(min,max)</code> der anderen Seite. Eine n:m-Beziehung ist noch eine Linie.</td></tr>
 <tr><td>Tabellen</td><td>die Tabellen, wie sie in der Datenbank entstehen: jede n:m-Beziehung ist eine eigene Tabelle. <code>PK</code> = Primärschlüssel, <code>FK</code> = Fremdschlüssel.</td></tr>
 </tbody>
 </table>

@@ -18,6 +18,8 @@
 //
 //   relationship has_genre: movie n:m genre        -> table movie_genre
 //   relationship credit: movie, crew, job as movie_crew   (three-way)
+//   relationship has_copy: movie (0,n) : (1,1) copy   (min,max): how often
+//       the entity next to it takes part; here copy.movie_id NOT NULL
 //
 // Command line (used by the Workspace checks and for exports):
 //   node er-core.js --json film.er     model, tables and problems as JSON
@@ -29,10 +31,12 @@
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
 
-    const VERSION = '0.3.0';
+    const VERSION = '0.4.0';
     const NAME = '[\\p{L}_][\\p{L}\\p{N}_]*';
     const RE_ENTITY = new RegExp(`^entity\\s+(${NAME})\\s*$`, 'u');
     const RE_BINARY = new RegExp(`^relationship\\s+(${NAME})\\s*:\\s*(${NAME})\\s+([1nm])\\s*:\\s*([1nm])\\s+(${NAME})(?:\\s+as\\s+(${NAME}))?\\s*$`, 'u');
+    // (min,max) next to each entity: how often that entity takes part
+    const RE_MINMAX = new RegExp(`^relationship\\s+(${NAME})\\s*:\\s*(${NAME})\\s*\\(\\s*([01])\\s*,\\s*([1nm*])\\s*\\)\\s*:\\s*\\(\\s*([01])\\s*,\\s*([1nm*])\\s*\\)\\s*(${NAME})(?:\\s+as\\s+(${NAME}))?\\s*$`, 'u');
     const RE_NARY = new RegExp(`^relationship\\s+(${NAME})\\s*:\\s*(${NAME}(?:\\s*,\\s*${NAME})+)(?:\\s+as\\s+(${NAME}))?\\s*$`, 'u');
     const RE_ATTR = new RegExp(`^(${NAME})\\s*(?::\\s*(.*))?$`, 'u');
     const RE_TYPE = /^(int|text|varchar\(\s*\d+\s*\)|decimal\(\s*\d+\s*,\s*\d+\s*\)|float|date|datetime|bool)$/;
@@ -65,7 +69,8 @@
     // Returns { entities, relations, errors, warnings, byName }.
     // entity:   { name, attrs, line }
     // relation: { name, ends: [entity names], card: ['1'|'n', ...] (binary only),
-    //             cardText, nary, table (from »as«, or null), attrs, line }
+    //             cardText, nary, table (from »as«, or null), attrs, line,
+    //             minmax: [{ min, max }, { min, max }] (with (min,max) only) }
     // attr:     { name, type, key, optional, unique, line }
     function parse(text) {
         const entities = [];
@@ -91,6 +96,16 @@
                     current = { kind: 'relation', name: m[1], ends: [m[2], m[5]], card, cardText,
                         nary: false, table: m[6] || null, attrs: [], line };
                     relations.push(current);
+                } else if ((m = s.match(RE_MINMAX))) {
+                    // (min,max) counts how often the entity next to it takes
+                    // part, so the 1:n reading comes from the other side: one
+                    // movie (0,n) to copies (1,1) is movie 1:n copy.
+                    const minmax = [{ min: m[3], max: m[4].toLowerCase() }, { min: m[5], max: m[6].toLowerCase() }];
+                    const many = (x) => (x.max === '1' ? '1' : 'n');
+                    const card = [many(minmax[1]), many(minmax[0])];
+                    current = { kind: 'relation', name: m[1], ends: [m[2], m[7]], card, cardText: card.slice(),
+                        nary: false, table: m[8] || null, attrs: [], line, minmax };
+                    relations.push(current);
                 } else if ((m = s.match(RE_NARY))) {
                     const ends = m[2].split(',').map((x) => x.trim());
                     current = { kind: 'relation', name: m[1], ends, card: ends.map(() => 'n'), cardText: ends.map(() => 'n'),
@@ -105,6 +120,7 @@
                     if (/^(Entity|ENTITY|Relationship|RELATIONSHIP)\b/.test(s)) msg = 'Schlüsselwörter schreibst du klein: »entity«, »relationship«.';
                     else if (/^(entität|entitaet|beziehung|tabelle)\b/i.test(s)) msg = 'Die Schlüsselwörter sind englisch: »entity« und »relationship«.';
                     else if (/^relationship\b/.test(s) && !/^relationship\s+\S+?\s*:/.test(s)) msg = 'Nach dem Namen der Beziehung kommt ein Doppelpunkt: »relationship has_genre: movie n:m genre«.';
+                    else if (/^relationship\b/.test(s) && s.includes('(')) msg = 'So sieht eine Beziehung mit (min,max) aus: »relationship has_copy: movie (0,n) : (1,1) copy«. Das Minimum ist 0 oder 1, das Maximum 1 oder n.';
                     else if (/^relationship\b/.test(s)) msg = 'So sieht eine Beziehung aus: »relationship has_genre: movie n:m genre«. Kardinalitäten: 1:1, 1:n, n:1, n:m.';
                     else if (/^entity\b/.test(s)) msg = 'Der Name einer Entität ist ein Wort ohne Leerzeichen, zum Beispiel »entity movie«.';
                     errors.push(problem(line, msg, raw));
@@ -258,7 +274,8 @@
                 const who = ends.map((e) => e.name);
                 const what = r.nary ? `Die Beziehung ${r.name} verbindet ${who.slice(0, -1).join(', ')} und ${who[who.length - 1]}` : `Die n:m-Beziehung ${r.name} zwischen ${who[0]} und ${who[1]}`;
                 steps.push({ tag: r.nary ? `${ends.length}-stellig` : 'n:m', text: `${what}${r.nary ? ' und' : ''} bekommt eine eigene Tabelle \`${t.name}\`. Sie enthält die Schlüssel ${r.nary ? 'aller' : 'beider'} Seiten als Fremdschlüssel; zusammen${extra.length ? ` mit \`${extra.join(', ')}\`` : ''} bilden sie den Primärschlüssel \`(${t.pk.join(', ')})\`.` +
-                    (relAttrs.length ? ` Die Attribute der Beziehung (${relAttrs.map((x) => `\`${x.name}\``).join(', ')}) kommen in diese Tabelle.` : '') });
+                    (relAttrs.length ? ` Die Attribute der Beziehung (${relAttrs.map((x) => `\`${x.name}\``).join(', ')}) kommen in diese Tabelle.` : '') +
+                    (r.minmax ? mustTakePart(r, ends, [0, 1]) : '') });
             } else {
                 // 1:n, n:1 or 1:1: the foreign key goes to the n side (for 1:1: the right side, made unique)
                 const [L, R] = ends;
@@ -267,9 +284,16 @@
                 const manySide = one === L ? R : L;
                 const t = tableOf(manySide);
                 const cols = keyColumns(one, t, L === R ? sqlName(r.name) : null);
+                // With (min,max): the side that gets the foreign key may be
+                // without a partner exactly when its minimum is 0.
+                const holder = one === L ? 1 : 0;
+                const optional = r.minmax ? r.minmax[holder].min === '0' : false;
                 // a table that points to itself needs NULL somewhere, or the first row could never be inserted
-                for (const c of cols) t.columns.push({ name: c.name, type: c.type, nullable: L === R });
-                t.fks.push({ cols: cols.map((c) => c.name), refTable: cols[0].refTable, refCols: cols.map((c) => c.ref) });
+                for (const c of cols) t.columns.push({ name: c.name, type: c.type, nullable: L === R || optional });
+                const fk = { cols: cols.map((c) => c.name), refTable: cols[0].refTable, refCols: cols.map((c) => c.ref) };
+                // the marks of the line in the table diagram: at each end the participation of the other
+                if (r.minmax) fk.marks = { table: footKind(r.minmax[1 - holder]), ref: footKind(r.minmax[holder]) };
+                t.fks.push(fk);
                 const isOne = cl === '1' && cr === '1';
                 if (isOne) t.uniques.push(cols.map((c) => c.name));
                 for (const ra of relAttrs) {
@@ -277,14 +301,31 @@
                     if (ra.key) warnings.push(problem(r.line, `Bei einer ${r.cardText.join(':')}-Beziehung wird »${ra.name}« ein normales Attribut von \`${t.name}\`; »primary key« wirkt hier nicht.`));
                 }
                 if (r.table) warnings.push(problem(r.line, `»as« gilt nur für Beziehungen mit eigener Tabelle (n:m oder mehrstellig).`));
-                const fk = cols.map((c) => c.name).join(', ');
-                steps.push({ tag: isOne ? '1:1' : '1:n', text: isOne
-                    ? `Die 1:1-Beziehung ${r.name}: \`${t.name}\` bekommt den Fremdschlüssel \`${fk}\`, der zusätzlich eindeutig (UNIQUE) ist. So gehört zu jedem Datensatz höchstens ein Partner.`
-                    : `Die 1:n-Beziehung ${r.name}: Jede Zeile in \`${t.name}\` merkt sich mit dem Fremdschlüssel \`${fk}\`, zu welcher Zeile in \`${one.name}\` sie gehört. Eine eigene Tabelle ist nicht nötig.` +
-                      (relAttrs.length ? ` Die Attribute der Beziehung kommen ebenfalls in \`${t.name}\`.` : '') });
+                const fkText = cols.map((c) => c.name).join(', ');
+                const minText = !r.minmax ? '' : (optional
+                    ? ` Das Minimum von \`${manySide.name}\` ist 0: Ein Datensatz in \`${manySide.name}\` kann ohne Partner in \`${one.name}\` sein, \`${fkText}\` darf also leer bleiben (NULL).`
+                    : ` Das Minimum von \`${manySide.name}\` ist 1: Jeder Datensatz in \`${manySide.name}\` hat einen Partner in \`${one.name}\`, \`${fkText}\` ist also NOT NULL.`) +
+                    mustTakePart(r, ends, [1 - holder]);
+                steps.push({ tag: isOne ? '1:1' : '1:n', text: (isOne
+                    ? `Die 1:1-Beziehung ${r.name}: \`${t.name}\` bekommt den Fremdschlüssel \`${fkText}\`, der zusätzlich eindeutig (UNIQUE) ist. So gehört zu jedem Datensatz höchstens ein Partner.`
+                    : `Die 1:n-Beziehung ${r.name}: Jede Zeile in \`${t.name}\` merkt sich mit dem Fremdschlüssel \`${fkText}\`, zu welcher Zeile in \`${one.name}\` sie gehört. Eine eigene Tabelle ist nicht nötig.` +
+                      (relAttrs.length ? ` Die Attribute der Beziehung kommen ebenfalls in \`${t.name}\`.` : '')) + minText });
             }
         }
         return { tables: [...tables.values()], steps, warnings };
+    }
+
+    // A crow's-foot mark for a participation (min,max): the outer part says
+    // the minimum (circle 0, bar 1), the inner the maximum (bar 1, crow many).
+    function footKind(p) {
+        return `${p.min === '0' ? 'zero' : 'one'}-${p.max === '1' ? 'one' : 'many'}`;
+    }
+
+    // A note for the sides (indexes into ends) whose minimum is 1 that the
+    // tables cannot hold: nothing stops a row on that side without a partner.
+    function mustTakePart(r, ends, sides) {
+        return sides.filter((i) => r.minmax[i].min === '1').map((i) =>
+            ` Dass jeder Datensatz in \`${ends[i].name}\` mindestens einen Partner hat (Minimum 1), können die Tabellen nicht erzwingen.`).join('');
     }
 
     // ---------- MySQL -------------------------------------------------------------
@@ -331,6 +372,7 @@
                 attributes: e.attrs.map((a) => ({ name: a.name, type: a.type, key: a.key, optional: a.optional, unique: a.unique })) })),
             relationships: model.relations.map((r) => ({ name: r.name, line: r.line, ends: r.ends, cardinality: r.nary ? r.card : r.cardText.map((c) => c.toLowerCase()),
                 table: r.card.every((c) => c === 'n') ? joinTableName(r) : null,
+                ...(r.minmax ? { participation: r.minmax.map((x) => [x.min, x.max]) } : {}),
                 attributes: r.attrs.map((a) => ({ name: a.name, type: a.type, key: a.key, optional: a.optional })) })),
             tables: result ? result.tables : [],
         };
@@ -381,7 +423,8 @@
             nodes.push({ id, kind: 'R', label: r.name, w: Math.max(100, tw(r.name, 500) * 1.6 + 36), h: 56, ends: ends.map((e) => `E:${e.name}`) });
             ends.forEach((e, i) => {
                 const earlier = ends.slice(0, i).filter((x) => x === e).length;
-                edges.push({ a: id, b: `E:${e.name}`, kind: 'rel', card: r.cardText[i], offset: earlier * 14 });
+                const card = r.minmax ? `(${r.minmax[i].min},${r.minmax[i].max})` : r.cardText[i];
+                edges.push({ a: id, b: `E:${e.name}`, kind: 'rel', card, offset: earlier * 14 });
             });
             for (const a of r.attrs) {
                 nodes.push({ id: `A:${r.name}.${a.name}`, kind: 'A', label: a.name, key: a.key, owner: id, w: tw(a.name) + 26, h: 30 });
@@ -422,7 +465,10 @@
                     continue;
                 }
                 const label = r.name + (r.attrs.length ? ` (${r.attrs.map((a) => a.name).join(', ')})` : '');
-                edges.push({ a: `C:${ends[0].name}`, b: `C:${ends[1].name}`, kind: 'cf', endA: r.card[0] === '1' ? 'one' : 'many', endB: r.card[1] === '1' ? 'one' : 'many', label });
+                // With (min,max), the end at an entity shows the participation of the other one.
+                edges.push({ a: `C:${ends[0].name}`, b: `C:${ends[1].name}`, kind: 'cf',
+                    endA: r.minmax ? footKind(r.minmax[1]) : r.card[0] === '1' ? 'one' : 'many',
+                    endB: r.minmax ? footKind(r.minmax[0]) : r.card[1] === '1' ? 'one' : 'many', label });
             }
         } else {
             for (const t of result.tables) {
@@ -433,7 +479,8 @@
             for (const t of result.tables) {
                 for (const fk of t.fks) {
                     const unique = t.uniques.some((u) => u.join() === fk.cols.join()) || t.pk.join() === fk.cols.join();
-                    edges.push({ a: `T:${t.name}`, b: `T:${fk.refTable}`, kind: 'cf', endA: unique ? 'one' : 'many', endB: 'one', label: '' });
+                    edges.push({ a: `T:${t.name}`, b: `T:${fk.refTable}`, kind: 'cf', endA: fk.marks ? fk.marks.table : unique ? 'one' : 'many',
+                        endB: fk.marks ? fk.marks.ref : 'one', label: '' });
                 }
             }
         }
@@ -1010,6 +1057,7 @@
     .box{fill:var(--er-shape,#fff);stroke:var(--er-ink,#1f2937);stroke-width:1.6}
     .boxhead{fill:var(--er-pen-soft,#e8effc)}
     .cfl{stroke:var(--er-ink,#1f2937);stroke-width:1.4;fill:none}
+    .cfo{stroke:var(--er-ink,#1f2937);stroke-width:1.4;fill:var(--er-paper,#fff)}
     .row{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:12.5px;fill:var(--er-ink,#1f2937);dominant-baseline:central}
     .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;fill:var(--er-pen,#2b5fb4);dominant-baseline:central}
     .tag.pk{fill:var(--er-red,#b42318)}
@@ -1030,15 +1078,27 @@
         S.push(`<style>${STYLE}</style>`);
         if (opts.background) S.push(`<rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="${esc(opts.background)}"/>`);
         const f = (v) => v.toFixed(1);
+        // kind: 'one' or 'many' (1:n), or with (min,max) 'zero-one',
+        // 'one-one', 'zero-many', 'one-many': the maximum next to the box
+        // (bar or crow), the minimum further out (circle for 0, bar for 1)
         const footMark = (p, ux, uy, kind) => {
             const px = -uy;
             const py = ux;
-            if (kind === 'many') {
+            const bar = (at) => {
+                const r = { x: p.x + ux * at, y: p.y + uy * at };
+                return `<line class="cfl" x1="${f(r.x + px * 8)}" y1="${f(r.y + py * 8)}" x2="${f(r.x - px * 8)}" y2="${f(r.y - py * 8)}"/>`;
+            };
+            const [min, max] = kind.includes('-') ? kind.split('-') : [null, kind];
+            let out = '';
+            if (max === 'many') {
                 const q = { x: p.x + ux * 16, y: p.y + uy * 16 };
-                return [-1, 0, 1].map((s) => `<line class="cfl" x1="${f(q.x)}" y1="${f(q.y)}" x2="${f(p.x + px * 9 * s)}" y2="${f(p.y + py * 9 * s)}"/>`).join('');
+                out = [-1, 0, 1].map((s) => `<line class="cfl" x1="${f(q.x)}" y1="${f(q.y)}" x2="${f(p.x + px * 9 * s)}" y2="${f(p.y + py * 9 * s)}"/>`).join('');
+            } else {
+                out = bar(12);
             }
-            const r = { x: p.x + ux * 12, y: p.y + uy * 12 };
-            return `<line class="cfl" x1="${f(r.x + px * 8)}" y1="${f(r.y + py * 8)}" x2="${f(r.x - px * 8)}" y2="${f(r.y - py * 8)}"/>`;
+            if (min === 'one') out += bar(21);
+            if (min === 'zero') out += `<circle class="cfo" cx="${f(p.x + ux * 25)}" cy="${f(p.y + uy * 25)}" r="4.5"/>`;
+            return out;
         };
         const routes = crowfootRoutes(byId, edges);
         const cards = [];
@@ -1098,9 +1158,13 @@
                 // The second line of a relationship with itself runs parallel
                 // to the first; its label goes on the other side.
                 const side = e.offset ? -1 : 1;
-                // Further out along the line while it would sit on another label.
-                let along = 14;
-                const at = () => ({ x: p.x + ux * along - uy * 10 * side, y: p.y + uy * along + ux * 10 * side });
+                // Further out along the line while it would sit on another label;
+                // a (min,max) is wider than 1 or n and starts further out.
+                let along = e.card.length > 1 ? 30 : 14;
+                // Sideways as far as the label reaches across the line (13px
+                // mono, about 8px a character), so the line passes beside it.
+                const away = e.card.length > 1 ? 5 + Math.abs(uy) * e.card.length * 4 + Math.abs(ux) * 8 : 10;
+                const at = () => ({ x: p.x + ux * along - uy * away * side, y: p.y + uy * along + ux * away * side });
                 for (let k = 0; k < 8 && cards.some((c) => Math.abs(c.x - at().x) < 14 && Math.abs(c.y - at().y) < 15); k++) along += 12;
                 const q = at();
                 cards.push(q);

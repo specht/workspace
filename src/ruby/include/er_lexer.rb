@@ -38,6 +38,7 @@ module Rouge
                 rule %r/\n/, Text::Whitespace, :pop!
                 rule %r/#.*$/, Comment::Single
                 rule %r/\b[1nm]\s*:\s*[1nm]\b/, Literal::Number
+                rule %r/\(\s*[01]\s*,\s*[1nm*]\s*\)/, Literal::Number
                 rule %r/\bas\b/, Keyword
                 rule %r/,/, Punctuation
                 rule IDENT, Name::Class

@@ -88,6 +88,42 @@ relationship leads: teacher 1:1 class
     assert.ok(result.steps.some((s) => s.tag === '1:1'));
 });
 
+test('(min,max): how often each entity takes part; NULL from the minimum, marks in both crow\'s foot drawings', () => {
+    const { model, result } = core.compile(`entity movie
+  id: int, primary key
+entity copy
+  id: int, primary key
+entity customer
+  id: int, primary key
+entity card
+  number: int, primary key
+relationship has_copy: movie (0,n) : (1,1) copy
+relationship holds: customer (1,1) : (0,1) card
+relationship borrows: customer (0,n) : (0,m) copy as loan
+  loan_date: date, primary key
+`);
+    assert.deepEqual(model.errors, []);
+    assert.deepEqual(model.relations.map((r) => r.card), [['1', 'n'], ['1', '1'], ['n', 'n']]);
+    const copy = result.tables.find((t) => t.name === 'copy');
+    assert.equal(copy.columns.find((c) => c.name === 'movie_id').nullable, false, 'every copy belongs to a film');
+    assert.deepEqual(copy.fks[0].marks, { table: 'zero-many', ref: 'one-one' });
+    const card = result.tables.find((t) => t.name === 'card');
+    assert.equal(card.columns.find((c) => c.name === 'customer_id').nullable, true, 'a card may be without a customer');
+    assert.deepEqual(card.uniques, [['customer_id']]);
+    assert.deepEqual(result.tables.find((t) => t.name === 'loan').pk, ['customer_id', 'copy_id', 'loan_date']);
+    const holds = result.steps.find((s) => s.text.includes('holds'));
+    assert.match(holds.text, /Dass jeder Datensatz in `customer` mindestens einen Partner hat \(Minimum 1\), können die Tabellen nicht erzwingen/);
+    const s = core.summary(model, result);
+    assert.deepEqual(s.relationships[0].cardinality, ['1', 'n']);
+    assert.deepEqual(s.relationships[0].participation, [['0', 'n'], ['1', '1']]);
+    const svg = core.diagram(`entity movie\n  id: int, primary key\nentity copy\n  id: int, primary key\nrelationship has_copy: movie (0,n) : (1,1) copy\n`, 'crowfoot').svg;
+    assert.equal((svg.match(/<circle class="cfo"/g) || []).length, 1, 'a circle at copy for a film without copies');
+    const chen = core.diagram(`entity movie\n  id: int, primary key\nentity copy\n  id: int, primary key\nrelationship has_copy: movie (0,n) : (1,1) copy\n`, 'chen').svg;
+    assert.ok(chen.includes('>(0,n)<') && chen.includes('>(1,1)<'));
+    const wrong = core.compile('entity a\n  id: int, primary key\nentity b\n  id: int, primary key\nrelationship r: a (2,n) : (1,1) b\n').model.errors;
+    assert.match(wrong[0].msg, /So sieht eine Beziehung mit \(min,max\) aus/);
+});
+
 test('n:1 is the same as 1:n the other way round', () => {
     const a = core.compile('entity a\n  id: int, primary key\nentity b\n  id: int, primary key\nrelationship r: b n:1 a\n').result;
     assert.deepEqual(a.tables.find((t) => t.name === 'b').fks, [{ cols: ['a_id'], refTable: 'a', refCols: ['id'] }]);

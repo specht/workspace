@@ -29,8 +29,8 @@ cp src/vscode-extensions/live-server/ritwickdey.LiveServer-5.7.10.vsix \
     docker/code/ritwickdey.LiveServer.vsix
 cp src/vscode-extensions/better-prolog-syntax/jeff-hykin.better-prolog-syntax-0.3.3.vsix \
     docker/code/jeff-hykin.better-prolog-syntax.vsix
-cp src/vscode-extensions/er/hackschule-er-0.3.0.vsix \
-    docker/code/hackschule-er-0.3.0.vsix
+cp src/vscode-extensions/er/hackschule-er-0.4.0.vsix \
+    docker/code/hackschule-er-0.4.0.vsix
 cp src/vscode-extensions/backrooms/hackschule-backrooms-0.1.1.vsix \
     docker/code/hackschule-backrooms-0.1.1.vsix
 cp src/vscode-extensions/uml/hackschule-uml-0.1.0.vsix \

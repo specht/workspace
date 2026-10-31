@@ -49,6 +49,7 @@ relationship has_genre: movie n:m genre              # table movie_genre
 relationship credit: movie, crew, job as movie_crew  # three-way, own table
 relationship loan: customer n:m copy                 # attributes of a relationship
   borrowed: date
+relationship has_copy: movie (0,n) : (1,1) copy      # (min,max): copy.movie_id NOT NULL
 ```
 
 - Keywords and identifiers are English and lower case; messages for students
@@ -56,8 +57,11 @@ relationship loan: customer n:m copy                 # attributes of a relations
 - Types: `int`, `text` (VARCHAR(255)), `varchar(n)`, `decimal(p,s)`, `float`,
   `date`, `datetime`, `bool`. Flags: `primary key`, `optional`, `unique`
   (`key` still works and gets a warning suggesting `primary key`).
-- Cardinalities: `1:1`, `1:n`, `n:1`, `n:m`. A three-way relationship lists its
-  entities with commas. Indented lines under a relationship are its attributes;
+- Cardinalities: `1:1`, `1:n`, `n:1`, `n:m`, or `(min,max)` next to each entity:
+  how often that entity takes part (min 0 or 1, max 1 or n). The foreign key of a
+  1:n or 1:1 may be empty exactly when its entity's minimum is 0; the crow's foot
+  then shows a circle (0) or a bar (1) outside the bar or crow of the maximum. A
+  three-way relationship lists its entities with commas. Indented lines under a relationship are its attributes;
   they end up in the table that holds the relationship.
 - n:m and three-way relationships get their own table, named after the
   entities (`movie_genre`) unless `as` names it. A relationship of an entity
