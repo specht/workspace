@@ -298,9 +298,59 @@ SELECT * FROM movie_genre LIMIT 5;
 
 _task(anzahl-filme)
 
+### Was die Schlüssel verhindern
+
+Die Schlüssel aus deinem Modell passen jetzt auf die Daten auf. `SELECT * FROM movie_genre WHERE movie_id = 233;` zeigt die Genres von »Back to the Future« als IDs: 2, 5 und 16.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Die Schlüssel aus deinem Modell passen jetzt auf die Daten auf. <code>SELECT * FROM movie_genre WHERE movie_id = 233;</code> zeigt die Genres von »Back to the Future« als IDs. Trag eine dieser Zeilen ein zweites Mal ein, mit <code>INSERT INTO movie_genre (movie_id, genre_id) VALUES (233, …);</code>, und dann eine mit einem Genre, das es nicht gibt, etwa 99. Was meldet MySQL jeweils, und welcher Schlüssel steckt dahinter? Geht ein <code>INSERT</code> doch durch, nimm die Zeile mit <code>DELETE FROM movie_genre WHERE movie_id = 233 AND genre_id = …;</code> wieder heraus.
+<strong>Ausprobieren:</strong> Trag drei Zeilen ein, die nicht passen, jede mit <code>INSERT INTO movie_genre (movie_id, genre_id) VALUES (…, …);</code>: die Zeile <code>(233, 16)</code>, die es schon gibt, die Zeile <code>(233, 99)</code> mit einem Genre, das es nicht gibt, und die Zeile <code>(99999, 16)</code> mit einem Film, den es nicht gibt. Achte bei jeder Meldung darauf, ob sie von <code>PRIMARY</code> oder von einem <code>FOREIGN KEY</code> spricht und welche Spalte sie nennt. Geht ein <code>INSERT</code> doch durch, nimm die Zeile mit <code>DELETE FROM movie_genre WHERE movie_id = … AND genre_id = …;</code> wieder heraus.
 </div>
+
+Die erste Zeile scheitert am Primärschlüssel von `movie_genre`: `Duplicate entry '233-16' for key 'movie_genre.PRIMARY'`. Jede Zuordnung gibt es nur einmal. Die beiden anderen scheitern an einem Fremdschlüssel: `Cannot add or update a child row: a foreign key constraint fails`. In `movie_genre` darf nur stehen, was auf einen Film und ein Genre zeigt, die es gibt. Am Ende der Meldung steht der Name, den MySQL dem Fremdschlüssel gegeben hat: `movie_genre_ibfk_1` für `movie_id`, `movie_genre_ibfk_2` für `genre_id`.
+
+Und andersherum: Was geschieht, wenn die Zeile verschwindet, auf die ein Fremdschlüssel zeigt?
+
+_task(genre-loeschen)
+
+<!-- after: genre-loeschen -->
+MySQL lehnt ab: `Cannot delete or update a parent row: a foreign key constraint fails`. Zu Sci-Fi gehören Zeilen in `movie_genre`, und solange eine Zeile auf das Genre zeigt, darf es nicht verschwinden. Genauso lehnt MySQL ab, einen Film zu löschen, der Genres hat, oder mit `UPDATE` die `id` eines Genres zu ändern, auf das eine Zeile zeigt.
+
+Was beim Löschen geschehen soll, legst du beim Fremdschlüssel fest, mit `ON DELETE`:
+
+<table class='table table-sm'>
+<thead>
+<tr><th>Angabe</th><th>Was beim Löschen geschieht</th></tr>
+</thead>
+<tbody>
+<tr><td>keine, oder <code>ON DELETE RESTRICT</code></td><td>MySQL lehnt ab, solange eine Zeile auf die gelöschte zeigt.</td></tr>
+<tr><td><code>ON DELETE CASCADE</code></td><td>Die Zeilen, die auf die gelöschte zeigen, werden mitgelöscht.</td></tr>
+<tr><td><code>ON DELETE SET NULL</code></td><td>In den Zeilen, die auf die gelöschte zeigen, wird der Fremdschlüssel leer. Das geht nur, wenn die Spalte leer sein darf.</td></tr>
+</tbody>
+</table>
+
+Die ER-Werkstatt schreibt kein `ON DELETE`, also lehnt deine Datenbank jedes solche Löschen ab. Das ist die vorsichtige Wahl. Für `movie_id` passt aber `CASCADE`: Ohne den Film bedeutet seine Zuordnung zu einem Genre nichts mehr. Bei `genre_id` ist es anders: Wer ein Genre löscht, zu dem viele Filme gehören, hat sich wahrscheinlich vertan.
+
+Einen Fremdschlüssel ändern kannst du nicht; du löschst ihn mit seinem Namen und legst ihn neu an. `mycli` fragt vorher nach; du antwortest mit <kbd>y</kbd>:
+
+```sql
+ALTER TABLE movie_genre
+  DROP FOREIGN KEY movie_genre_ibfk_1,
+  ADD FOREIGN KEY (movie_id) REFERENCES movie (id) ON DELETE CASCADE;
+```
+
+Dann lösch »Back to the Future« in einer Transaktion:
+
+```sql
+START TRANSACTION;
+DELETE FROM movie WHERE id = 233;
+SELECT * FROM movie_genre WHERE movie_id = 233;
+ROLLBACK;
+```
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wie viele Zeilen findet das <code>SELECT</code> nach dem <code>DELETE</code>, und wie viele ein zweites <code>SELECT * FROM movie_genre WHERE movie_id = 233;</code> nach dem <code>ROLLBACK</code>? Lass <code>START TRANSACTION</code> nicht weg, sonst ist der Film mit seinen Genres wirklich weg. Das <code>CASCADE</code> bleibt in deiner Tabelle, bis du sie in »Menschen und Tätigkeiten« mit <code>mysql &lt; film.sql</code> neu anlegst.
+</div>
+<!-- /after -->
 
 ## JOIN: Beziehungen wieder zusammensetzen
 
@@ -501,6 +551,18 @@ HAVING COUNT(*) >= 100;">
 _tool(query-stepper)
 
 _task(viel-regie)
+
+### Ein Titel ist kein Schlüssel
+
+Im Modell hast du `movie` eine `id` gegeben, weil Titel als Primärschlüssel nicht taugen. Mit `GROUP BY` und `HAVING` siehst du nach, ob das stimmt.
+
+_task(doppelte-titel)
+
+<!-- after: doppelte-titel -->
+Mehr als vierzig Titel kommen doppelt vor, meist weil ein Stoff neu verfilmt wurde: »Nosferatu« von 1922 und von 2024, »Dune« von 1984 und von 2021, »Halloween« sogar dreimal. `SELECT * FROM movie WHERE title = 'Halloween';` zeigt die drei mit ihren IDs. Deshalb nennt die Aufgabe zu »Back to the Future« auch das Jahr.
+
+Wäre `title` der Primärschlüssel, hätte schon `mysql < movies-data-films.sql` beim zweiten »Nosferatu« abgebrochen: `Duplicate entry 'Nosferatu' for key 'movie.PRIMARY'`. Und jede Zeile in `movie_genre` und `movie_crew` müsste den ganzen Titel tragen. Eine Nummer wie `id` sagt nichts über den Film und bleibt deshalb eindeutig, egal welche Filme noch dazukommen.
+<!-- /after -->
 
 ### Wer spielt mit wem?
 
@@ -795,7 +857,7 @@ DROP TABLE club_cast, club_movie, club_director, club_list;
 ## Zusammenfassung
 
 - Ein **ER-Modell** beschreibt Entitäten, ihre Attribute und Beziehungen. In der ER-Werkstatt schreibst du es als Text in eine `.er`-Datei und siehst es als Chen-, Krähenfuß- oder Tabellendiagramm.
-- Ein **Primärschlüssel** bestimmt eine Zeile eindeutig, ein **Fremdschlüssel** verweist auf eine Zeile einer anderen Tabelle.
+- Ein **Primärschlüssel** bestimmt eine Zeile eindeutig; ein Titel taugt dafür nicht, eine `id` schon. Ein **Fremdschlüssel** verweist auf eine Zeile einer anderen Tabelle. MySQL lehnt jedes `INSERT` ab, das ins Leere zeigen würde, und jedes `DELETE` einer Zeile, auf die noch gezeigt wird, außer der Fremdschlüssel sagt mit `ON DELETE` etwas anderes.
 - Eine **n:m-Beziehung** und jede Beziehung zwischen drei Entitäten wird eine eigene Tabelle mit einem **zusammengesetzten Primärschlüssel**.
 - Aus dem Modell entsteht SQL (`CREATE TABLE`, `PRIMARY KEY`, `FOREIGN KEY`), das du mit `mysql < film.sql` ausführst.
 - Mit `JOIN … ON …` setzt du verteilte Daten wieder zusammen, einen Schritt pro Linie im Tabellendiagramm. `GROUP BY` bildet Gruppen, `HAVING` filtert sie.
@@ -841,6 +903,8 @@ terminal-wait-for-prompt: 60
 check-task: daten-filme
 check-task: anzahl-filme <- SELECT COUNT(*) FROM movie;
 check-task-fails: anzahl-filme <- SELECT COUNT(*) FROM movie_genre;
+check-task: genre-loeschen <- 2
+check-task-fails: genre-loeschen <- 1
 check-task: genres-film <- SELECT genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future';
 check-task-fails: genres-film <- SELECT genre_id FROM movie_genre JOIN movie ON movie.id = movie_genre.movie_id WHERE movie.title = 'Back to the Future';
 check-task: animation <- SELECT movie.title, movie.year FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE genre.name = 'Animation' ORDER BY movie.year;
@@ -867,6 +931,8 @@ check-task: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON
 check-task-fails: nolan <- SELECT movie.title, movie.year FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' ORDER BY movie.year;
 check-task: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id JOIN job ON movie_crew.job_id = job.id WHERE job.title = 'director' GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
 check-task-fails: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
+check-task: doppelte-titel <- SELECT title, COUNT(*) FROM movie GROUP BY title HAVING COUNT(*) > 1;
+check-task-fails: doppelte-titel <- SELECT title, COUNT(*) FROM movie GROUP BY id, title HAVING COUNT(*) > 1;
 -->
 
 <!-- tutorial-step

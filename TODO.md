@@ -77,7 +77,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 * [ ] From a short story to an ER model in the DSL; Chen and crow's foot
 * [ ] Translation rules for 1:1, 1:n and n:m; relationship attributes
-* [ ] One flat table with update, insert and delete anomalies as the reason for splitting tables
 * [ ] The borders of the country dataset as an example of deliberate redundancy: every pair twice, what goes wrong if one direction is missing, how to store it once
 
 #### Filmdatenbank
@@ -85,8 +84,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 
 * [ ] Add the 1:n case: `movie 1:n copy`, `customer` borrows `copy` with loan and return date → relationship attributes, `NULL`, `LEFT JOIN` ("which copies are out?", "which films were never rented?")
-* [ ] Integrity experiments: insert a `movie_genre` row for a missing film, delete a genre still in use, then `ON DELETE`
-* [ ] "A title is not a key": two films with the same title (Nosferatu 1922 and 2024)
 * [ ] Music twin of the chapter on the Discogs dataset
 
 #### Neo4j

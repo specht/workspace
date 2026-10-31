@@ -26,6 +26,10 @@ Die Datendateien schreiben mit `INSERT INTO movie (id, title, …)`. Deshalb ver
 
 Die Kardinalität (`n:m`, und warum aus `n:1` eine Spalte statt einer Tabelle wird) und der zusammengesetzte Primärschlüssel. Die Vorhersage-Aufgabe »Was wäre bei n:1?« ist dafür da; es lohnt, sie gemeinsam aufzulösen. Bei den Abfragen ist es das fehlende `ON` und `COUNT` in `WHERE` statt `HAVING`; beides erkennt die Karte.
 
+#### Was die Schlüssel verhindern
+
+Nach dem Laden der Daten versuchen die Lernenden drei falsche `INSERT` (eine doppelte Zuordnung, ein Genre und ein Film, die es nicht gibt) und sagen dann vorher, was `DELETE FROM genre WHERE name = 'Sci-Fi'` tut. Danach ändern sie den Fremdschlüssel auf `movie_id` mit `ALTER TABLE … DROP FOREIGN KEY movie_genre_ibfk_1, ADD FOREIGN KEY … ON DELETE CASCADE` und löschen einen Film in einer Transaktion. Der Name `movie_genre_ibfk_1` ist der, den MySQL für das `film.sql` der ER-Werkstatt vergibt; er steht auch in der Fehlermeldung des falschen `INSERT`. Das `CASCADE` verschwindet wieder, wenn `film.sql` in »Menschen und Tätigkeiten« die Tabellen neu anlegt. Wer das `ROLLBACK` vergisst, hat »Back to the Future« gelöscht; dann helfen `mysql < film.sql` und das erneute Laden der Filmdaten.
+
 #### Tipps in Stufen
 
 »Viel Regie« hat zwei oder drei Tipps: ein Beispiel von Hand, den Weg in Worten, meist ein Gerüst mit Lücken, nie die ganze Lösung. Die nächste Stufe erscheint eine Minute nach der vorigen, ohne Uhr, und wer welchen Tipp aufgeklappt hat, sieht niemand außer der Person selbst. Hängen viele an derselben Stelle, ist das ein Thema für die ganze Gruppe.

@@ -122,6 +122,40 @@ tasks:
       tables: { movie: ~ }
       setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
 
+  - id: genre-loeschen
+    title: Ein Genre löschen
+    prediction: true
+    prompt: |
+      Zum Genre Sci-Fi gehören viele Zeilen in `movie_genre`. Was passiert bei
+      diesem Befehl?
+
+      ```sql
+      DELETE FROM genre WHERE name = 'Sci-Fi';
+      ```
+
+      Überleg zuerst. Dann probier es aus, in einer Transaktion: erst
+      `START TRANSACTION;`, dann das `DELETE`, zum Schluss `ROLLBACK;`. Auf die
+      Frage von `mycli` vor dem `DELETE` antwortest du mit <kbd>y</kbd>.
+    check:
+      type: choice
+      options:
+        - 'MySQL löscht das Genre. Die Zeilen in `movie_genre`, die darauf zeigen, bleiben und zeigen auf ein Genre, das es nicht mehr gibt.'
+        - 'MySQL löscht das Genre und alle Zeilen in `movie_genre`, die darauf zeigen.'
+        - 'MySQL lehnt ab und löscht nichts, weil noch Zeilen in `movie_genre` auf das Genre zeigen.'
+        - 'MySQL löscht das Genre und alle Filme, die dieses Genre haben.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Beim `INSERT` hat der Fremdschlüssel verhindert, dass `movie_genre` auf ein Genre zeigt, das es nicht gibt. Würde er es beim `DELETE` zulassen?'
+      - when: { picked: 1 }
+        say: 'Das kann man einstellen, aber nur ausdrücklich beim Fremdschlüssel. Steht in deinem `film.sql` dazu etwas?'
+      - when: { picked: 3 }
+        say: 'Ein Film kann mehrere Genres haben. Soll »Back to the Future« verschwinden, weil jemand Sci-Fi löscht?'
+    solution: |
+      MySQL lehnt ab: Solange eine Zeile in `movie_genre` auf Sci-Fi zeigt,
+      darf das Genre nicht verschwinden. Ein Fremdschlüssel wird beim Einfügen
+      in `movie_genre` geprüft und beim Löschen in `genre`.
+
   - id: genres-film
     title: Die Genres von »Back to the Future«
     prompt: Welche Genres hat »Back to the Future« aus dem Jahr 1985? Gefragt sind nur die Namen der Genres.
@@ -335,6 +369,31 @@ tasks:
         HAVING …
         ORDER BY …;
         ```
+
+  - id: doppelte-titel
+    title: Doppelte Titel
+    prompt: |
+      Welche Titel tragen mehrere Filme der Datenbank? Zeig den Titel und wie
+      viele Filme ihn tragen.
+    check:
+      type: sql
+      expect_query: |
+        SELECT title, COUNT(*)
+        FROM movie
+        GROUP BY title
+        HAVING COUNT(*) > 1
+      tables: { movie: ~ }
+      setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
+    feedback:
+      - when: { query_matches: 'group\s+by\s+(movie\.)?id\b' }
+        say: Gruppierst du nach der `id`, ist jede Gruppe ein einziger Film. Gefragt ist, wie oft jeder Titel vorkommt.
+      - when: { same_result_as: 'SELECT title, COUNT(*) FROM movie GROUP BY title' }
+        say: Das sind alle Titel. Behalte mit `HAVING` nur die Gruppen mit mehr als einem Film.
+      - when: { query_matches: 'where[\s\S]*count\s*\(' }
+        say: In `WHERE` kann noch nicht gezählt werden, dort wird zeilenweise gefiltert. Bedingungen an Gruppen gehören hinter `HAVING`.
+    solution: |
+      `GROUP BY title` fasst alle Filme mit demselben Titel zusammen,
+      `HAVING COUNT(*) > 1` behält die Gruppen mit mehr als einem Film.
 
   - id: neue-frage
     title: Was fehlt dem Modell?
