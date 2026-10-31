@@ -230,7 +230,7 @@ Keep tutorial tests focused on whether the documented student workflow actually 
 
 Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementally.
 
-* [ ] Further out of main.rb (8900 lines): exams and Git, then accounts and administration, the task API and the Workspace routes, the content pipeline last; one file per topic, the moved lines identical, its E2E tests
+* [ ] Further out of main.rb (5139 lines, 10648 on the morning of 31 October 2026): the content pipeline (reading and rendering pages, images, table of contents, metadata, the content cache), the largest part and the one that runs most at load time; then smaller ones (TCP-Konsole socket, TIC-80 files, Anaglyph viewer, Terminal-Krimi downloads, Open-Meteo proxy)
 
 
 ## Later ideas
