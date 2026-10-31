@@ -244,3 +244,77 @@ tasks:
           return balance;
         }
         ```
+
+  - id: arbeit-weitergeben
+    title: Arbeit weitergeben
+    prompt: |
+      Schreib in `/workspace/nebenlaeufigkeit/Buffer.java` einen Monitor `Buffer`:
+      `new Buffer(capacity)` hat Platz für `capacity` Zahlen, `put(int x)` legt
+      eine hinein und wartet, solange er voll ist, `take()` nimmt die älteste
+      heraus und wartet, solange er leer ist. Dazu
+      `public static int transfer(int n, int capacity)`: Ein Thread legt die
+      Zahlen 1 bis `n` hinein, ein zweiter nimmt `n` Zahlen heraus und zählt
+      sie zusammen; die Methode wartet auf beide und gibt die Summe zurück.
+    check:
+      type: java
+      file: nebenlaeufigkeit/Buffer.java
+      timeout: 20
+      slow: "`transfer` ist nicht fertig geworden: Ein Thread wartet und wird nicht wieder geweckt. Ruft `put` und `take` nach jeder Änderung `notifyAll()` auf?"
+      cases:
+        - { call: "Buffer.transfer(10, 1)", expect: 55, say: "Mit Platz für nur eine Zahl müssen beide Threads abwechselnd warten." }
+        - { call: "Buffer.transfer(1000, 3)", expect: 500500 }
+        - { call: "Buffer b = new Buffer(2); b.put(4); b.put(7); b.take()", expect: 4, say: "`take` gibt die Zahl zurück, die am längsten im Puffer liegt." }
+    hint:
+      - "Ein Array `items` mit `capacity` Plätzen, dazu `count` (wie viele drin sind) und `first` (wo die älteste liegt). Die nächste freie Stelle ist `(first + count) % items.length`."
+      - "`put` und `take` sind `synchronized`, warten mit `while (…) wait();` und rufen am Ende `notifyAll()` auf. In `transfer` zählt der zweite Thread in ein `int[] sum = { 0 }`, denn eine lokale Variable kann ein Lambda nicht ändern."
+    solution: |
+      ```java
+      public synchronized void put(int x) throws InterruptedException {
+          while (count == items.length) {
+              wait();
+          }
+          items[(first + count) % items.length] = x;
+          count++;
+          notifyAll();
+      }
+
+      public synchronized int take() throws InterruptedException {
+          while (count == 0) {
+              wait();
+          }
+          int x = items[first];
+          first = (first + 1) % items.length;
+          count--;
+          notifyAll();
+          return x;
+      }
+      ```
+    dart:
+      prompt: |
+        Schreib in `/workspace/nebenlaeufigkeit/primes.dart`, unter `countPrimes`,
+        eine Funktion `Future<int> countPrimesParallel(int limit, int parts)`: Sie
+        teilt die Zahlen von 0 bis vor `limit` in `parts` Stücke, zählt jedes Stück
+        mit `countPrimes` in einem eigenen Isolate und gibt die Summe zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/primes.dart
+        timeout: 20
+        cases:
+          - { call: "countPrimesParallel(100, 1)", expect: 25 }
+          - { call: "countPrimesParallel(100000, 4)", expect: 9592 }
+          - { call: "countPrimesParallel(100000, 3)", expect: 9592, say: "100000 lässt sich nicht in drei gleiche Stücke teilen: Fehlt am Ende ein Stück, oder zählt eines doppelt?" }
+          - { call: "countPrimesParallel(10, 4)", expect: 4 }
+      hint:
+        - "Ein Stück ist `size = (limit + parts - 1) ~/ parts` Zahlen lang; Stück `p` geht von `p * size` bis vor `(p + 1) * size`, das letzte nur bis `limit`."
+        - "`await Future.wait([for (var p = 0; p < parts; p++) Isolate.run(() => countPrimes(…, …))])` gibt die Zahlen der Stücke als Liste; die Summe bekommst du mit `fold`."
+      solution: |
+        ```dart
+        Future<int> countPrimesParallel(int limit, int parts) async {
+          final size = (limit + parts - 1) ~/ parts;
+          final counts = await Future.wait([
+            for (var p = 0; p < parts; p++)
+              Isolate.run(() => countPrimes(p * size, (p + 1) * size < limit ? (p + 1) * size : limit)),
+          ]);
+          return counts.fold<int>(0, (sum, c) => sum + c);
+        }
+        ```

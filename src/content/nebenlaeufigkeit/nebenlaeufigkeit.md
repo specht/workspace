@@ -194,3 +194,59 @@ class Lock {
 <!-- /language -->
 
 _task(locks-im-code)
+
+### Arbeit weitergeben
+
+<!-- language: java -->
+Oft macht ein Thread etwas, das ein anderer weiterverarbeitet: Ein Thread liest Anfragen, ein anderer beantwortet sie. Dazwischen liegt ein **Puffer** mit Platz für ein paar Werte. Ist er voll, muss der eine warten; ist er leer, der andere. Eine Klasse, deren Methoden alle `synchronized` sind und die Threads so warten lässt, heißt **Monitor**.
+
+Warten geht in Java mit `wait()`: Der Thread gibt den Lock des Objekts ab und schläft, bis ein anderer `notifyAll()` aufruft. Danach bekommt er den Lock zurück und prüft seine Bedingung noch einmal, darum steht `wait()` in einer `while`-Schleife:
+
+```java
+public synchronized void put(int x) throws InterruptedException {
+    while (count == items.length) {
+        wait();
+    }
+    // … x hineinlegen …
+    notifyAll();
+}
+```
+<!-- /language -->
+<!-- language: dart -->
+Ein Isolate ist in Dart ein eigener Arbeiter mit eigenem Speicher. Isolates teilen keine Variablen; sie schicken einander nur Nachrichten. Darum kann zwischen ihnen auch keine Erhöhung verloren gehen. Und anders als `async`-Code laufen mehrere Isolates wirklich gleichzeitig, auf mehreren Kernen.
+
+`Isolate.run` startet eine Funktion in einem neuen Isolate und gibt ihr Ergebnis als `Future` zurück. Diese Funktion zählt die Primzahlen von `from` bis vor `to`:
+
+```dart
+import 'dart:isolate';
+
+int countPrimes(int from, int to) {
+  var count = 0;
+  for (var n = from; n < to; n++) {
+    if (n < 2) continue;
+    var prime = true;
+    for (var d = 2; d * d <= n; d++) {
+      if (n % d == 0) {
+        prime = false;
+        break;
+      }
+    }
+    if (prime) count++;
+  }
+  return count;
+}
+```
+
+`await Isolate.run(() => countPrimes(0, 1000))` zählt dasselbe in einem eigenen Isolate.
+<!-- /language -->
+
+_task(arbeit-weitergeben)
+
+<!-- language: java -->
+Java hat so einen Puffer schon: `ArrayBlockingQueue`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
+<!-- /language -->
+<!-- language: dart -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Miss mit einer <code>Stopwatch</code>, wie lange <code>countPrimesParallel(5000000, 1)</code> braucht und wie lange dasselbe mit 2 und mit 4 Teilen. Dein Workspace hat vier Kerne. Achte darauf, ob vier Teile auch viermal so schnell sind, und überleg, welcher Teil am längsten rechnet.
+</div>
+<!-- /language -->

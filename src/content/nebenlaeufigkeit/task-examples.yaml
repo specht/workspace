@@ -40,3 +40,14 @@ examples:
       fail:
         # all at once without the lock: one deposit lost, every time
         - { files: { nebenlaeufigkeit/bank.dart: fehler/bank-ohne-lock.dart } }
+  arbeit-weitergeben:
+    pass:
+      - { files: { nebenlaeufigkeit/Buffer.java: loesung/Buffer.java } }
+    fail:
+      # without notifyAll a waiting thread is never woken: hangs every time
+      - { files: { nebenlaeufigkeit/Buffer.java: fehler/Buffer-ohne-notify.java } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/primes.dart: loesung/primes.dart } }
+      fail:
+        - { files: { nebenlaeufigkeit/primes.dart: { text: "import 'dart:isolate';\n\nint countPrimes(int from, int to) => 0;\n\nFuture<int> countPrimesParallel(int limit, int parts) async => 0;\n" } } }
