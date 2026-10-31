@@ -527,6 +527,21 @@
             }
             result();
         };
+        // what the program printed while it runs, in the console as it
+        // comes; the whole output replaces it when the run is over
+        let seen = 0;
+        const live = function (data) {
+            const console_ = card.querySelector('.task-console');
+            if (!console_ || typeof data.output !== 'string' || data.output === '') return;
+            if (seen === 0) {
+                console_.textContent = '';
+                console_.classList.remove('task-console-error');
+            }
+            console_.hidden = false;
+            const bottom = console_.scrollTop + console_.clientHeight >= console_.scrollHeight - 4;
+            console_.textContent += data.output;
+            if (bottom) console_.scrollTop = console_.scrollHeight;
+        };
         const follow = function (data) {
             if (!data || !data.success || data.done) {
                 done(data);
@@ -536,8 +551,10 @@
                 queue.textContent = data.running ? 'Läuft …'
                     : data.ahead > 0 ? 'Noch ' + data.ahead + ' vor dir' : 'Gleich dran …';
             }
+            live(data);
+            if (typeof data.seen === 'number') seen = data.seen;
             setTimeout(function () {
-                api_call('/api/kata/poll', { ticket: data.ticket || card.dataset.kataTicket }, follow, { no_please_wait: true });
+                api_call('/api/kata/poll', { ticket: data.ticket || card.dataset.kataTicket, seen: String(seen) }, follow, { no_please_wait: true });
             }, KATA_POLL_MS);
             if (data.ticket) card.dataset.kataTicket = data.ticket;
         };

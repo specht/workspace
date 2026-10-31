@@ -62,7 +62,10 @@ The code:
   text for Python, JavaScript, Dart and Java); `tests_check.rb`; `pip_check.rb` with `pip_world.rb` (the world
   on the server, which answers every command and records the trace) and
   `pip_maps.rb` (mazes from the seed).
-- **Pages:** `kata_page.rb` (tickets and polling, hand-ins), `kata_map.rb` (the
+- **Pages:** `kata_page.rb` (tickets and polling, hand-ins; each poll of a
+  running ticket brings what the person's own program printed since the last
+  one, so the console fills while it runs; Python with `-u` and Ruby with
+  `kata_sync.rb` print unbuffered), `kata_map.rb` (the
   strip), `kata_hand_ins.rb` and `kata_hand_ins.js` (the viewer without
   names), `pip_world.js` (the map, the player, the clicked plan),
   `tasks.js`, `code_input.js` (the editor).

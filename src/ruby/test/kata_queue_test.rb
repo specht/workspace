@@ -104,4 +104,19 @@ class KataQueueTest < Minitest::Test
         release << :go
         assert_equal :done, ticket.wait(5)
     end
+
+    # What the program prints while it runs: the card asks for what came
+    # after what it has (seen), in characters, and gets at most MAX_OUTPUT.
+    def test_output_while_it_runs_comes_in_pieces
+        ticket = KataQueue::Ticket.new('a', ->(_) {})
+        assert_equal ['', 0], ticket.output_since(0)
+        ticket.append_output("Hallo\n")
+        ticket.append_output("Grüße\n")
+        assert_equal ["Hallo\nGrüße\n", 12], ticket.output_since(0)
+        assert_equal ["Grüße\n", 12], ticket.output_since(6)
+        assert_equal ['', 12], ticket.output_since(99)
+        assert_equal ["Hallo\nGrüße\n", 12], ticket.output_since(-3)
+        ticket.append_output('x' * (KataQueue::Ticket::MAX_OUTPUT + 10))
+        assert_equal KataQueue::Ticket::MAX_OUTPUT, ticket.output_since(0)[1]
+    end
 end

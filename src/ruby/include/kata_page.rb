@@ -21,11 +21,14 @@ class Main < Sinatra::Base
     # sehr viele …«).
     KATA_MAX_WAIT = 120
 
-    # The run of one ticket: a newer run of the same person stops it.
-    def self.kata_run(ticket)
+    # The run of one ticket: a newer run of the same person stops it. live:
+    # what the program prints goes to the ticket as it comes, for the card
+    # to show while it runs (the person's own program, not a check's harness).
+    def self.kata_run(ticket, live: false)
+        on_output = live ? ->(_stream, text) { ticket.append_output(text) } : nil
         lambda do |files:, argv:, timeout:, dialog: nil|
             KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :dialog => dialog,
-                           :cancel => ->(kill) { ticket.on_stop(kill) })
+                           :cancel => ->(kill) { ticket.on_stop(kill) }, :on_output => on_output)
         end
     end
 
@@ -55,7 +58,7 @@ class Main < Sinatra::Base
             # one button: a function Kata's own program runs first, where it
             # has code of its own (KataCheck.top_level?), for what it prints
             language = task['check']['language']
-            ran = task['check']['type'] == 'function' && KataCheck.top_level?(code, language) ? KataCheck.run_program(language, code, Main.kata_run(t)) : nil
+            ran = task['check']['type'] == 'function' && KataCheck.top_level?(code, language) ? KataCheck.run_program(language, code, Main.kata_run(t, :live => true)) : nil
             [TaskCheck.check(task, code, :kata => Main.kata_run(t), :kata_seed => seed, :kata_map => found[:map]), ran]
         end
         ticket.data = { :kind => :check, :found => found, :code => code }
@@ -90,7 +93,7 @@ class Main < Sinatra::Base
                   :message => error ? KataCheck.explain(error, language) : nil,
                   :replay => PipCheck.replay(ran[:world], index, check['maps'].size, ran[:output]) }
             else
-                KataCheck.run_program(language, code, Main.kata_run(t))
+                KataCheck.run_program(language, code, Main.kata_run(t, :live => true))
             end
         end
         ticket.data = { :kind => :run }
@@ -99,7 +102,8 @@ class Main < Sinatra::Base
 
     post '/api/kata/poll' do
         assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:ticket], :max_value_lengths => {:ticket => 40})
+        data = parse_request_data(:required_keys => [:ticket], :optional_keys => [:seen],
+            :max_value_lengths => {:ticket => 40, :seen => 10})
         ticket = KATA_QUEUE.find(data[:ticket])
         halt 404 if ticket.nil? || ticket.owner != @session_user[:email]
 
@@ -111,7 +115,10 @@ class Main < Sinatra::Base
             end
             respond(:done => false, :ahead => KATA_QUEUE.ahead(ticket).to_i)
         when :running
-            respond(:done => false, :running => true)
+            # what the program printed since the last poll (seen: how much
+            # the card has)
+            output, seen = ticket.output_since(data[:seen])
+            respond(:done => false, :running => true, :output => output, :seen => seen)
         when :cancelled
             # a newer run of the same person took its place
             respond(:done => true, :status => 'cancelled')

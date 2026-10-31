@@ -55,6 +55,24 @@ test('a Kata runs, checks and keeps its code', async ({ page, e2eEmail }, testIn
   await expect(card.locator('.task-code')).toHaveValue(ruby ? /"Hallo, #\{name\}!"/ : /f'Hallo, \{name\}!'/);
 });
 
+// What the program prints shows while it runs (the poll brings it), not
+// only when the run is over.
+test('a Kata shows its output while it runs', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-functions');
+  const card = page.locator('.task-card[data-task="kata-functions/greet"]:visible');
+  const ruby = (await languageOf(card)) === 'ruby';
+  await card.locator('.task-code').fill(ruby
+    ? 'def greet(name)\n  "Hallo, #{name}!"\nend\nputs "eins"\nsleep 4\nputs "zwei"\n'
+    : 'import time\ndef greet(name):\n    return f"Hallo, {name}!"\nprint("eins")\ntime.sleep(4)\nprint("zwei")\n');
+  await card.locator('.task-submit').click();
+  const console_ = card.locator('.task-console');
+  await expect(console_).toHaveText('eins', { timeout: 15_000 });
+  await expect(card.locator('.task-queue')).toHaveText('Läuft …');
+  await expect(console_).toHaveText('eins\nzwei', { timeout: 30_000 });
+  await expect(card).toHaveAttribute('data-status', 'correct', { timeout: 30_000 });
+});
+
 test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/kata-loops');

@@ -21,7 +21,12 @@ class KataQueue
         # has been stored already)
         attr_accessor :data
 
+        # What the program printed so far, while it runs (append_output),
+        # for the card to show as it comes; at most MAX_OUTPUT characters.
+        MAX_OUTPUT = 64 * 1024
+
         def initialize(owner, job)
+            @output = +''
             @id = SecureRandom.hex(12)
             @created_at = Time.now
             @memo = {}
@@ -46,6 +51,21 @@ class KataQueue
                 run_now = @state == :cancelled
             end
             stop.call if run_now
+        end
+
+        def append_output(text)
+            @mutex.synchronize do
+                room = MAX_OUTPUT - @output.size
+                @output << text[0, room] if room > 0
+            end
+        end
+
+        # [what came after the first seen characters, how many there are now]
+        def output_since(seen)
+            @mutex.synchronize do
+                seen = seen.to_i.clamp(0, @output.size)
+                [@output[seen..], @output.size]
+            end
         end
 
         def cancelled?

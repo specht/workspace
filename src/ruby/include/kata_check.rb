@@ -61,7 +61,11 @@ module KataCheck
     FILES = { 'python' => 'kata.py', 'ruby' => 'kata.rb', 'javascript' => 'kata.js', 'dart' => 'kata.dart', 'java' => 'kata.java' }.freeze
     HARNESS_FILES = { 'python' => 'harness.py', 'ruby' => 'harness.rb', 'javascript' => 'harness.js' }.freeze
     # What runs on »Ausführen«: the program as it is, top-level code included.
-    PROGRAMS = { 'python' => %w[python3 -I -B kata.py], 'ruby' => %w[ruby -W0 kata.rb], 'javascript' => %w[node kata.js] }.freeze
+    # The person's own program (run_program), unbuffered, so that what it
+    # prints shows while it runs: Python with -u, Ruby with a line that
+    # syncs its output first (SYNC_FILES), loaded before the program.
+    PROGRAMS = { 'python' => %w[python3 -I -B -u kata.py], 'ruby' => %w[ruby -W0 -r./kata_sync.rb kata.rb], 'javascript' => %w[node kata.js] }.freeze
+    SYNC_FILES = { 'ruby' => { 'kata_sync.rb' => "$stdout.sync = true\n$stderr.sync = true\n" } }.freeze
     MAX_CODE = 4000
     # What is stored as the task's answer: the code per language, as JSON,
     # so each language keeps its own (TaskStore, max:).
@@ -486,7 +490,8 @@ module KataCheck
         return { :status => :invalid, :output => '', :message => EMPTY } if code.to_s.strip.empty?
 
         argv = KataCompiled::LANGUAGES.include?(language) ? KataCompiled.run_argv(language) : PROGRAMS.fetch(language)
-        result = run.call(:files => { FILES.fetch(language) => code.to_s }, :argv => argv, :timeout => RUN_SECONDS)
+        files = { FILES.fetch(language) => code.to_s }.merge(SYNC_FILES.fetch(language, {}))
+        result = run.call(:files => files, :argv => argv, :timeout => RUN_SECONDS)
         return { :status => :unavailable, :output => '', :message => BUSY } if result.nil?
 
         output = result.stdout + result.stderr
