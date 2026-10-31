@@ -12,8 +12,12 @@ async function scrollDown(page: Page) {
   await page.waitForTimeout(500);
 }
 
+// Below 1400 px a page with chapters shows a bar once the header has
+// scrolled away; from 1400 px the chapters stand in a column beside the
+// text instead, with its own »Nach oben«, and there is no bar beside it.
 test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.setViewportSize({ width: 1200, height: 1000 });
   for (const path of ['/', '/prolog', '/reference/farben']) {
     await page.goto(path);
     const bar = page.locator('nav.autotoc');
@@ -28,6 +32,18 @@ test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmai
   await page.goto('/reference');
   await scrollDown(page);
   await expect(page.locator('nav.autotoc')).toHaveClass(/hidden/);
+});
+
+test('on a wide screen the chapters stand beside the text, with »Nach oben«', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  for (const path of ['/prolog', '/reference/farben']) {
+    await page.goto(path);
+    await scrollDown(page);
+    await expect(page.locator('nav.autotoc')).not.toBeVisible();
+    await page.locator('.autotoc-secondary-up').click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  }
 });
 
 // A Handbuch part shown in an activity is one box: its sub-headings are h4
