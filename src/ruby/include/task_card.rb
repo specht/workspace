@@ -221,6 +221,14 @@ module TaskCard
                 io << "<textarea class='task-input circuit-answer' name='answer' hidden aria-hidden='true' tabindex='-1'></textarea>"
                 steps = check['sequence'] ? 'stellt die Schalter Schritt für Schritt so, wie die Aufgabe es sagt' : "schaltet jede Zeile der Wahrheitstabelle ein, #{1 << check['inputs'].size} Zeilen"
                 reads = "Deine Schaltung geht als Text an den Server. Er #{steps}, lässt die Gatter Runde für Runde rechnen wie hier im Editor und vergleicht die Lampen. Ausgeführt wird dabei nichts."
+            when 'interleaving'
+                # The step-through widget (interleaving.js) with the task's
+                # threads; it keeps the order in the hidden field, which is
+                # the answer (InterleavingCheck).
+                program = { 'shared' => check['shared'], 'locks' => check['locks'] || [], 'threads' => check['threads'] }
+                io << "<div class='interleaving' data-task-editor='true' data-program='#{h.(JSON.generate(program))}'></div>"
+                io << "<textarea class='task-input interleaving-answer' name='answer' hidden aria-hidden='true' tabindex='-1'></textarea>"
+                reads = 'Die Reihenfolge deiner Schritte geht als Text an den Server. Er lässt die Threads in dieser Reihenfolge laufen, mit denselben Regeln wie hier, und vergleicht das Ende mit dem Ziel der Aufgabe.'
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'

@@ -8513,7 +8513,8 @@ h3:has(+ .person) {
    widgets' own margins. */
 div[data-stepper],
 .bitplane-widget,
-.qr-damage {
+.qr-damage,
+.interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
     --widget-chip: #ebecef;
@@ -8529,7 +8530,8 @@ div[data-stepper],
 }
 html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget,
-html[data-bs-theme="dark"] .qr-damage {
+html[data-bs-theme="dark"] .qr-damage,
+html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
     --widget-chip: #25272b;
@@ -13574,4 +13576,143 @@ p.expl {
     font-size: 0.9em;
     opacity: 0.6;
     margin: 0;
+}
+
+/* Threads side by side (interleaving.js, »Nebenläufigkeit«): the shared
+   variables and locks above, a column per thread with its lines, the
+   current one purple like every widget's current step, its own variables
+   below; a button per thread, the order picked so far as chips. */
+.interleaving {
+    --il-line: var(--widget-line, #dbdee3);
+    --il-chip: var(--widget-chip, #ebecef);
+    margin-bottom: 0.75em;
+}
+html[data-bs-theme="dark"] .interleaving {
+    --il-line: var(--widget-line, #2a2e34);
+    --il-chip: var(--widget-chip, #25272b);
+}
+.interleaving .il-title {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+.interleaving .il-shared,
+.interleaving .il-order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 0.6em;
+}
+.interleaving .il-label {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    margin-right: 0.2em;
+}
+.interleaving .il-box {
+    display: inline-flex;
+    border: 1px solid var(--il-line);
+    border-radius: 0.3em;
+    overflow: hidden;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.9em;
+}
+.interleaving .il-name {
+    padding: 0.1em 0.45em;
+    background: var(--il-chip);
+}
+.interleaving .il-value {
+    padding: 0.1em 0.55em;
+    min-width: 2.2em;
+    text-align: center;
+    background: var(--bs-body-bg);
+}
+.interleaving .il-held .il-value {
+    color: var(--stepper-current);
+    font-weight: 600;
+}
+.interleaving .il-threads {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13em, 1fr));
+    gap: 0.75em;
+    margin-bottom: 0.6em;
+}
+.interleaving .il-thread {
+    border: 1px solid var(--il-line);
+    border-radius: 0.4em;
+    padding: 0.5em 0.6em;
+    background: var(--bs-body-bg);
+}
+.interleaving .il-head {
+    font-weight: 600;
+    margin-bottom: 0.3em;
+}
+.interleaving .il-code {
+    margin: 0 0 0.5em;
+    padding-left: 1.6em;
+}
+.interleaving .il-code li {
+    padding: 0.05em 0.3em;
+    border-radius: 0.25em;
+}
+.interleaving .il-code li code {
+    color: inherit;
+    background: none;
+    padding: 0;
+    font-size: 0.95em;
+}
+.interleaving .il-code li.il-past {
+    opacity: 0.5;
+}
+.interleaving .il-code li.il-current {
+    background: color-mix(in srgb, var(--stepper-current) 16%, transparent);
+    box-shadow: inset 3px 0 0 var(--stepper-current);
+}
+.interleaving .il-waiting .il-code li.il-current {
+    background: color-mix(in srgb, #c92a2a 12%, transparent);
+    box-shadow: inset 3px 0 0 #c92a2a;
+}
+.interleaving .il-locals {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 1.8em;
+}
+.interleaving .il-none {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+.interleaving .il-state {
+    font-size: 0.85em;
+    margin-left: auto;
+}
+.interleaving .il-wait {
+    color: #c92a2a;
+}
+html[data-bs-theme="dark"] .interleaving .il-wait {
+    color: #ff8787;
+}
+.interleaving .il-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin-bottom: 0.6em;
+}
+.interleaving .il-spacer {
+    flex: 1;
+}
+.interleaving .il-chip {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.85em;
+    padding: 0.05em 0.45em;
+    border-radius: 0.3em;
+    background: var(--il-chip);
+}
+.interleaving .il-chip.il-latest {
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
+}
+.interleaving .il-say code {
+    background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
+    color: inherit;
 }

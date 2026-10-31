@@ -1,0 +1,49 @@
+# Aufgaben zu »Nebenläufigkeit«. Format: docs/aufgaben.md.
+format: 1
+activity: nebenlaeufigkeit
+tasks:
+  - id: verlorene-erhoehung
+    title: Eine Erhöhung geht verloren
+    prompt: |
+      Beide Threads erhöhen den Zähler um eins. Finde eine Reihenfolge der
+      sechs Schritte, nach der `counter` am Ende 1 ist und nicht 2.
+    check:
+      type: interleaving
+      shared: { counter: 0 }
+      threads:
+        A: ["a ← counter", "a ← a + 1", "counter ← a"]
+        B: ["b ← counter", "b ← b + 1", "counter ← b"]
+      goal: counter == 1
+    feedback:
+      - when: { problem: goal }
+        say: Hier ist jede Erhöhung angekommen. Wann müsste B den Zähler lesen, damit es den neuen Wert von A noch nicht sieht?
+    hint:
+      - Wann liest B den Zähler, und was hat A bis dahin schon zurückgeschrieben?
+      - Lass beide Threads lesen, bevor einer schreibt.
+
+  - id: reihenfolgen-ohne-verlust
+    title: Wie oft geht es gut?
+    prompt: |
+      Es gibt 20 Reihenfolgen der sechs Schritte, in denen jeder Thread seine
+      drei Zeilen der Reihe nach ausführt. In wie vielen davon ist `counter`
+      am Ende 2?
+    check:
+      type: number
+      expect: 2
+    hint: Damit nichts verloren geht, muss ein Thread seinen Wert zurückgeschrieben haben, bevor der andere liest. Wie viele Reihenfolgen erlauben das?
+    solution: |
+      Nur in zweien: A ganz vor B und B ganz vor A. Sobald sich die Schritte
+      mischen, liest ein Thread, bevor der andere geschrieben hat.
+
+  - id: deadlock
+    title: Keiner kommt weiter
+    prompt: Finde eine Reihenfolge, nach der keiner der beiden Threads mehr einen Schritt machen kann.
+    check:
+      type: interleaving
+      shared: { x: 10, y: 10 }
+      locks: [m, n]
+      threads:
+        A: ["lock m", "lock n", "x ← x - 5", "y ← y + 5", "unlock n", "unlock m"]
+        B: ["lock n", "lock m", "y ← y - 3", "x ← x + 3", "unlock m", "unlock n"]
+      goal: deadlock
+    hint: Jeder Thread braucht beide Locks. Was passiert, wenn jeder schon einen hat?

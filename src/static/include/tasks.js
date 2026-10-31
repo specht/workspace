@@ -242,6 +242,13 @@
     }
 
     function writeAnswer(card, answer, state) {
+        if (card.dataset.type === 'interleaving') {
+            // the step-through widget (interleaving.js) replays the order
+            const field = card.querySelector('.interleaving-answer');
+            field.value = answer || '';
+            field.dispatchEvent(new CustomEvent('task-answer', { detail: { answer: answer || '' } }));
+            return;
+        }
         if (card.dataset.type === 'circuit') {
             // the Logik-Werkstatt's editor (circuit_editor.js) loads the
             // circuit itself; it compares the time with its draft
@@ -998,7 +1005,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'turtle', 'circuit'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'turtle', 'circuit', 'interleaving'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

@@ -1,0 +1,3 @@
+Lernende bringen die Schritte zweier Threads selbst in eine Reihenfolge und sehen, wo eine Erhöhung verloren geht (Race Condition, lost update), wie ein Lock das verhindert und wie zwei Locks in verschiedener Reihenfolge einander blockieren (Deadlock). Das Widget (`interleaving.js`) braucht keinen Code; die Prüfung »interleaving« lässt die gewählte Reihenfolge auf dem Server mit denselben Regeln laufen.
+
+Die Seite ist im Aufbau und steht nur in der Entwicklung im Katalog. Geplant sind Kapitel in Java (Threads, `synchronized`, Deadlock, Monitor mit `wait` und `notifyAll`) und Dart (das Rennen an `await`, ein Lock für `async`, Isolates); der Plan steht in `docs/plan-nebenlaeufigkeit.md`.

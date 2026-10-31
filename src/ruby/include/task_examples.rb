@@ -50,9 +50,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit turtle].freeze
+    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit turtle].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say variables].freeze
 

@@ -19,6 +19,7 @@ require_relative 'dart_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 require_relative 'circuit_check'
+require_relative 'interleaving_check'
 require_relative 'turtle_check'
 require_relative 'glsl_check'
 
@@ -36,7 +37,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit turtle]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -118,6 +119,7 @@ module TaskCheck
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_circuit(task, check, answer) if type == 'circuit'
+        return check_interleaving(task, check, answer) if type == 'interleaving'
         return check_turtle(task, check, answer, turtle) if type == 'turtle'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
@@ -295,6 +297,14 @@ module TaskCheck
     def self.check_circuit(task, check, answer)
         status, message, read = CircuitCheck.check(task, check, answer)
         Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # interleaving: an order of steps from the widget, run on the server
+    # with the widget's rules (InterleavingCheck); nothing in it runs.
+    def self.check_interleaving(task, check, answer)
+        status, message, read = InterleavingCheck.check(task, check, answer)
+        Result.new(:status => status, :message => message, :read => read, :problem => status == :wrong ? :goal : nil,
             :solution => status == :correct ? task['solution'] : nil)
     end
 

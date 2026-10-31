@@ -1243,6 +1243,45 @@ bleibt gelöst, und die Karte zeigt keine Unterschiede. In `task-examples.yaml` 
 `answer:`; es läuft dort mit ruby, python3 und node auf dem Rechner, mit
 denselben Befehlen (`TurtleCheck.record`).
 
+### interleaving
+
+Threads, die nebeneinander laufen, Schritt für Schritt (»Nebenläufigkeit«,
+`InterleavingCheck`): Die Karte enthält das Widget `interleaving.js`, in dem
+die Lernenden mit einem Knopf je Thread wählen, wer den nächsten Schritt
+macht. »Prüfen« schickt die Reihenfolge als Text, `A A B B A B`; der Server
+lässt die Threads darin mit denselben Regeln laufen und vergleicht das Ende
+mit dem Ziel. Ausgeführt wird nichts.
+
+```yaml
+check:
+  type: interleaving
+  shared: { counter: 0 }          # gemeinsame Variablen und ihr Anfangswert
+  locks: [m]                      # Locks, am Anfang frei
+  threads:                        # je Thread seine Zeilen, im Pseudocode der Seite
+    A: ["lock m", "a ← counter", "a ← a + 1", "counter ← a", "unlock m"]
+    B: ["lock m", "b ← counter", "b ← b + 1", "counter ← b", "unlock m"]
+  goal: counter == 2              # wenn alle fertig sind; oder: deadlock
+feedback:
+  - when: { problem: goal }
+    say: Hier ist jede Erhöhung angekommen.
+```
+
+Eine Zeile ist `name ← Ausdruck` (Namen und ganze Zahlen mit `+` und `-`),
+`lock m` oder `unlock m`. Ein Name, der nicht gemeinsam ist, gehört dem
+Thread, der ihn benutzt, und ist am Anfang 0. `lock` wartet, solange ein
+anderer Thread den Lock hält; dann kann dieser Thread keinen Schritt machen.
+`goal: deadlock` verlangt eine Reihenfolge, nach der nicht alle fertig sind
+und keiner weiterkann; sonst müssen alle fertig sein, und der Vergleich
+muss stimmen. Die Rückmeldung nennt den ersten Schritt, der nicht geht
+(»Schritt 3: B wartet auf den Lock n, den A hält«), oder das Ende
+(»Am Ende ist counter = 2«); `problem: goal` ersetzt diesen Satz. In
+`task-examples.yaml` steht die Reihenfolge unter `answer:`.
+
+Ohne Karte steht dasselbe Widget zum Ausprobieren auf einer Seite:
+`<div class='interleaving' data-title='…' data-program='{"shared": …,
+"locks": […], "threads": {…}}'></div>` und
+`<script src='/include/interleaving.js'></script>`.
+
 ### circuit
 
 Eine Schaltung aus der Logik-Werkstatt (`src/content/logikwerkstatt`,

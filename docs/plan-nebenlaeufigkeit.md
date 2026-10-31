@@ -15,6 +15,10 @@ maintainer before building.
   teaches the wrong lesson.
 - **The order of the work:** Textadventure, Prüfziffern and Laufzeit in Dart
   and Java first (done), then this activity.
+- **Built (31 October 2026):** the check type `interleaving` and the widget
+  `interleaving.js`; the page `nebenlaeufigkeit` (in development only, `.nebenlaeufigkeit`
+  in sections.yaml) with the widget chapter: the lost update, a lock, a
+  deadlock. Next: the Java and Dart chapters.
 - **Where and what (31 October 2026):** in »Netze & Sicherheit«, after the
   web server and the Pixelwand; named »Nebenläufigkeit«. The widget hands
   the order a student clicked to a check type of its own (not an `answer`

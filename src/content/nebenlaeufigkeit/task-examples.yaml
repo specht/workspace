@@ -1,0 +1,19 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: nebenlaeufigkeit
+examples:
+  verlorene-erhoehung:
+    pass:
+      - answer: A B A B A B
+      - answer: A A B B A B
+    fail:
+      - answer: A A A B B B
+      - answer: A B A B
+  deadlock:
+    pass:
+      - answer: A B
+      - answer: B A
+    fail:
+      - answer: A A A A A A B B B B B B
+      - answer: A A

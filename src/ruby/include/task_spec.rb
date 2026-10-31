@@ -24,6 +24,7 @@ require_relative 'tests_check'
 require_relative 'pip_check'
 require_relative 'turtle_check'
 require_relative 'circuit_check'
+require_relative 'interleaving_check'
 require_relative 'code_languages'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
@@ -74,6 +75,7 @@ module TaskSpec
         'tests' => 'M8',
         'turtle' => 'M8',
         'circuit' => 'M8',
+        'interleaving' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -129,6 +131,7 @@ module TaskSpec
         'tests' => [],
         'turtle' => [],
         'circuit' => [],
+        'interleaving' => %w[problem],
     }.freeze
 
     class Error < StandardError
@@ -631,6 +634,11 @@ module TaskSpec
             # right and some broken versions (TestsCheck).
             allowed += %w[language function correct mutants]
             errors.concat(TestsCheck.spec_errors(check))
+        when 'interleaving'
+            # An order of steps from the widget (interleaving.js), run with
+            # the widget's rules on the server (InterleavingCheck).
+            allowed += InterleavingCheck::SPEC_KEYS
+            errors.concat(InterleavingCheck.spec_errors(check))
         when 'circuit'
             # A circuit from the Logik-Werkstatt's editor, as a netlist, run
             # round by round on the server (CircuitCheck).
