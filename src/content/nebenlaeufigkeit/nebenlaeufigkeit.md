@@ -1,4 +1,6 @@
 <div class='meta'>
+image: teaser.webp:contain
+image_alt: "Zwei Threads, die je einen Lock halten und auf den des anderen warten: ein Deadlock"
 kind: projekt
 language: Java / Dart
 languages: [java, dart]
@@ -57,6 +59,19 @@ Ein **Lock** (auch Mutex) sorgt dafür, dass immer nur ein Thread einen Abschnit
 Eine Bank überweist zwischen zwei Konten `x` und `y`. Damit niemand dazwischenfunkt, nimmt jede Überweisung die Locks beider Konten. A überweist von `x` nach `y` und nimmt erst `m` (für `x`), dann `n`. B überweist in die andere Richtung und nimmt erst `n`, dann `m`.
 
 <div class='interleaving' data-title='Zwei Überweisungen' data-program='{"shared": {"x": 10, "y": 10}, "locks": ["m", "n"], "threads": {"A": ["lock m", "lock n", "x ← x - 5", "y ← y + 5", "unlock n", "unlock m"], "B": ["lock n", "lock m", "y ← y - 3", "x ← x + 3", "unlock m", "unlock n"]}}'></div>
+
+<!-- tutorial-screenshot
+# Bild für die Karte: das Widget im Deadlock, nach A und B
+open-site: /nebenlaeufigkeit
+tab: preview
+viewport: 980x700
+click: selector:.interleaving[data-title='Zwei Überweisungen'] .il-step[data-thread='A']
+click: selector:.interleaving[data-title='Zwei Überweisungen'] .il-step[data-thread='B']
+sleep: 0.5
+crop-element: .interleaving[data-title='Zwei Überweisungen']
+variants: dark
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Das Widget mit zwei Threads A und B: A hält den Lock m und wartet in der Zeile »lock n«, B hält den Lock n und wartet in der Zeile »lock m«; darunter steht, dass keiner weiterkann.'>
 
 _task(deadlock)
 

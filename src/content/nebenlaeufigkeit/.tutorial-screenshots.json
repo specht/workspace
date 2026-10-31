@@ -1,0 +1,14 @@
+{
+  "screenshots": {
+    "teaser.webp": {
+      "environment_fingerprint": "13880eec9889923b443e28b7ebad72a2949e693b9fe3c5c26433bd1eebf655b7",
+      "output_sha256": "2169b8698935d4a5e2a3e382ba179feede3899553ff73f0f010b6568d904fd5d",
+      "state_hash": "7f266a76567c985e7da7aec29af11959adbe16d55953b4eace7f591421292aa3",
+      "variants": {
+        "teaser-dark.webp": "aeb9643bde88e2633827364f8458d5c13b60a09a8479e4e41ba832e23be9b899"
+      },
+      "workspace_look": "4.140.0-ls368"
+    }
+  },
+  "version": 1
+}
