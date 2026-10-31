@@ -7283,6 +7283,25 @@ textarea.struktogramm-playground-input {
     margin: 1em auto;
 }
 
+/* Two ER diagrams side by side (a gallery of _include_er), their bottoms
+   level; one under the other below a tablet, where the tables would get
+   too small */
+.gallery.er-pair {
+    align-items: end;
+}
+
+.gallery.er-pair .er-figure svg {
+    margin: 0 auto;
+}
+
+.gallery.er-pair figcaption {
+    text-align: center;
+}
+
+@media (max-width: 760px) {
+    .gallery.er-pair { grid-template-columns: 1fr; }
+}
+
 .er-playground-diagram svg,
 .uml-playground-diagram svg {
     display: block;

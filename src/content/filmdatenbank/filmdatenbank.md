@@ -141,11 +141,18 @@ _person(chen)
 
 **Krähenfuß.** Jede Entität ist ein Kasten mit ihren Attributen. Das Linienende zeigt die Kardinalität: Der gespreizte Krähenfuß heißt »viele«, ein Querstrich heißt »eins«. Weil `has_genre` eine n:m-Beziehung ist, siehst du hier an beiden Enden einen Krähenfuß und keinen Strich.
 
-_include_er(film-1.er, crowfoot)
-
 **Tabellen.** So wird das Modell in der Datenbank gespeichert. Aus jeder Entität wird eine Tabelle. Die n:m-Beziehung wird zu einer eigenen Tabelle `movie_genre`: In ihr steht pro Zeile ein Paar aus Film und Genre, nur mit den beiden IDs.
 
+<div class='gallery columns-2 er-pair'>
+<figure>
+_include_er(film-1.er, crowfoot)
+<figcaption>Krähenfuß</figcaption>
+</figure>
+<figure>
 _include_er(film-1.er, tables)
+<figcaption>Tabellen</figcaption>
+</figure>
+</div>
 
 Jetzt siehst du auch den Strich für »eins«: Die Linien führen von `movie_genre` zu `movie` und zu `genre`, mit dem Krähenfuß bei `movie_genre` und dem Strich am anderen Ende. Zu einem Film gehören viele Zeilen in `movie_genre`, aber jede Zeile gehört zu genau einem Film.
 
