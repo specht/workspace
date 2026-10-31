@@ -28,3 +28,15 @@ examples:
       fail:
         # all deposits at once: one is lost, every time
         - { files: { nebenlaeufigkeit/bank.dart: loesung/bank-parallel.dart } }
+  locks-im-code:
+    pass:
+      - { files: { nebenlaeufigkeit/Bank.java: loesung/Bank.java } }
+    fail:
+      # each thread takes its own account first and waits a moment: hangs every time
+      - { files: { nebenlaeufigkeit/Bank.java: fehler/Bank-deadlock.java } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/bank.dart: loesung/bank-lock.dart } }
+      fail:
+        # all at once without the lock: one deposit lost, every time
+        - { files: { nebenlaeufigkeit/bank.dart: fehler/bank-ohne-lock.dart } }

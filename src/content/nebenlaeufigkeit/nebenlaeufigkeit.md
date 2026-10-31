@@ -126,3 +126,71 @@ Damit nichts verloren geht, darf eine Einzahlung erst beginnen, wenn die vorige 
 <!-- /language -->
 
 _task(sicherer-zaehler)
+
+### Locks im Code
+
+<!-- language: java -->
+Die Überweisungen aus dem Widget sehen in Java so aus. `synchronized (from) { … }` nimmt den Lock des Objekts `from` und gibt ihn am Ende des Blocks wieder frei; jedes Objekt in Java hat so einen Lock. `run` lässt zwei Threads je `times`-mal überweisen, einen von `x` nach `y`, einen zurück:
+
+```java
+class Account {
+    final int id;
+    int balance;
+
+    Account(int id, int balance) {
+        this.id = id;
+        this.balance = balance;
+    }
+}
+
+public class Bank {
+    static void transfer(Account from, Account to, int amount) {
+        synchronized (from) {
+            synchronized (to) {
+                from.balance -= amount;
+                to.balance += amount;
+            }
+        }
+    }
+
+    static int run(int times) throws InterruptedException {
+        Account x = new Account(1, 100);
+        Account y = new Account(2, 100);
+        Thread a = new Thread(() -> { for (int i = 0; i < times; i++) transfer(x, y, 1); });
+        Thread b = new Thread(() -> { for (int i = 0; i < times; i++) transfer(y, x, 1); });
+        a.start();
+        b.start();
+        a.join();
+        b.join();
+        return x.balance + y.balance;
+    }
+
+    static void main() throws InterruptedException {
+        IO.println(run(100000));
+    }
+}
+```
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg <code>Bank.java</code> in <code>/workspace/nebenlaeufigkeit</code> und führe es mit <code>java Bank.java</code> aus. Achte darauf, ob am Ende 200 erscheint, und wie oft du es versuchen musst. Ein Programm, das hängt, beendest du mit <kbd>Strg</kbd><kbd>C</kbd>.
+</div>
+<!-- /language -->
+<!-- language: dart -->
+Für `async`-Code hat Dart keinen Lock, aber einen kann man aus `Future`s bauen. Diese Klasse merkt sich in `_last`, wann die zuletzt angemeldete Aktion fertig ist. `synchronized` hängt die nächste Aktion mit `then` dahinter: Sie beginnt erst, wenn die vorige fertig ist, auch wenn sie mit einem Fehler endet.
+
+```dart
+class Lock {
+  Future<void> _last = Future.value();
+
+  Future<T> synchronized<T>(Future<T> Function() action) {
+    final result = _last.then((_) => action());
+    _last = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+}
+```
+
+`lock.synchronized(() => deposit(5))` meldet eine Einzahlung beim Lock an. Startest du mehrere so zugleich, kommt trotzdem eine nach der anderen an die Reihe.
+<!-- /language -->
+
+_task(locks-im-code)

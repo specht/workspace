@@ -174,3 +174,73 @@ tasks:
           return balance;
         }
         ```
+
+  - id: locks-im-code
+    title: Locks in fester Reihenfolge
+    prompt: |
+      Ändere `transfer` in `Bank.java` so, dass `run` nie hängen bleibt: Beide
+      Threads sollen die Locks der zwei Konten in derselben Reihenfolge nehmen,
+      erst das Konto mit der kleineren `id`, dann das andere. Am Ende muss
+      weiter 200 auf beiden Konten zusammen stehen.
+    check:
+      type: java
+      file: nebenlaeufigkeit/Bank.java
+      timeout: 20
+      slow: "`run` ist nicht fertig geworden: Die Threads warten aufeinander. Nehmen beide die Locks in derselben Reihenfolge, nach der `id` der Konten?"
+      cases:
+        - { call: "Bank.run(10)", expect: 200 }
+        - { call: "Bank.run(100000)", expect: 200 }
+    hint:
+      - "Bestimme zuerst, welches der beiden Konten `from` und `to` die kleinere `id` hat. Dieses Konto ist `first`, das andere `second`; dann `synchronized (first)` außen und `synchronized (second)` innen."
+      - "`Account first = from.id < to.id ? from : to;` und `Account second = first == from ? to : from;`. Am Rechnen innen ändert sich nichts."
+    solution: |
+      ```java
+      static void transfer(Account from, Account to, int amount) {
+          Account first = from.id < to.id ? from : to;
+          Account second = first == from ? to : from;
+          synchronized (first) {
+              synchronized (second) {
+                  from.balance -= amount;
+                  to.balance += amount;
+              }
+          }
+      }
+      ```
+      Jetzt will jeder Thread zuerst den Lock von Konto 1. Wer ihn hat, bekommt
+      auch den zweiten; der andere wartet, ohne schon einen zu halten.
+    dart:
+      prompt: |
+        Schreib in `bank.dart`, unter `deposit` und der Klasse `Lock`, eine Funktion
+        `Future<int> depositAllAtOnce(List<int> amounts)`: Sie setzt `balance`
+        auf 0, startet alle Einzahlungen zugleich mit `Future.wait`, aber jede
+        über denselben `Lock`, damit keine verloren geht, und gibt dann `balance`
+        zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/bank.dart
+        setup: |
+          Future<List<String>> lockOrder() async {
+            final lock = Lock();
+            final order = <String>[];
+            await Future.wait([
+              lock.synchronized(() async { order.add('A an'); await Future.delayed(const Duration(milliseconds: 20)); order.add('A aus'); }),
+              lock.synchronized(() async { order.add('B an'); order.add('B aus'); }),
+            ]);
+            return order;
+          }
+        cases:
+          - { call: "depositAllAtOnce([5, 7])", expect: 12, say: "Mit 5 und 7 müssen 12 auf dem Konto sein. Geht jede Einzahlung über `lock.synchronized`?" }
+          - { call: "depositAllAtOnce([1, 2, 3, 4])", expect: 10 }
+          - { call: "lockOrder()", expect: "['A an', 'A aus', 'B an', 'B aus']", say: "Zwei Aktionen über denselben `Lock` dürfen sich nicht mischen: Die zweite beginnt erst, wenn die erste fertig ist. Ist die Klasse `Lock` noch so wie oben?" }
+      hint:
+        - "Ein `Lock` für alle Einzahlungen: `final lock = Lock();`. Jede Einzahlung meldest du mit `lock.synchronized(() => deposit(amount))` an."
+        - "`await Future.wait([for (final amount in amounts) lock.synchronized(() => deposit(amount))]);`"
+      solution: |
+        ```dart
+        Future<int> depositAllAtOnce(List<int> amounts) async {
+          balance = 0;
+          final lock = Lock();
+          await Future.wait([for (final amount in amounts) lock.synchronized(() => deposit(amount))]);
+          return balance;
+        }
+        ```
