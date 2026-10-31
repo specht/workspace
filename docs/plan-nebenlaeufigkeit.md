@@ -20,8 +20,9 @@ maintainer before building.
   in sections.yaml) with the widget chapter: the lost update, a lock, a
   deadlock. Then »Im Code« in Java and Dart: the prediction, the counter that
   loses nothing, locks in a fixed order (Java) or a Lock of Futures (Dart), the
-  monitor (Java) or isolates (Dart). Open: a card picture, then out of the
-  development catalog.
+  monitor (Java) or isolates (Dart), a card picture, person boxes for
+  Dijkstra and Hoare; in the catalog since 31 October 2026 (the maintainer
+  looked at it). Not tried in class yet.
 - **Where and what (31 October 2026):** in »Netze & Sicherheit«, after the
   web server and the Pixelwand; named »Nebenläufigkeit«. The widget hands
   the order a student clicked to a check type of its own (not an `answer`

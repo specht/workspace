@@ -84,8 +84,9 @@ generated screenshots:
 * »Geheime Botschaften in Bildern« (`src/content/steganography`), Ruby/Python with ChunkyPNG/Pillow: bit planes, LSB with a length header, the chi-square test, compressed versus plain messages, colour classes with a mixed-radix number in RGB
 * »Ein Krimi im Terminal« (`src/content/terminal-mystery`), a theft solved with `grep`, `head | tail`, `sort | uniq -d` and `git log`/`git show`; with the case server (`CASE_SERVER`) a last chapter with `ssh`, `ssh -J` and `scp`
 * »Ein Rechner für Ausdrücke« (`src/content/calculator`), Ruby/Python: tokens, recursive descent, evaluation, errors, `^` and variables, with a tree drawer that steps through the evaluation
+* »Nebenläufigkeit« (`src/content/nebenlaeufigkeit`), Java or Dart: a step-through widget for the lost update, a lock and a deadlock (check type `interleaving`), then threads, `synchronized`, locks in a fixed order and a monitor in Java, or the race at `await`, a lock of `Future`s and isolates in Dart
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5, steganography 3, crime story 2, calculator 2 double lessons; TCP/IP 2 after its rework)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5, steganography 3, crime story 2, calculator 2, concurrency 3 double lessons; TCP/IP 2 after its rework)
 * [ ] Case server: try the SSH chapter with a whole class (1000 accounts, per-account limits, everyone on `museum.bitstein` at once) before switching it on elsewhere
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 
@@ -112,7 +113,6 @@ Plus, from the review:
 
 * [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): object orientation, the language model, the Turing machine and the logic sandbox are built; open are Urheberrecht (a section on licences), Rechenhilfsmittel and Rechnergenerationen (a chapter in `sandbox-cpu`), manipulated pictures and Ergonomie
 
-* [ ] **Concurrency in Java and Dart** ([docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md)): a step-through widget for lost updates, locks and deadlock; Java threads, `synchronized` and the monitor; Dart's races at `await` and isolates. First the `dart` check must await a `Future`; place and name are the maintainer's
 * [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing

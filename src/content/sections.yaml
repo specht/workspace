@@ -167,7 +167,7 @@
     - pixelwand
     - crypto
     - totp
-    - .nebenlaeufigkeit
+    - nebenlaeufigkeit
 
 - key: databases
   compact: true

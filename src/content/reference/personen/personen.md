@@ -479,6 +479,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='dijkstra.webp' alt='Edsger W. Dijkstra 2002: ein Mann mit Brille, grauem Bart und roter Pullunderweste, im Halbprofil.'>
 <p><strong>Edsger W. Dijkstra</strong> (1930–2002), niederländischer Informatiker. Sein Verfahren für den kürzesten Weg erdachte er 1956 in zwanzig Minuten auf einer Caféterrasse in Amsterdam, ohne Stift und Papier. Navis und der <a href='/routenplaner'>Routenplaner</a> suchen ihre Wege mit seiner Idee.</p>
 <p>Dass du Schleifen und Funktionen schreibst, statt mit <code>goto</code> kreuz und quer durchs Programm zu springen, geht auch auf ihn zurück: »Go To Statement Considered Harmful«, 1968.</p>
+<p>Für Programme, die nebeneinander laufen, erfand er 1962 oder 1963 den Semaphor, der regelt, wer an eine gemeinsame Sache darf, und 1965 eine Prüfungsaufgabe über Deadlocks: die speisenden Philosophen.</p>
 <p class='person-credit'>Foto: Hamilton Richards, 2002, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Edsger_Wybe_Dijkstra.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
@@ -551,6 +552,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='hoare.webp' alt='Tony Hoare 2011: ein älterer Mann mit weißem Bart und Brille, freundlich in die Kamera blickend.'>
 <p><strong>Tony Hoare</strong> (1934–2026), britischer Informatiker. Quick Sort erfand er 1959 als Austauschstudent in Moskau: Er sollte ein Programm schreiben, das Russisch übersetzt, und musste dafür die Wörter eines Satzes sortieren.</p>
 <p>1965 baute er in eine Programmiersprache den Wert <code>null</code> ein, »weil es so einfach war«. Später nannte er ihn seinen »Milliarden-Dollar-Fehler«: Meldungen wie <code>undefined method … for nil</code> in Ruby stammen von dieser Idee.</p>
+<p>Anfang der 1970er Jahre entwickelte er mit Per Brinch Hansen den Monitor, der verhindert, dass Threads zugleich an die Daten eines gemeinsamen Objekts gehen.</p>
 <p class='person-credit'>Foto: Rama, 2011, CC BY-SA 2.0 fr, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Sir_Tony_Hoare_IMG_5125.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

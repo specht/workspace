@@ -1383,6 +1383,14 @@ dijkstra:
         quote: "Go To Statement Considered Harmful … Volume 11 / Number 3 / March, 1968 … Communications of the ACM"
       - url: https://en.wikipedia.org/wiki/Considered_harmful
         quote: "The original title of the letter, as submitted to CACM, was \"A Case Against the Goto Statement\" … CACM editor Niklaus Wirth changed the title to \"Goto Statement Considered Harmful\""
+  - text: Für Programme, die nebeneinander laufen, erfand er 1962 oder 1963 den Semaphor, der regelt, wer an eine gemeinsame Sache darf
+    sources:
+      - url: https://en.wikipedia.org/wiki/Semaphore_(programming)
+        quote: "a semaphore is a synchronization device used to control access to a common resource … The semaphore concept was invented by Dutch computer scientist Edsger Dijkstra in 1962 or 1963"
+  - text: "und 1965 eine Prüfungsaufgabe über Deadlocks: die speisenden Philosophen."
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dining_philosophers_problem
+        quote: "It was originally formulated in 1965 by Edsger Dijkstra as a student exam exercise … The problem was designed to illustrate the challenges of avoiding deadlock"
 
 lempel-ziv:
   - text: Abraham Lempel (1936–2023)
@@ -1601,6 +1609,10 @@ hoare:
         quote: "Later, as in this talk from QCon in 2009, Hoare called Null references The Billion Dollar Mistake."
   - text: Meldungen wie undefined method … for nil in Ruby stammen von dieser Idee.
     none: Workspace
+  - text: Anfang der 1970er Jahre entwickelte er mit Per Brinch Hansen den Monitor, der verhindert, dass Threads zugleich an die Daten eines gemeinsamen Objekts gehen.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Monitor_(synchronization)
+        quote: "a monitor is a synchronization construct that prevents threads from concurrently accessing a shared object's state … Brinch Hansen and Hoare developed the monitor concept in the early 1970s"
 
 knuth-lamport:
   - text: "Donald Knuth (geboren 1938)"

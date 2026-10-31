@@ -79,6 +79,8 @@ _task(deadlock)
 Hält jeder Thread einen Lock und wartet auf den des anderen, kommt keiner mehr weiter: ein **Deadlock**. Es hilft, wenn alle Threads ihre Locks in derselben Reihenfolge nehmen, hier immer erst `m`, dann `n`. Dann kann der zweite gar nicht erst einen Lock halten, auf den der erste wartet.
 <!-- /after -->
 
+_person(dijkstra)
+
 ## Im Code
 
 <!-- language: java -->
@@ -141,6 +143,13 @@ Damit nichts verloren geht, darf eine Einzahlung erst beginnen, wenn die vorige 
 <!-- /language -->
 
 _task(sicherer-zaehler)
+
+<!-- language: java -->
+<!-- stage: loesung/Counter.java as nebenlaeufigkeit/Counter.java -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/bank.dart as nebenlaeufigkeit/bank.dart -->
+<!-- /language -->
 
 ### Locks im Code
 
@@ -210,6 +219,13 @@ class Lock {
 
 _task(locks-im-code)
 
+<!-- language: java -->
+<!-- stage: loesung/Bank.java as nebenlaeufigkeit/Bank.java -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/bank-lock.dart as nebenlaeufigkeit/bank.dart -->
+<!-- /language -->
+
 ### Arbeit weitergeben
 
 <!-- language: java -->
@@ -258,8 +274,18 @@ int countPrimes(int from, int to) {
 _task(arbeit-weitergeben)
 
 <!-- language: java -->
-Java hat so einen Puffer schon: `ArrayBlockingQueue`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
+<!-- stage: loesung/Buffer.java as nebenlaeufigkeit/Buffer.java -->
 <!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/primes.dart as nebenlaeufigkeit/primes.dart -->
+<!-- /language -->
+
+<!-- language: java -->
+Java hat so einen Puffer schon: `ArrayBlockingQueue`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
+
+_person(hoare)
+<!-- /language -->
+
 <!-- language: dart -->
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Miss mit einer <code>Stopwatch</code>, wie lange <code>countPrimesParallel(5000000, 1)</code> braucht und wie lange dasselbe mit 2 und mit 4 Teilen. Dein Workspace hat vier Kerne. Achte darauf, ob vier Teile auch viermal so schnell sind, und überleg, welcher Teil am längsten rechnet.
