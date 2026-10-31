@@ -19,7 +19,7 @@ test('a solved task shows up in »Weiter mit« and on the catalog card', async (
     await page.goto('/');
     const next = page.locator('.student-continue-list a').first();
     await expect(next).toContainText('Komprimieren mit Lauflängen');
-    await expect(next).toContainText(/\d von \d+ Aufgaben/);
+    await expect(next).toContainText(/\d von \d+ gelöst/);
     await expect(next).toHaveAttribute('href', /^\/rle#aufgabe-(?!von-hand)/);
     await expect(page.locator('.student-howto')).toHaveCount(0);
 
