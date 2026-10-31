@@ -56,7 +56,8 @@ containers are not stopped by these build scripts.
 
 **Building elsewhere:** A server without room for the build can take the
 finished image from a machine that has it: `./upload-image.sh HOST
-[REMOTE_DIR]`. By default it goes through a registry container on the server
+[REMOTE_DIR]`; it remembers both in `upload-image.conf` (not in git), and
+afterwards `./upload-image.sh` alone does the same again. By default it goes through a registry container on the server
 (listening only on 127.0.0.1 there, its storage in `REMOTE_DIR/registry`)
 reached through SSH: socat here, `docker exec` into the registry's container
 there, so the server needs no port forwarding. `docker push` sends only the
