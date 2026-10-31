@@ -67,10 +67,12 @@ test('the class page remembers the group and each group\'s activity', async ({ p
 test('toolbar buttons sit on one line', async ({ page }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
   await page.goto('/klasse?group=E2E&tab=fortschritt&activity=sandbox-datenstrukturen');
+  // two buttons of the same row (»Vorlage aktuell?« wraps to the next one
+  // since the bar has the meeting point and the feedback)
   const live = await page.getByRole('button', { name: 'Jetzt nachsehen' }).boundingBox();
-  const template = await page.getByRole('button', { name: 'Vorlage aktuell?' }).boundingBox();
-  expect(live && template).toBeTruthy();
-  expect(Math.abs((live!.y + live!.height / 2) - (template!.y + template!.height / 2))).toBeLessThan(1);
+  const feedback = await page.getByRole('button', { name: 'Rückmeldung geben' }).boundingBox();
+  expect(live && feedback).toBeTruthy();
+  expect(Math.abs((live!.y + live!.height / 2) - (feedback!.y + feedback!.height / 2))).toBeLessThan(1);
 });
 
 // Every teacher has exactly one test account in a test group of its own,
@@ -90,8 +92,9 @@ test('each teacher has its own test group and resets its test account', async ({
   await loginAsE2eUser(student, 'e2e-materials-teacher+test@example.com', testInfo);
   const saved = await (await student.request.post('/api/task/check', { data: { task: 'tcpip/traceroute-erklaeren', answer: 'Jeder Router auf dem Weg zieht von der TTL des Pakets eins ab, und bei null verwirft er es und schickt eine Meldung zurück; so findet traceroute einen Router nach dem anderen.' } })).json();
   expect(saved.status).toBe('sent');
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Testkonto zurücksetzen' }).click();
+  // the page asks in its own dialog (confirm_dialog), not the browser's
+  await page.locator('#__template_modal').getByRole('button', { name: 'Zurücksetzen', exact: true }).click();
   await expect(page.locator('.class-test-reset-note')).toContainText('Zurückgesetzt', { timeout: 60_000 });
   const states = await (await student.request.post('/api/task/states', { data: { activity: 'tcpip' } })).json();
   expect(states.states['traceroute-erklaeren']).toBeUndefined();

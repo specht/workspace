@@ -217,7 +217,6 @@ Improve supply-chain reproducibility gradually rather than rewriting the Docker 
 
 ### Continuous integration
 
-* [ ] Three E2E tests fail on 31 October 2026, on the code before that day's moves out of main.rb as well: class-page »toolbar buttons sit on one line« (the buttons 45 px apart in height), class-page »each teacher has its own test group and resets its test account« (»Zurückgesetzt« never comes; the reset itself or the test's dialog), code-input »SQL answers are coloured like the SQL code blocks«. Find out which are bugs and which outdated tests
 
 Keep tutorial tests focused on whether the documented student workflow actually works.
 

@@ -23,7 +23,10 @@ const TOKENS = `(root) => {
 async function compareWithCodeBlocks(page: Page, selector: string, language: 'sql' | 'cypher') {
   const blocks = await page.locator(selector).evaluateAll((pres, args) => {
     const tokens = eval(args.TOKENS);
-    return pres.filter((pre) => args.language === 'cypher' || /^\s*SELECT\b/.test(pre.textContent!)).map((pre) => {
+    // not the scaffolds in tips (.hint-steps): their … for a gap is an error
+    // token to Rouge, hidden there by the CSS, and nothing one types
+    return pres.filter((pre) => !pre.closest('.hint-steps'))
+      .filter((pre) => args.language === 'cypher' || /^\s*SELECT\b/.test(pre.textContent!)).map((pre) => {
       const box = document.createElement('pre');
       box.innerHTML = (window as any).CodeInput[args.language](pre.textContent);
       return { text: pre.textContent, server: tokens(pre), client: tokens(box) };
