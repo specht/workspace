@@ -213,8 +213,7 @@ Platform-wide:
 
 Improve supply-chain reproducibility gradually rather than rewriting the Docker build at once.
 
-* [ ] Checksum verification for important downloaded release archives where upstream checksums exist
-* [ ] Consider digest pinning for important base images
+* [ ] Pin the running services' images in `config.rb` (mysql, neo4j, phpmyadmin, ruby alpine) to the digests that run on the server: their tags were republished since, so pinning to today's digest would change what runs; the maintainer reads them there (`docker image inspect --format '{{join .RepoDigests " "}}' mysql:8.4.11`). The Dockerfiles' base images are pinned. Not checked: the TeX Live installer (no versions, tlmgr checks its packages) and pwndbg (its installer takes the latest)
 
 ### Continuous integration
 

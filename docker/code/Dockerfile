@@ -8,12 +8,12 @@
 # consumes it, which avoids unnecessary BuildKit cache invalidation.
 # ====================================================================
 
-ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.140.0
+ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.140.0@sha256:c84b35f6238af058e3543e2e9c0532c4d3d3902ef11effea3ed90e4ec293d46d
 # Pin the toolchain build environment independently of the code-server release.
 # Keep it compatible with the target code-server distribution (notably glibc).
 # Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Emscripten.
 # Bump this separately when the underlying Linux distribution changes.
-ARG TOOLCHAIN_BASE_IMAGE=linuxserver/code-server:4.138.0
+ARG TOOLCHAIN_BASE_IMAGE=linuxserver/code-server:4.138.0@sha256:6fb8bbaf3148a56027704830a63f5880cce31dda442b42d6cca66b29a505bad6
 
 ARG TL_YEAR=2026
 # Dart on its own, the version Flutter 3.47 brought (Flutter, the Android
@@ -23,6 +23,9 @@ ARG DART_VERSION=3.13.0
 ARG DART_SHA256=87902573facd8acacac7ee1fe73fa8d0668e06065016068e2ed6c5c99c6b1ee0
 ARG EMSCRIPTEN_VERSION=6.0.6
 ARG RAYLIB_VERSION=6.0
+# raylib publishes no checksum for its tag archive: the hash of the archive
+# on 31 October 2026, so that a changed archive stops the build
+ARG RAYLIB_SHA256=2b3ee1e2120c7a0796b33062c7e9a694dd8a8caa56a96319ac8c8ecf54a90d0b
 
 ARG NODE_MAJOR=24
 ARG GNUCOBOL_MAJOR=4
@@ -30,7 +33,11 @@ ARG GUILE_VERSION=3.0
 ARG LUA_VERSION=5.4
 ARG JAVA_VERSION=25
 ARG SMALLTALK_VERSION=3.2.5
+# the same from ftp.gnu.org and the fau.de mirror the build uses
+ARG SMALLTALK_SHA256=06e574e818ec49f0555d948ae53b1453d8c1df59ef597dad911a4fd1ffba1cce
 ARG HUGO_VERSION=0.164.0
+# from the release's hugo_${HUGO_VERSION}_checksums.txt
+ARG HUGO_SHA256=06f51ad0ec83e399e08a46a960f32453c109d6aad93e51ff8e659cdd5e51be7b
 # Go from go.dev instead of Ubuntu's golang-go (1.22); the checksum from
 # https://go.dev/dl/?mode=json
 ARG GO_VERSION=1.27.3
@@ -39,6 +46,8 @@ ARG YQ_VERSION=4.54.1
 ARG YQ_SHA256=8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f
 ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
+# from the release's hashes.sha256
+ARG POWERSHELL_SHA256=e5688e0569568d48051c49d3e93504cde47af709cdaaabd9a8892bc676b3bdf3
 ARG RUBY_VERSION=3.4.10
 ARG RUBY_API_VERSION=3.4.0
 ARG NEO4J_BOLT_VERSION=0.5.1
@@ -209,10 +218,12 @@ RUN git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk \
 
 # raylib
 ARG RAYLIB_VERSION
+ARG RAYLIB_SHA256
 
 RUN wget -q \
         "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz" \
         -O /tmp/raylib.tar.gz \
+    && printf '%s  %s\n' "${RAYLIB_SHA256}" /tmp/raylib.tar.gz | sha256sum -c - \
     && mkdir /opt/raylib \
     && tar xzf /tmp/raylib.tar.gz \
         -C /opt/raylib \
@@ -453,6 +464,7 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
 # --------------------------------------------------------------------
 
 ARG SMALLTALK_VERSION
+ARG SMALLTALK_SHA256
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -463,6 +475,7 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
             -O "${archive}.tmp"; \
         mv "${archive}.tmp" "$archive"; \
     fi; \
+    printf '%s  %s\n' "${SMALLTALK_SHA256}" "$archive" | sha256sum -c -; \
     mkdir -p /tmp/smalltalk; \
     tar xzf "$archive" \
         -C /tmp/smalltalk \
@@ -505,6 +518,7 @@ ENV GOTOOLCHAIN=local
 # --------------------------------------------------------------------
 
 ARG HUGO_VERSION
+ARG HUGO_SHA256
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -515,6 +529,7 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
             -O "${deb}.tmp"; \
         mv "${deb}.tmp" "$deb"; \
     fi; \
+    printf '%s  %s\n' "${HUGO_SHA256}" "$deb" | sha256sum -c -; \
     dpkg -i "$deb"
 
 
@@ -561,6 +576,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # --------------------------------------------------------------------
 
 ARG POWERSHELL_VERSION
+ARG POWERSHELL_SHA256
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -571,6 +587,7 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
             -O "${deb}.tmp"; \
         mv "${deb}.tmp" "$deb"; \
     fi; \
+    printf '%s  %s\n' "${POWERSHELL_SHA256}" "$deb" | sha256sum -c -; \
     dpkg -i "$deb"
 
 

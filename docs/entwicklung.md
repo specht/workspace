@@ -372,6 +372,14 @@ knapp, räumt man von Hand auf und schaut vorher, was das Backup braucht; ein
 Agent räumt nie auf (kein `docker system prune`), er fragt. Die
 code-server-Version steht in `docker/code/Dockerfile` (`CODE_SERVER_IMAGE`).
 
+Die Basis-Images der Dockerfiles stehen mit Tag und Digest da
+(`nginx:1.30.4@sha256:…`): Ein Tag kann neu veröffentlicht werden, ein Digest
+nicht. Wer auf ein neues Tag wechselt, holt den Digest dazu mit
+`src/scripts/image-digest.sh NAME:TAG`. Ebenso haben Archive, die das Image
+herunterlädt, eine Prüfsumme (`…_SHA256` im Dockerfile); kommt eine neue
+Version, kommt ihre Prüfsumme mit, aus den Prüfsummen des Projekts, wo es sie
+gibt.
+
 Ein Workspace startet als root (die Init von linuxserver, dann der Nutzer
 der Lernenden) und behält von Dockers Fähigkeiten nur CHOWN, DAC_OVERRIDE,
 FOWNER, KILL, SETGID und SETUID, mit `no-new-privileges`

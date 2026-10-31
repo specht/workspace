@@ -1,4 +1,4 @@
-FROM nginx:1.30.4
+FROM nginx:1.30.4@sha256:d5792f71a9496b833bc08ea834a758c46e2b6a6306c10f4be926f38a656cdc1c
 
 # The Workspace proxy injects the browser-visible webfont stylesheet into code-server HTML.
 RUN nginx -V 2>&1 | grep -q -- '--with-http_sub_module'
