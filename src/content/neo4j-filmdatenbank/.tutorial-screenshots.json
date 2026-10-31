@@ -7,12 +7,30 @@
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
+    "neo4j-browser-genres.webp": {
+      "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
+      "output_sha256": "090452cea560bbca0dab016cde0cb0ea045ffca43f85adc829476c4b62c5ef33",
+      "state_hash": "de41bd76ee7e16941bc7cf7745f34f28c3664e096c9344992fca18b43195c49b",
+      "variants": {
+        "neo4j-browser-genres-dark.webp": "e4760e9f550d1270adf34728afb82e7f51c615cff382d1662af9344d275492eb"
+      },
+      "workspace_look": "4.140.0-ls368"
+    },
     "neo4j-browser-graph.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
       "output_sha256": "6ff0993aa8b2b091ca539e6a2322c764bacd7372860cff9736486b67030e806d",
       "state_hash": "f6b0c0f5aa2a75ea863ae192309b4d9000a8c61d3f7e030f2c552bbbab7052a9",
       "variants": {
         "neo4j-browser-graph-dark.webp": "21dffb3aac181507d97394df48d8072eecfeab30e1327caf7e899b3bf600f3fe"
+      },
+      "workspace_look": "4.140.0-ls368"
+    },
+    "neo4j-browser-klein.webp": {
+      "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
+      "output_sha256": "a7d64b8e41bad3db5a3b88118513be379b6d0accacdc5c818e8db7badb1d2e52",
+      "state_hash": "77932c5e84abb723cc52f716a7cdd19615e74c31bbc8f08cc08b0852fc5c244e",
+      "variants": {
+        "neo4j-browser-klein-dark.webp": "dba242e07ce9c37d876b3790ed033239d8c9e8bc7262d236a0a7957f7a3b065f"
       },
       "workspace_look": "4.140.0-ls368"
     },

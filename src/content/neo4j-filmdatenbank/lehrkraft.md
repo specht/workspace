@@ -3,7 +3,7 @@ Lernende fragen dieselben Filmdaten wie in der »Filmdatenbank mit MySQL« als G
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die Aktivität setzt voraus, dass die Lernenden <code>JOIN</code> und <code>GROUP BY</code> kennen, denn die Vergleiche mit SQL tragen das Kapitel.</td></tr>
 <tr><th>Ablauf</th><td><ul>
-<li><b>1. Doppelstunde:</b> vom Tabellenmodell zum Graphen, die Daten laden, erste Abfragen mit <code>MATCH</code>.</li>
+<li><b>1. Doppelstunde:</b> vom Tabellenmodell zum Graphen, ein kleiner Graph von Hand mit <code>CREATE</code>, die Daten laden, erste Abfragen mit <code>MATCH</code>.</li>
 <li><b>2. Doppelstunde:</b> Regeln für den Graphen, Muster über mehrere Schritte und der Vergleich mit SQL.</li>
 </ul></td></tr>
 <tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code> (wie im MySQL-Kapitel); darin nur die heruntergeladene <code>movies-neo4j.dump</code></td></tr>
@@ -20,10 +20,10 @@ Lernende fragen dieselben Filmdaten wie in der »Filmdatenbank mit MySQL« als G
 
 Die Pfeilrichtung (eine Abfrage in die falsche Richtung liefert nichts, ohne Fehler) und dass gleiche Namen im Muster denselben Knoten bedeuten. Die Aufgaben »Die Pfeilrichtung« und »Das richtige Muster« zielen darauf. Bei den Paaren hilft es, die Vorhersage (sechs Zeilen für drei Personen) an der Tafel aufzulösen, bevor `a.id < b.id` erklärt wird.
 
-#### Neu laden
+#### Der kleine Graph von Hand
 
-`neo4j_bolt load` erwartet eine leere Datenbank. Wer schon experimentiert hat, setzt Neo4j im Profil zurück und lädt noch einmal; die Schlüssel sind danach auch weg.
+Vor dem Laden legen die Lernenden im Neo4j Browser vier Knoten und drei Beziehungen mit `CREATE` an (Labels, Eigenschaften, Richtung). Die Vorhersage »Zemeckis noch einmal« zeigt, dass ein zweites `CREATE` mit demselben Namen einen zweiten Knoten anlegt; danach löschen sie den doppelten mit `DETACH DELETE` und hängen den Film mit `MATCH … CREATE` an den vorhandenen. Das Kapitel »Regeln für den Graphen« greift das mit `NODE KEY` wieder auf.
 
-#### Noch offen, bevor das Kapitel im Katalog erscheint
+#### Neu anfangen
 
-`movies-neo4j.dump` muss in `specht/workspace-files/movie-archive/` liegen, das Workspace-Image braucht `neo4j_bolt` (ab dieser Version im Dockerfile), und die Screenshots aus dem Neo4j Browser fehlen noch (im Text als Kommentar markiert). Bis dahin steht die Seite nur in der Entwicklung im Katalog.
+`neo4j_bolt load` lädt nur in eine Datenbank ohne Knoten und bricht sonst mit `There are nodes in this database, exiting now.` ab. Die Seite lässt den kleinen Graphen deshalb vor dem Laden mit `MATCH (n) DETACH DELETE n;` löschen. Das löscht Knoten und Beziehungen, aber keine Schlüssel und Indizes. Ganz von vorn, auch ohne Schlüssel, beginnt man, indem man Neo4j im Profil zurücksetzt.

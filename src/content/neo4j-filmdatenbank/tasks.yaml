@@ -53,6 +53,45 @@ tasks:
       Graphen ist sie der Typ der Beziehung: `(:Person)-[:DIRECTOR]->(:Movie)`.
       Wer mitgespielt hat, hängt mit `ACTOR` am Film.
 
+  - id: zweimal-create
+    title: Zemeckis noch einmal
+    prediction: true
+    prompt: |
+      Robert Zemeckis hat auch bei »Forrest Gump« (1994) Regie geführt.
+      Jemand ergänzt den kleinen Graphen so:
+
+      ```cypher
+      CREATE (:Person {name: 'Robert Zemeckis'})-[:DIRECTOR]->(:Movie {title: 'Forrest Gump', year: 1994});
+      ```
+
+      Was zeigt danach diese Abfrage im Neo4j Browser?
+
+      ```cypher
+      MATCH (p:Person {name: 'Robert Zemeckis'})-[:DIRECTOR]->(m:Movie)
+      RETURN p, m;
+      ```
+
+      Überleg zuerst, dann probier beides aus.
+    check:
+      type: choice
+      options:
+        - 'Einen Knoten Robert Zemeckis mit Pfeilen zu beiden Filmen.'
+        - 'Zwei Knoten Robert Zemeckis, jeder mit einem Pfeil zu einem Film.'
+        - 'Nichts Neues: Neo4j lehnt das `CREATE` ab, weil es Robert Zemeckis schon gibt.'
+        - 'Nur »Back to the Future«: `CREATE` legt einen Knoten, den es schon gibt, nicht noch einmal an.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Woher sollte `CREATE` wissen, dass der Knoten im Muster derselbe ist wie der von vorhin? Die Namen wie `zemeckis` galten nur in dem einen Befehl.'
+      - when: { picked: 2 }
+        say: 'Gibt es im kleinen Graphen eine Regel, die zwei Personen mit demselben Namen verbietet? Probier es aus.'
+      - when: { picked: 3 }
+        say: '`CREATE` legt an, was in seinem Muster steht, jedes Mal. Probier es aus und zähl die Knoten.'
+    solution: |
+      Zwei Knoten: `CREATE` legt immer neu an, auch eine Person mit einem Namen,
+      den es schon gibt. Einen vorhandenen Knoten findest du mit `MATCH` und
+      hängst dann mit `CREATE` an ihn an.
+
   - id: koenig-der-loewen
     title: Der König der Löwen
     prompt: |

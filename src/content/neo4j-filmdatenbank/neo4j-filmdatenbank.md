@@ -102,9 +102,114 @@ _person(eifrem-svensson-neubauer)
 
 ## Loslegen
 
-### Die Filmdaten laden
+### Neo4j einschalten
 
 Schalte zuerst in deinem [Profil](/profil) unter »Datenbanken« **Neo4j** ein. Du hast dann eine eigene, leere Neo4j-Datenbank, und oben im Menü erscheint der Knopf »Neo4j«. Im Workspace stehen deine Zugangsdaten in den Umgebungsvariablen `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` und `NEO4J_DATABASE`; `neo4j_bolt` und `cypher-shell` weiter unten lesen sie von selbst.
+
+Öffne mit dem Knopf »Neo4j« den **Neo4j Browser** und melde dich mit dem Benutzernamen und dem Passwort aus deinem Profil an. Oben steht eine Eingabezeile für Abfragen in **Cypher**, der Sprache von Neo4j; <kbd>Strg</kbd><kbd>Enter</kbd> führt aus, was darin steht.
+
+### Ein kleiner Graph von Hand
+
+Bevor du 17.000 Knoten lädst, baust du einen Graphen mit vier Knoten selbst: einen Film, zwei Personen und ein Genre. Gib im Neo4j Browser ein:
+
+```cypher
+CREATE (bttf:Movie {title: 'Back to the Future', year: 1985})
+CREATE (zemeckis:Person {name: 'Robert Zemeckis'})
+CREATE (fox:Person {name: 'Michael J. Fox'})
+CREATE (scifi:Genre {name: 'Sci-Fi'})
+CREATE (zemeckis)-[:DIRECTOR]->(bttf)
+CREATE (fox)-[:ACTOR]->(bttf)
+CREATE (bttf)-[:IN_GENRE]->(scifi);
+```
+
+- Runde Klammern sind ein Knoten. `:Movie` ist sein **Label**, die Art des Knotens. In geschweiften Klammern stehen seine **Eigenschaften**, Name und Wert.
+- `bttf`, `zemeckis`, `fox` und `scifi` sind Namen für die neuen Knoten, damit die Zeilen darunter sie verbinden können. Sie gelten nur in diesem einen Befehl.
+- `-[:DIRECTOR]->` ist eine **Beziehung** mit ihrem Typ. Der Pfeil gibt die Richtung an: Robert Zemeckis führt Regie bei dem Film, nicht umgekehrt.
+
+Neo4j meldet, wie viele Knoten und Beziehungen es angelegt hat. Ansehen kannst du den Graphen mit einem Muster, das jede Beziehung mit ihren beiden Knoten findet; `a`, `r` und `b` sind Namen für den Knoten am Anfang, die Beziehung und den Knoten am Ende:
+
+```cypher
+MATCH (a)-[r]->(b)
+RETURN a, r, b;
+```
+
+Der Neo4j Browser zeichnet, was die Abfrage zurückgibt. `MATCH (n) RETURN n;` zeigt deshalb nur die vier Knoten, ohne die Pfeile dazwischen.
+
+<!-- tutorial-screenshot
+# Neo4j Browser: der kleine Graph von Hand, vier Knoten
+neo4j-browser
+tab: preview
+# Same width and scale as the VS Code shots, a little taller for the graph
+viewport: 1029x700
+click: selector:button[aria-label="Database overview"]
+click: selector:[data-testid=main-editor] .cm-content
+type: CREATE (bttf:Movie {title: 'Back to the Future', year: 1985}) CREATE (zemeckis:Person {name: 'Robert Zemeckis'}) CREATE (fox:Person {name: 'Michael J. Fox'}) CREATE (scifi:Genre {name: 'Sci-Fi'}) CREATE (zemeckis)-[:DIRECTOR]->(bttf) CREATE (fox)-[:ACTOR]->(bttf) CREATE (bttf)-[:IN_GENRE]->(scifi);
+press: Control+Enter
+sleep: 3
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: :clear
+press: Control+Enter
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: MATCH (a)-[r]->(b) RETURN a, r, b;
+press: Control+Enter
+wait-for-text: Started streaming 3 records
+sleep: 2
+move-mouse: Results overview
+sleep: 2
+variants: dark
+-->
+
+<!-- tutorial-step
+# The small graph goes before the films are loaded, in the Browser, as the
+# page says. The Browser remembers its database overview: open it again,
+# as the next picture of the Browser expects (it closes it itself)
+tab: preview
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: MATCH (n) DETACH DELETE n;
+press: Control+Enter
+sleep: 2
+click: selector:button[aria-label="Database overview"]
+-->
+
+<img class='full' src='neo4j-browser-klein.webp' alt='Neo4j Browser: vier Knoten, Back to the Future in der Mitte, mit Pfeilen von Robert Zemeckis (DIRECTOR) und Michael J. Fox (ACTOR) und einem Pfeil zum Genre Sci-Fi (IN_GENRE).'>
+
+Klick einen Knoten an: Rechts erscheinen sein Label und seine Eigenschaften.
+
+Jetzt soll ein zweiter Film von Robert Zemeckis dazukommen.
+
+_task(zweimal-create)
+
+<!-- after: zweimal-create -->
+`CREATE` legt immer an, was in seinem Muster steht, auch einen Knoten, den es so schon gibt. Danach gibt es zwei Knoten `Person` mit dem Namen Robert Zemeckis, jeder mit einem Film, und Neo4j weiß nicht, dass sie dieselbe Person meinen. Lösch den doppelten Knoten mit seinem Film wieder. `DETACH DELETE` löscht Knoten samt ihren Beziehungen:
+
+```cypher
+MATCH (p:Person)-[:DIRECTOR]->(m:Movie {title: 'Forrest Gump'})
+DETACH DELETE p, m;
+```
+
+Richtig geht es in zwei Schritten: Erst findet `MATCH` den Knoten, den es schon gibt, dann hängt `CREATE` den neuen Film an ihn an:
+
+```cypher
+MATCH (z:Person {name: 'Robert Zemeckis'})
+CREATE (z)-[:DIRECTOR]->(:Movie {title: 'Forrest Gump', year: 1994});
+```
+
+Wie du Neo4j verbietest, eine Person zweimal anzulegen, steht weiter unten im Kapitel »Regeln für den Graphen«.
+<!-- /after -->
+
+### Die Filmdaten laden
+
+Der kleine Graph hat seinen Zweck erfüllt. `neo4j_bolt load` lädt nur in eine Datenbank ohne Knoten, also löschst du ihn zuerst, im Neo4j Browser:
+
+```cypher
+MATCH (n)
+DETACH DELETE n;
+```
+
+Ohne `DETACH` lehnt Neo4j ab, einen Knoten zu löschen, an dem noch Beziehungen hängen.
 
 Öffne ein Terminal und wechsle in den Ordner aus der Filmdatenbank (`mkdir -p` legt ihn an, falls es ihn noch nicht gibt):
 
@@ -133,9 +238,9 @@ terminal-open
 terminal-maximize
 terminal-run: mkdir -p ~/filmdatenbank && cd ~/filmdatenbank
 terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/movies-neo4j.dump
-terminal-wait-for-prompt
+terminal-wait-for-prompt: 60
 terminal-run: neo4j_bolt load movies-neo4j.dump
-terminal-wait-for-prompt
+terminal-wait-for-prompt: 120
 crop-terminal-lines: auto
 -->
 
@@ -144,14 +249,14 @@ crop-terminal-lines: auto
 `movies-neo4j.dump` ist eine Textdatei: Jede Zeile beginnt mit `n` für einen Knoten oder mit `r` für eine Beziehung. `neo4j_bolt` legt erst alle Knoten an und verbindet sie dann. Die Daten stammen, wie die für MySQL, aus [Wikidata](https://www.wikidata.org/); was drinsteht, beschreibt das Handbuch unter [Datensätze](/reference/datensaetze#movies).
 
 <div class='hint'>
-<code>neo4j_bolt load</code> erwartet eine leere Datenbank. Hast du schon etwas ausprobiert, setze deine Neo4j-Datenbank im Profil zurück und lade dann noch einmal.
+Meldet <code>neo4j_bolt load</code> <code>There are nodes in this database, exiting now.</code>, ist noch etwas in der Datenbank: Lösch es mit <code>MATCH (n) DETACH DELETE n;</code> oder setze deine Neo4j-Datenbank im Profil zurück, und lade dann noch einmal.
 </div>
 
 ### Zwei Werkzeuge für Abfragen
 
-Abfragen schreibst du in **Cypher**. Dafür gibt es zwei Werkzeuge:
+Für Abfragen gibt es zwei Werkzeuge:
 
-- Den **Neo4j Browser** öffnest du mit dem Knopf »Neo4j« oben im Menü. Melde dich dort mit dem Benutzernamen und dem Passwort aus deinem Profil an. Er zeigt Ergebnisse als Graph zum Anschauen oder als Tabelle.
+- Den **Neo4j Browser** kennst du schon. Er zeigt Ergebnisse als Graph zum Anschauen oder als Tabelle.
 - **`cypher-shell`** läuft im Terminal des Workspace und meldet sich mit deinen Umgebungsvariablen von selbst an. Er zeigt Ergebnisse als Tabelle, wie `mycli` für MySQL. Mit `:exit` beendest du ihn.
 
 Fang im Neo4j Browser an:
@@ -250,16 +355,36 @@ _task(koenig-der-loewen)
 Jetzt kommt der Unterschied zu MySQL. Welche Genres hat »Back to the Future«? In MySQL brauchtest du dafür zwei `JOIN`s, über `movie_genre` zu `genre`. Im Graphen liegt die Beziehung schon da, und du schreibst sie als Muster hin:
 
 ```cypher
-MATCH (m:Movie {title: 'Back to the Future', year: 1985})-[:IN_GENRE]->(g:Genre)
-RETURN m, g;
+MATCH (m:Movie {title: 'Back to the Future', year: 1985})-[r:IN_GENRE]->(g:Genre)
+RETURN m, r, g;
 ```
 
-<!-- Screenshot von Hand: Neo4j Browser mit Back to the Future und seinen Genres -->
+<!-- tutorial-screenshot
+# Neo4j Browser: Back to the Future und seine Genres
+tab: preview
+viewport: 1029x700
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: :clear
+press: Control+Enter
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: MATCH (m:Movie {title: 'Back to the Future', year: 1985})-[r:IN_GENRE]->(g:Genre) RETURN m, r, g;
+press: Control+Enter
+wait-for-text: Started streaming 3 records
+sleep: 2
+click: selector:button[aria-label="Zoom in"]
+move-mouse: Results overview
+sleep: 2
+variants: dark
+-->
+
+<img class='full' src='neo4j-browser-genres.webp' alt='Neo4j Browser: der Knoten Back to the Future mit drei Pfeilen IN_GENRE zu den Genres Adventure, Comedy und Sci-Fi.'>
 
 Lies das Muster wie eine kleine Zeichnung:
 
 - `(m:Movie {…})` ist der Filmknoten,
-- `-[:IN_GENRE]->` eine Beziehung dieses Typs, in Pfeilrichtung,
+- `-[r:IN_GENRE]->` eine Beziehung dieses Typs, in Pfeilrichtung; `r` ist ihr Name, damit `RETURN` auch die Pfeile zurückgibt,
 - `(g:Genre)` der Genreknoten am anderen Ende.
 
 Brauchst du nur die Namen, gibst du nur sie zurück:
@@ -507,6 +632,8 @@ Eine Graphdatenbank ist nicht besser als eine relationale. MySQL hat dir mit Tab
 
 <!-- tutorial-step
 # Jede Cypher-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab
+check-task: zweimal-create <- 1
+check-task-fails: zweimal-create <- 0
 check-task: koenig-der-loewen <- MATCH (m:Movie {title: 'The Lion King', year: 1994}) RETURN m.runtime, m.german_title
 check-task-fails: koenig-der-loewen <- MATCH (m:Movie {title: 'The Lion King'}) RETURN m.runtime, m.german_title
 check-task: scifi <- MATCH (m:Movie)-[:IN_GENRE]->(g:Genre) WHERE g.name = 'Sci-Fi' AND m.year >= 2010 RETURN m.title, m.year ORDER BY m.year DESC
