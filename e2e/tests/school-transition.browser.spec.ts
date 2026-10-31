@@ -181,7 +181,9 @@ test('/personen shows the transition box and the school\'s progress', async ({ b
     await page.goto(`${baseUrl(testInfo)}/personen`);
     await page.locator('#tab-schulen').click();
     await expect(page.locator('#transition_here')).toContainText('Übergangszeit bis');
-    const row = page.locator('tr', { hasText: `E2E Übergang ${RUN}` }).first();
+    // the school's own row; a teacher's list below another school (row-detail)
+    // can name it too, once earlier runs have left schools behind
+    const row = page.locator('tr:not(.row-detail)', { hasText: `E2E Übergang ${RUN}` }).first();
     await expect(row).toContainText('Nachfassen fällig');
     await row.getByRole('button', { name: `Übergang bei E2E Übergang ${RUN}` }).click();
     const detail = page.locator('tr.transition-detail:visible');
