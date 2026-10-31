@@ -229,6 +229,61 @@ tasks:
         LIMIT …;
         ```
 
+  - id: grenze-einseitig
+    title: Eine Richtung fehlt
+    prediction: true
+    prompt: |
+      Jemand löscht die Grenze zwischen Frankreich und Deutschland, aber nur in
+      einer Richtung:
+
+      ```sql
+      START TRANSACTION;
+      DELETE FROM border WHERE country_code = 'FRA' AND neighbor_code = 'DEU';
+      ```
+
+      Was geschieht? Überleg zuerst. Dann probier es aus: die beiden Befehle,
+      dann die Nachbarn Deutschlands und die Frankreichs wie oben. Auf die
+      Frage von `mycli` vor dem `DELETE` antwortest du mit <kbd>y</kbd>. Das
+      `ROLLBACK;` kommt erst nach dem nächsten Absatz.
+    check:
+      type: choice
+      options:
+        - 'MySQL lehnt das `DELETE` ab, weil `(''DEU'', ''FRA'')` noch in `border` steht.'
+        - 'MySQL löscht `(''DEU'', ''FRA'')` mit: Die beiden Länder sind keine Nachbarn mehr.'
+        - 'Frankreich steht weiter bei den Nachbarn Deutschlands, aber Deutschland nicht mehr bei denen Frankreichs.'
+        - 'Beide sind weiter Nachbarn, weil die Grenze noch in einer Zeile steht.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Welche Regel der Datenbank sollte das verbieten? Die Fremdschlüssel prüfen, dass es beide Länder gibt. Gibt es eine, die zwei Zeilen von `border` aneinander bindet?'
+      - when: { picked: 1 }
+        say: 'Ein `DELETE` löscht die Zeilen, auf die sein `WHERE` passt. Passt `(''DEU'', ''FRA'')` darauf?'
+      - when: { picked: 3 }
+        say: 'Die Nachbarn Frankreichs sucht die Abfrage mit `WHERE border.country_code = ''FRA''`. Welche Zeilen findet sie nach dem `DELETE`?'
+    solution: |
+      Das `DELETE` geht durch und trifft nur die eine Zeile. Danach widerspricht
+      sich die Datenbank: Deutschland hat Frankreich als Nachbarn, Frankreich
+      Deutschland nicht. Keine Regel der Datenbank bindet die beiden Richtungen
+      aneinander.
+
+  - id: grenzen-einmal
+    title: Jede Grenze einmal
+    prompt: Wie viele Grenzen an Land gibt es, wenn du jede nur einmal zählst?
+    check:
+      type: sql
+      expect_query:
+        - SELECT COUNT(*) FROM border WHERE country_code < neighbor_code
+        - SELECT COUNT(*) / 2 FROM border
+      tables: { country: 197, border: 636 }
+      setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
+    feedback:
+      - when: { same_result_as: 'SELECT COUNT(*) FROM border' }
+        say: Das zählt jede Grenze zweimal, einmal in jeder Richtung.
+    hint: |
+      Von den beiden Zeilen `('DEU', 'FRA')` und `('FRA', 'DEU')` soll genau eine
+      übrig bleiben. Worin unterscheiden sie sich, wenn du die beiden Kürzel
+      vergleichst? Texte lassen sich mit `<` vergleichen, wie im Wörterbuch.
+
   - id: sprachen-schweiz
     title: Die Amtssprachen der Schweiz
     prompt: Welche Amtssprachen hat die Schweiz (`CHE`)? Gib ihre Namen aus.

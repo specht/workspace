@@ -222,9 +222,13 @@ crop-terminal-skip-bottom: 2
 
 <img class='full' src='join-neighbors.webp' alt='Die neun Nachbarländer Deutschlands, von Belgien bis Tschechien.'>
 
-Jede Grenze steht in `border` zweimal, einmal in jeder Richtung: `('DEU', 'FRA')` und `('FRA', 'DEU')`. Das ist Absicht, sonst müsste die Abfrage in beiden Spalten nach Deutschland suchen.
+Jede Grenze steht in `border` zweimal, einmal in jeder Richtung: `('DEU', 'FRA')` und `('FRA', 'DEU')`.
 
 _task(grenze-zweimal)
+
+<!-- after: grenze-zweimal -->
+Das ist Absicht. Mit einer Zeile pro Grenze müsste jede Frage nach den Nachbarn eines Landes in beiden Spalten suchen; so genügt `WHERE border.country_code = 'DEU'`. Was diese Wiederholung kostet, zeigt der Abschnitt »Zweimal gespeichert« weiter unten.
+<!-- /after -->
 
 _task(nachbarn-deutschland)
 
@@ -261,6 +265,54 @@ _task(meiste-staedte)
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Zähle, was das <code>LEFT</code> ausmacht: <code>SELECT COUNT(*) FROM country JOIN border ON border.country_code = country.code;</code> und dieselbe Abfrage mit <code>LEFT JOIN</code>. Um wie viele Zeilen ist das zweite Ergebnis größer, und was zählt dieser Unterschied? Und was kommt beim <code>LEFT JOIN</code> heraus, wenn du <code>COUNT(border.neighbor_code)</code> statt <code>COUNT(*)</code> schreibst?
 </div>
+
+### Zweimal gespeichert: was die Datenbank nicht prüft
+
+Dass jede Grenze in beiden Richtungen dasteht, ist eine Abmachung. Was geschieht, wenn eine Richtung fehlt?
+
+_task(grenze-einseitig)
+
+<!-- after: grenze-einseitig -->
+Das `DELETE` geht durch, und danach widerspricht sich die Datenbank: Frankreich steht weiter bei den Nachbarn Deutschlands, aber Deutschland nicht mehr bei denen Frankreichs. Die Fremdschlüssel von `border` prüfen nur, dass es beide Länder gibt. Dass zu jeder Zeile die Gegenrichtung gehört, sagt der Datenbank niemand.
+
+Solche Fehler findest du mit einem `LEFT JOIN` von `border` mit sich selbst. Zu jeder Zeile `a` sucht es die umgekehrte Zeile `b`; gibt es keine, ist `b` leer:
+
+```sql
+SELECT a.country_code, a.neighbor_code
+FROM border AS a
+LEFT JOIN border AS b
+  ON b.country_code = a.neighbor_code AND b.neighbor_code = a.country_code
+WHERE b.country_code IS NULL;
+```
+
+Solange deine Transaktion offen ist, findet die Abfrage die Zeile `('DEU', 'FRA')`. Gib dann `ROLLBACK;` ein, und die gelöschte Zeile ist wieder da. Jetzt findet die Abfrage keine Zeile: In den Daten fehlt keine Richtung.
+<!-- /after -->
+
+Man könnte jede Grenze auch nur einmal speichern, mit einer Regel, welches Land vorne steht, etwa das mit dem kleineren Kürzel. Dann gibt es nichts mehr, das sich widersprechen kann.
+
+_task(grenzen-einmal)
+
+Eine Tabelle, die jede Grenze nur einmal hat, legst du aus `border` an. `CHECK` hält die Regel fest: MySQL lehnt jede Zeile ab, die sie verletzt. Auf die Fragen von `mycli` antwortest du mit <kbd>y</kbd>:
+
+```sql
+CREATE TABLE border_once (PRIMARY KEY (country_code, neighbor_code)) AS
+SELECT country_code, neighbor_code FROM border WHERE country_code < neighbor_code;
+ALTER TABLE border_once ADD CHECK (country_code < neighbor_code);
+```
+
+Der Preis kommt beim Lesen. Die Nachbarn Deutschlands stehen jetzt mal in der einen, mal in der anderen Spalte, und die Abfrage muss beide ansehen. `UNION` hängt die Ergebnisse zweier Abfragen untereinander:
+
+```sql
+SELECT neighbor_code FROM border_once WHERE country_code = 'DEU'
+UNION
+SELECT country_code FROM border_once WHERE neighbor_code = 'DEU';
+```
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Versuch, in <code>border_once</code> die Zeile <code>('FRA', 'DEU')</code> einzutragen. Was meldet MySQL, und warum? Wie viele Nachbarn findet die Abfrage mit <code>UNION</code>, und wie viele ihre erste Hälfte allein? Zum Schluss löschst du die Tabelle wieder mit <code>DROP TABLE border_once;</code>.
+</div>
+
+Welche Form besser ist, hängt davon ab, was häufiger geschieht. Grenzen ändern sich selten, gefragt wird nach ihnen oft. Deshalb speichert der Datensatz sie zweimal und nimmt die Wiederholung in Kauf. Wo sich Daten oft ändern, ist eine Wiederholung gefährlicher; davon handelt die Normalisierung in der [Filmdatenbank](/filmdatenbank).
 
 ## Viele zu viele: Amtssprachen
 
@@ -369,6 +421,10 @@ Im Handbuch: _uses(aggregieren, join, entfernung)
 
 <!-- tutorial-step
 # Jede SQL-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf der ganzen Fassung
+check-task: grenze-einseitig <- 2
+check-task-fails: grenze-einseitig <- 0
+check-task: grenzen-einmal <- SELECT COUNT(*) FROM border WHERE country_code < neighbor_code;
+check-task-fails: grenzen-einmal <- SELECT COUNT(*) FROM border;
 check-task: linksverkehr <- SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'left';
 check-task-fails: linksverkehr <- SELECT name FROM country WHERE continent = 'Europa' AND driving_side = 'right';
 check-task: laender-pro-kontinent <- SELECT continent, COUNT(*) FROM country GROUP BY continent;

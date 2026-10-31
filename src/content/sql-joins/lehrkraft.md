@@ -4,7 +4,7 @@ Die Fortsetzung der [Einführung in SQL](/mysql): Lernende laden die ganze Fassu
 <tr><th>Voraussetzungen</th><td><code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code>, <code>LIMIT</code> und <code>COUNT</code> aus der Einführung; die Seite beginnt mit dem Ordner und dem Import, sie geht also auch in einem anderen Workspace oder nach einer Pause.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden.<ul>
 <li><b>1. Doppelstunde:</b> die ganze Fassung laden, <code>GROUP BY</code> und <code>HAVING</code>, der erste <code>JOIN</code>.</li>
-<li><b>2. Doppelstunde:</b> die Nachbarn mit derselben Tabelle zweimal, <code>LEFT JOIN</code>, die Amtssprachen und die Entfernungen.</li>
+<li><b>2. Doppelstunde:</b> die Nachbarn mit derselben Tabelle zweimal, <code>LEFT JOIN</code>, warum jede Grenze zweimal dasteht und was das kostet, die Amtssprachen und die Entfernungen.</li>
 </ul></td></tr>
 <tr><th>Daten</th><td><code>countries.sql</code> aus <a href='https://github.com/specht/workspace-files/tree/main/country-archive'><code>specht/workspace-files</code></a>, aus Wikidata vom Oktober 2026. Länder, Städte und Kontinente sind dieselben wie in der kleinen Fassung der Einführung; dazu kommen <code>border</code> (jede Grenze als zwei Paare), <code>currency</code>, <code>language</code> und <code>country_language</code>. Die Seite zeigt nach dem Import die Tabellen mit ein paar Zeilen und markiert die neuen.</td></tr>
 <tr><th>Prüfung</th><td>Wie in der Einführung: Werte werden eingetragen, Abfragen, die Zeilen ausgeben, laufen in der eigenen Datenbank der Lernenden neben der Musterabfrage, und verglichen werden die Ergebnisse. Fehlen die neuen Tabellen, weil nur die kleine Fassung geladen ist, sagt die Karte, dass zuerst <code>countries.sql</code> geladen werden muss.</td></tr>
@@ -14,6 +14,7 @@ Die Fortsetzung der [Einführung in SQL](/mysql): Lernende laden die ganze Fassu
 #### Die Aufgaben
 
 - »Jede Grenze zweimal« fragt, warum `border` jede Grenze in beiden Richtungen enthält: damit eine Abfrage die Nachbarn eines Landes in einer einzigen Spalte findet.
+- »Eine Richtung fehlt« ist eine Vorhersage: Ein `DELETE` einer Richtung geht durch, und die Datenbank widerspricht sich, weil keine Regel die beiden Zeilen aneinander bindet. Die Lernenden probieren es in einer Transaktion und finden die einseitige Grenze mit einem `LEFT JOIN` von `border` mit sich selbst. »Jede Grenze einmal« zählt die 318 Grenzen; danach legen sie `border_once` mit `CHECK` an, fragen mit `UNION` und löschen die Tabelle wieder. Für ein Unterrichtsgespräch: Eine gewollte Wiederholung lohnt sich, wo selten geändert und oft gelesen wird.
 - »Fehlt da nicht eine?« fragt, warum Brandenburg an der Havel nicht unter den Städten nahe Berlin steht: Die Datenbank kennt nur Städte ab 100.000 Einwohnern, sie ist ein Ausschnitt der Welt.
 - »Am anderen Ende der Welt« ist eine Vorhersage vor der Abfrage, welche Stadt am weitesten von Berlin entfernt liegt.
 - Die Aufgaben standen bis Oktober 2026 auf der Seite der Einführung; was Lernende dort gelöst haben, steht jetzt hier.

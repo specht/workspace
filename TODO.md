@@ -77,7 +77,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 * [ ] From a short story to an ER model in the DSL; Chen and crow's foot
 * [ ] Translation rules for 1:1, 1:n and n:m; relationship attributes
-* [ ] The borders of the country dataset as an example of deliberate redundancy: every pair twice, what goes wrong if one direction is missing, how to store it once
 
 #### Filmdatenbank
 
