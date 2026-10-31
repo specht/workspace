@@ -135,6 +135,8 @@ test('a solved Kata is handed in and shown in class without the name', async ({ 
   await card.locator('.task-code').fill(ruby ? 'def double(n)\n  n * 2\nend\n' : 'def double(n):\n    return n * 2\n');
   await card.locator('.task-submit').click();
   await expect(card).toHaveAttribute('data-status', 'correct', { timeout: 30_000 });
+  // a run stopped halfway may have left it handed in
+  if ((await handIn.textContent()) === 'Eingereicht, zurücknehmen') await handIn.click();
   await expect(handIn).toHaveText('Einreichen');
   await handIn.click();
   await expect(handIn).toHaveText('Eingereicht, zurücknehmen');

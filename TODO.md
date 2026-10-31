@@ -151,7 +151,7 @@ APK rather than App Bundle for the introduction; no release signing or Play Stor
 
 What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 
-* [ ] **One Kata widget** instead of the general task card on Kata pages: the prompt beside the code on a wide screen, as Pip's map beside the plan, and a UI/UX pass over all of it; planned and shown to the maintainer before it is built
+* [ ] Kata cards: the prompt beside the code once the card is 60em wide (done, `kata-layout`); left of the UI/UX pass: what else a Kata card needs (the maintainer's view after using it)
 * [ ] The output of a run while it runs (live, over the page's WebSocket); now it comes when the run ends
 * [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
 * [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)

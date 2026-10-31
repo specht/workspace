@@ -56,6 +56,10 @@ module TaskCard
         end
         io << "<span class='task-status' aria-live='polite'></span>"
         io << '</div>'
+        # A Kata written in the card: the prompt, the tip and what was tried
+        # beside the code once the card is wide enough (default.css)
+        kata_layout = %w[function tests].include?(type)
+        io << "<div class='kata-layout'>" if kata_layout
         io << "<div class='task-prompt'>#{render.(task['prompt'])}</div>"
 
         if runs
@@ -258,6 +262,8 @@ module TaskCard
             # a clicked plan is checked at the lamp (PipButtons)
             clicked = type == 'pip' && check['buttons']
             io << "<button type='submit' class='btn btn-success task-submit'#{clicked ? ' hidden' : ''}>#{%w[pip function tests turtle].include?(type) ? play : ''}#{label}</button>"
+            # the key that runs it, in view where there is a keyboard
+            io << "<span class='task-shortcut' aria-hidden='true'><kbd>Strg</kbd>+<kbd>Enter</kbd></span>" if %w[function tests].include?(type)
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
             # a small (i) so the card itself stays short.
@@ -284,6 +290,7 @@ module TaskCard
             io << HintSteps.html(Array(task['hint']).map { |hint| render.(hint) }, :extra_class => 'task-hint')
         end
         io << "<div class='task-feedback' aria-live='polite'></div>"
+        io << '</div>' if kata_layout
         io << "<div class='task-login-note'><a href='/login'>Melde dich an</a>, damit der Workspace deine Antwort prüfen und speichern kann.</div>" if runs
         io << '</section>'
         io

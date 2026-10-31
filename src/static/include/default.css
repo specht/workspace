@@ -6647,6 +6647,59 @@ html[data-bs-theme="dark"] .usage-row {
     color: var(--bs-secondary-color);
 }
 
+/* The key that runs a Kata, beside its button; not on a touch screen,
+   which has no Strg */
+.task-shortcut {
+    font-size: 80%;
+    color: var(--bs-secondary-color);
+}
+/* quieter than a kbd in the text: no shadow, smaller */
+.task-shortcut kbd {
+    min-width: 0;
+    margin: 0 0.15em;
+    padding: 0 0.3em;
+    border-color: rgba(0, 0, 0, 0.15);
+    font-size: 90%;
+    box-shadow: none;
+}
+@media (pointer: coarse) {
+    .task-shortcut { display: none; }
+}
+
+/* A Kata written in the card (TaskCard, kata-layout): once the card is
+   wide enough, the prompt, the tip and the result on the left, the code on
+   the right with its buttons and what it printed under it, as high as the
+   code needs (a result does not stretch it); like Pip's map beside the
+   plan. Narrower, all
+   of it one under the other, in the same order. */
+.task-card[data-type='function'],
+.task-card[data-type='tests'] {
+    container-type: inline-size;
+}
+@container (min-width: 60em) {
+    .kata-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+        grid-template-rows: auto auto auto 1fr;
+        grid-template-areas: 'prompt form' 'hint form' 'feedback form' '. form';
+        column-gap: 1.5em;
+        align-items: start;
+    }
+    /* a narrow column: justified, the gaps beside the code would gape */
+    .kata-layout > .task-prompt {
+        grid-area: prompt;
+        hyphens: auto;
+    }
+    .kata-layout > .task-prompt p,
+    .kata-layout > .task-feedback p { text-align: start; }
+    .kata-layout > .hint-steps { grid-area: hint; }
+    .kata-layout > .task-feedback { grid-area: feedback; }
+    .kata-layout > .task-form { grid-area: form; }
+    .kata-layout > .task-form > .task-actions {
+        margin-bottom: 0;
+    }
+}
+
 /* A task with extra: true (for the fast and the curious): a small label,
    with the stars of the extra chapters. */
 .task-extra {
