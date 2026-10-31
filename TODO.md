@@ -50,8 +50,9 @@ Countries, movies and music are published in `specht/workspace-files`
 published with `src/scripts/publish-datasets.rb`. The music data stays a
 dataset for teachers to use as they see fit (a project, an exam); no
 activity of its own is planned for it.
+Students load the data with `wget` and `mysql <` (or `neo4j_bolt load`), as
+they would outside the Workspace; no command of our own hides that.
 
-* [ ] A student command `load-dataset countries|movies|music [--schema|--data|--part NAME] [--neo4j]` that loads into the student's database (or a named extra database); the pages use `wget` and `mysql <` today
 * [ ] Refresh the datasets periodically rather than letting them go stale (countries: the tasks and screenshots of the SQL introduction follow the row counts)
 * [ ] After the school year (August 2027): delete the movie files under their old names (`mysql*.sql`, `neo4j.dump` in `movie-archive/`) and `old_files` in `publish-datasets.rb`
 
