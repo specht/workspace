@@ -1857,14 +1857,13 @@ hook: expect-value 350: 80 2
 -->
 
 <!-- tutorial-screenshot
-# Das Bild für die Karte: ein 8 × 8-Block vom Busfahrplan (die Kante der 1
-# in »15«), vergrößert mit seinen Werten, und seine Koeffizienten nach der
-# DCT, die meisten 0
+# Das Bild für die Karte: das Foto fünfmal vergrößert, ein 8 × 8-Block an
+# der oberen Kante der roten Tafel markiert; rechts der Block mit seinen
+# Werten und darunter seine Koeffizienten nach der DCT, die meisten 0
 open-site: /jpeg
 tab: preview
 viewport: 1280x720
-hook: poster 888 32
+hook: poster 224 264 80 185
 crop-element: #jpeg-poster
-variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Links ein vergrößerter Ausschnitt des Busfahrplans aus dem Beispielfoto, ein 8 × 8 Pixel großer Block an der Kante einer Ziffer ist markiert. In der Mitte derselbe Block groß, jedes Pixel mit seinem Grauwert. Ein Pfeil »DCT« führt zu den 64 Koeffizienten: Nur 15 sind nicht 0, sie stehen oben links, eine Zick-Zack-Linie führt durch sie.'>
+<img class='teaser' hidden src='teaser.webp' alt='Das Beispielfoto stark vergrößert, mit der roten Tafel »CIMB THAI«; an ihrer oberen Kante ist ein 8 × 8 Pixel großer Block markiert. Rechts derselbe Block groß, jedes Pixel mit seinem Grauwert, darunter nach einem Pfeil »DCT« seine 64 Koeffizienten: Nur 17 sind nicht 0, sie stehen oben links, eine Zick-Zack-Linie führt durch sie.'>

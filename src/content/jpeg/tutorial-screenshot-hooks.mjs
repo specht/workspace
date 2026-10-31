@@ -17,114 +17,123 @@ export default {
         await page.waitForLoadState('domcontentloaded', { timeout });
     },
 
-    // variants: dark: the poster follows the colour scheme (hook: poster)
-    variants: {
-        async dark({ page, on }) {
-            await page.emulateMedia({ colorScheme: on ? 'dark' : 'light' });
-            await page.waitForTimeout(500);
-        },
-    },
-
     actions: {
-        // hook: poster X Y: the picture for the card, over the whole window
-        // of /jpeg: a part of the photo with the 8 × 8 Y block at X, Y
-        // marked, the block enlarged with its values, an arrow »DCT« and
-        // its coefficients (dequantised) with the zigzag up to the last one
-        // that is not 0. Drawn with jpeg_image.js from 44-baseline.jpg, in
-        // the colours of the scheme, again when the scheme changes.
+        // hook: poster X Y LEFT TOP: the picture for the card, over the
+        // whole window of /jpeg. The photo fills it, from LEFT, TOP five
+        // times larger, its pixels as squares; the 8 × 8 Y block at X, Y is
+        // marked. On the right that block, enlarged with its values, and
+        // under it, after an arrow »DCT«, its coefficients (dequantised)
+        // with the zigzag up to the last one that is not 0. Thick lines with
+        // a dark edge, so that the card reads small. Drawn with
+        // jpeg_image.js from 44-baseline.jpg; the same picture in the light
+        // and the dark scheme.
         async poster({ page, args }) {
-            const [x, y] = args.trim().split(/\s+/).map(Number);
+            const [x, y, left, top] = args.trim().split(/\s+/).map(Number);
             await page.waitForFunction(() => window.JpegImage);
-            await page.evaluate(async ([bxPx, byPx]) => {
+            await page.evaluate(async ([bxPx, byPx, left, top]) => {
                 const image = await JpegImage.load('/jpeg/44-baseline.jpg');
                 await document.fonts.ready;
-                const W = 1600, H = 900;
-                const size = { w: window.innerWidth, h: window.innerHeight };
+                const W = 1600, H = 900, ZOOM = 5;
+                const width = window.innerWidth;
                 const canvas = document.createElement('canvas');
                 canvas.id = 'jpeg-poster';
-                canvas.width = Math.round(size.w * 2);
-                canvas.height = Math.round(size.w * 2 * H / W);
-                canvas.style.cssText = `position:fixed;left:0;top:0;width:${size.w}px;height:${size.w * H / W}px;z-index:10000`;
+                canvas.width = width * 2;
+                canvas.height = Math.round(width * 2 * H / W);
+                canvas.style.cssText = `position:fixed;left:0;top:0;width:${width}px;height:${width * H / W}px;z-index:10000`;
                 document.body.appendChild(canvas);
                 const block = image.block(0, Math.floor(bxPx / 16), Math.floor(byPx / 16), (Math.floor(byPx / 8) % 2) * 2 + (Math.floor(bxPx / 8) % 2));
                 const plane = image.comps[0];
                 const pixels = Array.from({ length: 64 }, (_, i) => plane.plane[(byPx + Math.floor(i / 8)) * plane.planeWidth + bxPx + i % 8]);
                 const minus = (v) => String(v).replace('-', '−');
                 const font = (px, weight, mono) => `${weight} ${px}px ${mono ? "'0xProto Nerd Font Mono', monospace" : "'IBM Plex Sans', sans-serif"}`;
-                function draw() {
-                    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
-                    const c = dark
-                        ? { bg: '#18181b', ink: '#e9e7e2', accent: [177, 151, 252], line: 'rgba(177, 151, 252, 0.6)', zero: 'rgba(255, 255, 255, 0.05)', zigzag: 'rgba(233, 231, 226, 0.22)', on: () => '#fff' }
-                        : { bg: '#f6f5f2', ink: '#25232b', accent: [112, 72, 232], line: 'rgba(112, 72, 232, 0.55)', zero: 'rgba(0, 0, 0, 0.05)', zigzag: 'rgba(37, 35, 43, 0.2)', on: (a) => a > 0.5 ? '#fff' : '#25232b' };
-                    const rgba = (a) => `rgba(${c.accent.join(', ')}, ${a})`;
+                // one picture for both schemes: the photo bright, the
+                // coefficients dark
+                {
+                    const c = { panel: '#1c1b21', ink: '#f1eff9', accent: [177, 151, 252], zero: '#26252c', zigzag: 'rgba(241, 239, 249, 0.35)', on: () => '#fff' };
+                    const accent = `rgb(${c.accent.join(', ')})`;
                     const ctx = canvas.getContext('2d');
                     ctx.setTransform(canvas.width / W, 0, 0, canvas.width / W, 0, 0);
-                    ctx.fillStyle = c.bg;
-                    ctx.fillRect(0, 0, W, H);
-                    // the photo around the block, four times larger
-                    const zoom = 4, sw = 120, sh = 190;
-                    const sx = Math.max(0, Math.min(image.width - sw, bxPx - 56)), sy = Math.max(0, Math.min(image.height - sh, byPx - 92));
-                    const px = 70, py = (H - sh * zoom) / 2;
+                    // the photo, its pixels as squares
                     ctx.imageSmoothingEnabled = false;
-                    ctx.drawImage(image.photo(), sx, sy, sw, sh, px, py, sw * zoom, sh * zoom);
-                    const bx = px + (bxPx - sx) * zoom, by = py + (byPx - sy) * zoom;
-                    // the block enlarged, with its values
-                    const cell = 46, gx = 640, gy = (H - 8 * cell) / 2;
-                    ctx.strokeStyle = c.line;
-                    ctx.lineWidth = 1.5;
-                    ctx.beginPath();
-                    ctx.moveTo(bx + 8 * zoom, by); ctx.lineTo(gx, gy);
-                    ctx.moveTo(bx + 8 * zoom, by + 8 * zoom); ctx.lineTo(gx, gy + 8 * cell);
-                    ctx.stroke();
-                    ctx.strokeStyle = rgba(1);
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(bx, by, 8 * zoom, 8 * zoom);
+                    ctx.drawImage(image.photo(), left, top, W / ZOOM, H / ZOOM, 0, 0, W, H);
+                    // a line or a frame twice: wide and dark, then narrower in its colour
+                    const stroke = (path, color, width) => {
+                        ctx.lineJoin = 'round';
+                        ctx.lineCap = 'round';
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+                        ctx.lineWidth = width + 6;
+                        path();
+                        ctx.stroke();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = width;
+                        path();
+                        ctx.stroke();
+                    };
+                    const cell = 42, side = 8 * cell, gap = 116;
+                    const gx = W - 90 - side, gy = (H - 2 * side - gap) / 2;
+                    const cy = gy + side + gap;
+                    const bx = (bxPx - left) * ZOOM, by = (byPx - top) * ZOOM, bs = 8 * ZOOM;
+                    // from the block on the photo to its enlargement
+                    stroke(() => { ctx.beginPath(); ctx.moveTo(bx + bs, by); ctx.lineTo(gx, gy); ctx.moveTo(bx + bs, by + bs); ctx.lineTo(gx, gy + side); }, '#fff', 4);
+                    stroke(() => { ctx.beginPath(); ctx.rect(bx, by, bs, bs); }, '#fff', 6);
+                    // the block, enlarged, with its values
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.font = font(15, 500, true);
+                    ctx.font = font(16, 600, true);
                     pixels.forEach((v, i) => {
                         const x0 = gx + (i % 8) * cell, y0 = gy + Math.floor(i / 8) * cell;
                         ctx.fillStyle = `rgb(${v}, ${v}, ${v})`;
                         ctx.fillRect(x0, y0, cell, cell);
-                        ctx.fillStyle = v > 120 ? '#222' : '#eee';
+                        ctx.fillStyle = v > 120 ? '#1a1a1a' : '#f4f4f4';
                         ctx.fillText(v, x0 + cell / 2, y0 + cell / 2);
                     });
-                    ctx.strokeRect(gx, gy, 8 * cell, 8 * cell);
-                    // the arrow
-                    const ax = gx + 8 * cell + 28, ay = H / 2;
-                    ctx.strokeStyle = c.ink;
+                    stroke(() => { ctx.beginPath(); ctx.rect(gx, gy, side, side); }, '#fff', 6);
+                    // the arrow down, »DCT« beside it on a plate
+                    const ax = gx + side / 2, ay0 = gy + side + 24, ay1 = cy - 24;
+                    stroke(() => { ctx.beginPath(); ctx.moveTo(ax, ay0); ctx.lineTo(ax, ay1 - 10); }, '#fff', 6);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+                    ctx.beginPath(); ctx.moveTo(ax, ay1 + 5); ctx.lineTo(ax - 19, ay1 - 19); ctx.lineTo(ax + 19, ay1 - 19); ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.moveTo(ax, ay1); ctx.lineTo(ax - 14, ay1 - 16); ctx.lineTo(ax + 14, ay1 - 16); ctx.fill();
+                    ctx.font = font(34, 700, false);
+                    const label = 'DCT', lw = ctx.measureText(label).width + 28;
+                    ctx.fillStyle = c.panel;
+                    ctx.beginPath(); ctx.roundRect(ax - 32 - lw, (ay0 + ay1) / 2 - 24, lw, 48, 10); ctx.fill();
                     ctx.fillStyle = c.ink;
-                    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + 78, ay); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(ax + 92, ay); ctx.lineTo(ax + 74, ay - 10); ctx.lineTo(ax + 74, ay + 10); ctx.fill();
-                    ctx.font = font(26, 600, false);
-                    ctx.fillText('DCT', ax + 46, ay - 28);
+                    ctx.fillText(label, ax - 32 - lw / 2, (ay0 + ay1) / 2 + 1);
                     // the coefficients, the zigzag through them
-                    const cx = ax + 120, cy = gy;
-                    const alpha = (v) => v ? Math.min(0.9, 0.25 + Math.abs(v) / 400) : 0;
+                    const alpha = (v) => Math.min(1, 0.3 + Math.abs(v) / 300);
+                    ctx.fillStyle = c.panel;
+                    ctx.fillRect(gx, cy, side, side);
                     block.forEach((v, i) => {
-                        ctx.fillStyle = v ? rgba(alpha(v)) : c.zero;
-                        ctx.fillRect(cx + (i % 8) * cell + 1, cy + Math.floor(i / 8) * cell + 1, cell - 2, cell - 2);
+                        const x0 = gx + (i % 8) * cell, y0 = cy + Math.floor(i / 8) * cell;
+                        ctx.fillStyle = c.zero;
+                        ctx.fillRect(x0 + 1.5, y0 + 1.5, cell - 3, cell - 3);
+                        if (v) {
+                            ctx.fillStyle = `rgba(${c.accent.join(', ')}, ${alpha(v)})`;
+                            ctx.fillRect(x0 + 1.5, y0 + 1.5, cell - 3, cell - 3);
+                        }
                     });
                     let last = 0;
                     JpegImage.ZIGZAG.forEach((n, k) => { if (block[n]) last = k; });
                     ctx.strokeStyle = c.zigzag;
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 2.5;
+                    ctx.lineJoin = 'round';
                     ctx.beginPath();
                     JpegImage.ZIGZAG.slice(0, last + 1).forEach((n, k) => {
-                        const x0 = cx + (n % 8 + 0.5) * cell, y0 = cy + (Math.floor(n / 8) + 0.5) * cell;
+                        const x0 = gx + (n % 8 + 0.5) * cell, y0 = cy + (Math.floor(n / 8) + 0.5) * cell;
                         if (k) ctx.lineTo(x0, y0); else ctx.moveTo(x0, y0);
                     });
                     ctx.stroke();
-                    ctx.font = font(15, 600, true);
+                    ctx.font = font(16, 700, true);
                     block.forEach((v, i) => {
                         if (!v) return;
                         ctx.fillStyle = c.on(alpha(v));
-                        ctx.fillText(minus(v), cx + (i % 8 + 0.5) * cell, cy + (Math.floor(i / 8) + 0.5) * cell);
+                        ctx.fillText(minus(v), gx + (i % 8 + 0.5) * cell, cy + (Math.floor(i / 8) + 0.5) * cell);
                     });
+                    stroke(() => { ctx.beginPath(); ctx.rect(gx, cy, side, side); }, accent, 6);
                 }
-                draw();
-                matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
-            }, [x, y]);
+            }, [x, y, left, top]);
             await page.mouse.move(0, 0);
             await page.waitForTimeout(500);
         },
