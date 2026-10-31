@@ -2402,8 +2402,13 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .gallery.columns-3 { grid-template-columns: repeat(3, 1fr); }
 .gallery.columns-4 { grid-template-columns: repeat(4, 1fr); gap: 1em 0.8em; }
 
+/* narrower: two columns, but three pictures never two and one alone; on a
+   phone three columns' pictures one under the other */
 @media (max-width: 760px) {
-    .gallery.columns-3, .gallery.columns-4 { grid-template-columns: repeat(2, 1fr); }
+    .gallery.columns-3:has(> :nth-child(4)), .gallery.columns-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .gallery.columns-3 { grid-template-columns: 1fr; }
 }
 
 /* .hide-lone: of four pictures, the fourth goes when three fit in a row and

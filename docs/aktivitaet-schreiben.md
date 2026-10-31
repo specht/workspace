@@ -151,7 +151,8 @@ mit seiner Unterschrift (außer es ist ein Link):
 
 Ohne weitere Klasse verteilen sich die Bilder nach Platz. `columns-2`,
 `columns-3` und `columns-4` halten so viele in einer Reihe, für Bilder, die
-man vergleicht (auf dem Handy zwei, bei `columns-2` eins); `portrait` ist
+man vergleicht (schmaler zwei, auf dem Handy bei `columns-2` und
+`columns-3` eins; drei Bilder nie zwei und eins allein); `portrait` ist
 für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
 Modelle eines Kenney-Kits, `centered` für wenige kleine Bilder wie zwei Diagramme
 (höchstens 16em breit, in der Mitte, immer in einer Reihe; mit `small` höchstens
