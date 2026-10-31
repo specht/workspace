@@ -70,16 +70,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 * [ ] Requirement checks that run inserts against the generated schema: "a film can have several genres" (two inserts succeed), "a loan needs an existing copy" (insert fails)
 * [ ] Later, if the curriculum needs them: weak entities, generalisation
 
-#### Modelling chapter (new, short)
-
-* [ ] From a short story to an ER model in the DSL; Chen and crow's foot
-* [ ] Translation rules for 1:1, 1:n and n:m; relationship attributes
-
-#### Filmdatenbank
-
-Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
-
-
 #### Neo4j
 
 * [ ] The recipe of `neo4j-load.webp` no longer renders: `terminal-wait-for-prompt` after `wget` returns at once (also with a time limit), `neo4j_bolt load` is typed during the download and the picture shows the load at 73 %. The committed picture is still right; find out why the prompt is not waited for in this recipe
