@@ -230,7 +230,7 @@ Keep tutorial tests focused on whether the documented student workflow actually 
 
 Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementally.
 
-* [ ] Workspace lifecycle / nginx management as a future extraction candidate
+* [ ] Further out of main.rb (8900 lines): exams and Git, then accounts and administration, the task API and the Workspace routes, the content pipeline last; one file per topic, the moved lines identical, its E2E tests
 
 
 ## Later ideas
