@@ -74,7 +74,7 @@ export default {
                     const cy = gy + side + gap;
                     const bx = (bxPx - left) * ZOOM, by = (byPx - top) * ZOOM, bs = 8 * ZOOM;
                     // from the block on the photo to its enlargement
-                    stroke(() => { ctx.beginPath(); ctx.moveTo(bx + bs, by); ctx.lineTo(gx, gy); ctx.moveTo(bx + bs, by + bs); ctx.lineTo(gx, gy + side); }, '#fff', 4);
+                    stroke(() => { ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(gx, gy); ctx.moveTo(bx + bs, by + bs); ctx.lineTo(gx, gy + side); }, '#fff', 4);
                     stroke(() => { ctx.beginPath(); ctx.rect(bx, by, bs, bs); }, '#fff', 6);
                     // the block, enlarged, with its values
                     ctx.textAlign = 'center';
