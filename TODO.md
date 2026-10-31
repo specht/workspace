@@ -67,7 +67,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 #### ER-Werkstatt
 
-* [ ] Requirement checks that run inserts against the generated schema: "a film can have several genres" (two inserts succeed), "a loan needs an existing copy" (insert fails)
 * [ ] Later, if the curriculum needs them: weak entities, generalisation
 
 #### Neo4j

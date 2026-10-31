@@ -669,7 +669,7 @@ module TaskSpec
             errors.concat(ErCheck.spec_errors(check))
         when 'schema'
             # Reads information_schema of the person's database, as them.
-            allowed += %w[tables setup]
+            allowed += %w[tables setup trials]
             errors.concat(SchemaCheck.spec_errors(check))
         when 'keyboard'
             # Reads the Keyboard-Tutorial's state file in /workspace.

@@ -1821,6 +1821,38 @@ check:
           rows: 1                  # nicht alle Städte
 ```
 
+`trials` prüft, was die Tabellen tun, nicht wie sie heißen: Jeder Versuch
+ist eine Liste von `INSERT`, `UPDATE` oder `DELETE` (eine Anweisung je
+Eintrag, ohne `;`), die in einer Transaktion laufen, als die Person; danach
+wird die Transaktion immer zurückgenommen, auch wenn alles klappt, und es
+bleibt nichts stehen. `expect` sagt, was geschehen soll: `ok` (alle gehen
+durch), `rejected` (MySQL lehnt eine ab), oder genauer `duplicate`
+(Schlüssel schon da, Fehler 1062), `foreign_key` (1451, 1452) oder
+`not_null` (1048, 1364). Geht ein Versuch anders aus, steht `say` auf der
+Karte mit dem, was MySQL getan hat, etwa »Eine Ausleihe braucht ein
+Exemplar, das es gibt. Bei dir nimmt MySQL das an.« (Problem-Code `trial`).
+Versuche laufen erst, wenn die Tabellen passen, der Reihe nach bis zum
+ersten, der anders ausgeht; unter der Rückmeldung steht, was jeder ergab.
+Damit sie auf leeren und auf gefüllten Tabellen gehen, legen sie an, was
+sie brauchen, mit Schlüsseln, die in den Daten nicht vorkommen
+(`999999001`).
+
+```yaml
+check:
+  type: schema
+  tables: [movie, genre, movie_genre]
+  trials:
+    - say: Ein Film kann mehrere Genres haben.
+      statements:
+        - "INSERT INTO movie (id, title, year, runtime) VALUES (999999001, 'Probe', 2000, 90)"
+        - "INSERT INTO genre (id, name) VALUES (999999001, 'Probe A'), (999999002, 'Probe B')"
+        - "INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001), (999999001, 999999002)"
+      expect: ok
+    - say: Eine Zuordnung braucht einen Film und ein Genre, die es gibt.
+      statements: ["INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001)"]
+      expect: foreign_key
+```
+
 Ein Fremdschlüssel ohne Spalte nach dem Punkt zeigt auf den Primärschlüssel
 der anderen Tabelle. `setup` steht dabei, wenn Tabellen fehlen. Unter der
 Rückmeldung stehen alle Tabellen der Datenbank mit Spalten und Typen,

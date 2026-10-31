@@ -566,8 +566,12 @@ module SqlCheck
 
     # Runs one query in the student's database, logged in as the student,
     # read-only and with a time limit. Needs the mysql2 gem (on the server).
+    # With trial: true, sql is a list of INSERT, UPDATE or DELETE statements
+    # (a schema check's trials, written by the task's author): they run in
+    # one transaction that is always rolled back, so nothing stays; the
+    # answer is { ok: true } or the first statement MySQL refused.
     def self.mysql_runner(host:, username:, password:, database:)
-        lambda do |sql|
+        lambda do |sql, trial: false|
             require 'mysql2'
             client = nil
             begin
@@ -575,6 +579,21 @@ module SqlCheck
                     :database => database, :encoding => 'utf8mb4', :reconnect => false,
                     :connect_timeout => 5, :read_timeout => MAX_MS / 1000 + 10, :write_timeout => 5)
                 client.query("SET SESSION max_execution_time = #{MAX_MS}")
+                if trial
+                    client.query('START TRANSACTION')
+                    begin
+                        sql.each_with_index do |statement, i|
+                            begin
+                                client.query(statement)
+                            rescue Mysql2::Error => e
+                                return { :failed => i, :error => { :code => e.error_number, :message => e.message } }
+                            end
+                        end
+                        return { :ok => true }
+                    ensure
+                        client.query('ROLLBACK') rescue nil
+                    end
+                end
                 client.query('START TRANSACTION READ ONLY')
                 # Values as MySQL sends them (strings), so the student sees
                 # 182.60 like in mycli; compare() normalizes numbers.

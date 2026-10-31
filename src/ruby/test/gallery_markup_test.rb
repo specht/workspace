@@ -22,8 +22,10 @@ class GalleryMarkupTest < Minitest::Test
             galleries(text).flat_map do |gallery|
                 gallery.scan(%r{<figure>(.*?)</figure>}m).map(&:first).reject do |figure|
                     # a picture: an <img> with alt, or a drawing the page makes
-                    # (an automaton) with role='img' and an aria-label
-                    picture = figure =~ /<img\s[^>]*alt=['"][^'"]+['"]/ || figure =~ /role=['"]img['"][^>]*aria-label=['"][^'"]+['"]/
+                    # (an automaton) with role='img' and an aria-label, or an
+                    # ER diagram from a model, whose aria-label the model gives
+                    picture = figure =~ /<img\s[^>]*alt=['"][^'"]+['"]/ || figure =~ /role=['"]img['"][^>]*aria-label=['"][^'"]+['"]/ ||
+                        figure =~ /^_include_er\(/
                     picture && figure.include?('<figcaption>')
                 end.map { |figure| "#{name}: #{figure.strip[0, 100]}" }
             end

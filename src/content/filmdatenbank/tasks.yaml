@@ -97,6 +97,27 @@ tasks:
         - name: movie_genre
           primary_key: [movie_id, genre_id]
           foreign_keys: ["movie_id -> movie.id", "genre_id -> genre.id"]
+      # what the tables do, each in a transaction that is rolled back
+      trials:
+        - say: Ein Film kann mehrere Genres haben.
+          statements:
+            - "INSERT INTO movie (id, title, year, runtime) VALUES (999999001, 'Probe', 2000, 90)"
+            - "INSERT INTO genre (id, name) VALUES (999999001, 'Probe A'), (999999002, 'Probe B')"
+            - "INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001), (999999001, 999999002)"
+          expect: ok
+        - say: Dasselbe Genre bekommt ein Film nur einmal.
+          statements:
+            - "INSERT INTO movie (id, title, year, runtime) VALUES (999999001, 'Probe', 2000, 90)"
+            - "INSERT INTO genre (id, name) VALUES (999999001, 'Probe A')"
+            - "INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001)"
+            - "INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001)"
+          expect: duplicate
+        - say: Eine Zuordnung braucht einen Film und ein Genre, die es gibt.
+          statements: ["INSERT INTO movie_genre (movie_id, genre_id) VALUES (999999001, 999999001)"]
+          expect: foreign_key
+        - say: Jedes Genre gibt es nur einmal.
+          statements: ["INSERT INTO genre (id, name) VALUES (999999001, 'Probe A'), (999999002, 'Probe A')"]
+          expect: duplicate
       setup: Erzeuge in der ER-Werkstatt das SQL und führe im Ordner `filmdatenbank` `mysql < film.sql` aus.
 
   - id: daten-filme
@@ -511,6 +532,24 @@ tasks:
           primary_key: [customer_id, copy_id, loan_date]
           foreign_keys: ["customer_id -> customer.id", "copy_id -> copy.id"]
           min_rows: 1000
+      # what the tables do, each in a transaction that is rolled back
+      trials:
+        - say: Dieselbe Person kann dasselbe Exemplar an zwei Tagen ausleihen, und eine Ausleihe darf ohne Rückgabedatum sein.
+          statements:
+            - "INSERT INTO movie (id, title, year, runtime) VALUES (999999001, 'Probe', 2000, 90)"
+            - "INSERT INTO copy (id, format, movie_id) VALUES (999999001, 'DVD', 999999001)"
+            - "INSERT INTO customer (id, name) VALUES (999999001, 'Probe')"
+            - "INSERT INTO loan (customer_id, copy_id, loan_date, return_date) VALUES (999999001, 999999001, '2001-01-01', '2001-01-03')"
+            - "INSERT INTO loan (customer_id, copy_id, loan_date) VALUES (999999001, 999999001, '2001-02-01')"
+          expect: ok
+        - say: Ein Exemplar gehört immer zu einem Film.
+          statements: ["INSERT INTO copy (id, format) VALUES (999999001, 'DVD')"]
+          expect: not_null
+        - say: Eine Ausleihe braucht ein Exemplar, das es gibt.
+          statements:
+            - "INSERT INTO customer (id, name) VALUES (999999001, 'Probe')"
+            - "INSERT INTO loan (customer_id, copy_id, loan_date) VALUES (999999001, 999999001, '2001-01-01')"
+          expect: foreign_key
       setup: Führe im Ordner `filmdatenbank` `mysql < film.sql` aus und lade dann die drei Datendateien.
     feedback:
       - when: { problem: rows }

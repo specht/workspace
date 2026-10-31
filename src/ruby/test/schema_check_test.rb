@@ -196,4 +196,60 @@ class SchemaCheckTest < Minitest::Test
         bad = check.merge('tables' => [{ 'name' => 'movie', 'absent_columns' => 'director' }])
         assert(TaskSpec.validate_task(task.merge('check' => bad)).any? { |e| e.include?('absent_columns must be a list of column names') })
     end
+    # Trials: the statements run in a transaction that is rolled back; here
+    # the runner answers as MySQL would
+    TRIALS = CHECK.merge('trials' => [
+        { 'say' => 'Ein Film kann mehrere Genres haben.', 'expect' => 'ok',
+          'statements' => ["INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 1)", "INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 2)"] },
+        { 'say' => 'Eine Zuordnung braucht ein Genre, das es gibt.', 'expect' => 'foreign_key',
+          'statements' => ["INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 999)"] },
+    ]).freeze
+
+    def trial_runner(answers, seen = [])
+        reads = runner
+        lambda do |sql, trial: false|
+            next reads.call(sql) unless trial
+            seen << sql
+            answers.shift
+        end
+    end
+
+    FK = { :failed => 0, :error => { :code => 1452, :message => 'Cannot add or update a child row: a foreign key constraint fails (`u_anna`.`movie_genre`)' } }.freeze
+
+    def test_trials_that_go_as_expected_pass_and_are_reported
+        seen = []
+        status, message, read, _, problem = SchemaCheck.check({}, TRIALS, trial_runner([{ :ok => true }, FK], seen), ENV_)
+        assert_equal :correct, status, message
+        assert_nil problem
+        assert_equal 2, seen.size
+        assert_includes read, 'Ausprobiert, jedes Mal in einer Transaktion, die danach zurückgenommen wurde'
+        assert_includes read, '- Ein Film kann mehrere Genres haben. MySQL nimmt alles an.'
+        assert_includes read, "- Eine Zuordnung braucht ein Genre, das es gibt. MySQL lehnt ab: `Cannot add or update a child row: a foreign key constraint fails ('u_anna'.'movie_genre')`"
+    end
+
+    def test_a_trial_that_goes_otherwise_says_what_mysql_did
+        duplicate = { :failed => 1, :error => { :code => 1062, :message => "Duplicate entry '1' for key 'movie_genre.PRIMARY'" } }
+        status, message, _, _, problem = SchemaCheck.check({}, TRIALS, trial_runner([duplicate]), ENV_)
+        assert_equal [:wrong, :trial], [status, problem]
+        assert_equal "Ein Film kann mehrere Genres haben. Bei dir lehnt MySQL das ab: `Duplicate entry '1' for key 'movie_genre.PRIMARY'`", message
+
+        _, message, = SchemaCheck.check({}, TRIALS, trial_runner([{ :ok => true }, { :ok => true }]), ENV_)
+        assert_equal 'Eine Zuordnung braucht ein Genre, das es gibt. Bei dir nimmt MySQL das an.', message
+
+        null = { :failed => 0, :error => { :code => 1048, :message => "Column 'genre_id' cannot be null" } }
+        _, message, = SchemaCheck.check({}, TRIALS, trial_runner([{ :ok => true }, null]), ENV_)
+        assert_match(/MySQL lehnt es bei dir ab, aber nicht weil ein Fremdschlüssel ins Leere zeigen würde/, message)
+
+        status, _, _, _, problem = SchemaCheck.check({}, TRIALS, trial_runner([{ :error => { :code => 2003, :message => "Can't connect" } }]), ENV_)
+        assert_equal [:unavailable, :unreachable], [status, problem]
+    end
+
+    def test_trials_take_only_what_a_transaction_can_take_back
+        assert_empty SchemaCheck.spec_errors(TRIALS)
+        bad = CHECK.merge('trials' => [{ 'say' => 'x', 'expect' => 'maybe', 'statements' => ['CREATE TABLE t (id INT)', 'DELETE FROM movie; DROP TABLE movie'] }])
+        errors = SchemaCheck.spec_errors(bad)
+        assert_includes errors, 'trials[0].expect must be one of ok, rejected, duplicate, foreign_key, not_null'
+        assert_includes errors, 'trials[0].statements[0] must be one INSERT, UPDATE or DELETE'
+        assert_includes errors, 'trials[0].statements[1] must be one INSERT, UPDATE or DELETE'
+    end
 end
