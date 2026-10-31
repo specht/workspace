@@ -83,7 +83,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 
-* [ ] Add the 1:n case: `movie 1:n copy`, `customer` borrows `copy` with loan and return date → relationship attributes, `NULL`, `LEFT JOIN` ("which copies are out?", "which films were never rented?")
 * [ ] Music twin of the chapter on the Discogs dataset
 
 #### Neo4j

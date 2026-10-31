@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "VS Code mit einem Datenmodell für Filme als Text links und dem daraus gezeichneten ER-Diagramm rechts"
 kind: projekt
 language: SQL
-duration: 3 Doppelstunden
+duration: 4 Doppelstunden
 curriculum: "Sek I: Datenbanken (Datenbanken als Tabellen planen, verknüpfte Tabellen); Oberstufe: Datenbanken (Datenmodellierung, relationales Datenbankschema, Join, Normalisierung)"
 topics: [datenbanken-modellierung, datenbanken-abfragen]
 requires: [mysql]
@@ -592,10 +592,160 @@ Fragen, die von Person zu Film zu Person und weiter wandern, werden in SQL schne
 
 _task(neue-frage)
 
+## Eine Videothek
+
+### Exemplare und Ausleihen
+
+Eine mögliche Antwort auf »Was fehlt dem Modell?« baust du jetzt: eine Videothek, die Filme aus deiner Datenbank verleiht. Von manchen Filmen hat sie ein Exemplar, von anderen zwei oder drei, als DVD oder als Blu-ray; viele Filme hat sie gar nicht. Kundinnen und Kunden leihen Exemplare aus und bringen sie ein paar Tage später zurück. Die Videothek möchte wissen: Welche Exemplare sind gerade ausgeliehen, und bei wem? Welche stehen nur im Regal?
+
+Dafür braucht dein Modell zwei neue Entitäten und zwei Beziehungen. Diesmal schreibst du sie selbst. Die Namen sind wieder fest, weil die Daten sie erwarten:
+
+<table class='table table-sm'>
+<thead>
+<tr><th>Name</th><th>Was es ist</th></tr>
+</thead>
+<tbody>
+<tr><td><code>copy</code></td><td>ein Exemplar, mit <code>id</code> und <code>format</code> (<code>DVD</code> oder <code>Blu-ray</code>)</td></tr>
+<tr><td><code>customer</code></td><td>eine Kundin oder ein Kunde, mit <code>id</code> und <code>name</code></td></tr>
+<tr><td><code>loan</code></td><td>die Tabelle der Ausleihen: wer welches Exemplar an welchem Tag ausgeliehen hat (<code>loan_date</code>) und an welchem Tag zurückgebracht (<code>return_date</code>)</td></tr>
+</tbody>
+</table>
+
+Zwei Kardinalitäten musst du entscheiden: zwischen `movie` und `copy` und zwischen `customer` und `copy`. Denk dabei an ein ganzes Jahr: Ein Exemplar wird viele Male ausgeliehen, und dieselbe Person kann dasselbe Exemplar zweimal ausleihen, an verschiedenen Tagen.
+
+Das Datum gehört weder zum Exemplar noch zur Person, sondern zur einzelnen Ausleihe. Es ist ein Attribut der Beziehung. Wie du Attribute einer Beziehung schreibst und ihrer Tabelle mit `as` einen Namen gibst, steht im Handbuch unter [Beziehungen und Kardinalitäten](/reference/er-modelle#beziehungen-und-kardinalitäten).
+
+_task(modell-verleih)
+
+<!-- after: modell-verleih -->
+So sieht der neue Teil von `film.er` aus:
+
+```er
+# Die Videothek: Exemplare, Kundschaft und Ausleihen
+
+entity copy
+  id: int, primary key
+  format: text
+
+entity customer
+  id: int, primary key
+  name: text
+
+relationship has_copy: movie 1:n copy
+
+relationship borrows: customer n:m copy as loan
+  loan_date: date, primary key
+  return_date: date, optional
+```
+
+- `movie 1:n copy`: Ein Film hat viele Exemplare, ein Exemplar gehört zu genau einem Film. Eine 1:n-Beziehung bekommt keine eigene Tabelle. `copy` merkt sich mit dem Fremdschlüssel `movie_id`, zu welchem Film es gehört, wie `movie` bei »Was wäre bei n:1?« die Spalte `genre_id` bekommen hätte.
+- `customer n:m copy`: Im Lauf der Zeit leiht eine Person viele Exemplare, und ein Exemplar geht an viele Personen. Die Beziehung wird zur Tabelle `loan`.
+- `loan_date` gehört zum Primärschlüssel. Ohne das Datum wäre der Schlüssel `(customer_id, copy_id)`, und dieselbe Person könnte dasselbe Exemplar nur ein einziges Mal ausleihen.
+- `return_date` ist `optional`: Solange ein Exemplar ausgeliehen ist, gibt es noch kein Rückgabedatum.
+
+<img class='invert-dark' src='film-3-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm des ganzen Modells: zu movie, genre, crew, job, movie_genre und movie_crew kommen copy mit dem Fremdschlüssel movie_id auf movie, customer und loan mit den Spalten customer_id, copy_id, loan_date und return_date; customer_id, copy_id und loan_date bilden den Primärschlüssel.'>
+<!-- /after -->
+
+### Die Ausleihen laden
+
+Erzeuge das SQL neu, beende `mycli`, lade die Ausleihen herunter und lege alles noch einmal an, mit allen drei Datendateien:
+
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-rental.sql
+```
+
+```bash
+mysql < film.sql
+mysql < movies-data-films.sql
+mysql < movies-data-crew.sql
+mysql < movies-data-rental.sql
+```
+
+<div class='hint'>
+Die Videothek ist erfunden: Die Exemplare, die Namen der Kundschaft und die Ausleihen vom 2. Januar bis zum 16. Oktober 2026 hat ein Programm ausgewürfelt. Die Filme sind dieselben wie bisher.
+</div>
+
+_task(tabellen-verleih)
+
+_schema(movies-rental, rows, new: copy customer loan)
+
+### Was noch draußen ist: NULL
+
+Ein Exemplar, das gerade ausgeliehen ist, hat in `loan` eine Zeile ohne Rückgabedatum. In `mycli` steht dort `NULL`: Die Zelle ist leer, es gibt keinen Wert.
+
+_task(vorhersage-null)
+
+<!-- after: vorhersage-null -->
+`= NULL` ist nie wahr, auch nicht in einer leeren Zelle. `NULL` heißt »unbekannt«, und ob ein unbekannter Wert gleich einem anderen unbekannten ist, weiß MySQL nicht. Das `WHERE` lässt deshalb keine Zeile durch, und `COUNT(*)` zählt 0. Nach einer leeren Zelle fragst du mit `IS NULL`, nach einer gefüllten mit `IS NOT NULL`:
+
+```sql
+SELECT COUNT(*) FROM loan WHERE return_date IS NULL;
+```
+<!-- /after -->
+
+_task(ausgeliehen)
+
+### Was nie ausgeliehen wurde: LEFT JOIN
+
+»Back to the Future« hat zwei Exemplare. Wann wurden sie ausgeliehen?
+
+```sql
+SELECT copy.id, copy.format, loan.loan_date, loan.return_date
+FROM copy
+JOIN loan ON copy.id = loan.copy_id
+WHERE copy.movie_id = 233;
+```
+
+<div class='scroll-x'>
+<table class='table table-sm'>
+<thead>
+<tr><th>id</th><th>format</th><th>loan_date</th><th>return_date</th></tr>
+</thead>
+<tbody>
+<tr><td>31</td><td>DVD</td><td>2026-05-21</td><td>2026-05-22</td></tr>
+</tbody>
+</table>
+</div>
+
+Nur die DVD steht da. Die Blu-ray wurde nie ausgeliehen, und ein `JOIN` behält nur Zeilen, die in beiden Tabellen einen Partner haben. Ein `LEFT JOIN` behält jede Zeile der linken Tabelle, hier `copy`. Findet es in `loan` keinen Partner, füllt es dessen Spalten mit `NULL`:
+
+```sql
+SELECT copy.id, copy.format, loan.loan_date, loan.return_date
+FROM copy
+LEFT JOIN loan ON copy.id = loan.copy_id
+WHERE copy.movie_id = 233;
+```
+
+<div class='scroll-x'>
+<table class='table table-sm'>
+<thead>
+<tr><th>id</th><th>format</th><th>loan_date</th><th>return_date</th></tr>
+</thead>
+<tbody>
+<tr><td>31</td><td>DVD</td><td>2026-05-21</td><td>2026-05-22</td></tr>
+<tr><td>32</td><td>Blu-ray</td><td>NULL</td><td>NULL</td></tr>
+</tbody>
+</table>
+</div>
+
+Im Query Stepper siehst du, welche Zeilen von `copy` beim `LEFT JOIN` keinen Partner finden. Ändere `LEFT JOIN` in `JOIN` und vergleiche.
+
+<div class='query-stepper' data-stepper data-dataset='movies-rental' data-query="SELECT copy.id, copy.format, loan.loan_date, loan.return_date
+FROM copy
+LEFT JOIN loan ON copy.id = loan.copy_id
+WHERE copy.movie_id = 233;">
+</div>
+
+Mit `WHERE loan.copy_id IS NULL` bleiben genau die Zeilen übrig, die keinen Partner hatten.
+
+_task(nie-ausgeliehen)
+
+_task(ohne-ausleihe)
+
 <!-- extra -->
 ## Normalisierung
 
-Deine Filmdaten liegen auf sechs Tabellen, und für fast jede Frage brauchst du ein `JOIN`. Warum nicht eine einzige große Tabelle, in der alles steht? In diesem Kapitel baust du eine solche Tabelle, siehst, was mit ihr schiefgeht, und teilst sie Schritt für Schritt wieder auf. Am Ende stehst du bei den Tabellen, die du schon kennst. Das Verfahren heißt **Normalisierung**; im Grundkurs kannst du das Kapitel überspringen.
+Deine Filmdaten liegen auf vielen Tabellen, und für fast jede Frage brauchst du ein `JOIN`. Warum nicht eine einzige große Tabelle, in der alles steht? In diesem Kapitel baust du eine solche Tabelle, siehst, was mit ihr schiefgeht, und teilst sie Schritt für Schritt wieder auf. Am Ende stehst du bei den Tabellen, die du schon kennst. Das Verfahren heißt **Normalisierung**; im Grundkurs kannst du das Kapitel überspringen.
 
 ### Eine Liste für alles
 
@@ -828,7 +978,7 @@ _task(dritte-normalform)
 
 ### Zurück zu deinen Tabellen
 
-Vergleich das mit deinen eigenen sechs Tabellen:
+Vergleich das mit deinen eigenen Tabellen für Filme und Personen:
 
 _schema(movies)
 
@@ -837,7 +987,7 @@ _schema(movies)
 - Wer mitspielt, ist auch eine Person. In `club_cast` steht nur ein Name, und Namen sind kein guter Schlüssel: In den Filmdaten heißen drei verschiedene Personen John Morris. In `crew` hat jede Person eine `id`, ein Geburtsjahr und ein Todesjahr, ob sie Regie führt, mitspielt oder die Musik schreibt.
 - Was eine Person bei einem Film gemacht hat, ist eine Zeile in `movie_crew`, mit der Tätigkeit aus `job`. `club_movie` hat Platz für genau eine `director_id`, aber 227 Filme der Datenbank haben zwei oder mehr Regisseurinnen und Regisseure. Und Robert Zemeckis hat bei »Back to the Future« Regie geführt und das Drehbuch geschrieben: zwei Zeilen in `movie_crew`.
 
-`movie_crew` besteht nur aus ihrem Schlüssel, da kann keine Spalte von einem Teil abhängen; in `movie`, `genre`, `crew` und `job` hängt jede Spalte direkt von der `id` ab. Deine sechs Tabellen sind in der dritten Normalform. Das ER-Modell hat sie dorthin gebracht: Jede Art von Objekt bekam ihre eigene Entität und damit ihre eigene Tabelle, und jede n:m-Beziehung ihre eigene Tabelle.
+`movie_crew` besteht nur aus ihrem Schlüssel, da kann keine Spalte von einem Teil abhängen; in `movie`, `genre`, `crew` und `job` hängt jede Spalte direkt von der `id` ab. Diese sechs Tabellen sind in der dritten Normalform, und die drei der Videothek auch: In `loan` hängt `return_date` vom ganzen Schlüssel ab, von Person, Exemplar und Tag. Das ER-Modell hat sie dorthin gebracht: Jede Art von Objekt bekam ihre eigene Entität und damit ihre eigene Tabelle, und jede n:m-Beziehung ihre eigene Tabelle.
 
 _task(welche-normalform)
 
@@ -860,7 +1010,9 @@ DROP TABLE club_cast, club_movie, club_director, club_list;
 - Ein **Primärschlüssel** bestimmt eine Zeile eindeutig; ein Titel taugt dafür nicht, eine `id` schon. Ein **Fremdschlüssel** verweist auf eine Zeile einer anderen Tabelle. MySQL lehnt jedes `INSERT` ab, das ins Leere zeigen würde, und jedes `DELETE` einer Zeile, auf die noch gezeigt wird, außer der Fremdschlüssel sagt mit `ON DELETE` etwas anderes.
 - Eine **n:m-Beziehung** und jede Beziehung zwischen drei Entitäten wird eine eigene Tabelle mit einem **zusammengesetzten Primärschlüssel**.
 - Aus dem Modell entsteht SQL (`CREATE TABLE`, `PRIMARY KEY`, `FOREIGN KEY`), das du mit `mysql < film.sql` ausführst.
+- Eine **1:n-Beziehung** wird ein Fremdschlüssel auf der n-Seite (`movie_id` in `copy`). Ein **Attribut einer Beziehung** wie `loan_date` kommt in ihre Tabelle und kann zum Schlüssel gehören.
 - Mit `JOIN … ON …` setzt du verteilte Daten wieder zusammen, einen Schritt pro Linie im Tabellendiagramm. `GROUP BY` bildet Gruppen, `HAVING` filtert sie.
+- Eine leere Zelle ist `NULL`; nach ihr fragst du mit `IS NULL`, nie mit `= NULL`. Ein `LEFT JOIN` behält auch die Zeilen ohne Partner.
 
 Im Handbuch: _uses(create-table, join, aggregieren)
 
@@ -933,6 +1085,34 @@ check-task: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN mo
 check-task-fails: viel-regie <- SELECT crew.name, COUNT(*) AS movies FROM crew JOIN movie_crew ON crew.id = movie_crew.crew_id GROUP BY crew.id, crew.name HAVING movies >= 5 ORDER BY movies DESC;
 check-task: doppelte-titel <- SELECT title, COUNT(*) FROM movie GROUP BY title HAVING COUNT(*) > 1;
 check-task-fails: doppelte-titel <- SELECT title, COUNT(*) FROM movie GROUP BY id, title HAVING COUNT(*) > 1;
+# Die Videothek: das Modell mit Exemplaren und Ausleihen, neu angelegt und
+# mit allen drei Datendateien geladen
+check-task-fails: modell-verleih
+write-file: filmdatenbank/film.er <- file:film-3.er
+check-task: modell-verleih
+terminal-run: sed -i 's/loan_date: date, primary key/loan_date: date/' film.er
+check-task-fails: modell-verleih
+write-file: filmdatenbank/film.er <- file:film-3.er
+open-file: film.er
+click: selector:.editor-actions a[aria-label="SQL erzeugen"]
+wait-for-file-newer: filmdatenbank/film.sql <- filmdatenbank/film.er
+# Right after »SQL erzeugen« the terminal loses the first line it is sent
+terminal-run: clear
+terminal-wait-for-prompt
+check-task-fails: tabellen-verleih
+terminal-run: test -f movies-data-rental.sql || wget -q https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-rental.sql
+terminal-wait-for-prompt: 60
+terminal-run: mysql < film.sql && mysql < movies-data-films.sql && mysql < movies-data-crew.sql && mysql < movies-data-rental.sql
+terminal-wait-for-prompt: 120
+check-task: tabellen-verleih
+check-task: vorhersage-null <- 1
+check-task-fails: vorhersage-null <- 0
+check-task: ausgeliehen <- SELECT movie.title, copy.format, customer.name, loan.loan_date FROM loan JOIN copy ON loan.copy_id = copy.id JOIN movie ON copy.movie_id = movie.id JOIN customer ON loan.customer_id = customer.id WHERE loan.return_date IS NULL ORDER BY loan.loan_date;
+check-task-fails: ausgeliehen <- SELECT movie.title, copy.format, customer.name, loan.loan_date FROM loan JOIN copy ON loan.copy_id = copy.id JOIN movie ON copy.movie_id = movie.id JOIN customer ON loan.customer_id = customer.id WHERE loan.return_date = NULL ORDER BY loan.loan_date;
+check-task: nie-ausgeliehen <- SELECT copy.id, movie.title, copy.format FROM copy JOIN movie ON copy.movie_id = movie.id LEFT JOIN loan ON copy.id = loan.copy_id WHERE loan.copy_id IS NULL;
+check-task-fails: nie-ausgeliehen <- SELECT copy.id, movie.title, copy.format FROM copy JOIN movie ON copy.movie_id = movie.id JOIN loan ON copy.id = loan.copy_id WHERE loan.copy_id IS NULL;
+check-task: ohne-ausleihe <- SELECT customer.name FROM customer LEFT JOIN loan ON customer.id = loan.customer_id WHERE loan.customer_id IS NULL;
+check-task-fails: ohne-ausleihe <- SELECT customer.name FROM customer;
 -->
 
 <!-- tutorial-step

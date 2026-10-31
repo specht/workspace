@@ -1,0 +1,45 @@
+# Filme und ihre Genres
+
+entity movie
+  id: int, primary key
+  title: text
+  original_title: text, optional
+  german_title: text, optional
+  year: int
+  runtime: int
+
+entity genre
+  id: int, primary key
+  name: text, unique
+
+relationship has_genre: movie n:m genre
+
+# Personen und was sie bei einem Film gemacht haben
+
+entity crew
+  id: int, primary key
+  name: text
+  birth_year: int, optional
+  death_year: int, optional
+
+entity job
+  id: int, primary key
+  title: text, unique
+
+relationship credit: movie, crew, job as movie_crew
+
+# Die Videothek: Exemplare, Kundschaft und Ausleihen
+
+entity copy
+  id: int, primary key
+  format: text
+
+entity customer
+  id: int, primary key
+  name: text
+
+relationship has_copy: movie 1:n copy
+
+relationship borrows: customer n:m copy as loan
+  loan_date: date, primary key
+  return_date: date, optional

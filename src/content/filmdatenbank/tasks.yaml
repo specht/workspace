@@ -422,6 +422,221 @@ tasks:
         also n:m.
 
   # Normalisierung (Extra): die Tabellen des Filmclubs in der eigenen Datenbank
+  - id: modell-verleih
+    title: Exemplare und Ausleihen
+    prompt: |
+      Ergänze `filmdatenbank/film.er` um die Videothek: die Entitäten `copy`
+      und `customer`, eine Beziehung zwischen `movie` und `copy` und eine
+      zwischen `customer` und `copy`, deren Tabelle `loan` heißt, mit den
+      Attributen `loan_date` und `return_date` vom Typ `date`.
+    check:
+      type: er
+      file: filmdatenbank/film.er
+      entities:
+        - name: copy
+          key: [id]
+          attributes: ["format: text"]
+        - name: customer
+          key: [id]
+          attributes: ["name: text"]
+      relationships:
+        - between: [movie, copy]
+          cardinality: 1:n
+        - between: [customer, copy]
+          cardinality: n:m
+          table: loan
+          attributes: ["loan_date: date", "return_date: date, optional"]
+      tables:
+        - name: copy
+          columns: [id, format, movie_id]
+          foreign_keys: ["movie_id -> movie.id"]
+        - name: loan
+          columns: [customer_id, copy_id, loan_date, return_date]
+          primary_key: [customer_id, copy_id, loan_date]
+    feedback:
+      - when: { problem: cardinality }
+        say: 'Prüf die Kardinalitäten. Zu wie vielen Filmen gehört ein Exemplar, wie viele Exemplare kann ein Film haben? Und wie oft wird ein Exemplar im Lauf eines Jahres ausgeliehen, von wie vielen Personen?'
+      - when: { problem: primary_key }
+        say: 'Kann dieselbe Person dasselbe Exemplar zweimal ausleihen, an verschiedenen Tagen? Mit dem Schlüssel `(customer_id, copy_id)` ginge das nicht. Was muss noch zum Schlüssel von `loan` gehören?'
+      - when: { problem: missing_table }
+        say: 'Aus der Beziehung zwischen `customer` und `copy` soll die Tabelle `loan` werden. Gib den Namen mit `as loan` am Ende ihrer Zeile an.'
+    hint:
+      - |
+        Ein Film hat ein, zwei oder drei Exemplare, ein Exemplar gehört zu genau
+        einem Film. Und eine Person leiht im Lauf eines Jahres viele Exemplare,
+        ein Exemplar geht an viele Personen. Welche Kardinalitäten sind das?
+        Die Daten der Ausleihe stehen eingerückt unter der Beziehung, wie
+        Attribute unter einer Entität.
+      - |
+        Ein Gerüst:
+
+        ```er
+        entity copy
+          id: int, primary key
+          format: …
+
+        entity customer
+          …
+
+        relationship has_copy: movie … copy
+
+        relationship borrows: customer … copy as loan
+          loan_date: date, …
+          return_date: date, …
+        ```
+
+  - id: tabellen-verleih
+    title: Die Videothek angelegt und geladen
+    prompt: |
+      Erzeuge das SQL neu und führe `film.sql`, `movies-data-films.sql`,
+      `movies-data-crew.sql` und `movies-data-rental.sql` nacheinander aus.
+    check:
+      type: schema
+      tables:
+        - name: movie
+          min_rows: 100
+        - name: movie_crew
+          min_rows: 100
+        - name: copy
+          columns: [id, format, movie_id]
+          primary_key: [id]
+          foreign_keys: ["movie_id -> movie.id"]
+          min_rows: 100
+        - name: customer
+          columns: [id, name]
+          primary_key: [id]
+          min_rows: 100
+        - name: loan
+          columns: [customer_id, copy_id, loan_date, return_date]
+          primary_key: [customer_id, copy_id, loan_date]
+          foreign_keys: ["customer_id -> customer.id", "copy_id -> copy.id"]
+          min_rows: 1000
+      setup: Führe im Ordner `filmdatenbank` `mysql < film.sql` aus und lade dann die drei Datendateien.
+    feedback:
+      - when: { problem: rows }
+        say: Eine Tabelle ist leer. `film.sql` löscht alle Tabellen; lade danach `movies-data-films.sql`, `movies-data-crew.sql` und `movies-data-rental.sql`, in dieser Reihenfolge. Meldet `mysql` beim Laden `Column 'return_date' cannot be null`, fehlt im Modell `optional` bei `return_date`.
+
+  - id: vorhersage-null
+    title: Gleich NULL?
+    prediction: true
+    prompt: |
+      Was zeigt diese Abfrage?
+
+      ```sql
+      SELECT COUNT(*) FROM loan WHERE return_date = NULL;
+      ```
+
+      Überleg zuerst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - 'Wie viele Exemplare gerade ausgeliehen sind: die Zahl der Zeilen ohne Rückgabedatum.'
+        - '0'
+        - 'Eine Fehlermeldung, weil `NULL` kein Wert ist.'
+        - 'Die Zahl aller Ausleihen.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Das wäre zu erwarten, und genau das ist die Falle. Probier es aus: Was zählt MySQL?'
+      - when: { picked: 2 }
+        say: 'MySQL meldet keinen Fehler. Probier es aus: Welche Zahl kommt heraus?'
+    solution: |
+      0: Ein Vergleich mit `NULL` ist nie wahr, auch nicht in einer leeren
+      Zelle. Nach einer leeren Zelle fragst du mit `IS NULL`.
+
+  - id: ausgeliehen
+    title: Was gerade ausgeliehen ist
+    prompt: |
+      Welche Exemplare sind gerade ausgeliehen? Zeig den Titel des Films, das
+      Format, den Namen der Person und den Tag der Ausleihe, die ältesten
+      Ausleihen zuerst.
+    check:
+      type: sql
+      expect_query: |
+        SELECT movie.title, copy.format, customer.name, loan.loan_date
+        FROM loan
+        JOIN copy ON loan.copy_id = copy.id
+        JOIN movie ON copy.movie_id = movie.id
+        JOIN customer ON loan.customer_id = customer.id
+        WHERE loan.return_date IS NULL
+        ORDER BY loan.loan_date
+      sorted_by: 4
+      tables: { movie: ~, copy: ~, customer: ~, loan: ~ }
+      setup: Lade zuerst die Ausleihen, wie unter »Die Ausleihen laden« beschrieben.
+    feedback:
+      - when: { query_matches: '=\s*null' }
+        say: '`= NULL` ist nie wahr, auch nicht in einer leeren Zelle. Frag mit `IS NULL`.'
+      - when: { query_matches: 'is\s+not\s+null' }
+        say: '`IS NOT NULL` behält die Ausleihen, die schon zurückgebracht sind. Gesucht sind die anderen.'
+    hint:
+      - |
+        Geh im Tabellendiagramm von `loan` aus: zu `copy` und von dort zu
+        `movie`, und zu `customer`. Jeder Schritt wird ein `JOIN`. Ausgeliehen
+        ist ein Exemplar, wenn `return_date` leer ist.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT movie.title, copy.format, customer.name, loan.loan_date
+        FROM loan
+        JOIN copy ON …
+        JOIN movie ON …
+        JOIN customer ON …
+        WHERE loan.return_date …
+        ORDER BY …;
+        ```
+
+  - id: nie-ausgeliehen
+    title: Nie ausgeliehen
+    prompt: |
+      Welche Exemplare wurden noch nie ausgeliehen? Zeig die `id` des
+      Exemplars, den Titel des Films und das Format.
+    check:
+      type: sql
+      expect_query: |
+        SELECT copy.id, movie.title, copy.format
+        FROM copy
+        JOIN movie ON copy.movie_id = movie.id
+        LEFT JOIN loan ON copy.id = loan.copy_id
+        WHERE loan.copy_id IS NULL
+      tables: { movie: ~, copy: ~, loan: ~ }
+      setup: Lade zuerst die Ausleihen, wie unter »Die Ausleihen laden« beschrieben.
+    feedback:
+      - when: { query_matches: '(?<!left)\s+join\s+loan\b' }
+        say: 'Ein `JOIN` mit `loan` lässt jedes Exemplar weg, das keine Ausleihe hat, also genau die gesuchten. Welches `JOIN` behält sie?'
+    hint:
+      - |
+        Verbinde `copy` mit `loan` so, dass jedes Exemplar bleibt, auch eines
+        ohne Ausleihe. Bei einem Exemplar ohne Ausleihe sind dann alle Spalten
+        von `loan` leer. Den Titel holst du mit einem zweiten `JOIN` aus `movie`.
+      - |
+        Ein Gerüst:
+
+        ```sql
+        SELECT copy.id, movie.title, copy.format
+        FROM copy
+        JOIN movie ON …
+        LEFT JOIN loan ON …
+        WHERE … IS NULL;
+        ```
+
+  - id: ohne-ausleihe
+    title: Noch nie etwas ausgeliehen
+    extra: true
+    prompt: Wer aus der Kundschaft hat noch nie etwas ausgeliehen? Gefragt sind nur die Namen.
+    check:
+      type: sql
+      expect_query: |
+        SELECT customer.name
+        FROM customer
+        LEFT JOIN loan ON customer.id = loan.customer_id
+        WHERE loan.customer_id IS NULL
+      tables: { customer: ~, loan: ~ }
+      setup: Lade zuerst die Ausleihen, wie unter »Die Ausleihen laden« beschrieben.
+    feedback:
+      - when: { query_matches: '(?<!left)\s+join\s+loan\b' }
+        say: 'Ein `JOIN` mit `loan` lässt jede Person ohne Ausleihe weg. Welches `JOIN` behält sie?'
+
   - id: vorhersage-geburtsjahr
     title: Ein Geburtsjahr ändern
     extra: true

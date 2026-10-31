@@ -95,7 +95,7 @@ Benutzt in: [Einführung in SQL](/mysql) (die kleine Fassung), [SQL: Gruppieren 
 <!-- part: movies -->
 ## Filme
 
-Rund 2.700 bekannte Spielfilme, ihre Genres und die Menschen, die an ihnen mitgearbeitet haben. Die Filmdatenbank baut diese Tabellen erst selbst aus einem ER-Modell und lädt dann die Daten hinein.
+Rund 2.700 bekannte Spielfilme, ihre Genres und die Menschen, die an ihnen mitgearbeitet haben, dazu eine erfundene Videothek, die einige der Filme verleiht. Die Filmdatenbank baut diese Tabellen erst selbst aus einem ER-Modell und lädt dann die Daten hinein.
 
 _schema(movies)
 
@@ -109,22 +109,28 @@ _schema(movies)
 <tr><td><code>crew.name</code>, <code>birth_year</code>, <code>death_year</code></td><td>eine Person, ihr Geburts- und Todesjahr; beide können fehlen</td></tr>
 <tr><td><code>job.title</code></td><td>eine Tätigkeit: <code>actor</code>, <code>director</code>, <code>writer</code>, <code>composer</code>, <code>producer</code>, <code>cinematographer</code> oder <code>editor</code></td></tr>
 <tr><td><code>movie_crew</code></td><td>wer bei welchem Film was gemacht hat; eine Person steht pro Film und Tätigkeit einmal da</td></tr>
+<tr><td><code>copy</code></td><td>ein Exemplar der Videothek: zu welchem Film (<code>movie_id</code>) und in welchem <code>format</code>, <code>DVD</code> oder <code>Blu-ray</code></td></tr>
+<tr><td><code>customer.name</code></td><td>eine Kundin oder ein Kunde der Videothek, mit erfundenem Namen</td></tr>
+<tr><td><code>loan</code></td><td>wer welches Exemplar an welchem Tag ausgeliehen hat (<code>loan_date</code>) und an welchem Tag zurückgebracht (<code>return_date</code>); leer, solange es ausgeliehen ist</td></tr>
 </tbody>
 </table>
 </div>
 
 **Was drin ist.** Spielfilme, die in IMDb mindestens 100.000 Stimmen haben; nur ihre IMDb-Nummer wird dafür benutzt, alles andere kommt aus [Wikidata](https://www.wikidata.org/). Von den Menschen stehen pro Film die zehn bekanntesten Schauspielerinnen und Schauspieler da (gemessen an der Zahl ihrer Wikipedia-Artikel) und wer Regie geführt, geschrieben, komponiert, produziert, die Kamera geführt oder geschnitten hat. Titel sind nicht eindeutig: Einen Film erkennst du an seiner `id` oder an Titel und Jahr.
 
+Die Videothek ist erfunden: Ein Programm hat mit festem Startwert Exemplare von gut 800 Filmen, 120 Namen und die Ausleihen vom 2. Januar bis zum 16. Oktober 2026 ausgewürfelt (`src/scripts/collect-movies/rental.rb`). Einige Exemplare wurden nie ausgeliehen, einige Kunden haben nie etwas ausgeliehen.
+
 **Woher, und darf ich das?** Wikidata steht unter [CC0](https://creativecommons.org/publicdomain/zero/1.0/): Die Daten dürfen ohne Nachfrage kopiert, verändert und weitergegeben werden.
 
-**Laden.** Die Filmdatenbank lädt die Daten in zwei Schritten, wie sie das Modell wachsen lässt:
+**Laden.** Die Filmdatenbank lädt die Daten in drei Schritten, wie sie das Modell wachsen lässt:
 
 ```bash_copy
 wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-films.sql
 wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-crew.sql
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-data-rental.sql
 ```
 
-Alles auf einmal, mit den Tabellen: `movie-archive/movies.sql`. In Neo4j: Knoten `Movie`, `Person` und `Genre`, `(Movie)-[:IN_GENRE]->(Genre)` und `(Person)-[:ACTOR|DIRECTOR|…]->(Movie)`.
+Alles auf einmal, mit den Tabellen: `movie-archive/movies.sql`. In Neo4j: Knoten `Movie`, `Person` und `Genre`, `(Movie)-[:IN_GENRE]->(Genre)` und `(Person)-[:ACTOR|DIRECTOR|…]->(Movie)`; die Videothek ist nicht im Graphen.
 
 Benutzt in: [Filmdatenbank mit MySQL](/filmdatenbank), [Filmdatenbank mit Neo4j](/neo4j-filmdatenbank) und im [Query Stepper](/query-stepper) (dort nur Regie und Schauspiel, Schauspielerinnen und Schauspieler ab fünf Filmen).
 <!-- /part -->
