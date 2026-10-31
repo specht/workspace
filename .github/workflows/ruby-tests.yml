@@ -11,6 +11,14 @@ on:
 
 jobs:
   test:
+    # two jobs side by side: the task examples take most of the time (about
+    # nine minutes), all other tests together about four, so a mistake there
+    # shows sooner
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [quick, task-examples]
+    name: ${{ matrix.part }}
     runs-on: ubuntu-latest
     container: ruby:3.4.10-bookworm
     steps:
@@ -34,7 +42,12 @@ jobs:
         working-directory: src/ruby
         run: |
           failed=0
-          for f in test/*_test.rb; do
+          if [ "${{ matrix.part }}" = task-examples ]; then
+            files=test/task_examples_test.rb
+          else
+            files=$(ls test/*_test.rb | grep -v '^test/task_examples_test.rb$')
+          fi
+          for f in $files; do
             if ! ruby "$f" > /tmp/out.txt 2>&1; then
               echo "::error file=src/ruby/$f::$(tail -3 /tmp/out.txt | tr '\n' ' ')"
               failed=1

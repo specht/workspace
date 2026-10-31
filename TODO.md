@@ -219,7 +219,6 @@ Improve supply-chain reproducibility gradually rather than rewriting the Docker 
 
 Keep tutorial tests focused on whether the documented student workflow actually works.
 
-* [ ] A small, fast CI gate for cheap checks
 * [ ] Heavier browser/toolchain tests manually, nightly or on a suitable self-hosted runner
 * [ ] E2E coverage when important pages are changed or newly written
 
