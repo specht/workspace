@@ -230,7 +230,6 @@ Keep tutorial tests focused on whether the documented student workflow actually 
 
 Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementally.
 
-* [ ] Decide whether the remaining login/session routes move into a dedicated module
 * [ ] Workspace lifecycle / nginx management as a future extraction candidate
 
 
