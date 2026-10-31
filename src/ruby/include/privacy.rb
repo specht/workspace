@@ -578,10 +578,13 @@ module Privacy
     end
 
     def self.impressum_html(s)
-        address = s[:operator_address] ? "<br>#{lines_html(s[:operator_address])}" : ''
-        operator = operator_line(s)
+        # name, school and address, each on a line of its own, as on a letter
+        lines = []
+        lines << "<strong>#{h(s[:operator_name])}</strong>" if s[:operator_name]
+        lines << h(s[:operator_school]) if s[:operator_school]
+        lines << lines_html(s[:operator_address]) if s[:operator_address]
         out = +"<h1>Impressum</h1>\n"
-        out << "<p>#{operator ? "<strong>#{operator}</strong>" : 'Die Angaben zur Person, die den Workspace betreibt, sind in dieser Installation noch nicht eingetragen.'}#{address}</p>\n"
+        out << "<p>#{lines.empty? ? 'Die Angaben zur Person, die den Workspace betreibt, sind in dieser Installation noch nicht eingetragen.' : lines.join('<br>')}</p>\n"
         out << "<p>E-Mail: #{email_link(s)}</p>\n" if s[:contact_email]
         out << '<p>Der Workspace ist ein nicht-kommerzielles Angebot für den Informatikunterricht, betrieben von einer Lehrkraft. ' \
             "Es gibt keine Werbung, keine kostenpflichtigen Funktionen und keine Auswertung der Daten für andere Zwecke.</p>\n"
