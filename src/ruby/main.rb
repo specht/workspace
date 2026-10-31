@@ -13,6 +13,7 @@ require './include/card_usage.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/stage_code.rb'
+require './include/command_redaction.rb'
 require './include/person_sources.rb'
 require './include/picture_rights.rb'
 require './include/curriculum_overview.rb'
@@ -495,13 +496,16 @@ class Main < Sinatra::Base
         dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
 
         if timed_out
-            STDERR.puts ">>> CMD TIMEOUT after #{format('%.3f', dt)}s: #{command}"
-            raise "Command timed out after #{timeout}s: #{command}"
+            # the command as it may stand in the log: secrets replaced (CommandRedaction)
+            shown = CommandRedaction.redact(command)
+            STDERR.puts ">>> CMD TIMEOUT after #{format('%.3f', dt)}s: #{shown}"
+            raise "Command timed out after #{timeout}s: #{shown}"
         end
 
         unless allow_failure || (status && status.success?)
-            STDERR.puts ">>> CMD ERROR after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
-            raise "Command failed with status #{status&.exitstatus}: #{command}\n#{stderr_data}"
+            shown = CommandRedaction.redact(command)
+            STDERR.puts ">>> CMD ERROR after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{shown}"
+            raise "Command failed with status #{status&.exitstatus}: #{shown}\n#{stderr_data}"
         end
 
         # STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}" if log_command

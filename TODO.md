@@ -208,8 +208,6 @@ Platform-wide:
 
 ### Operational logging
 
-* [ ] Audit command/error logging so secrets and credentials cannot appear in logs
-* [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
 
 ### Dependency and image verification
 
