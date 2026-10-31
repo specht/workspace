@@ -321,7 +321,7 @@ viewport: 900x160
 wait-for-text: Hallo aus meinem eigenen Server
 sleep: 1
 -->
-<img class='shot border' src='browser-hallo.webp' alt='Im Browser steht nur eine Zeile Text: Hallo aus meinem eigenen Server!'>
+<img class='drawing border' style='width: 40em' src='browser-hallo.webp' alt='Im Browser steht nur eine Zeile Text: Hallo aus meinem eigenen Server!'>
 
 Oder du schreibst die Anfrage selbst, Zeile für Zeile: Öffne die [TCP-Konsole](/tcp-console) und verbinde dich mit `localhost`, Port 8000. Die Konsole beginnt in deinem Workspace, also landet sie bei deinem Server. Tippe `GET / HTTP/1.1`, `Host: localhost` und eine leere Zeile. Im Terminal siehst du, wie dein Server die Zeilen liest, in der Konsole, was er antwortet. Probier auch, was passiert, wenn du die leere Zeile weglässt oder statt einer Anfrage einfach `Hallo` schickst.
 
