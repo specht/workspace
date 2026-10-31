@@ -47,7 +47,9 @@ A writing and development order, not a prerequisite chain for students.
 Countries, movies and music are published in `specht/workspace-files`
 (`country-archive/`, `movie-archive/`, `music-archive/`), built with
 `src/scripts/collect-countries`, `collect-movies` and `collect-music` and
-published with `src/scripts/publish-datasets.rb`.
+published with `src/scripts/publish-datasets.rb`. The music data stays a
+dataset for teachers to use as they see fit (a project, an exam); no
+activity of its own is planned for it.
 
 * [ ] A student command `load-dataset countries|movies|music [--schema|--data|--part NAME] [--neo4j]` that loads into the student's database (or a named extra database); the pages use `wget` and `mysql <` today
 * [ ] Refresh the datasets periodically rather than letting them go stale (countries: the tasks and screenshots of the SQL introduction follow the row counts)
@@ -81,11 +83,9 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 
-* [ ] Music twin of the chapter on the Discogs dataset
 
 #### Neo4j
 
-* [ ] The Discogs music graph (`MEMBER_OF`, `RELEASED`, `HAS_TRACK`) as the second dataset
 * [ ] The recipe of `neo4j-load.webp` no longer renders: `terminal-wait-for-prompt` after `wget` returns at once (also with a time limit), `neo4j_bolt load` is typed during the download and the picture shows the load at 73 %. The committed picture is still right; find out why the prompt is not waited for in this recipe
 
 ### Written, not yet tried in class
@@ -133,7 +133,7 @@ Plus, from the review:
 
 * [ ] **Concurrency in Java and Dart** ([docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md)): a step-through widget for lost updates, locks and deadlock; Java threads, `synchronized` and the monitor; Dart's races at `await` and isolates. First the `dart` check must await a `Future`; place and name are the maintainer's
 * [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
-* [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
+* [ ] **Query stepper, further**: subqueries and `UNION`
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
 * [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers
