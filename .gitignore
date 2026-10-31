@@ -17,6 +17,8 @@ logs
 src/content/git/git-tutorial/alice
 src/kenney/previews/
 src/ruby/credentials.rb
+# upload-image.sh's remembered server, one installation's settings
+/upload-image.conf
 # Editor swap and backup files (one of credentials.rb was committed once)
 *.swp
 *.swo

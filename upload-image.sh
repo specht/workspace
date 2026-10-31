@@ -6,10 +6,16 @@
 #
 #   ./upload-image.sh HOST [REMOTE_DIR]              # through a registry
 #   ./upload-image.sh --archive HOST [REMOTE_DIR]    # the whole image as a file
+#   ./upload-image.sh                                # as last time
 #
 # HOST is an SSH host (an entry in ~/.ssh/config or user@host). REMOTE_DIR is a
 # directory on the server the SSH user may write to (default: the home
 # directory there); best on a disk other than Docker's.
+#
+# A run with HOST remembers HOST, REMOTE_DIR and the method in
+# upload-image.conf next to this script (one installation's settings, not in
+# git); a run without HOST takes them from there. --archive alone keeps the
+# remembered HOST and REMOTE_DIR and sends an archive.
 #
 # Through a registry (the default): a registry container on the server, which
 # listens only on 127.0.0.1 there and keeps its layers in REMOTE_DIR/registry,
@@ -60,14 +66,40 @@ set -euo pipefail
 {
 cd "$(dirname "$0")"
 
-method=registry
+case "${1:-}" in
+    -h|--help)
+        sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'
+        exit 0 ;;
+esac
+settings=upload-image.conf
+method=''
 if [ "${1:-}" = '--archive' ]; then
     method=archive
     shift
 fi
 host="${1:-}"
-remote_dir="${2:-.}"
-if [ -z "$host" ] || [ "$host" = '-h' ] || [ "$host" = '--help' ]; then
+remote_dir="${2:-}"
+if [ -n "$host" ]; then
+    # Given: remembered for the next run
+    remote_dir="${remote_dir:-.}"
+    method="${method:-registry}"
+    printf '# upload-image.sh: the last HOST, REMOTE_DIR and method (not in git)\nhost=%s\nremote_dir=%s\nmethod=%s\n' \
+        "$host" "$remote_dir" "$method" > "$settings"
+elif [ -f "$settings" ]; then
+    # Read as key=value, not run as a script
+    while IFS='=' read -r key value; do
+        case "$key" in
+            host) host="$value" ;;
+            remote_dir) remote_dir="$value" ;;
+            method) [ -n "$method" ] || method="$value" ;;
+        esac
+    done < "$settings"
+    remote_dir="${remote_dir:-.}"
+    method="${method:-registry}"
+    [ -n "$host" ] || { echo "$settings names no host; run ./upload-image.sh HOST [REMOTE_DIR] once." >&2; exit 2; }
+    case "$method" in registry|archive) ;; *) echo "$settings: unknown method $method" >&2; exit 2 ;; esac
+    printf 'As last time (%s): %s %s\n' "$settings" "$host" "$remote_dir"
+else
     sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'
     exit 2
 fi
