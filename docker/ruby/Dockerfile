@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   weasyprint \
   default-libmysqlclient-dev \
   swi-prolog-nox \
+  nodejs \
   && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y \

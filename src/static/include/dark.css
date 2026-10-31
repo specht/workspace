@@ -715,6 +715,16 @@ html[data-bs-theme="dark"] {
         --er-red: #f19aa1;
     }
     .er-playground-problems { color: #f19aa1; }
+    .er-figure {
+        /* Colours of an ER diagram in a page (ErDiagrams), on the page's ground */
+        --er-ink: #e7e6e1;
+        --er-paper: #151514;
+        --er-shape: #151514;
+        --er-muted: #a3a29d;
+        --er-pen: #7fbfe3;
+        --er-pen-soft: #1d3346;
+        --er-red: #f19aa1;
+    }
     .uml-playground-output {
         border-color: #33332f;
         background-color: #1c1c1b;

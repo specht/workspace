@@ -149,7 +149,9 @@ class Main < Sinatra::Base
     def self.content_cache_key
         digest = Digest::SHA256.new
         digest.update("format 1\0#{DEVELOPMENT}\0")
-        files = Dir.glob('/src/ruby/**/*.rb') + Dir.glob('/src/content/**/*', File::FNM_DOTMATCH).select { |path| File.file?(path) }
+        # the ER-Werkstatt core draws the diagrams of _include_er
+        files = Dir.glob('/src/ruby/**/*.rb') + [ErDiagrams::CORE] +
+            Dir.glob('/src/content/**/*', File::FNM_DOTMATCH).select { |path| File.file?(path) }
         files.sort.each do |path|
             stat = File.stat(path)
             digest.update("#{path}\0#{stat.size}\0#{stat.mtime.to_f}\0")
@@ -577,6 +579,8 @@ class Main < Sinatra::Base
                     markdown = Tools.expand(markdown, :warn => content_warning)
                     # _schema(dataset): the tables of a dataset as schema lines (Schemas).
                     markdown = Schemas.expand(markdown, :warn => content_warning)
+                    # _include_er(model.er, chen|crowfoot|tables): an ER diagram drawn from the model (ErDiagrams).
+                    markdown = ErDiagrams.expand(markdown, :page_dir => File.dirname(path), :warn => content_warning)
                     # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
                     # them, _task(id) on a line of its own places a card.
                     tasks_path = File.join(File.dirname(path), 'tasks.yaml')

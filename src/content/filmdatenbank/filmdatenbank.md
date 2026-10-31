@@ -135,17 +135,17 @@ Oben in der Vorschau wählst du zwischen drei Darstellungen desselben Modells.
 
 **Chen.** Rechtecke sind Entitäten, Rauten Beziehungen, Ellipsen Attribute. Primärschlüssel sind unterstrichen. An den Linien steht die Kardinalität. Diese Darstellung findest du in vielen Schulbüchern.
 
-<img class='invert-dark' src='film-1-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm: movie und genre als Rechtecke, verbunden über die Raute has_genre mit n und m, Attribute als Ellipsen.'>
+_include_er(film-1.er, chen)
 
 _person(chen)
 
 **Krähenfuß.** Jede Entität ist ein Kasten mit ihren Attributen. Das Linienende zeigt die Kardinalität: Der gespreizte Krähenfuß heißt »viele«, ein Querstrich heißt »eins«. Weil `has_genre` eine n:m-Beziehung ist, siehst du hier an beiden Enden einen Krähenfuß und keinen Strich.
 
-<img class='invert-dark' src='film-1-crowfoot.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Krähenfuß-Diagramm: movie und genre, an beiden Enden der Linie ein Krähenfuß.'>
+_include_er(film-1.er, crowfoot)
 
 **Tabellen.** So wird das Modell in der Datenbank gespeichert. Aus jeder Entität wird eine Tabelle. Die n:m-Beziehung wird zu einer eigenen Tabelle `movie_genre`: In ihr steht pro Zeile ein Paar aus Film und Genre, nur mit den beiden IDs.
 
-<img class='invert-dark' src='film-1-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: oben movie und genre, darunter die Tabelle movie_genre mit movie_id und genre_id, beide PK und FK; von ihr führt je eine Linie hinauf zu movie und zu genre.'>
+_include_er(film-1.er, tables)
 
 Jetzt siehst du auch den Strich für »eins«: Die Linien führen von `movie_genre` zu `movie` und zu `genre`, mit dem Krähenfuß bei `movie_genre` und dem Strich am anderen Ende. Zu einem Film gehören viele Zeilen in `movie_genre`, aber jede Zeile gehört zu genau einem Film.
 
@@ -482,11 +482,11 @@ sleep: 1
 -->
 <img class='teaser' hidden src='teaser.webp' alt='VS Code mit dem Datenmodell film.er links und dem Krähenfuß-Diagramm mit movie, genre, crew, job und credit rechts.'>
 
-<img class='invert-dark' src='film-2-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm mit movie, genre, crew und job; die Raute credit verbindet movie, crew und job.'>
+_include_er(film-2.er, chen)
 
 In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zusammen den Primärschlüssel bilden. So kann dieselbe Person bei einem Film mehrere Tätigkeiten haben, aber dieselbe Kombination aus Film, Person und Tätigkeit nicht zweimal vorkommen.
 
-<img class='invert-dark' src='film-2-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: oben genre, movie, crew und job, darunter movie_genre und movie_crew; movie_crew hat drei Spalten, alle PK und FK, mit Linien hinauf zu movie, crew und job.'>
+_include_er(film-2.er, tables)
 
 _task(modell-crew)
 
@@ -643,7 +643,7 @@ relationship borrows: customer n:m copy as loan
 - `loan_date` gehört zum Primärschlüssel. Ohne das Datum wäre der Schlüssel `(customer_id, copy_id)`, und dieselbe Person könnte dasselbe Exemplar nur ein einziges Mal ausleihen.
 - `return_date` ist `optional`: Solange ein Exemplar ausgeliehen ist, gibt es noch kein Rückgabedatum.
 
-<img class='invert-dark' src='film-3-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm des ganzen Modells: zu movie, genre, crew, job, movie_genre und movie_crew kommen copy mit dem Fremdschlüssel movie_id auf movie, customer und loan mit den Spalten customer_id, copy_id, loan_date und return_date; customer_id, copy_id und loan_date bilden den Primärschlüssel.'>
+_include_er(film-3.er, tables)
 <!-- /after -->
 
 ### Die Ausleihen laden
