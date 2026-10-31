@@ -69,10 +69,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 
 * [ ] Later, if the curriculum needs them: weak entities, generalisation
 
-#### Neo4j
-
-* [ ] The recipe of `neo4j-load.webp` no longer renders: `terminal-wait-for-prompt` after `wget` returns at once (also with a time limit), `neo4j_bolt load` is typed during the download and the picture shows the load at 73 %. The committed picture is still right; find out why the prompt is not waited for in this recipe
-
 ### Written, not yet tried in class
 
 Activities written in October 2026, with tasks, teacher notes and

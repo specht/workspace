@@ -1730,10 +1730,35 @@ async function terminalMaximize() {
     await focusTerminal();
 }
 
+// The text on the visible terminal's screen
+function terminalScreen() {
+    return workspace.evaluate(() => {
+        const terminal = [...document.querySelectorAll('.terminal.xterm')]
+            .filter(t => { const r = t.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).at(-1);
+        return terminal ? [...terminal.querySelectorAll('.xterm-rows > div')].map(row => row.textContent || '').join('\n') : '';
+    });
+}
+
 async function terminalRun(text) {
     await terminalOpen();
+    const before = await terminalScreen();
     await workspace.keyboard.insertText(text);
     await workspace.keyboard.press('Enter');
+    // Until the screen changes (the command's echo, or what it prints), the
+    // shell may not have it yet, and a terminal-wait-for-prompt right after
+    // would see the prompt from before and go on while the command still
+    // runs. Up to 5 seconds; a command that changes nothing on the screen
+    // goes on after that.
+    await workspace.waitForFunction(
+        previous => {
+            const terminal = [...document.querySelectorAll('.terminal.xterm')]
+                .filter(t => { const r = t.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).at(-1);
+            const now = terminal ? [...terminal.querySelectorAll('.xterm-rows > div')].map(row => row.textContent || '').join('\n') : '';
+            return now !== previous;
+        },
+        before,
+        { timeout: 5000 },
+    ).catch(() => {});
     await workspace.waitForTimeout(250);
 }
 
