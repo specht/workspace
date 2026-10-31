@@ -130,8 +130,8 @@ class AccountDeletionTest < Minitest::Test
     # go with the account: Main#delete_account removes their folder before
     # the User node.
     def test_own_git_repositories_go_with_the_account
-        main = File.read(File.expand_path('../main.rb', __dir__))
-        body = main[/^    def delete_account\(email\)\n.*?^    end\n/m]
+        # in main.rb or a file of its own (include/accounts_page.rb)
+        body = SOURCES[/^    def delete_account\(email\)\n.*?^    end\n/m]
         assert body, 'Main#delete_account'
         assert_match(/u\.git_id AS id/, body)
         assert_match(/GitServer\.delete_folder\(git_id\)/, body)
