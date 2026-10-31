@@ -5,12 +5,14 @@
 #   src/scripts/query-stepper-data.rb countries countries.sql
 #   src/scripts/query-stepper-data.rb countries-basic countries-basic.sql
 #   src/scripts/query-stepper-data.rb movies movies-schema.sql movies-data-films.sql movies-data-crew.sql
+#   src/scripts/query-stepper-data.rb movies-rental movies-schema.sql movies-data-films.sql movies-data-rental.sql
 #   src/scripts/query-stepper-data.rb music music-schema.sql
 #
 # countries (»Einführung in SQL« and after): all tables, whole. movies
 # (»Filmdatenbank«): genre, movie and movie_genre whole; of the people only
 # directors and actors with at least MIN_ROLES films, so the file stays small
-# enough for the browser. Writes
+# enough for the browser. movies-rental (»Eine Videothek«, the chapter after
+# it): movie, copy, customer and loan, whole. Writes
 # src/static/query-stepper/<name>.json. The SQL files come from
 # https://github.com/specht/workspace-files.
 #
@@ -133,6 +135,13 @@ def movies(files)
     %w[movie genre movie_genre crew job movie_crew].to_h { |name| [name, tables.fetch(name)] }
 end
 
+# The invented video shop with the films it lends, in the order of the chapter
+def movies_rental(files)
+    tables = files.map { |f| inserts(File.read(f)) }.reduce(:merge)
+    tables.each_value { |t| t['count'] = t['rows'].size }
+    %w[movie copy customer loan].to_h { |name| [name, tables.fetch(name)] }
+end
+
 # Only the tables and their columns
 def schema_only(files)
     found = files.map { |f| keys(File.read(f)) }.reduce({}) { |all, k| all.merge(k) }
@@ -140,10 +149,10 @@ def schema_only(files)
 end
 
 SAMPLE_ROWS = 3
-MODES = { 'countries' => :countries, 'countries-basic' => :countries_sample, 'movies' => :movies, 'music' => :schema_only }.freeze
+MODES = { 'countries' => :countries, 'countries-basic' => :countries_sample, 'movies' => :movies, 'movies-rental' => :movies_rental, 'music' => :schema_only }.freeze
 
 name, *files = ARGV
-abort "usage: #{$0} countries countries.sql | countries-basic countries-basic.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | music music-schema.sql" unless MODES.key?(name) && !files.empty?
+abort "usage: #{$0} countries countries.sql | countries-basic countries-basic.sql | movies movies-schema.sql movies-data-films.sql movies-data-crew.sql | movies-rental movies-schema.sql movies-data-films.sql movies-data-rental.sql | music music-schema.sql" unless MODES.key?(name) && !files.empty?
 tables = send(MODES[name], files)
 add_keys!(name, tables, files)
 out = File.join(OUT_DIR, "#{name}.json")

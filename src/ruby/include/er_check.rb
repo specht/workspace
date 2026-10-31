@@ -24,6 +24,8 @@ require_relative 'table_expect'
 #         cardinality: n:m
 #       - between: [movie, crew, job]
 #         table: movie_crew
+#       - between: [customer, copy]
+#         attributes: ["loan_date: date, primary key"]   # of the relationship
 #     tables: [...]            # what the model translates to (TableExpect)
 module ErCheck
     CORE_PATH = File.expand_path('../../vscode-extensions/er/core/er-core.js', __dir__)
@@ -113,8 +115,15 @@ module ErCheck
                         errors << "relationships[#{i}] needs between: [entity, entity, …]"
                         next
                     end
-                    extra = r.keys - %w[between cardinality name table]
+                    extra = r.keys - %w[between cardinality name table attributes]
                     errors << "relationships[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
+                    if r.key?('attributes')
+                        if r['attributes'].is_a?(Array) && !r['attributes'].empty?
+                            r['attributes'].each { |a| errors.concat(attribute_errors(a).map { |m| "relationships[#{i}]: #{m}" }) }
+                        else
+                            errors << "relationships[#{i}].attributes must be a list"
+                        end
+                    end
                     if r.key?('cardinality')
                         errors << "relationships[#{i}].cardinality only for two entities" if r['between'].size != 2
                         errors << "relationships[#{i}].cardinality must be 1:1, 1:n, n:1 or n:m" unless r['cardinality'].to_s =~ /\A[1nm]:[1nm]\z/
@@ -160,22 +169,8 @@ module ErCheck
                 end
                 return [false, :key, "Der Schlüssel von #{code(name)} ist #{TableExpect.list(keys)}, verlangt ist #{TableExpect.list(spec['key'])}."]
             end
-            (spec['attributes'] || []).each do |text|
-                want = parse_attribute(text)
-                have = attrs[want[:name]]
-                if have.nil?
-                    return [false, :missing_attribute, "#{code(name)} hat noch kein Attribut #{code(want[:name])}. Es hat: #{TableExpect.list(attrs.keys)}."]
-                end
-                if want[:type] && have['type'].to_s.gsub(/\s+/, '').downcase != want[:type]
-                    return [false, :attribute, "#{code("#{name}.#{want[:name]}")} hat den Typ `#{have['type']}`, verlangt ist `#{want[:type]}`."]
-                end
-                want[:flags].each do |flag|
-                    next if have[flag]
-
-                    what = { 'optional' => 'darf leer bleiben (`optional`)', 'unique' => 'muss eindeutig sein (`unique`)', 'key' => 'gehört zum Primärschlüssel (`primary key`)' }[flag]
-                    return [false, :attribute, "#{code("#{name}.#{want[:name]}")} #{what}; das steht noch nicht im Modell."]
-                end
-            end
+            found = attribute_problem(name, attrs, spec['attributes'])
+            return found if found
         end
 
         relations = summary['relationships'] || []
@@ -197,6 +192,8 @@ module ErCheck
             if spec['table'] && r['table'] != spec['table']
                 return [false, :missing_table, "Die Beziehung #{code(r['name'])} wird zur Tabelle #{code(r['table'] || r['name'])}, verlangt ist #{code(spec['table'])}. Gib den Namen mit `as #{spec['table']}` an."]
             end
+            found = attribute_problem(r['name'], (r['attributes'] || []).to_h { |a| [a['name'], a] }, spec['attributes'], relationship: true)
+            return found if found
         end
 
         if check['tables']
@@ -204,6 +201,30 @@ module ErCheck
             return [false, problem, message] if problem
         end
         [true, nil, nil]
+    end
+
+    # The first attribute in want (texts as in the .er file) that owner (an
+    # entity or a relationship) lacks or has otherwise, as [false, problem,
+    # message], or nil
+    def self.attribute_problem(owner, attrs, want_texts, relationship: false)
+        (want_texts || []).each do |text|
+            want = parse_attribute(text)
+            have = attrs[want[:name]]
+            if have.nil?
+                has = attrs.empty? ? 'noch keine' : TableExpect.list(attrs.keys)
+                return [false, :missing_attribute, "#{relationship ? 'Die Beziehung ' : ''}#{code(owner)} hat noch kein Attribut #{code(want[:name])}. #{relationship ? 'Attribute einer Beziehung stehen eingerückt unter ihrer Zeile. ' : ''}Es hat: #{has}."]
+            end
+            if want[:type] && have['type'].to_s.gsub(/\s+/, '').downcase != want[:type]
+                return [false, :attribute, "#{code("#{owner}.#{want[:name]}")} hat den Typ `#{have['type']}`, verlangt ist `#{want[:type]}`."]
+            end
+            want[:flags].each do |flag|
+                next if have[flag]
+
+                what = { 'optional' => 'darf leer bleiben (`optional`)', 'unique' => 'muss eindeutig sein (`unique`)', 'key' => 'gehört zum Primärschlüssel (`primary key`)' }[flag]
+                return [false, :attribute, "#{code("#{owner}.#{want[:name]}")} #{what}; das steht noch nicht im Modell."]
+            end
+        end
+        nil
     end
 
     # Cardinality of a binary relationship read in the order of between,

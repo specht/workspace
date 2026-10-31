@@ -140,6 +140,31 @@ class CollectMoviesTest < Minitest::Test
             assert_equal ['Lana Wachowski'], matrix_jobs['writer']
             assert_equal 1, crew.count { |p| p['id'] == lana['id'] }, 'one person, two jobs'
             assert(wikidata.queries.all? { |q| q.include?('SELECT') })
+            assert_includes files['movies-data-rental.sql'], 'part "rental" (copy, customer, loan)'
+            assert_includes files['movies-schema.sql'], 'PRIMARY KEY (`customer_id`, `copy_id`, `loan_date`)'
+        end
+    end
+
+    # The invented video shop: the same rows for the same films, a loan
+    # without return_date only at the end, the page's examples on the shelf
+    def test_rental
+        movies = (1..400).map { |i| { id: i, title: "Film #{i}", year: 1950 + i % 76 } }
+        movies << { id: 401, title: 'Back to the Future', year: 1985 }
+        rental = Rental.build(movies)
+        assert_equal rental, Rental.build(movies)
+        copies, customers, loans = rental.values_at(:copies, :customers, :loans)
+        assert_equal Rental::CUSTOMERS, customers.map(&:last).uniq.size
+        assert_equal loans.size, loans.map { |l| l.first(3) }.uniq.size, 'the primary key is unique'
+        future = copies.select { |c| c[1] == 401 }
+        assert_equal %w[DVD Blu-ray], future.map(&:last)
+        blu_ray = future.last.first
+        assert loans.none? { |l| l[1] == blu_ray }, 'the Blu-ray of Back to the Future is never lent'
+        assert loans.any? { |l| l[3].nil? }
+        loans.group_by { |l| l[1] }.each_value do |list|
+            list.sort_by { |l| l[2] }.each_cons(2) do |a, b|
+                refute_nil a[3], 'only the last loan of a copy may be open'
+                assert a[3] <= b[2], 'a copy is back before it is lent again'
+            end
         end
     end
 end

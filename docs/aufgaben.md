@@ -1636,6 +1636,8 @@ check:
       cardinality: n:m             # in der Reihenfolge von between
     - between: [movie, crew, job]
       table: movie_crew            # verlangt `as movie_crew`
+    - between: [customer, copy]
+      attributes: ["loan_date: date, primary key", "return_date: date, optional"]   # der Beziehung
   tables:                          # was aus dem Modell wird, wie bei schema
     - name: movie_genre
       primary_key: [movie_id, genre_id]
@@ -1646,7 +1648,8 @@ Was nicht genannt ist, ist frei: weitere Entitäten, Attribute und Beziehungen
 stören nicht. Ein Attribut wird so geschrieben wie im Modell; Typ und
 Markierungen (`primary key`, `optional`, `unique`) zählen nur, wenn sie
 dastehen; `key` in der Aufgabe und das ältere `key` im Modell meinen dasselbe
-wie `primary key`. `key: [id]` unter einer Entität nennt die Attribute ihres
+wie `primary key`. `attributes` unter einer Beziehung prüft ihre Attribute
+genauso. `key: [id]` unter einer Entität nennt die Attribute ihres
 Primärschlüssels.
 Eine Beziehung wird an ihren Entitäten erkannt, nicht am Namen; `1:n`
 zwischen `[genre, movie]` ist dasselbe wie `n:1` zwischen `[movie, genre]`,

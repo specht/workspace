@@ -1,7 +1,9 @@
 # Collect movies
 
 `collect-movies.rb` builds the classroom movie dataset for *Filmdatenbank mit MySQL*
-(`src/content/filmdatenbank`): films, their genres and the people who made them.
+(`src/content/filmdatenbank`): films, their genres and the people who made them, and
+an invented video shop with copies of the films, customers and loans (`rental.rb`,
+drawn with a fixed seed: the same films give the same rows).
 
 All published data comes from [Wikidata](https://www.wikidata.org/) (CC0 1.0). IMDb
 is used only to choose the films: the script reads IMDb's public `title.ratings` and
@@ -30,19 +32,21 @@ Generated files (shared with `collect-music` via `../lib/classroom_dataset.rb`):
 - `movies.txt`, `crew.txt`, `genres.txt` — JSON Lines, with Wikidata item IDs
 - `movies.sql` — schema and complete data
 - `movies-schema.sql`, `movies-data.sql` — schema only and data only
-- `movies-data-films.sql` (`genre`, `movie`, `movie_genre`) and `movies-data-crew.sql`
-  (`crew`, `job`, `movie_crew`) — data in two steps, as the tutorial builds its schema
+- `movies-data-films.sql` (`genre`, `movie`, `movie_genre`), `movies-data-crew.sql`
+  (`crew`, `job`, `movie_crew`) and `movies-data-rental.sql` (`copy`, `customer`, `loan`)
+  — data in three steps, as the tutorial builds its schema
 - `movies-neo4j.dump` — logical dump compatible with `neo4j_bolt load`
 - `README.md` — provenance, licence and what each column means
 
 The column lists are a contract with the tutorial: students build the tables from
-their ER model (`src/content/filmdatenbank/film-2.er`) and then load the data files,
+their ER model (`src/content/filmdatenbank/film-3.er`) and then load the data files,
 which name their columns. Change both together.
 
 At the end the script prints a sanity summary (counts, films left out, people beyond
 the limit per job, genres). Check it, and check by hand what the tutorial asks about
 (*Back to the Future* from 1985, Christopher Nolan, the genre Animation, several people with
-at least five films as director), before publishing to
+at least five films as director, the copies of *Back to the Future* and the loans still
+out), before publishing to
 https://github.com/specht/workspace-files under `movie-archive/` with
 `../publish-datasets.rb movies` (it leaves out `.downloads/` and `.wikidata-cache/`).
 

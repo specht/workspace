@@ -35,10 +35,11 @@ DATASETS = {
     'movies' => {
         dir: 'movie-archive', from: 'src/scripts/collect-movies/movie-archive',
         title: 'Movies',
-        about: 'Well-known feature films, their genres and the people who made them: cast, direction, writing, music, production, camera and editing.',
-        source: '[Wikidata](https://www.wikidata.org/), CC0 1.0; IMDb votes only to choose the films',
+        about: 'Well-known feature films, their genres and the people who made them: cast, direction, writing, music, production, camera and editing. Also an invented video shop: copies of some of the films, customers and their loans.',
+        source: '[Wikidata](https://www.wikidata.org/), CC0 1.0; IMDb votes only to choose the films; the video shop is made up',
         used: '*Filmdatenbank* (MySQL and Neo4j), the Query Stepper',
-        stepper: { 'movies' => %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql] },
+        stepper: { 'movies' => %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql],
+                   'movies-rental' => %w[movies-schema.sql movies-data-films.sql movies-data-rental.sql] },
         # the names before October 2026, for students halfway through the Filmdatenbank
         old_files: %w[mysql.sql mysql-schema.sql mysql-data.sql mysql-data-movies.sql mysql-data-crew.sql neo4j.dump]
     },

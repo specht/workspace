@@ -783,8 +783,9 @@
 
     const ORDER = ['FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'ORDER BY', 'LIMIT'];
     const MAX_ROWS = 12;
-    // The tables to work on: countries (»Einführung in SQL«) or movies (»Filmdatenbank«)
-    const DATASETS = { countries: 'Länder der Welt', movies: 'Filme (Filmdatenbank)' };
+    // The tables to work on: countries (»Einführung in SQL«), movies or the
+    // video shop of its last chapter (»Filmdatenbank«)
+    const DATASETS = { countries: 'Länder der Welt', movies: 'Filme (Filmdatenbank)', 'movies-rental': 'Videothek (Filmdatenbank)' };
     const loaded = new Map();
     const loadData = (name) => {
         if (!loaded.has(name)) loaded.set(name, fetch(`/query-stepper/${name}.json`).then((r) => r.json()));

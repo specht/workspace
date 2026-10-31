@@ -126,6 +126,27 @@ class ErCheckTest < Minitest::Test
         assert_equal :correct, status
     end
 
+    def test_attributes_of_a_relationship
+        model = FILM.sub('relationship has_genre: movie n:m genre', "relationship has_genre: movie n:m genre\n  since: date, primary key\n  note: text, optional")
+        check = CHECK.merge('relationships' => [{ 'between' => %w[movie genre], 'attributes' => ['since: date, primary key', 'note: text, optional'] }],
+                            'tables' => [{ 'name' => 'movie_genre', 'primary_key' => %w[movie_id genre_id since] }])
+        assert_empty ErCheck.spec_errors(check)
+        status, = evaluate(model, check)
+        assert_equal :correct, status
+
+        _, problem, message, = evaluate(FILM, check)
+        assert_equal :missing_attribute, problem
+        assert_includes message, 'Die Beziehung `has_genre` hat noch kein Attribut `since`'
+
+        _, problem, message, = evaluate(model.sub('since: date, primary key', 'since: date'), check)
+        assert_equal :attribute, problem
+        assert_includes message, '`has_genre.since` gehört zum Primärschlüssel'
+
+        _, problem, message, = evaluate(model.sub('note: text, optional', 'note: text'), check)
+        assert_equal :attribute, problem
+        assert_includes message, '`has_genre.note` darf leer bleiben'
+    end
+
     def test_tables_from_the_model
         check = CHECK.merge('tables' => [{ 'name' => 'movie_genre', 'primary_key' => %w[movie_id genre_id] }])
         _, problem, message, = evaluate(FILM.sub('movie n:m genre', 'movie n:m genre as film_genre'), check.merge('relationships' => []))

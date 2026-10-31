@@ -7,7 +7,8 @@
 # title.ratings and title.basics files. Only the IMDb IDs are used, to find
 # the films in Wikidata (property P345); nothing from IMDb is published.
 # Everything in the output (titles, years, runtimes, genres, people, their
-# jobs, birth and death years) comes from Wikidata, which is CC0.
+# jobs, birth and death years) comes from Wikidata, which is CC0. The video
+# shop of the last chapter (copies, customers, loans) is invented, in rental.rb.
 
 require 'digest'
 require 'fileutils'
@@ -22,6 +23,7 @@ require 'zlib'
 
 require_relative '../lib/classroom_dataset'
 require_relative '../lib/wikidata_client'
+require_relative 'rental'
 
 # Which films to include: IMDb IDs of non-adult feature films with at least
 # min_votes votes, most voted first. Reads IMDb's public files, keeps only IDs.
@@ -394,6 +396,7 @@ class WikidataMovieBuilder
 
   def mysql_writer(movies, crew, genres)
     jobs = jobs_for(movies)
+    rental = Rental.build(movies)
     movie_genres = movies.flat_map { |m| m[:genres].map { |g| [m[:id], g] } }
     movie_crew = movies.flat_map do |m|
       m[:crew].flat_map { |job, ids| ids.map { |c| [m[:id], c, jobs.fetch(job)] } }
@@ -411,7 +414,13 @@ class WikidataMovieBuilder
       ClassroomDataset::Table.new(name: 'job', columns: %w[id title], primary_key: %w[id],
                                   rows: jobs.map { |title, id| [id, title] }),
       ClassroomDataset::Table.new(name: 'movie_crew', columns: %w[movie_id crew_id job_id],
-                                  primary_key: %w[movie_id crew_id job_id], rows: movie_crew)
+                                  primary_key: %w[movie_id crew_id job_id], rows: movie_crew),
+      ClassroomDataset::Table.new(name: 'copy', columns: %w[id movie_id format], primary_key: %w[id],
+                                  rows: rental[:copies]),
+      ClassroomDataset::Table.new(name: 'customer', columns: %w[id name], primary_key: %w[id],
+                                  rows: rental[:customers]),
+      ClassroomDataset::Table.new(name: 'loan', columns: %w[customer_id copy_id loan_date return_date],
+                                  primary_key: %w[customer_id copy_id loan_date], rows: rental[:loans])
     ]
     ClassroomDataset::MysqlWriter.new(
       name: 'movies',
@@ -419,17 +428,20 @@ class WikidataMovieBuilder
       header: [
         'Movie data from Wikidata (https://www.wikidata.org/), CC0 1.0.',
         "Films chosen by number of IMDb votes (>= #{@min_votes}); no IMDb data is included.",
+        'The video shop (copy, customer, loan) is invented.',
         "Generated: #{Time.now.utc.iso8601}"
       ],
       schema: MYSQL_SCHEMA,
       tables: tables,
-      # the Filmdatenbank tutorial first models movies and genres, then adds people
-      parts: { 'films' => %w[genre movie movie_genre], 'crew' => %w[crew job movie_crew] }
+      # the Filmdatenbank tutorial first models movies and genres, then adds
+      # people, then a video shop
+      parts: { 'films' => %w[genre movie movie_genre], 'crew' => %w[crew job movie_crew],
+               'rental' => %w[copy customer loan] }
     )
   end
 
   # The schema the Filmdatenbank tutorial builds from its ER model
-  # (src/content/filmdatenbank/film-2.er); the column lists must stay the same.
+  # (src/content/filmdatenbank/film-3.er); the column lists must stay the same.
   MYSQL_SCHEMA = <<~SQL
     CREATE TABLE `genre` (
       `id` INT NOT NULL,
@@ -488,6 +500,35 @@ class WikidataMovieBuilder
       CONSTRAINT `fk_movie_crew_job`
         FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `copy` (
+      `id` INT NOT NULL,
+      `movie_id` INT NOT NULL,
+      `format` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `idx_copy_movie` (`movie_id`),
+      CONSTRAINT `fk_copy_movie`
+        FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `customer` (
+      `id` INT NOT NULL,
+      `name` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `loan` (
+      `customer_id` INT NOT NULL,
+      `copy_id` INT NOT NULL,
+      `loan_date` DATE NOT NULL,
+      `return_date` DATE NULL,
+      PRIMARY KEY (`customer_id`, `copy_id`, `loan_date`),
+      KEY `idx_loan_copy` (`copy_id`),
+      CONSTRAINT `fk_loan_customer`
+        FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+      CONSTRAINT `fk_loan_copy`
+        FOREIGN KEY (`copy_id`) REFERENCES `copy` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   SQL
 
   def write_neo4j(movies, crew, genres)
@@ -516,6 +557,12 @@ class WikidataMovieBuilder
     notes = []
     notes << "#{titles.size} titles occur more than once (e.g. #{titles.keys.first(3).join(', ')}): a title is not a key" if titles.any?
     notes << 'check by hand what the tutorial asks about: Back to the Future (1985), Christopher Nolan, Animation, at least five directors with five films'
+    rental = Rental.build(movies)
+    lent = rental[:loans].map { |l| l[1] }.uniq
+    notes << "video shop (invented): #{rental[:copies].size} copies of #{rental[:copies].map { |c| c[1] }.uniq.size} films, " \
+             "#{rental[:customers].size} customers, #{rental[:loans].size} loans, #{rental[:loans].count { |l| l[3].nil? }} still out, " \
+             "#{rental[:copies].size - lent.size} copies never lent, " \
+             "#{rental[:customers].size - rental[:loans].map(&:first).uniq.size} customers without a loan"
     ClassroomDataset.report('Sanity check:', {
       'movies' => movies.size,
       'people' => crew.size,
@@ -568,6 +615,11 @@ class WikidataMovieBuilder
       Wikidata is edited by many people. A wrong date or a missing genre is best fixed
       there, and the next build picks it up.
 
+      The video shop in `copy`, `customer` and `loan` is invented: copies of some of
+      the films, #{Rental::CUSTOMERS} customers with made-up names and their loans from
+      #{Rental::FIRST_DAY.iso8601} to #{Rental::LAST_DAY.iso8601}, drawn with a fixed seed
+      (`rental.rb`). `return_date` is empty while a copy is out.
+
       ## Files
 
       - `movies.txt` — #{movies.size} movies, one JSON object per line
@@ -578,6 +630,7 @@ class WikidataMovieBuilder
       - `movies-data.sql` — data only, for a schema built in class
       - `movies-data-films.sql` — data only: `genre`, `movie`, `movie_genre`
       - `movies-data-crew.sql` — data only: `crew`, `job`, `movie_crew`
+      - `movies-data-rental.sql` — data only: `copy`, `customer`, `loan` (invented)
       - `movies-neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
 
       Every classroom dataset names its files this way, after the dataset (`countries`, `movies`, `music`).
@@ -593,6 +646,9 @@ class WikidataMovieBuilder
       crew(id, name, birth_year, death_year)
       job(id, title)
       movie_crew(movie_id → movie, crew_id → crew, job_id → job)
+      copy(id, movie_id → movie, format)
+      customer(id, name)
+      loan(customer_id → customer, copy_id → copy, loan_date, return_date)
       ```
 
       `movie_crew` connects a movie, a person and a job; a person appears once per job
@@ -606,11 +662,12 @@ class WikidataMovieBuilder
       mysql < movies.sql                 # everything
       mysql < movies-data-films.sql     # or step by step into tables built in class
       mysql < movies-data-crew.sql
+      mysql < movies-data-rental.sql
       ```
 
       ## Neo4j
 
-      `Movie`, `Person` and `Genre` nodes; `(Movie)-[:IN_GENRE]->(Genre)` and
+      `Movie`, `Person` and `Genre` nodes (the video shop is not in the graph); `(Movie)-[:IN_GENRE]->(Genre)` and
       `(Person)-[:ACTOR|DIRECTOR|WRITER|…]->(Movie)`.
 
       ```sh
