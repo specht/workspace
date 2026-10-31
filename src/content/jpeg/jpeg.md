@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein Farbwürfel, in dem eine Farbe als Pfeile entlang Y, Cb und Cr zerlegt ist"
+image_alt: "Ein 8 × 8-Block eines Fotos, seine Pixelwerte und seine Koeffizienten nach der DCT"
 kind: labor
 language: C
 duration: 4 Doppelstunden
@@ -1857,18 +1857,14 @@ hook: expect-value 350: 80 2
 -->
 
 <!-- tutorial-screenshot
-# Das Bild für die Karte: der Weg einer Farbe durch den Farbraum. Auf der
-# Seite »Farbräume« der Modus YCbCr und Orange (255, 128, 0), das lange,
-# deutlich verschiedene Stücke für Y, Cb und Cr hat; nur der Würfel,
-# so nah, wie er geht
-open-site: /rgb
+# Das Bild für die Karte: ein 8 × 8-Block vom Busfahrplan (die Kante der 1
+# in »15«), vergrößert mit seinen Werten, und seine Koeffizienten nach der
+# DCT, die meisten 0
+open-site: /jpeg
 tab: preview
 viewport: 1280x720
-sleep: 2
-hook: knob Mode YCbCr
-hook: knob R 255
-hook: knob G 128
-hook: knob B 0
-hook: only #cube_view -320
+hook: poster 888 32
+crop-element: #jpeg-poster
+variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Der Weg der Farbe Orange durch den YCbCr-Farbraum: vom schwarzen Punkt ein grauer Pfeil für die Helligkeit Y, dann ein grüner für Cb und ein oranger für Cr bis zum orangefarbenen Punkt, im Hintergrund der RGB-Würfel als Drahtgitter.'>
+<img class='teaser' hidden src='teaser.webp' alt='Links ein vergrößerter Ausschnitt des Busfahrplans aus dem Beispielfoto, ein 8 × 8 Pixel großer Block an der Kante einer Ziffer ist markiert. In der Mitte derselbe Block groß, jedes Pixel mit seinem Grauwert. Ein Pfeil »DCT« führt zu den 64 Koeffizienten: Nur 15 sind nicht 0, sie stehen oben links, eine Zick-Zack-Linie führt durch sie.'>
