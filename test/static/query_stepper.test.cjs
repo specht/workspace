@@ -127,3 +127,40 @@ test('the schema lines, as _schema(name) on a page draws them', () => {
         "<u><span class='schema-fk' title='verweist auf movie.id'><span class='schema-arrow'>↑</span>movie_id</span></u>, " +
         "<u><span class='schema-fk' title='verweist auf genre.id'><span class='schema-arrow'>↑</span>genre_id</span></u>)</div>");
 });
+
+// Compared with MySQL 8.4 on the published countries (31 October 2026)
+test('subqueries run first, with steps of their own', () => {
+    const sql = 'SELECT name FROM country WHERE population > (SELECT AVG(population) FROM country) ORDER BY name LIMIT 3';
+    const steps = QS.run(sql, data).steps;
+    assert.deepStrictEqual(steps.map((s) => [s.part || '', s.clause]), [
+        ['Unterabfrage', 'FROM'], ['Unterabfrage', 'SELECT'],
+        ['', 'FROM'], ['', 'WHERE'], ['', 'SELECT'], ['', 'ORDER BY'], ['', 'LIMIT'],
+    ]);
+    assert.strictEqual(sql.slice(...steps[0].span), 'FROM country');
+    assert.strictEqual(sql.slice(...steps[1].span), 'SELECT AVG(population)');
+    assert.deepStrictEqual(values(sql), ['Afghanistan', 'Ägypten', 'Algerien']);
+    assert.deepStrictEqual(values("SELECT name FROM country WHERE continent = 'Europa' AND code NOT IN (SELECT country_code FROM border) ORDER BY name"),
+        ['Island', 'Malta']);
+    assert.deepStrictEqual(values('SELECT name FROM city WHERE population = (SELECT MAX(population) FROM city)'), ['Chongqing']);
+    fails('SELECT name FROM country WHERE population > (SELECT population FROM country)', /liefert 197 Zeilen; an dieser Stelle passt nur ein Wert/);
+    fails('SELECT name FROM country WHERE code IN (SELECT code, name FROM country)', /liefert 2 Spalten/);
+    fails('SELECT name FROM country AS c WHERE population > (SELECT AVG(population) FROM city WHERE city.country_code = c.code)', /Spalten der äußeren Abfrage/);
+});
+
+test('UNION: each query, then their rows together', () => {
+    const sql = "SELECT neighbor_code FROM border WHERE country_code = 'DEU' UNION SELECT country_code FROM border WHERE neighbor_code = 'DEU' ORDER BY 1";
+    const steps = QS.run(sql, data).steps;
+    assert.deepStrictEqual(steps.map((s) => [s.part || '', s.clause]), [
+        ['1. Abfrage', 'FROM'], ['1. Abfrage', 'WHERE'], ['1. Abfrage', 'SELECT'],
+        ['2. Abfrage', 'FROM'], ['2. Abfrage', 'WHERE'], ['2. Abfrage', 'SELECT'],
+        ['', 'UNION'], ['', 'ORDER BY'],
+    ]);
+    assert.strictEqual(sql.slice(...steps[6].span), 'UNION');
+    assert.match(steps[6].text, /9 von 18 Zeilen/);
+    assert.deepStrictEqual(values(sql), ['AUT', 'BEL', 'CHE', 'CZE', 'DNK', 'FRA', 'LUX', 'NLD', 'POL']);
+    assert.strictEqual(result('SELECT continent FROM country UNION ALL SELECT name FROM continent').rows.length, 197 + 7);
+    assert.deepStrictEqual(values('SELECT name FROM continent UNION SELECT continent FROM country ORDER BY name'),
+        ['Afrika', 'Antarktika', 'Asien', 'Europa', 'Nordamerika', 'Ozeanien', 'Südamerika']);
+    fails('SELECT name FROM continent UNION SELECT code, name FROM country', /gleich viele Spalten/);
+    fails('SELECT name FROM continent UNION SELECT name FROM country ORDER BY population', /nach den Spalten des Ergebnisses/);
+});

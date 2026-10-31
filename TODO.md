@@ -119,7 +119,6 @@ Plus, from the review:
 
 * [ ] **Concurrency in Java and Dart** ([docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md)): a step-through widget for lost updates, locks and deadlock; Java threads, `synchronized` and the monitor; Dart's races at `await` and isolates. First the `dart` check must await a `Future`; place and name are the maintainer's
 * [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
-* [ ] **Query stepper, further**: subqueries and `UNION`
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The local branch `passwords` keeps solutions, starters, a list and tasks from a first attempt
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
 * [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers

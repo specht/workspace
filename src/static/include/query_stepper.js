@@ -1,6 +1,8 @@
 // The query stepper: a SELECT taken apart in the order the database works
 // through it, FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT,
-// ORDER BY, LIMIT, with the table after each step. ← and → step through it
+// ORDER BY, LIMIT, with the table after each step. A subquery (IN (SELECT …)
+// or a single value) runs first, with steps of its own; SELECT … UNION
+// SELECT … runs each query, then puts their rows together. ← and → step through it
 // (stepper_keys.js). The data are the countries of the world from the SQL
 // introduction and the movies of »Filmdatenbank«
 // (src/scripts/query-stepper-data.rb).
@@ -24,7 +26,7 @@
 
     const KEYWORDS = new Set(['SELECT', 'DISTINCT', 'FROM', 'AS', 'JOIN', 'INNER', 'LEFT', 'OUTER', 'ON', 'WHERE',
         'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'AND', 'OR', 'NOT', 'LIKE', 'IN',
-        'BETWEEN', 'IS', 'NULL', 'TRUE', 'FALSE']);
+        'BETWEEN', 'IS', 'NULL', 'TRUE', 'FALSE', 'UNION', 'ALL']);
     const AGGREGATES = new Set(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX']);
     const MAX_JOINED = 200000;
     const FUNCTIONS = new Set(['ROUND', 'UPPER', 'LOWER', 'LENGTH', 'ABS', 'CONCAT']);
@@ -125,6 +127,11 @@
             if (isKw('IN')) {
                 pos++;
                 expectOp('(');
+                if (isKw('SELECT')) {
+                    const sub = fullQuery();
+                    expectOp(')');
+                    return { type: 'in', expr: left, sub, not: negated };
+                }
                 const list = [expression()];
                 while (isOp(',')) { pos++; list.push(expression()); }
                 expectOp(')');
@@ -167,7 +174,11 @@
             if (isKw('TRUE') || isKw('FALSE')) { pos++; return { type: 'lit', value: t.value === 'TRUE' ? 1 : 0 }; }
             if (isOp('(')) {
                 pos++;
-                if (isKw('SELECT')) throw new SqlError('Unterabfragen kann der Query Stepper nicht zeigen.');
+                if (isKw('SELECT')) {
+                    const sub = fullQuery();
+                    expectOp(')');
+                    return { type: 'sub', sub };
+                }
                 const inner = expression();
                 expectOp(')');
                 return inner;
@@ -198,109 +209,141 @@
             throw new SqlError(`Hier fehlt ein Wert oder eine Spalte, gefunden: ${describe(t)}.`);
         }
 
-        const query = { distinct: false, select: [], joins: [], where: null, groupBy: [], having: null, orderBy: [], limit: null };
-        // What a clause says, as written, for the explanation of its step,
-        // and where it stands in the text ([start, end]), for the widget to
-        // mark the clause of the step it shows.
-        query.sources = {};
-        query.spans = { joins: [] };
         const clauseStart = () => tokens[pos].start;
         const clauseText = (start) => text.slice(start, tokens[pos - 1].end).replace(/\s+/g, ' ');
         const spanFrom = (start) => [start, tokens[pos - 1].end];
-        const selectStart = peek() ? peek().start : 0;
-        expectKw('SELECT');
-        if (isKw('DISTINCT')) { query.spans.distinct = [peek().start, peek().end]; pos++; query.distinct = true; }
-        do {
-            if (query.select.length) pos++;
-            const start = peek() ? peek().start : text.length;
-            if (isOp('*')) { pos++; query.select.push({ star: true, table: null }); continue; }
-            if (peek() && peek().type === 'id' && isOp('.', 1) && isOp('*', 2)) {
-                const table = peek().value;
-                pos += 3;
-                query.select.push({ star: true, table });
-                continue;
-            }
-            const expr = expression();
-            const source = text.slice(start, tokens[pos - 1].end);
-            let alias = null;
-            if (isKw('AS')) { pos++; alias = identifier('ein Name nach AS'); }
-            else if (peek() && peek().type === 'id') alias = tokens[pos++].value;
-            query.select.push({ expr, alias, source });
-        } while (isOp(','));
-        query.sources.select = clauseText(selectStart);
-        query.spans.select = spanFrom(selectStart);
 
-        const fromStart = peek() ? peek().start : text.length;
-        expectKw('FROM');
-        const tableRef = () => {
-            const name = identifier('ein Tabellenname');
-            let alias = null;
-            if (isKw('AS')) { pos++; alias = identifier('ein Name nach AS'); }
-            else if (peek() && peek().type === 'id') alias = tokens[pos++].value;
-            return { name, alias: alias || name };
-        };
-        query.from = tableRef();
-        query.spans.from = spanFrom(fromStart);
-        for (;;) {
-            let type = null;
-            const joinStart = peek() ? peek().start : 0;
-            if (isKw('JOIN')) { type = 'INNER'; pos++; }
-            else if (isKw('INNER') && isKw('JOIN', 1)) { type = 'INNER'; pos += 2; }
-            else if (isKw('LEFT')) { type = 'LEFT'; pos++; if (isKw('OUTER')) pos++; expectKw('JOIN'); }
-            else if (isOp(',')) throw new SqlError('Mehrere Tabellen mit Komma verbindet der Query Stepper nicht; schreib JOIN … ON.');
-            else break;
-            const at = joinStart;
-            const ref = tableRef();
-            expectKw('ON');
-            const on = expression();
-            query.joins.push({ type, ...ref, on, source: clauseText(at) });
-            query.spans.joins.push(spanFrom(at));
-        }
-        if (isKw('WHERE')) { const at = clauseStart(); pos++; query.where = expression(); query.sources.where = clauseText(at); query.spans.where = spanFrom(at); }
-        if (isKw('GROUP')) {
-            const at = clauseStart();
-            pos++;
-            expectKw('BY');
-            query.groupBy.push(expression());
-            while (isOp(',')) { pos++; query.groupBy.push(expression()); }
-            query.sources.groupBy = clauseText(at);
-            query.spans.groupBy = spanFrom(at);
-        }
-        if (isKw('HAVING')) { const at = clauseStart(); pos++; query.having = expression(); query.sources.having = clauseText(at); query.spans.having = spanFrom(at); }
-        if (isKw('ORDER')) {
-            query.sources.orderStart = clauseStart();
-            pos++;
-            expectKw('BY');
+        // One SELECT up to HAVING; ORDER BY and LIMIT come in fullQuery,
+        // because after UNION they belong to the whole result.
+        function selectPart() {
+            const query = { distinct: false, select: [], joins: [], where: null, groupBy: [], having: null, orderBy: [], limit: null };
+            // What a clause says, as written, for the explanation of its step,
+            // and where it stands in the text ([start, end]), for the widget to
+            // mark the clause of the step it shows.
+            query.sources = {};
+            query.spans = { joins: [] };
+            const selectStart = peek() ? peek().start : 0;
+            expectKw('SELECT');
+            if (isKw('DISTINCT')) { query.spans.distinct = [peek().start, peek().end]; pos++; query.distinct = true; }
             do {
-                if (query.orderBy.length) pos++;
+                if (query.select.length) pos++;
+                const start = peek() ? peek().start : text.length;
+                if (isOp('*')) { pos++; query.select.push({ star: true, table: null }); continue; }
+                if (peek() && peek().type === 'id' && isOp('.', 1) && isOp('*', 2)) {
+                    const table = peek().value;
+                    pos += 3;
+                    query.select.push({ star: true, table });
+                    continue;
+                }
                 const expr = expression();
-                let desc = false;
-                if (isKw('DESC')) { pos++; desc = true; } else if (isKw('ASC')) pos++;
-                query.orderBy.push({ expr, desc });
+                const source = text.slice(start, tokens[pos - 1].end);
+                let alias = null;
+                if (isKw('AS')) { pos++; alias = identifier('ein Name nach AS'); }
+                else if (peek() && peek().type === 'id') alias = tokens[pos++].value;
+                query.select.push({ expr, alias, source });
             } while (isOp(','));
-            query.sources.orderBy = clauseText(query.sources.orderStart);
-            query.spans.orderBy = spanFrom(query.sources.orderStart);
-        }
-        if (isKw('LIMIT')) {
-            const limitStart = clauseStart();
-            pos++;
-            const number = () => {
-                const t = peek();
-                if (!t || t.type !== 'num' || !Number.isInteger(t.value)) throw new SqlError('Nach LIMIT steht eine ganze Zahl.');
-                pos++;
-                return t.value;
+            query.sources.select = clauseText(selectStart);
+            query.spans.select = spanFrom(selectStart);
+
+            const fromStart = peek() ? peek().start : text.length;
+            expectKw('FROM');
+            const tableRef = () => {
+                const name = identifier('ein Tabellenname');
+                let alias = null;
+                if (isKw('AS')) { pos++; alias = identifier('ein Name nach AS'); }
+                else if (peek() && peek().type === 'id') alias = tokens[pos++].value;
+                return { name, alias: alias || name };
             };
-            let count = number();
-            let offset = 0;
-            if (isOp(',')) { pos++; offset = count; count = number(); }
-            else if (isKw('OFFSET')) { pos++; offset = number(); }
-            query.limit = { count, offset };
-            query.spans.limit = spanFrom(limitStart);
+            query.from = tableRef();
+            query.spans.from = spanFrom(fromStart);
+            for (;;) {
+                let type = null;
+                const joinStart = peek() ? peek().start : 0;
+                if (isKw('JOIN')) { type = 'INNER'; pos++; }
+                else if (isKw('INNER') && isKw('JOIN', 1)) { type = 'INNER'; pos += 2; }
+                else if (isKw('LEFT')) { type = 'LEFT'; pos++; if (isKw('OUTER')) pos++; expectKw('JOIN'); }
+                else if (isOp(',')) throw new SqlError('Mehrere Tabellen mit Komma verbindet der Query Stepper nicht; schreib JOIN … ON.');
+                else break;
+                const at = joinStart;
+                const ref = tableRef();
+                expectKw('ON');
+                const on = expression();
+                query.joins.push({ type, ...ref, on, source: clauseText(at) });
+                query.spans.joins.push(spanFrom(at));
+            }
+            if (isKw('WHERE')) { const at = clauseStart(); pos++; query.where = expression(); query.sources.where = clauseText(at); query.spans.where = spanFrom(at); }
+            if (isKw('GROUP')) {
+                const at = clauseStart();
+                pos++;
+                expectKw('BY');
+                query.groupBy.push(expression());
+                while (isOp(',')) { pos++; query.groupBy.push(expression()); }
+                query.sources.groupBy = clauseText(at);
+                query.spans.groupBy = spanFrom(at);
+            }
+            if (isKw('HAVING')) { const at = clauseStart(); pos++; query.having = expression(); query.sources.having = clauseText(at); query.spans.having = spanFrom(at); }
+            return query;
         }
+
+        // ORDER BY and LIMIT, for one SELECT or for all of a UNION
+        function orderLimit(query) {
+            if (isKw('ORDER')) {
+                query.sources.orderStart = clauseStart();
+                pos++;
+                expectKw('BY');
+                do {
+                    if (query.orderBy.length) pos++;
+                    const expr = expression();
+                    let desc = false;
+                    if (isKw('DESC')) { pos++; desc = true; } else if (isKw('ASC')) pos++;
+                    query.orderBy.push({ expr, desc });
+                } while (isOp(','));
+                query.sources.orderBy = clauseText(query.sources.orderStart);
+                query.spans.orderBy = spanFrom(query.sources.orderStart);
+            }
+            if (isKw('LIMIT')) {
+                const limitStart = clauseStart();
+                pos++;
+                const number = () => {
+                    const t = peek();
+                    if (!t || t.type !== 'num' || !Number.isInteger(t.value)) throw new SqlError('Nach LIMIT steht eine ganze Zahl.');
+                    pos++;
+                    return t.value;
+                };
+                let count = number();
+                let offset = 0;
+                if (isOp(',')) { pos++; offset = count; count = number(); }
+                else if (isKw('OFFSET')) { pos++; offset = number(); }
+                query.limit = { count, offset };
+                query.spans.limit = spanFrom(limitStart);
+            }
+        }
+
+        // A query: one SELECT, or several joined by UNION [ALL]; also what
+        // stands in parentheses as a subquery
+        function fullQuery() {
+            const first = selectPart();
+            const parts = [first];
+            const unions = [];
+            while (isKw('UNION')) {
+                const at = clauseStart();
+                pos++;
+                const all = isKw('ALL') ? (pos++, true) : false;
+                unions.push({ all, span: spanFrom(at) });
+                parts.push(selectPart());
+            }
+            const query = parts.length === 1 ? first :
+                { type: 'union', parts, unions, orderBy: [], limit: null, sources: {}, spans: {} };
+            orderLimit(query);
+            return query;
+        }
+
+        const query = fullQuery();
         if (isOp(';')) pos++;
         if (pos < tokens.length) {
             const t = peek();
             const clause = t.type === 'kw' && ['WHERE', 'GROUP', 'HAVING', 'ORDER', 'LIMIT', 'FROM'].includes(t.value);
+            if (isOp(')')) throw new SqlError('Hier schließt eine Klammer, die nicht geöffnet wurde.');
             throw new SqlError(clause ?
                 `${t.value} steht an der falschen Stelle. Die Reihenfolge ist SELECT, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT.` :
                 `Unerwartet: ${describe(t)}.`);
@@ -378,14 +421,63 @@
 
     function run(text, data) {
         const query = parse(text);
+        const steps = [];
+        const out = runQuery(query, data, steps, null);
+        return { steps, result: out.view };
+    }
+
+    // part: what the steps belong to (»Unterabfrage«, »1. Abfrage«), null
+    // for the query itself. Returns the result as a view, its column labels
+    // and its rows of values.
+    function runQuery(query, data, steps, part) {
+        return query.type === 'union' ? runUnion(query, data, steps, part) : runSelect(query, data, steps, part);
+    }
+
+    // The subqueries in the clauses of a SELECT, not those inside them
+    function subqueriesOf(query) {
+        const found = [];
+        (function walk(e) {
+            if (!e || typeof e !== 'object') return;
+            if (Array.isArray(e)) { e.forEach(walk); return; }
+            if (e.type === 'sub' || (e.type === 'in' && e.sub)) found.push(e);
+            ['left', 'right', 'expr', 'pattern', 'lo', 'hi'].forEach((k) => walk(e[k]));
+            (e.list || []).forEach(walk);
+            (e.args || []).forEach(walk);
+        })([query.select.map((x) => x.expr), query.joins.map((j) => j.on), query.where, query.having, query.orderBy.map((o) => o.expr)]);
+        return found;
+    }
+
+    function runSelect(query, data, allSteps, part) {
         const tables = data.tables;
         const tableByName = (name) => {
             const key = Object.keys(tables).find((t) => t.toLowerCase() === name.toLowerCase());
             if (!key) throw new SqlError(`Die Tabelle ${name} gibt es nicht. Es gibt: ${Object.keys(tables).join(', ')}.`);
             return key;
         };
+        // the steps of this SELECT; they follow those of its subqueries
         const steps = [];
         const joined = query.joins.length > 0;
+
+        // Subqueries first: each runs on its own, and its result stands in
+        // for it (a list for IN, one value elsewhere)
+        const subs = subqueriesOf(query);
+        subs.forEach((node, k) => {
+            const name = (part ? `${part}, ` : '') + (subs.length > 1 ? `${k + 1}. Unterabfrage` : 'Unterabfrage');
+            let out;
+            try {
+                out = runQuery(node.sub, data, allSteps, name);
+            } catch (error) {
+                if (error instanceof SqlError && /^Die Spalte /.test(error.message)) {
+                    throw new SqlError(`${error.message} Eine Unterabfrage, die Spalten der äußeren Abfrage benutzt, kann der Query Stepper nicht zeigen.`);
+                }
+                throw error;
+            }
+            if (out.labels.length !== 1) throw new SqlError(`Die Unterabfrage liefert ${out.labels.length} Spalten; hier passt nur eine.`);
+            node.values = out.values.map((v) => v[0]);
+            if (node.type === 'sub' && node.values.length > 1) {
+                throw new SqlError(`Die Unterabfrage liefert ${node.values.length} Zeilen; an dieser Stelle passt nur ein Wert. Eine ganze Liste passt zu IN (SELECT …).`);
+            }
+        });
 
         // Columns of the joined rows: { table (alias), name }
         const fromKey = tableByName(query.from.name);
@@ -400,7 +492,7 @@
             if (!e || typeof e !== 'object') return;
             if (Array.isArray(e)) { e.forEach(collect); return; }
             if (e.type === 'col') refs.push(e);
-            Object.keys(e).forEach((k) => { if (!k.startsWith('cached') && k !== 'type') collect(e[k]); });
+            Object.keys(e).forEach((k) => { if (!k.startsWith('cached') && !['type', 'sub', 'values'].includes(k)) collect(e[k]); });
         })([query.select.map((x) => x.expr), query.where, query.joins.map((j) => j.on), query.groupBy, query.having, query.orderBy.map((o) => o.expr)]);
         const star = query.select.some((x) => x.star);
         const visibleOf = (cols) => {
@@ -508,12 +600,13 @@
                     const hit = likeToRegex(fold(p)).test(fold(v));
                     return bool(expr.not ? !hit : hit);
                 }
+                case 'sub': return expr.values.length ? expr.values[0] : null;
                 case 'in': {
                     const v = evaluate(expr.expr, ctx);
                     if (v === null) return null;
                     let unknown = false;
-                    for (const item of expr.list) {
-                        const c = compare(v, evaluate(item, ctx));
+                    for (const item of (expr.sub ? expr.values : expr.list)) {
+                        const c = compare(v, expr.sub ? item : evaluate(item, ctx));
                         if (c === 0) return bool(!expr.not);
                         if (c === null) unknown = true;
                     }
@@ -610,6 +703,20 @@
             steps.push({ clause: join.type === 'LEFT' ? 'LEFT JOIN' : 'JOIN', text: `${code(join.source)}: Jede Zeile wird mit jeder Zeile aus ${join.name} verbunden, für die die Bedingung gilt. ${what} ${rows.length === 1 ? 'Jetzt ist es 1 Zeile' : `Jetzt sind es ${rows.length} Zeilen`}.`, table: view(columns, rows, null, { highlight: used(join.on) }) });
         }
 
+        // What the subqueries of a clause gave, said before its step
+        const standIns = (expr) => {
+            const inside = subs.filter((node) => (function has(e) {
+                if (!e || typeof e !== 'object') return false;
+                if (e === node) return true;
+                return ['left', 'right', 'expr', 'pattern', 'lo', 'hi'].some((k) => has(e[k])) || (e.list || []).some(has) || (e.args || []).some(has);
+            })(expr));
+            return inside.map((node) => {
+                const shown = node.values.slice(0, 6).map(show).join(', ') + (node.values.length > 6 ? ` … (${node.values.length} Werte)` : '');
+                return node.type === 'sub' ? `Für die Unterabfrage steht ihr Ergebnis: ${code(node.values.length ? shown : 'NULL')}. ` :
+                    `Für die Unterabfrage steht die Liste ihrer Ergebnisse: ${code(node.values.length ? shown : '(leer)')}. `;
+            }).join('');
+        };
+
         // WHERE
         if (query.where) {
             if (hasAggregate(query.where)) {
@@ -622,7 +729,7 @@
             });
             const kept = rows.filter((_, i) => marks[i] === 'keep');
             const nulls = marks.filter((m) => m === 'null').length;
-            steps.push({ clause: 'WHERE', text: `${code(query.sources.where)}: Die Bedingung wird für jede Zeile geprüft. ${kept.length} von ${rows.length} Zeilen ${kept.length === 1 ? 'bleibt' : 'bleiben'}.${nulls ? ` Bei ${nulls} ist das Ergebnis NULL, weil ein Wert fehlt; auch sie fallen weg.` : ''}`, table: view(columns, rows, marks, { highlight: used(query.where) }) });
+            steps.push({ clause: 'WHERE', text: `${code(query.sources.where)}: ${standIns(query.where)}Die Bedingung wird für jede Zeile geprüft. ${kept.length} von ${rows.length} Zeilen ${kept.length === 1 ? 'bleibt' : 'bleiben'}.${nulls ? ` Bei ${nulls} ist das Ergebnis NULL, weil ein Wert fehlt; auch sie fallen weg.` : ''}`, table: view(columns, rows, marks, { highlight: used(query.where) }) });
             rows = kept;
         }
 
@@ -775,13 +882,76 @@
         let joinIndex = 0;
         steps.forEach((step) => {
             step.span = step.clause.endsWith('JOIN') ? query.spans.joins[joinIndex++] : query.spans[SPAN_OF[step.clause]];
+            if (part) step.part = part;
+            allSteps.push(step);
         });
-        return { steps, result: resultView(results) };
+        return { view: resultView(results), labels: outColumns.map((o) => o.label), values: results.map((r) => r.values) };
+    }
+
+    // SELECT … UNION [ALL] SELECT …: each query on its own, then their rows
+    // one under the other, then ORDER BY and LIMIT over all of them
+    function runUnion(query, data, steps, part) {
+        const outs = query.parts.map((p, i) => runSelect(p, data, steps, (part ? `${part}, ` : '') + `${i + 1}. Abfrage`));
+        const labels = outs[0].labels;
+        outs.forEach((o, i) => {
+            if (o.labels.length !== labels.length) {
+                throw new SqlError(`Die ${i + 1}. Abfrage liefert ${o.labels.length} Spalten, die erste ${labels.length}. Bei UNION brauchen alle Abfragen gleich viele Spalten.`);
+            }
+        });
+        const own = [];
+        const view = (list, marks) => lazyView(labels, [], list.length, (i) => list[i].map(show), marks, null);
+        const all = outs.flatMap((o) => o.values);
+        let rows = all;
+        const distinct = query.unions.some((u) => !u.all);
+        const word = distinct ? 'UNION' : 'UNION ALL';
+        const code = (source) => `<code>${esc(source)}</code>`;
+        if (distinct) {
+            const seen = new Set();
+            const marks = all.map((v) => { const k = keysOf(v); if (seen.has(k)) return 'drop'; seen.add(k); return 'keep'; });
+            rows = all.filter((_, i) => marks[i] === 'keep');
+            own.push({ clause: 'UNION', span: query.unions[0].span, table: view(all, marks),
+                text: `${code(word)}: Die Zeilen aller ${outs.length} Abfragen kommen untereinander, unter den Spaltennamen der ersten. Gleiche Zeilen bleiben nur einmal: ${rows.length} von ${all.length} Zeilen.` });
+        } else {
+            own.push({ clause: 'UNION', span: query.unions[0].span, table: view(all),
+                text: `${code(word)}: Die Zeilen aller ${outs.length} Abfragen kommen untereinander, unter den Spaltennamen der ersten, auch gleiche Zeilen: ${all.length} Zeilen.` });
+        }
+        if (query.orderBy.length) {
+            const index = (o) => {
+                const e = o.expr;
+                if (e.type === 'lit' && Number.isInteger(e.value)) {
+                    if (e.value < 1 || e.value > labels.length) throw new SqlError(`ORDER BY ${e.value}: So viele Spalten hat das Ergebnis nicht.`);
+                    return e.value - 1;
+                }
+                const i = e.type === 'col' && !e.table ? labels.findIndex((l) => l.toLowerCase() === e.name.toLowerCase() || l.toLowerCase().endsWith(`.${e.name.toLowerCase()}`)) : -1;
+                if (i < 0) throw new SqlError(`Nach UNION sortiert ORDER BY nach den Spalten des Ergebnisses: ${labels.join(', ')}, oder nach ihrer Nummer.`);
+                return i;
+            };
+            const keys = query.orderBy.map((o) => ({ i: index(o), desc: o.desc }));
+            rows = rows.map((v, i) => i).sort((a, b) => {
+                for (const k of keys) {
+                    const x = rows[a][k.i], y = rows[b][k.i];
+                    let c = x === null && y === null ? 0 : x === null ? -1 : y === null ? 1 : compare(x, y);
+                    if (k.desc) c = -c;
+                    if (c) return c;
+                }
+                return a - b;
+            }).map((i) => rows[i]);
+            own.push({ clause: 'ORDER BY', span: query.spans.orderBy, table: view(rows), text: `${code(query.sources.orderBy)}: Alle Zeilen zusammen werden sortiert.` });
+        }
+        if (query.limit) {
+            const { count, offset } = query.limit;
+            const marks = rows.map((_, i) => (i >= offset && i < offset + count) ? 'keep' : 'drop');
+            const kept = rows.filter((_, i) => marks[i] === 'keep');
+            own.push({ clause: 'LIMIT', span: query.spans.limit, table: view(rows, marks), text: `<code>LIMIT ${offset ? offset + ', ' : ''}${count}</code>: ${offset ? `Die ersten ${offset} Zeilen werden übersprungen, dann bleiben die nächsten ${count}.` : `Nur die ersten ${count} Zeilen bleiben.`}` });
+            rows = kept;
+        }
+        own.forEach((step) => { if (part) step.part = part; steps.push(step); });
+        return { view: view(rows), labels, values: rows };
     }
 
     // --- The widget ---------------------------------------------------------
 
-    const ORDER = ['FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'ORDER BY', 'LIMIT'];
+    const ORDER = ['FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'UNION', 'ORDER BY', 'LIMIT'];
     const MAX_ROWS = 12;
     // The tables to work on: countries (»Einführung in SQL«), movies or the
     // video shop of its last chapter (»Filmdatenbank«)
@@ -914,10 +1084,11 @@
 
         function draw() {
             const step = steps[current];
-            const present = steps.map((s) => s.clause.replace('LEFT JOIN', 'JOIN'));
+            // the clauses of the part this step belongs to (a subquery, one query of a UNION)
+            const present = steps.filter((s) => s.part === step.part).map((s) => s.clause.replace('LEFT JOIN', 'JOIN'));
             orderBox.innerHTML = ORDER.filter((c) => present.includes(c)).map((c) =>
                 `<span class='qs-clause${c === step.clause.replace('LEFT JOIN', 'JOIN') ? ' qs-current' : ''}'>${c}</span>`).join("<i class='bi bi-arrow-right'></i>");
-            say.innerHTML = step.text;
+            say.innerHTML = (step.part ? `<strong>${esc(step.part)}.</strong> ` : '') + step.text;
             mark(step.span);
             viewBox.innerHTML = tableHtml(step.table);
             count.textContent = `Schritt ${current + 1} von ${steps.length}`;
