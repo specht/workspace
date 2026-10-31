@@ -15,6 +15,10 @@ maintainer before building.
   teaches the wrong lesson.
 - **The order of the work:** Textadventure, Prüfziffern and Laufzeit in Dart
   and Java first (done), then this activity.
+- **Where and what (31 October 2026):** in »Netze & Sicherheit«, after the
+  web server and the Pixelwand; named »Nebenläufigkeit«. The widget hands
+  the order a student clicked to a check type of its own (not an `answer`
+  card). Java and Dart only; no Ruby version.
 
 ## What exists
 
@@ -122,11 +126,10 @@ and checked reliably, unlike threads.
   returned), and the lost update is a prediction and a measurement on the
   page. Deadlock examples must hang every time: a `CountDownLatch` or a short
   `sleep` between taking the two locks makes that certain.
-- Dart: **the `dart` check does not await yet.** `DartCheck.harness` runs
-  each case synchronously, so a call that returns a `Future` would come
-  back as »Instance of 'Future<…>'«. Needed first: cases as `async`
-  functions that `await` a result that is a `Future`, with a test in
-  `test/java_dart_check_test.rb`.
+- Dart: the `dart` check awaits (31 October 2026): every case is an
+  `async` function, a `Future` is awaited, a step may `await`; the race at
+  `await` (two `deposit` with `Future.wait`) gives 7 instead of 12 every
+  time, so it can be a case. All Dart examples pass with it.
 - Time: a check that starts threads a million times needs `timeout:` a bit
   higher than the default; measure in a Workspace.
 

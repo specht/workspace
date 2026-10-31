@@ -68,8 +68,44 @@ class JavaDartCheckTest < Minitest::Test
     def test_dart_literal_and_harness
         assert_equal %q("Book('Faust', \"x \$y\").title"), DartCheck.literal(%q{Book('Faust', "x $y").title})
         source, = DartCheck.harness(DartCheck.cases(DART))
-        assert_includes source, "    final b = Book('A', 'B');\n    b.lend();\n    return (b.isAvailable);"
+        assert_includes source, "    final b = Book('A', 'B');\n    b.lend();\n    return await (b.isAvailable);"
         assert_includes source, "import '__HS_FILE__';"
+    end
+
+    # Every case is async: a Future is awaited, a step may await, and the
+    # cases run one after the other; a real run where Dart is installed
+    def test_dart_cases_await_futures
+        source, = DartCheck.harness(DartCheck.cases('cases' => [{ 'call' => 'await deposit(5); balance', 'expect' => 5 }]))
+        assert_includes source, "Future<void> _case0() async {"
+        assert_includes source, "    await deposit(5);\n    return await (balance);"
+        assert_includes source, "  await _case0();"
+        dart = ['/opt/dart-sdk/bin/dart', '/opt/flutter/bin/dart'].find { |d| File.executable?(d) }
+        skip 'Dart is not installed' unless dart
+        Dir.mktmpdir do |dir|
+            File.write(File.join(dir, 'bank.dart'), <<~DART)
+                var balance = 0;
+                Future<void> save() => Future.delayed(const Duration(milliseconds: 1));
+                Future<void> deposit(int amount) async {
+                  final before = balance;
+                  await save();
+                  balance = before + amount;
+                }
+                Future<int> both() async {
+                  balance = 0;
+                  await Future.wait([deposit(5), deposit(7)]);
+                  return balance;
+                }
+                Future<int> fails() async => throw StateError('kaputt');
+            DART
+            cases = DartCheck.cases('cases' => [
+                { 'both()' => 7 },
+                { 'call' => 'balance = 0; await deposit(5); await deposit(7); balance', 'expect' => 12 },
+                { 'call' => 'fails()', 'raises' => true },
+            ])
+            out, = Open3.capture2e({ 'PATH' => "#{File.dirname(dart)}:#{ENV['PATH']}" }, 'bash', '-c', DartCheck.command('bank.dart', cases), :chdir => dir)
+            result = DartCheck.parse(out)
+            assert_equal [true, true, true], result['cases'].map { |c| c['ok'] }, out
+        end
     end
 
     def test_dart_compile_errors_said_for_the_person

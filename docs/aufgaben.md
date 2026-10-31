@@ -1463,7 +1463,10 @@ in `/tmp`. Bei Java übersetzt `javac` es zusammen mit allen `.java`-Dateien
 im Ordner von `file`, bei Dart importiert es die Datei (und damit, was sie
 importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`,
 `/opt/dart-sdk`).
-Ein eigenes `main` läuft dabei nicht.
+Ein eigenes `main` läuft dabei nicht. In Dart ist jeder Fall `async`: Gibt
+ein Aufruf ein `Future` zurück, wartet die Prüfung darauf (auch auf ein
+erwartetes), ein Schritt darf `await` enthalten (`await deposit(5);
+balance`), und die Fälle laufen nacheinander.
 
 ```yaml
 check:

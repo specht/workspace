@@ -29,7 +29,9 @@ require_relative 'call_check'
 # as in JavaCheck (numbers as numbers, doubles within 1e-9; lists, sets and
 # maps by their elements; the rest with ==), shown like a literal ('Faust',
 # [1, 2]), an object of the person's class with its toString. print in their
-# code goes nowhere. Dart finds errors in the code only when it runs it: they
+# code goes nowhere. Each case is async: a call that gives a Future is
+# awaited (and so is an expected value), and a step may await
+# (»await deposit(5); balance«); the cases run one after the other. Dart finds errors in the code only when it runs it: they
 # come back as errors of the compiler, said like JavaCheck's.
 module DartCheck
     MAX_CASES = CallCheck::MAX_CASES
@@ -110,7 +112,7 @@ module DartCheck
               return text.length > 300 ? text.substring(0, 300) : text;
             }
 
-            T _quiet<T>(T Function() f) =>
+            Future<T> _quiet<T>(Future<T> Function() f) =>
                 runZoned(f, zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {}));
 
             void _add(String call, String expect, String? got, bool ok, String? error) {
@@ -137,22 +139,22 @@ module DartCheck
             body = prepare.map { |step| "    #{step};\n" }.join
             call = literal(c['call'])
             expect = literal(c['expect'])
-            source << "void _case#{i}() {\n  try {\n"
+            source << "Future<void> _case#{i}() async {\n  try {\n"
             if c['raises']
-                source << "    final Object? got = _quiet<Object?>(() {\n#{body}    return (#{last});\n    });\n"
+                source << "    final Object? got = await _quiet<Object?>(() async {\n#{body}    return await (#{last});\n    });\n"
                 source << "    _add(#{call}, #{expect}, _repr(got), false, null);\n"
                 source << "  } catch (e, s) {\n    _add(#{call}, #{expect}, null, true, _error(e, s));\n  }\n}\n\n"
             else
-                source << "    final Object? expected = (#{c['expect']});\n"
-                source << "    final Object? got = _quiet<Object?>(() {\n#{body}    return (#{last});\n    });\n"
+                source << "    final Object? expected = await (#{c['expect']});\n"
+                source << "    final Object? got = await _quiet<Object?>(() async {\n#{body}    return await (#{last});\n    });\n"
                 source << "    _add(#{call}, #{expect}, _repr(got), _same(got, expected), null);\n"
                 source << "  } catch (e, s) {\n    _add(#{call}, #{expect}, null, false, _error(e, s));\n  }\n}\n\n"
             end
             ranges << (first..source.count("\n"))
         end
         source << <<~DART
-            void main() {
-            #{cases.each_index.map { |i| "  _case#{i}();" }.join("\n")}
+            Future<void> main() async {
+            #{cases.each_index.map { |i| "  await _case#{i}();" }.join("\n")}
               print('');
               print('#{RESULT_MARK}${jsonEncode({'cases': _results})}');
             }
