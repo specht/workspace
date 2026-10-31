@@ -44,6 +44,16 @@ Liest B den Zähler, bevor A seinen neuen Wert zurückgeschrieben hat, rechnen b
 
 _task(reihenfolgen-ohne-verlust)
 
+### Drei Threads
+
+Mit einem dritten Thread wird es schlimmer: Jetzt können sogar zwei Erhöhungen verloren gehen.
+
+_task(drei-threads)
+
+<!-- after: drei-threads -->
+Drei Threads mit je drei Schritten haben 1680 Reihenfolgen. Nur in 6 davon steht am Ende 3 in `counter`, in 270 steht 2, und in 1404, also in den meisten, steht 1. Je mehr Threads denselben Zähler erhöhen, desto weniger wahrscheinlich ist es, dass alles gut geht.
+<!-- /after -->
+
 ## Ein Lock
 
 Ein **Lock** (auch Mutex) sorgt dafür, dass immer nur ein Thread einen Abschnitt ausführt. `lock m` nimmt den Lock `m`; hält ihn schon ein anderer Thread, wartet der Thread an dieser Zeile, bis `unlock m` ihn freigibt.
@@ -53,6 +63,12 @@ Ein **Lock** (auch Mutex) sorgt dafür, dass immer nur ein Thread einen Abschnit
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Versuch wieder, eine Erhöhung zu verlieren. Achte darauf, wann der Knopf eines Threads grau wird und was dann in seiner Spalte steht.
 </div>
+
+_task(reihenfolgen-mit-lock)
+
+<!-- after: reihenfolgen-mit-lock -->
+Es bleiben nur zwei: erst A ganz, dann B ganz, oder umgekehrt. Wer den Lock zuerst nimmt, macht alle seine Schritte, bevor der andere überhaupt anfangen kann. In beiden steht am Ende 2 in `counter`. Der Lock macht aus den drei Schritten einen einzigen, den niemand unterbrechen kann; so einen Abschnitt nennt man **kritischen Abschnitt**. Der Preis: Die Threads laufen hier nicht mehr nebeneinander, sondern nacheinander.
+<!-- /after -->
 
 ## Zwei Locks
 
@@ -80,6 +96,24 @@ Hält jeder Thread einen Lock und wartet auf den des anderen, kommt keiner mehr 
 <!-- /after -->
 
 _person(dijkstra)
+
+### Die speisenden Philosophen
+
+Drei Philosophen sitzen um einen runden Tisch, zwischen je zweien liegt eine Gabel. Wer essen will, braucht beide Gabeln neben sich, die linke und die rechte. Jeder nimmt erst die eine, dann die andere, isst, und legt beide zurück. Die Gabeln sind Locks: `f1` zwischen A und B, `f2` zwischen B und C, `f3` zwischen C und A.
+
+<div class='interleaving' data-title='Drei Philosophen' data-program='{"shared": {"meals": 0}, "locks": ["f1", "f2", "f3"], "threads": {"A": ["lock f1", "lock f2", "meals ← meals + 1", "unlock f2", "unlock f1"], "B": ["lock f2", "lock f3", "meals ← meals + 1", "unlock f3", "unlock f2"], "C": ["lock f3", "lock f1", "meals ← meals + 1", "unlock f1", "unlock f3"]}}'></div>
+
+_task(philosophen)
+
+Damit kein Deadlock entsteht, ändert C die Reihenfolge: Er nimmt erst `f1`, dann `f3`. A und B bleiben, wie sie sind.
+
+_task(philosophen-reihenfolge)
+
+<!-- after: philosophen-reihenfolge -->
+<div class='interleaving' data-title='C greift anders' data-program='{"shared": {"meals": 0}, "locks": ["f1", "f2", "f3"], "threads": {"A": ["lock f1", "lock f2", "meals ← meals + 1", "unlock f2", "unlock f1"], "B": ["lock f2", "lock f3", "meals ← meals + 1", "unlock f3", "unlock f2"], "C": ["lock f1", "lock f3", "meals ← meals + 1", "unlock f3", "unlock f1"]}}'></div>
+
+Jetzt nehmen alle drei ihre Gabeln in derselben Reihenfolge: die mit der kleineren Nummer zuerst. Ein Kreis, in dem jeder auf den Nächsten wartet, kann so nicht entstehen: Wer `f3` hält, hält schon seine andere Gabel und kann essen. Probiert man alle 236 Reihenfolgen durch, die es dann gibt, endet keine in einem Deadlock. Das ist dieselbe Regel wie bei den Überweisungen: Alle nehmen ihre Locks in derselben Reihenfolge.
+<!-- /after -->
 
 ## Im Code
 
@@ -114,6 +148,25 @@ Future<void> deposit(int amount) async {
   balance = before + amount;
 }
 ```
+
+Was als Nächstes läuft, wenn eine Funktion an einem `await` anhält, entscheidet Darts **Event Loop**. Er arbeitet eine Liste von Aufgaben ab, eine nach der anderen:
+
+```dart
+import 'dart:async';
+
+Future<void> main() async {
+  print('A');
+  Future(() => print('B'));
+  scheduleMicrotask(() => print('C'));
+  print('D');
+  await Future.delayed(Duration.zero);
+  print('E');
+}
+```
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Führe das Programm aus und achte darauf, in welcher Reihenfolge die Buchstaben erscheinen. Was läuft sofort, was danach, und was erst ganz am Ende?
+</div>
 
 `Future.wait` startet mehrere solche Aufrufe und wartet, bis alle fertig sind:
 
@@ -195,9 +248,6 @@ public class Bank {
 }
 ```
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Leg <code>Bank.java</code> in <code>/workspace/nebenlaeufigkeit</code> und führe es mit <code>java Bank.java</code> aus. Achte darauf, ob am Ende 200 erscheint, und wie oft du es versuchen musst. Ein Programm, das hängt, beendest du mit <kbd>Strg</kbd><kbd>C</kbd>.
-</div>
 <!-- /language -->
 <!-- language: dart -->
 Für `async`-Code hat Dart keinen Lock, aber einen kann man aus `Future`s bauen. Diese Klasse merkt sich in `_last`, wann die zuletzt angemeldete Aktion fertig ist. `synchronized` hängt die nächste Aktion mit `then` dahinter: Sie beginnt erst, wenn die vorige fertig ist, auch wenn sie mit einem Fehler endet.
@@ -215,7 +265,39 @@ class Lock {
 ```
 
 `lock.synchronized(() => deposit(5))` meldet eine Einzahlung beim Lock an. Startest du mehrere so zugleich, kommt trotzdem eine nach der anderen an die Reihe.
+
+Auch in Dart kann ein Lock auf sich selbst warten. Dieses Programm meldet innerhalb einer Aktion, die den Lock schon hat, noch eine zweite an:
+
+```dart
+Future<void> main() async {
+  final lock = Lock();
+  print('vorher');
+  await lock.synchronized(() async {
+    print('außen');
+    await lock.synchronized(() async {
+      print('innen');
+    });
+    print('wieder außen');
+  });
+  print('fertig');
+}
+```
 <!-- /language -->
+
+_task(haengt-es)
+
+<!-- after: haengt-es -->
+<!-- language: java -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Leg <code>Bank.java</code> in <code>/workspace/nebenlaeufigkeit</code> und führe es mehrmals mit <code>java Bank.java</code> aus. Achte darauf, ob am Ende 200 erscheint. Ein Programm, das hängt, beendest du mit <kbd>Strg</kbd><kbd>C</kbd>.
+</div>
+
+Hunderttausend Überweisungen in jede Richtung sind viele Gelegenheiten: Fast jeder Lauf bleibt irgendwann hängen, sobald beide Threads gleichzeitig ihren ersten Lock genommen haben. Genau die Reihenfolge, die du im Widget gefunden hast.
+<!-- /language -->
+<!-- language: dart -->
+Das Programm gibt `vorher` und `außen` aus und endet dann, ohne Fehlermeldung. Die innere Aktion wartet, bis die äußere fertig ist, und die äußere wartet auf die innere. Weil sonst nichts mehr geplant ist, hat Dart nichts mehr zu tun und beendet das Programm einfach. Das ist der Deadlock in Dart: Er hängt nicht, er hört leise auf, mitten in der Arbeit.
+<!-- /language -->
+<!-- /after -->
 
 _task(locks-im-code)
 
@@ -224,6 +306,34 @@ _task(locks-im-code)
 <!-- /language -->
 <!-- language: dart -->
 <!-- stage: loesung/bank-lock.dart as nebenlaeufigkeit/bank.dart -->
+<!-- /language -->
+
+<!-- language: java -->
+Für einen einzelnen Zähler braucht Java keinen eigenen Lock. `AtomicInteger` aus `java.util.concurrent.atomic` hat eine Methode `incrementAndGet()`, die lesen, eins dazuzählen und schreiben in einem einzigen Schritt erledigt, den kein anderer Thread unterbrechen kann. Das Wort `volatile` vor einer Variablen reicht dafür nicht: Es sorgt nur dafür, dass jeder Thread den neuesten Wert sieht. `count++` bleibt auch dann drei Schritte.
+<!-- /language -->
+<!-- language: dart -->
+Was zwischen zwei `await` passiert, kann auch eine Datei treffen. Ein Besuchszähler liest die Zahl aus einer Datei, wartet aufs Lesen und aufs Schreiben, und schreibt die neue Zahl zurück:
+
+```dart
+import 'dart:io';
+
+Future<void> visit(String path) async {
+  final file = File(path);
+  final count = int.parse(await file.readAsString());
+  await file.writeAsString('${count + 1}');
+}
+```
+
+Kommen mehrere Besuche zugleich, lesen alle dieselbe Zahl.
+<!-- /language -->
+
+_task(atomar)
+
+<!-- language: java -->
+<!-- stage: loesung/AtomicCounter.java as nebenlaeufigkeit/AtomicCounter.java -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/visits.dart as nebenlaeufigkeit/visits.dart -->
 <!-- /language -->
 
 ### Arbeit weitergeben
@@ -281,13 +391,68 @@ _task(arbeit-weitergeben)
 <!-- /language -->
 
 <!-- language: java -->
-Java hat so einen Puffer schon: `ArrayBlockingQueue`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
-
 _person(hoare)
+
+Java hat so einen Puffer schon: `ArrayBlockingQueue` aus `java.util.concurrent`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
+<!-- /language -->
+<!-- language: dart -->
+Zwischen zwei Teilen eines Dart-Programms, die nacheinander Werte liefern und verarbeiten, liegt oft ein **Stream**. Ein `StreamController` ist sein Anfang: `controller.add(x)` legt einen Wert hinein, `controller.close()` sagt, dass keiner mehr kommt. Am anderen Ende holt `await for (final x in controller.stream)` die Werte der Reihe nach ab und wartet, solange keiner da ist.
 <!-- /language -->
 
+_task(weitergeben-fertig)
+
+<!-- language: java -->
+<!-- stage: loesung/Pipeline.java as nebenlaeufigkeit/Pipeline.java -->
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/stream.dart as nebenlaeufigkeit/stream.dart -->
+<!-- /language -->
+
+### Mehrere Kerne nutzen
+
+<!-- language: java -->
+Threads einzeln zu starten und auf jeden zu warten ist mühsam. Ein **Thread-Pool** hält ein paar Threads bereit und verteilt Aufgaben auf sie: `Executors.newFixedThreadPool(4)` macht einen mit vier Threads. `pool.submit(() -> …)` gibt ihm eine Aufgabe und bekommt sofort ein `Future<Integer>` zurück, ein Versprechen auf das Ergebnis; `future.get()` wartet, bis es da ist. Am Ende beendet `pool.shutdown()` die Threads.
+
+Diese Methode zählt die Primzahlen von `from` bis vor `to`:
+
+```java
+public static int countPrimes(int from, int to) {
+    int count = 0;
+    for (int n = Math.max(from, 2); n < to; n++) {
+        boolean prime = true;
+        for (int d = 2; d * d <= n; d++) {
+            if (n % d == 0) {
+                prime = false;
+                break;
+            }
+        }
+        if (prime) count++;
+    }
+    return count;
+}
+```
+<!-- /language -->
 <!-- language: dart -->
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Miss mit einer <code>Stopwatch</code>, wie lange <code>countPrimesParallel(5000000, 1)</code> braucht und wie lange dasselbe mit 2 und mit 4 Teilen. Dein Workspace hat vier Kerne. Achte darauf, ob vier Teile auch viermal so schnell sind, und überleg, welcher Teil am längsten rechnet.
+</div>
+
+Die Teile sind nicht gleich viel Arbeit: Je größer eine Zahl, desto länger dauert die Prüfung, ob sie eine Primzahl ist. Gerechter wird es, wenn jedes Isolate kleine und große Zahlen bekommt: das erste 0, 4, 8, …, das zweite 1, 5, 9, … und so weiter.
+<!-- /language -->
+
+_task(mehrere-kerne)
+
+<!-- language: java -->
+<!-- stage: loesung/Primes.java as nebenlaeufigkeit/Primes.java -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Miss mit <code>System.nanoTime()</code> vorher und nachher, wie lange <code>countPrimesParallel(5000000, 1)</code> braucht und wie lange dasselbe mit 2 und mit 4 Threads. Dein Workspace hat vier Kerne. Achte darauf, ob vier Threads auch viermal so schnell sind.
+</div>
+<!-- /language -->
+<!-- language: dart -->
+<!-- stage: loesung/primes-fair.dart as nebenlaeufigkeit/primes.dart -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Miss <code>countPrimesFair(5000000, 4)</code> genauso wie vorhin <code>countPrimesParallel</code>. Achte darauf, um wie viel die gerechte Verteilung schneller ist.
 </div>
 <!-- /language -->

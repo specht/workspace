@@ -51,3 +51,44 @@ examples:
         - { files: { nebenlaeufigkeit/primes.dart: loesung/primes.dart } }
       fail:
         - { files: { nebenlaeufigkeit/primes.dart: { text: "import 'dart:isolate';\n\nint countPrimes(int from, int to) => 0;\n\nFuture<int> countPrimesParallel(int limit, int parts) async => 0;\n" } } }
+  drei-threads:
+    pass:
+      - answer: A B C A B C A B C
+    fail:
+      - answer: A A A B B B C C C
+  philosophen:
+    pass:
+      - answer: A B C
+    fail:
+      - answer: A A A A A B B B B B C C C C C
+  atomar:
+    pass:
+      - { files: { nebenlaeufigkeit/AtomicCounter.java: loesung/AtomicCounter.java } }
+    fail:
+      - { files: { nebenlaeufigkeit/AtomicCounter.java: { text: "public class AtomicCounter {\n    public static int countWithThreads(int threads, int times) { return 0; }\n}\n" } } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/visits.dart: loesung/visits.dart } }
+      fail:
+        # all visits at once without the lock: all read 0, every time
+        - { files: { nebenlaeufigkeit/visits.dart: fehler/visits-ohne-lock.dart } }
+  weitergeben-fertig:
+    pass:
+      - { files: { nebenlaeufigkeit/Pipeline.java: loesung/Pipeline.java } }
+    fail:
+      - { files: { nebenlaeufigkeit/Pipeline.java: { text: "public class Pipeline {\n    public static int transfer(int n, int capacity) { return 0; }\n}\n" } } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/stream.dart: loesung/stream.dart } }
+      fail:
+        - { files: { nebenlaeufigkeit/stream.dart: { text: "Future<int> transfer(int n) async => 0;\n" } } }
+  mehrere-kerne:
+    pass:
+      - { files: { nebenlaeufigkeit/Primes.java: loesung/Primes.java } }
+    fail:
+      - { files: { nebenlaeufigkeit/Primes.java: { text: "public class Primes {\n    public static int countPrimesParallel(int limit, int parts) { return 0; }\n}\n" } } }
+    dart:
+      pass:
+        - { files: { nebenlaeufigkeit/primes.dart: loesung/primes-fair.dart } }
+      fail:
+        - { files: { nebenlaeufigkeit/primes.dart: loesung/primes.dart } }

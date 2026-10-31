@@ -35,6 +35,38 @@ tasks:
       Nur in zweien: A ganz vor B und B ganz vor A. Sobald sich die Schritte
       mischen, liest ein Thread, bevor der andere geschrieben hat.
 
+  - id: drei-threads
+    title: Drei Threads
+    prompt: |
+      Drei Threads erhöhen denselben Zähler. Finde eine Reihenfolge, nach der
+      `counter` am Ende 1 ist: Zwei der drei Erhöhungen gehen verloren.
+    check:
+      type: interleaving
+      shared: { counter: 0 }
+      threads:
+        A: ["a ← counter", "a ← a + 1", "counter ← a"]
+        B: ["b ← counter", "b ← b + 1", "counter ← b"]
+        C: ["c ← counter", "c ← c + 1", "counter ← c"]
+      goal: counter == 1
+    feedback:
+      - when: { problem: goal }
+        say: Hier ist mehr als eine Erhöhung angekommen. Was müssen alle drei Threads getan haben, bevor der erste zurückschreibt?
+    hint: Lass alle drei lesen, bevor einer schreibt.
+
+  - id: reihenfolgen-mit-lock
+    title: Wie viele Reihenfolgen mit Lock?
+    prompt: |
+      Ohne Lock gibt es 20 Reihenfolgen der Schritte von A und B. Wie viele
+      gibt es mit dem Lock, wenn jeder Thread jetzt fünf Zeilen hat? Gezählt
+      wird nur, was ein Thread wirklich ausführen kann.
+    check:
+      type: number
+      expect: 2
+    hint: Was kann B tun, solange A den Lock hält? Und A, solange B ihn hält?
+    solution: |
+      Zwei: Wer den Lock zuerst nimmt, führt alle seine Zeilen aus, bevor der
+      andere anfangen kann.
+
   - id: deadlock
     title: Keiner kommt weiter
     prompt: Finde eine Reihenfolge, nach der keiner der beiden Threads mehr einen Schritt machen kann.
@@ -47,6 +79,44 @@ tasks:
         B: ["lock n", "lock m", "y ← y - 3", "x ← x + 3", "unlock m", "unlock n"]
       goal: deadlock
     hint: Jeder Thread braucht beide Locks. Was passiert, wenn jeder schon einen hat?
+
+  - id: philosophen
+    title: Drei hungrige Philosophen
+    prompt: Finde eine Reihenfolge, nach der keiner der drei Philosophen mehr einen Schritt machen kann.
+    check:
+      type: interleaving
+      shared: { meals: 0 }
+      locks: [f1, f2, f3]
+      threads:
+        A: ["lock f1", "lock f2", "meals ← meals + 1", "unlock f2", "unlock f1"]
+        B: ["lock f2", "lock f3", "meals ← meals + 1", "unlock f3", "unlock f2"]
+        C: ["lock f3", "lock f1", "meals ← meals + 1", "unlock f1", "unlock f3"]
+      goal: deadlock
+    hint: Was geschieht, wenn jeder Philosoph zuerst seine erste Gabel nimmt?
+
+  - id: philosophen-reihenfolge
+    title: Ein Philosoph greift anders
+    prediction: true
+    prompt: |
+      C nimmt jetzt erst `f1`, dann `f3`; A nimmt `f1` und `f2`, B `f2` und `f3`
+      wie bisher. Kann es noch einen Deadlock geben? Überleg zuerst; nach
+      deiner Antwort kannst du es in einem Widget ausprobieren.
+    check:
+      type: choice
+      options:
+        - 'Ja, wieder mit A, B, C: Jeder nimmt seine erste Gabel.'
+        - 'Ja, aber nur, wenn C zuerst dran ist.'
+        - 'Nein: Alle nehmen ihre Gabeln in derselben Reihenfolge, die mit der kleineren Nummer zuerst.'
+        - 'Nein, weil nur noch zwei Philosophen essen können.'
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Nehmen A und C nach der Änderung noch verschiedene erste Gabeln? Welche will jeder von beiden zuerst?'
+      - when: { picked: 1 }
+        say: 'Nimmt C zuerst `f1`, kann A nicht anfangen. Kann dann noch ein Kreis entstehen, in dem jeder auf den Nächsten wartet?'
+    solution: |
+      Nein. Weil alle die Gabel mit der kleineren Nummer zuerst nehmen, kann
+      kein Kreis entstehen, in dem jeder auf den Nächsten wartet.
 
   - id: was-kommt-heraus
     title: Was kommt heraus?
@@ -175,6 +245,55 @@ tasks:
         }
         ```
 
+  - id: haengt-es
+    title: Was passiert?
+    prediction: true
+    prompt: |
+      Was passiert, wenn du `Bank.java` zehnmal hintereinander laufen lässt?
+      Überleg zuerst; nach deiner Antwort probierst du es aus.
+    check:
+      type: choice
+      options:
+        - 'Jeder Lauf gibt 200 aus: Die Locks schützen die Konten.'
+        - 'Fast jeder Lauf bleibt hängen und gibt nichts aus.'
+        - 'Etwa jeder zehnte Lauf bleibt hängen.'
+        - 'Java merkt den Deadlock, meldet ihn und bricht ab.'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Die Locks schützen die Konten, aber in welcher Reihenfolge nehmen die beiden Threads sie? Denk an das Widget mit den zwei Überweisungen.'
+      - when: { picked: 2 }
+        say: 'Jeder Lauf macht hunderttausend Überweisungen in jede Richtung. Wie oft gibt es dabei die Gelegenheit, dass beide zugleich ihren ersten Lock nehmen?'
+      - when: { picked: 3 }
+        say: 'Java merkt einen Deadlock nicht von selbst: Die Threads warten einfach weiter.'
+    solution: |
+      Fast jeder Lauf bleibt hängen: Bei hunderttausend Überweisungen in jede
+      Richtung nehmen die beiden Threads früher oder später gleichzeitig ihren
+      ersten Lock, und dann wartet jeder auf den des anderen.
+    dart:
+      prompt: |
+        Was gibt das Programm mit den zwei `synchronized` aus? Überleg zuerst,
+        dann probier es aus, mit der Klasse `Lock` in derselben Datei.
+      check:
+        type: choice
+        options:
+          - '`vorher`, `außen`, `innen`, `wieder außen`, `fertig`'
+          - '`vorher` und `außen`; dann endet das Programm ohne Fehlermeldung.'
+          - '`vorher` und `außen`; dann hängt das Programm, bis man es mit Strg+C abbricht.'
+          - 'Eine Fehlermeldung, weil der Lock schon belegt ist.'
+        correct: 1
+      feedback:
+        - when: { picked: 0 }
+          say: 'Die innere Aktion meldet sich beim Lock an, während die äußere ihn noch hat. Wann darf sie beginnen?'
+        - when: { picked: 2 }
+          say: 'Ein Dart-Programm läuft so lange, wie noch etwas geplant ist: ein Timer, ein Lesen, ein Schreiben. Ist hier noch etwas geplant? Probier es aus.'
+        - when: { picked: 3 }
+          say: 'Der Lock aus `Future`s kennt keinen Fehler für diesen Fall. Er hängt die innere Aktion einfach hinten an.'
+      solution: |
+        `vorher` und `außen`, dann endet das Programm: Die innere Aktion wartet
+        auf die äußere, die äußere auf die innere, und sonst ist nichts mehr
+        geplant.
+
   - id: locks-im-code
     title: Locks in fester Reihenfolge
     prompt: |
@@ -242,6 +361,70 @@ tasks:
           final lock = Lock();
           await Future.wait([for (final amount in amounts) lock.synchronized(() => deposit(amount))]);
           return balance;
+        }
+        ```
+
+  - id: atomar
+    title: Ohne eigenen Lock
+    extra: true
+    prompt: |
+      Schreib in `/workspace/nebenlaeufigkeit/AtomicCounter.java` eine Klasse
+      `AtomicCounter` mit `public static int countWithThreads(int threads, int times)`
+      wie beim `Counter`, aber ohne `synchronized`: Der Zähler ist ein
+      `AtomicInteger`, und jeder Thread zählt mit `incrementAndGet()`.
+    check:
+      type: java
+      file: nebenlaeufigkeit/AtomicCounter.java
+      timeout: 20
+      cases:
+        - { call: "AtomicCounter.countWithThreads(1, 10)", expect: 10 }
+        - { call: "AtomicCounter.countWithThreads(4, 100000)", expect: 400000, say: "Vier Threads, je 100000-mal: Geht eine Erhöhung verloren, ist der Zähler kein `AtomicInteger`, oder es wird gezählt, bevor alle Threads fertig sind." }
+        - { call: "AtomicCounter.countWithThreads(4, 100000)", expect: 400000 }
+    hint:
+      - "`AtomicInteger count = new AtomicInteger();` oben in der Methode, `import java.util.concurrent.atomic.AtomicInteger;` oben in der Datei. Ein Lambda darf `count` benutzen, weil sich die Variable selbst nie ändert, nur der Wert darin."
+      - "Wie beim `Counter`: alle Threads starten, auf alle mit `join()` warten, dann `count.get()` zurückgeben."
+    solution: |
+      ```java
+      import java.util.concurrent.atomic.AtomicInteger;
+
+      public class AtomicCounter {
+          public static int countWithThreads(int threads, int times) throws InterruptedException {
+              AtomicInteger count = new AtomicInteger();
+              Thread[] all = new Thread[threads];
+              for (int t = 0; t < threads; t++) {
+                  all[t] = new Thread(() -> {
+                      for (int i = 0; i < times; i++) count.incrementAndGet();
+                  });
+                  all[t].start();
+              }
+              for (Thread thread : all) thread.join();
+              return count.get();
+          }
+      }
+      ```
+    dart:
+      prompt: |
+        Schreib in `/workspace/nebenlaeufigkeit/visits.dart`, mit `visit` von oben
+        und der Klasse `Lock` (kopier sie hinein), eine Funktion
+        `Future<int> visitAll(String path, int n)`: Sie schreibt zuerst `0` in
+        die Datei, startet dann `n` Besuche zugleich, jeden über denselben Lock,
+        und gibt am Ende die Zahl aus der Datei zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/visits.dart
+        cases:
+          - { call: "visitAll('/tmp/hs-visits-check.txt', 5)", expect: 5, say: "Fünf Besuche zugleich müssen 5 ergeben. Geht jeder Besuch über `lock.synchronized`?" }
+          - { call: "visitAll('/tmp/hs-visits-check.txt', 1)", expect: 1 }
+      hint:
+        - "`await File(path).writeAsString('0');` setzt den Zähler zurück; oben in die Datei gehört `import 'dart:io';`."
+        - "`await Future.wait([for (var i = 0; i < n; i++) lock.synchronized(() => visit(path))]);`, danach die Zahl mit `int.parse(await File(path).readAsString())` lesen."
+      solution: |
+        ```dart
+        Future<int> visitAll(String path, int n) async {
+          await File(path).writeAsString('0');
+          final lock = Lock();
+          await Future.wait([for (var i = 0; i < n; i++) lock.synchronized(() => visit(path))]);
+          return int.parse(await File(path).readAsString());
         }
         ```
 
@@ -314,6 +497,138 @@ tasks:
           final counts = await Future.wait([
             for (var p = 0; p < parts; p++)
               Isolate.run(() => countPrimes(p * size, (p + 1) * size < limit ? (p + 1) * size : limit)),
+          ]);
+          return counts.fold<int>(0, (sum, c) => sum + c);
+        }
+        ```
+
+  - id: weitergeben-fertig
+    title: Was es schon gibt
+    prompt: |
+      Schreib in `/workspace/nebenlaeufigkeit/Pipeline.java` eine Klasse `Pipeline`
+      mit `public static int transfer(int n, int capacity)`, die dasselbe tut wie
+      `Buffer.transfer`, aber mit einer `ArrayBlockingQueue<Integer>` statt
+      deines eigenen Puffers.
+    check:
+      type: java
+      file: nebenlaeufigkeit/Pipeline.java
+      timeout: 20
+      slow: "`transfer` ist nicht fertig geworden: Nimmt der zweite Thread genau `n` Zahlen heraus, so viele, wie der erste hineinlegt?"
+      cases:
+        - { call: "Pipeline.transfer(10, 1)", expect: 55 }
+        - { call: "Pipeline.transfer(1000, 3)", expect: 500500 }
+    hint:
+      - "`BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(capacity);`, dazu oben `import java.util.concurrent.ArrayBlockingQueue;` und `import java.util.concurrent.BlockingQueue;`."
+      - "Der Rest bleibt wie in `Buffer.transfer`: `queue.put(i)` im einen Thread, `queue.take()` im anderen."
+    dart:
+      prompt: |
+        Schreib in `/workspace/nebenlaeufigkeit/stream.dart` eine Funktion
+        `Future<int> transfer(int n)`: Ein Teil legt die Zahlen 1 bis `n` in einen
+        `StreamController<int>` und schließt ihn dann, ein anderer holt sie mit
+        `await for` ab und zählt sie zusammen; die Funktion gibt die Summe zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/stream.dart
+        cases:
+          - { call: "transfer(10)", expect: 55 }
+          - { call: "transfer(1000)", expect: 500500 }
+          - { call: "transfer(0)", expect: 0, say: "Ohne Zahlen ist die Summe 0. Wird der `StreamController` auch dann geschlossen?" }
+      hint:
+        - "Der Teil, der hineinlegt, ist eine eigene `async`-Funktion, die du startest, ohne auf sie zu warten. Am Ende ruft sie `controller.close()` auf, sonst wartet `await for` ewig."
+        - "`await for (final x in controller.stream) { sum += x; }` zählt; oben in die Datei gehört `import 'dart:async';`."
+      solution: |
+        ```dart
+        Future<int> transfer(int n) async {
+          final controller = StreamController<int>();
+          Future<void> produce() async {
+            for (var i = 1; i <= n; i++) {
+              controller.add(i);
+              await Future.delayed(Duration.zero);
+            }
+            await controller.close();
+          }
+
+          produce();
+          var sum = 0;
+          await for (final x in controller.stream) {
+            sum += x;
+          }
+          return sum;
+        }
+        ```
+
+  - id: mehrere-kerne
+    title: Mehrere Kerne
+    prompt: |
+      Schreib in `/workspace/nebenlaeufigkeit/Primes.java`, in der Klasse `Primes`
+      mit `countPrimes` von oben, eine Methode
+      `public static int countPrimesParallel(int limit, int parts)`: Sie teilt die
+      Zahlen von 0 bis vor `limit` in `parts` Stücke, gibt jedes einem Thread-Pool
+      mit `parts` Threads und zählt die Ergebnisse zusammen.
+    check:
+      type: java
+      file: nebenlaeufigkeit/Primes.java
+      timeout: 20
+      cases:
+        - { call: "Primes.countPrimesParallel(100, 1)", expect: 25 }
+        - { call: "Primes.countPrimesParallel(100000, 4)", expect: 9592 }
+        - { call: "Primes.countPrimesParallel(100000, 3)", expect: 9592, say: "100000 lässt sich nicht in drei gleiche Stücke teilen: Fehlt am Ende ein Stück, oder zählt eines doppelt?" }
+        - { call: "Primes.countPrimesParallel(10, 4)", expect: 4 }
+    hint:
+      - "Ein Stück ist `size = (limit + parts - 1) / parts` Zahlen lang; Stück `p` geht von `p * size` bis vor `Math.min(limit, (p + 1) * size)`. Merk dir die beiden Grenzen in Variablen, bevor du sie im Lambda benutzt."
+      - "`pool.submit(() -> countPrimes(from, to))` gibt ein `Future<Integer>`; sammle sie in einer `List<Future<Integer>>`, zähle danach mit `get()` zusammen und ruf `pool.shutdown()` auf. Weil `get()` Ausnahmen werfen kann, braucht die Methode `throws Exception`."
+    solution: |
+      ```java
+      public static int countPrimesParallel(int limit, int parts) throws Exception {
+          ExecutorService pool = Executors.newFixedThreadPool(parts);
+          int size = (limit + parts - 1) / parts;
+          List<Future<Integer>> results = new ArrayList<>();
+          for (int p = 0; p < parts; p++) {
+              int from = p * size;
+              int to = Math.min(limit, (p + 1) * size);
+              results.add(pool.submit(() -> countPrimes(from, to)));
+          }
+          int sum = 0;
+          for (Future<Integer> result : results) {
+              sum += result.get();
+          }
+          pool.shutdown();
+          return sum;
+      }
+      ```
+    dart:
+      prompt: |
+        Schreib in `primes.dart` eine Funktion `int countPrimesStep(int from, int step, int limit)`,
+        die zählt, wie viele der Zahlen `from`, `from + step`, `from + 2·step` … bis
+        vor `limit` Primzahlen sind. Dann `Future<int> countPrimesFair(int limit, int parts)`:
+        Isolate `p` zählt mit `countPrimesStep(p, parts, limit)`, und die Funktion
+        gibt die Summe zurück.
+      check:
+        type: dart
+        file: nebenlaeufigkeit/primes.dart
+        timeout: 20
+        cases:
+          - { call: "countPrimesStep(1, 2, 20)", expect: 7, say: "Von 1, 3, 5 … 19 sind 3, 5, 7, 11, 13, 17 und 19 Primzahlen, also 7." }
+          - { call: "countPrimesFair(100, 1)", expect: 25 }
+          - { call: "countPrimesFair(100000, 4)", expect: 9592 }
+          - { call: "countPrimesFair(100000, 3)", expect: 9592 }
+          - { call: "countPrimesFair(10, 4)", expect: 4 }
+      hint:
+        - "`countPrimesStep`: eine Schleife `for (var n = from; n < limit; n += step)`; ob `n` eine Primzahl ist, sagt dir `countPrimes(n, n + 1)` (1 oder 0)."
+        - "`countPrimesFair` wie `countPrimesParallel`, nur ruft jedes Isolate `countPrimesStep(p, parts, limit)` auf."
+      solution: |
+        ```dart
+        int countPrimesStep(int from, int step, int limit) {
+          var count = 0;
+          for (var n = from; n < limit; n += step) {
+            count += countPrimes(n, n + 1);
+          }
+          return count;
+        }
+
+        Future<int> countPrimesFair(int limit, int parts) async {
+          final counts = await Future.wait([
+            for (var p = 0; p < parts; p++) Isolate.run(() => countPrimesStep(p, parts, limit)),
           ]);
           return counts.fold<int>(0, (sum, c) => sum + c);
         }
