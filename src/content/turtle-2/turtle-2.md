@@ -53,7 +53,7 @@ _task(beautiful-tree)
 
 Ein Baum, in dem links und rechts dasselbe passiert, sieht aus wie gezeichnet.
 Andere Winkel und andere Längen für jede Seite, und er wächst wie ein
-echter:
+echter Baum:
 
 _task(asymmetric-tree)
 

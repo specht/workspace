@@ -243,7 +243,7 @@ tasks:
     title: "Ein schöner Baum"
     level: 3
     prompt: |
-      Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width depth`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
+      Mach aus dem Baum von eben einen schönen Baum: Jeder Ast ist so dick wie seine Tiefe (`width depth`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
     starter: |
       {{own tree tree}}
 
@@ -318,7 +318,7 @@ tasks:
       ```
     python:
       prompt: |
-        Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
+        Mach aus dem Baum von eben einen schönen Baum: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
       starter: |
         {{own tree tree}}
 
@@ -396,7 +396,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Mach aus dem Baum von eben einen schönen: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
+        Mach aus dem Baum von eben einen schönen Baum: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
       starter: |
         {{own tree tree}}
 
