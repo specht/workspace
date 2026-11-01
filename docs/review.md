@@ -17,6 +17,14 @@ commit per page. A page is ticked with the date and that commit once it has
 been read completely, its tasks.yaml and lehrkraft.md included. Started on
 1 November 2026, section by section, »Software entwerfen« first.
 
+## Where the review stands
+
+Done up to and including Web (`tracking`), on 1 November 2026. Next page:
+`sprachmodell` (Künstliche Intelligenz), then the sections below in catalog
+order. Answers that stand directly under or above their question go into an
+`<!-- after: id -->` block (an included Handbuch part can be wrapped too);
+redundant tasks are removed, since there are no student solutions yet.
+
 ## Fixes across pages
 
 - 22 teacher notes named the class page's setting »Sprache«; it is »Sprachen
