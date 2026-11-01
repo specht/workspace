@@ -240,7 +240,12 @@ image.
   site.RegularPages and is answered after it; the try box builds on »Ein
   Doppelpunkt zu viel«; layouts follow Hugo's current template system
   (baseof.html at the top, _partials).
-- [ ] `suchmaschine`
+- [x] `suchmaschine` (1 November 2026): page, cards and teacher note read,
+  nothing to change: predictions (geheim, erster) and the EU question are
+  answered in after blocks; the counts (11 files, 10 found, 8 links to the
+  start page, 9 with robots.txt) fit together; Brin/Page 1998, Panda 2011,
+  Penguin 2012, Google Spain 2014 and the ECIR 2024 study (7392 queries; few
+  reviews on the web use affiliate links, most results do) check out.
 - [ ] `tracking`
 
 ### Künstliche Intelligenz
