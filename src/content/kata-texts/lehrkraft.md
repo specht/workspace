@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen, die mit Texten arbeiten, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Zeichen der Reihe nach durchgehen, zählen, einen neuen Text bauen, mit den Nummern der Zeichen rechnen und zum Schluss wie Caesar und Vigenère verschlüsseln.
+Lernende schreiben Funktionen, die mit Texten arbeiten, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Zeichen der Reihe nach durchgehen, zählen, einen neuen Text bauen, mit den Nummern der Zeichen rechnen und zum Schluss wie Caesar und Vigenère verschlüsseln.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Schleifen und Verzweigungen, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Funktionen, die mit Texten arbeiten, direkt in die Karten der
 <li>Extras (2): die Vigenère-Verschlüsselung, Regeln für ein Passwort.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, bei Caesar dazu Verschiebungen, die für jede Person anders sind. Wo eine eingebaute Funktion die Aufgabe lösen würde (<code>reverse</code>, <code>upcase</code>, <code>capitalize</code>), ist sie abgeschaltet; beim Palindrom ist <code>reverse</code> wieder erlaubt.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

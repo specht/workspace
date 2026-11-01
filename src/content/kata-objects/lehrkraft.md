@@ -1,4 +1,4 @@
-Lernende schreiben Klassen und bauen daraus Objekte, direkt in den Karten der Seite, in Ruby, Python oder JavaScript: Attribute und Methoden, ein Objekt, das seine Regeln selbst durchsetzt, Objekte in Objekten, die eigene Textdarstellung, Vererbung mit überschriebenen Methoden und `super`. Die Seite zeigt jede Schreibweise zuerst an einem Beispiel, bevor eine Kata sie braucht.
+Lernende schreiben Klassen und bauen daraus Objekte, direkt in den Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Attribute und Methoden, ein Objekt, das seine Regeln selbst durchsetzt, Objekte in Objekten, die eigene Textdarstellung, Vererbung mit überschriebenen Methoden und `super`. Die Seite zeigt jede Schreibweise zuerst an einem Beispiel, bevor eine Kata sie braucht.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen, Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>. Wie man Klassen aus einer Geschichte findet und als Klassendiagramm zeichnet, zeigt danach <a href='/supermarkt'>Klassen entwerfen: die Expresskasse</a>.</td></tr>
@@ -11,7 +11,7 @@ Lernende schreiben Klassen und bauen daraus Objekte, direkt in den Karten der Se
 <li>Extras (2): ein Stack als Klasse, ein Bruch, der kürzt und addiert.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Die Prüfung baut Objekte und ruft ihre Methoden in mehreren Schritten auf, auch mehrere Objekte nebeneinander, so dass ein gemeinsamer Zustand auffällt. Bei den Flächen gibt sie <code>total_area</code> auch eine Form, die keine Klasse der Lernenden ist (in Ruby ein <code>Struct</code>, in Python eine mit <code>type</code> gebaute Klasse, in JavaScript ein Objekt mit <code>area</code>): Wer nach der Klasse fragt statt nach <code>area</code>, fällt auf. Ob <code>super</code> benutzt wird, prüft sie nicht direkt; der Name der Managerin kommt aber nur über das geerbte <code>initialize</code> an.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

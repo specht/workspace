@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: erst Element für Element, dann in sortierten Listen durch Halbieren (binäre Suche, Zahlenraten, die Wurzel), bis hunderttausend Suchen in hunderttausend Zahlen in Sekunden gelingen.
+Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: erst Element für Element, dann in sortierten Listen durch Halbieren (binäre Suche, Zahlenraten, die Wurzel), bis hunderttausend Suchen in hunderttausend Zahlen in Sekunden gelingen.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; für »Nur anders sortiert?« die Strichliste aus den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Se
 <li>Extras (2): wie viele Schritte die binäre Suche braucht, hunderttausend Suchen in fünf Sekunden.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, bei der Wurzel und beim letzten Extra mit einer Zeitgrenze: Durchprobieren oder lineare Suche sind dort zu langsam, und die Rückmeldung sagt, warum. Was die Suche fertig mitbringt, ist abgeschaltet (<code>index</code>, <code>bsearch</code>, <code>bisect</code>, <code>min</code>, <code>sort</code>, <code>Math.sqrt</code>).</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

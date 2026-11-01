@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: Elemente der Reihe nach durchgehen, mit dem Index arbeiten, eine neue Liste bauen, Doppelte entfernen und zwei sortierte Listen mischen, den Kern von Merge Sort.
+Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Elemente der Reihe nach durchgehen, mit dem Index arbeiten, eine neue Liste bauen, Doppelte entfernen und zwei sortierte Listen mischen, den Kern von Merge Sort.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Schleifen und Strings, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-texts'>Katas: Strings</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Sei
 <li>Extras (2): zwei Zahlen, die zusammen eine Zahl ergeben (ihre Indizes), eine Liste in Stücke teilen.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, auch die leere Liste und Listen mit einem Element. Wo eine eingebaute Funktion die Aufgabe lösen würde (<code>sum</code>, <code>max</code>, <code>include?</code>, <code>reverse</code>, <code>uniq</code>, <code>sort</code>), ist sie abgeschaltet; bei »Ohne Doppelte« ist das Nachsehen in der neuen Liste wieder erlaubt.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

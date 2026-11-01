@@ -9,7 +9,7 @@ Lernende schreiben Funktionen mit Schlüsseln und Werten (Hash in Ruby, Dictiona
 <li>Extras (2): die Fehlschläge eines kleinen LRU-Caches zählen, Anagramme sammeln.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte. Wo eine eingebaute Funktion die Aufgabe lösen würde (<code>tally</code>, <code>group_by</code>, <code>invert</code>, <code>Object.groupBy</code>), ist sie abgeschaltet; in Python bittet die Aufgabe nur darum, ohne <code>Counter</code> zu arbeiten. Bei der ersten Wiederholung hat der Code zehn Sekunden: Wer bei jeder Zahl die Liste durchsucht, ist zu langsam, und die Rückmeldung rät zu einem Dictionary.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript: mit einem Fall, in dem sie sofort fertig sind, und einem Aufruf mit etwas Kleinerem; von der Fakultät bis zu den Türmen von Hanoi und allen Reihenfolgen eines Textes.
+Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: mit einem Fall, in dem sie sofort fertig sind, und einem Aufruf mit etwas Kleinerem; von der Fakultät bis zu den Türmen von Hanoi und allen Reihenfolgen eines Textes.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen und Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; die Fakultät und Fibonacci aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
@@ -9,7 +9,7 @@ Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten de
 <li>Extras (2): Fibonacci mit einem Gedächtnis in drei Sekunden, ob einige Zahlen zusammen eine Summe ergeben.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte. Stimmen sie, sieht die Prüfung im Code nach, ob die Funktion sich selbst aufruft und, wo die Aufgabe es verlangt, ohne Schleife auskommt (<code>recursive</code>, <code>loops</code>; in Ruby mit dem Parser, in Python und JavaScript am Text); eine Lösung mit Schleife bekommt eine eigene Rückmeldung. Beim Flachmachen, bei den Reihenfolgen und beim Gedächtnis ist eine Schleife neben der Rekursion erlaubt.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

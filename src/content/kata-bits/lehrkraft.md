@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und in jedes andere schreiben und zurücklesen, direkt in die Karten der Seite, in Ruby, Python oder JavaScript, nur mit Teilen und Rest; dazu negative Zahlen im Zweierkomplement eines Bytes, schriftliches Addieren von Bits mit Übertrag und Überlauf, und römische Zahlen.
+Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und in jedes andere schreiben und zurücklesen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java, nur mit Teilen und Rest; dazu negative Zahlen im Zweierkomplement eines Bytes, schriftliches Addieren von Bits mit Übertrag und Überlauf, und römische Zahlen.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Schleifen, Strings und Dictionaries, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
@@ -10,7 +10,7 @@ Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und i
 <li>Extras (2): römische Zahlen schreiben und lesen.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, bei den meisten dazu Zahlen, die für jede Person anders sind. Was die Umwandlung fertig mitbringt, ist abgeschaltet (<code>to_s(2)</code>, <code>bin</code>, <code>format</code>, <code>toString(2)</code>, <code>to_i(2)</code>, <code>int</code>, <code>parseInt</code>); in Ruby bittet »Ein einzelnes Bit« nur darum, ohne <code>n[i]</code> zu arbeiten. Beim Addieren sind dieselben Umwandlungen abgeschaltet; wer die Bits mit eigenen Schleifen erst in eine Zahl und zurück rechnet, besteht trotzdem, die Aufgabe bittet aber darum, Stelle für Stelle zu rechnen.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht

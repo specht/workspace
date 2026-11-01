@@ -1,4 +1,4 @@
-Lernende geben Funktionen weiter wie Zahlen, direkt in den Karten der Seite, in Ruby, Python oder JavaScript: Lambdas, eine Funktion, die eine Funktion baut, dann `map`, `filter` und `reduce` einzeln und als Kette. Zum Schluss schreiben sie eine Schleife als Kette um und lösen eine Aufgabe, bei der die Schleife klarer bleibt.
+Lernende geben Funktionen weiter wie Zahlen, direkt in den Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Lambdas, eine Funktion, die eine Funktion baut, dann `map`, `filter` und `reduce` einzeln und als Kette. Zum Schluss schreiben sie eine Schleife als Kette um und lösen eine Aufgabe, bei der die Schleife klarer bleibt.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>. Die <a href='/kata-recursion'>Katas: Rekursion</a> helfen beim Startwert von <code>reduce</code> und beim Extra mit McCarthys <code>maplist</code>, sind aber nicht nötig.</td></tr>
@@ -11,7 +11,7 @@ Lernende geben Funktionen weiter wie Zahlen, direkt in den Karten der Seite, in 
 <li>Extras (2): zwei Funktionen zu einer zusammensetzen (f ∘ g), <code>map</code> selbst schreiben, mit einer Schleife oder rekursiv.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, auch die leere Liste. Wo <code>map</code> oder <code>filter</code> die Arbeit tun soll und bei der umgeschriebenen Schleife, sind in Ruby <code>each</code>, <code>for</code>, <code>times</code> und <code>loop</code> abgeschaltet, in JavaScript <code>forEach</code>, mit einer eigenen Rückmeldung. Nicht abschalten lassen sich <code>while</code> in Ruby, <code>for</code> und <code>while</code> in Python und JavaScript: Dort bittet die Aufgabe nur darum, und in Python nimmt die Prüfung eine List Comprehension an, die in Python übliche Schreibweise für <code>map</code> und <code>filter</code>. Bei den Katas mit <code>reduce</code> sind Schleifen in Ruby nicht abgeschaltet, weil Rubys <code>reduce</code> selbst <code>each</code> aufruft. Was die Aufgabe fertig lösen würde, ist abgeschaltet (<code>max_by</code>, <code>max</code>, <code>sorted</code>, <code>math.prod</code>, <code>group_by</code>, <code>map</code> im Extra); <code>f &lt;&lt; g</code> in Ruby nicht, die Aufgabe bittet darum, es selbst zu schreiben.</td></tr>
-<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt (Ruby, Python, JavaScript), sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
+<tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
 #### Was schiefgeht
