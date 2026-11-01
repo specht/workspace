@@ -20,7 +20,7 @@ reference: [struktogramme]
 # Prüfziffern: erst planen, dann programmieren
 
 <p class='abstract'>
-Warum piept die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, mit Kommentaren im Code, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht. Zum Schluss beklebst du einen QR-Code, bis er unlesbar wird, und programmierst selbst einen Code, der einen Fehler nicht nur findet, sondern repariert.
+Was macht die Kasse, wenn jemand eine Ziffer eines Strichcodes falsch eintippt? Du rechnest eine Prüfziffer von Hand aus, liest Struktogramme und übersetzt sie in Code. Dann planst du selbst, mit Kommentaren im Code, bevor du programmierst, und findest heraus, welche Tippfehler die Kasse übersieht. Zum Schluss beklebst du einen QR-Code, bis er unlesbar wird, und programmierst selbst einen Code, der einen Fehler nicht nur findet, sondern repariert.
 </p>
 
 <script src='/include/struktogramm.js'></script>
@@ -143,7 +143,7 @@ _task(erste-ziffer)
 
 ## Ein Algorithmus, drei Schreibweisen
 
-Die Regel in Worten ist kurz, aber ein Computer braucht es genauer: Wo fängt
+Die Regel in Worten ist kurz, aber ein Computer braucht sie genauer: Wo fängt
 das Zählen an? Was heißt »bis zur nächsten durch 10 teilbaren Zahl«? Bevor du
 programmierst, schreibst du einen Algorithmus darum so auf, dass er genau ist
 und trotzdem in keiner Programmiersprache: als **Pseudocode** oder als

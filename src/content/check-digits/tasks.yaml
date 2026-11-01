@@ -29,25 +29,26 @@ tasks:
   - id: von-hand
     title: Von Hand gerechnet
     prompt: |
-      Berechne die Prüfziffer zu den ersten zwölf Ziffern `4 260111 02043`,
-      von Hand oder mit dem Taschenrechner.
-    check: { type: number, expect: 4 }
+      Nach den Nudeln kommt ein Saft. Sein Code beginnt mit den zwölf Ziffern
+      `4 005999 90002` (ausgedacht). Berechne die Prüfziffer, von Hand oder mit
+      dem Taschenrechner.
+    check: { type: number, expect: 3 }
     feedback:
-      - when: { equals: 36 }
-        say: 36 ist die Summe. Die Prüfziffer ist, was bis zum nächsten Vielfachen von 10 fehlt.
-      - when: { equals: 6 }
-        say: 6 ist der Rest der Summe. Gesucht ist, was bis zur nächsten durch 10 teilbaren Zahl fehlt.
-      - when: { equals: 0 }
+      - when: { equals: 97 }
+        say: 97 ist die Summe. Die Prüfziffer ist, was bis zum nächsten Vielfachen von 10 fehlt.
+      - when: { equals: 7 }
+        say: 7 ist der Rest der Summe. Gesucht ist, was bis zur nächsten durch 10 teilbaren Zahl fehlt.
+      - when: { equals: 9 }
         say: Prüf die Gewichte noch einmal; die erste Ziffer zählt einfach, die zweite dreifach.
     hint:
       - |
         Schreib die zwölf Ziffern untereinander und daneben abwechselnd 1 und 3,
         mit 1 beginnend. Multipliziere jede Ziffer mit ihrem Gewicht.
       - |
-        Die Produkte sind 4, 6, 6, 0, 1, 3, 1, 0, 2, 0, 4, 9.
+        Die Produkte sind 4, 0, 0, 15, 9, 27, 9, 27, 0, 0, 0, 6.
     solution: |
-      Die Summe ist 4 + 6 + 6 + 0 + 1 + 3 + 1 + 0 + 2 + 0 + 4 + 9 = 36; bis 40
-      fehlen 4. Der ganze Code ist `4 260111 020434`.
+      Die Summe ist 4 + 0 + 0 + 15 + 9 + 27 + 9 + 27 + 0 + 0 + 0 + 6 = 97; bis
+      100 fehlen 3. Der ganze Code ist `4 005999 900023`.
 
 
   - id: rechts-lesen

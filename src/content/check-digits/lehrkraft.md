@@ -18,7 +18,7 @@ Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen 
 
 #### Die Zahlen
 
-- Die Prüfziffer zu `4 260111 02043` ist 4 (Summe 36); der Code auf den Nudeln ist `4 260111 020434`, ausgedacht.
+- Die Prüfziffer zu `4 005999 90002` ist 3 (Summe 97), der Saft aus »Von Hand gerechnet«. Die Aufgabe nimmt nicht den Code der Nudeln, denn der steht mit seiner Prüfziffer im Bild oben auf der Seite: `4 260111 020434`, ausgedacht.
 - `mystery(4021)` gibt 7 zurück, die Quersumme.
 - Von den 90 Zahlendrehern aus zwei verschiedenen Ziffern übersieht EAN-13 genau 10: die Paare, deren Ziffern sich um 5 unterscheiden (05, 16, 27, 38, 49 und umgekehrt). Die ISBN-10 übersieht keinen, weil 11 eine Primzahl ist und sich die Summe beim Vertauschen um den Unterschied der beiden Ziffern ändert.
 - Eine einzelne falsche Ziffer findet EAN-13 immer: Mit dem Gewicht 1 ändert sie die Summe um 1 bis 9, mit dem Gewicht 3 um 3 bis 27, aber nie um ein Vielfaches von 10.
