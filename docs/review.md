@@ -211,7 +211,9 @@ image.
   bild.webp um, bleibt es ein PNG«; the include now sits in the after block
   (includes are expanded before AfterTask.mark). The template on
   git.nhcham.org stays, as decided.
-- [ ] `latex`
+- [x] `latex` (1 November 2026): page, cards and teacher note read, nothing to
+  change: the pictures of the finished paper wait in after blocks, 2.46 s
+  checks out, the »??« question is not answered before it.
 
 ### Web
 
