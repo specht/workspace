@@ -722,7 +722,7 @@ Für jedes Bild rechnet `color` an 58.000 Ecken zwei Abstände und zwei Sinuswer
 
 Zwei Spuren fahren über das Spielfeld und ziehen eine Linie hinter sich her. Wer in eine Linie oder an die Wand fährt, verliert die Runde. Gespielt wird zu zweit an einer Tastatur, mit <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> und mit den Pfeiltasten.
 
-Das Spiel ist älter als die Heimcomputer. 1976 stellte die Firma Gremlin den Spielautomaten *Blockade* in die Spielhallen: Zwei Spieler steuern je einen Pfeil, der eine Mauer aus Blöcken hinter sich herzieht, und wer gegen eine Mauer fährt, verliert. Berühmt wurde die Idee 1982 durch den Film *Tron*. Darin leben Programme in einem Computer und fahren auf leuchtenden Motorrädern, den Light Cycles, gegeneinander; wer die Lichtspur des anderen berührt, ist ausgelöscht. Und aus *Blockade* wurde *Snake*, die Schlange, die auf Handys von Nokia ab 1998 Millionen Menschen gespielt haben.
+Das Spiel ist älter als die ersten Heimcomputer, die man fertig kaufen konnte, etwa den Apple II von 1977. 1976 stellte die Firma Gremlin den Spielautomaten *Blockade* in die Spielhallen: Zwei Spieler steuern je einen Pfeil, der eine Mauer aus Blöcken hinter sich herzieht, und wer gegen eine Mauer fährt, verliert. Berühmt wurde die Idee 1982 durch den Film *Tron*. Darin leben Programme in einem Computer und fahren auf leuchtenden Motorrädern, den Light Cycles, gegeneinander; wer die Lichtspur des anderen berührt, ist ausgelöscht. Und aus *Blockade* wurde *Snake*, die Schlange, die auf Handys von Nokia ab 1998 Millionen Menschen gespielt haben.
 
 Das Spiel bekommt eine eigene Datei. Lege `lichtspur.c` neben `main.c` an und übersetze sie mit:
 
@@ -1110,9 +1110,13 @@ crop-element: #canvas
 -->
 <img class='full' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
 
+Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Die Punkte stehen als Pixel in der oberen Wand.
+
 _task(unentschieden)
 
-Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Gelenkt wird in jedem Bild, gefahren im festen Takt: Bei jedem Schritt fahren beide Spuren, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand. Die Punkte stehen als Pixel in der oberen Wand.
+<!-- after: unentschieden -->
+Gelenkt wird in jedem Bild, gefahren im festen Takt: Bei jedem Schritt fahren beide Spuren, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand.
+<!-- /after -->
 
 <div class='hint task'>
 <strong>Bau das Spiel aus.</strong> Ein paar Ideen, von leicht bis knifflig:
