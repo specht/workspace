@@ -60,7 +60,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   cards read; FizzBuzz »in Vorstellungsgesprächen für Programmierer«
   shortened; the teacher note counted one extra and listed no `bread`.
   Predictions are answered in after blocks, first tips give no solution.
-- [ ] `kata-loops`
+- [x] `kata-loops` (1 November 2026, 19f23241): intro, predictions and cards
+  read; the abstract's »Von der Summe bis eins« said the wrong end. Checked:
+  Ausführen stops after 10 seconds (RUN_SECONDS), four perfect numbers up to
+  10000, collatz from 6 in eight steps.
 - [ ] `pip-2`
 - [ ] `kata-texts`
 - [ ] `kata-lists`
