@@ -45,7 +45,7 @@ Du kannst den Workspace auf zwei Wegen mit deinen Lernenden nutzen.
 
 **Hier, auf dieser Installation.** Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>, an welcher Schule du unterrichtest und mit welchen Klassen du arbeiten möchtest. Wenn es passt, lädt dich die Administration als Lehrkraft ein. Dann legst du unter »Klassen« deine Gruppen an und lädst deine Schülerinnen und Schüler mit ihren E-Mail-Adressen ein; nach der Anmeldung zeigt dir die Seite »Einstieg für Lehrkräfte« die erste Stunde Schritt für Schritt. Ob der Workspace im Unterricht eingesetzt wird, entscheidet deine Schulleitung; was sie dafür braucht, steht im nächsten Absatz.
 
-**Datenschutz.** Wer diese Installation betreibt, wo die Daten liegen, was gespeichert wird und wann es gelöscht wird, steht öffentlich in der [Datenschutzerklärung](/impressum#datenschutz); dort steht auch, auf welcher Grundlage die Schulen den Workspace nutzen. Die Unterlagen für die Schule (die Entscheidung für die Schulleitung, eine Prüfübersicht für die Datenschutzbeauftragte Stelle, die Vereinbarung zur Auftragsverarbeitung, ein Elternbrief) sind nicht öffentlich: Sie gehen als Dateien oder ausgedruckt an die Schulleitung. Möchte deine Schulleitung sie sehen, auch bevor du ein Konto hast, schreib an <a href='mailto:${contact_email}'>${contact_email}</a>.
+**Datenschutz.** Wer diese Installation betreibt, wo die Daten liegen, was gespeichert wird und wann es gelöscht wird, steht öffentlich in der [Datenschutzerklärung](/impressum#datenschutz); dort steht auch, auf welcher Grundlage die Schulen den Workspace nutzen. Die Unterlagen für die Schule (die Entscheidung für die Schulleitung, eine Prüfübersicht für die oder den Datenschutzbeauftragten, die Vereinbarung zur Auftragsverarbeitung, ein Elternbrief) sind nicht öffentlich: Sie gehen als Dateien oder ausgedruckt an die Schulleitung. Möchte deine Schulleitung sie sehen, auch bevor du ein Konto hast, schreib an <a href='mailto:${contact_email}'>${contact_email}</a>.
 
 **Auf einem eigenen Server.** Der Quelltext des Workspace ist öffentlich: [github.com/specht/workspace](https://github.com/specht/workspace). Du kannst ihn für deine Schule selbst betreiben, auf einem Rechner der Schule oder auf einem gemieteten Server. Der Server sollte nur für den Workspace da sein, denn der Webserver darf dort Container starten und stoppen. Wie viel Leistung nötig ist, hängt davon ab, wie viele gleichzeitig arbeiten: Ein gemieteter Server mit 4 Kernen und 8 GB RAM reicht für wenig Betrieb, für mehrere Klassen gleichzeitig eher ein Server mit 16 Kernen und 32 GB RAM. Wie die Installation geht, steht im [README](https://github.com/specht/workspace#betrieb-auf-einem-server), mit einer [Schnellstart-Anleitung für einen gemieteten Server](https://github.com/specht/workspace/blob/main/bootstrap/README.hetzner.centos.md).
 
@@ -117,7 +117,7 @@ Wer die Reihenfolge wählt, in der man eine Abfrage schreibt, bekommt eine Rück
 
 ### Selbst schreiben statt abtippen
 
-In den Programmierprojekten schreiben die Lernenden eine kleine Funktion zuerst selbst, sobald die Seite erklärt hat, was sie tun soll (»Jetzt bist du dran«); der Code der Seite kommt erst danach. Prüft eine Aufgabe die eigene Funktion, in Ruby, Python oder C, ruft der Workspace sie mit ein paar Eingaben auf, und wer sie so gelöst hat, kann den Code der Seite sofort aufklappen und vergleichen. Bei SQL schreiben die Lernenden ohnehin jede Abfrage selbst.
+In den Programmierprojekten schreiben die Lernenden eine kleine Funktion zuerst selbst, sobald die Seite erklärt hat, was sie tun soll (»Jetzt bist du dran«); der Code der Seite kommt erst danach. Prüft eine Aufgabe die eigene Funktion, in Ruby, Python, JavaScript, Java, Dart, C oder Prolog, ruft der Workspace sie mit ein paar Eingaben auf, und wer sie so gelöst hat, kann den Code der Seite sofort aufklappen und vergleichen. Bei SQL schreiben die Lernenden ohnehin jede Abfrage selbst.
 
 Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg, dann ein Gerüst mit Lücken, nie die ganze Lösung. Der nächste Tipp erscheint erst eine Minute, nachdem der vorige aufgeklappt wurde, ohne Uhr, damit man mit jedem arbeitet, statt bis zum letzten durchzuklicken. Welche Tipps jemand gebraucht hat, merkt sich nur der eigene Browser; keine Lehrkraft sieht es.
 
@@ -127,7 +127,7 @@ Wer hängen bleibt, holt sich Tipps in Stufen: erst zum Verstehen, dann zum Weg,
 
 Aufgaben stehen dort, wo die Lernenden gerade etwas getan haben, nicht gesammelt am Ende. Viele vergleichen nicht nur eine Antwort, sondern sehen nach: Eine SQL-Abfrage läuft in der eigenen Datenbank der Lernenden, und andere Aufgaben prüfen, ob eine Datei richtig liegt, ob das HTML einer Seite stimmt, ob alles committet ist, was eine selbst geschriebene Funktion zurückgibt oder ob der eigene Server antwortet. Dabei lesen sie nur und ändern nichts.
 
-Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«. Wer bei den fünf größten Ländern das `DESC` vergisst, liest »Das sind die fünf kleinsten«, und auch beim Ankreuzen hat jede falsche Antwort ihre eigene Rückmeldung. Die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
+Die Rückmeldung nennt den typischen Fehler, nicht bloß »falsch«. Wer bei den fünf größten Ländern das `DESC` vergisst, liest »Das sind die fünf kleinsten«, und auch beim Ankreuzen haben die häufigen falschen Antworten eine eigene Rückmeldung. Die Erklärung zur Lösung erscheint erst nach einer richtigen Antwort.
 
 <img class='full full-shadow shot' src='tour-rueckmeldung.webp' alt='Die Aufgabe »Was bedeutet die Zahl?«: Für Deutschland steht in der Spalte area die Zahl 357587.77. Angekreuzt ist 357.587,77 Quadratmeter. Die Rückmeldung: So groß ist ein Stadtviertel, kein Land. Ein Quadratkilometer hat eine Million Quadratmeter.'>
 
@@ -139,7 +139,7 @@ Hinter jeder Erfindung stehen Menschen. Wer ein Verfahren, eine Sprache oder ein
 
 ### Was die Lehrkraft davon hat
 
-Auf der Klassenseite sieht die Lehrkraft, wer welche Aufgabe gelöst hat, wie viele Versuche es waren und bei welcher Aufgabe gerade viele falsch liegen: ein guter Moment, kurz für alle zu erklären. Zu jeder Aktivität gibt es eine Notiz für Lehrkräfte mit dem Ablauf je Doppelstunde und dem, was oft schiefgeht. Baut eine Aktivität ein Programm Schritt für Schritt auf, kopiert ein Knopf unter den Bildern das ganze Programm bis zu dieser Stelle. Lernende sehen weder Notiz noch Knopf.
+Auf der Klassenseite sieht die Lehrkraft, wer welche Aufgabe gelöst hat, wie viele Versuche es waren und bei welcher Aufgabe gerade viele falsch liegen: ein guter Moment, kurz für alle zu erklären. Zu jeder Aktivität gibt es eine Notiz für Lehrkräfte mit dem Ablauf je Doppelstunde und dem, was oft schiefgeht. Baut eine Aktivität ein Programm Schritt für Schritt auf, kopiert ein Knopf »Code bis hier« nach jedem Schritt das ganze Programm bis zu dieser Stelle. Lernende sehen weder Notiz noch Knopf.
 
 ### Was eine Aktivität nicht ist
 

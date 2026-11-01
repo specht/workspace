@@ -51,7 +51,7 @@ click: Willkommen im Hackschule Workspace
 wait-for-text: Deine Dateien bleiben
 -->
 
-<img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Einführung »Willkommen im Hackschule Workspace« mit dem ersten Schritt »Deine Dateien bleiben« und dem Knopf »Ordner öffnen«.'>
+<img class='full' src='vs-code-welcome.webp' alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Einführung »Willkommen im Hackschule Workspace« mit dem ersten Schritt »Deine Dateien bleiben« und dem Knopf »Ordner öffnen«.'>
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
