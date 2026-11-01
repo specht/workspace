@@ -157,7 +157,11 @@ image.
   #e06000, 160/32/0, 248, 32), predictions and the »begrenzen« question come
   before their answers, the PlayStation claim matches Sanglard's article. The
   teacher note named the drawing page by an old title.
-- [ ] `pixelram`
+- [x] `pixelram` (1 November 2026, 7efa4338): page, cards and teacher note
+  read; the explanation why a simultaneous crash is a draw stood right under
+  the question, now in its after block; »älter als die Heimcomputer« made
+  precise (Apple II, 1977; Blockade 1976). Numbers (4, 0, 52 pixels per wave,
+  58 000 corners) and the DOOM port (ports/doom) check out.
 - [ ] `raytracing`
 - [ ] `glsl`
 
