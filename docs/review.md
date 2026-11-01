@@ -64,7 +64,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   read; the abstract's »Von der Summe bis eins« said the wrong end. Checked:
   Ausführen stops after 10 seconds (RUN_SECONDS), four perfect numbers up to
   10000, collatz from 6 in eight steps.
-- [ ] `pip-2`
+- [x] `pip-2` (1 November 2026, 8af0054b): page, tasks and teacher note read;
+  »wie in den Katas zum Wiederholen« named a page that is called »Katas:
+  Schleifen«, now a link; the teacher note credits Karel the Robot, the page
+  now has a book box for it (Internet Archive). Checked: 1000 steps
+  (PipWorld::MAX_STEPS), the first three spells are called by the check.
 - [ ] `kata-texts`
 - [ ] `kata-lists`
 - [ ] `kata-dicts`
