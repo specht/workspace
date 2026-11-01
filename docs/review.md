@@ -125,7 +125,12 @@ image.
   function as a person; the Java limit is eight seconds, the note said five.
   Examples (guesses, search_steps) check out. Java's narrow margin is under
   »Open for the maintainer«.
-- [ ] `pip-3`
+- [x] `pip-3` (1 November 2026, 48328edf): page, widget text, cards and
+  teacher note read; the prediction and the BFS tie (north before west, the
+  path over the top) check out. The first and only tip of »face« was the
+  solution's line in four languages, now two steps as Java had; »way« and
+  »escape« were both titled »Der kürzeste Weg«, escape is now »Zur letzten
+  Lampe«; find said »Stelle« where the page says Position.
 - [ ] `kata-tests`
 
 ### Grafik
