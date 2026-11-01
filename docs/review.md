@@ -156,7 +156,12 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   task, the answer (Kapselung, the bag in each language) moved into its after
   block. The other predictions need reasoning; maps and the sequence diagram
   are there, no illustration proposed.
-- [ ] `class-quiz`
+- [x] `class-quiz` (1 November 2026, 4019405d): the abstract said »Ein Push wird
+  abgelehnt« before the prediction about the push; »Mit Gewalt« counted
+  »Dein Push geht durch« as right, but the Workspace's Git server refuses
+  force pushes (`receive.denyNonFastForwards` in `git_server.rb`), so the task
+  now asks about a server that allows it and the solution says both; the
+  teacher note linked »Katas: Testen«, now »Testen«.
 
 ### Terminal & Git
 
@@ -227,3 +232,11 @@ maintainer to decide. Per page: where, what the picture shows, why.
   seconds: the first customer from 0 to 90, the second arriving at 30, a
   waiting bar until 90, her service until 165. The text explains »ab wann sie
   wieder frei ist« in words; the card picture already draws such timelines.
+
+#### `class-quiz`
+
+- **After »push-vorhersage«:** the commits as a small graph: on the server
+  A, B and Ida's I; in your clone A, B and your L. The server cannot take L
+  without losing I; after `git pull` a merge M joins both. The text says »Dein
+  Commit baut auf dem Stand davor auf«, which the graph shows; the card
+  picture already draws commit graphs in the same style.
