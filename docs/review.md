@@ -217,7 +217,11 @@ image.
 
 ### Web
 
-- [ ] `static-website`
+- [x] `static-website` (1 November 2026, 415ef997): page, included parts and
+  cards read; the sentence right under »Was ist .credit?« (»die Regel .credit
+  gilt deshalb nur für ihn«) and the one under »Wann gilt die Media Query?«
+  (»höchstens 700 Pixel breit«) gave the answers away; both now in after
+  blocks. The Space Jam page (1996, still at /1996) checks out.
 - [ ] `svelte`
 - [ ] `wetter`
 - [ ] `hugo`
