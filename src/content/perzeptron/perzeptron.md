@@ -606,7 +606,7 @@ _task(nie-gesehen)
 
 ### Wo ein Neuron nicht weiterkommt
 
-Auf der Insel Dream lebt eine dritte Art, der Zügelpinguin (englisch
+Auf der Insel Dream lebt auch die dritte Art, der Zügelpinguin
 Chinstrap). Kann das Neuron ihn vom Adéliepinguin unterscheiden?
 
 _task(zuegelpinguin)
