@@ -103,7 +103,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   teacher note read; the prediction on pop is answered only after it, the word
   lengths in the note (11, 61, 311) check out. The teacher note called the
   Kata page »Katas: Texte«.
-- [ ] `kata-functional`
+- [x] `kata-functional` (1 November 2026, b22849ea): intro, predictions, try
+  box, cards and teacher note read; the predictions are answered only in after
+  blocks, the chain's 1400 and the try box's error check out. The teacher note
+  named forEach only for JavaScript.
 - [ ] `kata-search`
 - [ ] `pip-3`
 - [ ] `kata-tests`
