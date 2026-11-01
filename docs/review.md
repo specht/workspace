@@ -21,9 +21,19 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ### Erste Schritte
 
-- [ ] `about`
-- [ ] `basics`
-- [ ] `keyboard`
+- [x] `about` (1 November 2026, 3be552c3): no tasks; out-of-date claims fixed:
+  the languages whose functions tasks call (also JavaScript, Java, Dart,
+  Prolog), »die Datenschutzbeauftragte Stelle«, »jede falsche Antwort« has
+  feedback (only the common ones), the copy button sits after each step; the
+  teacher note named »Sprache (Ruby oder Python)«. Checked: tips are kept in
+  localStorage only, curricula of Berlin-Brandenburg and Baden-Württemberg.
+- [x] `basics` (1 November 2026, 3be552c3): no tasks; a stray `data` attribute
+  on the first picture; the teacher note said a checkpoint saves the whole
+  Workspace, it saves the opened folder (and restoring removes newer files).
+  Checked: Dark 2026 is the default theme, seven chapters in the keyboard
+  tutorial, »Alle Checkpoints löschen…« exists.
+- [x] `keyboard` (1 November 2026): read, nothing to change; the prediction
+  »Kopieren ohne Markierung« comes before its after block.
 
 ### Katas
 
