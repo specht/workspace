@@ -24,6 +24,17 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 - 11 Kata teacher notes named Ruby, Python and JavaScript only; the pages
   also offer Dart and Java (c417af20).
 
+## Open for the maintainer
+
+Found while reading, not fixed, because it needs a decision or a run in the
+image.
+
+- `kata-search`, »Hunderttausend Suchen« in Java and Dart: the examples have
+  no fail case. Measured on the development machine, a linear search over
+  `List<Integer>` takes 8.9 seconds in Java (limit 8) and 15 in Dart
+  (limit 5); Java rejects it only narrowly, and a faster machine would let it
+  through. A fail example for each, and perhaps 200 000 queries in Java.
+
 ## Pages
 
 ### Erste Schritte
@@ -107,7 +118,13 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   box, cards and teacher note read; the predictions are answered only in after
   blocks, the chain's 1400 and the try box's error check out. The teacher note
   named forEach only for JavaScript.
-- [ ] `kata-search`
+- [x] `kata-search` (1 November 2026, ea6165ac): intro, try box, cards and
+  teacher note read; the extra claimed the linear search takes hours
+  (measured: about 9 minutes in Ruby, 5 in Python, 9 to 15 seconds in
+  JavaScript, Java and Dart); »Wer findet, gibt den Index zurück« spoke of a
+  function as a person; the Java limit is eight seconds, the note said five.
+  Examples (guesses, search_steps) check out. Java's narrow margin is under
+  »Open for the maintainer«.
 - [ ] `pip-3`
 - [ ] `kata-tests`
 
