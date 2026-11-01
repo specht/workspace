@@ -22,5 +22,5 @@ Rekursion zum Zuschauen: Lernende zeichnen mit der Schildkröte aus <a href='/tu
 
 #### Für die Besprechung
 
-- Beim eigenen Baum können die Lernenden den Zufall mitwachsen lassen (der Kasten »Ausprobieren« darunter); geprüft wird das nicht.
+- Beim eigenen Baum können die Lernenden den Zufall mitbestimmen lassen (der Kasten »Ausprobieren« darunter); geprüft wird das nicht.
 - Wie viele Linien zeichnet ein Baum der Tiefe 5, 6, 10? Jede Stufe verdoppelt die Äste, und dieselbe Frage stellt sich bei jeder Rekursion mit zwei Aufrufen.
