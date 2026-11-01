@@ -227,7 +227,14 @@ image.
   later through JavaScript), now in its after block; the fact the question
   needs (Svelte drops rules that match nothing) stays before. Checked: the
   current sv template keeps the adapter in vite.config.js, as the page says.
-- [ ] `wetter`
+- [x] `wetter` (1 November 2026, d2cce863): page, cards and teacher note read;
+  »jede Sekunde … verbraucht das Tageskontingent in gut einer Stunde« was
+  wrong (3600 an hour: the hourly 5000 after about 83 minutes, the daily 10
+  000 after about 2¾ hours); the sentence right before »Ein Spiegel für alle«
+  (30 people, one request) and the paragraph under the API-key question gave
+  the answers, now in after blocks. The mirror's claims (15 minutes,
+  hit/miss/stale) checked in weather_mirror.rb; Richardson 1922, ENIAC 1950
+  and the WMO codes check out.
 - [ ] `hugo`
 - [ ] `suchmaschine`
 - [ ] `tracking`
