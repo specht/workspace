@@ -136,7 +136,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ### Software entwerfen
 
-- [ ] `check-digits`
+- [x] `check-digits` (1 November 2026, 3675f1bd): »Von Hand gerechnet« asked for
+  the check digit the barcode at the top already shows (now a juice, `4 005999
+  90002`); the abstract answered the first prediction (»Warum piept die
+  Kasse«); »braucht es genauer« without a noun. Predictions, after blocks,
+  numbers in the teacher note and the explanations checked; 122 examples pass.
 - [ ] `supermarkt`
 - [ ] `testen`
 - [ ] `textadventure`
@@ -187,4 +191,14 @@ such a mention.
 What a page would explain better with a picture or a widget, for the
 maintainer to decide. Per page: where, what the picture shows, why.
 
-(none yet)
+#### `check-digits`
+
+- **»Reparieren mit einer Geraden«:** a small plot of the four stored values
+  over their places 1 to 4: 2, 6 and 14 on a straight line, the 11 above it,
+  a dotted arrow down to the 10 the line gives. The text has to say »wenn man
+  den Platz der 11 mitzählt«, which a picture shows at once.
+- **»Ein Gitter, das ein Bit repariert«:** the grid as a small widget: a click
+  flips a bit, rows and columns with an odd number of ones turn red, their
+  crossing is marked. It must not answer »zwei-bits« (two flips in one row)
+  before that prediction: flipping a second bit only after it, or the
+  widget placed after it.
