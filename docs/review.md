@@ -286,7 +286,10 @@ image.
   nothing to change: the numbers fit (45 240 bytes against LZW's 28 813 and
   gzip's 20 271; 90 % needs about a seventh of a bit), Fano's term paper 1951
   and Huffman 1952 check out.
-- [ ] `lzw`
+- [x] `lzw` (1 November 2026): page, both steppers, cards and teacher note
+  read, nothing to change: the special case and the photo are answered in
+  after blocks; LZ77/LZ78, Welch 1984 and the Unisys patent (1994, PNG 1995,
+  expired 2003/2004) check out.
 - [ ] `gif`
 - [ ] `jpeg`
 - [ ] `steganography`
