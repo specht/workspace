@@ -199,7 +199,12 @@ image.
 
 ### Texte & Präsentationen
 
-- [ ] `bif`
+- [x] `bif` (1 November 2026, 47fe6e2a): page, cards and teacher note read;
+  the paragraph introducing has_key said why the start value belongs in 1.md,
+  the answer of »Warum in 1.md?«, now in its after block; one »Leser:innen«
+  among »Leserinnen und Leser«; »keine allgemein gültige Liste wie die zwölf
+  Prinzipien der Animation« compared with something the page never mentions.
+  The prediction »Was bedeutet der Punkt?« has its after block.
 - [ ] `showerjs`
 - [ ] `latex`
 
