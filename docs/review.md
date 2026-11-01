@@ -147,7 +147,11 @@ image.
   reflection on scaling. Wording: »heisst«, »ein 4 Leerzeichen«, »kein
   Strich«, »eine neue« without noun; Reset Camera goes to the file's camera
   line (verified in camera.js).
-- [ ] `drawing`
+- [x] `drawing` (1 November 2026, 0daeda59): page, widget, cards and teacher
+  note read; colour 19 of zughy_32 (#3978a8) was called Indigo; rand(120) of
+  180 rows was »die obere Hälfte«; the teacher note counted two own boxes,
+  there are three (Drei Hügel). Predictions (fluten, maske) are answered only
+  in after blocks; 57600 bytes and 319, 179 check out.
 - [ ] `fire`
 - [ ] `pixelram`
 - [ ] `raytracing`
