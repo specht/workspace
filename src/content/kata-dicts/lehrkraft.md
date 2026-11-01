@@ -1,4 +1,4 @@
-Lernende schreiben Funktionen mit Schlüsseln und Werten (Hash in Ruby, Dictionary in Python, Objekt in JavaScript) direkt in die Karten der Seite: nachschlagen, Strichlisten führen, gruppieren, umkehren und mit einem Dictionary schneller werden als mit einer Liste.
+Lernende schreiben Funktionen mit Schlüsseln und Werten (Hash in Ruby, Dictionary in Python, Objekt in JavaScript, Map in Dart und Java) direkt in die Karten der Seite: nachschlagen, Strichlisten führen, gruppieren, umkehren und mit einem Dictionary schneller werden als mit einer Liste.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>.</td></tr>
@@ -14,11 +14,11 @@ Lernende schreiben Funktionen mit Schlüsseln und Werten (Hash in Ruby, Dictiona
 
 #### Was schiefgeht
 
-- Ein Schlüssel, den es nicht gibt: <code>nil</code>, <code>None</code> oder <code>undefined</code> statt eines Werts, den die Aufgabe nennt.
+- Ein Schlüssel, den es nicht gibt: <code>nil</code>, <code>None</code>, <code>undefined</code> oder <code>null</code> statt eines Werts, den die Aufgabe nennt.
 - Beim Zählen fängt jedes weitere Vorkommen wieder bei 1 an.
 - Beim Gruppieren ersetzt das zweite Wort die Gruppe, statt angehängt zu werden; beim Umkehren bleibt so nur die letzte Obstsorte.
 - <code>merge</code> oder <code>{**a, **b}</code> überschreibt, statt zusammenzuzählen.
-- In Ruby ist <code>3 / 2</code> gleich <code>1</code>, in Python <code>3 // 2</code>: Der Durchschnitt braucht Kommazahlen.
+- In Ruby und Java ist <code>3 / 2</code> gleich <code>1</code>, in Python <code>3 // 2</code>, in Dart <code>3 ~/ 2</code>: Der Durchschnitt braucht Kommazahlen.
 - In JavaScript sind die Schlüssel eines Objekts Texte; die Prüfung vergleicht so, dass das nicht stört.
 
 #### Die Aufgaben
