@@ -282,7 +282,10 @@ image.
 - [x] `rle` (1 November 2026): page, widget, cards and teacher note read,
   nothing to change: the predictions (ziffern, text) are answered in after
   blocks; the widget counts two bytes per run as the text says.
-- [ ] `huffman`
+- [x] `huffman` (1 November 2026): page, stepper, cards and teacher note read,
+  nothing to change: the numbers fit (45 240 bytes against LZW's 28 813 and
+  gzip's 20 271; 90 % needs about a seventh of a bit), Fano's term paper 1951
+  and Huffman 1952 check out.
 - [ ] `lzw`
 - [ ] `gif`
 - [ ] `jpeg`
