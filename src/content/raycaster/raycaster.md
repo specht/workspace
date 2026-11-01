@@ -26,7 +26,7 @@ Wie Wolfenstein 3D 1992 eine Welt in 3D auf einen Bildschirm brachte, auf Rechne
 
 <img class='full fit-width' src='fertig.webp' alt='Blick durch eine Halle: Säulen aus roten Ziegeln stehen auf einem Boden aus beigen und terrakottafarbenen Fliesen, darüber eine Decke aus hellem Putz mit dunklen Holzbalken; nach hinten wird alles dunkler. Oben links liegt halb durchsichtig die Karte mit der Spielfigur und ihren Strahlen.'>
 
-Die Welt dieses Spiels ist eine Karte aus Kästchen, wie Karopapier: Jedes Kästchen ist Boden oder Wand. Für jede Spalte des Bildes geht ein Strahl von der Spielfigur über diese Karte, bis er auf eine Wand trifft, und je weiter weg sie ist, desto kürzer zeichnet das Programm sie. 320 Strahlen für ein Bild, 60 Bilder in der Sekunde. So programmierte John Carmack 1992 Wolfenstein 3D.
+Die Welt dieses Spiels ist eine Karte aus Kästchen, wie Karopapier: Jedes Kästchen ist Boden oder Wand. Für jede Spalte des Bildes geht ein Strahl von der Spielfigur über diese Karte, bis er auf eine Wand trifft, und je weiter weg sie ist, desto kürzer zeichnet das Programm sie. So programmierte John Carmack 1992 Wolfenstein 3D. Dein Raycaster schickt 320 Strahlen für ein Bild, 60 Bilder in der Sekunde.
 
 _person(carmack)
 
@@ -1439,7 +1439,7 @@ Wolfenstein 3D und DOOM haben nur senkrechte Wände und waagrechte Böden und la
 
 ### Jeder Takt zählte
 
-Dein Programm rechnet mit `double`, ruft für jeden Pixel `texel` und `shaded` auf und ist trotzdem schnell genug, denn ein Rechner von heute schafft Milliarden Rechenschritte in der Sekunde. 1992 war es ein 386er mit 33 MHz, 33 Millionen Takte in der Sekunde. Ein Bild mit 320 × 200 Pixeln hat 64 000 davon; sollen es 30 Bilder in der Sekunde sein, bleiben für jeden Pixel etwa 17 Takte, für alles: das Texel holen, abdunkeln, schreiben, weiterzählen. Kommazahlen konnte ein 386er ohne einen zusätzlichen Chip gar nicht rechnen. Darum rechnete man mit ganzen Zahlen in Festkomma und schrieb die innerste Schleife in Assembler, Takt für Takt gezählt. Wolfenstein 3D erzeugte beim Start für jede mögliche Höhe einer Wandscheibe ein eigenes Stück Maschinencode, ganz ohne Schleife.
+Dein Programm rechnet mit `double`, ruft für jeden Pixel `texel` und `shaded` auf und ist trotzdem schnell genug, denn ein Rechner von heute schafft Milliarden Rechenschritte in der Sekunde. 1992 war es ein 386er mit 33 MHz, 33 Millionen Takte in der Sekunde. Ein Bild mit 320 × 200 Pixeln hat 64 000 davon; sollen es 30 Bilder in der Sekunde sein, bleiben für jeden Pixel etwa 17 Takte, für alles: das Texel holen, abdunkeln, schreiben, weiterzählen. Kommazahlen rechnete ein 386er ohne einen zusätzlichen Chip nur in Software, viele Male langsamer. Darum rechnete man mit ganzen Zahlen in Festkomma und schrieb die innerste Schleife in Assembler, Takt für Takt gezählt. Wolfenstein 3D erzeugte beim Start für jede mögliche Höhe einer Wandscheibe ein eigenes Stück Maschinencode, ganz ohne Schleife.
 
 Michael Abrash erzählt in seinem *Graphics Programming Black Book*, wie das ging. Sein Texture Mapper brauchte 44 Takte für jeden Pixel, als ihm der Programmierer John Miles schrieb, er schaffe es in 9, »Hmph!«. Abrash nahm die Herausforderung an, Kapitel 58 heißt »The 9-Cycle Dare«. Den entscheidenden Einfall hatte sein Freund Chris Hecker: Spalten statt Zeilen zu zeichnen, wie deine Wandscheiben, weil die Grafikkarte dann nicht bei jedem Pixel umgeschaltet werden musste. Das halbierte die Zeit, und am Ende waren es 5,5 Takte.
 
@@ -1834,7 +1834,7 @@ Dein Raycaster ist ein Gerüst, auf dem ganze Spiele stehen können:
 
 - **Eine eigene Welt:** eine größere Karte, neue Wandarten (eine Ziffer, eine Textur, ein Farbton), eigene Texturen.
 - **Türen:** eine Wandart, deren Wandscheibe sich zur Seite schiebt, wenn man davorsteht.
-- **Gegenstände und Gegner:** Bilder, die mitten im Raum stehen (**Sprites**). Für jede Bildspalte merkt sich das Programm, wie weit die Wand war; ein Sprite wird nur dort gezeichnet, wo er näher ist.
+- **Gegenstände und Gegner:** Bilder, die mitten im Raum stehen (**Sprites**). Für jede Bildspalte merkt sich das Programm, wie weit die Wand war; ein Sprite wird nur dort gezeichnet, wo es näher ist.
 - **Mit der Maus umsehen:** `set_mouse_relative(true)` und `mouse_delta` drehen die Figur.
 - **Licht an Orten:** Statt nur nach Abstand gibt jedes Kästchen sein eigenes Licht, eine Fackel an der Wand, ein dunkler Gang.
 
