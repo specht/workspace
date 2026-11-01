@@ -99,7 +99,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   wie ein echter:«, »einen schönen:«); the teacher note put the try box with
   random trees »dort« at the trees, it is under the own tree. Dates (Koch
   1904, Hilbert 1891) checked.
-- [ ] `turtle-3`
+- [x] `turtle-3` (1 November 2026, 983f677a): page, try boxes, cards and
+  teacher note read; the prediction on pop is answered only after it, the word
+  lengths in the note (11, 61, 311) check out. The teacher note called the
+  Kata page »Katas: Texte«.
 - [ ] `kata-functional`
 - [ ] `kata-search`
 - [ ] `pip-3`
