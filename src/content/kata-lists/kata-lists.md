@@ -183,6 +183,8 @@ sortiert. Ganze Sortierverfahren schreibst, beobachtest und vergleichst du in
 der [Sorting Sandbox](/sandbox-sortieren); wie Listen im Speicher aussehen,
 zeigt die [Data Structures Sandbox](/sandbox-datenstrukturen).
 
+_person(neumann)
+
 <!-- extra -->
 ## Extras
 
