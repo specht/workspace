@@ -139,7 +139,14 @@ image.
 
 ### Grafik
 
-- [ ] `anaglyph`
+- [x] `anaglyph` (1 November 2026, 25719b0e): page, cards and teacher note
+  read; checked against the viewer (specht/anaglyph). Wrong: »scale = 1,8«
+  does not drop the decimals, the comma separates values (x 1, y 8); the group
+  example »nach rechts verschoben« moves 50 up. Spoiler: the after block of
+  »reihenfolge« ended »(und jede Skalierung auch)«, the answer of the next
+  reflection on scaling. Wording: »heisst«, »ein 4 Leerzeichen«, »kein
+  Strich«, »eine neue« without noun; Reset Camera goes to the file's camera
+  line (verified in camera.js).
 - [ ] `drawing`
 - [ ] `fire`
 - [ ] `pixelram`
