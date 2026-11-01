@@ -150,7 +150,12 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   the answer; now explained with the age of majority (17 and 18). The rest was
   checked when the page was built the same day (examples, recipes with
   check-task in all three languages).
-- [ ] `textadventure`
+- [x] `textadventure` (1 November 2026, 7f34fbd7): the paragraph right before
+  »Wer räumt den Apfel weg?« ended »Wer etwas von der Tasche will, bittet die
+  Spielerin darum«, nearly the right option; the problem stays before the
+  task, the answer (Kapselung, the bag in each language) moved into its after
+  block. The other predictions need reasoning; maps and the sequence diagram
+  are there, no illustration proposed.
 - [ ] `class-quiz`
 
 ### Terminal & Git
