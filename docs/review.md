@@ -94,7 +94,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   here, about 7 months in Ruby, 10 in Python, a month in JavaScript, now said
   per language. The teacher note named only Ruby, Python and JavaScript for
   the recursion check (RecursionCheck reads Dart and Java too).
-- [ ] `turtle-2`
+- [x] `turtle-2` (1 November 2026, 7bc198fc): page, level widgets' texts,
+  cards and teacher note read; two sentences ended on an adjective (»wächst
+  wie ein echter:«, »einen schönen:«); the teacher note put the try box with
+  random trees »dort« at the trees, it is under the own tree. Dates (Koch
+  1904, Hilbert 1891) checked.
 - [ ] `turtle-3`
 - [ ] `kata-functional`
 - [ ] `kata-search`
