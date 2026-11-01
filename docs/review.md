@@ -222,7 +222,11 @@ image.
   gilt deshalb nur für ihn«) and the one under »Wann gilt die Media Query?«
   (»höchstens 700 Pixel breit«) gave the answers away; both now in after
   blocks. The Space Jam page (1996, still at /1996) checks out.
-- [ ] `svelte`
+- [x] `svelte` (1 November 2026, e0c07818): page, cards and teacher note read;
+  the paragraph before »Warum :global?« gave the answer (the classes come
+  later through JavaScript), now in its after block; the fact the question
+  needs (Svelte drops rules that match nothing) stays before. Checked: the
+  current sv template keeps the adapter in vite.config.js, as the page says.
 - [ ] `wetter`
 - [ ] `hugo`
 - [ ] `suchmaschine`
