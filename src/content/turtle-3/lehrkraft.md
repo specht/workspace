@@ -1,7 +1,7 @@
 Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und Kurven</a>: Lernende zeichnen mit Farben aus Zahlen (dem Farbkreis und dem Mischen zweier Farben), merken sich Stellen mit `push` und `pop`, lassen den Zufall mitzeichnen und Pflanzen aus Wörtern wachsen (Lindenmayer-Systeme). Die Aufgaben mit einer Vorlage üben je eine dieser Ideen; die Aufgaben mit Zufall und die eigenen Bilder prüft niemand, jedes Bild ist dort richtig. Ruby, Python oder JavaScript.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td><a href='/turtle-2'>Turtle: Bäume und Kurven</a> (ein rekursiver Baum). Für die Pflanzen aus Wörtern eine Schleife über die Buchstaben eines Strings und das Ersetzen in einem String (<a href='/kata-texts'>Katas: Texte</a>).</td></tr>
+<tr><th>Voraussetzungen</th><td><a href='/turtle-2'>Turtle: Bäume und Kurven</a> (ein rekursiver Baum). Für die Pflanzen aus Wörtern eine Schleife über die Buchstaben eines Strings und das Ersetzen in einem String (<a href='/kata-texts'>Katas: Strings</a>).</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Zufall«.<ul>
 <li>Farben aus Zahlen (3 Aufgaben): eine Sonne aus 36 Farben, eine Spirale durch den Farbkreis, ein Fächer, dessen Farbe von Gold nach Rot übergeht.</li>
