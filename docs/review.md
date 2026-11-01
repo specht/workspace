@@ -246,7 +246,12 @@ image.
   start page, 9 with robots.txt) fit together; Brin/Page 1998, Panda 2011,
   Penguin 2012, Google Spain 2014 and the ECIR 2024 study (7392 queries; few
   reviews on the web use affiliate links, most results do) check out.
-- [ ] `tracking`
+- [x] `tracking` (1 November 2026): page, cards and teacher note read, nothing
+  to change: the answers (referer, zweimal, personenbezug, ablehnen-versteckt)
+  wait in after blocks; the questions on § 25 TDDDG apply the rule stated
+  before them; Nouwens et al. (22 to 23 points, 11.8 % of 680 banners),
+  Planet49 2019, the Referer default since 2020/2021 and the DSK guidance 2024
+  check out.
 
 ### Künstliche Intelligenz
 
