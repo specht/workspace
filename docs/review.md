@@ -89,7 +89,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   blocks (the next Kata sits in the after block of the overflow), the Pac-Man
   level 256 claim matches the Dossier. The teacher note listed the switched-
   off conversions for Ruby, Python and JavaScript only.
-- [ ] `kata-recursion`
+- [x] `kata-recursion` (1 November 2026, cd4b821d): intro, try box, cards and
+  teacher note read; the extra said »fibonacci(70) dauert Jahre«: measured
+  here, about 7 months in Ruby, 10 in Python, a month in JavaScript, now said
+  per language. The teacher note named only Ruby, Python and JavaScript for
+  the recursion check (RecursionCheck reads Dart and Java too).
 - [ ] `turtle-2`
 - [ ] `turtle-3`
 - [ ] `kata-functional`
