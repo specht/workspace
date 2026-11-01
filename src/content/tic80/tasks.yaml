@@ -101,21 +101,6 @@ tasks:
       - when: { problem: missing }
         say: Es gibt noch keine `/workspace/TIC-80/stars.lua`. Tipp in der Konsole von TIC-80 `save stars.lua` (mit `.lua` am Ende) und drücke Enter.
 
-  - id: ein-stern
-    title: Ein Stern fällt
-    prompt: |
-      Bau den fallenden Stern und das Fangen in dein Spiel ein und speichere
-      es (<kbd>Strg</kbd><kbd>S</kbd>).
-    file: TIC-80/stars.lua
-    check:
-      type: files
-      path: TIC-80/stars.lua
-      expect:
-        format: text
-        contains:
-          - { pattern: 'math\.random', say: 'In `TIC-80/stars.lua` finde ich noch kein `math.random`: Wo fängt der Stern neu an?' }
-          - { pattern: 'print\(', say: 'Noch zeigt dein Spiel keine Punkte an: `print("Score: " .. score, 4, 4, 12)`.' }
-
   - id: eigene-figur
     title: Deine Figur
     prompt: |

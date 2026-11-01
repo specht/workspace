@@ -221,7 +221,7 @@ hook: tic run
 hook: hold ArrowRight 0.6
 sleep: 0.5
 check-task: gespeichert
-check-task-fails: ein-stern
+check-task-fails: fangen
 -->
 
 <img class='full' src='step1.webp' alt='Die Figur steht unten auf dem dunklen Bildschirm, sonst ist noch nichts zu sehen.'>
@@ -314,7 +314,7 @@ hook: tic load stars.lua
 hook: tic run
 hook: hold ArrowRight 0.4
 sleep: 1
-check-task: ein-stern
+check-task: fangen
 check-task-fails: viele-sterne
 check-task-fails: ton
 -->
@@ -322,8 +322,6 @@ check-task-fails: ton
 <img class='full' src='step2.webp' alt='Ein gelber Stern fällt, unten steht die Figur, oben links »Score: 0«.'>
 
 _task(fallzeit)
-
-_task(ein-stern)
 
 ### Eine eigene Figur
 

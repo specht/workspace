@@ -20,7 +20,7 @@ Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: C
 
 #### Die Aufgaben
 
-»Fallen und fangen« sucht die Zeilen aus dem Kasten »Jetzt bist du dran« (oben). »Im Workspace gespeichert«, »Ein Stern fällt«, »Viele Sterne«, »Ein Ton beim Fangen« und »Ein Himmel« lesen `TIC-80/stars.lua` und suchen typische Bausteine (`function TIC`, `math.random`, `for`, `sfx(`, `pix(`); die Karte nennt die Zeile, in der sie etwas gefunden hat. »Deine Figur« sieht nach, ob Sprite 1 anders aussieht als die mitgelieferte Figur. »Ohne cls« ist eine Vorhersage.
+»Fallen und fangen« sucht die Zeilen aus dem Kasten »Jetzt bist du dran« (oben). »Im Workspace gespeichert«, »Viele Sterne«, »Ein Ton beim Fangen« und »Ein Himmel« lesen `TIC-80/stars.lua` und suchen typische Bausteine (`function TIC`, `math.random`, `for`, `sfx(`, `pix(`); die Karte nennt die Zeile, in der sie etwas gefunden hat. »Deine Figur« sieht nach, ob Sprite 1 anders aussieht als die mitgelieferte Figur. »Ohne cls« ist eine Vorhersage.
 
 #### Eigene Projekte
 

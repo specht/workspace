@@ -9,12 +9,6 @@ examples:
     fail:
       - files: { TIC-80/stars.lua: { text: "-- title: game\n" } }
         say: Funktion `TIC`
-  ein-stern:
-    pass:
-      - files: { TIC-80/stars.lua: step2.lua }
-    fail:
-      - files: { TIC-80/stars.lua: step1.lua }
-        say: math.random
   eigene-figur:
     pass:
       # Stufe 2 mit einer selbst gemalten Figur in Sprite 1
