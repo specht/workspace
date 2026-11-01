@@ -272,7 +272,10 @@ image.
   Predictions are answered in after blocks; 342 and 274 penguins, 43 writers
   (30 train, 13 test), McCulloch/Pitts 1943, Rosenblatt 1958, Minsky/Papert
   1969 check out.
-- [ ] `naechste-nachbarn`
+- [x] `naechste-nachbarn` (1 November 2026): page, cards and teacher note
+  read, nothing to change: every prediction (alle-nachbarn, stadtteile, ohne-
+  wohnort, entfernung) is answered in an after block; Fix/Hodges 1951 and
+  Gender Shades 2018 (0.8 % and 34.7 %) check out.
 
 ### Bilder und Kompression
 
