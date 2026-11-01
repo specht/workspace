@@ -491,7 +491,9 @@ viewport: 720x405
 
 _task(selektor)
 
+<!-- after: selektor -->
 Dein Bildnachweis hat die Klasse `credit` bekommen (`<p class="credit">`); die Regel `.credit` gilt deshalb nur für ihn.
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Bau absichtlich Fehler ein, einen nach dem anderen, und speichere jedes Mal:
@@ -680,7 +682,9 @@ viewport: 390x760
     </figure>
 </div>
 
+<!-- after: media-query -->
 Die Regeln innerhalb der Media Query gelten nur, wenn das Browserfenster höchstens 700 Pixel breit ist.
+<!-- /after -->
 
 `flex-direction: column` sorgt dann dafür, dass Bild und Text wieder untereinander stehen. Das Bild bekommt mit `width: 100%` die gesamte verfügbare Breite.
 
