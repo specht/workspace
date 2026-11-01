@@ -14,7 +14,7 @@ requires: [kata-decisions]
 
 <p class='abstract'>
 Du schreibst Funktionen mit Schleifen: Sie zählen, summieren, füllen Listen
-und suchen, bis sie fertig sind. Von der Summe bis eins über Fakultät und
+und suchen, bis sie fertig sind. Von der Summe 1 + 2 + 3 + … über Fakultät und
 Fibonacci bis zu den Primzahlen.
 </p>
 
