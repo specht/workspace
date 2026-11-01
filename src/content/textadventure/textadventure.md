@@ -198,9 +198,21 @@ Die Tasche ist eine Liste, und eine Liste ließe sich von überall ändern,
 wenn man an sie herankäme. Dann könnte jede Klasse Gegenstände hinein- und
 herausnehmen, und wenn die Tasche einmal anders gebaut wird, nach Namen
 sortiert oder mit einer Grenze, wie viel hineinpasst, müsste man jede
-dieser Stellen finden. Darum bleibt sie bei der Spielerin: Wer etwas von
-der Tasche will, bittet die Spielerin darum, und nur sie ändert die Liste.
-Das heißt **Kapselung**.
+dieser Stellen finden.
+
+_task(wegraeumen)
+
+<!-- after: wegraeumen -->
+Der Apfel bittet die Spielerin: `player.remove(self)`. Er weiß, dass er
+gegessen wird, die Spielerin weiß, wie ihre Tasche gebaut ist. Holte er
+sich die Liste und löschte sich selbst, hinge er davon ab, wie die Tasche
+gebaut ist. Die Spielschleife wüsste nicht, ob ein Gegenstand beim
+Benutzen verschwindet, ein Schlüssel tut es ja nicht. Und ein gegessener
+Apfel, der in der Tasche bleibt, müsste von allen übersprungen werden, die
+sie zeigen.
+
+Die Tasche bleibt also bei der Spielerin: Wer etwas aus ihr will, bittet
+die Spielerin darum, und nur sie ändert die Liste. Das heißt **Kapselung**.
 
 <!-- language: ruby -->
 In Ruby kommt ohnehin niemand von außen an `@bag`, solange es keinen
@@ -222,17 +234,6 @@ In Java sagt `private`, dass nur die eigene Klasse ein Attribut anfasst; der
 Compiler hält sich daran. Solange `Player` keinen Getter für `bag` hat,
 kommt niemand von außen an die Liste.
 <!-- /language -->
-
-_task(wegraeumen)
-
-<!-- after: wegraeumen -->
-Der Apfel bittet die Spielerin: `player.remove(self)`. Er weiß, dass er
-gegessen wird, die Spielerin weiß, wie ihre Tasche gebaut ist. Holte er
-sich die Liste und löschte sich selbst, hinge er davon ab, wie die Tasche
-gebaut ist. Die Spielschleife wüsste nicht, ob ein Gegenstand beim
-Benutzen verschwindet, ein Schlüssel tut es ja nicht. Und ein gegessener
-Apfel, der in der Tasche bleibt, müsste von allen übersprungen werden, die
-sie zeigen.
 <!-- /after -->
 
 ## Gegenstände, die etwas können
