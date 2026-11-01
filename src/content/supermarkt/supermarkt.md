@@ -1075,7 +1075,7 @@ von der sie erbt. Steht eine Methode in beiden, gilt die der erbenden Klasse:
 Sie **überschreibt** die andere. Ein Fahrrad hat Räder wie jedes Fahrzeug, aber
 seine eigene Zahl von Sitzen. Gibt es von einer Klasse selbst keine Objekte, nur
 von denen, die von ihr erben, ist sie **abstrakt**: `class Vehicle (abstract)`.
-Eine normale Kasse ist selbst eine Kasse, sie bleibt also, wie sie ist.
+Die Kasse ist nicht abstrakt: Von ihr selbst gibt es Objekte, die normalen Kassen.
 
 Damit der Supermarkt weiß, wen er wohin schicken darf, fragt er jede Kasse, ob
 sie eine Kundin nimmt. Die normale Kasse sagt immer ja; die Expresskasse
