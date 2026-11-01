@@ -1,4 +1,4 @@
-Lernende programmieren in Ruby einen Feuer-Effekt, wie ihn die Demoszene der 90er-Jahre zeigte: erst eine Palette von Schwarz über Rot und Gelb bis Weiß, dann eine Animationsschleife, dann einen Filterkernel, der jedes Pixel aus seinen Nachbarn mittelt, und damit ein Feuer, das nach oben lodert und abkühlt. Gezeichnet wird mit Pixelflow Canvas wie in <a href='/drawing'>»Zeichnen mit Pixelflow Canvas«</a>, das vorher eingerichtet sein sollte.
+Lernende programmieren in Ruby einen Feuer-Effekt, wie ihn die Demoszene der 90er-Jahre zeigte: erst eine Palette von Schwarz über Rot und Gelb bis Weiß, dann eine Animationsschleife, dann einen Filterkernel, der jedes Pixel aus seinen Nachbarn mittelt, und damit ein Feuer, das nach oben lodert und abkühlt. Gezeichnet wird mit Pixelflow Canvas wie in <a href='/drawing'>»Pixelgrafik mit Ruby«</a>, das vorher eingerichtet sein sollte.
 
 <table class='table'>
 <tr><th>Ablauf</th><td><ul>

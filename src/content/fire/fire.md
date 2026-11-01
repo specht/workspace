@@ -57,7 +57,7 @@ Starte das Pixelflow Canvas, indem du <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd
 Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, siehst du die ersten 64 Farben der VGA-Palette:
 
 <!-- tutorial-screenshot
-# Erweiterung, Gem und Zeichenfläche wie in »Zeichnen mit Pixelflow Canvas«
+# Erweiterung, Gem und Zeichenfläche wie in »Pixelgrafik mit Ruby«
 press: Control+p
 type: ext install gymnasiumsteglitz.pixelflow-canvas
 wait-for-text: Press Enter to install extension
