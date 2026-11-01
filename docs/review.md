@@ -72,7 +72,9 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 - [x] `kata-texts` (1 November 2026): intro, try boxes, cards and teacher note
   read, nothing to change (the try boxes ask without answering, the examples
   check out: vigenere('hallo welt', 'abc') is 'hbnlp yemv').
-- [ ] `kata-lists`
+- [x] `kata-lists` (1 November 2026, 8386a4ee): intro, try box, cards and
+  teacher note read; no spoilers. Added von Neumann's person box after the
+  paragraph on Merge Sort, whose merge step he wrote down in 1945.
 - [ ] `kata-dicts`
 - [ ] `kata-objects`
 - [ ] `kata-bits`
