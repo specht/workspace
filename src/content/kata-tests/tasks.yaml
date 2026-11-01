@@ -684,7 +684,7 @@ tasks:
     title: "Tests für die Adresse"
     level: 2
     prompt: |
-      `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Katas zu Strings: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
     starter: |
       # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
       assert_equal('hello', slug('hello'))
@@ -720,7 +720,7 @@ tasks:
       ```
     python:
       prompt: |
-        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Katas zu Strings: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
         assert_equal('hello', slug('hello'))
@@ -758,7 +758,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `slug(text)` soll aus einem Titel eine Adresse machen, wie in den Katas zu Strings: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual('hello', slug('hello'));
@@ -794,7 +794,7 @@ tasks:
         ```
     dart:
       prompt: |
-        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Katas zu Strings: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug('Hello World!')` ergibt `'hello-world'`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual('hello', slug('hello'));
@@ -821,7 +821,7 @@ tasks:
         ```
     java:
       prompt: |
-        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Texten: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug("Hello World!")` ergibt `"hello-world"`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `String slug(String text)` soll aus einem Titel eine Adresse machen, wie in den Katas zu Strings: klein, nur Buchstaben von `a` bis `z` und Ziffern, die Wörter mit `-` verbunden. `slug("Hello World!")` ergibt `"hello-world"`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual("hello", slug("hello"));
@@ -1368,7 +1368,7 @@ tasks:
     title: "Tests fürs Mischen"
     level: 3
     prompt: |
-      `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+      `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Katas zu Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
     starter: |
       # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
       assert_equal([1, 2], merge_sorted([1], [2]))
@@ -1426,7 +1426,7 @@ tasks:
       ```
     python:
       prompt: |
-        `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `merge_sorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Katas zu Listen: `merge_sorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
         assert_equal([1, 2], merge_sorted([1], [2]))
@@ -1476,7 +1476,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        `mergeSorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `mergeSorted(a, b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Katas zu Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual([1, 2], mergeSorted([1], [2]));
@@ -1526,7 +1526,7 @@ tasks:
         ```
     dart:
       prompt: |
-        `List<int> mergeSorted(List<int> a, List<int> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `List<int> mergeSorted(List<int> a, List<int> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Katas zu Listen: `mergeSorted([1, 4], [2, 3])` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual([1, 2], mergeSorted([1], [2]));
@@ -1563,7 +1563,7 @@ tasks:
         ```
     java:
       prompt: |
-        `List<Integer> mergeSorted(List<Integer> a, List<Integer> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Listen: `mergeSorted(List.of(1, 4), List.of(2, 3))` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
+        `List<Integer> mergeSorted(List<Integer> a, List<Integer> b)` soll zwei aufsteigend sortierte Listen zu einer sortierten mischen, wie in den Katas zu Listen: `mergeSorted(List.of(1, 4), List.of(2, 3))` ergibt `[1, 2, 3, 4]`. Schreib Tests, die jede der drei falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual(List.of(1, 2), mergeSorted(List.of(1), List.of(2)));
@@ -1794,7 +1794,7 @@ tasks:
     title: "Tests für Caesar"
     extra: true
     prompt: |
-      `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+      `caesar(text, shift)` soll verschlüsseln wie in den Katas zu Strings: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
     starter: |
       # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
       assert_equal('def', caesar('abc', 3))
@@ -1836,7 +1836,7 @@ tasks:
       ```
     python:
       prompt: |
-        `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+        `caesar(text, shift)` soll verschlüsseln wie in den Katas zu Strings: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
       starter: |
         # Ein Test je Zeile: assert_equal(erwartet, ergebnis)
         assert_equal('def', caesar('abc', 3))
@@ -1895,7 +1895,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        `caesar(text, shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+        `caesar(text, shift)` soll verschlüsseln wie in den Katas zu Strings: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual('def', caesar('abc', 3));
@@ -1964,7 +1964,7 @@ tasks:
         ```
     dart:
       prompt: |
-        `String caesar(String text, int shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+        `String caesar(String text, int shift)` soll verschlüsseln wie in den Katas zu Strings: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual('def', caesar('abc', 3));
@@ -2004,7 +2004,7 @@ tasks:
         ```
     java:
       prompt: |
-        `String caesar(String text, int shift)` soll verschlüsseln wie in den Texten: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
+        `String caesar(String text, int shift)` soll verschlüsseln wie in den Katas zu Strings: Klein- und Großbuchstaben rücken um `shift` weiter, nach `z` geht es bei `a` weiter, auch rückwärts, und alles andere bleibt. Schreib Tests, die jede der vier falschen Fassungen entlarven.
       starter: |
         // Ein Test je Zeile: assertEqual(erwartet, ergebnis);
         assertEqual("def", caesar("abc", 3));

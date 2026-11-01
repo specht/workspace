@@ -102,8 +102,8 @@ _task(test-binary-search)
 _task(test-merge)
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Nimm einen deiner Tests heraus und führe
-wieder aus. Welche fehlerhafte Fassung kommt jetzt durch? So findest du
+<strong>Ausprobieren:</strong> Nimm einen deiner Tests heraus und klick wieder auf
+<em>Ausführen</em>. Welche fehlerhafte Fassung kommt jetzt durch? So findest du
 heraus, welcher Test wofür da ist.
 </div>
 
