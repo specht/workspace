@@ -145,7 +145,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   their own calculation, the simulation's numbers stand only in after blocks);
   »Eine normale Kasse ist selbst eine Kasse, sie bleibt also, wie sie ist«
   said plainly.
-- [ ] `testen`
+- [x] `testen` (1 November 2026, 356ee0ab): the text before »Die Grenzen von
+  grade« named the classes of `grade` and how to test their boundaries, almost
+  the answer; now explained with the age of majority (17 and 18). The rest was
+  checked when the page was built the same day (examples, recipes with
+  check-task in all three languages).
 - [ ] `textadventure`
 - [ ] `class-quiz`
 
