@@ -86,7 +86,7 @@ Zwei `int` teilt `/` ganzzahlig und lässt den Rest weg: Die Mitte zwischen
 den Indizes 0 und 5 ist 2.
 <!-- /language -->
 
-Wer findet, gibt den Index zurück; wer nichts findet, sagt das mit
+Eine Suche, die etwas findet, gibt seinen Index zurück; findet sie nichts, sagt sie das mit
 <!-- language: ruby -->
 `nil`.
 <!-- /language -->

@@ -6,7 +6,7 @@ Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Se
 <li>Einstieg (4 Katas): lineare Suche (der Index oder nichts), der Index der kleinsten Zahl, von hinten gesucht, die erste Zahl über einer Grenze.</li>
 <li>Übung (4): binäre Suche, Zahlenraten durch Halbieren (die Liste der Tipps), ab welchem Index eine sortierte Liste eine Grenze erreicht, die ganzzahlige Wurzel bis eine Billion.</li>
 <li>Knobelei (3): in eine sortierte Liste einsetzen, ob eine Liste nur anders sortiert ist (ohne zu sortieren), wo eine gedrehte sortierte Liste wieder anfängt.</li>
-<li>Extras (2): wie viele Schritte die binäre Suche braucht, hunderttausend Suchen in fünf Sekunden.</li>
+<li>Extras (2): wie viele Schritte die binäre Suche braucht, hunderttausend Suchen in fünf Sekunden (in Java acht).</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td>Feste Werte, bei der Wurzel und beim letzten Extra mit einer Zeitgrenze: Durchprobieren oder lineare Suche sind dort zu langsam, und die Rückmeldung sagt, warum. Was die Suche fertig mitbringt, ist abgeschaltet (<code>index</code>, <code>bsearch</code>, <code>bisect</code>, <code>min</code>, <code>sort</code>, <code>Math.sqrt</code>).</td></tr>
 <tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
