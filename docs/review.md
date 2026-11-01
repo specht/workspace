@@ -69,7 +69,9 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   Schleifen«, now a link; the teacher note credits Karel the Robot, the page
   now has a book box for it (Internet Archive). Checked: 1000 steps
   (PipWorld::MAX_STEPS), the first three spells are called by the check.
-- [ ] `kata-texts`
+- [x] `kata-texts` (1 November 2026): intro, try boxes, cards and teacher note
+  read, nothing to change (the try boxes ask without answering, the examples
+  check out: vigenere('hallo welt', 'abc') is 'hbnlp yemv').
 - [ ] `kata-lists`
 - [ ] `kata-dicts`
 - [ ] `kata-objects`
