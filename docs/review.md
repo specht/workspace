@@ -152,7 +152,11 @@ image.
   180 rows was »die obere Hälfte«; the teacher note counted two own boxes,
   there are three (Drei Hügel). Predictions (fluten, maske) are answered only
   in after blocks; 57600 bytes and 319, 179 check out.
-- [ ] `fire`
+- [x] `fire` (1 November 2026, dd18c94e): page, kernel figures, cards and
+  teacher note read, nothing wrong on the page: the numbers check out (28 =
+  #e06000, 160/32/0, 248, 32), predictions and the »begrenzen« question come
+  before their answers, the PlayStation claim matches Sanglard's article. The
+  teacher note named the drawing page by an old title.
 - [ ] `pixelram`
 - [ ] `raytracing`
 - [ ] `glsl`
