@@ -21,6 +21,8 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 - 22 teacher notes named the class page's setting »Sprache«; it is »Sprachen
   der Klasse«, a ranked list (41d48ebc, kept by `wording_test.rb`).
+- 11 Kata teacher notes named Ruby, Python and JavaScript only; the pages
+  also offer Dart and Java (c417af20).
 
 ## Pages
 
@@ -54,7 +56,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   nothing to change (predictions answered in after blocks; the two-digit help
   after predict-rest comes before the cards that need it, as help, not as a
   solution).
-- [ ] `kata-decisions`
+- [x] `kata-decisions` (1 November 2026, 0a6b3070): intro, predictions and
+  cards read; FizzBuzz »in Vorstellungsgesprächen für Programmierer«
+  shortened; the teacher note counted one extra and listed no `bread`.
+  Predictions are answered in after blocks, first tips give no solution.
 - [ ] `kata-loops`
 - [ ] `pip-2`
 - [ ] `kata-texts`
