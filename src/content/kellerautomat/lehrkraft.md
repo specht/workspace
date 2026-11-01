@@ -2,7 +2,7 @@ Kellerautomaten zum Programmieren, in Ruby oder Python: Lernende prüfen Klammer
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>»Endliche Automaten«: Automaten als Tabelle, Start- und akzeptierende Zustände, die Grenze am Ende. Listen oder Arrays in Ruby oder Python; den Stack erklärt die Seite und das Handbuch.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Zähler, die Vorhersage zu <code>([)]</code>, <code>balanced</code> mit einem Stack, der Kellerautomat für runde Klammern und die eckigen Klammern dazu.</li>
 <li><b>2. Doppelstunde:</b> a<sup>n</sup>b<sup>n</sup> als Kellerautomat, das Schubfachprinzip und die Überlegung dahinter, welche Fragen ein endlicher Automat beantwortet, die Reflexion über Compiler.</li>

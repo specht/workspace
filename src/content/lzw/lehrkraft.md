@@ -2,7 +2,7 @@ LZW zum Selberbauen, in Ruby oder Python: Lernende komprimieren einen Text von H
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Methoden oder Funktionen, Schleifen, Arrays oder Listen, Hashes oder <code>dict</code>. Bytes, <code>each_byte</code> und <code>pack('C*')</code> erklärt die Seite, soweit sie gebraucht werden.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Einordnung</th><td>Das <a href='/gif'>GIF-Labor</a> baut darauf auf: Dort steht dasselbe Verfahren Bit für Bit in einer Datei, mit Farben statt Bytes.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Wiederholungen, die Regeln des Kompressors, <code>ABABABA</code> von Hand, dann <code>compress</code>.</li>

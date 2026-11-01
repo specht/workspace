@@ -2,7 +2,7 @@ Ein Projekt zu Aufwand und Laufzeit: Lernende zählen die verschiedenen Straßen
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Listen, Dictionaries und Mengen (<a href='/kata-dicts'>Katas: Dictionaries</a>), Rekursion (<a href='/kata-recursion'>Katas: Rekursion</a>, dort kommt Fibonacci vor). Der <a href='/routenplaner'>Routenplaner</a> ist keine Voraussetzung; wer ihn kennt, hat die Rundfahrt schon auf echten Straßen gesehen.</td></tr>
-<tr><th>Sprache</th><td>Ruby, Python, Dart oder Java stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby, Python, Dart oder Java stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Daten holen, die drei Arten zu zählen, die Vorhersage zum Verdoppeln, messen und was die Messung zeigt.</li>
 <li><b>2. Doppelstunde:</b> Schritte zählen und O-Notation, der Regler zum Wachstum, Hochrechnen, Fibonacci mit Gedächtnis und das Paar mit gegebener Summe.</li>

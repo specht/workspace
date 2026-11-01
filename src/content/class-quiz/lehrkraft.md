@@ -2,7 +2,7 @@ Lernende bauen als Klasse ein Quiz in einem gemeinsamen Git-Repository: Jede und
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die Grundlagen von Git aus <a href='/git'>Versionsverwaltung mit Git</a>: Repository, Commit, Branch. Programmieren nur für die Aufgaben aus <code>TODO.md</code>: kleine Änderungen an einem fertigen Programm.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein. Im Repository liegt das Quiz in beiden Sprachen, <code>quiz.rb</code> und <code>quiz.py</code>; die Runden sind für beide dieselben.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. Im Repository liegt das Quiz in beiden Sprachen, <code>quiz.rb</code> und <code>quiz.py</code>; die Runden sind für beide dieselben.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> einrichten, die eigene Runde, abgeben, der abgelehnte Push, der Konflikt in <code>rounds.txt</code>.</li>
 <li><b>2. Doppelstunde:</b> Aufgaben aus <code>TODO.md</code> verteilen, in Branches erledigen und zusammenführen, ein Review, die Regeln fürs Team.</li>

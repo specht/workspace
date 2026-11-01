@@ -33,6 +33,12 @@ class WordingTest < Minitest::Test
         assert_empty hits(/\bDing(e|en|es|s)?\b/)
     end
 
+    # the class page's setting is »Sprachen der Klasse«, a ranked list
+    # (CodeLanguages); notes for teachers name it so
+    def test_the_class_languages_are_named_as_on_the_class_page
+        assert_empty hits(/unter »Sprache«/)
+    end
+
     # a sentence that ends on a bare »eine« leaves out what it is about
     # (»Dein Modell ist eine.«); the noun is said again. Across line breaks
     # too, so the whole prose is searched, not line by line. An adjective

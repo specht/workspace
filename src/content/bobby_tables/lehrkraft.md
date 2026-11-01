@@ -2,7 +2,7 @@ Ein Labor zu SQL Injection: Lernende schreiben ein kleines Anmeldeprogramm in Ru
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die SQL-Einführung (<code>SELECT</code>, <code>WHERE</code>) und etwas Ruby oder Python zum Lesen des Programms.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby; Lernende können auf der Seite selbst umschalten.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby; Lernende können auf der Seite selbst umschalten.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>
 <li>Testdatenbank im Profil anlegen, <code>users.sql</code> importieren, <code>gem install mysql2</code> (Python braucht nichts)</li>
 <li>das Programm ausprobieren und die Abfrage verstehen; die Vorhersage »Ein Name mit Apostroph« vor dem ersten Experiment</li>

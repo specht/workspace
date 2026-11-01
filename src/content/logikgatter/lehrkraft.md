@@ -2,7 +2,7 @@ Lernende schalten Gatter, Addierer, Flipflops und ein kleines Rechenwerk auf der
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Das Zweiersystem und Funktionen mit Listen, etwa aus den Katas »Bits und Zahlensysteme«; für das Subtrahieren hilft die Kata »Negative Zahlen in einem Byte« (Zweierkomplement). Die CPU Sandbox ist keine Voraussetzung: Die Seite führt zu ihr hin.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python, wie auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« eingestellt, ohne Einstellung Ruby. Eine Aufgabe, die in einer Sprache gelöst ist, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python, wie auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« eingestellt, ohne Einstellung Ruby. Eine Aufgabe, die in einer Sprache gelöst ist, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Gatter und ihre Schaltzeichen, die Regel von De Morgan als Vorhersage, NICHT, UND, ODER und XOR aus NAND, der Halbaddierer.</li>
 <li><b>2. Doppelstunde:</b> Volladdierer, Addierer für 4 Bit mit der Vorhersage zum Überlauf, RS- und D-Flipflop.</li>

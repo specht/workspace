@@ -2,7 +2,7 @@ Steganographie in Ruby oder Python: Lernende verstecken Text in den untersten Bi
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python und Zahlen im Zweiersystem; »Kryptographie im Terminal« ist ein guter Einstieg in das Gespräch über Verschlüsseln und Verstecken.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby.</td></tr>
 <tr><th>Bibliotheken</th><td>PNG lesen und schreiben ChunkyPNG (<code>gem install chunky_png</code>) und Pillow (<code>pip install pillow</code>); alles andere schreiben die Lernenden selbst, vom Bit bis zur Farbklasse.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Bitebenen, das Fundstück mit seinem Hinweis in Bit 1, LSB mit <code>hide</code> und <code>reveal</code>, das Codewort.</li>

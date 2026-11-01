@@ -2,7 +2,7 @@ Die ganze Klasse malt an einem Bild, live: Lernende schreiben einen Server in Ru
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>»Ein eigener Webserver«.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> warum WebSockets, die Gems (in Python das Paket), das Echo, der Handshake mit <code>curl</code>, Nachrichten an alle in zwei Tabs.</li>
 <li><b>2. Doppelstunde:</b> die Pixelwand mit JSON und Prüfung der Nachrichten, das gemeinsame Malen über Shared Live Apps, dann »Viele Threads« mit dem Lock.</li>

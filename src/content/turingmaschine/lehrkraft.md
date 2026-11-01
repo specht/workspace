@@ -2,7 +2,7 @@ Turingmaschinen zum Programmieren, in Ruby oder Python: Lernende lassen eine Mas
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>»Endliche Automaten«: Automaten als Tabelle in Ruby oder Python. »Kellerautomaten« hilft für die Frage, warum a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> mehr braucht, ist aber keine Bedingung.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Band, Kopf und Zustand, die Maschine für +1 mit der Vorhersage, minus 1 und die Addition von Strichlisten.</li>
 <li><b>2. Doppelstunde:</b> a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> mit Schritten zählen, universelle Maschine und Church-Turing-These, Maschinen, die nicht anhalten, das Halteproblem.</li>

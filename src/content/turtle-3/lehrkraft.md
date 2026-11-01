@@ -2,7 +2,7 @@ Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und K
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/turtle-2'>Turtle: Bäume und Kurven</a> (ein rekursiver Baum). Für die Pflanzen aus Wörtern eine Schleife über die Buchstaben eines Strings und das Ersetzen in einem String (<a href='/kata-texts'>Katas: Texte</a>).</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Zufall«.<ul>
 <li>Farben aus Zahlen (3 Aufgaben): eine Sonne aus 36 Farben, eine Spirale durch den Farbkreis, ein Fächer, dessen Farbe von Gold nach Rot übergeht.</li>
 <li>Merken und zurückkehren (1 Vorhersage, 1 Aufgabe): wo die Schildkröte nach <code>pop</code> steht, der Baum aus dem zweiten Teil ohne Rückweg.</li>

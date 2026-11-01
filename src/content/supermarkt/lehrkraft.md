@@ -2,7 +2,7 @@ Objektorientierter Entwurf an einer Simulation: Lernende finden in einer kurzen 
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in einer der fünf Sprachen: Funktionen oder Methoden, Verzweigungen, Listen, eine Schleife. Was eine Klasse ist, erklärt die Seite.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein. JavaScript, Dart und Java wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten, und ändert die Einstellung der Klasse nicht. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. JavaScript, Dart und Java wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten, und ändert die Einstellung der Klasse nicht. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die Geschichte, Klasse oder Attribut, die erste Klasse im Diagramm und im Code (Kapselung, Konstruktor, Getter), Klassendiagramm und ER-Modell.</li>
 <li><b>2. Doppelstunde:</b> Zustand und Verhalten an der Kasse, die Assoziation zwischen Supermarkt und Kassen.</li>

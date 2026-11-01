@@ -2,7 +2,7 @@ Lernende schreiben Tests mit dem Testwerkzeug ihrer Sprache für einen kleinen N
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen, Verzweigungen, Listen in einer der drei Sprachen. Was ein Testwerkzeug ist und wie man es startet, erklärt die Seite. In Ruby erbt die Testklasse von <code>Minitest::Test</code>; mehr über Klassen braucht es nicht.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein. JavaScript wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. JavaScript wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die Geschichte (805 Punkte, 1,2 statt 1,1), Einrichten, der erste Test, ein Test, der scheitert, Klassen und Grenzen, Tests für <code>grade</code> mit Fehlern, die erwartet werden.</li>
 <li><b>2. Doppelstunde:</b> die Tabelle der KMK, Tests an ihren Grenzen, die mit dem gegebenen Code rot werden, die Reparatur, dann die Zulassung testgetrieben: erst die Tests, dann der Code, dann aufräumen. Zum Schluss, was Tests nicht können.</li>

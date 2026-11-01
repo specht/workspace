@@ -5,7 +5,7 @@ Grammatiken zum Lesen und Programmieren, in Ruby oder Python: Lernende leiten S�
 <li>»Kellerautomaten«: Klammern prüfen, der Stack.</li>
 <li>Funktionen mit Rückgabewert und Schleifen in Ruby oder Python; dass eine Funktion sich selbst aufrufen kann, erklärt die Seite an einem Beispiel.</li>
 </ul></td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Regeln, Terminale und Nichtterminale, Ableitung und Syntaxbaum am Satz aus drei Wörtern, Syntax und Semantik, BNF und EBNF, Syntaxdiagramme lesen und in EBNF übersetzen.</li>
 <li><b>2. Doppelstunde:</b> der Parser für Klammerwörter zum Abtippen, die Vorhersage zu den offenen Aufrufen, <code>digit</code> und <code>number</code> selbst, dann <code>expression</code>, <code>term</code> und <code>factor</code>; die mehrdeutige Grammatik und die Chomsky-Hierarchie.</li>

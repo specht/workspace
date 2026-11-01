@@ -2,7 +2,7 @@ Huffman-Codes zum Selberbauen, in Ruby oder Python: Lernende kommen vom Morsecod
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Funktionen, Schleifen, Listen und Hashes oder <code>dict</code>. Eine Methode, die sich selbst aufruft, kommt in <code>code_table</code> vor; die Seite erklärt sie in zwei Sätzen, mehr Rekursion braucht es nicht.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Einordnung</th><td>Huffman passt vor <a href='/lzw'>LZW</a> oder danach; das <a href='/jpeg'>JPEG-Labor</a> baut darauf auf.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Morsecode, präfixfrei, der Baum mit der Zeitlupe und von Hand, dann <code>frequencies</code> und <code>build_tree</code>.</li>

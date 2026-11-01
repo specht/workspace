@@ -2,7 +2,7 @@ Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sech
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python (Variablen, Schleifen, Funktionen, Verzweigungen) und die Seite TCP/IP.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen. Die ausgelieferten Seiten in <code>public</code> sind in beiden Sprachen dieselben.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen. Die ausgelieferten Seiten in <code>public</code> sind in beiden Sprachen dieselben.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> der zuhörende Server mit <code>curl</code> im zweiten Terminal, die erste Antwort, Status-Line und Header, der Browser über den Reiter »Ports«, Pfade und 404.</li>
 <li><b>2. Doppelstunde:</b> Dateien aus <code>public</code> mit Content-Type und der Prüfung gegen <code>..</code>, Parameter, der Zähler mit Mutex oder Lock, die Umfrage mit <code>POST</code>, <code>Content-Length</code> und <code>303 See Other</code>, Teilen über Shared Live Apps; wer schnell ist, lässt die Klasse abstimmen.</li>

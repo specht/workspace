@@ -2,7 +2,7 @@ Lernende programmieren die Einmalcodes einer Authenticator-App selbst (TOTP), in
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python; »Kryptographie im Terminal« hilft beim Verständnis von Prüfsummen, HMAC erklärt die Seite selbst.</td></tr>
-<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein.</td></tr>
+<tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> zwei Faktoren, Base32, HOTP mit dem Rechenbeispiel der Seite (Zähler 1 ergibt 287082).</li>
 <li><b>2. Doppelstunde:</b> TOTP, der QR-Code und das Handy, der Prüfer mit Zeitfenster, das Gespräch darüber, wovor der zweite Faktor schützt.</li>

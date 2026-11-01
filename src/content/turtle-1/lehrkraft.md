@@ -2,7 +2,7 @@ Ein Einstieg ins Programmieren mit Bildern: Lernende steuern eine Schildkröte, 
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine. Neben <a href='/pip-1'>Pip: Hinab in die Stollen</a> ein zweiter Einstieg; wer Pip kennt, kennt Schleifen schon.</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprache« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Eigene Befehle«.<ul>
 <li>Die Schildkröte (1 Vorhersage, 3 Aufgaben): eine Treppe, ein Quadrat, die Vorhersage, um wie viel sich die Schildkröte an der Ecke eines Dreiecks dreht, das Dreieck.</li>
 <li>Wiederholen (1 Aufgabe): das Quadrat mit einer Schleife in wenigen Zeilen.</li>
