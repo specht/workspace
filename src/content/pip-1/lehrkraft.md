@@ -27,8 +27,9 @@ Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python
 
 #### Die Aufgaben
 
+- Der Eingang: `entrance`, mit den Knöpfen.
 - Der Schacht: Vorhersage `predict`, `shaft`, `first-stone`.
 - Funkensteine: `few-stones`, `tunnel`; Extra `broken-plan`.
-- Die Wendeltreppe: `room`, `corridor`, `spiral`; Extra `spiral-short`.
+- Die Wendeltreppe: `room`, `corridor`, Vorhersage `nested-steps`, `spiral`; Extra `spiral-short`.
 - Die Pilzwiese: `meadow`, `meadow-stones`.
 - Glibber!: `glibber`, `glibbers`.
