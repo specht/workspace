@@ -84,7 +84,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   notation shown before a Kata needs it. The teacher note described the
   foreign shape for Ruby, Python and JavaScript only (Java uses an anonymous
   Shape, Dart none).
-- [ ] `kata-bits`
+- [x] `kata-bits` (1 November 2026, 64f034c6): intro, try boxes, predictions,
+  cards and teacher note read; both predictions are answered only in after
+  blocks (the next Kata sits in the after block of the overflow), the Pac-Man
+  level 256 claim matches the Dossier. The teacher note listed the switched-
+  off conversions for Ruby, Python and JavaScript only.
 - [ ] `kata-recursion`
 - [ ] `turtle-2`
 - [ ] `turtle-3`
