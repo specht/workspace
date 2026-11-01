@@ -193,7 +193,13 @@ image.
   386er gar nicht rechnen« (it could, in software); »ein Sprite … wo er«.
   Numbers (83°, 500 steps, 1072 ramps, 24, 1.978) check out; the predictions
   have after blocks.
-- [ ] `raylib`
+- [x] `raylib` (1 November 2026, 869e7c5b): page, cards and teacher note read;
+  »Grafikkarten mit Tiefenpuffer gab es für zu Hause erst ab 1996« softened to
+  »wurden üblich« (cards like the S3 ViRGE had one in 1995). The link /unter-
+  der-welt to the 404 page is deliberate (3f4fd48e, the way into the
+  Backrooms). Numbers (55 296, 0.075, 1.28, 0.81, 0.45, seven minutes for 2000
+  blocks, 40 MB) and the history (Infiniminer, Straßer and Catmull 1974, BSP
+  1980) check out.
 
 ### Texte & Präsentationen
 
