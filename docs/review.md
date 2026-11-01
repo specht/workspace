@@ -263,7 +263,10 @@ image.
 
 ### Künstliche Intelligenz
 
-- [ ] `sprachmodell`
+- [x] `sprachmodell` (1 November 2026): page, cards and teacher note read,
+  nothing to change: the predictions (naechstes-wort, immer-das-haeufigste,
+  zwei-woerter, abgeschrieben, boese) are answered only in after blocks;
+  Shannon 1948 and Markow 1913 check out.
 - [ ] `perzeptron`
 - [ ] `naechste-nachbarn`
 
