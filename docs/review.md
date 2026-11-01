@@ -267,7 +267,11 @@ image.
   nothing to change: the predictions (naechstes-wort, immer-das-haeufigste,
   zwei-woerter, abgeschrieben, boese) are answered only in after blocks;
   Shannon 1948 and Markow 1913 check out.
-- [ ] `perzeptron`
+- [x] `perzeptron` (1 November 2026, beda8d0e): page, cards and teacher note
+  read; the Zügelpinguin was introduced twice with »(englisch Chinstrap)«.
+  Predictions are answered in after blocks; 342 and 274 penguins, 43 writers
+  (30 train, 13 test), McCulloch/Pitts 1943, Rosenblatt 1958, Minsky/Papert
+  1969 check out.
 - [ ] `naechste-nachbarn`
 
 ### Bilder und Kompression
