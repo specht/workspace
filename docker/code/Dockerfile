@@ -52,6 +52,7 @@ ARG RUBY_VERSION=3.4.10
 ARG RUBY_API_VERSION=3.4.0
 ARG NEO4J_BOLT_VERSION=0.5.1
 ARG MYSQL_CONNECTOR_PYTHON_VERSION=26.7.0
+ARG PYTEST_VERSION=9.1.1
 ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.2.0
@@ -769,6 +770,12 @@ RUN apt-get purge -y python3-mysql.connector \
 
 ENV PYTHONUSERBASE=/workspace/.local
 ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
+
+# pytest for »Testen«: the tests of the Notenrechner in Python, as minitest
+# comes with Ruby and node --test with Node
+ARG PYTEST_VERSION
+RUN pip install --no-cache-dir "pytest==${PYTEST_VERSION}" \
+    && python3 -m pytest --version | grep -q "${PYTEST_VERSION}"
 
 
 # --------------------------------------------------------------------

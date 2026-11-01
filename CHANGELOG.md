@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Das Workspace-Image enthält `pytest` für die Tests in Python (»Testen«): Nach dem Update das Image neu bauen
+  (`./build-image.sh`).
 - Der Ruby-Dienst braucht `node`: Seiten zeichnen ER-Diagramme mit `_include_er` aus dem Modell, mit dem Kern der
   ER-Werkstatt. Nach dem Update `./config.rb build ruby && ./config.rb up -d ruby`.
 - Die ER-Werkstatt 0.4.0 kennt Minimum und Maximum, `relationship has_copy: movie (0,n) : (1,1) copy`, mit Kreis und
