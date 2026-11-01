@@ -307,15 +307,14 @@ Alle Eingaben auszuprobieren geht selten. Bei `grade` wären es nur 16
 Punktzahlen und dazu alles, was keine ist; bei der Durchschnittsnote schon 601,
 und eine Liste von 36 Ergebnissen hat mehr Möglichkeiten, als es Sekunden seit
 dem Urknall gibt. Man teilt die Eingaben darum in **Klassen**, die das Programm
-gleich behandelt. Bei `grade` sind das die Punktzahlen von 0 bis 15, die eine
-Note bekommen, und alles darunter und darüber, das einen Fehler auslösen soll.
-Für eine Klasse genügt ein Vertreter: Klappt es mit einem, sollte es mit den
-anderen auch klappen.
+gleich behandelt. Eine Funktion, die sagt, ob jemand volljährig ist, hat zwei
+davon: die Alter unter 18 und die ab 18. Für eine Klasse genügt ein Vertreter:
+Klappt es mit einem, sollte es mit den anderen auch klappen.
 
 Fehler sitzen aber besonders gern dort, wo eine Klasse aufhört und die nächste
-beginnt: ein `<` statt `<=`, eine 15, wo 16 gemeint war. Darum testet man an
+beginnt: ein `<` statt `<=`, eine 17, wo 18 gemeint war. Darum testet man an
 jeder **Grenze** beide Seiten, den letzten Wert der einen Klasse und den ersten
-der anderen.
+der anderen, bei der Volljährigkeit also 17 und 18.
 
 _task(grenzen)
 
