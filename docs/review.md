@@ -34,6 +34,10 @@ image.
   `List<Integer>` takes 8.9 seconds in Java (limit 8) and 15 in Dart
   (limit 5); Java rejects it only narrowly, and a faster machine would let it
   through. A fail example for each, and perhaps 200 000 queries in Java.
+- `tic80`, »Ein Stern fällt« (`ein-stern`): it checks the same step as »Fallen
+  und fangen« right above it, only more loosely (`math.random` and `print`),
+  a leftover from before the own box. Remove the task (the recipe uses it with
+  check-task and check-task-fails, and solved marks would go), or keep it?
 
 ## Pages
 
@@ -178,7 +182,10 @@ image.
 
 ### Spiele & 3D-Welten
 
-- [ ] `tic80`
+- [x] `tic80` (1 November 2026): page, cards and teacher note read, nothing to
+  change: 32640 pixels and 2.28 seconds check out, the prediction (ohne-cls)
+  needs reasoning, the default program's cls(13) and transparent colour 14
+  match. A duplicate task (ein-stern) is under »Open for the maintainer«.
 - [ ] `raycaster`
 - [ ] `raylib`
 
