@@ -75,7 +75,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 - [x] `kata-lists` (1 November 2026, 8386a4ee): intro, try box, cards and
   teacher note read; no spoilers. Added von Neumann's person box after the
   paragraph on Merge Sort, whose merge step he wrote down in 1945.
-- [ ] `kata-dicts`
+- [x] `kata-dicts` (1 November 2026, 9eb018d1): intro, try box, cards and
+  teacher note read; no spoilers on the page (the ages in the example are
+  right: Lovelace 36, Turing 41, Hopper 85). The teacher note named only Ruby,
+  Python and JavaScript in three places.
 - [ ] `kata-objects`
 - [ ] `kata-bits`
 - [ ] `kata-recursion`
