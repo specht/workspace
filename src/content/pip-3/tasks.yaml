@@ -694,7 +694,7 @@ tasks:
     title: "Wo ist was?"
     level: 1
     prompt: |
-      Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `nil`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+      Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Position von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `nil`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
     starter: |
       def find(cave, tile)
       end
@@ -731,7 +731,7 @@ tasks:
       ```
     python:
       prompt: |
-        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als Tupel `(x, y)` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `None`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Position von `tile` auf der Karte als Tupel `(x, y)` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `None`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
       starter: |
         def find(cave, tile):
             pass
@@ -767,7 +767,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Stelle von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `find(cave, tile)`, die die Position von `tile` auf der Karte als `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links.
       starter: |
         function find(cave, tile) {
         }
@@ -804,7 +804,7 @@ tasks:
         ```
     dart:
       prompt: |
-        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `(int, int)? find(List<String> cave, String tile)`, die die Stelle von `tile` auf der Karte als Paar `(x, y)` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links. `(int, int)` ist ein Record aus zwei Zahlen; das `?` erlaubt `null`.
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Funktion `(int, int)? find(List<String> cave, String tile)`, die die Position von `tile` auf der Karte als Paar `(x, y)` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links. `(int, int)` ist ein Record aus zwei Zahlen; das `?` erlaubt `null`.
       starter: |
         (int, int)? find(List<String> cave, String tile) {
           return (-1, -1);
@@ -834,7 +834,7 @@ tasks:
         ```
     java:
       prompt: |
-        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Methode `List<Integer> find(List<String> cave, String tile)`, die die Stelle von `tile` auf der Karte als Liste `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links. `List.of(x, y)` baut eine solche Position.
+        Der Wichtel gibt dir seine Karte: eine Liste von Zeilen, jede ein Text, `#` ist Fels. Schreib eine Methode `List<Integer> find(List<String> cave, String tile)`, die die Position von `tile` auf der Karte als Liste `[x, y]` zurückgibt, x die Spalte und y die Zeile, beide ab 0, und `null`, wenn es nicht vorkommt. Kommt es mehrmals vor, gilt das erste von oben, in seiner Zeile das erste von links. `List.of(x, y)` baut eine solche Position.
       starter: |
         List<Integer> find(List<String> cave, String tile) {
             return List.of(-1, -1);
@@ -1591,7 +1591,9 @@ tasks:
             #.P.#
             #...#
             #####
-    hint: "Eine Schleife: `turn_left until facing == direction`. Schaut Pip schon richtig, dreht sie gar nicht."
+    hint:
+      - "Eine Schleife, die dreht, solange Pip nicht in die Richtung `direction` schaut. Schaut Pip schon richtig, dreht sie gar nicht."
+      - "`turn_left until facing == direction`: `until` wiederholt, bis die Frage wahr ist."
     solution: |
       ```ruby
       def face(direction)
@@ -1636,7 +1638,9 @@ tasks:
               #.P.#
               #...#
               #####
-      hint: "Eine Schleife: `while facing() != direction:` und darin `turn_left()`. Schaut Pip schon richtig, dreht sie gar nicht."
+      hint:
+        - "Eine Schleife, die dreht, solange Pip nicht in die Richtung `direction` schaut. Schaut Pip schon richtig, dreht sie gar nicht."
+        - "`while facing() != direction:` und darin `turn_left()`."
       solution: |
         ```python
         def face(direction):
@@ -1681,7 +1685,9 @@ tasks:
               #.P.#
               #...#
               #####
-      hint: "Eine Schleife: `while (facing() !== direction) turnLeft();`. Schaut Pip schon richtig, dreht sie gar nicht."
+      hint:
+        - "Eine Schleife, die dreht, solange Pip nicht in die Richtung `direction` schaut. Schaut Pip schon richtig, dreht sie gar nicht."
+        - "`while (facing() !== direction) turnLeft();`"
       solution: |
         ```javascript
         function face(direction) {
@@ -1739,8 +1745,9 @@ tasks:
             #.P.#
             #...#
             #####
-      hint: 'Eine Schleife: `while (facing() != direction) turnLeft();`. Schaut Pip schon
-        richtig, dreht sie gar nicht.'
+      hint:
+        - "Eine Schleife, die dreht, solange Pip nicht in die Richtung `direction` schaut. Schaut Pip schon richtig, dreht sie gar nicht."
+        - "`while (facing() != direction) turnLeft();`"
       solution: |
         ```dart
         void face(String direction) {
@@ -1816,7 +1823,7 @@ tasks:
         ```
 
   - id: escape
-    title: "Der kürzeste Weg"
+    title: "Zur letzten Lampe"
     level: 3
     prompt: |
       Jetzt alles zusammen: Lies mit `cave_map` die Karte, such mit deiner Funktion `way` den kürzesten Weg von Pip zur Lampe und lauf ihn ab, mit `face` vor jedem Schritt. Der Mampfer ist so schnell wie Pip, nur der kürzeste Weg ist schnell genug. Die Prüfung schickt Pip durch drei Höhlen; zwei baut der Wichtel für dich.
