@@ -17,6 +17,11 @@ commit per page. A page is ticked with the date and that commit once it has
 been read completely, its tasks.yaml and lehrkraft.md included. Started on
 1 November 2026, section by section, »Software entwerfen« first.
 
+## Fixes across pages
+
+- 22 teacher notes named the class page's setting »Sprache«; it is »Sprachen
+  der Klasse«, a ranked list (41d48ebc, kept by `wording_test.rb`).
+
 ## Pages
 
 ### Erste Schritte
@@ -41,7 +46,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   nothing to change (the predictions are answered only in after blocks, first
   tips give no solution, the Java variants say pause()); the teacher note's
   list of tasks lacked entrance and nested-steps.
-- [ ] `turtle-1`
+- [x] `turtle-1` (1 November 2026): page, tasks and teacher note read, nothing
+  to change on the page (the predictions on the triangle's corner and the
+  91-degree spiral are answered only after them); the teacher note's »Sprache«
+  is part of the fix across pages.
 - [ ] `kata-functions`
 - [ ] `kata-decisions`
 - [ ] `kata-loops`
