@@ -102,6 +102,14 @@ class UnitTestsCheckTest < Minitest::Test
         assert_includes message, '`notenrechner/test_noten.rb` gibt es nicht'
     end
 
+    # what students load with wget is what the recipes and examples use
+    def test_the_downloads_are_the_given_files
+        FILES.each_value do |ext|
+            assert_equal File.read(File.join(CONTENT, 'beispiele', "noten.#{ext}")),
+                File.read(File.expand_path("../../static/testen/noten.#{ext}", __dir__)), "noten.#{ext}"
+        end
+    end
+
     def test_resolve_and_spec
         data = { 'tasks' => [{ 'id' => 'x', 'check' => {
             'type' => 'unit_tests', 'language' => 'ruby', 'file' => 'n/test_noten.rb', 'correct' => 'loesung/noten.rb',

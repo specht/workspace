@@ -203,8 +203,9 @@ module UnitTestsCheck
         end
 
         mutants = (check['mutants'] || []).size
-        tested = count == 1 ? 'Dein Test besteht' : "Deine #{count} Tests bestehen"
-        [:correct, "#{tested} mit dem richtigen #{subject} und #{mutants == 1 ? 'finden den Fehler in der fehlerhaften Fassung' : "finden die Fehler in allen #{mutants} fehlerhaften Fassungen"}.", read]
+        tested, find = count == 1 ? ['Dein Test besteht', 'findet'] : ["Deine #{count} Tests bestehen", 'finden']
+        found = mutants == 1 ? 'den Fehler in der fehlerhaften Fassung' : "die Fehler in allen #{mutants} fehlerhaften Fassungen"
+        [:correct, "#{tested} mit dem richtigen #{subject} und #{find} #{found}.", read]
     end
 
     def self.first_test_hint(language)
