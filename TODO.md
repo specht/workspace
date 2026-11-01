@@ -156,7 +156,7 @@ What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
 * [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
 * [ ] Person box for Richard E. Pattis (Karel the Robot) once a source gives his year of birth
 * [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, live since 28 October 2026): a try in class; a picture of the Git server's key box only where the live box does not show (students see the box itself on the page). The other packages for the curriculum's gaps: docs/plan-lehrplan-luecken.md
-* [ ] »Testen« (`testen`, built 1 November 2026, in development only as `.testen`): the maintainer looks at it; then into the catalog (`curriculum-graph.rb`) and a try in class
+* [ ] »Testen« (`testen`, in the catalog since 1 November 2026): a try in class
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
 
 ## Existing pages
