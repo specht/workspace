@@ -463,7 +463,7 @@ _task(wetter-rb)
 
 ## Höflich bleiben
 
-Open-Meteo erlaubt höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.000 pro Tag, und zwar je Adresse, von der die Anfragen kommen. Das klingt nach viel, aber an deiner Schule teilen sich viele eine Adresse: Alle Workspaces gehen über denselben Server ins Netz, und alle Browser im Schulnetz über dieselbe Leitung. Ein Programm, das jede Sekunde nachfragt, verbraucht das Tageskontingent für alle in gut einer Stunde, eines ganz ohne Pause in wenigen Minuten. Danach bekommt niemand mehr Daten, nur noch eine Fehlermeldung; viele APIs antworten dann mit dem Statuscode `429 Too Many Requests`.
+Open-Meteo erlaubt höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.000 pro Tag, und zwar je Adresse, von der die Anfragen kommen. Das klingt nach viel, aber an deiner Schule teilen sich viele eine Adresse: Alle Workspaces gehen über denselben Server ins Netz, und alle Browser im Schulnetz über dieselbe Leitung. Ein Programm, das jede Sekunde nachfragt, verbraucht das Stundenkontingent für alle in gut einer Stunde und das Tageskontingent in knapp drei Stunden, eines ganz ohne Pause beides in wenigen Minuten. Danach bekommt niemand mehr Daten, nur noch eine Fehlermeldung; viele APIs antworten dann mit dem Statuscode `429 Too Many Requests`.
 
 Das Wetter ändert sich nicht jede Sekunde. Darum merkt sich ein höfliches Programm Antworten eine Weile: in einem **Cache**.
 
@@ -705,9 +705,13 @@ WEATHER_API = '${web_root}/open-meteo/api/v1/forecast'
 ```
 <!-- /language -->
 
-Der Spiegel holt die Daten bei Open-Meteo und merkt sich jede Antwort eine Viertelstunde lang, für alle zusammen. Fragen 30 Leute nach dem Wetter in Berlin, fragt er Open-Meteo nur einmal. Weigert sich Open-Meteo ganz, gibt er die letzte Antwort heraus, die er kennt, auch wenn sie älter ist. Ob eine Antwort neu geholt wurde, aus seinem Speicher kam oder schon älter ist, steht im Header `X-Hackschule-Cache`: `miss`, `hit` oder `stale`. Mit `curl -i` siehst du ihn.
+Der Spiegel holt die Daten bei Open-Meteo und merkt sich jede Antwort eine Viertelstunde lang, für alle zusammen. Weigert sich Open-Meteo ganz, gibt er die letzte Antwort heraus, die er kennt, auch wenn sie älter ist. Ob eine Antwort neu geholt wurde, aus seinem Speicher kam oder schon älter ist, steht im Header `X-Hackschule-Cache`: `miss`, `hit` oder `stale`. Mit `curl -i` siehst du ihn.
 
 _task(spiegel)
+
+<!-- after: spiegel -->
+Fragen 30 Leute nach dem Wetter in Berlin, fragt der Spiegel Open-Meteo nur einmal; die anderen 29 bekommen die Antwort, die er sich gemerkt hat.
+<!-- /after -->
 
 ## Eine Wetterseite
 
@@ -908,7 +912,9 @@ _task(api-key)
 
 ## Wie geht es weiter?
 
+<!-- after: api-key -->
 Viele APIs verlangen einen **API-Schlüssel**: eine lange Zeichenkette, die du bei der Anmeldung bekommst und bei jeder Anfrage mitschickst. Daran erkennt der Dienst, wer fragt, und zählt die Anfragen. Ein solcher Schlüssel ist wie ein Passwort: Er gehört nicht in eine Webseite, die jeder lesen kann, und nicht in ein öffentliches Git-Repository. Programme, die ihn brauchen, fragen die API vom Server aus, wie dein Programm im Terminal, nicht aus dem Browser.
+<!-- /after -->
 
 Wie die andere Seite aussieht, ein Server, der selbst Anfragen beantwortet, zeigt [Ein eigener Webserver](/webserver).
 
