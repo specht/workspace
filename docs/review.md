@@ -37,7 +37,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ### Katas
 
-- [ ] `pip-1`
+- [x] `pip-1` (1 November 2026, 4fa3a4fe): page, predictions and tips read,
+  nothing to change (the predictions are answered only in after blocks, first
+  tips give no solution, the Java variants say pause()); the teacher note's
+  list of tasks lacked entrance and nested-steps.
 - [ ] `turtle-1`
 - [ ] `kata-functions`
 - [ ] `kata-decisions`
