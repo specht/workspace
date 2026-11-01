@@ -168,7 +168,13 @@ image.
   about a fifth as bright, critical angle 41.8°, r0 0.04), the history
   (Whitted 1979/1980, Cook/Porter/Carpenter 1984, Schlick 1994, Haines' hollow
   ball) is sourced. Not checked: the three album covers.
-- [ ] `glsl`
+- [x] `glsl` (1 November 2026, 9d8e6379): page, cards and teacher note read;
+  the bullet right before »Heller, wo sie sich treffen« gave its answer (the
+  glow is added), now in the after block; »Wer näher als 0,5 ist« and »Wer
+  dicht an einem Tropfen vorbeiläuft« spoke of pixels and rays as persons;
+  Sierpinski without ń (also on pixelram); »einen neuen abgeben« without noun.
+  Numbers (1.3333, 0.984375, 1.4, 0.15, 512, 400) and the history (RenderMan,
+  GeForce 3, Shadertoy 2013, elevated 2009) check out.
 
 ### Spiele & 3D-Welten
 
