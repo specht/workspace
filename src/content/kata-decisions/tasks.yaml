@@ -1516,7 +1516,7 @@ tasks:
     title: "FizzBuzz"
     level: 3
     prompt: |
-      Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `fizzbuzz(n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
+      Ein englisches Zählspiel, und eine berühmte Aufgabe aus Vorstellungsgesprächen: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `fizzbuzz(n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
     starter: |
       def fizzbuzz(n)
       end
@@ -1667,7 +1667,7 @@ tasks:
         ```
     dart:
       prompt: |
-        Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
+        Ein englisches Zählspiel, und eine berühmte Aufgabe aus Vorstellungsgesprächen: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Funktion `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `'Fizz'`, `fizzbuzz(7)` ergibt `'7'`.
       starter: |
         String fizzbuzz(int n) {
           return '';
@@ -1709,7 +1709,7 @@ tasks:
         ```
     java:
       prompt: |
-        Ein englisches Zählspiel, und eine berühmte Aufgabe in Vorstellungsgesprächen für Programmierer: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Methode `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `"Fizz"`, `fizzbuzz(7)` ergibt `"7"`.
+        Ein englisches Zählspiel, und eine berühmte Aufgabe aus Vorstellungsgesprächen: Man zählt reihum, aber statt einer Zahl, die durch 3 teilbar ist, sagt man »Fizz«, statt einer, die durch 5 teilbar ist, »Buzz«, und wenn sie durch beide teilbar ist, »FizzBuzz«. Schreib eine Methode `String fizzbuzz(int n)`, die zurückgibt, was man bei `n` sagt, als Text: `fizzbuzz(9)` ergibt `"Fizz"`, `fizzbuzz(7)` ergibt `"7"`.
       starter: |
         String fizzbuzz(int n) {
             return "";
