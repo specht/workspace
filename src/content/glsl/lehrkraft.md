@@ -6,7 +6,7 @@ Lernende schreiben Fragment-Shader in GLSL, im Stil von Shadertoy (`mainImage`, 
 <li><b>1. Doppelstunde:</b> Vorlage klonen, Vorschau, was ein Shader bekommt, ein Kreis mit glattem Rand, Fehlermeldungen, leuchtende Kreise in Bewegung mit einer Kosinus-Palette.</li>
 <li><b>2. Doppelstunde:</b> ein Kaleidoskop aus Polarkoordinaten und Kacheln, Wolken aus Value Noise und fbm, dann Raymarching mit der ersten Kugel, mit Schatten unter einer Lampe in einem dunklen Studio.</li>
 <li><b>3. Doppelstunde:</b> sechs Tropfen, die mit einem weichen Minimum ineinanderfließen (Metaballs), weiche Schatten, Umgebungsverdeckung, Glanz nach Blinn und Schlick, ein schwarzer, spiegelnder Boden, eine Kamera, die man mit der Maus steuert.</li>
-<li><b>4. Doppelstunde:</b> der Sierpinski-Teppich in 2D, der Menger-Schwamm in 3D und ein Flug durch seine endlosen Gänge, was Rechenzeit kostet, ein eigener Shader.</li>
+<li><b>4. Doppelstunde:</b> der Sierpiński-Teppich in 2D, der Menger-Schwamm in 3D und ein Flug durch seine endlosen Gänge, was Rechenzeit kostet, ein eigener Shader.</li>
 <li>Die Stufen bis zu den Wolken sind kurz und unabhängig voneinander; von der Kugel bis zur Maus baut jede Stufe auf der vorigen auf; Teppich, Schwamm und Flug sind jeweils ein ganzes Programm.</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td><ul>

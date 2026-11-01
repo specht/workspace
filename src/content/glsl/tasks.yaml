@@ -290,7 +290,7 @@ tasks:
     prompt: |
       Gib deinen eigenen Shader ab: eine Welt, ein Muster oder etwas ganz
       anderes. Wähle die Datei aus `glsl-starter`. Du kannst jederzeit einen
-      neuen abgeben oder deine Abgabe löschen.
+      neuen Shader abgeben oder deine Abgabe löschen.
     check:
       type: submit
       pick: glsl-starter/*.frag

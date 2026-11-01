@@ -160,7 +160,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 `p` ist die Position des Pixels, so verschoben, dass die Mitte des Bildes `(0, 0)` ist, und durch die **Höhe** geteilt. Oben ist dann 1, unten −1, und nach links und rechts reicht `p.x` so weit, wie das Bild breiter als hoch ist. Weil beide Richtungen durch dieselbe Zahl geteilt werden, bleibt ein Kreis rund. Der Raytracer rechnet in `ray_dir` genauso.
 
-`length(p)` ist der Abstand zur Mitte. Wer näher als 0,5 ist, gehört zum Kreis. Ein hartes `if (d < 0.5)` gäbe Treppenstufen am Rand. `smoothstep(a, b, d)` ist 0, solange `d` kleiner als `a` ist, 1 ab `b`, und dazwischen steigt es weich an. Über die Breite von zwei Pixeln wird der Rand so ein Verlauf: glatte Kanten mit einer Rechnung, für die PixelRAM in »Glatte Kanten« jeden Pixel an den Kanten mehrfach fragen musste. `mix(a, b, t)` mischt zwei Farben: `t = 0` ergibt `a`, `t = 1` ergibt `b`.
+`length(p)` ist der Abstand zur Mitte. Ein Pixel, der näher als 0,5 an ihr liegt, gehört zum Kreis. Ein hartes `if (d < 0.5)` gäbe Treppenstufen am Rand. `smoothstep(a, b, d)` ist 0, solange `d` kleiner als `a` ist, 1 ab `b`, und dazwischen steigt es weich an. Über die Breite von zwei Pixeln wird der Rand so ein Verlauf: glatte Kanten mit einer Rechnung, für die PixelRAM in »Glatte Kanten« jeden Pixel an den Kanten mehrfach fragen musste. `mix(a, b, t)` mischt zwei Farben: `t = 0` ergibt `a`, `t = 1` ergibt `b`.
 
 <div class='hint own' data-check='scheibe'>
 <strong>Jetzt bist du dran:</strong> Bis jetzt zeigt die Vorschau nur den Hintergrund. Schreib statt der Zeile <code>// hier</code> und <code>float inside = 0.0;</code> die beiden Zeilen für <code>d</code> und <code>inside</code>: <code>d</code> ist der Abstand des Pixels zur Mitte, und <code>inside</code> ist im Kreis mit dem Radius 0,5 gleich 1, draußen 0, mit einem weichen Rand von einem Pixel innen bis einem Pixel außen. Speichere und sieh in der Vorschau nach, ob die Scheibe einen glatten Rand hat.
@@ -269,9 +269,13 @@ crop-element: #canvas
 - `float(i)` macht aus der ganzen Zahl `i` eine Kommazahl. Wieder rechnet GLSL das nicht von selbst um.
 - Jeder Kreis läuft auf einer eigenen Bahn: `cos(a)` nach links und rechts, `sin(1.3 * a)` nach oben und unten, etwas schneller. So entsteht keine Kreisbahn, sondern eine Schleife, die sich langsam verschiebt.
 - `palette` macht aus einer Zahl eine Farbe: Rot, Grün und Blau sind drei Kosinuswellen, um ein Drittel gegeneinander verschoben. Íñigo Quílez hat diese Paletten [beschrieben](https://iquilezles.org/articles/palettes/); mit anderen Zahlen statt `0.0, 0.33, 0.67` entstehen ganz andere Farben.
-- Jeder Kreis gibt seine Farbe als **Schein** dazu, `c * 0.012 / d`: dicht am Kreis viel, weiter weg immer weniger. Weil der Schein aller acht Kreise addiert wird, leuchtet es heller, wo sie sich nahe kommen.
+- Jeder Kreis gibt seine Farbe als **Schein** dazu, `c * 0.012 / d`: dicht am Kreis viel, weiter weg immer weniger.
 
 _task(schein)
+
+<!-- after: schein -->
+Der Schein aller acht Kreise wird addiert: Wo sich zwei nahe kommen, bekommt der Hintergrund von beiden etwas ab und leuchtet heller.
+<!-- /after -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Mach aus <code>0.012</code> einmal <code>0.05</code> und lass den Kreis selbst weg (die Zeile mit <code>mix</code>). Achte darauf, wie aus den Scheiben leuchtende Kugeln werden, die heller werden, wenn sie sich überlagern.
@@ -763,7 +767,7 @@ vec3 blob_color(vec3 p)
 ~ {
 ```
 
-Die Schatten werden weich. Im Raytracer brauchte ein weicher Schatten viele Strahlen zu verschiedenen Punkten der Sonne, gemittelt über viele Durchgänge. Raymarching bekommt ihn fast umsonst: Der Strahl zur Lampe merkt sich, wie knapp er an etwas vorbeigekommen ist. Wer dicht an einem Tropfen vorbeiläuft, liegt im Halbschatten. Schreib unter `normal`:
+Die Schatten werden weich. Im Raytracer brauchte ein weicher Schatten viele Strahlen zu verschiedenen Punkten der Sonne, gemittelt über viele Durchgänge. Raymarching bekommt ihn fast umsonst: Der Strahl zur Lampe merkt sich, wie knapp er an etwas vorbeigekommen ist. Ein Punkt, dessen Strahl dicht an einem Tropfen vorbeiläuft, liegt im Halbschatten. Schreib unter `normal`:
 
 ```glsl
 ~                           map(p + e.yxy) - map(p - e.yxy),
@@ -975,7 +979,7 @@ Zieh mit gedrückter Maus nach links und rechts, dann fliegt die Kamera um die T
 
 ### Ein Teppich aus Quadraten
 
-Raymarching kann mehr, als Formen verschmelzen. Es kann eine Form ohne Ende wiederholen, und jede Wiederholung noch einmal in klein. Bevor es dreidimensional wird, erst einmal in der Ebene: Nimm ein Quadrat, teile es in drei mal drei Kacheln und mach die mittlere zu einem Loch. Mit jeder der acht anderen Kacheln machst du dasselbe, mit deren Kacheln wieder, ohne Ende. Das ist der **Sierpinski-Teppich**, 1916 von Wacław Sierpiński beschrieben.
+Raymarching kann mehr, als Formen verschmelzen. Es kann eine Form ohne Ende wiederholen, und jede Wiederholung noch einmal in klein. Bevor es dreidimensional wird, erst einmal in der Ebene: Nimm ein Quadrat, teile es in drei mal drei Kacheln und mach die mittlere zu einem Loch. Mit jeder der acht anderen Kacheln machst du dasselbe, mit deren Kacheln wieder, ohne Ende. Das ist der **Sierpiński-Teppich**, 1916 von Wacław Sierpiński beschrieben.
 
 _person(sierpinski)
 
