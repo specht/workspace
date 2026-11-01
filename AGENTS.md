@@ -67,6 +67,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
+- [docs/review.md](docs/review.md): the reading of every page for spoilers, wording, hard passages and
+  wrong claims: which pages are done (date, commit), what was found, illustrations proposed
 - [CHANGELOG.md](CHANGELOG.md): per release, what an operator of another installation must know
 - [TODO.md](TODO.md): direction and open work; delete what is done instead of ticking it off
 
