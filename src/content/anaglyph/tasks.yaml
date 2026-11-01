@@ -228,7 +228,7 @@ tasks:
       Gib deine schönste Szene ab. In der Galerie deiner Klasse erscheint sie aus
       der Ansicht, die in ihrer Zeile `camera = …` steht: Stell die Kamera in der
       Vorschau ein, kopiere sie mit »Kamera kopieren« in die Datei, und prüfe
-      hier im Bild, wie die Szene aussehen wird. Du kannst jederzeit eine neue
+      hier im Bild, wie die Szene aussehen wird. Du kannst jederzeit eine neue Fassung
       abgeben oder deine Abgabe löschen.
     check:
       type: submit

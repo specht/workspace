@@ -423,7 +423,7 @@ In diesem Beispiel siehst du ein Gitter und drei Kugeln:
 - die dritte Kugel ist 1,8-mal so groß wie die normale Kugel und nach rechts verschoben
 
 <div class='hint books'>
-Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schreiben, also <code>1.8</code> und nicht <code>1,8</code>. Wenn du ein Komma eingibst, werden die Nachkommastellen ignoriert und die Zahl wird als ganze Zahl interpretiert.
+Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schreiben, also <code>1.8</code> und nicht <code>1,8</code>. Das Komma trennt hier Werte: <code>scale = 1,8</code> sind zwei Zahlen, 1 für die Breite und 8 für die Höhe, und die Kugel wird achtmal so hoch statt 1,8-mal so groß.
 </div>
 
 <!-- tutorial-scope -->
@@ -584,7 +584,7 @@ crop-bottom: 27%
 <!-- /tutorial-scope -->
 </div>
 
-Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
+Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt.
 <!-- /after -->
 
 _task(reihenfolge-erklaeren)
@@ -749,7 +749,7 @@ crop-right: 38.5%
 Dafür stehen dir vier Befehle zur Verfügung:
 
 - `background` für die Hintergrundfarbe: `0.0` bis `1.0` für schwarz bis weiß
-- `stroke` für die Strichfarbe:  `0.0` bis `1.0` für schwarz bis weiß / `off` für kein Strich
+- `stroke` für die Strichfarbe:  `0.0` bis `1.0` für schwarz bis weiß / `off` für keinen Strich
 - `fill` für die Füllfarbe: `0.0` bis `1.0` für schwarz bis weiß / `off` für keine Füllung
 - `shade` für 3D-Schattierung: `on` für 3D-Schattierung / `off` für keine 3D-Schattierung
 
@@ -1156,7 +1156,7 @@ _task(wie-viele)
 </div>
 
 <div class='hint'>
-Tipp: Rücke das Innere einer Schleife ein (wie oben z. B. mit Tab oder ein 4 Leerzeichen), um den Überblick zu behalten.
+Tipp: Rücke das Innere einer Schleife ein (wie oben, mit einem Tab oder vier Leerzeichen), um den Überblick zu behalten.
 </div>
 
 Um eine Schleife zu verwenden, musst du dich genau an die Syntax halten. Dabei gelten folgende Regeln:
@@ -1184,7 +1184,7 @@ Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 
 
 #### Verschachtelte Schleifen
 
-Schleifen können auch verschachtelt werden. Das heisst: du schreibst erst eine äußere Schleife mit einer Variablen, und darin eine innere Schleife mit einer anderen Variablen, z. B.:
+Schleifen können auch verschachtelt werden. Das heißt: du schreibst erst eine äußere Schleife mit einer Variablen, und darin eine innere Schleife mit einer anderen Variablen, z. B.:
 
 ```ini
 shape = grid
@@ -1268,7 +1268,7 @@ group
 end
 ```
 
-Hier stehen Würfel und Kugel auf entgegengesetzten Seiten des Gruppenmittelpunkts. Beide drehen sich gemeinsam um diesen Mittelpunkt, während die gesamte Gruppe nach rechts verschoben ist. Die `move`-Befehle bei den einzelnen Körpern bestimmen dagegen ihre Position **innerhalb** der Gruppe.
+Hier stehen Würfel und Kugel auf entgegengesetzten Seiten des Gruppenmittelpunkts. Beide drehen sich gemeinsam um diesen Mittelpunkt, während die gesamte Gruppe um 50 Einheiten nach oben verschoben ist. Die `move`-Befehle bei den einzelnen Körpern bestimmen dagegen ihre Position **innerhalb** der Gruppe.
 
 <div class='hint'>
 Tipp: Du kannst auch Gruppen in Gruppen anlegen oder eine ganze Gruppe in einer Schleife wiederholen. Achte darauf, jede Gruppe mit einem eigenen <code>end</code> zu schließen.
@@ -1321,7 +1321,7 @@ In der Galerie deiner Klasse erscheint die Szene aus einer festen Ansicht: aus d
 camera = 20, -35, -320, 0, 40, 0
 ```
 
-Die sechs Zahlen sind die beiden Drehwinkel in Grad, der Abstand und der Punkt, um den sich die Kamera dreht. Ohne diese Zeile zeigt die Galerie die Standardansicht, und die passt selten zu einer ganzen Szene. Mit »Reset Camera« kommst du jederzeit zu deiner Ansicht zurück.
+Die sechs Zahlen sind die beiden Drehwinkel in Grad, der Abstand und der Punkt, um den sich die Kamera dreht. Ohne diese Zeile zeigt die Galerie die Standardansicht, und die passt selten zu einer ganzen Szene. Mit »Reset Camera« kommst du zu der Ansicht aus deiner Datei zurück.
 
 Sobald du unten eine Datei auswählst, zeigt die Karte, wie deine Szene in der Galerie aussehen wird. Deine Abgabe ist eine Kopie: Du kannst danach weiter an der Datei arbeiten, eine neue Version abgeben oder deine Abgabe wieder löschen.
 
