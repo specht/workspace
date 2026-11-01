@@ -21,6 +21,7 @@ require_relative 'ruby_check'
 require_relative 'prolog_check'
 require_relative 'kata_check'
 require_relative 'tests_check'
+require_relative 'unit_tests_check'
 require_relative 'pip_check'
 require_relative 'turtle_check'
 require_relative 'circuit_check'
@@ -76,6 +77,7 @@ module TaskSpec
         'turtle' => 'M8',
         'circuit' => 'M8',
         'interleaving' => 'M8',
+        'unit_tests' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -132,6 +134,7 @@ module TaskSpec
         'turtle' => [],
         'circuit' => [],
         'interleaving' => %w[problem],
+        'unit_tests' => [],
     }.freeze
 
     class Error < StandardError
@@ -147,6 +150,9 @@ module TaskSpec
     def self.load_file(path, activity: File.basename(File.dirname(path)))
         data = YAML.safe_load(File.read(path, encoding: 'UTF-8'), permitted_classes: [], aliases: false)
         errors = validate(data, activity: activity)
+        raise Error.new(errors.map { |e| "#{path}: #{e}" }) unless errors.empty?
+        # unit_tests: the right version from its file, the broken ones made from it
+        errors = UnitTestsCheck.resolve!(data, File.dirname(path))
         raise Error.new(errors.map { |e| "#{path}: #{e}" }) unless errors.empty?
         # a starter that names a function of an earlier task gets its empty
         # frame here (OwnFunctions); the person's own comes with the states
@@ -634,6 +640,13 @@ module TaskSpec
             # right and some broken versions (TestsCheck).
             allowed += %w[language function correct mutants]
             errors.concat(TestsCheck.spec_errors(check))
+        when 'unit_tests'
+            # The person's tests, a file in the Workspace for minitest, pytest
+            # or node --test, run against a right and some broken versions
+            # of the file they test (UnitTestsCheck).
+            allowed += %w[language file correct mutants timeout]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(UnitTestsCheck.spec_errors(check))
         when 'interleaving'
             # An order of steps from the widget (interleaving.js), run with
             # the widget's rules on the server (InterleavingCheck).

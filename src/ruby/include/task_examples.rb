@@ -203,6 +203,8 @@ module TaskExamples
             checked = task['check']['type'] == 'python' && task['check']['file'] && File.join(root, WorkspaceFiles.clean(task['check']['file']))
             beside = ->(name) { File.exist?(File.join(File.dirname(checked), "#{name}.py")) || File.directory?(File.join(File.dirname(checked), name)) }
             return nil if checked && File.file?(checked) && python_modules(File.read(checked)).any? { |name| !beside.(name) && !python_module?(name) }
+            # tests for pytest wait for a machine that has it (the Workspace image)
+            return nil if task['check']['type'] == 'unit_tests' && task['check']['language'] == 'python' && !python_module?('pytest')
             # a turtle program runs here as the browser would run it
             turtle = nil
             if task['check']['type'] == 'turtle' && !example['answer'].to_s.strip.empty?

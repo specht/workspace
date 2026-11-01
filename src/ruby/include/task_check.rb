@@ -22,6 +22,7 @@ require_relative 'circuit_check'
 require_relative 'interleaving_check'
 require_relative 'turtle_check'
 require_relative 'glsl_check'
+require_relative 'unit_tests_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -37,7 +38,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle unit_tests]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -113,6 +114,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, CCheck) if type == 'c'
         return check_calls(task, check, workspace, guest_runner, JavaCheck) if type == 'java'
         return check_calls(task, check, workspace, guest_runner, DartCheck) if type == 'dart'
+        return check_calls(task, check, workspace, guest_runner, UnitTestsCheck) if type == 'unit_tests'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
         return check_tests(task, check, answer, kata) if type == 'tests'
         return check_pip(task, check, answer, kata, kata_seed, kata_map) if type == 'pip'
@@ -266,7 +268,7 @@ module TaskCheck
             hint = other ? " Es gibt aber `#{other}`; Groß- und Kleinschreibung zählen." : " Lege sie im Ordner `#{File.dirname(file)}` an."
             return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
         end
-        seconds = check['timeout'] || 10
+        seconds = check['timeout'] || (language.respond_to?(:timeout) ? language.timeout(check) : 10)
         command = language.respond_to?(:command_for_check) ? language.command_for_check(check) : language.command(file, language.cases(check))
         result = runner&.call(command, seconds)
         return Result.new(:status => :unavailable, :message => NOT_RUNNING_CALLS) if result.nil?

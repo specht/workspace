@@ -336,6 +336,10 @@ module TaskCard
         when 'python', 'ruby'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
+        when 'unit_tests'
+            n = (check['mutants'] || []).size
+            "Führt deine Tests in #{path.(check['file'])} in deinem Workspace aus, als Gast, der nichts verändern kann, mit #{h.(UnitTestsCheck::NAMES[check['language']])} in einem Ordner in <code>/tmp</code>: " \
+                "einmal mit einem richtigen <code>#{h.(UnitTestsCheck.module_name(check))}</code>, bei dem alle bestehen müssen, und mit #{n} fehlerhaften, von denen jede an mindestens einem Test scheitern muss. Dein eigenes <code>#{h.(UnitTestsCheck.module_name(check))}</code> läuft dabei nicht"
         when 'prolog'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} mit SWI-Prolog in deinem Workspace, als Gast, der nichts verändern kann, und stellt #{n == 1 ? 'eine Anfrage' : "#{n} Anfragen"}"

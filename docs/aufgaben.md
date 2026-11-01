@@ -1193,6 +1193,41 @@ Funktion selbst hinein, sagt die Prüfung, nur Tests zu schreiben, ohne etwas
 auszuführen. Der `starter` (ein erster Test) muss von selbst scheitern, wie
 bei `function`; in `task-examples.yaml` stehen Tests unter `answer:`.
 
+### unit_tests
+
+Tests als Datei im Workspace, mit dem Testwerkzeug der Sprache
+(`UnitTestsCheck`, »Testen«): minitest in Ruby, pytest in Python,
+`node --test` in JavaScript. Wie bei `tests` laufen sie gegen eine richtige
+Fassung der Datei, die sie testen, bei der alle bestehen müssen, und gegen
+fehlerhafte, von denen jede an mindestens einem Test scheitern muss. Die
+richtige Fassung ist eine Datei im Ordner der Aktivität; jede fehlerhafte ist
+eine einzige Änderung darin, und `TaskSpec.load_file` meldet eine, deren
+Text dort nicht genau einmal steht.
+
+```yaml
+check:
+  type: unit_tests
+  language: ruby                       # ruby, python oder javascript; je Sprache als Variante
+  file: notenrechner/test_noten.rb     # die Tests im Workspace
+  correct: loesung/noten.rb            # die richtige Fassung, im Ordner der Aktivität
+  mutants:                             # 1 bis 10, je eine Änderung in correct
+    - replace: ['points.between?(0, 15)', 'points.between?(0, 16)']
+      say: Eine Fassung, die 16 Punkte annimmt, besteht deine Tests.
+  timeout: 30                          # für alle Fassungen zusammen; Standard 5 + 3 je Fassung
+```
+
+Ein Skript läuft im Workspace als Gast, der `/workspace` lesen, aber nicht
+verändern kann: Es legt für jede Fassung einen Ordner in `/tmp` an, schreibt
+sie dort unter ihrem Namen hinein (`noten.rb`) mit einer Kopie der Tests und
+startet das Testwerkzeug, höchstens zehn Sekunden. Eine Fassung besteht,
+wenn das Werkzeug mit 0 endet; die eigene `noten.rb` der Lernenden läuft
+nie. Scheitert ein Test an der richtigen Fassung, zeigt »Details«, was das
+Werkzeug meldet; läuft noch kein Test, sagt die Rückmeldung, wie einer
+aussieht; kommt eine fehlerhafte durch, ersetzt ihr `say` die Rückmeldung.
+Beispiele in `task-examples.yaml` sind Dateien (`files:`); die für pytest
+warten auf einen Rechner, der es hat, das Workspace-Image
+(`src/scripts/task-examples-in-image.rb`).
+
 ### turtle
 
 Ein Programm, das zeichnet (`TurtleCheck`, Übung »Turtle«): Eine
