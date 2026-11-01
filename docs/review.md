@@ -205,7 +205,12 @@ image.
   among »Leserinnen und Leser«; »keine allgemein gültige Liste wie die zwölf
   Prinzipien der Animation« compared with something the page never mentions.
   The prediction »Was bedeutet der Punkt?« has its after block.
-- [ ] `showerjs`
+- [x] `showerjs` (1 November 2026, 85d9a643): page, included parts and cards
+  read; the prediction »Umbenennen ist nicht umwandeln« stood right above the
+  included part html#bilddateien, which says »Benennst du bild.png in
+  bild.webp um, bleibt es ein PNG«; the include now sits in the after block
+  (includes are expanded before AfterTask.mark). The template on
+  git.nhcham.org stays, as decided.
 - [ ] `latex`
 
 ### Web
