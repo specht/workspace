@@ -245,7 +245,7 @@ crop-element: #canvas
 </figure>
 </div>
 
-Die dritte Formel zeichnet das **Sierpinski-Dreieck**, ein Fraktal. `x & y` verknüpft die beiden Zahlen Bit für Bit: Ein Bit des Ergebnisses ist 1, wenn es in x **und** in y 1 ist. Das Pixel wird weiß (Farbe 12), wenn x und y keine einzige 1 an derselben Stelle haben. `?` und `:` sind ein Wenn-dann-sonst in einer Zeile. `x ^ y` in der vierten Formel ist das bitweise exklusive Oder.
+Die dritte Formel zeichnet das **Sierpiński-Dreieck**, ein Fraktal. `x & y` verknüpft die beiden Zahlen Bit für Bit: Ein Bit des Ergebnisses ist 1, wenn es in x **und** in y 1 ist. Das Pixel wird weiß (Farbe 12), wenn x und y keine einzige 1 an derselben Stelle haben. `?` und `:` sind ein Wenn-dann-sonst in einer Zeile. `x ^ y` in der vierten Formel ist das bitweise exklusive Oder.
 
 <div class='hint task'>
 <strong>Erfinde eigene Formeln.</strong> Was passiert, wenn du in der zweiten Formel <code>x</code> durch <code>x - 160</code> und <code>y</code> durch <code>y - 90</code> ersetzt? Wie bekommst du senkrechte Streifen, wie ein Schachbrett? Achte darauf, dass das Ergebnis zwischen 0 und 15 liegt.
