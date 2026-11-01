@@ -3184,6 +3184,26 @@ eich:
       - url: https://www.mozilla.org/en-US/about/history/
         quote: "The Mozilla project was created in 1998 with the release of the Netscape browser suite source code. … Firefox 1.0 was released in 2004 and became a big success."
 
+beck:
+  - text: Kent Beck (geboren 1961), US-amerikanischer Softwareentwickler.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Kent_Beck
+        quote: "Kent Beck (born 1961) is an American software engineer, author, and consultant"
+  - text: "So arbeitest du im Notenrechner, und so heißt es testgetriebene Entwicklung"
+    none: Workspace
+  - text: Beck machte sie bekannt; nach seinen Worten hat er sie in einem älteren Buch über das Programmieren wiederentdeckt.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Kent_Beck
+        quote: "According to Beck, he \"rediscovered\" TDD in an older programming book."
+  - text: Mit Erich Gamma brachte er das Testwerkzeug SUnit aus Smalltalk nach Java, als JUnit.
+    sources:
+      - url: https://en.wikipedia.org/wiki/XUnit
+        quote: "The SUnit framework was ported to Java by Kent Beck and Erich Gamma as JUnit which gained wide popularity."
+  - text: Nachbauten mit diesem Bauplan für andere Sprachen nennt man xUnit.
+    sources:
+      - url: https://en.wikipedia.org/wiki/XUnit
+        quote: "The term \"xUnit\" refers to any such adaptation where \"x\" is a placeholder for the language-specific prefix."
+
 gamma:
   - text: Erich Gamma (geboren 1961), Schweizer Informatiker.
     sources:

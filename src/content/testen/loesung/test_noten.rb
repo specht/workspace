@@ -34,12 +34,13 @@ class NotenTest < Minitest::Test
     assert_raises(ArgumentError) { abitur_grade(901) }
   end
 
+  # die Zulassung: Block I, Ergebnisse unter 5 Punkten, 0 Punkte
   def test_admitted
-    assert admitted?([10] * 20)                # genau 200 Punkte
-    refute admitted?([10] * 19 + [9])          # 199 Punkte
-    assert admitted?([4] * 7 + [12] * 15)      # 7 Defizite
-    refute admitted?([4] * 8 + [12] * 15)      # 8 Defizite
-    assert admitted?([5] * 8 + [12] * 15)      # 5 Punkte sind kein Defizit
-    refute admitted?([0] + [15] * 19)          # ein Kurs mit 0 Punkten
+    assert admitted?([5] * 36)                 # genau 200 Punkte in Block I
+    refute admitted?([5] * 35 + [4])           # 199 Punkte
+    assert admitted?([4] * 8 + [6] * 32)       # 8 von 40 unter 5 Punkten: genau 20 Prozent
+    refute admitted?([4] * 9 + [6] * 31)       # 9 von 40
+    assert admitted?([5] * 9 + [6] * 31)       # 5 Punkte liegen nicht unter 5
+    refute admitted?([0] + [15] * 35)          # ein Ergebnis mit 0 Punkten
   end
 end

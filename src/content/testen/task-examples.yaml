@@ -1,0 +1,98 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stufen in stufen/ sind der Stand nach jedem Kapitel; was ein Kapitel
+# verlangt, fehlt der Stufe davor. Das noten der Lernenden mit dem Fehler
+# liegt in beispiele/, als Kopie in src/static/testen/ zum Laden mit wget.
+format: 1
+activity: testen
+examples:
+  erster-test:
+    pass:
+      - { files: { notenrechner/test_noten.rb: stufen/1-erster-test/test_noten.rb } }
+    fail:
+      - { files: { notenrechner/test_noten.rb: { text: "require 'minitest/autorun'\nrequire_relative 'noten'\n" } } }
+    python:
+      pass:
+        - { files: { notenrechner/test_noten.py: stufen/1-erster-test/test_noten.py } }
+      fail:
+        - { files: { notenrechner/test_noten.py: { text: "from noten import grade\n" } } }
+    javascript:
+      pass:
+        - { files: { notenrechner/test_noten.js: stufen/1-erster-test/test_noten.js } }
+      fail:
+        - { files: { notenrechner/test_noten.js: { text: "const test = require('node:test');\nconst { grade } = require('./noten');\n" } } }
+  grade-tests:
+    pass:
+      - { files: { notenrechner/test_noten.rb: stufen/2-grade/test_noten.rb } }
+    fail:
+      - { files: { notenrechner/test_noten.rb: stufen/1-erster-test/test_noten.rb } }
+    python:
+      pass:
+        - { files: { notenrechner/test_noten.py: stufen/2-grade/test_noten.py } }
+      fail:
+        - { files: { notenrechner/test_noten.py: stufen/1-erster-test/test_noten.py } }
+    javascript:
+      pass:
+        - { files: { notenrechner/test_noten.js: stufen/2-grade/test_noten.js } }
+      fail:
+        - { files: { notenrechner/test_noten.js: stufen/1-erster-test/test_noten.js } }
+  abitur-tests:
+    pass:
+      - { files: { notenrechner/test_noten.rb: stufen/3-abitur/test_noten.rb } }
+    fail:
+      - { files: { notenrechner/test_noten.rb: stufen/2-grade/test_noten.rb } }
+    python:
+      pass:
+        - { files: { notenrechner/test_noten.py: stufen/3-abitur/test_noten.py } }
+      fail:
+        - { files: { notenrechner/test_noten.py: stufen/2-grade/test_noten.py } }
+    javascript:
+      pass:
+        - { files: { notenrechner/test_noten.js: stufen/3-abitur/test_noten.js } }
+      fail:
+        - { files: { notenrechner/test_noten.js: stufen/2-grade/test_noten.js } }
+  repariert:
+    pass:
+      - { files: { notenrechner/noten.rb: stufen/4-repariert/noten.rb } }
+    fail:
+      - { files: { notenrechner/noten.rb: beispiele/noten.rb } }
+    python:
+      pass:
+        - { files: { notenrechner/noten.py: stufen/4-repariert/noten.py } }
+      fail:
+        - { files: { notenrechner/noten.py: beispiele/noten.py } }
+    javascript:
+      pass:
+        - { files: { notenrechner/noten.js: stufen/4-repariert/noten.js } }
+      fail:
+        - { files: { notenrechner/noten.js: beispiele/noten.js } }
+  zulassung-tests:
+    pass:
+      - { files: { notenrechner/test_noten.rb: stufen/5-zulassung/test_noten.rb } }
+    fail:
+      - { files: { notenrechner/test_noten.rb: stufen/3-abitur/test_noten.rb } }
+    python:
+      pass:
+        - { files: { notenrechner/test_noten.py: stufen/5-zulassung/test_noten.py } }
+      fail:
+        - { files: { notenrechner/test_noten.py: stufen/3-abitur/test_noten.py } }
+    javascript:
+      pass:
+        - { files: { notenrechner/test_noten.js: stufen/5-zulassung/test_noten.js } }
+      fail:
+        - { files: { notenrechner/test_noten.js: stufen/3-abitur/test_noten.js } }
+  zulassung:
+    pass:
+      - { files: { notenrechner/noten.rb: loesung/noten.rb } }
+    fail:
+      - { files: { notenrechner/noten.rb: stufen/4-repariert/noten.rb } }
+    python:
+      pass:
+        - { files: { notenrechner/noten.py: loesung/noten.py } }
+      fail:
+        - { files: { notenrechner/noten.py: stufen/4-repariert/noten.py } }
+    javascript:
+      pass:
+        - { files: { notenrechner/noten.js: loesung/noten.js } }
+      fail:
+        - { files: { notenrechner/noten.js: stufen/4-repariert/noten.js } }

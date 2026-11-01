@@ -39,10 +39,11 @@ def test_abitur_grade_outside():
         abitur_grade(901)
 
 
+# die Zulassung: Block I, Ergebnisse unter 5 Punkten, 0 Punkte
 def test_admitted():
-    assert is_admitted([10] * 20)                    # genau 200 Punkte
-    assert not is_admitted([10] * 19 + [9])          # 199 Punkte
-    assert is_admitted([4] * 7 + [12] * 15)          # 7 Defizite
-    assert not is_admitted([4] * 8 + [12] * 15)      # 8 Defizite
-    assert is_admitted([5] * 8 + [12] * 15)          # 5 Punkte sind kein Defizit
-    assert not is_admitted([0] + [15] * 19)          # ein Kurs mit 0 Punkten
+    assert is_admitted([5] * 36)                     # genau 200 Punkte in Block I
+    assert not is_admitted([5] * 35 + [4])           # 199 Punkte
+    assert is_admitted([4] * 8 + [6] * 32)           # 8 von 40 unter 5 Punkten: genau 20 Prozent
+    assert not is_admitted([4] * 9 + [6] * 31)       # 9 von 40
+    assert is_admitted([5] * 9 + [6] * 31)           # 5 Punkte liegen nicht unter 5
+    assert not is_admitted([0] + [15] * 35)          # ein Ergebnis mit 0 Punkten

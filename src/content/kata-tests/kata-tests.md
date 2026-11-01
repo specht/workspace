@@ -68,6 +68,13 @@ hat, und Werte, die nicht ganz gewöhnlich sind (negative Zahlen, zwei
 gleiche). Ein Test, der nur das Erwartbare prüft, besteht auch mit vielen
 fehlerhaften Fassungen.
 
+Viele Sprachen haben ein Testwerkzeug mit `assert_equal` oder einem
+ähnlichen Namen. Den Bauplan dieser Werkzeuge brachte Kent Beck mit Erich Gamma
+nach Java, als JUnit; die Nachbauten für andere Sprachen heißen xUnit. Hier
+stellt die Prüfung `assert_equal` selbst bereit, ohne Testwerkzeug.
+
+_person(beck)
+
 Die Prüfung bringt die Funktion selbst mit; schreib sie nicht hinein, nur die
 Tests. Meldet die Prüfung, dass eine fehlerhafte Fassung besteht, sagt sie
 auch, was diese Fassung anders macht.

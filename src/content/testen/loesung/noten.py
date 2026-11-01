@@ -1,3 +1,5 @@
+import math
+
 # Der Notenrechner der Oberstufe: Punkte, Noten und der Schnitt im Abitur
 
 # Die Noten zu 0 bis 15 Punkten; der Index ist die Punktzahl
@@ -27,8 +29,12 @@ def abitur_grade(total):
     return max(tenths, 10) / 10
 
 
-# Zur Prüfung zugelassen (vereinfacht): in den Kursen zusammen mindestens
-# 200 Punkte, höchstens 7 Defizite und kein Kurs mit 0 Punkten
-def is_admitted(courses):
-    deficits = len([points for points in courses if is_deficit(points)])
-    return sum(courses) >= 200 and deficits <= 7 and 0 not in courses
+# Zur Abiturprüfung zugelassen, nach der Vereinbarung der KMK (Ziffer 9.5.7),
+# vereinfacht: jedes Ergebnis der Qualifikationsphase zählt einfach. Block I
+# hat mindestens 200 Punkte, höchstens 20 Prozent der Ergebnisse liegen unter
+# 5 Punkten, und keins hat 0 Punkte.
+def is_admitted(results):
+    # Block I: der Durchschnitt mal 40, ab ,5 aufgerundet
+    block_one = math.floor(sum(results) * 40 / len(results) + 0.5)
+    deficits = len([points for points in results if is_deficit(points)])
+    return block_one >= 200 and deficits * 5 <= len(results) and 0 not in results

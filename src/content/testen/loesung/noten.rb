@@ -30,9 +30,13 @@ def abitur_grade(total)
   [tenths, 10].max / 10.0
 end
 
-# Zur Prüfung zugelassen (vereinfacht): in den Kursen zusammen mindestens
-# 200 Punkte, höchstens 7 Defizite und kein Kurs mit 0 Punkten
-def admitted?(courses)
-  deficits = courses.count { |points| deficit?(points) }
-  courses.sum >= 200 && deficits <= 7 && !courses.include?(0)
+# Zur Abiturprüfung zugelassen, nach der Vereinbarung der KMK (Ziffer 9.5.7),
+# vereinfacht: jedes Ergebnis der Qualifikationsphase zählt einfach. Block I
+# hat mindestens 200 Punkte, höchstens 20 Prozent der Ergebnisse liegen unter
+# 5 Punkten, und keins hat 0 Punkte.
+def admitted?(results)
+  # Block I: der Durchschnitt mal 40, gerundet
+  block_one = (results.sum * 40.0 / results.size).round
+  deficits = results.count { |points| deficit?(points) }
+  block_one >= 200 && deficits * 5 <= results.size && !results.include?(0)
 end

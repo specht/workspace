@@ -261,6 +261,7 @@
   entries:
     - check-digits
     - supermarkt
+    - .testen
     - textadventure
     - class-quiz
 

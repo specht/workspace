@@ -1,0 +1,33 @@
+{
+  "screenshots": {
+    "rot-javascript.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cda6332d4114ddb90312111b86a62421b7b17796982c12b5ce30b7d85a8593a3",
+      "state_hash": "40b6e34433c9edb5d84ce67b2651fe03daac3d7722e9f82139e75b5e5f5b7e2e",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "rot-python.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cd7d8f36aaa266c2d1502a1f9735ff2ec886db5b8044acbf9c95caa2096fe13d",
+      "state_hash": "0ee93249a3613931ae2c9834da1b8451d099261a63c8d34e0b60415e0d8e877d",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "rot.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "543c89aae697e10f86ed34011f42ec95bb0531026fca969d71dbe0945ea100b3",
+      "state_hash": "b9aaf3ee5e1e6c4b96867a5e10012e53d57c2240ae70917b9a074eedc5e7847a",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "3bb2503278d6d81c008a31beb64e653feecc82ebd3c283c901f75701d9031f01",
+      "state_hash": "68a4a7ec64bb8799afa6eb7e4f9ef0cc889a51b85d4c17ac76bf0fa92f0cc0c4",
+      "workspace_look": "4.140.0-ls368",
+      "workspace_window": 560
+    }
+  },
+  "version": 1
+}

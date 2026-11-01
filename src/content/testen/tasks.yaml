@@ -1,0 +1,795 @@
+format: 1
+activity: testen
+tasks:
+  - id: erster-test
+    title: Dein erster Test
+    prompt: |
+      Schreib in `notenrechner/test_noten.rb` den Test von oben, der prüft,
+      dass 15 Punkte die Note `1+` sind, und lass ihn mit `ruby test_noten.rb`
+      laufen. Die Prüfung führt deinen Test mit einem richtigen `noten.rb` aus
+      und mit einem, das für jede Punktzahl die Note eines Punkts weniger
+      liefert.
+    file: notenrechner/test_noten.rb
+    check:
+      type: unit_tests
+      language: ruby
+      file: notenrechner/test_noten.rb
+      correct: loesung/noten.rb
+      mutants:
+        - replace: ['GRADES[points]', 'GRADES[points - 1]']
+          say: Dein Test besteht auch mit einem `noten.rb`, das für 15 Punkte `1` liefert. Prüft er mit `assert_equal`, dass `grade(15)` die Note `1+` ist?
+    hint:
+      - Die Datei beginnt mit zwei Zeilen `require`, dann kommt eine Klasse, die von `Minitest::Test` erbt, mit einer Methode, deren Name mit `test_` beginnt.
+      - In der Methode steht eine Zeile `assert_equal '1+', grade(15)`, zuerst der erwartete Wert, dann der Aufruf.
+    solution: |
+      ```ruby
+      require 'minitest/autorun'
+      require_relative 'noten'
+
+      class NotenTest < Minitest::Test
+        def test_grade_at_the_top
+          assert_equal '1+', grade(15)
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `notenrechner/test_noten.py` den Test von oben, der prüft,
+        dass 15 Punkte die Note `1+` sind, und lass ihn mit `pytest` laufen.
+        Die Prüfung führt deinen Test mit einem richtigen `noten.py` aus und
+        mit einem, das für jede Punktzahl die Note eines Punkts weniger
+        liefert.
+      file: notenrechner/test_noten.py
+      check:
+        type: unit_tests
+        language: python
+        file: notenrechner/test_noten.py
+        correct: loesung/noten.py
+        mutants:
+          - replace: ['GRADES[points]', 'GRADES[points - 1]']
+            say: Dein Test besteht auch mit einem `noten.py`, das für 15 Punkte `1` liefert. Prüft er mit `assert`, dass `grade(15)` die Note `"1+"` ist?
+      hint:
+        - Die Datei holt sich `grade` mit `from noten import grade`, dann kommt eine Funktion, deren Name mit `test_` beginnt.
+        - In der Funktion steht eine Zeile `assert grade(15) == "1+"`.
+      solution: |
+        ```python
+        from noten import grade
+
+
+        def test_grade_at_the_top():
+            assert grade(15) == "1+"
+        ```
+    javascript:
+      prompt: |
+        Schreib in `notenrechner/test_noten.js` den Test von oben, der prüft,
+        dass 15 Punkte die Note `1+` sind, und lass ihn mit
+        `node --test test_noten.js` laufen. Die Prüfung führt deinen Test mit
+        einem richtigen `noten.js` aus und mit einem, das für jede Punktzahl
+        die Note eines Punkts weniger liefert.
+      file: notenrechner/test_noten.js
+      check:
+        type: unit_tests
+        language: javascript
+        file: notenrechner/test_noten.js
+        correct: loesung/noten.js
+        mutants:
+          - replace: ['GRADES[points]', 'GRADES[points - 1]']
+            say: Dein Test besteht auch mit einem `noten.js`, das für 15 Punkte `1` liefert. Prüft er mit `assert.strictEqual`, dass `grade(15)` die Note `'1+'` ist?
+      hint:
+        - Die Datei holt sich `test`, `assert` und `grade` mit `require`, dann kommt ein Aufruf `test('…', () => { … })`.
+        - In der Funktion steht eine Zeile `assert.strictEqual(grade(15), '1+');`, zuerst der Aufruf, dann der erwartete Wert.
+      solution: |
+        ```javascript
+        const test = require('node:test');
+        const assert = require('node:assert');
+        const { grade } = require('./noten');
+
+        test('grade at the top', () => {
+          assert.strictEqual(grade(15), '1+');
+        });
+        ```
+
+  - id: rot
+    title: Ein Test, der scheitert
+    prediction: true
+    prompt: |
+      Angenommen, du änderst in deinem Test die erwartete Note von `1+` zu `1`
+      und lässt ihn noch einmal laufen. Was passiert?
+    check:
+      type: choice
+      options:
+        - Der Test besteht trotzdem, denn `grade` rechnet ja richtig.
+        - Der Test scheitert und nennt die erwartete Note `1`, die tatsächliche `1+` und die Zeile im Test.
+        - Das Testwerkzeug meldet einen Fehler in `noten`, in der Funktion `grade`.
+        - Der Test läuft gar nicht erst los, weil die Datei einen Fehler hat.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Der Test vergleicht, was `grade(15)` liefert, mit dem, was du hineinschreibst. Stimmen die beiden noch überein?
+      - when: { picked: 2 }
+        say: Das Testwerkzeug weiß nicht, wer recht hat, `noten` oder der Test. Es sagt nur, dass beide nicht zusammenpassen, und wo.
+      - when: { picked: 3 }
+        say: '`1` ist so gültig wie `1+`: Die Datei lässt sich lesen, der Test läuft. Was kommt heraus?'
+    solution: |
+      Der Test scheitert. Das Testwerkzeug nennt beide Werte und die Zeile des
+      Tests. Wer recht hat, entscheidet es nicht: Hier ist der Test falsch,
+      nicht `grade`.
+
+  - id: grenzen
+    title: Die Grenzen von grade
+    prompt: |
+      `grade` nimmt 0 bis 15 Punkte an und meldet für alles andere einen
+      Fehler. An welchen Punktzahlen liegen die Grenzen, an denen sich das
+      Verhalten ändert, auf beiden Seiten?
+    check:
+      type: choice
+      options: ['−1', '0', '1', '7', '14', '15', '16', '100']
+      correct: [0, 1, 5, 6]
+    feedback:
+      - when: { picked: 3 }
+        say: 7 liegt mitten in den Punkten, die es gibt. Was ändert sich dort?
+      - when: { picked: 7 }
+        say: 100 ist ein Fehler wie 16. Welche Punktzahl liegt gleich neben dem letzten gültigen Wert?
+    hint: Wo endet das, was es gibt, und wo beginnt das, was es nicht gibt? Eine Grenze hat zwei Seiten.
+    solution: |
+      −1 und 0 an der unteren Grenze, 15 und 16 an der oberen: Auf jeder
+      Seite liegt der letzte Wert der einen Klasse und der erste der anderen.
+
+  - id: grade-tests
+    title: Tests für grade
+    prompt: |
+      Schreib in `notenrechner/test_noten.rb` Tests für `grade`: an beiden
+      Enden, für Punktzahlen dazwischen und gleich neben den Enden, wo es einen
+      Fehler geben muss. Die Prüfung führt sie mit einem richtigen `noten.rb`
+      aus, mit dem alle bestehen müssen, und mit fünf fehlerhaften, von denen
+      jedes an mindestens einem Test scheitern muss.
+    file: notenrechner/test_noten.rb
+    check:
+      type: unit_tests
+      language: ruby
+      file: notenrechner/test_noten.rb
+      correct: loesung/noten.rb
+      mutants:
+        - replace: ['points.between?(0, 15)', 'points.between?(0, 16)']
+          say: Eine Fassung, die 16 Punkte annimmt, besteht deine Tests. Prüf auch gleich über dem oberen Ende, dort muss es einen Fehler geben.
+        - replace: ['points.between?(0, 15)', 'points.between?(1, 15)']
+          say: Eine Fassung, die 0 Punkte nicht annimmt, besteht deine Tests. Auch 0 Punkte sind eine Note, die 6.
+        - replace: ['points.between?(0, 15)', 'points.between?(-1, 15)']
+          say: Eine Fassung, die −1 Punkte annimmt, besteht deine Tests. Prüf auch gleich unter dem unteren Ende.
+        - replace: ["'4-', '4', '4+'", "'4', '4-', '4+'"]
+          say: 'Eine Fassung, die bei 4 und 5 Punkten die Noten vertauscht, besteht deine Tests. Bei 5 Punkten liegt eine Grenze, die zählt: Darunter ist ein Kurs ein Defizit.'
+        - replace: ['GRADES[points]', 'GRADES[points - 1]']
+          say: Eine Fassung, die die Note für einen Punkt weniger liefert, besteht deine Tests. Prüf, welche Note herauskommt, nicht nur, ob es einen Fehler gibt.
+    hint:
+      - 'Drei Arten von Tests: die Enden (0 und 15), etwas dazwischen und das, was es nicht gibt. Schreib für jede Art eine Methode.'
+      - Bei 5 Punkten liegt mitten im Bereich noch eine Grenze, die für die Oberstufe zählt. Welche Note gehört zu 5 Punkten?
+      - Für die Punkte, die es nicht gibt, steht der Aufruf in einem Block hinter `assert_raises(ArgumentError)`, wie oben bei `'zwölf'`.
+    solution: |
+      ```ruby
+      def test_grade_at_the_ends
+        assert_equal '6', grade(0)
+        assert_equal '1+', grade(15)
+      end
+
+      def test_grade_in_between
+        assert_equal '1-', grade(13)
+        assert_equal '4', grade(5)
+      end
+
+      def test_grade_outside
+        assert_raises(ArgumentError) { grade(-1) }
+        assert_raises(ArgumentError) { grade(16) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `notenrechner/test_noten.py` Tests für `grade`: an beiden
+        Enden, für Punktzahlen dazwischen und gleich neben den Enden, wo es
+        einen Fehler geben muss. Die Prüfung führt sie mit einem richtigen
+        `noten.py` aus, mit dem alle bestehen müssen, und mit fünf
+        fehlerhaften, von denen jedes an mindestens einem Test scheitern muss.
+      file: notenrechner/test_noten.py
+      check:
+        type: unit_tests
+        language: python
+        file: notenrechner/test_noten.py
+        correct: loesung/noten.py
+        mutants:
+          - replace: ['0 <= points <= 15', '0 <= points <= 16']
+            say: Eine Fassung, die 16 Punkte annimmt, besteht deine Tests. Prüf auch gleich über dem oberen Ende, dort muss es einen Fehler geben.
+          - replace: ['0 <= points <= 15', '1 <= points <= 15']
+            say: Eine Fassung, die 0 Punkte nicht annimmt, besteht deine Tests. Auch 0 Punkte sind eine Note, die 6.
+          - replace: ['0 <= points <= 15', '-1 <= points <= 15']
+            say: Eine Fassung, die −1 Punkte annimmt, besteht deine Tests. Prüf auch gleich unter dem unteren Ende.
+          - replace: ['"4-", "4", "4+"', '"4", "4-", "4+"']
+            say: 'Eine Fassung, die bei 4 und 5 Punkten die Noten vertauscht, besteht deine Tests. Bei 5 Punkten liegt eine Grenze, die zählt: Darunter ist ein Kurs ein Defizit.'
+          - replace: ['GRADES[points]', 'GRADES[points - 1]']
+            say: Eine Fassung, die die Note für einen Punkt weniger liefert, besteht deine Tests. Prüf, welche Note herauskommt, nicht nur, ob es einen Fehler gibt.
+      hint:
+        - 'Drei Arten von Tests: die Enden (0 und 15), etwas dazwischen und das, was es nicht gibt. Schreib für jede Art eine Funktion.'
+        - Bei 5 Punkten liegt mitten im Bereich noch eine Grenze, die für die Oberstufe zählt. Welche Note gehört zu 5 Punkten?
+        - Für die Punkte, die es nicht gibt, steht der Aufruf in einem Block `with pytest.raises(ValueError):`, wie oben bei `"zwölf"`.
+      solution: |
+        ```python
+        def test_grade_at_the_ends():
+            assert grade(0) == "6"
+            assert grade(15) == "1+"
+
+
+        def test_grade_in_between():
+            assert grade(13) == "1-"
+            assert grade(5) == "4"
+
+
+        def test_grade_outside():
+            with pytest.raises(ValueError):
+                grade(-1)
+            with pytest.raises(ValueError):
+                grade(16)
+        ```
+    javascript:
+      prompt: |
+        Schreib in `notenrechner/test_noten.js` Tests für `grade`: an beiden
+        Enden, für Punktzahlen dazwischen und gleich neben den Enden, wo es
+        einen Fehler geben muss. Die Prüfung führt sie mit einem richtigen
+        `noten.js` aus, mit dem alle bestehen müssen, und mit fünf
+        fehlerhaften, von denen jedes an mindestens einem Test scheitern muss.
+      file: notenrechner/test_noten.js
+      check:
+        type: unit_tests
+        language: javascript
+        file: notenrechner/test_noten.js
+        correct: loesung/noten.js
+        mutants:
+          - replace: ['points > 15', 'points > 16']
+            say: Eine Fassung, die 16 Punkte annimmt, besteht deine Tests. Prüf auch gleich über dem oberen Ende, dort muss es einen Fehler geben.
+          - replace: ['points < 0 ||', 'points < 1 ||']
+            say: Eine Fassung, die 0 Punkte nicht annimmt, besteht deine Tests. Auch 0 Punkte sind eine Note, die 6.
+          - replace: ['points < 0 ||', 'points < -1 ||']
+            say: Eine Fassung, die −1 Punkte annimmt, besteht deine Tests. Prüf auch gleich unter dem unteren Ende.
+          - replace: ["'4-', '4', '4+'", "'4', '4-', '4+'"]
+            say: 'Eine Fassung, die bei 4 und 5 Punkten die Noten vertauscht, besteht deine Tests. Bei 5 Punkten liegt eine Grenze, die zählt: Darunter ist ein Kurs ein Defizit.'
+          - replace: ['GRADES[points]', 'GRADES[points - 1]']
+            say: Eine Fassung, die die Note für einen Punkt weniger liefert, besteht deine Tests. Prüf, welche Note herauskommt, nicht nur, ob es einen Fehler gibt.
+      hint:
+        - 'Drei Arten von Tests: die Enden (0 und 15), etwas dazwischen und das, was es nicht gibt. Schreib für jede Art einen Aufruf von `test`.'
+        - Bei 5 Punkten liegt mitten im Bereich noch eine Grenze, die für die Oberstufe zählt. Welche Note gehört zu 5 Punkten?
+        - Für die Punkte, die es nicht gibt, steht der Aufruf in einer Funktion in `assert.throws(() => …, RangeError)`, wie oben bei `'zwölf'`.
+      solution: |
+        ```javascript
+        test('grade at the ends', () => {
+          assert.strictEqual(grade(0), '6');
+          assert.strictEqual(grade(15), '1+');
+        });
+
+        test('grade in between', () => {
+          assert.strictEqual(grade(13), '1-');
+          assert.strictEqual(grade(5), '4');
+        });
+
+        test('grade outside', () => {
+          assert.throws(() => grade(-1), RangeError);
+          assert.throws(() => grade(16), RangeError);
+        });
+        ```
+
+  - id: runden
+    title: 823 Punkte
+    prediction: true
+    prompt: |
+      Nach der Tabelle der KMK sind 823 Punkte eine 1,0. Was liefert
+      `abitur_grade(823)` aus `noten`, so wie die Datei jetzt ist? Rechne mit
+      der Zeile, die dort steht.
+    check:
+      type: choice
+      options: ['`1.0`', '`1.1`', '`1.2`', 'einen Fehler, weil 823 nicht in der Tabelle steht']
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 17/3 − 823/180 ist ungefähr 1,094. Was macht `round` daraus, auf eine Nachkommastelle?
+      - when: { picked: 2 }
+        say: 17/3 − 823/180 ist ungefähr 1,094. Wohin rundet man das, auf eine Nachkommastelle?
+      - when: { picked: 3 }
+        say: '`abitur_grade` kennt die Tabelle nicht, nur die Formel, und meldet nur unter 300 und über 900 Punkten einen Fehler.'
+    solution: |
+      `1.1`: 17/3 − 823/180 ist ungefähr 1,094, und gerundet ist das 1,1. Die
+      Tabelle schneidet nach der ersten Nachkommastelle ab und kommt auf 1,0.
+    javascript:
+      prompt: |
+        Nach der Tabelle der KMK sind 823 Punkte eine 1,0. Was liefert
+        `abiturGrade(823)` aus `noten`, so wie die Datei jetzt ist? Rechne mit
+        der Zeile, die dort steht.
+      feedback:
+        - when: { picked: 0 }
+          say: 17/3 − 823/180 ist ungefähr 1,094, mal 10 also 10,94. Was macht `Math.round` daraus?
+        - when: { picked: 2 }
+          say: 17/3 − 823/180 ist ungefähr 1,094. Wohin rundet man das, auf eine Nachkommastelle?
+        - when: { picked: 3 }
+          say: '`abiturGrade` kennt die Tabelle nicht, nur die Formel, und meldet nur unter 300 und über 900 Punkten einen Fehler.'
+
+  - id: abitur-tests
+    title: Tests für den Abi-Schnitt
+    prompt: |
+      Schreib in `notenrechner/test_noten.rb` Tests für `abitur_grade` nach der
+      Tabelle der KMK: an Grenzen der Tabelle, auf beiden Seiten, an beiden
+      Enden und gleich daneben. Mit deinem `noten.rb` scheitern sie, und das
+      sollen sie auch. Die Prüfung führt sie mit einem richtigen `noten.rb`
+      aus, mit dem alle bestehen müssen, und mit fünf fehlerhaften, darunter
+      dem, das rundet.
+    file: notenrechner/test_noten.rb
+    check:
+      type: unit_tests
+      language: ruby
+      file: notenrechner/test_noten.rb
+      correct: loesung/noten.rb
+      mutants:
+        - replace: ['tenths = (1020 - total) / 18', 'tenths = ((17.0 / 3 - total / 180.0) * 10).round']
+          say: 'Eine Fassung, die rundet, statt abzuschneiden, besteht deine Tests: der Fehler aus `noten.rb`. Nimm Punktzahlen aus der Tabelle, bei denen Runden und Abschneiden verschiedene Noten ergeben.'
+        - replace: ['[tenths, 10].max', 'tenths']
+          say: Eine Fassung, bei der 900 Punkte eine 0,6 ergeben, besteht deine Tests. Prüf auch das obere Ende der Tabelle.
+        - replace: ['tenths = (1020', 'tenths = (1021']
+          say: Eine Fassung, in der jede Note einen Punkt später beginnt, besteht deine Tests. Prüf genau an einer Grenze der Tabelle, auf beiden Seiten.
+        - replace: ['total.between?(300, 900)', 'total.between?(299, 900)']
+          say: Eine Fassung, die 299 Punkte annimmt, besteht deine Tests. Unter 300 Punkten gibt es keine Durchschnittsnote.
+        - replace: ['total.between?(300, 900)', 'total.between?(300, 901)']
+          say: Eine Fassung, die 901 Punkte annimmt, besteht deine Tests. Mehr als 900 Punkte gibt es nicht.
+    hint:
+      - Such in der Tabelle eine Grenze, an der eine neue Note beginnt. Welche zwei Punktzahlen liegen direkt an ihr?
+      - Die Enden der Tabelle sind 900 und 300 Punkte; gleich daneben liegen 901 und 299, wo es einen Fehler geben muss.
+      - '`assert_equal 1.0, abitur_grade(823)` prüft eine Grenze von der einen Seite, `assert_equal 1.1, abitur_grade(822)` von der anderen.'
+    solution: |
+      ```ruby
+      def test_abitur_grade_at_the_boundaries
+        assert_equal 1.0, abitur_grade(900)
+        assert_equal 1.0, abitur_grade(823)
+        assert_equal 1.1, abitur_grade(822)
+        assert_equal 1.1, abitur_grade(805)
+        assert_equal 1.2, abitur_grade(804)
+        assert_equal 4.0, abitur_grade(300)
+      end
+
+      def test_abitur_grade_outside
+        assert_raises(ArgumentError) { abitur_grade(299) }
+        assert_raises(ArgumentError) { abitur_grade(901) }
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `notenrechner/test_noten.py` Tests für `abitur_grade` nach
+        der Tabelle der KMK: an Grenzen der Tabelle, auf beiden Seiten, an
+        beiden Enden und gleich daneben. Mit deinem `noten.py` scheitern sie,
+        und das sollen sie auch. Die Prüfung führt sie mit einem richtigen
+        `noten.py` aus, mit dem alle bestehen müssen, und mit fünf
+        fehlerhaften, darunter dem, das rundet.
+      file: notenrechner/test_noten.py
+      check:
+        type: unit_tests
+        language: python
+        file: notenrechner/test_noten.py
+        correct: loesung/noten.py
+        mutants:
+          - replace: ['tenths = (1020 - total) // 18', 'tenths = round((17 / 3 - total / 180) * 10)']
+            say: 'Eine Fassung, die rundet, statt abzuschneiden, besteht deine Tests: der Fehler aus `noten.py`. Nimm Punktzahlen aus der Tabelle, bei denen Runden und Abschneiden verschiedene Noten ergeben.'
+          - replace: ['max(tenths, 10)', 'tenths']
+            say: Eine Fassung, bei der 900 Punkte eine 0,6 ergeben, besteht deine Tests. Prüf auch das obere Ende der Tabelle.
+          - replace: ['tenths = (1020', 'tenths = (1021']
+            say: Eine Fassung, in der jede Note einen Punkt später beginnt, besteht deine Tests. Prüf genau an einer Grenze der Tabelle, auf beiden Seiten.
+          - replace: ['300 <= total <= 900', '299 <= total <= 900']
+            say: Eine Fassung, die 299 Punkte annimmt, besteht deine Tests. Unter 300 Punkten gibt es keine Durchschnittsnote.
+          - replace: ['300 <= total <= 900', '300 <= total <= 901']
+            say: Eine Fassung, die 901 Punkte annimmt, besteht deine Tests. Mehr als 900 Punkte gibt es nicht.
+      hint:
+        - Such in der Tabelle eine Grenze, an der eine neue Note beginnt. Welche zwei Punktzahlen liegen direkt an ihr?
+        - Die Enden der Tabelle sind 900 und 300 Punkte; gleich daneben liegen 901 und 299, wo es einen Fehler geben muss.
+        - '`assert abitur_grade(823) == 1.0` prüft eine Grenze von der einen Seite, `assert abitur_grade(822) == 1.1` von der anderen.'
+      solution: |
+        ```python
+        def test_abitur_grade_at_the_boundaries():
+            assert abitur_grade(900) == 1.0
+            assert abitur_grade(823) == 1.0
+            assert abitur_grade(822) == 1.1
+            assert abitur_grade(805) == 1.1
+            assert abitur_grade(804) == 1.2
+            assert abitur_grade(300) == 4.0
+
+
+        def test_abitur_grade_outside():
+            with pytest.raises(ValueError):
+                abitur_grade(299)
+            with pytest.raises(ValueError):
+                abitur_grade(901)
+        ```
+    javascript:
+      prompt: |
+        Schreib in `notenrechner/test_noten.js` Tests für `abiturGrade` nach
+        der Tabelle der KMK: an Grenzen der Tabelle, auf beiden Seiten, an
+        beiden Enden und gleich daneben. Mit deinem `noten.js` scheitern sie,
+        und das sollen sie auch. Die Prüfung führt sie mit einem richtigen
+        `noten.js` aus, mit dem alle bestehen müssen, und mit fünf
+        fehlerhaften, darunter dem, das rundet.
+      file: notenrechner/test_noten.js
+      check:
+        type: unit_tests
+        language: javascript
+        file: notenrechner/test_noten.js
+        correct: loesung/noten.js
+        mutants:
+          - replace: ['Math.floor((1020 - total) / 18)', 'Math.round((17 / 3 - total / 180) * 10)']
+            say: 'Eine Fassung, die rundet, statt abzuschneiden, besteht deine Tests: der Fehler aus `noten.js`. Nimm Punktzahlen aus der Tabelle, bei denen Runden und Abschneiden verschiedene Noten ergeben.'
+          - replace: ['Math.max(tenths, 10)', 'tenths']
+            say: Eine Fassung, bei der 900 Punkte eine 0,6 ergeben, besteht deine Tests. Prüf auch das obere Ende der Tabelle.
+          - replace: ['Math.floor((1020', 'Math.floor((1021']
+            say: Eine Fassung, in der jede Note einen Punkt später beginnt, besteht deine Tests. Prüf genau an einer Grenze der Tabelle, auf beiden Seiten.
+          - replace: ['total < 300', 'total < 299']
+            say: Eine Fassung, die 299 Punkte annimmt, besteht deine Tests. Unter 300 Punkten gibt es keine Durchschnittsnote.
+          - replace: ['total > 900', 'total > 901']
+            say: Eine Fassung, die 901 Punkte annimmt, besteht deine Tests. Mehr als 900 Punkte gibt es nicht.
+      hint:
+        - Such in der Tabelle eine Grenze, an der eine neue Note beginnt. Welche zwei Punktzahlen liegen direkt an ihr?
+        - Die Enden der Tabelle sind 900 und 300 Punkte; gleich daneben liegen 901 und 299, wo es einen Fehler geben muss.
+        - '`assert.strictEqual(abiturGrade(823), 1.0)` prüft eine Grenze von der einen Seite, `assert.strictEqual(abiturGrade(822), 1.1)` von der anderen.'
+      solution: |
+        ```javascript
+        test('abiturGrade at the boundaries', () => {
+          assert.strictEqual(abiturGrade(900), 1.0);
+          assert.strictEqual(abiturGrade(823), 1.0);
+          assert.strictEqual(abiturGrade(822), 1.1);
+          assert.strictEqual(abiturGrade(805), 1.1);
+          assert.strictEqual(abiturGrade(804), 1.2);
+          assert.strictEqual(abiturGrade(300), 4.0);
+        });
+
+        test('abiturGrade outside', () => {
+          assert.throws(() => abiturGrade(299), RangeError);
+          assert.throws(() => abiturGrade(901), RangeError);
+        });
+        ```
+
+  - id: repariert
+    title: Der Fehler ist weg
+    prompt: |
+      Ändere `abitur_grade` in `notenrechner/noten.rb` so, dass es nach der
+      ersten Nachkommastelle abschneidet, statt zu runden, bis alle deine
+      Tests bestehen. Die Prüfung ruft `abitur_grade` mit sieben Punktzahlen
+      aus der Tabelle auf.
+    file: notenrechner/noten.rb
+    check:
+      type: ruby
+      file: notenrechner/noten.rb
+      cases:
+        - call: abitur_grade(805)
+          expect: 1.1
+          say: Bei 805 Punkten ergibt die Formel 1,194; abgeschnitten ist das 1,1.
+        - call: abitur_grade(823)
+          expect: 1.0
+        - abitur_grade(822): 1.1
+        - abitur_grade(787): 1.2
+        - call: abitur_grade(900)
+          expect: 1.0
+          say: Besser als 1,0 gibt es nicht, auch wenn die Formel bei 900 Punkten 0,67 ergibt.
+        - abitur_grade(301): 3.9
+        - abitur_grade(300): 4.0
+    hint:
+      - 'Runden und Abschneiden unterscheiden sich, wenn die zweite Nachkommastelle 5 oder mehr ist: 1,194 wird gerundet 1,2, abgeschnitten 1,1.'
+      - Abschneiden auf eine Nachkommastelle heißt mal 10 rechnen, nach unten runden (`floor`) und wieder durch 10 teilen. Ruby kann das auch in einem Schritt, `floor(1)`.
+      - 'Es geht auch ganz ohne Kommazahlen: Die Note in Zehnteln ist `(1020 - total) / 18`, ganzzahlig geteilt. Prüf das mit einer Punktzahl aus der Tabelle nach.'
+    solution: |
+      ```ruby
+      # in Zehnteln: (1020 - total) / 18, ganzzahlig geteilt, also abgeschnitten
+      tenths = (1020 - total) / 18
+      [tenths, 10].max / 10.0
+      ```
+
+      Mit `(17.0 / 3 - total / 180.0).floor(1)` und danach
+      `[average, 1.0].max` stimmt es auch.
+    python:
+      prompt: |
+        Ändere `abitur_grade` in `notenrechner/noten.py` so, dass es nach der
+        ersten Nachkommastelle abschneidet, statt zu runden, bis alle deine
+        Tests bestehen. Die Prüfung ruft `abitur_grade` mit sieben Punktzahlen
+        aus der Tabelle auf.
+      file: notenrechner/noten.py
+      check:
+        type: python
+        file: notenrechner/noten.py
+        cases:
+          - call: abitur_grade(805)
+            expect: 1.1
+            say: Bei 805 Punkten ergibt die Formel 1,194; abgeschnitten ist das 1,1.
+          - call: abitur_grade(823)
+            expect: 1.0
+          - abitur_grade(822): 1.1
+          - abitur_grade(787): 1.2
+          - call: abitur_grade(900)
+            expect: 1.0
+            say: Besser als 1,0 gibt es nicht, auch wenn die Formel bei 900 Punkten 0,67 ergibt.
+          - abitur_grade(301): 3.9
+          - abitur_grade(300): 4.0
+      hint:
+        - 'Runden und Abschneiden unterscheiden sich, wenn die zweite Nachkommastelle 5 oder mehr ist: 1,194 wird gerundet 1,2, abgeschnitten 1,1.'
+        - Abschneiden auf eine Nachkommastelle heißt mal 10 rechnen, nach unten runden (`math.floor`) und wieder durch 10 teilen.
+        - 'Es geht auch ganz ohne Kommazahlen: Die Note in Zehnteln ist `(1020 - total) // 18`. Prüf das mit einer Punktzahl aus der Tabelle nach.'
+      solution: |
+        ```python
+        # in Zehnteln: (1020 - total) // 18, ganzzahlig geteilt, also abgeschnitten
+        tenths = (1020 - total) // 18
+        return max(tenths, 10) / 10
+        ```
+
+        Mit `math.floor((17 / 3 - total / 180) * 10) / 10` und danach
+        `max(average, 1.0)` stimmt es auch.
+    javascript:
+      prompt: |
+        Ändere `abiturGrade` in `notenrechner/noten.js` so, dass es nach der
+        ersten Nachkommastelle abschneidet, statt zu runden, bis alle deine
+        Tests bestehen. Die Prüfung ruft `abiturGrade` mit sieben Punktzahlen
+        aus der Tabelle auf.
+      file: notenrechner/noten.js
+      check:
+        type: javascript
+        file: notenrechner/noten.js
+        cases:
+          - call: abiturGrade(805)
+            expect: 1.1
+            say: Bei 805 Punkten ergibt die Formel 1,194; abgeschnitten ist das 1,1.
+          - call: abiturGrade(823)
+            expect: 1.0
+          - abiturGrade(822): 1.1
+          - abiturGrade(787): 1.2
+          - call: abiturGrade(900)
+            expect: 1.0
+            say: Besser als 1,0 gibt es nicht, auch wenn die Formel bei 900 Punkten 0,67 ergibt.
+          - abiturGrade(301): 3.9
+          - abiturGrade(300): 4.0
+      hint:
+        - 'Runden und Abschneiden unterscheiden sich, wenn die zweite Nachkommastelle 5 oder mehr ist: 1,194 wird gerundet 1,2, abgeschnitten 1,1.'
+        - Abschneiden auf eine Nachkommastelle heißt mal 10 rechnen, nach unten runden (`Math.floor` statt `Math.round`) und wieder durch 10 teilen.
+        - 'Es geht auch ganz ohne Kommazahlen: Die Note in Zehnteln ist `Math.floor((1020 - total) / 18)`. Prüf das mit einer Punktzahl aus der Tabelle nach.'
+      solution: |
+        ```javascript
+        // in Zehnteln: (1020 - total) / 18, nach unten abgeschnitten
+        const tenths = Math.floor((1020 - total) / 18);
+        return Math.max(tenths, 10) / 10;
+        ```
+
+        Mit `Math.floor((17 / 3 - total / 180) * 10) / 10` statt
+        `Math.round` stimmt es auch.
+
+  - id: zulassung-tests
+    title: Zuerst die Tests
+    prompt: |
+      Schreib in `notenrechner/test_noten.rb` Tests für `admitted?`, bevor es
+      die Methode gibt: für Block I, für die Ergebnisse unter 5 Punkten und für
+      0 Punkte, jeweils an der Grenze. Mit deinem `noten.rb` scheitern sie. Die
+      Prüfung führt sie mit einem richtigen `noten.rb` aus, mit dem alle
+      bestehen müssen, und mit fünf fehlerhaften.
+    file: notenrechner/test_noten.rb
+    check:
+      type: unit_tests
+      language: ruby
+      file: notenrechner/test_noten.rb
+      correct: loesung/noten.rb
+      mutants:
+        - replace: ['block_one >= 200', 'block_one > 200']
+          say: 'Eine Fassung, die erst ab 201 Punkten in Block I zulässt, besteht deine Tests. Prüf mit genau 200 Punkten: Welcher Durchschnitt ergibt mal 40 genau 200?'
+        - replace: ['deficits * 5 <= results.size', 'deficits * 5 < results.size']
+          say: Eine Fassung, die bei genau 20 Prozent Ergebnissen unter 5 Punkten nicht zulässt, besteht deine Tests. Bei 40 Ergebnissen sind 20 Prozent genau 8.
+        - replace: [' && !results.include?(0)', '']
+          say: Eine Fassung, die ein Ergebnis mit 0 Punkten durchgehen lässt, besteht deine Tests.
+        - replace: ['points < 5', 'points <= 5']
+          say: Eine Fassung, die 5 Punkte schon zu den Ergebnissen unter 5 Punkten zählt, besteht deine Tests.
+        - replace: ['deficits * 5', 'deficits * 4']
+          say: Eine Fassung, die 25 statt 20 Prozent Ergebnisse unter 5 Punkten erlaubt, besteht deine Tests. Prüf auch knapp über der Grenze.
+    hint:
+      - 'Für jede der drei Regeln zwei Tests: einer, der gerade noch zugelassen wird, und einer, der gerade nicht mehr zugelassen wird.'
+      - 'Block I: 36 Ergebnisse mit je 5 Punkten sind im Durchschnitt 5, mal 40 genau 200. Mit einer 4 statt einer 5 reicht es nicht mehr. `[5] * 36` schreibt die 36 Ergebnisse kurz.'
+      - 'Die 20 Prozent: Bei 40 Ergebnissen dürfen 8 unter 5 Punkten liegen, 9 nicht. Die übrigen brauchen genug Punkte, damit Block I nicht der Grund ist: `[4] * 8 + [6] * 32`.'
+    solution: |
+      ```ruby
+      def test_admitted
+        assert admitted?([5] * 36)                 # genau 200 Punkte in Block I
+        refute admitted?([5] * 35 + [4])           # 199 Punkte
+        assert admitted?([4] * 8 + [6] * 32)       # 8 von 40 unter 5 Punkten: genau 20 Prozent
+        refute admitted?([4] * 9 + [6] * 31)       # 9 von 40
+        assert admitted?([5] * 9 + [6] * 31)       # 5 Punkte liegen nicht unter 5
+        refute admitted?([0] + [15] * 35)          # ein Ergebnis mit 0 Punkten
+      end
+      ```
+    python:
+      prompt: |
+        Schreib in `notenrechner/test_noten.py` Tests für `is_admitted`, bevor
+        es die Funktion gibt: für Block I, für die Ergebnisse unter 5 Punkten
+        und für 0 Punkte, jeweils an der Grenze. Mit deinem `noten.py`
+        scheitern sie. Die Prüfung führt sie mit einem richtigen `noten.py` aus,
+        mit dem alle bestehen müssen, und mit fünf fehlerhaften.
+      file: notenrechner/test_noten.py
+      check:
+        type: unit_tests
+        language: python
+        file: notenrechner/test_noten.py
+        correct: loesung/noten.py
+        mutants:
+          - replace: ['block_one >= 200', 'block_one > 200']
+            say: 'Eine Fassung, die erst ab 201 Punkten in Block I zulässt, besteht deine Tests. Prüf mit genau 200 Punkten: Welcher Durchschnitt ergibt mal 40 genau 200?'
+          - replace: ['deficits * 5 <= len(results)', 'deficits * 5 < len(results)']
+            say: Eine Fassung, die bei genau 20 Prozent Ergebnissen unter 5 Punkten nicht zulässt, besteht deine Tests. Bei 40 Ergebnissen sind 20 Prozent genau 8.
+          - replace: [' and 0 not in results', '']
+            say: Eine Fassung, die ein Ergebnis mit 0 Punkten durchgehen lässt, besteht deine Tests.
+          - replace: ['points < 5', 'points <= 5']
+            say: Eine Fassung, die 5 Punkte schon zu den Ergebnissen unter 5 Punkten zählt, besteht deine Tests.
+          - replace: ['deficits * 5', 'deficits * 4']
+            say: Eine Fassung, die 25 statt 20 Prozent Ergebnisse unter 5 Punkten erlaubt, besteht deine Tests. Prüf auch knapp über der Grenze.
+      hint:
+        - 'Für jede der drei Regeln zwei Tests: einer, der gerade noch zugelassen wird, und einer, der gerade nicht mehr zugelassen wird.'
+        - 'Block I: 36 Ergebnisse mit je 5 Punkten sind im Durchschnitt 5, mal 40 genau 200. Mit einer 4 statt einer 5 reicht es nicht mehr. `[5] * 36` schreibt die 36 Ergebnisse kurz.'
+        - 'Die 20 Prozent: Bei 40 Ergebnissen dürfen 8 unter 5 Punkten liegen, 9 nicht. Die übrigen brauchen genug Punkte, damit Block I nicht der Grund ist: `[4] * 8 + [6] * 32`.'
+      solution: |
+        ```python
+        def test_admitted():
+            assert is_admitted([5] * 36)                     # genau 200 Punkte in Block I
+            assert not is_admitted([5] * 35 + [4])           # 199 Punkte
+            assert is_admitted([4] * 8 + [6] * 32)           # 8 von 40 unter 5 Punkten: genau 20 Prozent
+            assert not is_admitted([4] * 9 + [6] * 31)       # 9 von 40
+            assert is_admitted([5] * 9 + [6] * 31)           # 5 Punkte liegen nicht unter 5
+            assert not is_admitted([0] + [15] * 35)          # ein Ergebnis mit 0 Punkten
+        ```
+    javascript:
+      prompt: |
+        Schreib in `notenrechner/test_noten.js` Tests für `isAdmitted`, bevor
+        es die Funktion gibt: für Block I, für die Ergebnisse unter 5 Punkten
+        und für 0 Punkte, jeweils an der Grenze. Mit deinem `noten.js`
+        scheitern sie. Die Prüfung führt sie mit einem richtigen `noten.js` aus,
+        mit dem alle bestehen müssen, und mit fünf fehlerhaften.
+      file: notenrechner/test_noten.js
+      check:
+        type: unit_tests
+        language: javascript
+        file: notenrechner/test_noten.js
+        correct: loesung/noten.js
+        mutants:
+          - replace: ['blockOne >= 200', 'blockOne > 200']
+            say: 'Eine Fassung, die erst ab 201 Punkten in Block I zulässt, besteht deine Tests. Prüf mit genau 200 Punkten: Welcher Durchschnitt ergibt mal 40 genau 200?'
+          - replace: ['deficits * 5 <= results.length', 'deficits * 5 < results.length']
+            say: Eine Fassung, die bei genau 20 Prozent Ergebnissen unter 5 Punkten nicht zulässt, besteht deine Tests. Bei 40 Ergebnissen sind 20 Prozent genau 8.
+          - replace: [' && !results.includes(0)', '']
+            say: Eine Fassung, die ein Ergebnis mit 0 Punkten durchgehen lässt, besteht deine Tests.
+          - replace: ['points < 5', 'points <= 5']
+            say: Eine Fassung, die 5 Punkte schon zu den Ergebnissen unter 5 Punkten zählt, besteht deine Tests.
+          - replace: ['deficits * 5', 'deficits * 4']
+            say: Eine Fassung, die 25 statt 20 Prozent Ergebnisse unter 5 Punkten erlaubt, besteht deine Tests. Prüf auch knapp über der Grenze.
+      hint:
+        - 'Für jede der drei Regeln zwei Tests: einer, der gerade noch zugelassen wird, und einer, der gerade nicht mehr zugelassen wird.'
+        - 'Block I: 36 Ergebnisse mit je 5 Punkten sind im Durchschnitt 5, mal 40 genau 200. Mit einer 4 statt einer 5 reicht es nicht mehr. `Array(36).fill(5)` schreibt die 36 Ergebnisse kurz.'
+        - 'Die 20 Prozent: Bei 40 Ergebnissen dürfen 8 unter 5 Punkten liegen, 9 nicht. Die übrigen brauchen genug Punkte, damit Block I nicht der Grund ist: `[...Array(8).fill(4), ...Array(32).fill(6)]`.'
+      solution: |
+        ```javascript
+        // count Ergebnisse mit je points Punkten
+        const results = (points, count) => Array(count).fill(points);
+
+        test('isAdmitted', () => {
+          assert.ok(isAdmitted(results(5, 36)));                                  // genau 200 Punkte in Block I
+          assert.ok(!isAdmitted([...results(5, 35), 4]));                         // 199 Punkte
+          assert.ok(isAdmitted([...results(4, 8), ...results(6, 32)]));           // 8 von 40 unter 5 Punkten: genau 20 Prozent
+          assert.ok(!isAdmitted([...results(4, 9), ...results(6, 31)]));          // 9 von 40
+          assert.ok(isAdmitted([...results(5, 9), ...results(6, 31)]));           // 5 Punkte liegen nicht unter 5
+          assert.ok(!isAdmitted([0, ...results(15, 35)]));                        // ein Ergebnis mit 0 Punkten
+        });
+        ```
+
+  - id: zulassung
+    title: Dann der Code
+    prompt: |
+      Schreib jetzt `admitted?(results)` in `notenrechner/noten.rb`, bis alle
+      deine Tests bestehen. Die Prüfung ruft es mit sechs anderen Listen von
+      Ergebnissen auf als deine Tests.
+    file: notenrechner/noten.rb
+    check:
+      type: ruby
+      file: notenrechner/noten.rb
+      cases:
+        - admitted?([6] * 40): true
+        - call: admitted?([5] * 39 + [4])
+          expect: false
+          say: 'Block I: 199 Punkte geteilt durch 40 Ergebnisse, mal 40, sind 199, und das ist weniger als 200.'
+        - admitted?([4] * 7 + [6] * 29): true
+        - call: admitted?([4] * 8 + [6] * 28)
+          expect: false
+          say: 8 von 36 Ergebnissen sind mehr als 20 Prozent.
+        - call: admitted?([5] * 10 + [6] * 26)
+          expect: true
+          say: 5 Punkte liegen nicht unter 5 Punkten.
+        - call: admitted?([0] + [12] * 35)
+          expect: false
+          say: Ein Ergebnis mit 0 Punkten schließt die Zulassung aus.
+    hint:
+      - Rechne zuerst die drei Werte aus, die die Regeln brauchen, Block I, wie viele Ergebnisse unter 5 Punkten liegen und ob eine 0 darunter ist, und verknüpf dann die drei Bedingungen.
+      - 'Block I ist die Summe geteilt durch die Anzahl, mal 40, gerundet: `(results.sum * 40.0 / results.size).round`. Die 20 Prozent ohne Kommazahlen: Anzahl unter 5 mal 5 höchstens so groß wie die Anzahl aller.'
+      - Für die Ergebnisse unter 5 Punkten gibt es `deficit?` schon in `noten.rb`, und `count` mit einem Block zählt, wofür es wahr ist.
+    solution: |
+      ```ruby
+      def admitted?(results)
+        # Block I: der Durchschnitt mal 40, gerundet
+        block_one = (results.sum * 40.0 / results.size).round
+        deficits = results.count { |points| deficit?(points) }
+        block_one >= 200 && deficits * 5 <= results.size && !results.include?(0)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib jetzt `is_admitted(results)` in `notenrechner/noten.py`, bis
+        alle deine Tests bestehen. Die Prüfung ruft es mit sechs anderen Listen
+        von Ergebnissen auf als deine Tests.
+      file: notenrechner/noten.py
+      check:
+        type: python
+        file: notenrechner/noten.py
+        cases:
+          - is_admitted([6] * 40): true
+          - call: is_admitted([5] * 39 + [4])
+            expect: false
+            say: 'Block I: 199 Punkte geteilt durch 40 Ergebnisse, mal 40, sind 199, und das ist weniger als 200.'
+          - is_admitted([4] * 7 + [6] * 29): true
+          - call: is_admitted([4] * 8 + [6] * 28)
+            expect: false
+            say: 8 von 36 Ergebnissen sind mehr als 20 Prozent.
+          - call: is_admitted([5] * 10 + [6] * 26)
+            expect: true
+            say: 5 Punkte liegen nicht unter 5 Punkten.
+          - call: is_admitted([0] + [12] * 35)
+            expect: false
+            say: Ein Ergebnis mit 0 Punkten schließt die Zulassung aus.
+      hint:
+        - Rechne zuerst die drei Werte aus, die die Regeln brauchen, Block I, wie viele Ergebnisse unter 5 Punkten liegen und ob eine 0 darunter ist, und verknüpf dann die drei Bedingungen.
+        - 'Block I ist die Summe geteilt durch die Anzahl, mal 40, ab ,5 aufgerundet: `math.floor(sum(results) * 40 / len(results) + 0.5)`. Pythons `round` rundet ,5 zur geraden Zahl. Die 20 Prozent ohne Kommazahlen: Anzahl unter 5 mal 5 höchstens so groß wie die Anzahl aller.'
+        - Für die Ergebnisse unter 5 Punkten gibt es `is_deficit` schon in `noten.py`; `len` einer Liste mit nur diesen Ergebnissen zählt sie.
+      solution: |
+        ```python
+        def is_admitted(results):
+            # Block I: der Durchschnitt mal 40, ab ,5 aufgerundet
+            block_one = math.floor(sum(results) * 40 / len(results) + 0.5)
+            deficits = len([points for points in results if is_deficit(points)])
+            return block_one >= 200 and deficits * 5 <= len(results) and 0 not in results
+        ```
+
+        `import math` kommt dazu ganz oben in die Datei.
+    javascript:
+      prompt: |
+        Schreib jetzt `isAdmitted(results)` in `notenrechner/noten.js`, bis
+        alle deine Tests bestehen, und nimm es in `module.exports` auf. Die
+        Prüfung ruft es mit sechs anderen Listen von Ergebnissen auf als deine
+        Tests.
+      file: notenrechner/noten.js
+      check:
+        type: javascript
+        file: notenrechner/noten.js
+        cases:
+          - isAdmitted(Array(40).fill(6)): true
+          - call: isAdmitted([...Array(39).fill(5), 4])
+            expect: false
+            say: 'Block I: 199 Punkte geteilt durch 40 Ergebnisse, mal 40, sind 199, und das ist weniger als 200.'
+          - isAdmitted([...Array(7).fill(4), ...Array(29).fill(6)]): true
+          - call: isAdmitted([...Array(8).fill(4), ...Array(28).fill(6)])
+            expect: false
+            say: 8 von 36 Ergebnissen sind mehr als 20 Prozent.
+          - call: isAdmitted([...Array(10).fill(5), ...Array(26).fill(6)])
+            expect: true
+            say: 5 Punkte liegen nicht unter 5 Punkten.
+          - call: isAdmitted([0, ...Array(35).fill(12)])
+            expect: false
+            say: Ein Ergebnis mit 0 Punkten schließt die Zulassung aus.
+      hint:
+        - Rechne zuerst die drei Werte aus, die die Regeln brauchen, Block I, wie viele Ergebnisse unter 5 Punkten liegen und ob eine 0 darunter ist, und verknüpf dann die drei Bedingungen.
+        - 'Block I ist die Summe geteilt durch die Anzahl, mal 40, gerundet: `Math.round(sum * 40 / results.length)`. Die 20 Prozent ohne Kommazahlen: Anzahl unter 5 mal 5 höchstens so groß wie die Anzahl aller.'
+        - Für die Ergebnisse unter 5 Punkten gibt es `isDeficit` schon in `noten.js`, und `results.filter(isDeficit).length` zählt sie.
+      solution: |
+        ```javascript
+        function isAdmitted(results) {
+          // Block I: der Durchschnitt mal 40, gerundet
+          const sum = results.reduce((total, points) => total + points, 0);
+          const blockOne = Math.round(sum * 40 / results.length);
+          const deficits = results.filter(isDeficit).length;
+          return blockOne >= 200 && deficits * 5 <= results.length && !results.includes(0);
+        }
+        ```
+
+        In der letzten Zeile kommt `isAdmitted` in `module.exports` dazu.

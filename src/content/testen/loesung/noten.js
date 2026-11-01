@@ -28,12 +28,16 @@ function abiturGrade(total) {
   return Math.max(tenths, 10) / 10;
 }
 
-// Zur Prüfung zugelassen (vereinfacht): in den Kursen zusammen mindestens
-// 200 Punkte, höchstens 7 Defizite und kein Kurs mit 0 Punkten
-function isAdmitted(courses) {
-  const deficits = courses.filter(isDeficit).length;
-  const sum = courses.reduce((total, points) => total + points, 0);
-  return sum >= 200 && deficits <= 7 && !courses.includes(0);
+// Zur Abiturprüfung zugelassen, nach der Vereinbarung der KMK (Ziffer 9.5.7),
+// vereinfacht: jedes Ergebnis der Qualifikationsphase zählt einfach. Block I
+// hat mindestens 200 Punkte, höchstens 20 Prozent der Ergebnisse liegen unter
+// 5 Punkten, und keins hat 0 Punkte.
+function isAdmitted(results) {
+  // Block I: der Durchschnitt mal 40, gerundet
+  const sum = results.reduce((total, points) => total + points, 0);
+  const blockOne = Math.round(sum * 40 / results.length);
+  const deficits = results.filter(isDeficit).length;
+  return blockOne >= 200 && deficits * 5 <= results.length && !results.includes(0);
 }
 
 module.exports = { grade, isDeficit, abiturGrade, isAdmitted };

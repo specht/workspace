@@ -1038,6 +1038,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1961 -->
+<!-- part: beck -->
+### Kent Beck
+
+<div class='person'>
+<img src='beck.webp' alt='Kent Beck 2006: ein Mann mit kurzem blondem Haar in einem hellen, gestreiften Hemd, die Hände vor dem Bauch gefaltet, vor einer Wandtafel.'>
+<p><strong>Kent Beck</strong> (geboren 1961), US-amerikanischer Softwareentwickler. Erst den Test, der scheitert, dann den Code, der ihn bestehen lässt: So arbeitest du im Notenrechner, und so heißt es testgetriebene Entwicklung. Beck machte sie bekannt; nach seinen Worten hat er sie in einem älteren Buch über das Programmieren wiederentdeckt.</p>
+<p>Mit Erich Gamma brachte er das Testwerkzeug SUnit aus Smalltalk nach Java, als JUnit. Nachbauten mit diesem Bauplan für andere Sprachen nennt man xUnit.</p>
+<p class='person-credit'>Foto: Improve It, 2006, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Kent_Beck_no_Workshop_Mapping_XP.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1961 -->
 <!-- part: eich -->
 ### Brendan Eich
 
