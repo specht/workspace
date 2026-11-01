@@ -50,7 +50,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   to change on the page (the predictions on the triangle's corner and the
   91-degree spiral are answered only after them); the teacher note's »Sprache«
   is part of the fix across pages.
-- [ ] `kata-functions`
+- [x] `kata-functions` (1 November 2026): intro, predictions and cards read,
+  nothing to change (predictions answered in after blocks; the two-digit help
+  after predict-rest comes before the cards that need it, as help, not as a
+  solution).
 - [ ] `kata-decisions`
 - [ ] `kata-loops`
 - [ ] `pip-2`
