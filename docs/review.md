@@ -141,7 +141,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   90002`); the abstract answered the first prediction (»Warum piept die
   Kasse«); »braucht es genauer« without a noun. Predictions, after blocks,
   numbers in the teacher note and the explanations checked; 122 examples pass.
-- [ ] `supermarkt`
+- [x] `supermarkt` (1 November 2026, f7f0c678): no spoilers (the predictions need
+  their own calculation, the simulation's numbers stand only in after blocks);
+  »Eine normale Kasse ist selbst eine Kasse, sie bleibt also, wie sie ist«
+  said plainly.
 - [ ] `testen`
 - [ ] `textadventure`
 - [ ] `class-quiz`
@@ -202,3 +205,16 @@ maintainer to decide. Per page: where, what the picture shows, why.
   crossing is marked. It must not answer »zwei-bits« (two flips in one row)
   before that prediction: flipping a second bit only after it, or the
   widget placed after it.
+
+#### `supermarkt`
+
+- **Diagrams instead of text:** the page explains the three compartments, the
+  multiplicities at the ends of a line and the hollow arrowhead of
+  inheritance, but shows the school with its rooms and the vehicle with the
+  bicycle only as `uml` text. Drawn as diagrams from the same text (the way
+  `_include_er` draws ER models with the ER-Werkstatt's core), text and
+  diagram side by side, a reader would see what the words describe.
+- **After »kasse-vorhersage«:** one checkout as a timeline from 0 to 120
+  seconds: the first customer from 0 to 90, the second arriving at 30, a
+  waiting bar until 90, her service until 165. The text explains »ab wann sie
+  wieder frei ist« in words; the card picture already draws such timelines.
