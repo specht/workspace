@@ -33,4 +33,4 @@ Alle hängen ihre Runde ans Ende von <code>rounds.txt</code> an. Wer als zweites
 
 #### Weiter
 
-Die Aufgaben in <code>TODO.md</code> lassen sich erweitern; jede, die <code>quiz.rb</code> oder <code>quiz.py</code> an derselben Stelle ändert wie eine andere, gibt einen Konflikt im Code, den die beiden Beteiligten gemeinsam lösen. Wer mehr will: Pull Requests auf einem Git-Server im Netz, oder Tests, die vor jedem Merge laufen (<a href='/kata-tests'>Katas: Testen</a>).
+Die Aufgaben in <code>TODO.md</code> lassen sich erweitern; jede, die <code>quiz.rb</code> oder <code>quiz.py</code> an derselben Stelle ändert wie eine andere, gibt einen Konflikt im Code, den die beiden Beteiligten gemeinsam lösen. Wer mehr will: Pull Requests auf einem Git-Server im Netz, oder Tests, die vor jedem Merge laufen (<a href='/testen'>Testen: der Notenrechner</a>).

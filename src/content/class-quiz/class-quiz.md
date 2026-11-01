@@ -20,7 +20,7 @@ class_repo: group
 # Im Team mit Git: das Klassenquiz
 
 <p class='abstract'>
-Eure Klasse baut zusammen ein Quiz: Jede und jeder schreibt eine Runde Fragen, alle in einem gemeinsamen Git-Repository. Dabei passiert, womit Teams jeden Tag umgehen: Ein Push wird abgelehnt, zwei ändern dieselbe Zeile, ein Konflikt will gelöst werden. Danach verteilt ihr die Arbeit am Programm, und jede und jeder erledigt eine Aufgabe in einem eigenen Branch.
+Eure Klasse baut zusammen ein Quiz: Jede und jeder schreibt eine Runde Fragen, alle in einem gemeinsamen Git-Repository. Dabei passiert, womit Teams jeden Tag umgehen: Zwei geben fast gleichzeitig ab, zwei ändern dieselbe Datei, und Git braucht eine Antwort, die nur ihr geben könnt. Danach verteilt ihr die Arbeit am Programm, und jede und jeder erledigt eine Aufgabe in einem eigenen Branch.
 </p>
 
 ## Worum es geht

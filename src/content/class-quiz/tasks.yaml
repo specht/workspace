@@ -142,7 +142,7 @@ tasks:
     title: Mit Gewalt
     prompt: |
       Git lehnt deinen Push ab. Jemand rät dir zu `git push --force`. Was
-      passiert dann?
+      passiert, wenn der Git-Server das zulässt, wie viele Server im Netz?
     check:
       type: choice
       options:
@@ -158,7 +158,9 @@ tasks:
     solution: |
       `--force` ersetzt den Stand auf dem Server durch deinen. Was die anderen
       seitdem gepusht haben, ist dort weg. In einem gemeinsamen Repository
-      ist `--force` darum tabu.
+      ist `--force` darum tabu. Der Git-Server des Workspace lässt es gar
+      nicht erst zu und lehnt auch diesen Push ab; ein Repository in einem
+      Ordner, wie ohne Git-Server, nimmt ihn an.
 
   - id: verteilt
     title: Deine Aufgabe ist drin
