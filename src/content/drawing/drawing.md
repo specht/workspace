@@ -560,7 +560,7 @@ set_mask do
 end
 ```
 
-Jetzt die Kreise, von außen nach innen. Wir beginnen mit einem Radius von 125 Pixeln und machen jeden Kreis um 5 Pixel kleiner. Die Farben sind Rot (28), Orange (27), Gelb (26), Grün (8), Indigo (19), Violett (23) und zuletzt Himmelblau (16), das die Mitte wieder frei macht:
+Jetzt die Kreise, von außen nach innen. Wir beginnen mit einem Radius von 125 Pixeln und machen jeden Kreis um 5 Pixel kleiner. Die Farben sind Rot (28), Orange (27), Gelb (26), Grün (8), Blau (19), Violett (23) und zuletzt Himmelblau (16), das die Mitte wieder frei macht:
 
 ```ruby
 r = 125
@@ -705,7 +705,7 @@ image-file: drawing-steps/step.png 8
 
 ### Sterne
 
-100 Pixel an zufälligen Stellen. `rand(320)` ist eine zufällige ganze Zahl von 0 bis 319, `rand(120)` eine von 0 bis 119, also nur in der oberen Hälfte:
+100 Pixel an zufälligen Stellen. `rand(320)` ist eine zufällige ganze Zahl von 0 bis 319, `rand(120)` eine von 0 bis 119, also nur in den oberen zwei Dritteln:
 
 ```ruby
 set_color(15)
