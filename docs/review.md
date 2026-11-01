@@ -214,7 +214,7 @@ maintainer to decide. Per page: where, what the picture shows, why.
   bicycle only as `uml` text. Drawn as diagrams from the same text (the way
   `_include_er` draws ER models with the ER-Werkstatt's core), text and
   diagram side by side, a reader would see what the words describe.
-- **After »kasse-vorhersage«:** one checkout as a timeline from 0 to 120
+- **After »kasse-vorhersage«:** one checkout as a timeline from 0 to 180
   seconds: the first customer from 0 to 90, the second arriving at 30, a
   waiting bar until 90, her service until 165. The text explains »ab wann sie
   wieder frei ist« in words; the card picture already draws such timelines.
