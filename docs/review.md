@@ -131,7 +131,11 @@ image.
   solution's line in four languages, now two steps as Java had; »way« and
   »escape« were both titled »Der kürzeste Weg«, escape is now »Zur letzten
   Lampe«; find said »Stelle« where the page says Position.
-- [ ] `kata-tests`
+- [x] `kata-tests` (1 November 2026, 4ceebf38): intro, try box, cards and
+  teacher note read; the try box said »und führe wieder aus« without an
+  object; the cards referred to »den Texten«, a page called Katas: Strings.
+  The prompts name the kinds of faulty versions on purpose (the point is the
+  boundaries), no spoiler beyond that.
 
 ### Grafik
 
