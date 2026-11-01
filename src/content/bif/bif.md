@@ -111,7 +111,7 @@ variants: dark
 
 <img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
 
-BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
+BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leserinnen und Leser nur die Leseansicht zu sehen.
 
 ## Seiten und Entscheidungen
 
@@ -382,7 +382,7 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 - [Gehe in den Flur.](2)
 ```
 
-`has_key` ist eine Variable. Der Wert `false` bedeutet hier: Du hast den Schlüssel noch nicht. Wir setzen diesen Anfangswert in `1.md`, weil diese Seite nur einmal am Anfang besucht wird.
+`has_key` ist eine Variable. Der Wert `false` bedeutet hier: Du hast den Schlüssel noch nicht. Den Anfangswert setzen wir in `1.md`.
 
 Öffne anschließend `3.md` und ergänze eine weitere lokale Entscheidung:
 
@@ -472,6 +472,10 @@ Der Grund liegt bei den lokalen Entscheidungen: BIF merkt sich innerhalb eines B
 Ob etwas **dauerhaft für den weiteren Verlauf der Geschichte** passiert ist, speichern wir deshalb in Variablen. Jetzt müssen wir dafür sorgen, dass die Seite diesen gespeicherten Zustand auch berücksichtigt.
 
 _task(anfangswert)
+
+<!-- after: anfangswert -->
+Ein Skript läuft bei jedem Besuch seiner Seite. `1.md` wird nur einmal besucht, am Anfang; stünde `has_key = false;` im Büro, hättest du den Schlüssel bei jedem Besuch dort wieder verloren.
+<!-- /after -->
 
 ### Bedingungen
 
@@ -846,7 +850,7 @@ _task(eigener-ordner)
 
 ### Eine Idee entwickeln
 
-Beim Geschichtenerzählen gibt es keine allgemein gültige Liste wie die zwölf Prinzipien der Animation. Es gibt aber ein paar Bausteine, die fast immer helfen. Für eine BIF-Geschichte kannst du dir zunächst diese Fragen stellen.
+Für das Erzählen gibt es keine Regeln, die immer gelten, aber ein paar Bausteine, die fast immer helfen. Für eine BIF-Geschichte kannst du dir zunächst diese Fragen stellen.
 
 **Figur**  
 Wer handelt in der Geschichte? Was ist dieser Person wichtig? Eine Figur wird interessanter, wenn sie nicht nur irgendwo herumläuft, sondern etwas will.
