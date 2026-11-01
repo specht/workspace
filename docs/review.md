@@ -162,7 +162,12 @@ image.
   the question, now in its after block; »älter als die Heimcomputer« made
   precise (Apple II, 1977; Blockade 1976). Numbers (4, 0, 52 pixels per wave,
   58 000 corners) and the DOOM port (ports/doom) check out.
-- [ ] `raytracing`
+- [x] `raytracing` (1 November 2026): page (1400 lines), cards and teacher
+  note read, nothing to change: the predictions (schatten-da, akne, tiefe) are
+  answered after them, the numbers check out (sx −0.8861, t 4, gamma: 128 is
+  about a fifth as bright, critical angle 41.8°, r0 0.04), the history
+  (Whitted 1979/1980, Cook/Porter/Carpenter 1984, Schlick 1994, Haines' hollow
+  ball) is sourced. Not checked: the three album covers.
 - [ ] `glsl`
 
 ### Spiele & 3D-Welten
