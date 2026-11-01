@@ -119,7 +119,9 @@ Mehr zum Text auf Folien: _uses(text, hervorheben, links)
 
 _task(umbenennen)
 
+<!-- after: umbenennen -->
 _include(html#bilddateien)
+<!-- /after -->
 
 _task(eigenes-bild)
 
