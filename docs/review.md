@@ -279,7 +279,9 @@ image.
 
 ### Bilder und Kompression
 
-- [ ] `rle`
+- [x] `rle` (1 November 2026): page, widget, cards and teacher note read,
+  nothing to change: the predictions (ziffern, text) are answered in after
+  blocks; the widget counts two bytes per run as the text says.
 - [ ] `huffman`
 - [ ] `lzw`
 - [ ] `gif`
