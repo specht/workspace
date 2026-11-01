@@ -254,6 +254,11 @@ _task(walk)
 
 _task(stairs)
 
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Karel the Robot: A Gentle Introduction to the Art of Programming</strong>, Richard E. Pattis, Wiley, 1981. Ein Roboter auf einem Gitter, der sich nur nach links drehen kann; nach rechts dreht er sich erst, wenn man es ihm mit einer eigenen Anweisung beibringt. Mit Karel haben seitdem viele das Programmieren angefangen, und Pip ist sein Nachfahre: <a href='https://archive.org/details/karelrobotgentle00patt'>zum Ausleihen im Internet Archive</a>.</p>
+</div>
+
 ## Das Labyrinth
 
 Ein Labyrinth hat Gänge, Abzweigungen und Sackgassen. Den Weg kennt niemand,
@@ -313,7 +318,7 @@ in den Fels hat jemand geritzt: »Dreimal ziehen. Nicht öfter.«
 _task(one-lever)
 
 Bei mehreren Hebeln muss Pip sich merken, wie oft schon gezogen wurde. Dafür
-gibt es Variablen, wie in den Katas zum Wiederholen:
+gibt es Variablen, wie in den [Katas zu Schleifen](/kata-loops):
 
 <!-- language: ruby -->
 ```ruby
