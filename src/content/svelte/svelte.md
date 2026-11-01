@@ -511,9 +511,13 @@ Im `<style>`-Teil formatieren ein paar Regeln die Anzeige:
 ~ </style>
 ```
 
-Svelte lässt CSS-Regeln weg, die zu nichts im HTML der Komponente passen. Die Klassen `ready` und `small` kommen aber erst später dazu, durch JavaScript. Deshalb stehen sie in `:global(` … `)`: So bleiben die Regeln erhalten.
+Svelte lässt CSS-Regeln weg, die zu nichts im HTML der Komponente passen. Zwei Regeln stehen deshalb in `:global(` … `)`.
 
 _task(global)
+
+<!-- after: global -->
+Die Klassen `ready` und `small` stehen nicht im HTML der Komponente: `ready` kommt erst später durch JavaScript dazu, `small` steckt im Text von `timerString`. Ohne `:global(` … `)` ließe Svelte die beiden Regeln weg.
+<!-- /after -->
 
 Jetzt eine Funktion, die die Anzeige, also `timerString`, auf den neuesten Stand bringt. Schreib sie in den `<script>`-Teil, vor `handleKeyDown`:
 
