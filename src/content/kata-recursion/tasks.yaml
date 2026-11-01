@@ -2076,7 +2076,7 @@ tasks:
     title: "Fibonacci mit Gedächtnis"
     extra: true
     prompt: |
-      Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Hash, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+      Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert mehr als ein halbes Jahr. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Hash, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
     starter: |
       def fast_fibonacci(n)
       end
@@ -2111,7 +2111,7 @@ tasks:
       ```
     python:
       prompt: |
-        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Dictionary, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert fast ein Jahr. Schreib `fast_fibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Dictionary, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fast_fibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
       starter: |
         def fast_fibonacci(n):
             pass
@@ -2148,7 +2148,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `fastFibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Objekt, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Wochen. Schreib `fastFibonacci(n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einem Objekt, in dem jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in weniger als drei Sekunden.
       starter: |
         function fastFibonacci(n) {
         }
@@ -2188,7 +2188,7 @@ tasks:
         ```
     dart:
       prompt: |
-        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `int fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
+        Deine rekursive Fibonacci-Funktion rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Wochen. Schreib `int fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
       starter: |
         int fastFibonacci(int n) {
           return 0;
@@ -2229,7 +2229,7 @@ tasks:
         ```
     java:
       prompt: |
-        Deine rekursive Fibonacci-Methode rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Jahre. Schreib `long fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
+        Deine rekursive Fibonacci-Methode rechnet dieselben Zahlen wieder und wieder aus: `fibonacci(70)` dauert Wochen. Schreib `long fastFibonacci(int n)`, rekursiv wie vorher, aber mit einem Gedächtnis: einer Map, in der jede Zahl steht, sobald sie einmal ausgerechnet ist. `fastFibonacci(70)` ergibt `190392490709135`, in wenigen Sekunden.
       starter: |
         long fastFibonacci(int n) {
             return 0;

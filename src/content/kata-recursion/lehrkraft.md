@@ -8,7 +8,7 @@ Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten de
 <li>Knobelei (3): die Türme von Hanoi (die Züge als Liste), Listen in Listen flach machen, alle Reihenfolgen eines Textes.</li>
 <li>Extras (2): Fibonacci mit einem Gedächtnis in drei Sekunden, ob einige Zahlen zusammen eine Summe ergeben.</li>
 </ul></td></tr>
-<tr><th>Prüfung</th><td>Feste Werte. Stimmen sie, sieht die Prüfung im Code nach, ob die Funktion sich selbst aufruft und, wo die Aufgabe es verlangt, ohne Schleife auskommt (<code>recursive</code>, <code>loops</code>; in Ruby mit dem Parser, in Python und JavaScript am Text); eine Lösung mit Schleife bekommt eine eigene Rückmeldung. Beim Flachmachen, bei den Reihenfolgen und beim Gedächtnis ist eine Schleife neben der Rekursion erlaubt.</td></tr>
+<tr><th>Prüfung</th><td>Feste Werte. Stimmen sie, sieht die Prüfung im Code nach, ob die Funktion sich selbst aufruft und, wo die Aufgabe es verlangt, ohne Schleife auskommt (<code>recursive</code>, <code>loops</code>; in Ruby mit dem Parser, in Python, JavaScript, Dart und Java am Text); eine Lösung mit Schleife bekommt eine eigene Rückmeldung. Beim Flachmachen, bei den Reihenfolgen und beim Gedächtnis ist eine Schleife neben der Rekursion erlaubt.</td></tr>
 <tr><th>Gespeichert</th><td>Der Code jeder Kata, für jede Sprache getrennt, sichtbar nur für die Person selbst; Lehrkräfte sehen im Klassenboard nur, ob sie gelöst ist.</td></tr>
 </table>
 
