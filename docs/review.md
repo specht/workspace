@@ -235,7 +235,11 @@ image.
   the answers, now in after blocks. The mirror's claims (15 minutes,
   hit/miss/stale) checked in weather_mirror.rb; Richardson 1922, ENIAC 1950
   and the WMO codes check out.
-- [ ] `hugo`
+- [x] `hugo` (1 November 2026): page, cards and teacher note read, nothing to
+  change: the prediction »Ein vierter Planet« needs the loop over
+  site.RegularPages and is answered after it; the try box builds on »Ein
+  Doppelpunkt zu viel«; layouts follow Hugo's current template system
+  (baseof.html at the top, _partials).
 - [ ] `suchmaschine`
 - [ ] `tracking`
 
