@@ -79,7 +79,11 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
   teacher note read; no spoilers on the page (the ages in the example are
   right: Lovelace 36, Turing 41, Hopper 85). The teacher note named only Ruby,
   Python and JavaScript in three places.
-- [ ] `kata-objects`
+- [x] `kata-objects` (1 November 2026, b6c0b904): intro, predictions, cards
+  and teacher note read; predictions answered only in after blocks, each
+  notation shown before a Kata needs it. The teacher note described the
+  foreign shape for Ruby, Python and JavaScript only (Java uses an anonymous
+  Shape, Dart none).
 - [ ] `kata-bits`
 - [ ] `kata-recursion`
 - [ ] `turtle-2`
