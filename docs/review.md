@@ -186,7 +186,13 @@ image.
   change: 32640 pixels and 2.28 seconds check out, the prediction (ohne-cls)
   needs reasoning, the default program's cls(13) and transparent colour 14
   match. A duplicate task (ein-stern) is under »Open for the maintainer«.
-- [ ] `raycaster`
+- [x] `raycaster` (1 November 2026, 4c83cf4d): page, cards and teacher note
+  read; »320 Strahlen für ein Bild, 60 Bilder in der Sekunde. So programmierte
+  John Carmack Wolfenstein 3D« read as if Wolfenstein ran at 60 (the page
+  later says 30 on a 386), now said of the student's program; »konnte ein
+  386er gar nicht rechnen« (it could, in software); »ein Sprite … wo er«.
+  Numbers (83°, 500 steps, 1072 ramps, 24, 1.978) check out; the predictions
+  have after blocks.
 - [ ] `raylib`
 
 ### Texte & Präsentationen
