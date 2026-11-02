@@ -43,6 +43,15 @@ require_relative 'pip_compiled'
 # The result names the map and the line where it went wrong (»In Karte 2
 # läuft Pip in Zeile 6 gegen die Wand«) and carries the run of that map, or
 # of the first when all are right, for the card to play back (replay).
+#
+#   feedback:
+#     - when: { same_as: "loop do\n  turn_left\n  move\nend\n" }
+#       say: Pip biegt immer links ab, auch wenn dort eine Wand ist.
+#
+# same_as: a typical wrong plan, in Ruby whatever the language of the card
+# (a trace has no language). When the person's plan went wrong on a map,
+# it runs on that map too; if Pip walks the same way, step by step, its say
+# follows the message. It never runs when the plan is right.
 module PipCheck
     FILES = KataCheck::FILES
     # The commands by their name in the world, as each language spells them.
@@ -457,22 +466,43 @@ module PipCheck
                 message += "\n\n#{explanation}" if explanation
                 return [:wrong, message, nil, replay]
             end
-            if world.chased > 0 && world.ended == :chomped
+            message = if world.chased > 0 && world.ended == :chomped
                 n = world.chased == 1 ? 'einem Schritt' : "#{world.chased} Schritten"
-                return [:wrong, "#{where} ist dein Plan zu Ende, bevor Pip es geschafft hat. Pip bleibt stehen, " \
-                                "und der Mampfer kommt: Nach #{n} hat er Pip zum Frühstück.", nil, replay]
-            end
-            if (event = EVENTS[world.ended.to_s])
+                "#{where} ist dein Plan zu Ende, bevor Pip es geschafft hat. Pip bleibt stehen, " \
+                    "und der Mampfer kommt: Nach #{n} hat er Pip zum Frühstück."
+            elsif (event = EVENTS[world.ended.to_s])
                 line = world.trace.last[:line]
-                return [:wrong, "#{where}#{line ? " in Zeile #{line}" : ''} #{event}.", nil, replay]
+                "#{where}#{line ? " in Zeile #{line}" : ''} #{event}#{event.end_with?('?') ? '' : '.'}"
+            elsif (missing = expect_missing(map, world) || goal_missing(check['goal'] || {}, world))
+                "#{where} #{missing}"
             end
-            missing = expect_missing(map, world) || goal_missing(check['goal'] || {}, world)
-            return [:wrong, "#{where} #{missing}", nil, replay] if missing
+            if message
+                say = map['call'] ? nil : same_as(task, check, map, world, run)
+                return [:wrong, say ? "#{message} #{say}" : message, nil, replay]
+            end
         end
         if check['max_lines'] && (n = lines(code)) > check['max_lines']
             return [:wrong, "Pip schafft es, aber dein Plan hat #{n} Zeilen. Geht es in höchstens #{check['max_lines']}?", nil, first]
         end
         [:correct, check['maps'].size > 1 ? "Pip schafft alle #{check['maps'].size} Karten." : 'Pip schafft es.', nil, first]
+    end
+
+    # The say of the first typical wrong plan (feedback same_as) that walks
+    # Pip on map the way world shows, or nil. Each runs in Ruby.
+    def self.same_as(task, check, map, world, run)
+        (task['feedback'] || []).each do |f|
+            plan = f.dig('when', 'same_as') or next
+            ran = run_map(check.merge('language' => 'ruby'), plan, map, run)
+            next if ran.nil? || ran[:timed_out]
+            return f['say'] if way(ran[:world].trace) == way(world.trace)
+        end
+        nil
+    end
+
+    # Where Pip went and what happened, step by step; what Pip said and the
+    # lines of the plan do not count.
+    def self.way(trace)
+        trace.reject { |f| f[:event] == :say }.map { |f| [f[:event], f[:pip], f[:after]] }
     end
 
     # call and expect of a map: »schaut Pip nach `turn_right` nach oben

@@ -3033,6 +3033,11 @@ tasks:
             ####.###.####
             #############
       goal: { lamp: true }
+    feedback:
+      - when: { same_as: "20.times do\n  wait if glibber_ahead?\n  move\nend\n" }
+        say: "Pip wartet höchstens einen Schritt und geht dann auf jeden Fall weiter, auch wenn der Glibber noch da ist. In jedem Durchlauf entscheidet Pip neu: warten oder gehen."
+      - when: { same_as: "20.times do\n  move\nend\n" }
+        say: "Pip geht los, ohne je zu fragen, ob ein Glibber kommt. Vor jedem Schritt fragt Pip, und wenn einer kommt, wartet Pip."
     hint:
       - "In jedem Durchlauf der Schleife entscheidet Pip neu: warten oder gehen. Wie oft die Schleife läuft, ist egal, wenn es oft genug ist: An der Lampe ist Schluss."
       - "`if glibber_ahead? … else … end` in einer Schleife."

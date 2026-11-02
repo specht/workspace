@@ -209,11 +209,21 @@ examples:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
     fail:
       - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n"
+        say: "dreht sich nur an einer Wand, nach links"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  move\nend\n"
+        say: "auch wenn dort eine Wand ist"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right unless front_clear?\n  move\nend\n"
+        say: "höchstens einmal nach rechts"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right until front_clear?\n  move\nend\n"
+        say: "nimmt Pip die Hand von der Wand"
     python:
       pass:
         - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
       fail:
         - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n"
+          say: "dreht sich nur an einer Wand, nach links"
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    if not front_clear():\n        turn_right()\n    move()\n"
+          say: "höchstens einmal nach rechts"
     javascript:
       pass:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"
@@ -234,11 +244,21 @@ examples:
       - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right until front_clear?\n  move\nend\n"
     fail:
       - answer: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n"
+        say: "dreht sich nur an einer Wand, nach links"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  move\nend\n"
+        say: "auch wenn dort eine Wand ist"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right unless front_clear?\n  move\nend\n"
+        say: "höchstens einmal nach rechts"
+      - answer: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right until front_clear?\n  move\nend\n"
+        say: "nimmt Pip die Hand von der Wand"
     python:
       pass:
         - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    while not front_clear():\n        turn_right()\n    move()\n"
       fail:
         - answer: "while not on_lamp():\n    if front_clear():\n        move()\n    else:\n        turn_left()\n"
+          say: "dreht sich nur an einer Wand, nach links"
+        - answer: "def turn_right():\n    for i in range(3):\n        turn_left()\n\nwhile not on_lamp():\n    turn_left()\n    if not front_clear():\n        turn_right()\n    move()\n"
+          say: "höchstens einmal nach rechts"
     javascript:
       pass:
         - answer: "function turnRight() {\n  for (let i = 0; i < 3; i++) {\n    turnLeft();\n  }\n}\n\nwhile (!onLamp()) {\n  turnLeft();\n  while (!frontClear()) {\n    turnRight();\n  }\n  move();\n}\n"

@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require_relative '../include/pip_check'
 require_relative '../include/kata_runner'
+require_relative '../include/task_spec'
 
 # Pip's plans with real runs in the Workspace image; the spec everywhere.
 class PipCheckTest < Minitest::Test
@@ -35,6 +36,23 @@ class PipCheckTest < Minitest::Test
         refute_empty PipCheck.spec_errors(check('ruby', :maps => [{ 'map' => SHAFT }, { 'map' => SHAFT }]).merge('buttons' => %w[move]))
         refute_empty PipCheck.spec_errors(check('ruby', :maps => [{ 'map' => SHAFT.sub('.', 'G') }]).merge('buttons' => %w[move]))
         refute_empty PipCheck.spec_errors(check('ruby').merge('buttons' => %w[move], 'dry' => true))
+    end
+
+    # feedback same_as: a typical wrong plan in Ruby; its say follows the
+    # message when Pip walks the same way, in any language
+    def test_a_typical_wrong_plan_by_its_way
+        needs_docker
+        task = { 'feedback' => [
+            { 'when' => { 'same_as' => "move\nmove\nmove\n" }, 'say' => 'Am Funkenstein geht es nach unten weiter.' },
+        ] }
+        status, message, = PipCheck.check(task, check('python'), "for i in range(3):\n    move()\n", RUN)
+        assert_equal :wrong, status
+        assert_match(/gegen die Wand.*Am Funkenstein geht es nach unten weiter\.\z/m, message)
+        # into the same wall, but after taking the stone: another way
+        status, message, = PipCheck.check(task, check('ruby'), "move\nmove\ntake\nmove\n", RUN)
+        assert_equal :wrong, status
+        refute_includes message, 'Am Funkenstein'
+        assert_empty TaskSpec.validate({ 'activity' => 'pip-1', 'tasks' => [{ 'id' => 'x', 'title' => 'x', 'prompt' => 'x', 'check' => check('ruby') }.merge(task)] }, activity: 'pip-1')
     end
 
     def test_a_plan_in_each_language

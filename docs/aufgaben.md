@@ -948,11 +948,30 @@ dauert etwa zwei Sekunden, mit einer typischen falschen Lösung (`same_as`)
 in Dart etwas länger. `gates` gibt es in beiden nicht. Die Beispiele
 brauchen `dart` und `javac` auf der Maschine, wo sie laufen.
 
-**Wo es auf die Geschwindigkeit ankommt** (`timeout` klein, eine große
-Eingabe), sagt `slow:`, was die Rückmeldung nach Ablauf der Zeit stattdessen
-sagt, statt nach einer Endlosschleife zu fragen; ebenso bei `ruby`,
-`python`, `dart` und `java`, die eine Datei der Lernenden aufrufen (»Wie
-lange dauert das?«).
+**Wo es auf die Geschwindigkeit ankommt**, bekommt der Fall mit der großen
+Eingabe `seconds:`: Der richtige Wert genügt dann nicht, der Aufruf muss
+schneller sein. Gemessen wird der Aufruf allein, ohne den erwarteten Wert
+daneben und ohne das Übersetzen in Dart und Java. Die Rückmeldung nennt den
+Aufruf und seine Zeit (»`primes_up_to(1_000_000).length` liefert das
+Richtige, braucht dafür aber 3,1 Sekunden; weniger als 1 sollen es sein.«),
+dahinter steht `slow:`, was zu ändern ist. Die Übersicht der Aufrufe nennt bei
+solchen Fällen die Zeit. `timeout` bleibt die Grenze für den ganzen Lauf, gegen
+eine Endlosschleife; läuft sie ab, sagt die Rückmeldung `slow:` allein, statt
+nach einer Endlosschleife zu fragen. `slow:` muss darum in beiden Fällen
+passen, ohne eine Zahl von Sekunden. Die Grenze kommt aus einer Messung mit
+einem halben Prozessor wie in einem Kata-Container: weit über der Lösung,
+weit unter dem, was zu langsam ist. Ebenso bei `ruby`, `python`, `dart` und
+`java`, die eine Datei der Lernenden aufrufen (»Wie lange dauert das?«).
+
+```yaml
+    timeout: 10
+    slow: "Jede Zahl einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes."
+    cases:
+      - primes_up_to(20): "[2, 3, 5, 7, 11, 13, 17, 19]"
+      - call: primes_up_to(1_000_000).length
+        expect: 78498
+        seconds: 1
+```
 
 **Wo eine Rekursion verlangt ist**, sagt `recursive: true`, dass die Funktion
 sich selbst aufrufen muss, und `loops: false`, dass sie keine Schleife
@@ -1096,7 +1115,26 @@ und solange ein Lauf unterwegs ist oder abgespielt wird, wartet der Reiter. Eine
 Stacheln, die aus dem Boden ragen (drei Züge versenken sie, ein vierter lässt sie wieder herausfahren; im Spec heißen sie `gate`), `take` ohne Stein, `pull`
 ohne Hebel, ein Glibber, mit `dry: true` eine Pfütze und mehr als 1000
 Schritte beenden den Lauf mit diesem Ereignis; die Rückmeldung nennt die Karte und die Zeile (»In Karte
-2 in Zeile 6 läuft Pip gegen die Wand.«) und spielt diesen Lauf ab. Wo es um
+2 in Zeile 6 läuft Pip gegen die Wand.«) und spielt diesen Lauf ab.
+
+**Ein typischer falscher Plan** (`feedback` mit `same_as`) ist bei Pip immer
+Ruby, auch für eine Karte in Python, JavaScript, Dart oder Java: Verglichen
+wird nicht der Code, sondern der Weg. Scheitert ein Plan auf einer Karte, läuft
+der typische auf derselben Karte; geht Pip dort Schritt für Schritt denselben
+Weg mit demselben Ende, folgt sein `say` der Rückmeldung (»Hier in Zeile 6
+läuft Pip gegen die Wand. Pip biegt immer links ab, auch wenn dort eine Wand
+ist. …«). Was Pip sagt und in welcher Zeile, zählt nicht. Ein richtiger Plan
+startet keinen weiteren Lauf, ein falscher einen je typischem Plan. Die
+Varianten der Sprachen erben diese Pläne, anders als bei `function`; `say`
+nennt darum keinen Code, sondern was Pip tut.
+
+```yaml
+    feedback:
+      - when: { same_as: "until on_lamp?\n  turn_left\n  move\nend\n" }
+        say: Pip biegt immer links ab, auch wenn dort eine Wand ist.
+```
+
+Wo es um
 eine allgemeine Lösung geht, prüfen mehrere Karten (höchstens sechs) mit
 verschiedenen Steinen oder Glibbern: Eine feste Folge von Schritten soll an
 mindestens einer scheitern. Eine Karte mit `generate` entsteht aus dem Seed

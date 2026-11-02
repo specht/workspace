@@ -129,7 +129,7 @@ module TaskSpec
         'java' => [],
         'dart' => [],
         'function' => %w[same_as],
-        'pip' => [],
+        'pip' => %w[same_as],
         'tests' => [],
         'turtle' => [],
         'circuit' => [],
@@ -266,7 +266,7 @@ module TaskSpec
         end
         if task.key?('feedback')
             errors.concat(validate_feedback(type, task['feedback']))
-            errors.concat(KataCheck.feedback_errors(task['feedback'])) if type == 'function'
+            errors.concat(KataCheck.feedback_errors(task['feedback'])) if %w[function pip].include?(type)
         end
         errors
     end

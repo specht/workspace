@@ -335,12 +335,18 @@ examples:
       - answer: "20.times do\n  if glibber_ahead?\n    wait\n  else\n    move\n  end\nend\n"
     fail:
       - answer: "10.times do\n  move\nend\n"
+        say: "ohne je zu fragen, ob ein Glibber kommt"
+      - answer: "20.times do\n  if glibber_ahead?\n    wait\n  end\n  move\nend\n"
+        say: "wartet höchstens einen Schritt"
       - answer: "wait\nwait\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\nmove\n"
     python:
       pass:
         - answer: "for i in range(20):\n    if glibber_ahead():\n        wait()\n    else:\n        move()\n"
       fail:
         - answer: "for i in range(10):\n    move()\n"
+          say: "ohne je zu fragen, ob ein Glibber kommt"
+        - answer: "for i in range(20):\n    if glibber_ahead():\n        wait()\n    move()\n"
+          say: "wartet höchstens einen Schritt"
         - answer: "wait()\nwait()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\nmove()\n"
     javascript:
       pass:

@@ -149,13 +149,14 @@ module CodeLanguages
     # task's own, without the variants themselves.
     # A typical wrong solution (feedback with same_as) is code in the task's
     # own language: a variant without feedback of its own does not inherit it.
+    # Pip's are plans in Ruby for every language (PipCheck.same_as) and stay.
     def self.variant(task, language)
         base = task.reject { |k, _| LANGUAGES.include?(k) }
         own = task[language.to_s]
         return base unless own.is_a?(Hash)
 
         merged = base.merge(own)
-        unless own.key?('feedback')
+        unless own.key?('feedback') || merged.dig('check', 'type') == 'pip'
             kept = (base['feedback'] || []).reject { |f| f.is_a?(Hash) && f['when'].is_a?(Hash) && f['when'].key?('same_as') }
             kept.empty? ? merged.delete('feedback') : merged['feedback'] = kept
         end

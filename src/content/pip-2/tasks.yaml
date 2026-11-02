@@ -1673,6 +1673,15 @@ tasks:
             #.....#L#
             #########
       goal: { lamp: true }
+    feedback:
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  move\nend\n" }
+        say: "Pip biegt immer links ab, auch wenn dort eine Wand ist. Nach der Drehung nach links fragt Pip, ob vorn frei ist, und dreht sich sonst nach rechts."
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right unless front_clear?\n  move\nend\n" }
+        say: "Pip dreht sich höchstens einmal nach rechts. In einer Ecke ist danach immer noch eine Wand vorn: Pip dreht sich nach rechts, solange vorn kein Weg ist, mit einer Schleife statt einer einzelnen Frage."
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right until front_clear?\n  move\nend\n" }
+        say: "Ohne die Drehung nach links bei jedem Schritt nimmt Pip die Hand von der Wand: Pip läuft geradeaus und biegt erst an einer Wand ab, nach rechts."
+      - when: { same_as: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n" }
+        say: "Pip läuft geradeaus und dreht sich nur an einer Wand, nach links. So bleibt die Hand nicht an der Wand: Bei jedem Schritt dreht sich Pip zuerst nach links."
     hint: |
       In der Schleife: einmal `turn_left`, dann `turn_right`, solange vorn kein Weg ist, dann ein Schritt.
     solution: |
@@ -1906,6 +1915,15 @@ tasks:
         - generate: maze
           size: [6, 5]
       goal: { lamp: true }
+    feedback:
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  move\nend\n" }
+        say: "Pip biegt immer links ab, auch wenn dort eine Wand ist. Nach der Drehung nach links fragt Pip, ob vorn frei ist, und dreht sich sonst nach rechts."
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_left\n  turn_right unless front_clear?\n  move\nend\n" }
+        say: "Pip dreht sich höchstens einmal nach rechts. In einer Ecke ist danach immer noch eine Wand vorn: Pip dreht sich nach rechts, solange vorn kein Weg ist, mit einer Schleife statt einer einzelnen Frage."
+      - when: { same_as: "def turn_right\n  3.times do\n    turn_left\n  end\nend\n\nuntil on_lamp?\n  turn_right until front_clear?\n  move\nend\n" }
+        say: "Ohne die Drehung nach links bei jedem Schritt nimmt Pip die Hand von der Wand: Pip läuft geradeaus und biegt erst an einer Wand ab, nach rechts."
+      - when: { same_as: "until on_lamp?\n  if front_clear?\n    move\n  else\n    turn_left\n  end\nend\n" }
+        say: "Pip läuft geradeaus und dreht sich nur an einer Wand, nach links. So bleibt die Hand nicht an der Wand: Bei jedem Schritt dreht sich Pip zuerst nach links."
     hint: |
       Die Hand an der Wand führt durch jedes Labyrinth, in dem alle Wände zusammenhängen: Pip läuft jede Sackgasse aus und kommt irgendwann an der Lampe vorbei.
     solution: |
