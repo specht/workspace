@@ -302,7 +302,11 @@ image.
   127 = −120), 10 500 MCUs for 91-baseline and the AAN claim (5
   multiplications) check out; the prediction on dequantisation has its after
   block.
-- [ ] `steganography`
+- [x] `steganography` (1 November 2026, 0fe2f56c): page, widget, cards and
+  teacher note read; the link to the JPEG page used the name »Ein JPEG-
+  Decoder«. Predictions (sichtbar, vorbei) are answered in after blocks;
+  capacity (57 596 bytes), 4.75 and almost 7 bits, Herodot and
+  Westfeld/Pfitzmann 1999 check out.
 
 ### Netze & Sicherheit
 
