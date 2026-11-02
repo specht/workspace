@@ -523,7 +523,9 @@ image.
 - [x] `java` (1 November 2026): page read, nothing to change: IO.println and
   the short main are final since Java 25.
 - [x] `js` (1 November 2026): page read, nothing to change.
-- [ ] `nasm`
+- [x] `nasm` (1 November 2026, 1db71447): »Programmierspracen«; RollerCoaster
+  Tycoon (1999) was listed among early games; the prose quoted »Hello, world!«
+  where the code prints »Hello, World!«.
 - [ ] `cs`
 - [ ] `go`
 - [ ] `dart`
