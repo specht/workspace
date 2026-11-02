@@ -319,7 +319,11 @@ image.
   block; all predictions already had after blocks. Berlin–Canberra (16 000 km,
   160 ms in fibre), RFC 826 (1982) and info.cern.ch (last modified December
   1992) check out.
-- [ ] `dns`
+- [x] `dns` (1 November 2026, a51081cb): page, cards and teacher note read;
+  the two sentences before »Was der Root-Server sagt« gave its answer (it
+  knows who is responsible for de, a referral in the AUTHORITY SECTION), now
+  in its after block; the student reads it from the output first. The TTLs
+  (300, 172800), Mockapetris 1983 and Kaminsky 2008 (65 536 IDs) check out.
 - [ ] `webserver`
 - [ ] `pixelwand`
 - [ ] `crypto`
