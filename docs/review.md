@@ -363,7 +363,11 @@ image.
   nothing to change: predictions (vollstaendig, primaerschluessel, welche-
   nutzt) wait in after blocks; the arithmetic (a third of a second, three
   queries a second, 20 steps of binary search) fits.
-- [ ] `filmdatenbank`
+- [x] `filmdatenbank` (1 November 2026): page, cards and teacher note read,
+  nothing to change: predictions (vorhersage-n1, genre-loeschen, doppelte-
+  titel, modell-verleih) are answered in after blocks; »Überlege, bevor du
+  weiterliest« is followed by its answer on purpose, without a task; Nosferatu
+  1922/2024 and Dune 1984/2021 check out.
 - [ ] `neo4j-filmdatenbank`
 - [ ] `bobby_tables`
 
