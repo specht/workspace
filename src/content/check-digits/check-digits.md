@@ -1253,6 +1253,7 @@ von Einsen. Darunter kommt eine Zeile mit den Paritätsbits der Spalten, sodass
 auch jede Spalte eine gerade Zahl von Einsen hat, die letzte eingeschlossen.
 Fett sind die Paritätsbits:
 
+<div class='parity-grid' data-title='Zum Ausprobieren: ein Bit kippen' data-flips='1'>
 <div class='scroll-x'><table class='table' style='width: auto; text-align: center;'>
 <tr><td>1</td><td>1</td><td>0</td><td>0</td><th>0</th></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>1</td><th>0</th></tr>
@@ -1261,6 +1262,8 @@ Fett sind die Paritätsbits:
 <tr><th>0</th><th>1</th><th>0</th><th>0</th><th>1</th></tr>
 </table>
 </div>
+</div>
+<script src='/include/parity_grid.js'></script>
 
 Kippt ein Bit, haben genau eine Zeile und genau eine Spalte eine ungerade Zahl
 von Einsen, und wo sie sich kreuzen, steht das gekippte Bit. Reparieren heißt
@@ -1695,6 +1698,22 @@ nicht stimmt, aber nicht, in welcher Zeile: Wie die Prüfziffer bemerkt es den
 Fehler, ohne ihn reparieren zu können. Für 16 Bits Daten hat das Gitter 9
 Paritätsbits und repariert ein Bit. Ein QR-Code der Stufe H repariert 14 von 44
 Codewörtern, und dafür sind fast zwei Drittel seiner Codewörter Korrektur.
+
+Hier darfst du zwei Bits kippen. Kipp zwei in derselben Zeile und dann zwei,
+die weder Zeile noch Spalte teilen, und achte darauf, an wie vielen Kreuzungen
+ein gekipptes Bit stehen könnte.
+
+<div class='parity-grid' data-title='Zum Ausprobieren: zwei Bits kippen' data-flips='2'>
+<div class='scroll-x'><table class='table' style='width: auto; text-align: center;'>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><th>0</th></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><th>0</th></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><th>1</th></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><th>0</th></tr>
+<tr><th>0</th><th>1</th><th>0</th><th>0</th><th>1</th></tr>
+</table>
+</div>
+</div>
+
 <!-- /after -->
 
 <!-- extra -->

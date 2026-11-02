@@ -13455,6 +13455,116 @@ html[data-bs-theme="dark"] .growth-widget {
     color: var(--bs-secondary-color);
 }
 
+/* a grid with parity bits (parity_grid.js, content/check-digits): a click
+   flips a bit, rows and columns with an odd number of ones turn red */
+.parity-grid.parity-ready {
+    --widget: #5c677d; --widget-ink: #4a5264; --widget-chip: #ebecef; --widget-line: #dbdee3; --widget-tint: #fafafb;
+    --parity-cell: 2.4em; --parity-count: 2em;
+    --parity-odd: #dc2626; --parity-odd-tint: rgba(220, 38, 38, 0.13);
+    --parity-flipped: rgba(217, 119, 6, 0.35);
+    margin: 1.75em 0;
+    padding: 0.9em 1.25em;
+    border: 1px solid var(--widget-line);
+    border-left: 5px solid var(--widget);
+    border-radius: 0.6em;
+    background: var(--widget-tint);
+}
+
+html[data-bs-theme="dark"] .parity-grid.parity-ready {
+    --widget: #858d9e; --widget-ink: #a5abb7; --widget-chip: #25272b; --widget-line: #2a2e34; --widget-tint: #1a1b1b;
+    --parity-odd: #f87171; --parity-odd-tint: rgba(248, 113, 113, 0.16);
+    --parity-flipped: rgba(251, 191, 36, 0.32);
+}
+
+.parity-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em 1em;
+    margin-bottom: 0.8em;
+}
+
+.parity-title {
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+}
+
+.parity-board {
+    display: grid;
+    gap: 3px;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.parity-cell {
+    width: var(--parity-cell);
+    height: var(--parity-cell);
+    padding: 0;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.3em;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: var(--bs-font-monospace);
+    font-size: 110%;
+    cursor: pointer;
+}
+
+.parity-cell:hover { border-color: var(--widget); }
+.parity-cell.parity-check { font-weight: 700; background: var(--widget-chip); }
+.parity-cell.parity-line { background: var(--parity-odd-tint); }
+.parity-cell.parity-flipped { background: var(--parity-flipped); }
+/* a shadow, not an outline: the focus ring of the clicked button would cover it */
+.parity-cell.parity-cross { box-shadow: 0 0 0 1px var(--bs-body-bg), 0 0 0 3.5px var(--parity-odd); }
+.parity-cell:focus:not(:focus-visible) { outline: none; }
+
+.parity-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bs-secondary-color);
+    font-size: 85%;
+    font-variant-numeric: tabular-nums;
+}
+
+.parity-count.parity-odd { color: var(--parity-odd); font-weight: 700; }
+
+.parity-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3em 1.2em;
+    margin: 0.8em 0 0.4em;
+    font-size: 85%;
+    color: var(--bs-secondary-color);
+}
+
+.parity-swatch {
+    display: inline-block;
+    width: 0.9em;
+    height: 0.9em;
+    margin-right: 0.4em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.2em;
+    vertical-align: -0.1em;
+}
+
+.parity-swatch-check { background: var(--widget-chip); }
+.parity-swatch-flipped { background: var(--parity-flipped); }
+.parity-swatch-odd { background: var(--parity-odd-tint); border-color: var(--parity-odd); }
+
+/* two lines high, so that the widget keeps its height from click to click */
+.parity-message {
+    min-height: 3em;
+    margin: 0;
+    text-align: center;
+}
+
 /* how Prolog searches (prolog_search.js, »Logisch programmieren mit Prolog«) */
 .prolog-search {
     --widget: #5c677d; --widget-ink: #4a5264; --widget-chip: #ebecef; --widget-line: #dbdee3; --widget-tint: #fafafb;
