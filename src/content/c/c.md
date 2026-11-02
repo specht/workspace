@@ -20,7 +20,7 @@ Die Programmiersprache C wurde in den frühen 1970er Jahren von Dennis Ritchie b
 
 _person(ritchie)
 
-Heutzutage ist C immer noch äußerst relevant und weit verbreitet. Sie bildet die Grundlage für viele moderne Programmiersprachen wie C++, C#, und Objective-C und wird weiterhin in der Entwicklung von Betriebssystemen, eingebetteten Systemen, Datenbanken und anderen Performance-kritischen Anwendungen eingesetzt. Die Sprache ist bekannt für ihre Effizienz, Portabilität und Nähe zur Hardware, was sie zu einer bevorzugten Wahl für Anwendungen macht, die eine hohe Leistung erfordern.
+Heutzutage ist C immer noch äußerst relevant und weit verbreitet. Sie bildet die Grundlage für viele moderne Programmiersprachen wie C++, C# und Objective-C und wird weiterhin in der Entwicklung von Betriebssystemen, eingebetteten Systemen, Datenbanken und anderen Performance-kritischen Anwendungen eingesetzt. Die Sprache ist bekannt für ihre Effizienz, Portabilität und Nähe zur Hardware, was sie zu einer bevorzugten Wahl für Anwendungen macht, die eine hohe Leistung erfordern.
 
 ## Hello, world!
 
