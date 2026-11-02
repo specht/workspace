@@ -19,10 +19,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ## Where the review stands
 
-Done up to and including Programmiersprachen (`rust`), on 2 November
-2026. Next and last: the four hidden levels (`level-0-c1d8a2f7` to
-`level-3-4c9e6a2d`), read under their own rules: never named or linked
-outside their series. Answers that stand directly under or above their question go into an
+Every page of the catalog is read, the four hidden levels last, on
+2 November 2026. What is left is in »Open for the maintainer« and
+»Illustrations proposed«; a page changed later is read again and its entry
+updated. Answers that stand directly under or above their question go into an
 `<!-- after: id -->` block (an included Handbuch part can be wrapped too);
 redundant tasks are removed, since there are no student solutions yet.
 
