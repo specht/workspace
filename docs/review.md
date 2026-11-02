@@ -546,7 +546,9 @@ such a mention.
   (FLOORS in level.js); the starter's comment listed six walls and five floors
   (fixed and pushed there, f20fabd); the door question checked against the
   loading queue; the box-office claim checked.
-- [ ] `level-1-7e3a91c4`
+- [x] `level-1-7e3a91c4` (1 November 2026): the code block with »slab = 0.5«
+  stood visible under the question asking for it, now in an after block;
+  stairs arithmetic, slab and the collision numbers (controls.js) checked.
 - [ ] `level-2-b52d0f18`
 - [ ] `level-3-4c9e6a2d`
 
