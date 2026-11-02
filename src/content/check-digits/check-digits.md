@@ -1222,7 +1222,7 @@ der 11 mitzählt. Nur die 11 passt nicht, und auf der Geraden stünde dort die
 schon, welche Werte fehlen, etwa weil zwei unlesbar sind, genügen die beiden
 übrigen: Durch zwei Punkte geht genau eine Gerade.
 
-<img class='drawing' style='width: 20em' src='gerade.webp' alt='Die vier angekommenen Werte über ihren Stellen 1 bis 4: 2, 6 und 14 liegen auf einer Geraden, die 11 an Stelle 3 liegt über ihr. Ein gestrichelter Pfeil führt von der 11 zu dem Punkt der Geraden an Stelle 3, der 10.'>
+<img class='drawing' style='width: 24em' src='gerade.webp' alt='Die vier angekommenen Werte über ihren Stellen 1 bis 4: 2, 6 und 14 liegen auf einer Geraden, die 11 an Stelle 3 liegt über ihr. Ein gestrichelter Pfeil führt von der 11 zu dem Punkt der Geraden an Stelle 3, der 10.'>
 
 _task(gerade)
 

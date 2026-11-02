@@ -101,14 +101,14 @@ _person(dijkstra)
 
 Drei Philosophen sitzen um einen runden Tisch, zwischen je zweien liegt eine Gabel. Wer essen will, braucht beide Gabeln neben sich, die linke und die rechte. Jeder nimmt erst die eine, dann die andere, isst, und legt beide zurück. Die Gabeln sind Locks: `f2` zwischen A und B, `f3` zwischen B und C, `f1` zwischen C und A. A braucht also `f1` und `f2`, B `f2` und `f3`, C `f3` und `f1`.
 
-<img class='drawing' style='width: 22em' src='philosophen.webp' alt='Ein runder Tisch mit drei Tellern; oben sitzt A, rechts unten B, links unten C. Zwischen je zwei Tellern liegt eine Gabel: f2 zwischen A und B, f3 unten zwischen B und C, f1 zwischen C und A.'>
+<img class='drawing' style='width: 26em' src='philosophen.webp' alt='Ein runder Tisch mit drei Tellern; oben sitzt A, rechts unten B, links unten C. Zwischen je zwei Tellern liegt eine Gabel: f2 zwischen A und B, f3 unten zwischen B und C, f1 zwischen C und A.'>
 
 <div class='interleaving' data-title='Drei Philosophen' data-program='{"shared": {"meals": 0}, "locks": ["f1", "f2", "f3"], "threads": {"A": ["lock f1", "lock f2", "meals ← meals + 1", "unlock f2", "unlock f1"], "B": ["lock f2", "lock f3", "meals ← meals + 1", "unlock f3", "unlock f2"], "C": ["lock f3", "lock f1", "meals ← meals + 1", "unlock f1", "unlock f3"]}}'></div>
 
 _task(philosophen)
 
 <!-- after: philosophen -->
-<img class='drawing' style='width: 22em' src='philosophen-deadlock.webp' alt='Derselbe Tisch im Deadlock: A hält f1 und wartet auf f2, B hält f2 und wartet auf f3, C hält f3 und wartet auf f1. Die gestrichelten Pfeile laufen im Kreis um den Tisch.'>
+<img class='drawing' style='width: 26em' src='philosophen-deadlock.webp' alt='Derselbe Tisch im Deadlock: A hält f1 und wartet auf f2, B hält f2 und wartet auf f3, C hält f3 und wartet auf f1. Die gestrichelten Pfeile laufen im Kreis um den Tisch.'>
 
 Jeder hält seine erste Gabel, und die zweite hält sein Nachbar. Die Pfeile, wer auf wen wartet, laufen einmal um den Tisch: Keiner kann essen, also legt auch keiner eine Gabel zurück.
 <!-- /after -->

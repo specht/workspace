@@ -42,16 +42,19 @@
         if (oddRows.length === 0 && oddColumns.length === 0) {
             return 'Alle Zeilen und Spalten sind wieder gerade.';
         }
-        const rows = oddRows.length === 1 ? 'eine Zeile' : `${COUNT[oddRows.length]} Zeilen`;
-        const columns = oddColumns.length === 1 ? 'eine Spalte' : `${COUNT[oddColumns.length]} Spalten`;
-        let text = `${rows[0].toUpperCase()}${rows.slice(1)} und ${columns} haben eine ungerade Zahl von Einsen.`;
-        if (oddRows.length === 0 || oddColumns.length === 0) {
-            text += ' Das Gitter merkt, dass etwas nicht stimmt, aber nicht, wo: Es gibt keine Kreuzung.';
+        // »keine Zeile«, »eine Zeile«, »zwei Zeilen«
+        const some = (n, one, many) => (n < 2 ? `${COUNT[n]} ${one}` : `${COUNT[n]} ${many}`);
+        const rows = some(oddRows.length, 'Zeile', 'Zeilen');
+        const columns = some(oddColumns.length, 'Spalte', 'Spalten');
+        const none = oddRows.length === 0 || oddColumns.length === 0;
+        let text = `${rows[0].toUpperCase()}${rows.slice(1)}${none ? ', aber' : ' und'} ${columns} haben eine ungerade Zahl von Einsen.`;
+        if (none) {
+            text += ' Ohne Kreuzung findet das Gitter den Fehler nicht.';
         } else if (oddRows.length > 1 && oddColumns.length > 1) {
-            text += ` An ${COUNT[oddRows.length * oddColumns.length]} Kreuzungen könnte ein gekipptes Bit stehen; welche es sind, kann das Gitter nicht sagen.`;
+            text += ` Ein gekipptes Bit könnte an ${COUNT[oddRows.length * oddColumns.length]} Kreuzungen stehen.`;
         }
         if (maxFlips > 1 && flipped.length === maxFlips) {
-            text += ' Ein weiterer Klick dreht das Bit zurück, das du zuerst gekippt hast.';
+            text += ' Ein weiterer Klick dreht das zuerst gekippte Bit zurück.';
         }
         return text;
     }

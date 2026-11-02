@@ -1,41 +1,41 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 470' width='520' height='470'>
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 476' width='520' height='476'>
   <!-- Vier Werte über ihren Stellen, drei auf einer Geraden; gemacht von bilder/diagramme.py,
        als Bild: ruby src/scripts/render-svg.rb src/content/check-digits/gerade.svg 1040 -->
-<rect width='520' height='470' fill='#ffffff'/>
-<text x='58.0' y='425.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>0</text>
+<rect width='520' height='476' fill='#ffffff'/>
+<text x='58.0' y='427.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>0</text>
 <line x1='70' y1='324' x2='484' y2='324' stroke='#d1d5db' stroke-width='1'/>
-<text x='58.0' y='329.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>4</text>
+<text x='58.0' y='331.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>4</text>
 <line x1='70' y1='228' x2='484' y2='228' stroke='#d1d5db' stroke-width='1'/>
-<text x='58.0' y='233.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>8</text>
+<text x='58.0' y='235.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>8</text>
 <line x1='70' y1='132' x2='484' y2='132' stroke='#d1d5db' stroke-width='1'/>
-<text x='58.0' y='137.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>12</text>
+<text x='58.0' y='139.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>12</text>
 <line x1='70' y1='36' x2='484' y2='36' stroke='#d1d5db' stroke-width='1'/>
-<text x='58.0' y='41.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>16</text>
+<text x='58.0' y='43.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>16</text>
 <line x1='160' y1='420' x2='160' y2='426' stroke='#6b7280' stroke-width='1.5'/>
-<text x='160.0' y='446.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>1</text>
+<text x='160.0' y='450.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>1</text>
 <line x1='250' y1='420' x2='250' y2='426' stroke='#6b7280' stroke-width='1.5'/>
-<text x='250.0' y='446.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>2</text>
+<text x='250.0' y='450.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>2</text>
 <line x1='340' y1='420' x2='340' y2='426' stroke='#6b7280' stroke-width='1.5'/>
-<text x='340.0' y='446.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>3</text>
+<text x='340.0' y='450.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>3</text>
 <line x1='430' y1='420' x2='430' y2='426' stroke='#6b7280' stroke-width='1.5'/>
-<text x='430.0' y='446.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>4</text>
+<text x='430.0' y='450.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>4</text>
 <line x1='70' y1='420' x2='474' y2='420' stroke='#6b7280' stroke-width='1.5'/>
 <polygon points='484,420 472,415 472,425' fill='#6b7280'/>
-<text x='484.0' y='446.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>Stelle</text>
+<text x='484.0' y='408.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>Stelle</text>
 <line x1='70' y1='420' x2='70' y2='28' stroke='#6b7280' stroke-width='1.5'/>
 <polygon points='70,18 65,30 75,30' fill='#6b7280'/>
-<text x='82.0' y='28.0' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>Wert</text>
+<text x='82.0' y='30.0' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='20' font-weight='400' fill='#6b7280'>Wert</text>
 <line x1='124.0' y1='410.4' x2='466.0' y2='45.6' stroke='#2b5fb4' stroke-width='2.5'/>
 <path d='M 331.0 156.0 C 294.0 156.0 294.0 180.0 319.0 180.0' fill='none' stroke='#dc2626' stroke-width='2' stroke-dasharray='5 4'/>
 <polygon points='331.0,180.0 319.0,175.0 319.0,185.0' fill='#dc2626'/>
 <circle cx='340.0' cy='180.0' r='7' fill='#ffffff' stroke='#2b5fb4' stroke-width='2.5'/>
-<text x='354.0' y='202.0' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='600' fill='#2b5fb4'>10</text>
+<text x='354.0' y='206.0' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='23' font-weight='600' fill='#2b5fb4'>10</text>
 <circle cx='340.0' cy='156.0' r='7' fill='#dc2626'/>
-<text x='326.0' y='144.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='600' fill='#dc2626'>11</text>
+<text x='326.0' y='144.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='23' font-weight='600' fill='#dc2626'>11</text>
 <circle cx='160.0' cy='372.0' r='7' fill='#2b5fb4'/>
-<text x='146.0' y='362.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='600' fill='#2b5fb4'>2</text>
+<text x='146.0' y='362.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='23' font-weight='600' fill='#2b5fb4'>2</text>
 <circle cx='250.0' cy='276.0' r='7' fill='#2b5fb4'/>
-<text x='236.0' y='266.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='600' fill='#2b5fb4'>6</text>
+<text x='236.0' y='266.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='23' font-weight='600' fill='#2b5fb4'>6</text>
 <circle cx='430.0' cy='84.0' r='7' fill='#2b5fb4'/>
-<text x='416.0' y='74.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='600' fill='#2b5fb4'>14</text>
+<text x='416.0' y='74.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='23' font-weight='600' fill='#2b5fb4'>14</text>
 </svg>

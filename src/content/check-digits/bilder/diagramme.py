@@ -17,7 +17,7 @@ SANS = "'IBM Plex Sans', 'DejaVu Sans', sans-serif"
 TEXT, BLUE, GREY, LINE, RED = "#1f2937", "#2b5fb4", "#6b7280", "#d1d5db", "#dc2626"
 OUT = Path(__file__).resolve().parent.parent
 
-W, H = 520, 470
+W, H = 520, 476
 X0, Y0 = 70, 420     # where position 0 and value 0 meet
 DX, DY = 90, 24      # pixels per position and per unit of value
 
@@ -41,20 +41,20 @@ def gerade():
         x, y = px(0, value)
         if value:
             out.append(f"<line x1='{X0}' y1='{y}' x2='{X0 + DX * 4.6:.0f}' y2='{y}' stroke='{LINE}' stroke-width='1'/>")
-        out.append(label(x - 12, y + 5, value, 15, GREY, "end"))
+        out.append(label(x - 12, y + 7, value, 20, GREY, "end"))
     for place in range(1, 5):
         x, y = px(place, 0)
         out.append(f"<line x1='{x}' y1='{Y0}' x2='{x}' y2='{Y0 + 6}' stroke='{GREY}' stroke-width='1.5'/>")
-        out.append(label(x, Y0 + 26, place, 15, GREY))
+        out.append(label(x, Y0 + 30, place, 20, GREY))
     # axes with arrowheads
     right = X0 + DX * 4.6
     out.append(f"<line x1='{X0}' y1='{Y0}' x2='{right - 10:.0f}' y2='{Y0}' stroke='{GREY}' stroke-width='1.5'/>")
     out.append(f"<polygon points='{right:.0f},{Y0} {right - 12:.0f},{Y0 - 5} {right - 12:.0f},{Y0 + 5}' fill='{GREY}'/>")
-    out.append(label(right, Y0 + 26, "Stelle", 15, GREY, "end"))
+    out.append(label(right, Y0 - 12, "Stelle", 20, GREY, "end"))
     top = 18
     out.append(f"<line x1='{X0}' y1='{Y0}' x2='{X0}' y2='{top + 10}' stroke='{GREY}' stroke-width='1.5'/>")
     out.append(f"<polygon points='{X0},{top} {X0 - 5},{top + 12} {X0 + 5},{top + 12}' fill='{GREY}'/>")
-    out.append(label(X0 + 12, top + 10, "Wert", 15, GREY, "start"))
+    out.append(label(X0 + 12, top + 12, "Wert", 20, GREY, "start"))
     # the straight line through 2, 6 and 14: value = 4 · place − 2
     xa, ya = px(0.6, 4 * 0.6 - 2)
     xb, yb = px(4.4, 4 * 4.4 - 2)
@@ -66,14 +66,14 @@ def gerade():
                f"fill='none' stroke='{RED}' stroke-width='2' stroke-dasharray='5 4'/>")
     out.append(f"<polygon points='{xh - 9:.1f},{yh:.1f} {xh - 21:.1f},{yh - 5:.1f} {xh - 21:.1f},{yh + 5:.1f}' fill='{RED}'/>")
     out.append(f"<circle cx='{xh:.1f}' cy='{yh:.1f}' r='7' fill='#ffffff' stroke='{BLUE}' stroke-width='2.5'/>")
-    out.append(label(xh + 14, yh + 22, "10", 17, BLUE, "start", "600"))
+    out.append(label(xh + 14, yh + 26, "10", 23, BLUE, "start", "600"))
     out.append(f"<circle cx='{xr:.1f}' cy='{yr:.1f}' r='7' fill='{RED}'/>")
-    out.append(label(xr - 14, yr - 12, "11", 17, RED, "end", "600"))
+    out.append(label(xr - 14, yr - 12, "11", 23, RED, "end", "600"))
     # the three values that fit
     for place, value in [(1, 2), (2, 6), (4, 14)]:
         x, y = px(place, value)
         out.append(f"<circle cx='{x:.1f}' cy='{y:.1f}' r='7' fill='{BLUE}'/>")
-        out.append(label(x - 14, y - 10, value, 17, BLUE, "end", "600"))
+        out.append(label(x - 14, y - 10, value, 23, BLUE, "end", "600"))
     out.append("</svg>")
     (OUT / "gerade.svg").write_text("\n".join(out) + "\n")
     print(OUT / "gerade.svg")

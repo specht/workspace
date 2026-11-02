@@ -69,7 +69,7 @@ def table(out):
     for name, angle in FORKS.items():
         out.append(fork(angle))
         x, y = at(TABLE + 34, angle)
-        out.append(code(name, x, y + 6, size=18, anchor="middle"))
+        out.append(code(name, x, y + 7, size=22, anchor="middle"))
 
 
 def people(out):
@@ -133,9 +133,9 @@ def deadlock(out):
     people(out)
     y = 520
     out.append(f"<line x1='90' y1='{y - 5}' x2='130' y2='{y - 5}' stroke='{BLUE}' stroke-width='5' stroke-linecap='round'/>")
-    out.append(label(142, y, "hält die Gabel", 16, TEXT, "start"))
+    out.append(label(142, y + 1, "hält die Gabel", 20, TEXT, "start"))
     out.append(arrow(300, y - 5, 342, y - 5, 1, 0))
-    out.append(label(354, y, "wartet auf die Gabel", 16, TEXT, "start"))
+    out.append(label(354, y + 1, "wartet auf die Gabel", 20, TEXT, "start"))
 
 
 picture("philosophen", "Drei Philosophen am runden Tisch, zwischen je zweien eine Gabel", 480, setup)

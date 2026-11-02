@@ -14,8 +14,8 @@ No names: the page has a version with Ida and one with the class
 repository, where it is anyone in the class.
 
     python3 src/content/class-quiz/bilder/diagramme.py
-    ruby src/scripts/render-svg.rb src/content/class-quiz/push-abgelehnt.svg 1520
-    ruby src/scripts/render-svg.rb src/content/class-quiz/nach-merge.svg 1520
+    ruby src/scripts/render-svg.rb src/content/class-quiz/push-abgelehnt.svg 1040
+    ruby src/scripts/render-svg.rb src/content/class-quiz/nach-merge.svg 1040
 """
 
 from pathlib import Path
@@ -23,7 +23,7 @@ from pathlib import Path
 SANS = "'IBM Plex Sans', 'DejaVu Sans', sans-serif"
 TEXT, BLUE, GREY, GREEN, AMBER = "#1f2937", "#2b5fb4", "#6b7280", "#16a34a", "#d97706"
 OUT = Path(__file__).resolve().parent.parent
-W = 760
+W = 520
 
 
 def label(x, y, text, size=16, colour=TEXT, anchor="middle", weight="400", italic=False):
@@ -57,7 +57,7 @@ def commit(x, y, colour, name=None, ring=False):
 def picture(name, comment, h, body):
     out = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {h}' width='{W}' height='{h}'>",
            f"  <!-- {comment}; gemacht von bilder/diagramme.py, als Bild:\n"
-           f"       ruby src/scripts/render-svg.rb src/content/class-quiz/{name}.svg 1520 -->",
+           f"       ruby src/scripts/render-svg.rb src/content/class-quiz/{name}.svg 1040 -->",
            f"<rect width='{W}' height='{h}' fill='#ffffff'/>"]
     body(out)
     out.append("</svg>")
@@ -65,38 +65,39 @@ def picture(name, comment, h, body):
     print(OUT / f"{name}.svg")
 
 
-A, B, NEXT = 230, 330, 460
+A, B, NEXT = 44, 140, 270
+SIZE = 21            # large enough to read on a phone, where the picture is about 360 px wide
 
 
 def rejected(out):
-    for y, place, colour, what in [(70, "Server", GREEN, "der andere Commit"), (200, "Dein Klon", AMBER, "dein Commit")]:
-        out.append(label(40, y + 6, place, 18, TEXT, "start", "600"))
+    # each row named above it, so that the commits can use the whole width
+    for y, place, colour, what in [(76, "Server", GREEN, "der andere Commit"), (180, "Dein Klon", AMBER, "dein Commit")]:
+        out.append(label(24, y - 38, place, SIZE, TEXT, "start", "700"))
         out.append(line([(A, y), (B, y)], BLUE))
         out.append(line([(B, y), (NEXT, y)], colour))
         out.append(commit(A, y, BLUE, "A"))
         out.append(commit(B, y, BLUE, "B"))
         out.append(commit(NEXT, y, colour))
-        out.append(label(NEXT + 32, y + 6, what, 16, colour, "start", "600"))
-    out.append(label(A, 268, "Beide bauen auf B auf. Nähme der Server deinen Commit an,", 15, GREY, "start", italic=True))
-    out.append(label(A, 290, "fehlte danach der andere.", 15, GREY, "start", italic=True))
+        out.append(label(NEXT + 32, y + 7, what, SIZE, colour, "start", "700"))
+    out.append(label(24, 248, "Beide bauen auf B auf. Nähme der Server deinen", SIZE - 2, GREY, "start", italic=True))
+    out.append(label(24, 274, "Commit an, fehlte danach der andere.", SIZE - 2, GREY, "start", italic=True))
 
 
 def after_pull(out):
-    y, up, down, merge = 140, 70, 210, 590
-    out.append(label(40, y + 6, "Dein Klon", 18, TEXT, "start", "600"))
-    out.append(label(40, y + 30, "nach dem Merge", 15, GREY, "start"))
+    y, up, down, merge = 160, 100, 220, 400
+    out.append(label(24, 38, "Dein Klon nach dem Merge", SIZE, TEXT, "start", "700"))
     out.append(line([(A, y), (B, y)], BLUE))
     out.append(line([(B, y), (NEXT, up), (merge, y)], GREEN))
     out.append(line([(B, y), (NEXT, down), (merge, y)], AMBER))
     out.append(commit(A, y, BLUE, "A"))
     out.append(commit(B, y, BLUE, "B"))
     out.append(commit(NEXT, up, GREEN))
-    out.append(label(NEXT, up - 30, "der andere Commit", 16, GREEN, weight="600"))
+    out.append(label(NEXT, up - 30, "der andere Commit", SIZE, GREEN, weight="700"))
     out.append(commit(NEXT, down, AMBER))
-    out.append(label(NEXT, down + 46, "dein Commit", 16, AMBER, weight="600"))
+    out.append(label(NEXT, down + 46, "dein Commit", SIZE, AMBER, weight="700"))
     out.append(commit(merge, y, BLUE, ring=True))
-    out.append(label(merge + 30, y + 6, "Merge", 16, BLUE, "start", "600"))
+    out.append(label(merge + 30, y + 7, "Merge", SIZE, BLUE, "start", "700"))
 
 
-picture("push-abgelehnt", "Server und Klon nach demselben B mit verschiedenen Commits", 310, rejected)
-picture("nach-merge", "Nach dem Merge: beide Commits, zusammengeführt", 280, after_pull)
+picture("push-abgelehnt", "Server und Klon nach demselben B mit verschiedenen Commits", 296, rejected)
+picture("nach-merge", "Nach dem Merge: beide Commits, zusammengeführt", 292, after_pull)

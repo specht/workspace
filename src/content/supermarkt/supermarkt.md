@@ -520,7 +520,7 @@ Sie wartet 60 Sekunden. Die erste Kundin ist von Sekunde 0 bis 90 an der Reihe;
 die zweite kommt in Sekunde 30 und kommt in Sekunde 90 dran. In den Blöcken
 steht, wie viele Artikel jede hat:
 
-<img class='drawing' style='width: 34em' src='kasse.webp' alt='Eine Kasse von Sekunde 0 bis 180: Die erste Kundin mit 10 Artikeln ist von 0 bis 90 dran, die zweite mit 5 Artikeln von 90 bis 165. Die zweite kommt in Sekunde 30 an und wartet 60 Sekunden. Über der Kasse steht, ab wann sie wieder frei ist: ab 90, dann ab 165.'>
+<img class='drawing' style='width: 28em' src='kasse.webp' alt='Eine Kasse von Sekunde 0 bis 180: Die erste Kundin mit 10 Artikeln ist von 0 bis 90 dran, die zweite mit 5 Artikeln von 90 bis 165. Die zweite kommt in Sekunde 30 an und wartet 60 Sekunden. Über der Kasse steht, ab wann sie wieder frei ist: ab 90, dann ab 165.'>
 
 Mehr muss die Kasse dafür nicht wissen als eine Zahl: **ab wann sie wieder frei ist**. Kommt
 eine Kundin, fängt die Kasse mit ihr an, sobald sie frei ist, aber nicht, bevor
