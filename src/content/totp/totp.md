@@ -156,7 +156,7 @@ _task(base32)
 
 ### Ein Code aus Schlüssel und Zähler
 
-Der Code kommt aus einer **HMAC**. Das ist eine Prüfsumme wie SHA-1 aus [Kryptographie im Terminal](/crypto), nur mit einem Schlüssel gemischt: Wer den Schlüssel nicht kennt, kann sie nicht ausrechnen, und an der Prüfsumme sieht man dem Schlüssel nichts an. Für einen Zähler, der bei jeder Anmeldung um 1 weiterzählt, geht **HOTP** so:
+Der Code kommt aus einer **HMAC**. Das ist ein Hash wie SHA-256 aus [Kryptographie im Terminal](/crypto), hier mit SHA-1, nur mit einem Schlüssel gemischt: Wer den Schlüssel nicht kennt, kann den Hash nicht ausrechnen, und an ihm sieht man vom Schlüssel nichts. Für einen Zähler, der bei jeder Anmeldung um 1 weiterzählt, geht **HOTP** so:
 
 1. Schreib den Zähler als 8 Bytes, das höchste zuerst. Zähler 1 sind die Bytes `00 00 00 00 00 00 00 01`.
 2. Rechne die HMAC mit SHA-1 aus Schlüssel und diesen 8 Bytes. Heraus kommen 20 Bytes.
