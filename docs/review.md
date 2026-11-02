@@ -19,9 +19,10 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ## Where the review stands
 
-Done up to and including Terminal & Git (`terminal-mystery`), on
-2 November 2026. Next page: `fortran` (Programmiersprachen), then the sections below in catalog
-order. Answers that stand directly under or above their question go into an
+Done up to and including Programmiersprachen (`rust`), on 2 November
+2026. Next and last: the four hidden levels (`level-0-c1d8a2f7` to
+`level-3-4c9e6a2d`), read under their own rules: never named or linked
+outside their series. Answers that stand directly under or above their question go into an
 `<!-- after: id -->` block (an included Handbuch part can be wrapped too);
 redundant tasks are removed, since there are no student solutions yet.
 
