@@ -114,7 +114,7 @@ Kein Server der Welt kennt alle Namen. Stattdessen ist jeder Name ein Pfad, von 
 - Darunter die **Endungen** (*Top-Level-Domains*) wie `de`, `com` oder `pe`. Für `de` ist die DENIC zuständig, eine Genossenschaft in Frankfurt.
 - Darunter die Namen, die jemand bei der Endung angemeldet hat, wie `hackschule.de`. Wer einen Namen anmeldet, sagt, welche Nameserver für ihn zuständig sind; bei `hackschule.de` sind es zwei von Cloudflare.
 
-Wer eine Adresse sucht, fängt oben an. Die Root-Server kennen `hackschule.de` nicht, aber sie wissen, wer für `de` zuständig ist. Frag selbst, mit `@` vor dem Server, den `dig` fragen soll:
+Wer eine Adresse sucht, fängt oben an, bei einem Root-Server. Frag selbst, mit `@` vor dem Server, den `dig` fragen soll:
 
 ```bash
 dig @a.root-servers.net hackschule.de
@@ -129,9 +129,13 @@ crop-terminal-lines: auto
 
 <img class='full' src='root.webp' alt='Die Antwort von a.root-servers.net: kein ANSWER SECTION, aber im AUTHORITY SECTION die Nameserver für de, etwa a.nic.de, f.nic.de, l.de.net und s.de.net.'>
 
-Der Root-Server antwortet nicht mit einer Adresse. Im **AUTHORITY SECTION** steht ein Verweis: Frag die Server für `de`. Im Bild steht nur dieser Teil der Antwort; `+noall +authority` blendet den Rest aus.
+Im Bild steht nur der Teil der Antwort, der mit **AUTHORITY SECTION** überschrieben ist; `+noall +authority` blendet den Rest aus.
 
 _task(wurzel)
+
+<!-- after: wurzel -->
+Der Root-Server antwortet nicht mit einer Adresse: Er kennt `hackschule.de` nicht, aber er weiß, wer für `de` zuständig ist. Im AUTHORITY SECTION steht darum ein Verweis: Frag die Server für `de`.
+<!-- /after -->
 
 Geh den Weg selbst weiter: Frag einen der Server für `de` nach `hackschule.de`. Er verweist dich wieder weiter, und erst der Server, auf den er verweist, kennt die Adresse.
 
