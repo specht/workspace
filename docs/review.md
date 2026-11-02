@@ -329,7 +329,10 @@ image.
   update, the answer of »Zwei auf einmal« further down; now in its after
   block, in both languages. Predictions have after blocks; RFC 2324 (1998) and
   418 kept in 2017 check out.
-- [ ] `pixelwand`
+- [x] `pixelwand` (1 November 2026): page (Ruby and Python), cards and teacher
+  note read, nothing to change: the predictions (handshake, wer-bekommt-was,
+  counter) are answered after them; the RFC 6455 example key, r/place 2017
+  (1000 × 1000, 16 colours, 5 to 20 minutes) and § 303b StGB check out.
 - [ ] `crypto`
 - [ ] `totp`
 - [ ] `nebenlaeufigkeit`
