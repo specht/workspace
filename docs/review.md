@@ -533,7 +533,7 @@ image.
 - [x] `go` (1 November 2026): page read, nothing to change.
 - [x] `dart` (1 November 2026): page read; only »macOS«: the analytics switch-
   off runs at every start (init-code-server-run).
-- [ ] `rust`
+- [x] `rust` (1 November 2026): page read, nothing to change.
 
 ### Hidden: the Backrooms
 
