@@ -2314,7 +2314,7 @@ tasks:
         ```
 
   - id: count-found
-    title: "Hunderttausend Suchen"
+    title: "Hunderttausende Suchen"
     extra: true
     prompt: |
       `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `count_found(numbers, queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als fünf Sekunden. Mit der linearen Suche dauert es Minuten.
@@ -2504,7 +2504,7 @@ tasks:
         ```
     java:
       prompt: |
-        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<Integer> numbers, List<Integer> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als acht Sekunden. Mit der linearen Suche dauert es zu lange.
+        `numbers` ist aufsteigend sortiert und hat 200 000 verschiedene Zahlen; `queries` hat 200 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<Integer> numbers, List<Integer> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als acht Sekunden. Mit der linearen Suche dauert es zu lange.
       starter: |
         int countFound(List<Integer> numbers, List<Integer> queries) {
             return -1;
@@ -2514,12 +2514,12 @@ tasks:
         language: java
         forbid: [Set, HashSet, TreeSet, Collections.binarySearch, Arrays.binarySearch]
         timeout: 8
-        slow: "Zu langsam: Bei jeder Suche gehst du die ganze Liste durch, hunderttausendmal hunderttausend Vergleiche. Die binäre Suche braucht für jede Suche nur etwa 17."
+        slow: "Zu langsam: Bei jeder Suche gehst du die ganze Liste durch, zweihunderttausendmal zweihunderttausend Vergleiche. Die binäre Suche braucht für jede Suche nur etwa 18."
         cases:
           - { call: "countFound(List.of(1, 3, 5), List.of(1, 2, 3))", expect: "2" }
           - { call: "countFound(List.of(), List.of(1))", expect: "0" }
           - { call: "countFound(List.of(2, 4), List.of())", expect: "0" }
-          - { call: "List<Integer> numbers = new ArrayList<>(); List<Integer> queries = new ArrayList<>(); for (int i = 0; i < 100000; i++) { numbers.add(i * 3); queries.add(i); }; countFound(numbers, queries)", expect: "33334", say: "Alle Vielfachen von 3 unter 100 000." }
+          - { call: "List<Integer> numbers = new ArrayList<>(); List<Integer> queries = new ArrayList<>(); for (int i = 0; i < 200000; i++) { numbers.add(i * 3); queries.add(i); }; countFound(numbers, queries)", expect: "66667", say: "Alle Vielfachen von 3 unter 200 000." }
       hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Methode von vorhin darfst du hier hineinschreiben und aufrufen."
       solution: |
         ```java

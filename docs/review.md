@@ -40,11 +40,7 @@ redundant tasks are removed, since there are no student solutions yet.
 Found while reading, not fixed, because it needs a decision or a run in the
 image.
 
-- `kata-search`, »Hunderttausend Suchen« in Java and Dart: the examples have
-  no fail case. Measured on the development machine, a linear search over
-  `List<Integer>` takes 8.9 seconds in Java (limit 8) and 15 in Dart
-  (limit 5); Java rejects it only narrowly, and a faster machine would let it
-  through. A fail example for each, and perhaps 200 000 queries in Java.
+Nothing at the moment.
 
 ## Pages
 
@@ -136,6 +132,10 @@ image.
   function as a person; the Java limit is eight seconds, the note said five.
   Examples (guesses, search_steps) check out. Java's narrow margin is under
   »Open for the maintainer«.
+  Later: »Hunderttausend Suchen« had no fail example in Java and Dart, and a
+  linear search in Java took 8.9 s against a limit of 8; Java now searches
+  200 000 numbers, the card is »Hunderttausende Suchen«, both languages have
+  a linear search as fail example (all 169 examples pass in the image).
 - [x] `pip-3` (1 November 2026, 48328edf): page, widget text, cards and
   teacher note read; the prediction and the BFS tie (north before west, the
   path over the top) check out. The first and only tip of »face« was the

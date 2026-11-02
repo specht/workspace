@@ -270,6 +270,10 @@ examples:
     dart:
       pass:
         - answer: "bool binarySearch(List<int> numbers, int wanted) {\n  var low = 0;\n  var high = numbers.length - 1;\n  while (low <= high) {\n    final middle = (low + high) ~/ 2;\n    if (numbers[middle] == wanted) {\n      return true;\n    }\n    if (numbers[middle] < wanted) {\n      low = middle + 1;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return false;\n}\n\nint countFound(List<int> numbers, List<int> queries) {\n  var count = 0;\n  for (final wanted in queries) {\n    if (binarySearch(numbers, wanted)) {\n      count++;\n    }\n  }\n  return count;\n}\n"
+      fail:
+        - answer: "int countFound(List<int> numbers, List<int> queries) {\n  return queries.where(numbers.contains).length;\n}\n"
     java:
       pass:
         - answer: "boolean binarySearch(List<Integer> numbers, int wanted) {\n    int low = 0;\n    int high = numbers.size() - 1;\n    while (low <= high) {\n        int middle = (low + high) / 2;\n        if (numbers.get(middle) == wanted) {\n            return true;\n        }\n        if (numbers.get(middle) < wanted) {\n            low = middle + 1;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return false;\n}\n\nint countFound(List<Integer> numbers, List<Integer> queries) {\n    int count = 0;\n    for (int wanted : queries) {\n        if (binarySearch(numbers, wanted)) {\n            count++;\n        }\n    }\n    return count;\n}\n"
+      fail:
+        - answer: "int countFound(List<Integer> numbers, List<Integer> queries) {\n    int count = 0;\n    for (int wanted : queries) {\n        if (numbers.contains(wanted)) {\n            count++;\n        }\n    }\n    return count;\n}\n"
