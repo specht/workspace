@@ -355,7 +355,10 @@ image.
   is the page sql-joins. Predictions (reihenfolge, dichte-where, ohne-where)
   have after blocks; SQL 1974 and the seven continents (Antarktika without
   countries) check out.
-- [ ] `sql-joins`
+- [x] `sql-joins` (1 November 2026): page, cards and teacher note read,
+  nothing to change: predictions are answered in after blocks or by the
+  student's own query (weiteste-berlin); Berlin–Paris 876 km, Singapur's four
+  official languages and Papua-Neuguinea's one neighbour check out.
 - [ ] `sql-index`
 - [ ] `filmdatenbank`
 - [ ] `neo4j-filmdatenbank`
