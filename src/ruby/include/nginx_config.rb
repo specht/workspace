@@ -436,10 +436,24 @@ class Main < Sinatra::Base
                     default_type application/manifest+json;
                 }
 
+                # While Ruby does not answer (a restart), a page that waits
+                # for it and loads again, instead of nginx's bare 502; a 502
+                # of the students' Workspaces (/w/) stays as it is. While
+                # its container is down, its address does not answer at all:
+                # without the short connect timeout nginx waited 14 seconds.
                 location @ruby {
                     limit_req zone=hs_backend burst=#{NGINX_BACKEND_BURST} nodelay;
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby:9292;
+                    proxy_connect_timeout 3s;
+                    error_page 502 504 =503 /_restarting.html;
+                }
+
+                location = /_restarting.html {
+                    internal;
+                    root /usr/share/nginx/html;
+                    add_header Cache-Control no-store always;
+                    add_header Retry-After 5 always;
                 }
 
                 # Normalize /w/<token> -> /w/<token>/
