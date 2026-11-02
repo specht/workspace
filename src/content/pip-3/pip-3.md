@@ -36,9 +36,9 @@ immer den kürzesten Weg. Bring ihm seinen Stein zurück.«
 <div class='pip-journey'>
 <pre class='no-copy'>
 #########################
-#...1.....2.....3.....4.#
-#P......................#
-#.....................M.#
+#...1.....2.....3...4####
+#P...................#..#
+#....................#M.#
 #########################
 </pre>
 <p>Die Karte des Wichtels: Eine Lampe brennt, sobald du die Aufgaben ihres Kapitels gelöst hast. Ein Klick auf eine Lampe führt zum Kapitel.</p>

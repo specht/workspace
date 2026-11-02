@@ -455,10 +455,15 @@
             // at the foot of a face: glowing mushrooms and crystals (with
             // their own light, above the dark), red mushrooms, stalagmites
             this.shining = [];
+            // not behind what stands tall on the field below: a lamp's post
+            // or a lever reaches up into the face
+            const { lamp, burning, unlit, levers, gates } = this.layout;
+            const tall = new Set([lamp, ...(burning || []), ...(unlit || []), ...(levers || []), ...(gates || [])].filter(Boolean).map(key));
             for (let y = 0; y < this.layout.height; y++) {
                 for (let x = 0; x < this.layout.width; x++) {
                     // on a straight piece of face only, not on a corner's curve
                     if (!wall(x, y) || wall(x, y + 1) || !wall(x - 1, y) || !wall(x + 1, y)) continue;
+                    if (tall.has(key([x, y + 1]))) continue;
                     const h = hash(x, y, 2);
                     if (h < 0.1) {
                         this.shining.push(['glowshroom', [x, y]]);
