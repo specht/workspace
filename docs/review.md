@@ -313,7 +313,12 @@ image.
 - [x] `radio` (1 November 2026): page, cards and teacher note read, nothing to
   change: the discussion questions are asked without answers; Baudot (five
   keys, about 150 years ago) and Shannon 1948 check out.
-- [ ] `tcpip`
+- [x] `tcpip` (1 November 2026, 9e7b0e6c): page, cards and teacher note read;
+  the explanation right under »Wo steht der Server wirklich?« (the ending says
+  where a name is registered, not where the server is) now sits in its after
+  block; all predictions already had after blocks. Berlin–Canberra (16 000 km,
+  160 ms in fibre), RFC 826 (1982) and info.cern.ch (last modified December
+  1992) check out.
 - [ ] `dns`
 - [ ] `webserver`
 - [ ] `pixelwand`
