@@ -414,7 +414,9 @@ image.
 
 ### Automaten und Sprachen
 
-- [ ] `automata`
+- [x] `automata` (1 November 2026): page (Ruby and Python), steppers, cards
+  and teacher note read, nothing to change: 3^1000 has 1585 binary digits,
+  2^30 is over a billion; the explosion prediction has its after block.
 - [ ] `regex`
 - [ ] `kellerautomat`
 - [ ] `turingmaschine`
