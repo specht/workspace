@@ -518,7 +518,8 @@ image.
 - [x] `perl` (1 November 2026): page read, nothing to change.
 - [x] `python` (1 November 2026): page read, nothing to change.
 - [x] `lua` (1 November 2026): page read, nothing to change.
-- [ ] `ruby`
+- [x] `ruby` (1 November 2026, c2698bfd): page read, only the quotes around
+  the nickname.
 - [ ] `java`
 - [ ] `js`
 - [ ] `nasm`
