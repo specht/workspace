@@ -19,7 +19,7 @@ Assembler ist eine maschinennahe Programmiersprache, die direkt auf der Maschine
 
 _person(tatham-hall)
 
-Assembler wird häufig für die Entwicklung von Betriebssystemen, Gerätetreibern und eingebetteten Systemen verwendet, da es eine hohe Effizienz und direkte Kontrolle über die Hardware bietet. Bekannte Beispiele für die Verwendung von Assembler sind der Linux-Kernel, der Teile seines Codes in Assembler enthält, und die Firmware von Mikrocontrollern in eingebetteten Systemen. Auch viele frühe Computerspiele wie »Prince of Persia« und »RollerCoaster Tycoon« wurden in Assembler geschrieben. Heutzutage ist Assembler immer noch relevant, insbesondere in Bereichen, die eine hohe Leistung und präzise Hardwaresteuerung erfordern, wie in der Systemprogrammierung und bei der Entwicklung von Echtzeitsystemen.
+Assembler wird häufig für die Entwicklung von Betriebssystemen, Gerätetreibern und eingebetteten Systemen verwendet, da es eine hohe Effizienz und direkte Kontrolle über die Hardware bietet. Bekannte Beispiele für die Verwendung von Assembler sind der Linux-Kernel, der Teile seines Codes in Assembler enthält, und die Firmware von Mikrocontrollern in eingebetteten Systemen. Auch Computerspiele wurden in Assembler geschrieben, »Prince of Persia« 1989 und noch 1999 »RollerCoaster Tycoon«. Heutzutage ist Assembler immer noch relevant, insbesondere in Bereichen, die eine hohe Leistung und präzise Hardwaresteuerung erfordern, wie in der Systemprogrammierung und bei der Entwicklung von Echtzeitsystemen.
 
 NASM (Netwide Assembler) ist ein freier Assembler, der auf vielen Plattformen verfügbar ist und die x86-Architektur unterstützt. Simon Tatham und Julian Hall haben ihn 1996 veröffentlicht, und er ist einer der beliebtesten Assembler in der Open-Source-Community.
 
@@ -46,9 +46,9 @@ _include_file(hello.asm, nasm)
 
 ### Warum einfach, wenn's auch kompliziert geht?
 
-Wie du sehen kannst, ist der Assembler-Code für ein einfaches »Hello, world!«-Programm im Vergleich zu anderen Programmierspracen relativ lang. Das liegt daran, dass Assembler eine sehr maschinennahe Sprache ist und du viele Details explizit angeben musst.
+Wie du sehen kannst, ist der Assembler-Code für ein einfaches »Hello, world!«-Programm im Vergleich zu anderen Programmiersprachen relativ lang. Das liegt daran, dass Assembler eine sehr maschinennahe Sprache ist und du viele Details explizit angeben musst.
 
-In den Zeilen 9 bis 13 wird ein Systemaufruf (`syscall`) verwendet, um die Funktion `write` aufzurufen und den Text »Hello, world!« auf der Standardausgabe auszugeben. Die Register `rax`, `rdi`, `rsi` und `rdx` enthalten die Argumente für den Systemaufruf:
+In den Zeilen 9 bis 13 wird ein Systemaufruf (`syscall`) verwendet, um die Funktion `write` aufzurufen und den Text »Hello, World!« auf der Standardausgabe auszugeben. Die Register `rax`, `rdi`, `rsi` und `rdx` enthalten die Argumente für den Systemaufruf:
 
 - `rax` enthält die Nummer des Systemaufrufs (1 für `write`)
 - `rdi` enthält den Dateideskriptor (1 für die Standardausgabe)
