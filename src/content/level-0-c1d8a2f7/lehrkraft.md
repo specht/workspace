@@ -4,7 +4,7 @@ Lernende entwerfen eigene Backrooms, die endlosen gelben Räume einer Internet-L
 <tr><th>Die Reihe</th><td>Level 0 einer Reihe aus vier Seiten; jedes Level baut auf dem vorigen auf, und am Ende jeder Seite führt ein Link ins nächste:<ul>
 <li><a href='/level-1-7e3a91c4'>Level 1</a>: Rampen, Treppen, Stockwerke, Kollision</li>
 <li><a href='/level-2-b52d0f18'>Level 2</a>: Wasser, Portale</li>
-<li><a href='/level-3-4c9e6a2d'>Level 3</a>: Licht, Veröffentlichen, am Ende die beiden fertigen Levels der Vorlage, Lobby und Tiefe, deren Räume man dann ganz lesen kann</li>
+<li><a href='/level-3-4c9e6a2d'>Level 3</a>: Licht, Veröffentlichen, am Ende die Nachtschicht, ein fertiges Level, dessen Räume man dann ganz lesen kann</li>
 </ul>Lernende kommen in jedes Level nur über den Link am Ende des vorigen.</td></tr>
 <tr><th>Versteckt</th><td><ul>
 <li>Die Seite steht in keinem Katalog und lässt sich nicht anheften (Abschnitt <code>hidden</code> in <code>sections.yaml</code>).</li>
