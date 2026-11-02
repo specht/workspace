@@ -530,7 +530,7 @@ image.
   where the code prints »Hello, World!«.
 - [x] `cs` (1 November 2026): page read, nothing to change: .NET 10 is what
   the image installs.
-- [ ] `go`
+- [x] `go` (1 November 2026): page read, nothing to change.
 - [ ] `dart`
 - [ ] `rust`
 
