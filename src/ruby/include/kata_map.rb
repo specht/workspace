@@ -1,6 +1,6 @@
 require 'cgi'
 
-# The Katas on the front page (docs/plan-katas.md): every set of the catalog
+# The Katas on the front page (docs/katas.md): every set of the catalog
 # section »Katas« (carousel: true in sections.yaml), in its order, with its
 # idea in a few words (meta idea:) and how many Katas it has on each level;
 # for a logged-in person how far they are (solved of the core Katas, and

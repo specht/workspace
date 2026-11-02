@@ -1,5 +1,5 @@
-# The Git server of the groups (docs/plan-git-gruppen.md, GitServer in
-# src/ruby/include/git_server.rb): sshd for one user, git, whose every key
+# The Git server of the groups (docs/teacher-access.md, »Repositorys im
+# Workspace«; GitServer in src/ruby/include/git_server.rb): sshd for one user, git, whose every key
 # runs git-gate. The repositories are in /srv/git (data/git-repos), the
 # keys and the access list the backend writes in /etc/git-server
 # (data/git-server/config, read-only here), the host keys in /keys.

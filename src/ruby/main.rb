@@ -1409,7 +1409,7 @@ class Main < Sinatra::Base
     end
 
     # The state whose curricula a teacher sees (profile, /lehrplan;
-    # Curriculum, docs/plan-bundeslaender.md); Berlin without a choice.
+    # Curriculum, docs/bundeslaender.md); Berlin without a choice.
     def curriculum_state
         # a teacher's is stored; a guest chooses on /lehrplan (?land=)
         state = @session_user ? @session_user[:curriculum_state].to_s : params['land'].to_s
@@ -2094,7 +2094,7 @@ class Main < Sinatra::Base
         respond(:unpinned => data[:slug])
     end
 
-    # --- The meeting point of an activity (MeetingPoint, docs/plan-treffpunkt.md)
+    # --- The meeting point of an activity (MeetingPoint, docs/teacher-access.md »Treffpunkt«)
 
     # { group => task id } of the activity, for these groups.
     def meeting_points(groups, activity)

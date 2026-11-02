@@ -6,7 +6,7 @@ require_relative 'kata_queue'
 require_relative 'kata_runner'
 require_relative 'pip_check'
 
-# Katas (docs/plan-katas.md): the code typed into a card runs in a container
+# Katas (docs/katas.md): the code typed into a card runs in a container
 # of its own (KataRunner), through the one queue (KataQueue). A request does
 # not wait for its run, which would hold a thread of the web server while a
 # whole class waits: /api/kata/check and /api/kata/run hand back a ticket,

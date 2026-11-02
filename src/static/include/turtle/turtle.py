@@ -1,4 +1,4 @@
-# The turtle's commands in Python (turtle_worker.js, docs/plan-katas.md,
+# The turtle's commands in Python (turtle_worker.js, docs/katas.md,
 # »Turtle«). Each one checks what it gets and hands the command to the host,
 # _turtle_host(command, value, line): the worker in the browser, a recorder
 # in tests. line is the line of the student's program (kata.py). The host

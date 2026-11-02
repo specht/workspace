@@ -1,4 +1,4 @@
-// The turtle's commands in JavaScript (turtle_worker.js, docs/plan-katas.md,
+// The turtle's commands in JavaScript (turtle_worker.js, docs/katas.md,
 // »Turtle«), as the parameters of the function the student's program runs
 // in. Each one checks what it gets and hands the command to the host,
 // host(command, value, line): the worker in the browser, a recorder in

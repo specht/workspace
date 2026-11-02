@@ -10,7 +10,7 @@ steht, damit eine Lehrkraft sie in ihre Planung einordnen kann.
 Lehrkräfte aus einem anderen Land wählen es im Profil oder auf `/lehrplan`;
 dann sehen sie überall die Zeile des Plans ihres Landes, abgeleitet aus den
 Themen der Aktivität (`topics:`), und `/lehrplan` ordnet nach dessen Namen
-([plan-bundeslaender.md](plan-bundeslaender.md)). Wer nichts wählt, sieht
+([bundeslaender.md](bundeslaender.md)). Wer nichts wählt, sieht
 Berlin. Die Zeile `curriculum:` bleibt die von Berlin und Brandenburg.
 
 Die Seite `/lehrplan` (verlinkt von der Klassenseite und von der Zeile oben

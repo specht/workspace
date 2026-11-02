@@ -6,8 +6,7 @@ require 'securerandom'
 require 'tmpdir'
 
 # Git repositories for groups, kept by the Workspace itself
-# (docs/plan-git-gruppen.md, docs/teacher-access.md »Repositorys im
-# Workspace«). Off unless GIT_SERVER = true in credentials.rb.
+# (docs/teacher-access.md, »Repositorys im Workspace«). Off unless GIT_SERVER = true in credentials.rb.
 #
 # A small SSH server (docker/git-server) holds the repositories in
 # data/git-repos/<git id>/<name>.git, one git id per group (GroupSetting.git_id),
@@ -32,7 +31,7 @@ require 'tmpdir'
 # person has a folder of their own too (User.git_id), for repositories to
 # practise with: only that person may clone, push and read them, not their
 # teachers and not the administration, who sees only that they exist and may
-# delete them (docs/plan-git-gruppen.md: practice is private; shared work
+# delete them (docs/teacher-access.md: practice is private; shared work
 # belongs in the class repositories).
 #
 # Students make a key pair in their Workspace and hand in the public key on

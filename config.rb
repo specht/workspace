@@ -301,9 +301,9 @@ if CaseServer.enabled?
     %w[museum alarmanlage].each { |role| FileUtils.mkpath(File.join(DATA_PATH, 'case-server', role)) }
 end
 
-# The Git server of the groups (docs/plan-git-gruppen.md), only with
-# GIT_SERVER = true in credentials.rb: git.workspace on the students' network,
-# reachable on port 22 and no further, like the case server (whose
+# The Git server of the groups (docs/teacher-access.md, »Repositorys im
+# Workspace«), only with GIT_SERVER = true in credentials.rb: git.workspace
+# on the students' network, reachable on port 22 and no further, like the case server (whose
 # peer-firewall label it shares). The backend writes the keys and the access
 # list into data/git-server/config and creates the repositories in
 # data/git-repos; the server reads the one and serves the other.

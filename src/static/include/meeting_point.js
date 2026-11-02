@@ -1,4 +1,4 @@
-// The meeting point on an activity page (docs/plan-treffpunkt.md). The page
+// The meeting point on an activity page (docs/teacher-access.md, »Treffpunkt«). The page
 // sets window.TASK_PAGE.meeting = { points: { group => task id }, groups,
 // teacher, kata, classUrl } (main.rb, meeting_page_config). Of the points
 // of one's groups the earliest on the page counts. The box stands after

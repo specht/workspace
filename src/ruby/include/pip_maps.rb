@@ -1,4 +1,4 @@
-# Maps for Pip made from a seed (docs/plan-katas.md, »The world«): where a
+# Maps for Pip made from a seed (docs/katas.md, »The world«): where a
 # chapter is about a general solution, a check runs the plan on its fixed
 # maps and on some made for the person and the task version (KataCheck.seed),
 # so that no list of steps fits them all. A map in tasks.yaml that says

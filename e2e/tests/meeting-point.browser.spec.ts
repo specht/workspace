@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-// The meeting point (docs/plan-treffpunkt.md): the teacher sets it on the
+// The meeting point (docs/teacher-access.md, »Treffpunkt«): the teacher sets it on the
 // class board after a task; the student's open page shows it without a
 // reload, quiet until the student has arrived; lifting it removes it.
 

@@ -7,7 +7,7 @@ require_relative 'recursion_check'
 require_relative 'gate_check'
 require_relative 'kata_compiled'
 
-# Check type function (docs/aufgaben.md, docs/plan-katas.md): a Kata. The
+# Check type function (docs/aufgaben.md, docs/katas.md): a Kata. The
 # code is typed into the card, not written in the Workspace; it runs in a
 # container of its own (KataRunner, through KataQueue), with the same
 # harness as the checks python and ruby: only the definitions are loaded,

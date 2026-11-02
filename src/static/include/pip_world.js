@@ -1,4 +1,4 @@
-// Pip unter Funkelbach (PipCheck, docs/plan-katas.md): the map of a Pip
+// Pip unter Funkelbach (PipCheck, docs/katas.md): the map of a Pip
 // task and the playback of a run. The server ran the plan against the world
 // and sends every frame (PipWorld#trace); this only draws them. What stays
 // the same thing moves (Pip, the Glibbers walk from tile to tile, a stone

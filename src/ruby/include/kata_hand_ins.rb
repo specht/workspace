@@ -1,7 +1,7 @@
 require 'cgi'
 require 'digest'
 
-# Katas handed in to be shown in class (Einreichen, docs/plan-katas.md):
+# Katas handed in to be shown in class (Einreichen, docs/katas.md):
 # under a solved Kata a student may hand in a copy of their code, and take
 # it back. Never automatic: what others see is their own choice. On the
 # class board (»Fortschritt«) the teacher finds them per Kata, numbered

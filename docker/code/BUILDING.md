@@ -14,7 +14,9 @@ The final Dockerfile imports directories from those two images via `COPY`.
 Dart is installed on its own in the final image (a pinned SDK, about 0.5 GB).
 Flutter, the Android SDK and the Gradle cache left the image on 28 October
 2026: no activity used them, and they were half of its 16.6 GiB; the stages
-are in the Git history (before that date) for the Flutter activity in TODO.md.
+are in the Git history before that date. The maintainer decided on
+2 November 2026 not to bring Flutter back: too large and too slow for the
+Workspace.
 
 No usage reporting: the image sets `DART_SUPPRESS_ANALYTICS`,
 `DOTNET_CLI_TELEMETRY_OPTOUT`, `POWERSHELL_TELEMETRY_OPTOUT` and

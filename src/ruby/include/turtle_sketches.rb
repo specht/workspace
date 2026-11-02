@@ -1,7 +1,7 @@
 require 'json'
 require_relative 'turtle_world'
 
-# Several drawings on a free turtle card (docs/plan-katas.md, »Turtle«, the
+# Several drawings on a free turtle card (docs/katas.md, »Turtle«, the
 # cards with free:): each with a name, per language, one of them open in
 # the card's editor. Any of them may be handed in; what the class sees is a
 # picture the server drew from the commands of its last run (svg), never

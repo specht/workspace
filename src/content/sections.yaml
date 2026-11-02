@@ -14,7 +14,7 @@
     - basics
     - keyboard
 
-# Katas (docs/plan-katas.md): small exercises typed into the cards of the
+# Katas (docs/katas.md): small exercises typed into the cards of the
 # page.
 
 - key: katas
@@ -186,14 +186,10 @@
     - neo4j-filmdatenbank
     - bobby_tables
 
-# .logikgatter (Gatter bis Rechenwerk) nur in der Entwicklung, bis die Reihen
-# der Startseite eine zehnte Karte tragen.
-
 # Wie Computer rechnen, Algorithmen und Datenstrukturen, Automaten und
 # Sprachen: früher ein Abschnitt, geteilt nach den Namen der Lehrpläne
 # (Technische Informatik; Algorithmen und Datenstrukturen; Sprachen und
-# Automaten, Syntax und Semantik), damit jede Reihe voll ist
-# (docs/plan-lehrplan-luecken.md, »Rechnen«). Icons: Noto Emoji v2.047.
+# Automaten, Syntax und Semantik). Icons: Noto Emoji v2.047.
 
 - key: computing
   compact: true
@@ -245,7 +241,7 @@
     - calculator
     - prolog
 
-# Software entwerfen (docs/plan-lehrplan-luecken.md, »Software«): erst
+# Software entwerfen: erst
 # planen, dann programmieren; Klassen und ihre Diagramme; ein Projekt der
 # ganzen Klasse mit Git.
 

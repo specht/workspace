@@ -6,7 +6,7 @@ Stand: 21. Oktober 2026. Erarbeitet als Claude Doc; die Fassung hier im Reposito
 
 Der Workspace ist eine Lernplattform für den Informatikunterricht. Er wurde von einer Berliner Informatiklehrkraft entwickelt und wird von ihr privat betrieben. Schülerinnen und Schüler programmieren damit im Browser, ohne etwas zu installieren. Er läuft auf einem gemieteten Server, auf dem sonst nichts läuft.
 
-Den Lernenden bringt er echte Werkzeuge, wie sie in der Softwareentwicklung genutzt werden: ein Linux-System mit Terminal, Visual Studio Code, Git, viele Programmiersprachen, Datenbanken wie MySQL und Neo4j, Webserver, LaTeX und App-Entwicklung für Android. Vieles davon lässt sich zu Hause nicht einfach installieren und auf einem Tablet gar nicht. Weil alles im Browser läuft und gespeichert bleibt, arbeiten sie zu Hause genau dort weiter, wo sie in der Schule aufgehört haben.
+Den Lernenden bringt er echte Werkzeuge, wie sie in der Softwareentwicklung genutzt werden: ein Linux-System mit Terminal, Visual Studio Code, Git, viele Programmiersprachen, Datenbanken wie MySQL und Neo4j, Webserver und LaTeX. Vieles davon lässt sich zu Hause nicht einfach installieren und auf einem Tablet gar nicht. Weil alles im Browser läuft und gespeichert bleibt, arbeiten sie zu Hause genau dort weiter, wo sie in der Schule aufgehört haben.
 
 Er ist aus dem Unterricht entstanden: Vor etwa drei Jahren wurde er für die eigenen Kurse an der Stammschule gebaut. Inzwischen nutzen ihn mehrere Berliner Schulen. Was als Werkzeug für den eigenen Unterricht begann, braucht deshalb jetzt eine saubere rechtliche Grundlage, an jeder Schule. Gespeichert werden Name, E-Mail-Adresse, Kurs, die Programme der Lernenden und ihr Bearbeitungsstand.
 

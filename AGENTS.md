@@ -37,31 +37,23 @@ address from `credentials.rb` and the code `123456`.
 - [docs/plan-datenschutz-schulen.md](docs/plan-datenschutz-schulen.md): the plan in German for non-specialists
   (Schulleitung, DSB, an attorney): who is approached when, which document goes to whom, the open questions
 - [docs/widgets.md](docs/widgets.md): how the step-by-step widgets look, move and are built (the AVL tree is the model)
-- [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see
+- [docs/teacher-access.md](docs/teacher-access.md): roles, groups, the roster import, /personen, what teachers see,
+  the meeting point (»Treffpunkt«), the Git server of the groups and why it is SSH
 - [docs/test-workspace-packages.md](docs/test-workspace-packages.md): Workspace packages for Leistungsüberprüfungen
-- [docs/plan-katas.md](docs/plan-katas.md): Katas (code typed into a card; check types `function`, `pip`,
+- [docs/katas.md](docs/katas.md): Katas (code typed into a card; check types `function`, `pip`,
   `tests`), Pip unter Funkelbach in three parts: what exists, the maintainer's decisions and why, what is open
 - [docs/lehrplan.md](docs/lehrplan.md): the `curriculum:` line every activity carries for teachers:
   its form and the only names allowed, from the Berlin-Brandenburg curricula
-- [docs/plan-bundeslaender.md](docs/plan-bundeslaender.md): the curricula of other states: topics per
+- [docs/bundeslaender.md](docs/bundeslaender.md): the curricula of other states: topics per
   activity (`topics:`), one plan per file in `src/content/curricula/`, the teacher's state in the profile;
   Baden-Württemberg as a draft for a teacher there to check
-- [docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md): the names of the curricula with no
-  or few activities, what could fill each, what is decided (object orientation as an activity with
-  modelling, in five languages) and what is open
-- [docs/plan-prolog-komplexitaet.md](docs/plan-prolog-komplexitaet.md): two planned activities, logic
-  programming with Prolog (SWI-Prolog in the image, a check type `prolog`) and run-time complexity
-  (measuring, counting, growth, P and NP); both built (`prolog`, `laufzeit`), what is open
-- [docs/plan-dart-java.md](docs/plan-dart-java.md): where Dart and Java are offered (all Katas and Pip,
-  Textadventure, Prüfziffern, Laufzeit, Supermarkt), the pattern for giving a page both, what is open
-  (checks in a real Workspace, a whole class on the Java Katas, the own switch, the next activities)
-- [docs/plan-nebenlaeufigkeit.md](docs/plan-nebenlaeufigkeit.md): a planned activity on concurrency in
-  Java and Dart (a step-through widget, threads, locks, deadlock, the monitor; races at `await`,
-  isolates); what is decided, what the `dart` check still needs, the open questions
-- [docs/plan-git-gruppen.md](docs/plan-git-gruppen.md): Git repositories for groups kept by the Workspace
-  itself (a mounted directory or an SSH container), browsable on the site; a plan, open questions
-- [docs/plan-treffpunkt.md](docs/plan-treffpunkt.md): a meeting point a teacher sets in an activity for
-  a group, live, soft (nothing hidden); what is decided and how it could be built
+- [docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md): the names of the curricula still
+  missing something (Urheberrecht, Rechnergenerationen, manipulated pictures, Ergonomie), and the
+  decisions made while filling the others
+- [docs/dart-java.md](docs/dart-java.md): where Dart and Java are offered (all Katas and Pip,
+  Textadventure, Prüfziffern, Laufzeit, Supermarkt, Nebenläufigkeit), the pattern for giving a page
+  both, what is open (checks in a real Workspace, a whole class on the Java Katas, the own switch,
+  the next activities)
 - `/picture-rights` (`src/ruby/include/picture_rights.rb`, `src/content/picture-rights.yaml`): pictures that are
   someone else's without a free licence, with a letter asking for permission; off the pages until granted
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;

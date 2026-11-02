@@ -5,7 +5,7 @@ require_relative 'kata_runner'
 require_relative 'kata_check'
 require_relative 'pip_compiled'
 
-# Check type pip (docs/plan-katas.md, section 2): a plan for Pip, the whole
+# Check type pip (docs/katas.md, section 2): a plan for Pip, the whole
 # program typed into the card. It runs in a container of its own
 # (KataRunner, through KataQueue); a prelude, invisible to the student,
 # defines Pip's commands as ordinary functions (Ruby: move, front_clear?;

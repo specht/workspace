@@ -3,7 +3,7 @@ require 'yaml'
 require_relative '../include/curriculum'
 
 # The line of the curriculum (docs/lehrplan.md) and the plans of the states
-# (docs/plan-bundeslaender.md): the form of a line, that every activity of
+# (docs/bundeslaender.md): the form of a line, that every activity of
 # the catalog has one and topics, apart from those parked, and that every
 # plan names only what it has.
 class CurriculumTest < Minitest::Test

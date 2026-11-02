@@ -1,6 +1,6 @@
 require 'cgi'
 
-# The meeting point of an activity (docs/plan-treffpunkt.md): a teacher sets
+# The meeting point of an activity (docs/teacher-access.md, »Treffpunkt«): a teacher sets
 # it for a group after one of the activity's tasks; on the page a box says
 # »here we meet«, and the class board counts who has arrived. Nothing about
 # a student is stored for it: arrival is computed from the task states the

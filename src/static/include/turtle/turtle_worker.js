@@ -1,4 +1,4 @@
-// Runs a turtle program in the browser (docs/plan-katas.md, »Turtle«): a
+// Runs a turtle program in the browser (docs/katas.md, »Turtle«): a
 // module worker for one language, so that »Stopp« can end a program at
 // once (terminate) and the page stays responsive. Python is Pyodide, Ruby
 // is ruby.wasm (fetch-turtle-runtimes.sh), JavaScript runs as it is. The

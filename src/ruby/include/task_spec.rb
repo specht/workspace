@@ -84,7 +84,7 @@ module TaskSpec
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
     TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level extra] + CodeLanguages::LANGUAGES).freeze
-    # The levels of a Kata (docs/plan-katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
+    # The levels of a Kata (docs/katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
     LEVELS = [1, 2, 3].freeze
 
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops dns_answers].freeze

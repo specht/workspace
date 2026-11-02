@@ -1,7 +1,7 @@
 # The line of the curriculum each activity carries, which only logged-in
 # teachers see: at the top of its page, in the Kata strip and on /lehrplan
 # (CurriculumOverview). Seen through the plan of the state a teacher chose
-# in the profile (docs/plan-bundeslaender.md): the plans are files in
+# in the profile (docs/bundeslaender.md): the plans are files in
 # src/content/curricula/. Berlin and Brandenburg share one, the default; its
 # line for an activity is the meta curriculum: (docs/lehrplan.md):
 #

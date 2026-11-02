@@ -1,4 +1,4 @@
-# The one queue for all Kata runs (docs/plan-katas.md): at most parallel
+# The one queue for all Kata runs (docs/katas.md): at most parallel
 # runs at a time, the others wait, first come, first served. Each person has
 # at most one run: a new one replaces theirs, waiting or running (a running
 # one is stopped through the hook its job registered, KataRunner.run's

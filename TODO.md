@@ -29,14 +29,6 @@ Principles:
   SQL, Neo4j and small applications.
 
 
-### Content model
-
-Activities, Handbuch pages and tasks with checks are in place, as are the class
-page and the start page (`docs/aufgaben.md`).
-Still open:
-
-
-
 ## Roadmap
 
 A writing and development order, not a prerequisite chain for students.
@@ -105,57 +97,27 @@ the answer, explanations after solving (docs/didaktik.md). Open from that pass:
 
 Prefer pages that introduce genuinely new ideas rather than more installed technology.
 Prioritise creative, visible material that also works with younger students; the order
-below is a writing priority, not a prerequisite chain.
+below is a writing priority, not a prerequisite chain. Flutter is not
+coming back into the image (the maintainer, 2 November 2026): too large and
+too slow for the Workspace.
 
-1. Flutter
+* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): open are Urheberrecht (a section on licences), Rechenhilfsmittel and Rechnergenerationen (a chapter in `sandbox-cpu`), manipulated pictures and Ergonomie
 
-Plus, from the review:
-
-* [ ] **The gaps on `/lehrplan`** ([docs/plan-lehrplan-luecken.md](docs/plan-lehrplan-luecken.md)): object orientation, the language model, the Turing machine and the logic sandbox are built; open are Urheberrecht (a section on licences), Rechenhilfsmittel and Rechnergenerationen (a chapter in `sandbox-cpu`), manipulated pictures and Ergonomie
-
-* [ ] **Dart and Java on more pages** ([docs/plan-dart-java.md](docs/plan-dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
+* [ ] **Dart and Java on more pages** ([docs/dart-java.md](docs/dart-java.md)): run Prüfziffern's and Laufzeit's Dart and Java checks in a real Workspace (recipes); measure a whole class on the Java Katas; the maintainer picks the next activities (automata, calculator, nearest neighbours, Huffman …) and whether the own switch offers Dart and Java
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The branch `passwords` with a first attempt no longer exists (31 October 2026, neither local nor on GitHub); stored passwords with salt are already in »Kryptographie im Terminal«, so this page would be about guessing
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
+* [ ] **Small things left on built pages:** Laufzeit: the students' own measurements as a chart (a `measure` task), person boxes for Stephen Cook and Richard Karp, an Extra on amortised cost (a list that grows by doubling); Nebenläufigkeit: Per Brinch Hansen's box (on the Personen page already) and a `.book` box (Goetz, »Java Concurrency in Practice«); Logik-Werkstatt: buses (four bits on one line), a block for the ALU, »Lösung einsetzen« for circuits; Perzeptron: digits the class draws on the pad as a dataset of its own (an Extra)
 * [ ] **JPEG, further**: the Huffman and dequantisation steppers still show only the first block (the iDCT stepper and the MCU widget take any MCU of the photo, `jpeg_image.js`); `decoder` runs the whole decoder, the number tasks before it could go once it has been tried in class
-
-#### Flutter
-
-> Develop in the browser, then turn the same project into a real installable app.
-
-* [ ] Smallest project with web **and Android** targets; hot reload; widgets and layout; button presses
-* [ ] A Dart list rendered as widgets; changing it without rebuilding motivates state; `StatefulWidget` and `setState`
-* [ ] A small ranking/favorites app: text field, sorting and filtering, one custom widget, maybe one implicit animation
-* [ ] Share the browser version through Shared Live Apps
-* [ ] End with `flutter build apk --debug` and where to find the APK; install on a phone
-
-```text
-HTML/JavaScript: find an element and change it.
-Flutter:         change the state and rebuild the interface.
-```
-
-Flutter, the Android SDK and the Gradle cache left the image on 28 October 2026
-(no activity used them; 8.6 GB of 16.6 GiB). For this activity they come back:
-the stages `flutter`, `android-sdk` and `flutter-android` and the test
-`e2e/tests/flutter.toolchain.spec.ts` are in the Git history before that date.
-Then, before broad rollout:
-
-* [ ] Measure memory and PID usage of `flutter build apk --debug` with the resource profiler
-* [ ] Re-check student container limits against the Android/Gradle workload
-* [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
-* [ ] `sdkmanager` is deprecated in favour of the Android CLI; accepting the licences and unzipping the NDK took most of that stage's time
-* [ ] Dart comes on its own now (`DART_VERSION`); Flutter brings its own, so one of the two goes
-
-APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
 ### Katas
 
-What exists and why: [docs/plan-katas.md](docs/plan-katas.md).
+What exists and why: [docs/katas.md](docs/katas.md).
 
-* [ ] Kata cards: the prompt beside the code once the card is 60em wide (done, `kata-layout`); left of the UI/UX pass: what else a Kata card needs (the maintainer's view after using it)
+* [ ] Kata cards: what else a card needs, from the maintainer's use of them (the prompt beside the code from 60em on is done)
 * [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
 * [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
 * [ ] Person box for Richard E. Pattis (Karel the Robot) once a source gives his year of birth
-* [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, live since 28 October 2026): a try in class; a picture of the Git server's key box only where the live box does not show (students see the box itself on the page). The other packages for the curriculum's gaps: docs/plan-lehrplan-luecken.md
+* [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, live since 28 October 2026): a try in class; a picture of the Git server's key box only where the live box does not show (students see the box itself on the page)
 * [ ] »Testen« (`testen`, in the catalog since 1 November 2026): a try in class
 * [ ] A whole-program mode (run the program, compare its output), for a quine as an Extra of Texte
 
@@ -172,13 +134,10 @@ Platform-wide:
 * [ ] Convert manual screenshots to recipes when a page is touched: 155 manual, 812 generated; most left on Ziffernerkennung (44, retired), Anaglyph (22), Handbuch Farbräume (14), Steganographie (8)
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
-* [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
+* [ ] Find a section for new pages as they land; keep related progressions adjacent
 
 
 ## Infrastructure and operations
-
-### Operational logging
-
 
 ### Dependency and image verification
 
@@ -188,21 +147,17 @@ Improve supply-chain reproducibility gradually rather than rewriting the Docker 
 
 ### Continuous integration
 
-
 Keep tutorial tests focused on whether the documented student workflow actually works.
 
 * [ ] Heavier browser/toolchain tests manually, nightly or on a suitable self-hosted runner
 * [ ] E2E coverage when important pages are changed or newly written
 
-### Deployment visibility
-
-
 ### Ruby cleanup
 
-Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementally.
-
-* [ ] Further out of main.rb (4187 lines, 10648 on the morning of 31 October 2026), only small parts are left: the TCP-Konsole socket, TIC-80 files, the Anaglyph viewer, the Terminal-Krimi downloads, the Open-Meteo proxy, and the configure block with the before filter, which stay in main.rb
-
+`main.rb` went from 10648 lines (31 October 2026) to about 4200; what is
+left there stays: the TCP-Konsole socket, TIC-80 files, the Anaglyph viewer,
+the Terminal-Krimi downloads, the Open-Meteo proxy, and the configure block
+with the before filter. New routes go into `include/` by topic.
 
 ## Later ideas
 

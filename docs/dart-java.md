@@ -1,4 +1,4 @@
-# Plan: Dart and Java on the site
+# Dart and Java on the site
 
 Where Dart and Java are offered, how the checks for them work, and what is
 open. State of 29 October 2026. The maintainer's school uses Dart; other
@@ -10,7 +10,13 @@ at a time (a class ranks its languages under »Sprachen der Klasse«).
 - **All Katas and Pip unter Funkelbach** in Ruby, Python, JavaScript, Dart
   and Java; how they are checked (`kata_compiled.rb`, `pip_compiled.rb`,
   `tests_compiled.rb`), the decisions and the typical mistakes per language:
-  [plan-katas.md](plan-katas.md).
+  [katas.md](katas.md).
+- **Only Java and Dart:** »Nebenläufigkeit« (`nebenlaeufigkeit`, the check
+  type `interleaving` for its widget). Not Ruby or Python, decided on
+  29 October 2026: their global interpreter lock makes a lost update rare
+  and unpredictable, so a broken program often looks right, which teaches
+  the wrong lesson. Dart has no shared threads; its race happens at `await`,
+  every time the same, so it can be predicted and checked.
 - **Activities in Ruby, Python, Dart and Java:** Textadventure
   (`textadventure`), Prüfziffern (`check-digits`), »Wie lange dauert das?«
   (`laufzeit`); »Supermarkt« in all five. Their code tasks use the check
@@ -56,8 +62,8 @@ The pattern of the three activities above:
   `loesung/Laufzeit.java`) would run them on the next render.
 - **A class at once.** In a Kata container (0.5 CPU) a Java Kata card with
   its typical wrong solutions takes about 2.3 s, a Dart card 1.4 to 2 s, a
-  Pip card with three maps about 3 s (measured, plan-lehrplan-luecken.md,
-  »Java and Dart for Katas«). Nobody has checked yet what thirty students pressing »Prüfen« in
+  Pip card with three maps about 3 s (measured, [katas.md](katas.md),
+  »What exists«). Nobody has checked yet what thirty students pressing »Prüfen« in
   the same minute do to the host. Measure before a Java class uses the
   Katas.
 - **The own switch.** Should a student be able to pick Dart or Java
@@ -73,6 +79,3 @@ The pattern of the three activities above:
   Tracking, Suchmaschine, Wetter), where Dart or Java would mean redoing the
   activity rather than translating it; check Perzeptron and Sprachmodell
   first. The maintainer picks the order.
-- **Concurrency** in Java and Dart: [plan-nebenlaeufigkeit.md](plan-nebenlaeufigkeit.md).
-- **Object orientation** in five languages, with a class diagram:
-  [plan-lehrplan-luecken.md](plan-lehrplan-luecken.md).

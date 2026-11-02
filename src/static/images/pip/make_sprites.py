@@ -1,4 +1,4 @@
-# The pictures of Pip's world (Pip unter Funkelbach, docs/plan-katas.md),
+# The pictures of Pip's world (Pip unter Funkelbach, docs/katas.md),
 # drawn here pixel by pixel, all in one palette and one view: seen from
 # above at a slant (the 3/4 view of tile games), light from the top left.
 # A tile is 24 × 24 pixels; what stands upright is taller than its tile and

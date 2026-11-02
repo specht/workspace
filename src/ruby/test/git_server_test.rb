@@ -132,7 +132,7 @@ class GitServerTest < Minitest::Test
         end
     end
 
-    # Practice is private (docs/plan-git-gruppen.md): a person's own folder
+    # Practice is private (docs/teacher-access.md, »Repositorys im Workspace«): a person's own folder
     # is in the access list for that person alone, not for a teacher of the
     # person's group, who reaches only the group's folder; on the site the
     # owner alone reads it, an administrator neither.

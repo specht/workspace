@@ -294,8 +294,22 @@ sagt, in der Reihenfolge des Katalogs, gespeichert mit »Adressen speichern«
 Mit `GIT_SERVER = true` in `credentials.rb` hält der Workspace die
 Repositorys der Gruppen selbst (`GitServer` in
 `src/ruby/include/git_server.rb`, der Dienst `git_server` aus
-`docker/git-server`, der Plan in docs/plan-git-gruppen.md). Ein Konto auf
-einem Git-Server im Netz braucht dann niemand.
+`docker/git-server`). Ein Konto auf einem Git-Server im Netz braucht dann
+niemand.
+
+So entschieden (27. Oktober 2026): kein GitLab und keine andere Forge (zu
+schwer zu betreiben), sondern Git über SSH in einem eigenen Container. Die
+andere Möglichkeit, ein Ordner, der in alle Workspaces der Gruppe gehängt
+wird, braucht keine Schlüssel; dort laufen `git push` und `git fetch` aber
+im Workspace dessen, der pusht, und lesen `config` und `hooks/` des
+gemeinsamen Repositorys: Ein Hook von einer Person liefe im Workspace einer
+anderen, und jede könnte das Repository mit `rm -rf` zerstören. Über SSH
+läuft alles auf der Seite des Servers, und Lernende lernen Schlüssel und
+Serveradresse wie bei jedem Git-Host. Darum gibt es auch keine stündlichen
+Sicherungen der Repositorys: Zerstören kann sie niemand außer einer
+Lehrkraft mit »Löschen«, und dann helfen die Backups des Servers, die ganz
+`data/` sichern. Eine Größengrenze je Repository gibt es nicht, nur 50 MB je
+Push.
 
 - **Anlegen:** Unter »Git-Repositorys« in den Einstellungen der Klassenseite
   steht neben jeder Seite mit `class_repo: group` »Im Workspace anlegen«. Hat die Seite einen Ordner
@@ -381,7 +395,8 @@ einem Git-Server im Netz braucht dann niemand.
   andere Lernende. Admins sehen auf `/repos` nur, dass es sie gibt (Person,
   Name, Größe, Datum) und können eins löschen, aber nicht hineinsehen. So
   entschieden, weil Üben privat ist; was gemeinsam entsteht, gehört in ein
-  Repository der Gruppe (docs/plan-git-gruppen.md). Getestet in
+  Repository der Gruppe; eine spätere Änderung darf sie Lehrkräften nicht
+  aus Versehen öffnen. Getestet in
   `git_server_test.rb` (`access_map`, `may_read?`) und
   `git-repos.browser.spec.ts`. Schlüssel: der, den die Person abgegeben
   hat; ohne einen sagt die Seite, wie sie ihn im Workspace erzeugt
@@ -459,8 +474,22 @@ Mitternacht). Sind alle da, wird die Zeile grün. Die Tabelle hat nach der
 Spalte der Aufgabe eine gestrichelte Linie. Auf der Seite der Aktivität setzt,
 verschiebt und hebt die Lehrkraft den Treffpunkt auch direkt auf (für die
 Gruppe, die auf der Klassenseite gewählt ist). Wer in zwei Gruppen ist, sieht
-den früheren Treffpunkt.
-Plan und Aufbau: [plan-treffpunkt.md](plan-treffpunkt.md).
+den früheren Treffpunkt. Aufgehoben ist aufgehoben, auch für alle, die gerade
+nicht da sind.
+
+So entschieden (28. Oktober 2026): Der Treffpunkt ist eine Schranke, die
+sagt »hier sprechen wir«, keine Sperre; jede Seite bleibt ganz lesbar, auch
+ohne Konto. Er steht nach einer Aufgabe, nicht an einem Kapitel, weil
+»angekommen« zählbar sein muss und der Workspace Aufgaben zählt; endet das
+Kapitel mit der Aufgabe, steht das Band vor der nächsten Überschrift, also
+dort, wo ein Treffpunkt am Kapitel stünde. Gespeichert wird je Gruppe und
+Aktivität ein `MeetingPoint` (Gruppe, Aktivität, Aufgabe, Zeit), nichts über
+eine Person; wer angekommen ist, rechnet `src/ruby/include/meeting_point.rb`
+aus den Aufgaben (getestet in `meeting_point_test.rb`), neu, sobald jemand
+der Gruppe eine Aufgabe löst oder löscht, und jede Minute. Die Seite
+(`meeting_point.js`) hört auf `/ws_meeting?activity=…`; ohne Verbindung
+zeigt sie den Stand des letzten Ladens. Ende zu Ende:
+`e2e/tests/meeting-point.browser.spec.ts`.
 
 ## Wer still ist, wie weit alle sind
 

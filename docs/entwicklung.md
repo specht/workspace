@@ -56,7 +56,7 @@ in `/internal/capacity-*.txt`. Auf dem Server außerhalb des Unterrichts.
 
 ### Katas: Läufe im eigenen Container
 
-Der Code einer Kata (docs/plan-katas.md) läuft nie im Workspace und nie im
+Der Code einer Kata (docs/katas.md) läuft nie im Workspace und nie im
 Ruby-Container, sondern jedes Mal in einem neuen Container aus dem
 Workspace-Image, ohne code-server, ohne Netz, schreibgeschützt bis auf ein
 kleines `/tmp`, als `nobody`, mit Grenzen für CPU, Speicher und Prozesse
@@ -259,7 +259,7 @@ selbst baut `src/scripts/collect-countries`, `collect-movies` und
 `collect-music`; beschrieben sind sie im Handbuch unter »Datensätze«.
 
 Die End-to-End-Tests mit Playwright (Anmeldung, Workspace-Start,
-Toolchains bis zum Android-APK) stehen in [e2e/README.md](../e2e/README.md).
+Toolchains wie Emscripten, SvelteKit und LaTeX) stehen in [e2e/README.md](../e2e/README.md).
 
 ## Screenshots und Videos der Tutorials
 
@@ -524,7 +524,7 @@ CASE_SERVER = true
 
 Mit `GIT_SERVER = true` in `credentials.rb` hält der Workspace Git-Repositorys
 für Gruppen (für Lehrkräfte: docs/teacher-access.md, »Repositorys im
-Workspace«; der Plan: docs/plan-git-gruppen.md).
+Workspace«, dort auch, warum SSH).
 
 ```bash
 ./config.rb build git_server peer_firewall && ./config.rb up -d

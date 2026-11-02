@@ -2,7 +2,7 @@ require_relative 'turtle_check'
 require_relative 'kata_check'
 require_relative 'turtle_sketches'
 
-# The turtle (docs/plan-katas.md, »Turtle«): the program runs in the
+# The turtle (docs/katas.md, »Turtle«): the program runs in the
 # browser (turtle_worker.js), so nothing waits in the Katas' queue. A run
 # that ends by itself comes here to be checked, with the commands it drew;
 # a run that is stopped only keeps its code. Like a Kata, the code is kept

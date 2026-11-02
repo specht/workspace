@@ -2,7 +2,7 @@ require 'json'
 require 'open3'
 require 'securerandom'
 
-# One run of a Kata (docs/plan-katas.md) in a container of its own, never in
+# One run of a Kata (docs/katas.md) in a container of its own, never in
 # a Workspace and never in this container: from the Workspace image, so Ruby,
 # Python and Node are those of the Workspace, but without code-server, without
 # network, with a read-only image and a small tmpfs as /tmp, as nobody, without

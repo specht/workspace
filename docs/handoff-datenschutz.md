@@ -9,10 +9,8 @@ documents for the school, deleting), `docs/teacher-access.md` (roles,
 /gruppen, /personen, the import), `docs/entwicklung.md`, `e2e/AGENTS.md`
 before an E2E test. `CHANGELOG.md` »Unreleased« lists every change in German.
 
-## Git state
+## Documents and git
 
-- Everything of 2026-10-21 is merged into `main` (the transition tracking
-  on /personen, the LMS documents, this hand-off).
 - `docs/plan-datenschutz-schulen.md` is the plan for non-specialists, in
   German, to show to the Schulleitung, the DSB or an attorney: the steps,
   who gets which document, the fallbacks, the open questions. Its master is
@@ -66,7 +64,7 @@ What this is and is not:
 Pending paperwork is not a new security issue; do not reopen the decision.
 Real technical vulnerabilities are handled at once, as always.
 
-### What the software does now (branch `datenschutz-uebergang`)
+### What the software does now
 
 `src/ruby/include/school_transition.rb`, used by `people_page.rb` and
 `/personen` › Schulen:
@@ -328,13 +326,12 @@ and processor); LfD Niedersachsen, Eckpunkte Lernplattformen (2022).
    that the MySQL and Neo4j root logins are refused from a Workspace.
 3. More container hardening (read-only root, user namespaces, seccomp),
    each against the full E2E suite.
-4. `main.rb` (~7,800 lines): move routes by topic into `include/`.
-5. A restore test of the backup, by the maintainer on the server.
-6. An outside uptime check (a server that is down is invisible to »Betrieb«).
-7. AVVs with Hetzner and united-domains (the AVV draft says they exist);
+4. A restore test of the backup, by the maintainer on the server.
+5. An outside uptime check (a server that is down is invisible to »Betrieb«).
+6. AVVs with Hetzner and united-domains (the AVV draft says they exist);
    `COST_NOTE` on the live server; the school's DSB name; the oldest backup
    archive must fit the months on the page.
-8. Deploy steps of 2026-10-19 (image before Ruby, `./config.rb up -d`, the
+7. Deploy steps of 2026-10-19 (image before Ruby, `./config.rb up -d`, the
    borgmatic hook touching `internal/backup-done`, the docker_guard log and
    `measure-capacity.rb`): ask whether they are done.
 
@@ -349,4 +346,5 @@ and processor); LfD Niedersachsen, Eckpunkte Lernplattformen (2022).
   buster changes only then.
 - Full E2E: `cd e2e && npm test`; one file:
   `npx playwright test --project=workspace-smoke --no-deps tests/FILE`.
-- Ruby tests: `cd src/ruby; for f in test/*_test.rb; do ruby "$f" | tail -1; done`.
+- Ruby tests: in the Ruby container, as AGENTS.md says (outside it only
+  those without nokogiri, redcarpet or rouge, with `LANG=C.UTF-8`).

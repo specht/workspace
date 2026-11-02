@@ -1,4 +1,4 @@
-# Pip unter Funkelbach (docs/plan-katas.md, section 2): the world Pip walks
+# Pip unter Funkelbach (docs/katas.md, section 2): the world Pip walks
 # through, turn by turn, on the server. The program a student writes sends
 # one command at a time (PipCheck); the world answers and writes down every
 # step, so a run is exactly reproducible, the check judges the trace and

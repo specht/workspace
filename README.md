@@ -21,7 +21,6 @@ Der Workspace bündelt bewusst unterschiedliche Bereiche der Informatik in einer
 - Rechnerarchitektur, Datenstrukturen und Sortieren in eigenen Sandboxes, bis zur CPU Sandbox mit Assembler und C
 - interaktive Geschichten mit BIF
 - relationale und Graphdatenbanken mit MySQL, Neo4j, SQL und Cypher
-- App-Entwicklung mit Flutter für Web und Android, einschließlich APK-Builds
 - Kommandozeile, Dateien, TCP/IP und Git
 - Facharbeiten und andere Dokumente mit LaTeX
 - HTML-Präsentationen mit shower.js
@@ -122,7 +121,7 @@ Die Turtle-Grafik führt Ruby und Python im Browser aus. Die beiden Laufzeiten (
 
 ## Entwicklung und Tests
 
-Für zentrale Workspace-Abläufe gibt es End-to-End- und Toolchain-Tests mit Playwright. Sie prüfen unter anderem Anmeldung und Sessions, Workspace-Start, Profil, Shared Live Apps, die Netzwerkisolation sowie ausgewählte Tutorials und Werkzeugketten bis hin zum Flutter-Android-APK-Build. Nach Möglichkeit verwenden die Tests dieselben Beispiele, die auch in den Tutorials dokumentiert sind.
+Für zentrale Workspace-Abläufe gibt es End-to-End- und Toolchain-Tests mit Playwright. Sie prüfen unter anderem Anmeldung und Sessions, Workspace-Start, Profil, Shared Live Apps, die Netzwerkisolation sowie ausgewählte Tutorials und Werkzeugketten bis hin zu Emscripten, SvelteKit und LaTeX. Nach Möglichkeit verwenden die Tests dieselben Beispiele, die auch in den Tutorials dokumentiert sind.
 
 Die Einrichtung und Ausführung der Tests ist in [`e2e/README.md`](e2e/README.md) beschrieben.
 

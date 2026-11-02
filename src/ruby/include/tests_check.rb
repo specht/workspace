@@ -1,7 +1,7 @@
 require 'json'
 require_relative 'tests_compiled'
 
-# Check type tests (docs/aufgaben.md, docs/plan-katas.md, set »Tests
+# Check type tests (docs/aufgaben.md, docs/katas.md, set »Tests
 # schreiben«): the student writes tests instead of code, assertions typed
 # into the card. They run against the right version of a function, where
 # all must pass, and against broken ones, each of which at least one test

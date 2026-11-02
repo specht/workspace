@@ -3,7 +3,7 @@ import { devices } from '@playwright/test';
 import type { Locator } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
-// A Kata (KataCheck, docs/plan-katas.md): code typed into the card, run in a
+// A Kata (KataCheck, docs/katas.md): code typed into the card, run in a
 // container of its own. One button, »Ausführen«, shows what the program
 // prints, then calls the functions and compares; the code comes back after
 // a reload. The Kata pages exist in development only. The visible card is

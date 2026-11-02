@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-// The turtle (TurtleCheck, docs/plan-katas.md, »Turtle«): the program runs in
+// The turtle (TurtleCheck, docs/katas.md, »Turtle«): the program runs in
 // the browser, Ruby and Python as WebAssembly (fetch-turtle-runtimes.sh), and
 // the turtle draws while it runs. A program that ends is checked on the
 // server; one that is stopped keeps its code and the card's state.

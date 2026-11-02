@@ -58,10 +58,18 @@ The code:
   `kata_compiled.rb` for Dart and Java, which compile before they run (the
   code as a library for DartCheck's harness, or as members of a class as in
   a compact source file of Java 25; one compiler run for the code and its
-  typical wrong solutions); `recursion_check.rb` (Prism for Ruby, blanked
+  typical wrong solutions; Dart through the SDK's own binary,
+  `DartCheck::DART`, since `dart` on the path is Flutter's wrapper, which
+  fails on a read-only image); `recursion_check.rb` (Prism for Ruby, blanked
   text for Python, JavaScript, Dart and Java); `tests_check.rb`; `pip_check.rb` with `pip_world.rb` (the world
   on the server, which answers every command and records the trace) and
   `pip_maps.rb` (mazes from the seed).
+- **Dart and Java in the Kata containers** (0.5 CPU, 192 MB, measured):
+  a Dart card with its typical wrong solutions takes about 1.4 to 2 s, a
+  Java card about 2.3 s; the sieve up to ten million 1.3 s in Dart and 2.5 s
+  in Java, which gets 8 s instead of 6 for it. Pip compiles once for all
+  maps of a card (`javac` alone takes about four seconds there), so three
+  maps take about 3 s.
 - **Pages:** `kata_page.rb` (tickets and polling, hand-ins; each poll of a
   running ticket brings what the person's own program printed since the last
   one, so the console fills while it runs; Python with `-u` and Ruby with

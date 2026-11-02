@@ -3,7 +3,7 @@ require 'shellwords'
 require_relative 'call_check'
 
 # The harness for JavaScript: the counterpart of PythonCheck and RubyCheck,
-# for the code typed into a Kata's card (KataCheck, docs/plan-katas.md) and,
+# for the code typed into a Kata's card (KataCheck, docs/katas.md) and,
 # as check type javascript (docs/aufgaben.md), for a file in the Workspace,
 # run there with node as the guest (command), like ruby and python.
 #

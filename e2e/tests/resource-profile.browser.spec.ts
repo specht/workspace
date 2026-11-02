@@ -489,7 +489,6 @@ async function collectVersions(
     gcc: 'gcc --version | head -n 1',
     gpp: 'g++ --version | head -n 1',
     emscripten: 'emcc --version | head -n 1',
-    flutter: 'flutter --version',
     node: 'node --version',
     npm: 'npm --version',
     latexmk: 'latexmk -v | head -n 2',
@@ -628,23 +627,10 @@ if (PROFILE_ENABLED) {
         `${PROFILE_ROOT}/interpreted`;
       const pixelramDir =
         `${PROFILE_ROOT}/pixelram-starter`;
-      const flutterDir =
-        `${PROFILE_ROOT}/flutter-profile`;
       const svelteDir =
         `${PROFILE_ROOT}/svelte-profile`;
       const latexDir =
         `${PROFILE_ROOT}/latex-tutorial`;
-
-      const stopFlutterGradle = async () => {
-        await expectCommandSuccess(
-          container,
-          './android/gradlew --stop',
-          {
-            workdir: flutterDir,
-            timeoutMs: 60_000,
-          },
-        );
-      };
 
       const workloads: Workload[] = [
         {
@@ -695,97 +681,6 @@ if (PROFILE_ENABLED) {
               },
             );
           },
-        },
-        {
-          id: 'flutter-web-debug',
-          description:
-            'Flutter Web debug build of a fresh app',
-          command:
-            'flutter build web --debug',
-          workdir: flutterDir,
-          timeoutMs: 360_000,
-          prepare: async () => {
-            await expectCommandSuccess(
-              container,
-              [
-                'flutter create',
-                '--platforms=web,android',
-                '--project-name=resource_profile_flutter',
-                'flutter-profile',
-              ].join(' '),
-              {
-                workdir: PROFILE_ROOT,
-                timeoutMs: 180_000,
-              },
-            );
-          },
-          beforeRun: async () => {
-            await expectCommandSuccess(
-              container,
-              'rm -rf build .dart_tool/flutter_build',
-              {
-                workdir: flutterDir,
-              },
-            );
-          },
-        },
-        {
-          id: 'flutter-web-release',
-          description:
-            'Flutter Web release build of the same fresh app',
-          command:
-            'flutter build web --release',
-          workdir: flutterDir,
-          timeoutMs: 360_000,
-          beforeRun: async () => {
-            await expectCommandSuccess(
-              container,
-              'rm -rf build .dart_tool/flutter_build',
-              {
-                workdir: flutterDir,
-              },
-            );
-          },
-        },
-        {
-          id: 'flutter-android-debug',
-          description:
-            'Flutter Android debug APK build of the same fresh app',
-          command:
-            'flutter build apk --debug && test -s build/app/outputs/flutter-apk/app-debug.apk',
-          workdir: flutterDir,
-          timeoutMs: 360_000,
-          beforeRun: async () => {
-            await stopFlutterGradle();
-            await expectCommandSuccess(
-              container,
-              'rm -rf build .dart_tool/flutter_build android/.gradle',
-              {
-                workdir: flutterDir,
-              },
-            );
-          },
-          afterRun: stopFlutterGradle,
-        },
-        {
-          id: 'flutter-android-release',
-          description:
-            'Flutter Android release APK build of the same fresh app',
-          command:
-            'flutter build apk --release && test -s build/app/outputs/flutter-apk/app-release.apk',
-          workdir: flutterDir,
-          timeoutMs: 360_000,
-          beforeRun: async () => {
-            await stopFlutterGradle();
-            await expectCommandSuccess(
-              container,
-              'rm -rf build .dart_tool/flutter_build android/.gradle',
-              {
-                workdir: flutterDir,
-              },
-            );
-          },
-          afterRun: stopFlutterGradle,
         },
         {
           id: 'svelte-npm',

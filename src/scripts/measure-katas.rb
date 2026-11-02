@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # How many Kata runs the server should run at a time (KATA_PARALLEL_RUNS in
-# credentials.rb, docs/plan-katas.md): a class presses »Prüfen« at once, so
+# credentials.rb, docs/katas.md): a class presses »Prüfen« at once, so
 # for each number of parallel runs this sends RUNS runs through the queue
 # (KataQueue, KataRunner, the same containers and limits as for students):
 # half a check that takes a moment (counting primes), half one that is quick,

@@ -4,7 +4,7 @@ require 'tmpdir'
 require 'stringio'
 require_relative 'turtle_world'
 
-# Check type turtle (docs/plan-katas.md, »Turtle«): a program typed into the
+# Check type turtle (docs/katas.md, »Turtle«): a program typed into the
 # card that draws. It runs in the browser (turtle_worker.js), which reports
 # the commands of each run; here they are replayed (TurtleWorld) and the
 # lines compared with the picture the task asks for.

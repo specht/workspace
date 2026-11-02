@@ -1,4 +1,4 @@
-// The turtle on the page (docs/plan-katas.md, »Turtle«): the picture of a
+// The turtle on the page (docs/katas.md, »Turtle«): the picture of a
 // task card, the player that draws a program's commands as they come from
 // turtle_worker.js, one worker per language, and the card's run, stop and
 // check. tasks.js makes a TurtleCard for every card with a .turtle-stage.

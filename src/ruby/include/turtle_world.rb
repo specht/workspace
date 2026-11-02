@@ -1,6 +1,6 @@
 require 'json'
 
-# The turtle's world on the server (docs/plan-katas.md, »Turtle«): the
+# The turtle's world on the server (docs/katas.md, »Turtle«): the
 # same geometry as turtle_canvas.js in the browser. The browser runs the
 # student's program (turtle_worker.js) and reports its commands; the world
 # replays them into lines. The pictures a task asks for are drawn here too,

@@ -1,8 +1,8 @@
 # Die Bildungspläne von Baden-Württemberg für Informatik am Gymnasium
-# (docs/plan-bundeslaender.md). Ein Entwurf: Die Zeile jeder Aktivität wird
+# (docs/bundeslaender.md). Ein Entwurf: Die Zeile jeder Aktivität wird
 # aus ihren Themen abgeleitet (topics:, themen.yaml), über die Zuordnung
 # unten; eine Lehrkraft in Baden-Württemberg prüft sie
-# (docs/plan-bundeslaender.md, »Was die Lehrkraft prüft«). Was sie
+# (docs/bundeslaender.md, »Was die Lehrkraft prüft«). Was sie
 # bestätigt oder ändert, kommt als eigene Zeile unter lines:.
 # Stand der Quellen: 27. Oktober 2026.
 title: Bildungspläne von Baden-Württemberg
