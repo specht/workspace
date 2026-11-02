@@ -515,7 +515,7 @@ image.
 - [x] `clisp` (1 November 2026, 29caf3e8): SBCL was called an interpreter of a
   script language; it compiles every expression to machine code, also in the
   REPL.
-- [ ] `perl`
+- [x] `perl` (1 November 2026): page read, nothing to change.
 - [ ] `python`
 - [ ] `lua`
 - [ ] `ruby`
