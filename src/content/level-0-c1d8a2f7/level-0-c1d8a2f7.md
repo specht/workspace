@@ -222,9 +222,13 @@ In `[map]` steht der Grundriss, von oben gesehen, oben ist Norden. Hier zählt j
 
 Eine Tür ist ein Feld, das zwei Räumen gehört. `door = gang 1` heißt: Diese `1` ist dasselbe Feld wie die `1` in `rooms/gang.room`. Das Programm legt die beiden Räume so nebeneinander, dass die Türen aufeinanderliegen. Ihre Wände dürfen sich dabei überdecken, ihre Böden nicht.
 
-Zwei Räume dürfen sich auch mehrere Türen teilen, jede mit ihrer eigenen Ziffer. So entsteht aus vielen kleinen Dateien ein Bauwerk. `level.ini` nennt nur den ersten Raum (`start = zimmer`). Das Programm liest ihn, dann jeden Raum, zu dem eine seiner Türen führt, dann deren Nachbarn, bis es keine neuen Türen mehr gibt. Eine Datei, zu der keine Tür führt, liest es gar nicht.
+Zwei Räume dürfen sich auch mehrere Türen teilen, jede mit ihrer eigenen Ziffer. So entsteht aus vielen kleinen Dateien ein Bauwerk. `level.ini` nennt nur den ersten Raum (`start = zimmer`). Das Programm liest ihn, dann jeden Raum, zu dem eine seiner Türen führt, dann deren Nachbarn, bis es keine neuen Türen mehr gibt.
 
 _task(tuer)
+
+<!-- after: tuer -->
+Eine Datei, zu der keine Tür führt, liest das Programm also gar nicht.
+<!-- /after -->
 
 ## Ein Raum mehr
 
