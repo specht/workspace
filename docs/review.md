@@ -455,10 +455,15 @@ Nothing at the moment.
   90002`); the abstract answered the first prediction (»Warum piept die
   Kasse«); »braucht es genauer« without a noun. Predictions, after blocks,
   numbers in the teacher note and the explanations checked; 122 examples pass.
+  Later: the straight line as a plot (»Stelle«, not »Platz«, also in the text
+  and the task), the parity grid as a widget: one flipped bit before »zwei-
+  bits«, two in its after block.
 - [x] `supermarkt` (1 November 2026, f7f0c678): no spoilers (the predictions need
   their own calculation, the simulation's numbers stand only in after blocks);
   »Eine normale Kasse ist selbst eine Kasse, sie bleibt also, wie sie ist«
   said plainly.
+  Later: School and Room, Vehicle and Bicycle drawn under their `uml` text
+  (`_uml_diagram`), the checkout as a timeline after »kasse-vorhersage«.
 - [x] `testen` (1 November 2026, 356ee0ab): the text before »Die Grenzen von
   grade« named the classes of `grade` and how to test their boundaries, almost
   the answer; now explained with the age of majority (17 and 18). The rest was
@@ -476,6 +481,9 @@ Nothing at the moment.
   force pushes (`receive.denyNonFastForwards` in `git_server.rb`), so the task
   now asks about a server that allows it and the solution says both; the
   teacher note linked »Katas: Testen«, now »Testen«.
+  Later: the rejected push and the merge as commit graphs; the merge picture
+  stands after the conflict is resolved, since `git pull` stops at the
+  conflict.
 
 ### Terminal & Git
 
@@ -568,35 +576,7 @@ such a mention.
 What a page would explain better with a picture or a widget, for the
 maintainer to decide. Per page: where, what the picture shows, why.
 
-#### `check-digits`
-
-- **»Reparieren mit einer Geraden«:** a small plot of the four stored values
-  over their places 1 to 4: 2, 6 and 14 on a straight line, the 11 above it,
-  a dotted arrow down to the 10 the line gives. The text has to say »wenn man
-  den Platz der 11 mitzählt«, which a picture shows at once.
-- **»Ein Gitter, das ein Bit repariert«:** the grid as a small widget: a click
-  flips a bit, rows and columns with an odd number of ones turn red, their
-  crossing is marked. It must not answer »zwei-bits« (two flips in one row)
-  before that prediction: flipping a second bit only after it, or the
-  widget placed after it.
-
-#### `supermarkt`
-
-- **Diagrams instead of text:** the page explains the three compartments, the
-  multiplicities at the ends of a line and the hollow arrowhead of
-  inheritance, but shows the school with its rooms and the vehicle with the
-  bicycle only as `uml` text. Drawn as diagrams from the same text (the way
-  `_include_er` draws ER models with the ER-Werkstatt's core), text and
-  diagram side by side, a reader would see what the words describe.
-- **After »kasse-vorhersage«:** one checkout as a timeline from 0 to 180
-  seconds: the first customer from 0 to 90, the second arriving at 30, a
-  waiting bar until 90, her service until 165. The text explains »ab wann sie
-  wieder frei ist« in words; the card picture already draws such timelines.
-
-#### `class-quiz`
-
-- **After »push-vorhersage«:** the commits as a small graph: on the server
-  A, B and Ida's I; in your clone A, B and your L. The server cannot take L
-  without losing I; after `git pull` a merge M joins both. The text says »Dein
-  Commit baut auf dem Stand davor auf«, which the graph shows; the card
-  picture already draws commit graphs in the same style.
+Nothing at the moment. Done on 2 November 2026: the straight line and the
+parity grid (a widget) in `check-digits`, the class diagrams (`_uml_diagram`,
+also in the Handbuch) and the checkout timeline in `supermarkt`, the commit
+graphs in `class-quiz`, the dining philosophers in `nebenlaeufigkeit`.
