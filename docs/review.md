@@ -550,7 +550,9 @@ such a mention.
 - [x] `level-1-7e3a91c4` (2 November 2026, 9988e4f6): the code block with »slab = 0.5«
   stood visible under the question asking for it, now in an after block;
   stairs arithmetic, slab and the collision numbers (controls.js) checked.
-- [ ] `level-2-b52d0f18`
+- [x] `level-2-b52d0f18` (2 November 2026, 8ff92c29): page read; the portal
+  section began by repeating the sentence before it; water depth, column
+  height and the water defaults (level.js) checked.
 - [ ] `level-3-4c9e6a2d`
 
 ## Illustrations proposed
