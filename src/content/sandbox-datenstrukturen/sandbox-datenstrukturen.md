@@ -156,7 +156,7 @@ Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils a
 
 <!-- tutorial-screenshot
 terminal-open
-terminal-run: cd /workspace && git clone -q https://github.com/specht/data-structures-sandbox.git && cd data-structures-sandbox && git checkout -q e4ea4fc5e126574ed27e671d20e66d43462909c0
+terminal-run: cd /workspace && git clone -q https://github.com/specht/data-structures-sandbox.git && cd data-structures-sandbox && git checkout -q 1e4b9fcda60a45f42956aed2c83c800643be7d0a
 terminal-wait-for-prompt
 terminal-run: cd /workspace/data-structures-sandbox && mkdir -p structures && ./new-structure demo list unsorted-nodes --example --lang java && ./new-structure demo tree avl --example --lang python && ./new-structure demo hash chains --example --lang dart
 terminal-wait-for-prompt
@@ -201,7 +201,9 @@ Bei **binären Suchbäumen** wird die Suchregel sichtbar: links das Kleinere, re
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
-select-option: #structure = avl:.py
+click: selector:#implementation-picker .picker-button
+type: avl
+press: Enter
 wait-for-text: demo/my_avl.py
 click: selector:#call-input
 press: Control+A
@@ -234,7 +236,9 @@ Die Hash Table löst Kollisionen durch **Chaining** (separate chaining). Wie vie
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
-select-option: #structure = hash
+click: selector:#implementation-picker .picker-button
+type: hash
+press: Enter
 wait-for-text: demo/my_hash_table.dart
 click: selector:#call-input
 press: Control+A
@@ -262,8 +266,8 @@ _task(buckets-belegt)
 
 ### Werkzeuge der App
 
-- **Repeat** spielt deine Aufruffolge nach jedem Speichern automatisch erneut ab: Du siehst sofort, was deine Änderung bewirkt.
-- **Run tests** prüft Methoden und inneren Aufbau gegen unabhängige Vergleichsmodelle und nennt bei einem Fehler den konkreten Fall.
+- Die **History** unter den Vorschlägen hält alle Aufrufe fest, seit die Datenstruktur leer war. Ist **Rebuild after save** eingeschaltet, wie es voreingestellt ist, baut die App die Datenstruktur nach jedem Speichern damit neu auf: Du siehst sofort, was deine Änderung bewirkt. Ein Klick auf einen früheren Aufruf baut sie nur bis dorthin auf, **Replay** zeigt den Aufbau Schritt für Schritt.
+- **Run tests** prüft Methoden und inneren Aufbau gegen unabhängige Vergleichsmodelle und nennt bei einem Fehler den konkreten Fall. Bei einem fehlgeschlagenen Test legt **Recreate this test** genau dessen Aufrufe in die Sandbox, sodass du den Fehler Schritt für Schritt ansehen kannst.
 - Ausgaben mit `print` erscheinen in der Konsole genau an dem Schritt, an dem sie entstanden sind; Laufzeitfehler springen auf Wunsch zur passenden Zeile.
 
 Neben den gezeigten Strukturen gibt es Stacks und Queues jeweils als Array und als Knotenkette sowie einen Min-Heap im Array. Mehr zur App steht in ihrer [Anleitung](https://github.com/specht/data-structures-sandbox#readme), was jede Struktur genau können muss in den [Verträgen](https://github.com/specht/data-structures-sandbox/blob/main/docs/contracts.md).

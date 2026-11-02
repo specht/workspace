@@ -218,7 +218,7 @@ of its root.
 
 `select-option` selects the given value in a real HTML `<select>` on the active
 tab and triggers the normal change event. For example,
-`select-option: #structure = avl` picks a completed AVL implementation.
+`select-option: #trace-mode = detailed` picks a value of a real `<select>`, here the trace mode of the data structures sandbox.
 
 `open-site: PATH` opens a page of the Workspace site itself, logged in as the
 screenshot account, as the `preview` tab (`open-site: /tic80/` for TIC-80).
