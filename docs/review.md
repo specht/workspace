@@ -402,7 +402,10 @@ image.
   variants), cards and teacher note read, nothing to change: −7 % 8 is 1 in
   Dart and Python and −7 in Java and JavaScript, as stated; the think boxes
   ask without answering.
-- [ ] `routenplaner`
+- [x] `routenplaner` (1 November 2026): page (Ruby and Python), cards and
+  teacher note read, nothing to change: the numbers fit (111 195 m per degree,
+  67 km per degree of longitude in Berlin, heap height 17 for 100 000, 4! =
+  24, 8! = 40 320, 7! = 5 040); the prediction on degrees has its after block.
 - [ ] `laufzeit`
 
 ### Automaten und Sprachen
