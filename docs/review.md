@@ -528,7 +528,8 @@ image.
 - [x] `nasm` (1 November 2026, 1db71447): »Programmierspracen«; RollerCoaster
   Tycoon (1999) was listed among early games; the prose quoted »Hello, world!«
   where the code prints »Hello, World!«.
-- [ ] `cs`
+- [x] `cs` (1 November 2026): page read, nothing to change: .NET 10 is what
+  the image installs.
 - [ ] `go`
 - [ ] `dart`
 - [ ] `rust`
