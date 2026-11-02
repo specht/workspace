@@ -374,7 +374,7 @@ Kellerautomaten können also mehr als endliche Automaten. Aber vielleicht hat nu
 _task(schubfach)
 
 <!-- after: schubfach -->
-Für einen Automaten heißt das: Hat er k Zustände und liest er k a, war er in k + 1 Zuständen, mit dem Startzustand. Also war er zweimal im selben Zustand, sagen wir nach i a und nach j a, mit i kleiner als j.
+Für einen Automaten heißt das: Hat er k Zustände und liest er k a, war er dabei k + 1 Mal in einem Zustand, den Startzustand mitgezählt, hat aber nur k verschiedene. Also war er zweimal im selben Zustand, sagen wir nach i a und nach j a, mit i kleiner als j.
 
 Ein Automat mit vier Zuständen, wie er für die a aussehen könnte: Nach einem a ist er in q<sub>1</sub>, nach vier a wieder, hier ist also i = 1 und j = 4.
 
