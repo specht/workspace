@@ -947,15 +947,15 @@ tasks:
     check: { type: number, expect: 10 }
     feedback:
       - when: { equals: 11 }
-        say: Die 11 ist der falsche Wert. Gesucht ist, was an ihrem Platz stehen müsste.
+        say: Die 11 ist der falsche Wert. Gesucht ist, was an ihrer Stelle stehen müsste.
       - when: { equals: 3 }
         say: Um 3 wächst die Folge bei jedem Schritt. Gesucht ist der richtige Wert für den falschen.
     hint:
-      - Lass nacheinander jeden der vier Werte weg und prüf, ob die drei anderen gleichmäßig wachsen, wenn man den Platz des fehlenden mitzählt.
+      - Lass nacheinander jeden der vier Werte weg und prüf, ob die drei anderen gleichmäßig wachsen, wenn man die Stelle des fehlenden mitzählt.
       - Ohne die 11 bleiben 4, 7 und 13. Von 7 bis 13 sind es zwei Schritte.
     solution: |
       10. Ohne die 11 wachsen 4, 7 und 13 um 3 bei jedem Schritt, von 7 bis 13
-      sind es zwei Schritte; an den Platz der 11 gehört die 10. Lässt man
+      sind es zwei Schritte; an die Stelle der 11 gehört die 10. Lässt man
       einen anderen Wert weg, wachsen die übrigen drei nicht gleichmäßig.
 
   - id: paritaet

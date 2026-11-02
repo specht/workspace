@@ -1216,11 +1216,13 @@ auf einer Geraden. Gespeichert werden vier Werte dieser Folge, 2, 6, 10 und 14;
 die beiden letzten sind die Korrektur.
 
 Kommt ein Wert falsch an, etwa 2, 6, 11, 14, liegen drei der vier noch auf
-einer Geraden: 2, 6 und 14 wachsen um 4 bei jedem Schritt, wenn man den Platz
+einer Geraden: 2, 6 und 14 wachsen um 4 bei jedem Schritt, wenn man die Stelle
 der 11 mitzählt. Nur die 11 passt nicht, und auf der Geraden stünde dort die
 10. Zwei Korrekturwerte reparieren also einen falschen Wert. Weiß man dagegen
 schon, welche Werte fehlen, etwa weil zwei unlesbar sind, genügen die beiden
 übrigen: Durch zwei Punkte geht genau eine Gerade.
+
+<img class='drawing' style='width: 20em' src='gerade.webp' alt='Die vier angekommenen Werte über ihren Stellen 1 bis 4: 2, 6 und 14 liegen auf einer Geraden, die 11 an Stelle 3 liegt über ihr. Ein gestrichelter Pfeil führt von der 11 zu dem Punkt der Geraden an Stelle 3, der 10.'>
 
 _task(gerade)
 
