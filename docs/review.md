@@ -499,7 +499,10 @@ image.
   with English quotes. The overflow prediction has its after block.
 - [x] `cobol` (1 November 2026, 825aff9c): page read (shared portrait
   template), nothing else to change: CODASYL 1959 and FLOW-MATIC check out.
-- [ ] `basic`
+- [x] `basic` (1 November 2026, 954561f6): page read; »BASIC ist eine
+  Skriptsprache, … zur Laufzeit interpretiert« (Dartmouth BASIC was compiled),
+  English quotes. The 3000000000 question was run in the image: bwBASIC prints
+  the 2 nine times and stops, so the question has an answer.
 - [ ] `pascal`
 - [ ] `c`
 - [ ] `prolog-portrait`
