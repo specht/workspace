@@ -384,7 +384,9 @@ image.
   read, nothing to change: every prediction is answered in an after block; the
   subtraction examples (5 − 3, 3 − 5 and their carry), CMOS NAND with four
   transistors and Boole/Shannon check out.
-- [ ] `logikwerkstatt`
+- [x] `logikwerkstatt` (1 November 2026): page, editor instructions, cards and
+  teacher note read, nothing to change: each circuit's explanation waits in
+  its after block; the mux and ripple-carry statements check out.
 - [ ] `sandbox-cpu`
 
 ### Algorithmen und Datenstrukturen
