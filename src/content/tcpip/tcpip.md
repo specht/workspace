@@ -146,7 +146,9 @@ _task(lichtgeschwindigkeit)
 
 _task(standort)
 
+<!-- after: standort -->
 Die Endung eines Namens sagt nur, wo der Name registriert ist, nicht, wo der Rechner steht. Ein Name ist ein Schild; welcher Rechner dahinter antwortet, entscheidet die IP-Adresse, die DNS dazu nennt.
+<!-- /after -->
 
 ### Ein Server am anderen Ende der Welt
 
