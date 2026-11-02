@@ -479,7 +479,11 @@ image.
   waits in the after block. The rm warning stays before »Und wenn rm
   danebengeht?« on purpose, it is a safety warning; the numbers (3 756 lines,
   3 002 words, 61 204 and 48 925 bytes) are the recipe's.
-- [ ] `git`
+- [x] `git` (1 November 2026, 84fa4794): page, object graphs, cards and
+  teacher note read; »Branches werden beim Push normal mit übertragen« (git
+  push sends the current branch only) with an em dash, and the diff's removed
+  lines were shown as »–« instead of »-«. The prediction head-zwei has its
+  after block.
 - [ ] `terminal-mystery`
 
 ### Programmiersprachen
