@@ -1,0 +1,36 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 780 300' width='780' height='300'>
+  <!-- Eine Kasse von Sekunde 0 bis 180; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/supermarkt/kasse.svg 1560 -->
+<rect width='780' height='300' fill='#ffffff'/>
+<line x1='436.0' y1='46' x2='436.0' y2='80' stroke='#6b7280' stroke-width='1.5' stroke-dasharray='4 4'/>
+<text x='436.0' y='36.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>frei ab 90</text>
+<line x1='691.0' y1='46' x2='691.0' y2='80' stroke='#6b7280' stroke-width='1.5' stroke-dasharray='4 4'/>
+<text x='691.0' y='36.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>frei ab 165</text>
+<text x='112.0' y='118.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='17' font-weight='700' fill='#1f2937'>Kasse</text>
+<rect x='130' y='80' width='612.0' height='64' rx='10' fill='#eef3fb'/>
+<rect x='132.0' y='87' width='302.0' height='50' rx='8' fill='#2b5fb4'/>
+<text x='283.0' y='120.0' text-anchor='middle' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size='22' font-weight='700' fill='#ffffff'>10</text>
+<rect x='438.0' y='87' width='251.0' height='50' rx='8' fill='#16a34a'/>
+<text x='563.5' y='120.0' text-anchor='middle' font-family="'0xProto Nerd Font Mono', 'DejaVu Sans Mono', monospace" font-size='22' font-weight='700' fill='#ffffff'>5</text>
+<text x='112.0' y='204.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='600' fill='#1f2937'>zweite Kundin</text>
+<rect x='232.0' y='178' width='204.0' height='40' rx='8' fill='none' stroke='#16a34a' stroke-width='2' stroke-dasharray='6 4'/>
+<text x='334.0' y='204.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='600' fill='#16a34a'>wartet 60 s</text>
+<line x1='436.0' y1='178' x2='436.0' y2='137' stroke='#16a34a' stroke-width='2'/>
+<circle cx='232.0' cy='198.0' r='5' fill='#16a34a'/>
+<text x='222.0' y='203.0' text-anchor='end' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#16a34a'>kommt an</text>
+<line x1='130' y1='258' x2='742.0' y2='258' stroke='#d1d5db' stroke-width='2'/>
+<line x1='130.0' y1='253' x2='130.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='130.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>0</text>
+<line x1='232.0' y1='253' x2='232.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='232.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>30</text>
+<line x1='334.0' y1='253' x2='334.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='334.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>60</text>
+<line x1='436.0' y1='253' x2='436.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='436.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>90</text>
+<line x1='538.0' y1='253' x2='538.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='538.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>120</text>
+<line x1='640.0' y1='253' x2='640.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='640.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>150</text>
+<line x1='742.0' y1='253' x2='742.0' y2='263' stroke='#6b7280' stroke-width='1.5'/>
+<text x='742.0' y='282.0' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='14' font-weight='400' fill='#6b7280'>180 s</text>
+</svg>
