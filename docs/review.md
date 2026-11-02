@@ -542,7 +542,10 @@ Read like the others, with their own rules: they are never named or linked
 outside the series, also not in what a page generates; a fix must not add
 such a mention.
 
-- [ ] `level-0-c1d8a2f7`
+- [x] `level-0-c1d8a2f7` (1 November 2026, 3df6bf71): »floor zehn« was eleven
+  (FLOORS in level.js); the starter's comment listed six walls and five floors
+  (fixed and pushed there, f20fabd); the door question checked against the
+  loading queue; the box-office claim checked.
 - [ ] `level-1-7e3a91c4`
 - [ ] `level-2-b52d0f18`
 - [ ] `level-3-4c9e6a2d`
