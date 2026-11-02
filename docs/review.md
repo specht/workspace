@@ -505,7 +505,8 @@ image.
   the 2 nine times and stops, so the question has an answer.
 - [x] `pascal` (1 November 2026): page read, nothing to change: Wirth
   1968/1970, Turbo Pascal and the FreePascal IDE are described correctly.
-- [ ] `c`
+- [x] `c` (1 November 2026, 4df77bb5): page read, nothing else: the int
+  overflow explanation (lower 32 bits, no error) is right for gcc.
 - [ ] `prolog-portrait`
 - [ ] `smalltalk`
 - [ ] `cpp`
