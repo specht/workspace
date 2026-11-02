@@ -512,7 +512,9 @@ image.
 - [x] `smalltalk` (1 November 2026): page read, nothing to change.
 - [x] `cpp` (1 November 2026): page read, nothing to change: cin stores the
   largest int and sets the fail state (since C++11), 2147483647 is prime.
-- [ ] `clisp`
+- [x] `clisp` (1 November 2026, 29caf3e8): SBCL was called an interpreter of a
+  script language; it compiles every expression to machine code, also in the
+  REPL.
 - [ ] `perl`
 - [ ] `python`
 - [ ] `lua`
