@@ -380,7 +380,10 @@ image.
 
 ### Wie Computer rechnen
 
-- [ ] `logikgatter`
+- [x] `logikgatter` (1 November 2026): page, circuits, cards and teacher note
+  read, nothing to change: every prediction is answered in an after block; the
+  subtraction examples (5 − 3, 3 − 5 and their carry), CMOS NAND with four
+  transistors and Boole/Shannon check out.
 - [ ] `logikwerkstatt`
 - [ ] `sandbox-cpu`
 
