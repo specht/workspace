@@ -257,7 +257,7 @@ _task(apostroph)
 Das Programm bricht mit einer Fehlermeldung der Datenbank ab: `You have an error in your SQL syntax`. Der Apostroph in `o'brien` beendet den Text in der Abfrage zu früh. Die Datenbank bekommt `WHERE login = 'o'brien' AND …`, und mit `brien' AND …` dahinter kann sie nichts anfangen. Was jemand als Login eintippt, wird also nicht nur verglichen, es wird Teil der Abfrage.
 <!-- /after -->
 
-Wie in vielen anderen Sprachen können in SQL Kommentare stehen: Mit `#` oder `--` beginnt ein Kommentar, der bis zum Ende der Zeile gilt und nicht ausgeführt wird.
+Wie in vielen anderen Sprachen können in SQL Kommentare stehen: Mit `#` oder `-- ` beginnt ein Kommentar, der bis zum Ende der Zeile gilt und nicht ausgeführt wird; hinter den beiden Strichen verlangt MySQL ein Leerzeichen.
 
 Das Programm setzt die Eingabe unverändert in die SQL-Abfrage ein. Damit kann, wer etwas eintippt, die Abfrage selbst verändern.
 
