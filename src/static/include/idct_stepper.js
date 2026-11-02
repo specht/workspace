@@ -8,7 +8,8 @@
 // with the 64 dequantised coefficients in natural order (row by row: v * 8 + u).
 // With data-src='/jpeg/44-baseline.jpg' (and jpeg_image.js on the page) a
 // picker above it chooses any block of the photo: an MCU on the photo, then
-// one of its blocks; data-coef is the block shown first.
+// one of its blocks; data-coef is the block shown first. A »jpeg-block«
+// event on the document ({ comp, index, mx, my }) chooses one from outside.
 
 (function (root) {
     'use strict';
@@ -177,6 +178,12 @@
                 const button = event.target.closest('button[data-block]');
                 if (!button) return;
                 ({ comp, index } = names[Number(button.dataset.block)]);
+                update();
+            });
+            // a block chosen above, at the Huffman stepper of the page
+            document.addEventListener('jpeg-block', (event) => {
+                ({ comp, index, mx, my } = event.detail);
+                picker.set(mx, my);
                 update();
             });
         }).catch((error) => { pickBox.textContent = `Das Foto ließ sich nicht laden: ${error.message}`; });

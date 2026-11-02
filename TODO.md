@@ -107,7 +107,7 @@ too slow for the Workspace.
 * [ ] **»Wie sicher ist ein Passwort?«**: not written; »Zwei Faktoren« fills the place in Netze & Sicherheit. The branch `passwords` with a first attempt no longer exists (31 October 2026, neither local nor on GitHub); stored passwords with salt are already in »Kryptographie im Terminal«, so this page would be about guessing
 * [ ] **Person boxes waiting for a visible page**: Béla Julesz and Christopher Tyler (autostereograms, `sirds`), Yann LeCun (`digits-experiment` is in no catalog); Turner Whitted has his place in Raytracing
 * [ ] **Small things left on built pages:** Laufzeit: the students' own measurements as a chart (a `measure` task), person boxes for Stephen Cook and Richard Karp, an Extra on amortised cost (a list that grows by doubling); Nebenläufigkeit: Per Brinch Hansen's box (on the Personen page already) and a `.book` box (Goetz, »Java Concurrency in Practice«); Logik-Werkstatt: buses (four bits on one line), a block for the ALU, »Lösung einsetzen« for circuits; Perzeptron: digits the class draws on the pad as a dataset of its own (an Extra)
-* [ ] **JPEG, further**: the Huffman and dequantisation steppers still show only the first block (the iDCT stepper and the MCU widget take any MCU of the photo, `jpeg_image.js`); `decoder` runs the whole decoder, the number tasks before it could go once it has been tried in class
+* [ ] **JPEG, further**: `decoder` runs the whole decoder; the number tasks before it could go once it has been tried in class
 
 ### Katas
 

@@ -8,9 +8,12 @@
 // JpegImage.load(url) decodes once per page and resolves to
 //   { width, height, hmax, vmax, mcusX, mcusY,
 //     comps: [{ name, h, v, blocksX, plane, planeWidth, coef }],
-//     block(c, mx, my, i), pixel(x, y), photo() }
+//     block(c, mx, my, i), bits(c, mx, my, i), pixel(x, y), photo() }
 // coef: the dequantised coefficients of every block, 64 in natural order
-// (row by row: v * 8 + u), blocks row by row in the component.
+// (row by row: v * 8 + u), blocks row by row in the component. bits()
+// gives what the Huffman stepper needs to read one block again: its bytes
+// in the file, where its bits start and end, the DC coefficient before it,
+// its tables (Huffman codes as {'1011': 0x04}) and its quantisation table.
 
 (function (root) {
     'use strict';
@@ -92,7 +95,7 @@
                     const counts = bytes.subarray(pos, pos + 16);
                     pos += 16;
                     const total = counts.reduce((a, b) => a + b, 0);
-                    const t = { values: bytes.slice(pos, pos + total), min: [], max: [], ptr: [] };
+                    const t = { values: bytes.slice(pos, pos + total), min: [], max: [], ptr: [], codes: {} };
                     pos += total;
                     let code = 0, k = 0;
                     for (let len = 1; len <= 16; len++) {
@@ -101,6 +104,7 @@
                         code += counts[len - 1];
                         k += counts[len - 1];
                         t.max[len] = counts[len - 1] ? code - 1 : -1;
+                        for (let c = t.min[len]; c <= t.max[len]; c++) t.codes[c.toString(2).padStart(len, '0')] = t.values[t.ptr[len] + c - t.min[len]];
                         code <<= 1;
                     }
                     (tcTh >> 4 ? tables.ac : tables.dc)[tcTh & 15] = t;
@@ -134,6 +138,9 @@
             return (buffer >> left) & 1;
         };
         const bits = (n) => { let v = 0; for (let i = 0; i < n; i++) v = (v << 1) | bit(); return v; };
+        // where the next bit is, counted in bits of the file; a byte 0xFF
+        // read last was followed by its 0x00, so it lies two bytes back
+        const at = () => left === 0 ? pos * 8 : (pos - (buffer === 0xFF ? 2 : 1)) * 8 + 8 - left;
         const huffman = (t) => {
             let code = 0;
             for (let len = 1; len <= 16; len++) {
@@ -154,6 +161,8 @@
             c.planeWidth = c.blocksX * 8;
             c.plane = new Uint8Array(c.planeWidth * c.blocksY * 8);
             c.coef = new Int16Array(c.blocksX * c.blocksY * 64);
+            c.span = new Int32Array(c.blocksX * c.blocksY * 2);
+            c.before = new Int32Array(c.blocksX * c.blocksY);
             c.prediction = 0;
         }
         for (let my = 0; my < mcusY; my++) {
@@ -162,7 +171,10 @@
                     for (let v = 0; v < c.v; v++) {
                         for (let h = 0; h < c.h; h++) {
                             const bx = mx * c.h + h, by = my * c.v + v;
-                            const coef = c.coef.subarray((by * c.blocksX + bx) * 64, (by * c.blocksX + bx + 1) * 64);
+                            const n = by * c.blocksX + bx;
+                            const coef = c.coef.subarray(n * 64, n * 64 + 64);
+                            c.span[2 * n] = at();
+                            c.before[n] = c.prediction;
                             const s = huffman(tables.dc[c.td]);
                             c.prediction += extend(bits(s), s);
                             coef[0] = c.prediction * quant[c.tq][0];
@@ -177,6 +189,7 @@
                                 if (k > 63) throw new Error('Zu viele Koeffizienten in einem Block.');
                                 coef[ZIGZAG[k]] = extend(bits(size), size) * quant[c.tq][ZIGZAG[k]];
                             }
+                            c.span[2 * n + 1] = at();
                             const block = idct(coef);
                             for (let y = 0; y < 8; y++) c.plane.set(block.subarray(y * 8, y * 8 + 8), (by * 8 + y) * c.planeWidth + bx * 8);
                         }
@@ -193,6 +206,17 @@
                 const comp = comps[c];
                 const bx = mx * comp.h + i % comp.h, by = my * comp.v + Math.floor(i / comp.h);
                 return Array.from(comp.coef.subarray((by * comp.blocksX + bx) * 64, (by * comp.blocksX + bx + 1) * 64));
+            },
+            bits(c, mx, my, i) {
+                const comp = comps[c];
+                const n = (my * comp.v + Math.floor(i / comp.h)) * comp.blocksX + mx * comp.h + i % comp.h;
+                const start = comp.span[2 * n], end = comp.span[2 * n + 1];
+                const from = start >> 3, to = (end + 7) >> 3;
+                return {
+                    offset: from, bytes: Array.from(bytes.subarray(from, to)), startBit: start - from * 8, endBit: end - from * 8,
+                    previousDC: comp.before[n], dcSlot: comp.td, acSlot: comp.ta, quantSlot: comp.tq,
+                    dc: tables.dc[comp.td].codes, ac: tables.ac[comp.ta].codes, quant: Array.from(ZIGZAG, (natural) => quant[comp.tq][natural]),
+                };
             },
             // a pixel, also one beyond the photo in the last MCUs: Y, Cb,
             // Cr where the decoder reads them, and the colour

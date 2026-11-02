@@ -57,12 +57,16 @@ function parseHexBytes(hexString) {
         .map(h => parseInt(h, 16));
 }
 
-// Bit reader, MSB-first inside each byte.
+// Bit reader, MSB-first inside each byte. With { startBit } it begins
+// inside the bytes (a block in the middle of a file), with { stuffed: true }
+// it skips the 0x00 after every 0xFF, as a decoder does; bit positions stay
+// those of the bytes given, so that a hexdump of them can be marked.
 class BitReader {
-    constructor(bytes) {
+    constructor(bytes, options = {}) {
         this.bytes = bytes;
         this.totalBits = bytes.length * 8;
-        this.bitPos = 0;
+        this.bitPos = options.startBit || 0;
+        this.stuffed = !!options.stuffed;
     }
 
     eof() {
@@ -73,7 +77,16 @@ class BitReader {
         return this.totalBits - this.bitPos;
     }
 
+    // past a stuffed 0x00, so that the next bit read is at bitPos
+    skipStuffing() {
+        if (this.stuffed && (this.bitPos & 7) === 0 && this.bitPos > 0 &&
+            this.bytes[(this.bitPos >> 3) - 1] === 0xFF && this.bytes[this.bitPos >> 3] === 0x00) {
+            this.bitPos += 8;
+        }
+    }
+
     readBit() {
+        this.skipStuffing();
         if (this.eof()) {
             throw new Error("Unexpected end of bitstream");
         }
@@ -90,6 +103,7 @@ class BitReader {
             throw new Error(`Not enough bits: wanted ${n}, have ${this.bitsRemaining()}`);
         }
 
+        if (n > 0) this.skipStuffing();
         const start = this.bitPos;
         let value = 0;
         let bits = "";
@@ -100,6 +114,7 @@ class BitReader {
         }
         return {
             startBit: start,
+            endBit: this.bitPos,
             length: n,
             bits,
             value
@@ -109,6 +124,7 @@ class BitReader {
 
 // Decode one Huffman symbol by growing the prefix one bit at a time.
 function readHuffmanSymbol(reader, compiledTable) {
+    reader.skipStuffing();
     const startBit = reader.bitPos;
     let prefix = "";
 
@@ -122,6 +138,7 @@ function readHuffmanSymbol(reader, compiledTable) {
         if (compiledTable.has(prefix)) {
             return {
                 startBit,
+                endBit: reader.bitPos,
                 length: prefix.length,
                 bits: prefix,
                 symbol: compiledTable.get(prefix)
@@ -170,12 +187,14 @@ function decodeOneBlock(reader, dcTable, acTable, prevDC = 0) {
         kind: "DC",
         huffman: {
             startBit: dcHuff.startBit,
+            endBit: dcHuff.endBit,
             length: dcHuff.length,
             bits: dcHuff.bits,
             symbol: dcCategory
         },
         valueBits: {
             startBit: dcValueInfo.startBit,
+            endBit: dcValueInfo.endBit,
             length: dcValueInfo.length,
             bits: dcValueInfo.bits,
             rawValue: dcValueInfo.value
@@ -207,6 +226,7 @@ function decodeOneBlock(reader, dcTable, acTable, prevDC = 0) {
                 kind: "AC_EOB",
                 huffman: {
                     startBit: acHuff.startBit,
+                    endBit: acHuff.endBit,
                     length: acHuff.length,
                     bits: acHuff.bits,
                     symbol: rs
@@ -244,6 +264,7 @@ function decodeOneBlock(reader, dcTable, acTable, prevDC = 0) {
                 kind: "AC_ZRL",
                 huffman: {
                     startBit: acHuff.startBit,
+                    endBit: acHuff.endBit,
                     length: acHuff.length,
                     bits: acHuff.bits,
                     symbol: rs
@@ -298,12 +319,14 @@ function decodeOneBlock(reader, dcTable, acTable, prevDC = 0) {
             kind: "AC",
             huffman: {
                 startBit: acHuff.startBit,
+                endBit: acHuff.endBit,
                 length: acHuff.length,
                 bits: acHuff.bits,
                 symbol: rs
             },
             valueBits: {
                 startBit: acValueInfo.startBit,
+                endBit: acValueInfo.endBit,
                 length: acValueInfo.length,
                 bits: acValueInfo.bits,
                 rawValue: acValueInfo.value
@@ -376,7 +399,9 @@ function decodeJpegDctStream(bytes, dcTableObj, acTableObj, options = {}) {
     };
 }
 
-function stepsToMarkedHexdump(bytes, steps, visibleMarkedCount = Infinity) {
+// other: spans shown always, faint ({ start, end, className }): the bits of
+// the blocks before and after, a stuffed 0x00.
+function stepsToMarkedHexdump(bytes, steps, visibleMarkedCount = Infinity, other = []) {
     const bits = bytes
         .map(b => b.toString(2).padStart(8, "0"))
         .join("");
@@ -387,26 +412,29 @@ function stepsToMarkedHexdump(bytes, steps, visibleMarkedCount = Infinity) {
     let classIndex = 0;
 
     for (const step of steps) {
-        if (step.huffman && step.huffman.length > 0) {
-            allRegions.push({
-                start: step.huffman.startBit,
-                end: step.huffman.startBit + step.huffman.length,
-                className: `m${classIndex % 9}`
-            });
-            classIndex++;
-        }
-
-        if (step.valueBits && step.valueBits.length > 0) {
-            allRegions.push({
-                start: step.valueBits.startBit,
-                end: step.valueBits.startBit + step.valueBits.length,
-                className: `m${classIndex % 9}`
-            });
-            classIndex++;
+        for (const part of [step.huffman, step.valueBits]) {
+            if (part && part.length > 0) {
+                allRegions.push({
+                    start: part.startBit,
+                    end: part.endBit ?? part.startBit + part.length,
+                    className: `m${classIndex % 9}`
+                });
+                classIndex++;
+            }
         }
     }
 
-    const spans = allRegions.slice(0, visibleMarkedCount).sort((a, b) => a.start - b.start);
+    // a region with a span of `other` inside (a stuffed 0x00) in two pieces
+    const pieces = [];
+    for (const region of allRegions.slice(0, visibleMarkedCount)) {
+        let start = region.start;
+        for (const o of other.filter((o) => o.start >= region.start && o.end <= region.end).sort((a, b) => a.start - b.start)) {
+            if (o.start > start) pieces.push({ ...region, start, end: o.start });
+            start = o.end;
+        }
+        if (start < region.end) pieces.push({ ...region, start });
+    }
+    const spans = pieces.concat(other).sort((a, b) => a.start - b.start);
 
     function esc(s) {
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -920,4 +948,8 @@ function markTableCellsByContent(tableSelector, marks) {
             td.innerHTML = `<span class="${className}">${escapeHtml(text)}</span>`;
         }
     });
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { ZIGZAG_TO_NATURAL, BitReader, compileHuffmanTable, decodeOneBlock, decodeJpegDctStream, stepsToMarkedHexdump, stepsToDctTable };
 }

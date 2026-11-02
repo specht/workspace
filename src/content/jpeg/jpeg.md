@@ -84,6 +84,15 @@ template_name: des PixelRAM-Starters
         }
     }
 
+    /* the bits of the blocks before and after, a stuffed 0x00 */
+    #div_hexdump .hd-other {
+        opacity: 0.4;
+    }
+
+    #ac-choose {
+        margin-bottom: 1em;
+    }
+
     html[data-bs-theme="dark"] {
         pre.spec {
             color: #ddd;
@@ -1282,9 +1291,16 @@ Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder 
   1111111111111110 -> 250 (0xFA)
 -->
 
+<!-- after: dc -->
+Die Zeitlupe unten liest den ersten Y-Block. Auf dem Foto kannst du eine andere MCU wählen, mit einem Klick oder den Pfeiltasten, und darin einen ihrer Blöcke: Dann liest die Zeitlupe diesen Block aus der Datei, und die Dequantisierung und die iDCT weiter unten zeigen ihn auch. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift liegt: Wie viele Codes braucht jeder?
+
+<div class='idct-choose' id='ac-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div>
+<!-- /after -->
+
 <div style='position: relative;' data-stepper id='ac-stepper'>
+<p id='ac-which' hidden></p>
 <p>
-Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
+Hier wird die AC-Tabelle im Slot <span id='ac-slot'>0</span> verwendet, die insgesamt <span id='ac-codes'>162</span> Codes definiert, von denen wir für <span id='ac-for'>dieses Beispiel</span> nur einen Auszug benötigen.
 Verwende die Buttons, um zu sehen, wie der Bitstream decodiert wird (die Bits des bereits decodierten DC-Koeffizienten sind weiterhin markiert):
 </p>
 <div style='margin: 0.6em 0;'>
@@ -1388,7 +1404,7 @@ Der dritte Koeffizient (k = 2) gehört also auf Platz 8: Zeile 1, Spalte 0.
 
 ### Dequantisierung
 
-Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben:
+Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die <span id='dequant-comp'>Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben</span>:
 
 <div style='display: flex; justify-content: center;'>
 <div class="dequant-row">
@@ -1400,7 +1416,7 @@ Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponente
 </div>
 </div>
 
-Der DC-Koeffizient −120 wird so zu −120 · 5 = −600, der erste AC-Koeffizient 9 zu 9 · 3 = 27.
+<p id='dequant-example'>Der DC-Koeffizient −120 wird so zu −120 · 5 = −600, der erste AC-Koeffizient 9 zu 9 · 3 = 27.</p>
 
 _task(dequant)
 
@@ -1428,7 +1444,7 @@ Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechn
 
 Schon nach wenigen Schritten sieht der Block fast fertig aus: Die großen Koeffizienten stehen vorn, die feinen Muster am Ende tragen wenig bei. Genau das nutzt JPEG aus. Die Quantisierung macht die hinteren Koeffizienten klein oder 0, und das Auge vermisst sie kaum.
 
-Über der Zeitlupe kannst du auf dem Foto eine andere MCU wählen, mit einem Klick oder den Pfeiltasten, und darin einen ihrer sechs Blöcke. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift auf der roten Tafel liegt: Wie viele Koeffizienten sind nicht 0, und wie weit hinten im Zick-Zack stehen sie?
+Über der Zeitlupe kannst du auf dem Foto eine andere MCU wählen, mit einem Klick oder den Pfeiltasten, und darin einen ihrer sechs Blöcke; wählst du oben bei den AC-Koeffizienten einen Block, kommt er auch hierher. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift auf der roten Tafel liegt: Wie viele Koeffizienten sind nicht 0, und wie weit hinten im Zick-Zack stehen sie?
 
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
@@ -1535,68 +1551,215 @@ Dein Decoder liest jetzt Baseline-JPEGs. Was ihm noch fehlt:
 
 <script>
 
-const step_min = 3;
-const step_max = 65;
-let step = step_min;
-let steps = [];
+// The AC stepper reads one block from its bits, one frame at a time. First
+// the first Y block of the file (the bytes above); once the task »dc« is
+// solved, a block chosen on the photo (#ac-choose), whose bits jpeg_image.js
+// finds in the file. A frame is { s, phase }: s the step of the block (0 is
+// its DC coefficient, shown decoded), phase 0 the code found, 1 what its
+// symbol means, 2 the value's bits read, 3 the value with its sign; ZRL and
+// EOB end after phase 1. The dequantisation below shows the same block.
 const hexBytes = `f0 7b 9d 26 64 7c c4 d9 52 7e e9 ed 59`;
 const bytes = parseHexBytes(hexBytes);
+const Q_FIRST = [
+    5, 3, 4, 4, 4, 3, 5, 4,
+    4, 4, 5, 5, 5, 6, 7, 12,
+    8, 7, 7, 7, 7, 15, 11, 11,
+    9, 12, 17, 15, 18, 18, 17, 15,
+    17, 17, 19, 22, 28, 23, 19, 20,
+    26, 21, 17, 17, 24, 33, 24, 26,
+    29, 29, 31, 31, 31, 19, 23, 34,
+    36, 34, 30, 36, 28, 30, 31, 30
+];
+let ac = null;
+let frames = [];
+let frame = 0;
 
-function activateStep(step) {
-    let div = document.querySelector("#div_hexdump");
-    div.innerHTML = stepsToMarkedHexdump(bytes, steps, Math.floor((step + 2) / 2));
-    let currentStep = steps[Math.floor(step / 4)];
-    let phase = step % 4;
-    let value = `0x${(currentStep.huffman.symbol >> 4).toString(16).toUpperCase()}${(currentStep.huffman.symbol & 0x0F).toString(16).toUpperCase()}`;
-    for (let x of document.querySelectorAll(".read_code")) {
-        x.textContent = currentStep ? currentStep.huffman.bits : '';
-    }
-    marked_cells = [];
-    if (step != step_min) {
-        marked_cells.push({ content: currentStep.huffman.bits, className: `m${(Math.floor(step / 4) * 2) % 9}` });
-    }
-    if (phase > 0) {
-        marked_cells.push({ content: value, className: `mg` });
-    }
-    markTableCellsByContent("#ac_table", marked_cells);
-    document.querySelector("#div_block").innerHTML = stepsToDctTable(steps, Math.floor((step - 3) / 2 + 2));
-    document.querySelector('#bu-first').disabled = step <= step_min;
-    document.querySelector("#bu-prev").disabled = step <= step_min;
-    document.querySelector("#bu-next").disabled = step >= step_max;
-    document.querySelector('#bu-last').disabled = step >= step_max;
-    document.querySelector('#ac-count').textContent = `Schritt ${step - step_min + 1} von ${step_max - step_min + 1}`;
+const hexSymbol = (symbol) => `0x${symbol.toString(16).toUpperCase().padStart(2, '0')}`;
+const signed = (n) => String(n).replace('-', '−');
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// block: { bytes, steps, table (the AC codes), slot, quant (zig-zag order),
+// other (faint spans: neighbours' bits, stuffed bytes), which, dequant }
+function setBlock(block) {
+    ac = block;
+    // where each step's code and value are among the marked regions
+    let region = 0;
+    ac.regions = ac.steps.map((s) => {
+        const huf = region++;
+        const val = s.valueBits.length > 0 ? region++ : null;
+        return { huf, val, last: region };
+    });
+    frames = [{ s: 0, phase: 3 }];
+    ac.steps.forEach((s, i) => {
+        if (i === 0) return;
+        for (let phase = 0; phase < (s.kind === 'AC' ? 4 : 2); phase++) frames.push({ s: i, phase });
+    });
+    drawAcTable();
+    document.querySelector('#ac-slot').textContent = ac.slot;
+    document.querySelector('#ac-codes').textContent = Object.keys(ac.table).length;
+    document.querySelector('#ac-for').textContent = ac.which ? 'diesen Block' : 'dieses Beispiel';
+    const which = document.querySelector('#ac-which');
+    which.hidden = !ac.which;
+    which.innerHTML = ac.which || '';
+    showDequant();
+    activateStep(0);
+}
+
+// the codes of the table in order: the first 13 and those this block uses
+function drawAcTable() {
+    const codes = Object.keys(ac.table).sort((a, b) => a.length - b.length || parseInt(a, 2) - parseInt(b, 2));
+    const used = new Set(ac.steps.slice(1).map((s) => s.huffman.bits));
+    const shown = codes.map((code, i) => i < 13 || used.has(code));
+    let head = '<tr><th>Code</th>', body = '<tr><th>Symbol</th>';
+    codes.forEach((code, i) => {
+        if (shown[i]) {
+            head += `<td>${code}</td>`;
+            body += `<td>${hexSymbol(ac.table[code])}</td>`;
+        } else if (shown[i - 1]) {
+            head += '<td>…</td>';
+            body += '<td>…</td>';
+        }
+    });
+    document.querySelector('#ac_table').innerHTML = `${head}</tr>${body}</tr>`;
+}
+
+function showDequant() {
+    document.querySelector('#dequant_0').innerHTML = stepsToDctTable(ac.steps, Infinity, false);
+    fillQuantAndDequantTablesFromSteps('#dequant_1', '#dequant_2', ac.steps, ac.quant, Infinity, false);
+    document.querySelector('#dequant-comp').textContent = ac.dequant.comp;
+    const dc = ac.steps[0].coefficient;
+    const first = ac.steps.find((s) => s.kind === 'AC');
+    document.querySelector('#dequant-example').textContent = `Der DC-Koeffizient ${signed(dc)} wird so zu ${signed(dc)} · ${ac.quant[0]} = ${signed(dc * ac.quant[0])}` +
+        (first ? `, der erste AC-Koeffizient, der nicht 0 ist, ${signed(first.coefficient)} zu ${signed(first.coefficient)} · ${ac.quant[first.zigzagIndex]} = ${signed(first.coefficient * ac.quant[first.zigzagIndex])}.` : '; alle AC-Koeffizienten sind 0.');
+}
+
+function activateStep(k) {
+    frame = Math.max(0, Math.min(frames.length - 1, k));
+    const { s, phase } = frames[frame];
+    const currentStep = ac.steps[s];
+    const r = ac.regions[s];
+    const hexCount = s === 0 ? r.last : phase < 2 ? r.huf + 1 : r.val + 1;
+    const tableCount = s === 0 ? r.last : phase === 0 ? r.huf : phase < 3 ? r.huf + 1 : r.val + 1;
+    document.querySelector('#div_hexdump').innerHTML = stepsToMarkedHexdump(ac.bytes, ac.steps, hexCount, ac.other);
+    document.querySelector('#div_block').innerHTML = stepsToDctTable(ac.steps, tableCount);
+    const symbol = currentStep.huffman.symbol;
+    const value = hexSymbol(symbol);
+    for (let x of document.querySelectorAll('.read_code')) x.textContent = currentStep.huffman.bits;
+    const marked_cells = [];
+    if (s > 0) marked_cells.push({ content: currentStep.huffman.bits, className: `m${r.huf % 9}` });
+    if (s > 0 && phase > 0) marked_cells.push({ content: value, className: 'mg' });
+    markTableCellsByContent('#ac_table', marked_cells);
+    document.querySelector('#bu-first').disabled = frame <= 0;
+    document.querySelector('#bu-prev').disabled = frame <= 0;
+    document.querySelector('#bu-next').disabled = frame >= frames.length - 1;
+    document.querySelector('#bu-last').disabled = frame >= frames.length - 1;
+    document.querySelector('#ac-count').textContent = `Schritt ${frame + 1} von ${frames.length}`;
     // for the timeline (stepper_keys.js)
     const widget = document.querySelector('#ac-stepper');
-    widget.dataset.step = step - step_min;
-    widget.dataset.steps = step_max - step_min + 1;
+    widget.dataset.step = frame;
+    widget.dataset.steps = frames.length;
     // on a narrow screen the table scrolls sideways: the code just read in view
     const box = document.querySelector('#ac-table-box');
     const cell = [...box.querySelectorAll('td')].find((td) => td.querySelector('[class^="m"]') || [...td.classList].some((c) => /^m/.test(c)));
     if (cell && box.scrollWidth > box.clientWidth) box.scrollLeft = cell.offsetLeft + cell.offsetWidth / 2 - box.clientWidth / 2;
-    document.querySelector('.step0').style.display = (step > step_min) ? 'list-item' : 'none';
-    document.querySelector('.step1').style.display = (step > step_min && (step) % 4 > 0) ? 'list-item' : 'none';
-    document.querySelector('.step2').style.display = (step > step_min && (step) % 4 > 1) ? 'list-item' : 'none';
-    document.querySelector('.step3').style.display = (step > step_min && (step) % 4 > 2) ? 'list-item' : 'none';
-    // Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der <span id='first_next'>erste</span> AC-Koeffizient in diesem Block hat also den Wert 9.
-    if (currentStep.decodedValue < 0) {
-        document.querySelector('.step3').innerHTML = `Da das höchste Bit 0 ist, handelt es sich um eine negative Zahl. Wir müssen also 2<sup>${currentStep.huffman.symbol & 0x0F}</sup> - 1 = ${Math.pow(2, currentStep.huffman.symbol & 0x0F) - 1} von der decodierten Zahl subtrahieren, um den tatsächlichen Wert zu erhalten. Der ${step > 8 ? `nächste` : `erste`} AC-Koeffizient in diesem Block hat also den Wert ${currentStep.valueBits.rawValue} - ${Math.pow(2, currentStep.huffman.symbol & 0x0F) - 1} =  ${currentStep.decodedValue}.`;
-    } else {
-        document.querySelector('.step3').textContent = `Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der ${step > 8 ? `nächste` : `erste`} AC-Koeffizient in diesem Block hat also den Wert ${currentStep.decodedValue}.`;
-    }
-    if (currentStep.extra.run > 0) {
-        document.querySelector('.step3').innerHTML += ` <strong>Achtung:</strong> Da die Anzahl der Nullen hier größer als 0 ist, wurde${currentStep.extra.run > 1 ? 'n' : ''} vorher bereits ${currentStep.extra.run} Null${currentStep.extra.run > 1 ? 'en' : ''} eingetragen.`;
-    }
+    document.querySelector('.step0').style.display = s > 0 ? 'list-item' : 'none';
+    document.querySelector('.step1').style.display = s > 0 && phase > 0 ? 'list-item' : 'none';
+    document.querySelector('.step2').style.display = s > 0 && phase > 1 ? 'list-item' : 'none';
+    document.querySelector('.step3').style.display = s > 0 && phase > 2 ? 'list-item' : 'none';
+    if (s === 0) return;
+    const run = symbol >> 4, size = symbol & 0x0F;
     if (currentStep.kind === 'AC_EOB') {
         document.querySelector('.step1').innerHTML = `Beim Symbol <code>0x00</code> handelt es sich um das EOB-Symbol (End of Block). Alle restlichen Koeffizienten in diesem Block haben den Wert 0 und die Decodierung ist damit abgeschlossen.`;
-    } else {
-        document.querySelector('.step1').innerHTML =
-            `Zum Code <code class='read_code'>${currentStep.huffman.bits}</code> gehört das Symbol <code class='read_symbol'>${value}</code>. Dieses Byte beinhaltet zwei Informationen:
-            <ul>
-            <li>die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (${currentStep.huffman.symbol >> 4} Null${(currentStep.huffman.symbol >> 4) !== 1 ? 'en' : ''})</li>
-            <li>die Anzahl der Bits, die für diesen Koeffizienten codiert sind (${currentStep.huffman.symbol & 0x0F} Bit${(currentStep.huffman.symbol & 0x0F) !== 1 ? 's' : ''})</li>
-            </ul>`;
-        document.querySelector('.step2').innerHTML = `Wir lesen also ${(currentStep.huffman.symbol & 0x0F) === 1 ? 'das nächste' : 'die nächsten'} ${currentStep.huffman.symbol & 0x0F} Bit${(currentStep.huffman.symbol & 0x0F) !== 1 ? 's' : ''} ein und erhalten <code>${currentStep.valueBits.rawValue.toString(2).padStart(currentStep.huffman.symbol & 0x0F, '0')}</code> = ${currentStep.valueBits.rawValue}.`;
+        return;
     }
+    if (currentStep.kind === 'AC_ZRL') {
+        document.querySelector('.step1').innerHTML = `Zum Code <code class='read_code'>${currentStep.huffman.bits}</code> gehört das Symbol <code>0xF0</code>, ZRL (Zero Run Length): 16 Nullen kommen in die Matrix, ohne dass Bits für einen Wert folgen. Danach geht es mit dem nächsten Code weiter.`;
+        return;
+    }
+    document.querySelector('.step1').innerHTML =
+        `Zum Code <code class='read_code'>${currentStep.huffman.bits}</code> gehört das Symbol <code class='read_symbol'>${value}</code>. Dieses Byte beinhaltet zwei Informationen:
+        <ul>
+        <li>die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (${plural(run, 'Null', 'Nullen')})</li>
+        <li>die Anzahl der Bits, die für diesen Koeffizienten codiert sind (${plural(size, 'Bit', 'Bits')})</li>
+        </ul>`;
+    document.querySelector('.step2').innerHTML = `Wir lesen also ${size === 1 ? 'das nächste Bit' : `die nächsten ${size} Bits`} ein und erhalten <code>${currentStep.valueBits.bits}</code> = ${currentStep.valueBits.rawValue}.`;
+    // »der erste«, as long as no coefficient that is not 0 came before
+    const first = !ac.steps.slice(1, s).some((x) => x.kind === 'AC');
+    const which = run > 0 ? `Nach ${plural(run, 'Null', 'Nullen')}, die in die Matrix kommen, hat der ${first ? 'erste' : 'nächste'} AC-Koeffizient, der nicht 0 ist,`
+        : `Der ${first ? 'erste' : 'nächste'} AC-Koeffizient in diesem Block hat`;
+    if (currentStep.decodedValue < 0) {
+        document.querySelector('.step3').innerHTML = `Da das höchste Bit 0 ist, handelt es sich um eine negative Zahl. Wir müssen also 2<sup>${size}</sup> - 1 = ${Math.pow(2, size) - 1} von der decodierten Zahl subtrahieren, um den tatsächlichen Wert zu erhalten. ${which} also den Wert ${currentStep.valueBits.rawValue} - ${Math.pow(2, size) - 1} = ${currentStep.decodedValue}.`;
+    } else {
+        document.querySelector('.step3').textContent = `Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. ${which} also den Wert ${currentStep.decodedValue}.`;
+    }
+}
+
+// A block of the photo, read from the file: comp c, block i of the MCU (mx, my)
+function blockOfPhoto(image, c, mx, my, i) {
+    const b = image.bits(c, mx, my, i);
+    const reader = new BitReader(b.bytes, { startBit: b.startBit, stuffed: true });
+    const block = decodeOneBlock(reader, compileHuffmanTable(b.dc), compileHuffmanTable(b.ac), b.previousDC);
+    // faint: the bits of the blocks before and after, and every stuffed 0x00
+    const other = [];
+    if (b.startBit > 0) other.push({ start: 0, end: b.startBit, className: 'hd-other' });
+    if (b.endBit < b.bytes.length * 8) other.push({ start: b.endBit, end: b.bytes.length * 8, className: 'hd-other' });
+    for (let k = 1; k < b.bytes.length; k++) {
+        if (b.bytes[k - 1] === 0xFF && b.bytes[k] === 0x00) other.push({ start: k * 8, end: k * 8 + 8, className: 'hd-other' });
+    }
+    const comp = image.comps[c];
+    const name = comp.h * comp.v > 1 ? `${comp.name}<sub>${i}</sub>` : comp.name;
+    const dc = block.steps[0];
+    const stuffing = other.length > (b.startBit > 0) + (b.endBit < b.bytes.length * 8) ? ' Blass ist ein 0x00 nach einem 0xFF, das dein Decoder überspringt.' : '';
+    return {
+        bytes: b.bytes, steps: block.steps, table: b.ac, slot: b.acSlot, quant: b.quant, other,
+        which: `Block ${name} der MCU in Spalte ${mx}, Reihe ${my}: ab Byte 0x${b.offset.toString(16).toUpperCase()} der Datei, ab Bit ${b.startBit} dieses Bytes; die Bits davor und danach gehören zu anderen Blöcken und sind blass.${stuffing} ` +
+            `Der DC-Koeffizient steht schon in der Matrix: der vorige DC-Koeffizient von ${comp.name}, ${signed(b.previousDC)}, plus die Differenz ${signed(dc.decodedValue)} ergibt ${signed(dc.coefficient)}.`,
+        dequant: { comp: `${comp.name}-Komponente, die Tabelle im Slot ${b.quantSlot}` },
+    };
+}
+
+// The picker above the stepper (once »dc« is solved): an MCU on the photo,
+// then one of its blocks. The iDCT stepper below follows (idct_stepper.js,
+// the event »jpeg-block«).
+function chooseBlock() {
+    const box = document.querySelector('#ac-choose');
+    if (!box || !window.JpegImage) return;
+    const pickBox = box.querySelector('.idct-pick');
+    const blocks = box.querySelector('.idct-blocks');
+    pickBox.textContent = 'Das Foto wird geladen …';
+    JpegImage.load('/jpeg/44-baseline.jpg').then((image) => {
+        let mx = 0, my = 0, comp = 0, index = 0;
+        const names = [];
+        image.comps.forEach((c, ci) => {
+            for (let i = 0; i < c.h * c.v; i++) names.push({ comp: ci, index: i, label: c.h * c.v > 1 ? `${c.name}<sub>${i}</sub>` : c.name });
+        });
+        blocks.innerHTML = names.map((n, i) => `<button type='button' class='btn btn-sm btn-outline-secondary' data-block='${i}' aria-pressed='${i === 0}'>${n.label}</button>`).join('');
+        const mark = (ctx, zoom) => {
+            const c = image.comps[comp];
+            const sw = image.hmax / c.h * 8 * zoom, sh = image.vmax / c.v * 8 * zoom;
+            const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
+            ctx.setLineDash([6, 4]);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ffd43b';
+            ctx.strokeRect(x + 5, y + 5, sw - 10, sh - 10);
+        };
+        const picker = JpegImage.picker(pickBox, image, { mx, my, mark, onPick: (x, y) => { mx = x; my = y; update(); } });
+        function update() {
+            blocks.querySelectorAll('button').forEach((b) => {
+                const n = names[Number(b.dataset.block)];
+                b.setAttribute('aria-pressed', String(n.comp === comp && n.index === index));
+            });
+            picker.redraw();
+            setBlock(blockOfPhoto(image, comp, mx, my, index));
+            document.dispatchEvent(new CustomEvent('jpeg-block', { detail: { comp, index, mx, my } }));
+        }
+        blocks.addEventListener('click', (event) => {
+            const button = event.target.closest('button[data-block]');
+            if (!button) return;
+            ({ comp, index } = names[Number(button.dataset.block)]);
+            update();
+        });
+    }).catch((error) => { pickBox.textContent = `Das Foto ließ sich nicht laden: ${error.message}`; });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1784,57 +1947,17 @@ document.addEventListener('DOMContentLoaded', function() {
         initialDC: 0
     });
 
-    steps = result.blocks[0].steps;
-
-    activateStep(step)
-    document.querySelector('#ac-stepper').stepperGo = (k) => {
-        step = Math.max(step_min, Math.min(step_max, step_min + k));
-        activateStep(step);
-    };
-
-    document.querySelector('#bu-first').addEventListener("click", function() {
-        step = step_min;
-        activateStep(step);
+    setBlock({
+        bytes, steps: result.blocks[0].steps, table: acTable, slot: 0, quant: Q_FIRST, other: [], which: null,
+        dequant: { comp: 'Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben' },
     });
-    document.querySelector("#bu-prev").addEventListener("click", function() {
-        if (step > step_min) {
-            step--;
-            activateStep(step);
-        }
-    });
-    document.querySelector("#bu-next").addEventListener("click", function() {
-        if (step < step_max) {
-            step++;
-            activateStep(step);
-        }
-    });
-    document.querySelector('#bu-last').addEventListener("click", function() {
-        step = step_max;
-        activateStep(step);
-    });
+    document.querySelector('#ac-stepper').stepperGo = activateStep;
+    document.querySelector('#bu-first').addEventListener('click', () => activateStep(0));
+    document.querySelector('#bu-prev').addEventListener('click', () => activateStep(frame - 1));
+    document.querySelector('#bu-next').addEventListener('click', () => activateStep(frame + 1));
+    document.querySelector('#bu-last').addEventListener('click', () => activateStep(frames.length - 1));
     // ← and → press bu-prev and bu-next (stepper_keys.js, data-stepper).
-
-    document.querySelector("#dequant_0").innerHTML = stepsToDctTable(steps, 65, false);
-
-    const q = [
-        5, 3, 4, 4, 4, 3, 5, 4,
-        4, 4, 5, 5, 5, 6, 7, 12,
-        8, 7, 7, 7, 7, 15, 11, 11,
-        9, 12, 17, 15, 18, 18, 17, 15,
-        17, 17, 19, 22, 28, 23, 19, 20,
-        26, 21, 17, 17, 24, 33, 24, 26,
-        29, 29, 31, 31, 31, 19, 23, 34,
-        36, 34, 30, 36, 28, 30, 31, 30
-    ];
-
-    fillQuantAndDequantTablesFromSteps(
-        "#dequant_1",
-        "#dequant_2",
-        steps,
-        q,
-        65,
-        false
-    );
+    chooseBlock();
 });
 
 </script>

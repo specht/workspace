@@ -13821,6 +13821,9 @@ pre.spec {
 
 pre.hexdump {
     line-height: 135%;
+    /* the boxes behind the bytes (z-index −1) stay in front of a stepper
+       box's background */
+    isolation: isolate;
 }
 
 pre.hexdump :is(.m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg) {
