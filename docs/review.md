@@ -520,7 +520,8 @@ image.
 - [x] `lua` (1 November 2026): page read, nothing to change.
 - [x] `ruby` (1 November 2026, c2698bfd): page read, only the quotes around
   the nickname.
-- [ ] `java`
+- [x] `java` (1 November 2026): page read, nothing to change: IO.println and
+  the short main are final since Java 25.
 - [ ] `js`
 - [ ] `nasm`
 - [ ] `cs`
