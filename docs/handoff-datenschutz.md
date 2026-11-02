@@ -11,11 +11,9 @@ before an E2E test. `CHANGELOG.md` »Unreleased« lists every change in German.
 
 ## Documents and git
 
-- `docs/plan-datenschutz-schulen.md` is the plan for non-specialists, in
-  German, to show to the Schulleitung, the DSB or an attorney: the steps,
-  who gets which document, the fallbacks, the open questions. Its master is
-  a Claude Doc of the maintainer; the file is a copy. Neutral voice, no
-  real names.
+- The plan for the talks with the schools (who is approached when, which
+  document goes to whom) is the maintainer's own and stays out of the
+  repository, which is public.
 - Merge or push only when the maintainer asks. Stage files by name, never
   `git add -A` (a swap file of `credentials.rb` was once committed that way).
 
@@ -30,16 +28,6 @@ The maintainer decided on a structured transition instead of interrupting
 lessons: every participating school is to be in a documented state by
 **12 April 2027** (after the Berlin Easter holidays; `TRANSITION_DEADLINE`
 in `credentials.rb`).
-
-<table>
-<tr><th>Period</th><th>Aim</th><th>Policy</th></tr>
-<tr><td>until 1 Nov 2026</td><td>autumn holidays, prepare the information</td><td>no new work for the schools</td></tr>
-<tr><td>2 Nov – 18 Dec 2026</td><td>talk to the maintainer's Schulleitung and the other schools</td><td>access continues</td></tr>
-<tr><td>Jan – Feb 2027</td><td>collect decisions and documents, follow up, answer questions</td><td>access continues; progress on /personen</td></tr>
-<tr><td>end of Jan 2027</td><td>review of the progress</td><td>name what is in the way, adjust the follow-up</td></tr>
-<tr><td>Mar 2027</td><td>last review, advance notice to schools still open</td><td>prepare restrictions if needed, no automatic lockout</td></tr>
-<tr><td>12 Apr 2027</td><td>target</td><td>ordinary school use needs a documented basis</td></tr>
-</table>
 
 What this is and is not:
 
