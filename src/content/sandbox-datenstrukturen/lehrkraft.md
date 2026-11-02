@@ -45,5 +45,5 @@ Eine mögliche Unterrichtsreihe:
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Referenzen, Rekursion für die Bäume</td></tr>
 <tr><th>Sprachen</th><td>Dart, Python, JavaScript oder Java; Darstellung und Tests sind in allen Sprachen gleich. Für Python, JavaScript und Java braucht der Rechner den jeweiligen Interpreter bzw. Compiler.</td></tr>
-<tr><th>Stand der Bilder</th><td><a href='https://github.com/specht/data-structures-sandbox/commit/1e4b9fcda60a45f42956aed2c83c800643be7d0a'><code>1e4b9fc</code></a> (3.11.2026); <a href='https://github.com/specht/data-structures-sandbox/blob/1e4b9fcda60a45f42956aed2c83c800643be7d0a/README.md'>README</a>, <a href='https://github.com/specht/data-structures-sandbox/blob/1e4b9fcda60a45f42956aed2c83c800643be7d0a/docs/list-exercises.md'>Unterrichtsreihe zu den Listen</a></td></tr>
+<tr><th>Stand der Bilder</th><td><a href='https://github.com/specht/data-structures-sandbox/commit/93f360279e833070ca74172b0993eeab4de86406'><code>93f3602</code></a> (3.11.2026); <a href='https://github.com/specht/data-structures-sandbox/blob/93f360279e833070ca74172b0993eeab4de86406/README.md'>README</a>, <a href='https://github.com/specht/data-structures-sandbox/blob/93f360279e833070ca74172b0993eeab4de86406/docs/list-exercises.md'>Unterrichtsreihe zu den Listen</a></td></tr>
 </table>

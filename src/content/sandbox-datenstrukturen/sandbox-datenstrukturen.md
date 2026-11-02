@@ -156,7 +156,7 @@ Besonders ergiebig sind die **vier Listen**: unsortiert oder sortiert, jeweils a
 
 <!-- tutorial-screenshot
 terminal-open
-terminal-run: cd /workspace && git clone -q https://github.com/specht/data-structures-sandbox.git && cd data-structures-sandbox && git checkout -q 1e4b9fcda60a45f42956aed2c83c800643be7d0a
+terminal-run: cd /workspace && git clone -q https://github.com/specht/data-structures-sandbox.git && cd data-structures-sandbox && git checkout -q 93f360279e833070ca74172b0993eeab4de86406
 terminal-wait-for-prompt
 terminal-run: cd /workspace/data-structures-sandbox && mkdir -p structures && ./new-structure demo list unsorted-nodes --example --lang java && ./new-structure demo tree avl --example --lang python && ./new-structure demo hash chains --example --lang dart
 terminal-wait-for-prompt
