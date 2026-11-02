@@ -333,7 +333,11 @@ image.
   note read, nothing to change: the predictions (handshake, wer-bekommt-was,
   counter) are answered after them; the RFC 6455 example key, r/place 2017
   (1000 × 1000, 16 colours, 5 to 20 minutes) and § 303b StGB check out.
-- [ ] `crypto`
+- [x] `crypto` (1 November 2026): page, cards and teacher note read, nothing
+  to change: every prediction (lawine, salz-vorhersage, schluesselproblem,
+  geaendert, fingerabdruck) is answered in an after block; RSA sizes (27 to
+  256 bytes, a bit over 200 at most), Diffie/Hellman 1976 and RSA 1977 check
+  out.
 - [ ] `totp`
 - [ ] `nebenlaeufigkeit`
 
