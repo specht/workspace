@@ -522,7 +522,7 @@ image.
   the nickname.
 - [x] `java` (1 November 2026): page read, nothing to change: IO.println and
   the short main are final since Java 25.
-- [ ] `js`
+- [x] `js` (1 November 2026): page read, nothing to change.
 - [ ] `nasm`
 - [ ] `cs`
 - [ ] `go`
