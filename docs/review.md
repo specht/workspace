@@ -338,7 +338,11 @@ image.
   geaendert, fingerabdruck) is answered in an after block; RSA sizes (27 to
   256 bytes, a bit over 200 at most), Diffie/Hellman 1976 and RSA 1977 check
   out.
-- [ ] `totp`
+- [x] `totp` (1 November 2026, 772f16fe): page (Ruby and Python), cards and
+  teacher note read; the HMAC was introduced as »eine Prüfsumme wie SHA-1 aus
+  Kryptographie im Terminal«, but that page uses SHA-256 and calls it a hash.
+  The RFC 4226 example (75a48a19…, 287082), Base32 and RSA SecurID 2011 check
+  out; predictions have after blocks.
 - [ ] `nebenlaeufigkeit`
 
 ### Datenbanken
