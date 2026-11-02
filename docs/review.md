@@ -553,7 +553,12 @@ such a mention.
 - [x] `level-2-b52d0f18` (2 November 2026, 8ff92c29): page read; the portal
   section began by repeating the sentence before it; water depth, column
   height and the water defaults (level.js) checked.
-- [ ] `level-3-4c9e6a2d`
+- [x] `level-3-4c9e6a2d` (2 November 2026, 7bc36cb9): »Die Decke ist schwarz«
+  stood visible under the prediction about it, now in an after block; the
+  abstract and both teacher notes promised Lobby and Tiefe, finished levels
+  the starter no longer has (only the Nachtschicht); 2K/4K were said to look
+  the same, but the engine keeps the full texture; 7680 points, 64 passes and
+  the ray count checked.
 
 ## Illustrations proposed
 
