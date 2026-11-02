@@ -104,26 +104,18 @@ module MailTexts
         ["Willkommen im Workspace: #{group}", body]
     end
 
-    # From the administration to a new teacher. school_approved: whether the
-    # school has agreed; if not, what covers the students until then.
-    def self.welcome_teacher(web_root:, school:, school_approved:, email:, signature:, documents_url:, cost_note: nil)
+    # From the administration to a new teacher. Nothing about the school's
+    # approval, the documents for the Schulleitung or the cost (COST_NOTE)
+    # until the maintainer has settled them with their own Schulleitung
+    # (2 November 2026); the git history has the earlier text.
+    def self.welcome_teacher(web_root:, school:, email:, signature:)
         body = +"<p>Hallo!</p>\n"
         body << "<p>Du hast jetzt ein Konto als Lehrkraft im Workspace (#{link(web_root)}), für <strong>#{h(school)}</strong>. " \
             "Anmelden kannst du dich mit deiner Adresse #{h(email)}; den Code dafür bekommst du per E-Mail.</p>\n"
         body << "<p>Für den Anfang:</p>\n<ul>\n"
         body << "<li>#{link("#{web_root}/lehrmaterial-einstieg")}: was du für die erste Stunde brauchst und wie du mit deinem Testkonto alles selbst ausprobierst.</li>\n"
         body << "<li>#{link("#{web_root}/klasse")}: Hier legst du mit »Neue Gruppe« Gruppen an, trägst im Reiter »Lernende« die Adressen deiner Schülerinnen und Schüler ein (Namen sind freiwillig) und schickst ihnen eine Willkommensmail.</li>\n"
-        body << "<li>#{link(documents_url)}: die Unterlagen für deine Schule, zum Drucken: eine Seite mit der Entscheidung für die Schulleitung, ein Elternbrief und mehr.</li>\n"
         body << "</ul>\n"
-        body << if school_approved
-            "<p>Deine Schule hat dem Einsatz zugestimmt; deine Schülerinnen und Schüler können sich anmelden, sobald du sie einträgst.</p>\n"
-        else
-            "<p>Deine Schule hat dem Einsatz noch nicht zugestimmt. Am besten unterschreibt die Schulleitung die Entscheidung " \
-                "und die Vereinbarung zur Auftragsverarbeitung aus den Unterlagen; schick sie dann an die Administration. " \
-                "Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis (der Elternbrief mit Einverständniserklärung ist in den Unterlagen); " \
-                "das bewahrst du auf und vermerkst es unter Gruppen. Anmelden können sich deine Schülerinnen und Schüler schon jetzt.</p>\n"
-        end
-        body << "<p>#{h(cost_note)}</p>\n" if cost_note && !cost_note.strip.empty?
         body << closing(signature)
         ['Willkommen im Workspace', body]
     end

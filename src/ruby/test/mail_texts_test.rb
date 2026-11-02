@@ -14,18 +14,11 @@ class MailTextsTest < Minitest::Test
         assert_includes html, 'Frau Berger'
     end
 
-    def test_welcome_teacher_follows_the_approval
-        args = { :web_root => WEB, :school => 'BS 7', :email => 't@example.org', :signature => 'Admin', :documents_url => "#{WEB}/datenschutz?schule=bs7" }
-        _, waiting = MailTexts.welcome_teacher(**args, :school_approved => false)
-        _, ready = MailTexts.welcome_teacher(**args, :school_approved => true, :cost_note => 'Der Server kostet 40 € im Monat.')
-        assert_includes waiting, 'noch nicht zugestimmt'
-        assert_includes waiting, 'schriftliches Einverständnis'
-        assert_includes waiting, 'Anmelden können sich deine Schülerinnen und Schüler schon jetzt'
-        refute_includes waiting, 'Server kostet'
-        assert_includes ready, 'hat dem Einsatz zugestimmt'
-        assert_includes ready, 'Der Server kostet 40 € im Monat.'
-        assert_includes ready, "#{WEB}/klasse"
-        assert_includes ready, "#{WEB}/datenschutz?schule=bs7"
+    def test_welcome_teacher_leaves_out_approval_and_cost
+        _, html = MailTexts.welcome_teacher(:web_root => WEB, :school => 'BS 7', :email => 't@example.org', :signature => 'Admin')
+        assert_includes html, "#{WEB}/klasse"
+        assert_includes html, "#{WEB}/lehrmaterial-einstieg"
+        refute_match(/zugestimmt|Schulleitung|Einverständnis|Unterlagen|kostet|€/, html)
     end
 
     def test_welcome_student_links_the_notice_that_applies

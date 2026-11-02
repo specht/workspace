@@ -238,9 +238,8 @@ class Main < Sinatra::Base
         email = data[:email].to_s.downcase
         school = school_of_teacher(email)
         halt 400, { :error => 'no_school' }.to_json unless school
-        mail_subject, html = MailTexts.welcome_teacher(:web_root => WEB_ROOT, :school => school[:name], :school_approved => school[:approved],
-            :email => email, :signature => mail_signature, :documents_url => "#{WEB_ROOT}/datenschutz?schule=#{CGI.escape(school[:key])}",
-            :cost_note => Privacy.settings[:cost_note])
+        mail_subject, html = MailTexts.welcome_teacher(:web_root => WEB_ROOT, :school => school[:name],
+            :email => email, :signature => mail_signature)
         reply = defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s : nil
         deliver_mail do
             to email

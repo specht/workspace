@@ -80,8 +80,8 @@ Alle freiwillig; fehlt eine, sagt die Seite, dass die Angabe fehlt.
   der Workspace. Dann sagen es die technischen Maßnahmen, die Risikoanalyse
   und die Folgenabschätzung; ohne die Zeile sagen sie nichts darüber.
 - `COST_NOTE`: was der Server kostet und wie eine Schule beitragen kann;
-  steht auf der Seite für die Schulleitung, in der Vereinbarung (§ 6) und in
-  der Willkommensmail an Lehrkräfte. Die Seiten sagen dazu immer, dass die
+  steht auf der Seite für die Schulleitung und in der Vereinbarung (§ 6),
+  vorerst nicht in der Willkommensmail an Lehrkräfte. Die Seiten sagen dazu immer, dass die
   Nutzung nicht davon abhängt. Geht Geld an eine Privatperson, sind Steuer
   und Nebentätigkeit zu bedenken; einfacher zahlt ein Förderverein oder der
   Schulträger den Server.
