@@ -425,7 +425,10 @@ image.
   cards and teacher note read; the pigeonhole step said a k-state automaton
   »war in k + 1 Zuständen«, now k + 1 visits to only k states. Predictions
   (zaehler, schubfach) wait in after blocks.
-- [ ] `turingmaschine`
+- [x] `turingmaschine` (1 November 2026): page (Ruby and Python), steppers,
+  cards and teacher note read, nothing to change: every prediction waits in an
+  after block; Turing 1936, Church and the halting argument are stated
+  correctly.
 - [ ] `grammatiken`
 - [ ] `calculator`
 - [ ] `prolog`
