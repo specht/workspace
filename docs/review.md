@@ -398,7 +398,10 @@ image.
   repository variants), cards and teacher note read; »weiß sogar ein
   Präsident« for the 2007 Google visit, when Obama was a senator and
   candidate. Predictions and think boxes have their after blocks or stay open.
-- [ ] `sandbox-datenstrukturen`
+- [x] `sandbox-datenstrukturen` (1 November 2026): page (both class-repository
+  variants), cards and teacher note read, nothing to change: −7 % 8 is 1 in
+  Dart and Python and −7 in Java and JavaScript, as stated; the think boxes
+  ask without answering.
 - [ ] `routenplaner`
 - [ ] `laufzeit`
 
