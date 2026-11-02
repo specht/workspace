@@ -295,7 +295,13 @@ image.
   numbers (54 rows in pass 1, row 4 next) and the colour-table sizes check
   out; the special code is answered in its after block; Wilhite 2013 and the
   browsers' 2-hundredths rule are right.
-- [ ] `jpeg`
+- [x] `jpeg` (1 November 2026, 37414408): page, widgets, cards and teacher
+  note read; the MCU was called »Minimal Coding Unit« (the standard says
+  Minimum Coded Unit), and Y was said to have »2:2-Subsampling« though Y is
+  not subsampled (factors 2 × 2, chroma 1 × 1). The DC example (11110 → 7, 7 −
+  127 = −120), 10 500 MCUs for 91-baseline and the AAN claim (5
+  multiplications) check out; the prediction on dequantisation has its after
+  block.
 - [ ] `steganography`
 
 ### Netze & Sicherheit
