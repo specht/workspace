@@ -442,7 +442,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Pfaueninsel | bfs
 -->
 <figure>
-<img src='pfaueninsel-breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den ganzen Bezirk, gelb im Osten um die Schule, rot im Westen. Der Weg ist eine lila Linie mit großen Zacken nach Süden.'>
+<img class='inspect' src='pfaueninsel-breitensuche.webp' alt='Die Breitensuche vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den ganzen Bezirk, gelb im Osten um die Schule, rot im Westen. Der Weg ist eine lila Linie mit großen Zacken nach Süden.'>
 <figcaption>Breitensuche: 23,9 km</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -455,7 +455,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Pfaueninsel | dijkstra
 -->
 <figure>
-<img src='pfaueninsel-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den Bezirk ebenso. Der Weg ist eine lila Linie fast gerade nach Westen, über den Bahnhof Wannsee zur Fähre.'>
+<img class='inspect' src='pfaueninsel-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zur Pfaueninsel: Die besuchten Knoten füllen den Bezirk ebenso. Der Weg ist eine lila Linie fast gerade nach Westen, über den Bahnhof Wannsee zur Fähre.'>
 <figcaption>Dijkstra: 16,7 km</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -737,7 +737,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | dijkstra
 -->
 <figure>
-<img src='tor-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Brandenburger Tor, über drei Bezirke: Die besuchten Knoten bilden einen großen Kreis um die Schule, gelb in der Mitte, rot am Rand, bis über das Brandenburger Tor hinaus. Der Weg ist eine lila Linie nach Norden.'>
+<img class='inspect' src='tor-dijkstra.webp' alt='Dijkstra vom Gymnasium Steglitz zum Brandenburger Tor, über drei Bezirke: Die besuchten Knoten bilden einen großen Kreis um die Schule, gelb in der Mitte, rot am Rand, bis über das Brandenburger Tor hinaus. Der Weg ist eine lila Linie nach Norden.'>
 <figcaption>Dijkstra: 225 556 Knoten besucht</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -750,7 +750,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar
 -->
 <figure>
-<img src='tor-astern.webp' alt='A* auf demselben Weg: Die besuchten Knoten bilden nur ein schmales Band von der Schule nach Norden zum Brandenburger Tor. Der Weg ist derselbe.'>
+<img class='inspect' src='tor-astern.webp' alt='A* auf demselben Weg: Die besuchten Knoten bilden nur ein schmales Band von der Schule nach Norden zum Brandenburger Tor. Der Weg ist derselbe.'>
 <figcaption>A*: 23 996 Knoten besucht</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -800,7 +800,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar | bike
 -->
 <figure>
-<img src='tor-rad.webp' alt='Mit dem Rad vom Gymnasium Steglitz zum Brandenburger Tor: der Weg als lila Linie über Radwege und Nebenstraßen, oben links die Länge und die Zeit in Minuten.'>
+<img class='inspect' src='tor-rad.webp' alt='Mit dem Rad vom Gymnasium Steglitz zum Brandenburger Tor: der Weg als lila Linie über Radwege und Nebenstraßen, oben links die Länge und die Zeit in Minuten.'>
 <figcaption>Mit dem Rad</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -813,7 +813,7 @@ variants: dark
 hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 -->
 <figure>
-<img src='tor-auto.webp' alt='Mit dem Auto auf demselben Weg: Die lila Linie nimmt große Straßen, oben links Länge und Zeit. Die besuchten Knoten füllen einen breiten Streifen um den Weg.'>
+<img class='inspect' src='tor-auto.webp' alt='Mit dem Auto auf demselben Weg: Die lila Linie nimmt große Straßen, oben links Länge und Zeit. Die besuchten Knoten füllen einen breiten Streifen um den Weg.'>
 <figcaption>Mit dem Auto</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -902,7 +902,7 @@ variants: dark
 hook: tour astar | foot | nearest | Brandenburger Tor | Berliner Fernsehturm | Siegessäule | Gendarmenmarkt | Reichstagsgebäude | Rotes Rathaus | Denkmal für die ermordeten Juden Europas | Berliner Dom
 -->
 <figure>
-<img src='rundfahrt-nachbar.webp' alt='Eine Rundfahrt zu Fuß durch Mitte, mit dem nächsten Nachbarn: acht nummerierte Orte vom Brandenburger Tor bis zum Fernsehturm und zur Siegessäule, verbunden durch eine lila Linie, die am Ende einen langen Weg zurück macht. Oben links die Orte und die Länge.'>
+<img class='inspect' src='rundfahrt-nachbar.webp' alt='Eine Rundfahrt zu Fuß durch Mitte, mit dem nächsten Nachbarn: acht nummerierte Orte vom Brandenburger Tor bis zum Fernsehturm und zur Siegessäule, verbunden durch eine lila Linie, die am Ende einen langen Weg zurück macht. Oben links die Orte und die Länge.'>
 <figcaption>Nächster Nachbar: 11,2 km</figcaption>
 </figure>
 <!-- /tutorial-scope -->
@@ -915,7 +915,7 @@ variants: dark
 hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Siegessäule | Gendarmenmarkt | Reichstagsgebäude | Rotes Rathaus | Denkmal für die ermordeten Juden Europas | Berliner Dom
 -->
 <figure>
-<img src='rundfahrt-beste.webp' alt='Dieselben acht Orte mit allen Reihenfolgen ausprobiert: Die lila Linie geht in einer großen Runde von Ort zu Ort, die Rundfahrt ist kürzer.'>
+<img class='inspect' src='rundfahrt-beste.webp' alt='Dieselben acht Orte mit allen Reihenfolgen ausprobiert: Die lila Linie geht in einer großen Runde von Ort zu Ort, die Rundfahrt ist kürzer.'>
 <figcaption>Alle Reihenfolgen: 9,8 km</figcaption>
 </figure>
 <!-- /tutorial-scope -->

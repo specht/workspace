@@ -217,7 +217,7 @@ viewport: 800x450
 hook: open 2.5 error
 crop-element: #canvas
 -->
-<img class='full fit-width' src='fehler.webp' alt='Die Vorschau ist schwarz, unten steht in einem dunkelroten Kasten: »Fehler in shader.frag:«, dann zweimal »Zeile 10:« mit englischen Meldungen: Für »/« gibt es keine Rechnung mit einem const int links und einem highp float rechts, und ein const int lässt sich nicht in einen highp float umwandeln.'>
+<img class='full' src='fehler.webp' alt='Die Vorschau ist schwarz, unten steht in einem dunkelroten Kasten: »Fehler in shader.frag:«, dann zweimal »Zeile 10:« mit englischen Meldungen: Für »/« gibt es keine Rechnung mit einem const int links und einem highp float rechts, und ein const int lässt sich nicht in einen highp float umwandeln.'>
 
 Hier steht in Zeile 10 `2 / iResolution.y`. `2` ist für GLSL eine ganze Zahl, ein `int`, und `iResolution.y` eine Kommazahl, ein `float`. Anders als C rechnet GLSL die beiden nicht von selbst um. Mit `2.0` ist der Fehler weg. Die häufigsten Fehler und wie man sie findet, stehen im Handbuch unter [Fehler finden](/reference/glsl#fehler).
 

@@ -157,7 +157,7 @@ ein `connect`, zwischen zwei Räumen sind es also meist zwei. Vom Schulhof
 führt keiner zurück; wer draußen ist, hat gewonnen.
 
 <div class='gallery single'>
-<figure><img src='schule-karte.webp' alt='Die Räume der Schule als Kästen, verbunden durch Pfeile, an jedem seine Richtung: Raum 204 und Flur mit westen und osten, Flur und Lehrerzimmer mit norden (verschlossen, in Orange) und süden, Flur und Treppenhaus, Treppenhaus und Eingangshalle mit unten und oben, Eingangshalle und Hausmeisterraum mit westen und osten, Eingangshalle und der dunkle Keller mit unten und oben, und von der Eingangshalle ein einzelner Pfeil süden (verschlossen) zum blau umrandeten Schulhof.'><figcaption>Die Nacht in der Schule: jeder Pfeil ein <code>connect</code>, verschlossene Türen in Orange, der Keller dunkel, das Ziel blau umrandet</figcaption></figure>
+<figure><img class='inspect' src='schule-karte.webp' alt='Die Räume der Schule als Kästen, verbunden durch Pfeile, an jedem seine Richtung: Raum 204 und Flur mit westen und osten, Flur und Lehrerzimmer mit norden (verschlossen, in Orange) und süden, Flur und Treppenhaus, Treppenhaus und Eingangshalle mit unten und oben, Eingangshalle und Hausmeisterraum mit westen und osten, Eingangshalle und der dunkle Keller mit unten und oben, und von der Eingangshalle ein einzelner Pfeil süden (verschlossen) zum blau umrandeten Schulhof.'><figcaption>Die Nacht in der Schule: jeder Pfeil ein <code>connect</code>, verschlossene Türen in Orange, der Keller dunkel, das Ziel blau umrandet</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -362,12 +362,12 @@ Spielschleife gibt ihn aus.
 
 <!-- language: ruby, python -->
 <div class='gallery single'>
-<figure><img src='eine-zeile.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exit_to("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
+<figure><img class='inspect' src='eine-zeile.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exit_to("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
 </div>
 <!-- /language -->
 <!-- language: dart, java -->
 <div class='gallery single'>
-<figure><img src='eine-zeile-camel.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exitTo("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
+<figure><img class='inspect' src='eine-zeile-camel.webp' alt='Ein Sequenzdiagramm mit fünf Spalten: Spielschleife, game, player, Raum 204 und Flur. Die Spielschleife ruft handle("gehe westen") bei game auf, game ruft go("westen") bei player, player ruft exitTo("westen") bei Raum 204 und bekommt den Flur zurück, ruft bei sich selbst look() auf und beim Flur describe(); der Text "Flur\nNur die …" geht gestrichelt zurück zu player, zu game und zur Spielschleife.'><figcaption>Was mit <code>gehe westen</code> in Raum 204 geschieht: durchgezogen die Aufrufe, gestrichelt, was zurückkommt</figcaption></figure>
 </div>
 <!-- /language -->
 
@@ -380,7 +380,7 @@ Räumen, einem dunklen Gang, einem Ziel hinter einer verschlossenen Tür und
 dem Weg dorthin, zuerst als Karte:
 
 <div class='gallery single'>
-<figure><img src='welt-karte.webp' alt='Vier Räume als Kästen: Zimmer 3, der dunkle Gang und die Küche nebeneinander, zwischen ihnen je zwei Pfeile, flur und zimmer, küche und flur; vom Gang ein einzelner orangefarbener Pfeil kasten (verschlossen) nach unten zum blau umrandeten Sicherungskasten.'><figcaption>Eine kleine Welt: Zeichne deine zuerst so, ein Pfeil je <code>connect</code></figcaption></figure>
+<figure><img class='inspect' src='welt-karte.webp' alt='Vier Räume als Kästen: Zimmer 3, der dunkle Gang und die Küche nebeneinander, zwischen ihnen je zwei Pfeile, flur und zimmer, küche und flur; vom Gang ein einzelner orangefarbener Pfeil kasten (verschlossen) nach unten zum blau umrandeten Sicherungskasten.'><figcaption>Eine kleine Welt: Zeichne deine zuerst so, ein Pfeil je <code>connect</code></figcaption></figure>
 </div>
 
 Und als Code:

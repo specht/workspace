@@ -296,7 +296,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-light-2026.webp' alt='VS Code im hellen Farbschema Light 2026.'><figcaption><b>Light 2026</b>, das helle Gegenstück</figcaption></figure>
+<figure><img class='inspect' src='theme-light-2026.webp' alt='VS Code im hellen Farbschema Light 2026.'><figcaption><b>Light 2026</b>, das helle Gegenstück</figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Monokai
 press: Control+K
@@ -306,7 +306,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-monokai.webp' alt='VS Code im Farbschema Monokai: kräftige Farben auf dunklem Grau.'><figcaption><b>Monokai</b>, ein Klassiker</figcaption></figure>
+<figure><img class='inspect' src='theme-monokai.webp' alt='VS Code im Farbschema Monokai: kräftige Farben auf dunklem Grau.'><figcaption><b>Monokai</b>, ein Klassiker</figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Solarized Light
 press: Control+K
@@ -316,7 +316,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-solarized-light.webp' alt='VS Code im Farbschema Solarized Light auf cremefarbenem Hintergrund.'><figcaption><b>Solarized Light</b>, warm und ruhig</figcaption></figure>
+<figure><img class='inspect' src='theme-solarized-light.webp' alt='VS Code im Farbschema Solarized Light auf cremefarbenem Hintergrund.'><figcaption><b>Solarized Light</b>, warm und ruhig</figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Red
 press: Control+K
@@ -326,7 +326,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-red.webp' alt='VS Code im Farbschema Red: alles in dunklen Rottönen.'><figcaption><b>Red</b>, für Mutige</figcaption></figure>
+<figure><img class='inspect' src='theme-red.webp' alt='VS Code im Farbschema Red: alles in dunklen Rottönen.'><figcaption><b>Red</b>, für Mutige</figcaption></figure>
 </div>
 
 ### Neue Farbschemata aus dem Marketplace
@@ -365,7 +365,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b></figcaption></figure>
+<figure><img class='inspect' src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Gruvbox, warm und erdig
 hook: install jdinhlife.gruvbox
@@ -377,7 +377,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-gruvbox.webp' alt='VS Code im Farbschema Gruvbox: warmes Orange, Gelb und Grün auf dunkelbraunem Grund.'><figcaption><b>Gruvbox</b></figcaption></figure>
+<figure><img class='inspect' src='theme-gruvbox.webp' alt='VS Code im Farbschema Gruvbox: warmes Orange, Gelb und Grün auf dunkelbraunem Grund.'><figcaption><b>Gruvbox</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema GitHub Light, hell
 hook: install GitHub.github-vscode-theme
@@ -389,7 +389,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-github-light.webp' alt='VS Code im Farbschema GitHub Light: dunkle Schrift in Blau und Rot auf weißem Grund, wie Code auf GitHub.'><figcaption><b>GitHub Light</b></figcaption></figure>
+<figure><img class='inspect' src='theme-github-light.webp' alt='VS Code im Farbschema GitHub Light: dunkle Schrift in Blau und Rot auf weißem Grund, wie Code auf GitHub.'><figcaption><b>GitHub Light</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Cobalt2, kräftiges Blau
 hook: install wesbos.theme-cobalt2
@@ -401,7 +401,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-cobalt2.webp' alt='VS Code im Farbschema Cobalt2: leuchtendes Gelb und Orange auf kräftigem Blau.'><figcaption><b>Cobalt2</b></figcaption></figure>
+<figure><img class='inspect' src='theme-cobalt2.webp' alt='VS Code im Farbschema Cobalt2: leuchtendes Gelb und Orange auf kräftigem Blau.'><figcaption><b>Cobalt2</b></figcaption></figure>
 </div>
 
 <div class='hint'>

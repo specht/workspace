@@ -21,7 +21,7 @@ reference: [workspace, farben]
 In diesem Projekt programmierst du Pixelgrafiken. Mit der Zeichenfläche »Pixelflow Canvas« und ein paar Zeilen Ruby entsteht Schritt für Schritt ein Bild: eine hügelige Wiese aus Bézierkurven und ein Regenbogen aus Kreisen. Zum Schluss zeichnest du ein eigenes Bild und gibst es ab.
 </p>
 
-<img class='full' src='rainbow.webp' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
+<img class='full fit-width' src='rainbow.webp' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
 Du brauchst keine Vorkenntnisse in Ruby: Jeder Befehl wird erklärt, wenn er zum ersten Mal vorkommt.
 
@@ -162,7 +162,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-1.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out1.webp' class='full' alt='Ein einzelner grüner Pixel liegt in der Mitte einer schwarzen Fläche.'>
+<img src='out1.webp' class='full fit-width' alt='Ein einzelner grüner Pixel liegt in der Mitte einer schwarzen Fläche.'>
 
 <div class='hint'>
 Meldet Ruby <code>Connection refused - connect(2) for "127.0.0.1" port 19223</code>, ist die Zeichenfläche nicht offen: Dein Programm findet niemanden, der seine Befehle annimmt. Öffne sie wie oben beschrieben und starte das Programm noch einmal. Meldet Ruby <code>cannot load such file -- pixelflow_canvas</code>, fehlt das Rubygem.
@@ -251,7 +251,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-2.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out2.webp' class='full' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
+<img src='out2.webp' class='full fit-width' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
 
 Die Farben haben sich geändert: Der Hintergrund ist nicht mehr schwarz, weil die Farbe 0 jetzt ein dunkles Lila ist, und die Farbe 10 ist jetzt ein dunkles Türkis.
 
@@ -276,7 +276,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-3.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out3.webp' class='full' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
+<img src='out3.webp' class='full fit-width' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
 
 ### Hügelige Wiese zeichnen
 
@@ -480,7 +480,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-4.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out4.webp' class='full' alt='Drei geschwungene grüne Linien verlaufen über den hellblauen Hintergrund.'>
+<img src='out4.webp' class='full fit-width' alt='Drei geschwungene grüne Linien verlaufen über den hellblauen Hintergrund.'>
 
 ### Flächen füllen
 
@@ -506,7 +506,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-5.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
+<img src='out5.webp' class='full fit-width' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 <!-- /after -->
 
 <div class='hint own' data-check='flaechen'>
@@ -546,7 +546,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-6.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out6.webp' class='full' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
+<img src='out6.webp' class='full fit-width' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
 
 ### Regenbogen zeichnen
 
@@ -587,7 +587,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb step-7.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
+<img src='out7.webp' class='full fit-width' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>r -= 5</code> in <code>r -= 10</code>: Wie breit sind die Streifen jetzt, und wie groß bleibt das Himmelblau in der Mitte? Nimm danach die <code>16</code> am Ende der Liste heraus: Was steht jetzt in der Mitte, und warum? Stell beides danach wieder her.
@@ -649,7 +649,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb rainbow.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img src='rainbow.webp' class='full' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
+<img src='rainbow.webp' class='full fit-width' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schreib vor die drei Zeilen der zweiten Maske, direkt über dem Himmel, je ein <code>#</code>. Was passiert jetzt mit dem Regenbogen, und warum? Nimm die <code>#</code> danach wieder heraus.
@@ -701,7 +701,7 @@ terminal-run: ruby -C /workspace/drawing-steps -r ./save_step.rb ideas.rb
 terminal-wait-for-prompt
 image-file: drawing-steps/step.png 8
 -->
-<img class='full' src='ideas.webp' alt='Ein Nachthimmel mit Sternen, einer gelben Sonne, einem rosa Stern aus Linien, einem Haus mit rotem Dach und dem Wort »Hallo«.'>
+<img class='full fit-width' src='ideas.webp' alt='Ein Nachthimmel mit Sternen, einer gelben Sonne, einem rosa Stern aus Linien, einem Haus mit rotem Dach und dem Wort »Hallo«.'>
 
 ### Sterne
 

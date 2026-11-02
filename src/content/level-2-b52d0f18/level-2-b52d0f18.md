@@ -373,7 +373,7 @@ hook: open view=4.00,17.00,-82,0&automap=0,64,64,38,-10,0,sight
 hook: light
 hook: info off
 -->
-<img src='portale-zimmer-karte.webp' alt='Die Automap von schräg oben: hell sind das Zimmer und alle Räume, die von ihm aus in einer Linie nach Osten liegen, Gang, Kammer, Saal, Vorgang, Rampe und der krumme Gang bis zum Schacht; alle übrigen Räume blass, orange Flächen in den Türen, durch die man schaut, ein rotes Blickfeld im Zimmer.'>
+<img class='inspect' src='portale-zimmer-karte.webp' alt='Die Automap von schräg oben: hell sind das Zimmer und alle Räume, die von ihm aus in einer Linie nach Osten liegen, Gang, Kammer, Saal, Vorgang, Rampe und der krumme Gang bis zum Schacht; alle übrigen Räume blass, orange Flächen in den Türen, durch die man schaut, ein rotes Blickfeld im Zimmer.'>
 <figcaption>… in der Automap mit <kbd>U</kbd></figcaption>
 </figure>
 <figure>
@@ -399,7 +399,7 @@ hook: open view=35.50,29.50,12,2,,0&automap=15,58,34,-2,0,-6,sight
 hook: light
 hook: info off
 -->
-<img src='portale-bad-karte.webp' alt='Die Automap: das Bad und der Vorgang hell, durch dessen breite Tür auch der Saal, alles andere blass; orange die Tür vom Bad in den Vorgang.'>
+<img class='inspect' src='portale-bad-karte.webp' alt='Die Automap: das Bad und der Vorgang hell, durch dessen breite Tür auch der Saal, alles andere blass; orange die Tür vom Bad in den Vorgang.'>
 <figcaption>… zeichnet das Programm nur drei Räume</figcaption>
 </figure>
 </div>

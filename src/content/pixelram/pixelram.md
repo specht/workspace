@@ -95,7 +95,7 @@ viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
-<img class='full' src='green-dot.webp' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
+<img class='full fit-width' src='green-dot.webp' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
 
 <div class='hint'>
 <strong>Röhrenbildschirm:</strong> Fährst du mit der Maus über das Bild, erscheinen unten rechts vier Knöpfe. Der dritte schaltet den CRT-Filter ein (oder <kbd>F6</kbd>): Scanlines und die gewölbte Scheibe eines alten Röhrenbildschirms, passend zu den großen Pixeln. Die Bilder auf dieser Seite haben dafür oben rechts einen eigenen Knopf mit demselben Zeichen <svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>. Der erste Knopf mit der Kamera (oder <kbd>F9</kbd>) lädt das Bild als PNG herunter, in der Größe, die dein Programm hat, ohne CRT-Filter; fehlt er, holt <code>make pixelram-update</code> die neueste Fassung von PixelRAM.
@@ -172,7 +172,7 @@ viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
-<img class='full' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
+<img class='full fit-width' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
 
 `x / 20` ist eine Ganzzahldivision: Für x = 0 bis 19 kommt 0 heraus, für 20 bis 39 kommt 1 heraus, und so weiter. So entstehen Felder von 20 × 20 Pixeln. Dein Programm zeichnet keine Quadrate. Es beantwortet für jedes Pixel einzeln die Frage: **Welche Farbe hast du?** Darum geht es auf dieser ganzen Seite.
 
@@ -320,7 +320,7 @@ viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
-<img class='full' src='color-circles.webp' alt='Konzentrische Kreise in kräftigen Regenbogenfarben.'>
+<img class='full fit-width' src='color-circles.webp' alt='Konzentrische Kreise in kräftigen Regenbogenfarben.'>
 
 <!-- stage: stufen/abstand.c as main.c -->
 
@@ -378,7 +378,7 @@ viewport: 1600x900
 hook: open main.html
 crop-element: #canvas
 -->
-<img class='full' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
+<img class='full fit-width' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
 
 <!-- stage: stufen/kreiswellen.c as main.c -->
 
@@ -709,7 +709,7 @@ hook: open main.html
 hook: at 7.2
 crop-element: #canvas
 -->
-<img class='full' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster mit weichen Kanten.'>
+<img class='full fit-width' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster mit weichen Kanten.'>
 <!-- /after -->
 
 Für jedes Bild rechnet `color` an 58.000 Ecken zwei Abstände und zwei Sinuswerte aus, und weil die Ringe hier dicht liegen, an vielen Kanten noch einmal: zusammen rund 200.000-mal pro Bild, bei 60 Bildern pro Sekunde rund **12 Millionen**-mal pro Sekunde. Für solche Rechnungen ist C gemacht.
@@ -807,7 +807,7 @@ hook: play 1 ArrowUp 0.4 ArrowLeft 0.4 ArrowDown 1
 hook: freeze
 crop-element: #canvas
 -->
-<img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
+<img class='full fit-width' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
 <!-- /after -->
 
 ### Ein fester Takt
@@ -1108,7 +1108,7 @@ hook: open lichtspur.html
 hook: play Space 0.5 ArrowUp 2.5 Space 0.3 KeyW ArrowDown 0.8 KeyD ArrowLeft 0.9 KeyS ArrowUp 0.6 KeyD ArrowLeft 0.8 KeyS ArrowDown 0.7 KeyA 0.6 ArrowRight 0.5 KeyS ArrowUp 3
 crop-element: #canvas
 -->
-<img class='full' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
+<img class='full fit-width' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
 
 Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Die Punkte stehen als Pixel in der oberen Wand.
 
@@ -1234,7 +1234,7 @@ hook: aspect 16 9
 move-mouse: selector:body
 crop-element: #canvas
 -->
-<img class='full' src='crystal-caves.webp' alt='Das Intro von Crystal Caves: »Apogee presents« in roter Schrift vor einem Sternenhimmel, unten ein gelber Strahlenkranz.'>
+<img class='full fit-width' src='crystal-caves.webp' alt='Das Intro von Crystal Caves: »Apogee presents« in roter Schrift vor einem Sternenhimmel, unten ein gelber Strahlenkranz.'>
 
 Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch [**Prince of Persia**](https://github.com/specht/pixelram/tree/main/ports/prince) und [**Descent**](https://github.com/specht/pixelram/tree/main/ports/descent) übersetzen.
 

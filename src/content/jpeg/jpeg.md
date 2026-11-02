@@ -119,7 +119,7 @@ tab: preview
 viewport: 1280x720
 sleep: 2
 -->
-<figure><a href='/rgb' target='_blank' rel='noopener'><img src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
+<figure><a href='/rgb' target='_blank' rel='noopener'><img class='inspect' src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
 <!-- tutorial-screenshot
 # »Trennung von Helligkeit und Farbe«
 open-site: /colorspace
@@ -127,7 +127,7 @@ tab: preview
 viewport: 1280x720
 sleep: 2
 -->
-<figure><a href='/colorspace' target='_blank' rel='noopener'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
+<figure><a href='/colorspace' target='_blank' rel='noopener'><img class='inspect' src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
 <!-- tutorial-screenshot
 # »DCT« zweidimensional: ein 8 x 8-Block aus der gestreiften Krawatte
 # rechts, mit allen 64 Koeffizienten, damit die schrägen Streifen in den
@@ -140,7 +140,7 @@ hook: dct-select 476 178 2d 64
 move-mouse: selector:#coefficients_chooser
 sleep: 1
 -->
-<figure><a href='/dct' target='_blank' rel='noopener'><img src='dct.webp' alt='Die DCT in 2D: ein 8 × 8-Block aus einer gestreiften Krawatte als Tabelle seiner Helligkeiten, daneben seine 64 DCT-Koeffizienten, die mit ihnen gewichteten Kosinusmuster und rechts der Block, wieder zusammengesetzt.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
+<figure><a href='/dct' target='_blank' rel='noopener'><img class='inspect' src='dct.webp' alt='Die DCT in 2D: ein 8 × 8-Block aus einer gestreiften Krawatte als Tabelle seiner Helligkeiten, daneben seine 64 DCT-Koeffizienten, die mit ihnen gewichteten Kosinusmuster und rechts der Block, wieder zusammengesetzt.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
 </div>
 
 <!-- Basiswechsel, Quantisierung, Huffman-Codierung -->
@@ -1482,7 +1482,7 @@ viewport: 800x533
 hook: open jpeg.html
 crop-element: #canvas
 -->
-<img class='full' src='ergebnis.webp' alt='Eine Frau mit Maske trägt ein Kleinkind in einem Tragetuch an einer Bushaltestelle; daneben eine Tafel mit Busnummern.'>
+<img class='full fit-width' src='ergebnis.webp' alt='Eine Frau mit Maske trägt ein Kleinkind in einem Tragetuch an einer Bushaltestelle; daneben eine Tafel mit Busnummern.'>
 
 <p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski (<a href='https://koby.photography/'>https://koby.photography/</a>)</p>
 

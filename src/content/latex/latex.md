@@ -22,9 +22,9 @@ Du schreibst eine kurze Facharbeit über ein Fadenpendel, von der leeren Datei b
 </p>
 
 <div class='gallery'>
-<figure><img class='invert-dark border' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Die Titelseite</figcaption></figure>
-<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste und Tabelle</figcaption></figure>
-<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm und Quellen</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Die Titelseite</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste und Tabelle</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm und Quellen</figcaption></figure>
 </div>
 
 ## Warum LaTeX?
@@ -193,7 +193,7 @@ _task(gliederung)
 Aus `\section` und `\subsection` setzt LaTeX das Inhaltsverzeichnis selbst zusammen, mit Nummern und Seitenzahlen. In der fertigen Facharbeit sieht es so aus:
 
 <div class='gallery centered'>
-<figure><img class='invert-dark border' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Das Inhaltsverzeichnis der fertigen Facharbeit</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Das Inhaltsverzeichnis der fertigen Facharbeit</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -251,7 +251,7 @@ _task(formel)
 So steht die Formel in der fertigen Facharbeit, abgesetzt und mit ihrer Nummer am rechten Rand:
 
 <div class='gallery centered'>
-<figure><img class='invert-dark border' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Die Formel auf ihrer Seite, mit Nummer am Rand</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Die Formel auf ihrer Seite, mit Nummer am Rand</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -369,7 +369,7 @@ _task(tabelle)
 Bild und Tabelle in der fertigen Facharbeit: Beide tragen eine Nummer und eine Unterschrift, und LaTeX setzt sie dorthin, wo sie auf die Seite passen.
 
 <div class='gallery centered'>
-<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung und Tabelle, jede mit Nummer und Unterschrift</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung und Tabelle, jede mit Nummer und Unterschrift</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -516,7 +516,7 @@ _task(quellen)
 Das Diagramm und das Literaturverzeichnis in der fertigen Facharbeit. Das Verzeichnis setzt `biblatex` aus der Datei mit den Quellen zusammen; es steht nur darin, was im Text zitiert wird.
 
 <div class='gallery centered'>
-<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit und Literaturverzeichnis</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit und Literaturverzeichnis</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -807,27 +807,27 @@ So sehen die Seiten aus:
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 1 Wie lange schwingt ein Pendel?
 -->
-<figure><img class='invert-dark border' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Titelseite</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Titelseite</figcaption></figure>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 2 Inhaltsverzeichnis
 -->
-<figure><img class='invert-dark border' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Inhaltsverzeichnis</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Inhaltsverzeichnis</figcaption></figure>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 3 Theorie
 -->
-<figure><img class='invert-dark border' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Einleitung, Theorie, Formel, Fußnote</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Einleitung, Theorie, Formel, Fußnote</figcaption></figure>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 4 Messwerte
 -->
-<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste, Tabelle</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste, Tabelle</figcaption></figure>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 5 Auswertung
 -->
-<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit, Literatur</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit, Literatur</figcaption></figure>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 6 Selbstständigkeitserklärung
 -->
-<figure><img class='invert-dark border' src='erklaerung.webp' alt='Die Selbstständigkeitserklärung mit einer Linie für Ort, Datum und Unterschrift.'><figcaption>Selbstständigkeitserklärung</figcaption></figure>
+<figure><img class='invert-dark border inspect' src='erklaerung.webp' alt='Die Selbstständigkeitserklärung mit einer Linie für Ort, Datum und Unterschrift.'><figcaption>Selbstständigkeitserklärung</figcaption></figure>
 </div>
 
 ## Deine eigene Arbeit

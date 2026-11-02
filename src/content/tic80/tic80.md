@@ -21,7 +21,7 @@ reference: [tic80, workspace]
 TIC-80 ist ein kleiner Computer, den es nur als Programm gibt: ein Bildschirm mit 240 × 136 Pixeln, 16 Farben und Platz für 64 KB. Alles, was man für ein Spiel braucht, ist eingebaut: ein Editor für den Code, einer für Figuren, einer für Töne. In diesem Projekt programmierst du in Lua ein kleines Spiel, »Star Catcher«: Sterne fallen vom Himmel, und du fängst sie.
 </p>
 
-<img class='full' src='stars-run.webp' alt='Das Spiel »Star Catcher«: Gelbe Sterne fallen über einen dunklen Himmel, unten steht eine kleine blaue Figur, oben stehen Punkte und Leben.'>
+<img class='full fit-width' src='stars-run.webp' alt='Das Spiel »Star Catcher«: Gelbe Sterne fallen über einen dunklen Himmel, unten steht eine kleine blaue Figur, oben stehen Punkte und Leben.'>
 
 ## TIC-80 kennenlernen
 
@@ -85,7 +85,7 @@ hook: hold ArrowRight 0.8
 sleep: 0.5
 -->
 
-<img class='full' src='new-lua-run.webp' alt='Das laufende Beispielprogramm: »HELLO WORLD!« in der Mitte und die kleine Figur auf einem blauen Hintergrund.'>
+<img class='full fit-width' src='new-lua-run.webp' alt='Das laufende Beispielprogramm: »HELLO WORLD!« in der Mitte und die kleine Figur auf einem blauen Hintergrund.'>
 
 Mit <kbd>Esc</kbd> kommst du zurück in die Konsole, mit einem weiteren <kbd>Esc</kbd> in den Code-Editor.
 
@@ -224,7 +224,7 @@ check-task: gespeichert
 check-task-fails: fangen
 -->
 
-<img class='full' src='step1.webp' alt='Die Figur steht unten auf dem dunklen Bildschirm, sonst ist noch nichts zu sehen.'>
+<img class='full fit-width' src='step1.webp' alt='Die Figur steht unten auf dem dunklen Bildschirm, sonst ist noch nichts zu sehen.'>
 
 ### Ein Stern fällt
 
@@ -319,7 +319,7 @@ check-task-fails: viele-sterne
 check-task-fails: ton
 -->
 
-<img class='full' src='step2.webp' alt='Ein gelber Stern fällt, unten steht die Figur, oben links »Score: 0«.'>
+<img class='full fit-width' src='step2.webp' alt='Ein gelber Stern fällt, unten steht die Figur, oben links »Score: 0«.'>
 
 _task(fallzeit)
 
@@ -368,7 +368,7 @@ check-task: ton
 check-task-fails: himmel
 -->
 
-<img class='full' src='stars-run.webp' alt='Drei gelbe Sterne fallen, unten die Figur, oben »Score« und »Lives«.'>
+<img class='full fit-width' src='stars-run.webp' alt='Drei gelbe Sterne fallen, unten die Figur, oben »Score« und »Lives«.'>
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step3.lua
@@ -380,7 +380,7 @@ hook: tic run
 sleep: 16
 -->
 
-<img class='full' src='game-over.webp' alt='»GAME OVER« in Rot und darunter »Z: play again«, oben »Lives: 0«.'>
+<img class='full fit-width' src='game-over.webp' alt='»GAME OVER« in Rot und darunter »Z: play again«, oben »Lives: 0«.'>
 
 _task(viele-sterne)
 
@@ -485,7 +485,7 @@ sleep: 0.6
 check-task: himmel
 -->
 
-<img class='full' src='sky.webp' alt='Das fertige Spiel: funkelnde Sterne mit einem Schweif in Orange, Rot und Lila fallen über einen Nachthimmel mit kleinen blauen Punkten, unten steht die Figur auf einer grünen Wiese.'>
+<img class='full fit-width' src='sky.webp' alt='Das fertige Spiel: funkelnde Sterne mit einem Schweif in Orange, Rot und Lila fallen über einen Nachthimmel mit kleinen blauen Punkten, unten steht die Figur auf einer grünen Wiese.'>
 
 _task(himmel)
 

@@ -588,7 +588,7 @@ hook: key m k
 hook: wheel 900
 hook: info off
 -->
-<img src='kollision-karte.webp' alt='Die Automap von schräg oben mit der Taste K: zwischen den hellblauen Linien der Räume rote Kästen für die Säulen und die Statue im Saal, für die Blöcke im roten Raum und für das Geländer an der Treppe.'>
+<img class='inspect' src='kollision-karte.webp' alt='Die Automap von schräg oben mit der Taste K: zwischen den hellblauen Linien der Räume rote Kästen für die Säulen und die Statue im Saal, für die Blöcke im roten Raum und für das Geländer an der Treppe.'>
 <figcaption>alle in der Automap</figcaption>
 </figure>
 </div>

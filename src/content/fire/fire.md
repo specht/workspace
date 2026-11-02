@@ -81,7 +81,7 @@ terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp0.rb
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
-<img src='ramp0.webp' class='full' alt='Die ersten 64 Farben der VGA-Palette.'>
+<img src='ramp0.webp' class='full fit-width' alt='Die ersten 64 Farben der VGA-Palette.'>
 
 Diese 64 Farben ersetzt du jetzt durch den Farbverlauf. Sieh ihn dir im Einzelnen an; die drei Linien zeigen, wie viel Rot, Grün und Blau in jeder Farbe steckt:
 
@@ -156,7 +156,7 @@ terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp1.rb
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
-<img src='ramp1.webp' class='full' alt='Der Anfang der Palette bildet einen Verlauf von Schwarz zu Dunkelrot.'>
+<img src='ramp1.webp' class='full fit-width' alt='Der Anfang der Palette bildet einen Verlauf von Schwarz zu Dunkelrot.'>
 
 ### Dunkelrot bis Orange
 
@@ -178,7 +178,7 @@ terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp2.rb
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
-<img src='ramp2.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
+<img src='ramp2.webp' class='full fit-width' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
 
 So ist jede Zeile des Verlaufs gebaut: Zuerst kommt die Nummer der Farbe, `i` plus die erste Nummer des Abschnitts, hier 16. Dann kommen Rot, Grün und Blau. Ein Kanal, der wächst, ist `i * 8` plus der Wert, mit dem er anfängt; Rot fängt hier bei 128 an, Grün bei 0. Ein Kanal, der gleich bleibt, ist eine feste Zahl, hier Blau mit 0.
 
@@ -218,7 +218,7 @@ terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp3.rb
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
-<img src='ramp3.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot und Orange bis Gelb.'>
+<img src='ramp3.webp' class='full fit-width' alt='Der Farbverlauf reicht von Schwarz über Rot und Orange bis Gelb.'>
 
 ### Gelb bis Weiß
 
@@ -256,7 +256,7 @@ terminal-run: ruby -C /workspace/fire-steps -r ./save_step.rb ramp4.rb
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 8
 -->
-<img src='ramp4.webp' class='full' alt='Die fertige Feuerrampe verläuft von Schwarz über Rot, Orange und Gelb bis Weiß.'>
+<img src='ramp4.webp' class='full fit-width' alt='Die fertige Feuerrampe verläuft von Schwarz über Rot, Orange und Gelb bis Weiß.'>
 
 _task(blau-63)
 
@@ -281,7 +281,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb dr
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='fire1.webp' class='full' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
+<img src='fire1.webp' class='full fit-width' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
 
 Für das Feuer brauchst du eine Technik aus der Bildbearbeitung, den »Filterkernel« (auch Faltungsmatrix, englisch *Convolution Matrix*).
 
@@ -492,7 +492,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fi
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='fire2.webp' class='full' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
+<img src='fire2.webp' class='full fit-width' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
 
 ### Zufällige Variation
 
@@ -512,7 +512,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fi
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='fire3.webp' class='full' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
+<img src='fire3.webp' class='full fit-width' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
 
 _task(begrenzen)
 
@@ -534,7 +534,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fi
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='fire4.webp' class='full' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
+<img src='fire4.webp' class='full fit-width' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
 
 ### Kalte Luft bleibt dunkel
 
@@ -557,7 +557,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fi
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='fire5.webp' class='full' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
+<img src='fire5.webp' class='full fit-width' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
 
 _task(feuer)
 
@@ -615,7 +615,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb wi
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='wind.webp' class='full' alt='Das Feuer steigt schräg nach rechts oben auf, in Streifen von links unten nach rechts oben. Links über der Glut bleibt ein dunkler Keil, rechts reichen die Flammen bis an den Rand des Bildes.'>
+<img src='wind.webp' class='full fit-width' alt='Das Feuer steigt schräg nach rechts oben auf, in Streifen von links unten nach rechts oben. Links über der Glut bleibt ein dunkler Keil, rechts reichen die Flammen bis an den Rand des Bildes.'>
 
 Die Wärme wandert in jedem Bild eine Zeile nach oben und dabei vor allem eine Spalte nach rechts. So steigen die Flammen schräg auf: Links über der Glut bleibt ein dunkler Keil, und rechts laufen sie über den Rand des Bildes hinaus.
 <!-- /after -->
@@ -709,7 +709,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb fo
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='form.webp' class='full' alt='Ein schräg stehendes weißes Quadrat auf Schwarz, aus dem Flammen nach oben schlagen; sein Inneres glüht rot und orange.'>
+<img src='form.webp' class='full fit-width' alt='Ein schräg stehendes weißes Quadrat auf Schwarz, aus dem Flammen nach oben schlagen; sein Inneres glüht rot und orange.'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong>
@@ -769,7 +769,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb gl
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='gluehen.webp' class='full' alt='Das gedrehte weiße Quadrat mit einem gelborangen Schein an allen Seiten, nach außen und nach innen; keine Flammen steigen auf.'>
+<img src='gluehen.webp' class='full fit-width' alt='Das gedrehte weiße Quadrat mit einem gelborangen Schein an allen Seiten, nach außen und nach innen; keine Flammen steigen auf.'>
 
 Achte auf die Ecken, während sich das Quadrat dreht: Hinter jeder zieht ein Schweif her. Die Hitze braucht ein paar Bilder, bis sie verglüht, und das Quadrat ist dann schon ein Stück weitergedreht.
 
@@ -829,7 +829,7 @@ terminal-run: STEP_FRAMES=150 ruby -C /workspace/fire-steps -r ./save_step.rb le
 terminal-wait-for-prompt: 180
 image-file: fire-steps/step.png 4
 -->
-<img src='leuchten.webp' class='full' alt='Das gedrehte Quadrat als dünne, fast weiße Linie mit einem violetten Schein ringsum auf Schwarz.'>
+<img src='leuchten.webp' class='full fit-width' alt='Das gedrehte Quadrat als dünne, fast weiße Linie mit einem violetten Schein ringsum auf Schwarz.'>
 
 Für jedes Pixel liest das Programm jetzt neun Werte statt drei, darum läuft die Animation ein wenig langsamer.
 

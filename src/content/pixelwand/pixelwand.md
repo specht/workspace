@@ -923,7 +923,7 @@ tab: preview
 wait-for-text: Du malst allein
 hook: paint
 -->
-<img class='full border' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«, darunter eine Reihe runder Farbknöpfe, von denen Gelb ausgewählt ist.'>
+<img class='full border fit-width' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«, darunter eine Reihe runder Farbknöpfe, von denen Gelb ausgewählt ist.'>
 
 <!-- language: ruby -->
 _uses(json-aufbau, json-ruby, json-javascript)

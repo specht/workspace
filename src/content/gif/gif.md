@@ -1017,7 +1017,7 @@ viewport: 800x533
 hook: open gif.html
 crop-element: #canvas
 -->
-<img class='full' src='markt.webp' alt='Ein Lastendreirad mit drei Männern vor einem Laden mit bunten Plastikwaren, als GIF mit 256 Farben.'>
+<img class='full fit-width' src='markt.webp' alt='Ein Lastendreirad mit drei Männern vor einem Laden mit bunten Plastikwaren, als GIF mit 256 Farben.'>
 
 <p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski (<a href='https://koby.photography/'>https://koby.photography/</a>)</p>
 
