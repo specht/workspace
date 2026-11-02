@@ -224,7 +224,8 @@
         if (table.length === 0) {
             table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Name</th><th>Gruppe</th><th class='num'>CPU</th><th class='num'>RAM</th><th class='num'>Prozesse</th><th class='num' title='stündlich gemessen'>Speicherplatz</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             table.on('mouseenter', () => { hovering = true; }).on('mouseleave', () => { hovering = false; });
-            here.empty().append(table);
+            // a scroll box of its own on a narrow screen, not the whole page
+            here.empty().append($("<div class='table-responsive'></div>").append(table));
         }
         const tbody = table.find('tbody');
         const rows = [];

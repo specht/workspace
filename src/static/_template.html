@@ -83,6 +83,21 @@ pre table td {
 .alt-review-footer-right {
     margin-left: auto;
     text-align: right;
+    /* the link keeps its line; the tools on the left give way */
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* development: the screenshot monitor in one line, cut with an ellipsis
+   instead of running over the link on a phone */
+.alt-review-footer-left .tutorial-screenshot-monitor:not(.error) {
+    min-width: 0;
+    overflow: hidden;
+}
+.alt-review-footer-left .tutorial-screenshot-monitor:not(.error) > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .alt-review-toggle {
@@ -1153,7 +1168,7 @@ window.addEventListener('load', function() {
                 <!-- One strong button (open the Workspace or log in); everything
                      else is a quiet menu button, the current page marked. -->
                 #{menu_tool_buttons_html(path)}
-                <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i>Handbuch</a>
+                <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i><span class='btn-menu-label'>Handbuch</span></a>
                 #{menu_account_buttons_html}
             </div>
         </div>

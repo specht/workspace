@@ -17,6 +17,12 @@
     .lehrplan-page .cg-choose select {
         width: auto;
         max-width: 26em;
+        /* on a phone the selection gets narrower, not the label: »Name der
+           Pläne« stays on one line */
+        min-width: 0;
+    }
+    .lehrplan-page .cg-choose {
+        white-space: nowrap;
     }
     .lehrplan-page .cg-scroll {
         overflow-x: auto;
@@ -310,7 +316,12 @@
         const scroll = graph.parentElement;
         function widen() {
             const left = scroll.getBoundingClientRect().left;
-            scroll.style.width = Math.max(scroll.parentElement.clientWidth, Math.min(graph.offsetWidth + 4, window.innerWidth - left - 16)) + 'px';
+            // the column's width without its padding: clientWidth counts it,
+            // and the box would stick out of a narrow screen by as much
+            const box = scroll.parentElement;
+            const style = getComputedStyle(box);
+            const column = box.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+            scroll.style.width = Math.max(column, Math.min(graph.offsetWidth + 4, window.innerWidth - left - 16)) + 'px';
         }
         widen();
         window.addEventListener('resize', widen);

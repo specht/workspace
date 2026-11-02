@@ -3290,7 +3290,7 @@ class Main < Sinatra::Base
         return '' unless GitServer.enabled? && @session_user
 
         "<a style='#{@session_user[:show_git] ? '' : 'display: none;'}' href='/repos' data-menu-module='git' class='btn btn-menu'>" \
-            "<i class='bi bi-git'></i>Git</a>"
+            "<i class='bi bi-git'></i><span class='btn-menu-label'>Git</span></a>"
     end
 
     # The menu (_template.html): one strong button (open the Workspace or
@@ -3305,9 +3305,9 @@ class Main < Sinatra::Base
         hidden = ->(key) { @session_user[key] ? '' : " style='display: none;'" }
         io = []
         io << "<button id='bu_launch' class=\"btn btn-success bu-launch-workspace\"><i class='bi bi-code-slash'></i>Workspace öffnen</button>" if @session_user[:show_workspace]
-        io << "<button#{hidden.(:show_phpmyadmin)} id='bu_phpmyadmin' data-menu-module='phpmyadmin' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-database'></i>phpMyAdmin</button>"
-        io << "<button#{hidden.(:show_neo4j)} id='bu_neo4j' data-menu-module='neo4j' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-diagram-3'></i>Neo4j</button>"
-        io << "<a#{hidden.(:show_tic80)} href=\"/tic80/\" data-menu-module='tic80' class=\"btn btn-menu\" target=\"_blank\"><svg class='bi bi-tic80' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg>TIC-80</a>"
+        io << "<button#{hidden.(:show_phpmyadmin)} id='bu_phpmyadmin' data-menu-module='phpmyadmin' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-database'></i><span class='btn-menu-label'>phpMyAdmin</span></button>"
+        io << "<button#{hidden.(:show_neo4j)} id='bu_neo4j' data-menu-module='neo4j' class=\"btn btn-menu\" target=\"_blank\"><i class='bi bi-diagram-3'></i><span class='btn-menu-label'>Neo4j</span></button>"
+        io << "<a#{hidden.(:show_tic80)} href=\"/tic80/\" data-menu-module='tic80' class=\"btn btn-menu\" target=\"_blank\"><svg class='bi bi-tic80' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg><span class='btn-menu-label'>TIC-80</span></a>"
         io << git_menu_button_html
         io.join("\n")
     end
@@ -3324,7 +3324,7 @@ class Main < Sinatra::Base
         active = ->(p) { request.path == p ? 'active' : '' }
         io = []
         if teacher_logged_in? || teacher_account_logged_in?
-            io << "<a href='/klasse' class=\"btn btn-menu #{active.('/klasse')}\"#{here.('/klasse')}><i class='bi bi-people'></i>Klassen</a>"
+            io << "<a href='/klasse' class=\"btn btn-menu #{active.('/klasse')}\"#{here.('/klasse')}><i class='bi bi-people'></i><span class='btn-menu-label'>Klassen</span></a>"
         end
         if admin_logged_in?
             # what the site shows: picture rights (picture_rights.rb), the
@@ -3333,7 +3333,7 @@ class Main < Sinatra::Base
             item = ->(p, icon, label) { "<li><a class=\"dropdown-item #{active.(p)}\" href='#{p}'#{here.(p)}><i class='bi bi-#{icon} me-2'></i>#{label}</a></li>" }
             open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen'].include?(request.path)
             io << "<div class='btn-group'>"
-            io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i>Administration</button>"
+            io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i><span class='btn-menu-label'>Administration</span></button>"
             io << "<ul class='dropdown-menu'>"
             io << item.('/admin', 'speedometer2', 'Betrieb')
             io << item.('/gruppen', 'person-lines-fill', 'Gruppen')
@@ -3345,7 +3345,7 @@ class Main < Sinatra::Base
             io << "</ul></div>"
         end
         name = (@@invitations[@session_user[:email]] || {})[:name].to_s.strip
-        io << "<a href='/profil' class=\"btn btn-menu btn-menu-profile #{active.('/profil')}\" title='Profil'><i class='bi bi-person-badge'></i>#{CGI.escapeHTML(name.empty? ? @session_user[:email].to_s : name)}</a>"
+        io << "<a href='/profil' class=\"btn btn-menu btn-menu-profile #{active.('/profil')}\" title='Profil'><i class='bi bi-person-badge'></i><span class='btn-menu-label'>#{CGI.escapeHTML(name.empty? ? @session_user[:email].to_s : name)}</span></a>"
         if request.path == '/profil'
             io << "<a href='/logout' class=\"btn btn-menu btn-menu-logout\"><i class='bi bi-box-arrow-right' aria-hidden='true'></i>Abmelden</a>"
         end

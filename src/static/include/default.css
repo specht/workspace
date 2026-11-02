@@ -724,6 +724,23 @@ input.error {
     color: inherit;
 }
 
+/* On a phone the menu would take four rows: the quiet buttons show their
+   icon only, as the class page's tabs do; the strong button and the page
+   one is on keep their name. The name stays for screen readers. */
+@media (max-width: 575.98px) {
+    .menu .btn-menu:not(.active) .btn-menu-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+    .menu .btn-menu:not(.active):has(.btn-menu-label) .bi {
+        margin-right: 0;
+    }
+}
+
 .btn-menu-profile {
     max-width: 18em;
     overflow: hidden;
@@ -5511,6 +5528,11 @@ body.cl-dragging-page * {
 .class-meeting-control select {
     width: auto;
     max-width: 22em;
+    /* narrower on a phone instead of wider than the screen */
+    min-width: 0;
+}
+.class-meeting-control {
+    max-width: 100%;
 }
 .class-meeting-status {
     display: flex;
