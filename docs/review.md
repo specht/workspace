@@ -438,7 +438,9 @@ image.
   Automat nicht kann« gave its answer, now in its after block with a hint
   (»Denk an ((((1))))«) before. The other predictions had after blocks; ALGOL
   60 and Ruby's Rational for 2 ^ -1 check out.
-- [ ] `prolog`
+- [x] `prolog` (1 November 2026): page, figures, cards and teacher note read,
+  nothing to change: every prediction waits in an after block; Appel/Haken
+  1976 and Prolog's origin in language processing check out.
 
 ### Software entwerfen
 
