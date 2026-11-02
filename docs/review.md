@@ -359,7 +359,10 @@ image.
   nothing to change: predictions are answered in after blocks or by the
   student's own query (weiteste-berlin); Berlin–Paris 876 km, Singapur's four
   official languages and Papua-Neuguinea's one neighbour check out.
-- [ ] `sql-index`
+- [x] `sql-index` (1 November 2026): page, cards and teacher note read,
+  nothing to change: predictions (vollstaendig, primaerschluessel, welche-
+  nutzt) wait in after blocks; the arithmetic (a third of a second, three
+  queries a second, 20 steps of binary search) fits.
 - [ ] `filmdatenbank`
 - [ ] `neo4j-filmdatenbank`
 - [ ] `bobby_tables`
