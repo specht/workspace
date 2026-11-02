@@ -1285,7 +1285,7 @@ git push origin --tags
 ```
 
 <div class='hint books'>
-`git push` überträgt den aktuellen Branch, Tags aber nicht von selbst: Sie muss man ausdrücklich pushen.
+<code>git push</code> überträgt den aktuellen Branch, Tags aber nicht von selbst: Sie muss man ausdrücklich pushen.
 </div>
 
 ### Zu einem Stand springen
