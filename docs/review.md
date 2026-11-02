@@ -31,6 +31,8 @@ redundant tasks are removed, since there are no student solutions yet.
   der Klasse«, a ranked list (41d48ebc, kept by `wording_test.rb`).
 - 11 Kata teacher notes named Ruby, Python and JavaScript only; the pages
   also offer Dart and Java (c417af20).
+- 18 language portraits wrote »Youtube« in their closing paragraph; now
+  »YouTube« (632506ee).
 
 ## Open for the maintainer
 
