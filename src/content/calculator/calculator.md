@@ -305,9 +305,13 @@ Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Au
 
 ### Was ein Automat nicht kann
 
-Für die Tokens hat ein Automat gereicht. Für den Baum reicht er nicht mehr. Um zu wissen, zu welcher Klammer ein `)` gehört, muss man sich merken, wie viele Klammern gerade offen sind, und in `((((1))))` können es beliebig viele sein.
+Für die Tokens hat ein Automat gereicht. Reicht er auch für den Baum? Denk an `((((1))))`.
 
 _task(klammern)
+
+<!-- after: klammern -->
+Für den Baum reicht er nicht mehr. Um zu wissen, zu welcher Klammer ein `)` gehört, muss man sich merken, wie viele Klammern gerade offen sind, und in `((((1))))` können es beliebig viele sein; ein Automat hat aber nur endlich viele Zustände.
+<!-- /after -->
 
 Was ein Automat nicht kann, kann ein Programm, das sich selbst aufruft. Die Regeln für Ausdrücke lassen sich als **Grammatik** aufschreiben, eine Regel pro Zeile. `{ … }` heißt »beliebig oft, auch keinmal«, `|` heißt »oder«:
 
