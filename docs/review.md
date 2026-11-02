@@ -387,7 +387,10 @@ image.
 - [x] `logikwerkstatt` (1 November 2026): page, editor instructions, cards and
   teacher note read, nothing to change: each circuit's explanation waits in
   its after block; the mux and ripple-carry statements check out.
-- [ ] `sandbox-cpu`
+- [x] `sandbox-cpu` (1 November 2026): page (both class-repository variants),
+  cards and teacher note read, nothing to change: the 6502 history (1975,
+  Apple II, C64, NES, Terminator) and the overflow puzzle (0 + 255 + … + 1 ≡
+  128 mod 256) check out; the think boxes ask without answering.
 
 ### Algorithmen und Datenstrukturen
 
