@@ -473,7 +473,12 @@ image.
 
 ### Terminal & Git
 
-- [ ] `working-with-files`
+- [x] `working-with-files` (1 November 2026, af7092fa): page, cards and
+  teacher note read; the paragraph right before »Windows oder Linux?« named 0d
+  0a as the Windows line end, now the student looks first and the explanation
+  waits in the after block. The rm warning stays before »Und wenn rm
+  danebengeht?« on purpose, it is a safety warning; the numbers (3 756 lines,
+  3 002 words, 61 204 and 48 925 bytes) are the recipe's.
 - [ ] `git`
 - [ ] `terminal-mystery`
 
