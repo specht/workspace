@@ -517,7 +517,9 @@
         if (!show) { $('#school_form')[0].reset(); $('#school_key').val(''); $('#school_submit_label').text('Schule anlegen'); }
     }
 
-    function load_schools() {
+    // then: called once the schools are known, for what needs them (the
+    // school of each teacher)
+    function load_schools(then) {
         people_call('/api/people/schools', {}, function (data) {
             schools = data.schools;
             transition = data.transition;
@@ -537,6 +539,7 @@
             tfilter.find('option:not(:first)').remove();
             schools.filter(s => !s.guests).forEach(s => tfilter.append($('<option>').val(s.key).text(s.name)));
             tfilter.val(tchosen || '');
+            if (then) then();
             if (schools.length === 0) return;
             const table = $(`<table class='table table-sm align-middle people-table'><thead><tr><th>Schule</th><th title='Datum der Entscheidung der Schulleitung'>Entscheidung</th><th title='Datum der unterschriebenen Vereinbarung zur Auftragsverarbeitung'>AVV</th><th>Stand</th><th title='wie weit das Gespräch mit der Schule ist (kein Nachweis)'>Übergang</th><th>Gruppen</th><th>Lehrkräfte</th><th title='eingeladene Schülerinnen und Schüler in den Gruppen der Schule'>Lernende</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead><tbody></tbody></table>`);
             schools.forEach(function (s) {
@@ -881,8 +884,8 @@
     }
 
     function load_all() {
-        load_schools();
-        setTimeout(load_teachers, 200);
+        // the teachers' rows need the schools for their dropdowns
+        load_schools(load_teachers);
         load_all_people();
     }
 
