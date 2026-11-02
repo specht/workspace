@@ -40,6 +40,8 @@ class Room
 association rooms: School 1 -- 1..* Room
 ```
 
+_uml_diagram
+
 Die Schlüsselwörter sind Englisch: `class`, `extends`, `abstract`, `association`. Namen beginnen mit einem Buchstaben und enthalten Buchstaben, Ziffern und `_`, keine Leerzeichen. Klassen schreibst du groß (`Room`), Attribute und Methoden so, wie sie in deinem Code heißen.
 <!-- /part -->
 
@@ -113,6 +115,8 @@ class Bicycle extends Vehicle
   + Bicycle()
   + seats(): int
 ```
+
+_uml_diagram
 
 Steht eine Methode der Oberklasse noch einmal in der Unterklasse, wie `seats()` in `Bicycle`, **überschreibt** die Unterklasse sie: Ein Fahrrad antwortet auf seine Weise.
 
