@@ -784,6 +784,8 @@ class Room
 association rooms: School 1 -- 1..* Room
 ```
 
+_uml_diagram
+
 Eine Schule hat einen oder mehrere Räume, `1..*` an `Room`; jeder Raum gehört
 zu genau einer Schule, `1` an `School`. Die Zahl steht also an der Klasse,
 deren Anzahl sie nennt. Weitere Multiplizitäten sind `0..1` (keins oder eins),
@@ -1069,6 +1071,8 @@ class Bicycle extends Vehicle
   + Bicycle()
   + seats(): int
 ```
+
+_uml_diagram
 
 Im Diagramm zeigt ein Pfeil mit hohler Spitze von der erbenden Klasse zu der,
 von der sie erbt. Steht eine Methode in beiden, gilt die der erbenden Klasse:

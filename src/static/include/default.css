@@ -7332,8 +7332,10 @@ textarea.struktogramm-playground-input {
     background-color: #fff;
 }
 
-/* _include_er: an ER diagram drawn from a model (ErDiagrams), centred, at
-   most as wide as the text */
+/* _include_er: an ER diagram drawn from a model (ErDiagrams), and
+   _uml_diagram: a class diagram drawn from the uml block above it
+   (UmlDiagrams); centred, at most as wide as the text */
+.uml-figure svg,
 .er-figure svg {
     display: block;
     max-width: 100%;

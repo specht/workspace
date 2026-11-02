@@ -729,6 +729,15 @@ html[data-bs-theme="dark"] {
         --er-pen-soft: #1d3346;
         --er-red: #f19aa1;
     }
+    .uml-figure {
+        /* Colours of a class diagram in a page (UmlDiagrams), on the page's ground */
+        --cd-ink: #e7e6e1;
+        --cd-paper: #151514;
+        --cd-shape: #151514;
+        --cd-muted: #a3a29d;
+        --cd-pen: #7fbfe3;
+        --cd-pen-soft: #1d3346;
+    }
     .uml-playground-output {
         border-color: #33332f;
         background-color: #1c1c1b;
