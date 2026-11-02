@@ -1002,7 +1002,7 @@ In der Schleife heißt, was nach der Methode kommt, jetzt `target`: Es enthält 
 ~     else
 ```
 
-`$visits_lock` ist ein **Mutex**, ein Lock, den immer nur ein Thread auf einmal hält. `$visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+`$visits_lock` ist ein **Mutex**, ein Lock, den immer nur ein Thread auf einmal hält. Warum es ihn braucht, überlegst du gleich selbst.
 
 <div class='hint own' data-check='hallo'>
 <strong>Jetzt bist du dran:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im Hash <code>params</code>.
@@ -1084,7 +1084,7 @@ In `handle` heißt, was nach der Methode kommt, jetzt `target`: Es enthält auß
 ~         else:
 ```
 
-`visits_lock` ist ein **Lock**, den immer nur ein Thread auf einmal hält: `with visits_lock:` wartet, bis er frei ist. `visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+`visits_lock` ist ein **Lock**, den immer nur ein Thread auf einmal hält: `with visits_lock:` wartet, bis er frei ist. Warum es ihn braucht, überlegst du gleich selbst.
 
 <div class='hint own' data-check='hallo'>
 <strong>Jetzt bist du dran:</strong> Füg einen Fall für <code>/hello</code> hinzu. <code>/hello?name=Ada</code> antwortet mit dem Text <code>Hallo, Ada!</code> und einem Zeilenende, <code>/hello</code> ohne Namen mit <code>Hallo, Unbekannt!</code>. Den Namen findest du im <code>dict</code> <code>params</code>.
@@ -1191,6 +1191,10 @@ _uses(url)
 _task(hallo)
 
 _task(mutex)
+
+<!-- after: mutex -->
+Das Zählen sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, lesen vielleicht beide die 10, beide schreiben 11 zurück, und ein Besuch ist verloren. Mit dem Lock wartet der zweite Thread, bis der erste fertig ist.
+<!-- /after -->
 
 ## Ein Formular annehmen
 
