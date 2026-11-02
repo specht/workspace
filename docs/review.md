@@ -343,7 +343,10 @@ image.
   Kryptographie im Terminal«, but that page uses SHA-256 and calls it a hash.
   The RFC 4226 example (75a48a19…, 287082), Base32 and RSA SecurID 2011 check
   out; predictions have after blocks.
-- [ ] `nebenlaeufigkeit`
+- [x] `nebenlaeufigkeit` (1 November 2026): page (Java; Dart parallel),
+  widgets, cards and teacher note read, nothing to change: every prediction is
+  answered in an after block; 1680 orders for three threads, and »vier Kerne«
+  (docker run --cpus=4 in workspace_runtime.rb) check out.
 
 ### Datenbanken
 
