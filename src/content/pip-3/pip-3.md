@@ -33,6 +33,17 @@ Stein trägt, den findet er. Er hört jeden Schritt, kennt jeden Gang und nimmt
 immer den kürzesten Weg. Bring ihm seinen Stein zurück.«
 </div>
 
+<div class='pip-journey'>
+<pre class='no-copy'>
+#########################
+#...1.....2.....3.....4.#
+#P......................#
+#.....................M.#
+#########################
+</pre>
+<p>Die Karte des Wichtels: Eine Lampe brennt, sobald du die Aufgaben ihres Kapitels gelöst hast. Ein Klick auf eine Lampe führt zum Kapitel.</p>
+</div>
+
 ## Der Mampfer
 
 Nach jedem Schritt von Pip geht der Mampfer ein Feld weiter, auf dem kürzesten

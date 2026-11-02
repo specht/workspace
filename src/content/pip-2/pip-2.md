@@ -39,6 +39,17 @@ keine Karten mehr; die zeichne ich unterwegs. Pip muss selbst nachsehen, wo es
 weitergeht. Zum Glück kann dein Plan Fragen stellen.«
 </div>
 
+<div class='pip-journey'>
+<pre class='no-copy'>
+#########################
+#..1...2...3...4...5...6#
+#P......................#
+#.............H..~pp....#
+#########################
+</pre>
+<p>Die Karte des Wichtels: Eine Lampe brennt, sobald du die Aufgaben ihres Kapitels gelöst hast. Ein Klick auf eine Lampe führt zum Kapitel.</p>
+</div>
+
 ## Im Finstern
 
 Bisher hast du gezählt: viermal das, achtmal jenes. Hier weiß niemand, wie lang

@@ -47,6 +47,17 @@ Jahren dunkel. Jeder Plan bringt Pip zur nächsten. Dort zündet Pip sie mit der
 eigenen Laterne an, und der Wichtel zeichnet von ihr aus den nächsten Gang in
 seine Karte. So bleibt auch der Weg zurück hell.
 
+<div class='pip-journey'>
+<pre class='no-copy'>
+#########################
+#..1...2...3...4...5...6#
+#P......................#
+#.......o.o.........G...#
+#########################
+</pre>
+<p>Die Karte des Wichtels: Eine Lampe brennt, sobald du die Aufgaben ihres Kapitels gelöst hast. Ein Klick auf eine Lampe führt zum Kapitel.</p>
+</div>
+
 ## Der Eingang
 
 Pip steht oben am Eingang zum ersten Stollen und schaut nach unten. Unter der

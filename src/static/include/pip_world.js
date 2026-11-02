@@ -204,7 +204,12 @@
                 this.glow('lamp', [p[0] + (right ? -0.15 : 0.15), p[1] - 0.6], 3).classList.add('pip-burning');
                 this.tile('lamp pip-lit pip-sort pip-tall pip-bright' + (right ? ' pip-mirrored' : ''), p);
             });
-            if ((layout.burning || []).length) this.safeLight(layout.burning, wall);
+            if ((layout.burning || []).length && layout.safe !== false) this.safeLight(layout.burning, wall);
+            // old lamps not lit yet (the Wichtel's map, pip_journey.js)
+            (layout.unlit || []).forEach((p) => {
+                const right = wall(p[0] + 1, p[1]) && !wall(p[0] - 1, p[1]);
+                this.tile('lamp pip-sort pip-tall' + (right ? ' pip-mirrored' : ''), p);
+            });
             this.lantern = this.glow('lantern actor', [start.pip.x, start.pip.y], 3.5);
             // shining by themselves, above the light, sorted by row
             (layout.stones || []).forEach((p) => { this.stones[key(p)] = this.tile('stone', p); });
@@ -614,7 +619,8 @@
             // rest would be odd
             const even = (n, inner) => n + (n - inner) % 2;
             const cols = even(Math.max(Math.max(map.width, scene.width) + 2, scene.columns || SCENE_COLUMNS), bx1 - bx0 + 1);
-            const rows = even(Math.max(Math.max(map.height, scene.height) + 2, Math.round(cols / SCENE_RATIO)), by1 - by0 + 1);
+            // scene.ratio: a strip (the Wichtel's map) keeps its own height
+            const rows = even(Math.max(Math.max(map.height, scene.height) + 2, Math.round(cols / (scene.ratio || SCENE_RATIO))), by1 - by0 + 1);
             const ox = Math.floor((cols - (bx1 - bx0 + 1)) / 2) - bx0;
             const oy = Math.floor((rows - (by1 - by0 + 1)) / 2) - by0;
             this.offset = [ox, oy];
@@ -630,6 +636,7 @@
             const layout = {
                 width: cols, height: rows, walls,
                 stones: list('stones'), levers: list('levers'), gates: list('gates'), trail: list('trail'), puddles: list('puddles'), burning: list('burning'),
+                unlit: list('unlit'), safe: map.safe,
                 lamp: map.lamp && at(map.lamp), bello: map.bello && at(map.bello),
                 labels: (map.labels || []).map((label) => ({ at: at(label.at), text: label.text })),
             };

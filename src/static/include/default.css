@@ -11175,6 +11175,38 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
     transition: opacity 300ms;
 }
 .pip-stone.pip-taken { opacity: 0; }
+/* The Wichtel's map at the top of a Pip page (pip_journey.js): each lamp
+   is a link to its chapter */
+.pip-journey {
+    margin: 1.5em 0;
+}
+.pip-journey > p {
+    margin: 0.5em 0 0;
+    font-size: 0.9em;
+    color: var(--bs-secondary-color);
+    text-align: center;
+}
+.pip-journey-links {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+}
+.pip-journey-lamp {
+    position: absolute;
+    left: calc(var(--x) * var(--tile));
+    top: calc((var(--y) - 0.67) * var(--tile));
+    width: var(--tile);
+    height: calc(1.67 * var(--tile));
+    border-radius: calc(var(--tile) * 0.2);
+}
+.pip-journey-lamp:hover {
+    background: rgba(255, 220, 160, 0.18);
+}
+.pip-journey-lamp:focus-visible {
+    outline: 2px solid #ffd43b;
+    outline-offset: 2px;
+}
+
 /* the old lamp on its post, dark with a faint ember until Pip lights it */
 .pip-lamp {
     --h: 1.6667;

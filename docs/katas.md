@@ -237,6 +237,20 @@ The code:
   both wall-following plans of Teil 2 are caught, and the lamp sits at two
   thirds of the longest way, so that the way is long but not all corners.
 
+- **The Wichtel's map** (`pip_journey.js`, November 2026) at the top of each
+  part: the page's tunnels as one strip with an old lamp for each chapter,
+  as the story tells it (Pip lights each lamp, the Wichtel draws the next
+  passage). A lamp burns once every task of its chapter is solved (Extras
+  do not count, a prediction counts once it is answered); Pip stands below
+  the last one that burns. Each lamp is a link to its chapter. The map is
+  text in the page (`<div class='pip-journey'><pre>`), the digits 1 to 9
+  are the lamps in the order of the chapters; decoration such as stones, a
+  Glibber or the Mampfer shows what lies ahead.
+- **Typical wrong plans** (`feedback` with `same_as`, docs/aufgaben.md,
+  »pip«): a plan in Ruby, compared by the way Pip walks, so it serves every
+  language. On »Die Hand an der Wand«, »Das Labyrinth« and »Glibber
+  überall« so far.
+
 ### Turtle
 
 An introduction to programming beside Pip, with pictures: a turtle on a
