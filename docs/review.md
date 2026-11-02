@@ -497,7 +497,8 @@ image.
   (copied from the C page; the other portraits are right), and the first
   sentence made the 1957 compiler »eine der ältesten Programmiersprachen«,
   with English quotes. The overflow prediction has its after block.
-- [ ] `cobol`
+- [x] `cobol` (1 November 2026, 825aff9c): page read (shared portrait
+  template), nothing else to change: CODASYL 1959 and FLOW-MATIC check out.
 - [ ] `basic`
 - [ ] `pascal`
 - [ ] `c`
