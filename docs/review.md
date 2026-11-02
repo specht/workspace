@@ -350,6 +350,9 @@ Nothing at the moment.
   widgets, cards and teacher note read, nothing to change: every prediction is
   answered in an after block; 1680 orders for three threads, and »vier Kerne«
   (docker run --cpus=4 in workspace_runtime.rb) check out.
+  Later: the dining philosophers got a picture of the table and, after the
+  task, one of the deadlock as a circle; drawing it showed that the text put
+  the forks in the wrong places (A takes `f1` and `f2`, which lay apart).
 
 ### Datenbanken
 
