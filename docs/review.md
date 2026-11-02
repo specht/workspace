@@ -19,8 +19,8 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ## Where the review stands
 
-Done up to and including Algorithmen (`laufzeit`), on
-2 November 2026. Next page: `automata` (Automaten und Sprachen), then the sections below in catalog
+Done up to and including Automaten und Sprachen (`prolog`), on
+2 November 2026. Next page: `working-with-files` (Terminal & Git; Software entwerfen is done), then the sections below in catalog
 order. Answers that stand directly under or above their question go into an
 `<!-- after: id -->` block (an included Handbuch part can be wrapped too);
 redundant tasks are removed, since there are no student solutions yet.
