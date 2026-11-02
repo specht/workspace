@@ -350,7 +350,11 @@ image.
 
 ### Datenbanken
 
-- [ ] `mysql`
+- [x] `mysql` (1 November 2026, d7873aaf): page, cards and teacher note read;
+  the closing paragraph spoke of »im zweiten Teil unten«, but the second part
+  is the page sql-joins. Predictions (reihenfolge, dichte-where, ohne-where)
+  have after blocks; SQL 1974 and the seven continents (Antarktika without
+  countries) check out.
 - [ ] `sql-joins`
 - [ ] `sql-index`
 - [ ] `filmdatenbank`
