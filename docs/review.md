@@ -509,7 +509,7 @@ image.
   overflow explanation (lower 32 bits, no error) is right for gcc.
 - [x] `prolog-portrait` (1 November 2026): page read, nothing to change:
   Colmerauer and Roussel 1972, = versus is explained correctly.
-- [ ] `smalltalk`
+- [x] `smalltalk` (1 November 2026): page read, nothing to change.
 - [ ] `cpp`
 - [ ] `clisp`
 - [ ] `perl`
