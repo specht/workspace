@@ -290,7 +290,11 @@ image.
   read, nothing to change: the special case and the photo are answered in
   after blocks; LZ77/LZ78, Welch 1984 and the Unisys patent (1994, PNG 1995,
   expired 2003/2004) check out.
-- [ ] `gif`
+- [x] `gif` (1 November 2026): page, hexdumps, LZW stepper, cards and teacher
+  note read, nothing to change: the bit order example (4, 1, 6), the interlace
+  numbers (54 rows in pass 1, row 4 next) and the colour-table sizes check
+  out; the special code is answered in its after block; Wilhite 2013 and the
+  browsers' 2-hundredths rule are right.
 - [ ] `jpeg`
 - [ ] `steganography`
 
