@@ -417,7 +417,10 @@ image.
 - [x] `automata` (1 November 2026): page (Ruby and Python), steppers, cards
   and teacher note read, nothing to change: 3^1000 has 1585 binary digits,
   2^30 is over a billion; the explosion prediction has its after block.
-- [ ] `regex`
+- [x] `regex` (1 November 2026): page (Ruby and Python), cards and teacher
+  note read, nothing to change: every prediction is answered in an after
+  block; Cloudflare 2 July 2019 (27 minutes), Ruby 3.2's memoization, Thompson
+  1968 and Kleene check out.
 - [ ] `kellerautomat`
 - [ ] `turingmaschine`
 - [ ] `grammatiken`
