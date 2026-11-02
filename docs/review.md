@@ -531,7 +531,8 @@ image.
 - [x] `cs` (1 November 2026): page read, nothing to change: .NET 10 is what
   the image installs.
 - [x] `go` (1 November 2026): page read, nothing to change.
-- [ ] `dart`
+- [x] `dart` (1 November 2026): page read; only »macOS«: the analytics switch-
+  off runs at every start (init-code-server-run).
 - [ ] `rust`
 
 ### Hidden: the Backrooms
