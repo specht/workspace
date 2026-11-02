@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 280' width='760' height='280'>
+  <!-- Nach dem Merge: beide Commits, zusammengeführt; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/class-quiz/nach-merge.svg 1520 -->
+<rect width='760' height='280' fill='#ffffff'/>
+<text x='40' y='146' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='18' font-weight='600' fill='#1f2937'>Dein Klon</text>
+<text x='40' y='170' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280'>nach dem Merge</text>
+<path d='M 230 140 L 330 140' fill='none' stroke='#2b5fb4' stroke-width='5' stroke-linecap='round'/>
+<path d='M 330 140 C 395.0 140 395.0 70 460 70 C 525.0 70 525.0 140 590 140' fill='none' stroke='#16a34a' stroke-width='5' stroke-linecap='round'/>
+<path d='M 330 140 C 395.0 140 395.0 210 460 210 C 525.0 210 525.0 140 590 140' fill='none' stroke='#d97706' stroke-width='5' stroke-linecap='round'/>
+<circle cx='230' cy='140' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='230' y='146' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>A</text>
+<circle cx='330' cy='140' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='330' y='146' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>B</text>
+<circle cx='460' cy='70' r='17' fill='#16a34a' stroke='#ffffff' stroke-width='4'/>
+<text x='460' y='40' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='600' fill='#16a34a'>der andere Commit</text>
+<circle cx='460' cy='210' r='17' fill='#d97706' stroke='#ffffff' stroke-width='4'/>
+<text x='460' y='256' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='600' fill='#d97706'>dein Commit</text>
+<circle cx='590' cy='140' r='17' fill='#ffffff' stroke='#2b5fb4' stroke-width='6'/>
+<text x='620' y='146' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='600' fill='#2b5fb4'>Merge</text>
+</svg>

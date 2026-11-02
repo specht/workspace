@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 310' width='760' height='310'>
+  <!-- Server und Klon nach demselben B mit verschiedenen Commits; gemacht von bilder/diagramme.py, als Bild:
+       ruby src/scripts/render-svg.rb src/content/class-quiz/push-abgelehnt.svg 1520 -->
+<rect width='760' height='310' fill='#ffffff'/>
+<text x='40' y='76' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='18' font-weight='600' fill='#1f2937'>Server</text>
+<path d='M 230 70 L 330 70' fill='none' stroke='#2b5fb4' stroke-width='5' stroke-linecap='round'/>
+<path d='M 330 70 L 460 70' fill='none' stroke='#16a34a' stroke-width='5' stroke-linecap='round'/>
+<circle cx='230' cy='70' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='230' y='76' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>A</text>
+<circle cx='330' cy='70' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='330' y='76' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>B</text>
+<circle cx='460' cy='70' r='17' fill='#16a34a' stroke='#ffffff' stroke-width='4'/>
+<text x='492' y='76' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='600' fill='#16a34a'>der andere Commit</text>
+<text x='40' y='206' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='18' font-weight='600' fill='#1f2937'>Dein Klon</text>
+<path d='M 230 200 L 330 200' fill='none' stroke='#2b5fb4' stroke-width='5' stroke-linecap='round'/>
+<path d='M 330 200 L 460 200' fill='none' stroke='#d97706' stroke-width='5' stroke-linecap='round'/>
+<circle cx='230' cy='200' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='230' y='206' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>A</text>
+<circle cx='330' cy='200' r='17' fill='#2b5fb4' stroke='#ffffff' stroke-width='4'/><text x='330' y='206' text-anchor='middle' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='700' fill='#ffffff'>B</text>
+<circle cx='460' cy='200' r='17' fill='#d97706' stroke='#ffffff' stroke-width='4'/>
+<text x='492' y='206' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='16' font-weight='600' fill='#d97706'>dein Commit</text>
+<text x='230' y='268' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280' font-style='italic'>Beide bauen auf B auf. Nähme der Server deinen Commit an,</text>
+<text x='230' y='290' text-anchor='start' font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size='15' font-weight='400' fill='#6b7280' font-style='italic'>fehlte danach der andere.</text>
+</svg>
