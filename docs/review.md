@@ -19,8 +19,8 @@ been read completely, its tasks.yaml and lehrkraft.md included. Started on
 
 ## Where the review stands
 
-Done up to and including Web (`tracking`), on 1 November 2026. Next page:
-`sprachmodell` (Künstliche Intelligenz), then the sections below in catalog
+Done up to and including Bilder und Kompression (`steganography`), on
+2 November 2026. Next page: `radio` (Netze & Sicherheit), then the sections below in catalog
 order. Answers that stand directly under or above their question go into an
 `<!-- after: id -->` block (an included Handbuch part can be wrapped too);
 redundant tasks are removed, since there are no student solutions yet.
