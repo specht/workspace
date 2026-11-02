@@ -366,9 +366,13 @@ In der folgenden Tabelle siehst du, welche Werte welchem ASCII-Zeichen entsprech
 Ignoriere die rechte Hälfte der Tabelle &ndash; die Werte von 128 bis 255 sind nicht standardisiert und können je nach Zeichensatz unterschiedlich sein (abgebildet ist eine ASCII-Tabelle für MS-DOS von 1990). Die linke Hälfte (0 bis 127) ist jedoch standardisiert und wird von allen modernen Systemen unterstützt, wobei die Zeichen von 0 bis 31 sowie 127 nicht druckbar sind.
 </div>
 
-Wenn du dir den Hexdump genau anschaust, findest du z. B. Leerzeichen (`20`) und Zeilenumbrüche (`0d` `0a`), auch CRLF genannt. Hieran erkennst du, dass es sich um eine Windows-Textdatei handelt. Linux-Textdateien verwenden nur ein LF (`0a`) als Zeilenumbruch (trotzdem kann Linux mit beiden Arten von Textdateien umgehen).
+Wenn du dir den Hexdump genau anschaust, findest du z. B. Leerzeichen (`20`). Achte auch darauf, was am Ende jeder Zeile steht. Linux-Textdateien verwenden nur ein LF (`0a`) als Zeilenumbruch.
 
 _task(zeilenende)
+
+<!-- after: zeilenende -->
+Am Ende jeder Zeile von `alice.txt` stehen zwei Bytes, `0d` `0a`, auch CRLF genannt: Daran erkennst du eine Windows-Textdatei. Linux kann trotzdem mit beiden Arten von Textdateien umgehen.
+<!-- /after -->
 
 ### Dateien in Visual Studio Code öffnen
 
