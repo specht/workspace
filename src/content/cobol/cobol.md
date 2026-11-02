@@ -308,5 +308,5 @@ _task(absteigend)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches COBOL-Programm schreiben, kompilieren und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um COBOL wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches COBOL-Programm schreiben, kompilieren und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um COBOL wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und YouTube sind voll von Material für dich. Viel Spaß beim Programmieren!
 

@@ -274,4 +274,4 @@ _task(absteigend)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches BASIC-Skript schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um BASIC wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches BASIC-Skript schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um BASIC wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und YouTube sind voll von Material für dich. Viel Spaß beim Programmieren!

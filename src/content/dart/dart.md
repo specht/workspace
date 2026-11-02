@@ -117,7 +117,7 @@ crop-terminal-lines: auto
 Von sich aus schickt Dart Nutzungsdaten an Google, damit seine Entwickler sehen, welche Befehle wie oft laufen. Im Workspace ist das abgeschaltet: Bei jedem Start deines Workspace läuft dafür `dart --disable-analytics`. Auf einem eigenen Rechner erklärt Dart das beim ersten Lauf in einem langen englischen Text, und derselbe Befehl schaltet es ab.
 
 <div class='hint'>
-Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
+Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, macOS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
 </div>
 
 ### Fehler finden und beheben
@@ -231,6 +231,6 @@ _task(absteigend)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Dart-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Dart wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Dart-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Dart wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und YouTube sind voll von Material für dich. Viel Spaß beim Programmieren!
 
 Was in Dart anders aussieht als in Java, und wie dasselbe in beiden geht, steht im Handbuch unter [Dart und Java](/reference/dart-java).

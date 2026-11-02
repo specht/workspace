@@ -303,7 +303,7 @@ _task(absteigend)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches JavaScript-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um JavaScript wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches JavaScript-Programm schreiben und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um JavaScript wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Skripte schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und YouTube sind voll von Material für dich. Viel Spaß beim Programmieren!
 
 <div class='book'>
 <i class='bi bi-book'></i>

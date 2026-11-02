@@ -349,5 +349,5 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert.
 
 Wie du siehst, ist Assembler eine sehr aufwendige Programmiersprache: Schon das Ausgeben einer Zahl braucht ein eigenes Unterprogramm.
 
-In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Assembler-Programm schreiben, kompilieren, linken und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Assembler wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an drei Beispielen gesehen, wie man ein einfaches Assembler-Programm schreiben, kompilieren, linken und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Assembler wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und YouTube sind voll von Material für dich. Viel Spaß beim Programmieren!
 
