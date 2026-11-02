@@ -387,11 +387,13 @@ In `[_]` steht, welcher Raum darunter liegt, und mit `slab`, wie dick der Boden 
 
 _task(zwischendecke)
 
+<!-- after: zwischendecke -->
 ```room
 [_]
 below = gang            # darunter liegt der Gang
 slab = 0.5              # so dick ist der Boden zwischen beiden
 ```
+<!-- /after -->
 
 Im Gang werden dieselben Felder zum Loch in der Decke, in `rooms/gang.room` unter der Tür zu Rot:
 
