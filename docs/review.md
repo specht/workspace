@@ -492,7 +492,11 @@ image.
 
 ### Programmiersprachen
 
-- [ ] `fortran`
+- [x] `fortran` (1 November 2026, be941eb4): page, cards and teacher note
+  read; »wie man in C Benutzereingaben verarbeitet« on the Fortran page
+  (copied from the C page; the other portraits are right), and the first
+  sentence made the 1957 compiler »eine der ältesten Programmiersprachen«,
+  with English quotes. The overflow prediction has its after block.
 - [ ] `cobol`
 - [ ] `basic`
 - [ ] `pascal`
