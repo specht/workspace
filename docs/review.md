@@ -510,7 +510,8 @@ image.
 - [x] `prolog-portrait` (1 November 2026): page read, nothing to change:
   Colmerauer and Roussel 1972, = versus is explained correctly.
 - [x] `smalltalk` (1 November 2026): page read, nothing to change.
-- [ ] `cpp`
+- [x] `cpp` (1 November 2026): page read, nothing to change: cin stores the
+  largest int and sets the fail state (since C++11), 2147483647 is prime.
 - [ ] `clisp`
 - [ ] `perl`
 - [ ] `python`
