@@ -373,7 +373,10 @@ image.
   graph, zweimal-create, paare) wait in after blocks; IS NODE KEY needs Neo4j
   Enterprise, which the Workspace runs (neo4j:2026.06.0-enterprise); Johnson
   and Jackson in »The Other Guys« checks out.
-- [ ] `bobby_tables`
+- [x] `bobby_tables` (1 November 2026, 29183015): page (Ruby and Python),
+  cards and teacher note read; »Mit # oder -- beginnt ein Kommentar« left out
+  that MySQL needs a space after --, so an injection with »--« and no space
+  fails. The prediction (apostroph) has its after block; xkcd 327 credited.
 
 ### Wie Computer rechnen
 
