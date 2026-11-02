@@ -272,7 +272,7 @@ wait-for-text: 2 of 2 analyzed
 </div>
 <!-- /after -->
 
-Wie schlecht Bubble Sort für große Listen ist, weiß sogar ein Präsident. 2007 fragte Eric Schmidt bei einem Besuch von Barack Obama bei Google, wie man am besten eine Million Zahlen mit 32 Bit sortiert, und Obama antwortete: »I think the bubble sort would be the wrong way to go.« Eines der Verfahren, die im Durchschnitt mit *n* log *n* auskommen, erfand Tony Hoare 1959 als Gaststudent in Moskau: Für ein Programm, das Russisch übersetzen sollte, musste er Wörter sortieren, bevor er sie in einem Wörterbuch auf Magnetband nachschlagen konnte. Insertion Sort war ihm zu langsam, und so entstand Quicksort.
+Wie schlecht Bubble Sort für große Listen ist, wusste sogar ein späterer Präsident. 2007 besuchte Barack Obama, damals Senator und Bewerber um die Präsidentschaft, Google. Eric Schmidt fragte ihn, wie man am besten eine Million Zahlen mit 32 Bit sortiert, und Obama antwortete: »I think the bubble sort would be the wrong way to go.« Eines der Verfahren, die im Durchschnitt mit *n* log *n* auskommen, erfand Tony Hoare 1959 als Gaststudent in Moskau: Für ein Programm, das Russisch übersetzen sollte, musste er Wörter sortieren, bevor er sie in einem Wörterbuch auf Magnetband nachschlagen konnte. Insertion Sort war ihm zu langsam, und so entstand Quicksort.
 
 ### Check: richtig, stabil oder nur zufällig richtig?
 
