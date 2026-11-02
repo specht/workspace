@@ -35,7 +35,7 @@ _person(mccarthy)
 
 ## Hello, world!
 
-Lisp ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Ein moderner Lisp-Interpreter ist [»SBCL«](https://de.wikipedia.org/wiki/Steel_Bank_Common_Lisp) (»Steel Bank Common Lisp«), den wir in diesem Tutorial verwenden. Du hast damit zwei Möglichkeiten, Lisp-Code auszuführen:
+In diesem Tutorial verwenden wir [»SBCL«](https://de.wikipedia.org/wiki/Steel_Bank_Common_Lisp) (»Steel Bank Common Lisp«). SBCL fühlt sich an wie ein Interpreter: Du gibst einen Ausdruck ein und siehst sofort das Ergebnis. Im Hintergrund übersetzt SBCL aber jeden Ausdruck in Maschinencode, bevor es ihn ausführt, und ist darum schnell. Du hast damit zwei Möglichkeiten, Lisp-Code auszuführen:
 
 1. Du kannst Lisp-Code direkt in der SBCL-Shell ausführen.
 2. Du kannst Lisp-Code in einer Textdatei speichern und dann ausführen.
@@ -73,7 +73,7 @@ Du kannst die SBCL-Shell wieder beenden, indem du `(exit)` eingibst und <kbd>Ent
 
 **Möglichkeit 2:** Lisp-Code in einer Textdatei speichern und ausführen
 
-Lisp-Programme werden in Textdateien mit der Endung `.lisp` geschrieben. Ein Lisp-Interpreter liest anschließend den Quelltext und führt ihn aus.
+Lisp-Programme werden in Textdateien mit der Endung `.lisp` geschrieben. SBCL liest anschließend den Quelltext, übersetzt ihn und führt ihn aus.
 
 ### Quelltext schreiben
 
@@ -166,7 +166,7 @@ crop-bottom: 78%
 
 ### Skript ausführen
 
-Um unser Programm auszuführen, müssen wir den Lisp-Interpreter aufrufen (in unserem Fall `sbcl`) und ihm den Dateinamen unseres Programms übergeben.
+Um unser Programm auszuführen, müssen wir `sbcl` aufrufen und ihm den Dateinamen unseres Programms übergeben.
 
 Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst und gib folgenden Befehl ein:
 
@@ -235,7 +235,7 @@ crop-terminal-lines: 4
 
 <img class='full' src='hello-error.webp' alt='sbcl meldet Unhandled UNDEFINED-FUNCTION: The function COMMON-LISP-USER::FORMT is undefined.'>
 
-Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt SBCL im Gegensatz zu vielen anderen Interpretern keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt SBCL im Gegensatz zu vielen anderen Sprachen keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
 <!-- /after -->
 
