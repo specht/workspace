@@ -421,7 +421,10 @@ image.
   note read, nothing to change: every prediction is answered in an after
   block; Cloudflare 2 July 2019 (27 minutes), Ruby 3.2's memoization, Thompson
   1968 and Kleene check out.
-- [ ] `kellerautomat`
+- [x] `kellerautomat` (1 November 2026, f3302e02): page (Ruby and Python),
+  cards and teacher note read; the pigeonhole step said a k-state automaton
+  »war in k + 1 Zuständen«, now k + 1 visits to only k states. Predictions
+  (zaehler, schubfach) wait in after blocks.
 - [ ] `turingmaschine`
 - [ ] `grammatiken`
 - [ ] `calculator`
