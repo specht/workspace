@@ -333,7 +333,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='git-diff-2.webp' alt='git diff zeigt für README.md die Zeile »Hello, world!« in Rot entfernt und »Hello, planet!«, eine Leerzeile und »Git is awesome!« in Grün hinzugefügt.'>
 
-Du siehst jetzt die aktuellen Änderungen in deinem Arbeitsverzeichnis. Rote Zeilen (`–`) zeigen entfernte Zeilen an, während grüne Zeilen (`+`) hinzugefügte Zeilen darstellen.
+Du siehst jetzt die aktuellen Änderungen in deinem Arbeitsverzeichnis. Rote Zeilen (`-`) zeigen entfernte Zeilen an, während grüne Zeilen (`+`) hinzugefügte Zeilen darstellen.
 
 Wenn du einen Commit erstellen möchtest, der alle Änderungen in deinem Arbeitsverzeichnis umfasst, kannst du den Befehl `git commit` mit der Option `-a` verwenden. Diese Option fügt automatisch alle geänderten und gelöschten Dateien zur Staging Area hinzu, bevor der Commit erstellt wird (du sparst dir so `git add`). Führe den folgenden Befehl aus, um die Änderungen zu committen:
 
@@ -1285,7 +1285,7 @@ git push origin --tags
 ```
 
 <div class='hint books'>
-Branches werden beim Push normal mit übertragen, Tags aber nicht automatisch — deshalb muss man sie extra pushen.
+`git push` überträgt den aktuellen Branch, Tags aber nicht von selbst: Sie muss man ausdrücklich pushen.
 </div>
 
 ### Zu einem Stand springen
