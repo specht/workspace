@@ -406,7 +406,11 @@ image.
   teacher note read, nothing to change: the numbers fit (111 195 m per degree,
   67 km per degree of longitude in Berlin, heap height 17 for 100 000, 4! =
   24, 8! = 40 320, 7! = 5 040); the prediction on degrees has its after block.
-- [ ] `laufzeit`
+- [x] `laufzeit` (1 November 2026): page (Ruby; the other languages parallel),
+  widgets, cards and teacher note read, nothing to change: predictions wait in
+  after blocks; 499 500 steps, 1,5 s · 1716 ≈ 43 minutes, Cook 1971 and the n
+  log n bound check out; the 110,6 km per degree of latitude matches the code
+  (110.57).
 
 ### Automaten und Sprachen
 
