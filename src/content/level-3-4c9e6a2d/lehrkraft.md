@@ -7,7 +7,7 @@ Lernende hängen Lampen aus Modellen an die Wände ihres Levels, stellen Möbel 
 <li>Lampen und Möbel</li>
 <li>das Licht Schritt für Schritt, jedes einzeln an- und abschaltbar: die Punkte der Lightmap, direktes Licht mit weichen Schatten (Halbschatten aus 64 Strahlen zu zufälligen Punkten einer Leuchte), Licht, das von Flächen zurückgeworfen wird (Bounce), Kontaktschatten (Ambient Occlusion), Tone Mapping und Bloom</li>
 <li>Licht aufheben und veröffentlichen</li>
-<li>am Schluss die Nachtschicht, ein fertiges Level zum Durchlaufen, und die beiden fertigen Levels der Vorlage, Lobby und Tiefe, deren Räume die Lernenden jetzt ganz lesen können.</li>
+<li>am Schluss die Nachtschicht, ein fertiges Level zum Durchlaufen, dessen Räume die Lernenden jetzt ganz lesen können.</li>
 </ul></td></tr>
 <tr><th>Rechner</th><td>Das Licht berechnet die Grafikkarte des Rechners, auf dem der Browser läuft, nicht der Workspace. Wie lange das dauert, hängt von ihr ab; schwache Grafik braucht länger. <code>detail</code> und <code>bounces</code> in <code>level.ini</code> machen es schneller oder schöner.</td></tr>
 <tr><th>Aufgaben</th><td>Eine Rechnung zur Zahl der Punkte der Lightmap auf einer Wand, eine Vorhersage zur Decke ohne Bounce-Licht und eine Erklärung, warum große Leuchten weiche Schatten werfen.</td></tr>

@@ -19,7 +19,7 @@ template_name: der Backrooms-Vorlage
 </div>
 
 <p class='abstract'>
-Woher kommt das Licht in den Backrooms? Du hängst Lampen an die Wand, stellst ein Sofa in die Kammer und holst dir Möbel aus dem Internet. Dann gehst du in den Maschinenraum und siehst zu, wie das Programm das Licht berechnet: Punkt für Punkt, Strahl für Strahl, das Licht, das von den Wänden zurückfällt, und die dunklen Ecken. Zum Schluss veröffentlichst du dein Level, und zwei fertige Levels warten auf dich, deren Räume du jetzt Zeile für Zeile lesen kannst.
+Woher kommt das Licht in den Backrooms? Du hängst Lampen an die Wand, stellst ein Sofa in die Kammer und holst dir Möbel aus dem Internet. Dann gehst du in den Maschinenraum und siehst zu, wie das Programm das Licht berechnet: Punkt für Punkt, Strahl für Strahl, das Licht, das von den Wänden zurückfällt, und die dunklen Ecken. Zum Schluss veröffentlichst du dein Level, und ein fertiges Level wartet auf dich, die Nachtschicht, deren Räume du jetzt Zeile für Zeile lesen kannst.
 </p>
 
 <div class='found-note'>
@@ -88,7 +88,7 @@ Farbiges Licht färbt alles, was es trifft, auch über die Tür hinaus in den Na
 <cite>Seite aus einem durchnässten Notizbuch, dritte Handschrift</cite>
 </div>
 
-Eine Leuchte hängt immer unter der Decke; was hier Leuchte heißt, ist so ein helles Feld unter der Decke. Licht kann aber auch aus einem Modell kommen, einer Lampe: einer Wandlampe, einer Stehlampe, einer Laterne. Die Kammer wird ein Ruheraum. Statt der flackernden Leuchte an der Decke hängen zwei Wandlampen an den Wänden, und an der Südwand steht ein Sofa. Ersetze `rooms/kammer.room` durch:
+Was hier Leuchte heißt, ist ein helles Feld, das immer unter der Decke hängt. Licht kann aber auch aus einem Modell kommen, einer Lampe: einer Wandlampe, einer Stehlampe, einer Laterne. Die Kammer wird ein Ruheraum. Statt der flackernden Leuchte an der Decke hängen zwei Wandlampen an den Wänden, und an der Südwand steht ein Sofa. Ersetze `rooms/kammer.room` durch:
 
 _include_file(stufen/kammer-lampen.room, room_copy)
 
@@ -114,7 +114,7 @@ hook: info off
 
 Sofa und Wandlampe liegen schon in `models/`, dazu die Wandlampe mit Schirm und der Kerzenleuchter aus dem Holz- und dem Samtsaal und Möbel: ein Schreibtisch aus Metall, Stühle, eine Kommode, ein Regal, ein altes Bettgestell, ein Schaukelstuhl und ein kleiner Tisch. Alle sind von [Poly Haven](https://polyhaven.com/models). Dort steht jedes Modell unter CC0: Du darfst es verwenden, wofür du willst, ohne zu fragen. So holst du dir weitere:
 
-1. Wähl auf der Seite des Modells beim Download die Auflösung **1K** und das Format **glTF**. glTF und GLB kann das Programm lesen. 1K genügt: Das Programm nimmt vom Modell die Farbe der Oberfläche und, für Spiegelungen, wie glatt und metallisch sie ist; 2K oder 4K sähen genauso aus und wären nur größer.
+1. Wähl auf der Seite des Modells beim Download die Auflösung **1K** und das Format **glTF**. glTF und GLB kann das Programm lesen. 1K genügt: Das Programm nimmt vom Modell die Farbe der Oberfläche und, für Spiegelungen, wie glatt und metallisch sie ist. Mit 2K oder 4K ist die Oberfläche nur aus der Nähe schärfer, und die Bilder brauchen vier- oder sechzehnmal so viel Platz.
 2. Ein Modell in glTF besteht aus mehreren Dateien: einer `.gltf`, einer `.bin` und Bildern im Ordner `textures`. Sie gehören zusammen in einen eigenen Ordner in `models`, etwa `models/sessel/`, so wie sie ankommen.
 3. In der Raumdatei steht dann `model = models/sessel/DATEINAME.gltf`. Wie groß das Modell ist, steht auf seiner Seite bei den Maßen; die Höhe davon gehört in `height`.
 
@@ -316,7 +316,11 @@ hook: key t b
 
 <!-- /tutorial-scope -->
 
-**Bounce-Licht.** Die Decke ist schwarz: Keine Leuchte strahlt nach oben. In Wirklichkeit ist sie trotzdem hell, weil jede Fläche einen Teil des Lichts zurückwirft, das auf sie fällt, in ihrer eigenen Farbe: der Teppich bräunliches Licht, eine rote Wand rotes. Ist das direkte Licht fertig, schickt das Programm von jedem Punkt Strahlen in zufällige Richtungen und schaut, wie hell die Flächen sind, die sie treffen. Was dabei herauskommt, ist das Licht, das einmal zurückgeworfen wurde, ein **Bounce**. Damit das schnell geht, sammelt es das zurückgeworfene Licht vorher in Würfeln von 25 cm, und weil zufällige Strahlen ein körniges Ergebnis geben, glättet es das Bounce-Licht am Ende. Das Ganze dreimal: Beim zweiten Bounce werfen die Flächen auch das Licht des ersten zurück und so weiter, darum steht beim Backen »bounce 1 of 3«. Mit einem, zwei und drei Bounces (in `level.ini` mit `bounces = 1` und so weiter):
+<!-- after: decke -->
+Ohne Bounce-Licht ist die Decke fast schwarz: Keine Leuchte strahlt nach oben.
+<!-- /after -->
+
+**Bounce-Licht.** In Wirklichkeit ist eine Decke trotzdem hell, weil jede Fläche einen Teil des Lichts zurückwirft, das auf sie fällt, in ihrer eigenen Farbe: der Teppich bräunliches Licht, eine rote Wand rotes. Ist das direkte Licht fertig, schickt das Programm von jedem Punkt Strahlen in zufällige Richtungen und schaut, wie hell die Flächen sind, die sie treffen. Was dabei herauskommt, ist das Licht, das einmal zurückgeworfen wurde, ein **Bounce**. Damit das schnell geht, sammelt es das zurückgeworfene Licht vorher in Würfeln von 25 cm, und weil zufällige Strahlen ein körniges Ergebnis geben, glättet es das Bounce-Licht am Ende. Das Ganze dreimal: Beim zweiten Bounce werfen die Flächen auch das Licht des ersten zurück und so weiter, darum steht beim Backen »bounce 1 of 3«. Mit einem, zwei und drei Bounces (in `level.ini` mit `bounces = 1` und so weiter):
 
 <!-- tutorial-scope -->
 
