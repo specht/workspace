@@ -851,7 +851,7 @@ Im Handbuch: _uses(mycli, select, where, sortieren, aggregieren, insert, update-
 Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>Strg</kbd><kbd>D</kbd>.
 </div>
 
-Die drei Tabellen sind die kleine Fassung der Länder der Welt. Im zweiten Teil unten lädst du die ganze, mit Grenzen, Währungen und Amtssprachen, und verbindest Tabellen miteinander.
+Die drei Tabellen sind die kleine Fassung der Länder der Welt. Die ganze Fassung, mit Grenzen, Währungen und Amtssprachen, lädst du auf der nächsten Seite und verbindest dort Tabellen miteinander.
 
 <!-- tutorial-step
 # Jede SQL-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf den Daten, die die Seite lädt
