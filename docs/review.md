@@ -310,7 +310,9 @@ image.
 
 ### Netze & Sicherheit
 
-- [ ] `radio`
+- [x] `radio` (1 November 2026): page, cards and teacher note read, nothing to
+  change: the discussion questions are asked without answers; Baudot (five
+  keys, about 150 years ago) and Shannon 1948 check out.
 - [ ] `tcpip`
 - [ ] `dns`
 - [ ] `webserver`
