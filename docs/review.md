@@ -503,7 +503,8 @@ image.
   Skriptsprache, … zur Laufzeit interpretiert« (Dartmouth BASIC was compiled),
   English quotes. The 3000000000 question was run in the image: bwBASIC prints
   the 2 nine times and stops, so the question has an answer.
-- [ ] `pascal`
+- [x] `pascal` (1 November 2026): page read, nothing to change: Wirth
+  1968/1970, Turbo Pascal and the FreePascal IDE are described correctly.
 - [ ] `c`
 - [ ] `prolog-portrait`
 - [ ] `smalltalk`
