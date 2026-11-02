@@ -341,7 +341,7 @@ Zwei Bilder mehr für jedes Bild, in dem Wasser zu sehen ist: Das kostet. Zeichn
 
 ### Was gezeichnet wird
 
-Für ein Bild zeichnet das Programm nicht das ganze Level, nur, was du von deinem Platz aus sehen kannst. In einen anderen Raum siehst du nur durch eine Öffnung, eine Tür oder ein Loch. Solche Öffnungen heißen **Portale**, und so sucht `portals.js` für jedes Bild aus, was gezeichnet wird:
+In einen anderen Raum siehst du nur durch eine Öffnung, eine Tür oder ein Loch. Solche Öffnungen heißen **Portale**, und so sucht `portals.js` für jedes Bild aus, was gezeichnet wird:
 
 1. Der Raum, in dem du stehst, ist zu sehen, soweit er im Bild liegt.
 2. Jedes seiner Portale wird aufs Bild gerechnet, als Rechteck um die Öffnung. Liegt das Rechteck im Bild, siehst du durch das Portal in den Raum dahinter, aber nur durch dieses Rechteck.
