@@ -517,7 +517,7 @@ image.
   REPL.
 - [x] `perl` (1 November 2026): page read, nothing to change.
 - [x] `python` (1 November 2026): page read, nothing to change.
-- [ ] `lua`
+- [x] `lua` (1 November 2026): page read, nothing to change.
 - [ ] `ruby`
 - [ ] `java`
 - [ ] `js`
