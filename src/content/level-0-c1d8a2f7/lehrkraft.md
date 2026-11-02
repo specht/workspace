@@ -14,7 +14,7 @@ Lernende entwerfen eigene Backrooms, die endlosen gelben Räume einer Internet-L
 </ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Vorlage klonen, hineingehen, die Automap, Grundriss und Türen, die Kammer, der Saal mit Satteldach, Säulen und Statue.</li>
-<li><b>2. Doppelstunde:</b> andere Wände und Böden mit Holz, Leisten und runden Bögen, der Salon (breite und runde Türen, Lambris, Leisten), ein eigener Raum mit Leuchten und Möbeln, Brillen.</li>
+<li><b>2. Doppelstunde:</b> andere Wände und Böden, der Salon (breite Türen, Bögen, Lambris, Leisten, runde Ecken), ein eigener Raum mit Leuchten und Möbeln, Brillen.</li>
 <li><b>Maschinenraum</b> für alle, die wissen wollen, wie es funktioniert: wie das Programm aus Textdateien ein Bauwerk macht (Breitensuche über die Türen, ein Gitter aus Feldern, Flächen an den Kanten) und wie Holz, Fliesen und Marmor ohne Bilder entstehen (prozedurale Texturen, ein Shader in GLSL).</li>
 </ul></td></tr>
 <tr><th>Rechner</th><td>Das Licht berechnet die Grafikkarte des Rechners, auf dem der Browser läuft, nicht der Workspace. Wie lange das dauert, hängt von ihr ab; schwache Grafik braucht länger. <code>detail</code> und <code>bounces</code> in <code>level.ini</code> machen es schneller oder schöner. Beim Laufen zeichnet das Programm nur die Räume, die man durch Türen und Löcher sieht (Portale, im Maschinenraum erklärt).</td></tr>

@@ -19,7 +19,7 @@ template_name: der Backrooms-Vorlage
 </div>
 
 <p class='abstract'>
-Du bist durch eine Wand gefallen. Dahinter liegen die Backrooms: gelbe Tapete, feuchter Teppich, das Summen der Leuchten, Räume ohne Ende. Du kartierst sie in Textdateien und baust eigene Räume dazu, einen Saal mit Säulen, Satteldach und einer Statue und einen Salon mit Holz an den Wänden. Dein Browser macht daraus ein Bauwerk in 3D und berechnet das Licht, das zwischen den Wänden hin- und herfällt. Am Rechner, auf dem Handy, mit Rot-Cyan-Brille oder mit einer VR-Brille. Zum Schluss schaust du nach, wie das Programm aus ein paar Zeilen Text Wände macht und Holz und Marmor, ohne ein einziges Bild.
+Du bist durch eine Wand gefallen. Dahinter liegen die Backrooms: gelbe Tapete, feuchter Teppich, das Summen der Leuchten, Räume ohne Ende. Du kartierst sie in Textdateien und baust eigene Räume dazu, einen Saal mit Säulen, Satteldach und einer Statue und einen Salon mit Holz an den Wänden. Dein Browser macht daraus ein Bauwerk in 3D und berechnet das Licht, das zwischen den Wänden hin- und herfällt, am Rechner, auf dem Handy, mit Rot-Cyan-Brille oder mit einer VR-Brille. Zum Schluss schaust du nach, wie das Programm aus ein paar Zeilen Text Wände macht und Holz und Marmor, ohne ein einziges Bild.
 </p>
 
 </p>
@@ -258,7 +258,7 @@ power = 0.9
 flicker = 1
 ```
 
-Die Leuchte ist orange, und mit `flicker = 1` flackert sie ab und zu. Die Tapete ist eine Farbe als Hexadezimalzahl wie in CSS: Rot, Grün und Blau, je zwei Ziffern.
+Die Leuchte ist orange, und mit `flicker = 1` flackert sie ab und zu. Die Farbe der Tapete steht als Hexadezimalzahl da, wie in CSS: Rot, Grün und Blau, je zwei Ziffern.
 
 Noch führt keine Tür in die Kammer, also gibt es sie nicht. Öffne `rooms/gang.room`. Weit unten im Grundriss ist links die `1`, die Tür zum Zimmer. Ersetze in dieser Zeile das `#` am rechten Rand durch eine `5`:
 
@@ -570,7 +570,7 @@ hook: info off
 
 ### Andere Wände und Böden
 
-Marmor ist nur eine Möglichkeit. `walls` kennt neun Arten, `floor` zehn, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
+Marmor ist nur eine Möglichkeit. `walls` kennt neun Arten, `floor` elf, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
 
 <table class='table'>
 <tr><th>Wert</th><th>Wände (<code>walls</code>)</th><th>Boden (<code>floor</code>)</th></tr>
@@ -850,7 +850,7 @@ Wo Holz und Tapete sich treffen, kommt eine helle Leiste:
 dado_rail = 0.06, #d9cdae
 ```
 
-`dado_rail` ist eine Leiste auf der Kante des Lambris, hier 6 cm hoch. Auf Englisch heißt sie auch *chair rail*, Stuhlleiste: Sie hielt die Lehnen der Stühle von der Wand fern, damit die Tapete hielt.
+`dado_rail` ist eine Leiste auf der Kante des Lambris, hier 6 cm hoch. Auf Englisch heißt sie auch *chair rail*, Stuhlleiste: Sie hielt die Lehnen der Stühle von der Wand fern und schützte so die Tapete.
 
 <!-- tutorial-screenshot
 write-file: rooms/salon.room <- file:stufen/salon-4.room
@@ -866,7 +866,7 @@ hook: info off
 
 ### Ein Gesims
 
-Zuletzt die Kante, an der die Wand die Decke trifft:
+Dann die Kante, an der die Wand die Decke trifft:
 
 ```room
 ~ dado_rail = 0.06, #d9cdae
