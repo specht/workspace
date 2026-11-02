@@ -324,7 +324,11 @@ image.
   knows who is responsible for de, a referral in the AUTHORITY SECTION), now
   in its after block; the student reads it from the output first. The TTLs
   (300, 172800), Mockapetris 1983 and Kaminsky 2008 (65 536 IDs) check out.
-- [ ] `webserver`
+- [x] `webserver` (1 November 2026, 72f9b665): page (Ruby and Python), cards
+  and teacher note read; the paragraph introducing the lock explained the lost
+  update, the answer of »Zwei auf einmal« further down; now in its after
+  block, in both languages. Predictions have after blocks; RFC 2324 (1998) and
+  418 kept in 2017 check out.
 - [ ] `pixelwand`
 - [ ] `crypto`
 - [ ] `totp`
