@@ -433,7 +433,11 @@ image.
   and teacher note read, nothing to change: the predictions (tiefe, baeume,
   welcher-typ) wait in after blocks; Backus 1959, Naur 1960, Wirth's diagrams
   for Pascal and Chomsky 1956 check out.
-- [ ] `calculator`
+- [x] `calculator` (1 November 2026, bd471779): page (Ruby and Python), tree
+  stepper, cards and teacher note read; the paragraph right before »Was ein
+  Automat nicht kann« gave its answer, now in its after block with a hint
+  (»Denk an ((((1))))«) before. The other predictions had after blocks; ALGOL
+  60 and Ruby's Rational for 2 ^ -1 check out.
 - [ ] `prolog`
 
 ### Software entwerfen
