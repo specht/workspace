@@ -484,7 +484,11 @@ image.
   push sends the current branch only) with an em dash, and the diff's removed
   lines were shown as »–« instead of »-«. The prediction head-zwei has its
   after block.
-- [ ] `terminal-mystery`
+- [x] `terminal-mystery` (1 November 2026): page, cards and teacher note read,
+  nothing to change: the case is solved by the student's own commands, the
+  regex shortcut for the car stands only after the culprit is found; the
+  counts (over 1200 lines, 1503 interviews, 145 Hamburg files) fit; Veltman's
+  Command Line Murders credited.
 
 ### Programmiersprachen
 
