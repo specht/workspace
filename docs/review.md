@@ -368,7 +368,11 @@ image.
   titel, modell-verleih) are answered in after blocks; »Überlege, bevor du
   weiterliest« is followed by its answer on purpose, without a task; Nosferatu
   1922/2024 and Dune 1984/2021 check out.
-- [ ] `neo4j-filmdatenbank`
+- [x] `neo4j-filmdatenbank` (1 November 2026): page, cards and teacher note
+  read, nothing to change: predictions (zwischentabelle, taetigkeit, ausleihe-
+  graph, zweimal-create, paare) wait in after blocks; IS NODE KEY needs Neo4j
+  Enterprise, which the Workspace runs (neo4j:2026.06.0-enterprise); Johnson
+  and Jackson in »The Other Guys« checks out.
 - [ ] `bobby_tables`
 
 ### Wie Computer rechnen
