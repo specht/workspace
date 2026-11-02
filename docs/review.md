@@ -394,7 +394,10 @@ image.
 
 ### Algorithmen und Datenstrukturen
 
-- [ ] `sandbox-sortieren`
+- [x] `sandbox-sortieren` (1 November 2026, 7ec0b4c1): page (both class-
+  repository variants), cards and teacher note read; »weiß sogar ein
+  Präsident« for the 2007 Google visit, when Obama was a senator and
+  candidate. Predictions and think boxes have their after blocks or stay open.
 - [ ] `sandbox-datenstrukturen`
 - [ ] `routenplaner`
 - [ ] `laufzeit`
