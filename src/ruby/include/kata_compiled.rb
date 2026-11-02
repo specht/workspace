@@ -203,8 +203,13 @@ module KataCompiled
             }
 
             static void __hsAdd(String call, String expect, String got, boolean ok, String error) {
+                __hsAdd(call, expect, got, ok, error, -1);
+            }
+
+            static void __hsAdd(String call, String expect, String got, boolean ok, String error, long ms) {
                 if (__HS_RESULT.length() > 0) __HS_RESULT.append(',');
                 __HS_RESULT.append("{\\"call\\":").append(__hsJson(call)).append(",\\"expect\\":").append(__hsJson(expect)).append(",\\"ok\\":").append(ok);
+                if (ms >= 0) __HS_RESULT.append(",\\"ms\\":").append(ms);
                 if (got != null) __HS_RESULT.append(",\\"got\\":").append(__hsJson(got.length() > 300 ? got.substring(0, 300) + " …" : got));
                 if (error != null) __HS_RESULT.append(",\\"error\\":").append(__hsJson(error));
                 __HS_RESULT.append('}');
@@ -223,8 +228,8 @@ module KataCompiled
                 source << "        try {\n#{body}            Object got = (#{last_step});\n            __hsAdd(#{call}, #{expect}, __hsRepr(got), false, null);\n"
                 source << "        } catch (Throwable e) {\n            __hsAdd(#{call}, #{expect}, null, true, __hsError(e));\n        }\n"
             else
-                source << "        try {\n            Object expected = (#{c['expect']});\n#{body}            Object got = (#{last_step});\n"
-                source << "            __hsAdd(#{call}, #{expect}, __hsRepr(got), __hsSame(got, expected), null);\n"
+                source << "        try {\n            Object expected = (#{c['expect']});\n            long __hsStarted = System.nanoTime();\n#{body}            Object got = (#{last_step});\n"
+                source << "            __hsAdd(#{call}, #{expect}, __hsRepr(got), __hsSame(got, expected), null, (System.nanoTime() - __hsStarted) / 1_000_000);\n"
                 source << "        } catch (Throwable e) {\n            __hsAdd(#{call}, #{expect}, null, false, __hsError(e));\n        }\n"
             end
             source << "    }\n\n"

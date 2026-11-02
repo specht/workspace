@@ -114,8 +114,7 @@ too slow for the Workspace.
 What exists and why: [docs/katas.md](docs/katas.md).
 
 * [ ] Kata cards: what else a card needs, from the maintainer's use of them (the prompt beside the code from 60em on is done)
-* [ ] A time limit per case where speed is the point (now `timeout` is for all cases together; `slow:` words the message)
-* [ ] Pip: a map of the tunnels at the top of each Pip page that lights up chapter by chapter; `same_as`-style feedback by trace (»Pip biegt immer links ab, auch wenn dort eine Wand ist.«)
+* [ ] Pip: more typical wrong plans (`same_as`, by the way Pip walks) where classes show them, after a try in class
 * [ ] Person box for Richard E. Pattis (Karel the Robot) once a source gives his year of birth
 * [ ] »Software entwerfen« (`check-digits`, `supermarkt`, `class-quiz`, live since 28 October 2026): a try in class; a picture of the Git server's key box only where the live box does not show (students see the box itself on the page)
 * [ ] »Testen« (`testen`, in the catalog since 1 November 2026): a try in class

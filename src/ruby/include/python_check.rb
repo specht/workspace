@@ -40,7 +40,7 @@ module PythonCheck
     RESULT_MARK = CallCheck::RESULT_MARK
 
     HARNESS = <<~PY
-        import ast, contextlib, importlib.util, io, json, os, sys, traceback
+        import ast, contextlib, importlib.util, io, json, os, sys, time, traceback
         path, cases = sys.argv[1], json.loads(sys.argv[2])
         full = os.path.abspath(path)
         sink = io.StringIO()
@@ -185,8 +185,10 @@ module PythonCheck
                     expected = eval(case['expect'], {'math': __import__('math')})
                     if case.get('show'):
                         entry['shown'] = short(expected)
+                    started = time.monotonic()
                     with contextlib.redirect_stdout(sink):
                         got = evaluate(case['call'], module)
+                    entry['ms'] = round((time.monotonic() - started) * 1000)
                     entry['got'] = short(got)
                     entry['ok'] = bool(got == expected)
                 except BaseException as error:

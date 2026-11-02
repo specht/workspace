@@ -153,7 +153,9 @@ module RubyCheck
                     expected = TOPLEVEL_BINDING.eval(c['expect'])
                     entry['shown'] = short.call(expected) if c['show']
                     $stdout = StringIO.new
+                    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
                     got = TOPLEVEL_BINDING.eval(c['call'])
+                    entry['ms'] = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round
                     $stdout = real_stdout
                     entry['got'] = short.call(got)
                     entry['ok'] = (got == expected)

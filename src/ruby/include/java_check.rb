@@ -157,8 +157,13 @@ module JavaCheck
                 }
 
                 static void add(String call, String expect, String got, boolean ok, String error) {
+                    add(call, expect, got, ok, error, -1);
+                }
+
+                static void add(String call, String expect, String got, boolean ok, String error, long ms) {
                     if (RESULT.length() > 0) RESULT.append(',');
                     RESULT.append("{\\"call\\":").append(json(call)).append(",\\"expect\\":").append(json(expect)).append(",\\"ok\\":").append(ok);
+                    if (ms >= 0) RESULT.append(",\\"ms\\":").append(ms);
                     if (got != null) RESULT.append(",\\"got\\":").append(json(got.length() > 300 ? got.substring(0, 300) + " …" : got));
                     if (error != null) RESULT.append(",\\"error\\":").append(json(error));
                     RESULT.append('}');
@@ -183,8 +188,8 @@ module JavaCheck
                 source << "        try {\n#{body}            Object got = (#{last});\n            add(#{call}, #{expect}, repr(got), false, null);\n"
                 source << "        } catch (Throwable e) {\n            add(#{call}, #{expect}, null, true, error(e));\n        }\n"
             else
-                source << "        try {\n            Object expected = (#{c['expect']});\n#{body}            Object got = (#{last});\n"
-                source << "            add(#{call}, #{expect}, repr(got), same(got, expected), null);\n"
+                source << "        try {\n            Object expected = (#{c['expect']});\n            long __hsStarted = System.nanoTime();\n#{body}            Object got = (#{last});\n"
+                source << "            add(#{call}, #{expect}, repr(got), same(got, expected), null, (System.nanoTime() - __hsStarted) / 1_000_000);\n"
                 source << "        } catch (Throwable e) {\n            add(#{call}, #{expect}, null, false, error(e));\n        }\n"
             end
             source << "    }\n\n"

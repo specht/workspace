@@ -113,7 +113,9 @@ module JavascriptCheck
                 try {
                     const expected = run('(' + c.expect + ')');
                     if (c.show) entry.shown = short(expected);
+                    const started = performance.now();
                     const got = call(c.call);
+                    entry.ms = Math.round(performance.now() - started);
                     entry.got = short(got);
                     entry.ok = util.isDeepStrictEqual(got, expected);
                 } catch (error) {

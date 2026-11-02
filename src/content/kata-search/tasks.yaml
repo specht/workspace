@@ -1351,6 +1351,7 @@ tasks:
         - call: "int_sqrt(1000000000000)"
           expect: "1000000"
           say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht."
+          seconds: 2
         - call: "int_sqrt(999999999999)"
           expect: "999999"
     hint:
@@ -1397,6 +1398,7 @@ tasks:
           - call: "int_sqrt(1000000000000)"
             expect: "1000000"
             say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht."
+            seconds: 2
           - call: "int_sqrt(999999999999)"
             expect: "999999"
       hint:
@@ -1440,6 +1442,7 @@ tasks:
           - call: "intSqrt(1000000000000)"
             expect: "1000000"
             say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht."
+            seconds: 2
           - call: "intSqrt(999999999999)"
             expect: "999999"
       hint:
@@ -1479,7 +1482,7 @@ tasks:
           - { call: "intSqrt(16)", expect: "4", say: "Bei einer Quadratzahl genau ihre Wurzel." }
           - { call: "intSqrt(0)", expect: "0" }
           - { call: "intSqrt(1)", expect: "1" }
-          - { call: "intSqrt(1000000000000)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht." }
+          - { call: "intSqrt(1000000000000)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht.", seconds: 2 }
           - { call: "intSqrt(999999999999)", expect: "999999" }
       feedback:
         - when: { same_as: "int intSqrt(int n) {\n  var low = 0;\n  var high = n;\n  while (low < high) {\n    final middle = (low + high + 1) ~/ 2;\n    if (middle * middle <= n) {\n      low = middle;\n    } else {\n      high = middle - 1;\n    }\n  }\n  return low;\n}\n" }
@@ -1521,7 +1524,7 @@ tasks:
           - { call: "intSqrt(16)", expect: "4", say: "Bei einer Quadratzahl genau ihre Wurzel." }
           - { call: "intSqrt(0)", expect: "0" }
           - { call: "intSqrt(1)", expect: "1" }
-          - { call: "intSqrt(1000000000000L)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht." }
+          - { call: "intSqrt(1000000000000L)", expect: "1000000", say: "Eine Billion: Zählen von 0 an dauert zu lange, Halbieren nicht.", seconds: 2 }
           - { call: "intSqrt(999999999999L)", expect: "999999" }
       feedback:
         - when: { same_as: "long intSqrt(long n) {\n    long low = 0;\n    long high = n;\n    while (low < high) {\n        long middle = (low + high + 1) / 2;\n        if (middle * middle <= n) {\n            low = middle;\n        } else {\n            high = middle - 1;\n        }\n    }\n    return low;\n}\n" }
@@ -2317,7 +2320,7 @@ tasks:
     title: "Hunderttausende Suchen"
     extra: true
     prompt: |
-      `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `count_found(numbers, queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als fünf Sekunden. Mit der linearen Suche dauert es Minuten.
+      `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `count_found(numbers, queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als zwei Sekunden. Mit der linearen Suche dauert es Minuten.
     starter: |
       def count_found(numbers, queries)
       end
@@ -2337,6 +2340,7 @@ tasks:
         - call: "count_found((0...100000).map { |i| i * 3 }, (0...100000).to_a)"
           expect: "33334"
           say: "Alle Vielfachen von 3 unter 100 000."
+          seconds: 2
     hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Funktion von vorhin darfst du hier hineinschreiben und aufrufen."
     solution: |
       ```ruby
@@ -2379,6 +2383,7 @@ tasks:
           - call: "count_found([i * 3 for i in range(100000)], list(range(100000)))"
             expect: "33334"
             say: "Alle Vielfachen von 3 unter 100 000."
+            seconds: 2
       hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Funktion von vorhin darfst du hier hineinschreiben und aufrufen."
       solution: |
         ```python
@@ -2404,7 +2409,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `countFound(numbers, queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als fünf Sekunden. Mit der linearen Suche dauert es zu lange.
+        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `countFound(numbers, queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als zwei Sekunden. Mit der linearen Suche dauert es zu lange.
       starter: |
         function countFound(numbers, queries) {
         }
@@ -2424,6 +2429,7 @@ tasks:
           - call: "countFound(Array.from({ length: 100000 }, (_, i) => i * 3), Array.from({ length: 100000 }, (_, i) => i))"
             expect: "33334"
             say: "Alle Vielfachen von 3 unter 100 000."
+            seconds: 2
       hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Funktion von vorhin darfst du hier hineinschreiben und aufrufen."
       solution: |
         ```javascript
@@ -2456,7 +2462,7 @@ tasks:
         ```
     dart:
       prompt: |
-        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<int> numbers, List<int> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als fünf Sekunden. Mit der linearen Suche dauert es zu lange.
+        `numbers` ist aufsteigend sortiert und hat 100 000 verschiedene Zahlen; `queries` hat 100 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<int> numbers, List<int> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als zwei Sekunden. Mit der linearen Suche dauert es zu lange.
       starter: |
         int countFound(List<int> numbers, List<int> queries) {
           return -1;
@@ -2471,7 +2477,7 @@ tasks:
           - { call: "countFound([1, 3, 5], [1, 2, 3])", expect: "2" }
           - { call: "countFound([], [1])", expect: "0" }
           - { call: "countFound([2, 4], [])", expect: "0" }
-          - { call: "countFound([for (var i = 0; i < 100000; i++) i * 3], [for (var i = 0; i < 100000; i++) i])", expect: "33334", say: "Alle Vielfachen von 3 unter 100 000." }
+          - { call: "countFound([for (var i = 0; i < 100000; i++) i * 3], [for (var i = 0; i < 100000; i++) i])", expect: "33334", say: "Alle Vielfachen von 3 unter 100 000.", seconds: 2 }
       hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Funktion von vorhin darfst du hier hineinschreiben und aufrufen."
       solution: |
         ```dart
@@ -2504,7 +2510,7 @@ tasks:
         ```
     java:
       prompt: |
-        `numbers` ist aufsteigend sortiert und hat 200 000 verschiedene Zahlen; `queries` hat 200 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<Integer> numbers, List<Integer> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als acht Sekunden. Mit der linearen Suche dauert es zu lange.
+        `numbers` ist aufsteigend sortiert und hat 200 000 verschiedene Zahlen; `queries` hat 200 000 Zahlen, nach denen gesucht wird. Schreib `int countFound(List<Integer> numbers, List<Integer> queries)`, die zählt, wie viele davon in `numbers` stehen, in weniger als zwei Sekunden. Mit der linearen Suche dauert es zu lange.
       starter: |
         int countFound(List<Integer> numbers, List<Integer> queries) {
             return -1;
@@ -2519,7 +2525,7 @@ tasks:
           - { call: "countFound(List.of(1, 3, 5), List.of(1, 2, 3))", expect: "2" }
           - { call: "countFound(List.of(), List.of(1))", expect: "0" }
           - { call: "countFound(List.of(2, 4), List.of())", expect: "0" }
-          - { call: "List<Integer> numbers = new ArrayList<>(); List<Integer> queries = new ArrayList<>(); for (int i = 0; i < 200000; i++) { numbers.add(i * 3); queries.add(i); }; countFound(numbers, queries)", expect: "66667", say: "Alle Vielfachen von 3 unter 200 000." }
+          - { call: "List<Integer> numbers = new ArrayList<>(); List<Integer> queries = new ArrayList<>(); for (int i = 0; i < 200000; i++) { numbers.add(i * 3); queries.add(i); }; countFound(numbers, queries)", expect: "66667", say: "Alle Vielfachen von 3 unter 200 000.", seconds: 2 }
       hint: "Für jede Zahl aus `queries` eine binäre Suche in `numbers`. Deine Methode von vorhin darfst du hier hineinschreiben und aufrufen."
       solution: |
         ```java

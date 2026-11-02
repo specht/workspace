@@ -1918,6 +1918,7 @@ tasks:
           expect: "7"
         - call: "first_repeat((1..100000).to_a + [99999])"
           expect: "99999"
+          seconds: 2
     hint:
       - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
       - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Hash geht es sofort: `seen.key?(number)`."
@@ -1955,6 +1956,7 @@ tasks:
             expect: "7"
           - call: "first_repeat(list(range(1, 100001)) + [99999])"
             expect: "99999"
+            seconds: 2
       hint:
         - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
         - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Dictionary geht es sofort: `number in seen`."
@@ -1991,6 +1993,7 @@ tasks:
             expect: "7"
           - call: "firstRepeat([...Array(100000).keys()].map((i) => i + 1).concat([99999]))"
             expect: "99999"
+            seconds: 2
       hint:
         - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
         - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Objekt geht es sofort: `number in seen`."
@@ -2031,6 +2034,7 @@ tasks:
             expect: "7"
           - call: "firstRepeat([for (var i = 1; i <= 100000; i++) i, 99999])"
             expect: "99999"
+            seconds: 2
       hint:
         - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
         - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Set, einer Map nur aus Schlüsseln, geht es sofort: `final seen = <int>{};`, `seen.contains(number)`, `seen.add(number)`."
@@ -2071,6 +2075,7 @@ tasks:
             expect: "7"
           - call: "List<Integer> big = new ArrayList<>(); for (int i = 1; i <= 100000; i++) big.add(i); big.add(99999); firstRepeat(big)"
             expect: "99999"
+            seconds: 2
       hint:
         - "Geh die Zahlen der Reihe nach durch und merk dir, welche schon da waren. Ist die Zahl schon dabei, hast du sie."
         - "In einer Liste nachzusehen dauert bei 100 000 Zahlen lange. In einem Set, einer Map nur aus Schlüsseln, geht es sofort: `Set<Integer> seen = new HashSet<>();`, `seen.contains(number)`, `seen.add(number)`."

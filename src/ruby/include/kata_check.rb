@@ -23,14 +23,18 @@ require_relative 'kata_compiled'
 #       - call: gcd(7, 7)
 #         expect: 7
 #         say: Der größte Teiler einer Zahl mit sich selbst ist sie selbst.
+#       - call: gcd(2**60, 3**30)
+#         expect: 1
+#         seconds: 1              # the right value in less than that (CallCheck)
 #     random:                     # cases of their own for each person
 #       count: 4
 #       call: gcd(a, b)
 #       args: { a: 1..1000, b: 1..1000 }
 #       reference: a.gcd(b)       # computed in the run, never shown
 #     timeout: 10                 # seconds for all cases together
-#     slow: Für eine Million …    # the message when the time is up, where
-#                                 # speed is the point (not »Endlosschleife?«)
+#     slow: Für eine Million …    # what to change, where speed is the point:
+#                                 # after a case's seconds, or alone when the
+#                                 # time is up (not »Endlosschleife?«)
 #     recursive: true             # the function must call itself, and
 #     loops: false                # use no loop (RecursionCheck, read from
 #                                 # the code once the cases pass)

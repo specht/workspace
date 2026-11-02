@@ -152,6 +152,30 @@ class RubyCheckTest < Minitest::Test
         assert_includes RubyCheck.spec_errors(check.merge('cases' => [{ 'call' => 'f()', 'raises' => 'ja' }])), 'cases[0]: raises must be true'
     end
 
+    # seconds on a case: the right value is not enough, the call must take less
+    def test_a_case_with_seconds_must_be_fast
+        check = CHECK.merge('cases' => [
+            { 'call' => "opens('1213')", 'expect' => true },
+            { 'call' => "sleep(0.3); opens('12')", 'expect' => false, 'seconds' => 0.1 },
+        ], 'slow' => 'Merk dir den Zustand, statt zu warten.')
+        status, message, read = run_check(LOCK.sub('loop { gets }', ''), check)
+        assert_equal :wrong, status
+        assert_match(/\A`sleep\(0\.3\); opens\('12'\)` liefert das Richtige, braucht dafür aber 0,3 Sekunden; weniger als 0,1 sollen es sein\. Merk dir/, message)
+        assert_includes read, "<i class='bi bi-x-lg'></i> `sleep(0.3); opens('12')` → `false` in 0,3 s"
+        assert_includes read, "<i class='bi bi-check-lg'></i> `opens('1213')` → `true`"
+        refute_match(/`opens\('1213'\)` → `true` in/, read)
+
+        check['cases'][1]['seconds'] = 5
+        status, = run_check(LOCK.sub('loop { gets }', ''), check)
+        assert_equal :correct, status
+    end
+
+    def test_seconds_text
+        assert_equal '0,5', CallCheck.seconds_text(0.5)
+        assert_equal '2', CallCheck.seconds_text(2)
+        assert_equal '1,2', CallCheck.seconds_text(1.234)
+    end
+
     def test_spec
         task = { 'id' => 'schloss', 'title' => 'Schloss', 'prompt' => 'x', 'check' => CHECK }
         assert_empty TaskSpec.validate({ 'activity' => 'automata', 'tasks' => [task] }, activity: 'automata')
@@ -160,5 +184,9 @@ class RubyCheckTest < Minitest::Test
         assert errors.any? { |e| e.include?('file must end in .rb') }
         assert errors.any? { |e| e.include?('cases[0] needs call and expect') }
         assert errors.any? { |e| e.include?('cases[1] must be') }
+        slow = CHECK.merge('cases' => [{ 'call' => 'opens()', 'expect' => true, 'seconds' => 0 }, { 'call' => 'opens(1)', 'raises' => true, 'seconds' => 1 }])
+        errors = TaskSpec.validate({ 'activity' => 'automata', 'tasks' => [task.merge('check' => slow)] }, activity: 'automata')
+        assert errors.any? { |e| e.include?('cases[0]: seconds must be a number above 0') }
+        assert errors.any? { |e| e.include?('cases[1]: seconds and raises') }
     end
 end

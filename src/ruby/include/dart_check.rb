@@ -115,11 +115,12 @@ module DartCheck
             Future<T> _quiet<T>(Future<T> Function() f) =>
                 runZoned(f, zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {}));
 
-            void _add(String call, String expect, String? got, bool ok, String? error) {
+            void _add(String call, String expect, String? got, bool ok, String? error, [int? ms]) {
               _results.add({
                 'call': call,
                 'expect': expect,
                 'ok': ok,
+                if (ms != null) 'ms': ms,
                 if (got != null) 'got': got.length > 300 ? '${got.substring(0, 300)} …' : got,
                 if (error != null) 'error': error,
               });
@@ -146,8 +147,9 @@ module DartCheck
                 source << "  } catch (e, s) {\n    _add(#{call}, #{expect}, null, true, _error(e, s));\n  }\n}\n\n"
             else
                 source << "    final Object? expected = await (#{c['expect']});\n"
+                source << "    final _hsWatch = Stopwatch()..start();\n"
                 source << "    final Object? got = await _quiet<Object?>(() async {\n#{body}    return await (#{last});\n    });\n"
-                source << "    _add(#{call}, #{expect}, _repr(got), _same(got, expected), null);\n"
+                source << "    _add(#{call}, #{expect}, _repr(got), _same(got, expected), null, _hsWatch.elapsedMilliseconds);\n"
                 source << "  } catch (e, s) {\n    _add(#{call}, #{expect}, null, false, _error(e, s));\n  }\n}\n\n"
             end
             ranges << (first..source.count("\n"))

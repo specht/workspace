@@ -2089,6 +2089,7 @@ tasks:
       cases:
         - call: "fast_fibonacci(70)"
           expect: "190392490709135"
+          seconds: 2
         - call: "fast_fibonacci(0)"
           expect: "0"
         - call: "fast_fibonacci(1)"
@@ -2124,6 +2125,7 @@ tasks:
         cases:
           - call: "fast_fibonacci(70)"
             expect: "190392490709135"
+            seconds: 2
           - call: "fast_fibonacci(0)"
             expect: "0"
           - call: "fast_fibonacci(1)"
@@ -2161,6 +2163,7 @@ tasks:
         cases:
           - call: "fastFibonacci(70)"
             expect: "190392490709135"
+            seconds: 2
           - call: "fastFibonacci(0)"
             expect: "0"
           - call: "fastFibonacci(1)"
@@ -2202,6 +2205,7 @@ tasks:
         cases:
           - call: "fastFibonacci(70)"
             expect: "190392490709135"
+            seconds: 2
           - call: "fastFibonacci(0)"
             expect: "0"
           - call: "fastFibonacci(1)"
@@ -2243,6 +2247,7 @@ tasks:
         cases:
           - call: "fastFibonacci(70)"
             expect: "190392490709135L"
+            seconds: 2
           - call: "fastFibonacci(0)"
             expect: "0"
           - call: "fastFibonacci(1)"

@@ -16,6 +16,12 @@ require 'json'
 # reference to compute) also gets shown, the expected value as it came out,
 # so that messages name the value, not the reference.
 #
+# Where speed is the point, a case has seconds: the right value is not
+# enough, the call must take less than that (each harness measures the call
+# alone, »ms«, not the expected value beside it). The message names the
+# call and its time, followed by the check's slow:. timeout stays the limit
+# for the whole run, against an endless loop.
+#
 # Everything here works on that line and can be tested without a Workspace.
 module CallCheck
     MAX_CASES = 50
@@ -30,7 +36,7 @@ module CallCheck
             if item.is_a?(Hash) && item.key?('call')
                 raises = item['raises'] == true
                 { 'call' => item['call'].to_s, 'expect' => raises ? literal.call(nil) : literal.call(item['expect']),
-                  'say' => item['say'], 'raises' => raises }
+                  'say' => item['say'], 'raises' => raises, 'seconds' => item['seconds'] }.compact
             else
                 call, expect = item.first
                 { 'call' => call.to_s, 'expect' => literal.call(expect), 'say' => nil, 'raises' => false }
@@ -49,7 +55,7 @@ module CallCheck
 
         list.each_with_index do |item, i|
             if item.is_a?(Hash) && item.key?('call')
-                extra = item.keys - %w[call expect say raises]
+                extra = item.keys - %w[call expect say raises seconds]
                 errors << "cases[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
                 errors << "cases[#{i}]: raises must be true" if item.key?('raises') && item['raises'] != true
                 errors << "cases[#{i}]: raises or expect, not both" if item.key?('raises') && item.key?('expect')
@@ -57,6 +63,10 @@ module CallCheck
                     errors << "cases[#{i}] needs call and expect (or raises: true)"
                 end
                 errors << "cases[#{i}]: say must be text" if item.key?('say') && !item['say'].is_a?(String)
+                if item.key?('seconds') && !(item['seconds'].is_a?(Numeric) && item['seconds'].positive? && item['seconds'] <= 30)
+                    errors << "cases[#{i}]: seconds must be a number above 0, at most 30"
+                end
+                errors << "cases[#{i}]: seconds and raises do not go together" if item.key?('seconds') && item['raises'] == true
             elsif !(item.is_a?(Hash) && item.size == 1 && item.keys.first.is_a?(String))
                 errors << "cases[#{i}] must be »call: expected« or have call, expect and say"
             end
@@ -148,21 +158,33 @@ module CallCheck
 
         results = data['cases'] || []
         says = cases.map { |c| c['say'] }
-        read = results.first(MAX_SHOWN).map do |r|
-            icon = r['ok'] ? "<i class='bi bi-check-lg'></i>" : "<i class='bi bi-x-lg'></i>"
+        limits = cases.map { |c| c['seconds'] }
+        slow = results.each_with_index.map { |r, i| r['ok'] && limits[i] && r['ms'].is_a?(Numeric) && r['ms'] > limits[i] * 1000 }
+        read = results.first(MAX_SHOWN).each_with_index.map do |r, i|
+            icon = r['ok'] && !slow[i] ? "<i class='bi bi-check-lg'></i>" : "<i class='bi bi-x-lg'></i>"
             outcome = r['error'] ? "bricht ab: `#{r['error']}`" : "`#{r['got']}`"
+            outcome += " in #{seconds_text(r['ms'] / 1000.0)} s" if limits[i] && r['ms'].is_a?(Numeric) && !r['error']
             "- #{icon} `#{r['call']}` → #{outcome}"
         end
         read << "- … und #{results.size - MAX_SHOWN} weitere" if results.size > MAX_SHOWN
         read = read.join("\n")
 
-        failed_at = results.index { |r| !r['ok'] }
+        failed_at = results.each_index.find { |i| !results[i]['ok'] || slow[i] }
         if failed_at.nil?
             n = results.size
             return [:correct, n == 1 ? 'Der Aufruf liefert, was er soll.' : "Alle #{n} Aufrufe liefern, was sie sollen.", read]
         end
 
         r = results[failed_at]
+        if slow[failed_at]
+            took = seconds_text(r['ms'] / 1000.0)
+            # 2,04 s against 2 s: one more digit, so that it reads as more
+            took = format('%.2f', r['ms'] / 1000.0).tr('.', ',') if took == seconds_text(limits[failed_at])
+            message = "`#{r['call']}` liefert das Richtige, braucht dafür aber #{took} Sekunden; " \
+                      "weniger als #{seconds_text(limits[failed_at])} sollen es sein."
+            message += " #{check['slow']}" if check['slow']
+            return [:wrong, message, read]
+        end
         message = if cases[failed_at] && cases[failed_at]['raises']
             "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre ein Fehler."
         elsif r['error']
@@ -172,6 +194,13 @@ module CallCheck
         end
         message += " #{says[failed_at]}" if says[failed_at]
         [:wrong, message, read]
+    end
+
+    # 1,2 and 0,5 and 2: seconds as German prose writes them
+    def self.seconds_text(seconds)
+        rounded = seconds.round(1)
+        text = rounded == rounded.to_i ? rounded.to_i.to_s : format('%.1f', rounded)
+        text.tr('.', ',')
     end
 
     def self.at_line(line)

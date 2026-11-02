@@ -2272,7 +2272,7 @@ tasks:
     title: "Alle Primzahlen, schnell"
     extra: true
     prompt: |
-      Schreib eine Funktion `primes_up_to(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primes_up_to(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis eine Million, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+      Schreib eine Funktion `primes_up_to(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primes_up_to(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis eine Million, und dafür hat dein Code zwei Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
     starter: |
       def primes_up_to(n)
       end
@@ -2281,7 +2281,7 @@ tasks:
       language: ruby
       forbid: [Integer#prime?]
       timeout: 6
-      slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+      slow: "Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
       cases:
         - call: "primes_up_to(20)"
           expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
@@ -2291,6 +2291,7 @@ tasks:
           expect: "[]"
         - call: "primes_up_to(1_000_000).length"
           expect: "78498"
+          seconds: 2
     hint: |
       Ein Array `prime = Array.new(n + 1, true)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
     solution: |
@@ -2315,7 +2316,7 @@ tasks:
         type: function
         language: python
         timeout: 6
-        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        slow: "Jede Zahl bis eine Million einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
         cases:
           - call: "primes_up_to(20)"
             expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
@@ -2325,6 +2326,7 @@ tasks:
             expect: "[]"
           - call: "len(primes_up_to(1_000_000))"
             expect: "78498"
+            seconds: 2
       hint: |
         Eine Liste `prime = [True] * (n + 1)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
       solution: |
@@ -2344,7 +2346,7 @@ tasks:
         ```
     javascript:
       prompt: |
-        Schreib eine Funktion `primesUpTo(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+        Schreib eine Funktion `primesUpTo(n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code zwei Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
       starter: |
         function primesUpTo(n) {
         }
@@ -2352,7 +2354,7 @@ tasks:
         type: function
         language: javascript
         timeout: 6
-        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        slow: "Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
         cases:
           - call: "primesUpTo(20)"
             expect: "[2, 3, 5, 7, 11, 13, 17, 19]"
@@ -2362,6 +2364,7 @@ tasks:
             expect: "[]"
           - call: "primesUpTo(10_000_000).length"
             expect: "664579"
+            seconds: 2
       hint: |
         Eine Liste `const prime = new Array(n + 1).fill(true)` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`.
       solution: |
@@ -2381,7 +2384,7 @@ tasks:
         ```
     dart:
       prompt: |
-        Schreib eine Funktion `List<int> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code sechs Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+        Schreib eine Funktion `List<int> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code zwei Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
       starter: |
         List<int> primesUpTo(int n) {
           return [];
@@ -2390,12 +2393,12 @@ tasks:
         type: function
         language: dart
         timeout: 6
-        slow: "Dein Code brauchte länger als 6 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        slow: "Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
         cases:
           - { call: "primesUpTo(20)", expect: "[2, 3, 5, 7, 11, 13, 17, 19]" }
           - { call: "primesUpTo(2)", expect: "[2]" }
           - { call: "primesUpTo(1)", expect: "[]" }
-          - { call: "primesUpTo(10000000).length", expect: "664579" }
+          - { call: "primesUpTo(10000000).length", expect: "664579", seconds: 2 }
       hint: "Eine Liste `final prime = List.filled(n + 1, true);` sagt für jede Zahl, ob sie noch im Rennen ist. Für jede Zahl `p`, die noch drin ist, streichst du `p * p`, `p * p + p`, … bis `n`."
       solution: |
         ```dart
@@ -2419,7 +2422,7 @@ tasks:
         ```
     java:
       prompt: |
-        Schreib eine Methode `List<Integer> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code acht Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
+        Schreib eine Methode `List<Integer> primesUpTo(int n)`, die alle Primzahlen bis `n` als Liste zurückgibt: `primesUpTo(20)` ergibt `[2, 3, 5, 7, 11, 13, 17, 19]`. Die Prüfung fragt auch nach allen bis zehn Millionen, und dafür hat dein Code zwei Sekunden. Prüft er jede Zahl einzeln, reicht das nicht. Eratosthenes hat sich vor über 2000 Jahren etwas Schnelleres ausgedacht: Streich aus einer Liste aller Zahlen die Vielfachen jeder Primzahl.
       starter: |
         List<Integer> primesUpTo(int n) {
             return new ArrayList<>();
@@ -2428,12 +2431,12 @@ tasks:
         type: function
         language: java
         timeout: 8
-        slow: "Dein Code brauchte länger als 8 Sekunden. Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
+        slow: "Jede Zahl bis zehn Millionen einzeln zu prüfen dauert zu lange: Probier das Sieb des Eratosthenes, das die Vielfachen jeder Primzahl auf einmal streicht."
         cases:
           - { call: "primesUpTo(20)", expect: "List.of(2, 3, 5, 7, 11, 13, 17, 19)" }
           - { call: "primesUpTo(2)", expect: "List.of(2)" }
           - { call: "primesUpTo(1)", expect: "List.of()" }
-          - { call: "primesUpTo(10_000_000).size()", expect: "664579" }
+          - { call: "primesUpTo(10_000_000).size()", expect: "664579", seconds: 2 }
       hint: "Ein Array `boolean[] composite = new boolean[n + 1];` sagt für jede Zahl, ob sie schon gestrichen ist; am Anfang ist alles `false`. Für jede Zahl `p`, die noch nicht gestrichen ist, streichst du `p * p`, `p * p + p`, … bis `n`."
       solution: |
         ```java
