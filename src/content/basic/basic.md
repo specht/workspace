@@ -14,7 +14,7 @@ topics: [programmiersprachen, geschichte]
 # BASIC <span style='font-size: 80%;'>(1963)</span>
 
 <p class='abstract'>
-BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny und Thomas E. Kurtz am Dartmouth College entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für "Beginner's All-purpose Symbolic Instruction Code". BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.
+BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny und Thomas E. Kurtz am Dartmouth College entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für »Beginner's All-purpose Symbolic Instruction Code«. BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.
 </p>
 
 _person(kemeny-kurtz)
@@ -28,7 +28,7 @@ Heutzutage ist BASIC weniger relevant als moderne Programmiersprachen, wird aber
 
 ## Hello, World!
 
-BASIC ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird.
+Auf den Heimcomputern war BASIC meist ein **Interpreter**: Er liest den Code Zeile für Zeile und führt ihn gleich aus, ohne ihn vorher in Maschinencode zu übersetzen. Das erste BASIC in Dartmouth übersetzte die Programme dagegen, nur so schnell, dass man es kaum merkte. bwBASIC, das du hier benutzt, ist ein Interpreter.
 
 Früher wurde BASIC auf vielen Heimcomputern eingesetzt, darunter der Commodore 64, der Apple II und der Sinclair ZX Spectrum. Im Workspace kannst du BASIC-Programme z. B. mit Bywater BASIC (bwBASIC) ausführen.
 
