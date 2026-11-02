@@ -516,7 +516,7 @@ image.
   script language; it compiles every expression to machine code, also in the
   REPL.
 - [x] `perl` (1 November 2026): page read, nothing to change.
-- [ ] `python`
+- [x] `python` (1 November 2026): page read, nothing to change.
 - [ ] `lua`
 - [ ] `ruby`
 - [ ] `java`
