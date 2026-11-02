@@ -293,19 +293,19 @@ image.
   read, nothing to change: the special case and the photo are answered in
   after blocks; LZ77/LZ78, Welch 1984 and the Unisys patent (1994, PNG 1995,
   expired 2003/2004) check out.
-- [x] `gif` (1 November 2026): page, hexdumps, LZW stepper, cards and teacher
+- [x] `gif` (2 November 2026): page, hexdumps, LZW stepper, cards and teacher
   note read, nothing to change: the bit order example (4, 1, 6), the interlace
   numbers (54 rows in pass 1, row 4 next) and the colour-table sizes check
   out; the special code is answered in its after block; Wilhite 2013 and the
   browsers' 2-hundredths rule are right.
-- [x] `jpeg` (1 November 2026, 37414408): page, widgets, cards and teacher
+- [x] `jpeg` (2 November 2026, 37414408): page, widgets, cards and teacher
   note read; the MCU was called »Minimal Coding Unit« (the standard says
   Minimum Coded Unit), and Y was said to have »2:2-Subsampling« though Y is
   not subsampled (factors 2 × 2, chroma 1 × 1). The DC example (11110 → 7, 7 −
   127 = −120), 10 500 MCUs for 91-baseline and the AAN claim (5
   multiplications) check out; the prediction on dequantisation has its after
   block.
-- [x] `steganography` (1 November 2026, 0fe2f56c): page, widget, cards and
+- [x] `steganography` (2 November 2026, 0fe2f56c): page, widget, cards and
   teacher note read; the link to the JPEG page used the name »Ein JPEG-
   Decoder«. Predictions (sichtbar, vorbei) are answered in after blocks;
   capacity (57 596 bytes), 4.75 and almost 7 bits, Herodot and
@@ -313,103 +313,103 @@ image.
 
 ### Netze & Sicherheit
 
-- [x] `radio` (1 November 2026): page, cards and teacher note read, nothing to
+- [x] `radio` (2 November 2026): page, cards and teacher note read, nothing to
   change: the discussion questions are asked without answers; Baudot (five
   keys, about 150 years ago) and Shannon 1948 check out.
-- [x] `tcpip` (1 November 2026, 9e7b0e6c): page, cards and teacher note read;
+- [x] `tcpip` (2 November 2026, 9e7b0e6c): page, cards and teacher note read;
   the explanation right under »Wo steht der Server wirklich?« (the ending says
   where a name is registered, not where the server is) now sits in its after
   block; all predictions already had after blocks. Berlin–Canberra (16 000 km,
   160 ms in fibre), RFC 826 (1982) and info.cern.ch (last modified December
   1992) check out.
-- [x] `dns` (1 November 2026, a51081cb): page, cards and teacher note read;
+- [x] `dns` (2 November 2026, a51081cb): page, cards and teacher note read;
   the two sentences before »Was der Root-Server sagt« gave its answer (it
   knows who is responsible for de, a referral in the AUTHORITY SECTION), now
   in its after block; the student reads it from the output first. The TTLs
   (300, 172800), Mockapetris 1983 and Kaminsky 2008 (65 536 IDs) check out.
-- [x] `webserver` (1 November 2026, 72f9b665): page (Ruby and Python), cards
+- [x] `webserver` (2 November 2026, 72f9b665): page (Ruby and Python), cards
   and teacher note read; the paragraph introducing the lock explained the lost
   update, the answer of »Zwei auf einmal« further down; now in its after
   block, in both languages. Predictions have after blocks; RFC 2324 (1998) and
   418 kept in 2017 check out.
-- [x] `pixelwand` (1 November 2026): page (Ruby and Python), cards and teacher
+- [x] `pixelwand` (2 November 2026): page (Ruby and Python), cards and teacher
   note read, nothing to change: the predictions (handshake, wer-bekommt-was,
   counter) are answered after them; the RFC 6455 example key, r/place 2017
   (1000 × 1000, 16 colours, 5 to 20 minutes) and § 303b StGB check out.
-- [x] `crypto` (1 November 2026): page, cards and teacher note read, nothing
+- [x] `crypto` (2 November 2026): page, cards and teacher note read, nothing
   to change: every prediction (lawine, salz-vorhersage, schluesselproblem,
   geaendert, fingerabdruck) is answered in an after block; RSA sizes (27 to
   256 bytes, a bit over 200 at most), Diffie/Hellman 1976 and RSA 1977 check
   out.
-- [x] `totp` (1 November 2026, 772f16fe): page (Ruby and Python), cards and
+- [x] `totp` (2 November 2026, 772f16fe): page (Ruby and Python), cards and
   teacher note read; the HMAC was introduced as »eine Prüfsumme wie SHA-1 aus
   Kryptographie im Terminal«, but that page uses SHA-256 and calls it a hash.
   The RFC 4226 example (75a48a19…, 287082), Base32 and RSA SecurID 2011 check
   out; predictions have after blocks.
-- [x] `nebenlaeufigkeit` (1 November 2026): page (Java; Dart parallel),
+- [x] `nebenlaeufigkeit` (2 November 2026): page (Java; Dart parallel),
   widgets, cards and teacher note read, nothing to change: every prediction is
   answered in an after block; 1680 orders for three threads, and »vier Kerne«
   (docker run --cpus=4 in workspace_runtime.rb) check out.
 
 ### Datenbanken
 
-- [x] `mysql` (1 November 2026, d7873aaf): page, cards and teacher note read;
+- [x] `mysql` (2 November 2026, d7873aaf): page, cards and teacher note read;
   the closing paragraph spoke of »im zweiten Teil unten«, but the second part
   is the page sql-joins. Predictions (reihenfolge, dichte-where, ohne-where)
   have after blocks; SQL 1974 and the seven continents (Antarktika without
   countries) check out.
-- [x] `sql-joins` (1 November 2026): page, cards and teacher note read,
+- [x] `sql-joins` (2 November 2026): page, cards and teacher note read,
   nothing to change: predictions are answered in after blocks or by the
   student's own query (weiteste-berlin); Berlin–Paris 876 km, Singapur's four
   official languages and Papua-Neuguinea's one neighbour check out.
-- [x] `sql-index` (1 November 2026): page, cards and teacher note read,
+- [x] `sql-index` (2 November 2026): page, cards and teacher note read,
   nothing to change: predictions (vollstaendig, primaerschluessel, welche-
   nutzt) wait in after blocks; the arithmetic (a third of a second, three
   queries a second, 20 steps of binary search) fits.
-- [x] `filmdatenbank` (1 November 2026): page, cards and teacher note read,
+- [x] `filmdatenbank` (2 November 2026): page, cards and teacher note read,
   nothing to change: predictions (vorhersage-n1, genre-loeschen, doppelte-
   titel, modell-verleih) are answered in after blocks; »Überlege, bevor du
   weiterliest« is followed by its answer on purpose, without a task; Nosferatu
   1922/2024 and Dune 1984/2021 check out.
-- [x] `neo4j-filmdatenbank` (1 November 2026): page, cards and teacher note
+- [x] `neo4j-filmdatenbank` (2 November 2026): page, cards and teacher note
   read, nothing to change: predictions (zwischentabelle, taetigkeit, ausleihe-
   graph, zweimal-create, paare) wait in after blocks; IS NODE KEY needs Neo4j
   Enterprise, which the Workspace runs (neo4j:2026.06.0-enterprise); Johnson
   and Jackson in »The Other Guys« checks out.
-- [x] `bobby_tables` (1 November 2026, 29183015): page (Ruby and Python),
+- [x] `bobby_tables` (2 November 2026, 29183015): page (Ruby and Python),
   cards and teacher note read; »Mit # oder -- beginnt ein Kommentar« left out
   that MySQL needs a space after --, so an injection with »--« and no space
   fails. The prediction (apostroph) has its after block; xkcd 327 credited.
 
 ### Wie Computer rechnen
 
-- [x] `logikgatter` (1 November 2026): page, circuits, cards and teacher note
+- [x] `logikgatter` (2 November 2026): page, circuits, cards and teacher note
   read, nothing to change: every prediction is answered in an after block; the
   subtraction examples (5 − 3, 3 − 5 and their carry), CMOS NAND with four
   transistors and Boole/Shannon check out.
-- [x] `logikwerkstatt` (1 November 2026): page, editor instructions, cards and
+- [x] `logikwerkstatt` (2 November 2026): page, editor instructions, cards and
   teacher note read, nothing to change: each circuit's explanation waits in
   its after block; the mux and ripple-carry statements check out.
-- [x] `sandbox-cpu` (1 November 2026): page (both class-repository variants),
+- [x] `sandbox-cpu` (2 November 2026): page (both class-repository variants),
   cards and teacher note read, nothing to change: the 6502 history (1975,
   Apple II, C64, NES, Terminator) and the overflow puzzle (0 + 255 + … + 1 ≡
   128 mod 256) check out; the think boxes ask without answering.
 
 ### Algorithmen und Datenstrukturen
 
-- [x] `sandbox-sortieren` (1 November 2026, 7ec0b4c1): page (both class-
+- [x] `sandbox-sortieren` (2 November 2026, 7ec0b4c1): page (both class-
   repository variants), cards and teacher note read; »weiß sogar ein
   Präsident« for the 2007 Google visit, when Obama was a senator and
   candidate. Predictions and think boxes have their after blocks or stay open.
-- [x] `sandbox-datenstrukturen` (1 November 2026): page (both class-repository
+- [x] `sandbox-datenstrukturen` (2 November 2026): page (both class-repository
   variants), cards and teacher note read, nothing to change: −7 % 8 is 1 in
   Dart and Python and −7 in Java and JavaScript, as stated; the think boxes
   ask without answering.
-- [x] `routenplaner` (1 November 2026): page (Ruby and Python), cards and
+- [x] `routenplaner` (2 November 2026): page (Ruby and Python), cards and
   teacher note read, nothing to change: the numbers fit (111 195 m per degree,
   67 km per degree of longitude in Berlin, heap height 17 for 100 000, 4! =
   24, 8! = 40 320, 7! = 5 040); the prediction on degrees has its after block.
-- [x] `laufzeit` (1 November 2026): page (Ruby; the other languages parallel),
+- [x] `laufzeit` (2 November 2026): page (Ruby; the other languages parallel),
   widgets, cards and teacher note read, nothing to change: predictions wait in
   after blocks; 499 500 steps, 1,5 s · 1716 ≈ 43 minutes, Cook 1971 and the n
   log n bound check out; the 110,6 km per degree of latitude matches the code
@@ -417,31 +417,31 @@ image.
 
 ### Automaten und Sprachen
 
-- [x] `automata` (1 November 2026): page (Ruby and Python), steppers, cards
+- [x] `automata` (2 November 2026): page (Ruby and Python), steppers, cards
   and teacher note read, nothing to change: 3^1000 has 1585 binary digits,
   2^30 is over a billion; the explosion prediction has its after block.
-- [x] `regex` (1 November 2026): page (Ruby and Python), cards and teacher
+- [x] `regex` (2 November 2026): page (Ruby and Python), cards and teacher
   note read, nothing to change: every prediction is answered in an after
   block; Cloudflare 2 July 2019 (27 minutes), Ruby 3.2's memoization, Thompson
   1968 and Kleene check out.
-- [x] `kellerautomat` (1 November 2026, f3302e02): page (Ruby and Python),
+- [x] `kellerautomat` (2 November 2026, f3302e02): page (Ruby and Python),
   cards and teacher note read; the pigeonhole step said a k-state automaton
   »war in k + 1 Zuständen«, now k + 1 visits to only k states. Predictions
   (zaehler, schubfach) wait in after blocks.
-- [x] `turingmaschine` (1 November 2026): page (Ruby and Python), steppers,
+- [x] `turingmaschine` (2 November 2026): page (Ruby and Python), steppers,
   cards and teacher note read, nothing to change: every prediction waits in an
   after block; Turing 1936, Church and the halting argument are stated
   correctly.
-- [x] `grammatiken` (1 November 2026): page (Ruby and Python), diagrams, cards
+- [x] `grammatiken` (2 November 2026): page (Ruby and Python), diagrams, cards
   and teacher note read, nothing to change: the predictions (tiefe, baeume,
   welcher-typ) wait in after blocks; Backus 1959, Naur 1960, Wirth's diagrams
   for Pascal and Chomsky 1956 check out.
-- [x] `calculator` (1 November 2026, bd471779): page (Ruby and Python), tree
+- [x] `calculator` (2 November 2026, bd471779): page (Ruby and Python), tree
   stepper, cards and teacher note read; the paragraph right before »Was ein
   Automat nicht kann« gave its answer, now in its after block with a hint
   (»Denk an ((((1))))«) before. The other predictions had after blocks; ALGOL
   60 and Ruby's Rational for 2 ^ -1 check out.
-- [x] `prolog` (1 November 2026): page, figures, cards and teacher note read,
+- [x] `prolog` (2 November 2026): page, figures, cards and teacher note read,
   nothing to change: every prediction waits in an after block; Appel/Haken
   1976 and Prolog's origin in language processing check out.
 
@@ -476,18 +476,18 @@ image.
 
 ### Terminal & Git
 
-- [x] `working-with-files` (1 November 2026, af7092fa): page, cards and
+- [x] `working-with-files` (2 November 2026, af7092fa): page, cards and
   teacher note read; the paragraph right before »Windows oder Linux?« named 0d
   0a as the Windows line end, now the student looks first and the explanation
   waits in the after block. The rm warning stays before »Und wenn rm
   danebengeht?« on purpose, it is a safety warning; the numbers (3 756 lines,
   3 002 words, 61 204 and 48 925 bytes) are the recipe's.
-- [x] `git` (1 November 2026, 84fa4794): page, object graphs, cards and
+- [x] `git` (2 November 2026, 84fa4794): page, object graphs, cards and
   teacher note read; »Branches werden beim Push normal mit übertragen« (git
   push sends the current branch only) with an em dash, and the diff's removed
   lines were shown as »–« instead of »-«. The prediction head-zwei has its
   after block.
-- [x] `terminal-mystery` (1 November 2026): page, cards and teacher note read,
+- [x] `terminal-mystery` (2 November 2026): page, cards and teacher note read,
   nothing to change: the case is solved by the student's own commands, the
   regex shortcut for the car stands only after the culprit is found; the
   counts (over 1200 lines, 1503 interviews, 145 Hamburg files) fit; Veltman's
@@ -495,46 +495,46 @@ image.
 
 ### Programmiersprachen
 
-- [x] `fortran` (1 November 2026, be941eb4): page, cards and teacher note
+- [x] `fortran` (2 November 2026, be941eb4): page, cards and teacher note
   read; »wie man in C Benutzereingaben verarbeitet« on the Fortran page
   (copied from the C page; the other portraits are right), and the first
   sentence made the 1957 compiler »eine der ältesten Programmiersprachen«,
   with English quotes. The overflow prediction has its after block.
-- [x] `cobol` (1 November 2026, 825aff9c): page read (shared portrait
+- [x] `cobol` (2 November 2026, 825aff9c): page read (shared portrait
   template), nothing else to change: CODASYL 1959 and FLOW-MATIC check out.
-- [x] `basic` (1 November 2026, 954561f6): page read; »BASIC ist eine
+- [x] `basic` (2 November 2026, 954561f6): page read; »BASIC ist eine
   Skriptsprache, … zur Laufzeit interpretiert« (Dartmouth BASIC was compiled),
   English quotes. The 3000000000 question was run in the image: bwBASIC prints
   the 2 nine times and stops, so the question has an answer.
-- [x] `pascal` (1 November 2026): page read, nothing to change: Wirth
+- [x] `pascal` (2 November 2026): page read, nothing to change: Wirth
   1968/1970, Turbo Pascal and the FreePascal IDE are described correctly.
-- [x] `c` (1 November 2026, 4df77bb5): page read, nothing else: the int
+- [x] `c` (2 November 2026, 4df77bb5): page read, nothing else: the int
   overflow explanation (lower 32 bits, no error) is right for gcc.
-- [x] `prolog-portrait` (1 November 2026): page read, nothing to change:
+- [x] `prolog-portrait` (2 November 2026): page read, nothing to change:
   Colmerauer and Roussel 1972, = versus is explained correctly.
-- [x] `smalltalk` (1 November 2026): page read, nothing to change.
-- [x] `cpp` (1 November 2026): page read, nothing to change: cin stores the
+- [x] `smalltalk` (2 November 2026): page read, nothing to change.
+- [x] `cpp` (2 November 2026): page read, nothing to change: cin stores the
   largest int and sets the fail state (since C++11), 2147483647 is prime.
-- [x] `clisp` (1 November 2026, 29caf3e8): SBCL was called an interpreter of a
+- [x] `clisp` (2 November 2026, 29caf3e8): SBCL was called an interpreter of a
   script language; it compiles every expression to machine code, also in the
   REPL.
-- [x] `perl` (1 November 2026): page read, nothing to change.
-- [x] `python` (1 November 2026): page read, nothing to change.
-- [x] `lua` (1 November 2026): page read, nothing to change.
-- [x] `ruby` (1 November 2026, c2698bfd): page read, only the quotes around
+- [x] `perl` (2 November 2026): page read, nothing to change.
+- [x] `python` (2 November 2026): page read, nothing to change.
+- [x] `lua` (2 November 2026): page read, nothing to change.
+- [x] `ruby` (2 November 2026, c2698bfd): page read, only the quotes around
   the nickname.
-- [x] `java` (1 November 2026): page read, nothing to change: IO.println and
+- [x] `java` (2 November 2026): page read, nothing to change: IO.println and
   the short main are final since Java 25.
-- [x] `js` (1 November 2026): page read, nothing to change.
-- [x] `nasm` (1 November 2026, 1db71447): »Programmierspracen«; RollerCoaster
+- [x] `js` (2 November 2026): page read, nothing to change.
+- [x] `nasm` (2 November 2026, 1db71447): »Programmierspracen«; RollerCoaster
   Tycoon (1999) was listed among early games; the prose quoted »Hello, world!«
   where the code prints »Hello, World!«.
-- [x] `cs` (1 November 2026): page read, nothing to change: .NET 10 is what
+- [x] `cs` (2 November 2026): page read, nothing to change: .NET 10 is what
   the image installs.
-- [x] `go` (1 November 2026): page read, nothing to change.
-- [x] `dart` (1 November 2026): page read; only »macOS«: the analytics switch-
+- [x] `go` (2 November 2026): page read, nothing to change.
+- [x] `dart` (2 November 2026): page read; only »macOS«: the analytics switch-
   off runs at every start (init-code-server-run).
-- [x] `rust` (1 November 2026): page read, nothing to change.
+- [x] `rust` (2 November 2026): page read, nothing to change.
 
 ### Hidden: the Backrooms
 
@@ -542,11 +542,12 @@ Read like the others, with their own rules: they are never named or linked
 outside the series, also not in what a page generates; a fix must not add
 such a mention.
 
-- [x] `level-0-c1d8a2f7` (1 November 2026, 3df6bf71): »floor zehn« was eleven
+- [x] `level-0-c1d8a2f7` (2 November 2026, 3df6bf71): »floor zehn« was eleven
   (FLOORS in level.js); the starter's comment listed six walls and five floors
   (fixed and pushed there, f20fabd); the door question checked against the
-  loading queue; the box-office claim checked.
-- [x] `level-1-7e3a91c4` (1 November 2026): the code block with »slab = 0.5«
+  loading queue, and the sentence above it that answered it moved behind it
+  (be7390e2); the box-office claim checked.
+- [x] `level-1-7e3a91c4` (2 November 2026, 9988e4f6): the code block with »slab = 0.5«
   stood visible under the question asking for it, now in an after block;
   stairs arithmetic, slab and the collision numbers (controls.js) checked.
 - [ ] `level-2-b52d0f18`
