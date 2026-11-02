@@ -429,7 +429,10 @@ image.
   cards and teacher note read, nothing to change: every prediction waits in an
   after block; Turing 1936, Church and the halting argument are stated
   correctly.
-- [ ] `grammatiken`
+- [x] `grammatiken` (1 November 2026): page (Ruby and Python), diagrams, cards
+  and teacher note read, nothing to change: the predictions (tiefe, baeume,
+  welcher-typ) wait in after blocks; Backus 1959, Naur 1960, Wirth's diagrams
+  for Pascal and Chomsky 1956 check out.
 - [ ] `calculator`
 - [ ] `prolog`
 
