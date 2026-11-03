@@ -223,8 +223,14 @@ module Roster
             (user_groups['Administrator'] ||= []) << email
         end
 
+        # A declared group is a group also before its first member (a group
+        # just made with »Neue Gruppe«) and after its last one leaves: the
+        # class page lists it, and its settings and pins stay (GroupData.vanished).
         groups.each do |group|
-            user_group_order << group.name if group.declared && !user_group_order.include?(group.name)
+            if group.declared
+                user_group_order << group.name unless user_group_order.include?(group.name)
+                group_members[group.name] ||= []
+            end
             group.teachers.each { |email| (teachers[email] ||= Set.new) << group.name }
         end
         members.each do |group_name, email, name|

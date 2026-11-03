@@ -100,6 +100,27 @@ class RosterTest < Minitest::Test
         assert_equal %w[a@example.org b@example.org], built[:group_members]['BS 1'].sort
     end
 
+    # »Neue Gruppe«: the teacher teaches the new group but is no member of
+    # it; the class page (class_groups) lists the keys of group_members.
+    def test_a_new_group_without_members_is_a_group
+        records = {
+            :groups => [{ :name => '10a', :school => 'home', :approved => true }, { :name => 'Neu', :school => 'home', :approved => true }],
+            :invitations => [
+                { :email => 'a@example.org', :name => 'A', :teacher => false },
+                { :email => 't@example.org', :name => 'T', :teacher => true, :school => 'home' },
+            ],
+            :memberships => [['a@example.org', '10a']],
+            :teaching => [['t@example.org', '10a'], ['t@example.org', 'Neu']],
+        }
+        from = Roster.from_records(records)
+        built = Roster.build(:groups => from[:groups], :members => from[:members], :designated => from[:designated], :admins => [])
+        assert_equal [], built[:group_members]['Neu']
+        assert_equal Set['10a', 'Neu'], built[:teachers]['t@example.org']
+        assert_includes built[:user_group_order], 'Neu'
+        # what the import compares leaves empty groups out, as before
+        refute Roster.content(built)[:groups].key?('Neu')
+    end
+
     def test_pasted_addresses
         parsed = Roster.parse_member_lines(<<~END_OF_TEXT)
             Lena Muster <Lena@Example.org>
