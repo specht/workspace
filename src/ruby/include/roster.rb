@@ -210,7 +210,7 @@ module Roster
     # administrators. A person's group is the first it appears in, its name
     # the last one given (without any, the address). Groups come in the order
     # given; teachers are merged by group name.
-    def self.build(groups:, members:, designated:, admins:)
+    def self.build(groups:, members:, designated:, admins:, empty_groups: false)
         invitations = {}
         user_groups = {}
         user_group_order = []
@@ -223,13 +223,15 @@ module Roster
             (user_groups['Administrator'] ||= []) << email
         end
 
-        # A declared group is a group also before its first member (a group
-        # just made with »Neue Gruppe«) and after its last one leaves: the
-        # class page lists it, and its settings and pins stay (GroupData.vanished).
+        # empty_groups (the roster in Neo4j): a group is a group also before
+        # its first member (a group just made with »Neue Gruppe«) and after
+        # its last one leaves: the class page lists it, and its settings and
+        # pins stay (GroupData.vanished). The invitation files keep the old
+        # loader's behaviour, which left such groups out.
         groups.each do |group|
             if group.declared
                 user_group_order << group.name unless user_group_order.include?(group.name)
-                group_members[group.name] ||= []
+                group_members[group.name] ||= [] if empty_groups
             end
             group.teachers.each { |email| (teachers[email] ||= Set.new) << group.name }
         end

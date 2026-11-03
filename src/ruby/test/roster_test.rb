@@ -113,7 +113,7 @@ class RosterTest < Minitest::Test
             :teaching => [['t@example.org', '10a'], ['t@example.org', 'Neu']],
         }
         from = Roster.from_records(records)
-        built = Roster.build(:groups => from[:groups], :members => from[:members], :designated => from[:designated], :admins => [])
+        built = Roster.build(:groups => from[:groups], :members => from[:members], :designated => from[:designated], :admins => [], :empty_groups => true)
         assert_equal [], built[:group_members]['Neu']
         assert_equal Set['10a', 'Neu'], built[:teachers]['t@example.org']
         assert_includes built[:user_group_order], 'Neu'

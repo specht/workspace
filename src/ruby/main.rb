@@ -644,7 +644,7 @@ class Main < Sinatra::Base
     def self.load_invitations_locked
         source = roster_source
         built = Roster.build(:groups => source[:groups], :members => source[:members],
-            :designated => source[:designated], :admins => ADMIN_USERS)
+            :designated => source[:designated], :admins => ADMIN_USERS, :empty_groups => !roster_imported.nil?)
         invitations = built[:invitations]
         user_groups = built[:user_groups]
         user_group_order = built[:user_group_order]
