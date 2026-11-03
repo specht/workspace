@@ -2304,7 +2304,9 @@ class Main < Sinatra::Base
     def class_people_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         members = class_members(group)
-        test_group = members.all? { |m| @@test_accounts.key?(m[:email]) }
+        # by name: a group just made with »Neue Gruppe« has no members yet
+        # and is no test group (all? of nothing is true)
+        test_group = @@test_groups.include?(group)
         io = +"<section class='class-people' data-group='#{h.(group)}'>"
         if test_group
             io << "<p>Mit deinem Testkonto probierst du aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie und Leistungsüberprüfungen. Es gehört nur zu dieser Gruppe, die nur du siehst.</p>"
