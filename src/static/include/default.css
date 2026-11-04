@@ -6832,23 +6832,24 @@ html[data-bs-theme="dark"] .usage-row {
 /* A box that stays dark in the light scheme scrolls with a scrollbar in
    its colours: a soft light thumb on no track, never the browser's light
    one (docs/checkliste.md, »Oberfläche«). Code blocks (but the light one in
-   a template notice), the Kata's console and editor, the text adventure;
-   a new dark box that scrolls joins the list. Safari ignores
+   a template notice), the Kata's console and editor, the text adventure,
+   the terminal's colours in the Handbuch (.ansi-demo); a new dark box that
+   scrolls joins the list. Safari ignores
    scrollbar-color and takes the ::-webkit-scrollbar parts. */
-pre:not(.template-notice-body pre), .task-console, .code-input .code-input-text, .adventure-screen {
+pre:not(.template-notice-body pre), .task-console, .code-input .code-input-text, .adventure-screen, .ansi-demo {
     scrollbar-color: rgba(251, 241, 199, 0.28) transparent;
 }
 pre:not(.template-notice-body pre)::-webkit-scrollbar, .task-console::-webkit-scrollbar,
-.code-input .code-input-text::-webkit-scrollbar, .adventure-screen::-webkit-scrollbar {
+.code-input .code-input-text::-webkit-scrollbar, .adventure-screen::-webkit-scrollbar, .ansi-demo::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 pre:not(.template-notice-body pre)::-webkit-scrollbar-track, .task-console::-webkit-scrollbar-track,
-.code-input .code-input-text::-webkit-scrollbar-track, .adventure-screen::-webkit-scrollbar-track {
+.code-input .code-input-text::-webkit-scrollbar-track, .adventure-screen::-webkit-scrollbar-track, .ansi-demo::-webkit-scrollbar-track {
     background: transparent;
 }
 pre:not(.template-notice-body pre)::-webkit-scrollbar-thumb, .task-console::-webkit-scrollbar-thumb,
-.code-input .code-input-text::-webkit-scrollbar-thumb, .adventure-screen::-webkit-scrollbar-thumb {
+.code-input .code-input-text::-webkit-scrollbar-thumb, .adventure-screen::-webkit-scrollbar-thumb, .ansi-demo::-webkit-scrollbar-thumb {
     background: rgba(251, 241, 199, 0.28);
     border: 2px solid transparent;
     border-radius: 4px;

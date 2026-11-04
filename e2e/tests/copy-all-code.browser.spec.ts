@@ -26,9 +26,9 @@ test('a group can go back to copy buttons only where the page marks them', async
     await teacher.goto('/raytracing');
     await expect(teacher.locator('.code-copy')).toHaveCount(blocks);
 
-    // »Wo sinnvoll« on the class page, saved at once
+    // »Wo sinnvoll« on the class page (tab »Einstellungen«), saved at once
     await setting(true);
-    await teacher.goto('/klasse?group=E2E&tab=fortschritt');
+    await teacher.goto('/klasse?group=E2E&tab=einstellungen');
     const menu = teacher.getByRole('combobox', { name: 'Kopierknöpfe' });
     await expect(menu).toHaveValue('all');
     const saved = teacher.waitForResponse((r) => r.url().endsWith('/api/set_group_copy_all_code'));

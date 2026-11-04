@@ -1107,9 +1107,15 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
             menu.style.left = `${Math.max(4, Math.min(x, window.innerWidth - r.width - 4))}px`;
             menu.style.top = `${Math.max(4, Math.min(y, window.innerHeight - r.height - 4))}px`;
             const buttons = () => [...menu.querySelectorAll('.dropdown-item:not(.disabled)')];
-            menu.addEventListener('keydown', (e) => {
+            // On window, before anything else (capture): Bootstrap's dropdown
+            // handler takes the arrows and Escape in any .dropdown-menu on
+            // document, also in the capture phase, and fails without a
+            // toggle button. The menu's own keys stop here.
+            const keys = (e) => {
+                if (!menu.contains(e.target)) return;
                 const list = buttons();
                 const i = list.indexOf(document.activeElement);
+                if (['ArrowDown', 'ArrowUp', 'Escape', 'Tab'].includes(e.key)) e.stopPropagation();
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                     e.preventDefault();
                     const next = list[(i + (e.key === 'ArrowDown' ? 1 : list.length - 1)) % list.length];
@@ -1119,21 +1125,23 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
                     this.closeMenu();
                     this.svg.focus({ preventScroll: true });
                 }
-            });
+            };
+            window.addEventListener('keydown', keys, true);
             const outside = (e) => { if (!menu.contains(e.target)) this.closeMenu(); };
             const away = () => this.closeMenu();
             document.addEventListener('pointerdown', outside, true);
             window.addEventListener('scroll', away, { passive: true, once: true });
             window.addEventListener('resize', away, { once: true });
-            this.menu = { menu, outside, away };
+            this.menu = { menu, outside, away, keys };
             const first = buttons()[0];
             if (first) first.focus({ preventScroll: true });
         }
 
         closeMenu() {
             if (!this.menu) return;
-            const { menu, outside, away } = this.menu;
+            const { menu, outside, away, keys } = this.menu;
             this.menu = null;
+            window.removeEventListener('keydown', keys, true);
             document.removeEventListener('pointerdown', outside, true);
             window.removeEventListener('scroll', away);
             window.removeEventListener('resize', away);
