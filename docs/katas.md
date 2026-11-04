@@ -348,6 +348,43 @@ development since 28 October 2026). What the maintainer decided and why:
 - **One set of commands per language** (`turtle.rb`, `turtle.py`,
   `turtle.js`), used by the worker and by the examples on the host
   (`TurtleCheck.record`), so that both run the same code.
+- **Java and Dart run on the server** (4 November 2026, the maintainer: all
+  five languages on every Kata page, and teachers told that Java and Dart
+  answer more slowly). There is no small runtime that compiles them in the
+  browser, so `/api/turtle/run` puts the program into the Katas' queue
+  (`TurtleCompiled`, a Kata container, the compile service of »Java and
+  Dart compiled hot« below) and the page replays what came back as it
+  replays the worker (`ServerRunner` in `turtle_canvas.js`, the same
+  messages); no student code runs in the browser. The decisions:
+  - **One run for program and calls:** the program, and for a card with
+    calls each call from the start, all in one container and one process;
+    the check then takes the calls from the same answer, so a card costs
+    one compile. Java gets a new `HsTurtle` per run (its fields start
+    again), Dart an isolate per run (its top-level variables start again;
+    about 4 ms each, measured).
+  - **The commands check what they get as the worker does** (`Turtle.java`,
+    `turtle.dart`: colour names from `colors.json`, the width, `push` and
+    `pop`, the limits of 200 000 commands and 100 000 characters of
+    output), with the worker's messages; the server turns colours into hex
+    with `TurtleWorld.color_hex`. Each command is one line on stdout
+    (`TurtleCompiled.parse`), so the runner takes up to 8 MB of output for
+    these runs (`max_output:`).
+  - **The line of a command** costs a look at the stack (about 35 µs in
+    Dart): for the first 5000 commands each time, then every 50th, so that
+    a fern does not take seconds longer.
+  - **`void main() { … }` as in Pip:** every starter and solution has it;
+    code with only commands goes into one by itself, code with functions
+    and without `main` has nothing that runs by itself (enough for a card
+    with calls), and a command outside every function gets the hint that it
+    belongs into `main`. `max_lines` does not count `main`'s first line and
+    its closing brace, so a card asks for the same in every language.
+  - **Measured:** hot, a card's run takes 0.3 to 0.9 s in the container,
+    one that stops at 200 000 commands about 1.8 s; cold (the service still
+    starting) 1.3 to 3.5 s. A program runs at most 10 s, then it shows what
+    it drew with »Dein Programm lief länger als 10 Sekunden«.
+  - **A server that did not answer is not a wrong run:** the card shows the
+    message and checks nothing (an error marked `fatal`, also for a browser
+    runtime that does not load).
 - **The speed changes while a program runs** (the maintainer): the worker
   paces as above, the page draws what came at the speed chosen now;
   »Sofort« at the start sends everything at once. Shared memory

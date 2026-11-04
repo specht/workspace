@@ -31,8 +31,8 @@ class Main < Sinatra::Base
     # to show while it runs (the person's own program, not a check's harness).
     def self.kata_run(ticket, live: false)
         on_output = live ? ->(_stream, text) { ticket.append_output(text) } : nil
-        lambda do |files:, argv:, timeout:, dialog: nil|
-            KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :dialog => dialog,
+        lambda do |files:, argv:, timeout:, dialog: nil, max_output: KataRunner::MAX_OUTPUT|
+            KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :dialog => dialog, :max_output => max_output,
                            :cancel => ->(kill) { ticket.on_stop(kill) }, :on_output => on_output)
         end
     end
@@ -200,6 +200,12 @@ class Main < Sinatra::Base
             STDERR.puts "Kata run failed: #{ticket.error.class}: #{ticket.error.message}"
             return { :done => true, :status => 'unavailable',
                      :message => render_task_markdown('Das hat gerade nicht geklappt. Versuch es gleich noch einmal.') }
+        end
+        if ticket.data[:kind] == :turtle
+            # the turtle in Java and Dart (/api/turtle/run)
+            return { :done => true, :status => 'unavailable', :message => render_task_markdown(KataCheck::BUSY) } if ticket.result.nil?
+
+            return { :done => true, :status => 'ran', :turtle => ticket.result }
         end
         if ticket.data[:kind] == :run
             ran = ticket.result

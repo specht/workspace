@@ -69,6 +69,49 @@ test('the turtle draws and is checked in Ruby, Python and JavaScript', async ({ 
   expect(errors).toEqual([]);
 });
 
+// Dart and Java compile: they run on the server (TurtleCompiled) and the
+// page replays what came back, the program at once and the calls of a
+// check from the same run.
+const COMPILED = {
+  dart: ['void main() {\n  print(\'hallo\');\n  for (var i = 0; i < 4; i++) {\n    forward(100);\n    left(90);\n  }\n}\n',
+    'void square(double size) {\n  for (var i = 0; i < 4; i++) {\n    forward(size);\n    left(90);\n  }\n}\n\nvoid main() {\n  square(150);\n}\n',
+    'void main() {\n  forward(100);\n  left(90)\n}\n'],
+  java: ['void main() {\n    IO.println("hallo");\n    for (int i = 0; i < 4; i++) {\n        forward(100);\n        left(90);\n    }\n}\n',
+    'void square(double size) {\n    for (int i = 0; i < 4; i++) {\n        forward(size);\n        left(90);\n    }\n}\n\nvoid main() {\n    square(150);\n}\n',
+    'void main() {\n    forward(100);\n    left(90)\n}\n'],
+};
+
+test('the turtle in Dart and Java runs on the server and is checked', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/turtle-1');
+  for (const language of ['dart', 'java'] as const) {
+    await page.locator(`.code-language-option[data-set-language="${language}"]`).click();
+    const square = page.locator('.task-card[data-task="turtle-1/square"]:visible');
+    await expect(square.locator('.task-code')).toHaveAttribute('data-code-language', language);
+    await square.locator('.turtle-speeds button', { hasText: 'Sofort' }).click();
+    await square.locator('.task-code').fill(COMPILED[language][0]);
+    await square.locator('.task-submit').click();
+    await expect(square.locator('.task-feedback')).toContainText('Dein Bild stimmt.', { timeout: 60_000 });
+    // what the program printed, in the order it came
+    await expect(square.locator('.task-console')).toHaveText('hallo\n');
+    // a program that does not compile: the compiler's message with its line
+    await square.locator('.task-code').fill(COMPILED[language][2]);
+    await square.locator('.task-submit').click();
+    await expect(square.locator('.task-console')).toContainText('Zeile 3: ', { timeout: 60_000 });
+    await expect(square.locator('.task-console')).toContainText(language === 'java' ? "';' expected" : "Expected ';'");
+    await expect(square.locator('.task-submit')).toContainText('Ausführen');
+
+    const fn = page.locator('.task-card[data-task="turtle-1/square-function"]:visible');
+    await fn.locator('.task-code').fill(COMPILED[language][1]);
+    await fn.locator('.task-submit').click();
+    await expect(fn.locator('.task-feedback')).toContainText('Alle 2 Aufrufe zeichnen genau das Richtige.', { timeout: 60_000 });
+  }
+  expect(errors).toEqual([]);
+});
+
 test('an endless program draws until it is stopped, and its code stays', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/turtle-1');
@@ -172,9 +215,9 @@ test('colours to pick from under color and background; background colours the pa
     await card.locator('.task-code').fill(programs[language]);
     await card.locator('.task-submit').click();
     await expect(card.locator('.task-feedback')).toContainText(/Fertig|frei ausprobieren/, { timeout: 60_000 });
-    // the corner of the paper is navy
-    const pixel = await card.locator('canvas.turtle-paper').evaluate((c: HTMLCanvasElement) => Array.from(c.getContext('2d')!.getImageData(1, 1, 1, 1).data.slice(0, 3)));
-    expect(pixel).toEqual([0, 0, 128]);
+    // the corner of the paper is navy, once the paper has glided into place
+    await expect.poll(() => card.locator('canvas.turtle-paper').evaluate((c: HTMLCanvasElement) => Array.from(c.getContext('2d')!.getImageData(1, 1, 1, 1).data.slice(0, 3))),
+      { timeout: 5_000 }).toEqual([0, 0, 128]);
     // a swatch under background goes into the program where the cursor is
     await card.locator(".turtle-palette-open[data-command='background']").click();
     await card.locator('.turtle-palette-swatch').first().click();

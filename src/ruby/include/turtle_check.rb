@@ -3,6 +3,7 @@ require 'open3'
 require 'tmpdir'
 require 'stringio'
 require_relative 'turtle_world'
+require_relative 'turtle_compiled'
 
 # Check type turtle (docs/katas.md, »Turtle«): a program typed into the
 # card that draws. It runs in the browser (turtle_worker.js), which reports
@@ -38,7 +39,7 @@ module TurtleCheck
     NEAR = 1.6
     CELL = 10.0
     MAX_RUNS = 12
-    FILES = { 'ruby' => 'kata.rb', 'python' => 'kata.py', 'javascript' => 'kata.js' }.freeze
+    FILES = { 'ruby' => 'kata.rb', 'python' => 'kata.py', 'javascript' => 'kata.js', 'java' => 'kata.java', 'dart' => 'kata.dart' }.freeze
     LANGUAGES = FILES.keys.freeze
     FREE = %w[min_lines min_colors].freeze
     # The commands as each language writes them, with an example, and what
@@ -58,6 +59,14 @@ module TurtleCheck
                           'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)',
                           'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)',
                           'background' => 'background("navy")' },
+        'java' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
+                    'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => 'color("red")', 'width' => 'width(4)',
+                    'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => 'color("gold", "red", 0.5)', 'random' => 'random(1, 6)',
+                    'background' => 'background("navy")' },
+        'dart' => { 'forward' => 'forward(100)', 'back' => 'back(100)', 'left' => 'left(90)', 'right' => 'right(90)',
+                    'pen_up' => 'penUp()', 'pen_down' => 'penDown()', 'color' => "color('red')", 'width' => 'width(4)',
+                    'push' => 'push()', 'pop' => 'pop()', 'hue' => 'color(200)', 'mix' => "color('gold', 'red', 0.5)", 'random' => 'random(1, 6)',
+                    'background' => "background('navy')" },
     }.freeze
     DESCRIPTIONS = {
         'forward' => 'so viele Schritte vorwärts gehen', 'back' => 'so viele Schritte rückwärts gehen',
@@ -77,7 +86,7 @@ module TurtleCheck
 
     def self.spec_errors(check)
         errors = []
-        errors << 'language must be ruby, python or javascript' unless LANGUAGES.include?(check['language'])
+        errors << "language must be one of #{LANGUAGES.join(', ')}" unless LANGUAGES.include?(check['language'])
         kinds = %w[draw cases free].select { |k| check.key?(k) }
         errors << 'a turtle check needs exactly one of draw, cases and free' unless kinds.size == 1
         if check.key?('draw')
@@ -223,7 +232,7 @@ module TurtleCheck
         worlds = runs.map { |commands| TurtleWorld.replay(commands) }
         if check['free']
             status, message = free_check(check['free'], worlds.first)
-            if status == :correct && check['max_lines'] && (n = lines(code)) > check['max_lines']
+            if status == :correct && check['max_lines'] && (n = lines(code, check['language'])) > check['max_lines']
                 return [:wrong, "Dein Bild hat genug Linien, aber dein Programm hat #{n} Zeilen. Geht es in höchstens #{check['max_lines']}? " \
                                 'Was sich wiederholt, kann eine Schleife machen.', nil]
             end
@@ -246,7 +255,7 @@ module TurtleCheck
                          :missing => d[:missing].map(&:to_a), :extra => d[:extra].map(&:to_a) }
                 return [:wrong, message(d, drawn, expected, call, check['colors'] == true), show]
             end
-            if check['max_lines'] && (n = lines(code)) > check['max_lines']
+            if check['max_lines'] && (n = lines(code, check['language'])) > check['max_lines']
                 return [:wrong, "Das Bild stimmt, aber dein Programm hat #{n} Zeilen. Geht es in höchstens #{check['max_lines']}? " \
                                 'Was sich wiederholt, kann eine Schleife machen.', nil]
             end
@@ -301,8 +310,11 @@ module TurtleCheck
 
     # The program and its calls as the worker runs them, with the local
     # ruby, python3 or node and the same commands (turtle.rb, turtle.py,
-    # turtle.js): [runs, error] with runs as the browser reports them.
+    # turtle.js), Java and Dart in a Kata container as on the server
+    # (TurtleCompiled): [runs, error] with runs as the browser reports them.
     def self.record(language, code, runs, timeout: 10)
+        return record_compiled(language, code, runs) if TurtleCompiled::LANGUAGES.include?(language)
+
         Dir.mktmpdir('turtle') do |dir|
             File.write(File.join(dir, FILES.fetch(language)), code.to_s)
             File.write(File.join(dir, 'runs.json'), JSON.generate(runs))
@@ -317,6 +329,17 @@ module TurtleCheck
             data = JSON.parse(out.lines.last.to_s)
             [data['runs'], data['error']]
         end
+    end
+
+    def self.record_compiled(language, code, runs)
+        kata = lambda do |files:, argv:, timeout:, dialog: nil, max_output: KataRunner::MAX_OUTPUT|
+            KataRunner.run(:files => files, :argv => argv, :timeout => timeout, :max_output => max_output)
+        end
+        result = TurtleCompiled.run(language, code, runs, kata)
+        recorded = result[:runs].map { |run| run[:items].reject { |i| i[0] == 'out' }.map { |c, v, _| v.nil? ? [c] : [c, v] } }
+        error = result[:runs].map { |run| run[:error] }.compact.first
+        error ||= { :message => 'Die Schildkröte hat aufgehört.' } if result[:limit]
+        [recorded, error && error[:message]]
     end
 
     RUBY_DRIVER = <<~'RUBY'
@@ -406,8 +429,15 @@ module TurtleCheck
         console.log(JSON.stringify({ runs, error }));
     JS
 
-    # The lines that count for max_lines: not empty, not only a comment.
-    def self.lines(code)
-        code.to_s.lines.count { |l| l.strip != '' && !l.strip.start_with?('#', '//') }
+    # The lines that count for max_lines: not empty, not only a comment;
+    # in Java and Dart not the frame of main either (its first line and the
+    # brace that closes it), so that a card asks for the same in every
+    # language.
+    def self.lines(code, language = nil)
+        count = code.to_s.lines.count { |l| l.strip != '' && !l.strip.start_with?('#', '//') }
+        if TurtleCompiled::LANGUAGES.include?(language) && code.to_s =~ /^\s*void\s+main\s*\(\s*\)\s*\{\s*$/
+            count -= 2
+        end
+        count
     end
 end

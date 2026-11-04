@@ -2,7 +2,7 @@
 icon: bi-flower1
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Farben aus Zahlen, Merken und Zurückkehren, Zufall und Pflanzen, die aus Wörtern wachsen
 curriculum: "Sek I: Algorithmisches Problemlösen (Zeichenkettenbearbeitung), Digitale Bilder und Visualisierung (Turtle-Grafik, Farbmodelle, rekursive Algorithmen für Grafiken)"
 topics: [computergrafik, zeichenketten, grammatiken]
@@ -59,6 +59,20 @@ color(120);    // grün
 color(200);    // ein helles Blau
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+color(0);      // rot
+color(120);    // grün
+color(200);    // ein helles Blau
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+color(0);      // rot
+color(120);    // grün
+color(200);    // ein helles Blau
+```
+<!-- /language -->
 
 _task(sun)
 
@@ -80,6 +94,16 @@ color("gold", "crimson", 0.25)    # ein Viertel des Wegs von Gold nach Rot
 <!-- /language -->
 <!-- language: javascript -->
 ```javascript
+color("gold", "crimson", 0.25);    // ein Viertel des Wegs von Gold nach Rot
+```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+color('gold', 'crimson', 0.25);    // ein Viertel des Wegs von Gold nach Rot
+```
+<!-- /language -->
+<!-- language: java -->
+```java
 color("gold", "crimson", 0.25);    // ein Viertel des Wegs von Gold nach Rot
 ```
 <!-- /language -->

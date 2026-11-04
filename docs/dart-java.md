@@ -7,10 +7,12 @@ at a time (a class ranks its languages under »Sprachen der Klasse«).
 
 ## What exists
 
-- **All Katas and Pip unter Funkelbach** in Ruby, Python, JavaScript, Dart
-  and Java; how they are checked (`kata_compiled.rb`, `pip_compiled.rb`,
-  `tests_compiled.rb`), the decisions and the typical mistakes per language:
-  [katas.md](katas.md).
+- **All Katas, Pip unter Funkelbach and the turtle** (`turtle-1` to
+  `turtle-3`) in Ruby, Python, JavaScript, Dart and Java; how they are
+  checked (`kata_compiled.rb`, `pip_compiled.rb`, `tests_compiled.rb`,
+  `turtle_compiled.rb`: the turtle in Dart and Java runs on the server, the
+  other three in the browser), the decisions and the typical mistakes per
+  language: [katas.md](katas.md).
 - **Only Java and Dart:** »Nebenläufigkeit« (`nebenlaeufigkeit`, the check
   type `interleaving` for its widget). Not Ruby or Python, decided on
   29 October 2026: their global interpreter lock makes a lost update rare

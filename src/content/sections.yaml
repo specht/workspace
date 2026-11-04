@@ -24,9 +24,9 @@
   # one strip of the sets with the person's progress (KataMap)
   carousel: true
   description: |
-    Kleine Programmieraufgaben direkt auf der Seite, in Ruby, Python oder
-    JavaScript: ohne Terminal und Dateien, mit einem Knopf, der den Code
-    ausführt und prüft. Eine Kata übt man, bis sie sitzt, wie in den
+    Kleine Programmieraufgaben direkt auf der Seite, in Ruby, Python,
+    JavaScript, Dart oder Java: ohne Terminal und Dateien, mit einem Knopf,
+    der den Code ausführt und prüft. Eine Kata übt man, bis sie sitzt, wie in den
     Kampfkünsten; die Übungen bauen aufeinander auf, springen darfst du immer.
   entries:
     - pip-1

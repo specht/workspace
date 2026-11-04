@@ -2,7 +2,7 @@
 icon: /images/icons/hilbert.svg
 kind: uebung
 duration: 1 Doppelstunde
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Bäume, ein Farnblatt und Kurven, die aus kleineren Kopien ihrer selbst bestehen
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Turtle-Grafik, rekursive Algorithmen für Grafiken), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten); Oberstufe: Algorithmen und Datenstrukturen (rekursive Verfahren)"
 topics: [rekursion, computergrafik, geschichte]

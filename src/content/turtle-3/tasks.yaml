@@ -104,6 +104,80 @@ tasks:
           left(10);
         }
         ```
+    java:
+      prompt: |
+        Die Sonne aus 36 Strahlen ist schon da, noch schwarz. Gib jedem Strahl seine eigene Farbe: Der erste ist rot, `color(0)`, und jeder nächste liegt 10 Grad weiter im Farbkreis.
+      starter: |
+        void main() {
+            for (int i = 0; i < 36; i++) {
+                forward(150);
+                back(150);
+                left(10);
+            }
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: |
+          36.times do |i|
+            color i * 10
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Die Farbe kommt vor den Strahl, als erste Zeile in der Schleife. Ihre Zahl hängt davon ab, der wievielte Strahl es ist: `i`."
+        - "Strahl 0 hat die Farbe 0, Strahl 1 die Farbe 10, Strahl 2 die Farbe 20: `color(i * 10)`."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 36; i++) {
+                color(i * 10);
+                forward(150);
+                back(150);
+                left(10);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Die Sonne aus 36 Strahlen ist schon da, noch schwarz. Gib jedem Strahl seine eigene Farbe: Der erste ist rot, `color(0)`, und jeder nächste liegt 10 Grad weiter im Farbkreis.
+      starter: |
+        void main() {
+          for (var i = 0; i < 36; i++) {
+            forward(150);
+            back(150);
+            left(10);
+          }
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: |
+          36.times do |i|
+            color i * 10
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Die Farbe kommt vor den Strahl, als erste Zeile in der Schleife. Ihre Zahl hängt davon ab, der wievielte Strahl es ist: `i`."
+        - "Strahl 0 hat die Farbe 0, Strahl 1 die Farbe 10, Strahl 2 die Farbe 20: `color(i * 10)`."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 36; i++) {
+            color(i * 10);
+            forward(150);
+            back(150);
+            left(10);
+          }
+        }
+        ```
 
   - id: rainbow-spiral
     title: "Eine Spirale durch den Farbkreis"
@@ -179,6 +253,68 @@ tasks:
           color(i * 3);
           forward(i * 2);
           left(59);
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne eine Spirale aus 120 Linien: Linie `i` ist `2 * i` Schritte lang (die erste, Linie 0, also gar nicht), und nach jeder dreht sich die Schildkröte 59 Grad nach links. Die Farben laufen einmal durch den ganzen Farbkreis: Linie `i` hat die Farbe `3 * i`.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: |
+          120.times do |i|
+            color i * 3
+            forward i * 2
+            left 59
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Eine Schleife mit 120 Durchläufen, die mitzählt, der wievielte es ist. Darin drei Befehle: die Farbe, die Linie, die Drehung."
+        - "Die Länge und die Farbe rechnest du aus `i` aus: `color(i * 3)` und `forward(i * 2)`."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 120; i++) {
+                color(i * 3);
+                forward(i * 2);
+                left(59);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne eine Spirale aus 120 Linien: Linie `i` ist `2 * i` Schritte lang (die erste, Linie 0, also gar nicht), und nach jeder dreht sich die Schildkröte 59 Grad nach links. Die Farben laufen einmal durch den ganzen Farbkreis: Linie `i` hat die Farbe `3 * i`.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: |
+          120.times do |i|
+            color i * 3
+            forward i * 2
+            left 59
+          end
+        colors: true
+        commands: [forward, back, left, right, hue]
+      hint:
+        - "Eine Schleife mit 120 Durchläufen, die mitzählt, der wievielte es ist. Darin drei Befehle: die Farbe, die Linie, die Drehung."
+        - "Die Länge und die Farbe rechnest du aus `i` aus: `color(i * 3)` und `forward(i * 2)`."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 120; i++) {
+            color(i * 3);
+            forward(i * 2);
+            left(59);
+          }
         }
         ```
 
@@ -262,6 +398,72 @@ tasks:
           forward(150);
           back(150);
           left(10);
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne einen Fächer aus 19 Strahlen, jeder 150 Schritte lang und 10 Grad weiter gedreht als der davor: der erste nach rechts, der letzte nach links. Der erste Strahl ist ganz `"gold"`, der letzte ganz `"crimson"`, und dazwischen ändert sich die Farbe gleichmäßig.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: |
+          19.times do |i|
+            color "gold", "crimson", i / 18.0
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, mix]
+      hint:
+        - "Wie die Sonne, nur mit 19 Strahlen und einer gemischten Farbe: `color(\"gold\", \"crimson\", anteil)`, mit dem Anteil 0 beim ersten Strahl und 1 beim letzten."
+        - "Der letzte Strahl ist Strahl 18. Der Anteil ist also `i / 18.0`: Mit `18` statt `18.0` rechnet Java ohne Komma, und der Anteil wäre fast immer 0."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 19; i++) {
+                color("gold", "crimson", i / 18.0);
+                forward(150);
+                back(150);
+                left(10);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne einen Fächer aus 19 Strahlen, jeder 150 Schritte lang und 10 Grad weiter gedreht als der davor: der erste nach rechts, der letzte nach links. Der erste Strahl ist ganz `'gold'`, der letzte ganz `'crimson'`, und dazwischen ändert sich die Farbe gleichmäßig.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: |
+          19.times do |i|
+            color "gold", "crimson", i / 18.0
+            forward 150
+            back 150
+            left 10
+          end
+        colors: true
+        commands: [forward, back, left, right, mix]
+      hint:
+        - "Wie die Sonne, nur mit 19 Strahlen und einer gemischten Farbe: `color('gold', 'crimson', anteil)`, mit dem Anteil 0 beim ersten Strahl und 1 beim letzten."
+        - "Der letzte Strahl ist Strahl 18. Der Anteil ist also `i / 18`."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 19; i++) {
+            color('gold', 'crimson', i / 18);
+            forward(150);
+            back(150);
+            left(10);
+          }
         }
         ```
 
@@ -515,6 +717,170 @@ tasks:
         left(90);
         tree(100, 5);
         ```
+    java:
+      prompt: |
+        Schreib `void tree(double size, int depth)` für den Baum aus »Bäume und Kurven« noch einmal, diesmal ohne `back` und ohne zurückzudrehen: Vor jedem Ast merkt sich die Schildkröte mit `push`, wo sie ist, und kehrt nach ihm mit `pop` dorthin zurück.
+      starter: |
+        void tree(double size, int depth) {
+        }
+
+        void main() {
+            left(90);
+            tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, left, right, push, pop]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Methode zurück. Sonst zeichnet sie den Stamm, und an seinem Ende wachsen die beiden Äste."
+        - "Ein Ast: `push()`, 30 Grad drehen, `tree(size * 0.7, depth - 1)`, `pop()`. Nach dem `pop` steht die Schildkröte wieder oben am Stamm und schaut nach oben, bereit für den zweiten Ast."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            forward(size);
+            push();
+            left(30);
+            tree(size * 0.7, depth - 1);
+            pop();
+            push();
+            right(30);
+            tree(size * 0.7, depth - 1);
+            pop();
+        }
+
+        void main() {
+            left(90);
+            tree(100, 5);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void tree(double size, int depth)` für den Baum aus »Bäume und Kurven« noch einmal, diesmal ohne `back` und ohne zurückzudrehen: Vor jedem Ast merkt sich die Schildkröte mit `push`, wo sie ist, und kehrt nach ihm mit `pop` dorthin zurück.
+      starter: |
+        void tree(double size, int depth) {
+        }
+
+        void main() {
+          left(90);
+          tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, left, right, push, pop]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Funktion zurück. Sonst zeichnet sie den Stamm, und an seinem Ende wachsen die beiden Äste."
+        - "Ein Ast: `push()`, 30 Grad drehen, `tree(size * 0.7, depth - 1)`, `pop()`. Nach dem `pop` steht die Schildkröte wieder oben am Stamm und schaut nach oben, bereit für den zweiten Ast."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          forward(size);
+          push();
+          left(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+          push();
+          right(30);
+          tree(size * 0.7, depth - 1);
+          pop();
+        }
+
+        void main() {
+          left(90);
+          tree(100, 5);
+        }
+        ```
 
   - id: walk
     title: "Ein Spaziergang"
@@ -580,6 +946,56 @@ tasks:
           left(random(-30, 30));
         }
         ```
+    java:
+      prompt: |
+        Lass die Schildkröte 1000 kleine Schritte gehen, jeden 4 lang, und sich nach jedem zufällig ein wenig drehen, um `random(-30, 30)` Grad. Wer mag, lässt dabei die Farbe langsam durch den Farbkreis wandern.
+      starter: |
+        void main() {
+            // 1000 Schritte
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, left, right, background, hue, random]
+      hint:
+        - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
+        - "Die Farbe des `i`-ten Schritts: `color(i / 3.0)`, so ist sie nach 1000 Schritten fast einmal herum."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 1000; i++) {
+                color(i / 3.0);
+                forward(4);
+                left(random(-30, 30));
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Lass die Schildkröte 1000 kleine Schritte gehen, jeden 4 lang, und sich nach jedem zufällig ein wenig drehen, um `random(-30, 30)` Grad. Wer mag, lässt dabei die Farbe langsam durch den Farbkreis wandern.
+      starter: |
+        void main() {
+          // 1000 Schritte
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, left, right, background, hue, random]
+      hint:
+        - "Eine Schleife mit 1000 Durchläufen, darin ein Schritt vorwärts und eine Drehung um eine zufällige Zahl."
+        - "Die Farbe des `i`-ten Schritts: `color(i / 3)`, so ist sie nach 1000 Schritten fast einmal herum."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 1000; i++) {
+            color(i / 3);
+            forward(4);
+            left(random(-30, 30));
+          }
+        }
+        ```
 
   - id: wind-tree
     title: "Ein Baum im Wind"
@@ -636,7 +1052,7 @@ tasks:
       hint:
         - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
         - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
-        - "Dick und braun unten, dünn und grün an den Spitzen: `width depth` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width(depth)` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
       solution: |
         ```python
         def tree(size, depth):
@@ -676,7 +1092,7 @@ tasks:
       hint:
         - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
         - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
-        - "Dick und braun unten, dünn und grün an den Spitzen: `width depth` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width(depth)` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
       solution: |
         ```javascript
         function tree(size, depth) {
@@ -696,6 +1112,88 @@ tasks:
 
         left(90);
         tree(80, 9);
+        ```
+    java:
+      prompt: |
+        Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
+      starter: |
+        {{own tree-push tree}}
+
+        void main() {
+            // left(90);
+            // tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, left, right, color, width, push, pop, random]
+      hint:
+        - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
+        - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width(depth)` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth);
+            color(depth <= 2 ? "forestgreen" : "saddlebrown");
+            forward(size);
+            push();
+            left(random(10, 40));
+            tree(size * random(0.6, 0.85), depth - 1);
+            pop();
+            push();
+            right(random(10, 40));
+            tree(size * random(0.6, 0.85), depth - 1);
+            pop();
+        }
+
+        void main() {
+            left(90);
+            tree(80, 9);
+        }
+        ```
+    dart:
+      prompt: |
+        Lass deinen Baum mit `push` und `pop` so wachsen, wie Bäume wachsen: Jeder Ast bekommt seinen eigenen zufälligen Winkel und seine eigene zufällige Länge. Lass ihn ein paarmal wachsen, jedes Mal steht ein anderer Baum da.
+      starter: |
+        {{own tree-push tree}}
+
+        void main() {
+          // left(90);
+          // tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, left, right, color, width, push, pop, random]
+      hint:
+        - "Statt `left(30)` ein Winkel aus dem Zufall: `left(random(10, 40))`, für jeden Ast neu."
+        - "Auch die Länge darf schwanken: `size * random(0.6, 0.85)`. Mit Kommazahlen gibt `random` eine Kommazahl zurück."
+        - "Dick und braun unten, dünn und grün an den Spitzen: `width(depth)` und eine Farbe, die von `depth` abhängt, wie beim schönen Baum."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth);
+          color(depth <= 2 ? 'forestgreen' : 'saddlebrown');
+          forward(size);
+          push();
+          left(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+          push();
+          right(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+        }
+
+        void main() {
+          left(90);
+          tree(80, 9);
+        }
         ```
 
   - id: meadow
@@ -793,6 +1291,84 @@ tasks:
           penUp();
           forward(random(3, 9));
           penDown();
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne eine Wiese aus vielen Grashalmen nebeneinander. Ein Halm ist eine Reihe kurzer Schritte, die sich immer ein wenig in dieselbe Richtung biegen; jeder Halm biegt sich anders, ist anders lang und anders grün.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
+      hint:
+        - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
+        - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
+        - "Für jeden Halm neu: `double bend = random(-3.0, 3.0)`, eine Länge mit `random(15, 40)` und ein Grün mit `color(\"forestgreen\", \"yellowgreen\", random(0.0, 1.0))`."
+      solution: |
+        ```java
+        void main() {
+            penUp();
+            back(250);
+            penDown();
+            for (int blade = 0; blade < 80; blade++) {
+                push();
+                left(90 + random(-10, 10));
+                color("forestgreen", "yellowgreen", random(0.0, 1.0));
+                double bend = random(-3.0, 3.0);
+                int steps = random(15, 40);
+                for (int step = 0; step < steps; step++) {
+                    forward(4);
+                    left(bend);
+                }
+                pop();
+                penUp();
+                forward(random(3, 9));
+                penDown();
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne eine Wiese aus vielen Grashalmen nebeneinander. Ein Halm ist eine Reihe kurzer Schritte, die sich immer ein wenig in dieselbe Richtung biegen; jeder Halm biegt sich anders, ist anders lang und anders grün.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, pen_up, pen_down, push, pop, background, mix, random]
+      hint:
+        - "Ein Halm: `push()`, nach oben drehen, dann viele Schritte von 4, nach jedem eine kleine Drehung um denselben Winkel `bend`, und `pop()`. Danach steht die Schildkröte wieder unten."
+        - "Zwischen zwei Halmen geht sie mit gehobenem Stift ein paar Schritte nach rechts."
+        - "Für jeden Halm neu: `final bend = random(-3.0, 3.0)`, eine Länge mit `random(15, 40)` und ein Grün mit `color('forestgreen', 'yellowgreen', random(0.0, 1.0))`."
+      solution: |
+        ```dart
+        void main() {
+          penUp();
+          back(250);
+          penDown();
+          for (var blade = 0; blade < 80; blade++) {
+            push();
+            left(90 + random(-10, 10));
+            color('forestgreen', 'yellowgreen', random(0.0, 1.0));
+            final bend = random(-3.0, 3.0);
+            final steps = random(15, 40);
+            for (var step = 0; step < steps; step++) {
+              forward(4);
+              left(bend);
+            }
+            pop();
+            penUp();
+            forward(random(3, 9));
+            penDown();
+          }
         }
         ```
 
@@ -1022,6 +1598,166 @@ tasks:
 
         left(90);
         drawWord("F[+F]F[-F]F", 60, 25);
+        ```
+    java:
+      prompt: |
+        Schreib `void drawWord(String word, double size, double angle)`, die ein Wort Buchstabe für Buchstabe zeichnet: `F` ist `size` Schritte vorwärts, `+` ist `angle` Grad nach links, `-` ist `angle` Grad nach rechts, `[` ist `push` und `]` ist `pop`. Andere Buchstaben zeichnen nichts.
+      starter: |
+        void drawWord(String word, double size, double angle) {
+        }
+
+        void main() {
+            left(90);
+            drawWord("F[+F]F[-F]F", 60, 25);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); drawWord(\"F[+F]F[-F]F\", 60, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              left 90
+              draw_word('F[+F]F[-F]F', 60, 25)
+          - call: "drawWord(\"FF[++F][-F]X+F\", 40, 30)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              draw_word('FF[++F][-F]X+F', 40, 30)
+        commands: [forward, left, right, push, pop]
+        show: 0
+      hint:
+        - "Eine Schleife über die Buchstaben: `for (char letter : word.toCharArray())`. Darin fragt sie, welcher Buchstabe es ist."
+        - "Für jeden der fünf Buchstaben eine Frage: `if (letter == 'F')`, dann `else if (letter == '+')` und so weiter, mit dem passenden Befehl darin."
+      solution: |
+        ```java
+        void drawWord(String word, double size, double angle) {
+            for (char letter : word.toCharArray()) {
+                if (letter == 'F') {
+                    forward(size);
+                } else if (letter == '+') {
+                    left(angle);
+                } else if (letter == '-') {
+                    right(angle);
+                } else if (letter == '[') {
+                    push();
+                } else if (letter == ']') {
+                    pop();
+                }
+            }
+        }
+
+        void main() {
+            left(90);
+            drawWord("F[+F]F[-F]F", 60, 25);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void drawWord(String word, double size, double angle)`, die ein Wort Buchstabe für Buchstabe zeichnet: `F` ist `size` Schritte vorwärts, `+` ist `angle` Grad nach links, `-` ist `angle` Grad nach rechts, `[` ist `push` und `]` ist `pop`. Andere Buchstaben zeichnen nichts.
+      starter: |
+        void drawWord(String word, double size, double angle) {
+        }
+
+        void main() {
+          left(90);
+          drawWord('F[+F]F[-F]F', 60, 25);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); drawWord('F[+F]F[-F]F', 60, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              left 90
+              draw_word('F[+F]F[-F]F', 60, 25)
+          - call: "drawWord('FF[++F][-F]X+F', 40, 30)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              draw_word('FF[++F][-F]X+F', 40, 30)
+        commands: [forward, left, right, push, pop]
+        show: 0
+      hint:
+        - "Eine Schleife über die Buchstaben: `for (final letter in word.split(''))`. Darin fragt sie, welcher Buchstabe es ist."
+        - "Für jeden der fünf Buchstaben eine Frage: `if (letter == 'F')`, dann `else if (letter == '+')` und so weiter, mit dem passenden Befehl darin."
+      solution: |
+        ```dart
+        void drawWord(String word, double size, double angle) {
+          for (final letter in word.split('')) {
+            if (letter == 'F') {
+              forward(size);
+            } else if (letter == '+') {
+              left(angle);
+            } else if (letter == '-') {
+              right(angle);
+            } else if (letter == '[') {
+              push();
+            } else if (letter == ']') {
+              pop();
+            }
+          }
+        }
+
+        void main() {
+          left(90);
+          drawWord('F[+F]F[-F]F', 60, 25);
+        }
         ```
 
   - id: grow
@@ -1315,6 +2051,210 @@ tasks:
         left(90);
         drawWord(grow("F", 4), 4, 25);
         ```
+    java:
+      prompt: |
+        Schreib `String grow(String word, int times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Methode `drawWord` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
+      starter: |
+        {{own draw-word drawWord}}
+
+        String grow(String word, int times) {
+        }
+
+        void main() {
+            left(90);
+            drawWord(grow("F", 4), 4, 25);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); drawWord(grow(\"F\", 1), 40, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 1), 40, 25)
+          - call: "left(90); drawWord(grow(\"F\", 4), 4, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 4), 4, 25)
+        commands: [forward, left, right, push, pop]
+        show: 1
+      hint:
+        - "Eine Schleife, die `times`-mal läuft; in jedem Durchlauf wird das Wort durch ein neues ersetzt."
+        - "Jedes `F` auf einmal ersetzen: `word = word.replace(\"F\", \"F[+F]F[-F]F\")`. Am Ende gibt die Methode das Wort zurück."
+      solution: |
+        ```java
+        void drawWord(String word, double size, double angle) {
+            for (char letter : word.toCharArray()) {
+                if (letter == 'F') {
+                    forward(size);
+                } else if (letter == '+') {
+                    left(angle);
+                } else if (letter == '-') {
+                    right(angle);
+                } else if (letter == '[') {
+                    push();
+                } else if (letter == ']') {
+                    pop();
+                }
+            }
+        }
+
+        String grow(String word, int times) {
+            for (int i = 0; i < times; i++) {
+                word = word.replace("F", "F[+F]F[-F]F");
+            }
+            return word;
+        }
+
+        void main() {
+            left(90);
+            drawWord(grow("F", 4), 4, 25);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `String grow(String word, int times)`, die das Wort `times`-mal wachsen lässt: Bei jedem Mal wird jedes `F` zu `F[+F]F[-F]F`. Deine Funktion `drawWord` von eben steht schon da; unten zeichnet sie die Pflanze der Stufe 4.
+      starter: |
+        {{own draw-word drawWord}}
+
+        String grow(String word, int times) {
+        }
+
+        void main() {
+          left(90);
+          drawWord(grow('F', 4), 4, 25);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); drawWord(grow('F', 1), 40, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 1), 40, 25)
+          - call: "left(90); drawWord(grow('F', 4), 4, 25)"
+            draw: |
+              def draw_word(word, size, angle)
+                word.each_char do |letter|
+                  if letter == "F"
+                    forward size
+                  elsif letter == "+"
+                    left angle
+                  elsif letter == "-"
+                    right angle
+                  elsif letter == "["
+                    push
+                  elsif letter == "]"
+                    pop
+                  end
+                end
+              end
+              def grow(word, times)
+                times.times do
+                  word = word.gsub("F", "F[+F]F[-F]F")
+                end
+                word
+              end
+              left 90
+              draw_word(grow('F', 4), 4, 25)
+        commands: [forward, left, right, push, pop]
+        show: 1
+      hint:
+        - "Eine Schleife, die `times`-mal läuft; in jedem Durchlauf wird das Wort durch ein neues ersetzt."
+        - "Jedes `F` auf einmal ersetzen: `word = word.replaceAll('F', 'F[+F]F[-F]F')`. Am Ende gibt die Funktion das Wort zurück."
+      solution: |
+        ```dart
+        void drawWord(String word, double size, double angle) {
+          for (final letter in word.split('')) {
+            if (letter == 'F') {
+              forward(size);
+            } else if (letter == '+') {
+              left(angle);
+            } else if (letter == '-') {
+              right(angle);
+            } else if (letter == '[') {
+              push();
+            } else if (letter == ']') {
+              pop();
+            }
+          }
+        }
+
+        String grow(String word, int times) {
+          for (var i = 0; i < times; i++) {
+            word = word.replaceAll('F', 'F[+F]F[-F]F');
+          }
+          return word;
+        }
+
+        void main() {
+          left(90);
+          drawWord(grow('F', 4), 4, 25);
+        }
+        ```
 
   - id: own-plant
     title: "Deine Pflanze"
@@ -1484,6 +2424,128 @@ tasks:
         left(70);
         drawWord(grow("X", 5), 4, 22.5);
         ```
+    java:
+      prompt: |
+        Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
+      starter: |
+        {{own draw-word drawWord}}
+
+        {{own grow grow}}
+
+        void main() {
+            // left(90);
+            // drawWord(grow("F", 4), 4, 25);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
+        - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
+      solution: |
+        ```java
+        void drawWord(String word, double size, double angle) {
+            for (char letter : word.toCharArray()) {
+                if (letter == 'F') {
+                    forward(size);
+                } else if (letter == '+') {
+                    left(angle);
+                } else if (letter == '-') {
+                    right(angle);
+                } else if (letter == '[') {
+                    push();
+                } else if (letter == ']') {
+                    pop();
+                }
+            }
+        }
+
+        String grow(String word, int times) {
+            for (int i = 0; i < times; i++) {
+                String newWord = "";
+                for (char letter : word.toCharArray()) {
+                    if (letter == 'X') {
+                        newWord += "F+[[X]-X]-F[-FX]+X";
+                    } else if (letter == 'F') {
+                        newWord += "FF";
+                    } else {
+                        newWord += letter;
+                    }
+                }
+                word = newWord;
+            }
+            return word;
+        }
+
+        void main() {
+            color("olivedrab");
+            left(70);
+            drawWord(grow("X", 5), 4, 22.5);
+        }
+        ```
+    dart:
+      prompt: |
+        Erfinde eine eigene Pflanze: eine andere Regel, ein anderer Winkel, mehr Stufen, Farben, die sich mit jedem Ast ändern, oder ein Winkel aus dem Zufall. Ideen stehen oben im Kasten »Ausprobieren«.
+      starter: |
+        {{own draw-word drawWord}}
+
+        {{own grow grow}}
+
+        void main() {
+          // left(90);
+          // drawWord(grow('F', 4), 4, 25);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Zahl an: Ein Winkel von 20 oder 35 Grad statt 25 gibt schon eine andere Pflanze."
+        - "Eine zweite Regel braucht einen Buchstaben, der nichts zeichnet, wie `X`: Er sagt nur, wo die Pflanze weiterwächst. Dann ersetzt `grow` Buchstabe für Buchstabe, damit die Regeln einander nicht stören."
+      solution: |
+        ```dart
+        void drawWord(String word, double size, double angle) {
+          for (final letter in word.split('')) {
+            if (letter == 'F') {
+              forward(size);
+            } else if (letter == '+') {
+              left(angle);
+            } else if (letter == '-') {
+              right(angle);
+            } else if (letter == '[') {
+              push();
+            } else if (letter == ']') {
+              pop();
+            }
+          }
+        }
+
+        String grow(String word, int times) {
+          for (var i = 0; i < times; i++) {
+            var newWord = '';
+            for (final letter in word.split('')) {
+              if (letter == 'X') {
+                newWord += 'F+[[X]-X]-F[-FX]+X';
+              } else if (letter == 'F') {
+                newWord += 'FF';
+              } else {
+                newWord += letter;
+              }
+            }
+            word = newWord;
+          }
+          return word;
+        }
+
+        void main() {
+          color('olivedrab');
+          left(70);
+          drawWord(grow('X', 5), 4, 22.5);
+        }
+        ```
 
   - id: finale
     title: "Dein Bild"
@@ -1619,5 +2681,103 @@ tasks:
           penUp();
           forward(200);
           penDown();
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne, was du willst, mit allem, was du jetzt kannst: einen Wald aus Bäumen im Wind, eine Wiese mit Blumen, eine Schneeflocke, einen Blitz, einen Sternenhimmel. Gefällt dir dein Bild, kannst du es einreichen.
+      starter: |
+        void main() {
+            // Dein Bild
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
+        - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth);
+            color(depth <= 2 ? "forestgreen" : "saddlebrown");
+            forward(size);
+            push();
+            left(random(10, 40));
+            tree(size * random(0.6, 0.85), depth - 1);
+            pop();
+            push();
+            right(random(10, 40));
+            tree(size * random(0.6, 0.85), depth - 1);
+            pop();
+        }
+
+        void main() {
+            // ein Wald: drei Bäume im Wind nebeneinander
+
+            penUp();
+            back(200);
+            penDown();
+            for (int i = 0; i < 3; i++) {
+                push();
+                left(90);
+                tree(random(40, 60), 8);
+                pop();
+                penUp();
+                forward(200);
+                penDown();
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne, was du willst, mit allem, was du jetzt kannst: einen Wald aus Bäumen im Wind, eine Wiese mit Blumen, eine Schneeflocke, einen Blitz, einen Sternenhimmel. Gefällt dir dein Bild, kannst du es einreichen.
+      starter: |
+        void main() {
+          // Dein Bild
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width, push, pop, background, hue, mix, random]
+      hint:
+        - "Fang mit einer Sache an, die du schon kannst, und setz sie mehrmals nebeneinander: Mit `push` und `pop` kommt die Schildkröte nach jedem Teil zurück."
+        - "Mit gehobenem Stift bringst du die Schildkröte an die Stelle für das nächste Teil."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth);
+          color(depth <= 2 ? 'forestgreen' : 'saddlebrown');
+          forward(size);
+          push();
+          left(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+          push();
+          right(random(10, 40));
+          tree(size * random(0.6, 0.85), depth - 1);
+          pop();
+        }
+
+        void main() {
+          // ein Wald: drei Bäume im Wind nebeneinander
+
+          penUp();
+          back(200);
+          penDown();
+          for (var i = 0; i < 3; i++) {
+            push();
+            left(90);
+            tree(random(40, 60), 8);
+            pop();
+            penUp();
+            forward(200);
+            penDown();
+          }
         }
         ```

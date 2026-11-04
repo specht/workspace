@@ -1,9 +1,12 @@
 require_relative 'turtle_check'
 require_relative 'kata_check'
 require_relative 'turtle_sketches'
+require_relative 'turtle_compiled'
 
 # The turtle (docs/katas.md, »Turtle«): the program runs in the
-# browser (turtle_worker.js), so nothing waits in the Katas' queue. A run
+# browser (turtle_worker.js), so nothing waits in the Katas' queue; Java and
+# Dart, which compile, run on the server through that queue
+# (/api/turtle/run, TurtleCompiled) and the page replays them. A run
 # that ends by itself comes here to be checked, with the commands it drew;
 # a run that is stopped only keeps its code. Like a Kata, the code is kept
 # per language ({"python": "…"}) until the student deletes it.
@@ -118,6 +121,29 @@ class Main < Sinatra::Base
                     :solution => render_task_markdown(result.solution, :lineno => true),
                     :state => state, :replay => result.replay)
         end
+    end
+
+    # Java and Dart (TurtleCompiled): the program, and the card's calls
+    # each from the start, in one run in the Katas' queue; the card asks
+    # /api/kata/poll as for a Kata, and gets what the browser's worker would
+    # have sent: runs[0] is the program, runs[1..] the calls, if there are
+    # any. Nothing is stored; the card sends the commands to
+    # /api/turtle/check as for the other languages.
+    post '/api/turtle/run' do
+        data, found = turtle_request
+        task = found[:task]
+        language = task['check']['language']
+        halt 404 unless TurtleCompiled::LANGUAGES.include?(language)
+        code = data[:answer].to_s
+        return respond(:done => true, :status => 'invalid', :message => render_task_markdown(TurtleCheck::EMPTY)) if code.strip.empty?
+
+        calls = TurtleCheck.runs(task['check'])
+        runs = calls == [nil] ? [nil] : [nil] + calls
+        ticket = KATA_QUEUE.submit(@session_user[:email]) do |t|
+            TurtleCompiled.run(language, code, runs, Main.kata_run(t))
+        end
+        ticket.data = { :kind => :turtle }
+        respond(:done => false, :ticket => ticket.id, :ahead => KATA_QUEUE.ahead(ticket))
     end
 
     # A stopped run, or one that broke off: the code is kept, the status

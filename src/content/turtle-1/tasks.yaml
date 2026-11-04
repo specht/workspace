@@ -100,6 +100,76 @@ tasks:
         forward(50);
         right(90);
         ```
+    java:
+      prompt: |
+        Die Schildkröte soll eine Treppe mit drei Stufen zeichnen, jede 50 Schritte breit und 50 Schritte hoch. Die erste Stufe steht schon da: Ergänze die beiden anderen. Die Befehle stehen in `void main() { … }`, zwischen den geschweiften Klammern: Dort fängt ein Java-Programm an.
+      starter: |
+        void main() {
+            forward(50);
+            left(90);
+            forward(50);
+            right(90);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "3.times { forward 50; left 90; forward 50; right 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Stufe sind vier Befehle: ein Stück nach rechts, eine Drehung nach oben, ein Stück nach oben und eine Drehung zurück."
+        - "Schreib die vier Zeilen der ersten Stufe noch zweimal darunter."
+      solution: |
+        ```java
+        void main() {
+            forward(50);
+            left(90);
+            forward(50);
+            right(90);
+            forward(50);
+            left(90);
+            forward(50);
+            right(90);
+            forward(50);
+            left(90);
+            forward(50);
+            right(90);
+        }
+        ```
+    dart:
+      prompt: |
+        Die Schildkröte soll eine Treppe mit drei Stufen zeichnen, jede 50 Schritte breit und 50 Schritte hoch. Die erste Stufe steht schon da: Ergänze die beiden anderen. Die Befehle stehen in `void main() { … }`, zwischen den geschweiften Klammern: Dort fängt ein Dart-Programm an.
+      starter: |
+        void main() {
+          forward(50);
+          left(90);
+          forward(50);
+          right(90);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "3.times { forward 50; left 90; forward 50; right 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Stufe sind vier Befehle: ein Stück nach rechts, eine Drehung nach oben, ein Stück nach oben und eine Drehung zurück."
+        - "Schreib die vier Zeilen der ersten Stufe noch zweimal darunter."
+      solution: |
+        ```dart
+        void main() {
+          forward(50);
+          left(90);
+          forward(50);
+          right(90);
+          forward(50);
+          left(90);
+          forward(50);
+          right(90);
+          forward(50);
+          left(90);
+          forward(50);
+          right(90);
+        }
+        ```
 
   - id: square
     title: "Ein Quadrat"
@@ -168,6 +238,62 @@ tasks:
         left(90);
         forward(100);
         left(90);
+        ```
+    java:
+      prompt: |
+        Zeichne ein Quadrat mit der Seitenlänge 100. Es fängt dort an, wo die Schildkröte steht, und geht nach rechts und nach oben.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "4.times { forward 100; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Nach jeder Seite dreht sich die Schildkröte nach links, so dass die nächste Seite senkrecht auf der letzten steht."
+        - "100 Schritte vorwärts und 90 Grad nach links, und das viermal."
+      solution: |
+        ```java
+        void main() {
+            forward(100);
+            left(90);
+            forward(100);
+            left(90);
+            forward(100);
+            left(90);
+            forward(100);
+            left(90);
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne ein Quadrat mit der Seitenlänge 100. Es fängt dort an, wo die Schildkröte steht, und geht nach rechts und nach oben.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "4.times { forward 100; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Nach jeder Seite dreht sich die Schildkröte nach links, so dass die nächste Seite senkrecht auf der letzten steht."
+        - "100 Schritte vorwärts und 90 Grad nach links, und das viermal."
+      solution: |
+        ```dart
+        void main() {
+          forward(100);
+          left(90);
+          forward(100);
+          left(90);
+          forward(100);
+          left(90);
+          forward(100);
+          left(90);
+        }
         ```
 
   - id: triangle-angle
@@ -242,6 +368,58 @@ tasks:
         forward(150);
         left(120);
         ```
+    java:
+      prompt: |
+        Zeichne das Dreieck mit drei gleich langen Seiten, jede 150 Schritte lang.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "3.times { forward 150; left 120 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie beim Quadrat: eine Seite, eine Drehung, nur dreimal."
+        - "Um wie viel sich die Schildkröte dreht, steht oben unter der Vorhersage."
+      solution: |
+        ```java
+        void main() {
+            forward(150);
+            left(120);
+            forward(150);
+            left(120);
+            forward(150);
+            left(120);
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne das Dreieck mit drei gleich langen Seiten, jede 150 Schritte lang.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "3.times { forward 150; left 120 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie beim Quadrat: eine Seite, eine Drehung, nur dreimal."
+        - "Um wie viel sich die Schildkröte dreht, steht oben unter der Vorhersage."
+      solution: |
+        ```dart
+        void main() {
+          forward(150);
+          left(120);
+          forward(150);
+          left(120);
+          forward(150);
+          left(120);
+        }
+        ```
 
   - id: square-loop
     title: "Viermal dasselbe"
@@ -299,6 +477,56 @@ tasks:
         for (let i = 0; i < 4; i++) {
           forward(100);
           left(90);
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne das Quadrat noch einmal, aber in höchstens vier Zeilen in `main`: Was sich wiederholt, macht eine Schleife.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "4.times { forward 100; left 90 }"
+        max_lines: 4
+        commands: [forward, back, left, right]
+      hint:
+        - "Wiederholt werden zwei Befehle: 100 vorwärts und 90 nach links."
+        - "`for (int i = 0; i < 4; i++) {`, darunter die beiden Befehle, dann `}`."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 4; i++) {
+                forward(100);
+                left(90);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne das Quadrat noch einmal, aber in höchstens vier Zeilen in `main`: Was sich wiederholt, macht eine Schleife.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "4.times { forward 100; left 90 }"
+        max_lines: 4
+        commands: [forward, back, left, right]
+      hint:
+        - "Wiederholt werden zwei Befehle: 100 vorwärts und 90 nach links."
+        - "`for (var i = 0; i < 4; i++) {`, darunter die beiden Befehle, dann `}`."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 4; i++) {
+            forward(100);
+            left(90);
+          }
         }
         ```
 
@@ -394,6 +622,76 @@ tasks:
         }
 
         square(150);
+        ```
+    java:
+      prompt: |
+        Schreib eine Methode `void square(double size)`, die ein Quadrat mit der Seitenlänge `size` zeichnet. Unten in `main` zeichnet `square(150)` eins.
+      starter: |
+        void square(double size) {
+        }
+
+        void main() {
+            square(150);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "square(150)"
+            draw: "4.times { forward 150; left 90 }"
+          - call: "square(40)"
+            draw: "4.times { forward 40; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Das Quadrat mit der Schleife von eben gehört in die Methode, eingerückt."
+        - "Statt `100` steht dort `size`: Dann zeichnet `square(40)` die Seiten 40 Schritte lang."
+      solution: |
+        ```java
+        void square(double size) {
+            for (int i = 0; i < 4; i++) {
+                forward(size);
+                left(90);
+            }
+        }
+
+        void main() {
+            square(150);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `void square(double size)`, die ein Quadrat mit der Seitenlänge `size` zeichnet. Unten in `main` zeichnet `square(150)` eins.
+      starter: |
+        void square(double size) {
+        }
+
+        void main() {
+          square(150);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "square(150)"
+            draw: "4.times { forward 150; left 90 }"
+          - call: "square(40)"
+            draw: "4.times { forward 40; left 90 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Das Quadrat mit der Schleife von eben gehört in die Funktion, eingerückt."
+        - "Statt `100` steht dort `size`: Dann zeichnet `square(40)` die Seiten 40 Schritte lang."
+      solution: |
+        ```dart
+        void square(double size) {
+          for (var i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        void main() {
+          square(150);
+        }
         ```
 
   - id: polygon
@@ -498,6 +796,82 @@ tasks:
 
         polygon(5, 100);
         ```
+    java:
+      prompt: |
+        Schreib eine Methode `void polygon(int corners, double side)`, die ein Vieleck mit `corners` Ecken und gleich langen Seiten der Länge `side` zeichnet: `polygon(5, 100)` ein Fünfeck, `polygon(8, 60)` ein Achteck.
+      starter: |
+        void polygon(int corners, double side) {
+        }
+
+        void main() {
+            polygon(5, 100);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "polygon(5, 100)"
+            draw: "5.times { forward 100; left 72 }"
+          - call: "polygon(8, 60)"
+            draw: "8.times { forward 60; left 45 }"
+          - call: "polygon(7, 80)"
+            draw: "7.times { forward 80; left 360.0 / 7 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Die Schleife läuft so oft, wie das Vieleck Ecken hat: `corners` mal."
+        - "An allen Ecken zusammen dreht sich die Schildkröte einmal ganz herum, um 360 Grad. An einer Ecke ist es also 360 geteilt durch die Zahl der Ecken."
+        - "Teilt Java eine ganze Zahl durch eine ganze Zahl, rechnet es ohne Komma: `360 / 7` ergibt `51`. Mit `360.0 / corners` ergibt es eine Kommazahl, auch bei 7 Ecken."
+      solution: |
+        ```java
+        void polygon(int corners, double side) {
+            for (int i = 0; i < corners; i++) {
+                forward(side);
+                left(360.0 / corners);
+            }
+        }
+
+        void main() {
+            polygon(5, 100);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `void polygon(int corners, double side)`, die ein Vieleck mit `corners` Ecken und gleich langen Seiten der Länge `side` zeichnet: `polygon(5, 100)` ein Fünfeck, `polygon(8, 60)` ein Achteck.
+      starter: |
+        void polygon(int corners, double side) {
+        }
+
+        void main() {
+          polygon(5, 100);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "polygon(5, 100)"
+            draw: "5.times { forward 100; left 72 }"
+          - call: "polygon(8, 60)"
+            draw: "8.times { forward 60; left 45 }"
+          - call: "polygon(7, 80)"
+            draw: "7.times { forward 80; left 360.0 / 7 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Die Schleife läuft so oft, wie das Vieleck Ecken hat: `corners` mal."
+        - "An allen Ecken zusammen dreht sich die Schildkröte einmal ganz herum, um 360 Grad. An einer Ecke ist es also 360 geteilt durch die Zahl der Ecken."
+        - "`360 / corners` ergibt in Dart eine Kommazahl, auch bei 7 Ecken."
+      solution: |
+        ```dart
+        void polygon(int corners, double side) {
+          for (var i = 0; i < corners; i++) {
+            forward(side);
+            left(360 / corners);
+          }
+        }
+
+        void main() {
+          polygon(5, 100);
+        }
+        ```
 
   - id: flower
     title: "Eine Blume aus Quadraten"
@@ -577,6 +951,72 @@ tasks:
         for (let i = 0; i < 12; i++) {
           square(100);
           left(30);
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Methode `square` von eben steht schon da und hilft dabei.
+      starter: |
+        {{own square-function square}}
+
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "12.times { 4.times { forward 100; left 90 }; left 30 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zwölfmal dasselbe: ein Quadrat zeichnen, dann 30 Grad weiterdrehen."
+        - "In der Schleife stehen zwei Zeilen: `square(100)` und die Drehung um 30 Grad nach links."
+      solution: |
+        ```java
+        void square(double size) {
+            for (int i = 0; i < 4; i++) {
+                forward(size);
+                left(90);
+            }
+        }
+
+        void main() {
+            for (int i = 0; i < 12; i++) {
+                square(100);
+                left(30);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne zwölf Quadrate mit der Seitenlänge 100, alle an derselben Ecke, jedes um 30 Grad weiter gedreht als das davor. Deine Funktion `square` von eben steht schon da und hilft dabei.
+      starter: |
+        {{own square-function square}}
+
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "12.times { 4.times { forward 100; left 90 }; left 30 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zwölfmal dasselbe: ein Quadrat zeichnen, dann 30 Grad weiterdrehen."
+        - "In der Schleife stehen zwei Zeilen: `square(100)` und die Drehung um 30 Grad nach links."
+      solution: |
+        ```dart
+        void square(double size) {
+          for (var i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        void main() {
+          for (var i = 0; i < 12; i++) {
+            square(100);
+            left(30);
+          }
         }
         ```
 
@@ -660,6 +1100,72 @@ tasks:
           left(20);
         }
         ```
+    java:
+      prompt: |
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Methode `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
+      starter: |
+        {{own polygon polygon}}
+
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+      solution: |
+        ```java
+        void polygon(int corners, double side) {
+            for (int i = 0; i < corners; i++) {
+                forward(side);
+                left(360.0 / corners);
+            }
+        }
+
+        void main() {
+            for (int i = 0; i < 18; i++) {
+                polygon(6, 70);
+                left(20);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Bau deine eigene Blume: Nimm statt des Quadrats eine andere Figur, ein Dreieck, ein Sechseck oder ein Vieleck mit deiner Funktion `polygon`, und dreh sie so oft, dass sie einmal ganz herumkommt.
+      starter: |
+        {{own polygon polygon}}
+
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, right]
+      hint:
+        - "Wie bei der Blume aus Quadraten: die Figur zeichnen, ein Stück weiterdrehen, und das in einer Schleife."
+        - "Damit die Blume einmal herumkommt, ergeben alle Drehungen zusammen 360 Grad: 18-mal 20 Grad, 12-mal 30 Grad, 36-mal 10 Grad."
+      solution: |
+        ```dart
+        void polygon(int corners, double side) {
+          for (var i = 0; i < corners; i++) {
+            forward(side);
+            left(360 / corners);
+          }
+        }
+
+        void main() {
+          for (var i = 0; i < 18; i++) {
+            polygon(6, 70);
+            left(20);
+          }
+        }
+        ```
 
   - id: dashes
     title: "Eine gestrichelte Linie"
@@ -720,6 +1226,58 @@ tasks:
           penUp();
           forward(10);
           penDown();
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne eine gestrichelte Linie nach rechts: zehn Striche, jeder 10 Schritte lang, und zwischen zwei Strichen 10 Schritte Lücke. Mit `penUp()` hebt die Schildkröte den Stift und geht weiter, ohne zu zeichnen; `penDown()` setzt ihn wieder auf.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Strich und eine Lücke wiederholen sich zehnmal."
+        - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 10; i++) {
+                forward(10);
+                penUp();
+                forward(10);
+                penDown();
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne eine gestrichelte Linie nach rechts: zehn Striche, jeder 10 Schritte lang, und zwischen zwei Strichen 10 Schritte Lücke. Mit `penUp()` hebt die Schildkröte den Stift und geht weiter, ohne zu zeichnen; `penDown()` setzt ihn wieder auf.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "10.times { forward 10; pen_up; forward 10; pen_down }"
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Strich und eine Lücke wiederholen sich zehnmal."
+        - "In der Schleife: 10 vorwärts, Stift hoch, 10 vorwärts, Stift wieder runter."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 10; i++) {
+            forward(10);
+            penUp();
+            forward(10);
+            penDown();
+          }
         }
         ```
 
@@ -830,6 +1388,86 @@ tasks:
           penDown();
         }
         ```
+    java:
+      prompt: |
+        Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`"red"`), das zweite goldgelb (`"gold"`), das dritte blau (`"blue"`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
+      starter: |
+        {{own square-function square}}
+
+        void main() {
+            width(4);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: |
+          width 4
+          %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
+        - "Vor jedem Quadrat seine Farbe: `color(\"red\")`. Wer mag, nimmt eine Schleife über die Farben: `for (String name : List.of(\"red\", \"gold\", \"blue\")) {`."
+      solution: |
+        ```java
+        void square(double size) {
+            for (int i = 0; i < 4; i++) {
+                forward(size);
+                left(90);
+            }
+        }
+
+        void main() {
+            width(4);
+            for (String name : List.of("red", "gold", "blue")) {
+                color(name);
+                square(60);
+                penUp();
+                forward(80);
+                penDown();
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne drei Quadrate mit der Seitenlänge 60 nebeneinander, das erste rot (`'red'`), das zweite goldgelb (`'gold'`), das dritte blau (`'blue'`). Zwischen zwei Quadraten sind 20 Schritte frei, und die Schildkröte zeichnet dabei nichts.
+      starter: |
+        {{own square-function square}}
+
+        void main() {
+          width(4);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: |
+          width 4
+          %w[red gold blue].each { |c| color c; 4.times { forward 60; left 90 }; pen_up; forward 80; pen_down }
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Ein Quadrat, dann 80 Schritte nach rechts mit gehobenem Stift: 60 für das Quadrat und 20 Lücke."
+        - "Vor jedem Quadrat seine Farbe: `color('red')`. Wer mag, nimmt eine Schleife über die Farben: `for (final name in ['red', 'gold', 'blue']) {`."
+      solution: |
+        ```dart
+        void square(double size) {
+          for (var i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        void main() {
+          width(4);
+          for (final name in ['red', 'gold', 'blue']) {
+            color(name);
+            square(60);
+            penUp();
+            forward(80);
+            penDown();
+          }
+        }
+        ```
 
   - id: spiral
     title: "Eine eckige Spirale"
@@ -890,6 +1528,58 @@ tasks:
           forward(step);
           left(90);
           step = step + 10;
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne eine eckige Spirale aus 20 Linien: die erste 10 Schritte lang, jede weitere 10 Schritte länger als die davor, und nach jeder Linie eine Drehung um 90 Grad nach links.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "s = 10; 20.times { forward s; left 90; s += 10 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Variable merkt sich, wie lang die nächste Linie wird. Sie beginnt bei 10."
+        - "In der Schleife: so weit vorwärts, wie die Variable sagt, 90 nach links, und dann die Variable um 10 größer machen."
+      solution: |
+        ```java
+        void main() {
+            int step = 10;
+            for (int i = 0; i < 20; i++) {
+                forward(step);
+                left(90);
+                step = step + 10;
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne eine eckige Spirale aus 20 Linien: die erste 10 Schritte lang, jede weitere 10 Schritte länger als die davor, und nach jeder Linie eine Drehung um 90 Grad nach links.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "s = 10; 20.times { forward s; left 90; s += 10 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Eine Variable merkt sich, wie lang die nächste Linie wird. Sie beginnt bei 10."
+        - "In der Schleife: so weit vorwärts, wie die Variable sagt, 90 nach links, und dann die Variable um 10 größer machen."
+      solution: |
+        ```dart
+        void main() {
+          var step = 10;
+          for (var i = 0; i < 20; i++) {
+            forward(step);
+            left(90);
+            step = step + 10;
+          }
         }
         ```
 
@@ -963,6 +1653,56 @@ tasks:
         for (let i = 0; i < 5; i++) {
           forward(200);
           right(144);
+        }
+        ```
+    java:
+      prompt: |
+        Zeichne den Stern mit fünf Zacken, ohne den Stift abzusetzen: fünf Linien, jede 200 Schritte lang.
+      starter: |
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: "5.times { forward 200; right 144 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zeichne den Stern mit dem Finger auf dem Tisch nach, ohne abzusetzen. Wie oft drehst du dich dabei ganz herum, bis du wieder in die Richtung vom Anfang schaust?"
+        - "Zweimal: 720 Grad, auf fünf Spitzen verteilt."
+        - "144 Grad nach rechts an jeder Spitze. Nach links wird der Stern gespiegelt."
+      solution: |
+        ```java
+        void main() {
+            for (int i = 0; i < 5; i++) {
+                forward(200);
+                right(144);
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne den Stern mit fünf Zacken, ohne den Stift abzusetzen: fünf Linien, jede 200 Schritte lang.
+      starter: |
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: "5.times { forward 200; right 144 }"
+        commands: [forward, back, left, right]
+      hint:
+        - "Zeichne den Stern mit dem Finger auf dem Tisch nach, ohne abzusetzen. Wie oft drehst du dich dabei ganz herum, bis du wieder in die Richtung vom Anfang schaust?"
+        - "Zweimal: 720 Grad, auf fünf Spitzen verteilt."
+        - "144 Grad nach rechts an jeder Spitze. Nach links wird der Stern gespiegelt."
+      solution: |
+        ```dart
+        void main() {
+          for (var i = 0; i < 5; i++) {
+            forward(200);
+            right(144);
+          }
         }
         ```
 
@@ -1090,6 +1830,96 @@ tasks:
 
         circle(80);
         ```
+    java:
+      prompt: |
+        Schreib eine Methode `void circle(double radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        void circle(double radius) {
+        }
+
+        void main() {
+            circle(80);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in Java `Math.PI`."
+      solution: |
+        ```java
+        void circle(double radius) {
+            for (int i = 0; i < 36; i++) {
+                forward(2 * Math.PI * radius / 36);
+                left(10);
+            }
+        }
+
+        void main() {
+            circle(80);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib eine Funktion `void circle(double radius)`, die einen Kreis mit dem Radius `radius` zeichnet: ein Vieleck mit 36 Ecken, dessen Seiten zusammen so lang sind wie der Umfang des Kreises, 2 · π · `radius`. Die Schildkröte fängt unten am Kreis an und läuft links herum.
+      starter: |
+        void circle(double radius) {
+        }
+
+        void main() {
+          circle(80);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "circle(80)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(80)
+          - call: "circle(30)"
+            draw: |
+              def circle(radius)
+                36.times { forward 2 * Math::PI * radius / 36; left 10 }
+              end
+              circle(30)
+        commands: [forward, back, left, right]
+      hint:
+        - "Ein Vieleck mit 36 Ecken: 36-mal ein Stück vorwärts und 10 Grad nach links, denn 36 · 10 = 360."
+        - "Ein Stück ist der Umfang geteilt durch 36: `2 * π * radius / 36`."
+        - "π heißt in Dart `pi`; dafür steht `import 'dart:math';` in der ersten Zeile."
+      solution: |
+        ```dart
+        import 'dart:math';
+
+        void circle(double radius) {
+          for (var i = 0; i < 36; i++) {
+            forward(2 * pi * radius / 36);
+            left(10);
+          }
+        }
+
+        void main() {
+          circle(80);
+        }
+        ```
 
   - id: slinky
     title: "Eine Feder"
@@ -1193,6 +2023,86 @@ tasks:
           penDown();
         }
         ```
+    java:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        {{own circle circle}}
+
+        void main() {
+            // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```java
+        void circle(double radius) {
+            for (int i = 0; i < 36; i++) {
+                forward(2 * Math.PI * radius / 36);
+                left(10);
+            }
+        }
+
+        void main() {
+            for (int i = 0; i < 30; i++) {
+                circle(50);
+                penUp();
+                forward(8);
+                penDown();
+            }
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne eine Feder aus 30 Kreisen mit dem Radius 50: Nach jedem Kreis geht die Schildkröte mit gehobenem Stift 8 Schritte weiter nach rechts. Dein Kreis von eben hilft dabei.
+      starter: |
+        {{own circle circle}}
+
+        void main() {
+          // Deine Befehle
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        draw: |
+          def circle(radius)
+            36.times { forward 2 * Math::PI * radius / 36; left 10 }
+          end
+          30.times { circle(50); pen_up; forward 8; pen_down }
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Dreißigmal dasselbe: ein Kreis, dann ein kleines Stück weiter."
+        - "Das Stück weiter geht mit gehobenem Stift, damit unten keine Linie entsteht."
+      solution: |
+        ```dart
+        import 'dart:math';
+
+        void circle(double radius) {
+          for (var i = 0; i < 36; i++) {
+            forward(2 * pi * radius / 36);
+            left(10);
+          }
+        }
+
+        void main() {
+          for (var i = 0; i < 30; i++) {
+            circle(50);
+            penUp();
+            forward(8);
+            penDown();
+          }
+        }
+        ```
 
   - id: own
     title: "Dein eigenes Bild"
@@ -1285,4 +2195,74 @@ tasks:
         color("gold");
         width(6);
         square(30);
+        ```
+    java:
+      prompt: |
+        Zeichne ein eigenes Bild, was immer du magst: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+      starter: |
+        void main() {
+            // Dein Bild
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
+      solution: |
+        ```java
+        void square(double size) {
+            for (int i = 0; i < 4; i++) {
+                forward(size);
+                left(90);
+            }
+        }
+
+        void main() {
+            color("teal");
+            for (int i = 0; i < 12; i++) {
+                square(100);
+                left(30);
+            }
+            color("gold");
+            width(6);
+            square(30);
+        }
+        ```
+    dart:
+      prompt: |
+        Zeichne ein eigenes Bild, was immer du magst: einen Garten aus Blumen, ein Haus, einen Sternenhimmel, ein Muster. Was du in den Aufgaben gebaut hast, darfst du alles wiederverwenden.
+      starter: |
+        void main() {
+          // Dein Bild
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit einer Figur an, die du schon kannst, und bau sie aus: eine Blume aus Sechsecken, eine Reihe von Sternen in verschiedenen Farben."
+        - "Mit gehobenem Stift bringst du die Schildkröte an eine andere Stelle, bevor sie die nächste Figur zeichnet."
+      solution: |
+        ```dart
+        void square(double size) {
+          for (var i = 0; i < 4; i++) {
+            forward(size);
+            left(90);
+          }
+        }
+
+        void main() {
+          color('teal');
+          for (var i = 0; i < 12; i++) {
+            square(100);
+            left(30);
+          }
+          color('gold');
+          width(6);
+          square(30);
+        }
         ```

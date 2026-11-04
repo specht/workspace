@@ -108,8 +108,9 @@ module KataRunner
     # on_output(stream, text) gets the output as it comes. dialog: a lambda
     # that answers each line of the program that starts with DIALOG_MARK
     # (with the rest of the line); those lines are not part of stdout, and
-    # stdin stays open for the answers until the program ends.
-    def self.run(files:, argv:, input: '', timeout: 10, image: IMAGE, cancel: nil, on_output: nil, dialog: nil)
+    # stdin stays open for the answers until the program ends. max_output:
+    # more output than that stops the run (the turtle's commands need more).
+    def self.run(files:, argv:, input: '', timeout: 10, image: IMAGE, cancel: nil, on_output: nil, dialog: nil, max_output: MAX_OUTPUT)
         name = container_name
         stdout = +''
         stderr = +''
@@ -179,7 +180,7 @@ module KataRunner
                     end
                     buffer << text
                     on_output&.call(kind, text) unless text.empty?
-                    if stdout.bytesize + stderr.bytesize > MAX_OUTPUT
+                    if stdout.bytesize + stderr.bytesize > max_output
                         too_long = true
                         kill.call
                         streams.clear

@@ -2,7 +2,7 @@ Rekursion zum Zuschauen: Lernende zeichnen mit der Schildkröte aus <a href='/tu
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/turtle-1'>Turtle: Bilder aus Befehlen</a> (die Befehle, eigene Funktionen, Stift und Farbe) und <a href='/kata-recursion'>Katas: Rekursion</a> (eine Funktion, die sich selbst aufruft, mit einem Fall, der aufhört).</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby, Python, JavaScript, Dart oder Java. Die Sprachen stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript, Dart und Java können die Lernenden auf der Seite auch selbst wählen. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder. Dart und Java laufen auf dem Server und werden dort zuerst übersetzt, darum kommt die Antwort langsamer als in den anderen drei Sprachen (Zeile »Technik« in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>).</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Ein Baum (4 Aufgaben): ein rekursiver Baum, ein schöner in Braun und Grün, ein schiefer und einer, der bis zum Boden hängt.</li>
 <li>Ein Farnblatt (1 Aufgabe).</li>

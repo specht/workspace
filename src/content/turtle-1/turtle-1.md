@@ -2,7 +2,7 @@
 icon: bi-pencil
 kind: uebung
 duration: 2 Doppelstunden
-languages: [ruby, python, javascript]
+languages: [ruby, python, javascript, dart, java]
 idea: Eine Schildkröte zeichnet, was du ihr sagst
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen, Implementieren von Algorithmen), Digitale Bilder und Visualisierung (Vektorgrafik, Turtle-Grafik), Geschichte der Informatik (Lebensläufe und Leistungen bedeutender Persönlichkeiten)"
 topics: [grundstrukturen, unterprogramme, computergrafik, geschichte]
@@ -57,12 +57,48 @@ left(90);
 forward(50);
 ```
 <!-- /language -->
+<!-- language: dart -->
+```dart
+void main() {
+  forward(100);
+  left(90);
+  forward(50);
+}
+```
+
+Ein Dart-Programm fängt in `void main() { … }` an: Die Befehle stehen
+zwischen den geschweiften Klammern. In den Beispielen weiter unten steht
+nur noch, was zwischen diese Klammern gehört.
+<!-- /language -->
+<!-- language: java -->
+```java
+void main() {
+    forward(100);
+    left(90);
+    forward(50);
+}
+```
+
+Ein Java-Programm fängt in `void main() { … }` an: Die Befehle stehen
+zwischen den geschweiften Klammern. In den Beispielen weiter unten steht
+nur noch, was zwischen diese Klammern gehört.
+<!-- /language -->
 
 Dein Programm schreibst du in eine Karte wie die folgenden; *Ausführen*
 startet es. Die Schildkröte zeichnet, während es läuft, und die Zeile, an
 der sie gerade ist, leuchtet im Programm. Wie schnell sie läuft, stellst du
-unter dem Papier ein. Dein Programm läuft in deinem Browser; ist es zu Ende,
-vergleicht der Workspace dein Bild mit dem grauen Bild auf dem Papier.
+unter dem Papier ein.
+<!-- language: ruby, python, javascript -->
+Dein Programm läuft in deinem Browser; ist es zu Ende, vergleicht der
+Workspace dein Bild mit dem grauen Bild auf dem Papier.
+<!-- /language -->
+<!-- language: dart, java -->
+Dein Programm läuft nicht in deinem Browser, sondern auf dem Server: Dort
+wird es erst übersetzt und dann ausgeführt, und die Schildkröte zeichnet,
+was es getan hat. Darum dauert es einen Moment, bis sie losläuft. Ist sie
+fertig, vergleicht der Workspace dein Bild mit dem grauen Bild auf dem
+Papier.
+<!-- /language -->
 
 _task(steps)
 
@@ -142,6 +178,40 @@ for (let i = 0; i < 5; i++) {
 `for (let i = 0; i < 5; i++)` heißt: fünfmal. Was zwischen den geschweiften
 Klammern steht, wiederholt JavaScript; `i` zählt dabei mit, von 0 bis 4.
 <!-- /language -->
+<!-- language: dart -->
+```dart
+for (var i = 0; i < 5; i++) {
+  forward(20);
+  left(90);
+  forward(20);
+  right(90);
+  forward(20);
+  right(90);
+  forward(20);
+  left(90);
+}
+```
+
+`for (var i = 0; i < 5; i++)` heißt: fünfmal. Was zwischen den geschweiften
+Klammern steht, wiederholt Dart; `i` zählt dabei mit, von 0 bis 4.
+<!-- /language -->
+<!-- language: java -->
+```java
+for (int i = 0; i < 5; i++) {
+    forward(20);
+    left(90);
+    forward(20);
+    right(90);
+    forward(20);
+    right(90);
+    forward(20);
+    left(90);
+}
+```
+
+`for (int i = 0; i < 5; i++)` heißt: fünfmal. Was zwischen den geschweiften
+Klammern steht, wiederholt Java; `i` zählt dabei mit, von 0 bis 4.
+<!-- /language -->
 
 _task(square-loop)
 
@@ -212,6 +282,52 @@ stair(60);
 `function` beginnt die Funktion; was zwischen den geschweiften Klammern
 steht, gehört zu ihr. Erst die Aufrufe darunter lassen die Schildkröte
 zeichnen; beim ersten ist `size` 20, beim zweiten 40.
+<!-- /language -->
+<!-- language: dart -->
+```dart
+void stair(double size) {
+  forward(size);
+  left(90);
+  forward(size);
+  right(90);
+}
+
+void main() {
+  stair(20);
+  stair(40);
+  stair(60);
+}
+```
+
+`void stair(double size)` beginnt die Funktion; was zwischen den
+geschweiften Klammern steht, gehört zu ihr. `double` sagt, dass `size` eine
+Zahl ist, auch eine mit Komma, und `void`, dass die Funktion nichts
+zurückgibt. Die Funktion steht neben `main`, nicht darin; erst die Aufrufe
+in `main` lassen die Schildkröte zeichnen. Beim ersten ist `size` 20, beim
+zweiten 40.
+<!-- /language -->
+<!-- language: java -->
+```java
+void stair(double size) {
+    forward(size);
+    left(90);
+    forward(size);
+    right(90);
+}
+
+void main() {
+    stair(20);
+    stair(40);
+    stair(60);
+}
+```
+
+In Java heißt eine Funktion **Methode**. `void stair(double size)` beginnt
+die Methode; was zwischen den geschweiften Klammern steht, gehört zu ihr.
+`double` sagt, dass `size` eine Zahl ist, auch eine mit Komma, und `void`,
+dass die Methode nichts zurückgibt. Die Methode steht neben `main`, nicht
+darin; erst die Aufrufe in `main` lassen die Schildkröte zeichnen. Beim
+ersten ist `size` 20, beim zweiten 40.
 <!-- /language -->
 
 Bei den folgenden Aufgaben ruft der Workspace deine Funktion selbst auf,
@@ -285,6 +401,44 @@ color("red");
 forward(80);
 ```
 <!-- /language -->
+<!-- language: dart -->
+Mit `penUp()` hebt die Schildkröte ihren Stift: Sie geht weiter, ohne zu
+zeichnen, bis `penDown()` ihn wieder aufsetzt. `color` gibt dem Stift eine
+Farbe, mit einem englischen Namen wie `'red'`, `'orange'` oder
+`'darkgreen'`; `width` macht die Linie dicker. Diese Linie ist erst dick und
+grün, dann kommt eine Lücke, dann geht sie dünn und rot weiter:
+
+```dart
+width(6);
+color('green');
+forward(80);
+penUp();
+forward(40);
+penDown();
+width(2);
+color('red');
+forward(80);
+```
+<!-- /language -->
+<!-- language: java -->
+Mit `penUp()` hebt die Schildkröte ihren Stift: Sie geht weiter, ohne zu
+zeichnen, bis `penDown()` ihn wieder aufsetzt. `color` gibt dem Stift eine
+Farbe, mit einem englischen Namen wie `"red"`, `"orange"` oder
+`"darkgreen"`; `width` macht die Linie dicker. Diese Linie ist erst dick und
+grün, dann kommt eine Lücke, dann geht sie dünn und rot weiter:
+
+```java
+width(6);
+color("green");
+forward(80);
+penUp();
+forward(40);
+penDown();
+width(2);
+color("red");
+forward(80);
+```
+<!-- /language -->
 
 Ein Klick auf den Befehl `color` über dem Papier öffnet Farben zum
 Aussuchen: die Palette Cling und einige Namen. Ein Klick auf eine Farbe
@@ -338,6 +492,32 @@ for (let i = 0; i < 6; i++) {
   size = size + 10;
 }
 ```
+<!-- /language -->
+<!-- language: dart -->
+```dart
+var size = 10;
+for (var i = 0; i < 6; i++) {
+  forward(size);
+  left(90);
+  forward(size);
+  right(90);
+  size = size + 10;
+}
+```
+<!-- /language -->
+<!-- language: java -->
+```java
+int size = 10;
+for (int i = 0; i < 6; i++) {
+    forward(size);
+    left(90);
+    forward(size);
+    right(90);
+    size = size + 10;
+}
+```
+
+`int` sagt, dass `size` eine ganze Zahl ist.
 <!-- /language -->
 
 `size = size + 10` rechnet mit dem alten Wert und merkt sich den neuen:

@@ -84,6 +84,7 @@ module TaskExamples
                 # none (the Ruby container) or an older one than in the image,
                 # its examples wait for a machine that has it.
                 next if %w[function pip tests turtle].include?(type) && variant['check']['language'] == 'javascript' && !node?
+                next if type == 'turtle' && TurtleCompiled::LANGUAGES.include?(variant['check']['language']) && !kata_image?
                 # Java and Dart likewise: their examples wait for a machine with javac or dart
                 next if type == 'javascript' && !node?
                 next if type == 'unit_tests' && variant['check']['language'] == 'javascript' && !node?
@@ -293,6 +294,13 @@ module TaskExamples
             @java = version[/javac (\d+)/, 1].to_i >= JAVA_MAJOR
         end
         @java
+    end
+
+    # the Kata image, for the turtle in Java and Dart (TurtleCheck.record),
+    # which runs as on the server
+    def self.kata_image?
+        @kata_image = system('docker', 'image', 'inspect', KataRunner::IMAGE, :out => File::NULL, :err => File::NULL) if @kata_image.nil?
+        @kata_image
     end
 
     def self.node?

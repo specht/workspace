@@ -238,6 +238,168 @@ tasks:
         left(90);
         tree(100, 5);
         ```
+    java:
+      prompt: |
+        Schreib `void tree(double size, int depth)` für den Baum aus dem Bild oben: Bei der Tiefe 0 zeichnet sie nichts, sonst einen Stamm der Länge `size` mit zwei kleineren Bäumen daran. Danach steht die Schildkröte wieder unten am Stamm und schaut wie vorher.
+      starter: |
+        void tree(double size, int depth) {
+        }
+
+        void main() {
+            left(90);
+            tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Methode sofort zurück. Das ist das Ende der Rekursion: Ohne diese Zeile ruft sie sich für immer selbst auf."
+        - "Sonst: den Stamm vorwärts, 30 nach links, `tree(size * 0.7, depth - 1)` für den linken Baum, 60 nach rechts, derselbe Aufruf für den rechten, und 30 nach links zurück."
+        - "Am Ende den Stamm zurück: Erst dann steht die Schildkröte nach dem linken Baum wieder dort, wo der rechte anfängt."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            forward(size);
+            left(30);
+            tree(size * 0.7, depth - 1);
+            right(60);
+            tree(size * 0.7, depth - 1);
+            left(30);
+            back(size);
+        }
+
+        void main() {
+            left(90);
+            tree(100, 5);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void tree(double size, int depth)` für den Baum aus dem Bild oben: Bei der Tiefe 0 zeichnet sie nichts, sonst einen Stamm der Länge `size` mit zwei kleineren Bäumen daran. Danach steht die Schildkröte wieder unten am Stamm und schaut wie vorher.
+      starter: |
+        void tree(double size, int depth) {
+        }
+
+        void main() {
+          left(90);
+          tree(100, 5);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); tree(100, 1)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 1)
+          - call: "left(90); tree(100, 2)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 2)
+          - call: "left(90); tree(100, 5)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                forward size
+                left 30
+                tree(size * 0.7, depth - 1)
+                right 60
+                tree(size * 0.7, depth - 1)
+                left 30
+                back size
+              end
+              left 90
+              tree(100, 5)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Bei der Tiefe 0 kehrt die Funktion sofort zurück. Das ist das Ende der Rekursion: Ohne diese Zeile ruft sie sich für immer selbst auf."
+        - "Sonst: den Stamm vorwärts, 30 nach links, `tree(size * 0.7, depth - 1)` für den linken Baum, 60 nach rechts, derselbe Aufruf für den rechten, und 30 nach links zurück."
+        - "Am Ende den Stamm zurück: Erst dann steht die Schildkröte nach dem linken Baum wieder dort, wo der rechte anfängt."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          forward(size);
+          left(30);
+          tree(size * 0.7, depth - 1);
+          right(60);
+          tree(size * 0.7, depth - 1);
+          left(30);
+          back(size);
+        }
+
+        void main() {
+          left(90);
+          tree(100, 5);
+        }
+        ```
 
   - id: beautiful-tree
     title: "Ein schöner Baum"
@@ -469,6 +631,164 @@ tasks:
         left(90);
         tree(80, 7);
         ```
+    java:
+      prompt: |
+        Mach aus dem Baum von eben einen schönen Baum: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`"forestgreen"`), alle anderen braun (`"saddlebrown"`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+            left(90);
+            tree(80, 7);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); tree(80, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 25
+                tree(size * 0.75, depth - 1)
+                right 50
+                tree(size * 0.75, depth - 1)
+                left 25
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 3)
+          - call: "left(90); tree(80, 7)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 25
+                tree(size * 0.75, depth - 1)
+                right 50
+                tree(size * 0.75, depth - 1)
+                left 25
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 7)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Breite und Farbe setzt die Methode am Anfang, bevor sie den Ast zeichnet: Dann gelten sie für ihn."
+        - "Die Farbe hängt von der Tiefe ab: `color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\")`, oder mit `if` und `else`."
+        - "Am Ende: Stift hoch, den Ast zurück, Stift wieder runter."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth);
+            color(depth <= 2 ? "forestgreen" : "saddlebrown");
+            forward(size);
+            left(25);
+            tree(size * 0.75, depth - 1);
+            right(50);
+            tree(size * 0.75, depth - 1);
+            left(25);
+            penUp();
+            back(size);
+            penDown();
+        }
+
+        void main() {
+            left(90);
+            tree(80, 7);
+        }
+        ```
+    dart:
+      prompt: |
+        Mach aus dem Baum von eben einen schönen Baum: Jeder Ast ist so dick wie seine Tiefe (`width(depth)`), die Äste mit der Tiefe 1 und 2 sind grün (`'forestgreen'`), alle anderen braun (`'saddlebrown'`). Die Äste drehen sich um 25 Grad und sind 0,75-mal so lang wie der davor. Zurück geht die Schildkröte mit gehobenem Stift, sonst malt sie den braunen Ast in der Farbe des letzten Blatts nach.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+          left(90);
+          tree(80, 7);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); tree(80, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 25
+                tree(size * 0.75, depth - 1)
+                right 50
+                tree(size * 0.75, depth - 1)
+                left 25
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 3)
+          - call: "left(90); tree(80, 7)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 25
+                tree(size * 0.75, depth - 1)
+                right 50
+                tree(size * 0.75, depth - 1)
+                left 25
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 7)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Breite und Farbe setzt die Funktion am Anfang, bevor sie den Ast zeichnet: Dann gelten sie für ihn."
+        - "Die Farbe hängt von der Tiefe ab: `color(depth <= 2 ? 'forestgreen' : 'saddlebrown')`, oder mit `if` und `else`."
+        - "Am Ende: Stift hoch, den Ast zurück, Stift wieder runter."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth);
+          color(depth <= 2 ? 'forestgreen' : 'saddlebrown');
+          forward(size);
+          left(25);
+          tree(size * 0.75, depth - 1);
+          right(50);
+          tree(size * 0.75, depth - 1);
+          left(25);
+          penUp();
+          back(size);
+          penDown();
+        }
+
+        void main() {
+          left(90);
+          tree(80, 7);
+        }
+        ```
 
   - id: asymmetric-tree
     title: "Ein schiefer Baum"
@@ -696,6 +1016,162 @@ tasks:
 
         left(90);
         tree(80, 9);
+        ```
+    java:
+      prompt: |
+        Echte Bäume wachsen nicht gleichmäßig. Ändere deinen schönen Baum: Der linke Ast dreht sich um 15 Grad und wird 0,8-mal so lang, der rechte dreht sich um 40 Grad und wird 0,6-mal so lang. Breite und Farben bleiben wie eben.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+            left(90);
+            tree(80, 9);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); tree(80, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 15
+                tree(size * 0.8, depth - 1)
+                right 55
+                tree(size * 0.6, depth - 1)
+                left 40
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 3)
+          - call: "left(90); tree(80, 9)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 15
+                tree(size * 0.8, depth - 1)
+                right 55
+                tree(size * 0.6, depth - 1)
+                left 40
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 9)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Der linke und der rechte Baum bekommen jetzt verschiedene Zahlen: `size * 0.8` und `size * 0.6`."
+        - "Die Drehungen müssen zusammenpassen: 15 nach links für den linken Baum, dann 15 + 40 = 55 nach rechts für den rechten, und am Ende 40 nach links zurück."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth);
+            color(depth <= 2 ? "forestgreen" : "saddlebrown");
+            forward(size);
+            left(15);
+            tree(size * 0.8, depth - 1);
+            right(55);
+            tree(size * 0.6, depth - 1);
+            left(40);
+            penUp();
+            back(size);
+            penDown();
+        }
+
+        void main() {
+            left(90);
+            tree(80, 9);
+        }
+        ```
+    dart:
+      prompt: |
+        Echte Bäume wachsen nicht gleichmäßig. Ändere deinen schönen Baum: Der linke Ast dreht sich um 15 Grad und wird 0,8-mal so lang, der rechte dreht sich um 40 Grad und wird 0,6-mal so lang. Breite und Farben bleiben wie eben.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+          left(90);
+          tree(80, 9);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); tree(80, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 15
+                tree(size * 0.8, depth - 1)
+                right 55
+                tree(size * 0.6, depth - 1)
+                left 40
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 3)
+          - call: "left(90); tree(80, 9)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth
+                color(depth <= 2 ? 'forestgreen' : 'saddlebrown')
+                forward size
+                left 15
+                tree(size * 0.8, depth - 1)
+                right 55
+                tree(size * 0.6, depth - 1)
+                left 40
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(80, 9)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Der linke und der rechte Baum bekommen jetzt verschiedene Zahlen: `size * 0.8` und `size * 0.6`."
+        - "Die Drehungen müssen zusammenpassen: 15 nach links für den linken Baum, dann 15 + 40 = 55 nach rechts für den rechten, und am Ende 40 nach links zurück."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth);
+          color(depth <= 2 ? 'forestgreen' : 'saddlebrown');
+          forward(size);
+          left(15);
+          tree(size * 0.8, depth - 1);
+          right(55);
+          tree(size * 0.6, depth - 1);
+          left(40);
+          penUp();
+          back(size);
+          penDown();
+        }
+
+        void main() {
+          left(90);
+          tree(80, 9);
+        }
         ```
 
   - id: weeping-tree
@@ -925,6 +1401,162 @@ tasks:
         left(90);
         tree(52, 10);
         ```
+    java:
+      prompt: |
+        Dreht sich jeder Ast weit genug und wird er nur wenig kürzer, biegen sich die äußeren Äste bis zum Boden. Ändere deinen schönen Baum: Beide Äste drehen sich um 36 Grad und werden 0,84-mal so lang; die Breite ist `depth * 0.7`, die Äste mit einer Tiefe bis 3 sind `"olivedrab"`, die anderen `"sienna"`. Er beginnt mit `tree(52, 10)`.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+            left(90);
+            tree(52, 10);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); tree(52, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth * 0.7
+                color(depth <= 3 ? 'olivedrab' : 'sienna')
+                forward size
+                left 36
+                tree(size * 0.84, depth - 1)
+                right 72
+                tree(size * 0.84, depth - 1)
+                left 36
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(52, 3)
+          - call: "left(90); tree(52, 10)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth * 0.7
+                color(depth <= 3 ? 'olivedrab' : 'sienna')
+                forward size
+                left 36
+                tree(size * 0.84, depth - 1)
+                right 72
+                tree(size * 0.84, depth - 1)
+                left 36
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(52, 10)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Es ändern sich nur Zahlen und Farben: 36 statt 25 Grad, 0,84 statt 0,75, `depth * 0.7` für die Breite."
+        - "Nach dem linken Baum dreht sich die Schildkröte 72 Grad nach rechts, für den rechten, und am Ende 36 Grad nach links zurück."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth * 0.7);
+            color(depth <= 3 ? "olivedrab" : "sienna");
+            forward(size);
+            left(36);
+            tree(size * 0.84, depth - 1);
+            right(72);
+            tree(size * 0.84, depth - 1);
+            left(36);
+            penUp();
+            back(size);
+            penDown();
+        }
+
+        void main() {
+            left(90);
+            tree(52, 10);
+        }
+        ```
+    dart:
+      prompt: |
+        Dreht sich jeder Ast weit genug und wird er nur wenig kürzer, biegen sich die äußeren Äste bis zum Boden. Ändere deinen schönen Baum: Beide Äste drehen sich um 36 Grad und werden 0,84-mal so lang; die Breite ist `depth * 0.7`, die Äste mit einer Tiefe bis 3 sind `'olivedrab'`, die anderen `'sienna'`. Er beginnt mit `tree(52, 10)`.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+          left(90);
+          tree(52, 10);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); tree(52, 3)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth * 0.7
+                color(depth <= 3 ? 'olivedrab' : 'sienna')
+                forward size
+                left 36
+                tree(size * 0.84, depth - 1)
+                right 72
+                tree(size * 0.84, depth - 1)
+                left 36
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(52, 3)
+          - call: "left(90); tree(52, 10)"
+            draw: |
+              def tree(size, depth)
+                return if depth == 0
+                width depth * 0.7
+                color(depth <= 3 ? 'olivedrab' : 'sienna')
+                forward size
+                left 36
+                tree(size * 0.84, depth - 1)
+                right 72
+                tree(size * 0.84, depth - 1)
+                left 36
+                pen_up
+                back size
+                pen_down
+              end
+              left 90
+              tree(52, 10)
+        colors: true
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Es ändern sich nur Zahlen und Farben: 36 statt 25 Grad, 0,84 statt 0,75, `depth * 0.7` für die Breite."
+        - "Nach dem linken Baum dreht sich die Schildkröte 72 Grad nach rechts, für den rechten, und am Ende 36 Grad nach links zurück."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth * 0.7);
+          color(depth <= 3 ? 'olivedrab' : 'sienna');
+          forward(size);
+          left(36);
+          tree(size * 0.84, depth - 1);
+          right(72);
+          tree(size * 0.84, depth - 1);
+          left(36);
+          penUp();
+          back(size);
+          penDown();
+        }
+
+        void main() {
+          left(90);
+          tree(52, 10);
+        }
+        ```
 
   - id: fern
     title: "Ein Farnblatt"
@@ -1120,6 +1752,142 @@ tasks:
         left(90);
         fern(25, 1);
         ```
+    java:
+      prompt: |
+        Schreib `void fern(double size, int sign)` für das Farnblatt aus dem Bild oben. `sign` ist 1 oder −1 und sagt, wohin sich das Blatt biegt: Mit −1 ist es gespiegelt. Danach steht die Schildkröte wieder unten am Stiel und schaut wie vorher.
+      starter: |
+        void fern(double size, int sign) {
+        }
+
+        void main() {
+            color("forestgreen");
+            left(90);
+            fern(25, 1);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "left(90); fern(4, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(4, 1)
+          - call: "left(90); fern(25, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(25, 1)
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Kleiner als 1 zeichnet die Methode nichts."
+        - "Sonst: ein Stück Stiel, 70 · `sign` nach rechts, ein halb so großes Blatt mit `-sign`, zurückdrehen; noch ein Stück Stiel, 70 · `sign` nach links, ein halb so großes Blatt mit `sign`, zurückdrehen."
+        - "Dann der Rest des Blatts: 7 · `sign` nach rechts, `fern(size - 1, sign)`, 7 · `sign` zurück, und den Stiel zurück, zwei Stücke: `size * 2`."
+      solution: |
+        ```java
+        void fern(double size, int sign) {
+            if (size < 1) return;
+            forward(size);
+            right(70 * sign);
+            fern(size * 0.5, -sign);
+            left(70 * sign);
+            forward(size);
+            left(70 * sign);
+            fern(size * 0.5, sign);
+            right(70 * sign);
+            right(7 * sign);
+            fern(size - 1, sign);
+            left(7 * sign);
+            back(size * 2);
+        }
+
+        void main() {
+            color("forestgreen");
+            left(90);
+            fern(25, 1);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void fern(double size, int sign)` für das Farnblatt aus dem Bild oben. `sign` ist 1 oder −1 und sagt, wohin sich das Blatt biegt: Mit −1 ist es gespiegelt. Danach steht die Schildkröte wieder unten am Stiel und schaut wie vorher.
+      starter: |
+        void fern(double size, int sign) {
+        }
+
+        void main() {
+          color('forestgreen');
+          left(90);
+          fern(25, 1);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "left(90); fern(4, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(4, 1)
+          - call: "left(90); fern(25, 1)"
+            draw: |
+              def fern(size, sign)
+                return if size < 1
+                forward size; right 70 * sign; fern(size * 0.5, -sign); left 70 * sign
+                forward size; left 70 * sign; fern(size * 0.5, sign); right 70 * sign
+                right 7 * sign; fern(size - 1, sign); left 7 * sign
+                back size * 2
+              end
+              left 90
+              fern(25, 1)
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+        show: 1
+      hint:
+        - "Kleiner als 1 zeichnet die Funktion nichts."
+        - "Sonst: ein Stück Stiel, 70 · `sign` nach rechts, ein halb so großes Blatt mit `-sign`, zurückdrehen; noch ein Stück Stiel, 70 · `sign` nach links, ein halb so großes Blatt mit `sign`, zurückdrehen."
+        - "Dann der Rest des Blatts: 7 · `sign` nach rechts, `fern(size - 1, sign)`, 7 · `sign` zurück, und den Stiel zurück, zwei Stücke: `size * 2`."
+      solution: |
+        ```dart
+        void fern(double size, int sign) {
+          if (size < 1) return;
+          forward(size);
+          right(70 * sign);
+          fern(size * 0.5, -sign);
+          left(70 * sign);
+          forward(size);
+          left(70 * sign);
+          fern(size * 0.5, sign);
+          right(70 * sign);
+          right(7 * sign);
+          fern(size - 1, sign);
+          left(7 * sign);
+          back(size * 2);
+        }
+
+        void main() {
+          color('forestgreen');
+          left(90);
+          fern(25, 1);
+        }
+        ```
 
   - id: sierpinski
     title: "Das Sierpiński-Dreieck"
@@ -1255,7 +2023,7 @@ tasks:
         show: 2
       hint:
         - "Die Stufe 0 ist das Dreieck von ganz am Anfang, mit `size` statt 150."
-        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben. In Ruby `size / 2.0`."
+        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben."
         - "Zwischen ihnen läuft die Schildkröte: die halbe Seite nach rechts für das zweite; zurück und die halbe linke Seite hinauf (60 nach links, vorwärts, 60 nach rechts) für das dritte; dann denselben Weg zurück."
       solution: |
         ```python
@@ -1332,7 +2100,7 @@ tasks:
         show: 2
       hint:
         - "Die Stufe 0 ist das Dreieck von ganz am Anfang, mit `size` statt 150."
-        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben. In Ruby `size / 2.0`."
+        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben."
         - "Zwischen ihnen läuft die Schildkröte: die halbe Seite nach rechts für das zweite; zurück und die halbe linke Seite hinauf (60 nach links, vorwärts, 60 nach rechts) für das dritte; dann denselben Weg zurück."
       solution: |
         ```javascript
@@ -1359,6 +2127,174 @@ tasks:
         }
 
         sierpinski(256, 4);
+        ```
+    java:
+      prompt: |
+        Schreib `void sierpinski(double size, int depth)` für das Dreieck aus dem Bild oben, mit Seiten der Länge `size`. Danach steht die Schildkröte wieder, wo sie angefangen hat, und schaut wie vorher.
+      starter: |
+        void sierpinski(double size, int depth) {
+        }
+
+        void main() {
+            sierpinski(256, 4);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "sierpinski(256, 0)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 0)
+          - call: "sierpinski(256, 1)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 1)
+          - call: "sierpinski(256, 4)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 4)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 ist das Dreieck von ganz am Anfang, mit `size` statt 150."
+        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben."
+        - "Zwischen ihnen läuft die Schildkröte: die halbe Seite nach rechts für das zweite; zurück und die halbe linke Seite hinauf (60 nach links, vorwärts, 60 nach rechts) für das dritte; dann denselben Weg zurück."
+      solution: |
+        ```java
+        void sierpinski(double size, int depth) {
+            if (depth == 0) {
+                for (int i = 0; i < 3; i++) {
+                    forward(size);
+                    left(120);
+                }
+                return;
+            }
+            double half = size / 2;
+            sierpinski(half, depth - 1);
+            forward(half);
+            sierpinski(half, depth - 1);
+            back(half);
+            left(60);
+            forward(half);
+            right(60);
+            sierpinski(half, depth - 1);
+            left(60);
+            back(half);
+            right(60);
+        }
+
+        void main() {
+            sierpinski(256, 4);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void sierpinski(double size, int depth)` für das Dreieck aus dem Bild oben, mit Seiten der Länge `size`. Danach steht die Schildkröte wieder, wo sie angefangen hat, und schaut wie vorher.
+      starter: |
+        void sierpinski(double size, int depth) {
+        }
+
+        void main() {
+          sierpinski(256, 4);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "sierpinski(256, 0)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 0)
+          - call: "sierpinski(256, 1)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 1)
+          - call: "sierpinski(256, 4)"
+            draw: |
+              def sierpinski(size, depth)
+                return 3.times { forward size; left 120 } if depth == 0
+                half = size / 2.0
+                sierpinski(half, depth - 1); forward half
+                sierpinski(half, depth - 1); back half
+                left 60; forward half; right 60
+                sierpinski(half, depth - 1)
+                left 60; back half; right 60
+              end
+              sierpinski(256, 4)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 ist das Dreieck von ganz am Anfang, mit `size` statt 150."
+        - "Jede andere Stufe besteht aus drei Dreiecken der Stufe darunter, halb so groß: `sierpinski(size / 2, depth - 1)`, links unten, rechts unten und oben."
+        - "Zwischen ihnen läuft die Schildkröte: die halbe Seite nach rechts für das zweite; zurück und die halbe linke Seite hinauf (60 nach links, vorwärts, 60 nach rechts) für das dritte; dann denselben Weg zurück."
+      solution: |
+        ```dart
+        void sierpinski(double size, int depth) {
+          if (depth == 0) {
+            for (var i = 0; i < 3; i++) {
+              forward(size);
+              left(120);
+            }
+            return;
+          }
+          final half = size / 2;
+          sierpinski(half, depth - 1);
+          forward(half);
+          sierpinski(half, depth - 1);
+          back(half);
+          left(60);
+          forward(half);
+          right(60);
+          sierpinski(half, depth - 1);
+          left(60);
+          back(half);
+          right(60);
+        }
+
+        void main() {
+          sierpinski(256, 4);
+        }
         ```
 
   - id: koch
@@ -1540,6 +2476,134 @@ tasks:
         }
 
         koch(243, 3);
+        ```
+    java:
+      prompt: |
+        Schreib `void koch(double size, int depth)` für die Koch-Kurve aus dem Bild oben: `size` Schritte von links nach rechts, mit so vielen Stufen, wie `depth` sagt.
+      starter: |
+        void koch(double size, int depth) {
+        }
+
+        void main() {
+            koch(243, 3);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "koch(243, 0)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 0)
+          - call: "koch(243, 1)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 1)
+          - call: "koch(243, 3)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 3)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 ist eine gerade Linie: `forward(size)`, und fertig."
+        - "Jede andere Stufe besteht aus vier Kurven der Stufe darunter, jede ein Drittel so lang: viermal `koch(size / 3, depth - 1)`."
+        - "Zwischen den vier Kurven: 60 Grad nach links, 120 nach rechts, 60 nach links, so wie die Zacke in der Stufe 1."
+      solution: |
+        ```java
+        void koch(double size, int depth) {
+            if (depth == 0) {
+                forward(size);
+                return;
+            }
+            koch(size / 3, depth - 1);
+            left(60);
+            koch(size / 3, depth - 1);
+            right(120);
+            koch(size / 3, depth - 1);
+            left(60);
+            koch(size / 3, depth - 1);
+        }
+
+        void main() {
+            koch(243, 3);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void koch(double size, int depth)` für die Koch-Kurve aus dem Bild oben: `size` Schritte von links nach rechts, mit so vielen Stufen, wie `depth` sagt.
+      starter: |
+        void koch(double size, int depth) {
+        }
+
+        void main() {
+          koch(243, 3);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "koch(243, 0)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 0)
+          - call: "koch(243, 1)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 1)
+          - call: "koch(243, 3)"
+            draw: |
+              def koch(size, depth)
+                return forward(size) if depth == 0
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1); right 120
+                koch(size / 3.0, depth - 1); left 60; koch(size / 3.0, depth - 1)
+              end
+              koch(243, 3)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 ist eine gerade Linie: `forward(size)`, und fertig."
+        - "Jede andere Stufe besteht aus vier Kurven der Stufe darunter, jede ein Drittel so lang: viermal `koch(size / 3, depth - 1)`."
+        - "Zwischen den vier Kurven: 60 Grad nach links, 120 nach rechts, 60 nach links, so wie die Zacke in der Stufe 1."
+      solution: |
+        ```dart
+        void koch(double size, int depth) {
+          if (depth == 0) {
+            forward(size);
+            return;
+          }
+          koch(size / 3, depth - 1);
+          left(60);
+          koch(size / 3, depth - 1);
+          right(120);
+          koch(size / 3, depth - 1);
+          left(60);
+          koch(size / 3, depth - 1);
+        }
+
+        void main() {
+          koch(243, 3);
+        }
         ```
 
   - id: hilbert
@@ -1746,6 +2810,148 @@ tasks:
 
         hilbert(4, 90, 15);
         ```
+    java:
+      prompt: |
+        Schreib `void hilbert(int level, double angle, double size)` für die Hilbert-Kurve aus dem Bild oben: jede graue Linie `size` lang, `angle` 90. Mit `-90` ist die Kurve gespiegelt.
+      starter: |
+        void hilbert(int level, double angle, double size) {
+        }
+
+        void main() {
+            hilbert(4, 90, 15);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        cases:
+          - call: "hilbert(1, 90, 100)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(1, 90, 100)
+          - call: "hilbert(2, 90, 60)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(2, 90, 60)
+          - call: "hilbert(4, 90, 15)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(4, 90, 15)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 zeichnet nichts. Die Stufe 1 ist das U: `angle` nach rechts, vorwärts, `angle` nach links, vorwärts, `angle` nach links, vorwärts, `angle` nach rechts."
+        - "Für jede andere Stufe kommen vier Kurven der Stufe darunter in dieses U: nach der ersten Drehung, nach der zweiten, nach der zweiten Linie und vor der letzten Drehung."
+        - "Die erste und die letzte sind gespiegelt: Sie bekommen `-angle`, die beiden mittleren `angle`."
+      solution: |
+        ```java
+        void hilbert(int level, double angle, double size) {
+            if (level == 0) return;
+            right(angle);
+            hilbert(level - 1, -angle, size);
+            forward(size);
+            left(angle);
+            hilbert(level - 1, angle, size);
+            forward(size);
+            hilbert(level - 1, angle, size);
+            left(angle);
+            forward(size);
+            hilbert(level - 1, -angle, size);
+            right(angle);
+        }
+
+        void main() {
+            hilbert(4, 90, 15);
+        }
+        ```
+    dart:
+      prompt: |
+        Schreib `void hilbert(int level, double angle, double size)` für die Hilbert-Kurve aus dem Bild oben: jede graue Linie `size` lang, `angle` 90. Mit `-90` ist die Kurve gespiegelt.
+      starter: |
+        void hilbert(int level, double angle, double size) {
+        }
+
+        void main() {
+          hilbert(4, 90, 15);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        cases:
+          - call: "hilbert(1, 90, 100)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(1, 90, 100)
+          - call: "hilbert(2, 90, 60)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(2, 90, 60)
+          - call: "hilbert(4, 90, 15)"
+            draw: |
+              def hilbert(level, angle, size)
+                return if level == 0
+                right angle; hilbert(level - 1, -angle, size); forward size
+                left angle; hilbert(level - 1, angle, size); forward size
+                hilbert(level - 1, angle, size); left angle; forward size
+                hilbert(level - 1, -angle, size); right angle
+              end
+              hilbert(4, 90, 15)
+        commands: [forward, back, left, right]
+        show: 2
+      hint:
+        - "Die Stufe 0 zeichnet nichts. Die Stufe 1 ist das U: `angle` nach rechts, vorwärts, `angle` nach links, vorwärts, `angle` nach links, vorwärts, `angle` nach rechts."
+        - "Für jede andere Stufe kommen vier Kurven der Stufe darunter in dieses U: nach der ersten Drehung, nach der zweiten, nach der zweiten Linie und vor der letzten Drehung."
+        - "Die erste und die letzte sind gespiegelt: Sie bekommen `-angle`, die beiden mittleren `angle`."
+      solution: |
+        ```dart
+        void hilbert(int level, double angle, double size) {
+          if (level == 0) return;
+          right(angle);
+          hilbert(level - 1, -angle, size);
+          forward(size);
+          left(angle);
+          hilbert(level - 1, angle, size);
+          forward(size);
+          hilbert(level - 1, angle, size);
+          left(angle);
+          forward(size);
+          hilbert(level - 1, -angle, size);
+          right(angle);
+        }
+
+        void main() {
+          hilbert(4, 90, 15);
+        }
+        ```
 
   - id: own-tree
     title: "Dein eigener Baum"
@@ -1859,4 +3065,84 @@ tasks:
 
         left(90);
         tree(70, 8);
+        ```
+    java:
+      prompt: |
+        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+            left(90);
+            tree(60, 8);
+        }
+      check:
+        type: "turtle"
+        language: "java"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
+        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
+      solution: |
+        ```java
+        void tree(double size, int depth) {
+            if (depth == 0) return;
+            width(depth);
+            color(depth <= 2 ? "orange" : "saddlebrown");
+            forward(size);
+            left(20);
+            tree(size * 0.75, depth - 1);
+            right(50);
+            tree(size * 0.7, depth - 1);
+            left(30);
+            penUp();
+            back(size);
+            penDown();
+        }
+
+        void main() {
+            left(90);
+            tree(70, 8);
+        }
+        ```
+    dart:
+      prompt: |
+        Lass deinen eigenen Baum wachsen, wie er dir gefällt: schief, hängend, mit drei Ästen statt zwei, im Herbst rot und gelb. Wer mag, lässt den Zufall mitbestimmen.
+      starter: |
+        {{own tree tree}}
+
+        void main() {
+          left(90);
+          tree(60, 8);
+        }
+      check:
+        type: "turtle"
+        language: "dart"
+        free: {}
+        commands: [forward, back, left, right, pen_up, pen_down, color, width]
+      hint:
+        - "Fang mit deinem schönen Baum an und ändere eine Zahl nach der anderen: Winkel, Längen, Farben, die Tiefe."
+        - "Ein dritter Ast in der Mitte: ein weiterer Aufruf von `tree` zwischen den beiden, ohne Drehung."
+      solution: |
+        ```dart
+        void tree(double size, int depth) {
+          if (depth == 0) return;
+          width(depth);
+          color(depth <= 2 ? 'orange' : 'saddlebrown');
+          forward(size);
+          left(20);
+          tree(size * 0.75, depth - 1);
+          right(50);
+          tree(size * 0.7, depth - 1);
+          left(30);
+          penUp();
+          back(size);
+          penDown();
+        }
+
+        void main() {
+          left(90);
+          tree(70, 8);
+        }
         ```

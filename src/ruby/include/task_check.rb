@@ -319,7 +319,10 @@ module TaskCheck
 
         if report['error']
             line = report['line'].is_a?(Integer) ? " (Zeile #{report['line']})" : ''
-            message = "Dein Programm bricht ab#{line}: `#{report['error'].to_s[0, 200]}`"
+            # Java and Dart: compiled on the server first (TurtleCompiled)
+            message = "Dein Programm #{report['compile'] ? 'ließ sich nicht übersetzen' : 'bricht ab'}#{line}: `#{report['error'].to_s.split("\n\n").first.to_s[0, 200]}`"
+            rest = report['error'].to_s.split("\n\n", 2)[1]
+            message += "\n\n#{rest}" if report['compile'] && rest
             explanation = KataCheck.explain(report['error'].to_s, check['language'])
             message += "\n\n#{explanation}" if explanation
             return Result.new(:status => :wrong, :message => message)

@@ -35,8 +35,8 @@ require 'cgi'
 # A class ranks any of the five (GROUP_LANGUAGES; g.code_languages, a list,
 # the class page's »Sprachen der Klasse«). A person's own switch picks
 # between Ruby and Python (OWN_LANGUAGES). JavaScript, Dart and Java are
-# offered where a page needs them: all three on the Katas
-# and Pip unter Funkelbach (docs/katas.md), Dart and Java on the
+# offered where a page needs them: all three on the Katas, Pip unter
+# Funkelbach and the turtle (docs/katas.md), Dart and Java on the
 # Textadventure, the check digits and Laufzeit (docs/dart-java.md), all
 # five on the activity about classes (supermarkt). Someone who picks one of
 # these three keeps it apart (u.kata_code_language) and still sees Ruby or

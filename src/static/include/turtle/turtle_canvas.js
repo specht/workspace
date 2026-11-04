@@ -1,7 +1,8 @@
 // The turtle on the page (docs/katas.md, »Turtle«): the picture of a
 // task card, the player that draws a program's commands as they come from
-// turtle_worker.js, one worker per language, and the card's run, stop and
-// check. tasks.js makes a TurtleCard for every card with a .turtle-stage.
+// turtle_worker.js, one worker per language (Dart and Java from the server,
+// ServerRunner), and the card's run, stop and check. tasks.js makes a
+// TurtleCard for every card with a .turtle-stage.
 //
 // The geometry is TurtleWorld's (turtle_world.rb): the turtle starts at
 // (0, 0), looks to the right, x to the right and y up, left is
@@ -31,7 +32,10 @@
     // a check that runs this long without an end is given up
     const CHECK_SECONDS = 15;
     const VERSION = (document.currentScript && document.currentScript.src.split('?')[1]) || '';
-    const LANGUAGE_NAMES = { ruby: 'Ruby', python: 'Python', javascript: 'JavaScript' };
+    const LANGUAGE_NAMES = { ruby: 'Ruby', python: 'Python', javascript: 'JavaScript', java: 'Java', dart: 'Dart' };
+    // compiled on the server instead of run in the browser (ServerRunner)
+    const SERVER_LANGUAGES = ['java', 'dart'];
+    const POLL_MS = 400;
 
     function storageGet(key) {
         try { return window.localStorage.getItem(key); } catch (e) { return null; }
@@ -598,11 +602,105 @@
         }
     }
 
+    // Java and Dart (TurtleCompiled on the server): the same interface as
+    // Runner, and the same messages as the worker. The program runs in the
+    // Katas' queue, with all of the card's calls at once (/api/turtle/run,
+    // then /api/kata/poll); what came back is played like the worker's
+    // messages, the program's run at once and the calls from the same
+    // answer when the check asks for them. No student code runs in the
+    // browser.
+    class ServerRunner {
+        constructor(language) {
+            this.language = language;
+            this.owner = null;
+            this.job = 0;
+            this.last = null;
+        }
+
+        prepare() { }
+
+        run(owner, message) {
+            if (this.owner && this.owner !== owner) this.owner.interrupted();
+            this.owner = owner;
+            const job = ++this.job;
+            const calls = message.runs.length === 1 && message.runs[0] === null ? null : message.runs;
+            const live = () => job === this.job && this.owner === owner;
+            if (this.last && this.last.task === owner.taskKey && this.last.code === message.code) {
+                setTimeout(() => { if (live()) this.play(owner, this.last.result, calls); }, 0);
+                return;
+            }
+            const say = (text) => { if (live()) owner.message({ type: 'server', text: text }); };
+            const fail = (text) => {
+                if (!live()) return;
+                owner.message({ type: 'error', index: 0, message: text || 'Das hat gerade nicht geklappt. Versuch es gleich noch einmal.', line: null, fatal: true });
+                owner.message({ type: 'done' });
+            };
+            const post = (path, data) => fetch(path, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data),
+            }).then((response) => { if (!response.ok) throw new Error(String(response.status)); return response.json(); });
+            const answer = (data) => {
+                if (!live()) return;
+                if (data.done) {
+                    if (data.status !== 'ran' || !data.turtle) {
+                        const box = document.createElement('div');
+                        box.innerHTML = data.message || '';
+                        fail(data.status === 'cancelled' ? null : box.textContent.trim());
+                        return;
+                    }
+                    this.last = { task: owner.taskKey, code: message.code, result: data.turtle };
+                    this.play(owner, data.turtle, calls);
+                    return;
+                }
+                if (data.ahead > 0) say('Wartet auf einen Platz auf dem Server (' + (data.ahead === 1 ? 'eine Person' : data.ahead + ' Personen') + ' vor dir) …');
+                else say(LANGUAGE_NAMES[this.language] + ' wird auf dem Server übersetzt und ausgeführt …');
+                setTimeout(() => {
+                    if (live()) post('/api/kata/poll', { ticket: ticket }).then(answer).catch(() => fail());
+                }, POLL_MS);
+            };
+            let ticket = null;
+            say(LANGUAGE_NAMES[this.language] + ' wird auf dem Server übersetzt und ausgeführt …');
+            post('/api/turtle/run', { task: owner.taskKey, language: this.language, answer: message.code })
+                .then((data) => { ticket = data.ticket; answer(data); })
+                .catch(() => fail());
+        }
+
+        // The runs as the worker sends them: the program's (runs[0]), or
+        // the calls (runs[1..]); a run that hit a limit ends everything.
+        play(owner, result, calls) {
+            const runs = calls ? result.runs.slice(1) : result.runs.slice(0, 1);
+            const limited = result.limit && runs.length > 0 && runs[runs.length - 1] === result.runs[result.runs.length - 1];
+            for (let i = 0; i < runs.length; i++) {
+                if (this.owner !== owner) return;
+                const run = runs[i];
+                owner.message({ type: 'start', index: i });
+                for (let k = 0; k < run.items.length; k += 4000) owner.message({ type: 'items', list: run.items.slice(k, k + 4000) });
+                if (run.error) owner.message({ type: 'error', index: i, message: run.error.message, line: run.error.line, compile: !!run.error.compile });
+                if (limited && i === runs.length - 1) {
+                    owner.message({ type: 'limit', commands: result.limit === 'commands', index: i });
+                    return;
+                }
+                owner.message({ type: 'end', index: i });
+            }
+            if (this.owner === owner) owner.message({ type: 'done' });
+        }
+
+        stop(owner) {
+            if (this.owner !== owner) return;
+            this.owner = null;
+            this.job += 1;
+        }
+
+        release(owner) {
+            if (this.owner === owner) this.owner = null;
+        }
+    }
+
     const runners = {};
     // the turtle cards of the page, which share their speed
     const cards = [];
     function runner(language) {
-        if (!runners[language]) runners[language] = new Runner(language);
+        if (!runners[language]) runners[language] = SERVER_LANGUAGES.includes(language) ? new ServerRunner(language) : new Runner(language);
         return runners[language];
     }
 
@@ -764,6 +862,8 @@
             if (!r) return;
             if (m.type === 'loading') {
                 this.state.textContent = LANGUAGE_NAMES[m.language] + ' wird geladen …';
+            } else if (m.type === 'server') {
+                this.state.textContent = m.text;
             } else if (m.type === 'start') {
                 if (r.phase === 'live') this.state.textContent = '';
                 else r.checkIndex = m.index;
@@ -776,7 +876,9 @@
                     m.list.forEach((item) => { if (item[0] !== 'out') run.push(item[1] === undefined || item[1] === null ? [item[0]] : [item[0], item[1]]); });
                 }
             } else if (m.type === 'error') {
-                if (!r.error) r.error = { message: m.message, line: m.line };
+                // fatal: nothing ran (a runtime that did not load, a server
+                // that did not answer), so nothing is checked
+                if (!r.error) r.error = { message: m.message, line: m.line, compile: !!m.compile, fatal: !!m.fatal };
             } else if (m.type === 'limit') {
                 r.error = { message: 'Die Schildkröte hat aufgehört: ' + (m.commands ? 'mehr als 200 000 Befehle.' : 'Dein Programm hat zu viel ausgegeben.'), line: null, limit: true };
                 runner(this.language).stop(this);
@@ -799,12 +901,13 @@
             if (r.error) {
                 this.hooks.console((r.error.line ? 'Zeile ' + r.error.line + ': ' : '') + r.error.message, true);
                 if (r.error.line) this.hooks.mark(r.error.line);
-                if (r.error.limit) {
+                if (r.error.limit || r.error.fatal) {
                     this.running = null;
+                    this.state.textContent = '';
                     this.hooks.busy(false);
                     return;
                 }
-                this.send({ runs: null, error: r.error.message, line: r.error.line });
+                this.send({ runs: null, error: r.error.message, line: r.error.line, compile: r.error.compile });
                 return;
             }
             if (this.runs.length === 1 && this.runs[0] === null) {
@@ -830,7 +933,7 @@
             const r = this.running;
             clearTimeout(r.timer);
             if (r.error) {
-                this.send({ runs: null, error: r.error.message, line: r.error.line });
+                this.send({ runs: null, error: r.error.message, line: r.error.line, compile: r.error.compile });
                 return;
             }
             this.send({ runs: r.checkRuns, error: null });
@@ -1158,7 +1261,8 @@
         const editor = card.querySelector('.task-code');
         if (!editor) return;
         const language = editor.dataset.codeLanguage;
-        const text = language === 'ruby' ? command + ' "' + value + '"' : language === 'python' ? command + '("' + value + '")' : command + '("' + value + '");';
+        const text = language === 'ruby' ? command + ' "' + value + '"' : language === 'python' ? command + '("' + value + '")'
+            : language === 'dart' ? command + "('" + value + "');" : command + '("' + value + '");';
         const touched = editor.dataset.touched;
         editor.focus();
         if (touched) {

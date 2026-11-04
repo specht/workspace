@@ -23,6 +23,18 @@ examples:
       fail:
         - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  forward(size);\n  left(30);\n  tree(size * 0.7, depth - 1);\n  right(60);\n  tree(size * 0.7, depth - 1);\n  left(30);\n}\n\nleft(90);\ntree(100, 5);\n"
           say: "tree"
+    java:
+      pass:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    forward(size);\n    left(30);\n    tree(size * 0.7, depth - 1);\n    right(60);\n    tree(size * 0.7, depth - 1);\n    left(30);\n    back(size);\n}\n\nvoid main() {\n    left(90);\n    tree(100, 5);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    forward(size);\n    left(30);\n    tree(size * 0.7, depth - 1);\n    right(60);\n    tree(size * 0.7, depth - 1);\n    left(30);\n}\n\nvoid main() {\n    left(90);\n    tree(100, 5);\n}\n"
+          say: "tree"
+    dart:
+      pass:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  forward(size);\n  left(30);\n  tree(size * 0.7, depth - 1);\n  right(60);\n  tree(size * 0.7, depth - 1);\n  left(30);\n  back(size);\n}\n\nvoid main() {\n  left(90);\n  tree(100, 5);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  forward(size);\n  left(30);\n  tree(size * 0.7, depth - 1);\n  right(60);\n  tree(size * 0.7, depth - 1);\n  left(30);\n}\n\nvoid main() {\n  left(90);\n  tree(100, 5);\n}\n"
+          say: "tree"
   koch:
     pass:
       - answer: "def koch(size, depth)\n  if depth == 0\n    forward size\n    return\n  end\n  koch(size / 3.0, depth - 1)\n  left 60\n  koch(size / 3.0, depth - 1)\n  right 120\n  koch(size / 3.0, depth - 1)\n  left 60\n  koch(size / 3.0, depth - 1)\nend\n\nkoch(243, 3)\n"
@@ -40,6 +52,18 @@ examples:
         - answer: "function koch(size, depth) {\n  if (depth === 0) {\n    forward(size);\n    return;\n  }\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n  right(120);\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n}\n\nkoch(243, 3);\n"
       fail:
         - answer: "function koch(size, depth) {\n  if (depth === 0) {\n    forward(size);\n    return;\n  }\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n  right(60);\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n}\n\nkoch(243, 3);\n"
+          say: "koch"
+    java:
+      pass:
+        - answer: "void koch(double size, int depth) {\n    if (depth == 0) {\n        forward(size);\n        return;\n    }\n    koch(size / 3, depth - 1);\n    left(60);\n    koch(size / 3, depth - 1);\n    right(120);\n    koch(size / 3, depth - 1);\n    left(60);\n    koch(size / 3, depth - 1);\n}\n\nvoid main() {\n    koch(243, 3);\n}\n"
+      fail:
+        - answer: "void koch(double size, int depth) {\n    if (depth == 0) {\n        forward(size);\n        return;\n    }\n    koch(size / 3, depth - 1);\n    left(60);\n    koch(size / 3, depth - 1);\n    right(60);\n    koch(size / 3, depth - 1);\n    left(60);\n    koch(size / 3, depth - 1);\n}\n\nvoid main() {\n    koch(243, 3);\n}\n"
+          say: "koch"
+    dart:
+      pass:
+        - answer: "void koch(double size, int depth) {\n  if (depth == 0) {\n    forward(size);\n    return;\n  }\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n  right(120);\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n}\n\nvoid main() {\n  koch(243, 3);\n}\n"
+      fail:
+        - answer: "void koch(double size, int depth) {\n  if (depth == 0) {\n    forward(size);\n    return;\n  }\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n  right(60);\n  koch(size / 3, depth - 1);\n  left(60);\n  koch(size / 3, depth - 1);\n}\n\nvoid main() {\n  koch(243, 3);\n}\n"
           say: "koch"
   beautiful-tree:
     pass:
@@ -59,6 +83,18 @@ examples:
       fail:
         - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  width(depth);\n  color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n  forward(size);\n  left(25);\n  tree(size * 0.75, depth - 1);\n  right(50);\n  tree(size * 0.75, depth - 1);\n  left(25);\n  back(size);\n}\n\nleft(90);\ntree(80, 7);\n"
           say: "Farben"
+    java:
+      pass:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth);\n    color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n    forward(size);\n    left(25);\n    tree(size * 0.75, depth - 1);\n    right(50);\n    tree(size * 0.75, depth - 1);\n    left(25);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(80, 7);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth);\n    color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n    forward(size);\n    left(25);\n    tree(size * 0.75, depth - 1);\n    right(50);\n    tree(size * 0.75, depth - 1);\n    left(25);\n    back(size);\n}\n\nvoid main() {\n    left(90);\n    tree(80, 7);\n}\n"
+          say: "Farben"
+    dart:
+      pass:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth);\n  color(depth <= 2 ? 'forestgreen' : 'saddlebrown');\n  forward(size);\n  left(25);\n  tree(size * 0.75, depth - 1);\n  right(50);\n  tree(size * 0.75, depth - 1);\n  left(25);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(80, 7);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth);\n  color(depth <= 2 ? 'forestgreen' : 'saddlebrown');\n  forward(size);\n  left(25);\n  tree(size * 0.75, depth - 1);\n  right(50);\n  tree(size * 0.75, depth - 1);\n  left(25);\n  back(size);\n}\n\nvoid main() {\n  left(90);\n  tree(80, 7);\n}\n"
+          say: "Farben"
   sierpinski:
     pass:
       - answer: "def sierpinski(size, depth)\n  if depth == 0\n    3.times do\n      forward size\n      left 120\n    end\n    return\n  end\n  half = size / 2.0\n  sierpinski(half, depth - 1)\n  forward half\n  sierpinski(half, depth - 1)\n  back half\n  left 60\n  forward half\n  right 60\n  sierpinski(half, depth - 1)\n  left 60\n  back half\n  right 60\nend\n\nsierpinski(256, 4)\n"
@@ -76,6 +112,18 @@ examples:
         - answer: "function sierpinski(size, depth) {\n  if (depth === 0) {\n    for (let i = 0; i < 3; i++) {\n      forward(size);\n      left(120);\n    }\n    return;\n  }\n  const half = size / 2;\n  sierpinski(half, depth - 1);\n  forward(half);\n  sierpinski(half, depth - 1);\n  back(half);\n  left(60);\n  forward(half);\n  right(60);\n  sierpinski(half, depth - 1);\n  left(60);\n  back(half);\n  right(60);\n}\n\nsierpinski(256, 4);\n"
       fail:
         - answer: "function sierpinski(size, depth) {\n  if (depth === 0) {\n    for (let i = 0; i < 3; i++) {\n      forward(size);\n      left(120);\n    }\n    return;\n  }\n  const half = size / 2;\n  sierpinski(half, depth - 1);\n  forward(half);\n  sierpinski(half, depth - 1);\n  back(half);\n  left(60);\n  forward(half);\n  right(60);\n  sierpinski(half, depth - 1);\n  right(60);\n  back(half);\n  right(60);\n}\n\nsierpinski(256, 4);\n"
+          say: "sierpinski"
+    java:
+      pass:
+        - answer: "void sierpinski(double size, int depth) {\n    if (depth == 0) {\n        for (int i = 0; i < 3; i++) {\n            forward(size);\n            left(120);\n        }\n        return;\n    }\n    double half = size / 2;\n    sierpinski(half, depth - 1);\n    forward(half);\n    sierpinski(half, depth - 1);\n    back(half);\n    left(60);\n    forward(half);\n    right(60);\n    sierpinski(half, depth - 1);\n    left(60);\n    back(half);\n    right(60);\n}\n\nvoid main() {\n    sierpinski(256, 4);\n}\n"
+      fail:
+        - answer: "void sierpinski(double size, int depth) {\n    if (depth == 0) {\n        for (int i = 0; i < 3; i++) {\n            forward(size);\n            left(120);\n        }\n        return;\n    }\n    double half = size / 2;\n    sierpinski(half, depth - 1);\n    forward(half);\n    sierpinski(half, depth - 1);\n    back(half);\n    left(60);\n    forward(half);\n    right(60);\n    sierpinski(half, depth - 1);\n    right(60);\n    back(half);\n    right(60);\n}\n\nvoid main() {\n    sierpinski(256, 4);\n}\n"
+          say: "sierpinski"
+    dart:
+      pass:
+        - answer: "void sierpinski(double size, int depth) {\n  if (depth == 0) {\n    for (var i = 0; i < 3; i++) {\n      forward(size);\n      left(120);\n    }\n    return;\n  }\n  final half = size / 2;\n  sierpinski(half, depth - 1);\n  forward(half);\n  sierpinski(half, depth - 1);\n  back(half);\n  left(60);\n  forward(half);\n  right(60);\n  sierpinski(half, depth - 1);\n  left(60);\n  back(half);\n  right(60);\n}\n\nvoid main() {\n  sierpinski(256, 4);\n}\n"
+      fail:
+        - answer: "void sierpinski(double size, int depth) {\n  if (depth == 0) {\n    for (var i = 0; i < 3; i++) {\n      forward(size);\n      left(120);\n    }\n    return;\n  }\n  final half = size / 2;\n  sierpinski(half, depth - 1);\n  forward(half);\n  sierpinski(half, depth - 1);\n  back(half);\n  left(60);\n  forward(half);\n  right(60);\n  sierpinski(half, depth - 1);\n  right(60);\n  back(half);\n  right(60);\n}\n\nvoid main() {\n  sierpinski(256, 4);\n}\n"
           say: "sierpinski"
   hilbert:
     pass:
@@ -95,6 +143,18 @@ examples:
       fail:
         - answer: "function hilbert(level, angle, size) {\n  if (level === 0) return;\n  right(angle);\n  hilbert(level - 1, angle, size);\n  forward(size);\n  left(angle);\n  hilbert(level - 1, angle, size);\n  forward(size);\n  hilbert(level - 1, angle, size);\n  left(angle);\n  forward(size);\n  hilbert(level - 1, -angle, size);\n  right(angle);\n}\n\nhilbert(4, 90, 15);\n"
           say: "hilbert"
+    java:
+      pass:
+        - answer: "void hilbert(int level, double angle, double size) {\n    if (level == 0) return;\n    right(angle);\n    hilbert(level - 1, -angle, size);\n    forward(size);\n    left(angle);\n    hilbert(level - 1, angle, size);\n    forward(size);\n    hilbert(level - 1, angle, size);\n    left(angle);\n    forward(size);\n    hilbert(level - 1, -angle, size);\n    right(angle);\n}\n\nvoid main() {\n    hilbert(4, 90, 15);\n}\n"
+      fail:
+        - answer: "void hilbert(int level, double angle, double size) {\n    if (level == 0) return;\n    right(angle);\n    hilbert(level - 1, angle, size);\n    forward(size);\n    left(angle);\n    hilbert(level - 1, angle, size);\n    forward(size);\n    hilbert(level - 1, angle, size);\n    left(angle);\n    forward(size);\n    hilbert(level - 1, -angle, size);\n    right(angle);\n}\n\nvoid main() {\n    hilbert(4, 90, 15);\n}\n"
+          say: "hilbert"
+    dart:
+      pass:
+        - answer: "void hilbert(int level, double angle, double size) {\n  if (level == 0) return;\n  right(angle);\n  hilbert(level - 1, -angle, size);\n  forward(size);\n  left(angle);\n  hilbert(level - 1, angle, size);\n  forward(size);\n  hilbert(level - 1, angle, size);\n  left(angle);\n  forward(size);\n  hilbert(level - 1, -angle, size);\n  right(angle);\n}\n\nvoid main() {\n  hilbert(4, 90, 15);\n}\n"
+      fail:
+        - answer: "void hilbert(int level, double angle, double size) {\n  if (level == 0) return;\n  right(angle);\n  hilbert(level - 1, angle, size);\n  forward(size);\n  left(angle);\n  hilbert(level - 1, angle, size);\n  forward(size);\n  hilbert(level - 1, angle, size);\n  left(angle);\n  forward(size);\n  hilbert(level - 1, -angle, size);\n  right(angle);\n}\n\nvoid main() {\n  hilbert(4, 90, 15);\n}\n"
+          say: "hilbert"
   fern:
     pass:
       - answer: "def fern(size, sign)\n  return if size < 1\n  forward size\n  right 70 * sign\n  fern(size * 0.5, -sign)\n  left 70 * sign\n  forward size\n  left 70 * sign\n  fern(size * 0.5, sign)\n  right 70 * sign\n  right 7 * sign\n  fern(size - 1, sign)\n  left 7 * sign\n  back size * 2\nend\n\ncolor \"forestgreen\"\nleft 90\nfern(25, 1)\n"
@@ -112,6 +172,18 @@ examples:
         - answer: "function fern(size, sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, -sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\ncolor(\"forestgreen\");\nleft(90);\nfern(25, 1);\n"
       fail:
         - answer: "function fern(size, sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\ncolor(\"forestgreen\");\nleft(90);\nfern(25, 1);\n"
+          say: "fern"
+    java:
+      pass:
+        - answer: "void fern(double size, int sign) {\n    if (size < 1) return;\n    forward(size);\n    right(70 * sign);\n    fern(size * 0.5, -sign);\n    left(70 * sign);\n    forward(size);\n    left(70 * sign);\n    fern(size * 0.5, sign);\n    right(70 * sign);\n    right(7 * sign);\n    fern(size - 1, sign);\n    left(7 * sign);\n    back(size * 2);\n}\n\nvoid main() {\n    color(\"forestgreen\");\n    left(90);\n    fern(25, 1);\n}\n"
+      fail:
+        - answer: "void fern(double size, int sign) {\n    if (size < 1) return;\n    forward(size);\n    right(70 * sign);\n    fern(size * 0.5, sign);\n    left(70 * sign);\n    forward(size);\n    left(70 * sign);\n    fern(size * 0.5, sign);\n    right(70 * sign);\n    right(7 * sign);\n    fern(size - 1, sign);\n    left(7 * sign);\n    back(size * 2);\n}\n\nvoid main() {\n    color(\"forestgreen\");\n    left(90);\n    fern(25, 1);\n}\n"
+          say: "fern"
+    dart:
+      pass:
+        - answer: "void fern(double size, int sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, -sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\nvoid main() {\n  color('forestgreen');\n  left(90);\n  fern(25, 1);\n}\n"
+      fail:
+        - answer: "void fern(double size, int sign) {\n  if (size < 1) return;\n  forward(size);\n  right(70 * sign);\n  fern(size * 0.5, sign);\n  left(70 * sign);\n  forward(size);\n  left(70 * sign);\n  fern(size * 0.5, sign);\n  right(70 * sign);\n  right(7 * sign);\n  fern(size - 1, sign);\n  left(7 * sign);\n  back(size * 2);\n}\n\nvoid main() {\n  color('forestgreen');\n  left(90);\n  fern(25, 1);\n}\n"
           say: "fern"
   asymmetric-tree:
     pass:
@@ -131,6 +203,18 @@ examples:
       fail:
         - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  width(depth);\n  color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n  forward(size);\n  left(15);\n  tree(size * 0.8, depth - 1);\n  right(40);\n  tree(size * 0.6, depth - 1);\n  left(40);\n  penUp();\n  back(size);\n  penDown();\n}\n\nleft(90);\ntree(80, 9);\n"
           say: "tree"
+    java:
+      pass:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth);\n    color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n    forward(size);\n    left(15);\n    tree(size * 0.8, depth - 1);\n    right(55);\n    tree(size * 0.6, depth - 1);\n    left(40);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(80, 9);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth);\n    color(depth <= 2 ? \"forestgreen\" : \"saddlebrown\");\n    forward(size);\n    left(15);\n    tree(size * 0.8, depth - 1);\n    right(40);\n    tree(size * 0.6, depth - 1);\n    left(40);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(80, 9);\n}\n"
+          say: "tree"
+    dart:
+      pass:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth);\n  color(depth <= 2 ? 'forestgreen' : 'saddlebrown');\n  forward(size);\n  left(15);\n  tree(size * 0.8, depth - 1);\n  right(55);\n  tree(size * 0.6, depth - 1);\n  left(40);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(80, 9);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth);\n  color(depth <= 2 ? 'forestgreen' : 'saddlebrown');\n  forward(size);\n  left(15);\n  tree(size * 0.8, depth - 1);\n  right(40);\n  tree(size * 0.6, depth - 1);\n  left(40);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(80, 9);\n}\n"
+          say: "tree"
   weeping-tree:
     pass:
       - answer: "def tree(size, depth)\n  return if depth == 0\n  width depth * 0.7\n  color depth <= 3 ? \"olivedrab\" : \"sienna\"\n  forward size\n  left 36\n  tree(size * 0.84, depth - 1)\n  right 72\n  tree(size * 0.84, depth - 1)\n  left 36\n  pen_up\n  back size\n  pen_down\nend\n\nleft 90\ntree(52, 10)\n"
@@ -149,6 +233,18 @@ examples:
       fail:
         - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  width(depth * 0.7);\n  color(depth <= 3 ? \"olivedrab\" : \"sienna\");\n  forward(size);\n  left(36);\n  tree(size * 0.75, depth - 1);\n  right(72);\n  tree(size * 0.84, depth - 1);\n  left(36);\n  penUp();\n  back(size);\n  penDown();\n}\n\nleft(90);\ntree(52, 10);\n"
           say: "tree"
+    java:
+      pass:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth * 0.7);\n    color(depth <= 3 ? \"olivedrab\" : \"sienna\");\n    forward(size);\n    left(36);\n    tree(size * 0.84, depth - 1);\n    right(72);\n    tree(size * 0.84, depth - 1);\n    left(36);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(52, 10);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth * 0.7);\n    color(depth <= 3 ? \"olivedrab\" : \"sienna\");\n    forward(size);\n    left(36);\n    tree(size * 0.75, depth - 1);\n    right(72);\n    tree(size * 0.84, depth - 1);\n    left(36);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(52, 10);\n}\n"
+          say: "tree"
+    dart:
+      pass:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth * 0.7);\n  color(depth <= 3 ? 'olivedrab' : 'sienna');\n  forward(size);\n  left(36);\n  tree(size * 0.84, depth - 1);\n  right(72);\n  tree(size * 0.84, depth - 1);\n  left(36);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(52, 10);\n}\n"
+      fail:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth * 0.7);\n  color(depth <= 3 ? 'olivedrab' : 'sienna');\n  forward(size);\n  left(36);\n  tree(size * 0.75, depth - 1);\n  right(72);\n  tree(size * 0.84, depth - 1);\n  left(36);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(52, 10);\n}\n"
+          say: "tree"
   own-tree:
     pass:
       - answer: "def tree(size, depth)\n  return if depth == 0\n  width depth\n  color depth <= 2 ? \"orange\" : \"saddlebrown\"\n  forward size\n  left 20\n  tree(size * 0.75, depth - 1)\n  right 50\n  tree(size * 0.7, depth - 1)\n  left 30\n  pen_up\n  back size\n  pen_down\nend\n\nleft 90\ntree(70, 8)\n"
@@ -166,4 +262,16 @@ examples:
         - answer: "function tree(size, depth) {\n  if (depth === 0) return;\n  width(depth);\n  color(depth <= 2 ? \"orange\" : \"saddlebrown\");\n  forward(size);\n  left(20);\n  tree(size * 0.75, depth - 1);\n  right(50);\n  tree(size * 0.7, depth - 1);\n  left(30);\n  penUp();\n  back(size);\n  penDown();\n}\n\nleft(90);\ntree(70, 8);\n"
       fail:
         - answer: "left(90);\n"
+          say: "nichts gezeichnet"
+    java:
+      pass:
+        - answer: "void tree(double size, int depth) {\n    if (depth == 0) return;\n    width(depth);\n    color(depth <= 2 ? \"orange\" : \"saddlebrown\");\n    forward(size);\n    left(20);\n    tree(size * 0.75, depth - 1);\n    right(50);\n    tree(size * 0.7, depth - 1);\n    left(30);\n    penUp();\n    back(size);\n    penDown();\n}\n\nvoid main() {\n    left(90);\n    tree(70, 8);\n}\n"
+      fail:
+        - answer: "void main() {\n    left(90);\n}\n"
+          say: "nichts gezeichnet"
+    dart:
+      pass:
+        - answer: "void tree(double size, int depth) {\n  if (depth == 0) return;\n  width(depth);\n  color(depth <= 2 ? 'orange' : 'saddlebrown');\n  forward(size);\n  left(20);\n  tree(size * 0.75, depth - 1);\n  right(50);\n  tree(size * 0.7, depth - 1);\n  left(30);\n  penUp();\n  back(size);\n  penDown();\n}\n\nvoid main() {\n  left(90);\n  tree(70, 8);\n}\n"
+      fail:
+        - answer: "void main() {\n  left(90);\n}\n"
           say: "nichts gezeichnet"

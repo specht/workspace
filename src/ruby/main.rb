@@ -2481,7 +2481,9 @@ class Main < Sinatra::Base
         }
         io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-languages-title'>Sprachen der Klasse</h3>" \
             "<p class='class-setting-hint'>Jede Aktivität, die es in mehreren Sprachen gibt, zeigt die erste dieser Liste, die sie anbietet. " \
-            "Zieh eine Sprache an ihren Platz oder hol eine aus »Weitere Sprachen« dazu. Lernende können auf der Seite selbst umschalten.</p>" \
+            "Zieh eine Sprache an ihren Platz oder hol eine aus »Weitere Sprachen« dazu. Lernende können auf der Seite selbst umschalten. " \
+            "Bei den Katas, bei Pip und bei der Schildkröte werden Dart und Java auf dem Server zuerst übersetzt: " \
+            "Die Antwort kommt dort langsamer als in Ruby, Python und JavaScript.</p>" \
             "<div class='class-languages' data-languages='#{h.(data.to_json)}'></div></section>"
         io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         # Copy buttons on every code block for the group's students, or only

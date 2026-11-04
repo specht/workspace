@@ -2,7 +2,7 @@ Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und K
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/turtle-2'>Turtle: Bäume und Kurven</a> (ein rekursiver Baum). Für die Pflanzen aus Wörtern eine Schleife über die Buchstaben eines Strings und das Ersetzen in einem String (<a href='/kata-texts'>Katas: Strings</a>).</td></tr>
-<tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript wählen die Lernenden auf der Seite selbst. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
+<tr><th>Sprache</th><td>Ruby, Python, JavaScript, Dart oder Java. Die Sprachen stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript, Dart und Java können die Lernenden auf der Seite auch selbst wählen. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder. Dart und Java laufen auf dem Server und werden dort zuerst übersetzt, darum kommt die Antwort langsamer als in den anderen drei Sprachen (Zeile »Technik« in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>).</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Zufall«.<ul>
 <li>Farben aus Zahlen (3 Aufgaben): eine Sonne aus 36 Farben, eine Spirale durch den Farbkreis, ein Fächer, dessen Farbe von Gold nach Rot übergeht.</li>
 <li>Merken und zurückkehren (1 Vorhersage, 1 Aufgabe): wo die Schildkröte nach <code>pop</code> steht, der Baum aus dem zweiten Teil ohne Rückweg.</li>
@@ -17,7 +17,7 @@ Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und K
 
 #### Was schiefgeht
 
-- In Ruby ist `i / 18` eine ganze Zahl, fast immer 0: Der Fächer bleibt golden. Der zweite Tipp nennt `i / 18.0`.
+- In Ruby und Java ist `i / 18` eine ganze Zahl, fast immer 0: Der Fächer bleibt golden. Der zweite Tipp nennt `i / 18.0`.
 - Ein `pop` ohne `push` davor bricht das Programm mit einer Meldung ab; ein vergessenes `pop` lässt den nächsten Ast an der Spitze des letzten wachsen.
 - Beim Wachsen nacheinander zwei Regeln mit `gsub` oder `replace` anwenden: Die zweite ersetzt auch, was die erste gerade eingesetzt hat. Mit zwei Regeln baut `grow` das neue Wort Buchstabe für Buchstabe (die Lösung der eigenen Pflanze zeigt es).
 
