@@ -8,21 +8,27 @@
 # its own). Says where verdict, message or output differ, and how long each
 # took.
 #
-#   ./config.rb exec ruby ruby /src/scripts/compare-hot-compile.rb [ACTIVITY …] [--tasks N]
+#   ./config.rb exec ruby ruby /src/scripts/compare-hot-compile.rb [ACTIVITY …] [--tasks N] [--language java|dart]
 #
 # Without activities: every Kata set, Pip and Tests schreiben. --tasks N
-# takes the first N cards of each (all by default).
+# takes the first N cards of each (all by default), --language only one of
+# the two languages (both by default).
 require 'yaml'
 require_relative '../ruby/include/task_examples'
 require_relative '../ruby/include/hot_compile'
 
 content = File.expand_path('../content', __dir__)
 limit = nil
+languages = %w[java dart]
 names = []
 args = ARGV.dup
 until args.empty?
     a = args.shift
-    a == '--tasks' ? limit = args.shift.to_i : names << a
+    case a
+    when '--tasks' then limit = args.shift.to_i
+    when '--language' then languages = [args.shift]
+    else names << a
+    end
 end
 names = Dir[File.join(content, '{kata-*,pip-*}', 'tasks.yaml')].map { |f| File.basename(File.dirname(f)) }.sort if names.empty?
 
@@ -32,7 +38,7 @@ end
 
 # both services ready before the first comparison
 HotCompile.enabled = true
-%w[java dart].each do |language|
+languages.each do |language|
     started = Time.now
     HotCompile.server(language).start
     puts "#{language} service ready after #{(Time.now - started).round(1)} s"
@@ -48,7 +54,7 @@ names.each do |activity|
     path = File.join(dir, TaskExamples::FILE)
     examples = File.exist?(path) ? (YAML.safe_load(File.read(path))['examples'] || {}) : {}
     tasks.each do |task|
-        %w[java dart].each do |language|
+        languages.each do |language|
             next unless task[language].is_a?(Hash) && task[language].key?('check')
 
             variant = CodeLanguages.variant(task, language)

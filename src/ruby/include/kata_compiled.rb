@@ -271,12 +271,16 @@ module KataCompiled
                 files["harness_#{t}.dart"] = DartCheck.harness(cases)[0].sub('__HS_FILE__', "#{t}.dart")
             end
             # a harness the compile service compiled runs from its .dill,
-            # one it found errors in shows them, else Dart compiles it here
+            # one it found errors in shows them, else Dart compiles it here,
+            # first to a .dill and then runs it, so that compiler and program
+            # need not fit into the container's memory at once (a correct
+            # sieve of ten million did not); each .dill is several MB and
+            # goes after its run, the tmpfs has 16
             loop = targets.map do |t|
                 "printf '\\n%s %s\\n' '#{TARGET_MARK}' '#{t}'\n" \
                     "if [ -e hot_harness_#{t}.ok ]; then \"$dart\" harness_#{t}.dill > out 2> errors\n" \
                     "elif [ -e hot_harness_#{t}.err ]; then : > out; cp hot_harness_#{t}.err errors\n" \
-                    "else \"$dart\" harness_#{t}.dart > out 2> errors; fi\n" \
+                    "else : > out; \"$dart\" compile kernel -o harness_#{t}.dill harness_#{t}.dart > errors 2>&1 && \"$dart\" harness_#{t}.dill > out 2> errors; rm -f harness_#{t}.dill; fi\n" \
                     "if grep -q '#{RESULT_MARK}' out; then cat out; else echo '#{COMPILE_MARK}'; cat errors; fi"
             end
             script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n#{loop.join("\n")}\n"
@@ -395,13 +399,20 @@ module KataCompiled
     # failed«). Java runs the class kata of a compact source file; a file
     # with a class of its own (public class Main) has none, or does not
     # compile with javac in kata.java (the launcher allows it), and runs as
-    # without the service.
+    # without the service. Dart without the service compiles to a .dill
+    # first and then runs it (see program); dart compile kernel also says
+    # »No 'main' method found« after other errors, which dart and the
+    # service do not, so that line goes when there are others.
     def self.run_program(language)
         if language == 'dart'
             script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n" \
                      "if [ -e hot_kata.ok ]; then exec \"$dart\" kata.dill\n" \
                      "elif [ -e hot_kata.err ]; then cat hot_kata.err >&2; exit 254\n" \
-                     "else exec \"$dart\" kata.dart; fi\n"
+                     "else \"$dart\" compile kernel -o kata.dill kata.dart > errors 2>&1 && exec \"$dart\" kata.dill\n" \
+                     "grep -v -e '^Compiling ' -e '^Bad state: Generating kernel failed' errors > shown\n" \
+                     "grep -v -e \"No 'main' method found\" -e \"Try adding a method named 'main'\" shown > others\n" \
+                     "if grep -q 'Error: ' others; then cat others >&2; else cat shown >&2; fi\n" \
+                     "exit 254; fi\n"
             { :argv => ['sh', '-c', script], :hot => { :language => 'dart', :entries => ['kata.dart'] } }
         else
             script = "if [ -e hot_javac.ok ] && [ -e out/kata.class ]; then exec java #{JVM.join(' ')} -cp out kata\n" \

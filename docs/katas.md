@@ -170,9 +170,14 @@ compilers hot (`src/ruby/include/hot_compile.rb`):
   Dart 1.78 s and 0.77 s (with E2E tests running beside it). Two differed,
   neither for the service: a stack overflow in Java ends a little
   differently from run to run (`power`, the same again when repeated), and
-  the Dart sieve up to a million (`primes-up-to`) is killed cold, since
-  `dart harness.dart` holds its compiler in the same 192 MB, and runs hot
-  from its .dill.
+  the Dart sieve up to a million (`primes-up-to`) was killed cold, since
+  `dart harness.dart` held its compiler in the same 192 MB, and ran hot
+  from its .dill. Since then Dart without the service compiles to a .dill
+  first and runs that (`dart compile kernel`, each .dill removed after its
+  run, as several of them do not fit into the 16 MB tmpfs); compared again
+  on four sets (`kata-bits`, `kata-loops`, `pip-3`, `kata-tests`, 295
+  checks), cold and hot agree, the sieve included. `--language dart` or
+  `java` compares one language.
 - **Nothing waits for a service.** One that is not ready is started in the
   background and the run compiles cold meanwhile; one that fails or takes
   longer than 20 s is killed and started again at the next run. A service
