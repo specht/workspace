@@ -79,6 +79,19 @@ dem Server außerhalb des Unterrichts. Auf einem Entwicklungsrechner mit
 6 Kernen brauchten 30 Läufe nacheinander 12,8 s, mit 8 gleichzeitig 2,1 s;
 mehr brachte kaum noch etwas.
 
+Java und Dart übersetzt je ein Container, der geladen bleibt
+(`hs_code_compile_*`, `src/ruby/include/hot_compile.rb`, docs/katas.md, »Java
+and Dart compiled hot«); das Programm läuft trotzdem in seinem eigenen
+Container. Ob heiß und kalt dasselbe sagen, prüft
+
+```bash
+./config.rb exec ruby ruby /src/scripts/compare-hot-compile.rb [AKTIVITÄT …] [--tasks N]
+```
+
+mit jeder Java- und Dart-Karte der Katas, von Pip und »Tests schreiben«, ihren
+Beispielen und einer Fassung, die sich nicht übersetzen lässt, je kalt und
+heiß, und druckt die Zeiten.
+
 ### Betrieb überwachen
 
 `/admin` zeigt unter »Betrieb«, beim Laden der Seite geprüft

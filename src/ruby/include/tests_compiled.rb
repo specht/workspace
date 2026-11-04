@@ -1,6 +1,7 @@
 require 'json'
 require_relative 'dart_check'
 require_relative 'java_check'
+require_relative 'hot_compile'
 
 # Check type tests (TestsCheck) in Dart and Java, which compile before they
 # run. Each version (the right one and the broken ones) gets the person's
@@ -155,7 +156,8 @@ module TestsCompiled
         JAVA
     end
 
-    # { files:, argv:, timeout:, first:, last: }
+    # { files:, argv:, timeout:, first:, last:, hot: } (hot: what the compile
+    # service compiles, HotCompile)
     def self.program(language, code, versions)
         lines = code.to_s.gsub("\r\n", "\n").split("\n", -1)
         lines = [''] if lines.empty?
@@ -195,8 +197,9 @@ module TestsCompiled
                 }
             DART
             script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n" \
-                     "if ! \"$dart\" compile kernel run.dart -o run.dill > errors 2>&1; then\n#{compile_failed}fi\n" \
+                     "#{HotCompile.step('run', '"$dart" compile kernel run.dart -o run.dill > errors 2>&1', compile_failed)}" \
                      "#{loop_body.call('"$dart" run.dill')}"
+            hot = { :language => 'dart', :entries => ['run.dart'] }
             first = 1
             last = lines.size
         else
@@ -236,12 +239,14 @@ module TestsCompiled
             JAVA
             jvm = JavaCheck::JVM.join(' ')
             names = versions.each_index.map { |i| "HsV#{i}.java" }.join(' ')
+            javac = "javac -nowarn -encoding UTF-8 #{JavaCheck::JVM.map { |o| "-J#{o}" }.join(' ')} -d out HsTests.java #{names} HsTestsRun.java 2> errors"
             script = "mkdir -p out\n" \
-                     "if ! javac -nowarn -encoding UTF-8 #{JavaCheck::JVM.map { |o| "-J#{o}" }.join(' ')} -d out HsTests.java #{names} HsTestsRun.java 2> errors; then\n#{compile_failed}fi\n" \
+                     "#{HotCompile.step('javac', javac, compile_failed)}" \
                      "#{loop_body.call("java #{jvm} -cp out HsTestsRun")}"
+            hot = { :language => 'java', :entries => ['javac'] }
         end
         timeout = [20 + VERSION_SECONDS * versions.size, 55].min
-        { :files => files, :argv => ['sh', '-c', script], :timeout => timeout, :first => first, :last => last }
+        { :files => files, :argv => ['sh', '-c', script], :timeout => timeout, :first => first, :last => last, :hot => hot }
     end
 
     # The message for tests that do not compile, with the person's line.

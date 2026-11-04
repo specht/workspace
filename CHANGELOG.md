@@ -21,6 +21,9 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Java und Dart in den Katas, bei Pip und »Tests schreiben« übersetzt je ein Container, der geladen bleibt
+  (`hs_code_compile_*`, zusammen bis zu 1 GB Arbeitsspeicher, 2 CPUs): Prüfungen antworten in etwa einer halben Sekunde
+  statt in ein bis zwei. Ausschalten mit `HOT_COMPILE = false` in `credentials.rb`.
 - Das Workspace-Image enthält `pytest` für die Tests in Python (»Testen«): Nach dem Update das Image neu bauen
   (`./build-image.sh`).
 - Der Ruby-Dienst braucht `node`: Seiten zeichnen ER-Diagramme mit `_include_er` aus dem Modell, mit dem Kern der

@@ -130,3 +130,9 @@ end
 # diese Zeile 4. Wie viele der Server verträgt, misst
 # ./config.rb exec ruby ruby /src/scripts/measure-katas.rb
 # KATA_PARALLEL_RUNS = 4
+
+# Java und Dart übersetzt ein Compiler, der geladen bleibt (docs/katas.md,
+# »Java and Dart compiled hot«): je ein Container für Java und für Dart, zusammen
+# bis zu 1 GB Arbeitsspeicher. Mit false übersetzt jede Prüfung wieder
+# selbst, langsamer.
+# HOT_COMPILE = false

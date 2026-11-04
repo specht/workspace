@@ -343,7 +343,7 @@ module PipCheck
             end
             index && worlds[index] ? [worlds[index], maps[index]] : [nil, nil]
         end
-        result = run.call(:files => program[:files], :argv => program[:argv], :timeout => program[:timeout], :dialog => dialog(check, current))
+        result = run.call(:files => HotCompile.files(program), :argv => program[:argv], :timeout => program[:timeout], :dialog => dialog(check, current))
         return nil if result.nil?
 
         sections = PipCompiled.sections(result.stdout)

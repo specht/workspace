@@ -11,8 +11,9 @@ require 'securerandom'
 # through (docker_policy.rb), like the offline reader of workspace_runtime.rb.
 #
 # The code goes in on stdin, never as a file on the host: RUNNER reads the
-# first line ({files, argv, limit}), writes the files into /tmp/kata and
-# starts the program there; after that line comes what the program reads. A
+# first line ({files, argv, limit}), writes the files into /tmp/kata (a
+# file's text, or {"base64": …} for bytes such as compiled classes; a name
+# may have one folder, out/HsKata.class) and starts the program there; after that line comes what the program reads. A
 # run ends when the program ends, after timeout seconds or when it writes
 # more than MAX_OUTPUT bytes; then the container is killed, and docker run
 # --rm removes it. The alarm in RUNNER (limit) ends the program even if this
@@ -35,6 +36,7 @@ module KataRunner
     # The files go into /tmp/kata, the program replaces this script there,
     # and the alarm stays set across that exec.
     RUNNER = <<~'PY'
+        import base64
         import json
         import os
         import signal
@@ -54,11 +56,19 @@ module KataRunner
         setup = json.loads(line)
         os.makedirs('/tmp/kata', exist_ok=True)
         for name, content in setup.get('files', {}).items():
-            if '/' in name or name.startswith('.') or not name:
+            parts = name.split('/')
+            if not name or len(parts) > 2 or any(not p or p.startswith('.') for p in parts):
                 sys.exit(f'kata runner: bad file name {name!r}')
-            with open(os.path.join('/tmp/kata', name), 'w', encoding='utf-8') as file:
-                file.write(content)
+            path = os.path.join('/tmp/kata', name)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            if isinstance(content, dict):
+                with open(path, 'wb') as file:
+                    file.write(base64.b64decode(content['base64']))
+            else:
+                with open(path, 'w', encoding='utf-8') as file:
+                    file.write(content)
         os.chdir('/tmp/kata')
+        # 0: no alarm (the compile services of HotCompile, which stay)
         signal.alarm(int(setup.get('limit', 60)))
         argv = setup['argv']
         os.execvp(argv[0], argv)
@@ -77,12 +87,13 @@ module KataRunner
     end
 
     # The docker command for one run; every option is one the guard checks.
-    def self.docker_args(name, image: IMAGE)
+    # The compile services (HotCompile) take other limits.
+    def self.docker_args(name, image: IMAGE, cpus: CPUS, memory: MEMORY, tmpfs: TMPFS)
         ['docker', 'run', '--rm', '-i', '--init', '--name', name,
          '--network', 'none', '--read-only',
-         '--tmpfs', "/tmp:rw,nosuid,nodev,size=#{TMPFS},mode=1777",
+         '--tmpfs', "/tmp:rw,nosuid,nodev,size=#{tmpfs},mode=1777",
          '--user', USER, '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-         '--cpus', CPUS, '--memory', MEMORY, '--memory-swap', MEMORY, '--pids-limit', PIDS.to_s,
+         '--cpus', cpus, '--memory', memory, '--memory-swap', memory, '--pids-limit', PIDS.to_s,
          '--log-driver', 'none', '-e', 'HOME=/tmp', '-e', 'LANG=C.UTF-8', '-e', 'PYTHONDONTWRITEBYTECODE=1',
          '--entrypoint', 'python3', image, '-I', '-c', RUNNER]
     end

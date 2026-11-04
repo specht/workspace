@@ -143,7 +143,7 @@ module TestsCheck
         versions = [check['correct']] + check['mutants'].map { |m| m['code'] }
         if TestsCompiled::LANGUAGES.include?(language)
             program = TestsCompiled.program(language, code, versions)
-            result = run.call(:files => program[:files], :argv => program[:argv], :timeout => program[:timeout])
+            result = run.call(:files => HotCompile.files(program), :argv => program[:argv], :timeout => program[:timeout])
             return [:unavailable, KataCheck::BUSY, nil] if result.nil?
             if (at = result.stdout.to_s.index(TestsCompiled::COMPILE_MARK))
                 errors = result.stdout.to_s[(at + TestsCompiled::COMPILE_MARK.size)..]

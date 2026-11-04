@@ -1,6 +1,7 @@
 require 'json'
 require_relative 'dart_check'
 require_relative 'java_check'
+require_relative 'hot_compile'
 
 # Pip's plans in Dart and Java (PipCheck), the two languages that compile
 # before they run. Compiling takes longer than the plan (javac about four
@@ -282,8 +283,9 @@ module PipCompiled
 
     # --- the run ------------------------------------------------------------
 
-    # { files:, argv:, timeout:, first:, last: }: compile once, then each map
-    # of order, until one ends with an error or runs too long.
+    # { files:, argv:, timeout:, first:, last:, hot: }: compile once (or the
+    # compile service did, HotCompile), then each map of order, until one
+    # ends with an error or runs too long.
     def self.program(check, code, maps, order)
         language = check['language']
         loop_body = lambda do |start|
@@ -302,17 +304,20 @@ module PipCompiled
             first = 1
             last = files['kata.dart'].count("\n")
             script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n" \
-                     "if ! \"$dart\" compile kernel run.dart -o run.dill > errors 2>&1; then\n#{compile_failed}fi\n" \
+                     "#{HotCompile.step('run', '"$dart" compile kernel run.dart -o run.dill > errors 2>&1', compile_failed)}" \
                      "#{loop_body.call('"$dart" run.dill')}"
+            hot = { :language => 'dart', :entries => ['run.dart'] }
         else
             files, first, last = java_files(check, code, maps)
             jvm = JavaCheck::JVM.join(' ')
+            javac = "javac -nowarn -encoding UTF-8 #{JavaCheck::JVM.map { |o| "-J#{o}" }.join(' ')} -d out Pip.java HsPip.java HsPipRun.java 2> errors"
             script = "mkdir -p out\n" \
-                     "if ! javac -nowarn -encoding UTF-8 #{JavaCheck::JVM.map { |o| "-J#{o}" }.join(' ')} -d out Pip.java HsPip.java HsPipRun.java 2> errors; then\n#{compile_failed}fi\n" \
+                     "#{HotCompile.step('javac', javac, compile_failed)}" \
                      "#{loop_body.call("java #{jvm} -cp out HsPipRun")}"
+            hot = { :language => 'java', :entries => ['javac'] }
         end
         timeout = [COMPILE_SECONDS + MAP_SECONDS * order.size, 55].min
-        { :files => files, :argv => ['sh', '-c', script], :timeout => timeout, :first => first, :last => last }
+        { :files => files, :argv => ['sh', '-c', script], :timeout => timeout, :first => first, :last => last, :hot => hot }
     end
 
     # { compile: errors or nil, maps: { index => { output:, errors:, status:, timed_out: } } }

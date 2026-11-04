@@ -51,7 +51,8 @@ The code:
 
 - **Runs:** `kata_runner.rb` (one container per run from the Workspace image,
   no network, as `nobody`, limits), `kata_queue.rb` (one queue,
-  `KATA_PARALLEL_RUNS`, one run per person), `src/scripts/measure-katas.rb`.
+  `KATA_PARALLEL_RUNS`, one run per person), `src/scripts/measure-katas.rb`;
+  `hot_compile.rb` for Java and Dart (»Java and Dart compiled hot« below).
 - **Checks:** `kata_check.rb` with the harnesses of `ruby_check.rb`,
   `python_check.rb` and `javascript_check.rb` (cases, `random` with a seed per
   person, `forbid`, `same_as` feedback, explained beginner errors);
@@ -141,6 +142,62 @@ The code:
   stays clearer, and the page shows its `reduce` version afterwards.
 - **Examples never imitate a difficulty a student may have:** a »stutter«
   function became one putting letters in brackets.
+
+### Java and Dart compiled hot
+
+Measured in a Kata container (0.5 CPU, 192 MB) on 3 November 2026: the
+container starts in 0.2 s, a compiled program runs in under 0.1 s, but
+`javac` started cold takes 1.1 to 1.2 s and Dart 0.7 to 1.0 s. A compiler
+that stays loaded takes 0.1 to 0.3 s. The maintainer chose to keep the
+compilers hot (`src/ruby/include/hot_compile.rb`):
+
+- **One container per language stays and only compiles** (`hs_code_compile_java_*`,
+  `hs_code_compile_dart_*`), as isolated as a Kata run: no network,
+  read-only, `nobody`, 1 CPU and 512 MB each. Java is `javax.tools` in a JVM
+  of its own, Dart its `frontend_server`, driven on stdin as Flutter's tools
+  drive it. **The program still runs in a container of its own**: Java 25 has
+  no sandbox for code in a shared JVM any more, and one `System.exit` would
+  end the service.
+- **The scripts stay the one place that decides.** KataCompiled, TestsCompiled
+  and PipCompiled build their script as before; its compile step
+  (`HotCompile.step`) is skipped when the run's files already hold what the
+  service made, takes the service's errors when it found some, and
+  otherwise compiles as before. The service compiles in `/tmp/kata` with the
+  names and options of the run, so errors, line numbers and stack traces are
+  the same; `src/scripts/compare-hot-compile.rb` checks every Java and Dart
+  card cold and hot and compares verdict and message word for word: on
+  4 November 2026, 1457 checks, Java 2.19 s cold and 0.61 s hot on average,
+  Dart 1.78 s and 0.77 s (with E2E tests running beside it). Two differed,
+  neither for the service: a stack overflow in Java ends a little
+  differently from run to run (`power`, the same again when repeated), and
+  the Dart sieve up to a million (`primes-up-to`) is killed cold, since
+  `dart harness.dart` holds its compiler in the same 192 MB, and runs hot
+  from its .dill.
+- **Nothing waits for a service.** One that is not ready is started in the
+  background and the run compiles cold meanwhile; one that fails or takes
+  longer than 20 s is killed and started again at the next run. A service
+  ends by itself when the Ruby process is gone (its stdin closes).
+  `HOT_COMPILE = false` in `credentials.rb` switches it off.
+- **»Ausführen« too**: Java runs the class `kata` of a compact source file,
+  with `error: compilation failed` after errors as the launcher prints it; a
+  file with a class of its own (`public class Main`), which the launcher
+  accepts and `javac` does not, runs cold as before.
+- **Dart's `frontend_server` has its quirks** (found while building it, kept
+  in the driver): `compile` after `reset` keeps files it has read before (the
+  same `kata.dart` with new code), so every compile after the first is
+  `recompile` with every file name as changed; its output is buffered, so the
+  error lines decide, not the count at the end, which comes only with the
+  next command; after errors `reject`, after success `accept`, then `reset`.
+  The mode without `--incremental` adds the error counts up and writes 8 MB.
+- **Not chosen:** compiling in the browser (Dart has no compiler there;
+  CheerpJ loads from its maker's servers and needs a licence to host it
+  oneself; TeaVM's `javac` in WebAssembly would be tens of MB and needs
+  recent browsers, and a Kata's check would move into the student's
+  browser, where its hidden cases show and a »gelöst« can be faked); a
+  cached start for `javac` (`-XX:AOTCache`, 1.15 s to 0.8 s, far less than
+  a hot one); caching results of the same code (most hits would be a
+  person's own runs because of the seed per person, never for programs with
+  `random`, wrong as soon as a check or the image changes).
 
 ### The card and the strip
 

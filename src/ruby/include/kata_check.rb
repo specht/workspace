@@ -350,7 +350,7 @@ module KataCheck
         program = KataCompiled.program(language_name, code, alternatives.map { |f| f['when']['same_as'] }, cases)
         seconds = check['timeout'] || 10
         timeout = [seconds * program[:targets].size, MAX_SECONDS].min
-        result = run.call(:files => program[:files], :argv => program[:argv], :timeout => timeout)
+        result = run.call(:files => HotCompile.files(program), :argv => program[:argv], :timeout => timeout)
         return [:unavailable, BUSY, nil] if result.nil?
 
         sections = result.too_long ? {} : KataCompiled.sections(result.stdout)
@@ -493,8 +493,14 @@ module KataCheck
     def self.run_program(language, code, run)
         return { :status => :invalid, :output => '', :message => EMPTY } if code.to_s.strip.empty?
 
-        argv = KataCompiled::LANGUAGES.include?(language) ? KataCompiled.run_argv(language) : PROGRAMS.fetch(language)
         files = { FILES.fetch(language) => code.to_s }.merge(SYNC_FILES.fetch(language, {}))
+        if KataCompiled::LANGUAGES.include?(language)
+            program = KataCompiled.run_program(language).merge(:files => files)
+            argv = program[:argv]
+            files = HotCompile.files(program)
+        else
+            argv = PROGRAMS.fetch(language)
+        end
         result = run.call(:files => files, :argv => argv, :timeout => RUN_SECONDS)
         return { :status => :unavailable, :output => '', :message => BUSY } if result.nil?
 

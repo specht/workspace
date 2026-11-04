@@ -2,6 +2,7 @@ require 'json'
 require_relative 'call_check'
 require_relative 'dart_check'
 require_relative 'java_check'
+require_relative 'hot_compile'
 
 # Katas (check type function) in Dart and Java, the two languages that
 # compile before they run (KataCheck hands them over). The person's code is
@@ -258,7 +259,8 @@ module KataCompiled
 
     # --- the run ------------------------------------------------------------
 
-    # { files:, argv: } for the code and the typical wrong solutions.
+    # { files:, argv:, targets:, hot: } for the code and the typical wrong
+    # solutions (hot: what the compile service compiles, HotCompile).
     def self.program(language, code, alternatives, cases)
         targets = target_names(language, alternatives.size)
         codes = [code] + alternatives
@@ -268,20 +270,26 @@ module KataCompiled
                 files["#{t}.dart"] = codes[i].to_s
                 files["harness_#{t}.dart"] = DartCheck.harness(cases)[0].sub('__HS_FILE__', "#{t}.dart")
             end
+            # a harness the compile service compiled runs from its .dill,
+            # one it found errors in shows them, else Dart compiles it here
             loop = targets.map do |t|
                 "printf '\\n%s %s\\n' '#{TARGET_MARK}' '#{t}'\n" \
-                    "\"$dart\" harness_#{t}.dart > out 2> errors\n" \
+                    "if [ -e hot_harness_#{t}.ok ]; then \"$dart\" harness_#{t}.dill > out 2> errors\n" \
+                    "elif [ -e hot_harness_#{t}.err ]; then : > out; cp hot_harness_#{t}.err errors\n" \
+                    "else \"$dart\" harness_#{t}.dart > out 2> errors; fi\n" \
                     "if grep -q '#{RESULT_MARK}' out; then cat out; else echo '#{COMPILE_MARK}'; cat errors; fi"
             end
             script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n#{loop.join("\n")}\n"
+            hot = { :language => 'dart', :entries => targets.map { |t| "harness_#{t}.dart" } }
         else
             files = targets.each_with_index.to_h { |t, i| ["#{t}.java", java_source(t, codes[i], cases)[0]] }
-            javac = "javac -nowarn -encoding UTF-8 #{JVM.map { |o| "-J#{o}" }.join(' ')} -d out #{targets.map { |t| "#{t}.java" }.join(' ')}"
+            javac = "javac -nowarn -encoding UTF-8 #{JVM.map { |o| "-J#{o}" }.join(' ')} -d out #{targets.map { |t| "#{t}.java" }.join(' ')} 2> errors"
             runs = targets.map { |t| "printf '\\n%s %s\\n' '#{TARGET_MARK}' '#{t}'\njava #{JVM.join(' ')} -cp out HsRun#{t}" }
-            script = "if #{javac} 2> errors; then\n#{runs.join("\n")}\nelse\n" \
-                     "printf '\\n%s %s\\n%s\\n' '#{TARGET_MARK}' '#{targets.first}' '#{COMPILE_MARK}'\ncat errors\nfi\n"
+            failed = "printf '\\n%s %s\\n%s\\n' '#{TARGET_MARK}' '#{targets.first}' '#{COMPILE_MARK}'\ncat errors\nexit 0\n"
+            script = "#{HotCompile.step('javac', javac, failed)}#{runs.join("\n")}\n"
+            hot = { :language => 'java', :entries => ['javac'] }
         end
-        { :files => files, :argv => ['sh', '-c', script], :targets => targets }
+        { :files => files, :argv => ['sh', '-c', script], :targets => targets, :hot => hot }
     end
 
     # {target => output} of a run.
@@ -381,12 +389,26 @@ module KataCompiled
     end
 
     # What runs on »Ausführen«: Dart with its main, Java as a compact source
-    # file (Java 25), which needs a main too.
-    def self.run_argv(language)
+    # file (Java 25), which needs a main too. { argv:, hot: }: with what the
+    # compile service made (HotCompile) it prints what dart and java print,
+    # also a compile error (Java's launcher adds »error: compilation
+    # failed«). Java runs the class kata of a compact source file; a file
+    # with a class of its own (public class Main) has none, or does not
+    # compile with javac in kata.java (the launcher allows it), and runs as
+    # without the service.
+    def self.run_program(language)
         if language == 'dart'
-            ['sh', '-c', "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart; exec \"$dart\" kata.dart"]
+            script = "dart=#{DartCheck::DART}; [ -x \"$dart\" ] || dart=dart\n" \
+                     "if [ -e hot_kata.ok ]; then exec \"$dart\" kata.dill\n" \
+                     "elif [ -e hot_kata.err ]; then cat hot_kata.err >&2; exit 254\n" \
+                     "else exec \"$dart\" kata.dart; fi\n"
+            { :argv => ['sh', '-c', script], :hot => { :language => 'dart', :entries => ['kata.dart'] } }
         else
-            ['java', *JVM, 'kata.java']
+            script = "if [ -e hot_javac.ok ] && [ -e out/kata.class ]; then exec java #{JVM.join(' ')} -cp out kata\n" \
+                     "elif [ -e hot_javac.err ] && ! grep -q 'should be declared in a file named' hot_javac.err; then\n" \
+                     "cat hot_javac.err >&2; echo 'error: compilation failed' >&2; exit 1\n" \
+                     "else exec java #{JVM.join(' ')} kata.java; fi\n"
+            { :argv => ['sh', '-c', script], :hot => { :language => 'java', :entries => ['javac'] } }
         end
     end
 

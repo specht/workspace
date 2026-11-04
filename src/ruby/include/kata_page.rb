@@ -21,6 +21,11 @@ class Main < Sinatra::Base
     # sehr viele …«).
     KATA_MAX_WAIT = 120
 
+    # Java and Dart compiled by a compiler that stays loaded (HotCompile),
+    # unless credentials.rb sets HOT_COMPILE = false.
+    HotCompile.enabled = !(defined?(HOT_COMPILE) && HOT_COMPILE == false)
+    at_exit { HotCompile.stop_all }
+
     # The run of one ticket: a newer run of the same person stops it. live:
     # what the program prints goes to the ticket as it comes, for the card
     # to show while it runs (the person's own program, not a check's harness).
