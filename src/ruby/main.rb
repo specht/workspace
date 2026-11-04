@@ -95,6 +95,8 @@ require 'sinatra/cookies'
 require './credentials.rb'
 
 Neo4jBolt.bolt_host = 'neo4japp'
+require './include/request_diagnostics.rb'
+Neo4jBolt.prepend(RequestDiagnostics::Neo4jTiming)
 Neo4jBolt.bolt_port = 7687
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
@@ -584,11 +586,36 @@ class Main < Sinatra::Base
     @@mysql_database_locks_mutex = Mutex.new
     @@mysql_database_locks = {}
 
+    # Called on every request of a logged-in person (before '*') and by many
+    # pages: the roster is built again, and the Git server's files written
+    # again (git_refresh!), only when the roster changed (roster_changed!,
+    # another process, the invitation files), not each time. Built on every
+    # request under the one mutex, with the Git server's queries and files,
+    # it made the site slow with a class at work (polls every 400 ms).
+    @@invitations_key = nil
+
     def self.load_invitations
-        @@load_invitations_mutex.synchronize do
+        waiting = RequestDiagnostics.now
+        rebuilt = @@load_invitations_mutex.synchronize do
+            RequestDiagnostics.roster_wait((RequestDiagnostics.now - waiting) * 1000)
+            key = invitations_key
+            next false if key == @@invitations_key
+
             load_invitations_locked
+            @@invitations_key = key
+            true
         end
-        git_refresh!
+        git_refresh! if rebuilt
+    end
+
+    # What the roster is built from: the cached records in Neo4j (a new
+    # object after every change, RosterStore), or the invitation files with
+    # their times and sizes (before the import, and the tools' files in
+    # development).
+    def self.invitations_key
+        cached = cached_roster
+        files = !cached[:imported] || DEVELOPMENT ? invitation_files(:all).map { |path| [path, File.mtime(path).to_f, File.size(path)] } : nil
+        [cached.object_id, files]
     end
 
     # --- Git repositories of groups in the Workspace (GitServer) -------------

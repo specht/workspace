@@ -17,6 +17,8 @@ class Main < Sinatra::Base
     # How many runs at a time: KATA_PARALLEL_RUNS in credentials.rb, measured
     # with src/scripts/measure-katas.rb.
     KATA_QUEUE = KataQueue.new(:parallel => defined?(KATA_PARALLEL_RUNS) ? KATA_PARALLEL_RUNS : 4)
+    RequestDiagnostics.queue = KATA_QUEUE
+    RequestDiagnostics.start_watch
     # A run that waited this long for a place is given up (»Gerade prüfen
     # sehr viele …«).
     KATA_MAX_WAIT = 120

@@ -178,6 +178,12 @@ class KataQueue
         @mutex.synchronize { @waiting.size }
     end
 
+    # runs going on now (RequestDiagnostics)
+    def running
+        # each ticket asked outside the queue's lock (it takes its own)
+        @mutex.synchronize { @tickets.values }.count { |t| t.state == :running }
+    end
+
     private
 
     def prune

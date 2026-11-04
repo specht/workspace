@@ -142,6 +142,32 @@ sie leert sich von selbst. Was das alles nicht sieht: einen Server, der
 ganz steht. Dafür braucht es einen Dienst von außen, der die Startseite
 aufruft.
 
+### Wenn die Seite langsam ist
+
+Der Ruby-Dienst schreibt drei Arten von Zeilen in sein Log
+(`src/ruby/include/request_diagnostics.rb`, eingehängt in `config.ru`):
+
+- `SLOW 2345 ms GET /admin 200 neo4j 14× 2100 ms (slowest …) roster lock 0 ms`:
+  eine Anfrage, die länger als eine Sekunde gedauert hat, mit ihren
+  Neo4j-Abfragen und wie lange sie auf die Liste der Eingeladenen gewartet hat;
+- `STUCK 15 s POST /api/turtle/check … at turtle_check.rb:212 < …`: eine
+  Anfrage, die nach zehn Sekunden noch läuft, mit den Zeilen, in denen sie
+  gerade steckt (einmal je Anfrage);
+- `STATS 5 min: …`: alle fünf Minuten Anfragen, langsame, Median, 95 %,
+  Maximum, Neo4j, die Warteschlange der Katas, Threads, der Speicher des
+  Prozesses und was der Rechner noch frei hat.
+
+```bash
+docker logs --since 1h workspace_ruby_1 2>&1 | grep -E '^(SLOW|STUCK|STATS)'
+```
+
+Eine Anfrage, die Ruby ganz beschäftigt, macht alle anderen langsam (der
+globale Interpreter-Lock) und nginx zeigt dann »Der Workspace startet gerade
+neu«. Am 4. November 2026 war das die Prüfung einer Schildkröte, die eine
+Linie von astronomischer Länge gezeichnet hatte: Stunden Rechenzeit und
+24 GB, bis der Kernel Ruby beendete. Welcher Thread rechnet, zeigt auf dem
+Server `top -H -p <PID von puma>`; seit wann, `ps -L -o tid,lstart,time -p <PID>`.
+
 ### Große Workspaces
 
 »Betrieb« zeigt die laufenden Workspaces nach Last (Rechenzeit, dann

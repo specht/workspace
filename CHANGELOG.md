@@ -21,6 +21,11 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Die Prüfung der Schildkröte vergleicht nur noch, was nahe am Bild der Aufgabe liegt: Eine Linie von astronomischer Länge
+  (eine Spirale, deren Schritt sich immer wieder vervielfacht) hielt den Ruby-Dienst stundenlang beschäftigt und ließ ihn
+  wachsen, bis der Kernel ihn beendete. Update empfohlen.
+- Das Log des Ruby-Dienstes nennt langsame (`SLOW`) und hängende Anfragen (`STUCK`, mit der Zeile, in der sie stecken)
+  und alle fünf Minuten einen Überblick (`STATS`); docs/entwicklung.md, »Wenn die Seite langsam ist«.
 - Java und Dart in den Katas, bei Pip und »Tests schreiben« übersetzt je ein Container, der geladen bleibt
   (`hs_code_compile_*`, zusammen bis zu 1 GB Arbeitsspeicher, 2 CPUs): Prüfungen antworten in etwa einer halben Sekunde
   statt in ein bis zwei. Ausschalten mit `HOT_COMPILE = false` in `credentials.rb`.
