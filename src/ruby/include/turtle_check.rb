@@ -150,16 +150,28 @@ module TurtleCheck
 
     # ----- comparing -----
 
-    # The lines of a picture in cells of CELL, for »is there one near?«.
+    # The lines of a picture in cells of CELL, for »is there one near?«,
+    # only in region ([xmin, ymin, xmax, ymax], where points are asked
+    # about): a line registers in every cell of its bounding box, and one of
+    # 10^9 steps, diagonal, would otherwise fill 10^16 of them.
     class Index
-        def initialize(segments)
+        def initialize(segments, region)
             @cells = Hash.new { |h, k| h[k] = [] }
+            xmin, ymin, xmax, ymax = region.map { |v| (v / CELL).floor }
+            budget = MAX_CELLS
             segments.each do |s|
                 pad = NEAR + 0.01
-                (((([s.x1, s.x2].min - pad) / CELL).floor)..((([s.x1, s.x2].max + pad) / CELL).floor)).each do |cx|
-                    (((([s.y1, s.y2].min - pad) / CELL).floor)..((([s.y1, s.y2].max + pad) / CELL).floor)).each do |cy|
-                        @cells[[cx, cy]] << s
-                    end
+                x1 = [((([s.x1, s.x2].min - pad) / CELL).floor), xmin].max
+                x2 = [((([s.x1, s.x2].max + pad) / CELL).floor), xmax].min
+                y1 = [((([s.y1, s.y2].min - pad) / CELL).floor), ymin].max
+                y2 = [((([s.y1, s.y2].max + pad) / CELL).floor), ymax].min
+                next if x1 > x2 || y1 > y2
+
+                budget -= (x2 - x1 + 1) * (y2 - y1 + 1)
+                raise TooBig if budget.negative?
+
+                (x1..x2).each do |cx|
+                    (y1..y2).each { |cy| @cells[[cx, cy]] << s }
                 end
             end
         end
@@ -179,29 +191,100 @@ module TurtleCheck
         Math.hypot(x - (s.x1 + t * dx), y - (s.y1 + t * dy))
     end
 
+    # At most so many samples and cells of the index per check: a picture
+    # of 200 000 lines crossing the paper would otherwise take many seconds.
+    MAX_SAMPLES = 1_000_000
+    MAX_CELLS = 1_000_000
+    TOO_BIG = 'Dein Bild hat zu viele oder zu lange Linien, um es mit der Vorlage zu vergleichen.'
+
+    class TooBig < StandardError; end
+
     # The pieces of segments that no line of other comes near, as segments
-    # (a single point as one of length 0).
+    # (a single point as one of length 0). Only the part of a segment near
+    # other's lines is sampled (clip): what lies further out is uncovered
+    # anyway. Sampled whole, one line of 10^9 steps (a spiral that grows
+    # without end) took hours and many GB of memory on the server.
     def self.uncovered(segments, other, colors)
-        index = Index.new(other)
+        return [] if segments.empty?
+        return segments.map { |s| piece(s, 0.0, 1.0) } if other.empty?
+
+        box = bounds(other, NEAR + STEP)
+        # points are asked about only inside box and on segments
+        region = intersect(box, bounds(segments, NEAR + STEP))
+        return segments.map { |s| piece(s, 0.0, 1.0) } unless region
+
+        index = Index.new(other, region)
+        budget = MAX_SAMPLES
         segments.flat_map do |s|
-            n = [(s.length / STEP).ceil, 1].max
-            covered = (0..n).map do |i|
-                t = i.to_f / n
-                index.near?(s.x1 + t * (s.x2 - s.x1), s.y1 + t * (s.y2 - s.y1), colors ? s.color : nil)
-            end
+            inside = clip(s, box)
+            next [piece(s, 0.0, 1.0)] unless inside
+
+            a, b = inside
+            n = [((b - a) * s.length / STEP).ceil, 1].max
+            budget -= n + 1
+            raise TooBig if budget.negative?
+
+            at = ->(i) { a + (b - a) * i / n }
             runs = []
             start = nil
-            covered.each_with_index do |c, i|
-                if !c && start.nil?
+            (0..n).each do |i|
+                t = at.(i)
+                covered = index.near?(s.x1 + t * (s.x2 - s.x1), s.y1 + t * (s.y2 - s.y1), colors ? s.color : nil)
+                if !covered && start.nil?
                     start = i
-                elsif c && start
-                    runs << [start, i - 1]
+                elsif covered && start
+                    runs << [at.(start), at.(i - 1)]
                     start = nil
                 end
             end
-            runs << [start, n] if start
-            runs.map { |a, b| piece(s, a.to_f / n, b.to_f / n) }
+            runs << [at.(start), b] if start
+            # the parts outside, joined to an uncovered run at the edge
+            if a.positive?
+                runs.first && runs.first[0] == a ? runs.first[0] = 0.0 : runs.unshift([0.0, a])
+            end
+            if b < 1.0
+                runs.last && runs.last[1] == b ? runs.last[1] = 1.0 : runs.push([b, 1.0])
+            end
+            runs.map { |from, to| piece(s, from, to) }
         end
+    end
+
+    # [xmin, ymin, xmax, ymax] around segments, with margin.
+    def self.bounds(segments, margin)
+        xs = segments.flat_map { |s| [s.x1, s.x2] }
+        ys = segments.flat_map { |s| [s.y1, s.y2] }
+        [xs.min - margin, ys.min - margin, xs.max + margin, ys.max + margin]
+    end
+
+    # The overlap of two boxes, or nil.
+    def self.intersect(a, b)
+        box = [[a[0], b[0]].max, [a[1], b[1]].max, [a[2], b[2]].min, [a[3], b[3]].min]
+        box[0] <= box[2] && box[1] <= box[3] ? box : nil
+    end
+
+    # The part of s inside box as [a, b], 0 <= a <= b <= 1, or nil
+    # (Liang–Barsky).
+    def self.clip(s, box)
+        xmin, ymin, xmax, ymax = box
+        dx = s.x2 - s.x1
+        dy = s.y2 - s.y1
+        a = 0.0
+        b = 1.0
+        [[-dx, s.x1 - xmin], [dx, xmax - s.x1], [-dy, s.y1 - ymin], [dy, ymax - s.y1]].each do |p, q|
+            if p.zero?
+                return nil if q.negative?
+            else
+                r = q / p
+                if p.negative?
+                    return nil if r > b
+                    a = r if r > a
+                else
+                    return nil if r < a
+                    b = r if r < b
+                end
+            end
+        end
+        [a, b]
     end
 
     def self.piece(s, a, b)
@@ -262,6 +345,8 @@ module TurtleCheck
             n = wanted.size
             [:correct, n > 1 ? "Alle #{n} Aufrufe zeichnen genau das Richtige." : 'Dein Bild stimmt.', nil]
         end
+    rescue TooBig
+        [:wrong, TOO_BIG, nil]
     rescue TurtleWorld::Error => e
         [:invalid, "Das Bild ließ sich nicht nachzeichnen (#{e.message}). Lass dein Programm noch einmal laufen.", nil]
     end

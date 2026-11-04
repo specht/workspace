@@ -95,4 +95,24 @@ class TurtleCheckTest < Minitest::Test
         _, error = TurtleCheck.record('ruby', 'forward "100"', [nil])
         assert_match(/forward braucht eine Zahl/, error)
     end
+
+    # A line of 10^15 steps, diagonal, or a spiral that multiplies its step,
+    # was compared for hours with many GB on the server (4 November 2026):
+    # now only the part near the picture asked for counts.
+    def test_endless_lines_are_compared_at_once
+        check = { 'type' => 'turtle', 'language' => 'ruby', 'draw' => '4.times { forward 100; left 90 }' }
+        spiral = []
+        step = 1.0
+        3000.times { spiral << ['forward', step] << ['left', 89]; step *= 1.05 }
+        [[['left', 30], ['forward', 1e15]], spiral].each do |commands|
+            started = Time.now
+            status, message, show = TurtleCheck.check(check, 'x', [commands])
+            assert_equal :wrong, status
+            assert_includes message, 'zu viel'
+            refute_empty show[:extra]
+            assert_operator Time.now - started, :<, 1
+        end
+        across = [['forward', 400], ['back', 400]] * 100_000
+        assert_equal [:wrong, TurtleCheck::TOO_BIG, nil], TurtleCheck.check(check, 'x', [across])
+    end
 end
