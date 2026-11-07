@@ -922,7 +922,9 @@ vscode_config: {}</pre>
             if (!data.success) return;
             const emails = data.emails.slice().sort((a, b) => exam_name(a).localeCompare(exam_name(b), 'de'));
             showTemplateModal(`Ergebnisse von »${$('<div>').text(exam_title(entry)).html()}«`,
-                `<p>Alle zusammen als ein PDF, oder eine Person einzeln.</p><div class='list-group' id='test_result_users_here'></div>`,
+                `<p>Alle zusammen als ein PDF, oder eine Person einzeln. Zum Aufheben und Ausprobieren gibt es alle Dateien als ZIP, ein Ordner je Person.</p>` +
+                `<p><a class='btn btn-outline-primary btn-sm' id='test_results_zip' href='/api/zip_for_test/${encodeURIComponent(entry.tag)}'><i class='bi bi-file-earmark-zip'></i>Alle Dateien als ZIP</a></p>` +
+                `<div class='list-group' id='test_result_users_here'></div>`,
                 "<i class='bi bi-printer'></i>Alle drucken", 'btn-primary', "<i class='bi bi-x-lg'></i>Schließen", 'btn-outline-secondary',
                 function() {
                     if (emails.length === 0) return false;
@@ -931,6 +933,7 @@ vscode_config: {}</pre>
             const list = $('#test_result_users_here');
             if (emails.length === 0) {
                 list.replaceWith($("<p class='text-body-secondary mb-0'>").text('Dieser Leistungsüberprüfung ist noch niemand zugeordnet.'));
+                $('#test_results_zip').closest('p').remove();
                 $('#__template_modal .modal-footer .btn').eq(0).prop('disabled', true);
                 return;
             }

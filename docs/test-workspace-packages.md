@@ -249,3 +249,17 @@ beides vor der Leistungsüberprüfung einmal zu öffnen.
 
 Bei den Ergebnissen kann anschließend entweder die gesamte Gruppe oder gezielt
 eine einzelne Person gedruckt werden.
+
+## Ergebnisse herunterladen
+
+Unter »Ergebnisse« gibt es neben dem Druck alle Dateien als ein ZIP
+(`/api/zip_for_test/TAG`, `exams_page.rb`), zum Aufheben und um die Lösungen
+später auszuführen; der Ausdruck bleibt die Dokumentation. Im Archiv steht
+ein Ordner je Person, benannt wie auf dem Ausdruck, mit allen Dateien ihres
+Prüfungs-Workspace, auch denen, die `print.exclude` vom Druck ausnimmt
+(Tests, Daten). Es fehlen nur die versteckten Ordner, in denen code-server
+seinen Zustand ablegt (`.local`, `.cache` und ähnliche); `.git` und
+`.workspace` bleiben. Wer den Prüfungs-Workspace nie geöffnet hat, steht in
+`nicht-geoeffnet.txt`. Das Archiv entsteht beim Herunterladen
+(`tools/zip_stream.py` als Workspace-Benutzer, wie »Meine Daten
+herunterladen«) und wird nicht gespeichert.

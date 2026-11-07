@@ -1,3 +1,4 @@
+require_relative 'zip_stream'
 # Accounts and their administration: resetting a test account, deleting an
 # account (at once, announced with notice, on a person's own request with a
 # code), the deletion log that is repeated after a restore, suspending
@@ -511,8 +512,7 @@ class Main < Sinatra::Base
         end
 
         workspace_root = "/user/#{fs_tag_for_email(email)}"
-        args = ['setpriv', "--reuid=#{WORKSPACE_UID}", "--regid=#{WORKSPACE_GID}", '--clear-groups',
-            'python3', '-I', File.join(__dir__, 'tools', 'zip_stream.py'), '--exclude', 'workspace/.cache']
+        args = ZipStream.command(WORKSPACE_UID, WORKSPACE_GID, '--exclude', 'workspace/.cache')
         args << '--skip-rebuildable' unless everything
         args << "=#{dir}"
         args << "workspace=#{File.join(workspace_root, 'workspace')}" if File.directory?(File.join(workspace_root, 'workspace'))

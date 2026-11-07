@@ -3,12 +3,15 @@ herunterladen«, AccountExport). Run with python3 -I and, for a student's
 folder, as the Workspace user, not as root:
 
     python3 -I zip_stream.py [--exclude workspace/.cache] [--skip-rebuildable]
-        [--skipped-note NAME] PREFIX=FOLDER ...
+        [--skip-hidden] [--skipped-note NAME] PREFIX=FOLDER ...
 
 PREFIX is the path in the archive ('' for the top). --skip-rebuildable leaves
 out folders that tools make and that one command makes again
 (node_modules, build output, Python environments; REBUILDABLE below); the
-archive then ends with a file NAME that lists them, with the command. The folders may be
+archive then ends with a file NAME that lists them, with the command.
+--skip-hidden leaves out folders whose names start with a dot, but for
+.git and .workspace (the results of a Leistungsüberprüfung: code-server
+keeps its state in .local, .cache and the like). The folders may be
 controlled by a student, who can put a link or a FIFO anywhere, also while
 this runs, so: the walk never follows a link (os.fwalk), every file is
 opened relative to its folder with O_NOFOLLOW and checked to be a regular
@@ -42,13 +45,18 @@ def zip_time(seconds):
     return t[:6]
 
 
-def add_tree(archive, prefix, top, excludes, skip_rebuildable, skipped):
+KEEP_HIDDEN = {'.git', '.workspace'}
+
+
+def add_tree(archive, prefix, top, excludes, skip_rebuildable, skipped, skip_hidden=False):
     for folder, dirs, files, dir_fd in os.fwalk(top, follow_symlinks=False):
         rel = os.path.relpath(folder, top)
         base = prefix if rel == '.' else os.path.join(prefix, rel) if prefix else rel
         if any(base == e or base.startswith(e + '/') for e in excludes):
             dirs[:] = []
             continue
+        if skip_hidden:
+            dirs[:] = [d for d in dirs if not d.startswith('.') or d in KEEP_HIDDEN]
         if skip_rebuildable and not in_tool_folder(rel):
             siblings = set(files) | set(dirs)
             for name in list(dirs):
@@ -100,6 +108,7 @@ def main(args):
     excludes = []
     trees = []
     skip_rebuildable = False
+    skip_hidden = False
     note = 'weggelassen.txt'
     while args:
         arg = args.pop(0)
@@ -107,6 +116,8 @@ def main(args):
             excludes.append(args.pop(0).strip('/'))
         elif arg == '--skip-rebuildable':
             skip_rebuildable = True
+        elif arg == '--skip-hidden':
+            skip_hidden = True
         elif arg == '--skipped-note':
             note = args.pop(0)
         else:
@@ -116,7 +127,7 @@ def main(args):
     with zipfile.ZipFile(sys.stdout.buffer, 'w', zipfile.ZIP_DEFLATED, allowZip64=True, compresslevel=LEVEL) as archive:
         for prefix, folder in trees:
             if os.path.isdir(folder):
-                add_tree(archive, prefix, folder, excludes, skip_rebuildable, skipped)
+                add_tree(archive, prefix, folder, excludes, skip_rebuildable, skipped, skip_hidden)
         if skipped:
             lines = ['Diese Ordner fehlen im Archiv. Werkzeuge haben sie angelegt; mit dem Befehl',
                      'dahinter legst du sie im jeweiligen Projektordner wieder an, solange die',

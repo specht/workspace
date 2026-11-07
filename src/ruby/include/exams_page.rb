@@ -1,3 +1,4 @@
+require_relative 'zip_stream'
 # Leistungsüberprüfungen (exams): a teacher uploads a Workspace package,
 # assigns students, starts and stops the exam and its demo, and gets the
 # results as a PDF; docs/test-workspace-packages.md. Moved out of main.rb,
@@ -427,6 +428,62 @@ class Main < Sinatra::Base
         end
         respond_raw_with_mimetype(test_results_html(emails, test_tag), 'text/html')
     end
+    # All results of a Leistungsüberprüfung as one ZIP, to keep them and run
+    # them later (the printout stays the record): a folder per person with
+    # every file of the exam Workspace but the hidden folders of code-server
+    # (zip_stream.py --skip-hidden; .git and .workspace stay), streamed as
+    # the Workspace user, as »Meine Daten herunterladen« is. Who never
+    # opened the Workspace is listed in nicht-geoeffnet.txt.
+    get '/api/zip_for_test/:tag' do
+        assert(teacher_logged_in?)
+        test_tag = params['tag'].to_s
+        test = neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :test_tag => test_tag).first
+            MATCH (t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
+            RETURN t;
+        END_OF_QUERY
+        halt 404 unless test
+        emails = neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :test_tag => test_tag).map { |row| row['email'] }
+            MATCH (u:User)-[:TAKES]->(t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
+            RETURN u.email AS email;
+        END_OF_QUERY
+        names = emails.to_h { |email| [email, (@@invitations[email] || {})[:name] || email] }
+        emails.sort_by! { |email| names[email].downcase }
+        folders = emails.zip(ZipStream.folder_names(emails.map { |email| names[email] })).to_h
+
+        trees = []
+        missing = []
+        emails.each do |email|
+            path = "/user/#{fs_tag_for_email("#{email}#{test_tag}")}/workspace"
+            File.directory?(path) ? trees << "#{folders[email]}=#{path}" : missing << names[email]
+        end
+        dir = Dir.mktmpdir('exam-results')
+        unless missing.empty?
+            File.write(File.join(dir, 'nicht-geoeffnet.txt'),
+                "Diese Personen haben ihren Prüfungs-Workspace nicht geöffnet; von ihnen gibt es nichts:\n\n" +
+                missing.map { |name| "- #{name}\n" }.join)
+        end
+        FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, dir)
+
+        title = test['t'][:filename].to_s.sub(/\.tar\.(gz|bz2)\z|\.t[gb]z\z/, '')
+        title = 'leistungsueberpruefung' if title.strip.empty?
+        args = ZipStream.command(WORKSPACE_UID, WORKSPACE_GID, '--skip-hidden', "=#{dir}", *trees)
+        @respond_streaming = true
+        content_type 'application/zip'
+        attachment "#{title}-ergebnisse.zip"
+        response.headers['Cache-Control'] = 'no-store'
+        stream do |out|
+            begin
+                IO.popen(args, 'rb', :err => File::NULL) do |io|
+                    while (chunk = io.read(65_536))
+                        out << chunk
+                    end
+                end
+            ensure
+                FileUtils.rm_rf(dir)
+            end
+        end
+    end
+
     get '/api/pdf_for_test_demo/:tag' do
         assert(teacher_logged_in?)
         email = @session_user[:email]
