@@ -272,8 +272,10 @@ Datei weiter und schreibt ihre Fehler ins Log.
 ## Nutzung ohne Namen
 
 `/statistik` (nur die Administration, Menü »Administration« → »Nutzung«)
-zeigt für die letzten 7, 30 oder 90 Tage, welche Aktivitäten und Aufgaben an
-welcher Schule bearbeitet werden, wie viele sie gelöst haben, wie viele
+zeigt für die letzten 7, 30 oder 90 Tage oder ein Jahr, wie viele Lernende an
+jedem Tag (im Jahr: in jeder Woche) etwas prüfen ließen, als Balken, insgesamt
+und je Schule, wann in der Woche geprüft wird (Wochentag und Stunde), welche
+Aktivitäten und Aufgaben an welcher Schule bearbeitet werden, wie viele sie gelöst haben, wie viele
 Prüfungen es bis dahin brauchte und welche Aufgaben am häufigsten haken
 (»Stolpersteine«). Die Zahlen kommen aus den Versuchen, die jede Prüfung
 ohnehin hinterlässt (`TaskAttempt`: Aufgabe, Ergebnis, Zeit, kein Text); es
@@ -286,7 +288,10 @@ wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
 - **Erst ab fünf:** Jede Zahl, hinter der weniger als fünf verschiedene
   Lernende stehen, erscheint als »< 5«, mit allem, was sie verraten würde
   (die Prüfungen dieser Zelle, ihre Aufgaben). Aktivitäten einer Schule mit
-  weniger als fünf Lernenden werden nur gezählt, nicht genannt.
+  weniger als fünf Lernenden werden nur gezählt, nicht genannt. In den
+  Balken und im Wochenrhythmus ist ein Tag, eine Woche oder eine Stunde mit
+  einer bis vier Personen ein grauer Strich ohne Zahl, damit ein ruhiger Tag
+  von einem ohne jede Prüfung zu unterscheiden ist.
 - **Wer zählt:** nur Lernende; Lehrkräfte, die Administration und die
   Testgruppen nicht. Eine Person zählt bei der Schule ihrer ersten Gruppe.
 - **Entscheidung des Maintainers (7. November 2026):** sofort für alle

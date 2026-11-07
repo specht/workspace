@@ -11,14 +11,26 @@ require 'date'
 # in the rows with a number per person instead of an address.
 module UsageStats
     MIN_PEOPLE = 5
-    WINDOWS = [7, 30, 90].freeze
+    WINDOWS = [7, 30, 90, 365].freeze
     DEFAULT_WINDOW = 30
     STUMBLING = 15
+    WEEKDAYS = %w[Mo Di Mi Do Fr Sa So].freeze
+    MONTHS = %w[Jan Feb Mär Apr Mai Jun Jul Aug Sep Okt Nov Dez].freeze
+
+    def self.day_of(ts) = Time.at(ts.to_i).to_date
+
+    # The first day of the window: today and the days before it, for a
+    # year from a Monday on, so that its weeks are calendar weeks.
+    def self.first_day(days, now)
+        first = day_of(now) - days + 1
+        days > 90 ? first - (first.cwday - 1) : first
+    end
 
     # rows: [{ person:, school:, activity:, task:, status:, ts: }], person a
     # number that stands for one student within this request.
     def self.summary(rows, days:, now: Time.now.to_i, min: MIN_PEOPLE)
-        since = now - days * 86_400
+        first = first_day(days, now)
+        since = Time.new(first.year, first.month, first.day).to_i
         rows = rows.select { |r| r[:ts].to_i >= since }
         count = ->(people) { people.size >= min ? people.size : nil }
         {
@@ -27,7 +39,8 @@ module UsageStats
             :people => count.(people(rows)),
             :checks => people(rows).size >= min ? rows.size : nil,
             :periods => periods(rows, days, now, min),
-            :schools => schools(rows, min),
+            :rhythm => rhythm(rows, min),
+            :schools => schools(rows, min, days, now),
             :activities => activities(rows, min),
             :stumbling => stumbling(rows, min),
         }
@@ -35,25 +48,37 @@ module UsageStats
 
     def self.people(rows) = rows.map { |r| r[:person] }.uniq
 
-    # Per day (7 days) or per week (longer): students and checks.
+    # A number of students as the page may show it: the number from min on,
+    # :few for one to min - 1 (»weniger als fünf«), 0 for none.
+    def self.shown(n, min) = n >= min ? n : (n.zero? ? 0 : :few)
+
+    # Per day (up to 90 days) or per calendar week (a year): students and
+    # checks.
     def self.periods(rows, days, now, min)
-        step = days <= 7 ? 1 : 7
-        start = Date.parse(Time.at(now).strftime('%Y-%m-%d')) - days + 1
-        (0...days).step(step).map do |offset|
-            from = start + offset
-            to = from + step
-            inside = rows.select { |r| d = Date.parse(Time.at(r[:ts]).strftime('%Y-%m-%d')); d >= from && d < to }
+        step = days > 90 ? 7 : 1
+        last = day_of(now)
+        by_day = rows.group_by { |r| day_of(r[:ts]) }
+        (first_day(days, now)..last).step(step).map do |from|
+            to = [from + step - 1, last].min
+            inside = (from..to).flat_map { |d| by_day[d] || [] }
             n = people(inside).size
-            { :from => from, :to => to - 1, :people => n >= min ? n : nil, :checks => n >= min ? inside.size : nil }
+            { :from => from, :to => to, :people => shown(n, min), :checks => n >= min ? inside.size : nil }
         end
     end
 
-    def self.schools(rows, min)
+    # When in the week: students per weekday (Monday first) and hour.
+    def self.rhythm(rows, min)
+        cells = rows.group_by { |r| t = Time.at(r[:ts].to_i); [(t.wday + 6) % 7, t.hour] }
+        (0..6).map { |wday| (0..23).map { |hour| shown(people(cells[[wday, hour]] || []).size, min) } }
+    end
+
+    def self.schools(rows, min, days, now)
         rows.group_by { |r| r[:school] }.map do |school, own|
             n = people(own).size
             entry = { :school => school, :people => n >= min ? n : nil }
             if n >= min
                 entry[:checks] = own.size
+                entry[:periods] = periods(own, days, now, min)
                 entry[:activities] = own.group_by { |r| r[:activity] }.map do |activity, part|
                     k = people(part).size
                     { :activity => activity, :people => k >= min ? k : nil, :checks => k >= min ? part.size : nil }
@@ -128,6 +153,100 @@ module UsageStats
 
     def self.date(d) = d.strftime('%-d.%-m.')
 
+    def self.period_label(p)
+        return "#{WEEKDAYS[p[:from].cwday - 1]} #{date(p[:from])}" if p[:from] == p[:to]
+
+        "#{date(p[:from])} bis #{date(p[:to])}"
+    end
+
+    # Grid lines: steps of 1, 2 or 5 times a power of ten, at most four.
+    def self.ticks(max)
+        max = [max, 1].max
+        k = 1
+        loop do
+            [1, 2, 5].each do |f|
+                step = f * k
+                return (0..(max.to_f / step).ceil).map { |i| i * step } if max.to_f / step <= 4
+            end
+            k *= 10
+        end
+    end
+
+    # Where a label goes under the bars: every day of a week, the Mondays
+    # of a month, the first day (or week) of each month beyond that.
+    def self.axis_labels(periods)
+        periods.each_with_index.filter_map do |p, i|
+            d = p[:from]
+            text = if periods.size <= 7 then "#{WEEKDAYS[d.cwday - 1]} #{d.day}."
+                   elsif periods.size <= 31 then (d.monday? ? date(d) : nil)
+                   elsif i.positive? && d.month != periods[i - 1][:from].month then MONTHS[d.month - 1]
+                   end
+            text && [i, text]
+        end
+    end
+
+    # A bar per day or week, as high as the number of students; one to
+    # four students a grey stub, so that a quiet day differs from none.
+    # small: a strip without axes (a school), with its own scale.
+    def self.bars(periods, min, small: false)
+        max = periods.map { |p| p[:people].is_a?(Integer) ? p[:people] : 0 }.max.to_i
+        top = small ? [max, min].max : ticks([max, min].max).last
+        weekly = periods.any? { |p| p[:from] != p[:to] }
+        io = +"<div class='usage-plot#{small ? ' usage-plot-small' : ''}'>"
+        unless small
+            ticks([max, min].max).each do |t|
+                io << "<span class='usage-tick' style='bottom: #{(100.0 * t / top).round(2)}%'><span>#{t}</span></span>"
+            end
+        end
+        io << "<div class='usage-bars#{periods.size > 60 ? ' usage-bars-dense' : ''}'>"
+        periods.each do |p|
+            n = p[:people]
+            weekend = !weekly && (p[:from].saturday? || p[:from].sunday?)
+            tip, fill = if n == :few then ["#{period_label(p)}: weniger als #{min} Lernende", "<i class='usage-fill usage-few'></i>"]
+                        elsif n.zero? then ["#{period_label(p)}: keine Prüfung", '']
+                        else ["#{period_label(p)}: #{n} Lernende, #{p[:checks]} Prüfungen",
+                              "<i class='usage-fill' style='height: #{(100.0 * n / top).round(2)}%'></i>"]
+                        end
+            io << "<span class='usage-col#{weekend ? ' usage-weekend' : ''}' data-tip='#{h(tip)}'>#{fill}</span>"
+        end
+        io << '</div></div>'
+        unless small
+            io << "<div class='usage-axis' aria-hidden='true'>"
+            axis_labels(periods).each do |i, text|
+                io << "<span style='left: #{(100.0 * i / periods.size).round(2)}%'>#{h(text)}</span>"
+            end
+            io << '</div>'
+        end
+        io
+    end
+
+    # Weekdays by hours, darker where more students checked something.
+    def self.rhythm_html(rhythm, min)
+        max = rhythm.flatten.grep(Integer).max.to_i
+        io = +"<div class='usage-rhythm' role='group' aria-label='Lernende nach Wochentag und Uhrzeit'><span></span>"
+        24.times { |hour| io << "<span class='usage-hour'>#{hour % 3 == 0 ? hour : ''}</span>" }
+        rhythm.each_with_index do |row, wday|
+            io << "<span class='usage-day'>#{WEEKDAYS[wday]}</span>"
+            row.each_with_index do |n, hour|
+                when_ = "#{WEEKDAYS[wday]} #{hour} bis #{hour + 1} Uhr"
+                if n == :few
+                    io << "<span class='usage-cell usage-few' data-tip='#{when_}: weniger als #{min} Lernende'></span>"
+                elsif n.zero?
+                    io << "<span class='usage-cell' data-tip='#{when_}: keine Prüfung'></span>"
+                else
+                    level = (5.0 * n / max).ceil.clamp(1, 5)
+                    io << "<span class='usage-cell usage-level-#{level}' data-tip='#{when_}: #{n} Lernende'></span>"
+                end
+            end
+        end
+        io << '</div>'
+        io << "<p class='usage-legend'>weniger #{(1..5).map { |l| "<i class='usage-swatch usage-level-#{l}'></i>" }.join} mehr" \
+              "<span class='ms-3'><i class='usage-swatch usage-few'></i> weniger als #{min}</span></p>"
+        io
+    end
+
+    def self.meter(share) = share.nil? ? '' : "<span class='usage-meter' aria-hidden='true'><i style='width: #{(share * 100).round}%'></i></span>"
+
     # titles: { activity => [title, slug] }, tasks: { 'activity/id' => title },
     # schools: { key => name }
     def self.html(summary, titles:, tasks:, schools:)
@@ -141,19 +260,30 @@ module UsageStats
         io << "<nav class='usage-windows mb-3' aria-label='Zeitraum'>"
         WINDOWS.each do |d|
             current = d == summary[:days]
-            io << "<a class='btn btn-sm #{current ? 'btn-primary' : 'btn-outline-primary'} me-2' href='/statistik?tage=#{d}'#{current ? " aria-current='page'" : ''}>#{d} Tage</a>"
+            io << "<a class='btn btn-sm #{current ? 'btn-primary' : 'btn-outline-primary'} me-2' href='/statistik?tage=#{d}'#{current ? " aria-current='page'" : ''}>#{d == 365 ? 'ein Jahr' : "#{d} Tage"}</a>"
         end
         io << '</nav>'
-        io << "<p>In den letzten #{summary[:days]} Tagen: <strong>#{number(summary[:people], min)}</strong> Lernende mit " \
+        io << "<p>#{summary[:days] == 365 ? 'Im letzten Jahr' : "In den letzten #{summary[:days]} Tagen"}: <strong>#{number(summary[:people], min)}</strong> Lernende mit " \
               "<strong>#{number(summary[:checks], min)}</strong> Prüfungen.</p>"
 
+        unit = summary[:days] > 90 ? 'Woche' : 'Tag'
+        io << "<div class='usage-charts'>"
         io << "<h2 class='mt-4'>Verlauf</h2>"
-        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>#{summary[:days] <= 7 ? 'Tag' : 'Woche'}</th><th class='text-end'>Lernende</th><th class='text-end'>Prüfungen</th></tr></thead><tbody>"
+        io << "<p>Wie viele Lernende #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'} etwas prüfen ließen#{unit == 'Tag' ? ', Wochenenden grau hinterlegt' : ''}. " \
+              "Ein grauer Strich: weniger als #{min}.</p>"
+        io << bars(summary[:periods], min)
+        io << "<details class='usage-table-view'><summary>Als Tabelle</summary>"
+        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>#{unit}</th><th class='text-end'>Lernende</th><th class='text-end'>Prüfungen</th></tr></thead><tbody>"
         summary[:periods].each do |p|
-            label = p[:from] == p[:to] ? date(p[:from]) : "#{date(p[:from])} bis #{date(p[:to])}"
-            io << "<tr><td>#{label}</td><td class='text-end'>#{number(p[:people], min)}</td><td class='text-end'>#{number(p[:checks], min)}</td></tr>"
+            people = p[:people] == :few ? nil : p[:people]
+            io << "<tr><td>#{period_label(p)}</td><td class='text-end'>#{number(people, min)}</td><td class='text-end'>#{p[:people] == 0 ? 0 : number(p[:checks], min)}</td></tr>"
         end
-        io << '</tbody></table></div>'
+        io << '</tbody></table></div></details>'
+
+        io << "<h2 class='mt-4'>Wochenrhythmus</h2>"
+        io << "<p>Wann in der Woche geprüft wird: Lernende je Wochentag und Stunde, über den ganzen Zeitraum.</p>"
+        io << rhythm_html(summary[:rhythm], min)
+        io << '</div>'
 
         io << "<h2 class='mt-4'>Stolpersteine</h2>"
         io << "<p>Aufgaben, die mindestens #{min} Lernende versucht haben, die mit dem kleinsten Anteil Gelöster zuerst. " \
@@ -165,7 +295,7 @@ module UsageStats
                   "<th class='text-end'>Lernende</th><th class='text-end'>gelöst</th><th class='text-end'>falsch</th><th class='text-end'>bis gelöst</th></tr></thead><tbody>"
             summary[:stumbling].each do |t|
                 io << "<tr><td>#{activity_link.(t[:activity])}</td><td>#{task_name.(t[:task])}</td><td class='text-end'>#{t[:people]}</td>" \
-                      "<td class='text-end'>#{percent(t[:solved])}</td><td class='text-end'>#{percent(t[:wrong])}</td><td class='text-end'>#{decimal(t[:median])}</td></tr>"
+                      "<td class='text-end text-nowrap'>#{meter(t[:solved])}#{percent(t[:solved])}</td><td class='text-end'>#{percent(t[:wrong])}</td><td class='text-end'>#{decimal(t[:median])}</td></tr>"
             end
             io << '</tbody></table></div>'
         end
@@ -179,6 +309,10 @@ module UsageStats
             io << "<h3 class='h5 mt-3'>#{h(name)} <span class='text-muted fw-normal'>#{number(s[:people], min)} Lernende" \
                   "#{s[:checks] ? ", #{s[:checks]} Prüfungen" : ''}</span></h3>"
             next unless s[:activities]
+
+            peak = s[:periods].map { |p| p[:people].is_a?(Integer) ? p[:people] : 0 }.max
+            io << "<div class='usage-charts usage-school-strip'>#{bars(s[:periods], min, :small => true)}" \
+                  "<span class='usage-peak'>#{peak.positive? ? "höchstens #{peak}<br>#{unit == 'Tag' ? 'am Tag' : 'in einer Woche'}" : ''}</span></div>"
 
             big, small = s[:activities].select { |a| titles.key?(a[:activity]) }.partition { |a| a[:people] }
             # not named: that someone at this school did it is all it would say

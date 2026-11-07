@@ -66,4 +66,37 @@ class UsageStatsTest < Minitest::Test
         refute_includes a, 'Katas: Schleifen'
         refute_match(/>[1-4]<\/td>/, html.gsub(/<td class='text-end'>\d+ %<\/td>/, ''))
     end
+
+    # a day with one to four students is :few, never its number; the year
+    # goes by calendar weeks from a Monday
+    def test_days_and_weeks_show_no_small_number
+        days = summary(7)[:periods]
+        assert_equal 7, days.size
+        yesterday = days[-2]
+        assert_equal 9, yesterday[:people]
+        assert_equal 0, days.last[:people]
+        few = UsageStats.summary(rows.first(3), :days => 7, :now => NOW)[:periods][-2]
+        assert_equal :few, few[:people]
+        assert_nil few[:checks]
+        weeks = summary(365)[:periods]
+        assert weeks.first[:from].monday?
+        assert(weeks[0...-1].all? { |w| (w[:to] - w[:from]).to_i == 6 })
+    end
+
+    def test_the_rhythm_counts_students_per_weekday_and_hour
+        rhythm = summary[:rhythm]
+        t = Time.at(NOW - DAY)
+        assert_equal 9, rhythm[(t.wday + 6) % 7][t.hour]
+        assert_equal 1, rhythm.flatten.count { |n| n != 0 }
+        lone = UsageStats.summary(rows.first(3), :days => 7, :now => NOW)[:rhythm]
+        assert_equal [:few], lone.flatten.uniq - [0]
+    end
+
+    def test_the_page_draws_bars_and_names_no_small_number_in_them
+        html = UsageStats.html(UsageStats.summary(rows.first(3) + rows.map { |r| r.merge(:ts => NOW - 3 * DAY) }, :days => 7, :now => NOW),
+                               :titles => {}, :tasks => {}, :schools => {})
+        assert_includes html, "usage-fill usage-few"
+        assert_includes html, ': 9 Lernende, 24 Prüfungen'
+        refute_match(/data-tip='[^']*: [1-4] Lernende/, html)
+    end
 end

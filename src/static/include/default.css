@@ -6488,17 +6488,23 @@ body.cl-dragging-page * {
    (grey: never), and beside it the solved tasks and the people. The steps
    are an ordinal ramp checked against the surface (light: #fff, dark:
    #212529); in dark mode more is lighter. */
-.usage-row {
+.usage-row,
+.usage-charts {
     --usage-1: #86b6ef;
     --usage-2: #5598e7;
     --usage-3: #2a78d6;
     --usage-4: #1c5cab;
     --usage-5: #104281;
+    --usage-bar: var(--usage-3);
+    --usage-few: #8a8b8f;
+}
+.usage-row {
     display: flex;
     align-items: center;
     gap: 0.7em;
 }
-html[data-bs-theme="dark"] .usage-row {
+html[data-bs-theme="dark"] .usage-row,
+html[data-bs-theme="dark"] .usage-charts {
     --usage-1: #1c5cab;
     --usage-2: #2a78d6;
     --usage-3: #5598e7;
@@ -14056,4 +14062,179 @@ html[data-bs-theme="dark"] .interleaving .il-wait {
 .interleaving .il-say code {
     background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
     color: inherit;
+}
+
+/* /statistik (UsageStats.bars, rhythm_html): bars per day or week, a grid
+   of weekdays by hours and a strip per school, in HTML so that the text
+   keeps its size on a phone. The bar is the blue of the band above
+   (light #2a78d6, dark #5598e7, both above 3:1 against the page); a grey
+   stub stands for one to four students. Each column is as tall as the
+   plot, so that the pointer finds it; usage_charts.js shows data-tip. */
+.usage-plot {
+    position: relative;
+    height: 11rem;
+    margin-left: 2.2em;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.usage-plot-small {
+    height: 2.4rem;
+    margin-left: 0;
+    flex: 1 1 auto;
+}
+.usage-tick {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--bs-border-color-translucent);
+    pointer-events: none;
+}
+.usage-tick > span {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.4em;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+.usage-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+}
+.usage-bars-dense {
+    gap: 1px;
+}
+.usage-col {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 1px;
+    display: flex;
+    align-items: flex-end;
+    cursor: default;
+}
+.usage-weekend {
+    background: rgba(127, 127, 127, 0.09);
+}
+.usage-fill {
+    display: block;
+    width: 100%;
+    background: var(--usage-bar);
+    border-radius: 2px 2px 0 0;
+}
+.usage-fill.usage-few {
+    height: 3px;
+    background: var(--usage-few);
+    border-radius: 1px;
+}
+.usage-col:hover .usage-fill,
+.usage-col.usage-active .usage-fill {
+    filter: brightness(1.15);
+}
+.usage-col:hover,
+.usage-col.usage-active {
+    box-shadow: inset 0 0 0 100vh rgba(127, 127, 127, 0.12);
+}
+.usage-axis {
+    position: relative;
+    height: 1.4em;
+    margin-left: 2.2em;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+.usage-axis > span {
+    position: absolute;
+    top: 0.15em;
+    white-space: nowrap;
+    padding-left: 0.2em;
+    border-left: 1px solid var(--bs-border-color);
+}
+.usage-table-view {
+    margin-top: 0.8em;
+}
+.usage-table-view > summary {
+    color: var(--bs-secondary-color);
+}
+.usage-rhythm {
+    display: grid;
+    grid-template-columns: 2em repeat(24, minmax(0, 1fr));
+    gap: 2px;
+    max-width: 52rem;
+}
+.usage-hour,
+.usage-day {
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+    line-height: 1.4;
+}
+.usage-cell {
+    aspect-ratio: 1;
+    border-radius: 2px;
+}
+.usage-cell:not([class*='usage-level']) {
+    background: rgba(127, 127, 127, 0.07);
+}
+.usage-cell.usage-few,
+.usage-swatch.usage-few {
+    background: rgba(127, 127, 127, 0.3);
+}
+.usage-cell:hover,
+.usage-cell.usage-active {
+    outline: 2px solid var(--bs-body-color);
+    outline-offset: -1px;
+}
+.usage-legend {
+    margin-top: 0.6em;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+.usage-swatch {
+    display: inline-block;
+    width: 0.9em;
+    height: 0.9em;
+    margin: 0 1px;
+    border-radius: 2px;
+    vertical-align: -0.1em;
+}
+.usage-school-strip {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.7em;
+    margin-bottom: 0.6em;
+}
+.usage-peak {
+    flex: 0 0 6.5em;
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+.usage-meter {
+    display: inline-block;
+    width: 3.5em;
+    height: 0.45em;
+    margin-right: 0.5em;
+    border-radius: 2px;
+    background: rgba(127, 127, 127, 0.18);
+    vertical-align: 0.1em;
+    overflow: hidden;
+}
+.usage-meter > i {
+    display: block;
+    height: 100%;
+    background: #2a78d6;
+}
+html[data-bs-theme="dark"] .usage-meter > i {
+    background: #5598e7;
+}
+.usage-tip {
+    position: fixed;
+    z-index: 2000;
+    max-width: 16rem;
+    padding: 0.3em 0.6em;
+    border-radius: 0.3em;
+    background: var(--bs-emphasis-color);
+    color: var(--bs-body-bg);
+    font-size: 0.8rem;
+    pointer-events: none;
 }

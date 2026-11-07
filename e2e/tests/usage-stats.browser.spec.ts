@@ -4,8 +4,8 @@ import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
 // What is used at which school, without names (src/ruby/include/usage_stats.rb):
-// the administration reads /statistik and finds it in its menu, a student
-// gets 403. The numbers and the threshold of five are tested in Ruby
+// the administration reads /statistik with its bars and the weekly grid
+// and finds it in its menu, a student gets 403. The numbers and the threshold of five are tested in Ruby
 // (usage_stats_test.rb). HS_SHOTS=dir keeps pictures, desktop and phone.
 
 const shots = process.env.HS_SHOTS;
@@ -27,9 +27,16 @@ test('the administration sees what is used, without names; a student does not', 
   await loginAsE2eUser(admin, adminEmail(), testInfo);
   await admin.goto('/statistik');
   await expect(admin.locator('h1')).toHaveText('Nutzung');
-  for (const heading of ['Verlauf', 'Stolpersteine', 'Schulen', 'Aktivitäten']) {
+  for (const heading of ['Verlauf', 'Wochenrhythmus', 'Stolpersteine', 'Schulen', 'Aktivitäten']) {
     await expect(admin.locator('h2', { hasText: heading })).toBeVisible();
   }
+  // a bar per day, its number above it under the pointer; 7 x 24 hours
+  const columns = admin.locator('.usage-plot:not(.usage-plot-small) .usage-col');
+  expect(await columns.count()).toBe(30);
+  await columns.last().hover();
+  await expect(admin.locator('.usage-tip')).toBeVisible();
+  await expect(admin.locator('.usage-tip')).toHaveText(/\d+\.\d+\.: /);
+  await expect(admin.locator('.usage-rhythm .usage-cell')).toHaveCount(7 * 24);
   // another window
   await admin.locator('.usage-windows a', { hasText: '7 Tage' }).click();
   await expect(admin).toHaveURL(/tage=7/);
