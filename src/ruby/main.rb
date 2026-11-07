@@ -555,6 +555,7 @@ class Main < Sinatra::Base
     require './include/server_start_queue.rb'
     require './include/task_api.rb'
     require './include/turtle_page.rb'
+    require './include/usage_stats_page.rb'
     require './include/workspace_routes.rb'
 
     def workspace_url()
@@ -758,6 +759,8 @@ class Main < Sinatra::Base
         INDEX_LIST = [
             'Test/running',
             'TaskAttempt/task',
+            # the window of /statistik (UsageStats)
+            'TaskAttempt/ts',
         ]
 
         setup = SetupDatabase.new()
@@ -3360,10 +3363,11 @@ class Main < Sinatra::Base
         end
         if admin_logged_in?
             # what the site shows: picture rights (picture_rights.rb), the
-            # teachers' feedback on activities (activity_feedback.rb) and,
+            # teachers' feedback on activities (activity_feedback.rb), what is
+            # used without names (usage_stats.rb) and,
             # in development only, the sources of the person boxes
             item = ->(p, icon, label) { "<li><a class=\"dropdown-item #{active.(p)}\" href='#{p}'#{here.(p)}><i class='bi bi-#{icon} me-2'></i>#{label}</a></li>" }
-            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen'].include?(request.path)
+            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen', '/statistik'].include?(request.path)
             io << "<div class='btn-group'>"
             io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i><span class='btn-menu-label'>Administration</span></button>"
             io << "<ul class='dropdown-menu'>"
@@ -3373,6 +3377,7 @@ class Main < Sinatra::Base
             io << "<li><hr class='dropdown-divider'></li><li><h6 class='dropdown-header'>Inhalte</h6></li>"
             io << item.('/picture-rights', 'image', 'Bildrechte')
             io << item.('/rueckmeldungen', 'chat-square-text', 'Rückmeldungen')
+            io << item.('/statistik', 'bar-chart-line', 'Nutzung')
             io << item.('/person-sources', 'patch-check', 'Belege der Personen') if DEVELOPMENT
             io << "</ul></div>"
         end
@@ -4096,6 +4101,13 @@ class Main < Sinatra::Base
         # Feedback of the teachers on the activities (activity_feedback.rb):
         # administrators only.
         if path == '/rueckmeldungen'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless admin_logged_in?
+        end
+        # What is used at which school, without names (usage_stats.rb):
+        # administrators only.
+        if path == '/statistik'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?

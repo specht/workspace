@@ -269,6 +269,34 @@ lange benutzbar. Danach die Datei löschen und neu starten, oder unter
 »Löschungen wiederholen«. Die Prüfung alle fünf Minuten läuft auch mit der
 Datei weiter und schreibt ihre Fehler ins Log.
 
+## Nutzung ohne Namen
+
+`/statistik` (nur die Administration, Menü »Administration« → »Nutzung«)
+zeigt für die letzten 7, 30 oder 90 Tage, welche Aktivitäten und Aufgaben an
+welcher Schule bearbeitet werden, wie viele sie gelöst haben, wie viele
+Prüfungen es bis dahin brauchte und welche Aufgaben am häufigsten haken
+(»Stolpersteine«). Die Zahlen kommen aus den Versuchen, die jede Prüfung
+ohnehin hinterlässt (`TaskAttempt`: Aufgabe, Ergebnis, Zeit, kein Text); es
+wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
+`usage_stats_page.rb`, getestet in `test/usage_stats_test.rb`).
+
+- **Ohne Namen:** Jede Person wird beim Laden der Seite zu einer Nummer;
+  Adressen und Gruppennamen erscheinen nicht (Gruppennamen können Namen
+  enthalten, »Testgruppe (Name)«).
+- **Erst ab fünf:** Jede Zahl, hinter der weniger als fünf verschiedene
+  Lernende stehen, erscheint als »< 5«, mit allem, was sie verraten würde
+  (die Prüfungen dieser Zelle, ihre Aufgaben). Aktivitäten einer Schule mit
+  weniger als fünf Lernenden werden nur gezählt, nicht genannt.
+- **Wer zählt:** nur Lernende; Lehrkräfte, die Administration und die
+  Testgruppen nicht. Eine Person zählt bei der Schule ihrer ersten Gruppe.
+- **Entscheidung des Maintainers (7. November 2026):** sofort für alle
+  Schulen eingeschaltet. Datenschutzerklärung (Zweck, wer was sieht),
+  Prüfübersicht, Risikoanalyse, Verzeichnis und der Entwurf der
+  Vereinbarung zur Auftragsverarbeitung (§ 2) nennen den Zweck; für eine
+  Partnerschule, die die Vereinbarung schon in der alten Fassung
+  unterschrieben hat, ist das eine Änderung, der sie zustimmen muss
+  (docs/handoff-datenschutz.md, »Open«).
+
 ## Wer am Code ändert, was gespeichert wird
 
 Dann ändern sich auch die Fakten in `privacy.rb`, und `Privacy::CHECKED`

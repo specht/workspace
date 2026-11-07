@@ -18,7 +18,7 @@ require_relative 'school_transition'
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 10, 27)
+    CHECKED = Date.new(2026, 11, 7)
 
     LEGAL_BASES = [:school, :consent, :pending].freeze
 
@@ -305,8 +305,8 @@ module Privacy
             {
                 :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache, dazu der letzte Code, der die Prüfung bestanden hat, damit spätere Aufgaben die eigenen Funktionen daraus übernehmen, und bei diesen späteren Aufgaben, welche Fassung der Funktionen sie beim Speichern enthielten; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person dort angelegt hat, mit Namen und Code; bei einer Schaltung aus der Logik-Werkstatt die Schaltung), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
-                :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft',
-                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis)',
+                :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft; zusammengefasst und ohne Namen: welche Aufgaben genutzt werden und wo sie schwerfallen, um sie zu verbessern',
+                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis); die Administration nur als Zahlen je Schule, Aktivität und Aufgabe, ohne Namen und ohne Antworten, und nur, wo mindestens fünf Lernende dahinterstehen',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
@@ -587,7 +587,7 @@ module Privacy
         out << "<p>#{lines.empty? ? 'Die Angaben zur Person, die den Workspace betreibt, sind in dieser Installation noch nicht eingetragen.' : lines.join('<br>')}</p>\n"
         out << "<p>E-Mail: #{email_link(s)}</p>\n" if s[:contact_email]
         out << '<p>Der Workspace ist ein nicht-kommerzielles Angebot für den Informatikunterricht, betrieben von einer Lehrkraft. ' \
-            "Es gibt keine Werbung, keine kostenpflichtigen Funktionen und keine Auswertung der Daten für andere Zwecke.</p>\n"
+            "Es gibt keine Werbung, keine kostenpflichtigen Funktionen und keine Auswertung der Daten für fremde Zwecke.</p>\n"
         out << "<p>Quelltext: <a href='https://github.com/specht/workspace'>https://github.com/specht/workspace</a></p>\n"
         out << "<p><strong>Für Lehrkräfte:</strong> Wie eine Lehrkraft ihre Klasse hier anmeldet oder den Workspace auf einem eigenen oder gemieteten Server betreibt, " \
             "steht unter <a href='/about#lehrkraefte'>»Für Lehrkräfte«</a>.</p>\n"
@@ -640,7 +640,10 @@ module Privacy
             Für den Unterricht, vor allem im Fach Informatik: Schülerinnen und Schüler programmieren in ihrem eigenen Workspace, bearbeiten Aufgaben,
             lassen sie automatisch prüfen und geben Ergebnisse ab; die Lehrkraft sieht den Stand der Lerngruppe und hilft bei Problemen.
             Lehrkräfte können außerdem freiwillig zurückmelden, wie eine Aktivität in ihrer Gruppe lief; das dient nur dazu,
-            die Aktivitäten zu verbessern.
+            die Aktivitäten zu verbessern. Ebenfalls nur dafür zählt die Administration aus den Ergebnissen der automatischen Prüfung
+            zusammengefasst, welche Aktivitäten und Aufgaben an welcher Schule bearbeitet werden und wie oft sie gelöst werden:
+            ohne Namen, ohne Antworten, berechnet beim Ansehen und nicht gespeichert; Zahlen, hinter denen weniger als fünf Lernende stehen,
+            erscheinen dort nicht.
             Die Daten werden für keinen anderen Zweck verarbeitet: nicht für Noten, nicht für Werbung, nicht für Profile,
             nicht für Forschung, und sie werden an niemanden für eigene Zwecke weitergegeben.
             </p>
