@@ -25,7 +25,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   `tools/zip_stream.py` stimmte nach einem Umzug im Code nicht mehr). Wer in dieser Zeit seine Daten geholt hat, holt
   sie noch einmal. Neu: Unter »Ergebnisse« einer Leistungsüberprüfung gibt es alle Dateien als ZIP, ein Ordner je Person.
 - Neue Seite für die Administration: `/statistik` (»Nutzung«) zählt aus den Ergebnissen der Prüfungen, welche Aufgaben je
-  Schule bearbeitet werden und wo sie haken, ohne Namen und erst ab fünf Lernenden; gespeichert wird nichts Neues.
+  Schule und Klasse bearbeitet werden und wo sie haken, ohne Namen der Lernenden und erst ab fünf Lernenden; gespeichert
+  wird nichts Neues.
   Datenschutzerklärung, Verzeichnis, Risikoanalyse und der Entwurf der Vereinbarung zur Auftragsverarbeitung (§ 2) nennen
   den Zweck; wer die Vereinbarung schon unterschrieben hat, braucht die Zustimmung der Schule zur neuen Fassung.
 - Die Prüfung der Schildkröte vergleicht nur noch, was nahe am Bild der Aufgabe liegt: Eine Linie von astronomischer Länge

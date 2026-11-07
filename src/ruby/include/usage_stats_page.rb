@@ -3,9 +3,10 @@ require_relative 'usage_stats'
 # /statistik (UsageStats): what is used at which school and where tasks
 # are hard, for the administration, without names. The attempts of the
 # window are read once per request; each student becomes a number at once,
-# and the address goes no further than this method. Teachers,
-# administrators and the test groups are left out, as on the class board's
-# »looks finished« (feedback_students).
+# and the address goes no further than this method. The classes (groups)
+# are named on »Stolpersteine«, where at least five of one tried a task.
+# Teachers, administrators and the test groups are left out, as on the
+# class board's »looks finished« (feedback_students).
 class Main < Sinatra::Base
     def usage_stats_page
         admins_only!
@@ -24,13 +25,17 @@ class Main < Sinatra::Base
         # the roster) that is no test group
         others = Set.new(ADMIN_USERS.to_a + @@teachers.keys + @@teacher_emails.to_a + @@test_accounts.keys)
         school_of = {}
+        groups_of = Hash.new { |hash, key| hash[key] = [] }
+        group_school = {}
         @@user_group_order.each do |group|
             next if @@test_groups.include?(group)
 
+            group_school[group] = school_of_group.fetch(group, HOME_SCHOOL) || HOME_SCHOOL
             (@@group_members[group] || []).each do |email|
-                next if others.include?(email) || school_of.key?(email)
+                next if others.include?(email)
 
-                school_of[email] = school_of_group.fetch(group, HOME_SCHOOL) || HOME_SCHOOL
+                school_of[email] ||= group_school[group]
+                groups_of[email] << group
             end
         end
 
@@ -41,7 +46,7 @@ class Main < Sinatra::Base
         END_OF_QUERY
             school = school_of[r['email']] or next
             task = r['task'].to_s
-            { :person => (number[r['email']] ||= number.size), :school => school, :activity => task.split('/').first,
+            { :person => (number[r['email']] ||= number.size), :school => school, :groups => groups_of[r['email']], :activity => task.split('/').first,
               :task => task, :status => r['status'], :ts => r['ts'].to_i }
         end
 
@@ -54,6 +59,6 @@ class Main < Sinatra::Base
             titles[activity] ||= [plain_title(slug), slug]
             (c[:tasks][:by_id] || {}).each { |id, t| tasks["#{activity}/#{id}"] ||= t['title'].to_s }
         end
-        UsageStats.html(UsageStats.summary(rows, :days => days, :now => now), :titles => titles, :tasks => tasks, :schools => school_names)
+        UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school), :titles => titles, :tasks => tasks, :schools => school_names)
     end
 end

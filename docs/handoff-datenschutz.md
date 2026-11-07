@@ -254,13 +254,15 @@ this runs on 12 April 2027 by itself.
    Dienstvereinbarung for school software.
 10. **Usage statistics for the maintainer** (/statistik, decided on
    7 November 2026, switched on for all schools at once): numbers per
-   school, activity and task from the attempts, without names, computed
+   school, class, activity and task from the attempts, without names, computed
    when the page loads, nothing under five students shown
    (docs/datenschutz.md, »Nutzung ohne Namen«). This is the operator's own
    purpose, which the Berlin route without consent does not cover by itself
    (see above, »does not cover … statistics, the operator's own purposes«).
    The privacy statement, the Verzeichnis, the risk analysis and § 2 of the
-   AVV draft now name it. Open for the DSB: whether anonymous statistics
+   AVV draft now name it. Classes are named under »Stolpersteine« where
+   at least five of one tried a task; that also shows how a teacher's class
+   does, which the maintainer accepted. Open for the DSB: whether anonymous statistics
    of this kind are covered as a clause of the AVV, and for each partner
    school that signed the AVV before, its agreement to the new § 2.
 

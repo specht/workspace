@@ -306,7 +306,7 @@ module Privacy
                 :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache, dazu der letzte Code, der die Prüfung bestanden hat, damit spätere Aufgaben die eigenen Funktionen daraus übernehmen, und bei diesen späteren Aufgaben, welche Fassung der Funktionen sie beim Speichern enthielten; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person dort angelegt hat, mit Namen und Code; bei einer Schaltung aus der Logik-Werkstatt die Schaltung), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
                 :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft; zusammengefasst und ohne Namen: welche Aufgaben genutzt werden und wo sie schwerfallen, um sie zu verbessern',
-                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis); die Administration nur als Zahlen je Schule, Aktivität und Aufgabe, ohne Namen und ohne Antworten, und nur, wo mindestens fünf Lernende dahinterstehen',
+                :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis); die Administration nur als Zahlen je Schule, Klasse, Aktivität und Aufgabe, ohne Namen der Lernenden und ohne Antworten, und nur, wo mindestens fünf Lernende dahinterstehen',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
@@ -641,7 +641,7 @@ module Privacy
             lassen sie automatisch prüfen und geben Ergebnisse ab; die Lehrkraft sieht den Stand der Lerngruppe und hilft bei Problemen.
             Lehrkräfte können außerdem freiwillig zurückmelden, wie eine Aktivität in ihrer Gruppe lief; das dient nur dazu,
             die Aktivitäten zu verbessern. Ebenfalls nur dafür zählt die Administration aus den Ergebnissen der automatischen Prüfung
-            zusammengefasst, welche Aktivitäten und Aufgaben an welcher Schule bearbeitet werden und wie oft sie gelöst werden:
+            zusammengefasst, welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wie oft sie gelöst werden:
             ohne Namen, ohne Antworten, berechnet beim Ansehen und nicht gespeichert; Zahlen, hinter denen weniger als fünf Lernende stehen,
             erscheinen dort nicht.
             Die Daten werden für keinen anderen Zweck verarbeitet: nicht für Noten, nicht für Werbung, nicht für Profile,

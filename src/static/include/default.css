@@ -14209,23 +14209,227 @@ html[data-bs-theme="dark"] .interleaving .il-wait {
     font-size: 0.75rem;
     color: var(--bs-secondary-color);
 }
-.usage-meter {
+/* the figures at the top of /statistik */
+.usage-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+.usage-tile {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+}
+.usage-tile-value {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+.usage-tile-label {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+/* a share as a pie (conic gradient): blue solved, coral wrong; both above
+   3:1 against the page, checked with the dataviz validator */
+.usage-charts {
+    --usage-solved: #2a78d6;
+    --usage-wrong: #e0452f;
+    --usage-track: rgba(127, 127, 127, 0.22);
+}
+html[data-bs-theme="dark"] .usage-charts {
+    --usage-solved: #4a8fe0;
+    --usage-wrong: #ef4538;
+}
+.usage-pie {
     display: inline-block;
-    width: 3.5em;
-    height: 0.45em;
-    margin-right: 0.5em;
+    width: 1.35em;
+    height: 1.35em;
+    border-radius: 50%;
+    vertical-align: middle;
+    background: conic-gradient(var(--usage-pie-color) var(--p), var(--usage-track) 0);
+}
+.usage-pie-solved { --usage-pie-color: var(--usage-solved); }
+.usage-pie-wrong { --usage-pie-color: var(--usage-wrong); }
+.usage-pie-none { background: none; border: 1px dashed var(--usage-track); }
+.usage-pie-small {
+    width: 0.95em;
+    height: 0.95em;
+    margin-right: 0.35em;
+}
+.usage-key .usage-pie {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.12em;
+}
+.usage-pie-cell {
+    width: 4.5em;
+    text-align: center;
+}
+.usage-num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.usage-tasks td:first-child,
+.usage-tasks th:first-child {
+    width: 100%;
+}
+.usage-charts .usage-table td {
+    vertical-align: middle;
+}
+.usage-charts .usage-table td:first-child {
+    white-space: normal;
+}
+.usage-task-name {
+    font-weight: 500;
+}
+.usage-task-activity {
+    font-size: 0.85rem;
+}
+.usage-places {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em 0.5em;
+    margin-top: 0.35em;
+    font-size: 0.8rem;
+}
+.usage-place {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.05em 0.5em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1em;
+    white-space: nowrap;
+}
+.usage-place-school,
+.usage-place-rest {
+    color: var(--bs-secondary-color);
+}
+.usage-place-school {
+    margin-left: 0.35em;
+}
+.usage-place-rest {
+    align-self: center;
+}
+/* a bar of fixed length and its number in a column of fixed width, so
+   that rows line up */
+.usage-hbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    white-space: nowrap;
+}
+.usage-hbar-track {
+    display: inline-block;
+    width: 7em;
+    height: 0.5em;
     border-radius: 2px;
-    background: rgba(127, 127, 127, 0.18);
-    vertical-align: 0.1em;
+    background: var(--usage-track);
     overflow: hidden;
 }
-.usage-meter > i {
+.usage-hbar-track > i {
     display: block;
     height: 100%;
-    background: #2a78d6;
+    background: var(--usage-bar);
 }
-html[data-bs-theme="dark"] .usage-meter > i {
-    background: #5598e7;
+.usage-hbar-number {
+    min-width: 2.2em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.usage-hbar-cell {
+    width: 11em;
+}
+.usage-school {
+    margin-top: 1.4rem;
+}
+.usage-activity > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2em 1em;
+    padding: 0.35em 0;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+.usage-activity > summary::before {
+    content: '\F285';
+    font-family: bootstrap-icons;
+    font-size: 0.75em;
+    color: var(--bs-secondary-color);
+    transition: transform 0.15s;
+}
+.usage-activity[open] > summary::before {
+    transform: rotate(90deg);
+}
+.usage-activity > summary::-webkit-details-marker {
+    display: none;
+}
+.usage-activity > summary {
+    list-style: none;
+    cursor: pointer;
+}
+.usage-activity-title {
+    flex: 1 1 14em;
+}
+.usage-activity-schools {
+    min-width: 6em;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+}
+.usage-activity .table-responsive {
+    margin: 0.4em 0 0.8em 1.2em;
+}
+/* on a phone a task is a block: its name, then the four values side by
+   side, each with its name above it */
+@media (max-width: 575.98px) {
+    .usage-tasks thead {
+        display: none;
+    }
+    .usage-tasks,
+    .usage-tasks tbody {
+        display: block;
+    }
+    .usage-tasks td.text-end {
+        text-align: center !important;
+    }
+    .usage-tasks tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        padding: 0.5em 0;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+    .usage-tasks td {
+        border: 0;
+        padding: 0.1em 0.3em;
+    }
+    .usage-tasks td:first-child {
+        flex: 1 0 100%;
+        padding-bottom: 0.4em;
+    }
+    .usage-tasks td:not(:first-child) {
+        flex: 1 1 0;
+        width: auto;
+        text-align: center;
+    }
+    .usage-tasks td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.75rem;
+        color: var(--bs-secondary-color);
+    }
+    .usage-activity .table-responsive {
+        margin-left: 0;
+    }
+    .usage-hbar-track {
+        width: 3.5em;
+    }
+    .usage-hbar-cell {
+        width: auto;
+    }
 }
 .usage-tip {
     position: fixed;

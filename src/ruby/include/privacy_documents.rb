@@ -183,7 +183,7 @@ module PrivacyDocuments
     def self.pruefuebersicht_rows(s)
         rows = [
             ['Rechtsgrundlage', 'Art. 6 Abs. 1 Buchst. e DSGVO' + (s[:school_law] ? ", #{h(s[:school_law])}" : ''), 'Entscheidung der Schulleitung (Unterlage »Information und Entscheidung«)'],
-            ['Zweckbindung', 'Art. 5 Abs. 1 Buchst. b DSGVO' + (digllv?(s) ? '; § 2 Abs. 1 DigLLV' : ''), 'Unterricht; dazu, um die Aufgaben zu verbessern, Zahlen ohne Namen je Schule und Aufgabe, erst ab fünf Lernenden; keine Werbung, keine Forschung, keine Noten, keine Profile (Datenschutzerklärung, »Wozu«)'],
+            ['Zweckbindung', 'Art. 5 Abs. 1 Buchst. b DSGVO' + (digllv?(s) ? '; § 2 Abs. 1 DigLLV' : ''), 'Unterricht; dazu, um die Aufgaben zu verbessern, Zahlen ohne Namen je Schule, Klasse und Aufgabe, erst ab fünf Lernenden; keine Werbung, keine Forschung, keine Noten, keine Profile (Datenschutzerklärung, »Wozu«)'],
             ['Datenminimierung', 'Art. 5 Abs. 1 Buchst. c, Art. 25 DSGVO', 'Name nicht zwingend; Protokolle ohne IP-Adressen; von Aufgaben nur die letzte Antwort; kein Tracking (TOM)'],
             ['Datenkategorien', digllv?(s) ? '§ 2 Abs. 5 DigLLV' : 'Art. 30 Abs. 1 Buchst. c DSGVO', 'Stammdaten, Account-Daten, Zuordnungsdaten, nutzergenerierte Inhalte, Verkehrsdaten; jede Datenart ist zugeordnet (VVT)'],
             ['Speicherbegrenzung', 'Art. 5 Abs. 1 Buchst. e DSGVO' + (digllv?(s) ? '; § 2 Abs. 6 DigLLV' : ''), 'Löschung spätestens zum Ende des Schuljahres, Löschkonzept; Löschfunktion für die Administration'],
@@ -413,7 +413,7 @@ module PrivacyDocuments
              'Löschkonzept: Enddatum je Gruppe mit Erinnerung, Konten ohne Einladung werden zum Ende des Schuljahres gelöscht; Lernende löschen selbst; jede Löschung wird ohne Adresse vermerkt und nach einer Wiederherstellung wiederholt',
              'überschaubar', 'hängt davon ab, dass Lehrkräfte ihre Listen pflegen; die Administration sieht offene Konten'],
             ['Aus den Daten entsteht ein Leistungs- oder Verhaltensprofil', 'überschaubar', 'substanziell',
-             'Keine Noten; die automatische Prüfung ist Rückmeldung; von Aufgaben nur die letzte Antwort, Versuche ohne Text; über die Gruppe hinaus nur Zahlen je Schule und Aufgabe für die Administration, ohne Namen, beim Ansehen berechnet und erst ab fünf Lernenden; Zweckbindung' + (digllv?(s) ? ' (§ 2 Abs. 1 DigLLV)' : ''),
+             'Keine Noten; die automatische Prüfung ist Rückmeldung; von Aufgaben nur die letzte Antwort, Versuche ohne Text; über die Gruppe hinaus nur Zahlen je Schule, Klasse und Aufgabe für die Administration, ohne Namen, beim Ansehen berechnet und erst ab fünf Lernenden; Zweckbindung' + (digllv?(s) ? ' (§ 2 Abs. 1 DigLLV)' : ''),
              'überschaubar', 'Lehrkräfte sehen den Lernstand ihrer Gruppen; Leistungsüberprüfungen laden sie zur Korrektur herunter'],
             ['Lernende veröffentlichen Daten über sich oder andere (geteilte Links, Web-Apps, eigene Website)', 'überschaubar', 'überschaubar',
              'Teilen nur auf eigenen Wunsch; der Link zum Workspace gilt eine Woche; die Nutzungsordnung verbietet Daten anderer ohne deren Einverständnis; die Seite weist beim Teilen darauf hin',
@@ -526,7 +526,7 @@ module PrivacyDocuments
             <p>
             Zweck, Art der Daten und Kreis der Betroffenen ergeben sich aus dem Eintrag im Verzeichnis von Verarbeitungstätigkeiten,
             der Teil dieser Vereinbarung ist. Um die Aufgaben zu verbessern, darf der Auftragsverarbeiter aus den Ergebnissen der
-            automatischen Prüfung zusammengefasste Zahlen ohne Namen bilden: welche Aktivitäten und Aufgaben je Schule bearbeitet und wie oft
+            automatischen Prüfung zusammengefasste Zahlen ohne Namen bilden: welche Aktivitäten und Aufgaben je Schule und Klasse bearbeitet und wie oft
             sie gelöst werden. Sie werden beim Ansehen berechnet, nicht gespeichert und nicht weitergegeben; Zahlen, hinter denen weniger als
             fünf Lernende stehen, werden nicht angezeigt. Eine Verarbeitung zu anderen Zwecken findet nicht statt.
             </p>

@@ -283,8 +283,12 @@ wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
 `usage_stats_page.rb`, getestet in `test/usage_stats_test.rb`).
 
 - **Ohne Namen:** Jede Person wird beim Laden der Seite zu einer Nummer;
-  Adressen und Gruppennamen erscheinen nicht (Gruppennamen können Namen
-  enthalten, »Testgruppe (Name)«).
+  Adressen erscheinen nicht. Unter den »Stolpersteinen« steht bei jeder
+  Aufgabe, in welchen Klassen (Gruppen) mindestens fünf sie versucht
+  haben, mit deren Anteil Gelöster; kleinere Klassen werden nur gezählt.
+  Eine Schule steht dort nur, wenn keine ihrer Klassen genannt ist, damit
+  Klasse und Schule zusammen nicht den Rest verraten. Testgruppen
+  erscheinen nie (ihr Name enthält den der Lehrkraft).
 - **Erst ab fünf:** Jede Zahl, hinter der weniger als fünf verschiedene
   Lernende stehen, erscheint als »< 5«, mit allem, was sie verraten würde
   (die Prüfungen dieser Zelle, ihre Aufgaben). Aktivitäten einer Schule mit
@@ -295,7 +299,9 @@ wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
 - **Wer zählt:** nur Lernende; Lehrkräfte, die Administration und die
   Testgruppen nicht. Eine Person zählt bei der Schule ihrer ersten Gruppe.
 - **Entscheidung des Maintainers (7. November 2026):** sofort für alle
-  Schulen eingeschaltet. Datenschutzerklärung (Zweck, wer was sieht),
+  Schulen eingeschaltet; am selben Tag die Klassen bei den
+  Stolpersteinen dazu, im Wissen, dass sie auch zeigen, wie es in der
+  Klasse einer Lehrkraft läuft. Datenschutzerklärung (Zweck, wer was sieht),
   Prüfübersicht, Risikoanalyse, Verzeichnis und der Entwurf der
   Vereinbarung zur Auftragsverarbeitung (§ 2) nennen den Zweck; für eine
   Partnerschule, die die Vereinbarung schon in der alten Fassung

@@ -99,4 +99,23 @@ class UsageStatsTest < Minitest::Test
         assert_includes html, ': 9 Lernende, 24 Prüfungen'
         refute_match(/data-tip='[^']*: [1-4] Lernende/, html)
     end
+
+    # classes on »Stolpersteine«: named from five who tried the task, with
+    # their own share; a school only where none of its classes is named;
+    # smaller classes only counted
+    def test_a_stumbling_task_names_its_classes_from_five_on
+        list = []
+        6.times { |p| list << row(p, 'a', 'turtle-1/square', p < 3 ? 'wrong' : 'correct').merge(:groups => ['10a']) }
+        3.times { |p| list << row(20 + p, 'a', 'turtle-1/square', 'wrong').merge(:groups => ['10b']) }
+        5.times { |p| list << row(30 + p, 'b', 'turtle-1/square', 'correct').merge(:groups => ["k#{p}"]) }
+        s = UsageStats.summary(list, :days => 30, :now => NOW, :group_school => { '10a' => 'a', '10b' => 'a' }.merge((0..4).to_h { |p| ["k#{p}", 'b'] }))
+        task = s[:stumbling].first
+        assert_equal [['10a', 'a', 6, 0.5], [nil, 'b', 5, 1.0]], task[:places].map { |p| [p[:group], p[:school], p[:people], p[:solved]] }
+        assert_equal 6, task[:small_places]
+        html = UsageStats.html(s, :titles => {}, :tasks => {}, :schools => { 'a' => 'Schule A', 'b' => 'Schule B' })
+        assert_includes html, "10a, Schule A: 6 Lernende, 50 % gelöst"
+        refute_includes html, '10b'
+        assert_includes html, '6 Klassen mit weniger als 5'
+    end
 end
+
