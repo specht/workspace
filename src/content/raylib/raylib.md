@@ -170,7 +170,7 @@ Die erste Zeile in `main` bittet um zweierlei, bevor `InitWindow` das Fenster ö
 
 Ein Punkt im Raum hat drei Koordinaten. In raylib zeigt **x** nach rechts, **y** nach oben und **z** nach vorne, auf dich zu, wenn du von vorne auf die Welt schaust:
 
-<img class='drawing' style='width: 26em' src='../reference/raylib/axes.webp' alt='Drei Pfeile von einem Punkt aus: x rot nach rechts, y grün nach oben, z blau schräg nach vorne auf den Betrachter zu; darunter ein Gitter, das flach in x und z auf dem Boden liegt.'>
+<img class='drawing' style='width: 26em' src='../reference/raylib/axes.svg' alt='Drei Pfeile von einem Punkt aus: x rot nach rechts, y grün nach oben, z blau schräg nach vorne auf den Betrachter zu; darunter ein Gitter, das flach in x und z auf dem Boden liegt.'>
 
 Das Gitter, das `DrawGrid(10, 1)` zeichnet, liegt flach auf dem Boden, also bei y = 0, und reicht von −5 bis 5 in x- und z-Richtung. Eine Einheit ist in diesem Projekt ein Block.
 
@@ -1218,8 +1218,8 @@ $$u\_x v\_y - u\_y v\_x$$
 Ist sie positiv, laufen die Ecken auf dem Bildschirm gegen den Uhrzeigersinn: Die Seite zeigt zu dir, sie wird gezeichnet. Ist sie negativ, laufen sie im Uhrzeigersinn: Du schaust von hinten auf die Seite, und sie fällt weg.
 
 <div class='gallery centered'>
-<figure><img src='winding-front.webp' alt='Ein hellblau gefülltes Quadrat mit den Ecken 1 links unten, 2 rechts unten, 3 rechts oben und 4 links oben. Pfeile von Ecke zu Ecke und ein Kreispfeil in der Mitte laufen gegen den Uhrzeigersinn.'><figcaption>Von außen: 1, 2, 3, 4 laufen gegen den Uhrzeigersinn, die Seite wird gezeichnet.</figcaption></figure>
-<figure><img src='winding-back.webp' alt='Dasselbe Quadrat gespiegelt und leer: 1 rechts unten, 2 links unten, 3 links oben, 4 rechts oben. Die Pfeile und der Kreispfeil laufen im Uhrzeigersinn.'><figcaption>Dieselbe Seite von hinten: Dieselben Ecken laufen im Uhrzeigersinn, die Seite fällt weg.</figcaption></figure>
+<figure><img src='winding-front.svg' alt='Ein hellblau gefülltes Quadrat mit den Ecken 1 links unten, 2 rechts unten, 3 rechts oben und 4 links oben. Pfeile von Ecke zu Ecke und ein Kreispfeil in der Mitte laufen gegen den Uhrzeigersinn.'><figcaption>Von außen: 1, 2, 3, 4 laufen gegen den Uhrzeigersinn, die Seite wird gezeichnet.</figcaption></figure>
+<figure><img src='winding-back.svg' alt='Dasselbe Quadrat gespiegelt und leer: 1 rechts unten, 2 links unten, 3 links oben, 4 rechts oben. Die Pfeile und der Kreispfeil laufen im Uhrzeigersinn.'><figcaption>Dieselbe Seite von hinten: Dieselben Ecken laufen im Uhrzeigersinn, die Seite fällt weg.</figcaption></figure>
 </div>
 
 Im ersten Bild liegen die Ecken 1, 2 und 3 bei (0, 0), (1, 0) und (1, 1). Die Kanten sind \\(\vec u = (1, 0)\\) und \\(\vec v = (1, 1)\\), also \\(1 \cdot 1 - 0 \cdot 1 = 1\\): positiv. Von hinten ist das Bild gespiegelt, die Ecken liegen bei (1, 0), (0, 0) und (0, 1). Jetzt ist \\(\vec u = (-1, 0)\\) und \\(\vec v = (-1, 1)\\), also \\((-1) \cdot 1 - 0 \cdot (-1) = -1\\): negativ. Es ist wie bei einer Uhr an einer Glasscheibe: Von hinten gesehen laufen ihre Zeiger andersherum.

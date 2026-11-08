@@ -4,7 +4,10 @@ cross product, mirroring, a ray, turning in 2D.
 
     python3 src/content/reference/vektoren/bilder/diagramme.py
     for f in src/content/reference/vektoren/*.svg; do
-        ruby src/scripts/render-svg.rb $f $(( 2 * $(grep -o 'width="[0-9]*"' $f | head -1 | tr -dc 0-9) )); done
+        case $f in *-dark.svg) ;; *) ruby src/scripts/render-svg.rb --svg $f;; esac; done
+
+The page shows the SVGs themselves, sharp at every size; --svg writes the
+dark one beside each.
 
 The colours: the first vector blue, the second purple, a result amber,
 helper lines grey and dashed; the axes red (x), green (y) and blue (z), as
@@ -46,8 +49,8 @@ class Picture:
         self.s = (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
                   f'viewBox="0 0 {w} {h}" width="{w}" height="{h}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
                   f'  <!-- {comment}\n'
-                  f'       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:\n'
-                  f'       src/scripts/render-svg.rb src/content/reference/vektoren/{name}.svg {2 * w} -->\n'
+                  f'       Gemacht von bilder/diagramme.py; die dunkle Fassung\n'
+                  f'       {name}-dark.svg und die Schriften: src/scripts/render-svg.rb -->\n'
                   f'  <defs>{markers}</defs>\n'
                   f'  <rect width="{w}" height="{h}" fill="{WHITE}"/>\n')
 
@@ -161,10 +164,10 @@ def axes_in_space():
     # a camera on the z axis, in front of the arrow, looking along -z
     cx, cy = v((0, 0, 3.2))
     angle = m.degrees(m.atan2(oy - cy, ox - cx))
-    p.add(f'<g transform="translate({cx:.1f} {cy:.1f}) rotate({angle:.1f})">'
-          f'<rect x="-15" y="-10" width="24" height="20" rx="3" fill="{INK}"/>'
-          f'<path d="M9,-6 L18,-10 L18,10 L9,6 Z" fill="{INK}"/></g>')
-    p.add(f'<text x="{cx + 4:.1f}" y="{cy + 30:.1f}" font-size="16" fill="{GREY}" text-anchor="middle">Kamera</text>')
+    # Bootstrap Icons »camera-video-fill« (MIT licence), its lens towards the scene
+    p.add(f'<path transform="translate({cx:.1f} {cy:.1f}) rotate({angle:.1f}) scale(2) translate(-8 -8)" '
+          f'fill="{INK}" fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>')
+    p.add(f'<text x="{cx:.1f}" y="{cy + 34:.1f}" font-size="16" fill="{GREY}" text-anchor="middle">Kamera</text>')
     p.save()
 
 

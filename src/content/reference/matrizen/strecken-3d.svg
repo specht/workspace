@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525 455" width="525" height="455" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Das F als Block, in x und z gestreckt, in y gestaucht.
-       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
-       src/scripts/render-svg.rb src/content/reference/matrizen/strecken-3d.svg 1050 -->
+       Gemacht von bilder/diagramme.py; die dunkle Fassung
+       strecken-3d-dark.svg und die Schriften: src/scripts/render-svg.rb -->
   <defs><marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker><marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker></defs>
   <rect width="525" height="455" fill="#ffffff"/>
   <polygon points="256.9,326.2 293.7,330.7 279.0,339.8 242.2,335.3" fill="#6b7280" fill-opacity="0.08" data-dark-fill-opacity="0.08"/>

@@ -122,8 +122,8 @@ go-live
 Ein Bild entsteht auf der Grafikkarte in einer festen Folge von Schritten,
 der **Pipeline**:
 
-<img class='drawing d-none d-lg-block' style='width: 65.875em' src='pipeline-wide.webp' alt='Die Pipeline als Kette von sechs Kästen in einer Reihe: Ecken (Zahlen aus JavaScript), Vertex-Shader (rechnet jede Ecke um), Rasterung (findet die Pixel jedes Dreiecks), Fragment-Shader (färbt jedes Pixel), Z-Buffer (nur das Nächste bleibt), Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
-<img class='drawing d-lg-none' style='width: 23.75em' src='pipeline.webp' alt='Die Pipeline als Kette von sechs Kästen in drei Reihen zu zwei: Ecken (Zahlen aus JavaScript), daneben Vertex-Shader (rechnet jede Ecke um), darunter Rasterung (findet die Pixel jedes Dreiecks), links daneben Fragment-Shader (färbt jedes Pixel), darunter Z-Buffer (nur das Nächste bleibt), daneben Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
+<img class='drawing d-none d-lg-block' style='width: 65.875em' src='pipeline-wide.svg' alt='Die Pipeline als Kette von sechs Kästen in einer Reihe: Ecken (Zahlen aus JavaScript), Vertex-Shader (rechnet jede Ecke um), Rasterung (findet die Pixel jedes Dreiecks), Fragment-Shader (färbt jedes Pixel), Z-Buffer (nur das Nächste bleibt), Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
+<img class='drawing d-lg-none' style='width: 23.75em' src='pipeline.svg' alt='Die Pipeline als Kette von sechs Kästen in drei Reihen zu zwei: Ecken (Zahlen aus JavaScript), daneben Vertex-Shader (rechnet jede Ecke um), darunter Rasterung (findet die Pixel jedes Dreiecks), links daneben Fragment-Shader (färbt jedes Pixel), darunter Z-Buffer (nur das Nächste bleibt), daneben Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
 
 Der **Vertex-Shader** läuft für jede Ecke und sagt, wo sie auf dem Bildschirm
 landet. Die **Rasterung** findet alle Pixel, die ein Dreieck bedeckt; die
@@ -670,7 +670,7 @@ $$u \times v = \begin{pmatrix} u\_y v\_z - u\_z v\_y \\\\ u\_z v\_x - u\_x v\_z 
 Liegen die Ecken von außen gesehen gegen den Uhrzeigersinn, zeigt es nach
 außen. Darum stehen die Ecken jeder Seite des Würfels so herum.
 
-<img class='drawing' style='width: 30em' src='normale.webp' alt='Ein Dreieck mit den Ecken a, b und c, gegen den Uhrzeigersinn. Von a gehen die Kanten b − a und c − a aus; senkrecht auf dem Dreieck steht die Normale n. Daneben fällt Licht aus der Richtung l auf die Fläche, mit dem Winkel θ zwischen n und l.'>
+<img class='drawing' style='width: 30em' src='normale.svg' alt='Ein Dreieck mit den Ecken a, b und c, gegen den Uhrzeigersinn. Von a gehen die Kanten b − a und c − a aus; senkrecht auf dem Dreieck steht die Normale n. Daneben fällt Licht aus der Richtung l auf die Fläche, mit dem Winkel θ zwischen n und l.'>
 
 <div class='hint own' data-check='normale'>
 <strong>Jetzt bist du dran:</strong> Schreib in <code>math.js</code> die
@@ -1208,10 +1208,10 @@ Die Normale eines Dreiecks kannst du schon ausrechnen, mit `faceNormal`.
 
 <div class='gallery columns-2'>
 <figure>
-<img src='normalen-flach.webp' alt='Ein Schnitt durch eine runde Fläche aus vier geraden Stücken, links oben die Lampe l. In der Mitte jedes Stücks steht seine Normale senkrecht darauf. Unter jedem Stück ein Streifen in einer einzigen Helligkeit: am hellsten die Stücke, die zur Lampe zeigen, mit Kanten dazwischen.'>
+<img src='normalen-flach.svg' alt='Ein Schnitt durch eine runde Fläche aus vier geraden Stücken, links oben die Lampe l. In der Mitte jedes Stücks steht seine Normale senkrecht darauf. Unter jedem Stück ein Streifen in einer einzigen Helligkeit: am hellsten die Stücke, die zur Lampe zeigen, mit Kanten dazwischen.'>
 <figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
 <figure>
-<img src='normalen-glatt.webp' alt='Dieselben vier geraden Stücke, gestrichelt die runde Fläche, die sie darstellen. An jeder Ecke steht eine Normale senkrecht auf der runden Fläche, dazwischen kleinere graue, gemischte Normalen, die sich allmählich drehen. Der Streifen darunter wird ohne Kanten von hell zu dunkel.'>
+<img src='normalen-glatt.svg' alt='Dieselben vier geraden Stücke, gestrichelt die runde Fläche, die sie darstellen. An jeder Ecke steht eine Normale senkrecht auf der runden Fläche, dazwischen kleinere graue, gemischte Normalen, die sich allmählich drehen. Der Streifen darunter wird ohne Kanten von hell zu dunkel.'>
 <figcaption>Smooth Shading: eine Normale je Ecke, dazwischen gemischt</figcaption></figure>
 </div>
 
@@ -1384,7 +1384,7 @@ $$h = \frac{l + v}{|l + v|},$$
 
 liegt nahe an der Normale, wenn das Licht zum Auge gespiegelt wird.
 
-<img class='drawing' style='width: 26.25em' src='glanz-vektoren.webp' alt='Ein Punkt auf einer Fläche, darauf senkrecht die Normale n. Nach links oben zeigt l zur Lampe, nach rechts oben v zur Kamera, und h liegt genau zwischen l und v, nur wenig neben n.'>
+<img class='drawing' style='width: 26.25em' src='glanz-vektoren.svg' alt='Ein Punkt auf einer Fläche, darauf senkrecht die Normale n. Nach links oben zeigt l zur Lampe, nach rechts oben v zur Kamera, und h liegt genau zwischen l und v, nur wenig neben n.'>
 
 Dann ist
 \\(n \cdot h\\) fast 1, und eine hohe Potenz davon macht daraus einen kleinen,

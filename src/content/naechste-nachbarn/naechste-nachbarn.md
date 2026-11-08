@@ -40,7 +40,7 @@ Nachbarn**, und das Verfahren heißt danach: **k nächste Nachbarn**, wobei k
 sagt, wie viele Nachbarn gefragt werden.
 
 <div class='gallery single'>
-<figure><img class='inspect' src='teaser.webp' alt='Pinguine in einem Diagramm, nach rechts die Länge des Schnabels, nach oben seine Höhe, in drei Farben für Adélie-, Zügel- und Eselspinguine. In der Mitte ein Kreis mit einem Fragezeichen, von dem Linien zu den fünf nächsten Pinguinen gehen: Der nächste ist ein Eselspinguin, drei der fünf sind Zügelpinguine.'><figcaption>Ein unbekannter Pinguin und seine fünf nächsten Nachbarn: Der nächste ist ein Eselspinguin, aber drei der fünf sind Zügelpinguine</figcaption></figure>
+<figure><img class='inspect' src='teaser.svg' alt='Pinguine in einem Diagramm, nach rechts die Länge des Schnabels, nach oben seine Höhe, in drei Farben für Adélie-, Zügel- und Eselspinguine. In der Mitte ein Kreis mit einem Fragezeichen, von dem Linien zu den fünf nächsten Pinguinen gehen: Der nächste ist ein Eselspinguin, drei der fünf sind Zügelpinguine.'><figcaption>Ein unbekannter Pinguin und seine fünf nächsten Nachbarn: Der nächste ist ein Eselspinguin, aber drei der fünf sind Zügelpinguine</figcaption></figure>
 </div>
 
 Mit k = 1 wäre der unbekannte Pinguin ein Eselspinguin, mit k = 5 ein
@@ -117,7 +117,7 @@ Hypotenuse.
 
 $$d = \sqrt{(a\_1 - b\_1)^2 + (a\_2 - b\_2)^2}$$
 
-<img class='drawing' style='width: 28em' src='abstand.webp' alt='Ein Diagramm mit Länge nach rechts und Höhe nach oben. Zwei Punkte: b = (b1, b2) unten links, a = (a1, a2) oben rechts, verbunden durch eine blaue Linie d. Gestrichelt darunter die waagrechte Kathete a1 − b1 und rechts die senkrechte a2 − b2, mit einem rechten Winkel zwischen ihnen.'>
+<img class='drawing' style='width: 28em' src='abstand.svg' alt='Ein Diagramm mit Länge nach rechts und Höhe nach oben. Zwei Punkte: b = (b1, b2) unten links, a = (a1, a2) oben rechts, verbunden durch eine blaue Linie d. Gestrichelt darunter die waagrechte Kathete a1 − b1 und rechts die senkrechte a2 − b2, mit einem rechten Winkel zwischen ihnen.'>
 
 Bei mehr als zwei Merkmalen kommt für jedes ein Quadrat unter die Wurzel dazu.
 Die Formel bleibt dieselbe, nur zeichnen kann man den Raum dann nicht mehr.
@@ -512,7 +512,7 @@ und sie haben zu jeder Kundin und jedem Kunden aufgeschrieben:
 </div>
 
 <div class='gallery single'>
-<figure><img class='inspect' src='stadt.webp' alt='Ein quadratischer Stadtplan, 8 mal 8 Kilometer, mit einem Fluss, der waagerecht durch das untere Drittel fließt. Nördlich davon liegen von West nach Ost Lindenhof, Altstadt mit dem Laden und Bahnhofsviertel, südlich davon Sandberg. Graue Punkte zeigen, wo die Kundinnen und Kunden wohnen, über die ganze Stadt verteilt.'><figcaption>Die Stadt und die 300 Kundinnen und Kunden, über die der Laden bisher entschieden hat</figcaption></figure>
+<figure><img class='inspect' src='stadt.svg' alt='Ein quadratischer Stadtplan, 8 mal 8 Kilometer, mit einem Fluss, der waagerecht durch das untere Drittel fließt. Nördlich davon liegen von West nach Ost Lindenhof, Altstadt mit dem Laden und Bahnhofsviertel, südlich davon Sandberg. Graue Punkte zeigen, wo die Kundinnen und Kunden wohnen, über die ganze Stadt verteilt.'><figcaption>Die Stadt und die 300 Kundinnen und Kunden, über die der Laden bisher entschieden hat</figcaption></figure>
 </div>
 
 Jetzt soll ein Programm entscheiden, damit es schneller geht und, wie der Laden
@@ -736,7 +736,7 @@ wohnen am Sandberg, im wörtlichen Sinn. Der Laden hat dort öfter eine Kaution
 verlangt, also verlangt sie das Programm dort auch.
 
 <div class='gallery single'>
-<figure><img class='inspect' src='stadt-kaution.webp' alt='Derselbe Stadtplan, jetzt mit farbigen Punkten: orange, wer eine Kaution zahlen musste, blau, wer keine zahlen musste. Nördlich des Flusses sind die meisten Punkte blau, am Sandberg südlich des Flusses die meisten orange.'><figcaption>Wie der Laden bisher entschieden hat</figcaption></figure>
+<figure><img class='inspect' src='stadt-kaution.svg' alt='Derselbe Stadtplan, jetzt mit farbigen Punkten: orange, wer eine Kaution zahlen musste, blau, wer keine zahlen musste. Nördlich des Flusses sind die meisten Punkte blau, am Sandberg südlich des Flusses die meisten orange.'><figcaption>Wie der Laden bisher entschieden hat</figcaption></figure>
 </div>
 
 Warum der Laden so entschieden hat, steht in keiner Spalte. Die Daten sind

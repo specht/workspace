@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <style id='embedded-fonts'>@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:italic;src:url(data:font/woff2;base64,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) format('woff2')}</style>
+  <!-- Ein B-Baum über die Telefonnummern: die Wurzel, eine Ebene darunter,
+       die Blätter mit Nummer und Zeile. In jedem Knoten stehen in Wahrheit
+       Hunderte von Schlüsseln, hier zwei. Jeder Pfeil verlässt seinen Knoten
+       senkrecht und kommt auf der Linie zur Mitte seines Kindknotens an, die
+       Spitze genau auf dem Rand: Der letzte Kontrollpunkt liegt auf dieser
+       Linie, so zeigt die Pfeilspitze in die Richtung, in die die Kurve läuft. Als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/sql-index/b-tree.svg -->
+  <style>
+    .node { fill: #1e2836; stroke: #e3e6ea; stroke-width: 2; }
+    .leaf { fill: #151514; stroke: #e3e6ea; stroke-width: 2; }
+    .key { font-size: 22px; fill: #e3e6ea; text-anchor: middle; }
+    .row { font-size: 17px; fill: #e3e6ea; }
+    .ptr { stroke: #6ea2f2; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    .next { stroke: #9aa1ac; stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; marker-end: url(#arrow-grey); }
+    .level { font-size: 18px; fill: #9aa1ac; font-style: italic; }
+    .dots { font-size: 28px; fill: #9aa1ac; text-anchor: middle; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6ea2f2"/>
+    </marker>
+    <marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa1ac"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="560" fill="#151514"/>
+
+  <!-- Ebene 1: die Wurzel -->
+  <rect class="node" x="430" y="30" width="340" height="50" rx="6"/>
+  <line x1="543" y1="30" x2="543" y2="80" stroke="#e3e6ea" stroke-width="1.5"/>
+  <line x1="657" y1="30" x2="657" y2="80" stroke="#e3e6ea" stroke-width="1.5"/>
+  <text class="key" x="600" y="63">…</text>
+  <text class="key" x="487" y="63">3400000</text>
+  <text class="key" x="713" y="63">6700000</text>
+
+  <!-- Ebene 2 -->
+  <rect class="node" x="70" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="145" y="223">1100000</text>
+  <text class="key" x="220" y="223">…</text>
+  <text class="key" x="295" y="223">2200000</text>
+  <rect class="node" x="450" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="525" y="223">4500000</text>
+  <text class="key" x="600" y="223">…</text>
+  <text class="key" x="675" y="223">5600000</text>
+  <rect class="node" x="830" y="190" width="300" height="50" rx="6"/>
+  <text class="key" x="905" y="223">7800000</text>
+  <text class="key" x="980" y="223">…</text>
+  <text class="key" x="1055" y="223">8900000</text>
+  <path class="ptr" d="M450,80 C450,134.4 338.8,145.3 264.7,188.8"/>
+  <path class="ptr" d="M600,80 L600.0,187.6"/>
+  <path class="ptr" d="M750,80 C750,134.4 861.2,145.3 935.3,188.8"/>
+
+  <!-- Ebene 3: die Blätter, mit Nummer und Zeile, der Reihe nach verbunden -->
+  <rect class="leaf" x="20" y="340" width="280" height="78" rx="6"/>
+  <text class="row" x="38" y="370">0151 0000001 → Zeile 17679</text>
+  <text class="row" x="38" y="400">0151 0000002 → Zeile 35358</text>
+  <rect class="leaf" x="340" y="340" width="280" height="78" rx="6"/>
+  <text class="row" x="358" y="370">0151 1100176 → Zeile 11504</text>
+  <text class="row" x="358" y="400">0151 1100177 → Zeile 29183</text>
+  <text class="dots" x="720" y="388">…</text>
+  <rect class="leaf" x="820" y="340" width="300" height="78" rx="6"/>
+  <text class="row" x="838" y="370">0151 9500000 → Zeile 500000</text>
+  <text class="row" x="838" y="400">0151 9500001 → Zeile 517679</text>
+  <text class="dots" x="1160" y="388">…</text>
+  <path class="ptr" d="M100,240 C100,288.9 125.3,298.7 142.2,337.8"/>
+  <path class="ptr" d="M220,240 C220,289.4 331.0,299.3 404.9,338.9"/>
+  <path class="ptr" d="M1100,240 C1100,289.1 1044.9,298.9 1008.1,338.2"/>
+  <path class="next" d="M300,379 L338,379"/>
+  <path class="next" d="M620,379 L680,379"/>
+  <path class="next" d="M760,379 L818,379"/>
+  <path class="next" d="M1120,379 L1140,379"/>
+
+  <text class="level" x="40" y="480">Gesucht 0151 9500000: In der Wurzel größer als 6700000, also nach rechts; in Ebene 2 größer als 8900000,</text>
+  <text class="level" x="40" y="508">wieder nach rechts; im Blatt die Nummer mit ihrer Zeile. Drei Knoten gelesen statt einer Million Zeilen.</text>
+</svg>

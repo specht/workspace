@@ -3,10 +3,11 @@ a letter F (turn, stretch, mirror, shear), and that the order of turning and
 moving matters.
 
     python3 src/content/reference/matrizen/bilder/diagramme.py
-    for f in drehen strecken spiegeln scheren drehen-verschieben verschieben-drehen; do
-        ruby src/scripts/render-svg.rb src/content/reference/matrizen/$f.svg 1064; done
-    for f in drehen-3d strecken-3d spiegeln-3d scheren-3d achse-3d; do
-        ruby src/scripts/render-svg.rb src/content/reference/matrizen/$f.svg 1050; done
+    for f in src/content/reference/matrizen/*.svg; do
+        case $f in *-dark.svg) ;; *) ruby src/scripts/render-svg.rb --svg $f;; esac; done
+
+The page shows the SVGs themselves, sharp at every size; --svg writes the
+dark one beside each.
 
 Each picture: a grid, the F before (grey, dashed) and after (blue), and the
 images of the two axes, (1, 0) in red and (0, 1) in green, which are the
@@ -55,8 +56,8 @@ def head(comment, name):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             f'viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
             f'  <!-- {comment}\n'
-            f'       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:\n'
-            f'       src/scripts/render-svg.rb src/content/reference/matrizen/{name}.svg {2 * W} -->\n'
+            f'       Gemacht von bilder/diagramme.py; die dunkle Fassung\n'
+            f'       {name}-dark.svg und die Schriften: src/scripts/render-svg.rb -->\n'
             f'  <defs>{markers}</defs>\n'
             f'  <rect width="{W}" height="{H}" fill="{WHITE}"/>\n')
 
@@ -179,8 +180,8 @@ def head3(comment, name):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             f'viewBox="0 0 {W3} {H3}" width="{W3}" height="{H3}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
             f'  <!-- {comment}\n'
-            f'       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:\n'
-            f'       src/scripts/render-svg.rb src/content/reference/matrizen/{name}.svg {2 * W3} -->\n'
+            f'       Gemacht von bilder/diagramme.py; die dunkle Fassung\n'
+            f'       {name}-dark.svg und die Schriften: src/scripts/render-svg.rb -->\n'
             f'  <defs>{markers}</defs>\n'
             f'  <rect width="{W3}" height="{H3}" fill="{WHITE}"/>\n')
 

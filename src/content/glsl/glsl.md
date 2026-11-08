@@ -442,7 +442,7 @@ Jetzt wird es dreidimensional, mit derselben Idee wie im [Raytracer](/raytracing
 
 Ein Shader fragt die Szene etwas Einfacheres: Wie weit ist es von diesem Punkt bis zur nächsten Fläche, egal in welcher Richtung? Die Antwort gibt eine Funktion `map`. Für eine Kugel ist das leicht, der Abstand zum Mittelpunkt weniger den Radius, für den Boden bei `y = 0` ist es die Höhe `y`. Wenn bis zur nächsten Fläche noch `d` Platz ist, kann der Strahl `d` weit gehen, ohne etwas zu treffen. Dann fragt er wieder:
 
-<img class='full' src='marching.webp' alt='Seitenansicht: links das Auge über dem Boden, rechts eine Kugel. Ein Strahl geht vom Auge leicht aufwärts zur Kugel. Um jeden Punkt des Strahls ist ein gestrichelter Kreis gezeichnet, der gerade den Boden oder die Kugel berührt; der erste hat den Radius d bis zum Boden. Der Strahl springt jeweils bis zum Rand seines Kreises, die Kreise werden größer, solange der Boden am nächsten ist, und an der Kugel immer kleiner, bis der Strahl sie trifft.'>
+<img class='full' src='marching.svg' alt='Seitenansicht: links das Auge über dem Boden, rechts eine Kugel. Ein Strahl geht vom Auge leicht aufwärts zur Kugel. Um jeden Punkt des Strahls ist ein gestrichelter Kreis gezeichnet, der gerade den Boden oder die Kugel berührt; der erste hat den Radius d bis zum Boden. Der Strahl springt jeweils bis zum Rand seines Kreises, die Kreise werden größer, solange der Boden am nächsten ist, und an der Kugel immer kleiner, bis der Strahl sie trifft.'>
 
 So tastet sich der Strahl vor: große Schritte im freien Raum, immer kleinere dicht an einer Fläche, bis der Abstand fast 0 ist. Das heißt **Raymarching**. Eine Formel für den Treffer braucht es nicht mehr, nur eine für den Abstand, und Abstände lassen sich kombinieren: Der Abstand zu zwei Flächen ist der kleinere der beiden Abstände.
 
@@ -661,11 +661,11 @@ Mit einer Kugel ist der Shader nicht besser als der Raytracer. Raymarching kann 
 
 Auf einer Linie durch zwei Tropfen sieht man, was `smin` tut:
 
-<img class='drawing' style='width: 30em' src='smin.webp' alt='Ein Graph entlang der Linie durch zwei Tropfen, die als graue Balken auf der Linie Abstand 0 liegen. Gestrichelt steigen a und b, die Abstände zu je einem Tropfen, zur Mitte hin an und kreuzen sich; schwarz min(a, b) mit einem spitzen Knick in der Mitte; blau smin(a, b, k), außen genau wie min, in der Mitte rund und tiefer, aber nur im grau hinterlegten Bereich, wo |a − b| < k ist.'>
+<img class='drawing' style='width: 30em' src='smin.svg' alt='Ein Graph entlang der Linie durch zwei Tropfen, die als graue Balken auf der Linie Abstand 0 liegen. Gestrichelt steigen a und b, die Abstände zu je einem Tropfen, zur Mitte hin an und kreuzen sich; schwarz min(a, b) mit einem spitzen Knick in der Mitte; blau smin(a, b, k), außen genau wie min, in der Mitte rund und tiefer, aber nur im grau hinterlegten Bereich, wo |a − b| < k ist.'>
 
 In 2D, mit den Zahlen aus dem Shader, sieht das so aus: Sind sich zwei Tropfen nah genug, wölben sie sich einander entgegen, und kommen sie noch näher, wächst der Hals.
 
-<img class='drawing' style='width: 33em' src='metaballs.webp' alt='Dreimal zwei Tropfen in 2D, gestrichelt jeweils die beiden Kreise allein. Auseinander: genau zwei Kreise. Fast verbunden: Beide ziehen sich spitz zueinander aus, bis auf einen haarfeinen Spalt. Verbunden: Ein Hals verbindet sie zu einer Form wie eine Erdnuss.'>
+<img class='drawing' style='width: 33em' src='metaballs.svg' alt='Dreimal zwei Tropfen in 2D, gestrichelt jeweils die beiden Kreise allein. Auseinander: genau zwei Kreise. Fast verbunden: Beide ziehen sich spitz zueinander aus, bis auf einen haarfeinen Spalt. Verbunden: Ein Hals verbindet sie zu einer Form wie eine Erdnuss.'>
 
 Kugeln, die so ineinanderfließen, heißen **Metaballs**. Erfunden hat sie Jim Blinn um 1980, für Bilder von Atomen in einer Fernsehserie. Bei ihm hat jede Kugel ein Feld, das mit dem Abstand schwächer wird, so wie das Licht einer Lampe. Die Felder aller Kugeln werden addiert, und die Oberfläche liegt dort, wo die Summe einen bestimmten Wert erreicht. Kommen sich zwei Kugeln nahe, ist die Summe zwischen ihnen groß, und die Oberfläche wölbt sich hinüber. Das weiche Minimum macht dasselbe mit Abständen, so wie Raymarching sie braucht.
 

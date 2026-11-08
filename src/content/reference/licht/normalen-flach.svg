@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 340 175" width="340" height="175" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Flat Shading: vier gerade Stücke einer runden Fläche, in der Mitte jedes Stücks seine Normale, jedes Stück in einer einzigen Helligkeit.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/webgl/normalen-flach.svg 680 -->
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker><marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+  <rect width="340" height="175" fill="#ffffff"/>
+  <polygon points="50.6,139.8 103.9,94.3 111.2,108.6 63.6,149.2" fill="#d97706" fill-opacity="0.99"/>
+  <polygon points="103.9,94.3 172.0,78.0 172.0,94.0 111.2,108.6" fill="#d97706" fill-opacity="0.95"/>
+  <polygon points="172.0,78.0 240.1,94.3 232.8,108.6 172.0,94.0" fill="#d97706" fill-opacity="0.72"/>
+  <polygon points="240.1,94.3 293.4,139.8 280.4,149.2 232.8,108.6" fill="#d97706" fill-opacity="0.35"/>
+  <polyline points="50.6,139.8 103.9,94.3 172.0,78.0 240.1,94.3 293.4,139.8" fill="none" stroke="#1f2937" stroke-width="2.2" stroke-linejoin="round"/>
+  <line x1="77.3" y1="117.1" x2="47.4" y2="82.1" stroke="#2b5fb4" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="138.0" y1="86.2" x2="127.2" y2="41.4" stroke="#2b5fb4" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="206.0" y1="86.2" x2="216.8" y2="41.4" stroke="#2b5fb4" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="266.7" y1="117.1" x2="296.6" y2="82.1" stroke="#2b5fb4" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <circle cx="50.6" cy="139.8" r="3.5" fill="#1f2937"/>
+  <circle cx="103.9" cy="94.3" r="3.5" fill="#1f2937"/>
+  <circle cx="172.0" cy="78.0" r="3.5" fill="#1f2937"/>
+  <circle cx="240.1" cy="94.3" r="3.5" fill="#1f2937"/>
+  <circle cx="293.4" cy="139.8" r="3.5" fill="#1f2937"/>
+  <circle cx="34" cy="34" r="13" fill="#d97706"/>
+  <g transform='translate(58.00 40.00) scale(1.7000) translate(0.5000 0)' fill='#d97706' stroke='none'><defs>
+<path id='m9-g0-108' d='M2.570361-6.804483C2.570361-6.814446 2.570361-6.914072 2.440847-6.914072C2.211706-6.914072 1.484433-6.834371 1.225405-6.814446C1.145704-6.804483 1.036115-6.794521 1.036115-6.60523C1.036115-6.495641 1.135741-6.495641 1.285181-6.495641C1.763387-6.495641 1.77335-6.405978 1.77335-6.326276L1.743462-6.127024L.488169-1.145704C.458281-1.036115 .438356-.966376 .438356-.806974C.438356-.239103 .876712 .109589 1.344956 .109589C1.673724 .109589 1.92279-.089664 2.092154-.448319C2.271482-.826899 2.391034-1.404732 2.391034-1.424658C2.391034-1.524284 2.30137-1.524284 2.271482-1.524284C2.171856-1.524284 2.161893-1.484433 2.132005-1.344956C1.96264-.697385 1.77335-.109589 1.374844-.109589C1.075965-.109589 1.075965-.428394 1.075965-.56787C1.075965-.806974 1.085928-.856787 1.135741-1.046077L2.570361-6.804483Z'/>
+</defs>
+<g id='m9-page1'>
+<use x='0' y='0' xlink:href='#m9-g0-108'/>
+</g>
+</g>
+</svg>

@@ -29,10 +29,10 @@ Ist das Skalarprodukt negativ, zeigt die Fläche vom Licht weg; dann ist sie dun
 
 <div class='gallery columns-2'>
 <figure>
-<img src='lambert-steil.webp' alt='Drei parallele Lichtstrahlen fallen steil auf eine Fläche und treffen ein kurzes, orange markiertes Stück; daneben die Normale n senkrecht nach oben und l in Richtung der Strahlen.'>
+<img src='lambert-steil.svg' alt='Drei parallele Lichtstrahlen fallen steil auf eine Fläche und treffen ein kurzes, orange markiertes Stück; daneben die Normale n senkrecht nach oben und l in Richtung der Strahlen.'>
 <figcaption>Steil: viel Licht auf wenig Fläche</figcaption></figure>
 <figure>
-<img src='lambert-flach.webp' alt='Dieselben drei Strahlen fallen flach auf die Fläche und treffen ein mehr als doppelt so langes Stück.'>
+<img src='lambert-flach.svg' alt='Dieselben drei Strahlen fallen flach auf die Fläche und treffen ein mehr als doppelt so langes Stück.'>
 <figcaption>Flach: dasselbe Licht auf viel Fläche</figcaption></figure>
 </div>
 
@@ -68,7 +68,7 @@ Bùi Tường Phong spiegelte 1973 die Richtung zum Licht an der Normale und ver
 
 $$h = \frac{l + v}{|l + v|}, \qquad \text{Glanz} = \max(n \cdot h,\ 0)^{k}$$
 
-<img class='drawing' style='width: 26.25em' src='glanz-vektoren.webp' alt='Ein Punkt auf einer Fläche, darauf senkrecht die Normale n. Nach links oben zeigt l zur Lampe, nach rechts oben v zur Kamera, und h liegt genau zwischen l und v, nur wenig neben n.'>
+<img class='drawing' style='width: 26.25em' src='glanz-vektoren.svg' alt='Ein Punkt auf einer Fläche, darauf senkrecht die Normale n. Nach links oben zeigt l zur Lampe, nach rechts oben v zur Kamera, und h liegt genau zwischen l und v, nur wenig neben n.'>
 
 Wird das Licht zum Auge gespiegelt, liegt \\(h\\) genau auf der Normale, und \\(n \cdot h = 1\\). Die hohe Potenz \\(k\\), der **Exponent** (englisch *shininess*), macht daraus einen Fleck, der zur Seite schnell auf 0 fällt:
 
@@ -141,10 +141,10 @@ Damit eine runde Fläche glatt aussieht, haben die Ecken ihre eigenen Normalen, 
 
 <div class='gallery columns-2'>
 <figure>
-<img src='normalen-flach.webp' alt='Ein Schnitt durch eine runde Fläche aus vier geraden Stücken, links oben die Lampe l. In der Mitte jedes Stücks steht seine Normale senkrecht darauf. Unter jedem Stück ein Streifen in einer einzigen Helligkeit, mit Kanten dazwischen.'>
+<img src='normalen-flach.svg' alt='Ein Schnitt durch eine runde Fläche aus vier geraden Stücken, links oben die Lampe l. In der Mitte jedes Stücks steht seine Normale senkrecht darauf. Unter jedem Stück ein Streifen in einer einzigen Helligkeit, mit Kanten dazwischen.'>
 <figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
 <figure>
-<img src='normalen-glatt.webp' alt='Dieselben vier geraden Stücke, gestrichelt die runde Fläche, die sie darstellen. An jeder Ecke steht eine Normale senkrecht auf der runden Fläche, dazwischen kleinere graue, gemischte Normalen. Der Streifen darunter wird ohne Kanten von hell zu dunkel.'>
+<img src='normalen-glatt.svg' alt='Dieselben vier geraden Stücke, gestrichelt die runde Fläche, die sie darstellen. An jeder Ecke steht eine Normale senkrecht auf der runden Fläche, dazwischen kleinere graue, gemischte Normalen. Der Streifen darunter wird ohne Kanten von hell zu dunkel.'>
 <figcaption>Smooth Shading: Normalen an den Ecken, dazwischen gemischt</figcaption></figure>
 </div>
 <!-- /part -->
@@ -161,7 +161,7 @@ Ein Spiegel zeigt, was in der gespiegelten Blickrichtung liegt: Die Richtung von
 
 $$u = \frac{1}{2} + \frac{\operatorname{atan2}(r\_x, -r\_z)}{2\pi}, \qquad v = \frac{1}{2} + \frac{\arcsin r\_y}{\pi}$$
 
-<img class='drawing' style='width: 20em' src='spiegeln.webp' alt='Ein Punkt auf einer Fläche mit der Normale n senkrecht nach oben; nach rechts oben zeigt v zu einer Kamera, nach links oben r, im gleichen Winkel zur Normale auf der anderen Seite.'>
+<img class='drawing' style='width: 20em' src='spiegeln.svg' alt='Ein Punkt auf einer Fläche mit der Normale n senkrecht nach oben; nach rechts oben zeigt v zu einer Kamera, nach links oben r, im gleichen Winkel zur Normale auf der anderen Seite.'>
 
 ### Raue Flächen
 

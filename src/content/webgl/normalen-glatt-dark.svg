@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 340 175" width="340" height="175" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Smooth Shading: vier gerade Stücke einer runden Fläche, an jeder Ecke eine Normale senkrecht auf der gedachten runden Fläche, dazwischen gemischte Normalen, die Helligkeit läuft fließend.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/webgl/normalen-glatt.svg 680 -->
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e3e6ea"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6ea2f2"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker><marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa1ac"/></marker></defs>
+  <rect width="340" height="175" fill="#151514"/>
+  <defs><linearGradient id="band0" gradientUnits="userSpaceOnUse" x1="50.6" y1="139.8" x2="103.9" y2="94.3"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.94"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0.99"/></linearGradient></defs>
+  <polygon points="50.6,139.8 103.9,94.3 111.2,108.6 63.6,149.2" fill="url(#band0)"/>
+  <defs><linearGradient id="band1" gradientUnits="userSpaceOnUse" x1="103.9" y1="94.3" x2="172.0" y2="78.0"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.99"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0.85"/></linearGradient></defs>
+  <polygon points="103.9,94.3 172.0,78.0 172.0,94.0 111.2,108.6" fill="url(#band1)"/>
+  <defs><linearGradient id="band2" gradientUnits="userSpaceOnUse" x1="172.0" y1="78.0" x2="240.1" y2="94.3"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.85"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0.54"/></linearGradient></defs>
+  <polygon points="172.0,78.0 240.1,94.3 232.8,108.6 172.0,94.0" fill="url(#band2)"/>
+  <defs><linearGradient id="band3" gradientUnits="userSpaceOnUse" x1="240.1" y1="94.3" x2="293.4" y2="139.8"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.54"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0.14"/></linearGradient></defs>
+  <polygon points="240.1,94.3 293.4,139.8 280.4,149.2 232.8,108.6" fill="url(#band3)"/>
+  <polyline points="44.8,148.5 47.6,144.1 50.6,139.8 53.8,135.7 57.1,131.6 60.5,127.6 64.1,123.8 67.8,120.1 71.6,116.5 75.6,113.1 79.7,109.8 83.8,106.6 88.1,103.6 92.5,100.8 97.0,98.1 101.6,95.6 106.2,93.2 111.0,91.0 115.8,88.9 120.7,87.0 125.6,85.3 130.7,83.8 135.7,82.5 140.8,81.3 146.0,80.3 151.1,79.5 156.3,78.8 161.5,78.4 166.8,78.1 172.0,78.0 177.2,78.1 182.5,78.4 187.7,78.8 192.9,79.5 198.0,80.3 203.2,81.3 208.3,82.5 213.3,83.8 218.4,85.3 223.3,87.0 228.2,88.9 233.0,91.0 237.8,93.2 242.4,95.6 247.0,98.1 251.5,100.8 255.9,103.6 260.2,106.6 264.3,109.8 268.4,113.1 272.4,116.5 276.2,120.1 279.9,123.8 283.5,127.6 286.9,131.6 290.2,135.7 293.4,139.8 296.4,144.1 299.2,148.5" fill="none" stroke="#9aa1ac" stroke-width="1.2" stroke-dasharray="4 4"/>
+  <polyline points="50.6,139.8 103.9,94.3 172.0,78.0 240.1,94.3 293.4,139.8" fill="none" stroke="#e3e6ea" stroke-width="2.2" stroke-linejoin="round"/>
+  <line x1="68.4" y1="124.7" x2="44.0" y2="100.3" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="86.2" y1="109.5" x2="65.9" y2="81.6" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="126.6" y1="88.9" x2="115.9" y2="56.1" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="149.3" y1="83.4" x2="143.9" y2="49.4" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="194.7" y1="83.4" x2="200.1" y2="49.4" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="217.4" y1="88.9" x2="228.1" y2="56.1" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="257.8" y1="109.5" x2="278.1" y2="81.6" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="275.6" y1="124.7" x2="300.0" y2="100.3" stroke="#9aa1ac" stroke-width="1.3" marker-end="url(#arrow-grey)"/>
+  <line x1="50.6" y1="139.8" x2="13.4" y2="112.8" stroke="#6ea2f2" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="103.9" y1="94.3" x2="83.0" y2="53.4" stroke="#6ea2f2" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="172.0" y1="78.0" x2="172.0" y2="32.0" stroke="#6ea2f2" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="240.1" y1="94.3" x2="261.0" y2="53.4" stroke="#6ea2f2" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <line x1="293.4" y1="139.8" x2="330.6" y2="112.8" stroke="#6ea2f2" stroke-width="2.4" marker-end="url(#arrow-blue)"/>
+  <circle cx="50.6" cy="139.8" r="3.5" fill="#e3e6ea"/>
+  <circle cx="103.9" cy="94.3" r="3.5" fill="#e3e6ea"/>
+  <circle cx="172.0" cy="78.0" r="3.5" fill="#e3e6ea"/>
+  <circle cx="240.1" cy="94.3" r="3.5" fill="#e3e6ea"/>
+  <circle cx="293.4" cy="139.8" r="3.5" fill="#e3e6ea"/>
+  <circle cx="34" cy="34" r="13" fill="#fbbf24"/>
+  <g transform='translate(58.00 40.00) scale(1.7000) translate(0.5000 0)' fill='#fbbf24' stroke='none'><defs>
+<path id='m10-g0-108' d='M2.570361-6.804483C2.570361-6.814446 2.570361-6.914072 2.440847-6.914072C2.211706-6.914072 1.484433-6.834371 1.225405-6.814446C1.145704-6.804483 1.036115-6.794521 1.036115-6.60523C1.036115-6.495641 1.135741-6.495641 1.285181-6.495641C1.763387-6.495641 1.77335-6.405978 1.77335-6.326276L1.743462-6.127024L.488169-1.145704C.458281-1.036115 .438356-.966376 .438356-.806974C.438356-.239103 .876712 .109589 1.344956 .109589C1.673724 .109589 1.92279-.089664 2.092154-.448319C2.271482-.826899 2.391034-1.404732 2.391034-1.424658C2.391034-1.524284 2.30137-1.524284 2.271482-1.524284C2.171856-1.524284 2.161893-1.484433 2.132005-1.344956C1.96264-.697385 1.77335-.109589 1.374844-.109589C1.075965-.109589 1.075965-.428394 1.075965-.56787C1.075965-.806974 1.085928-.856787 1.135741-1.046077L2.570361-6.804483Z'/>
+</defs>
+<g id='m10-page1'>
+<use x='0' y='0' xlink:href='#m10-g0-108'/>
+</g>
+</g>
+</svg>

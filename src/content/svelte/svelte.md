@@ -331,7 +331,7 @@ Um die Stoppuhr zu programmieren, brauchen wir eine Idee, wie sie benutzt werden
 
 Daraus ergibt sich folgender Ablauf:
 
-<img class='full' src='logik.webp' alt='Ein Ablaufdiagramm zeigt, welche Zustände es gibt und wie die Anwendung zwischen ihnen wechselt.'>
+<img class='full' src='logik.svg' alt='Ein Ablaufdiagramm zeigt, welche Zustände es gibt und wie die Anwendung zwischen ihnen wechselt.'>
 
 _task(fehlstart)
 

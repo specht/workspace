@@ -299,7 +299,7 @@ Weil hier die Zeichen selbst Klammern sind, liest sich das schwer. Vor dem Komma
 
 Die Ausgabe mit `trace` zeigt nach jedem Zeichen den Zustand und den Stack, von unten nach oben gelesen. So sieht der Stack beim Wort `(()())` aus, das oberste Zeichen hervorgehoben:
 
-<img class='drawing' style='width: 28.125em' src='stack-schritte.webp' alt='Sieben Stapel nebeneinander, über jedem außer dem ersten das gelesene Zeichen. Am Anfang liegt nur #. Nach ( liegt # und (, nach dem zweiten ( zwei Klammern auf #, nach ) wieder eine, nach ( wieder zwei, nach ) eine, nach dem letzten ) nur noch #.'>
+<img class='drawing' style='width: 28.125em' src='stack-schritte.svg' alt='Sieben Stapel nebeneinander, über jedem außer dem ersten das gelesene Zeichen. Am Anfang liegt nur #. Nach ( liegt # und (, nach dem zweiten ( zwei Klammern auf #, nach ) wieder eine, nach ( wieder zwei, nach ) eine, nach dem letzten ) nur noch #.'>
 
 Die Höhe des Stacks ist der Zähler aus `count`. Der Stack kann sich aber mehr merken als eine Zahl: welche Klammern in welcher Reihenfolge offen sind.
 

@@ -90,7 +90,7 @@ eine Anfrage wie `parent(X, johann_sebastian)` sucht die Pfeile, die bei
 Johann Sebastian ankommen.
 
 <div class='gallery single'>
-<figure><img class='inspect' src='stammbaum.webp' alt='Die Familie Bach als Graph, von links nach rechts in Generationen: christoph mit einem Pfeil zu johann_ambrosius; johann_ambrosius und maria_elisabeth mit Pfeilen zu johann_christoph, johann_jacob und johann_sebastian; johann_michael zu maria_barbara; johann_sebastian und maria_barbara zu catharina_dorothea, wilhelm_friedemann, carl_philipp_emanuel und johann_gottfried_bernhard; johann_sebastian und anna_magdalena in Blau zu gottfried_heinrich, elisabeth_juliane_friederica, johann_christoph_friedrich und johann_christian; carl_philipp_emanuel zu johann_sebastian_der_juengere, johann_christoph_friedrich zu wilhelm_friedrich_ernst.'><figcaption>Jeder Pfeil ein Fakt <code>parent(P, K)</code>; blau, was du eingetragen hast</figcaption></figure>
+<figure><img class='inspect' src='stammbaum.svg' alt='Die Familie Bach als Graph, von links nach rechts in Generationen: christoph mit einem Pfeil zu johann_ambrosius; johann_ambrosius und maria_elisabeth mit Pfeilen zu johann_christoph, johann_jacob und johann_sebastian; johann_michael zu maria_barbara; johann_sebastian und maria_barbara zu catharina_dorothea, wilhelm_friedemann, carl_philipp_emanuel und johann_gottfried_bernhard; johann_sebastian und anna_magdalena in Blau zu gottfried_heinrich, elisabeth_juliane_friederica, johann_christoph_friedrich und johann_christian; carl_philipp_emanuel zu johann_sebastian_der_juengere, johann_christoph_friedrich zu wilhelm_friedrich_ernst.'><figcaption>Jeder Pfeil ein Fakt <code>parent(P, K)</code>; blau, was du eingetragen hast</figcaption></figure>
 </div>
 <!-- /after -->
 
@@ -238,7 +238,7 @@ Hier färbt Prolog die zwölf Bezirke Berlins. Nachbarn sind Bezirke mit
 einer gemeinsamen Grenze; im Bild verbindet sie eine Linie:
 
 <div class='gallery single'>
-<figure><img class='inspect' src='bezirke.webp' alt='Die zwölf Bezirke Berlins als Kreise mit ihrer Variablen, ungefähr da, wo sie liegen: Spandau im Westen, Reinickendorf und Pankow im Norden, Charlottenburg-Wilmersdorf, Mitte und Friedrichshain-Kreuzberg in der Mitte, Lichtenberg und Marzahn-Hellersdorf im Osten, Steglitz-Zehlendorf, Tempelhof-Schöneberg, Neukölln und Treptow-Köpenick im Süden; eine Linie zwischen je zwei Nachbarn, wie in der Tabelle.'><figcaption>Die Bezirke und ihre Nachbarn, noch ohne Farben</figcaption></figure>
+<figure><img class='inspect' src='bezirke.svg' alt='Die zwölf Bezirke Berlins als Kreise mit ihrer Variablen, ungefähr da, wo sie liegen: Spandau im Westen, Reinickendorf und Pankow im Norden, Charlottenburg-Wilmersdorf, Mitte und Friedrichshain-Kreuzberg in der Mitte, Lichtenberg und Marzahn-Hellersdorf im Osten, Steglitz-Zehlendorf, Tempelhof-Schöneberg, Neukölln und Treptow-Köpenick im Süden; eine Linie zwischen je zwei Nachbarn, wie in der Tabelle.'><figcaption>Die Bezirke und ihre Nachbarn, noch ohne Farben</figcaption></figure>
 </div>
 
 <table class='table'>
@@ -277,7 +277,7 @@ Antwort eine andere sein; richtig ist jede, in der keine Linie zwei Kreise
 derselben Farbe verbindet.
 
 <div class='gallery single'>
-<figure><img class='inspect' src='bezirke-farben.webp' alt='Dieselben zwölf Bezirke, jeder Kreis mit einem Ring in seiner Farbe: Charlottenburg-Wilmersdorf, Pankow und Treptow-Köpenick gelb; Friedrichshain-Kreuzberg, Marzahn-Hellersdorf, Reinickendorf und Steglitz-Zehlendorf grün; Lichtenberg, Mitte, Neukölln und Spandau rot; Tempelhof-Schöneberg blau. Keine Linie verbindet zwei Kreise derselben Farbe.'><figcaption>Die erste Färbung, die Prolog findet: vier Farben, keine zwei Nachbarn gleich</figcaption></figure>
+<figure><img class='inspect' src='bezirke-farben.svg' alt='Dieselben zwölf Bezirke, jeder Kreis mit einem Ring in seiner Farbe: Charlottenburg-Wilmersdorf, Pankow und Treptow-Köpenick gelb; Friedrichshain-Kreuzberg, Marzahn-Hellersdorf, Reinickendorf und Steglitz-Zehlendorf grün; Lichtenberg, Mitte, Neukölln und Spandau rot; Tempelhof-Schöneberg blau. Keine Linie verbindet zwei Kreise derselben Farbe.'><figcaption>Die erste Färbung, die Prolog findet: vier Farben, keine zwei Nachbarn gleich</figcaption></figure>
 </div>
 <!-- /after -->
 

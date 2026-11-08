@@ -62,7 +62,7 @@ Für \\(E(c) = (c - 0{,}7)^2\\), begonnen bei \\(c = 1{,}4\\) mit der Lernrate 0
 </table>
 </div>
 
-<img class='drawing' style='width: 35em' src='bergab.webp' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
+<img class='drawing' style='width: 35em' src='bergab.svg' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
 
 Jeder Schritt ist kleiner als der vorige, weil die Steigung kleiner wird. Den Tiefpunkt erreicht das Verfahren nie genau, aber so nah, wie man will; man hört auf, wenn sich der Fehler kaum noch ändert.
 <!-- /part -->

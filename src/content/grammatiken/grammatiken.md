@@ -260,7 +260,7 @@ _task(tiefe)
 <!-- after: tiefe -->
 Vier. Bei der ersten `)`, am Index 3, ist jeder Aufruf, der eine `(` gelesen hat, noch offen und wartet auf seine `)`, und der Aufruf für das innerste Klammerwort liest gerade:
 
-<img class='drawing' style='width: 35em' src='aufrufe.webp' alt='Das Wort ((())) in sechs Feldern mit den Indizes 0 bis 5; die drei öffnenden Klammern sind grau, die erste schließende am Index 3 ist violett umrandet, darunter steht i = 3. Ein Pfeil führt zu einem Stapel rechts: unten accepts(word), darüber brackets(word, 0), brackets(word, 1), brackets(word, 2) und oben, violett, brackets(word, 3).'>
+<img class='drawing' style='width: 35em' src='aufrufe.svg' alt='Das Wort ((())) in sechs Feldern mit den Indizes 0 bis 5; die drei öffnenden Klammern sind grau, die erste schließende am Index 3 ist violett umrandet, darunter steht i = 3. Ein Pfeil führt zu einem Stapel rechts: unten accepts(word), darüber brackets(word, 0), brackets(word, 1), brackets(word, 2) und oben, violett, brackets(word, 3).'>
 
 Wie viele Aufrufe offen sind, merkt sich das Programm auf dem **Stack der Aufrufe**: Jeder Aufruf, der noch nicht fertig ist, liegt darauf, bis er zurückkehrt. Das ist der Stack des Kellerautomaten, nur dass jetzt Aufrufe darauf liegen statt Klammern. Eine Regel, die sich selbst aufruft, braucht ihn; ein endlicher Automat hat keinen.
 <!-- /after -->

@@ -16,13 +16,18 @@ pixel by pixel, in flat, Gouraud and Phong shading.
 """
 
 import os
-
-import numpy as np
-from PIL import Image
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+
+drawings_container.ensure()     # runs in docker/drawings, the same on every machine
+
+import numpy as np  # noqa: E402
+from PIL import Image  # noqa: E402
 OUT = os.path.join(HERE, '..')
-SIZE = 320
+SIZE = 1200                   # a gallery shows them up to about 770 px wide, sharp on fine screens too
 SCALE = 2
 GROUND = np.array([0.36, 0.38, 0.41])
 BASE = np.array([0.80, 0.26, 0.06])          # an orange, like lacquer (linear)

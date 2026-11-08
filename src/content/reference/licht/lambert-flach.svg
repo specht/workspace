@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 528 363" width="528" height="363" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
   <!-- Dieselben drei Strahlen fallen flach auf die Fläche und verteilen sich auf ein langes Stück: dasselbe Licht auf viel Fläche, dunkel.
-       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
-       src/scripts/render-svg.rb src/content/reference/licht/lambert-flach.svg 1056 -->
+       Gemacht von bilder/diagramme.py; die dunkle Fassung
+       lambert-flach-dark.svg und die Schriften: src/scripts/render-svg.rb -->
   <defs><marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker></defs>
   <rect width="528" height="363" fill="#ffffff"/>
   <rect x="0" y="288.75" width="528" height="74.25" fill="#eef3fb"/>

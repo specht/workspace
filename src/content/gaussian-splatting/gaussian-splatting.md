@@ -136,7 +136,7 @@ ab etwa \\(3\sigma\\) ist sie kaum noch von 0 zu unterscheiden.
 
 _person(gauss)
 
-<img class='drawing' style='width: 30em' src='glocke.webp' alt='Die Glockenkurve g(x) über der x-Achse von −3σ bis 3σ: in der Mitte bei x = 0 am höchsten, bei σ und −σ auf 0,61 gefallen, gestrichelt markiert, und bei ±3σ fast bei 0.'>
+<img class='drawing' style='width: 30em' src='glocke.svg' alt='Die Glockenkurve g(x) über der x-Achse von −3σ bis 3σ: in der Mitte bei x = 0 am höchsten, bei σ und −σ auf 0,61 gefallen, gestrichelt markiert, und bei ±3σ fast bei 0.'>
 
 Für einen Splat in einem Bild brauchst du dieselbe Glocke in zwei Richtungen.
 Liegt ein Pixel um \\(\Delta x\\) nach rechts und \\(\Delta y\\) nach unten
@@ -278,7 +278,7 @@ Glocke wie vorher, mit \\(u\\) und \\(v\\) statt der Abstände geteilt durch
 
 $$g = e^{-\frac{u^2 + v^2}{2}}$$
 
-<img class='drawing' style='width: 30em' src='ellipse.webp' alt='Ein länglicher Splat als Ellipse, um den Winkel θ gegen die Waagerechte gedreht, nach rechts unten, denn y zeigt nach unten. Entlang seiner langen Achse ist s_x eingezeichnet, quer dazu s_y. Ein Pixel P rechts neben dem Splat liegt Δx rechts und Δy unter der Mitte; entlang der langen Achse liegt es u · s_x weit (durchgezogen), quer dazu v · s_y (gestrichelt).'>
+<img class='drawing' style='width: 30em' src='ellipse.svg' alt='Ein länglicher Splat als Ellipse, um den Winkel θ gegen die Waagerechte gedreht, nach rechts unten, denn y zeigt nach unten. Entlang seiner langen Achse ist s_x eingezeichnet, quer dazu s_y. Ein Pixel P rechts neben dem Splat liegt Δx rechts und Δy unter der Mitte; entlang der langen Achse liegt es u · s_x weit (durchgezogen), quer dazu v · s_y (gestrichelt).'>
 
 Weil auf dem Bildschirm \\(y\\) nach unten zeigt, dreht ein positiver Winkel
 den Splat im Uhrzeigersinn. Ist \\(s\_x = s\_y = \sigma\\), ist der Winkel egal,
@@ -488,7 +488,7 @@ Mehrere Regler auf einmal gehen genauso, jeder mit seiner eigenen Steigung;
 alle Steigungen zusammen heißen **Gradient** (Handbuch,
 [Gradientenabstieg](/reference/gradientenabstieg)).
 
-<img class='drawing' style='width: 35em' src='bergab.webp' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
+<img class='drawing' style='width: 35em' src='bergab.svg' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
 
 _task(erster-schritt)
 
@@ -911,7 +911,7 @@ Das hochgestellte \\(\top\\) heißt **transponiert**: Zeilen und Spalten
 tauschen die Plätze. In numpy multipliziert `@` zwei Matrizen, und `.T` ist
 die transponierte Matrix.
 
-<img class='drawing' style='width: 37.5em' src='kovarianz.webp' alt='Drei Bilder nebeneinander: eine Kugel; dieselbe Kugel entlang der x-Achse lang und entlang der z-Achse flach gestreckt, ein Ellipsoid, beschriftet mit S; und das Ellipsoid schräg gedreht, beschriftet mit R.'>
+<img class='drawing' style='width: 37.5em' src='kovarianz.svg' alt='Drei Bilder nebeneinander: eine Kugel; dieselbe Kugel entlang der x-Achse lang und entlang der z-Achse flach gestreckt, ein Ellipsoid, beschriftet mit S; und das Ellipsoid schräg gedreht, beschriftet mit R.'>
 
 <div class='hint own' data-check='kovarianz'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>rotation_matrix</code>
@@ -963,7 +963,7 @@ $$u = f \cdot \frac{x}{z} + \frac{W}{2}$$
 
 $$v = f \cdot \frac{y}{z} + \frac{H}{2}$$
 
-<img class='drawing' style='width: 32.5em' src='kamera.webp' alt='Die Kamera von der Seite: links ihr Auge, nach rechts die Blickrichtung z. Im Abstand f steht senkrecht das Bild. Ein Punkt weiter rechts, um y unter der Blickrichtung und z vor dem Auge, wird durch eine Gerade zum Auge auf das Bild geworfen; dort trifft er im Abstand f · y / z unter der Mitte auf.'>
+<img class='drawing' style='width: 32.5em' src='kamera.svg' alt='Die Kamera von der Seite: links ihr Auge, nach rechts die Blickrichtung z. Im Abstand f steht senkrecht das Bild. Ein Punkt weiter rechts, um y unter der Blickrichtung und z vor dem Auge, wird durch eine Gerade zum Auge auf das Bild geworfen; dort trifft er im Abstand f · y / z unter der Mitte auf.'>
 
 <div class='hint own' data-check='bildschirm'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion
@@ -1030,7 +1030,7 @@ $$\text{Farbe} \leftarrow \text{Farbe} + T \cdot \alpha \cdot c$$
 
 $$T \leftarrow T \cdot (1 - \alpha)$$
 
-<img class='drawing' style='width: 36.25em' src='mischen.webp' alt='Links ein Auge, davor drei halb durchsichtige Scheiben hintereinander, von vorne nach hinten rot, grün und blau, jede mit Deckkraft 0,5. Unter den Lücken steht, wie viel Licht noch ankommt: vor der roten T = 1, vor der grünen T = 0,5, vor der blauen T = 0,25, dahinter T = 0,125. Darunter das Pixel als Streifen aus seinen Anteilen: die Hälfte Rot, ein Viertel Grün, ein Achtel Blau und ein Achtel Hintergrund.'>
+<img class='drawing' style='width: 36.25em' src='mischen.svg' alt='Links ein Auge, davor drei halb durchsichtige Scheiben hintereinander, von vorne nach hinten rot, grün und blau, jede mit Deckkraft 0,5. Unter den Lücken steht, wie viel Licht noch ankommt: vor der roten T = 1, vor der grünen T = 0,5, vor der blauen T = 0,25, dahinter T = 0,125. Darunter das Pixel als Streifen aus seinen Anteilen: die Hälfte Rot, ein Viertel Grün, ein Achtel Blau und ein Achtel Hintergrund.'>
 
 <div class='hint own' data-check='mischen'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion

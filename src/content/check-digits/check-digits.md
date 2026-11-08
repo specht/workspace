@@ -86,7 +86,7 @@ in 95 gleich breite Streifen geteilt, die **Module**. Jedes Modul ist dunkel
 oder hell, also eine 1 oder eine 0; ein breiter Strich sind mehrere dunkle
 Module nebeneinander.
 
-<img class='drawing' style='width: 37.5em' src='aufbau.webp' alt='Der Strichcode der Nudeln, 4 260111 020434, auf einem weißen Etikett. Farbige Flächen hinter den Strichen zeigen die Teile: am linken und rechten Rand je drei Module »Rand« und in der Mitte fünf Module »Mitte«, orange, dazwischen links und rechts je »sechs Ziffern, je 7 Module«, blau. Die Striche von Rand und Mitte reichen weiter nach unten als die anderen. Darunter eine Klammer über den ganzen Code: 95 Module, 3 + 6 · 7 + 5 + 6 · 7 + 3.'>
+<img class='drawing' style='width: 37.5em' src='aufbau.svg' alt='Der Strichcode der Nudeln, 4 260111 020434, auf einem weißen Etikett. Farbige Flächen hinter den Strichen zeigen die Teile: am linken und rechten Rand je drei Module »Rand« und in der Mitte fünf Module »Mitte«, orange, dazwischen links und rechts je »sechs Ziffern, je 7 Module«, blau. Die Striche von Rand und Mitte reichen weiter nach unten als die anderen. Darunter eine Klammer über den ganzen Code: 95 Module, 3 + 6 · 7 + 5 + 6 · 7 + 3.'>
 
 Am Rand und in der Mitte stehen feste Muster: `101` links und rechts, `01010`
 in der Mitte. Ihre Striche reichen weiter nach unten als die anderen. An ihnen
@@ -98,7 +98,7 @@ Jede Ziffer besteht aus genau zwei dunklen und zwei hellen Abschnitten. Welches
 Muster zu welcher Ziffer gehört, legt GS1 in einer Tabelle fest, und zwar in
 drei Fassungen, **L**, **G** und **R**. So sieht die 4 in allen dreien aus:
 
-<img class='drawing' style='width: 34em' src='ziffer.webp' alt='Die Ziffer 4 in drei Fassungen, je sieben Kästchen, dunkel für 1 und hell für 0. L, links: 0100011, 3 dunkle Module, ungerade. G, links: 0011101, 4 dunkle Module, gerade. R, rechts: 1011100, 4 dunkle Module, gerade.'>
+<img class='drawing' style='width: 34em' src='ziffer.svg' alt='Die Ziffer 4 in drei Fassungen, je sieben Kästchen, dunkel für 1 und hell für 0. L, links: 0100011, 3 dunkle Module, ungerade. G, links: 0011101, 4 dunkle Module, gerade. R, rechts: 1011100, 4 dunkle Module, gerade.'>
 
 R ist L mit vertauschtem Hell und Dunkel, G ist R von hinten nach vorne
 gelesen. Darum genügt die Tabelle für L:
@@ -1104,7 +1104,7 @@ dreizehn Ziffern wie der Strichcode der Nudeln.
 Auch ein QR-Code besteht aus Modulen, diesmal aus kleinen Quadraten, hell oder
 dunkel. Dieser hier hat 25 × 25 davon:
 
-<img class='drawing' style='width: 38em' src='qr-aufbau.webp' alt='Ein QR-Code aus 25 mal 25 Modulen auf einem weißen Etikett, farbige Flächen hinter den Modulen zeigen die Teile. Orange: drei große Quadrate in den Ecken oben links, oben rechts und unten links, »Suchmuster«; eine Linie aus abwechselnd hellen und dunklen Modulen zwischen den beiden oberen, »Taktlinie«; ein kleines Quadrat unten rechts, »Ausrichtungsmuster«. Lila: schmale Streifen neben den Suchmustern, links und rechts »Formatinformation«. Der Rest ist in Blöcke aus meist acht Modulen geteilt, blau umrandet die rechte Hälfte, »Daten: 28 Codewörter«, grün umrandet ein Streifen links davon, »Korrektur: 16 Codewörter«.'>
+<img class='drawing' style='width: 38em' src='qr-aufbau.svg' alt='Ein QR-Code aus 25 mal 25 Modulen auf einem weißen Etikett, farbige Flächen hinter den Modulen zeigen die Teile. Orange: drei große Quadrate in den Ecken oben links, oben rechts und unten links, »Suchmuster«; eine Linie aus abwechselnd hellen und dunklen Modulen zwischen den beiden oberen, »Taktlinie«; ein kleines Quadrat unten rechts, »Ausrichtungsmuster«. Lila: schmale Streifen neben den Suchmustern, links und rechts »Formatinformation«. Der Rest ist in Blöcke aus meist acht Modulen geteilt, blau umrandet die rechte Hälfte, »Daten: 28 Codewörter«, grün umrandet ein Streifen links davon, »Korrektur: 16 Codewörter«.'>
 
 - In drei Ecken steht ein **Suchmuster**: ein dunkles Quadrat in einem hellen
   Rahmen in einem dunklen Rahmen. An ihnen erkennt ein Handy, wo der Code ist,
@@ -1138,7 +1138,7 @@ Auf den Code kommen zwei gleich große Aufkleber aus 5 × 5 Modulen: A mitten in
 das Suchmuster oben links, B an den rechten Rand, mitten in die Codewörter mit
 den Daten. Der Code ist mit der Stufe M gedruckt; was das heißt, kommt gleich.
 
-<img class='drawing' style='width: 18em' src='qr-flecken.webp' alt='Derselbe QR-Code mit zwei gelben Aufklebern aus je 5 mal 5 Modulen: A verdeckt das Innere des Suchmusters oben links, B ein Stück des rechten Rands unter dem Suchmuster oben rechts.'>
+<img class='drawing' style='width: 18em' src='qr-flecken.svg' alt='Derselbe QR-Code mit zwei gelben Aufklebern aus je 5 mal 5 Modulen: A verdeckt das Innere des Suchmusters oben links, B ein Stück des rechten Rands unter dem Suchmuster oben rechts.'>
 
 _task(qr-fleck)
 
@@ -1222,7 +1222,7 @@ der 11 mitzählt. Nur die 11 passt nicht, und auf der Geraden stünde dort die
 schon, welche Werte fehlen, etwa weil zwei unlesbar sind, genügen die beiden
 übrigen: Durch zwei Punkte geht genau eine Gerade.
 
-<img class='drawing' style='width: 24em' src='gerade.webp' alt='Die vier angekommenen Werte über ihren Stellen 1 bis 4: 2, 6 und 14 liegen auf einer Geraden, die 11 an Stelle 3 liegt über ihr. Ein gestrichelter Pfeil führt von der 11 zu dem Punkt der Geraden an Stelle 3, der 10.'>
+<img class='drawing' style='width: 24em' src='gerade.svg' alt='Die vier angekommenen Werte über ihren Stellen 1 bis 4: 2, 6 und 14 liegen auf einer Geraden, die 11 an Stelle 3 liegt über ihr. Ein gestrichelter Pfeil führt von der 11 zu dem Punkt der Geraden an Stelle 3, der 10.'>
 
 _task(gerade)
 

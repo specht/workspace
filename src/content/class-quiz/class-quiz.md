@@ -233,7 +233,7 @@ hint: Updates were rejected because the remote contains work that you do not
 hint: have locally.
 ```
 
-<img class='drawing' style='width: 24em' src='push-abgelehnt.webp' alt='Zwei Reihen von Commits. Auf dem Server A, B und danach der andere Commit, grün; in deinem Klon A, B und danach dein Commit, orange. Beide bauen auf B auf; nähme der Server deinen Commit an, fehlte danach der andere.'>
+<img class='drawing' style='width: 24em' src='push-abgelehnt.svg' alt='Zwei Reihen von Commits. Auf dem Server A, B und danach der andere Commit, grün; in deinem Klon A, B und danach dein Commit, orange. Beide bauen auf B auf; nähme der Server deinen Commit an, fehlte danach der andere.'>
 
 Auf dem Server liegt ein Commit, den dein Klon noch nicht kennt. Dein Commit
 baut auf dem Stand davor auf; nähme der Server ihn einfach an, wäre der andere
@@ -297,7 +297,7 @@ git push
 
 Der Commit, der den Konflikt löst, ist ein **Merge**: Er baut auf beiden Commits auf, deinem und dem anderen. Darum kann der Server ihn annehmen, ohne einen zu verlieren:
 
-<img class='drawing' style='width: 24em' src='nach-merge.webp' alt="Dein Klon nach dem Merge: nach A und B teilt sich die Linie in den anderen Commit, grün, und deinen Commit, orange; beide laufen in einem Merge-Commit wieder zusammen.">
+<img class='drawing' style='width: 24em' src='nach-merge.svg' alt="Dein Klon nach dem Merge: nach A und B teilt sich die Linie in den anderen Commit, grün, und deinen Commit, orange; beide laufen in einem Merge-Commit wieder zusammen.">
 
 Lehnt Git den Push wieder ab, war in der Zwischenzeit noch jemand schneller:
 noch einmal `git pull --no-edit`, dann `git push`.

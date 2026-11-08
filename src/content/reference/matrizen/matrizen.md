@@ -58,16 +58,16 @@ In den Bildern ist das F vorher gestrichelt und nachher blau. Die roten und grü
 
 <div class='gallery columns-2'>
 <figure>
-<img src='drehen.webp' alt='Ein F, um 45 Grad gegen den Uhrzeigersinn gedreht, so dass es schräg nach links oben zeigt; der rote Pfeil zeigt schräg nach rechts oben, der grüne schräg nach links oben.'>
+<img src='drehen.svg' alt='Ein F, um 45 Grad gegen den Uhrzeigersinn gedreht, so dass es schräg nach links oben zeigt; der rote Pfeil zeigt schräg nach rechts oben, der grüne schräg nach links oben.'>
 <figcaption>Drehen um 45°</figcaption></figure>
 <figure>
-<img src='strecken.webp' alt='Ein F, fast doppelt so breit und nur noch halb so hoch wie vorher; der rote Pfeil ist lang, der grüne kurz.'>
+<img src='strecken.svg' alt='Ein F, fast doppelt so breit und nur noch halb so hoch wie vorher; der rote Pfeil ist lang, der grüne kurz.'>
 <figcaption>Strecken: 1,8 in x, 0,6 in y</figcaption></figure>
 <figure>
-<img src='spiegeln.webp' alt='Ein F, an der senkrechten Achse gespiegelt, seine Arme zeigen nach links; der rote Pfeil zeigt nach links.'>
+<img src='spiegeln.svg' alt='Ein F, an der senkrechten Achse gespiegelt, seine Arme zeigen nach links; der rote Pfeil zeigt nach links.'>
 <figcaption>Spiegeln an der y-Achse</figcaption></figure>
 <figure>
-<img src='scheren.webp' alt='Ein F, schräg wie in Kursivschrift: Je höher ein Punkt, desto weiter rückt er nach rechts; der grüne Pfeil steht schräg.'>
+<img src='scheren.svg' alt='Ein F, schräg wie in Kursivschrift: Je höher ein Punkt, desto weiter rückt er nach rechts; der grüne Pfeil steht schräg.'>
 <figcaption>Scheren mit k = 0,6</figcaption></figure>
 </div>
 
@@ -90,10 +90,10 @@ Gelesen wird also **von rechts nach links**, und die Reihenfolge zählt: Erst dr
 
 <div class='gallery columns-2'>
 <figure>
-<img src='drehen-verschieben.webp' alt='Ein F, erst um 90 Grad gedreht, gepunktet links vom Ursprung liegend, dann um 2 nach rechts verschoben: Es liegt auf dem Rücken rechts neben dem Ursprung.'>
+<img src='drehen-verschieben.svg' alt='Ein F, erst um 90 Grad gedreht, gepunktet links vom Ursprung liegend, dann um 2 nach rechts verschoben: Es liegt auf dem Rücken rechts neben dem Ursprung.'>
 <figcaption>Erst drehen, dann verschieben</figcaption></figure>
 <figure>
-<img src='verschieben-drehen.webp' alt='Ein F, erst um 2 nach rechts verschoben, gepunktet, dann um 90 Grad um den Ursprung gedreht: Es liegt auf dem Rücken oben links, weit weg von der ersten Lage.'>
+<img src='verschieben-drehen.svg' alt='Ein F, erst um 2 nach rechts verschoben, gepunktet, dann um 90 Grad um den Ursprung gedreht: Es liegt auf dem Rücken oben links, weit weg von der ersten Lage.'>
 <figcaption>Erst verschieben, dann drehen</figcaption></figure>
 </div>
  Darum steht in einem Grafikprogramm `projection * view * model * punkt`: zuerst das Modell an seinen Platz, dann in die Sicht der Kamera, zuletzt auf den Bildschirm.
@@ -136,16 +136,16 @@ Dieselben Bewegungen wie oben in der Ebene, jetzt mit dem F als Block im Raum. G
 
 <div class='gallery columns-2'>
 <figure>
-<img src='drehen-3d.webp' alt='Ein F als Block, um 40 Grad um die senkrechte y-Achse gedreht: Seine Arme zeigen schräg nach hinten und wirken kürzer. Dahinter der graue Block vorher, dessen Arme genau nach rechts zeigen.'>
+<img src='drehen-3d.svg' alt='Ein F als Block, um 40 Grad um die senkrechte y-Achse gedreht: Seine Arme zeigen schräg nach hinten und wirken kürzer. Dahinter der graue Block vorher, dessen Arme genau nach rechts zeigen.'>
 <figcaption>Drehen um 40° um die y-Achse</figcaption></figure>
 <figure>
-<img src='strecken-3d.webp' alt='Ein F als Block, breiter, niedriger und viel tiefer als der graue Block vorher, der darüber hinausragt.'>
+<img src='strecken-3d.svg' alt='Ein F als Block, breiter, niedriger und viel tiefer als der graue Block vorher, der darüber hinausragt.'>
 <figcaption>Strecken: 1,5 in x, 0,6 in y, 1,6 in z</figcaption></figure>
 <figure>
-<img src='spiegeln-3d.webp' alt='Ein F als Block, an der Ebene aus y- und z-Achse gespiegelt: Seine Arme zeigen nach links. Rechts daneben der graue Block vorher, dessen Arme nach rechts zeigen.'>
+<img src='spiegeln-3d.svg' alt='Ein F als Block, an der Ebene aus y- und z-Achse gespiegelt: Seine Arme zeigen nach links. Rechts daneben der graue Block vorher, dessen Arme nach rechts zeigen.'>
 <figcaption>Spiegeln: x wird zu −x</figcaption></figure>
 <figure>
-<img src='scheren-3d.webp' alt='Ein F als Block, schräg wie in Kursivschrift: Je höher ein Punkt, desto weiter rückt er nach rechts; die Tiefe bleibt, wie sie war. Dahinter der graue Block vorher, aufrecht.'>
+<img src='scheren-3d.svg' alt='Ein F als Block, schräg wie in Kursivschrift: Je höher ein Punkt, desto weiter rückt er nach rechts; die Tiefe bleibt, wie sie war. Dahinter der graue Block vorher, aufrecht.'>
 <figcaption>Scheren: x wird zu x + 0,6 · y</figcaption></figure>
 </div>
 
@@ -172,7 +172,7 @@ $$R = \begin{pmatrix} c + x^2 t & xy\,t - z s & xz\,t + y s \\\\ yx\,t + z s & c
 
 Mit \\(\vec{k} = (0, 1, 0)\\) wird daraus genau \\(R\_y(\theta)\\) von oben. Im Bild dreht sich das F um 60° um die Diagonale \\(\vec{k} = \frac{1}{\sqrt{3}}(1, 1, 1)\\), die zwischen den drei Achsen liegt:
 
-<img class='drawing' style='width: 30em' src='achse-3d.webp' alt='Ein F als Block, um 60 Grad um eine schräge Achse gedreht, die orange gestrichelt vom Ursprung nach rechts oben zeigt, auf der Diagonale zwischen x-, y- und z-Achse. Das F liegt danach schräg im Raum, nach links gekippt; dahinter der graue Block vorher.'>
+<img class='drawing' style='width: 30em' src='achse-3d.svg' alt='Ein F als Block, um 60 Grad um eine schräge Achse gedreht, die orange gestrichelt vom Ursprung nach rechts oben zeigt, auf der Diagonale zwischen x-, y- und z-Achse. Das F liegt danach schräg im Raum, nach links gekippt; dahinter der graue Block vorher.'>
 
 Dieselbe Drehung ließe sich auch aus Drehungen um x, y und z zusammensetzen; die Formel sagt sie in einem Schritt. Sie heißt nach Olinde Rodrigues, der sie 1840 veröffentlicht hat; Leonhard Euler kannte sie schon 1770.
 <!-- /part -->

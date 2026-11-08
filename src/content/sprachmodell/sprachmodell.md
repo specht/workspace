@@ -189,7 +189,7 @@ Als Bild: Jedes Wort steht einmal da, und von ihm führt ein Pfeil zu jedem
 Wort, das darauf folgte, umso dicker, je öfter. Wenn dein Programm später
 schreibt, geht es an diesen Pfeilen entlang.
 
-<img class='drawing' style='width: 36em' src='folgen.webp' alt='Sechs Wörter in Kästen: links »Der«, daneben oben »Wolf« und unten »Jäger«, weiter rechts oben »fraß« und unten »kam«, ganz rechts der Punkt. Von »Der« führt ein dicker Pfeil mit 2 zu »Wolf« und ein dünner mit 1 zu »Jäger«. Von »Wolf« führt je ein Pfeil mit 1 zu »fraß« und zu »kam«, von »Jäger« einer mit 1 zu »kam«. »fraß« führt mit 1 zum Punkt, »kam« mit einem dicken Pfeil mit 2. Vom Punkt läuft unten ein dicker Bogen mit 2 zurück zu »Der«.'>
+<img class='drawing' style='width: 36em' src='folgen.svg' alt='Sechs Wörter in Kästen: links »Der«, daneben oben »Wolf« und unten »Jäger«, weiter rechts oben »fraß« und unten »kam«, ganz rechts der Punkt. Von »Der« führt ein dicker Pfeil mit 2 zu »Wolf« und ein dünner mit 1 zu »Jäger«. Von »Wolf« führt je ein Pfeil mit 1 zu »fraß« und zu »kam«, von »Jäger« einer mit 1 zu »kam«. »fraß« führt mit 1 zum Punkt, »kam« mit einem dicken Pfeil mit 2. Vom Punkt läuft unten ein dicker Bogen mit 2 zurück zu »Der«.'>
 
 _task(von-hand)
 
@@ -510,7 +510,7 @@ mit der Anzahl des nächsten Nachfolgers.
 Bei einer 7: Sie ist nicht kleiner als 6, also bleibt 7 − 6 = 1, und 1 ist
 kleiner als 3. Das Modell nimmt »ist«.
 
-<img class='drawing' style='width: 32em' src='wuerfeln.webp' alt='Zehn Felder in einer Reihe mit den Zahlen 0 bis 9. Unter den Feldern 0 bis 5 steht »war, 6-mal«, unter 6 bis 8 »ist, 3-mal«, unter 9 »trug, 1-mal«. Das Feld 7 ist lila umrandet, ein Pfeil darüber sagt »gezogen: 7«.'>
+<img class='drawing' style='width: 32em' src='wuerfeln.svg' alt='Zehn Felder in einer Reihe mit den Zahlen 0 bis 9. Unter den Feldern 0 bis 5 steht »war, 6-mal«, unter 6 bis 8 »ist, 3-mal«, unter 9 »trug, 1-mal«. Das Feld 7 ist lila umrandet, ein Pfeil darüber sagt »gezogen: 7«.'>
 
 <div class='hint own' data-check='wuerfeln'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>next_word(counts, word)</code>,
@@ -732,7 +732,7 @@ anderes Wort als nach »Da sprach«. Der **Kontext** ist jetzt ein Paar von
 Wörtern, und als Schlüssel nimmt das Modell beide zusammen, mit einem
 Leerzeichen dazwischen: Unter `"sprach der"` steht, was nach »sprach der« kam.
 
-<img class='drawing' style='width: 22em' src='kontext.webp' alt='Zweimal die Wörter »Da sprach der Wolf« in Kästen. Oben ist nur »der« als Kontext markiert, unten »sprach der« zusammen; in beiden Reihen führt ein Pfeil vom Kontext zu »Wolf«, darunter steht »danach«.'>
+<img class='drawing' style='width: 22em' src='kontext.svg' alt='Zweimal die Wörter »Da sprach der Wolf« in Kästen. Oben ist nur »der« als Kontext markiert, unten »sprach der« zusammen; in beiden Reihen führt ein Pfeil vom Kontext zu »Wolf«, darunter steht »danach«.'>
 
 <div class='hint own' data-check='paare'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>pair_counts(tokens)</code>:

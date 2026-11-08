@@ -3,11 +3,13 @@ light falling steeply and flatly on a surface (Lambert), and a view mirrored
 at the normal.
 
     python3 src/content/reference/licht/bilder/diagramme.py
-    for f in lambert-steil lambert-flach spiegeln; do
-        ruby src/scripts/render-svg.rb src/content/reference/licht/$f.svg $(( 2 * $(grep -o 'width="[0-9]*"' src/content/reference/licht/$f.svg | head -1 | tr -dc 0-9) )); done
+    for f in src/content/reference/licht/*.svg; do
+        case $f in *-dark.svg) ;; *) ruby src/scripts/render-svg.rb --svg $f;; esac; done
 
-The pictures of flat and smooth shading and of the half vector are those of
-»3D-Grafik mit WebGL« (webgl/bilder/diagramme.py), copied here.
+The page shows the SVGs themselves, sharp at every size; --svg writes the
+dark one beside each. The drawings of flat and smooth shading and of the
+half vector are those of »3D-Grafik mit WebGL« (webgl/bilder/diagramme.py),
+copied here as SVG.
 """
 
 import math as m
@@ -31,8 +33,8 @@ def head(comment, name, w=W, h=H):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             f'viewBox="0 0 {w} {h}" width="{w}" height="{h}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
             f'  <!-- {comment}\n'
-            f'       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:\n'
-            f'       src/scripts/render-svg.rb src/content/reference/licht/{name}.svg {2 * w} -->\n'
+            f'       Gemacht von bilder/diagramme.py; die dunkle Fassung\n'
+            f'       {name}-dark.svg und die Schriften: src/scripts/render-svg.rb -->\n'
             f'  <defs>{markers}</defs>\n'
             f'  <rect width="{w}" height="{h}" fill="{WHITE}"/>\n')
 
@@ -98,9 +100,9 @@ def mirror():
     s += label('n', cx + 10, ground - 112, BLUE, 'start')
     s += line(cx, ground, vx, vy, INK, 2.2, 'ink')
     s += label('v', vx + 8, vy + 12, INK, 'start')
-    # the camera at the end of v
-    s += f'  <rect x="{vx + 4:.1f}" y="{vy - 22:.1f}" width="22" height="15" rx="3" fill="{INK}"/>\n'
-    s += f'  <circle cx="{vx + 15:.1f}" cy="{vy - 14.5:.1f}" r="4" fill="{WHITE}"/>\n'
+    # the camera at the end of v: Bootstrap Icons »camera-fill« (MIT licence)
+    s += (f'  <path transform="translate({vx + 2:.1f} {vy - 30:.1f}) scale(1.6)" fill="{INK}" '
+          f'd="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"/>\n')
     s += line(cx, ground, rx, ry, AMBER, 2.4, 'amber')
     s += label('r', rx - 8, ry + 6, AMBER, 'end')
     # the two equal angles

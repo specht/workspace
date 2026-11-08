@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 484 356" width="484" height="356" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <style id='embedded-fonts'>@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}</style>
+  <!-- Schritt für Schritt: Die Punkte liegen einen Schritt auseinander. Der Strahl streift die Ecke eines Wandkästchens zwischen zwei Punkten, das Programm merkt es nicht und läuft weiter bis zur Wand dahinter. Dieselbe Karte, dieselbe Figur und derselbe Strahl wie in dda und dda-t.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/raycaster/schritte.svg 968 -->
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e3e6ea"/></marker>
+    <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6ea2f2"/></marker>
+    <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa1ac"/></marker>
+    <marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f87171"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/></marker>
+  </defs>
+  <rect width="484" height="356" fill="#151514"/>
+  <rect x="18.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="82.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="146.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="210.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="274.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="338.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="402.0" y="18.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="18.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="82.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="146.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="210.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="274.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="338.0" y="82.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="402.0" y="82.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="18.0" y="146.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="82.0" y="146.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="146.0" y="146.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="210.0" y="146.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="274.0" y="146.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="338.0" y="146.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="402.0" y="146.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="18.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="82.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="146.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="210.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="274.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="338.0" y="210.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="402.0" y="210.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="18.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="82.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="146.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="210.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="274.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="338.0" y="274.0" width="64.0" height="64.0" fill="#151514" stroke="#3a3f47" stroke-width="1.5"/>
+  <rect x="402.0" y="274.0" width="64.0" height="64.0" fill="#3a3f47" stroke="#3a3f47" stroke-width="1.5"/>
+  <line x1="54.5" y1="306.6" x2="384.4" y2="74.9" stroke="#6ea2f2" stroke-width="2.5"/>
+  <line x1="274.0" y1="152.5" x2="283.2" y2="146.0" stroke="#f87171" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="78.0" cy="290.1" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="101.6" cy="273.5" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="125.2" cy="257.0" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="148.7" cy="240.4" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="172.3" cy="223.9" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="195.9" cy="207.3" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="219.5" cy="190.8" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="243.0" cy="174.2" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="266.6" cy="157.7" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="290.2" cy="141.1" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="313.7" cy="124.6" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="337.3" cy="108.0" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="360.9" cy="91.4" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <circle cx="384.4" cy="74.9" r="4.5" fill="#6ea2f2" stroke="#151514" stroke-width="1.5"/>
+  <text x="306.0" y="232.0" font-size="16" fill="#f87171" text-anchor="middle">übersehen</text>
+  <circle cx="54.5" cy="306.6" r="7.0" fill="#e3e6ea" stroke="#e3e6ea" stroke-width="2"/>
+  <text x="70.5" y="330.6" font-size="16" fill="#e3e6ea" text-anchor="start">Spielfigur</text>
+</svg>
