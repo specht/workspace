@@ -1495,6 +1495,45 @@ Für eigene Fotos:
    erscheint dann der Knopf »Aufrichten«: Liegt die Szene auf der Seite oder
    steht sie auf dem Kopf, dreht er sie jedes Mal um eine Vierteldrehung.
 
+### Kamera und Vorgehen
+
+Ein Objekt umrundest du; einen Ort, durch den man geht, ein Zimmer oder
+einen Flur, nimmst du anders auf. Geh langsam hindurch, mehrmals, auf
+verschiedenen Höhen, und dreh dich in einem Raum langsam einmal im Kreis.
+Jede Stelle, die später zu sehen sein soll, muss auf vielen Fotos aus
+verschiedenen Richtungen vorkommen: Was keine Kamera gesehen hat, bleibt
+verschwommen, wie die Gasse von außen. Für die Gasse hat David Fletcher
+1.575 Fotos gemacht, mit einer Systemkamera und einem Weitwinkelobjektiv,
+die Lage der Kameras mit RealityScan berechnet und mit LichtFeld Studio
+trainiert.
+
+- **Handy:** Stell Schärfe und Belichtung fest (bei vielen Kamera-Apps durch
+  langes Tippen aufs Bild), damit alle Fotos gleich hell sind. Apps wie
+  Scaniverse oder Polycam erledigen alle Schritte auf einmal und speichern
+  eine `.ply`. Manche rechnen auf dem Handy, andere schicken die Fotos an
+  einen Server; dann liegen deine Fotos dort.
+- **Video statt Fotos:** Aus einem Video, langsam gefilmt, nimmst du zwei
+  bis drei Bilder je Sekunde, zum Beispiel mit
+  `ffmpeg -i video.mp4 -vf fps=2 bilder/%04d.jpg`.
+- **Actioncam:** Ihr Fischauge verwirrt COLMAP; stell sie auf eine
+  Einstellung ohne Fischauge (bei GoPro »Linear«). Mit ihrem Bildstabilisator
+  eignet sie sich gut, um durch einen Flur oder eine Straße zu gehen.
+- **Drohne:** für ein Gebäude von außen. Flieg in zwei oder drei Höhen um
+  es herum, die Kamera schräg nach unten. Vorher klären, wo und wie die
+  Drohne fliegen darf.
+- **Menschen:** Wer auf den Fotos ist, ist später in der Szene, als Gestalt
+  aus Splats, die jeder ansehen kann, dem du die Datei gibst. Nimm einen
+  Ort auf, wenn niemand dort ist, oder frag vorher.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Nehmt eure Schule auf, als Rundgang wie die
+Gasse. Teilt euch auf: Eine Gruppe filmt den Eingang, eine den Flur, eine
+einen Fachraum, eine den Schulhof, vielleicht mit einer Drohne von außen.
+Jede Gruppe trainiert ihre Szene, öffnet sie im Viewer und sucht die
+Standorte, an denen sie am besten aussieht, und die, an denen die Täuschung
+endet. Fragt vorher die Schulleitung, und filmt, wenn niemand im Bild ist.
+</div>
+
 ## Wie geht es weiter?
 
 Dein Renderer und der Viewer sortieren Splats und mischen sie. Ein
