@@ -159,10 +159,18 @@ image-file: fraktal/kopie-8.png 2
 Beide Male entsteht dasselbe Dreieck, ein **Sierpinski-Dreieck**. Das Startbild spielt keine Rolle: Jede Runde verkleinert es auf die Hälfte, nach acht Runden auf 1/256, ein Pixel von 256. Was übrig bleibt, ist allein die Regel der Maschine, wohin die drei Kopien kommen. Das Dreieck ist ihr **Fixpunkt**: Legt man es ein, kommt es unverändert wieder heraus, denn es besteht genau aus drei halb so großen Kopien von sich selbst.
 
 Eine Kopiermaschine, deren Kopien kleiner sind als das Original, findet immer zu einem solchen Fixpunkt, egal womit man anfängt; der Mathematiker Stefan Banach hat das 1922 bewiesen (der **Fixpunktsatz von Banach**). Ein Bild, das aus verkleinerten Kopien von sich selbst besteht, heißt **Fraktal**.
+
+<!-- Bis die Seite den Katalog erreicht, steht der Kasten hier; danach als Teil »banach« nach reference/personen (Quellen schon in sources.yaml) und _person(banach). -->
+<div class='person'>
+<img src='banach.webp' alt='Stefan Banach, Schwarzweißfoto: ein Mann mit zurückgekämmtem Haar und kräftigem Gesicht, in Anzug und Krawatte, mit festem Blick in die Kamera.'>
+<p><strong>Stefan Banach</strong> (1892–1945), polnischer Mathematiker in Lwów, einer der Begründer der modernen Funktionalanalysis. Mit anderen Mathematikern der Stadt traf er sich zum Rechnen und Streiten im Schottischen Café.</p>
+<p>In seiner Doktorarbeit, veröffentlicht 1922, steht der Fixpunktsatz von Banach: Eine Abbildung, die alle Abstände verkleinert, hat genau einen Fixpunkt, und wer sie von irgendeinem Startpunkt aus immer wieder anwendet, kommt ihm beliebig nahe. Deshalb findet eine Kopiermaschine aus verkleinerten Kopien aus jedem Startbild dasselbe Fraktal.</p>
+<p class='person-credit'>Foto: unbekannt, 1945, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Stefana_Banach_-_%D8%B3%D8%AA%D9%8A%D9%81%D8%A7%D9%86_%D8%A8%D9%86%D8%A7%D8%AE.jpg'>Wikimedia Commons</a>)</p>
+</div>
 <!-- /after -->
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere in <code>copy_machine</code> die Stelle der oberen Kopie, zum Beispiel <code>new[0:h, 0:h] = small</code>, links oben statt in der Mitte. Welches Bild entsteht jetzt nach acht Runden? Und was passiert, wenn du eine vierte Kopie nach rechts oben legst, <code>new[0:h, h:N] = small</code>? Stell die Zeilen danach wieder zurück.
+<strong>Ausprobieren:</strong> Ändere in <code>copy_machine</code> den Ort der oberen Kopie, zum Beispiel <code>new[0:h, 0:h] = small</code>, links oben statt in der Mitte. Welches Bild entsteht jetzt nach acht Runden? Und was passiert, wenn du eine vierte Kopie nach rechts oben legst, <code>new[0:h, h:N] = small</code>? Stell die Zeilen danach wieder zurück.
 </div>
 
 _person(sierpinski)
@@ -176,6 +184,12 @@ Ein Foto der Strandhäuser ist kein Fraktal. Aber es ist sich an vielen Stellen 
 - Der **Decoder** fängt mit irgendeinem Bild an und macht für jeden Block, was der Encoder gefunden hat, wieder und wieder. Wie bei der Kopiermaschine verschwindet das Startbild, und übrig bleibt das Foto.
 
 In der Datei steht also kein einziges Pixel des Fotos, sondern nur, welcher Teil welchem anderen ähnlich sieht.
+
+<!-- Bis die Seite den Katalog erreicht, steht der Kasten hier; danach als Teil »barnsley« nach reference/personen (Quellen schon in sources.yaml) und _person(barnsley). -->
+<div class='person'>
+<p><strong>Michael Barnsley</strong> (geboren 1946), britischer Mathematiker, damals an der Georgia Tech, später an der Australian National University. 1988 erschien sein Buch <em>Fractals Everywhere</em>; berühmt ist sein Farn, ein Bild aus vier verkleinerten, gedrehten Kopien von sich selbst.</p>
+<p>1987 gründete er mit Alan Sloan die Firma Iterated Systems, um Fotos als solche Kopiermaschinen zu speichern, und hielt Patente auf die fraktale Bildkompression. Den ersten Encoder, der die Blöcke und ihre Partner von selbst findet, schrieb 1992 sein Doktorand Arnaud Jacquin.</p>
+</div>
 
 ## Blöcke und ihre Partner
 
@@ -241,7 +255,9 @@ _task(verkleinern)
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
+check-task-fails: verkleinern
 write-file: fraktal/fraktal.py <- file:stufen/fraktal-1.py
+check-task: verkleinern
 terminal-run: cd /workspace/fraktal && python3 fraktal.py
 terminal-wait-for-prompt: 60
 image-file: fraktal/grau.png 2
@@ -315,10 +331,11 @@ Jetzt kann das Programm für einen Range-Block alle Domain-Blöcke durchprobiere
 def mark(image, boxes):
     picture = np.stack([np.clip(image, 0, 255)] * 3, axis=-1).astype(np.uint8)
     for x, y, size, color in boxes:
-        picture[y, x:x + size] = color
-        picture[y + size - 1, x:x + size] = color
-        picture[y:y + size, x] = color
-        picture[y:y + size, x + size - 1] = color
+        for d in range(2):
+            picture[y + d, x:x + size] = color
+            picture[y + size - 1 - d, x:x + size] = color
+            picture[y:y + size, x + d] = color
+            picture[y:y + size, x + size - 1 - d] = color
     Image.fromarray(picture).resize((picture.shape[1] * 2, picture.shape[0] * 2), Image.NEAREST).save('paar.png')
 
 
@@ -349,11 +366,12 @@ python3 fraktal.py
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 write-file: fraktal/fraktal.py <- file:stufen/fraktal-2.py
+check-task: passen
 terminal-run: cd /workspace/fraktal && python3 fraktal.py
 terminal-wait-for-prompt: 120
 image-file: fraktal/paar.png 1
 -->
-<img class='full fit-width' src='paar.webp' alt='Die Strandhäuser in Graustufen. Ein kleiner roter Rahmen sitzt auf der Kante des mittleren Dachs, ein doppelt so großer blauer Rahmen ein Stück weiter unten auf derselben Kante.'>
+<img class='full fit-width inspect' src='paar.webp' alt='Die Strandhäuser in Graustufen. Ein kleiner roter Rahmen sitzt auf der Kante des mittleren Dachs, ein doppelt so großer blauer Rahmen ein Stück weiter unten auf derselben Kante.'>
 <!-- /tutorial-scope -->
 
 Der beste Partner liegt ein Stück tiefer auf derselben Dachkante: Verkleinert sieht ein Stück Kante aus wie ein Stück Kante. Das Programm hat dafür 2301 Domain-Blöcke in je acht Lagen verglichen, 18 408 Mal `fit`.
@@ -516,7 +534,9 @@ python3 fraktal.py decode
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
+check-task-fails: decodieren
 write-file: fraktal/fraktal.py <- file:stufen/fraktal-4.py
+check-task: decodieren
 terminal-run: cd /workspace/fraktal && python3 fraktal.py encode && python3 fraktal.py decode
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-1.png 1
@@ -580,21 +600,48 @@ und nimm sie im Teil für `decode`:
 ~         save(image, 'schritt-0.png')
 ```
 
-`verlauf` geht von Schwarz links nach Weiß rechts, `rauschen` ist jedes Pixel zufällig, und ein Dateiname nimmt ein anderes Foto. Der Code in `code.npy` bleibt derselbe: der der Strandhäuser.
+`verlauf` geht von Schwarz links nach Weiß rechts, `rauschen` ist jedes Pixel zufällig, und ein Dateiname nimmt ein anderes Foto. Der Code in `code.npy` bleibt derselbe: der der Strandhäuser. Fang mit dem Foto der Möwen an:
 
-_task(startbild)
+```bash
+python3 fraktal.py decode moewen.png
+```
 
-<!-- after: startbild -->
+Bevor du `schritt-1.png` öffnest:
+
+_task(erster-schritt)
+
+<!-- after: erster-schritt -->
+Probier auch den Verlauf und das Rauschen:
+
 ```bash
 python3 fraktal.py decode verlauf
 python3 fraktal.py decode rauschen
-python3 fraktal.py decode moewen.png
 ```
 
 <div class='gallery columns-3'>
 <figure>
 <!-- tutorial-screenshot
 write-file: fraktal/fraktal.py <- file:stufen/fraktal-5.py
+terminal-run: cd /workspace/fraktal && python3 fraktal.py decode moewen.png
+terminal-wait-for-prompt: 120
+image-file: fraktal/schritt-0.png 1
+-->
+<img src='start-moewen.webp' alt='Das Foto der Möwen in Graustufen: vier Möwen am Himmel, unten ein Mann mit Sonnenbrille.'>
+<figcaption>Ein anderes Foto, Schritt 0</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: fraktal/schritt-1.png 1
+-->
+<img src='start-moewen-1.webp' alt='Nach einem Schritt aus dem Möwenfoto: grobe Kästchen mit Resten der Möwen, die Umrisse der Dächer erkennbar.'>
+<figcaption>Schritt 1</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: fraktal/schritt-8.png 1
+-->
+<img src='start-moewen-8.webp' alt='Nach acht Schritten aus dem Möwenfoto: dieselben Strandhäuser, keine Spur mehr von den Möwen.'>
+<figcaption>Schritt 8</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
 terminal-run: cd /workspace/fraktal && python3 fraktal.py decode verlauf
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-0.png 1
@@ -633,29 +680,9 @@ image-file: fraktal/schritt-8.png 1
 -->
 <img src='start-rauschen-8.webp' alt='Nach acht Schritten aus dem Rauschen: wieder dieselben Strandhäuser.'>
 <figcaption>Schritt 8</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-terminal-run: cd /workspace/fraktal && python3 fraktal.py decode moewen.png
-terminal-wait-for-prompt: 120
-image-file: fraktal/schritt-0.png 1
--->
-<img src='start-moewen.webp' alt='Das Foto der Möwen in Graustufen: vier Möwen am Himmel, unten ein Mann mit Sonnenbrille.'>
-<figcaption>Ein anderes Foto, Schritt 0</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-image-file: fraktal/schritt-1.png 1
--->
-<img src='start-moewen-1.webp' alt='Nach einem Schritt aus dem Möwenfoto: grobe Kästchen mit Resten der Möwen, die Umrisse der Dächer erkennbar.'>
-<figcaption>Schritt 1</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-image-file: fraktal/schritt-8.png 1
--->
-<img src='start-moewen-8.webp' alt='Nach acht Schritten aus dem Möwenfoto: dieselben Strandhäuser, keine Spur mehr von den Möwen.'>
-<figcaption>Schritt 8</figcaption></figure>
 </div>
 
-Aus jedem Startbild wird dasselbe Foto, bis aufs Pixel. Das ist der große Unterschied zu GIF und JPEG: Dort steht in der Datei, welche Farbe ein Pixel hat oder welche Frequenzen ein Block enthält, und ohne diese Zahlen gäbe es kein Bild. Hier steht in der Datei für jeden Block nur, aus welchem anderen Block er gemacht wird und mit welchem Kontrast und welcher Helligkeit. Das Foto ist der Fixpunkt dieser Vorschrift; das Startbild verschwindet, weil jeder Schritt es mit `s` verkleinert, so wie die Kopiermaschine das Foto der Strandhäuser in ihrem Dreieck verschwinden ließ.
+Nach einem Schritt steckt vom Startbild noch etwas in jedem Block: das verkleinerte Stück, das sein Partner dort sah, mit `s` gewichtet, dazu `o`. Darum sieht man nach einem Schritt aus den Möwen Kästchen der Strandhäuser mit Resten der Möwen darin. Nach acht Schritten wird aus jedem Startbild dasselbe Foto, bis aufs Pixel. Das ist der große Unterschied zu GIF und JPEG: Dort steht in der Datei, welche Farbe ein Pixel hat oder welche Frequenzen ein Block enthält, und ohne diese Zahlen gäbe es kein Bild. Hier steht in der Datei für jeden Block nur, aus welchem anderen Block er gemacht wird und mit welchem Kontrast und welcher Helligkeit. Das Foto ist der Fixpunkt dieser Vorschrift; das Startbild verschwindet, weil jeder Schritt es mit `s` verkleinert, so wie die Kopiermaschine das Foto der Strandhäuser in ihrem Dreieck verschwinden ließ.
 <!-- /after -->
 
 ## Größer als das Original
@@ -796,9 +823,129 @@ Vergrößere beide Bilder mit einem Klick und schau genau hin. Das Foto mit dem 
 <!-- extra -->
 ## Große und kleine Blöcke
 
-Ein Block im gleichmäßigen Himmel wäre auch als 16 × 16 gut getroffen, ein Block in den Ästen des Kirschbaums bräuchte 4 × 4. Eine Kompression mit festen 8 × 8 verschenkt an beiden Stellen. Ein **Quadtree** (ein Baum, in dem jeder Knoten vier Kinder hat) passt die Größe an: Jeder Block beginnt mit 16 × 16. Ist sein Fehler zu groß, wird er in vier Blöcke von 8 × 8 geteilt, und jeder davon, wenn nötig, noch einmal in vier von 4 × 4.
+Ein Block im gleichmäßigen Himmel wäre auch als 16 × 16 gut getroffen, ein Block in den Ästen des Kirschbaums bräuchte 4 × 4. Eine Kompression mit festen 8 × 8 verschenkt an beiden Stellen Bits. Ein **Quadtree** (ein Baum, in dem jeder Knoten vier Kinder hat) passt die Größe an: Jeder Block beginnt mit 16 × 16. Ist sein Fehler zu groß, wird er in vier Blöcke von 8 × 8 geteilt, und jeder davon, wenn nötig, noch einmal in vier von 4 × 4.
 
-So ein Encoder braucht für jede Größe seine eigenen Domain-Blöcke, doppelt so groß wie die Range-Blöcke, und eine rekursive Funktion, die einen Block versucht und ihn bei zu großem Fehler teilt. Der Code bekommt eine Spalte mehr, die Größe jedes Blocks. Mit den Strandhäusern ergibt das, je nach der Grenze für den mittleren Fehler eines Pixels:
+Für jede Größe braucht der Encoder seine eigenen Domain-Blöcke, doppelt so groß wie die Range-Blöcke. Gib `domains` die Größe als Parameter:
+
+```python
+def domains(image, r=R):
+    blocks, places = [], []
+    h, w = image.shape
+    for y in range(0, h - 2 * r + 1, r):
+        for x in range(0, w - 2 * r + 1, r):
+            small = shrink(image[y:y + 2 * r, x:x + 2 * r])
+~             for k in range(8):
+```
+
+Der Encoder bekommt eine rekursive Funktion `encode_block`: Sie sucht den besten Partner wie `encode`, und ist der mittlere Fehler je Pixel größer als `limit`, ruft sie sich viermal selbst auf, für die vier Viertel des Blocks. Jeder Eintrag im Code bekommt als achte Zahl seine Größe. Schreib unter `decode_step`:
+
+```python_copy
+SIZES = (16, 8, 4)
+
+
+def encode_quadtree(image, limit):
+    pools = {}
+    for size in SIZES:
+        blocks, places = domains(image, size)
+        means = blocks.mean(axis=1)
+        centred = blocks - means[:, None]
+        pools[size] = (centred, means, (centred * centred).sum(axis=1), places)
+    code = []
+
+    def encode_block(x, y, size):
+        centred, means, spread, places = pools[size]
+        target = image[y:y + size, x:x + size].ravel()
+        t = target - target.mean()
+        dots = centred @ t
+        s = np.clip(dots / np.maximum(spread, 1e-9), -1, 1)
+        error = t @ t - 2 * s * dots + s * s * spread
+        best = int(error.argmin())
+        if error[best] / (size * size) > limit and size > SIZES[-1]:
+            half = size // 2
+            for dy in (0, half):
+                for dx in (0, half):
+                    encode_block(x + dx, y + dy, half)
+            return
+        px, py, k = places[best]
+        code.append((x, y, px, py, k, s[best], target.mean() - s[best] * means[best], size))
+
+    h, w = image.shape
+    for y in range(0, h, SIZES[0]):
+        for x in range(0, w, SIZES[0]):
+            encode_block(x, y, SIZES[0])
+    return np.array(code)
+
+
+def show_blocks(image, code):
+    picture = np.stack([np.clip(image, 0, 255)] * 3, axis=-1).astype(np.uint8)
+    for x, y, size in code[:, [0, 1, 7]].astype(int):
+        picture[y, x:x + size] = (220, 38, 38)
+        picture[y:y + size, x] = (220, 38, 38)
+    Image.fromarray(picture).resize((picture.shape[1] * 2, picture.shape[0] * 2), Image.NEAREST).save('bloecke.png')
+```
+
+`show_blocks` zeichnet die linke und die obere Kante jedes Blocks rot ins Foto und speichert es doppelt so groß als `bloecke.png`. Der Decoder liest die Größe aus der achten Spalte, wenn es sie gibt:
+
+```python
+def decode_step(image, code, scale=1):
+    new = np.empty_like(image)
+    for row in code:
+        x, y, dx, dy, k, s, o = row[:7]
+        r = (int(row[7]) if len(row) > 7 else R) * scale
+        x, y, dx, dy, k = int(x) * scale, int(y) * scale, int(dx) * scale, int(dy) * scale, int(k)
+~         small = shrink(image[dy:dy + 2 * r, dx:dx + 2 * r])
+```
+
+In `main` rechnet der Teil für `decode` die Größe des Bildes mit den Größen der Blöcke aus, und ein neuer Teil `quadtree` codiert mit einer Grenze:
+
+```python
+~         scale = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+        sizes = code[:, 7] if code.shape[1] > 7 else R
+        h = int((code[:, 1] + sizes).max())
+        w = int((code[:, 0] + sizes).max())
+~         image = start_image(start, h * scale, w * scale)
+```
+
+```python_copy
+~             save(image, f'schritt-{step}.png')
+    elif task == 'quadtree':
+        photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
+        limit = float(sys.argv[3]) if len(sys.argv) > 3 else 60
+        code = encode_quadtree(photo, limit)
+        np.save('code.npy', code)
+        show_blocks(photo, code)
+        counts = ', '.join(f'{int((code[:, 7] == size).sum())} mit {size}' for size in SIZES)
+        print(f'{len(code)} Blöcke: {counts}')
+~     elif task == 'vergleich':
+```
+
+```bash
+python3 fraktal.py quadtree strandhaeuser.png 60
+python3 fraktal.py decode && python3 fraktal.py vergleich
+python3 fraktal.py quadtree kirschbluete.png 60
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: fraktal/fraktal.py <- file:stufen/fraktal-7.py
+terminal-run: cd /workspace/fraktal && python3 fraktal.py quadtree strandhaeuser.png 60
+terminal-wait-for-prompt: 180
+image-file: fraktal/bloecke.png 1
+-->
+<img class='inspect' src='bloecke-strandhaeuser.webp' alt='Die Strandhäuser mit roten Kästchen: Im Himmel und auf den Flächen der Türen sind sie groß, an den Dachkanten, den Brettern und dem Riegel klein.'>
+<figcaption>Strandhäuser: große Blöcke im Himmel, kleine an den Kanten</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+terminal-run: cd /workspace/fraktal && python3 fraktal.py quadtree kirschbluete.png 60
+terminal-wait-for-prompt: 180
+image-file: fraktal/bloecke.png 1
+-->
+<img class='inspect' src='bloecke-kirschbluete.webp' alt='Die Straße mit dem Kirschbaum, überall dichte rote Kästchen: winzig in den Ästen und Blüten, größer nur im dunklen Schaufenster rechts unten und auf der hellen Fassade rechts oben.'>
+<figcaption>Kirschbaum: fast überall die kleinsten</figcaption></figure>
+</div>
+
+Mit den Strandhäusern ergibt das, je nach der Grenze für den mittleren Fehler eines Pixels:
 
 <div class='scroll-x'><table class='table table-sm'>
 <thead><tr><th>Blöcke</th><th>Anzahl</th><th>etwa Bytes</th><th>PSNR</th></tr></thead>
@@ -806,15 +953,17 @@ So ein Encoder braucht für jede Größe seine eigenen Domain-Blöcke, doppelt s
 <tr><td>fest 8 × 8</td><td>2400</td><td>8100</td><td>33,1 dB</td></tr>
 <tr><td>fest 4 × 4</td><td>9600</td><td>32 400</td><td>40,5 dB</td></tr>
 <tr><td>Quadtree 16, 8, 4, Grenze 150</td><td>1335</td><td>4700</td><td>32,9 dB</td></tr>
-<tr><td>Quadtree 16, 8, 4, Grenze 60</td><td>1998</td><td>7000</td><td>35,8 dB</td></tr>
+<tr><td>Quadtree 16, 8, 4, Grenze 60</td><td>1998</td><td>7000</td><td>35,7 dB</td></tr>
 <tr><td>JPEG, Qualität 30</td><td></td><td>8000</td><td>34,2 dB</td></tr>
 </tbody>
 </table>
 </div>
 
-Mit der Grenze 150 erreicht der Quadtree dieselbe Qualität wie feste 8 × 8 mit gut der Hälfte der Bytes; mit der Grenze 60 ist er bei kleinerer Datei besser als das JPEG. Die Bytes sind dabei grob gerechnet, 28 Bits je Block, ein Bit mehr für die Teilung. Er steckt die Bits dorthin, wo das Bild sie braucht: große Blöcke in den Himmel, kleine an die Kanten.
+Mit der Grenze 150 erreicht der Quadtree dieselbe Qualität wie feste 8 × 8 mit gut der Hälfte der Bytes; mit der Grenze 60 ist er bei kleinerer Datei besser als das JPEG. Die Bytes sind dabei grob gerechnet, 28 Bits je Block, ein Bit mehr für die Teilung. Beim Kirschbaum teilt der Quadtree fast überall bis zur kleinsten Größe: 6417 Blöcke, fast dreimal so viele wie mit festen 8 × 8. Das Bild wird viel besser, gut 28 dB statt 22, aber der Code auch fast dreimal so groß.
 
-Bau ihn selbst, wenn du magst: Die Schleifen in `encode` werden zu einer Funktion `encode_block(x, y, size)`, die die Domain-Blöcke der passenden Größe nimmt und sich bei zu großem Fehler viermal selbst aufruft, für die vier Viertel; `decode_step` liest die Größe jedes Blocks aus der neuen Spalte.
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Codiere die Strandhäuser mit den Grenzen 20, 60, 150 und 400 und schreib dir jedes Mal die Zahl der Blöcke und das PSNR auf. Ab welcher Grenze siehst du Fehler im Bild, und wo zuerst?
+</div>
 
 ## Wo es herkommt
 
@@ -829,13 +978,13 @@ Microsoft nahm das Verfahren in den 1990er-Jahren für die Bilder seiner Enzyklo
 
 <div class='book'>
 <i class='bi bi-book'></i>
-<p><strong>Fractal Image Compression: Theory and Application</strong>, Yuval Fisher (Hrsg.), Springer 1995. Das Standardwerk: Quadtrees, Rechtecke statt Quadrate, schnellere Suche, mit vielen Bildern. In Universitätsbibliotheken, auf Englisch.</p>
+<p><strong>Fractal Image Compression: Theory and Application</strong>, Yuval Fisher (Hrsg.), Springer 1995. Das Standardwerk: Quadtrees, Rechtecke statt Quadrate, schnellere Suche, mit vielen Bildern. In Universitätsbibliotheken, beim Verlag: <a href='https://doi.org/10.1007/978-1-4612-2472-3'>doi.org/10.1007/978-1-4612-2472-3</a>, auf Englisch.</p>
 </div>
 
 ## Wie geht es weiter?
 
 - **Wirklich speichern.** Runde `s` auf 32 Stufen und `o` auf 128 Stufen, bevor der Decoder sie bekommt, und schreib den Code mit 27 Bits je Block in eine Datei. Wie groß ist sie, und wie viel schlechter wird das Bild? Wie man Bits zu Bytes packt, steht im Handbuch, [Bits und Bytes](/reference/bits-und-bytes).
-- **Farbe.** Codiere die drei Farbkanäle getrennt, oder besser wie JPEG: Helligkeit genau, Farbe gröber (<a href='/jpeg'>JPEG</a>, Farbräume).
+- **Farbe.** Codiere die drei Farbkanäle getrennt, oder besser wie JPEG: Helligkeit genau, Farbe gröber (<a href='/jpeg'>JPEG</a>, Handbuch, [Farbräume](/reference/farbraeume)).
 - **Schneller suchen.** Sortiere die Domain-Blöcke vorher in Klassen, etwa nach der Ecke, in der sie am hellsten sind, und suche für einen Range-Block nur in seiner Klasse.
 - **Andere Formen.** Statt Quadraten Rechtecke, die an den Kanten des Bildes geteilt werden (HV-Partition), oder Dreiecke: Die Blöcke folgen dann dem Bild, statt einem festen Gitter.
 - **Ein Fraktal zeichnen.** Barnsleys Farn entsteht aus vier Kopien, die nicht nur verkleinert, sondern auch gedreht und geschert sind, mit einer 2 × 2-Matrix und einer Verschiebung (Handbuch, [Matrizen](/reference/matrizen)).

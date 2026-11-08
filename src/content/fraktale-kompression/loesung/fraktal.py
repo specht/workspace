@@ -36,12 +36,12 @@ def fit(domain, target):
     return s, o, error
 
 
-def domains(image):
+def domains(image, r=R):
     blocks, places = [], []
     h, w = image.shape
-    for y in range(0, h - 2 * R + 1, R):
-        for x in range(0, w - 2 * R + 1, R):
-            small = shrink(image[y:y + 2 * R, x:x + 2 * R])
+    for y in range(0, h - 2 * r + 1, r):
+        for x in range(0, w - 2 * r + 1, r):
+            small = shrink(image[y:y + 2 * r, x:x + 2 * r])
             for k in range(8):
                 blocks.append(turned(small, k).ravel())
                 places.append((x, y, k))
@@ -71,12 +71,57 @@ def encode(image):
 
 def decode_step(image, code, scale=1):
     new = np.empty_like(image)
-    r = R * scale
-    for x, y, dx, dy, k, s, o in code:
+    for row in code:
+        x, y, dx, dy, k, s, o = row[:7]
+        r = (int(row[7]) if len(row) > 7 else R) * scale
         x, y, dx, dy, k = int(x) * scale, int(y) * scale, int(dx) * scale, int(dy) * scale, int(k)
         small = shrink(image[dy:dy + 2 * r, dx:dx + 2 * r])
         new[y:y + r, x:x + r] = s * turned(small, k) + o
     return new
+
+
+SIZES = (16, 8, 4)
+
+
+def encode_quadtree(image, limit):
+    pools = {}
+    for size in SIZES:
+        blocks, places = domains(image, size)
+        means = blocks.mean(axis=1)
+        centred = blocks - means[:, None]
+        pools[size] = (centred, means, (centred * centred).sum(axis=1), places)
+    code = []
+
+    def encode_block(x, y, size):
+        centred, means, spread, places = pools[size]
+        target = image[y:y + size, x:x + size].ravel()
+        t = target - target.mean()
+        dots = centred @ t
+        s = np.clip(dots / np.maximum(spread, 1e-9), -1, 1)
+        error = t @ t - 2 * s * dots + s * s * spread
+        best = int(error.argmin())
+        if error[best] / (size * size) > limit and size > SIZES[-1]:
+            half = size // 2
+            for dy in (0, half):
+                for dx in (0, half):
+                    encode_block(x + dx, y + dy, half)
+            return
+        px, py, k = places[best]
+        code.append((x, y, px, py, k, s[best], target.mean() - s[best] * means[best], size))
+
+    h, w = image.shape
+    for y in range(0, h, SIZES[0]):
+        for x in range(0, w, SIZES[0]):
+            encode_block(x, y, SIZES[0])
+    return np.array(code)
+
+
+def show_blocks(image, code):
+    picture = np.stack([np.clip(image, 0, 255)] * 3, axis=-1).astype(np.uint8)
+    for x, y, size in code[:, [0, 1, 7]].astype(int):
+        picture[y, x:x + size] = (220, 38, 38)
+        picture[y:y + size, x] = (220, 38, 38)
+    Image.fromarray(picture).resize((picture.shape[1] * 2, picture.shape[0] * 2), Image.NEAREST).save('bloecke.png')
 
 
 def start_image(name, h, w):
@@ -105,13 +150,22 @@ def main():
         code = np.load('code.npy')
         start = sys.argv[2] if len(sys.argv) > 2 else 'grau'
         scale = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-        h = int(code[:, 1].max()) + R
-        w = int(code[:, 0].max()) + R
+        sizes = code[:, 7] if code.shape[1] > 7 else R
+        h = int((code[:, 1] + sizes).max())
+        w = int((code[:, 0] + sizes).max())
         image = start_image(start, h * scale, w * scale)
         save(image, 'schritt-0.png')
         for step in range(1, 9):
             image = decode_step(image, code, scale)
             save(image, f'schritt-{step}.png')
+    elif task == 'quadtree':
+        photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
+        limit = float(sys.argv[3]) if len(sys.argv) > 3 else 60
+        code = encode_quadtree(photo, limit)
+        np.save('code.npy', code)
+        show_blocks(photo, code)
+        counts = ', '.join(f'{int((code[:, 7] == size).sum())} mit {size}' for size in SIZES)
+        print(f'{len(code)} Blöcke: {counts}')
     elif task == 'vergleich':
         photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
         image = load(sys.argv[3] if len(sys.argv) > 3 else 'schritt-8.png')

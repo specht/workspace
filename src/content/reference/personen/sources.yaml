@@ -591,7 +591,30 @@ sierpinski:
     sources:
       - url: https://en.wikipedia.org/wiki/Fractal
         quote: "This exhibition of similar patterns at increasingly smaller scales is called self-similarity … The term \"fractal\" was coined by the mathematician Benoît Mandelbrot in 1975."
-  - text: Dein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen.
+  - text: Ein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen, eine Kopiermaschine aus drei verkleinerten Kopien das Dreieck.
+    none: Workspace
+
+# Der Kasten steht bis zur Freigabe direkt in fraktale-kompression.md.
+banach:
+  - text: Stefan Banach (1892–1945), polnischer Mathematiker in Lwów, einer der Begründer der modernen Funktionalanalysis.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stefan_Banach
+        quote: "30 March 1892 – 31 August 1945) was a Polish mathematician … He was one of the founders of modern functional analysis"
+  - text: Mit anderen Mathematikern der Stadt traf er sich zum Rechnen und Streiten im Schottischen Café.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stefan_Banach
+        quote: "Banach was also a co-founder of the Lwów School of Mathematics … meeting in the Scottish Café"
+  - text: In seiner Doktorarbeit, veröffentlicht 1922, steht der Fixpunktsatz von Banach
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stefan_Banach
+        quote: "The doctoral thesis, accepted by King John II Casimir University of Lwów in 1920 and published in 1922 … was included in his dissertation"
+      - url: https://en.wikipedia.org/wiki/Banach_fixed-point_theorem
+        quote: "The theorem is named after Stefan Banach (1892–1945) who first stated it in 1922."
+  - text: Eine Abbildung, die alle Abstände verkleinert, hat genau einen Fixpunkt, und wer sie von irgendeinem Startpunkt aus immer wieder anwendet, kommt ihm beliebig nahe.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Banach_fixed-point_theorem
+        quote: "Then T admits a unique fixed point … start with an arbitrary element"
+  - text: Deshalb findet eine Kopiermaschine aus verkleinerten Kopien aus jedem Startbild dasselbe Fraktal.
     none: Workspace
 
 luhn:
@@ -3997,6 +4020,29 @@ hanrahan:
         quote: "Hanrahan received three Academy Awards for his work in rendering and computer graphics research."
       - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
         quote: "Hanrahan shared the 2019 ACM A.M. Turing Award with Catmull for their pioneering efforts on computer-generated imagery."
+
+# Der Kasten steht bis zur Freigabe direkt in fraktale-kompression.md.
+barnsley:
+  - text: Michael Barnsley (geboren 1946), britischer Mathematiker, damals an der Georgia Tech, später an der Australian National University.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Michael_Barnsley
+        quote: "Michael Fielding Barnsley (born 1946) is a British mathematician, researcher and an entrepreneur … previously held a faculty position at Georgia Tech … Mathematical Sciences Institute at the Australian National University"
+  - text: 1988 erschien sein Buch Fractals Everywhere; berühmt ist sein Farn, ein Bild aus vier verkleinerten, gedrehten Kopien von sich selbst.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Michael_Barnsley
+        quote: "In 1988, he published a book titled Fractals Everywhere … epitomised by the Barnsley fern"
+      - url: https://en.wikipedia.org/wiki/Barnsley_fern
+        quote: "The fern is one of the basic examples of self-similar sets … Barnsley's fern uses four affine transformations."
+  - text: 1987 gründete er mit Alan Sloan die Firma Iterated Systems, um Fotos als solche Kopiermaschinen zu speichern, und hielt Patente auf die fraktale Bildkompression.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Fractal_compression
+        quote: "Michael Barnsley and Alan Sloan formed Iterated Systems Inc."
+      - url: https://en.wikipedia.org/wiki/Michael_Barnsley
+        quote: "known for his work on fractal compression, and he holds several patents on the technology … initially devoted to fractal image compression"
+  - text: Den ersten Encoder, der die Blöcke und ihre Partner von selbst findet, schrieb 1992 sein Doktorand Arnaud Jacquin.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Fractal_compression
+        quote: "Barnsley's graduate student Arnaud Jacquin implemented the first automatic algorithm in software in 1992."
 
 metcalfe:
   - text: Robert Metcalfe (geboren 1946), amerikanischer Ingenieur.

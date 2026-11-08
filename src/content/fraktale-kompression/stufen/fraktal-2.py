@@ -39,10 +39,11 @@ def fit(domain, target):
 def mark(image, boxes):
     picture = np.stack([np.clip(image, 0, 255)] * 3, axis=-1).astype(np.uint8)
     for x, y, size, color in boxes:
-        picture[y, x:x + size] = color
-        picture[y + size - 1, x:x + size] = color
-        picture[y:y + size, x] = color
-        picture[y:y + size, x + size - 1] = color
+        for d in range(2):
+            picture[y + d, x:x + size] = color
+            picture[y + size - 1 - d, x:x + size] = color
+            picture[y:y + size, x + d] = color
+            picture[y:y + size, x + size - 1 - d] = color
     Image.fromarray(picture).resize((picture.shape[1] * 2, picture.shape[0] * 2), Image.NEAREST).save('paar.png')
 
 

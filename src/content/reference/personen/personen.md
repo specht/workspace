@@ -222,7 +222,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <div class='person'>
 <img src='sierpinski.webp' alt='Wacław Sierpiński 1928: ein Mann mit hoher Stirn und runder Brille, in Anzug und Krawatte, ernst in die Kamera blickend.'>
 <p><strong>Wacław Sierpiński</strong> (1882–1969), polnischer Mathematiker in Warschau, mit über 700 Aufsätzen und 50 Büchern. 1916 beschrieb er ein Quadrat, aus dem die Mitte fehlt, und aus jedem der acht Quadrate drumherum wieder die Mitte, ohne Ende: den Sierpinski-Teppich. Auch ein Dreieck aus Dreiecken trägt seinen Namen.</p>
-<p>Ein Muster, das in jedem Ausschnitt wieder sich selbst enthält, heißt heute Fraktal. Dein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen.</p>
+<p>Ein Muster, das in jedem Ausschnitt wieder sich selbst enthält, heißt heute Fraktal. Ein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen, eine Kopiermaschine aus drei verkleinerten Kopien das Dreieck.</p>
 <p class='person-credit'>Foto: unbekannt, 1928, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Wac%C5%82aw_Sierpi%C5%84ski.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

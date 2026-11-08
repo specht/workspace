@@ -151,32 +151,33 @@ tasks:
           return new
       ```
 
-  - id: startbild
-    title: Ein anderes Startbild
+  - id: erster-schritt
+    title: Ein Schritt aus einem anderen Foto
     prediction: true
     prompt: |
-      Der Code in `code.npy` gehört zu den Strandhäusern. Was zeigt
-      `schritt-8.png`, wenn der Decoder mit Rauschen anfängt statt mit Grau
-      (`python3 fraktal.py decode rauschen`)?
+      Der Code in `code.npy` gehört zu den Strandhäusern; der Decoder fängt
+      mit dem Foto der Möwen an. Was zeigt `schritt-1.png`, nach einem
+      einzigen Schritt?
     check:
       type: choice
       options:
-        - Dieselben Strandhäuser wie vom grauen Bild aus.
-        - Die Strandhäuser, aber verrauscht, weil das Rauschen in jedem Schritt weitergegeben wird.
-        - Nur Rauschen, weil der Code ohne das Foto nichts weiß.
-        - Ein Bild aus groben Kästchen, weil das Rauschen die Kanten zerstört.
+        - Grobe Kästchen der Strandhäuser, in denen noch Reste der Möwen stecken.
+        - Die Möwen, kaum verändert; ein einziger Schritt ändert wenig.
+        - Schon die fertigen Strandhäuser, denn der Code beschreibt sie.
+        - Die Möwen und die Strandhäuser übereinander, halb durchsichtig.
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Weitergegeben wird nur das s-fache, und s ist höchstens 1; die verkleinerten Blöcke mitteln das Rauschen außerdem. Von Schritt zu Schritt bleibt immer weniger davon.
+        say: Jeder Block wird in diesem Schritt neu geschrieben, aus einem anderen, verkleinerten Block und mit `o`; an seinem Platz bleibt nichts vom alten Bild.
       - when: { picked: 2 }
-        say: Nach einem Schritt aus Grau sah man schon Kästchen; die stammen aus o, nicht aus dem Startbild. Dasselbe passiert mit Rauschen.
+        say: Aus Grau waren es nach einem Schritt auch erst Kästchen. Die Kanten holt sich jeder Block von seinem Partner, und der hat in Schritt 1 noch Möwen.
       - when: { picked: 3 }
-        say: Die Kanten kommen aus den Partnern der Blöcke, nicht aus dem Startbild. Aus Grau sind sie auch entstanden, obwohl Grau gar keine Kanten hat.
+        say: Das alte Bild wird nicht unter das neue gelegt. Jeder Block ist `s` mal ein verkleinertes Stück der Möwen plus `o`; die Möwen stecken darin, aber zerhackt und verkleinert.
     solution: |
-      Dieselben Strandhäuser: Der Code sagt nur, wie jeder Block aus einem
-      anderen entsteht. Jeder Schritt verkleinert, was vom Startbild noch
-      übrig ist, und nach acht Schritten ist davon nichts mehr zu sehen.
+      Grobe Kästchen der Strandhäuser mit Resten der Möwen: Jeder Block ist
+      jetzt `s` mal ein verkleinertes Stück aus dem Möwenfoto plus `o`. Mit
+      jedem weiteren Schritt bleibt weniger von den Möwen; nach acht
+      Schritten ist es dasselbe Foto wie aus Grau.
 
   - id: gegen-jpeg
     title: Fraktal gegen JPEG
