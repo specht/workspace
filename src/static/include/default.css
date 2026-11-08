@@ -14584,7 +14584,13 @@ html[data-bs-theme="dark"] .splat-viewer {
     color: var(--bs-secondary-color);
 }
 .splat-viewer-help {
-    margin-top: 0.1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em 1.2em;
+    margin-top: 0.5em;
+}
+.splat-viewer-help kbd {
+    font-size: 0.75rem;
 }
 .splat-viewer-canvas:focus-visible {
     outline: 2px solid var(--bs-primary);

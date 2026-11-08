@@ -377,9 +377,10 @@ void main() {
             stage.append(this.canvas, this.status, walk);
             this.info = document.createElement('div');
             this.info.className = 'splat-viewer-info';
+            // the keys and what they do, for the scene shown (showHelp)
             const help = document.createElement('div');
             help.className = 'splat-viewer-help';
-            help.textContent = 'Ziehen oder die Pfeiltasten drehen, W, A, S, D bewegen dich, Q und E nach unten und oben, das Mausrad oder zwei Finger bringen dich näher heran; ein Doppelklick stellt die Kamera zurück.';
+            this.help = help;
             // the spots of a scene (»spots« in its entry): buttons that fly
             // the camera there, filled in by show()
             this.spotBar = document.createElement('div');
@@ -531,6 +532,7 @@ void main() {
             this.yaw = 0.6; this.pitch = 0.3; this.roll = 0;
             this.look = !!(this.view && this.view.look);
             this.gameSwitch.hidden = !this.look;
+            this.showHelp();
             if (this.view) {
                 if (this.view.target) this.target = this.view.target.slice();
                 if (this.view.distance) this.distance = this.view.distance;
@@ -605,6 +607,26 @@ void main() {
             const v = parseFloat(this.counter.value);
             if (n <= 100 || v >= 1) return n;
             return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
+        }
+
+        // a legend of the controls: in a place to walk through other ones
+        // than around an object
+        showHelp() {
+            const k = (...keys) => keys.map((key) => `<kbd>${key}</kbd>`).join('');
+            const items = this.look ? [
+                [k('W', 'A', 'S', 'D'), 'gehen'],
+                [k('Q') + k('E'), 'nach unten, nach oben'],
+                [k('←', '→', '↑', '↓') + ' oder ziehen', 'umschauen'],
+                ['Mausrad', 'vorwärts, rückwärts'],
+                ['Doppelklick', 'zurück zum Anfang'],
+            ] : [
+                ['Ziehen oder ' + k('←', '→', '↑', '↓'), 'drehen'],
+                ['Mausrad oder zwei Finger', 'näher heran'],
+                ['Rechte Maustaste oder ' + k('Shift') + ' und ziehen', 'verschieben'],
+                [k('W', 'A', 'S', 'D') + ' ' + k('Q') + k('E'), 'bewegen'],
+                ['Doppelklick', 'zurück zum Anfang'],
+            ];
+            this.help.innerHTML = items.map(([keys, what]) => `<span><span class='splat-viewer-keys'>${keys}</span>: ${what}</span>`).join('');
         }
 
         // the numbers beside the sliders
