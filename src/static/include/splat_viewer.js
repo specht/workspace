@@ -397,6 +397,8 @@ void main() {
                 if (e.isTrusted && this.autoCount && this.autoCount.checked) {
                     this.autoCount.checked = false;
                     this.counter.step = '0.1';
+                    this.still = false;
+                    clearTimeout(this.stillTimer);
                 }
                 this.change();
             });
@@ -453,6 +455,8 @@ void main() {
             this.autoCount.addEventListener('change', () => {
                 // the automatic number needs fine steps, the hand the stops
                 this.counter.step = this.autoCount.checked ? 'any' : '0.1';
+                this.still = false;
+                clearTimeout(this.stillTimer);
                 if (this.autoCount.checked) this.calibrate();
                 else this.change(false);
             });
@@ -1026,7 +1030,7 @@ void main() {
             this.showValues();
             const n = this.splats.count, k = this.drawn();
             let count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
-            if (k < n && this.autoCount && this.autoCount.checked) count += ' (»Automatisch flüssig« hat weniger gewählt, damit es flüssig bleibt)';
+            if (k < n && this.autoCount && this.autoCount.checked) count += ' (»Automatisch flüssig« hat weniger gewählt, damit es flüssig bleibt; steht die Kamera still, kommen alle dazu)';
             this.info.textContent = count + (this.credit ? ', ' + this.credit : '');
         }
 
@@ -1123,9 +1127,22 @@ void main() {
         // a few tens of thousands
         draw() {
             const auto = this.autoCount && this.autoCount.checked && this.splats;
+            if (auto) {
+                // the camera moved: back to the number that keeps it smooth
+                const cam = this.camera();
+                const key = cam.back.map((v) => v.toFixed(3)).join() + cam.eye.map((v) => v.toFixed(4)).join();
+                if (key !== this.autoKey) {
+                    this.autoKey = key;
+                    if (this.still) { this.still = false; this.setCountNow(this.movingCount); }
+                }
+            }
             const start = auto ? performance.now() : 0;
             this.drawFrame();
-            if (!auto) return;
+            if (!auto || this.still) return;
+            // no new movement after this picture (about two frames): the
+            // camera stands, all splats (stillPicture)
+            clearTimeout(this.stillTimer);
+            this.stillTimer = setTimeout(() => this.stillPicture(), 120);
             this.gl.finish();
             const took = performance.now() - start;
             this.frameTime = this.frameTime ? 0.7 * this.frameTime + 0.3 * took : took;
@@ -1135,13 +1152,35 @@ void main() {
             if (this.frameTime > 28 && v > 0.55) v = Math.max(0.55, v - 0.03);
             else if (this.frameTime < 14 && v < 1) v = Math.min(1, v + 0.02);
             else return;
+            this.setCountNow(v);
+        }
+
+        // the number of splats (the slider's 0 to 1) everywhere at once,
+        // without a wave
+        setCountNow(v) {
             this.counter.value = String(v);
-            // the number of splats changes everywhere at once, without a wave
             const count = this.drawn();
             if (this.lookBase) this.lookBase[3] = count;
             for (const w of this.waves || []) w.look[3] = count;
             this.lastSort = null;
             this.describe();
+        }
+
+        // With »Automatisch flüssig«, as soon as the camera stands: all
+        // splats, for the sharpest picture; drawing it may take longer,
+        // nothing moves. Not while waves run, which want smooth pictures.
+        // The first movement brings the smooth number back (draw).
+        stillPicture() {
+            if (!this.autoCount.checked || !this.splats || this.still) return;
+            if (this.flight || this.walking || this.swinging || (this.waves && this.waves.length)) {
+                this.stillTimer = setTimeout(() => this.stillPicture(), 120);
+                return;
+            }
+            if (parseFloat(this.counter.value) >= 1) return;
+            this.movingCount = parseFloat(this.counter.value);
+            this.still = true;
+            this.setCountNow(1);
+            this.redraw();
         }
 
         // about two seconds of pictures in a row, each timed by draw(), so
