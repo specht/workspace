@@ -725,12 +725,15 @@ input.error {
 }
 
 /* On a phone the menu would take four rows: the quiet buttons show their
-   icon only, as the class page's tabs do; so does the green »Workspace
-   öffnen« (maintainer, November 2026); the page one is on keeps its name.
-   The name stays for screen readers and as the button's title. */
+   icon only, as the class page's tabs do; the page one is on keeps its
+   name. The green »Workspace öffnen« keeps its name too, unless a page's
+   name already shows beside it (maintainer, November 2026): one label in
+   the row at most, and on a page outside the menu (the start page) the
+   green button says what it does. The name stays for screen readers and
+   as the button's title. */
 @media (max-width: 575.98px) {
     .menu .btn-menu:not(.active) .btn-menu-label,
-    .menu .bu-launch-workspace .btn-menu-label {
+    .menu:has(.btn-menu.active .btn-menu-label) .bu-launch-workspace .btn-menu-label {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -739,7 +742,7 @@ input.error {
         white-space: nowrap;
     }
     .menu .btn-menu:not(.active):has(.btn-menu-label) .bi,
-    .menu .bu-launch-workspace .bi {
+    .menu:has(.btn-menu.active .btn-menu-label) .bu-launch-workspace .bi {
         margin-right: 0;
     }
 }
