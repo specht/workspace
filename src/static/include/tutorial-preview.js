@@ -56,8 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // a gallery picture opens large unless it already almost fills the screen
     const zoomable = (image) => {
-        // an SVG drawing is sharp at every size: enlarged, it always shows more
-        if (/\.svg($|\?)/.test(image.currentSrc || image.src)) return true;
+        // an SVG is sharp at every size: it opens where enlarging gains
+        // something, a drawing narrower than most of the window, not a
+        // picture that already spans the text (a font sample)
+        if (/\.svg($|\?)/.test(image.currentSrc || image.src)) return image.getBoundingClientRect().width < window.innerWidth * 0.75;
         if (!image.closest('.gallery')) return image.naturalWidth > image.getBoundingClientRect().width * 1.15;
         const width = image.getBoundingClientRect().width;
         // on a phone too, where the file has much more to show (a texture of 2048 pixels)
@@ -124,9 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function fit(image) {
         if (!image.naturalWidth) return;
         const caption = content.querySelector('figcaption');
-        const room = parseFloat(getComputedStyle(lightbox).paddingLeft) * 2;
-        const width = window.innerWidth - room;
-        const height = window.innerHeight - room - (caption ? caption.offsetHeight + 12 : 0);
+        const style = getComputedStyle(lightbox);
+        const width = window.innerWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        // the bottom padding is larger under a gallery: room for its dots
+        const height = window.innerHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) -
+            (caption ? caption.offsetHeight + 12 : 0);
         const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
         image.style.width = `${Math.floor(image.naturalWidth * scale)}px`;
         image.style.height = `${Math.floor(image.naturalHeight * scale)}px`;
@@ -290,6 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const siblings = gallerySiblings(source);
         lightbox.classList.add('is-gallery');
         lightbox.classList.toggle('has-steps', siblings.length > 1);
+        // at the first and the last picture the arrow that leads out is off
+        const position = siblings.indexOf(source);
+        prevButton.disabled = position <= 0;
+        nextButton.disabled = position >= siblings.length - 1;
         showDots(siblings, source);
         content.replaceChildren(...parts);
         show();
@@ -368,8 +376,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!current) return;
         const siblings = gallerySiblings(current);
         if (siblings.length < 2) return;
-        const index = siblings.indexOf(current);
-        openGallery(siblings[(index + delta + siblings.length) % siblings.length]);
+        // the gallery ends at its first and last picture: no jump round to
+        // the other end, and none to pictures elsewhere on the page
+        const next = siblings.indexOf(current) + delta;
+        if (next < 0 || next >= siblings.length) return;
+        openGallery(siblings[next]);
     }
 
     function closePreview() {

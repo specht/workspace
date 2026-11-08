@@ -3766,7 +3766,8 @@ class Main < Sinatra::Base
             relative = params['markdown'].to_s
             target = params['target'].to_s
             halt 400 unless TutorialScreenshots.valid_relative_markdown_path?(relative)
-            mime = { '.webp' => 'image/webp', '.png' => 'image/png', '.mp4' => 'video/mp4', '.webm' => 'video/webm' }[File.extname(target)]
+            mime = { '.webp' => 'image/webp', '.png' => 'image/png', '.svg' => 'image/svg+xml',
+                     '.mp4' => 'video/mp4', '.webm' => 'video/webm' }[File.extname(target)]
             halt 400 unless mime && !target.start_with?('/') && !target.split('/').include?('..')
             directory = File.expand_path(File.dirname(File.join('/src/content', relative)))
             file = File.expand_path(target, directory)

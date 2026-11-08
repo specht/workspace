@@ -241,6 +241,19 @@
     display: grid;
 }
 
+/* the first and the last picture: the arrow that would lead out stays
+   visible but off, so the gallery's end is clear */
+.tutorial-preview-lightbox-step:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* under a gallery the row of dots needs its own room, below the caption */
+.tutorial-preview-lightbox.is-gallery.has-steps {
+    padding-bottom: 4rem;
+}
+
 /* At the bottom, in the middle, a dot for each picture of the gallery
    (tutorial-preview.js): at most seven slots, the open picture's dot in the
    middle, the row sliding and the dots growing and shrinking when stepping */

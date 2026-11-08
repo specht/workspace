@@ -188,7 +188,7 @@ class Main < Sinatra::Base
         mime_type = 'image/jpeg' if path =~ /\.jpe?g$/
         mime_type = 'image/png' if path =~ /\.png$/
         mime_type = 'image/gif' if path =~ /\.gif$/
-        mime_type = 'image/svg' if path =~ /\.svg$/
+        mime_type = 'image/svg+xml' if path =~ /\.svg$/
         mime_type = 'application/pdf' if path =~ /\.pdf$/
         mime_type = 'text/css' if path =~ /\.css$/
         mime_type = 'text/javascript' if path =~ /\.js$/
