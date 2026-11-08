@@ -5,13 +5,19 @@
 // buttons at the sides, or a swipe on a tablet) go through the pictures of
 // its gallery. On a phone a preview already fills the width and does not
 // open; a gallery picture opens there too when it is clearly narrower than
-// the screen (two in a row). A gallery picture with class 'inspect' (a whole
+// the screen (two in a row) or its file is more than twice as wide as the
+// picture on the screen. A gallery picture with class 'inspect' (a whole
 // light map, a large plan) always opens and can be looked at closely there:
 // the mouse wheel or two fingers zoom where they point, dragging moves it, a
-// double click zooms in and back out.
+// double click zooms in and back out. A single picture of a page (a
+// screenshot, a rendered scene, a drawing: img.full and img.drawing outside a
+// gallery) opens the same way, as a gallery of one, wherever its file is
+// clearly larger than the picture on the page: there is more to see.
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
-    const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a'));
+    const singleImages = [...document.querySelectorAll('img.full, img.drawing')]
+        .filter((image) => !image.closest('a, .gallery, .tutorial-preview') && !image.classList.contains('teaser'));
+    const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a')).concat(singleImages);
     if (previews.length === 0 && galleryImages.length === 0) return;
 
     const ANIMATION_TIME = 180;
@@ -49,7 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const narrow = window.matchMedia('(max-width: 760px)');
 
     // a gallery picture opens large unless it already almost fills the screen
-    const zoomable = (image) => !narrow.matches || image.classList.contains('inspect') || image.getBoundingClientRect().width < window.innerWidth * 0.75;
+    const zoomable = (image) => {
+        if (!image.closest('.gallery')) return image.naturalWidth > image.getBoundingClientRect().width * 1.15;
+        const width = image.getBoundingClientRect().width;
+        // on a phone too, where the file has much more to show (a texture of 2048 pixels)
+        return !narrow.matches || image.classList.contains('inspect') || width < window.innerWidth * 0.75 || image.naturalWidth > width * 2;
+    };
 
     function setupGallery() {
         galleryImages.forEach((image) => {
@@ -67,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     setupGallery();
+    // a picture knows its size only once it is loaded
+    galleryImages.forEach((image) => { if (!image.complete) image.addEventListener('load', setupGallery, { once: true }); });
     narrow.addEventListener('change', setupGallery);
     window.addEventListener('resize', setupGallery);
 
