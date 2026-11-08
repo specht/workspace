@@ -525,17 +525,17 @@ sleep: 20
 wait-for-file-newer: latex-tutorial/fonts.pdf <- latex-tutorial/fonts.tex
 pdf-page: latex-tutorial/fonts.pdf 7 Latin Modern Roman
 -->
-<img class='full invert-dark' src='fonts/latin-modern-roman.webp' alt='Schriftprobe in Latin Modern Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/latin-modern-roman.svg' alt='Schriftprobe in Latin Modern Roman mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 8 Latin Modern Sans
 -->
-<img class='full invert-dark' src='fonts/latin-modern-sans.webp' alt='Schriftprobe in Latin Modern Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/latin-modern-sans.svg' alt='Schriftprobe in Latin Modern Sans mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 12 CMU Typewriter Text
 -->
-<img class='full invert-dark' src='fonts/cmu-typewriter-text.webp' alt='Schriftprobe in CMU Typewriter Text mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/cmu-typewriter-text.svg' alt='Schriftprobe in CMU Typewriter Text mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Buch- und Textschriften (für längere Texte)
 
@@ -544,34 +544,34 @@ Gut für längere Texte wie eine Facharbeit: angenehm zu lesen und mit Serifen, 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 13 Nimbus Roman
 -->
-<img class='full invert-dark' src='fonts/nimbus-roman.webp' alt='Schriftprobe in Nimbus Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/nimbus-roman.svg' alt='Schriftprobe in Nimbus Roman mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 14 XCharter
 -->
-<img class='full invert-dark' src='fonts/xcharter.webp' alt='Schriftprobe in XCharter mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/xcharter.svg' alt='Schriftprobe in XCharter mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 15 Vollkorn
 -->
-<img class='full invert-dark' src='fonts/vollkorn.webp' alt='Schriftprobe in Vollkorn mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/vollkorn.svg' alt='Schriftprobe in Vollkorn mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Moderne serifenlose Schriften (Arbeitsblätter, Präsentationen)
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 16 Inter
 -->
-<img class='full invert-dark' src='fonts/inter.webp' alt='Schriftprobe in Inter mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/inter.svg' alt='Schriftprobe in Inter mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 17 IBM Plex Sans
 -->
-<img class='full invert-dark' src='fonts/ibm-plex-sans.webp' alt='Schriftprobe in IBM Plex Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/ibm-plex-sans.svg' alt='Schriftprobe in IBM Plex Sans mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 18 Ubuntu
 -->
-<img class='full invert-dark' src='fonts/ubuntu.webp' alt='Schriftprobe in Ubuntu mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/ubuntu.svg' alt='Schriftprobe in Ubuntu mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Monospace-Schriften
 
@@ -580,39 +580,39 @@ Jedes Zeichen gleich breit: für Code, Terminal-Ausgaben und Dateinamen.
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 22 JetBrains Mono
 -->
-<img class='full invert-dark' src='fonts/jetbrains-mono.webp' alt='Schriftprobe in JetBrains Mono mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/jetbrains-mono.svg' alt='Schriftprobe in JetBrains Mono mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 23 Anonymous Pro
 -->
-<img class='full invert-dark' src='fonts/anonymous-pro.webp' alt='Schriftprobe in Anonymous Pro mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/anonymous-pro.svg' alt='Schriftprobe in Anonymous Pro mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 24 IBM Plex Mono
 -->
-<img class='full invert-dark' src='fonts/ibm-plex-mono.webp' alt='Schriftprobe in IBM Plex Mono mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/ibm-plex-mono.svg' alt='Schriftprobe in IBM Plex Mono mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Kreative Schriftarten (für Überschriften, Plakate)
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 25 Atkinson Hyperlegible
 -->
-<img class='full invert-dark' src='fonts/atkinson-hyperlegible.webp' alt='Schriftprobe in Atkinson Hyperlegible mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/atkinson-hyperlegible.svg' alt='Schriftprobe in Atkinson Hyperlegible mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 26 Comic Neue
 -->
-<img class='full invert-dark' src='fonts/comic-neue.webp' alt='Schriftprobe in Comic Neue mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/comic-neue.svg' alt='Schriftprobe in Comic Neue mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 27 Montserrat
 -->
-<img class='full invert-dark' src='fonts/montserrat.webp' alt='Schriftprobe in Montserrat mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/montserrat.svg' alt='Schriftprobe in Montserrat mit Überschrift, Fließtext und Beispielzeichen.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 28 Comfortaa
 -->
-<img class='full invert-dark' src='fonts/comfortaa.webp' alt='Schriftprobe in Comfortaa mit Überschrift, Fließtext und Beispielzeichen.'>
+<img class='full border' src='fonts/comfortaa.svg' alt='Schriftprobe in Comfortaa mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Schriftarten mit mathematischer Unterstützung
 
@@ -628,32 +628,32 @@ Für Formeln braucht ein Dokument eine eigene Formelschrift, die zur Textschrift
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 1 Latin Modern Math
 -->
-<img class='full invert-dark' src='fonts/latin-modern-math.webp' alt='Schriftprobe in Latin Modern Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/latin-modern-math.svg' alt='Schriftprobe in Latin Modern Math mit Fließtext und mathematischen Formeln.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 2 XCharter Math
 -->
-<img class='full invert-dark' src='fonts/xcharter-math.webp' alt='Schriftprobe in XCharter Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/xcharter-math.svg' alt='Schriftprobe in XCharter Math mit Fließtext und mathematischen Formeln.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 4 TeX Gyre Termes Math
 -->
-<img class='full invert-dark' src='fonts/tex-gyre-termes-math.webp' alt='Schriftprobe in TeX Gyre Termes Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/tex-gyre-termes-math.svg' alt='Schriftprobe in TeX Gyre Termes Math mit Fließtext und mathematischen Formeln.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 3 TeX Gyre Pagella Math
 -->
-<img class='full invert-dark' src='fonts/tex-gyre-pagella-math.webp' alt='Schriftprobe in TeX Gyre Pagella Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/tex-gyre-pagella-math.svg' alt='Schriftprobe in TeX Gyre Pagella Math mit Fließtext und mathematischen Formeln.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 5 TeX Gyre Schola Math
 -->
-<img class='full invert-dark' src='fonts/tex-gyre-schola-math.webp' alt='Schriftprobe in TeX Gyre Schola Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/tex-gyre-schola-math.svg' alt='Schriftprobe in TeX Gyre Schola Math mit Fließtext und mathematischen Formeln.'>
 
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 6 TeX Gyre Bonum Math
 -->
-<img class='full invert-dark' src='fonts/tex-gyre-bonum-math.webp' alt='Schriftprobe in TeX Gyre Bonum Math mit Fließtext und mathematischen Formeln.'>
+<img class='full border' src='fonts/tex-gyre-bonum-math.svg' alt='Schriftprobe in TeX Gyre Bonum Math mit Fließtext und mathematischen Formeln.'>
 
 <div class='hint'>
 Du kannst auch eigene Schriftarten verwenden: Lege die Schriftdatei (<code>.ttf</code> oder <code>.otf</code>) neben die <code>.tex</code>-Datei und gib sie mit Namen an, etwa <code>\setmainfont{MeineSchrift.otf}</code>.

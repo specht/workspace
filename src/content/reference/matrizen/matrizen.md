@@ -229,7 +229,7 @@ _person(hamilton)
 
 <!-- part: inverse -->
 <!-- short: T(t)⁻¹ = T(−t), S(s)⁻¹ = S(1/s), R(θ)⁻¹ = R(−θ) = Rᵀ; (A · B)⁻¹ = B⁻¹ · A⁻¹, die Reihenfolge dreht sich um; die View-Matrix ist die Inverse der Kamera. -->
-### Jeder Baustein rückwärts
+### Die Inversen der Bausteine
 
 Die **Inverse** \\(M^{-1}\\) macht rückgängig, was \\(M\\) tut. Für die Bausteine ist sie leicht hinzuschreiben, ohne zu rechnen:
 
@@ -243,7 +243,7 @@ Die **Inverse** \\(M^{-1}\\) macht rückgängig, was \\(M\\) tut. Für die Baust
 </table>
 </div>
 
-### Ein Produkt rückwärts
+### Die Inverse eines Produkts
 
 Ein Produkt macht man rückgängig, indem man die Schritte rückwärts und in umgekehrter Reihenfolge geht, wie beim Ausziehen erst die Schuhe, dann die Socken:
 

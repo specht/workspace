@@ -3872,7 +3872,11 @@ async function pdfPageAsSvg(pdf, page, png, dpi, trim, target) {
         const [w, h, x, y] = stdout.trim().split(/\s+/).map((v) => Number.parseInt(v, 10));
         const scale = 72 / Number(dpi);
         const shave = 12;
-        const box = [x * scale, (y + shave) * scale, w * scale, Math.max(1, h - 2 * shave) * scale].map((v) => +v.toFixed(2));
+        // a little paper around the type, so it does not touch the edge
+        // of the white card (6 pt at the sides, 4 pt above and below)
+        const [padX, padY] = [6, 4];
+        const box = [x * scale - padX, (y + shave) * scale - padY, w * scale + 2 * padX,
+            Math.max(1, h - 2 * shave) * scale + 2 * padY].map((v) => +v.toFixed(2));
         svg = svg.replace(/<svg\b[^>]*>/, (tag) => tag
             .replace(/\swidth="[^"]*"/, ` width="${box[2]}pt"`)
             .replace(/\sheight="[^"]*"/, ` height="${box[3]}pt"`)

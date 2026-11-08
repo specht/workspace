@@ -1,60 +1,60 @@
 {
   "screenshots": {
-    "erklaerung.webp": {
+    "erklaerung.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "2dff63af80853fc707b6188cc5d49b2ee032bf60835c4fcb321b8c7c7398b6b1",
-      "state_hash": "7c6f83d7bb1e11425a0d366c37c69ff092c3863c6ef16b18f378cba17cc2eb21",
+      "output_sha256": "1b860eef92c7579c68413380273d0f353a80e11998c8980634c06eb673bf0455",
+      "state_hash": "62f6f0f6c05421758951411b18183499a70f2b5c21a56f8a4ca00bcc4c606ab7",
       "workspace_look": "4.140.0-ls368"
     },
     "erstes-dokument.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "51a033e208c8588649940291abef8dcb8918a25ec738e1cbf2040913f9bd4104",
+      "output_sha256": "323bee7abb913fde07c0e862cdba55bc8ee83758dae205570f0a8c2fcd8b01c8",
       "state_hash": "ff6f7dd663a8456945e11edc16ec48b57c3f592aa59d32426c1972f10d52be9b",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "facharbeit-fertig.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "977eaaa2dab9a7dfc27828a1a785ca1c94139ccf17e9169fbb905d3b802feded",
+      "output_sha256": "b907fc9cdde1b8db46bc4041ef10b475762f8bcaee3140ea5018f58e35dca8c7",
       "state_hash": "b2fff5a84ee80dcfffcae2e1c8f30d0ccbdb744be68520df0ff4210491fab4d4",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
-    "inhaltsverzeichnis.webp": {
+    "inhaltsverzeichnis.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b9ba077445076f60152ed4d9b4696e03311bce208df13f38356f362d65234e1a",
-      "state_hash": "beaaeb585dab253482c79af1f42d7cd63b182e2d44b69d0ff84660f32f0c8334",
+      "output_sha256": "d5d3253576d5f605557b74c63b4fab34bdeef9e822006c0ef2fc370fa2ac4a2f",
+      "state_hash": "50af2c5341b06d07ea4bf7dfd3e1f02f8cdc1747b9381aa2c9776b28a568f7e9",
       "workspace_look": "4.140.0-ls368"
     },
-    "seite-auswertung.webp": {
+    "seite-auswertung.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5266b7b71424c7d1abe085d7290ab328efe5eddf9003fe9cf81684053ea892e8",
-      "state_hash": "812f7844fd31c5f837b5352ad58b2beb35505a00cae49da70f0c6c527676cdd2",
+      "output_sha256": "ce3632d316f310d738bb47ee72fb7ec45e33edc7f462f0bbd9301da53d12e297",
+      "state_hash": "45d9c9d9b2a4e859b2d9ea760aa012eb4b8f6e1904ca042fd0196c4c3441cb02",
       "workspace_look": "4.140.0-ls368"
     },
-    "seite-theorie.webp": {
+    "seite-theorie.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "8697740c4dd3d05d1243ab3c0b6cfe575fe6a1813e3ff28abc2ff5b978168c50",
-      "state_hash": "01eadef5f2d1dcc7aaef7179b34b688421467f4dd6603234f9309ca7ed018138",
+      "output_sha256": "b405a98285980ef33e52b97fdd38c7faa16f734f1bc7c8a8f58a2cbc625a21a1",
+      "state_hash": "d5e2647939cd523d0e9fc9e111a72068a371c7975230f73482d0699de5d234c4",
       "workspace_look": "4.140.0-ls368"
     },
-    "seite-versuch.webp": {
+    "seite-versuch.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "a4868d25cb0062d91a0c895b6ebca9d6f3dae7a034033879c8c4d4f824b0050d",
-      "state_hash": "899e073d21652191e3e550276d586928bbbc00a1246442c6d34c13d4044bbc68",
+      "output_sha256": "a6f8bf01b6cb3b2d38c485c75c4f48b64259c42aaba1007b139a704c610ae54b",
+      "state_hash": "f0b4a56d0ecffc0906cd8d6f6b777f2011aa595ac880d09bb0220b62fb4757bd",
       "workspace_look": "4.140.0-ls368"
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "6fb7ec160228d0489c0f037b502b9e59e31255785cf6902bb0b2fade015b5e2c",
+      "output_sha256": "a1d13e4c2f6d3366bf945682658d54db795b5ce919a5f2a94b4c4ac5504f2815",
       "state_hash": "16fc35b74f3c4bead1b3c54257dc917b1bfbaa46bd076b39a2d11b45e9b77033",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
-    "titelseite.webp": {
+    "titelseite.svg": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "c2e74f397d8fca74cdb31f793a96b6e431adc4ca3b5bf2ca20e8581d4602286a",
-      "state_hash": "ba3f00fdeb002720585b56a957ae0f778c3303a5216e640e6e88cd4086af9645",
+      "output_sha256": "d05fc307e0d0f364ec979ec9b3bda74d427bb0c30a4b2a7acd348433ea01cb53",
+      "state_hash": "85c351090f3fc08c24e04bc95b67ffc510a2dd5b53cf871d241e17f572982275",
       "workspace_look": "4.140.0-ls368"
     }
   },

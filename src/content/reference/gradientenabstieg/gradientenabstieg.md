@@ -92,7 +92,7 @@ Eine zu große Lernrate erkennt man daran, dass der Fehler von Schritt zu Schrit
 
 <!-- part: gradient -->
 <!-- short: Bei vielen Reglern hat jeder seine eigene Steigung (partielle Ableitung); alle zusammen sind der Gradient, und alle gehen gleichzeitig einen Schritt. -->
-### Jeder Regler seine Steigung
+### Jeder Regler hat seine eigene Steigung
 
 Hängt der Fehler von vielen Reglern ab, hat jeder seine eigene Steigung: wie sich der Fehler ändert, wenn man nur diesen Regler ein wenig dreht und alle anderen lässt (die **partielle Ableitung**). Alle Steigungen zusammen sind der **Gradient** \\(\nabla E\\), ein Vektor mit so vielen Zahlen, wie es Regler gibt. Er zeigt in die Richtung, in der der Fehler am schnellsten wächst; ein Schritt geht also für alle Regler gleichzeitig dagegen:
 
@@ -107,7 +107,7 @@ $$E'(c) \approx \frac{E(c + h) - E(c - h)}{2h}$$
 mit einem kleinen \\(h\\), etwa 0,0001. Das ist einfach, kostet aber für jeden Regler zwei Rechnungen des ganzen Fehlers; bei Millionen Reglern rechnet man die Ableitungen deshalb aus der Formel, rückwärts durch die Rechnung (*Backpropagation*). Zum Prüfen, ob die eigene Ableitung stimmt, ist die Schätzung trotzdem gut.
 <!-- /part -->
 
-## Adam: jeder Regler sein eigenes Tempo
+## Adam: Jeder Regler bekommt sein eigenes Tempo
 
 <!-- part: adam -->
 <!-- short: Adam merkt sich je Regler den Schwung m und die typische Größe v der Steigung und geht m / √v: Schritte von etwa gleicher Größe für jeden Regler. -->
