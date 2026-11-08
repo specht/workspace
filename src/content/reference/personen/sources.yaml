@@ -360,6 +360,33 @@ lambert:
       - url: https://en.wikipedia.org/wiki/Proof_that_%CF%80_is_irrational
         quote: "In 1768, Johann Heinrich Lambert published a proof that π is irrational"
 
+hamilton:
+  - text: William Rowan Hamilton (1805–1865), irischer Mathematiker, Physiker und Astronom.
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Rowan_Hamilton
+        quote: "Sir William Rowan Hamilton (4 August 1805 – 2 September 1865) was an Irish mathematician, physicist, and astronomer"
+  - text: Mit 17 kam er an das Trinity College in Dublin und wurde noch als Student Professor für Astronomie.
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Rowan_Hamilton
+        quote: "by examination, at age 17 … Hamilton was appointed to the vacant posts left by Brinkley's departure the following year … Despite having his undergraduate career cut short in this way"
+  - text: Komplexe Zahlen kann man als Punkte in der Ebene sehen; Hamilton suchte dasselbe für Punkte im Raum.
+    sources:
+      - url: https://en.wikipedia.org/wiki/History_of_quaternions
+        quote: "the complex numbers could be viewed as points in a plane … Hamilton sought to find a way to do the same for points in space."
+  - text: Am 16. Oktober 1843 ging er mit seiner Frau am Royal Canal in Dublin spazieren, als ihm die Lösung einfiel
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Rowan_Hamilton
+        quote: "on 16 October he was out walking along the Royal Canal in Dublin with his wife when the solution"
+  - text: mit den Regeln i² = j² = k² = ijk = −1. Er ritzte sie mit seinem Taschenmesser in die nahe Broom Bridge.
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Rowan_Hamilton
+        quote: "i2 = j2 = k2 = ijk = −1 … Hamilton then carved this equation using his penknife into the side of the nearby Broom Bridge"
+  - text: Heute drehen Quaternionen Modelle in Spielen, in glTF-Dateien und die Splats in Gaussian Splatting.
+    sources:
+      - url: https://en.wikipedia.org/wiki/History_of_quaternions
+        quote: "For this reason, quaternions are used in computer graphics"
+      - url: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+        quote: "The node's unit quaternion rotation in the order (x, y, z, w), where w is the scalar."
 fresnel:
   - text: Augustin-Jean Fresnel (1788–1827), französischer Ingenieur und Physiker.
     sources:

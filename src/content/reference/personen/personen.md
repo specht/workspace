@@ -122,6 +122,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p class='person-credit'>Stich: E. Rosette nach Ambroise Tardieu, 19. Jahrhundert, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Augustin_Fresnel.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
+<!-- year: 1805 -->
+<!-- part: hamilton -->
+### William Rowan Hamilton
+
+<div class='person'>
+<img src='hamilton.webp' alt='William Rowan Hamilton, Schwarzweißfoto: ein älterer Mann mit hoher Stirn und Glatze, grauen Locken an den Seiten und Koteletten, weißer Halsbinde und dunklem Mantel, mit leicht zusammengekniffenem, nachdenklichem Blick.'>
+<p><strong>William Rowan Hamilton</strong> (1805–1865), irischer Mathematiker, Physiker und Astronom. Mit 17 kam er an das Trinity College in Dublin und wurde noch als Student Professor für Astronomie. Komplexe Zahlen kann man als Punkte in der Ebene sehen; Hamilton suchte dasselbe für Punkte im Raum.</p>
+<p>Am 16. Oktober 1843 ging er mit seiner Frau am Royal Canal in Dublin spazieren, als ihm die Lösung einfiel: vier Zahlen statt drei, mit den Regeln \(i^2 = j^2 = k^2 = ijk = -1\). Er ritzte sie mit seinem Taschenmesser in die nahe Broom Bridge. Heute drehen Quaternionen Modelle in Spielen, in glTF-Dateien und die Splats in Gaussian Splatting.</p>
+<p class='person-credit'>Foto: 1885, Library of Congress, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Sir_William_Rowan_Hamilton,_head-and-shoulders_portrait,_facing_slightly_right_LCCN90713420_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
 
 <!-- year: 1815 -->
 <!-- part: lovelace -->
