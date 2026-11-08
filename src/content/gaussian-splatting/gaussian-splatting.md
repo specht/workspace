@@ -6,7 +6,7 @@ language: Python
 duration: 3 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Splats statt Dreiecke, Projektion mit einer Kamera, Sortieren nach der Tiefe, Alpha-Blending), Vertiefung Künstliche Intelligenz (Gradientenabstieg: ein Bild aus Splats lernen)"
 topics: [computergrafik, ki]
-requires: [kata-loops]
+requires: [webgl, kata-lists]
 reference: [vektoren]
 </div>
 
