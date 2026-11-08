@@ -41,11 +41,11 @@ Die Zahl \\(\eta\\) (Eta) ist die **Lernrate**: Sie sagt, wie groß die Schritte
 <!-- part: algorithmus -->
 <!-- short: Wiederholen: Steigung ausrechnen, jeden Regler um Lernrate mal Steigung zurücknehmen, bis der Fehler nicht mehr kleiner wird. -->
 ```pseudocode
-gradientenabstieg(regler, lernrate, schritte):
-    for k from 1 to schritte:
-        steigung ← ableitung(regler)
-        regler ← regler − lernrate · steigung
-    return regler
+gradient_descent(params, rate, steps):
+    for k from 1 to steps:
+        slope ← derivative(params)
+        params ← params − rate · slope
+    return params
 ```
 
 Für \\(E(c) = (c - 0{,}7)^2\\), begonnen bei \\(c = 1{,}4\\) mit der Lernrate 0,2:
@@ -85,6 +85,13 @@ Die Lernrate entscheidet, ob es klappt. Dasselbe Beispiel, begonnen bei 1,4, mit
 </table>
 </div>
 
+<div class='gallery columns-2'>
+<figure><img src='lernrate-0-05.svg' alt='Die Parabel des Fehlers über c, am tiefsten bei 0,7. Fünf Punkte dicht beieinander am rechten Hang, von 1,4 aus nur ein kleines Stück hinunter: Schritt 0 oben, Schritt 4 knapp darunter, alle weit rechts vom Tiefpunkt.'><figcaption>Lernrate 0,05: kommt an, aber langsam</figcaption></figure>
+<figure><img src='lernrate-0-2.svg' alt='Dieselbe Parabel. Ein Bogen führt von Schritt 0 bei 1,4 zu Schritt 1 ein Stück tiefer, die weiteren Punkte liegen immer dichter beieinander, Schritt 4 fast im Tiefpunkt.'><figcaption>Lernrate 0,2: kommt zügig an</figcaption></figure>
+<figure><img src='lernrate-1-0.svg' alt='Dieselbe Parabel. Zwei Punkte auf gleicher Höhe, links bei 0 mit den Schritten 1 und 3, rechts bei 1,4 mit den Schritten 0, 2 und 4; vier Bögen springen zwischen ihnen hin und her, über den Tiefpunkt hinweg.'><figcaption>Lernrate 1,0: springt hin und her</figcaption></figure>
+<figure><img src='lernrate-1-1.svg' alt='Dieselbe Parabel. Von Schritt 0 bei 1,4 springt jeder Bogen auf die andere Seite und dort höher hinauf: Schritt 1 links, 2 rechts höher, 3 links noch höher, 4 rechts ganz oben.'><figcaption>Lernrate 1,1: schießt immer weiter weg</figcaption></figure>
+</div>
+
 Eine zu große Lernrate erkennt man daran, dass der Fehler von Schritt zu Schritt wächst oder auf und ab springt. Dann halbiert man sie. Eine zu kleine erkennt man daran, dass er sehr langsam, aber stetig fällt.
 <!-- /part -->
 
@@ -114,19 +121,19 @@ mit einem kleinen \\(h\\), etwa 0,0001. Das ist einfach, kostet aber für jeden 
 Haben die Regler verschiedene Größenordnungen, Lagen in Pixeln, Winkel im Bogenmaß, Farben von 0 bis 1, passt eine Lernrate für alle nicht mehr. Das Verfahren **Adam** gibt jedem Regler ein eigenes Tempo. Es merkt sich für jeden, in welche Richtung er zuletzt gegangen ist (der **Schwung** \\(m\\)) und wie groß seine Steigungen typisch sind (\\(v\\)), und teilt das eine durch das andere:
 
 ```pseudocode
-adam_schritt(regler, steigung, lernrate, t):
-    m ← 0,9 · m + 0,1 · steigung
-    v ← 0,999 · v + 0,001 · steigung²
-    m̂ ← m / (1 − 0,9^t)          # am Anfang sind m und v noch zu klein
-    v̂ ← v / (1 − 0,999^t)
-    regler ← regler − lernrate · m̂ / (√v̂ + 0,00000001)
+adam_step(param, slope, rate, t):
+    m ← 0.9 · m + 0.1 · slope
+    v ← 0.999 · v + 0.001 · slope²
+    m_corr ← m / (1 − 0.9^t)      (am Anfang sind m und v noch zu klein)
+    v_corr ← v / (1 − 0.999^t)
+    param ← param − rate · m_corr / (√v_corr + 0.00000001)
 ```
 
 So macht jeder Regler Schritte von etwa der Größe der Lernrate, egal wie groß seine Steigung gerade ist. Der Schwung glättet das Hin und Her, wenn die Steigung von Schritt zu Schritt das Vorzeichen wechselt. Diederik Kingma und Jimmy Ba haben Adam 2014 beschrieben; fast alle Programme, die heute etwas lernen, nehmen Adam oder ein Verfahren wie Adam.
 
-### Kleine Stapel
+### Kleine Batches
 
-Hängt der Fehler von sehr vielen Beispielen ab, Millionen Bilder oder Fotos, rechnet man ihn für jeden Schritt nur mit einigen davon aus, einem **Stapel** (englisch *batch*), jedes Mal mit anderen. Die Steigung wird ungenauer, aber jeder Schritt viel schneller (*stochastischer Gradientenabstieg*). Gaussian Splatting nimmt für jeden Schritt ein einziges Foto.
+Hängt der Fehler von sehr vielen Beispielen ab, Millionen Bilder oder Fotos, rechnet man ihn für jeden Schritt nur mit einigen davon aus, einem **Batch** (englisch für Stapel), jedes Mal mit anderen. Die Steigung wird ungenauer, aber jeder Schritt viel schneller (*stochastischer Gradientenabstieg*). Gaussian Splatting nimmt für jeden Schritt ein einziges Foto.
 <!-- /part -->
 
 ## Wo es hängenbleiben kann
