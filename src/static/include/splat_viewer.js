@@ -345,7 +345,6 @@ void main() {
             gameText.textContent = 'Y-Achse umkehren';
             game.append(this.invertY, gameText);
             this.gameSwitch = game;
-            switches.append(game);
             const auto = document.createElement('label');
             auto.className = 'form-check form-switch splat-viewer-game';
             auto.title = 'Zeichnet beim Bewegen so viele Splats, wie der Rechner flüssig schafft';
@@ -374,6 +373,9 @@ void main() {
             swing.title = 'Die Kamera bewegt sich langsam ein Stück zur Seite und zurück';
             swing.append(this.swing, swingText);
             switches.append(swing);
+            // last: it is there only in a place to walk through, and in front
+            // it would push the other switches aside when the scene changes
+            switches.append(game);
             this.canvas = document.createElement('canvas');
             this.canvas.className = 'splat-viewer-canvas';
             this.canvas.tabIndex = 0;
