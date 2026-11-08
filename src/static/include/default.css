@@ -14486,6 +14486,13 @@ html[data-bs-theme="dark"] .splat-viewer {
     overflow: hidden;
     background: var(--splat-ground);
 }
+/* a phone held upright: a square picture instead of a strip of 16:9 with
+   the two sticks over half of it */
+@media (max-width: 575.98px) and (orientation: portrait) {
+    .splat-viewer-stage {
+        aspect-ratio: 1 / 1;
+    }
+}
 .splat-viewer-canvas {
     display: block;
     width: 100%;
@@ -14524,6 +14531,22 @@ html[data-bs-theme="dark"] .splat-viewer {
     min-width: 0;
 }
 .splat-viewer-bar .btn { flex: none; }
+/* the folder button: square, as tall as the list of scenes beside it (one
+   height for both, 44 px on a touch screen) */
+.splat-viewer-bar {
+    --bar-height: 2.2rem;
+}
+.splat-viewer-bar select {
+    height: var(--bar-height);
+}
+.splat-viewer-bar .splat-viewer-icon-button {
+    width: var(--bar-height);
+    height: var(--bar-height);
+    padding: 0;
+}
+@media (pointer: coarse) {
+    .splat-viewer-bar { --bar-height: 44px; }
+}
 /* the switches in their own row: Bootstrap's form-switch without its
    block margin, the label in the size of the other controls */
 .splat-viewer-switches {

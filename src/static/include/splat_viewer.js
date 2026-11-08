@@ -407,6 +407,7 @@ void main() {
             // only the icon, beside the list of scenes: a line less, more
             // room for the picture; the name as its title and label
             open.innerHTML = "<i class='bi bi-folder2-open'></i>";
+            open.classList.add('splat-viewer-icon-button');
             open.title = 'Eigene Datei öffnen (.ply oder .splat)';
             open.setAttribute('aria-label', 'Eigene Datei öffnen');
             this.file = document.createElement('input');
@@ -992,7 +993,10 @@ void main() {
             for (let pass = 0; pass < 2; pass++) {
                 const below = root.getBoundingClientRect().bottom - this.stage.getBoundingClientRect().bottom;
                 const room = Math.min(window.innerHeight - covered - below - 32, 0.6 * window.innerHeight);
-                const width = Math.max(480, Math.floor(room * 16 / 9));
+                // the shape the stage has (16:9, square on a phone held upright)
+                const shape = getComputedStyle(this.stage).aspectRatio.split('/').map(Number);
+                const ratio = shape.length === 2 && shape[1] ? shape[0] / shape[1] : 16 / 9;
+                const width = Math.max(480, Math.floor(room * ratio));
                 root.style.maxWidth = width < column ? `${width}px` : '';
             }
         }
