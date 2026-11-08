@@ -192,20 +192,25 @@ const WORKSPACE_SCREENSHOT_STYLE = `
 }
 `;
 
-// The graphics card only for tutorials whose hooks ask for it (gpu: true: the
-// anaglyph scenes, the Backrooms, the Klötzchenwelt), everything else in
-// software as always: on the card, captures of VS Code now and then hung or
-// came back as the page repeated 3 × 3. On the card, ANGLE runs on Vulkan: on
-// OpenGL ES (gl-egl) it dropped whole draw calls in about one frame of five
-// (raylib's world in the Klötzchenwelt), and a picture could catch one.
-let browserGpu = false;
+// The graphics card only for the preview tabs of tutorials whose hooks ask
+// for it (gpu: true: the anaglyph scenes, the Backrooms, the Klötzchenwelt,
+// the splat viewer): on the card, captures of VS Code now and then hung or
+// came back as the page repeated 3 × 3 (or twice side by side). So VS Code
+// always runs in the main browser, in software, and such a tutorial's
+// preview tabs open in a second browser on the card, with the main
+// browser's cookies. On the card, ANGLE runs on Vulkan: on OpenGL ES
+// (gl-egl) it dropped whole draw calls in about one frame of five (raylib's
+// world in the Klötzchenwelt), and a picture could catch one.
+let previewGpu = false;      // this tutorial's preview tabs on the card
+let gpuBrowserPromise = null;
+let gpuContext = null;
 
 function gpuAvailable() {
     return process.env.TUTORIAL_SCREENSHOT_GPU === 'nvidia';
 }
 
-function webglArgs() {
-    if (browserGpu) {
+function webglArgs(gpu) {
+    if (gpu) {
         return ['--use-gl=angle', '--use-angle=vulkan', '--enable-features=Vulkan', '--enable-gpu', '--ignore-gpu-blocklist'];
     }
     return ['--use-gl=angle', '--use-angle=swiftshader'];
@@ -1212,8 +1217,19 @@ async function writeManifest(directory, manifest) {
 }
 
 async function ensureBrowser() {
-    if (!browserPromise) {
-        browserPromise = (async () => {
+    if (!browserPromise) browserPromise = launchBrowser(false);
+    return browserPromise;
+}
+
+// the second browser, on the graphics card, for preview tabs (previewGpu)
+async function ensureGpuBrowser() {
+    if (!gpuBrowserPromise) gpuBrowserPromise = launchBrowser(true);
+    return gpuBrowserPromise;
+}
+
+function launchBrowser(gpu) {
+    {
+        return (async () => {
             // Keep the browser-visible workspace.test URLs (cookies and nginx
             // routing depend on them), but connect directly to the Compose nginx
             // service. Chromium host mapping can override both host and port, so
@@ -1234,7 +1250,7 @@ async function ensureBrowser() {
                 'EXCLUDE localhost',
             ].join(',');
             console.log(`Tutorial screenshot browser routing: ${hostRules}`);
-            console.log(`Tutorial screenshot WebGL: ${browserGpu ? 'NVIDIA graphics card' : 'software (SwiftShader)'}`);
+            console.log(`Tutorial screenshot browser: ${gpu ? 'NVIDIA graphics card (preview tabs)' : 'software (SwiftShader)'}`);
             // Development runs on plain http. VS Code webviews (the ER-Werkstatt,
             // the Markdown preview) need a service worker, which browsers allow
             // only in a secure context; students on https have one.
@@ -1256,7 +1272,7 @@ async function ensureBrowser() {
                     // Backrooms bake their light in seconds), otherwise in
                     // software (SwiftShader). Either way VS Code/xterm can use
                     // its WebGL renderer.
-                    ...webglArgs(),
+                    ...webglArgs(gpu),
                     '--enable-webgl',
 
                     // '--disable-font-subpixel-positioning',
@@ -1265,7 +1281,6 @@ async function ensureBrowser() {
             });
         })();
     }
-    return browserPromise;
 }
 
 async function ensureContext() {
@@ -1283,6 +1298,32 @@ async function ensureContext() {
     });
     dashboard = await context.newPage();
     return context;
+}
+
+// A context in the browser on the card, set up like the main one, with the
+// main browser's cookies (the login, the Workspace's own), copied again
+// before every new preview tab: a Workspace reset gives it a new address.
+async function ensureGpuContext() {
+    if (!gpuContext) {
+        const browser = await ensureGpuBrowser();
+        const metrics = screenshotMetricsFor(DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
+        gpuContext = await browser.newContext({
+            viewport: { width: metrics.width, height: metrics.height },
+            deviceScaleFactor: metrics.deviceScaleFactor,
+            acceptDownloads: false,
+        });
+        gpuContext.on('page', page => {
+            page.on('crash', () => console.warn(`Tutorial screenshot tab crashed (graphics card): ${page.url()}`));
+        });
+    }
+    await gpuContext.addCookies(await context.cookies());
+    return gpuContext;
+}
+
+// a new tab for the preview: on the card for a tutorial that asks for it
+async function newPreviewPage() {
+    if (previewGpu) return (await ensureGpuContext()).newPage();
+    return context.newPage();
 }
 
 async function ensureBootstrapPage() {
@@ -1508,13 +1549,22 @@ async function restartBrowser(reason) {
     // A Browser from chromium.launch() has no process() (only a BrowserServer
     // has): close it, and give up on it after ten seconds.
     await withTimeout(browser?.close() ?? Promise.resolve(), 10_000, 'closing the old browser').catch(() => {});
+    await closeGpuBrowser();
+}
+
+async function closeGpuBrowser() {
+    const old = gpuBrowserPromise;
+    gpuBrowserPromise = null;
+    gpuContext = null;
+    const browser = await old?.catch(() => null);
+    await withTimeout(browser?.close() ?? Promise.resolve(), 10_000, 'closing the browser on the graphics card').catch(() => {});
 }
 
 async function prepareFreshWorkspace() {
     workspacePrepared = false;
     await ensureLoggedIn();
 
-    const others = context.pages().filter(page => page !== dashboard);
+    const others = context.pages().filter(page => page !== dashboard).concat(gpuContext ? gpuContext.pages() : []);
     try {
         await withTimeout(Promise.all(others.map(page => page.close().catch(() => {}))), 15_000, 'closing the tabs of the last render');
     } catch (error) {
@@ -1565,12 +1615,10 @@ async function acquireFreshWorkspace(gpu = false) {
         await workspacePreparationPromise;
     }
 
-    // on the graphics card or in software: a new browser when that changes
-    const wanted = gpu && gpuAvailable();
-    if (wanted !== browserGpu) {
-        browserGpu = wanted;
-        if (browserPromise) await restartBrowser(wanted ? 'this tutorial renders 3D on the graphics card' : 'back to software rendering');
-    }
+    // preview tabs on the graphics card or in software; VS Code always in
+    // software. The card's browser closes when a tutorial does not need it.
+    previewGpu = gpu && gpuAvailable();
+    if (!previewGpu && gpuBrowserPromise) await closeGpuBrowser();
 
     if (!workspacePrepared || !workspace || workspace.isClosed()) {
         await prepareFreshWorkspace();
@@ -2170,7 +2218,7 @@ async function closeLeftoverTabs() {
     const atPreview = (url) => {
         try { return new URL(url).host === host; } catch { return false; }
     };
-    const leftovers = context.pages().filter((page) => page !== preview && atPreview(page.url()));
+    const leftovers = preview.context().pages().filter((page) => page !== preview && atPreview(page.url()));
     for (const page of leftovers) {
         await withTimeout(page.close({ runBeforeUnload: false }), 10_000, 'closing a leftover tab').catch((error) => {
             console.log(`  a leftover tab did not close: ${error.message}`);
@@ -2179,10 +2227,10 @@ async function closeLeftoverTabs() {
     // Chromium itself may still hold a preview tab Playwright has lost track of.
     let lost = 0;
     try {
-        const session = await context.newCDPSession(preview);
+        const session = await preview.context().newCDPSession(preview);
         const own = (await session.send('Target.getTargetInfo')).targetInfo.targetId;
         await session.detach().catch(() => {});
-        const browserSession = await (await ensureBrowser()).newBrowserCDPSession();
+        const browserSession = await preview.context().browser().newBrowserCDPSession();
         const { targetInfos } = await browserSession.send('Target.getTargets');
         for (const target of targetInfos) {
             if (target.type !== 'page' || target.targetId === own || !atPreview(target.url)) continue;
@@ -2203,6 +2251,13 @@ async function goLive(hooks) {
     await goLive.click();
     preview = await popupPromise;
     await preview.waitForLoadState('domcontentloaded');
+    if (previewGpu) {
+        // the same address once more, in the browser on the card
+        const url = preview.url();
+        await withTimeout(preview.close(), 10_000, 'closing the Go Live tab').catch(() => {});
+        preview = await newPreviewPage();
+        await preview.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    }
     await waitForPreviewReady(preview, hooks);
 }
 
@@ -2212,7 +2267,7 @@ async function openPreviewPort(port, hooks, path = '/') {
     // loopback-only servers.
     const url = new URL(`/proxy/${port}${path}`, workspace.url()).href;
     if (preview && !preview.isClosed()) await preview.close();
-    preview = await context.newPage();
+    preview = await newPreviewPage();
     const deadline = Date.now() + 180_000;
     let lastError = 'application not ready';
     while (Date.now() < deadline) {
@@ -2256,7 +2311,7 @@ async function openNeo4jBrowser() {
     }
 
     if (preview && !preview.isClosed()) await preview.close();
-    preview = await context.newPage();
+    preview = await newPreviewPage();
     const response = await preview.goto(start.browser_url, {
         waitUntil: 'domcontentloaded', timeout: 60_000,
     });
@@ -2275,7 +2330,7 @@ async function openNeo4jBrowser() {
 // preview tab, logged in as the screenshot account like the dashboard.
 async function openSitePage(pathname, hooks) {
     if (preview && !preview.isClosed()) await preview.close();
-    preview = await context.newPage();
+    preview = await newPreviewPage();
     const response = await preview.goto(new URL(pathname, BASE_URL).href, {
         waitUntil: 'domcontentloaded', timeout: 60_000,
     });
@@ -2298,7 +2353,7 @@ async function previewReload(reset = false, hooks = null) {
     let previewSession = null;
     let injectedResetScript = null;
     if (reset) {
-        previewSession = await context.newCDPSession(preview);
+        previewSession = await preview.context().newCDPSession(preview);
         const installed = await previewSession.send('Page.addScriptToEvaluateOnNewDocument', {
             source: `
                 try { sessionStorage.clear(); } catch (error) {}
@@ -2332,7 +2387,7 @@ async function previewReload(reset = false, hooks = null) {
                     const url = preview.url();
                     console.log(`  the preview tab is gone; opening ${url} in a new one`);
                     await withTimeout(preview.close(), 10_000, 'closing the preview tab').catch(() => {});
-                    preview = await withTimeout(context.newPage(), 60_000, 'opening a new preview tab');
+                    preview = await withTimeout(newPreviewPage(), 60_000, 'opening a new preview tab');
                     await withTimeout(closeLeftoverTabs(), 20_000, 'closing leftover preview tabs').catch((error) => {
                         console.log(`  ${error.message}`);
                     });
@@ -3058,7 +3113,7 @@ async function executeAction(action, targetTab, hooks) {
 async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
     let session = deviceMetricSessions.get(page);
     if (!session) {
-        session = await context.newCDPSession(page);
+        session = await page.context().newCDPSession(page);
         deviceMetricSessions.set(page, session);
     }
 
