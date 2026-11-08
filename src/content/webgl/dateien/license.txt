@@ -7,7 +7,9 @@ under CC0 1.0 Universal (public domain), https://polyhaven.com/license:
   textured by James Ray Cock, rigged by Yann Kervran,
   https://polyhaven.com/a/alarm_clock_01
 - hotel-room.jpg: »Hotel Room« by Greg Zaal, https://polyhaven.com/a/hotel_room
-  (the tonemapped JPG, scaled to 2048 × 1024)
+  (the tonemapped JPG, scaled to 2048 × 1024 and made brighter: each
+  colour to the power 2.2, multiplied by 2.2, back to the power 1/2.2, so
+  that the chrome of the clock does not mirror a dim room)
 
 The OBJ files are the glTF of Poly Haven turned into OBJ with
 src/content/webgl/werkzeug/gltf_to_obj.py (the ukulele with --lay-down,

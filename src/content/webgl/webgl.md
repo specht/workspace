@@ -2160,7 +2160,7 @@ tab: preview
 viewport: 1029x579
 sleep: 7
 hook: clear 0.93 0.92 0.89
-hook: view 0 0.086 0.007 0.28 0.5 0.22
+hook: view 0 0.086 0.007 0.28 -0.3 0.3
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf hellem Grund.'>
 
