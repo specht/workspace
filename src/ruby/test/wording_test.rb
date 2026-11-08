@@ -132,14 +132,16 @@ class WordingTest < Minitest::Test
 
     # The activities of the section `hidden` are found, not advertised: no
     # page outside them names their addresses, and no public file of the
-    # site names them either.
+    # site names them either. The page named `entrance:` (a public activity,
+    # the first of the series) is the way in and may link to the first of
+    # them; so may the 404 page, which names the entrance (noclip).
     def test_the_hidden_section_stays_hidden
         sections = YAML.load_file(File.join(CONTENT, 'sections.yaml'))
         hidden = sections.find { |s| s['key'] == 'hidden' }
         skip 'no hidden section' unless hidden
         slugs = hidden['entries'].map { |e| e.to_s.delete_prefix('.') }
-        outside = files.reject { |path| slugs.any? { |slug| path.include?("/#{slug}/") } || File.basename(path) == 'sections.yaml' }
-        # the 404 page is the way in (noclip): it names the first address
+        inside = slugs + [hidden['entrance']].compact
+        outside = files.reject { |path| inside.any? { |slug| path.include?("/#{slug}/") } || File.basename(path) == 'sections.yaml' }
         public = Dir.glob(File.join(STATIC, '**', '*.{js,css,html}')).reject do |path|
             path.include?('/include/bootstrap') || path.include?('/tic80/') || File.basename(path) == '_not_found.html'
         end
@@ -147,12 +149,12 @@ class WordingTest < Minitest::Test
             found = (outside + public).select { |path| File.read(path).include?(slug) }
             assert_empty found, "#{slug} is named outside its section"
         end
-        # the series by the name in its first page's title, without the article
-        series = File.read(File.join(CONTENT, slugs.first, "#{slugs.first}.md"))[/^# (.+)$/, 1].to_s.split(/[:·]/).first.to_s.strip
-        series = series.sub(/\A(Die|Der|Das)\s+/, '')
-        unless series.empty?
-            named = (outside + public).select { |path| File.read(path).include?(series) }
-            assert_empty named, "the series »#{series}« is named outside its section"
+        # the levels by the titles of their pages (»Level 1: Die Tiefe«)
+        slugs.each do |slug|
+            title = File.read(File.join(CONTENT, slug, "#{slug}.md"))[/^# (.+)$/, 1].to_s.strip
+            next if title.empty?
+            named = (outside + public).select { |path| File.read(path).include?(title) }
+            assert_empty named, "»#{title}« is named outside its section"
         end
     end
 

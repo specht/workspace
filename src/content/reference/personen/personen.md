@@ -1347,3 +1347,15 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p class='person-credit'>Foto: Niccolò Caranti, 2018, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Joy_Buolamwini,_2018_(cropped).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
+
+<!-- year: 2005 -->
+<!-- part: parsons -->
+### Kane Parsons
+
+<div class='person'>
+<img src='parsons.webp' alt='Kane Parsons 2026 bei einem Interview: ein junger Mann mit dunklen Locken in einem grau melierten Pullover vor einer gelben Wand, mit einem leichten Lächeln.'>
+<p><strong>Kane Parsons</strong> (geboren 2005), amerikanischer Filmemacher, auf YouTube »Kane Pixels«. Im Januar 2022, mit 16, stellte er »The Backrooms (Found Footage)« online: neun Minuten, die aussehen wie eine alte Videokassette. 1991 tritt ein Kameramann einen Schritt zurück, fällt durch den Boden und flieht durch gelbe Gänge vor etwas Dunklem. Die Kamera, sagt das Video, tauchte erst fünf Jahre später wieder auf.</p>
+<p>Gefilmt ist daran nichts. Du baust deine Gänge aus Text, er baute seine im freien 3D-Programm Blender und rechnete das Wackeln der Kamera und das Rauschen der Kassette dazu. Mit diesem Video und rund zwei Dutzend weiteren wurden die Backrooms weltbekannt. Im Mai 2026 kam sein Kinofilm »Backrooms« heraus; mit 20 war er der jüngste Regisseur, dessen Film in Nordamerika am ersten Wochenende auf Platz 1 stand.</p>
+<p class='person-credit'>Foto: Lachlan und Austin Macfarlane, 2026, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Kane_Parsons.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->

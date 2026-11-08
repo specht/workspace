@@ -80,12 +80,14 @@
   icon: /images/joystick.png
   description: |
     Programmiere Spiele und Welten, durch die du selbst läufst: ein Spiel auf
-    einem kleinen Computer mit 64 KB, die Technik hinter Wolfenstein 3D und
-    eine Welt aus Blöcken mit Tag und Nacht.
+    einem kleinen Computer mit 64 KB, die Technik hinter Wolfenstein 3D,
+    eine Welt aus Blöcken mit Tag und Nacht und endlose gelbe Räume, die du
+    aus Textdateien baust.
   entries:
     - tic80
     - raycaster
     - raylib
+    - level-0-c1d8a2f7
 
 - key: writing
   compact: true
@@ -279,14 +281,16 @@
     - terminal-mystery
 
 # Hidden: not in the catalog and not pinnable; the pages are found by their
-# address (the Backrooms, level-0-…: by typing noclip on the 404 page).
+# address. Levels 1 to 3 of the series that begins with level-0-c1d8a2f7
+# (in »Spiele & 3D-Welten«, also reached by typing noclip on the 404 page):
+# each is linked only from the level before it.
 
 - key: hidden
   hidden: true
   label: Verborgen
   icon: /images/bookmark.png
+  entrance: level-0-c1d8a2f7
   entries:
-    - level-0-c1d8a2f7
     - level-1-7e3a91c4
     - level-2-b52d0f18
     - level-3-4c9e6a2d
