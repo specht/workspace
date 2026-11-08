@@ -19,8 +19,9 @@
 // forward; a switch turns the y axis of dragging round), "path": [[x, y,
 // z], …] (points along a free way through the place: a flight to a spot
 // walks along it instead of cutting through walls). Beside "view",
-// "spots": [{"name", "target", "distance", "yaw", "pitch", "roll"}, …]
-// become buttons that fly the camera there.
+// "spots": [{"name", "target", "distance", "yaw", "pitch", "roll", "note"},
+// …] become buttons that fly the camera there; "note" is a caption shown
+// over the picture on arrival, until one moves.
 //
 // Reads .splat (32 bytes a splat: position and scale as float32, RGBA and
 // the rotation as bytes, the format of antimatter15/splat), .csplat (16
@@ -445,7 +446,32 @@ void main() {
                 button.addEventListener('pointercancel', stop);
                 walk.append(button);
             }
-            stage.append(this.canvas, this.status, walk);
+            // the caption of a spot (»note«), shown on arrival until one moves
+            this.note = document.createElement('div');
+            this.note.className = 'splat-viewer-note';
+            this.note.hidden = true;
+            // fullscreen: the whole viewer, the controls with it (not on an
+            // iPhone, whose browser has no fullscreen for page elements)
+            const full = document.createElement('button');
+            full.type = 'button';
+            full.className = 'btn btn-light splat-viewer-full';
+            full.setAttribute('aria-label', 'Vollbild');
+            full.title = 'Vollbild (Esc beendet es)';
+            full.innerHTML = "<i class='bi bi-arrows-fullscreen'></i>";
+            full.hidden = !root.requestFullscreen;
+            full.addEventListener('click', () => {
+                if (document.fullscreenElement === root) document.exitFullscreen();
+                else root.requestFullscreen().catch(() => {});
+            });
+            document.addEventListener('fullscreenchange', () => {
+                const on = document.fullscreenElement === root;
+                full.innerHTML = on ? "<i class='bi bi-fullscreen-exit'></i>" : "<i class='bi bi-arrows-fullscreen'></i>";
+                full.setAttribute('aria-label', on ? 'Vollbild beenden' : 'Vollbild');
+                this.fit();
+                this.redraw();
+                this.canvas.focus({ preventScroll: true });
+            });
+            stage.append(this.canvas, this.status, walk, full, this.note);
             this.info = document.createElement('div');
             this.info.className = 'splat-viewer-info';
             // the keys and what they do, for the scene shown (showHelp)
@@ -613,6 +639,7 @@ void main() {
             this.up = 0;
             this.counter.value = '1';
             this.showSpots();
+            this.showNote(null);
             this.upload();
             this.fit();
             this.message('');
@@ -657,9 +684,15 @@ void main() {
                 this.roll = from.roll + ((spot.roll || 0) - from.roll) * e;
                 this.redraw();
                 if (t < 1) requestAnimationFrame(step);
-                else this.flight = null;
+                else { this.flight = null; this.showNote(spot); }
             };
+            this.showNote(null);
             requestAnimationFrame(step);
+        }
+
+        showNote(spot) {
+            this.note.textContent = spot && spot.note ? spot.note : '';
+            this.note.hidden = !(spot && spot.note);
         }
 
         // in a place with a free way through it (»path« in the view: points
@@ -744,8 +777,9 @@ void main() {
                 this.target = eye.map((v, c) => v - back[c] * distance);
                 this.redraw();
                 if (t < 1) requestAnimationFrame(step);
-                else this.flight = null;
+                else { this.flight = null; this.showNote(spot); }
             };
+            this.showNote(null);
             requestAnimationFrame(step);
         }
 
@@ -767,6 +801,7 @@ void main() {
         fit() {
             const root = this.root;
             root.style.maxWidth = '';
+            if (document.fullscreenElement === root) return;
             const column = root.parentElement ? root.parentElement.clientWidth : root.clientWidth;
             let covered = 0;
             for (const bar of document.querySelectorAll('footer, header, nav')) {
@@ -1035,6 +1070,7 @@ void main() {
                 if (turnSide || turnUp) this.turn(turnSide * 1.4 * dt, -turnUp * 1.0 * dt);
                 const speed = this.walkSpeed();
                 this.level();
+                this.showNote(null);
                 const sy = Math.sin(this.yaw), cy = Math.cos(this.yaw);
                 const forward = [-sy, 0, -cy], right = [cy, 0, -sy];
                 for (let i = 0; i < 3; i++) this.target[i] += (ahead * forward[i] + side * right[i]) * speed * dt;
@@ -1141,6 +1177,7 @@ void main() {
 
         turn(yaw, pitch) {
             this.level();
+            if (!this.flight) this.showNote(null);
             // the eye without the swing of »Kamera pendelt«, else turning would drift
             const sway = this.sway;
             this.sway = 0;
@@ -1159,6 +1196,7 @@ void main() {
         // point it turns around
         dolly(amount) {
             this.level();
+            this.showNote(null);
             const back = this.camera().back;
             this.target = this.target.map((v, k) => v - back[k] * amount);
         }

@@ -14621,6 +14621,65 @@ html[data-bs-theme="dark"] .splat-viewer {
 .splat-viewer-help kbd {
     font-size: 0.75rem;
 }
+/* the caption of a spot: bottom left over the picture, readable on any
+   scene; it lets clicks through to the picture. In a narrow viewer (a
+   phone) it would cover most of the picture, so it is smaller there. */
+.splat-viewer-note {
+    position: absolute;
+    left: 0.8em;
+    bottom: 0.8em;
+    max-width: min(32em, calc(100% - 5em));
+    padding: 0.45em 0.75em;
+    border-radius: 0.35rem;
+    background: rgba(20, 22, 26, 0.72);
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    pointer-events: none;
+}
+@container (max-width: 36em) {
+    .splat-viewer-note {
+        left: 0.4em;
+        bottom: 0.4em;
+        max-width: calc(100% - 4.4em);
+        padding: 0.3em 0.5em;
+        font-size: 0.72rem;
+        line-height: 1.3;
+    }
+}
+/* the fullscreen button in the bottom right corner of the picture; on a
+   touch screen the two walk buttons stand above it */
+.splat-viewer-full {
+    position: absolute;
+    right: 0.6em;
+    bottom: 0.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4em;
+    height: 2.4em;
+    padding: 0;
+    opacity: 0.85;
+}
+.splat-viewer-full .bi { margin: 0; }
+@media (pointer: coarse) {
+    .splat-viewer-walk { bottom: 3.6em; }
+}
+/* in fullscreen the picture takes all the room the controls leave */
+.splat-viewer:fullscreen {
+    display: flex;
+    flex-direction: column;
+    max-width: none !important;
+    margin: 0;
+    padding: 0.8em 1.2em 0.6em;
+    background: var(--bs-body-bg);
+    overflow-y: auto;
+}
+.splat-viewer:fullscreen .splat-viewer-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+}
 .splat-viewer-canvas:focus-visible {
     outline: 2px solid var(--bs-primary);
     outline-offset: -2px;

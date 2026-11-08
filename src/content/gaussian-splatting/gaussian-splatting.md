@@ -1207,7 +1207,7 @@ Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
 hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
 würde dunkel und flau.
 
-<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer (1,2 Mio. Splats, 19 MB)", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1}, {"name": "Aus der Ecke", "target": [-2.4, 1.0, -2.4], "distance": 0.3, "yaw": -2.6, "pitch": 0.2}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1}, {"name": "Bildschirm", "target": [-0.2, 0.7, -1.9], "distance": 0.3, "yaw": 0.35, "pitch": 0}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5}]}, {"name": "Artillery Passage (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true, "path": [[0.2, 0.5, -21], [0.2, 0.5, 9], [1.0, 0.5, 13], [1.1, 0.5, 20], [1.5, 0.5, 26], [1.5, 0.5, 32], [1.0, 3, 40]]}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schilder", "target": [0.2, 1.5, 1.5], "distance": 0.3, "yaw": 2.85, "pitch": -0.15}, {"name": "Grapeshots", "target": [-0.6, 0.6, 8.5], "distance": 0.3, "yaw": 4.0, "pitch": 0}, {"name": "Graffiti", "target": [0.6, 0.4, 10.5], "distance": 0.3, "yaw": 2.0, "pitch": 0.05}, {"name": "Plakat", "target": [0.6, 0.6, 23], "distance": 0.3, "yaw": 2.6, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Durch die Laterne", "target": [0.2, 3.95, -12.2], "distance": 0.3, "yaw": 0, "pitch": 0.03, "roll": -0.04}, {"name": "Von unten", "target": [0.15, -0.7, -10.8], "distance": 0.3, "yaw": 0, "pitch": -0.75}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer (1,2 Mio. Splats, 19 MB)", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "note": "Kreideschrift an der Tafel: feine Striche aus vielen kleinen Splats."}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1, "note": "Das ganze Zimmer aus etwa 1,2 Millionen Splats, gelernt aus Fotos."}, {"name": "Aus der Ecke", "target": [-2.4, 1.0, -2.4], "distance": 0.3, "yaw": -2.6, "pitch": 0.2, "note": "Licht durch die Fenster: Helligkeit und Farben kommen aus den Fotos, nicht aus einer Lampe im Programm."}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1, "note": "Die bemalte Tafel an der Rückwand: Je mehr Einzelheiten, desto kleiner und dichter die Splats."}, {"name": "Bildschirm", "target": [-0.2, 0.7, -1.9], "distance": 0.3, "yaw": 0.35, "pitch": 0, "note": "Im schwarzen Bildschirm spiegelt sich das Zimmer. Das Spiegelbild liegt als Splats hinter dem Bildschirm: Schalt »Kamera pendelt« ein."}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1, "note": "Unter die Tische hat kaum eine Kamera geschaut: Hier wird das Bild verschwommen."}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5, "note": "Von außen: eine Wolke aus Splats, die nur von innen ein Zimmer ergibt."}]}, {"name": "Artillery Passage (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true, "path": [[0.2, 0.5, -21], [0.2, 0.5, 9], [1.0, 0.5, 13], [1.1, 0.5, 20], [1.5, 0.5, 26], [1.5, 0.5, 32], [1.0, 3, 40]]}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "note": "Die Gasse aus fast 5 Millionen Splats: kein Dreieck, keine Textur, nur farbige Flecken im Raum."}, {"name": "Schilder", "target": [0.2, 1.5, 1.5], "distance": 0.3, "yaw": 2.85, "pitch": -0.15, "note": "Schrift auf Schildern: Ihre scharfen Kanten bestehen aus vielen kleinen, gestreckten Splats."}, {"name": "Grapeshots", "target": [-0.6, 0.6, 8.5], "distance": 0.3, "yaw": 4.0, "pitch": 0, "note": "Der helle Fleck auf der Tür spiegelt die Lampe in der Durchfahrt gegenüber (»Graffiti«). Das Training hat ihn hinter die Tür gelegt: Schalt »Kamera pendelt« ein und sieh, wie er wandert."}, {"name": "Graffiti", "target": [0.6, 0.4, 10.5], "distance": 0.3, "yaw": 2.0, "pitch": 0.05, "note": "Eine Durchfahrt mit Lampe: Licht und Schatten berechnet hier kein Programm, sie sind so gelernt, wie die Fotos sie zeigen."}, {"name": "Plakat", "target": [0.6, 0.6, 23], "distance": 0.3, "yaw": 2.6, "pitch": 0, "note": "Das Ende der Gasse: Die Häuser gegenüber haben weniger Fotos gesehen und werden zum Rand hin unscharf."}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "note": "Ein Schaufenster: Auslage, Gitter und Spiegelung im Glas zugleich. Klassische Computergrafik müsste Glas, Spiegelung und Licht einzeln berechnen."}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35, "note": "Etwas über Kopfhöhe: Auch zwischen den Orten, an denen fotografiert wurde, lässt sich jedes Bild ausrechnen."}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1, "note": "Goldene Buchstaben schräg von unten: Ihr Glanz kommt aus den Fotos, kein Programm hat ihn berechnet."}, {"name": "Durch die Laterne", "target": [0.2, 3.95, -12.2], "distance": 0.3, "yaw": 0, "pitch": 0.03, "roll": -0.04, "note": "Durch das Glas der Laterne: Für Glas braucht klassische Computergrafik Brechung und Spiegelung, hier sind es Splats wie alle anderen."}, {"name": "Von unten", "target": [0.15, -0.7, -10.8], "distance": 0.3, "yaw": 0, "pitch": -0.75, "note": "Ganz unten am Pflaster: Hierher hat kaum eine Kamera geschaut, deshalb wirkt das Pflaster verwischt."}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0, "note": "Im Laden: In ihn hinein hat keine Kamera fotografiert. Die Fassade ist von hinten nur ein dünner Schleier aus Splats."}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15, "note": "Außerhalb der Gasse: Was keine Kamera gesehen hat, hat das Training nie verbessert."}]}]'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl das Klassenzimmer, flieg mit »Zur
@@ -1230,26 +1230,26 @@ CC BY 4.0 auf [superspl.at](https://superspl.at/scene/f4897475)
 veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 1,2 Gigabyte groß; für diese Seite stehen dieselben Splats in einem
 kompakteren Format in 80 Megabyte. So eine große Szene braucht eine Weile
-zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schieb
-»Anzahl der Splats« nach links: Dann zeichnet der Viewer nur die Splats,
-die am meisten zeigen.
+zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schalt
+»Automatisch flüssig« ein: Dann zeichnet der Viewer nur so viele der
+Splats, die am meisten zeigen, wie dein Rechner flüssig schafft. Von Hand
+geht das mit »Anzahl der Splats«.
 
 Wähl im Viewer »Artillery Passage (5 Mio. Splats, 80 MB)«: Die Kamera steht
 mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
 Touchscreen mit den beiden Knöpfen), mit Q und E nach unten und oben, mit
 den Pfeiltasten oder durch Ziehen schaust du dich um, und mit dem Mausrad
 gehst du dorthin, wohin du schaust. Unter dem Viewer steht, welche Taste
-was tut. In Street View von Google geht das
-nur in Sprüngen, von einem Aufnahmeort zum nächsten, denn dazwischen gibt es
-kein Foto. Aus Splats lässt sich jedes Bild dazwischen ausrechnen, und du
-gehst fließend.
+was tut. In Street View von Google geht das nur in Sprüngen, von einem
+Aufnahmeort zum nächsten, denn dazwischen gibt es kein Foto. Aus Splats
+lässt sich jedes Bild dazwischen ausrechnen, und du gehst fließend.
 
 Die Knöpfe unter »Standorte« führen dich durch die Gasse: zu den Schildern
 über den Läden, zu einem Graffito in einer Durchfahrt, zu einem Plakat am
 Ende der Gasse, schräg unter das Schild des Juweliers und von ganz unten an
-einer Laterne hinauf. Schieb dort die drei
-Regler und achte darauf, wie groß die Splats an Schrift und Fensterrahmen
-sind und wie groß auf einer glatten Wand. Die letzten beiden Standorte
+einer Laterne hinauf; dazwischen geht die Kamera die Gasse entlang. Schieb
+dort die drei Regler und achte darauf, wie groß die Splats an Schrift und
+Fensterrahmen sind und wie groß auf einer glatten Wand. Die letzten beiden Standorte
 zeigen, wo die Täuschung endet: in einem Laden, durch dessen Fassade du
 hinaus auf die Gasse schaust, und weit draußen vor der Gasse. Dort zerfallen
 die Fassaden an den Seiten in Schlieren, und nur in der Mitte bleibt die
@@ -1396,7 +1396,8 @@ den Rändern der Striche haben.
 schalt »Kamera pendelt« ein. Im schwarzen Bildschirm spiegelt sich das
 Zimmer. Achte darauf, ob sich das Spiegelbild mit dem Rahmen des
 Bildschirms bewegt oder anders als er. Schieb dann »Weichheit der Splats«
-nach links.
+nach links. Dasselbe in der Gasse bei »Grapeshots«: Auf der grünen Tür der
+Bar liegt ein heller Glanzfleck von einer Lampe.
 </div>
 
 Jeder Splat hat hier eine einzige Farbe, aus welcher Richtung man ihn auch
@@ -1489,9 +1490,9 @@ Für eigene Fotos:
    schärfer wird.
 4. **Ansehen.** Brush speichert die Szene als `.ply`. Öffne sie oben im
    Viewer mit »Eigene Datei öffnen«: Der Viewer liest die Datei in deinem
-   Browser, sie wird nirgends hochgeladen. Liegt die Szene auf der Seite oder
-   steht sie auf dem Kopf, dreht »Aufrichten« sie jedes Mal um eine
-   Vierteldrehung.
+   Browser, sie wird nirgends hochgeladen. Neben »Eigene Datei öffnen«
+   erscheint dann der Knopf »Aufrichten«: Liegt die Szene auf der Seite oder
+   steht sie auf dem Kopf, dreht er sie jedes Mal um eine Vierteldrehung.
 
 ## Wie geht es weiter?
 
