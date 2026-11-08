@@ -148,6 +148,7 @@
     - lzw
     - gif
     - jpeg
+    - .fraktale-kompression
     - steganography
 
 - key: networks

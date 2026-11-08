@@ -1,0 +1,31 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt ein leerer
+# Anfang, eine Stufe davor und in fehler/ je ein typischer Fehler.
+format: 1
+activity: fraktale-kompression
+examples:
+  verkleinern:
+    pass:
+      - { files: { fraktal/fraktal.py: stufen/fraktal-1.py } }
+      - { files: { fraktal/fraktal.py: stufen/fraktal-6.py } }
+    fail:
+      - { files: { fraktal/fraktal.py: { text: "import numpy as np\n\n\ndef shrink(block):\n    ...\n" } } }
+      - { files: { fraktal/fraktal.py: fehler/shrink-jedes-zweite.py } }
+  passen:
+    pass:
+      - { files: { fraktal/fraktal.py: stufen/fraktal-2.py } }
+      - { files: { fraktal/fraktal.py: stufen/fraktal-6.py } }
+    fail:
+      - { files: { fraktal/fraktal.py: stufen/fraktal-1.py } }
+      - { files: { fraktal/fraktal.py: fehler/fit-ohne-grenze.py } }
+      - { files: { fraktal/fraktal.py: fehler/fit-nenner-null.py } }
+  decodieren:
+    pass:
+      - { files: { fraktal/fraktal.py: stufen/fraktal-4.py } }
+      - { files: { fraktal/fraktal.py: stufen/fraktal-5.py } }
+      - { files: { fraktal/fraktal.py: stufen/fraktal-6.py } }
+    fail:
+      - { files: { fraktal/fraktal.py: stufen/fraktal-3.py } }
+      - { files: { fraktal/fraktal.py: fehler/decode-selbes-bild.py } }
+      - { files: { fraktal/fraktal.py: fehler/decode-xy-vertauscht.py } }

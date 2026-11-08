@@ -1,0 +1,207 @@
+# Aufgaben zu »Fraktale Bildkompression«. Format: docs/aufgaben.md. Alles
+# liegt in /workspace/fraktal; die Funktionen der Lernenden rechnen mit numpy
+# (pip install numpy pillow, wie die Seite sagt). Die Zahlen gehören zu den
+# Programmen in stufen/ und zu den Fotos in beispiele/.
+format: 1
+activity: fraktale-kompression
+tasks:
+  - id: kopiermaschine
+    title: Die Kopiermaschine und das Rauschen
+    prediction: true
+    prompt: |
+      Die Kopiermaschine hat aus dem Foto in acht Runden ein feines Dreieck
+      aus Dreiecken gemacht. Was zeigt `kopie-8.png`, wenn sie mit Rauschen
+      anfängt (`python3 kopiermaschine.py rauschen`)?
+    check:
+      type: choice
+      options:
+        - Dasselbe feine Dreieck wie vom Foto aus; vom Rauschen ist nichts mehr zu sehen.
+        - Ein Dreieck aus Dreiecken, die alle mit Rauschen gefüllt sind.
+        - Weiter nur Rauschen, denn aus Rauschen kann kein Muster entstehen.
+        - Ein graues Bild, weil sich das Rauschen beim Verkleinern zu Grau mittelt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Jede Runde verkleinert jede Kopie auf die Hälfte. Nach acht Runden ist ein Stück Rauschen kleiner als ein Pixel, und was davon in einem Pixel landet, ist sein Mittelwert.
+      - when: { picked: 2 }
+        say: Das Muster kommt nicht aus dem Startbild, sondern aus der Regel, wohin die drei Kopien kommen. Die gilt für jedes Bild gleich.
+      - when: { picked: 3 }
+        say: Grau mittelt sich das Rauschen nur innerhalb der winzigen Kopien. Wo keine Kopie liegt, füllt die Maschine in jeder Runde Weiß; dort bleibt es weiß.
+    solution: |
+      Dasselbe Dreieck: Jede Runde verkleinert das Startbild auf die Hälfte,
+      nach acht Runden auf 1/256. Übrig bleibt nur die Regel der Maschine,
+      wohin die drei Kopien kommen, und die ist für jedes Startbild gleich.
+
+  - id: verkleinern
+    title: Halb so groß
+    prompt: |
+      Schreib in `fraktal/fraktal.py` die Funktion `shrink(block)`: Jedes
+      Pixel des Ergebnisses ist der Mittelwert eines Quadrats von 2 × 2
+      Pixeln. Die Prüfung ruft sie mit kleinen Arrays auf, auch mit einem,
+      das breiter als hoch ist.
+    check:
+      type: python
+      file: fraktal/fraktal.py
+      cases:
+        - call: 'shrink(np.array([[0.0, 2.0], [4.0, 6.0]])).tolist()'
+          expect: '[[3.0]]'
+          say: Aus vier Pixeln wird eines mit ihrem Mittelwert, (0 + 2 + 4 + 6) / 4 = 3.
+        - call: 'shrink(np.arange(16.0).reshape(4, 4)).tolist()'
+          expect: '[[2.5, 4.5], [10.5, 12.5]]'
+          say: Links oben sind es die Zahlen 0, 1, 4 und 5, Mittelwert 2,5. Nimmt die Funktion nur jedes zweite Pixel (`block[::2, ::2]`), kommt 0 heraus statt 2,5.
+        - call: 'list(shrink(np.ones((4, 8))).shape)'
+          expect: '[2, 4]'
+          say: Ein Array mit 4 Zeilen und 8 Spalten wird zu einem mit 2 Zeilen und 4 Spalten. Sind Breite und Höhe vertauscht?
+    solution: |
+      ```python
+      def shrink(block):
+          h, w = block.shape
+          return block.reshape(h // 2, 2, w // 2, 2).mean(axis=(1, 3))
+      ```
+
+  - id: passen
+    title: Kontrast und Helligkeit
+    prompt: |
+      Schreib in `fraktal/fraktal.py` die Funktion `fit(domain, target)`:
+      Sie gibt `s`, `o` und den Fehler zurück, mit dem `s * domain + o` dem
+      Block `target` am nächsten kommt, und begrenzt `s` auf −1 bis 1.
+    check:
+      type: python
+      file: fraktal/fraktal.py
+      cases:
+        - call: 'tuple(round(float(v), 3) for v in fit(np.arange(64.0).reshape(8, 8), np.arange(64.0).reshape(8, 8)))'
+          expect: '(1.0, 0.0, 0.0)'
+          say: Zwei gleiche Blöcke passen mit s = 1 und o = 0 ohne Fehler.
+        - call: 'tuple(round(float(v), 3) for v in fit(np.arange(64.0).reshape(8, 8), 0.5 * np.arange(64.0).reshape(8, 8) + 20))'
+          expect: '(0.5, 20.0, 0.0)'
+          say: Der Zielblock ist der halbe Domain-Block plus 20; s = 0,5 und o = 20 treffen ihn genau. Wird o mit dem Mittelwert von target minus s mal dem Mittelwert von domain gerechnet?
+        - call: 'tuple(round(float(v), 3) for v in fit(np.arange(64.0).reshape(8, 8), 100 - np.arange(64.0).reshape(8, 8)))'
+          expect: '(-1.0, 100.0, 0.0)'
+          say: Hell und dunkel sind vertauscht; das trifft s = −1 mit o = 100 genau. Ein negatives s darf bleiben, nur nicht unter −1.
+        - call: 'tuple(round(float(v), 3) for v in fit(np.arange(64.0).reshape(8, 8), 3 * np.arange(64.0).reshape(8, 8)))'
+          expect: '(1.0, 63.0, 87360.0)'
+          say: Der Zielblock hat dreimal so viel Kontrast; s wäre 3, ist aber auf 1 begrenzt. Mit s = 1 ist o = 94,5 − 31,5 = 63, und der Fehler wird mit diesem begrenzten s gerechnet.
+        - call: 'tuple(round(float(v), 3) for v in fit(np.full((8, 8), 5.0), np.arange(64.0).reshape(8, 8)))'
+          expect: '(0.0, 31.5, 21840.0)'
+          say: Ein Domain-Block, der überall gleich hell ist, hat keinen Kontrast; s wird 0 und o der Mittelwert des Zielblocks. Teilt die Funktion hier durch 0?
+    solution: |
+      ```python
+      def fit(domain, target):
+          d = domain - domain.mean()
+          t = target - target.mean()
+          s = (d * t).sum() / max((d * d).sum(), 1e-9)
+          s = min(max(s, -1.0), 1.0)
+          o = target.mean() - s * domain.mean()
+          error = ((s * domain + o - target) ** 2).sum()
+          return s, o, error
+      ```
+
+  - id: bytes
+    title: So groß ist der Code
+    prompt: |
+      Die Strandhäuser haben 2400 Range-Blöcke, und jeder braucht 27 Bits.
+      Wie viele Bytes braucht der ganze Code?
+    check:
+      type: number
+      expect: 8100
+      tolerance: 1
+    feedback:
+      - when: { equals: 64800 }
+        say: Das sind die Bits. Ein Byte hat 8 Bits.
+      - when: { equals: 153600 }
+        say: So groß ist das Foto selbst in Graustufen, 480 · 320 Bytes. Gefragt ist der Code.
+    solution: |
+      2400 · 27 = 64 800 Bits, geteilt durch 8 sind das 8100 Bytes, statt
+      480 · 320 = 153 600 Bytes für die Pixel: etwa ein Neunzehntel.
+
+  - id: decodieren
+    title: Ein Schritt des Decoders
+    prompt: |
+      Schreib in `fraktal/fraktal.py` die Funktion `decode_step(image, code)`:
+      Sie gibt ein neues Bild zurück, in dem jeder Range-Block aus seinem
+      Domain-Block im alten Bild gemacht ist. Die Prüfung gibt ihr ein Bild
+      mit 16 × 16 Pixeln und einen Code mit einem oder zwei Einträgen.
+    check:
+      type: python
+      file: fraktal/fraktal.py
+      cases:
+        - call: 'round(float(decode_step(np.arange(256.0).reshape(16, 16), np.array([(0, 0, 0, 0, 0, 0.5, 10.0)]))[0, 0]), 2)'
+          expect: 14.25
+          say: Der Domain-Block ist das ganze Bild, verkleinert ist sein erstes Pixel (0 + 1 + 16 + 17) / 4 = 8,5, mal 0,5 plus 10 gibt 14,25. Wird der Domain-Block mit 2 · R Pixeln herausgeschnitten und verkleinert?
+        - call: 'round(float(decode_step(np.arange(256.0).reshape(16, 16), np.array([(0, 0, 0, 0, 4, 0.5, 10.0)]))[0, 0]), 2)'
+          expect: 21.25
+          say: In Lage 4 ist der verkleinerte Block gespiegelt; links oben steht dann, was vorher rechts oben stand, 22,5, mal 0,5 plus 10. Wird `turned(small, k)` mit der Lage aus dem Code aufgerufen?
+        - call: 'round(float(decode_step(np.arange(256.0).reshape(16, 16), np.array([(8, 8, 0, 0, 0, 0.5, 10.0)]))[8, 8]), 2)'
+          expect: 14.25
+          say: Der Range-Block liegt bei (8, 8), rechts unten; dorthin gehört das Ergebnis.
+        - call: 'round(float(decode_step(np.arange(256.0).reshape(16, 16), np.array([(8, 0, 0, 0, 0, 0.5, 10.0), (0, 8, 0, 0, 0, 0.0, 0.0)]))[0, 8]), 2)'
+          expect: 14.25
+          say: Der erste Block liegt bei x = 8, y = 0, also oben rechts, in Zeile 0 und Spalte 8. Sind x und y vertauscht? Das Array wird mit [y, x] angesprochen, Zeile zuerst.
+        - call: 'round(float(decode_step(np.zeros((16, 16)), np.array([(0, 0, 0, 0, 0, 0.0, 200.0), (8, 8, 0, 0, 0, 1.0, 0.0)]))[8, 8]), 2)'
+          expect: 0.0
+          say: Der zweite Block liest das alte Bild, das überall 0 ist. Kommt 200 heraus, schreibt die Funktion in dasselbe Bild, aus dem sie liest; schreib in ein neues (`np.empty_like(image)`).
+    solution: |
+      ```python
+      def decode_step(image, code):
+          new = np.empty_like(image)
+          for x, y, dx, dy, k, s, o in code:
+              x, y, dx, dy, k = int(x), int(y), int(dx), int(dy), int(k)
+              small = shrink(image[dy:dy + 2 * R, dx:dx + 2 * R])
+              new[y:y + R, x:x + R] = s * turned(small, k) + o
+          return new
+      ```
+
+  - id: startbild
+    title: Ein anderes Startbild
+    prediction: true
+    prompt: |
+      Der Code in `code.npy` gehört zu den Strandhäusern. Was zeigt
+      `schritt-8.png`, wenn der Decoder mit Rauschen anfängt statt mit Grau
+      (`python3 fraktal.py decode rauschen`)?
+    check:
+      type: choice
+      options:
+        - Dieselben Strandhäuser wie vom grauen Bild aus.
+        - Die Strandhäuser, aber verrauscht, weil das Rauschen in jedem Schritt weitergegeben wird.
+        - Nur Rauschen, weil der Code ohne das Foto nichts weiß.
+        - Ein Bild aus groben Kästchen, weil das Rauschen die Kanten zerstört.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Weitergegeben wird nur das s-fache, und s ist höchstens 1; die verkleinerten Blöcke mitteln das Rauschen außerdem. Von Schritt zu Schritt bleibt immer weniger davon.
+      - when: { picked: 2 }
+        say: Nach einem Schritt aus Grau sah man schon Kästchen; die stammen aus o, nicht aus dem Startbild. Dasselbe passiert mit Rauschen.
+      - when: { picked: 3 }
+        say: Die Kanten kommen aus den Partnern der Blöcke, nicht aus dem Startbild. Aus Grau sind sie auch entstanden, obwohl Grau gar keine Kanten hat.
+    solution: |
+      Dieselben Strandhäuser: Der Code sagt nur, wie jeder Block aus einem
+      anderen entsteht. Jeder Schritt verkleinert, was vom Startbild noch
+      übrig ist, und nach acht Schritten ist davon nichts mehr zu sehen.
+
+  - id: gegen-jpeg
+    title: Fraktal gegen JPEG
+    prediction: true
+    prompt: |
+      Der fraktale Code der Strandhäuser braucht etwa 8100 Bytes und kommt
+      auf etwa 33 dB. Ein JPEG in Graustufen mit der Qualität 30 ist etwa
+      genauso groß. Wie gut ist es?
+    check:
+      type: choice
+      options:
+        - Viel schlechter, unter 25 dB.
+        - Etwas schlechter, um 30 dB.
+        - Etwa gleich gut, ein, zwei Dezibel mehr oder weniger.
+        - Viel besser, über 40 dB.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Mit der Qualität 30 hat ein JPEG noch kaum sichtbare Blöcke. Unter 25 dB fällt es bei diesem Foto erst mit Qualität 3 oder weniger.
+      - when: { picked: 1 }
+        say: Etwas besser als 30 dB ist das JPEG schon; bei diesem Foto mit seinen großen ruhigen Flächen hat JPEG es leicht.
+      - when: { picked: 3 }
+        say: Über 40 dB kommt ein JPEG bei diesem Foto erst mit Qualität 80, und dann ist es gut doppelt so groß.
+    solution: |
+      Etwa gleich gut: Das JPEG kommt auf etwa 34 dB, gut ein Dezibel mehr.
+      Bei diesem Foto, das sich oft wiederholt, hält die fraktale
+      Kompression mit; bei feinen Einzelheiten wie den Ästen des Kirschbaums
+      liegt sie weit zurück.

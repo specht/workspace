@@ -1,0 +1,12 @@
+Fotos von Ian Kobylanski (https://koby.photography/), mit seiner schriftlichen
+Genehmigung für den Hackschule Workspace, wie die Fotos in »JPEG« und
+»Steganographie«.
+
+skytree-original.webp       Street Photography | Tokyo, Japan (zwei Frauen in Rot vor dem Skytree)
+kirschbluete-original.webp  Street Photography | Morning Commute Under Sakuras | Tokyo, Japan
+
+In der größten Fassung, die seine Website ausliefert (geholt am 8. November
+2026). Daraus gemacht, mit src/scripts/drawings auf 480 × 320 verkleinert:
+src/static/fraktal/skytree.png und src/static/fraktal/kirschbluete.png.
+strandhaeuser.png und moewen.png dort sind dieselben Dateien wie in
+src/static/steganography/.
