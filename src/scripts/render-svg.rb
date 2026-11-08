@@ -11,6 +11,10 @@
 # The palette maps the colours the diagrams use (Tailwind greys, the site's
 # blue). A colour that is not in it stops the script: add it here first, so
 # that nothing stays light by accident.
+#
+# A shape that needs another opacity in the dark picture carries it as
+# data-dark-fill-opacity="0.3" right after its fill-opacity; the dark picture
+# takes that value instead.
 
 require 'open3'
 require 'tmpdir'
@@ -42,6 +46,7 @@ light = File.read(svg_path)
 unknown = light.scan(/#[0-9a-fA-F]{6}\b/).map(&:downcase).uniq - DARK.keys
 abort "#{svg_path}: no dark colour for #{unknown.join(', ')}; add it to DARK in #{__FILE__}" unless unknown.empty?
 dark = light.gsub(/#[0-9a-fA-F]{6}\b/) { |colour| DARK.fetch(colour.downcase) }
+dark = dark.gsub(/fill-opacity="[^"]*" data-dark-fill-opacity="([^"]*)"/) { "fill-opacity=\"#{Regexp.last_match(1)}\"" }
 
 def render(svg, target, width)
     Dir.mktmpdir do |dir|
