@@ -343,7 +343,6 @@ void main() {
             this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.showValues(); this.upload(); });
             this.sizeValue = document.createElement('output');
             sizeLabel.append(this.slider, this.sizeValue);
-            sliders.append(sizeLabel);
             const countLabel = document.createElement('label');
             countLabel.className = 'splat-viewer-size';
             countLabel.innerHTML = '<span>Anzahl der Splats</span>';
@@ -356,7 +355,6 @@ void main() {
             });
             this.countValue = document.createElement('output');
             countLabel.append(this.counter, this.countValue);
-            sliders.append(countLabel);
             const sharpLabel = document.createElement('label');
             sharpLabel.className = 'splat-viewer-size';
             sharpLabel.innerHTML = '<span>Weichheit der Splats</span>';
@@ -373,7 +371,9 @@ void main() {
             this.sharpValue = document.createElement('output');
             this.sharpValue.title = '100 % ist die Glocke von Gauß, 0 % eine Ellipse mit scharfem Rand';
             sharpLabel.append(this.sharpness, this.sharpValue);
-            sliders.append(sharpLabel);
+            // first what changes the look of each splat, then how many, then
+            // their size
+            sliders.append(sharpLabel, countLabel, sizeLabel);
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
@@ -773,14 +773,21 @@ void main() {
             // the street, looking back into it), the camera walks backwards
             // and keeps looking, like a camera on a dolly.
             const walking = (() => {
-                const p = points[Math.min(2, points.length - 2)], q = points[Math.max(points.length - 3, 1)];
+                // from where the walk joins the path to where it leaves it
+                const p = points[1], q = points[points.length - 2];
                 const dx = q[0] - p[0], dz = q[2] - p[2];
                 if (Math.hypot(dx, dz) <= 0.5) return null;
                 const ahead = Math.atan2(-dx, -dz);
                 const off = (yaw) => Math.abs(nearAngle(yaw, ahead) - ahead);
                 return off(from.yaw) > 2.2 && off(spot.yaw) > 2.2 ? ahead + Math.PI : ahead;
             })();
-            const time = Math.min(5000, Math.max(1400, 900 + 110 * total));
+            // long enough for the walk and for the turns: a turn happens in
+            // a third of the time and should not exceed about 2 radians a
+            // second on average (3 at its fastest), or it jars
+            const turnAway = walking !== null && total > 3 ? Math.abs(nearAngle(walking, from.yaw) - from.yaw) : Math.abs(nearAngle(spot.yaw, from.yaw) - from.yaw);
+            const turnTo = walking !== null && total > 3 ? Math.abs(nearAngle(spot.yaw, walking) - walking) : 0;
+            const turning = walking !== null && total > 3 ? Math.max(turnAway, turnTo) / (2 * 0.35) : turnAway / 2;
+            const time = Math.max(Math.min(5000, Math.max(1400, 900 + 110 * total)), 1000 * turning);
             const start = performance.now();
             const flight = this.flight = {};
             const smooth = (x) => { const c = Math.min(1, Math.max(0, x)); return c * c * (3 - 2 * c); };
