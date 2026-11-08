@@ -7,7 +7,7 @@ duration: 3 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Splats statt Dreiecke, Projektion mit einer Kamera, Sortieren nach der Tiefe, Alpha-Blending), Vertiefung Künstliche Intelligenz (Gradientenabstieg: ein Bild aus Splats lernen)"
 topics: [computergrafik, ki]
 requires: [webgl, kata-lists]
-reference: [vektoren]
+reference: [vektoren, sortieren, bits-und-bytes]
 </div>
 
 <div
@@ -1245,7 +1245,8 @@ Spitalfields, die David Fletcher aus 1.575 Fotos trainiert und unter
 CC BY 4.0 auf [superspl.at](https://superspl.at/scene/f4897475)
 veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 1,2 Gigabyte groß; für diese Seite stehen dieselben Splats in einem
-kompakteren Format in 80 Megabyte. So eine große Szene braucht eine Weile
+kompakteren Format in 80 Megabyte, 16 Bytes je Splat statt 248 (Handbuch,
+[Bits und Bytes](/reference/bits-und-bytes)). So eine große Szene braucht eine Weile
 zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schalt
 »Automatisch flüssig« ein: Dann zeichnet der Viewer nur so viele der
 Splats, die am meisten zeigen, wie dein Rechner flüssig schafft. Von Hand

@@ -7,7 +7,7 @@ duration: 5 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen, Flat und Smooth Shading, Licht nach Lambert und Blinn-Phong, Texturen und Normal Maps, Spiegelung und Transparenz)"
 topics: [computergrafik]
 requires: [glsl, raytracing, kata-lists]
-reference: [vektoren, workspace]
+reference: [glsl, vektoren, bits-und-bytes, workspace]
 </div>
 
 <div
@@ -131,7 +131,8 @@ macht die Grafikkarte allein. Der **Fragment-Shader** läuft für jedes dieser
 Pixel und sagt, welche Farbe es bekommt. Beide Shader schreibt man in
 **GLSL**, einer Sprache wie C, die die Grafikkarte ausführt. Aus
 [Shader in GLSL](/glsl) kennst du den Fragment-Shader schon; neu ist hier der
-Vertex-Shader davor.
+Vertex-Shader davor. Typen wie `vec3` und `mat4` und die eingebauten
+Funktionen stehen im Handbuch unter [GLSL](/reference/glsl).
 
 Auf dem Bildschirm rechnet WebGL in **Clip-Koordinaten**: \\(x\\) von −1
 (links) bis 1 (rechts), \\(y\\) von −1 (unten) bis 1 (oben), egal wie groß
@@ -249,7 +250,8 @@ Was darin passiert:
   `gl.bufferData` schickt sie auf die Grafikkarte. Die Schleife über
   `attributes` sagt ihr, wie sie zu lesen sind: `position` sind 2 Zahlen ab
   der Zahl 0 jeder Ecke, `color` 3 Zahlen ab der Zahl 2, und eine Ecke ist
-  5 · 4 Bytes lang (eine Zahl als `float` hat 4 Bytes).
+  5 · 4 Bytes lang (eine Zahl als `float` hat 4 Bytes; Handbuch,
+  [Bits und Bytes](/reference/bits-und-bytes)).
 - Am Ende: die Fläche so groß wie das Fenster, ein dunkler Hintergrund, und
   `gl.drawArrays` malt aus den Ecken 0 bis 2 ein Dreieck. `devicePixelRatio`
   sagt, wie viele Pixel des Bildschirms auf einen Pixel der Seite kommen
@@ -716,7 +718,7 @@ Wie viel Licht eine Fläche bekommt, hängt vom Winkel \\(\theta\\) zwischen
 ihrer Normale \\(n\\) und der Richtung \\(l\\) zum Licht ab: Steht das
 Licht senkrecht darüber, ist es voll, fällt es flach darauf, wenig. Für
 Vektoren der Länge 1 ist \\(\cos\theta\\) einfach das Skalarprodukt
-\\(n \cdot l\\); so rechnet auch dein [Raytracer](/raytracing) matte
+\\(n \cdot l\\) (Handbuch, [Vektoren](/reference/vektoren)); so rechnet auch dein [Raytracer](/raytracing) matte
 Flächen (nach Johann Heinrich Lambert, 1760). Ist es negativ, liegt die
 Fläche im Schatten, also 0. Dazu kommt ein bisschen Licht von überall, damit
 Schattenseiten nicht schwarz sind:

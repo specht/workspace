@@ -14703,14 +14703,19 @@ html[data-bs-theme="dark"] .splat-viewer {
     flex-direction: column;
     max-width: none !important;
     margin: 0;
-    padding: 0.8em 1.2em 0.6em;
+    padding: 0 0 0.6em;
     background: var(--bs-body-bg);
     overflow-y: auto;
 }
+/* the picture from edge to edge, the controls below with a margin */
 .splat-viewer:fullscreen .splat-viewer-stage {
     flex: 1 1 auto;
     min-height: 0;
     aspect-ratio: auto;
+    border-radius: 0;
+}
+.splat-viewer:fullscreen > :not(.splat-viewer-stage) {
+    margin-inline: 1.2em;
 }
 .splat-viewer-canvas:focus-visible {
     outline: 2px solid var(--bs-primary);
