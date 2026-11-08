@@ -30,6 +30,16 @@ class PseudocodeLexerTest < Minitest::Test
         refute tokens('if (j ≥ stop or list[i] ≤ list[j]):').any? { |token, _| token == 'c1' }
     end
 
+    # the signs of a formula make a bracket code, not a remark (the Adam
+    # step in »Gradientenabstieg«); a name keeps its combining accent
+    def test_formula_signs_are_operators_and_names_keep_accents
+        refute tokens('m_corr ← m / (1 − 0.9^t)').any? { |token, _| token == 'c1' }
+        assert_includes tokens('a ← b · c'), %w[o ·]
+        assert_includes tokens('x ← √v'), %w[o √]
+        assert_includes tokens("m\u0302 ← m"), ['n', "m\u0302"]
+        assert_includes tokens('m_corr ← m / (1 − 0.9^t)      (am Anfang sind m und v noch zu klein)'), ['c1', '(am Anfang sind m und v noch zu klein)']
+    end
+
     def test_blocks_on_the_page_are_highlighted
         html = Nokogiri::HTML::DocumentFragment.parse("<pre><code class='pseudocode'>return x\n</code></pre>")
         CodeHighlight.apply(html)

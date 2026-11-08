@@ -3222,7 +3222,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
     // the pages (pseudocode_lexer.rb): the same classes, the same colours
     const KEYWORDS = new Set(['if', 'else', 'while', 'for', 'each', 'in', 'of', 'return', 'not', 'and', 'or', 'repeat', 'until', 'break', 'continue', 'do', 'then', 'to', 'from', 'down', 'mod', 'div']);
     const CONSTANTS = new Set(['empty', 'none', 'null', 'true', 'false', 'found', 'done', 'full', 'error']);
-    const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]]*\))|(←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|\*|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{N}_]*)(\()?|([()[\]{},:])/gu;
+    const PSEUDOCODE = /(\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*/=<>≤≥≠[\]−·×÷√^]*\))|(←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|−|\*|·|×|÷|√|\^|\/|%)|(\d+(?:\.\d+)?)|(\.)([\p{L}_][\p{L}\p{M}\p{N}_]*)|(not found\b)|([\p{L}_][\p{L}\p{M}\p{N}_]*)(\()?|([()[\]{},:])/gu;
     function highlightPseudocode(line) {
         const out = [];
         let last = 0;

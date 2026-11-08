@@ -5,6 +5,9 @@ module Rouge
         # The pseudocode of the Handbuch pages (```pseudocode blocks): English
         # keywords, function names, fields, ← and the comparisons (==, !=, <, ≤ …),
         # constants such as null, empty and found, numbers, and German remarks in parentheses.
+        # The signs of the formulas (− · × ÷ √ ^) are operators too, so a
+        # bracket with them is never a remark; a name may carry an accent
+        # (a combining mark, as in m̂) without losing it.
         # The Algo Stepper's code box colours the same tokens the same way
         # (algo_stepper.js, highlightPseudocode).
         class Pseudocode < RegexLexer
@@ -14,13 +17,13 @@ module Rouge
 
             KEYWORDS = %w[if else while for each in of return not and or repeat until break continue do then to from down mod div].freeze
             CONSTANTS = %w[empty none null true false found done full error].freeze
-            IDENT = /[\p{L}_][\p{L}\p{N}_]*/
+            IDENT = /[\p{L}_][\p{L}\p{M}\p{N}_]*/
 
             state :root do
                 # a remark: three words or more in parentheses, no operators
                 # (a tuple like (0, start) or (i - 1) is code)
-                rule %r/\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*\/=<>≤≥≠\[\]]*\)/, Comment::Single
-                rule %r/←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|\*|\/|%/, Operator
+                rule %r/\((?=[^()\n]*\s[^()\n]*\s)[^()\n+\-*\/=<>≤≥≠\[\]−·×÷√^]*\)/, Comment::Single
+                rule %r/←|==|!=|<=|>=|≤|≥|≠|<|>|=|\+|-|−|\*|·|×|÷|√|\^|\/|%/, Operator
                 rule %r/\d+(?:\.\d+)?/, Literal::Number::Integer
                 rule %r/(\.)(#{IDENT})/ do
                     groups Punctuation, Name::Attribute
