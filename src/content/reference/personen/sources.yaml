@@ -4004,3 +4004,60 @@ metcalfe:
     sources:
       - url: https://en.wikipedia.org/wiki/Robert_Metcalfe
         quote: "In 2023, he received the Turing Award, the highest distinction in computer science. … In March 2023, Metcalfe was awarded the 2022 Association for Computing Machinery's Turing Award for his contributions to the invention of Ethernet technology."
+gauss:
+  - text: Carl Friedrich Gauß (1777–1855), deutscher Mathematiker, Astronom und Landvermesser.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss
+        quote: "30 April 1777 – 23 February 1855) was a German polymath active as a mathematician, astronomer, geodesist, and physicist"
+  - text: Bei seiner Arbeit über die Bahnen von Kleinplaneten wie Ceres entstand die Methode der kleinsten Quadrate
+    sources:
+      - url: https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss
+        quote: "Gauss was instrumental in the identification of Ceres as a dwarf planet. His work on the motion of planetoids disturbed by large planets led to the introduction of the Gaussian gravitational constant and the method of least squares"
+  - text: Die Glockenkurve heißt nach ihm Gaußsche Normalverteilung.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Normal_distribution
+        quote: "a normal distribution or Gaussian distribution is a type of continuous probability distribution"
+phong:
+  - text: Bùi Tường Phong (1942–1975), in Hanoi geborener Informatiker.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "Bui Tuong Phong (December 14, 1942 – July 1975) was a Vietnamese-born computer graphics researcher and pioneer."
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "Phong was born in Hanoi."
+  - text: Er studierte in Grenoble und Toulouse, kam 1971 an die University of Utah und schrieb dort 1973 seine Doktorarbeit.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "He received his licence ès sciences from Grenoble in 1966 and his Diplôme d'Ingénieur from the ENSEEIHT, Toulouse, in 1968."
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "He went to the University of Utah College of Engineering in September 1971 as a research assistant in Computer Science and he received his Ph.D. from the University of Utah in 1973."
+  - text: Darin stehen das Phong Shading
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "He invented the widely used Phong shading algorithm and Phong reflection model."
+  - text: 1975 wurde er Professor in Stanford und starb im selben Jahr an Krebs, mit 32 Jahren.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "In 1975, after his tenure at the University of Utah, Phong joined Stanford University as a professor."
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "Two years after receiving his Ph.D., Phong died in 1975 from complications related to squamous cell carcinoma of the throat."
+  - text: Über sein Ziel schrieb er
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bui_Tuong_Phong
+        quote: "We do not expect to be able to display the object exactly as it would appear in reality, with texture, overcast shadows, etc. We hope only to display an image that approximates the real object closely enough to provide a certain degree of realism."
+gouraud:
+  - text: Henri Gouraud (geboren 1944), französischer Informatiker.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Henri_Gouraud_(computer_scientist)
+        quote: "Henri Gouraud (French pronunciation: [ɑ̃ʁi ɡuʁo]; born 1944) is a French computer scientist."
+  - text: An der University of Utah schrieb er 1971 seine Doktorarbeit über die Darstellung gekrümmter Flächen auf dem Bildschirm.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Henri_Gouraud_(computer_scientist)
+        quote: "He received his Ph.D. from the University of Utah College of Engineering in 1971, working with Dave Evans and Ivan Sutherland, with his dissertation titled Computer Display of Curved Surfaces."
+  - text: Darin rechnet er das Licht nur an den Ecken eines Dreiecks aus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Henri_Gouraud_(computer_scientist)
+        quote: "He is the inventor of Gouraud shading used in computer graphics."
+  - text: Er nahm dafür als einer der Ersten ein menschliches Gesicht als Drahtgitter auf, das seiner Frau Sylvie.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Henri_Gouraud_(computer_scientist)
+        quote: "In 1971, Gouraud made the first computer graphics geometry capture and representation of a human face in wire-frame model, and applied his shader to produce the famous human face images showing the effect of his shading, which were done using his wife Sylvie Gouraud as the model."

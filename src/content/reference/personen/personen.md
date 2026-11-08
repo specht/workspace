@@ -100,6 +100,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1777 -->
+<!-- part: gauss -->
+### Carl Friedrich Gauß
+
+<div class='person'>
+<img src='gauss.webp' alt='Carl Friedrich Gauß, gemalt 1840: ein älterer Mann mit weißem Haar und schwarzer Samtkappe, in einem dunklen Mantel mit Pelzkragen über weißem Rüschenhemd, ernst und aufmerksam.'>
+<p><strong>Carl Friedrich Gauß</strong> (1777–1855), deutscher Mathematiker, Astronom und Landvermesser. Bei seiner Arbeit über die Bahnen von Kleinplaneten wie Ceres entstand die Methode der kleinsten Quadrate: Man sucht die Werte, bei denen die Summe der quadrierten Fehler am kleinsten ist. Die Glockenkurve heißt nach ihm Gaußsche Normalverteilung.</p>
+<p>Beide stecken in Gaussian Splatting: Jeder Splat ist eine Glockenkurve, und das Training macht einen quadrierten Fehler so klein wie möglich.</p>
+<p class='person-credit'>Gemälde: Christian Albrecht Jensen, 1840, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Carl_Friedrich_Gauss_1840_by_Jensen.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
 <!-- year: 1788 -->
 <!-- part: fresnel -->
 ### Augustin-Jean Fresnel
@@ -672,6 +683,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1942 -->
+<!-- part: phong -->
+### Bùi Tường Phong
+
+<div class='person'>
+<img src='phong.webp' alt='Bùi Tường Phong, Schwarzweißfoto: ein junger Mann mit dunklem, glattem Haar, Anzug, weißem Hemd und gemusterter Krawatte, breit lachend.'>
+<p><strong>Bùi Tường Phong</strong> (1942–1975), in Hanoi geborener Informatiker. Er studierte in Grenoble und Toulouse, kam 1971 an die University of Utah und schrieb dort 1973 seine Doktorarbeit. Darin stehen das Phong Shading, bei dem für jedes Pixel die Normale gemischt und das Licht neu gerechnet wird, und das Beleuchtungsmodell mit Glanzlicht. 1975 wurde er Professor in Stanford und starb im selben Jahr an Krebs, mit 32 Jahren.</p>
+<p>Über sein Ziel schrieb er: Man erwarte nicht, ein Objekt genau so zu zeigen, wie es in Wirklichkeit aussieht, sondern nur ein Bild, das ihm nahe genug kommt, um ein gewisses Maß an Wirklichkeit zu geben. Dein Fragment-Shader rechnet nach seinem Verfahren.</p>
+<p class='person-credit'>Foto: Ponction, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Bui-Tuong-Phong.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
 <!-- year: 1943 -->
 <!-- part: thompson -->
 ### Ken Thompson
@@ -720,6 +742,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1944 -->
+<!-- part: gouraud -->
+### Henri Gouraud
+
+<div class='person'>
+<img src='gouraud.webp' alt='Henri Gouraud, ein Mann mit kurzem grauem Bart, Halbglatze und Brille, lächelnd, im weißen Hemd vor einer Wand mit einem blauen Logo.'>
+<p><strong>Henri Gouraud</strong> (geboren 1944), französischer Informatiker. An der University of Utah schrieb er 1971 seine Doktorarbeit über die Darstellung gekrümmter Flächen auf dem Bildschirm. Darin rechnet er das Licht nur an den Ecken eines Dreiecks aus und mischt die Helligkeiten dazwischen: das Gouraud Shading. Er nahm dafür als einer der Ersten ein menschliches Gesicht als Drahtgitter auf, das seiner Frau Sylvie.</p>
+<p>So sahen 3D-Spiele lange aus, denn es braucht nur drei Lichtrechnungen je Dreieck statt einer für jedes Pixel.</p>
+<p class='person-credit'>Foto: Hgouraud, 2007, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Henri_Gouraud,_computer_scientist.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
 <!-- year: 1945 -->
 <!-- part: catmull -->
 ### Edwin Catmull
