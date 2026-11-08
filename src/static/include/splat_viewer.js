@@ -14,6 +14,12 @@
 // "distance": d, "yaw": a, "pitch": b} (radians; yaw 0 looks along -z):
 // a street scanned from inside is a cloud of stray splats from outside, so
 // its camera starts in the street, close to the point it turns around.
+// More in "view": "speed" (walking, units a second), "look": true (a place
+// to walk through: turning keeps the eye where it is, the wheel goes
+// forward; a switch turns the y axis of dragging round), "overfly": true
+// (outdoors: a long flight to a spot rises over the houses). Beside "view",
+// "spots": [{"name", "target", "distance", "yaw", "pitch", "roll"}, …]
+// become buttons that fly the camera there.
 //
 // Reads .splat (32 bytes a splat: position and scale as float32, RGBA and
 // the rotation as bytes, the format of antimatter15/splat), .csplat (16
@@ -565,11 +571,14 @@ void main() {
             let yaw = spot.yaw;
             while (yaw - from.yaw > Math.PI) yaw -= 2 * Math.PI;
             while (yaw - from.yaw < -Math.PI) yaw += 2 * Math.PI;
-            // in a street a long flight rises in an arc over the houses and
-            // comes down again, like a drone: there are no walls to steer
-            // around, only splats, and from above one sees where one lands
+            // outdoors (»overfly« in the view, the street) a long flight
+            // rises in an arc over the houses and comes down again, like a
+            // drone: there are no walls to steer around, only splats, and
+            // from above one sees where one lands. In a room it would go
+            // through the ceiling, so there the flight goes straight.
             const travel = Math.hypot(...[0, 1, 2].map((k) => spot.target[k] - from.target[k]));
-            const hump = this.look && travel > 2 * this.walkSpeed() ? Math.min(0.4 * travel, 4 * this.walkSpeed()) : 0;
+            const overfly = this.view && this.view.overfly;
+            const hump = overfly && travel > 2 * this.walkSpeed() ? Math.min(0.4 * travel, 4 * this.walkSpeed()) : 0;
             const time = this.look ? Math.min(2600, 1200 + 40 * travel / this.walkSpeed() * 1.5) : 1200;
             const start = performance.now();
             const flight = this.flight = {};
