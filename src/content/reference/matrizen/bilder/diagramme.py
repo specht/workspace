@@ -4,7 +4,9 @@ moving matters.
 
     python3 src/content/reference/matrizen/bilder/diagramme.py
     for f in drehen strecken spiegeln scheren drehen-verschieben verschieben-drehen; do
-        ruby src/scripts/render-svg.rb src/content/reference/matrizen/$f.svg 560; done
+        ruby src/scripts/render-svg.rb src/content/reference/matrizen/$f.svg 1064; done
+    for f in drehen-3d strecken-3d spiegeln-3d scheren-3d achse-3d; do
+        ruby src/scripts/render-svg.rb src/content/reference/matrizen/$f.svg 1050; done
 
 Each picture: a grid, the F before (grey, dashed) and after (blue), and the
 images of the two axes, (1, 0) in red and (0, 1) in green, which are the
@@ -24,9 +26,14 @@ OUT = os.path.join(HERE, '..')
 INK, BLUE, GREY, LINE, PALE, WHITE = '#1f2937', '#2b5fb4', '#6b7280', '#d1d5db', '#eef3fb', '#ffffff'
 RED, GREEN = '#dc2626', '#16a34a'
 
-W, H = 280, 230
-UNIT = 38                      # pixels per unit
-OX, OY = W / 2, 172            # where the origin is: low, the F stands above it
+# the pictures stand two in a row in a gallery, which stretches them to
+# about 530 px: drawn at that size, so that the labels (17 px) are not
+# enlarged with them; on a phone, one below the other, they shrink to
+# about 0.7, which leaves the labels at 12 px
+ZOOM = 1.9
+W, H = round(280 * ZOOM), round(230 * ZOOM)
+UNIT = 38 * ZOOM               # pixels per unit
+OX, OY = W / 2, 172 * ZOOM     # where the origin is: low, the F stands above it
 
 # an F, asymmetric so that turning and mirroring show
 F = [(0, 0), (0.5, 0), (0.5, 1), (1.2, 1), (1.2, 1.5), (0.5, 1.5), (0.5, 2), (1.5, 2), (1.5, 2.5), (0, 2.5)]
@@ -132,10 +139,11 @@ if __name__ == '__main__':
 
 PURPLE = '#7c3aed'
 AMBER = '#d97706'
-W3, H3 = 300, 260
+ZOOM3 = 1.75                  # as ZOOM: two in a row
+W3, H3 = round(300 * ZOOM3), round(260 * ZOOM3)
 YAW, PITCH = m.radians(24), m.radians(16)
-U3 = 46                       # pixels per unit
-O3 = (W3 / 2 - 20, H3 - 58)
+U3 = 46 * ZOOM3               # pixels per unit
+O3 = (W3 / 2 - 20 * ZOOM3, H3 - 58 * ZOOM3)
 
 
 def view(p):

@@ -4,7 +4,7 @@ at the normal.
 
     python3 src/content/reference/licht/bilder/diagramme.py
     for f in lambert-steil lambert-flach spiegeln; do
-        ruby src/scripts/render-svg.rb src/content/reference/licht/$f.svg 640; done
+        ruby src/scripts/render-svg.rb src/content/reference/licht/$f.svg $(( 2 * $(grep -o 'width="[0-9]*"' src/content/reference/licht/$f.svg | head -1 | tr -dc 0-9) )); done
 
 The pictures of flat and smooth shading and of the half vector are those of
 »3D-Grafik mit WebGL« (webgl/bilder/diagramme.py), copied here.
@@ -24,17 +24,17 @@ AMBER = '#d97706'
 W, H = 320, 220
 
 
-def head(comment, name):
+def head(comment, name, w=W, h=H):
     markers = ''.join(
         f'<marker id="arrow-{n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
         f'<path d="M0,0 L10,5 L0,10 z" fill="{col}"/></marker>' for n, col in [('ink', INK), ('blue', BLUE), ('amber', AMBER)])
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            f'viewBox="0 0 {W} {H}" width="{W}" height="{H}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
+            f'viewBox="0 0 {w} {h}" width="{w}" height="{h}" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">\n'
             f'  <!-- {comment}\n'
             f'       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:\n'
-            f'       src/scripts/render-svg.rb src/content/reference/licht/{name}.svg {2 * W} -->\n'
+            f'       src/scripts/render-svg.rb src/content/reference/licht/{name}.svg {2 * w} -->\n'
             f'  <defs>{markers}</defs>\n'
-            f'  <rect width="{W}" height="{H}" fill="{WHITE}"/>\n')
+            f'  <rect width="{w}" height="{h}" fill="{WHITE}"/>\n')
 
 
 def line(x1, y1, x2, y2, color=INK, width=1.6, arrow=None, dash=None):
@@ -52,31 +52,33 @@ def save(name, svg):
         f.write(svg + '</svg>\n')
 
 
-def lambert(name, angle, comment):
+def lambert(name, angle, comment, zoom=1.65):
     """a beam of three rays, 60 px wide, falling at angle (degrees from the
-    surface); the stretch of surface it lights in amber"""
-    s = head(comment, name)
-    ground = 175
-    s += f'  <rect x="0" y="{ground}" width="{W}" height="{H - ground}" fill="{PALE}"/>\n'
-    s += line(10, ground, W - 10, ground, INK, 2)
+    surface); the stretch of surface it lights in amber. The two pictures
+    stand side by side in a gallery, which stretches them to about 530 px:
+    drawn at that size (zoom), so that the labels are not enlarged"""
+    w, h = round(W * zoom), round(H * zoom)
+    s = head(comment, name, w, h)
+    ground = 175 * zoom
+    s += f'  <rect x="0" y="{ground}" width="{w}" height="{h - ground}" fill="{PALE}"/>\n'
+    s += line(10, ground, w - 10, ground, INK, 2)
     a = m.radians(angle)
     d = (-m.cos(a), m.sin(a))              # towards the light, y up
-    across = (m.sin(a), m.cos(a))          # across the beam
-    width = 60
+    width = 60 * zoom
     lit = width / m.sin(a)                 # the stretch on the ground
     # the light comes from the left: a flat beam needs room there
-    cx = W / 2 + 70 * m.cos(a)
+    cx = w / 2 + 70 * zoom * m.cos(a)
     for k in (-1, 0, 1):
         # where this ray meets the ground
         gx = cx + k * lit / 2
-        length = min(150, (gx - 8) / max(-d[0], 1e-6))   # not beyond the left edge
+        length = min(150 * zoom, (gx - 8) / max(-d[0], 1e-6))   # not beyond the left edge
         sx, sy = gx + d[0] * length, ground - d[1] * length
         s += line(sx, sy, gx - d[0] * 6, ground + d[1] * 6 - 0.5, AMBER, 2, 'amber')
     s += line(cx - lit / 2, ground, cx + lit / 2, ground, AMBER, 6)
     # the normal and the direction to the light, from the middle
-    s += line(cx, ground, cx, ground - 70, BLUE, 2.6, 'blue')
-    s += label('n', cx + 10, ground - 62, BLUE, 'start')
-    lx, ly = cx + d[0] * 70, ground - d[1] * 70
+    s += line(cx, ground, cx, ground - 70 * zoom, BLUE, 2.6, 'blue')
+    s += label('n', cx + 10, ground - 70 * zoom + 8, BLUE, 'start')
+    lx, ly = cx + d[0] * 70 * zoom, ground - d[1] * 70 * zoom
     s += label('l', lx - 6, ly - 8, AMBER, 'end')
     save(name, s)
 

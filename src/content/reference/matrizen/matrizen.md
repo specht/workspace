@@ -172,7 +172,7 @@ $$R = \begin{pmatrix} c + x^2 t & xy\,t - z s & xz\,t + y s \\\\ yx\,t + z s & c
 
 Mit \\(\vec{k} = (0, 1, 0)\\) wird daraus genau \\(R\_y(\theta)\\) von oben. Im Bild dreht sich das F um 60° um die Diagonale \\(\vec{k} = \frac{1}{\sqrt{3}}(1, 1, 1)\\), die zwischen den drei Achsen liegt:
 
-<img class='drawing' style='width: 22em' src='achse-3d.webp' alt='Ein F als Block, um 60 Grad um eine schräge Achse gedreht, die orange gestrichelt vom Ursprung nach rechts oben zeigt, auf der Diagonale zwischen x-, y- und z-Achse. Das F liegt danach schräg im Raum, nach links gekippt; dahinter der graue Block vorher.'>
+<img class='drawing' style='width: 30em' src='achse-3d.webp' alt='Ein F als Block, um 60 Grad um eine schräge Achse gedreht, die orange gestrichelt vom Ursprung nach rechts oben zeigt, auf der Diagonale zwischen x-, y- und z-Achse. Das F liegt danach schräg im Raum, nach links gekippt; dahinter der graue Block vorher.'>
 
 Dieselbe Drehung ließe sich auch aus Drehungen um x, y und z zusammensetzen; die Formel sagt sie in einem Schritt. Sie heißt nach Olinde Rodrigues, der sie 1840 veröffentlicht hat; Leonhard Euler kannte sie schon 1770.
 <!-- /part -->
