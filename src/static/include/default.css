@@ -1126,6 +1126,21 @@ img.fit-width {
     min-width: unset;
 }
 
+/* No picture on a desktop is taller than three quarters of the window (the
+   maintainer, November 2026): one that would be, a portrait or a tall
+   program picture at the width of the text, shrinks to that height and
+   stays in the middle of its box, whole and undistorted; a picture that
+   fits keeps its size. Phones keep the pictures as wide as the screen. */
+@media (min-width: 768px) {
+    img.full,
+    img.fit-width,
+    img.drawing,
+    .scroll-x > img {
+        max-height: 75vh;
+        object-fit: contain;
+    }
+}
+
 /* A small drawing (a tree, an automaton) at about the size it has on
    screen, centred, instead of stretched to the width of the text like a
    screenshot. Its recipe renders it with zoom: 2, so it stays sharp; the
@@ -14500,10 +14515,40 @@ html[data-bs-theme="dark"] .splat-viewer {
 .splat-viewer-size input {
     width: 8em;
 }
-.splat-viewer-info {
+.splat-viewer-info,
+.splat-viewer-help {
     margin-top: 0.3em;
     font-size: 0.8rem;
     color: var(--bs-secondary-color);
+}
+.splat-viewer-help {
+    margin-top: 0.1em;
+}
+.splat-viewer-canvas:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+}
+/* walking on a touch screen: two round buttons in the lower right corner */
+.splat-viewer-walk {
+    position: absolute;
+    right: 0.6em;
+    bottom: 0.6em;
+    display: none;
+    flex-direction: column;
+    gap: 0.4em;
+}
+@media (pointer: coarse) {
+    .splat-viewer-walk {
+        display: flex;
+    }
+}
+.splat-viewer-walk .btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    opacity: 0.85;
+    touch-action: none;
 }
 @media (pointer: coarse) {
     .splat-viewer-bar .btn,

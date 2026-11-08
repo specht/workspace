@@ -1,7 +1,7 @@
 # Aufgaben zu »Gaussian Splatting«. Format: docs/aufgaben.md. Alles liegt in
 # /workspace/splatting; die Funktionen der Lernenden rechnen mit numpy
 # (pip install numpy pillow, wie die Seite sagt). Die Zahlen gehören zu den
-# Programmen in stufen/ und zu pearl-earring.png und measuring-tape.ply.
+# Programmen in stufen/ und zu pearl-earring.png und modern-arm-chair.ply.
 format: 1
 activity: gaussian-splatting
 tasks:
@@ -351,7 +351,7 @@ tasks:
       options:
         - Nichts ändert sich; beim Addieren der Splats in 2D war die Reihenfolge auch egal.
         - Das Bild wird nur etwas heller oder dunkler.
-        - Splats, die hinten liegen, malen über die vorderen; das Maßband sieht fleckig aus, und Teile scheinen durch, die verdeckt sein müssten.
+        - Splats, die hinten liegen, malen über die vorderen; der Sessel sieht fleckig aus, und Teile scheinen durch, die verdeckt sein müssten.
         - Das Programm bricht mit einem Fehler ab.
       correct: 2
     feedback:
@@ -366,6 +366,34 @@ tasks:
       vordersten. Liegt er in Wahrheit hinten, malt er über die Splats vor
       ihm, und die nehmen ihm später kein Licht mehr weg. Das Bild wird
       fleckig, und Verdecktes scheint durch.
+
+  - id: z-buffer
+    title: Warum kein Z-Buffer?
+    prediction: true
+    prompt: |
+      Ein Z-Buffer merkt sich für jedes Pixel die Tiefe dessen, was dort am
+      nächsten gemalt wurde, und malt nur, was noch näher liegt. Warum nimmt
+      der Viewer ihn nicht statt des Sortierens?
+    check:
+      type: choice
+      options:
+        - Ein Z-Buffer hält je Pixel nur das Nächste fest; ein durchscheinender Splat soll aber mit dem mischen, was hinter ihm liegt, und das ist dann oft noch gar nicht gemalt.
+        - Splats haben keine Tiefe, die man vergleichen könnte.
+        - Ein Z-Buffer ist für so viele Splats zu langsam.
+        - Ein Z-Buffer geht nur mit Dreiecken, weil er ihre Ecken braucht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Jeder Splat hat eine Lage im Raum und damit eine Tiefe von der Kamera aus; danach sortiert der Viewer ja.
+      - when: { picked: 2 }
+        say: Ein Z-Buffer ist schnell, er braucht nur einen Vergleich je Pixel. Das Problem ist, was er verwirft.
+      - when: { picked: 3 }
+        say: Ein Z-Buffer vergleicht die Tiefe an jedem Pixel, egal woher sie kommt. Er geht mit allem, was deckt.
+    solution: |
+      Ein Z-Buffer kennt je Pixel nur das Nächste. Mit Durchscheinendem geht
+      das nicht: Was hinter einem halb durchsichtigen Splat liegt, muss noch
+      beigemischt werden. Kommt es später, verwirft der Z-Buffer es, und es
+      fehlt.
 
   - id: warum-reihenfolge
     title: Addieren und Mischen

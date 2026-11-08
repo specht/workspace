@@ -1,4 +1,4 @@
-Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde aus 500 Splats, die durch Gradientenabstieg ihre Lage, Form und Farbe lernen, dann einen Renderer, der eine Szene aus 19.469 Splats im Raum mit einer Kamera abbildet, nach der Tiefe sortiert und von vorne nach hinten mischt. Am Ende drehen sie fertige Szenen in einem Viewer auf der Seite, der dasselbe auf der Grafikkarte tut.
+Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde aus 500 Splats, die durch Gradientenabstieg ihre Lage, Form und Farbe lernen, dann einen Renderer, der eine Szene aus 49.817 Splats im Raum mit einer Kamera abbildet, nach der Tiefe sortiert und von vorne nach hinten mischt. Am Ende drehen sie fertige Szenen in einem Viewer auf der Seite, der dasselbe auf der Grafikkarte tut.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen und Listen in Python (die Katas bis <a href='/kata-loops'>Schleifen</a>); aus der Mathematik die e-Funktion, Sinus und Kosinus, Ableitungen und Matrizen, die man multipliziert. numpy ist neu und wird auf der Seite erklärt, so weit sie es braucht (<code>np.mgrid</code>, Rechnen mit ganzen Arrays, <code>[:, :, None]</code>, <code>@</code>, <code>np.argsort</code>).</td></tr>
@@ -6,19 +6,20 @@ Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten, die Glockenkurve, ein Splat als Bild, gestreckte und gedrehte Splats, Splats addieren, der mittlere quadratische Fehler, 200 zufällige Splats.</li>
 <li><b>2. Doppelstunde:</b> Gradientenabstieg mit einem Regler, die Farben von 500 festen Splats lernen (eigene Funktion <code>step</code>), die Lernrate, die zu groß ist, dann alles lernen mit Adam, der Film vom Lernen.</li>
-<li><b>3. Doppelstunde:</b> ein Splat im Raum, die Kovarianzmatrix, die Kamera, die Ellipse auf dem Bildschirm (ausgearbeitet), Mischen von vorne nach hinten, das Maßband mit und ohne Sortieren, die Szenen im Viewer.</li>
+<li><b>3. Doppelstunde:</b> ein Splat im Raum, die Kovarianzmatrix, die Kamera, die Ellipse auf dem Bildschirm (ausgearbeitet), Mischen von vorne nach hinten, der Sessel mit und ohne Sortieren, die Szenen im Viewer mit der Gasse, durch die man gehen kann, und drei Fragen an den Viewer: scharfe Kanten aus weichen Splats, Sortieren in jedem Bild, warum kein Z-Buffer.</li>
 <li><b>Für Schnelle</b> (auf der Seite als »Extra« markiert): eine eigene Szene mit Brush und COLMAP am eigenen Rechner mit Grafikkarte, oder mit den Bildern der DX.GL-Datensätze; dazu die Kästen »Ausprobieren« (andere Szenen, eine Kamera, die kreist, als GIF).</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td><ul>
 <li>Alles in <code>/workspace/splatting</code>: <code>blobs.py</code> (alle Funktionen der 2D-Hälfte, mit einem Block <code>if __name__ == '__main__':</code> zum Ausprobieren), <code>train.py</code> (das Programm, das lernt, holt die Funktionen aus <code>blobs.py</code>) und <code>render3d.py</code>.</li>
-<li>Heruntergeladen mit <code>wget</code> aus <a href='https://github.com/specht/workspace-files/tree/main/gaussian-splatting'><code>specht/workspace-files</code></a>: <code>pearl-earring.png</code> (Vermeer, gemeinfrei, 128 Pixel breit) und <code>measuring-tape.ply</code>; dort liegen fünf weitere Szenen.</li>
+<li>Heruntergeladen mit <code>wget</code> aus <a href='https://github.com/specht/workspace-files/tree/main/gaussian-splatting'><code>specht/workspace-files</code></a>: <code>pearl-earring.png</code> (Vermeer, gemeinfrei, 128 Pixel breit) und <code>modern-arm-chair.ply</code>; dort liegen fünf weitere Szenen und die Gasse.</li>
 <li>Jeder Stand liegt unter <a href='https://github.com/specht/workspace/tree/main/src/content/gaussian-splatting/stufen'><code>src/content/gaussian-splatting/stufen</code></a>: <code>blobs-1.py</code> bis <code>blobs-4.py</code>, <code>train-1.py</code> (nur Farben) und <code>train-2.py</code> (alles, mit Adam), <code>render3d-1.py</code> (die Funktionen) und <code>render3d-2.py</code> (der Renderer); <code>vergleich-ohne-sortieren.py</code> ist nur für das Bild nach der Vorhersage.</li>
+<li>Die Gasse »Artillery Passage« (David Fletcher, CC BY 4.0, aus 1.575 Fotos) macht <code>werkzeug/prepare_street.py</code> aus seinen 5 Millionen Splats: 1,5 Millionen (24 MB) und fast alle (80 MB) im kompakten Format des Viewers mit 16 Bytes je Splat. Beide sind zu groß für das Repository: Der Server holt sie beim Start aus <code>specht/workspace-files</code> nach <code>/dl</code>, und der Viewer lädt eine erst, wenn jemand sie auswählt.</li>
 <li>Die Szenen der Seite macht <code>werkzeug/prepare_scenes.py</code> aus den Splats der DX.GL-Datensätze (CC0, trainiert aus Modellen von Poly Haven): eine Vierteldrehung, damit y nach oben zeigt, die Mitte in den Ursprung, nur die Farbe ohne die Abhängigkeit von der Blickrichtung.</li>
 </ul></td></tr>
-<tr><th>Laufzeiten</th><td>Gemessen mit einem Prozessorkern, wie ihn ein Workspace bekommt, wenn eine ganze Klasse rechnet: <code>train.py</code> mit nur den Farben etwa 6 Sekunden, mit allem etwa 13 Sekunden für 300 Schritte; <code>render3d.py</code> etwa 2 Sekunden für ein Bild des Maßbands mit 320 × 240 Pixeln.</td></tr>
+<tr><th>Laufzeiten</th><td>Gemessen mit einem Prozessorkern, wie ihn ein Workspace bekommt, wenn eine ganze Klasse rechnet: <code>train.py</code> mit nur den Farben etwa 6 Sekunden, mit allem etwa 13 Sekunden für 300 Schritte; <code>render3d.py</code> etwa 4 Sekunden für ein Bild des Sessels mit 320 × 240 Pixeln.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Sieben Aufgaben rufen die Funktionen der Lernenden auf, mit Zahlen und mit numpy-Arrays (Prüfart <code>python</code>): <code>blob</code>, <code>weight</code>, <code>error</code> und <code>step</code> in <code>blobs.py</code>, <code>covariance</code>, <code>to_screen</code> und <code>blend</code> in <code>render3d.py</code>. Ein Aufruf mit Arrays fällt auf, wenn jemand <code>math.exp</code> statt <code>np.exp</code> nimmt.</li>
-<li>Vier Vorhersagen vor dem Ausprobieren (überlappende Splats, die doppelte Lernrate, wie viel das Wandern bringt, ein Renderer ohne Sortieren); was sie verrät, erscheint erst nach der Antwort.</li>
+<li>Fünf Vorhersagen vor dem Ausprobieren oder Erklären (überlappende Splats, die doppelte Lernrate, wie viel das Wandern bringt, ein Renderer ohne Sortieren, warum der Viewer keinen Z-Buffer nimmt); was sie verrät, erscheint erst nach der Antwort.</li>
 <li>Eine Rechnung von Hand (der erste Schritt Gradientenabstieg) und zum Schluss eine Erklärung in eigenen Worten, warum die Reihenfolge in 2D egal ist und in 3D nicht (Klassenboard).</li>
 </ul></td></tr>
 <tr><th>Jetzt bist du dran</th><td>An sieben Stellen schreiben die Lernenden die Funktion zuerst selbst, nachdem die Seite die Formel erklärt hat, mit Tipps in Stufen; der Code der Seite ist die letzte Stufe, und die Aufgabe darunter prüft die eigene Fassung. Die Gradienten von Lage, Breiten und Winkel, Adam und die Projektion der Ellipse sind ausgearbeitete Beispiele, die die Seite erklärt, aber nicht schreiben lässt.</td></tr>
@@ -27,10 +28,10 @@ Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde
 #### Was schiefgeht
 
 - **`ModuleNotFoundError: No module named 'numpy'`.** `pip install numpy pillow` fehlt oder lief in einem anderen Workspace.
-- **`FileNotFoundError` für `pearl-earring.png` oder `measuring-tape.ply`.** Das Programm läuft in einem anderen Ordner; vorher `cd ~/splatting`.
+- **`FileNotFoundError` für `pearl-earring.png` oder `modern-arm-chair.ply`.** Das Programm läuft in einem anderen Ordner; vorher `cd ~/splatting`.
 - **`blobs.py` malt beim Start von `train.py` ein Bild.** Der Teil zum Ausprobieren steht nicht unter `if __name__ == '__main__':`.
 - **Der Fehler in `train.py` wächst ins Riesige.** Eine zu große Lernrate, oder `step` addiert statt abzuziehen; die Aufgabe zu `step` fängt das Zweite.
-- **Das Maßband steht auf dem Kopf oder ist von hinten zu sehen.** Die Kamera hat andere Richtungen als in `look_at` auf der Seite, etwa `up` statt `down` als zweite Zeile.
+- **Der Sessel steht auf dem Kopf oder ist von hinten zu sehen.** Die Kamera hat andere Richtungen als in `look_at` auf der Seite, etwa `up` statt `down` als zweite Zeile.
 - **Der Viewer bleibt grau.** Der Browser kann kein WebGL2; mit einem aktuellen Firefox, Chrome oder Safari geht es.
 
 #### Die Aufgaben

@@ -139,6 +139,7 @@ Entstanden beim Bau der Katas und von »Pip unter Funkelbach«
 
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
+| Kein Bild ist auf dem Desktop höher als drei Viertel des Fensters: Ein höheres (ein Porträt, ein kleines Bild eines Programms in der Breite des Textes) wird so hoch, bleibt ganz und steht in der Mitte; Galerien haben ihre eigene Grenze (`portrait`, `single`). Ein kleines Bild eines Programms bekommt trotzdem besser eine Breite, die zu ihm passt | Man soll ein Bild auf einmal sehen, ohne zu scrollen | `default.css` (für alle Bilder `full`, `fit-width`, `drawing`), Lesen |
 | Jedes Bild hat einen `alt`-Text, der sagt, was zu sehen ist | Barrierefreiheit, und beim Lesen ohne Bild | `alt_text_test.rb` |
 | Bilder nebeneinander sind eine Galerie (`<div class='gallery'>`, je ein `<figure>` mit `<figcaption>`), Beschriftungen in der Bildunterschrift, nicht im Bild | Sie passen sich der Breite an | `gallery_markup_test.rb` |
 | Bilder aus dem Workspace, aus einer Vorschau oder von einer Seite der Website kommen aus Rezepten (`<!-- tutorial-screenshot -->` als eigener Block vor dem `<img>`), nie von Hand | Nach einem Update entstehen sie neu | Audit (Spalte »von Hand«), `tutorial_screenshot_markup_test.rb`, `recreate-screenshots.rb --status` |

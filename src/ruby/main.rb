@@ -720,6 +720,28 @@ class Main < Sinatra::Base
 
     private_class_method :load_invitations_locked
 
+    # The street of »Gaussian Splatting« (splat_viewer.js, 24 and 80 MB),
+    # too big for the repository: fetched once from specht/workspace-files
+    # into /dl, which nginx serves; a file only gets its name when it is
+    # complete, so a broken download is fetched again at the next start.
+    SPLAT_SCENES = %w[artillery-passage.csplat artillery-passage-full.csplat].freeze
+
+    def self.prepare_splat_scenes
+        SPLAT_SCENES.each do |name|
+            path = File.join('/dl/gaussian-splatting', name)
+            next if File.exist?(path)
+            FileUtils.mkpath(File.dirname(path))
+            if system('wget', '-q', '-O', "#{path}.part", "https://github.com/specht/workspace-files/raw/main/gaussian-splatting/#{name}")
+                File.rename("#{path}.part", path)
+            else
+                STDERR.puts "Fetching #{name} for Gaussian Splatting failed; it is tried again at the next start."
+                FileUtils.rm_f("#{path}.part")
+            end
+        end
+    rescue StandardError => e
+        STDERR.puts "Preparing the splat scenes failed: #{e.class}: #{e.message}"
+    end
+
     def self.prepare_downloads()
         unless File.exist?("/dl/working-with-files.tar.gz")
             STDERR.puts "Preparing /dl/working-with-files.tar.bz2..."
@@ -787,6 +809,7 @@ class Main < Sinatra::Base
         self.parse_content()
         self.load_invitations()
         self.prepare_downloads()
+        Thread.new { self.prepare_splat_scenes }
 
         @@brand_header = ''
         begin

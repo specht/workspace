@@ -74,7 +74,7 @@ mkdir -p ~/splatting
 cd ~/splatting
 pip install numpy pillow
 wget https://github.com/specht/workspace-files/raw/main/gaussian-splatting/pearl-earring.png
-wget https://github.com/specht/workspace-files/raw/main/gaussian-splatting/measuring-tape.ply
+wget https://github.com/specht/workspace-files/raw/main/gaussian-splatting/modern-arm-chair.ply
 ```
 
 `pip install` legt die Bibliotheken in deinen Workspace; auch nach einem
@@ -89,17 +89,17 @@ terminal-run: pip install -q numpy pillow
 terminal-wait-for-prompt: 240
 terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/gaussian-splatting/pearl-earring.png
 terminal-wait-for-prompt
-terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/gaussian-splatting/measuring-tape.ply
+terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/gaussian-splatting/modern-arm-chair.ply
 terminal-wait-for-prompt
 terminal-run: clear && ls -l
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
-<img class='full' src='einrichten.webp' alt='Das Terminal im Ordner splatting: ls -l zeigt die Dateien measuring-tape.ply, gut ein Megabyte groß, und pearl-earring.png, gut 30 Kilobyte groß.'>
+<img class='full' src='einrichten.webp' alt='Das Terminal im Ordner splatting: ls -l zeigt die Dateien modern-arm-chair.ply, knapp drei Megabyte groß, und pearl-earring.png, gut 30 Kilobyte groß.'>
 
 `pearl-earring.png` ist »Das Mädchen mit dem Perlenohrring« von Johannes
-Vermeer, gemalt um 1665, klein, nur 128 Pixel breit. `measuring-tape.ply` ist
-ein Maßband aus 19.469 Splats; um diese Datei geht es ab dem Kapitel
+Vermeer, gemalt um 1665, klein, nur 128 Pixel breit. `modern-arm-chair.ply` ist
+ein Sessel aus 49.817 Splats; um diese Datei geht es ab dem Kapitel
 »Splats im Raum«.
 
 ### Bilder ansehen
@@ -233,7 +233,7 @@ terminal-run: cd /workspace/splatting && python3 blobs.py
 terminal-wait-for-prompt: 60
 image-file: splatting/blob.png 3
 -->
-<img class='full fit-width' src='blob.webp' alt='Ein heller, weicher, runder Splat in der Mitte eines schwarzen Bildes, nach außen ohne Rand immer dunkler.'>
+<img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='blob.webp' alt='Ein heller, weicher, runder Splat in der Mitte eines schwarzen Bildes, nach außen ohne Rand immer dunkler.'>
 
 <!-- /tutorial-scope -->
 
@@ -352,7 +352,7 @@ terminal-run: cd /workspace/splatting && python3 blobs.py
 terminal-wait-for-prompt: 60
 image-file: splatting/blobs.png 3
 -->
-<img class='full fit-width' src='blobs.webp' alt='Drei weiche Splats auf Schwarz: links ein langer, schräg liegender oranger, rechts oben ein hoher blauer und rechts unten ein runder grüner. Wo der blaue den grünen überlappt, wird es heller und türkis, wo der orange den blauen berührt, leicht violett.'>
+<img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='blobs.webp' alt='Drei weiche Splats auf Schwarz: links ein langer, schräg liegender oranger, rechts oben ein hoher blauer und rechts unten ein runder grüner. Wo der blaue den grünen überlappt, wird es heller und türkis, wo der orange den blauen berührt, leicht violett.'>
 
 <!-- /tutorial-scope -->
 
@@ -449,7 +449,7 @@ terminal-run: cd /workspace/splatting && python3 blobs.py
 terminal-wait-for-prompt: 60
 image-file: splatting/random.png 3
 -->
-<img class='full fit-width' src='random.webp' alt='Ein dunkles, verschwommenes Bild aus weichen Splats: Man ahnt oben in der Mitte etwas Blaues und Gelbes, mehr nicht.'>
+<img class='full fit-width' style='max-width: 24em; margin: 0 auto' src='random.webp' alt='Ein dunkles, verschwommenes Bild aus weichen Splats: Man ahnt oben in der Mitte etwas Blaues und Gelbes, mehr nicht.'>
 
 <!-- /tutorial-scope -->
 
@@ -604,7 +604,7 @@ terminal-run: cd /workspace/splatting && python3 train.py
 terminal-wait-for-prompt: 120
 image-file: splatting/colors.png 3
 -->
-<img class='full fit-width' src='colors.webp' alt='Das Gemälde aus 500 runden Splats, die alle gleich groß sind und fest an zufälligen Stellen liegen: Kopftuch, Gesicht und Kragen sind als bunte Punkte zu erkennen, dazwischen schimmert Schwarz durch.'>
+<img class='full fit-width' style='max-width: 24em; margin: 0 auto' src='colors.webp' alt='Das Gemälde aus 500 runden Splats, die alle gleich groß sind und fest an zufälligen Stellen liegen: Kopftuch, Gesicht und Kragen sind als bunte Punkte zu erkennen, dazwischen schimmert Schwarz durch.'>
 
 <!-- /tutorial-scope -->
 
@@ -731,7 +731,7 @@ terminal-run: cd /workspace/splatting && python3 train.py
 terminal-wait-for-prompt: 180
 image-file: splatting/learned.png 3
 -->
-<img class='full fit-width' src='learned.webp' alt='Das Mädchen mit dem Perlenohrring aus 500 Splats, weich, aber deutlich: das blaue und gelbe Kopftuch, das Gesicht mit Augen und rotem Mund, die Perle, der weiße Kragen, die braune Jacke vor dunklem Grund.'>
+<img class='full fit-width' style='max-width: 24em; margin: 0 auto' src='learned.webp' alt='Das Mädchen mit dem Perlenohrring aus 500 Splats, weich, aber deutlich: das blaue und gelbe Kopftuch, das Gesicht mit Augen und rotem Mund, die Perle, der weiße Kragen, die braune Jacke vor dunklem Grund.'>
 
 <!-- /tutorial-scope -->
 
@@ -766,8 +766,8 @@ und 1. Bei 1 deckt der Splat in seiner Mitte alles dahinter ab, bei 0,3
 scheint viel durch. In 2D haben sich Splats einfach addiert; im Raum liegen
 sie voreinander, und vordere verdecken hintere.
 
-Die Szene des Maßbands steht in `measuring-tape.ply`: am Anfang ein paar
-Zeilen Text, die sagen, welche Zahlen folgen, dann für jeden der 19.469
+Die Szene des Sessels steht in `modern-arm-chair.ply`: am Anfang ein paar
+Zeilen Text, die sagen, welche Zahlen folgen, dann für jeden der 49.817
 Splats 14 Zahlen. Leg die Datei `render3d.py` an und schreib diese Funktion
 zum Lesen ab (oder kopier sie; an ihr gibt es nichts Neues):
 
@@ -977,7 +977,7 @@ _task(mischen)
 
 <!-- stage: stufen/render3d-1.py as render3d.py -->
 
-### Das Maßband
+### Der Sessel
 
 Jetzt kommt alles zusammen. Ergänze `render3d.py` um eine Kamera und den
 Renderer:
@@ -1039,8 +1039,8 @@ def save(image, name):
 
 
 if __name__ == '__main__':
-    splats = read_ply('measuring-tape.ply')
-    save(render(splats, np.array([0.3, 0.25, 0.7])), 'tape.png')
+    splats = read_ply('modern-arm-chair.ply')
+    save(render(splats, np.array([0.6, 0.35, 0.9])), 'armchair.png')
 ```
 
 Du kennst fast jede Zeile:
@@ -1069,54 +1069,53 @@ _task(ohne-sortieren)
 write-file: splatting/render3d.py <- file:stufen/vergleich-ohne-sortieren.py
 terminal-run: cd /workspace/splatting && python3 render3d.py
 terminal-wait-for-prompt: 120
-image-file: splatting/tape.png 2
+image-file: splatting/armchair.png 2
 -->
-<img class='full fit-width' src='ohne-sortieren.webp' alt='Das Maßband, gerendert ohne Sortieren: Der gelbe Knopf ist voller dunkler Sprenkel, das Gehäuse fleckig, und unten am Ende des Bandes schimmert Gelb durch.'>
+<img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='ohne-sortieren.webp' alt='Der Sessel, gerendert ohne Sortieren: Über dem schwarzen Lederpolster der Lehne liegt ein großer hellbrauner Fleck, der Rahmen aus Holz von der Rückseite, und auch das Sitzpolster ist von Holz durchsetzt.'>
 
 <!-- /tutorial-scope -->
 
-So sieht das Maßband aus, wenn die Splats in der Reihenfolge der Datei
-gemischt werden statt nach ihrer Tiefe: Dunkle Splats des Gehäuses, das
-hinter dem gelben Knopf liegt, sprenkeln den Knopf, und unten am Band
-schimmert Gelb durch, wo im richtigen Bild schwarzes Gehäuse ist. Beim Addieren in 2D war die
+So sieht der Sessel aus, wenn die Splats in der Reihenfolge der Datei
+gemischt werden statt nach ihrer Tiefe: Der Rahmen aus Holz, der hinter der
+Lehne liegt, malt sich über das Lederpolster, das ihn eigentlich verdeckt. Beim Addieren in 2D war die
 Reihenfolge egal; beim Mischen nicht, denn jeder Splat nimmt den Splats
 hinter ihm einen Teil des Lichts.
 <!-- /after -->
 
 Starte jetzt `python3 render3d.py` mit dem Programm von oben, das sortiert,
-und öffne `tape.png`. Für 19.469 Splats braucht es ein paar Sekunden.
+und öffne `armchair.png`. Für 49.817 Splats braucht es ein paar Sekunden.
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 write-file: splatting/render3d.py <- file:stufen/render3d-2.py
 terminal-run: cd /workspace/splatting && python3 render3d.py
 terminal-wait-for-prompt: 120
-image-file: splatting/tape.png 2
+image-file: splatting/armchair.png 2
 -->
-<img class='full fit-width' src='tape.webp' alt='Ein schwarzes Maßband auf weißem Grund, schräg von oben: das Gehäuse mit gelbem Knopf, vorne das herausschauende Ende des Bandes aus Metall und rechts eine Schlaufe zum Tragen.'>
+<img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='sessel.webp' alt='Ein Sessel auf weißem Grund, schräg von vorne und leicht von oben: ein Rahmen aus hellem Holz mit Armlehnen und schwarzen Lederpolstern für Sitz und Lehne.'>
 
 <!-- /tutorial-scope -->
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Stell die Kamera woanders hin, etwa
-<code>np.array([-0.6, 0.1, -0.4])</code> (von hinten links) oder
-<code>np.array([0.0, 0.8, 0.1])</code> (fast von oben). Die Splats bleiben
+<code>np.array([-0.8, 0.2, -0.6])</code> (von hinten links) oder
+<code>np.array([0.0, 1.0, 0.1])</code> (fast von oben). Die Splats bleiben
 dieselben; nur die Kamera und damit die Reihenfolge ändert sich.
 </div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Vier weitere Szenen liegen im selben Ordner auf
-GitHub: <code>potted-plant.ply</code>, <code>modern-arm-chair.ply</code>,
-<code>drill.ply</code> und <code>fire-extinguisher.ply</code>. Lade eine mit <code>wget</code> wie oben und
-setz ihren Namen statt <code>measuring-tape.ply</code> ein. Die größeren
-Szenen haben bis zu 51.278 Splats und brauchen entsprechend länger.
+<strong>Ausprobieren:</strong> Fünf weitere Szenen liegen im selben Ordner auf
+GitHub: <code>potted-plant.ply</code>, <code>cash-register.ply</code>,
+<code>drill.ply</code>, <code>fire-extinguisher.ply</code> und <code>apple.ply</code>. Lade eine mit <code>wget</code> wie oben und
+setz ihren Namen statt <code>modern-arm-chair.ply</code> ein; die Kamera
+musst du vielleicht näher heran- oder weiter wegstellen.
 </div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ein Film, in dem sich das Maßband dreht:
+<strong>Ausprobieren:</strong> Ein Film, in dem sich der Sessel dreht:
 Rendere in einer Schleife 24 kleine Bilder (<code>W=160, H=120, f=200</code>),
 die Kamera jedes Mal auf einem Kreis um die Mitte ein Stück weiter, etwa bei
-<code>[0.7 * np.sin(a), 0.25, 0.7 * np.cos(a)]</code> mit
+<code>[1.0 * np.sin(a), 0.35, 1.0 * np.cos(a)]</code> mit
 <code>a = 2 * np.pi * k / 24</code>, und speichere sie wie in
 <code>train.py</code> als GIF.
 </div>
@@ -1129,12 +1128,89 @@ nach der Formel von Zwicker, die Splats werden nach ihrer Tiefe sortiert und
 von vorne nach hinten gemischt, viele Male in der Sekunde, so dass du die
 Szene flüssig drehen kannst.
 
-<div class='splat-viewer' data-scenes='[{"name": "Maßband", "src": "szenen/measuring-tape.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Registrierkasse", "src": "szenen/cash-register.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}, {"name": "Artillery Passage, alle Splats (80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}]'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl die Bohrmaschine und schieb »Größe der
 Splats« langsam nach links. Achte darauf, wo die Splats klein und dicht
 liegen und wo wenige große Splats eine Fläche malen.
+</div>
+
+### Eine Straße aus 1,5 Millionen Splats
+
+Die Gegenstände im Viewer hat ein Programm aus gerenderten Bildern gelernt.
+»Artillery Passage« ist echt: eine schmale Gasse im Londoner Stadtteil
+Spitalfields, die David Fletcher aus 1.575 Fotos trainiert und unter
+CC BY 4.0 auf [superspl.at](https://superspl.at/scene/f4897475)
+veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
+1,2 Gigabyte groß; für diese Seite sind es die 1,5 Millionen, die am meisten
+zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage«: Die Kamera steht
+mitten in der Gasse. Wenn du ziehst, drehst du dich um, und mit den
+Pfeiltasten oder W, A, S, D gehst du die Gasse entlang (auf einem
+Touchscreen mit den beiden Knöpfen). Von außen sieht eine solche Szene aus
+wie eine wirre Wolke: Alle Fotos wurden in der Gasse gemacht, und was keine
+Kamera gesehen hat, hat das Training nie verbessert. Die Fassung mit fast
+allen Splats ist schärfer, braucht aber 80 Megabyte und einen Rechner mit
+eigener Grafikkarte.
+
+Die Datei ist so sortiert, dass die Splats, die am meisten zeigen, vorne
+stehen. »Anzahl der Splats« zeichnet nur die ersten davon:
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+open-site: /gaussian-splatting
+tab: preview
+viewport: 1280x900
+hook: hide-footer
+hook: scene Artillery Passage 1000
+crop-element: #szenen .splat-viewer-stage
+-->
+<img src='gasse-1000.webp' alt='Die Gasse aus 1.000 Splats: auf hellem Grund nur ein paar lange, verwischte Striche und dunkle Flecken, von einer Gasse nichts zu erkennen.'>
+<figcaption>1.000 Splats</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+open-site: /gaussian-splatting
+tab: preview
+viewport: 1280x900
+hook: hide-footer
+hook: scene Artillery Passage 10000
+crop-element: #szenen .splat-viewer-stage
+-->
+<img src='gasse-10000.webp' alt='Die Gasse aus 10.000 Splats: große dunkle und helle Kleckse, dazwischen Spitzen und Striche; in der Mitte ahnt man den hellen Himmel über einer Gasse.'>
+<figcaption>10.000 Splats</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+open-site: /gaussian-splatting
+tab: preview
+viewport: 1280x900
+hook: hide-footer
+hook: scene Artillery Passage 100000
+crop-element: #szenen .splat-viewer-stage
+-->
+<img src='gasse-100000.webp' alt='Die Gasse aus 100.000 Splats: Fassaden links und rechts und der Boden sind zu erkennen, aber verschmiert und voller schwarzer und heller Schlieren.'>
+<figcaption>100.000 Splats</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+open-site: /gaussian-splatting
+tab: preview
+viewport: 1280x900
+hook: hide-footer
+hook: scene Artillery Passage 1500000
+crop-element: #szenen .splat-viewer-stage
+-->
+<img src='gasse-1500000.webp' alt='Die Gasse aus allen 1,5 Millionen Splats, fast wie ein Foto: links eine Fassade aus hellem Holz mit Schaufenster, in der Mitte eine schwarze Mülltonne auf grauem Pflaster, rechts weiße und grüne Ladenfronten, hinten die Gasse bis zu einem Laternenmast.'>
+<figcaption>1.500.000 Splats</figcaption></figure>
+</div>
+
+Die ersten Splats sind groß und decken viel, aber jeder malt nur einen
+groben Mittelwert dessen, was an seiner Stelle liegt. Erst die vielen
+kleinen Splats danach bringen die Kanten, die Fenster und die Schrift.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schieb »Anzahl der Splats« ganz nach links
+und dann langsam nach rechts, erst in der Gasse, dann bei der Topfpflanze.
+Ab wie vielen Splats erkennst du, was du siehst?
 </div>
 
 ### Wie so eine Szene entsteht
@@ -1170,6 +1246,73 @@ Gegenüber deinem 2D-Programm kommt dreierlei dazu:
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>3D Gaussian Splatting for Real-Time Radiance Field Rendering</strong>, Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler und George Drettakis, 2023. Der Aufsatz, mit dem Gaussian Splatting anfing: Splats im Raum, gelernt aus Fotos, sortiert und gemischt wie in deinem Renderer, schnell genug, um sich in Echtzeit in einer Szene umzusehen. Mit Videos und dem Code auf der <a href='https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/'>Seite des Projekts</a>.</p>
 </div>
+
+### Scharfe Kanten aus weichen Splats
+
+Ein Splat hat keinen Rand. Wie bekommt eine Szene aus weichen Splats eine
+scharfe Kante, etwa an einem Fensterrahmen oder einer Stufe? Durch die
+Form: Ein Splat kann in eine Richtung lang und in die andere sehr schmal
+sein, ein Strich statt eines Kleckses, oder flach wie eine Scheibe. Viele
+schmale Splats, entlang der Kante gestreckt und nebeneinandergelegt, ergeben
+einen Übergang, der schmaler ist als ein Pixel. Dasselbe hast du in 2D
+gesehen: Deine Splats haben sich an den Rändern des Kopftuchs gestreckt und
+gedreht. Das Training sorgt mit dem Verdichten dafür, dass es dort viele
+kleine Splats gibt. Wo es zu wenige sind, bei feinen Mustern oder Schrift,
+bleibt die Szene unscharf.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wähl die Registrierkasse, zoom an die Tasten
+heran und schieb »Größe der Splats« nach links. Achte darauf, welche Form
+die Splats an den Rändern der Tasten haben.
+</div>
+
+### Sortieren in jedem Bild
+
+Die Reihenfolge der Splats hängt von der Kamera ab: Was von vorne gesehen
+vorne liegt, liegt von hinten gesehen hinten. Dreht sich die Kamera, muss
+der Viewer neu sortieren, für jedes Bild. Soll es flüssig aussehen, sind das
+60 Bilder in der Sekunde, eines alle 16 Millisekunden.
+
+Mit einem Verfahren, das vergleicht (Handbuch,
+[Sortieren](/reference/sortieren)), dauern die 1,5 Millionen Splats der Gasse
+auf dem Rechner, auf dem diese Seite entstanden ist, etwa 740 Millisekunden:
+viel zu lange. Der Viewer zählt stattdessen. Er rechnet jede Tiefe in eine
+ganze Zahl von 0 bis 65.535 um, zählt, wie oft jede Zahl vorkommt, und weiß
+dann für jeden Splat, an welchen Platz er gehört (**Counting Sort**). Das
+sind wenige Durchgänge durch alle Splats statt \\(n \log\_2 n\\) Vergleichen und
+dauert auf demselben Rechner 23 Millisekunden, gut 40 Bilder in der Sekunde.
+Andere Viewer sortieren deshalb nebenher in einem eigenen Thread und zeichnen
+so lange mit der alten Reihenfolge weiter. Ganz genau ist es nicht: Zwei
+Splats, deren Tiefen sich um weniger als ein 65.536stel des Bereichs
+unterscheiden, bekommen dieselbe Zahl, und ihre Reihenfolge ist zufällig.
+Sehen kann man das nicht.
+
+Auch sonst ist das Sortieren eine Vereinfachung: Jeder Splat hat eine
+einzige Tiefe, die seiner Mitte. Zwei große Splats, die einander
+durchdringen, liegen aber an einer Stelle vorne und an einer anderen hinten;
+beim Drehen springt dann manchmal einer nach vorne (englisch *popping*).
+Das Programm aus dem Aufsatz von Kerbl sortiert darum auf der Grafikkarte
+und für jede Kachel des Bildes aus 16 × 16 Pixeln für sich.
+
+### Warum kein Z-Buffer?
+
+Spiele mit Dreiecken sortieren nicht. Sie haben einen **Z-Buffer**: für jedes
+Pixel die Tiefe des nächsten Dreiecks, das dort bisher gemalt wurde. Ein
+neues Dreieck malt ein Pixel nur, wenn es näher liegt, und überschreibt es
+dann. Damit ist die Reihenfolge der Dreiecke egal.
+
+_task(z-buffer)
+
+<!-- after: z-buffer -->
+Ein Z-Buffer merkt sich für jedes Pixel nur eines, das Nächste. Ein
+durchscheinender Splat soll aber mit dem mischen, was hinter ihm liegt, und
+das ist bei einer beliebigen Reihenfolge oft noch gar nicht gemalt. Kommt
+es später, verwirft der Z-Buffer es, weil es weiter weg ist, und hinter dem
+halb durchsichtigen Splat bleibt ein Loch. Spiele haben dasselbe Problem mit
+Glas, Rauch und Blättern: Sie malen zuerst alles, was deckt, mit dem
+Z-Buffer, und danach das Durchscheinende, nach der Tiefe sortiert. Es gibt
+auch Verfahren, die ohne Sortieren mischen; sie rechnen nur ungefähr.
+<!-- /after -->
 
 _task(warum-reihenfolge)
 

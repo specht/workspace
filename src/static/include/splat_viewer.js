@@ -6,9 +6,20 @@
 //
 // <div class='splat-viewer' data-scenes='[{"name": "Maßband", "src": "…/measuring-tape.splat"}, …]'></div>
 //
+// A scene may name where the camera starts, "view": {"target": [x, y, z],
+// "distance": d, "yaw": a, "pitch": b} (radians; yaw 0 looks along -z):
+// a street scanned from inside is a cloud of stray splats from outside, so
+// its camera starts in the street, close to the point it turns around.
+//
 // Reads .splat (32 bytes a splat: position and scale as float32, RGBA and
-// the rotation as bytes, the format of antimatter15/splat) and the .ply of a
-// 3DGS trainer (the colour from f_dc only). »Eigene Datei öffnen« reads a
+// the rotation as bytes, the format of antimatter15/splat), .csplat (16
+// bytes a splat, werkzeug/prepare_street.py says how) and the .ply of a
+// 3DGS trainer (the colour from f_dc only). The arrow keys or W, A, S, D
+// walk (Q and E down and up), and on a touch screen two buttons walk
+// forward and back: through a street that was scanned from inside. »Anzahl der Splats« draws only
+// the first ones of a file: the files of the page come sorted with the most
+// visible splats first (werkzeug/prepare_*.py), so a scene builds up from a
+// few large blurry ones to all of them. »Eigene Datei öffnen« reads a
 // file from the person's computer; nothing is sent anywhere. Drag to turn,
 // the wheel or two fingers to zoom, the right button or Shift to move.
 (function () {
@@ -31,6 +42,46 @@
             }
         }
         return s;
+    }
+
+    function parseCompact(buffer) {
+        const head = new DataView(buffer, 0, 40);
+        const n = head.getUint32(8, true);
+        const low = [0, 1, 2].map((k) => head.getFloat32(12 + 4 * k, true));
+        const high = [0, 1, 2].map((k) => head.getFloat32(24 + 4 * k, true));
+        const u = new Uint8Array(buffer, 40, n * 16);
+        const s = { count: n, position: new Float32Array(n * 3), scale: new Float32Array(n * 3),
+            rotation: new Float32Array(n * 4), color: new Float32Array(n * 4) };
+        const r = Math.SQRT1_2;
+        const q = [0, 0, 0, 0];
+        for (let i = 0; i < n; i++) {
+            const o = i * 16;
+            for (let k = 0; k < 3; k++) {
+                s.position[i * 3 + k] = low[k] + (u[o + 2 * k] | (u[o + 2 * k + 1] << 8)) / 65535 * (high[k] - low[k]);
+                s.scale[i * 3 + k] = Math.exp(u[o + 6 + k] / 255 * 14 - 12);
+            }
+            for (let k = 0; k < 4; k++) s.color[i * 4 + k] = u[o + 9 + k] / 255;
+            const packed = (u[o + 13] << 16) | (u[o + 14] << 8) | u[o + 15];
+            const largest = packed >> 22;
+            const rest = [(packed >> 14) & 127, (packed >> 7) & 127, packed & 127].map((v) => (v / 127 * 2 - 1) * r);
+            let sum = 0;
+            for (let k = 0, j = 0; k < 4; k++) {
+                if (k === largest) continue;
+                q[k] = rest[j++];
+                sum += q[k] * q[k];
+            }
+            q[largest] = Math.sqrt(Math.max(0, 1 - sum));
+            for (let k = 0; k < 4; k++) s.rotation[i * 4 + k] = q[k];
+        }
+        return s;
+    }
+
+    function parse(buffer, name) {
+        const magic = new TextDecoder().decode(new Uint8Array(buffer, 0, Math.min(8, buffer.byteLength)));
+        if (magic === 'CSPLAT01') return parseCompact(buffer);
+        if (magic.startsWith('ply')) return parsePly(buffer);
+        if (/\.ply$/i.test(name)) throw new Error('Das ist keine PLY-Datei.');
+        return parseSplat(buffer);
     }
 
     function parsePly(buffer) {
@@ -198,6 +249,14 @@ void main() {
             this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.upload(); });
             sizeLabel.append(this.slider);
             bar.append(sizeLabel);
+            const countLabel = document.createElement('label');
+            countLabel.className = 'splat-viewer-size';
+            countLabel.innerHTML = '<span>Anzahl der Splats</span>';
+            this.counter = document.createElement('input');
+            this.counter.type = 'range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
+            this.counter.addEventListener('input', () => { this.lastSort = null; this.describe(); this.redraw(); });
+            countLabel.append(this.counter);
+            bar.append(countLabel);
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
@@ -216,14 +275,34 @@ void main() {
             bar.append(turn);
             this.canvas = document.createElement('canvas');
             this.canvas.className = 'splat-viewer-canvas';
+            this.canvas.tabIndex = 0;
+            this.canvas.setAttribute('aria-label', 'Szene: ziehen zum Drehen, Pfeiltasten zum Gehen');
             this.status = document.createElement('div');
             this.status.className = 'splat-viewer-status';
             const stage = document.createElement('div');
             stage.className = 'splat-viewer-stage';
-            stage.append(this.canvas, this.status);
+            const walk = document.createElement('div');
+            walk.className = 'splat-viewer-walk';
+            for (const [dir, icon, label] of [[1, 'bi-arrow-up', 'Vorwärts'], [-1, 'bi-arrow-down', 'Rückwärts']]) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-light';
+                button.setAttribute('aria-label', label);
+                button.innerHTML = `<i class='bi ${icon}'></i>`;
+                const stop = () => { this.held.delete(dir > 0 ? 'touch-forward' : 'touch-back'); };
+                button.addEventListener('pointerdown', (e) => { e.preventDefault(); this.held.add(dir > 0 ? 'touch-forward' : 'touch-back'); this.walkLoop(); });
+                button.addEventListener('pointerup', stop);
+                button.addEventListener('pointerleave', stop);
+                button.addEventListener('pointercancel', stop);
+                walk.append(button);
+            }
+            stage.append(this.canvas, this.status, walk);
             this.info = document.createElement('div');
             this.info.className = 'splat-viewer-info';
-            root.append(stage, bar, this.info);
+            const help = document.createElement('div');
+            help.className = 'splat-viewer-help';
+            help.textContent = 'Ziehen dreht, das Mausrad oder zwei Finger zoomen, die Pfeiltasten oder W, A, S, D bewegen dich, Q und E nach unten und oben; ein Doppelklick stellt die Kamera zurück.';
+            root.append(stage, bar, this.info, help);
 
             const gl = this.canvas.getContext('webgl2', { antialias: false, premultipliedAlpha: true, alpha: true });
             if (!gl) { this.message('Dieser Browser kann kein WebGL2. Mit einem aktuellen Firefox, Chrome oder Safari geht es.'); return; }
@@ -275,7 +354,9 @@ void main() {
                 const response = await fetch(scene.src);
                 if (!response.ok) throw new Error(`Die Szene ließ sich nicht laden (${response.status}).`);
                 const buffer = await response.arrayBuffer();
-                this.show(scene.src.endsWith('.ply') ? parsePly(buffer) : parseSplat(buffer), scene.credit || '');
+                this.view = scene.view || null;
+                this.show(parse(buffer, scene.src), scene.credit || '');
+                this.loaded = scene.name;
             } catch (e) {
                 this.message(e.message);
             }
@@ -284,7 +365,8 @@ void main() {
         loadFile(file) {
             this.message('Lädt …');
             file.arrayBuffer().then((buffer) => {
-                this.show(/\.splat$/i.test(file.name) ? parseSplat(buffer) : parsePly(buffer), file.name);
+                this.view = null;
+                this.show(parse(buffer, file.name), file.name);
             }).catch((e) => this.message(e.message));
         }
 
@@ -300,10 +382,33 @@ void main() {
             this.radius = d[Math.floor(d.length * 0.9)] || 1;
             this.distance = this.radius * 3;
             this.yaw = 0.6; this.pitch = 0.3;
+            if (this.view) {
+                if (this.view.target) this.target = this.view.target.slice();
+                if (this.view.distance) this.distance = this.view.distance;
+                if (this.view.yaw !== undefined) this.yaw = this.view.yaw;
+                if (this.view.pitch !== undefined) this.pitch = this.view.pitch;
+            }
             this.up = 0;
+            this.counter.value = '1';
             this.upload();
             this.message('');
-            this.info.textContent = `${n.toLocaleString('de-DE')} Splats${credit ? ', ' + credit : ''}`;
+            this.describe();
+        }
+
+        // how many splats the slider asks for: from 100 to all, evenly on a
+        // logarithmic scale
+        drawn() {
+            const n = this.splats ? this.splats.count : 0;
+            const v = parseFloat(this.counter.value);
+            if (n <= 100 || v >= 1) return n;
+            return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
+        }
+
+        describe() {
+            if (!this.splats) return;
+            const n = this.splats.count, k = this.drawn();
+            const count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
+            this.info.textContent = count + (this.credit ? ', ' + this.credit : '');
         }
 
         tilt() {
@@ -355,7 +460,7 @@ void main() {
         }
 
         sort(cam) {
-            const s = this.splats, n = s.count;
+            const s = this.splats, n = this.drawn();
             const f = cam.back;
             let min = Infinity, max = -Infinity;
             for (let i = 0; i < n; i++) {
@@ -372,7 +477,8 @@ void main() {
             for (let i = n - 1; i >= 0; i--) this.order[--counts[this.keys[i]]] = i;
             const gl = this.gl;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.orderBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.order, gl.DYNAMIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, this.order.subarray(0, n), gl.DYNAMIC_DRAW);
+            this.sortedCount = n;
         }
 
         redraw() {
@@ -406,15 +512,52 @@ void main() {
             gl.uniform2f(this.u.u_viewport, w, h);
             gl.enable(gl.BLEND);
             gl.blendFuncSeparate(gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE);
-            gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, s.count);
+            gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, this.sortedCount);
+        }
+
+        // walking: while a key or a button is held, the camera and the point
+        // it turns around move together, along the ground and sideways
+        walkLoop() {
+            if (this.walking) return;
+            this.walking = true;
+            let last = performance.now();
+            const step = (now) => {
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
+                const h = this.held;
+                const ahead = (h.has('w') || h.has('arrowup') || h.has('touch-forward') ? 1 : 0) - (h.has('s') || h.has('arrowdown') || h.has('touch-back') ? 1 : 0);
+                const side = (h.has('d') || h.has('arrowright') ? 1 : 0) - (h.has('a') || h.has('arrowleft') ? 1 : 0);
+                const up = (h.has('e') ? 1 : 0) - (h.has('q') ? 1 : 0);
+                if (!this.splats || (!ahead && !side && !up)) { this.walking = false; return; }
+                const speed = (this.view && this.view.speed) || this.radius * 0.6;
+                const sy = Math.sin(this.yaw), cy = Math.cos(this.yaw);
+                const forward = [-sy, 0, -cy], right = [cy, 0, -sy];
+                for (let i = 0; i < 3; i++) this.target[i] += (ahead * forward[i] + side * right[i]) * speed * dt;
+                this.target[1] += up * speed * dt;
+                this.draw();
+                requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
         }
 
         controls() {
             const c = this.canvas;
+            this.held = new Set();
+            const keys = ['w', 'a', 's', 'd', 'q', 'e', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'];
+            c.addEventListener('keydown', (e) => {
+                const k = e.key.toLowerCase();
+                if (!keys.includes(k) || e.ctrlKey || e.metaKey || e.altKey) return;
+                e.preventDefault();
+                this.held.add(k);
+                this.walkLoop();
+            });
+            c.addEventListener('keyup', (e) => this.held.delete(e.key.toLowerCase()));
+            c.addEventListener('blur', () => this.held.clear());
             const pointers = new Map();
             let last = null;
             c.addEventListener('contextmenu', (e) => e.preventDefault());
             c.addEventListener('pointerdown', (e) => {
+                c.focus({ preventScroll: true });
                 c.setPointerCapture(e.pointerId);
                 pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, button: e.button, shift: e.shiftKey });
                 last = null;
@@ -462,7 +605,7 @@ void main() {
     function start() {
         document.querySelectorAll('.splat-viewer:not([data-started])').forEach((root) => {
             root.dataset.started = '1';
-            try { new Viewer(root); } catch (e) { root.textContent = 'Der Viewer konnte nicht starten: ' + e.message; }
+            try { root.splatViewer = new Viewer(root); } catch (e) { root.textContent = 'Der Viewer konnte nicht starten: ' + e.message; }
         });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

@@ -98,5 +98,5 @@ def save(image, name):
 
 
 if __name__ == '__main__':
-    splats = read_ply('measuring-tape.ply')
-    save(render(splats, np.array([0.3, 0.25, 0.7])), 'tape.png')
+    splats = read_ply('modern-arm-chair.ply')
+    save(render(splats, np.array([0.6, 0.35, 0.9])), 'armchair.png')
