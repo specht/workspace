@@ -171,14 +171,18 @@
   icon: /images/video-game.png
   description: |
     C selbst zum Nachschlagen: Typen, Rechnen, Arrays, Structs, Bits, Zeiger,
-    Dateien und Fehlermeldungen. Vektoren für Punkte, Richtungen, Licht und
-    Strahlen. PixelRAM für Bilder aus einzelnen Pixeln,
+    Dateien und Fehlermeldungen. Vektoren für Punkte, Richtungen und
+    Strahlen, Matrizen zum Drehen, Verschieben und für die Kamera, Licht und
+    Glanz für matte, glänzende und spiegelnde Flächen. PixelRAM für Bilder
+    aus einzelnen Pixeln,
     raylib für Spiele in 3D mit Kamera, Licht, Texturen und Shadern; dazu
     Tastatur, Maus und Zeit. GLSL für die Shader selbst, prozedurale Texturen
     für Holz, Fliesen und Marmor ohne ein einziges Bild.
   entries:
     - c
     - vektoren
+    - matrizen
+    - licht
     - pixelram
     - raylib
     - glsl
@@ -210,7 +214,8 @@
   description: |
     Wie Sortierverfahren, Suchen in Graphen und Datenstrukturen arbeiten,
     Schritt für Schritt zum Durchklicken und als Pseudocode zum Übersetzen
-    in die eigene Sprache.
+    in die eigene Sprache; dazu der Gradientenabstieg, mit dem Programme
+    lernen.
   entries:
     - listen
     - sortieren
@@ -218,6 +223,7 @@
     - heap
     - baeume
     - hash-tables
+    - gradientenabstieg
 
 - key: reference-automata
   label: Automaten und reguläre Ausdrücke

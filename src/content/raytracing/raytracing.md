@@ -7,7 +7,7 @@ duration: 4 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik"
 topics: [computergrafik]
 requires: [pixelram]
-reference: [c, pixelram, workspace, vektoren]
+reference: [c, pixelram, workspace, vektoren, licht]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>

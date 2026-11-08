@@ -7,7 +7,7 @@ duration: 5 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen, Flat und Smooth Shading, Licht nach Lambert und Blinn-Phong, Texturen und Normal Maps, Spiegelung und Transparenz)"
 topics: [computergrafik]
 requires: [glsl, raytracing, kata-lists]
-reference: [glsl, vektoren, bits-und-bytes, workspace]
+reference: [glsl, vektoren, matrizen, licht, bits-und-bytes, workspace]
 </div>
 
 <div
@@ -297,7 +297,9 @@ landen, werden sie mehrmals umgerechnet: gedreht, verschoben, perspektivisch
 verkleinert. Jede dieser Umrechnungen ist eine **Matrix**, vier Zeilen mit je
 vier Zahlen. Multipliziert man eine Matrix mit einem Punkt
 \\((x, y, z, 1)\\), kommt der umgerechnete Punkt heraus; die vierte Zahl,
-die 1, ist der Trick, mit dem eine Matrix auch verschieben kann.
+die 1, ist der Trick, mit dem eine Matrix auch verschieben kann. Wie man
+mit Matrizen rechnet, mit Bildern in 2D, steht im Handbuch unter
+[Matrizen](/reference/matrizen).
 
 WebGL möchte eine Matrix als Array aus 16 Zahlen, **Spalte für Spalte**: Die
 Zahl in Zeile \\(r\\) und Spalte \\(c\\) steht beim Index \\(4c + r\\).
@@ -719,7 +721,8 @@ ihrer Normale \\(n\\) und der Richtung \\(l\\) zum Licht ab: Steht das
 Licht senkrecht darüber, ist es voll, fällt es flach darauf, wenig. Für
 Vektoren der Länge 1 ist \\(\cos\theta\\) einfach das Skalarprodukt
 \\(n \cdot l\\) (Handbuch, [Vektoren](/reference/vektoren)); so rechnet auch dein [Raytracer](/raytracing) matte
-Flächen (nach Johann Heinrich Lambert, 1760). Ist es negativ, liegt die
+Flächen (nach Johann Heinrich Lambert, 1760; Handbuch,
+[Licht und Glanz](/reference/licht)). Ist es negativ, liegt die
 Fläche im Schatten, also 0. Dazu kommt ein bisschen Licht von überall, damit
 Schattenseiten nicht schwarz sind:
 

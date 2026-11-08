@@ -6,7 +6,7 @@ language: GLSL
 duration: 4 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Shader, Raymarching, Fraktale)"
 topics: [computergrafik]
-reference: [glsl, prozedurale-texturen, workspace, vektoren]
+reference: [glsl, prozedurale-texturen, workspace, vektoren, licht]
 template: https://github.com/specht/glsl-starter.git
 template_name: des GLSL-Starters
 </div>

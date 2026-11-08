@@ -7,7 +7,7 @@ duration: 3 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Splats statt Dreiecke, Projektion mit einer Kamera, Sortieren nach der Tiefe, Alpha-Blending), Vertiefung Künstliche Intelligenz (Gradientenabstieg: ein Bild aus Splats lernen)"
 topics: [computergrafik, ki]
 requires: [webgl, kata-lists]
-reference: [vektoren, sortieren, bits-und-bytes]
+reference: [vektoren, matrizen, gradientenabstieg, sortieren, bits-und-bytes]
 </div>
 
 <div
@@ -485,7 +485,8 @@ $$c \leftarrow c - \eta \cdot E'(c)$$
 
 \\(\eta\\) (Eta) heißt **Lernrate**: Sie sagt, wie groß die Schritte sind.
 Mehrere Regler auf einmal gehen genauso, jeder mit seiner eigenen Steigung;
-alle Steigungen zusammen heißen **Gradient**.
+alle Steigungen zusammen heißen **Gradient** (Handbuch,
+[Gradientenabstieg](/reference/gradientenabstieg)).
 
 <img class='drawing' style='width: 35em' src='bergab.webp' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
 
@@ -900,7 +901,7 @@ wenn man sie mit ihm multipliziert.
 
 Statt drei Breiten und einer Drehung beschreibt man die Form eines Splats im
 Raum mit einer einzigen Matrix, der **Kovarianzmatrix** \\(\Sigma\\) (groß
-Sigma). Sie entsteht, wenn man sich eine Kugel denkt, sie mit der Matrix
+Sigma; Handbuch, [Matrizen](/reference/matrizen)). Sie entsteht, wenn man sich eine Kugel denkt, sie mit der Matrix
 \\(S\\) entlang der Achsen streckt (die Breiten auf der Diagonale, sonst
 Nullen) und mit der Drehmatrix \\(R\\) dreht:
 
