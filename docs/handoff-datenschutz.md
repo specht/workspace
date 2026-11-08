@@ -338,7 +338,7 @@ and processor); LfD Niedersachsen, Eckpunkte Lernplattformen (2022).
 
 ## Working on the dev site
 
-- `http://workspace.test:8025`, admin login with an `ADMIN_USERS` address
+- `http://workspace.test:8030`, admin login with an `ADMIN_USERS` address
   and code `123456`; mails are only logged in development.
 - The dev database holds the live dump: made-up addresses (`…@example.com`)
   and schools in tests, cleaned up afterwards; never real identities.

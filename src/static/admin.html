@@ -347,9 +347,8 @@
     });
 
     function establish_websocket_connection() {
-        var ws_uri = 'ws://' + location.host + '/ws';
-        if (location.port !== '8025')
-            ws_uri = 'wss://' + location.host + '/ws';
+        // plain ws only where the page itself is plain http (development)
+        var ws_uri = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
         ws = new WebSocket(ws_uri);
         setup_ws(ws);
     }

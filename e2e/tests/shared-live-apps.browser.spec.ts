@@ -235,7 +235,7 @@ test('a student can share and revoke a live app', async ({
     let sharedUrl = '';
     await test.step('Share the port and access its HTTP endpoint', async () => {
       sharedUrl = await sharePort();
-      expect(sharedUrl).toMatch(/^http:\/\/live-[a-z0-9]+\.workspace\.test:8025\/$/);
+      expect(sharedUrl).toMatch(/^http:\/\/live-[a-z0-9]+\.workspace\.test:8030\/$/);
 
       // The share API sends nginx a graceful-reload signal, but old workers
       // may briefly serve the previous route map. Retry real HTTP requests so

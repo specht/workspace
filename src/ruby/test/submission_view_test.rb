@@ -58,11 +58,11 @@ class SubmissionViewTest < Minitest::Test
     end
 
     def test_headers_sandbox_every_answer
-        h = SubmissionView.headers('x/index.html', 'http://workspace.test:8025')
+        h = SubmissionView.headers('x/index.html', 'http://workspace.test:8030')
         assert_equal 'text/html; charset=utf-8', h['Content-Type']
         assert_match(/\Asandbox allow-scripts /, h['Content-Security-Policy'])
         refute_includes h['Content-Security-Policy'], 'allow-same-origin'
-        assert_includes h['Content-Security-Policy'], 'frame-ancestors http://workspace.test:8025'
+        assert_includes h['Content-Security-Policy'], 'frame-ancestors http://workspace.test:8030'
         assert_equal 'application/octet-stream', SubmissionView.headers('x/datei.exe', 'x')['Content-Type']
         assert SubmissionView.text?('a/b.ini')
         refute SubmissionView.text?('a/b.png')
@@ -73,9 +73,9 @@ class SubmissionViewTest < Minitest::Test
         end
         assert_equal 'application/wasm', SubmissionView.content_type('raylib-starter/main.wasm')
         # the one exception: a PDF, which Chrome shows only outside a sandbox
-        pdf = SubmissionView.headers('facharbeit/facharbeit.pdf', 'http://workspace.test:8025')
+        pdf = SubmissionView.headers('facharbeit/facharbeit.pdf', 'http://workspace.test:8030')
         assert_equal 'application/pdf', pdf['Content-Type']
-        assert_equal 'frame-ancestors http://workspace.test:8025', pdf['Content-Security-Policy']
+        assert_equal 'frame-ancestors http://workspace.test:8030', pdf['Content-Security-Policy']
         assert_equal 'nosniff', pdf['X-Content-Type-Options']
     end
 end

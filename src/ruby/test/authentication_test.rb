@@ -111,7 +111,7 @@ class AuthenticationTest < Minitest::Test
         refute Authentication.same_origin?(
             :origin => 'http://workspace.example:8026',
             :referer => nil,
-            :expected_origin => 'http://workspace.example:8025',
+            :expected_origin => 'http://workspace.example:8030',
         )
     end
 

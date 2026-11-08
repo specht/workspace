@@ -1,7 +1,7 @@
 # End-to-end tests
 
 Playwright tests against the local Hackschule Workspace
-(`http://workspace.test:8025`). There are two kinds:
+(`http://workspace.test:8030`). There are two kinds:
 
 - **Browser tests** (`*.browser.spec.ts`, project `workspace-smoke`) for what
   only a browser can show: login and sessions, starting a Workspace, the

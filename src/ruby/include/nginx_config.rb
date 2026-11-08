@@ -500,7 +500,7 @@ class Main < Sinatra::Base
                     set $r $rest;
                     if ($r = "") { set $r /; }
 
-                    # pick up external port from Host header (e.g. :8025)
+                    # pick up external port from Host header (e.g. :8030)
                     set $port "";
                     if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
 
@@ -571,7 +571,7 @@ class Main < Sinatra::Base
                     proxy_redirect ~^//[^/]+/proxy/[0-9]+/?$ /;
 
                     # Any remaining absolute redirect must use the browser-visible host.
-                    # $http_host includes :8025 in development.
+                    # $http_host includes :8030 in development.
                     proxy_redirect ~^(https?://)[^/]+(/.*)$ $1$http_host$2;
                     proxy_redirect ~^//[^/]+(/.*)$ //$http_host$1;
 
@@ -619,7 +619,7 @@ class Main < Sinatra::Base
                     proxy_redirect ~^//[^/]+/proxy/[0-9]+/?$ /;
 
                     # Any remaining absolute redirect must use the browser-visible host.
-                    # $http_host includes :8025 in development.
+                    # $http_host includes :8030 in development.
                     proxy_redirect ~^(https?://)[^/]+(/.*)$ $1$http_host$2;
                     proxy_redirect ~^//[^/]+(/.*)$ //$http_host$1;
 

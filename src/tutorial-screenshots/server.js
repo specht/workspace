@@ -61,7 +61,7 @@ function sleep(seconds) {
 const CONTENT_ROOT = '/content';
 const USER_ROOT = '/user';
 const GIT_CACHE_ROOT = process.env.TUTORIAL_SCREENSHOT_GIT_CACHE_ROOT || '/git-cache';
-const BASE_URL = process.env.TUTORIAL_SCREENSHOT_BASE_URL || 'http://workspace.test:8025';
+const BASE_URL = process.env.TUTORIAL_SCREENSHOT_BASE_URL || 'http://workspace.test:8030';
 const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'student@example.com';
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
@@ -1233,7 +1233,7 @@ function launchBrowser(gpu) {
             // Keep the browser-visible workspace.test URLs (cookies and nginx
             // routing depend on them), but connect directly to the Compose nginx
             // service. Chromium host mapping can override both host and port, so
-            // URLs containing the host-published :8025 development port still
+            // URLs containing the host-published development port (:8030) still
             // reach nginx on its container port 80. The wildcard rule does the
             // same for code-server and Live Server subdomains.
             let nginxAddress;

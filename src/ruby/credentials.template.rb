@@ -3,7 +3,7 @@ DEVELOPMENT = true
 # IMPORTANT: This must be the path to the data directory on the host machine
 PATH_TO_HOST_DATA = nil
 
-WEBSITE_HOST = DEVELOPMENT ? "workspace.test:8025" : "code.hackschule.de"
+WEBSITE_HOST = DEVELOPMENT ? "workspace.test:8030" : "code.hackschule.de"
 WEB_ROOT = DEVELOPMENT ? "http://#{WEBSITE_HOST}" : "https://#{WEBSITE_HOST}"
 PHPMYADMIN_WEB_ROOT = DEVELOPMENT ? "http://phpmyadmin.#{WEBSITE_HOST}" : "https://phpmyadmin.#{WEBSITE_HOST}"
 NEO4J_WEB_ROOT = DEVELOPMENT ? "http://neo4j.#{WEBSITE_HOST}/browser/" : "https://neo4j.#{WEBSITE_HOST}/browser/"

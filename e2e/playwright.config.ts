@@ -63,7 +63,7 @@ export default defineConfig({
 
                 launchOptions: {
                     args: [
-                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8025,*.workspace.test',
+                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8030,*.workspace.test',
                     ],
                 },
             },
@@ -89,7 +89,7 @@ export default defineConfig({
                 channel: 'chromium',
                 launchOptions: {
                     args: [
-                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8025,*.workspace.test',
+                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8030,*.workspace.test',
                     ],
                 },
             },
@@ -99,7 +99,7 @@ export default defineConfig({
     use: {
         baseURL:
             process.env.E2E_BASE_URL ??
-            'http://workspace.test:8025',
+            'http://workspace.test:8030',
         viewport: {
             width: 1600,
             height: 1000,

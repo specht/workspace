@@ -375,7 +375,7 @@
     }
 
     function connect() {
-        const ws = new WebSocket((location.port === '8025' ? 'ws://' : 'wss://') + location.host + '/ws');
+        const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
         ws.onmessage = (event) => {
             let data;
             try { data = JSON.parse(event.data); } catch (e) { return; }

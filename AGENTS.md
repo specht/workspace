@@ -18,7 +18,7 @@ user-facing text are German; code and these notes are English.
 | `docker/code/` | the student Workspace image |
 | `e2e/` | Playwright tests; read [e2e/AGENTS.md](e2e/AGENTS.md) before writing one |
 
-The development site is `http://workspace.test:8025`; log in with any admin
+The development site is `http://workspace.test:8030`; log in with any admin
 address from `credentials.rb` and the code `123456`.
 
 ## Documentation

@@ -72,7 +72,7 @@ echo "address=/workspace.test/127.0.0.1" > \
 systemctl restart NetworkManager
 ```
 
-Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://workspace.test:8025'>http://workspace.test:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, musst du noch das Workspace-Image bauen (siehe unten).
+Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://workspace.test:8030'>http://workspace.test:8030</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, musst du noch das Workspace-Image bauen (siehe unten).
 
 Damit Chrome die lokale HTTP-Adresse als sicher ansieht (manche Funktionen von Visual Studio Code gibt es sonst nicht), kann man zusätzlich folgende Einstellung vornehmen:
 
@@ -82,7 +82,7 @@ sudo mkdir -p /etc/opt/chrome/policies/managed
 sudo tee /etc/opt/chrome/policies/managed/workspace-dev.json >/dev/null <<'EOF'
 {
   "OverrideSecurityRestrictionsOnInsecureOrigin": [
-    "http://workspace.test:8025/",
+    "http://workspace.test:8030/",
     "*.workspace.test"
   ]
 }
