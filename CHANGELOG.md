@@ -21,8 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
-- Der Server holt beim Start einmal vier Dateien von `specht/workspace-files` nach `/dl/gaussian-splatting` (zusammen
-  etwa 145 MB, die Gasse, ein Klassenzimmer und ein Dorf für den Viewer der Aktivität »Gaussian Splatting«);
+- Der Server holt beim Start einmal drei Dateien von `specht/workspace-files` nach `/dl/gaussian-splatting` (zusammen
+  etwa 120 MB, die Gasse und ein Klassenzimmer für den Viewer der Aktivität »Gaussian Splatting«);
   ohne Netz beim Start fehlen nur diese Szenen, und er versucht es beim nächsten Start wieder.
 - »Meine Daten herunterladen« lieferte vom 31. Oktober bis 7. November 2026 ein leeres Archiv (der Pfad zu
   `tools/zip_stream.py` stimmte nach einem Umzug im Code nicht mehr). Wer in dieser Zeit seine Daten geholt hat, holt
