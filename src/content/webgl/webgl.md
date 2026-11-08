@@ -1930,15 +1930,27 @@ void main() {
     vec3 mirrored = environmentColor(reflect(-v, n), roughness * 8.0);
     // schräg gesehen spiegelt jede Fläche mehr (nach Schlick)
     float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(n, v), 0.0), 5.0);
-    // Lack und Farbe: Licht, Glanz und ein wenig Spiegelung
-    vec3 painted = base * (0.3 * ao + 0.7 * diffuse) + specular + mirrored * fresnel * (1.0 - roughness);
+    // Licht von überall: so hell und so farbig, wie das Zimmer in Richtung
+    // der Normale ist, aus der verschwommensten Fassung des Panoramas
+    vec3 around = environmentColor(n, 9.0);
+    // Lack und Farbe: Licht aus dem Zimmer, Licht von der Lampe, Glanz und
+    // ein wenig Spiegelung
+    vec3 painted = base * (1.2 * ao * around + 0.5 * diffuse) + specular + mirrored * fresnel * (1.0 - roughness);
     // Metall: spiegelt alles, in seiner eigenen Farbe
     vec3 shiny = mirrored * base * ao + specular * base;
     color = vec4(mix(painted, shiny, metal), 1.0);
 }
 ```
 
-- `painted` ist die Farbe von Lack und Zifferblatt: Licht von überall, jetzt
+- `around` ist das Licht von überall, und das kommt jetzt aus dem Zimmer.
+  Bisher war es eine feste Zahl, 0,3, aus jeder Richtung gleich.
+  `environmentColor(n, 9.0)` liest das Panorama in Richtung der Normale aus
+  seiner kleinsten Fassung, nur 4 × 2 Pixel groß: fast der Durchschnitt der
+  Seite des Zimmers, in die die Fläche zeigt. Das Zifferblatt zeigt in ein
+  warmes, helles Zimmer und wird cremefarben; eine Fläche, die zum dunklen
+  Boden zeigt, bleibt dunkler. Das heißt **Image Based Lighting**: Licht aus
+  einem Bild der Umgebung.
+- `painted` ist die Farbe von Lack und Zifferblatt: das Licht aus dem Zimmer
   mal der AO, Licht von der Lampe, Glanz und die Spiegelung nach Schlick,
   schwächer, je rauer die Fläche ist.
 - `shiny` ist Metall: die Spiegelung mal der eigenen Farbe.
@@ -1980,7 +1992,7 @@ click: selector:canvas
 press: 5
 sleep: 1
 -->
-<img src='wecker-ohne.webp' alt='Der Wecker ohne Metall: Glocken, Bügel und Ring sind grau und matt wie aus Kunststoff, nur mit einem schwachen Glanz.'>
+<img src='wecker-ohne.webp' alt='Der Wecker ohne Metall: Glocken, Bügel und Ring sind hell cremefarben und matt wie aus Kunststoff, nur mit einem schwachen Glanz; das Zifferblatt ist warm cremefarben.'>
 <figcaption>Ohne Metallic Map</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -2128,7 +2140,7 @@ click: selector:canvas
 press: g
 sleep: 1
 -->
-<img src='glas-ohne.webp' alt='Das Zifferblatt des Weckers schräg von der Seite, ohne Glas: Ziffern und Zeiger klar und matt.'>
+<img src='glas-ohne.webp' alt='Das cremefarbene Zifferblatt des Weckers schräg von der Seite, ohne Glas: Ziffern und Zeiger klar und matt.'>
 <figcaption>Ohne Glas</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot

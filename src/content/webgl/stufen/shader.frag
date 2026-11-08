@@ -80,8 +80,12 @@ void main() {
         color = vec4(mirrored * reflectance + specular, reflectance);
         return;
     }
-    // Lack und Farbe: Licht, Glanz und ein wenig Spiegelung
-    vec3 painted = base * (0.3 * ao + 0.7 * diffuse) + specular + mirrored * fresnel * (1.0 - roughness);
+    // Licht von überall: so hell und so farbig, wie das Zimmer in Richtung
+    // der Normale ist, aus der verschwommensten Fassung des Panoramas
+    vec3 around = environmentColor(n, 9.0);
+    // Lack und Farbe: Licht aus dem Zimmer, Licht von der Lampe, Glanz und
+    // ein wenig Spiegelung
+    vec3 painted = base * (1.2 * ao * around + 0.5 * diffuse) + specular + mirrored * fresnel * (1.0 - roughness);
     // Metall: spiegelt alles, in seiner eigenen Farbe
     vec3 shiny = mirrored * base * ao + specular * base;
     color = vec4(mix(painted, shiny, metal), 1.0);
