@@ -253,6 +253,7 @@ terminal-wait-for-prompt: 60
 image-file: fraktal/grau.png 2
 -->
 <img class='full fit-width' style='max-width: 40em; margin: 0 auto' src='grau.webp' alt='Die Strandhäuser in Graustufen: drei Hütten mit spitzen Dächern, Brettertüren und einem Riegel an der mittleren Tür, darüber heller Himmel.'>
+
 <!-- /tutorial-scope -->
 
 ### Ein Block und ein Partner
@@ -362,6 +363,7 @@ terminal-wait-for-prompt: 120
 image-file: fraktal/paar.png 1
 -->
 <img class='full fit-width inspect' src='paar.webp' alt='Die Strandhäuser in Graustufen. Ein kleiner roter Rahmen sitzt auf der Kante des mittleren Dachs, ein doppelt so großer blauer Rahmen ein Stück weiter unten auf derselben Kante.'>
+
 <!-- /tutorial-scope -->
 
 Der beste Partner liegt ein Stück tiefer auf derselben Dachkante: Verkleinert sieht ein Stück Kante aus wie ein Stück Kante. Das Programm hat dafür 2301 Domain-Blöcke in je acht Lagen verglichen, 18 408 Mal `fit`.
@@ -804,6 +806,7 @@ terminal-wait-for-prompt: 180
 image-file: fraktal/schritt-8.png 1
 -->
 <img class='full fit-width inspect' src='gross.webp' alt='Die Strandhäuser in Farbe, aus demselben Code doppelt so groß decodiert, 960 × 640 Pixel: Die Dachkanten sind glatt und scharf, die Bretter fein.'>
+
 <!-- /tutorial-scope -->
 
 Das Bild hat 960 × 640 Pixel, viermal so viele wie das Foto, und es ist nicht verschwommen wie ein einfach vergrößertes Foto: Die Kanten sind scharf, die Bretter fein. Die neuen Feinheiten hat der Decoder aber erfunden. Er setzt in jeden Block die verkleinerte Fassung eines größeren, auch dort, wo das echte Foto im Kleinen ganz anders aussähe. Für Kanten und Bretter passt das gut, für Gesichter oder Schrift nicht.
