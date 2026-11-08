@@ -16,8 +16,9 @@
 // its camera starts in the street, close to the point it turns around.
 // More in "view": "speed" (walking, units a second), "look": true (a place
 // to walk through: turning keeps the eye where it is, the wheel goes
-// forward; a switch turns the y axis of dragging round), "overfly": true
-// (outdoors: a long flight to a spot rises over the houses). Beside "view",
+// forward; a switch turns the y axis of dragging round), "path": [[x, y,
+// z], …] (points along a free way through the place: a flight to a spot
+// walks along it instead of cutting through walls). Beside "view",
 // "spots": [{"name", "target", "distance", "yaw", "pitch", "roll"}, …]
 // become buttons that fly the camera there.
 //
@@ -236,6 +237,50 @@ void main() {
         for (let i = k; i < values.length; i += stride * step) list.push(values[i]);
         list.sort((a, b) => a - b);
         return list[Math.min(list.length - 1, Math.floor(list.length * q))] || 0;
+    }
+
+    // the angle a, by whole turns, as close to b as possible: turning from b
+    // to it goes the shorter way round
+    function nearAngle(a, b) {
+        while (a - b > Math.PI) a -= 2 * Math.PI;
+        while (a - b < -Math.PI) a += 2 * Math.PI;
+        return a;
+    }
+
+    // the point of the path (a list of points) nearest to p, and the index
+    // of the segment it lies on (from path[segment] to path[segment + 1])
+    function nearestOnPath(path, p) {
+        let best = { point: path[0], segment: 0, d: Infinity };
+        for (let k = 0; k + 1 < path.length; k++) {
+            const a = path[k], b = path[k + 1];
+            const ab = [0, 1, 2].map((c) => b[c] - a[c]);
+            const len = ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2] || 1;
+            const f = Math.min(1, Math.max(0, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1] + (p[2] - a[2]) * ab[2]) / len));
+            const q = [0, 1, 2].map((c) => a[c] + ab[c] * f);
+            const d = Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+            if (d < best.d) best = { point: q, segment: k, d };
+        }
+        return best;
+    }
+
+    // how far along the path a point found by nearestOnPath lies
+    function pathPosition(path, p) {
+        let d = 0;
+        for (let k = 0; k < p.segment; k++) d += Math.hypot(...[0, 1, 2].map((c) => path[k + 1][c] - path[k][c]));
+        return d + Math.hypot(...[0, 1, 2].map((c) => p.point[c] - path[p.segment][c]));
+    }
+
+    // the point the distance step further along the path (backwards for a
+    // negative step), kept within its ends; d stays that of p
+    function pointAlongPath(path, p, step) {
+        let total = 0;
+        const lengths = [0];
+        for (let k = 0; k + 1 < path.length; k++) lengths.push(total += Math.hypot(...[0, 1, 2].map((c) => path[k + 1][c] - path[k][c])));
+        const at = Math.min(total, Math.max(0, pathPosition(path, p) + step));
+        let k = 0;
+        while (k < path.length - 2 && lengths[k + 1] < at) k++;
+        const f = (at - lengths[k]) / ((lengths[k + 1] - lengths[k]) || 1);
+        return { point: path[k].map((v, c) => v + (path[k + 1][c] - v) * f), segment: k, d: p.d };
     }
 
     class Viewer {
@@ -595,31 +640,108 @@ void main() {
         // moves the camera to a spot in a short flight instead of a jump,
         // so that one sees where it lies in the scene
         fly(spot) {
+            const path = this.view && this.view.path;
+            if (path && this.look) { this.walkTo(spot, path); return; }
             const from = { target: this.target.slice(), distance: this.distance, yaw: this.yaw, pitch: this.pitch, roll: this.roll || 0 };
-            // the shorter way round
-            let yaw = spot.yaw;
-            while (yaw - from.yaw > Math.PI) yaw -= 2 * Math.PI;
-            while (yaw - from.yaw < -Math.PI) yaw += 2 * Math.PI;
-            // outdoors (»overfly« in the view, the street) a long flight
-            // rises in an arc over the houses and comes down again, like a
-            // drone: there are no walls to steer around, only splats, and
-            // from above one sees where one lands. In a room it would go
-            // through the ceiling, so there the flight goes straight.
-            const travel = Math.hypot(...[0, 1, 2].map((k) => spot.target[k] - from.target[k]));
-            const overfly = this.view && this.view.overfly;
-            const hump = overfly && travel > 2 * this.walkSpeed() ? Math.min(0.4 * travel, 4 * this.walkSpeed()) : 0;
-            const time = this.look ? Math.min(2600, 1200 + 40 * travel / this.walkSpeed() * 1.5) : 1200;
+            const yaw = nearAngle(spot.yaw, from.yaw);
             const start = performance.now();
             const flight = this.flight = {};
             const step = (now) => {
                 if (this.flight !== flight) return;
-                const t = Math.min(1, (now - start) / time);
+                const t = Math.min(1, (now - start) / 1200);
                 const e = t * t * (3 - 2 * t);
-                this.target = from.target.map((v, k) => v + (spot.target[k] - v) * e + (k === 1 ? hump * Math.sin(Math.PI * e) : 0));
+                this.target = from.target.map((v, k) => v + (spot.target[k] - v) * e);
                 this.distance = from.distance + (spot.distance - from.distance) * e;
                 this.yaw = from.yaw + (yaw - from.yaw) * e;
                 this.pitch = from.pitch + (spot.pitch - from.pitch) * e;
                 this.roll = from.roll + ((spot.roll || 0) - from.roll) * e;
+                this.redraw();
+                if (t < 1) requestAnimationFrame(step);
+                else this.flight = null;
+            };
+            requestAnimationFrame(step);
+        }
+
+        // in a place with a free way through it (»path« in the view: points
+        // along the middle of a street) the camera walks instead of flying
+        // straight, which would cut through walls: from where it is to the
+        // nearest point of the path, along the path, and from there to the
+        // spot. On the way it looks where it goes and turns towards the
+        // spot at the end; the horizon is level while walking.
+        walkTo(spot, path) {
+            const eyeOf = (target, distance, yaw, pitch) => {
+                const cp = Math.cos(pitch);
+                return [target[0] + Math.sin(yaw) * cp * distance, target[1] + Math.sin(pitch) * distance, target[2] + Math.cos(yaw) * cp * distance];
+            };
+            const from = { eye: eyeOf(this.target, this.distance, this.yaw, this.pitch), distance: this.distance, yaw: this.yaw, pitch: this.pitch, roll: this.roll || 0 };
+            const to = { eye: eyeOf(spot.target, spot.distance, spot.yaw, spot.pitch), distance: spot.distance, pitch: spot.pitch, roll: spot.roll || 0 };
+            let a = nearestOnPath(path, from.eye), b = nearestOnPath(path, to.eye);
+            // a spot well off the path (high up, at a lantern) is not reached
+            // straight up from the path but on a slant, like a crane: the
+            // camera joins and leaves the path that much earlier and later
+            const between = Math.abs(pathPosition(path, b) - pathPosition(path, a));
+            const slide = (p, dir) => (p.d < 1 ? p : pointAlongPath(path, p, dir * Math.min(p.d, 4, between / 2)));
+            const forward = pathPosition(path, a) <= pathPosition(path, b) ? 1 : -1;
+            a = slide(a, forward);
+            b = slide(b, -forward);
+            // the points to walk through: on to the path, along it, off it
+            const points = [from.eye, a.point];
+            if (a.segment < b.segment) for (let k = a.segment + 1; k <= b.segment; k++) points.push(path[k]);
+            else if (a.segment > b.segment) for (let k = a.segment; k > b.segment; k--) points.push(path[k]);
+            points.push(b.point, to.eye);
+            const lengths = [0];
+            for (let k = 1; k < points.length; k++) lengths.push(lengths[k - 1] + Math.hypot(...[0, 1, 2].map((c) => points[k][c] - points[k - 1][c])));
+            const total = lengths[lengths.length - 1];
+            const along = (d) => {
+                let k = 1;
+                while (k < points.length - 1 && lengths[k] < d) k++;
+                const span = lengths[k] - lengths[k - 1] || 1;
+                const f = Math.min(1, Math.max(0, (d - lengths[k - 1]) / span));
+                return { eye: points[k - 1].map((v, c) => v + (points[k][c] - v) * f), k };
+            };
+            // the direction of the walk along the path, as a yaw (yaw 0 looks along -z)
+            // When the start and the end both look against the walk (out of
+            // the street, looking back into it), the camera walks backwards
+            // and keeps looking, like a camera on a dolly.
+            const walking = (() => {
+                const p = points[Math.min(2, points.length - 2)], q = points[Math.max(points.length - 3, 1)];
+                const dx = q[0] - p[0], dz = q[2] - p[2];
+                if (Math.hypot(dx, dz) <= 0.5) return null;
+                const ahead = Math.atan2(-dx, -dz);
+                const off = (yaw) => Math.abs(nearAngle(yaw, ahead) - ahead);
+                return off(from.yaw) > 2.2 && off(spot.yaw) > 2.2 ? ahead + Math.PI : ahead;
+            })();
+            const time = Math.min(5000, Math.max(1400, 900 + 110 * total));
+            const start = performance.now();
+            const flight = this.flight = {};
+            const smooth = (x) => { const c = Math.min(1, Math.max(0, x)); return c * c * (3 - 2 * c); };
+            const step = (now) => {
+                if (this.flight !== flight) return;
+                const t = Math.min(1, (now - start) / time);
+                const e = smooth(t);
+                const eye = along(e * total).eye;
+                // turn away from the start view in the first third, towards
+                // the spot's view in the last third, looking ahead between
+                const leave = smooth(t / 0.35), arrive = smooth((t - 0.65) / 0.35);
+                let yaw = from.yaw, pitch = from.pitch, roll = from.roll;
+                if (walking !== null && total > 3) {
+                    yaw = from.yaw + (nearAngle(walking, from.yaw) - from.yaw) * leave;
+                    pitch = from.pitch * (1 - leave);
+                    roll = from.roll * (1 - leave);
+                    const end = nearAngle(spot.yaw, yaw);
+                    yaw = yaw + (end - yaw) * arrive;
+                    pitch = pitch + (to.pitch - pitch) * arrive;
+                    roll = roll + (to.roll - roll) * arrive;
+                } else {
+                    const end = nearAngle(spot.yaw, from.yaw);
+                    yaw = from.yaw + (end - from.yaw) * e;
+                    pitch = from.pitch + (to.pitch - from.pitch) * e;
+                    roll = from.roll + (to.roll - from.roll) * e;
+                }
+                const distance = from.distance + (to.distance - from.distance) * e;
+                this.yaw = yaw; this.pitch = pitch; this.roll = roll; this.distance = distance;
+                const back = this.camera().back;
+                this.target = eye.map((v, c) => v - back[c] * distance);
                 this.redraw();
                 if (t < 1) requestAnimationFrame(step);
                 else this.flight = null;
