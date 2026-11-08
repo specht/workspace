@@ -52,8 +52,8 @@ variants: dark
 
 <!-- /tutorial-scope -->
 
-Zieh mit der Maus, um die Pflanze zu drehen; das Mausrad oder zwei Finger
-zoomen. Schieb dann »Größe der Splats« ganz nach links: Jetzt sind die
+Zieh mit der Maus oder drück die Pfeiltasten, um die Pflanze zu drehen; das
+Mausrad oder zwei Finger zoomen. Schieb dann »Größe der Splats« ganz nach links: Jetzt sind die
 Splats so klein, dass du siehst, woraus die Pflanze besteht. Schieb sie
 zurück und »Weichheit der Splats« nach links: Aus den weichen Flecken werden
 Ellipsen mit scharfem Rand, und du siehst, wie groß jeder Splat ist und wie
@@ -1207,12 +1207,13 @@ Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
 hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
 würde dunkel und flau.
 
-<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0, ausgedünnt auf 1 von 1,2 Millionen Splats", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5}]}, {"name": "Artillery Passage (1,5 Mio. Splats, 24 MB)", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}, {"name": "Artillery Passage, schärfer (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0, 1,2 Millionen Splats", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1}, {"name": "Aus der Ecke", "target": [-2.4, 1.0, -2.4], "distance": 0.3, "yaw": -2.6, "pitch": 0.2}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1}, {"name": "Bildschirm", "target": [-0.2, 0.7, -1.9], "distance": 0.3, "yaw": 0.35, "pitch": 0}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5}]}, {"name": "Artillery Passage (1,5 Mio. Splats, 24 MB)", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}, {"name": "Artillery Passage, schärfer (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}]'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Wähl die Bohrmaschine und schieb »Größe der
-Splats« langsam nach links. Achte darauf, wo die Splats klein und dicht
-liegen und wo wenige große Splats eine Fläche malen.
+<strong>Ausprobieren:</strong> Wähl das Klassenzimmer, flieg mit »Zur
+Rückwand« vor die bemalte Tafel und schieb »Größe der Splats« langsam nach
+links. Achte darauf, wo die Splats klein und dicht liegen und wo wenige
+große Splats eine Fläche malen.
 </div>
 
 ### Eine Straße aus 1,5 Millionen Splats
@@ -1231,7 +1232,7 @@ veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage (1,5 Mio. Splats, 24 MB)«: Die Kamera steht
 mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
 Touchscreen mit den beiden Knöpfen), mit den Pfeiltasten oder durch Ziehen
-schaust du dich um. In Street View von Google geht das
+schaust du dich um, und mit dem Mausrad gehst du dorthin, wohin du schaust. In Street View von Google geht das
 nur in Sprüngen, von einem Aufnahmeort zum nächsten, denn dazwischen gibt es
 kein Foto. Aus Splats lässt sich jedes Bild dazwischen ausrechnen, und du
 gehst fließend.
@@ -1305,7 +1306,7 @@ kleinen Splats danach bringen die Kanten, die Fenster und die Schrift.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schieb »Anzahl der Splats« ganz nach links
-und dann langsam nach rechts, erst in der Gasse, dann bei der Topfpflanze.
+und dann langsam nach rechts, erst in der Gasse, dann im Klassenzimmer.
 Ab wie vielen Splats erkennst du, was du siehst?
 </div>
 
@@ -1357,11 +1358,29 @@ kleine Splats gibt. Wo es zu wenige sind, bei feinen Mustern oder Schrift,
 bleibt die Szene unscharf.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Wähl den Feuerlöscher, geh nah an die
-Schrift auf seinem Sockel heran und schieb »Weichheit der Splats« nach
-links. Achte darauf, welche Form die Splats an den Rändern der Buchstaben
-haben.
+<strong>Ausprobieren:</strong> Flieg im Klassenzimmer mit »Vorne« vor die
+Tafel, geh mit dem Mausrad nah an die Kreideschrift heran und schieb
+»Weichheit der Splats« nach links. Achte darauf, welche Form die Splats an
+den Rändern der Striche haben.
 </div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Flieg im Klassenzimmer zu »Bildschirm« und
+schalt »Kamera pendelt« ein. Im schwarzen Bildschirm spiegelt sich das
+Zimmer. Achte darauf, ob sich das Spiegelbild mit dem Rahmen des
+Bildschirms bewegt oder anders als er. Schieb dann »Weichheit der Splats«
+nach links.
+</div>
+
+Jeder Splat hat hier eine einzige Farbe, aus welcher Richtung man ihn auch
+sieht. Ein Spiegelbild, das sich mit dem Blick verschiebt, kann das Training
+deshalb nicht auf den Bildschirm malen. Es legt Splats hinter den
+Bildschirm, wie ein zweites Zimmer hinter einem Fenster, und das Spiegelbild
+liegt im Raum: Pendelt die Kamera, bewegt es sich wie etwas, das weiter
+weg ist. Die Trainingsprogramme speichern für jeden Splat zwar auch, wie
+sich seine Farbe mit der Richtung ändert; die Szenen hier haben nur die
+Grundfarbe. Auch mit allen Werten legt das Training ein scharfes
+Spiegelbild meist hinter die Fläche.
 
 ### Sortieren in jedem Bild
 

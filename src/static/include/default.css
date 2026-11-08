@@ -14507,6 +14507,12 @@ html[data-bs-theme="dark"] .splat-viewer {
     gap: 0.5em;
     margin-top: 0.6em;
 }
+/* the switch beside the buttons: Bootstrap's form-switch, without its own
+   block margin, the label in the size of the buttons */
+.splat-viewer-game {
+    margin: 0 0 0 0.3em;
+    font-size: 0.9rem;
+}
 .splat-viewer-bar select {
     width: auto;
     max-width: 100%;
@@ -14527,7 +14533,7 @@ html[data-bs-theme="dark"] .splat-viewer {
    so that both start and end at the same place */
 .splat-viewer-sliders {
     display: grid;
-    grid-template-columns: max-content minmax(6em, 18em);
+    grid-template-columns: max-content minmax(6em, 18em) max-content;
     align-items: center;
     gap: 0.3em 0.8em;
     margin-top: 0.6em;
@@ -14548,13 +14554,20 @@ html[data-bs-theme="dark"] .splat-viewer {
 /* on a wide screen the three sliders side by side */
 @media (min-width: 992px) {
     .splat-viewer-sliders {
-        grid-template-columns: repeat(3, max-content minmax(5em, 1fr));
+        grid-template-columns: repeat(3, max-content minmax(5em, 1fr) max-content);
         column-gap: 0.6em;
     }
     .splat-viewer-size:not(:first-child) > span { margin-left: 1em; }
 }
 .splat-viewer-size input {
     width: 100%;
+}
+/* the number beside a slider: as wide as its widest value, so that the
+   slider does not jump */
+.splat-viewer-size output {
+    min-width: 5.5em;
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
 }
 .splat-viewer-progress {
     width: min(18em, 80%);

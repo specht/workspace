@@ -263,8 +263,9 @@ void main() {
             sizeLabel.innerHTML = '<span>Größe der Splats</span>';
             this.slider = document.createElement('input');
             this.slider.type = 'range'; this.slider.className = 'form-range'; this.slider.min = '0.05'; this.slider.max = '1'; this.slider.step = '0.05'; this.slider.value = '1';
-            this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.upload(); });
-            sizeLabel.append(this.slider);
+            this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.showValues(); this.upload(); });
+            this.sizeValue = document.createElement('output');
+            sizeLabel.append(this.slider, this.sizeValue);
             sliders.append(sizeLabel);
             const countLabel = document.createElement('label');
             countLabel.className = 'splat-viewer-size';
@@ -272,7 +273,8 @@ void main() {
             this.counter = document.createElement('input');
             this.counter.type = 'range'; this.counter.className = 'form-range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
             this.counter.addEventListener('input', () => { this.lastSort = null; this.describe(); this.redraw(); });
-            countLabel.append(this.counter);
+            this.countValue = document.createElement('output');
+            countLabel.append(this.counter, this.countValue);
             sliders.append(countLabel);
             const sharpLabel = document.createElement('label');
             sharpLabel.className = 'splat-viewer-size';
@@ -282,9 +284,14 @@ void main() {
             this.sharpness.setAttribute('aria-valuetext', 'weich');
             this.sharpness.addEventListener('input', () => {
                 this.sharpness.setAttribute('aria-valuetext', this.sharpness.value < 0.5 ? 'scharf' : 'weich');
+                this.showValues();
                 this.redraw();
             });
-            sharpLabel.append(this.sharpness);
+            // the exponent k of exp(-q^k / 2): 1 is the bell of Gauss, 32 an
+            // ellipse with a sharp border (sharpness in paint() of the page)
+            this.sharpValue = document.createElement('output');
+            this.sharpValue.title = 'Der Exponent der Glocke: 1 ist die Glocke von Gauß, 32 eine Ellipse mit scharfem Rand';
+            sharpLabel.append(this.sharpness, this.sharpValue);
             sliders.append(sharpLabel);
             const open = document.createElement('button');
             open.type = 'button';
@@ -306,6 +313,38 @@ void main() {
             turn.addEventListener('click', () => this.tilt());
             this.turnButton = turn;
             bar.append(turn);
+            // in a street: the y axis of dragging turned round; remembered in
+            // this browser (only a convenience, so it may fail)
+            const game = document.createElement('label');
+            game.className = 'form-check form-switch splat-viewer-game';
+            game.hidden = true;
+            this.invertY = document.createElement('input');
+            this.invertY.type = 'checkbox';
+            this.invertY.className = 'form-check-input';
+            this.invertY.setAttribute('role', 'switch');
+            try { this.invertY.checked = localStorage.getItem('splat-viewer-invert-y') === '1'; } catch (e) { /* no storage */ }
+            this.invertY.addEventListener('change', () => {
+                try { localStorage.setItem('splat-viewer-invert-y', this.invertY.checked ? '1' : '0'); } catch (e) { /* no storage */ }
+            });
+            const gameText = document.createElement('span');
+            gameText.className = 'form-check-label';
+            gameText.textContent = 'Y-Achse umkehren';
+            game.append(this.invertY, gameText);
+            this.gameSwitch = game;
+            bar.append(game);
+            const swing = document.createElement('label');
+            swing.className = 'form-check form-switch splat-viewer-game';
+            this.swing = document.createElement('input');
+            this.swing.type = 'checkbox';
+            this.swing.className = 'form-check-input';
+            this.swing.setAttribute('role', 'switch');
+            this.swing.addEventListener('change', () => this.swingLoop());
+            const swingText = document.createElement('span');
+            swingText.className = 'form-check-label';
+            swingText.textContent = 'Kamera pendelt';
+            swing.title = 'Die Kamera bewegt sich langsam ein Stück zur Seite und zurück';
+            swing.append(this.swing, swingText);
+            bar.append(swing);
             this.canvas = document.createElement('canvas');
             this.canvas.className = 'splat-viewer-canvas';
             this.canvas.tabIndex = 0;
@@ -485,6 +524,7 @@ void main() {
             this.distance = this.radius * 3;
             this.yaw = 0.6; this.pitch = 0.3; this.roll = 0;
             this.look = !!(this.view && this.view.look);
+            this.gameSwitch.hidden = !this.look;
             if (this.view) {
                 if (this.view.target) this.target = this.view.target.slice();
                 if (this.view.distance) this.distance = this.view.distance;
@@ -525,13 +565,19 @@ void main() {
             let yaw = spot.yaw;
             while (yaw - from.yaw > Math.PI) yaw -= 2 * Math.PI;
             while (yaw - from.yaw < -Math.PI) yaw += 2 * Math.PI;
+            // in a street a long flight rises in an arc over the houses and
+            // comes down again, like a drone: there are no walls to steer
+            // around, only splats, and from above one sees where one lands
+            const travel = Math.hypot(...[0, 1, 2].map((k) => spot.target[k] - from.target[k]));
+            const hump = this.look && travel > 2 * this.walkSpeed() ? Math.min(0.4 * travel, 4 * this.walkSpeed()) : 0;
+            const time = this.look ? Math.min(2600, 1200 + 40 * travel / this.walkSpeed() * 1.5) : 1200;
             const start = performance.now();
             const flight = this.flight = {};
             const step = (now) => {
                 if (this.flight !== flight) return;
-                const t = Math.min(1, (now - start) / 1200);
+                const t = Math.min(1, (now - start) / time);
                 const e = t * t * (3 - 2 * t);
-                this.target = from.target.map((v, k) => v + (spot.target[k] - v) * e);
+                this.target = from.target.map((v, k) => v + (spot.target[k] - v) * e + (k === 1 ? hump * Math.sin(Math.PI * e) : 0));
                 this.distance = from.distance + (spot.distance - from.distance) * e;
                 this.yaw = from.yaw + (yaw - from.yaw) * e;
                 this.pitch = from.pitch + (spot.pitch - from.pitch) * e;
@@ -552,8 +598,21 @@ void main() {
             return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
         }
 
+        // the numbers beside the sliders
+        exponent() {
+            return Math.pow(32, 1 - parseFloat(this.sharpness.value));
+        }
+
+        showValues() {
+            this.sizeValue.textContent = `${Math.round(parseFloat(this.slider.value) * 100)} %`;
+            this.countValue.textContent = this.splats ? this.drawn().toLocaleString('de-DE') : '';
+            const k = this.exponent();
+            this.sharpValue.textContent = k < 9.95 ? k.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : String(Math.round(k));
+        }
+
         describe() {
             if (!this.splats) return;
+            this.showValues();
             const n = this.splats.count, k = this.drawn();
             const count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
             this.info.textContent = count + (this.credit ? ', ' + this.credit : '');
@@ -601,8 +660,12 @@ void main() {
         camera() {
             const cp = Math.cos(this.pitch), sp = Math.sin(this.pitch), cy = Math.cos(this.yaw), sy = Math.sin(this.yaw);
             const back = [sy * cp, sp, cy * cp];                      // from the target to the eye
-            const eye = this.target.map((t, k) => t + back[k] * this.distance);
             const flatRight = [cy, 0, -sy];
+            // »Kamera pendelt«: the eye swings a little to the side and back, so that
+            // what lies deeper (a reflection behind a window) moves against
+            // what lies in front
+            const sway = this.sway || 0;
+            const eye = this.target.map((t, k) => t + back[k] * this.distance + flatRight[k] * sway);
             const flatUp = [-sy * sp, cp, -cy * sp];
             // tilted sideways by roll (a spot may want a slanted view)
             const cr = Math.cos(this.roll || 0), sr = Math.sin(this.roll || 0);
@@ -664,7 +727,7 @@ void main() {
             gl.uniform2f(this.u.u_viewport, w, h);
             // »Weichheit« from 1 (the Gaussian, k = 1) down to 0 (k = 32, an
             // ellipse with a sharp border)
-            gl.uniform1f(this.u.u_sharpness, Math.pow(32, this.sharpness ? 1 - parseFloat(this.sharpness.value) : 0));
+            gl.uniform1f(this.u.u_sharpness, this.sharpness ? this.exponent() : 1);
             gl.enable(gl.BLEND);
             // back to front: each splat covers what is already there as far
             // as it is opaque (the colour comes premultiplied by alpha)
@@ -674,6 +737,28 @@ void main() {
 
         // walking: while a key or a button is held, the camera and the point
         // it turns around move together, along the ground and sideways
+        // while »Kamera pendelt« is on: the eye swings sideways, a few centimetres in
+        // a street, a few percent of the distance around an object, once in
+        // three seconds
+        swingLoop() {
+            if (this.swinging) return;
+            this.swinging = true;
+            const start = performance.now();
+            const step = (now) => {
+                if (!this.swing.checked) {
+                    this.sway = 0;
+                    this.swinging = false;
+                    this.redraw();
+                    return;
+                }
+                const amplitude = this.look ? 0.06 * this.walkSpeed() : 0.04 * this.distance;
+                this.sway = amplitude * Math.sin((now - start) / 3000 * 2 * Math.PI);
+                this.draw();
+                requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+
         walkSpeed() {
             return (this.view && this.view.speed) || this.radius * 0.6;
         }
@@ -696,6 +781,7 @@ void main() {
                 if (!this.splats || (!ahead && !side && !up && !turnSide && !turnUp)) { this.walking = false; return; }
                 if (turnSide || turnUp) this.turn(turnSide * 1.4 * dt, -turnUp * 1.0 * dt);
                 const speed = this.walkSpeed();
+                this.level();
                 const sy = Math.sin(this.yaw), cy = Math.cos(this.yaw);
                 const forward = [-sy, 0, -cy], right = [cy, 0, -sy];
                 for (let i = 0; i < 3; i++) this.target[i] += (ahead * forward[i] + side * right[i]) * speed * dt;
@@ -755,11 +841,13 @@ void main() {
                     if (p.button === 2 || p.shift) this.pan(dx, dy);
                     else {
                         if (this.look) {
-                            // in a street the point under the mouse stays
-                            // under it, as in Street View: one pixel turns by
-                            // the angle one pixel covers (1 / focal length)
-                            const perPixel = 2 * Math.tan(25 * Math.PI / 180) / this.canvas.clientHeight;
-                            this.turn(dx * perPixel, -dy * perPixel);
+                            // in a street the view turns where the hand goes,
+                            // as in a game, twice the angle a pixel covers;
+                            // »Y-Achse umkehren« (remembered) makes dragging
+                            // up look down, as in a flight game
+                            const perPixel = 4 * Math.tan(25 * Math.PI / 180) / this.canvas.clientHeight;
+                            const k = this.invertY.checked ? -1 : 1;
+                            this.turn(-dx * perPixel, k * dy * perPixel);
                         } else {
                             // around an object the object turns with the hand
                             this.turn(-dx * 0.008, dy * 0.008);
@@ -790,8 +878,21 @@ void main() {
         // turns the camera: around the point it looks at for an object, around
         // the eye in a street (»look«), so that turning there is turning
         // the head, wherever one has walked to
+        // after a slanted spot the horizon comes back level as soon as one
+        // walks or turns again: a little with each step (about half a second)
+        level() {
+            if (this.flight || !this.roll) return;
+            this.roll *= 0.88;
+            if (Math.abs(this.roll) < 0.002) this.roll = 0;
+        }
+
         turn(yaw, pitch) {
+            this.level();
+            // the eye without the swing of »Kamera pendelt«, else turning would drift
+            const sway = this.sway;
+            this.sway = 0;
             const eye = this.look ? this.camera().eye : null;
+            this.sway = sway;
             this.yaw += yaw;
             this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch + pitch));
             if (eye) {
@@ -804,6 +905,7 @@ void main() {
         // where the camera looks, instead of changing the distance to the
         // point it turns around
         dolly(amount) {
+            this.level();
             const back = this.camera().back;
             this.target = this.target.map((v, k) => v - back[k] * amount);
         }
