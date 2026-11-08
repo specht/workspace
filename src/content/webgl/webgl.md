@@ -1,12 +1,12 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein Piratenschiff aus Dreiecken, rotbraun mit schwarzen Segeln und einem Totenkopf, schräg von vorne beleuchtet auf dunklem Grund"
+image_alt: "Ein steigendes Pferd aus Porzellan auf einem runden Sockel, aus Tausenden flacher Dreiecke, jedes in einem eigenen Grau, so dass man die Facetten des Modells sieht, auf dunklem Grund"
 kind: projekt
 language: JavaScript / GLSL
-duration: 3 Doppelstunden
-curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen und Licht, Texturen)"
+duration: 4 Doppelstunden
+curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen, Flat und Smooth Shading, Licht nach Lambert und Blinn-Phong, Texturen und Normal Maps)"
 topics: [computergrafik]
-requires: [kata-loops]
+requires: [glsl, raytracing, kata-lists]
 reference: [vektoren, workspace]
 </div>
 
@@ -19,7 +19,7 @@ reference: [vektoren, workspace]
 # 3D-Grafik mit WebGL
 
 <p class='abstract'>
-Fast alles, was du in Spielen in 3D siehst, besteht aus Dreiecken, und die Grafikkarte malt Millionen davon in jedem Bild. Du programmierst das selbst, in JavaScript und mit WebGL, direkt im Browser: ein Dreieck, einen Würfel, der sich dreht, den Z-Buffer, der weiß, was vorne ist, Licht aus Normalen, und am Ende ein Piratenschiff aus 3.163 Dreiecken mit Textur, das du mit der Maus drehst und als Drahtgitter siehst.
+Fast alles, was du in Spielen in 3D siehst, besteht aus Dreiecken, und die Grafikkarte malt Millionen davon in jedem Bild. Du programmierst das selbst, in JavaScript und GLSL, direkt im Browser: ein Dreieck, einen Würfel, der sich dreht, den Z-Buffer, der weiß, was vorne ist, Licht aus Normalen, und am Ende ein Pferd aus Porzellan aus 22.388 Dreiecken, mit Glanzlichtern und vier Texturen, das du mit der Maus drehst, als Drahtgitter und in flachen Facetten siehst.
 </p>
 
 Ein 3D-Modell in einem Spiel ist eine Liste von Dreiecken: für jede Ecke eine
@@ -31,22 +31,25 @@ JavaScript gibst du ihr die Dreiecke.
 
 ## Einrichten
 
-### Ein Ordner und ein Schiff
+### Ein Ordner und ein Pferd
 
-Leg im Terminal einen Ordner an und lade das Schiff herunter, das am Ende
-auf dem Bildschirm stehen wird, und das Bild mit seinen Farben:
+Leg im Terminal einen Ordner an und lade das Pferd herunter, das am Ende auf
+dem Bildschirm stehen wird, mit den vier Bildern, die zu ihm gehören:
 
 ```bash_copy
 mkdir -p ~/webgl
 cd ~/webgl
-wget https://github.com/specht/workspace-files/raw/main/webgl/ship-pirate-large.obj
-wget https://github.com/specht/workspace-files/raw/main/webgl/colormap.png
+wget https://github.com/specht/workspace-files/raw/main/webgl/horse.obj
+wget https://github.com/specht/workspace-files/raw/main/webgl/horse-color.jpg
+wget https://github.com/specht/workspace-files/raw/main/webgl/horse-normal.jpg
+wget https://github.com/specht/workspace-files/raw/main/webgl/horse-roughness.jpg
+wget https://github.com/specht/workspace-files/raw/main/webgl/horse-ao.jpg
 touch math.js model.js
 ```
 
-Das Schiff stammt aus dem *Pirate Kit* von [Kenney](https://kenney.nl/assets/pirate-kit),
-frei von Rechten (CC0). `touch` legt zwei leere Dateien an, die du später
-füllst.
+Das Pferd ist das Modell [*Horse Statue 01*](https://polyhaven.com/a/horse_statue_01)
+von Rico Cilliers aus der Sammlung Poly Haven, frei von Rechten (CC0). `touch`
+legt zwei leere Dateien an, die du später füllst.
 
 Öffne den Ordner jetzt in VS Code: <kbd>Strg</kbd>+<kbd>K</kbd>, dann
 <kbd>Strg</kbd>+<kbd>O</kbd>, schreib `/workspace/webgl/` und bestätige mit
@@ -74,7 +77,8 @@ füllst.
 
 Die Seite besteht aus einer einzigen Fläche zum Malen, dem `canvas`, so groß
 wie das Fenster. Die drei Skripte füllst du nacheinander: `main.js` malt,
-`math.js` rechnet mit Matrizen, `model.js` liest das Schiff.
+`math.js` rechnet mit Matrizen und Normalen, `model.js` liest das Pferd. Dazu
+kommen gleich zwei Dateien für die Shader, `shader.vert` und `shader.frag`.
 
 ### Vorschau starten
 
@@ -83,11 +87,12 @@ Leg noch eine leere Datei `main.js` an und klicke unten rechts auf
 eine dunkle Fläche: Noch malt nichts.
 
 <!-- tutorial-step
-# Der Ordner mit dem Schiff, in VS Code geöffnet, index.html und die
-# Vorschau; main.js gleich mit dem Dreieck, das das nächste Bild zeigt
+# Der Ordner mit dem Pferd, in VS Code geöffnet, index.html und die
+# Vorschau; main.js und die Shader gleich mit dem Dreieck, das das nächste
+# Bild zeigt
 hide-left-sidebar
 terminal-open
-terminal-run: mkdir -p ~/webgl && cd ~/webgl && wget -q https://github.com/specht/workspace-files/raw/main/webgl/ship-pirate-large.obj && wget -q https://github.com/specht/workspace-files/raw/main/webgl/colormap.png && touch math.js model.js
+terminal-run: mkdir -p ~/webgl && cd ~/webgl && for f in horse.obj horse-color.jpg horse-normal.jpg horse-roughness.jpg horse-ao.jpg; do wget -q https://github.com/specht/workspace-files/raw/main/webgl/$f; done && touch math.js model.js
 terminal-wait-for-prompt
 hide-bottom-panel
 press: Control+K
@@ -97,8 +102,10 @@ type: webgl
 press: Enter
 wait-for-input-value: /workspace/webgl/
 press: Enter
-wait-for-text: colormap.png
+wait-for-text: horse.obj
 write-file: webgl/index.html <- file:stufen/index.html
+write-file: webgl/shader.vert <- file:stufen/shader-1.vert
+write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-1.js
 go-live
 -->
@@ -116,8 +123,9 @@ Der **Vertex-Shader** läuft für jede Ecke und sagt, wo sie auf dem Bildschirm
 landet. Die **Rasterung** findet alle Pixel, die ein Dreieck bedeckt; die
 macht die Grafikkarte allein. Der **Fragment-Shader** läuft für jedes dieser
 Pixel und sagt, welche Farbe es bekommt. Beide Shader schreibt man in
-**GLSL**, einer Sprache wie C, die die Grafikkarte ausführt; wenn du die
-Aktivität [Shader in GLSL](/glsl) kennst, kennst du den Fragment-Shader schon.
+**GLSL**, einer Sprache wie C, die die Grafikkarte ausführt. Aus
+[Shader in GLSL](/glsl) kennst du den Fragment-Shader schon; neu ist hier der
+Vertex-Shader davor.
 
 Auf dem Bildschirm rechnet WebGL in **Clip-Koordinaten**: \\(x\\) von −1
 (links) bis 1 (rechts), \\(y\\) von −1 (unten) bis 1 (oben), egal wie groß
@@ -125,28 +133,48 @@ das Fenster ist.
 
 ### Zwei Shader
 
-Schreib in `main.js`:
+Jeder Shader bekommt eine eigene Datei; dann färbt VS Code ihn wie C, und du
+siehst Tippfehler leichter. Schreib in `shader.vert`:
 
-```js_copy
-const canvas = document.getElementById('canvas');
-const gl = canvas.getContext('webgl2');
-
-const vertexShader = `#version 300 es
+```glsl
+#version 300 es
 in vec2 position;
 in vec3 color;
 out vec3 v_color;
 void main() {
     gl_Position = vec4(position, 0.0, 1.0);
     v_color = color;
-}`;
+}
+```
 
-const fragmentShader = `#version 300 es
+und in `shader.frag`:
+
+```glsl
+#version 300 es
 precision highp float;
 in vec3 v_color;
 out vec4 color;
 void main() {
     color = vec4(v_color, 1.0);
-}`;
+}
+```
+
+Die erste Zeile, `#version 300 es`, muss in beiden ganz oben stehen, auch vor
+jedem Kommentar: Sie sagt, welches GLSL gemeint ist.
+
+- Der Vertex-Shader bekommt für jede Ecke `position` (zwei Zahlen) und
+  `color` (drei Zahlen). Er schreibt die Lage in `gl_Position` (vier Zahlen;
+  was die dritte und vierte bedeuten, kommt im nächsten Kapitel) und gibt die
+  Farbe als `v_color` weiter.
+- Der Fragment-Shader bekommt `v_color` und schreibt die Farbe des Pixels in
+  `color`, mit 1.0 für »undurchsichtig«.
+
+Jetzt `main.js`. Es lädt die beiden Shader, übersetzt sie und gibt der
+Grafikkarte drei Ecken:
+
+```js_copy
+const canvas = document.getElementById('canvas');
+const gl = canvas.getContext('webgl2');
 
 function compile(type, source) {
     const shader = gl.createShader(type);
@@ -158,49 +186,59 @@ function compile(type, source) {
     return shader;
 }
 
-const program = gl.createProgram();
-gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexShader));
-gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentShader));
-gl.linkProgram(program);
-gl.useProgram(program);
-
-// drei Ecken: x, y und eine Farbe (Rot, Grün, Blau)
-const vertices = [
-    -0.6, -0.5,   1.0, 0.0, 0.0,
-     0.6, -0.5,   0.0, 1.0, 0.0,
-     0.0,  0.6,   0.0, 0.0, 1.0,
-];
-const buffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-const attributes = [['position', 2, 0], ['color', 3, 2]];
-for (const [name, size, offset] of attributes) {
-    const location = gl.getAttribLocation(program, name);
-    gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location, size, gl.FLOAT, false, 5 * 4, offset * 4);
+// lädt die beiden Shader aus ihren Dateien und verbindet sie zu einem Programm
+async function loadProgram(vertexFile, fragmentFile) {
+    const vertexSource = await (await fetch(vertexFile, { cache: 'no-store' })).text();
+    const fragmentSource = await (await fetch(fragmentFile, { cache: 'no-store' })).text();
+    const program = gl.createProgram();
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexSource));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentSource));
+    gl.linkProgram(program);
+    gl.useProgram(program);
+    return program;
 }
 
-canvas.width = canvas.clientWidth;
-canvas.height = canvas.clientHeight;
-gl.viewport(0, 0, canvas.width, canvas.height);
-gl.clearColor(0.12, 0.13, 0.16, 1);
-gl.clear(gl.COLOR_BUFFER_BIT);
-gl.drawArrays(gl.TRIANGLES, 0, 3);
+async function start() {
+    const program = await loadProgram('shader.vert', 'shader.frag');
+
+    // drei Ecken: x, y und eine Farbe (Rot, Grün, Blau)
+    const vertices = [
+        -0.6, -0.5,   1.0, 0.0, 0.0,
+         0.6, -0.5,   0.0, 1.0, 0.0,
+         0.0,  0.6,   0.0, 0.0, 1.0,
+    ];
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    const attributes = [['position', 2, 0], ['color', 3, 2]];
+    for (const [name, size, offset] of attributes) {
+        const location = gl.getAttribLocation(program, name);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 5 * 4, offset * 4);
+    }
+
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.12, 0.13, 0.16, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+start();
 ```
 
 Was darin passiert:
 
 - `gl` ist das Tor zur Grafikkarte; alles, was mit `gl.` anfängt, ist ein
   Befehl an sie.
-- Der Vertex-Shader bekommt für jede Ecke `position` (zwei Zahlen) und
-  `color` (drei Zahlen). Er schreibt die Lage in `gl_Position` (vier Zahlen;
-  was die dritte und vierte bedeuten, kommt im nächsten Kapitel) und gibt die
-  Farbe als `v_color` weiter.
-- Der Fragment-Shader bekommt `v_color` und schreibt die Farbe des Pixels in
-  `color`, mit 1.0 für »undurchsichtig«.
-- `compile` übersetzt einen Shader; `gl.linkProgram` verbindet beide zu einem
-  Programm. Hat ein Shader einen Fehler, steht er in der Konsole des Browsers
-  (in der Vorschau <kbd>F12</kbd>).
+- `loadProgram` holt die beiden Dateien mit `fetch`, `compile` übersetzt
+  jeden Shader, und `gl.linkProgram` verbindet beide zu einem Programm. Hat
+  ein Shader einen Fehler, steht er in der Konsole des Browsers (in der
+  Vorschau <kbd>F12</kbd>), mit der Zeile im Shader. `cache: 'no-store'` holt
+  die Dateien jedes Mal neu, auch wenn der Browser sie schon kennt.
+- `start` ist `async`, weil Laden Zeit braucht: `await` wartet, bis eine
+  Datei da ist.
 - Die Ecken stehen in einem einzigen Array, fünf Zahlen je Ecke.
   `gl.bufferData` schickt sie auf die Grafikkarte. Die Schleife über
   `attributes` sagt ihr, wie sie zu lesen sind: `position` sind 2 Zahlen ab
@@ -220,6 +258,8 @@ _task(farbe-mitte)
 <!-- after: farbe-mitte -->
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
+write-file: webgl/shader.vert <- file:stufen/shader-1.vert
+write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-1.js
 preview-reload
 tab: preview
@@ -402,11 +442,12 @@ _task(wo-landet)
 
 ### Ein Würfel
 
-Ein Würfel hat sechs Seiten, jede aus zwei Dreiecken: 36 Ecken. Ersetze in
-`main.js` die Shader, die Ecken und alles danach:
+Ein Würfel hat sechs Seiten, jede aus zwei Dreiecken: 36 Ecken. Der
+Vertex-Shader bekommt jetzt drei Zahlen je Lage und drei Matrizen. Schreib
+`shader.vert` neu (`shader.frag` bleibt):
 
-```js_copy
-const vertexShader = `#version 300 es
+```glsl
+#version 300 es
 in vec3 position;
 in vec3 color;
 uniform mat4 projection;
@@ -416,63 +457,69 @@ out vec3 v_color;
 void main() {
     gl_Position = projection * view * model * vec4(position, 1.0);
     v_color = color;
-}`;
+}
 ```
 
+In `main.js` ersetzt du in `start` alles nach `loadProgram`:
+
 ```js_copy
-// sechs Seiten, jede aus zwei Dreiecken und in einer eigenen Farbe; die
-// Ecken jeder Seite gegen den Uhrzeigersinn, von außen gesehen
-const faces = [
-    { corners: [[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], color: [0.9, 0.3, 0.2] },
-    { corners: [[1, -1, -1], [-1, -1, -1], [-1, 1, -1], [1, 1, -1]], color: [0.2, 0.6, 0.9] },
-    { corners: [[1, -1, 1], [1, -1, -1], [1, 1, -1], [1, 1, 1]], color: [0.3, 0.8, 0.3] },
-    { corners: [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1]], color: [0.95, 0.8, 0.2] },
-    { corners: [[-1, 1, 1], [1, 1, 1], [1, 1, -1], [-1, 1, -1]], color: [0.8, 0.4, 0.9] },
-    { corners: [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], color: [0.9, 0.9, 0.9] },
-];
-const vertices = [];
-for (const face of faces) {
-    const [a, b, c, d] = face.corners;
-    for (const corner of [a, b, c, a, c, d]) {
-        vertices.push(...corner, ...face.color);
+    // sechs Seiten, jede aus zwei Dreiecken und in einer eigenen Farbe; die
+    // Ecken jeder Seite gegen den Uhrzeigersinn, von außen gesehen
+    const faces = [
+        { corners: [[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], color: [0.98, 0.36, 0.45] },
+        { corners: [[1, -1, -1], [-1, -1, -1], [-1, 1, -1], [1, 1, -1]], color: [0.2, 0.75, 0.68] },
+        { corners: [[1, -1, 1], [1, -1, -1], [1, 1, -1], [1, 1, 1]], color: [1.0, 0.82, 0.38] },
+        { corners: [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1]], color: [0.36, 0.6, 0.95] },
+        { corners: [[-1, 1, 1], [1, 1, 1], [1, 1, -1], [-1, 1, -1]], color: [0.62, 0.88, 0.46] },
+        { corners: [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], color: [0.76, 0.52, 0.92] },
+    ];
+    const vertices = [];
+    for (const face of faces) {
+        const [a, b, c, d] = face.corners;
+        for (const corner of [a, b, c, a, c, d]) {
+            vertices.push(...corner, ...face.color);
+        }
     }
-}
-const buffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-const attributes = [['position', 3, 0], ['color', 3, 3]];
-for (const [name, size, offset] of attributes) {
-    const location = gl.getAttribLocation(program, name);
-    gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location, size, gl.FLOAT, false, 6 * 4, offset * 4);
-}
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    const attributes = [['position', 3, 0], ['color', 3, 3]];
+    for (const [name, size, offset] of attributes) {
+        const location = gl.getAttribLocation(program, name);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 6 * 4, offset * 4);
+    }
 
-function frame(time) {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.12, 0.13, 0.16, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    function frame(time) {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0.12, 0.13, 0.16, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
-    const t = time / 1000;
-    const projection = perspective(0.8, canvas.width / canvas.height, 0.1, 100);
-    const view = translate(0, 0, -6);
-    const model = multiply(rotateY(t), rotateX(0.7 * t));
-    gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projection'), false, projection);
-    gl.uniformMatrix4fv(gl.getUniformLocation(program, 'view'), false, view);
-    gl.uniformMatrix4fv(gl.getUniformLocation(program, 'model'), false, model);
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 6);
+        const t = time / 1000;
+        const projection = perspective(0.8, canvas.width / canvas.height, 0.1, 100);
+        const view = translate(0, 0, -5);
+        const model = multiply(rotateX(0.5), rotateY(0.5 * t));
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projection'), false, projection);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'view'), false, view);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'model'), false, model);
+        gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 6);
+        requestAnimationFrame(frame);
+    }
     requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
 ```
 
 Neu ist:
 
 - Der Vertex-Shader bekommt drei Matrizen als `uniform`, Werte, die für alle
-  Ecken gleich sind: `model` dreht den Würfel, `view` schiebt ihn 6 Einheiten
+  Ecken gleich sind: `model` dreht den Würfel, `view` schiebt ihn 5 Einheiten
   vor die Kamera, `projection` macht die Perspektive. Gelesen von rechts
   nach links, wie das Produkt: erst drehen, dann schieben, dann projizieren.
+- `model` dreht den Würfel erst um die y-Achse, immer weiter, und kippt ihn
+  dann um 0,5 (knapp 30°) nach vorne, so dass du immer auch auf seine
+  Oberseite schaust.
 - Jede Seite hat vier Ecken `a`, `b`, `c`, `d`; die beiden Dreiecke sind
   `a b c` und `a c d`.
 - `frame` malt ein Bild und bittet mit `requestAnimationFrame` den Browser,
@@ -485,53 +532,96 @@ _task(ohne-tiefe)
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 write-file: webgl/math.js <- file:stufen/math-1.js
+write-file: webgl/shader.vert <- file:stufen/shader-2.vert
+write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-2.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 2.3
+sleep: 1.3
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='ohne-tiefe.webp' alt='Der Würfel ohne Z-Buffer: Vorne ist eine weiße Seite, aber rechts davon liegt die violette Oberseite über der gelben Seite, die eigentlich näher ist; oben schaut ein gelber Streifen hervor.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='ohne-tiefe.webp' alt='Der Würfel ohne Z-Buffer: Statt der Vorderseiten sieht man in ihn hinein. Unten liegt die violette Unterseite über allem, links die blaue, rechts die gelbe Seite, hinten ein Stück der türkisen Rückseite; nur die grüne Oberseite ist an ihrem Platz.'>
 
 <!-- /tutorial-scope -->
 
 Der Würfel ist kaputt: Die Grafikkarte malt die Dreiecke in der Reihenfolge
 des Arrays, und was zuletzt kommt, liegt oben, auch wenn es hinten ist. Die
-violette Oberseite steht im Array nach der gelben Seite und malt sich über
-sie.
+violette Unterseite steht im Array ganz am Ende und malt sich über alles.
 <!-- /after -->
 
 ## Der Z-Buffer
 
 Die Lösung heißt **Z-Buffer** (oder Tiefenpuffer): Für jedes Pixel merkt sich
-die Grafikkarte neben der Farbe die Tiefe dessen, was dort gerade gemalt ist.
-Ein neues Pixel wird nur gemalt, wenn es näher liegt; sonst wird es
-verworfen. Damit ist die Reihenfolge der Dreiecke egal. Ergänze vor `frame`:
+die Grafikkarte neben der Farbe die Tiefe dessen, was dort gerade gemalt ist,
+eine Zahl von 0 (bei `near`) bis 1 (bei `far`). Ein neues Pixel wird nur
+gemalt, wenn es näher liegt; sonst wird es verworfen. Damit ist die
+Reihenfolge der Dreiecke egal. Ergänze vor `frame`:
 
 ```js
-~     gl.vertexAttribPointer(location, size, gl.FLOAT, false, 6 * 4, offset * 4);
-~ }
-gl.enable(gl.DEPTH_TEST);
+~         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 6 * 4, offset * 4);
+~     }
+    gl.enable(gl.DEPTH_TEST);
 ```
 
 und lösche zu Beginn jedes Bilds auch die Tiefen:
 
 ```js
-gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 ```
 
-<!-- tutorial-scope -->
+<div class='gallery columns-2'>
+<figure>
 <!-- tutorial-screenshot
 write-file: webgl/math.js <- file:stufen/math-1.js
+write-file: webgl/shader.vert <- file:stufen/shader-2.vert
+write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-3.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 2.3
+sleep: 1.3
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='mit-tiefe.webp' alt='Derselbe Würfel mit Z-Buffer: vorne die weiße Seite, rechts die gelbe, beide mit geraden Kanten, nichts liegt mehr darüber.'>
+<img src='mit-tiefe.webp' alt='Derselbe Würfel mit Z-Buffer: oben die grüne Oberseite, links die blaue, rechts die rote Seite, mit geraden Kanten, nichts liegt mehr darüber.'>
+<figcaption>Mit Z-Buffer</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math-1.js
+write-file: webgl/shader.vert <- file:stufen/shader-2.vert
+write-file: webgl/shader.frag <- file:stufen/vergleich-tiefe.frag
+write-file: webgl/main.js <- file:stufen/main-3.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 1.3
+-->
+<img src='tiefe.webp' alt='Derselbe Würfel, gemalt aus den Zahlen im Z-Buffer: Die vordere Kante, die der Kamera am nächsten ist, ist fast weiß, und nach hinten werden die drei Seiten gleichmäßig grauer.'>
+<figcaption>Die Tiefen im Z-Buffer, hell ist nah</figcaption></figure>
+</div>
 
-<!-- /tutorial-scope -->
+Rechts ist der Z-Buffer selbst zu sehen: Für jedes Pixel ist die gespeicherte
+Tiefe in ein Grau umgerechnet, nah ist hell, fern ist dunkel. So ein Bild
+rechnet die Grafikkarte nebenher in jedem Bild, damit das linke stimmt.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Sieh dir den Z-Buffer selbst an. Ersetz in
+<code>shader.frag</code> die Zeile <code>color = vec4(v_color, 1.0);</code>
+durch die Zeilen unten. <code>gl_FragCoord.z</code> ist die Tiefe des Pixels,
+wie sie im Z-Buffer landet; die Zeilen rechnen sie in den Abstand zur
+Kamera zurück, mit <code>near</code> und <code>far</code> wie in
+<code>perspective</code>, und machen daraus ein Grau. Achte darauf, welche
+Ecke des Würfels am hellsten ist, während er sich dreht. Stell die Zeile
+danach wieder her.
+</div>
+
+<!-- page-code: own -->
+```glsl
+    float z = gl_FragCoord.z * 2.0 - 1.0;
+    float near = 0.1;
+    float far = 100.0;
+    float distance = 2.0 * far * near / (far + near - z * (far - near));
+    float gray = clamp((6.5 - distance) / 3.0, 0.0, 1.0);
+    color = vec4(gray, gray, gray, 1.0);
+```
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ergänze unter <code>gl.enable(gl.DEPTH_TEST);</code>
@@ -546,6 +636,8 @@ Ein Z-Buffer kennt für jedes Pixel nur eines, das Nächste. Für Undurchsichtig
 reicht das. Für Durchscheinendes nicht: Was hinter einer halb durchsichtigen
 Scheibe liegt, muss noch beigemischt werden, und der Z-Buffer hätte es
 verworfen. Spiele malen darum Glas und Rauch zuletzt, nach der Tiefe sortiert.
+Den Z-Buffer beschrieben 1974 unabhängig voneinander Wolfgang Straßer in
+seiner Doktorarbeit an der TU Berlin und Edwin Catmull in Utah.
 
 ## Licht
 
@@ -615,8 +707,9 @@ Wie viel Licht eine Fläche bekommt, hängt vom Winkel \\(\theta\\) zwischen
 ihrer Normale \\(n\\) und der Richtung \\(l\\) zum Licht ab: Steht das
 Licht senkrecht darüber, ist es voll, fällt es flach darauf, wenig. Für
 Vektoren der Länge 1 ist \\(\cos\theta\\) einfach das Skalarprodukt
-\\(n \cdot l\\) (**Lambert**). Ist es negativ, liegt die Fläche im
-Schatten, also 0. Dazu kommt ein bisschen Licht von überall, damit
+\\(n \cdot l\\); so rechnet auch dein [Raytracer](/raytracing) matte
+Flächen (nach Johann Heinrich Lambert, 1760). Ist es negativ, liegt die
+Fläche im Schatten, also 0. Dazu kommt ein bisschen Licht von überall, damit
 Schattenseiten nicht schwarz sind:
 
 $$\text{Farbe} = \text{Grundfarbe} \cdot (0{,}3 + 0{,}7 \cdot \max(n \cdot l, 0))$$
@@ -626,8 +719,8 @@ _task(wie-hell)
 Gib jetzt jeder Ecke die Normale ihrer Seite mit. Im Vertex-Shader kommt
 `normal` dazu; `mat3(model)` dreht sie mit dem Würfel mit:
 
-```js_copy
-const vertexShader = `#version 300 es
+```glsl
+#version 300 es
 in vec3 position;
 in vec3 color;
 in vec3 normal;
@@ -640,9 +733,13 @@ void main() {
     gl_Position = projection * view * model * vec4(position, 1.0);
     v_color = color;
     v_normal = mat3(model) * normal;
-}`;
+}
+```
 
-const fragmentShader = `#version 300 es
+Der Fragment-Shader rechnet die Helligkeit nach der Formel:
+
+```glsl
+#version 300 es
 precision highp float;
 in vec3 v_color;
 in vec3 v_normal;
@@ -651,7 +748,7 @@ out vec4 color;
 void main() {
     float diffuse = max(dot(normalize(v_normal), normalize(light)), 0.0);
     color = vec4(v_color * (0.3 + 0.7 * diffuse), 1.0);
-}`;
+}
 ```
 
 `normalize` macht einen Vektor wieder 1 lang: Die Rasterung mischt die
@@ -659,38 +756,44 @@ Normalen zwischen den Ecken, und eine Mischung ist kürzer. In der Schleife übe
 die Seiten kommt die Normale in jede Ecke:
 
 ```js
-~     const [a, b, c, d] = face.corners;
-    const normal = faceNormal(a, b, c);
-    for (const corner of [a, b, c, a, c, d]) {
-        vertices.push(...corner, ...face.color, ...normal);
-    }
+~         const [a, b, c, d] = face.corners;
+        const normal = faceNormal(a, b, c);
+        for (const corner of [a, b, c, a, c, d]) {
+            vertices.push(...corner, ...face.color, ...normal);
+        }
 ```
 
 Jede Ecke hat jetzt 9 Zahlen. Ändere die Attribute und schick die Richtung
-zum Licht, schräg von rechts oben und vorne:
+zum Licht, von vorne und etwas von oben:
 
 ```js
-const attributes = [['position', 3, 0], ['color', 3, 3], ['normal', 3, 6]];
-for (const [name, size, offset] of attributes) {
-    const location = gl.getAttribLocation(program, name);
-    gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location, size, gl.FLOAT, false, 9 * 4, offset * 4);
-}
-gl.uniform3fv(gl.getUniformLocation(program, 'light'), [0.4, 0.8, 0.45]);
+    const attributes = [['position', 3, 0], ['color', 3, 3], ['normal', 3, 6]];
+    for (const [name, size, offset] of attributes) {
+        const location = gl.getAttribLocation(program, name);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 9 * 4, offset * 4);
+    }
+    gl.uniform3fv(gl.getUniformLocation(program, 'light'), [0, 0.3, 0.95]);
 ```
 
-und in `frame` teilst du jetzt durch 9: `gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 9);`
+und in `frame` teilst du jetzt durch 9:
+
+```js
+        gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 9);
+```
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
-write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/math.js <- file:stufen/math-2.js
+write-file: webgl/shader.vert <- file:stufen/shader-3.vert
+write-file: webgl/shader.frag <- file:stufen/shader-3.frag
 write-file: webgl/main.js <- file:stufen/main-4.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 2.3
+sleep: 1.3
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='licht.webp' alt='Der beleuchtete Würfel: die Seite vorne links dunkelgrau statt weiß, weil sie sich vom Licht abwendet, die Seite rechts gelb, etwas dunkler als vorher, die Kanten dazwischen klar.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='licht.webp' alt='Der beleuchtete Würfel: Die grüne Oberseite ist am hellsten, die blaue Seite links und die rote rechts sind dunkler, jede Seite in einem eigenen Ton, so dass die Kanten klar hervortreten.'>
 
 <!-- /tutorial-scope -->
 
@@ -701,27 +804,28 @@ was passiert, wenn du die <code>0.3</code> im Fragment-Shader auf
 <code>0.0</code> setzt? Stell beides danach wieder her.
 </div>
 
-## Ein Schiff aus 3.163 Dreiecken
+## Ein Pferd aus 22.388 Dreiecken
 
 ### Das OBJ-Format
 
-Ein Würfel lässt sich von Hand aufschreiben, ein Schiff nicht. Modelle kommen
+Ein Würfel lässt sich von Hand aufschreiben, ein Pferd nicht. Modelle kommen
 aus Programmen wie Blender, und ein einfaches Format, das fast jedes Programm
 schreibt, ist **OBJ**: eine Textdatei, eine Angabe je Zeile. Öffne
-`ship-pirate-large.obj` und schau hinein:
+`horse.obj` und schau hinein:
 
 ```text
-v 0.2643659 4.103146 -3.83468 1 1 1
-vt 0.1015625 0.578125
-vn 0.9238795 0.3826834 0
-f 3/1/1 2/2/2 1/1/1
+v 0.00569 0.02485 0.01804
+vt 0.69118 0.38420
+vn 0.6411 -0.4108 0.6482
+f 1/1/1 2/2/2 3/3/3
 ```
 
-- `v` ist eine Ecke, \\(x\\), \\(y\\), \\(z\\) (die drei Zahlen danach
-  brauchst du nicht).
+- `v` ist eine Ecke, \\(x\\), \\(y\\), \\(z\\); das Pferd ist 0,22 Einheiten
+  hoch, eine Einheit ist ein Meter.
 - `vt` ist eine Stelle in einem Bild, der **Textur**, mit \\(u\\) nach
   rechts und \\(v\\) nach oben, beide von 0 bis 1.
-- `vn` ist eine Normale.
+- `vn` ist eine Normale. Die Datei bringt sie mit; wie sie entstehen, kommt
+  gleich.
 - `f` ist ein Dreieck (englisch *face*): für jede seiner drei Ecken drei
   Nummern, getrennt durch `/`, welches `v`, welches `vt` und welches `vn` sie
   hat. Gezählt wird ab 1, in der Reihenfolge, in der die Zeilen in der Datei
@@ -813,69 +917,47 @@ if (typeof module !== 'undefined') module.exports = { parseObj };
 
 _task(obj)
 
-### Eine Textur
+### Das Pferd auf dem Bildschirm
 
-Die Farben des Schiffs stehen nicht in der OBJ-Datei, sondern in
-`colormap.png`, einem kleinen Bild aus lauter Farbfeldern. Jede Ecke zeigt
-mit \\((u, v)\\) auf eine Stelle darin, und der Fragment-Shader liest dort
-die Farbe, mit `texture(colormap, v_uv)`. Weil alle drei Ecken eines Dreiecks
-in dasselbe Farbfeld zeigen, bekommt das ganze Dreieck seine Farbe. Andere
-Modelle haben Texturen mit Holzmaserung oder Gesichtern; dann zeigen die Ecken
-auf verschiedene Stellen, und die Rasterung mischt \\((u, v)\\) wie vorhin
-die Farben.
+Die Shader werden einfacher als beim Würfel: Das Pferd hat keine Farbe je
+Ecke und dreht sich nicht selbst, also braucht es weder `color` noch `model`.
+`shader.vert`:
 
-Schreib `main.js` neu, für das Schiff:
-
-```js_copy
-const canvas = document.getElementById('canvas');
-const gl = canvas.getContext('webgl2');
-
-const vertexShader = `#version 300 es
+```glsl
+#version 300 es
 in vec3 position;
-in vec2 uv;
 in vec3 normal;
 uniform mat4 projection;
 uniform mat4 view;
-out vec2 v_uv;
 out vec3 v_normal;
 void main() {
     gl_Position = projection * view * vec4(position, 1.0);
-    v_uv = uv;
     v_normal = normal;
-}`;
+}
+```
 
-const fragmentShader = `#version 300 es
+`shader.frag`, mit einem hellen Grau als Grundfarbe, wie Porzellan:
+
+```glsl
+#version 300 es
 precision highp float;
-in vec2 v_uv;
 in vec3 v_normal;
-uniform sampler2D colormap;
 uniform vec3 light;
 out vec4 color;
 void main() {
-    vec3 base = texture(colormap, v_uv).rgb;
+    vec3 base = vec3(0.9, 0.88, 0.84);
     float diffuse = max(dot(normalize(v_normal), normalize(light)), 0.0);
     color = vec4(base * (0.3 + 0.7 * diffuse), 1.0);
-}`;
-
-function compile(type, source) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        throw new Error(gl.getShaderInfoLog(shader));
-    }
-    return shader;
 }
+```
 
-const program = gl.createProgram();
-gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexShader));
-gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentShader));
-gl.linkProgram(program);
-gl.useProgram(program);
+Und `main.js`: `compile` und `loadProgram` oben bleiben, wie sie sind;
+ersetz alles darunter:
 
+```js_copy
 let yaw = 0.6;
-let pitch = 0.3;
-let distance = 20;
+let pitch = 0.2;
+let distance = 1;
 let center = [0, 0, 0];
 
 canvas.addEventListener('pointermove', (e) => {
@@ -889,7 +971,8 @@ canvas.addEventListener('wheel', (e) => {
 });
 
 async function start() {
-    const text = await (await fetch('ship-pirate-large.obj')).text();
+    const program = await loadProgram('shader.vert', 'shader.frag');
+    const text = await (await fetch('horse.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
 
@@ -903,7 +986,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -911,18 +994,10 @@ async function start() {
     const attributes = [['position', 3, 0], ['uv', 2, 3], ['normal', 3, 5]];
     for (const [name, size, offset] of attributes) {
         const location = gl.getAttribLocation(program, name);
+        if (location < 0) continue;   // ein Attribut, das der Shader nicht benutzt
         gl.enableVertexAttribArray(location);
         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
     }
-
-    const image = new Image();
-    image.src = 'colormap.png';
-    await image.decode();
-    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     gl.uniform3fv(gl.getUniformLocation(program, 'light'), [0.4, 0.8, 0.45]);
     gl.enable(gl.DEPTH_TEST);
@@ -934,7 +1009,7 @@ async function start() {
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        const projection = perspective(0.8, canvas.width / canvas.height, 0.1, 100);
+        const projection = perspective(0.8, canvas.width / canvas.height, 0.01, 100);
         const view = multiply(translate(0, 0, -distance), multiply(rotateX(pitch), multiply(rotateY(yaw), translate(-center[0], -center[1], -center[2]))));
         gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projection'), false, projection);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, 'view'), false, view);
@@ -949,8 +1024,6 @@ start();
 
 Was neu ist:
 
-- `start` ist `async`, weil Laden Zeit braucht: `await fetch(…)` wartet auf
-  die Datei, `await image.decode()` auf das Bild.
 - Die Kiste um das Modell gibt seine Mitte und seine Größe; die Kamera schaut
   auf die Mitte, aus einem Abstand, der zur Größe passt. So passt auch ein
   anderes Modell ins Bild.
@@ -958,57 +1031,36 @@ Was neu ist:
   Matrix `view` schiebt die Mitte des Modells in den Ursprung, dreht um
   `yaw` und `pitch` und schiebt alles `distance` vor die Kamera. Ziehen mit
   gedrückter Maustaste ändert die beiden Winkel, das Mausrad den Abstand.
-  Weil das Modell sich nicht dreht, braucht die Normale keine Matrix.
-- Die Textur: `gl.texImage2D` schickt das Bild auf die Grafikkarte.
-  `UNPACK_FLIP_Y_WEBGL` dreht es um, weil \\(v\\) in OBJ unten anfängt und
-  ein Bild oben. `NEAREST` nimmt die Farbe des nächsten Pixels, statt
-  benachbarte zu mischen: Die Farbfelder bleiben scharf.
+  Weil das Pferd sich nicht dreht, braucht die Normale keine Matrix.
+- Die Ecken haben 8 Zahlen, auch die Stelle in der Textur; `uv` braucht der
+  Shader erst später. Ein Attribut, das ein Shader nicht benutzt, hat keine
+  Nummer (`location` ist −1), und die Schleife überspringt es.
+- `near` ist jetzt 0,01: Das Pferd ist klein, und die Kamera kommt ihm
+  nahe.
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
-write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/math.js <- file:stufen/math-2.js
 write-file: webgl/model.js <- file:stufen/model-1.js
+write-file: webgl/shader.vert <- file:stufen/shader-4.vert
+write-file: webgl/shader.frag <- file:stufen/shader-4.frag
 write-file: webgl/main.js <- file:stufen/main-5.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 3
+sleep: 4
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='schiff.webp' alt='Das Piratenschiff, schräg von vorne und leicht von oben: ein rotbrauner Rumpf mit Fenstern am Heck, zwei Masten mit schwarzen Segeln, auf dem großen ein heller Totenkopf, vorne ein kleines Segel; die Seiten, die zum Licht zeigen, sind heller.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='pferd.webp' alt='Das Pferd aus Porzellan, hellgrau auf dunklem Grund, schräg von vorne: Es steigt auf den Hinterbeinen, die Vorderbeine angewinkelt, die Mähne weht, und steht auf einem runden Sockel. Die Seiten zum Licht sind hell, die abgewandten dunkler, alles mit weichen Übergängen.'>
 
 <!-- /tutorial-scope -->
-
-<!-- tutorial-scope -->
-<!-- tutorial-screenshot
-# Bild für die Karte: das Schiff in 16:9, ein Stück näher
-write-file: webgl/math.js <- file:stufen/math.js
-write-file: webgl/model.js <- file:stufen/model-1.js
-write-file: webgl/main.js <- file:stufen/main-5.js
-preview-reload
-tab: preview
-viewport: 1029x579
-sleep: 3
-hook: zoom 1.2
--->
-<img class='teaser' hidden src='teaser.webp' alt='Ein Piratenschiff aus Dreiecken, rotbraun mit schwarzen Segeln und einem Totenkopf, schräg von vorne beleuchtet auf dunklem Grund.'>
-
-<!-- /tutorial-scope -->
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Fünf weitere Modelle aus demselben Kit passen
-zu derselben Textur: <code>ship-ghost.obj</code>, <code>palm-detailed-bend.obj</code>,
-<code>chest.obj</code>, <code>cannon.obj</code> und
-<code>tower-complete-large.obj</code>. Lade eins mit <code>wget</code> wie
-oben und setz seinen Namen in <code>fetch</code> ein.
-</div>
 
 ## Drahtgitter
 
-Woraus das Schiff besteht, siehst du am besten an seinen Kanten. Ein
-**Drahtgitter** malt statt der Dreiecke nur ihre drei Kanten, als Linien.
-Dafür gibt es `gl.LINES`: Es verbindet je zwei Ecken. Welche Ecken, sagt
-eine Liste von Indizes; Dreieck Nummer \\(i\\) hat die Ecken \\(3i\\),
-\\(3i + 1\\) und \\(3i + 2\\).
+Woraus das Pferd besteht, siehst du an seinen Kanten. Ein **Drahtgitter**
+malt statt der Dreiecke nur ihre drei Kanten, als Linien. Dafür gibt es
+`gl.LINES`: Es verbindet je zwei Ecken. Welche Ecken, sagt eine Liste von
+Indizes; Dreieck Nummer \\(i\\) hat die Ecken \\(3i\\), \\(3i + 1\\) und
+\\(3i + 2\\).
 
 <div class='hint own' data-check='kanten'>
 <strong>Jetzt bist du dran:</strong> Schreib in <code>model.js</code> die
@@ -1042,7 +1094,7 @@ _task(kanten)
 Jetzt das Umschalten mit der Taste <kbd>W</kbd>. Im Fragment-Shader kommt ein
 Schalter dazu: Ist `wire` an, wird jede Linie weiß.
 
-```js
+```glsl
 ~ uniform vec3 light;
 uniform bool wire;
 ~ out vec4 color;
@@ -1051,10 +1103,10 @@ uniform bool wire;
         color = vec4(1.0, 1.0, 1.0, 1.0);
         return;
     }
-~     vec3 base = texture(colormap, v_uv).rgb;
+~     vec3 base = vec3(0.9, 0.88, 0.84);
 ```
 
-Oben bei den Variablen:
+In `main.js` oben bei den Variablen:
 
 ```js
 ~ let center = [0, 0, 0];
@@ -1075,7 +1127,7 @@ In `start` kommen die Indizes der Kanten in einen eigenen Buffer, einen
 ```js
 ~         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
 ~     }
-~
+
     const lines = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lines);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(edges(count / 3)), gl.STATIC_DRAW);
@@ -1094,30 +1146,672 @@ und in `frame` malt `gl.drawElements` die Linien, wenn der Schalter an ist:
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
-write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/math.js <- file:stufen/math-2.js
 write-file: webgl/model.js <- file:stufen/model.js
-write-file: webgl/main.js <- file:stufen/main.js
+write-file: webgl/shader.vert <- file:stufen/shader-4.vert
+write-file: webgl/shader.frag <- file:stufen/shader-5.frag
+write-file: webgl/main.js <- file:stufen/main-6.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 3
+sleep: 4
+hook: view -0.03 0.165 0 0.16 0.6 0.12
 click: selector:canvas
 press: w
 sleep: 1
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='drahtgitter.webp' alt='Das Schiff als Drahtgitter: weiße Linien auf dunklem Grund, die Kanten aller Dreiecke, auch die der Rückseite; an den runden Masten und Rahen liegen sie dicht, am flachen Rumpf weit auseinander.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='drahtgitter.webp' alt='Kopf und Brust des Pferds als Drahtgitter: weiße Linien auf dunklem Grund, die Kanten aller Dreiecke, auch die der Rückseite. An Ohren, Nüstern und Mähne liegen sie dicht, an Hals und Brust weiter auseinander.'>
 
 <!-- /tutorial-scope -->
 
 Im Drahtgitter siehst du auch die Rückseite, denn Linien haben keine Fläche,
 die etwas verdecken könnte. Und du siehst, wo das Modell seine Dreiecke
-ausgibt: viele an den runden Masten, wenige am flachen Rumpf.
+ausgibt: viele an Ohren, Nüstern und Mähne, wo die Form sich schnell ändert,
+weniger an Hals und Brust.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Zähl die Dreiecke selbst: Gib in
 <code>start</code> mit <code>console.log(count / 3)</code> aus, wie viele es
-sind, und schau in der Konsole des Browsers nach (<kbd>F12</kbd>). Wie viele
-hat die Palme?
+sind, und schau in der Konsole des Browsers nach (<kbd>F12</kbd>).
+</div>
+
+## Flat Shading und Smooth Shading
+
+Das Pferd sieht weich aus, obwohl es aus flachen Dreiecken besteht. Das liegt
+an den Normalen aus der Datei: Sie gehören nicht zu den Dreiecken, sondern zu
+den Ecken. Jede steht senkrecht auf der gedachten glatten Oberfläche des
+Pferds, und weil die Rasterung sie zwischen den Ecken mischt, ändert sich die
+Helligkeit innerhalb eines Dreiecks fließend. Das heißt **Smooth Shading**.
+
+Gibt man allen drei Ecken eines Dreiecks dieselbe Normale, die des Dreiecks
+selbst, bekommt jedes Dreieck eine einzige Helligkeit, und man sieht die
+Facetten: **Flat Shading**. So sahen 3D-Spiele bis in die 1990er Jahre aus.
+Die Normale eines Dreiecks kannst du schon ausrechnen, mit `faceNormal`.
+
+<div class='hint own' data-check='flach'>
+<strong>Jetzt bist du dran:</strong> Schreib in <code>math.js</code> die
+Funktion <code>flatNormals(vertices)</code>. Sie bekommt die Ecken mit acht
+Zahlen je Ecke, wie <code>parseObj</code> sie liefert, und gibt ein neues
+Array zurück, in dem jede Ecke statt ihrer Normale die Normale ihres Dreiecks
+hat; Lage und Stelle in der Textur bleiben. Das übergebene Array bleibt, wie
+es ist. Trag sie in <code>module.exports</code> ein.
+</div>
+
+<!-- hint -->
+Ein Dreieck sind drei Ecken, also 24 Zahlen; eine Schleife mit `i += 24`
+geht die Dreiecke durch. Die Lage der ersten Ecke steht bei `i` bis `i + 2`,
+die der zweiten bei `i + 8`, die der dritten bei `i + 16`, und die Normale
+jeder Ecke 5 Zahlen nach ihrer Lage. `vertices.slice()` macht eine Kopie.
+<!-- /hint -->
+
+<!-- hint -->
+<!-- page-code: own -->
+```js
+function flatNormals(vertices) {
+    const out = vertices.slice();
+    for (let i = 0; i < vertices.length; i += 24) {
+        const a = vertices.slice(i, i + 3);
+        const b = …;   // hier: die Lage der zweiten Ecke
+        const c = …;   // hier: die Lage der dritten Ecke
+        const n = faceNormal(a, b, c);
+        for (let k = 0; k < 3; k++) {
+            …   // hier: n in die Normale der Ecke k, ab out[i + 8 * k + 5]
+        }
+    }
+    return out;
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+```js
+// die Ecken eines Modells, acht Zahlen je Ecke, mit der Normale ihres Dreiecks
+// statt der Normale aus der Datei
+function flatNormals(vertices) {
+    const out = vertices.slice();
+    for (let i = 0; i < vertices.length; i += 24) {
+        const a = vertices.slice(i, i + 3);
+        const b = vertices.slice(i + 8, i + 11);
+        const c = vertices.slice(i + 16, i + 19);
+        const n = faceNormal(a, b, c);
+        for (let k = 0; k < 3; k++) {
+            out[i + 8 * k + 5] = n[0];
+            out[i + 8 * k + 6] = n[1];
+            out[i + 8 * k + 7] = n[2];
+        }
+    }
+    return out;
+}
+```
+<!-- /solution -->
+
+_task(flach)
+
+Mit der Taste <kbd>F</kbd> schaltest du um. Oben bei den Variablen:
+
+```js
+~ let wireframe = false;
+let flat = false;
+```
+
+beim Drücken einer Taste:
+
+```js
+~     if (e.key === 'w') wireframe = !wireframe;
+    if (e.key === 'f') flat = !flat;
+```
+
+in `start`, gleich nach `parseObj`, die Ecken mit flachen Normalen:
+
+```js
+~     const count = vertices.length / 8;
+    const flatVertices = flatNormals(vertices);
+```
+
+und vor `frame` merkst du dir, welche Ecken auf der Grafikkarte sind:
+
+```js
+    let shownFlat = false;
+```
+
+In `frame` schickst du die anderen hin, sobald `flat` nicht mehr dazu passt:
+
+```js
+        if (flat !== shownFlat) {
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flat ? flatVertices : vertices), gl.STATIC_DRAW);
+            shownFlat = flat;
+        }
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader-4.vert
+write-file: webgl/shader.frag <- file:stufen/shader-5.frag
+write-file: webgl/main.js <- file:stufen/main-7.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 4
+hook: view -0.03 0.165 0 0.16 0.6 0.12
+click: selector:canvas
+press: f
+sleep: 1
+-->
+<img src='flach.webp' alt='Kopf, Hals und Brust des Pferds mit Flat Shading: Die Oberfläche besteht aus lauter kleinen, flachen Dreiecken, jedes in einem einzigen Grau, an der Brust größer, an Ohren und Mähne winzig.'>
+<figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader-4.vert
+write-file: webgl/shader.frag <- file:stufen/shader-5.frag
+write-file: webgl/main.js <- file:stufen/main-7.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 4
+hook: view -0.03 0.165 0 0.16 0.6 0.12
+sleep: 1
+-->
+<img src='glatt.webp' alt='Derselbe Ausschnitt mit Smooth Shading: Kopf, Hals und Brust sind glatt und rund, die Helligkeit geht ohne Kanten ineinander über; nur am Umriss ahnt man, dass er aus geraden Stücken besteht.'>
+<figcaption>Smooth Shading: eine Normale je Ecke, gemischt</figcaption></figure>
+</div>
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte: das Pferd mit Flat Shading in 16:9
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader-4.vert
+write-file: webgl/shader.frag <- file:stufen/shader-5.frag
+write-file: webgl/main.js <- file:stufen/main-7.js
+preview-reload
+tab: preview
+viewport: 1029x579
+sleep: 4
+hook: zoom 0.95
+click: selector:canvas
+press: f
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Ein steigendes Pferd aus Porzellan auf einem runden Sockel, aus Tausenden flacher Dreiecke, jedes in einem eigenen Grau, so dass man die Facetten des Modells sieht, auf dunklem Grund.'>
+
+<!-- /tutorial-scope -->
+
+Am Umriss hilft Smooth Shading nicht: Der bleibt aus geraden Kanten, denn die
+Normalen ändern nur die Helligkeit, nicht die Form. Wo das stört, braucht
+das Modell mehr Dreiecke.
+
+Henri Gouraud mischte 1971 die Helligkeiten der Ecken. Bui Tuong Phong
+mischte 1973 stattdessen die Normalen und rechnete das Licht für jedes Pixel
+neu; so macht es dein Fragment-Shader. Der Unterschied zeigt sich beim
+Glanzlicht im nächsten Kapitel: Ein Glanzpunkt mitten in einem großen
+Dreieck fällt bei Gouraud unter den Tisch, denn an den Ecken ist er nicht.
+
+## Glanzlicht
+
+Porzellan ist nicht matt, es glänzt: Wo das Licht so zurückgeworfen wird, dass
+es genau ins Auge fällt, sieht man einen hellen Fleck. Wie hell, hängt nicht
+nur von der Fläche und vom Licht ab, sondern auch davon, wo die Kamera steht.
+Jim Blinn rechnete das 1977 so: Die Richtung \\(h\\) genau zwischen der zum
+Licht \\(l\\) und der zur Kamera \\(v\\),
+
+$$h = \frac{l + v}{|l + v|},$$
+
+liegt nahe an der Normale, wenn das Licht zum Auge gespiegelt wird. Dann ist
+\\(n \cdot h\\) fast 1, und eine hohe Potenz davon macht daraus einen kleinen,
+hellen Fleck, der zur Seite schnell auf 0 fällt:
+
+$$\text{Glanz} = 0{,}4 \cdot \max(n \cdot h, 0)^{40}$$
+
+Der Glanz kommt als Weiß zur Farbe dazu, unabhängig von der Grundfarbe: Bei
+Porzellan, Lack und Plastik hat das zurückgeworfene Licht die Farbe der
+Lampe. Die Zahl 40 heißt **Exponent** (englisch *shininess*).
+
+_task(glanz)
+
+Für \\(v\\) braucht der Fragment-Shader die Lage jedes Pixels im Raum und die
+Lage der Kamera. Der Vertex-Shader gibt die Lage weiter:
+
+```glsl
+#version 300 es
+in vec3 position;
+in vec3 normal;
+uniform mat4 projection;
+uniform mat4 view;
+out vec3 v_position;
+out vec3 v_normal;
+void main() {
+    gl_Position = projection * view * vec4(position, 1.0);
+    v_position = position;
+    v_normal = normal;
+}
+```
+
+Der Fragment-Shader bekommt die Kamera als `eye`:
+
+```glsl
+#version 300 es
+precision highp float;
+in vec3 v_position;
+in vec3 v_normal;
+uniform vec3 light;
+uniform vec3 eye;
+uniform bool wire;
+out vec4 color;
+void main() {
+    if (wire) {
+        color = vec4(1.0, 1.0, 1.0, 1.0);
+        return;
+    }
+    vec3 base = vec3(0.9, 0.88, 0.84);
+    vec3 n = normalize(v_normal);
+    vec3 l = normalize(light);
+    vec3 v = normalize(eye - v_position);
+    vec3 h = normalize(l + v);
+    float diffuse = max(dot(n, l), 0.0);
+    float specular = pow(max(dot(n, h), 0.0), 40.0);
+    color = vec4(base * (0.3 + 0.7 * diffuse) + 0.4 * specular, 1.0);
+}
+```
+
+Wo die Kamera steht, folgt aus den Winkeln: Sie ist `distance` von `center`
+entfernt, nach oben um `pitch` und zur Seite um `yaw` gedreht. In `main.js`
+vor `start`:
+
+```js
+// wo die Kamera steht: dort, wohin die Matrix view den Ursprung schiebt
+function cameraPosition() {
+    return [
+        center[0] - distance * Math.sin(yaw) * Math.cos(pitch),
+        center[1] + distance * Math.sin(pitch),
+        center[2] + distance * Math.cos(yaw) * Math.cos(pitch),
+    ];
+}
+```
+
+und in `frame` nach den beiden Matrizen:
+
+```js
+        gl.uniform3fv(gl.getUniformLocation(program, 'eye'), cameraPosition());
+```
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader-5.vert
+write-file: webgl/shader.frag <- file:stufen/shader-6.frag
+write-file: webgl/main.js <- file:stufen/main-8.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 4
+-->
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='glanz.webp' alt='Das ganze Pferd mit Glanzlichtern: auf Brust, Schulter und Hinterteil kleine weiße, scharf begrenzte Flecken, auf den Beinen schmale helle Streifen, so dass es nach glattem Porzellan aussieht.'>
+
+<!-- /tutorial-scope -->
+
+Dreh das Pferd mit der Maus: Die Glanzpunkte wandern mit, denn sie hängen
+davon ab, wo du stehst. Die Helligkeit nach Lambert bleibt, wo sie ist.
+
+_task(exponent)
+
+<!-- after: exponent -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz den Exponenten auf <code>200.0</code>
+und danach auf <code>5.0</code>. Achte auf die Größe der Glanzpunkte auf der
+Brust und darauf, wie scharf ihr Rand ist. Stell danach <code>40.0</code>
+wieder her.
+</div>
+<!-- /after -->
+
+## Texturen
+
+### Die Farbe
+
+Die Farben des Pferds stehen nicht in der OBJ-Datei, sondern in
+`horse-color.jpg`. Öffne das Bild in VS Code: Es sieht aus wie ein
+zerschnittenes Pferd, Stücke der Oberfläche, flach ausgebreitet, dazu der
+Holz des Sockels. Jede Ecke zeigt mit \\((u, v)\\) auf eine Stelle
+darin, und die Rasterung mischt \\((u, v)\\) zwischen den Ecken wie vorhin
+die Farben. Der Fragment-Shader liest an der gemischten Stelle die Farbe, mit
+`texture(colorMap, v_uv)`. Ein Bild so auf ein Modell zu legen, heißt
+**Texture Mapping**; es kommt, wie der Z-Buffer, aus Edwin Catmulls
+Doktorarbeit von 1974.
+
+Der Vertex-Shader gibt jetzt auch `uv` weiter:
+
+```glsl
+#version 300 es
+in vec3 position;
+in vec2 uv;
+in vec3 normal;
+uniform mat4 projection;
+uniform mat4 view;
+out vec3 v_position;
+out vec2 v_uv;
+out vec3 v_normal;
+void main() {
+    gl_Position = projection * view * vec4(position, 1.0);
+    v_position = position;
+    v_uv = uv;
+    v_normal = normal;
+}
+```
+
+Im Fragment-Shader kommt die Textur als `sampler2D` dazu, und die Grundfarbe
+kommt aus ihr:
+
+```glsl
+~ in vec3 v_position;
+in vec2 v_uv;
+~ in vec3 v_normal;
+uniform sampler2D colorMap;
+```
+
+```glsl
+    vec3 base = texture(colorMap, v_uv).rgb;
+```
+
+In `main.js` lädt eine Funktion ein Bild auf die Grafikkarte; schreib sie vor
+`start`:
+
+```js
+// ein Bild als Textur auf der Grafikkarte, in der Einheit unit (0, 1, 2, …)
+async function loadTexture(file, unit) {
+    const image = new Image();
+    image.src = file;
+    await image.decode();
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+}
+```
+
+und in `start` nach dem Buffer der Kanten:
+
+```js
+    await loadTexture('horse-color.jpg', 0);
+    gl.uniform1i(gl.getUniformLocation(program, 'colorMap'), 0);
+```
+
+- Die Grafikkarte hat mehrere **Textureinheiten**, nummeriert ab 0; jedes
+  Bild kommt in eine eigene, und `gl.uniform1i` sagt dem `sampler2D` im
+  Shader, aus welcher er liest.
+- `UNPACK_FLIP_Y_WEBGL` dreht das Bild um, weil \\(v\\) in OBJ unten anfängt
+  und ein Bild oben.
+- Ein Bild aus 2048 × 2048 Pixeln auf einem Pferd, das im Fenster 300 Pixel
+  hoch ist: Auf ein Pixel des Bildschirms kommen viele Pixel der Textur, und
+  nimmt man einfach eines davon, flimmert das Bild beim Drehen.
+  `generateMipmap` rechnet darum kleinere Fassungen des Bilds aus, jede halb
+  so breit wie die davor (**Mipmaps**, nach Lance Williams, 1983), und
+  `LINEAR_MIPMAP_LINEAR` nimmt die Fassung, die zur Größe auf dem Bildschirm
+  passt.
+
+_person(williams)
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-7.frag
+write-file: webgl/main.js <- file:stufen/main-9.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 5
+-->
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Das Pferd mit seiner Textur: Das Porzellan ist fast weiß mit leichten grauen Schattierungen in den Falten, der Sockel hat jetzt einen Rand aus rötlich braunem Holz.'>
+
+<!-- /tutorial-scope -->
+
+### Mehr als Farbe
+
+Zum Pferd gehören noch drei Bilder. Jedes ist eine **Map**, eine Karte, die
+für jede Stelle der Oberfläche eine Zahl oder eine Richtung festhält, und
+alle vier liegen gleich auf dem Modell: Dieselbe Stelle \\((u, v)\\) meint
+in jedem Bild dieselbe Stelle des Pferds.
+
+<div class='gallery columns-4'>
+<figure><img src='map-color.webp' alt='Die Color Map: Stücke der Oberfläche des Pferds, flach ausgebreitet, fast weiß mit grauen Schattierungen, dazwischen Grau; rechts eine runde, braune Fläche Holz und zwei braune Streifen, das Holz des Sockels.'><figcaption>Color Map</figcaption></figure>
+<figure><img src='map-normal.webp' alt='Die Normal Map: dieselben Stücke in Hellblau und Violett, an den Muskeln, Adern und Haaren rötliche und grünliche Ränder.'><figcaption>Normal Map</figcaption></figure>
+<figure><img src='map-roughness.webp' alt='Die Roughness Map: dieselben Stücke in dunklem Grau, die runde Fläche Holz fast weiß, die Streifen Holz heller als das Porzellan.'><figcaption>Roughness Map</figcaption></figure>
+<figure><img src='map-ao.webp' alt='Die Ambient Occlusion Map: dieselben Stücke auf weißem Grund, meist hell, in Falten, in Vertiefungen und in den Ohren grau bis schwarz.'><figcaption>Ambient Occlusion Map</figcaption></figure>
+</div>
+
+- Die **Color Map** (auch *Albedo* oder *Diffuse Map*) hat die Farbe der
+  Oberfläche, ohne Licht und ohne Schatten. Die kennst du schon.
+- Die **Normal Map** hat für jede Stelle eine Normale, als Farbe: Rot ist
+  \\(x\\), Grün \\(y\\), Blau \\(z\\), jeweils von 0 bis 1 statt von −1 bis 1.
+  Die Richtung meint nicht den Raum, sondern die Fläche: \\(x\\) zeigt in
+  die Richtung, in die \\(u\\) wächst, \\(y\\) in die, in die \\(v\\)
+  wächst, und \\(z\\) gerade aus der Fläche heraus. Darum ist eine Normal
+  Map meist hellblau, \\((0{,}5;\ 0{,}5;\ 1)\\), gerade heraus, und nur wo
+  die Fläche Beulen und Rillen hat, kippt die Farbe. So bekommt das Pferd
+  Muskeln, Adern und Haare, die in keinem Dreieck stecken: Das Modell aus
+  22.388 Dreiecken ist von einem viel feineren abgeleitet, und die Normal Map
+  bewahrt, wie das Licht auf diesem gefallen wäre.
+- Die **Roughness Map** sagt, wie rau die Oberfläche ist, von 0 (spiegelglatt)
+  bis 1 (ganz rau). Auf einer glatten Fläche ist der Glanzpunkt klein und
+  hell, auf einer rauen breit und schwach.
+- Die **Ambient Occlusion Map** (kurz *AO*) sagt, wie viel vom Licht, das von
+  überall kommt, eine Stelle erreicht. In einer Falte oder einem Ohr verdeckt
+  das Modell sich selbst; dort ist sie dunkel. Sie wirkt darum nur auf die
+  0,3 für das Licht von überall.
+
+Die Idee hinter der Normal Map ist älter: Jim Blinn beulte 1978 Flächen ein,
+indem er ihre Normalen nach einer **Bump Map** kippte, einem Bild aus
+Höhen; heute speichert man meist gleich die gekippten Normalen. Andere
+Modelle haben noch mehr Maps: eine **Height Map** oder **Displacement Map**,
+nach der der Vertex-Shader Ecken wirklich verschiebt, und eine **Metallic
+Map**, die sagt, wo Metall ist, denn Metall färbt seinen Glanz mit seiner
+eigenen Farbe. Das Pferd braucht sie nicht.
+
+_task(karten)
+
+Der neue Fragment-Shader liest alle vier Maps. Mit den Tasten <kbd>1</kbd>
+bis <kbd>4</kbd> schaltest du jede ein und aus, um zu sehen, was sie tut;
+dafür gibt es für jede einen Schalter (`useColor` und so weiter). Schreib
+`shader.frag` neu:
+
+```glsl_copy
+#version 300 es
+precision highp float;
+in vec3 v_position;
+in vec2 v_uv;
+in vec3 v_normal;
+uniform sampler2D colorMap;
+uniform sampler2D normalMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D aoMap;
+uniform bool useColor;
+uniform bool useNormal;
+uniform bool useRoughness;
+uniform bool useAo;
+uniform bool wire;
+uniform vec3 light;
+uniform vec3 eye;
+out vec4 color;
+
+// die Normale aus der Normal Map, gedreht auf die Fläche
+vec3 mapNormal(vec3 n) {
+    // wie sich Lage und Stelle in der Textur von Pixel zu Pixel ändern
+    vec3 dp1 = dFdx(v_position);
+    vec3 dp2 = dFdy(v_position);
+    vec2 duv1 = dFdx(v_uv);
+    vec2 duv2 = dFdy(v_uv);
+    // daraus die Richtungen t und b, in die u und v auf der Fläche wachsen
+    float s = sign(duv1.x * duv2.y - duv1.y * duv2.x);
+    vec3 t = normalize(dp1 * duv2.y - dp2 * duv1.y) * s;
+    vec3 b = normalize(dp2 * duv1.x - dp1 * duv2.x) * s;
+    // die Farbe der Normal Map von 0 bis 1 wird eine Richtung von -1 bis 1
+    vec3 m = texture(normalMap, v_uv).rgb * 2.0 - 1.0;
+    return normalize(m.x * t + m.y * b + m.z * n);
+}
+
+void main() {
+    if (wire) {
+        color = vec4(1.0, 1.0, 1.0, 1.0);
+        return;
+    }
+    vec3 base = useColor ? texture(colorMap, v_uv).rgb : vec3(0.9, 0.88, 0.84);
+    vec3 n = normalize(v_normal);
+    if (useNormal) n = mapNormal(n);
+    float shininess = 40.0;
+    float strength = 0.4;
+    if (useRoughness) {
+        float roughness = texture(roughnessMap, v_uv).r;
+        shininess = mix(200.0, 4.0, roughness);
+        strength = 1.0 - roughness;
+    }
+    float ao = useAo ? texture(aoMap, v_uv).r : 1.0;
+
+    vec3 l = normalize(light);
+    vec3 v = normalize(eye - v_position);
+    vec3 h = normalize(l + v);
+    float diffuse = max(dot(n, l), 0.0);
+    float specular = strength * pow(max(dot(n, h), 0.0), shininess);
+    color = vec4(base * (0.3 * ao + 0.7 * diffuse) + specular, 1.0);
+}
+```
+
+Was darin passiert:
+
+- `mapNormal` braucht die Richtungen \\(t\\) und \\(b\\), in die \\(u\\) und
+  \\(v\\) auf der Fläche wachsen, denn die Normal Map meint diese Richtungen.
+  `dFdx` und `dFdy` sagen, wie sehr sich ein Wert vom Pixel zum rechten und
+  zum oberen Nachbarn ändert. Aus der Änderung der Lage und der Änderung von
+  \\((u, v)\\) folgt, wohin \\(u\\) und \\(v\\) im Raum zeigen. Dann wird
+  die Farbe der Map zur Richtung, und \\(x\\), \\(y\\) und \\(z\\) zählen in
+  den Richtungen \\(t\\), \\(b\\) und \\(n\\).
+- Die Roughness ändert den Exponenten und die Stärke des Glanzes: `mix(200.0,
+  4.0, roughness)` geht von 200 bei 0 bis 4 bei 1.
+- Die AO multipliziert das Licht von überall.
+
+In `main.js` kommen die Schalter zu den Variablen:
+
+```js
+~ let flat = false;
+const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true };
+```
+
+die Tasten zum Drücken einer Taste:
+
+```js
+~     if (e.key === 'f') flat = !flat;
+    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo' };
+    if (names[e.key]) maps[names[e.key]] = !maps[names[e.key]];
+```
+
+In `start` laden jetzt vier Bilder in die Einheiten 0 bis 3; das ersetzt die
+zwei Zeilen mit `horse-color.jpg`:
+
+```js
+    const textures = [['colorMap', 'horse-color.jpg'], ['normalMap', 'horse-normal.jpg'],
+        ['roughnessMap', 'horse-roughness.jpg'], ['aoMap', 'horse-ao.jpg']];
+    for (let unit = 0; unit < textures.length; unit++) {
+        const [name, file] = textures[unit];
+        await loadTexture(file, unit);
+        gl.uniform1i(gl.getUniformLocation(program, name), unit);
+    }
+```
+
+und in `frame` gehen die Schalter an die Shader, nach `eye`:
+
+```js
+        for (const name in maps) {
+            gl.uniform1i(gl.getUniformLocation(program, name), maps[name]);
+        }
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader.frag
+write-file: webgl/main.js <- file:stufen/main.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view -0.035 0.18 0 0.11 0.9 0.15
+click: selector:canvas
+press: 2
+press: 3
+press: 4
+sleep: 1
+-->
+<img src='maps-1.webp' alt='Kopf und Brust des Pferds nur mit der Color Map: glatt und rund wie ein Stück Seife, ein breiter, weicher Glanz auf der Brust.'>
+<figcaption>Nur die Color Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader.frag
+write-file: webgl/main.js <- file:stufen/main.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view -0.035 0.18 0 0.11 0.9 0.15
+click: selector:canvas
+press: 3
+press: 4
+sleep: 1
+-->
+<img src='maps-2.webp' alt='Derselbe Ausschnitt mit der Normal Map dazu: Auf Hals und Brust treten Muskeln und Adern hervor, die Nüstern und die Haare der Mähne sind fein gezeichnet, obwohl die Dreiecke dieselben sind.'>
+<figcaption>Dazu die Normal Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader.frag
+write-file: webgl/main.js <- file:stufen/main.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view -0.035 0.18 0 0.11 0.9 0.15
+click: selector:canvas
+press: 4
+sleep: 1
+-->
+<img src='maps-3.webp' alt='Dazu die Roughness Map: Die Glanzpunkte auf Brust und Bein sind kleiner und heller, das Porzellan sieht glatter und härter aus.'>
+<figcaption>Dazu die Roughness Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader.frag
+write-file: webgl/main.js <- file:stufen/main.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view -0.035 0.18 0 0.11 0.9 0.15
+-->
+<img src='maps-4.webp' alt='Dazu die Ambient Occlusion Map: In den Ohren, den Nüstern und den Falten am Hals ist es jetzt dunkler, das Pferd wirkt plastischer.'>
+<figcaption>Dazu die AO Map: alle vier</figcaption></figure>
+</div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schalt mit <kbd>2</kbd> die Normal Map aus und
+wieder an, während du das Pferd drehst, und dann mit <kbd>F</kbd> auf Flat
+Shading. Achte darauf, ob die Muskeln auf der Brust dabei bleiben. Und schalt
+mit <kbd>W</kbd> auf das Drahtgitter: Wie viele der Adern siehst du dort?
 </div>
 
 _task(warum-z-buffer)
@@ -1126,11 +1820,15 @@ _task(warum-z-buffer)
 
 Dein Programm malt Dreiecke, wie fast jedes Spiel: Ecken mit einer Matrix auf
 den Bildschirm, Pixel aus der Rasterung, der Z-Buffer für das Nächste, Licht
-aus Normalen. Einen ganz anderen Weg geht ein [Raytracer](/raytracing): Er
-schickt für jedes Pixel einen Strahl in die Szene und rechnet aus, was er
-trifft, mit Spiegeln, Glas und weichen Schatten, aber viel langsamer. Und was
-dein Fragment-Shader tut, treibt [Shader in GLSL](/glsl) weiter, bis zu
-Welten ohne ein einziges Dreieck.
+aus Normalen und Texturen für alles, was in keinem Dreieck steckt. Spiele
+gehen noch weiter: Schatten aus einem zweiten Z-Buffer, der von der Lampe aus
+gerechnet wird, und Licht nach der Physik, bei dem Roughness und Metallic
+genauer rechnen als dein Exponent (*Physically Based Rendering*). Einen ganz
+anderen Weg geht ein [Raytracer](/raytracing): Er schickt für jedes Pixel
+einen Strahl in die Szene und rechnet aus, was er trifft, mit Spiegeln, Glas
+und weichen Schatten, aber viel langsamer. Und was dein Fragment-Shader tut,
+treibt [Shader in GLSL](/glsl) weiter, bis zu Welten ohne ein einziges
+Dreieck.
 
 Ohne Dreiecke kommt auch Gaussian Splatting aus: Eine
 Szene aus Fotos besteht dort aus Millionen weicher, durchscheinender Splats,

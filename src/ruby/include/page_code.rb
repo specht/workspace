@@ -17,7 +17,7 @@ module PageCode
         '.rb' => %w[ruby], '.py' => %w[python], '.html' => %w[html css js javascript], '.js' => %w[js javascript],
         '.c' => %w[c], '.css' => %w[css], '.yaml' => %w[yaml], '.yml' => %w[yaml], '.tex' => %w[tex latex],
         '.fs' => %w[glsl], '.vs' => %w[glsl], '.md' => %w[markdown md], '.svelte' => %w[svelte html css js javascript],
-        '.frag' => %w[glsl], '.lua' => %w[lua], '.h' => %w[c],
+        '.frag' => %w[glsl], '.vert' => %w[glsl], '.lua' => %w[lua], '.h' => %w[c],
     }.freeze
     STAGE = /^<!--\s*stage:\s*(\S+)/
     FENCE = /^```([A-Za-z0-9]*)(?:_[a-z]+)*[ \t]*$/

@@ -1,38 +1,6 @@
 const canvas = document.getElementById('canvas');
 const gl = canvas.getContext('webgl2');
 
-const vertexShader = `#version 300 es
-in vec3 position;
-in vec2 uv;
-in vec3 normal;
-uniform mat4 projection;
-uniform mat4 view;
-out vec2 v_uv;
-out vec3 v_normal;
-void main() {
-    gl_Position = projection * view * vec4(position, 1.0);
-    v_uv = uv;
-    v_normal = normal;
-}`;
-
-const fragmentShader = `#version 300 es
-precision highp float;
-in vec2 v_uv;
-in vec3 v_normal;
-uniform sampler2D colormap;
-uniform vec3 light;
-uniform bool wire;
-out vec4 color;
-void main() {
-    if (wire) {
-        color = vec4(1.0, 1.0, 1.0, 1.0);
-        return;
-    }
-    vec3 base = texture(colormap, v_uv).rgb;
-    float diffuse = max(dot(normalize(v_normal), normalize(light)), 0.0);
-    color = vec4(base * (0.3 + 0.7 * diffuse), 1.0);
-}`;
-
 function compile(type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -43,17 +11,25 @@ function compile(type, source) {
     return shader;
 }
 
-const program = gl.createProgram();
-gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexShader));
-gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentShader));
-gl.linkProgram(program);
-gl.useProgram(program);
+// lädt die beiden Shader aus ihren Dateien und verbindet sie zu einem Programm
+async function loadProgram(vertexFile, fragmentFile) {
+    const vertexSource = await (await fetch(vertexFile, { cache: 'no-store' })).text();
+    const fragmentSource = await (await fetch(fragmentFile, { cache: 'no-store' })).text();
+    const program = gl.createProgram();
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexSource));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentSource));
+    gl.linkProgram(program);
+    gl.useProgram(program);
+    return program;
+}
 
 let yaw = 0.6;
-let pitch = 0.3;
-let distance = 20;
+let pitch = 0.2;
+let distance = 1;
 let center = [0, 0, 0];
 let wireframe = false;
+let flat = false;
+const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true };
 
 canvas.addEventListener('pointermove', (e) => {
     if (e.buttons) {
@@ -66,12 +42,39 @@ canvas.addEventListener('wheel', (e) => {
 });
 window.addEventListener('keydown', (e) => {
     if (e.key === 'w') wireframe = !wireframe;
+    if (e.key === 'f') flat = !flat;
+    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo' };
+    if (names[e.key]) maps[names[e.key]] = !maps[names[e.key]];
 });
 
+// wo die Kamera steht: dort, wohin die Matrix view den Ursprung schiebt
+function cameraPosition() {
+    return [
+        center[0] - distance * Math.sin(yaw) * Math.cos(pitch),
+        center[1] + distance * Math.sin(pitch),
+        center[2] + distance * Math.cos(yaw) * Math.cos(pitch),
+    ];
+}
+
+// ein Bild als Textur auf der Grafikkarte, in der Einheit unit (0, 1, 2, …)
+async function loadTexture(file, unit) {
+    const image = new Image();
+    image.src = file;
+    await image.decode();
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+}
+
 async function start() {
-    const text = await (await fetch('ship-pirate-large.obj')).text();
+    const program = await loadProgram('shader.vert', 'shader.frag');
+    const text = await (await fetch('horse.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
+    const flatVertices = flatNormals(vertices);
 
     // die Kiste um das Modell: die Kamera schaut auf ihre Mitte
     const low = [Infinity, Infinity, Infinity];
@@ -83,7 +86,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -91,6 +94,7 @@ async function start() {
     const attributes = [['position', 3, 0], ['uv', 2, 3], ['normal', 3, 5]];
     for (const [name, size, offset] of attributes) {
         const location = gl.getAttribLocation(program, name);
+        if (location < 0) continue;   // ein Attribut, das der Shader nicht benutzt
         gl.enableVertexAttribArray(location);
         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
     }
@@ -99,14 +103,14 @@ async function start() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lines);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(edges(count / 3)), gl.STATIC_DRAW);
 
-    const image = new Image();
-    image.src = 'colormap.png';
-    await image.decode();
-    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    const textures = [['colorMap', 'horse-color.jpg'], ['normalMap', 'horse-normal.jpg'],
+        ['roughnessMap', 'horse-roughness.jpg'], ['aoMap', 'horse-ao.jpg']];
+    for (let unit = 0; unit < textures.length; unit++) {
+        const [name, file] = textures[unit];
+        await loadTexture(file, unit);
+        gl.uniform1i(gl.getUniformLocation(program, name), unit);
+    }
+    let shownFlat = false;
 
     gl.uniform3fv(gl.getUniformLocation(program, 'light'), [0.4, 0.8, 0.45]);
     gl.enable(gl.DEPTH_TEST);
@@ -118,10 +122,19 @@ async function start() {
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        const projection = perspective(0.8, canvas.width / canvas.height, 0.1, 100);
+        if (flat !== shownFlat) {
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flat ? flatVertices : vertices), gl.STATIC_DRAW);
+            shownFlat = flat;
+        }
+
+        const projection = perspective(0.8, canvas.width / canvas.height, 0.01, 100);
         const view = multiply(translate(0, 0, -distance), multiply(rotateX(pitch), multiply(rotateY(yaw), translate(-center[0], -center[1], -center[2]))));
         gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projection'), false, projection);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, 'view'), false, view);
+        gl.uniform3fv(gl.getUniformLocation(program, 'eye'), cameraPosition());
+        for (const name in maps) {
+            gl.uniform1i(gl.getUniformLocation(program, name), maps[name]);
+        }
         gl.uniform1i(gl.getUniformLocation(program, 'wire'), wireframe);
         if (wireframe) {
             gl.drawElements(gl.LINES, count * 2, gl.UNSIGNED_INT, 0);

@@ -33,6 +33,8 @@
         "**/*.synctex.gz": true
     },
     "files.associations": {
+        "*.frag": "c",
+        "*.vert": "c",
         "*.pl": "perl",
         "**/prolog/**/*.pl": "prolog"
     },

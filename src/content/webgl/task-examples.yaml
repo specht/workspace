@@ -21,6 +21,7 @@ examples:
       - { files: { webgl/math.js: fehler/rotatey-andersherum.js } }
   normale:
     pass:
+      - { files: { webgl/math.js: stufen/math-2.js } }
       - { files: { webgl/math.js: stufen/math.js } }
     fail:
       - { files: { webgl/math.js: stufen/math-1.js } }
@@ -41,3 +42,10 @@ examples:
       - { files: { webgl/model.js: stufen/model-1.js } }
       - { files: { webgl/model.js: fehler/edges-ohne-letzte.js } }
       - { files: { webgl/model.js: fehler/edges-ab-null.js } }
+  flach:
+    pass:
+      - { files: { webgl/math.js: stufen/math.js } }
+    fail:
+      - { files: { webgl/math.js: stufen/math-2.js } }
+      - { files: { webgl/math.js: fehler/flatnormals-ohne-kopie.js } }
+      - { files: { webgl/math.js: fehler/flatnormals-erste-ecke.js } }

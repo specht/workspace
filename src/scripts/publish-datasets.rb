@@ -69,7 +69,7 @@ OTHER_FILES = {
     'working-with-files.tar.gz' => 'the files to explore in *Arbeiten mit Dateien*',
     'snake.c' => 'a small game in C, not used by an activity at the moment',
     'gaussian-splatting' => '`pearl-earring.png` (Vermeer\'s painting, public domain, 128 pixels wide) and scenes of 3D Gaussians as `.ply` with the colour only (`modern-arm-chair.ply` and others, from the DX.GL multi-view datasets, CC0) for *Gaussian Splatting*, copied from `src/content/gaussian-splatting/dateien/` and made with `werkzeug/prepare_scenes.py`; the street *Artillery Passage* by David Fletcher (CC BY 4.0, superspl.at/scene/f4897475) in the compact format of the viewer, 1.5 million and all splats (`artillery-passage.csplat`, `artillery-passage-full.csplat`, made with `werkzeug/prepare_street.py`), which the server fetches into /dl',
-    'webgl' => '`ship-pirate-large.obj` and five more models of the Pirate Kit by Kenney (CC0, `kenney-license.txt`) with their texture `colormap.png`, for *3D-Grafik mit WebGL*; copied from `src/content/webgl/dateien/`',
+    'webgl' => '`horse.obj`, the model *Horse Statue 01* by Rico Cilliers from Poly Haven (CC0, `horse-license.txt`), with its four textures `horse-color.jpg`, `horse-normal.jpg`, `horse-roughness.jpg` and `horse-ao.jpg`, for *3D-Grafik mit WebGL*; copied from `src/content/webgl/dateien/`, the OBJ made with `werkzeug/gltf_to_obj.py`',
     'raycaster' => '`palette.rb` (a palette of 256 colours, the shade table and the textures as `palette.h`, from seven tiles drawn in the 2D Game Studio) and `textures.png` (the seven tiles of the raycaster) for *Raycasting in C*; copied from `src/content/raycaster/werkzeug/`'
 }.freeze
 

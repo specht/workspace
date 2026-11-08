@@ -1,0 +1,10 @@
+»Horse Statue 01« by Rico Cilliers, from Poly Haven:
+https://polyhaven.com/a/horse_statue_01
+
+License: CC0 1.0 Universal (public domain), https://polyhaven.com/license
+
+horse.obj is the glTF of Poly Haven turned into OBJ with
+src/content/webgl/werkzeug/gltf_to_obj.py (the horse and its base in one
+object, the hooves' morph target applied). The four textures are the 2k JPGs
+of Poly Haven, renamed: horse-color.jpg (diff), horse-normal.jpg (nor_gl),
+horse-roughness.jpg (rough), horse-ao.jpg (ao).

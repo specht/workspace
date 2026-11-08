@@ -275,9 +275,9 @@ tasks:
         - call: edges(0)
           expect: '[]'
           say: Ohne Dreiecke gibt es keine Kanten.
-        - call: edges(3163).length
-          expect: 18978
-          say: Das Schiff hat 3.163 Dreiecke, je 6 Indizes.
+        - call: edges(22388).length
+          expect: 134328
+          say: Das Pferd hat 22.388 Dreiecke, je 6 Indizes.
     solution: |
       ```js
       function edges(triangles) {
@@ -289,6 +289,125 @@ tasks:
           return lines;
       }
       ```
+
+  - id: flach
+    title: Flache Normalen
+    prompt: |
+      Schreib in `webgl/math.js` die Funktion `flatNormals(vertices)`: ein
+      neues Array, in dem jede Ecke (acht Zahlen) statt ihrer Normale die
+      Normale ihres Dreiecks hat. Die Prüfung rundet auf drei Stellen.
+    check:
+      type: javascript
+      file: webgl/math.js
+      cases:
+        - call: flatNormals([0, 0, 0, 0, 0, 9, 9, 9, 1, 0, 0, 1, 0, 9, 9, 9, 0, 1, 0, 0, 1, 9, 9, 9]).map((x) => Math.round(x * 1000) / 1000 + 0)
+          expect: '[0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1]'
+          say: Alle drei Ecken bekommen die Normale des Dreiecks, (0, 0, 1); Lage und Stelle in der Textur bleiben.
+        - call: flatNormals([0, 0, 0, 0.5, 0.5, 9, 9, 9, 2, 0, 0, 0.5, 0.5, 9, 9, 9, 0, 0, -2, 0.5, 0.5, 9, 9, 9]).slice(16).map((x) => Math.round(x * 1000) / 1000 + 0)
+          expect: '[0, 0, -2, 0.5, 0.5, 0, 1, 0]'
+          say: Auch die dritte Ecke bekommt die Normale, hier (0, 1, 0); sie steht 5 Zahlen nach ihrer Lage, ab Index 21.
+        - call: flatNormals([0, 0, 0, 0, 0, 9, 9, 9, 1, 0, 0, 0, 0, 9, 9, 9, 0, 1, 0, 0, 0, 9, 9, 9, 0, 0, 0, 0, 0, 9, 9, 9, 0, 1, 0, 0, 0, 9, 9, 9, 1, 0, 0, 0, 0, 9, 9, 9]).slice(29, 32).map((x) => Math.round(x * 1000) / 1000 + 0)
+          expect: '[0, 0, -1]'
+          say: Das zweite Dreieck, ab Index 24, hat seine eigene Normale; es liegt im Uhrzeigersinn, sie zeigt nach hinten.
+        - call: const v = [0, 0, 0, 0, 0, 9, 9, 9, 1, 0, 0, 0, 0, 9, 9, 9, 0, 1, 0, 0, 0, 9, 9, 9]; flatNormals(v); v[5]
+          expect: 9
+          say: Das übergebene Array muss bleiben, wie es ist; das Pferd braucht seine Normalen noch für Smooth Shading. Arbeite auf einer Kopie, vertices.slice().
+        - call: flatNormals([])
+          expect: '[]'
+          say: Ohne Ecken gibt es nichts umzurechnen.
+    solution: |
+      ```js
+      function flatNormals(vertices) {
+          const out = vertices.slice();
+          for (let i = 0; i < vertices.length; i += 24) {
+              const a = vertices.slice(i, i + 3);
+              const b = vertices.slice(i + 8, i + 11);
+              const c = vertices.slice(i + 16, i + 19);
+              const n = faceNormal(a, b, c);
+              for (let k = 0; k < 3; k++) {
+                  out[i + 8 * k + 5] = n[0];
+                  out[i + 8 * k + 6] = n[1];
+                  out[i + 8 * k + 7] = n[2];
+              }
+          }
+          return out;
+      }
+      ```
+
+  - id: glanz
+    title: Wie hell ist der Glanz?
+    prompt: |
+      An einer Stelle des Pferds ist \\(n \cdot h = 0{,}98\\): Das Licht wird
+      fast genau ins Auge gespiegelt. Wie viel Weiß kommt dort nach der
+      Formel oben dazu? Auf zwei Stellen nach dem Komma.
+    check: { type: number, expect: 0.18, tolerance: 0.006 }
+    feedback:
+      - when: { equals: 0.45 }
+        say: Das ist \\(0{,}98^{40}\\); der Faktor 0,4 fehlt noch.
+      - when: { equals: 0.39 }
+        say: Das ist \\(0{,}4 \cdot 0{,}98\\); \\(n \cdot h\\) kommt erst hoch 40.
+      - when: { equals: 15.68 }
+        say: Hoch 40 heißt, 0,98 vierzigmal mit sich selbst zu multiplizieren, nicht mit 40.
+      - when: { equals: 0.4 }
+        say: Nur bei \\(n \cdot h = 1\\) ist die Potenz 1; schon 0,98 hoch 40 ist deutlich kleiner.
+    hint: |
+      `Math.pow(0.98, 40)` in der Konsole des Browsers rechnet die Potenz aus.
+    solution: |
+      \\(0{,}98^{40} \approx 0{,}446\\), also \\(0{,}4 \cdot 0{,}446 \approx 0{,}18\\).
+      Schon ein wenig neben der genauen Spiegelung bleibt also weniger als die
+      Hälfte; bei \\(n \cdot h = 0{,}9\\) wären es nur noch 0,006.
+
+  - id: exponent
+    title: Ein größerer Exponent
+    prediction: true
+    prompt: |
+      Im Fragment-Shader steht der Exponent 40. Was passiert mit den
+      Glanzpunkten, wenn du ihn auf 200 setzt?
+    check:
+      type: choice
+      options:
+        - Sie werden kleiner und schärfer begrenzt.
+        - Sie werden größer und weicher.
+        - Sie werden fünfmal so hell.
+        - Sie bleiben, wie sie sind; der Exponent ändert nur die Farbe.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Eine Zahl unter 1 wird kleiner, je öfter man sie mit sich selbst multipliziert; mit dem größeren Exponenten fällt der Glanz neben der Spiegelung schneller auf 0.
+      - when: { picked: 2 }
+        say: Am hellsten ist der Glanz bei \\(n \cdot h = 1\\), und 1 hoch 200 ist immer noch 1. Heller wird er nicht.
+      - when: { picked: 3 }
+        say: Der Exponent wirkt auf \\(n \cdot h\\), eine Zahl zwischen 0 und 1; damit ändert er, wie schnell der Glanz zur Seite abfällt.
+    solution: |
+      Kleiner und schärfer: Neben der genauen Spiegelung ist \\(n \cdot h\\)
+      etwas kleiner als 1, und hoch 200 fällt das viel schneller auf 0 als hoch
+      40. In der Mitte bleibt der Glanz gleich hell, denn 1 hoch 200 ist 1. So
+      sieht Lack aus, ein kleiner Exponent wie 5 wie mattes Plastik.
+
+  - id: karten
+    title: Was die Roughness Map sagt
+    prompt: |
+      Auf der Roughness Map ist das Holz des Sockels hell, die Stücke des
+      Porzellans sind dunkel. Wie sehen die Glanzpunkte darum aus?
+    check:
+      type: choice
+      options:
+        - Auf dem Porzellan klein und hell, auf dem Holz breit und schwach.
+        - Auf dem Holz klein und hell, auf dem Porzellan breit und schwach.
+        - Das Holz ist hell und das Porzellan dunkel gefärbt; mit Glanz hat das nichts zu tun.
+        - Das Holz glänzt gar nicht, das Porzellan überall gleich.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Hell heißt in der Roughness Map rau, nahe 1. Eine raue Fläche streut das Licht.
+      - when: { picked: 2 }
+        say: Die Farbe steht in der Color Map. Die Roughness Map hat eine einzige Zahl je Stelle, wie rau die Fläche ist.
+      - when: { picked: 3 }
+        say: Auch rau glänzt das Holz ein wenig, nur breit und schwach; und das Porzellan hat auf der Map nicht überall denselben Wert.
+    solution: |
+      Hell ist rau: Das Holz bekommt einen kleinen Exponenten und wenig
+      Stärke, also einen breiten, schwachen Schimmer. Das Porzellan ist glatt,
+      mit großem Exponenten: kleine, helle Glanzpunkte.
 
   - id: warum-z-buffer
     title: Der Z-Buffer in eigenen Worten

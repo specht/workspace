@@ -41,4 +41,22 @@ function faceNormal(a, b, c) {
     return [n[0] / length, n[1] / length, n[2] / length];
 }
 
-if (typeof module !== 'undefined') module.exports = { multiply, translate, rotateX, rotateY, perspective, faceNormal };
+// die Ecken eines Modells, acht Zahlen je Ecke, mit der Normale ihres Dreiecks
+// statt der Normale aus der Datei
+function flatNormals(vertices) {
+    const out = vertices.slice();
+    for (let i = 0; i < vertices.length; i += 24) {
+        const a = vertices.slice(i, i + 3);
+        const b = vertices.slice(i + 8, i + 11);
+        const c = vertices.slice(i + 16, i + 19);
+        const n = faceNormal(a, b, c);
+        for (let k = 0; k < 3; k++) {
+            out[i + 8 * k + 5] = n[0];
+            out[i + 8 * k + 6] = n[1];
+            out[i + 8 * k + 7] = n[2];
+        }
+    }
+    return out;
+}
+
+if (typeof module !== 'undefined') module.exports = { multiply, translate, rotateX, rotateY, perspective, faceNormal, flatNormals };
