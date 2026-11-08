@@ -1,0 +1,43 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt ein leerer
+# Anfang und in fehler/ je ein typischer Fehler.
+format: 1
+activity: webgl
+examples:
+  produkt:
+    pass:
+      - { files: { webgl/math.js: stufen/math-1.js } }
+      - { files: { webgl/math.js: stufen/math.js } }
+    fail:
+      - { files: { webgl/math.js: { text: "module.exports = {};\n" } } }
+      - { files: { webgl/math.js: fehler/multiply-vertauscht.js } }
+      - { files: { webgl/math.js: fehler/multiply-ba.js } }
+  drehen:
+    pass:
+      - { files: { webgl/math.js: stufen/math-1.js } }
+    fail:
+      - { files: { webgl/math.js: fehler/multiply-vertauscht.js } }
+      - { files: { webgl/math.js: fehler/rotatey-andersherum.js } }
+  normale:
+    pass:
+      - { files: { webgl/math.js: stufen/math.js } }
+    fail:
+      - { files: { webgl/math.js: stufen/math-1.js } }
+      - { files: { webgl/math.js: fehler/facenormal-ohne-laenge.js } }
+      - { files: { webgl/math.js: fehler/facenormal-vertauscht.js } }
+  obj:
+    pass:
+      - { files: { webgl/model.js: stufen/model-1.js } }
+      - { files: { webgl/model.js: stufen/model.js } }
+    fail:
+      - { files: { webgl/model.js: { text: "module.exports = {};\n" } } }
+      - { files: { webgl/model.js: fehler/parseobj-ab-eins.js } }
+      - { files: { webgl/model.js: fehler/parseobj-ohne-uv.js } }
+  kanten:
+    pass:
+      - { files: { webgl/model.js: stufen/model.js } }
+    fail:
+      - { files: { webgl/model.js: stufen/model-1.js } }
+      - { files: { webgl/model.js: fehler/edges-ohne-letzte.js } }
+      - { files: { webgl/model.js: fehler/edges-ab-null.js } }
