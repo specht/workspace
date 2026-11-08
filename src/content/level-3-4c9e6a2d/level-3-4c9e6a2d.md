@@ -270,7 +270,8 @@ hook: key t b
 -->
 
 <img class='full fit-width' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, die Decke und alles, was keine Leuchte sieht, fast schwarz.'>
-<!-- /after -->
+
+Ohne Bounce-Licht ist die Decke fast schwarz: Keine Leuchte strahlt nach oben.
 
 Wie weich ein Schatten ist, hängt also davon ab, wie groß die Leuchte ist. Mit `size = 0.2` und mit `size = 2` (und `power` so, dass jede gleich viel Licht gibt, denn eine kleinere Leuchte gibt auch weniger):
 
@@ -316,8 +317,6 @@ hook: key t b
 
 <!-- /tutorial-scope -->
 
-<!-- after: decke -->
-Ohne Bounce-Licht ist die Decke fast schwarz: Keine Leuchte strahlt nach oben.
 <!-- /after -->
 
 **Bounce-Licht.** In Wirklichkeit ist eine Decke trotzdem hell, weil jede Fläche einen Teil des Lichts zurückwirft, das auf sie fällt, in ihrer eigenen Farbe: der Teppich bräunliches Licht, eine rote Wand rotes. Ist das direkte Licht fertig, schickt das Programm von jedem Punkt Strahlen in zufällige Richtungen und schaut, wie hell die Flächen sind, die sie treffen. Was dabei herauskommt, ist das Licht, das einmal zurückgeworfen wurde, ein **Bounce**. Damit das schnell geht, sammelt es das zurückgeworfene Licht vorher in Würfeln von 25 cm, und weil zufällige Strahlen ein körniges Ergebnis geben, glättet es das Bounce-Licht am Ende. Das Ganze dreimal: Beim zweiten Bounce werfen die Flächen auch das Licht des ersten zurück und so weiter, darum steht beim Backen »bounce 1 of 3«. Mit einem, zwei und drei Bounces (in `level.ini` mit `bounces = 1` und so weiter):
