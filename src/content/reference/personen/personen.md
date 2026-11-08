@@ -227,6 +227,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1892 -->
+<!-- part: banach -->
+### Stefan Banach
+
+<div class='person'>
+<img src='banach.webp' alt='Stefan Banach, Schwarzweißfoto: ein Mann mit zurückgekämmtem Haar und kräftigem Gesicht, in Anzug und Krawatte, mit festem Blick in die Kamera.'>
+<p><strong>Stefan Banach</strong> (1892–1945), polnischer Mathematiker in Lwów, einer der Begründer der modernen Funktionalanalysis. Mit anderen Mathematikern der Stadt traf er sich zum Rechnen und Streiten im Schottischen Café.</p>
+<p>In seiner Doktorarbeit, veröffentlicht 1922, steht der Fixpunktsatz von Banach: Eine Abbildung, die alle Abstände verkleinert, hat genau einen Fixpunkt, und wer sie von irgendeinem Startpunkt aus immer wieder anwendet, kommt ihm beliebig nahe. Deshalb findet eine Kopiermaschine aus verkleinerten Kopien aus jedem Startbild dasselbe Fraktal.</p>
+<p class='person-credit'>Foto: unbekannt, 1945, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Stefana_Banach_-_%D8%B3%D8%AA%D9%8A%D9%81%D8%A7%D9%86_%D8%A8%D9%86%D8%A7%D8%AE.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1896 -->
 <!-- part: luhn -->
 ### Hans Peter Luhn
@@ -797,6 +809,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Ron Rivest</strong> (geboren 1947), <strong>Adi Shamir</strong> (geboren 1952) und <strong>Leonard Adleman</strong> (geboren 1945), damals am MIT. Das Schlüsselpaar, das du mit <code>openssl genpkey -algorithm RSA</code> erzeugst, trägt ihre Anfangsbuchstaben: RSA veröffentlichten sie 1977. Rivest und Shamir schlugen eine Idee nach der anderen vor, und Adleman, der Mathematiker, suchte in jeder die Schwachstelle.</p>
 <p>1977 feierten sie Pessach bei einem Studenten, mit viel Wein. Rivest konnte danach nicht schlafen, legte sich mit einem Mathebuch aufs Sofa und hatte bis zum Morgen den größten Teil des Aufsatzes geschrieben. In der gedruckten Fassung von 1978 tauchen zum ersten Mal Alice und Bob auf, die seitdem in fast jedem Beispiel zur Verschlüsselung Nachrichten tauschen. 2002 bekamen die drei den Turing Award, den wichtigsten Preis der Informatik.</p>
 <p class='person-credit'>Fotos: Ronald L. Rivest, 2015, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Ronald_L_Rivest_photo.jpg'>Wikimedia Commons</a>); Erik Tews, 2013, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Adi_Shamir_at_TU_Darmstadt_(2013).jpg'>Wikimedia Commons</a>); Leonard Adleman, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Len-mankin-pic.jpg'>Wikimedia Commons</a>), alle zugeschnitten</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1946 -->
+<!-- part: barnsley -->
+### Michael Barnsley
+
+<div class='person'>
+<p><strong>Michael Barnsley</strong> (geboren 1946), britischer Mathematiker, damals an der Georgia Tech, später an der Australian National University. 1988 erschien sein Buch <em>Fractals Everywhere</em>; berühmt ist sein Farn, ein Bild aus vier verkleinerten, gedrehten Kopien von sich selbst.</p>
+<p>1987 gründete er mit Alan Sloan die Firma Iterated Systems, um Fotos als solche Kopiermaschinen zu speichern, und hielt Patente auf die fraktale Bildkompression. Den ersten Encoder, der die Blöcke und ihre Partner von selbst findet, schrieb 1992 sein Doktorand Arnaud Jacquin.</p>
 </div>
 <!-- /part -->
 

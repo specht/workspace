@@ -594,7 +594,6 @@ sierpinski:
   - text: Ein Shader rechnet den Teppich mit einer Schleife aus vier Zeilen, eine Kopiermaschine aus drei verkleinerten Kopien das Dreieck.
     none: Workspace
 
-# Der Kasten steht bis zur Freigabe direkt in fraktale-kompression.md.
 banach:
   - text: Stefan Banach (1892–1945), polnischer Mathematiker in Lwów, einer der Begründer der modernen Funktionalanalysis.
     sources:
@@ -4021,7 +4020,6 @@ hanrahan:
       - url: https://en.wikipedia.org/wiki/Pat_Hanrahan
         quote: "Hanrahan shared the 2019 ACM A.M. Turing Award with Catmull for their pioneering efforts on computer-generated imagery."
 
-# Der Kasten steht bis zur Freigabe direkt in fraktale-kompression.md.
 barnsley:
   - text: Michael Barnsley (geboren 1946), britischer Mathematiker, damals an der Georgia Tech, später an der Australian National University.
     sources:

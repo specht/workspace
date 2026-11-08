@@ -160,13 +160,7 @@ Beide Male entsteht dasselbe Dreieck, ein **Sierpinski-Dreieck**. Das Startbild 
 
 Eine Kopiermaschine, deren Kopien kleiner sind als das Original, findet immer zu einem solchen Fixpunkt, egal womit man anfängt; der Mathematiker Stefan Banach hat das 1922 bewiesen (der **Fixpunktsatz von Banach**). Ein Bild, das aus verkleinerten Kopien von sich selbst besteht, heißt **Fraktal**.
 
-<!-- Bis die Seite den Katalog erreicht, steht der Kasten hier; danach als Teil »banach« nach reference/personen (Quellen schon in sources.yaml) und _person(banach). -->
-<div class='person'>
-<img src='banach.webp' alt='Stefan Banach, Schwarzweißfoto: ein Mann mit zurückgekämmtem Haar und kräftigem Gesicht, in Anzug und Krawatte, mit festem Blick in die Kamera.'>
-<p><strong>Stefan Banach</strong> (1892–1945), polnischer Mathematiker in Lwów, einer der Begründer der modernen Funktionalanalysis. Mit anderen Mathematikern der Stadt traf er sich zum Rechnen und Streiten im Schottischen Café.</p>
-<p>In seiner Doktorarbeit, veröffentlicht 1922, steht der Fixpunktsatz von Banach: Eine Abbildung, die alle Abstände verkleinert, hat genau einen Fixpunkt, und wer sie von irgendeinem Startpunkt aus immer wieder anwendet, kommt ihm beliebig nahe. Deshalb findet eine Kopiermaschine aus verkleinerten Kopien aus jedem Startbild dasselbe Fraktal.</p>
-<p class='person-credit'>Foto: unbekannt, 1945, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Stefana_Banach_-_%D8%B3%D8%AA%D9%8A%D9%81%D8%A7%D9%86_%D8%A8%D9%86%D8%A7%D8%AE.jpg'>Wikimedia Commons</a>)</p>
-</div>
+_person(banach)
 <!-- /after -->
 
 <div class='hint try'>
@@ -185,11 +179,7 @@ Ein Foto der Strandhäuser ist kein Fraktal. Aber es ist sich an vielen Stellen 
 
 In der Datei steht also kein einziges Pixel des Fotos, sondern nur, welcher Teil welchem anderen ähnlich sieht.
 
-<!-- Bis die Seite den Katalog erreicht, steht der Kasten hier; danach als Teil »barnsley« nach reference/personen (Quellen schon in sources.yaml) und _person(barnsley). -->
-<div class='person'>
-<p><strong>Michael Barnsley</strong> (geboren 1946), britischer Mathematiker, damals an der Georgia Tech, später an der Australian National University. 1988 erschien sein Buch <em>Fractals Everywhere</em>; berühmt ist sein Farn, ein Bild aus vier verkleinerten, gedrehten Kopien von sich selbst.</p>
-<p>1987 gründete er mit Alan Sloan die Firma Iterated Systems, um Fotos als solche Kopiermaschinen zu speichern, und hielt Patente auf die fraktale Bildkompression. Den ersten Encoder, der die Blöcke und ihre Partner von selbst findet, schrieb 1992 sein Doktorand Arnaud Jacquin.</p>
-</div>
+_person(barnsley)
 
 ## Blöcke und ihre Partner
 
