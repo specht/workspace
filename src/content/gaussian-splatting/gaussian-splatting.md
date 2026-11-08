@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Eine Topfpflanze aus Zehntausenden kleinen, durchscheinenden Splats: die Blätter grün, der Topf weiß, auf einem hellen Grund"
+image_alt: "Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor dem hellen Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt"
 kind: projekt
 language: Python
 duration: 3 Doppelstunden
@@ -35,23 +35,29 @@ wird wie die Glockenkurve von Carl Friedrich Gauß.
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
-# Bild für die Karte: der Viewer oben mit der Topfpflanze, seine Bühne ist 16:9
+# Bild für die Karte: der Apfel aus dem Viewer weiter unten, nah und fast
+# von der Seite, der Stiel frei vor dem Grund, mit »Weichheit der Splats« ganz links: lauter Ellipsen
+# mit scharfem Rand
 open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x900
-wait-for-text: 51.278 Splats
 hook: hide-footer
-sleep: 2
-crop-element: .splat-viewer-stage
+hook: scene Apfel 1000000
+hook: camera 0.38 0.2 0.12
+hook: softness 0
+crop-element: #szenen .splat-viewer-stage
 variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Eine Topfpflanze aus Zehntausenden kleinen, durchscheinenden Splats: die Blätter grün, der Topf weiß, auf einem hellen Grund.'>
+<img class='teaser' hidden src='teaser.webp' alt='Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor dem hellen Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt.'>
 
 <!-- /tutorial-scope -->
 
 Zieh mit der Maus, um die Pflanze zu drehen; das Mausrad oder zwei Finger
 zoomen. Schieb dann »Größe der Splats« ganz nach links: Jetzt sind die
-Splats so klein, dass du siehst, woraus die Pflanze besteht.
+Splats so klein, dass du siehst, woraus die Pflanze besteht. Schieb sie
+zurück und »Weichheit der Splats« nach links: Aus den weichen Flecken werden
+Ellipsen mit scharfem Rand, und du siehst, wie groß jeder Splat ist und wie
+sie sich überdecken.
 
 Wie das funktioniert, baust du selbst, in zwei Schritten. Zuerst in 2D: Ein
 Gemälde aus 500 Splats, die ihren Platz, ihre Form und ihre Farbe selbst
@@ -73,8 +79,8 @@ aus Splats:
 mkdir -p ~/splatting
 cd ~/splatting
 pip install numpy pillow
-wget https://github.com/specht/workspace-files/raw/main/gaussian-splatting/pearl-earring.png
-wget https://github.com/specht/workspace-files/raw/main/gaussian-splatting/modern-arm-chair.ply
+wget https://raw.githubusercontent.com/specht/workspace-files/main/gaussian-splatting/pearl-earring.png
+wget https://raw.githubusercontent.com/specht/workspace-files/main/gaussian-splatting/modern-arm-chair.ply
 ```
 
 `pip install` legt die Bibliotheken in deinen Workspace; auch nach einem
@@ -87,9 +93,9 @@ terminal-maximize
 terminal-run: mkdir -p ~/splatting && cd ~/splatting
 terminal-run: pip install -q numpy pillow
 terminal-wait-for-prompt: 240
-terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/gaussian-splatting/pearl-earring.png
+terminal-run: wget -q https://raw.githubusercontent.com/specht/workspace-files/main/gaussian-splatting/pearl-earring.png
 terminal-wait-for-prompt
-terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/gaussian-splatting/modern-arm-chair.ply
+terminal-run: wget -q https://raw.githubusercontent.com/specht/workspace-files/main/gaussian-splatting/modern-arm-chair.ply
 terminal-wait-for-prompt
 terminal-run: clear && ls -l
 terminal-wait-for-prompt
@@ -475,7 +481,7 @@ $$c \leftarrow c - \eta \cdot E'(c)$$
 Mehrere Regler auf einmal gehen genauso, jeder mit seiner eigenen Steigung;
 alle Steigungen zusammen heißen **Gradient**.
 
-<img class='drawing' style='width: 30em' src='bergab.webp' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend, die mit jedem Schritt näher an den Tiefpunkt rücken, die ersten Schritte groß, die späteren immer kleiner.'>
+<img class='drawing' style='width: 35em' src='bergab.webp' alt='Die Parabel des Fehlers E über c, am tiefsten bei c = 0,7. Auf ihr liegen Punkte, rechts oben beginnend; Bögen führen von jedem zum nächsten, näher an den Tiefpunkt. Gestrichelte Linien führen von den Punkten hinunter zur c-Achse, wo c₀, c₁, c₂, c₃ stehen: Der erste Schritt ist groß, jeder weitere kleiner.'>
 
 _task(erster-schritt)
 
@@ -749,6 +755,74 @@ Wie viele Splats braucht es, bis du die Perle erkennst? Mit 2000 Splats
 dauert jeder Schritt etwa viermal so lang. Stell danach 500 wieder ein.
 </div>
 
+### Splats haben keine Pixel
+
+Das Bild hat 128 × 152 Pixel, so viele wie das Gemälde, denn nur so lässt
+es sich Pixel für Pixel mit ihm vergleichen. Die Splats selbst sind aber
+keine Pixel, sondern Zahlen: eine Lage, zwei Breiten, ein Winkel und eine
+Farbe. Deshalb kannst du sie auf ein Bild jeder Größe malen. Häng unten an
+`train.py` diese Funktion an:
+
+```python
+def paint(scale, sharpness):
+    # dieselben Splats auf einem Bild, das scale-mal so groß ist; sharpness 1
+    # ist die Glocke, je größer, desto schärfer der Rand
+    big = np.zeros((H * scale, W * scale, 3))
+    for i in range(N):
+        r = 3 * max(sx[i], sy[i])                  # weiter weg ist der Splat fast 0
+        x0, x1 = int(max(0, x[i] - r) * scale), int(min(W, x[i] + r) * scale)
+        y0, y1 = int(max(0, y[i] - r) * scale), int(min(H, y[i] + r) * scale)
+        ys, xs = np.mgrid[y0:y1, x0:x1]
+        dx = (xs + 0.5) / scale - x[i]             # wo der Pixel im kleinen Bild läge
+        dy = (ys + 0.5) / scale - y[i]
+        c, s = np.cos(angle[i]), np.sin(angle[i])
+        u = (c * dx + s * dy) / sx[i]
+        v = (-s * dx + c * dy) / sy[i]
+        big[y0:y1, x0:x1] += np.exp(-(u * u + v * v) ** sharpness / 2)[:, :, None] * color[i]
+    return big
+
+
+save(paint(4, 1), 'learned-large.png')
+save(paint(4, 8), 'learned-sharp.png')
+```
+
+`paint` geht jeden Splat durch wie `render`, aber für jeden Pixel des großen
+Bildes rechnet sie aus, wo er im kleinen läge: `(xs + 0.5) / scale`.
+`sharpness` ändert die Glocke. Mit 1 ist es die von Gauß; mit 8 bleibt sie
+innerhalb einer Breite fast bei 1 und fällt an ihrem Rand steil auf 0, und
+jeder Splat wird eine Ellipse mit scharfem Rand.
+
+<!-- tutorial-scope -->
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: splatting/blobs.py <- file:stufen/blobs-4.py
+write-file: splatting/train.py <- file:stufen/train-3.py
+terminal-run: cd /workspace/splatting && python3 train.py
+terminal-wait-for-prompt: 180
+image-file: splatting/learned-large.png 1
+-->
+<img src='learned-large.webp' alt='Das Mädchen mit dem Perlenohrring aus denselben 500 Splats, viermal so groß gemalt: weich und glatt, ohne einen einzigen sichtbaren Pixel, das Kopftuch, das Gesicht, die Perle und der Kragen deutlich.'>
+<figcaption>Viermal so groß gemalt</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: splatting/blobs.py <- file:stufen/blobs-4.py
+write-file: splatting/train.py <- file:stufen/train-3.py
+terminal-run: cd /workspace/splatting && python3 train.py
+terminal-wait-for-prompt: 180
+image-file: splatting/learned-sharp.png 1
+-->
+<img src='learned-sharp.webp' alt='Dieselben 500 Splats mit scharfem Rand: Der dunkle Grund besteht aus großen, runden Scheiben mit Lücken dazwischen; am Kopftuch liegen lange, schmale Ellipsen entlang der Falten, im Gesicht kleinere dicht an dicht, rot ein Fleck am Mund.'>
+<figcaption>Mit scharfem Rand</figcaption></figure>
+</div>
+<!-- /tutorial-scope -->
+
+Mit scharfem Rand siehst du, wie das Training die 500 Splats verteilt hat:
+große, runde für den gleichmäßigen Grund, lange, schmale entlang der Kanten
+des Kopftuchs, kleine dort, wo sich viel ändert. Die Lücken dazwischen füllt
+sonst der weiche Rand. Im Viewer ganz oben macht »Weichheit der Splats«
+dasselbe mit einer Szene im Raum.
+
 Das ist schon fast alles, was Gaussian Splatting ausmacht: ein Bild aus
 Splats, ein Fehler, der sagt, wie weit es vom Ziel weg ist, und
 Gradientenabstieg, der jeden Splat ein Stück in die richtige Richtung
@@ -889,7 +963,7 @@ Sie soll auch mit ganzen Arrays von Punkten gehen.
 
 <!-- hint -->
 Ein Punkt genau vor der Kamera (`x = 0`, `y = 0`) landet in der Mitte des
-Bildes, bei 320 × 240 Pixeln also bei `(160, 120)`, egal wie weit er weg ist.
+Bildes, bei 640 × 480 Pixeln also bei `(320, 240)`, egal wie weit er weg ist.
 <!-- /hint -->
 
 <!-- solution -->
@@ -1000,7 +1074,7 @@ def look_at(eye, target):
     return np.array([right, down, forward])
 
 
-def render(splats, eye, W=320, H=240, f=400, background=1.0):
+def render(splats, eye, W=640, H=480, f=680, background=1.0):
     position, scale, rotation, color, opacity = splats
     view = look_at(eye, np.zeros(3))
     x, y, z = ((position - eye) @ view.T).T          # in Koordinaten der Kamera
@@ -1069,7 +1143,7 @@ _task(ohne-sortieren)
 write-file: splatting/render3d.py <- file:stufen/vergleich-ohne-sortieren.py
 terminal-run: cd /workspace/splatting && python3 render3d.py
 terminal-wait-for-prompt: 120
-image-file: splatting/armchair.png 2
+image-file: splatting/armchair.png 1
 -->
 <img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='ohne-sortieren.webp' alt='Der Sessel, gerendert ohne Sortieren: Über dem schwarzen Lederpolster der Lehne liegt ein großer hellbrauner Fleck, der Rahmen aus Holz von der Rückseite, und auch das Sitzpolster ist von Holz durchsetzt.'>
 
@@ -1090,7 +1164,7 @@ und öffne `armchair.png`. Für 49.817 Splats braucht es ein paar Sekunden.
 write-file: splatting/render3d.py <- file:stufen/render3d-2.py
 terminal-run: cd /workspace/splatting && python3 render3d.py
 terminal-wait-for-prompt: 120
-image-file: splatting/armchair.png 2
+image-file: splatting/armchair.png 1
 -->
 <img class='full fit-width' style='max-width: 30em; margin: 0 auto' src='sessel.webp' alt='Ein Sessel auf weißem Grund, schräg von vorne und leicht von oben: ein Rahmen aus hellem Holz mit Armlehnen und schwarzen Lederpolstern für Sitz und Lehne.'>
 
@@ -1133,7 +1207,7 @@ Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
 hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
 würde dunkel und flau.
 
-<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Registrierkasse", "src": "szenen/cash-register.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}, {"name": "Artillery Passage, alle Splats (80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Registrierkasse", "src": "szenen/cash-register.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Schräg nach oben", "target": [0, 1.2, -7], "distance": 0.3, "yaw": -0.6, "pitch": -0.35, "roll": -0.3}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Von oben", "target": [0, 6, -6], "distance": 0.3, "yaw": 0.6, "pitch": 1.5}, {"name": "Über den Dächern", "target": [0, 0, -6], "distance": 6, "yaw": 0.3, "pitch": 1.2}, {"name": "Hinter der Fassade", "target": [3, 0, -6], "distance": 0.3, "yaw": -1.57, "pitch": 0.1}, {"name": "Von außen", "target": [0, 0, -6], "distance": 20, "yaw": 1.57, "pitch": 0.2}]}, {"name": "Artillery Passage, alle Splats (80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Schräg nach oben", "target": [0, 1.2, -7], "distance": 0.3, "yaw": -0.6, "pitch": -0.35, "roll": -0.3}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Von oben", "target": [0, 6, -6], "distance": 0.3, "yaw": 0.6, "pitch": 1.5}, {"name": "Über den Dächern", "target": [0, 0, -6], "distance": 6, "yaw": 0.3, "pitch": 1.2}, {"name": "Hinter der Fassade", "target": [3, 0, -6], "distance": 0.3, "yaw": -1.57, "pitch": 0.1}, {"name": "Von außen", "target": [0, 0, -6], "distance": 20, "yaw": 1.57, "pitch": 0.2}]}]'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl die Bohrmaschine und schieb »Größe der
@@ -1152,7 +1226,16 @@ veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage«: Die Kamera steht
 mitten in der Gasse. Wenn du ziehst, drehst du dich um, und mit den
 Pfeiltasten oder W, A, S, D gehst du die Gasse entlang (auf einem
-Touchscreen mit den beiden Knöpfen). Von außen sieht eine solche Szene aus
+Touchscreen mit den beiden Knöpfen). In Street View von Google geht das
+nur in Sprüngen, von einem Aufnahmeort zum nächsten, denn dazwischen gibt es
+kein Foto. Aus Splats lässt sich jedes Bild dazwischen ausrechnen, und du
+gehst fließend.
+
+Die Knöpfe unter »Standorte« fliegen dich zu Stellen, an die du zu Fuß
+nicht kommst, etwa schräg unter das Schild des Juweliers oder hoch über die
+Gasse. Schieb dort die drei Regler und achte darauf, wie groß die Splats an
+Schrift und Fensterrahmen sind und wie groß auf einer glatten Wand. Die
+letzten beiden Standorte zeigen, wo die Täuschung endet. Von außen sieht eine solche Szene aus
 wie eine wirre Wolke: Alle Fotos wurden in der Gasse gemacht, und was keine
 Kamera gesehen hat, hat das Training nie verbessert. Die Fassung mit fast
 allen Splats ist schärfer, braucht aber 80 Megabyte und einen Rechner mit

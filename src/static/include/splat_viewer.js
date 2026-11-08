@@ -198,13 +198,17 @@ void main() {
 
     const FRAGMENT = `#version 300 es
 precision highp float;
+uniform float u_sharpness;  // 1: the Gaussian; larger: towards a hard ellipse
 in vec4 v_color;
 in vec2 v_corner;
 out vec4 fragColor;
 void main() {
     float q = dot(v_corner, v_corner);
     if (q > 9.0) discard;
-    float alpha = min(0.99, v_color.a * exp(-0.5 * q));
+    // q^k with k = 1 is the bell of the Gaussian; the larger k, the flatter
+    // it is inside one standard deviation (q < 1) and the steeper it falls
+    // at its edge: an ellipse with a sharp border
+    float alpha = min(0.99, v_color.a * exp(-0.5 * pow(q, u_sharpness)));
     if (alpha < 1.0 / 255.0) discard;
     fragColor = vec4(v_color.rgb * alpha, alpha);
 }`;
@@ -267,6 +271,18 @@ void main() {
             this.counter.addEventListener('input', () => { this.lastSort = null; this.describe(); this.redraw(); });
             countLabel.append(this.counter);
             sliders.append(countLabel);
+            const sharpLabel = document.createElement('label');
+            sharpLabel.className = 'splat-viewer-size';
+            sharpLabel.innerHTML = '<span>Weichheit der Splats</span>';
+            this.sharpness = document.createElement('input');
+            this.sharpness.type = 'range'; this.sharpness.className = 'form-range'; this.sharpness.min = '0'; this.sharpness.max = '1'; this.sharpness.step = '0.01'; this.sharpness.value = '1';
+            this.sharpness.setAttribute('aria-valuetext', 'weich');
+            this.sharpness.addEventListener('input', () => {
+                this.sharpness.setAttribute('aria-valuetext', this.sharpness.value < 0.5 ? 'scharf' : 'weich');
+                this.redraw();
+            });
+            sharpLabel.append(this.sharpness);
+            sliders.append(sharpLabel);
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
@@ -312,7 +328,12 @@ void main() {
             const help = document.createElement('div');
             help.className = 'splat-viewer-help';
             help.textContent = 'Ziehen dreht, das Mausrad oder zwei Finger zoomen, die Pfeiltasten oder W, A, S, D bewegen dich, Q und E nach unten und oben; ein Doppelklick stellt die Kamera zurück.';
-            root.append(stage, bar, sliders, this.info, help);
+            // the spots of a scene (»spots« in its entry): buttons that fly
+            // the camera there, filled in by show()
+            this.spotBar = document.createElement('div');
+            this.spotBar.className = 'splat-viewer-spots';
+            this.spotBar.hidden = true;
+            root.append(stage, bar, this.spotBar, sliders, this.info, help);
 
             const gl = this.canvas.getContext('webgl2', { antialias: false, premultipliedAlpha: true, alpha: true });
             if (!gl) { this.message('Dieser Browser kann kein WebGL2. Mit einem aktuellen Firefox, Chrome oder Safari geht es.'); return; }
@@ -325,7 +346,7 @@ void main() {
             this.program = program;
             gl.useProgram(program);
             this.u = {};
-            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport']) this.u[name] = gl.getUniformLocation(program, name);
+            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness']) this.u[name] = gl.getUniformLocation(program, name);
             this.vao = gl.createVertexArray();
             gl.bindVertexArray(this.vao);
             const corners = gl.createBuffer();
@@ -369,6 +390,7 @@ void main() {
                 this.message('Bereitet die Splats vor …');
                 await new Promise((r) => setTimeout(r, 30));
                 this.view = scene.view || null;
+                this.spots = scene.spots || [];
                 this.show(parse(buffer, scene.src), scene.credit || '');
                 this.loaded = scene.name;
             } catch (e) {
@@ -447,7 +469,8 @@ void main() {
             d.sort((a, b) => a - b);
             this.radius = d[Math.floor(d.length * 0.9)] || 1;
             this.distance = this.radius * 3;
-            this.yaw = 0.6; this.pitch = 0.3;
+            this.yaw = 0.6; this.pitch = 0.3; this.roll = 0;
+            this.look = !!(this.view && this.view.look);
             if (this.view) {
                 if (this.view.target) this.target = this.view.target.slice();
                 if (this.view.distance) this.distance = this.view.distance;
@@ -456,9 +479,54 @@ void main() {
             }
             this.up = 0;
             this.counter.value = '1';
+            this.showSpots();
             this.upload();
             this.message('');
             this.describe();
+        }
+
+        showSpots() {
+            const spots = this.spots || [];
+            this.spotBar.replaceChildren();
+            this.spotBar.hidden = spots.length === 0;
+            if (!spots.length) return;
+            const title = document.createElement('span');
+            title.textContent = 'Standorte:';
+            this.spotBar.append(title);
+            for (const spot of spots) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-sm btn-outline-secondary';
+                button.textContent = spot.name;
+                button.addEventListener('click', () => this.fly(spot));
+                this.spotBar.append(button);
+            }
+        }
+
+        // moves the camera to a spot in a short flight instead of a jump,
+        // so that one sees where it lies in the scene
+        fly(spot) {
+            const from = { target: this.target.slice(), distance: this.distance, yaw: this.yaw, pitch: this.pitch, roll: this.roll || 0 };
+            // the shorter way round
+            let yaw = spot.yaw;
+            while (yaw - from.yaw > Math.PI) yaw -= 2 * Math.PI;
+            while (yaw - from.yaw < -Math.PI) yaw += 2 * Math.PI;
+            const start = performance.now();
+            const flight = this.flight = {};
+            const step = (now) => {
+                if (this.flight !== flight) return;
+                const t = Math.min(1, (now - start) / 1200);
+                const e = t * t * (3 - 2 * t);
+                this.target = from.target.map((v, k) => v + (spot.target[k] - v) * e);
+                this.distance = from.distance + (spot.distance - from.distance) * e;
+                this.yaw = from.yaw + (yaw - from.yaw) * e;
+                this.pitch = from.pitch + (spot.pitch - from.pitch) * e;
+                this.roll = from.roll + ((spot.roll || 0) - from.roll) * e;
+                this.redraw();
+                if (t < 1) requestAnimationFrame(step);
+                else this.flight = null;
+            };
+            requestAnimationFrame(step);
         }
 
         // how many splats the slider asks for: from 100 to all, evenly on a
@@ -520,8 +588,12 @@ void main() {
             const cp = Math.cos(this.pitch), sp = Math.sin(this.pitch), cy = Math.cos(this.yaw), sy = Math.sin(this.yaw);
             const back = [sy * cp, sp, cy * cp];                      // from the target to the eye
             const eye = this.target.map((t, k) => t + back[k] * this.distance);
-            const right = [cy, 0, -sy];
-            const up = [-sy * sp, cp, -cy * sp];
+            const flatRight = [cy, 0, -sy];
+            const flatUp = [-sy * sp, cp, -cy * sp];
+            // tilted sideways by roll (a spot may want a slanted view)
+            const cr = Math.cos(this.roll || 0), sr = Math.sin(this.roll || 0);
+            const right = flatRight.map((v, k) => cr * v + sr * flatUp[k]);
+            const up = flatUp.map((v, k) => -sr * flatRight[k] + cr * v);
             return { eye, right, up, back };
         }
 
@@ -576,6 +648,9 @@ void main() {
             gl.uniform3fv(this.u.u_eye, cam.eye);
             gl.uniform2f(this.u.u_focal, focal, focal);
             gl.uniform2f(this.u.u_viewport, w, h);
+            // »Weichheit« from 1 (the Gaussian, k = 1) down to 0 (k = 32, an
+            // ellipse with a sharp border)
+            gl.uniform1f(this.u.u_sharpness, Math.pow(32, this.sharpness ? 1 - parseFloat(this.sharpness.value) : 0));
             gl.enable(gl.BLEND);
             // back to front: each splat covers what is already there as far
             // as it is opaque (the colour comes premultiplied by alpha)
@@ -586,6 +661,7 @@ void main() {
         // walking: while a key or a button is held, the camera and the point
         // it turns around move together, along the ground and sideways
         walkLoop() {
+            this.flight = null;
             if (this.walking) return;
             this.walking = true;
             let last = performance.now();
@@ -612,19 +688,34 @@ void main() {
             const c = this.canvas;
             this.held = new Set();
             const keys = ['w', 'a', 's', 'd', 'q', 'e', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'];
-            c.addEventListener('keydown', (e) => {
+            // the keys work anywhere in the viewer, not only on the canvas:
+            // after a slider W, A, S, D, Q and E still walk. The arrow keys
+            // stay with a slider that has the focus (keyboard users move it
+            // with them) and with the list of scenes, which also takes letters.
+            const root = this.root;
+            root.addEventListener('keydown', (e) => {
                 const k = e.key.toLowerCase();
                 if (!keys.includes(k) || e.ctrlKey || e.metaKey || e.altKey) return;
+                const target = e.target;
+                if (target.tagName === 'SELECT') return;
+                if (target !== c && k.startsWith('arrow') && target.type === 'range') return;
                 e.preventDefault();
                 this.held.add(k);
                 this.walkLoop();
             });
-            c.addEventListener('keyup', (e) => this.held.delete(e.key.toLowerCase()));
-            c.addEventListener('blur', () => this.held.clear());
+            root.addEventListener('keyup', (e) => this.held.delete(e.key.toLowerCase()));
+            root.addEventListener('focusout', (e) => { if (!root.contains(e.relatedTarget)) this.held.clear(); });
+            // a slider or button used with the mouse hands the focus back
+            // to the scene, so that the arrow keys walk again
+            root.addEventListener('pointerup', (e) => {
+                const control = e.target.closest('input[type=range], button');
+                if (control && !control.closest('.splat-viewer-walk')) c.focus({ preventScroll: true });
+            });
             const pointers = new Map();
             let last = null;
             c.addEventListener('contextmenu', (e) => e.preventDefault());
             c.addEventListener('pointerdown', (e) => {
+                this.flight = null;   // a drag stops a flight to a spot
                 c.focus({ preventScroll: true });
                 c.setPointerCapture(e.pointerId);
                 pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, button: e.button, shift: e.shiftKey });
@@ -641,8 +732,12 @@ void main() {
                 if (pointers.size === 1) {
                     if (p.button === 2 || p.shift) this.pan(dx, dy);
                     else {
-                        this.yaw -= dx * 0.008;
-                        this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch + dy * 0.008));
+                        // around an object the scene turns with the hand; in
+                        // a street (»look« in its view) the hand turns the
+                        // head, so the other way round
+                        const k = this.look ? -1 : 1;
+                        this.yaw -= k * dx * 0.008;
+                        this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch + k * dy * 0.008));
                     }
                 } else if (pointers.size === 2) {
                     const [a, b] = [...pointers.values()];
@@ -657,6 +752,7 @@ void main() {
             });
             c.addEventListener('wheel', (e) => {
                 e.preventDefault();
+                this.flight = null;
                 this.distance *= Math.exp(e.deltaY * 0.001);
                 this.redraw();
             }, { passive: false });

@@ -10,7 +10,7 @@ with WIDTH twice the width of each viewBox. One unit of the viewBox is one
 CSS pixel at the width the page gives the picture (width / 16 em). On the
 screen y points down, as in the code (the ellipse, the camera). The parabola
 starts elsewhere than the task »Der erste Schritt bergab« (at c = 1.4, with
-the rate 0.15), so that it does not show the answer.
+the rate 0.2), so that it does not show the answer.
 """
 
 import math as m
@@ -152,34 +152,55 @@ def ellipse():
 # ------------------------------------------------------------- downhill
 
 def bergab():
-    w, h = 480, 260
-    s = head(w, h, 'Die Parabel E(c) = (c − 0,7)² und Schritte des Gradientenabstiegs von c = 1,4 aus, mit der Lernrate 0,15: '
-             'jeder Schritt kleiner als der vorige, auf den Tiefpunkt bei 0,7 zu.', 'bergab')
-    ox, oy, sx, sy = 50, 215, 260, 360
+    """The steps as arcs beside the parabola (a straight chord would lie
+    almost on the curve), each point with a dashed line down to the axis,
+    where the steps can be read as distances: c₀ to c₃ named, the later
+    ones too close together for a name."""
+    w, h = 560, 300
+    s = head(w, h, 'Die Parabel E(c) = (c − 0,7)² und vier Schritte des Gradientenabstiegs von c₀ = 1,4 aus, mit der Lernrate 0,2: '
+             'jeder Schritt ein Bogen neben der Kurve, jeder kleiner als der vorige, auf den Tiefpunkt bei 0,7 zu.', 'bergab')
+    ox, oy, sx, sy = 40, 238, 320, 380
 
     def X(c):
         return ox + c * sx
 
     def Y(e):
         return oy - e * sy
-    s += line(X(-0.05), oy, X(1.62), oy, INK, 1.5, arrow='arrow')
-    s += label('c', X(1.62) - 2, oy + 20, 16, INK, 'end')
+    s += line(X(-0.05), oy, X(1.6), oy, INK, 1.5, arrow='arrow')
+    s += label('c', X(1.6) - 2, oy + 24, 18, INK, 'end')
     s += line(ox, oy, ox, Y(0.56), INK, 1.5, arrow='arrow')
-    s += label('E', ox + 10, Y(0.53), 16, INK, 'start')
+    s += label('E', ox + 12, Y(0.53), 18, INK, 'start')
     pts = [(X(c / 100), Y((c / 100 - 0.7) ** 2)) for c in range(-3, 156)]
     s += polyline([p for p in pts if p[1] > Y(0.55)], BLUE, 3)
-    s += line(X(0.7), oy - 4, X(0.7), oy + 4)
-    s += label(r'0{,}7', X(0.7), oy + 24)
-    s += label('0', ox, oy + 24)
+    s += line(X(0.7), oy - 5, X(0.7), oy + 5)
+    s += label(r'0{,}7', X(0.7), oy + 28, 17)
+    s += label('0', ox, oy + 28, 17)
     c = 1.4
     steps = [c]
-    for _ in range(6):
-        c = c - 0.15 * 2 * (c - 0.7)
+    for _ in range(4):
+        c = c - 0.2 * 2 * (c - 0.7)
         steps.append(c)
-    for a, b in zip(steps, steps[1:]):
-        s += line(X(a), Y((a - 0.7) ** 2), X(b) + 3, Y((b - 0.7) ** 2) - 4, INK, 1.4, arrow='arrow')
-    for c in steps:
-        s += dot(X(c), Y((c - 0.7) ** 2), INK, 4.5)
+    P = [(X(c), Y((c - 0.7) ** 2)) for c in steps]
+    for k, (x, y) in enumerate(P):
+        s += line(x, y + 7, x, oy - 1, GREY, 1.2, dash='3 4')
+        if k < 4:
+            s += label(f'c_{k}', x, oy + 28, 17)
+    for (xa, ya), (xb, yb) in zip(P, P[1:]):
+        dx, dy = xb - xa, yb - ya
+        d = m.hypot(dx, dy)
+        if d < 40:   # too short for an arc: the dots alone
+            continue
+        ux, uy = dx / d, dy / d
+        # start and end a little off the dots; bow up and to the left,
+        # away from the curve, which bends the other way
+        x1, y1 = xa + 8 * ux, ya + 8 * uy
+        x2, y2 = xb - 9 * ux, yb - 9 * uy
+        bow = 0.22 * d + 3
+        cx, cy = (x1 + x2) / 2 - uy * bow, (y1 + y2) / 2 + ux * bow
+        s += (f'  <path d="M{x1:.1f},{y1:.1f} Q{cx:.1f},{cy:.1f} {x2:.1f},{y2:.1f}" fill="none" stroke="{INK}" '
+              f'stroke-width="1.6" marker-end="url(#arrow)"/>\n')
+    for x, y in P:
+        s += dot(x, y, INK, 5)
     save('bergab', s)
 
 

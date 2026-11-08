@@ -14493,8 +14493,12 @@ html[data-bs-theme="dark"] .splat-viewer {
     justify-content: center;
     padding: 1em;
     text-align: center;
-    color: var(--bs-secondary-color);
     pointer-events: none;
+    /* a veil over the scene, so that the text stays readable on a street
+       already drawn (»Bereitet die Splats vor …« after the download) */
+    z-index: 1;
+    background: color-mix(in srgb, var(--splat-ground) 85%, transparent);
+    color: var(--bs-body-color);
 }
 .splat-viewer-bar {
     display: flex;
@@ -14532,13 +14536,25 @@ html[data-bs-theme="dark"] .splat-viewer {
 .splat-viewer-size {
     display: contents;
 }
+.splat-viewer-spots {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: 0.6em;
+    font-size: 0.9rem;
+}
+.splat-viewer-spots > span { margin-right: 0.2em; }
+/* on a wide screen the three sliders side by side */
+@media (min-width: 992px) {
+    .splat-viewer-sliders {
+        grid-template-columns: repeat(3, max-content minmax(5em, 1fr));
+        column-gap: 0.6em;
+    }
+    .splat-viewer-size:not(:first-child) > span { margin-left: 1em; }
+}
 .splat-viewer-size input {
     width: 100%;
-}
-.splat-viewer-status:has(.splat-viewer-progress) {
-    z-index: 1;
-    background: color-mix(in srgb, var(--splat-ground) 85%, transparent);
-    color: var(--bs-body-color);
 }
 .splat-viewer-progress {
     width: min(18em, 80%);

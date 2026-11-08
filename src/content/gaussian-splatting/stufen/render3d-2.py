@@ -59,7 +59,7 @@ def look_at(eye, target):
     return np.array([right, down, forward])
 
 
-def render(splats, eye, W=320, H=240, f=400, background=1.0):
+def render(splats, eye, W=640, H=480, f=680, background=1.0):
     position, scale, rotation, color, opacity = splats
     view = look_at(eye, np.zeros(3))
     x, y, z = ((position - eye) @ view.T).T          # in Koordinaten der Kamera
