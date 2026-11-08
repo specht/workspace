@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor dem hellen Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt"
+image_alt: "Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor weißem Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt"
 kind: projekt
 language: Python
 duration: 3 Doppelstunden
@@ -36,28 +36,32 @@ wird wie die Glockenkurve von Carl Friedrich Gauß.
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Bild für die Karte: der Apfel aus dem Viewer weiter unten, nah und fast
-# von der Seite, der Stiel frei vor dem Grund, mit »Weichheit der Splats« ganz links: lauter Ellipsen
+# von der Seite, der Stiel frei vor dem Grund, mit »Weichheit« ganz links: lauter Ellipsen
 # mit scharfem Rand
 open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x1080
 hook: hide-footer
+hook: white-ground
 hook: scene Apfel 1000000
 hook: camera 0.38 0.2 0.12
 hook: softness 0
 crop-element: #szenen .splat-viewer-stage
 variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor dem hellen Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt.'>
+<img class='teaser' hidden src='teaser.webp' alt='Die obere Hälfte eines roten Apfels, nah und fast von der Seite, der Stiel frei vor weißem Grund. Der Apfel besteht aus Splats mit scharfem Rand: lauter sich überdeckende Ellipsen in Rot, um den Stiel in Gelb und Braun, Weiß, wo das Licht glänzt.'>
 
 <!-- /tutorial-scope -->
 
 Zieh mit der Maus oder drück die Pfeiltasten, um die Pflanze zu drehen; das
-Mausrad oder zwei Finger zoomen. Schieb dann »Größe der Splats« ganz nach links: Jetzt sind die
-Splats so klein, dass du siehst, woraus die Pflanze besteht. Schieb sie
-zurück und »Weichheit der Splats« nach links: Aus den weichen Flecken werden
+Mausrad oder zwei Finger zoomen. Schieb dann »Größe« ganz nach links: Jetzt
+sind die Splats so klein, dass du siehst, woraus die Pflanze besteht. Schieb
+sie zurück und »Weichheit« nach links: Aus den weichen Flecken werden
 Ellipsen mit scharfem Rand, und du siehst, wie groß jeder Splat ist und wie
-sie sich überdecken.
+sie sich überdecken. Mit »Füllung« auf 0 % bleibt von jedem Splat nur sein
+Umriss. Jede Änderung läuft als Welle von dir aus durch die Szene: Was die
+Welle erreicht hat, zeigt schon den neuen Wert. Ohne den Schalter »Welle«
+ändert sich alles auf einmal.
 
 Wie das funktioniert, baust du selbst, in zwei Schritten. Zuerst in 2D: Ein
 Gemälde aus 500 Splats, die ihren Platz, ihre Form und ihre Farbe selbst
@@ -129,6 +133,8 @@ Bei \\(x = 0\\) ist \\(g = 1\\), und je weiter \\(x\\) von 0 weg ist, desto
 näher kommt \\(g\\) der 0. Die Zahl \\(\sigma\\) (Sigma) sagt, wie breit die
 Glocke ist: Bei \\(x = \sigma\\) ist \\(g = e^{-1/2} \approx 0{,}61\\), und
 ab etwa \\(3\sigma\\) ist sie kaum noch von 0 zu unterscheiden.
+
+_person(gauss)
 
 <img class='drawing' style='width: 30em' src='glocke.webp' alt='Die Glockenkurve g(x) über der x-Achse von −3σ bis 3σ: in der Mitte bei x = 0 am höchsten, bei σ und −σ auf 0,61 gefallen, gestrichelt markiert, und bei ±3σ fast bei 0.'>
 
@@ -654,6 +660,11 @@ Schritte von etwa gleicher Größe, egal wie groß seine Steigung gerade ist.
 Fast alle Programme, die heute etwas lernen, nehmen Adam oder ein Verfahren
 wie Adam.
 
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Adam: A Method for Stochastic Optimization</strong>, Diederik P. Kingma und Jimmy Ba, 2014. Das Verfahren, mit dem deine Splats lernen: für jeden Wert ein eigener Schwung und eine eigene Schrittgröße. Auch das Training echter Szenen und fast jedes neuronalen Netzes nimmt es: <a href='https://arxiv.org/abs/1412.6980'>bei arXiv</a>.</p>
+</div>
+
 Ergänze `train.py`: unter `render` die Klasse `Adam`, und die Schleife lernt
 jetzt alles:
 
@@ -820,7 +831,7 @@ image-file: splatting/learned-sharp.png 1
 Mit scharfem Rand siehst du, wie das Training die 500 Splats verteilt hat:
 große, runde für den gleichmäßigen Grund, lange, schmale entlang der Kanten
 des Kopftuchs, kleine dort, wo sich viel ändert. Die Lücken dazwischen füllt
-sonst der weiche Rand. Im Viewer ganz oben macht »Weichheit der Splats«
+sonst der weiche Rand. Im Viewer ganz oben macht »Weichheit«
 dasselbe mit einer Szene im Raum.
 
 Das ist schon fast alles, was Gaussian Splatting ausmacht: ein Bild aus
@@ -998,6 +1009,11 @@ Abschnitt, eine Matrix aus zwei Zeilen und drei Spalten. Heraus kommt
 Zahlen \\(a\\), \\(b\\) und \\(c\\) das Gewicht eines Pixels wieder eine
 Glocke ist. Du rechnest das nicht selbst; es steht gleich fertig im
 Programm.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>EWA Volume Splatting</strong>, Matthias Zwicker, Hanspeter Pfister, Jeroen van Baar und Markus Gross, IEEE Visualization 2001. Wie ein Ellipsoid im Raum auf dem Bildschirm zu einer Ellipse wird, die wieder eine Glocke ist, und wie man viele davon ohne Treppen und Flimmern mischt: als <a href='https://www.cs.umd.edu/~zwicker/publications/EWAVolumeSplatting-VIS01.pdf'>PDF</a>.</p>
+</div>
 
 ### Vorne zuerst
 
@@ -1211,7 +1227,7 @@ würde dunkel und flau.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl das Klassenzimmer, flieg mit »Zur
-Rückwand« vor die bemalte Tafel und schieb »Größe der Splats« langsam nach
+Rückwand« vor die bemalte Tafel und schieb »Größe« langsam nach
 links. Achte darauf, wo die Splats klein und dicht liegen und wo wenige
 große Splats eine Fläche malen.
 </div>
@@ -1233,7 +1249,7 @@ kompakteren Format in 80 Megabyte. So eine große Szene braucht eine Weile
 zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schalt
 »Automatisch flüssig« ein: Dann zeichnet der Viewer nur so viele der
 Splats, die am meisten zeigen, wie dein Rechner flüssig schafft. Von Hand
-geht das mit »Anzahl der Splats«.
+geht das mit »Anzahl«.
 
 Wähl im Viewer »Artillery Passage (5 Mio. Splats, 80 MB)«: Die Kamera steht
 mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
@@ -1257,7 +1273,7 @@ Gasse: Alle Fotos wurden in der Gasse gemacht, und was keine Kamera gesehen
 hat, hat das Training nie verbessert.
 
 Die Datei ist so sortiert, dass die Splats, die am meisten zeigen, vorne
-stehen. »Anzahl der Splats« zeichnet nur die ersten davon:
+stehen. »Anzahl« zeichnet nur die ersten davon:
 
 <div class='gallery columns-2'>
 <figure>
@@ -1311,7 +1327,7 @@ groben Mittelwert dessen, was an seiner Stelle liegt. Erst die vielen
 kleinen Splats danach bringen die Kanten, die Fenster und die Schrift.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schieb »Anzahl der Splats« ganz nach links
+<strong>Ausprobieren:</strong> Schieb »Anzahl« ganz nach links
 und dann langsam nach rechts, erst in der Gasse, dann im Klassenzimmer.
 Ab wie vielen Splats erkennst du, was du siehst?
 </div>
@@ -1387,7 +1403,7 @@ bleibt die Szene unscharf.
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Flieg im Klassenzimmer mit »Vorne« vor die
 Tafel, geh mit dem Mausrad nah an die Kreideschrift heran und schieb
-»Weichheit der Splats« nach links. Achte darauf, welche Form die Splats an
+»Weichheit« nach links. Achte darauf, welche Form die Splats an
 den Rändern der Striche haben.
 </div>
 
@@ -1395,10 +1411,9 @@ den Rändern der Striche haben.
 <strong>Ausprobieren:</strong> Flieg im Klassenzimmer zu »Bildschirm« und
 schalt »Kamera pendelt« ein. Im schwarzen Bildschirm spiegelt sich das
 Zimmer. Achte darauf, ob sich das Spiegelbild mit dem Rahmen des
-Bildschirms bewegt oder anders als er. Schieb dann »Weichheit der Splats«
-nach links, oder schalt »Umrisse« ein: Dann läuft eine Welle von dir aus
-durch die Szene und zeigt jeden Splat, den sie erreicht, als Umriss. Dasselbe in der Gasse bei »Grapeshots«: Auf der grünen Tür der
-Bar liegt ein heller Glanzfleck von einer Lampe.
+Bildschirms bewegt oder anders als er. Schieb dann »Weichheit« oder
+»Füllung« nach links. Dasselbe in der Gasse bei »Grapeshots«: Auf der
+grünen Tür der Bar liegt ein heller Glanzfleck von einer Lampe.
 </div>
 
 Jeder Splat hat hier eine einzige Farbe, aus welcher Richtung man ihn auch

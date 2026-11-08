@@ -2,16 +2,19 @@
 // (src/tutorial-screenshots/README.md, »Tutorial-specific hooks«).
 
 export default {
-    // the viewer draws up to 1.5 million splats: on the graphics card, not
-    // in software (README, »WebGL renders on the host's NVIDIA graphics card«)
+    // the viewer draws up to 5 million splats: its preview tabs on the
+    // graphics card, not in software, where the street does not finish within
+    // the capture's time (README, »WebGL renders on the host's NVIDIA
+    // graphics card«); VS Code stays in software either way
     gpu: true,
 
     actions: {
         // hook: hide-footer: the footer, fixed to the bottom in development,
-        // and the bar of the page's chapters would lie over the viewer;
+        // and the bar of the page's chapters would lie over the viewer, the
+        // fullscreen button and a spot's caption over the picture;
         // the stage loses its round corners, which the card has itself.
         async 'hide-footer'({ page }) {
-            await page.addStyleTag({ content: 'footer, nav.autotoc { display: none !important; } .splat-viewer-stage { border-radius: 0 !important; }' });
+            await page.addStyleTag({ content: 'footer, nav.autotoc, .splat-viewer-full, .splat-viewer-note { display: none !important; } .splat-viewer-stage { border-radius: 0 !important; }' });
             await page.waitForTimeout(200);
         },
 
@@ -36,8 +39,7 @@ export default {
                 }
                 const n = viewer.splats.count;
                 const k = Math.min(count, n);
-                viewer.counter.value = String(k >= n ? 1 : Math.log(k / 100) / Math.log(n / 100));
-                viewer.counter.dispatchEvent(new Event('input'));
+                viewer.setLook({ count: k >= n ? 1 : Math.log(k / 100) / Math.log(n / 100) });
             }, [match[1], Number(match[2])]);
             await page.waitForTimeout(4000);
         },
@@ -61,17 +63,24 @@ export default {
             await page.waitForTimeout(3000);
         },
 
-        // hook: softness VALUE: the slider »Weichheit der Splats« of
-        // #szenen, from 0 (ellipses with a sharp border) to 1 (Gaussians).
+        // hook: white-ground: the viewer #szenen on white instead of its
+        // beige, in the light theme only (the card picture, like the other
+        // cards with an object on white; the dark variant keeps its ground)
+        async 'white-ground'({ page }) {
+            await page.addStyleTag({ content: 'html:not([data-bs-theme="dark"]) #szenen { --splat-ground: #ffffff; }' });
+            await page.waitForTimeout(300);
+        },
+
+        // hook: softness VALUE: the slider »Weichheit« of #szenen, from 0
+        // (ellipses with a sharp border) to 1 (Gaussians), without the wave
+        // a change by hand runs.
         async softness({ page, args }) {
             const value = Number(args.trim());
             if (!(value >= 0 && value <= 1)) throw new Error(`hook: softness VALUE (0 to 1), got: ${args}`);
             await page.evaluate((v) => {
-                const slider = document.getElementById('szenen').splatViewer.sharpness;
-                slider.value = String(v);
-                slider.dispatchEvent(new Event('input'));
+                document.getElementById('szenen').splatViewer.setLook({ softness: v });
             }, value);
-            await page.waitForTimeout(2000);
+            await page.waitForTimeout(1500);
         },
     },
 
