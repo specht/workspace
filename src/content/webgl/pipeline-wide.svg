@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1054 136" width="1054" height="136" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <!-- Die Pipeline in einer Reihe: Ecken, Vertex-Shader, Rasterung, Fragment-Shader, Z-Buffer, Bild; die beiden Shader blau.
+       Gemacht von bilder/diagramme.py; als Bild, hell und dunkel:
+       src/scripts/render-svg.rb src/content/webgl/pipeline-wide.svg 2108 -->
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b5fb4"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker><marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+  <rect width="1054" height="136" fill="#ffffff"/>
+  <rect x="8" y="34" width="148" height="92" rx="8" fill="#ffffff" stroke="#1f2937" stroke-width="1.4"/>
+  <text x="82.0" y="66.0" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="bold">Ecken</text>
+  <text x="82.0" y="90.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">Zahlen aus</text>
+  <text x="82.0" y="107.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">JavaScript</text>
+  <rect x="186" y="34" width="148" height="92" rx="8" fill="#eef3fb" stroke="#2b5fb4" stroke-width="2.2"/>
+  <text x="260.0" y="66.0" font-size="15" fill="#2b5fb4" text-anchor="middle" font-weight="bold">Vertex-Shader</text>
+  <text x="260.0" y="90.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">rechnet jede</text>
+  <text x="260.0" y="107.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">Ecke um</text>
+  <text x="260.0" y="22.0" font-size="14" fill="#2b5fb4" text-anchor="middle" font-weight="normal">schreibst du</text>
+  <rect x="364" y="34" width="148" height="92" rx="8" fill="#ffffff" stroke="#1f2937" stroke-width="1.4"/>
+  <text x="438.0" y="66.0" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="bold">Rasterung</text>
+  <text x="438.0" y="90.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">findet die Pixel</text>
+  <text x="438.0" y="107.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">jedes Dreiecks</text>
+  <rect x="542" y="34" width="148" height="92" rx="8" fill="#eef3fb" stroke="#2b5fb4" stroke-width="2.2"/>
+  <text x="616.0" y="66.0" font-size="15" fill="#2b5fb4" text-anchor="middle" font-weight="bold">Fragment-Shader</text>
+  <text x="616.0" y="90.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">färbt jedes</text>
+  <text x="616.0" y="107.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">Pixel</text>
+  <text x="616.0" y="22.0" font-size="14" fill="#2b5fb4" text-anchor="middle" font-weight="normal">schreibst du</text>
+  <rect x="720" y="34" width="148" height="92" rx="8" fill="#ffffff" stroke="#1f2937" stroke-width="1.4"/>
+  <text x="794.0" y="66.0" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="bold">Z-Buffer</text>
+  <text x="794.0" y="90.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">nur das Nächste</text>
+  <text x="794.0" y="107.0" font-size="14" fill="#6b7280" text-anchor="middle" font-weight="normal">bleibt</text>
+  <rect x="898" y="34" width="148" height="92" rx="8" fill="#ffffff" stroke="#1f2937" stroke-width="1.4"/>
+  <text x="972.0" y="86.0" font-size="16" fill="#1f2937" text-anchor="middle" font-weight="bold">Bild</text>
+  <line x1="158.0" y1="80.0" x2="183.0" y2="80.0" stroke="#1f2937" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="336.0" y1="80.0" x2="361.0" y2="80.0" stroke="#1f2937" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="514.0" y1="80.0" x2="539.0" y2="80.0" stroke="#1f2937" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="692.0" y1="80.0" x2="717.0" y2="80.0" stroke="#1f2937" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="870.0" y1="80.0" x2="895.0" y2="80.0" stroke="#1f2937" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>

@@ -117,8 +117,8 @@ async function start() {
     gl.enable(gl.DEPTH_TEST);
 
     function frame() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

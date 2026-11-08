@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein türkiser Wecker mit zwei Glocken aus Chrom, in denen sich ein Zimmer spiegelt, einem cremefarbenen Zifferblatt mit römischen Ziffern hinter Glas, auf dunklem Grund"
+image_alt: "Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf hellem Grund"
 kind: projekt
 language: JavaScript / GLSL
 duration: 5 Doppelstunden
@@ -43,7 +43,7 @@ cd ~/webgl
 for f in ukulele.obj ukulele-color.jpg ukulele-normal.jpg ukulele-roughness.jpg \
          clock.obj glass.obj clock-color.jpg clock-normal.jpg clock-roughness.jpg \
          clock-ao.jpg clock-metal.jpg hotel-room.jpg; do
-    wget https://github.com/specht/workspace-files/raw/main/webgl/$f
+    wget https://raw.githubusercontent.com/specht/workspace-files/main/webgl/$f
 done
 touch math.js model.js
 ```
@@ -97,7 +97,7 @@ eine dunkle Fläche: Noch malt nichts.
 # Bild zeigt
 hide-left-sidebar
 terminal-open
-terminal-run: mkdir -p ~/webgl && cd ~/webgl && for f in ukulele.obj ukulele-color.jpg ukulele-normal.jpg ukulele-roughness.jpg clock.obj glass.obj clock-color.jpg clock-normal.jpg clock-roughness.jpg clock-ao.jpg clock-metal.jpg hotel-room.jpg; do wget -q https://github.com/specht/workspace-files/raw/main/webgl/$f; done && touch math.js model.js
+terminal-run: mkdir -p ~/webgl && cd ~/webgl && for f in ukulele.obj ukulele-color.jpg ukulele-normal.jpg ukulele-roughness.jpg clock.obj glass.obj clock-color.jpg clock-normal.jpg clock-roughness.jpg clock-ao.jpg clock-metal.jpg hotel-room.jpg; do wget -q https://raw.githubusercontent.com/specht/workspace-files/main/webgl/$f; done && touch math.js model.js
 terminal-wait-for-prompt
 hide-bottom-panel
 press: Control+K
@@ -122,7 +122,8 @@ go-live
 Ein Bild entsteht auf der Grafikkarte in einer festen Folge von Schritten,
 der **Pipeline**:
 
-<img class='drawing' style='width: 28.125em' src='pipeline.webp' alt='Die Pipeline als Kette von Kästen in zwei Reihen: oben von links nach rechts Ecken (Zahlen aus JavaScript), Vertex-Shader (rechnet jede Ecke um), Rasterung (findet die Pixel jedes Dreiecks), dann ein Pfeil nach unten und unten von rechts nach links Fragment-Shader (färbt jedes Pixel), Z-Buffer (nur das Nächste bleibt), Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
+<img class='drawing d-none d-lg-block' style='width: 65.875em' src='pipeline-wide.webp' alt='Die Pipeline als Kette von sechs Kästen in einer Reihe: Ecken (Zahlen aus JavaScript), Vertex-Shader (rechnet jede Ecke um), Rasterung (findet die Pixel jedes Dreiecks), Fragment-Shader (färbt jedes Pixel), Z-Buffer (nur das Nächste bleibt), Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
+<img class='drawing d-lg-none' style='width: 23.75em' src='pipeline.webp' alt='Die Pipeline als Kette von sechs Kästen in drei Reihen zu zwei: Ecken (Zahlen aus JavaScript), daneben Vertex-Shader (rechnet jede Ecke um), darunter Rasterung (findet die Pixel jedes Dreiecks), links daneben Fragment-Shader (färbt jedes Pixel), darunter Z-Buffer (nur das Nächste bleibt), daneben Bild. Die beiden Shader sind blau: Sie schreibst du selbst.'>
 
 Der **Vertex-Shader** läuft für jede Ecke und sagt, wo sie auf dem Bildschirm
 landet. Die **Rasterung** findet alle Pixel, die ein Dreieck bedeckt; die
@@ -222,8 +223,8 @@ async function start() {
         gl.vertexAttribPointer(location, size, gl.FLOAT, false, 5 * 4, offset * 4);
     }
 
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    canvas.width = canvas.clientWidth * devicePixelRatio;
+    canvas.height = canvas.clientHeight * devicePixelRatio;
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.12, 0.13, 0.16, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -250,7 +251,10 @@ Was darin passiert:
   der Zahl 0 jeder Ecke, `color` 3 Zahlen ab der Zahl 2, und eine Ecke ist
   5 · 4 Bytes lang (eine Zahl als `float` hat 4 Bytes).
 - Am Ende: die Fläche so groß wie das Fenster, ein dunkler Hintergrund, und
-  `gl.drawArrays` malt aus den Ecken 0 bis 2 ein Dreieck.
+  `gl.drawArrays` malt aus den Ecken 0 bis 2 ein Dreieck. `devicePixelRatio`
+  sagt, wie viele Pixel des Bildschirms auf einen Pixel der Seite kommen
+  (auf vielen Laptops und Handys 2). Ohne diese Zahl malt die Grafikkarte
+  weniger Pixel, als der Bildschirm hat, und das Bild wird unscharf.
 
 ### Farben dazwischen
 
@@ -496,8 +500,8 @@ In `main.js` ersetzt du in `start` alles nach `loadProgram`:
     }
 
     function frame(time) {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -961,8 +965,8 @@ Und `main.js`: `compile` und `loadProgram` oben bleiben, wie sie sind;
 ersetz alles darunter:
 
 ```js_copy
-let yaw = 0.9;
-let pitch = 0.7;
+let yaw = 1.25;
+let pitch = 0.85;
 let distance = 1;
 let center = [0, 0, 0];
 
@@ -992,7 +996,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 0.8 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -1009,8 +1013,8 @@ async function start() {
     gl.enable(gl.DEPTH_TEST);
 
     function frame() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1197,6 +1201,15 @@ selbst, bekommt jedes Dreieck eine einzige Helligkeit, und man sieht die
 Facetten: **Flat Shading**. So sahen 3D-Spiele bis in die 1990er Jahre aus.
 Die Normale eines Dreiecks kannst du schon ausrechnen, mit `faceNormal`.
 
+<div class='gallery columns-2'>
+<figure>
+<img src='normalen-flach.webp' alt='Ein Schnitt durch eine runde Fläche aus vier geraden Stücken, links oben die Lampe l. In der Mitte jedes Stücks steht seine Normale senkrecht darauf. Unter jedem Stück ein Streifen in einer einzigen Helligkeit: am hellsten die Stücke, die zur Lampe zeigen, mit Kanten dazwischen.'>
+<figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
+<figure>
+<img src='normalen-glatt.webp' alt='Dieselben vier geraden Stücke, gestrichelt die runde Fläche, die sie darstellen. An jeder Ecke steht eine Normale senkrecht auf der runden Fläche, dazwischen kleinere graue, gemischte Normalen, die sich allmählich drehen. Der Streifen darunter wird ohne Kanten von hell zu dunkel.'>
+<figcaption>Smooth Shading: eine Normale je Ecke, dazwischen gemischt</figcaption></figure>
+</div>
+
 <div class='hint own' data-check='flach'>
 <strong>Jetzt bist du dran:</strong> Schreib in <code>math.js</code> die
 Funktion <code>flatNormals(vertices)</code>. Sie bekommt die Ecken mit acht
@@ -1305,12 +1318,12 @@ preview-reload
 tab: preview
 viewport: 800x450
 sleep: 4
-hook: view 0 0 -0.13 0.3 0.9 0.7
+hook: view 0 0 -0.1 0.28 -0.6 0.3
 click: selector:canvas
 press: f
 sleep: 1
 -->
-<img src='flach.webp' alt='Die Ukulele mit Flat Shading: Der runde Rand des Korpus besteht aus lauter schmalen, flachen Streifen, jeder in einem einzigen Grau, auch an den Wirbeln sieht man Kanten.'>
+<img src='flach.webp' alt='Die Ukulele mit Flat Shading, flach von der Seite auf den Korpus gesehen: Sein runder Rand besteht aus lauter schmalen, senkrechten Streifen, jeder in einem einzigen Grau, mit sichtbaren Kanten dazwischen.'>
 <figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -1323,10 +1336,10 @@ preview-reload
 tab: preview
 viewport: 800x450
 sleep: 4
-hook: view 0 0 -0.13 0.3 0.9 0.7
+hook: view 0 0 -0.1 0.28 -0.6 0.3
 sleep: 1
 -->
-<img src='glatt.webp' alt='Dieselbe Ukulele mit Smooth Shading: Der Rand des Korpus ist glatt und rund, die Helligkeit geht ohne Kanten ineinander über; nur am Umriss ahnt man, dass er aus geraden Stücken besteht.'>
+<img src='glatt.webp' alt='Dieselbe Ansicht mit Smooth Shading: Der Rand des Korpus ist glatt und rund, die Helligkeit geht ohne Kanten ineinander über; nur am Umriss ahnt man, dass er aus geraden Stücken besteht.'>
 <figcaption>Smooth Shading: eine Normale je Ecke, gemischt</figcaption></figure>
 </div>
 
@@ -1350,7 +1363,11 @@ der zum Licht \\(l\\) und der zur Kamera \\(v\\),
 
 $$h = \frac{l + v}{|l + v|},$$
 
-liegt nahe an der Normale, wenn das Licht zum Auge gespiegelt wird. Dann ist
+liegt nahe an der Normale, wenn das Licht zum Auge gespiegelt wird.
+
+<img class='drawing' style='width: 26.25em' src='glanz-vektoren.webp' alt='Ein Punkt auf einer Fläche, darauf senkrecht die Normale n. Nach links oben zeigt l zur Lampe, nach rechts oben v zur Kamera, und h liegt genau zwischen l und v, nur wenig neben n.'>
+
+Dann ist
 \\(n \cdot h\\) fast 1, und eine hohe Potenz davon macht daraus einen kleinen,
 hellen Fleck, der zur Seite schnell auf 0 fällt:
 
@@ -1558,7 +1575,7 @@ tab: preview
 viewport: 800x450
 sleep: 5
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Die Ukulele mit ihrer Textur: Korpus und Hals aus braunem Holz mit Maserung und abgewetzten hellen Stellen, ein dunkles Griffbrett mit hellen Bünden, das Schallloch mit einer Rosette, silberne Wirbel am Kopf.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Die Ukulele mit ihrer Textur: Korpus und Hals aus braunem Holz mit Maserung und abgewetzten hellen Stellen, ein dunkles Griffbrett mit hellen Bünden, das Schallloch mit einem Zierring, silberne Wirbel am Kopf.'>
 
 <!-- /tutorial-scope -->
 
@@ -2142,9 +2159,10 @@ preview-reload
 tab: preview
 viewport: 1029x579
 sleep: 7
-hook: view 0 0.087 0.007 0.24 0.5 0.25
+hook: clear 0.93 0.92 0.89
+hook: view 0 0.086 0.007 0.28 0.5 0.22
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom, in denen sich ein Zimmer spiegelt, einem cremefarbenen Zifferblatt mit römischen Ziffern hinter Glas, auf dunklem Grund.'>
+<img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf hellem Grund.'>
 
 <!-- /tutorial-scope -->
 
@@ -2178,7 +2196,7 @@ dort, was wirklich daneben steht, nicht ein Rundumbild, aber das Bild
 braucht viel länger. Und was dein Fragment-Shader tut, treibt
 [Shader in GLSL](/glsl) weiter, bis zu Welten ohne ein einziges Dreieck.
 
-Ohne Dreiecke kommt auch Gaussian Splatting aus: Eine
+Ohne Dreiecke kommt auch [Gaussian Splatting](/gaussian-splatting) aus: Eine
 Szene aus Fotos besteht dort aus Millionen weicher, durchscheinender Splats,
 und gerade weil sie durchscheinen, hilft kein Z-Buffer mehr; sie müssen in
 jedem Bild nach der Tiefe sortiert werden.

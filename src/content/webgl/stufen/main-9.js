@@ -23,8 +23,8 @@ async function loadProgram(vertexFile, fragmentFile) {
     return program;
 }
 
-let yaw = 0.9;
-let pitch = 0.7;
+let yaw = 1.25;
+let pitch = 0.85;
 let distance = 1;
 let center = [0, 0, 0];
 let wireframe = false;
@@ -83,7 +83,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 0.8 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -108,8 +108,8 @@ async function start() {
     gl.enable(gl.DEPTH_TEST);
 
     function frame() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0.12, 0.13, 0.16, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

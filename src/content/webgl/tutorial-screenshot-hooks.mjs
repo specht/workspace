@@ -28,5 +28,18 @@ export default {
             }, v);
             await page.waitForTimeout(500);
         },
+
+        // hook: clear R G B: the background the program clears to, for the
+        // card only (a light ground like the other cards): main.js calls
+        // gl.clearColor in every frame, so the method itself is replaced.
+        async clear({ page, args }) {
+            const c = args.trim().split(/\s+/).map(Number);
+            if (c.length !== 3 || c.some((x) => !Number.isFinite(x))) throw new Error(`hook: clear R G B, got: ${args}`);
+            await page.evaluate(([r, g, b]) => {
+                const original = WebGL2RenderingContext.prototype.clearColor;
+                WebGL2RenderingContext.prototype.clearColor = function () { original.call(this, r, g, b, 1); };
+            }, c);
+            await page.waitForTimeout(500);
+        },
     },
 };
