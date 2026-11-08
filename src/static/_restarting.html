@@ -43,7 +43,7 @@
         line-height: 1.5;
     }
     main {
-        max-width: 38rem;
+        max-width: 48rem;
         min-height: 100vh;
         margin: 0 auto;
         display: flex;
@@ -99,8 +99,9 @@
     .log, .status {
         margin: 0;
         font: inherit;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
+        /* wide enough for every line; wrapping only where a phone is too narrow */
+        white-space: pre;
+        overflow: hidden;
     }
     .log {
         height: 10.15em;
@@ -129,10 +130,13 @@
     }
     @keyframes blink { 50% { opacity: 0; } }
     @media (max-width: 34rem) {
+        .log, .status { white-space: pre-wrap; overflow-wrap: anywhere; }
+        /* the name of a status is left out there, the code stays */
+        .log .name { display: none; }
         .server { display: none; }
         /* narrower lines wrap: room for one more */
         .log { height: 11.6em; }
-        .term { font-size: 0.8rem; }
+        .term { font-size: 0.74rem; }
     }
     @media (prefers-reduced-motion: reduce) {
         .cursor { animation: none; }
@@ -258,7 +262,7 @@
                 });
                 return;
             }
-            line([['dim', 'GET '], ['path', '/api/ping'], ['bad', '  ' + r.status + ' ' + (STATUS[r.status] || '')], ['dim', '  (Versuch ' + attempt + ')']], 0);
+            line([['dim', 'GET '], ['path', '/api/ping'], ['bad', '  ' + r.status], ['bad name', ' ' + (STATUS[r.status] || '')], ['dim', '  (Versuch ' + attempt + ')']], 0);
             setTimeout(ask, 2000);
         }, function () {
             asking = false;
