@@ -93,10 +93,10 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 ### Johann Heinrich Lambert
 
 <div class='person'>
-<img src='lambert.webp' alt='Johann Heinrich Lambert im Profil nach links, Lithografie: ein Mann mit gelockter Perücke und Halsbinde in einem runden Bildfeld.'>
+<img src='lambert.webp' alt='Johann Heinrich Lambert von vorn, Lithografie: ein Mann mit rundem Gesicht und gepuderter Perücke, der ruhig aus dem Bild sieht, am Hals eine gestreifte Schleife.'>
 <p><strong>Johann Heinrich Lambert</strong> (1728–1777), Mathematiker, Physiker und Astronom aus Mülhausen im Elsass. Wie hell eine matte Kugel an einer Stelle ist, rechnet dein Raytracer mit <code>dot(normal, sun_dir)</code>: dem Kosinus des Winkels zwischen der Normalen und der Richtung zur Sonne. Dieses Kosinusgesetz schrieb Lambert 1760 in seinem Buch <em>Photometria</em> auf; matte Flächen heißen in der Computergrafik bis heute »lambertsch«.</p>
 <p>Sein Vater war Schneider, und mit zwölf musste Lambert die Schule verlassen, um in der Werkstatt zu helfen; alles Weitere brachte er sich in seiner freien Zeit selbst bei. Später arbeitete er an der Akademie in Berlin, und in einer Arbeit, die 1768 erschien, bewies er als Erster, dass π irrational ist: Seine Nachkommastellen hören nie auf und wiederholen sich nie.</p>
-<p class='person-credit'>Lithografie: Godefroy Engelmann, 1829, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Johann_Heinrich_Lambert_1829_Engelmann.png'>Wikimedia Commons</a>)</p>
+<p class='person-credit'>Lithografie: Émile Lemaître, um 1850, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Christophe_Guillaume_Koch,_Jean-Henri_Lambert,_Ph._And._Grandidier,_buste,_en_m%C3%A9d._ov._avec_encadrement_-_btv1b10207613n.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
