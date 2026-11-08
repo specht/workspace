@@ -725,10 +725,12 @@ input.error {
 }
 
 /* On a phone the menu would take four rows: the quiet buttons show their
-   icon only, as the class page's tabs do; the strong button and the page
-   one is on keep their name. The name stays for screen readers. */
+   icon only, as the class page's tabs do; so does the green »Workspace
+   öffnen« (maintainer, November 2026); the page one is on keeps its name.
+   The name stays for screen readers and as the button's title. */
 @media (max-width: 575.98px) {
-    .menu .btn-menu:not(.active) .btn-menu-label {
+    .menu .btn-menu:not(.active) .btn-menu-label,
+    .menu .bu-launch-workspace .btn-menu-label {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -736,7 +738,8 @@ input.error {
         clip: rect(0 0 0 0);
         white-space: nowrap;
     }
-    .menu .btn-menu:not(.active):has(.btn-menu-label) .bi {
+    .menu .btn-menu:not(.active):has(.btn-menu-label) .bi,
+    .menu .bu-launch-workspace .bi {
         margin-right: 0;
     }
 }
@@ -3631,6 +3634,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        a box stay as they are; pictures and previews keep their frame. */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
         :is(.task-card, .hint, .person, .book, .reference-include, .code-copy-box, pre):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-left-width: 0;
+        border-right-width: 0;
+        border-radius: 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* the hits of the Handbuch search likewise */
+    .reference-results > .reference-result {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-left-width: 0;
