@@ -1247,10 +1247,11 @@ veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 1,2 Gigabyte groß; für diese Seite stehen dieselben Splats in einem
 kompakteren Format in 80 Megabyte, 16 Bytes je Splat statt 248 (Handbuch,
 [Bits und Bytes](/reference/bits-und-bytes)). So eine große Szene braucht eine Weile
-zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schalt
-»Automatisch flüssig« ein: Dann zeichnet der Viewer nur so viele der
-Splats, die am meisten zeigen, wie dein Rechner flüssig schafft. Von Hand
-geht das mit »Anzahl«.
+zum Laden und einen Rechner mit eigener Grafikkarte. Darum ist
+»Automatisch flüssig« eingeschaltet: Solange sich die Kamera bewegt,
+zeichnet der Viewer nur so viele der Splats, die am meisten zeigen, wie
+dein Rechner flüssig schafft; steht sie still, kommen alle dazu.
+Ausgeschaltet bestimmst du die Zahl selbst mit »Anzahl«.
 
 Wähl im Viewer »Artillery Passage (5 Mio. Splats, 80 MB)«: Die Kamera steht
 mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem

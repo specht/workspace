@@ -39,6 +39,11 @@ export default {
                 }
                 const n = viewer.splats.count;
                 const k = Math.min(count, n);
+                // the number of the recipe, not the automatic one
+                if (viewer.autoCount.checked) {
+                    viewer.autoCount.checked = false;
+                    viewer.autoCount.dispatchEvent(new Event('change'));
+                }
                 viewer.setLook({ count: k >= n ? 1 : Math.log(k / 100) / Math.log(n / 100) });
             }, [match[1], Number(match[2])]);
             await page.waitForTimeout(4000);

@@ -446,6 +446,10 @@ void main() {
             this.autoCount.type = 'checkbox';
             this.autoCount.className = 'form-check-input';
             this.autoCount.setAttribute('role', 'switch');
+            // on from the start: on a phone or a weak computer the camera
+            // would otherwise stutter, and a flight to a spot would arrive
+            // in a jump
+            this.autoCount.checked = true;
             const autoText = document.createElement('span');
             autoText.className = 'form-check-label';
             autoText.textContent = 'Automatisch flüssig';
@@ -499,20 +503,56 @@ void main() {
             const stage = document.createElement('div');
             stage.className = 'splat-viewer-stage';
             this.stage = stage;
+            // Two sticks on a touch screen in a place to walk through, as in a
+            // game: the left one walks (forward, back, sideways, as far as it
+            // is pushed), the right one looks around. Shown by default.css
+            // only with a coarse pointer and in such a place (.is-look).
             const walk = document.createElement('div');
             walk.className = 'splat-viewer-walk';
-            for (const [dir, icon, label] of [[1, 'bi-arrow-up', 'Vorwärts'], [-1, 'bi-arrow-down', 'Rückwärts']]) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'btn btn-light';
-                button.setAttribute('aria-label', label);
-                button.innerHTML = `<i class='bi ${icon}'></i>`;
-                const stop = () => { this.held.delete(dir > 0 ? 'touch-forward' : 'touch-back'); };
-                button.addEventListener('pointerdown', (e) => { e.preventDefault(); this.held.add(dir > 0 ? 'touch-forward' : 'touch-back'); this.walkLoop(); });
-                button.addEventListener('pointerup', stop);
-                button.addEventListener('pointerleave', stop);
-                button.addEventListener('pointercancel', stop);
-                walk.append(button);
+            this.sticks = {};
+            for (const [name, label] of [['move', 'Gehen'], ['look', 'Umschauen']]) {
+                const base = document.createElement('div');
+                base.className = `splat-viewer-stick splat-viewer-stick-${name}`;
+                base.setAttribute('role', 'presentation');
+                base.title = label;
+                const knob = document.createElement('div');
+                knob.className = 'splat-viewer-knob';
+                base.append(knob);
+                const stick = this.sticks[name] = { x: 0, y: 0 };
+                let id = null;
+                const set = (e) => {
+                    const box = base.getBoundingClientRect();
+                    const r = box.width / 2;
+                    let dx = e.clientX - (box.left + r), dy = e.clientY - (box.top + r);
+                    const d = Math.hypot(dx, dy);
+                    if (d > r) { dx *= r / d; dy *= r / d; }
+                    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+                    // a small dead zone in the middle, then finer near it
+                    const m = Math.hypot(dx, dy) / r;
+                    const k = m < 0.12 ? 0 : ((m - 0.12) / 0.88) ** 1.5 / (m || 1);
+                    stick.x = dx / r * k;
+                    stick.y = dy / r * k;
+                    // the walk loop ends when nothing moves: pushing the knob
+                    // out of the middle starts it again
+                    if (stick.x || stick.y) this.walkLoop();
+                };
+                base.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    id = e.pointerId;
+                    base.setPointerCapture(id);
+                    set(e);
+                });
+                base.addEventListener('pointermove', (e) => { if (e.pointerId === id) set(e); });
+                const release = (e) => {
+                    if (e.pointerId !== id) return;
+                    id = null;
+                    stick.x = stick.y = 0;
+                    knob.style.transform = '';
+                };
+                base.addEventListener('pointerup', release);
+                base.addEventListener('pointercancel', release);
+                walk.append(base);
             }
             // the caption of a spot (»note«), shown on arrival until one moves
             this.note = document.createElement('div');
@@ -548,6 +588,10 @@ void main() {
             const help = document.createElement('div');
             help.className = 'splat-viewer-help';
             this.help = help;
+            // a mouse plugged in or taken away: the legend follows
+            for (const query of ['(pointer: coarse)', '(any-pointer: fine)']) {
+                window.matchMedia(query).addEventListener('change', () => { if (this.splats) this.showHelp(); });
+            }
             // the spots of a scene (»spots« in its entry): buttons that fly
             // the camera there, filled in by show()
             this.spotBar = document.createElement('div');
@@ -698,6 +742,7 @@ void main() {
             this.distance = this.radius * 3;
             this.yaw = 0.6; this.pitch = 0.3; this.roll = 0;
             this.look = !!(this.view && this.view.look);
+            this.root.classList.toggle('is-look', this.look);
             this.gameSwitch.hidden = !this.look;
             this.showHelp();
             if (this.view) {
@@ -713,6 +758,12 @@ void main() {
             this.waves = [];
             this.lookBase = null;
             this.change(false);
+            // a new scene: the automatic number measured afresh
+            if (this.autoCount && this.autoCount.checked) {
+                this.counter.step = 'any';
+                this.movingCount = undefined;
+                this.calibrate();
+            }
             this.upload();
             this.fit();
             this.message('');
@@ -726,15 +777,22 @@ void main() {
             if (!spots.length) return;
             const title = document.createElement('span');
             title.textContent = 'Standorte:';
-            this.spotBar.append(title);
+            // the buttons in a row of their own, which a narrow screen
+            // swipes sideways (default.css)
+            const row = document.createElement('div');
+            row.className = 'splat-viewer-spot-row';
             for (const spot of spots) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn btn-sm btn-outline-secondary';
                 button.textContent = spot.name;
-                button.addEventListener('click', () => this.fly(spot));
-                this.spotBar.append(button);
+                button.addEventListener('click', () => {
+                    this.fly(spot);
+                    button.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+                });
+                row.append(button);
             }
+            this.spotBar.append(title, row);
         }
 
         // moves the camera to a spot in a short flight instead of a jump,
@@ -903,7 +961,20 @@ void main() {
         // than around an object
         showHelp() {
             const k = (...keys) => keys.map((key) => `<kbd>${key}</kbd>`).join('');
-            const items = this.look ? [
+            // on a touch screen without a mouse: gestures and the walk
+            // buttons instead of keys
+            const touch = window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(any-pointer: fine)').matches;
+            const items = touch ? (this.look ? [
+                ['Linker Kreis', 'gehen'],
+                ['Rechter Kreis oder ziehen', 'umschauen'],
+                ['Zwei Finger auseinander, zusammen', 'vorwärts, rückwärts'],
+                ['Doppelt tippen', 'zurück zum Anfang'],
+            ] : [
+                ['Ziehen', 'drehen'],
+                ['Zwei Finger auseinander, zusammen', 'näher heran'],
+                ['Mit zwei Fingern ziehen', 'verschieben'],
+                ['Doppelt tippen', 'zurück zum Anfang'],
+            ]) : this.look ? [
                 [k('W', 'A', 'S', 'D'), 'gehen'],
                 [k('Q') + k('E'), 'nach unten, nach oben'],
                 [k('←', '→', '↑', '↓') + ' oder ziehen', 'umschauen'],
@@ -1028,8 +1099,19 @@ void main() {
             this.showValues();
             const n = this.splats.count, k = this.drawn();
             let count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
-            if (k < n && this.autoCount && this.autoCount.checked) count += ' (»Automatisch flüssig« hat weniger gewählt, damit es flüssig bleibt; steht die Kamera still, kommen alle dazu)';
-            this.info.textContent = count + (this.credit ? ', ' + this.credit : '');
+            if (k < n && this.autoCount && this.autoCount.checked) count += ', weniger, solange sich die Kamera bewegt';
+            // two lines that keep their height: the count changes all the
+            // time and stays on one line (in fullscreen a line more or less
+            // would make the picture jump), the credit only with the scene
+            if (!this.countLine) {
+                this.countLine = document.createElement('div');
+                this.countLine.className = 'splat-viewer-count';
+                this.creditLine = document.createElement('div');
+                this.info.replaceChildren(this.countLine, this.creditLine);
+            }
+            this.countLine.textContent = count;
+            this.countLine.title = count;
+            this.creditLine.textContent = this.credit || '';
         }
 
         tilt() {
@@ -1272,12 +1354,17 @@ void main() {
                 const dt = Math.min(0.05, (now - last) / 1000);
                 last = now;
                 const h = this.held;
-                const ahead = (h.has('w') || h.has('touch-forward') ? 1 : 0) - (h.has('s') || h.has('touch-back') ? 1 : 0);
-                const side = (h.has('d') ? 1 : 0) - (h.has('a') ? 1 : 0);
+                const move = this.sticks ? this.sticks.move : { x: 0, y: 0 };
+                const look = this.sticks ? this.sticks.look : { x: 0, y: 0 };
+                const ahead = (h.has('w') ? 1 : 0) - (h.has('s') ? 1 : 0) - move.y;
+                const side = (h.has('d') ? 1 : 0) - (h.has('a') ? 1 : 0) + move.x;
                 const up = (h.has('e') ? 1 : 0) - (h.has('q') ? 1 : 0);
-                // the arrow keys turn and tilt, as dragging does
-                const turnSide = (h.has('arrowleft') ? 1 : 0) - (h.has('arrowright') ? 1 : 0);
-                const turnUp = (h.has('arrowup') ? 1 : 0) - (h.has('arrowdown') ? 1 : 0);
+                // the arrow keys turn and tilt, as dragging does, and the
+                // right stick (its y axis turned round with »Y-Achse
+                // umkehren«, like dragging)
+                const flip = this.invertY && this.invertY.checked ? -1 : 1;
+                const turnSide = (h.has('arrowleft') ? 1 : 0) - (h.has('arrowright') ? 1 : 0) - look.x;
+                const turnUp = (h.has('arrowup') ? 1 : 0) - (h.has('arrowdown') ? 1 : 0) - flip * look.y;
                 if (!this.splats || (!ahead && !side && !up && !turnSide && !turnUp)) { this.walking = false; return; }
                 if (turnSide || turnUp) this.turn(turnSide * 1.4 * dt, -turnUp * 1.0 * dt);
                 const speed = this.walkSpeed();
@@ -1318,7 +1405,7 @@ void main() {
             // to the scene, so that the arrow keys walk again
             root.addEventListener('pointerup', (e) => {
                 const control = e.target.closest('input[type=range], button');
-                if (control && !control.closest('.splat-viewer-walk')) c.focus({ preventScroll: true });
+                if (control) c.focus({ preventScroll: true });
             });
             const pointers = new Map();
             let last = null;

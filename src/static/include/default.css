@@ -14540,8 +14540,7 @@ html[data-bs-theme="dark"] .splat-viewer {
     justify-content: center;
     gap: 0.4em;
 }
-.splat-viewer-bar .btn .bi,
-.splat-viewer-walk .btn .bi {
+.splat-viewer-bar .btn .bi {
     margin: 0;
     font-size: 0.9em;
     line-height: 1;
@@ -14636,6 +14635,13 @@ html[data-bs-theme="dark"] .splat-viewer {
     height: 0.5em;
     margin-top: 0.4em;
 }
+/* the number of splats on one line, cut rather than wrapped */
+.splat-viewer-count {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+}
 .splat-viewer-info,
 .splat-viewer-help {
     margin-top: 0.3em;
@@ -14692,10 +14698,35 @@ html[data-bs-theme="dark"] .splat-viewer {
     opacity: 0.85;
 }
 .splat-viewer-full .bi { margin: 0; }
-/* on a touch screen the walk buttons take the bottom right corner, the
-   fullscreen button goes to the top right */
+/* on a touch screen the sticks take the bottom corners, the fullscreen
+   button goes to the top right, and a spot's caption to the top left beside
+   it, where nothing lies under it */
 @media (pointer: coarse) {
     .splat-viewer-full { top: 0.6em; bottom: auto; }
+    .splat-viewer-note {
+        top: 0.5em;
+        bottom: auto;
+        max-width: calc(100% - 4.4em);
+    }
+}
+/* the row of spot buttons wraps on a wide screen; on a narrow one it is a
+   single row to swipe sideways, so that the sliders stay close below the
+   picture */
+.splat-viewer-spot-row {
+    display: flex;
+    flex: 1 1 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 0.4em;
+}
+@container (max-width: 40em) {
+    .splat-viewer-spot-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.3em;
+        scrollbar-width: thin;
+    }
+    .splat-viewer-spot-row > button { flex: none; }
 }
 /* in fullscreen the picture takes all the room the controls leave */
 .splat-viewer:fullscreen {
@@ -14723,28 +14754,39 @@ html[data-bs-theme="dark"] .splat-viewer {
 }
 /* walking on a touch screen: two round buttons in the lower right corner */
 .splat-viewer-walk {
-    position: absolute;
-    right: 0.6em;
-    bottom: 0.6em;
     display: none;
-    flex-direction: column;
-    gap: 0.4em;
 }
+/* the two sticks, bottom left and right of the picture: a ring and a knob
+   that follows the finger (splat_viewer.js); only on a touch screen and in
+   a place to walk through */
 @media (pointer: coarse) {
-    .splat-viewer-walk {
-        display: flex;
+    .splat-viewer.is-look .splat-viewer-walk {
+        display: block;
     }
 }
-.splat-viewer-walk .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
+.splat-viewer-stick {
+    position: absolute;
+    bottom: 0.8em;
+    width: 6.5em;
+    height: 6.5em;
     border-radius: 50%;
-    padding: 0;
-    opacity: 0.85;
+    background: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
     touch-action: none;
+}
+.splat-viewer-stick-move { left: 0.8em; }
+.splat-viewer-stick-look { right: 0.8em; }
+.splat-viewer-knob {
+    position: absolute;
+    left: calc(50% - 1.4em);
+    top: calc(50% - 1.4em);
+    width: 2.8em;
+    height: 2.8em;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
 }
 @media (pointer: coarse) {
     .splat-viewer-bar .btn,
