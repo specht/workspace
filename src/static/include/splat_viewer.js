@@ -754,11 +754,16 @@ void main() {
                 if (pointers.size === 1) {
                     if (p.button === 2 || p.shift) this.pan(dx, dy);
                     else {
-                        // around an object the scene turns with the hand; in
-                        // a street (»look« in its view) the head turns where
-                        // the hand goes, as in a game: the same numbers do
-                        // both, because there turn() keeps the eye in place
-                        this.turn(-dx * 0.008, dy * 0.008);
+                        if (this.look) {
+                            // in a street the point under the mouse stays
+                            // under it, as in Street View: one pixel turns by
+                            // the angle one pixel covers (1 / focal length)
+                            const perPixel = 2 * Math.tan(25 * Math.PI / 180) / this.canvas.clientHeight;
+                            this.turn(dx * perPixel, -dy * perPixel);
+                        } else {
+                            // around an object the object turns with the hand
+                            this.turn(-dx * 0.008, dy * 0.008);
+                        }
                     }
                 } else if (pointers.size === 2) {
                     const [a, b] = [...pointers.values()];
