@@ -23,8 +23,8 @@ async function loadProgram(vertexFile, fragmentFile) {
     return program;
 }
 
-let yaw = 0.6;
-let pitch = 0.2;
+let yaw = 0.9;
+let pitch = 0.7;
 let distance = 1;
 let center = [0, 0, 0];
 let wireframe = false;
@@ -68,7 +68,7 @@ async function loadTexture(file, unit) {
 
 async function start() {
     const program = await loadProgram('shader.vert', 'shader.frag');
-    const text = await (await fetch('horse.obj')).text();
+    const text = await (await fetch('ukulele.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
     const flatVertices = flatNormals(vertices);
@@ -83,7 +83,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -100,7 +100,7 @@ async function start() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lines);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(edges(count / 3)), gl.STATIC_DRAW);
 
-    await loadTexture('horse-color.jpg', 0);
+    await loadTexture('ukulele-color.jpg', 0);
     gl.uniform1i(gl.getUniformLocation(program, 'colorMap'), 0);
     let shownFlat = false;
 
@@ -115,6 +115,7 @@ async function start() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         if (flat !== shownFlat) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flat ? flatVertices : vertices), gl.STATIC_DRAW);
             shownFlat = flat;
         }

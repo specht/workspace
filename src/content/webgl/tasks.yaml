@@ -275,9 +275,9 @@ tasks:
         - call: edges(0)
           expect: '[]'
           say: Ohne Dreiecke gibt es keine Kanten.
-        - call: edges(22388).length
-          expect: 134328
-          say: Das Pferd hat 22.388 Dreiecke, je 6 Indizes.
+        - call: edges(8912).length
+          expect: 53472
+          say: Die Ukulele hat 8.912 Dreiecke, je 6 Indizes.
     solution: |
       ```js
       function edges(triangles) {
@@ -311,7 +311,7 @@ tasks:
           say: Das zweite Dreieck, ab Index 24, hat seine eigene Normale; es liegt im Uhrzeigersinn, sie zeigt nach hinten.
         - call: const v = [0, 0, 0, 0, 0, 9, 9, 9, 1, 0, 0, 0, 0, 9, 9, 9, 0, 1, 0, 0, 0, 9, 9, 9]; flatNormals(v); v[5]
           expect: 9
-          say: Das übergebene Array muss bleiben, wie es ist; das Pferd braucht seine Normalen noch für Smooth Shading. Arbeite auf einer Kopie, vertices.slice().
+          say: Das übergebene Array muss bleiben, wie es ist; die Ukulele braucht ihre Normalen noch für Smooth Shading. Arbeite auf einer Kopie, vertices.slice().
         - call: flatNormals([])
           expect: '[]'
           say: Ohne Ecken gibt es nichts umzurechnen.
@@ -337,7 +337,7 @@ tasks:
   - id: glanz
     title: Wie hell ist der Glanz?
     prompt: |
-      An einer Stelle des Pferds ist \\(n \cdot h = 0{,}98\\): Das Licht wird
+      An einer Stelle der Ukulele ist \\(n \cdot h = 0{,}98\\): Das Licht wird
       fast genau ins Auge gespiegelt. Wie viel Weiß kommt dort nach der
       Formel oben dazu? Auf zwei Stellen nach dem Komma.
     check: { type: number, expect: 0.18, tolerance: 0.006 }
@@ -384,30 +384,59 @@ tasks:
       40. In der Mitte bleibt der Glanz gleich hell, denn 1 hoch 200 ist 1. So
       sieht Lack aus, ein kleiner Exponent wie 5 wie mattes Plastik.
 
-  - id: karten
-    title: Was die Roughness Map sagt
+  - id: metall
+    title: Was die Metallic Map sagt
     prompt: |
-      Auf der Roughness Map ist das Holz des Sockels hell, die Stücke des
-      Porzellans sind dunkel. Wie sehen die Glanzpunkte darum aus?
+      Auf der Metallic Map sind die Glocken, der Bügel und der Ring um das Glas
+      weiß, das türkise Gehäuse ist schwarz. Was siehst du darum in den Glocken?
     check:
       type: choice
       options:
-        - Auf dem Porzellan klein und hell, auf dem Holz breit und schwach.
-        - Auf dem Holz klein und hell, auf dem Porzellan breit und schwach.
-        - Das Holz ist hell und das Porzellan dunkel gefärbt; mit Glanz hat das nichts zu tun.
-        - Das Holz glänzt gar nicht, das Porzellan überall gleich.
+        - Das Zimmer, gespiegelt und gefärbt mit der Farbe der Glocken.
+        - Das Zimmer, gespiegelt in seinen eigenen Farben, auf dem Gehäuse ebenso stark.
+        - Weiße Glocken, denn Weiß auf der Map heißt weiße Farbe.
+        - Nur einen kleinen Glanzpunkt wie auf dem Lack.
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Hell heißt in der Roughness Map rau, nahe 1. Eine raue Fläche streut das Licht.
+        say: Auf dem Gehäuse, schwarz auf der Map, ist kein Metall; dort spiegelt es nur wenig, wie Lack. Und Metall färbt die Spiegelung mit seiner eigenen Farbe.
       - when: { picked: 2 }
-        say: Die Farbe steht in der Color Map. Die Roughness Map hat eine einzige Zahl je Stelle, wie rau die Fläche ist.
+        say: Die Farbe steht in der Color Map. Die Metallic Map hat eine einzige Zahl je Stelle, ob dort Metall ist.
       - when: { picked: 3 }
-        say: Auch rau glänzt das Holz ein wenig, nur breit und schwach; und das Porzellan hat auf der Map nicht überall denselben Wert.
+        say: Ein Glanzpunkt ist nur das Spiegelbild der Lampe. Metall spiegelt alles um sich herum.
     solution: |
-      Hell ist rau: Das Holz bekommt einen kleinen Exponenten und wenig
-      Stärke, also einen breiten, schwachen Schimmer. Das Porzellan ist glatt,
-      mit großem Exponenten: kleine, helle Glanzpunkte.
+      Weiß heißt Metall: Die Glocken spiegeln das ganze Zimmer, und weil Metall
+      die Spiegelung mit seiner eigenen Farbe färbt, spiegelt Chrom grau und
+      Messing golden. Das Gehäuse ist Lack; es spiegelt nur ein wenig, vor allem
+      schräg gesehen.
+
+  - id: glas-zuerst
+    title: Glas mit dem Z-Buffer
+    prediction: true
+    prompt: |
+      Stell dir vor, das Glas wird wie alles andere gemalt, mit dem Z-Buffer,
+      und zwar vor dem Wecker, also zuerst. Es ist halb durchsichtig gemischt.
+      Was siehst du, wo das Zifferblatt sein sollte?
+    check:
+      type: choice
+      options:
+        - Kein Zifferblatt, nur das Glas vor dem dunklen Hintergrund.
+        - Das Zifferblatt hinter dem Glas, wie es sein soll.
+        - Das Zifferblatt vor dem Glas, ohne Spiegelung.
+        - Ein Zifferblatt, das zur Hälfte fehlt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Als das Glas gemalt wurde, war hinter ihm nur der Hintergrund, mit dem es gemischt wurde. Und danach?
+      - when: { picked: 2 }
+        say: Der Z-Buffer hat sich die Tiefe des Glases gemerkt. Das Zifferblatt liegt dahinter und wird verworfen.
+      - when: { picked: 3 }
+        say: Der Z-Buffer verwirft das Zifferblatt an jedem Pixel hinter dem Glas, nicht nur an manchen.
+    solution: |
+      Kein Zifferblatt: Als das Glas gemalt wurde, war dahinter nur der dunkle
+      Hintergrund, und mit dem wurde es gemischt. Der Z-Buffer hat sich die
+      Tiefe des Glases gemerkt, und das Zifferblatt, das danach kommt, liegt
+      dahinter und wird verworfen. Das Glas sieht aus wie eine dunkle Scheibe.
 
   - id: warum-z-buffer
     title: Der Z-Buffer in eigenen Worten

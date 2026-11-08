@@ -23,13 +23,14 @@ async function loadProgram(vertexFile, fragmentFile) {
     return program;
 }
 
-let yaw = 0.6;
-let pitch = 0.2;
+let yaw = -0.4;
+let pitch = 0.15;
 let distance = 1;
 let center = [0, 0, 0];
 let wireframe = false;
 let flat = false;
-const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true };
+let showGlass = true;
+const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true, useMetal: true };
 
 canvas.addEventListener('pointermove', (e) => {
     if (e.buttons) {
@@ -43,7 +44,8 @@ canvas.addEventListener('wheel', (e) => {
 window.addEventListener('keydown', (e) => {
     if (e.key === 'w') wireframe = !wireframe;
     if (e.key === 'f') flat = !flat;
-    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo' };
+    if (e.key === 'g') showGlass = !showGlass;
+    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo', 5: 'useMetal' };
     if (names[e.key]) maps[names[e.key]] = !maps[names[e.key]];
 });
 
@@ -69,12 +71,32 @@ async function loadTexture(file, unit) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 }
 
+// ein Modell als Buffer auf der Grafikkarte: die Ecken und wie sie zu lesen sind
+function upload(vertices) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    return buffer;
+}
+
+function bindAttributes(program, buffer) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    const attributes = [['position', 3, 0], ['uv', 2, 3], ['normal', 3, 5]];
+    for (const [name, size, offset] of attributes) {
+        const location = gl.getAttribLocation(program, name);
+        if (location < 0) continue;   // ein Attribut, das der Shader nicht benutzt
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
+    }
+}
+
 async function start() {
     const program = await loadProgram('shader.vert', 'shader.frag');
-    const text = await (await fetch('horse.obj')).text();
+    const text = await (await fetch('clock.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
     const flatVertices = flatNormals(vertices);
+    const glassVertices = parseObj(await (await fetch('glass.obj')).text());
 
     // die Kiste um das Modell: die Kamera schaut auf ihre Mitte
     const low = [Infinity, Infinity, Infinity];
@@ -86,25 +108,19 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 1.4 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    const attributes = [['position', 3, 0], ['uv', 2, 3], ['normal', 3, 5]];
-    for (const [name, size, offset] of attributes) {
-        const location = gl.getAttribLocation(program, name);
-        if (location < 0) continue;   // ein Attribut, das der Shader nicht benutzt
-        gl.enableVertexAttribArray(location);
-        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
-    }
+    const buffer = upload(vertices);
+    const glassBuffer = upload(glassVertices);
+    bindAttributes(program, buffer);
 
     const lines = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lines);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(edges(count / 3)), gl.STATIC_DRAW);
 
-    const textures = [['colorMap', 'horse-color.jpg'], ['normalMap', 'horse-normal.jpg'],
-        ['roughnessMap', 'horse-roughness.jpg'], ['aoMap', 'horse-ao.jpg']];
+    const textures = [['colorMap', 'clock-color.jpg'], ['normalMap', 'clock-normal.jpg'],
+        ['roughnessMap', 'clock-roughness.jpg'], ['aoMap', 'clock-ao.jpg'],
+        ['metalMap', 'clock-metal.jpg'], ['environment', 'hotel-room.jpg']];
     for (let unit = 0; unit < textures.length; unit++) {
         const [name, file] = textures[unit];
         await loadTexture(file, unit);
@@ -123,6 +139,7 @@ async function start() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         if (flat !== shownFlat) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flat ? flatVertices : vertices), gl.STATIC_DRAW);
             shownFlat = flat;
         }
@@ -140,6 +157,21 @@ async function start() {
             gl.drawElements(gl.LINES, count * 2, gl.UNSIGNED_INT, 0);
         } else {
             gl.drawArrays(gl.TRIANGLES, 0, count);
+        }
+
+        // das Glas zuletzt: gemischt mit dem, was schon gemalt ist, und ohne
+        // selbst in den Z-Buffer zu schreiben
+        if (!wireframe && showGlass) {
+            bindAttributes(program, glassBuffer);
+            gl.uniform1i(gl.getUniformLocation(program, 'glass'), true);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.depthMask(false);
+            gl.drawArrays(gl.TRIANGLES, 0, glassVertices.length / 8);
+            gl.depthMask(true);
+            gl.disable(gl.BLEND);
+            gl.uniform1i(gl.getUniformLocation(program, 'glass'), false);
+            bindAttributes(program, buffer);
         }
         requestAnimationFrame(frame);
     }

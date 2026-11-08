@@ -1,10 +1,10 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein steigendes Pferd aus Porzellan auf einem runden Sockel, aus Tausenden flacher Dreiecke, jedes in einem eigenen Grau, so dass man die Facetten des Modells sieht, auf dunklem Grund"
+image_alt: "Ein türkiser Wecker mit zwei Glocken aus Chrom, in denen sich ein Zimmer spiegelt, einem cremefarbenen Zifferblatt mit römischen Ziffern hinter Glas, auf dunklem Grund"
 kind: projekt
 language: JavaScript / GLSL
-duration: 4 Doppelstunden
-curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen, Flat und Smooth Shading, Licht nach Lambert und Blinn-Phong, Texturen und Normal Maps)"
+duration: 5 Doppelstunden
+curriculum: "Oberstufe: Vertiefung Computergrafik (Dreiecke auf der Grafikkarte, Matrizen für Drehung und Perspektive, Z-Buffer, Normalen, Flat und Smooth Shading, Licht nach Lambert und Blinn-Phong, Texturen und Normal Maps, Spiegelung und Transparenz)"
 topics: [computergrafik]
 requires: [glsl, raytracing, kata-lists]
 reference: [vektoren, workspace]
@@ -19,7 +19,7 @@ reference: [vektoren, workspace]
 # 3D-Grafik mit WebGL
 
 <p class='abstract'>
-Fast alles, was du in Spielen in 3D siehst, besteht aus Dreiecken, und die Grafikkarte malt Millionen davon in jedem Bild. Du programmierst das selbst, in JavaScript und GLSL, direkt im Browser: ein Dreieck, einen Würfel, der sich dreht, den Z-Buffer, der weiß, was vorne ist, Licht aus Normalen, und am Ende ein Pferd aus Porzellan aus 22.388 Dreiecken, mit Glanzlichtern und vier Texturen, das du mit der Maus drehst, als Drahtgitter und in flachen Facetten siehst.
+Fast alles, was du in Spielen in 3D siehst, besteht aus Dreiecken, und die Grafikkarte malt Millionen davon in jedem Bild. Du programmierst das selbst, in JavaScript und GLSL, direkt im Browser: ein Dreieck, einen Würfel, der sich dreht, den Z-Buffer, der weiß, was vorne ist, Licht aus Normalen, eine Ukulele aus Holz mit Glanzlichtern und Texturen, die du mit der Maus drehst, als Drahtgitter und in flachen Facetten siehst, und am Ende einen Wecker aus Metall, in dem sich ein Zimmer spiegelt, mit Glas vor dem Zifferblatt.
 </p>
 
 Ein 3D-Modell in einem Spiel ist eine Liste von Dreiecken: für jede Ecke eine
@@ -31,25 +31,30 @@ JavaScript gibst du ihr die Dreiecke.
 
 ## Einrichten
 
-### Ein Ordner und ein Pferd
+### Ein Ordner und zwei Modelle
 
-Leg im Terminal einen Ordner an und lade das Pferd herunter, das am Ende auf
-dem Bildschirm stehen wird, mit den vier Bildern, die zu ihm gehören:
+Leg im Terminal einen Ordner an und lade die beiden Modelle herunter, die du
+später auf den Bildschirm bringst, mit den Bildern, die zu ihnen gehören. Die
+Schleife holt eine Datei nach der anderen:
 
 ```bash_copy
 mkdir -p ~/webgl
 cd ~/webgl
-wget https://github.com/specht/workspace-files/raw/main/webgl/horse.obj
-wget https://github.com/specht/workspace-files/raw/main/webgl/horse-color.jpg
-wget https://github.com/specht/workspace-files/raw/main/webgl/horse-normal.jpg
-wget https://github.com/specht/workspace-files/raw/main/webgl/horse-roughness.jpg
-wget https://github.com/specht/workspace-files/raw/main/webgl/horse-ao.jpg
+for f in ukulele.obj ukulele-color.jpg ukulele-normal.jpg ukulele-roughness.jpg \
+         clock.obj glass.obj clock-color.jpg clock-normal.jpg clock-roughness.jpg \
+         clock-ao.jpg clock-metal.jpg hotel-room.jpg; do
+    wget https://github.com/specht/workspace-files/raw/main/webgl/$f
+done
 touch math.js model.js
 ```
 
-Das Pferd ist das Modell [*Horse Statue 01*](https://polyhaven.com/a/horse_statue_01)
-von Rico Cilliers aus der Sammlung Poly Haven, frei von Rechten (CC0). `touch`
-legt zwei leere Dateien an, die du später füllst.
+Die Modelle stammen aus der Sammlung [Poly Haven](https://polyhaven.com) und
+sind frei von Rechten (CC0): die Ukulele [*Ukulele 01*](https://polyhaven.com/a/Ukulele_01)
+von Joseph Burgan, der Wecker [*Alarm Clock 01*](https://polyhaven.com/a/alarm_clock_01)
+von James Ray Cock, und `hotel-room.jpg` ist ein Rundumbild des Hotelzimmers
+[*Hotel Room*](https://polyhaven.com/a/hotel_room) von Greg Zaal, in dem
+sich der Wecker später spiegelt. `touch` legt zwei leere Dateien an, die du
+später füllst.
 
 Öffne den Ordner jetzt in VS Code: <kbd>Strg</kbd>+<kbd>K</kbd>, dann
 <kbd>Strg</kbd>+<kbd>O</kbd>, schreib `/workspace/webgl/` und bestätige mit
@@ -77,7 +82,7 @@ legt zwei leere Dateien an, die du später füllst.
 
 Die Seite besteht aus einer einzigen Fläche zum Malen, dem `canvas`, so groß
 wie das Fenster. Die drei Skripte füllst du nacheinander: `main.js` malt,
-`math.js` rechnet mit Matrizen und Normalen, `model.js` liest das Pferd. Dazu
+`math.js` rechnet mit Matrizen und Normalen, `model.js` liest die Modelle. Dazu
 kommen gleich zwei Dateien für die Shader, `shader.vert` und `shader.frag`.
 
 ### Vorschau starten
@@ -87,12 +92,12 @@ Leg noch eine leere Datei `main.js` an und klicke unten rechts auf
 eine dunkle Fläche: Noch malt nichts.
 
 <!-- tutorial-step
-# Der Ordner mit dem Pferd, in VS Code geöffnet, index.html und die
+# Der Ordner mit den Modellen, in VS Code geöffnet, index.html und die
 # Vorschau; main.js und die Shader gleich mit dem Dreieck, das das nächste
 # Bild zeigt
 hide-left-sidebar
 terminal-open
-terminal-run: mkdir -p ~/webgl && cd ~/webgl && for f in horse.obj horse-color.jpg horse-normal.jpg horse-roughness.jpg horse-ao.jpg; do wget -q https://github.com/specht/workspace-files/raw/main/webgl/$f; done && touch math.js model.js
+terminal-run: mkdir -p ~/webgl && cd ~/webgl && for f in ukulele.obj ukulele-color.jpg ukulele-normal.jpg ukulele-roughness.jpg clock.obj glass.obj clock-color.jpg clock-normal.jpg clock-roughness.jpg clock-ao.jpg clock-metal.jpg hotel-room.jpg; do wget -q https://github.com/specht/workspace-files/raw/main/webgl/$f; done && touch math.js model.js
 terminal-wait-for-prompt
 hide-bottom-panel
 press: Control+K
@@ -102,7 +107,7 @@ type: webgl
 press: Enter
 wait-for-input-value: /workspace/webgl/
 press: Enter
-wait-for-text: horse.obj
+wait-for-text: ukulele.obj
 write-file: webgl/index.html <- file:stufen/index.html
 write-file: webgl/shader.vert <- file:stufen/shader-1.vert
 write-file: webgl/shader.frag <- file:stufen/shader-1.frag
@@ -804,24 +809,24 @@ was passiert, wenn du die <code>0.3</code> im Fragment-Shader auf
 <code>0.0</code> setzt? Stell beides danach wieder her.
 </div>
 
-## Ein Pferd aus 22.388 Dreiecken
+## Eine Ukulele aus 8.912 Dreiecken
 
 ### Das OBJ-Format
 
-Ein Würfel lässt sich von Hand aufschreiben, ein Pferd nicht. Modelle kommen
+Ein Würfel lässt sich von Hand aufschreiben, eine Ukulele nicht. Modelle kommen
 aus Programmen wie Blender, und ein einfaches Format, das fast jedes Programm
 schreibt, ist **OBJ**: eine Textdatei, eine Angabe je Zeile. Öffne
-`horse.obj` und schau hinein:
+`ukulele.obj` und schau hinein:
 
 ```text
-v 0.00569 0.02485 0.01804
-vt 0.69118 0.38420
-vn 0.6411 -0.4108 0.6482
-f 1/1/1 2/2/2 3/3/3
+v 0.00000 -0.01981 -0.00224
+vt 0.19389 0.58144
+vn -0.0000 1.0000 -0.0000
+f 4/4/4 15/15/15 13/13/13
 ```
 
-- `v` ist eine Ecke, \\(x\\), \\(y\\), \\(z\\); das Pferd ist 0,22 Einheiten
-  hoch, eine Einheit ist ein Meter.
+- `v` ist eine Ecke, \\(x\\), \\(y\\), \\(z\\); die Ukulele ist 0,53 Einheiten
+  lang, eine Einheit ist ein Meter.
 - `vt` ist eine Stelle in einem Bild, der **Textur**, mit \\(u\\) nach
   rechts und \\(v\\) nach oben, beide von 0 bis 1.
 - `vn` ist eine Normale. Die Datei bringt sie mit; wie sie entstehen, kommt
@@ -917,10 +922,10 @@ if (typeof module !== 'undefined') module.exports = { parseObj };
 
 _task(obj)
 
-### Das Pferd auf dem Bildschirm
+### Die Ukulele auf dem Bildschirm
 
-Die Shader werden einfacher als beim Würfel: Das Pferd hat keine Farbe je
-Ecke und dreht sich nicht selbst, also braucht es weder `color` noch `model`.
+Die Shader werden einfacher als beim Würfel: Die Ukulele hat keine Farbe je
+Ecke und dreht sich nicht selbst, also braucht sie weder `color` noch `model`.
 `shader.vert`:
 
 ```glsl
@@ -936,7 +941,8 @@ void main() {
 }
 ```
 
-`shader.frag`, mit einem hellen Grau als Grundfarbe, wie Porzellan:
+`shader.frag`, erst einmal mit einem hellen Grau als Grundfarbe; die Farben
+kommen später:
 
 ```glsl
 #version 300 es
@@ -955,8 +961,8 @@ Und `main.js`: `compile` und `loadProgram` oben bleiben, wie sie sind;
 ersetz alles darunter:
 
 ```js_copy
-let yaw = 0.6;
-let pitch = 0.2;
+let yaw = 0.9;
+let pitch = 0.7;
 let distance = 1;
 let center = [0, 0, 0];
 
@@ -972,7 +978,7 @@ canvas.addEventListener('wheel', (e) => {
 
 async function start() {
     const program = await loadProgram('shader.vert', 'shader.frag');
-    const text = await (await fetch('horse.obj')).text();
+    const text = await (await fetch('ukulele.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
 
@@ -986,7 +992,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -1030,12 +1036,14 @@ Was neu ist:
 - Diesmal dreht sich nicht das Modell, sondern die Kamera um es: Die
   Matrix `view` schiebt die Mitte des Modells in den Ursprung, dreht um
   `yaw` und `pitch` und schiebt alles `distance` vor die Kamera. Ziehen mit
-  gedrückter Maustaste ändert die beiden Winkel, das Mausrad den Abstand.
-  Weil das Pferd sich nicht dreht, braucht die Normale keine Matrix.
+  gedrückter Maustaste ändert die beiden Winkel, das Mausrad den Abstand. Zu
+  Beginn schaut die Kamera schräg von oben auf die Ukulele, die auf dem
+  Rücken liegt.
+  Weil die Ukulele sich nicht dreht, braucht die Normale keine Matrix.
 - Die Ecken haben 8 Zahlen, auch die Stelle in der Textur; `uv` braucht der
   Shader erst später. Ein Attribut, das ein Shader nicht benutzt, hat keine
   Nummer (`location` ist −1), und die Schleife überspringt es.
-- `near` ist jetzt 0,01: Das Pferd ist klein, und die Kamera kommt ihm
+- `near` ist jetzt 0,01: Die Ukulele ist klein, und die Kamera kommt ihr
   nahe.
 
 <!-- tutorial-scope -->
@@ -1050,13 +1058,13 @@ tab: preview
 viewport: 800x450
 sleep: 4
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='pferd.webp' alt='Das Pferd aus Porzellan, hellgrau auf dunklem Grund, schräg von vorne: Es steigt auf den Hinterbeinen, die Vorderbeine angewinkelt, die Mähne weht, und steht auf einem runden Sockel. Die Seiten zum Licht sind hell, die abgewandten dunkler, alles mit weichen Übergängen.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='ukulele.webp' alt='Die Ukulele, hellgrau auf dunklem Grund, schräg von oben: Sie liegt auf dem Rücken, der Hals mit den Bünden und dem Kopf mit vier Wirbeln zeigt nach links oben, auf dem Korpus das Schallloch und der Steg mit den vier Saiten. Die Flächen zum Licht sind hell, die abgewandten dunkler.'>
 
 <!-- /tutorial-scope -->
 
 ## Drahtgitter
 
-Woraus das Pferd besteht, siehst du an seinen Kanten. Ein **Drahtgitter**
+Woraus die Ukulele besteht, siehst du an ihren Kanten. Ein **Drahtgitter**
 malt statt der Dreiecke nur ihre drei Kanten, als Linien. Dafür gibt es
 `gl.LINES`: Es verbindet je zwei Ecken. Welche Ecken, sagt eine Liste von
 Indizes; Dreieck Nummer \\(i\\) hat die Ecken \\(3i\\), \\(3i + 1\\) und
@@ -1155,19 +1163,19 @@ preview-reload
 tab: preview
 viewport: 800x450
 sleep: 4
-hook: view -0.03 0.165 0 0.16 0.6 0.12
 click: selector:canvas
 press: w
 sleep: 1
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='drahtgitter.webp' alt='Kopf und Brust des Pferds als Drahtgitter: weiße Linien auf dunklem Grund, die Kanten aller Dreiecke, auch die der Rückseite. An Ohren, Nüstern und Mähne liegen sie dicht, an Hals und Brust weiter auseinander.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='drahtgitter.webp' alt='Die Ukulele als Drahtgitter: weiße Linien auf dunklem Grund, die Kanten aller Dreiecke, auch die der Rückseite. Am Kopf mit den Wirbeln und an den Bünden liegen sie dicht, auf den großen Flächen des Korpus laufen lange Dreiecke vom Rand zum Schallloch.'>
 
 <!-- /tutorial-scope -->
 
 Im Drahtgitter siehst du auch die Rückseite, denn Linien haben keine Fläche,
 die etwas verdecken könnte. Und du siehst, wo das Modell seine Dreiecke
-ausgibt: viele an Ohren, Nüstern und Mähne, wo die Form sich schnell ändert,
-weniger an Hals und Brust.
+ausgibt: viele an Wirbeln, Bünden und am runden Rand, wo die Form sich
+schnell ändert, wenige auf der flachen Decke, wo lange, schmale Dreiecke
+genügen.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Zähl die Dreiecke selbst: Gib in
@@ -1177,11 +1185,12 @@ sind, und schau in der Konsole des Browsers nach (<kbd>F12</kbd>).
 
 ## Flat Shading und Smooth Shading
 
-Das Pferd sieht weich aus, obwohl es aus flachen Dreiecken besteht. Das liegt
-an den Normalen aus der Datei: Sie gehören nicht zu den Dreiecken, sondern zu
-den Ecken. Jede steht senkrecht auf der gedachten glatten Oberfläche des
-Pferds, und weil die Rasterung sie zwischen den Ecken mischt, ändert sich die
-Helligkeit innerhalb eines Dreiecks fließend. Das heißt **Smooth Shading**.
+Der runde Rand der Ukulele sieht weich aus, obwohl er aus flachen Dreiecken
+besteht. Das liegt an den Normalen aus der Datei: Sie gehören nicht zu den
+Dreiecken, sondern zu den Ecken. Jede steht senkrecht auf der gedachten
+glatten Oberfläche, und weil die Rasterung sie zwischen den Ecken mischt,
+ändert sich die Helligkeit innerhalb eines Dreiecks fließend. Das heißt
+**Smooth Shading**.
 
 Gibt man allen drei Ecken eines Dreiecks dieselbe Normale, die des Dreiecks
 selbst, bekommt jedes Dreieck eine einzige Helligkeit, und man sieht die
@@ -1278,6 +1287,7 @@ In `frame` schickst du die anderen hin, sobald `flat` nicht mehr dazu passt:
 
 ```js
         if (flat !== shownFlat) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flat ? flatVertices : vertices), gl.STATIC_DRAW);
             shownFlat = flat;
         }
@@ -1295,12 +1305,12 @@ preview-reload
 tab: preview
 viewport: 800x450
 sleep: 4
-hook: view -0.03 0.165 0 0.16 0.6 0.12
+hook: view 0 0 -0.13 0.3 0.9 0.7
 click: selector:canvas
 press: f
 sleep: 1
 -->
-<img src='flach.webp' alt='Kopf, Hals und Brust des Pferds mit Flat Shading: Die Oberfläche besteht aus lauter kleinen, flachen Dreiecken, jedes in einem einzigen Grau, an der Brust größer, an Ohren und Mähne winzig.'>
+<img src='flach.webp' alt='Die Ukulele mit Flat Shading: Der runde Rand des Korpus besteht aus lauter schmalen, flachen Streifen, jeder in einem einzigen Grau, auch an den Wirbeln sieht man Kanten.'>
 <figcaption>Flat Shading: eine Normale je Dreieck</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -1313,33 +1323,12 @@ preview-reload
 tab: preview
 viewport: 800x450
 sleep: 4
-hook: view -0.03 0.165 0 0.16 0.6 0.12
+hook: view 0 0 -0.13 0.3 0.9 0.7
 sleep: 1
 -->
-<img src='glatt.webp' alt='Derselbe Ausschnitt mit Smooth Shading: Kopf, Hals und Brust sind glatt und rund, die Helligkeit geht ohne Kanten ineinander über; nur am Umriss ahnt man, dass er aus geraden Stücken besteht.'>
+<img src='glatt.webp' alt='Dieselbe Ukulele mit Smooth Shading: Der Rand des Korpus ist glatt und rund, die Helligkeit geht ohne Kanten ineinander über; nur am Umriss ahnt man, dass er aus geraden Stücken besteht.'>
 <figcaption>Smooth Shading: eine Normale je Ecke, gemischt</figcaption></figure>
 </div>
-
-<!-- tutorial-scope -->
-<!-- tutorial-screenshot
-# Bild für die Karte: das Pferd mit Flat Shading in 16:9
-write-file: webgl/math.js <- file:stufen/math.js
-write-file: webgl/model.js <- file:stufen/model.js
-write-file: webgl/shader.vert <- file:stufen/shader-4.vert
-write-file: webgl/shader.frag <- file:stufen/shader-5.frag
-write-file: webgl/main.js <- file:stufen/main-7.js
-preview-reload
-tab: preview
-viewport: 1029x579
-sleep: 4
-hook: zoom 0.95
-click: selector:canvas
-press: f
-sleep: 1
--->
-<img class='teaser' hidden src='teaser.webp' alt='Ein steigendes Pferd aus Porzellan auf einem runden Sockel, aus Tausenden flacher Dreiecke, jedes in einem eigenen Grau, so dass man die Facetten des Modells sieht, auf dunklem Grund.'>
-
-<!-- /tutorial-scope -->
 
 Am Umriss hilft Smooth Shading nicht: Der bleibt aus geraden Kanten, denn die
 Normalen ändern nur die Helligkeit, nicht die Form. Wo das stört, braucht
@@ -1353,11 +1342,11 @@ Dreieck fällt bei Gouraud unter den Tisch, denn an den Ecken ist er nicht.
 
 ## Glanzlicht
 
-Porzellan ist nicht matt, es glänzt: Wo das Licht so zurückgeworfen wird, dass
-es genau ins Auge fällt, sieht man einen hellen Fleck. Wie hell, hängt nicht
-nur von der Fläche und vom Licht ab, sondern auch davon, wo die Kamera steht.
-Jim Blinn rechnete das 1977 so: Die Richtung \\(h\\) genau zwischen der zum
-Licht \\(l\\) und der zur Kamera \\(v\\),
+Die Ukulele ist lackiert, sie glänzt: Wo das Licht so zurückgeworfen wird,
+dass es genau ins Auge fällt, sieht man einen hellen Fleck. Wie hell, hängt
+nicht nur von der Fläche und vom Licht ab, sondern auch davon, wo die Kamera
+steht. Jim Blinn rechnete das 1977 so: Die Richtung \\(h\\) genau zwischen
+der zum Licht \\(l\\) und der zur Kamera \\(v\\),
 
 $$h = \frac{l + v}{|l + v|},$$
 
@@ -1368,7 +1357,7 @@ hellen Fleck, der zur Seite schnell auf 0 fällt:
 $$\text{Glanz} = 0{,}4 \cdot \max(n \cdot h, 0)^{40}$$
 
 Der Glanz kommt als Weiß zur Farbe dazu, unabhängig von der Grundfarbe: Bei
-Porzellan, Lack und Plastik hat das zurückgeworfene Licht die Farbe der
+Lack, Porzellan und Plastik hat das zurückgeworfene Licht die Farbe der
 Lampe. Die Zahl 40 heißt **Exponent** (englisch *shininess*).
 
 _task(glanz)
@@ -1451,11 +1440,11 @@ tab: preview
 viewport: 800x450
 sleep: 4
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='glanz.webp' alt='Das ganze Pferd mit Glanzlichtern: auf Brust, Schulter und Hinterteil kleine weiße, scharf begrenzte Flecken, auf den Beinen schmale helle Streifen, so dass es nach glattem Porzellan aussieht.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='glanz.webp' alt='Die graue Ukulele mit Glanzlichtern: helle Säume am runden Rand des Korpus, an Hals und Wirbeln, so dass sie nach glattem Lack aussieht.'>
 
 <!-- /tutorial-scope -->
 
-Dreh das Pferd mit der Maus: Die Glanzpunkte wandern mit, denn sie hängen
+Dreh die Ukulele mit der Maus: Die Glanzpunkte wandern mit, denn sie hängen
 davon ab, wo du stehst. Die Helligkeit nach Lambert bleibt, wo sie ist.
 
 _task(exponent)
@@ -1463,8 +1452,8 @@ _task(exponent)
 <!-- after: exponent -->
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Setz den Exponenten auf <code>200.0</code>
-und danach auf <code>5.0</code>. Achte auf die Größe der Glanzpunkte auf der
-Brust und darauf, wie scharf ihr Rand ist. Stell danach <code>40.0</code>
+und danach auf <code>5.0</code>. Achte auf die Größe des Glanzpunkts auf dem
+Korpus und darauf, wie scharf sein Rand ist. Stell danach <code>40.0</code>
 wieder her.
 </div>
 <!-- /after -->
@@ -1473,15 +1462,15 @@ wieder her.
 
 ### Die Farbe
 
-Die Farben des Pferds stehen nicht in der OBJ-Datei, sondern in
-`horse-color.jpg`. Öffne das Bild in VS Code: Es sieht aus wie ein
-zerschnittenes Pferd, Stücke der Oberfläche, flach ausgebreitet, dazu das
-Holz des Sockels. Jede Ecke zeigt mit \\((u, v)\\) auf eine Stelle
-darin, und die Rasterung mischt \\((u, v)\\) zwischen den Ecken wie vorhin
-die Farben. Der Fragment-Shader liest an der gemischten Stelle die Farbe, mit
-`texture(colorMap, v_uv)`. Ein Bild so auf ein Modell zu legen, heißt
-**Texture Mapping**; es kommt, wie der Z-Buffer, aus Edwin Catmulls
-Doktorarbeit von 1974.
+Die Farben der Ukulele stehen nicht in der OBJ-Datei, sondern in
+`ukulele-color.jpg`. Öffne das Bild in VS Code: Es sieht aus wie eine
+zerlegte Ukulele, ihre Teile flach ausgebreitet: Decke und Boden mit der
+Maserung des Holzes, der Hals mit den Bünden, der Kopf, ein Aufkleber. Jede
+Ecke zeigt mit \\((u, v)\\) auf eine Stelle darin, und die Rasterung mischt
+\\((u, v)\\) zwischen den Ecken wie vorhin die Farben. Der Fragment-Shader
+liest an der gemischten Stelle die Farbe, mit `texture(colorMap, v_uv)`. Ein
+Bild so auf ein Modell zu legen, heißt **Texture Mapping**; es kommt, wie
+der Z-Buffer, aus Edwin Catmulls Doktorarbeit von 1974.
 
 Der Vertex-Shader gibt jetzt auch `uv` weiter:
 
@@ -1538,7 +1527,7 @@ async function loadTexture(file, unit) {
 und in `start` nach dem Buffer der Kanten:
 
 ```js
-    await loadTexture('horse-color.jpg', 0);
+    await loadTexture('ukulele-color.jpg', 0);
     gl.uniform1i(gl.getUniformLocation(program, 'colorMap'), 0);
 ```
 
@@ -1547,8 +1536,8 @@ und in `start` nach dem Buffer der Kanten:
   Shader, aus welcher er liest.
 - `UNPACK_FLIP_Y_WEBGL` dreht das Bild um, weil \\(v\\) in OBJ unten anfängt
   und ein Bild oben.
-- Ein Bild aus 2048 × 2048 Pixeln auf einem Pferd, das im Fenster 300 Pixel
-  hoch ist: Auf ein Pixel des Bildschirms kommen viele Pixel der Textur, und
+- Ein Bild aus 2048 × 2048 Pixeln auf einer Ukulele, die im Fenster 300 Pixel
+  lang ist: Auf ein Pixel des Bildschirms kommen viele Pixel der Textur, und
   nimmt man einfach eines davon, flimmert das Bild beim Drehen.
   `generateMipmap` rechnet darum kleinere Fassungen des Bilds aus, jede halb
   so breit wie die davor (**Mipmaps**, nach Lance Williams, 1983), und
@@ -1569,22 +1558,21 @@ tab: preview
 viewport: 800x450
 sleep: 5
 -->
-<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Das Pferd mit seiner Textur: Das Porzellan ist fast weiß mit leichten grauen Schattierungen in den Falten, der Sockel hat jetzt einen Rand aus rötlich braunem Holz.'>
+<img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Die Ukulele mit ihrer Textur: Korpus und Hals aus braunem Holz mit Maserung und abgewetzten hellen Stellen, ein dunkles Griffbrett mit hellen Bünden, das Schallloch mit einer Rosette, silberne Wirbel am Kopf.'>
 
 <!-- /tutorial-scope -->
 
 ### Mehr als Farbe
 
-Zum Pferd gehören noch drei Bilder. Jedes ist eine **Map**, eine Karte, die
-für jede Stelle der Oberfläche eine Zahl oder eine Richtung festhält, und
-alle vier liegen gleich auf dem Modell: Dieselbe Stelle \\((u, v)\\) meint
-in jedem Bild dieselbe Stelle des Pferds.
+Zur Ukulele gehören noch zwei Bilder. Jedes ist eine **Map**, eine Karte,
+die für jede Stelle der Oberfläche eine Zahl oder eine Richtung festhält, und
+alle liegen gleich auf dem Modell: Dieselbe Stelle \\((u, v)\\) meint in
+jedem Bild dieselbe Stelle der Ukulele.
 
-<div class='gallery columns-4'>
-<figure><img src='map-color.webp' alt='Die Color Map: Stücke der Oberfläche des Pferds, flach ausgebreitet, fast weiß mit grauen Schattierungen, dazwischen Grau; rechts eine runde, braune Fläche Holz und zwei braune Streifen, das Holz des Sockels.'><figcaption>Color Map</figcaption></figure>
-<figure><img src='map-normal.webp' alt='Die Normal Map: dieselben Stücke in Hellblau und Violett, an den Muskeln, Adern und Haaren rötliche und grünliche Ränder.'><figcaption>Normal Map</figcaption></figure>
-<figure><img src='map-roughness.webp' alt='Die Roughness Map: dieselben Stücke in dunklem Grau, die runde Fläche Holz fast weiß, die Streifen Holz heller als das Porzellan.'><figcaption>Roughness Map</figcaption></figure>
-<figure><img src='map-ao.webp' alt='Die Ambient Occlusion Map: dieselben Stücke auf weißem Grund, meist hell, in Falten, in Vertiefungen und in den Ohren grau bis schwarz.'><figcaption>Ambient Occlusion Map</figcaption></figure>
+<div class='gallery columns-3'>
+<figure><img src='map-color.webp' alt='Die Color Map der Ukulele: ihre Teile flach ausgebreitet, Decke und Boden aus braunem, gemasertem Holz, der Hals mit dem dunklen Griffbrett und den Bünden, oben ein Aufkleber mit dem Wort KOLO.'><figcaption>Color Map</figcaption></figure>
+<figure><img src='map-normal.webp' alt='Die Normal Map: dieselben Teile in Hellblau und Violett; an den Bünden, am Rand des Schalllochs und an den Kanten rötliche und grünliche Streifen.'><figcaption>Normal Map</figcaption></figure>
+<figure><img src='map-roughness.webp' alt='Die Roughness Map: dieselben Teile in mittlerem Grau, mit helleren Kratzern und Flecken auf Decke und Boden, eine große Fläche fast weiß.'><figcaption>Roughness Map</figcaption></figure>
 </div>
 
 - Die **Color Map** (auch *Albedo* oder *Diffuse Map*) hat die Farbe der
@@ -1594,31 +1582,25 @@ in jedem Bild dieselbe Stelle des Pferds.
   Die Richtung meint nicht den Raum, sondern die Fläche: \\(x\\) zeigt in
   die Richtung, in die \\(u\\) wächst, \\(y\\) in die, in die \\(v\\)
   wächst, und \\(z\\) gerade aus der Fläche heraus. Darum ist eine Normal
-  Map meist hellblau, \\((0{,}5;\ 0{,}5;\ 1)\\), gerade heraus, und nur wo
-  die Fläche Beulen und Rillen hat, kippt die Farbe. So bekommt das Pferd
-  Muskeln, Adern und Haare, die in keinem Dreieck stecken: Das Modell aus
-  22.388 Dreiecken ist von einem viel feineren abgeleitet, und die Normal Map
-  bewahrt, wie das Licht auf diesem gefallen wäre.
+  Map meist hellblau, \\((0{,}5;\ 0{,}5;\ 1)\\), gerade heraus, und nur
+  wo die Fläche Beulen und Rillen hat, kippt die Farbe. So bekommt die Ukulele
+  Kerben, Kanten und Dellen im Holz, die in keinem Dreieck stecken: Das Modell
+  aus 8.912 Dreiecken ist von einem viel feineren abgeleitet, und die Normal
+  Map bewahrt, wie das Licht auf diesem gefallen wäre.
 - Die **Roughness Map** sagt, wie rau die Oberfläche ist, von 0 (spiegelglatt)
   bis 1 (ganz rau). Auf einer glatten Fläche ist der Glanzpunkt klein und
-  hell, auf einer rauen breit und schwach.
-- Die **Ambient Occlusion Map** (kurz *AO*) sagt, wie viel vom Licht, das von
-  überall kommt, eine Stelle erreicht. In einer Falte oder einem Ohr verdeckt
-  das Modell sich selbst; dort ist sie dunkel. Sie wirkt darum nur auf die
-  0,3 für das Licht von überall.
+  hell, auf einer rauen breit und schwach. Bei der Ukulele ist der Lack an
+  vielen Stellen zerkratzt; dort ist sie heller, also rauer.
 
 Die Idee hinter der Normal Map ist älter: Jim Blinn beulte 1978 Flächen ein,
 indem er ihre Normalen nach einer **Bump Map** kippte, einem Bild aus
-Höhen; heute speichert man meist gleich die gekippten Normalen. Andere
-Modelle haben noch mehr Maps: eine **Height Map** oder **Displacement Map**,
-nach der der Vertex-Shader Ecken wirklich verschiebt, und eine **Metallic
-Map**, die sagt, wo Metall ist, denn Metall färbt seinen Glanz mit seiner
-eigenen Farbe. Das Pferd braucht sie nicht.
+Höhen; heute speichert man meist gleich die gekippten Normalen. Mit einer
+**Height Map** oder **Displacement Map** verschiebt der Vertex-Shader die
+Ecken sogar wirklich, nach der Höhe im Bild; dafür braucht das Modell aber
+sehr viele Ecken.
 
-_task(karten)
-
-Der neue Fragment-Shader liest alle vier Maps. Mit den Tasten <kbd>1</kbd>
-bis <kbd>4</kbd> schaltest du jede ein und aus, um zu sehen, was sie tut;
+Der neue Fragment-Shader liest alle drei Maps. Mit den Tasten <kbd>1</kbd>
+bis <kbd>3</kbd> schaltest du jede ein und aus, um zu sehen, was sie tut;
 dafür gibt es für jede einen Schalter (`useColor` und so weiter). Schreib
 `shader.frag` neu:
 
@@ -1631,11 +1613,9 @@ in vec3 v_normal;
 uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D roughnessMap;
-uniform sampler2D aoMap;
 uniform bool useColor;
 uniform bool useNormal;
 uniform bool useRoughness;
-uniform bool useAo;
 uniform bool wire;
 uniform vec3 light;
 uniform vec3 eye;
@@ -1665,21 +1645,21 @@ void main() {
     vec3 base = useColor ? texture(colorMap, v_uv).rgb : vec3(0.9, 0.88, 0.84);
     vec3 n = normalize(v_normal);
     if (useNormal) n = mapNormal(n);
+    float roughness = 0.5;
     float shininess = 40.0;
     float strength = 0.4;
     if (useRoughness) {
-        float roughness = texture(roughnessMap, v_uv).r;
+        roughness = texture(roughnessMap, v_uv).r;
         shininess = mix(200.0, 4.0, roughness);
         strength = 1.0 - roughness;
     }
-    float ao = useAo ? texture(aoMap, v_uv).r : 1.0;
 
     vec3 l = normalize(light);
     vec3 v = normalize(eye - v_position);
     vec3 h = normalize(l + v);
     float diffuse = max(dot(n, l), 0.0);
     float specular = strength * pow(max(dot(n, h), 0.0), shininess);
-    color = vec4(base * (0.3 * ao + 0.7 * diffuse) + specular, 1.0);
+    color = vec4(base * (0.3 + 0.7 * diffuse) + specular, 1.0);
 }
 ```
 
@@ -1692,31 +1672,30 @@ Was darin passiert:
   \\((u, v)\\) folgt, wohin \\(u\\) und \\(v\\) im Raum zeigen. Dann wird
   die Farbe der Map zur Richtung, und \\(x\\), \\(y\\) und \\(z\\) zählen in
   den Richtungen \\(t\\), \\(b\\) und \\(n\\).
-- Die Roughness ändert den Exponenten und die Stärke des Glanzes: `mix(200.0,
-  4.0, roughness)` geht von 200 bei 0 bis 4 bei 1.
-- Die AO multipliziert das Licht von überall.
+- Die Roughness ändert den Exponenten und die Stärke des Glanzes:
+  `mix(200.0, 4.0, roughness)` geht von 200 bei 0 bis 4 bei 1.
 
 In `main.js` kommen die Schalter zu den Variablen:
 
 ```js
 ~ let flat = false;
-const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true };
+const maps = { useColor: true, useNormal: true, useRoughness: true };
 ```
 
 die Tasten zum Drücken einer Taste:
 
 ```js
 ~     if (e.key === 'f') flat = !flat;
-    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo' };
+    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness' };
     if (names[e.key]) maps[names[e.key]] = !maps[names[e.key]];
 ```
 
-In `start` laden jetzt vier Bilder in die Einheiten 0 bis 3; das ersetzt die
-zwei Zeilen mit `horse-color.jpg`:
+In `start` laden jetzt drei Bilder in die Einheiten 0 bis 2; das ersetzt die
+zwei Zeilen mit `ukulele-color.jpg`:
 
 ```js
-    const textures = [['colorMap', 'horse-color.jpg'], ['normalMap', 'horse-normal.jpg'],
-        ['roughnessMap', 'horse-roughness.jpg'], ['aoMap', 'horse-ao.jpg']];
+    const textures = [['colorMap', 'ukulele-color.jpg'], ['normalMap', 'ukulele-normal.jpg'],
+        ['roughnessMap', 'ukulele-roughness.jpg']];
     for (let unit = 0; unit < textures.length; unit++) {
         const [name, file] = textures[unit];
         await loadTexture(file, unit);
@@ -1732,6 +1711,389 @@ und in `frame` gehen die Schalter an die Shader, nach `eye`:
         }
 ```
 
+<div class='gallery columns-3'>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-8.frag
+write-file: webgl/main.js <- file:stufen/main-10.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view 0 0 -0.16 0.22 0.9 0.75
+click: selector:canvas
+press: 2
+press: 3
+sleep: 1
+-->
+<img src='maps-1.webp' alt='Der Korpus der Ukulele nur mit der Color Map: das Holz mit seiner Maserung, aber glatt wie bemalt, ein breiter, gleichmäßiger Glanz.'>
+<figcaption>Nur die Color Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-8.frag
+write-file: webgl/main.js <- file:stufen/main-10.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view 0 0 -0.16 0.22 0.9 0.75
+click: selector:canvas
+press: 3
+sleep: 1
+-->
+<img src='maps-2.webp' alt='Derselbe Ausschnitt mit der Normal Map dazu: Am Rand des Schalllochs, am Steg und an den Kanten treten Kerben und Wülste hervor, obwohl die Dreiecke dieselben sind.'>
+<figcaption>Dazu die Normal Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-8.frag
+write-file: webgl/main.js <- file:stufen/main-10.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 6
+hook: view 0 0 -0.16 0.22 0.9 0.75
+-->
+<img src='maps-3.webp' alt='Dazu die Roughness Map: Der Glanz ist ungleichmäßig, auf dem Lack heller, auf den zerkratzten Stellen matt, so dass das Holz abgegriffen aussieht.'>
+<figcaption>Dazu die Roughness Map</figcaption></figure>
+</div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schalt mit <kbd>2</kbd> die Normal Map aus und
+wieder an, während du die Ukulele drehst, und dann mit <kbd>F</kbd> auf Flat
+Shading. Achte darauf, ob die Kerben am Schallloch dabei bleiben. Und schalt
+mit <kbd>W</kbd> auf das Drahtgitter: Stecken die Kerben in den Dreiecken?
+</div>
+
+## Ein Wecker aus Metall und Glas
+
+### Zwei Maps mehr
+
+Ukulele aus, Wecker an: In `main.js` lädt `start` jetzt `clock.obj`:
+
+```js
+    const text = await (await fetch('clock.obj')).text();
+```
+
+Der Wecker steht aufrecht, mit dem Zifferblatt nach vorne; die Kamera
+schaut ihn schräg von vorne an, aus etwas mehr Abstand:
+
+```js
+let yaw = -0.4;
+let pitch = 0.15;
+```
+
+```js
+    distance = 1.4 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+```
+
+Zum Wecker gehören zwei Maps, die die Ukulele nicht hat:
+
+<div class='gallery columns-2'>
+<figure><img src='map-ao.webp' alt='Die Ambient Occlusion Map des Weckers: seine Teile flach ausgebreitet, fast alles weiß, in den Ecken der Glocken, um die Achse der Zeiger und an den Kanten grau bis schwarz.'><figcaption>Ambient Occlusion Map</figcaption></figure>
+<figure><img src='map-metal.webp' alt='Die Metallic Map des Weckers: dieselben Teile, weiß die Glocken, der Bügel, der Ring um das Glas und die Füße, schwarz das Gehäuse und das Zifferblatt.'><figcaption>Metallic Map</figcaption></figure>
+</div>
+
+- Die **Ambient Occlusion Map** (kurz *AO*) sagt, wie viel vom Licht, das von
+  überall kommt, eine Stelle erreicht. Unter den Glocken und in Ritzen
+  verdeckt das Modell sich selbst; dort ist sie dunkel.
+- Die **Metallic Map** sagt, wo Metall ist: weiß, wo es ist, schwarz, wo
+  nicht. Metall verhält sich anders als Lack: Es spiegelt fast alles, was um
+  es herum ist, und färbt die Spiegelung mit seiner eigenen Farbe. Eine
+  Glocke aus Messing spiegelt golden, eine aus Chrom grau.
+
+_task(metall)
+
+### Spiegelungen
+
+Was spiegelt eine Glocke aus Chrom? Das Zimmer, in dem sie steht. Das
+Zimmer ist `hotel-room.jpg`: ein Rundumbild, aufgenommen mit einer Kamera,
+die in alle Richtungen zugleich schaut. Seine Breite geht einmal im Kreis
+herum, seine Höhe von ganz unten bis ganz oben. Jede Richtung im Raum hat
+darin eine Stelle: der Winkel zur Seite, mit `atan`, gibt \\(u\\), der
+Winkel nach oben, mit `asin`, gibt \\(v\\). So eine Textur heißt
+**Environment Map**.
+
+Für jedes Pixel rechnet der Shader aus, wohin der Blick gespiegelt wird:
+`reflect(-v, n)` spiegelt die Richtung von der Kamera zum Pixel an der
+Normale. In diese Richtung liest er das Rundumbild. Auf einer rauen Fläche
+ist die Spiegelung verschwommen: Dafür liest `textureLod` eine der Mipmaps,
+je rauer, desto kleiner und verschwommener.
+
+Schräg gesehen spiegelt jede Fläche mehr, auch Lack und Holz; schau einmal
+flach über einen Tisch. Christophe Schlick fand 1994 eine einfache Formel
+dafür:
+
+$$F = 0{,}04 + 0{,}96 \cdot (1 - n \cdot v)^5$$
+
+Von vorne, \\(n \cdot v = 1\\), sind es 4 Prozent, ganz von der Seite 100.
+
+Schreib `shader.frag` neu:
+
+```glsl_copy
+#version 300 es
+precision highp float;
+in vec3 v_position;
+in vec2 v_uv;
+in vec3 v_normal;
+uniform sampler2D colorMap;
+uniform sampler2D normalMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D aoMap;
+uniform sampler2D metalMap;
+uniform sampler2D environment;
+uniform bool useColor;
+uniform bool useNormal;
+uniform bool useRoughness;
+uniform bool useAo;
+uniform bool useMetal;
+uniform bool wire;
+uniform vec3 light;
+uniform vec3 eye;
+out vec4 color;
+
+// die Normale aus der Normal Map, gedreht auf die Fläche
+vec3 mapNormal(vec3 n) {
+    // wie sich Lage und Stelle in der Textur von Pixel zu Pixel ändern
+    vec3 dp1 = dFdx(v_position);
+    vec3 dp2 = dFdy(v_position);
+    vec2 duv1 = dFdx(v_uv);
+    vec2 duv2 = dFdy(v_uv);
+    // daraus die Richtungen t und b, in die u und v auf der Fläche wachsen
+    float s = sign(duv1.x * duv2.y - duv1.y * duv2.x);
+    vec3 t = normalize(dp1 * duv2.y - dp2 * duv1.y) * s;
+    vec3 b = normalize(dp2 * duv1.x - dp1 * duv2.x) * s;
+    // die Farbe der Normal Map von 0 bis 1 wird eine Richtung von -1 bis 1
+    vec3 m = texture(normalMap, v_uv).rgb * 2.0 - 1.0;
+    return normalize(m.x * t + m.y * b + m.z * n);
+}
+
+// die Farbe der Umgebung in Richtung d, aus dem Panorama; blur wählt eine
+// kleinere, verschwommenere Fassung (eine Mipmap)
+vec3 environmentColor(vec3 d, float blur) {
+    float u = 0.5 + atan(d.x, -d.z) / (2.0 * 3.14159265);
+    float v = 0.5 + asin(clamp(d.y, -1.0, 1.0)) / 3.14159265;
+    return textureLod(environment, vec2(u, v), blur).rgb;
+}
+
+void main() {
+    if (wire) {
+        color = vec4(1.0, 1.0, 1.0, 1.0);
+        return;
+    }
+    vec3 base = useColor ? texture(colorMap, v_uv).rgb : vec3(0.9, 0.88, 0.84);
+    vec3 n = normalize(v_normal);
+    if (useNormal) n = mapNormal(n);
+    float roughness = 0.5;
+    float shininess = 40.0;
+    float strength = 0.4;
+    if (useRoughness) {
+        roughness = texture(roughnessMap, v_uv).r;
+        shininess = mix(200.0, 4.0, roughness);
+        strength = 1.0 - roughness;
+    }
+    float ao = useAo ? texture(aoMap, v_uv).r : 1.0;
+    float metal = useMetal ? texture(metalMap, v_uv).r : 0.0;
+
+    vec3 l = normalize(light);
+    vec3 v = normalize(eye - v_position);
+    vec3 h = normalize(l + v);
+    float diffuse = max(dot(n, l), 0.0);
+    float specular = strength * pow(max(dot(n, h), 0.0), shininess);
+
+    // was die Fläche spiegelt: die Umgebung in Richtung des gespiegelten Blicks
+    vec3 mirrored = environmentColor(reflect(-v, n), roughness * 8.0);
+    // schräg gesehen spiegelt jede Fläche mehr (nach Schlick)
+    float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(n, v), 0.0), 5.0);
+    // Lack und Farbe: Licht, Glanz und ein wenig Spiegelung
+    vec3 painted = base * (0.3 * ao + 0.7 * diffuse) + specular + mirrored * fresnel * (1.0 - roughness);
+    // Metall: spiegelt alles, in seiner eigenen Farbe
+    vec3 shiny = mirrored * base * ao + specular * base;
+    color = vec4(mix(painted, shiny, metal), 1.0);
+}
+```
+
+- `painted` ist die Farbe von Lack und Zifferblatt: Licht von überall, jetzt
+  mal der AO, Licht von der Lampe, Glanz und die Spiegelung nach Schlick,
+  schwächer, je rauer die Fläche ist.
+- `shiny` ist Metall: die Spiegelung mal der eigenen Farbe.
+- `mix(painted, shiny, metal)` nimmt das eine, das andere oder, wo die Map
+  grau ist, etwas dazwischen.
+
+In `main.js` kommen zwei Schalter dazu, auf den Tasten <kbd>4</kbd> und
+<kbd>5</kbd>:
+
+```js
+const maps = { useColor: true, useNormal: true, useRoughness: true, useAo: true, useMetal: true };
+```
+
+```js
+    const names = { 1: 'useColor', 2: 'useNormal', 3: 'useRoughness', 4: 'useAo', 5: 'useMetal' };
+```
+
+und in `start` sechs Bilder, die Maps des Weckers und das Zimmer:
+
+```js
+    const textures = [['colorMap', 'clock-color.jpg'], ['normalMap', 'clock-normal.jpg'],
+        ['roughnessMap', 'clock-roughness.jpg'], ['aoMap', 'clock-ao.jpg'],
+        ['metalMap', 'clock-metal.jpg'], ['environment', 'hotel-room.jpg']];
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-9.frag
+write-file: webgl/main.js <- file:stufen/main-11.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 7
+click: selector:canvas
+press: 5
+sleep: 1
+-->
+<img src='wecker-ohne.webp' alt='Der Wecker ohne Metall: Glocken, Bügel und Ring sind grau und matt wie aus Kunststoff, nur mit einem schwachen Glanz.'>
+<figcaption>Ohne Metallic Map</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader-9.frag
+write-file: webgl/main.js <- file:stufen/main-11.js
+preview-reload
+tab: preview
+viewport: 800x450
+sleep: 7
+-->
+<img src='wecker.webp' alt='Der Wecker mit Metall: In den Glocken aus Chrom, im Bügel und im Ring um das Zifferblatt spiegelt sich das Hotelzimmer, helle Fenster und dunkle Möbel, verzerrt über die runden Formen; das türkise Gehäuse glänzt.'>
+<figcaption>Mit Metallic Map und Spiegelung</figcaption></figure>
+</div>
+
+### Glas
+
+Vor dem Zifferblatt sitzt eine Scheibe aus Glas. Sie liegt in einer eigenen
+Datei, `glass.obj`, denn sie braucht etwas, was der Z-Buffer nicht kann:
+Hinter ihr muss das Zifferblatt zu sehen sein.
+
+_task(glas-zuerst)
+
+<!-- after: glas-zuerst -->
+Darum wird das Glas zuletzt gemalt, nach allem, was undurchsichtig ist, und
+zwar so:
+
+- **gemischt** statt übermalt: `gl.enable(gl.BLEND)` mit
+  `gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)` nimmt die Farbe des Glases und
+  dazu so viel von dem, was schon dort ist, wie das Glas durchlässt. Wie viel
+  das ist, sagt die vierte Zahl der Farbe, **Alpha**: 1 deckt ganz, 0 gar
+  nicht.
+- **ohne in den Z-Buffer zu schreiben**: `gl.depthMask(false)`. Der Z-Buffer
+  prüft weiter, ob das Glas vor dem Wecker liegt, aber er merkt es sich
+  nicht; sonst verdeckte das Glas alles, was danach noch käme.
+<!-- /after -->
+
+Im Fragment-Shader kommt ein Schalter dazu:
+
+```glsl
+~ uniform bool useMetal;
+uniform bool glass;
+```
+
+und gleich nach `fresnel` der Fall für das Glas:
+
+```glsl
+    if (glass) {
+        // Glas: fast nur Spiegelung, schräg mehr als von vorne. Echtes Glas
+        // spiegelt von vorne 4 Prozent, hier sind es 15, damit man es sieht
+        float reflectance = 0.15 + 0.85 * pow(1.0 - max(dot(n, v), 0.0), 5.0);
+        color = vec4(mirrored * reflectance + specular, reflectance);
+        return;
+    }
+```
+
+Glas ist die Spiegelung und der Glanz; Alpha ist, wie viel es spiegelt. Was
+es nicht spiegelt, lässt es durch.
+
+In `main.js` gibt es jetzt zwei Modelle, also zwei Buffer. Zwei Funktionen
+vor `start` legen einen an und sagen der Grafikkarte, wie sie ihn liest:
+
+```js
+// ein Modell als Buffer auf der Grafikkarte: die Ecken und wie sie zu lesen sind
+function upload(vertices) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    return buffer;
+}
+
+function bindAttributes(program, buffer) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    const attributes = [['position', 3, 0], ['uv', 2, 3], ['normal', 3, 5]];
+    for (const [name, size, offset] of attributes) {
+        const location = gl.getAttribLocation(program, name);
+        if (location < 0) continue;   // ein Attribut, das der Shader nicht benutzt
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 8 * 4, offset * 4);
+    }
+}
+```
+
+In `start` liest du das Glas gleich nach dem Wecker:
+
+```js
+    const glassVertices = parseObj(await (await fetch('glass.obj')).text());
+```
+
+und an die Stelle des Buffers und der Schleife über die Attribute treten:
+
+```js
+    const buffer = upload(vertices);
+    const glassBuffer = upload(glassVertices);
+    bindAttributes(program, buffer);
+```
+
+Mit der Taste <kbd>G</kbd> schaltest du das Glas aus und an:
+
+```js
+~ let flat = false;
+let showGlass = true;
+```
+
+```js
+~     if (e.key === 'f') flat = !flat;
+    if (e.key === 'g') showGlass = !showGlass;
+```
+
+In `frame` malst du das Glas zuletzt, nach dem Wecker:
+
+```js
+        // das Glas zuletzt: gemischt mit dem, was schon gemalt ist, und ohne
+        // selbst in den Z-Buffer zu schreiben
+        if (!wireframe && showGlass) {
+            bindAttributes(program, glassBuffer);
+            gl.uniform1i(gl.getUniformLocation(program, 'glass'), true);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.depthMask(false);
+            gl.drawArrays(gl.TRIANGLES, 0, glassVertices.length / 8);
+            gl.depthMask(true);
+            gl.disable(gl.BLEND);
+            gl.uniform1i(gl.getUniformLocation(program, 'glass'), false);
+            bindAttributes(program, buffer);
+        }
+```
+
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
@@ -1743,16 +2105,14 @@ write-file: webgl/main.js <- file:stufen/main.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 6
-hook: view -0.035 0.18 0 0.11 0.9 0.15
+sleep: 7
+hook: view 0 0.087 0.007 0.24 0.5 0.25
 click: selector:canvas
-press: 2
-press: 3
-press: 4
+press: g
 sleep: 1
 -->
-<img src='maps-1.webp' alt='Kopf und Brust des Pferds nur mit der Color Map: glatt und rund wie ein Stück Seife, ein breiter, weicher Glanz auf der Brust.'>
-<figcaption>Nur die Color Map</figcaption></figure>
+<img src='glas-ohne.webp' alt='Das Zifferblatt des Weckers schräg von der Seite, ohne Glas: Ziffern und Zeiger klar und matt.'>
+<figcaption>Ohne Glas</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 write-file: webgl/math.js <- file:stufen/math.js
@@ -1763,55 +2123,42 @@ write-file: webgl/main.js <- file:stufen/main.js
 preview-reload
 tab: preview
 viewport: 800x450
-sleep: 6
-hook: view -0.035 0.18 0 0.11 0.9 0.15
-click: selector:canvas
-press: 3
-press: 4
-sleep: 1
+sleep: 7
+hook: view 0 0.087 0.007 0.24 0.5 0.25
 -->
-<img src='maps-2.webp' alt='Derselbe Ausschnitt mit der Normal Map dazu: Auf Hals und Brust treten Muskeln und Adern hervor, die Nüstern und die Haare der Mähne sind fein gezeichnet, obwohl die Dreiecke dieselben sind.'>
-<figcaption>Dazu die Normal Map</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-write-file: webgl/math.js <- file:stufen/math.js
-write-file: webgl/model.js <- file:stufen/model.js
-write-file: webgl/shader.vert <- file:stufen/shader.vert
-write-file: webgl/shader.frag <- file:stufen/shader.frag
-write-file: webgl/main.js <- file:stufen/main.js
-preview-reload
-tab: preview
-viewport: 800x450
-sleep: 6
-hook: view -0.035 0.18 0 0.11 0.9 0.15
-click: selector:canvas
-press: 4
-sleep: 1
--->
-<img src='maps-3.webp' alt='Dazu die Roughness Map: Die Glanzpunkte auf Brust und Bein sind kleiner und heller, das Porzellan sieht glatter und härter aus.'>
-<figcaption>Dazu die Roughness Map</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-write-file: webgl/math.js <- file:stufen/math.js
-write-file: webgl/model.js <- file:stufen/model.js
-write-file: webgl/shader.vert <- file:stufen/shader.vert
-write-file: webgl/shader.frag <- file:stufen/shader.frag
-write-file: webgl/main.js <- file:stufen/main.js
-preview-reload
-tab: preview
-viewport: 800x450
-sleep: 6
-hook: view -0.035 0.18 0 0.11 0.9 0.15
--->
-<img src='maps-4.webp' alt='Dazu die Ambient Occlusion Map: In den Ohren, den Nüstern und den Falten am Hals ist es jetzt dunkler, das Pferd wirkt plastischer.'>
-<figcaption>Dazu die AO Map: alle vier</figcaption></figure>
+<img src='glas.webp' alt='Dasselbe mit Glas: Über Ziffern und Zeigern liegt das Spiegelbild des Zimmers, links ein heller Streifen vom Fenster, zum Rand hin stärker; das Zifferblatt ist darunter gut zu lesen.'>
+<figcaption>Mit Glas</figcaption></figure>
 </div>
 
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte: der Wecker mit Spiegelungen und Glas in 16:9
+write-file: webgl/math.js <- file:stufen/math.js
+write-file: webgl/model.js <- file:stufen/model.js
+write-file: webgl/shader.vert <- file:stufen/shader.vert
+write-file: webgl/shader.frag <- file:stufen/shader.frag
+write-file: webgl/main.js <- file:stufen/main.js
+preview-reload
+tab: preview
+viewport: 1029x579
+sleep: 7
+hook: view 0 0.087 0.007 0.24 0.5 0.25
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom, in denen sich ein Zimmer spiegelt, einem cremefarbenen Zifferblatt mit römischen Ziffern hinter Glas, auf dunklem Grund.'>
+
+<!-- /tutorial-scope -->
+
+Für ein einzelnes Glas reicht das. Liegen mehrere durchsichtige Flächen
+hintereinander, müssen sie von hinten nach vorne gemalt werden, damit jede
+mit dem richtigen Hintergrund gemischt wird: Spiele sortieren darum alles
+Durchsichtige in jedem Bild nach der Tiefe.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schalt mit <kbd>2</kbd> die Normal Map aus und
-wieder an, während du das Pferd drehst, und dann mit <kbd>F</kbd> auf Flat
-Shading. Achte darauf, ob die Muskeln auf der Brust dabei bleiben. Und schalt
-mit <kbd>W</kbd> auf das Drahtgitter: Wie viele der Adern siehst du dort?
+<strong>Ausprobieren:</strong> Schalt mit <kbd>5</kbd> das Metall aus und
+wieder an, und dreh den Wecker langsam: Achte darauf, wie das Zimmer über die
+Glocken wandert. Setz dann im Glas die <code>0.15</code> auf
+<code>0.04</code>, so viel, wie echtes Glas von vorne spiegelt, und schau das
+Zifferblatt einmal von vorne und einmal ganz von der Seite an.
 </div>
 
 _task(warum-z-buffer)
@@ -1820,15 +2167,16 @@ _task(warum-z-buffer)
 
 Dein Programm malt Dreiecke, wie fast jedes Spiel: Ecken mit einer Matrix auf
 den Bildschirm, Pixel aus der Rasterung, der Z-Buffer für das Nächste, Licht
-aus Normalen und Texturen für alles, was in keinem Dreieck steckt. Spiele
-gehen noch weiter: Schatten aus einem zweiten Z-Buffer, der von der Lampe aus
-gerechnet wird, und Licht nach der Physik, bei dem Roughness und Metallic
-genauer rechnen als dein Exponent (*Physically Based Rendering*). Einen ganz
-anderen Weg geht ein [Raytracer](/raytracing): Er schickt für jedes Pixel
-einen Strahl in die Szene und rechnet aus, was er trifft, mit Spiegeln, Glas
-und weichen Schatten, aber viel langsamer. Und was dein Fragment-Shader tut,
-treibt [Shader in GLSL](/glsl) weiter, bis zu Welten ohne ein einziges
-Dreieck.
+aus Normalen, Texturen für alles, was in keinem Dreieck steckt, Spiegelungen
+aus einem Rundumbild und Glas, das zuletzt gemischt wird. Spiele gehen noch
+weiter: Schatten aus einem zweiten Z-Buffer, der von der Lampe aus gerechnet
+wird, und Licht nach der Physik, bei dem Roughness und Metallic genauer
+rechnen als dein Exponent (*Physically Based Rendering*). Einen ganz anderen
+Weg geht ein [Raytracer](/raytracing): Er schickt für jedes Pixel einen
+Strahl in die Szene und rechnet aus, was er trifft; Spiegel und Glas zeigen
+dort, was wirklich daneben steht, nicht ein Rundumbild, aber das Bild
+braucht viel länger. Und was dein Fragment-Shader tut, treibt
+[Shader in GLSL](/glsl) weiter, bis zu Welten ohne ein einziges Dreieck.
 
 Ohne Dreiecke kommt auch Gaussian Splatting aus: Eine
 Szene aus Fotos besteht dort aus Millionen weicher, durchscheinender Splats,

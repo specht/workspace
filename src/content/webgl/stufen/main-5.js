@@ -23,8 +23,8 @@ async function loadProgram(vertexFile, fragmentFile) {
     return program;
 }
 
-let yaw = 0.6;
-let pitch = 0.2;
+let yaw = 0.9;
+let pitch = 0.7;
 let distance = 1;
 let center = [0, 0, 0];
 
@@ -40,7 +40,7 @@ canvas.addEventListener('wheel', (e) => {
 
 async function start() {
     const program = await loadProgram('shader.vert', 'shader.frag');
-    const text = await (await fetch('horse.obj')).text();
+    const text = await (await fetch('ukulele.obj')).text();
     const vertices = parseObj(text);
     const count = vertices.length / 8;
 
@@ -54,7 +54,7 @@ async function start() {
         }
     }
     center = [0, 1, 2].map((k) => (low[k] + high[k]) / 2);
-    distance = 1.1 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
+    distance = 0.9 * Math.hypot(high[0] - low[0], high[1] - low[1], high[2] - low[2]);
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);

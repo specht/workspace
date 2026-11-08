@@ -1,0 +1,56 @@
+#version 300 es
+precision highp float;
+in vec3 v_position;
+in vec2 v_uv;
+in vec3 v_normal;
+uniform sampler2D colorMap;
+uniform sampler2D normalMap;
+uniform sampler2D roughnessMap;
+uniform bool useColor;
+uniform bool useNormal;
+uniform bool useRoughness;
+uniform bool wire;
+uniform vec3 light;
+uniform vec3 eye;
+out vec4 color;
+
+// die Normale aus der Normal Map, gedreht auf die Fläche
+vec3 mapNormal(vec3 n) {
+    // wie sich Lage und Stelle in der Textur von Pixel zu Pixel ändern
+    vec3 dp1 = dFdx(v_position);
+    vec3 dp2 = dFdy(v_position);
+    vec2 duv1 = dFdx(v_uv);
+    vec2 duv2 = dFdy(v_uv);
+    // daraus die Richtungen t und b, in die u und v auf der Fläche wachsen
+    float s = sign(duv1.x * duv2.y - duv1.y * duv2.x);
+    vec3 t = normalize(dp1 * duv2.y - dp2 * duv1.y) * s;
+    vec3 b = normalize(dp2 * duv1.x - dp1 * duv2.x) * s;
+    // die Farbe der Normal Map von 0 bis 1 wird eine Richtung von -1 bis 1
+    vec3 m = texture(normalMap, v_uv).rgb * 2.0 - 1.0;
+    return normalize(m.x * t + m.y * b + m.z * n);
+}
+
+void main() {
+    if (wire) {
+        color = vec4(1.0, 1.0, 1.0, 1.0);
+        return;
+    }
+    vec3 base = useColor ? texture(colorMap, v_uv).rgb : vec3(0.9, 0.88, 0.84);
+    vec3 n = normalize(v_normal);
+    if (useNormal) n = mapNormal(n);
+    float roughness = 0.5;
+    float shininess = 40.0;
+    float strength = 0.4;
+    if (useRoughness) {
+        roughness = texture(roughnessMap, v_uv).r;
+        shininess = mix(200.0, 4.0, roughness);
+        strength = 1.0 - roughness;
+    }
+
+    vec3 l = normalize(light);
+    vec3 v = normalize(eye - v_position);
+    vec3 h = normalize(l + v);
+    float diffuse = max(dot(n, l), 0.0);
+    float specular = strength * pow(max(dot(n, h), 0.0), shininess);
+    color = vec4(base * (0.3 + 0.7 * diffuse) + specular, 1.0);
+}

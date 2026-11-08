@@ -1,0 +1,16 @@
+The models and the panorama of »3D-Grafik mit WebGL«, all from Poly Haven
+under CC0 1.0 Universal (public domain), https://polyhaven.com/license:
+
+- ukulele.obj and ukulele-*.jpg: »Ukulele 01« by Joseph Burgan,
+  https://polyhaven.com/a/Ukulele_01
+- clock.obj, glass.obj and clock-*.jpg: »Alarm Clock 01«, modelled and
+  textured by James Ray Cock, rigged by Yann Kervran,
+  https://polyhaven.com/a/alarm_clock_01
+- hotel-room.jpg: »Hotel Room« by Greg Zaal, https://polyhaven.com/a/hotel_room
+  (the tonemapped JPG, scaled to 2048 × 1024)
+
+The OBJ files are the glTF of Poly Haven turned into OBJ with
+src/content/webgl/werkzeug/gltf_to_obj.py (the ukulele with --lay-down,
+the clock with --glass glass.obj). The textures are the 2k JPGs of Poly
+Haven, saved again with quality 88 and renamed: -color (diff), -normal
+(nor_gl), -roughness (rough or roughness), -ao (ao), -metal (metal).
