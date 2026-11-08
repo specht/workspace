@@ -397,7 +397,6 @@ void main() {
                 if (e.isTrusted && this.autoCount && this.autoCount.checked) {
                     this.autoCount.checked = false;
                     this.counter.step = '0.1';
-                    this.still = false;
                     clearTimeout(this.stillTimer);
                 }
                 this.change();
@@ -455,7 +454,6 @@ void main() {
             this.autoCount.addEventListener('change', () => {
                 // the automatic number needs fine steps, the hand the stops
                 this.counter.step = this.autoCount.checked ? 'any' : '0.1';
-                this.still = false;
                 clearTimeout(this.stillTimer);
                 if (this.autoCount.checked) this.calibrate();
                 else this.change(false);
@@ -1128,31 +1126,44 @@ void main() {
         draw() {
             const auto = this.autoCount && this.autoCount.checked && this.splats;
             if (auto) {
-                // the camera moved: back to the number that keeps it smooth
                 const cam = this.camera();
                 const key = cam.back.map((v) => v.toFixed(3)).join() + cam.eye.map((v) => v.toFixed(4)).join();
-                if (key !== this.autoKey) {
-                    this.autoKey = key;
-                    if (this.still) { this.still = false; this.setCountNow(this.movingCount); }
-                }
+                if (key !== this.autoKey) { this.autoKey = key; this.lastMoveAt = performance.now(); }
             }
             const start = auto ? performance.now() : 0;
             this.drawFrame();
-            if (!auto || this.still) return;
-            // no new movement after this picture (about two frames): the
-            // camera stands, all splats (stillPicture)
-            clearTimeout(this.stillTimer);
-            this.stillTimer = setTimeout(() => this.stillPicture(), 120);
+            if (!auto) return;
             this.gl.finish();
-            const took = performance.now() - start;
-            this.frameTime = this.frameTime ? 0.7 * this.frameTime + 0.3 * took : took;
-            if (start - (this.lastAdjust || 0) < 300) return;
-            this.lastAdjust = start;
-            let v = parseFloat(this.counter.value);
-            if (this.frameTime > 28 && v > 0.55) v = Math.max(0.55, v - 0.03);
-            else if (this.frameTime < 14 && v < 1) v = Math.min(1, v + 0.02);
-            else return;
-            this.setCountNow(v);
+            const now = performance.now();
+            const took = now - start;
+            const current = parseFloat(this.counter.value);
+            if (this.movingCount === undefined) this.movingCount = current;
+            const moving = this.calibrating || now - (this.lastMoveAt || 0) < 150 || this.flight || this.walking
+                || this.swinging || (this.waves && this.waves.length);
+            if (moving && Math.abs(current - this.movingCount) < 1e-6) {
+                // the number that keeps moving smooth, from the time of the
+                // pictures drawn with it
+                this.frameTime = this.frameTime ? 0.7 * this.frameTime + 0.3 * took : took;
+                if (now - (this.lastAdjust || 0) >= 300) {
+                    this.lastAdjust = now;
+                    if (this.frameTime > 28 && this.movingCount > 0.55) this.movingCount = Math.max(0.55, this.movingCount - 0.03);
+                    else if (this.frameTime < 14 && this.movingCount < 1) this.movingCount = Math.min(1, this.movingCount + 0.02);
+                }
+            }
+            // towards the target a little with every picture, so that
+            // nothing snaps: down quickly when the camera moves, up over
+            // about a second when it stands (all splats, the sharpest picture)
+            const target = moving ? this.movingCount : 1;
+            let next = current;
+            if (current > target) next = Math.max(target, current - 0.15);
+            else if (current < target) next = Math.min(target, current + 0.02);
+            if (next !== current) {
+                this.setCountNow(next);
+                this.redraw();
+            }
+            // the camera may stop without another picture: look again then
+            clearTimeout(this.stillTimer);
+            if (moving) this.stillTimer = setTimeout(() => this.redraw(), 170);
         }
 
         // the number of splats (the slider's 0 to 1) everywhere at once,
@@ -1166,32 +1177,19 @@ void main() {
             this.describe();
         }
 
-        // With »Automatisch flüssig«, as soon as the camera stands: all
-        // splats, for the sharpest picture; drawing it may take longer,
-        // nothing moves. Not while waves run, which want smooth pictures.
-        // The first movement brings the smooth number back (draw).
-        stillPicture() {
-            if (!this.autoCount.checked || !this.splats || this.still) return;
-            if (this.flight || this.walking || this.swinging || (this.waves && this.waves.length)) {
-                this.stillTimer = setTimeout(() => this.stillPicture(), 120);
-                return;
-            }
-            if (parseFloat(this.counter.value) >= 1) return;
-            this.movingCount = parseFloat(this.counter.value);
-            this.still = true;
-            this.setCountNow(1);
-            this.redraw();
-        }
 
         // about two seconds of pictures in a row, each timed by draw(), so
         // that the number of splats settles even while nothing moves
         calibrate() {
             const until = performance.now() + 2000;
+            this.movingCount = parseFloat(this.counter.value);
+            this.calibrating = true;
             const step = () => {
-                if (!this.autoCount.checked || !this.splats) return;
+                if (!this.autoCount.checked || !this.splats) { this.calibrating = false; return; }
                 this.lastSort = null;   // as when moving: sorting is part of the time
                 this.draw();
                 if (performance.now() < until) requestAnimationFrame(step);
+                else { this.calibrating = false; this.redraw(); }
             };
             requestAnimationFrame(step);
         }

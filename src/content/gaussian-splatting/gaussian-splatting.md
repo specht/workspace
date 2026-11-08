@@ -1284,17 +1284,6 @@ open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x1080
 hook: hide-footer
-hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 1000
-crop-element: #szenen .splat-viewer-stage
--->
-<img src='gasse-1000.webp' alt='Die Gasse aus 1.000 Splats: auf hellem Grund nur ein paar lange, verwischte Striche und dunkle Flecken, von einer Gasse nichts zu erkennen.'>
-<figcaption>1.000 Splats</figcaption></figure>
-<figure>
-<!-- tutorial-screenshot
-open-site: /gaussian-splatting
-tab: preview
-viewport: 1280x1080
-hook: hide-footer
 hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 10000
 crop-element: #szenen .splat-viewer-stage
 -->
@@ -1311,6 +1300,17 @@ crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-100000.webp' alt='Die Gasse aus 100.000 Splats: Fassaden links und rechts und der Boden sind zu erkennen, aber verschmiert und voller schwarzer und heller Schlieren.'>
 <figcaption>100.000 Splats</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+open-site: /gaussian-splatting
+tab: preview
+viewport: 1280x1080
+hook: hide-footer
+hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 1000000
+crop-element: #szenen .splat-viewer-stage
+-->
+<img src='gasse-1000000.webp' alt='Die Gasse aus einer Million Splats: Fassaden, Fenster, die Mülltonne und das Pflaster sind klar zu erkennen; die Aushänge hinter den Scheiben und die Schilder über der Gasse sind noch verschwommen, ohne lesbare Schrift.'>
+<figcaption>1.000.000 Splats</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 open-site: /gaussian-splatting
