@@ -279,7 +279,11 @@ void main() {
             countLabel.innerHTML = '<span>Anzahl der Splats</span>';
             this.counter = document.createElement('input');
             this.counter.type = 'range'; this.counter.className = 'form-range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
-            this.counter.addEventListener('input', () => { this.lastSort = null; this.describe(); this.redraw(); });
+            this.counter.addEventListener('input', (e) => {
+                // moved by hand: the automatic number stops
+                if (e.isTrusted && this.autoCount) this.autoCount.checked = false;
+                this.lastSort = null; this.describe(); this.redraw();
+            });
             this.countValue = document.createElement('output');
             countLabel.append(this.counter, this.countValue);
             sliders.append(countLabel);
@@ -339,6 +343,18 @@ void main() {
             game.append(this.invertY, gameText);
             this.gameSwitch = game;
             bar.append(game);
+            const auto = document.createElement('label');
+            auto.className = 'form-check form-switch splat-viewer-game';
+            auto.title = 'Zeichnet beim Bewegen so viele Splats, wie der Rechner flüssig schafft';
+            this.autoCount = document.createElement('input');
+            this.autoCount.type = 'checkbox';
+            this.autoCount.className = 'form-check-input';
+            this.autoCount.setAttribute('role', 'switch');
+            const autoText = document.createElement('span');
+            autoText.className = 'form-check-label';
+            autoText.textContent = 'Automatisch flüssig';
+            auto.append(this.autoCount, autoText);
+            bar.append(auto);
             const swing = document.createElement('label');
             swing.className = 'form-check form-switch splat-viewer-game';
             this.swing = document.createElement('input');
@@ -760,7 +776,31 @@ void main() {
             this.frame = requestAnimationFrame(() => { this.frame = null; this.draw(); });
         }
 
+        // one picture; with »Automatisch flüssig« it is also timed (sorting
+        // and drawing until the graphics chip is done), and the number of
+        // splats follows: fewer when a picture takes longer than 28 ms, more
+        // when it takes less than 14 ms, at most every 300 ms, never below
+        // a few tens of thousands
         draw() {
+            const auto = this.autoCount && this.autoCount.checked && this.splats;
+            const start = auto ? performance.now() : 0;
+            this.drawFrame();
+            if (!auto) return;
+            this.gl.finish();
+            const took = performance.now() - start;
+            this.frameTime = this.frameTime ? 0.7 * this.frameTime + 0.3 * took : took;
+            if (start - (this.lastAdjust || 0) < 300) return;
+            this.lastAdjust = start;
+            let v = parseFloat(this.counter.value);
+            if (this.frameTime > 28 && v > 0.55) v = Math.max(0.55, v - 0.03);
+            else if (this.frameTime < 14 && v < 1) v = Math.min(1, v + 0.02);
+            else return;
+            this.counter.value = String(v);
+            this.lastSort = null;
+            this.describe();
+        }
+
+        drawFrame() {
             const gl = this.gl, s = this.splats;
             if (!gl) return;
             const ratio = Math.min(window.devicePixelRatio || 1, 2);
