@@ -2468,6 +2468,65 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     .gallery.wide-narrow > figure:last-child img { max-width: 15em; }
 }
 
+/* On a phone a gallery of several pictures is a row to swipe through
+   (.swipe, set by tutorial-preview.js), from edge to edge of the screen: one
+   picture at a time, snapping into place, the edge of the next showing that
+   there is more; a dot for each picture below it. Wider screens keep the
+   grid, and the dots are hidden there. */
+.gallery-dots {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .gallery.swipe {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75em;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding: 0 calc(50vw - 50%);
+        scroll-padding: 0 calc(50vw - 50%);
+        margin-bottom: 0.4em;
+    }
+
+    .gallery.swipe::-webkit-scrollbar {
+        display: none;
+    }
+
+    .gallery.swipe > figure {
+        flex: 0 0 86%;
+        scroll-snap-align: center;
+    }
+
+    .gallery.swipe.wide-narrow > figure:last-child img {
+        max-width: none;
+    }
+
+    .gallery-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.45em;
+        margin: 0 0 1.5em;
+    }
+
+    .gallery-dots span {
+        width: 0.45em;
+        height: 0.45em;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.25;
+        transition: opacity 150ms ease;
+    }
+
+    .gallery-dots span.active {
+        opacity: 0.75;
+    }
+}
+
 .gallery figure {
     margin: 0;
 }

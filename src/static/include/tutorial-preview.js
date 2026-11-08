@@ -13,6 +13,33 @@
 // screenshot, a rendered scene, a drawing: img.full and img.drawing outside a
 // gallery) opens the same way, as a gallery of one, wherever its file is
 // clearly larger than the picture on the page: there is more to see.
+// On a phone a gallery that would stack its pictures one under the other
+// becomes a row to swipe through (.swipe, default.css), with a dot for each
+// picture below it, the one in view filled. Galleries that already suit a
+// phone stay as they are: tiles, a few small drawings (centered), a single
+// picture to read, four columns (a grid of two there).
+document.addEventListener('DOMContentLoaded', () => {
+    const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair';
+    for (const gallery of document.querySelectorAll('.gallery')) {
+        const figures = [...gallery.children].filter((child) => child.tagName === 'FIGURE');
+        if (gallery.matches(KEEP) || figures.length < 2) continue;
+        gallery.classList.add('swipe');
+        const dots = document.createElement('div');
+        dots.className = 'gallery-dots';
+        dots.setAttribute('aria-hidden', 'true');
+        dots.append(...figures.map(() => document.createElement('span')));
+        gallery.after(dots);
+        const update = () => {
+            const step = figures[1].offsetLeft - figures[0].offsetLeft;
+            const index = step > 0 ? Math.round(gallery.scrollLeft / step) : 0;
+            [...dots.children].forEach((dot, i) => dot.classList.toggle('active', i === Math.min(index, figures.length - 1)));
+        };
+        gallery.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
     const singleImages = [...document.querySelectorAll('img.full, img.drawing')]
