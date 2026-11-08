@@ -558,17 +558,7 @@ hook: info off
 
 <img class='full fit-width' src='saal-5.webp' alt='Der Saal mit einem grauen Schreibtisch aus Metall zwischen den Säulen, davor ein blauer Schulstuhl; rechts an der Wand ein leeres Regal aus Metall.'>
 
-Im Ordner `models` liegt auch eine Statue, `athena.glb`: der 3D-Scan eines Gipsabgusses einer antiken Statue aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei, im Format GLB, das alles in einer Datei hat. Mit `material = marble` ist ein Modell aus Marmor statt aus seinen eigenen Farben, und `pedestal = 0.9, 0.8, 0.9` stellt es auf einen Sockel, 0,9 m breit, 0,8 m hoch und 0,9 m tief:
-
-```room
-[A]
-model = models/athena.glb
-height = 2.2
-material = marble
-pedestal = 0.9, 0.8, 0.9
-```
-
-Weitere Möbel liegen im selben Ordner; zwei davon stehen gleich im Salon.
+Weitere Möbel liegen im selben Ordner; zwei davon stehen gleich im Salon. Was ein Modell sonst noch kann, etwa auf einem Sockel stehen oder aus einem anderen Material sein, steht in der [Kartografie](/reference/kartografie).
 
 ### Ein Boden wie im Büro
 

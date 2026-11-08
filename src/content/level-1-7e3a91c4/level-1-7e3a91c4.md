@@ -594,7 +594,7 @@ hook: info off
 </div>
 
 <div class='hint try'>
-<p><strong>Ausprobieren:</strong> Drück <kbd>K</kbd> und lauf schräg gegen eine Wand. Welche der acht Punkte werden rot, und warum gleitest du trotzdem weiter? Stell dich vor die erste Stufe im Treppenhaus und dann vor die Seite des Absatzes: Wann werden die Punkte dort rot? Geh im Saal um Athena herum, ganz dicht: Wie nah kommst du an den Sockel?</p>
+<p><strong>Ausprobieren:</strong> Drück <kbd>K</kbd> und lauf schräg gegen eine Wand. Welche der acht Punkte werden rot, und warum gleitest du trotzdem weiter? Stell dich vor die erste Stufe im Treppenhaus und dann vor die Seite des Absatzes: Wann werden die Punkte dort rot? Geh im Saal um den Schreibtisch herum, ganz dicht: Wie nah kommst du an seine Kante?</p>
 </div>
 
 ## Ein Ausgang

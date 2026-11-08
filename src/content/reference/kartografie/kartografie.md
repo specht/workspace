@@ -149,7 +149,7 @@ Eine Statue, ein Möbelstück, eine Lampe: eine Datei im Format [glTF](https://r
 
 <table class='table'>
 <tr><th>Eintrag</th><th>Bedeutung</th></tr>
-<tr><td><code>model</code></td><td>der Pfad zur Datei, etwa <code>models/athena.glb</code></td></tr>
+<tr><td><code>model</code></td><td>der Pfad zur Datei, etwa <code>models/sofa_03/sofa_03_1k.gltf</code></td></tr>
 <tr><td><code>height</code></td><td>wie hoch es ist (2)</td></tr>
 <tr><td><code>rotation</code></td><td>gedreht, in Grad: eine Zahl um die senkrechte Achse; drei, <code>x, y, z</code>, um alle drei Achsen, erst um y, dann um x, dann um z</td></tr>
 <tr><td><code>offset</code></td><td>aus der Mitte des Felds geschoben: x, y, z</td></tr>
