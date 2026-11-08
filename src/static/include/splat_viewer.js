@@ -172,6 +172,7 @@ in uint a_index;
 uniform vec3 u_waveCenter;  // where the wave of »Umrisse« started
 uniform float u_radius;     // how far it has come
 uniform float u_inside;     // 1: outlines inside the sphere, 0: outside it
+uniform float u_band;       // how soft its front is
 out vec4 v_color;
 out vec2 v_corner;
 out float v_outline;        // 1: draw only the outline of this splat
@@ -207,9 +208,9 @@ void main() {
     gl_Position = vec4((center + offset) * 2.0 / u_viewport, 0.0, 1.0);
     v_color = vec4(t1.rgb, t0.w);
     // the wave: a sphere around u_waveCenter; splats it has passed change,
-    // over a soft band of a twentieth of its radius
+    // over a soft band (u_band, a twelfth of the depth of the scene)
     float d = distance(t0.xyz, u_waveCenter);
-    float band = max(0.05 * u_radius, 0.05);
+    float band = max(u_band, 1e-4);
     float passed = 1.0 - smoothstep(u_radius - band, u_radius, d);
     v_outline = mix(1.0 - passed, passed, u_inside);
     v_front = 1.0 - smoothstep(0.0, band, abs(d - u_radius));
@@ -529,7 +530,7 @@ void main() {
             this.program = program;
             gl.useProgram(program);
             this.u = {};
-            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness', 'u_waveCenter', 'u_radius', 'u_inside']) this.u[name] = gl.getUniformLocation(program, name);
+            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness', 'u_waveCenter', 'u_radius', 'u_inside', 'u_band']) this.u[name] = gl.getUniformLocation(program, name);
             this.vao = gl.createVertexArray();
             gl.bindVertexArray(this.vao);
             const corners = gl.createBuffer();
@@ -1017,23 +1018,24 @@ void main() {
         startWave(on) {
             if (!this.splats) return;
             const center = this.camera().eye;
-            // far enough for the whole scene: the distance to the corners of
-            // its box
+            // from the nearest splats to the farthest (a few stray ones left
+            // out), so that the wave spends its time in the scene, not in
+            // the empty space between the camera and an object
             const s = this.splats, n = s.count;
-            let far = 0;
+            const distances = [];
             const step = Math.max(1, Math.floor(n / 20000));
-            for (let i = 0; i < n; i += step) {
-                const d = Math.hypot(s.position[i * 3] - center[0], s.position[i * 3 + 1] - center[1], s.position[i * 3 + 2] - center[2]);
-                if (d > far) far = d;
-            }
+            for (let i = 0; i < n; i += step) distances.push(Math.hypot(s.position[i * 3] - center[0], s.position[i * 3 + 1] - center[1], s.position[i * 3 + 2] - center[2]));
+            distances.sort((a, b) => a - b);
+            const near = distances[Math.floor(distances.length * 0.01)] || 0;
+            const far = distances[Math.floor(distances.length * 0.995)] || 1;
+            const band = 0.08 * (far - near);
             const start = performance.now();
-            const wave = this.wave = { center, radius: 0, inside: on ? 1 : 0 };
+            const wave = this.wave = { center, radius: near - band, band, inside: on ? 1 : 0 };
             const tick = (now) => {
                 if (this.wave !== wave) return;
                 const t = Math.min(1, (now - start) / 3000);
-                // fast near the camera, slower far out, so that one sees it
-                // travel along a street
-                wave.radius = far * Math.pow(t, 1.6);
+                // a little slower towards the end, so that one sees it leave
+                wave.radius = near - band + (far - near + 2 * band) * Math.pow(t, 1.25);
                 this.redraw();
                 if (t < 1) requestAnimationFrame(tick);
                 else if (!on) this.wave = null;
@@ -1082,10 +1084,11 @@ void main() {
             // »Weichheit« from 1 (the Gaussian, k = 1) down to 0 (k = 32, an
             // ellipse with a sharp border)
             gl.uniform1f(this.u.u_sharpness, this.sharpness ? this.exponent() : 1);
-            const wave = this.wave || { center: [0, 0, 0], radius: 1e9, inside: 0 };
+            const wave = this.wave || { center: [0, 0, 0], radius: 1e9, inside: 0, band: 1 };
             gl.uniform3fv(this.u.u_waveCenter, wave.center);
             gl.uniform1f(this.u.u_radius, wave.radius);
             gl.uniform1f(this.u.u_inside, wave.inside);
+            gl.uniform1f(this.u.u_band, wave.band || 1);
             gl.enable(gl.BLEND);
             // back to front: each splat covers what is already there as far
             // as it is opaque (the colour comes premultiplied by alpha)
