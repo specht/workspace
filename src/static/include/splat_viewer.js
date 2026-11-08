@@ -294,10 +294,10 @@ void main() {
                 this.showValues();
                 this.redraw();
             });
-            // the exponent k of exp(-q^k / 2): 1 is the bell of Gauss, 32 an
-            // ellipse with a sharp border (sharpness in paint() of the page)
+            // 100 % is the bell of Gauss (exponent 1 in exp(-q^k / 2)), 0 % an
+            // ellipse with a sharp border (exponent 32)
             this.sharpValue = document.createElement('output');
-            this.sharpValue.title = 'Der Exponent der Glocke: 1 ist die Glocke von Gauß, 32 eine Ellipse mit scharfem Rand';
+            this.sharpValue.title = '100 % ist die Glocke von Gauß, 0 % eine Ellipse mit scharfem Rand';
             sharpLabel.append(this.sharpness, this.sharpValue);
             sliders.append(sharpLabel);
             const open = document.createElement('button');
@@ -612,19 +612,30 @@ void main() {
             return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
         }
 
-        // the whole viewer fits into the window, the controls and the legend
-        // below the picture included: the picture gets at most the height
-        // that is left (it becomes wider than 16:9 then, not smaller), minus
-        // what is fixed over the page (the footer in development)
+        // the whole viewer fits comfortably into the window: the picture at
+        // most about 60 % of its height, and picture, controls and legend
+        // together inside what is not covered (the footer in development).
+        // The picture stays 16:9; where the column is wider than that
+        // allows, the whole viewer becomes narrower and sits in the middle.
+        // Twice, because the controls wrap differently at the new width.
         fit() {
-            const below = this.root.getBoundingClientRect().bottom - this.stage.getBoundingClientRect().bottom;
+            const root = this.root;
+            root.style.maxWidth = '';
+            const column = root.parentElement ? root.parentElement.clientWidth : root.clientWidth;
             let covered = 0;
             for (const bar of document.querySelectorAll('footer, header, nav')) {
+                // only bars across the page (the footer, the chapter bar),
+                // not the table of contents beside it, which is sticky too
                 const position = getComputedStyle(bar).position;
-                if (position === 'fixed' || position === 'sticky') covered += bar.getBoundingClientRect().height;
+                const box = bar.getBoundingClientRect();
+                if ((position === 'fixed' || position === 'sticky') && box.width > 0.6 * window.innerWidth && box.height < 0.25 * window.innerHeight) covered += box.height;
             }
-            const room = Math.floor(window.innerHeight - covered - below - 16);
-            this.stage.style.maxHeight = room >= 240 ? `${room}px` : '';
+            for (let pass = 0; pass < 2; pass++) {
+                const below = root.getBoundingClientRect().bottom - this.stage.getBoundingClientRect().bottom;
+                const room = Math.min(window.innerHeight - covered - below - 32, 0.6 * window.innerHeight);
+                const width = Math.max(480, Math.floor(room * 16 / 9));
+                root.style.maxWidth = width < column ? `${width}px` : '';
+            }
         }
 
         // a legend of the controls: in a place to walk through other ones
@@ -655,8 +666,7 @@ void main() {
         showValues() {
             this.sizeValue.textContent = `${Math.round(parseFloat(this.slider.value) * 100)} %`;
             this.countValue.textContent = this.splats ? this.drawn().toLocaleString('de-DE') : '';
-            const k = this.exponent();
-            this.sharpValue.textContent = k < 9.95 ? k.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : String(Math.round(k));
+            this.sharpValue.textContent = `${Math.round(parseFloat(this.sharpness.value) * 100)} %`;
         }
 
         describe() {

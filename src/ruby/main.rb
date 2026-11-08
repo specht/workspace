@@ -721,11 +721,11 @@ class Main < Sinatra::Base
     private_class_method :load_invitations_locked
 
     # The street and the classroom of »Gaussian Splatting«
-    # (splat_viewer.js, 16 to 80 MB),
+    # (splat_viewer.js, 19 and 80 MB),
     # too big for the repository: fetched once from specht/workspace-files
     # into /dl, which nginx serves; a file only gets its name when it is
     # complete, so a broken download is fetched again at the next start.
-    SPLAT_SCENES = %w[artillery-passage.csplat artillery-passage-full.csplat classroom.csplat].freeze
+    SPLAT_SCENES = %w[artillery-passage-full.csplat classroom.csplat].freeze
 
     def self.prepare_splat_scenes
         SPLAT_SCENES.each do |name|

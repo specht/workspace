@@ -14462,7 +14462,8 @@ html[data-bs-theme="dark"] .usage-charts {
    a 16:9 stage on a quiet ground, below it the scene, the size of the
    splats and the own file */
 .splat-viewer {
-    margin: 1.2em 0;
+    /* in the middle when fit() makes it narrower than the column */
+    margin: 1.2em auto;
     --splat-ground: #eceae4;
 }
 html[data-bs-theme="dark"] .splat-viewer {
@@ -14470,9 +14471,6 @@ html[data-bs-theme="dark"] .splat-viewer {
 }
 .splat-viewer-stage {
     position: relative;
-    /* 16:9, but in a low window lower (splat_viewer.js, fit): then the
-       full width stays and the picture becomes wider */
-    width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: 0.4rem;
     overflow: hidden;

@@ -40,7 +40,7 @@ wird wie die Glockenkurve von Carl Friedrich Gauß.
 # mit scharfem Rand
 open-site: /gaussian-splatting
 tab: preview
-viewport: 1280x900
+viewport: 1280x1080
 hook: hide-footer
 hook: scene Apfel 1000000
 hook: camera 0.38 0.2 0.12
@@ -1207,7 +1207,7 @@ Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
 hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
 würde dunkel und flau.
 
-<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1}, {"name": "Aus der Ecke", "target": [-2.4, 1.0, -2.4], "distance": 0.3, "yaw": -2.6, "pitch": 0.2}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1}, {"name": "Bildschirm", "target": [-0.2, 0.7, -1.9], "distance": 0.3, "yaw": 0.35, "pitch": 0}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5}]}, {"name": "Artillery Passage (1,5 Mio. Splats, 24 MB)", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true, "overfly": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}, {"name": "Artillery Passage, schärfer (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true, "overfly": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Klassenzimmer", "src": "/dl/gaussian-splatting/classroom.csplat", "credit": "»Classroom of Class 6 Grade 9, China« von Hite Spive, CC BY 4.0", "view": {"target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05, "speed": 0.8, "look": true}, "spots": [{"name": "Vorne", "target": [-0.2, 0.5, -0.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "Von hinten", "target": [0, 0.7, 2.2], "distance": 0.3, "yaw": 0, "pitch": 0.1}, {"name": "Aus der Ecke", "target": [-2.4, 1.0, -2.4], "distance": 0.3, "yaw": -2.6, "pitch": 0.2}, {"name": "Zur Rückwand", "target": [0, 0.6, -2.2], "distance": 0.3, "yaw": 3.14, "pitch": 0.1}, {"name": "Bildschirm", "target": [-0.2, 0.7, -1.9], "distance": 0.3, "yaw": 0.35, "pitch": 0}, {"name": "Unter den Tischen", "target": [-0.2, -0.4, 0], "distance": 0.3, "yaw": 0.4, "pitch": -0.1}, {"name": "Von außen", "target": [-0.2, 0.5, -0.2], "distance": 9, "yaw": 0.6, "pitch": 0.5}]}, {"name": "Artillery Passage (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true, "overfly": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [-1.1, 0.3, -3.4], "distance": 0.3, "yaw": -1.55, "pitch": -0.33, "roll": 0.1}, {"name": "Hinter der Laterne", "target": [0.25, 4.6, -10.8], "distance": 0.3, "yaw": 0, "pitch": 0.45, "roll": -0.08}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 1, 5], "distance": 40, "yaw": 0, "pitch": 0.15}]}]'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl das Klassenzimmer, flieg mit »Zur
@@ -1216,7 +1216,7 @@ links. Achte darauf, wo die Splats klein und dicht liegen und wo wenige
 große Splats eine Fläche malen.
 </div>
 
-### Eine Straße aus 1,5 Millionen Splats
+### Eine Straße aus 5 Millionen Splats
 
 Die Gegenstände vom Sessel bis zum Apfel hat ein Programm aus gerenderten
 Bildern gelernt. Echt, aus Fotos trainiert, ist das
@@ -1228,8 +1228,13 @@ Auch »Artillery Passage« ist echt: eine schmale Gasse im Londoner Stadtteil
 Spitalfields, die David Fletcher aus 1.575 Fotos trainiert und unter
 CC BY 4.0 auf [superspl.at](https://superspl.at/scene/f4897475)
 veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
-1,2 Gigabyte groß; für diese Seite sind es die 1,5 Millionen, die am meisten
-zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage (1,5 Mio. Splats, 24 MB)«: Die Kamera steht
+1,2 Gigabyte groß; für diese Seite stehen dieselben Splats in einem
+kompakteren Format in 80 Megabyte. So eine große Szene braucht eine Weile
+zum Laden und einen Rechner mit eigener Grafikkarte. Ruckelt sie, schieb
+»Anzahl der Splats« nach links: Dann zeichnet der Viewer nur die Splats,
+die am meisten zeigen.
+
+Wähl im Viewer »Artillery Passage (5 Mio. Splats, 80 MB)«: Die Kamera steht
 mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
 Touchscreen mit den beiden Knöpfen), mit Q und E nach unten und oben, mit
 den Pfeiltasten oder durch Ziehen schaust du dich um, und mit dem Mausrad
@@ -1247,10 +1252,8 @@ sind und wie groß auf einer glatten Wand. Die letzten beiden Standorte
 zeigen, wo die Täuschung endet: in einem Laden, durch dessen Fassade du
 hinaus auf die Gasse schaust, und weit draußen vor der Gasse. Dort zerfallen
 die Fassaden an den Seiten in Schlieren, und nur in der Mitte bleibt die
-Gasse: Alle Fotos wurden in der Gasse gemacht,
-und was keine Kamera gesehen hat, hat das Training nie verbessert. Die
-Fassung mit 5 Millionen Splats zeigt mehr, braucht aber 80 Megabyte und
-einen Rechner mit eigener Grafikkarte.
+Gasse: Alle Fotos wurden in der Gasse gemacht, und was keine Kamera gesehen
+hat, hat das Training nie verbessert.
 
 Die Datei ist so sortiert, dass die Splats, die am meisten zeigen, vorne
 stehen. »Anzahl der Splats« zeichnet nur die ersten davon:
@@ -1260,9 +1263,9 @@ stehen. »Anzahl der Splats« zeichnet nur die ersten davon:
 <!-- tutorial-screenshot
 open-site: /gaussian-splatting
 tab: preview
-viewport: 1280x900
+viewport: 1280x1080
 hook: hide-footer
-hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 1000
+hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 1000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-1000.webp' alt='Die Gasse aus 1.000 Splats: auf hellem Grund nur ein paar lange, verwischte Striche und dunkle Flecken, von einer Gasse nichts zu erkennen.'>
@@ -1271,9 +1274,9 @@ crop-element: #szenen .splat-viewer-stage
 <!-- tutorial-screenshot
 open-site: /gaussian-splatting
 tab: preview
-viewport: 1280x900
+viewport: 1280x1080
 hook: hide-footer
-hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 10000
+hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 10000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-10000.webp' alt='Die Gasse aus 10.000 Splats: große dunkle und helle Kleckse, dazwischen Spitzen und Striche; in der Mitte ahnt man den hellen Himmel über einer Gasse.'>
@@ -1282,9 +1285,9 @@ crop-element: #szenen .splat-viewer-stage
 <!-- tutorial-screenshot
 open-site: /gaussian-splatting
 tab: preview
-viewport: 1280x900
+viewport: 1280x1080
 hook: hide-footer
-hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 100000
+hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 100000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-100000.webp' alt='Die Gasse aus 100.000 Splats: Fassaden links und rechts und der Boden sind zu erkennen, aber verschmiert und voller schwarzer und heller Schlieren.'>
@@ -1293,13 +1296,13 @@ crop-element: #szenen .splat-viewer-stage
 <!-- tutorial-screenshot
 open-site: /gaussian-splatting
 tab: preview
-viewport: 1280x900
+viewport: 1280x1080
 hook: hide-footer
-hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 1500000
+hook: scene Artillery Passage (5 Mio. Splats, 80 MB) 5000000
 crop-element: #szenen .splat-viewer-stage
 -->
-<img src='gasse-1500000.webp' alt='Die Gasse aus allen 1,5 Millionen Splats, fast wie ein Foto: links eine Fassade aus hellem Holz mit Schaufenster, in der Mitte eine schwarze Mülltonne auf grauem Pflaster, rechts weiße und grüne Ladenfronten, hinten die Gasse bis zu einem Laternenmast.'>
-<figcaption>1.500.000 Splats</figcaption></figure>
+<img src='gasse-alle.webp' alt='Die Gasse aus allen fast 5 Millionen Splats, fast wie ein Foto: links eine Fassade aus hellem Holz mit Schaufenster, in der Mitte eine schwarze Mülltonne auf grauem Pflaster, rechts weiße und grüne Ladenfronten, hinten die Gasse bis zu einem Laternenmast.'>
+<figcaption>Alle 4.974.593 Splats</figcaption></figure>
 </div>
 
 Die ersten Splats sind groß und decken viel, aber jeder malt nur einen
@@ -1392,7 +1395,7 @@ der Viewer neu sortieren, für jedes Bild. Soll es flüssig aussehen, sind das
 60 Bilder in der Sekunde, eines alle 16 Millisekunden.
 
 Mit einem Verfahren, das vergleicht (Handbuch,
-[Sortieren](/reference/sortieren)), dauern die 1,5 Millionen Splats der Gasse
+[Sortieren](/reference/sortieren)), dauern 1,5 Millionen Splats
 auf dem Rechner, auf dem diese Seite entstanden ist, etwa 740 Millisekunden:
 viel zu lange. Der Viewer zählt stattdessen. Er rechnet jede Tiefe in eine
 ganze Zahl von 0 bis 65.535 um, zählt, wie oft jede Zahl vorkommt, und weiß
