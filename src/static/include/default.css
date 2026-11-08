@@ -7702,6 +7702,16 @@ textarea.struktogramm-playground-input {
         max-width: 100%;
         overflow-x: auto;
     }
+
+    /* unless it already stands in a box that scrolls (Bootstrap's
+       .table-responsive, .scroll-x): then two scrollbars, one inside the
+       other */
+    .table-responsive > table.table,
+    .scroll-x > table.table {
+        display: table;
+        max-width: none;
+        overflow-x: visible;
+    }
 }
 
 /* Admin page: which group's login codes a teacher of several groups sees. */
