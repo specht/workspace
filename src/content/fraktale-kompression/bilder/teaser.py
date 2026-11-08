@@ -1,5 +1,6 @@
-"""The picture for the card of »Fraktale Bildkompression«: the beach huts,
-decoded twice as large from noise, in vertical strips from left to right:
+"""The picture for the card of »Fraktale Bildkompression«: the beach huts in
+colour, decoded twice as large from coloured noise, in vertical strips from
+left to right:
 the noise, steps 1, 2 and 3, then the finished picture. 16:9, cut from the
 middle of the 960 × 640 picture.
 
@@ -21,23 +22,37 @@ from PIL import Image  # noqa: E402
 sys.path.insert(0, os.path.join(HERE, '..', 'loesung'))
 import fraktal  # noqa: E402
 
-photo = fraktal.load(os.path.join(HERE, '..', 'beispiele', 'strandhaeuser.png'))
-code = fraktal.encode(photo)
+path = os.path.join(HERE, '..', 'beispiele', 'strandhaeuser.png')
+y, cb, cr = fraktal.load_color(path)
+codes = {'y': fraktal.encode(y), 'cb': fraktal.encode(fraktal.shrink(cb)), 'cr': fraktal.encode(fraktal.shrink(cr))}
 scale = 2
-image = fraktal.start_image('rauschen', photo.shape[0] * scale, photo.shape[1] * scale)
-steps = [image]
-for _ in range(8):
-    image = fraktal.decode_step(image, code, scale)
-    steps.append(image)
+h, w = fraktal.picture_size(codes['y'])
+y0, cb0, cr0 = fraktal.start_image('rauschen', h * scale, w * scale)
+images = {'y': y0, 'cb': cb0, 'cr': cr0}
+steps = []
 
-h, w = steps[0].shape
+
+def colour(images):
+    cbu = np.repeat(np.repeat(images['cb'], 2, axis=0), 2, axis=1)
+    cru = np.repeat(np.repeat(images['cr'], 2, axis=0), 2, axis=1)
+    ycbcr = np.clip(np.stack([images['y'], cbu, cru], axis=-1), 0, 255).round().astype(np.uint8)
+    return np.asarray(Image.fromarray(ycbcr, 'YCbCr').convert('RGB'))
+
+
+steps.append(colour(images))
+for _ in range(8):
+    for name in images:
+        images[name] = fraktal.decode_step(images[name], codes[name], scale)
+    steps.append(colour(images))
+
+height_full, width = steps[0].shape[:2]
 order = [0, 1, 2, 3, 8, 8]
-band = w // len(order)
-teaser = np.empty((h, w))
+band = width // len(order)
+teaser = np.empty_like(steps[0])
 for i, step in enumerate(order):
     teaser[:, i * band:(i + 1) * band] = steps[step][:, i * band:(i + 1) * band]
-height = w * 9 // 16
-top = (h - height) // 2
-picture = Image.fromarray(np.clip(teaser[top:top + height], 0, 255).round().astype(np.uint8))
+height = width * 9 // 16
+top = (height_full - height) // 2
+picture = Image.fromarray(teaser[top:top + height])
 picture.save(os.path.join(HERE, '..', 'teaser.webp'), quality=88)
 print('teaser.webp', picture.size)

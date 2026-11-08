@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Die Strandhäuser, von links nach rechts in Streifen aus Rauschen über grobe Kästchen zum fertigen Foto"
+image_alt: "Die Strandhäuser in Farbe, von links nach rechts in Streifen aus buntem Rauschen über grobe Kästchen zum fertigen Foto"
 kind: labor
 language: Python
 duration: 3 Doppelstunden
@@ -69,14 +69,14 @@ N = 256
 
 
 def shrink(image):
-    h, w = image.shape
-    return image.reshape(h // 2, 2, w // 2, 2).mean(axis=(1, 3))
+    h, w = image.shape[:2]
+    return image.reshape(h // 2, 2, w // 2, 2, 3).mean(axis=(1, 3))
 
 
 def copy_machine(image):
     small = shrink(image)
     h = N // 2
-    new = np.full((N, N), 255.0)
+    new = np.full((N, N, 3), 255.0)
     new[0:h, h // 2:h // 2 + h] = small
     new[h:N, 0:h] = small
     new[h:N, h:N] = small
@@ -86,9 +86,9 @@ def copy_machine(image):
 def main():
     start = sys.argv[1] if len(sys.argv) > 1 else 'strandhaeuser.png'
     if start == 'rauschen':
-        image = np.random.default_rng(1).uniform(0, 255, (N, N))
+        image = np.random.default_rng(1).uniform(0, 255, (N, N, 3))
     else:
-        image = np.asarray(Image.open(start).convert('L').resize((N, N)), dtype=float)
+        image = np.asarray(Image.open(start).convert('RGB').resize((N, N)), dtype=float)
     for step in range(9):
         Image.fromarray(image.astype(np.uint8)).save(f'kopie-{step}.png')
         image = copy_machine(image)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     main()
 ```
 
-Ein Bild ist hier ein numpy-Array aus Graustufen, 0 für Schwarz, 255 für Weiß. `shrink` macht aus jedem Quadrat von 2 × 2 Pixeln eines mit ihrem Mittelwert: `reshape` teilt das Array in solche Quadrate, `mean` mittelt in jedem. `copy_machine` setzt die verkleinerte Kopie dreimal in ein weißes Bild. `main` lädt die Strandhäuser in Graustufen, auf 256 × 256 Pixel gebracht, und speichert das Bild und acht Runden der Maschine als `kopie-0.png` bis `kopie-8.png`.
+Ein Bild ist hier ein numpy-Array mit drei Zahlen je Pixel, Rot, Grün und Blau, jede von 0 bis 255: `image[y, x]` sind die drei Zahlen des Pixels in Spalte `x` und Zeile `y`. `shrink` macht aus jedem Quadrat von 2 × 2 Pixeln eines mit ihrem Mittelwert, für jede Farbe: `reshape` teilt das Array in solche Quadrate, `mean` mittelt in jedem. `copy_machine` setzt die verkleinerte Kopie dreimal in ein weißes Bild. `main` lädt die Strandhäuser, auf 256 × 256 Pixel gebracht, und speichert das Bild und acht Runden der Maschine als `kopie-0.png` bis `kopie-8.png`.
 
 ```bash
 python3 kopiermaschine.py
@@ -112,7 +112,7 @@ terminal-run: cd /workspace/fraktal && python3 kopiermaschine.py
 terminal-wait-for-prompt: 60
 image-file: fraktal/kopie-0.png 2
 -->
-<img src='kopie-0.webp' alt='Die Strandhäuser in Graustufen, quadratisch zusammengedrückt: drei Hütten mit spitzen Dächern unter einem hellen Himmel.'>
+<img src='kopie-0.webp' alt='Die Strandhäuser, quadratisch zusammengedrückt: drei Hütten mit spitzen Dächern, links eine rote, dann zwei blaue Türen, darüber blauer Himmel.'>
 <figcaption>Runde 0: das Foto</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -144,7 +144,7 @@ terminal-run: cd /workspace/fraktal && python3 kopiermaschine.py
 terminal-wait-for-prompt: 60
 image-file: fraktal/kopie-8.png 2
 -->
-<img src='kopie-8-foto.webp' alt='Ein feines Dreieck aus winzigen Dreiecken, grau auf weiß: ein Sierpinski-Dreieck. Vom Foto ist nichts mehr zu erkennen.'>
+<img src='kopie-8-foto.webp' alt='Ein feines Dreieck aus winzigen Dreiecken in einem graublauen Ton auf Weiß: ein Sierpinski-Dreieck. Vom Foto ist nur seine mittlere Farbe geblieben.'>
 <figcaption>Runde 8, vom Foto aus</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -152,11 +152,11 @@ terminal-run: cd /workspace/fraktal && python3 kopiermaschine.py rauschen
 terminal-wait-for-prompt: 60
 image-file: fraktal/kopie-8.png 2
 -->
-<img src='kopie-8-rauschen.webp' alt='Dasselbe feine Dreieck aus winzigen Dreiecken, vom Rauschen aus: Es sieht genauso aus wie das Dreieck vom Foto aus.'>
+<img src='kopie-8-rauschen.webp' alt='Dasselbe feine Dreieck aus winzigen Dreiecken, vom bunten Rauschen aus, in einem mittleren Grau: Die Form ist genau die vom Foto aus.'>
 <figcaption>Runde 8, vom Rauschen aus</figcaption></figure>
 </div>
 
-Beide Male entsteht dasselbe Dreieck, ein **Sierpinski-Dreieck**. Das Startbild spielt keine Rolle: Jede Runde verkleinert es auf die Hälfte, nach acht Runden auf 1/256, ein Pixel von 256. Was übrig bleibt, ist allein die Regel der Maschine, wohin die drei Kopien kommen. Das Dreieck ist ihr **Fixpunkt**: Legt man es ein, kommt es unverändert wieder heraus, denn es besteht genau aus drei halb so großen Kopien von sich selbst.
+Beide Male entsteht dieselbe Form, ein **Sierpinski-Dreieck**. Vom Startbild ist nichts mehr zu erkennen: Jede Runde verkleinert es auf die Hälfte, nach acht Runden auf 1/256, ein Pixel von 256. Was übrig bleibt, ist die Regel der Maschine, wohin die drei Kopien kommen. Nur eines vom Startbild hält sich, seine mittlere Farbe: Die Maschine mittelt beim Verkleinern und tut nichts dazu, darum ist das Dreieck vom Foto aus graublau und vom bunten Rauschen aus grau. Das Dreieck ist ihr **Fixpunkt**: Legt man es ein, kommt es unverändert wieder heraus, denn es besteht genau aus drei halb so großen Kopien von sich selbst.
 
 Eine Kopiermaschine, deren Kopien kleiner sind als das Original, findet immer zu einem solchen Fixpunkt, egal womit man anfängt; der Mathematiker Stefan Banach hat das 1922 bewiesen (der **Fixpunktsatz von Banach**). Ein Bild, das aus verkleinerten Kopien von sich selbst besteht, heißt **Fraktal**.
 
@@ -185,7 +185,7 @@ _person(barnsley)
 
 ### Das Foto als Zahlen
 
-Lege im Ordner `fraktal` die Datei `fraktal.py` an. Sie wird über diese Seite der Encoder und der Decoder. Der Anfang lädt ein Foto in Graustufen und speichert eines:
+Wie JPEG trennt der Encoder die Helligkeit eines Fotos von seiner Farbe: Das Auge sieht Helligkeit viel feiner als Farbe (Handbuch, [Farbräume](/reference/farbraeume), YCbCr). Zuerst geht es nur um die Helligkeit, ein Bild in Graustufen; die Farbe kommt dazu, wenn Encoder und Decoder laufen. Lege im Ordner `fraktal` die Datei `fraktal.py` an. Sie wird über diese Seite der Encoder und der Decoder. Der Anfang lädt die Helligkeit eines Fotos und speichert ein Bild in Graustufen:
 
 <!-- page-code: own -->
 ```python_copy
@@ -220,14 +220,14 @@ if __name__ == '__main__':
     main()
 ```
 
-`load` gibt ein Array mit 320 Zeilen und 480 Spalten zurück, `photo[y, x]` ist die Helligkeit des Pixels in Spalte `x` und Zeile `y`. Mit `photo[y:y + 8, x:x + 8]` schneidest du einen Block von 8 × 8 Pixeln heraus, dessen linke obere Ecke bei `(x, y)` liegt. `save` begrenzt die Werte auf 0 bis 255, rundet sie und speichert ein PNG.
+`convert('L')` rechnet aus Rot, Grün und Blau die Helligkeit aus, mit denselben Gewichten wie das Y von JPEG. `load` gibt ein Array mit 320 Zeilen und 480 Spalten zurück, `photo[y, x]` ist die Helligkeit des Pixels in Spalte `x` und Zeile `y`. Mit `photo[y:y + 8, x:x + 8]` schneidest du einen Block von 8 × 8 Pixeln heraus, dessen linke obere Ecke bei `(x, y)` liegt. `save` begrenzt die Werte auf 0 bis 255, rundet sie und speichert ein PNG.
 
 <div class='hint own' data-check='verkleinern'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>shrink(block)</code>: Sie macht aus einem Array mit einer geraden Zahl von Zeilen und Spalten eines, das halb so breit und halb so hoch ist. Jedes Pixel des Ergebnisses ist der Mittelwert eines Quadrats von 2 × 2 Pixeln. Aus <code>[[0, 2], [4, 6]]</code> wird <code>[[3]]</code>.
 </div>
 
 <!-- hint -->
-Die Kopiermaschine hat dieselbe Funktion. Was macht `reshape(h // 2, 2, w // 2, 2)` aus einem Array mit 4 × 4 Zahlen? Probier es in Python aus und schau dir `shape` an.
+Die Kopiermaschine hat fast dieselbe Funktion, dort mit einer Achse mehr für die drei Farben. Was macht `reshape(h // 2, 2, w // 2, 2)` aus einem Array mit 4 × 4 Zahlen? Probier es in Python aus und schau dir `shape` an.
 <!-- /hint -->
 <!-- hint -->
 Nach `reshape` hat das Array vier Achsen: Zeile des Quadrats, Zeile darin, Spalte des Quadrats, Spalte darin. Gemittelt wird über die Achsen 1 und 3, die innerhalb eines Quadrats.
@@ -563,34 +563,120 @@ Wie bei der Kopiermaschine verkleinert jeder Schritt, was das Startbild noch bei
 <strong>Ausprobieren:</strong> Ändere in <code>encode</code> die Grenze auf <code>np.clip(…, -2, 2)</code> und codiere neu. Wie sehen die Schritte jetzt aus? Stell die Grenze danach wieder auf −1 bis 1 und codiere noch einmal.
 </div>
 
+## In Farbe wie bei JPEG
+
+### Helligkeit und zwei Farbanteile
+
+Ein Farbfoto zerlegt der Encoder wie JPEG in drei Kanäle: **Y**, die Helligkeit, wie bisher, **Cb**, wie viel bläulicher oder gelblicher ein Pixel ist, und **Cr**, wie viel rötlicher oder grünlicher (Handbuch, [Farbräume](/reference/farbraeume), YCbCr). Pillow rechnet das mit `convert('YCbCr')` um. In Cb und Cr ist ein Foto fast überall ein gleichmäßiges Grau, und das Auge sieht dort Unterschiede ohnehin viel gröber als bei der Helligkeit. JPEG speichert Cb und Cr darum oft nur halb so breit und halb so hoch, einen Farbwert für vier Pixel; das heißt **Farbunterabtastung** (englisch *chroma subsampling*).
+
+Der fraktale Encoder macht es genauso. Y codiert er wie bisher, Cb und Cr verkleinert er erst mit `shrink` auf 240 × 160 Pixel und codiert dann jeden mit derselben Funktion `encode`: Jeder Kanal ist für sich ein Bild in Graustufen, mit seinen eigenen Blöcken und Partnern. Schreib über `main` diese drei Funktionen:
+
+```python_copy
+def load_color(path):
+    image = np.asarray(Image.open(path).convert('YCbCr'), dtype=float)
+    return image[:, :, 0], image[:, :, 1], image[:, :, 2]
+
+
+def save_color(y, cb, cr, path):
+    cb = np.repeat(np.repeat(cb, 2, axis=0), 2, axis=1)
+    cr = np.repeat(np.repeat(cr, 2, axis=0), 2, axis=1)
+    ycbcr = np.clip(np.stack([y, cb, cr], axis=-1), 0, 255).round().astype(np.uint8)
+    Image.fromarray(ycbcr, 'YCbCr').convert('RGB').save(path)
+
+
+def picture_size(code):
+    return int(code[:, 1].max()) + R, int(code[:, 0].max()) + R
+```
+
+`load_color` gibt die drei Kanäle als eigene Arrays zurück. `save_color` vergrößert Cb und Cr wieder auf die volle Größe: `np.repeat` verdoppelt jede Zeile und jede Spalte, so dass jeder Farbwert für vier Pixel gilt, wie im Decoder von <a href='/jpeg'>JPEG</a>. Dann legt `np.stack` die drei Kanäle zu einem Bild zusammen, und Pillow rechnet es in Rot, Grün und Blau zurück. `picture_size` rechnet die Größe eines Bildes aus seinem Code aus, wie bisher in `main`.
+
+Ersetze `main` durch eine Fassung, die die drei Kanäle codiert, zusammen in einer Datei `code.npz`, und decodiert:
+
+```python_copy
+def main():
+    task = sys.argv[1] if len(sys.argv) > 1 else 'encode'
+    if task == 'encode':
+        y, cb, cr = load_color(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
+        begin = time.time()
+        np.savez('code.npz', y=encode(y), cb=encode(shrink(cb)), cr=encode(shrink(cr)))
+        print(f'fertig in {time.time() - begin:.1f} s')
+    elif task == 'decode':
+        codes = np.load('code.npz')
+        h, w = picture_size(codes['y'])
+        images = {'y': np.full((h, w), 128.0), 'cb': np.full((h // 2, w // 2), 128.0), 'cr': np.full((h // 2, w // 2), 128.0)}
+        save_color(images['y'], images['cb'], images['cr'], 'schritt-0.png')
+        for step in range(1, 9):
+            for name in images:
+                images[name] = decode_step(images[name], codes[name])
+            save_color(images['y'], images['cb'], images['cr'], f'schritt-{step}.png')
+```
+
+Der Decoder fängt in allen drei Kanälen mit 128 an. In Cb und Cr heißt 128: keine Farbe; das Startbild ist also grau. In jedem Schritt macht er für jeden Kanal einen Schritt mit dessen Code.
+
+```bash
+python3 fraktal.py encode
+python3 fraktal.py decode
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+write-file: fraktal/fraktal.py <- file:stufen/fraktal-5.py
+terminal-run: cd /workspace/fraktal && python3 fraktal.py encode && python3 fraktal.py decode
+terminal-wait-for-prompt: 120
+image-file: fraktal/schritt-1.png 1
+-->
+<img src='farbe-1.webp' alt='Nach einem Schritt in Farbe: grobe Kästchen, oben blau wie der Himmel, links ein rötlicher Fleck, rechts bläuliche, die Umrisse der Dächer zu ahnen.'>
+<figcaption>Schritt 1</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: fraktal/schritt-8.png 1
+-->
+<img src='farbe-8.webp' alt='Nach acht Schritten in Farbe: die Strandhäuser unter blauem Himmel, links die rote Tür, rechts zwei blaue, mit scharfen Dachkanten.'>
+<figcaption>Schritt 8</figcaption></figure>
+</div>
+
+### Was die Farbe kostet
+
+Cb und Cr haben je 30 × 20 = 600 Blöcke, und ihre Domain-Blöcke liegen auf nur 29 · 19 = 551 Orten, die in 10 Bits passen. Mit 3 Bits für die Lage, 5 für `s` und 7 für `o` braucht ein Farbblock 25 Bits. Zusammen sind das
+
+$$2400 \cdot 27 + 2 \cdot 600 \cdot 25 = 94\,800 \text{ Bits} \approx 11\,850 \text{ Bytes},$$
+
+nur gut ein Drittel mehr als die Helligkeit allein, für ein Foto, das unkomprimiert 480 · 320 · 3 = 460 800 Bytes hat.
+
 ## Jedes Startbild führt zum selben Foto
 
-Dass der Decoder mit Grau anfängt, ist nur eine Wahl. Der Code sagt nicht, welche Helligkeit ein Pixel hat, sondern nur, wie jeder Block aus einem anderen Block entsteht. Ändere `main` so, dass der Decoder mit einem Startbild deiner Wahl anfängt. Schreib dafür über `main` die Funktion `start_image`:
+Dass der Decoder mit Grau anfängt, ist nur eine Wahl. Der Code sagt nicht, welche Helligkeit oder Farbe ein Pixel hat, sondern nur, wie jeder Block aus einem anderen Block entsteht. Ändere `main` so, dass der Decoder mit einem Startbild deiner Wahl anfängt. Schreib dafür über `main` die Funktion `start_image`; sie macht ein Startbild in Rot, Grün und Blau und gibt es zerlegt in Y und die verkleinerten Cb und Cr zurück:
 
 ```python_copy
 def start_image(name, h, w):
     if name == 'grau':
-        return np.full((h, w), 128.0)
-    if name == 'verlauf':
-        return np.tile(np.linspace(0, 255, w), (h, 1))
-    if name == 'rauschen':
-        return np.random.default_rng(1).uniform(0, 255, (h, w))
-    return np.asarray(Image.open(name).convert('L').resize((w, h)), dtype=float)
+        rgb = np.full((h, w, 3), 128.0)
+    elif name == 'verlauf':
+        rgb = np.zeros((h, w, 3))
+        rgb[:, :, 0] = np.linspace(0, 255, w)
+        rgb[:, :, 2] = np.linspace(255, 0, w)
+    elif name == 'rauschen':
+        rgb = np.random.default_rng(1).uniform(0, 255, (h, w, 3))
+    else:
+        rgb = np.asarray(Image.open(name).convert('RGB').resize((w, h)), dtype=float)
+    ycbcr = np.asarray(Image.fromarray(rgb.astype(np.uint8)).convert('YCbCr'), dtype=float)
+    return ycbcr[:, :, 0], shrink(ycbcr[:, :, 1]), shrink(ycbcr[:, :, 2])
 ```
 
 und nimm sie im Teil für `decode`:
 
 ```python_copy
 ~     elif task == 'decode':
-~         code = np.load('code.npy')
+~         codes = np.load('code.npz')
         start = sys.argv[2] if len(sys.argv) > 2 else 'grau'
-~         h = int(code[:, 1].max()) + R
-~         w = int(code[:, 0].max()) + R
-        image = start_image(start, h, w)
-~         save(image, 'schritt-0.png')
+~         h, w = picture_size(codes['y'])
+        y, cb, cr = start_image(start, h, w)
+        images = {'y': y, 'cb': cb, 'cr': cr}
+~         save_color(images['y'], images['cb'], images['cr'], 'schritt-0.png')
 ```
 
-`verlauf` geht von Schwarz links nach Weiß rechts, `rauschen` ist jedes Pixel zufällig, und ein Dateiname nimmt ein anderes Foto. Der Code in `code.npy` bleibt derselbe: der der Strandhäuser. Fang mit dem Foto der Möwen an:
+`verlauf` geht von Blau links nach Rot rechts, `rauschen` ist jedes Pixel in jeder Farbe zufällig, und ein Dateiname nimmt ein anderes Foto. Der Code in `code.npz` bleibt derselbe: der der Strandhäuser. Fang mit dem Foto der Möwen an:
 
 ```bash
 python3 fraktal.py decode moewen.png
@@ -611,24 +697,24 @@ python3 fraktal.py decode rauschen
 <div class='gallery columns-3'>
 <figure>
 <!-- tutorial-screenshot
-write-file: fraktal/fraktal.py <- file:stufen/fraktal-5.py
+write-file: fraktal/fraktal.py <- file:stufen/fraktal-6.py
 terminal-run: cd /workspace/fraktal && python3 fraktal.py decode moewen.png
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-0.png 1
 -->
-<img src='start-moewen.webp' alt='Das Foto der Möwen in Graustufen: vier Möwen am Himmel, unten ein Mann mit Sonnenbrille.'>
+<img src='start-moewen.webp' alt='Das Foto der Möwen: vier Möwen am blauen Himmel, unten ein Mann mit Sonnenbrille.'>
 <figcaption>Ein anderes Foto, Schritt 0</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-1.png 1
 -->
-<img src='start-moewen-1.webp' alt='Nach einem Schritt aus dem Möwenfoto: grobe Kästchen mit Resten der Möwen, die Umrisse der Dächer erkennbar.'>
+<img src='start-moewen-1.webp' alt='Nach einem Schritt aus dem Möwenfoto: grobe bunte Kästchen, viel Himmelblau, darin zerhackte Reste der Möwen, die Umrisse der Dächer erkennbar.'>
 <figcaption>Schritt 1</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-8.png 1
 -->
-<img src='start-moewen-8.webp' alt='Nach acht Schritten aus dem Möwenfoto: dieselben Strandhäuser, keine Spur mehr von den Möwen.'>
+<img src='start-moewen-8.webp' alt='Nach acht Schritten aus dem Möwenfoto: dieselben Strandhäuser in Farbe, keine Spur mehr von den Möwen.'>
 <figcaption>Schritt 8</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -636,19 +722,19 @@ terminal-run: cd /workspace/fraktal && python3 fraktal.py decode verlauf
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-0.png 1
 -->
-<img src='start-verlauf.webp' alt='Ein Verlauf von Schwarz links nach Weiß rechts.'>
+<img src='start-verlauf.webp' alt='Ein Verlauf von Blau links über Violett nach Rot rechts.'>
 <figcaption>Verlauf, Schritt 0</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-1.png 1
 -->
-<img src='start-verlauf-1.webp' alt='Nach einem Schritt aus dem Verlauf: grobe Kästchen, links dunkler, rechts heller, mit den Umrissen der Dächer.'>
+<img src='start-verlauf-1.webp' alt='Nach einem Schritt aus dem Verlauf: grobe Kästchen in Blau, Violett und Rot durcheinander, mit den Umrissen der Dächer.'>
 <figcaption>Schritt 1</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-8.png 1
 -->
-<img src='start-verlauf-8.webp' alt='Nach acht Schritten aus dem Verlauf: die Strandhäuser, genau wie aus Grau.'>
+<img src='start-verlauf-8.webp' alt='Nach acht Schritten aus dem Verlauf: die Strandhäuser in ihren Farben, genau wie aus Grau.'>
 <figcaption>Schritt 8</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -656,23 +742,23 @@ terminal-run: cd /workspace/fraktal && python3 fraktal.py decode rauschen
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-0.png 1
 -->
-<img src='start-rauschen.webp' alt='Rauschen: jedes Pixel ein zufälliges Grau.'>
+<img src='start-rauschen.webp' alt='Rauschen: jedes Pixel eine zufällige Farbe.'>
 <figcaption>Rauschen, Schritt 0</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-1.png 1
 -->
-<img src='start-rauschen-1.webp' alt='Nach einem Schritt aus dem Rauschen: grobe Kästchen voller Rauschen, die Umrisse der Dächer erkennbar.'>
+<img src='start-rauschen-1.webp' alt='Nach einem Schritt aus dem Rauschen: grobe Kästchen voller bunter Punkte, die Umrisse der Dächer erkennbar.'>
 <figcaption>Schritt 1</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: fraktal/schritt-8.png 1
 -->
-<img src='start-rauschen-8.webp' alt='Nach acht Schritten aus dem Rauschen: wieder dieselben Strandhäuser.'>
+<img src='start-rauschen-8.webp' alt='Nach acht Schritten aus dem Rauschen: wieder dieselben Strandhäuser in Farbe.'>
 <figcaption>Schritt 8</figcaption></figure>
 </div>
 
-Nach einem Schritt steckt vom Startbild noch etwas in jedem Block: das verkleinerte Stück, das sein Partner dort sah, mit `s` gewichtet, dazu `o`. Darum sieht man nach einem Schritt aus den Möwen Kästchen der Strandhäuser mit Resten der Möwen darin. Nach acht Schritten wird aus jedem Startbild dasselbe Foto, bis aufs Pixel. Das ist der große Unterschied zu GIF und JPEG: Dort steht in der Datei, welche Farbe ein Pixel hat oder welche Frequenzen ein Block enthält, und ohne diese Zahlen gäbe es kein Bild. Hier steht in der Datei für jeden Block nur, aus welchem anderen Block er gemacht wird und mit welchem Kontrast und welcher Helligkeit. Das Foto ist der Fixpunkt dieser Vorschrift; das Startbild verschwindet, weil jeder Schritt es mit `s` verkleinert, so wie die Kopiermaschine das Foto der Strandhäuser in ihrem Dreieck verschwinden ließ.
+Nach einem Schritt steckt vom Startbild noch etwas in jedem Block: das verkleinerte Stück, das sein Partner dort sah, mit `s` gewichtet, dazu `o`. Darum sieht man nach einem Schritt aus den Möwen bunte Kästchen der Strandhäuser mit Resten der Möwen darin. Nach acht Schritten wird aus jedem Startbild dasselbe Foto, bis aufs Pixel. Das ist der große Unterschied zu GIF und JPEG: Dort steht in der Datei, welche Farbe ein Pixel hat oder welche Frequenzen ein Block enthält, und ohne diese Zahlen gäbe es kein Bild. Hier steht in der Datei für jeden Block, in jedem der drei Kanäle, nur, aus welchem anderen Block er gemacht wird und mit welchem Kontrast und welcher Verschiebung. Das Foto ist der Fixpunkt dieser Vorschrift; das Startbild verschwindet, weil jeder Schritt es mit `s` verkleinert, so wie die Kopiermaschine das Foto der Strandhäuser in ihrem Dreieck verschwinden ließ.
 <!-- /after -->
 
 ## Größer als das Original
@@ -695,13 +781,16 @@ und in `main` den Faktor als dritte Angabe:
 ```python_copy
 ~         start = sys.argv[2] if len(sys.argv) > 2 else 'grau'
         scale = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-~         h = int(code[:, 1].max()) + R
-~         w = int(code[:, 0].max()) + R
-        image = start_image(start, h * scale, w * scale)
-~         save(image, 'schritt-0.png')
+~         h, w = picture_size(codes['y'])
+        y, cb, cr = start_image(start, h * scale, w * scale)
+~         images = {'y': y, 'cb': cb, 'cr': cr}
+~         save_color(images['y'], images['cb'], images['cr'], 'schritt-0.png')
 ~         for step in range(1, 9):
-            image = decode_step(image, code, scale)
+~             for name in images:
+                images[name] = decode_step(images[name], codes[name], scale)
 ```
+
+Für Cb und Cr wirkt der Faktor genauso: Ihre Blöcke liegen im halb so großen Bild, und es wird mit ihnen doppelt so groß.
 
 ```bash
 python3 fraktal.py decode grau 2
@@ -709,41 +798,60 @@ python3 fraktal.py decode grau 2
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
-write-file: fraktal/fraktal.py <- file:stufen/fraktal-6.py
+write-file: fraktal/fraktal.py <- file:stufen/fraktal-7.py
 terminal-run: cd /workspace/fraktal && python3 fraktal.py decode grau 2
 terminal-wait-for-prompt: 180
 image-file: fraktal/schritt-8.png 1
 -->
-<img class='full fit-width inspect' src='gross.webp' alt='Die Strandhäuser, aus demselben Code doppelt so groß decodiert, 960 × 640 Pixel: Die Dachkanten sind glatt und scharf, die Bretter fein.'>
+<img class='full fit-width inspect' src='gross.webp' alt='Die Strandhäuser in Farbe, aus demselben Code doppelt so groß decodiert, 960 × 640 Pixel: Die Dachkanten sind glatt und scharf, die Bretter fein.'>
 <!-- /tutorial-scope -->
 
 Das Bild hat 960 × 640 Pixel, viermal so viele wie das Foto, und es ist nicht verschwommen wie ein einfach vergrößertes Foto: Die Kanten sind scharf, die Bretter fein. Die neuen Feinheiten hat der Decoder aber erfunden. Er setzt in jeden Block die verkleinerte Fassung eines größeren, auch dort, wo das echte Foto im Kleinen ganz anders aussähe. Für Kanten und Bretter passt das gut, für Gesichter oder Schrift nicht.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Vergrößere das Foto zum Vergleich einfach: <code>python3 -c "from PIL import Image; Image.open('strandhaeuser.png').convert('L').resize((960, 640), Image.BICUBIC).save('bikubisch.png')"</code>. Öffne beide Bilder nebeneinander und vergrößere auf eine Dachkante und auf den Riegel der mittleren Tür. Wo ist das fraktale Bild besser, wo hat es sich etwas ausgedacht?
+<strong>Ausprobieren:</strong> Vergrößere das Foto zum Vergleich einfach: <code>python3 -c "from PIL import Image; Image.open('strandhaeuser.png').resize((960, 640), Image.BICUBIC).save('bikubisch.png')"</code>. Öffne beide Bilder nebeneinander und vergrößere auf eine Dachkante und auf den Riegel der mittleren Tür. Wo ist das fraktale Bild besser, wo hat es sich etwas ausgedacht?
 </div>
 
 ## Wie gut ist das?
 
-### Fraktal gegen JPEG
+### Wie man Fehler in Dezibel misst
 
-Wie nah ein Bild am Original ist, misst man oft mit dem **PSNR** (*peak signal-to-noise ratio*), in Dezibel: Je größer, desto ähnlicher. Unter 25 dB sieht man die Fehler deutlich, ab etwa 35 dB kaum noch. Die Formel nimmt den mittleren quadrierten Fehler aller Pixel, \\(\text{MSE}\\), und vergleicht ihn mit dem größten Wert 255:
+Wie nah ein Bild an seinem Original ist, misst man meist in zwei Schritten. Zuerst der **mittlere quadrierte Fehler** (englisch *mean squared error*, MSE): für jedes Pixel und jede der drei Farben die Abweichung vom Original, quadriert, und von allen diesen Quadraten der Mittelwert. Ist jedes Pixel in jeder Farbe um genau 5 daneben, ist der MSE 5² = 25; ist die Hälfte um 10 daneben und der Rest genau, ist er (100 + 0) / 2 = 50. Das Quadrieren macht große Abweichungen teurer als viele kleine.
+
+Dann vergleicht man den MSE mit dem größten möglichen Fehler, 255², und nimmt davon den Logarithmus. Heraus kommt das **PSNR** (*peak signal-to-noise ratio*), in **Dezibel** (dB):
 
 $$\text{PSNR} = 10 \cdot \log\_{10} \frac{255^2}{\text{MSE}}$$
+
+Je größer das PSNR, desto kleiner der Fehler. Durch den Logarithmus wird jeder Faktor 10 im Fehler zu einem gleich großen Schritt: **10 dB mehr heißt ein zehnmal kleinerer MSE**, 20 dB mehr ein hundertmal kleinerer. Etwa 6 dB mehr heißt, dass jedes Pixel im Mittel halb so weit danebenliegt (ein Viertel des MSE). So passen winzige und riesige Fehler auf eine Skala von etwa 20 bis 50 dB. Wie sich das anfühlt, zeigt dieselbe Ecke der Strandhäuser als JPEG, so stark gepackt, dass das ganze Foto auf das jeweilige PSNR kommt:
+
+<div class='gallery columns-4'>
+<figure><img class='inspect' src='psnr-25.webp' alt='Die Ecke mit dem mittleren Dach und dem Riegel bei etwa 25 dB: grobe Farbblöcke, das Dach in Stufen, der Riegel ein Fleck.'><figcaption>etwa 25 dB</figcaption></figure>
+<figure><img class='inspect' src='psnr-30.webp' alt='Dieselbe Ecke bei etwa 30 dB: alles erkennbar, die Bretter der Tür aber verwischt, um die Kanten feine Schlieren.'><figcaption>etwa 30 dB</figcaption></figure>
+<figure><img class='inspect' src='psnr-35.webp' alt='Dieselbe Ecke bei etwa 35 dB: die Bretter zu sehen, kaum ein Unterschied zum Original.'><figcaption>etwa 35 dB</figcaption></figure>
+<figure><img class='inspect' src='psnr-40.webp' alt='Dieselbe Ecke bei etwa 40 dB: vom Original nicht zu unterscheiden.'><figcaption>etwa 40 dB</figcaption></figure>
+</div>
+
+Unter 25 dB sieht man die Fehler sofort, um 30 dB beim genauen Hinsehen, ab etwa 35 dB kaum noch. Wie die Fehler aussehen, hängt aber vom Verfahren ab: JPEG macht Blöcke und Schlieren, die fraktale Kompression Kästchen und Flecken. Zwei Bilder mit gleichem PSNR können darum verschieden gut aussehen.
+
+_task(dezibel)
+
+### Fraktal gegen JPEG
+
+Schreib die Funktion `psnr` über `main`:
 
 ```python_copy
 def psnr(a, b):
     return 10 * np.log10(255 ** 2 / ((a - b) ** 2).mean())
 ```
 
-Schreib die Funktion über `main`, und hänge an `main` einen Teil `vergleich` an, der das letzte decodierte Bild mit dem Foto vergleicht:
+und hänge an `main` einen Teil `vergleich` an, der das letzte decodierte Bild mit dem Foto vergleicht, in Rot, Grün und Blau:
 
 ```python_copy
-~             image = decode_step(image, code, scale)
-~             save(image, f'schritt-{step}.png')
+~                 images[name] = decode_step(images[name], codes[name], scale)
+~             save_color(images['y'], images['cb'], images['cr'], f'schritt-{step}.png')
     elif task == 'vergleich':
-        photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
-        image = load(sys.argv[3] if len(sys.argv) > 3 else 'schritt-8.png')
+        photo = np.asarray(Image.open(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png').convert('RGB'), dtype=float)
+        image = np.asarray(Image.open(sys.argv[3] if len(sys.argv) > 3 else 'schritt-8.png').convert('RGB'), dtype=float)
         print(f'{psnr(image, photo):.1f} dB')
 ```
 
@@ -754,30 +862,30 @@ python3 fraktal.py decode
 python3 fraktal.py vergleich
 ```
 
-Der Code der Strandhäuser braucht mit 27 Bits je Block etwa 8100 Bytes. Wie gut ist ein JPEG, das genauso groß ist?
+Der Code der Strandhäuser braucht in Farbe etwa 11 850 Bytes. Wie gut ist ein JPEG, das genauso groß ist?
 
 _task(gegen-jpeg)
 
 <!-- after: gegen-jpeg -->
-Speichere das Foto als JPEG in Graustufen, mit der Qualität 30, und vergleiche:
+Speichere das Foto als JPEG mit der Qualität 43 und vergleiche:
 
 ```bash
-python3 -c "from PIL import Image; Image.open('strandhaeuser.png').convert('L').save('q30.jpg', quality=30)"
-ls -l q30.jpg
-python3 fraktal.py vergleich strandhaeuser.png q30.jpg
+python3 -c "from PIL import Image; Image.open('strandhaeuser.png').save('q43.jpg', quality=43)"
+ls -l q43.jpg
+python3 fraktal.py vergleich strandhaeuser.png q43.jpg
 ```
 
 <div class='scroll-x'><table class='table table-sm'>
 <thead><tr><th></th><th>Größe</th><th>PSNR</th></tr></thead>
 <tbody>
-<tr><td>Graustufen, unkomprimiert</td><td>153 600 Bytes</td><td></td></tr>
-<tr><td>fraktal, Blöcke 8 × 8</td><td>etwa 8100 Bytes</td><td>33,1 dB</td></tr>
-<tr><td>JPEG, Qualität 30</td><td>etwa 8000 Bytes</td><td>34,2 dB</td></tr>
+<tr><td>unkomprimiert, 480 · 320 · 3</td><td>460 800 Bytes</td><td></td></tr>
+<tr><td>fraktal, Blöcke 8 × 8, Farbe halb so groß</td><td>etwa 11 850 Bytes</td><td>31,7 dB</td></tr>
+<tr><td>JPEG, Qualität 43</td><td>etwa 11 800 Bytes</td><td>33,6 dB</td></tr>
 </tbody>
 </table>
 </div>
 
-Beide sind fast gleich gut, JPEG liegt knapp vorn. Bei diesem Foto hilft der fraktalen Kompression, dass es sich so oft wiederholt: drei Dächer, viele Bretter, viel gleichmäßiger Himmel.
+JPEG liegt knapp 2 dB vorn: Sein MSE ist etwa um ein Drittel kleiner. Beide packen das Foto auf etwa ein Vierzigstel. Bei diesem Foto hilft der fraktalen Kompression, dass es sich so oft wiederholt: drei Dächer, viele Bretter, viel gleichmäßiger Himmel.
 <!-- /after -->
 
 ### Wo es schwer wird
@@ -796,7 +904,7 @@ terminal-run: cd /workspace/fraktal && python3 fraktal.py encode skytree.png && 
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-8.png 1
 -->
-<img class='inspect' src='skytree.webp' alt='Zwei Frauen in roten Mänteln und Hüten an einer Betonmauer, von hinten, links im Nebel der Fernsehturm Skytree; decodiert, in Graustufen, kaum vom Foto zu unterscheiden.'>
+<img class='inspect' src='skytree.webp' alt='Zwei Frauen in roten Mänteln und Hüten an einer grauen Betonmauer, von hinten, links im Nebel der Fernsehturm Skytree; decodiert, kaum vom Foto zu unterscheiden.'>
 <figcaption>Skytree, decodiert</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -804,11 +912,11 @@ terminal-run: cd /workspace/fraktal && python3 fraktal.py encode kirschbluete.pn
 terminal-wait-for-prompt: 120
 image-file: fraktal/schritt-8.png 1
 -->
-<img class='inspect' src='kirschbluete.webp' alt='Eine Straße in Tokio mit einem blühenden Kirschbaum vor Hausfassaden, ein Mann im Anzug geht vorbei; decodiert, in Graustufen. Von Weitem sieht es aus wie das Foto, aus der Nähe sind die Blüten verschwunden und die feinen Äste zu Kästchen geworden.'>
+<img class='inspect' src='kirschbluete.webp' alt='Eine Straße in Tokio mit einem blühenden Kirschbaum vor Hausfassaden, ein Mann im Anzug geht vorbei; decodiert. Von Weitem sieht es aus wie das Foto, aus der Nähe sind die Blüten verschwunden und die feinen Äste zu Kästchen geworden.'>
 <figcaption>Kirschblüte, decodiert</figcaption></figure>
 </div>
 
-Vergrößere beide Bilder mit einem Klick und schau genau hin. Das Foto mit dem Skytree hat große ruhige Flächen, Nebel und Beton, und die beiden roten Mäntel sehen sich selbst ähnlich: Es kommt auf etwa 34 dB. Beim Kirschbaum sind aus der Nähe die Blüten verschwunden und die Äste zu Kästchen geworden: Für die feinen, wirren Äste und Blüten gibt es keinen größeren Block, der verkleinert so aussieht. Das Foto kommt nur auf gut 22 dB. Fraktale Kompression ist gut, wo ein Bild sich wiederholt, und schlecht bei feinen Einzelheiten, die es nur einmal gibt.
+Vergrößere beide Bilder mit einem Klick und schau genau hin. Das Foto mit dem Skytree hat große ruhige Flächen, Nebel und Beton, und die beiden roten Mäntel sehen sich selbst ähnlich: Es kommt auf knapp 33 dB. Beim Kirschbaum sind aus der Nähe die Blüten verschwunden und die Äste zu Kästchen geworden: Für die feinen, wirren Äste und Blüten gibt es keinen größeren Block, der verkleinert so aussieht. Das Foto kommt nur auf gut 22 dB. Fraktale Kompression ist gut, wo ein Bild sich wiederholt, und schlecht bei feinen Einzelheiten, die es nur einmal gibt.
 
 <!-- extra -->
 ## Große und kleine Blöcke
@@ -886,24 +994,24 @@ def decode_step(image, code, scale=1):
 ~         small = shrink(image[dy:dy + 2 * r, dx:dx + 2 * r])
 ```
 
-In `main` rechnet der Teil für `decode` die Größe des Bildes mit den Größen der Blöcke aus, und ein neuer Teil `quadtree` codiert mit einer Grenze:
+`picture_size` rechnet die Größe des Bildes mit den Größen der Blöcke aus:
 
 ```python
-~         scale = int(sys.argv[3]) if len(sys.argv) > 3 else 1
-        sizes = code[:, 7] if code.shape[1] > 7 else R
-        h = int((code[:, 1] + sizes).max())
-        w = int((code[:, 0] + sizes).max())
-~         image = start_image(start, h * scale, w * scale)
+def picture_size(code):
+    sizes = code[:, 7] if code.shape[1] > 7 else R
+    return int((code[:, 1] + sizes).max()), int((code[:, 0] + sizes).max())
 ```
 
+Ein neuer Teil `quadtree` in `main` codiert die Helligkeit mit dem Quadtree und die Farbe wie bisher mit festen Blöcken; die Farbe ist ohnehin klein:
+
 ```python_copy
-~             save(image, f'schritt-{step}.png')
+~             save_color(images['y'], images['cb'], images['cr'], f'schritt-{step}.png')
     elif task == 'quadtree':
-        photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
+        y, cb, cr = load_color(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
         limit = float(sys.argv[3]) if len(sys.argv) > 3 else 60
-        code = encode_quadtree(photo, limit)
-        np.save('code.npy', code)
-        show_blocks(photo, code)
+        code = encode_quadtree(y, limit)
+        np.savez('code.npz', y=code, cb=encode(shrink(cb)), cr=encode(shrink(cr)))
+        show_blocks(y, code)
         counts = ', '.join(f'{int((code[:, 7] == size).sum())} mit {size}' for size in SIZES)
         print(f'{len(code)} Blöcke: {counts}')
 ~     elif task == 'vergleich':
@@ -918,7 +1026,7 @@ python3 fraktal.py quadtree kirschbluete.png 60
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
-write-file: fraktal/fraktal.py <- file:stufen/fraktal-7.py
+write-file: fraktal/fraktal.py <- file:stufen/fraktal-8.py
 terminal-run: cd /workspace/fraktal && python3 fraktal.py quadtree strandhaeuser.png 60
 terminal-wait-for-prompt: 180
 image-file: fraktal/bloecke.png 1
@@ -935,21 +1043,20 @@ image-file: fraktal/bloecke.png 1
 <figcaption>Kirschbaum: fast überall die kleinsten</figcaption></figure>
 </div>
 
-Mit den Strandhäusern ergibt das, je nach der Grenze für den mittleren Fehler eines Pixels:
+Mit den Strandhäusern ergibt das, je nach der Grenze für den mittleren Fehler eines Pixels (die Blöcke der Helligkeit, mit der Farbe zusammen):
 
 <div class='scroll-x'><table class='table table-sm'>
-<thead><tr><th>Blöcke</th><th>Anzahl</th><th>etwa Bytes</th><th>PSNR</th></tr></thead>
+<thead><tr><th>Blöcke der Helligkeit</th><th>Anzahl</th><th>etwa Bytes</th><th>PSNR</th></tr></thead>
 <tbody>
-<tr><td>fest 8 × 8</td><td>2400</td><td>8100</td><td>33,1 dB</td></tr>
-<tr><td>fest 4 × 4</td><td>9600</td><td>32 400</td><td>40,5 dB</td></tr>
-<tr><td>Quadtree 16, 8, 4, Grenze 150</td><td>1335</td><td>4700</td><td>32,9 dB</td></tr>
-<tr><td>Quadtree 16, 8, 4, Grenze 60</td><td>1998</td><td>7000</td><td>35,7 dB</td></tr>
-<tr><td>JPEG, Qualität 30</td><td></td><td>8000</td><td>34,2 dB</td></tr>
+<tr><td>fest 8 × 8</td><td>2400</td><td>11 850</td><td>31,7 dB</td></tr>
+<tr><td>Quadtree 16, 8, 4, Grenze 150</td><td>1335</td><td>8400</td><td>31,5 dB</td></tr>
+<tr><td>Quadtree 16, 8, 4, Grenze 60</td><td>1998</td><td>10 700</td><td>33,3 dB</td></tr>
+<tr><td>JPEG, Qualität 36</td><td></td><td>10 700</td><td>32,9 dB</td></tr>
 </tbody>
 </table>
 </div>
 
-Mit der Grenze 150 erreicht der Quadtree dieselbe Qualität wie feste 8 × 8 mit gut der Hälfte der Bytes; mit der Grenze 60 ist er bei kleinerer Datei besser als das JPEG. Die Bytes sind dabei grob gerechnet, 28 Bits je Block, ein Bit mehr für die Teilung. Beim Kirschbaum teilt der Quadtree fast überall bis zur kleinsten Größe: 6417 Blöcke, fast dreimal so viele wie mit festen 8 × 8. Das Bild wird viel besser, gut 28 dB statt 22, aber der Code auch fast dreimal so groß.
+Mit der Grenze 150 erreicht der Quadtree fast dieselbe Qualität wie feste 8 × 8 mit gut zwei Dritteln der Bytes; mit der Grenze 60 ist er etwas besser als ein gleich großes JPEG. Die Bytes sind dabei grob gerechnet, 28 Bits je Block der Helligkeit, ein Bit mehr für die Teilung. Beim Kirschbaum teilt der Quadtree fast überall bis zur kleinsten Größe: 6402 Blöcke, fast dreimal so viele wie mit festen 8 × 8. Das Bild wird viel besser, knapp 28 dB statt 22, aber der Code auch mehr als doppelt so groß.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Codiere die Strandhäuser mit den Grenzen 20, 60, 150 und 400 und schreib dir jedes Mal die Zahl der Blöcke und das PSNR auf. Ab welcher Grenze siehst du Fehler im Bild, und wo zuerst?
@@ -964,7 +1071,18 @@ Iterierte Funktionensysteme, Kopiermaschinen wie die vom Anfang, hat Michael Bar
 <p><strong>Image coding based on a fractal theory of iterated contractive image transformations</strong>, Arnaud E. Jacquin, IEEE Transactions on Image Processing 1(1), 1992. Der Aufsatz, in dem ein Programm zum ersten Mal selbst die Blöcke und ihre Partner findet. <a href='https://doi.org/10.1109/83.128028'>doi.org/10.1109/83.128028</a>, auf Englisch.</p>
 </div>
 
-Microsoft nahm das Verfahren in den 1990er-Jahren für die Bilder seiner Enzyklopädie Encarta auf CD-ROM. Durchgesetzt hat es sich trotzdem nicht: Der Encoder ist sehr langsam, weil er für jeden Block sucht, die Patente machten es teuer, und JPEG und später die Wavelets von JPEG 2000 waren bei gleicher Größe meist genauso gut oder besser.
+Microsoft nahm das Verfahren in den 1990er-Jahren für die Bilder seiner Enzyklopädie Encarta auf CD-ROM.
+
+### Warum heute kaum jemand fraktal komprimiert
+
+Durchgesetzt hat es sich trotzdem nicht. Die Gründe hast du zum Teil selbst gesehen:
+
+- **Der Encoder ist langsam.** Für jeden Block sucht er unter allen Domain-Blöcken; beide werden mit der Zahl der Pixel mehr, die Arbeit also mit ihrem Quadrat. Das Foto der Strandhäuser hat 153 600 Pixel und braucht einige Sekunden. Ein Foto vom Handy hat 12 Millionen, 78-mal so viele, und bräuchte mit dem Programm dieser Seite gut 6000-mal so lange, mehrere Stunden. Der Decoder ist dagegen schnell; nur nützt das wenig, wenn niemand Bilder erzeugen mag.
+- **Es ist nicht besser.** Bei gleicher Größe war JPEG schon in deinem Vergleich knapp vorn, und bei Fotos mit feinen Einzelheiten weit vorn. Spätere Formate, JPEG 2000 mit Wavelets und heute WebP und AVIF, die aus Videocodecs stammen, sind noch einmal deutlich besser.
+- **Es kostete Lizenzen.** Iterated Systems hielt die Patente; wer fraktal komprimieren wollte, musste die Firma bezahlen. JPEG war eine offene Norm, und eine Kamera, ein Browser und ein Bildprogramm konnten es bald alle. Ein Bildformat ist nur so viel wert wie die Zahl der Programme, die es öffnen.
+- **Die Vergrößerung erfindet.** Ein Bild doppelt so groß zu decodieren, war das große Versprechen. Wie du gesehen hast, sind die neuen Feinheiten aber ausgedacht: gut für Kanten und Bretter, falsch für Gesichter und Schrift.
+
+Geblieben ist die Idee, dass sich die Teile eines Bildes gegenseitig erklären. Programme, die das Rauschen aus einem Foto entfernen, suchen für jede Stelle ähnliche Stellen im selben Bild und mitteln sie (*Non-local Means*, 2005); Programme, die Lücken in einem Foto füllen, kopieren dafür passende Stücke aus dem Rest des Bildes.
 
 <div class='book'>
 <i class='bi bi-book'></i>
@@ -974,7 +1092,7 @@ Microsoft nahm das Verfahren in den 1990er-Jahren für die Bilder seiner Enzyklo
 ## Wie geht es weiter?
 
 - **Wirklich speichern.** Runde `s` auf 32 Stufen und `o` auf 128 Stufen, bevor der Decoder sie bekommt, und schreib den Code mit 27 Bits je Block in eine Datei. Wie groß ist sie, und wie viel schlechter wird das Bild? Wie man Bits zu Bytes packt, steht im Handbuch, [Bits und Bytes](/reference/bits-und-bytes).
-- **Farbe.** Codiere die drei Farbkanäle getrennt, oder besser wie JPEG: Helligkeit genau, Farbe gröber (<a href='/jpeg'>JPEG</a>, Handbuch, [Farbräume](/reference/farbraeume)).
+- **Farbe ohne eigene Suche.** Cb und Cr suchen ihre Partner bisher selbst. Lass sie dieselben Partner nehmen wie Y, nur mit eigenem `s` und `o`: Wie viele Bytes spart das, und wie viel schlechter wird die Farbe? (<a href='/jpeg'>JPEG</a> geht noch weiter und speichert Cb und Cr oft gröber als hier.)
 - **Schneller suchen.** Sortiere die Domain-Blöcke vorher in Klassen, etwa nach der Ecke, in der sie am hellsten sind, und suche für einen Range-Block nur in seiner Klasse.
 - **Andere Formen.** Statt Quadraten Rechtecke, die an den Kanten des Bildes geteilt werden (HV-Partition), oder Dreiecke: Die Blöcke folgen dann dem Bild, statt einem festen Gitter.
 - **Ein Fraktal zeichnen.** Barnsleys Farn entsteht aus vier Kopien, die nicht nur verkleinert, sondern auch gedreht und geschert sind, mit einer 2 × 2-Matrix und einer Verschiebung (Handbuch, [Matrizen](/reference/matrizen)).

@@ -78,34 +78,38 @@ def decode_step(image, code):
     return new
 
 
-def start_image(name, h, w):
-    if name == 'grau':
-        return np.full((h, w), 128.0)
-    if name == 'verlauf':
-        return np.tile(np.linspace(0, 255, w), (h, 1))
-    if name == 'rauschen':
-        return np.random.default_rng(1).uniform(0, 255, (h, w))
-    return np.asarray(Image.open(name).convert('L').resize((w, h)), dtype=float)
+def load_color(path):
+    image = np.asarray(Image.open(path).convert('YCbCr'), dtype=float)
+    return image[:, :, 0], image[:, :, 1], image[:, :, 2]
+
+
+def save_color(y, cb, cr, path):
+    cb = np.repeat(np.repeat(cb, 2, axis=0), 2, axis=1)
+    cr = np.repeat(np.repeat(cr, 2, axis=0), 2, axis=1)
+    ycbcr = np.clip(np.stack([y, cb, cr], axis=-1), 0, 255).round().astype(np.uint8)
+    Image.fromarray(ycbcr, 'YCbCr').convert('RGB').save(path)
+
+
+def picture_size(code):
+    return int(code[:, 1].max()) + R, int(code[:, 0].max()) + R
 
 
 def main():
     task = sys.argv[1] if len(sys.argv) > 1 else 'encode'
     if task == 'encode':
-        photo = load(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
+        y, cb, cr = load_color(sys.argv[2] if len(sys.argv) > 2 else 'strandhaeuser.png')
         begin = time.time()
-        code = encode(photo)
-        np.save('code.npy', code)
-        print(f'{len(code)} Blöcke in {time.time() - begin:.1f} s')
+        np.savez('code.npz', y=encode(y), cb=encode(shrink(cb)), cr=encode(shrink(cr)))
+        print(f'fertig in {time.time() - begin:.1f} s')
     elif task == 'decode':
-        code = np.load('code.npy')
-        start = sys.argv[2] if len(sys.argv) > 2 else 'grau'
-        h = int(code[:, 1].max()) + R
-        w = int(code[:, 0].max()) + R
-        image = start_image(start, h, w)
-        save(image, 'schritt-0.png')
+        codes = np.load('code.npz')
+        h, w = picture_size(codes['y'])
+        images = {'y': np.full((h, w), 128.0), 'cb': np.full((h // 2, w // 2), 128.0), 'cr': np.full((h // 2, w // 2), 128.0)}
+        save_color(images['y'], images['cb'], images['cr'], 'schritt-0.png')
         for step in range(1, 9):
-            image = decode_step(image, code)
-            save(image, f'schritt-{step}.png')
+            for name in images:
+                images[name] = decode_step(images[name], codes[name])
+            save_color(images['y'], images['cb'], images['cr'], f'schritt-{step}.png')
 
 
 if __name__ == '__main__':

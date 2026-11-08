@@ -26,6 +26,7 @@ examples:
       - { files: { fraktal/fraktal.py: stufen/fraktal-5.py } }
       - { files: { fraktal/fraktal.py: stufen/fraktal-6.py } }
       - { files: { fraktal/fraktal.py: stufen/fraktal-7.py } }
+      - { files: { fraktal/fraktal.py: stufen/fraktal-8.py } }
     fail:
       - { files: { fraktal/fraktal.py: stufen/fraktal-3.py } }
       - { files: { fraktal/fraktal.py: fehler/decode-selbes-bild.py } }

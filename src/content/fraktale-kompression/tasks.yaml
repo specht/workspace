@@ -15,7 +15,7 @@ tasks:
     check:
       type: choice
       options:
-        - Dasselbe feine Dreieck wie vom Foto aus; vom Rauschen ist nichts mehr zu sehen.
+        - Dasselbe feine Dreieck wie vom Foto aus, nur in einer anderen, gleichmäßigen Farbe; vom Rauschen ist nichts mehr zu sehen.
         - Ein Dreieck aus Dreiecken, die alle mit Rauschen gefüllt sind.
         - Weiter nur Rauschen, denn aus Rauschen kann kein Muster entstehen.
         - Ein graues Bild, weil sich das Rauschen beim Verkleinern zu Grau mittelt.
@@ -26,11 +26,13 @@ tasks:
       - when: { picked: 2 }
         say: Das Muster kommt nicht aus dem Startbild, sondern aus der Regel, wohin die drei Kopien kommen. Die gilt für jedes Bild gleich.
       - when: { picked: 3 }
-        say: Grau mittelt sich das Rauschen nur innerhalb der winzigen Kopien. Wo keine Kopie liegt, füllt die Maschine in jeder Runde Weiß; dort bleibt es weiß.
+        say: Zu Grau mittelt sich das Rauschen nur innerhalb der winzigen Kopien. Wo keine Kopie liegt, füllt die Maschine in jeder Runde Weiß; dort bleibt es weiß, und die Form des Dreiecks ist zu sehen.
     solution: |
       Dasselbe Dreieck: Jede Runde verkleinert das Startbild auf die Hälfte,
-      nach acht Runden auf 1/256. Übrig bleibt nur die Regel der Maschine,
-      wohin die drei Kopien kommen, und die ist für jedes Startbild gleich.
+      nach acht Runden auf 1/256. Übrig bleibt die Regel der Maschine, wohin
+      die drei Kopien kommen, und die ist für jedes Startbild gleich. Nur die
+      mittlere Farbe des Startbilds bleibt, weil die Maschine beim
+      Verkleinern mittelt; vom bunten Rauschen ist das ein Grau.
 
   - id: verkleinern
     title: Halb so groß
@@ -179,30 +181,52 @@ tasks:
       jedem weiteren Schritt bleibt weniger von den Möwen; nach acht
       Schritten ist es dasselbe Foto wie aus Grau.
 
+  - id: dezibel
+    title: Um 5 daneben
+    prompt: |
+      In einem Bild weicht jedes Pixel in jeder Farbe um genau 5 vom
+      Original ab. Wie viel Dezibel hat sein PSNR? Eine Nachkommastelle
+      genügt; 255² ist 65 025.
+    check:
+      type: number
+      expect: 34.15
+      tolerance: 0.1
+    feedback:
+      - when: { equals: 25 }
+        say: Das ist der MSE, 5². Jetzt noch 255² durch den MSE teilen, davon den Logarithmus zur Basis 10 nehmen und mal 10.
+      - when: { equals: 2601 }
+        say: Das ist 255² / MSE. Davon noch den Logarithmus zur Basis 10, und das mal 10.
+      - when: { equals: 3.415 }
+        say: Das ist der Logarithmus; das PSNR ist zehnmal so viel.
+    solution: |
+      Der MSE ist 5² = 25, also PSNR = 10 · log₁₀(65 025 / 25) = 10 · log₁₀(2601)
+      ≈ 10 · 3,415 ≈ 34,2 dB. Wären es überall 10 statt 5, wäre der MSE viermal
+      so groß und das PSNR etwa 6 dB kleiner, 28,1 dB.
+
   - id: gegen-jpeg
     title: Fraktal gegen JPEG
     prediction: true
     prompt: |
-      Der fraktale Code der Strandhäuser braucht etwa 8100 Bytes und kommt
-      auf etwa 33 dB. Ein JPEG in Graustufen mit der Qualität 30 ist etwa
+      Der fraktale Code der Strandhäuser braucht in Farbe etwa 11 850 Bytes
+      und kommt auf knapp 32 dB. Ein JPEG mit der Qualität 43 ist etwa
       genauso groß. Wie gut ist es?
     check:
       type: choice
       options:
         - Viel schlechter, unter 25 dB.
-        - Etwas schlechter, um 30 dB.
+        - Etwas schlechter, um 29 dB.
         - Etwa gleich gut, ein, zwei Dezibel mehr oder weniger.
         - Viel besser, über 40 dB.
       correct: 2
     feedback:
       - when: { picked: 0 }
-        say: Mit der Qualität 30 hat ein JPEG noch kaum sichtbare Blöcke. Unter 25 dB fällt es bei diesem Foto erst mit Qualität 3 oder weniger.
+        say: Mit der Qualität 43 hat ein JPEG noch kaum sichtbare Blöcke. Unter 25 dB fällt es bei diesem Foto erst mit Qualität 5 oder weniger.
       - when: { picked: 1 }
-        say: Etwas besser als 30 dB ist das JPEG schon; bei diesem Foto mit seinen großen ruhigen Flächen hat JPEG es leicht.
+        say: Schlechter als die fraktale Kompression ist das JPEG nicht; seine Farbkanäle kosten fast nichts, und der Himmel ist für JPEG leicht.
       - when: { picked: 3 }
-        say: Über 40 dB kommt ein JPEG bei diesem Foto erst mit Qualität 80, und dann ist es gut doppelt so groß.
+        say: Über 40 dB kommt ein JPEG bei diesem Foto erst mit Qualität 90, und dann ist es fast dreimal so groß.
     solution: |
-      Etwa gleich gut: Das JPEG kommt auf etwa 34 dB, gut ein Dezibel mehr.
-      Bei diesem Foto, das sich oft wiederholt, hält die fraktale
-      Kompression mit; bei feinen Einzelheiten wie den Ästen des Kirschbaums
-      liegt sie weit zurück.
+      Etwa gleich gut: Das JPEG kommt auf etwa 33,6 dB, knapp 2 dB mehr; sein
+      MSE ist etwa um ein Drittel kleiner. Bei diesem Foto, das sich oft
+      wiederholt, hält die fraktale Kompression mit; bei feinen Einzelheiten
+      wie den Ästen des Kirschbaums liegt sie weiter zurück.
