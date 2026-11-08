@@ -2,8 +2,7 @@
 
 [room]
 name = Saal
-height = 3, 7
-slope = gable
+height = 3
 
 [map]
 #############
@@ -18,7 +17,6 @@ slope = gable
 
 [L]
 light = #fff3cf
-power = 1.6
 
 [S]
-block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+block = 0.7, 4, 0.7      # höher als die Decke: Die Säule verschwindet in ihr

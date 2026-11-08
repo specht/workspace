@@ -2,35 +2,41 @@
 
 [room]
 name = Saal
-height = 3, 7
-slope = gable
-walls = marble
-floor = marble
+height = 3
+floor = carpet_tiles
+carpet = #7a7050
 
 [map]
 #############
 #...........#
 #...L.S.L.S.#
 1...........#
-#.....M.....#
+#....CM.....#
 #...........#
 #...L.S.L.S.#
-#...........#
+#...R.......#
 #####444#####
 
 [L]
 light = #fff3cf
-power = 1.6
 
 [S]
-block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+block = 0.7, 4, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 
 [M]
-model = models/athena.glb
-height = 2.2
+model = models/metal_office_desk/metal_office_desk_1k.gltf   # Poly Haven, CC0
+height = 0.76
 rotation = 270
-material = marble
-pedestal = 0.9, 0.8, 0.9
+
+[C]
+model = models/SchoolChair_01/SchoolChair_01_1k.gltf   # Poly Haven, CC0
+height = 0.82
+rotation = 90
+
+[R]
+model = models/worn_metal_rack/worn_metal_rack_1k.gltf   # Poly Haven, CC0
+height = 1.8
+offset = 0, 0, 0.25      # an die Südwand
 
 [4]
 door = salon 1

@@ -1,6 +1,6 @@
 <div class='meta'>
-image: saal-6.webp
-image_alt: "Ein Saal aus weißem, geädertem Marmor unter einem Satteldach, zwei Reihen Säulen, in der Mitte Athena auf einem Sockel"
+image: teaser.webp
+image_alt: "Der Saal wie ein verlassenes Büro, schräg aus einer Ecke: gelbe Tapete, tapezierte Säulen, Teppichfliesen, ein Schreibtisch mit einem Schulstuhl und ein leeres Regal; hinten durch einen runden Bogen der grüne Salon"
 kind: projekt
 duration: 2 Doppelstunden
 curriculum: "Sek I: Digitale Bilder und Visualisierung (Figuren, Farbmodelle); Oberstufe: Vertiefung Computergrafik (prozedurale Texturen, Shader)"
@@ -19,7 +19,7 @@ template_name: der Backrooms-Vorlage
 </div>
 
 <p class='abstract'>
-Du bist durch eine Wand gefallen. Dahinter liegen die Backrooms: gelbe Tapete, feuchter Teppich, das Summen der Leuchten, Räume ohne Ende. Du kartierst sie in Textdateien und baust eigene Räume dazu, einen Saal mit Säulen, Satteldach und einer Statue und einen Salon mit Holz an den Wänden. Dein Browser macht daraus ein Bauwerk in 3D und berechnet das Licht, das zwischen den Wänden hin- und herfällt, am Rechner, auf dem Handy, mit Rot-Cyan-Brille oder mit einer VR-Brille. Zum Schluss schaust du nach, wie das Programm aus ein paar Zeilen Text Wände macht und Holz und Marmor, ohne ein einziges Bild.
+Du bist durch eine Wand gefallen. Dahinter liegen die Backrooms: gelbe Tapete, feuchter Teppich, das Summen der Leuchten, Räume ohne Ende. Du kartierst sie in Textdateien und baust eigene Räume dazu, einen Saal wie ein verlassenes Büro, mit Säulen, Teppichfliesen und einem Schreibtisch, und einen Salon mit Holz an den Wänden. Dein Browser macht daraus ein Bauwerk in 3D und berechnet das Licht, das zwischen den Wänden hin- und herfällt, am Rechner, auf dem Handy, mit Rot-Cyan-Brille oder mit einer VR-Brille. Zum Schluss schaust du nach, wie das Programm aus ein paar Zeilen Text Wände macht und Holz und Marmor, ohne ein einziges Bild.
 </p>
 
 </p>
@@ -296,11 +296,11 @@ Stimmt etwas nicht, steht oben links in Rot, in welcher Datei (und, wenn es eine
 ## Ein Saal, Schritt für Schritt
 
 <div class='found-note'>
-<p>Hinter der Kammer ist noch eine Tür. Dahinter: ein Saal, leer und hoch. Jedes Mal, wenn ich zurückkomme, steht etwas mehr darin.</p>
+<p>Hinter der Kammer ist noch eine Tür. Dahinter: ein Saal, leer, mit einer Decke aus Platten wie in einem Büro. Jedes Mal, wenn ich zurückkomme, steht etwas mehr darin.</p>
 <cite>Seite aus einem durchnässten Notizbuch, andere Handschrift</cite>
 </div>
 
-Hinter der Kammer baust du einen Saal, Schritt für Schritt: erst den Grundriss, dann eine schräge Decke, Säulen, farbiges Licht, eine Statue und Marmor. Nach jedem Schritt speicherst du und lädst die Vorschau neu.
+Hinter der Kammer baust du einen Saal, Schritt für Schritt: erst den Grundriss, dann Säulen, farbiges Licht, Möbel und einen Boden wie im Büro; unterwegs siehst du, wie eine schräge Decke aussähe. Nach jedem Schritt speicherst du und lädst die Vorschau neu.
 
 ### Der Grundriss
 
@@ -360,7 +360,9 @@ hook: info off
 
 ### Schräge Decken
 
-Zwei Höhen machen die Decke schräg, `slope` sagt, wie. `gable` ist ein Satteldach: an den Wänden 3 m, in der Mitte 7 m hoch, der First läuft an der längeren Seite entlang. Die Leuchten liegen dann so schräg wie die Decke über ihnen. Weil sie jetzt höher hängen, bekommen sie mit `power` mehr Kraft:
+Die Decke des Saals ist flach und 3 m hoch, wie in einem Büro, und so bleibt sie. Sie kann aber auch schräg sein: Zwei Höhen machen die Decke schräg, `slope` sagt, wie. `gable` ist ein Satteldach: an den Wänden 3 m, in der Mitte 7 m hoch, der First läuft an der längeren Seite entlang. Die Leuchten liegen dann so schräg wie die Decke über ihnen. Weil sie höher hängen, bekommen sie mit `power` mehr Kraft:
+
+<!-- tutorial-scope -->
 
 ```room
 ~ [room]
@@ -387,6 +389,8 @@ hook: info off
 
 <img class='full fit-width' src='saal-2.webp' alt='Derselbe Saal unter einem Satteldach: Die Decke steigt von beiden Wänden zur Mitte hin an, die Leuchten liegen schräg in den Dachflächen, die Stirnwand ist fünfeckig.'>
 
+<!-- /tutorial-scope -->
+
 Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Mit `slope = east` statt `gable` wird die Decke des Saals nach Osten immer höher, also nach rechts im Grundriss:
 
 ```room
@@ -394,7 +398,7 @@ Eine Decke kann auch nur in eine Richtung ansteigen, wie ein Pultdach. Mit `slop
 slope = east
 ```
 
-An der Westwand ist sie dann 3 m hoch, an der Ostwand 7 m. Statt `east` geht auch `north`, `south` oder `west`. Auch hier liegen die Leuchten so schräg wie die Decke. So sähe der Saal damit aus, von der Seite; für die nächsten Schritte bleibt er beim Satteldach:
+An der Westwand ist sie dann 3 m hoch, an der Ostwand 7 m. Statt `east` geht auch `north`, `south` oder `west`. Auch hier liegen die Leuchten so schräg wie die Decke. So sähe der Saal damit aus, von der Seite:
 
 <!-- tutorial-scope -->
 
@@ -412,6 +416,8 @@ hook: info off
 
 <!-- /tutorial-scope -->
 
+Hast du eine der beiden ausprobiert, stell danach wieder `height = 3` ein und nimm die Zeile mit `slope` heraus: Für die nächsten Schritte bleibt die Decke flach.
+
 ### Säulen
 
 Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an den langen Seiten, zwischen den Leuchten:
@@ -428,10 +434,10 @@ Ein Buchstabe im Grundriss kann auch ein Block sein. Vier Säulen, je zwei an de
 
 ```room
 [S]
-block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+block = 0.7, 4, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 ```
 
-`block = 0.7, 7, 0.7` ist 0,7 m breit, 7 m hoch und 0,7 m tief, mitten auf seinem Feld. Ist ein Block höher als die Decke, verschwindet er in ihr. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Mit `material = marble` ist er aus Marmor, auch in einem Raum mit Tapete; es gehen alle Arten, die es für Wände gibt (in »Andere Wände und Böden«). Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
+`block = 0.7, 4, 0.7` ist 0,7 m breit, 4 m hoch und 0,7 m tief, mitten auf seinem Feld. Ist ein Block höher als die Decke, verschwindet er in ihr. `block = 1` füllt das ganze Feld einen Meter hoch, eine Kiste. Mit `base = 2` schwebt ein Block zwei Meter über dem Boden, mit `color = #6a5a3a` bekommt er eine eigene Farbe; ohne sieht er aus wie die Wände seines Raums. Mit `material = marble` ist er aus Marmor, auch in einem Raum mit Tapete; es gehen alle Arten, die es für Wände gibt (in »Andere Wände und Böden«). Durch Blöcke läuft man nicht hindurch, und sie werfen Schatten.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-3.room
@@ -443,7 +449,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='saal-3.webp' alt='Der Saal mit vier Säulen, die bis in das Dach reichen; an Boden und Wänden ihre weichen Schatten.'>
+<img class='full fit-width' src='saal-3.webp' alt='Der Saal mit vier tapezierten Säulen, die bis an die Decke reichen; an Boden und Wänden ihre weichen Schatten.'>
 
 Mit `shape = round` wird ein Block rund, eine Säule wie in einem alten Bad, so breit und tief wie der Block. So sähe der Saal damit aus; für die nächsten Schritte bleiben die Säulen eckig:
 
@@ -451,7 +457,7 @@ Mit `shape = round` wird ein Block rund, eine Säule wie in einem alten Bad, so 
 
 ```room
 ~ [S]
-~ block = 0.7, 7, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
+~ block = 0.7, 4, 0.7      # höher als die Decke: Die Säule verschwindet in ihr
 shape = round
 ```
 
@@ -465,28 +471,28 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='saal-rund.webp' alt='Derselbe Saal mit vier runden Säulen, die bis in das Dach reichen; das Licht der Leuchten läuft weich um sie herum.'>
+<img class='full fit-width' src='saal-rund.webp' alt='Derselbe Saal mit vier runden Säulen bis an die Decke; das Licht der Leuchten läuft weich um sie herum.'>
 
 <!-- /tutorial-scope -->
 
 ### Farbiges Licht
 
-Die Leuchte hinten rechts soll rot leuchten. Sie bekommt einen eigenen Buchstaben:
+Die Leuchte hinten rechts soll grün leuchten, wie das Schild über einem Notausgang. Sie bekommt einen eigenen Buchstaben:
 
 ```room
 ~ #...........#
-#...L.S.R.S.#
+#...L.S.G.S.#
 ~ #...........#
 ```
 
 ```room
-[R]
-light = #ff3020
-power = 3
+[G]
+light = #30e060
+power = 2
 size = 1.2, 1.2
 ```
 
-`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Das rote Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, rot gefärbt. So sähe der Saal mit der roten Leuchte aus; für die nächsten Schritte bleiben alle vier weiß.
+`light` ist die Farbe, `size` die Größe in Metern: Eine größere Leuchte wirft weichere Schatten. Das grüne Licht fällt auf Wände, Boden und Säulen und wird von ihnen zurückgeworfen, grün gefärbt. So sähe der Saal mit der grünen Leuchte aus; für die nächsten Schritte bleiben alle vier weiß.
 
 <!-- tutorial-scope -->
 
@@ -500,35 +506,45 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='saal-4.webp' alt='Der Saal mit einer roten Leuchte hinten rechts: Die rechte Wand, der Boden und die Säulen dort glühen rot, nach vorn wird es wieder gelb.'>
+<img class='full fit-width' src='saal-4.webp' alt='Der Saal mit einer grünen Leuchte hinten rechts: Die Wand hinten, die rechte Wand und die Säulen dort leuchten grün, nach vorn wird es wieder gelb.'>
 
 <!-- /tutorial-scope -->
 
-### Eine Statue
+### Möbel
 
 <div class='found-note'>
-<p>Im Saal steht eine Frau aus Stein auf einem Sockel, größer als ich. Sie schaut zum Eingang. Ich bin dreimal um sie herumgegangen. Sie schaut immer zum Eingang.</p>
+<p>Mitten im Saal steht ein Schreibtisch, davor ein Stuhl, als wäre gerade jemand aufgestanden. Ich habe mich nicht hingesetzt. Als ich wiederkam, stand der Stuhl ein Stück weiter vom Tisch weg.</p>
 <cite>Letzter Eintrag einer Kartografin, Saal</cite>
 </div>
 
-In die Mitte des Saals kommt Athena, auf einem Sockel:
+In die Mitte des Saals kommt ein Schreibtisch mit einem Stuhl davor, an die Südwand ein Regal:
 
 ```room
 ~ 1...........#
-#.....M.....#
+#....CM.....#
 ~ #...........#
+~ #...L.S.L.S.#
+#...R.......#
 ```
 
 ```room
 [M]
-model = models/athena.glb
-height = 2.2
+model = models/metal_office_desk/metal_office_desk_1k.gltf   # Poly Haven, CC0
+height = 0.76
 rotation = 270
-material = marble
-pedestal = 0.9, 0.8, 0.9
+
+[C]
+model = models/SchoolChair_01/SchoolChair_01_1k.gltf   # Poly Haven, CC0
+height = 0.82
+rotation = 90
+
+[R]
+model = models/worn_metal_rack/worn_metal_rack_1k.gltf   # Poly Haven, CC0
+height = 1.8
+offset = 0, 0, 0.25      # an die Südwand
 ```
 
-Eine Statue ist ein 3D-Modell im Format GLB. `height` macht sie so hoch wie angegeben, `rotation` dreht sie in Grad um ihre senkrechte Achse, hier zur Tür, `material = marble` macht sie aus Marmor statt aus den Farben des Modells, und `pedestal` stellt sie auf einen Sockel: 0,9 m breit, 0,8 m hoch, 0,9 m tief. Auch Modelle werfen Schatten und bekommen Licht, das Wände und Boden zurückwerfen, und wo eine Statue sich selbst verdeckt, ist es auf ihr dunkler.
+Die Möbel sind 3D-Modelle aus dem Ordner `models`, im Format glTF: eine Datei `.gltf`, die das Modell beschreibt, daneben seine Daten und Texturen. `height` macht ein Modell so hoch wie angegeben, `rotation` dreht es in Grad um seine senkrechte Achse, hier den Schreibtisch mit den Schubladen zum Stuhl und den Stuhl zum Schreibtisch. `offset` verschiebt es auf seinem Feld, in Metern nach Osten, nach oben und nach Süden: Das Regal rückt 25 cm an die Wand. Auch Modelle werfen Schatten und bekommen Licht, das Wände und Boden zurückwerfen, und wo ein Modell sich selbst verdeckt, ist es auf ihm dunkler.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-5.room
@@ -540,19 +556,30 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='saal-5.webp' alt='Athena aus weißem Marmor auf einem hellen Sockel in der Mitte des Saals, zwischen den Säulen, im warmen Licht der vier Leuchten.'>
+<img class='full fit-width' src='saal-5.webp' alt='Der Saal mit einem grauen Schreibtisch aus Metall zwischen den Säulen, davor ein blauer Schulstuhl; rechts an der Wand ein leeres Regal aus Metall.'>
 
-Athena ist der 3D-Scan eines Gipsabgusses einer antiken Statue, aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei. Ohne `material = marble` behält ein Modell seine eigenen Farben. Im Ordner `models` liegen außerdem Möbel; zwei davon stehen gleich im Salon.
-
-### Marmor
-
-Zum Schluss Wände und Boden aus Marmor:
+Im Ordner `models` liegt auch eine Statue, `athena.glb`: der 3D-Scan eines Gipsabgusses einer antiken Statue aus dem [Statens Museum for Kunst](https://open.smk.dk/artwork/image/KAS255) in Kopenhagen, gemeinfrei, im Format GLB, das alles in einer Datei hat. Mit `material = marble` ist ein Modell aus Marmor statt aus seinen eigenen Farben, und `pedestal = 0.9, 0.8, 0.9` stellt es auf einen Sockel, 0,9 m breit, 0,8 m hoch und 0,9 m tief:
 
 ```room
-~ height = 3, 7
-~ slope = gable
-walls = marble
-floor = marble
+[A]
+model = models/athena.glb
+height = 2.2
+material = marble
+pedestal = 0.9, 0.8, 0.9
+```
+
+Weitere Möbel liegen im selben Ordner; zwei davon stehen gleich im Salon.
+
+### Ein Boden wie im Büro
+
+Zum Schluss bekommt der Saal einen Boden aus Teppichfliesen wie in einem Büro, in einem schmutzigen Gelbgrau:
+
+```room
+~ [room]
+~ name = Saal
+~ height = 3
+floor = carpet_tiles
+carpet = #7a7050
 ```
 
 <!-- tutorial-screenshot
@@ -565,11 +592,11 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='saal-6.webp' alt='Der fertige Saal: Wände und Boden aus weißem, geädertem Marmor, die Säulen hell, Athena auf ihrem Sockel.'>
+<img class='full fit-width' src='saal-6.webp' alt='Der fertige Saal: gelbe Tapete, eine Decke aus Platten mit vier Leuchten, tapezierte Säulen, ein Boden aus gelbgrauen Teppichfliesen, in der Mitte der Schreibtisch mit dem Stuhl, rechts das Regal.'>
 
 ### Andere Wände und Böden
 
-Marmor ist nur eine Möglichkeit. `walls` kennt neun Arten, `floor` elf, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
+Teppichfliesen sind nur eine Möglichkeit. `walls` kennt neun Arten, `floor` elf, jede in der Farbe aus `wallpaper` (Wände) und `carpet` (Boden), Marmor in seiner eigenen:
 
 <table class='table'>
 <tr><th>Wert</th><th>Wände (<code>walls</code>)</th><th>Boden (<code>floor</code>)</th></tr>
@@ -757,7 +784,7 @@ Gib dem Saal in der Mitte seiner Südwand eine Tür, drei Felder breit:
 
 ```room
 ~ #...L.S.L.S.#
-~ #...........#
+~ #...R.......#
 #####444#####
 ```
 
@@ -770,7 +797,7 @@ Dieselbe Ziffer mehrmals in einer Reihe, nebeneinander wie hier oder untereinand
 
 _include_file(stufen/salon-1.room, room_copy)
 
-Grüne Tapete, ein Boden aus Dielen, eine helle Decke und eine Sockelleiste aus dunklem Holz, 10 cm hoch. Sofa und Tisch sind Modelle wie Athena, aus dem Ordner `models`; `rotation = 180` dreht das Sofa, bis es zur Tür schaut.
+Grüne Tapete, ein Boden aus Dielen, eine helle Decke und eine Sockelleiste aus dunklem Holz, 10 cm hoch. Sofa und Tisch sind Modelle wie der Schreibtisch, aus dem Ordner `models`; `rotation = 180` dreht das Sofa, bis es zur Tür schaut.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-salon.room
@@ -783,7 +810,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='salon-1.webp' alt='Ein Salon mit grüner Tapete und Dielenboden, links ein Sofa und ein kleiner Tisch; in der Wand gegenüber eine breite, rechteckige Öffnung in den hellen Marmorsaal.'>
+<img class='full fit-width' src='salon-1.webp' alt='Ein Salon mit grüner Tapete und Dielenboden, links ein Sofa und ein kleiner Tisch; in der Wand gegenüber eine breite, rechteckige Öffnung in den gelben Saal.'>
 
 ### Ein runder Bogen
 
@@ -798,7 +825,7 @@ casing = on             # mit Rahmen: Putz, Bekleidung und Schwelle
 
 Über die ganze Breite der Tür spannt sich ein Halbkreis, in der Mitte so hoch wie die Zahl. Hier ist die Tür 3 m breit, der Halbkreis hat also 1,5 m Radius und beginnt 1,4 m über dem Boden. Es genügt, wenn einer der beiden Räume `arch` nennt, so wie bei `door`.
 
-Eine Tür ist so tief wie die Wand, ein ganzes Feld, und sieht aus wie der Raum, dem dieses Feld gehört. Zwischen zwei gelben Räumen fällt das nicht auf; hier wäre der Bogen innen aus Marmor, und vom Salon aus sähe die grüne Wand dünn wie Papier aus. `casing = on` gibt der Tür einen Rahmen: innen heller Putz, unten eine Schwelle aus Stein und auf beiden Seiten der Wand eine Leiste um die Öffnung, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz.
+Eine Tür ist so tief wie die Wand, ein ganzes Feld, und sieht aus wie der Raum, dem dieses Feld gehört. Zwischen zwei gelben Räumen fällt das nicht auf; hier wäre der Bogen innen gelb tapeziert wie der Saal, und vom Salon aus sähe die grüne Wand dünn wie Papier aus. `casing = on` gibt der Tür einen Rahmen: innen heller Putz, unten eine Schwelle aus Stein und auf beiden Seiten der Wand eine Leiste um die Öffnung, in der Farbe der Sockelleiste des Raums, hier also dunkles Holz.
 
 <!-- tutorial-screenshot
 write-file: rooms/saal.room <- file:stufen/saal-salon-2.room
@@ -810,7 +837,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='salon-2.webp' alt='Derselbe Salon; die Öffnung zum Saal ist jetzt ein runder Bogen, durch den man den Marmor sieht.'>
+<img class='full fit-width' src='salon-2.webp' alt='Derselbe Salon; die Öffnung zum Saal ist jetzt ein runder Bogen, durch den man in den gelben Saal sieht.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Mit einer zweiten Zahl wird der Bogen schmaler als die Tür, und daneben bleibt Wand: <code>arch = 2.9, 1.2</code> ist nur 1,2 m breit. Wie sieht <code>arch = 2.4, 0.9</code> aus, ein schmaler, hoher Durchgang? Stell danach <code>arch = 2.9</code> wieder her.</p>
@@ -884,7 +911,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='salon-5.webp' alt='Der fertige Salon: oben an allen Wänden eine helle, schräge Leiste zur Decke, darunter grüne Tapete, eine helle Stuhlleiste, dunkles Holz und eine dunkle Sockelleiste; durch den Bogen der Marmorsaal.'>
+<img class='full fit-width' src='salon-5.webp' alt='Der fertige Salon: oben an allen Wänden eine helle, schräge Leiste zur Decke, darunter grüne Tapete, eine helle Stuhlleiste, dunkles Holz und eine dunkle Sockelleiste; durch den Bogen der gelbe Saal.'>
 ### Runde Ecken
 
 Zuletzt verlieren die Ecken des Salons ihre Kanten. Setz in die vier Ecken des Grundrisses statt `#` einen Buchstaben und beschreib ihn:
@@ -916,6 +943,19 @@ hook: info off
 -->
 
 <img class='full fit-width' src='salon-6.webp' alt='Der Salon mit runden Ecken: Die grüne Wand biegt in einem Viertelkreis um die Ecke, Sockelleiste, Holz, Stuhlleiste und Gesims laufen ohne Kante mit.'>
+
+<!-- tutorial-screenshot
+# Das Bild der Karte: der fertige Saal schräg aus der Ecke bei der Tür zur
+# Kammer, durch den Bogen der Salon
+tab: preview
+viewport: 1536x864
+zoom: 1.5
+hook: open view=18.20,15.20,-128,2
+hook: light
+hook: info off
+-->
+
+<img class='teaser' hidden src='teaser.webp' alt='Der Saal wie ein verlassenes Büro, schräg aus einer Ecke: gelbe Tapete, eine Decke aus Platten mit Leuchten, tapezierte Säulen, ein Boden aus Teppichfliesen, ein Schreibtisch mit einem Schulstuhl und ein leeres Regal; hinten durch einen runden Bogen der grüne Salon.'>
 
 <div class='hint try'>
 <p><strong>Ausprobieren:</strong> Wie groß darf der Radius hier werden? Probier <code>round = 4</code>: Oben links steht dann, an welchem Feld er nicht mehr passt und warum. Öffne danach die Automap: Auch dort sind die Ecken rund.</p>

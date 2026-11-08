@@ -1,6 +1,6 @@
 <div class='meta'>
 image: licht-alles.webp
-image_alt: "Ein Saal aus Marmor im warmen Licht der Leuchten: helle Wände und heller Boden, die Säulen mit ihren weichen Schatten, Athena auf ihrem Sockel, das Satteldach hell."
+image_alt: "Der Saal im warmen Licht der Leuchten: gelbe Tapete, die Säulen mit ihren weichen Schatten, in der Mitte der Schreibtisch mit dem Stuhl, rechts das Regal, links die Treppe, hinten der Vorgang und durch den Bogen der grüne Salon; die Decke aus Platten hell."
 kind: projekt
 duration: 1 Doppelstunde
 curriculum: "Sek I: Digitale Bilder und Visualisierung; Oberstufe: Vertiefung Computergrafik (Lightmap, weiche Schatten, indirektes Licht)"
@@ -143,7 +143,7 @@ hook: info off
 hook: key t g
 -->
 
-<img class='full fit-width' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Boden, Säulen und Satteldach; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht; um die Säulen und die Statue herum sind sie so fein, dass man sie kaum sieht.'>
+<img class='full fit-width' src='licht-punkte.webp' alt='Der Saal ganz in Hellgrau, übersät mit einem Raster aus dunklen Punkten auf Wänden, Säulen, Bogen und Decke; vorn sind die Punkte groß und weit auseinander, hinten klein und dicht; auf dem Boden um die Säulen und die Möbel herum sind sie so fein, dass man sie kaum sieht.'>
 
 _task(lichtpunkte)
 
@@ -269,7 +269,7 @@ hook: info off
 hook: key t b
 -->
 
-<img class='full fit-width' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, das Satteldach und alles, was keine Leuchte sieht, fast schwarz.'>
+<img class='full fit-width' src='licht-direkt.webp' alt='Der Saal in Grau, nur mit direktem Licht: helle Flecken auf dem Boden unter den Leuchten, die Säulen werfen weiche Schatten, die Decke und alles, was keine Leuchte sieht, fast schwarz.'>
 <!-- /after -->
 
 Wie weich ein Schatten ist, hängt also davon ab, wie groß die Leuchte ist. Mit `size = 0.2` und mit `size = 2` (und `power` so, dass jede gleich viel Licht gibt, denn eine kleinere Leuchte gibt auch weniger):
@@ -279,7 +279,7 @@ Wie weich ein Schatten ist, hängt also davon ab, wie groß die Leuchte ist. Mit
 ```room
 [L]
 light = #fff3cf
-power = 29
+power = 18
 size = 0.2
 ```
 
@@ -335,7 +335,7 @@ hook: light
 hook: info off
 hook: key t
 -->
-<img src='licht-bounces-1.webp' alt='Der Saal in Hellgrau mit einem Bounce: Das Satteldach ist nur schwach beleuchtet, die Schatten der Säulen sind tief.'>
+<img src='licht-bounces-1.webp' alt='Der Saal in Hellgrau mit einem Bounce: Die Decke ist nur schwach beleuchtet, die Schatten der Säulen sind tief.'>
 <figcaption>1 Bounce</figcaption>
 </figure>
 <figure>
@@ -348,7 +348,7 @@ hook: light
 hook: info off
 hook: key t
 -->
-<img src='licht-bounces-2.webp' alt='Derselbe Saal mit zwei Bounces: Das Dach ist heller, die Schatten der Säulen sind weicher.'>
+<img src='licht-bounces-2.webp' alt='Derselbe Saal mit zwei Bounces: Die Decke ist heller, die Schatten der Säulen sind weicher.'>
 <figcaption>2 Bounces</figcaption>
 </figure>
 <figure>
@@ -361,7 +361,7 @@ hook: light
 hook: info off
 hook: key t
 -->
-<img src='licht-ohne-texturen.webp' alt='Derselbe Saal mit drei Bounces: das Dach hell, alles weich ausgeleuchtet.'>
+<img src='licht-ohne-texturen.webp' alt='Derselbe Saal mit drei Bounces: die Decke hell, alles weich ausgeleuchtet.'>
 <figcaption>3 Bounces</figcaption>
 </figure>
 </div>
@@ -394,7 +394,7 @@ hook: light
 hook: info off
 hook: key t l
 -->
-<img src='licht-bounce.webp' alt='Derselbe Saal mit Kontaktschatten: die Ecken zwischen Wänden, Boden und Dach, die Füße der Säulen und der Boden unter dem Sockel dunkler.'>
+<img src='licht-bounce.webp' alt='Derselbe Saal mit Kontaktschatten: die Ecken zwischen Wänden, Boden und Decke, die Füße der Säulen und der Boden unter dem Schreibtisch dunkler.'>
 <figcaption><kbd>T</kbd> <kbd>L</kbd>: mit Kontaktschatten</figcaption>
 </figure>
 </div>
@@ -410,7 +410,7 @@ hook: light
 hook: info off
 -->
 
-<img class='full fit-width' src='licht-alles.webp' alt='Der Saal aus Marmor im warmen Licht der Leuchten: helle Wände und heller Boden, die Säulen mit ihren weichen Schatten, Athena auf ihrem Sockel, das Satteldach hell.'>
+<img class='full fit-width' src='licht-alles.webp' alt='Der Saal im warmen Licht der Leuchten: gelbe Tapete, die Säulen mit ihren weichen Schatten, in der Mitte der Schreibtisch mit dem Stuhl, rechts das Regal, links die Treppe, hinten der Vorgang und durch den Bogen der grüne Salon; die Decke aus Platten hell.'>
 
 **Beim Zeichnen: Tone Mapping und Bloom.** Die Lightmap enthält das Licht, wie es wirklich ist: Unter einer Leuchte ist es viel heller als in einer Ecke, und die Leuchte selbst ist noch einmal viel heller. Ein Bildschirm kann das nicht zeigen, er kennt nur Helligkeiten von 0 bis 1. Das **Tone Mapping** drückt große Werte sanft zusammen, wie eine Kamera: Helles bleibt hell, ohne dass alles darüber gleich weiß wird. Davor kommt **Bloom** (<kbd>H</kbd>): Was viel heller ist als Weiß, die Leuchten vor allem, strahlt weich in seine Umgebung, so wie in einer Kamera oder im Auge, wenn man in eine Lampe schaut. Dafür verkleinert das Programm das Bild mehrmals auf die Hälfte, verwischt die hellsten Stellen und legt sie wieder vergrößert darüber. Das kostet bei jedem Bild ein wenig Zeit, darum fehlt Bloom mit der Rot-Cyan-Brille, in VR und in der Automap; dort hat jede Leuchte einen eigenen, einfachen Schein.
 
@@ -425,7 +425,7 @@ hook: light
 hook: info off
 hook: key h
 -->
-<img src='licht-ohne-bloom.webp' alt='Der Saal ohne Bloom: Die Leuchten sind scharf begrenzte helle Rechtecke im Dach.'>
+<img src='licht-ohne-bloom.webp' alt='Der Saal ohne Bloom: Die Leuchten sind scharf begrenzte helle Rechtecke in der Decke.'>
 <figcaption><kbd>H</kbd>: ohne Bloom</figcaption>
 </figure>
 <figure>

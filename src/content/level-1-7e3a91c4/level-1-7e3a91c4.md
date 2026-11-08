@@ -72,7 +72,7 @@ Auch ein Boden kann schräg sein. Hinter dem Saal kommt erst ein ebener Gang, da
 ```room
 ~ #...L.S.L.S.#
 1...........2
-#.....M.....2
+#....CM.....2
 #...........2
 ~ #...L.S.L.S.#
 ```
@@ -564,7 +564,7 @@ hook: key k
 </figure>
 <figure>
 <!-- tutorial-screenshot
-# Mit K: Säulen und Athena im Saal
+# Mit K: Säulen und Möbel im Saal
 tab: preview
 viewport: 1536x864
 zoom: 1.5
@@ -573,8 +573,8 @@ hook: light
 hook: info off
 hook: key k
 -->
-<img src='kollision-saal.webp' alt='Der Marmorsaal mit der Taste K: Die vier Säulen und Athena auf ihrem Sockel sind von roten, halb durchsichtigen Kästen umgeben.'>
-<figcaption>Säulen und Statue</figcaption>
+<img src='kollision-saal.webp' alt='Der Saal mit der Taste K: Die vier Säulen, der Schreibtisch, der Stuhl und das Regal stecken in roten, halb durchsichtigen Kästen.'>
+<figcaption>Säulen und Möbel</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot
@@ -588,7 +588,7 @@ hook: key m k
 hook: wheel 900
 hook: info off
 -->
-<img class='inspect' src='kollision-karte.webp' alt='Die Automap von schräg oben mit der Taste K: zwischen den hellblauen Linien der Räume rote Kästen für die Säulen und die Statue im Saal, für die Blöcke im roten Raum und für das Geländer an der Treppe.'>
+<img class='inspect' src='kollision-karte.webp' alt='Die Automap von schräg oben mit der Taste K: zwischen den hellblauen Linien der Räume rote Kästen für die Säulen und die Möbel im Saal, für die Blöcke im roten Raum und für das Geländer an der Treppe.'>
 <figcaption>alle in der Automap</figcaption>
 </figure>
 </div>
