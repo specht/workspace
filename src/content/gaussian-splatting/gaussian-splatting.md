@@ -1207,7 +1207,7 @@ Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
 hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
 würde dunkel und flau.
 
-<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Registrierkasse", "src": "szenen/cash-register.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Schräg nach oben", "target": [0, 1.2, -7], "distance": 0.3, "yaw": -0.6, "pitch": -0.35, "roll": -0.3}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Von oben", "target": [0, 6, -6], "distance": 0.3, "yaw": 0.6, "pitch": 1.5}, {"name": "Über den Dächern", "target": [0, 0, -6], "distance": 6, "yaw": 0.3, "pitch": 1.2}, {"name": "Hinter der Fassade", "target": [3, 0, -6], "distance": 0.3, "yaw": -1.57, "pitch": 0.1}, {"name": "Von außen", "target": [0, 0, -6], "distance": 20, "yaw": 1.57, "pitch": 0.2}]}, {"name": "Artillery Passage, alle Splats (80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Schräg nach oben", "target": [0, 1.2, -7], "distance": 0.3, "yaw": -0.6, "pitch": -0.35, "roll": -0.3}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Von oben", "target": [0, 6, -6], "distance": 0.3, "yaw": 0.6, "pitch": 1.5}, {"name": "Über den Dächern", "target": [0, 0, -6], "distance": 6, "yaw": 0.3, "pitch": 1.2}, {"name": "Hinter der Fassade", "target": [3, 0, -6], "distance": 0.3, "yaw": -1.57, "pitch": 0.1}, {"name": "Von außen", "target": [0, 0, -6], "distance": 20, "yaw": 1.57, "pitch": 0.2}]}]'></div>
+<div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage (1,5 Mio. Splats, 24 MB)", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 0, 5], "distance": 35, "yaw": 1.4, "pitch": 0.3}]}, {"name": "Artillery Passage, schärfer (5 Mio. Splats, 80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5, "look": true}, "spots": [{"name": "Anfang", "target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0}, {"name": "Schaufenster", "target": [-1.3, 0.6, 25.2], "distance": 0.3, "yaw": 0, "pitch": 0.05}, {"name": "An der Straße", "target": [0.8, 2, 28], "distance": 0.3, "yaw": 0.05, "pitch": 0.35}, {"name": "Juwelier", "target": [0, 0.5, -3], "distance": 0.3, "yaw": -1.4, "pitch": -0.55, "roll": 0.3}, {"name": "Laterne", "target": [-0.1, 2.6, -10], "distance": 0.8, "yaw": 0.6, "pitch": -0.3, "roll": 0.2}, {"name": "Aus dem Fenster", "target": [0, 3, -3], "distance": 0.3, "yaw": 0.2, "pitch": 0.9, "roll": 0.35}, {"name": "Über den Dächern", "target": [0, 0, 5], "distance": 12, "yaw": 0.3, "pitch": 1.15}, {"name": "Aus dem Laden", "target": [-2.5, 0.2, -2], "distance": 0.3, "yaw": -1.57, "pitch": 0}, {"name": "Von außen", "target": [0, 0, 5], "distance": 35, "yaw": 1.4, "pitch": 0.3}]}]'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Wähl die Bohrmaschine und schieb »Größe der
@@ -1223,23 +1223,25 @@ Spitalfields, die David Fletcher aus 1.575 Fotos trainiert und unter
 CC BY 4.0 auf [superspl.at](https://superspl.at/scene/f4897475)
 veröffentlicht hat. Sein Original hat fast 5 Millionen Splats und ist
 1,2 Gigabyte groß; für diese Seite sind es die 1,5 Millionen, die am meisten
-zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage«: Die Kamera steht
-mitten in der Gasse. Wenn du ziehst, drehst du dich um, und mit den
-Pfeiltasten oder W, A, S, D gehst du die Gasse entlang (auf einem
-Touchscreen mit den beiden Knöpfen). In Street View von Google geht das
+zeigen, in 24 Megabyte. Wähl im Viewer »Artillery Passage (1,5 Mio. Splats, 24 MB)«: Die Kamera steht
+mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
+Touchscreen mit den beiden Knöpfen), mit den Pfeiltasten oder durch Ziehen
+schaust du dich um. In Street View von Google geht das
 nur in Sprüngen, von einem Aufnahmeort zum nächsten, denn dazwischen gibt es
 kein Foto. Aus Splats lässt sich jedes Bild dazwischen ausrechnen, und du
 gehst fließend.
 
-Die Knöpfe unter »Standorte« fliegen dich zu Stellen, an die du zu Fuß
-nicht kommst, etwa schräg unter das Schild des Juweliers oder hoch über die
-Gasse. Schieb dort die drei Regler und achte darauf, wie groß die Splats an
-Schrift und Fensterrahmen sind und wie groß auf einer glatten Wand. Die
-letzten beiden Standorte zeigen, wo die Täuschung endet. Von außen sieht eine solche Szene aus
-wie eine wirre Wolke: Alle Fotos wurden in der Gasse gemacht, und was keine
-Kamera gesehen hat, hat das Training nie verbessert. Die Fassung mit fast
-allen Splats ist schärfer, braucht aber 80 Megabyte und einen Rechner mit
-eigener Grafikkarte.
+Die Knöpfe unter »Standorte« fliegen dich durch die Gasse: zu einem
+Schaufenster und an das andere Ende, wo sie auf eine Straße trifft, schräg
+unter das Schild des Juweliers und hoch über die Dächer. Schieb dort die drei
+Regler und achte darauf, wie groß die Splats an Schrift und Fensterrahmen
+sind und wie groß auf einer glatten Wand. Die letzten beiden Standorte
+zeigen, wo die Täuschung endet: in einem Laden, durch dessen Fassade du
+hinaus auf die Gasse schaust, und von außen. Von außen sieht eine solche
+Szene aus wie eine wirre Wolke: Alle Fotos wurden in der Gasse gemacht,
+und was keine Kamera gesehen hat, hat das Training nie verbessert. Die
+Fassung mit 5 Millionen Splats zeigt mehr, braucht aber 80 Megabyte und
+einen Rechner mit eigener Grafikkarte.
 
 Die Datei ist so sortiert, dass die Splats, die am meisten zeigen, vorne
 stehen. »Anzahl der Splats« zeichnet nur die ersten davon:
@@ -1251,7 +1253,7 @@ open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x900
 hook: hide-footer
-hook: scene Artillery Passage 1000
+hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 1000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-1000.webp' alt='Die Gasse aus 1.000 Splats: auf hellem Grund nur ein paar lange, verwischte Striche und dunkle Flecken, von einer Gasse nichts zu erkennen.'>
@@ -1262,7 +1264,7 @@ open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x900
 hook: hide-footer
-hook: scene Artillery Passage 10000
+hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 10000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-10000.webp' alt='Die Gasse aus 10.000 Splats: große dunkle und helle Kleckse, dazwischen Spitzen und Striche; in der Mitte ahnt man den hellen Himmel über einer Gasse.'>
@@ -1273,7 +1275,7 @@ open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x900
 hook: hide-footer
-hook: scene Artillery Passage 100000
+hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 100000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-100000.webp' alt='Die Gasse aus 100.000 Splats: Fassaden links und rechts und der Boden sind zu erkennen, aber verschmiert und voller schwarzer und heller Schlieren.'>
@@ -1284,7 +1286,7 @@ open-site: /gaussian-splatting
 tab: preview
 viewport: 1280x900
 hook: hide-footer
-hook: scene Artillery Passage 1500000
+hook: scene Artillery Passage (1,5 Mio. Splats, 24 MB) 1500000
 crop-element: #szenen .splat-viewer-stage
 -->
 <img src='gasse-1500000.webp' alt='Die Gasse aus allen 1,5 Millionen Splats, fast wie ein Foto: links eine Fassade aus hellem Holz mit Schaufenster, in der Mitte eine schwarze Mülltonne auf grauem Pflaster, rechts weiße und grüne Ladenfronten, hinten die Gasse bis zu einem Laternenmast.'>
@@ -1349,9 +1351,10 @@ kleine Splats gibt. Wo es zu wenige sind, bei feinen Mustern oder Schrift,
 bleibt die Szene unscharf.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Wähl die Registrierkasse, zoom an die Tasten
-heran und schieb »Größe der Splats« nach links. Achte darauf, welche Form
-die Splats an den Rändern der Tasten haben.
+<strong>Ausprobieren:</strong> Wähl den Feuerlöscher, geh nah an die
+Schrift auf seinem Sockel heran und schieb »Weichheit der Splats« nach
+links. Achte darauf, welche Form die Splats an den Rändern der Buchstaben
+haben.
 </div>
 
 ### Sortieren in jedem Bild
@@ -1434,8 +1437,9 @@ Für eigene Fotos:
    schärfer wird.
 4. **Ansehen.** Brush speichert die Szene als `.ply`. Öffne sie oben im
    Viewer mit »Eigene Datei öffnen«: Der Viewer liest die Datei in deinem
-   Browser, sie wird nirgends hochgeladen. Steht die Szene auf dem Kopf, dreht
-   »Kippen« sie um eine Vierteldrehung.
+   Browser, sie wird nirgends hochgeladen. Liegt die Szene auf der Seite oder
+   steht sie auf dem Kopf, dreht »Aufrichten« sie jedes Mal um eine
+   Vierteldrehung.
 
 ## Wie geht es weiter?
 

@@ -221,12 +221,15 @@ void main() {
         return shader;
     }
 
-    function median(values, stride, k) {
+    // the value below which the share q of the values lies (q = 0.5: the
+    // median), from a sample of 5000; values holds stride numbers a splat,
+    // k picks one of them
+    function quantile(values, stride, k, q) {
         const list = [];
         const step = Math.max(1, Math.floor(values.length / stride / 5000));
         for (let i = k; i < values.length; i += stride * step) list.push(values[i]);
         list.sort((a, b) => a - b);
-        return list[Math.floor(list.length / 2)] || 0;
+        return list[Math.min(list.length - 1, Math.floor(list.length * q))] || 0;
     }
 
     class Viewer {
@@ -295,14 +298,18 @@ void main() {
             const turn = document.createElement('button');
             turn.type = 'button';
             turn.className = 'btn btn-sm btn-outline-secondary';
-            turn.title = 'Die Szene um eine Vierteldrehung kippen, wenn oben nicht oben ist';
-            turn.innerHTML = "<i class='bi bi-arrow-clockwise'></i><span>Kippen</span>";
+            // only for a file of one's own: a trainer often writes it with
+            // another axis up, and the scene lies on its side
+            turn.title = 'Die eigene Datei um eine Vierteldrehung drehen, wenn oben nicht oben ist';
+            turn.innerHTML = "<i class='bi bi-arrow-clockwise'></i><span>Aufrichten</span>";
+            turn.hidden = true;
             turn.addEventListener('click', () => this.tilt());
+            this.turnButton = turn;
             bar.append(turn);
             this.canvas = document.createElement('canvas');
             this.canvas.className = 'splat-viewer-canvas';
             this.canvas.tabIndex = 0;
-            this.canvas.setAttribute('aria-label', 'Szene: ziehen zum Drehen, Pfeiltasten zum Gehen');
+            this.canvas.setAttribute('aria-label', 'Szene: ziehen oder Pfeiltasten zum Drehen, W, A, S, D zum Gehen');
             this.status = document.createElement('div');
             this.status.className = 'splat-viewer-status';
             const stage = document.createElement('div');
@@ -327,7 +334,7 @@ void main() {
             this.info.className = 'splat-viewer-info';
             const help = document.createElement('div');
             help.className = 'splat-viewer-help';
-            help.textContent = 'Ziehen dreht, das Mausrad oder zwei Finger zoomen, die Pfeiltasten oder W, A, S, D bewegen dich, Q und E nach unten und oben; ein Doppelklick stellt die Kamera zurück.';
+            help.textContent = 'Ziehen oder die Pfeiltasten drehen, W, A, S, D bewegen dich, Q und E nach unten und oben, das Mausrad oder zwei Finger bringen dich näher heran; ein Doppelklick stellt die Kamera zurück.';
             // the spots of a scene (»spots« in its entry): buttons that fly
             // the camera there, filled in by show()
             this.spotBar = document.createElement('div');
@@ -391,6 +398,7 @@ void main() {
                 await new Promise((r) => setTimeout(r, 30));
                 this.view = scene.view || null;
                 this.spots = scene.spots || [];
+                this.turnButton.hidden = true;
                 this.show(parse(buffer, scene.src), scene.credit || '');
                 this.loaded = scene.name;
             } catch (e) {
@@ -454,6 +462,8 @@ void main() {
             this.message('Lädt …');
             file.arrayBuffer().then((buffer) => {
                 this.view = null;
+                this.spots = [];
+                this.turnButton.hidden = false;
                 this.show(parse(buffer, file.name), file.name);
             }).catch((e) => this.message(e.message));
         }
@@ -462,7 +472,11 @@ void main() {
             this.splats = splats;
             this.credit = credit;
             const n = splats.count;
-            this.target = [0, 1, 2].map((k) => median(splats.position, 3, k));
+            // the camera looks at the middle of the object's extent, not at
+            // the median of its splats: a fire extinguisher has most of
+            // them in its base. The outermost 1 % on each side are left out
+            // (stray splats far away).
+            this.target = [0, 1, 2].map((k) => (quantile(splats.position, 3, k, 0.01) + quantile(splats.position, 3, k, 0.99)) / 2);
             const d = [];
             const step = Math.max(1, Math.floor(n / 5000));
             for (let i = 0; i < n; i += step) d.push(Math.hypot(...[0, 1, 2].map((k) => splats.position[i * 3 + k] - this.target[k])));
@@ -660,6 +674,10 @@ void main() {
 
         // walking: while a key or a button is held, the camera and the point
         // it turns around move together, along the ground and sideways
+        walkSpeed() {
+            return (this.view && this.view.speed) || this.radius * 0.6;
+        }
+
         walkLoop() {
             this.flight = null;
             if (this.walking) return;
@@ -669,11 +687,15 @@ void main() {
                 const dt = Math.min(0.05, (now - last) / 1000);
                 last = now;
                 const h = this.held;
-                const ahead = (h.has('w') || h.has('arrowup') || h.has('touch-forward') ? 1 : 0) - (h.has('s') || h.has('arrowdown') || h.has('touch-back') ? 1 : 0);
-                const side = (h.has('d') || h.has('arrowright') ? 1 : 0) - (h.has('a') || h.has('arrowleft') ? 1 : 0);
+                const ahead = (h.has('w') || h.has('touch-forward') ? 1 : 0) - (h.has('s') || h.has('touch-back') ? 1 : 0);
+                const side = (h.has('d') ? 1 : 0) - (h.has('a') ? 1 : 0);
                 const up = (h.has('e') ? 1 : 0) - (h.has('q') ? 1 : 0);
-                if (!this.splats || (!ahead && !side && !up)) { this.walking = false; return; }
-                const speed = (this.view && this.view.speed) || this.radius * 0.6;
+                // the arrow keys turn and tilt, as dragging does
+                const turnSide = (h.has('arrowleft') ? 1 : 0) - (h.has('arrowright') ? 1 : 0);
+                const turnUp = (h.has('arrowup') ? 1 : 0) - (h.has('arrowdown') ? 1 : 0);
+                if (!this.splats || (!ahead && !side && !up && !turnSide && !turnUp)) { this.walking = false; return; }
+                if (turnSide || turnUp) this.turn(turnSide * 1.4 * dt, -turnUp * 1.0 * dt);
+                const speed = this.walkSpeed();
                 const sy = Math.sin(this.yaw), cy = Math.cos(this.yaw);
                 const forward = [-sy, 0, -cy], right = [cy, 0, -sy];
                 for (let i = 0; i < 3; i++) this.target[i] += (ahead * forward[i] + side * right[i]) * speed * dt;
@@ -736,14 +758,14 @@ void main() {
                         // a street (»look« in its view) the hand turns the
                         // head, so the other way round
                         const k = this.look ? -1 : 1;
-                        this.yaw -= k * dx * 0.008;
-                        this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch + k * dy * 0.008));
+                        this.turn(-k * dx * 0.008, k * dy * 0.008);
                     }
                 } else if (pointers.size === 2) {
                     const [a, b] = [...pointers.values()];
                     const now = { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
                     if (last) {
-                        this.distance *= last.d / Math.max(now.d, 1);
+                        if (this.look) this.dolly(this.walkSpeed() * 0.004 * (now.d - last.d));
+                        else this.distance *= last.d / Math.max(now.d, 1);
                         this.pan(now.x - last.x, now.y - last.y);
                     }
                     last = now;
@@ -753,10 +775,32 @@ void main() {
             c.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 this.flight = null;
-                this.distance *= Math.exp(e.deltaY * 0.001);
+                if (this.look) this.dolly(-this.walkSpeed() * 0.0015 * e.deltaY);
+                else this.distance *= Math.exp(e.deltaY * 0.001);
                 this.redraw();
             }, { passive: false });
             c.addEventListener('dblclick', () => { if (this.splats) { this.show(this.splats, this.credit); } });
+        }
+
+        // turns the camera: around the point it looks at for an object, around
+        // the eye in a street (»look«), so that turning there is turning
+        // the head, wherever one has walked to
+        turn(yaw, pitch) {
+            const eye = this.look ? this.camera().eye : null;
+            this.yaw += yaw;
+            this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch + pitch));
+            if (eye) {
+                const back = this.camera().back;
+                this.target = eye.map((v, k) => v - back[k] * this.distance);
+            }
+        }
+
+        // in a street the wheel and two fingers go forward and back, along
+        // where the camera looks, instead of changing the distance to the
+        // point it turns around
+        dolly(amount) {
+            const back = this.camera().back;
+            this.target = this.target.map((v, k) => v - back[k] * amount);
         }
 
         pan(dx, dy) {
