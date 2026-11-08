@@ -1,0 +1,58 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt ein leerer
+# Anfang und in fehler/ je ein typischer Fehler.
+format: 1
+activity: gaussian-splatting
+examples:
+  ein-splat:
+    pass:
+      - { files: { splatting/blobs.py: stufen/blobs-1.py } }
+      - { files: { splatting/blobs.py: stufen/blobs-3.py } }
+    fail:
+      - { files: { splatting/blobs.py: { text: "import numpy as np\n" } } }
+      - { files: { splatting/blobs.py: fehler/blob-ohne-zwei.py } }
+      - { files: { splatting/blobs.py: fehler/blob-math.py } }
+  gedreht:
+    pass:
+      - { files: { splatting/blobs.py: stufen/blobs-2.py } }
+    fail:
+      - { files: { splatting/blobs.py: stufen/blobs-1.py } }
+      - { files: { splatting/blobs.py: fehler/weight-vorzeichen.py } }
+      - { files: { splatting/blobs.py: fehler/weight-ohne-teilen.py } }
+  fehler:
+    pass:
+      - { files: { splatting/blobs.py: stufen/blobs-3.py } }
+    fail:
+      - { files: { splatting/blobs.py: stufen/blobs-2.py } }
+      - { files: { splatting/blobs.py: fehler/error-summe.py } }
+      - { files: { splatting/blobs.py: fehler/error-betrag.py } }
+  schritt:
+    pass:
+      - { files: { splatting/blobs.py: stufen/blobs-4.py } }
+    fail:
+      - { files: { splatting/blobs.py: stufen/blobs-3.py } }
+      - { files: { splatting/blobs.py: fehler/step-plus.py } }
+  kovarianz:
+    pass:
+      - { files: { splatting/render3d.py: stufen/render3d-1.py } }
+      - { files: { splatting/render3d.py: stufen/render3d-2.py } }
+    fail:
+      - { files: { splatting/render3d.py: { text: "import numpy as np\n" } } }
+      - { files: { splatting/render3d.py: fehler/covariance-ein-s.py } }
+      - { files: { splatting/render3d.py: fehler/covariance-ohne-rt.py } }
+  bildschirm:
+    pass:
+      - { files: { splatting/render3d.py: stufen/render3d-1.py } }
+    fail:
+      - { files: { splatting/render3d.py: { text: "import numpy as np\n" } } }
+      - { files: { splatting/render3d.py: fehler/to-screen-ohne-z.py } }
+      - { files: { splatting/render3d.py: fehler/to-screen-ohne-mitte.py } }
+  mischen:
+    pass:
+      - { files: { splatting/render3d.py: stufen/render3d-1.py } }
+      - { files: { splatting/render3d.py: stufen/render3d-2.py } }
+    fail:
+      - { files: { splatting/render3d.py: { text: "import numpy as np\n" } } }
+      - { files: { splatting/render3d.py: fehler/blend-ohne-durchlass.py } }
+      - { files: { splatting/render3d.py: fehler/blend-ohne-hintergrund.py } }

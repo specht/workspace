@@ -68,6 +68,7 @@ OTHER_FILES = {
     'users.sql' => 'a table of users with passwords for *Bobby Tables* (SQL injection)',
     'working-with-files.tar.gz' => 'the files to explore in *Arbeiten mit Dateien*',
     'snake.c' => 'a small game in C, not used by an activity at the moment',
+    'gaussian-splatting' => '`pearl-earring.png` (Vermeer\'s painting, public domain, 128 pixels wide) and five scenes of 3D Gaussians as `.ply` with the colour only (`measuring-tape.ply` and others, from the DX.GL multi-view datasets, CC0) for *Gaussian Splatting*; copied from `src/content/gaussian-splatting/dateien/`, the scenes made with `werkzeug/prepare_scenes.py`',
     'raycaster' => '`palette.rb` (a palette of 256 colours, the shade table and the textures as `palette.h`, from seven tiles drawn in the 2D Game Studio) and `textures.png` (the seven tiles of the raycaster) for *Raycasting in C*; copied from `src/content/raycaster/werkzeug/`'
 }.freeze
 

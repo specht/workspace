@@ -14442,3 +14442,72 @@ html[data-bs-theme="dark"] .usage-charts {
     font-size: 0.8rem;
     pointer-events: none;
 }
+
+/* the splat viewer of »Gaussian Splatting« (splat_viewer.js): the scene in
+   a 16:9 stage on a quiet ground, below it the scene, the size of the
+   splats and the own file */
+.splat-viewer {
+    margin: 1.2em 0;
+    --splat-ground: #eceae4;
+}
+html[data-bs-theme="dark"] .splat-viewer {
+    --splat-ground: #2a2d31;
+}
+.splat-viewer-stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.4rem;
+    overflow: hidden;
+    background: var(--splat-ground);
+}
+.splat-viewer-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: grab;
+}
+.splat-viewer-canvas:active {
+    cursor: grabbing;
+}
+.splat-viewer-status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    text-align: center;
+    color: var(--bs-secondary-color);
+    pointer-events: none;
+}
+.splat-viewer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+    margin-top: 0.6em;
+}
+.splat-viewer-bar select {
+    width: auto;
+}
+.splat-viewer-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.9rem;
+}
+.splat-viewer-size input {
+    width: 8em;
+}
+.splat-viewer-info {
+    margin-top: 0.3em;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+@media (pointer: coarse) {
+    .splat-viewer-bar .btn,
+    .splat-viewer-bar select {
+        min-height: 44px;
+    }
+}

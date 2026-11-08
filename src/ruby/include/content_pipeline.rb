@@ -260,6 +260,23 @@ class Main < Sinatra::Base
             FileUtils.cp(script_path, target_path) unless File.exist?(target_path)
             script['src'] = "/cache/#{sha1}.js"
         end
+        # The scenes of a splat viewer beside the page (splat_viewer.js,
+        # »Gaussian Splatting«): served from the cache by content hash, as
+        # the scripts above.
+        root.css('.splat-viewer[data-scenes]').each do |viewer|
+            scenes = JSON.parse(viewer['data-scenes'])
+            scenes.each do |scene|
+                src = scene['src'].to_s
+                next if src.empty? || src.start_with?('/') || src =~ /\A[a-z]+:/i
+                scene_path = File.join(File.dirname(path), src)
+                next unless File.file?(scene_path)
+                sha1 = Digest::SHA1.hexdigest(File.binread(scene_path))[0, 16]
+                target_path = "/webcache/#{sha1}#{File.extname(scene_path)}"
+                FileUtils.cp(scene_path, target_path) unless File.exist?(target_path)
+                scene['src'] = "/cache/#{sha1}#{File.extname(scene_path)}"
+            end
+            viewer['data-scenes'] = JSON.generate(scenes)
+        end
         root.css('svg').each do |img|
             if img.classes.include?('full')
                 img.wrap("<div class='scroll-x'>")

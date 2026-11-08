@@ -1,0 +1,382 @@
+# Aufgaben zu »Gaussian Splatting«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/splatting; die Funktionen der Lernenden rechnen mit numpy
+# (pip install numpy pillow, wie die Seite sagt). Die Zahlen gehören zu den
+# Programmen in stufen/ und zu pearl-earring.png und measuring-tape.ply.
+format: 1
+activity: gaussian-splatting
+tasks:
+  - id: ein-splat
+    title: Ein Splat
+    prompt: |
+      Schreib in `splatting/blobs.py` die Funktion `blob(dx, dy, sigma)`: das
+      Gewicht eines Pixels, das um `dx` und `dy` von der Mitte eines runden
+      Splats mit der Breite `sigma` entfernt ist. Die Prüfung ruft sie mit
+      einzelnen Zahlen und mit numpy-Arrays auf.
+    check:
+      type: python
+      file: splatting/blobs.py
+      cases:
+        - call: 'round(float(blob(0, 0, 1)), 4)'
+          expect: 1.0
+          say: In der Mitte ist das Gewicht genau 1, denn e hoch 0 ist 1.
+        - call: 'round(float(blob(1, 0, 1)), 4)'
+          expect: 0.6065
+          say: Einen Sigma von der Mitte entfernt ist das Gewicht e hoch −1/2, etwa 0,61. Steht im Nenner 2 · sigma · sigma?
+        - call: 'round(float(blob(3, 4, 5)), 4)'
+          expect: 0.6065
+          say: Der Abstand ist 5, so groß wie sigma; das Gewicht ist wieder etwa 0,61. Wird sigma im Nenner quadriert?
+        - call: 'round(float(blob(0, -2, 1)), 4)'
+          expect: 0.1353
+          say: Unter der Mitte zählt der Abstand genauso wie darüber; dy wird quadriert.
+        - call: 'blob(np.array([0.0, 2.0]), np.array([0.0, 0.0]), 2).round(4).tolist()'
+          expect: '[1.0, 0.6065]'
+          say: Mit Arrays rechnet die Funktion jede Zelle für sich. math.exp geht nur mit einzelnen Zahlen; nimm np.exp.
+    solution: |
+      ```python
+      def blob(dx, dy, sigma):
+          return np.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma))
+      ```
+
+  - id: gedreht
+    title: Gestreckt und gedreht
+    prompt: |
+      Schreib in `splatting/blobs.py` die Funktion
+      `weight(dx, dy, sx, sy, angle)`: das Gewicht eines Pixels für einen Splat
+      mit den Breiten `sx` und `sy`, um den Winkel `angle` gedreht. Die
+      Prüfung ruft sie ohne und mit Drehung auf und auch mit Arrays.
+    check:
+      type: python
+      file: splatting/blobs.py
+      cases:
+        - call: 'round(float(weight(3, 0, 3, 1, 0)), 4)'
+          expect: 0.6065
+          say: Ohne Drehung ist u = dx / sx = 1 und v = 0; das Gewicht ist e hoch −1/2.
+        - call: 'round(float(weight(0, 3, 3, 1, 0)), 4)'
+          expect: 0.0111
+          say: Ohne Drehung ist v = dy / sy = 3; quer zum Splat fällt die Glocke schnell ab.
+        - call: 'round(float(weight(0, 3, 3, 1, np.pi / 2)), 4)'
+          expect: 0.6065
+          say: Um eine Vierteldrehung gedreht liegt die lange Achse senkrecht; ein Pixel 3 unter der Mitte ist dann eine Breite sx entfernt. Stimmen die Vorzeichen von sin in u und v?
+        - call: 'round(float(weight(2, 2, 2.0, 1.0, np.pi / 4)), 4)'
+          expect: 0.3679
+          say: Um ein Achtel gedreht zeigt die lange Achse nach rechts unten; das Pixel bei (2, 2) liegt auf ihr, u ist etwa 1,41 und v 0.
+        - call: 'round(float(weight(1, 2, 4, 4, 0.7) - blob(1, 2, 4)), 6)'
+          expect: 0.0
+          say: Sind beide Breiten gleich, ist der Splat rund, und der Winkel ist egal; dann kommt dasselbe heraus wie bei blob.
+        - call: 'weight(np.array([0.0, 3.0]), np.array([0.0, 0.0]), 3, 1, 0).round(4).tolist()'
+          expect: '[1.0, 0.6065]'
+          say: Mit Arrays rechnet die Funktion jede Zelle für sich; nimm np.cos, np.sin und np.exp.
+    solution: |
+      ```python
+      def weight(dx, dy, sx, sy, angle):
+          c = np.cos(angle)
+          s = np.sin(angle)
+          u = (c * dx + s * dy) / sx
+          v = (-s * dx + c * dy) / sy
+          return np.exp(-(u * u + v * v) / 2)
+      ```
+
+  - id: ueberlappen
+    title: Wo zwei Splats sich treffen
+    prediction: true
+    prompt: |
+      Das Programm addiert drei farbige Splats. Der blaue und der grüne
+      überlappen sich rechts. Was zeigt das Bild dort, wo sie sich
+      überlappen?
+    check:
+      type: choice
+      options:
+        - Es wird heller, die Farben addieren sich, Blau und Grün zu einem hellen Türkis.
+        - Der Splat, der im Programm später kommt, deckt den früheren ab.
+        - Es wird dunkler, weil sich die beiden Splats gegenseitig abschwächen.
+        - Die Farbe des stärkeren Splats setzt sich durch, ohne sich zu mischen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das Programm rechnet `image +=`, es addiert. Abdecken müsste es die Farbe darunter ersetzen.
+      - when: { picked: 2 }
+        say: Gewichte und Farben sind nie negativ; eine Summe solcher Zahlen wird nicht kleiner.
+      - when: { picked: 3 }
+        say: Beide Splats tragen ihre Farbe bei, multipliziert mit ihrem Gewicht an dieser Stelle; keiner verdrängt den anderen.
+    solution: |
+      Es wird heller: Jeder Splat addiert seine Farbe, multipliziert mit
+      seinem Gewicht. Blau (0,1, 0,5, 1,0) und Grün (0,2, 0,9, 0,2) ergeben
+      zusammen viel Grün und Blau, ein helles Türkis.
+
+  - id: fehler
+    title: Wie weit daneben?
+    prompt: |
+      Schreib in `splatting/blobs.py` die Funktion `error(image, target)`:
+      der mittlere quadratische Fehler zwischen zwei gleich großen Tabellen.
+    check:
+      type: python
+      file: splatting/blobs.py
+      cases:
+        - call: 'float(error(np.array([0.5, 1.0]), np.array([0.0, 1.0])))'
+          expect: 0.125
+          say: Die Abweichungen sind 0,5 und 0, die Quadrate 0,25 und 0, ihr Mittelwert 0,125.
+        - call: 'float(error(np.array([0.0, 1.0]), np.array([0.5, 1.0])))'
+          expect: 0.125
+          say: Eine Abweichung nach unten zählt genauso wie eine nach oben; das Quadrat macht beide positiv.
+        - call: 'float(error(np.zeros((2, 2, 3)), np.ones((2, 2, 3))))'
+          expect: 1.0
+          say: Jede der 12 Zahlen weicht um 1 ab; der Mittelwert der Quadrate ist 1, nicht die Summe 12.
+        - call: 'float(error(np.array([0.2, 0.4, 0.6]), np.array([0.2, 0.4, 0.6])))'
+          expect: 0.0
+          say: Sind beide gleich, ist der Fehler 0.
+        - call: 'round(float(error(np.array([1.0, 0.0]), np.array([0.0, 0.0]))), 4)'
+          expect: 0.5
+          say: Die Abweichungen 1 und 0 im Quadrat sind 1 und 0, ihr Mittelwert 0,5. Wird quadriert, nicht nur der Betrag genommen?
+    solution: |
+      ```python
+      def error(image, target):
+          return np.mean((image - target) ** 2)
+      ```
+
+  - id: erster-schritt
+    title: Der erste Schritt bergab
+    prompt: |
+      Der Fehler ist \\(E(c) = (c - 0{,}7)^2\\), seine Ableitung
+      \\(E'(c) = 2\\,(c - 0{,}7)\\). Du beginnst bei \\(c = 0\\) und gehst einen
+      Schritt Gradientenabstieg mit der Lernrate \\(\eta = 0{,}1\\). Welchen
+      Wert hat \\(c\\) danach?
+    check: { type: number, expect: 0.14, tolerance: 0.0001 }
+    feedback:
+      - when: { equals: -0.14 }
+        say: Die Steigung bei 0 ist −1,4; gegen die Steigung heißt, sie abzuziehen, und minus mal minus ist plus.
+      - when: { equals: 0.07 }
+        say: Die Ableitung hat den Faktor 2; die Steigung bei 0 ist 2 · (0 − 0,7) = −1,4.
+      - when: { equals: 0.7 }
+        say: Das ist der Tiefpunkt. Ein Schritt mit der Lernrate 0,1 kommt nur ein Stück dorthin.
+      - when: { equals: 1.4 }
+        say: Das ist der Betrag der Steigung. Multiplizier sie noch mit der Lernrate.
+    hint: |
+      Erst die Steigung an der Stelle 0 ausrechnen, dann mit 0,1
+      multiplizieren und von 0 abziehen.
+    solution: |
+      Die Steigung bei 0 ist \\(2 \cdot (0 - 0{,}7) = -1{,}4\\). Der Schritt:
+      \\(0 - 0{,}1 \cdot (-1{,}4) = 0{,}14\\). Der Regler geht also ein Stück
+      nach rechts, auf den Tiefpunkt bei 0,7 zu.
+
+  - id: schritt
+    title: Ein Schritt gegen den Gradienten
+    prompt: |
+      Schreib in `splatting/blobs.py` die Funktion `step(value, gradient, rate)`:
+      ein Schritt Gradientenabstieg. Die Prüfung ruft sie mit Zahlen und mit
+      numpy-Arrays auf.
+    check:
+      type: python
+      file: splatting/blobs.py
+      cases:
+        - call: 'round(float(step(1.0, 2.0, 0.1)), 6)'
+          expect: 0.8
+          say: Gegen die Steigung, also abziehen. 1 − 0,1 · 2 = 0,8.
+        - call: 'round(float(step(0.0, -1.4, 0.1)), 6)'
+          expect: 0.14
+          say: Bei negativer Steigung wird der Wert größer.
+        - call: 'step(np.array([1.0, 1.0]), np.array([2.0, -2.0]), 0.5).tolist()'
+          expect: '[0.0, 2.0]'
+          say: Mit Arrays geht jeder Wert seinen eigenen Schritt, mit seiner eigenen Steigung.
+        - call: 'round(float(step(3.0, 0.0, 0.5)), 6)'
+          expect: 3.0
+          say: Ohne Steigung bleibt der Wert, wo er ist.
+    solution: |
+      ```python
+      def step(value, gradient, rate):
+          return value - rate * gradient
+      ```
+
+  - id: zu-schnell
+    title: Größere Schritte
+    prediction: true
+    prompt: |
+      In `train.py` steht die Lernrate 0,01; damit fällt der Fehler auf etwa
+      0,019. Was passiert, wenn du sie auf 0,02 verdoppelst?
+    check:
+      type: choice
+      options:
+        - Der Fehler fällt doppelt so schnell und landet wieder bei etwa 0,019.
+        - Der Fehler fällt schneller und landet unter 0,019.
+        - Der Fehler wächst, von Schritt zu Schritt immer schneller, auf riesige Zahlen.
+        - Es ändert sich fast nichts.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es, wenn jeder Schritt genau das richtige Stück ginge. Aber wo viele Splats an denselben Pixeln ziehen, schießen doppelt so große Schritte über den Tiefpunkt hinaus.
+      - when: { picked: 1 }
+        say: Unter 0,019 kommt man mit festen, runden Splats nicht, egal wie schnell. Und doppelt so große Schritte schießen hier über das Ziel hinaus.
+      - when: { picked: 3 }
+        say: Die Lernrate bestimmt die Größe jedes Schritts; doppelt so groß ist ein großer Unterschied.
+    solution: |
+      Der Fehler wächst ins Riesige. Viele Splats ziehen an denselben Pixeln;
+      mit doppelt so großen Schritten landet jeder Schritt auf der anderen
+      Seite des Tiefpunkts, weiter weg als vorher, und der nächste Schritt
+      ist noch größer.
+
+  - id: wandern
+    title: Splats, die wandern dürfen
+    prediction: true
+    prompt: |
+      Mit festen, runden Splats, die nur ihre Farbe lernen, bleibt der Fehler
+      bei etwa 0,019. Jetzt dürfen die Splats auch wandern, sich strecken
+      und drehen. Wie groß wird der Fehler nach 300 Schritten?
+    check:
+      type: choice
+      options:
+        - Kaum kleiner, etwa 0,017.
+        - Etwa halb so groß, 0,01.
+        - Mehr als zehnmal kleiner, unter 0,002.
+        - Größer, weil sich die Splats gegenseitig im Weg sind.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die Farben waren schon so gut, wie es mit festen Splats geht. Was fehlte, waren Kanten und Formen, und die können die Splats jetzt lernen.
+      - when: { picked: 1 }
+        say: Es wird noch viel besser. Ein Splat, der sich an eine Kante legt, ersetzt viele runde Splats.
+      - when: { picked: 3 }
+        say: Jeder Schritt geht bergab, für alle Werte zusammen. Adam sorgt dafür, dass keiner zu weit springt.
+    solution: |
+      Etwa 0,0008, mehr als zwanzigmal kleiner. Splats, die sich an Kanten
+      legen, strecken und drehen, malen das Kopftuch und das Gesicht viel
+      genauer als feste Splats.
+
+  - id: kovarianz
+    title: Die Form im Raum
+    prompt: |
+      Schreib in `splatting/render3d.py` die Funktion
+      `covariance(scale, rotation)`: die Kovarianzmatrix eines Splats mit den
+      drei Breiten `scale` und der Drehmatrix `rotation`.
+    check:
+      type: python
+      file: splatting/render3d.py
+      cases:
+        - call: 'np.allclose(covariance(np.array([1.0, 2.0, 3.0]), np.eye(3)), np.diag([1.0, 4.0, 9.0]))'
+          expect: true
+          say: Ohne Drehung stehen die Breiten im Quadrat auf der Diagonale, 1, 4 und 9. Kommt S zweimal vor, einmal transponiert?
+        - call: 'np.allclose(covariance(np.array([2.0, 1.0, 1.0]), np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])), np.diag([1.0, 4.0, 1.0]))'
+          expect: true
+          say: Eine Vierteldrehung um z legt die lange Achse von x nach y; dann steht die 4 an zweiter Stelle der Diagonale. Steht R links und das transponierte R rechts?
+        - call: 'C = covariance(np.array([0.5, 1.0, 2.0]), rotation_matrix(np.array([0.9, 0.3, 0.2, 0.1]) / np.linalg.norm([0.9, 0.3, 0.2, 0.1]))); bool(np.allclose(C, C.T))'
+          expect: true
+          say: Eine Kovarianzmatrix ist symmetrisch, gespiegelt an der Diagonale gleich. Fehlt am Ende das transponierte R?
+        - call: 'C = covariance(np.array([0.5, 1.0, 2.0]), rotation_matrix(np.array([0.9, 0.3, 0.2, 0.1]) / np.linalg.norm([0.9, 0.3, 0.2, 0.1]))); round(float(np.trace(C)), 6)'
+          expect: 5.25
+          say: Eine Drehung ändert die Summe der Diagonale nicht; sie ist die Summe der Quadrate der Breiten, 0,25 + 1 + 4.
+    solution: |
+      ```python
+      def covariance(scale, rotation):
+          S = np.diag(scale)
+          return rotation @ S @ S.T @ rotation.T
+      ```
+
+  - id: bildschirm
+    title: Auf den Bildschirm
+    prompt: |
+      Schreib in `splatting/render3d.py` die Funktion
+      `to_screen(x, y, z, f, W, H)`: die Spalte und die Zeile, auf die ein
+      Punkt in den Koordinaten der Kamera fällt, als Paar `u, v`.
+    check:
+      type: python
+      file: splatting/render3d.py
+      cases:
+        - call: 'tuple(float(t) for t in to_screen(0, 0, 5, 100, 320, 240))'
+          expect: '(160.0, 120.0)'
+          say: Ein Punkt genau vor der Kamera landet in der Mitte des Bildes, bei W / 2 und H / 2.
+        - call: 'tuple(float(t) for t in to_screen(1, 0, 2, 100, 320, 240))'
+          expect: '(210.0, 120.0)'
+          say: 100 · 1 / 2 = 50 Pixel rechts von der Mitte. Wird durch z geteilt?
+        - call: 'tuple(float(t) for t in to_screen(1, 0, 4, 100, 320, 240))'
+          expect: '(185.0, 120.0)'
+          say: Doppelt so weit weg, halb so weit von der Mitte.
+        - call: 'tuple(float(t) for t in to_screen(0, -1, 4, 200, 320, 240))'
+          expect: '(160.0, 70.0)'
+          say: y gehört zu v, mit H / 2 als Mitte; ein negatives y liegt über der Mitte.
+        - call: 'u, v = to_screen(np.array([0.0, 1.0]), np.array([0.0, 1.0]), np.array([1.0, 2.0]), 100, 320, 240); (u.tolist(), v.tolist())'
+          expect: '([160.0, 210.0], [120.0, 170.0])'
+          say: Mit Arrays rechnet die Funktion für jeden Punkt; die Formel geht unverändert.
+    solution: |
+      ```python
+      def to_screen(x, y, z, f, W, H):
+          return f * x / z + W / 2, f * y / z + H / 2
+      ```
+
+  - id: mischen
+    title: Von vorne nach hinten
+    prompt: |
+      Schreib in `splatting/render3d.py` die Funktion
+      `blend(colors, alphas, background)`: die Farbe eines Pixels aus Splats,
+      die von vorne nach hinten sortiert sind, und dem Hintergrund.
+    check:
+      type: python
+      file: splatting/render3d.py
+      cases:
+        - call: 'blend([1.0], [0.5], 0.0)'
+          expect: 0.5
+          say: Ein weißer Splat mit Deckkraft 0,5 vor Schwarz trägt 0,5 bei, der Hintergrund 0.
+        - call: 'blend([1.0, 0.0], [0.5, 0.5], 0.0)'
+          expect: 0.5
+          say: Der weiße Splat vorne trägt 0,5 bei; der schwarze dahinter nichts.
+        - call: 'blend([0.0, 1.0], [0.5, 0.5], 0.0)'
+          expect: 0.25
+          say: Hinter dem schwarzen Splat kommt nur noch die Hälfte des Lichts an; der weiße trägt 0,5 · 0,5 = 0,25 bei. Wird die Durchlässigkeit nach jedem Splat kleiner?
+        - call: 'blend([], [], 0.3)'
+          expect: 0.3
+          say: Ohne Splats bleibt nur der Hintergrund.
+        - call: 'round(blend([0.0], [0.25], 1.0), 6)'
+          expect: 0.75
+          say: Ein schwarzer Splat mit Deckkraft 0,25 lässt drei Viertel des weißen Hintergrunds durch. Kommt der Hintergrund nach der Schleife dazu, mit dem, was übrig ist?
+        - call: 'blend([np.array([1.0, 0.0, 0.0])], [0.5], np.zeros(3)).tolist()'
+          expect: '[0.5, 0.0, 0.0]'
+          say: Mit Farben aus drei Zahlen geht dieselbe Rechnung für jede Zahl.
+    solution: |
+      ```python
+      def blend(colors, alphas, background):
+          color = 0
+          transmittance = 1
+          for c, a in zip(colors, alphas):
+              color += transmittance * a * c
+              transmittance *= 1 - a
+          return color + transmittance * background
+      ```
+
+  - id: ohne-sortieren
+    title: Ohne Sortieren
+    prediction: true
+    prompt: |
+      Der Renderer geht die Splats mit `np.argsort(z)` von vorne nach hinten
+      durch. Was passiert, wenn er sie stattdessen in der Reihenfolge der Datei
+      mischt, mit `range(len(z))`?
+    check:
+      type: choice
+      options:
+        - Nichts ändert sich; beim Addieren der Splats in 2D war die Reihenfolge auch egal.
+        - Das Bild wird nur etwas heller oder dunkler.
+        - Splats, die hinten liegen, malen über die vorderen; das Maßband sieht fleckig aus, und Teile scheinen durch, die verdeckt sein müssten.
+        - Das Programm bricht mit einem Fehler ab.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Beim Addieren schon, denn a + b = b + a. Beim Mischen nimmt jeder Splat denen dahinter einen Teil des Lichts; wer zuerst kommt, gilt als vorne.
+      - when: { picked: 1 }
+        say: Es geht nicht nur um die Helligkeit. Die Rechnung hält den ersten Splat für den vordersten; liegt er hinten, malt er über das, was vor ihm liegt.
+      - when: { picked: 3 }
+        say: Rechnen kann das Programm in jeder Reihenfolge; es rechnet dann nur etwas anderes.
+    solution: |
+      Ohne Sortieren hält das Programm den ersten Splat der Datei für den
+      vordersten. Liegt er in Wahrheit hinten, malt er über die Splats vor
+      ihm, und die nehmen ihm später kein Licht mehr weg. Das Bild wird
+      fleckig, und Verdecktes scheint durch.
+
+  - id: warum-reihenfolge
+    title: Addieren und Mischen
+    prompt: |
+      Erkläre in eigenen Worten, warum die Reihenfolge der Splats in deinem
+      2D-Bild egal war und in der 3D-Szene nicht.
+    check: { type: reflection, min_words: 25 }
+    solution: |
+      In 2D addiert das Programm die Farben der Splats, und eine Summe ist
+      in jeder Reihenfolge gleich. In 3D mischt es: Jeder Splat trägt seine
+      Farbe mit dem Anteil des Lichts bei, das noch durchkommt, und lässt
+      danach weniger durch. Ein Splat vorne nimmt den Splats dahinter Licht
+      weg, nicht umgekehrt; darum muss man von vorne nach hinten gehen, also
+      nach der Tiefe sortieren, und die hängt von der Kamera ab.
