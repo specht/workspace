@@ -14470,6 +14470,9 @@ html[data-bs-theme="dark"] .splat-viewer {
 }
 .splat-viewer-stage {
     position: relative;
+    /* 16:9, but in a low window lower (splat_viewer.js, fit): then the
+       full width stays and the picture becomes wider */
+    width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: 0.4rem;
     overflow: hidden;

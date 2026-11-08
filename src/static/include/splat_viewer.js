@@ -246,6 +246,7 @@ void main() {
             this.yaw = 0.6; this.pitch = 0.3; this.distance = 1; this.target = [0, 0, 0];
             this.build();
             if (!this.gl) return;
+            window.addEventListener('resize', () => { if (this.splats) { this.fit(); this.redraw(); } });
             if (this.scenes.length) this.load(this.scenes[0]);
         }
 
@@ -359,6 +360,7 @@ void main() {
             this.status.className = 'splat-viewer-status';
             const stage = document.createElement('div');
             stage.className = 'splat-viewer-stage';
+            this.stage = stage;
             const walk = document.createElement('div');
             walk.className = 'splat-viewer-walk';
             for (const [dir, icon, label] of [[1, 'bi-arrow-up', 'Vorwärts'], [-1, 'bi-arrow-down', 'Rückwärts']]) {
@@ -543,6 +545,7 @@ void main() {
             this.counter.value = '1';
             this.showSpots();
             this.upload();
+            this.fit();
             this.message('');
             this.describe();
         }
@@ -607,6 +610,21 @@ void main() {
             const v = parseFloat(this.counter.value);
             if (n <= 100 || v >= 1) return n;
             return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
+        }
+
+        // the whole viewer fits into the window, the controls and the legend
+        // below the picture included: the picture gets at most the height
+        // that is left (it becomes wider than 16:9 then, not smaller), minus
+        // what is fixed over the page (the footer in development)
+        fit() {
+            const below = this.root.getBoundingClientRect().bottom - this.stage.getBoundingClientRect().bottom;
+            let covered = 0;
+            for (const bar of document.querySelectorAll('footer, header, nav')) {
+                const position = getComputedStyle(bar).position;
+                if (position === 'fixed' || position === 'sticky') covered += bar.getBoundingClientRect().height;
+            }
+            const room = Math.floor(window.innerHeight - covered - below - 16);
+            this.stage.style.maxHeight = room >= 240 ? `${room}px` : '';
         }
 
         // a legend of the controls: in a place to walk through other ones
