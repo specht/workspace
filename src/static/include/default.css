@@ -14708,8 +14708,8 @@ html[data-bs-theme="dark"] .splat-viewer {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.4em;
-    height: 2.4em;
+    width: 2.4rem;
+    height: 2.4rem;
     padding: 0;
     opacity: 0.85;
 }
@@ -14720,29 +14720,31 @@ html[data-bs-theme="dark"] .splat-viewer {
 @media (pointer: coarse) {
     .splat-viewer-full { top: 0.6em; bottom: auto; }
     .splat-viewer-note {
-        top: 0.5em;
+        top: 0.5rem;
         bottom: auto;
-        max-width: calc(100% - 4.4em);
+        /* clear of the fullscreen button at the top right */
+        max-width: calc(100% - 4.1rem);
     }
 }
 /* fullscreen on a phone: the picture runs under the camera's notch and into
-   the rounded corners of the screen. The overlays keep away from them (the
-   site declares no viewport-fit=cover, so the browser rarely reports the
-   safe areas; where it does, the larger value counts). */
+   the rounded corners of the screen, the overlays keep clear of them. The
+   viewer measures the safe areas in fullscreen (splat_viewer.js, safeAreas:
+   --safe-top and so on); a phone that reports none keeps these distances. */
 @media (pointer: coarse) {
     .splat-viewer:fullscreen .splat-viewer-full {
-        top: max(2.4em, env(safe-area-inset-top, 0px));
-        right: max(1em, env(safe-area-inset-right, 0px));
+        top: var(--safe-top, 2.4rem);
+        right: var(--safe-right, 1rem);
     }
+    /* the caption ends half a rem before the button (2.4rem wide) */
     .splat-viewer:fullscreen .splat-viewer-note {
-        top: max(2.4em, env(safe-area-inset-top, 0px));
-        left: max(1em, env(safe-area-inset-left, 0px));
-        max-width: calc(100% - 5.4em);
+        top: var(--safe-top, 2.4rem);
+        left: var(--safe-left, 1rem);
+        max-width: calc(100% - var(--safe-left, 1rem) - var(--safe-right, 1rem) - 2.9rem);
     }
-    .splat-viewer:fullscreen .splat-viewer-stick-move { left: max(1.2em, env(safe-area-inset-left, 0px)); }
-    .splat-viewer:fullscreen .splat-viewer-stick-look { right: max(1.2em, env(safe-area-inset-right, 0px)); }
+    .splat-viewer:fullscreen .splat-viewer-stick-move { left: var(--safe-left, 1.2rem); }
+    .splat-viewer:fullscreen .splat-viewer-stick-look { right: var(--safe-right, 1.2rem); }
     .splat-viewer:fullscreen {
-        padding-bottom: max(1.2em, env(safe-area-inset-bottom, 0px));
+        padding-bottom: var(--safe-bottom, 1.2rem);
     }
 }
 /* the row of spot buttons wraps on a wide screen; on a narrow one it is a

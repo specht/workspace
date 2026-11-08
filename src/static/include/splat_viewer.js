@@ -579,6 +579,7 @@ void main() {
             });
             document.addEventListener('fullscreenchange', () => {
                 const on = document.fullscreenElement === root;
+                this.safeAreas(on);
                 full.innerHTML = on ? "<i class='bi bi-fullscreen-exit'></i>" : "<i class='bi bi-arrows-fullscreen'></i>";
                 full.setAttribute('aria-label', on ? 'Vollbild beenden' : 'Vollbild');
                 this.fit();
@@ -932,6 +933,41 @@ void main() {
             const v = parseFloat(this.counter.value);
             if (n <= 100 || v >= 1) return n;
             return Math.max(1, Math.round(100 * Math.pow(n / 100, v)));
+        }
+
+        // The safe areas of a phone (notch, rounded corners): the browser
+        // reports them (env(safe-area-inset-*)) only with viewport-fit=cover,
+        // which the site does not declare. So only in fullscreen: switch it
+        // on, measure, and hand the values to the CSS as --safe-top and so
+        // on; a phone that reports nothing keeps the fixed distances of
+        // default.css. Leaving fullscreen puts the viewport back.
+        safeAreas(on) {
+            const meta = document.querySelector('meta[name=viewport]');
+            const style = this.root.style;
+            if (!on) {
+                if (meta && this.viewportBefore !== undefined) meta.setAttribute('content', this.viewportBefore);
+                this.viewportBefore = undefined;
+                for (const side of ['top', 'right', 'bottom', 'left']) style.removeProperty(`--safe-${side}`);
+                return;
+            }
+            if (meta && this.viewportBefore === undefined) {
+                this.viewportBefore = meta.getAttribute('content') || '';
+                if (!/viewport-fit/.test(this.viewportBefore)) meta.setAttribute('content', `${this.viewportBefore}, viewport-fit=cover`);
+            }
+            // measured a moment later, once the browser has applied it
+            setTimeout(() => {
+                const probe = document.createElement('div');
+                probe.style.cssText = 'position: fixed; visibility: hidden; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);';
+                this.root.append(probe);
+                const cs = getComputedStyle(probe);
+                for (const side of ['top', 'right', 'bottom', 'left']) {
+                    const px = parseFloat(cs[`padding-${side}`]) || 0;
+                    // a little air beyond the safe area
+                    if (px > 0) style.setProperty(`--safe-${side}`, `${px + 8}px`);
+                    else style.removeProperty(`--safe-${side}`);
+                }
+                probe.remove();
+            }, 150);
         }
 
         // the whole viewer fits comfortably into the window: the picture at
