@@ -492,7 +492,9 @@ void main() {
             full.setAttribute('aria-label', 'Vollbild');
             full.title = 'Vollbild (Esc beendet es)';
             full.innerHTML = "<i class='bi bi-arrows-fullscreen'></i>";
-            full.hidden = !root.requestFullscreen;
+            // only where the browser really allows it (an iPhone has the
+            // method but no fullscreen for elements)
+            full.hidden = !(document.fullscreenEnabled && root.requestFullscreen);
             full.addEventListener('click', () => {
                 if (document.fullscreenElement === root) document.exitFullscreen();
                 else root.requestFullscreen().catch(() => {});

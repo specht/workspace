@@ -14662,8 +14662,10 @@ html[data-bs-theme="dark"] .splat-viewer {
     opacity: 0.85;
 }
 .splat-viewer-full .bi { margin: 0; }
+/* on a touch screen the walk buttons take the bottom right corner, the
+   fullscreen button goes to the top right */
 @media (pointer: coarse) {
-    .splat-viewer-walk { bottom: 3.6em; }
+    .splat-viewer-full { top: 0.6em; bottom: auto; }
 }
 /* in fullscreen the picture takes all the room the controls leave */
 .splat-viewer:fullscreen {
