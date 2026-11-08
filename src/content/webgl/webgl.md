@@ -89,7 +89,7 @@ kommen gleich zwei Dateien für die Shader, `shader.vert` und `shader.frag`.
 
 Leg noch eine leere Datei `main.js` an und klicke unten rechts auf
 »Go Live« (Handbuch, [Workspace](/reference/workspace)). Die Vorschau zeigt
-eine dunkle Fläche: Noch malt nichts.
+eine dunkle Fläche: Noch wird nichts gezeichnet.
 
 <!-- tutorial-step
 # Der Ordner mit den Modellen, in VS Code geöffnet, index.html und die

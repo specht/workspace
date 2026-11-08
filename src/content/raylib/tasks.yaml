@@ -558,7 +558,7 @@ tasks:
         contains:
           - { pattern: 'rlNormal3f\s*\(', say: 'In `main.c` bekommt noch keine Ecke eine Normale (`rlNormal3f`).' }
           - { pattern: 'LoadShader\s*\(\s*"light\.vs"\s*,\s*"light\.fs"\s*\)', say: 'Noch lädt `main.c` den Shader nicht: `LoadShader("light.vs", "light.fs")`.' }
-          - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch zeichnet nichts mit ihm: `BeginShaderMode(light)` vor der Schleife über die Welt.' }
+          - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch wird nichts mit ihm gezeichnet: `BeginShaderMode(light)` vor der Schleife über die Welt.' }
 
   - id: nebel
     title: Dein Nebel

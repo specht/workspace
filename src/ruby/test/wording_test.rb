@@ -28,6 +28,12 @@ class WordingTest < Minitest::Test
         end
     end
 
+    # »nichts« cannot paint: a verb that needs someone acting gets a real
+    # subject, or the sentence is passive (»Noch wird nichts gezeichnet«)
+    def test_nothing_is_not_the_one_who_draws
+        assert_empty hits(/\b(Noch|noch|Jetzt|jetzt|Dann|dann|Hier|Sonst|Nun) (malt|zeichnet|rechnet|schreibt) (noch )?nichts\b/)
+    end
+
     # it makes a class laugh; what is meant has a name
     def test_no_ding
         assert_empty hits(/\bDing(e|en|es|s)?\b/)
