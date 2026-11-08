@@ -3,147 +3,147 @@
     "country-sql.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "669a894fceb6cb0c42c4328ce1cf9771ddca75abb443cf8dd94a67de816eeb99",
-      "state_hash": "6445d369949a870d950d03c1d2302dbf7f6df4f9418f16fabf7845bbe900e5dd",
+      "state_hash": "d94da9df64202d8785074b6206a8f80b3beb287bba53e45604bb60fe828bf2d5",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "describe-country.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "138f106a67a0eca22ad0da6c22f1d0c662e37157b3cf542c9c981b6f6a15917e",
-      "state_hash": "ddf0bd5b6751f8ad27c23062360ace6684515e0740aa99f095f0cab3cb5b4314",
+      "state_hash": "10a7b911eabed7ec8529ab8d0c1244292963e87ab91953c04027205b74372d0c",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "insert-foreign-key.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "61f2773d8b092649e807f5ab6c38635d5a8af6e1b1451770ae77ef8015b4cbdf",
-      "state_hash": "59bc2397bdda5a4c174ed5b7cbab6c7dbb56c91aca71ca51d68ecc93fbbae1b3",
+      "state_hash": "c05d0984d168e4da4d04a604b762b6e0cfa8630799646fb7d74158cc50d43885",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "mycli-prompt.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f051fa34ba6369f6605c81109f718f27f9936ea7c3904806dd0bf236f9e459bf",
-      "state_hash": "8f22b55dc659a7510b01b080c6d7ad9570ff7e6f9cb66c28d50d61dd28553162",
+      "output_sha256": "2202ad438a38b1dbdcc186e7c6d600aa632c6476bf29ba54f141cbbe7c5c8325",
+      "state_hash": "9f30f4520edb7ae1233c9a79262dbb0694bf4a8d242d97ce944f426ec342cf90",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "open-folder.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "c7a5b51a0efe09f89501bfc9b059c7220a487e06e2fd4474595d247809bc3541",
-      "state_hash": "8ff7ab562a6262a0b543f4877bac022b33775306a05a74e910436b95035d6d4e",
+      "output_sha256": "8d1a0d51e7170e5b77586681cca335b87d5decec3ade96d4d9db3915947f15c2",
+      "state_hash": "2cd2698a454e7257f551e19ae0e46eea5e9f9ef91f7c58a4c6cd49786a9dea5e",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-count-where.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "4286c0fdb9160bc331c666464cb2b2be2b9c1a1921d7a817506a4823e38e34ee",
-      "state_hash": "fbf97f940cdbf15ca538a0aa6cb3bfb7a4cb27a05f5e8d312a2be48170eb8e35",
+      "state_hash": "ff080978a6e7d1fde34a14aeca6720d7158dc2817a98e9c4816a435cb3bb3542",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-count.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "2bcc767b32f3c2c538e34292e0e67a987a5a243c8bc43da826bb352d4360cd1b",
-      "state_hash": "9f18da67a63f00a3a06fe315db6b885832b211bd378eee8ae29e5b3860a3677f",
+      "output_sha256": "c3a18a9622bd99b8ef80717b47c8dffcd5612f1a49a0575589b91fefa6798aef",
+      "state_hash": "f2b67e4ad763924a9a4ddf8b67dcf97bec8cf4a4533d68da2891f54c73429fe4",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-columns.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5949c273eb4ab7fbf12a96b00758e8e5e83509e9b1265d980f340043553a27c6",
-      "state_hash": "eac2fadf2a455c90f39a3f68f9e92c3305f621afd9c266731e94ff54e8f3cbea",
+      "output_sha256": "5b006d5b3d28e747df1fe3a5d01f3c5ea0f7058278f03999081dcd5f463af2a4",
+      "state_hash": "f9fdb6d52640f49ba07eb2452eabb0942822cdb39c044a56c396e761aa39ca97",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-limit.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b0bc691ae573d03cbbd648d22ed6c77357d90f198f4dfe407c139c12e729b465",
-      "state_hash": "94f6fb2350b71fafe4ed18b5a8996018fbce98bde13bbf33391798d388890384",
+      "output_sha256": "ae027bf84d9fc85acb9f8bf40291104f05355e8ab75c291a538aecd11b58bd9e",
+      "state_hash": "940c8a48c30182902fd072a724961c1fbe90c4acfd203ecd880c3a7074b99a81",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-order-by-desc.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "42b4083382e391286175fe762fa87ac0a08238e28fd91fb88ce553bd8cf66dae",
-      "state_hash": "d362ef50f1bf86b88e48480a76c9bad9ebe664d2b07509659c448532402231a1",
+      "output_sha256": "d28cee7848aadebfa175ffbc404fa43ed3c6b2a2854f8275a3e804403433ed57",
+      "state_hash": "422e2bf54f746944033227b8d3e45c9d869d701ae9be84bb660e8c3ad60e2fae",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-order-by.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "c032c66f76ab4a6f6967b8b39427e6cf2f1ef4a87677f57f208829c9ed1015c2",
-      "state_hash": "cae13af05b53c82686b8eb94a5cb5bf5fd6c104951d56bcfee2094a1fd2fbf28",
+      "output_sha256": "a9b8a0f895f5dd2e83efc9ca2dbaf168bcc59246c818c5b731b21fee302034fb",
+      "state_hash": "0a9f3dc00a75ec2e90f3c376a08cf85f1a56a04d112e2be421ebfff67fbe46bb",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-where-and.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "60bf3a0981c5b2c83c7334cdc3e50242cf3f361c2922fceafa2fce22c478cf7c",
-      "state_hash": "da78f3a95f5b9194db5d01dd05cad0b7c703e325d502e883a4a5b622af059233",
+      "output_sha256": "24eca3ca7eaa8a7b07e9705f31b0e4e47a3c2b6fbec6bd74c00c0adbd2c51044",
+      "state_hash": "e3bb63b4c15e04d66924d609e22a1e3095df245abf4e71b0450310862bd39f3a",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-where-or.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "3676f1f790c70f1d790ba43cd6e6f6874fbba76d8f8e476312feed3fdb249c12",
-      "state_hash": "306d105530de5075012c7cdff278c859e91e78e3cb15a6d29176086e0fc96c12",
+      "output_sha256": "9d177154b3ad68ae317175be693a6711cd6fbe83f57b9b58e2b340c548348e4a",
+      "state_hash": "ecaa65241ff39fcef5f54026e3e20ee53723d6d807c95197a6ff339667aa97d9",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country-where.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "9ef5c19b4879d586546e713090140305206662e849a544242dfe94b5d77bc734",
-      "state_hash": "b459101282868b0f4d219b45109d28a3e5e0d1522be158490682c251dca54ab3",
+      "output_sha256": "7d8d12ccb134728c124fe9c76c16a9bbe29b0b3984794c0c3c951339cf843864",
+      "state_hash": "2aa25c87bccb3c9dfea432d0803c4c032229a42f1b79ef7aef9588f3ba1686c5",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-country.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "59390334da1fda8a45326240d4dfc8d76a7d1e654b693ad39a89ffa0a2ea3c6a",
-      "state_hash": "787fed4abc6c59a9fa7be4f2c21e6b03e323106faa73c3d5197e6a79242da247",
+      "output_sha256": "0c62d93a87f3f46cb0127d8ab56b75c77a0465f66ca21a21180efafa625ebf79",
+      "state_hash": "7a6771b1b27677ddc788c9781cdfdd73dc22448ca966a4a28258c59f2c4079ec",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-distinct.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "62ffad274b89ef05fde5456d323d404fa0e7291e54ba9964460aeb28c3601ed5",
-      "state_hash": "2864222c1f65626d2adad610499260cdf42d52d7724493201e26877657933605",
+      "output_sha256": "4418810485d50daff32b6dfabfcd8c7de974cf9153dce44c27de5d5faf2050e6",
+      "state_hash": "dfcf5d6260144c472bedafb2f07789b89f0fe31280bcb39c204d23ad8ac06610",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "select-like.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "a78766ce7d73f4e2a8da22b3249548743cce9a33f0e56da3d338c18c269be69a",
-      "state_hash": "953dda22e33b1a8cf31ee2cc78472c8c98c5ad4e7ccb2efb995f0eaf8bd3f228",
+      "state_hash": "4d6de24e264e1063c291bc67f63543d9f9b186ad8f76c9f3dcf8a0db587018d4",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "show-tables.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "0ba6eea2a055d00cdb63a35d8ce316fe8e83875b26758945e73617c9cfe90357",
-      "state_hash": "7bc75202b907bff7fd5a8b10b9505865c93f0de53cdffd37aeb5ab56fd46a6b0",
+      "output_sha256": "325cb221e813ad580d616a6190d4f25e197cb6d6abf5a515a3e27d2be60b1300",
+      "state_hash": "86f7330b2d4e680a9a4635e9ba10e57a9130f2261a250e7b8d0430fd3c655492",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "sql-import.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "8dd15d3bd0fc57f6ead20802be5f394f78a89656306c3b2d857ab2a5fa6ce882",
-      "state_hash": "7abddbbd439b8f0db5b66db46d4fd91b35b69ff32908f4a70d27e24d929b69f0",
+      "state_hash": "2f6473baf10a7d254e8fd338eeda39e6ffd20c3d71dd33b059b90b51fcc087c5",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "update-without-where.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "ebcf59e74ddfd6ac0e93a724c657a12c3073cb09007dc6e1d621557964ff824d",
-      "state_hash": "d33cb3fa05e8ab32e437f04f17cd9d6e0c73c916867b10e0fcf4b14c3c8ddbc5",
+      "state_hash": "f8777ad197d7e4e66ff78532d09bdfe46ac76e1090549c369338ef1528f9604c",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     },
     "wget.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ff209888b1093e29436e70375d27471c1d0972274b61f082494c2a12ad970b43",
-      "state_hash": "c0446f9694e4890bde20867547e85d5ef4abec3ccc9bc6b5e3dfa89e25e31434",
+      "output_sha256": "d862597d77c0e2034f601c0368bbf2fa696f980fb005ad3b075974a699cb2944",
+      "state_hash": "8aebdff8777f773f753eb3103bc40b52622fc4d0296d77190e2e41aab9a314f0",
       "workspace_look": "4.140.0-ls368",
       "workspace_window": 560
     }
