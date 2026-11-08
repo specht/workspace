@@ -50,6 +50,7 @@ test('git-graph: and SVG targets belong together', () => {
     assert.doesNotThrow(() => checkGitGraphForTarget('graph3.svg', 'git-tutorial/alice'));
     assert.doesNotThrow(() => checkGitGraphForTarget('a.webp', undefined));
     assert.throws(() => checkGitGraphForTarget('graph3.svg', undefined), /needs git-graph/);
+    assert.doesNotThrow(() => checkGitGraphForTarget('fonts/inter.svg', undefined, { path: 'f.pdf', page: 3 }));
     assert.throws(() => checkGitGraphForTarget('a.webp', 'git-tutorial/alice'), /_include_svg/);
 });
 

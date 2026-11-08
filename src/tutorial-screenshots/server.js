@@ -1074,7 +1074,7 @@ async function parseTutorial(markdown, markdownPath) {
                 throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
             }
             checkRecordForTarget(target, recipe.record);
-            checkGitGraphForTarget(target, recipe.gitGraph);
+            checkGitGraphForTarget(target, recipe.gitGraph, recipe.pdfPage);
         } catch (error) {
             throw withSourceError(error, targetSource);
         }
@@ -1128,8 +1128,8 @@ async function parseTutorial(markdown, markdownPath) {
         // Only graphs carry this, so images hash exactly as before.
         // Only PDF pages carry this, so images hash exactly as before.
         if (recipe.pdfPage) {
-            if (!/\.(webp|png)$/i.test(target)) {
-                throw withSourceError(new Error(`pdf-page needs a .webp or .png target, not ${target}`), targetSource);
+            if (!/\.(svg|webp|png)$/i.test(target)) {
+                throw withSourceError(new Error(`pdf-page needs a .svg, .webp or .png target, not ${target}`), targetSource);
             }
             resolved.pdfPage = recipe.pdfPage;
         }
@@ -3168,6 +3168,20 @@ async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
         setTimeout(resolve, 1000);   // no frames for a while: see CAPTURE_TIMEOUT_MS
         })).catch(() => {});
     }
+    // sharp-canvas in the Workspace: the PDF in LaTeX Workshop's viewer sits
+    // in a frame of a webview and keeps the canvas it drew at the old pixel
+    // ratio, enlarged and blurry, until told to draw again. Every frame gets
+    // a resize, pdf.js its own refresh, and a moment to finish.
+    if (page === workspace && sharpCanvas) {
+        for (const frame of page.frames()) {
+            await frame.evaluate(() => {
+                window.dispatchEvent(new Event('resize'));
+                const viewer = window.PDFViewerApplication && window.PDFViewerApplication.pdfViewer;
+                if (viewer && typeof viewer.refresh === 'function') viewer.refresh();
+            }).catch(() => {});
+        }
+        await sleep(1.5);
+    }
 
     appliedViewportProfiles.set(page, profileKey);
     return { session, metrics };
@@ -3796,10 +3810,11 @@ async function captureGitGraph(shot, tutorialDirectory) {
 
 // pdf-page: PATH PAGE renders one page of a PDF in the screenshot Workspace
 // (compiled there by the recipe, with the Workspace's own TeX and fonts) at
-// 300 dpi, cuts it to its content and shaves 1 mm off the top and bottom, as
-// src/content/latex/fonts/pdf_page_to_svg.rb did by hand: right for a line of
-// type. pdf-page-full keeps the whole sheet with its margins, at 200 dpi, for
-// a page that should look like a page.
+// 300 dpi, cuts it to its content and shaves 1 mm off the top and bottom:
+// right for a line of type. pdf-page-full keeps the whole sheet with its
+// margins, at 200 dpi, for a page that should look like a page. An .svg
+// target gets the page as a drawing (pdftocairo -svg, the glyphs as paths),
+// sharp at every size, cut to the same box as the picture (its viewBox).
 async function capturePdfPage(shot, tutorialDirectory) {
     const root = path.resolve(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace');
     const pdf = path.resolve(root, shot.pdfPage.path);
@@ -3828,7 +3843,9 @@ async function capturePdfPage(shot, tutorialDirectory) {
             await execFileAsync('convert', [path.join(work, 'page.png'), '-trim', '+repage', '-shave', '0x12', '+repage', trimmed]);
         }
         const temporary = `${target}.tmp-${process.pid}`;
-        if (/\.webp$/i.test(target)) {
+        if (/\.svg$/i.test(target)) {
+            await pdfPageAsSvg(pdf, page, path.join(work, 'page.png'), dpi, !shot.pdfPage.full, temporary);
+        } else if (/\.webp$/i.test(target)) {
             await execFileAsync('cwebp', ['-quiet', '-q', '90', trimmed, '-o', temporary]);
         } else {
             await fs.copyFile(trimmed, temporary);
@@ -3840,6 +3857,35 @@ async function capturePdfPage(shot, tutorialDirectory) {
         await fs.rm(work, { recursive: true, force: true }).catch(() => {});
     }
     return sha256(await fs.readFile(target));
+}
+
+// The page as an SVG, cut like the picture: the box -trim finds in the
+// rendered page (pixels at dpi) becomes the viewBox in points, minus 1 mm at
+// the top and bottom (-shave 0x12 at 300 dpi).
+async function pdfPageAsSvg(pdf, page, png, dpi, trim, target) {
+    const svgPath = `${target}.page.svg`;
+    await execFileAsync('pdftocairo', ['-svg', '-f', page, '-l', page, pdf, svgPath]);
+    let svg = await fs.readFile(svgPath, 'utf8');
+    await fs.rm(svgPath, { force: true });
+    if (trim) {
+        const { stdout } = await execFileAsync('convert', [png, '-trim', '-format', '%w %h %X %Y', 'info:']);
+        const [w, h, x, y] = stdout.trim().split(/\s+/).map((v) => Number.parseInt(v, 10));
+        const scale = 72 / Number(dpi);
+        const shave = 12;
+        const box = [x * scale, (y + shave) * scale, w * scale, Math.max(1, h - 2 * shave) * scale].map((v) => +v.toFixed(2));
+        svg = svg.replace(/<svg\b[^>]*>/, (tag) => tag
+            .replace(/\swidth="[^"]*"/, ` width="${box[2]}pt"`)
+            .replace(/\sheight="[^"]*"/, ` height="${box[3]}pt"`)
+            .replace(/\sviewBox="[^"]*"/, ` viewBox="${box.join(' ')}"`));
+    }
+    // the paper: pdftocairo leaves the page transparent, and on a dark
+    // backdrop (the enlarged view) black type would vanish
+    const view = (/\sviewBox="([^"]*)"/.exec(svg) || [])[1];
+    if (view) {
+        const [vx, vy, vw, vh] = view.trim().split(/[\s,]+/);
+        svg = svg.replace(/(<svg\b[^>]*>)/, `$1\n<rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="#ffffff"/>`);
+    }
+    await fs.writeFile(target, svg);
 }
 
 // image-file: PATH [SCALE] makes the image from a picture a program wrote

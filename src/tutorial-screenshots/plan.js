@@ -30,11 +30,12 @@ export function findRecipeTarget(afterComment) {
     return { src: match[1], index: match.index };
 }
 
-// git-graph: draws an SVG, and an SVG target can only come from git-graph:.
-export function checkGitGraphForTarget(target, gitGraph) {
+// git-graph: draws an SVG, and an SVG target can only come from git-graph:
+// or from pdf-page: (a page of a PDF as a drawing, sharp at every size).
+export function checkGitGraphForTarget(target, gitGraph, pdfPage = undefined) {
     const svg = `${target}`.toLowerCase().endsWith('.svg');
-    if (svg && !gitGraph) {
-        throw new Error(`${target} is an SVG: the recipe needs git-graph: PATH`);
+    if (svg && !gitGraph && !pdfPage) {
+        throw new Error(`${target} is an SVG: the recipe needs git-graph: PATH or pdf-page: PATH PAGE`);
     }
     if (!svg && gitGraph) {
         throw new Error(`git-graph: needs an _include_svg(NAME.svg) target, not ${target}`);
