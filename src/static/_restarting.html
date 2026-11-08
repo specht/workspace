@@ -3,7 +3,14 @@
      answer, mostly during a restart (nginx_config.rb, location @ruby). Ruby
      cannot render anything then, so the page stands alone. It asks
      /api/ping every two seconds and loads the page again once Ruby answers;
-     after ten minutes it stops asking. -->
+     after ten minutes it stops asking.
+
+     A terminal in 0xProto shows what the page does: a small server whose
+     lights blink, and every ask as a log line with the status it really got
+     (while Ruby is down, the ping lands here too, as 503). The text below
+     the terminal is only for the eye; the same in words stands in the page
+     for screen readers, hidden from view. With reduced motion nothing is
+     typed or blinks. -->
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -12,16 +19,20 @@
 <noscript><meta http-equiv="refresh" content="10"></noscript>
 <link rel="stylesheet" href="/include/fonts.css">
 <style>
+    /* dark in any scheme: a terminal in a dark room, a shade lighter than
+       the ground and with a fine edge, so that it stands out */
     :root {
-        color-scheme: light dark;
-        --ink: #212529;
-        --muted: #6c757d;
-        --ground: #fff;
-        /* the petrol blue of the site's links */
-        --accent: #135e86;
-    }
-    @media (prefers-color-scheme: dark) {
-        :root { --ink: #dee2e6; --muted: #9aa0a6; --ground: #212529; --accent: #6cb4dc; }
+        color-scheme: dark;
+        --ink: #dee2e6;
+        --ground: #0c0c0e;
+        --term: #18181b;
+        --term-edge: #2c2c31;
+        --term-ink: #d4d4d8;
+        --term-dim: #71717a;
+        --green: #4ade80;
+        --amber: #fbbf24;
+        --red: #f87171;
+        --cyan: #67c7e6;
     }
     body {
         margin: 0;
@@ -32,50 +43,229 @@
         line-height: 1.5;
     }
     main {
-        max-width: 32em;
-        margin: 6em auto;
-        text-align: center;
+        max-width: 38rem;
+        min-height: 100vh;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-    h1 { font-size: 1.6rem; margin: 1em 0 0.6em; }
-    p { margin: 0.6em 0; }
-    .restart-small { color: var(--muted); font-size: 0.9rem; }
-    .restart-dots { display: inline-flex; gap: 0.5em; }
-    .restart-dots span {
-        width: 0.7em;
-        height: 0.7em;
-        border-radius: 50%;
-        background: var(--accent);
-        animation: restart-dot 1.2s infinite ease-in-out;
+    /* the words for screen readers: in the page, not on the screen */
+    .for-readers {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
     }
-    .restart-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .restart-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes restart-dot {
-        0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
-        40% { opacity: 1; transform: none; }
+    .term {
+        background: var(--term);
+        color: var(--term-ink);
+        border: 1px solid var(--term-edge);
+        border-radius: 0.6rem;
+        box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        font-family: '0xProto', '0xProto Nerd Font Mono', ui-monospace, monospace;
+        font-size: 0.86rem;
+        line-height: 1.45;
+    }
+    .term-bar {
+        padding: 0.5rem 1.1rem;
+        border-bottom: 1px solid var(--term-edge);
+        color: var(--term-dim);
+        font-size: 0.78rem;
+    }
+    .term-body {
+        display: flex;
+        gap: 1.2rem;
+        align-items: flex-start;
+        padding: 1rem 1.1rem 1.1rem;
+    }
+    .server {
+        margin: 0;
+        flex: none;
+        color: var(--term-dim);
+        font: inherit;
+        white-space: pre;
+    }
+    .server b { font-weight: inherit; color: var(--green); }
+    .server b.off { color: var(--term-edge); }
+    .server b.busy { color: var(--amber); }
+    .term-text {
+        flex: 1;
+        min-width: 0;
+    }
+    .log, .status {
+        margin: 0;
+        font: inherit;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+    .log {
+        height: 10.15em;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .status { color: var(--term-dim); }
+    .status .spin { color: var(--amber); }
+    .status .good { color: var(--green); }
+    .log .prompt { color: var(--green); }
+    .log .dim { color: var(--term-dim); }
+    .log .warn { color: var(--amber); }
+    .log .bad { color: var(--red); }
+    .log .good { color: var(--green); }
+    .log .path { color: var(--cyan); }
+    .cursor {
+        display: inline-block;
+        width: 0.6em;
+        height: 1.1em;
+        margin-left: 0.1em;
+        vertical-align: -0.18em;
+        background: var(--term-ink);
+        animation: blink 1.05s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (max-width: 34rem) {
+        .server { display: none; }
+        /* narrower lines wrap: room for one more */
+        .log { height: 11.6em; }
+        .term { font-size: 0.8rem; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .restart-dots span { animation: none; opacity: 0.7; }
+        .cursor { animation: none; }
     }
 </style>
 </head>
 <body>
 <main>
-    <div class="restart-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-    <h1>Der Workspace startet gerade neu</h1>
-    <p id="restart-say">Das dauert meist nur ein paar Sekunden. Sobald er wieder antwortet, lädt diese Seite neu.</p>
-    <p class="restart-small">Dein Workspace mit VS Code und deine Dateien sind davon nicht betroffen.</p>
+    <div class="term" aria-hidden="true">
+        <div class="term-bar">workspace: bash</div>
+        <div class="term-body">
+<pre class="server" id="server">
+ .-----------.
+ | <b>o</b> <b>o</b>  ==== |
+ |-----------|
+ | <b>o</b> <b>o</b>  ==== |
+ |-----------|
+ | <b>o</b> <b>o</b>  ==== |
+ '-----------'
+   |_______|
+</pre>
+<div class="term-text">
+<pre class="log" id="log"></pre>
+<pre class="status" id="status"> </pre>
+</div>
+        </div>
+    </div>
+    <div class="for-readers">
+        <h1>Der Workspace startet gerade neu</h1>
+        <p id="restart-say">Das dauert meist nur ein paar Sekunden. Sobald er wieder antwortet, lädt diese Seite neu.</p>
+        <p>Dein Workspace mit VS Code und deine Dateien sind davon nicht betroffen.</p>
+    </div>
 </main>
 <script>
 (function () {
     var started = Date.now();
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var log = document.getElementById('log');
+    var lights = document.querySelectorAll('#server b');
+    var STATUS = { 200: 'OK', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout' };
+    var attempt = 0;
+    var queue = Promise.resolve();
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    // a line of spans, typed one character at a time (or at once, if still)
+    function line(parts, speed) {
+        queue = queue.then(function () {
+            return new Promise(function (done) {
+                var row = document.createElement('div');
+                log.appendChild(row);
+                row.appendChild(cursor);
+                while (log.children.length > 7) log.removeChild(log.firstChild);
+                var i = 0, j = 0, span = null;
+                function next() {
+                    if (i >= parts.length) { done(); return; }
+                    var part = parts[i];
+                    if (!span) {
+                        span = document.createElement('span');
+                        if (part[0]) span.className = part[0];
+                        row.insertBefore(span, cursor);
+                    }
+                    if (still || !speed) { span.textContent = part[1]; j = part[1].length; }
+                    else { span.textContent = part[1].slice(0, ++j); }
+                    if (j >= part[1].length) { i++; j = 0; span = null; }
+                    setTimeout(next, still || !speed ? 0 : speed);
+                }
+                next();
+            });
+        });
+        return queue;
+    }
+
+    // the lights of the server: busy while asking, a running light otherwise
+    var tick = 0;
+    function blink(busy) {
+        for (var k = 0; k < lights.length; k++) {
+            var on = still ? true : ((k + tick) % 3 !== 0);
+            lights[k].className = busy ? 'busy' : (on ? '' : 'off');
+        }
+    }
+    if (!still) setInterval(function () { tick++; blink(false); }, 400);
+
+    line([['prompt', '$ '], ['', 'sudo systemctl restart workspace']], 28);
+    line([['dim', '[ .... ] '], ['', 'Der Workspace startet neu']], 0);
+    line([['good', '[  OK  ] '], ['', 'VS Code und Dateien laufen weiter']], 0);
+    line([['prompt', '$ '], ['', 'warte auf '], ['path', '/api/ping']], 28);
+
+    // the line below the log: a spinner and when the next ask comes
+    var status = document.getElementById('status');
+    var nextAt = Date.now() + 2000, asking = false, frame = 0, ended = false;
+    var FRAMES = ['|', '/', '-', '\\'];
+    function showStatus() {
+        if (ended) return;
+        var spin = still ? '.' : FRAMES[frame++ % FRAMES.length];
+        var say = asking ? 'frage nach, ob der Server antwortet'
+            : 'nächster Versuch in ' + Math.max(1, Math.ceil((nextAt - Date.now()) / 1000)) + ' s';
+        status.innerHTML = '[ <span class="spin">' + spin + '</span> ] ' + say;
+    }
+    setInterval(showStatus, still ? 1000 : 120);
+    showStatus();
+
     function ask() {
         if (Date.now() - started > 10 * 60 * 1000) {
             document.getElementById('restart-say').textContent = 'Das dauert länger als sonst. Lade die Seite in ein paar Minuten neu.';
+            line([['warn', '[ WARN ] '], ['', 'Das dauert länger als sonst. Lade die Seite in ein paar Minuten neu.']], 0);
+            ended = true;
+            status.textContent = ' ';
             return;
         }
+        attempt++;
+        blink(true);
+        asking = true;
         fetch('/api/ping', { cache: 'no-store' }).then(function (r) {
-            if (r.ok) location.reload(); else setTimeout(ask, 2000);
-        }, function () { setTimeout(ask, 2000); });
+            asking = false;
+            nextAt = Date.now() + 2000;
+            if (r.ok) {
+                ended = true;
+                status.innerHTML = '[ <span class="good">OK</span> ] gleich geht es weiter';
+                line([['dim', 'GET '], ['path', '/api/ping'], ['good', '  200 OK']], 0);
+                line([['good', '[  OK  ] '], ['', 'Der Workspace ist wieder da, lade neu']], 0).then(function () {
+                    setTimeout(function () { location.reload(); }, still ? 0 : 500);
+                });
+                return;
+            }
+            line([['dim', 'GET '], ['path', '/api/ping'], ['bad', '  ' + r.status + ' ' + (STATUS[r.status] || '')], ['dim', '  (Versuch ' + attempt + ')']], 0);
+            setTimeout(ask, 2000);
+        }, function () {
+            asking = false;
+            nextAt = Date.now() + 2000;
+            line([['dim', 'GET '], ['path', '/api/ping'], ['bad', '  keine Antwort'], ['dim', '  (Versuch ' + attempt + ')']], 0);
+            setTimeout(ask, 2000);
+        });
     }
     setTimeout(ask, 2000);
 })();
