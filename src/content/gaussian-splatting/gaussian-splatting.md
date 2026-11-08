@@ -1125,8 +1125,13 @@ die Kamera jedes Mal auf einem Kreis um die Mitte ein Stück weiter, etwa bei
 Dein Renderer braucht für ein Bild ein paar Sekunden. Der Viewer unten
 macht dasselbe, nur auf der Grafikkarte: Jeder Splat wird zu einer Ellipse
 nach der Formel von Zwicker, die Splats werden nach ihrer Tiefe sortiert und
-von vorne nach hinten gemischt, viele Male in der Sekunde, so dass du die
-Szene flüssig drehen kannst.
+gemischt, viele Male in der Sekunde, so dass du die Szene flüssig drehen
+kannst. Er mischt allerdings von hinten nach vorne: Jeder Splat deckt das,
+was schon gemalt ist, so weit ab, wie er deckt. Das ergibt dasselbe Bild wie
+von vorne nach hinten, aber die Grafikkarte speichert jede Farbe nur in 256
+Stufen. Von vorne nach hinten würden die vielen schwachen Splats weiter
+hinten so wenig beitragen, dass ihre Farbe auf 0 gerundet wird, und das Bild
+würde dunkel und flau.
 
 <div class='splat-viewer' id='szenen' data-scenes='[{"name": "Sessel", "src": "szenen/modern-arm-chair.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Topfpflanze", "src": "szenen/potted-plant.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Registrierkasse", "src": "szenen/cash-register.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Bohrmaschine", "src": "szenen/drill.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Feuerlöscher", "src": "szenen/fire-extinguisher.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Apfel", "src": "szenen/apple.splat", "credit": "aus den DX.GL-Datensätzen, nach einem Modell von Poly Haven, CC0"}, {"name": "Artillery Passage", "src": "/dl/gaussian-splatting/artillery-passage.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, ausgedünnt auf 1,5 von 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}, {"name": "Artillery Passage, alle Splats (80 MB)", "src": "/dl/gaussian-splatting/artillery-passage-full.csplat", "credit": "»Artillery Passage« von David Fletcher, CC BY 4.0, fast alle 5 Millionen Splats", "view": {"target": [0, 0, 0], "distance": 0.3, "yaw": 0, "pitch": 0, "speed": 1.5}}]'></div>
 

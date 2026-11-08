@@ -14500,20 +14500,53 @@ html[data-bs-theme="dark"] .splat-viewer {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5em 1em;
+    gap: 0.5em;
     margin-top: 0.6em;
 }
 .splat-viewer-bar select {
     width: auto;
+    max-width: 100%;
 }
-.splat-viewer-size {
+.splat-viewer-bar .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5em;
+    justify-content: center;
+    gap: 0.4em;
+}
+.splat-viewer-bar .btn .bi,
+.splat-viewer-walk .btn .bi {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1;
+}
+/* the two sliders: their labels in one column, the sliders in the next,
+   so that both start and end at the same place */
+.splat-viewer-sliders {
+    display: grid;
+    grid-template-columns: max-content minmax(6em, 18em);
+    align-items: center;
+    gap: 0.3em 0.8em;
+    margin-top: 0.6em;
     font-size: 0.9rem;
 }
+.splat-viewer-size {
+    display: contents;
+}
 .splat-viewer-size input {
-    width: 8em;
+    width: 100%;
+}
+.splat-viewer-status:has(.splat-viewer-progress) {
+    z-index: 1;
+    background: color-mix(in srgb, var(--splat-ground) 85%, transparent);
+    color: var(--bs-body-color);
+}
+.splat-viewer-progress {
+    width: min(18em, 80%);
+    font-size: 0.9rem;
+}
+.splat-viewer-progress .progress {
+    height: 0.5em;
+    margin-top: 0.4em;
 }
 .splat-viewer-info,
 .splat-viewer-help {
@@ -14543,6 +14576,9 @@ html[data-bs-theme="dark"] .splat-viewer {
     }
 }
 .splat-viewer-walk .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 48px;
     height: 48px;
     border-radius: 50%;

@@ -2,7 +2,11 @@
 // a scene of 3D Gaussians in WebGL2, drawn the way the page's own renderer
 // draws it, only on the graphics chip: every splat becomes an ellipse on the
 // screen (Σ' = J V Σ Vᵀ Jᵀ, in the vertex shader), the splats are sorted by
-// their depth (here on the CPU, a counting sort) and blended front to back.
+// their depth (here on the CPU, a counting sort) and blended back to front.
+// That is the same picture as front to back, as the page's renderer does
+// it, but the canvas keeps 8 bits a channel: front to back, the colour of
+// the many faint splats behind rounds to nothing while their alpha still
+// counts, and a street turns dark and hazy.
 //
 // <div class='splat-viewer' data-scenes='[{"name": "Maßband", "src": "…/measuring-tape.splat"}, …]'></div>
 //
@@ -169,6 +173,11 @@ void main() {
     vec3 cam = u_view * (t0.xyz - u_eye);
     float z = -cam.z;
     if (z < 0.01) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); return; }
+    // splats whose middle lies outside the picture (with a margin) are left
+    // out, as in the program of Kerbl: a splat of the wall just beside the
+    // camera would otherwise become a huge ellipse across the whole picture
+    vec2 center = vec2(u_focal.x * cam.x / z, u_focal.y * cam.y / z);
+    if (any(greaterThan(abs(center), 0.65 * u_viewport))) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); return; }
     mat3 sigma = mat3(t1.w, t2.x, t2.y, t2.x, t2.z, t2.w, t2.y, t2.w, t3.x);
     mat3 J = mat3(u_focal.x / z, 0.0, 0.0,
                   0.0, u_focal.y / z, 0.0,
@@ -182,7 +191,6 @@ void main() {
     vec2 e1 = abs(b) > 1e-9 ? normalize(vec2(b, l1 - a)) : (a >= c ? vec2(1.0, 0.0) : vec2(0.0, 1.0));
     vec2 e2 = vec2(-e1.y, e1.x);
     vec2 offset = a_corner.x * min(sqrt(l1), 1024.0) * e1 + a_corner.y * min(sqrt(l2), 1024.0) * e2;
-    vec2 center = vec2(u_focal.x * cam.x / z, u_focal.y * cam.y / z);
     gl_Position = vec4((center + offset) * 2.0 / u_viewport, 0.0, 1.0);
     v_color = vec4(t1.rgb, t0.w);
     v_corner = a_corner;
@@ -241,26 +249,28 @@ void main() {
                 this.select.addEventListener('change', () => this.load(this.scenes[this.select.value]));
                 bar.append(this.select);
             }
+            const sliders = document.createElement('div');
+            sliders.className = 'splat-viewer-sliders';
             const sizeLabel = document.createElement('label');
             sizeLabel.className = 'splat-viewer-size';
             sizeLabel.innerHTML = '<span>Größe der Splats</span>';
             this.slider = document.createElement('input');
-            this.slider.type = 'range'; this.slider.min = '0.05'; this.slider.max = '1'; this.slider.step = '0.05'; this.slider.value = '1';
+            this.slider.type = 'range'; this.slider.className = 'form-range'; this.slider.min = '0.05'; this.slider.max = '1'; this.slider.step = '0.05'; this.slider.value = '1';
             this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.upload(); });
             sizeLabel.append(this.slider);
-            bar.append(sizeLabel);
+            sliders.append(sizeLabel);
             const countLabel = document.createElement('label');
             countLabel.className = 'splat-viewer-size';
             countLabel.innerHTML = '<span>Anzahl der Splats</span>';
             this.counter = document.createElement('input');
-            this.counter.type = 'range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
+            this.counter.type = 'range'; this.counter.className = 'form-range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
             this.counter.addEventListener('input', () => { this.lastSort = null; this.describe(); this.redraw(); });
             countLabel.append(this.counter);
-            bar.append(countLabel);
+            sliders.append(countLabel);
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
-            open.innerHTML = "<i class='bi bi-folder2-open'></i> Eigene Datei öffnen";
+            open.innerHTML = "<i class='bi bi-folder2-open'></i><span>Eigene Datei öffnen</span>";
             this.file = document.createElement('input');
             this.file.type = 'file'; this.file.accept = '.ply,.splat'; this.file.hidden = true;
             open.addEventListener('click', () => this.file.click());
@@ -270,7 +280,7 @@ void main() {
             turn.type = 'button';
             turn.className = 'btn btn-sm btn-outline-secondary';
             turn.title = 'Die Szene um eine Vierteldrehung kippen, wenn oben nicht oben ist';
-            turn.innerHTML = "<i class='bi bi-arrow-clockwise'></i> Kippen";
+            turn.innerHTML = "<i class='bi bi-arrow-clockwise'></i><span>Kippen</span>";
             turn.addEventListener('click', () => this.tilt());
             bar.append(turn);
             this.canvas = document.createElement('canvas');
@@ -302,7 +312,7 @@ void main() {
             const help = document.createElement('div');
             help.className = 'splat-viewer-help';
             help.textContent = 'Ziehen dreht, das Mausrad oder zwei Finger zoomen, die Pfeiltasten oder W, A, S, D bewegen dich, Q und E nach unten und oben; ein Doppelklick stellt die Kamera zurück.';
-            root.append(stage, bar, this.info, help);
+            root.append(stage, bar, sliders, this.info, help);
 
             const gl = this.canvas.getContext('webgl2', { antialias: false, premultipliedAlpha: true, alpha: true });
             if (!gl) { this.message('Dieser Browser kann kein WebGL2. Mit einem aktuellen Firefox, Chrome oder Safari geht es.'); return; }
@@ -349,20 +359,76 @@ void main() {
         }
 
         async load(scene) {
-            this.message('Lädt …');
+            const token = this.loading = {};
+            this.progress(0, null);
             try {
                 const response = await fetch(scene.src);
                 if (!response.ok) throw new Error(`Die Szene ließ sich nicht laden (${response.status}).`);
-                const buffer = await response.arrayBuffer();
+                const buffer = await this.download(response, token);
+                if (token !== this.loading) return;
+                this.message('Bereitet die Splats vor …');
+                await new Promise((r) => setTimeout(r, 30));
                 this.view = scene.view || null;
                 this.show(parse(buffer, scene.src), scene.credit || '');
                 this.loaded = scene.name;
             } catch (e) {
-                this.message(e.message);
+                if (token === this.loading) this.message(e.message);
             }
         }
 
+        // reads the response piece by piece and shows how much has come
+        async download(response, token) {
+            const total = parseInt(response.headers.get('Content-Length') || '0', 10);
+            if (!response.body || !response.body.getReader) return response.arrayBuffer();
+            const reader = response.body.getReader();
+            const parts = [];
+            let received = 0, shown = 0;
+            for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                if (token !== this.loading) { reader.cancel(); return null; }
+                parts.push(value);
+                received += value.length;
+                const now = performance.now();
+                if (now - shown > 100) { shown = now; this.progress(received, total); }
+            }
+            const out = new Uint8Array(received);
+            let at = 0;
+            for (const part of parts) { out.set(part, at); at += part.length; }
+            return out.buffer;
+        }
+
+        progress(received, total) {
+            const mb = (v) => (v / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 0 });
+            this.status.hidden = false;
+            this.status.textContent = '';
+            const box = document.createElement('div');
+            box.className = 'splat-viewer-progress';
+            const text = document.createElement('div');
+            const bar = document.createElement('div');
+            bar.className = 'progress';
+            bar.setAttribute('role', 'progressbar');
+            const fill = document.createElement('div');
+            fill.className = 'progress-bar';
+            bar.append(fill);
+            if (total) {
+                const percent = Math.min(100, Math.round(100 * received / total));
+                text.textContent = `Lädt … ${mb(received)} von ${mb(total)} MB`;
+                fill.style.width = percent + '%';
+                bar.setAttribute('aria-valuenow', String(percent));
+                bar.setAttribute('aria-valuemin', '0');
+                bar.setAttribute('aria-valuemax', '100');
+            } else {
+                text.textContent = received ? `Lädt … ${mb(received)} MB` : 'Lädt …';
+                fill.classList.add('progress-bar-striped', 'progress-bar-animated');
+                fill.style.width = '100%';
+            }
+            box.append(text, bar);
+            this.status.append(box);
+        }
+
         loadFile(file) {
+            this.loading = {};
             this.message('Lädt …');
             file.arrayBuffer().then((buffer) => {
                 this.view = null;
@@ -469,10 +535,10 @@ void main() {
                 if (d < min) min = d;
                 if (d > max) max = d;
             }
-            // a counting sort on 16 bits of depth: the nearest first
+            // a counting sort on 16 bits of depth: the farthest first
             const scale = 65535 / Math.max(max - min, 1e-9);
             const counts = new Uint32Array(65536);
-            for (let i = 0; i < n; i++) { const k = ((this.depths[i] - min) * scale) | 0; this.keys[i] = k; counts[k]++; }
+            for (let i = 0; i < n; i++) { const k = ((max - this.depths[i]) * scale) | 0; this.keys[i] = k; counts[k]++; }
             for (let k = 1; k < 65536; k++) counts[k] += counts[k - 1];
             for (let i = n - 1; i >= 0; i--) this.order[--counts[this.keys[i]]] = i;
             const gl = this.gl;
@@ -511,7 +577,9 @@ void main() {
             gl.uniform2f(this.u.u_focal, focal, focal);
             gl.uniform2f(this.u.u_viewport, w, h);
             gl.enable(gl.BLEND);
-            gl.blendFuncSeparate(gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE);
+            // back to front: each splat covers what is already there as far
+            // as it is opaque (the colour comes premultiplied by alpha)
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, this.sortedCount);
         }
 
