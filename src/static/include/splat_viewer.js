@@ -414,7 +414,9 @@ void main() {
             this.file.type = 'file'; this.file.accept = '.ply,.splat'; this.file.hidden = true;
             open.addEventListener('click', () => this.file.click());
             this.file.addEventListener('change', () => { if (this.file.files[0]) this.loadFile(this.file.files[0]); this.file.value = ''; });
-            bar.append(open, this.file);
+            // only beside a list of scenes: a viewer that shows one scene
+            // (the first picture of »Gaussian Splatting«) stays that scene
+            if (this.scenes.length > 1) bar.append(open, this.file);
             const turn = document.createElement('button');
             turn.type = 'button';
             turn.className = 'btn btn-sm btn-outline-secondary';
@@ -425,7 +427,7 @@ void main() {
             turn.hidden = true;
             turn.addEventListener('click', () => this.tilt());
             this.turnButton = turn;
-            bar.append(turn);
+            if (this.scenes.length > 1) bar.append(turn);
             // in a street: the y axis of dragging turned round; remembered in
             // this browser (only a convenience, so it may fail)
             const game = document.createElement('label');
@@ -603,6 +605,8 @@ void main() {
             this.spotBar = document.createElement('div');
             this.spotBar.className = 'splat-viewer-spots';
             this.spotBar.hidden = true;
+            // nothing in the bar (one scene): no empty row under the picture
+            bar.hidden = bar.childElementCount === 0;
             root.append(stage, bar, switches, this.spotBar, sliders, this.info, help);
 
             const gl = this.canvas.getContext('webgl2', { antialias: false, premultipliedAlpha: true, alpha: true });
