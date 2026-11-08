@@ -42,6 +42,7 @@ Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde
 - **Die Form im Raum:** \\(S\\) nur einmal (die Breiten stehen nicht im Quadrat da) oder das transponierte \\(R\\) fehlt (die Matrix ist nicht symmetrisch).
 - **Auf den Bildschirm:** nicht durch `z` geteilt oder die Mitte des Bildes vergessen.
 - **Von vorne nach hinten:** die Durchlässigkeit wird nicht kleiner, oder der Hintergrund fehlt.
+- **Street View und Splats:** eine freie Antwort; gute nennen, dass Street View Rundumfotos von festen Aufnahmeorten zeigt (scharf, aber nur von dort, in engen Gassen oft gar keine), die Splats dagegen ein Modell sind, in dem man überall hin kann, das aber dort verschwimmt, wo wenige Fotos waren. Der Link öffnet das Street-View-Bild, das der Gasse am nächsten liegt; vorher einmal ansehen, wo es landet.
 
 #### Eigene Projekte
 

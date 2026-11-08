@@ -408,3 +408,27 @@ tasks:
       danach weniger durch. Ein Splat vorne nimmt den Splats dahinter Licht
       weg, nicht umgekehrt; darum muss man von vorne nach hinten gehen, also
       nach der Tiefe sortieren, und die hängt von der Kamera ab.
+
+  - id: street-view
+    title: Street View und Splats
+    prompt: |
+      Öffne dieselbe Gasse in [Street View von Google](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=51.51815,-0.07736)
+      und hier im Viewer, und geh in beiden ein Stück die Gasse entlang.
+      Dass Street View springt, weißt du schon. Beschreibe zwei weitere
+      Unterschiede: was du an jeder Stelle siehst, wohin du gehen und schauen
+      kannst, wie scharf es ist, wo es nicht mehr stimmt. Woher kommt jeder
+      dieser Unterschiede?
+    check: { type: reflection, min_words: 40 }
+    solution: |
+      Street View zeigt an jedem Aufnahmeort ein echtes Rundumfoto: scharf,
+      auch Schrift und Glanz, aber nur von genau dort, wo die Kamera stand,
+      meist auf Augenhöhe in der Mitte der Straße. Wohin du gehst, legen die
+      Aufnahmeorte fest; enge Gassen haben oft gar keine, dann stehst du
+      draußen auf der nächsten Straße. Die Splats sind ein Modell im Raum:
+      Du kannst überall hin, auch nach oben, schräg oder in einen Laden, und
+      jedes Bild wird neu ausgerechnet. Dafür ist es dort unscharf oder voller
+      Schlieren, wo wenige Fotos aus dieser Richtung waren, und außerhalb der
+      Gasse zerfällt es. Glanz und Spiegelungen liegen bei den Splats als
+      Flecken im Raum, bei Street View sind sie einfach Teil des Fotos. Und
+      die Gasse hier sind 80 Megabyte für ein paar Dutzend Meter, Street View
+      lädt nur die Fotos, die du gerade ansiehst.

@@ -1256,8 +1256,8 @@ mitten in der Gasse. Mit W, A, S, D gehst du die Gasse entlang (auf einem
 Touchscreen mit den beiden Knöpfen), mit Q und E nach unten und oben, mit
 den Pfeiltasten oder durch Ziehen schaust du dich um, und mit dem Mausrad
 gehst du dorthin, wohin du schaust. Unter dem Viewer steht, welche Taste
-was tut. In Street View von Google geht das nur in Sprüngen, von einem
-Aufnahmeort zum nächsten, denn dazwischen gibt es kein Foto. Aus Splats
+was tut. In [Street View von Google](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=51.51815,-0.07736) geht das nur in Sprüngen, von
+einem Aufnahmeort zum nächsten, denn dazwischen gibt es kein Foto. Aus Splats
 lässt sich jedes Bild dazwischen ausrechnen, und du gehst fließend.
 
 Die Knöpfe unter »Standorte« führen dich durch die Gasse: zu den Schildern
@@ -1271,6 +1271,8 @@ hinaus auf die Gasse schaust, und weit draußen vor der Gasse. Dort zerfallen
 die Fassaden an den Seiten in Schlieren, und nur in der Mitte bleibt die
 Gasse: Alle Fotos wurden in der Gasse gemacht, und was keine Kamera gesehen
 hat, hat das Training nie verbessert.
+
+_task(street-view)
 
 Die Datei ist so sortiert, dass die Splats, die am meisten zeigen, vorne
 stehen. »Anzahl« zeichnet nur die ersten davon:
