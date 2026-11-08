@@ -755,10 +755,10 @@ void main() {
                     if (p.button === 2 || p.shift) this.pan(dx, dy);
                     else {
                         // around an object the scene turns with the hand; in
-                        // a street (»look« in its view) the hand turns the
-                        // head, so the other way round
-                        const k = this.look ? -1 : 1;
-                        this.turn(-k * dx * 0.008, k * dy * 0.008);
+                        // a street (»look« in its view) the head turns where
+                        // the hand goes, as in a game: the same numbers do
+                        // both, because there turn() keeps the eye in place
+                        this.turn(-dx * 0.008, dy * 0.008);
                     }
                 } else if (pointers.size === 2) {
                     const [a, b] = [...pointers.values()];
