@@ -1315,6 +1315,27 @@ und dann langsam nach rechts, erst in der Gasse, dann im Klassenzimmer.
 Ab wie vielen Splats erkennst du, was du siehst?
 </div>
 
+### Vom Groben zum Feinen
+
+Mit jedem Splat mehr wird das Bild nur ein wenig besser, ohne Sprung. Und
+doch kippt es irgendwann: Eben waren es noch Kleckse, und plötzlich ist es
+eine Gasse. Das hat zwei Gründe.
+
+Der erste liegt in der Datei. Vorne stehen die Splats, die am meisten
+zeigen: große, weiche, die nur die groben Farben einer Fläche tragen, hell
+oben, grau unten, dunkel an den Seiten. Die kleinen danach bringen die
+Kanten und die Einzelheiten. Ein Bild, das vom Groben zum Feinen aufgebaut
+wird, kennst du vielleicht von einer langsamen Webseite: Ein JPEG kann
+*progressiv* gespeichert sein, dann erscheint erst eine verschwommene
+Fassung des ganzen Bildes und wird nach und nach schärfer.
+
+Der zweite liegt in dir. Du erkennst eine Gasse nicht an ihren Farben,
+sondern an Kanten, die zusammenpassen: Fensterrahmen, Türen, eine
+Dachkante, die auf einen Fluchtpunkt zuläuft. Solange diese Kanten fehlen,
+siehst du Flecken; sobald genug davon da sind, setzt dein Gehirn sie zu
+einer Gasse zusammen, und zwar auf einen Schlag. Das Bild hat sich nur ein
+wenig verändert, deine Wahrnehmung dagegen springt.
+
 ### Wie so eine Szene entsteht
 
 Die Szenen im Viewer hat ein Programm aus Bildern gelernt, genau so wie
