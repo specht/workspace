@@ -169,8 +169,13 @@ uniform vec2 u_focal;      // in pixels
 uniform vec2 u_viewport;
 in vec2 a_corner;          // a corner of the square, -3 ... 3 (three standard deviations)
 in uint a_index;
+uniform vec3 u_waveCenter;  // where the wave of »Umrisse« started
+uniform float u_radius;     // how far it has come
+uniform float u_inside;     // 1: outlines inside the sphere, 0: outside it
 out vec4 v_color;
 out vec2 v_corner;
+out float v_outline;        // 1: draw only the outline of this splat
+out float v_front;          // 1: right at the front of the wave
 void main() {
     int i = int(a_index);
     ivec2 base = ivec2((i & 1023) * 4, i >> 10);
@@ -201,6 +206,13 @@ void main() {
     vec2 offset = a_corner.x * min(sqrt(l1), 1024.0) * e1 + a_corner.y * min(sqrt(l2), 1024.0) * e2;
     gl_Position = vec4((center + offset) * 2.0 / u_viewport, 0.0, 1.0);
     v_color = vec4(t1.rgb, t0.w);
+    // the wave: a sphere around u_waveCenter; splats it has passed change,
+    // over a soft band of a twentieth of its radius
+    float d = distance(t0.xyz, u_waveCenter);
+    float band = max(0.05 * u_radius, 0.05);
+    float passed = 1.0 - smoothstep(u_radius - band, u_radius, d);
+    v_outline = mix(1.0 - passed, passed, u_inside);
+    v_front = 1.0 - smoothstep(0.0, band, abs(d - u_radius));
     v_corner = a_corner;
 }`;
 
@@ -209,6 +221,8 @@ precision highp float;
 uniform float u_sharpness;  // 1: the Gaussian; larger: towards a hard ellipse
 in vec4 v_color;
 in vec2 v_corner;
+in float v_outline;
+in float v_front;
 out vec4 fragColor;
 void main() {
     float q = dot(v_corner, v_corner);
@@ -217,8 +231,14 @@ void main() {
     // it is inside one standard deviation (q < 1) and the steeper it falls
     // at its edge: an ellipse with a sharp border
     float alpha = min(0.99, v_color.a * exp(-0.5 * pow(q, u_sharpness)));
+    // the outline: a thin ring where the bell has fallen to about 60 %
+    // (one standard deviation), opaque, in the splat's colour
+    float r = sqrt(q);
+    float ring = smoothstep(0.82, 0.94, r) * (1.0 - smoothstep(0.98, 1.1, r));
+    alpha = mix(alpha, 0.9 * ring * step(0.05, v_color.a), v_outline);
+    vec3 rgb = mix(v_color.rgb, vec3(1.0), 0.7 * v_front);
     if (alpha < 1.0 / 255.0) discard;
-    fragColor = vec4(v_color.rgb * alpha, alpha);
+    fragColor = vec4(rgb * alpha, alpha);
 }`;
 
     function compile(gl, type, source) {
@@ -406,6 +426,19 @@ void main() {
             this.autoCount.addEventListener('change', () => { if (this.autoCount.checked) this.calibrate(); });
             auto.append(this.autoCount, autoText);
             switches.append(auto);
+            const outline = document.createElement('label');
+            outline.className = 'form-check form-switch splat-viewer-game';
+            outline.title = 'Eine Welle läuft von der Kamera durch die Szene und zeigt jeden Splat als Umriss; noch einmal, und sie läuft zurück';
+            this.outlines = document.createElement('input');
+            this.outlines.type = 'checkbox';
+            this.outlines.className = 'form-check-input';
+            this.outlines.setAttribute('role', 'switch');
+            this.outlines.addEventListener('change', () => this.startWave(this.outlines.checked));
+            const outlineText = document.createElement('span');
+            outlineText.className = 'form-check-label';
+            outlineText.textContent = 'Umrisse';
+            outline.append(this.outlines, outlineText);
+            switches.append(outline);
             const swing = document.createElement('label');
             swing.className = 'form-check form-switch splat-viewer-game';
             this.swing = document.createElement('input');
@@ -496,7 +529,7 @@ void main() {
             this.program = program;
             gl.useProgram(program);
             this.u = {};
-            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness']) this.u[name] = gl.getUniformLocation(program, name);
+            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness', 'u_waveCenter', 'u_radius', 'u_inside']) this.u[name] = gl.getUniformLocation(program, name);
             this.vao = gl.createVertexArray();
             gl.bindVertexArray(this.vao);
             const corners = gl.createBuffer();
@@ -640,6 +673,8 @@ void main() {
             this.counter.value = '1';
             this.showSpots();
             this.showNote(null);
+            this.wave = null;
+            if (this.outlines) this.outlines.checked = false;
             this.upload();
             this.fit();
             this.message('');
@@ -976,6 +1011,37 @@ void main() {
             this.describe();
         }
 
+        // »Umrisse«: a sphere grows from where the camera is, over about
+        // three seconds, until it holds the whole scene; the splats it has
+        // passed are drawn as outlines (on) or as they are again (off)
+        startWave(on) {
+            if (!this.splats) return;
+            const center = this.camera().eye;
+            // far enough for the whole scene: the distance to the corners of
+            // its box
+            const s = this.splats, n = s.count;
+            let far = 0;
+            const step = Math.max(1, Math.floor(n / 20000));
+            for (let i = 0; i < n; i += step) {
+                const d = Math.hypot(s.position[i * 3] - center[0], s.position[i * 3 + 1] - center[1], s.position[i * 3 + 2] - center[2]);
+                if (d > far) far = d;
+            }
+            const start = performance.now();
+            const wave = this.wave = { center, radius: 0, inside: on ? 1 : 0 };
+            const tick = (now) => {
+                if (this.wave !== wave) return;
+                const t = Math.min(1, (now - start) / 3000);
+                // fast near the camera, slower far out, so that one sees it
+                // travel along a street
+                wave.radius = far * Math.pow(t, 1.6);
+                this.redraw();
+                if (t < 1) requestAnimationFrame(tick);
+                else if (!on) this.wave = null;
+                else wave.radius = 1e9;
+            };
+            requestAnimationFrame(tick);
+        }
+
         // about two seconds of pictures in a row, each timed by draw(), so
         // that the number of splats settles even while nothing moves
         calibrate() {
@@ -1016,6 +1082,10 @@ void main() {
             // »Weichheit« from 1 (the Gaussian, k = 1) down to 0 (k = 32, an
             // ellipse with a sharp border)
             gl.uniform1f(this.u.u_sharpness, this.sharpness ? this.exponent() : 1);
+            const wave = this.wave || { center: [0, 0, 0], radius: 1e9, inside: 0 };
+            gl.uniform3fv(this.u.u_waveCenter, wave.center);
+            gl.uniform1f(this.u.u_radius, wave.radius);
+            gl.uniform1f(this.u.u_inside, wave.inside);
             gl.enable(gl.BLEND);
             // back to front: each splat covers what is already there as far
             // as it is opaque (the colour comes premultiplied by alpha)
