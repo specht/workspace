@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:100:50
 image_alt: "Ein 8 × 8-Block eines Fotos, seine Pixelwerte und seine Koeffizienten nach der DCT"
 kind: labor
 language: C

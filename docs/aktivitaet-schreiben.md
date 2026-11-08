@@ -64,7 +64,7 @@ Jahr steht dafür im Titel der Seite in Klammern.
 
 | Feld | Wofür |
 | --- | --- |
-| `image` | Bild für die Karte im Katalog, selbst 16:9: Die Karte zeigt es überall ganz, auf dem Desktop wie auf dem Handy. Hat das Bild der Seite ein anderes Format, bekommt die Karte ein eigenes `teaser.webp` aus einem Rezept (docs/checkliste.md). Eine Zeichnung, die ganz zu sehen sein soll, bekommt `bild.webp:contain`: Sie wird mit der Farbe ihrer Ecke auf 16:9 aufgefüllt, auch ihre dunkle Fassung. Schau die Startseite hell und dunkel an, auch mit 390 px Breite |
+| `image` | Bild für die Karte im Katalog, selbst 16:9: Die Karte zeigt es ganz, auf dem Desktop wie auf dem Handy; nur in den Paaren am Ende eines Abschnitts fehlt links und rechts ein schmaler Streifen, um den Punkt `bild.webp:X:Y` (ohne: die Mitte). Hat das Bild der Seite ein anderes Format, bekommt die Karte ein eigenes `teaser.webp` aus einem Rezept (docs/checkliste.md). Eine Zeichnung, die ganz zu sehen sein soll, bekommt `bild.webp:contain`: Sie wird mit der Farbe ihrer Ecke auf 16:9 aufgefüllt, auch ihre dunkle Fassung. Schau die Startseite hell und dunkel an, auch mit 390 px Breite |
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |

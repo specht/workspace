@@ -1233,7 +1233,7 @@ div.floatright > p {
     background-color: #f9f9f9;
 }
 
-@media (max-width: 767.999999px) {
+@media (max-width: 767.98px) {
     p,
     .hint {
         text-align: left;
@@ -1611,7 +1611,7 @@ details.solution.hint-step-new > summary {
     /* On a phone every card is a full card as on the desktop: the picture
        across the whole width in 16:9, nothing of it cut and no bars, and
        below it the kind, the title and two short lines of text. */
-    @media (max-width: 767.999999px) {
+    @media (max-width: 767.98px) {
         padding-right: 0.375rem;
         padding-left: 0.375rem;
 
@@ -1651,7 +1651,7 @@ details.solution.hint-step-new > summary {
     /* Two columns (tablet): a card alone in the last row of its section
        takes the whole width, the picture on the left half, the text beside
        it, instead of leaving half a row empty. */
-    @media (min-width: 768px) and (max-width: 1199.999999px) {
+    @media (min-width: 768px) and (max-width: 1199.98px) {
         &:last-child:nth-child(odd) {
             width: 100%;
 
@@ -1692,11 +1692,17 @@ details.solution.hint-step-new > summary {
 
     /* The pairs at the end of a section whose last row would not be full
        (4, 5 or 7 cards; main.rb, hscol-pair): half a row each, the picture
-       in 16:9 on the left as on every card, the text beside it, so the
-       section ends in a full row instead of a gap */
+       on the left, the text beside it, so the section ends in a full row
+       instead of a gap. The picture is exactly as tall as on a full card,
+       so every card's picture has the same height whatever the count
+       (maintainer, November 2026); a little narrower than 16:9, it loses
+       a strip left and right around the card's focus. A full card's
+       picture is a third of the row less one gutter wide; this column,
+       half the row, measures itself (100cqw, without its gutter). */
     @media (min-width: 1200px) {
         &.hscol-pair {
             width: 50%;
+            container-type: inline-size;
 
             .tutorial_card3 {
                 > div {
@@ -1707,10 +1713,14 @@ details.solution.hint-step-new > summary {
                 }
 
                 /* nearly as wide as a full card's picture (58% of half a
-                   row against a third), so it is not small beside them */
+                   row against a third), so it is not small beside them,
+                   and as tall: a third of the row (two thirds of this
+                   column with its gutter) less the gutter, in 16:9 */
                 img {
                     flex: 0 0 58%;
                     width: 58%;
+                    height: calc((200cqw / 3 - var(--bs-gutter-x, 1.5rem) / 3) * 9 / 16);
+                    aspect-ratio: auto;
                     align-self: center;
                 }
 
@@ -6664,7 +6674,7 @@ html[data-bs-theme="dark"] .usage-charts {
 }
 /* the card alone in its row on a tablet, the picture beside the text: room
    for the row below its text too */
-@media (min-width: 768px) and (max-width: 1199.999999px) {
+@media (min-width: 768px) and (max-width: 1199.98px) {
     .hscol:last-child:nth-child(odd) .tutorial_card3.card-with-usage .card-content {
         padding-bottom: 2.6em;
     }
@@ -8678,7 +8688,7 @@ h3:has(+ .person) {
     color: var(--bs-secondary-color);
 }
 
-@media (max-width: 575.999999px) {
+@media (max-width: 575.98px) {
     .lang-tiles {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.7em;
