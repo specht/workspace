@@ -1475,7 +1475,7 @@ wieder her.
 
 Die Farben des Pferds stehen nicht in der OBJ-Datei, sondern in
 `horse-color.jpg`. Öffne das Bild in VS Code: Es sieht aus wie ein
-zerschnittenes Pferd, Stücke der Oberfläche, flach ausgebreitet, dazu der
+zerschnittenes Pferd, Stücke der Oberfläche, flach ausgebreitet, dazu das
 Holz des Sockels. Jede Ecke zeigt mit \\((u, v)\\) auf eine Stelle
 darin, und die Rasterung mischt \\((u, v)\\) zwischen den Ecken wie vorhin
 die Farben. Der Fragment-Shader liest an der gemischten Stelle die Farbe, mit

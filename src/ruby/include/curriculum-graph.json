@@ -150,64 +150,68 @@
     },
     {
       "name": "development",
-      "key": "8a5748b45e69a9db",
-      "cost": 281.76,
-      "quick": 569.46,
+      "key": "059833406461b571",
+      "cost": 456.53,
+      "quick": 880.55,
       "orders": [
         [
           0,
           [
-            "tcpip",
-            "turtle-1",
             "mysql",
-            "working-with-files",
-            "kata-functions",
-            "git",
+            "turtle-1",
+            "tcpip",
             "drawing",
-            "static-website",
+            "kata-functions",
+            "working-with-files",
+            "glsl",
             "pip-1",
-            "pixelram"
+            "git",
+            "pixelram",
+            "static-website"
           ]
         ],
         [
           1,
           [
-            "wetter",
-            "crypto",
-            "dns",
-            "turtle-1>turtle-2#1",
-            "webserver",
-            "sql-index",
             "bobby_tables",
+            "sql-index",
             "sql-joins",
+            "turtle-1>turtle-2#1",
             "filmdatenbank",
-            "terminal-mystery",
-            "kata-decisions",
-            "class-quiz",
+            "webserver",
+            "dns",
+            "wetter",
             "fire",
-            "hugo",
-            "svelte",
-            "pip-1>pip-2#1",
-            "raycaster",
+            "kata-decisions",
+            "crypto",
+            "terminal-mystery",
+            "glsl>webgl#1",
             "raylib",
+            "pip-1>pip-2#1",
+            "class-quiz",
+            "raycaster",
+            "pixelram>jpeg#1",
             "raytracing",
             "pixelram>gif#1",
-            "pixelram>jpeg#1"
+            "hugo",
+            "svelte"
           ]
         ],
         [
           2,
           [
-            "totp",
             "turtle-1>turtle-2#2",
-            "tracking",
+            "neo4j-filmdatenbank",
             "nebenlaeufigkeit",
             "pixelwand",
-            "neo4j-filmdatenbank",
+            "tracking",
+            "totp",
             "kata-loops",
             "pip-1>pip-2#2",
-            "pixelram>gif#2",
-            "pixelram>jpeg#2"
+            "glsl>webgl#2",
+            "pixelram>jpeg#2",
+            "raytracing>webgl#1",
+            "pixelram>gif#2"
           ]
         ],
         [
@@ -215,11 +219,11 @@
           [
             "turtle-1>turtle-2#3",
             "kata-texts",
-            "gaussian-splatting",
-            "webgl",
             "pip-2",
-            "pixelram>gif#3",
-            "pixelram>jpeg#3"
+            "glsl>webgl#3",
+            "pixelram>jpeg#3",
+            "raytracing>webgl#2",
+            "pixelram>gif#3"
           ]
         ],
         [
@@ -228,6 +232,8 @@
             "turtle-1>turtle-2#4",
             "kata-lists",
             "pip-2>pip-3#1",
+            "glsl>webgl#4",
+            "raytracing>webgl#3",
             "pixelram>gif#4",
             "pixelram>jpeg#4"
           ]
@@ -240,13 +246,15 @@
             "supermarkt",
             "kata-lists>suchmaschine#1",
             "naechste-nachbarn",
-            "kata-dicts",
             "testen",
-            "sandbox-sortieren",
-            "perzeptron",
+            "kata-dicts",
             "rle",
+            "perzeptron",
             "check-digits",
+            "kata-lists>gaussian-splatting#1",
+            "sandbox-sortieren",
             "pip-2>pip-3#2",
+            "webgl",
             "pixelram>gif#5",
             "pixelram>jpeg#5"
           ]
@@ -255,20 +263,21 @@
           6,
           [
             "turtle-2",
-            "kata-search",
             "prolog",
-            "sandbox-datenstrukturen",
+            "kata-search",
             "laufzeit",
+            "sandbox-datenstrukturen",
             "suchmaschine",
             "kata-objects",
             "kata-bits",
-            "sprachmodell",
-            "kata-functional",
             "routenplaner",
             "automata",
+            "sprachmodell",
+            "kata-functional",
             "lzw",
             "huffman",
             "pip-3",
+            "gaussian-splatting",
             "pixelram>gif#6",
             "pixelram>jpeg#6"
           ]
@@ -281,10 +290,10 @@
             "textadventure",
             "logikgatter",
             "steganography",
-            "kellerautomat",
             "regex",
-            "turingmaschine",
             "calculator",
+            "kellerautomat",
+            "turingmaschine",
             "gif",
             "jpeg"
           ]
