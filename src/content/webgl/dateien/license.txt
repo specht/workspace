@@ -12,7 +12,8 @@ under CC0 1.0 Universal (public domain), https://polyhaven.com/license:
   that the chrome of the clock does not mirror a dim room)
 
 The OBJ files are the glTF of Poly Haven turned into OBJ with
-src/content/webgl/werkzeug/gltf_to_obj.py (the ukulele with --lay-down,
+src/content/webgl/werkzeug/gltf_to_obj.py (the ukulele with --lay-down --smooth-angle 30, its own normals averaged
+across sharp edges too,
 the clock with --glass glass.obj). The textures are the 2k JPGs of Poly
 Haven, saved again with quality 88 and renamed: -color (diff), -normal
 (nor_gl), -roughness (rough or roughness), -ao (ao), -metal (metal).

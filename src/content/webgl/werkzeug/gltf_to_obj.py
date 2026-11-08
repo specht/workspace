@@ -17,6 +17,14 @@ faces up, and what was up points away from the viewer): a long ukulele
 fits a wide picture better. The second texture coordinate is flipped (glTF counts it
 from the top, OBJ from the bottom), and every face is written as a/a/a,
 position, texture coordinate and normal with the same number.
+
+--smooth-angle DEGREES computes the normals anew instead of taking the
+model's: each corner gets the average of the faces around its point whose
+direction differs from its own face by less than DEGREES. The ukulele's
+normals are averaged across sharp edges too (the flat bridge plate leans
+in the light, one side brighter than the other); with 30 degrees round
+edges stay round and sharp ones sharp. Every corner then has a vertex of
+its own.
 """
 import argparse
 import json
@@ -53,6 +61,7 @@ def main():
     p.add_argument('--glass')
     p.add_argument('--credit', default='')
     p.add_argument('--lay-down', action='store_true')
+    p.add_argument('--smooth-angle', type=float)
     a = p.parse_args()
 
     gltf = json.load(open(a.source))
@@ -100,6 +109,29 @@ def main():
     scene = gltf['scenes'][gltf.get('scene', 0)]
     for index in scene['nodes']:
         visit(index, turn)
+
+    def smooth(pos, uv, nor, idx):
+        # one vertex per corner, its normal from the faces around its point
+        # that face almost the same way
+        corners = idx.reshape(-1)
+        p = pos[corners]
+        face = np.cross(p[1::3] - p[0::3], p[2::3] - p[0::3])        # area-weighted
+        unit = face / (np.linalg.norm(face, axis=1, keepdims=True) + 1e-20)
+        keys = [tuple(k) for k in np.round(p / 1e-5).astype(np.int64)]
+        around = {}
+        for c, key in enumerate(keys):
+            around.setdefault(key, []).append(c // 3)
+        limit = np.cos(np.radians(a.smooth_angle))
+        normals = np.zeros((len(corners), 3))
+        for c, key in enumerate(keys):
+            faces = np.array(around[key])
+            near = faces[unit[faces] @ unit[c // 3] > limit]
+            normals[c] = face[near].sum(0)
+        normals /= np.linalg.norm(normals, axis=1, keepdims=True) + 1e-20
+        return p, uv[corners], normals, np.arange(len(corners)).reshape(-1, 3)
+
+    if a.smooth_angle:
+        out = {kind: [smooth(*part) for part in parts] for kind, parts in out.items()}
 
     def write(path, parts):
         lines = [f'# {a.credit}'] if a.credit else []

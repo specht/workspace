@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf hellem Grund"
+image_alt: "Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf weißem Grund"
 kind: projekt
 language: JavaScript / GLSL
 duration: 5 Doppelstunden
@@ -272,7 +272,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-1.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 1.5
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='dreieck.webp' alt='Ein Dreieck auf dunklem Grund: links unten rot, rechts unten grün, oben blau, dazwischen fließen die Farben ineinander, in der Mitte ein trübes Grau.'>
@@ -546,7 +546,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-2.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 1.3
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='ohne-tiefe.webp' alt='Der Würfel ohne Z-Buffer: Statt der Vorderseiten sieht man in ihn hinein. Unten liegt die violette Unterseite über allem, links die blaue, rechts die gelbe Seite, hinten ein Stück der türkisen Rückseite; nur die grüne Oberseite ist an ihrem Platz.'>
@@ -587,7 +587,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-1.frag
 write-file: webgl/main.js <- file:stufen/main-3.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 1.3
 -->
 <img src='mit-tiefe.webp' alt='Derselbe Würfel mit Z-Buffer: oben die grüne Oberseite, links die blaue, rechts die rote Seite, mit geraden Kanten, nichts liegt mehr darüber.'>
@@ -600,7 +600,7 @@ write-file: webgl/shader.frag <- file:stufen/vergleich-tiefe.frag
 write-file: webgl/main.js <- file:stufen/main-3.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 1.3
 -->
 <img src='tiefe.webp' alt='Derselbe Würfel, gemalt aus den Zahlen im Z-Buffer: Die vordere Kante, die der Kamera am nächsten ist, ist fast weiß, und nach hinten werden die drei Seiten gleichmäßig grauer.'>
@@ -799,7 +799,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-3.frag
 write-file: webgl/main.js <- file:stufen/main-4.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 1.3
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='licht.webp' alt='Der beleuchtete Würfel: Die grüne Oberseite ist am hellsten, die blaue Seite links und die rote rechts sind dunkler, jede Seite in einem eigenen Ton, so dass die Kanten klar hervortreten.'>
@@ -823,10 +823,10 @@ schreibt, ist **OBJ**: eine Textdatei, eine Angabe je Zeile. Öffne
 `ukulele.obj` und schau hinein:
 
 ```text
-v 0.00000 -0.01981 -0.00224
-vt 0.19389 0.58144
-vn -0.0000 1.0000 -0.0000
-f 4/4/4 15/15/15 13/13/13
+v -0.05555 0.02002 -0.15943
+vt 0.67967 0.49873
+vn 0.9871 0.0010 -0.1599
+f 1/1/1 2/2/2 3/3/3
 ```
 
 - `v` ist eine Ecke, \\(x\\), \\(y\\), \\(z\\); die Ukulele ist 0,53 Einheiten
@@ -1059,7 +1059,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-4.frag
 write-file: webgl/main.js <- file:stufen/main-5.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 4
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='ukulele.webp' alt='Die Ukulele, hellgrau auf dunklem Grund, schräg von oben: Sie liegt auf dem Rücken, der Hals mit den Bünden und dem Kopf mit vier Wirbeln zeigt nach links oben, auf dem Korpus das Schallloch und der Steg mit den vier Saiten. Die Flächen zum Licht sind hell, die abgewandten dunkler.'>
@@ -1165,7 +1165,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-5.frag
 write-file: webgl/main.js <- file:stufen/main-6.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 4
 click: selector:canvas
 press: w
@@ -1316,7 +1316,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-5.frag
 write-file: webgl/main.js <- file:stufen/main-7.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 4
 hook: view 0 0 -0.1 0.28 -0.6 0.3
 click: selector:canvas
@@ -1334,7 +1334,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-5.frag
 write-file: webgl/main.js <- file:stufen/main-7.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 4
 hook: view 0 0 -0.1 0.28 -0.6 0.3
 sleep: 1
@@ -1347,11 +1347,25 @@ Am Umriss hilft Smooth Shading nicht: Der bleibt aus geraden Kanten, denn die
 Normalen ändern nur die Helligkeit, nicht die Form. Wo das stört, braucht
 das Modell mehr Dreiecke.
 
-Henri Gouraud mischte 1971 die Helligkeiten der Ecken. Bui Tuong Phong
+Henri Gouraud mischte 1971 die Helligkeiten der Ecken. Bùi Tường Phong
 mischte 1973 stattdessen die Normalen und rechnete das Licht für jedes Pixel
 neu; so macht es dein Fragment-Shader. Der Unterschied zeigt sich beim
 Glanzlicht im nächsten Kapitel: Ein Glanzpunkt mitten in einem großen
 Dreieck fällt bei Gouraud unter den Tisch, denn an den Ecken ist er nicht.
+
+_person(gouraud)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Continuous Shading of Curved Surfaces</strong>, Henri Gouraud, IEEE Transactions on Computers, 1971. Wie aus geraden Dreiecken eine runde Fläche wird: das Licht an den Ecken gerechnet und dazwischen gemischt, mit den ersten Bildern eines Gesichts aus Dreiecken: <a href='https://doi.org/10.1109/T-C.1971.223313'>bei der IEEE</a>.</p>
+</div>
+
+_person(phong)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Illumination for Computer Generated Pictures</strong>, Bùi Tường Phong, Communications of the ACM, 1975. Die Normalen zwischen den Ecken gemischt und das Licht für jeden Punkt gerechnet, dazu ein Glanzlicht, das mit einer Potenz schmal wird: <a href='https://doi.org/10.1145/360825.360839'>bei der ACM</a>.</p>
+</div>
 
 ## Glanzlicht
 
@@ -1372,6 +1386,13 @@ Dann ist
 hellen Fleck, der zur Seite schnell auf 0 fällt:
 
 $$\text{Glanz} = 0{,}4 \cdot \max(n \cdot h, 0)^{40}$$
+
+_person(blinn)
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>Models of Light Reflection for Computer Synthesized Pictures</strong>, James F. Blinn, SIGGRAPH 1977. Hier steht die Richtung \\(h\\) genau zwischen Licht und Auge, mit der dein Glanzlicht rechnet, und warum sie bei schräg einfallendem Licht besser aussieht als Phongs Spiegelrichtung: <a href='https://doi.org/10.1145/563858.563893'>bei der ACM</a>.</p>
+</div>
 
 Der Glanz kommt als Weiß zur Farbe dazu, unabhängig von der Grundfarbe: Bei
 Lack, Porzellan und Plastik hat das zurückgeworfene Licht die Farbe der
@@ -1454,7 +1475,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-6.frag
 write-file: webgl/main.js <- file:stufen/main-8.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 4
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='glanz.webp' alt='Die graue Ukulele mit Glanzlichtern: helle Säume am runden Rand des Korpus, an Hals und Wirbeln, so dass sie nach glattem Lack aussieht.'>
@@ -1572,7 +1593,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-7.frag
 write-file: webgl/main.js <- file:stufen/main-9.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 5
 -->
 <img class='full fit-width' style='max-width: 32em; margin: 0 auto' src='farbe.webp' alt='Die Ukulele mit ihrer Textur: Korpus und Hals aus braunem Holz mit Maserung und abgewetzten hellen Stellen, ein dunkles Griffbrett mit hellen Bünden, das Schallloch mit einem Zierring, silberne Wirbel am Kopf.'>
@@ -1738,7 +1759,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-8.frag
 write-file: webgl/main.js <- file:stufen/main-10.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 6
 hook: view 0 0 -0.16 0.22 0.9 0.75
 click: selector:canvas
@@ -1757,7 +1778,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-8.frag
 write-file: webgl/main.js <- file:stufen/main-10.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 6
 hook: view 0 0 -0.16 0.22 0.9 0.75
 click: selector:canvas
@@ -1775,7 +1796,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-8.frag
 write-file: webgl/main.js <- file:stufen/main-10.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 6
 hook: view 0 0 -0.16 0.22 0.9 0.75
 -->
@@ -1852,6 +1873,11 @@ dafür:
 $$F = 0{,}04 + 0{,}96 \cdot (1 - n \cdot v)^5$$
 
 Von vorne, \\(n \cdot v = 1\\), sind es 4 Prozent, ganz von der Seite 100.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>An Inexpensive BRDF Model for Physically-based Rendering</strong>, Christophe Schlick, Computer Graphics Forum, 1994. Die Formel für die Spiegelung, die zum Rand hin stärker wird, mit einer Potenz statt der langen Gleichungen von Fresnel: <a href='https://doi.org/10.1111/1467-8659.1330233'>bei Wiley</a>.</p>
+</div>
 
 Schreib `shader.frag` neu:
 
@@ -1986,7 +2012,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-9.frag
 write-file: webgl/main.js <- file:stufen/main-11.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 7
 click: selector:canvas
 press: 5
@@ -2003,7 +2029,7 @@ write-file: webgl/shader.frag <- file:stufen/shader-9.frag
 write-file: webgl/main.js <- file:stufen/main-11.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 7
 -->
 <img src='wecker.webp' alt='Der Wecker mit Metall: In den Glocken aus Chrom, im Bügel und im Ring um das Zifferblatt spiegelt sich das Hotelzimmer, helle Fenster und dunkle Möbel, verzerrt über die runden Formen; das türkise Gehäuse glänzt.'>
@@ -2133,7 +2159,7 @@ write-file: webgl/shader.frag <- file:stufen/shader.frag
 write-file: webgl/main.js <- file:stufen/main.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 7
 hook: view 0 0.087 0.007 0.24 0.5 0.25
 click: selector:canvas
@@ -2151,7 +2177,7 @@ write-file: webgl/shader.frag <- file:stufen/shader.frag
 write-file: webgl/main.js <- file:stufen/main.js
 preview-reload
 tab: preview
-viewport: 800x450
+viewport: 1440x810
 sleep: 7
 hook: view 0 0.087 0.007 0.24 0.5 0.25
 -->
@@ -2171,10 +2197,11 @@ preview-reload
 tab: preview
 viewport: 1029x579
 sleep: 7
-hook: clear 0.93 0.92 0.89
+hook: clear 1 1 1
 hook: view 0 0.086 0.007 0.28 -0.3 0.3
+variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf hellem Grund.'>
+<img class='teaser' hidden src='teaser.webp' alt='Ein türkiser Wecker mit zwei Glocken aus Chrom und einem Bügel darüber, in den Glocken spiegelt sich ein Zimmer; dazu ein cremefarbenes Zifferblatt mit römischen Ziffern hinter Glas, alles auf weißem Grund.'>
 
 <!-- /tutorial-scope -->
 
@@ -2207,6 +2234,11 @@ Strahl in die Szene und rechnet aus, was er trifft; Spiegel und Glas zeigen
 dort, was wirklich daneben steht, nicht ein Rundumbild, aber das Bild
 braucht viel länger. Und was dein Fragment-Shader tut, treibt
 [Shader in GLSL](/glsl) weiter, bis zu Welten ohne ein einziges Dreieck.
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Real-Time Rendering</strong>, Tomas Akenine-Möller, Eric Haines, Naty Hoffman und andere, 4. Auflage 2018. Das Buch über Grafik in Echtzeit: die Pipeline, Shading, Texturen, Schatten, Glas und Licht nach der Physik, so wie Spiele und Grafikkarten es machen: <a href='https://www.realtimerendering.com/'>die Seite des Buchs</a>.</p>
+</div>
 
 Ohne Dreiecke kommt auch [Gaussian Splatting](/gaussian-splatting) aus: Eine
 Szene aus Fotos besteht dort aus Millionen weicher, durchscheinender Splats,
