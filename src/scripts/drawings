@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Runs one command of the drawings in their Docker image (docker/drawings), so
+# that a drawing comes out the same on every machine: the same Python, LaTeX,
+# fonttools and fonts.
+#
+#   src/scripts/drawings python3 src/content/reference/vektoren/bilder/diagramme.py
+#   src/scripts/drawings ruby src/scripts/render-svg.rb src/content/dns/dns-tree.svg
+#
+# The repository is mounted at /repo and the command runs in the same folder
+# below it as here, as the calling user, so the files it writes belong to
+# them. The labels LaTeX has typeset are kept in ~/.cache/workspace-drawings.
+# The image is built on the first call and again when docker/drawings changes
+# (Docker's cache makes that quick otherwise). At most 6 GB of memory.
+set -euo pipefail
+
+repo=$(cd "$(dirname "$0")/../.." && pwd)
+image=workspace-drawings
+docker build -q -t "$image" "$repo/docker/drawings" > /dev/null
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/workspace-drawings"
+mkdir -p "$cache"
+here=/repo
+case "$PWD/" in
+    "$repo"/*) here="/repo${PWD#"$repo"}" ;;
+esac
+
+tty=()
+[ -t 0 ] && [ -t 1 ] && tty=(-it)
+exec docker run --rm "${tty[@]}" --memory 6g \
+    -u "$(id -u):$(id -g)" \
+    -v "$repo:/repo" -v "$cache:/home/drawings/.cache" \
+    -w "$here" "$image" "$@"

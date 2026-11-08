@@ -342,6 +342,34 @@ Screenshot vom eigenen Rechner (Pfade stehen im Skript, je nach Hostname),
 `src/scripts/replace-screenshot.rb` ersetzt eine Bilddatei in allen
 Tutorials, die dieselbe Datei verwenden.
 
+### Zeichnungen
+
+Eine Zeichnung ist ein SVG und steht als SVG auf der Seite (`<img class='drawing' … src='x.svg'>`,
+nie als WebP daraus; `drawings_svg_test.rb` prüft das). Die Werkzeuge dafür laufen in einem
+eigenen Docker-Image, `docker/drawings`, damit eine Zeichnung auf jedem Rechner gleich herauskommt:
+Python mit numpy und Pillow, LaTeX und dvisvgm für die Beschriftungen, fonttools, rsvg-convert,
+cwebp und die Schriften der Website. `src/scripts/drawings BEFEHL …` baut es beim ersten Mal und
+führt den Befehl darin aus, im selben Ordner des Repositorys und als der eigene Benutzer:
+
+```bash
+src/scripts/drawings python3 src/content/reference/vektoren/bilder/diagramme.py
+src/scripts/drawings ruby src/scripts/render-svg.rb src/content/reference/vektoren/strahl.svg
+```
+
+Ein Skript, das `diagram_labels.py` oder `drawings_container.py` lädt, und `render-svg.rb`
+wechseln von selbst in den Container, wenn man sie direkt aufruft.
+
+`render-svg.rb x.svg` bereitet eine Zeichnung vor: Es bettet die Schriften ihrer Texte ein
+(`svg_fonts.py`: nur die Zeichen, die vorkommen, als WOFF2, im Mittel etwa 14 KB je Zeichnung),
+denn ein SVG in einem `<img>` kann die Schriften der Seite nicht laden, und schreibt `x-dark.svg`
+mit der dunklen Palette, das die Seite im dunklen Farbschema zeigt. Nach jeder Änderung an einer
+Zeichnung läuft es noch einmal. Mit `--webp` macht es zusätzlich `x.webp` und `x-dark.webp`, nur
+für Stellen, die Pixel brauchen, die Karte einer Aktivität (`image:`).
+
+Eine Galerie streckt jedes Bild auf ihre Spalte (etwa 530 px bei zwei, 360 px bei drei, auf dem
+Handy eine): eine Zeichnung für eine Galerie wird in dieser Breite gezeichnet, Schrift und Linien
+in ihrer normalen Größe (`Picture(zoom=…)` in `reference/vektoren/bilder/diagramme.py`).
+
 ### Bilder auf den Karten
 
 Die Karten der Startseite und die Sprach-Kacheln zeigen ihr Bild (`image:`

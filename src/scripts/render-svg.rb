@@ -1,12 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Renders a hand-drawn SVG diagram as NAME.webp and, with the dark palette
-# below, as NAME-dark.webp beside it. The site shows the -dark picture in
-# dark mode, on the page and on the card of the activity (add_media_variants
-# and image_dark in main.rb), so a diagram needs no invert-dark.
+# Prepares a drawing (an SVG) for the pages: embeds the fonts its texts
+# use (svg_fonts.py), so that it looks the same in every browser, and writes
+# NAME-dark.svg beside it, the same drawing in the dark palette below. A page
+# shows the SVG itself, <img src='NAME.svg'>: sharp at every size and in the
+# enlarged view; in dark mode the site swaps in NAME-dark.svg
+# (content_pipeline.rb, add_media_variants), so a drawing needs no
+# invert-dark.
 #
-#   src/scripts/render-svg.rb src/content/dns/dns-tree.svg [WIDTH]
+#   src/scripts/render-svg.rb src/content/dns/dns-tree.svg
+#   src/scripts/render-svg.rb --webp src/content/dns/dns-tree.svg [WIDTH]
+#
+# --webp also renders NAME.webp and NAME-dark.webp (WIDTH pixels wide,
+# 1600 if not given): only for a place that needs a picture made of pixels,
+# the card of an activity (image: in its meta) or a social preview. A page
+# never shows a drawing as WebP (docs/checkliste.md).
 #
 # The palette maps the colours the diagrams use (Tailwind greys, the site's
 # blue). A colour that is not in it stops the script: add it here first, so
@@ -39,8 +48,26 @@ DARK = {
     '#eab308' => '#facc15', # yellow: a colour by name beside red, green and blue (a map in four colours)
 }.freeze
 
-svg_path = ARGV[0] or abort "usage: #{$PROGRAM_NAME} FILE.svg [WIDTH]"
+# in docker/drawings, the same fonts and tools on every machine: started
+# again there through src/scripts/drawings
+unless ENV['DRAWINGS_CONTAINER'] == '1'
+    repo = File.expand_path('../..', __dir__)
+    inside = ARGV.map { |a| a.start_with?("#{repo}/") ? "/repo/#{a.delete_prefix("#{repo}/")}" : a }
+    exec(File.join(__dir__, 'drawings'), 'ruby', '/repo/src/scripts/render-svg.rb', *inside)
+end
+
+webp = !ARGV.delete('--webp').nil?
+ARGV.delete('--svg')          # the default now; accepted for old notes
+svg_path = ARGV[0] or abort "usage: #{$PROGRAM_NAME} [--webp] FILE.svg [WIDTH]"
 width = Integer(ARGV[1] || 1600)
+# rsvg-convert forgives it, a browser shows nothing: two hyphens inside a
+# comment end the XML
+if File.read(svg_path).scan(/<!--(.*?)-->/m).any? { |(text)| text.include?('--') }
+    abort "#{svg_path}: a comment contains »--«, which browsers refuse in an SVG"
+end
+fonts = File.join(__dir__, 'svg_fonts.py')
+output, status = Open3.capture2e('python3', fonts, svg_path)
+abort "svg_fonts.py failed: #{output}" unless status.success?
 light = File.read(svg_path)
 
 unknown = light.scan(/#[0-9a-fA-F]{6}\b/).map(&:downcase).uniq - DARK.keys
@@ -63,5 +90,9 @@ def render(svg, target, width)
 end
 
 base = svg_path.delete_suffix('.svg')
-render(light, "#{base}.webp", width)
-render(dark, "#{base}-dark.webp", width)
+File.write("#{base}-dark.svg", dark)
+puts "#{base}-dark.svg"
+if webp
+    render(light, "#{base}.webp", width)
+    render(dark, "#{base}-dark.webp", width)
+end

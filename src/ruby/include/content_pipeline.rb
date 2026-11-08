@@ -219,11 +219,10 @@ class Main < Sinatra::Base
                 # an SVG stays an SVG: sharp at every size, and as WebP it
                 # would be served with the wrong type
                 if img.attr('data-noconvert') || File.extname(image_path).downcase == '.svg'
-                    sha1 = Digest::SHA1.hexdigest(image_path)
-                    extension = File.extname(image_path)
-                    target_path = "/webcache/#{sha1}#{extension}"
-                    FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
-                    img['src'] = "/cache/#{sha1}#{extension}"
+                    img['src'] = cache_by_content(image_path)
+                    # a drawing with its dark colours beside it (x-dark.svg,
+                    # from render-svg.rb --svg) swaps like a WebP's variant
+                    add_media_variants(img, image_path) { |variant_path| cache_by_content(variant_path) }
                 else
                     sha1 = convert_image(image_path)
                     img['src'] = "/cache/#{sha1}.webp"
@@ -293,6 +292,15 @@ class Main < Sinatra::Base
         Tools.link_targets(root)
         highlight_code(root)
         root
+    end
+    # A file served as it is (an SVG drawing), named by its content, so that
+    # a changed drawing gets a new address and no browser keeps the old one
+    def self.cache_by_content(file_path)
+        extension = File.extname(file_path)
+        sha1 = Digest::SHA1.hexdigest(File.binread(file_path))[0, 16]
+        target_path = "/webcache/#{sha1}#{extension}"
+        FileUtils.cp(file_path, target_path) unless File.exist?(target_path)
+        "/cache/#{sha1}#{extension}"
     end
     def self.cache_video(video_path)
         sha1 = Digest::SHA1.hexdigest(File.read(video_path))[0, 16]

@@ -72,6 +72,10 @@ often:
 
 - Names in code are English; German prose keeps English technical terms
   (Handshake, String, Stack, Queue). »Index«, not »Stelle«; no »Ding«.
+- Drawings are SVG on the page (`src='x.svg'`, never a WebP made from one);
+  `src/scripts/render-svg.rb x.svg` embeds their fonts and writes
+  `x-dark.svg`. Drawing tools run in Docker (`src/scripts/drawings`,
+  docs/entwicklung.md »Zeichnungen«), never on the host.
 - Screenshots come from recipes (`<!-- tutorial-screenshot -->`), rendered
   with `src/scripts/recreate-screenshots.rb PAGE`; look at every new picture.
 - Tables are HTML, icons are Bootstrap Icons, every picture has an `alt`

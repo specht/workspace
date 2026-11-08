@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // a gallery picture opens large unless it already almost fills the screen
     const zoomable = (image) => {
+        // an SVG drawing is sharp at every size: enlarged, it always shows more
+        if (/\.svg($|\?)/.test(image.currentSrc || image.src)) return true;
         if (!image.closest('.gallery')) return image.naturalWidth > image.getBoundingClientRect().width * 1.15;
         const width = image.getBoundingClientRect().width;
         // on a phone too, where the file has much more to show (a texture of 2048 pixels)

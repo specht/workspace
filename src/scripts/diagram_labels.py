@@ -22,6 +22,11 @@ import re
 import subprocess
 import tempfile
 
+import drawings_container
+
+# a script that draws runs in docker/drawings, the same on every machine
+drawings_container.ensure()
+
 TEXT = '#1f2937'
 CODE_TEXT = '#e5185d'        # default.css, code
 CODE_BACKGROUND = '#f384af'  # rgba(243, 132, 175, 0.2) in default.css
