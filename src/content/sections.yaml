@@ -67,8 +67,8 @@
     - pixelram
     - raytracing
     - glsl
-    - .webgl
-    - .gaussian-splatting
+    - webgl
+    - gaussian-splatting
   #  - .sirds
   # - .p5js
   # - .gif
