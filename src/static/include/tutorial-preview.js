@@ -410,6 +410,19 @@ document.addEventListener('DOMContentLoaded', () => {
         openGallery(siblings[next]);
     }
 
+    // After the lightbox, the picture it showed last is on the page too: a
+    // gallery that swipes (a phone) turns to it, and the page scrolls only
+    // if the picture lies outside the window, as far as needed, clear of
+    // the bars that stay at the top.
+    function showOnPage(image) {
+        const target = image.closest('figure') || image;
+        target.style.scrollMarginTop = '5rem';
+        target.style.scrollMarginBottom = '1rem';
+        target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+        target.style.scrollMarginTop = '';
+        target.style.scrollMarginBottom = '';
+    }
+
     function closePreview() {
         if (!lightbox.open) return;
 
@@ -425,7 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
             content.replaceChildren();
             inspected = null;
             lightbox.classList.remove('is-zoomed');
-            if (current) current.focus({ preventScroll: true });
+            if (current) {
+                showOnPage(current);
+                current.focus({ preventScroll: true });
+            }
             current = null;
         }, ANIMATION_TIME);
     }
