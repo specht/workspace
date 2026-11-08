@@ -28,7 +28,7 @@
 // bytes a splat, werkzeug/prepare_street.py says how) and the .ply of a
 // 3DGS trainer (the colour from f_dc only). The arrow keys or W, A, S, D
 // walk (Q and E down and up), and on a touch screen two buttons walk
-// forward and back: through a street that was scanned from inside. »Anzahl der Splats« draws only
+// forward and back: through a street that was scanned from inside. »Anzahl« draws only
 // the first ones of a file: the files of the page come sorted with the most
 // visible splats first (werkzeug/prepare_*.py), so a scene builds up from a
 // few large blurry ones to all of them. »Eigene Datei öffnen« reads a
@@ -140,6 +140,9 @@
     }
 
     // the 3D covariance Σ = R S Sᵀ Rᵀ of every splat, as six numbers
+    // the stops of »Größe«
+    const SIZES = [0.05, 0.1, 0.25, 0.5, 0.75, 1];
+
     function covariances(s, size) {
         const out = new Float32Array(s.count * 6);
         for (let i = 0; i < s.count; i++) {
@@ -169,13 +172,22 @@ uniform vec2 u_focal;      // in pixels
 uniform vec2 u_viewport;
 in vec2 a_corner;          // a corner of the square, -3 ... 3 (three standard deviations)
 in uint a_index;
-uniform vec3 u_waveCenter;  // where the wave of »Umrisse« started
-uniform float u_radius;     // how far it has come
-uniform float u_inside;     // 1: outlines inside the sphere, 0: outside it
-uniform float u_band;       // how soft its front is
+// The look of the splats, from the four sliders: x the exponent of the bell
+// (1 Gauss, 32 a sharp border), y the fill (1 filled, 0 only the outline),
+// z the size, w how many splats (the first ones of the file). A change runs
+// as a wave, a sphere growing from the camera: splats it has passed have its
+// look. Several waves can run at once, the newest innermost; a splat has
+// the look of the last one that has passed it.
+const int WAVES = 16;
+uniform vec4 u_base;              // the look before all running waves
+uniform int u_waveCount;
+uniform vec4 u_waves[WAVES];      // centre xyz, radius
+uniform float u_bands[WAVES];     // how soft each front is
+uniform vec4 u_looks[WAVES];      // the look each wave brings
 out vec4 v_color;
 out vec2 v_corner;
-out float v_outline;        // 1: draw only the outline of this splat
+out float v_sharp;          // the exponent of the bell for this splat
+out float v_fill;           // 1 filled, 0 only its outline
 out float v_front;          // 1: right at the front of the wave
 void main() {
     int i = int(a_index);
@@ -184,6 +196,20 @@ void main() {
     vec4 t1 = texelFetch(u_data, base + ivec2(1, 0), 0);   // r g b σxx
     vec4 t2 = texelFetch(u_data, base + ivec2(2, 0), 0);   // σxy σxz σyy σyz
     vec4 t3 = texelFetch(u_data, base + ivec2(3, 0), 0);   // σzz
+    vec4 look = u_base;
+    float count = u_base.w, front = 0.0;
+    for (int k = 0; k < WAVES; k++) {
+        if (k >= u_waveCount) break;
+        float d = distance(t0.xyz, u_waves[k].xyz);
+        float band = max(u_bands[k], 1e-4);
+        float passed = 1.0 - smoothstep(u_waves[k].w - band, u_waves[k].w, d);
+        look = mix(look, u_looks[k], passed);
+        // more or fewer splats change at once where the wave is, not softly
+        if (passed > 0.5) count = u_looks[k].w;
+        // where the front is now: a thin line, a third of the soft band
+        front = max(front, 1.0 - smoothstep(0.0, 0.33 * band, abs(d - u_waves[k].w)));
+    }
+    if (float(i) >= count) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); return; }
     vec3 cam = u_view * (t0.xyz - u_eye);
     float z = -cam.z;
     if (z < 0.01) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); return; }
@@ -192,7 +218,8 @@ void main() {
     // camera would otherwise become a huge ellipse across the whole picture
     vec2 center = vec2(u_focal.x * cam.x / z, u_focal.y * cam.y / z);
     if (any(greaterThan(abs(center), 0.65 * u_viewport))) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); return; }
-    mat3 sigma = mat3(t1.w, t2.x, t2.y, t2.x, t2.z, t2.w, t2.y, t2.w, t3.x);
+    // the size scales the three widths, so Σ by its square
+    mat3 sigma = mat3(t1.w, t2.x, t2.y, t2.x, t2.z, t2.w, t2.y, t2.w, t3.x) * (look.z * look.z);
     mat3 J = mat3(u_focal.x / z, 0.0, 0.0,
                   0.0, u_focal.y / z, 0.0,
                   u_focal.x * cam.x / (z * z), u_focal.y * cam.y / (z * z), 0.0);
@@ -207,22 +234,18 @@ void main() {
     vec2 offset = a_corner.x * min(sqrt(l1), 1024.0) * e1 + a_corner.y * min(sqrt(l2), 1024.0) * e2;
     gl_Position = vec4((center + offset) * 2.0 / u_viewport, 0.0, 1.0);
     v_color = vec4(t1.rgb, t0.w);
-    // the wave: a sphere around u_waveCenter; splats it has passed change,
-    // over a soft band (u_band, a twelfth of the depth of the scene)
-    float d = distance(t0.xyz, u_waveCenter);
-    float band = max(u_band, 1e-4);
-    float passed = 1.0 - smoothstep(u_radius - band, u_radius, d);
-    v_outline = mix(1.0 - passed, passed, u_inside);
-    v_front = 1.0 - smoothstep(0.0, band, abs(d - u_radius));
+    v_sharp = look.x;
+    v_fill = look.y;
+    v_front = front;
     v_corner = a_corner;
 }`;
 
     const FRAGMENT = `#version 300 es
 precision highp float;
-uniform float u_sharpness;  // 1: the Gaussian; larger: towards a hard ellipse
 in vec4 v_color;
 in vec2 v_corner;
-in float v_outline;
+in float v_sharp;
+in float v_fill;
 in float v_front;
 out vec4 fragColor;
 void main() {
@@ -231,13 +254,14 @@ void main() {
     // q^k with k = 1 is the bell of the Gaussian; the larger k, the flatter
     // it is inside one standard deviation (q < 1) and the steeper it falls
     // at its edge: an ellipse with a sharp border
-    float alpha = min(0.99, v_color.a * exp(-0.5 * pow(q, u_sharpness)));
+    float alpha = min(0.99, v_color.a * exp(-0.5 * pow(q, v_sharp)));
     // the outline: a thin ring where the bell has fallen to about 60 %
     // (one standard deviation), opaque, in the splat's colour
     float r = sqrt(q);
     float ring = smoothstep(0.82, 0.94, r) * (1.0 - smoothstep(0.98, 1.1, r));
-    alpha = mix(alpha, 0.9 * ring * step(0.05, v_color.a), v_outline);
-    vec3 rgb = mix(v_color.rgb, vec3(1.0), 0.7 * v_front);
+    alpha = mix(0.9 * ring * step(0.05, v_color.a), alpha, v_fill);
+    // a faint light line where the wave is, so that one sees it travel
+    vec3 rgb = mix(v_color.rgb, vec3(1.0), 0.3 * v_front);
     if (alpha < 1.0 / 255.0) discard;
     fragColor = vec4(rgb * alpha, alpha);
 }`;
@@ -309,7 +333,6 @@ void main() {
         constructor(root) {
             this.root = root;
             this.scenes = JSON.parse(root.dataset.scenes || '[]');
-            this.size = 1;
             this.yaw = 0.6; this.pitch = 0.3; this.distance = 1; this.target = [0, 0, 0];
             this.build();
             if (!this.gl) return;
@@ -335,45 +358,48 @@ void main() {
             }
             const sliders = document.createElement('div');
             sliders.className = 'splat-viewer-sliders';
-            const sizeLabel = document.createElement('label');
-            sizeLabel.className = 'splat-viewer-size';
-            sizeLabel.innerHTML = '<span>Größe der Splats</span>';
-            this.slider = document.createElement('input');
-            this.slider.type = 'range'; this.slider.className = 'form-range'; this.slider.min = '0.05'; this.slider.max = '1'; this.slider.step = '0.05'; this.slider.value = '1';
-            this.slider.addEventListener('input', () => { this.size = parseFloat(this.slider.value); this.showValues(); this.upload(); });
-            this.sizeValue = document.createElement('output');
-            sizeLabel.append(this.slider, this.sizeValue);
-            const countLabel = document.createElement('label');
-            countLabel.className = 'splat-viewer-size';
-            countLabel.innerHTML = '<span>Anzahl der Splats</span>';
-            this.counter = document.createElement('input');
-            this.counter.type = 'range'; this.counter.className = 'form-range'; this.counter.min = '0'; this.counter.max = '1'; this.counter.step = '0.01'; this.counter.value = '1';
-            this.counter.addEventListener('input', (e) => {
-                // moved by hand: the automatic number stops
-                if (e.isTrusted && this.autoCount) this.autoCount.checked = false;
-                this.lastSort = null; this.describe(); this.redraw();
-            });
-            this.countValue = document.createElement('output');
-            countLabel.append(this.counter, this.countValue);
-            const sharpLabel = document.createElement('label');
-            sharpLabel.className = 'splat-viewer-size';
-            sharpLabel.innerHTML = '<span>Weichheit der Splats</span>';
-            this.sharpness = document.createElement('input');
-            this.sharpness.type = 'range'; this.sharpness.className = 'form-range'; this.sharpness.min = '0'; this.sharpness.max = '1'; this.sharpness.step = '0.01'; this.sharpness.value = '1';
-            this.sharpness.setAttribute('aria-valuetext', 'weich');
-            this.sharpness.addEventListener('input', () => {
-                this.sharpness.setAttribute('aria-valuetext', this.sharpness.value < 0.5 ? 'scharf' : 'weich');
-                this.showValues();
-                this.redraw();
-            });
+            // A slider with stops: steps of the range, and tick marks for
+            // them; every change runs as a wave through the scene (change()).
+            const slider = (title, min, max, step, value, tip) => {
+                const label = document.createElement('label');
+                label.className = 'splat-viewer-size';
+                label.innerHTML = `<span>${title}</span>`;
+                const input = document.createElement('input');
+                input.type = 'range'; input.className = 'form-range';
+                input.min = String(min); input.max = String(max); input.step = String(step); input.value = String(value);
+                // the stops as marks under the track, where the thumb's middle
+                // stands at each of them
+                const track = document.createElement('span');
+                track.className = 'splat-viewer-track';
+                const ticks = document.createElement('span');
+                ticks.className = 'splat-viewer-ticks';
+                ticks.setAttribute('aria-hidden', 'true');
+                for (let v = min; v <= max + 1e-9; v += step) ticks.append(document.createElement('i'));
+                track.append(input, ticks);
+                const output = document.createElement('output');
+                if (tip) output.title = tip;
+                label.append(track, output);
+                sliders.append(label);
+                return [input, output];
+            };
             // 100 % is the bell of Gauss (exponent 1 in exp(-q^k / 2)), 0 % an
             // ellipse with a sharp border (exponent 32)
-            this.sharpValue = document.createElement('output');
-            this.sharpValue.title = '100 % ist die Glocke von Gauß, 0 % eine Ellipse mit scharfem Rand';
-            sharpLabel.append(this.sharpness, this.sharpValue);
-            // first what changes the look of each splat, then how many, then
-            // their size
-            sliders.append(sharpLabel, countLabel, sizeLabel);
+            [this.sharpness, this.sharpValue] = slider('Weichheit', 0, 1, 0.25, 1, '100 % ist die Glocke von Gauß, 0 % eine Ellipse mit scharfem Rand');
+            // 100 % filled, 0 % only a thin ring at one standard deviation
+            [this.fill, this.fillValue] = slider('Füllung', 0, 1, 0.25, 1, '100 % gefüllt, 0 % nur der Umriss jedes Splats');
+            // from 100 splats to all, on a logarithmic scale (drawn())
+            [this.counter, this.countValue] = slider('Anzahl', 0, 1, 0.1, 1);
+            // the stops of the size: SIZES[value]
+            [this.slider, this.sizeValue] = slider('Größe', 0, SIZES.length - 1, 1, SIZES.length - 1);
+            for (const input of [this.sharpness, this.fill, this.slider]) input.addEventListener('input', () => this.change());
+            this.counter.addEventListener('input', (e) => {
+                // moved by hand: the automatic number stops
+                if (e.isTrusted && this.autoCount && this.autoCount.checked) {
+                    this.autoCount.checked = false;
+                    this.counter.step = '0.1';
+                }
+                this.change();
+            });
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
@@ -424,22 +450,28 @@ void main() {
             autoText.textContent = 'Automatisch flüssig';
             // switched on, it measures at once with a few pictures, not only
             // once the camera moves
-            this.autoCount.addEventListener('change', () => { if (this.autoCount.checked) this.calibrate(); });
+            this.autoCount.addEventListener('change', () => {
+                // the automatic number needs fine steps, the hand the stops
+                this.counter.step = this.autoCount.checked ? 'any' : '0.1';
+                if (this.autoCount.checked) this.calibrate();
+                else this.change(false);
+            });
             auto.append(this.autoCount, autoText);
             switches.append(auto);
-            const outline = document.createElement('label');
-            outline.className = 'form-check form-switch splat-viewer-game';
-            outline.title = 'Eine Welle läuft von der Kamera durch die Szene und zeigt jeden Splat als Umriss; noch einmal, und sie läuft zurück';
-            this.outlines = document.createElement('input');
-            this.outlines.type = 'checkbox';
-            this.outlines.className = 'form-check-input';
-            this.outlines.setAttribute('role', 'switch');
-            this.outlines.addEventListener('change', () => this.startWave(this.outlines.checked));
-            const outlineText = document.createElement('span');
-            outlineText.className = 'form-check-label';
-            outlineText.textContent = 'Umrisse';
-            outline.append(this.outlines, outlineText);
-            switches.append(outline);
+            // the wave for every change of a slider, on unless switched off
+            const waveSwitch = document.createElement('label');
+            waveSwitch.className = 'form-check form-switch splat-viewer-game';
+            waveSwitch.title = 'Jede Änderung an einem Regler läuft als Welle von der Kamera durch die Szene';
+            this.waveOn = document.createElement('input');
+            this.waveOn.type = 'checkbox';
+            this.waveOn.className = 'form-check-input';
+            this.waveOn.setAttribute('role', 'switch');
+            this.waveOn.checked = true;
+            const waveText = document.createElement('span');
+            waveText.className = 'form-check-label';
+            waveText.textContent = 'Welle';
+            waveSwitch.append(this.waveOn, waveText);
+            switches.append(waveSwitch);
             const swing = document.createElement('label');
             swing.className = 'form-check form-switch splat-viewer-game';
             this.swing = document.createElement('input');
@@ -532,7 +564,7 @@ void main() {
             this.program = program;
             gl.useProgram(program);
             this.u = {};
-            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_sharpness', 'u_waveCenter', 'u_radius', 'u_inside', 'u_band']) this.u[name] = gl.getUniformLocation(program, name);
+            for (const name of ['u_data', 'u_view', 'u_eye', 'u_focal', 'u_viewport', 'u_base', 'u_waveCount', 'u_waves', 'u_bands', 'u_looks']) this.u[name] = gl.getUniformLocation(program, name);
             this.vao = gl.createVertexArray();
             gl.bindVertexArray(this.vao);
             const corners = gl.createBuffer();
@@ -676,8 +708,9 @@ void main() {
             this.counter.value = '1';
             this.showSpots();
             this.showNote(null);
-            this.wave = null;
-            if (this.outlines) this.outlines.checked = false;
+            this.waves = [];
+            this.lookBase = null;
+            this.change(false);
             this.upload();
             this.fit();
             this.message('');
@@ -884,13 +917,96 @@ void main() {
             this.help.innerHTML = items.map(([keys, what]) => `<span><span class='splat-viewer-keys'>${keys}</span>: ${what}</span>`).join('');
         }
 
-        // the numbers beside the sliders
-        exponent() {
-            return Math.pow(32, 1 - parseFloat(this.sharpness.value));
+        // the look the sliders ask for, as the shader takes it (u_from, u_to)
+        lookOfSliders() {
+            return [Math.pow(32, 1 - parseFloat(this.sharpness.value)), parseFloat(this.fill.value),
+                SIZES[parseInt(this.slider.value, 10)] || 1, this.drawn()];
+        }
+
+        // a slider moved: every step sends a wave of its own from the camera
+        // through the scene, the newest inside the older ones; the numbers
+        // beside the sliders follow at once. Nothing jumps: a splat changes
+        // only when a wave reaches it.
+        change(animate = true) {
+            this.sharpness.setAttribute('aria-valuetext', this.sharpness.value < 0.5 ? 'scharf' : 'weich');
+            const to = this.lookOfSliders();
+            this.describe();
+            if (!this.splats) return;
+            if (!animate || !this.lookBase || !this.waveOn.checked) {
+                this.lookBase = to;
+                this.waves = [];
+            } else {
+                const now = performance.now();
+                // 16 waves at once (the shader's WAVES): only after five
+                // steps a second for three seconds does the newest wave take
+                // the next look instead of a new one starting
+                if (this.waves.length < 16) this.waves.push(this.newWave(now, to));
+                else this.waves[this.waves.length - 1].look = to;
+                this.runWaves();
+            }
+            this.lastSort = null;
+            this.redraw();
+        }
+
+        // the look shown once all waves have passed
+        get lookNow() {
+            return this.waves && this.waves.length ? this.waves[this.waves.length - 1].look : this.lookBase;
+        }
+
+        // A sphere from where the camera is, over about three seconds, from
+        // the nearest splats to the farthest (a few stray ones left out): it
+        // spends its time in the scene, not in the empty space before an
+        // object.
+        newWave(start, look) {
+            const center = this.camera().eye;
+            const s = this.splats, n = s.count;
+            const distances = [];
+            const step = Math.max(1, Math.floor(n / 20000));
+            for (let i = 0; i < n; i += step) distances.push(Math.hypot(s.position[i * 3] - center[0], s.position[i * 3 + 1] - center[1], s.position[i * 3 + 2] - center[2]));
+            distances.sort((a, b) => a - b);
+            const near = distances[Math.floor(distances.length * 0.01)] || 0;
+            const far = distances[Math.floor(distances.length * 0.995)] || 1;
+            const last = distances[distances.length - 1] || far;
+            const band = 0.08 * (far - near);
+            return { start, center, near, far, last, band, radius: near - band, look };
+        }
+
+        runWaves() {
+            if (this.wavesRunning) return;
+            this.wavesRunning = true;
+            const tick = (now) => {
+                if (!this.waves.length) { this.wavesRunning = false; return; }
+                for (const w of this.waves) {
+                    const t = (now - w.start) / 3000;
+                    // a little slower towards the end, so that one sees it
+                    // leave; then, in a moment, on over the last stray splats,
+                    // so that none of them changes when the wave is done
+                    if (t < 1) w.radius = w.near - w.band + (w.far - w.near + 2 * w.band) * Math.pow(Math.max(t, 0), 1.25);
+                    else w.radius = w.far + w.band + (w.last - w.far + w.band) * Math.min(1, (t - 1) / 0.1);
+                }
+                // waves that have passed everything become the base
+                while (this.waves.length && now - this.waves[0].start >= 3300) {
+                    this.lookBase = this.waves.shift().look;
+                    this.lastSort = null;
+                }
+                this.redraw();
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+
+        // the look without a wave (hooks of the picture recipes, a new scene)
+        setLook(values) {
+            if (values.softness !== undefined) this.sharpness.value = String(values.softness);
+            if (values.fill !== undefined) this.fill.value = String(values.fill);
+            if (values.count !== undefined) { this.counter.step = 'any'; this.counter.value = String(values.count); }
+            if (values.size !== undefined) this.slider.value = String(values.size);
+            this.change(false);
         }
 
         showValues() {
-            this.sizeValue.textContent = `${Math.round(parseFloat(this.slider.value) * 100)} %`;
+            this.sizeValue.textContent = `${Math.round((SIZES[parseInt(this.slider.value, 10)] || 1) * 100)} %`;
+            this.fillValue.textContent = `${Math.round(parseFloat(this.fill.value) * 100)} %`;
             // the share of all splats; the slider runs on a logarithmic scale
             // (100 splats to all), so its thumb at three quarters can mean a
             // tenth. The numbers themselves are in the line below (describe).
@@ -934,7 +1050,7 @@ void main() {
         upload() {
             const gl = this.gl, s = this.splats;
             if (!gl || !s) return;
-            const cov = covariances(s, this.size);
+            const cov = covariances(s, 1);   // the size comes in the shader
             const rows = Math.ceil(s.count / 1024);
             const data = new Float32Array(1024 * 4 * 4 * rows);
             for (let i = 0; i < s.count; i++) {
@@ -971,7 +1087,10 @@ void main() {
         }
 
         sort(cam) {
-            const s = this.splats, n = this.drawn();
+            const s = this.splats;
+            // as many as any look still on the screen asks for
+            const wanted = [this.drawn(), this.lookBase ? this.lookBase[3] : 0, ...(this.waves || []).map((w) => w.look[3])];
+            const n = Math.min(s.count, Math.max(...wanted));
             const f = cam.back;
             let min = Infinity, max = -Infinity;
             for (let i = 0; i < n; i++) {
@@ -1017,40 +1136,12 @@ void main() {
             else if (this.frameTime < 14 && v < 1) v = Math.min(1, v + 0.02);
             else return;
             this.counter.value = String(v);
+            // the number of splats changes everywhere at once, without a wave
+            const count = this.drawn();
+            if (this.lookBase) this.lookBase[3] = count;
+            for (const w of this.waves || []) w.look[3] = count;
             this.lastSort = null;
             this.describe();
-        }
-
-        // »Umrisse«: a sphere grows from where the camera is, over about
-        // three seconds, until it holds the whole scene; the splats it has
-        // passed are drawn as outlines (on) or as they are again (off)
-        startWave(on) {
-            if (!this.splats) return;
-            const center = this.camera().eye;
-            // from the nearest splats to the farthest (a few stray ones left
-            // out), so that the wave spends its time in the scene, not in
-            // the empty space between the camera and an object
-            const s = this.splats, n = s.count;
-            const distances = [];
-            const step = Math.max(1, Math.floor(n / 20000));
-            for (let i = 0; i < n; i += step) distances.push(Math.hypot(s.position[i * 3] - center[0], s.position[i * 3 + 1] - center[1], s.position[i * 3 + 2] - center[2]));
-            distances.sort((a, b) => a - b);
-            const near = distances[Math.floor(distances.length * 0.01)] || 0;
-            const far = distances[Math.floor(distances.length * 0.995)] || 1;
-            const band = 0.08 * (far - near);
-            const start = performance.now();
-            const wave = this.wave = { center, radius: near - band, band, inside: on ? 1 : 0 };
-            const tick = (now) => {
-                if (this.wave !== wave) return;
-                const t = Math.min(1, (now - start) / 3000);
-                // a little slower towards the end, so that one sees it leave
-                wave.radius = near - band + (far - near + 2 * band) * Math.pow(t, 1.25);
-                this.redraw();
-                if (t < 1) requestAnimationFrame(tick);
-                else if (!on) this.wave = null;
-                else wave.radius = 1e9;
-            };
-            requestAnimationFrame(tick);
         }
 
         // about two seconds of pictures in a row, each timed by draw(), so
@@ -1092,12 +1183,14 @@ void main() {
             gl.uniform2f(this.u.u_viewport, w, h);
             // »Weichheit« from 1 (the Gaussian, k = 1) down to 0 (k = 32, an
             // ellipse with a sharp border)
-            gl.uniform1f(this.u.u_sharpness, this.sharpness ? this.exponent() : 1);
-            const wave = this.wave || { center: [0, 0, 0], radius: 1e9, inside: 0, band: 1 };
-            gl.uniform3fv(this.u.u_waveCenter, wave.center);
-            gl.uniform1f(this.u.u_radius, wave.radius);
-            gl.uniform1f(this.u.u_inside, wave.inside);
-            gl.uniform1f(this.u.u_band, wave.band || 1);
+            const waves = this.waves || [];
+            gl.uniform4fv(this.u.u_base, this.lookBase || this.lookOfSliders());
+            gl.uniform1i(this.u.u_waveCount, waves.length);
+            if (waves.length) {
+                gl.uniform4fv(this.u.u_waves, waves.flatMap((w) => [...w.center, w.radius]));
+                gl.uniform1fv(this.u.u_bands, waves.map((w) => w.band));
+                gl.uniform4fv(this.u.u_looks, waves.flatMap((w) => w.look));
+            }
             gl.enable(gl.BLEND);
             // back to front: each splat covers what is already there as far
             // as it is opaque (the colour comes premultiplied by alpha)

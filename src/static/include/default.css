@@ -14573,7 +14573,7 @@ html[data-bs-theme="dark"] .splat-viewer {
     flex-basis: 100%;
     color: var(--bs-secondary-color);
 }
-/* where the viewer is wide enough, the three sliders side by side (the
+/* where the viewer is wide enough, the four sliders side by side (the
    viewer's own width, which fit() in splat_viewer.js may make narrower
    than the column) */
 .splat-viewer {
@@ -14581,7 +14581,7 @@ html[data-bs-theme="dark"] .splat-viewer {
 }
 @container (min-width: 58em) {
     .splat-viewer-sliders {
-        grid-template-columns: repeat(3, max-content minmax(5em, 1fr) max-content);
+        grid-template-columns: repeat(4, max-content minmax(4em, 1fr) max-content);
         column-gap: 0.6em;
         margin-top: 0.9em;
     }
@@ -14590,10 +14590,40 @@ html[data-bs-theme="dark"] .splat-viewer {
 .splat-viewer-size input {
     width: 100%;
 }
+/* a slider with its stops: a mark under the track for each, from the middle
+   of the thumb at the left end to its middle at the right end (Bootstrap's
+   thumb is 1rem wide) */
+.splat-viewer-track {
+    position: relative;
+    display: block;
+    padding-bottom: 0.45rem;
+}
+.splat-viewer-track input {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+.splat-viewer-ticks {
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+.splat-viewer-ticks i {
+    width: 2px;
+    height: 0.4rem;
+    margin: 0 -1px;
+    border-radius: 1px;
+    background: var(--bs-secondary-color);
+    opacity: 0.6;
+}
 /* the number beside a slider: as wide as its widest value, so that the
    slider does not jump */
 .splat-viewer-size output {
-    min-width: 5.5em;
+    min-width: 3.4em;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
     color: var(--bs-secondary-color);
