@@ -255,6 +255,9 @@ void main() {
             root.innerHTML = '';
             const bar = document.createElement('div');
             bar.className = 'splat-viewer-bar';
+            // the switches in a row of their own under the scene and the file
+            const switches = document.createElement('div');
+            switches.className = 'splat-viewer-switches';
             if (this.scenes.length > 1) {
                 this.select = document.createElement('select');
                 this.select.className = 'form-select form-select-sm';
@@ -342,7 +345,7 @@ void main() {
             gameText.textContent = 'Y-Achse umkehren';
             game.append(this.invertY, gameText);
             this.gameSwitch = game;
-            bar.append(game);
+            switches.append(game);
             const auto = document.createElement('label');
             auto.className = 'form-check form-switch splat-viewer-game';
             auto.title = 'Zeichnet beim Bewegen so viele Splats, wie der Rechner flüssig schafft';
@@ -353,8 +356,11 @@ void main() {
             const autoText = document.createElement('span');
             autoText.className = 'form-check-label';
             autoText.textContent = 'Automatisch flüssig';
+            // switched on, it measures at once with a few pictures, not only
+            // once the camera moves
+            this.autoCount.addEventListener('change', () => { if (this.autoCount.checked) this.calibrate(); });
             auto.append(this.autoCount, autoText);
-            bar.append(auto);
+            switches.append(auto);
             const swing = document.createElement('label');
             swing.className = 'form-check form-switch splat-viewer-game';
             this.swing = document.createElement('input');
@@ -367,7 +373,7 @@ void main() {
             swingText.textContent = 'Kamera pendelt';
             swing.title = 'Die Kamera bewegt sich langsam ein Stück zur Seite und zurück';
             swing.append(this.swing, swingText);
-            bar.append(swing);
+            switches.append(swing);
             this.canvas = document.createElement('canvas');
             this.canvas.className = 'splat-viewer-canvas';
             this.canvas.tabIndex = 0;
@@ -404,7 +410,7 @@ void main() {
             this.spotBar = document.createElement('div');
             this.spotBar.className = 'splat-viewer-spots';
             this.spotBar.hidden = true;
-            root.append(stage, bar, this.spotBar, sliders, this.info, help);
+            root.append(stage, bar, switches, this.spotBar, sliders, this.info, help);
 
             const gl = this.canvas.getContext('webgl2', { antialias: false, premultipliedAlpha: true, alpha: true });
             if (!gl) { this.message('Dieser Browser kann kein WebGL2. Mit einem aktuellen Firefox, Chrome oder Safari geht es.'); return; }
@@ -681,7 +687,17 @@ void main() {
 
         showValues() {
             this.sizeValue.textContent = `${Math.round(parseFloat(this.slider.value) * 100)} %`;
-            this.countValue.textContent = this.splats ? this.drawn().toLocaleString('de-DE') : '';
+            // the share of all splats; the slider runs on a logarithmic scale
+            // (100 splats to all), so its thumb at three quarters can mean a
+            // tenth. The numbers themselves are in the line below (describe).
+            if (this.splats) {
+                const k = this.drawn(), n = this.splats.count;
+                const share = 100 * k / n;
+                const percent = share >= 10 ? Math.round(share) : share >= 1 ? share.toLocaleString('de-DE', { maximumFractionDigits: 1 }) : share.toLocaleString('de-DE', { maximumSignificantDigits: 1 });
+                this.countValue.textContent = `${percent} %`;
+            } else {
+                this.countValue.textContent = '';
+            }
             this.sharpValue.textContent = `${Math.round(parseFloat(this.sharpness.value) * 100)} %`;
         }
 
@@ -689,7 +705,8 @@ void main() {
             if (!this.splats) return;
             this.showValues();
             const n = this.splats.count, k = this.drawn();
-            const count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
+            let count = k < n ? `${k.toLocaleString('de-DE')} von ${n.toLocaleString('de-DE')} Splats` : `${n.toLocaleString('de-DE')} Splats`;
+            if (k < n && this.autoCount && this.autoCount.checked) count += ' (»Automatisch flüssig« hat weniger gewählt, damit es flüssig bleibt)';
             this.info.textContent = count + (this.credit ? ', ' + this.credit : '');
         }
 
@@ -798,6 +815,19 @@ void main() {
             this.counter.value = String(v);
             this.lastSort = null;
             this.describe();
+        }
+
+        // about two seconds of pictures in a row, each timed by draw(), so
+        // that the number of splats settles even while nothing moves
+        calibrate() {
+            const until = performance.now() + 2000;
+            const step = () => {
+                if (!this.autoCount.checked || !this.splats) return;
+                this.lastSort = null;   // as when moving: sorting is part of the time
+                this.draw();
+                if (performance.now() < until) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
         }
 
         drawFrame() {

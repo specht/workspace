@@ -14508,11 +14508,27 @@ html[data-bs-theme="dark"] .splat-viewer {
     gap: 0.5em;
     margin-top: 0.6em;
 }
-/* the switch beside the buttons: Bootstrap's form-switch, without its own
-   block margin, the label in the size of the buttons */
-.splat-viewer-game {
-    margin: 0 0 0 0.3em;
+/* the switches in their own row: Bootstrap's form-switch without its
+   block margin, the label in the size of the other controls */
+.splat-viewer-switches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 1.6em;
+    margin-top: 0.6em;
     font-size: 0.9rem;
+}
+.splat-viewer-game {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    min-height: 0;
+    margin: 0;
+    padding-left: 0;
+}
+.splat-viewer-game .form-check-input {
+    float: none;
+    margin: 0;
 }
 .splat-viewer-bar select {
     width: auto;
@@ -14548,15 +14564,26 @@ html[data-bs-theme="dark"] .splat-viewer {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.4em;
-    margin-top: 0.6em;
+    margin-top: 0.8em;
     font-size: 0.9rem;
 }
-.splat-viewer-spots > span { margin-right: 0.2em; }
-/* on a wide screen the three sliders side by side */
-@media (min-width: 992px) {
+/* »Standorte:« on a line of its own above the buttons, so that wrapped
+   buttons start at the same edge as the first */
+.splat-viewer-spots > span {
+    flex-basis: 100%;
+    color: var(--bs-secondary-color);
+}
+/* where the viewer is wide enough, the three sliders side by side (the
+   viewer's own width, which fit() in splat_viewer.js may make narrower
+   than the column) */
+.splat-viewer {
+    container-type: inline-size;
+}
+@container (min-width: 58em) {
     .splat-viewer-sliders {
         grid-template-columns: repeat(3, max-content minmax(5em, 1fr) max-content);
         column-gap: 0.6em;
+        margin-top: 0.9em;
     }
     .splat-viewer-size:not(:first-child) > span { margin-left: 1em; }
 }
@@ -14567,6 +14594,7 @@ html[data-bs-theme="dark"] .splat-viewer {
    slider does not jump */
 .splat-viewer-size output {
     min-width: 5.5em;
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
     color: var(--bs-secondary-color);
 }
