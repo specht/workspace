@@ -1,6 +1,6 @@
 # The tools that make the drawings of the pages, the same on every machine:
 # Python with numpy and Pillow for the scripts in bilder/ (diagramme.py,
-# kugeln.py), LaTeX and dvisvgm for their labels (src/scripts/diagram_labels.py),
+# kugeln.py; gcc for render_large.py), LaTeX and dvisvgm for their labels (src/scripts/diagram_labels.py),
 # fonttools with brotli to embed the fonts as WOFF2 (src/scripts/svg_fonts.py),
 # rsvg-convert and cwebp for the rare WebP (render-svg.rb --webp), and the
 # site's fonts (from the repository), so that a WebP shows the same letters
@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3 python3-numpy python3-pil python3-fonttools python3-brotli \
         ruby \
         texlive-latex-base texlive-latex-recommended preview-latex-style dvisvgm \
+        gcc libc6-dev \
         librsvg2-bin webp \
         fontconfig fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*

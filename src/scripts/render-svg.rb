@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Prepares a drawing (an SVG) for the pages: embeds the fonts its texts
-# use (svg_fonts.py), so that it looks the same in every browser, and writes
+# Prepares a drawing (an SVG) for the pages: ends the line of every arrow
+# inside its head, so that it does not show beside the tip (svg_arrows.py),
+# embeds the fonts its texts use (svg_fonts.py), so that it looks the same in
+# every browser, and writes
 # NAME-dark.svg beside it, the same drawing in the dark palette below. A page
 # shows the SVG itself, <img src='NAME.svg'>: sharp at every size and in the
 # enlarged view; in dark mode the site swaps in NAME-dark.svg
@@ -65,9 +67,12 @@ width = Integer(ARGV[1] || 1600)
 if File.read(svg_path).scan(/<!--(.*?)-->/m).any? { |(text)| text.include?('--') }
     abort "#{svg_path}: a comment contains »--«, which browsers refuse in an SVG"
 end
-fonts = File.join(__dir__, 'svg_fonts.py')
-output, status = Open3.capture2e('python3', fonts, svg_path)
-abort "svg_fonts.py failed: #{output}" unless status.success?
+# the lines of the arrows end inside their heads, not at the tips
+# (svg_arrows.py), then the fonts go in (svg_fonts.py)
+%w[svg_arrows.py svg_fonts.py].each do |step|
+    output, status = Open3.capture2e('python3', File.join(__dir__, step), svg_path)
+    abort "#{step} failed: #{output}" unless status.success?
+end
 light = File.read(svg_path)
 
 unknown = light.scan(/#[0-9a-fA-F]{6}\b/).map(&:downcase).uniq - DARK.keys

@@ -158,14 +158,17 @@ def facets(smooth):
     brightness. Smooth: a normal at each corner, perpendicular to the
     imagined smooth surface (dashed), mixed normals in between (grey), and
     the brightness running from corner to corner."""
-    w, h = 340, 175
+    # the two stand side by side in a gallery, which stretches them to about
+    # 530 px: drawn at that size (Z), lines and the label at their own size
+    Z = 1.55
+    w, h = round(340 * Z), round(175 * Z)
     name = 'normalen-glatt' if smooth else 'normalen-flach'
     comment = ('Smooth Shading: vier gerade Stücke einer runden Fläche, an jeder Ecke eine Normale senkrecht auf der gedachten '
                'runden Fläche, dazwischen gemischte Normalen, die Helligkeit läuft fließend.' if smooth else
                'Flat Shading: vier gerade Stücke einer runden Fläche, in der Mitte jedes Stücks seine Normale, jedes Stück '
                'in einer einzigen Helligkeit.')
     s = head(w, h, comment, name)
-    cx, cy, r = 172, 228, 150
+    cx, cy, r = 172 * Z, 228 * Z, 150 * Z
     angles = [m.radians(a) for a in (-54, -27, 0, 27, 54)]
     P = [(cx + r * m.sin(a), cy - r * m.cos(a)) for a in angles]
     light = (-0.55, -0.835)                       # towards the lamp, y down
@@ -180,7 +183,7 @@ def facets(smooth):
         dx, dy = x2 - x1, y2 - y1
         d = m.hypot(dx, dy)
         seg_normals.append((dy / d, -dx / d))
-    band = 16
+    band = 16 * Z
     # the brightness as a band under the surface, amber: the more light, the more amber
     for k, ((x1, y1), (x2, y2)) in enumerate(zip(P, P[1:])):
         if smooth:
@@ -205,7 +208,7 @@ def facets(smooth):
         arc = [(cx + r * m.sin(m.radians(a)), cy - r * m.cos(m.radians(a))) for a in range(-58, 59, 2)]
         s += '  <polyline points="' + ' '.join(f'{x:.1f},{y:.1f}' for x, y in arc) + f'" fill="none" stroke="{GREY}" stroke-width="1.2" stroke-dasharray="4 4"/>\n'
     s += '  <polyline points="' + ' '.join(f'{x:.1f},{y:.1f}' for x, y in P) + f'" fill="none" stroke="{INK}" stroke-width="2.2" stroke-linejoin="round"/>\n'
-    length = 46
+    length = 46 * Z
     if smooth:
         # mixed normals between the corners: what the rasterizer hands each pixel
         for k in range(4):
@@ -227,8 +230,8 @@ def facets(smooth):
         for x, y in P:
             s += f'  <circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="{INK}"/>\n'
     # the lamp, upper left
-    s += f'  <circle cx="34" cy="34" r="13" fill="{AMBER}"/>\n'
-    s += label('l', 58, 40, 17, AMBER, 'start')
+    s += f'  <circle cx="{34 * Z:.1f}" cy="{34 * Z:.1f}" r="{13 * Z:.1f}" fill="{AMBER}"/>\n'
+    s += label('l', 34 * Z + 13 * Z + 10, 34 * Z + 6, 17, AMBER, 'start')
     save(name, s)
 
 

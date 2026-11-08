@@ -4,6 +4,12 @@ words that follow it in the tales, each arrow as thick as it was counted
 (top(counts, "Es", 5) on maerchen.txt). Writes ../teaser.svg; render it with
 src/scripts/render-svg.rb src/content/sprachmodell/teaser.svg 1280."""
 
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
+
 import math
 from pathlib import Path
 

@@ -18,6 +18,12 @@ repository, where it is anyone in the class.
     ruby src/scripts/render-svg.rb src/content/class-quiz/nach-merge.svg 1040
 """
 
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
+
 from pathlib import Path
 
 SANS = "'IBM Plex Sans', 'DejaVu Sans', sans-serif"

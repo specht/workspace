@@ -12,6 +12,12 @@ x to the right, y up and z towards the viewer. No picture shows a task's
 numbers (tasks.yaml).
 """
 
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
+
 import math
 import os
 import sys
@@ -631,15 +637,18 @@ def glas():
 def strahlen_durch_kugel(name, hollow, comment):
     """Two level rays through a solid or a hollow glass ball, refracted as
     glass() does it (refraction only)."""
-    w, h = 320, 190
+    # the two stand side by side in a gallery, about 530 px wide: drawn at
+    # that size (Z), the lines at their own width
+    Z = 1.65
+    w, h = round(320 * Z), round(190 * Z)
     s = Svg(name, w, h, comment)
-    c, R = (120, 95), 64
+    c, R = (120 * Z, 95 * Z), 64 * Z
     inner = 0.9 * R
     s.circle(c, R, PALE, INK, 2.5)
     if hollow:
         s.circle(c, inner, WHITE, INK, 1.8)
     for y_off, col in [(-0.5, BLUE), (0.5, RED)]:
-        p = (10, c[1] + y_off * R)
+        p = (10 * Z, c[1] + y_off * R)
         d = (1.0, 0.0)
         pts = [p]
         # spheres in the order the ray meets them: (radius, eta when entering)
@@ -667,7 +676,7 @@ def strahlen_durch_kugel(name, hollow, comment):
             p, d = add(q, mul(d, 1e-3)), unit(nd)
         end = add(p, mul(d, 400))
         # clip the last piece to the picture
-        k = min((w - 12 - p[0]) / d[0] if d[0] > 0 else 1e9, 1e9)
+        k = min((w - 12 * Z - p[0]) / d[0] if d[0] > 0 else 1e9, 1e9)
         end = add(p, mul(d, k))
         s.polyline(pts + [sub(end, mul(d, 10))], col, 2.4)
         s.head(end, d, col, 13)

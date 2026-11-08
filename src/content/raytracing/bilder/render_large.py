@@ -12,6 +12,12 @@ result goes through exposure, tone mapping and gamma exactly as to_byte.
 Defaults: 512 passes in each of 6 processes, about a quarter of an hour on
 six cores (a pass at 1920 × 1080 takes about 1.5 seconds).
 """
+
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
 import os
 import re
 import subprocess

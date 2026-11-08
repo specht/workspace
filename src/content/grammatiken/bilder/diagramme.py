@@ -12,6 +12,12 @@ card picture by bilder/teaser.cjs with the same module; tapes and stacks come
 from src/scripts/automaton_pictures.py.
 """
 
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
+
 import os
 import sys
 

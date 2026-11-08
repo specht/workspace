@@ -8,6 +8,12 @@ so that it looks unlike the card of »Was eine Webseite über dich erfährt«.
 Writes ../teaser.svg; render it with
 src/scripts/render-svg.rb src/content/suchmaschine/teaser.svg 1280."""
 
+# runs in docker/drawings, the same on every machine (src/scripts/drawings)
+import os as _os, sys as _sys  # noqa: E401
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', 'scripts'))
+import drawings_container  # noqa: E402
+drawings_container.ensure()
+
 from pathlib import Path
 
 W, H = 1280, 720
