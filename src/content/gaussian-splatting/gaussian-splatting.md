@@ -1508,10 +1508,10 @@ Für eigene Fotos:
 3. **Trainieren.** Brush öffnet den Ordner mit den Fotos und dem Ergebnis von
    COLMAP und trainiert; in einem Fenster siehst du dabei zu, wie die Szene
    schärfer wird.
-4. **Ansehen.** Brush speichert die Szene als `.ply`. Öffne sie oben im
-   Viewer mit »Eigene Datei öffnen«: Der Viewer liest die Datei in deinem
-   Browser, sie wird nirgends hochgeladen. Neben »Eigene Datei öffnen«
-   erscheint dann der Knopf »Aufrichten«: Liegt die Szene auf der Seite oder
+4. **Ansehen.** Brush speichert die Szene als `.ply`. Öffne sie im Viewer
+   mit dem Ordner <i class='bi bi-folder2-open'></i> neben der Liste der
+   Szenen: Der Viewer liest die Datei in deinem Browser, sie wird nirgends
+   hochgeladen. Daneben erscheint dann der Knopf »Aufrichten«: Liegt die Szene auf der Seite oder
    steht sie auf dem Kopf, dreht er sie jedes Mal um eine Vierteldrehung.
 
 ### Kamera und Vorgehen

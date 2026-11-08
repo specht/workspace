@@ -404,7 +404,11 @@ void main() {
             const open = document.createElement('button');
             open.type = 'button';
             open.className = 'btn btn-sm btn-outline-secondary';
-            open.innerHTML = "<i class='bi bi-folder2-open'></i><span>Eigene Datei öffnen</span>";
+            // only the icon, beside the list of scenes: a line less, more
+            // room for the picture; the name as its title and label
+            open.innerHTML = "<i class='bi bi-folder2-open'></i>";
+            open.title = 'Eigene Datei öffnen (.ply oder .splat)';
+            open.setAttribute('aria-label', 'Eigene Datei öffnen');
             this.file = document.createElement('input');
             this.file.type = 'file'; this.file.accept = '.ply,.splat'; this.file.hidden = true;
             open.addEventListener('click', () => this.file.click());
