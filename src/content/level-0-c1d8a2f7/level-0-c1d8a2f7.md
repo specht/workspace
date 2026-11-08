@@ -144,7 +144,7 @@ hook: wheel 450
 hook: info off
 -->
 
-<img class='full' src='automap.webp' alt='Die Automap über dem ganzen Level: Zimmer, Gang, Blau und Rot als hellblaues Drahtgitter von schräg oben, jeder Raum mit seinem Namen, gelbe Punkte für die Leuchten, ein roter Pfeil mit Ring und Strahl im Zimmer; Linien hinter Wänden sind blass.'>
+<img class='full fit-width' src='automap.webp' alt='Die Automap über dem ganzen Level: Zimmer, Gang, Blau und Rot als hellblaues Drahtgitter von schräg oben, jeder Raum mit seinem Namen, gelbe Punkte für die Leuchten, ein roter Pfeil mit Ring und Strahl im Zimmer; Linien hinter Wänden sind blass.'>
 
 Und mit <kbd>V</kbd>, die Räume selbst:
 
@@ -159,7 +159,7 @@ hook: wheel 450
 hook: info off
 -->
 
-<img class='full' src='automap-raeume.webp' alt='Dieselbe Automap mit den Räumen von oben, ohne Decken: gelbe Tapete und Teppich im Zimmer und im Gang, der blaue Raum blau, der rote rot, darüber das hellblaue Drahtgitter und die Namen.'>
+<img class='full fit-width' src='automap-raeume.webp' alt='Dieselbe Automap mit den Räumen von oben, ohne Decken: gelbe Tapete und Teppich im Zimmer und im Gang, der blaue Raum blau, der rote rot, darüber das hellblaue Drahtgitter und die Namen.'>
 
 ## Kartografie
 

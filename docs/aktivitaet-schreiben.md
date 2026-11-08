@@ -88,7 +88,8 @@ breit, damit Text in einem Screenshot (Editor, Terminal) auf dem Handy lesbar
 bleibt; man schiebt das Bild dann zur Seite. Ein Bild ohne kleine Schrift,
 etwa eine 3D-Szene oder ein Foto, bekommt dazu `fit-width`
 (`<img class='full fit-width' …>`): Es ist auf dem Handy so breit wie der
-Bildschirm.
+Bildschirm. Eine 3D-Szene bleibt so, auch mit großen Beschriftungen wie in
+der Automap der Backrooms (`scene_pictures_test.rb`).
 
 Screenshots aus dem Workspace macht man nicht von Hand: Ein Rezept
 `<!-- tutorial-screenshot … -->` direkt vor dem `<img>` beschreibt, was zu tun
