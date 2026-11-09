@@ -104,7 +104,11 @@ Why it was flaky:
   a click (no dragging needed). Each entry: number, title, the line of
   description, sorted by title as in a real phone book, not by number
   (the maintainer); no names, no classes (the maintainer). The phone book shows
-  the phone number too (or that one is being worked on).
+  the phone number too (or that one is being worked on), and a note on how
+  to get into it (the maintainer): »Dein eigenes Spiel im Telefonbuch?
+  Programmier es in der Aktivität »Ein Spiel am Telefon« und veröffentliche
+  es dort; nach der Freigabe steht es hier.« with a link to the activity
+  (public by then: a public page links no development-only one).
 - **Calling from the Telefonbuch** (the maintainer): the phone on the page
   is the line itself: a call plays the menu, as on the real number, and
   the visitor types the three digits from the phone book (or 000); an
