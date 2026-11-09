@@ -72,3 +72,27 @@ examples:
         - files: { telefon/geschichte.py: stufen/6-gang/hoehle.py }
       fail:
         - files: { telefon/geschichte.py: stufen/1-hallo/hallo.py }
+  klang:
+    pass:
+      - files: { telefon/hoehle.rb: stufen/8-klang/hoehle.rb }
+    fail:
+      - files: { telefon/hoehle.rb: stufen/7-stimmen/hoehle.rb }
+        say: Musik noch
+    python:
+      pass:
+        - files: { telefon/hoehle.py: stufen/8-klang/hoehle.py }
+      fail:
+        - files: { telefon/hoehle.py: stufen/7-stimmen/hoehle.py }
+          say: Musik noch
+  auflegen:
+    pass:
+      - files: { telefon/hoehle.rb: stufen/9-auflegen/hoehle.rb }
+    fail:
+      - files: { telefon/hoehle.rb: stufen/8-klang/hoehle.rb }
+        say: nennt die 3
+    python:
+      pass:
+        - files: { telefon/hoehle.py: stufen/9-auflegen/hoehle.py }
+      fail:
+        - files: { telefon/hoehle.py: stufen/8-klang/hoehle.py }
+          say: nennt die 3

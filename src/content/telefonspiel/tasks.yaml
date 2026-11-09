@@ -226,6 +226,82 @@ tasks:
             moods: { Gold: surprised }
             ends: true
 
+  - id: klang
+    title: Stille und Musik
+    prompt: In `telefon/hoehle.rb` hört die Musik im Gang auf, und beim Schatz spielt »No Quarter« von 0:16 bis 0:32.
+    check:
+      type: phone
+      file: telefon/hoehle.rb
+      cases:
+        - keys: '1'
+          says: [teilt sich]
+          music_stops: true
+          ends: false
+          say: Im Gang läuft die Musik noch. Steht am Anfang von `tunnel` `music nil`?
+        - keys: '1,1'
+          says: [Gold]
+          music: 'oR450XGc-j4.* von 0:16 bis 0:32'
+          ends: true
+          say: "Beim Schatz spielt noch nicht »No Quarter« von 0:16 bis 0:32. Steht am Anfang von `treasure` `music '…', start: '0:16', stop: '0:32'`?"
+    python:
+      prompt: In `telefon/hoehle.py` hört die Musik im Gang auf, und beim Schatz spielt »No Quarter« von 0:16 bis 0:32.
+      check:
+        type: phone
+        file: telefon/hoehle.py
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            music_stops: true
+            ends: false
+            say: Im Gang läuft die Musik noch. Steht am Anfang von `tunnel` `music(None)`?
+          - keys: '1,1'
+            says: [Gold]
+            music: 'oR450XGc-j4.* von 0:16 bis 0:32'
+            ends: true
+            say: Beim Schatz spielt noch nicht »No Quarter« von 0:16 bis 0:32. Steht am Anfang von `treasure` `music('…', start='0:16', stop='0:32')`?
+
+  - id: auflegen
+    title: Ein Sprung ins Wasser
+    prompt: In `telefon/hoehle.rb` nennt der Gang eine dritte Wahl. Mit der 3 springt man ins Wasser, das Spiel sagt »… Strömung …« und legt auf, ohne danach noch »Ende.« zu sagen.
+    check:
+      type: phone
+      file: telefon/hoehle.rb
+      cases:
+        - keys: '1'
+          says: ['\b3\b|drei']
+          ends: false
+          say: Der Satz im Gang nennt die 3 noch nicht.
+        - keys: '1,3'
+          says: [Strömung]
+          ends: true
+        - keys: '1,3'
+          not_says: ['^Ende']
+          say: Nach dem Sprung sagt dein Spiel noch »Ende.« Mit `hangup` legt es sofort auf, dann kommt nichts mehr.
+        - keys: '1,2'
+          says: [eiskalt]
+          ends: false
+          say: Die 2 im Gang soll weiter zum eiskalten Wasser und zurück in den Gang führen.
+    python:
+      prompt: In `telefon/hoehle.py` nennt der Gang eine dritte Wahl. Mit der 3 springt man ins Wasser, das Spiel sagt »… Strömung …« und legt auf, ohne danach noch »Ende.« zu sagen.
+      check:
+        type: phone
+        file: telefon/hoehle.py
+        cases:
+          - keys: '1'
+            says: ['\b3\b|drei']
+            ends: false
+            say: Der Satz im Gang nennt die 3 noch nicht.
+          - keys: '1,3'
+            says: [Strömung]
+            ends: true
+          - keys: '1,3'
+            not_says: ['^Ende']
+            say: Nach dem Sprung sagt dein Spiel noch »Ende.« Mit `hangup()` legt es sofort auf, dann kommt nichts mehr; in der ersten Zeile holt `from telefon import` auch `hangup`.
+          - keys: '1,2'
+            says: [eiskalt]
+            ends: false
+            say: Die 2 im Gang soll weiter zum eiskalten Wasser und zurück in den Gang führen.
+
   - id: geschichte
     title: Deine Geschichte
     prompt: '`telefon/geschichte.rb` spielt Musik, sagt etwas und wartet dann auf eine Taste.'

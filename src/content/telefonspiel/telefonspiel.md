@@ -24,8 +24,10 @@ reference: [ruby-python, terminal]
 Du programmierst ein Spiel, das man anrufen kann: Es spricht mit einer
 echten Stimme, spielt Musik und hört auf die Tasten des Telefons. Erst
 begrüßt dich dein Programm, dann stellt es eine Frage, und am Ende führt es
-durch eine Höhle voller Gänge. Zum Schluss schreibst du deine eigene
-Geschichte, und jemand aus deiner Klasse spielt sie durch.
+durch eine Höhle, in der es flüstert, still wird und Musik spielt, wenn man
+den Schatz findet. Zum Schluss schreibst du deine eigene Geschichte: Jemand
+aus deiner Klasse spielt sie durch, und im Telefonbuch kann sie jeder
+anrufen.
 </p>
 
 ## Der erste Anruf
@@ -42,10 +44,18 @@ Im Workspace probierst du dein Spiel mit dem Befehl `telefon` aus. Er startet
 dein Programm und zeigt dir im Browser ein Telefon mit Tastenfeld. Daneben
 steht, was das Spiel sagt, Wort für Wort, während du es hörst.
 
+Fertige Spiele kommen ins [Telefonbuch](/telefonbuch). Dort ruft man sie im
+Browser an, auch ohne Workspace: die Nummer eintippen und auf den grünen
+Hörer drücken. Steht dort schon ein Spiel, ruf es an, bevor du anfängst, und
+hör genau hin: Was davon könntest du selbst programmieren?
+
 <!-- feature: !phone_number -->
-Anrufen kann man dein Spiel bisher nur hier im Workspace. Wir arbeiten daran,
-eine echte Telefonnummer zu bekommen: Dann kann man fertige Spiele von jedem
-Telefon aus anrufen.
+Eine echte Telefonnummer gibt es noch nicht. Wir arbeiten daran, dass man die
+Spiele auch mit einem Telefon anrufen kann.
+<!-- /feature -->
+<!-- feature: phone_number -->
+Im Telefonbuch steht auch eine echte Telefonnummer: Unter ihr ruft man die
+Spiele von jedem Telefon aus an.
 <!-- /feature -->
 
 Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>:
@@ -163,9 +173,11 @@ beiden Befehle, die dein Programm aus der Bibliothek braucht.
 <!-- /language -->
 
 Von einem Video nimmt das Telefon nur den Ton, und es spielt ihn in einer
-Schleife, bis dein Programm zu Ende ist. `music` wartet, bis die Musik läuft;
-beim ersten Mal kann das einige Sekunden dauern, weil der Workspace das Video
-erst holt. Danach liegt es bereit. Statt eines Links geht auch eine Datei aus
+Schleife, bis dein Programm zu Ende ist. `music` wartet, bis die Musik läuft.
+Das Video holt `telefon` schon, sobald es gestartet ist, und es bereitet auch
+die Sätze deines Spiels vor; im Terminal steht, wann beides bereit ist. Rufst
+du gleich nach dem Start an, dauert der erste Anruf darum etwas länger. Statt
+eines Links geht auch eine Datei aus
 deinem Ordner, etwa `music 'hoehle.mp3'`; nimm dafür MP3, das spielt jeder
 Browser.
 
@@ -272,8 +284,9 @@ _task(text-oder-zahl)
 Das Spiel sagt »Du hast nichts gedrückt. Schade!«. `keys` gibt einen Text
 zurück, auch wenn er nur aus einer Ziffer besteht, und ein Text ist nie
 gleich einer Zahl: `'1' == 1` ist falsch. Darum vergleicht dein Programm mit
-`'1'` in Anführungszeichen. So kann `keys` auch `*` und `#` zurückgeben, und
-mehrere Tasten auf einmal, wie `'472'`.
+`'1'` in Anführungszeichen. So kann `keys` auch den Stern `'*'` zurückgeben,
+und mehrere Tasten auf einmal, wie `'472'`. Nur die Raute `#` gibt `keys` nie
+zurück: Sie beendet eine Eingabe aus mehreren Tasten.
 <!-- /after -->
 
 ### Eine dritte Wahl
@@ -363,7 +376,9 @@ für eine schwere Frage. Wie lange `keys` wartet, sagst du in Sekunden:
 <!-- /language -->
 
 Und mit `keys(3)` wartet dein Programm auf bis zu drei Tasten, etwa für eine
-Geheimzahl; die Raute <kbd>#</kbd> beendet die Eingabe früher.
+Geheimzahl; die Raute <kbd>#</kbd> beendet die Eingabe früher. Die Wartezeit
+gilt für jede Taste neu: Nach jeder Taste hat man wieder die ganze Zeit für
+die nächste.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib der Frage zwei Sekunden und ruf an. Achte
@@ -621,6 +636,11 @@ Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht:
 (flüsternd). Auf der Seite des Telefons steht die Stimmung klein über dem
 Satz.
 
+Die Sätze mit Stimmung spricht eine zweite Stimme von Thorsten, die etwas
+weniger klar klingt als die gewohnte. Setz Stimmungen darum sparsam ein, dort,
+wo sie etwas erzählen: Ein einziges Flüstern im dunklen Gang wirkt stärker als
+zehn.
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ruf an und drück die 2. Achte auf Tempo und
 Betonung des Satzes. Setz dann <code>drunk</code> statt <code>sleepy</code>
@@ -672,6 +692,235 @@ Flüstern, `surprised` für die Überraschung.
 
 _task(stimmen)
 
+### Stille und Musik
+
+<!-- language: ruby -->
+Musik erzählt mit, und am deutlichsten, wenn sie sich ändert. Hört sie
+plötzlich auf, horcht man auf: Im dunklen Gang soll nur noch das Flüstern zu
+hören sein. `music nil` schaltet die Musik aus.
+<!-- /language -->
+<!-- language: python -->
+Musik erzählt mit, und am deutlichsten, wenn sie sich ändert. Hört sie
+plötzlich auf, horcht man auf: Im dunklen Gang soll nur noch das Flüstern zu
+hören sein. `music(None)` schaltet die Musik aus.
+<!-- /language -->
+
+Ein neues `music` mitten im Spiel ersetzt die Musik, die gerade läuft. Wer den
+Schatz findet, hat Musik verdient, die nach Gewinnen klingt: »No Quarter« aus
+dem Spiel Thimbleweed Park, Synthie-Pop im Stil der Achtziger. Für den Schatz
+reicht die Stelle von 0:16 bis 0:32, und die wiederholt sich, solange sie
+läuft. Sechzehn Sekunden sind bei diesem Stück genau acht Takte, darum springt
+die Wiederholung nicht mitten aus dem Takt.
+
+<div class='hint own' data-check='klang'>
+<strong>Jetzt bist du dran:</strong> Mach den Gang still: Am Anfang von
+<code>tunnel</code> hört die Musik auf. Am Anfang von <code>treasure</code>
+spielt »No Quarter« (<code>https://www.youtube.com/watch?v=oR450XGc-j4</code>) von 0:16 bis 0:32.
+Damit man die Musik nach dem Satz noch hört, wartet <code>treasure</code>
+danach acht Sekunden.
+</div>
+
+<!-- hint -->
+Für jede der beiden Stellen reicht eine Zeile. Wie `music` nur einen
+Ausschnitt spielt, steht oben unter »Musik im Hintergrund«: mit `start` und
+`stop`.
+<!-- /hint -->
+<!-- hint -->
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+def treasure
+  music '…', start: '…', stop: '…'
+  say '…', mood: 'surprised'
+  sleep …
+end
+
+def tunnel
+  music …
+  say '…', mood: 'whisper'
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+def treasure():
+    music('…', start='…', stop='…')
+    say('…', mood='surprised')
+    sleep(…)
+
+
+def tunnel():
+    music(…)
+    say('…', mood='whisper')
+```
+<!-- /language -->
+<!-- /hint -->
+
+<!-- solution -->
+<!-- language: ruby -->
+```ruby
+~ def treasure
+  music 'https://www.youtube.com/watch?v=oR450XGc-j4', start: '0:16', stop: '0:32'
+~   say 'Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', mood: 'surprised'
+  sleep 8
+~ end
+~
+~ def tunnel
+  music nil
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+~ def treasure():
+    music('https://www.youtube.com/watch?v=oR450XGc-j4', start='0:16', stop='0:32')
+~     say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', mood='surprised')
+    sleep(8)
+~
+~
+~ def tunnel():
+    music(None)
+```
+<!-- /language -->
+<!-- /solution -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/8-klang/hoehle.rb as hoehle.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/8-klang/hoehle.py as hoehle.py -->
+<!-- /language -->
+
+_task(klang)
+
+### Ungeduld
+
+Wer zum dritten Mal anruft, kennt den Satz vor der Höhle auswendig. Eine
+Taste, die man währenddessen drückt, geht zwar nicht verloren, aber den Satz
+muss man trotzdem bis zum Ende anhören. Mit `interrupt` bricht er ab, sobald
+jemand eine Taste drückt, und das nächste `keys` bekommt genau diese Taste:
+
+<!-- language: ruby -->
+```ruby
+~ def cave
+  say 'Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.', interrupt: true
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+~ def cave():
+    say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.', interrupt=True)
+```
+<!-- /language -->
+
+Das passt zu Sätzen, die man nach dem ersten Mal kennt, wie der Wahl vor der
+Höhle. Ein Satz mit einem Hinweis, den niemand verpassen darf, bleibt besser
+ohne `interrupt`.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ruf an und drück schon während des Satzes vor
+der Höhle die 1. Achte darauf, an welcher Stelle der Satz abbricht und was
+danach in seiner Blase steht.
+</div>
+
+### Auflegen
+
+<!-- language: ruby -->
+Bisher endet ein Anruf, wenn das Programm zu Ende ist. Manchmal soll er
+mittendrin enden: Wer im Gang ins Wasser springt, kommt nicht wieder. `hangup`
+legt sofort auf, egal in welcher Szene das Spiel gerade ist. Danach kommt kein
+Satz mehr, auch nicht das »Ende.« am Schluss des Programms, und auf dem
+Telefon ertönt das Besetztzeichen.
+<!-- /language -->
+<!-- language: python -->
+Bisher endet ein Anruf, wenn das Programm zu Ende ist. Manchmal soll er
+mittendrin enden: Wer im Gang ins Wasser springt, kommt nicht wieder.
+`hangup()` legt sofort auf, egal in welcher Szene das Spiel gerade ist. Danach
+kommt kein Satz mehr, auch nicht das »Ende.« am Schluss des Programms, und auf
+dem Telefon ertönt das Besetztzeichen.
+<!-- /language -->
+
+<div class='hint own' data-check='auflegen'>
+<strong>Jetzt bist du dran:</strong> Gib dem Gang eine dritte Wahl: Mit der 3
+springt man ins Wasser. Das Spiel sagt »Du springst ins Wasser. Die Strömung
+reißt dich fort, hinaus in die Nacht.« und legt auf. Vergiss nicht, die 3 im
+Satz des Gangs zu nennen.
+</div>
+
+<!-- hint -->
+Die 3 bekommt einen eigenen Zweig vor dem `else`, wie die Fische in der
+Frage nach den Tieren.
+<!-- /hint -->
+<!-- hint -->
+Reicht nicht auch der Satz allein? Spiel es im Kopf durch: Nach dem Satz ist
+`tunnel` zu Ende, das Programm macht in `cave` weiter, dann ist auch `cave` zu
+Ende, und ganz unten sagt das Programm noch »Ende.« Erst das Auflegen beendet
+den Anruf sofort.
+<!-- /hint -->
+<!-- hint -->
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+  elsif key == '3'
+    say '…'
+    …
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+    elif key == '3':
+        say('…')
+        …
+```
+
+In der ersten Zeile holt `from telefon import` dann auch `hangup`.
+<!-- /language -->
+<!-- /hint -->
+
+<!-- solution -->
+<!-- language: ruby -->
+```ruby
+~ def tunnel
+~   music nil
+  say 'Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts, 3, um ins Wasser zu springen.', mood: 'whisper'
+~   …
+~   elsif key == '2'
+~     say 'Das Wasser ist eiskalt. Du gehst zurück.'
+~     tunnel
+  elsif key == '3'
+    say 'Du springst ins Wasser. Die Strömung reißt dich fort, hinaus in die Nacht.'
+    hangup
+~   else
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+from telefon import hangup, keys, music, say, sleep
+~ …
+~ def tunnel():
+~     music(None)
+    say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts, 3, um ins Wasser zu springen.', mood='whisper')
+~     …
+~     elif key == '2':
+~         say('Das Wasser ist eiskalt. Du gehst zurück.')
+~         tunnel()
+    elif key == '3':
+        say('Du springst ins Wasser. Die Strömung reißt dich fort, hinaus in die Nacht.')
+        hangup()
+~     else:
+```
+<!-- /language -->
+<!-- /solution -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/9-auflegen/hoehle.rb as hoehle.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/9-auflegen/hoehle.py as hoehle.py -->
+<!-- /language -->
+
+_task(auflegen)
+
 ### Aussprache
 
 Thorsten liest alles, was in `say` steht, wie einen deutschen Text. Meistens
@@ -699,13 +948,13 @@ Deutsch meistens sagt.
 <!-- language: ruby -->
 <!-- page-code: own -->
 ```ruby
-say 'Die Fackel ist aus. [[ ɡˈeɪm ]] over!'
+say 'Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!'
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
-say('Die Fackel ist aus. [[ ɡˈeɪm ]] over!')
+say('Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!')
 ```
 <!-- /language -->
 
@@ -715,8 +964,8 @@ unter »Aussprache«, bei englischen Wörtern im
 von dort. Auf der Seite des Telefons steht die Lautschrift ohne die Klammern.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Lass Thorsten <code>Game Over</code> einmal
-als Text und einmal mit »Game« in Lautschrift sagen. Achte auf den Vokal in
+<strong>Ausprobieren:</strong> Gib dem Sprung ins Wasser ein »Game over«, einmal
+als Text und einmal mit »Game« in Lautschrift. Achte auf den Vokal in
 »Game«.
 </div>
 
@@ -754,21 +1003,15 @@ Was ein Spiel am Telefon gut macht:
   man sich leichter als am Anfang.
 - **Nichts drücken ist auch eine Wahl.** Wiederhol die Szene, oder lass
   etwas passieren: Wer im Wald zu lange wartet, hört Schritte.
-- **Musik passend zur Szene.** `music` darf auch mitten im Spiel stehen,
-  etwa am Anfang der Funktion einer Szene; dann wechselt die Musik.
-- **Eine Stimme für jede Figur.** Mit den Stimmungen klingt die Hexe anders
-  als der Erzähler, etwa wütend oder flüsternd.
-
-<!-- language: ruby -->
-Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
-`say '…', interrupt: true` hört der Satz auf, sobald jemand eine Taste
-drückt, und das nächste `keys` bekommt genau diese Taste.
-<!-- /language -->
-<!-- language: python -->
-Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
-`say('…', interrupt=True)` hört der Satz auf, sobald jemand eine Taste
-drückt, und das nächste `keys` bekommt genau diese Taste.
-<!-- /language -->
+- **Musik erzählt mit.** Jede Szene darf ihre eigene haben, am Anfang ihrer
+  Funktion; ein Ausschnitt mit `start` und `stop` reicht oft. Und Stille ist
+  auch Musik.
+- **Stimmungen sparsam.** Ein Flüstern an der richtigen Stelle, eine Hexe, die
+  wütend klingt, wenn man sie weckt.
+- **Abkürzen erlaubt.** `interrupt` für Sätze, die man beim zweiten Mal schon
+  kennt.
+- **Ein Ende darf auflegen.** Nach dem Sturz in die Schlucht sagt das
+  Besetztzeichen den Rest.
 
 _task(geschichte)
 
@@ -814,9 +1057,11 @@ subtitle('Ein Abenteuer mit drei Wegen und einem Schatz.')
 
 Das Telefon zeigt den Namen an, sobald dein Spiel ihn sagt.
 
-Eingereicht wird eine Kopie deines Spiels: Änderst du danach etwas, reich es
-noch einmal ein. Zurückziehen kannst du es jederzeit, dann ist seine Nummer
-wieder frei.
+Eingereicht wird eine Kopie deines Spiels und der Dateien daneben, etwa deiner
+MP3s: Änderst du danach etwas, reich es noch einmal ein, unter derselben
+Nummer; die neue Fassung ersetzt die alte, sobald sie freigegeben ist.
+Zurückziehen kannst du dein Spiel jederzeit, dann ist seine Nummer wieder
+frei.
 
 <div class='phone-publish card card-body' id='veroeffentlichen'>
 <p class='mb-0 text-muted'>Deine Spiele werden geladen …</p>
