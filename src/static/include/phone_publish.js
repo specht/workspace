@@ -35,15 +35,15 @@
 
     // { ok, text, kind } for the number typed: digits, or letters as on the keys
     function numberStatus(typed) {
-        if (!typed) return { ok: false, text: 'Drei oder vier Ziffern oder Buchstaben, oder würfle eine freie.', kind: 'muted' };
-        if (!/^[0-9A-Z]{3,4}$/.test(typed)) return { ok: false, text: 'Eine Nummer hat drei oder vier Ziffern oder Buchstaben.', kind: 'muted' };
+        if (!typed) return { ok: false, text: '3 oder 4 Ziffern oder Buchstaben, zum Beispiel DINO.', kind: 'muted' };
+        if (!/^[0-9A-Z]{3,4}$/.test(typed)) return { ok: false, text: 'Noch eine Ziffer oder ein Buchstabe: 3 oder 4 Zeichen.', kind: 'muted' };
         const n = digitsOf(typed);
-        const dialled = /[A-Z]/.test(typed) ? ` ${typed} wählt man als ${n}.` : '';
-        if (state.taken.includes(n)) return { ok: false, text: `Diese Nummer hat schon ein anderes Spiel.${dialled}`, kind: 'danger' };
+        const dialled = /[A-Z]/.test(typed) ? ` Man wählt ${n}.` : '';
+        if (state.taken.includes(n)) return { ok: false, text: `Vergeben, nimm eine andere.${dialled}`, kind: 'danger' };
         // one's own number: the new version replaces the old one once it is approved
         const own = state.games.find((g) => g.state !== 'rejected' && g.number === n);
-        if (own) return { ok: true, text: `Ersetzt »${own.title}« unter dieser Nummer, sobald es freigegeben ist.${dialled}`, kind: 'info' };
-        return { ok: true, text: `Die Nummer ist frei.${dialled}`, kind: 'success' };
+        if (own) return { ok: true, text: `Ersetzt »${own.title}«, sobald es freigegeben ist.${dialled}`, kind: 'info' };
+        return { ok: true, text: `Frei.${dialled}`, kind: 'success' };
     }
 
     const game = () => state.files.find((f) => f.name === chosen);
@@ -64,11 +64,12 @@
                 `Speichern, dann <b>Neu laden</b>.</div>`;
         }
         const valid = /^[0-9A-Z]{3,4}$/.test(number);
-        const shown = !valid ? '···' : /[A-Z]/.test(number) ? `${esc(number)} <small>${esc(digitsOf(number))}</small>` : esc(number);
-        return `<figure class='pp-preview mb-0'>` +
+        const shown = !valid ? "<span class='pp-entry-missing'>Nummer</span>"
+            : /[A-Z]/.test(number) ? `${esc(number)} <small>${esc(digitsOf(number))}</small>` : esc(number);
+        return `<figure class='pp-preview mb-0'><figcaption>So steht dein Spiel im Telefonbuch</figcaption>` +
             `<div class='pp-entry'><div class='pp-line'><span class='pp-title'>${esc(g.title)}</span><span class='pp-dots'></span>` +
             `<span class='pp-entry-number'>${shown}</span></div><div class='pp-sub'>${esc(g.subtitle)}</div></div>` +
-            `<figcaption>So steht dein Spiel im Telefonbuch.</figcaption></figure>`;
+            `</figure>`;
     }
 
     function gameHtml(g) {
@@ -105,14 +106,15 @@
                 `Hast du gerade eins angelegt, klick auf <b>Neu laden</b>.</p>`;
         }
         const options = state.files.map((f) => `<option value='${esc(f.name)}'${f.name === chosen ? ' selected' : ''}>${esc(f.name)}</option>`).join('');
-        return `<div class='pp-fields'>` +
+        // left the form, right what the Telefonbuch will show (stacked on a phone)
+        return `<div class='pp-layout'><div class='pp-form-side'><div class='pp-fields'>` +
             `<div><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${options}</select></div>` +
             `<div><label class='form-label' for='pp-number'>Nummer</label><div class='input-group pp-number-group'>` +
-            `<input class='form-control pp-number-input' id='pp-number' maxlength='4' autocomplete='off' autocapitalize='characters' spellcheck='false' placeholder='123 oder DINO' value='${esc(number)}' aria-describedby='pp-number-status'>` +
-            `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer würfeln' aria-label='Eine freie Nummer würfeln'><i class='bi bi-dice-5'></i></button></div>` +
-            `<div class='form-text pp-number-status' id='pp-number-status' aria-live='polite'></div></div></div>` +
-            `<div class='pp-preview-box'></div>` +
-            `<div class='pp-actions'><button class='btn btn-success pp-submit' type='button'></button><span class='form-text pp-why'></span></div>`;
+            `<input class='form-control pp-number-input' id='pp-number' maxlength='4' autocomplete='off' autocapitalize='characters' spellcheck='false' placeholder='123' value='${esc(number)}' aria-describedby='pp-number-status'>` +
+            `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer würfeln' aria-label='Eine freie Nummer würfeln'><i class='bi bi-dice-5'></i></button></div></div></div>` +
+            `<div class='form-text pp-number-status' id='pp-number-status' aria-live='polite'></div>` +
+            `<div class='pp-actions'><button class='btn btn-success pp-submit' type='button'></button><span class='form-text pp-why'></span></div></div>` +
+            `<div class='pp-preview-box'></div></div>`;
     }
 
     function render() {
