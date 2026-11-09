@@ -177,6 +177,13 @@ Why it was flaky:
 - **A good German voice:** Piper with Thorsten to start (the old
   Hackschule's voice, now fast enough to speak during a call); other voices
   to compare later.
+- **One voice: Piper** (the maintainer, November 2026): Thorsten's
+  CosyVoice 3 (`thorstenvoice/cosyvoice-tts:cosyvoice3`) sounds more
+  natural, and the plan was to make the fixed sentences of published games
+  with it in the background. Its image takes 19.4 GB and its models 9.7 GB,
+  on a CPU it needs about 50 seconds for a short sentence (Thorsten-Voice's
+  own figures), and the server's disk cannot grow: left out.
+  `src/scripts/measure-speech.sh` measures Piper's processors and threads.
 
 ## Musik von YouTube
 
