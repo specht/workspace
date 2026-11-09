@@ -1,9 +1,10 @@
 // The Telefonbuch (telefonbuch.html, phone_games_api.rb#phone_book_page):
 // the published Telefonspiele in window.PHONE_BOOK, sorted by title, as the
 // pages of a book. A click on the right page turns forward, on the left
-// page back (also the buttons and the arrow keys); on a narrow screen one
-// page at a time. An entry cannot be clicked to start a game: one types its
-// number on the phone. A page holds as many entries as fit (measured, so
+// page back (also the arrow keys and a swipe); on a narrow screen one page
+// at a time, its left half turning back and its right half on. An entry
+// cannot be clicked to start a game: one types its number on the phone. A
+// page holds as many entries as fit (measured, so
 // long descriptions take more room). The notes stand in a colophon, on the
 // right page of the spread after the last entries (a blank page beside it),
 // so there is always a page to turn to; on a narrow screen on the next page.
@@ -131,10 +132,33 @@
 
     book.addEventListener('click', (e) => {
         if (e.target.closest('a')) return;
+        if (swiped) { swiped = false; return; }
         const page = e.target.closest('.phone-book-leaf');
         if (!page || page.classList.contains('empty')) return;
+        // one page at a time: its left half turns back, its right half on
+        if (narrow()) {
+            const box = page.getBoundingClientRect();
+            turn(e.clientX < box.left + box.width / 2 ? -1 : 1);
+            return;
+        }
         turn(page.dataset.side === 'left' ? -1 : 1);
     });
+    // a swipe turns the page too: to the left on, to the right back
+    let startX = null, startY = null, swiped = false;
+    book.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+    book.addEventListener('touchend', (e) => {
+        if (startX === null) return;
+        const dx = e.changedTouches[0].clientX - startX, dy = e.changedTouches[0].clientY - startY;
+        startX = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > 1.5 * Math.abs(dy)) {
+            swiped = true;
+            setTimeout(() => { swiped = false; }, 400);
+            turn(dx < 0 ? 1 : -1);
+        }
+    }, { passive: true });
     document.addEventListener('keydown', (e) => {
         if (e.target.closest('input, textarea, select')) return;
         if (e.key === 'ArrowLeft') turn(-1);
