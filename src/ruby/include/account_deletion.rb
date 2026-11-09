@@ -13,7 +13,8 @@ require 'set'
 #   (/user/<fs_tag of email + test tag>), and of a teacher's exam demos;
 # - its MySQL database and login, the extra MySQL databases it made, its
 #   Neo4j database, user and role;
-# - its hand-ins under /internal/submissions.
+# - its hand-ins under /internal/submissions;
+# - the copies of its Telefonspiele under /internal/phone-games.
 #
 # Exams (Test) a teacher owns go with the teacher; an exam a student took
 # stays, only the student's relation to it goes (DETACH DELETE).
@@ -32,6 +33,9 @@ module AccountDeletion
         'Test' => '(n:Test)-[:BELONGS_TO]->(u)',
         # a teacher's feedback on activities (ActivityFeedback)
         'ActivityFeedback' => '(n:ActivityFeedback)-[:BY]->(u)',
+        # submitted and published Telefonspiele (PhoneGames); their copies
+        # under /internal/phone-games go in Main#delete_account
+        'PhoneGame' => '(n:PhoneGame)-[:BY]->(u)',
     }.freeze
 
     # Linked to a User, but not the person's own: the exam a student takes

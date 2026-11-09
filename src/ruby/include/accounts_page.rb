@@ -92,6 +92,12 @@ class Main < Sinatra::Base
             MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
             RETURN s.task AS task;
         END_OF_QUERY
+        # the copies of its Telefonspiele (PhoneGames); the nodes go with OWN_NODES
+        phone_games = neo4j_query(<<~END_OF_QUERY, :email => email).map { |row| row['id'].to_s }
+            MATCH (g:PhoneGame)-[:BY]->(:User {email: $email})
+            RETURN g.id AS id;
+        END_OF_QUERY
+        phone_games.each { |id| PhoneGames.remove(id) }
 
         stop_server(email)
         ([fs_tag_for_email(email)] + instances.map { |tag| fs_tag_for_email("#{email}#{tag}") }).each do |container_name|

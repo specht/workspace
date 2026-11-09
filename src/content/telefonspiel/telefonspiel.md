@@ -730,6 +730,24 @@ kommt sie nicht weiter? Danach änderst du dein Spiel.
 
 _task(spieltest)
 
+### Veröffentlichen
+
+Ist dein Spiel fertig, kommt es ins [Telefonbuch](/telefonbuch): Dort steht
+es mit seinem Titel und einer Nummer, unter der man es anruft. Such dir die
+Nummer aus, von 001 bis 999. Bevor es im Telefonbuch steht,
+sieht es sich jemand an, und du bekommst eine E-Mail, ob es veröffentlicht
+ist. Im Telefonbuch steht kein Name, nur der Titel, der Satz dazu und die
+Nummer.
+
+Eingereicht wird eine Kopie deines Spiels: Änderst du danach etwas, reich es
+noch einmal ein. Zurückziehen kannst du es jederzeit, dann ist seine Nummer
+wieder frei.
+
+<div class='phone-publish card card-body' id='veroeffentlichen'>
+<p class='mb-0 text-muted'>Deine Spiele werden geladen …</p>
+</div>
+<script src='/include/phone_publish.js'></script>
+
 <!-- extra -->
 ## Ein Zahlenschloss
 

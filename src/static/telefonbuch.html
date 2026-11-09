@@ -1,0 +1,162 @@
+<style>
+    /* Bitstream Charter in Michael Sharpe's extension XCharter (free, see
+       fonts/XCharter/LICENSE.txt), for the printed pages */
+    @font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Roman.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+    @font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }
+    /* The Telefonbuch (phone_games_api.rb, phone_book.js): the published
+       Telefonspiele as the pages of a book, sorted by title; a click on a
+       page turns it. Beside it the phone that plays the menu. */
+    .phone-book-page {
+        --pb-paper: #f8f2de;
+        --pb-paper-edge: #e6dabb;
+        --pb-ink: #1d1a14;
+        --pb-quiet: #5d5442;
+        --pb-rule: #b9ab88;
+        --pb-dim: none;
+        --pb-cover: #c8a32c;
+        --pb-shadow: 0 1px 2px rgba(40, 30, 10, .15), 0 18px 40px -16px rgba(40, 30, 10, .45);
+    }
+    [data-bs-theme='dark'] .phone-book-page {
+        --pb-cover: #8c7420;
+        /* the paper stays paper; at night it is just in less light */
+        --pb-dim: brightness(.78) contrast(1.05);
+        --pb-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 18px 40px -16px rgba(0, 0, 0, .8);
+    }
+    .phone-book-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+        gap: 2rem;
+        align-items: start;
+        margin-top: 1.5rem;
+    }
+    @media (max-width: 900px) {
+        .phone-book-layout { grid-template-columns: minmax(0, 1fr); }
+    }
+    .phone-book-phone {
+        border-radius: 46px;
+        background: #0c0d10;
+        padding: 11px;
+        box-shadow: 0 0 0 1.5px #3a3e46, var(--pb-shadow);
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    .phone-book-phone .glass {
+        border-radius: 36px;
+        min-height: 420px;
+        padding: 3rem 1.5rem 2rem;
+        color: #f5f7fa;
+        text-align: center;
+        background: radial-gradient(120% 70% at 50% 0%, #2a3a46 0%, #141b21 55%, #0b0f12 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        justify-content: center;
+    }
+    .phone-book-phone .glass i { font-size: 2.5rem; opacity: .8; }
+    .phone-book-phone .glass p { margin: 0; color: rgba(245, 247, 250, .75); text-align: center; hyphens: none; }
+    /* the book: two pages and a spine, one page on a phone */
+    .phone-book {
+        position: relative;
+        perspective: 2200px;
+        user-select: none;
+    }
+    .phone-book-spread {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: var(--pb-cover);
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: var(--pb-shadow);
+    }
+    .phone-book-spread { filter: var(--pb-dim); }
+    /* thin paper with grain and a few stains; the ink multiplied onto it */
+    .phone-book-leaf {
+        background:
+            linear-gradient(90deg, rgba(120, 95, 40, .16), transparent 7%, transparent 93%, rgba(120, 95, 40, .16)),
+            url('/include/phone-book-paper.webp') var(--pb-paper);
+        background-size: auto, 384px 384px;
+        color: var(--pb-ink);
+        font-family: 'XCharter', 'Charter', 'Bitstream Charter', Georgia, serif;
+        min-height: 520px;
+        padding: 1.6rem 1.6rem 2.6rem;
+        position: relative;
+        cursor: pointer;
+    }
+    .phone-book-leaf.left { border-radius: 6px 0 0 6px; box-shadow: inset -12px 0 16px -12px rgba(0, 0, 0, .35); }
+    .phone-book-leaf.right { border-radius: 0 6px 6px 0; box-shadow: inset 12px 0 16px -12px rgba(0, 0, 0, .35); background-position: 0 0, 190px 140px; }
+    .phone-book-leaf > * { mix-blend-mode: multiply; }
+    .phone-book-leaf.empty { cursor: default; }
+    .phone-book-head {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 2px solid var(--pb-ink);
+        padding-bottom: .3rem;
+        margin-bottom: .8rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        font-size: .8rem;
+    }
+    .phone-book-entry { padding: .45rem 0; border-bottom: 1px dotted var(--pb-rule); }
+    .phone-book-entry .pb-line { display: flex; align-items: baseline; gap: .4rem; }
+    .phone-book-entry .pb-title { font-weight: 700; font-size: 1.05rem; line-height: 1.3; text-align: left; }
+    .phone-book-entry .pb-dots { flex: 1; border-bottom: 2px dotted var(--pb-quiet); transform: translateY(-.25em); opacity: .6; }
+    .phone-book-entry .pb-number { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums lining-nums; letter-spacing: .04em; }
+    .phone-book-entry .pb-description { color: var(--pb-quiet); font-style: italic; font-size: .92rem; margin-top: .05rem; text-align: left; }
+    .pb-remark { margin-top: 1.2rem; padding-top: .7rem; border-top: 1px solid var(--pb-ink); font-size: .95rem; }
+    .pb-remark-head { font-style: italic; font-weight: 700; margin-bottom: .3rem; }
+    .phone-book-page .phone-book-leaf p { color: var(--pb-ink); }
+    .pb-remark p { margin: 0 0 .4rem; text-align: left; hyphens: none; }
+    .phone-book-page .pb-remark a { color: var(--pb-ink); text-decoration: underline; text-underline-offset: 2px; }
+    .phone-book-folio { position: absolute; bottom: .9rem; color: var(--pb-quiet); font-size: .8rem; }
+    .phone-book-leaf.left .phone-book-folio { left: 1.6rem; }
+    .phone-book-leaf.right .phone-book-folio { right: 1.6rem; }
+    .phone-book-page .phone-book-none { color: var(--pb-quiet); margin-top: 2rem; text-align: center; }
+    /* the page that turns: front and back, around the spine */
+    .phone-book-turning {
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        width: calc(50% - 10px);
+        transform-style: preserve-3d;
+        transition: transform .6s ease-in-out;
+        z-index: 2;
+    }
+    .phone-book-turning.forward { left: 50%; transform-origin: left center; }
+    .phone-book-turning.backward { left: 10px; transform-origin: right center; }
+    .phone-book-turning > div { position: absolute; inset: 0; backface-visibility: hidden; }
+    .phone-book-turning > .back { transform: rotateY(180deg); }
+    .phone-book-controls { display: flex; justify-content: space-between; align-items: center; margin-top: .8rem; }
+    @media (max-width: 640px) {
+        .phone-book-spread { grid-template-columns: 1fr; }
+        .phone-book-leaf.left { display: none; }
+        .phone-book-leaf.right { border-radius: 6px; }
+        .phone-book-turning { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .phone-book-turning { transition: none; }
+    }
+</style>
+<div class='container phone-book-page'>
+    <h1 class='mt-4'>Telefonbuch</h1>
+    #{phone_book_page}
+    <div class='phone-book-layout'>
+        <div class='phone-book-phone' aria-label='Telefon'>
+            <div class='glass'>
+                <i class='bi bi-telephone'></i>
+                <p>Hier kannst du bald anrufen: Das Telefon spielt das Menü, und du tippst die Nummer aus dem Telefonbuch ein.</p>
+            </div>
+        </div>
+        <div>
+            <div class='phone-book' id='phone-book'></div>
+            <div class='phone-book-controls'>
+                <button class='btn btn-outline-secondary btn-sm' id='phone-book-back' aria-label='Zurückblättern'><i class='bi bi-chevron-left'></i></button>
+                <span class='text-muted small' id='phone-book-where'></span>
+                <button class='btn btn-outline-secondary btn-sm' id='phone-book-next' aria-label='Weiterblättern'><i class='bi bi-chevron-right'></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src='/include/phone_book.js'></script>

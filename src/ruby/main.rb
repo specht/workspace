@@ -554,6 +554,7 @@ class Main < Sinatra::Base
     require './include/server_health.rb'
     require './include/server_start_queue.rb'
     require './include/task_api.rb'
+    require './include/phone_games_api.rb'
     require './include/turtle_page.rb'
     require './include/usage_stats_page.rb'
     require './include/workspace_routes.rb'
@@ -773,6 +774,7 @@ class Main < Sinatra::Base
             'Session/sid',
             'TaskState/key',
             'Pin/key',
+            'PhoneGame/id',
             'Test/tag',
             'User/email',
             'User/db_login',
@@ -4112,6 +4114,13 @@ class Main < Sinatra::Base
         # fact-checking: development only.
         if path == '/person-sources'
             halt 404 unless DEVELOPMENT
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless admin_logged_in?
+        end
+        # A submitted Telefonspiel with the buttons to publish or reject it
+        # (phone_games_api.rb): administrators only.
+        if path == '/telefon-freigabe'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?
