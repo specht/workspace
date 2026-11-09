@@ -631,23 +631,20 @@ geht jetzt müde nach Hause:
 <!-- /language -->
 
 Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht;
-hör sie dir an, alle mit demselben Satz:
+hör sie dir an, jede mit einem Satz, der zu ihr passt:
 
-<table class='table mood-table'>
-<caption>Thorsten sagt »Hinter dieser Tür liegt der Schatz.«</caption>
-<thead><tr><th>Stimmung</th><th>Hören</th></tr></thead>
-<tbody>
-<tr><td>ohne Stimmung<br><span class='text-body-secondary'>die gewohnte Stimme</span></td><td><audio controls preload='none' src='moods/plain.mp3'></audio></td></tr>
-<tr><td>neutral<br><code>neutral</code></td><td><audio controls preload='none' src='moods/neutral.mp3'></audio></td></tr>
-<tr><td>amüsiert<br><code>amused</code></td><td><audio controls preload='none' src='moods/amused.mp3'></audio></td></tr>
-<tr><td>wütend<br><code>angry</code></td><td><audio controls preload='none' src='moods/angry.mp3'></audio></td></tr>
-<tr><td>angewidert<br><code>disgusted</code></td><td><audio controls preload='none' src='moods/disgusted.mp3'></audio></td></tr>
-<tr><td>betrunken<br><code>drunk</code></td><td><audio controls preload='none' src='moods/drunk.mp3'></audio></td></tr>
-<tr><td>müde<br><code>sleepy</code></td><td><audio controls preload='none' src='moods/sleepy.mp3'></audio></td></tr>
-<tr><td>überrascht<br><code>surprised</code></td><td><audio controls preload='none' src='moods/surprised.mp3'></audio></td></tr>
-<tr><td>flüsternd<br><code>whisper</code></td><td><audio controls preload='none' src='moods/whisper.mp3'></audio></td></tr>
-</tbody>
-</table>
+<div class='sound-grid'>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='ohne Stimmung anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>ohne Stimmung</b><div class='sound-text'>»Du stehst vor einer dunklen Höhle.«</div></div><audio preload='none' src='moods/plain.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='neutral anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>neutral</b> <code>neutral</code><div class='sound-text'>»Der Gang führt nach links und nach rechts.«</div></div><audio preload='none' src='moods/neutral.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='amüsiert anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>amüsiert</b> <code>amused</code><div class='sound-text'>»Na, das hast du dir wohl anders vorgestellt!«</div></div><audio preload='none' src='moods/amused.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='wütend anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>wütend</b> <code>angry</code><div class='sound-text'>»Wer hat meine Fackel ausgeblasen?«</div></div><audio preload='none' src='moods/angry.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='angewidert anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>angewidert</b> <code>disgusted</code><div class='sound-text'>»Igitt, hier riecht es nach faulen Eiern.«</div></div><audio preload='none' src='moods/disgusted.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='betrunken anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>betrunken</b> <code>drunk</code><div class='sound-text'>»Alles dreht sich, wo ist denn hier der Ausgang?«</div></div><audio preload='none' src='moods/drunk.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='müde anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>müde</b> <code>sleepy</code><div class='sound-text'>»Ich bin so müde, ich lege mich kurz hin.«</div></div><audio preload='none' src='moods/sleepy.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='überrascht anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>überrascht</b> <code>surprised</code><div class='sound-text'>»Was? Die Kiste ist voller Gold!«</div></div><audio preload='none' src='moods/surprised.mp3'></audio></div>
+<div class='sound-item'><button class='sound-play' type='button' aria-label='flüsternd anhören'><i class='bi bi-play-fill' aria-hidden='true'></i></button><div><b>flüsternd</b> <code>whisper</code><div class='sound-text'>»Psst, da hinten bewegt sich etwas.«</div></div><audio preload='none' src='moods/whisper.mp3'></audio></div>
+</div>
+<script src='/include/sound_buttons.js'></script>
 
 Auf der Seite des Telefons steht die Stimmung klein über dem Satz.
 

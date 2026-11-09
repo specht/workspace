@@ -14967,10 +14967,13 @@ html[data-bs-theme="dark"] .splat-viewer {
 .phone-publish .pp-actions .form-text { margin-top: 0; }
 .phone-publish .pp-own-number { font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* recordings in a table (the moods of »Ein Spiel am Telefon«): the player
-   takes the rest of the row, at every width */
-.mood-table { width: 100%; }
-.mood-table td { vertical-align: middle; }
-.mood-table td:first-child { width: 11rem; }
-.mood-table audio { display: block; width: 100%; min-width: 10rem; max-width: 22rem; height: 2.25rem; }
-@media (max-width: 576px) { .mood-table td:first-child { width: auto; } }
+/* recordings to play beside their text (sound_buttons.js; the moods of
+   »Ein Spiel am Telefon«): small cards in a grid, a round button each */
+.sound-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: .75rem; margin: 1rem 0 1.25rem; }
+.sound-item { display: flex; gap: .75rem; align-items: flex-start; padding: .65rem .8rem; border: 1px solid var(--bs-border-color); border-radius: .5rem; }
+.sound-play { flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 0; background: var(--bs-success); color: #fff;
+    display: grid; place-items: center; font-size: 1.15rem; cursor: pointer; }
+.sound-play:hover { filter: brightness(1.1); }
+.sound-item.playing { border-color: var(--bs-success); }
+.sound-item.playing .sound-play { background: var(--bs-danger); }
+.sound-text { margin-top: .15rem; font-style: italic; color: var(--bs-secondary-color); font-size: .92rem; }
