@@ -214,6 +214,54 @@ function audio() {
     return ctx;
 }
 
+// The music follows the voice (Thorsten's or a recording): it gives way
+// while the voice is loud and comes back after HOLD seconds of quiet, also
+// in the pauses of a recording; a level meter on the voice's way, read
+// every 40 ms. The browser's own voice (speakInBrowser) is not heard by
+// the meter: while it speaks the music stays down.
+const LOUD = 0.015, HOLD = 0.5;
+let meter = null, following = null, musicDucked = false, lastLoud = 0, browserSpeaking = false;
+
+function voiceOut() {
+    if (!meter) {
+        meter = ctx.createAnalyser();
+        meter.fftSize = 1024;
+        meter.connect(ctx.destination);
+    }
+    return meter;
+}
+
+function setDucked(on) {
+    if (on === musicDucked || !duckGain) return;
+    musicDucked = on;
+    duck(on);
+}
+
+function followVoice(on) {
+    if (!on) {
+        clearInterval(following);
+        following = null;
+        setDucked(false);
+        return;
+    }
+    if (following) return;
+    voiceOut();
+    const data = new Float32Array(meter.fftSize);
+    lastLoud = ctx.currentTime;
+    setDucked(true);
+    following = setInterval(() => {
+        meter.getFloatTimeDomainData(data);
+        let sum = 0;
+        for (const v of data) sum += v * v;
+        if (browserSpeaking || Math.sqrt(sum / data.length) > LOUD) {
+            lastLoud = ctx.currentTime;
+            setDucked(true);
+        } else if (ctx.currentTime - lastLoud > HOLD) {
+            setDucked(false);
+        }
+    }, 40);
+}
+
 function duck(on) {
     const g = duckGain.gain, now = ctx.currentTime, from = g.value, target = on ? DUCK : 1;
     g.cancelScheduledValues(now);
@@ -313,7 +361,7 @@ async function playRecording(url, name, id, interrupt) {
         const buffer = await fetchAudio(url);
         if (mine !== call) return;
         if (!skipped) {
-            duck(true);
+            followVoice(true);
             $('screen').classList.add('speaking');
             $('spoken').textContent = 'Aufnahme ' + name;
             await play(buffer);
@@ -325,7 +373,7 @@ async function playRecording(url, name, id, interrupt) {
     if (mine !== call) return;
     if (interrupt && !skipped) skip = null;
     $('screen').classList.remove('speaking');
-    duck(false);
+    followVoice(false);
     post('/heard?id=' + id);
 }
 
@@ -339,7 +387,7 @@ function play(buffer) {
     return new Promise(resolve => {
         const source = ctx.createBufferSource();
         source.buffer = buffer;
-        source.connect(ctx.destination);
+        source.connect(voiceOut());          // through the level meter the music follows
         source.onended = () => { if (voice === source) voice = null; resolve(); };
         voice = source;
         source.start();
@@ -352,7 +400,8 @@ function speakInBrowser(text) {
         if (!window.speechSynthesis) { setTimeout(resolve, 60 * text.length); return; }
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'de-DE';
-        u.onend = u.onerror = () => resolve();
+        browserSpeaking = true;
+        u.onend = u.onerror = () => { browserSpeaking = false; resolve(); };
         speechSynthesis.speak(u);
     });
 }
@@ -447,7 +496,7 @@ async function say(parts, id, interrupt, mood) {
     }
     const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p) + (mood ? '&mood=' + mood : '')));
     buffers.forEach(b => b.catch(() => {}));
-    let ducked = false;
+    let begun = false;
     for (let i = 0; i < parts.length; i++) {
         // phonemes in [[ … ]] are shown without the brackets
         const shown = parts[i].replace(/\[\[\s*(.*?)\s*\]\]/g, '$1');
@@ -455,7 +504,7 @@ async function say(parts, id, interrupt, mood) {
         let finish = null;
         const start = (times, now) => {
             // the music gives way when the voice starts, not while it is made
-            if (!ducked) { duck(true); $('screen').classList.add('speaking'); ducked = true; }
+            if (!begun) { followVoice(true); $('screen').classList.add('speaking'); begun = true; }
             $('spoken').textContent = shown;
             post(`/playing?id=${id}&part=${i}`);       // the terminal shows the sentence now
             finish = typeSentence(bubble, words, times, now, () => skipped);
@@ -491,7 +540,7 @@ async function say(parts, id, interrupt, mood) {
     if (interrupt && !skipped) skip = null;
     cursor.remove();
     $('screen').classList.remove('speaking');
-    if (ducked) duck(false);
+    if (begun) followVoice(false);
     post('/heard?id=' + id);
 }
 
@@ -700,6 +749,10 @@ function setCall(on) {
         if (wasInCall) hangupTone();
         document.querySelectorAll('#lines .cursor').forEach(c => c.remove());
         if (window.speechSynthesis) speechSynthesis.cancel();
+        clearInterval(following);
+        following = null;
+        musicDucked = false;
+        browserSpeaking = false;
         if (duckGain) { duckGain.gain.cancelScheduledValues(0); duckGain.gain.value = 1; }
     }
 }
