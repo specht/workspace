@@ -14977,19 +14977,16 @@ html[data-bs-theme="dark"] .splat-viewer {
 [data-bs-theme=dark] .voice-chat { --voice-bubble: #173039; --voice-ink: #d3eef5; --voice-avatar: #3fa9c2; }
 .voice-chat .voice-all { column-span: all; display: block; margin-bottom: .8rem; }
 /* the scene flows down the columns that fit, as many as the width allows */
-.voice-item { display: flex; align-items: flex-end; gap: .5rem; max-width: 100%; margin-bottom: .45rem; break-inside: avoid; }
-.voice-avatar { flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--voice-avatar); color: #fff;
-    display: grid; place-items: center; font-size: .85rem; }
-.voice-item + .voice-item .voice-avatar { visibility: hidden; }
+.voice-item { display: flex; max-width: 100%; margin-bottom: .45rem; break-inside: avoid; }
 .voice-line { display: grid; grid-template-columns: 1fr auto; column-gap: .7rem; align-items: end; text-align: left;
     padding: .45rem .8rem .5rem; border: 0; border-radius: 1.1rem; border-bottom-left-radius: .4rem;
     background: var(--voice-bubble); color: var(--voice-ink); cursor: pointer; transition: filter .15s, box-shadow .15s; }
 .voice-line:hover { filter: brightness(.97); }
 [data-bs-theme=dark] .voice-line:hover { filter: brightness(1.15); }
 .voice-line:focus-visible { outline: 2px solid var(--voice-avatar); outline-offset: 2px; }
-.voice-mood { grid-column: 1; font-size: .8rem; font-style: italic; opacity: .75; }
-.voice-chat .voice-mood code, html[data-bs-theme="dark"] .voice-chat .voice-mood code { color: inherit; background: none; padding: 0; font-size: .95em; font-style: normal; margin-left: .25rem; }
-.voice-text { grid-column: 1; }
+.voice-mood { grid-column: 1; font-size: .8rem; }
+.voice-mood code { margin-left: .3rem; }
+.voice-text { grid-column: 1; font-style: italic; }
 .voice-state { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: grid; place-items: center; width: 1.3rem; opacity: .7; }
 .voice-bars { display: none; gap: 2px; align-items: center; height: 1rem; }
 .voice-bars i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; animation: voice-bar .9s ease-in-out infinite; }
