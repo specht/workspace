@@ -21,6 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Telefonspiele veröffentlichen: Lernende reichen ihr Spiel in »Ein Spiel am Telefon« ein, jede Einreichung schickt eine E-Mail an alle `ADMIN_USERS` mit einem Link zur Freigabe (`/telefon-freigabe`); veröffentlichte Spiele stehen im öffentlichen Telefonbuch (`/telefonbuch`, Knopf im Menü). Gespeichert wird eine Kopie jedes eingereichten Spiels in `data/internal/phone-games` (in der Datenschutzerklärung eingetragen, mit dem Konto gelöscht).
 - Neue, freiwillige Werte in `credentials.rb` für das Telefonspiel: `PHONE_NUMBER` (die Nummer) und `PHONE_DIRECT_DIAL` (ob der Anbieter drei angehängte Ziffern weiterreicht). Ohne `PHONE_NUMBER` sagt die Aktivität »Ein Spiel am Telefon«, dass an einer echten Nummer gearbeitet wird.
 - Neuer Dienst `phone_speech` (der Sprachdienst des Telefonspiels, läuft immer): nach dem Update `./config.rb build phone_speech peer_firewall && ./config.rb up -d`; der Befehl `telefon` braucht ein neu gebautes Workspace-Image. Der Dienst speichert gesprochene Sätze und Musik in `data/phone-cache` (90 Tage nach dem letzten Abspielen gelöscht, in der Datenschutzerklärung eingetragen), holt Musik von YouTube und hält yt-dlp über PyPI aktuell.
 - Die Entwicklungsumgebung läuft jetzt auf Port 8030 statt 8025 (`DEV_NGINX_PORT` in `config.rb`), der Neo4j-Browser auf 8031 statt 8021 (`DEV_NEO4J_PORT`): in einer eigenen `credentials.rb` `WEBSITE_HOST` für die Entwicklung auf `workspace.test:8030` ändern und `./config.rb up -d` ausführen.

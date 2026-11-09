@@ -286,6 +286,17 @@ loop.
   (`telefon` and its page), `src/phone/lib/` (the libraries for Python,
   Ruby, JavaScript), `src/phone/games/1/` (Zahlenraten, a demo game with
   its own music file);
+- publishing and the Telefonbuch (built, November 2026):
+  `src/ruby/include/phone_games.rb` (numbers, the copy of a game, the
+  sentences of its code, the mails, the order of the book) and
+  `phone_games_api.rb` (the PhoneGame nodes, the routes, the moderation
+  page, the profile list); the card `src/static/include/phone_publish.js` in
+  the activity (»Veröffentlichen«), `/telefon-freigabe` (`phone_review.js`),
+  `/telefonbuch` (`phone_book.js`, XCharter, the paper of
+  `src/scripts/phone-book-paper.py`); copies under `/internal/phone-games`.
+  Not built yet: the phone of the Telefonbuch and playtesting on the
+  moderation page, both in the runner's sandbox (no network for the game);
+  until then the Telefonbuch says the phone is coming;
 - `config.rb`: `phone_speech` always, on the students' network,
   reachable from Workspaces on port 8000 only (peer-firewall label
   `…peer_firewall.phone`); Asterisk and the runner join with the trunk;

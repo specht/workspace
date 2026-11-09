@@ -28,6 +28,12 @@ module PhoneGames
     MAX_DESCRIPTION = 140
     MAX_REASON = 1000
     RANDOM = '000'                           # the number that plays a random game
+    # games of the Workspace itself, always in the Telefonbuch, their numbers
+    # never free (src/phone/games)
+    FIXED = [
+        { :number => '555', :title => 'Hotline des Hackschule Workspace', :description => 'Alle Leitungen sind belegt. Bitte bleiben Sie dran.',
+          :folder => '/src/phone/games/hotline', :file => 'hotline.rb' },
+    ].freeze
     STATES = %w[pending published rejected].freeze
     # the sentences a game says and the music it plays, as the emulator
     # finds them (src/phone/emulator/telefon: SAY, YOUTUBE)
@@ -186,6 +192,6 @@ module PhoneGames
 
     # The numbers someone else holds, with a pending or published game
     def self.taken_numbers(games, email)
-        games.reject { |g| g[:email] == email || g[:state] == 'rejected' }.map { |g| g[:number] }.uniq.sort
+        (games.reject { |g| g[:email] == email || g[:state] == 'rejected' }.map { |g| g[:number] } + FIXED.map { |g| g[:number] }).uniq.sort
     end
 end

@@ -253,7 +253,7 @@ class Main < Sinatra::Base
     # /telefonbuch: the published games, sorted by title, as the pages of a
     # book; the phone number or that one is being worked on (public)
     def phone_book_page
-        games = PhoneGames.phone_book(phone_games_all.select { |g| g[:state] == 'published' })
+        games = PhoneGames.phone_book(phone_games_all.select { |g| g[:state] == 'published' } + PhoneGames::FIXED)
         number = Main.phone_number
         entries = games.map do |g|
             { :number => g[:number], :title => g[:title], :description => g[:description] }
