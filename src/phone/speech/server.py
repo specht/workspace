@@ -81,15 +81,24 @@ INTERJECTIONS = [
     (r'p+s+t+', 'pst'), (r'p+s?ch+t+', 'pʃt'), (r's?ch+h*|sh+', 'ʃː'), (r'h+m+', 'hmː'), (r'm+h+m+', 'mhm'),
     (r'b+r+', 'bʁː'), (r'g+r+', 'ɡʁː'), (r'p+f+', 'pfː'), (r't+s+', 'tsː'),
 ]
+# English words espeak reads as German (Hotline as »Hot-lie-ne«) or the
+# voice speaks badly: their English sound, chosen by ear.
+LOANWORDS = [
+    (r'hotlines?', None), (r'workspaces?', None),
+]
+LOANWORD_SOUNDS = {'hotline': 'hˈɒtlaɪn', 'hotlines': 'hˈɒtlaɪns', 'workspace': 'wˈœɐkspɛɪs', 'workspaces': 'wˈœɐkspɛɪsɪs'}
+INTERJECTIONS += LOANWORDS
 _INTERJECTION = re.compile(r'(?<![\w-])(' + '|'.join(f'(?:{p})' for p, _ in INTERJECTIONS) + r')(?![\w-])([,.!?;:…]*)', re.IGNORECASE)
 
 
 def sounding(sentence):
-    """the sentence as Piper should read it: interjections as their sound"""
+    """the sentence as Piper should read it: interjections and some English
+    words as their sound"""
     def sound(m):
         word = m.group(1).lower()
         for pattern, phonemes in INTERJECTIONS:
             if re.fullmatch(pattern, word):
+                phonemes = phonemes or LOANWORD_SOUNDS[word]
                 return f'[[ {phonemes}{m.group(2)} ]]'
         return m.group(0)
     return _INTERJECTION.sub(sound, sentence)
@@ -115,6 +124,49 @@ def ready():
     time.sleep(0.5)
 
 
+PHONEME_BLOCK = re.compile(r'\[\[(.*?)\]\]')
+
+
+def phonemes_of(voice, sentence):
+    """the sentence as one list of phonemes: espeak's for the words, ours
+    for the interjections and loanwords, the game's own [[ … ]] as written.
+    Piper's own [[ … ]] would start a new sentence after each block, voice
+    every piece on its own at full volume, and an empty piece at the end as
+    a burst of noise."""
+    out = []
+
+    def space():
+        if out and out[-1] != ' ':
+            out.append(' ')
+
+    text = sounding(sentence)
+    at = 0
+    for m in list(PHONEME_BLOCK.finditer(text)) + [None]:
+        part = text[at:m.start() if m else len(text)]
+        if part.strip() and not re.search(r'\w', part):
+            out.extend(part.strip())             # only punctuation: espeak would drop it
+            if part[-1].isspace():
+                space()
+        elif part.strip():
+            if part[0].isspace():
+                space()
+            for piece in voice.phonemize(part):
+                if piece:
+                    if out and out[-1] != ' ' and piece[0] != ' ':
+                        space()
+                    out.extend(piece)
+            if part[-1].isspace():
+                space()
+        elif part:
+            space()
+        if m:
+            out.extend(m.group(1).strip())
+            at = m.end()
+    while out and out[-1] == ' ':
+        out.pop()
+    return out
+
+
 def synthesize(sentence, mood=None):
     """one sentence to float32 bytes at 16 kHz, with a short pause after it
     (as a speaker breathes), in a mood or not; runs in a worker process"""
@@ -124,8 +176,9 @@ def synthesize(sentence, mood=None):
     if mood:
         voice = _mood_voice
         config = SynthesisConfig(speaker_id=voice.config.speaker_id_map[mood])
-    data = b''.join(chunk.audio_int16_bytes for chunk in voice.synthesize(sounding(sentence), syn_config=config))
-    samples = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
+    samples = np.asarray(voice.phoneme_ids_to_audio(voice.phonemes_to_ids(phonemes_of(voice, sentence)), config), dtype=np.float32)
+    peak = float(np.max(np.abs(samples))) if samples.size else 0.0
+    samples = samples / peak if peak > 1e-8 else np.zeros_like(samples)     # as Piper's synthesize does
     if voice.config.sample_rate != RATE:
         samples = soxr.resample(samples, voice.config.sample_rate, RATE)
     samples = np.concatenate([samples.astype(np.float32), np.zeros(int(RATE * 0.25), dtype=np.float32)])
@@ -295,6 +348,10 @@ class Service:
         self.music_pool = ThreadPoolExecutor(max_workers=2)
         self.pending = {}            # cache path → future: the same work only once at a time
         self.waiting = 0
+        # sentences made in advance (prepare=1) take at most all workers but
+        # one, so a sentence a call waits for always finds one free
+        self.preparing = asyncio.Semaphore(max(1, WORKERS - 1))
+        self.queued = 0              # requests in advance waiting for their turn
 
     async def once(self, path, pool, function, *args):
         """the file at path, made by function(*args) unless it exists; its
@@ -322,12 +379,25 @@ class Service:
             self.pending[path] = asyncio.ensure_future(make())
         await asyncio.shield(self.pending[path])
 
-    async def sentence(self, sentence, mood=None):
+    async def sentence(self, sentence, mood=None, prepare=False):
         # without a mood the key it always had
         voice = os.path.basename(VOICE) if not mood else f'{os.path.basename(MOOD_VOICE)}:{mood}'
         # the key from the text as read, so a sentence spelled before is made anew
-        path = cache_path('speech', voice + '\n' + sounding(sentence), '.f32')
-        await self.once(path, self.speech_pool, synthesize, sentence, mood)
+        read = sounding(sentence)
+        # a sentence with phonemes in it is made in one piece now, without the
+        # noise at its end: a key of its own, so the old one is not used
+        path = cache_path('speech', voice + '\n' + read + ('\nwhole' if '[[' in read else ''), '.f32')
+        if prepare and not os.path.exists(path):
+            if self.queued >= WAITING:
+                raise web.HTTPServiceUnavailable(text='busy')
+            self.queued += 1
+            try:
+                async with self.preparing:
+                    await self.once(path, self.speech_pool, synthesize, sentence, mood)
+            finally:
+                self.queued -= 1
+        else:
+            await self.once(path, self.speech_pool, synthesize, sentence, mood)
         with open(path, 'rb') as f:
             return f.read()
 
@@ -347,7 +417,8 @@ class Service:
             mood = None
             headers['X-Phone-Mood'] = 'missing'
         started = time.monotonic()
-        parts = [await self.sentence(s, mood) for s in sentences(text)]
+        prepare = request.query.get('prepare') == '1'     # in advance, not for a call waiting now
+        parts = [await self.sentence(s, mood, prepare) for s in sentences(text)]
         audio = b''.join(parts)
         log(f'speech {len(text)} chars, {len(audio) / 4 / RATE:.1f} s audio in {time.monotonic() - started:.2f} s')
         if request.query.get('format') == 'f32':

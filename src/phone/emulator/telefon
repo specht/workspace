@@ -37,6 +37,9 @@ WATCHED = 50                       # files of the folder looked at, at most
 # the fixed texts of say ('…' or "…" right after say or say(), without #{…}
 # or an f in front), rendered before the first call
 SAY = re.compile(r'''\bsay\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1''')
+# other texts that look like sentences (a list of questions, say text later):
+# a capital letter at the start, . ! ? or … at the end, nothing filled in
+SENTENCE = re.compile(r'''(?<![\w])(['"])([A-ZÄÖÜ](?:(?!\1)[^\\\n])*?[.!?…])\1''')
 MAX_SENTENCES = 300                # rendered in advance per run, at most
 MOOD = re.compile(r'''\bmood\s*[:=]\s*(?:['"]|:)(\w+)''')   # on the rest of the line of a say ('whisper' or :whisper)
 COLOR = sys.stdout.isatty()
@@ -173,7 +176,9 @@ class Server:
                         self.fetched.add(source)
                         asyncio.ensure_future(self.fetch_music(source))
                 new = []
+                said = []                        # where the says' texts stand
                 for m in SAY.finditer(text):
+                    said.append((m.start(2), m.end(2)))
                     literal = m.group(2)
                     if '#{' in literal:          # Ruby fills it in while the game runs
                         continue
@@ -185,6 +190,13 @@ class Server:
                         if (sentence, mood) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
                             self.spoken.add((sentence, mood))
                             new.append((sentence, mood))
+                for m in SENTENCE.finditer(text):
+                    if '#{' in m.group(2) or any(a <= m.start(2) < b for a, b in said):
+                        continue
+                    for sentence in game.sentences(m.group(2)):
+                        if (sentence, None) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
+                            self.spoken.add((sentence, None))
+                            new.append((sentence, None))
                 if new:
                     asyncio.ensure_future(self.render(new))
             await asyncio.sleep(2)
@@ -195,7 +207,8 @@ class Server:
         show(f'{len(sentences)} {"Satz wird" if len(sentences) == 1 else "Sätze werden"} vorbereitet …', '2')
         def fetch(item):
             sentence, mood = item
-            query = urllib.parse.urlencode({'text': sentence, 'format': 'f32', **({'mood': mood} if mood else {})})
+            # prepare: after the sentences a call waits for (speech/server.py)
+            query = urllib.parse.urlencode({'text': sentence, 'format': 'f32', 'prepare': '1', **({'mood': mood} if mood else {})})
             with urllib.request.urlopen(f'{SPEECH}/speech?{query}', timeout=60) as r:
                 r.read()
         loop = asyncio.get_running_loop()
