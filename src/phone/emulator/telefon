@@ -99,6 +99,16 @@ class Emulator(game.Phone):
             self.heard.pop(id_, None)
             self.parts.pop(id_, None)
 
+    async def play(self, source, interrupt=False):
+        if game.game_file(self.server.folder, source) is None:
+            show(f'Aufnahme: Die Datei {source} gibt es im Ordner des Spiels nicht.', '33')
+            return
+        show(f'Aufnahme: {source}', '1;36')
+        # served like a music file of the game; played on the voice's channel
+        event = {'play': '/music?' + urllib.parse.urlencode({'source': source}), 'name': source,
+                 **({'interrupt': True} if interrupt else {})}
+        await self.until_heard(event)
+
     def playing(self, id_, part):
         """the page starts a sentence: now it appears in the terminal, as a subtitle"""
         parts = self.parts.get(id_, [])
@@ -466,6 +476,12 @@ class TestPhone(game.Phone):
             print(f'Musik: {source} (diese Datei gibt es im Ordner des Spiels nicht)', flush=True)
         else:
             print(f'Musik: {source}{game.span_text(start, stop)}', flush=True)
+
+    async def play(self, source, interrupt=False):
+        if game.game_file(self.folder, source) is None:
+            print(f'Aufnahme: {source} (diese Datei gibt es im Ordner des Spiels nicht)', flush=True)
+        else:
+            print(f'Aufnahme: {source}', flush=True)
 
     async def sleep(self, ms):
         try:

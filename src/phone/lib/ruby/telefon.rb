@@ -1,4 +1,4 @@
-# The Telefonspiel in Ruby: say, keys, music, hangup.
+# The Telefonspiel in Ruby: say, play, keys, music, hangup.
 #
 # Every method writes one command as a line of JSON and waits for the
 # answer, so a game is an ordinary program that runs from top to bottom.
@@ -41,6 +41,15 @@ def say(text, interrupt: false, mood: nil)
     command = { 'say' => text.to_s }
     command['interrupt'] = true if interrupt
     command['mood'] = mood.to_s if mood
+    Telefon.command(command)
+    nil
+end
+
+# play a recording of the game's folder (an MP3) in place of the voice;
+# returns when it has been heard. interrupt: true lets a key stop it.
+def play(file, interrupt: false)
+    command = { 'play' => file.to_s }
+    command['interrupt'] = true if interrupt
     Telefon.command(command)
     nil
 end

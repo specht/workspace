@@ -1,4 +1,4 @@
-// The Telefonspiel in JavaScript (Node): say, keys, music, sleep, hangup.
+// The Telefonspiel in JavaScript (Node): say, play, keys, music, sleep, hangup.
 //
 // Every function writes one command as a line of JSON and waits for the
 // answer, so a game is an ordinary program that runs from top to bottom.
@@ -38,6 +38,12 @@ function say(text, { interrupt = false, mood = null } = {}) {
     command({ say: String(text), ...(interrupt ? { interrupt: true } : {}), ...(mood ? { mood: String(mood) } : {}) });
 }
 
+// play a recording of the game's folder (an MP3) in place of the voice;
+// returns when it has been heard. play(file, { interrupt: true }) lets a key stop it.
+function play(file, { interrupt = false } = {}) {
+    command({ play: String(file), ...(interrupt ? { interrupt: true } : {}) });
+}
+
 // wait for up to count keys (# ends early); '' after timeout seconds
 function keys(count = 1, timeout = 10) {
     return command({ keys: count, timeout: Math.round(timeout * 1000) }).keys || '';
@@ -60,4 +66,4 @@ function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }
 // end the call
 function hangup() { command({ hangup: true }); process.exit(0); }
 
-module.exports = { title, subtitle, say, keys, music, sleep, hangup };
+module.exports = { title, subtitle, say, play, keys, music, sleep, hangup };

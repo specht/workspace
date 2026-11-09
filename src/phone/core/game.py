@@ -188,6 +188,11 @@ class Phone:
         """source None or '' stops the music; start and stop come from music_span"""
         raise NotImplementedError
 
+    async def play(self, source, interrupt=False):
+        """a recording of the game's folder in place of the voice (an MP3 the
+        student made); returns when it has been heard, like say"""
+        raise NotImplementedError
+
     async def sleep(self, ms):
         await asyncio.sleep(max(0.0, float(ms)) / 1000)
 
@@ -220,6 +225,9 @@ class Phone:
             return {'ok': True}
         if 'sleep' in command:
             await self.sleep(command['sleep'])
+            return {'ok': True}
+        if 'play' in command:
+            await self.play(str(command['play']), bool(command.get('interrupt')))
             return {'ok': True}
         if 'music' in command:
             source = command['music']

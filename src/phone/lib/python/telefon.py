@@ -1,4 +1,4 @@
-"""The Telefonspiel in Python: say, keys, music, sleep, hangup.
+"""The Telefonspiel in Python: say, play, keys, music, sleep, hangup.
 
 Every function writes one command as a line of JSON and waits for the
 answer, so a game is an ordinary program that runs from top to bottom.
@@ -41,6 +41,15 @@ def say(text, interrupt=False, mood=None):
         command['interrupt'] = True
     if mood:
         command['mood'] = str(mood)
+    _command(command)
+
+
+def play(file, interrupt=False):
+    """play a recording of the game's folder (an MP3) in place of the voice;
+    returns when it has been heard. interrupt=True lets a key stop it."""
+    command = {'play': str(file)}
+    if interrupt:
+        command['interrupt'] = True
     _command(command)
 
 
