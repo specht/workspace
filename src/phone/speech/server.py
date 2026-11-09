@@ -41,6 +41,7 @@ VOICE = os.environ.get('PHONE_VOICE', '/voices/de_DE-thorsten-high.onnx')
 MOOD_VOICE = os.environ.get('PHONE_MOOD_VOICE', '/voices/de_DE-thorsten_emotional-medium.onnx')
 MOODS = ('neutral', 'amused', 'angry', 'disgusted', 'drunk', 'sleepy', 'surprised', 'whisper')
 WORKERS = int(os.environ.get('PHONE_SPEECH_WORKERS', '2'))
+THREADS = int(os.environ.get('PHONE_SPEECH_THREADS', '2'))      # per worker (_load)
 WAITING = int(os.environ.get('PHONE_SPEECH_WAITING', '100'))     # more requests waiting: 503
 MAX_TEXT = 500                                                   # characters per request
 MUSIC_SECONDS = 600                                              # the longest piece: ten minutes from start
@@ -110,12 +111,26 @@ _voice = None
 _mood_voice = None
 
 
+def _load(path):
+    """a voice whose model computes on THREADS threads. Piper's own session
+    takes one thread per core of the machine, and with the service's limit of
+    two processors (config.rb) Docker throttles them: on six cores twice as
+    slow as with two threads, on a server with more cores slower still."""
+    import onnxruntime
+    from piper import PiperVoice
+    voice = PiperVoice.load(path)
+    options = onnxruntime.SessionOptions()
+    options.intra_op_num_threads = THREADS
+    options.inter_op_num_threads = 1
+    voice.session = onnxruntime.InferenceSession(str(path), sess_options=options, providers=['CPUExecutionProvider'])
+    return voice
+
+
 def _load_voice():
     global _voice, _mood_voice
-    from piper import PiperVoice
-    _voice = PiperVoice.load(VOICE)
+    _voice = _load(VOICE)
     if os.path.exists(MOOD_VOICE):
-        _mood_voice = PiperVoice.load(MOOD_VOICE)
+        _mood_voice = _load(MOOD_VOICE)
 
 
 def ready():
