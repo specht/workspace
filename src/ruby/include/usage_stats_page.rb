@@ -1,5 +1,6 @@
 require_relative 'usage_stats'
 require_relative 'workspace_usage'
+require_relative 'server_load'
 
 # /statistik (UsageStats): what is used at which school and where tasks
 # are hard, for the administration, without names. The attempts of the
@@ -61,8 +62,29 @@ class Main < Sinatra::Base
             (c[:tasks][:by_id] || {}).each { |id, t| tasks["#{activity}/#{id}"] ||= t['title'].to_s }
         end
         hours = workspace_hours(now - days * 86_400 - 7 * 86_400)
-        UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
-                        :titles => titles, :tasks => tasks, :schools => school_names)
+        server = server_hours(now - days * 86_400 - 7 * 86_400)
+        first_server = neo4j_query('MATCH (h:ServerHour) RETURN min(h.hour) AS first;').first&.dig('first')
+        "<h1 class='mt-4'>Nutzung</h1>" \
+            "<p class='abstract'>Welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wo sie haken, " \
+            'aus den Ergebnissen der automatischen Prüfung, ohne Namen. Zahlen, die auf weniger als fünf Lernenden beruhen, stehen hier nicht; ' \
+            'Lehrkräfte, die Administration und die Testgruppen zählen nicht mit. Am Ende steht, wie ausgelastet der Server ist.</p>' +
+            UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
+                        :titles => titles, :tasks => tasks, :schools => school_names) +
+            ServerLoad.html(ServerLoad.periods(server, days, now), ServerLoad.rhythm(server), :since => first_server, :today => UsageStats.day_of(now))
+    end
+
+    # /statistik?server=2026-11-09: one day of the server in five-minute steps
+    def server_day_page
+        admins_only!
+        today = Date.today
+        day = (Date.iso8601(params['server'].to_s) rescue today)
+        day = today if day > today
+        start = Time.new(day.year, day.month, day.day).to_i
+        samples = neo4j_query(<<~END_OF_QUERY, :from => start, :to => start + 86_400).map { |r| r['s'].transform_keys(&:to_sym) }
+            MATCH (s:ServerSample) WHERE s.ts >= $from AND s.ts < $to
+            RETURN properties(s) AS s ORDER BY s.ts;
+        END_OF_QUERY
+        ServerLoad.day_html(day, samples, :today => today)
     end
 
     # Running Workspaces, every few minutes from main.rb (WorkspaceUsage)
@@ -77,6 +99,27 @@ class Main < Sinatra::Base
                 h.peak = CASE WHEN coalesce(h.peak, 0) < $peak THEN $peak ELSE h.peak END;
         END_OF_QUERY
         neo4j_query('MATCH (h:WorkspaceHour) WHERE h.hour < $before DELETE h;', :before => Time.now.to_i - WorkspaceUsage::KEEP_DAYS * 86_400)
+    end
+
+    # The server's load (ServerLoad), at the same five minutes: the hour's
+    # numbers and the look itself, which goes after SAMPLE_DAYS
+    @@server_reader = ServerLoad::Reader.new
+
+    def sample_server_load
+        now = Time.now.to_i
+        sample = @@server_reader.read
+        values = sample.merge(:hour => now - now % 3600, :ts => now)
+        neo4j_query(ServerLoad.store_query(sample), values)
+        neo4j_query(ServerLoad.sample_query(sample), values)
+        neo4j_query('MATCH (s:ServerSample) WHERE s.ts < $before DELETE s;', :before => now - ServerLoad::SAMPLE_DAYS * 86_400)
+    end
+
+    # The server's hours of the window, oldest first
+    def server_hours(since)
+        neo4j_query(<<~END_OF_QUERY, :since => since).map { |r| r['h'].transform_keys(&:to_sym) }
+            MATCH (h:ServerHour) WHERE h.hour >= $since
+            RETURN properties(h) AS h ORDER BY h.hour;
+        END_OF_QUERY
     end
 
     # The hours of the window, oldest first: [{ hour:, running:, peak: }]

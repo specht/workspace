@@ -14218,6 +14218,46 @@ html[data-bs-theme="dark"] .interleaving .il-wait {
 .usage-bars-dense {
     gap: 1px;
 }
+/* /statistik, »Server« (server_load.rb): four small charts in percent, two
+   side by side on a wide screen; a day in five-minute steps without gaps */
+.server-plots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem 2rem;
+}
+@media (min-width: 768px) {
+    .server-plots { grid-template-columns: 1fr 1fr; }
+}
+.server-plots .usage-plot.server-plot,
+.server-plots .usage-axis {
+    margin-left: 3em;
+}
+.usage-plot.server-plot {
+    height: 7rem;
+}
+.server-plot .usage-tick > span {
+    white-space: nowrap;
+}
+.server-note {
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+}
+.usage-bars-fine {
+    gap: 0;
+}
+.usage-bars-fine .usage-fill {
+    border-radius: 0;
+}
+a.usage-col {
+    text-decoration: none;
+    cursor: pointer;
+}
+.server-day-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 .usage-col {
     position: relative;
     flex: 1 1 0;

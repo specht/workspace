@@ -1,6 +1,4 @@
 <div class='container'>
-    <h1 class='mt-4'>Nutzung</h1>
-    <p class='abstract'>Welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wo sie haken, aus den Ergebnissen der automatischen Prüfung, ohne Namen. Zahlen, die auf weniger als fünf Lernenden beruhen, stehen hier nicht; Lehrkräfte, die Administration und die Testgruppen zählen nicht mit.</p>
-    #{usage_stats_page}
+    #{params['server'] ? server_day_page : usage_stats_page}
 </div>
 <script src='/include/usage_charts.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

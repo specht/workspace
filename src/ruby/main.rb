@@ -781,12 +781,15 @@ class Main < Sinatra::Base
             'User/server_tag',
             'User/share_tag',
             'WorkspaceHour/hour',
+            'ServerHour/hour',
         ]
         INDEX_LIST = [
             'Test/running',
             'TaskAttempt/task',
             # the window of /statistik (UsageStats)
             'TaskAttempt/ts',
+            # the server's looks, one day at a time and deleted by age (ServerLoad)
+            'ServerSample/ts',
         ]
 
         setup = SetupDatabase.new()
@@ -856,7 +859,8 @@ class Main < Sinatra::Base
         end
 
         # How many Workspaces run, two numbers per hour for /statistik
-        # (include/workspace_usage.rb): who it was stays in memory only.
+        # (include/workspace_usage.rb): who it was stays in memory only. At
+        # the same five minutes the server's load (include/server_load.rb).
         Thread.new do
             loop do
                 sleep(DEVELOPMENT ? 60 : WorkspaceUsage::SECONDS)
@@ -864,6 +868,11 @@ class Main < Sinatra::Base
                     Main.new!.sample_running_workspaces
                 rescue => e
                     STDERR.puts "Counting running Workspaces failed: #{e.class}: #{e.message}"
+                end
+                begin
+                    Main.new!.sample_server_load
+                rescue => e
+                    STDERR.puts "Reading the server's load failed: #{e.class}: #{e.message}"
                 end
             end
         end
