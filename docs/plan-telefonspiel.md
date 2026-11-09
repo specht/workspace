@@ -86,8 +86,12 @@ Why it was flaky:
 - **Moderation by the maintainer**: each submission sends an email with a
   link into the Workspace (login, admins only): title, number, class and
   name, the code, the sentences in order, the music links, a test run in
-  the browser, and the buttons »Veröffentlichen« and »Ablehnen« (with an
-  optional reason the student sees).
+  the browser, and the buttons »Veröffentlichen« and »Ablehnen«. A
+  rejection needs a reason (the maintainer): »Ablehnen« stays disabled
+  until one is written. Either way the student gets an email (the
+  address they log in with): »Dein Spiel … ist unter 123 im Telefonbuch«
+  or »… wurde nicht veröffentlicht: <the reason>«, with a link to the
+  card; the card shows the same.
 - **Taking back** at any time, without moderation: the game is off the
   phone at once and its number free again. A new version of a published
   game is moderated again; the old one stays playable until it is approved.
