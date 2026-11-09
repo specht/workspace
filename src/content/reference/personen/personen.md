@@ -1255,6 +1255,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1975 -->
+<!-- part: thorsten-mueller -->
+### Thorsten Müller
+
+<div class='person'>
+<img src='thorsten-mueller.webp' alt='Thorsten Müller 2025: ein Mann mit Glatze und schmaler Brille in einem dunkelblauen Polohemd, der vor einer grauen Wand in die Kamera lächelt.'>
+<p><strong>Thorsten Müller</strong> aus dem Wetteraukreis bei Frankfurt am Main wollte einen Sprachassistenten bauen, der ohne Cloud auskommt: Kein Mikrofon bei ihm zu Hause sollte, was es hört, an fremde Server schicken. Eine freie deutsche Stimme dafür gab es nicht. Also nahm er ab 2019 abends und an Wochenenden Satz für Satz seine eigene Stimme auf, zusammen mit Dominik Kreutz, der die Aufnahmen bearbeitete. Über die Jahre wurden es mehr als 30 000 Aufnahmen, zusammen über 40 Stunden.</p>
+<p>Er hat seine Stimme verschenkt: Die Aufnahmen stehen unter CC0, alle dürfen damit eine Stimme trainieren. Aus ihnen ist die Stimme gemacht, die in deinem Telefonspiel spricht, auch die Stimmungen: Dafür hat er 300 Sätze in jeder Stimmung aufgenommen.</p>
+<p class='person-credit'>Foto: Thorsten Müller, 2025, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Thorsten_M%C3%BCller_Thorsten-Voice_2025.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1977 -->
 <!-- part: graydon-hoare -->
 ### Graydon Hoare

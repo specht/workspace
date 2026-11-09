@@ -105,8 +105,9 @@ telefon hallo.py
 
 Das Terminal nennt eine Adresse; sie steht auch im Reiter »Ports« neben
 »Terminal«, bei Port 8040. Öffne sie im Browser und klick auf den grünen
-Hörer. Jetzt startet dein Programm, und du hörst seine Stimme. Im Terminal
-steht jeder Satz in dem Moment, in dem er gesprochen wird.
+Hörer. Jetzt startet dein Programm, und du hörst seine Stimme: Es spricht
+Thorsten. Im Terminal steht jeder Satz in dem Moment, in dem er gesprochen
+wird.
 
 Nach der letzten Zeile ist das Programm zu Ende, und damit auch der Anruf. Ein
 Klick auf den Hörer ruft noch einmal an: Das Programm startet dann von vorn.
@@ -121,6 +122,8 @@ _task(hallo)
 mit <code>say</code> und ruf noch einmal an. Achte darauf, wann der zweite
 Satz beginnt: Steht er schon da, während der erste noch gesprochen wird?
 </div>
+
+_person(thorsten-mueller)
 
 ## Musik und Pausen
 
@@ -669,6 +672,54 @@ Flüstern, `surprised` für die Überraschung.
 
 _task(stimmen)
 
+### Aussprache
+
+Thorsten liest alles, was in `say` steht, wie einen deutschen Text. Meistens
+klingt das richtig. Bei Zahlen, Abkürzungen und englischen Wörtern lohnt es
+sich, genau hinzuhören:
+
+<table class='table'>
+<thead><tr><th>Im Text</th><th>Thorsten sagt</th><th>So klingt es anders</th></tr></thead>
+<tbody>
+<tr><td><code>Raum 123</code></td><td>»Raum hundertdreiundzwanzig«</td><td><code>Raum 1 2 3</code>: »Raum eins zwei drei«</td></tr>
+<tr><td><code>ZDF</code></td><td>»Zett De Eff«: Abkürzungen buchstabiert er</td><td></td></tr>
+<tr><td><code>Psst</code>, <code>Hm</code>, <code>Brr</code></td><td>den Laut, nicht die Buchstaben</td><td></td></tr>
+<tr><td><code>Game Over</code></td><td>»Gahme Ohver«, deutsch gelesen</td><td><code>[[ ɡˈeɪm ]] over</code></td></tr>
+</tbody>
+</table>
+
+Ein Komma macht eine kurze Pause, ein Punkt, ein Fragezeichen oder ein
+Ausrufezeichen eine längere. Zwischen zwei doppelten eckigen Klammern steht
+Lautschrift, das Internationale Phonetische Alphabet (IPA): Dann spricht
+Thorsten genau diese Laute. Das Zeichen `ˈ` steht vor der betonten Silbe,
+`ː` macht den Laut davor lang. Meist reicht es, nur das Wort in Lautschrift zu
+schreiben, das falsch klingt: »over« spricht Thorsten so, wie man es auf
+Deutsch meistens sagt.
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+say 'Die Fackel ist aus. [[ ɡˈeɪm ]] over!'
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+say('Die Fackel ist aus. [[ ɡˈeɪm ]] over!')
+```
+<!-- /language -->
+
+Die Lautschrift eines Wortes steht im [Wiktionary](https://de.wiktionary.org)
+unter »Aussprache«, bei englischen Wörtern im
+[englischen Wiktionary](https://en.wiktionary.org). Die Zeichen kopierst du
+von dort. Auf der Seite des Telefons steht die Lautschrift ohne die Klammern.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Lass Thorsten <code>Game Over</code> einmal
+als Text und einmal mit »Game« in Lautschrift sagen. Achte auf den Vokal in
+»Game«.
+</div>
+
 ## Deine Geschichte
 
 ### Erst die Karte
@@ -734,7 +785,7 @@ _task(spieltest)
 
 Ist dein Spiel fertig, kommt es ins [Telefonbuch](/telefonbuch): Dort steht
 es mit seinem Titel und einer Nummer, unter der man es anruft. Such dir die
-Nummer aus, von 001 bis 999. Bevor es im Telefonbuch steht,
+Nummer aus, mit drei oder vier Ziffern. Bevor es im Telefonbuch steht,
 sieht es sich jemand an, und du bekommst eine E-Mail, ob es veröffentlicht
 ist. Im Telefonbuch steht nicht, wer es geschrieben hat, nur der Titel, der
 Satz dazu und die Nummer.
@@ -743,6 +794,7 @@ Vorher gibt dein Spiel sich selbst einen Namen und einen Satz, der im
 Telefonbuch unter dem Namen steht. Beides gehört an den Anfang deiner Datei:
 
 <!-- language: ruby -->
+<!-- page-code: own -->
 ```ruby
 ~ require 'telefon'
 ~
@@ -751,6 +803,7 @@ subtitle 'Ein Abenteuer mit drei Wegen und einem Schatz.'
 ```
 <!-- /language -->
 <!-- language: python -->
+<!-- page-code: own -->
 ```python
 from telefon import keys, music, say, sleep, subtitle, title
 
@@ -778,6 +831,7 @@ wartet auf bis zu drei Tasten, und wer weniger braucht, drückt danach die
 Raute:
 
 <!-- language: ruby -->
+<!-- page-code: own -->
 ```ruby
 def door
   say 'Eine Tür mit einem Zahlenschloss. Gib drei Ziffern ein.'
@@ -792,6 +846,7 @@ end
 ```
 <!-- /language -->
 <!-- language: python -->
+<!-- page-code: own -->
 ```python
 def door():
     say('Eine Tür mit einem Zahlenschloss. Gib drei Ziffern ein.')
@@ -861,4 +916,5 @@ hook: teaser -3
 variants: dark
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Das Telefon im Browser während eines Anrufs bei der Höhle: links ein Telefon mit Display, Tastenfeld und rotem Hörer zum Auflegen; rechts das Gespräch, die Sätze des Spiels in Blasen, die gedrückten Tasten 1 und 2 als kleine Tasten, und der nächste Satz erscheint gerade Wort für Wort.'>
+
 <!-- /tutorial-scope -->
