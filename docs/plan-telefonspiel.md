@@ -83,7 +83,9 @@ Why it was flaky:
   student's submissions: »wartet auf Freigabe«, »veröffentlicht unter
   123«, »abgelehnt« with the reason; the number can be changed while a
   free one is chosen.
-- **Moderation by the maintainer**: each submission sends an email with a
+- **Moderation by the maintainer only** (the maintainer: he is responsible
+  for the website and answers quickly; teachers approve nothing): each
+  submission sends an email with a
   link into the Workspace (login, admins only): title, number, class and
   name, the code, the sentences in order, the music links, a test run in
   the browser, and the buttons »Veröffentlichen« and »Ablehnen«. A
@@ -95,17 +97,22 @@ Why it was flaky:
 - **Taking back** at any time, without moderation: the game is off the
   phone at once and its number free again. A new version of a published
   game is moderated again; the old one stays playable until it is approved.
-- **The Telefonbuch** (the maintainer): the public list of published games
-  at `/telefonbuch`, no login: number, title, the line of description, and
-  the phone number (or that one is being worked on). No names of students.
-  A button »Telefonbuch« on the public start page and on the activity page.
-  The menu on the phone reads the same titles.
-- **Calling from the Telefonbuch** (the maintainer): every game has a
-  button »Anrufen« that opens the phone of `telefon` (the emulator's page)
-  in the visitor's browser, no login. The game runs on the server as a
-  call on the line does (the same runner, the same sandbox without
-  network, the same limit of calls at once, shared with the line); the
-  browser plays speech and music as in the emulator. One call at a time
+- **The Telefonbuch** (the maintainer): the public page `/telefonbuch`, no
+  login, with a button »Telefonbuch« on the public start page and on the
+  activity page. Two things side by side: the phone of `telefon` (the
+  emulator's page) and a phone book, drawn as a book whose pages turn with
+  a click (no dragging needed). Each entry: number, title, the line of
+  description; no names, no classes (the maintainer). The phone book shows
+  the phone number too (or that one is being worked on).
+- **Calling from the Telefonbuch** (the maintainer): the phone on the page
+  is the line itself: a call plays the menu, as on the real number, and
+  the visitor types the three digits from the phone book (or 000); an
+  entry in the book cannot be clicked to start a game. The menu and then
+  the game run on the server as a call on the line does (the same runner,
+  the same sandbox without network, the same limit of calls at once,
+  shared with the line); the browser plays speech and music as in the
+  emulator. Without published games the menu says so and the book is
+  empty. One call at a time
   per visitor, at most 15 minutes, »Alle Leitungen sind belegt« when the
   limit is reached; nothing about the visitor is stored. With a number the
   page also says how to call it (»Ruf 030 … an und gib 123 ein«, or
@@ -317,9 +324,6 @@ loop.
   Callers' numbers are personal data. Store none, or only
   as long as a call lasts, and write it into `src/ruby/include/privacy.rb`
   before going live (docs/datenschutz.md).
-- The Telefonbuch: does it show the class (»aus Klasse 8b«) or nothing
-  about who made a game? May a teacher approve the games of their own
-  class, or only the maintainer?
 - What publishing stores (the copies, titles, statuses, who submitted):
   into `privacy.rb`; deleting an account removes its games.
 - Recording one's own sentences, as before: later, after the first
