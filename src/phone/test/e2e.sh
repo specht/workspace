@@ -18,7 +18,8 @@ cleanup
 docker network create $NET >/dev/null
 docker run -d --name phone-e2e-asterisk --network $NET --network-alias asterisk \
     -v "$HERE/asterisk:/etc/asterisk:ro" phone-asterisk >/dev/null
-chmod 777 "$CACHE"
+# a new folder for the container; on later runs it belongs to the speech user
+chmod 777 "$CACHE" 2>/dev/null || true
 docker run -d --name phone-e2e-speech --network $NET --network-alias phone-speech \
     -v "$HERE/speech:/app:ro" -v "$CACHE:/cache" phone-speech >/dev/null
 docker run -d --name phone-e2e-runner --network $NET --network-alias runner \

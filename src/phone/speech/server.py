@@ -5,7 +5,9 @@ speech workers, so ten calls and a class trying their games at once share
 the processor instead of fighting for it.
 
     GET /speech?text=…&format=wav|f32   a sentence or a few, 16 kHz mono
-    GET /music?source=…&format=mp3|f32  a YouTube link, 16 kHz mono, looped by the client
+    GET /music?source=…&format=mp3|f32[&start=75][&stop=112]
+                                        a YouTube link, 16 kHz mono, looped by the client:
+                                        from start (seconds) to stop, at most ten minutes
     GET /health
 
 Music comes only from YouTube: the service fetches nothing else, so no one
@@ -36,7 +38,7 @@ VOICE = os.environ.get('PHONE_VOICE', '/voices/de_DE-thorsten-high.onnx')
 WORKERS = int(os.environ.get('PHONE_SPEECH_WORKERS', '2'))
 WAITING = int(os.environ.get('PHONE_SPEECH_WAITING', '100'))     # more requests waiting: 503
 MAX_TEXT = 500                                                   # characters per request
-MUSIC_SECONDS = 600                                              # the first ten minutes of a piece
+MUSIC_SECONDS = 600                                              # the longest piece: ten minutes from start
 KEEP_DAYS = 90                      # speech and music not played for this long are deleted (privacy.rb)
 YOUTUBE = re.compile(r'^https://(www\.|m\.|music\.)?(youtube\.com/(watch\?v=|shorts/)|youtu\.be/)[\w-]{6,}([?&][\w=&%.-]*)?$')
 
@@ -186,27 +188,54 @@ def download(source, raw):
                    check=True, timeout=300, stdin=subprocess.DEVNULL, env=yt_dlp_env())
 
 
-def fetch_youtube(source, path):
-    raw = path + '.download'
+def fetch_youtube(source, raw):
+    """the video's audio as YouTube sends it, kept beside the pieces cut
+    from it, so another start or stop needs no second download"""
+    tmp = raw + '.download'
     try:
         try:
-            download(source, raw)
+            download(source, tmp)
         except subprocess.CalledProcessError:
             if not update_yt_dlp(f'download of {source} failed'):
                 raise
-            download(source, raw)
-        pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', raw, '-t', str(MUSIC_SECONDS),
-                              '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
-                             check=True, capture_output=True, timeout=300).stdout
+            download(source, tmp)
+        os.replace(tmp, raw)
     finally:
-        if os.path.exists(raw):
-            os.remove(raw)
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+
+def cut(raw, start, length, path):
+    """the piece from start, length seconds long, 16 kHz mono float32"""
+    pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-ss', f'{start:g}', '-i', raw, '-t', f'{length:g}',
+                          '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
+                         check=True, capture_output=True, timeout=300).stdout
     samples = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
+    if len(samples) < RATE // 10:
+        # the one message students see (in the terminal, through the page)
+        raise ValueError(f'Das Video ist kürzer als {start:g} Sekunden; start liegt dahinter.')
     # roughly as loud as the voice: the music's peaks normalised
-    peak = float(np.percentile(np.abs(samples), 99.5)) if len(samples) else 0.0
+    peak = float(np.percentile(np.abs(samples), 99.5))
     if peak > 0:
         samples = np.clip(samples / peak * 0.7, -1, 1).astype(np.float32)
     store(path, samples.astype(np.float32).tobytes())
+
+
+def span(query):
+    """start and stop of a /music request in seconds: (0.0, None) for the
+    first ten minutes; ValueError for anything else than two times in order"""
+    def number(name):
+        value = query.get(name, '').strip()
+        if not value:
+            return None
+        result = float(value)
+        if not 0 <= result < 24 * 3600:
+            raise ValueError(f'{name} out of range')
+        return result
+    start, stop = number('start') or 0.0, number('stop')
+    if stop is not None and stop <= start:
+        raise ValueError('stop must come after start')
+    return start, stop
 
 
 def to_mp3(f32_path, mp3_path):
@@ -283,17 +312,29 @@ class Service:
         source = request.query.get('source', '').strip()
         if not YOUTUBE.match(source):
             raise web.HTTPBadRequest(text='only YouTube links (https://www.youtube.com/watch?v=… or https://youtu.be/…)')
-        f32 = cache_path('music', source, '.f32')
+        try:
+            start, stop = span(request.query)
+        except ValueError as error:
+            raise web.HTTPBadRequest(text=str(error))
+        length = min(stop - start, MUSIC_SECONDS) if stop is not None else MUSIC_SECONDS
+        # the whole beginning keeps the key it always had
+        key = source if not start and stop is None else f'{source}\n{start:g}-{"" if stop is None else f"{stop:g}"}'
+        raw = cache_path('music', source, '.audio')
+        f32 = cache_path('music', key, '.f32')
         started = time.monotonic()
         try:
-            await self.once(f32, self.music_pool, fetch_youtube, source, f32)
+            if not os.path.exists(f32):
+                await self.once(raw, self.music_pool, fetch_youtube, source, raw)
+            await self.once(f32, self.music_pool, cut, raw, start, length, f32)
         except subprocess.SubprocessError as error:
             log('music failed:', source, error)
             raise web.HTTPBadGateway(text='could not fetch this video')
-        log(f'music {source} in {time.monotonic() - started:.2f} s')
+        except ValueError as error:
+            raise web.HTTPBadRequest(text=str(error))
+        log(f'music {key!r} in {time.monotonic() - started:.2f} s')
         if request.query.get('format') == 'f32':
             return web.FileResponse(f32)
-        mp3 = cache_path('music', source, '.mp3')
+        mp3 = cache_path('music', key, '.mp3')
         await self.once(mp3, self.music_pool, to_mp3, f32, mp3)
         return web.FileResponse(mp3, headers={'Content-Type': 'audio/mpeg', 'Cache-Control': 'max-age=86400'})
 

@@ -15,7 +15,10 @@ def _command(data):
     line = sys.stdin.readline()
     if not line:                      # the caller hung up
         raise SystemExit(0)
-    return json.loads(line)
+    answer = json.loads(line)
+    if answer.get('error'):           # a wrong argument (a time that is none)
+        raise ValueError(answer['error'])
+    return answer
 
 
 def say(text):
@@ -28,10 +31,12 @@ def keys(count=1, timeout=10):
     return _command({'keys': int(count), 'timeout': int(timeout * 1000)}).get('keys', '')
 
 
-def music(source, volume=1.0):
+def music(source, volume=1.0, start=None, stop=None):
     """background music (a YouTube link or a file in the game's folder),
-    looped, quieter while speaking; music(None) stops it"""
-    _command({'music': source, 'volume': volume})
+    looped, quieter while speaking; music(None) stops it. start and stop in
+    seconds (75) or as '1:15': the piece from start to stop, looped; a
+    YouTube link with t= starts there."""
+    _command({'music': source, 'volume': volume, 'start': start, 'stop': stop})
 
 
 def sleep(seconds):

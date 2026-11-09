@@ -136,11 +136,18 @@ Workspace: telefon spiel.rb ── the same game code (core/game.py) ───�
   server already found them by reading the script).
 - **Music:** a YouTube link goes to the speech service (it fetches nothing
   else, so no one can make it fetch an address inside the network): yt-dlp,
-  the first ten minutes at 16 kHz, normalised, cached; about 10 s the first
-  time. yt-dlp updates itself (PyPI, daily and after a failed download),
+  the audio kept as YouTube sends it, and from it the piece the game asks
+  for (`start`, `stop`; without them the first ten minutes, never more than
+  ten) at 16 kHz, normalised, cached; about 10 s the first time, another
+  piece of the same video a fraction of a second. yt-dlp updates itself (PyPI, daily and after a failed download),
   since YouTube refuses old versions. Publishing is to fetch it in advance, so a call meets only finished
   files. A file in the game's folder is read by the runner or the emulator
   itself, never outside that folder.
+- **Pieces and loops:** `music` takes `start` and `stop` in seconds or as
+  `'1:15'` (also a `t=` in a YouTube link); the phone loops the piece from
+  start to stop. `core/game.py` (`music_span`) reads the times for the
+  runner and the emulator alike; a wrong one is an error in the game, at its
+  line. A new `music` replaces the playing one at once (no crossfade).
 
 ## The protocol
 
@@ -150,7 +157,8 @@ object, so any language can play:
 ```text
 → {"say": "Willkommen im Labyrinth."}
 → {"sleep": 1000}
-→ {"music": "https://youtu.be/…", "volume": 0.3}
+→ {"music": "https://youtu.be/…", "volume": 0.3, "start": "1:15", "stop": 112}
+← {"ok": true}                   or {"error": "music: …"} for a time that is none
 → {"keys": 1}                    ask for up to 1 key
 ← {"keys": "4"}                  the caller pressed 4 ("" after a timeout)
 → {"hangup": true}

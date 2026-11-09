@@ -81,7 +81,7 @@ class Emulator(game.Phone):
         if 0 <= part < len(parts):
             show(f'Telefon: {parts[part]}', '1;36')
 
-    async def music(self, source, volume=1.0):
+    async def music(self, source, volume=1.0, start=0.0, stop=None):
         try:
             volume = max(0.0, min(1.0, float(volume)))
         except (TypeError, ValueError):
@@ -94,9 +94,19 @@ class Emulator(game.Phone):
         if not re.match(r'https?://', source) and game.game_file(self.server.folder, source) is None:
             show(f'Musik: Die Datei {source} gibt es im Ordner des Spiels nicht.', '33')
             return
-        show(f'Musik: {source} (Lautstärke {volume:g})', '2')
+        show(f'Musik: {source}{game.span_text(start, stop)} (Lautstärke {volume:g})', '2')
+        # a YouTube link: the speech service cuts the piece; a file of the
+        # game: the page plays it from start and loops back there at stop
+        query = {'source': source}
+        youtube = bool(re.match(r'https?://', source))
+        if youtube:
+            query.update({'start': f'{start:g}'} if start else {})
+            query.update({'stop': f'{stop:g}'} if stop is not None else {})
+        event = {'music': '/music?' + urllib.parse.urlencode(query), 'volume': volume}
+        if not youtube and (start or stop is not None):
+            event['loop'] = [start, stop]
         # as on the phone, the game goes on when the music plays (or failed)
-        await self.until_heard({'music': '/music?' + urllib.parse.urlencode({'source': source}), 'volume': volume})
+        await self.until_heard(event)
 
     async def read_keys(self, count, timeout_ms):
         self.server.send({'keys': count, 'timeout': timeout_ms})
@@ -267,7 +277,8 @@ class Server:
         elif method == 'GET' and path == '/music':
             source = query.get('source', '')
             if re.match(r'https?://', source):
-                await self.proxy(writer, '/music', {'source': source, 'format': 'mp3'}, 330)
+                params = {k: query[k] for k in ('start', 'stop') if query.get(k)}
+                await self.proxy(writer, '/music', {'source': source, 'format': 'mp3', **params}, 330)
             else:
                 file = game.game_file(self.folder, source)
                 if file is None:
@@ -312,13 +323,13 @@ class TestPhone(game.Phone):
     async def say(self, text):
         print(f'Telefon: {" ".join(str(text).split())}', flush=True)
 
-    async def music(self, source, volume=1.0):
+    async def music(self, source, volume=1.0, start=0.0, stop=None):
         if not source:
             print('Musik: aus', flush=True)
         elif not re.match(r'https?://', str(source)) and game.game_file(self.folder, str(source)) is None:
             print(f'Musik: {source} (diese Datei gibt es im Ordner des Spiels nicht)', flush=True)
         else:
-            print(f'Musik: {source}', flush=True)
+            print(f'Musik: {source}{game.span_text(start, stop)}', flush=True)
 
     async def sleep(self, ms):
         try:

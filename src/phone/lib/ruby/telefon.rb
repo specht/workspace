@@ -15,7 +15,10 @@ module Telefon
         $stdout.write(JSON.generate(data) + "\n")
         line = $stdin.gets
         exit 0 if line.nil?           # the caller hung up
-        JSON.parse(line)
+        answer = JSON.parse(line)
+        # a wrong argument (a time that is none): an error at the game's own line
+        raise ArgumentError, answer['error'], caller.reject { |l| l.start_with?(__FILE__) } if answer['error']
+        answer
     end
 end
 
@@ -31,9 +34,11 @@ def keys(count = 1, timeout: 10)
 end
 
 # background music (a YouTube link or a file in the game's folder), looped,
-# quieter while speaking; music(nil) stops it
-def music(source, volume: 1.0)
-    Telefon.command('music' => source, 'volume' => volume)
+# quieter while speaking; music(nil) stops it. start and stop in seconds
+# (75) or as '1:15': the piece from start to stop, looped; a YouTube link
+# with t= starts there.
+def music(source, volume: 1.0, start: nil, stop: nil)
+    Telefon.command('music' => source, 'volume' => volume, 'start' => start, 'stop' => stop)
     nil
 end
 

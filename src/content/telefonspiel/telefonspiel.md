@@ -160,6 +160,21 @@ erst holt. Danach liegt es bereit. Statt eines Links geht auch eine Datei aus
 deinem Ordner, etwa `music 'hoehle.mp3'`; nimm dafür MP3, das spielt jeder
 Browser.
 
+<!-- language: ruby -->
+Brauchst du nur eine Stelle aus einem längeren Video, sag, wo sie anfängt
+und wo sie aufhört: `music '…', start: '1:15', stop: '1:52'` spielt die
+Musik von Minute 1:15 bis 1:52 und dann wieder ab 1:15. Ohne `stop` geht es
+ab `start` weiter. Kopierst du bei YouTube mit »Teilen« einen Link ab einer
+Stelle, endet er auf `t=75`; auch dann beginnt die Musik dort.
+<!-- /language -->
+<!-- language: python -->
+Brauchst du nur eine Stelle aus einem längeren Video, sag, wo sie anfängt
+und wo sie aufhört: `music('…', start='1:15', stop='1:52')` spielt die
+Musik von Minute 1:15 bis 1:52 und dann wieder ab 1:15. Ohne `stop` geht es
+ab `start` weiter. Kopierst du bei YouTube mit »Teilen« einen Link ab einer
+Stelle, endet er auf `t=75`; auch dann beginnt die Musik dort.
+<!-- /language -->
+
 `sleep` wartet, so viele Sekunden, wie du angibst. Die Musik spielt dabei
 weiter.
 
@@ -604,8 +619,8 @@ Was ein Spiel am Telefon gut macht:
   man sich leichter als am Anfang.
 - **Nichts drücken ist auch eine Wahl.** Wiederhol die Szene, oder lass
   etwas passieren: Wer im Wald zu lange wartet, hört Schritte.
-- **Musik passend zur Szene.** `music` darf auch mitten im Spiel stehen;
-  dann wechselt die Musik.
+- **Musik passend zur Szene.** `music` darf auch mitten im Spiel stehen,
+  etwa am Anfang der Funktion einer Szene; dann wechselt die Musik.
 
 _task(geschichte)
 

@@ -79,6 +79,28 @@ class PhoneCheckTest < Minitest::Test
         assert_equal 'Nach der Taste 2 bricht das Spiel in Zeile 8 mit einem Fehler ab: `TypeError: can only concatenate str (not "int") to str`', result.message
     end
 
+    def test_an_error_inside_a_function_names_its_line
+        game = <<~RUBY
+            require 'telefon'
+            def cave
+              say 'Vor der Höhle.'
+              say 'Drinnen ' + 5
+            end
+            cave
+        RUBY
+        result = play({ 'telefon/spiel.rb' => game }, 'telefon/spiel.rb', [{ 'keys' => '', 'ends' => true }])
+        assert_match(/\AOhne eine Taste bricht das Spiel in Zeile 4 mit einem Fehler ab/, result.message)
+        python = "from telefon import say\ndef cave():\n    say('Vor der Höhle.')\n    say('Drinnen ' + 5)\ncave()\n"
+        result = play({ 'telefon/spiel.py' => python }, 'telefon/spiel.py', [{ 'keys' => '', 'ends' => true }])
+        assert_match(/\AOhne eine Taste bricht das Spiel in Zeile 4 mit einem Fehler ab/, result.message)
+    end
+
+    def test_a_wrong_time_for_the_music_is_an_error_at_its_line
+        game = "require 'telefon'\nmusic 'musik.mp3', start: '1:75'\nsay 'Hallo.'\n"
+        result = play({ 'telefon/spiel.rb' => game, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb', [{ 'keys' => '', 'ends' => true }])
+        assert_match(/\AOhne eine Taste bricht das Spiel in Zeile 2 mit einem Fehler ab: `music: start »1:75« ist keine Zeit/, result.message)
+    end
+
     def test_a_game_that_goes_on_is_not_over
         game = RUBY_GAME.sub('hangup', "keys(1)\nhangup")
         result = play({ 'telefon/spiel.rb' => game, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb')

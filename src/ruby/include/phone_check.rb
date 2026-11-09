@@ -162,7 +162,10 @@ module PhoneCheck
             lines_ = errors.reject { |e| e.strip.empty? || e.match?(/\A\s/) || e.start_with?('Traceback') }
             last = lines_.reverse.find { |e| e.match?(/(Error|Exception)\b/) } || lines_.last || errors.last
             name = File.basename(c['file'].to_s)
-            line = errors.reverse.map { |e| e[/File ".*?#{Regexp.escape(name)}", line (\d+)/, 1] || e[/#{Regexp.escape(name)}:(\d+)/, 1] }.compact.first
+            # the innermost line of the game's own file: Python lists it last,
+            # Ruby and Node first (a function called from a function)
+            frames = name.end_with?('.py') ? errors.reverse : errors
+            line = frames.map { |e| e[/File ".*?#{Regexp.escape(name)}", line (\d+)/, 1] || e[/#{Regexp.escape(name)}:(\d+)/, 1] }.compact.first
             where = line ? " in Zeile #{line}" : ''
             return "#{when_} bricht das Spiel#{where} mit einem Fehler ab#{last ? ": `#{last.strip.sub(/\A.*?:\d+:in '[^']*': /, '')}`" : '.'}"
         end

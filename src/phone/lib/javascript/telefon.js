@@ -22,7 +22,9 @@ function command(data) {
         if (one[0] === 10) break;
         bytes.push(one[0]);
     }
-    return JSON.parse(Buffer.from(bytes).toString('utf8'));
+    const answer = JSON.parse(Buffer.from(bytes).toString('utf8'));
+    if (answer.error) throw new Error(answer.error);   // a wrong argument (a time that is none)
+    return answer;
 }
 
 // speak the text; returns when it has been said
@@ -35,7 +37,14 @@ function keys(count = 1, timeout = 10) {
 
 // background music (a YouTube link or a file in the game's folder), looped,
 // quieter while speaking; music(null) stops it
-function music(source, volume = 1) { command({ music: source, volume }); }
+// music(source, { volume, start, stop }): start and stop in seconds (75) or
+// as '1:15', the piece from start to stop, looped; a YouTube link with t=
+// starts there. music(source, 0.5) sets only the volume.
+function music(source, options = {}) {
+    if (typeof options === 'number') options = { volume: options };
+    const { volume = 1, start = null, stop = null } = options;
+    command({ music: source, volume, start, stop });
+}
 
 // wait; the music keeps playing, keys pressed meanwhile are kept
 function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }

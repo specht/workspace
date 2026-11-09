@@ -407,7 +407,9 @@ function stopMusic() {
 
 // audio first: the page says nothing about the music; a problem goes only
 // to the terminal
-async function music(url, volume, id) {
+// loop: [start, stop] in seconds for a file of the game (stop null: its
+// end); a YouTube piece comes cut by the speech service
+async function music(url, volume, id, loop) {
     stopMusic();
     if (!url) return;
     const mine = ++musicRequest;
@@ -419,7 +421,14 @@ async function music(url, volume, id) {
         musicSource.loop = true;
         musicGain.gain.value = volume * evenOut(buffer);
         musicSource.connect(musicGain);
-        musicSource.start();
+        if (loop) {
+            const from = Math.min(loop[0] || 0, buffer.duration);
+            const to = loop[1] == null ? buffer.duration : Math.min(loop[1], buffer.duration);
+            if (to > from) { musicSource.loopStart = from; musicSource.loopEnd = to; }
+            musicSource.start(0, from);
+        } else {
+            musicSource.start();
+        }
     } catch (error) {
         const source = decodeURIComponent(url.split('source=')[1] || '');
         post('/problem', 'Die Musik ließ sich nicht laden (' + source + '): ' + error.message);
@@ -565,7 +574,7 @@ events.onmessage = message => {
     } else if (e.say) {
         say(e.say, e.id);
     } else if ('music' in e) {
-        music(e.music, e.volume, e.id);
+        music(e.music, e.volume, e.id, e.loop);
     } else if (e.keys) {
         waiting(e.keys, e.timeout);
     } else if ('keysDone' in e) {

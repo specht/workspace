@@ -38,8 +38,9 @@ def is_youtube(source):
     return bool(re.match(r'https?://', source))
 
 
-def _decode_file(path):
-    pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', path, '-t', str(MUSIC_SECONDS),
+def _decode_file(path, start=0.0, stop=None):
+    length = (stop - start) if stop is not None else MUSIC_SECONDS
+    pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-ss', f'{start:g}', '-i', path, '-t', f'{length:g}',
                           '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
                          check=True, capture_output=True, timeout=120).stdout
     samples = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
@@ -49,14 +50,17 @@ def _decode_file(path):
     return samples
 
 
-async def music(session, folder, source):
+async def music(session, folder, source, start=0.0, stop=None):
+    """the piece from start to stop (game.music_span), which the mixer loops"""
     if is_youtube(source):
-        data = await _get(session, '/music', source=source, format='f32')
+        span = {'start': f'{start:g}'} if start else {}
+        span.update({'stop': f'{stop:g}'} if stop is not None else {})
+        data = await _get(session, '/music', source=source, format='f32', **span)
         return np.frombuffer(data, dtype=np.float32)
     path = game_file(folder, source)
     if path is None:
         raise FileNotFoundError(source)
-    key = (path, os.path.getmtime(path))
+    key = (path, os.path.getmtime(path), start, stop)
     if key not in _files:
-        _files[key] = await asyncio.get_running_loop().run_in_executor(None, _decode_file, path)
+        _files[key] = await asyncio.get_running_loop().run_in_executor(None, _decode_file, path, start, stop)
     return _files[key]

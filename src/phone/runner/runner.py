@@ -131,13 +131,13 @@ class Call(game.Phone):
         if heard:
             await heard
 
-    async def music(self, source, volume=1.0):
-        self.log('music', source, volume)
+    async def music(self, source, volume=1.0, start=0.0, stop=None):
+        self.log('music', source, volume, start, stop)
         if not source:
             self.mixer.set_music(None)
             return
         try:
-            samples = await sounds.music(self.runner.session, self.folder, str(source))
+            samples = await sounds.music(self.runner.session, self.folder, str(source), start, stop)
         except Exception as error:
             self.log('music failed:', repr(error))
             return

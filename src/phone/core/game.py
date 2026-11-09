@@ -48,6 +48,84 @@ def game_file(folder, source):
     return path
 
 
+# the longest piece of music: from start, at most ten minutes (the speech
+# service and the runner cut no more)
+MUSIC_SECONDS = 600
+
+
+def clock(seconds):
+    """75 → '1:15', 3723.5 → '1:02:03.5'"""
+    whole, frac = divmod(round(seconds, 2), 1)
+    h, rest = divmod(int(whole), 3600)
+    m, s = divmod(rest, 60)
+    text = f'{h}:{m:02d}:{s:02d}' if h else f'{m}:{s:02d}'
+    return text + (f'{frac:.2f}'.rstrip('0')[1:] if frac else '')
+
+
+def seconds(value, name):
+    """a time as a game writes it: 75, 75.5, '75', '1:15' or '1:02:03'; None stays None"""
+    if value is None or value == '':
+        return None
+    if isinstance(value, bool):
+        raise ValueError(f'music: {name} ist keine Zeit')
+    if isinstance(value, (int, float)):
+        result = float(value)
+    else:
+        text = str(value).strip()
+        m = re.fullmatch(r'(?:(\d+):)?(?:(\d+):)?(\d+(?:\.\d+)?)', text)
+        if not m:
+            raise ValueError(f"music: {name} »{value}« ist keine Zeit; schreib Sekunden (75) oder Minuten und Sekunden ('1:15')")
+        parts = [float(p) for p in m.groups() if p is not None]
+        if any(p >= 60 for p in parts[1:]):
+            raise ValueError(f"music: {name} »{value}« ist keine Zeit; nach einem Doppelpunkt kommen höchstens 59 Sekunden oder Minuten")
+        result = 0.0
+        for p in parts:
+            result = result * 60 + p
+    if not result >= 0:
+        raise ValueError(f'music: {name} darf nicht negativ sein')
+    return result
+
+
+def youtube_start(source):
+    """the link without the start YouTube puts into a shared link (t=75,
+    t=1m15s, start=75), and that start in seconds or None"""
+    m = re.search(r'([?&])(t|start)=(\d+h)?(\d+m)?(\d+)?s?(?=&|#|$)', source)
+    if not m or not any(m.group(i) for i in (3, 4, 5)):
+        return source, None
+    h, mi, se = (int((m.group(i) or '0').rstrip('hm')) for i in (3, 4, 5))
+    before, after = source[:m.start()], source[m.end():]
+    # »?t=5&x« → »?x«, »&t=5&x« → »&x«, »&t=5« → »«
+    rest = before + m.group(1) + after[1:] if after.startswith('&') else before + after
+    return rest, float(h * 3600 + mi * 60 + se)
+
+
+def music_span(source, start=None, stop=None):
+    """(source, start, stop) as the phone plays it: start in seconds (from a
+    t= in a YouTube link if not given), stop in seconds or None for ten
+    minutes after start. The piece loops from start to stop. ValueError with
+    a message for the game when a time is wrong."""
+    source = str(source)
+    begin = seconds(start, 'start')
+    end = seconds(stop, 'stop')
+    if re.match(r'https?://', source):
+        source, linked = youtube_start(source)
+        if begin is None:
+            begin = linked
+    begin = begin or 0.0
+    if end is not None:
+        if end <= begin:
+            raise ValueError(f'music: stop ({clock(end)}) muss nach start ({clock(begin)}) kommen')
+        end = min(end, begin + MUSIC_SECONDS)
+    return source, begin, end
+
+
+def span_text(start, stop):
+    """' von 1:15 bis 1:52' for the terminal; '' for the whole piece"""
+    if stop is not None:
+        return f' von {clock(start)} bis {clock(stop)}'
+    return f' ab {clock(start)}' if start else ''
+
+
 def environment(base=None):
     """the libraries of every language on their search paths"""
     env = dict(base if base is not None else os.environ)
@@ -76,7 +154,8 @@ class Phone:
     async def say(self, text):
         raise NotImplementedError
 
-    async def music(self, source, volume=1.0):
+    async def music(self, source, volume=1.0, start=0.0, stop=None):
+        """source None or '' stops the music; start and stop come from music_span"""
         raise NotImplementedError
 
     async def sleep(self, ms):
@@ -106,7 +185,15 @@ class Phone:
             await self.sleep(command['sleep'])
             return {'ok': True}
         if 'music' in command:
-            await self.music(command['music'], command.get('volume', 1.0))
+            source = command['music']
+            if not source:
+                await self.music(None, 1.0)
+                return {'ok': True}
+            try:
+                source, start, stop = music_span(source, command.get('start'), command.get('stop'))
+            except ValueError as error:
+                return {'error': str(error)}
+            await self.music(source, command.get('volume', 1.0), start, stop)
             return {'ok': True}
         if 'keys' in command:
             digits = await self.read_keys(max(1, int(command['keys'])), float(command.get('timeout', 10000)))
