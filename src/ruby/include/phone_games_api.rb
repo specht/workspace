@@ -263,7 +263,7 @@ class Main < Sinatra::Base
             direct ? "Ruf #{number} mit der Nummer des Spiels dahinter an, zum Beispiel #{number} 123." :
                 "Ruf #{number} an und gib die Nummer des Spiels ein."
         else
-            'Wir arbeiten daran, eine echte Telefonnummer zu bekommen.'
+            nil      # without a number the book says nothing about one
         end
         # the notes stand at the end of the book, as a remark (phone_book.js)
         notes = { :line => line, :random => 'Mit der Nummer 000 kommt ein Spiel, das der Zufall aussucht.',

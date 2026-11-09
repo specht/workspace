@@ -31,7 +31,7 @@ module PhoneGames
     # games of the Workspace itself, always in the Telefonbuch, their numbers
     # never free (src/phone/games)
     FIXED = [
-        { :number => '555', :title => 'Hotline des Hackschule Workspace', :description => 'Alle Leitungen sind belegt. Bitte bleiben Sie dran.',
+        { :number => '555', :title => 'Hotline des Hackschule Workspace', :description => 'Hilfe bei allen Fragen rund um den Workspace, rund um die Uhr.',
           :folder => '/src/phone/games/hotline', :file => 'hotline.rb' },
     ].freeze
     STATES = %w[pending published rejected].freeze

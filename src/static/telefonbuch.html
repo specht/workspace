@@ -102,7 +102,8 @@
     .phone-book-entry { padding: .45rem 0; border-bottom: 1px dotted var(--pb-rule); }
     .phone-book-entry .pb-line { display: flex; align-items: baseline; gap: .4rem; }
     .phone-book-entry .pb-title { font-weight: 700; font-size: 1.05rem; line-height: 1.3; text-align: left; }
-    .phone-book-entry .pb-dots { flex: 1; border-bottom: 2px dotted var(--pb-quiet); transform: translateY(-.25em); opacity: .6; }
+    /* the leader sits on the baseline, as in a printed list */
+    .phone-book-entry .pb-dots { flex: 1; align-self: baseline; height: 0; border-bottom: 2px dotted var(--pb-quiet); opacity: .6; }
     .phone-book-entry .pb-number { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums lining-nums; letter-spacing: .04em; }
     .phone-book-entry .pb-description { color: var(--pb-quiet); font-style: italic; font-size: .92rem; margin-top: .05rem; text-align: left; }
     .pb-remark { margin-top: 1.2rem; padding-top: .7rem; border-top: 1px solid var(--pb-ink); font-size: .95rem; }
@@ -128,7 +129,6 @@
     .phone-book-turning.backward { left: 10px; transform-origin: right center; }
     .phone-book-turning > div { position: absolute; inset: 0; backface-visibility: hidden; }
     .phone-book-turning > .back { transform: rotateY(180deg); }
-    .phone-book-controls { display: flex; justify-content: space-between; align-items: center; margin-top: .8rem; }
     @media (max-width: 640px) {
         .phone-book-spread { grid-template-columns: 1fr; }
         .phone-book-leaf.left { display: none; }
@@ -144,18 +144,10 @@
     #{phone_book_page}
     <div class='phone-book-layout'>
         <div class='phone-book-phone' aria-label='Telefon'>
-            <div class='glass'>
-                <i class='bi bi-telephone'></i>
-                <p>Hier kannst du bald anrufen: Das Telefon spielt das Menü, und du tippst die Nummer aus dem Telefonbuch ein.</p>
-            </div>
+            <div class='glass'></div>
         </div>
         <div>
             <div class='phone-book' id='phone-book'></div>
-            <div class='phone-book-controls'>
-                <button class='btn btn-outline-secondary btn-sm' id='phone-book-back' aria-label='Zurückblättern'><i class='bi bi-chevron-left'></i></button>
-                <span class='text-muted small' id='phone-book-where'></span>
-                <button class='btn btn-outline-secondary btn-sm' id='phone-book-next' aria-label='Weiterblättern'><i class='bi bi-chevron-right'></i></button>
-            </div>
         </div>
     </div>
 </div>

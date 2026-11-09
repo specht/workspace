@@ -31,9 +31,10 @@
     function pageHtml(index) {
         const list = pages[index];
         if (!list) return '';
-        const range = list.length ? `${letter(list[0].title)} – ${letter(list[list.length - 1].title)}` : '';
+        const first = list.length ? letter(list[0].title) : '', last = list.length ? letter(list[list.length - 1].title) : '';
+        const range = first === last ? first : `${first} – ${last}`;
         const remark = notes && index === remarkPage
-            ? `<div class='pb-remark'><div class='pb-remark-head'>Anmerkung</div><p>${esc(notes.line)} ${esc(notes.random)}</p>` +
+            ? `<div class='pb-remark'><div class='pb-remark-head'>Anmerkung</div><p>${notes.line ? esc(notes.line) + ' ' : ''}${esc(notes.random)}</p>` +
               `<p>${esc(notes.own)} <a href='${esc(notes.href)}'>${esc(notes.link)}</a></p></div>` : '';
         const body = list.length ? list.map((e) =>
             `<div class='phone-book-entry'><div class='pb-line'><span class='pb-title'>${esc(e.title)}</span><span class='pb-dots'></span>` +
@@ -52,10 +53,6 @@
     function render() {
         if (!narrow()) at -= at % 2;
         book.innerHTML = `<div class='phone-book-spread'>${narrow() ? leaf('right', at) : leaf('left', at) + leaf('right', at + 1)}</div>`;
-        const last = Math.min(pages.length, at + step());
-        document.getElementById('phone-book-where').textContent = pages.length > 1 ? `Seite ${at + 1}${last > at + 1 ? `–${last}` : ''} von ${pages.length}` : '';
-        document.getElementById('phone-book-back').disabled = at === 0;
-        document.getElementById('phone-book-next').disabled = at + step() >= pages.length;
     }
 
     // a page turns around the spine: its front is the page it was, its back
@@ -97,8 +94,6 @@
         if (!page || page.classList.contains('empty')) return;
         turn(page.dataset.side === 'left' ? -1 : 1);
     });
-    document.getElementById('phone-book-back').addEventListener('click', () => turn(-1));
-    document.getElementById('phone-book-next').addEventListener('click', () => turn(1));
     document.addEventListener('keydown', (e) => {
         if (e.target.closest('input, textarea, select')) return;
         if (e.key === 'ArrowLeft') turn(-1);
