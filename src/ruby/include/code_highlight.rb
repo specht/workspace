@@ -24,6 +24,37 @@ module CodeHighlight
     # are punctuation.
     LONE_BRACKETS = /\A[\]\)\}\[\(\{]+\z/
 
+    # Comparison tables (the Handbuch's Ruby beside Python): a column whose
+    # head names a language has its code highlighted like a code block, in
+    # small chips (default.css, .table code.code-chip; the theme in _template.html)
+    TABLE_LANGUAGES = {
+        'Ruby' => 'ruby', 'Python' => 'python', 'JavaScript' => 'javascript', 'Dart' => 'dart',
+        'Java' => 'java', 'C' => 'c', 'SQL' => 'sql', 'Cypher' => 'workspace-cypher',
+    }.freeze
+
+    def self.highlight_tables(root)
+        formatter = Rouge::Formatters::HTML.new
+        root.css('table').each do |table|
+            head = table.at_css('thead tr')
+            next unless head
+
+            languages = head.xpath('./th|./td').map { |cell| TABLE_LANGUAGES[cell.text.strip] }
+            next if languages.compact.empty?
+
+            table.css('tbody tr').each do |row|
+                row.xpath('./th|./td').each_with_index do |cell, i|
+                    lexer_class = languages[i] && Rouge::Lexer.find(languages[i])
+                    next unless lexer_class
+
+                    cell.css('code').each do |code|
+                        code.inner_html = formatter.format(tokens(lexer_class.new, code.text))
+                        code.add_class('code-chip')
+                    end
+                end
+            end
+        end
+    end
+
     def self.tokens(lexer, text)
         lexer.lex(text).map do |token, value|
             token == Rouge::Token::Tokens::Error && value =~ LONE_BRACKETS ? [Rouge::Token::Tokens::Punctuation, value] : [token, value]

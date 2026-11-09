@@ -733,6 +733,7 @@ class Main < Sinatra::Base
                     ExtraChapters.find(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                     inject_autotoc(root)
                     ExtraChapters.mark(root)
+                    CodeHighlight.highlight_tables(root)
                     # Code in a table that is one short word ([0-9], \\d+, --force)
                     # stays in one piece instead of breaking at its hyphen when the
                     # table squeezes its column (default.css, .table code.whole)
