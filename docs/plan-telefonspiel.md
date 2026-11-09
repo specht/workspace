@@ -56,6 +56,20 @@ Why it was flaky:
   maintainer's existing sipgate account still has its Berlin number.
 - **One number for all games:** a menu or a code chooses the game; several
   calls at once, one process per call.
+- **Game numbers 000 to 999** (the maintainer): a student chooses a free
+  number when publishing, can switch to another free one, and can
+  unpublish (the number is free again). Exactly three digits, so the menu
+  reads three keys without #: »Gib die Nummer des Spiels ein«; keys typed
+  during the greeting count. The menu reads no list of all games (a class
+  has thirty): a selection the teacher makes (up to 9, »Drücke 1 für …«)
+  and 0 for a random published game.
+- **Durchwahl when the trunk allows it:** Asterisk gets the dialled number,
+  and the runner starts the game of its last three digits without the
+  menu (»Ruf 030 … 123 an«). This needs a single number with an appended
+  extension of three digits or a block of 1000 numbers; easybell's
+  Business trunks have SIP-DDI, a 10-number block would only cover the
+  teacher's selection. Whether easybell routes a three-digit appended
+  extension: to ask easybell or test once the trunk runs.
 - **Several languages:** not only Python. Games speak a small protocol
   (below), with a short library per language.
 - **Music from YouTube stays** (the maintainer: the line is hardly public,
@@ -161,8 +175,8 @@ loop.
   (not even that there is any); a music problem goes only to the terminal.
   The conversation is a chat: the game's sentences in bubbles on the left,
   the keys as key caps on the right. The words appear one by one as they
-  are spoken, with a dot as the cursor, in the bubble and on the phone's
-  screen; Piper gives no word timings, so the page takes them from the
+  are spoken, with a dot as the cursor, in the bubble (only there: the
+  phone's screen shows the state of the call, keys and the time to press); Piper gives no word timings, so the page takes them from the
   sound (where speech starts and ends, its pauses put at the commas, the
   words in between by length), on the audio clock. The terminal shows each
   sentence when it starts to play; the game's own output and errors stay

@@ -34,7 +34,6 @@ main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align
 .wait { height: 4px; background: var(--line); border-radius: 2px; margin: 10px 18px 0; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
 .wait div { height: 100%; width: 100%; background: var(--you); transform-origin: left; }
-.subtitle { min-height: 44px; margin: 8px 4px 0; font-size: 15px; line-height: 1.45; color: var(--game); }
 .digits { font: 600 22px/1 ui-monospace, monospace; letter-spacing: .12em; min-height: 26px; margin-top: 8px; }
 .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; }
 .keypad button { width: 68px; height: 68px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
@@ -83,7 +82,6 @@ kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-
         <div class="screen">
             <h1 id="title">Telefonspiel</h1>
             <div class="status" id="status">Verbinde mit dem Terminal …</div>
-            <div class="subtitle" id="subtitle"></div>
             <div class="digits" id="digits" aria-live="polite"></div>
             <div class="wait" id="wait"><div id="wait-bar"></div></div>
         </div>
@@ -240,23 +238,19 @@ function wordTimes(buffer, words) {
     return times;
 }
 
-// the words of a sentence into the bubble and the phone's screen as they
-// are spoken; now() is the time since the sentence started. Returns a
+// the words of a sentence into the bubble as they are spoken; now() is the time since the sentence started. Returns a
 // function that shows the rest at once.
 function typeSentence(bubble, words, times, now) {
     const cursor = bubble.querySelector('.cursor');
-    $('subtitle').textContent = '';
     let next = 0, all = false;
     const step = () => {
         const t = now();
         while (next < words.length && (all || times[next] <= t)) {
-            for (const [target, before] of [[bubble, cursor], [$('subtitle'), null]]) {
-                if (target.querySelector('.w')) target.insertBefore(document.createTextNode(' '), before);
-                const span = document.createElement('span');
-                span.className = 'w';
-                span.textContent = words[next];
-                target.insertBefore(span, before);
-            }
+            if (bubble.querySelector('.w')) bubble.insertBefore(document.createTextNode(' '), cursor);
+            const span = document.createElement('span');
+            span.className = 'w';
+            span.textContent = words[next];
+            bubble.insertBefore(span, cursor);
             next++;
             scroll();
         }
@@ -421,7 +415,6 @@ function setCall(on) {
     } else {
         stopMusic();
         if (voice) { try { voice.stop(); } catch (e) {} voice = null; }
-        $('subtitle').textContent = '';
         document.querySelectorAll('#lines .cursor').forEach(c => c.remove());
         if (window.speechSynthesis) speechSynthesis.cancel();
         if (duckGain) { duckGain.gain.cancelScheduledValues(0); duckGain.gain.value = 1; }

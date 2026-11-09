@@ -289,6 +289,78 @@ class Server:
             self.respond(writer, 502, f'Der Sprachdienst ist nicht erreichbar ({SPEECH}): {error}'.encode())
 
 
+class TestPhone(game.Phone):
+    """telefon --test: the game without a page, as the phone check runs it
+    (src/ruby/include/phone_check.rb). Each keys() of the game takes the
+    next answer of --keys (»-« for none, as after a timeout); the keys of an
+    answer are pressed one by one, so keys left over wait for the next
+    question as on the phone. Pauses take no time. One line per event:
+    »Telefon: …«, »Musik: …«, »Pause: …«, »Tasten: …«, »Ausgabe: …« (what
+    the game prints), »Fehler: …« (its errors) and »Ende: …«."""
+
+    def __init__(self, answers):
+        super().__init__()
+        self.answers = list(answers)
+        self.folder = None
+
+    async def say(self, text):
+        print(f'Telefon: {" ".join(str(text).split())}', flush=True)
+
+    async def music(self, source, volume=1.0):
+        if not source:
+            print('Musik: aus', flush=True)
+        elif not re.match(r'https?://', str(source)) and game.game_file(self.folder, str(source)) is None:
+            print(f'Musik: {source} (diese Datei gibt es im Ordner des Spiels nicht)', flush=True)
+        else:
+            print(f'Musik: {source}', flush=True)
+
+    async def sleep(self, ms):
+        try:
+            print(f'Pause: {float(ms) / 1000:g} s', flush=True)
+        except (TypeError, ValueError):
+            print('Pause', flush=True)
+
+    async def read_keys(self, count, timeout_ms):
+        if not self.answers and self.keys.empty():
+            print(f'Ende: Das Spiel wartet auf {"eine Taste" if count == 1 else f"bis zu {count} Tasten"}, '
+                  'aber die Prüfung drückt keine mehr.', flush=True)
+            self.ended.set()
+            return ''
+        if self.answers:
+            answer = self.answers.pop(0)
+            for key in ('' if answer == '-' else answer):
+                self.press(key)
+        digits = ''
+        while len(digits) < count and not self.keys.empty():
+            key = self.keys.get_nowait()       # as Phone.read_keys: # ends early, the rest waits
+            if key == '#':
+                break
+            digits += key
+        print(f'Tasten: {digits if digits else "(keine)"}', flush=True)
+        return digits
+
+
+async def test(command, folder, answers, seconds):
+    phone = TestPhone(answers)
+    phone.folder = folder
+
+    def output(kind, line):
+        print(f'{"Fehler" if kind == "err" else "Ausgabe"}: {line}', flush=True)
+    try:
+        reason, status = await game.run_game(phone, command, folder, game.environment(), output, seconds=seconds)
+    except OSError as error:
+        print(f'Ende: Das Spiel ließ sich nicht starten: {error}', flush=True)
+        return
+    if reason == 'hangup':
+        print('Ende: Das Spiel hat aufgelegt.', flush=True)
+    elif reason == 'time':
+        print(f'Ende: Das Spiel lief länger als {seconds} Sekunden.', flush=True)
+    elif reason == 'ended' and status:
+        print(f'Ende: Das Spiel ist mit einem Fehler beendet (Exit-Code {status}).', flush=True)
+    elif reason == 'ended':
+        print('Ende: Das Spiel ist zu Ende.', flush=True)
+
+
 def find_game(args):
     """the command and the folder it runs in"""
     if not args:
@@ -337,10 +409,18 @@ async def serve(command, folder, port):
 def main():
     parser = argparse.ArgumentParser(prog='telefon', description='Das Telefonspiel im Workspace ausprobieren.')
     parser.add_argument('--port', type=int, default=PORT, help=f'der Port der Seite (Standard: {PORT})')
+    parser.add_argument('--test', action='store_true',
+                        help='ohne Seite: die Tasten aus --keys, eine Zeile je Ereignis (für die Prüfungen)')
+    parser.add_argument('--keys', default='', help='mit --test: die Antworten auf keys(), mit Kommas, »-« für keine')
+    parser.add_argument('--seconds', type=int, default=10, help='mit --test: so lange darf das Spiel laufen')
     parser.add_argument('command', nargs=argparse.REMAINDER, help='spiel.rb, spiel.py, spiel.js oder ein Befehl')
     options = parser.parse_args()
     command, folder = find_game(options.command)
-    asyncio.run(serve(command, folder, options.port))
+    if options.test:
+        answers = [a.strip() for a in options.keys.split(',')] if options.keys.strip() else []
+        asyncio.run(test(command, folder, answers, options.seconds))
+    else:
+        asyncio.run(serve(command, folder, options.port))
 
 
 if __name__ == '__main__':
