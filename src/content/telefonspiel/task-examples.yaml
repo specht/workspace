@@ -1,0 +1,62 @@
+# Beispiele für die Prüfungen (docs/aufgaben.md, »Beispiele für die Prüfungen«).
+format: 1
+activity: telefonspiel
+examples:
+  hallo:
+    pass:
+      - files: { telefon/hallo.rb: stufen/1-hallo/hallo.rb }
+    fail:
+      - files: { telefon/hallo.rb: { text: "require 'telefon'\n" } }
+        say: sagt noch nichts
+    python:
+      pass:
+        - files: { telefon/hallo.py: stufen/1-hallo/hallo.py }
+      fail:
+        - files: { telefon/hallo.py: { text: "from telefon import say\n" } }
+          say: sagt noch nichts
+  musik:
+    pass:
+      - files: { telefon/hallo.rb: stufen/2-musik/hallo.rb }
+    fail:
+      - files: { telefon/hallo.rb: stufen/1-hallo/hallo.rb }
+        say: keine Musik
+    python:
+      pass:
+        - files: { telefon/hallo.py: stufen/2-musik/hallo.py }
+      fail:
+        - files: { telefon/hallo.py: stufen/1-hallo/hallo.py }
+          say: keine Musik
+  drei:
+    pass:
+      - files: { telefon/frage.rb: stufen/4-drei/frage.rb }
+    fail:
+      - files: { telefon/frage.rb: stufen/3-frage/frage.rb }
+        say: Fische
+    python:
+      pass:
+        - files: { telefon/frage.py: stufen/4-drei/frage.py }
+      fail:
+        - files: { telefon/frage.py: stufen/3-frage/frage.py }
+          say: Fische
+  gang:
+    pass:
+      - files: { telefon/hoehle.rb: stufen/6-gang/hoehle.rb }
+    fail:
+      - files: { telefon/hoehle.rb: stufen/5-hoehle/hoehle.rb }
+        say: Gang
+    python:
+      pass:
+        - files: { telefon/hoehle.py: stufen/6-gang/hoehle.py }
+      fail:
+        - files: { telefon/hoehle.py: stufen/5-hoehle/hoehle.py }
+          say: Gang
+  geschichte:
+    pass:
+      - files: { telefon/geschichte.rb: stufen/6-gang/hoehle.rb }
+    fail:
+      - files: { telefon/geschichte.rb: stufen/1-hallo/hallo.rb }
+    python:
+      pass:
+        - files: { telefon/geschichte.py: stufen/6-gang/hoehle.py }
+      fail:
+        - files: { telefon/geschichte.py: stufen/1-hallo/hallo.py }

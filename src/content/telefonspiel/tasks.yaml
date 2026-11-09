@@ -1,0 +1,228 @@
+# Aufgaben zu »Ein Spiel am Telefon«. Format: docs/aufgaben.md
+# Die Prüfart phone spielt das Spiel mit telefon --test und festen Tasten.
+format: 1
+activity: telefonspiel
+tasks:
+  - id: hallo
+    title: Hallo
+    prompt: Dein erstes Telefonspiel in `telefon/hallo.rb` sagt etwas, wenn man anruft.
+    check:
+      type: phone
+      file: telefon/hallo.rb
+      cases:
+        - keys: ''
+          says: ['\w']
+          say: Dein Spiel sagt noch nichts. Steht in `hallo.rb` eine Zeile mit `say` und einem Text in Anführungszeichen?
+    python:
+      prompt: Dein erstes Telefonspiel in `telefon/hallo.py` sagt etwas, wenn man anruft.
+      check:
+        type: phone
+        file: telefon/hallo.py
+        cases:
+          - keys: ''
+            says: ['\w']
+            say: Dein Spiel sagt noch nichts. Steht in `hallo.py` eine Zeile mit `say('…')`?
+
+  - id: musik
+    title: Musik
+    prompt: '`telefon/hallo.rb` spielt Musik und sagt danach etwas.'
+    check:
+      type: phone
+      file: telefon/hallo.rb
+      cases:
+        - keys: ''
+          music: true
+          says: ['\w']
+    hint: Die Zeile mit `music` steht vor dem `say`, mit einem Link oder dem Namen einer Datei in Anführungszeichen.
+    python:
+      prompt: '`telefon/hallo.py` spielt Musik und sagt danach etwas.'
+      check:
+        type: phone
+        file: telefon/hallo.py
+        cases:
+          - keys: ''
+            music: true
+            says: ['\w']
+      hint: Die Zeile mit `music('…')` steht vor dem `say`, und in der ersten Zeile holt `from telefon import` auch `music`.
+
+  - id: text-oder-zahl
+    title: Text oder Zahl?
+    prediction: true
+    prompt: Jemand ändert in `frage.rb` die Zeile `if key == '1'` in `if key == 1`, ohne Anführungszeichen. Was sagt das Spiel, wenn man die 1 drückt?
+    check:
+      type: choice
+      options:
+        - »Miau! Katzen schlafen bis zu sechzehn Stunden am Tag.«
+        - »Du hast nichts gedrückt. Schade!«
+        - Nichts mehr, Ruby bricht mit einer Fehlermeldung ab.
+        - »Wuff! Hunde hören Töne, die für dich zu hoch sind.«
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Auf dem Telefon steht eine 1, aber `keys` gibt den Text `'1'` zurück, und der ist nicht gleich der Zahl `1`. Darum passt der erste Zweig nicht.
+      - when: { picked: 2 }
+        say: Ruby darf einen Text mit einer Zahl vergleichen, das ist kein Fehler. Der Vergleich ist nur nie wahr.
+      - when: { picked: 3 }
+        say: Der Zweig für die 2 vergleicht weiter mit `'2'`, und gedrückt wurde die 1.
+    python:
+      prompt: Jemand ändert in `frage.py` die Zeile `if key == '1':` in `if key == 1:`, ohne Anführungszeichen. Was sagt das Spiel, wenn man die 1 drückt?
+      check:
+        type: choice
+        options:
+          - »Miau! Katzen schlafen bis zu sechzehn Stunden am Tag.«
+          - »Du hast nichts gedrückt. Schade!«
+          - Nichts mehr, Python bricht mit einer Fehlermeldung ab.
+          - »Wuff! Hunde hören Töne, die für dich zu hoch sind.«
+        correct: 1
+      feedback:
+        - when: { picked: 0 }
+          say: Auf dem Telefon steht eine 1, aber `keys` gibt den Text `'1'` zurück, und der ist nicht gleich der Zahl `1`. Darum passt der erste Zweig nicht.
+        - when: { picked: 2 }
+          say: Python darf einen Text mit einer Zahl auf Gleichheit vergleichen, das ist kein Fehler. Der Vergleich ist nur nie wahr.
+        - when: { picked: 3 }
+          say: Der Zweig für die 2 vergleicht weiter mit `'2'`, und gedrückt wurde die 1.
+
+  - id: drei
+    title: Eine dritte Wahl
+    prompt: '`telefon/frage.rb` bietet Fische als dritte Wahl an: Die Frage nennt sie, und mit der 3 sagt das Spiel »Blubb! …«. Die anderen Antworten bleiben, wie sie sind.'
+    check:
+      type: phone
+      file: telefon/frage.rb
+      cases:
+        - keys: ''
+          says: [Fisch]
+          ends: false
+          say: Die Frage am Anfang nennt die Fische noch nicht.
+        - keys: '3'
+          says: [Blubb]
+          ends: true
+        - keys: '1'
+          says: [Miau]
+        - keys: '2'
+          says: [Wuff]
+        - keys: '-'
+          says: [nichts gedrückt]
+          say: Ohne Taste soll das Spiel weiter »Du hast nichts gedrückt« sagen. Steht der Zweig für die 3 vor dem `else`?
+    python:
+      prompt: '`telefon/frage.py` bietet Fische als dritte Wahl an: Die Frage nennt sie, und mit der 3 sagt das Spiel »Blubb! …«. Die anderen Antworten bleiben, wie sie sind.'
+      check:
+        type: phone
+        file: telefon/frage.py
+        cases:
+          - keys: ''
+            says: [Fisch]
+            ends: false
+            say: Die Frage am Anfang nennt die Fische noch nicht.
+          - keys: '3'
+            says: [Blubb]
+            ends: true
+          - keys: '1'
+            says: [Miau]
+          - keys: '2'
+            says: [Wuff]
+          - keys: '-'
+            says: [nichts gedrückt]
+            say: Ohne Taste soll das Spiel weiter »Du hast nichts gedrückt« sagen. Steht der Zweig für die 3 vor dem `else:`?
+
+  - id: nichts-gedrueckt
+    title: Niemand drückt
+    prediction: true
+    prompt: Du rufst `hoehle` an und drückst vor der Höhle zehn Sekunden lang gar nichts. Was passiert dann?
+    check:
+      type: choice
+      options:
+        - Der Anruf ist zu Ende.
+        - Das Spiel sagt den Satz vor der Höhle noch einmal.
+        - Das Spiel geht zum Schatz, weil die 1 die erste Wahl ist.
+        - Das Spiel bricht mit einer Fehlermeldung ab.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Zu Ende wäre der Anruf, wenn `cave` einfach zurückkehrte. Sieh nach, was im letzten Zweig der Verzweigung steht.
+      - when: { picked: 2 }
+        say: '`keys` gibt ohne Taste einen leeren Text zurück, und der ist nicht `''1''`.'
+      - when: { picked: 3 }
+        say: Ein leerer Text ist eine ganz normale Antwort von `keys`; damit kann jede Verzweigung umgehen.
+
+  - id: gang
+    title: Der Gang
+    prompt: In `telefon/hoehle.rb` führt die 1 vor der Höhle in den Gang. Dort führt die 1 zum Schatz, die 2 zum eiskalten Wasser und zurück in den Gang, und ohne Taste beginnt der Gang von vorn.
+    check:
+      type: phone
+      file: telefon/hoehle.rb
+      cases:
+        - keys: '1'
+          says: [teilt sich]
+          not_says: [Gold]
+          ends: false
+          say: Nach der 1 vor der Höhle soll das Spiel den Satz vom Gang sagen und auf eine Taste warten, nicht gleich zum Schatz gehen.
+        - keys: '1,1'
+          says: [Gold]
+          ends: true
+        - keys: '1,2'
+          says: [eiskalt]
+          ends: false
+          say: Nach dem eiskalten Wasser geht es zurück in den Gang, und der fragt wieder nach einer Taste.
+        - keys: '1,-'
+          says: [teilt sich]
+          ends: false
+          say: Ohne Taste beginnt der Gang von vorn und fragt wieder nach einer Taste.
+        - keys: '2'
+          says: [nach Hause]
+          ends: true
+    python:
+      prompt: In `telefon/hoehle.py` führt die 1 vor der Höhle in den Gang. Dort führt die 1 zum Schatz, die 2 zum eiskalten Wasser und zurück in den Gang, und ohne Taste beginnt der Gang von vorn.
+      check:
+        type: phone
+        file: telefon/hoehle.py
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            not_says: [Gold]
+            ends: false
+            say: Nach der 1 vor der Höhle soll das Spiel den Satz vom Gang sagen und auf eine Taste warten, nicht gleich zum Schatz gehen.
+          - keys: '1,1'
+            says: [Gold]
+            ends: true
+          - keys: '1,2'
+            says: [eiskalt]
+            ends: false
+            say: Nach dem eiskalten Wasser geht es zurück in den Gang, und der fragt wieder nach einer Taste.
+          - keys: '1,-'
+            says: [teilt sich]
+            ends: false
+            say: Ohne Taste beginnt der Gang von vorn und fragt wieder nach einer Taste.
+          - keys: '2'
+            says: [nach Hause]
+            ends: true
+
+  - id: geschichte
+    title: Deine Geschichte
+    prompt: '`telefon/geschichte.rb` spielt Musik, sagt etwas und wartet dann auf eine Taste.'
+    check:
+      type: phone
+      file: telefon/geschichte.rb
+      cases:
+        - keys: ''
+          music: true
+          says: ['\w']
+          ends: false
+          say: Dein Spiel soll am Anfang etwas sagen und dann mit `keys` auf eine Taste warten.
+    python:
+      prompt: '`telefon/geschichte.py` spielt Musik, sagt etwas und wartet dann auf eine Taste.'
+      check:
+        type: phone
+        file: telefon/geschichte.py
+        cases:
+          - keys: ''
+            music: true
+            says: ['\w']
+            ends: false
+            say: Dein Spiel soll am Anfang etwas sagen und dann mit `keys` auf eine Taste warten.
+
+  - id: spieltest
+    title: Spieltest
+    prompt: Wer hat dein Spiel gespielt? Wo hat die Person gezögert oder etwas anderes gedrückt, als du erwartet hast, und was hast du danach geändert?
+    check:
+      type: reflection
+      min_words: 20

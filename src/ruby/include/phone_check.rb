@@ -149,7 +149,7 @@ module PhoneCheck
         when_ = after_keys(c['keys'])
 
         if lines.any? { |l| l.match?(/\A(telefon: command not found|sh: \d+: telefon: not found|.*telefon: not found)/i) }
-            return 'Den Befehl `telefon` gibt es in deinem Workspace noch nicht. Starte ihn neu, dann ist er da.'
+            return 'Den Befehl `telefon` gibt es in deinem Workspace nicht: Das Workspace-Image ist älter als diese Aufgabe. Sag deiner Lehrkraft Bescheid.'
         end
         if lines.empty?
             return "#{when_} kommt aus dem Spiel gar nichts."

@@ -2,9 +2,9 @@
 #
 # Every method writes one command as a line of JSON and waits for the
 # answer, so a game is an ordinary program that runs from top to bottom.
-# puts still works: lines that are not JSON are ordinary output. Ruby's
-# own sleep works as well: the music keeps playing, keys pressed meanwhile
-# are kept.
+# puts still works: lines that are not JSON are ordinary output. sleep
+# goes through the phone too, as in Python and JavaScript: the music keeps
+# playing, keys pressed meanwhile are kept, and the checks need not wait.
 
 require 'json'
 
@@ -35,6 +35,12 @@ end
 def music(source, volume: 1.0)
     Telefon.command('music' => source, 'volume' => volume)
     nil
+end
+
+# wait; the music keeps playing, keys pressed meanwhile are kept
+def sleep(seconds)
+    Telefon.command('sleep' => (seconds * 1000).to_i)
+    seconds.round
 end
 
 # end the call
