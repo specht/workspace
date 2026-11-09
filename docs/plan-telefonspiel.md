@@ -164,6 +164,7 @@ object, so any language can play:
 ```text
 → {"say": "Willkommen im Labyrinth."}
 → {"say": "Ein langer Text …", "interrupt": true}   a key stops it and stays for keys
+→ {"say": "Psst.", "mood": "whisper"}   Thorsten in a mood (his emotional voice, eight speakers)
 → {"sleep": 1000}
 → {"music": "https://youtu.be/…", "volume": 0.3, "start": "1:15", "stop": 112}
 ← {"ok": true}                   or {"error": "music: …"} for a time that is none

@@ -108,6 +108,7 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
 .avatar svg { width: 16px; height: 16px; }
 .row + .row .avatar { visibility: hidden; }
 .msg { padding: 8px 13px; border-radius: 18px; overflow-wrap: anywhere; }
+.msg .mood { display: block; font-size: 12px; font-style: italic; opacity: .7; margin-bottom: 1px; }
 .msg.game { background: var(--bubble); color: var(--bubble-ink); border-bottom-left-radius: 6px; min-width: 44px; }
 .msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; animation: pop .22s ease-out; }
 .cap { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 8px;
@@ -345,7 +346,11 @@ function typeSentence(bubble, words, times, now, stopped = () => false) {
     return () => { all = true; step(); };
 }
 
-async function say(parts, id, interrupt) {
+// the moods as stage directions above the bubble (say … mood:)
+const MOODS = { neutral: 'neutral', amused: 'amüsiert', angry: 'wütend', disgusted: 'angewidert',
+    drunk: 'betrunken', sleepy: 'müde', surprised: 'überrascht', whisper: 'flüsternd' };
+
+async function say(parts, id, interrupt, mood) {
     const mine = call;
     let skipped = false;
     if (interrupt) skip = () => {
@@ -359,7 +364,13 @@ async function say(parts, id, interrupt) {
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     bubble.appendChild(cursor);
-    const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p)));
+    if (mood && MOODS[mood]) {
+        const label = document.createElement('span');
+        label.className = 'mood';
+        label.textContent = MOODS[mood];
+        bubble.prepend(label);              // inside, above the words
+    }
+    const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p) + (mood ? '&mood=' + mood : '')));
     buffers.forEach(b => b.catch(() => {}));
     duck(true);
     $('screen').classList.add('speaking');
@@ -619,7 +630,7 @@ events.onmessage = message => {
         $('call').classList.remove('ready');
         $('status').textContent = 'Das Telefon ist jetzt in einem anderen Tab offen.';
     } else if (e.say) {
-        say(e.say, e.id, e.interrupt);
+        say(e.say, e.id, e.interrupt, e.mood);
     } else if ('music' in e) {
         music(e.music, e.volume, e.id, e.loop);
     } else if (e.keys) {

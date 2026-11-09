@@ -29,8 +29,8 @@ async def _get(session, path, **params):
         return await response.read()
 
 
-async def speak(session, sentence):
-    data = await _get(session, '/speech', text=sentence, format='f32')
+async def speak(session, sentence, mood=None):
+    data = await _get(session, '/speech', text=sentence, format='f32', **({'mood': mood} if mood else {}))
     return np.frombuffer(data, dtype=np.float32)
 
 

@@ -4,7 +4,9 @@ the emulator in every Workspace, with one cache and a fixed number of
 speech workers, so ten calls and a class trying their games at once share
 the processor instead of fighting for it.
 
-    GET /speech?text=…&format=wav|f32   a sentence or a few, 16 kHz mono
+    GET /speech?text=…&format=wav|f32[&mood=whisper]
+                                        a sentence or a few, 16 kHz mono, Thorsten
+                                        or Thorsten in a mood (MOODS)
     GET /music?source=…&format=mp3|f32[&start=75][&stop=112]
                                         a YouTube link, 16 kHz mono, looped by the client:
                                         from start (seconds) to stop, at most ten minutes
@@ -35,6 +37,9 @@ from aiohttp import web
 RATE = 16000
 CACHE = os.environ.get('PHONE_CACHE', '/cache')
 VOICE = os.environ.get('PHONE_VOICE', '/voices/de_DE-thorsten-high.onnx')
+# Thorsten in moods: one model, a speaker per mood (say … mood: 'whisper')
+MOOD_VOICE = os.environ.get('PHONE_MOOD_VOICE', '/voices/de_DE-thorsten_emotional-medium.onnx')
+MOODS = ('neutral', 'amused', 'angry', 'disgusted', 'drunk', 'sleepy', 'surprised', 'whisper')
 WORKERS = int(os.environ.get('PHONE_SPEECH_WORKERS', '2'))
 WAITING = int(os.environ.get('PHONE_SPEECH_WAITING', '100'))     # more requests waiting: 503
 MAX_TEXT = 500                                                   # characters per request
@@ -71,12 +76,15 @@ def sentences(text):
 # speech, in the worker processes --------------------------------------------
 
 _voice = None
+_mood_voice = None
 
 
 def _load_voice():
-    global _voice
+    global _voice, _mood_voice
     from piper import PiperVoice
     _voice = PiperVoice.load(VOICE)
+    if os.path.exists(MOOD_VOICE):
+        _mood_voice = PiperVoice.load(MOOD_VOICE)
 
 
 def ready():
@@ -85,14 +93,19 @@ def ready():
     time.sleep(0.5)
 
 
-def synthesize(sentence):
+def synthesize(sentence, mood=None):
     """one sentence to float32 bytes at 16 kHz, with a short pause after it
-    (as a speaker breathes); runs in a worker process"""
+    (as a speaker breathes), in a mood or not; runs in a worker process"""
     import soxr
-    data = b''.join(chunk.audio_int16_bytes for chunk in _voice.synthesize(sentence))
+    from piper import SynthesisConfig
+    voice, config = _voice, None
+    if mood:
+        voice = _mood_voice
+        config = SynthesisConfig(speaker_id=voice.config.speaker_id_map[mood])
+    data = b''.join(chunk.audio_int16_bytes for chunk in voice.synthesize(sentence, syn_config=config))
     samples = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
-    if _voice.config.sample_rate != RATE:
-        samples = soxr.resample(samples, _voice.config.sample_rate, RATE)
+    if voice.config.sample_rate != RATE:
+        samples = soxr.resample(samples, voice.config.sample_rate, RATE)
     samples = np.concatenate([samples.astype(np.float32), np.zeros(int(RATE * 0.25), dtype=np.float32)])
     return samples.tobytes()
 
@@ -287,9 +300,11 @@ class Service:
             self.pending[path] = asyncio.ensure_future(make())
         await asyncio.shield(self.pending[path])
 
-    async def sentence(self, sentence):
-        path = cache_path('speech', os.path.basename(VOICE) + '\n' + sentence, '.f32')
-        await self.once(path, self.speech_pool, synthesize, sentence)
+    async def sentence(self, sentence, mood=None):
+        # without a mood the key it always had
+        voice = os.path.basename(VOICE) if not mood else f'{os.path.basename(MOOD_VOICE)}:{mood}'
+        path = cache_path('speech', voice + '\n' + sentence, '.f32')
+        await self.once(path, self.speech_pool, synthesize, sentence, mood)
         with open(path, 'rb') as f:
             return f.read()
 
@@ -299,8 +314,13 @@ class Service:
             raise web.HTTPBadRequest(text='text is missing')
         if len(text) > MAX_TEXT:
             raise web.HTTPRequestEntityTooLarge(MAX_TEXT, len(text), text=f'at most {MAX_TEXT} characters')
+        mood = request.query.get('mood', '').strip() or None
+        if mood and mood not in MOODS:
+            raise web.HTTPBadRequest(text=f'mood is one of {", ".join(MOODS)}')
+        if mood and not os.path.exists(MOOD_VOICE):
+            raise web.HTTPServiceUnavailable(text='this speech service has no voice for moods')
         started = time.monotonic()
-        parts = [await self.sentence(s) for s in sentences(text)]
+        parts = [await self.sentence(s, mood) for s in sentences(text)]
         audio = b''.join(parts)
         log(f'speech {len(text)} chars, {len(audio) / 4 / RATE:.1f} s audio in {time.monotonic() - started:.2f} s')
         if request.query.get('format') == 'f32':

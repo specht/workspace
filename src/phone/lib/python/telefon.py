@@ -21,10 +21,17 @@ def _command(data):
     return answer
 
 
-def say(text, interrupt=False):
+def say(text, interrupt=False, mood=None):
     """speak the text; returns when it has been said. interrupt=True lets a
-    key stop it; the key is kept for the next keys()."""
-    _command({'say': str(text), **({'interrupt': True} if interrupt else {})})
+    key stop it; the key is kept for the next keys(). mood: Thorsten in a
+    mood: neutral, amused, angry, disgusted, drunk, sleepy, surprised or
+    whisper."""
+    command = {'say': str(text)}
+    if interrupt:
+        command['interrupt'] = True
+    if mood:
+        command['mood'] = str(mood)
+    _command(command)
 
 
 def keys(count=1, timeout=10):

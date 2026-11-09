@@ -23,9 +23,13 @@ module Telefon
 end
 
 # speak the text; returns when it has been said. interrupt: true lets a key
-# stop it; the key is kept for the next keys.
-def say(text, interrupt: false)
-    Telefon.command({ 'say' => text.to_s }.merge(interrupt ? { 'interrupt' => true } : {}))
+# stop it; the key is kept for the next keys. mood: Thorsten in a mood:
+# neutral, amused, angry, disgusted, drunk, sleepy, surprised or whisper.
+def say(text, interrupt: false, mood: nil)
+    command = { 'say' => text.to_s }
+    command['interrupt'] = true if interrupt
+    command['mood'] = mood.to_s if mood
+    Telefon.command(command)
     nil
 end
 

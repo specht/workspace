@@ -28,8 +28,11 @@ function command(data) {
 }
 
 // speak the text; returns when it has been said. say(text, { interrupt: true })
-// lets a key stop it; the key is kept for the next keys().
-function say(text, { interrupt = false } = {}) { command({ say: String(text), ...(interrupt ? { interrupt: true } : {}) }); }
+// lets a key stop it; the key is kept for the next keys(). mood: Thorsten in a
+// mood: neutral, amused, angry, disgusted, drunk, sleepy, surprised or whisper.
+function say(text, { interrupt = false, mood = null } = {}) {
+    command({ say: String(text), ...(interrupt ? { interrupt: true } : {}), ...(mood ? { mood: String(mood) } : {}) });
+}
 
 // wait for up to count keys (# ends early); '' after timeout seconds
 function keys(count = 1, timeout = 10) {

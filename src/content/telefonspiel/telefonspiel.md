@@ -626,11 +626,23 @@ Was ein Spiel am Telefon gut macht:
 Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
 `say '…', interrupt: true` hört der Satz auf, sobald jemand eine Taste
 drückt, und das nächste `keys` bekommt genau diese Taste.
+
+Thorsten kann auch flüstern, sich ärgern oder staunen: `say 'Psst, da ist jemand.', mood: 'whisper'`. Es gibt
+`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
+`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und
+`whisper` (flüsternd). So bekommt eine Figur in deiner Geschichte ihre eigene
+Stimme.
 <!-- /language -->
 <!-- language: python -->
 Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
 `say('…', interrupt=True)` hört der Satz auf, sobald jemand eine Taste
 drückt, und das nächste `keys` bekommt genau diese Taste.
+
+Thorsten kann auch flüstern, sich ärgern oder staunen: `say('Psst, da ist jemand.', mood='whisper')`. Es gibt
+`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
+`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und
+`whisper` (flüsternd). So bekommt eine Figur in deiner Geschichte ihre eigene
+Stimme.
 <!-- /language -->
 
 _task(geschichte)

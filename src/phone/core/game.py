@@ -48,6 +48,22 @@ def game_file(folder, source):
     return path
 
 
+# Thorsten's moods (say … mood:), the speakers of his emotional voice, and
+# how the terminal names them
+MOODS = {'neutral': 'neutral', 'amused': 'amüsiert', 'angry': 'wütend', 'disgusted': 'angewidert',
+         'drunk': 'betrunken', 'sleepy': 'müde', 'surprised': 'überrascht', 'whisper': 'flüsternd'}
+
+
+def mood_of(value):
+    """None for none; ValueError with a message for the game for a mood that does not exist"""
+    if value is None or value == '':
+        return None
+    mood = str(value).strip().lower()
+    if mood not in MOODS:
+        raise ValueError(f"say: die Stimmung »{value}« gibt es nicht; es gibt {', '.join(MOODS)}")
+    return mood
+
+
 # the longest piece of music: from start, at most ten minutes (the speech
 # service and the runner cut no more)
 MUSIC_SECONDS = 600
@@ -160,8 +176,9 @@ class Phone:
     def press(self, key):
         self.keys.put_nowait(key)
 
-    async def say(self, text, interrupt=False):
-        """interrupt: a key stops the speech (and stays for the next keys)"""
+    async def say(self, text, interrupt=False, mood=None):
+        """interrupt: a key stops the speech (and stays for the next keys);
+        mood: one of MOODS or None"""
         raise NotImplementedError
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
@@ -189,7 +206,11 @@ class Phone:
         if not isinstance(command, dict):
             return {'error': 'a command is a JSON object'}
         if 'say' in command:
-            await self.say(str(command['say']), bool(command.get('interrupt')))
+            try:
+                mood = mood_of(command.get('mood'))
+            except ValueError as error:
+                return {'error': str(error)}
+            await self.say(str(command['say']), bool(command.get('interrupt')), mood)
             return {'ok': True}
         if 'sleep' in command:
             await self.sleep(command['sleep'])
