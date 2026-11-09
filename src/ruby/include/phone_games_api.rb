@@ -73,7 +73,7 @@ class Main < Sinatra::Base
 
     post '/api/phone/submit' do
         assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:file, :number], :max_value_lengths => { :file => 200, :number => 3 })
+        data = parse_request_data(:required_keys => [:file, :number], :max_value_lengths => { :file => 200, :number => 4 })
         email = @session_user[:email]
         number = data[:number].to_s
         halt 400, { :error => 'number' }.to_json unless PhoneGames.valid_number?(number)
@@ -143,7 +143,7 @@ class Main < Sinatra::Base
     # Another free number for a game (pending or published)
     post '/api/phone/renumber' do
         assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:id, :number], :max_value_lengths => { :number => 3 })
+        data = parse_request_data(:required_keys => [:id, :number], :max_value_lengths => { :number => 4 })
         number = data[:number].to_s
         halt 400, { :error => 'number' }.to_json unless PhoneGames.valid_number?(number)
         @@phone_games_mutex.synchronize do
