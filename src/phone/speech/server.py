@@ -394,14 +394,18 @@ class Service:
             self.pending[path] = asyncio.ensure_future(make())
         await asyncio.shield(self.pending[path])
 
-    async def sentence(self, sentence, mood=None, prepare=False):
+    @staticmethod
+    def speech_path(sentence, mood=None):
         # without a mood the key it always had
         voice = os.path.basename(VOICE) if not mood else f'{os.path.basename(MOOD_VOICE)}:{mood}'
         # the key from the text as read, so a sentence spelled before is made anew
         read = sounding(sentence)
         # a sentence with phonemes in it is made in one piece now, without the
         # noise at its end: a key of its own, so the old one is not used
-        path = cache_path('speech', voice + '\n' + read + ('\nwhole' if '[[' in read else ''), '.f32')
+        return cache_path('speech', voice + '\n' + read + ('\nwhole' if '[[' in read else ''), '.f32')
+
+    async def sentence(self, sentence, mood=None, prepare=False):
+        path = self.speech_path(sentence, mood)
         if prepare and not os.path.exists(path):
             if self.queued >= WAITING:
                 raise web.HTTPServiceUnavailable(text='busy')
@@ -485,6 +489,32 @@ class Service:
             await loop.run_in_executor(None, update_yt_dlp, 'daily check')
             await asyncio.sleep(UPDATE_EVERY)
 
+    async def prepared(self, request):
+        """which of a game's fixed sentences and music are made already
+        (POST {sentences: [{text, mood}], music: [link]}): the moderation
+        publishes a game only when its sentences are, so the first caller
+        does not wait (phone_games_api.rb). Makes nothing itself."""
+        try:
+            data = await request.json()
+        except ValueError:
+            raise web.HTTPBadRequest(text='JSON expected')
+        total, ready, missing = 0, 0, []
+        for item in (data.get('sentences') or [])[:2000]:
+            text = str(item.get('text', ''))[:MAX_TEXT] if isinstance(item, dict) else ''
+            mood = item.get('mood') if isinstance(item, dict) else None
+            if mood not in MOODS or not os.path.exists(MOOD_VOICE):
+                mood = None
+            for part in sentences(text):
+                total += 1
+                if os.path.exists(self.speech_path(part, mood)):
+                    ready += 1
+                elif len(missing) < 20:
+                    missing.append(part)
+        music = [str(m) for m in (data.get('music') or [])[:100]]
+        music_ready = sum(1 for m in music if os.path.exists(cache_path('music', m, '.audio')))
+        return web.json_response({'total': total, 'ready': ready, 'missing': missing,
+                                  'music': len(music), 'music_ready': music_ready})
+
     async def health(self, request):
         return web.json_response({'ok': True, 'workers': WORKERS, 'waiting': self.waiting})
 
@@ -494,7 +524,7 @@ def main():
     app = web.Application()
     app.on_startup.append(service.warm_up)
     app.add_routes([web.get('/speech', service.speech), web.get('/music', service.music),
-                    web.get('/health', service.health)])
+                    web.get('/health', service.health), web.post('/prepared', service.prepared)])
     log(f'speech service: {WORKERS} workers, voice {os.path.basename(VOICE)}')
     web.run_app(app, port=8000, print=None, access_log=None)
 

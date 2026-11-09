@@ -342,3 +342,10 @@
     font-display: swap;
     src: url(fonts/Pixelify_Sans/PixelifySans.ttf) format('truetype');
 }
+
+/* Bitstream Charter as XCharter (include/fonts/XCharter/LICENSE.txt): the
+   Telefonbuch and the preview of an entry on the activity's card */
+@font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Roman.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'XCharter'; src: url('/include/fonts/XCharter/XCharter-BoldItalic.woff2') format('woff2'); font-weight: 700; font-style: italic; font-display: swap; }

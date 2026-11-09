@@ -14940,3 +14940,29 @@ html[data-bs-theme="dark"] .splat-viewer {
         min-height: 44px;
     }
 }
+
+/* The card »Dein Spiel veröffentlichen« (phone_publish.js): the folder and
+   »Neu laden« on top, file and number side by side (stacked on a phone), the
+   entry as the Telefonbuch prints it, the button with the reason it waits */
+.phone-publish { --pp-paper: #f8f1dc; --pp-ink: #2a2418; --pp-quiet: #6b5f48; }
+[data-bs-theme=dark] .phone-publish { --pp-paper: #2b2720; --pp-ink: #ece3cc; --pp-quiet: #b5a888; }
+.phone-publish .pp-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: space-between;
+    padding-bottom: .75rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bs-border-color); }
+.phone-publish .pp-folder { color: var(--bs-secondary-color); }
+.phone-publish .pp-fields { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: 1rem; align-items: start; }
+@media (max-width: 576px) { .phone-publish .pp-fields { grid-template-columns: minmax(0, 1fr); } }
+.phone-publish .pp-number-input { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.phone-publish .pp-number-status { min-height: 1.5em; }
+.phone-publish .pp-preview-box { margin-top: 1rem; }
+.phone-publish .pp-preview { max-width: 26rem; }
+.phone-publish .pp-entry { background: var(--pp-paper); color: var(--pp-ink); border-radius: 4px; padding: .8rem 1rem;
+    font-family: 'XCharter', 'Charter', 'Bitstream Charter', Georgia, serif; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
+.phone-publish .pp-line { display: flex; align-items: baseline; gap: .4rem; }
+.phone-publish .pp-title, .phone-publish .pp-entry-number { font-weight: 700; font-size: 1.05rem; }
+.phone-publish .pp-entry-number { font-variant-numeric: tabular-nums lining-nums; letter-spacing: .04em; }
+.phone-publish .pp-dots { flex: 1; align-self: baseline; height: 0; border-bottom: 2px dotted var(--pp-quiet); opacity: .6; }
+.phone-publish .pp-sub { color: var(--pp-quiet); font-style: italic; font-size: .92rem; }
+.phone-publish .pp-preview figcaption { margin-top: .35rem; font-size: .85rem; color: var(--bs-secondary-color); }
+.phone-publish .pp-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-top: 1.25rem; }
+.phone-publish .pp-actions .form-text { margin-top: 0; }
+.phone-publish .pp-own-number { font-weight: 700; font-variant-numeric: tabular-nums; }

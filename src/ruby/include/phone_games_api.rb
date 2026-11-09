@@ -1,3 +1,4 @@
+require 'net/http'
 require 'shellwords'
 require_relative 'phone_games'
 
@@ -46,11 +47,13 @@ class Main < Sinatra::Base
     def phone_games_state
         email = @session_user[:email]
         all = phone_games_all
+        ws = task_workspace_files
         {
             :games => all.select { |g| g[:email] == email }.sort_by { |g| -g[:submitted].to_i }.map { |g| PhoneGames.public_view(g) },
             :taken => PhoneGames.taken_numbers(all, email),
-            :files => PhoneGames.games(task_workspace_files),
+            :files => PhoneGames.games(ws),
             :folder => PhoneGames::FOLDER,
+            :workspace => !ws.nil?,                     # false: no Workspace yet, so no files either
         }
     end
 
@@ -162,6 +165,34 @@ class Main < Sinatra::Base
 
     # The maintainer decides: publish, or reject with a reason; the student
     # gets a mail either way
+    # How far the speech service has made a game's fixed sentences and fetched
+    # its music: { total:, ready:, missing:, music:, music_ready: }, or nil
+    # when it does not answer
+    PHONE_SPEECH_URL = ENV['PHONE_SPEECH'] || 'http://phone_speech:8000'
+
+    def phone_game_prepared(id)
+        items = PhoneGames.prepared_items(id)
+        uri = URI("#{PHONE_SPEECH_URL}/prepared")
+        response = Net::HTTP.start(uri.host, uri.port, :open_timeout => 3, :read_timeout => 10) do |http|
+            http.post(uri.path, items.to_json, 'Content-Type' => 'application/json')
+        end
+        response.is_a?(Net::HTTPSuccess) ? JSON.parse(response.body, :symbolize_names => true) : nil
+    rescue StandardError
+        nil
+    end
+
+    def phone_game_ready?(prepared)
+        prepared && prepared[:ready] == prepared[:total]
+    end
+
+    post '/api/phone/prepared' do
+        admins_only!
+        data = parse_request_data(:required_keys => [:id])
+        halt 404 unless PhoneGames.valid_id?(data[:id])
+        prepared = phone_game_prepared(data[:id])
+        respond(:prepared => prepared, :ready => phone_game_ready?(prepared))
+    end
+
     post '/api/phone/decide' do
         admins_only!
         data = parse_request_data(:required_keys => [:id, :decision], :optional_keys => [:reason],
@@ -172,6 +203,8 @@ class Main < Sinatra::Base
         reason = data[:reason].to_s.strip[0, PhoneGames::MAX_REASON]
         case data[:decision]
         when 'publish'
+            # the first caller should not wait for sentences being made
+            halt 409, { :error => 'not_ready' }.to_json unless phone_game_ready?(phone_game_prepared(game[:id]))
             @@phone_games_mutex.synchronize do
                 # the version it replaces leaves the phone book now
                 phone_games_all.select { |g| g[:email] == game[:email] && g[:number] == game[:number] && g[:state] == 'published' }.each do |old|
@@ -274,7 +307,8 @@ class Main < Sinatra::Base
         end
         buttons = if game[:state] == 'pending'
             "<div class='pg-decide' data-id='#{h.(game[:id])}'>" \
-                "<button class='btn btn-success pg-publish'><i class='bi bi-check-lg'></i> Veröffentlichen</button>" \
+                "<p class='pg-prepared text-body-secondary'><span class='spinner-border spinner-border-sm' aria-hidden='true'></span> Sätze werden vorbereitet …</p>" \
+                "<button class='btn btn-success pg-publish' disabled><i class='bi bi-check-lg'></i> Veröffentlichen</button>" \
                 "<div class='mt-3'><label class='form-label' for='pg-reason'>Grund für die Ablehnung (die Schülerin oder der Schüler liest ihn)</label>" \
                 "<textarea class='form-control' id='pg-reason' rows='3' maxlength='#{PhoneGames::MAX_REASON}'></textarea>" \
                 "<button class='btn btn-outline-danger mt-2 pg-reject' disabled><i class='bi bi-x-lg'></i> Ablehnen</button></div>" \

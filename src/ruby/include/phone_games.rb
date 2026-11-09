@@ -189,6 +189,53 @@ module PhoneGames
         found.sort_by(&:first).map { |_, kind, text| [kind, text] }
     end
 
+    # What the line makes in advance for a game (src/phone/emulator/telefon,
+    # watch_music): the fixed texts of say with their mood, other texts that
+    # look like sentences, the YouTube links in one form per video. The
+    # moderation publishes only when the sentences are made (/prepared of
+    # the speech service), so the first caller does not wait.
+    MOOD = /\bmood\s*[:=]\s*(?:['"]|:)(\w+)/
+    SENTENCE = /(?<!\w)(['"])([A-ZÄÖÜ](?:(?!\1)[^\\\n])*?[.!?…])\1/
+    MOODS = %w[neutral amused angry disgusted drunk sleepy surprised whisper].freeze
+
+    def self.prepared_items(id)
+        dir = File.join(ROOT, id.to_s)
+        return { :sentences => [], :music => [] } unless valid_id?(id) && Dir.exist?(dir)
+
+        sentences = []
+        music = []
+        Dir.children(dir).sort.select { |n| LANGUAGES.include?(File.extname(n)) }.first(50).each do |name|
+            code = File.read(File.join(dir, name), :mode => 'rb').force_encoding('UTF-8').scrub('')
+            said = []
+            code.to_enum(:scan, SAY).each do
+                m = Regexp.last_match
+                said << (m.begin(2)...m.end(2))
+                next if m[2].include?('#{')
+
+                line_end = code.index("\n", m.end(0)) || code.length
+                mood = code[m.end(0)...line_end][MOOD, 1]
+                sentences << { :text => m[2].gsub(/\\(['"\\])/, '\1'), :mood => MOODS.include?(mood) ? mood : nil }
+            end
+            code.to_enum(:scan, SENTENCE).each do
+                m = Regexp.last_match
+                next if m[2].include?('#{') || said.any? { |r| r.cover?(m.begin(2)) }
+
+                sentences << { :text => m[2], :mood => nil }
+            end
+            code.scan(YOUTUBE) { |link| music << youtube_link(link) }
+        end
+        { :sentences => sentences.uniq, :music => music.uniq }
+    end
+
+    # a YouTube link in the one form the speech service caches it under
+    # (src/phone/core/game.py: youtube_link of youtube_start)
+    def self.youtube_link(link)
+        link = link.sub(/([?&])(t|start)=(\d+h)?(\d+m)?(\d+)?s?(?=&|#|\z)/) { $3 || $4 || $5 ? ($~.post_match.start_with?('&') ? $1 : '') : $& }
+        link = link.sub(/[?&]\z/, '').sub('?&', '?')
+        m = link.match(%r{\Ahttps://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|shorts/)|youtu\.be/)([\w-]{6,})})
+        m ? "https://www.youtube.com/watch?v=#{m[1]}" : link
+    end
+
     # The order of the phone book: by title, as people read it (umlauts
     # with their letter, case and leading articles ignored)
     def self.sort_key(title)

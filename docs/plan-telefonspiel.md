@@ -104,6 +104,19 @@ Why it was flaky:
   copy on the line, in the line's sandbox. The page writes a ticket for that
   copy into `trials.json` beside the copies (an hour, random); the line
   reads it, since it holds no secrets and cannot ask the database.
+- **Published only when its sentences are made** (the maintainer: on the
+  server a sentence takes seconds, and the first caller should not wait):
+  the line makes a game's fixed sentences as soon as the copy exists; the
+  review page asks the speech service (`/prepared`, which makes nothing
+  itself) how many are in its cache and enables »Veröffentlichen« when all
+  are; the server checks again. Music does not hold a game back (YouTube
+  refuses some servers); the page says how much of it is loaded.
+- **The card refreshes itself:** »Neu laden« and coming back to the tab
+  reload the games of `/workspace/telefon` without losing the file and the
+  number chosen; the card shows the entry as the Telefonbuch will print it.
+  The only form that lists files of the Workspace in advance (task cards
+  of type `submit` read them when the button is clicked; live apps update
+  over a WebSocket).
 - **Taking back** at any time, without moderation: the game is off the
   phone at once and its number free again. A new version of a published
   game is moderated again; the old one stays playable until it is approved.
