@@ -285,9 +285,28 @@ def update_yt_dlp(why):
 
 # music, in threads (they wait for yt-dlp and ffmpeg) -----------------------
 
+# YouTube asks some servers to sign in (»confirm you're not a bot«): with
+# PHONE_YOUTUBE_COOKIES in credentials.rb, config.rb mounts the cookies of a
+# Google account kept for this (cookies.txt, read-only); yt-dlp writes renewed
+# cookies back, so it gets a copy in /tmp, made anew at each start
+YOUTUBE_COOKIES = os.environ.get('PHONE_YOUTUBE_COOKIES', '')
+_cookies_lock = threading.Lock()
+
+
+def cookies_args():
+    if not YOUTUBE_COOKIES or not os.path.isfile(YOUTUBE_COOKIES):
+        return []
+    copy = '/tmp/youtube-cookies.txt'
+    with _cookies_lock:
+        if not os.path.exists(copy):
+            shutil.copyfile(YOUTUBE_COOKIES, copy)
+            os.chmod(copy, 0o600)
+    return ['--cookies', copy]
+
+
 def download(source, raw):
     subprocess.run([sys.executable, '-m', 'yt_dlp', '-q', '--no-playlist', '--no-warnings', '-f', 'bestaudio',
-                    '--max-filesize', '80M', '-o', raw, source],
+                    '--max-filesize', '80M', *cookies_args(), '-o', raw, source],
                    check=True, timeout=300, stdin=subprocess.DEVNULL, env=yt_dlp_env())
 
 

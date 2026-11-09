@@ -351,6 +351,12 @@ docker_compose[:services][:phone_speech] = {
     :cpus => 2.0,
     :restart => 'always',
 }
+# the cookies of a Google account for YouTube, when the server is asked to
+# sign in (credentials.rb, PHONE_YOUTUBE_COOKIES; src/phone/speech/server.py)
+if defined?(PHONE_YOUTUBE_COOKIES) && PHONE_YOUTUBE_COOKIES && File.file?(PHONE_YOUTUBE_COOKIES)
+    docker_compose[:services][:phone_speech][:volumes] << "#{PHONE_YOUTUBE_COOKIES}:/secrets/youtube-cookies.txt:ro"
+    docker_compose[:services][:phone_speech][:environment]['PHONE_YOUTUBE_COOKIES'] = '/secrets/youtube-cookies.txt'
+end
 
 # The public line of the Telefonbuch (src/phone/line): the phone on
 # /telefonbuch for every visitor, running the menu and the published games.

@@ -178,6 +178,33 @@ Why it was flaky:
   Hackschule's voice, now fast enough to speak during a call); other voices
   to compare later.
 
+## Musik von YouTube
+
+YouTube asks some servers to sign in before it hands out a video
+(»Sign in to confirm you're not a bot«); the production server is one of
+them, so games there had no YouTube music. The maintainer keeps a Google
+account only for this. Its cookies go into a file on the server, never
+into the repository or a chat:
+
+1. In a private window of a desktop browser, sign in to youtube.com with
+   that account.
+2. In the same window, open `https://www.youtube.com/robots.txt`, so only
+   this tab is open, and export the cookies of youtube.com as `cookies.txt`
+   (Netscape format) with an extension such as »Get cookies.txt LOCALLY«,
+   allowed in private windows.
+3. Close the private window at once, without signing out: YouTube renews
+   the cookies of open tabs, and signing out makes the file worthless.
+4. Copy the file to the server outside the repository, readable only by
+   the operator (`chmod 600`), and name it in `credentials.rb`:
+   `PHONE_YOUTUBE_COOKIES = '/home/…/youtube-cookies.txt'`; then
+   `./config.rb up -d`.
+
+`config.rb` mounts the file read-only into `phone_speech`; the service
+gives yt-dlp a copy in `/tmp` (yt-dlp writes renewed cookies back), made
+anew at each start. When downloads fail again with the same message, the
+cookies have expired: export them again. Music files in the game's folder
+(`music 'musik.mp3'`) need none of this.
+
 ## Architecture
 
 ```text

@@ -134,6 +134,13 @@ end
 # PHONE_NUMBER = '+49 30 1234567'
 # PHONE_DIRECT_DIAL = false
 
+# Musik von YouTube für das Telefonspiel: Manche Server bittet YouTube, sich
+# anzumelden (»Sign in to confirm you're not a bot«). Dann hilft eine Datei
+# cookies.txt eines eigenen Google-Kontos nur dafür, außerhalb des
+# Repositorys, lesbar nur für den Betreiber (docs/plan-telefonspiel.md,
+# »Musik von YouTube«). Nach einer Änderung: ./config.rb up -d
+# PHONE_YOUTUBE_COOKIES = '/home/betreiber/youtube-cookies.txt'
+
 # Wie viele Katas (Programmieraufgaben in der Karte, docs/aufgaben.md,
 # »function«) gleichzeitig laufen; die anderen warten der Reihe nach. Ohne
 # diese Zeile 4. Wie viele der Server verträgt, misst
