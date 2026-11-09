@@ -150,7 +150,11 @@ bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
 der Seite noch in der Klassenübersicht. Es gibt `case_server`, den
 Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)),
 und `git_server`, den Git-Server der Gruppen ([entwicklung.md](entwicklung.md#der-git-server-der-gruppen));
-mit ihm stehen im Handbuch »Git-Server« die Teile zum Schlüssel für diesen Server.
+mit ihm stehen im Handbuch »Git-Server« die Teile zum Schlüssel für diesen Server,
+und `phone_number`, die Telefonnummer des Telefonspiels (`PHONE_NUMBER` in
+`credentials.rb`). Mit `!` davor gilt ein Teil nur, wo die Funktion aus ist:
+`<!-- feature: !phone_number -->` sagt in »Ein Spiel am Telefon«, dass an
+einer echten Nummer gearbeitet wird.
 Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
 
 ### Teile mit und ohne Klassen-Repository

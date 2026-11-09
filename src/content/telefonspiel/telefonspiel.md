@@ -42,6 +42,12 @@ Im Workspace probierst du dein Spiel mit dem Befehl `telefon` aus. Er startet
 dein Programm und zeigt dir im Browser ein Telefon mit Tastenfeld. Daneben
 steht, was das Spiel sagt, Wort für Wort, während du es hörst.
 
+<!-- feature: !phone_number -->
+Anrufen kann man dein Spiel bisher nur hier im Workspace. Wir arbeiten daran,
+eine echte Telefonnummer zu bekommen: Dann kann man fertige Spiele von jedem
+Telefon aus anrufen.
+<!-- /feature -->
+
 Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>:
 
 ```bash

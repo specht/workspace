@@ -56,17 +56,23 @@ Why it was flaky:
   maintainer's existing sipgate account still has its Berlin number.
 - **One number for all games:** a menu or a code chooses the game; several
   calls at once, one process per call.
-- **Game numbers 000 to 999** (the maintainer): a student chooses a free
-  number when publishing, can switch to another free one, and can
-  unpublish (the number is free again). Exactly three digits, so the menu
+- **Game numbers 001 to 999, 000 for a random game** (the maintainer): a
+  student chooses a free number when publishing, can switch to another
+  free one, and can unpublish (the number is free again). Always exactly
+  three digits, also for chance (000, never a single 0), so the menu
   reads three keys without #: »Gib die Nummer des Spiels ein«; keys typed
   during the greeting count. Without Durchwahl the menu reads the titles of
   the published games in random order (the maintainer), so no game is
   always first: five at a time, each with its number (»Die Höhle der
   Echos: eins, zwei, drei«), then »Für weitere Spiele drück die Raute«;
   a number typed at any moment, also in the middle of the list, starts
-  that game, and 0 a random one. Open: whether a selection by the teacher
+  that game, and 000 a random one. Open: whether a selection by the teacher
   (up to 9, »Drücke 1 für …«) stays as an option.
+- **The menu's words made in advance** (the maintainer): the digits and the
+  menu's own sentences once, each game's title when the game is published,
+  so the menu never waits for the speech service during a call.
+- **Without a number** (`PHONE_NUMBER` not set) the activity says that a
+  real number is being worked on (`<!-- feature: !phone_number -->`).
 - **Durchwahl when the trunk allows it:** Asterisk gets the dialled number,
   and the runner starts the game of its last three digits without the
   menu (»Ruf 030 … 123 an«). This needs a single number with an appended

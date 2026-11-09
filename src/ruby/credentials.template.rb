@@ -125,6 +125,15 @@ end
 # Gespeichert werden die Repositorys in data/git-repos.
 # GIT_SERVER = true
 
+# Die Telefonnummer des Telefonspiels (docs/plan-telefonspiel.md). Ohne diese
+# Zeile sagt die Aktivität »Ein Spiel am Telefon«, dass an einer echten Nummer
+# gearbeitet wird. Die Anrufe selbst brauchen noch den SIP-Zugang, der
+# Anschluss ans Telefonnetz ist im Aufbau. PHONE_DIRECT_DIAL: ob der Anbieter
+# drei angehängte Ziffern weiterreicht (»Ruf … 123 an«); ohne diese Zeile
+# wählt man das Spiel im Menü.
+# PHONE_NUMBER = '+49 30 1234567'
+# PHONE_DIRECT_DIAL = false
+
 # Wie viele Katas (Programmieraufgaben in der Karte, docs/aufgaben.md,
 # »function«) gleichzeitig laufen; die anderen warten der Reihe nach. Ohne
 # diese Zeile 4. Wie viele der Server verträgt, misst

@@ -18,7 +18,14 @@ class Main < Sinatra::Base
     # The features of this installation that pages may show parts for
     # (ContentParts.filter_features).
     def self.content_features
-        (CaseServer.enabled? ? ['case_server'] : []) + (GitServer.enabled? ? ['git_server'] : [])
+        (CaseServer.enabled? ? ['case_server'] : []) + (GitServer.enabled? ? ['git_server'] : []) +
+            (phone_number ? ['phone_number'] : [])
+    end
+    # The number of the Telefonspiel (PHONE_NUMBER in credentials.rb), or nil
+    # while the installation has none (docs/plan-telefonspiel.md)
+    def self.phone_number
+        number = defined?(PHONE_NUMBER) ? PHONE_NUMBER.to_s.strip : ''
+        number.empty? ? nil : number
     end
     def self.convert_image(image_path)
         image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]

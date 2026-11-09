@@ -288,6 +288,12 @@ class ContentPartsTest < Minitest::Test
         assert_includes warnings, '<!-- feature: teleport --> without <!-- /feature -->'
     end
 
+    def test_a_negated_feature_block_stays_only_where_the_feature_is_off
+        page = "A\n<!-- feature: !phone_number -->\nNoch keine Nummer.\n<!-- /feature -->\nC\n"
+        assert_equal "A\nNoch keine Nummer.\nC\n", ContentParts.filter_features(page, [])
+        assert_equal "A\nC\n", ContentParts.filter_features(page, ['phone_number'])
+    end
+
     def test_paths_in_code_examples_stay_as_written
         text = "<img src='bild.webp' alt=''>\n\n```html\n<img src=\"pictures/fuji.jpg\" alt=\"\">\n```\n\n" \
                "<pre><code>&lt;img src=\"Fuji.jpg\"&gt;</code></pre>\n\nIm Text: `src=\"fuji.jpg\"`, und ![Bild](foto.webp)\n"
