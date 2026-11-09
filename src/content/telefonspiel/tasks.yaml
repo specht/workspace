@@ -23,6 +23,16 @@ tasks:
             says: ['\w']
             say: Dein Spiel sagt noch nichts. Steht in `hallo.py` eine Zeile mit `say('…')`?
 
+    javascript:
+      prompt: Dein erstes Telefonspiel in `telefon/hallo.js` sagt etwas, wenn man anruft.
+      check:
+        type: phone
+        file: telefon/hallo.js
+        cases:
+          - keys: ''
+            says: ['\w']
+            say: Dein Spiel sagt noch nichts. Steht in `hallo.js` eine Zeile mit `say('…');`?
+
   - id: musik
     title: Musik
     prompt: '`telefon/hallo.rb` spielt Musik und sagt danach etwas.'
@@ -44,6 +54,17 @@ tasks:
             music: true
             says: ['\w']
       hint: Die Zeile mit `music('…')` steht vor dem `say`, und in der ersten Zeile holt `from telefon import` auch `music`.
+
+    javascript:
+      prompt: '`telefon/hallo.js` spielt Musik und sagt danach etwas.'
+      check:
+        type: phone
+        file: telefon/hallo.js
+        cases:
+          - keys: ''
+            music: true
+            says: ['\w']
+      hint: Die Zeile mit `music('…');` steht vor dem `say`, und in der ersten Zeile holt `require('telefon')` auch `music`.
 
   - id: text-oder-zahl
     title: Text oder Zahl?
@@ -79,6 +100,24 @@ tasks:
           say: Auf dem Telefon steht eine 1, aber `keys` gibt den Text `'1'` zurück, und der ist nicht gleich der Zahl `1`. Darum passt der erste Zweig nicht.
         - when: { picked: 2 }
           say: Python darf einen Text mit einer Zahl auf Gleichheit vergleichen, das ist kein Fehler. Der Vergleich ist nur nie wahr.
+        - when: { picked: 3 }
+          say: Der Zweig für die 2 vergleicht weiter mit `'2'`, und gedrückt wurde die 1.
+
+    javascript:
+      prompt: Jemand ändert in `frage.js` die Zeile `if (key === '1') {` in `if (key === 1) {`, ohne Anführungszeichen. Was sagt das Spiel, wenn man die 1 drückt?
+      check:
+        type: choice
+        options:
+          - »Miau! Katzen schlafen bis zu sechzehn Stunden am Tag.«
+          - »Du hast nichts gedrückt. Schade!«
+          - Nichts mehr, JavaScript bricht mit einer Fehlermeldung ab.
+          - »Wuff! Hunde hören Töne, die für dich zu hoch sind.«
+        correct: 1
+      feedback:
+        - when: { picked: 0 }
+          say: Auf dem Telefon steht eine 1, aber `keys` gibt den Text `'1'` zurück, und `===` prüft auch, ob beides von derselben Art ist. Der Text `'1'` ist keine Zahl, darum passt der erste Zweig nicht. (Mit `==` wäre es anders.)
+        - when: { picked: 2 }
+          say: JavaScript darf einen Text mit einer Zahl vergleichen, das ist kein Fehler. Mit `===` ist der Vergleich nur nie wahr.
         - when: { picked: 3 }
           say: Der Zweig für die 2 vergleicht weiter mit `'2'`, und gedrückt wurde die 1.
 
@@ -123,6 +162,27 @@ tasks:
           - keys: '-'
             says: [nichts gedrückt]
             say: Ohne Taste soll das Spiel weiter »Du hast nichts gedrückt« sagen. Steht der Zweig für die 3 vor dem `else:`?
+
+    javascript:
+      prompt: '`telefon/frage.js` bietet Fische als dritte Wahl an: Die Frage nennt sie, und mit der 3 sagt das Spiel »Blubb! …«. Die anderen Antworten bleiben, wie sie sind.'
+      check:
+        type: phone
+        file: telefon/frage.js
+        cases:
+          - keys: ''
+            says: [Fisch]
+            ends: false
+            say: Die Frage am Anfang nennt die Fische noch nicht.
+          - keys: '3'
+            says: [Blubb]
+            ends: true
+          - keys: '1'
+            says: [Miau]
+          - keys: '2'
+            says: [Wuff]
+          - keys: '-'
+            says: [nichts gedrückt]
+            say: Ohne Taste soll das Spiel weiter »Du hast nichts gedrückt« sagen. Steht der Zweig für die 3 vor dem `else`?
 
   - id: nichts-gedrueckt
     title: Niemand drückt
@@ -196,6 +256,32 @@ tasks:
             says: [nach Hause]
             ends: true
 
+    javascript:
+      prompt: In `telefon/hoehle.js` führt die 1 vor der Höhle in den Gang. Dort führt die 1 zum Schatz, die 2 zum eiskalten Wasser und zurück in den Gang, und ohne Taste beginnt der Gang von vorn.
+      check:
+        type: phone
+        file: telefon/hoehle.js
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            not_says: [Gold]
+            ends: false
+            say: Nach der 1 vor der Höhle soll das Spiel den Satz vom Gang sagen und auf eine Taste warten, nicht gleich zum Schatz gehen.
+          - keys: '1,1'
+            says: [Gold]
+            ends: true
+          - keys: '1,2'
+            says: [eiskalt]
+            ends: false
+            say: Nach dem eiskalten Wasser geht es zurück in den Gang, und der fragt wieder nach einer Taste.
+          - keys: '1,-'
+            says: [teilt sich]
+            ends: false
+            say: Ohne Taste beginnt der Gang von vorn und fragt wieder nach einer Taste.
+          - keys: '2'
+            says: [nach Hause]
+            ends: true
+
   - id: stimmen
     title: Stimmen in der Höhle
     prompt: In `telefon/hoehle.rb` flüstert das Spiel den Satz im Gang, und beim Gold klingt es überrascht.
@@ -216,6 +302,21 @@ tasks:
       check:
         type: phone
         file: telefon/hoehle.py
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            moods: { teilt sich: whisper }
+            ends: false
+          - keys: '1,1'
+            says: [Gold]
+            moods: { Gold: surprised }
+            ends: true
+
+    javascript:
+      prompt: In `telefon/hoehle.js` flüstert das Spiel den Satz im Gang, und beim Gold klingt es überrascht.
+      check:
+        type: phone
+        file: telefon/hoehle.js
         cases:
           - keys: '1'
             says: [teilt sich]
@@ -260,6 +361,23 @@ tasks:
             ends: true
             say: Beim Schatz spielt noch nicht »No Quarter« von 0:16 bis 0:32. Steht am Anfang von `treasure` `music('…', start='0:16', stop='0:32')`?
 
+    javascript:
+      prompt: In `telefon/hoehle.js` hört die Musik im Gang auf, und beim Schatz spielt »No Quarter« von 0:16 bis 0:32.
+      check:
+        type: phone
+        file: telefon/hoehle.js
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            music_stops: true
+            ends: false
+            say: Im Gang läuft die Musik noch. Steht am Anfang von `tunnel` `music(null)`?
+          - keys: '1,1'
+            says: [Gold]
+            music: 'oR450XGc-j4.* von 0:16 bis 0:32'
+            ends: true
+            say: "Beim Schatz spielt noch nicht »No Quarter« von 0:16 bis 0:32. Steht am Anfang von `treasure` `music('…', { start: '0:16', stop: '0:32' })`?"
+
   - id: auflegen
     title: Ein Sprung ins Wasser
     prompt: In `telefon/hoehle.rb` nennt der Gang eine dritte Wahl. Mit der 3 springt man ins Wasser, das Spiel sagt »… Strömung …« und legt auf, ohne danach noch »Ende.« zu sagen.
@@ -302,6 +420,27 @@ tasks:
             ends: false
             say: Die 2 im Gang soll weiter zum eiskalten Wasser und zurück in den Gang führen.
 
+    javascript:
+      prompt: In `telefon/hoehle.js` nennt der Gang eine dritte Wahl. Mit der 3 springt man ins Wasser, das Spiel sagt »… Strömung …« und legt auf, ohne danach noch »Ende.« zu sagen.
+      check:
+        type: phone
+        file: telefon/hoehle.js
+        cases:
+          - keys: '1'
+            says: ['\b3\b|drei']
+            ends: false
+            say: Der Satz im Gang nennt die 3 noch nicht.
+          - keys: '1,3'
+            says: [Strömung]
+            ends: true
+          - keys: '1,3'
+            not_says: ['^Ende']
+            say: Nach dem Sprung sagt dein Spiel noch »Ende.« Mit `hangup()` legt es sofort auf, dann kommt nichts mehr; in der ersten Zeile holt `require('telefon')` auch `hangup`.
+          - keys: '1,2'
+            says: [eiskalt]
+            ends: false
+            say: Die 2 im Gang soll weiter zum eiskalten Wasser und zurück in den Gang führen.
+
   - id: geschichte
     title: Deine Geschichte
     prompt: '`telefon/geschichte.rb` spielt Musik, sagt etwas und wartet dann auf eine Taste.'
@@ -319,6 +458,18 @@ tasks:
       check:
         type: phone
         file: telefon/geschichte.py
+        cases:
+          - keys: ''
+            music: true
+            says: ['\w']
+            ends: false
+            say: Dein Spiel soll am Anfang etwas sagen und dann mit `keys` auf eine Taste warten.
+
+    javascript:
+      prompt: '`telefon/geschichte.js` spielt Musik, sagt etwas und wartet dann auf eine Taste.'
+      check:
+        type: phone
+        file: telefon/geschichte.js
         cases:
           - keys: ''
             music: true

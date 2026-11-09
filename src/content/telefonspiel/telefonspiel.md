@@ -2,8 +2,8 @@
 image: teaser.webp
 image_alt: "Das Telefon im Browser während eines Anrufs bei der Höhle: links ein Telefon mit Display, Tastenfeld und rotem Hörer zum Auflegen; rechts das Gespräch, die Sätze des Spiels in Blasen, die gedrückten Tasten 1 und 2 als kleine Tasten, und der nächste Satz erscheint gerade Wort für Wort"
 kind: projekt
-language: Ruby / Python
-languages: [ruby, python]
+language: Ruby / Python / JavaScript
+languages: [ruby, python, javascript]
 duration: 3 Doppelstunden
 curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukturen: Verzweigung, Prozeduren); Oberstufe: Algorithmen und Softwareentwicklung (Sequenz, Auswahl)"
 topics: [grundstrukturen, unterprogramme]
@@ -90,12 +90,28 @@ Die erste Zeile holt den Befehl `say` aus der Bibliothek des Telefons, und
 `say` sagt einen Text. Python wartet, bis der Satz gesprochen ist, und macht
 erst dann mit der nächsten Zeile weiter.
 <!-- /language -->
+<!-- language: javascript -->
+Lege darin die Datei `hallo.js` an:
+
+```javascript
+const { say } = require('telefon');
+
+say('Hallo! Hier spricht dein erstes Telefonspiel.');
+```
+
+Die erste Zeile holt den Befehl `say` aus der Bibliothek des Telefons, und
+`say` sagt einen Text. JavaScript wartet, bis der Satz gesprochen ist, und
+macht erst dann mit der nächsten Zeile weiter.
+<!-- /language -->
 
 <!-- language: ruby -->
 <!-- stage: stufen/1-hallo/hallo.rb as hallo.rb -->
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/1-hallo/hallo.py as hallo.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/1-hallo/hallo.js as hallo.js -->
 <!-- /language -->
 
 ### Anrufen
@@ -110,6 +126,11 @@ telefon hallo.rb
 <!-- language: python -->
 ```bash
 telefon hallo.py
+```
+<!-- /language -->
+<!-- language: javascript -->
+```bash
+telefon hallo.js
 ```
 <!-- /language -->
 
@@ -164,12 +185,27 @@ sleep(3)
 In der ersten Zeile stehen jetzt auch `music` und `sleep`, die anderen
 beiden Befehle, die dein Programm aus der Bibliothek braucht.
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+const { music, say, sleep } = require('telefon');
+
+music('https://www.youtube.com/watch?v=-xRD8VmjBQM');
+sleep(3);
+~ say('Hallo! Hier spricht dein erstes Telefonspiel.');
+```
+
+In der ersten Zeile stehen jetzt auch `music` und `sleep`, die anderen
+beiden Befehle, die dein Programm aus der Bibliothek braucht.
+<!-- /language -->
 
 <!-- language: ruby -->
 <!-- stage: stufen/2-musik/hallo.rb as hallo.rb -->
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/2-musik/hallo.py as hallo.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/2-musik/hallo.js as hallo.js -->
 <!-- /language -->
 
 Von einem Video nimmt das Telefon nur den Ton, und es spielt ihn in einer
@@ -178,7 +214,7 @@ Das Video holt `telefon` schon, sobald es gestartet ist, und es bereitet auch
 die Sätze deines Spiels vor; im Terminal steht, wann beides bereit ist. Rufst
 du gleich nach dem Start an, dauert der erste Anruf darum etwas länger. Statt
 eines Links geht auch eine Datei aus
-deinem Ordner, etwa `music 'hoehle.mp3'`; nimm dafür MP3, das spielt jeder
+deinem Ordner, etwa `hoehle.mp3`; nimm dafür MP3, das spielt jeder
 Browser.
 
 <!-- language: ruby -->
@@ -191,6 +227,13 @@ Stelle, endet er auf `t=75`; auch dann beginnt die Musik dort.
 <!-- language: python -->
 Brauchst du nur eine Stelle aus einem längeren Video, sag, wo sie anfängt
 und wo sie aufhört: `music('…', start='1:15', stop='1:52')` spielt die
+Musik von Minute 1:15 bis 1:52 und dann wieder ab 1:15. Ohne `stop` geht es
+ab `start` weiter. Kopierst du bei YouTube mit »Teilen« einen Link ab einer
+Stelle, endet er auf `t=75`; auch dann beginnt die Musik dort.
+<!-- /language -->
+<!-- language: javascript -->
+Brauchst du nur eine Stelle aus einem längeren Video, sag, wo sie anfängt
+und wo sie aufhört: `music('…', { start: '1:15', stop: '1:52' })` spielt die
 Musik von Minute 1:15 bis 1:52 und dann wieder ab 1:15. Ohne `stop` geht es
 ab `start` weiter. Kopierst du bei YouTube mit »Teilen« einen Link ab einer
 Stelle, endet er auf `t=75`; auch dann beginnt die Musik dort.
@@ -210,7 +253,7 @@ wenn jemand über die Musik spricht. Dein Programm muss dafür nichts tun.
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib der Musik eine Lautstärke zwischen
 <code>0</code> und <code>1</code>, in Ruby mit
-<code>music '…', volume: 0.3</code>, in Python mit
+<code>music '…', volume: 0.3</code>, in Python und JavaScript mit
 <code>music('…', 0.3)</code>. Ohne Angabe spielt sie mit <code>1</code>, so
 laut wie möglich. Achte darauf, ob du die Stimme bei <code>1</code> noch gut
 verstehst.
@@ -255,12 +298,32 @@ else:
     say('Du hast nichts gedrückt. Schade!')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+`frage.js`:
+
+```javascript
+const { keys, say } = require('telefon');
+
+say('Katzen oder Hunde? Drück 1 für Katzen, 2 für Hunde.');
+const key = keys(1);
+if (key === '1') {
+  say('Miau! Katzen schlafen bis zu sechzehn Stunden am Tag.');
+} else if (key === '2') {
+  say('Wuff! Hunde hören Töne, die für dich zu hoch sind.');
+} else {
+  say('Du hast nichts gedrückt. Schade!');
+}
+```
+<!-- /language -->
 
 <!-- language: ruby -->
 <!-- stage: stufen/3-frage/frage.rb as frage.rb -->
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/3-frage/frage.py as frage.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/3-frage/frage.js as frage.js -->
 <!-- /language -->
 
 `keys(1)` wartet auf eine Taste und gibt sie zurück, als Text: `'1'`, wenn
@@ -281,12 +344,28 @@ Anführungszeichen. Ist das nicht dasselbe?
 _task(text-oder-zahl)
 
 <!-- after: text-oder-zahl -->
-Das Spiel sagt »Du hast nichts gedrückt. Schade!«. `keys` gibt einen Text
+<!-- language: ruby -->
+Das Spiel sagt »Du hast nichts gedrückt. Schade!« Denn `keys` gibt einen Text
 zurück, auch wenn er nur aus einer Ziffer besteht, und ein Text ist nie
-gleich einer Zahl: `'1' == 1` ist falsch. Darum vergleicht dein Programm mit
-`'1'` in Anführungszeichen. So kann `keys` auch den Stern `'*'` zurückgeben,
-und mehrere Tasten auf einmal, wie `'472'`. Nur die Raute `#` gibt `keys` nie
-zurück: Sie beendet eine Eingabe aus mehreren Tasten.
+gleich einer Zahl: `'1' == 1` ist falsch.
+<!-- /language -->
+<!-- language: python -->
+Das Spiel sagt »Du hast nichts gedrückt. Schade!« Denn `keys` gibt einen Text
+zurück, auch wenn er nur aus einer Ziffer besteht, und ein Text ist nie
+gleich einer Zahl: `'1' == 1` ist falsch.
+<!-- /language -->
+<!-- language: javascript -->
+Das Spiel sagt »Du hast nichts gedrückt. Schade!« Denn `keys` gibt einen Text
+zurück, auch wenn er nur aus einer Ziffer besteht, und `===` prüft auch, ob
+beides von derselben Art ist: `'1' === 1` ist falsch. Mit `==` wäre es wahr,
+weil JavaScript den Text dann erst in eine Zahl verwandelt; darum vergleicht
+man in JavaScript mit `===`.
+<!-- /language -->
+
+Darum vergleicht dein Programm mit `'1'` in Anführungszeichen. So kann `keys`
+auch den Stern `'*'` zurückgeben, und mehrere Tasten auf einmal, wie `'472'`.
+Nur die Raute `#` gibt `keys` nie zurück: Sie beendet eine Eingabe aus
+mehreren Tasten.
 <!-- /after -->
 
 ### Eine dritte Wahl
@@ -321,6 +400,15 @@ elif key == '…':
     say('…')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+Ein neuer Zweig zwischen dem für die 2 und `else`:
+
+<!-- page-code: own -->
+```javascript
+} else if (key === '…') {
+  say('…');
+```
+<!-- /language -->
 <!-- /hint -->
 
 <!-- solution -->
@@ -352,6 +440,20 @@ elif key == '3':
 ~ else:
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+~ const { keys, say } = require('telefon');
+~
+say('Katzen, Hunde oder Fische? Drück 1 für Katzen, 2 für Hunde, 3 für Fische.');
+~ const key = keys(1);
+~ …
+~ } else if (key === '2') {
+~   say('Wuff! Hunde hören Töne, die für dich zu hoch sind.');
+} else if (key === '3') {
+  say('Blubb! Fische haben keine Augenlider.');
+~ } else {
+```
+<!-- /language -->
 <!-- /solution -->
 
 <!-- language: ruby -->
@@ -359,6 +461,9 @@ elif key == '3':
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/4-drei/frage.py as frage.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/4-drei/frage.js as frage.js -->
 <!-- /language -->
 
 _task(drei)
@@ -373,6 +478,9 @@ für eine schwere Frage. Wie lange `keys` wartet, sagst du in Sekunden:
 <!-- /language -->
 <!-- language: python -->
 `keys(1, timeout=5)` wartet nur fünf Sekunden.
+<!-- /language -->
+<!-- language: javascript -->
+`keys(1, 5)` wartet nur fünf Sekunden.
 <!-- /language -->
 
 Und mit `keys(3)` wartet dein Programm auf bis zu drei Tasten, etwa für eine
@@ -458,12 +566,43 @@ cave()
 say('Ende.')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+`hoehle.js`:
+
+```javascript
+const { keys, music, say, sleep } = require('telefon');
+
+function treasure() {
+  say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!');
+}
+
+function cave() {
+  say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.');
+  const key = keys(1);
+  if (key === '1') {
+    treasure();
+  } else if (key === '2') {
+    say('Du gehst nach Hause. Vielleicht ein anderes Mal.');
+  } else {
+    cave();
+  }
+}
+
+music('https://www.youtube.com/watch?v=-xRD8VmjBQM');
+sleep(3);
+cave();
+say('Ende.');
+```
+<!-- /language -->
 
 <!-- language: ruby -->
 <!-- stage: stufen/5-hoehle/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/5-hoehle/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/5-hoehle/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 Unten steht, was beim Anruf passiert: Musik, eine Pause, dann die Szene vor
@@ -547,6 +686,23 @@ def tunnel():
         …
 ```
 <!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+function tunnel() {
+  say('…');
+  const key = keys(1);
+  if (key === '1') {
+    …
+  } else if (key === '2') {
+    say('…');
+    …
+  } else {
+    …
+  }
+}
+```
+<!-- /language -->
 <!-- /hint -->
 
 <!-- solution -->
@@ -598,6 +754,31 @@ In `cave` führt die 1 in den Gang:
 ~     elif key == '2':
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+function tunnel() {
+  say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts.');
+  const key = keys(1);
+  if (key === '1') {
+    treasure();
+  } else if (key === '2') {
+    say('Das Wasser ist eiskalt. Du gehst zurück.');
+    tunnel();
+  } else {
+    tunnel();
+  }
+}
+```
+
+In `cave` führt die 1 in den Gang:
+
+```javascript
+~   const key = keys(1);
+~   if (key === '1') {
+    tunnel();
+~   } else if (key === '2') {
+```
+<!-- /language -->
 <!-- /solution -->
 
 <!-- language: ruby -->
@@ -605,6 +786,9 @@ In `cave` führt die 1 in den Gang:
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/6-gang/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/6-gang/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(gang)
@@ -627,6 +811,13 @@ geht jetzt müde nach Hause:
 ~     elif key == '2':
         say('Du gehst nach Hause. Vielleicht ein anderes Mal.', mood='sleepy')
 ~     else:
+```
+<!-- /language -->
+<!-- language: javascript -->
+```javascript
+~   } else if (key === '2') {
+    say('Du gehst nach Hause. Vielleicht ein anderes Mal.', { mood: 'sleepy' });
+~   } else {
 ```
 <!-- /language -->
 
@@ -669,8 +860,19 @@ den Satz im Gang flüstern. Wer das Gold findet, soll es überrascht hören.
 Es sind zwei Sätze: Der eine steht in `tunnel`, der andere in `treasure`.
 <!-- /hint -->
 <!-- hint -->
-An beide kommt hinter den Text ein Komma und die Stimmung: `whisper` für das
-Flüstern, `surprised` für die Überraschung.
+<!-- language: ruby -->
+An beide kommt hinter den Text ein Komma und die Stimmung:
+`mood: 'whisper'` für das Flüstern, `mood: 'surprised'` für die Überraschung.
+<!-- /language -->
+<!-- language: python -->
+An beide kommt hinter den Text ein Komma und die Stimmung:
+`mood='whisper'` für das Flüstern, `mood='surprised'` für die Überraschung.
+<!-- /language -->
+<!-- language: javascript -->
+An beide kommt hinter den Text ein Komma und die Stimmung in geschweiften
+Klammern: `{ mood: 'whisper' }` für das Flüstern, `{ mood: 'surprised' }` für
+die Überraschung.
+<!-- /language -->
 <!-- /hint -->
 
 <!-- solution -->
@@ -694,6 +896,16 @@ Flüstern, `surprised` für die Überraschung.
     say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts.', mood='whisper')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+~ function treasure() {
+  say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', { mood: 'surprised' });
+~ }
+~
+~ function tunnel() {
+  say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts.', { mood: 'whisper' });
+```
+<!-- /language -->
 <!-- /solution -->
 
 <!-- language: ruby -->
@@ -701,6 +913,9 @@ Flüstern, `surprised` für die Überraschung.
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/7-stimmen/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/7-stimmen/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(stimmen)
@@ -716,6 +931,11 @@ hören sein. `music nil` schaltet die Musik aus.
 Musik erzählt mit, und am deutlichsten, wenn sie sich ändert. Hört sie
 plötzlich auf, horcht man auf: Im dunklen Gang soll nur noch das Flüstern zu
 hören sein. `music(None)` schaltet die Musik aus.
+<!-- /language -->
+<!-- language: javascript -->
+Musik erzählt mit, und am deutlichsten, wenn sie sich ändert. Hört sie
+plötzlich auf, horcht man auf: Im dunklen Gang soll nur noch das Flüstern zu
+hören sein. `music(null)` schaltet die Musik aus.
 <!-- /language -->
 
 Ein neues `music` mitten im Spiel ersetzt die Musik, die gerade läuft. Wer den
@@ -767,6 +987,20 @@ def tunnel():
     say('…', mood='whisper')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+function treasure() {
+  music('…', { start: '…', stop: '…' });
+  say('…', { mood: 'surprised' });
+  sleep(…);
+}
+
+function tunnel() {
+  music(…);
+  say('…', { mood: 'whisper' });
+```
+<!-- /language -->
 <!-- /hint -->
 
 <!-- solution -->
@@ -794,6 +1028,18 @@ def tunnel():
     music(None)
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+~ function treasure() {
+  music('https://www.youtube.com/watch?v=oR450XGc-j4', { start: '0:16', stop: '0:32' });
+~   say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', { mood: 'surprised' });
+  sleep(8);
+~ }
+~
+~ function tunnel() {
+  music(null);
+```
+<!-- /language -->
 <!-- /solution -->
 
 <!-- language: ruby -->
@@ -801,6 +1047,9 @@ def tunnel():
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/8-klang/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/8-klang/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(klang)
@@ -824,6 +1073,12 @@ jemand eine Taste drückt, und das nächste `keys` bekommt genau diese Taste:
     say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.', interrupt=True)
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+~ function cave() {
+  say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.', { interrupt: true });
+```
+<!-- /language -->
 
 Das passt zu Sätzen, die man nach dem ersten Mal kennt, wie der Wahl vor der
 Höhle. Ein Satz mit einem Hinweis, den niemand verpassen darf, bleibt besser
@@ -845,6 +1100,13 @@ Satz mehr, auch nicht das »Ende.« am Schluss des Programms, und auf dem
 Telefon ertönt das Besetztzeichen.
 <!-- /language -->
 <!-- language: python -->
+Bisher endet ein Anruf, wenn das Programm zu Ende ist. Manchmal soll er
+mittendrin enden: Wer im Gang ins Wasser springt, kommt nicht wieder.
+`hangup()` legt sofort auf, egal in welcher Szene das Spiel gerade ist. Danach
+kommt kein Satz mehr, auch nicht das »Ende.« am Schluss des Programms, und auf
+dem Telefon ertönt das Besetztzeichen.
+<!-- /language -->
+<!-- language: javascript -->
 Bisher endet ein Anruf, wenn das Programm zu Ende ist. Manchmal soll er
 mittendrin enden: Wer im Gang ins Wasser springt, kommt nicht wieder.
 `hangup()` legt sofort auf, egal in welcher Szene das Spiel gerade ist. Danach
@@ -888,6 +1150,16 @@ den Anruf sofort.
 
 In der ersten Zeile holt `from telefon import` dann auch `hangup`.
 <!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+  } else if (key === '3') {
+    say('…');
+    …
+```
+
+In der ersten Zeile holt `require('telefon')` dann auch `hangup`.
+<!-- /language -->
 <!-- /hint -->
 
 <!-- solution -->
@@ -923,6 +1195,23 @@ from telefon import hangup, keys, music, say, sleep
 ~     else:
 ```
 <!-- /language -->
+<!-- language: javascript -->
+```javascript
+const { hangup, keys, music, say, sleep } = require('telefon');
+~ …
+~ function tunnel() {
+~   music(null);
+  say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts, 3, um ins Wasser zu springen.', { mood: 'whisper' });
+~   …
+~   } else if (key === '2') {
+~     say('Das Wasser ist eiskalt. Du gehst zurück.');
+~     tunnel();
+  } else if (key === '3') {
+    say('Du springst ins Wasser. Die Strömung reißt dich fort, hinaus in die Nacht.');
+    hangup();
+~   } else {
+```
+<!-- /language -->
 <!-- /solution -->
 
 <!-- language: ruby -->
@@ -930,6 +1219,9 @@ from telefon import hangup, keys, music, say, sleep
 <!-- /language -->
 <!-- language: python -->
 <!-- stage: stufen/9-auflegen/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/9-auflegen/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(auflegen)
@@ -970,6 +1262,12 @@ say 'Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!'
 say('Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+say('Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!');
+```
+<!-- /language -->
 
 Die Lautschrift eines Wortes steht im [Wiktionary](https://de.wiktionary.org)
 unter »Aussprache«, bei englischen Wörtern im
@@ -1005,6 +1303,11 @@ Szene. Ruf nach jeder neuen Szene einmal an und spiel sie durch.
 <!-- /language -->
 <!-- language: python -->
 Schreib dein Spiel in eine neue Datei `geschichte.py` im Ordner `telefon`:
+eine Funktion für jede Szene, unten die Musik und der Aufruf der ersten
+Szene. Ruf nach jeder neuen Szene einmal an und spiel sie durch.
+<!-- /language -->
+<!-- language: javascript -->
+Schreib dein Spiel in eine neue Datei `geschichte.js` im Ordner `telefon`:
 eine Funktion für jede Szene, unten die Musik und der Aufruf der ersten
 Szene. Ruf nach jeder neuen Szene einmal an und spiel sie durch.
 <!-- /language -->
@@ -1067,6 +1370,15 @@ title('Die Höhle der Echos')
 subtitle('Ein Abenteuer mit drei Wegen und einem Schatz.')
 ```
 <!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+const { keys, music, say, sleep, subtitle, title } = require('telefon');
+
+title('Die Höhle der Echos');
+subtitle('Ein Abenteuer mit drei Wegen und einem Schatz.');
+```
+<!-- /language -->
 
 Das Telefon zeigt den Namen an, sobald dein Spiel ihn sagt.
 
@@ -1114,6 +1426,21 @@ def door():
     else:
         say('Nichts passiert.')
         door()
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+function door() {
+  say('Eine Tür mit einem Zahlenschloss. Gib drei Ziffern ein.');
+  const code = keys(3);
+  if (code === '472') {
+    say('Klick. Die Tür springt auf.');
+  } else {
+    say('Nichts passiert.');
+    door();
+  }
+}
 ```
 <!-- /language -->
 

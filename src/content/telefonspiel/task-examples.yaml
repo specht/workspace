@@ -14,6 +14,12 @@ examples:
       fail:
         - files: { telefon/hallo.py: { text: "from telefon import say\n" } }
           say: sagt noch nichts
+    javascript:
+      pass:
+        - files: { telefon/hallo.js: stufen/1-hallo/hallo.js }
+      fail:
+        - files: { telefon/hallo.js: { text: "const { say } = require('telefon');\n" } }
+          say: sagt noch nichts
   musik:
     pass:
       - files: { telefon/hallo.rb: stufen/2-musik/hallo.rb }
@@ -25,6 +31,12 @@ examples:
         - files: { telefon/hallo.py: stufen/2-musik/hallo.py }
       fail:
         - files: { telefon/hallo.py: stufen/1-hallo/hallo.py }
+          say: keine Musik
+    javascript:
+      pass:
+        - files: { telefon/hallo.js: stufen/2-musik/hallo.js }
+      fail:
+        - files: { telefon/hallo.js: stufen/1-hallo/hallo.js }
           say: keine Musik
   drei:
     pass:
@@ -38,6 +50,12 @@ examples:
       fail:
         - files: { telefon/frage.py: stufen/3-frage/frage.py }
           say: Fische
+    javascript:
+      pass:
+        - files: { telefon/frage.js: stufen/4-drei/frage.js }
+      fail:
+        - files: { telefon/frage.js: stufen/3-frage/frage.js }
+          say: Fische
   gang:
     pass:
       - files: { telefon/hoehle.rb: stufen/6-gang/hoehle.rb }
@@ -49,6 +67,12 @@ examples:
         - files: { telefon/hoehle.py: stufen/6-gang/hoehle.py }
       fail:
         - files: { telefon/hoehle.py: stufen/5-hoehle/hoehle.py }
+          say: Gang
+    javascript:
+      pass:
+        - files: { telefon/hoehle.js: stufen/6-gang/hoehle.js }
+      fail:
+        - files: { telefon/hoehle.js: stufen/5-hoehle/hoehle.js }
           say: Gang
   stimmen:
     pass:
@@ -62,6 +86,12 @@ examples:
       fail:
         - files: { telefon/hoehle.py: stufen/6-gang/hoehle.py }
           say: flüsternd
+    javascript:
+      pass:
+        - files: { telefon/hoehle.js: stufen/7-stimmen/hoehle.js }
+      fail:
+        - files: { telefon/hoehle.js: stufen/6-gang/hoehle.js }
+          say: flüsternd
   geschichte:
     pass:
       - files: { telefon/geschichte.rb: stufen/6-gang/hoehle.rb }
@@ -72,6 +102,11 @@ examples:
         - files: { telefon/geschichte.py: stufen/6-gang/hoehle.py }
       fail:
         - files: { telefon/geschichte.py: stufen/1-hallo/hallo.py }
+    javascript:
+      pass:
+        - files: { telefon/geschichte.js: stufen/6-gang/hoehle.js }
+      fail:
+        - files: { telefon/geschichte.js: stufen/1-hallo/hallo.js }
   klang:
     pass:
       - files: { telefon/hoehle.rb: stufen/8-klang/hoehle.rb }
@@ -84,6 +119,12 @@ examples:
       fail:
         - files: { telefon/hoehle.py: stufen/7-stimmen/hoehle.py }
           say: Musik noch
+    javascript:
+      pass:
+        - files: { telefon/hoehle.js: stufen/8-klang/hoehle.js }
+      fail:
+        - files: { telefon/hoehle.js: stufen/7-stimmen/hoehle.js }
+          say: Musik noch
   auflegen:
     pass:
       - files: { telefon/hoehle.rb: stufen/9-auflegen/hoehle.rb }
@@ -95,4 +136,10 @@ examples:
         - files: { telefon/hoehle.py: stufen/9-auflegen/hoehle.py }
       fail:
         - files: { telefon/hoehle.py: stufen/8-klang/hoehle.py }
+          say: nennt die 3
+    javascript:
+      pass:
+        - files: { telefon/hoehle.js: stufen/9-auflegen/hoehle.js }
+      fail:
+        - files: { telefon/hoehle.js: stufen/8-klang/hoehle.js }
           say: nennt die 3
