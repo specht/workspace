@@ -54,6 +54,9 @@ address from `credentials.rb` and the code `123456`.
   the next activities)
 - `/picture-rights` (`src/ruby/include/picture_rights.rb`, `src/content/picture-rights.yaml`): pictures that are
   someone else's without a free licence, with a letter asking for permission; off the pages until granted
+- [docs/plan-telefonspiel.md](docs/plan-telefonspiel.md): the Telefonspiel, a game behind a real phone
+  number: the old Hackschule's version and why it was flaky, the decisions (Asterisk with any SIP trunk,
+  several languages, one number for many games and calls), the protocol, the steps
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures
