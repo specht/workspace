@@ -17,6 +17,7 @@ require 'shellwords'
 #       - keys: ''                       # no keys: what the game says first
 #         says: [Höhle]                  # each pattern in something the game says
 #         music: true                    # it plays music (a file that exists, or a link)
+#         music_stops: true              # it switches the music off (music nil, »Musik: aus«)
 #       - keys: '1'                      # the answers to keys(), with commas; »-« for none
 #         says: [Fackel]
 #         not_says: [Wasser]
@@ -28,7 +29,7 @@ module PhoneCheck
     MARK = '@@hs-phone-case '
     MAX_CASES = 12
     SECONDS = 5                    # per case, unless the check says otherwise
-    CASE_KEYS = %w[keys says not_says moods music ends say].freeze
+    CASE_KEYS = %w[keys says not_says moods music music_stops ends say].freeze
     # Thorsten's moods (say … mood:, src/phone/core/game.py) and how a message names them
     MOODS = { 'neutral' => 'neutral', 'amused' => 'amüsiert', 'angry' => 'wütend', 'disgusted' => 'angewidert',
               'drunk' => 'betrunken', 'sleepy' => 'müde', 'surprised' => 'überrascht', 'whisper' => 'flüsternd' }.freeze
@@ -104,9 +105,10 @@ module PhoneCheck
             end
             errors << "phone case #{i + 1}: music must be true or a pattern" if c.key?('music') && !(c['music'] == true || c['music'].is_a?(String))
             errors << "phone case #{i + 1}: ends must be true or false" if c.key?('ends') && ![true, false].include?(c['ends'])
+            errors << "phone case #{i + 1}: music_stops must be true" if c.key?('music_stops') && c['music_stops'] != true
             errors << "phone case #{i + 1}: say must be text" if c.key?('say') && !c['say'].is_a?(String)
             if (CASE_KEYS - %w[keys say] & c.keys).empty?
-                errors << "phone case #{i + 1} expects nothing (says, not_says, moods, music or ends)"
+                errors << "phone case #{i + 1} expects nothing (says, not_says, moods, music, music_stops or ends)"
             end
         end
         errors
@@ -220,6 +222,9 @@ module PhoneCheck
                 return "Die Musik `#{missing.sub(/ \(diese Datei.*\z/, '')}` gibt es im Ordner des Spiels nicht." if missing
                 return c['say'] || "#{when_} spielt das Spiel keine Musik."
             end
+        end
+        if c['music_stops'] && !music.include?('aus')
+            return c['say'] || "#{when_} läuft die Musik weiter; hier soll sie aufhören."
         end
         if c['ends'] == true && finish.start_with?('Das Spiel wartet auf')
             return c['say'] || "#{when_} fragt das Spiel noch nach einer Taste; hier sollte es zu Ende sein."

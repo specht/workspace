@@ -1261,6 +1261,8 @@ check:
       music: true              # es spielt Musik (eine Datei, die es gibt, oder einen Link)
       ends: false              # und fragt danach nach einer Taste
     - keys: '1'
+      music_stops: true        # es schaltet die Musik aus (music nil, »Musik: aus«)
+    - keys: '1'
       says: [Fackel]
       not_says: [Wasser]       # kein Satz passt darauf
       moods: { Fackel: whisper }   # der Satz mit »Fackel« in dieser Stimmung (say … mood:)
@@ -1269,7 +1271,10 @@ check:
 ```
 
 Die Ausdrücke sind reguläre Ausdrücke ohne Rücksicht auf Groß- und
-Kleinschreibung; `music` ist `true` oder ein Ausdruck für die Quelle. `moods`
+Kleinschreibung; `music` ist `true` oder ein Ausdruck für die Quelle (mit
+`start` und `stop` steht dahinter »von 1:15 bis 1:52«, darauf passt etwa
+` bis `); `music_stops: true` verlangt, dass das Spiel die Musik ausschaltet.
+`moods`
 ordnet Ausdrücken eine der acht Stimmungen zu (`neutral`, `amused`, `angry`,
 `disgusted`, `drunk`, `sleepy`, `surprised`, `whisper`); ob es den Satz
 überhaupt gibt, prüft `says`, die Rückmeldung lautet sonst »Nach der Taste 1

@@ -62,6 +62,17 @@ class PhoneCheckTest < Minitest::Test
         end
     end
 
+    def test_music_stops_asks_for_music_nil
+        cases = [{ 'keys' => '1', 'music_stops' => true }]
+        silent = RUBY_GAME.sub("when '1' then say 'Links brennt eine Fackel.'", "when '1' then music nil; say 'Links brennt eine Fackel.'")
+        result = play({ 'telefon/spiel.rb' => silent, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb', cases)
+        assert_equal :correct, result.status, result.message
+        result = play({ 'telefon/spiel.rb' => RUBY_GAME, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb', cases)
+        assert_equal :wrong, result.status
+        assert_equal 'Nach der Taste 1 läuft die Musik weiter; hier soll sie aufhören.', result.message
+        assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => '', 'music_stops' => 'ja' }]), 'phone case 1: music_stops must be true'
+    end
+
     def test_a_wrong_answer_names_the_keys_and_the_missing_words
         game = RUBY_GAME.sub("when '1' then say 'Links brennt eine Fackel.'", "when '1' then say 'Rechts rauscht Wasser.'")
         result = play({ 'telefon/spiel.rb' => game, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb')
@@ -133,7 +144,7 @@ class PhoneCheckTest < Minitest::Test
     def test_spec_errors
         assert_empty PhoneCheck.spec_errors('cases' => CASES)
         assert_includes PhoneCheck.spec_errors('cases' => []), 'phone needs cases'
-        assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => '1' }]), 'phone case 1 expects nothing (says, not_says, moods, music or ends)'
+        assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => '1' }]), 'phone case 1 expects nothing (says, not_says, moods, music, music_stops or ends)'
         assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => 'a', 'ends' => true }]), 'phone case 1: keys may hold 0-9, *, #, - and commas'
         assert(PhoneCheck.spec_errors('cases' => [{ 'says' => ['('] }]).any? { |e| e.include?('no regular expression') })
     end
