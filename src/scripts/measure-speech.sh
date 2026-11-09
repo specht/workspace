@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # How fast the voices of the Telefonspiel speak on this machine
-# (docs/plan-telefonspiel.md, »Two voices«): Piper in the running
-# phone_speech, with 1, 2 and 4 threads per worker under its limit of two
-# processors, and Thorsten's CosyVoice in a container of its own with 2, 4
+# (docs/plan-telefonspiel.md, »Two voices«): Piper in containers of
+# phone_speech's image with 2 and 4 processors and 1, 2 and 4 threads per
+# worker, and Thorsten's CosyVoice in a container of its own with 2, 4
 # and all processors at the lowest priority (--cpu-shares 2): it gets only
 # the time nothing else wants, so Workspaces and calls do not notice it.
 # Prints, per setting, the seconds per second of speech (below 1: faster
@@ -39,12 +39,19 @@ echo "Rechner: ${cores} Kerne, $(free -g | awk '/^Mem/ {print $2 " GB Arbeitsspe
 echo
 
 if [[ "$WHAT" == all || "$WHAT" == piper ]]; then
-    echo "== Piper (thorsten-high) in ${SPEECH}, begrenzt auf $(docker inspect -f '{{.HostConfig.NanoCpus}}' "$SPEECH" | awk '{printf "%g", $1 / 1e9}') Prozessoren =="
-    printf '%s\n' "${SENTENCES[@]}" | docker exec -i "$SPEECH" timeout 900 python3 -c '
+    # in containers of phone_speech's image, beside the running service: how
+    # many processors and threads per worker make the live voice fastest
+    piper_image="$(docker inspect -f '{{.Config.Image}}' "$SPEECH")"
+    echo "== Piper (thorsten-high), Image ${piper_image}; der Dienst hat jetzt $(docker inspect -f '{{.HostConfig.NanoCpus}}' "$SPEECH" | awk '{printf "%g", $1 / 1e9}') Prozessoren =="
+    for cpus in 2 4; do
+        [[ "$cpus" -gt "$cores" ]] && continue
+        printf '%s\n' "${SENTENCES[@]}" | docker run --rm -i --cpus "$cpus" -v "$PWD/src/phone/speech:/app:ro" \
+            --entrypoint timeout "$piper_image" 900 python3 -c '
 import sys, time, onnxruntime
 sys.path.insert(0, "/app")
 import server
 from piper import PiperVoice
+cpus = sys.argv[1]
 texts = [l.strip() for l in sys.stdin if l.strip()]
 voice = PiperVoice.load(server.VOICE)
 for threads in (1, 2, 4):
@@ -58,8 +65,9 @@ for threads in (1, 2, 4):
         for sentence in server.sentences(text):
             audio += len(voice.phoneme_ids_to_audio(voice.phonemes_to_ids(server.phonemes_of(voice, sentence)))) / voice.config.sample_rate
     took = time.monotonic() - started
-    print(f"  {threads} Thread(s): {took:6.1f} s für {audio:5.1f} s Sprache, {took / audio:5.2f} s je Sekunde Sprache")
-'
+    print(f"  {cpus} Prozessoren, {threads} Thread(s): {took:6.1f} s für {audio:5.1f} s Sprache, {took / audio:5.2f} s je Sekunde Sprache", flush=True)
+' "$cpus"
+    done
     echo
 fi
 
