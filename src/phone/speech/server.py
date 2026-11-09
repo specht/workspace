@@ -287,21 +287,23 @@ def update_yt_dlp(why):
 
 # YouTube asks some servers to sign in (»confirm you're not a bot«): with
 # PHONE_YOUTUBE_COOKIES in credentials.rb, config.rb mounts the cookies of a
-# Google account kept for this (cookies.txt, read-only); yt-dlp writes renewed
-# cookies back, so it gets a copy in /tmp, made anew at each start
+# Google account kept for this, and the start copies them to /tmp for the
+# user speech (docker/phone-speech/Dockerfile); yt-dlp writes renewed cookies
+# back into that copy. Unreadable, the download goes on without them.
 YOUTUBE_COOKIES = os.environ.get('PHONE_YOUTUBE_COOKIES', '')
-_cookies_lock = threading.Lock()
+_cookies_said = False
 
 
 def cookies_args():
-    if not YOUTUBE_COOKIES or not os.path.isfile(YOUTUBE_COOKIES):
+    global _cookies_said
+    if not YOUTUBE_COOKIES:
         return []
-    copy = '/tmp/youtube-cookies.txt'
-    with _cookies_lock:
-        if not os.path.exists(copy):
-            shutil.copyfile(YOUTUBE_COOKIES, copy)
-            os.chmod(copy, 0o600)
-    return ['--cookies', copy]
+    if os.access(YOUTUBE_COOKIES, os.R_OK | os.W_OK):
+        return ['--cookies', YOUTUBE_COOKIES]
+    if not _cookies_said:
+        _cookies_said = True
+        log(f'YouTube cookies: {YOUTUBE_COOKIES} is missing or not readable; downloading without them')
+    return []
 
 
 def download(source, raw):

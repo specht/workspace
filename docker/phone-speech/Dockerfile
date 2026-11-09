@@ -17,5 +17,7 @@ RUN mkdir -p /voices && cd /voices \
     && curl -sSfL -o de_DE-thorsten_emotional-medium.onnx https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx \
     && curl -sSfL -o de_DE-thorsten_emotional-medium.onnx.json https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx.json
 RUN useradd -m -u 1500 speech && mkdir -p /cache
-# the cache folder (mounted from the host) to the user speech, then only as speech
-CMD ["sh", "-c", "chown speech:speech /cache && exec setpriv --reuid speech --regid speech --clear-groups env HOME=/home/speech python3 -u /app/server.py"]
+# the cache folder (mounted from the host) to the user speech, then only as
+# speech; the YouTube cookies (PHONE_YOUTUBE_COOKIES, readable only by the
+# operator on the host) copied for speech first, which yt-dlp may rewrite
+CMD ["sh", "-c", "chown speech:speech /cache && if [ -f /secrets/youtube-cookies.txt ]; then cp /secrets/youtube-cookies.txt /tmp/youtube-cookies.txt && chown speech:speech /tmp/youtube-cookies.txt && chmod 600 /tmp/youtube-cookies.txt; fi && exec setpriv --reuid speech --regid speech --clear-groups env HOME=/home/speech python3 -u /app/server.py"]

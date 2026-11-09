@@ -355,7 +355,8 @@ docker_compose[:services][:phone_speech] = {
 # sign in (credentials.rb, PHONE_YOUTUBE_COOKIES; src/phone/speech/server.py)
 if defined?(PHONE_YOUTUBE_COOKIES) && PHONE_YOUTUBE_COOKIES && File.file?(PHONE_YOUTUBE_COOKIES)
     docker_compose[:services][:phone_speech][:volumes] << "#{PHONE_YOUTUBE_COOKIES}:/secrets/youtube-cookies.txt:ro"
-    docker_compose[:services][:phone_speech][:environment]['PHONE_YOUTUBE_COOKIES'] = '/secrets/youtube-cookies.txt'
+    # the start copies it to /tmp for the user speech (docker/phone-speech/Dockerfile)
+    docker_compose[:services][:phone_speech][:environment]['PHONE_YOUTUBE_COOKIES'] = '/tmp/youtube-cookies.txt'
 end
 
 # The public line of the Telefonbuch (src/phone/line): the phone on
