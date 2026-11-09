@@ -273,7 +273,9 @@ class Server:
                 else:
                     with open(file, 'rb') as f:
                         data = f.read()
-                    self.respond(writer, 200, data, mimetypes.guess_type(file)[0] or 'application/octet-stream')
+                    # no-cache: a file replaced under the same name plays new at the next call
+                    self.respond(writer, 200, data, mimetypes.guess_type(file)[0] or 'application/octet-stream',
+                                 ['Cache-Control: no-cache'])
         else:
             self.respond(writer, 404, b'not found')
 
