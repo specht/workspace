@@ -288,6 +288,15 @@ class Main < Sinatra::Base
                 img.wrap("<div class='scroll-x'>")
             end
         end
+        # a recording beside the page (<audio src='x.mp3'>, the moods of the
+        # Telefonspiel): from the cache by content hash, like a drawing
+        root.css('audio[src]').each do |audio|
+            src = audio['src'].to_s
+            next if src.empty? || src.start_with?('/') || src =~ /\A[a-z]+:/i
+            audio_path = File.join(File.dirname(path), src)
+            next unless File.file?(audio_path)
+            audio['src'] = cache_by_content(audio_path)
+        end
         root.css('video').each do |video|
             src = video.attr('src')
             image_path = File.join(File.dirname(path), src)

@@ -14966,3 +14966,11 @@ html[data-bs-theme="dark"] .splat-viewer {
 .phone-publish .pp-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-top: 1.25rem; }
 .phone-publish .pp-actions .form-text { margin-top: 0; }
 .phone-publish .pp-own-number { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* recordings in a table (the moods of »Ein Spiel am Telefon«): the player
+   takes the rest of the row, at every width */
+.mood-table { width: 100%; }
+.mood-table td { vertical-align: middle; }
+.mood-table td:first-child { width: 11rem; }
+.mood-table audio { display: block; width: 100%; min-width: 10rem; max-width: 22rem; height: 2.25rem; }
+@media (max-width: 576px) { .mood-table td:first-child { width: auto; } }

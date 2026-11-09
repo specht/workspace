@@ -630,11 +630,26 @@ geht jetzt müde nach Hause:
 ```
 <!-- /language -->
 
-Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht:
-`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
-`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und `whisper`
-(flüsternd). Auf der Seite des Telefons steht die Stimmung klein über dem
-Satz.
+Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht;
+hör sie dir an, alle mit demselben Satz:
+
+<table class='table mood-table'>
+<caption>Thorsten sagt »Hinter dieser Tür liegt der Schatz.«</caption>
+<thead><tr><th>Stimmung</th><th>Hören</th></tr></thead>
+<tbody>
+<tr><td>ohne Stimmung<br><span class='text-body-secondary'>die gewohnte Stimme</span></td><td><audio controls preload='none' src='moods/plain.mp3'></audio></td></tr>
+<tr><td>neutral<br><code>neutral</code></td><td><audio controls preload='none' src='moods/neutral.mp3'></audio></td></tr>
+<tr><td>amüsiert<br><code>amused</code></td><td><audio controls preload='none' src='moods/amused.mp3'></audio></td></tr>
+<tr><td>wütend<br><code>angry</code></td><td><audio controls preload='none' src='moods/angry.mp3'></audio></td></tr>
+<tr><td>angewidert<br><code>disgusted</code></td><td><audio controls preload='none' src='moods/disgusted.mp3'></audio></td></tr>
+<tr><td>betrunken<br><code>drunk</code></td><td><audio controls preload='none' src='moods/drunk.mp3'></audio></td></tr>
+<tr><td>müde<br><code>sleepy</code></td><td><audio controls preload='none' src='moods/sleepy.mp3'></audio></td></tr>
+<tr><td>überrascht<br><code>surprised</code></td><td><audio controls preload='none' src='moods/surprised.mp3'></audio></td></tr>
+<tr><td>flüsternd<br><code>whisper</code></td><td><audio controls preload='none' src='moods/whisper.mp3'></audio></td></tr>
+</tbody>
+</table>
+
+Auf der Seite des Telefons steht die Stimmung klein über dem Satz.
 
 Die Sätze mit Stimmung spricht eine zweite Stimme von Thorsten, die etwas
 weniger klar klingt als die gewohnte. Setz Stimmungen darum sparsam ein, dort,
