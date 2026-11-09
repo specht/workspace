@@ -219,6 +219,9 @@ function duck(on) {
 // only the phone, and a session of its own on every request. Addresses are
 // relative, so the page works under any path (/telefonbuch/telefon/).
 const LINE = new URLSearchParams(location.search).has('line');
+// a game tried before it is published (/telefon-freigabe): the call button
+// calls it without a number
+const TRY = LINE ? (new URLSearchParams(location.search).get('try') || '') : '';
 const SESSION = LINE ? Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('') : '';
 if (LINE) document.body.classList.add('line');
 function at(path) {
@@ -608,7 +611,7 @@ function setCall(on) {
     call++;
     const button = $('call');
     button.classList.toggle('hang', on);
-    button.classList.toggle('ready', !on && !button.disabled && !LINE);
+    button.classList.toggle('ready', !on && !button.disabled && (!LINE || !!TRY));
     $('screen').classList.toggle('on', on);
     $('log').classList.toggle('on', on);
     $('screen').classList.remove('speaking');
@@ -639,7 +642,7 @@ function toggleCall() {
         post('/hangup');
         return;
     }
-    if (LINE && !dialed) return;               // the line calls a number, as a real phone does
+    if (LINE && !dialed && !TRY) return;       // the line calls a number, as a real phone does
     audio();
     $('lines').textContent = '';
     const number = dialed;
@@ -647,7 +650,7 @@ function toggleCall() {
     $('erase').hidden = true;
     if (LINE) $('title').textContent = number;
     setCall(true);
-    post('/call' + (number ? '?number=' + number : ''));
+    post('/call' + (TRY ? '?try=' + encodeURIComponent(TRY) : number ? '?number=' + number : ''));
 }
 
 // the letters of a telephone keypad (ITU E.161) under the digits
@@ -688,7 +691,7 @@ events.onmessage = message => {
         if (inCall) { setCall(false); note('Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
         $('status').textContent = 'Bereit';
         $('call').disabled = false;
-        $('call').classList.toggle('ready', !inCall && !LINE);
+        $('call').classList.toggle('ready', !inCall && (!LINE || !!TRY));
         enableKeys();
     } else if (e.replaced) {
         events.close();

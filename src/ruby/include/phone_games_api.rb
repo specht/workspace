@@ -263,6 +263,15 @@ class Main < Sinatra::Base
         list = events.map do |kind, text|
             kind == :say ? "<li>#{h.(text)}</li>" : "<li class='text-muted'><i class='bi bi-music-note'></i> #{h.(text)}</li>"
         end.join
+        # the game on the Telefonbuch's line, in its sandbox, before anyone
+        # else can call it (phone_review.js loads the phone on the click)
+        try = if code
+            token = PhoneGames.trial(game[:id], game[:file])
+            "<div class='pg-try mb-4'><button class='btn btn-outline-primary pg-try-button'><i class='bi bi-telephone'></i> Ausprobieren</button>" \
+                "<div class='pg-try-phone' data-src='/telefonbuch/telefon/?line&amp;try=#{token}' hidden></div></div>"
+        else
+            ''
+        end
         buttons = if game[:state] == 'pending'
             "<div class='pg-decide' data-id='#{h.(game[:id])}'>" \
                 "<button class='btn btn-success pg-publish'><i class='bi bi-check-lg'></i> Veröffentlichen</button>" \
@@ -280,7 +289,7 @@ class Main < Sinatra::Base
             "<tr><th>Eingereicht</th><td>#{Time.at(game[:submitted].to_i).strftime('%d.%m.%Y %H:%M')}</td></tr>" \
             "<tr><th>Stand</th><td>#{h.(state)}</td></tr>" \
             "<tr><th>Dateien</th><td>#{files.map { |f| "<code>#{h.(f)}</code>" }.join(', ')}</td></tr></table>" \
-            "#{buttons}" \
+            "#{try}#{buttons}" \
             "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
             "<h2 class='mt-4'>Probelauf</h2><p>Der Anfang des Spiels mit <code>telefon --test</code>, ohne eine Taste, beim Einreichen im Workspace.</p><pre class='pg-transcript'>#{h.(game[:transcript])}</pre>" \
             "<h2 class='mt-4'>Programm: <code>#{h.(game[:file])}</code></h2><pre class='pg-code'>#{h.(code || 'Die Datei fehlt.')}</pre>" \

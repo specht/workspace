@@ -17,7 +17,9 @@ from telefon import _command, hangup, keys, say, title
 GAMES = os.environ.get('PHONE_GAMES', '/games')
 LANGUAGES = {'.py': ['python3'], '.rb': ['ruby'], '.js': ['node']}
 BATCH = 5
-DIALED = os.environ.get('PHONE_DIALED', '')   # the number dialled before the call (line.py), or ''
+DIALED = os.environ.get('PHONE_DIALED', '')
+# a game tried from /telefon-freigabe before it is published (line.py checks the ticket)
+TRIAL = json.loads(os.environ.get('PHONE_TRIAL') or 'null')   # the number dialled before the call (line.py), or ''
 
 
 def load():
@@ -84,6 +86,8 @@ def connect(number, games):
 
 
 def main():
+    if TRIAL:
+        start(TRIAL)
     games = load()
     if DIALED:
         connect(DIALED, games)

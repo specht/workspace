@@ -66,6 +66,25 @@ def published_folders():
         return set()
 
 
+def trial_of(token):
+    """the game a ticket of /telefon-freigabe lets one try before it is
+    published (PhoneGames.trial: GAMES/trials.json), or None"""
+    import json
+    if not (16 <= len(token) <= 64 and token.isalnum()):
+        return None
+    try:
+        with open(os.path.join(GAMES, 'trials.json')) as f:
+            trial = json.load(f).get(token)
+    except (OSError, ValueError, AttributeError):
+        return None
+    if not isinstance(trial, dict) or float(trial.get('expires', 0)) < time.time():
+        return None
+    folder, file = str(trial.get('folder', '')), os.path.basename(str(trial.get('file', '')))
+    if not folder.startswith('games/') or os.path.splitext(file)[1] not in ('.py', '.rb', '.js'):
+        return None
+    return {'folder': folder, 'file': file}
+
+
 def folder_path(folder):
     return os.path.join(GAMES, os.path.basename(folder))
 
@@ -109,7 +128,8 @@ class LinePhone(emulator.Emulator):
     async def execute(self, command):
         if isinstance(command, dict) and 'game' in command:
             folder = str(command['game'])
-            if self.switched or folder not in published_folders():
+            trial = self.server.trial and self.server.trial['folder'] == folder
+            if self.switched or not (trial or folder in published_folders()):
                 return {'error': 'no game'}
             self.switched = True
             self.server.folder = folder_path(folder)
@@ -125,6 +145,7 @@ class Line(emulator.Server):
         self.ip = ip
         self.seen = time.monotonic()
         self.dialed = ''                                # the number dialled before the call, or ''
+        self.trial = None                               # a game tried before it is published (trial_of)
 
     def title(self):
         return ''                                       # the display says nothing until a game names itself
@@ -134,6 +155,9 @@ class Line(emulator.Server):
         self.phone = phone = LinePhone(self)
         env = game.environment()
         env['PHONE_DIALED'] = self.dialed
+        if self.trial:
+            import json
+            env['PHONE_TRIAL'] = json.dumps(self.trial)
         try:
             reason, _ = await game.run_game(phone, self.command, HERE, env, lambda kind, line: print('game', kind, line, file=sys.stderr, flush=True) if kind == 'err' else None,
                                             preexec_fn=limits, seconds=SECONDS)
@@ -216,6 +240,7 @@ class Router(emulator.Server):
                 return
             number = query.get('number', '')
             line.dialed = number if number.isdigit() and len(number) <= 4 else ''
+            line.trial = trial_of(query.get('try', ''))
         await line.route(method, path, query, body, reader, writer)
 
 

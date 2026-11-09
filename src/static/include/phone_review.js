@@ -1,5 +1,18 @@
-// The maintainer's two buttons on /telefon-freigabe (phone_games_api.rb):
-// publish, or reject with a reason; »Ablehnen« waits for the reason.
+// The maintainer's buttons on /telefon-freigabe (phone_games_api.rb): try
+// the game on the line, publish, or reject with a reason; »Ablehnen«
+// waits for the reason.
+(function () {
+    const tryBox = document.querySelector('.pg-try');
+    if (tryBox) {
+        tryBox.querySelector('.pg-try-button').addEventListener('click', (e) => {
+            const phone = tryBox.querySelector('.pg-try-phone');
+            phone.innerHTML = `<iframe class='phone-book-line' title='Telefon' allow='autoplay' src='${phone.dataset.src}'></iframe>`;
+            phone.hidden = false;
+            e.currentTarget.hidden = true;
+        });
+    }
+})();
+
 (function () {
     const box = document.querySelector('.pg-decide');
     if (!box) return;

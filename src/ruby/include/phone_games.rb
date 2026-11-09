@@ -143,6 +143,26 @@ module PhoneGames
         File.rename("#{path}.tmp", path)
     end
 
+    # A ticket to try a game on the line before it is published (the button
+    # »Ausprobieren« on /telefon-freigabe): ROOT/trials.json, which the line
+    # reads (src/phone/line/line.py), for this one copy, for an hour; old
+    # tickets go when a new one is made
+    TRIAL_SECONDS = 3600
+
+    def self.trial(id, file)
+        FileUtils.mkdir_p(ROOT)
+        path = File.join(ROOT, 'trials.json')
+        now = Time.now.to_i
+        trials = (JSON.parse(File.read(path)) rescue {})
+        trials = {} unless trials.is_a?(Hash)
+        trials.select! { |_, t| t.is_a?(Hash) && t['expires'].to_i > now }
+        token = SecureRandom.hex(16)
+        trials[token] = { 'folder' => "games/#{id}", 'file' => File.basename(file.to_s), 'expires' => now + TRIAL_SECONDS }
+        File.write("#{path}.tmp", JSON.generate(trials))
+        File.rename("#{path}.tmp", path)
+        token
+    end
+
     def self.remove(id)
         FileUtils.rm_rf(File.join(ROOT, id)) if valid_id?(id)
     end

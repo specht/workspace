@@ -95,7 +95,15 @@ Why it was flaky:
   until one is written. Either way the student gets an email (the
   address they log in with): »Dein Spiel … ist unter 123 im Telefonbuch«
   or »… wurde nicht veröffentlicht: <the reason>«, with a link to the
-  card; the card shows the same.
+  card; the card shows the same. Every submission is listed under
+  Administration → Telefonspiele (`/telefon-freigabe`, waiting ones
+  first).
+- **Trying a game before publishing it** (the maintainer: in a sandbox,
+  never in the maintainer's own Workspace): »Ausprobieren« on a game's page
+  loads the Telefonbuch's phone, and its call plays exactly the submitted
+  copy on the line, in the line's sandbox. The page writes a ticket for that
+  copy into `trials.json` beside the copies (an hour, random); the line
+  reads it, since it holds no secrets and cannot ask the database.
 - **Taking back** at any time, without moderation: the game is off the
   phone at once and its number free again. A new version of a published
   game is moderated again; the old one stays playable until it is approved.
