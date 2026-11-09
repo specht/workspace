@@ -138,6 +138,7 @@ class Server:
         self.call = None
         self.fetched = set()           # YouTube links asked for (without t=)
         self.spoken = set()            # (sentence, mood) asked for
+        self.mood_missing = False      # said once: the speech service has no moods
 
     # music in advance ------------------------------------------------------------
 
@@ -396,10 +397,14 @@ class Server:
         """the speech service answers; its errors go to the page as 502"""
         def fetch():
             with urllib.request.urlopen(SPEECH + path + '?' + urllib.parse.urlencode(params), timeout=timeout) as r:
-                return r.read(), r.headers.get('Content-Type', 'application/octet-stream')
+                return r.read(), r.headers.get('Content-Type', 'application/octet-stream'), r.headers.get('X-Phone-Mood')
         try:
-            data, content_type = await asyncio.get_running_loop().run_in_executor(None, fetch)
-            self.respond(writer, 200, data, content_type)
+            data, content_type, mood = await asyncio.get_running_loop().run_in_executor(None, fetch)
+            if mood == 'missing' and not self.mood_missing:
+                self.mood_missing = True
+                show('Der Sprachdienst kennt noch keine Stimmungen (sein Image ist älter als telefon); '
+                     'Thorsten spricht ohne Stimmung. Sag deiner Lehrkraft Bescheid.', '33')
+            self.respond(writer, 200, data, content_type, ['Cache-Control: no-cache'] if mood else [])
         except urllib.error.HTTPError as error:
             self.respond(writer, 502, error.read()[:500] or str(error).encode())
         except (urllib.error.URLError, OSError) as error:

@@ -317,16 +317,20 @@ class Service:
         mood = request.query.get('mood', '').strip() or None
         if mood and mood not in MOODS:
             raise web.HTTPBadRequest(text=f'mood is one of {", ".join(MOODS)}')
+        headers = {}
         if mood and not os.path.exists(MOOD_VOICE):
-            raise web.HTTPServiceUnavailable(text='this speech service has no voice for moods')
+            # an image from before the moods: Thorsten without one, and the
+            # answer says so (the emulator tells the terminal)
+            mood = None
+            headers['X-Phone-Mood'] = 'missing'
         started = time.monotonic()
         parts = [await self.sentence(s, mood) for s in sentences(text)]
         audio = b''.join(parts)
         log(f'speech {len(text)} chars, {len(audio) / 4 / RATE:.1f} s audio in {time.monotonic() - started:.2f} s')
         if request.query.get('format') == 'f32':
-            return web.Response(body=audio, content_type='application/octet-stream')
+            return web.Response(body=audio, content_type='application/octet-stream', headers=headers)
         return web.Response(body=wav(audio), content_type='audio/wav',
-                            headers={'Cache-Control': 'max-age=86400'})
+                            headers={**headers, 'Cache-Control': 'no-cache' if headers else 'max-age=86400'})
 
     async def music(self, request):
         source = request.query.get('source', '').strip()
