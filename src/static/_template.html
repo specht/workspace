@@ -80,6 +80,7 @@ pre table td {
     align-items: center;
     gap: 0.8em;
     min-width: 0;
+    overflow: hidden;
 }
 
 .alt-review-footer-right {
@@ -88,6 +89,10 @@ pre table td {
     /* the link keeps its line; the tools on the left give way */
     flex-shrink: 0;
     white-space: nowrap;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.2em 1.2em;
 }
 
 /* development: the screenshot monitor in one line, cut with an ellipsis
@@ -1171,7 +1176,6 @@ window.addEventListener('load', function() {
                      else is a quiet menu button, the current page marked. -->
                 #{menu_tool_buttons_html(path)}
                 <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i><span class='btn-menu-label'>Handbuch</span></a>
-                <a href='/telefonbuch' class="btn btn-menu #{request.path == '/telefonbuch' ? 'active' : ''}"#{request.path == '/telefonbuch' ? " aria-current='page'" : ''}><i class='bi bi-telephone'></i><span class='btn-menu-label'>Telefonbuch</span></a>
                 #{menu_account_buttons_html}
             </div>
         </div>
@@ -1193,6 +1197,7 @@ window.addEventListener('load', function() {
                 #{DEVELOPMENT ? '<label class="alt-review-toggle"><input type="checkbox" id="alt-review-toggle">Alt-Texte prüfen</label><span class="alt-review-counts" id="alt-review-counts"><span class="alt-review-count alt-review-count-ok" title="Alt-/ARIA-Text vorhanden"><span id="alt-review-count-ok">0</span></span><span class="alt-review-count alt-review-count-empty" title="Bewusst leer"><span id="alt-review-count-empty">0</span></span><span class="alt-review-count alt-review-count-missing" title="Alt-/ARIA-Text fehlt"><span id="alt-review-count-missing">0</span></span></span>' : ''}
             </div>
             <div class="alt-review-footer-right">
+                <a href='/telefonbuch'>Telefonbuch</a>
                 <a href='/impressum'>Impressum und Datenschutzerklärung</a>
             </div>
         </div>
