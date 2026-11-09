@@ -84,7 +84,7 @@
     eine Welt aus Blöcken mit Tag und Nacht und endlose gelbe Räume, die du
     aus Textdateien baust.
   entries:
-    - .telefonspiel
+    - telefonspiel
     - tic80
     - raycaster
     - raylib
