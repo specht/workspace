@@ -194,6 +194,25 @@ class Main < Sinatra::Base
 
     # --- the pages --------------------------------------------------------
 
+    # In the profile, beside the shared live apps: the person's
+    # Telefonspiele with their state (nothing without one)
+    def phone_games_profile_html
+        return '' unless user_logged_in?
+
+        games = phone_games_all.select { |g| g[:email] == @session_user[:email] }.sort_by { |g| g[:number] }
+        return '' if games.empty?
+
+        badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
+        items = games.map do |g|
+            "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' href='/telefonspiel#veroeffentlichen'>" \
+                "<span><span class='font-monospace me-2'>#{PhoneGames.h(g[:number])}</span><strong>#{PhoneGames.h(g[:title])}</strong></span>" \
+                "<span class='badge #{badge[g[:state]]}'>#{PhoneGames::STATE_TEXT[g[:state]]}</span></a>"
+        end.join
+        "<section id='telefonspiele' class='my-4'><h3>Deine Telefonspiele</h3>" \
+            "<p>Veröffentlichte Spiele stehen im <a href='/telefonbuch'>Telefonbuch</a>. Ändern, eine andere Nummer wählen oder zurückziehen kannst du sie in der Aktivität.</p>" \
+            "<div class='list-group'>#{items}</div></section>"
+    end
+
     # /telefon-freigabe?id=…: everything about one submission, with the two
     # buttons (administrators only, main.rb guards the path)
     def phone_game_review_page

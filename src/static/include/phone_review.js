@@ -24,3 +24,4 @@
     box.querySelector('.pg-publish').addEventListener('click', () => decide('publish'));
     reject.addEventListener('click', () => decide('reject'));
 })();
+

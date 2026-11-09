@@ -345,7 +345,14 @@ module Privacy
                 :how_long => '90 Tage nach dem letzten Abspielen',
             },
             {
-                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
+                :data => 'Telefonspiele zum Veröffentlichen: eine Kopie des eingereichten Spiels und der Dateien neben ihm, Titel, ein Satz dazu, die gewählte Nummer, der Stand (wartet auf Freigabe, veröffentlicht, abgelehnt mit Begründung), wann eingereicht und entschieden wurde, und der Anfang eines Probelaufs des Spiels',
+                :categories => [:content],
+                :purpose => 'Veröffentlichen im Telefonbuch nach der Freigabe durch die Administration; Nachricht per E-Mail, ob das Spiel veröffentlicht wurde',
+                :who => 'die Person selbst; die Administration zur Freigabe, mit der E-Mail-Adresse; nach der Freigabe öffentlich im Telefonbuch: Titel, der Satz dazu und die Nummer, ohne Namen und ohne Klasse',
+                :how_long => 'bis die Person das Spiel zurückzieht oder eine Ablehnung entfernt (die Kopie eines abgelehnten Spiels gleich bei der Ablehnung), sonst ' + ACCOUNT_END,
+            },
+            {
+                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos, Einreichen, Zurückziehen und Freigeben eines Telefonspiels; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
                 :categories => [:traffic],
                 :purpose => 'Betrieb, Sicherheit und Fehlersuche',
                 :who => 'Administration',

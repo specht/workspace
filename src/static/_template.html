@@ -1169,6 +1169,7 @@ window.addEventListener('load', function() {
                      else is a quiet menu button, the current page marked. -->
                 #{menu_tool_buttons_html(path)}
                 <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i><span class='btn-menu-label'>Handbuch</span></a>
+                <a href='/telefonbuch' class="btn btn-menu #{request.path == '/telefonbuch' ? 'active' : ''}"#{request.path == '/telefonbuch' ? " aria-current='page'" : ''}><i class='bi bi-telephone'></i><span class='btn-menu-label'>Telefonbuch</span></a>
                 #{menu_account_buttons_html}
             </div>
         </div>
