@@ -724,16 +724,14 @@ input.error {
     color: inherit;
 }
 
-/* On a phone the menu would take four rows: the quiet buttons show their
-   icon only, as the class page's tabs do; the page one is on keeps its
-   name. The green »Workspace öffnen« keeps its name too, unless a page's
-   name already shows beside it (maintainer, November 2026): one label in
-   the row at most, and on a page outside the menu (the start page) the
-   green button says what it does. The name stays for screen readers and
-   as the button's title. */
+/* On a phone the menu would take several rows: every button shows its
+   icon only, the green »Workspace öffnen« and the current page's too
+   (maintainer, November 2026; before, one label stayed, which broke the row
+   once the Telefonbuch came in). The current page keeps its light blue; the
+   name stays for screen readers. Logged out,
+   »Anmelden« keeps its word: it has no label to hide. */
 @media (max-width: 575.98px) {
-    .menu .btn-menu:not(.active) .btn-menu-label,
-    .menu:has(.btn-menu.active .btn-menu-label) .bu-launch-workspace .btn-menu-label {
+    .menu .btn-menu-label {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -741,9 +739,12 @@ input.error {
         clip: rect(0 0 0 0);
         white-space: nowrap;
     }
-    .menu .btn-menu:not(.active):has(.btn-menu-label) .bi,
-    .menu:has(.btn-menu.active .btn-menu-label) .bu-launch-workspace .bi {
+    .menu .btn:has(.btn-menu-label) .bi {
         margin-right: 0;
+    }
+    .menu .btn:has(.btn-menu-label) {
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
     }
 }
 

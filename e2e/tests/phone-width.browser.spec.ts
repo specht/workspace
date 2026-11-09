@@ -62,18 +62,17 @@ test('the Kata strip on a phone', async ({ page, e2eEmail }, testInfo) => {
   expect(Math.abs(first!.x - text!.x)).toBeLessThanOrEqual(2);
 });
 
-// The menu on a phone holds one label at most: on a page the menu names
-// (the Handbuch) that page's name shows and the green button is an icon;
-// on the start page, which no menu button names, the green button keeps
-// »Workspace öffnen«.
-test('one label in the menu on a phone', async ({ page, e2eEmail }, testInfo) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+// The menu on a phone is one row of icons: no button shows its label, not
+// the green one and not the current page's, which is marked by its colour.
+test('no labels in the menu on a phone', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 360, height: 800 });
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  const label = page.locator('.menu .bu-launch-workspace .btn-menu-label');
-  const width = () => label.evaluate((el) => el.getBoundingClientRect().width);
-  await page.goto('/');
-  expect(await width()).toBeGreaterThan(40);
-  await page.goto('/reference/gradientenabstieg');
-  await expect(page.locator('.menu .btn-menu.active .btn-menu-label')).toBeVisible();
-  expect(await width()).toBeLessThanOrEqual(1);
+  for (const path of ['/', '/reference/gradientenabstieg', '/telefonbuch']) {
+    await page.goto(path);
+    const widths = await page.locator('.menu .btn-menu-label').evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+    expect(widths.length).toBeGreaterThan(0);
+    for (const w of widths) expect(w).toBeLessThanOrEqual(1);
+    const tops = await page.locator('.menu .btn:visible').evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().top)));
+    expect(new Set(tops).size).toBe(1);
+  }
 });
