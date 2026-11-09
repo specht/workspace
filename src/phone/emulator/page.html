@@ -608,6 +608,25 @@ function talking() {
     return `Verbunden ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+// during a call the screen stays on: a phone that turns it off suspends the
+// page, its connection to the line closes, and the line hangs up (Screen
+// Wake Lock; where the browser has none, the screen goes dark as before)
+let wakeLock = null;
+async function keepAwake(on) {
+    try {
+        if (on && !wakeLock && navigator.wakeLock && document.visibilityState === 'visible') {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+        } else if (!on && wakeLock) {
+            await wakeLock.release();
+            wakeLock = null;
+        }
+    } catch (e) {
+        wakeLock = null;
+    }
+}
+document.addEventListener('visibilitychange', () => { if (inCall) keepAwake(true); });
+
 function setCall(on) {
     const wasInCall = inCall;
     inCall = on;
@@ -620,6 +639,7 @@ function setCall(on) {
     $('screen').classList.remove('speaking');
     button.setAttribute('aria-label', on ? 'Auflegen' : 'Anrufen');
     enableKeys();
+    keepAwake(on);
     clearInterval(clock);
     $('wait').classList.remove('on');
     $('digits').textContent = '';

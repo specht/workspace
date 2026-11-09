@@ -6,7 +6,7 @@
     if (tryBox) {
         tryBox.querySelector('.pg-try-button').addEventListener('click', (e) => {
             const phone = tryBox.querySelector('.pg-try-phone');
-            phone.innerHTML = `<iframe class='phone-book-line' title='Telefon' allow='autoplay' src='${phone.dataset.src}'></iframe>`;
+            phone.innerHTML = `<iframe class='phone-book-line' title='Telefon' allow='autoplay; screen-wake-lock' src='${phone.dataset.src}'></iframe>`;
             phone.hidden = false;
             e.currentTarget.hidden = true;
         });
