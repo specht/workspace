@@ -131,7 +131,9 @@ class Server:
             self.events.close()
             self.hang_up()
         self.events = writer
-        writer.write(b'HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache\r\n'
+        # no-transform: code-server's proxy gzips everything else and would
+        # hold the stream back until enough bytes collect
+        writer.write(b'HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache, no-transform\r\n'
                      b'X-Accel-Buffering: no\r\n\r\n')
         self.send({'ready': True, 'title': self.title()})
 
