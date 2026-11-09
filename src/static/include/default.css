@@ -14969,13 +14969,15 @@ html[data-bs-theme="dark"] .splat-viewer {
 
 /* recordings to play, as the phone of the Telefonspiel shows a call
    (sound_buttons.js; the moods of »Ein Spiel am Telefon«): Thorsten's
-   bubbles one below the other, the mood small above the sentence; the
+   bubbles one below the other, in columns where the page is wide, the mood
+   small above the sentence; the
    whole bubble plays it, and while it speaks the phone's sound bars */
 .voice-chat { --voice-bubble: #e3f2f6; --voice-ink: #0b4a59; --voice-avatar: #0e7490;
-    display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; margin: 1rem 0 1.25rem; max-width: 36rem; }
+    columns: 24rem auto; column-gap: 1.75rem; margin: 1rem 0 1.25rem; }
 [data-bs-theme=dark] .voice-chat { --voice-bubble: #173039; --voice-ink: #d3eef5; --voice-avatar: #3fa9c2; }
-.voice-chat .voice-all { margin-bottom: .35rem; }
-.voice-item { display: flex; align-items: flex-end; gap: .5rem; max-width: 100%; }
+.voice-chat .voice-all { column-span: all; display: block; margin-bottom: .8rem; }
+/* the scene flows down the columns that fit, as many as the width allows */
+.voice-item { display: flex; align-items: flex-end; gap: .5rem; max-width: 100%; margin-bottom: .45rem; break-inside: avoid; }
 .voice-avatar { flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--voice-avatar); color: #fff;
     display: grid; place-items: center; font-size: .85rem; }
 .voice-item + .voice-item .voice-avatar { visibility: hidden; }
