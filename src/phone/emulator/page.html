@@ -37,21 +37,24 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
          box-shadow: var(--shadow); align-self: start; }
 .speaker { width: 54px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
 .screen { position: relative; background: var(--screen); color: var(--screen-ink); border-radius: 20px;
-          padding: 14px 14px 12px; text-align: center; margin-bottom: 18px; min-height: 118px; }
+          padding: 14px 14px 16px; text-align: center; margin-bottom: 18px; }
 .screen h1 { font-size: 17px; margin: 0 0 2px; font-weight: 650; }
 .status { color: var(--screen-muted); font-size: 13.5px; min-height: 20px; font-variant-numeric: tabular-nums;
           display: flex; align-items: center; justify-content: center; gap: 6px; }
 .status .live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: none; }
 .screen.on .status .live { display: inline-block; }
-.digits { font: 600 22px/1 ui-monospace, monospace; letter-spacing: .14em; min-height: 26px; margin-top: 8px; }
+/* one row for the keys pressed (while the game waits) and the voice (while it speaks) */
+.readout { position: relative; height: 30px; margin-top: 8px; }
+.digits { position: absolute; inset: 0; display: grid; place-items: center; font: 600 22px/1 ui-monospace, monospace; letter-spacing: .14em; }
 /* while the game speaks: bars on the screen (the voice, never the music) */
-.voice { display: flex; gap: 3px; justify-content: center; align-items: center; height: 14px; margin-top: 4px; opacity: 0; transition: opacity .2s; }
+.voice { position: absolute; inset: 0; display: flex; gap: 3px; justify-content: center; align-items: center; opacity: 0; transition: opacity .2s; }
 .voice i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; }
 .screen.speaking .voice { opacity: .8; }
+.screen.speaking .digits { opacity: 0; }
 .screen.speaking .voice i { animation: bar .9s ease-in-out infinite; }
 .voice i:nth-child(2) { animation-delay: -.6s !important; } .voice i:nth-child(3) { animation-delay: -.3s !important; }
 .voice i:nth-child(4) { animation-delay: -.75s !important; } .voice i:nth-child(5) { animation-delay: -.15s !important; }
-@keyframes bar { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+@keyframes bar { 0%, 100% { height: 5px; } 50% { height: 20px; } }
 .wait { position: absolute; left: 16px; right: 16px; bottom: 9px; height: 3px; background: rgba(127,127,127,.25);
         border-radius: 2px; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
@@ -132,8 +135,10 @@ kbd { font: 11.5px ui-monospace, monospace; border: 1px solid var(--line); borde
         <div class="screen" id="screen">
             <h1 id="title">Telefonspiel</h1>
             <div class="status"><span class="live"></span><span id="status">Verbinde mit dem Terminal …</span></div>
-            <div class="digits" id="digits" aria-live="polite"></div>
-            <div class="voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="readout">
+                <div class="digits" id="digits" aria-live="polite"></div>
+                <div class="voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
             <div class="wait" id="wait"><div id="wait-bar"></div></div>
         </div>
         <div class="keypad" id="keypad"></div>
