@@ -73,6 +73,29 @@ Why it was flaky:
   so the menu never waits for the speech service during a call.
 - **Without a number** (`PHONE_NUMBER` not set) the activity says that a
   real number is being worked on (`<!-- feature: !phone_number -->`).
+- **Submitting** (proposed, the maintainer agreed to the Telefonbuch): a
+  card »Dein Spiel veröffentlichen« on the activity page, below »Deine
+  Geschichte«. The student picks the file in `/workspace/telefon`, gives a
+  title and a line of description, and chooses a free number 001 to 999
+  (the card shows the taken ones). Submitting copies the game: the file and
+  the files it uses (music, required files); the phone plays that copy, so
+  later edits reach it only when submitted again. The card lists the
+  student's submissions: »wartet auf Freigabe«, »veröffentlicht unter
+  123«, »abgelehnt« with the reason; the number can be changed while a
+  free one is chosen.
+- **Moderation by the maintainer**: each submission sends an email with a
+  link into the Workspace (login, admins only): title, number, class and
+  name, the code, the sentences in order, the music links, a test run in
+  the browser, and the buttons »Veröffentlichen« and »Ablehnen« (with an
+  optional reason the student sees).
+- **Taking back** at any time, without moderation: the game is off the
+  phone at once and its number free again. A new version of a published
+  game is moderated again; the old one stays playable until it is approved.
+- **The Telefonbuch** (the maintainer): the public list of published games
+  at `/telefonbuch`, no login: number, title, the line of description, and
+  the phone number (or that one is being worked on). No names of students.
+  A button »Telefonbuch« on the public start page and on the activity page.
+  The menu on the phone reads the same titles.
 - **Durchwahl when the trunk allows it:** Asterisk gets the dialled number,
   and the runner starts the game of its last three digits without the
   menu (»Ruf 030 … 123 an«). This needs a single number with an appended
@@ -278,6 +301,11 @@ loop.
   Callers' numbers are personal data. Store none, or only
   as long as a call lasts, and write it into `src/ruby/include/privacy.rb`
   before going live (docs/datenschutz.md).
+- The Telefonbuch: does it show the class (»aus Klasse 8b«) or nothing
+  about who made a game? May a teacher approve the games of their own
+  class, or only the maintainer?
+- What publishing stores (the copies, titles, statuses, who submitted):
+  into `privacy.rb`; deleting an account removes its games.
 - Recording one's own sentences, as before: later, after the first
   version runs.
 - Interactive fiction (the BIF stories) on the phone: a story read out,
