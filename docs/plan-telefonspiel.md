@@ -70,6 +70,14 @@ Why it was flaky:
   Business trunks have SIP-DDI, a 10-number block would only cover the
   teacher's selection. Whether easybell routes a three-digit appended
   extension: to ask easybell or test once the trunk runs.
+- **Durchwahl is a setting** (the maintainer): schools have different
+  providers, and whether one passes extra digits on cannot be told in
+  advance. `credentials.rb` holds the number and a switch, off by default
+  (the menu works with every provider): `PHONE_NUMBER` and
+  `PHONE_DIRECT_DIAL`. On, the runner starts the game of the dialled
+  number's last three digits; a call without them still gets the menu, so
+  a wrong setting strands no one. The page and the list of games show the
+  number to match: »Ruf 030 … 123 an« or »Ruf 030 … an und gib 123 ein«.
 - **Several languages:** not only Python. Games speak a small protocol
   (below), with a short library per language.
 - **Music from YouTube stays** (the maintainer: the line is hardly public,
