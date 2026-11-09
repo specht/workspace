@@ -27,7 +27,7 @@
 body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
 main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; justify-content: center;
-       padding: 20px 16px; margin: 0 auto; }
+       padding: 24px 16px; margin: 0 auto; }
 @media (max-width: 720px) { main { grid-template-columns: minmax(0, 340px); } }
 
 /* the phone: a dark body with side buttons, the screen inside it, a camera
@@ -39,8 +39,9 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
 .phone::before { left: -6px; top: 120px; height: 56px; box-shadow: 0 72px 0 #2c3037; }   /* volume up and down */
 .phone::after { right: -6px; top: 160px; height: 84px; }                               /* side button */
 .glass { position: relative; border-radius: 40px; overflow: hidden; color: #f5f7fa; padding: 12px 22px 10px;
+         display: flex; flex-direction: column; height: 646px;   /* a phone's 19.5:9 with the body */
          background: radial-gradient(120% 70% at 50% 0%, #2a3a46 0%, #141b21 55%, #0b0f12 100%); }
-.island { width: 92px; height: 26px; border-radius: 13px; background: #000; margin: 0 auto 12px; }
+.island { width: 92px; height: 26px; border-radius: 13px; background: #000; margin: 0 auto 30px; }
 .screen { position: relative; text-align: center; margin-bottom: 14px; padding-bottom: 9px; }
 .screen h1 { font-size: 22px; margin: 0 0 4px; font-weight: 500; letter-spacing: .01em; }
 .status { color: rgba(245,247,250,.62); font-size: 14px; min-height: 20px; font-variant-numeric: tabular-nums;
@@ -64,17 +65,17 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
         border-radius: 2px; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
 .wait div { height: 100%; width: 100%; background: #fbbf24; transform-origin: left; }
-.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; justify-items: center; }
-.keypad button { width: 62px; height: 62px; border-radius: 50%; border: 0; background: rgba(255,255,255,.13); color: #fff;
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 16px; justify-items: center; margin-top: auto; }
+.keypad button { width: 66px; height: 66px; border-radius: 50%; border: 0; background: rgba(255,255,255,.13); color: #fff;
                  cursor: pointer; transition: background .08s, transform .08s; display: flex; flex-direction: column;
                  align-items: center; justify-content: center; gap: 2px; padding: 0; }
-.keypad b { font: 400 28px/1 system-ui, -apple-system, sans-serif; }
+.keypad b { font: 400 30px/1 system-ui, -apple-system, sans-serif; }
 .keypad small { font: 600 9px/1 system-ui, sans-serif; letter-spacing: .16em; color: rgba(255,255,255,.7); min-height: 9px; }
 .keypad button:hover { background: rgba(255,255,255,.2); }
 .keypad button.down { transform: scale(.93); background: rgba(255,255,255,.32); }
 .keypad button:disabled { opacity: .45; cursor: default; }
-.call { display: flex; justify-content: center; margin-top: 14px; }
-.call button { position: relative; width: 62px; height: 62px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
+.call { display: flex; justify-content: center; margin-top: 18px; }
+.call button { position: relative; width: 66px; height: 66px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
                background: var(--green); transition: background .15s; }
 .call button:disabled { opacity: .45; cursor: default; }
 .call button.hang { background: var(--red); }
@@ -86,11 +87,11 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
 .call .end, .call button.hang .dial { display: none; }
 .call button.hang .end { display: inline; }
 .call svg { width: 30px; height: 30px; vertical-align: middle; }
-.home { width: 112px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); margin: 16px auto 0; }
+.home { width: 112px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); margin: 24px auto 0; }
 
 /* the conversation as a chat: the game left, the keys right */
 .log { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow);
-       display: flex; flex-direction: column; min-height: 0; height: 100%; max-height: calc(100vh - 40px); overflow: hidden; }
+       display: flex; flex-direction: column; min-height: 0; height: 100%; max-height: calc(100vh - 48px); overflow: hidden; }
 @media (max-width: 720px) { .log { height: auto; min-height: 260px; max-height: 70vh; } }
 .log header { display: flex; align-items: center; justify-content: space-between; gap: 12px;
               padding: 13px 18px; border-bottom: 1px solid var(--line); }

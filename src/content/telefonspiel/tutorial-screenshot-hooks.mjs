@@ -30,6 +30,9 @@ export default {
                     if (word.previousSibling && word.previousSibling.nodeType === Node.TEXT_NODE) word.previousSibling.remove();
                     word.remove();
                 }
+                // the click on the receiver scrolled it into view; the phone may
+                // be cut off at the bottom, not at the top
+                window.scrollTo(0, 0);
                 clearInterval(clock);
                 document.getElementById('status').textContent = 'Verbunden 0:42';
                 for (const animation of document.getAnimations()) {
@@ -38,6 +41,20 @@ export default {
                     animation.currentTime = (phases[animation.animationName] ?? 0) - animation.effect.getTiming().delay;
                 }
             }, { text, phases: PHASES });
+            // no key under the mouse lit up
+            await page.mouse.move(page.viewportSize().width - 2, 2);
+        },
+
+        // hook: teaser DEGREES: the layout of the teaser: the phone turned a
+        // little (the chat stays straight) and both centred with a margin, so
+        // the phone is cut off only at the bottom; the page itself is upright
+        async teaser({ page, args }) {
+            await page.evaluate((degrees) => {
+                document.querySelector('main').style.gridTemplateColumns = '310px minmax(0, 540px)';
+                const phone = document.querySelector('.phone');
+                phone.style.transformOrigin = '50% 30%';
+                phone.style.transform = `rotate(${degrees}deg)`;
+            }, Number(args));
         },
     },
 

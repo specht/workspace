@@ -682,7 +682,8 @@ funktioniert, übst du in den [Katas zu Dictionaries](/kata-dicts).
 # dunkel; dabei prüft es die Aufgaben mit Tasten an den Lösungen. Erst holt
 # der Sprachdienst die Musik (beim ersten Mal von YouTube, das dauert).
 # freeze-at hält den Anruf nach »Links flackert Licht,« an: immer dieselben
-# Wörter, dieselbe Zeit, stehende Animationen.
+# Wörter, dieselbe Zeit, stehende Animationen; teaser dreht das Telefon ein
+# wenig und rückt beides in die Mitte.
 write-file: telefon/frage.rb <- file:stufen/4-drei/frage.rb
 write-file: telefon/hoehle.rb <- file:stufen/6-gang/hoehle.rb
 check-task: drei
@@ -693,7 +694,7 @@ terminal-wait-for-prompt: 300
 terminal-run: cd /workspace/telefon && telefon hoehle.rb
 preview-port: 8040
 tab: preview
-viewport: 1120x630
+viewport: 960x540
 wait-for-text: Bereit
 click: selector:#call
 wait-for-text: nach Hause zu gehen.
@@ -704,6 +705,7 @@ sleep: 1
 press: 2
 wait-for-text: Du gehst zurück.
 hook: freeze-at Links flackert Licht,
+hook: teaser -3
 variants: dark
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Das Telefon im Browser während eines Anrufs bei der Höhle: links ein Telefon mit Display, Tastenfeld und rotem Hörer zum Auflegen; rechts das Gespräch, die Sätze des Spiels in Blasen, die gedrückten Tasten 1 und 2 als kleine Tasten, und der nächste Satz erscheint gerade Wort für Wort.'>
