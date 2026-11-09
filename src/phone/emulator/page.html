@@ -9,6 +9,7 @@
     --bg: #f3f4f6; --card: #ffffff; --ink: #1f2933; --muted: #6b7280; --line: #e2e5ea;
     --key: #eef0f3; --key-hover: #e2e5ea; --game: #0e7490; --you: #a16207; --note: #6b7280;
     --green: #16a34a; --red: #dc2626; --warn-bg: #fef3c7; --warn-ink: #78350f;
+    --bubble: #e3f2f6; --bubble-ink: #0b4a59; --cap: #ffffff; --cap-line: #d4d8de;
     color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -16,6 +17,7 @@
         --bg: #111418; --card: #1b2026; --ink: #e5e7eb; --muted: #9ca3af; --line: #2c333b;
         --key: #262c34; --key-hover: #313842; --game: #67c6dc; --you: #facc15; --note: #9ca3af;
         --warn-bg: #3b2f12; --warn-ink: #fde68a;
+        --bubble: #173039; --bubble-ink: #d3eef5; --cap: #2a3038; --cap-line: #444c57;
         color-scheme: dark;
     }
 }
@@ -32,7 +34,7 @@ main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align
 .wait { height: 4px; background: var(--line); border-radius: 2px; margin: 10px 18px 0; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
 .wait div { height: 100%; width: 100%; background: var(--you); transform-origin: left; }
-.subtitle { min-height: 42px; margin: 8px 4px 0; font-size: 15px; color: var(--game); }
+.subtitle { min-height: 44px; margin: 8px 4px 0; font-size: 15px; line-height: 1.45; color: var(--game); }
 .digits { font: 600 22px/1 ui-monospace, monospace; letter-spacing: .12em; min-height: 26px; margin-top: 8px; }
 .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; }
 .keypad button { width: 68px; height: 68px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
@@ -49,11 +51,28 @@ main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align
 .call svg { width: 30px; height: 30px; vertical-align: middle; }
 .log { flex: 1 1 320px; max-width: 560px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
        padding: 16px 18px; min-height: 200px; max-height: calc(100vh - 48px); overflow-y: auto; }
-.log h2 { font-size: 15px; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
-.log p { margin: 6px 0; }
-.log .game { color: var(--game); }
-.log .you { color: var(--you); font-weight: 600; }
-.log .note { color: var(--note); font-size: 14px; }
+.log h2 { font-size: 15px; margin: 0 0 12px; color: var(--muted); font-weight: 600; }
+/* the conversation as a chat: the game left, the keys right */
+#lines { display: flex; flex-direction: column; gap: 8px; }
+.msg { max-width: 85%; padding: 8px 13px; border-radius: 18px; overflow-wrap: anywhere; animation: pop .22s ease-out; }
+.msg.game { align-self: flex-start; background: var(--bubble); color: var(--bubble-ink); border-bottom-left-radius: 6px; min-width: 44px; }
+.msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+.cap { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 7px;
+       background: var(--cap); color: var(--ink); border: 1px solid var(--cap-line); border-bottom-width: 2px;
+       font: 600 15px/1 ui-monospace, monospace; animation: pop .15s ease-out; }
+.note { align-self: center; display: flex; align-items: center; gap: 6px; color: var(--note); font-size: 13px;
+        text-align: center; animation: pop .22s ease-out; }
+.note svg { width: 15px; height: 15px; flex: none; }
+/* words appear as they are spoken; the dot is the cursor */
+.w { animation: word .3s ease-out both; }
+.cursor { display: inline-block; width: .6em; height: .6em; margin-left: .3em; border-radius: 50%; background: currentColor;
+          vertical-align: .02em; animation: pulse 1s ease-in-out infinite; }
+.msg .cursor:first-child { margin-left: 0; }
+@keyframes word { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
+@keyframes pop { from { opacity: 0; transform: translateY(4px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes pulse { 0%, 100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .w, .msg, .cap, .note { animation: none; } .cursor { animation: none; opacity: .7; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 8px 12px; font-size: 14px; margin-bottom: 10px; }
 kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 .help { color: var(--muted); font-size: 13px; margin-top: 12px; text-align: center; }
@@ -77,10 +96,11 @@ kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-
         </button></div>
         <div class="help">Tasten auch mit <kbd>0</kbd>–<kbd>9</kbd>, <kbd>*</kbd>, <kbd>#</kbd>; <kbd>Enter</kbd> ruft an, <kbd>Esc</kbd> legt auf.</div>
     </section>
-    <section class="log" id="log" aria-live="polite">
+    <section class="log" id="log">
         <h2>Gespräch</h2>
         <div id="warnings"></div>
-        <div id="lines"><p class="note">Klick auf den grünen Hörer: Dann startet dein Spiel im Terminal, und du hörst es hier.</p></div>
+        <div id="lines"><div class="note">Klick auf den grünen Hörer: Dann startet dein Spiel im Terminal, und du hörst es hier.</div></div>
+        <div class="sr" id="spoken" aria-live="polite"></div>
     </section>
 </main>
 <script>
@@ -94,7 +114,9 @@ const TONES = { '1': [697, 1209], '2': [697, 1336], '3': [697, 1477], '4': [770,
 
 const $ = id => document.getElementById(id);
 let ctx = null, musicGain, duckGain, musicSource = null, voice = null;
-let inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {};
+let inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {}, keyBubble = null;
+// Tabler Icons 3.49.0 (MIT License): outline/music
+const MUSIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M9 17v-13h10v13" /><path d="M9 8h10" /></svg>';
 
 function audio() {
     if (!ctx) {
@@ -119,13 +141,28 @@ function post(path, body) {
     return fetch(path, { method: 'POST', body: body || '' }).catch(() => {});
 }
 
-function line(kind, text) {
-    const p = document.createElement('p');
-    p.className = kind;
-    p.textContent = text;
-    $('lines').appendChild(p);
+function scroll() {
     $('log').scrollTop = $('log').scrollHeight;
-    return p;
+}
+
+function message(kind) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + kind;
+    $('lines').appendChild(div);
+    if (kind !== 'you') keyBubble = null;
+    scroll();
+    return div;
+}
+
+function note(text, icon) {
+    const div = document.createElement('div');
+    div.className = 'note';
+    if (icon) div.innerHTML = icon;
+    div.appendChild(document.createTextNode(text));
+    $('lines').appendChild(div);
+    keyBubble = null;
+    scroll();
+    return div;
 }
 
 function warn(key, text, terminal) {
@@ -166,37 +203,112 @@ function speakInBrowser(text) {
     });
 }
 
+// When each word is spoken. Piper tells no word timings, so they come from
+// the sound: where the speech starts and ends, its pauses (put at the
+// commas when there are as many of both), the words in between by length.
+function wordTimes(buffer, words) {
+    const data = buffer.getChannelData(0), hop = Math.round(buffer.sampleRate / 100), env = [];
+    for (let i = 0; i < data.length; i += hop) {
+        const end = Math.min(i + hop, data.length);
+        let sum = 0;
+        for (let j = i; j < end; j++) sum += data[j] * data[j];
+        env.push(Math.sqrt(sum / (end - i)));
+    }
+    const peak = env.reduce((a, b) => Math.max(a, b), 0) || 1;
+    const loud = env.map(e => e > peak * 0.06);
+    let first = loud.indexOf(true), last = loud.lastIndexOf(true);
+    if (first < 0) { first = 0; last = env.length - 1; }
+    const pauses = [];
+    for (let i = first, run = 0; i <= last; i++) {
+        if (!loud[i]) run++;
+        else { if (run >= 12) pauses.push([i - run, i]); run = 0; }
+    }
+    const breaks = [];
+    words.forEach((w, i) => { if (i < words.length - 1 && /[,;:–—]$/.test(w)) breaks.push(i + 1); });
+    const segments = [];                     // [from, to (in 10 ms), first word, end word]
+    if (pauses.length && pauses.length === breaks.length) {
+        let from = first, word = 0;
+        pauses.forEach(([a, b], k) => { segments.push([from, a, word, breaks[k]]); from = b; word = breaks[k]; });
+        segments.push([from, last + 1, word, words.length]);
+    } else {
+        segments.push([first, last + 1, 0, words.length]);
+    }
+    const times = [];
+    for (const [from, to, w0, w1] of segments) {
+        // a digit is spoken as a word (»drei«)
+        const weights = words.slice(w0, w1).map(w => w.replace(/[^\p{L}]/gu, '').length + 4 * w.replace(/\D/g, '').length + 1.5);
+        const total = weights.reduce((a, b) => a + b, 0);
+        let sum = 0;
+        for (const weight of weights) { times.push((from + (to - from) * sum / total) / 100); sum += weight; }
+    }
+    return times;
+}
+
+// the words of a sentence into the bubble and the phone's screen as they
+// are spoken; now() is the time since the sentence started. Returns a
+// function that shows the rest at once.
+function typeSentence(bubble, words, times, now) {
+    const cursor = bubble.querySelector('.cursor');
+    $('subtitle').textContent = '';
+    let next = 0, all = false;
+    const step = () => {
+        const t = now();
+        while (next < words.length && (all || times[next] <= t)) {
+            for (const [target, before] of [[bubble, cursor], [$('subtitle'), null]]) {
+                if (target.querySelector('.w')) target.insertBefore(document.createTextNode(' '), before);
+                const span = document.createElement('span');
+                span.className = 'w';
+                span.textContent = words[next];
+                target.insertBefore(span, before);
+            }
+            next++;
+            scroll();
+        }
+        if (next < words.length && !all) requestAnimationFrame(step);
+    };
+    step();
+    return () => { all = true; step(); };
+}
+
 async function say(parts, id) {
     const mine = call;
-    // like subtitles: each sentence appears when it starts to play, here
-    // and in the terminal
-    const p = line('game', '');
-    const shown = i => {
-        p.textContent += (i ? ' ' : '') + parts[i];
-        $('subtitle').textContent = parts[i];
-        $('log').scrollTop = $('log').scrollHeight;
-        post(`/playing?id=${id}&part=${i}`);
-    };
+    // the bubble shows the cursor alone until the first word is spoken
+    const bubble = message('game');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    bubble.appendChild(cursor);
     const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p)));
     buffers.forEach(b => b.catch(() => {}));
     duck(true);
     for (let i = 0; i < parts.length; i++) {
+        const words = parts[i].split(' ');
+        let finish = null;
+        const start = (times, now) => {
+            $('spoken').textContent = parts[i];
+            post(`/playing?id=${id}&part=${i}`);       // the terminal shows the sentence now
+            finish = typeSentence(bubble, words, times, now);
+        };
         try {
             const buffer = await buffers[i];
             if (mine !== call) return;
-            shown(i);
+            const t0 = ctx.currentTime;
+            start(wordTimes(buffer, words), () => ctx.currentTime - t0);
             await play(buffer);
         } catch (error) {
             if (mine !== call) return;
             warn('speech', 'Die Stimme des Telefons ist gerade nicht erreichbar; der Browser liest vor. Auf dem echten Telefon klingt es anders.',
                  'Die Stimme ist nicht erreichbar, der Browser liest vor: ' + error.message);
-            shown(i);
+            let chars = 0;
+            const times = words.map(w => { const t = chars * 0.065; chars += w.length + 1; return t; });
+            const t0 = performance.now();
+            if (!finish) start(times, () => (performance.now() - t0) / 1000);
             await speakInBrowser(parts[i]);
         }
+        if (finish) finish();
         if (mine !== call) return;
     }
+    cursor.remove();
     duck(false);
-    $('subtitle').textContent = '';
     post('/heard?id=' + id);
 }
 
@@ -210,7 +322,11 @@ async function music(url, volume) {
     if (!url) return;
     const mine = ++musicRequest;
     const source = decodeURIComponent(url.split('source=')[1] || '');
-    const slow = setTimeout(() => line('note', 'Die Musik wird geladen; beim ersten Mal dauert ein Video etwas.'), 1500);
+    const name = /^https?:/.test(source) ? 'Musik von YouTube' : 'Musik: ' + source;
+    // the note where the game asked for the music, even while it loads
+    const shown = note(name, MUSIC_ICON);
+    const text = shown.lastChild;
+    const slow = setTimeout(() => { text.textContent = name + ' (wird geladen; beim ersten Mal dauert ein Video etwas)'; }, 1500);
     try {
         const buffer = await fetchAudio(url);
         if (mine !== musicRequest || !inCall) return;
@@ -220,8 +336,9 @@ async function music(url, volume) {
         musicGain.gain.value = volume;
         musicSource.connect(musicGain);
         musicSource.start();
+        text.textContent = name;
     } catch (error) {
-        line('note', 'Die Musik ließ sich nicht laden: ' + source);
+        text.textContent = 'Die Musik ließ sich nicht laden: ' + source;
         post('/problem', 'Die Musik ließ sich nicht laden (' + source + '): ' + error.message);
     } finally {
         clearTimeout(slow);
@@ -249,12 +366,19 @@ function press(key) {
     setTimeout(() => button.classList.remove('down'), 120);
     if (!inCall) return;
     tone(key);
-    line('you', 'Taste ' + key);
+    if (!keyBubble) keyBubble = message('you');
+    const cap = document.createElement('span');
+    cap.className = 'cap';
+    cap.textContent = key;
+    cap.setAttribute('aria-label', 'Taste ' + key);
+    keyBubble.appendChild(cap);
+    scroll();
     $('digits').textContent += key;
     post('/key?key=' + encodeURIComponent(key));
 }
 
 function waiting(count, timeout) {
+    keyBubble = null;
     $('digits').textContent = '';
     $('status').textContent = count === 1 ? 'Das Spiel wartet auf eine Taste' : `Das Spiel wartet auf bis zu ${count} Tasten`;
     const bar = $('wait-bar');
@@ -294,6 +418,7 @@ function setCall(on) {
         stopMusic();
         if (voice) { try { voice.stop(); } catch (e) {} voice = null; }
         $('subtitle').textContent = '';
+        document.querySelectorAll('#lines .cursor').forEach(c => c.remove());
         if (window.speechSynthesis) speechSynthesis.cancel();
         if (duckGain) { duckGain.gain.cancelScheduledValues(0); duckGain.gain.value = 1; }
     }
@@ -320,7 +445,10 @@ for (const key of KEYS) {
     b.addEventListener('click', () => press(key));
     $('keypad').appendChild(b);
 }
-$('call').addEventListener('click', toggleCall);
+$('call').addEventListener('click', e => {
+    toggleCall();
+    if (e.detail) e.currentTarget.blur();      // a mouse click: no focus ring while typing digits
+});
 document.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (KEYS.includes(e.key)) { press(e.key); e.preventDefault(); }
@@ -334,7 +462,7 @@ events.onmessage = message => {
     const e = JSON.parse(message.data);
     if (e.ready) {
         $('title').textContent = e.title || 'Telefonspiel';
-        if (inCall) { setCall(false); line('note', 'Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
+        if (inCall) { setCall(false); note('Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
         $('status').textContent = 'Bereit';
         $('call').disabled = false;
     } else if (e.replaced) {
@@ -352,7 +480,7 @@ events.onmessage = message => {
         waited();
     } else if (e.ended) {
         setCall(false);
-        line('note', ENDED[e.ended] || 'Der Anruf ist beendet.');
+        note(ENDED[e.ended] || 'Der Anruf ist beendet.');
         $('status').textContent = 'Bereit';
     }
 };

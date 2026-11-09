@@ -155,9 +155,14 @@ loop.
   proxy. The page has a keypad (mouse or keyboard, with key tones), a green
   receiver that starts the game and a red one that hangs up. The browser
   mixes as the phone does (the same constants as `mixer.py`, Web Audio).
-  Each sentence appears like a subtitle, on the phone's screen, in the
-  page's transcript and in the terminal, when it starts to play; the game's
-  own output and errors stay in the terminal. Without the speech service
+  The conversation is a chat: the game's sentences in bubbles on the left,
+  the keys as key caps on the right. The words appear one by one as they
+  are spoken, with a dot as the cursor, in the bubble and on the phone's
+  screen; Piper gives no word timings, so the page takes them from the
+  sound (where speech starts and ends, its pauses put at the commas, the
+  words in between by length), on the audio clock. The terminal shows each
+  sentence when it starts to play; the game's own output and errors stay
+  there. Without the speech service
   the browser's own voice reads, and the page says so. Closing or reloading
   the page hangs up; a second tab takes over the phone.
 - For the real thing in class: a softphone (in the browser, or Linphone on
