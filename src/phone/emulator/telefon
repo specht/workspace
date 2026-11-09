@@ -426,7 +426,7 @@ class TestPhone(game.Phone):
         self.folder = None
 
     async def say(self, text, interrupt=False, mood=None):
-        print(f'Telefon: {" ".join(str(text).split())}', flush=True)
+        print(f'Telefon{f" ({mood})" if mood else ""}: {" ".join(str(text).split())}', flush=True)
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
         if not source:

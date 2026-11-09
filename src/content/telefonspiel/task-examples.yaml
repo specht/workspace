@@ -50,6 +50,18 @@ examples:
       fail:
         - files: { telefon/hoehle.py: stufen/5-hoehle/hoehle.py }
           say: Gang
+  stimmen:
+    pass:
+      - files: { telefon/hoehle.rb: stufen/7-stimmen/hoehle.rb }
+    fail:
+      - files: { telefon/hoehle.rb: stufen/6-gang/hoehle.rb }
+        say: flüsternd
+    python:
+      pass:
+        - files: { telefon/hoehle.py: stufen/7-stimmen/hoehle.py }
+      fail:
+        - files: { telefon/hoehle.py: stufen/6-gang/hoehle.py }
+          say: flüsternd
   geschichte:
     pass:
       - files: { telefon/geschichte.rb: stufen/6-gang/hoehle.rb }

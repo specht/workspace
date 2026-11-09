@@ -196,6 +196,36 @@ tasks:
             says: [nach Hause]
             ends: true
 
+  - id: stimmen
+    title: Stimmen in der Höhle
+    prompt: In `telefon/hoehle.rb` flüstert das Spiel den Satz im Gang, und beim Gold klingt es überrascht.
+    check:
+      type: phone
+      file: telefon/hoehle.rb
+      cases:
+        - keys: '1'
+          says: [teilt sich]
+          moods: { teilt sich: whisper }
+          ends: false
+        - keys: '1,1'
+          says: [Gold]
+          moods: { Gold: surprised }
+          ends: true
+    python:
+      prompt: In `telefon/hoehle.py` flüstert das Spiel den Satz im Gang, und beim Gold klingt es überrascht.
+      check:
+        type: phone
+        file: telefon/hoehle.py
+        cases:
+          - keys: '1'
+            says: [teilt sich]
+            moods: { teilt sich: whisper }
+            ends: false
+          - keys: '1,1'
+            says: [Gold]
+            moods: { Gold: surprised }
+            ends: true
+
   - id: geschichte
     title: Deine Geschichte
     prompt: '`telefon/geschichte.rb` spielt Musik, sagt etwas und wartet dann auf eine Taste.'

@@ -73,6 +73,28 @@ def sentences(text):
     return [p for p in parts if p]
 
 
+# Interjections without a vowel, which espeak spells letter by letter (»Psst«
+# as P-S-S-T): their sound as phonemes, which Piper takes in [[ … ]], the
+# punctuation after them inside so its pause stays. A list, not every word
+# without a vowel, so ZDF and BVG are still spelled.
+INTERJECTIONS = [
+    (r'p+s+t+', 'pst'), (r'p+s?ch+t+', 'pʃt'), (r's?ch+h*|sh+', 'ʃː'), (r'h+m+', 'hmː'), (r'm+h+m+', 'mhm'),
+    (r'b+r+', 'bʁː'), (r'g+r+', 'ɡʁː'), (r'p+f+', 'pfː'), (r't+s+', 'tsː'),
+]
+_INTERJECTION = re.compile(r'(?<![\w-])(' + '|'.join(f'(?:{p})' for p, _ in INTERJECTIONS) + r')(?![\w-])([,.!?;:…]*)', re.IGNORECASE)
+
+
+def sounding(sentence):
+    """the sentence as Piper should read it: interjections as their sound"""
+    def sound(m):
+        word = m.group(1).lower()
+        for pattern, phonemes in INTERJECTIONS:
+            if re.fullmatch(pattern, word):
+                return f'[[ {phonemes}{m.group(2)} ]]'
+        return m.group(0)
+    return _INTERJECTION.sub(sound, sentence)
+
+
 # speech, in the worker processes --------------------------------------------
 
 _voice = None
@@ -102,7 +124,7 @@ def synthesize(sentence, mood=None):
     if mood:
         voice = _mood_voice
         config = SynthesisConfig(speaker_id=voice.config.speaker_id_map[mood])
-    data = b''.join(chunk.audio_int16_bytes for chunk in voice.synthesize(sentence, syn_config=config))
+    data = b''.join(chunk.audio_int16_bytes for chunk in voice.synthesize(sounding(sentence), syn_config=config))
     samples = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
     if voice.config.sample_rate != RATE:
         samples = soxr.resample(samples, voice.config.sample_rate, RATE)
@@ -303,7 +325,8 @@ class Service:
     async def sentence(self, sentence, mood=None):
         # without a mood the key it always had
         voice = os.path.basename(VOICE) if not mood else f'{os.path.basename(MOOD_VOICE)}:{mood}'
-        path = cache_path('speech', voice + '\n' + sentence, '.f32')
+        # the key from the text as read, so a sentence spelled before is made anew
+        path = cache_path('speech', voice + '\n' + sounding(sentence), '.f32')
         await self.once(path, self.speech_pool, synthesize, sentence, mood)
         with open(path, 'rb') as f:
             return f.read()

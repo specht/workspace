@@ -1242,7 +1242,7 @@ Person als Gast wie bei `command`, einmal je Fall: Jedes `keys()` des Spiels
 bekommt die nächste Antwort des Falls (`-` für keine, wie nach einer
 Wartezeit; `1#` drückt erst 1, dann die Raute), Pausen dauern nichts, die
 Musik wird nicht geladen. Der Emulator schreibt eine Zeile je Ereignis
-(`Telefon: …`, `Musik: …`, `Pause: …`, `Tasten: …`, `Ausgabe: …` für das,
+(`Telefon: …`, in einer Stimmung `Telefon (whisper): …`, `Musik: …`, `Pause: …`, `Tasten: …`, `Ausgabe: …` für das,
 was das Programm selbst ausgibt, `Fehler: …`, `Ende: …`), und die stehen
 unter »Was der Workspace gelesen hat«, für jeden Fall mit seinen Tasten.
 
@@ -1259,12 +1259,17 @@ check:
     - keys: '1'
       says: [Fackel]
       not_says: [Wasser]       # kein Satz passt darauf
+      moods: { Fackel: whisper }   # der Satz mit »Fackel« in dieser Stimmung (say … mood:)
       ends: true               # danach ist das Spiel zu Ende
       say: Nach der 1 geht es in den linken Gang.
 ```
 
 Die Ausdrücke sind reguläre Ausdrücke ohne Rücksicht auf Groß- und
-Kleinschreibung; `music` ist `true` oder ein Ausdruck für die Quelle. Fragt
+Kleinschreibung; `music` ist `true` oder ein Ausdruck für die Quelle. `moods`
+ordnet Ausdrücken eine der acht Stimmungen zu (`neutral`, `amused`, `angry`,
+`disgusted`, `drunk`, `sleepy`, `surprised`, `whisper`); ob es den Satz
+überhaupt gibt, prüft `says`, die Rückmeldung lautet sonst »Nach der Taste 1
+sagt das Spiel »…« noch nicht flüsternd (`mood: 'whisper'`).« Fragt
 das Spiel nach mehr Tasten, als der Fall hat, endet der Lauf dort (»Ende: Das
 Spiel wartet auf eine Taste, aber die Prüfung drückt keine mehr«); `ends:
 false` verlangt genau das, `ends: true` das Gegenteil. Die Rückmeldung nennt

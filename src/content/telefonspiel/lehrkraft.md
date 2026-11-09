@@ -5,7 +5,7 @@ Lernende programmieren ein Spiel, das man anrufen kann, in Ruby oder Python: Es 
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen. Der Befehl <code>telefon</code> spielt auch Spiele in JavaScript (<code>require('telefon')</code>); die Seite zeigt nur Ruby und Python.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> der erste Anruf, Musik und Pausen, die Frage mit Tasten, Text oder Zahl, die dritte Wahl.</li>
-<li><b>2. Doppelstunde:</b> die Höhle aus Szenen, »Niemand drückt«, der Gang als eigene Funktion; dann die Karte der eigenen Geschichte auf Papier.</li>
+<li><b>2. Doppelstunde:</b> die Höhle aus Szenen, »Niemand drückt«, der Gang als eigene Funktion, Stimmungen (Thorsten flüstert, staunt, ist müde); dann die Karte der eigenen Geschichte auf Papier.</li>
 <li><b>3. Doppelstunde:</b> die eigene Geschichte programmieren, Spieltest in Paaren, danach verbessern.</li>
 <li><b>Für Schnelle:</b> das Zahlenschloss (Extra), Musik, die mit der Szene wechselt.</li>
 </ul></td></tr>
@@ -33,6 +33,7 @@ Lernende programmieren ein Spiel, das man anrufen kann, in Ruby oder Python: Es 
 - »Text oder Zahl?« und »Niemand drückt« sind Vorhersagen; die Erklärung steht erst nach der Antwort auf der Seite.
 - »Eine dritte Wahl« spielt fünf Fälle: ohne Taste (die Frage nennt die Fische), 1, 2, 3 und nichts gedrückt.
 - »Der Gang« spielt fünf Wege durch die Höhle, auch die Schleifen: im Gang die 2 und im Gang gar nichts müssen wieder nach einer Taste fragen.
+- »Stimmen in der Höhle« prüft, dass der Satz im Gang mit `mood: 'whisper'` und der Satz beim Gold mit `mood: 'surprised'` gesagt wird; der Text selbst bleibt.
 - »Deine Geschichte« prüft nur den Anfang (Musik, ein Satz, dann wartet das Spiel auf eine Taste); ob es vier Szenen und zwei Enden gibt, zeigt der Spieltest.
 - »Spieltest« ist eine Reflexion: wer gespielt hat, wo es hakte, was sich geändert hat.
 

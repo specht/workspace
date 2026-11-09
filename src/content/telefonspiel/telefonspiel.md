@@ -585,6 +585,84 @@ In `cave` führt die 1 in den Gang:
 
 _task(gang)
 
+### Stimmen in der Höhle
+
+Thorsten muss nicht jeden Satz gleich sagen. Bekommt `say` eine Stimmung,
+flüstert er, wundert sich oder klingt müde. Wer vor der Höhle die 2 drückt,
+geht jetzt müde nach Hause:
+
+<!-- language: ruby -->
+```ruby
+~   elsif key == '2'
+    say 'Du gehst nach Hause. Vielleicht ein anderes Mal.', mood: 'sleepy'
+~   else
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+~     elif key == '2':
+        say('Du gehst nach Hause. Vielleicht ein anderes Mal.', mood='sleepy')
+~     else:
+```
+<!-- /language -->
+
+Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht:
+`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
+`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und `whisper`
+(flüsternd). Auf der Seite des Telefons steht die Stimmung klein über dem
+Satz.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ruf an und drück die 2. Achte auf Tempo und
+Betonung des Satzes. Setz dann <code>drunk</code> statt <code>sleepy</code>
+ein und vergleiche beide.
+</div>
+
+<div class='hint own' data-check='stimmen'>
+<strong>Jetzt bist du dran:</strong> Im Gang ist es dunkel. Lass das Spiel
+den Satz im Gang flüstern. Wer das Gold findet, soll es überrascht hören.
+</div>
+
+<!-- hint -->
+Es sind zwei Sätze: Der eine steht in `tunnel`, der andere in `treasure`.
+<!-- /hint -->
+<!-- hint -->
+An beide kommt hinter den Text ein Komma und die Stimmung: `whisper` für das
+Flüstern, `surprised` für die Überraschung.
+<!-- /hint -->
+
+<!-- solution -->
+<!-- language: ruby -->
+```ruby
+~ def treasure
+  say 'Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', mood: 'surprised'
+~ end
+~
+~ def tunnel
+  say 'Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts.', mood: 'whisper'
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+~ def treasure():
+    say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!', mood='surprised')
+~
+~
+~ def tunnel():
+    say('Drinnen teilt sich der Gang. Links flackert Licht, rechts rauscht Wasser. Drück 1 für links, 2 für rechts.', mood='whisper')
+```
+<!-- /language -->
+<!-- /solution -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/7-stimmen/hoehle.rb as hoehle.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/7-stimmen/hoehle.py as hoehle.py -->
+<!-- /language -->
+
+_task(stimmen)
+
 ## Deine Geschichte
 
 ### Erst die Karte
@@ -621,28 +699,18 @@ Was ein Spiel am Telefon gut macht:
   etwas passieren: Wer im Wald zu lange wartet, hört Schritte.
 - **Musik passend zur Szene.** `music` darf auch mitten im Spiel stehen,
   etwa am Anfang der Funktion einer Szene; dann wechselt die Musik.
+- **Eine Stimme für jede Figur.** Mit den Stimmungen klingt die Hexe anders
+  als der Erzähler, etwa wütend oder flüsternd.
 
 <!-- language: ruby -->
 Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
 `say '…', interrupt: true` hört der Satz auf, sobald jemand eine Taste
 drückt, und das nächste `keys` bekommt genau diese Taste.
-
-Thorsten kann auch flüstern, sich ärgern oder staunen: `say 'Psst, da ist jemand.', mood: 'whisper'`. Es gibt
-`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
-`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und
-`whisper` (flüsternd). So bekommt eine Figur in deiner Geschichte ihre eigene
-Stimme.
 <!-- /language -->
 <!-- language: python -->
 Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
 `say('…', interrupt=True)` hört der Satz auf, sobald jemand eine Taste
 drückt, und das nächste `keys` bekommt genau diese Taste.
-
-Thorsten kann auch flüstern, sich ärgern oder staunen: `say('Psst, da ist jemand.', mood='whisper')`. Es gibt
-`neutral`, `amused` (amüsiert), `angry` (wütend), `disgusted` (angewidert),
-`drunk` (betrunken), `sleepy` (müde), `surprised` (überrascht) und
-`whisper` (flüsternd). So bekommt eine Figur in deiner Geschichte ihre eigene
-Stimme.
 <!-- /language -->
 
 _task(geschichte)

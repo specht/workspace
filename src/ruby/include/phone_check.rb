@@ -28,7 +28,10 @@ module PhoneCheck
     MARK = '@@hs-phone-case '
     MAX_CASES = 12
     SECONDS = 5                    # per case, unless the check says otherwise
-    CASE_KEYS = %w[keys says not_says music ends say].freeze
+    CASE_KEYS = %w[keys says not_says moods music ends say].freeze
+    # Thorsten's moods (say … mood:, src/phone/core/game.py) and how a message names them
+    MOODS = { 'neutral' => 'neutral', 'amused' => 'amüsiert', 'angry' => 'wütend', 'disgusted' => 'angewidert',
+              'drunk' => 'betrunken', 'sleepy' => 'müde', 'surprised' => 'überrascht', 'whisper' => 'flüsternd' }.freeze
     SHOWN_LINES = 30
 
     # The emulator: on PATH in the Workspace (/usr/local/bin/telefon); the
@@ -85,11 +88,25 @@ module PhoneCheck
                     errors << "phone case #{i + 1}: #{key} #{pattern.inspect} is no regular expression (#{e.message})"
                 end
             end
+            if c.key?('moods')
+                if c['moods'].is_a?(Hash) && !c['moods'].empty?
+                    c['moods'].each do |pattern, mood|
+                        errors << "phone case #{i + 1}: moods: #{mood.inspect} is none of #{MOODS.keys.join(', ')}" unless MOODS.key?(mood.to_s)
+                        begin
+                            Regexp.new(pattern.to_s)
+                        rescue RegexpError => e
+                            errors << "phone case #{i + 1}: moods #{pattern.inspect} is no regular expression (#{e.message})"
+                        end
+                    end
+                else
+                    errors << "phone case #{i + 1}: moods must map patterns to moods, like { 'teilt sich': whisper }"
+                end
+            end
             errors << "phone case #{i + 1}: music must be true or a pattern" if c.key?('music') && !(c['music'] == true || c['music'].is_a?(String))
             errors << "phone case #{i + 1}: ends must be true or false" if c.key?('ends') && ![true, false].include?(c['ends'])
             errors << "phone case #{i + 1}: say must be text" if c.key?('say') && !c['say'].is_a?(String)
             if (CASE_KEYS - %w[keys say] & c.keys).empty?
-                errors << "phone case #{i + 1} expects nothing (says, not_says, music or ends)"
+                errors << "phone case #{i + 1} expects nothing (says, not_says, moods, music or ends)"
             end
         end
         errors
@@ -142,7 +159,9 @@ module PhoneCheck
     # What is wrong with one run, or nil.
     def self.problem(c, lines)
         # c['file']: the game's file, for the line of an error (set by evaluate)
-        said = lines.select { |l| l.start_with?('Telefon: ') }.map { |l| l.delete_prefix('Telefon: ') }
+        # »Telefon: …« or, in a mood, »Telefon (whisper): …«
+        spoken = lines.filter_map { |l| (m = l.match(/\ATelefon(?: \((\w+)\))?: (.*)\z/)) && [m[2], m[1]] }
+        said = spoken.map(&:first)
         music = lines.select { |l| l.start_with?('Musik: ') }.map { |l| l.delete_prefix('Musik: ') }
         finish = lines.reverse.find { |l| l.start_with?('Ende: ') }.to_s.delete_prefix('Ende: ')
         errors = lines.select { |l| l.start_with?('Fehler: ') }.map { |l| l.delete_prefix('Fehler: ') }
@@ -184,6 +203,14 @@ module PhoneCheck
             next unless hit
 
             return c['say'] || "#{when_} sagt das Spiel »#{hit}«; das gehört hier nicht hin."
+        end
+        (c['moods'] || {}).each do |pattern, mood|
+            hits = spoken.select { |text, _| matches?(pattern.to_s, text) }
+            next if hits.empty? || hits.any? { |_, m| m == mood.to_s }
+
+            sentence = hits.first.first
+            sentence = "#{sentence[0, 60]} …" if sentence.size > 62
+            return c['say'] || "#{when_} sagt das Spiel »#{sentence}« noch nicht #{MOODS[mood.to_s]} (`mood: '#{mood}'`)."
         end
         if c['music']
             missing = music.find { |m| m.include?('(diese Datei gibt es im Ordner des Spiels nicht)') }

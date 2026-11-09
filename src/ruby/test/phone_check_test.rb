@@ -101,6 +101,15 @@ class PhoneCheckTest < Minitest::Test
         assert_match(/\AOhne eine Taste bricht das Spiel in Zeile 2 mit einem Fehler ab: `music: start »1:75« ist keine Zeit/, result.message)
     end
 
+    def test_a_sentence_in_the_wrong_mood_is_named
+        whisper = RUBY_GAME.sub("when '1' then say 'Links brennt eine Fackel.'", "when '1' then say 'Links brennt eine Fackel.', mood: 'whisper'")
+        cases = [{ 'keys' => '1', 'says' => ['Fackel'], 'moods' => { 'Fackel' => 'whisper' }, 'ends' => true }]
+        assert_equal :correct, play({ 'telefon/spiel.rb' => whisper, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb', cases).status
+        result = play({ 'telefon/spiel.rb' => RUBY_GAME, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb', cases)
+        assert_equal "Nach der Taste 1 sagt das Spiel »Links brennt eine Fackel.« noch nicht flüsternd (`mood: 'whisper'`).", result.message
+        assert_includes PhoneCheck.spec_errors('cases' => [{ 'moods' => { 'x' => 'happy' } }]).join, 'is none of'
+    end
+
     def test_a_game_that_goes_on_is_not_over
         game = RUBY_GAME.sub('hangup', "keys(1)\nhangup")
         result = play({ 'telefon/spiel.rb' => game, 'telefon/musik.mp3' => 'x' }, 'telefon/spiel.rb')
@@ -124,7 +133,7 @@ class PhoneCheckTest < Minitest::Test
     def test_spec_errors
         assert_empty PhoneCheck.spec_errors('cases' => CASES)
         assert_includes PhoneCheck.spec_errors('cases' => []), 'phone needs cases'
-        assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => '1' }]), 'phone case 1 expects nothing (says, not_says, music or ends)'
+        assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => '1' }]), 'phone case 1 expects nothing (says, not_says, moods, music or ends)'
         assert_includes PhoneCheck.spec_errors('cases' => [{ 'keys' => 'a', 'ends' => true }]), 'phone case 1: keys may hold 0-9, *, #, - and commas'
         assert(PhoneCheck.spec_errors('cases' => [{ 'says' => ['('] }]).any? { |e| e.include?('no regular expression') })
     end
