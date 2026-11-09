@@ -2,8 +2,9 @@
 
 Students program a game that answers the phone: someone dials a Berlin
 number, a menu offers the published games, and the game talks, plays music
-and reacts to the keys of the phone. As of 9 November 2026 this is a plan;
-nothing is built yet.
+and reacts to the keys of the phone. As of 9 November 2026: the call path
+runs end to end in a test network (Asterisk, the runner, a test telephone);
+the trunk, publishing and the Workspace side are open (»Steps«).
 
 ## What the old Hackschule had
 
@@ -58,6 +59,14 @@ Why it was flaky:
   an old-fashioned nice thing), but it is fetched and mixed when a game is
   published, never during a call.
 - **Develop and test in the Workspace** in VS Code, then publish.
+- **Mixed live** (the maintainer): music keeps playing while the game waits
+  for keys, a key changes what happens without a gap in the music, and the
+  music ducks by itself under speech. So the runner makes each call's
+  audio itself, 50 frames a second, instead of asking Asterisk to play
+  files one after the other.
+- **A good German voice:** Piper with Thorsten to start (the old
+  Hackschule's voice, now fast enough to speak during a call); other voices
+  to compare later.
 
 ## Architecture
 
@@ -73,10 +82,23 @@ caller ── easybell (SIP trunk) ── Asterisk (service "phone")
                      speech (Piper) and music, cached as files
 ```
 
-- **Asterisk** registers at the trunk named in `credentials.rb`, answers, and hands every call to
-  the runner through ARI (the Asterisk REST Interface: a WebSocket for
-  events such as keys and hang-ups, HTTP for commands such as playing a
-  file). Only the trunk and the runner talk to it.
+- **Asterisk** registers at the trunk named in `credentials.rb`, answers,
+  and hands every call to the runner through ARI (the Asterisk REST
+  Interface: a WebSocket for events such as keys and hang-ups, HTTP for
+  commands). Only the trunk and the runner talk to it.
+- **The audio of a call** comes from the runner as a stream: an External
+  Media channel (RTP to and from the runner) in a bridge with the caller.
+  The runner sends G.722 (payload type 9), encoded itself: Asterisk 20
+  (20.9 and 20.11 tried) does not take 16 kHz linear audio back from
+  External Media, neither over RTP with a dynamic payload type (it drops
+  the packets without a word) nor over AudioSocket (it reads them as
+  8 kHz). G.722 keeps the 16 kHz; a trunk that offers only G.711 gets it
+  translated by Asterisk. G.722's RTP clock runs at 8000 per second, so
+  the timestamp grows by 160 per 20 ms frame.
+- **The mixer** (`src/phone/runner/mixer.py`): looping music, speech on
+  top, the music at a quarter of its volume under speech (down in 80 ms,
+  back in 400 ms); keys pressed during a sentence wait for the game's next
+  question.
 - **The runner** plays the menu, starts the chosen game as a process of
   its own (as an unprivileged user, with limits on time, memory and
   processor, without network), translates the game's lines into ARI
@@ -121,15 +143,33 @@ loop.
 - Publishing from the activity page: the game gets a code, a teacher sees
   it on a page and can take it offline.
 
+## Where it is
+
+- `docker/phone-asterisk`, `docker/phone-runner` (Piper and the Thorsten
+  voice inside), `docker/phone-testclient` (baresip as a test telephone);
+- `src/phone/asterisk/` (configuration: a test endpoint, the echo
+  extension 600, 100 into the runner), `src/phone/runner/` (runner, mixer,
+  speech and music cache, the Python library in `lib/python/telefon.py`),
+  `src/phone/games/1/` (Zahlenraten, a demo game);
+- tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
+  and `src/phone/test/e2e.sh` (a whole call: menu, key 1, three guesses,
+  the runner's log checked, the recording kept). The test telephone sends
+  keys as RFC 4733 events and needs a key release after each key (0x04 on
+  baresip's UDP console), or each key arrives only with the next one.
+
 ## Steps
 
 1. The maintainer books a trunk (easybell Business 2 to start) and puts the
    SIP credentials and the number into `credentials.rb`. Check when ordering that a Berlin number is
    included or what it costs.
-2. Asterisk as a service in `config.rb`, reachable in development only
-   from the local network; a softphone dials an echo extension.
-3. The runner with the protocol, the menu and one built-in game; Piper for
-   speech.
+2. Done in the test network: Asterisk with a test endpoint and an echo
+   extension. Open: Asterisk as a service in `config.rb`, reachable in
+   development only from the local network, the trunk from
+   `credentials.rb`.
+3. Done in the test network: the runner with live mixing, the protocol,
+   the menu, a demo game; Piper for speech. Open: a fixed number of speech
+   workers (ten calls at once), rendering a game's fixed sentences when it
+   is published.
 4. The Python library and the simulator in the Workspace; an activity page
    »Telefonspiel« (Ruby as the default language of new activities, Python
    and the others through the library).

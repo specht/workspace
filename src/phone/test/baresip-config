@@ -1,0 +1,16 @@
+poll_method		epoll
+sip_listen		0.0.0.0:5070
+audio_player		aufile,/out/heard-player.wav
+audio_source		aufile,/in/source.wav
+audio_alert		aufile,/dev/null
+module_path		/usr/lib/baresip/modules
+module			g711.so
+module			g722.so
+module			aufile.so
+module			sndfile.so
+module			account.so
+module			menu.so
+module			cons.so
+module			stdio.so
+snd_path		/out
+cons_listen		0.0.0.0:5555
