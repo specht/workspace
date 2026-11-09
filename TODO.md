@@ -170,3 +170,4 @@ with the before filter. New routes go into `include/` by topic.
 * **PixelRAM projects** – plasma, Game of Life, Mandelbrot, raycaster, raytracer, a software rasterizer; do not turn PixelRAM into a second raylib
 * **PostgreSQL** – next to MySQL, with the exercises of [practical-sql](https://github.com/anthonydb/practical-sql)
 * **LDAP for schools** – a simple directory for logins, for example [glauth](https://github.com/glauth/glauth) with a config file
+* **Telefonspiel** – students program a game that answers a real phone: dial a number, and a game is waiting (speech, keypad tones). The old Hackschule had one ([video](https://www.youtube.com/watch?v=pOFEFaOmCDA)) and classes loved it. Needs a free (or very cheap) Berlin landline number and a SIP/telephony setup that works reliably: the old one was very flaky. Check providers and an open-source PBX (e.g. Asterisk) before writing the page.
