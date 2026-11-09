@@ -299,7 +299,7 @@ class Main < Sinatra::Base
                 <head>
                     <meta charset="utf-8">
                     <title>#{CGI.escapeHTML(document_title)}</title>
-                    <link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}">
+                    <link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}">
                     <style>
                         @page {
                             margin: 12mm;

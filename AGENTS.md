@@ -126,6 +126,12 @@ often:
   outside it, only those without nokogiri, redcarpet or rouge run, and only
   with `LANG=C.UTF-8` (docs/entwicklung.md, »Tests«). For the generator,
   `node --test src/tutorial-screenshots/test/*.test.js`.
+- Every `/include` file a page loads gets the cache buster in both parts,
+  `x.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}`: fixed in
+  production (a new address with each start of the server), fresh with each
+  request in development, because nginx lets browsers keep `/include/*`
+  forever. Scripts in an activity's Markdown get it by themselves
+  (`content_pipeline.rb`); `cache_buster_test.rb` checks the rest.
 - After a change to `src/tutorial-screenshots/server.js`, rebuild the service:
   `./config.rb build tutorial_screenshots && ./config.rb up -d tutorial_screenshots`.
 - CHANGELOG: a short German line under »Unreleased« only for what an

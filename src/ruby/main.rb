@@ -1814,7 +1814,7 @@ class Main < Sinatra::Base
         "<style>.tasks-off-only { display: none; }" \
             "#{waits ? ' .after-task:not(.after-task-shown) > .after-task-body { display: none; } .after-task:not(.after-task-shown) > .after-task-wait { display: block; }' : ''}</style>" \
             "<script>window.TASK_PAGE = #{config.to_json.gsub('</', '<\/')};</script>" \
-            "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
+            "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{code_input}" \
             "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{pip ? "<script src='/include/pip_journey.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
@@ -1873,7 +1873,7 @@ class Main < Sinatra::Base
         return '' if seen.empty?
 
         "<script>window.SEEN_PARTS = #{seen.to_json.gsub('</', '<\/')};</script>" \
-            "<script src='/include/include_fold.js?#{CACHE_BUSTER}'></script>"
+            "<script src='/include/include_fold.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # The picture in the front page's header (index.html): a tidy Workspace
@@ -1907,7 +1907,7 @@ class Main < Sinatra::Base
         return '' if template.nil? || !user_logged_in? || !tasks_visible?
 
         "<script>window.TEMPLATE_PAGE = #{{ :slug => slug }.to_json};</script>" \
-            "<script src='/include/template_notice.js?#{CACHE_BUSTER}'></script>"
+            "<script src='/include/template_notice.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # :outdated, :current, :absent, :other or :unavailable for one person's
@@ -2122,7 +2122,7 @@ class Main < Sinatra::Base
         end
         html = StudentHome.html(:progress => my_progress, :pinned => pinned, :listed => allowed,
                                 :guide => student_home_visible?)
-        html += "<script src='/include/home_templates.js?#{CACHE_BUSTER}'></script>" if pinned.any? { |p| p[:template_folder] }
+        html += "<script src='/include/home_templates.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" if pinned.any? { |p| p[:template_folder] }
         html
     end
 

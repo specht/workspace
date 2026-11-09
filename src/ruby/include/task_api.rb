@@ -541,7 +541,7 @@ class Main < Sinatra::Base
             end
             io << "</div>"
         end
-        io << "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" unless io.empty?
+        io << "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" unless io.empty?
         io
     end
     def submission_path(task_key, email = @session_user[:email])
