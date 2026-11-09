@@ -98,6 +98,13 @@ Why it was flaky:
   card; the card shows the same. Every submission is listed under
   Administration → Telefonspiele (`/telefon-freigabe`, waiting ones
   first).
+- **Vanity numbers** (the maintainer): a number may be three or four
+  letters or digits, like DINO; it is dialled with the keys the letters
+  stand on (ITU E.161), DINO as 3466, and taken numbers are compared as
+  digits. The game stores the digits as its number and the word beside it;
+  the Telefonbuch shows the word with its digits small after it, since a
+  real phone often has no letters on its keys. The phone in the browser
+  takes letters typed on the keyboard as their keys.
 - **Trying a game before publishing it** (the maintainer: in a sandbox,
   never in the maintainer's own Workspace): »Ausprobieren« on a game's page
   loads the Telefonbuch's phone, and its call plays exactly the submitted

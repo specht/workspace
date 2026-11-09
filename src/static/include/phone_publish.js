@@ -18,6 +18,11 @@
 
     const ownNumbers = () => state.games.filter((g) => g.state !== 'rejected').map((g) => g.number);
 
+    // the letters on the keys of a phone (ITU E.161): DINO is dialled as 3466
+    const KEYPAD = { ABC: '2', DEF: '3', GHI: '4', JKL: '5', MNO: '6', PQRS: '7', TUV: '8', WXYZ: '9' };
+    const digitsOf = (text) => [...text].map((c) => /\d/.test(c) ? c : (Object.entries(KEYPAD).find(([l]) => l.includes(c)) || [])[1] || '').join('');
+    const label = (g) => g.word ? `${g.word} (${g.number})` : g.number;
+
     function freeNumber() {
         const taken = new Set([...state.taken, ...ownNumbers()]);
         const free = [];
@@ -28,15 +33,17 @@
         return free.length ? free[Math.floor(Math.random() * free.length)] : '';
     }
 
-    // { ok, text, kind } for the number typed
-    function numberStatus(n) {
-        if (!n) return { ok: false, text: 'Drei oder vier Ziffern, oder würfle eine freie.', kind: 'muted' };
-        if (!/^\d{3,4}$/.test(n)) return { ok: false, text: 'Eine Nummer hat drei oder vier Ziffern.', kind: 'muted' };
-        if (state.taken.includes(n)) return { ok: false, text: 'Diese Nummer hat schon ein anderes Spiel.', kind: 'danger' };
+    // { ok, text, kind } for the number typed: digits, or letters as on the keys
+    function numberStatus(typed) {
+        if (!typed) return { ok: false, text: 'Drei oder vier Ziffern oder Buchstaben, oder würfle eine freie.', kind: 'muted' };
+        if (!/^[0-9A-Z]{3,4}$/.test(typed)) return { ok: false, text: 'Eine Nummer hat drei oder vier Ziffern oder Buchstaben.', kind: 'muted' };
+        const n = digitsOf(typed);
+        const dialled = /[A-Z]/.test(typed) ? ` ${typed} wählt man als ${n}.` : '';
+        if (state.taken.includes(n)) return { ok: false, text: `Diese Nummer hat schon ein anderes Spiel.${dialled}`, kind: 'danger' };
         // one's own number: the new version replaces the old one once it is approved
         const own = state.games.find((g) => g.state !== 'rejected' && g.number === n);
-        if (own) return { ok: true, text: `Ersetzt »${own.title}« unter dieser Nummer, sobald es freigegeben ist.`, kind: 'info' };
-        return { ok: true, text: 'Die Nummer ist frei.', kind: 'success' };
+        if (own) return { ok: true, text: `Ersetzt »${own.title}« unter dieser Nummer, sobald es freigegeben ist.${dialled}`, kind: 'info' };
+        return { ok: true, text: `Die Nummer ist frei.${dialled}`, kind: 'success' };
     }
 
     const game = () => state.files.find((f) => f.name === chosen);
@@ -56,10 +63,11 @@
                 `<pre class='mt-2 mb-2'><code>${missing.map((m) => esc(line(m))).join('\n')}</code></pre>` +
                 `Speichern, dann <b>Neu laden</b>.</div>`;
         }
-        const n = /^\d{3,4}$/.test(number) ? number : '···';
+        const valid = /^[0-9A-Z]{3,4}$/.test(number);
+        const shown = !valid ? '···' : /[A-Z]/.test(number) ? `${esc(number)} <small>${esc(digitsOf(number))}</small>` : esc(number);
         return `<figure class='pp-preview mb-0'>` +
             `<div class='pp-entry'><div class='pp-line'><span class='pp-title'>${esc(g.title)}</span><span class='pp-dots'></span>` +
-            `<span class='pp-entry-number'>${esc(n)}</span></div><div class='pp-sub'>${esc(g.subtitle)}</div></div>` +
+            `<span class='pp-entry-number'>${shown}</span></div><div class='pp-sub'>${esc(g.subtitle)}</div></div>` +
             `<figcaption>So steht dein Spiel im Telefonbuch.</figcaption></figure>`;
     }
 
@@ -69,7 +77,7 @@
         const renumber = g.state !== 'rejected'
             ? `<button class='btn btn-sm btn-outline-secondary pp-renumber' data-id='${esc(g.id)}'><i class='bi bi-123'></i> Nummer ändern</button>` : '';
         return `<li class='list-group-item'>` +
-            `<div class='d-flex flex-wrap gap-2 align-items-baseline'><span class='pp-own-number'>${esc(g.number)}</span>` +
+            `<div class='d-flex flex-wrap gap-2 align-items-baseline'><span class='pp-own-number'>${esc(label(g))}</span>` +
             `<b>${esc(g.title)}</b><span class='badge ${badge}'>${esc(g.stateText)}</span>` +
             `<span class='text-muted small'>${esc(g.file)}</span></div>` +
             (g.description ? `<div class='text-muted small'>${esc(g.description)}</div>` : '') + reason +
@@ -100,7 +108,7 @@
         return `<div class='pp-fields'>` +
             `<div><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${options}</select></div>` +
             `<div><label class='form-label' for='pp-number'>Nummer</label><div class='input-group pp-number-group'>` +
-            `<input class='form-control pp-number-input' id='pp-number' maxlength='4' inputmode='numeric' autocomplete='off' placeholder='123' value='${esc(number)}' aria-describedby='pp-number-status'>` +
+            `<input class='form-control pp-number-input' id='pp-number' maxlength='4' autocomplete='off' autocapitalize='characters' spellcheck='false' placeholder='123 oder DINO' value='${esc(number)}' aria-describedby='pp-number-status'>` +
             `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer würfeln' aria-label='Eine freie Nummer würfeln'><i class='bi bi-dice-5'></i></button></div>` +
             `<div class='form-text pp-number-status' id='pp-number-status' aria-live='polite'></div></div></div>` +
             `<div class='pp-preview-box'></div>` +
@@ -171,7 +179,7 @@
         const texts = {
             title: 'In deinem Spiel fehlt die Zeile title.',
             subtitle: 'In deinem Spiel fehlt die Zeile subtitle.',
-            number: 'Die Nummer hat drei oder vier Ziffern.',
+            number: 'Die Nummer hat drei oder vier Ziffern oder Buchstaben.',
             taken: 'Diese Nummer hat schon ein anderes Spiel. Nimm eine andere.',
         };
         message(texts[data.error] || data.message || fallback);
@@ -216,7 +224,7 @@
         } else if (button.classList.contains('pp-renumber')) {
             const edit = root.querySelector(`.pp-edit[data-id='${button.dataset.id}']`);
             edit.innerHTML = `<div class='input-group input-group-sm mt-2' style='max-width: 18rem'>` +
-                `<input class='form-control pp-number-input' maxlength='4' inputmode='numeric' aria-label='Neue Nummer' value='${freeNumber()}'>` +
+                `<input class='form-control pp-number-input' maxlength='4' autocapitalize='characters' spellcheck='false' aria-label='Neue Nummer' value='${freeNumber()}'>` +
                 `<button class='btn btn-outline-success pp-renumber-save' data-id='${esc(button.dataset.id)}'>Übernehmen</button></div>`;
         } else if (button.classList.contains('pp-renumber-save')) {
             const n = button.parentElement.querySelector('input').value.trim();
@@ -234,7 +242,7 @@
 
     root.addEventListener('input', (e) => {
         if (!e.target.classList.contains('pp-number-input')) return;
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+        e.target.value = e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 4);
         if (e.target.id === 'pp-number') { number = e.target.value; update(); }
     });
 

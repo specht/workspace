@@ -14960,6 +14960,7 @@ html[data-bs-theme="dark"] .splat-viewer {
 .phone-publish .pp-line { display: flex; align-items: baseline; gap: .4rem; }
 .phone-publish .pp-title, .phone-publish .pp-entry-number { font-weight: 700; font-size: 1.05rem; }
 .phone-publish .pp-entry-number { font-variant-numeric: tabular-nums lining-nums; letter-spacing: .04em; }
+.phone-publish .pp-entry-number small { font-weight: 400; font-size: .8em; color: var(--pp-quiet); margin-left: .2rem; }
 .phone-publish .pp-dots { flex: 1; align-self: baseline; height: 0; border-bottom: 2px dotted var(--pp-quiet); opacity: .6; }
 .phone-publish .pp-sub { color: var(--pp-quiet); font-style: italic; font-size: .92rem; }
 .phone-publish .pp-preview figcaption { margin-top: .35rem; font-size: .85rem; color: var(--bs-secondary-color); }

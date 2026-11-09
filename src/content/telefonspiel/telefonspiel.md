@@ -1281,7 +1281,9 @@ _task(spieltest)
 
 Ist dein Spiel fertig, kommt es ins [Telefonbuch](/telefonbuch): Dort steht
 es mit seinem Titel und einer Nummer, unter der man es anruft. Such dir die
-Nummer aus, mit drei oder vier Ziffern. Bevor es im Telefonbuch steht,
+Nummer aus, mit drei oder vier Ziffern, oder ein Wort aus drei oder vier
+Buchstaben wie DINO: Man wählt es mit den Tasten, auf denen die Buchstaben
+stehen, hier 3466. Bevor es im Telefonbuch steht,
 sieht es sich jemand an, und du bekommst eine E-Mail, ob es veröffentlicht
 ist. Im Telefonbuch steht nicht, wer es geschrieben hat, nur der Titel, der
 Satz dazu und die Nummer.

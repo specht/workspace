@@ -83,6 +83,26 @@ module PhoneGames
         number.to_s.match?(/\A\d{3,4}\z/)
     end
 
+    # The letters on the keys of a phone (ITU E.161), as under the digits of
+    # the Telefonbuch's phone
+    KEYPAD = { 'ABC' => '2', 'DEF' => '3', 'GHI' => '4', 'JKL' => '5', 'MNO' => '6', 'PQRS' => '7', 'TUV' => '8', 'WXYZ' => '9' }.freeze
+
+    # A number as a student may type it: three or four digits or letters
+    # (a vanity number like DINO). [digits, word], the word nil without
+    # letters; nil when it is no number.
+    def self.parse_number(text)
+        text = text.to_s.strip.upcase
+        return nil unless text.match?(/\A[0-9A-Z]{3,4}\z/)
+
+        digits = text.chars.map { |c| c.match?(/\d/) ? c : KEYPAD.find { |letters, _| letters.include?(c) }.last }.join
+        [digits, text.match?(/[A-Z]/) ? text : nil]
+    end
+
+    # How a game's number is written: DINO (3466), or the digits alone
+    def self.label(game)
+        game[:word] ? "#{game[:word]} (#{game[:number]})" : game[:number].to_s
+    end
+
     def self.clean_text(text, max)
         text.to_s.gsub(/[[:cntrl:]]/, ' ').gsub(/\s+/, ' ').strip[0, max]
     end
@@ -264,16 +284,16 @@ module PhoneGames
     # --- the mails ------------------------------------------------------
 
     def self.mail_to_maintainer(game, student, link)
-        subject = "Telefonspiel zur Freigabe: #{game[:number]} #{game[:title]}"
+        subject = "Telefonspiel zur Freigabe: #{label(game)} #{game[:title]}"
         html = "<p>#{h(student)} hat ein Telefonspiel eingereicht:</p>" \
-            "<p><b>#{h(game[:number])} #{h(game[:title])}</b><br>#{h(game[:description])}</p>" \
+            "<p><b>#{h(label(game))} #{h(game[:title])}</b><br>#{h(game[:description])}</p>" \
             "<p><a href='#{h(link)}'>Ansehen, veröffentlichen oder ablehnen</a></p>"
         [subject, html]
     end
 
     def self.mail_published(game, link)
-        subject = "Dein Telefonspiel ist im Telefonbuch: #{game[:number]} #{game[:title]}"
-        html = "<p>Dein Telefonspiel <b>#{h(game[:title])}</b> ist veröffentlicht. Im Telefonbuch hat es die Nummer <b>#{h(game[:number])}</b>.</p>" \
+        subject = "Dein Telefonspiel ist im Telefonbuch: #{label(game)} #{game[:title]}"
+        html = "<p>Dein Telefonspiel <b>#{h(game[:title])}</b> ist veröffentlicht. Im Telefonbuch hat es die Nummer <b>#{h(label(game))}</b>.</p>" \
             "<p><a href='#{h(link)}'>Zu deinem Spiel</a></p>"
         [subject, html]
     end
@@ -297,7 +317,7 @@ module PhoneGames
     # A game as the student's card shows it (no files, no email)
     def self.public_view(game)
         {
-            :id => game[:id], :number => game[:number], :title => game[:title],
+            :id => game[:id], :number => game[:number], :word => game[:word], :title => game[:title],
             :description => game[:description], :file => game[:file], :state => game[:state],
             :stateText => STATE_TEXT[game[:state]], :reason => game[:state] == 'rejected' ? game[:reason] : nil,
             :submitted => game[:submitted], :decided => game[:decided],
@@ -327,7 +347,9 @@ module PhoneGames
 
     def self.sample_entries
         SAMPLE_TITLES.each_with_index.map do |title, i|
-            { :number => format('%03d', 101 + i * 29 % 880), :title => title, :description => SAMPLE_DESCRIPTIONS[i * 5 % SAMPLE_DESCRIPTIONS.size] }
+            entry = { :number => format('%03d', 101 + i * 29 % 880), :title => title, :description => SAMPLE_DESCRIPTIONS[i * 5 % SAMPLE_DESCRIPTIONS.size] }
+            # one with a vanity number, to see how the book shows it
+            title == 'Amt für Wartezeiten' ? entry.merge(:number => parse_number('WART')[0], :word => 'WART') : entry
         end
     end
 

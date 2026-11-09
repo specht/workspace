@@ -681,6 +681,9 @@ function toggleCall() {
 
 // the letters of a telephone keypad (ITU E.161) under the digits
 const LETTERS = { '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL', '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ', '0': '+' };
+// a letter typed on the keyboard is the key it stands on: DINO is 3466
+const LETTERS_KEY = {};
+for (const [key, letters] of Object.entries(LETTERS)) for (const c of letters) if (/[A-Z]/.test(c)) LETTERS_KEY[c] = key;
 empty();
 for (const key of KEYS) {
     const b = document.createElement('button');
@@ -700,6 +703,7 @@ $('erase').addEventListener('click', erase);
 document.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (KEYS.includes(e.key)) { press(e.key); e.preventDefault(); }
+    else if (/^[a-z]$/i.test(e.key) && LETTERS_KEY[e.key.toUpperCase()]) { press(LETTERS_KEY[e.key.toUpperCase()]); e.preventDefault(); }
     else if (e.key === 'Backspace' && !inCall && dialed) { erase(); e.preventDefault(); }
     else if (e.key === 'Enter' && !inCall) { toggleCall(); e.preventDefault(); }
     else if (e.key === 'Escape' && inCall) { toggleCall(); e.preventDefault(); }

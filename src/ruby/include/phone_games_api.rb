@@ -20,7 +20,7 @@ class Main < Sinatra::Base
 
     def phone_game_from(node, email)
         {
-            :id => node[:id], :number => node[:number], :title => node[:title], :description => node[:description],
+            :id => node[:id], :number => node[:number], :word => node[:word], :title => node[:title], :description => node[:description],
             :file => node[:file], :state => node[:state], :reason => node[:reason], :transcript => node[:transcript],
             :submitted => node[:submitted], :decided => node[:decided], :email => email,
         }
@@ -78,8 +78,8 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:file, :number], :max_value_lengths => { :file => 200, :number => 4 })
         email = @session_user[:email]
-        number = data[:number].to_s
-        halt 400, { :error => 'number' }.to_json unless PhoneGames.valid_number?(number)
+        number, word = PhoneGames.parse_number(data[:number])
+        halt 400, { :error => 'number' }.to_json unless number
         ws = task_workspace_files
         begin
             files = PhoneGames.plan(ws, data[:file])
@@ -99,7 +99,7 @@ class Main < Sinatra::Base
         @@phone_games_mutex.synchronize do
             all = phone_games_all
             if PhoneGames.taken_numbers(all, email).include?(number)
-                halt 409, { :error => 'taken', :message => "Die Nummer #{number} hat schon ein anderes Spiel." }.to_json
+                halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} hat schon ein anderes Spiel." }.to_json
             end
             PhoneGames.copy(ws, files, id)
             # a pending version of the same number is replaced by this one; a
@@ -108,9 +108,9 @@ class Main < Sinatra::Base
                 neo4j_query('MATCH (g:PhoneGame {id: $id}) DETACH DELETE g;', :id => old[:id])
                 PhoneGames.remove(old[:id])
             end
-            neo4j_query(<<~END_OF_QUERY, :email => email, :id => id, :number => number, :title => title, :description => description, :file => file, :transcript => transcript, :now => Time.now.to_i)
+            neo4j_query(<<~END_OF_QUERY, :email => email, :id => id, :number => number, :word => word, :title => title, :description => description, :file => file, :transcript => transcript, :now => Time.now.to_i)
                 MATCH (u:User {email: $email})
-                CREATE (g:PhoneGame {id: $id, number: $number, title: $title, description: $description, file: $file,
+                CREATE (g:PhoneGame {id: $id, number: $number, word: $word, title: $title, description: $description, file: $file,
                     state: 'pending', transcript: $transcript, submitted: $now})-[:BY]->(u);
             END_OF_QUERY
         end
@@ -126,7 +126,7 @@ class Main < Sinatra::Base
         rescue StandardError => e
             STDERR.puts "Telefonspiel #{id}: mail to #{admin} failed: #{e.message}"
         end
-        log_event "Telefonspiel eingereicht von #{email}: #{number} #{title}"
+        log_event "Telefonspiel eingereicht von #{email}: #{word || number} #{title}"
         respond(phone_games_state)
     end
 
@@ -139,7 +139,7 @@ class Main < Sinatra::Base
         neo4j_query('MATCH (g:PhoneGame {id: $id}) DETACH DELETE g;', :id => game[:id])
         PhoneGames.remove(game[:id])
         phone_games_publish_list
-        log_event "Telefonspiel zurückgezogen von #{game[:email]}: #{game[:number]} #{game[:title]}"
+        log_event "Telefonspiel zurückgezogen von #{game[:email]}: #{PhoneGames.label(game)} #{game[:title]}"
         respond(phone_games_state)
     end
 
@@ -147,17 +147,17 @@ class Main < Sinatra::Base
     post '/api/phone/renumber' do
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:id, :number], :max_value_lengths => { :number => 4 })
-        number = data[:number].to_s
-        halt 400, { :error => 'number' }.to_json unless PhoneGames.valid_number?(number)
+        number, word = PhoneGames.parse_number(data[:number])
+        halt 400, { :error => 'number' }.to_json unless number
         @@phone_games_mutex.synchronize do
             all = phone_games_all
             game = all.find { |g| g[:id] == data[:id] }
             halt 404 unless game && game[:email] == @session_user[:email] && game[:state] != 'rejected'
             if PhoneGames.taken_numbers(all, game[:email]).include?(number) ||
                     all.any? { |g| g[:email] == game[:email] && g[:id] != game[:id] && g[:number] == number && g[:state] != 'rejected' }
-                halt 409, { :error => 'taken', :message => "Die Nummer #{number} ist schon vergeben." }.to_json
+                halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} ist schon vergeben." }.to_json
             end
-            neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.number = $number;', :id => game[:id], :number => number)
+            neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.number = $number, g.word = $word;', :id => game[:id], :number => number, :word => word)
         end
         phone_games_publish_list
         respond(phone_games_state)
@@ -233,7 +233,7 @@ class Main < Sinatra::Base
             STDERR.puts "Telefonspiel #{game[:id]}: mail to the student failed: #{e.message}"
         end
         phone_games_publish_list
-        log_event "Telefonspiel #{data[:decision] == 'publish' ? 'veröffentlicht' : 'abgelehnt'} von #{@session_user[:email]}: #{game[:number]} #{game[:title]}"
+        log_event "Telefonspiel #{data[:decision] == 'publish' ? 'veröffentlicht' : 'abgelehnt'} von #{@session_user[:email]}: #{PhoneGames.label(game)} #{game[:title]}"
         respond(:state => data[:decision] == 'publish' ? 'published' : 'rejected')
     end
 
@@ -250,7 +250,7 @@ class Main < Sinatra::Base
         badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
         items = games.map do |g|
             "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' href='/telefonspiel#veroeffentlichen'>" \
-                "<span><span class='font-monospace me-2'>#{PhoneGames.h(g[:number])}</span><strong>#{PhoneGames.h(g[:title])}</strong></span>" \
+                "<span><span class='font-monospace me-2'>#{PhoneGames.h(PhoneGames.label(g))}</span><strong>#{PhoneGames.h(g[:title])}</strong></span>" \
                 "<span class='badge #{badge[g[:state]]}'>#{PhoneGames::STATE_TEXT[g[:state]]}</span></a>"
         end.join
         "<section id='telefonspiele' class='my-4'><h3>Deine Telefonspiele</h3>" \
@@ -272,7 +272,7 @@ class Main < Sinatra::Base
         badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
         rows = games.map do |g|
             "<a class='list-group-item list-group-item-action' href='/telefon-freigabe?id=#{h.(g[:id])}'>" \
-                "<div class='d-flex flex-wrap gap-2 align-items-baseline'><b>#{h.(g[:number])}</b> <b>#{h.(g[:title])}</b>" \
+                "<div class='d-flex flex-wrap gap-2 align-items-baseline'><b>#{h.(PhoneGames.label(g))}</b> <b>#{h.(g[:title])}</b>" \
                 "<span class='badge #{badge[g[:state]]}'>#{h.(PhoneGames::STATE_TEXT[g[:state]])}</span>" \
                 "<span class='text-muted small'>#{h.(g[:email])}, #{h.(g[:file])}</span></div>" \
                 "<div class='text-muted small'>#{h.(g[:description])}</div></a>"
@@ -317,7 +317,7 @@ class Main < Sinatra::Base
             ''
         end
         "<p class='mt-4 mb-0'><a href='/telefon-freigabe'><i class='bi bi-arrow-left'></i> Alle Telefonspiele</a></p>" \
-            "<h1 class='mt-2'>#{h.(game[:number])} #{h.(game[:title])}</h1>" \
+            "<h1 class='mt-2'>#{h.(PhoneGames.label(game))} #{h.(game[:title])}</h1>" \
             "<p class='abstract'>#{h.(game[:description])}</p>" \
             "<table class='table'><tr><th>Von</th><td>#{h.(game[:email])}</td></tr>" \
             "<tr><th>Eingereicht</th><td>#{Time.at(game[:submitted].to_i).strftime('%d.%m.%Y %H:%M')}</td></tr>" \
@@ -339,7 +339,7 @@ class Main < Sinatra::Base
         games = PhoneGames.phone_book(games)
         number = Main.phone_number
         entries = games.map do |g|
-            { :number => g[:number], :title => g[:title], :description => g[:description] }
+            { :number => g[:number], :word => g[:word], :title => g[:title], :description => g[:description] }
         end
         line = if number
             direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
