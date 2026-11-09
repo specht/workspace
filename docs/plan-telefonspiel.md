@@ -100,6 +100,18 @@ Why it was flaky:
   the phone number (or that one is being worked on). No names of students.
   A button »Telefonbuch« on the public start page and on the activity page.
   The menu on the phone reads the same titles.
+- **Calling from the Telefonbuch** (the maintainer): every game has a
+  button »Anrufen« that opens the phone of `telefon` (the emulator's page)
+  in the visitor's browser, no login. The game runs on the server as a
+  call on the line does (the same runner, the same sandbox without
+  network, the same limit of calls at once, shared with the line); the
+  browser plays speech and music as in the emulator. One call at a time
+  per visitor, at most 15 minutes, »Alle Leitungen sind belegt« when the
+  limit is reached; nothing about the visitor is stored. With a number the
+  page also says how to call it (»Ruf 030 … an und gib 123 ein«, or
+  »… 123 an« with Durchwahl). Then the activity's note »Anrufen kann man
+  dein Spiel bisher nur hier im Workspace« changes: published games can
+  be called from the Telefonbuch.
 - **Durchwahl when the trunk allows it:** Asterisk gets the dialled number,
   and the runner starts the game of its last three digits without the
   menu (»Ruf 030 … 123 an«). This needs a single number with an appended
