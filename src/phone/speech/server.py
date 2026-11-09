@@ -105,6 +105,32 @@ def sounding(sentence):
     return _INTERJECTION.sub(sound, sentence)
 
 
+# transcripts of the students' recordings, for the review (Whisper) ----------
+
+WHISPER = os.environ.get('PHONE_WHISPER', '/voices/whisper')
+MAX_RECORDING = 20 * 1024 * 1024
+_whisper = None
+_whisper_lock = threading.Lock()
+
+
+def transcribe_file(path):
+    """what a recording says, in German, from Whisper on this server; in
+    its own thread, one at a time"""
+    global _whisper
+    from faster_whisper import WhisperModel
+    with _whisper_lock:
+        if _whisper is None:
+            # the model fetched when the image was built: no asking the internet
+            _whisper = WhisperModel('base', device='cpu', compute_type='int8', download_root=WHISPER, cpu_threads=THREADS,
+                                    local_files_only=True)
+        # decoded by ffmpeg, as the music is: 16 kHz mono, what Whisper hears
+        raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', path, '-f', 'f32le', '-ac', '1', '-ar', '16000', '-'],
+                             check=True, capture_output=True, timeout=300).stdout
+        samples = np.frombuffer(raw, dtype=np.float32)
+        segments, _ = _whisper.transcribe(samples, language='de', vad_filter=True)
+        return ' '.join(segment.text.strip() for segment in segments).strip()
+
+
 # speech, in the worker processes --------------------------------------------
 
 _voice = None
@@ -382,6 +408,7 @@ class Service:
     def __init__(self):
         self.speech_pool = ProcessPoolExecutor(max_workers=WORKERS, initializer=_load_voice)
         self.music_pool = ThreadPoolExecutor(max_workers=2)
+        self.transcribe_pool = ThreadPoolExecutor(max_workers=1)
         self.pending = {}            # cache path → future: the same work only once at a time
         self.waiting = 0
         # sentences made in advance (prepare=1) take at most all workers but
@@ -536,6 +563,31 @@ class Service:
         return web.json_response({'total': total, 'ready': ready, 'missing': missing,
                                   'music': len(music), 'music_ready': music_ready})
 
+    async def transcribe(self, request):
+        """POST a recording (MP3, Ogg, WAV, M4A): {text}, what it says.
+        Cached by its checksum, so a game submitted again is not written
+        out again."""
+        data = await request.content.read(MAX_RECORDING + 1)
+        if not data or len(data) > MAX_RECORDING:
+            raise web.HTTPBadRequest(text=f'a recording of at most {MAX_RECORDING // 1024 // 1024} MB')
+        path = cache_path('transcripts', hashlib.sha1(data).hexdigest(), '.txt')
+        if not os.path.exists(path):
+            tmp = f'/tmp/recording-{os.getpid()}-{threading.get_ident()}-{time.monotonic_ns()}'
+            try:
+                with open(tmp, 'wb') as f:
+                    f.write(data)
+                started = time.monotonic()
+                text = await asyncio.get_running_loop().run_in_executor(self.transcribe_pool, transcribe_file, tmp)
+                log(f'transcript {len(data) // 1024} kB in {time.monotonic() - started:.1f} s')
+            finally:
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
+            store(path, text.encode('utf-8'))
+        with open(path, encoding='utf-8') as f:
+            return web.json_response({'text': f.read()})
+
     async def health(self, request):
         return web.json_response({'ok': True, 'workers': WORKERS, 'waiting': self.waiting})
 
@@ -545,7 +597,8 @@ def main():
     app = web.Application()
     app.on_startup.append(service.warm_up)
     app.add_routes([web.get('/speech', service.speech), web.get('/music', service.music),
-                    web.get('/health', service.health), web.post('/prepared', service.prepared)])
+                    web.get('/health', service.health), web.post('/prepared', service.prepared),
+                    web.post('/transcribe', service.transcribe)])
     log(f'speech service: {WORKERS} workers, voice {os.path.basename(VOICE)}')
     web.run_app(app, port=8000, print=None, access_log=None)
 

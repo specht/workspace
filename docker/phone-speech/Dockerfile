@@ -16,6 +16,11 @@ RUN mkdir -p /voices && cd /voices \
     && curl -sSfL -o de_DE-thorsten-high.onnx.json https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten/high/de_DE-thorsten-high.onnx.json \
     && curl -sSfL -o de_DE-thorsten_emotional-medium.onnx https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx \
     && curl -sSfL -o de_DE-thorsten_emotional-medium.onnx.json https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten_emotional/medium/de_DE-thorsten_emotional-medium.onnx.json
+# Whisper for the review of submitted games: what the students' own
+# recordings (play '….mp3') say, written out on the server, never sent
+# elsewhere; the small multilingual model »base«, fetched here, not at run
+RUN pip install --no-cache-dir faster-whisper==1.1.1 \
+    && python3 -c "from faster_whisper import WhisperModel; WhisperModel('base', device='cpu', compute_type='int8', download_root='/voices/whisper')"
 RUN useradd -m -u 1500 speech && mkdir -p /cache
 # the cache folder (mounted from the host) to the user speech, then only as
 # speech; the YouTube cookies (PHONE_YOUTUBE_COOKIES, readable only by the
