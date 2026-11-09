@@ -15,13 +15,16 @@ runner read the game's own files themselves.
 
 import asyncio
 import hashlib
-import io
+import json
 import os
 import re
+import shutil
 import struct
 import subprocess
 import sys
+import threading
 import time
+import urllib.request
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import numpy as np
@@ -34,6 +37,7 @@ WORKERS = int(os.environ.get('PHONE_SPEECH_WORKERS', '2'))
 WAITING = int(os.environ.get('PHONE_SPEECH_WAITING', '100'))     # more requests waiting: 503
 MAX_TEXT = 500                                                   # characters per request
 MUSIC_SECONDS = 600                                              # the first ten minutes of a piece
+KEEP_DAYS = 90                      # speech and music not played for this long are deleted (privacy.rb)
 YOUTUBE = re.compile(r'^https://(www\.|m\.|music\.)?(youtube\.com/(watch\?v=|shorts/)|youtu\.be/)[\w-]{6,}([?&][\w=&%.-]*)?$')
 
 _start = time.monotonic()
@@ -91,14 +95,106 @@ def synthesize(sentence):
     return samples.tobytes()
 
 
+def prune():
+    """deletes speech and music not used for KEEP_DAYS"""
+    limit = time.time() - KEEP_DAYS * 86400
+    removed = 0
+    for kind in ('speech', 'music'):
+        for folder, _, files in os.walk(os.path.join(CACHE, kind)):
+            for name in files:
+                path = os.path.join(folder, name)
+                try:
+                    if os.path.getmtime(path) < limit:
+                        os.remove(path)
+                        removed += 1
+                except OSError:
+                    pass
+    if removed:
+        log(f'cache: {removed} files not played for {KEEP_DAYS} days deleted')
+
+
+# yt-dlp, kept up to date ----------------------------------------------------
+# YouTube changes often, and an old yt-dlp then gets 403. So the service
+# keeps its own yt-dlp (with Deno, which it needs for YouTube) in
+# CACHE/tools: at the start and once a day it asks PyPI for the newest
+# version and installs it there when it is newer; after a failed download
+# it does so at once (at most once an hour) and tries again. Until the first
+# update, and when PyPI is out of reach, the version of the image runs.
+
+TOOLS = os.path.join(CACHE, 'tools')
+UPDATE_EVERY = 24 * 3600
+_update_lock = threading.Lock()
+_last_update = 0.0
+
+
+def yt_dlp_env():
+    env = dict(os.environ)
+    if os.path.isdir(os.path.join(TOOLS, 'yt_dlp')):
+        env['PYTHONPATH'] = TOOLS
+        env['PATH'] = os.path.join(TOOLS, 'bin') + os.pathsep + env.get('PATH', '')
+    return env
+
+
+def yt_dlp_version():
+    try:
+        return subprocess.run([sys.executable, '-m', 'yt_dlp', '--version'], env=yt_dlp_env(), check=True,
+                              capture_output=True, text=True, timeout=60).stdout.strip()
+    except (subprocess.SubprocessError, OSError):
+        return None
+
+
+def update_yt_dlp(why):
+    """the newest yt-dlp into TOOLS, unless it is there or was tried within the hour"""
+    global _last_update
+    with _update_lock:
+        if time.time() - _last_update < 3600:
+            return False
+        _last_update = time.time()
+        try:
+            with urllib.request.urlopen('https://pypi.org/pypi/yt-dlp/json', timeout=30) as response:
+                newest = json.load(response)['info']['version']
+        except (OSError, ValueError, KeyError) as error:
+            log(f'yt-dlp: PyPI not reachable ({error}); staying with {yt_dlp_version()}')
+            return False
+        current = yt_dlp_version()
+        if current == newest:
+            return False
+        new, old = TOOLS + '.new', TOOLS + '.old'
+        shutil.rmtree(new, ignore_errors=True)
+        try:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', '--no-cache-dir', '--disable-pip-version-check',
+                            '--target', new, f'yt-dlp[default,deno]=={newest}'],
+                           check=True, capture_output=True, timeout=900, env={**os.environ, 'HOME': '/tmp'})
+        except (subprocess.SubprocessError, OSError) as error:
+            log(f'yt-dlp: installing {newest} failed: {error}')
+            shutil.rmtree(new, ignore_errors=True)
+            return False
+        shutil.rmtree(old, ignore_errors=True)
+        if os.path.exists(TOOLS):
+            os.rename(TOOLS, old)
+        os.rename(new, TOOLS)
+        shutil.rmtree(old, ignore_errors=True)
+        log(f'yt-dlp: {current} → {yt_dlp_version()} ({why})')
+        return True
+
+
 # music, in threads (they wait for yt-dlp and ffmpeg) -----------------------
+
+def download(source, raw):
+    subprocess.run([sys.executable, '-m', 'yt_dlp', '-q', '--no-playlist', '--no-warnings', '-f', 'bestaudio',
+                    '--max-filesize', '80M', '-o', raw, source],
+                   check=True, timeout=300, stdin=subprocess.DEVNULL, env=yt_dlp_env())
+
 
 def fetch_youtube(source, path):
     raw = path + '.download'
     try:
-        subprocess.run(['yt-dlp', '-q', '--no-playlist', '--no-warnings', '-f', 'bestaudio',
-                        '--max-filesize', '80M', '-o', raw, source],
-                       check=True, timeout=300, stdin=subprocess.DEVNULL)
+        try:
+            download(source, raw)
+        except subprocess.CalledProcessError:
+            if not update_yt_dlp(f'download of {source} failed'):
+                raise
+            download(source, raw)
         pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', raw, '-t', str(MUSIC_SECONDS),
                               '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
                              check=True, capture_output=True, timeout=300).stdout
@@ -137,8 +233,13 @@ class Service:
         self.waiting = 0
 
     async def once(self, path, pool, function, *args):
-        """the file at path, made by function(*args) unless it exists"""
+        """the file at path, made by function(*args) unless it exists; its
+        time is the last use (prune() deletes what is not used)"""
         if os.path.exists(path):
+            try:
+                os.utime(path)
+            except OSError:
+                pass
             return
         if path not in self.pending:
             if self.waiting >= WAITING:
@@ -200,6 +301,15 @@ class Service:
         loop = asyncio.get_running_loop()
         for _ in range(WORKERS):
             loop.run_in_executor(self.speech_pool, ready)
+        app['updates'] = asyncio.ensure_future(self.keep_updated())
+
+    async def keep_updated(self):
+        """once a day: a newer yt-dlp, and away with what was not played for KEEP_DAYS"""
+        loop = asyncio.get_running_loop()
+        while True:
+            await loop.run_in_executor(None, prune)
+            await loop.run_in_executor(None, update_yt_dlp, 'daily check')
+            await asyncio.sleep(UPDATE_EVERY)
 
     async def health(self, request):
         return web.json_response({'ok': True, 'workers': WORKERS, 'waiting': self.waiting})

@@ -56,18 +56,24 @@ class Emulator(game.Phone):
         parts = game.sentences(text)
         if not parts:
             return
+        await self.until_heard({'say': parts}, parts)
+
+    async def until_heard(self, event, parts=None):
+        """sends the event to the page and waits until the page has played it"""
         self.next_id += 1
+        id_ = self.next_id
         done = asyncio.get_running_loop().create_future()
-        self.heard[self.next_id] = done
-        self.parts[self.next_id] = parts
-        self.server.send({'say': parts, 'id': self.next_id})
+        self.heard[id_] = done
+        if parts:
+            self.parts[id_] = parts
+        self.server.send({**event, 'id': id_})
         ended = asyncio.ensure_future(self.ended.wait())
         try:
             await asyncio.wait({done, ended}, return_when=asyncio.FIRST_COMPLETED)
         finally:
             ended.cancel()
-            self.heard.pop(self.next_id, None)
-            self.parts.pop(self.next_id, None)
+            self.heard.pop(id_, None)
+            self.parts.pop(id_, None)
 
     def playing(self, id_, part):
         """the page starts a sentence: now it appears in the terminal, as a subtitle"""
@@ -75,11 +81,11 @@ class Emulator(game.Phone):
         if 0 <= part < len(parts):
             show(f'Telefon: {parts[part]}', '1;36')
 
-    async def music(self, source, volume=0.5):
+    async def music(self, source, volume=1.0):
         try:
             volume = max(0.0, min(1.0, float(volume)))
         except (TypeError, ValueError):
-            volume = 0.5
+            volume = 1.0
         if not source:
             show('Musik aus', '2')
             self.server.send({'music': None})
@@ -89,7 +95,8 @@ class Emulator(game.Phone):
             show(f'Musik: Die Datei {source} gibt es im Ordner des Spiels nicht.', '33')
             return
         show(f'Musik: {source} (Lautstärke {volume:g})', '2')
-        self.server.send({'music': '/music?' + urllib.parse.urlencode({'source': source}), 'volume': volume})
+        # as on the phone, the game goes on when the music plays (or failed)
+        await self.until_heard({'music': '/music?' + urllib.parse.urlencode({'source': source}), 'volume': volume})
 
     async def read_keys(self, count, timeout_ms):
         self.server.send({'keys': count, 'timeout': timeout_ms})

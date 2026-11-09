@@ -131,7 +131,7 @@ class Call(game.Phone):
         if heard:
             await heard
 
-    async def music(self, source, volume=0.5):
+    async def music(self, source, volume=1.0):
         self.log('music', source, volume)
         if not source:
             self.mixer.set_music(None)
@@ -144,7 +144,7 @@ class Call(game.Phone):
         try:
             volume = float(volume)
         except (TypeError, ValueError):
-            volume = 0.5
+            volume = 1.0
         self.mixer.set_music(samples, volume)
 
     # the menu and the games ---------------------------------------------

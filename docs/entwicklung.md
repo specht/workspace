@@ -23,7 +23,7 @@ Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
 `docker_guard`, `docker_guard_ro`, in der Entwicklung `tutorial_screenshots`, mit
 `CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«)
 mit `GIT_SERVER = true` `git_server` (siehe »Der Git-Server der Gruppen«)
-und mit `PHONE = true` `phone_speech` (siehe »Das Telefonspiel«).
+und `phone_speech` (siehe »Das Telefonspiel«).
 
 ### Der Docker-Wächter
 
@@ -624,8 +624,8 @@ Workspace«, dort auch, warum SSH).
 ## Das Telefonspiel
 
 Ein Spiel hinter einer Telefonnummer (Plan, Protokoll und Stand:
-docs/plan-telefonspiel.md). Mit `PHONE = true` in `credentials.rb` läuft der
-Sprachdienst, und der Emulator im Workspace spricht:
+docs/plan-telefonspiel.md). Der Sprachdienst läuft in jeder Installation; der
+Emulator im Workspace spricht mit ihm. Nach einer Änderung an seinem Image:
 
 ```bash
 ./config.rb build phone_speech peer_firewall && ./config.rb up -d
@@ -637,7 +637,11 @@ Sprachdienst, und der Emulator im Workspace spricht:
   Im Netz der Workspaces unter `phone-speech`, mit einem eigenen Label der
   Peer-Firewall: Workspaces erreichen ihn nur auf Port 8000, er erreicht
   keinen Workspace. Sätze und Musik liegen als Dateien in
-  `data/phone-cache`, benannt nach dem SHA-1 des Textes oder der Adresse.
+  `data/phone-cache`, benannt nach dem SHA-1 des Textes oder der Adresse;
+  was 90 Tage nicht abgespielt wurde, löscht er (Datenschutzerklärung).
+  yt-dlp hält er selbst aktuell: beim Start und täglich fragt er PyPI nach
+  einer neueren Version und installiert sie nach `data/phone-cache/tools`,
+  nach einem gescheiterten Download sofort (höchstens einmal je Stunde).
 - **Der Emulator** (`src/phone/emulator`, im Image unter `/opt/telefon`,
   Befehl `telefon`): `telefon spiel.rb` (oder `.py`, `.js`) startet das Spiel
   mit demselben Code wie der Runner (`src/phone/core/game.py`) und bietet

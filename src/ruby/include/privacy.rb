@@ -18,7 +18,7 @@ require_relative 'school_transition'
 # stored, who sees it or which outside service is used changes it here too.
 module Privacy
     # When the facts were last checked against the code; the page says so.
-    CHECKED = Date.new(2026, 11, 7)
+    CHECKED = Date.new(2026, 11, 9)
 
     LEGAL_BASES = [:school, :consent, :pending].freeze
 
@@ -338,6 +338,13 @@ module Privacy
                 :how_long => 'Link zum Workspace eine Woche (verlängerbar), sonst bis die Person den Link abschaltet',
             },
             {
+                :data => 'Telefonspiel: die Sätze, die ein Spiel im Telefon-Emulator spricht, als Tondatei, und die Musik der YouTube-Links, die ein Spiel abspielt; benannt nach einer Prüfsumme des Textes oder Links, ohne Namen und ohne Zuordnung zu einer Person',
+                :categories => [:content],
+                :purpose => 'denselben Satz und dieselbe Musik nicht jedes Mal neu erzeugen oder herunterladen',
+                :who => 'Administration; wer denselben Satz oder Link abspielt, bekommt dieselbe Datei',
+                :how_long => '90 Tage nach dem letzten Abspielen',
+            },
+            {
                 :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
                 :categories => [:traffic],
                 :purpose => 'Betrieb, Sicherheit und Fehlersuche',
@@ -392,6 +399,11 @@ module Privacy
                 :name => 'Open-Meteo',
                 :kind => :server,
                 :html => 'Für die Aktivität »Daten aus dem Netz« gibt es auf dem Server einen Spiegel des Wetterdienstes Open-Meteo. Fragt ein Programm dort, sieht Open-Meteo nur den Server.',
+            },
+            {
+                :name => 'YouTube',
+                :kind => :server,
+                :html => 'Spielt ein Telefonspiel Musik von einem YouTube-Link, holt der Server sie einmal von YouTube und spielt sie danach aus seinem Zwischenspeicher. YouTube sieht die Adresse des Servers, keine Daten über Personen.',
             },
             {
                 :name => 'Open VSX',

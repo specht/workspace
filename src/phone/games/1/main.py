@@ -1,8 +1,9 @@
 import random
 
-from telefon import keys, music, say
+from telefon import keys, music, say, sleep
 
-music('musik.ogg', 0.6)
+music('https://www.youtube.com/watch?v=-xRD8VmjBQM')   # Thimbleweed Park OST, Hotel Elevator
+sleep(3)                                                # the music alone first
 say('Ich denke mir eine Zahl zwischen 1 und 9. Rate sie!')
 secret = random.randint(1, 9)
 for attempt in range(1, 4):

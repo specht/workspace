@@ -76,7 +76,7 @@ class Phone:
     async def say(self, text):
         raise NotImplementedError
 
-    async def music(self, source, volume=0.5):
+    async def music(self, source, volume=1.0):
         raise NotImplementedError
 
     async def sleep(self, ms):
@@ -106,7 +106,7 @@ class Phone:
             await self.sleep(command['sleep'])
             return {'ok': True}
         if 'music' in command:
-            await self.music(command['music'], command.get('volume', 0.5))
+            await self.music(command['music'], command.get('volume', 1.0))
             return {'ok': True}
         if 'keys' in command:
             digits = await self.read_keys(max(1, int(command['keys'])), float(command.get('timeout', 10000)))

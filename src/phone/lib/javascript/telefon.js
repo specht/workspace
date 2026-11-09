@@ -35,7 +35,7 @@ function keys(count = 1, timeout = 10) {
 
 // background music (a YouTube link or a file in the game's folder), looped,
 // quieter while speaking; music(null) stops it
-function music(source, volume = 0.5) { command({ music: source, volume }); }
+function music(source, volume = 1) { command({ music: source, volume }); }
 
 // wait; the music keeps playing, keys pressed meanwhile are kept
 function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }

@@ -332,27 +332,25 @@ if GitServer.enabled?
     end
 end
 
-# The Telefonspiel (docs/plan-telefonspiel.md), only with PHONE = true in
-# credentials.rb. For now the speech service: the emulator in every
-# Workspace (`telefon spiel.rb`) gets its speech (Piper, Thorsten) and its
-# YouTube music there. On the students' network as phone-speech, reachable
-# on port 8000 and no further (a peer-firewall label of its own); it fetches
-# only from YouTube. Asterisk and the runner follow with the trunk.
-if defined?(PHONE) && PHONE == true
-    FileUtils.mkpath(File.join(DATA_PATH, 'phone-cache'))
-    docker_compose[:services][:phone_speech] = {
-        :build => './docker/phone-speech',
-        :volumes => ['./src/phone/speech:/app:ro', "#{DATA_PATH}/phone-cache:/cache"],
-        :environment => { 'PHONE_SPEECH_WORKERS' => '2' },
-        :networks => { 'user' => { :aliases => ['phone-speech'] } },
-        :labels => ['hackschule.workspace.peer_firewall.phone=true'],
-        :tmpfs => ['/tmp:size=256m'],
-        :mem_limit => '3g',
-        :pids_limit => 200,
-        :cpus => 2.0,
-        :restart => 'always',
-    }
-end
+# The Telefonspiel (docs/plan-telefonspiel.md): the speech service, always
+# there. The emulator in every Workspace (`telefon spiel.rb`) gets its speech
+# (Piper, Thorsten) and its YouTube music here. On the students' network as
+# phone-speech, reachable on port 8000 and no further (a peer-firewall label
+# of its own); it fetches only from YouTube and, for yt-dlp, from PyPI.
+# Asterisk and the runner follow with the trunk, which the maintainer adds.
+FileUtils.mkpath(File.join(DATA_PATH, 'phone-cache'))
+docker_compose[:services][:phone_speech] = {
+    :build => './docker/phone-speech',
+    :volumes => ['./src/phone/speech:/app:ro', "#{DATA_PATH}/phone-cache:/cache"],
+    :environment => { 'PHONE_SPEECH_WORKERS' => '2' },
+    :networks => { 'user' => { :aliases => ['phone-speech'] } },
+    :labels => ['hackschule.workspace.peer_firewall.phone=true'],
+    :tmpfs => ['/tmp:size=256m'],
+    :mem_limit => '3g',
+    :pids_limit => 200,
+    :cpus => 2.0,
+    :restart => 'always',
+}
 
 # The only service with the Docker socket next to the peer firewall: it
 # lets the backend start and stop Workspaces and exec into them and the

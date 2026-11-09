@@ -62,7 +62,6 @@ main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align
        font: 600 15px/1 ui-monospace, monospace; animation: pop .15s ease-out; }
 .note { align-self: center; display: flex; align-items: center; gap: 6px; color: var(--note); font-size: 13px;
         text-align: center; animation: pop .22s ease-out; }
-.note svg { width: 15px; height: 15px; flex: none; }
 /* words appear as they are spoken; the dot is the cursor */
 .w { animation: word .3s ease-out both; }
 .cursor { display: inline-block; width: .6em; height: .6em; margin-left: .3em; border-radius: 50%; background: currentColor;
@@ -115,8 +114,6 @@ const TONES = { '1': [697, 1209], '2': [697, 1336], '3': [697, 1477], '4': [770,
 const $ = id => document.getElementById(id);
 let ctx = null, musicGain, duckGain, musicSource = null, voice = null;
 let inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {}, keyBubble = null;
-// Tabler Icons 3.49.0 (MIT License): outline/music
-const MUSIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M9 17v-13h10v13" /><path d="M9 8h10" /></svg>';
 
 function audio() {
     if (!ctx) {
@@ -154,11 +151,10 @@ function message(kind) {
     return div;
 }
 
-function note(text, icon) {
+function note(text) {
     const div = document.createElement('div');
     div.className = 'note';
-    if (icon) div.innerHTML = icon;
-    div.appendChild(document.createTextNode(text));
+    div.textContent = text;
     $('lines').appendChild(div);
     keyBubble = null;
     scroll();
@@ -312,36 +308,44 @@ async function say(parts, id) {
     post('/heard?id=' + id);
 }
 
+// as loud as on the phone: the music's peaks (99.5 % of the samples below)
+// at 0.7, as the runner and the speech service do (sounds.py, server.py)
+function evenOut(buffer) {
+    const data = buffer.getChannelData(0), bins = new Uint32Array(1000);
+    for (let i = 0; i < data.length; i += 4) bins[Math.min(999, Math.floor(Math.abs(data[i]) * 1000))]++;
+    let count = 0, total = Math.ceil(data.length / 4);
+    for (let b = 0; b < 1000; b++) {
+        count += bins[b];
+        if (count >= total * 0.995) return b ? Math.min(8, 0.7 / ((b + 1) / 1000)) : 1;
+    }
+    return 1;
+}
+
 function stopMusic() {
     musicRequest++;
     if (musicSource) { try { musicSource.stop(); } catch (e) {} musicSource = null; }
 }
 
-async function music(url, volume) {
+// audio first: the page says nothing about the music; a problem goes only
+// to the terminal
+async function music(url, volume, id) {
     stopMusic();
     if (!url) return;
     const mine = ++musicRequest;
-    const source = decodeURIComponent(url.split('source=')[1] || '');
-    const name = /^https?:/.test(source) ? 'Musik von YouTube' : 'Musik: ' + source;
-    // the note where the game asked for the music, even while it loads
-    const shown = note(name, MUSIC_ICON);
-    const text = shown.lastChild;
-    const slow = setTimeout(() => { text.textContent = name + ' (wird geladen; beim ersten Mal dauert ein Video etwas)'; }, 1500);
     try {
         const buffer = await fetchAudio(url);
         if (mine !== musicRequest || !inCall) return;
         musicSource = ctx.createBufferSource();
         musicSource.buffer = buffer;
         musicSource.loop = true;
-        musicGain.gain.value = volume;
+        musicGain.gain.value = volume * evenOut(buffer);
         musicSource.connect(musicGain);
         musicSource.start();
-        text.textContent = name;
     } catch (error) {
-        text.textContent = 'Die Musik ließ sich nicht laden: ' + source;
+        const source = decodeURIComponent(url.split('source=')[1] || '');
         post('/problem', 'Die Musik ließ sich nicht laden (' + source + '): ' + error.message);
     } finally {
-        clearTimeout(slow);
+        if (id) post('/heard?id=' + id);           // the game goes on
     }
 }
 
@@ -473,7 +477,7 @@ events.onmessage = message => {
     } else if (e.say) {
         say(e.say, e.id);
     } else if ('music' in e) {
-        music(e.music, e.volume);
+        music(e.music, e.volume, e.id);
     } else if (e.keys) {
         waiting(e.keys, e.timeout);
     } else if ('keysDone' in e) {

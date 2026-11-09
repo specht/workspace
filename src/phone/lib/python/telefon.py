@@ -28,7 +28,7 @@ def keys(count=1, timeout=10):
     return _command({'keys': int(count), 'timeout': int(timeout * 1000)}).get('keys', '')
 
 
-def music(source, volume=0.5):
+def music(source, volume=1.0):
     """background music (a YouTube link or a file in the game's folder),
     looped, quieter while speaking; music(None) stops it"""
     _command({'music': source, 'volume': volume})

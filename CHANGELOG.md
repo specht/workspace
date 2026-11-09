@@ -21,7 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
-- Neu und zunächst abgeschaltet: der Sprachdienst des Telefonspiels. Mit `PHONE = true` in `credentials.rb`, dann `./config.rb build phone_speech peer_firewall && ./config.rb up -d`; der Befehl `telefon` braucht ein neu gebautes Workspace-Image. Der Dienst speichert gesprochene Sätze und Musik als Dateien in `data/phone-cache` und holt Musik von YouTube.
+- Neuer Dienst `phone_speech` (der Sprachdienst des Telefonspiels, läuft immer): nach dem Update `./config.rb build phone_speech peer_firewall && ./config.rb up -d`; der Befehl `telefon` braucht ein neu gebautes Workspace-Image. Der Dienst speichert gesprochene Sätze und Musik in `data/phone-cache` (90 Tage nach dem letzten Abspielen gelöscht, in der Datenschutzerklärung eingetragen), holt Musik von YouTube und hält yt-dlp über PyPI aktuell.
 - Die Entwicklungsumgebung läuft jetzt auf Port 8030 statt 8025 (`DEV_NGINX_PORT` in `config.rb`), der Neo4j-Browser auf 8031 statt 8021 (`DEV_NEO4J_PORT`): in einer eigenen `credentials.rb` `WEBSITE_HOST` für die Entwicklung auf `workspace.test:8030` ändern und `./config.rb up -d` ausführen.
 - Der Server holt beim Start einmal zwei Dateien von `specht/workspace-files` nach `/dl/gaussian-splatting` (zusammen
   etwa 100 MB, die Gasse und ein Klassenzimmer für den Viewer der Aktivität »Gaussian Splatting«);

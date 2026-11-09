@@ -32,7 +32,7 @@ end
 
 # background music (a YouTube link or a file in the game's folder), looped,
 # quieter while speaking; music(nil) stops it
-def music(source, volume: 0.5)
+def music(source, volume: 1.0)
     Telefon.command('music' => source, 'volume' => volume)
     nil
 end

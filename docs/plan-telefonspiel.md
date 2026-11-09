@@ -5,8 +5,9 @@ number, a menu offers the published games, and the game talks, plays music
 and reacts to the keys of the phone. As of 9 November 2026: the call path
 runs end to end in a test network (Asterisk, the speech service, the
 runner, a test telephone); the emulator runs in the Workspace (`telefon
-spiel.rb`) with the speech service behind `PHONE = true`; the trunk,
-publishing and the activity page are open (»Steps«).
+spiel.rb`) with the speech service, which every installation has; the
+trunk (optional, by the maintainer), publishing and the activity page are
+open (»Steps«).
 
 ## What the old Hackschule had
 
@@ -122,7 +123,8 @@ Workspace: telefon spiel.rb ── the same game code (core/game.py) ───�
 - **Music:** a YouTube link goes to the speech service (it fetches nothing
   else, so no one can make it fetch an address inside the network): yt-dlp,
   the first ten minutes at 16 kHz, normalised, cached; about 10 s the first
-  time. Publishing is to fetch it in advance, so a call meets only finished
+  time. yt-dlp updates itself (PyPI, daily and after a failed download),
+  since YouTube refuses old versions. Publishing is to fetch it in advance, so a call meets only finished
   files. A file in the game's folder is read by the runner or the emulator
   itself, never outside that folder.
 
@@ -155,6 +157,8 @@ loop.
   proxy. The page has a keypad (mouse or keyboard, with key tones), a green
   receiver that starts the game and a red one that hangs up. The browser
   mixes as the phone does (the same constants as `mixer.py`, Web Audio).
+  Audio first: the page shows what is said and pressed, never the music
+  (not even that there is any); a music problem goes only to the terminal.
   The conversation is a chat: the game's sentences in bubbles on the left,
   the keys as key caps on the right. The words appear one by one as they
   are spoken, with a dot as the cursor, in the bubble and on the phone's
@@ -183,7 +187,7 @@ loop.
   (`telefon` and its page), `src/phone/lib/` (the libraries for Python,
   Ruby, JavaScript), `src/phone/games/1/` (Zahlenraten, a demo game with
   its own music file);
-- `config.rb`: `phone_speech` with `PHONE = true`, on the students' network,
+- `config.rb`: `phone_speech` always, on the students' network,
   reachable from Workspaces on port 8000 only (peer-firewall label
   `…peer_firewall.phone`); Asterisk and the runner join with the trunk;
 - tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
@@ -220,10 +224,12 @@ loop.
   the trunk need on the server (SIP and the range for the audio)?
 - The licence of the German Piper voice, for the page's credits.
 - What is stored: the speech service keeps every sentence a game said and
-  every piece of music as files (named by hash, without who asked), and its
-  log names the YouTube links; say so in `privacy.rb` before `PHONE` is
-  switched on anywhere. Callers' numbers are personal data. Store none, or only
+  every piece of music as files (named by hash, without who asked) until
+  they are 90 days unplayed; `privacy.rb` says so, and names YouTube.
+  Callers' numbers are personal data. Store none, or only
   as long as a call lasts, and write it into `src/ruby/include/privacy.rb`
   before going live (docs/datenschutz.md).
 - Recording one's own sentences, as before: later, after the first
   version runs.
+- Interactive fiction (the BIF stories) on the phone: a story read out,
+  choices on the keys. A natural connection; kept independent for now.
