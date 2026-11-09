@@ -7,9 +7,8 @@
 <style>
 :root {
     --bg: #eef1f4; --card: #ffffff; --ink: #1f2933; --muted: #6b7280; --line: #e2e5ea;
-    --key: #f1f3f6; --key-hover: #e4e8ed; --key-sub: #8a93a0; --you: #b45309; --note: #6b7280;
+    --note: #6b7280;
     --green: #16a34a; --red: #dc2626; --warn-bg: #fef3c7; --warn-ink: #78350f;
-    --screen: linear-gradient(160deg, #e6f4f7, #d5ebf0); --screen-ink: #0b4a59; --screen-muted: #4b7884;
     --bubble: #e3f2f6; --bubble-ink: #0b4a59; --avatar: #0e7490; --cap: #ffffff; --cap-line: #d4d8de;
     --shadow: 0 1px 2px rgba(16,24,40,.06), 0 18px 40px -12px rgba(16,24,40,.18);
     color-scheme: light;
@@ -17,67 +16,68 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --bg: #0f1216; --card: #1a1f25; --ink: #e5e7eb; --muted: #9ca3af; --line: #2b323a;
-        --key: #242a32; --key-hover: #2f3640; --key-sub: #7c8592; --you: #fbbf24; --note: #9ca3af;
+        --note: #9ca3af;
         --warn-bg: #3b2f12; --warn-ink: #fde68a;
-        --screen: linear-gradient(160deg, #143440, #0f2a33); --screen-ink: #d3eef5; --screen-muted: #8fb9c4;
         --bubble: #173039; --bubble-ink: #d3eef5; --avatar: #3fa9c2; --cap: #2a3038; --cap-line: #444c57;
         --shadow: 0 1px 2px rgba(0,0,0,.3), 0 18px 40px -12px rgba(0,0,0,.6);
         color-scheme: dark;
     }
 }
-/* 0xProto Nerd Font Mono (SIL Open Font License), only 0-9 * # + for the keys:
-   python3 -m fontTools.subset src/static/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.ttf
-   '--text=0123456789*#+' --flavor=woff2 --layout-features= --no-hinting (and -Bold), in src/scripts/drawings */
-@font-face { font-family: 'Keys'; font-weight: 400; src: url(data:font/woff2;base64,d09GMgABAAAAAAWAAA4AAAAACUgAAAUuAAKAgwAAAAAAAAAAAAAAAAAAAAAAAAAAGiYbIBwqBmAARBEICokkh34BNgIkAx4LHgAEIAWDPAcgG40HUVRx0gC+KLCN6YMVsXyMZcZQ8hxjnkeuV5xvbMJzsdFAnRa0bMTWIv4Gz/Nr/c69b769Nzv7UfURzCQxC949iUYSJPO1RLNQILJDetU85JwUrZ0FmBNYNG+iIgiAY3YrHmCCFVdRhW/AkTge2ESjBQb6IP/0FAPJWitsAQWScNKKJeH7+5/TP+n/XFMXUX7vgFas/xbV2mGjG+iE9mazak7BAY0LnKY6hlb5FBMT2Vg34E9eQlCu6QGCBzSGeBBcbmltvkGTp84OGYkHUAHAQbpKNHiy8dvX7N/JTCaR055ulytEqNVUDcAsfZesBA/MBKirqjNqGi0PEGBn/0V7SF5KYYW3/jcB6kPyGHL943iAdtVX0N5IQAEze4BdTsFQ+mN+cm22kxSsQ2cJkqFjKz+U5UcEWIXjzH4vBYDWwpDDIe27GqNu0xj9eKa3Xfse0dZe1m/s+0Hrno07NPGzrQO/qe9sYsU9bBeysZiPmHiT+PBEMSJJFEIRr7NCcAQydk1aLAI5UxK4XEHA4WYsPV1os+z+O5t+sCNLcp/dwMkW2y6+9zZsucn349elSc5zrHpuutLXO8zgS/KCDaHR/PBdDmWbFucmzwsuF7RiACPUPQ62DKdkdjGaCxKAnEgc+QudcbrN5wFtcKqO9E1nazLJmQhrVPDfiU3FJM1zqBFX+rGqfaxkyAMWqi++5J1myu4YZXq4d/r+9m6+7NaHKchLfHE+HW4ZPxLGV2x7bCj7gMWy3bueLI1byPYQ9b41yY5f4o09agTtzu6IISEJWM3EVFvmZ3cmn3kGdut+e8337dZOOhNpQAXz+InU1mmzyQ1gLbiuHo4PX70zYFi01dnBDs/sEMPM9gfsmQQRZDDDM9pVP6MDgH/s25JBw8d3P60ITO5E/blAM3p2w0a7P08zaj4aGzY6+3G5jty298qEvuapia6D5Ypobf46B1iU7ysGKvk+OtXDFiTYuZKna5+VHOcdT7ZVCCVuwmhSFS/ZFusHTT58mi9Ek+qy4qSYaqYxhqqQqzCaWU7QbUylVMagKah4nC7mv5Dn9rZxV6TRzCwa6vrwMu8Cvf8drsWhxYmLoXTrQ3GOHF06b7k9J3JoSMj4ugN+3D51djLdyaSRUgUzh+RIRZmJDULeAsV8jKnXK/giLWP+sc2La9vBwld27H9VkUSqFHu7p89oNjI9LEZYxGeGM1gKZZaQWfx+88iZKi6HULE5hJrFIQjwz5HDD9OlxOrBx9DT+4UeDYZb3FNjsxgSbexAeTa2QBsWQeNzISsFNjppYpGTjhiTWXTLfBGkDwvYPFseqliPjRAmz8r9mxA3ftssmStEM4R6Pg5rVOKZoplaFYyb+ED2BbRQBouQZ/I5peb+nr9TG4XSDDJbXjiAzs3n+jmMyEvlKELNZhFqDptQcbiECg8AIICePnc6H6ersqP/1i4wf4CfpZgEgF+N7PvVp3e9AtUoAAL/UR7dzmB4MIIAr0dFt4ODCakxWFhoqJiZaYjJY5DAjqB1tADO1bDUEMSrA9YDNir0FkGVgCuoYbjFeI+HVnHY7eeppnFgLqhKFlUKkSAGxQpkI4WVgoiUKZWpQLESkESZSpUqVIINgciQJa+XCYGFFciDZLYl9Rizd5YqANEhUSUCIocwX6lda/26AiakDGVyBRVHL4dQwGhgKBs3XiJL4hDca0X1OAe0ini64PqsBac9K5sO1eUwMGZLpL4PQ5eGFEJHlYQzh6GSsQfNGeSdclpDAKCS9O8LAA==) format('woff2'); }
-@font-face { font-family: 'Keys'; font-weight: 700; src: url(data:font/woff2;base64,d09GMgABAAAAAAWMAA4AAAAACYQAAAU5AAKAgwAAAAAAAAAAAAAAAAAAAAAAAAAAGiYbIBwqBmAARBEICokch2EBNgIkAx4LHgAEIAWEAAcgG7QHAK4GbGM6eEUoqdGyABFDL8YaEPnnm/ay4KnXpW9XOsOXzjJzgA6wCgBBlS48fbgyVKkAuMy48w3WoSkxOZ0vV1F6TuT53L2/5WcYY+cUaAatLXiIm//qOk8skYT2eRhQaWRLozEpmuP/6tkuzv+zNbNdVwIhmxXCz23LUwBQDKoeNQp9qXuHrGvkC0UgrEVL8fIVNl/BMoJids5CsIF80hDAwYZyLxH0G6CoCcixnaQCMNpGHxFuRrtstqczeBwIl9u6TDt8ZOgRcRKAoc+nyQzYMwSgji/TUuvGawOCOjXQEBJcpQ7fWNI+BnBuJSnI2VUUoI3aDKqRAwpYtQdC0TliAsB/ktEIdXB8HN6UCCtv6v3/p8SwIBh79UsRoFwJZUNA81pjeLZqGlae6Yr67TQttz033xivrMtDhofUjy6/KxocM9EIjpI4hgTD/SN2yBmnHQQ6Li3tE06XpgWY06AtwEKzj2xflLL7p3SOvkp2PXeasmvriUE95ZFjc/LRnR3ZHZZOqktyjnV94NSeedGTynaYeSRTfV01aXBl4mNwzUV55Pno8gOeuz7liXVbVEdvyn6URrx1Q6B2YiazvH1bNtXIYcQVFZrowAaejnNcl2szcCg3fRHVWb2x/BN344XjB2cDI8jq7YlHVsGu05LbSpUlyxz92UJDmfDaTxprSGcTTO2ecj9Nrqc8Ut0+Ua8kPvnWp+x6DeD1mhN2XvS9PutwfBFIWdxpAyvq0iVWGqNOmZXm70ucb6hqQ4IrdT6HJFeaADibUi11VpW7qPJ92xwZ40LDK0+n+cQ3d2jwqJLyct8rkgGvB7VheMzAsTvr7ozRKSBeQ+fzCFg8iVEZ9SRaw/uuCgqWPHwWj6NVRz6OIaB/+8raRsJeQ+dnNAX5Uu4uj+RJcovSO0u+fck3O6WJqV1T8qV3azerZtd+THbKOb7ILzIvLGftY68riBkJy38+fLpx09am8znhYSocmjhmijBt9JvKzRUxtuCXkfZ7LyZm9Xl0AwfzZEd2OS4RHn8hgZ3QxwaWemmGueGjXnrhkiJGLJyaPDy43u9W6kD/7/qmsUUjP/RK8ZYnkszB/KloWgxl5ymCiUzbHoqngLbhRaX2fZjZDDgFbVVk+B3sBeQVHVn5tUz/DqjFuUVFeLmL2MuG8C3RaQy6Wzd83bHGVGO+7yB2BbGLnqKmfDzW0sJ8Fg588nLO4oKevy4H3obYDgNsxz3YjvhnpnfrlGjq7Lm1fNvVj8ndgxWWwgNUc+GqoavYRfQF/MKkVBnKi1g0jHilpO7AzOhDl8KXXjXi5vwCGMB9L/KdrbHGV98DlfXWee+1MS0uCS70/v/+9b2E3iNpLiD2esYt7QTkZZ1FhX00EuO/hS8crSMn6BpEp70MCZsJ8FjeBtiOAyzHQdbDINsRAAigu4K2ZSM+zfTU/xlV1k/At5MD+wIA38/1uPvncvtgjaSTCGkoAALbkEuXIYSpcxAu24ougx0zIQrYqFEgT4IsOZL4iafRZpkkkfMF6Kp0piBC7ExgHvBOha4sqZLBKWrRRy61idmnPjZFvj9pVOYQAb40+XFlBVLlzoU9KxY8QWK8eLLlwp0H6CNbnjy58sCPBQsbdqiHezHHzIILJyw5I/ZFn7vF856DlFmxnCVImqFzaaj0Bncivj5HlumcUL8VEAdmXJix5oLayKgHOxWF2PPMsWInwFj7o9bMesbiotEuL0a13tgw470Tzq9jw42JFXPcOGEEajCqR41BlaUpYarZkyICgBShOQIAAA==) format('woff2'); }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; justify-content: center;
-       padding: 24px 16px; margin: 0 auto; }
+main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; justify-content: center;
+       padding: 20px 16px; margin: 0 auto; }
 @media (max-width: 720px) { main { grid-template-columns: minmax(0, 340px); } }
 
-/* the phone */
-.phone { background: var(--card); border: 1px solid var(--line); border-radius: 36px; padding: 14px 18px 22px;
-         box-shadow: var(--shadow); align-self: start; }
-.speaker { width: 54px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
-.screen { position: relative; background: var(--screen); color: var(--screen-ink); border-radius: 20px;
-          padding: 14px 14px 16px; text-align: center; margin-bottom: 18px; }
-.screen h1 { font-size: 17px; margin: 0 0 2px; font-weight: 650; }
-.status { color: var(--screen-muted); font-size: 13.5px; min-height: 20px; font-variant-numeric: tabular-nums;
+/* the phone: a dark body with side buttons, the screen inside it, a camera
+   island at the top and the home bar at the bottom; the screen of a call is dark
+   in both colour schemes, as on a real phone */
+.phone { position: relative; align-self: start; background: #0c0d10; border-radius: 50px; padding: 11px;
+         box-shadow: 0 0 0 1.5px #3a3e46, 0 0 0 3px #15171b, var(--shadow); }
+.phone::before, .phone::after { content: ''; position: absolute; width: 4px; border-radius: 2px; background: #2c3037; }
+.phone::before { left: -6px; top: 120px; height: 56px; box-shadow: 0 72px 0 #2c3037; }   /* volume up and down */
+.phone::after { right: -6px; top: 160px; height: 84px; }                               /* side button */
+.glass { position: relative; border-radius: 40px; overflow: hidden; color: #f5f7fa; padding: 12px 22px 10px;
+         background: radial-gradient(120% 70% at 50% 0%, #2a3a46 0%, #141b21 55%, #0b0f12 100%); }
+.island { width: 92px; height: 26px; border-radius: 13px; background: #000; margin: 0 auto 12px; }
+.screen { position: relative; text-align: center; margin-bottom: 14px; padding-bottom: 9px; }
+.screen h1 { font-size: 22px; margin: 0 0 4px; font-weight: 500; letter-spacing: .01em; }
+.status { color: rgba(245,247,250,.62); font-size: 14px; min-height: 20px; font-variant-numeric: tabular-nums;
           display: flex; align-items: center; justify-content: center; gap: 6px; }
-.status .live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: none; }
+.status .live { width: 7px; height: 7px; border-radius: 50%; background: #34d399; display: none; }
 .screen.on .status .live { display: inline-block; }
 /* one row for the keys pressed (while the game waits) and the voice (while it speaks) */
-.readout { position: relative; height: 30px; margin-top: 8px; }
-.digits { position: absolute; inset: 0; display: grid; place-items: center; font: 700 22px/1 Keys, ui-monospace, monospace; letter-spacing: .14em; }
+.readout { position: relative; height: 30px; margin-top: 6px; }
+.digits { position: absolute; inset: 0; display: grid; place-items: center; font: 300 28px/1 system-ui, -apple-system, sans-serif;
+          letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 /* while the game speaks: bars on the screen (the voice, never the music) */
 .voice { position: absolute; inset: 0; display: flex; gap: 3px; justify-content: center; align-items: center; opacity: 0; transition: opacity .2s; }
 .voice i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; }
-.screen.speaking .voice { opacity: .8; }
+.screen.speaking .voice { opacity: .85; }
 .screen.speaking .digits { opacity: 0; }
 .screen.speaking .voice i { animation: bar .9s ease-in-out infinite; }
 .voice i:nth-child(2) { animation-delay: -.6s !important; } .voice i:nth-child(3) { animation-delay: -.3s !important; }
 .voice i:nth-child(4) { animation-delay: -.75s !important; } .voice i:nth-child(5) { animation-delay: -.15s !important; }
 @keyframes bar { 0%, 100% { height: 5px; } 50% { height: 20px; } }
-.wait { position: absolute; left: 16px; right: 16px; bottom: 9px; height: 3px; background: rgba(127,127,127,.25);
+.wait { position: absolute; left: 30px; right: 30px; bottom: 0; height: 3px; background: rgba(255,255,255,.15);
         border-radius: 2px; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
-.wait div { height: 100%; width: 100%; background: var(--you); transform-origin: left; }
-.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 12px; justify-items: center; }
-.keypad button { width: 64px; height: 64px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
+.wait div { height: 100%; width: 100%; background: #fbbf24; transform-origin: left; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; justify-items: center; }
+.keypad button { width: 62px; height: 62px; border-radius: 50%; border: 0; background: rgba(255,255,255,.13); color: #fff;
                  cursor: pointer; transition: background .08s, transform .08s; display: flex; flex-direction: column;
-                 align-items: center; justify-content: center; gap: 1px; padding: 0; }
-.keypad b { font: 400 26px/1 Keys, ui-monospace, monospace; }
-.keypad small { font: 600 9px/1 system-ui, sans-serif; letter-spacing: .14em; color: var(--key-sub); min-height: 9px; }
-.keypad button:hover { background: var(--key-hover); }
-.keypad button.down { transform: scale(.93); background: var(--key-hover); }
-.keypad button:disabled { opacity: .5; cursor: default; }
-.call { display: flex; justify-content: center; margin-top: 16px; }
-.call button { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
-               background: var(--green); box-shadow: 0 6px 16px -4px rgba(22,163,74,.55); transition: background .15s, box-shadow .15s; }
-.call button:disabled { opacity: .5; box-shadow: none; cursor: default; }
-.call button.hang { background: var(--red); box-shadow: 0 6px 16px -4px rgba(220,38,38,.55); }
+                 align-items: center; justify-content: center; gap: 2px; padding: 0; }
+.keypad b { font: 400 28px/1 system-ui, -apple-system, sans-serif; }
+.keypad small { font: 600 9px/1 system-ui, sans-serif; letter-spacing: .16em; color: rgba(255,255,255,.7); min-height: 9px; }
+.keypad button:hover { background: rgba(255,255,255,.2); }
+.keypad button.down { transform: scale(.93); background: rgba(255,255,255,.32); }
+.keypad button:disabled { opacity: .45; cursor: default; }
+.call { display: flex; justify-content: center; margin-top: 14px; }
+.call button { position: relative; width: 62px; height: 62px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
+               background: var(--green); transition: background .15s; }
+.call button:disabled { opacity: .45; cursor: default; }
+.call button.hang { background: var(--red); }
 /* ready to call: a ring that invites the click */
 .call button.ready::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--green);
                             animation: ring 2s ease-out infinite; }
@@ -85,11 +85,12 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
 .call button:focus:not(:focus-visible), .keypad button:focus:not(:focus-visible) { outline: none; }
 .call .end, .call button.hang .dial { display: none; }
 .call button.hang .end { display: inline; }
-.call svg { width: 28px; height: 28px; vertical-align: middle; }
+.call svg { width: 30px; height: 30px; vertical-align: middle; }
+.home { width: 112px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); margin: 16px auto 0; }
 
 /* the conversation as a chat: the game left, the keys right */
 .log { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow);
-       display: flex; flex-direction: column; min-height: 0; height: 100%; max-height: calc(100vh - 48px); overflow: hidden; }
+       display: flex; flex-direction: column; min-height: 0; height: 100%; max-height: calc(100vh - 40px); overflow: hidden; }
 @media (max-width: 720px) { .log { height: auto; min-height: 260px; max-height: 70vh; } }
 .log header { display: flex; align-items: center; justify-content: space-between; gap: 12px;
               padding: 13px 18px; border-bottom: 1px solid var(--line); }
@@ -110,7 +111,7 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
 .msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; animation: pop .22s ease-out; }
 .cap { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 8px;
        background: var(--cap); color: var(--ink); border: 1px solid var(--cap-line); border-bottom-width: 3px;
-       font: 700 15px/1 Keys, ui-monospace, monospace; animation: pop .15s ease-out; }
+       font: 600 15px/1 system-ui, -apple-system, sans-serif; animation: pop .15s ease-out; }
 .note { align-self: center; color: var(--note); font-size: 13px; text-align: center; animation: pop .22s ease-out; }
 .empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 12px; color: var(--muted);
          text-align: center; font-size: 14px; }
@@ -136,7 +137,8 @@ kbd { font: 11.5px ui-monospace, monospace; border: 1px solid var(--line); borde
 <body>
 <main>
     <section class="phone" aria-label="Telefon">
-        <div class="speaker"></div>
+        <div class="glass">
+        <div class="island"></div>
         <div class="screen" id="screen">
             <h1 id="title">Telefonspiel</h1>
             <div class="status"><span class="live"></span><span id="status">Verbinde mit dem Terminal …</span></div>
@@ -152,6 +154,8 @@ kbd { font: 11.5px ui-monospace, monospace; border: 1px solid var(--line); borde
             <svg class="dial" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3a1 1 0 0 1 .877 .519l.051 .11l2 5a1 1 0 0 1 -.313 1.16l-.1 .068l-1.674 1.004l.063 .103a10 10 0 0 0 3.132 3.132l.102 .062l1.005 -1.672a1 1 0 0 1 1.113 -.453l.115 .039l5 2a1 1 0 0 1 .622 .807l.007 .121v4c0 1.657 -1.343 3 -3.06 2.998c-8.579 -.521 -15.418 -7.36 -15.94 -15.998a3 3 0 0 1 2.824 -2.995l.176 -.005h4z" /></svg>
             <svg class="end" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l18 -18" /><path d="M5.831 14.161a15.946 15.946 0 0 1 -2.831 -8.161a2 2 0 0 1 2 -2h4l2 5l-2.5 1.5c.108 .22 .223 .435 .345 .645m1.751 2.277c.843 .84 1.822 1.544 2.904 2.078l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a15.963 15.963 0 0 1 -10.344 -4.657" /></svg>
         </button></div>
+        <div class="home"></div>
+        </div>
     </section>
     <section class="log" id="log">
         <header><h2>Gespräch</h2><span class="pill">Anruf läuft</span></header>
