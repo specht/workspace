@@ -3389,11 +3389,12 @@ class Main < Sinatra::Base
         end
         if admin_logged_in?
             # what the site shows: picture rights (picture_rights.rb), the
-            # teachers' feedback on activities (activity_feedback.rb), what is
+            # teachers' feedback on activities (activity_feedback.rb), the
+            # submitted Telefonspiele (phone_games_api.rb), what is
             # used without names (usage_stats.rb) and,
             # in development only, the sources of the person boxes
             item = ->(p, icon, label) { "<li><a class=\"dropdown-item #{active.(p)}\" href='#{p}'#{here.(p)}><i class='bi bi-#{icon} me-2'></i>#{label}</a></li>" }
-            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen', '/statistik'].include?(request.path)
+            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen', '/statistik', '/telefon-freigabe'].include?(request.path)
             io << "<div class='btn-group'>"
             io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i><span class='btn-menu-label'>Administration</span></button>"
             io << "<ul class='dropdown-menu'>"
@@ -3403,6 +3404,7 @@ class Main < Sinatra::Base
             io << "<li><hr class='dropdown-divider'></li><li><h6 class='dropdown-header'>Inhalte</h6></li>"
             io << item.('/picture-rights', 'image', 'Bildrechte')
             io << item.('/rueckmeldungen', 'chat-square-text', 'Rückmeldungen')
+            io << item.('/telefon-freigabe', 'telephone', 'Telefonspiele')
             io << item.('/statistik', 'bar-chart-line', 'Nutzung')
             io << item.('/person-sources', 'patch-check', 'Belege der Personen') if DEVELOPMENT
             io << "</ul></div>"

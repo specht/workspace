@@ -227,7 +227,31 @@ class Main < Sinatra::Base
 
     # /telefon-freigabe?id=…: everything about one submission, with the two
     # buttons (administrators only, main.rb guards the path)
+    # /telefon-freigabe without an id: every submission, those waiting
+    # first, each linked to its page (the same the mail links to)
+    def phone_games_list_html
+        h = ->(t) { PhoneGames.h(t) }
+        order = { 'pending' => 0, 'published' => 1, 'rejected' => 2 }
+        games = phone_games_all.sort_by { |g| [order[g[:state]] || 3, -(g[:submitted] || 0).to_i] }
+        head = "<h1 class='mt-4'>Telefonspiele</h1>"
+        return "#{head}<p>Noch hat niemand ein Telefonspiel eingereicht.</p>" if games.empty?
+
+        badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
+        rows = games.map do |g|
+            "<a class='list-group-item list-group-item-action' href='/telefon-freigabe?id=#{h.(g[:id])}'>" \
+                "<div class='d-flex flex-wrap gap-2 align-items-baseline'><b>#{h.(g[:number])}</b> <b>#{h.(g[:title])}</b>" \
+                "<span class='badge #{badge[g[:state]]}'>#{h.(PhoneGames::STATE_TEXT[g[:state]])}</span>" \
+                "<span class='text-muted small'>#{h.(g[:email])}, #{h.(g[:file])}</span></div>" \
+                "<div class='text-muted small'>#{h.(g[:description])}</div></a>"
+        end
+        waiting = games.count { |g| g[:state] == 'pending' }
+        "#{head}<p>#{waiting.zero? ? 'Kein Spiel wartet auf Freigabe.' : (waiting == 1 ? 'Ein Spiel wartet auf Freigabe.' : "#{waiting} Spiele warten auf Freigabe.")}</p>" \
+            "<div class='list-group'>#{rows.join}</div>"
+    end
+
     def phone_game_review_page
+        return phone_games_list_html if params[:id].to_s.empty?
+
         game = phone_game(params[:id].to_s)
         return "<p>Dieses Spiel gibt es nicht mehr: zurückgezogen oder schon entschieden und gelöscht.</p>" unless game
 
@@ -249,7 +273,8 @@ class Main < Sinatra::Base
         else
             ''
         end
-        "<h1 class='mt-4'>#{h.(game[:number])} #{h.(game[:title])}</h1>" \
+        "<p class='mt-4 mb-0'><a href='/telefon-freigabe'><i class='bi bi-arrow-left'></i> Alle Telefonspiele</a></p>" \
+            "<h1 class='mt-2'>#{h.(game[:number])} #{h.(game[:title])}</h1>" \
             "<p class='abstract'>#{h.(game[:description])}</p>" \
             "<table class='table'><tr><th>Von</th><td>#{h.(game[:email])}</td></tr>" \
             "<tr><th>Eingereicht</th><td>#{Time.at(game[:submitted].to_i).strftime('%d.%m.%Y %H:%M')}</td></tr>" \
