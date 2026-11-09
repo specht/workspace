@@ -14953,6 +14953,13 @@ html[data-bs-theme="dark"] .splat-viewer {
 @media (max-width: 768px) { .phone-publish .pp-layout { grid-template-columns: minmax(0, 1fr); } }
 .phone-publish .pp-fields { display: grid; grid-template-columns: minmax(0, 1fr) 9.5rem; gap: 1rem; align-items: end; }
 .phone-publish .pp-number-input { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+/* the dice beside the number: part of the field, as an add-on, not a button of its own */
+.phone-publish .pp-random { border: var(--bs-border-width) solid var(--bs-border-color); background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color); padding: 0 .75rem; font-size: 1.1rem; }
+.phone-publish .pp-random:hover, .phone-publish .pp-random:focus-visible { background: var(--bs-secondary-bg); color: var(--bs-body-color); border-color: var(--bs-border-color); }
+.phone-publish .pp-random.rolling i { display: inline-block; animation: pp-roll .35s ease-out; }
+@keyframes pp-roll { from { transform: rotate(-200deg) scale(.7); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .phone-publish .pp-random.rolling i { animation: none; } }
 .phone-publish .pp-number-status { min-height: 1.5em; margin-top: .4rem; }
 .phone-publish .pp-preview { max-width: 30rem; }
 .phone-publish .pp-preview figcaption { margin: 0 0 .4rem; font-size: .85rem; color: var(--bs-secondary-color); }

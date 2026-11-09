@@ -112,7 +112,7 @@
             `<div><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${options}</select></div>` +
             `<div><label class='form-label' for='pp-number'>Nummer</label><div class='input-group pp-number-group'>` +
             `<input class='form-control pp-number-input' id='pp-number' maxlength='4' autocomplete='off' autocapitalize='characters' spellcheck='false' placeholder='123' value='${esc(number)}' aria-describedby='pp-number-status'>` +
-            `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer würfeln' aria-label='Eine freie Nummer würfeln'><i class='bi bi-dice-5'></i></button></div></div></div>` +
+            `<button class='btn pp-random' type='button' title='Eine freie Nummer würfeln' aria-label='Eine freie Nummer würfeln'><i class='bi bi-dice-5'></i></button></div></div></div>` +
             `<div class='form-text pp-number-status' id='pp-number-status' aria-live='polite'></div>` +
             `<div class='pp-actions'><button class='btn btn-success pp-submit' type='button'></button><span class='form-text pp-why'></span></div></div>` +
             `<div class='pp-preview-box'></div></div>`;
@@ -197,6 +197,9 @@
         } else if (button.classList.contains('pp-random')) {
             number = freeNumber();
             root.querySelector('#pp-number').value = number;
+            button.classList.remove('rolling');
+            void button.offsetWidth;
+            button.classList.add('rolling');
             update();
         } else if (button.classList.contains('pp-submit')) {
             busy = true;
