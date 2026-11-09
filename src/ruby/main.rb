@@ -780,6 +780,7 @@ class Main < Sinatra::Base
             'User/db_login',
             'User/server_tag',
             'User/share_tag',
+            'WorkspaceHour/hour',
         ]
         INDEX_LIST = [
             'Test/running',
@@ -850,6 +851,19 @@ class Main < Sinatra::Base
                     Main.new!.mail_deletion_log
                 rescue => e
                     STDERR.puts "Mailing the deletion log failed (tried again in a few minutes): #{e.class}: #{e.message}"
+                end
+            end
+        end
+
+        # How many Workspaces run, two numbers per hour for /statistik
+        # (include/workspace_usage.rb): who it was stays in memory only.
+        Thread.new do
+            loop do
+                sleep(DEVELOPMENT ? 60 : WorkspaceUsage::SECONDS)
+                begin
+                    Main.new!.sample_running_workspaces
+                rescue => e
+                    STDERR.puts "Counting running Workspaces failed: #{e.class}: #{e.message}"
                 end
             end
         end

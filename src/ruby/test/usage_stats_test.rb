@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require_relative '../include/usage_stats'
+require_relative '../include/workspace_usage'
 
 # /statistik without names (UsageStats): the numbers, and above all that
 # nothing resting on fewer than five students shows.
@@ -117,5 +118,37 @@ class UsageStatsTest < Minitest::Test
         refute_includes html, '10b'
         assert_includes html, '6 Klassen mit weniger als 5'
     end
-end
 
+    # Running Workspaces: who it was only within the hour, two numbers out
+    def test_the_tally_counts_different_workspaces_and_the_most_at_once
+        tally = WorkspaceUsage::Tally.new
+        hour = NOW - NOW % 3600
+        tally.add(%w[a b], hour + 60)
+        tally.add(%w[b c d], hour + 360)
+        assert_equal({ :hour => hour, :running => 4, :peak => 3 }, tally.add(%w[a], hour + 660))
+        assert_equal({ :hour => hour + 3600, :running => 1, :peak => 1 }, tally.add(%w[e], hour + 3660))
+    end
+
+    def test_workspaces_per_day_are_the_busiest_hour_and_small_numbers_hide
+        hour = NOW - NOW % 3600
+        hours = [{ :hour => hour - DAY, :running => 7, :peak => 4 }, { :hour => hour - DAY + 3600, :running => 9, :peak => 6 },
+                 { :hour => hour - 2 * DAY, :running => 3, :peak => 2 }]
+        days = UsageStats.workspace_periods(hours, 7, NOW, 5)
+        yesterday = days.find { |d| d[:from] == UsageStats.day_of(hour - DAY) }
+        assert_equal 9, yesterday[:people]
+        assert_equal 6, yesterday[:peak]
+        assert_equal :few, days.find { |d| d[:from] == UsageStats.day_of(hour - 2 * DAY) }[:people]
+        refute days.find { |d| d[:from] == UsageStats.day_of(hour - 3 * DAY) }[:counted]
+    end
+
+    def test_the_page_says_when_counting_began_or_that_it_has_not
+        empty = UsageStats.html(UsageStats.summary([], :days => 7, :now => NOW), :titles => {}, :tasks => {}, :schools => {})
+        assert_includes empty, 'Noch keine Zahlen'
+        hour = NOW - NOW % 3600
+        hours = (0..30).map { |i| { :hour => hour - i * 3600, :running => 6, :peak => 5 } }
+        html = UsageStats.html(UsageStats.summary([], :days => 7, :now => NOW, :hours => hours), :titles => {}, :tasks => {}, :schools => {})
+        assert_includes html, 'Laufende Workspaces'
+        assert_includes html, 'höchstens 6 Workspaces in einer Stunde, 5 gleichzeitig'
+        refute_includes html, 'Noch keine Zahlen'
+    end
+end

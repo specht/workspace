@@ -307,6 +307,18 @@ wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
   Partnerschule, die die Vereinbarung schon in der alten Fassung
   unterschrieben hat, ist das eine Änderung, der sie zustimmen muss
   (docs/handoff-datenschutz.md, »Open«).
+- **Laufende Workspaces (seit 9. November 2026, Wunsch des Maintainers):**
+  Alle fünf Minuten sieht der Server, welche Workspaces laufen. Welche es
+  waren, hält er nur im Arbeitsspeicher und nur für die laufende Stunde; in
+  der Datenbank stehen je Stunde zwei Zahlen (`WorkspaceHour`: wie viele
+  verschiedene Workspaces in der Stunde liefen, wie viele höchstens
+  gleichzeitig), 400 Tage lang. Das sind keine personenbezogenen Daten:
+  Hinter einer Zahl steht keine Person, und nichts führt zu einer zurück;
+  darum braucht die Datenschutzerklärung dafür keinen Eintrag und die
+  Vereinbarung keine Änderung. Gezählt werden alle Workspaces, auch die von
+  Lehrkräften. Auf `/statistik` erscheinen sie wie der Rest: ein Wert unter
+  fünf als grauer Strich (`src/ruby/include/workspace_usage.rb`,
+  `usage_stats_page.rb`).
 
 ## Wer am Code ändert, was gespeichert wird
 

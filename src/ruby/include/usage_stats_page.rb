@@ -1,4 +1,5 @@
 require_relative 'usage_stats'
+require_relative 'workspace_usage'
 
 # /statistik (UsageStats): what is used at which school and where tasks
 # are hard, for the administration, without names. The attempts of the
@@ -59,6 +60,30 @@ class Main < Sinatra::Base
             titles[activity] ||= [plain_title(slug), slug]
             (c[:tasks][:by_id] || {}).each { |id, t| tasks["#{activity}/#{id}"] ||= t['title'].to_s }
         end
-        UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school), :titles => titles, :tasks => tasks, :schools => school_names)
+        hours = workspace_hours(now - days * 86_400 - 7 * 86_400)
+        UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
+                        :titles => titles, :tasks => tasks, :schools => school_names)
+    end
+
+    # Running Workspaces, every few minutes from main.rb (WorkspaceUsage)
+    @@workspace_tally = WorkspaceUsage::Tally.new
+
+    def sample_running_workspaces
+        tags = workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys
+        numbers = @@workspace_tally.add(tags, Time.now.to_i)
+        neo4j_query(<<~END_OF_QUERY, numbers)
+            MERGE (h:WorkspaceHour {hour: $hour})
+            SET h.running = CASE WHEN coalesce(h.running, 0) < $running THEN $running ELSE h.running END,
+                h.peak = CASE WHEN coalesce(h.peak, 0) < $peak THEN $peak ELSE h.peak END;
+        END_OF_QUERY
+        neo4j_query('MATCH (h:WorkspaceHour) WHERE h.hour < $before DELETE h;', :before => Time.now.to_i - WorkspaceUsage::KEEP_DAYS * 86_400)
+    end
+
+    # The hours of the window, oldest first: [{ hour:, running:, peak: }]
+    def workspace_hours(since)
+        neo4j_query(<<~END_OF_QUERY, :since => since).map { |r| { :hour => r['hour'].to_i, :running => r['running'].to_i, :peak => r['peak'].to_i } }
+            MATCH (h:WorkspaceHour) WHERE h.hour >= $since
+            RETURN h.hour AS hour, h.running AS running, h.peak AS peak ORDER BY hour;
+        END_OF_QUERY
     end
 end

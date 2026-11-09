@@ -30,7 +30,7 @@ module UsageStats
     # person a number that stands for one student within this request,
     # groups the classes the student is in (no test groups); group_school:
     # { group => school }.
-    def self.summary(rows, days:, now: Time.now.to_i, min: MIN_PEOPLE, group_school: {})
+    def self.summary(rows, days:, now: Time.now.to_i, min: MIN_PEOPLE, group_school: {}, hours: [])
         first = first_day(days, now)
         since = Time.new(first.year, first.month, first.day).to_i
         rows = rows.select { |r| r[:ts].to_i >= since }
@@ -45,6 +45,9 @@ module UsageStats
             :schools => schools(rows, min, days, now),
             :activities => activities(rows, min),
             :stumbling => stumbling(rows, min, group_school),
+            :workspaces => workspace_periods(hours, days, now, min),
+            :workspace_rhythm => workspace_rhythm(hours, min),
+            :workspaces_since => hours.map { |h| h[:hour] }.min,
         }
     end
 
@@ -65,6 +68,33 @@ module UsageStats
             inside = (from..to).flat_map { |d| by_day[d] || [] }
             n = people(inside).size
             { :from => from, :to => to, :people => shown(n, min), :checks => n >= min ? inside.size : nil }
+        end
+    end
+
+    # Running Workspaces (WorkspaceUsage) per day or calendar week: the
+    # busiest hour of it (different Workspaces in that hour) and the most
+    # at once; nil before the first counted hour.
+    def self.workspace_periods(hours, days, now, min)
+        step = days > 90 ? 7 : 1
+        last = day_of(now)
+        by_day = hours.group_by { |h| day_of(h[:hour]) }
+        (first_day(days, now)..last).step(step).map do |from|
+            to = [from + step - 1, last].min
+            inside = (from..to).flat_map { |d| by_day[d] || [] }
+            top = inside.map { |h| h[:running] }.max.to_i
+            { :from => from, :to => to, :people => shown(top, min), :peak => inside.map { |h| h[:peak] }.max.to_i, :counted => !inside.empty? }
+        end
+    end
+
+    # When in the week: running Workspaces per weekday and hour, the mean
+    # over the counted hours of the window.
+    def self.workspace_rhythm(hours, min)
+        cells = hours.group_by { |h| t = Time.at(h[:hour]); [(t.wday + 6) % 7, t.hour] }
+        (0..6).map do |wday|
+            (0..23).map do |hour|
+                list = cells[[wday, hour]] || []
+                shown(list.empty? ? 0 : (list.sum { |h| h[:running] }.to_f / list.size).round, min)
+            end
         end
     end
 
@@ -218,7 +248,11 @@ module UsageStats
     # A bar per day or week, as high as the number of students; one to
     # four students a grey stub, so that a quiet day differs from none.
     # small: a strip without axes (a school), with its own scale.
-    def self.bars(periods, min, small: false)
+    # tip: the words of a bar, ->(period, n) for n from min on; few and none
+    # for the grey stub and an empty day
+    STUDENT_TIP = ->(p, n) { "#{n} Lernende, #{p[:checks]} Prüfungen" }
+
+    def self.bars(periods, min, small: false, tip: STUDENT_TIP, few: 'Lernende', none: 'keine Prüfung')
         max = periods.map { |p| p[:people].is_a?(Integer) ? p[:people] : 0 }.max.to_i
         top = small ? [max, min].max : ticks([max, min].max).last
         weekly = periods.any? { |p| p[:from] != p[:to] }
@@ -232,12 +266,12 @@ module UsageStats
         periods.each do |p|
             n = p[:people]
             weekend = !weekly && (p[:from].saturday? || p[:from].sunday?)
-            tip, fill = if n == :few then ["#{period_label(p)}: weniger als #{min} Lernende", "<i class='usage-fill usage-few'></i>"]
-                        elsif n.zero? then ["#{period_label(p)}: keine Prüfung", '']
-                        else ["#{period_label(p)}: #{n} Lernende, #{p[:checks]} Prüfungen",
+            tip_text, fill = if n == :few then ["#{period_label(p)}: weniger als #{min} #{few}", "<i class='usage-fill usage-few'></i>"]
+                        elsif n.zero? then ["#{period_label(p)}: #{none.respond_to?(:call) ? none.(p) : none}", '']
+                        else ["#{period_label(p)}: #{tip.(p, n)}",
                               "<i class='usage-fill' style='height: #{(100.0 * n / top).round(2)}%'></i>"]
                         end
-            io << "<span class='usage-col#{weekend ? ' usage-weekend' : ''}' data-tip='#{h(tip)}'>#{fill}</span>"
+            io << "<span class='usage-col#{weekend ? ' usage-weekend' : ''}' data-tip='#{h(tip_text)}'>#{fill}</span>"
         end
         io << '</div></div>'
         unless small
@@ -251,21 +285,21 @@ module UsageStats
     end
 
     # Weekdays by hours, darker where more students checked something.
-    def self.rhythm_html(rhythm, min)
+    def self.rhythm_html(rhythm, min, noun: 'Lernende', none: 'keine Prüfung')
         max = rhythm.flatten.grep(Integer).max.to_i
-        io = +"<div class='usage-rhythm' role='group' aria-label='Lernende nach Wochentag und Uhrzeit'><span></span>"
+        io = +"<div class='usage-rhythm' role='group' aria-label='#{noun} nach Wochentag und Uhrzeit'><span></span>"
         24.times { |hour| io << "<span class='usage-hour'>#{hour % 3 == 0 ? hour : ''}</span>" }
         rhythm.each_with_index do |row, wday|
             io << "<span class='usage-day'>#{WEEKDAYS[wday]}</span>"
             row.each_with_index do |n, hour|
                 when_ = "#{WEEKDAYS[wday]} #{hour} bis #{hour + 1} Uhr"
                 if n == :few
-                    io << "<span class='usage-cell usage-few' data-tip='#{when_}: weniger als #{min} Lernende'></span>"
+                    io << "<span class='usage-cell usage-few' data-tip='#{when_}: weniger als #{min} #{noun}'></span>"
                 elsif n.zero?
-                    io << "<span class='usage-cell' data-tip='#{when_}: keine Prüfung'></span>"
+                    io << "<span class='usage-cell' data-tip='#{when_}: #{none}'></span>"
                 else
                     level = (5.0 * n / max).ceil.clamp(1, 5)
-                    io << "<span class='usage-cell usage-level-#{level}' data-tip='#{when_}: #{n} Lernende'></span>"
+                    io << "<span class='usage-cell usage-level-#{level}' data-tip='#{when_}: #{n} #{noun}'></span>"
                 end
             end
         end
@@ -346,6 +380,20 @@ module UsageStats
             io << "<tr><td>#{period_label(p)}</td><td class='text-end'>#{number(people, min)}</td><td class='text-end'>#{p[:people] == 0 ? 0 : number(p[:checks], min)}</td></tr>"
         end
         io << '</tbody></table></div></details>'
+
+        io << "<h2 class='mt-4'>Laufende Workspaces</h2>"
+        if summary[:workspaces_since].nil?
+            io << "<p>Noch keine Zahlen. Der Workspace zählt alle fünf Minuten, wie viele Workspaces laufen, und speichert je Stunde nur zwei Zahlen, nicht wer.</p>"
+        else
+            since = Time.at(summary[:workspaces_since])
+            io << "<p>Wie viele Workspaces #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'} in der vollsten Stunde liefen, auch die von Lehrkräften. " \
+                  "Gezählt wird alle fünf Minuten, seit #{since.strftime('%-d.%-m.%Y')}; gespeichert sind je Stunde nur zwei Zahlen, nicht wer. Ein grauer Strich: weniger als #{min}.</p>"
+            io << bars(summary[:workspaces], min, :tip => ->(p, n) { "höchstens #{n} Workspaces in einer Stunde, #{p[:peak]} gleichzeitig" },
+                       :few => 'Workspaces', :none => (->(p) { p[:counted] ? 'kein Workspace' : 'nicht gezählt' }))
+            io << "<h3 class='mt-3 h5'>Wann sie laufen</h3>"
+            io << '<p>Laufende Workspaces je Wochentag und Stunde, im Mittel über den Zeitraum.</p>'
+            io << rhythm_html(summary[:workspace_rhythm], min, :noun => 'Workspaces', :none => 'kein Workspace')
+        end
 
         io << "<h2 class='mt-4'>Wochenrhythmus</h2>"
         io << '<p>Wann in der Woche geprüft wird: Lernende je Wochentag und Stunde, über den ganzen Zeitraum.</p>'
