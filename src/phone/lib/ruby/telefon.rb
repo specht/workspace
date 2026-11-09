@@ -22,9 +22,10 @@ module Telefon
     end
 end
 
-# speak the text; returns when it has been said
-def say(text)
-    Telefon.command('say' => text.to_s)
+# speak the text; returns when it has been said. interrupt: true lets a key
+# stop it; the key is kept for the next keys.
+def say(text, interrupt: false)
+    Telefon.command({ 'say' => text.to_s }.merge(interrupt ? { 'interrupt' => true } : {}))
     nil
 end
 

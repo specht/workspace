@@ -118,11 +118,11 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
          text-align: center; font-size: 14px; }
 .empty svg { width: 40px; height: 40px; opacity: .55; }
 /* words appear as they are spoken; the dot is the cursor */
-.w { animation: word .3s ease-out both; }
+.w { animation: word .18s ease-out both; }
 .cursor { display: inline-block; width: .6em; height: .6em; margin-left: .3em; border-radius: 50%; background: currentColor;
           vertical-align: .02em; animation: pulse 1s ease-in-out infinite; }
 .msg .cursor:first-child { margin-left: 0; }
-@keyframes word { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
+@keyframes word { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pop { from { opacity: 0; transform: translateY(4px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 0%, 100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
@@ -180,6 +180,7 @@ const TONES = { '1': [697, 1209], '2': [697, 1336], '3': [697, 1477], '4': [770,
 const $ = id => document.getElementById(id);
 let ctx = null, musicGain, duckGain, musicSource = null, voice = null;
 let inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {}, keyBubble = null;
+let skip = null;          // while a sentence a key may stop (say … interrupt) is spoken: stops it
 
 function audio() {
     if (!ctx) {
@@ -323,10 +324,11 @@ function wordTimes(buffer, words) {
 
 // the words of a sentence into the bubble as they are spoken; now() is the time since the sentence started. Returns a
 // function that shows the rest at once.
-function typeSentence(bubble, words, times, now) {
+function typeSentence(bubble, words, times, now, stopped = () => false) {
     const cursor = bubble.querySelector('.cursor');
     let next = 0, all = false;
     const step = () => {
+        if (stopped()) return;            // a key stopped the sentence: no more words
         const t = now();
         while (next < words.length && (all || times[next] <= t)) {
             if (bubble.querySelector('.w')) bubble.insertBefore(document.createTextNode(' '), cursor);
@@ -343,8 +345,15 @@ function typeSentence(bubble, words, times, now) {
     return () => { all = true; step(); };
 }
 
-async function say(parts, id) {
+async function say(parts, id, interrupt) {
     const mine = call;
+    let skipped = false;
+    if (interrupt) skip = () => {
+        skipped = true;
+        skip = null;
+        if (voice) { try { voice.stop(); } catch (e) {} }
+        if (window.speechSynthesis) speechSynthesis.cancel();
+    };
     // the bubble shows the cursor alone until the first word is spoken
     const bubble = message('game');
     const cursor = document.createElement('span');
@@ -360,14 +369,16 @@ async function say(parts, id) {
         const start = (times, now) => {
             $('spoken').textContent = parts[i];
             post(`/playing?id=${id}&part=${i}`);       // the terminal shows the sentence now
-            finish = typeSentence(bubble, words, times, now);
+            finish = typeSentence(bubble, words, times, now, () => skipped);
         };
         try {
             const buffer = await buffers[i];
             if (mine !== call) return;
-            const t0 = ctx.currentTime;
-            start(wordTimes(buffer, words), () => ctx.currentTime - t0);
-            await play(buffer);
+            if (!skipped) {
+                const t0 = ctx.currentTime;
+                start(wordTimes(buffer, words), () => ctx.currentTime - t0);
+                await play(buffer);
+            }
         } catch (error) {
             if (mine !== call) return;
             warn('speech', 'Die Stimme des Telefons ist gerade nicht erreichbar; der Browser liest vor. Auf dem echten Telefon klingt es anders.',
@@ -375,12 +386,20 @@ async function say(parts, id) {
             let chars = 0;
             const times = words.map(w => { const t = chars * 0.065; chars += w.length + 1; return t; });
             const t0 = performance.now();
-            if (!finish) start(times, () => (performance.now() - t0) / 1000);
-            await speakInBrowser(parts[i]);
+            if (!skipped) {
+                if (!finish) start(times, () => (performance.now() - t0) / 1000);
+                await speakInBrowser(parts[i]);
+            }
+        }
+        if (mine !== call) return;
+        if (skipped) {
+            // the rest is not heard, so it is not written either
+            cursor.insertAdjacentText('beforebegin', ' …');
+            break;
         }
         if (finish) finish();
-        if (mine !== call) return;
     }
+    if (interrupt && !skipped) skip = null;
     cursor.remove();
     $('screen').classList.remove('speaking');
     duck(false);
@@ -437,19 +456,43 @@ async function music(url, volume, id, loop) {
     }
 }
 
+// the key's two tones (DTMF), as loud and as long as on a phone: 150 ms
+// with soft edges, not ducked
 function tone(key) {
     if (!ctx) return;
     const gain = ctx.createGain(), now = ctx.currentTime;
-    gain.gain.setValueAtTime(0.08, now);
-    gain.gain.setTargetAtTime(0, now + 0.1, 0.02);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.22, now + 0.005);
+    gain.gain.setValueAtTime(0.22, now + 0.145);
+    gain.gain.linearRampToValueAtTime(0, now + 0.15);
     gain.connect(ctx.destination);
     for (const f of TONES[key]) {
         const o = ctx.createOscillator();
         o.frequency.value = f;
         o.connect(gain);
         o.start(now);
-        o.stop(now + 0.2);
+        o.stop(now + 0.16);
     }
+}
+
+// the end of a call: the busy tone of German phones, 425 Hz, three times
+// 240 ms with pauses as long
+function hangupTone() {
+    if (!ctx) return;
+    const now = ctx.currentTime, gain = ctx.createGain(), o = ctx.createOscillator();
+    gain.gain.setValueAtTime(0, now);
+    for (let i = 0; i < 3; i++) {
+        const t = now + 0.1 + i * 0.48;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.18, t + 0.01);
+        gain.gain.setValueAtTime(0.18, t + 0.23);
+        gain.gain.linearRampToValueAtTime(0, t + 0.24);
+    }
+    o.frequency.value = 425;
+    o.connect(gain);
+    gain.connect(ctx.destination);
+    o.start(now);
+    o.stop(now + 1.6);
 }
 
 function press(key) {
@@ -458,6 +501,7 @@ function press(key) {
     setTimeout(() => button.classList.remove('down'), 120);
     if (!inCall) return;
     tone(key);
+    if (skip) skip();
     if (!keyBubble) keyBubble = message('you');
     const cap = document.createElement('span');
     cap.className = 'cap';
@@ -493,6 +537,7 @@ function talking() {
 }
 
 function setCall(on) {
+    const wasInCall = inCall;
     inCall = on;
     call++;
     const button = $('call');
@@ -511,8 +556,10 @@ function setCall(on) {
         $('status').textContent = talking();
         clock = setInterval(() => { if (!$('wait').classList.contains('on')) $('status').textContent = talking(); }, 1000);
     } else {
+        skip = null;
         stopMusic();
         if (voice) { try { voice.stop(); } catch (e) {} voice = null; }
+        if (wasInCall) hangupTone();
         document.querySelectorAll('#lines .cursor').forEach(c => c.remove());
         if (window.speechSynthesis) speechSynthesis.cancel();
         if (duckGain) { duckGain.gain.cancelScheduledValues(0); duckGain.gain.value = 1; }
@@ -572,7 +619,7 @@ events.onmessage = message => {
         $('call').classList.remove('ready');
         $('status').textContent = 'Das Telefon ist jetzt in einem anderen Tab offen.';
     } else if (e.say) {
-        say(e.say, e.id);
+        say(e.say, e.id, e.interrupt);
     } else if ('music' in e) {
         music(e.music, e.volume, e.id, e.loop);
     } else if (e.keys) {

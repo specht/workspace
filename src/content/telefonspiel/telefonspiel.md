@@ -622,6 +622,17 @@ Was ein Spiel am Telefon gut macht:
 - **Musik passend zur Szene.** `music` darf auch mitten im Spiel stehen,
   etwa am Anfang der Funktion einer Szene; dann wechselt die Musik.
 
+<!-- language: ruby -->
+Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
+`say '…', interrupt: true` hört der Satz auf, sobald jemand eine Taste
+drückt, und das nächste `keys` bekommt genau diese Taste.
+<!-- /language -->
+<!-- language: python -->
+Wer eine lange Szene zum zweiten Mal hört, will sie nicht ganz abwarten. Mit
+`say('…', interrupt=True)` hört der Satz auf, sobald jemand eine Taste
+drückt, und das nächste `keys` bekommt genau diese Taste.
+<!-- /language -->
+
 _task(geschichte)
 
 ### Spieltest

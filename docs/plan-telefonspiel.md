@@ -143,6 +143,13 @@ Workspace: telefon spiel.rb ── the same game code (core/game.py) ───�
   since YouTube refuses old versions. Publishing is to fetch it in advance, so a call meets only finished
   files. A file in the game's folder is read by the runner or the emulator
   itself, never outside that folder.
+- **In advance in the Workspace:** `telefon` looks at the game's folder
+  every two seconds (.rb, .py, .js, at most 50 files) and has the speech
+  service fetch every YouTube link and render every fixed text of `say`
+  (no `#{…}`, no f-string) at once, so a call waits for neither; the
+  terminal says »Musik wird geholt«, »Musik bereit«, »… Sätze werden
+  vorbereitet«, »Sätze bereit«. Texts made while the game runs still come
+  at the call. Publishing is to do the same for the real phone.
 - **Pieces and loops:** `music` takes `start` and `stop` in seconds or as
   `'1:15'` (also a `t=` in a YouTube link); the phone loops the piece from
   start to stop. `core/game.py` (`music_span`) reads the times for the
@@ -156,6 +163,7 @@ object, so any language can play:
 
 ```text
 → {"say": "Willkommen im Labyrinth."}
+→ {"say": "Ein langer Text …", "interrupt": true}   a key stops it and stays for keys
 → {"sleep": 1000}
 → {"music": "https://youtu.be/…", "volume": 0.3, "start": "1:15", "stop": 112}
 ← {"ok": true}                   or {"error": "music: …"} for a time that is none

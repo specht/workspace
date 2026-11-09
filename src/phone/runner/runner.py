@@ -119,17 +119,29 @@ class Call(game.Phone):
 
     # what a game can do --------------------------------------------------
 
-    async def say(self, text):
-        """sentence by sentence: the first plays while the next is made"""
+    async def say(self, text, interrupt=False):
+        """sentence by sentence: the first plays while the next is made;
+        interrupt: a key cuts the speech (press) and stays for keys()"""
         self.log('say', repr(text[:80]))
         heard = None
-        for sentence in game.sentences(text):
-            samples = await sounds.speak(self.runner.session, sentence)
-            if self.ended.is_set():
-                return
-            heard = self.mixer.say(samples)
-        if heard:
-            await heard
+        self.cut = False
+        self.interruptible = interrupt
+        try:
+            for sentence in game.sentences(text):
+                samples = await sounds.speak(self.runner.session, sentence)
+                if self.ended.is_set() or self.cut:
+                    return
+                heard = self.mixer.say(samples)
+            if heard:
+                await heard
+        finally:
+            self.interruptible = False
+
+    def press(self, key):
+        super().press(key)
+        if getattr(self, 'interruptible', False):
+            self.cut = True
+            self.mixer.cut_speech()
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
         self.log('music', source, volume, start, stop)

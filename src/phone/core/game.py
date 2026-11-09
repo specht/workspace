@@ -86,6 +86,14 @@ def seconds(value, name):
     return result
 
 
+def youtube_link(source):
+    """one form per video (https://www.youtube.com/watch?v=ID), so youtu.be
+    and a link with si= or list= are fetched and cached once; anything else
+    as it is"""
+    m = re.match(r'https://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|shorts/)|youtu\.be/)([\w-]{6,})', source)
+    return f'https://www.youtube.com/watch?v={m.group(1)}' if m else source
+
+
 def youtube_start(source):
     """the link without the start YouTube puts into a shared link (t=75,
     t=1m15s, start=75), and that start in seconds or None"""
@@ -109,6 +117,7 @@ def music_span(source, start=None, stop=None):
     end = seconds(stop, 'stop')
     if re.match(r'https?://', source):
         source, linked = youtube_start(source)
+        source = youtube_link(source)
         if begin is None:
             begin = linked
     begin = begin or 0.0
@@ -151,7 +160,8 @@ class Phone:
     def press(self, key):
         self.keys.put_nowait(key)
 
-    async def say(self, text):
+    async def say(self, text, interrupt=False):
+        """interrupt: a key stops the speech (and stays for the next keys)"""
         raise NotImplementedError
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
@@ -179,7 +189,7 @@ class Phone:
         if not isinstance(command, dict):
             return {'error': 'a command is a JSON object'}
         if 'say' in command:
-            await self.say(str(command['say']))
+            await self.say(str(command['say']), bool(command.get('interrupt')))
             return {'ok': True}
         if 'sleep' in command:
             await self.sleep(command['sleep'])

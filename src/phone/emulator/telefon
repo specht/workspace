@@ -31,6 +31,13 @@ import game  # noqa: E402
 SPEECH = os.environ.get('PHONE_SPEECH', 'http://phone-speech:8000')
 PAGE = os.path.join(HERE, 'page.html')
 PORT = 8040
+# YouTube links in the game's files, fetched before the first call
+YOUTUBE = re.compile(r'https://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)[\w-]{6,}(?:[?&][\w=&%.-]*)?')
+WATCHED = 50                       # files of the folder looked at, at most
+# the fixed texts of say ('…' or "…" right after say or say(), without #{…}
+# or an f in front), rendered before the first call
+SAY = re.compile(r'''\bsay\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1''')
+MAX_SENTENCES = 300                # rendered in advance per run, at most
 COLOR = sys.stdout.isatty()
 
 
@@ -52,11 +59,12 @@ class Emulator(game.Phone):
         self.parts = {}
         self.next_id = 0
 
-    async def say(self, text):
+    async def say(self, text, interrupt=False):
         parts = game.sentences(text)
         if not parts:
             return
-        await self.until_heard({'say': parts}, parts)
+        # interrupt: the page stops the voice at a key and says it has heard
+        await self.until_heard({'say': parts, **({'interrupt': True} if interrupt else {})}, parts)
 
     async def until_heard(self, event, parts=None):
         """sends the event to the page and waits until the page has played it"""
@@ -123,6 +131,86 @@ class Server:
         self.events = None             # the page's event stream (one page at a time)
         self.phone = None
         self.call = None
+        self.fetched = set()           # YouTube links asked for (without t=)
+        self.spoken = set()            # sentences asked for
+
+    # music in advance ------------------------------------------------------------
+
+    async def watch_music(self):
+        """every two seconds: the YouTube links in the game's files (.rb,
+        .py, .js in its folder), and each new one fetched at once, so a call
+        does not wait for the download"""
+        seen = {}
+        while True:
+            try:
+                names = sorted(n for n in os.listdir(self.folder) if os.path.splitext(n)[1] in game.LANGUAGES)[:WATCHED]
+            except OSError:
+                names = []
+            for name in names:
+                path = os.path.join(self.folder, name)
+                try:
+                    stamp = os.stat(path).st_mtime
+                    if seen.get(path) == stamp:
+                        continue
+                    seen[path] = stamp
+                    with open(path, encoding='utf-8', errors='replace') as f:
+                        text = f.read(1_000_000)
+                except OSError:
+                    continue
+                for link in YOUTUBE.findall(text):
+                    source = game.youtube_link(game.youtube_start(link)[0])
+                    if source not in self.fetched:
+                        self.fetched.add(source)
+                        asyncio.ensure_future(self.fetch_music(source))
+                new = []
+                for quote, literal in SAY.findall(text):
+                    if '#{' in literal:          # Ruby fills it in while the game runs
+                        continue
+                    literal = re.sub(r'''\\(['"\\])''', r'\1', literal)
+                    for sentence in game.sentences(literal):
+                        if sentence not in self.spoken and len(self.spoken) < MAX_SENTENCES:
+                            self.spoken.add(sentence)
+                            new.append(sentence)
+                if new:
+                    asyncio.ensure_future(self.render(new))
+            await asyncio.sleep(2)
+
+    async def render(self, sentences):
+        """the sentences made by the speech service now, two at a time, so a
+        call takes them from its cache"""
+        show(f'{len(sentences)} {"Satz wird" if len(sentences) == 1 else "Sätze werden"} vorbereitet …', '2')
+        def fetch(sentence):
+            query = urllib.parse.urlencode({'text': sentence, 'format': 'f32'})
+            with urllib.request.urlopen(f'{SPEECH}/speech?{query}', timeout=60) as r:
+                r.read()
+        loop = asyncio.get_running_loop()
+        failed = 0
+        for i in range(0, len(sentences), 2):
+            results = await asyncio.gather(*(loop.run_in_executor(None, fetch, s) for s in sentences[i:i + 2]),
+                                           return_exceptions=True)
+            for sentence, result in zip(sentences[i:i + 2], results):
+                if isinstance(result, Exception):
+                    failed += 1
+                    self.spoken.discard(sentence)     # again when the file changes
+        if failed:
+            show(f'{failed} von {len(sentences)} Sätzen ließen sich nicht vorbereiten; sie kommen beim Anruf.', '33')
+        else:
+            show(f'{"Satz" if len(sentences) == 1 else "Sätze"} bereit.', '2')
+
+    async def fetch_music(self, source):
+        show(f'Musik wird geholt: {source}', '2')
+        def fetch():
+            query = urllib.parse.urlencode({'source': source, 'format': 'mp3'})
+            with urllib.request.urlopen(f'{SPEECH}/music?{query}', timeout=330) as r:
+                r.read()
+        try:
+            await asyncio.get_running_loop().run_in_executor(None, fetch)
+            show(f'Musik bereit: {source}', '2')
+        except urllib.error.HTTPError as error:
+            show(f'Musik: {source} ließ sich nicht holen: {error.read().decode("utf-8", "replace")[:200]}', '33')
+        except (OSError, ValueError):
+            self.fetched.discard(source)      # the speech service was away: again when the file changes
+            show(f'Musik: {source} ließ sich nicht holen, der Sprachdienst ist nicht erreichbar.', '33')
 
     # the event stream to the page --------------------------------------------
 
@@ -320,7 +408,7 @@ class TestPhone(game.Phone):
         self.answers = list(answers)
         self.folder = None
 
-    async def say(self, text):
+    async def say(self, text, interrupt=False):
         print(f'Telefon: {" ".join(str(text).split())}', flush=True)
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
@@ -411,15 +499,32 @@ async def serve(command, folder, port):
     show(f'Das Telefon läuft auf Port {candidate}.', '1')
     show(f'Öffne {address} im Browser (die Adresse steht auch im Reiter »Ports«) und klick auf den grünen Hörer.')
     show('Beenden mit Strg+C.', '2')
+    watching = asyncio.ensure_future(server.watch_music())
     loop = asyncio.get_running_loop()
     stop = loop.create_future()
+
+    def interrupt():
+        if stop.done():
+            os._exit(130)          # a second Strg+C: at once
+        stop.set_result(True)
     for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, lambda: stop.done() or stop.set_result(True))
-    async with listener:
-        await stop
-        server.hang_up()
-        if server.call and not server.call.done():
-            await asyncio.wait({server.call}, timeout=3)
+        loop.add_signal_handler(sig, interrupt)
+    await stop
+    watching.cancel()
+    server.hang_up()
+    if server.call and not server.call.done():
+        await asyncio.wait({server.call}, timeout=3)
+    # the page keeps its event stream open, and a server waits for every
+    # connection before it closes (Python 3.12 and later): close them here
+    listener.close()
+    if server.events is not None:
+        server.events.close()
+    if hasattr(listener, 'close_clients'):
+        listener.close_clients()
+    try:
+        await asyncio.wait_for(listener.wait_closed(), 2)
+    except asyncio.TimeoutError:
+        pass
     show('')
 
 

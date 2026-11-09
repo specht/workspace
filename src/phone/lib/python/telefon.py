@@ -21,9 +21,10 @@ def _command(data):
     return answer
 
 
-def say(text):
-    """speak the text; returns when it has been said"""
-    _command({'say': str(text)})
+def say(text, interrupt=False):
+    """speak the text; returns when it has been said. interrupt=True lets a
+    key stop it; the key is kept for the next keys()."""
+    _command({'say': str(text), **({'interrupt': True} if interrupt else {})})
 
 
 def keys(count=1, timeout=10):

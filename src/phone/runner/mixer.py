@@ -63,6 +63,13 @@ class Mixer:
         self.speech.append([samples, 0, done])
         return done
 
+    def cut_speech(self):
+        """the speech stops at once (a key interrupted it); its futures are done"""
+        for item in self.speech:
+            if not item[2].done():
+                item[2].set_result(False)
+        self.speech = []
+
     def speaking(self):
         return bool(self.speech)
 
