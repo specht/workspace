@@ -22,6 +22,18 @@ module Telefon
     end
 end
 
+# the game's name and a line about it: the phone shows the name, and the
+# Telefonbuch lists both when the game is published
+def title(text)
+    Telefon.command('title' => text.to_s)
+    nil
+end
+
+def subtitle(text)
+    Telefon.command('subtitle' => text.to_s)
+    nil
+end
+
 # speak the text; returns when it has been said. interrupt: true lets a key
 # stop it; the key is kept for the next keys. mood: Thorsten in a mood:
 # neutral, amused, angry, disgusted, drunk, sleepy, surprised or whisper.

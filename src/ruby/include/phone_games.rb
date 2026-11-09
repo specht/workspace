@@ -40,6 +40,10 @@ module PhoneGames
     SAY = /\bsay\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1/
     YOUTUBE = %r{https://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)[\w-]{6,}(?:[?&][\w=&%.-]*)?}
     MUSIC_FILE = /\bmusic\s*\(?\s*(['"])([^'"\n]+\.(?:mp3|ogg|wav|m4a))\1/
+    # the game names itself in its code: title '…' and subtitle '…' (Ruby),
+    # title('…') (Python, JavaScript), each at the start of a line
+    TITLE = /^[ \t]*title\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1/
+    SUBTITLE = /^[ \t]*subtitle\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1/
 
     class Refused < StandardError
         attr_reader :problem
@@ -47,6 +51,29 @@ module PhoneGames
         def initialize(problem, message)
             @problem = problem
             super(message)
+        end
+    end
+
+    # { title:, subtitle: } as the game's code states them (nil where missing)
+    def self.names(code)
+        pick = ->(re) { (m = code.to_s.match(re)) ? clean_text(m[2].gsub(/\\(['"\\])/, '\1'), re == TITLE ? MAX_TITLE : MAX_DESCRIPTION) : nil }
+        { :title => pick.(TITLE), :subtitle => pick.(SUBTITLE) }
+    end
+
+    # The names as the game itself states them while it runs: the lines
+    # »Titel: …« and »Untertitel: …« of telefon --test (the protocol's title
+    # and subtitle, the same for every language)
+    def self.names_from_run(transcript)
+        pick = ->(prefix, max) { (line = transcript.to_s.lines.find { |l| l.start_with?(prefix) }) ? clean_text(line.delete_prefix(prefix), max) : nil }
+        { :title => pick.('Titel: ', MAX_TITLE), :subtitle => pick.('Untertitel: ', MAX_DESCRIPTION) }
+    end
+
+    # The games a student can submit, each with its names from the code:
+    # [{ name:, title:, subtitle: }]
+    def self.games(ws)
+        candidates(ws).map do |name|
+            code = ws.read_text(File.join(FOLDER, name), :max => 512 * 1024) rescue ''
+            { :name => name }.merge(names(code))
         end
     end
 

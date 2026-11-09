@@ -61,6 +61,10 @@ class Emulator(game.Phone):
         self.moods = {}                # id of a say → its mood, for the terminal
         self.next_id = 0
 
+    def titled(self, title, subtitle):
+        if title:
+            self.server.send({'title': title})
+
     async def say(self, text, interrupt=False, mood=None):
         parts = game.sentences(text)
         if not parts:
@@ -424,6 +428,12 @@ class TestPhone(game.Phone):
         super().__init__()
         self.answers = list(answers)
         self.folder = None
+
+    def titled(self, title, subtitle):
+        if title:
+            print(f'Titel: {" ".join(title.split())}', flush=True)
+        if subtitle:
+            print(f'Untertitel: {" ".join(subtitle.split())}', flush=True)
 
     async def say(self, text, interrupt=False, mood=None):
         print(f'Telefon{f" ({mood})" if mood else ""}: {" ".join(str(text).split())}', flush=True)

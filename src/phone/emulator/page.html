@@ -26,6 +26,10 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* the line in the Telefonbuch: only the phone, on the page behind it */
+body.line { background: transparent; }
+body.line main { grid-template-columns: 310px; padding: 0; }
+body.line .log { display: none; }
 main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; justify-content: center;
        padding: 24px 16px; margin: 0 auto; }
 @media (max-width: 720px) { main { grid-template-columns: minmax(0, 340px); } }
@@ -202,8 +206,19 @@ function duck(on) {
     g.linearRampToValueAtTime(target, now + Math.abs(from - target) / (1 - DUCK) * (on ? ATTACK : RELEASE));
 }
 
+// In the Telefonbuch (?line) this page is the public line (src/phone/line):
+// only the phone, and a session of its own on every request. Addresses are
+// relative, so the page works under any path (/telefonbuch/telefon/).
+const LINE = new URLSearchParams(location.search).has('line');
+const SESSION = LINE ? Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('') : '';
+if (LINE) document.body.classList.add('line');
+function at(path) {
+    const p = path.replace(/^\//, '');
+    return SESSION ? p + (p.includes('?') ? '&' : '?') + 's=' + SESSION : p;
+}
+
 function post(path, body) {
-    return fetch(path, { method: 'POST', body: body || '' }).catch(() => {});
+    return fetch(at(path), { method: 'POST', body: body || '' }).catch(() => {});
 }
 
 function scroll() {
@@ -255,7 +270,7 @@ function warn(key, text, terminal) {
 }
 
 async function fetchAudio(url) {
-    const response = await fetch(url);
+    const response = await fetch(at(url));
     if (!response.ok) throw new Error(await response.text());
     return audio().decodeAudioData(await response.arrayBuffer());
 }
@@ -613,8 +628,9 @@ document.addEventListener('keydown', e => {
     else if (e.key === 'Escape' && inCall) { toggleCall(); e.preventDefault(); }
 });
 
-const ENDED = { caller: 'Aufgelegt.', hangup: 'Das Spiel hat aufgelegt.', ended: 'Das Spiel ist zu Ende.', time: 'Die Zeit ist um.' };
-const events = new EventSource('/events');
+const ENDED = { caller: 'Aufgelegt.', hangup: 'Das Spiel hat aufgelegt.', ended: 'Das Spiel ist zu Ende.', time: 'Die Zeit ist um.',
+    busy: 'Alle Leitungen sind belegt. Versuch es gleich noch einmal.', one: 'Von hier läuft schon ein Anruf.' };
+const events = new EventSource(at('/events'));
 events.onmessage = message => {
     const e = JSON.parse(message.data);
     if (e.ready) {
@@ -629,6 +645,8 @@ events.onmessage = message => {
         $('call').disabled = true;
         $('call').classList.remove('ready');
         $('status').textContent = 'Das Telefon ist jetzt in einem anderen Tab offen.';
+    } else if (e.title) {
+        $('title').textContent = e.title;
     } else if (e.say) {
         say(e.say, e.id, e.interrupt, e.mood);
     } else if ('music' in e) {
@@ -640,7 +658,8 @@ events.onmessage = message => {
     } else if (e.ended) {
         setCall(false);
         note(ENDED[e.ended] || 'Der Anruf ist beendet.');
-        $('status').textContent = 'Bereit';
+        // without the chat (the line) the display says why it ended
+        $('status').textContent = LINE && ENDED[e.ended] && e.ended !== 'caller' ? ENDED[e.ended] : 'Bereit';
     }
 };
 events.onerror = () => {

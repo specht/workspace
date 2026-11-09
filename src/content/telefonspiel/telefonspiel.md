@@ -736,8 +736,30 @@ Ist dein Spiel fertig, kommt es ins [Telefonbuch](/telefonbuch): Dort steht
 es mit seinem Titel und einer Nummer, unter der man es anruft. Such dir die
 Nummer aus, von 001 bis 999. Bevor es im Telefonbuch steht,
 sieht es sich jemand an, und du bekommst eine E-Mail, ob es veröffentlicht
-ist. Im Telefonbuch steht kein Name, nur der Titel, der Satz dazu und die
-Nummer.
+ist. Im Telefonbuch steht nicht, wer es geschrieben hat, nur der Titel, der
+Satz dazu und die Nummer.
+
+Vorher gibt dein Spiel sich selbst einen Namen und einen Satz, der im
+Telefonbuch unter dem Namen steht. Beides gehört an den Anfang deiner Datei:
+
+<!-- language: ruby -->
+```ruby
+~ require 'telefon'
+~
+title 'Die Höhle der Echos'
+subtitle 'Ein Abenteuer mit drei Wegen und einem Schatz.'
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+from telefon import keys, music, say, sleep, subtitle, title
+
+title('Die Höhle der Echos')
+subtitle('Ein Abenteuer mit drei Wegen und einem Schatz.')
+```
+<!-- /language -->
+
+Das Telefon zeigt den Namen an, sobald dein Spiel ihn sagt.
 
 Eingereicht wird eine Kopie deines Spiels: Änderst du danach etwas, reich es
 noch einmal ein. Zurückziehen kannst du es jederzeit, dann ist seine Nummer

@@ -43,7 +43,7 @@ class Main < Sinatra::Base
         {
             :games => all.select { |g| g[:email] == email }.sort_by { |g| -g[:submitted].to_i }.map { |g| PhoneGames.public_view(g) },
             :taken => PhoneGames.taken_numbers(all, email),
-            :files => PhoneGames.candidates(task_workspace_files),
+            :files => PhoneGames.games(task_workspace_files),
             :folder => PhoneGames::FOLDER,
         }
     end
@@ -67,13 +67,9 @@ class Main < Sinatra::Base
 
     post '/api/phone/submit' do
         assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:file, :title, :number], :optional_keys => [:description],
-            :max_value_lengths => { :file => 200, :title => 200, :description => 400, :number => 3 })
+        data = parse_request_data(:required_keys => [:file, :number], :max_value_lengths => { :file => 200, :number => 3 })
         email = @session_user[:email]
-        title = PhoneGames.clean_text(data[:title], PhoneGames::MAX_TITLE)
-        description = PhoneGames.clean_text(data[:description], PhoneGames::MAX_DESCRIPTION)
         number = data[:number].to_s
-        halt 400, { :error => 'title' }.to_json if title.empty?
         halt 400, { :error => 'number' }.to_json unless PhoneGames.valid_number?(number)
         ws = task_workspace_files
         begin
@@ -82,7 +78,14 @@ class Main < Sinatra::Base
             halt 400, { :error => 'files', :message => e.message }.to_json
         end
         file = File.basename(data[:file].to_s)
+        # the names are the game's own: as it states them in the test run
+        # (title '…', subtitle '…' in any language), else as its code has them
         transcript = phone_game_transcript(file)
+        ran = PhoneGames.names_from_run(transcript)
+        code = PhoneGames.names(ws.read_text(File.join(PhoneGames::FOLDER, file), :max => 512 * 1024))
+        title, description = ran[:title] || code[:title], ran[:subtitle] || code[:subtitle]
+        halt 400, { :error => 'title' }.to_json unless title
+        halt 400, { :error => 'subtitle' }.to_json unless description
         id = PhoneGames.new_id
         @@phone_games_mutex.synchronize do
             all = phone_games_all

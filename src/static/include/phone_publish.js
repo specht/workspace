@@ -37,21 +37,43 @@
             `<div class='pp-edit' data-id='${esc(g.id)}'></div></li>`;
     }
 
+    // what the chosen game says about itself (title '…', subtitle '…' in its code)
+    function namesHtml() {
+        const select = root.querySelector('#pp-file');
+        const game = select && state.files.find((f) => f.name === select.value);
+        if (!game) return '';
+        const missing = [!game.title && 'title', !game.subtitle && 'subtitle'].filter(Boolean);
+        if (missing.length) {
+            return `<div class='alert alert-warning py-2 mb-0'>In <code>${esc(game.name)}</code> fehlt ` +
+                missing.map((m) => `eine Zeile <code>${m} '…'</code>`).join(' und ') + `: Damit gibt das Spiel sich selbst einen Namen und einen Satz fürs Telefonbuch.</div>`;
+        }
+        return `<div class='pp-names'><b>${esc(game.title)}</b><br><span class='text-muted'>${esc(game.subtitle)}</span></div>`;
+    }
+
     function render() {
-        const files = state.files.map((f) => `<option value='${esc(f)}'>${esc(f)}</option>`).join('');
+        const files = state.files.map((f) => `<option value='${esc(f.name)}'>${esc(f.name)}</option>`).join('');
         const form = state.files.length
             ? `<div class='row g-2'>` +
-                `<div class='col-md-4'><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${files}</select></div>` +
-                `<div class='col-md-5'><label class='form-label' for='pp-title'>Titel</label><input class='form-control' id='pp-title' maxlength='60' placeholder='Die Höhle der Echos'></div>` +
+                `<div class='col-md-5'><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${files}</select></div>` +
                 `<div class='col-md-3'><label class='form-label' for='pp-number'>Nummer</label><div class='input-group'>` +
                 `<input class='form-control pp-number-input' id='pp-number' maxlength='3' inputmode='numeric' placeholder='123'>` +
                 `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer'><i class='bi bi-shuffle'></i></button></div></div>` +
-                `<div class='col-12'><label class='form-label' for='pp-description'>Ein Satz dazu</label><input class='form-control' id='pp-description' maxlength='140' placeholder='Ein Abenteuer mit drei Wegen und einem Schatz.'></div>` +
+                `<div class='col-12 pp-names-box'></div>` +
                 `</div><button class='btn btn-success mt-3 pp-submit'><i class='bi bi-send'></i> Einreichen</button>`
             : `<p class='mb-0'>In <code>/workspace/${esc(state.folder)}</code> liegt noch kein Spiel (eine Datei mit <code>.rb</code>, <code>.py</code> oder <code>.js</code>).</p>`;
         const list = state.games.length
             ? `<h4 class='mt-4'>Deine Spiele</h4><ul class='list-group'>${state.games.map(gameHtml).join('')}</ul>` : '';
         root.innerHTML = `${form}<div class='pp-message'></div>${list}`;
+        showNames();
+    }
+
+    function showNames() {
+        const box = root.querySelector('.pp-names-box');
+        if (!box) return;
+        box.innerHTML = namesHtml();
+        const select = root.querySelector('#pp-file');
+        const game = select && state.files.find((f) => f.name === select.value);
+        root.querySelector('.pp-submit').disabled = !(game && game.title && game.subtitle);
     }
 
     function load() {
@@ -72,7 +94,8 @@
 
     function failed(data, fallback) {
         const texts = {
-            title: 'Gib deinem Spiel einen Titel.',
+            title: "In deinem Spiel fehlt die Zeile title '…'.",
+            subtitle: "In deinem Spiel fehlt die Zeile subtitle '…'.",
             number: 'Die Nummer hat drei Ziffern, 001 bis 999. Die 000 gehört dem Zufall.',
             taken: 'Diese Nummer hat schon ein anderes Spiel. Nimm eine andere.',
         };
@@ -89,12 +112,7 @@
             if (state.taken.includes(number)) { failed({ error: 'taken' }); return; }
             button.disabled = true;
             message('');
-            api_call('/api/phone/submit', {
-                file: root.querySelector('#pp-file').value,
-                title: root.querySelector('#pp-title').value,
-                description: root.querySelector('#pp-description').value,
-                number,
-            }, (data) => {
+            api_call('/api/phone/submit', { file: root.querySelector('#pp-file').value, number }, (data) => {
                 button.disabled = false;
                 if (!data.success) { failed(data, 'Das Einreichen hat nicht geklappt. Sieh nach, ob dein Workspace läuft, und versuch es noch einmal.'); return; }
                 state = data;
@@ -124,6 +142,10 @@
                 render();
             });
         }
+    });
+
+    root.addEventListener('change', (e) => {
+        if (e.target.id === 'pp-file') showNames();
     });
 
     root.addEventListener('input', (e) => {

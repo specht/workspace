@@ -176,6 +176,9 @@ class Phone:
     def press(self, key):
         self.keys.put_nowait(key)
 
+    def titled(self, title, subtitle):
+        """the game named itself (title '…', subtitle '…'); nothing to do here"""
+
     async def say(self, text, interrupt=False, mood=None):
         """interrupt: a key stops the speech (and stays for the next keys);
         mood: one of MOODS or None"""
@@ -205,6 +208,9 @@ class Phone:
         """one command; the answer, or None to hang up"""
         if not isinstance(command, dict):
             return {'error': 'a command is a JSON object'}
+        if 'title' in command or 'subtitle' in command:
+            self.titled(str(command.get('title', '')), str(command.get('subtitle', '')))
+            return {'ok': True}
         if 'say' in command:
             try:
                 mood = mood_of(command.get('mood'))

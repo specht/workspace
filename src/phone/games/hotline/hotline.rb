@@ -3,6 +3,9 @@
 # die Schleife; wer den geheimen Ausgang findet (die Sterntaste), kommt raus.
 require 'telefon'
 
+title 'Hotline des Hackschule Workspace'
+subtitle 'Hilfe bei allen Fragen rund um den Workspace, rund um die Uhr.'
+
 HOLD = 'https://www.youtube.com/watch?v=-xRD8VmjBQM'   # Thimbleweed Park, »Hotel Elevator«
 
 QUESTIONS = [
@@ -13,6 +16,9 @@ QUESTIONS = [
   ['Steht Ihr Computer gerade vor Ihnen oder hinter Ihnen?', 'Drücken Sie die 1 für vor mir, die 2 für hinter mir.'],
   ['Haben Sie den Fehler schon gefragt, warum er da ist?', 'Drücken Sie die 1 für ja, die 2 für er antwortet nicht.'],
   ['Ist Ihr Bildschirm eingeschaltet?', 'Wenn Sie das nicht sehen können, drücken Sie bitte die 1.'],
+  ['Haben Sie das Formular 27 B Strich 6 ausgefüllt, in dreifacher Ausfertigung?', 'Drücken Sie die 1 für ja, die 2 für welches Formular.'],
+  ['Möchten Sie den Empfang Ihrer Empfangsbestätigung bestätigen?', 'Drücken Sie die 1 für ja, die 2 für ja, aber später.'],
+  ['Wurde Ihr Problem bereits von einer anderen Abteilung als nicht zuständig abgelehnt?', 'Drücken Sie die 1 für ja, die 2 für noch nicht.'],
 ].freeze
 
 REPLIES = [
@@ -21,6 +27,11 @@ REPLIES = [
   'Interessant. Das hat noch niemand geantwortet.',
   'Ihre Eingabe wurde gespeichert. Leider in der falschen Tabelle.',
   'Einen Moment, ich schaue nach. Hm.',
+  'Ihre Anfrage wurde an die Zentralen Dienste weitergeleitet. Die Zentralen Dienste verweisen Sie an die Hotline.',
+  'Laut unseren Unterlagen sind Sie bereits zufrieden.',
+  'Es liegt eine Verwechslung vor. Nicht bei uns.',
+  'Ihr Fall wird in einer anderen Abteilung bearbeitet. Diese Abteilung gibt es noch nicht.',
+  'Wir haben Ihre Antwort in dreifacher Ausfertigung abgelegt. Eine davon ist leider verschwunden.',
 ].freeze
 
 $place = 3

@@ -21,6 +21,16 @@ def _command(data):
     return answer
 
 
+def title(text):
+    """the game's name: the phone shows it, the Telefonbuch lists it"""
+    _command({'title': str(text)})
+
+
+def subtitle(text):
+    """a line about the game, for the Telefonbuch"""
+    _command({'subtitle': str(text)})
+
+
 def say(text, interrupt=False, mood=None):
     """speak the text; returns when it has been said. interrupt=True lets a
     key stop it; the key is kept for the next keys(). mood: Thorsten in a

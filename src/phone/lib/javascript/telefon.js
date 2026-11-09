@@ -27,6 +27,10 @@ function command(data) {
     return answer;
 }
 
+// the game's name (the phone shows it, the Telefonbuch lists it) and a line about it
+function title(text) { command({ title: String(text) }); }
+function subtitle(text) { command({ subtitle: String(text) }); }
+
 // speak the text; returns when it has been said. say(text, { interrupt: true })
 // lets a key stop it; the key is kept for the next keys(). mood: Thorsten in a
 // mood: neutral, amused, angry, disgusted, drunk, sleepy, surprised or whisper.
@@ -56,4 +60,4 @@ function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }
 // end the call
 function hangup() { command({ hangup: true }); process.exit(0); }
 
-module.exports = { say, keys, music, sleep, hangup };
+module.exports = { title, subtitle, say, keys, music, sleep, hangup };
