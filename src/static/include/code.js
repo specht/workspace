@@ -1,9 +1,3 @@
-// A trial (November 2026): ?tabellencode=hell shows the highlighted code in
-// the Handbuch's tables on light chips instead of dark ones (default.css)
-try {
-    if (new URLSearchParams(location.search).get('tabellencode') === 'hell') document.documentElement.dataset.tableCode = 'light';
-} catch (e) { }
-
 // The Workspace may be installed manually from the browser menu,
 // but don't interrupt students with an automatic install prompt.
 window.addEventListener('beforeinstallprompt', function(event) {

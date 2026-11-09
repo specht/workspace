@@ -56,9 +56,8 @@
 
 <style>
 #{Rouge::Theme.find('gruvbox').render(scope: 'pre')}
-#{Rouge::Theme.find('gruvbox').render(scope: 'html:not([data-table-code="light"]) .table code.code-chip')}
-#{Rouge::Theme.find('gruvbox').mode(:light).render(scope: 'html[data-table-code="light"]:not([data-bs-theme="dark"]) .table code.code-chip')}
-#{Rouge::Theme.find('gruvbox').render(scope: 'html[data-table-code="light"][data-bs-theme="dark"] .table code.code-chip')}
+#{Rouge::Theme.find('gruvbox').mode(:light).render(scope: 'html:not([data-bs-theme="dark"]) .table code.code-chip')}
+#{Rouge::Theme.find('gruvbox').render(scope: 'html[data-bs-theme="dark"] .table code.code-chip')}
 pre table td {
     padding: 0;
     border-radius: 0;

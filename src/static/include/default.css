@@ -15000,11 +15000,10 @@ html[data-bs-theme="dark"] .splat-viewer {
 @media (prefers-reduced-motion: reduce) { .voice-bars i { animation: none; height: 10px; } }
 
 /* Code in a comparison table, highlighted by its column's language
-   (CodeHighlight.highlight_tables), in chips: dark like the code blocks,
-   with their yellow strings and orange keywords; a trial with light chips
-   behind ?tabellencode=hell (code.js) */
+   (CodeHighlight.highlight_tables), in light chips: dark lines between the
+   rows of a table would be too jarring, so not the dark of the code blocks
+   (the maintainer); gruvbox's light colours on a very light grey, its dark
+   ones on a faint chip in dark mode (theme in _template.html) */
 .table code.code-chip { padding: .1rem .4rem; border-radius: .3rem; font-size: .88em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-html:not([data-table-code="light"]) .table code.code-chip :is(.s, .sb, .sc, .dl, .sd, .s2, .sh, .sx, .s1) { color: #fad31c !important; font-weight: normal !important; }
-html:not([data-table-code="light"]) .table code.code-chip :is(.k, .kn, .kp, .kr, .kv, .nt) { color: #fdb717 !important; }
-html[data-table-code="light"]:not([data-bs-theme="dark"]) .table code.code-chip { background-color: #f6f7f8 !important; }
-html[data-table-code="light"][data-bs-theme="dark"] .table code.code-chip { background-color: rgba(255, 255, 255, .06) !important; }
+html:not([data-bs-theme="dark"]) .table code.code-chip { background-color: #f6f7f8 !important; }
+html[data-bs-theme="dark"] .table code.code-chip { background-color: rgba(255, 255, 255, .06) !important; }
