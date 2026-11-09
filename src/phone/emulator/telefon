@@ -157,7 +157,9 @@ class Server:
             with open(os.path.join(self.folder, 'game.json')) as f:
                 return str(json.load(f)['title'])
         except (OSError, ValueError, KeyError, TypeError):
-            return os.path.basename(self.folder)
+            # the file that answers (hoehle.rb), so a student sees which one runs
+            files = [c for c in self.command if os.path.splitext(c)[1] in game.LANGUAGES]
+            return os.path.basename(files[-1]) if files else os.path.basename(self.folder)
 
     # the call ------------------------------------------------------------------
 

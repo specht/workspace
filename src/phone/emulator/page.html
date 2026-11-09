@@ -6,61 +6,107 @@
 <title>Telefonspiel</title>
 <style>
 :root {
-    --bg: #f3f4f6; --card: #ffffff; --ink: #1f2933; --muted: #6b7280; --line: #e2e5ea;
-    --key: #eef0f3; --key-hover: #e2e5ea; --game: #0e7490; --you: #a16207; --note: #6b7280;
+    --bg: #eef1f4; --card: #ffffff; --ink: #1f2933; --muted: #6b7280; --line: #e2e5ea;
+    --key: #f1f3f6; --key-hover: #e4e8ed; --key-sub: #8a93a0; --you: #b45309; --note: #6b7280;
     --green: #16a34a; --red: #dc2626; --warn-bg: #fef3c7; --warn-ink: #78350f;
-    --bubble: #e3f2f6; --bubble-ink: #0b4a59; --cap: #ffffff; --cap-line: #d4d8de;
+    --screen: linear-gradient(160deg, #e6f4f7, #d5ebf0); --screen-ink: #0b4a59; --screen-muted: #4b7884;
+    --bubble: #e3f2f6; --bubble-ink: #0b4a59; --avatar: #0e7490; --cap: #ffffff; --cap-line: #d4d8de;
+    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 18px 40px -12px rgba(16,24,40,.18);
     color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #111418; --card: #1b2026; --ink: #e5e7eb; --muted: #9ca3af; --line: #2c333b;
-        --key: #262c34; --key-hover: #313842; --game: #67c6dc; --you: #facc15; --note: #9ca3af;
+        --bg: #0f1216; --card: #1a1f25; --ink: #e5e7eb; --muted: #9ca3af; --line: #2b323a;
+        --key: #242a32; --key-hover: #2f3640; --key-sub: #7c8592; --you: #fbbf24; --note: #9ca3af;
         --warn-bg: #3b2f12; --warn-ink: #fde68a;
-        --bubble: #173039; --bubble-ink: #d3eef5; --cap: #2a3038; --cap-line: #444c57;
+        --screen: linear-gradient(160deg, #143440, #0f2a33); --screen-ink: #d3eef5; --screen-muted: #8fb9c4;
+        --bubble: #173039; --bubble-ink: #d3eef5; --avatar: #3fa9c2; --cap: #2a3038; --cap-line: #444c57;
+        --shadow: 0 1px 2px rgba(0,0,0,.3), 0 18px 40px -12px rgba(0,0,0,.6);
         color-scheme: dark;
     }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align-items: flex-start;
-       padding: 24px 16px; max-width: 960px; margin: 0 auto; }
-.phone { background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 22px 22px 26px;
-         width: 300px; max-width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
-.screen { text-align: center; min-height: 92px; margin-bottom: 14px; }
-.screen h1 { font-size: 18px; margin: 4px 0 2px; }
-.status { color: var(--muted); font-size: 14px; min-height: 21px; }
-.wait { height: 4px; background: var(--line); border-radius: 2px; margin: 10px 18px 0; overflow: hidden; visibility: hidden; }
+main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; justify-content: center;
+       padding: 24px 16px; margin: 0 auto; }
+@media (max-width: 720px) { main { grid-template-columns: minmax(0, 340px); } }
+
+/* the phone */
+.phone { background: var(--card); border: 1px solid var(--line); border-radius: 36px; padding: 14px 18px 22px;
+         box-shadow: var(--shadow); align-self: start; }
+.speaker { width: 54px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
+.screen { position: relative; background: var(--screen); color: var(--screen-ink); border-radius: 20px;
+          padding: 14px 14px 12px; text-align: center; margin-bottom: 18px; min-height: 118px; }
+.screen h1 { font-size: 17px; margin: 0 0 2px; font-weight: 650; }
+.status { color: var(--screen-muted); font-size: 13.5px; min-height: 20px; font-variant-numeric: tabular-nums;
+          display: flex; align-items: center; justify-content: center; gap: 6px; }
+.status .live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: none; }
+.screen.on .status .live { display: inline-block; }
+.digits { font: 600 22px/1 ui-monospace, monospace; letter-spacing: .14em; min-height: 26px; margin-top: 8px; }
+/* while the game speaks: bars on the screen (the voice, never the music) */
+.voice { display: flex; gap: 3px; justify-content: center; align-items: center; height: 14px; margin-top: 4px; opacity: 0; transition: opacity .2s; }
+.voice i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; }
+.screen.speaking .voice { opacity: .8; }
+.screen.speaking .voice i { animation: bar .9s ease-in-out infinite; }
+.voice i:nth-child(2) { animation-delay: -.6s !important; } .voice i:nth-child(3) { animation-delay: -.3s !important; }
+.voice i:nth-child(4) { animation-delay: -.75s !important; } .voice i:nth-child(5) { animation-delay: -.15s !important; }
+@keyframes bar { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+.wait { position: absolute; left: 16px; right: 16px; bottom: 9px; height: 3px; background: rgba(127,127,127,.25);
+        border-radius: 2px; overflow: hidden; visibility: hidden; }
 .wait.on { visibility: visible; }
 .wait div { height: 100%; width: 100%; background: var(--you); transform-origin: left; }
-.digits { font: 600 22px/1 ui-monospace, monospace; letter-spacing: .12em; min-height: 26px; margin-top: 8px; }
-.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; }
-.keypad button { width: 68px; height: 68px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
-                 font: 500 26px/1 system-ui, sans-serif; cursor: pointer; transition: background .08s, transform .08s; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 12px; justify-items: center; }
+.keypad button { width: 64px; height: 64px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
+                 cursor: pointer; transition: background .08s, transform .08s; display: flex; flex-direction: column;
+                 align-items: center; justify-content: center; gap: 1px; padding: 0; }
+.keypad b { font: 500 25px/1 system-ui, sans-serif; }
+.keypad small { font: 600 9px/1 system-ui, sans-serif; letter-spacing: .14em; color: var(--key-sub); min-height: 9px; }
 .keypad button:hover { background: var(--key-hover); }
 .keypad button.down { transform: scale(.93); background: var(--key-hover); }
-.keypad button:disabled { opacity: .45; cursor: default; }
-.call { display: flex; justify-content: center; margin-top: 18px; }
-.call button { width: 68px; height: 68px; border-radius: 50%; border: 0; cursor: pointer; color: #fff; background: var(--green); }
-.call button.hang { background: var(--red); }
+.keypad button:disabled { opacity: .5; cursor: default; }
+.call { display: flex; justify-content: center; margin-top: 16px; }
+.call button { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
+               background: var(--green); box-shadow: 0 6px 16px -4px rgba(22,163,74,.55); transition: background .15s, box-shadow .15s; }
+.call button:disabled { opacity: .5; box-shadow: none; cursor: default; }
+.call button.hang { background: var(--red); box-shadow: 0 6px 16px -4px rgba(220,38,38,.55); }
+/* ready to call: a ring that invites the click */
+.call button.ready::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--green);
+                            animation: ring 2s ease-out infinite; }
+@keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.45); opacity: 0; } }
 .call button:focus:not(:focus-visible), .keypad button:focus:not(:focus-visible) { outline: none; }
 .call .end, .call button.hang .dial { display: none; }
 .call button.hang .end { display: inline; }
-.call svg { width: 30px; height: 30px; vertical-align: middle; }
-.log { flex: 1 1 320px; max-width: 560px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-       padding: 16px 18px; min-height: 200px; max-height: calc(100vh - 48px); overflow-y: auto; }
-.log h2 { font-size: 15px; margin: 0 0 12px; color: var(--muted); font-weight: 600; }
+.call svg { width: 28px; height: 28px; vertical-align: middle; }
+
 /* the conversation as a chat: the game left, the keys right */
+.log { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow);
+       display: flex; flex-direction: column; min-height: 0; height: 100%; max-height: calc(100vh - 48px); overflow: hidden; }
+@media (max-width: 720px) { .log { height: auto; min-height: 260px; max-height: 70vh; } }
+.log header { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+              padding: 13px 18px; border-bottom: 1px solid var(--line); }
+.log h2 { font-size: 15px; margin: 0; font-weight: 650; }
+.pill { font-size: 12px; font-weight: 600; color: var(--red); display: none; align-items: center; gap: 6px; }
+.pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: blink 1.6s ease-in-out infinite; }
+.log.on .pill { display: inline-flex; }
+@keyframes blink { 50% { opacity: .3; } }
+.scroll { flex: 1; overflow-y: auto; padding: 16px 18px; }
 #lines { display: flex; flex-direction: column; gap: 8px; }
-.msg { max-width: 85%; padding: 8px 13px; border-radius: 18px; overflow-wrap: anywhere; animation: pop .22s ease-out; }
-.msg.game { align-self: flex-start; background: var(--bubble); color: var(--bubble-ink); border-bottom-left-radius: 6px; min-width: 44px; }
-.msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
-.cap { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 7px;
-       background: var(--cap); color: var(--ink); border: 1px solid var(--cap-line); border-bottom-width: 2px;
+.row { display: flex; align-items: flex-end; gap: 8px; max-width: 88%; animation: pop .22s ease-out; }
+.avatar { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--avatar); color: #fff;
+          display: grid; place-items: center; }
+.avatar svg { width: 16px; height: 16px; }
+.row + .row .avatar { visibility: hidden; }
+.msg { padding: 8px 13px; border-radius: 18px; overflow-wrap: anywhere; }
+.msg.game { background: var(--bubble); color: var(--bubble-ink); border-bottom-left-radius: 6px; min-width: 44px; }
+.msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; animation: pop .22s ease-out; }
+.cap { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 8px;
+       background: var(--cap); color: var(--ink); border: 1px solid var(--cap-line); border-bottom-width: 3px;
        font: 600 15px/1 ui-monospace, monospace; animation: pop .15s ease-out; }
-.note { align-self: center; display: flex; align-items: center; gap: 6px; color: var(--note); font-size: 13px;
-        text-align: center; animation: pop .22s ease-out; }
+.note { align-self: center; color: var(--note); font-size: 13px; text-align: center; animation: pop .22s ease-out; }
+.empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 12px; color: var(--muted);
+         text-align: center; font-size: 14px; }
+.empty svg { width: 40px; height: 40px; opacity: .55; }
 /* words appear as they are spoken; the dot is the cursor */
 .w { animation: word .3s ease-out both; }
 .cursor { display: inline-block; width: .6em; height: .6em; margin-left: .3em; border-radius: 50%; background: currentColor;
@@ -69,20 +115,25 @@ main { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align
 @keyframes word { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
 @keyframes pop { from { opacity: 0; transform: translateY(4px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 0%, 100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .w, .msg, .cap, .note { animation: none; } .cursor { animation: none; opacity: .7; } }
+@media (prefers-reduced-motion: reduce) {
+    .w, .row, .msg, .cap, .note, .pill::before, .call button.ready::after { animation: none; }
+    .cursor { animation: none; opacity: .7; } .screen.speaking .voice i { animation: none; height: 9px; }
+}
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 8px 12px; font-size: 14px; margin-bottom: 10px; }
-kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
-.help { color: var(--muted); font-size: 13px; margin-top: 12px; text-align: center; }
+.log footer { padding: 9px 18px 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+kbd { font: 11.5px ui-monospace, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; }
 </style>
 </head>
 <body>
 <main>
     <section class="phone" aria-label="Telefon">
-        <div class="screen">
+        <div class="speaker"></div>
+        <div class="screen" id="screen">
             <h1 id="title">Telefonspiel</h1>
-            <div class="status" id="status">Verbinde mit dem Terminal …</div>
+            <div class="status"><span class="live"></span><span id="status">Verbinde mit dem Terminal …</span></div>
             <div class="digits" id="digits" aria-live="polite"></div>
+            <div class="voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
             <div class="wait" id="wait"><div id="wait-bar"></div></div>
         </div>
         <div class="keypad" id="keypad"></div>
@@ -91,12 +142,14 @@ kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-
             <svg class="dial" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3a1 1 0 0 1 .877 .519l.051 .11l2 5a1 1 0 0 1 -.313 1.16l-.1 .068l-1.674 1.004l.063 .103a10 10 0 0 0 3.132 3.132l.102 .062l1.005 -1.672a1 1 0 0 1 1.113 -.453l.115 .039l5 2a1 1 0 0 1 .622 .807l.007 .121v4c0 1.657 -1.343 3 -3.06 2.998c-8.579 -.521 -15.418 -7.36 -15.94 -15.998a3 3 0 0 1 2.824 -2.995l.176 -.005h4z" /></svg>
             <svg class="end" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l18 -18" /><path d="M5.831 14.161a15.946 15.946 0 0 1 -2.831 -8.161a2 2 0 0 1 2 -2h4l2 5l-2.5 1.5c.108 .22 .223 .435 .345 .645m1.751 2.277c.843 .84 1.822 1.544 2.904 2.078l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a15.963 15.963 0 0 1 -10.344 -4.657" /></svg>
         </button></div>
-        <div class="help">Tasten auch mit <kbd>0</kbd>–<kbd>9</kbd>, <kbd>*</kbd>, <kbd>#</kbd>; <kbd>Enter</kbd> ruft an, <kbd>Esc</kbd> legt auf.</div>
     </section>
     <section class="log" id="log">
-        <h2>Gespräch</h2>
-        <div id="warnings"></div>
-        <div id="lines"><div class="note">Klick auf den grünen Hörer: Dann startet dein Spiel im Terminal, und du hörst es hier.</div></div>
+        <header><h2>Gespräch</h2><span class="pill">Anruf läuft</span></header>
+        <div class="scroll" id="scroll">
+            <div id="warnings"></div>
+            <div id="lines"></div>
+        </div>
+        <footer>Tasten auch mit <kbd>0</kbd>–<kbd>9</kbd>, <kbd>*</kbd> und <kbd>#</kbd>; <kbd>Enter</kbd> ruft an, <kbd>Esc</kbd> legt auf.</footer>
         <div class="sr" id="spoken" aria-live="polite"></div>
     </section>
 </main>
@@ -137,16 +190,31 @@ function post(path, body) {
 }
 
 function scroll() {
-    $('log').scrollTop = $('log').scrollHeight;
+    $('scroll').scrollTop = $('scroll').scrollHeight;
 }
+
+// Tabler Icons 3.49.0 (MIT License): outline/phone, beside the game's bubbles
+const PHONE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>';
 
 function message(kind) {
     const div = document.createElement('div');
     div.className = 'msg ' + kind;
-    $('lines').appendChild(div);
-    if (kind !== 'you') keyBubble = null;
+    if (kind === 'game') {
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `<span class="avatar">${PHONE_ICON}</span>`;
+        row.appendChild(div);
+        $('lines').appendChild(row);
+        keyBubble = null;
+    } else {
+        $('lines').appendChild(div);
+    }
     scroll();
     return div;
+}
+
+function empty() {
+    $('lines').innerHTML = `<div class="empty">${PHONE_ICON}<div>Klick auf den grünen Hörer: Dann startet dein Spiel im Terminal, und du hörst es hier.</div></div>`;
 }
 
 function note(text) {
@@ -270,6 +338,7 @@ async function say(parts, id) {
     const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p)));
     buffers.forEach(b => b.catch(() => {}));
     duck(true);
+    $('screen').classList.add('speaking');
     for (let i = 0; i < parts.length; i++) {
         const words = parts[i].split(' ');
         let finish = null;
@@ -298,6 +367,7 @@ async function say(parts, id) {
         if (mine !== call) return;
     }
     cursor.remove();
+    $('screen').classList.remove('speaking');
     duck(false);
     post('/heard?id=' + id);
 }
@@ -403,6 +473,10 @@ function setCall(on) {
     call++;
     const button = $('call');
     button.classList.toggle('hang', on);
+    button.classList.toggle('ready', !on && !button.disabled);
+    $('screen').classList.toggle('on', on);
+    $('log').classList.toggle('on', on);
+    $('screen').classList.remove('speaking');
     button.setAttribute('aria-label', on ? 'Auflegen' : 'Anrufen');
     document.querySelectorAll('.keypad button').forEach(b => b.disabled = !on);
     clearInterval(clock);
@@ -433,10 +507,14 @@ function toggleCall() {
     post('/call');
 }
 
+// the letters of a telephone keypad (ITU E.161) under the digits
+const LETTERS = { '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL', '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ', '0': '+' };
+empty();
 for (const key of KEYS) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.textContent = key;
+    b.innerHTML = `<b>${key}</b><small>${LETTERS[key] || ''}</small>`;
+    b.setAttribute('aria-label', key);
     b.dataset.key = key;
     b.disabled = true;
     b.addEventListener('click', () => press(key));
@@ -462,10 +540,12 @@ events.onmessage = message => {
         if (inCall) { setCall(false); note('Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
         $('status').textContent = 'Bereit';
         $('call').disabled = false;
+        $('call').classList.toggle('ready', !inCall);
     } else if (e.replaced) {
         events.close();
         setCall(false);
         $('call').disabled = true;
+        $('call').classList.remove('ready');
         $('status').textContent = 'Das Telefon ist jetzt in einem anderen Tab offen.';
     } else if (e.say) {
         say(e.say, e.id);
@@ -484,6 +564,7 @@ events.onmessage = message => {
 events.onerror = () => {
     if (events.readyState === EventSource.CLOSED) return;
     $('call').disabled = true;
+    $('call').classList.remove('ready');
     $('status').textContent = 'Keine Verbindung zum Terminal: Läuft telefon noch?';
 };
 </script>
