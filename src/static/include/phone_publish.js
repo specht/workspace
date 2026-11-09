@@ -69,7 +69,8 @@
         return `<figure class='pp-preview mb-0'><figcaption>So steht dein Spiel im Telefonbuch</figcaption>` +
             `<div class='pp-entry'><div class='pp-line'><span class='pp-title'>${esc(g.title)}</span><span class='pp-dots'></span>` +
             `<span class='pp-entry-number'>${shown}</span></div><div class='pp-sub'>${esc(g.subtitle)}</div></div>` +
-            `</figure>`;
+            `</figure>` +
+            (g.plays ? `<p class='pp-plays'><i class='bi bi-mic'></i> Dein Spiel spielt eigene Aufnahmen ab. Im Telefonbuch kann sie jeder hören.</p>` : '');
     }
 
     function gameHtml(g) {

@@ -98,6 +98,18 @@ Why it was flaky:
   card; the card shows the same. Every submission is listed under
   Administration → Telefonspiele (`/telefon-freigabe`, waiting ones
   first).
+- **Own recordings, no recorder** (the maintainer, November 2026): `play
+  'eingang.mp3'` plays an MP3 of the game's folder on the voice's channel,
+  like `say` (music quieter, waits, `interrupt`); the Handbuch shows how to
+  record one (Audacity), the page itself records nothing. A voice is
+  personal data and the Telefonbuch is public, so the maintainer hears each
+  recording before publishing: after a submission the speech service writes
+  out every audio file of the copy with Whisper (faster-whisper, model
+  »base«, on the server, `/transcribe`), the review page shows a player and
+  the transcript beside each, and in the list of what the game says the
+  recording stands in its place with its transcript. The card tells the
+  student that anyone can hear the recordings; the Handbuch asks to record
+  only what everyone may hear, and others only with their consent.
 - **Vanity numbers** (the maintainer): a number may be three or four
   letters or digits, like DINO; it is dialled with the keys the letters
   stand on (ITU E.161), DINO as 3466, and taken numbers are compared as
@@ -396,14 +408,6 @@ loop.
 
 ## Open
 
-- **Students' own voices** (put off by the maintainer, November 2026): a
-  command `play 'aufnahme.mp3'` on the voice channel, a recorder on the
-  `telefon` page, and for the review each recording with a player and a
-  transcript made locally (Whisper). Held back because a voice is personal
-  data and the Telefonbuch is public: publishing it needs consent (perhaps
-  the parents'), a new entry in the privacy statement and the data
-  protection officer's view. A first step without publishing (only in the
-  Workspace) would be possible.
 - Does easybell's Business 2 include a Berlin number, and which ports does
   the trunk need on the server (SIP and the range for the audio)?
 - The licence of the German Piper voice, for the page's credits.

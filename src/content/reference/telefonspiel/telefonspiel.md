@@ -14,7 +14,8 @@ kind: reference
 
 <p class='abstract'>
 Alle Befehle des Telefons zum Nachschlagen, in Ruby, Python und JavaScript, die
-Stimmungen zum Anhören und wie Thorsten ein Wort richtig ausspricht. Wie alles
+Stimmungen zum Anhören, eigene Aufnahmen statt Thorstens Stimme und wie
+Thorsten ein Wort richtig ausspricht. Wie alles
 zusammenspielt, zeigt die Aktivität <a href='/telefonspiel'>»Ein Spiel am
 Telefon«</a>; fertige Spiele stehen im <a href='/telefonbuch'>Telefonbuch</a>.
 </p>
@@ -71,7 +72,7 @@ prüfen auch die Aufgaben dein Spiel.
 ## Alle Befehle
 
 <!-- part: befehle -->
-<!-- short: `say`, `keys`, `music`, `sleep`, `hangup`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
+<!-- short: `say`, `play`, `keys`, `music`, `sleep`, `hangup`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
 ### Auf einen Blick
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
@@ -80,6 +81,7 @@ prüfen auch die Aufgaben dein Spiel.
 <tr><th>Etwas sagen</th><td><code>say 'Hallo!'</code></td><td><code>say('Hallo!')</code></td><td><code>say('Hallo!');</code></td></tr>
 <tr><th>… mit einer Taste abzubrechen</th><td><code>say '…', interrupt: true</code></td><td><code>say('…', interrupt=True)</code></td><td><code>say('…', { interrupt: true });</code></td></tr>
 <tr><th>… in einer Stimmung</th><td><code>say '…', mood: 'whisper'</code></td><td><code>say('…', mood='whisper')</code></td><td><code>say('…', { mood: 'whisper' });</code></td></tr>
+<tr><th>Eine eigene Aufnahme abspielen</th><td><code>play 'eingang.mp3'</code></td><td><code>play('eingang.mp3')</code></td><td><code>play('eingang.mp3');</code></td></tr>
 <tr><th>Auf eine Taste warten</th><td><code>key = keys(1)</code></td><td><code>key = keys(1)</code></td><td><code>const key = keys(1);</code></td></tr>
 <tr><th>Auf bis zu drei Tasten, 5 Sekunden je Taste</th><td><code>code = keys(3, timeout: 5)</code></td><td><code>code = keys(3, timeout=5)</code></td><td><code>const code = keys(3, 5);</code></td></tr>
 <tr><th>Musik von YouTube</th><td><code>music 'https://…'</code></td><td><code>music('https://…')</code></td><td><code>music('https://…');</code></td></tr>
@@ -205,6 +207,38 @@ Die Sätze mit Stimmung spricht eine zweite Stimme von Thorsten, die etwas
 weniger klar klingt als die gewohnte. Setz Stimmungen darum sparsam ein, dort,
 wo sie etwas erzählen: Ein einziges Flüstern im dunklen Gang wirkt stärker als
 zehn.
+<!-- /part -->
+
+## Eigene Aufnahmen
+
+<!-- part: aufnahmen -->
+<!-- short: `play 'eingang.mp3'` spielt eine eigene Aufnahme aus dem Ordner des Spiels, so wie `say` einen Satz sagt. -->
+### play
+
+Statt Thorsten kann auch deine eigene Stimme sprechen, ein Geräusch erklingen
+oder eine Melodie, die du gesummt hast. Nimm sie auf, leg sie als MP3 in den
+Ordner deines Spiels, und `play` spielt sie ab, wie `say` einen Satz sagt: Die
+Musik wird leiser, das Spiel wartet, bis die Aufnahme zu Ende ist, und mit
+`interrupt` bricht eine Taste sie ab.
+
+<div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
+<thead><tr><th></th><th>Ruby</th><th>Python</th><th>JavaScript</th></tr></thead>
+<tbody>
+<tr><th>Abspielen</th><td><code>play 'eingang.mp3'</code></td><td><code>play('eingang.mp3')</code></td><td><code>play('eingang.mp3');</code></td></tr>
+<tr><th>… mit einer Taste abzubrechen</th><td><code>play 'eingang.mp3', interrupt: true</code></td><td><code>play('eingang.mp3', interrupt=True)</code></td><td><code>play('eingang.mp3', { interrupt: true });</code></td></tr>
+</tbody>
+</table>
+</div>
+
+Aufnehmen kannst du am Computer mit [Audacity](https://www.audacityteam.org),
+das nichts kostet: aufnehmen, dann »Datei«, »Exportieren«, »Als MP3
+exportieren«. Eine Aufnahme vom Handy öffnet Audacity ebenso und speichert sie
+als MP3. Die Datei ziehst du in VS Code in den Ordner `telefon`. Auf der Seite
+des Telefons steht an ihrer Stelle ihr Name neben einem Mikrofon.
+
+Reichst du dein Spiel ein, kommen die Aufnahmen mit ins Telefonbuch, und dort
+kann sie jeder hören. Nimm darum nur auf, was alle hören dürfen, und die Stimme
+von jemand anderem nur, wenn die Person einverstanden ist.
 <!-- /part -->
 
 ## Aussprache

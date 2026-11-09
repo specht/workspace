@@ -102,6 +102,7 @@ class Main < Sinatra::Base
                 halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} hat schon ein anderes Spiel." }.to_json
             end
             PhoneGames.copy(ws, files, id)
+            phone_game_transcribe_later(id)
             # a pending version of the same number is replaced by this one; a
             # published one stays playable until this one is approved
             all.select { |g| g[:email] == email && g[:number] == number && g[:state] != 'published' }.each do |old|
@@ -170,6 +171,26 @@ class Main < Sinatra::Base
     # when it does not answer
     PHONE_SPEECH_URL = ENV['PHONE_SPEECH'] || 'http://phone_speech:8000'
 
+    # What the copy's audio files say, by the speech service (Whisper), in
+    # the background after a submission: the review shows it beside each
+    # recording. One file at a time; what fails stays out (the page says so).
+    def phone_game_transcribe_later(id)
+        Thread.new do
+            texts = {}
+            PhoneGames.audio_files(id).each do |name|
+                uri = URI("#{PHONE_SPEECH_URL}/transcribe")
+                data = File.binread(File.join(PhoneGames::ROOT, id, name))
+                response = Net::HTTP.start(uri.host, uri.port, :open_timeout => 5, :read_timeout => 600) do |http|
+                    http.post(uri.path, data, 'Content-Type' => 'application/octet-stream')
+                end
+                texts[name] = JSON.parse(response.body)['text'].to_s if response.is_a?(Net::HTTPSuccess)
+            rescue StandardError => e
+                STDERR.puts "Telefonspiel #{id}: #{name} not written out: #{e.class}: #{e.message}"
+            end
+            PhoneGames.write_transcripts(id, texts) if Dir.exist?(File.join(PhoneGames::ROOT, id))
+        end
+    end
+
     def phone_game_prepared(id)
         items = PhoneGames.prepared_items(id)
         uri = URI("#{PHONE_SPEECH_URL}/prepared")
@@ -191,6 +212,18 @@ class Main < Sinatra::Base
         halt 404 unless PhoneGames.valid_id?(data[:id])
         prepared = phone_game_prepared(data[:id])
         respond(:prepared => prepared, :ready => phone_game_ready?(prepared))
+    end
+
+    # An audio file of a submitted copy, for the review's players:
+    # administrators only, and only the audio files of that copy
+    get '/telefon-freigabe/datei' do
+        halt 403 unless admin_logged_in?
+        id = params['id'].to_s
+        file = File.basename(params['datei'].to_s)
+        halt 404 unless PhoneGames.valid_id?(id) && PhoneGames.audio_files(id).include?(file)
+        content_type({ '.mp3' => 'audio/mpeg', '.ogg' => 'audio/ogg', '.wav' => 'audio/wav', '.m4a' => 'audio/mp4' }[File.extname(file).downcase])
+        cache_control :private, :no_cache
+        send_file File.join(PhoneGames::ROOT, id, file)
     end
 
     post '/api/phone/decide' do
@@ -293,9 +326,29 @@ class Main < Sinatra::Base
         events = PhoneGames.events(code)
         files = Dir.exist?(File.join(PhoneGames::ROOT, game[:id])) ? Dir.children(File.join(PhoneGames::ROOT, game[:id])).sort : []
         state = { 'pending' => 'wartet auf Freigabe', 'published' => 'veröffentlicht', 'rejected' => "abgelehnt: #{game[:reason]}" }[game[:state]]
+        transcripts = PhoneGames.transcripts(game[:id])
+        audio = PhoneGames.audio_files(game[:id])
+        written = ->(file) { transcripts.key?(file) ? (transcripts[file].empty? ? '<span class=\'text-muted\'>(nichts verstanden)</span>' : "»#{h.(transcripts[file])}«") : '<span class=\'text-muted\'>wird noch abgeschrieben …</span>' }
         list = events.map do |kind, text|
-            kind == :say ? "<li>#{h.(text)}</li>" : "<li class='text-muted'><i class='bi bi-music-note'></i> #{h.(text)}</li>"
+            case kind
+            when :say then "<li>#{h.(text)}</li>"
+            when :play then "<li><i class='bi bi-mic'></i> <code>#{h.(text)}</code>: #{audio.include?(File.basename(text)) ? written.(File.basename(text)) : '<span class=\'text-danger\'>die Datei fehlt</span>'}</li>"
+            else "<li class='text-muted'><i class='bi bi-music-note'></i> #{h.(text)}</li>"
+            end
         end.join
+        # every audio file of the copy to listen to, with what Whisper heard
+        recordings = if audio.empty?
+            ''
+        else
+            rows = audio.map do |file|
+                src = "/telefon-freigabe/datei?id=#{h.(game[:id])}&amp;datei=#{CGI.escape(file)}"
+                "<li class='mb-3'><code>#{h.(file)}</code><audio class='d-block mt-1' controls preload='none' src='#{src}'></audio>" \
+                    "<div class='small mt-1'>#{written.(file)}</div></li>"
+            end.join
+            "<h2 class='mt-4'>Aufnahmen und Musik</h2><p>Jede Tondatei der Kopie zum Anhören, darunter, was Whisper auf dem Server darin verstanden hat " \
+                '(bei Musik oft nichts oder Unsinn). Im Telefonbuch kann jeder sie hören.</p>' \
+                "<ul class='list-unstyled'>#{rows}</ul>"
+        end
         # the game on the Telefonbuch's line, in its sandbox, before anyone
         # else can call it (phone_review.js loads the phone on the click)
         try = if code
@@ -324,7 +377,8 @@ class Main < Sinatra::Base
             "<tr><th>Stand</th><td>#{h.(state)}</td></tr>" \
             "<tr><th>Dateien</th><td>#{files.map { |f| "<code>#{h.(f)}</code>" }.join(', ')}</td></tr></table>" \
             "#{try}#{buttons}" \
-            "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
+            "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze, die eigenen Aufnahmen (mit dem, was Whisper darin verstanden hat) und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
+            "#{recordings}" \
             "<h2 class='mt-4'>Probelauf</h2><p>Der Anfang des Spiels mit <code>telefon --test</code>, ohne eine Taste, beim Einreichen im Workspace.</p><pre class='pg-transcript'>#{h.(game[:transcript])}</pre>" \
             "<h2 class='mt-4'>Programm: <code>#{h.(game[:file])}</code></h2><pre class='pg-code'>#{h.(code || 'Die Datei fehlt.')}</pre>" \
             "<script src='/include/phone_review.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"

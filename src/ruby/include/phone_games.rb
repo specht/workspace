@@ -33,6 +33,10 @@ module PhoneGames
     SAY = /\bsay\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1/
     YOUTUBE = %r{https://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)[\w-]{6,}(?:[?&][\w=&%.-]*)?}
     MUSIC_FILE = /\bmusic\s*\(?\s*(['"])([^'"\n]+\.(?:mp3|ogg|wav|m4a))\1/
+    # a recording of the student's own (play 'eingang.mp3'), and the audio
+    # files a copy may hold, written out for the review (transcripts)
+    PLAY = /\bplay\s*\(?\s*(['"])([^'"\n]+)\1/
+    AUDIO = %w[.mp3 .ogg .wav .m4a].freeze
     # the game names itself in its code: title '…' and subtitle '…' (Ruby),
     # title('…') (Python, JavaScript), each at the start of a line
     TITLE = /^[ \t]*title\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1/
@@ -66,7 +70,7 @@ module PhoneGames
     def self.games(ws)
         candidates(ws).map do |name|
             code = ws.read_text(File.join(FOLDER, name), :max => 512 * 1024) rescue ''
-            { :name => name }.merge(names(code))
+            { :name => name, :plays => code.match?(PLAY) }.merge(names(code))
         end
     end
 
@@ -184,7 +188,33 @@ module PhoneGames
     end
 
     def self.remove(id)
-        FileUtils.rm_rf(File.join(ROOT, id)) if valid_id?(id)
+        return unless valid_id?(id)
+
+        FileUtils.rm_rf(File.join(ROOT, id))
+        FileUtils.rm_f(transcripts_path(id))
+    end
+
+    # What the audio files of a copy say ({ file => text }), written out by
+    # the speech service (Whisper) after the submission, for the review
+    def self.transcripts_path(id)
+        File.join(ROOT, 'transcripts', "#{id}.json")
+    end
+
+    def self.audio_files(id)
+        dir = File.join(ROOT, id.to_s)
+        valid_id?(id) && Dir.exist?(dir) ? Dir.children(dir).select { |n| AUDIO.include?(File.extname(n).downcase) }.sort : []
+    end
+
+    def self.transcripts(id)
+        JSON.parse(File.read(transcripts_path(id)))
+    rescue StandardError
+        {}
+    end
+
+    def self.write_transcripts(id, texts)
+        FileUtils.mkdir_p(File.dirname(transcripts_path(id)))
+        File.write("#{transcripts_path(id)}.tmp", JSON.generate(texts))
+        File.rename("#{transcripts_path(id)}.tmp", transcripts_path(id))
     end
 
     def self.read_game(id, file)
@@ -199,6 +229,7 @@ module PhoneGames
         found = []
         code.scan(SAY) { m = Regexp.last_match; found << [m.begin(0), :say, m[2].gsub(/\\(['"\\])/, '\1')] }
         code.scan(MUSIC_FILE) { m = Regexp.last_match; found << [m.begin(0), :music, m[2]] }
+        code.scan(PLAY) { m = Regexp.last_match; found << [m.begin(0), :play, m[2]] }
         code.scan(YOUTUBE) do
             m = Regexp.last_match
             # a link inside a sentence is a word of it, not music

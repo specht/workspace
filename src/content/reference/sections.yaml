@@ -159,8 +159,8 @@
   icon: /images/telephone.png
   description: |
     Die Befehle des Telefons in Ruby, Python und JavaScript nebeneinander,
-    die acht Stimmungen zum Anhören und wie Thorsten ein Wort richtig
-    ausspricht.
+    die acht Stimmungen zum Anhören, eigene Aufnahmen und wie Thorsten ein
+    Wort richtig ausspricht.
   entries:
     - telefonspiel
 
