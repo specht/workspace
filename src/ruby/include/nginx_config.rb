@@ -436,6 +436,24 @@ class Main < Sinatra::Base
                     default_type application/manifest+json;
                 }
 
+                # The public line of the Telefonbuch (src/phone/line): its
+                # phone page and each visitor's session, the visitor's address
+                # for »one call at a time«. Resolved on use, so nginx starts
+                # also while the line is down; events stream unbuffered.
+                location /telefonbuch/telefon/ {
+                    resolver 127.0.0.11 valid=30s ipv6=off;
+                    set $hs_phone_line phone_line:8040;
+                    rewrite ^/telefonbuch/telefon/(.*)$ /$1 break;
+                    proxy_pass http://$hs_phone_line;
+                    proxy_http_version 1.1;
+                    proxy_set_header Connection '';
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_buffering off;
+                    proxy_read_timeout 1h;
+                    proxy_connect_timeout 3s;
+                    client_max_body_size 64k;
+                }
+
                 # While Ruby does not answer (a restart), a page that waits
                 # for it and loads again, instead of nginx's bare 502; a 502
                 # of the students' Workspaces (/w/) stays as it is. While

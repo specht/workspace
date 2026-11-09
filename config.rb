@@ -352,6 +352,28 @@ docker_compose[:services][:phone_speech] = {
     :restart => 'always',
 }
 
+# The public line of the Telefonbuch (src/phone/line): the phone on
+# /telefonbuch for every visitor, running the menu and the published games.
+# The sandbox: a network of its own without the internet (only nginx and the
+# speech service), no secrets, the games read-only, each call's process as
+# the user game with limits (line.py).
+docker_compose[:services][:phone_line] = {
+    :build => './docker/phone-runner',
+    :command => ['python3', '-u', '/phone/line/line.py'],
+    :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro"],
+    :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games', 'PHONE_LINES' => '10' },
+    :networks => ['phone'],
+    :tmpfs => ['/tmp:size=64m'],
+    :mem_limit => '2g',
+    :pids_limit => 400,
+    :cpus => 2.0,
+    :restart => 'always',
+}
+FileUtils.mkpath(File.join(INTERNAL_PATH, 'phone-games'))
+docker_compose[:networks][:phone] = { :driver => 'bridge', :internal => true }
+docker_compose[:services][:nginx][:networks] << 'phone'
+docker_compose[:services][:phone_speech][:networks]['phone'] = { :aliases => ['phone-speech'] }
+
 # The only service with the Docker socket next to the peer firewall: it
 # lets the backend start and stop Workspaces and exec into them and the
 # databases, and refuses everything else (docker/docker-guard/guard.rb,

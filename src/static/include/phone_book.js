@@ -3,19 +3,16 @@
 // pages of a book. A click on the right page turns forward, on the left
 // page back (also the buttons and the arrow keys); on a narrow screen one
 // page at a time. An entry cannot be clicked to start a game: one types its
-// number on the phone.
+// number on the phone. A page holds as many entries as fit (measured, so
+// long descriptions take more room). The notes stand in a colophon, on the
+// right page of the spread after the last entries (a blank page beside it),
+// so there is always a page to turn to; on a narrow screen on the next page.
 (function () {
-    const PER_PAGE = 8;
     const book = document.getElementById('phone-book');
     if (!book) return;
     const entries = window.PHONE_BOOK || [];
     const notes = window.PHONE_BOOK_NOTES;
-    const REMARK = 3;                 // the remark at the end takes the room of three entries
-    const pages = [];
-    for (let i = 0; i < entries.length; i += PER_PAGE) pages.push(entries.slice(i, i + PER_PAGE));
-    if (pages.length === 0) pages.push([]);
-    if (notes && pages[pages.length - 1].length > PER_PAGE - REMARK) pages.push([]);
-    const remarkPage = pages.length - 1;
+    let pages = [{ kind: 'entries', list: [] }];     // and { kind: 'blank' }, { kind: 'colophon' }
     let at = 0;                       // the first page shown (even on a spread)
     let turning = false;
 
@@ -28,21 +25,65 @@
         return ({ 'Ä': 'A', 'Ö': 'O', 'Ü': 'U' })[c] || c;
     };
 
+    const entryHtml = (e) =>
+        `<div class='phone-book-entry'><div class='pb-line'><span class='pb-title'>${esc(e.title)}</span><span class='pb-dots'></span>` +
+        `<span class='pb-number'>${esc(e.number)}</span></div>` +
+        (e.description ? `<div class='pb-description'>${esc(e.description)}</div>` : '') + '</div>';
+    const colophonHtml = () =>
+        `<div class='pb-remark'><div class='pb-remark-head'>Telefonbuch des Hackschule Workspace</div>` +
+        (notes.line ? `<p>${esc(notes.line)}</p>` : '') +
+        `<p>${esc(notes.own)} <a href='${esc(notes.href)}'>${esc(notes.link)}</a></p></div>`;
+    const HEAD = 'Hackschule Workspace';
+
     function pageHtml(index) {
-        const list = pages[index];
-        if (!list) return '';
+        const page = pages[index];
+        if (!page || page.kind === 'blank') return '';
+        if (page.kind === 'colophon') return colophonHtml();
+        const list = page.list;
         const first = list.length ? letter(list[0].title) : '', last = list.length ? letter(list[list.length - 1].title) : '';
         const range = first === last ? first : `${first} – ${last}`;
-        const remark = notes && index === remarkPage
-            ? `<div class='pb-remark'><div class='pb-remark-head'>Anmerkung</div><p>${notes.line ? esc(notes.line) + ' ' : ''}${esc(notes.random)}</p>` +
-              `<p>${esc(notes.own)} <a href='${esc(notes.href)}'>${esc(notes.link)}</a></p></div>` : '';
-        const body = list.length ? list.map((e) =>
-            `<div class='phone-book-entry'><div class='pb-line'><span class='pb-title'>${esc(e.title)}</span><span class='pb-dots'></span>` +
-            `<span class='pb-number'>${esc(e.number)}</span></div>` +
-            (e.description ? `<div class='pb-description'>${esc(e.description)}</div>` : '') + '</div>').join('')
-            : (entries.length ? '' : "<p class='phone-book-none'>Noch steht kein Spiel im Telefonbuch.</p>");
-        return `<div class='phone-book-head'><span>Telefonbuch</span><span>${esc(range)}</span></div>${body}${remark}` +
-            `<span class='phone-book-folio'>${index + 1}</span>`;
+        const body = list.length ? list.map(entryHtml).join('')
+            : "<p class='phone-book-none'>Noch steht kein Spiel im Telefonbuch.</p>";
+        return `<div class='phone-book-head'><span>${HEAD}</span><span>${esc(range)}</span></div>` +
+            `<div class='pb-body'>${body}</div>`;
+    }
+
+    // the pages, by filling a hidden page of the same size until it overflows
+    function paginate() {
+        const sample = book.querySelector('.phone-book-leaf');
+        if (!sample) return;
+        const probe = document.createElement('div');
+        probe.className = 'phone-book-leaf right';
+        probe.setAttribute('aria-hidden', 'true');
+        probe.style.cssText = `position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; width: ${sample.offsetWidth}px`;
+        probe.innerHTML = `<div class='phone-book-head'><span>${HEAD}</span><span>A</span></div><div class='pb-body'></div>`;
+        book.appendChild(probe);
+        const body = probe.querySelector('.pb-body');
+        const full = () => body.scrollHeight > body.clientHeight + 1;
+        const lists = [[]];
+        for (const e of entries) {
+            body.insertAdjacentHTML('beforeend', entryHtml(e));
+            if (full() && lists[lists.length - 1].length) {
+                lists.push([]);
+                body.innerHTML = entryHtml(e);
+            }
+            lists[lists.length - 1].push(e);
+        }
+        probe.remove();
+        pages = lists.map((list) => ({ kind: 'entries', list }));
+        if (notes) {
+            // wide: the right page of the next spread; narrow: the next page
+            const colophon = narrow() ? pages.length : 2 * (Math.floor((pages.length - 1) / 2) + 1) + 1;
+            while (pages.length < colophon) pages.push({ kind: 'blank' });
+            pages.push({ kind: 'colophon' });
+        }
+        at = Math.min(at, pages.length - 1);
+    }
+
+    function layout() {
+        render();
+        paginate();
+        render();
     }
 
     function leaf(side, index) {
@@ -99,6 +140,11 @@
         if (e.key === 'ArrowLeft') turn(-1);
         if (e.key === 'ArrowRight') turn(1);
     });
-    window.matchMedia('(max-width: 640px)').addEventListener('change', render);
-    render();
+    let resized = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resized);
+        resized = setTimeout(() => { if (!turning) layout(); }, 150);
+    });
+    layout();
+    if (document.fonts) document.fonts.ready.then(() => { if (!turning) layout(); });
 })();

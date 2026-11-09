@@ -26,7 +26,7 @@
     }
     .phone-book-layout {
         display: grid;
-        grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+        grid-template-columns: 340px minmax(0, 1fr);
         gap: 2rem;
         align-items: start;
         margin-top: 1.5rem;
@@ -34,28 +34,8 @@
     @media (max-width: 900px) {
         .phone-book-layout { grid-template-columns: minmax(0, 1fr); }
     }
-    .phone-book-phone {
-        border-radius: 46px;
-        background: #0c0d10;
-        padding: 11px;
-        box-shadow: 0 0 0 1.5px #3a3e46, var(--pb-shadow);
-        max-width: 300px;
-        margin: 0 auto;
-    }
-    .phone-book-phone .glass {
-        border-radius: 36px;
-        min-height: 420px;
-        padding: 3rem 1.5rem 2rem;
-        color: #f5f7fa;
-        text-align: center;
-        background: radial-gradient(120% 70% at 50% 0%, #2a3a46 0%, #141b21 55%, #0b0f12 100%);
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        justify-content: center;
-    }
-    .phone-book-phone .glass i { font-size: 2.5rem; opacity: .8; }
-    .phone-book-phone .glass p { margin: 0; color: rgba(245, 247, 250, .75); text-align: center; hyphens: none; }
+    /* the phone: the line itself (src/phone/line), in a frame */
+    .phone-book-line { display: block; width: 340px; height: 740px; max-width: 100%; border: 0; margin: -12px auto 0; background: transparent; }
     /* the book: two pages and a spine, one page on a phone */
     .phone-book {
         position: relative;
@@ -79,11 +59,16 @@
         background-size: auto, 384px 384px;
         color: var(--pb-ink);
         font-family: 'XCharter', 'Charter', 'Bitstream Charter', Georgia, serif;
-        min-height: 520px;
-        padding: 1.6rem 1.6rem 2.6rem;
+        aspect-ratio: 1 / 1.414;              /* a page of A paper, at every width */
+        padding: 1.6rem;
         position: relative;
         cursor: pointer;
+        display: flex;
+        flex-direction: column;
     }
+    /* the entries of a page, and the remark at its foot (phone_book.js fills
+       a page until this box overflows) */
+    .pb-body { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
     .phone-book-leaf.left { border-radius: 6px 0 0 6px; box-shadow: inset -12px 0 16px -12px rgba(0, 0, 0, .35); }
     .phone-book-leaf.right { border-radius: 0 6px 6px 0; box-shadow: inset 12px 0 16px -12px rgba(0, 0, 0, .35); background-position: 0 0, 190px 140px; }
     .phone-book-leaf > * { mix-blend-mode: multiply; }
@@ -106,14 +91,12 @@
     .phone-book-entry .pb-dots { flex: 1; align-self: baseline; height: 0; border-bottom: 2px dotted var(--pb-quiet); opacity: .6; }
     .phone-book-entry .pb-number { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums lining-nums; letter-spacing: .04em; }
     .phone-book-entry .pb-description { color: var(--pb-quiet); font-style: italic; font-size: .92rem; margin-top: .05rem; text-align: left; }
-    .pb-remark { margin-top: 1.2rem; padding-top: .7rem; border-top: 1px solid var(--pb-ink); font-size: .95rem; }
-    .pb-remark-head { font-style: italic; font-weight: 700; margin-bottom: .3rem; }
+    /* the colophon: the notes on a page of their own, at its foot */
+    .pb-remark { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--pb-ink); font-size: .92rem; font-style: italic; opacity: .62; }
+    .pb-remark-head { font-variant: small-caps; letter-spacing: .06em; font-style: normal; margin-bottom: .4rem; }
     .phone-book-page .phone-book-leaf p { color: var(--pb-ink); }
     .pb-remark p { margin: 0 0 .4rem; text-align: left; hyphens: none; }
     .phone-book-page .pb-remark a { color: var(--pb-ink); text-decoration: underline; text-underline-offset: 2px; }
-    .phone-book-folio { position: absolute; bottom: .9rem; color: var(--pb-quiet); font-size: .8rem; }
-    .phone-book-leaf.left .phone-book-folio { left: 1.6rem; }
-    .phone-book-leaf.right .phone-book-folio { right: 1.6rem; }
     .phone-book-page .phone-book-none { color: var(--pb-quiet); margin-top: 2rem; text-align: center; }
     /* the page that turns: front and back, around the spine */
     .phone-book-turning {
@@ -140,15 +123,13 @@
     }
 </style>
 <div class='container phone-book-page'>
-    <h1 class='mt-4'>Telefonbuch</h1>
+    <h1 class='visually-hidden'>Telefonbuch</h1>
     #{phone_book_page}
     <div class='phone-book-layout'>
-        <div class='phone-book-phone' aria-label='Telefon'>
-            <div class='glass'></div>
-        </div>
+        <iframe class='phone-book-line' src='/telefonbuch/telefon/?line' title='Telefon' allow='autoplay'></iframe>
         <div>
             <div class='phone-book' id='phone-book'></div>
         </div>
     </div>
 </div>
-<script src='/include/phone_book.js'></script>
+<script src='/include/phone_book.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

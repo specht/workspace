@@ -56,17 +56,19 @@ Why it was flaky:
   maintainer's existing sipgate account still has its Berlin number.
 - **One number for all games:** a menu or a code chooses the game; several
   calls at once, one process per call.
-- **Game numbers 001 to 999, 000 for a random game** (the maintainer): a
-  student chooses a free number when publishing, can switch to another
-  free one, and can unpublish (the number is free again). Always exactly
-  three digits, also for chance (000, never a single 0), so the menu
-  reads three keys without #: »Gib die Nummer des Spiels ein«; keys typed
-  during the greeting count. Without Durchwahl the menu reads the titles of
+- **Game numbers of three or four digits** (the maintainer; 000 was chance
+  at first, dropped with the menu's mention of it; four digits allowed
+  later): a student chooses a free number when publishing, can switch to
+  another free one, and can unpublish (the number is free again). The menu
+  reads three keys without #, and a fourth only while a game's number
+  begins with those three and is longer (# ends early): »Gib die Nummer
+  des Spiels ein«; keys typed during the greeting count. The phone in the
+  Telefonbuch dials up to four digits before the call. Without Durchwahl the menu reads the titles of
   the published games in random order (the maintainer), so no game is
   always first: five at a time, each with its number (»Die Höhle der
   Echos: eins, zwei, drei«), then »Für weitere Spiele drück die Raute«;
   a number typed at any moment, also in the middle of the list, starts
-  that game, and 000 a random one. No selection by the teacher (the
+  that game. No selection by the teacher (the
   maintainer): every published game is in the list.
 - **The menu's words made in advance** (the maintainer): the digits and the
   menu's own sentences once, each game's title when the game is published,
@@ -76,7 +78,7 @@ Why it was flaky:
 - **Submitting** (proposed, the maintainer agreed to the Telefonbuch): a
   card »Dein Spiel veröffentlichen« on the activity page, below »Deine
   Geschichte«. The student picks the file in `/workspace/telefon`, gives a
-  title and a line of description, and chooses a free number 001 to 999
+  title and a line of description, and chooses a free number of three or four digits
   (the card shows the taken ones). Submitting copies the game: the file and
   the files it uses (music, required files); the phone plays that copy, so
   later edits reach it only when submitted again. The card lists the
@@ -110,7 +112,7 @@ Why it was flaky:
   (public by then: a public page links no development-only one).
 - **Calling from the Telefonbuch** (the maintainer): the phone on the page
   is the line itself: a call plays the menu, as on the real number, and
-  the visitor types the three digits from the phone book (or 000); an
+  the visitor types the number from the phone book; an
   entry in the book cannot be clicked to start a game. The menu and then
   the game run on the server as a call on the line does (the same runner,
   the same sandbox without network, the same limit of calls at once,
@@ -129,7 +131,9 @@ Why it was flaky:
   extension of three digits or a block of 1000 numbers; easybell's
   Business trunks have SIP-DDI, a 10-number block would only cover the
   teacher's selection. Whether easybell routes a three-digit appended
-  extension: to ask easybell or test once the trunk runs.
+  extension: to ask easybell or test once the trunk runs. Open since
+  numbers may have four digits: a three-digit extension cannot reach
+  them; either four-digit extensions or the menu for those games.
 - **Durchwahl is a setting** (the maintainer): schools have different
   providers, and whether one passes extra digits on cannot be told in
   advance. `credentials.rb` holds the number and a switch, off by default

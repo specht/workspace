@@ -28,8 +28,10 @@ body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
 /* the line in the Telefonbuch: only the phone, on the page behind it */
 body.line { background: transparent; }
-body.line main { grid-template-columns: 310px; padding: 0; }
+body.line main { grid-template-columns: 310px; padding: 12px 15px 40px; }
 body.line .log { display: none; }
+/* a real phone shows no countdown while the other end waits for keys */
+body.line .wait { display: none; }
 main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; justify-content: center;
        padding: 24px 16px; margin: 0 auto; }
 @media (max-width: 720px) { main { grid-template-columns: minmax(0, 340px); } }
@@ -78,19 +80,24 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
 .keypad button:hover { background: rgba(255,255,255,.2); }
 .keypad button.down { transform: scale(.93); background: rgba(255,255,255,.32); }
 .keypad button:disabled { opacity: .45; cursor: default; }
-.call { display: flex; justify-content: center; margin-top: 18px; }
+.call { display: grid; grid-template-columns: 1fr 66px 1fr; align-items: center; justify-items: center; margin-top: 18px; }
+.call #call { grid-column: 2; }
+/* the line: digits dialled before the call, taken back one at a time */
+.call .erase { grid-column: 3; width: 44px; height: 44px; background: none; color: rgba(255,255,255,.75); }
+.call .erase:hover { color: #fff; }
+.call .erase svg { width: 26px; height: 26px; }
 .call button { position: relative; width: 66px; height: 66px; border-radius: 50%; border: 0; cursor: pointer; color: #fff;
                background: var(--green); transition: background .15s; }
-.call button:disabled { opacity: .45; cursor: default; }
-.call button.hang { background: var(--red); }
+.call #call:disabled { opacity: .45; cursor: default; }
+.call #call.hang { background: var(--red); }
 /* ready to call: a ring that invites the click */
-.call button.ready::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--green);
+.call #call.ready::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--green);
                             animation: ring 2s ease-out infinite; }
 @keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.45); opacity: 0; } }
 .call button:focus:not(:focus-visible), .keypad button:focus:not(:focus-visible) { outline: none; }
-.call .end, .call button.hang .dial { display: none; }
-.call button.hang .end { display: inline; }
-.call svg { width: 30px; height: 30px; vertical-align: middle; }
+.call .end, .call #call.hang .dial { display: none; }
+.call #call.hang .end { display: inline; }
+.call #call svg { width: 30px; height: 30px; vertical-align: middle; }
 .home { width: 112px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.55); margin: 24px auto 0; }
 
 /* the conversation as a chat: the game left, the keys right */
@@ -156,9 +163,11 @@ kbd { font: 11.5px ui-monospace, monospace; border: 1px solid var(--line); borde
         </div>
         <div class="keypad" id="keypad"></div>
         <div class="call"><button id="call" type="button" aria-label="Anrufen" disabled>
-            <!-- Tabler Icons 3.49.0 (MIT License): filled/phone and outline/phone-off -->
-            <svg class="dial" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3a1 1 0 0 1 .877 .519l.051 .11l2 5a1 1 0 0 1 -.313 1.16l-.1 .068l-1.674 1.004l.063 .103a10 10 0 0 0 3.132 3.132l.102 .062l1.005 -1.672a1 1 0 0 1 1.113 -.453l.115 .039l5 2a1 1 0 0 1 .622 .807l.007 .121v4c0 1.657 -1.343 3 -3.06 2.998c-8.579 -.521 -15.418 -7.36 -15.94 -15.998a3 3 0 0 1 2.824 -2.995l.176 -.005h4z" /></svg>
-            <svg class="end" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l18 -18" /><path d="M5.831 14.161a15.946 15.946 0 0 1 -2.831 -8.161a2 2 0 0 1 2 -2h4l2 5l-2.5 1.5c.108 .22 .223 .435 .345 .645m1.751 2.277c.843 .84 1.822 1.544 2.904 2.078l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a15.963 15.963 0 0 1 -10.344 -4.657" /></svg>
+            <!-- Tabler Icons 3.49.0 (MIT License): outline/phone, outline/phone-off, outline/backspace -->
+            <svg class="dial" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>
+            <svg class="end" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l18 -18" /><path d="M5.831 14.161a15.946 15.946 0 0 1 -2.831 -8.161a2 2 0 0 1 2 -2h4l2 5l-2.5 1.5c.108 .22 .223 .435 .345 .645m1.751 2.277c.843 .84 1.822 1.544 2.904 2.078l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a15.963 15.963 0 0 1 -10.344 -4.657" /></svg>
+        </button><button class="erase" id="erase" type="button" aria-label="Ziffer löschen" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-11l-5 -5a1.5 1.5 0 0 1 0 -2l5 -5z" /><path d="M12 10l4 4m0 -4l-4 4" /></svg>
         </button></div>
         <div class="home"></div>
         </div>
@@ -184,7 +193,7 @@ const TONES = { '1': [697, 1209], '2': [697, 1336], '3': [697, 1477], '4': [770,
 
 const $ = id => document.getElementById(id);
 let ctx = null, musicGain, duckGain, musicSource = null, voice = null;
-let inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {}, keyBubble = null;
+let dialed = '', inCall = false, call = 0, musicRequest = 0, started = 0, clock = null, warned = {}, keyBubble = null;
 let skip = null;          // while a sentence a key may stop (say … interrupt) is spoken: stops it
 
 function audio() {
@@ -344,7 +353,7 @@ function typeSentence(bubble, words, times, now, stopped = () => false) {
     const cursor = bubble.querySelector('.cursor');
     let next = 0, all = false;
     const step = () => {
-        if (stopped()) return;            // a key stopped the sentence: no more words
+        if (stopped() || !cursor.isConnected) return;    // a key stopped the sentence, or the call ended
         const t = now();
         while (next < words.length && (all || times[next] <= t)) {
             if (bubble.querySelector('.w')) bubble.insertBefore(document.createTextNode(' '), cursor);
@@ -387,13 +396,16 @@ async function say(parts, id, interrupt, mood) {
     }
     const buffers = parts.map(p => fetchAudio('/speech?text=' + encodeURIComponent(p) + (mood ? '&mood=' + mood : '')));
     buffers.forEach(b => b.catch(() => {}));
-    duck(true);
-    $('screen').classList.add('speaking');
+    let ducked = false;
     for (let i = 0; i < parts.length; i++) {
-        const words = parts[i].split(' ');
+        // phonemes in [[ … ]] are shown without the brackets
+        const shown = parts[i].replace(/\[\[\s*(.*?)\s*\]\]/g, '$1');
+        const words = shown.split(' ');
         let finish = null;
         const start = (times, now) => {
-            $('spoken').textContent = parts[i];
+            // the music gives way when the voice starts, not while it is made
+            if (!ducked) { duck(true); $('screen').classList.add('speaking'); ducked = true; }
+            $('spoken').textContent = shown;
             post(`/playing?id=${id}&part=${i}`);       // the terminal shows the sentence now
             finish = typeSentence(bubble, words, times, now, () => skipped);
         };
@@ -414,7 +426,7 @@ async function say(parts, id, interrupt, mood) {
             const t0 = performance.now();
             if (!skipped) {
                 if (!finish) start(times, () => (performance.now() - t0) / 1000);
-                await speakInBrowser(parts[i]);
+                await speakInBrowser(shown);
             }
         }
         if (mine !== call) return;
@@ -428,7 +440,7 @@ async function say(parts, id, interrupt, mood) {
     if (interrupt && !skipped) skip = null;
     cursor.remove();
     $('screen').classList.remove('speaking');
-    duck(false);
+    if (ducked) duck(false);
     post('/heard?id=' + id);
 }
 
@@ -525,7 +537,16 @@ function press(key) {
     const button = document.querySelector(`.keypad button[data-key="${key}"]`);
     button.classList.add('down');
     setTimeout(() => button.classList.remove('down'), 120);
-    if (!inCall) return;
+    if (!inCall) {
+        // the line: up to four digits, then the call button dials them
+        if (!LINE || $('call').disabled || dialed.length >= 4 || !/\d/.test(key)) return;
+        audio();
+        tone(key);
+        if (!dialed) { $('title').textContent = ''; $('status').textContent = 'Bereit'; }
+        dialed += key;
+        showDialed();
+        return;
+    }
     tone(key);
     if (skip) skip();
     if (!keyBubble) keyBubble = message('you');
@@ -535,14 +556,33 @@ function press(key) {
     cap.setAttribute('aria-label', 'Taste ' + key);
     keyBubble.appendChild(cap);
     scroll();
-    $('digits').textContent += key;
+    // the latest digits only, as a phone shows them
+    $('digits').textContent = ($('digits').textContent + key).slice(-12);
     post('/key?key=' + encodeURIComponent(key));
+}
+
+function showDialed() {
+    $('digits').textContent = dialed;
+    $('erase').hidden = !dialed;
+    $('call').classList.toggle('ready', !!dialed && !inCall && !$('call').disabled);
+}
+
+function erase() {
+    dialed = dialed.slice(0, -1);
+    showDialed();
+}
+
+// the keypad works during a call, and on the line also before one (to dial)
+function enableKeys() {
+    const on = inCall || (LINE && !$('call').disabled);
+    document.querySelectorAll('.keypad button').forEach(b => b.disabled = !on);
 }
 
 function waiting(count, timeout) {
     keyBubble = null;
     $('digits').textContent = '';
-    $('status').textContent = count === 1 ? 'Das Spiel wartet auf eine Taste' : `Das Spiel wartet auf bis zu ${count} Tasten`;
+    // the Workspace's phone says what the game waits for; the line just shows the bar
+    if (!LINE) $('status').textContent = count === 1 ? 'Das Spiel wartet auf eine Taste' : `Das Spiel wartet auf bis zu ${count} Tasten`;
     const bar = $('wait-bar');
     $('wait').classList.add('on');
     bar.style.transition = 'none';
@@ -568,19 +608,20 @@ function setCall(on) {
     call++;
     const button = $('call');
     button.classList.toggle('hang', on);
-    button.classList.toggle('ready', !on && !button.disabled);
+    button.classList.toggle('ready', !on && !button.disabled && !LINE);
     $('screen').classList.toggle('on', on);
     $('log').classList.toggle('on', on);
     $('screen').classList.remove('speaking');
     button.setAttribute('aria-label', on ? 'Auflegen' : 'Anrufen');
-    document.querySelectorAll('.keypad button').forEach(b => b.disabled = !on);
+    enableKeys();
     clearInterval(clock);
     $('wait').classList.remove('on');
     $('digits').textContent = '';
     if (on) {
         started = Date.now();
         $('status').textContent = talking();
-        clock = setInterval(() => { if (!$('wait').classList.contains('on')) $('status').textContent = talking(); }, 1000);
+        // the clock runs on, except where the display says what the game waits for
+        clock = setInterval(() => { if (LINE || !$('wait').classList.contains('on')) $('status').textContent = talking(); }, 1000);
     } else {
         skip = null;
         stopMusic();
@@ -598,10 +639,15 @@ function toggleCall() {
         post('/hangup');
         return;
     }
+    if (LINE && !dialed) return;               // the line calls a number, as a real phone does
     audio();
     $('lines').textContent = '';
+    const number = dialed;
+    dialed = '';
+    $('erase').hidden = true;
+    if (LINE) $('title').textContent = number;
     setCall(true);
-    post('/call');
+    post('/call' + (number ? '?number=' + number : ''));
 }
 
 // the letters of a telephone keypad (ITU E.161) under the digits
@@ -621,30 +667,36 @@ $('call').addEventListener('click', e => {
     toggleCall();
     if (e.detail) e.currentTarget.blur();      // a mouse click: no focus ring while typing digits
 });
+$('erase').addEventListener('click', erase);
 document.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (KEYS.includes(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === 'Backspace' && !inCall && dialed) { erase(); e.preventDefault(); }
     else if (e.key === 'Enter' && !inCall) { toggleCall(); e.preventDefault(); }
     else if (e.key === 'Escape' && inCall) { toggleCall(); e.preventDefault(); }
 });
 
 const ENDED = { caller: 'Aufgelegt.', hangup: 'Das Spiel hat aufgelegt.', ended: 'Das Spiel ist zu Ende.', time: 'Die Zeit ist um.',
     busy: 'Alle Leitungen sind belegt. Versuch es gleich noch einmal.', one: 'Von hier läuft schon ein Anruf.' };
+// the line's display speaks of the other end, not of a game
+if (LINE) Object.assign(ENDED, { hangup: 'Die Gegenseite hat aufgelegt.', ended: 'Der Anruf ist beendet.' });
 const events = new EventSource(at('/events'));
 events.onmessage = message => {
     const e = JSON.parse(message.data);
     if (e.ready) {
-        $('title').textContent = e.title || 'Telefonspiel';
+        $('title').textContent = LINE ? e.title || '' : e.title || 'Telefonspiel';
         if (inCall) { setCall(false); note('Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
         $('status').textContent = 'Bereit';
         $('call').disabled = false;
-        $('call').classList.toggle('ready', !inCall);
+        $('call').classList.toggle('ready', !inCall && !LINE);
+        enableKeys();
     } else if (e.replaced) {
         events.close();
         setCall(false);
         $('call').disabled = true;
         $('call').classList.remove('ready');
         $('status').textContent = 'Das Telefon ist jetzt in einem anderen Tab offen.';
+        enableKeys();
     } else if (e.title) {
         $('title').textContent = e.title;
     } else if (e.say) {
@@ -666,7 +718,8 @@ events.onerror = () => {
     if (events.readyState === EventSource.CLOSED) return;
     $('call').disabled = true;
     $('call').classList.remove('ready');
-    $('status').textContent = 'Keine Verbindung zum Terminal: Läuft telefon noch?';
+    $('status').textContent = LINE ? 'Keine Verbindung. Versuch es gleich noch einmal.' : 'Keine Verbindung zum Terminal: Läuft telefon noch?';
+    enableKeys();
 };
 </script>
 </body>

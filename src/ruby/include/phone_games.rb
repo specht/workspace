@@ -7,7 +7,7 @@ require_relative 'workspace_files'
 # Publishing a Telefonspiel (docs/plan-telefonspiel.md, »Submitting«,
 # »Moderation«, »The Telefonbuch«): a student submits a game from
 # /workspace/telefon with a title, a line of description and a number from
-# 001 to 999 (000 is chance); the server keeps a copy of the game's folder;
+# of three or four digits; the server keeps a copy of the game's folder;
 # the maintainer publishes or rejects it (with a reason) from a page the
 # notification mail links to; the student is told by mail either way and
 # can take a game back at any time. Published games are listed in the
@@ -27,13 +27,6 @@ module PhoneGames
     MAX_TITLE = 60
     MAX_DESCRIPTION = 140
     MAX_REASON = 1000
-    RANDOM = '000'                           # the number that plays a random game
-    # games of the Workspace itself, always in the Telefonbuch, their numbers
-    # never free (src/phone/games)
-    FIXED = [
-        { :number => '555', :title => 'Hotline des Hackschule Workspace', :description => 'Hilfe bei allen Fragen rund um den Workspace, rund um die Uhr.',
-          :folder => '/src/phone/games/hotline', :file => 'hotline.rb' },
-    ].freeze
     STATES = %w[pending published rejected].freeze
     # the sentences a game says and the music it plays, as the emulator
     # finds them (src/phone/emulator/telefon: SAY, YOUTUBE)
@@ -85,9 +78,9 @@ module PhoneGames
         id.to_s.match?(/\A[0-9a-f]{24}\z/)
     end
 
-    # A number a game may have: three digits, not 000
+    # A number a game may have: three or four digits (000 to 9999)
     def self.valid_number?(number)
-        number.to_s.match?(/\A\d{3}\z/) && number.to_s != RANDOM
+        number.to_s.match?(/\A\d{3,4}\z/)
     end
 
     def self.clean_text(text, max)
@@ -131,6 +124,23 @@ module PhoneGames
             File.binwrite(File.join(dir, f[:name]), ws.read(File.join(FOLDER, f[:name]), :max => MAX_FILE))
         end
         dir
+    end
+
+    # The list the line reads (src/phone/line/menu.py): every published game
+    # with its folder there (games/<id>, the copy)
+    def self.manifest(published)
+        games = published.map { |g| { :number => g[:number], :title => g[:title], :folder => "games/#{g[:id]}", :file => g[:file] } }
+        JSON.pretty_generate(:games => games)
+    end
+
+    def self.write_manifest(published)
+        FileUtils.mkdir_p(ROOT)
+        path = File.join(ROOT, 'published.json')
+        text = manifest(published)
+        return if File.exist?(path) && File.read(path) == text
+
+        File.write("#{path}.tmp", text)
+        File.rename("#{path}.tmp", path)
     end
 
     def self.remove(id)
@@ -217,8 +227,35 @@ module PhoneGames
         }
     end
 
+    # Entries to try the book with (/telefonbuch?muster, in development
+    # only): offices that do not exist, with descriptions of every length
+    SAMPLE_TITLES = [
+        'Amt für Wartezeiten', 'Antragsannahme Nord', 'Antragsannahme Süd', 'Abteilung für Abteilungen', 'Beschwerdestelle für Beschwerden',
+        'Büro für Formulare', 'Durchschlagverwaltung', 'Ermittlung der Zuständigkeit', 'Fundbüro für Akten', 'Gebührenstelle',
+        'Hausmeisterei des Ministeriums', 'Informationsschalter (geschlossen)', 'Kopierraum', 'Landesamt für Stempel', 'Meldestelle für Meldungen',
+        'Nachfragestelle', 'Ordnungsamt, Ablage 3', 'Poststelle, Eingang', 'Poststelle, Ausgang', 'Referat für Verweise',
+        'Registratur', 'Schalter 7 (bitte Schalter 8 benutzen)', 'Stelle für Bescheinigungen', 'Terminvergabe für Termine', 'Umzugsbehörde',
+        'Verwaltung der Verwaltung', 'Vorzimmer', 'Wartenummernausgabe', 'Zentrale Dienste', 'Zweigstelle der Zentrale',
+    ].freeze
+    SAMPLE_DESCRIPTIONS = [
+        'Montags geschlossen.',
+        'Bitte ziehen Sie eine Wartenummer.',
+        'Sprechzeiten nach Vereinbarung, Vereinbarungen nach Sprechzeit.',
+        'Zuständig für alles, was nicht in die Zuständigkeit anderer Stellen fällt, sofern diese nicht zuständig sind.',
+        'Anträge nur in dreifacher Ausfertigung, mit Durchschlag und Durchschlag des Durchschlags.',
+        'Auskünfte erteilt die Auskunft.',
+        'Vorübergehend dauerhaft geschlossen. Bitte wenden Sie sich an die Stelle, die Sie an uns verwiesen hat.',
+        '',
+    ].freeze
+
+    def self.sample_entries
+        SAMPLE_TITLES.each_with_index.map do |title, i|
+            { :number => format('%03d', 101 + i * 29 % 880), :title => title, :description => SAMPLE_DESCRIPTIONS[i * 5 % SAMPLE_DESCRIPTIONS.size] }
+        end
+    end
+
     # The numbers someone else holds, with a pending or published game
     def self.taken_numbers(games, email)
-        (games.reject { |g| g[:email] == email || g[:state] == 'rejected' }.map { |g| g[:number] } + FIXED.map { |g| g[:number] }).uniq.sort
+        games.reject { |g| g[:email] == email || g[:state] == 'rejected' }.map { |g| g[:number] }.uniq.sort
     end
 end

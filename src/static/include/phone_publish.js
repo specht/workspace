@@ -1,6 +1,6 @@
 // The card »Dein Spiel veröffentlichen« in »Ein Spiel am Telefon«
 // (phone_games_api.rb): submit a game from /workspace/telefon with a title,
-// a line of description and a free number from 001 to 999; the list of
+// a line of description and a free number of three or four digits; the list of
 // one's own games with their state; another number; taking a game back.
 (function () {
     const root = document.querySelector('.phone-publish');
@@ -11,7 +11,7 @@
     function freeNumber() {
         const taken = new Set([...state.taken, ...state.games.filter((g) => g.state !== 'rejected').map((g) => g.number)]);
         const free = [];
-        for (let n = 1; n <= 999; n++) {
+        for (let n = 0; n <= 999; n++) {
             const s = String(n).padStart(3, '0');
             if (!taken.has(s)) free.push(s);
         }
@@ -56,7 +56,7 @@
             ? `<div class='row g-2'>` +
                 `<div class='col-md-5'><label class='form-label' for='pp-file'>Spiel</label><select class='form-select' id='pp-file'>${files}</select></div>` +
                 `<div class='col-md-3'><label class='form-label' for='pp-number'>Nummer</label><div class='input-group'>` +
-                `<input class='form-control pp-number-input' id='pp-number' maxlength='3' inputmode='numeric' placeholder='123'>` +
+                `<input class='form-control pp-number-input' id='pp-number' maxlength='4' inputmode='numeric' placeholder='123'>` +
                 `<button class='btn btn-outline-secondary pp-random' type='button' title='Eine freie Nummer'><i class='bi bi-shuffle'></i></button></div></div>` +
                 `<div class='col-12 pp-names-box'></div>` +
                 `</div><button class='btn btn-success mt-3 pp-submit'><i class='bi bi-send'></i> Einreichen</button>`
@@ -96,7 +96,7 @@
         const texts = {
             title: "In deinem Spiel fehlt die Zeile title '…'.",
             subtitle: "In deinem Spiel fehlt die Zeile subtitle '…'.",
-            number: 'Die Nummer hat drei Ziffern, 001 bis 999. Die 000 gehört dem Zufall.',
+            number: 'Die Nummer hat drei oder vier Ziffern.',
             taken: 'Diese Nummer hat schon ein anderes Spiel. Nimm eine andere.',
         };
         message(texts[data.error] || fallback);
@@ -132,7 +132,7 @@
         } else if (button.classList.contains('pp-renumber')) {
             const edit = root.querySelector(`.pp-edit[data-id='${button.dataset.id}']`);
             edit.innerHTML = `<div class='input-group input-group-sm mt-2' style='max-width: 18rem'>` +
-                `<input class='form-control pp-number-input' maxlength='3' inputmode='numeric' aria-label='Neue Nummer' value='${freeNumber()}'>` +
+                `<input class='form-control pp-number-input' maxlength='4' inputmode='numeric' aria-label='Neue Nummer' value='${freeNumber()}'>` +
                 `<button class='btn btn-outline-success pp-renumber-save' data-id='${esc(button.dataset.id)}'>Übernehmen</button></div>`;
         } else if (button.classList.contains('pp-renumber-save')) {
             const number = button.parentElement.querySelector('input').value.trim();
@@ -149,7 +149,7 @@
     });
 
     root.addEventListener('input', (e) => {
-        if (e.target.classList.contains('pp-number-input')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+        if (e.target.classList.contains('pp-number-input')) e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
     });
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);

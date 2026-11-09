@@ -31,6 +31,12 @@ class Main < Sinatra::Base
         phone_games_all.find { |g| g[:id] == id }
     end
 
+    def phone_games_publish_list
+        PhoneGames.write_manifest(phone_games_all.select { |g| g[:state] == 'published' })
+    rescue StandardError => e
+        STDERR.puts "Telefonbuch: the list for the line could not be written: #{e.message}"
+    end
+
     def phone_games_link
         "#{WEB_ROOT}/telefonspiel#veroeffentlichen"
     end
@@ -129,6 +135,7 @@ class Main < Sinatra::Base
         halt 404 unless game && game[:email] == @session_user[:email]
         neo4j_query('MATCH (g:PhoneGame {id: $id}) DETACH DELETE g;', :id => game[:id])
         PhoneGames.remove(game[:id])
+        phone_games_publish_list
         log_event "Telefonspiel zurückgezogen von #{game[:email]}: #{game[:number]} #{game[:title]}"
         respond(phone_games_state)
     end
@@ -149,6 +156,7 @@ class Main < Sinatra::Base
             end
             neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.number = $number;', :id => game[:id], :number => number)
         end
+        phone_games_publish_list
         respond(phone_games_state)
     end
 
@@ -191,6 +199,7 @@ class Main < Sinatra::Base
         rescue StandardError => e
             STDERR.puts "Telefonspiel #{game[:id]}: mail to the student failed: #{e.message}"
         end
+        phone_games_publish_list
         log_event "Telefonspiel #{data[:decision] == 'publish' ? 'veröffentlicht' : 'abgelehnt'} von #{@session_user[:email]}: #{game[:number]} #{game[:title]}"
         respond(:state => data[:decision] == 'publish' ? 'published' : 'rejected')
     end
@@ -250,13 +259,16 @@ class Main < Sinatra::Base
             "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
             "<h2 class='mt-4'>Probelauf</h2><p>Der Anfang des Spiels mit <code>telefon --test</code>, ohne eine Taste, beim Einreichen im Workspace.</p><pre class='pg-transcript'>#{h.(game[:transcript])}</pre>" \
             "<h2 class='mt-4'>Programm: <code>#{h.(game[:file])}</code></h2><pre class='pg-code'>#{h.(code || 'Die Datei fehlt.')}</pre>" \
-            "<script src='/include/phone_review.js?#{CACHE_BUSTER}'></script>"
+            "<script src='/include/phone_review.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # /telefonbuch: the published games, sorted by title, as the pages of a
     # book; the phone number or that one is being worked on (public)
     def phone_book_page
-        games = PhoneGames.phone_book(phone_games_all.select { |g| g[:state] == 'published' } + PhoneGames::FIXED)
+        phone_games_publish_list
+        games = phone_games_all.select { |g| g[:state] == 'published' }
+        games += PhoneGames.sample_entries if DEVELOPMENT && params.key?('muster')     # to try the pages
+        games = PhoneGames.phone_book(games)
         number = Main.phone_number
         entries = games.map do |g|
             { :number => g[:number], :title => g[:title], :description => g[:description] }
@@ -266,10 +278,10 @@ class Main < Sinatra::Base
             direct ? "Ruf #{number} mit der Nummer des Spiels dahinter an, zum Beispiel #{number} 123." :
                 "Ruf #{number} an und gib die Nummer des Spiels ein."
         else
-            nil      # without a number the book says nothing about one
+            'Wir arbeiten an einer echten Telefonnummer, unter der man die Spiele auch mit einem Telefon anrufen kann.'
         end
         # the notes stand at the end of the book, as a remark (phone_book.js)
-        notes = { :line => line, :random => 'Mit der Nummer 000 kommt ein Spiel, das der Zufall aussucht.',
+        notes = { :line => line,
                   :own => 'Schreib dein eigenes Telefonspiel:', :link => 'hier entlang', :href => '/telefonspiel' }
         "<script>window.PHONE_BOOK = #{JSON.generate(entries).gsub('</', '<\/')}; " \
             "window.PHONE_BOOK_NOTES = #{JSON.generate(notes).gsub('</', '<\/')};</script>"
