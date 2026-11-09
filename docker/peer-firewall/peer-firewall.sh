@@ -9,6 +9,10 @@ INFRASTRUCTURE_LABEL="${INFRASTRUCTURE_LABEL:-hackschule.workspace.peer_firewall
 # SSH port, and they only answer. They are no infrastructure: from there, a
 # student must not reach anyone else's Workspace.
 CASE_SERVER_LABEL="${CASE_SERVER_LABEL:-hackschule.workspace.peer_firewall.case_server}"
+# The speech service of the Telefonspiel (phone_speech): the emulator in a
+# Workspace asks it for speech and music on port 8000, and it only answers.
+PHONE_LABEL="${PHONE_LABEL:-hackschule.workspace.peer_firewall.phone}"
+PHONE_TCP_PORT="${PHONE_TCP_PORT:-8000}"
 PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234}"
 SYNC_INTERVAL="${SYNC_INTERVAL:-2}"
 NFT_TABLE="hackschule_workspace"
@@ -79,6 +83,15 @@ EOF_RULES
     cat <<EOF_RULES
     }
 
+    set phone_services {
+        type ipv4_addr
+EOF_RULES
+    if [ -n "$phone_elements" ]; then
+        printf '        elements = { %s }\n' "$phone_elements"
+    fi
+    cat <<EOF_RULES
+    }
+
     chain peer_filter {
         type filter hook forward priority filter - 1; policy accept;
 
@@ -99,6 +112,10 @@ EOF_RULES
         # SSH to the case server, and its answers on those connections.
         ip saddr @user_subnets ip daddr @case_servers tcp dport 22 accept
         ip saddr @case_servers ip daddr @user_subnets tcp sport 22 ct state established accept
+
+        # The Telefonspiel's speech service, and its answers.
+        ip saddr @user_subnets ip daddr @phone_services tcp dport ${PHONE_TCP_PORT} accept
+        ip saddr @phone_services ip daddr @user_subnets tcp sport ${PHONE_TCP_PORT} ct state established accept
 
         # Everything else directly between student-side endpoints is private.
         # bridge/forward cannot use an ICMP reject verdict on the nftables
@@ -145,6 +162,7 @@ discover_network_state() {
 
     infrastructure_elements="$(ips_with_label "$INFRASTRUCTURE_LABEL")" || return 1
     case_server_elements="$(ips_with_label "$CASE_SERVER_LABEL")" || return 1
+    phone_elements="$(ips_with_label "$PHONE_LABEL")" || return 1
 }
 
 # The addresses on the workspace network of all running containers with the
@@ -189,6 +207,10 @@ apply_network_state() {
         if [ -n "$case_server_elements" ]; then
             printf 'add element bridge %s case_servers { %s }\n' "$NFT_TABLE" "$case_server_elements"
         fi
+        printf 'flush set bridge %s phone_services\n' "$NFT_TABLE"
+        if [ -n "$phone_elements" ]; then
+            printf 'add element bridge %s phone_services { %s }\n' "$NFT_TABLE" "$phone_elements"
+        fi
     } | nft -f -
 }
 
@@ -206,13 +228,13 @@ done
 # The first installed table already contains the subnet and infrastructure
 # sets, so there is no fail-open initialization window.
 install_ruleset
-last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}"
+last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
 log "protecting ${WORKSPACE_NETWORK}; peer TCP ports: ${PEER_TCP_PORTS}; peer UDP disabled"
-log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}"
+log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}"
 
 while :; do
     if discover_network_state; then
-        current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}"
+        current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
 
         if ! nft list table bridge "$NFT_TABLE" >/dev/null 2>&1; then
             log 'firewall table disappeared; restoring it'
@@ -220,7 +242,7 @@ while :; do
             last_state="$current_state"
         elif [ "$current_state" != "$last_state" ]; then
             apply_network_state
-            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}"
+            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}"
             last_state="$current_state"
         fi
     else

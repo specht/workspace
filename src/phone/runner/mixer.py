@@ -125,15 +125,6 @@ class Mixer:
                 await asyncio.sleep(delay)
 
 
-def pcm16_to_float(data, rate):
-    """int16 bytes at `rate` to float32 at 16 kHz"""
-    import soxr
-    samples = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
-    if rate != RATE:
-        samples = soxr.resample(samples, rate, RATE)
-    return samples.astype(np.float32)
-
-
 def silence(ms):
     return np.zeros(int(RATE * ms / 1000), dtype=np.float32)
 

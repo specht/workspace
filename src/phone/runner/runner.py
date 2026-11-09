@@ -2,26 +2,29 @@
 
 Asterisk hands every call to the Stasis app "telefonspiel". For each call
 the runner answers, connects a stream of its own into the call (External
-Media: RTP with 16 kHz audio as G.722, bridged with the caller), mixes music and
-speech into it live (mixer.py), reads the keys from ARI events, plays the
-menu and then runs the chosen game as a process of its own.
+Media: RTP with 16 kHz audio as G.722, bridged with the caller), mixes music
+and speech into it live (mixer.py), reads the keys from ARI events, plays
+the menu and then runs the chosen game as a process of its own.
 
-A game speaks the protocol of JSON lines: it writes a command on stdout
-and reads the answer on stdin (docs/plan-telefonspiel.md, »The protocol«).
-Lines that are not JSON are its ordinary output and go to the log.
+Running the game and its protocol is shared with the emulator in the
+Workspace (src/phone/core/game.py), so a game behaves the same in both.
 """
 
 import asyncio
 import json
 import os
+import pwd
 import resource
 import socket
 import sys
+import time
 
 import aiohttp
 
-import sounds
-from mixer import Mixer, silence
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core'))
+import game  # noqa: E402
+import sounds  # noqa: E402
+from mixer import Mixer, silence  # noqa: E402
 
 ARI = os.environ.get('PHONE_ARI', 'http://asterisk:8088/ari')
 ARI_USER = os.environ.get('PHONE_ARI_USER', 'runner')
@@ -33,9 +36,6 @@ GAME_SECONDS = int(os.environ.get('PHONE_GAME_SECONDS', '900'))   # a call at mo
 GAME_MEMORY = 512 * 1024 * 1024
 GAME_CPU = 120                                                    # seconds of processor time
 
-
-import time
-
 _start = time.monotonic()
 
 
@@ -43,20 +43,33 @@ def log(*parts):
     print(f'{time.monotonic() - _start:8.2f}', *parts, file=sys.stderr, flush=True)
 
 
-class Call:
+def game_limits():
+    """in the game's process, before it starts: a session of its own, limits,
+    the unprivileged user game"""
+    os.setsid()
+    resource.setrlimit(resource.RLIMIT_CPU, (GAME_CPU, GAME_CPU))
+    resource.setrlimit(resource.RLIMIT_AS, (GAME_MEMORY, GAME_MEMORY))
+    resource.setrlimit(resource.RLIMIT_NPROC, (64, 64))
+    if os.getuid() == 0:
+        user = pwd.getpwnam('game')
+        os.setgid(user.pw_gid)
+        os.setuid(user.pw_uid)
+
+
+class Call(game.Phone):
     def __init__(self, runner, channel):
+        super().__init__()
         self.runner = runner
         self.channel = channel
-        self.keys = asyncio.Queue()
+        self.folder = GAMES
         self.mixer = None
         self.sock = None
         self.port = None
         self.media_channel = None
         self.bridge = None
-        self.process = None
-        self.ended = asyncio.Event()
 
-    # ARI -----------------------------------------------------------------
+    def log(self, *parts):
+        log(f'[{self.channel}]', *parts)
 
     async def ari(self, method, path, **params):
         return await self.runner.ari(method, path, **params)
@@ -79,8 +92,7 @@ class Call:
         self.bridge = bridge['id']
         await self.ari('POST', f'/bridges/{self.bridge}/addChannel', channel=f'{self.channel},{self.media_channel}')
         self.mixer = Mixer(self.sock, remote)
-        loop = asyncio.get_running_loop()
-        loop.add_reader(self.sock.fileno(), self._receive)
+        asyncio.get_running_loop().add_reader(self.sock.fileno(), self._receive)
         self.mixer.start()
 
     def _receive(self):
@@ -91,11 +103,6 @@ class Call:
             pass
 
     async def teardown(self):
-        if self.process and self.process.returncode is None:
-            try:
-                os.killpg(self.process.pid, 9)
-            except ProcessLookupError:
-                pass
         if self.mixer:
             self.mixer.stop()
         if self.sock:
@@ -113,42 +120,32 @@ class Call:
     # what a game can do --------------------------------------------------
 
     async def say(self, text):
-        """speak, sentence by sentence: the first plays while the next is made"""
-        log(f'[{self.channel}] say', repr(str(text)[:80]))
+        """sentence by sentence: the first plays while the next is made"""
+        self.log('say', repr(text[:80]))
         heard = None
-        for sentence in sounds.sentences(str(text)):
-            samples = await sounds.in_thread(sounds.speak_sentence, sentence)
+        for sentence in game.sentences(text):
+            samples = await sounds.speak(self.runner.session, sentence)
             if self.ended.is_set():
                 return
             heard = self.mixer.say(samples)
         if heard:
             await heard
 
-    async def sleep(self, ms):
-        await asyncio.sleep(max(0, float(ms)) / 1000)
-
     async def music(self, source, volume=0.5):
-        log(f'[{self.channel}] music', source, volume)
+        self.log('music', source, volume)
         if not source:
             self.mixer.set_music(None)
             return
-        samples = await sounds.in_thread(sounds.fetch_music, str(source))
+        try:
+            samples = await sounds.music(self.runner.session, self.folder, str(source))
+        except Exception as error:
+            self.log('music failed:', repr(error))
+            return
+        try:
+            volume = float(volume)
+        except (TypeError, ValueError):
+            volume = 0.5
         self.mixer.set_music(samples, volume)
-
-    async def read_keys(self, count, timeout_ms):
-        """up to `count` keys; keys pressed earlier (during speech) count too;
-        # ends early"""
-        digits = ''
-        while len(digits) < count:
-            try:
-                key = await asyncio.wait_for(self.keys.get(), timeout_ms / 1000)
-            except asyncio.TimeoutError:
-                break
-            if key == '#':
-                break
-            digits += key
-        log(f'[{self.channel}] keys', repr(digits))
-        return digits
 
     # the menu and the games ---------------------------------------------
 
@@ -163,7 +160,6 @@ class Call:
         return found
 
     async def menu(self):
-        await self.music('/app/sounds/menu.ogg' if os.path.exists('/app/sounds/menu.ogg') else None)
         games = self.games()
         if not games:
             await self.say('Hallo! Hier gibt es gerade keine Spiele. Schreib doch selbst eins.')
@@ -184,80 +180,18 @@ class Call:
         return None
 
     async def run_game(self, code):
-        folder = os.path.join(GAMES, code)
-        with open(os.path.join(folder, 'game.json')) as f:
+        self.folder = os.path.join(GAMES, code)
+        with open(os.path.join(self.folder, 'game.json')) as f:
             meta = json.load(f)
         self.mixer.set_music(None)
-
-        def limits():
-            os.setsid()
-            resource.setrlimit(resource.RLIMIT_CPU, (GAME_CPU, GAME_CPU))
-            resource.setrlimit(resource.RLIMIT_AS, (GAME_MEMORY, GAME_MEMORY))
-            resource.setrlimit(resource.RLIMIT_NPROC, (64, 64))
-            if os.getuid() == 0:
-                import pwd
-                user = pwd.getpwnam('game')
-                os.setgid(user.pw_gid)
-                os.setuid(user.pw_uid)
-
-        env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'PYTHONPATH': '/app/lib/python', 'PYTHONUNBUFFERED': '1',
-               'LANG': 'C.UTF-8', 'HOME': '/tmp'}
-        self.process = await asyncio.create_subprocess_exec(
-            *meta['command'], cwd=folder, env=env, preexec_fn=limits,
-            stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-        stderr_task = asyncio.create_task(self._pipe_log(self.process.stderr, f'[{code} stderr]'))
-        try:
-            await asyncio.wait_for(self._protocol(code), GAME_SECONDS)
-        except asyncio.TimeoutError:
+        env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp'})
+        reason, status = await game.run_game(
+            self, game.command_for(meta['command']), self.folder, env,
+            lambda kind, line: log(f'[{code} {kind}]', line),
+            preexec_fn=game_limits, seconds=GAME_SECONDS)
+        self.log('game ended:', reason, status)
+        if reason == 'time':
             await self.say('Die Zeit ist um. Tschüss!')
-        finally:
-            stderr_task.cancel()
-
-    async def _pipe_log(self, stream, prefix):
-        async for line in stream:
-            log(prefix, line.decode('utf-8', 'replace').rstrip())
-
-    async def _protocol(self, code):
-        while not self.ended.is_set():
-            line = await self.process.stdout.readline()
-            if not line:
-                await self.process.wait()
-                log(f'[{self.channel}] game ended with', self.process.returncode)
-                return                                   # the game ended
-            text = line.decode('utf-8', 'replace').strip()
-            if not text.startswith('{'):
-                log(f'[{code}]', text)                   # an ordinary print
-                continue
-            try:
-                command = json.loads(text)
-            except json.JSONDecodeError:
-                log(f'[{code}] not a command:', text)
-                continue
-            answer = await self.execute(command)
-            if answer is None or self.ended.is_set():
-                return                                   # hang up, or the caller did
-            try:
-                self.process.stdin.write((json.dumps(answer) + '\n').encode('utf-8'))
-                await self.process.stdin.drain()
-            except (ConnectionResetError, BrokenPipeError):
-                return                                   # the game is gone
-
-    async def execute(self, command):
-        if 'say' in command:
-            await self.say(command['say'])
-            return {'ok': True}
-        if 'sleep' in command:
-            await self.sleep(command['sleep'])
-            return {'ok': True}
-        if 'music' in command:
-            await self.music(command['music'], command.get('volume', 0.5))
-            return {'ok': True}
-        if 'keys' in command:
-            digits = await self.read_keys(int(command['keys']), float(command.get('timeout', 10000)))
-            return {'keys': digits}
-        if command.get('hangup'):
-            return None
-        return {'error': 'unknown command'}
 
     async def run(self):
         try:
@@ -288,7 +222,8 @@ class Runner:
         self.free_ports.append(port)
 
     async def ari(self, method, path, **params):
-        async with self.session.request(method, ARI + path, params=params) as response:
+        async with self.session.request(method, ARI + path, params=params,
+                                        auth=aiohttp.BasicAuth(ARI_USER, ARI_PASSWORD)) as response:
             if response.status >= 400:
                 raise RuntimeError(f'{method} {path}: {response.status} {await response.text()}')
             if response.content_type == 'application/json':
@@ -305,20 +240,15 @@ class Runner:
                 channel = event.get('channel', {}).get('id')
                 if kind == 'StasisStart' and channel not in self.media_channels \
                         and not event['channel'].get('name', '').startswith('UnicastRTP'):
-                    log('call from', event['channel'].get('caller', {}).get('number', '?') and 'a caller')
+                    log('a call')          # no caller's number in the log (docs/plan-telefonspiel.md, »Open«)
                     call = Call(self, channel)
                     self.calls[channel] = call
                     asyncio.create_task(self._run_call(call))
                 elif kind == 'ChannelDtmfReceived' and channel in self.calls:
                     log(f'[{channel}] key', event['digit'])
-                    self.calls[channel].keys.put_nowait(event['digit'])
+                    self.calls[channel].press(event['digit'])
                 elif kind in ('StasisEnd', 'ChannelDestroyed') and channel in self.calls:
                     self.calls[channel].ended.set()
-                    if self.calls[channel].process and self.calls[channel].process.returncode is None:
-                        try:
-                            os.killpg(self.calls[channel].process.pid, 9)
-                        except ProcessLookupError:
-                            pass
 
     async def _run_call(self, call):
         try:
@@ -327,8 +257,7 @@ class Runner:
             self.calls.pop(call.channel, None)
 
     async def main(self):
-        auth = aiohttp.BasicAuth(ARI_USER, ARI_PASSWORD)
-        async with aiohttp.ClientSession(auth=auth) as self.session:
+        async with aiohttp.ClientSession() as self.session:
             while True:
                 try:
                     await self.events()

@@ -22,7 +22,8 @@ Repositorys, sofern nicht anders angegeben. Die Einrichtung selbst steht im
 Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
 `docker_guard`, `docker_guard_ro`, in der Entwicklung `tutorial_screenshots`, mit
 `CASE_SERVER = true` `case_museum` und `case_alarm` (siehe »Der Fallserver«)
-und mit `GIT_SERVER = true` `git_server` (siehe »Der Git-Server der Gruppen«).
+mit `GIT_SERVER = true` `git_server` (siehe »Der Git-Server der Gruppen«)
+und mit `PHONE = true` `phone_speech` (siehe »Das Telefonspiel«).
 
 ### Der Docker-Wächter
 
@@ -619,6 +620,45 @@ Workspace«, dort auch, warum SSH).
   Repository samt abgelehntem `--force`), `git_browse_test.rb`,
   `class_repos_test.rb` (die Fassungen der Seiten). Den ganzen Weg durch den
   Container prüft `e2e/tests/git-server.browser.spec.ts`.
+
+## Das Telefonspiel
+
+Ein Spiel hinter einer Telefonnummer (Plan, Protokoll und Stand:
+docs/plan-telefonspiel.md). Mit `PHONE = true` in `credentials.rb` läuft der
+Sprachdienst, und der Emulator im Workspace spricht:
+
+```bash
+./config.rb build phone_speech peer_firewall && ./config.rb up -d
+```
+
+- **Der Sprachdienst** (`docker/phone-speech`, Code in `src/phone/speech`):
+  Piper mit der Stimme Thorsten in `PHONE_SPEECH_WORKERS` Prozessen (2) für
+  alle Workspaces und Anrufe, dazu Musik von YouTube (yt-dlp, nur YouTube).
+  Im Netz der Workspaces unter `phone-speech`, mit einem eigenen Label der
+  Peer-Firewall: Workspaces erreichen ihn nur auf Port 8000, er erreicht
+  keinen Workspace. Sätze und Musik liegen als Dateien in
+  `data/phone-cache`, benannt nach dem SHA-1 des Textes oder der Adresse.
+- **Der Emulator** (`src/phone/emulator`, im Image unter `/opt/telefon`,
+  Befehl `telefon`): `telefon spiel.rb` (oder `.py`, `.js`) startet das Spiel
+  mit demselben Code wie der Runner (`src/phone/core/game.py`) und bietet
+  auf Port 8040 eine Seite mit Tastenfeld; der Browser mischt Stimme und
+  Musik wie das Telefon. Die Bibliotheken der Sprachen liegen in
+  `src/phone/lib`. Nach einer Änderung dort: Workspace-Image neu bauen
+  (`build-image.sh` kopiert sie nach `docker/code/telefon`).
+- **Ausprobieren ohne Workspace:** den Sprachdienst starten und den
+  Emulator auf dem Rechner laufen lassen:
+
+  ```bash
+  docker build -t phone-speech docker/phone-speech
+  docker run -d --rm --name phone-speech -p 127.0.0.1:18000:8000 \
+      -v "$PWD/src/phone/speech:/app:ro" phone-speech
+  cd src/phone/games/1 && PHONE_SPEECH=http://localhost:18000 ../../emulator/telefon
+  ```
+
+- **Asterisk und der Runner** gehören noch nicht zu `config.rb`; sie kommen
+  mit dem SIP-Trunk. `src/phone/test/e2e.sh` prüft einen ganzen Anruf in
+  einem eigenen Docker-Netz (Images `phone-asterisk`, `phone-speech`,
+  `phone-runner`, `phone-testclient`).
 
 ## Das Demo-Level der Backrooms
 

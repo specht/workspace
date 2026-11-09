@@ -29,14 +29,17 @@ def keys(count=1, timeout=10):
 
 
 def music(source, volume=0.5):
-    """background music (a YouTube link, a URL or a file), looped, quieter
-    while speaking; music(None) stops it"""
+    """background music (a YouTube link or a file in the game's folder),
+    looped, quieter while speaking; music(None) stops it"""
     _command({'music': source, 'volume': volume})
 
 
 def sleep(seconds):
+    """wait; the music keeps playing, keys pressed meanwhile are kept"""
     _command({'sleep': int(seconds * 1000)})
 
 
 def hangup():
+    """end the call"""
     _command({'hangup': True})
+    raise SystemExit(0)

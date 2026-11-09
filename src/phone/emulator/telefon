@@ -1,0 +1,340 @@
+#!/usr/bin/env python3
+"""telefon: the Telefonspiel in the Workspace (docs/plan-telefonspiel.md).
+
+    telefon spiel.rb          (or spiel.py, spiel.js, or a whole command)
+    telefon                   (the command from game.json in this folder)
+
+Runs the game exactly as the runner does on the real phone (the same code,
+src/phone/core/game.py) and serves a page with a telephone: the browser
+plays the speech and the music, mixed as on the phone, and sends the keys.
+The speech comes from the speech service of the Workspace (phone-speech);
+the game's own music files are served from its folder. Only the standard
+library, so it runs in every Workspace without installing anything.
+"""
+
+import argparse
+import asyncio
+import json
+import mimetypes
+import os
+import re
+import signal
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), 'core'))
+import game  # noqa: E402
+
+SPEECH = os.environ.get('PHONE_SPEECH', 'http://phone-speech:8000')
+PAGE = os.path.join(HERE, 'page.html')
+PORT = 8040
+COLOR = sys.stdout.isatty()
+
+
+def paint(code, text):
+    return f'\033[{code}m{text}\033[0m' if COLOR else text
+
+
+def show(text, code=None):
+    print(paint(code, text) if code else text, flush=True)
+
+
+class Emulator(game.Phone):
+    """the page in the browser is the other end of the call"""
+
+    def __init__(self, server):
+        super().__init__()
+        self.server = server
+        self.heard = {}
+        self.parts = {}
+        self.next_id = 0
+
+    async def say(self, text):
+        parts = game.sentences(text)
+        if not parts:
+            return
+        self.next_id += 1
+        done = asyncio.get_running_loop().create_future()
+        self.heard[self.next_id] = done
+        self.parts[self.next_id] = parts
+        self.server.send({'say': parts, 'id': self.next_id})
+        ended = asyncio.ensure_future(self.ended.wait())
+        try:
+            await asyncio.wait({done, ended}, return_when=asyncio.FIRST_COMPLETED)
+        finally:
+            ended.cancel()
+            self.heard.pop(self.next_id, None)
+            self.parts.pop(self.next_id, None)
+
+    def playing(self, id_, part):
+        """the page starts a sentence: now it appears in the terminal, as a subtitle"""
+        parts = self.parts.get(id_, [])
+        if 0 <= part < len(parts):
+            show(f'Telefon: {parts[part]}', '1;36')
+
+    async def music(self, source, volume=0.5):
+        try:
+            volume = max(0.0, min(1.0, float(volume)))
+        except (TypeError, ValueError):
+            volume = 0.5
+        if not source:
+            show('Musik aus', '2')
+            self.server.send({'music': None})
+            return
+        source = str(source)
+        if not re.match(r'https?://', source) and game.game_file(self.server.folder, source) is None:
+            show(f'Musik: Die Datei {source} gibt es im Ordner des Spiels nicht.', '33')
+            return
+        show(f'Musik: {source} (Lautstärke {volume:g})', '2')
+        self.server.send({'music': '/music?' + urllib.parse.urlencode({'source': source}), 'volume': volume})
+
+    async def read_keys(self, count, timeout_ms):
+        self.server.send({'keys': count, 'timeout': timeout_ms})
+        digits = await super().read_keys(count, timeout_ms)
+        self.server.send({'keysDone': digits})
+        show(f'… das Spiel bekommt {json.dumps(digits)}', '2')
+        return digits
+
+
+class Server:
+    def __init__(self, command, folder):
+        self.command = command
+        self.folder = folder
+        self.events = None             # the page's event stream (one page at a time)
+        self.phone = None
+        self.call = None
+
+    # the event stream to the page --------------------------------------------
+
+    def send(self, event):
+        if self.events is None:
+            return
+        try:
+            self.events.write(b'data: ' + json.dumps(event, ensure_ascii=False).encode('utf-8') + b'\n\n')
+        except (ConnectionError, RuntimeError):
+            pass
+
+    async def stream(self, reader, writer):
+        """until the page goes away: then the caller has hung up"""
+        if self.events is not None:
+            self.send({'replaced': True})
+            self.events.close()
+            self.hang_up()
+        self.events = writer
+        writer.write(b'HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache\r\n'
+                     b'X-Accel-Buffering: no\r\n\r\n')
+        self.send({'ready': True, 'title': self.title()})
+
+        async def ping():
+            while True:
+                await asyncio.sleep(15)
+                writer.write(b': ping\n\n')
+                await writer.drain()
+        pinging = asyncio.ensure_future(ping())
+        try:
+            await asyncio.wait({pinging, asyncio.ensure_future(reader.read())},
+                               return_when=asyncio.FIRST_COMPLETED)
+        finally:
+            pinging.cancel()
+            if self.events is writer:
+                self.events = None
+                self.hang_up()
+
+    def title(self):
+        try:
+            with open(os.path.join(self.folder, 'game.json')) as f:
+                return str(json.load(f)['title'])
+        except (OSError, ValueError, KeyError, TypeError):
+            return os.path.basename(self.folder)
+
+    # the call ------------------------------------------------------------------
+
+    def hang_up(self):
+        if self.phone is not None:
+            self.phone.ended.set()
+
+    async def run_call(self):
+        self.phone = phone = Emulator(self)
+        show('')
+        show(f'Anruf: {" ".join(self.command)}', '1')
+        env = game.environment()
+        try:
+            reason, status = await game.run_game(
+                phone, self.command, self.folder, env,
+                lambda kind, line: print(paint('31', line) if kind == 'err' else line, flush=True))
+        except OSError as error:
+            show(f'Das Spiel ließ sich nicht starten: {error}', '31')
+            reason, status = 'ended', None
+        if reason == 'caller':
+            show('Aufgelegt.', '1')
+        elif reason == 'hangup':
+            show('Das Spiel hat aufgelegt.', '1')
+        elif status:
+            show(f'Das Spiel ist mit einem Fehler beendet (Exit-Code {status}); die Meldung steht oben.', '1;31')
+        else:
+            show('Das Spiel ist zu Ende.', '1')
+        if self.phone is phone:
+            self.phone = None
+            self.send({'ended': reason})
+
+    async def start_call(self):
+        if self.call and not self.call.done():
+            self.hang_up()
+            await asyncio.wait({self.call}, timeout=3)
+        self.call = asyncio.ensure_future(self.run_call())
+
+    # HTTP ----------------------------------------------------------------------
+
+    async def handle(self, reader, writer):
+        try:
+            request = await asyncio.wait_for(reader.readline(), 30)
+            parts = request.decode('latin-1').split()
+            if len(parts) < 2:
+                return
+            method, target = parts[0], parts[1]
+            length = 0
+            while True:
+                line = await asyncio.wait_for(reader.readline(), 30)
+                if line in (b'\r\n', b'\n', b''):
+                    break
+                name, _, value = line.decode('latin-1').partition(':')
+                if name.strip().lower() == 'content-length':
+                    length = min(int(value.strip() or 0), 65536)
+            body = await reader.readexactly(length) if length else b''
+            url = urllib.parse.urlsplit(target)
+            query = dict(urllib.parse.parse_qsl(url.query))
+            await self.route(method, url.path, query, body, reader, writer)
+        except (ConnectionError, asyncio.TimeoutError, asyncio.IncompleteReadError, ValueError):
+            pass
+        finally:
+            try:
+                writer.close()
+            except RuntimeError:
+                pass
+
+    def respond(self, writer, status, body=b'', content_type='text/plain; charset=utf-8', headers=()):
+        reason = {200: 'OK', 204: 'No Content', 400: 'Bad Request', 404: 'Not Found', 502: 'Bad Gateway'}[status]
+        head = [f'HTTP/1.1 {status} {reason}', f'Content-Type: {content_type}',
+                f'Content-Length: {len(body)}', 'Connection: close', *headers]
+        writer.write(('\r\n'.join(head) + '\r\n\r\n').encode('latin-1') + body)
+
+    async def route(self, method, path, query, body, reader, writer):
+        if method == 'GET' and path == '/':
+            with open(PAGE, 'rb') as f:
+                self.respond(writer, 200, f.read(), 'text/html; charset=utf-8', ['Cache-Control: no-cache'])
+        elif method == 'GET' and path == '/events':
+            await self.stream(reader, writer)
+        elif method == 'POST' and path == '/call':
+            await self.start_call()
+            self.respond(writer, 204)
+        elif method == 'POST' and path == '/hangup':
+            self.hang_up()
+            self.respond(writer, 204)
+        elif method == 'POST' and path == '/key':
+            key = query.get('key', '')
+            if self.phone is not None and len(key) == 1 and key in '0123456789*#':
+                show(f'Taste {key}', '1;33')
+                self.phone.press(key)
+            self.respond(writer, 204)
+        elif method == 'POST' and path == '/heard':
+            done = self.phone.heard.get(int(query.get('id', '0'))) if self.phone else None
+            if done is not None and not done.done():
+                done.set_result(True)
+            self.respond(writer, 204)
+        elif method == 'POST' and path == '/playing':
+            if self.phone is not None:
+                self.phone.playing(int(query.get('id', '0')), int(query.get('part', '-1')))
+            self.respond(writer, 204)
+        elif method == 'POST' and path == '/problem':
+            show(body.decode('utf-8', 'replace')[:500], '33')
+            self.respond(writer, 204)
+        elif method == 'GET' and path == '/speech':
+            await self.proxy(writer, '/speech', {'text': query.get('text', '')[:500], 'format': 'wav'}, 60)
+        elif method == 'GET' and path == '/music':
+            source = query.get('source', '')
+            if re.match(r'https?://', source):
+                await self.proxy(writer, '/music', {'source': source, 'format': 'mp3'}, 330)
+            else:
+                file = game.game_file(self.folder, source)
+                if file is None:
+                    self.respond(writer, 404, b'not in the game\'s folder')
+                else:
+                    with open(file, 'rb') as f:
+                        data = f.read()
+                    self.respond(writer, 200, data, mimetypes.guess_type(file)[0] or 'application/octet-stream')
+        else:
+            self.respond(writer, 404, b'not found')
+
+    async def proxy(self, writer, path, params, timeout):
+        """the speech service answers; its errors go to the page as 502"""
+        def fetch():
+            with urllib.request.urlopen(SPEECH + path + '?' + urllib.parse.urlencode(params), timeout=timeout) as r:
+                return r.read(), r.headers.get('Content-Type', 'application/octet-stream')
+        try:
+            data, content_type = await asyncio.get_running_loop().run_in_executor(None, fetch)
+            self.respond(writer, 200, data, content_type)
+        except urllib.error.HTTPError as error:
+            self.respond(writer, 502, error.read()[:500] or str(error).encode())
+        except (urllib.error.URLError, OSError) as error:
+            self.respond(writer, 502, f'Der Sprachdienst ist nicht erreichbar ({SPEECH}): {error}'.encode())
+
+
+def find_game(args):
+    """the command and the folder it runs in"""
+    if not args:
+        if not os.path.exists('game.json'):
+            sys.exit('Aufruf: telefon spiel.rb   (oder spiel.py, spiel.js; ohne Angabe: der Befehl aus game.json)')
+        with open('game.json') as f:
+            return game.command_for(json.load(f)['command']), os.getcwd()
+    if len(args) == 1 and os.path.isfile(args[0]):
+        folder, name = os.path.split(os.path.abspath(args[0]))
+        if os.path.splitext(name)[1] not in game.LANGUAGES:
+            sys.exit(f'telefon kennt Dateien mit {", ".join(game.LANGUAGES)}; '
+                     f'für andere schreib den ganzen Befehl, zum Beispiel: telefon ./{name}')
+        return game.command_for([name]), folder
+    if len(args) == 1 and os.path.splitext(args[0])[1] in game.LANGUAGES:
+        sys.exit(f'Die Datei {args[0]} gibt es hier nicht.')
+    return list(args), os.getcwd()
+
+
+async def serve(command, folder, port):
+    server = Server(command, folder)
+    for candidate in range(port, port + 20):
+        try:
+            listener = await asyncio.start_server(server.handle, '0.0.0.0', candidate)
+            break
+        except OSError:
+            continue
+    else:
+        sys.exit(f'Kein freier Port zwischen {port} und {port + 19}.')
+    proxy = os.environ.get('VSCODE_PROXY_URI', '')
+    address = proxy.replace('{{port}}', str(candidate)) if '{{port}}' in proxy else f'http://localhost:{candidate}/'
+    show(f'Das Telefon läuft auf Port {candidate}.', '1')
+    show(f'Öffne {address} im Browser (die Adresse steht auch im Reiter »Ports«) und klick auf den grünen Hörer.')
+    show('Beenden mit Strg+C.', '2')
+    loop = asyncio.get_running_loop()
+    stop = loop.create_future()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, lambda: stop.done() or stop.set_result(True))
+    async with listener:
+        await stop
+        server.hang_up()
+        if server.call and not server.call.done():
+            await asyncio.wait({server.call}, timeout=3)
+    show('')
+
+
+def main():
+    parser = argparse.ArgumentParser(prog='telefon', description='Das Telefonspiel im Workspace ausprobieren.')
+    parser.add_argument('--port', type=int, default=PORT, help=f'der Port der Seite (Standard: {PORT})')
+    parser.add_argument('command', nargs=argparse.REMAINDER, help='spiel.rb, spiel.py, spiel.js oder ein Befehl')
+    options = parser.parse_args()
+    command, folder = find_game(options.command)
+    asyncio.run(serve(command, folder, options.port))
+
+
+if __name__ == '__main__':
+    main()

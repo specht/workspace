@@ -879,6 +879,19 @@ ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man:
 
 
 # --------------------------------------------------------------------
+# The Telefonspiel's emulator (docs/plan-telefonspiel.md): `telefon spiel.rb`
+# runs a game as the phone does and serves a telephone for the browser; the
+# libraries for Python, Ruby and JavaScript come along. build-image.sh copies
+# src/phone/{core,lib,emulator} to docker/code/telefon.
+# --------------------------------------------------------------------
+
+COPY telefon /opt/telefon
+RUN chmod -R a+rX /opt/telefon && chmod 755 /opt/telefon/emulator/telefon \
+    && ln -sf /opt/telefon/emulator/telefon /usr/local/bin/telefon \
+    && telefon --help >/dev/null
+
+
+# --------------------------------------------------------------------
 # Startup scripts — always last
 # --------------------------------------------------------------------
 

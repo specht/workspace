@@ -3,8 +3,10 @@
 Students program a game that answers the phone: someone dials a Berlin
 number, a menu offers the published games, and the game talks, plays music
 and reacts to the keys of the phone. As of 9 November 2026: the call path
-runs end to end in a test network (Asterisk, the runner, a test telephone);
-the trunk, publishing and the Workspace side are open (»Steps«).
+runs end to end in a test network (Asterisk, the speech service, the
+runner, a test telephone); the emulator runs in the Workspace (`telefon
+spiel.rb`) with the speech service behind `PHONE = true`; the trunk,
+publishing and the activity page are open (»Steps«).
 
 ## What the old Hackschule had
 
@@ -74,12 +76,13 @@ Why it was flaky:
 caller ── easybell (SIP trunk) ── Asterisk (service "phone")
                                      │ ARI: call events, play, keys
                                      ▼
-                              phone runner (Ruby, service)
-                                     │ one process per call
-                                     ▼
-                     the student's game (any language), JSON lines
-                                     │
-                     speech (Piper) and music, cached as files
+                              phone runner (Python, service) ── speech service
+                                     │ one process per call         (Piper, YouTube,
+                                     ▼                               cached as files)
+                     the student's game (any language), JSON lines        │
+                                                                          │
+Workspace: telefon spiel.rb ── the same game code (core/game.py) ─────────┘
+           page in the browser: keypad, speech and music mixed there
 ```
 
 - **Asterisk** registers at the trunk named in `credentials.rb`, answers,
@@ -106,12 +109,22 @@ caller ── easybell (SIP trunk) ── Asterisk (service "phone")
   hangs up. It never waits for slow work during a call: speech comes from
   the cache or from Piper, which needs a fraction of a second for a
   sentence.
-- **Speech:** Piper with a German voice. Constant sentences are rendered
-  when a game is published (the old server already found them by reading
-  the script); sentences with values in them (»Du hast die 3 gedrückt«)
-  are rendered during the call and cached.
-- **Music:** fetched with yt-dlp and mixed when publishing; during the
-  call only finished files.
+- **The speech service** (`src/phone/speech/server.py`, its own container
+  `phone_speech`): Piper with the voice Thorsten in a fixed number of worker
+  processes (`PHONE_SPEECH_WORKERS`, 2) for every call and every emulator,
+  so ten calls and a class trying their games share the processor instead
+  of fighting for it. Each sentence is cached as a file (SHA-1 of voice and
+  text); the same sentence is made once even when several ask at once;
+  more than 100 waiting requests get 503. Workers load the voice at start;
+  a new sentence takes well under a second, a cached one 20 ms.
+  Constant sentences are to be rendered when a game is published (the old
+  server already found them by reading the script).
+- **Music:** a YouTube link goes to the speech service (it fetches nothing
+  else, so no one can make it fetch an address inside the network): yt-dlp,
+  the first ten minutes at 16 kHz, normalised, cached; about 10 s the first
+  time. Publishing is to fetch it in advance, so a call meets only finished
+  files. A file in the game's folder is read by the runner or the emulator
+  itself, never outside that folder.
 
 ## The protocol
 
@@ -134,9 +147,19 @@ loop.
 
 ## Developing and testing in the Workspace
 
-- A simulator in the Workspace image runs the game exactly as the runner
-  would: the spoken text in the terminal and as audio in the browser
-  preview, the keys from a keypad there or from the keyboard.
+- **The emulator** (`src/phone/emulator/telefon`, in the Workspace image as
+  `telefon`, only the standard library): `telefon spiel.rb` (or `.py`,
+  `.js`, or without a name the command from `game.json`) runs the game with
+  the runner's own code (`src/phone/core/game.py`) and serves a page on
+  port 8040 (the next free one up to 8059), linked through code-server's
+  proxy. The page has a keypad (mouse or keyboard, with key tones), a green
+  receiver that starts the game and a red one that hangs up. The browser
+  mixes as the phone does (the same constants as `mixer.py`, Web Audio).
+  Each sentence appears like a subtitle, on the phone's screen, in the
+  page's transcript and in the terminal, when it starts to play; the game's
+  own output and errors stay in the terminal. Without the speech service
+  the browser's own voice reads, and the page says so. Closing or reloading
+  the page hangs up; a second tab takes over the phone.
 - For the real thing in class: a softphone (in the browser, or Linphone on
   a phone) dials into the test extension of the Asterisk, without the
   public number.
@@ -145,12 +168,19 @@ loop.
 
 ## Where it is
 
-- `docker/phone-asterisk`, `docker/phone-runner` (Piper and the Thorsten
-  voice inside), `docker/phone-testclient` (baresip as a test telephone);
+- `docker/phone-asterisk`, `docker/phone-speech` (Piper and the Thorsten
+  voice, yt-dlp), `docker/phone-runner` (Python, Ruby, Node for the games),
+  `docker/phone-testclient` (baresip as a test telephone);
 - `src/phone/asterisk/` (configuration: a test endpoint, the echo
-  extension 600, 100 into the runner), `src/phone/runner/` (runner, mixer,
-  speech and music cache, the Python library in `lib/python/telefon.py`),
-  `src/phone/games/1/` (Zahlenraten, a demo game);
+  extension 600, 100 into the runner), `src/phone/core/game.py` (running a
+  game and its protocol, shared by runner and emulator), `src/phone/runner/`
+  (runner, mixer, sounds), `src/phone/speech/`, `src/phone/emulator/`
+  (`telefon` and its page), `src/phone/lib/` (the libraries for Python,
+  Ruby, JavaScript), `src/phone/games/1/` (Zahlenraten, a demo game with
+  its own music file);
+- `config.rb`: `phone_speech` with `PHONE = true`, on the students' network,
+  reachable from Workspaces on port 8000 only (peer-firewall label
+  `…peer_firewall.phone`); Asterisk and the runner join with the trunk;
 - tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
   and `src/phone/test/e2e.sh` (a whole call: menu, key 1, three guesses,
   the runner's log checked, the recording kept). The test telephone sends
@@ -167,12 +197,13 @@ loop.
    development only from the local network, the trunk from
    `credentials.rb`.
 3. Done in the test network: the runner with live mixing, the protocol,
-   the menu, a demo game; Piper for speech. Open: a fixed number of speech
-   workers (ten calls at once), rendering a game's fixed sentences when it
-   is published.
-4. The Python library and the simulator in the Workspace; an activity page
-   »Telefonspiel« (Ruby as the default language of new activities, Python
-   and the others through the library).
+   the menu, a demo game; the speech service with a fixed number of
+   workers. Open: rendering a game's fixed sentences and fetching its music
+   when it is published; the game's process without network.
+4. Done: the libraries for Python, Ruby and JavaScript and the emulator in
+   the Workspace. Open: an activity page »Telefonspiel« (Ruby as the
+   default language of new activities, Python and JavaScript through the
+   libraries).
 5. Publishing, codes, the teacher page, limits per call.
 6. Connect the trunk on the server, open the ports it needs, test calls
    from outside, several at once.
@@ -183,7 +214,10 @@ loop.
 - Does easybell's Business 2 include a Berlin number, and which ports does
   the trunk need on the server (SIP and the range for the audio)?
 - The licence of the German Piper voice, for the page's credits.
-- What is stored: callers' numbers are personal data. Store none, or only
+- What is stored: the speech service keeps every sentence a game said and
+  every piece of music as files (named by hash, without who asked), and its
+  log names the YouTube links; say so in `privacy.rb` before `PHONE` is
+  switched on anywhere. Callers' numbers are personal data. Store none, or only
   as long as a call lasts, and write it into `src/ruby/include/privacy.rb`
   before going live (docs/datenschutz.md).
 - Recording one's own sentences, as before: later, after the first

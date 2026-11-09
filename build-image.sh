@@ -36,6 +36,10 @@ cp src/vscode-extensions/backrooms/hackschule-backrooms-0.1.1.vsix \
 cp src/vscode-extensions/uml/hackschule-uml-0.1.0.vsix \
     docker/code/hackschule-uml-0.1.0.vsix
 
+rm -rf docker/code/telefon && mkdir -p docker/code/telefon
+cp -r src/phone/core src/phone/lib src/phone/emulator docker/code/telefon/
+find docker/code/telefon -name __pycache__ -prune -exec rm -rf {} +
+
 echo '=== Building reusable toolchains ==='
 bash docker/code/build-toolchains.sh
 

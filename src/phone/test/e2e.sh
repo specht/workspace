@@ -1,23 +1,28 @@
 #!/bin/sh
-# The Telefonspiel end to end, without a trunk: Asterisk, the runner and a
-# test telephone (baresip) in a Docker network of their own. The telephone
+# The Telefonspiel end to end, without a trunk: Asterisk, the speech
+# service, the runner and a test telephone (baresip) in a Docker network of
+# their own. The telephone
 # calls 100, chooses game 1 (Zahlenraten) and guesses; the test checks the
 # runner's log and keeps the recording in $OUT.
 #   src/phone/test/e2e.sh            (from the repository; images phone-asterisk,
-#                                     phone-runner, phone-testclient built)
+#                                     phone-speech, phone-runner, phone-testclient built)
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 OUT=${OUT:-/tmp/phone-e2e}
+CACHE=${CACHE:-/tmp/phone-e2e-cache}       # speech, kept between runs
 NET=phone-e2e
-rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$OUT/cache"
-cleanup() { docker rm -f phone-e2e-asterisk phone-e2e-runner >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
+rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$CACHE"
+cleanup() { docker rm -f phone-e2e-asterisk phone-e2e-speech phone-e2e-runner >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 cleanup
 docker network create $NET >/dev/null
 docker run -d --name phone-e2e-asterisk --network $NET --network-alias asterisk \
     -v "$HERE/asterisk:/etc/asterisk:ro" phone-asterisk >/dev/null
+chmod 777 "$CACHE"
+docker run -d --name phone-e2e-speech --network $NET --network-alias phone-speech \
+    -v "$HERE/speech:/app:ro" -v "$CACHE:/cache" phone-speech >/dev/null
 docker run -d --name phone-e2e-runner --network $NET --network-alias runner \
-    -v "$HERE/runner:/app:ro" -v "$HERE/games:/games:ro" -v "$OUT/cache:/cache" phone-runner >/dev/null
+    -v "$HERE:/phone:ro" -v "$HERE/games:/games:ro" phone-runner >/dev/null
 cp "$HERE/test/baresip-config" "$OUT/conf/config"
 echo "<sip:test@asterisk>;auth_pass=test;regint=0" > "$OUT/conf/accounts"
 cp "$HERE/test/call.py" "$OUT/call.py"
@@ -28,7 +33,7 @@ docker run --rm --network $NET -v "$OUT:/t" -v "$OUT/conf:/root/.baresip" -v "$O
     phone-testclient python3 /t/call.py 100 40 1@9 5@18 3@24 7@30 >/dev/null 2>&1
 docker logs phone-e2e-runner > "$OUT/runner.log" 2>&1
 fail=0
-for expected in "say 'Hallo und willkommen" "keys '1'" "say 'Ich denke mir eine Zahl" "keys '5'" "keys '3'" "keys '7'" "game ended with 0"; do
+for expected in "say 'Hallo und willkommen" "keys '1'" "say 'Ich denke mir eine Zahl" "keys '5'" "keys '3'" "keys '7'" "game ended: ended 0"; do
     if grep -q "$expected" "$OUT/runner.log"; then echo "ok    $expected"; else echo "MISSING $expected"; fail=1; fi
 done
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)

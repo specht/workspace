@@ -36,3 +36,4 @@ src/scripts/collect-countries/country-archive
 src/scripts/collect-streets/cache
 src/scripts/collect-streets/street-archive
 __pycache__/
+docker/code/telefon/
