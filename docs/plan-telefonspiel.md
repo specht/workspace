@@ -66,8 +66,8 @@ Why it was flaky:
   always first: five at a time, each with its number (»Die Höhle der
   Echos: eins, zwei, drei«), then »Für weitere Spiele drück die Raute«;
   a number typed at any moment, also in the middle of the list, starts
-  that game, and 000 a random one. Open: whether a selection by the teacher
-  (up to 9, »Drücke 1 für …«) stays as an option.
+  that game, and 000 a random one. No selection by the teacher (the
+  maintainer): every published game is in the list.
 - **The menu's words made in advance** (the maintainer): the digits and the
   menu's own sentences once, each game's title when the game is published,
   so the menu never waits for the speech service during a call.
