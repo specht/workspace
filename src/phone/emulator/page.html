@@ -95,6 +95,9 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
                             animation: ring 2s ease-out infinite; }
 @keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.45); opacity: 0; } }
 .call button:focus:not(:focus-visible), .keypad button:focus:not(:focus-visible) { outline: none; }
+/* a tap on a phone: no blue highlight, no zoom on a quick second tap, no
+   selected digits; the ring of :focus-visible stays for the keyboard */
+.keypad button, .call button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
 .call .end, .call #call.hang .dial { display: none; }
 .call #call.hang .end { display: inline; }
 .call #call svg { width: 30px; height: 30px; vertical-align: middle; }
