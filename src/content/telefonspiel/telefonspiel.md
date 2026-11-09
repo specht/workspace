@@ -9,7 +9,7 @@ curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukture
 topics: [grundstrukturen, unterprogramme]
 age: Sek I
 requires: [kata-decisions]
-reference: [ruby-python, terminal]
+reference: [telefonspiel, ruby-python, terminal]
 </div>
 
 <div
@@ -821,29 +821,10 @@ geht jetzt müde nach Hause:
 ```
 <!-- /language -->
 
-Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Es gibt acht;
-hör sie dir an, jede mit einem Satz, der zu ihr passt:
+Die Stimmung steht hinter dem Text, durch ein Komma getrennt. Auf der Seite
+des Telefons steht sie klein über dem Satz.
 
-<div class='voice-chat'>
-<button class='btn btn-sm btn-outline-secondary voice-all' type='button'><i class='bi bi-play'></i> Alle nacheinander</button>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='ohne Stimmung: Du stehst vor einer dunklen Höhle. Anhören'><span class='voice-mood'>ohne Stimmung</span><span class='voice-text'>»Du stehst vor einer dunklen Höhle.«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/plain.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='neutral: Der Gang führt nach links und nach rechts. Anhören'><span class='voice-mood'>neutral <code>neutral</code></span><span class='voice-text'>»Der Gang führt nach links und nach rechts.«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/neutral.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='flüsternd: Psst, da hinten bewegt sich etwas. Anhören'><span class='voice-mood'>flüsternd <code>whisper</code></span><span class='voice-text'>»Psst, da hinten bewegt sich etwas.«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/whisper.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='angewidert: Igitt, hier riecht es nach faulen Eiern. Anhören'><span class='voice-mood'>angewidert <code>disgusted</code></span><span class='voice-text'>»Igitt, hier riecht es nach faulen Eiern.«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/disgusted.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='wütend: Wer hat meine Fackel ausgeblasen? Anhören'><span class='voice-mood'>wütend <code>angry</code></span><span class='voice-text'>»Wer hat meine Fackel ausgeblasen?«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/angry.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='betrunken: Alles dreht sich, wo ist denn hier der Ausgang? Anhören'><span class='voice-mood'>betrunken <code>drunk</code></span><span class='voice-text'>»Alles dreht sich, wo ist denn hier der Ausgang?«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/drunk.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='müde: Ich bin so müde, ich lege mich kurz hin. Anhören'><span class='voice-mood'>müde <code>sleepy</code></span><span class='voice-text'>»Ich bin so müde, ich lege mich kurz hin.«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/sleepy.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='überrascht: Was? Die Kiste ist voller Gold! Anhören'><span class='voice-mood'>überrascht <code>surprised</code></span><span class='voice-text'>»Was? Die Kiste ist voller Gold!«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/surprised.mp3'></audio></div>
-<div class='voice-item'><button class='voice-line' type='button' aria-label='amüsiert: Na, das hast du dir wohl anders vorgestellt! Anhören'><span class='voice-mood'>amüsiert <code>amused</code></span><span class='voice-text'>»Na, das hast du dir wohl anders vorgestellt!«</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='moods/amused.mp3'></audio></div>
-</div>
-<script src='/include/sound_buttons.js'></script>
-
-Auf der Seite des Telefons steht die Stimmung klein über dem Satz.
-
-Die Sätze mit Stimmung spricht eine zweite Stimme von Thorsten, die etwas
-weniger klar klingt als die gewohnte. Setz Stimmungen darum sparsam ein, dort,
-wo sie etwas erzählen: Ein einziges Flüstern im dunklen Gang wirkt stärker als
-zehn.
+_include(telefonspiel#stimmungen)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ruf an und drück die 2. Achte auf Tempo und
@@ -1228,51 +1209,7 @@ _task(auflegen)
 
 ### Aussprache
 
-Thorsten liest alles, was in `say` steht, wie einen deutschen Text. Meistens
-klingt das richtig. Bei Zahlen, Abkürzungen und englischen Wörtern lohnt es
-sich, genau hinzuhören:
-
-<table class='table'>
-<thead><tr><th>Im Text</th><th>Thorsten sagt</th><th>So klingt es anders</th></tr></thead>
-<tbody>
-<tr><td><code>Raum 123</code></td><td>»Raum hundertdreiundzwanzig«</td><td><code>Raum 1 2 3</code>: »Raum eins zwei drei«</td></tr>
-<tr><td><code>ZDF</code></td><td>»Zett De Eff«: Abkürzungen buchstabiert er</td><td></td></tr>
-<tr><td><code>Psst</code>, <code>Hm</code>, <code>Brr</code></td><td>den Laut, nicht die Buchstaben</td><td></td></tr>
-<tr><td><code>Game Over</code></td><td>»Gahme Ohver«, deutsch gelesen</td><td><code>[[ ɡˈeɪm ]] over</code></td></tr>
-</tbody>
-</table>
-
-Ein Komma macht eine kurze Pause, ein Punkt, ein Fragezeichen oder ein
-Ausrufezeichen eine längere. Zwischen zwei doppelten eckigen Klammern steht
-Lautschrift, das Internationale Phonetische Alphabet (IPA): Dann spricht
-Thorsten genau diese Laute. Das Zeichen `ˈ` steht vor der betonten Silbe,
-`ː` macht den Laut davor lang. Meist reicht es, nur das Wort in Lautschrift zu
-schreiben, das falsch klingt: »over« spricht Thorsten so, wie man es auf
-Deutsch meistens sagt.
-
-<!-- language: ruby -->
-<!-- page-code: own -->
-```ruby
-say 'Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!'
-```
-<!-- /language -->
-<!-- language: python -->
-<!-- page-code: own -->
-```python
-say('Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!')
-```
-<!-- /language -->
-<!-- language: javascript -->
-<!-- page-code: own -->
-```javascript
-say('Die Strömung reißt dich fort. [[ ɡˈeɪm ]] over!');
-```
-<!-- /language -->
-
-Die Lautschrift eines Wortes steht im [Wiktionary](https://de.wiktionary.org)
-unter »Aussprache«, bei englischen Wörtern im
-[englischen Wiktionary](https://en.wiktionary.org). Die Zeichen kopierst du
-von dort. Auf der Seite des Telefons steht die Lautschrift ohne die Klammern.
+_include(telefonspiel#aussprache)
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib dem Sprung ins Wasser ein »Game over«, einmal

@@ -154,6 +154,16 @@
   entries:
     - bif
 
+- key: reference-telefonspiel
+  label: Telefonspiel
+  icon: /images/telephone.png
+  description: |
+    Die Befehle des Telefons in Ruby, Python und JavaScript nebeneinander,
+    die acht Stimmungen zum Anhören und wie Thorsten ein Wort richtig
+    ausspricht.
+  entries:
+    - telefonspiel
+
 - key: reference-minicpu
   label: MiniCPU
   icon: /images/computer.png
