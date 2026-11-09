@@ -396,6 +396,14 @@ loop.
 
 ## Open
 
+- **Students' own voices** (put off by the maintainer, November 2026): a
+  command `play 'aufnahme.mp3'` on the voice channel, a recorder on the
+  `telefon` page, and for the review each recording with a player and a
+  transcript made locally (Whisper). Held back because a voice is personal
+  data and the Telefonbuch is public: publishing it needs consent (perhaps
+  the parents'), a new entry in the privacy statement and the data
+  protection officer's view. A first step without publishing (only in the
+  Workspace) would be possible.
 - Does easybell's Business 2 include a Berlin number, and which ports does
   the trunk need on the server (SIP and the range for the audio)?
 - The licence of the German Piper voice, for the page's credits.
