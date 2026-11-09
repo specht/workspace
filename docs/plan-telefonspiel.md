@@ -60,9 +60,13 @@ Why it was flaky:
   number when publishing, can switch to another free one, and can
   unpublish (the number is free again). Exactly three digits, so the menu
   reads three keys without #: »Gib die Nummer des Spiels ein«; keys typed
-  during the greeting count. The menu reads no list of all games (a class
-  has thirty): a selection the teacher makes (up to 9, »Drücke 1 für …«)
-  and 0 for a random published game.
+  during the greeting count. Without Durchwahl the menu reads the titles of
+  the published games in random order (the maintainer), so no game is
+  always first: five at a time, each with its number (»Die Höhle der
+  Echos: eins, zwei, drei«), then »Für weitere Spiele drück die Raute«;
+  a number typed at any moment, also in the middle of the list, starts
+  that game, and 0 a random one. Open: whether a selection by the teacher
+  (up to 9, »Drücke 1 für …«) stays as an option.
 - **Durchwahl when the trunk allows it:** Asterisk gets the dialled number,
   and the runner starts the game of its last three digits without the
   menu (»Ruf 030 … 123 an«). This needs a single number with an appended
