@@ -50,9 +50,9 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle unit_tests].freeze
+    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle unit_tests phone].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle unit_tests].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle unit_tests phone].freeze
     # answer with compare: regex needs examples as well (see missing).
     CASE_KEYS = %w[archive files answer say variables].freeze
 
@@ -240,6 +240,8 @@ module TaskExamples
     # Runs a check's command in the example folder, the way the guest runs
     # it in /workspace.
     def self.local_runner(root)
+        # phone checks: the emulator of the repository, as /usr/local/bin/telefon in the Workspace
+        ENV['HS_TELEFON'] ||= File.expand_path('../../phone/emulator/telefon', __dir__)
         lambda do |command, seconds|
             output = +''
             timed_out = false

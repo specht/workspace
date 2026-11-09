@@ -336,6 +336,9 @@ module TaskCard
         when 'python', 'ruby'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
+        when 'phone'
+            n = (check['cases'] || []).size
+            "Spielt #{path.(check['file'])} in deinem Workspace mit <code>telefon --test</code>, als Gast, der nichts verändern kann: #{n == 1 ? 'einmal' : "#{n}-mal"}, mit festen Tasten, ohne Pausen"
         when 'unit_tests'
             n = (check['mutants'] || []).size
             "Führt deine Tests in #{path.(check['file'])} in deinem Workspace aus, als Gast, der nichts verändern kann, mit #{h.(UnitTestsCheck::NAMES[check['language']])} in einem Ordner in <code>/tmp</code>: " \

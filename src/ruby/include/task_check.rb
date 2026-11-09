@@ -11,6 +11,7 @@ require_relative 'er_check'
 require_relative 'classes_check'
 require_relative 'python_check'
 require_relative 'ruby_check'
+require_relative 'phone_check'
 require_relative 'prolog_check'
 require_relative 'c_check'
 require_relative 'javascript_check'
@@ -38,7 +39,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle unit_tests]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle unit_tests phone]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -115,6 +116,7 @@ module TaskCheck
         return check_calls(task, check, workspace, guest_runner, JavaCheck) if type == 'java'
         return check_calls(task, check, workspace, guest_runner, DartCheck) if type == 'dart'
         return check_calls(task, check, workspace, guest_runner, UnitTestsCheck) if type == 'unit_tests'
+        return check_calls(task, check, workspace, guest_runner, PhoneCheck) if type == 'phone'
         return check_function(task, check, answer, kata, kata_seed) if type == 'function'
         return check_tests(task, check, answer, kata) if type == 'tests'
         return check_pip(task, check, answer, kata, kata_seed, kata_map) if type == 'pip'

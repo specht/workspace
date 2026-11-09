@@ -398,6 +398,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast |
 | `c` | Funktionen aus einer C-Datei der Lernenden, übersetzt mit `cc`, ohne ihr `main` | eine `.c`-Datei | Workspace, als Gast |
 | `prolog` | Anfragen an eine Prolog-Datei der Lernenden und ihre Antworten, mit SWI-Prolog | eine `.pl`-Datei | Workspace, als Gast |
+| `phone` | ein Telefonspiel, gespielt mit festen Tasten: was es danach sagt, ob es Musik spielt, ob es zu Ende ist | eine `.rb`-, `.py`- oder `.js`-Datei, mit `telefon --test` | Workspace, als Gast |
 | `function` | eine Kata: Funktionen aus dem Code, der in der Karte geschrieben wird, wie `python` und `ruby` | der Code der Karte | eigener Container ohne Netz |
 | `pip` | eine Kata mit Pip: ein Plan aus Befehlen, der Pip über eine oder mehrere Karten schickt; Ziel erreicht, nichts schiefgegangen | der Code der Karte | eigener Container ohne Netz, die Welt auf dem Server |
 | `tests` | eine Kata, in der die Lernenden Tests schreiben: Sie bestehen mit der richtigen Fassung einer Funktion und erkennen jede fehlerhafte | der Code der Karte | eigener Container ohne Netz |
@@ -1231,6 +1232,49 @@ die Rückmeldung. In Python ist `True` dabei nicht `1`. Schreibt jemand die
 Funktion selbst hinein, sagt die Prüfung, nur Tests zu schreiben, ohne etwas
 auszuführen. Der `starter` (ein erster Test) muss von selbst scheitern, wie
 bei `function`; in `task-examples.yaml` stehen Tests unter `answer:`.
+
+### phone
+
+Spielt ein Telefonspiel der Lernenden (docs/plan-telefonspiel.md) mit festen
+Tasten und liest, was es sagt (`PhoneCheck`). Das Spiel läuft mit dem
+Prüfmodus des Emulators, `telefon --test --keys 1,2 datei`, im Workspace der
+Person als Gast wie bei `command`, einmal je Fall: Jedes `keys()` des Spiels
+bekommt die nächste Antwort des Falls (`-` für keine, wie nach einer
+Wartezeit; `1#` drückt erst 1, dann die Raute), Pausen dauern nichts, die
+Musik wird nicht geladen. Der Emulator schreibt eine Zeile je Ereignis
+(`Telefon: …`, `Musik: …`, `Pause: …`, `Tasten: …`, `Ausgabe: …` für das,
+was das Programm selbst ausgibt, `Fehler: …`, `Ende: …`), und die stehen
+unter »Was der Workspace gelesen hat«, für jeden Fall mit seinen Tasten.
+
+```yaml
+check:
+  type: phone
+  file: telefon/abenteuer.rb
+  timeout: 5                   # Sekunden je Fall (Standard 5)
+  cases:
+    - keys: ''                 # ohne Taste: was das Spiel zuerst sagt
+      says: [Höhle]            # jeder Ausdruck in etwas, das das Spiel sagt
+      music: true              # es spielt Musik (eine Datei, die es gibt, oder einen Link)
+      ends: false              # und fragt danach nach einer Taste
+    - keys: '1'
+      says: [Fackel]
+      not_says: [Wasser]       # kein Satz passt darauf
+      ends: true               # danach ist das Spiel zu Ende
+      say: Nach der 1 geht es in den linken Gang.
+```
+
+Die Ausdrücke sind reguläre Ausdrücke ohne Rücksicht auf Groß- und
+Kleinschreibung; `music` ist `true` oder ein Ausdruck für die Quelle. Fragt
+das Spiel nach mehr Tasten, als der Fall hat, endet der Lauf dort (»Ende: Das
+Spiel wartet auf eine Taste, aber die Prüfung drückt keine mehr«); `ends:
+false` verlangt genau das, `ends: true` das Gegenteil. Die Rückmeldung nennt
+den ersten Fall, der nicht passt, mit seinen Tasten: »Nach der Taste 1 sagt
+das Spiel nichts mit »Fackel«.« (ein Ausdruck aus einfachen Wörtern steht
+darin, sonst »… noch nicht, was es soll«), oder `say` des Falls. Bricht das
+Spiel ab, nennt sie die Zeile in der Datei und die Fehlermeldung; fehlt eine
+Musikdatei, ihren Namen. Alle Fälle zusammen haben höchstens 30 Sekunden.
+Für die Beispiele in `task-examples.yaml` läuft der Emulator aus dem
+Repository (`HS_TELEFON`), die Tests stehen in `phone_check_test.rb`.
 
 ### unit_tests
 

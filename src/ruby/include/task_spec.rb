@@ -18,6 +18,7 @@ require_relative 'java_check'
 require_relative 'dart_check'
 require_relative 'hint_steps'
 require_relative 'ruby_check'
+require_relative 'phone_check'
 require_relative 'prolog_check'
 require_relative 'kata_check'
 require_relative 'tests_check'
@@ -78,6 +79,7 @@ module TaskSpec
         'circuit' => 'M8',
         'interleaving' => 'M8',
         'unit_tests' => 'M8',
+        'phone' => 'M8',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -135,6 +137,7 @@ module TaskSpec
         'circuit' => [],
         'interleaving' => %w[problem],
         'unit_tests' => [],
+        'phone' => [],
     }.freeze
 
     class Error < StandardError
@@ -620,6 +623,11 @@ module TaskSpec
             allowed += %w[file cases timeout slow]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(RubyCheck.spec_errors(check))
+        when 'phone'
+            # A Telefonspiel played with given keys, as the guest (PhoneCheck).
+            allowed += %w[file cases timeout]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(PhoneCheck.spec_errors(check))
         when 'prolog'
             # Queries to the person's Prolog file, run as the guest (PrologCheck).
             allowed += %w[file cases timeout slow]
