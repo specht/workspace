@@ -197,34 +197,44 @@ module PhoneGames
     MOOD = /\bmood\s*[:=]\s*(?:['"]|:)(\w+)/
     SENTENCE = /(?<!\w)(['"])([A-ZÄÖÜ](?:(?!\1)[^\\\n])*?[.!?…])\1/
     MOODS = %w[neutral amused angry disgusted drunk sleepy surprised whisper].freeze
+    # texts filled in while the game runs (Python f'…', JavaScript `…`); of
+    # these and of Ruby's "…#{…}…" only the sentences without a gap
+    SAY_FILLED = /\bsay\s*\(\s*(?:f(['"])((?:\\.|(?!\1)[^\\\n])*)\1|`((?:\\.|[^\\`])*)`)/
+
+    # the text in sentences, as the phone fetches them (src/phone/core/game.py)
+    def self.sentences(text)
+        text.to_s.split.join(' ').split(/(?<=[.!?…:;])\s+/).reject(&:empty?)
+    end
 
     def self.prepared_items(id)
         dir = File.join(ROOT, id.to_s)
         return { :sentences => [], :music => [] } unless valid_id?(id) && Dir.exist?(dir)
 
-        sentences = []
+        sentences_found = []
         music = []
         Dir.children(dir).sort.select { |n| LANGUAGES.include?(File.extname(n)) }.first(50).each do |name|
             code = File.read(File.join(dir, name), :mode => 'rb').force_encoding('UTF-8').scrub('')
             said = []
-            code.to_enum(:scan, SAY).each do
-                m = Regexp.last_match
-                said << (m.begin(2)...m.end(2))
-                next if m[2].include?('#{')
-
+            found = []
+            code.to_enum(:scan, SAY).each { found << [Regexp.last_match, Regexp.last_match[2], '#{'] }
+            code.to_enum(:scan, SAY_FILLED).each { m = Regexp.last_match; found << [m, m[2] || m[3], '{'] }
+            found.each do |m, literal, gap|
+                said << (m.begin(0)...m.end(0))
                 line_end = code.index("\n", m.end(0)) || code.length
                 mood = code[m.end(0)...line_end][MOOD, 1]
-                sentences << { :text => m[2].gsub(/\\(['"\\])/, '\1'), :mood => MOODS.include?(mood) ? mood : nil }
+                sentences(literal.gsub(/\\(['"\\`])/, '\1')).each do |sentence|
+                    sentences_found << { :text => sentence, :mood => MOODS.include?(mood) ? mood : nil } unless sentence.include?(gap)
+                end
             end
             code.to_enum(:scan, SENTENCE).each do
                 m = Regexp.last_match
-                next if m[2].include?('#{') || said.any? { |r| r.cover?(m.begin(2)) }
+                next if said.any? { |r| r.cover?(m.begin(2)) }
 
-                sentences << { :text => m[2], :mood => nil }
+                sentences(m[2]).each { |sentence| sentences_found << { :text => sentence, :mood => nil } unless sentence.include?('#{') }
             end
             code.scan(YOUTUBE) { |link| music << youtube_link(link) }
         end
-        { :sentences => sentences.uniq, :music => music.uniq }
+        { :sentences => sentences_found.uniq, :music => music.uniq }
     end
 
     # a YouTube link in the one form the speech service caches it under

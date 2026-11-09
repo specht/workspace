@@ -37,6 +37,11 @@ WATCHED = 50                       # files of the folder looked at, at most
 # the fixed texts of say ('…' or "…" right after say or say(), without #{…}
 # or an f in front), rendered before the first call
 SAY = re.compile(r'''\bsay\s*\(?\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\1''')
+# texts the game fills in while it runs: Python's f'…' and JavaScript's `…`;
+# of these and of Ruby's "…#{…}…" the sentences without a gap are prepared,
+# since the phone fetches every sentence of a text on its own
+SAY_FILLED = re.compile(r'''\bsay\s*\(\s*(?:f(['"])((?:\\.|(?!\1)[^\\\n])*)\1|`((?:\\.|[^\\`])*)`)''')
+GAP = re.compile(r'#\{|\$\{|\{')
 # other texts that look like sentences (a list of questions, say text later):
 # a capital letter at the start, . ! ? or … at the end, nothing filled in
 SENTENCE = re.compile(r'''(?<![\w])(['"])([A-ZÄÖÜ](?:(?!\1)[^\\\n])*?[.!?…])\1''')
@@ -177,23 +182,26 @@ class Server:
                         asyncio.ensure_future(self.fetch_music(source))
                 new = []
                 said = []                        # where the says' texts stand
-                for m in SAY.finditer(text):
-                    said.append((m.start(2), m.end(2)))
-                    literal = m.group(2)
-                    if '#{' in literal:          # Ruby fills it in while the game runs
-                        continue
-                    literal = re.sub(r'''\\(['"\\])''', r'\1', literal)
+                found = [(m, m.group(2), '#{') for m in SAY.finditer(text)] + \
+                    [(m, m.group(2) if m.group(2) is not None else m.group(3), '{') for m in SAY_FILLED.finditer(text)]
+                for m, literal, gap in found:
+                    said.append((m.start(0), m.end(0)))
+                    literal = re.sub(r'''\\(['"\\`])''', r'\1', literal)
                     line_end = text.find('\n', m.end())
                     rest = MOOD.search(text, m.end(), len(text) if line_end < 0 else line_end)
                     mood = rest.group(1) if rest and rest.group(1) in game.MOODS else None
                     for sentence in game.sentences(literal):
+                        if gap in sentence:      # filled in while the game runs: made then
+                            continue
                         if (sentence, mood) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
                             self.spoken.add((sentence, mood))
                             new.append((sentence, mood))
                 for m in SENTENCE.finditer(text):
-                    if '#{' in m.group(2) or any(a <= m.start(2) < b for a, b in said):
+                    if any(a <= m.start(2) < b for a, b in said):
                         continue
                     for sentence in game.sentences(m.group(2)):
+                        if '#{' in sentence:
+                            continue
                         if (sentence, None) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
                             self.spoken.add((sentence, None))
                             new.append((sentence, None))
