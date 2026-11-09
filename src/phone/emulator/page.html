@@ -226,7 +226,10 @@ const LINE = new URLSearchParams(location.search).has('line');
 // calls it without a number
 const TRY = LINE ? (new URLSearchParams(location.search).get('try') || '') : '';
 const SESSION = LINE ? Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('') : '';
-if (LINE) document.body.classList.add('line');
+if (LINE) {
+    document.body.classList.add('line');
+    $('title').textContent = '';          // the display says nothing until a game names itself
+}
 function at(path) {
     const p = path.replace(/^\//, '');
     return SESSION ? p + (p.includes('?') ? '&' : '?') + 's=' + SESSION : p;
