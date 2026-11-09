@@ -58,19 +58,8 @@ echo '=== Checking ping as a student, without NET_RAW (workspace_runtime.rb) ===
 docker run --rm --user 1000:1000 --cap-drop NET_RAW --security-opt no-new-privileges \
     --entrypoint /bin/sh hs_code_server:candidate -c 'ping -c 1 -W 5 127.0.0.1 >/dev/null'
 
-echo '=== Verifying the LaTeX tutorial in the candidate ==='
-docker run --rm --user 0 --entrypoint /bin/bash \
-    -e HOME=/tmp \
-    hs_code_server:candidate \
-    -lc 'set -euo pipefail
-         git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial
-         cd /tmp/latex-tutorial
-         for file in hello.tex Bewerbung.tex CV.tex Ausarbeitung.tex Mathe.tex wpgtr.tex; do
-             latexmk -lualatex -interaction=nonstopmode -halt-on-error -file-line-error "$file"
-             test -s "${file%.tex}.pdf"
-         done
-         test -s Ausarbeitung.bbl
-         grep -Fq mueller2022 Ausarbeitung.bbl'
+# The LaTeX tutorial is compiled by the e2e test latex.toolchain.spec.ts
+# (project toolchains), not here: it took minutes on every build.
 
 docker tag hs_code_server:candidate hs_code_server:latest
 echo '=== Done ==='

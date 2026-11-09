@@ -420,8 +420,10 @@ Ins Workspace-Image kommt eine neue `.vsix` so:
    anpassen. Dieses Skript installiert die Erweiterung beim Start des
    Workspaces; fehlt die Datei, überspringt es sie nur mit einer Warnung.
 5. `./build-image.sh`. Das Skript baut zuerst einen Kandidaten, prüft, ob jede
-   `.vsix` aus `svc-code-server-run` darin liegt, prüft das LaTeX-Tutorial und
-   taggt erst dann `hs_code_server:latest`.
+   `.vsix` aus `svc-code-server-run` darin liegt, und taggt erst dann
+   `hs_code_server:latest`. LaTeX prüft es nicht mehr (das dauerte bei jedem
+   Bau Minuten); das LaTeX-Tutorial übersetzt der E2E-Test
+   `latex.toolchain.spec.ts` (Projekt `toolchains`, [e2e/README.md](../e2e/README.md)).
 
 Zum schnellen Ausprobieren ohne neues Image: in einem laufenden Workspace
 »Extensions« → »…« → »Install from VSIX…« und die Datei auswählen.

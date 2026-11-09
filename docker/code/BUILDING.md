@@ -27,18 +27,22 @@ start. Go comes from go.dev (`GO_VERSION`), not from apt, with
 `GOTOOLCHAIN=local`: no other toolchain is downloaded behind the student's
 back.
 
-`./build-image.sh` refreshes those stages, builds a *candidate*, clones the
-real `specht/latex-tutorial` repository, compiles its six example documents
-with `latexmk -lualatex`, checks the bibliography and only then updates the
-`hs_code_server:latest` tag. A candidate that fails validation leaves the
-existing production tag unchanged. The existing e2e tests cover the code-server
-LaTeX Workshop UI and should still be run before deployment.
+`./build-image.sh` refreshes those stages, builds a *candidate*, checks the
+bundled extensions and `ping` in it, and only then updates the
+`hs_code_server:latest` tag. A candidate that fails a check leaves the
+existing production tag unchanged. LaTeX is tested by the e2e tests, not by
+the build (it took minutes on every build): `latex.toolchain.spec.ts` clones
+the real `specht/latex-tutorial` repository, compiles its six example
+documents with `latexmk -lualatex` and checks the bibliography; the browser
+tests cover the LaTeX Workshop UI. Run them after a change to TeX Live and
+before deployment:
+`cd e2e && npx playwright test tests/latex.toolchain.spec.ts --project=toolchains`.
 
 TeX Live uses `scheme-basic` plus explicitly chosen packages for the tutorial,
 including LuaLaTeX, Biber, XCharter Math, KOMA-Script, and the older packages
 used in `wpgtr.tex`. If a new document needs an additional package, add its
 TeX Live package name to the `tlmgr install` block and rebuild the TeX stage;
-do not revert to `scheme-full`. The build's tutorial check catches currently
+do not revert to `scheme-full`. The tutorial test catches currently
 missing dependencies, but cannot guarantee every possible future student
 document will compile.
 
