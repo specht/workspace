@@ -25,6 +25,11 @@
         color-scheme: dark;
     }
 }
+/* 0xProto Nerd Font Mono (SIL Open Font License), only 0-9 * # + for the keys:
+   python3 -m fontTools.subset src/static/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.ttf
+   '--text=0123456789*#+' --flavor=woff2 --layout-features= --no-hinting (and -Bold), in src/scripts/drawings */
+@font-face { font-family: 'Keys'; font-weight: 400; src: url(data:font/woff2;base64,d09GMgABAAAAAAWAAA4AAAAACUgAAAUuAAKAgwAAAAAAAAAAAAAAAAAAAAAAAAAAGiYbIBwqBmAARBEICokkh34BNgIkAx4LHgAEIAWDPAcgG40HUVRx0gC+KLCN6YMVsXyMZcZQ8hxjnkeuV5xvbMJzsdFAnRa0bMTWIv4Gz/Nr/c69b769Nzv7UfURzCQxC949iUYSJPO1RLNQILJDetU85JwUrZ0FmBNYNG+iIgiAY3YrHmCCFVdRhW/AkTge2ESjBQb6IP/0FAPJWitsAQWScNKKJeH7+5/TP+n/XFMXUX7vgFas/xbV2mGjG+iE9mazak7BAY0LnKY6hlb5FBMT2Vg34E9eQlCu6QGCBzSGeBBcbmltvkGTp84OGYkHUAHAQbpKNHiy8dvX7N/JTCaR055ulytEqNVUDcAsfZesBA/MBKirqjNqGi0PEGBn/0V7SF5KYYW3/jcB6kPyGHL943iAdtVX0N5IQAEze4BdTsFQ+mN+cm22kxSsQ2cJkqFjKz+U5UcEWIXjzH4vBYDWwpDDIe27GqNu0xj9eKa3Xfse0dZe1m/s+0Hrno07NPGzrQO/qe9sYsU9bBeysZiPmHiT+PBEMSJJFEIRr7NCcAQydk1aLAI5UxK4XEHA4WYsPV1os+z+O5t+sCNLcp/dwMkW2y6+9zZsucn349elSc5zrHpuutLXO8zgS/KCDaHR/PBdDmWbFucmzwsuF7RiACPUPQ62DKdkdjGaCxKAnEgc+QudcbrN5wFtcKqO9E1nazLJmQhrVPDfiU3FJM1zqBFX+rGqfaxkyAMWqi++5J1myu4YZXq4d/r+9m6+7NaHKchLfHE+HW4ZPxLGV2x7bCj7gMWy3bueLI1byPYQ9b41yY5f4o09agTtzu6IISEJWM3EVFvmZ3cmn3kGdut+e8337dZOOhNpQAXz+InU1mmzyQ1gLbiuHo4PX70zYFi01dnBDs/sEMPM9gfsmQQRZDDDM9pVP6MDgH/s25JBw8d3P60ITO5E/blAM3p2w0a7P08zaj4aGzY6+3G5jty298qEvuapia6D5Ypobf46B1iU7ysGKvk+OtXDFiTYuZKna5+VHOcdT7ZVCCVuwmhSFS/ZFusHTT58mi9Ek+qy4qSYaqYxhqqQqzCaWU7QbUylVMagKah4nC7mv5Dn9rZxV6TRzCwa6vrwMu8Cvf8drsWhxYmLoXTrQ3GOHF06b7k9J3JoSMj4ugN+3D51djLdyaSRUgUzh+RIRZmJDULeAsV8jKnXK/giLWP+sc2La9vBwld27H9VkUSqFHu7p89oNjI9LEZYxGeGM1gKZZaQWfx+88iZKi6HULE5hJrFIQjwz5HDD9OlxOrBx9DT+4UeDYZb3FNjsxgSbexAeTa2QBsWQeNzISsFNjppYpGTjhiTWXTLfBGkDwvYPFseqliPjRAmz8r9mxA3ftssmStEM4R6Pg5rVOKZoplaFYyb+ED2BbRQBouQZ/I5peb+nr9TG4XSDDJbXjiAzs3n+jmMyEvlKELNZhFqDptQcbiECg8AIICePnc6H6ersqP/1i4wf4CfpZgEgF+N7PvVp3e9AtUoAAL/UR7dzmB4MIIAr0dFt4ODCakxWFhoqJiZaYjJY5DAjqB1tADO1bDUEMSrA9YDNir0FkGVgCuoYbjFeI+HVnHY7eeppnFgLqhKFlUKkSAGxQpkI4WVgoiUKZWpQLESkESZSpUqVIINgciQJa+XCYGFFciDZLYl9Rizd5YqANEhUSUCIocwX6lda/26AiakDGVyBRVHL4dQwGhgKBs3XiJL4hDca0X1OAe0ini64PqsBac9K5sO1eUwMGZLpL4PQ5eGFEJHlYQzh6GSsQfNGeSdclpDAKCS9O8LAA==) format('woff2'); }
+@font-face { font-family: 'Keys'; font-weight: 700; src: url(data:font/woff2;base64,d09GMgABAAAAAAWMAA4AAAAACYQAAAU5AAKAgwAAAAAAAAAAAAAAAAAAAAAAAAAAGiYbIBwqBmAARBEICokch2EBNgIkAx4LHgAEIAWEAAcgG7QHAK4GbGM6eEUoqdGyABFDL8YaEPnnm/ay4KnXpW9XOsOXzjJzgA6wCgBBlS48fbgyVKkAuMy48w3WoSkxOZ0vV1F6TuT53L2/5WcYY+cUaAatLXiIm//qOk8skYT2eRhQaWRLozEpmuP/6tkuzv+zNbNdVwIhmxXCz23LUwBQDKoeNQp9qXuHrGvkC0UgrEVL8fIVNl/BMoJids5CsIF80hDAwYZyLxH0G6CoCcixnaQCMNpGHxFuRrtstqczeBwIl9u6TDt8ZOgRcRKAoc+nyQzYMwSgji/TUuvGawOCOjXQEBJcpQ7fWNI+BnBuJSnI2VUUoI3aDKqRAwpYtQdC0TliAsB/ktEIdXB8HN6UCCtv6v3/p8SwIBh79UsRoFwJZUNA81pjeLZqGlae6Yr67TQttz033xivrMtDhofUjy6/KxocM9EIjpI4hgTD/SN2yBmnHQQ6Li3tE06XpgWY06AtwEKzj2xflLL7p3SOvkp2PXeasmvriUE95ZFjc/LRnR3ZHZZOqktyjnV94NSeedGTynaYeSRTfV01aXBl4mNwzUV55Pno8gOeuz7liXVbVEdvyn6URrx1Q6B2YiazvH1bNtXIYcQVFZrowAaejnNcl2szcCg3fRHVWb2x/BN344XjB2cDI8jq7YlHVsGu05LbSpUlyxz92UJDmfDaTxprSGcTTO2ecj9Nrqc8Ut0+Ua8kPvnWp+x6DeD1mhN2XvS9PutwfBFIWdxpAyvq0iVWGqNOmZXm70ucb6hqQ4IrdT6HJFeaADibUi11VpW7qPJ92xwZ40LDK0+n+cQ3d2jwqJLyct8rkgGvB7VheMzAsTvr7ozRKSBeQ+fzCFg8iVEZ9SRaw/uuCgqWPHwWj6NVRz6OIaB/+8raRsJeQ+dnNAX5Uu4uj+RJcovSO0u+fck3O6WJqV1T8qV3azerZtd+THbKOb7ILzIvLGftY68riBkJy38+fLpx09am8znhYSocmjhmijBt9JvKzRUxtuCXkfZ7LyZm9Xl0AwfzZEd2OS4RHn8hgZ3QxwaWemmGueGjXnrhkiJGLJyaPDy43u9W6kD/7/qmsUUjP/RK8ZYnkszB/KloWgxl5ymCiUzbHoqngLbhRaX2fZjZDDgFbVVk+B3sBeQVHVn5tUz/DqjFuUVFeLmL2MuG8C3RaQy6Wzd83bHGVGO+7yB2BbGLnqKmfDzW0sJ8Fg588nLO4oKevy4H3obYDgNsxz3YjvhnpnfrlGjq7Lm1fNvVj8ndgxWWwgNUc+GqoavYRfQF/MKkVBnKi1g0jHilpO7AzOhDl8KXXjXi5vwCGMB9L/KdrbHGV98DlfXWee+1MS0uCS70/v/+9b2E3iNpLiD2esYt7QTkZZ1FhX00EuO/hS8crSMn6BpEp70MCZsJ8FjeBtiOAyzHQdbDINsRAAigu4K2ZSM+zfTU/xlV1k/At5MD+wIA38/1uPvncvtgjaSTCGkoAALbkEuXIYSpcxAu24ougx0zIQrYqFEgT4IsOZL4iafRZpkkkfMF6Kp0piBC7ExgHvBOha4sqZLBKWrRRy61idmnPjZFvj9pVOYQAb40+XFlBVLlzoU9KxY8QWK8eLLlwp0H6CNbnjy58sCPBQsbdqiHezHHzIILJyw5I/ZFn7vF856DlFmxnCVImqFzaaj0Bncivj5HlumcUL8VEAdmXJix5oLayKgHOxWF2PPMsWInwFj7o9bMesbiotEuL0a13tgw470Tzq9jw42JFXPcOGEEajCqR41BlaUpYarZkyICgBShOQIAAA==) format('woff2'); }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
        font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -45,7 +50,7 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
 .screen.on .status .live { display: inline-block; }
 /* one row for the keys pressed (while the game waits) and the voice (while it speaks) */
 .readout { position: relative; height: 30px; margin-top: 8px; }
-.digits { position: absolute; inset: 0; display: grid; place-items: center; font: 600 22px/1 ui-monospace, monospace; letter-spacing: .14em; }
+.digits { position: absolute; inset: 0; display: grid; place-items: center; font: 700 22px/1 Keys, ui-monospace, monospace; letter-spacing: .14em; }
 /* while the game speaks: bars on the screen (the voice, never the music) */
 .voice { position: absolute; inset: 0; display: flex; gap: 3px; justify-content: center; align-items: center; opacity: 0; transition: opacity .2s; }
 .voice i { width: 3px; height: 4px; border-radius: 2px; background: currentColor; }
@@ -63,7 +68,7 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
 .keypad button { width: 64px; height: 64px; border-radius: 50%; border: 0; background: var(--key); color: var(--ink);
                  cursor: pointer; transition: background .08s, transform .08s; display: flex; flex-direction: column;
                  align-items: center; justify-content: center; gap: 1px; padding: 0; }
-.keypad b { font: 500 25px/1 system-ui, sans-serif; }
+.keypad b { font: 400 26px/1 Keys, ui-monospace, monospace; }
 .keypad small { font: 600 9px/1 system-ui, sans-serif; letter-spacing: .14em; color: var(--key-sub); min-height: 9px; }
 .keypad button:hover { background: var(--key-hover); }
 .keypad button.down { transform: scale(.93); background: var(--key-hover); }
@@ -105,7 +110,7 @@ main { display: grid; grid-template-columns: 300px minmax(0, 700px); gap: 24px; 
 .msg.you { align-self: flex-end; padding: 2px 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; animation: pop .22s ease-out; }
 .cap { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 8px;
        background: var(--cap); color: var(--ink); border: 1px solid var(--cap-line); border-bottom-width: 3px;
-       font: 600 15px/1 ui-monospace, monospace; animation: pop .15s ease-out; }
+       font: 700 15px/1 Keys, ui-monospace, monospace; animation: pop .15s ease-out; }
 .note { align-self: center; color: var(--note); font-size: 13px; text-align: center; animation: pop .22s ease-out; }
 .empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 12px; color: var(--muted);
          text-align: center; font-size: 14px; }

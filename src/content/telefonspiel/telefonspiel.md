@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Das Telefon im Browser während eines Anrufs: links ein Tastenfeld mit rotem Hörer, rechts das Gespräch mit der Höhle, die Sätze des Spiels in Blasen und die gedrückten Tasten als kleine Tasten"
+image_alt: "Das Telefon im Browser während eines Anrufs bei der Höhle: links ein Telefon mit Display, Tastenfeld und rotem Hörer zum Auflegen; rechts das Gespräch, die Sätze des Spiels in Blasen, die gedrückten Tasten 1 und 2 als kleine Tasten, und der nächste Satz erscheint gerade Wort für Wort"
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
@@ -675,3 +675,36 @@ Dann lohnt es sich, die Szenen als Daten aufzuschreiben: ein Hash
 (Dictionary) mit dem Namen jeder Szene, ihrem Text und wohin ihre Tasten
 führen, und eine einzige Schleife, die von Szene zu Szene geht. Wie ein Hash
 funktioniert, übst du in den [Katas zu Dictionaries](/kata-dicts).
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Bild für die Karte: das Telefon mitten in der Höhle, in 16:9, hell und
+# dunkel; dabei prüft es die Aufgaben mit Tasten an den Lösungen. Erst holt
+# der Sprachdienst die Musik (beim ersten Mal von YouTube, das dauert).
+# freeze-at hält den Anruf nach »Links flackert Licht,« an: immer dieselben
+# Wörter, dieselbe Zeit, stehende Animationen.
+write-file: telefon/frage.rb <- file:stufen/4-drei/frage.rb
+write-file: telefon/hoehle.rb <- file:stufen/6-gang/hoehle.rb
+check-task: drei
+check-task: gang
+terminal-open
+terminal-run: curl -s -o /dev/null 'http://phone-speech:8000/music?source=https://www.youtube.com/watch?v=-xRD8VmjBQM&format=mp3'
+terminal-wait-for-prompt: 300
+terminal-run: cd /workspace/telefon && telefon hoehle.rb
+preview-port: 8040
+tab: preview
+viewport: 1120x630
+wait-for-text: Bereit
+click: selector:#call
+wait-for-text: nach Hause zu gehen.
+sleep: 1
+press: 1
+wait-for-text: 2 für rechts.
+sleep: 1
+press: 2
+wait-for-text: Du gehst zurück.
+hook: freeze-at Links flackert Licht,
+variants: dark
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Das Telefon im Browser während eines Anrufs bei der Höhle: links ein Telefon mit Display, Tastenfeld und rotem Hörer zum Auflegen; rechts das Gespräch, die Sätze des Spiels in Blasen, die gedrückten Tasten 1 und 2 als kleine Tasten, und der nächste Satz erscheint gerade Wort für Wort.'>
+<!-- /tutorial-scope -->
