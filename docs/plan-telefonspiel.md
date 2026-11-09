@@ -102,7 +102,8 @@ Why it was flaky:
   activity page. Two things side by side: the phone of `telefon` (the
   emulator's page) and a phone book, drawn as a book whose pages turn with
   a click (no dragging needed). Each entry: number, title, the line of
-  description; no names, no classes (the maintainer). The phone book shows
+  description, sorted by title as in a real phone book, not by number
+  (the maintainer); no names, no classes (the maintainer). The phone book shows
   the phone number too (or that one is being worked on).
 - **Calling from the Telefonbuch** (the maintainer): the phone on the page
   is the line itself: a call plays the menu, as on the real number, and
