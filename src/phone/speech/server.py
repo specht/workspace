@@ -113,9 +113,9 @@ _mood_voice = None
 
 def _load(path):
     """a voice whose model computes on THREADS threads. Piper's own session
-    takes one thread per core of the machine, and with the service's limit of
-    two processors (config.rb) Docker throttles them: on six cores twice as
-    slow as with two threads, on a server with more cores slower still."""
+    takes one thread per core of the machine, and under the service's limit
+    of processors (config.rb) Docker throttles them; as many threads as
+    processors is fastest (src/scripts/measure-speech.sh)."""
     import onnxruntime
     from piper import PiperVoice
     voice = PiperVoice.load(path)

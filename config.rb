@@ -342,13 +342,16 @@ FileUtils.mkpath(File.join(DATA_PATH, 'phone-cache'))
 docker_compose[:services][:phone_speech] = {
     :build => './docker/phone-speech',
     :volumes => ['./src/phone/speech:/app:ro', "#{DATA_PATH}/phone-cache:/cache"],
-    :environment => { 'PHONE_SPEECH_WORKERS' => '2' },
+    # src/scripts/measure-speech.sh on the server (16 cores, November 2026):
+    # 4 processors and 4 threads per worker 0.30 s per second of speech,
+    # 2 and 2 0.55 s; with both workers busy they share the 4
+    :environment => { 'PHONE_SPEECH_WORKERS' => '2', 'PHONE_SPEECH_THREADS' => '4' },
     :networks => { 'user' => { :aliases => ['phone-speech'] } },
     :labels => ['hackschule.workspace.peer_firewall.phone=true'],
     :tmpfs => ['/tmp:size=256m'],
     :mem_limit => '3g',
     :pids_limit => 200,
-    :cpus => 2.0,
+    :cpus => 4.0,
     :restart => 'always',
 }
 # the cookies of a Google account for YouTube, when the server is asked to

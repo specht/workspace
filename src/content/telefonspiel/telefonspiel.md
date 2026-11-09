@@ -969,53 +969,6 @@ als Text und einmal mit »Game« in Lautschrift. Achte auf den Vokal in
 »Game«.
 </div>
 
-### Sätze mit Lücken
-
-Sobald `telefon` startet, bereitet es jeden Satz vor, der fest in deinem
-Programm steht: Ruft jemand an, ist er schon fertig. Anders ist es mit einem
-Satz, in den dein Programm erst beim Anruf etwas einsetzt:
-
-<!-- language: ruby -->
-<!-- page-code: own -->
-```ruby
-say "Du hast #{points} Punkte."
-```
-<!-- /language -->
-<!-- language: python -->
-<!-- page-code: own -->
-```python
-say(f'Du hast {points} Punkte.')
-```
-<!-- /language -->
-
-Diesen Satz kennt Thorsten erst, wenn das Spiel ihn sagt, und macht ihn erst
-dann: Wer anruft, wartet einen Moment. Die anderen Sätze im selben `say`
-bereitet `telefon` trotzdem vor, nur der Satz mit der Lücke wartet.
-
-Gibt es nur wenige Möglichkeiten, schreib die Sätze aus, in eine Liste. Dann
-bereitet `telefon` jeden davon vor, und du kannst bei jedem gleich die
-Grammatik richtig machen: »einen Punkt«, aber »zwei Punkte«.
-
-<!-- language: ruby -->
-<!-- page-code: own -->
-```ruby
-SCORES = ['Du hast keinen Punkt.', 'Du hast einen Punkt.', 'Du hast zwei Punkte.', 'Du hast drei Punkte.']
-say SCORES[points]
-```
-<!-- /language -->
-<!-- language: python -->
-<!-- page-code: own -->
-```python
-SCORES = ['Du hast keinen Punkt.', 'Du hast einen Punkt.', 'Du hast zwei Punkte.', 'Du hast drei Punkte.']
-say(SCORES[points])
-```
-<!-- /language -->
-
-`SCORES[points]` ist der Satz mit dem Index `points`: Bei 0 Punkten ist es der
-erste, bei 3 Punkten der letzte. Damit ein Satz in der Liste vorbereitet wird,
-beginnt er mit einem Großbuchstaben und endet mit einem Punkt, einem
-Fragezeichen oder einem Ausrufezeichen.
-
 ## Deine Geschichte
 
 ### Erst die Karte
