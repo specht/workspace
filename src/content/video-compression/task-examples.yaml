@@ -33,3 +33,21 @@ examples:
       - { files: { video/chroma.py: stufen/chroma-1.py }, say: 'subsample' }
       - { files: { video/chroma.py: fehler/subsample-every-second.py }, say: 'Mittelwert' }
       - { files: { video/chroma.py: fehler/subsample-wrong-axes.py }, say: 'Quadrat' }
+  quantize:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-1.py, video/chroma.py: stufen/chroma-2.py } }
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: fehler/quantize-without-round.py, video/chroma.py: stufen/chroma-2.py }, say: 'np.round' }
+      - { files: { video/blocks.py: fehler/restore-without-step.py, video/chroma.py: stufen/chroma-2.py }, say: 'step' }
+  predict:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: stufen/blocks-1.py, video/chroma.py: stufen/chroma-2.py }, say: 'predict' }
+      - { files: { video/blocks.py: fehler/predict-horizontal-as-rows.py, video/chroma.py: stufen/chroma-2.py }, say: 'left[:, None]' }
+  best-mode:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: fehler/best-mode-largest.py, video/chroma.py: stufen/chroma-2.py }, say: 'kleinsten' }

@@ -41,6 +41,30 @@
       "output_sha256": "37168fffa1f7b5b412b77deefe140bc047bae19458cd6c9260d65083ca032b89",
       "state_hash": "876e822a86d169ace62597e5401e3937531f548030d3a0038f738481be2131a2",
       "workspace_look": "4.140.0-ls368"
+    },
+    "residual.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cf85f4671d08dc9c8a35d1e9f4ba211725e397bd4728aa8312bcc478b7b68755",
+      "state_hash": "8f154ac6b6dd1eea5d390e08d08b4ded9a95e312028e645ab772a9fcaf79937a",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "step-32.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "5c6b85c3dfb5dee79bc13b69519955de1bb22861ffe16dcc631ae3203286499e",
+      "state_hash": "df4f5057765fab73646342d22a874d0b18db92f17bee74817e3a89f131729ace",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "step-64.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "7384d3801c5377aa74b610d7f138897e8173a8d8c0d9e7739945a2f70e1c4d03",
+      "state_hash": "a44b4a8bd923000b615579dde9fba0ad8d65c4ab2d5eceed98137d4a859dd2e2",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "step-8.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "51ec835809807869e16bf2c996f353c71ef6e1eeedb66ab6635376fb99eaced0",
+      "state_hash": "ebc1ce9ace844fdb399b35171bd2ae1c8339b1384b967ee2e0e73e68c8b5a172",
+      "workspace_look": "4.140.0-ls368"
     }
   },
   "version": 1

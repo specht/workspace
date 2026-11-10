@@ -137,6 +137,10 @@ link to JPEG for those who did it.
    later ones, why a player can only jump to a key frame. Task: the frame
    types of a real file with ffprobe. Datamoshing: a clip whose key frame is
    removed, the movement of one scene painted over the next.
+   The maintainer's idea (10 November 2026): show how many bytes each I-,
+   P- and B-frame of a sequence takes, from `ffprobe -show_frames`
+   (`pict_type`, `pkt_size`), as a bar chart the students draw; the I-frames
+   stand out.
 7. **Artefakte und Filter.** Blocks, banding, the deblocking filter, film
    grain that AV1 removes before coding and adds again in the player.
 8. **Bitrate steuern.** Constant quality against constant rate, two passes,
@@ -262,6 +266,18 @@ seconds at 720p each.
    the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
    coarser against brightness made coarser in a detail, and why a frame
    from an MP4 has nothing left to subsample.
+   Part 3 is written: a block of the girl's cheek in the iDCT stepper of the
+   JPEG page (20 of 64 coefficients after rounding to multiples of 8),
+   `blocks.py` with the DCT as a matrix for blocks of any size, `bits` with
+   one table per position, `quantize` and `restore` of one's own (step 8,
+   32, 64: 33 %, 11,5 %, 5,4 % of the coefficients not 0; 0,67 bits per
+   pixel at 32), the tiles at 64 as a prediction, a drawing of vertical,
+   horizontal and dc (`bilder/intra.py`), `predict` and `best_mode` of
+   one's own, the residual as a prediction and the bits: 8 × 8 without
+   prediction 0,67, 4 × 4 without 0,79, 4 × 4 with 0,60. Predicted from the
+   original neighbours, not the decoded ones, which the page says. A map of
+   the chosen modes was tried and left out: in calm areas the choice is
+   close to chance, and the map shows noise.
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

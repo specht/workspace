@@ -526,3 +526,313 @@ Warum `slope.png` und kein Bild aus `slope.mp4`? In `write_video` steht `-pix_fm
 </div>
 
 <!-- stage: stufen/chroma-2.py as chroma.py -->
+
+## Innerhalb eines Bildes
+
+Bevor ein Codec Bilder miteinander vergleicht, muss er ein einzelnes Bild gut speichern können: das erste eines Videos und jedes, mit dem eine neue Szene beginnt. Dafür macht er fast dasselbe wie JPEG. Er teilt das Bild in Blöcke, zerlegt jeden Block in Frequenzen und rundet sie grob. Neu ist ein Trick: Jeder Block wird aus den Pixeln vorhergesagt, die schon gespeichert sind, und nur der Rest kommt in die Datei.
+
+### Blöcke und Frequenzen
+
+Ein Block aus 8 × 8 Helligkeiten lässt sich als Summe von 64 **Basisbildern** schreiben: Muster aus Kosinus-Wellen, vom ganz glatten Block bis zum feinen Schachbrett. Die **DCT** (Diskrete Kosinustransformation) rechnet aus, wie stark jedes Muster im Block vorkommt; diese 64 Zahlen heißen **Koeffizienten**. Das ist dieselbe Idee wie bei der MDCT in »Audio komprimieren«, nur in zwei Richtungen; ausführlich steht es in <a href='/jpeg' target='_blank' rel='noopener'>der JPEG-Aktivität</a>.
+
+Hier ist ein Block aus `slope.png`, die Wange des Mädchens mit dem Rand ihrer dunklen Haare rechts. Seine Koeffizienten sind schon auf Vielfache von 8 gerundet, und nur 20 der 64 sind nicht 0. Schritt für Schritt kommt ein Basisbild nach dem anderen dazu:
+
+<script src='/include/idct_stepper.js'></script>
+<div class='idct-stepper' data-stepper data-coef='-80 64 -72 32 -16 8 8 0 16 -24 0 0 -16 16 -8 8 -8 -8 0 -8 0 0 0 0 8 -8 0 -8 0 -8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
+
+Die ersten Koeffizienten bringen fast alles: die mittlere Helligkeit und den dunklen Rand rechts. Was danach kommt, sind feine Muster, und gerade bei denen sieht das Auge Fehler kaum. Darum rundet ein Codec sie grob, und viele werden 0.
+
+Lege `blocks.py` an. Es braucht `to_ycbcr` aus `chroma.py`:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+from PIL import Image
+
+from chroma import to_ycbcr
+
+
+def dct_matrix(n):
+    k = np.arange(n)[:, None]
+    i = np.arange(n)[None, :]
+    d = np.cos((2 * i + 1) * k * np.pi / (2 * n)) * np.sqrt(2 / n)
+    d[0] /= np.sqrt(2)
+    return d
+
+
+def split(plane, n):
+    height, width = plane.shape
+    return plane.reshape(height // n, n, width // n, n).swapaxes(1, 2)
+
+
+def join(blocks):
+    rows, columns, n, _ = blocks.shape
+    return blocks.swapaxes(1, 2).reshape(rows * n, columns * n)
+
+
+def dct(blocks):
+    d = dct_matrix(blocks.shape[-1])
+    return d @ blocks @ d.T
+
+
+def idct(coefficients):
+    d = dct_matrix(coefficients.shape[-1])
+    return d.T @ coefficients @ d
+
+
+def bits(levels):
+    n = levels.shape[-1]
+    flat = levels.reshape(-1, n * n)
+    total = 0
+    for k in range(n * n):
+        _, counts = np.unique(flat[:, k], return_counts=True)
+        p = counts / len(flat)
+        total += -(p * np.log2(p)).sum() * len(flat)
+    return total
+
+
+def quantize(blocks, step):
+    # hier: die Koeffizienten, durch step geteilt und gerundet
+
+
+def restore(levels, step):
+    # hier: zurück zu Pixeln
+
+
+def save_detail(path, plane):
+    grey = plane.round().clip(0, 255).astype(np.uint8)
+    Image.fromarray(grey[130:310, 460:700]).resize((720, 540), Image.NEAREST).save(path)
+
+
+if __name__ == '__main__':
+    luma = to_ycbcr(np.asarray(Image.open('slope.png').convert('RGB')))[..., 0]
+    blocks = split(luma - 128, 8)
+    for step in (8, 32, 64):
+        levels = quantize(blocks, step)
+        share = np.count_nonzero(levels) / levels.size
+        print(f'Schritt {step}: {share:.1%} nicht 0, {bits(levels) / luma.size:.2f} Bits je Pixel')
+        save_detail(f'step-{step}.png', join(restore(levels, step)) + 128)
+```
+
+`dct_matrix(n)` hat in Zeile `k` das `k`-te Kosinus-Muster mit `n` Werten. `split` legt eine Ebene in Blöcke, mit demselben `reshape` wie `subsample`; `swapaxes(1, 2)` tauscht zwei Achsen, sodass `blocks[r, c]` der Block in Reihe `r` und Spalte `c` ist, mit `n` × `n` Pixeln. `join` setzt die Blöcke wieder zusammen. `dct` multipliziert jeden Block von links und von rechts mit der Matrix, einmal für die Zeilen und einmal für die Spalten; der Operator `@` macht das für alle Blöcke auf einmal. `idct` rechnet zurück: Die Matrix ist so gebaut, dass ihre Transponierte `d.T` ihre Inverse ist.
+
+`bits` schätzt, wie viele Bits die gerundeten Koeffizienten brauchen, mit der Entropie wie bei FLAC in »Audio komprimieren«. Weil der Koeffizient oben links fast immer groß ist und die rechts unten fast immer 0, zählt `bits` für jede Position im Block eine eigene Tabelle, so wie es die Codecs machen. Vor der DCT zieht das Hauptprogramm von jeder Helligkeit 128 ab, damit ein mittleres Grau 0 ist.
+
+<div class='hint own' data-check='quantize'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>quantize(blocks, step)</code> und <code>restore(levels, step)</code>. <code>quantize</code> gibt die Koeffizienten aller Blöcke zurück, durch <code>step</code> geteilt und auf ganze Zahlen gerundet. <code>restore</code> macht daraus wieder Pixel: mit <code>step</code> multiplizieren und zurückrechnen.
+</div>
+
+<!-- hint -->
+`dct(blocks)` gibt die Koeffizienten aller Blöcke auf einmal, `np.round` rundet ein ganzes Array.
+<!-- /hint -->
+<!-- hint -->
+`restore` ist der Weg zurück: `levels * step` sind die gerundeten Koeffizienten, und `idct` macht aus Koeffizienten Pixel.
+
+```python
+def quantize(blocks, step):
+    return np.round(dct(blocks) / step)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def quantize(blocks, step):
+    return np.round(dct(blocks) / step)
+
+
+def restore(levels, step):
+    return idct(levels * step)
+```
+<!-- /solution -->
+
+_task(quantize)
+
+Das Programm speichert für die Schritte 8, 32 und 64 einen Ausschnitt um das Mädchen. Bevor du es startest:
+
+_task(tiles)
+
+```bash
+python3 blocks.py
+```
+
+<!-- tutorial-step
+write-file: video/blocks.py <- file:stufen/blocks-1.py
+check-task: quantize
+terminal-run: python3 blocks.py
+terminal-wait-for-prompt: 60
+wait-for-text: Schritt 64
+-->
+
+<!-- after: tiles -->
+<div class='gallery columns-3'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/step-8.png 1
+-->
+<img src='step-8.webp' alt='Der Ausschnitt um das Mädchen in Graustufen nach Schritt 8: kaum vom Original zu unterscheiden.'>
+<figcaption>Schritt 8: 33 % der Koeffizienten nicht 0</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/step-32.png 1
+-->
+<img src='step-32.webp' alt='Derselbe Ausschnitt nach Schritt 32: Im dunklen Hintergrund ahnt man Kacheln, das Gesicht hat weniger Einzelheiten.'>
+<figcaption>Schritt 32: 11,5 %</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/step-64.png 1
+-->
+<img src='step-64.webp' alt='Derselbe Ausschnitt nach Schritt 64: Der Hintergrund besteht aus deutlichen Kacheln mit Kanten dazwischen, das Gesicht und der Stab haben kaum noch Einzelheiten.'>
+<figcaption>Schritt 64: 5,4 %</figcaption></figure>
+</div>
+
+Bei Schritt 64 zerfällt der Hintergrund in Kacheln aus 8 × 8 Pixeln. In jedem Block blieb kaum mehr als der Koeffizient für die mittlere Helligkeit, und benachbarte Blöcke treffen sich mit einer Kante. Das ist das bekannteste Artefakt von JPEG und von Videos mit zu wenigen Bits. Bei Schritt 32 braucht das Bild 0,67 Bits je Pixel statt 8, ein Zwölftel, und ist noch gut zu erkennen.
+<!-- /after -->
+
+### Vorhersage im Bild
+
+Ein Codec speichert die Blöcke nacheinander, Zeile für Zeile. Wenn er an einen Block kommt, kennen er und später der Decoder schon die Pixel darüber und links davon. Aus ihnen sagt er den Block voraus und speichert nur, was von der Vorhersage abweicht: den Rest, auf Englisch **Residual**. Für 4 × 4 Pixel kennt H.264 (2003) neun Arten der Vorhersage, H.265 (2013) 35, AV1 (2018) über 60. Die drei einfachsten:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='intra-wide.svg' alt='Drei Blöcke aus 4 × 4 Pixeln, darüber die vier Nachbarn 40, 80, 160 und 200, links die vier Nachbarn 200, 160, 100 und 60. Bei vertical wiederholt jede Spalte den Wert über ihr, Pfeile zeigen nach unten. Bei horizontal wiederholt jede Zeile den Wert links von ihr, Pfeile zeigen nach rechts. Bei dc haben alle 16 Pixel den Mittelwert der acht Nachbarn, 125.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='intra.svg' alt='Drei Blöcke untereinander aus 4 × 4 Pixeln, darüber die vier Nachbarn 40, 80, 160 und 200, links die vier Nachbarn 200, 160, 100 und 60. Bei vertical wiederholt jede Spalte den Wert über ihr, Pfeile zeigen nach unten. Bei horizontal wiederholt jede Zeile den Wert links von ihr, Pfeile zeigen nach rechts. Bei dc haben alle 16 Pixel den Mittelwert der acht Nachbarn, 125.'>
+
+Bei einer senkrechten Kante passt `vertical`, bei einem waagerechten Horizont `horizontal`, bei einer ruhigen Fläche `dc`. Der Encoder probiert alle und nimmt die, deren Rest am kleinsten ist; welche er nahm, schreibt er mit in die Datei.
+
+Erweitere `blocks.py` um die Vorhersage:
+
+<!-- page-code: own -->
+```python
+MODES = ['vertical', 'horizontal', 'dc']
+
+
+def predict(above, left, mode):
+    # hier: ein Block aus n × n Pixeln, vorhergesagt aus above und left
+
+
+def best_mode(block, above, left):
+    # hier: die Art der Vorhersage mit dem kleinsten Rest
+
+
+def residual(plane, n):
+    height, width = plane.shape
+    rest = np.zeros_like(plane)
+    for y in range(0, height, n):
+        for x in range(0, width, n):
+            block = plane[y:y + n, x:x + n]
+            above = plane[y - 1, x:x + n] if y > 0 else np.full(n, 128.0)
+            left = plane[y:y + n, x - 1] if x > 0 else np.full(n, 128.0)
+            rest[y:y + n, x:x + n] = block - predict(above, left, best_mode(block, above, left))
+    return rest
+```
+
+`residual` geht die Blöcke durch. `above` ist die Zeile über dem Block, `left` die Spalte links davon; am oberen und linken Rand gibt es keine Nachbarn, dort nimmt es ein mittleres Grau. Ein echter Encoder sagt aus den Pixeln voraus, die der Decoder schon hat, also aus den gerundeten. Hier nehmen wir die Originale: Das ist einfacher und macht die Vorhersage etwas zu gut.
+
+<div class='hint own' data-check='predict'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>predict(above, left, mode)</code>. <code>above</code> und <code>left</code> sind Arrays mit je <code>n</code> Werten. Das Ergebnis ist ein Block aus <code>n</code> × <code>n</code> Pixeln wie in der Zeichnung: bei <code>'vertical'</code> in jeder Zeile <code>above</code>, bei <code>'horizontal'</code> in jeder Spalte <code>left</code>, bei <code>'dc'</code> überall der Mittelwert aller <code>2 * n</code> Nachbarn.
+</div>
+
+<!-- hint -->
+`np.tile(a, (n, 1))` legt ein Array `n`-mal untereinander. Für `'horizontal'` muss `left` eine Spalte werden: `left[:, None]` hat die Form `(n, 1)`.
+<!-- /hint -->
+<!-- hint -->
+`np.full((n, n), value)` ist ein Block, in dem überall `value` steht.
+
+```python
+n = len(above)
+if mode == 'vertical':
+    return np.tile(above, (n, 1))
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def predict(above, left, mode):
+    n = len(above)
+    if mode == 'vertical':
+        return np.tile(above, (n, 1))
+    if mode == 'horizontal':
+        return np.tile(left[:, None], (1, n))
+    return np.full((n, n), (above.sum() + left.sum()) / (2 * n))
+```
+<!-- /solution -->
+
+_task(predict)
+
+<div class='hint own' data-check='best-mode'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>best_mode(block, above, left)</code>: Es probiert jede Art aus <code>MODES</code> und gibt die zurück, bei der die Summe der Beträge von <code>block - predict(above, left, mode)</code> am kleinsten ist.
+</div>
+
+<!-- hint -->
+`np.abs(a).sum()` ist die Summe der Beträge. Merk dir in einer Schleife über `MODES` die beste Art und ihren Fehler.
+<!-- /hint -->
+<!-- hint -->
+```python
+best, best_error = None, None
+for mode in MODES:
+    error = np.abs(block - predict(above, left, mode)).sum()
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def best_mode(block, above, left):
+    best, best_error = None, None
+    for mode in MODES:
+        error = np.abs(block - predict(above, left, mode)).sum()
+        if best is None or error < best_error:
+            best, best_error = mode, error
+    return best
+```
+<!-- /solution -->
+
+_task(best-mode)
+
+Und unten im Hauptprogramm:
+
+```python
+    rest = residual(luma, 4)
+    Image.fromarray((rest + 128).round().clip(0, 255).astype(np.uint8)).save('residual.png')
+    for name, plane, n in [('8 × 8 ohne Vorhersage', luma - 128, 8),
+                           ('4 × 4 ohne Vorhersage', luma - 128, 4),
+                           ('4 × 4 mit Vorhersage ', rest, 4)]:
+        print(f'{name}: {bits(quantize(split(plane, n), 32)) / luma.size:.2f} Bits je Pixel')
+```
+
+`residual.png` zeigt den Rest für Blöcke aus 4 × 4 Pixeln, 128 ist dort ein Rest von 0. Bevor du es öffnest:
+
+_task(residual-look)
+
+```bash
+python3 blocks.py
+```
+
+<!-- tutorial-step
+write-file: video/blocks.py <- file:stufen/blocks-2.py
+check-task: predict
+check-task: best-mode
+terminal-run: python3 blocks.py
+terminal-wait-for-prompt: 60
+wait-for-text: mit Vorhersage
+-->
+
+<!-- after: residual-look -->
+<!-- tutorial-screenshot
+image-file: video/residual.png 1
+-->
+<img class='full fit-width' src='residual.webp' alt='Der Rest nach der Vorhersage für das ganze Bild vom Hang: fast überall ein gleichmäßiges mittleres Grau. Nur an Kanten bleiben helle und dunkle Linien: am Umriss des Mädchens, an den Felsen, an den Halmen im Gras und an den Pflanzen oben links.'>
+
+Fast alles ist mittelgrau: Wo das Bild ruhig ist, sagen die Nachbarn den Block gut voraus. Was bleibt, sind Kanten und feine Muster wie das Gras. Die Zahlen:
+
+```text
+8 × 8 ohne Vorhersage: 0.67 Bits je Pixel
+4 × 4 ohne Vorhersage: 0.79 Bits je Pixel
+4 × 4 mit Vorhersage : 0.60 Bits je Pixel
+```
+
+Kleine Blöcke folgen den Kanten besser, aber ohne Vorhersage kosten sie mehr: Jeder Block braucht seine eigene mittlere Helligkeit. Mit Vorhersage kommt diese fast umsonst aus den Nachbarn, und die kleinen Blöcke sind um ein Viertel billiger, sogar billiger als die großen ohne Vorhersage. Darum kann H.264 bei Kanten kleine Blöcke nehmen und bei ruhigen Flächen große.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Nimm in <code>residual</code> und der letzten Zeile Blöcke aus 8 × 8 Pixeln statt 4 × 4. Hilft die Vorhersage dann noch so viel? Und was ändert sich, wenn du <code>MODES</code> auf <code>['dc']</code> kürzt?
+</div>
+<!-- /after -->
+
+<!-- stage: stufen/blocks-2.py as blocks.py -->

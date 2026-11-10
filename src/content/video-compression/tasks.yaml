@@ -222,3 +222,156 @@ tasks:
           height, width = plane.shape
           return plane.reshape(height // n, n, width // n, n).mean(axis=(1, 3))
       ```
+
+  - id: quantize
+    title: Quantisieren
+    prompt: |
+      Schreib in `video/blocks.py` die Funktionen `quantize(blocks, step)`
+      (die Koeffizienten aller Blöcke, durch `step` geteilt und gerundet) und
+      `restore(levels, step)` (zurück zu Pixeln). Die Prüfung gibt ihnen
+      Blöcke aus 8 × 8 und 4 × 4 Pixeln.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: round(float(quantize(np.full((1, 1, 8, 8), 40.0), 10)[0, 0, 0, 0]), 6)
+          expect: '32.0'
+          say: Ein Block, in dem überall 40 steht, hat oben links den Koeffizienten 40 · 8 = 320, durch 10 geteilt 32. Teilt `quantize` die Koeffizienten aus `dct(blocks)` durch `step`?
+        - call: int(np.count_nonzero(quantize(np.full((1, 1, 8, 8), 40.0), 10)))
+          expect: '1'
+          say: Bei einem Block mit überall 40 bleibt nur der Koeffizient oben links; die anderen sind fast 0 und werden mit `np.round` genau 0.
+        - call: '[int(v) for v in quantize(np.arange(16.0).reshape(1, 1, 4, 4), 4).flatten()][:5]'
+          expect: '[8, -1, 0, 0, -4]'
+          say: Die Koeffizienten werden auf ganze Zahlen gerundet, mit `np.round`.
+        - call: float(quantize(np.full((1, 1, 4, 4), 7.0), 8)[0, 0, 0, 0])
+          expect: '4.0'
+          say: 7 · 4 / 8 = 3,5 wird gerundet zu 4. Rundet `quantize` mit `np.round`?
+        - call: 'lv = np.zeros((1, 1, 8, 8)); lv[0, 0, 0, 0] = 32; [round(float(v), 6) for v in np.unique(restore(lv, 10))]'
+          expect: '[40.0]'
+          say: Aus dem Koeffizienten 32 bei Schritt 10 wird wieder 320, und das ist ein Block, in dem überall 40 steht. Multipliziert `restore` mit `step`, bevor es `idct` aufruft?
+        - call: restore(quantize(np.zeros((2, 3, 4, 4)), 5), 5).shape
+          expect: (2, 3, 4, 4)
+          say: '`restore` gibt Blöcke derselben Form zurück, die `quantize` bekam.'
+    solution: |
+      ```python
+      def quantize(blocks, step):
+          return np.round(dct(blocks) / step)
+
+
+      def restore(levels, step):
+          return idct(levels * step)
+      ```
+
+  - id: tiles
+    title: Grob gerundet
+    prediction: true
+    prompt: |
+      Bei Schritt 64 bleiben von den Koeffizienten nur gut 5 % übrig, die
+      anderen werden 0. Wie sieht der Ausschnitt um das Mädchen dann aus?
+    check:
+      type: choice
+      options:
+        - Wie das Original, nur dunkler.
+        - Gleichmäßig unscharf, wie durch Milchglas.
+        - Aus Kacheln von 8 × 8 Pixeln, mit Kanten dazwischen.
+        - Verrauscht, mit hellen und dunklen Punkten überall.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die mittlere Helligkeit jedes Blocks bleibt fast immer erhalten; sie steckt im größten Koeffizienten.
+      - when: { picked: 1 }
+        say: Jeder Block wird für sich gerundet. Treffen sich dann zwei Blöcke glatt?
+      - when: { picked: 3 }
+        say: Wo Koeffizienten 0 werden, fehlen feine Muster. Wird ein Block dadurch unruhiger oder ruhiger?
+    solution: |
+      Aus Kacheln: In vielen Blöcken bleibt nur die mittlere Helligkeit, und
+      zwei benachbarte Blöcke treffen sich mit einer Kante.
+
+  - id: predict
+    title: Vorhersage aus den Nachbarn
+    prompt: |
+      Schreib in `video/blocks.py` die Funktion `predict(above, left, mode)`:
+      einen Block aus `n` × `n` Pixeln, bei `'vertical'` in jeder Zeile
+      `above`, bei `'horizontal'` in jeder Spalte `left`, bei `'dc'` überall
+      der Mittelwert aller `2 * n` Nachbarn.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'vertical').tolist()
+          expect: '[[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]]'
+          say: Bei `'vertical'` wiederholt jede Spalte den Wert über ihr, jede Zeile ist also `above`.
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'horizontal').tolist()
+          expect: '[[5.0, 5.0, 5.0, 5.0], [6.0, 6.0, 6.0, 6.0], [7.0, 7.0, 7.0, 7.0], [8.0, 8.0, 8.0, 8.0]]'
+          say: Bei `'horizontal'` wiederholt jede Zeile den Wert links von ihr. Wird `left` mit `left[:, None]` zu einer Spalte?
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'dc').tolist()
+          expect: '[[4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5]]'
+          say: Bei `'dc'` ist jedes Pixel der Mittelwert aller acht Nachbarn, (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8) / 8 = 4,5.
+        - call: predict(np.zeros(8), np.zeros(8), 'dc').shape
+          expect: (8, 8)
+          say: Bei 8 Nachbarn oben und 8 links ist der Block 8 × 8 groß. Nimmt `predict` die Größe aus `len(above)`?
+    solution: |
+      ```python
+      def predict(above, left, mode):
+          n = len(above)
+          if mode == 'vertical':
+              return np.tile(above, (n, 1))
+          if mode == 'horizontal':
+              return np.tile(left[:, None], (1, n))
+          return np.full((n, n), (above.sum() + left.sum()) / (2 * n))
+      ```
+
+  - id: best-mode
+    title: Die beste Vorhersage
+    prompt: |
+      Schreib in `video/blocks.py` die Funktion `best_mode(block, above,
+      left)`: die Art aus `MODES`, bei der die Summe der Beträge von `block -
+      predict(above, left, mode)` am kleinsten ist.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: "a = np.array([10., 20., 30., 40.]); l = np.array([90., 80., 70., 60.]); best_mode(np.tile(a, (4, 1)), a, l)"
+          expect: "'vertical'"
+          say: Ein Block, dessen Zeilen alle `above` sind, wird von `'vertical'` genau vorhergesagt, der Rest ist 0. Nimmt `best_mode` die Art mit dem kleinsten Fehler?
+        - call: "a = np.array([10., 20., 30., 40.]); l = np.array([90., 80., 70., 60.]); best_mode(np.tile(l[:, None], (1, 4)), a, l)"
+          expect: "'horizontal'"
+          say: Ein Block, dessen Spalten alle `left` sind, passt am besten zu `'horizontal'`. Nimmt `best_mode` den kleinsten Fehler, nicht den größten?
+        - call: best_mode(np.full((4, 4), 5.0), np.array([0., 10., 0., 10.]), np.array([10., 0., 10., 0.]))
+          expect: "'dc'"
+          say: Ein ruhiger Block mit überall 5 neben Nachbarn, die abwechselnd 0 und 10 sind, passt am besten zu ihrem Mittelwert, `'dc'`.
+    solution: |
+      ```python
+      def best_mode(block, above, left):
+          best, best_error = None, None
+          for mode in MODES:
+              error = np.abs(block - predict(above, left, mode)).sum()
+              if best is None or error < best_error:
+                  best, best_error = mode, error
+          return best
+      ```
+
+  - id: residual-look
+    title: Was übrig bleibt
+    prediction: true
+    prompt: |
+      `residual.png` zeigt für jedes Pixel den Rest nach der besten
+      Vorhersage, 128 heißt Rest 0. Wie sieht das Bild aus?
+    check:
+      type: choice
+      options:
+        - Wie das Bild vom Hang, nur blasser.
+        - Fast überall mittelgrau, nur an Kanten hell oder dunkel.
+        - Überall gleichmäßig verrauscht.
+        - Fast ganz schwarz.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Die mittlere Helligkeit eines Blocks sagen die Nachbarn meist gut voraus. Bleibt sie im Rest?
+      - when: { picked: 2 }
+        say: Wo das Bild ruhig ist, passen die Nachbarn gut. Wo passen sie schlecht?
+      - when: { picked: 3 }
+        say: Schwarz wäre ein Rest von −128. Ein Rest von 0 ist mittelgrau.
+    solution: |
+      Fast überall mittelgrau: In ruhigen Flächen sagen die Nachbarn den Block
+      gut voraus. Hell und dunkel bleiben Kanten und feine Muster wie Gras.
