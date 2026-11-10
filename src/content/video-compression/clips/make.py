@@ -5,10 +5,16 @@ the film; both sides multiples of 16, the size of a macroblock), 24
 frames per second, without sound, as H.264 of high quality (CRF 14) in
 src/static/video/:
 
-    blick.mp4      65,5 s: the girl looks at the camera; only her eyes move
+    blick.mp4      65,5 s: the girl looks to the side; only her eyes move
     schwenk.mp4    37 s:   a slow pan along a mountain ridge with clouds
     hang.mp4       395 s:  a slope in the evening sun, the girl walking; fine texture
     aufwaerts.mp4  408 s:  the camera tilts fast up a rock face with plants
+
+their first frames as stills for the page (blick.webp, …), and one
+frame with all its colour, never through H.264 and its 4:2:0, as
+PNG:
+
+    hang.png       395 s:  the first frame of hang.mp4
 
 The film comes from Wikimedia Commons, which has it from the Blender
 Studio's YouTube channel, so it was compressed once before (VP9, 2048 ×
@@ -40,6 +46,15 @@ def main(source):
                         '-c:v', 'libx264', '-crf', '14', '-preset', 'slow', '-pix_fmt', 'yuv420p',
                         '-movflags', '+faststart', target], check=True)
         print(target, os.path.getsize(target), 'bytes')
+    # the first frame of each clip as a still for the page, shown before it plays
+    for name in CLIPS:
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', os.path.join(OUT, f'{name}.mp4'), '-frames:v', '1',
+                        '-c:v', 'libwebp', '-quality', '80', os.path.join(OUT, f'{name}.webp')], check=True)
+    target = os.path.join(OUT, 'hang.png')
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(CLIPS['hang']), '-i', source, '-frames:v', '1',
+                    '-vf', f'scale={WIDTH}:-2:flags=lanczos+full_chroma_int+accurate_rnd,crop={WIDTH}:{HEIGHT},format=rgb24',
+                    target], check=True)
+    print(target, os.path.getsize(target), 'bytes')
 
 
 main(sys.argv[1])

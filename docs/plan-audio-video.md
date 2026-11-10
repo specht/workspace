@@ -107,7 +107,7 @@ each with its source in a README beside it.
 ## Activity 2: moving pictures (`video-compression`)
 
 Title proposals: »Video komprimieren«; or »Von H.261 bis AV2«. Oberstufe,
-about five double lessons, Python. The JPEG decoder (C, four double
+about nine double lessons, Python. The JPEG decoder (C, four double
 lessons) is too heavy as a requirement: the parts about blocks and the DCT
 come again in short, with the existing iDCT widget (`idct_stepper.js`), and
 link to JPEG for those who did it.
@@ -237,7 +237,43 @@ seconds at 720p each.
    name; then the video activity. The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
-3. Moving pictures the same way.
+3. Moving pictures the same way. Begun on 10 November 2026, dev-only
+   (`.video-compression` after `.audio-compression` in `sections.yaml`),
+   working title »Video komprimieren«, nine parts planned (`duration: 9
+   Doppelstunden`). The material: four clips of four seconds from »Spring«
+   (Blender Foundation, CC BY 4.0), made by `clips/make.py` from the film on
+   Wikimedia Commons, 960 × 400 at 24 frames, in `src/static/video/`
+   (`blick`, `schwenk`, `hang`, `aufwaerts`); Muybridge's plate of 1878
+   (`muybridge.jpg`, public domain). The teaser is a frame of the slope with
+   the blocks a codec might choose, split by the spread of the brightness
+   (`bilder/teaser.py`). Part 1 is written: a second of Full HD in Mbit/s,
+   `read_frames` and `write_video` through a pipe to ffmpeg (`video.py`),
+   Muybridge's horse cut from the plate into a film (`pferd.py`), `held` of
+   one's own (fewer frames, each shown longer; 24 frames as the compromise
+   of the sound film), `interlace` of one's own (fields, the prediction of
+   Combing, the larger file). The order is Muybridge first, then Python,
+   then Spring; the four clips play on the page in a gallery
+   (`video_in_view.js`: nothing loads before a clip is in view, stills from
+   `clips/make.py`). Part 2 is written: colour television as the origin,
+   `to_ycbcr` of one's own (JPEG's formulas), the three planes of
+   `hang.png` (a frame made from the film without H.264, so with nearly all
+   its colour) and the prediction of the red jacket (Cr 162, Cb 105 on
+   average), a drawing of 4:4:4, 4:2:2 and 4:2:0 (`bilder/subsampling.py`),
+   the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
+   coarser against brightness made coarser in a detail, and why a frame
+   from an MP4 has nothing left to subsample.
+   The clips come from the YouTube copy of Spring on Commons; Blender Studio
+   keeps its masters for subscribers. The Spring dataset of the University
+   of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,
+   [spring-benchmark.org](https://spring-benchmark.org/download)) has
+   lossless Full HD frames rendered from the film's files, 24 frames a
+   second, and the true optical flow; two of its sequences are our shots
+   (0006 is `blick` from its frame 58, 0047 is `aufwaerts` from its frame
+   32, the band of 2,4 : 1 from row 138). But the frames are the render
+   before compositing: no grading, no depth of field, no glow, so the clips
+   stay the film's. The flow may serve part 5 (motion vectors against the
+   truth). The left frames lie in the Docker volume `spring-dataset`
+   (13,4 GB, `train_frame_left.zip`).
 
 Each activity is several sessions of work; the widgets (spectrum and
 spectrogram, threshold and masking, quantisation with listening, ABX, block
@@ -257,6 +293,14 @@ matching) are most of it.
 - AV2: specification 1.0.0 on 28 May 2026, announced 9 June 2026, about
   30 % more efficient than AV1 according to AOMedia.
   [AOMedia](http://aomedia.org/press%20releases/Alliance-for-Open-Media-Releases-AV2-Codec/)
+
+- Muybridge: Palo Alto, June 1878, on Stanford's track, the mare Sallie
+  Gardner, twelve cameras released by wires; the plate says the photos are
+  »about the twenty-fifth part of a second« apart; the zoopraxiscope from
+  1880. [Wikipedia](https://en.wikipedia.org/wiki/The_Horse_in_Motion)
+- Spring (2019): CC BY 4.0, credit »© Blender Foundation |
+  cloud.blender.org/spring«; the file on Commons comes from the studio's
+  YouTube channel and was compressed once before.
 
 Every other date above is from memory and gets a source when its page is
 written.

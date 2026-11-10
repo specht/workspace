@@ -2545,10 +2545,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     margin: 0;
 }
 
-.gallery img {
+.gallery img,
+.gallery video {
     display: block;
     width: 100%;
     border-radius: 0.3em;
+}
+
+/* a video before it loads has the size of its poster */
+.gallery video {
+    height: auto;
 }
 
 .gallery img.full-shadow {

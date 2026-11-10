@@ -1,0 +1,224 @@
+# Aufgaben zu »Video komprimieren«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/video; die Funktionen der Lernenden rechnen mit numpy, das im
+# Workspace-Image ist. Die Zahlen gehören zu den Programmen in stufen/.
+format: 1
+activity: video-compression
+tasks:
+  - id: full-hd
+    title: Eine Sekunde Full HD
+    prompt: |
+      Ein Video in Full HD hat Bilder mit 1.920 × 1.080 Pixeln, jedes Pixel
+      3 Bytes, und 25 Bilder in der Sekunde. Wie viele Megabit braucht eine
+      Sekunde, unkomprimiert? Ein Megabit sind 1.000.000 Bit.
+    check:
+      type: number
+      expect: 1244.16
+      tolerance: 1
+    feedback:
+      - when: { between: [155, 156] }
+        say: Das sind Megabytes. Ein Byte hat 8 Bits.
+      - when: { between: [414, 415] }
+        say: Jedes Pixel hat drei Bytes, eines für Rot, eines für Grün und eines für Blau.
+      - when: { between: [49.5, 50.5] }
+        say: Das ist ein einziges Bild. In der Sekunde kommen 25.
+      - when: { between: [1186, 1187] }
+        say: So viele Mebibit sind es, 1.048.576 Bit je Mebibit. Gefragt ist das Megabit mit 1.000.000 Bit.
+    solution: |
+      1.920 · 1.080 · 3 = 6.220.800 Bytes je Bild, mal 25 sind 155.520.000
+      Bytes in der Sekunde, mal 8 sind 1.244.160.000 Bit, also etwa 1.244
+      Mbit/s. Ein Stream in Full HD hat meist nur einige Mbit/s, ein
+      Zweihundertstel davon oder weniger.
+
+  - id: festhalten
+    title: Weniger Bilder
+    prompt: |
+      Schreib in `video/frames.py` die Funktion `held(frames, step)`: genauso
+      viele Bilder wie `frames`, die Bilder 0, `step`, `2 * step`, … je
+      `step`-mal hintereinander. Die Prüfung gibt ihr kleine Arrays, in denen
+      jedes »Bild« eine Zahl ist, und eines aus echten Bildern.
+    check:
+      type: python
+      file: video/frames.py
+      cases:
+        - call: '[int(f) for f in held(np.arange(6), 2)]'
+          expect: '[0, 0, 2, 2, 4, 4]'
+          say: Aus den Bildern 0 bis 5 werden bei `step = 2` die Bilder 0, 2 und 4, jedes zweimal. Wird jedes Bild wiederholt, `np.repeat`, und nicht die ganze Folge, `np.tile`?
+        - call: '[int(f) for f in held(np.arange(7), 3)]'
+          expect: '[0, 0, 0, 3, 3, 3, 6]'
+          say: Bei 7 Bildern und `step = 3` bleiben 0, 3 und 6; das Ergebnis hat wieder 7 Bilder, das letzte nur einmal. Wird es mit `[:len(frames)]` abgeschnitten?
+        - call: held(np.zeros((5, 4, 4, 3)), 2).shape
+          expect: (5, 4, 4, 3)
+          say: Bei echten Bildern bleibt jedes Bild ganz, nur ihre Folge ändert sich. Wiederholt `np.repeat` entlang der ersten Achse, `axis=0`?
+    solution: |
+      ```python
+      def held(frames, step):
+          return np.repeat(frames[::step], step, axis=0)[:len(frames)]
+      ```
+
+  - id: halbbilder
+    title: Halbbilder
+    prompt: |
+      Schreib in `video/frames.py` die Funktion `interlace(frames)`: Bild `k`
+      des Ergebnisses hat die geraden Zeilen von Bild `k` und die ungeraden
+      von Bild `k + 1`; das Ergebnis hat ein Bild weniger, und `frames`
+      bleibt unverändert. Die Prüfung gibt ihr Bilder, in denen jedes Pixel
+      die Nummer seines Bildes ist.
+    check:
+      type: python
+      file: video/frames.py
+      cases:
+        - call: interlace(np.zeros((5, 4, 2, 3))).shape
+          expect: (4, 4, 2, 3)
+          say: Aus 5 Bildern werden 4, denn das letzte hat kein Bild nach sich.
+        - call: '[int(v) for v in interlace(np.arange(4).reshape(4, 1, 1, 1) * np.ones((4, 4, 1, 1), dtype=int))[0, :, 0, 0]]'
+          expect: '[0, 1, 0, 1]'
+          say: Die Zeilen von Bild 0 des Ergebnisses kommen abwechselnd aus Bild 0 (die geraden, 0 und 2) und Bild 1 (die ungeraden, 1 und 3), dem nächsten, nicht dem vorigen.
+        - call: '[int(v) for v in interlace(np.arange(4).reshape(4, 1, 1, 1) * np.ones((4, 4, 1, 1), dtype=int))[2, :, 0, 0]]'
+          expect: '[2, 3, 2, 3]'
+          say: Bild 2 des Ergebnisses hat die geraden Zeilen von Bild 2 und die ungeraden von Bild 3, dem nächsten, nicht dem vorigen.
+        - call: f = np.arange(3).reshape(3, 1, 1, 1) * np.ones((3, 2, 1, 1), dtype=int); interlace(f); [int(v) for v in f[:, 1, 0, 0]]
+          expect: '[0, 1, 2]'
+          say: '`interlace` darf `frames` nicht verändern: Fang mit einer Kopie an, `frames[:-1].copy()`.'
+    solution: |
+      ```python
+      def interlace(frames):
+          out = frames[:-1].copy()
+          out[:, 1::2] = frames[1:, 1::2]
+          return out
+      ```
+
+  - id: combing
+    title: Halbbilder einer schnellen Fahrt
+    prediction: true
+    prompt: |
+      Die Kamera fährt schnell die Felswand hinauf. Wie sieht ein einzelnes
+      Bild aus `interlace(fast)` aus, dort wo sich etwas bewegt?
+    check:
+      type: choice
+      options:
+        - Unscharf, wie verwischt.
+        - Wie vorher, man sieht keinen Unterschied.
+        - Die Kanten sind in feine waagerechte Streifen zerfranst.
+        - Nur halb so hoch.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Verwischt würde es, wenn man zwei Bilder mischt. Hier kommt jede Zeile ganz aus einem der beiden Bilder.
+      - when: { picked: 1 }
+        say: Die beiden Bilder sind eine vierundzwanzigstel Sekunde auseinander, und die Kamera fährt schnell. Liegt eine Kante in beiden an derselben Stelle?
+      - when: { picked: 3 }
+        say: Das Bild hat alle Zeilen, die geraden aus einem Bild, die ungeraden aus dem nächsten.
+    solution: |
+      In feine Streifen zerfranst: Die geraden Zeilen zeigen die Felswand ein
+      Stück tiefer als die ungeraden, und jede Kante sieht aus wie ein Kamm: Das heißt Combing.
+
+  - id: ycbcr
+    title: Helligkeit und Farbe
+    prompt: |
+      Schreib in `video/chroma.py` die Funktion `to_ycbcr(rgb)`: Die letzte
+      Achse von `rgb` sind R, G und B, die letzte Achse des Ergebnisses Y, Cb
+      und Cr, nach den Formeln auf der Seite. Die Prüfung gibt ihr einzelne
+      Pixel, auch als Bytes wie aus einem Bild, und ein Array mit vier Achsen.
+    check:
+      type: python
+      file: video/chroma.py
+      cases:
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([100, 100, 100]))]'
+          expect: '[100.0, 128.0, 128.0]'
+          say: Ein Grau mit R = G = B = 100 hat Y = 100, und Cb und Cr sind 128. Steht in den Formeln für Cb und Cr die 128 am Anfang?
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([200, 100, 50]))]'
+          expect: '[124.2, 86.1, 182.1]'
+          say: Für R = 200, G = 100, B = 50 ergeben die Formeln Y = 124,2, Cb = 86,1 und Cr = 182,1. Stimmen die Zahlen und die Vorzeichen in deinen Formeln?
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([200, 100, 50], dtype=np.uint8))]'
+          expect: '[124.2, 86.1, 182.1]'
+          say: Mit Bytes aus einem Bild (`uint8`) kommt etwas anderes heraus. Rechnet deine Funktion mit Kommazahlen, etwa `0.299 * r`?
+        - call: to_ycbcr(np.zeros((2, 3, 4, 3))).shape
+          expect: (2, 3, 4, 3)
+          say: Das Ergebnis hat dieselbe Form wie `rgb`, Y, Cb und Cr in der letzten Achse. Legt `np.stack` die drei mit `axis=-1` zusammen?
+    solution: |
+      ```python
+      def to_ycbcr(rgb):
+          r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+          y = 0.299 * r + 0.587 * g + 0.114 * b
+          cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b
+          cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b
+          return np.stack([y, cb, cr], axis=-1)
+      ```
+
+  - id: jacket
+    title: Die rote Jacke
+    prediction: true
+    prompt: |
+      `chroma.py` speichert Y, Cb und Cr als drei Graubilder: 0 ist schwarz,
+      255 weiß, 128 ein mittleres Grau. Wie sieht die rote Jacke des Mädchens
+      in `cb.png` und in `cr.png` aus?
+    check:
+      type: choice
+      options:
+        - In beiden heller als das mittlere Grau.
+        - In Cb dunkler als das mittlere Grau, in Cr heller.
+        - In Cb heller als das mittlere Grau, in Cr dunkler.
+        - In beiden mittelgrau, wie der Rest des Bildes.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Cr sagt, wie viel röter das Pixel ist als ein Grau derselben Helligkeit, Cb, wie viel blauer. Hat die Jacke viel Blau?
+      - when: { picked: 2 }
+        say: Andersherum. In der Formel für Cr steht R mit + 0,5, in der für Cb mit einem Minus.
+      - when: { picked: 3 }
+        say: Mittelgrau, 128, haben Cb und Cr bei einem Grau. Die Jacke ist kräftig rot.
+    solution: |
+      In Cr heller, weil die Jacke viel röter ist als ein Grau derselben
+      Helligkeit (im Mittel 162), in Cb etwas dunkler, weil sie wenig Blau
+      hat (im Mittel 105).
+
+  - id: bytes-420
+    title: Ein Bild in 4:2:0
+    prompt: |
+      Ein Bild hat 960 × 400 Pixel. Y bleibt für jedes Pixel, Cb und Cr gibt es
+      nur einmal für jedes Quadrat aus 2 × 2 Pixeln, und jeder Wert ist ein
+      Byte. Wie viele Bytes hat das Bild?
+    check:
+      type: number
+      expect: 576000
+    feedback:
+      - when: { between: [1152000, 1152000] }
+        say: So viele sind es mit drei Bytes für jedes Pixel, wie in RGB. Cb und Cr gibt es aber nur für jedes vierte Pixel.
+      - when: { between: [384000, 384000] }
+        say: Das ist Y allein. Cb und Cr kommen dazu, je einmal für 2 × 2 Pixel.
+      - when: { between: [480000, 480000] }
+        say: Cb und Cr sind zwei Ebenen, und beide gibt es für jedes Quadrat aus 2 × 2 Pixeln.
+      - when: { between: [768000, 768000] }
+        say: Das wäre 4:2:2, mit Cb und Cr halb so breit wie das Bild. Bei 4:2:0 sind sie auch halb so hoch.
+      - when: { between: [144000, 144000] }
+        say: Das ist die Zahl aller Werte geteilt durch vier. Y bleibt aber für jedes Pixel.
+    solution: |
+      Y: 960 · 400 = 384.000 Bytes. Cb und Cr: je 480 · 200 = 96.000 Bytes.
+      Zusammen 576.000 Bytes, halb so viel wie die 1.152.000 Bytes in RGB:
+      anderthalb Bytes je Pixel statt drei.
+
+  - id: subsample
+    title: Chroma Subsampling
+    prompt: |
+      Schreib in `video/chroma.py` die Funktion `subsample(plane, n)`: eine
+      Ebene, `n`-mal kleiner in jeder Richtung, jeder Wert der Mittelwert eines
+      Quadrats aus `n` × `n` Werten.
+    check:
+      type: python
+      file: video/chroma.py
+      cases:
+        - call: subsample(np.arange(16).reshape(4, 4)).tolist()
+          expect: '[[2.5, 4.5], [10.5, 12.5]]'
+          say: 'Aus 0 bis 15 in vier Zeilen wird bei `n = 2` der Mittelwert jedes Quadrats: oben links (0 + 1 + 4 + 5) / 4 = 2,5. Bildet deine Funktion den Mittelwert aus vier Werten, die in einem Quadrat beieinander liegen, mit `reshape(height // n, n, width // n, n)`?'
+        - call: subsample(np.arange(36).reshape(6, 6), 3).tolist()
+          expect: '[[7.0, 10.0], [25.0, 28.0]]'
+          say: Bei `n = 3` mittelt jedes Quadrat neun Werte. Rechnet deine Funktion mit `n` statt mit 2?
+        - call: subsample(np.zeros((400, 960))).shape
+          expect: (200, 480)
+          say: Eine Ebene von 400 × 960 Werten wird bei `n = 2` zu 200 × 480.
+    solution: |
+      ```python
+      def subsample(plane, n=2):
+          height, width = plane.shape
+          return plane.reshape(height // n, n, width // n, n).mean(axis=(1, 3))
+      ```

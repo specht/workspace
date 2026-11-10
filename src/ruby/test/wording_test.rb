@@ -120,6 +120,11 @@ class WordingTest < Minitest::Test
         assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher/)
     end
 
+    # video terms German developers say in English: Combing, not Kammeffekt
+    def test_english_video_terms
+        assert_empty hits(/Kammeffekt|Kamm-Effekt/)
+    end
+
     # the server opens links to other sites in a new tab (ExternalLinks)
     # The paragraph right after <div class='hint …'> is HTML: Markdown in it
     # stays as it is, and backticks show up on the page. Code there is <code>.

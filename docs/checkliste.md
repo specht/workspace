@@ -51,7 +51,7 @@ dieselbe Bitte für jede Zeile, in der etwas fehlt. Für eine neue Aktivität:
 | Regel | Warum | Geprüft durch |
 | --- | --- | --- |
 | Namen im Code sind Englisch (Variablen, Funktionen, Dateien, Routen); Kommentare und Ausgaben dürfen Deutsch sein | So sieht Code auch später im Beruf aus | Lesen |
-| Fachwörter, die man im Deutschen englisch sagt, bleiben englisch (Handshake, Lock, String, Header); Elemente von VS Code heißen wie ihre Beschriftung | Lernende sollen die Wörter wiedererkennen | Lesen |
+| Fachwörter, die man im Deutschen englisch sagt, bleiben englisch (Handshake, Lock, String, Header, Combing statt »Kammeffekt«); Elemente von VS Code heißen wie ihre Beschriftung | Lernende sollen die Wörter wiedererkennen | Lesen; `wording_test.rb` für »Kammeffekt« |
 | Datenstrukturen heißen englisch: Stack, Queue, Priority Queue, Heap, Linked List, Hash Table | So sagt man es auch im Deutschen | `wording_test.rb` |
 | »Index« oder »Zählvariable«, nicht »Stelle«, für die Position in einem Array oder eine Schleifenvariable; »Stelle« bleibt für Ziffern einer Zahl und Stellen in einem Text | »Stelle« ist dafür ungenau | Lesen |
 | »Sample«, nicht »Messung«, für einen Wert eines Klangs zu einem Zeitpunkt (Abtastung, Abtastrate, »Bits je Sample«); das Verb »messen« bleibt | ein englischer Fachbegriff wie String oder Stack, so heißt es in Programmen und Dateiformaten (Bits per Sample) | `wording_test.rb` auf den Seiten über Klang |

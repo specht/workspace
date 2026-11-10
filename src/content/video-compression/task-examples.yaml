@@ -1,0 +1,35 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt in fehler/ je ein
+# typischer Fehler.
+format: 1
+activity: video-compression
+examples:
+  festhalten:
+    pass:
+      - { files: { video/frames.py: stufen/frames-1.py, video/video.py: stufen/video.py } }
+      - { files: { video/frames.py: stufen/frames-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/frames.py: fehler/held-tile.py, video/video.py: stufen/video.py }, say: 'np.tile' }
+      - { files: { video/frames.py: fehler/held-zu-lang.py, video/video.py: stufen/video.py }, say: '[:len(frames)]' }
+  halbbilder:
+    pass:
+      - { files: { video/frames.py: stufen/frames-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/frames.py: stufen/frames-1.py, video/video.py: stufen/video.py }, say: 'interlace' }
+      - { files: { video/frames.py: fehler/interlace-voriges.py, video/video.py: stufen/video.py }, say: 'nicht dem vorigen' }
+      - { files: { video/frames.py: fehler/interlace-ohne-kopie.py, video/video.py: stufen/video.py }, say: 'Kopie' }
+  ycbcr:
+    pass:
+      - { files: { video/chroma.py: stufen/chroma-1.py } }
+      - { files: { video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/chroma.py: fehler/ycbcr-ohne-128.py }, say: '128' }
+      - { files: { video/chroma.py: fehler/ycbcr-achse-0.py }, say: 'axis=-1' }
+  subsample:
+    pass:
+      - { files: { video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/chroma.py: stufen/chroma-1.py }, say: 'subsample' }
+      - { files: { video/chroma.py: fehler/subsample-jeder-zweite.py }, say: 'Mittelwert' }
+      - { files: { video/chroma.py: fehler/subsample-falsche-achsen.py }, say: 'Quadrat' }
