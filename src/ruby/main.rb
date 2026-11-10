@@ -2988,11 +2988,7 @@ class Main < Sinatra::Base
                                 :slide => series ? slide : nil, :count => slides.size, :part => part)
                         end
                         if series
-                            io.puts "<span class='card-series-controls'>" \
-                                "<button type='button' class='card-series-prev' aria-label='Voriges Bild'><i class='bi bi-chevron-left' aria-hidden='true'></i></button>" \
-                                "<span class='card-series-dots' aria-hidden='true'>#{"<span></span>" * slides.size}</span>" \
-                                "<button type='button' class='card-series-next' aria-label='Nächstes Bild'><i class='bi bi-chevron-right' aria-hidden='true'></i></button>" \
-                                "</span>"
+                            io.puts "<span class='card-series-dots'>" + slides.each_index.map { |i| "<button type='button' aria-label='Bild #{i + 1} von #{slides.size} zeigen'></button>" }.join + "</span>"
                             io.puts "</div>"
                             series_cards = true
                         else

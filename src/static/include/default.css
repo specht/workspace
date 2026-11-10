@@ -15432,8 +15432,8 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
 .activity-part-next { margin: 2.5em 0 1em; }
 
 /* The card of a series (card_series.js): a link over the whole card to the
-   member shown, above it a small pill with the arrows and a dot for each
-   picture, at the top right of the picture */
+   member shown, and small dots at the foot of its picture to show another
+   (placed by the script, as the picture is on top or beside the text) */
 .tutorial_card3.card-series { cursor: pointer; }
 .card-series-link {
     position: absolute;
@@ -15442,41 +15442,41 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
     border-radius: inherit;
 }
 .card-series-link:focus-visible { outline: 3px solid #6741d9; outline-offset: -3px; }
-.card-series-controls {
+.card-series-dots {
     position: absolute;
     z-index: 3;
-    top: 0.5em;
-    right: 0.5em;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
     display: inline-flex;
-    align-items: center;
-    gap: 0.15em;
-    padding: 0.1em;
-    border-radius: 1em;
-    background-color: rgba(20, 20, 24, 0.62);
-    color: #ffffff;
+    gap: 0;
 }
-.card-series-controls button {
+.card-series-dots button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.9em;
-    height: 1.9em;
+    width: 1.1em;
+    height: 1.1em;
     padding: 0;
     border: none;
-    border-radius: 50%;
     background: none;
-    color: inherit;
 }
-.card-series-controls button:hover { background-color: rgba(255, 255, 255, 0.18); }
-.card-series-controls button:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; }
-.card-series-dots { display: inline-flex; gap: 0.3em; }
-.card-series-dots > span {
-    width: 0.45em;
-    height: 0.45em;
+.card-series-dots button::before {
+    content: '';
+    width: 0.38em;
+    height: 0.38em;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.45);
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
-.card-series-dots > span.active { background-color: #ffffff; }
+.card-series-dots button.active::before {
+    width: 0.5em;
+    height: 0.5em;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.6);
+}
+.card-series-dots button:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; border-radius: 50%; }
+
 /* the part shown on the card of an activity in parts */
 .tutorial_card3 .card-content .card-part { font-weight: 600; font-size: 0.9em; color: #6741d9; margin: -0.15em 0 0.2em; }
 html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b197fc; }
