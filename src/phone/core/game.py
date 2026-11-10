@@ -39,6 +39,25 @@ def sentences(text):
     return [p for p in parts if p]
 
 
+# the sound files music and play take: the types the Telefonbuch copies
+# with a game, directly beside it in its folder (src/ruby/include/
+# phone_games.rb, KEEP and AUDIO); the phone decodes them with ffmpeg, the
+# emulator's browser itself, and every browser plays MP3 and WAV
+SOUND_TYPES = ('.mp3', '.wav', '.ogg', '.m4a')
+
+
+def sound_file_problem(command, source):
+    """None, or the message for the game when music or play gets a file it
+    cannot take"""
+    name = str(source)
+    if '/' in name or '\\' in name:
+        return (f'{command}: {name} liegt in einem Unterordner. Leg die Datei direkt neben dein Spiel; '
+                'nur von dort kommt sie beim Veröffentlichen mit.')
+    if os.path.splitext(name)[1].lower() not in SOUND_TYPES:
+        return f'{command}: {name} spielt das Telefon nicht. Nimm eine Datei in MP3, WAV, Ogg oder M4A; MP3 spielt jeder Browser.'
+    return None
+
+
 def game_file(folder, source):
     """a file in the game's folder, or None for anything outside it"""
     path = os.path.realpath(os.path.join(folder, source))
@@ -227,6 +246,9 @@ class Phone:
             await self.sleep(command['sleep'])
             return {'ok': True}
         if 'play' in command:
+            problem = sound_file_problem('play', command['play'])
+            if problem:
+                return {'error': problem}
             await self.play(str(command['play']), bool(command.get('interrupt')))
             return {'ok': True}
         if 'music' in command:
@@ -238,6 +260,9 @@ class Phone:
                 source, start, stop = music_span(source, command.get('start'), command.get('stop'))
             except ValueError as error:
                 return {'error': str(error)}
+            problem = None if re.match(r'https?://', source) else sound_file_problem('music', source)
+            if problem:
+                return {'error': problem}
             await self.music(source, command.get('volume', 1.0), start, stop)
             return {'ok': True}
         if 'keys' in command:

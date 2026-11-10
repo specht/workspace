@@ -1034,6 +1034,16 @@ shannon:
         quote: "they do not always achieve the lowest possible expected codeword length, as Huffman coding does"
       - url: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
         quote: "We see from this that the inefficiency in coding, when only a finite delay of N symbols is used, need not be greater than 1/N plus the difference between the true entropy H and the entropy G_N calculated for sequences of length N."
+  - text: 1949 bewies er einen Satz, den Nachrichtentechniker schon kannten
+    sources:
+      - url: https://fab.cba.mit.edu/classes/S62.12/docs/Shannon_noise.pdf
+        quote: "Communication in the Presence of Noise … II. The Sampling Theorem … This is a fact which is common knowledge in the communication art. … A mathematical proof showing that this is not only approximately, but exactly, true can be given as follows."
+      - url: https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem
+        quote: "Claude E. Shannon, \"Communication in the presence of noise,\" Proceedings of the Institute of Radio Engineers, vol. 37, no. 1, pp. 10–21, January 1949"
+  - text: Schwingt ein Signal höchstens W-mal in der Sekunde, ist es ganz festgehalten, wenn man es 2W-mal in der Sekunde misst.
+    sources:
+      - url: https://fab.cba.mit.edu/classes/S62.12/docs/Shannon_noise.pdf
+        quote: "Theorem 1: If a function f(t) contains no frequencies higher than W cps, it is completely determined by giving its ordinates at a series of points spaced 1/2W seconds apart."
 
 chomsky:
   - text: Noam Chomsky (geboren 1928), amerikanischer Sprachwissenschaftler am MIT.

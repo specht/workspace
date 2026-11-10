@@ -138,13 +138,21 @@ zurück, `''`.
 <!-- /part -->
 
 <!-- part: music -->
-<!-- short: `music` spielt einen YouTube-Link oder eine MP3-Datei in einer Schleife, leiser, solange gesprochen wird; `music nil` schaltet sie aus. -->
+<!-- short: `music` spielt einen YouTube-Link oder eine Datei (MP3, WAV, Ogg, M4A) in einer Schleife, leiser, solange gesprochen wird; `music nil` schaltet sie aus. -->
 ### music
 
 `music` spielt Musik in einer Schleife, bis das Spiel zu Ende ist oder ein
 neues `music` sie ersetzt. Solange Thorsten spricht, wird sie leiser. Die
 Quelle ist ein Link zu YouTube, von dem das Telefon nur den Ton nimmt, oder
-eine Datei im Ordner des Spiels; nimm dafür MP3, das spielt jeder Browser.
+eine Datei im Ordner des Spiels.
+
+- Eine Datei ist MP3, WAV, Ogg oder M4A und liegt direkt neben dem Spiel,
+  nicht in einem Unterordner; sonst gibt `music` einen Fehler, denn beim
+  Veröffentlichen käme sie nicht mit. MP3 und WAV spielt jeder Browser, Ogg
+  und M4A nicht jeder; das Telefon spielt alle vier.
+- Ins Telefonbuch kommt eine Datei bis 20 MB, alle zusammen bis 40 MB.
+- Von einem Video holt der Workspace einmal den Ton und hebt ihn auf; von
+  einem sehr langen Video nur das Stück ab `start`, höchstens zehn Minuten.
 
 - Die Lautstärke liegt zwischen `0` und `1`, ohne Angabe `1`.
 - `start` und `stop` spielen nur einen Ausschnitt, in Sekunden (`75`) oder als
@@ -217,7 +225,8 @@ zehn.
 
 Statt Thorsten kann auch deine eigene Stimme sprechen, ein Geräusch erklingen
 oder eine Melodie, die du gesummt hast. Nimm sie auf, leg sie als MP3 in den
-Ordner deines Spiels, und `play` spielt sie ab, wie `say` einen Satz sagt: Die
+Ordner deines Spiels (WAV, Ogg und M4A gehen auch, wie bei
+[music](#music)), und `play` spielt sie ab, wie `say` einen Satz sagt: Die
 Musik wird leiser, das Spiel wartet, bis die Aufnahme zu Ende ist, und mit
 `interrupt` bricht eine Taste sie ab.
 

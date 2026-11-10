@@ -213,9 +213,7 @@ Schleife, bis dein Programm zu Ende ist. `music` wartet, bis die Musik läuft.
 Das Video holt `telefon` schon, sobald es gestartet ist, und es bereitet auch
 die Sätze deines Spiels vor; im Terminal steht, wann beides bereit ist. Rufst
 du gleich nach dem Start an, dauert der erste Anruf darum etwas länger. Statt
-eines Links geht auch eine Datei aus
-deinem Ordner, etwa `hoehle.mp3`; nimm dafür MP3, das spielt jeder
-Browser.
+eines Links nimmt `music` auch eine Datei; dazu gleich mehr.
 
 <!-- language: ruby -->
 Brauchst du nur eine Stelle aus einem längeren Video, sag, wo sie anfängt
@@ -258,6 +256,138 @@ wenn jemand über die Musik spricht. Dein Programm muss dafür nichts tun.
 laut wie möglich. Achte darauf, ob du die Stimme bei <code>1</code> noch gut
 verstehst.
 </div>
+
+### Musik aus einer Datei
+
+Statt eines Links nimmt `music` auch eine Datei. Sie muss direkt im Ordner
+`telefon` liegen, neben deinem Spiel; dann schreibst du nur ihren Namen. Ein
+Stück für die Höhle, das wir selbst gemacht haben, holst du im Terminal in
+deinen Ordner:
+
+```bash
+wget ${web_root}/telefonspiel/hoehle.mp3
+```
+
+<!-- language: ruby -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ersetze in <code>hallo.rb</code> den Link durch den Namen der
+Datei, <code>music 'hoehle.mp3'</code>, und ruf an. Achte darauf, ob die Musik nach dem
+Satz weiterläuft und ob du hörst, wo sie wieder von vorn beginnt.
+</div>
+<!-- /language -->
+<!-- language: python -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ersetze in <code>hallo.py</code> den Link durch den Namen der
+Datei, <code>music('hoehle.mp3')</code>, und ruf an. Achte darauf, ob die Musik nach dem
+Satz weiterläuft und ob du hörst, wo sie wieder von vorn beginnt.
+</div>
+<!-- /language -->
+<!-- language: javascript -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ersetze in <code>hallo.js</code> den Link durch den Namen der
+Datei, <code>music('hoehle.mp3');</code>, und ruf an. Achte darauf, ob die Musik nach dem
+Satz weiterläuft und ob du hörst, wo sie wieder von vorn beginnt.
+</div>
+<!-- /language -->
+
+Eigene Musik oder ein Geräusch ziehst du aus dem Dateimanager deines
+Computers in VS Code auf den Ordner `telefon`. Das Telefon spielt vier
+Formate, an der Endung der Datei zu erkennen:
+
+<div class='scroll-x'><table class='table table-sm'>
+<thead><tr><th>Format</th><th>Endung</th><th></th></tr></thead>
+<tbody>
+<tr><td>MP3</td><td><code>.mp3</code></td><td>klein, und jeder Browser spielt es: Nimm MP3, wenn du die Wahl hast.</td></tr>
+<tr><td>WAV</td><td><code>.wav</code></td><td>jeder Browser spielt es, aber die Datei ist groß; warum, steht im nächsten Abschnitt.</td></tr>
+<tr><td>Ogg</td><td><code>.ogg</code></td><td>klein; das Telefon spielt es, im Workspace nicht jeder Browser.</td></tr>
+<tr><td>M4A</td><td><code>.m4a</code></td><td>so speichern viele Handys Aufnahmen; das Telefon spielt es, im Workspace nicht jeder Browser.</td></tr>
+</tbody>
+</table>
+</div>
+
+Eine Datei in einem anderen Format oder in einem Unterordner nimmt `music`
+nicht an: Sie käme beim Veröffentlichen nicht mit ins Telefonbuch. Dorthin
+kommt auch nur, was höchstens 20 MB groß ist, alle Dateien zusammen
+höchstens 40 MB. Hörst du im Workspace nichts, öffne die Datei in
+[Audacity](https://www.audacityteam.org) und exportiere sie als MP3. Dieselben
+Regeln gelten für [eigene Aufnahmen](/reference/telefonspiel#aufnahmen), die
+mit `play` statt Thorsten sprechen.
+
+### Wie aus Ton Zahlen werden
+
+Ton ist schwingende Luft: Der Luftdruck steigt und fällt, viele Male in der
+Sekunde, und dein Trommelfell schwingt mit. Ein Mikrofon macht daraus eine
+elektrische Spannung, die genauso steigt und fällt. Der Computer misst diese
+Spannung in gleichen Abständen und speichert jede Messung als Zahl. Das heißt
+Abtasten, auf Englisch Sampling; jede Messung ist ein Sample, und wie oft in
+der Sekunde gemessen wird, ist die Abtastrate (Sample Rate), angegeben in
+Hertz (Hz).
+
+<img class='drawing' src='abtastung.svg' alt='Zwei Bilder derselben grauen Welle über einer Zeitachse: eine langsame Schwingung, auf der eine schnelle, kleine sitzt. Oben, »Oft gemessen: 48 Messungen«: blaue Punkte auf senkrechten Strichen, durch eine blaue Linie verbunden, die der Welle mit allen kleinen Zacken folgt. Unten, »Selten gemessen: 12 Messungen«: nur wenige Punkte, und die blaue Linie zwischen ihnen zeigt die langsame Schwingung, die kleinen Wellen dazwischen fehlen.'>
+
+Was zwischen zwei Messungen geschieht, weiß der Computer nicht. Eine
+Schwingung bleibt nur erhalten, wenn er sie mehr als zweimal pro Schwingung
+misst: Mit 8.000 Messungen in der Sekunde kommen Töne bis 4.000 Hz an, alles
+Höhere fehlt. Der tiefe Ton der Höhlenmusik schwingt 55-mal in der Sekunde,
+also mit 55 Hz; das Zischen eines »s« liegt zum großen Teil über 4.000 Hz.
+
+<div class='voice-chat'>
+<button class='btn btn-sm btn-outline-secondary voice-all' type='button'><i class='bi bi-play'></i> Alle nacheinander</button>
+<div class='voice-item'><button class='voice-line' type='button' aria-label='44.100 Hz, wie auf einer CD: Töne bis 22.050 Hz. Anhören'><span class='voice-mood'>44.100 Hz</span><span class='voice-text'>wie auf einer CD: Töne bis 22.050 Hz</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='sounds/abtastung-44100.mp3'></audio></div>
+<div class='voice-item'><button class='voice-line' type='button' aria-label='16.000 Hz, wie im Telefonspiel: bis 8.000 Hz. Anhören'><span class='voice-mood'>16.000 Hz</span><span class='voice-text'>wie im Telefonspiel: bis 8.000 Hz</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='sounds/abtastung-16000.mp3'></audio></div>
+<div class='voice-item'><button class='voice-line' type='button' aria-label='8.000 Hz, wie im alten Telefonnetz: bis 4.000 Hz. Anhören'><span class='voice-mood'>8.000 Hz</span><span class='voice-text'>wie im alten Telefonnetz: bis 4.000 Hz</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='sounds/abtastung-8000.mp3'></audio></div>
+<div class='voice-item'><button class='voice-line' type='button' aria-label='4.000 Hz, bis 2.000 Hz. Anhören'><span class='voice-mood'>4.000 Hz</span><span class='voice-text'>bis 2.000 Hz</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='sounds/abtastung-4000.mp3'></audio></div>
+<div class='voice-item'><button class='voice-line' type='button' aria-label='2.000 Hz, bis 1.000 Hz. Anhören'><span class='voice-mood'>2.000 Hz</span><span class='voice-text'>bis 1.000 Hz</span><span class='voice-state' aria-hidden='true'><i class='bi bi-volume-up'></i><span class='voice-bars'><i></i><i></i><i></i></span></span></button><audio preload='none' src='sounds/abtastung-2000.mp3'></audio></div>
+</div>
+<script src='/include/sound_buttons.js'></script>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Thorsten sagt in allen fünf denselben Satz über
+der Höhlenmusik: »Sieben Fledermäuse schlafen still an der feuchten
+Felswand.« Hör sie nacheinander an und achte auf das »s« in »still«, das »f«
+in »Felswand« und auf das helle Glöckchen am Ende. Ab welcher Abtastrate
+kannst du »s« und »f« nicht mehr auseinanderhalten?
+</div>
+
+Das Telefonspiel rechnet mit 16.000 Messungen in der Sekunde, so kommen
+Thorsten und die Musik beim Telefon an. Das alte Telefonnetz übertrug nur
+8.000; am Telefon buchstabiert man darum mit Wörtern, »S wie Samuel«, weil
+»s« und »f« dort ähnlich klingen. Eine CD misst 44.100-mal in der Sekunde,
+etwas mehr als doppelt so oft wie die höchsten Töne, die Menschen hören, um
+20.000 Hz.
+
+Jede Messung ist eine Zahl, auf einer CD 2 Byte groß, und eine WAV-Datei
+speichert jede einzeln: In einer Sekunde Ton mit 44.100 Hz stecken 88.200
+Byte, für zwei Lautsprecher doppelt so viel. `hoehle.mp3` dauert 48 Sekunden
+und ist 0,6 MB groß; als WAV wären es 4,2 MB. MP3 lässt weg, was man kaum
+hört, und speichert den Rest geschickter.
+
+_person(shannon)
+
+### Telefonieren über das Internet
+
+Früher lief ein Anruf als elektrische Schwingung durch Kupferdrähte, und
+Vermittlungsstellen schalteten für jedes Gespräch eine Leitung von einem
+Telefon zum anderen durch. Fachleute nennen dieses alte Netz POTS, »plain old
+telephone service«. Heute geht fast jeder Anruf als Datenpakete durch das
+Internet, Voice over IP: Der Router zu Hause oder das Handy macht aus der
+Stimme Zahlen und schickt sie in kleinen Paketen los, eines alle 20
+Millisekunden. In Deutschland hat die Telekom bis Ende 2020 alle ihre
+Anschlüsse so umgestellt, [Großbritannien schaltet sein altes Netz Ende
+Januar 2027 ab](https://www.bt.com/about/all-ip).
+
+<!-- feature: phone_number -->
+Auch das Telefonspiel ist so angeschlossen. Wer die Nummer im Telefonbuch
+anruft, kommt über das Protokoll SIP bei einem Server an, auf dem
+[Asterisk](https://www.asterisk.org) die Anrufe annimmt, und Thorstens Stimme
+geht in Paketen zurück, 16.000 Zahlen in der Sekunde.
+<!-- /feature -->
+<!-- feature: !phone_number -->
+So wird auch die Telefonnummer des Telefonspiels angeschlossen, an der wir
+arbeiten: Ein Anruf kommt über das Protokoll SIP bei einem Server an, auf dem
+[Asterisk](https://www.asterisk.org) ihn annimmt, und Thorstens Stimme geht in
+Paketen zurück, 16.000 Zahlen in der Sekunde.
+<!-- /feature -->
 
 ## Eine Frage mit Tasten
 
