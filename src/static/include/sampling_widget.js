@@ -25,7 +25,7 @@
     const BITS = [16, 12, 8, 6, 4, 3];
     const MU = 255;
     const WINDOW = 0.005;                    // the picture: 5 ms
-    const CLIPS = [{ id: 'musik', label: 'Musik', at: 2.504 }, { id: 'orgel', label: 'Orgel', at: 4.86 }, { id: 'stimme', label: 'Stimme', at: 0.62 }];
+    const CLIPS = [{ id: 'musik', label: 'Musik', at: 2.504 }, { id: 'stimme', label: 'Stimme', at: 0.62 }];
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     const de = (n, digits = 0) => n.toLocaleString('de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
     let counter = 0;

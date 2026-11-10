@@ -10,8 +10,8 @@
 //   <div class='spectrum-widget' data-clip='akkord'></div>
 //
 // The clips: the files students fetch (/audio/*.wav, read as in
-// sampling_widget.js): the band, the dramatic organ piece and the voice; for
-// each piece of music switches for its six instruments, from
+// sampling_widget.js): the music and the voice; for the music switches for
+// its six instruments, from
 // /audio/<clip>/*.flac, made by sounds/make.py so that they add up to it;
 // the chord of »Drei Töne auf einmal« (each tone 0,5,
 // the sum divided by 3) and a sweep, a tone that glides from 100 Hz to 10 kHz, both
@@ -36,7 +36,6 @@
     };
     const CLIPS = [
         { id: 'musik', label: 'Musik', at: 2.6 },
-        { id: 'orgel', label: 'Orgel', at: 4.9 },
         { id: 'stimme', label: 'Stimme', at: 0.7 },
         { id: 'akkord', label: 'Akkord', at: 1, make: () => tone(2, (t) =>
             [440, 554.37, 659.26].reduce((s, f) => s + 0.5 * Math.sin(2 * Math.PI * f * t), 0) / 3) },
@@ -143,7 +142,6 @@
     // (/audio/<clip>/<name>.flac)
     const INSTRUMENTS = {
         musik: [['kick', 'Kick'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'], ['bass', 'Bass'], ['chords', 'Akkorde'], ['melody', 'Melodie']],
-        orgel: [['organ', 'Orgel'], ['bass', 'Bass'], ['kick', 'Kick'], ['snare', 'Snare'], ['toms', 'Toms'], ['strings', 'Streicher']],
     };
     const tracks = {};
     function loadTracks(clipId) {

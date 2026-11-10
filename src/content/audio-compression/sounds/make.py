@@ -7,9 +7,6 @@ from src/static/audio/, and the widgets of the page play the same files:
 - musik.wav: eight seconds of a band made of numbers: drums (the hi-hat
   reaches up to 16 kHz), bass, chords and a melody, A minor, 120 beats per
   minute.
-- orgel.wav: a second, dramatic piece, A minor with two unexpected major
-  chords (Am, C, E), an organ in arpeggios, bass, drums with a tom fill,
-  strings, a large hall; orgel/*.flac its six instruments one by one.
 - waehlen.wav: a telephone number dialled with the tones of the keys
   (DTMF), at 8.000 Hz like a telephone line, with a little noise and pauses
   of different length. The number is one of those the Bundesnetzagentur
@@ -30,7 +27,7 @@ write (Piper does not speak the same way twice, so stimme.wav changes
 whenever it is made again):
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo \\
-        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik spuren orgel waehlen kastagnetten]
+        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik spuren waehlen kastagnetten]
 """
 
 import os
@@ -187,86 +184,6 @@ def music(stems=False):
     return out
 
 
-def organ(freq, length):
-    """A drawbar organ: the fundamental and five harmonics, a slow vibrato
-    and a wobble of the level, as from a rotating speaker"""
-    x = seconds(length)
-    vibrato = 1 + 0.003 * np.sin(2 * np.pi * 6.2 * x)
-    phase = 2 * np.pi * freq * np.cumsum(vibrato) / RATE
-    drawbars = ((1, 1.0), (2, 0.65), (3, 0.5), (4, 0.4), (6, 0.25), (8, 0.15))
-    out = sum(level * np.sin(k * phase) for k, level in drawbars if freq * k < 16000)
-    wobble = 1 + 0.12 * np.sin(2 * np.pi * 6.2 * x + 1)
-    return out * wobble * np.minimum(1, x / 0.004) * np.minimum(1, (length - x) / 0.012)
-
-
-def saw(freq, length, harmonics=14):
-    x = seconds(length)
-    out = sum(np.sin(2 * np.pi * freq * k * x) / k for k in range(1, harmonics + 1) if freq * k < 12000)
-    return out * np.minimum(1, x / 0.01) * np.minimum(1, (length - x) / 0.05)
-
-
-def drama(stems=False):
-    """A dramatic piece: A minor, then two unexpected major chords, | Am | C |
-    E | Esus4 E |, an organ in sixteenth-note arpeggios over two octaves, a
-    sustained synth bass, kick on 1 and 3, a snare with a long room on 2 and
-    4, a tom fill at the end, strings under it all, 100 beats per minute,
-    9,6 seconds. Its own random numbers, so that musik.wav stays as it is.
-    With stems=True each instrument alone, as in music()."""
-    own = np.random.default_rng(41)
-    beat = 0.6
-    n = int(16 * beat * RATE)
-    tracks = {name: np.zeros(n) for name in ('organ', 'bass', 'kick', 'snare', 'toms', 'strings')}
-    chords = [('A', ['A3', 'C4', 'E4', 'A4', 'C5', 'E5', 'A5']),
-              ('C', ['C4', 'E4', 'G4', 'C5', 'E5', 'G5', 'C6']),
-              ('E', ['E3', 'G#3', 'B3', 'E4', 'G#4', 'B4', 'E5']),
-              ('E', ['E3', 'A3', 'B3', 'E4', 'A4', 'B4', 'E5'])]
-    pattern = [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5]
-    sixteenth = beat / 4
-    for bar, (root, tones) in enumerate(chords):
-        for step, index in enumerate(pattern):
-            name = tones[index]
-            if bar == 3 and step >= 8:             # the suspension resolves: A becomes G#
-                name = name.replace('A', 'G#')
-            place(tracks['organ'], organ(note(name), sixteenth * 1.05), (bar * 16 + step) * sixteenth)
-        bass_root = {'A': 'A1', 'C': 'C2', 'E': 'E1'}[root]
-        place(tracks['bass'], saw(note(bass_root), 4 * beat) + 0.5 * saw(2 * note(bass_root), 4 * beat), bar * 4 * beat)
-        triad = {'A': ['A3', 'C4', 'E4'], 'C': ['G3', 'C4', 'E4'], 'E': ['G#3', 'B3', 'E4']}[root]
-        place(tracks['strings'], pad([note(t) for t in triad], 4 * beat + 0.2), bar * 4 * beat)
-        for b in range(4):
-            at = (bar * 4 + b) * beat
-            if b in (0, 2):
-                place(tracks['kick'], kick(), at)
-            if b in (1, 3) and not (bar == 3 and b == 3):
-                rattle = own.standard_normal(int(0.3 * RATE))
-                x = seconds(0.3)
-                place(tracks['snare'], 0.5 * np.sin(2 * np.pi * 180 * x) * np.exp(-x / 0.06) + 0.8 * rattle * np.exp(-x / 0.09), at)
-    for i, pitch in enumerate((180, 150, 120, 95)):    # the fill: four toms falling, on the last beat
-        x = seconds(0.35)
-        tom = np.sin(2 * np.pi * np.cumsum(pitch * (1 + 0.5 * np.exp(-x / 0.02))) / RATE) * np.exp(-x / 0.18)
-        place(tracks['toms'], tom, (15 + i / 4) * beat)
-    norm = lambda s: s / np.abs(s).max()
-    gains = {'organ': 0.36, 'bass': 0.3, 'kick': 0.5, 'snare': 0.3, 'toms': 0.32, 'strings': 0.16}
-    parts = {name: gains[name] * norm(track) for name, track in tracks.items()}
-    dry = sum(parts.values())
-    # a large hall: a longer echo than the band's room
-    m = int(1.6 * RATE)
-    impulse = own.standard_normal(m) * np.exp(-np.arange(m) / RATE / 0.45)
-    impulse[0] = 0
-    hall = lambda s: np.fft.irfft(np.fft.rfft(s, n + m) * np.fft.rfft(impulse, n + m), n + m)[:n]
-    room = hall(dry)
-    echo = 0.25 / np.abs(room).max() * np.abs(dry).max()
-    fade = int(0.05 * RATE)
-    def finish(s):
-        out = s + echo * hall(s)
-        out[-fade:] *= np.linspace(1, 0, fade)
-        return out
-    wet = finish(dry)
-    scale = 0.89 / np.abs(wet).max()
-    if not stems:
-        return wet * scale
-    return {name: finish(part) * scale for name, part in parts.items()}
-
-
 def thorsten(sentence):
     from piper import PiperVoice
     voice = PiperVoice.load('/voices/de_DE-thorsten-high.onnx')
@@ -316,7 +233,7 @@ def castanets():
 def main():
     os.makedirs(OUT, exist_ok=True)
     start = rng.bit_generator.state
-    chosen = sys.argv[1:] or ['stimme', 'musik', 'spuren', 'orgel', 'waehlen', 'kastagnetten']
+    chosen = sys.argv[1:] or ['stimme', 'musik', 'spuren', 'waehlen', 'kastagnetten']
     if 'stimme' in chosen:
         write_wav(os.path.join(OUT, 'stimme.wav'), thorsten('Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.'))
     if 'musik' in chosen:
@@ -330,15 +247,6 @@ def main():
         folder = os.path.join(OUT, 'musik')
         os.makedirs(folder, exist_ok=True)
         for name, part in music(stems=True).items():
-            temporary = os.path.join(folder, f'{name}.wav')
-            write_wav(temporary, part)
-            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', temporary, '-c:a', 'flac', os.path.join(folder, f'{name}.flac')], check=True)
-            os.remove(temporary)
-    if 'orgel' in chosen:
-        write_wav(os.path.join(OUT, 'orgel.wav'), drama())
-        folder = os.path.join(OUT, 'orgel')
-        os.makedirs(folder, exist_ok=True)
-        for name, part in drama(stems=True).items():
             temporary = os.path.join(folder, f'{name}.wav')
             write_wav(temporary, part)
             subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', temporary, '-c:a', 'flac', os.path.join(folder, f'{name}.flac')], check=True)
