@@ -21,6 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Telefonspiel: Musik aus sehr langen YouTube-Videos (mehr als 80 MB Ton) schlug fehl; jetzt holt der Sprachdienst davon nur das Stück, das das Spiel spielt. Nach dem Update `./config.rb restart phone_speech`.
 - Etikettendrucker für den Tag der offenen Tür (`docs/etiketten.md`): zunächst aus; unter »Administration«, »Etikettendrucker« für einige Stunden einschalten. Besucher malen auf `/etiketten` (QR-Code, ohne Konto), ein Ruby-Skript auf einem Laptop mit dem ZPL-Drucker am USB holt die Etiketten ab. Gespeichert wird nur das Bild, zwei Tage lang (in der Datenschutzerklärung eingetragen).
 - Die Auslastung des Servers (Prozessoren, Arbeitsspeicher, Festplatten) wird alle fünf Minuten gemessen und auf `/statistik` gezeigt: je Stunde dauerhaft, jede Messung 90 Tage.
 - Telefonspiele veröffentlichen: Lernende reichen ihr Spiel in »Ein Spiel am Telefon« ein, jede Einreichung schickt eine E-Mail an alle `ADMIN_USERS` mit einem Link zur Freigabe (`/telefon-freigabe`); veröffentlichte Spiele stehen im öffentlichen Telefonbuch (`/telefonbuch`, Knopf im Menü). Gespeichert wird eine Kopie jedes eingereichten Spiels in `data/internal/phone-games` (in der Datenschutzerklärung eingetragen, mit dem Konto gelöscht).

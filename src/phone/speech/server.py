@@ -13,11 +13,14 @@ the processor instead of fighting for it.
     GET /health
 
 Music comes only from YouTube: the service fetches nothing else, so no one
-can make it fetch an address inside the network. The emulator and the
+can make it fetch an address inside the network. A video's audio is fetched
+once and kept (KEEP_DAYS); of a video above WHOLE_LIMIT only the piece a game
+plays. The emulator and the
 runner read the game's own files themselves.
 """
 
 import asyncio
+import glob
 import hashlib
 import json
 import os
@@ -332,38 +335,90 @@ def cookies_args():
     return []
 
 
-def download(source, raw):
+# A video whose audio is larger than WHOLE_LIMIT (about an hour and a half)
+# is not downloaded whole: yt-dlp skips it without an error, the service
+# leaves a mark (BIG beside the audio's path) and fetches only the piece a
+# game plays, from start to stop or ten minutes from start, cut exactly
+# (--force-keyframes-at-cuts; without it the piece begins at the keyframe
+# before start, seconds too early).
+WHOLE_LIMIT = '80M'
+BIG = '.big'
+
+
+def download(source, path, section=None):
+    piece = ['--download-sections', f'*{section[0]:g}-{section[1]:g}', '--force-keyframes-at-cuts'] if section else []
     subprocess.run([sys.executable, '-m', 'yt_dlp', '-q', '--no-playlist', '--no-warnings', '-f', 'bestaudio',
-                    '--max-filesize', '80M', *cookies_args(), '-o', raw, source],
+                    *([] if section else ['--max-filesize', WHOLE_LIMIT]), *piece, *cookies_args(), '-o', path, source],
                    check=True, timeout=300, stdin=subprocess.DEVNULL, env=yt_dlp_env())
+
+
+def fetch(source, path, section=None):
+    """yt-dlp writes path; after a failure once more with the newest yt-dlp.
+    False when it wrote nothing (a whole video above WHOLE_LIMIT)."""
+    tmp = path + '.download'
+    try:
+        try:
+            download(source, tmp, section)
+        except subprocess.CalledProcessError:
+            if not update_yt_dlp(f'download of {source} failed'):
+                raise
+            download(source, tmp, section)
+        if not os.path.exists(tmp):
+            return False
+        os.replace(tmp, path)
+        return True
+    finally:
+        # yt-dlp's own leftovers too (.part after a failure)
+        for name in glob.glob(glob.escape(tmp) + '*'):
+            os.remove(name)
+
+
+def duration(source):
+    """the video's length in seconds, None when YouTube does not say"""
+    try:
+        text = subprocess.run([sys.executable, '-m', 'yt_dlp', '-q', '--no-playlist', '--no-warnings', '--skip-download',
+                               '--print', 'duration', *cookies_args(), source], check=True, capture_output=True,
+                              text=True, timeout=120, stdin=subprocess.DEVNULL, env=yt_dlp_env()).stdout
+        return float(text.split()[0])
+    except (subprocess.SubprocessError, OSError, ValueError, IndexError):
+        return None
 
 
 def fetch_youtube(source, raw):
     """the video's audio as YouTube sends it, kept beside the pieces cut
-    from it, so another start or stop needs no second download"""
-    tmp = raw + '.download'
+    from it, so another start or stop needs no second download; for a
+    video too large, the mark BIG instead"""
+    if not fetch(source, raw):
+        log(f'music: {source} is larger than {WHOLE_LIMIT}; fetching pieces only')
+        store(raw + BIG, b'')
+
+
+def fetch_piece(source, start, length, path):
+    """only the piece from start, length seconds long (a video too large)"""
     try:
-        try:
-            download(source, tmp)
-        except subprocess.CalledProcessError:
-            if not update_yt_dlp(f'download of {source} failed'):
-                raise
-            download(source, tmp)
-        os.replace(tmp, raw)
-    finally:
-        if os.path.exists(tmp):
-            os.remove(tmp)
+        if fetch(source, path, (start, start + length)):
+            return
+    except subprocess.CalledProcessError:
+        pass
+    # yt-dlp fails on a start behind the end; the message the whole video gives (cut)
+    seconds = duration(source)
+    if seconds is not None and start >= seconds:
+        raise ValueError(f'Das Video ist kürzer als {start:g} Sekunden; start liegt dahinter.')
+    raise subprocess.SubprocessError(f'yt-dlp wrote nothing for {source} from {start:g}')
 
 
-def cut(raw, start, length, path):
-    """the piece from start, length seconds long, 16 kHz mono float32"""
-    pcm = subprocess.run(['ffmpeg', '-loglevel', 'error', '-ss', f'{start:g}', '-i', raw, '-t', f'{length:g}',
-                          '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
-                         check=True, capture_output=True, timeout=300).stdout
-    samples = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
+def cut(raw, start, length, path, begins=None):
+    """the piece from start, length seconds long, 16 kHz mono float32; a
+    piece fetched alone (fetch_piece) is cut from 0, begins is its start in
+    the video, and a piece behind the end comes as a file ffmpeg cannot read"""
+    done = subprocess.run(['ffmpeg', '-loglevel', 'error', '-ss', f'{start:g}', '-i', raw, '-t', f'{length:g}',
+                           '-ac', '1', '-ar', str(RATE), '-f', 's16le', '-'],
+                          check=begins is None, capture_output=True, timeout=300)
+    samples = np.frombuffer(done.stdout, dtype=np.int16).astype(np.float32) / 32768.0
     if len(samples) < RATE // 10:
         # the one message students see (in the terminal, through the page)
-        raise ValueError(f'Das Video ist kürzer als {start:g} Sekunden; start liegt dahinter.')
+        at = start if begins is None else begins
+        raise ValueError(f'Das Video ist kürzer als {at:g} Sekunden; start liegt dahinter.')
     # roughly as loud as the voice: the music's peaks normalised
     peak = float(np.percentile(np.abs(samples), 99.5))
     if peak > 0:
@@ -508,9 +563,14 @@ class Service:
         f32 = cache_path('music', key, '.f32')
         started = time.monotonic()
         try:
-            if not os.path.exists(f32):
+            if not os.path.exists(f32) and not os.path.exists(raw + BIG):
                 await self.once(raw, self.music_pool, fetch_youtube, source, raw)
-            await self.once(f32, self.music_pool, cut, raw, start, length, f32)
+            if os.path.exists(f32) or os.path.exists(raw):
+                await self.once(f32, self.music_pool, cut, raw, start, length, f32)
+            else:
+                piece = cache_path('music', key, '.piece')
+                await self.once(piece, self.music_pool, fetch_piece, source, start, length, piece)
+                await self.once(f32, self.music_pool, cut, piece, 0, length, f32, start)
         except subprocess.SubprocessError as error:
             log('music failed:', source, error)
             raise web.HTTPBadGateway(text='could not fetch this video')
