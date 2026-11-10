@@ -3,9 +3,10 @@
 // snaps to the grid of blocks; a tap or the arrow keys work too); in the
 // frame before, a square of the same size can be dragged (mouse, finger, or
 // the arrow keys) within the search area around the block's own place.
-// The square carries the block as an onion skin, half transparent, so that
-// it merges with the picture where it fits and shows doubled edges where
-// it does not. Beside them, enlarged: the block, the square under it and
+// Grid and frames lie on a canvas in device pixels over each picture, at
+// whole pixels, outside the pixels they mark: the block and the square in
+// the widget's purple, the block under the mouse dashed, the search area
+// dashed. Beside them, enlarged: the block, the square under it and
 // their difference with its sign (orange where the block is brighter, blue
 // where it is darker, black where they agree), with the sum of the differences (SAD) and the vector (dx, dy)
 // from the block to the square. »Beste Verschiebung suchen« tries every
@@ -58,6 +59,8 @@
             'aria-label': `${nowImg.alt} Ein Block ist markiert; er lässt sich ziehen oder mit den Pfeiltasten verschieben.` });
         const beforeCanvas = html('canvas', { class: 'motion-frame motion-drag', tabindex: '0', role: 'img',
             'aria-label': `${beforeImg.alt} Ein Quadrat lässt sich ziehen oder mit den Pfeiltasten verschieben.` });
+        const nowOverlay = html('canvas', { class: 'motion-overlay', 'aria-hidden': 'true' });
+        const beforeOverlay = html('canvas', { class: 'motion-overlay', 'aria-hidden': 'true' });
         const zoomBlock = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Block, vergrößert' });
         const zoomCandidate = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Das Quadrat im Bild davor, vergrößert' });
         const zoomDiff = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Unterschied, vergrößert' });
@@ -69,8 +72,8 @@
         const compare = html('p', { class: 'motion-compare', 'aria-live': 'polite' });
         el.replaceChildren(
             html('div', { class: 'motion-frames' }, [
-                html('figure', { class: 'motion-figure' }, [nowCanvas, html('figcaption', { text: `${nowImg.dataset.label || 'jetzt'}: den Block ziehen` })]),
-                html('figure', { class: 'motion-figure' }, [beforeCanvas, html('figcaption', { text: `${beforeImg.dataset.label || 'vorher'}: das Quadrat ziehen` })]),
+                html('figure', { class: 'motion-figure' }, [html('div', { class: 'motion-wrap' }, [nowCanvas, nowOverlay]), html('figcaption', { text: `${nowImg.dataset.label || 'jetzt'}: den Block ziehen` })]),
+                html('figure', { class: 'motion-figure' }, [html('div', { class: 'motion-wrap' }, [beforeCanvas, beforeOverlay]), html('figcaption', { text: `${beforeImg.dataset.label || 'vorher'}: das Quadrat ziehen` })]),
             ]),
             html('div', { class: 'motion-controls' }, [search, html('div', {}, [say, compare])]),
             html('div', { class: 'motion-zooms' }, [
@@ -87,6 +90,7 @@
         let sums = null;               // the sum for every shift, after a search
         let manual = null;             // the reader's square when they searched: { vx, vy, s }
         let found = null;              // what the search found: { vx, vy, s }
+        let hover = null;              // the block under the mouse in the frame now: its top left corner
 
         const sad = (dy, dx) => {
             let s = 0;
@@ -98,37 +102,50 @@
         };
         const fits = (dy, dx) => by + dy >= 0 && bx + dx >= 0 && by + dy + N <= before.height && bx + dx + N <= before.width;
 
-        function drawFrame(canvas, source, square, dashed) {
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(source.canvas, 0, 0);
+        // the picture on its canvas; grid and frames on the canvas over it, in
+        // device pixels at whole pixels
+        function drawFrame(canvas, overlay, source, square, before) {
+            canvas.getContext('2d').drawImage(source.canvas, 0, 0);
+            const box = canvas.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const w = Math.round(box.width * ratio), h = Math.round(box.height * ratio);
+            if (!w || !h) return;
+            if (overlay.width !== w || overlay.height !== h) { overlay.width = w; overlay.height = h; }
+            const g = overlay.getContext('2d');
+            g.clearRect(0, 0, w, h);
+            const k = w / canvas.width;                       // device pixels per pixel of the picture
+            const P = (v) => Math.round(v * k);
+            const thick = Math.max(2, Math.round(ratio * 1.5));
+            // a frame of `width` device pixels just outside a rectangle, with a dark edge outside it
+            const frame = (x, y, size, colour, width, dash) => {
+                const r = [P(x), P(y), P(x + size), P(y + size)];
+                g.setLineDash([]);
+                g.lineWidth = 1;
+                g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+                g.strokeRect(r[0] - width - 0.5, r[1] - width - 0.5, r[2] - r[0] + 2 * width + 1, r[3] - r[1] + 2 * width + 1);
+                g.lineWidth = width;
+                g.strokeStyle = colour;
+                g.setLineDash(dash ? [3 * width, 2 * width] : []);
+                g.strokeRect(r[0] - width / 2, r[1] - width / 2, r[2] - r[0] + width, r[3] - r[1] + width);
+                g.setLineDash([]);
+            };
             const purple = getComputedStyle(el).getPropertyValue('--motion-accent').trim() || '#6741d9';
-            if (dashed) {
-                // the search area: the rest of the picture darker
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-                ctx.beginPath();
-                ctx.rect(0, 0, canvas.width, canvas.height);
-                ctx.rect(bx - R, by - R, N + 2 * R, N + 2 * R);
-                ctx.fill('evenodd');
-                ctx.setLineDash([4, 3]);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(bx - R + 0.5, by - R + 0.5, N + 2 * R - 1, N + 2 * R - 1);
-                ctx.setLineDash([]);
-                // the onion skin: the block of the frame now, half transparent
-                ctx.globalAlpha = 0.5;
-                ctx.drawImage(now.canvas, bx, by, N, N, square[0], square[1], N, N);
-                ctx.globalAlpha = 1;
+            if (before) {
+                // the search area, dashed white with a dark edge
+                frame(bx - R, by - R, N + 2 * R, '#ffffff', Math.max(1, Math.round(ratio)), true);
             } else {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-                ctx.lineWidth = 1;
-                for (let x = R; x <= canvas.width - R; x += N) { ctx.beginPath(); ctx.moveTo(x + 0.5, R); ctx.lineTo(x + 0.5, canvas.height - R); ctx.stroke(); }
-                for (let y = R; y <= canvas.height - R; y += N) { ctx.beginPath(); ctx.moveTo(R, y + 0.5); ctx.lineTo(canvas.width - R, y + 0.5); ctx.stroke(); }
+                // the grid of blocks: a light and a dark device pixel side by side
+                for (let x = R; x <= canvas.width - R; x += N) {
+                    g.fillStyle = 'rgba(255, 255, 255, 0.28)'; g.fillRect(P(x) - 1, P(R), 1, P(canvas.height - R) - P(R));
+                    g.fillStyle = 'rgba(0, 0, 0, 0.28)'; g.fillRect(P(x), P(R), 1, P(canvas.height - R) - P(R));
+                }
+                for (let y = R; y <= canvas.height - R; y += N) {
+                    g.fillStyle = 'rgba(255, 255, 255, 0.28)'; g.fillRect(P(R), P(y) - 1, P(canvas.width - R) - P(R), 1);
+                    g.fillStyle = 'rgba(0, 0, 0, 0.28)'; g.fillRect(P(R), P(y), P(canvas.width - R) - P(R), 1);
+                }
+                if (hover && (hover[0] !== bx || hover[1] !== by)) frame(hover[0], hover[1], N, purple, thick, true);
             }
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeRect(square[0] - 1, square[1] - 1, N + 2, N + 2);
-            ctx.strokeStyle = purple;
-            ctx.strokeRect(square[0] + 1, square[1] + 1, N - 2, N - 2);
+            frame(square[0], square[1], N, purple, thick, false);
         }
 
         // the difference with its sign: orange where the block is brighter,
@@ -186,8 +203,8 @@
 
         function draw() {
             if (!now) return;
-            drawFrame(nowCanvas, now, [bx, by], false);
-            drawFrame(beforeCanvas, before, [bx + vx, by + vy], true);
+            drawFrame(nowCanvas, nowOverlay, now, [bx, by], false);
+            drawFrame(beforeCanvas, beforeOverlay, before, [bx + vx, by + vy], true);
             drawZoom(zoomBlock, (x, y) => now.luma[(by + y) * now.width + bx + x]);
             drawZoom(zoomCandidate, (x, y) => before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawSigned(zoomDiff, (x, y) => now.luma[(by + y) * now.width + bx + x] - before.luma[(by + vy + y) * before.width + bx + vx + x]);
@@ -236,7 +253,16 @@
             follow(event);
             event.preventDefault();
         });
-        nowCanvas.addEventListener('pointermove', (event) => { if (holding) follow(event); });
+        nowCanvas.addEventListener('pointermove', (event) => {
+            if (holding) { follow(event); return; }
+            if (!now) return;
+            // the block under the mouse, dashed
+            const [x, y] = toPicture(nowCanvas, event);
+            const hx = Math.max(R, Math.min(now.width - R - N, Math.floor(x / N) * N));
+            const hy = Math.max(R, Math.min(now.height - R - N, Math.floor(y / N) * N));
+            if (!hover || hover[0] !== hx || hover[1] !== hy) { hover = [hx, hy]; draw(); }
+        });
+        nowCanvas.addEventListener('pointerleave', () => { if (hover) { hover = null; draw(); } });
         nowCanvas.addEventListener('pointerup', () => { holding = false; });
         nowCanvas.addEventListener('pointercancel', () => { holding = false; });
 
@@ -290,6 +316,8 @@
             now = pixels(nowImg);
             before = pixels(beforeImg);
             for (const c of [nowCanvas, beforeCanvas]) { c.width = now.width; c.height = now.height; }
+            // a new size (window, zoom): grid and frames anew
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(nowCanvas);
             const [x, y] = (el.dataset.block || '').split(/\s+/).map(Number);
             choose(Number.isFinite(x) ? x : now.width / 2, Number.isFinite(y) ? y : now.height / 2);
         });

@@ -423,8 +423,9 @@ only to look nice.
   now and the frame before (two PNGs inside the div, 288 × 192 from
   `bilder/motion_widget.py`); the block (16 × 16) is dragged over the frame
   now and snaps to the grid, the square over the frame before, within the
-  search area of ±16 that stays bright, carrying the block as a half
-  transparent onion skin; mouse or finger on either. Once the reader has
+  search area of ±16 that stays bright, without an onion skin (the
+  maintainer); grid and frames on canvases in device pixels, the block
+  under the mouse dashed; mouse or finger on either. Once the reader has
   touched or focused the widget, the arrow keys move the square by a pixel
   and with Shift the block by a block, wherever the focus is, until a click
   elsewhere; before that they scroll the page (the widget takes them in the

@@ -15813,3 +15813,17 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 .gallery.carousel.swipe > figure img {
     margin: 0 auto;
 }
+
+/* the pictures of the block-matching widget and, over each, its grid and
+   frames in device pixels */
+.motion-widget .motion-wrap {
+    position: relative;
+}
+.motion-widget .motion-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
+}
