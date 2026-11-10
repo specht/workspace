@@ -25,5 +25,5 @@ if __name__ == '__main__':
     for path in ['stimme.wav', 'musik.wav']:
         x = numbers(path)
         r = residual(x)
-        print(f'{path}: Messungen im Mittel {np.abs(x).mean():.0f}, Reste {np.abs(r).mean():.0f}')
+        print(f'{path}: Samples im Mittel {np.abs(x).mean():.0f}, Reste {np.abs(r).mean():.0f}')
         print('  zurück wie vorher:', np.array_equal(restore(r), x))

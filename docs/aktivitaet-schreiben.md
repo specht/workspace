@@ -597,8 +597,11 @@ Aufgaben und Tests sehen sie wie vorher, geteilt wird erst die fertige Seite
 (`src/ruby/include/activity_parts.rb`). Darum muss jedes Kapitel für sich
 lesbar sein: Was ein späteres braucht, steht in den Stufen oder wird dort
 kurz wiederholt, und ein Verweis nennt das Kapitel (»wie im Kapitel
-Frequenzen«) statt »oben«. `parts:` lohnt sich ab etwa fünf Kapiteln, die
-je eine Doppelstunde füllen; Beispiel: »Audio komprimieren«.
+Frequenzen«) statt »oben«. `parts:` lohnt sich erst, wenn eine Seite wirklich zu lang ist, um sie
+zu lesen; »Audio komprimieren« mit acht Doppelstunden ist es nicht und
+steht auf einer Seite. Als Liste (`- image: …` und `image_alt: …` je
+Teil) gibt `parts:` jedem Teil ein Bild, und die Karte im Katalog blättert
+wie bei einer Reihe durch die Teile.
 
 Mehrere Aktivitäten, die aufeinander aufbauen und doch jede für sich stehen
 (eigene Aufgaben, eigene Notiz, einzeln einer Klasse zuzuweisen), werden in

@@ -12,7 +12,7 @@ examples:
       - files: { audio/wav.py: { text: "import struct\n\n\ndef wav_header(n, rate):\n    size = 2 * n\n    riff = struct.pack('<4sI4s', b'RIFF', 36 + size, b'WAVE')\n    # hier: fmt und data\n    return riff + fmt + data\n" } }
         say: fmt
       - { files: { audio/wav.py: fehler/wav-big-endian.py }, say: Little Endian }
-      - { files: { audio/wav.py: fehler/wav-groesse-messungen.py }, say: 'Bytes der Messungen' }
+      - { files: { audio/wav.py: fehler/wav-groesse-messungen.py }, say: 'Bytes der Samples' }
       - { files: { audio/wav.py: fehler/wav-byte-rate-fest.py }, say: Byte Rate }
   ton:
     pass:

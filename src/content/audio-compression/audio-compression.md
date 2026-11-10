@@ -1,28 +1,11 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Eine Welle, in gleichen Abständen gemessen; jede Messung ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
+image_alt: "Eine Welle, in gleichen Abständen gemessen; jedes Sample ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
 kind: labor
 language: Python
 duration: 8 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Huffman-Codierung), Vertiefung Technische Informatik (Abtastung, Quantisierung, Audiokompression)"
 topics: [kompression, codierung, zahlensysteme]
-parts:
-  - image: teaser.webp
-    image_alt: "Eine Welle, in gleichen Abständen gemessen; jede Messung ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
-  - image: teil-2.webp
-    image_alt: "Die Kurve von μ-law, die leise Messungen streckt: Acht gleichmäßige Stufen nach oben gehören zu Messungen, die bei null dicht beieinander liegen und nach rechts immer weiter auseinander."
-  - image: teil-3.webp
-    image_alt: "Oben eine unruhige Welle, darunter ein Gleichheitszeichen und drei glatte Sinuswellen, eine langsame, eine mittlere und eine schnelle: Zusammengezählt ergeben sie die Welle oben."
-  - image: teil-4.webp
-    image_alt: "Die Hörschwelle als Kurve über den Frequenzen, tief in der Mitte, steil bei den tiefen und den hohen Tönen; bei 1 kHz ein lautes Band, über dem eine gestrichelte Spitze die Schwelle hebt. Punkte für Töne: Die über den Kurven sind kräftig, zwei unter der gestrichelten Spitze blass."
-  - image: teil-5.webp
-    image_alt: "Sieben Bögen von Sinusfenstern nebeneinander, jeder überlappt den nächsten zur Hälfte, abwechselnd kräftig und blass; darunter eine Welle."
-  - image: teil-6.webp
-    image_alt: "Sechzehn Balken für die Lautstärke von Bändern, nach rechts leiser; in jedem ein kräftigerer, niedrigerer Teil für das erlaubte Rauschen, darüber die Mithörschwelle als gestrichelte Treppe."
-  - image: teil-7.webp
-    image_alt: "Die vier Bytes ff, fb, 90 und c0 vom Anfang eines MP3-Frames, darunter ihre 32 Bits; elf Einsen am Anfang sind als Sync markiert, und im dritten Byte sind die vier Bits der Bitrate, 128 kbit/s, und die zwei der Abtastrate, 44.100 Hz, hervorgehoben."
-  - image: teil-8.webp
-    image_alt: "Eine Zeitleiste von 1972 bis heute mit sieben Punkten: G.711 1972, die CD 1982, MP3 1993, AAC 1997, Vorbis 2000, Opus 2012 und SoundStream 2021."
 requires: [huffman]
 reference: [bits-und-bytes]
 </div>
@@ -46,7 +29,7 @@ Eine Minute Musik in CD-Qualität braucht 10 MB, als MP3 nur ein Zehntel davon, 
 
 ## Ton als Zahlen
 
-Was du hörst, ist Luft, die schwingt: Der Druck steigt und fällt, hunderte bis tausende Male in der Sekunde. Ein Mikrofon macht daraus eine Spannung, die genauso steigt und fällt. Ein Computer kann mit einer Spannung nichts anfangen, nur mit Zahlen. Darum misst ein Wandler sie in festen Abständen und schreibt jede Messung als ganze Zahl auf. Zwei Entscheidungen bestimmen, wie gut das klingt und wie viel Platz es braucht: **wie oft** gemessen wird und **wie genau**.
+Was du hörst, ist Luft, die schwingt: Der Druck steigt und fällt, hunderte bis tausende Male in der Sekunde. Ein Mikrofon macht daraus eine Spannung, die genauso steigt und fällt. Ein Computer kann mit einer Spannung nichts anfangen, nur mit Zahlen. Darum misst ein Wandler sie in festen Abständen und schreibt jeden Messwert als ganze Zahl auf, ein **Sample**. Zwei Entscheidungen bestimmen, wie gut das klingt und wie viel Platz es braucht: **wie oft** gemessen wird und **wie genau**.
 
 ### Einrichten
 
@@ -63,33 +46,33 @@ terminal-open
 terminal-run: mkdir -p ~/audio && cd ~/audio
 -->
 
-Öffne sie im Explorer: VS Code spielt WAV-Dateien selbst ab. `stimme.wav` ist ein Satz, gesprochen von Thorsten, einer freien Stimme für Sprachausgabe; sie wurde mit 22.050 Messungen in der Sekunde aufgenommen. `musik.wav` sind acht Sekunden einer Band, die es nicht gibt: Schlagzeug, Bass, Akkorde und eine Melodie, ausgerechnet aus Sinusschwingungen und Rauschen, mit 44.100 Messungen in der Sekunde.
+Öffne sie im Explorer: VS Code spielt WAV-Dateien selbst ab. `stimme.wav` ist ein Satz, gesprochen von Thorsten, einer freien Stimme für Sprachausgabe; sie wurde mit 22.050 Samples in der Sekunde aufgenommen. `musik.wav` sind acht Sekunden einer Band, die es nicht gibt: Schlagzeug, Bass, Akkorde und eine Melodie, ausgerechnet aus Sinusschwingungen und Rauschen, mit 44.100 Samples in der Sekunde.
 
 ### Wie oft und wie genau
 
-Wie oft gemessen wird, heißt **Abtastrate** und wird in Hertz angegeben: 44.100 Hz sind 44.100 Messungen in der Sekunde. Je seltener gemessen wird, desto mehr von den schnellen Schwingungen geht verloren. Eine Abtastrate hält Frequenzen bis knapp unter ihrer Hälfte fest; was schneller schwingt, muss vorher herausgefiltert werden. Das Ohr eines jungen Menschen hört bis etwa 20.000 Hz. Darum misst eine CD 44.100-mal in der Sekunde, gut doppelt so oft.
+Wie oft gemessen wird, heißt **Abtastrate** und wird in Hertz angegeben: 44.100 Hz sind 44.100 Samples in der Sekunde. Je seltener gemessen wird, desto mehr von den schnellen Schwingungen geht verloren. Eine Abtastrate hält Frequenzen bis knapp unter ihrer Hälfte fest; was schneller schwingt, muss vorher herausgefiltert werden. Das Ohr eines jungen Menschen hört bis etwa 20.000 Hz. Darum misst eine CD 44.100-mal in der Sekunde, gut doppelt so oft.
 
 _person(shannon)
 
-Wie genau gemessen wird, bestimmen die **Bits je Messung**. Mit 16 Bit hat jede Messung eine von 65.536 Stufen, von −32.768 bis 32.767. Jede Messung wird auf die nächste Stufe gerundet, das heißt **quantisiert**. Jedes Bit weniger halbiert die Zahl der Stufen und verdoppelt den Fehler beim Runden. Diesen Fehler hörst du als Rauschen.
+Wie genau gemessen wird, bestimmen die **Bits je Sample**. Mit 16 Bit hat jedes Sample eine von 65.536 Stufen, von −32.768 bis 32.767. Jedes Sample wird auf die nächste Stufe gerundet, das heißt **quantisiert**. Jedes Bit weniger halbiert die Zahl der Stufen und verdoppelt den Fehler beim Runden. Diesen Fehler hörst du als Rauschen.
 
 Probier beides aus. Spiel einen Klang ab und schalte um, während er läuft:
 
 <div class='sampling-widget'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Stell bei der Musik die Abtastrate von 44.100 schrittweise auf 4.000 Hz. Achte auf das Zischen der Hi-Hat: Bei welcher Rate ist es weg? Wie klingt die Musik bei 8.000 Hz, der Rate des Telefons? Geh dann zurück auf 44.100 Hz und nimm Bits weg. Ab wie vielen Bits hörst du ein Rauschen, und wo hörst du es zuerst, in lauten oder in leisen Stellen? Im Bild sitzt bei wenigen Bits jede Messung auf einer der Linien. Bei der Stimme ändert sich zwischen 44.100 und 22.050 Hz nichts: warum?
+<strong>Ausprobieren:</strong> Stell bei der Musik die Abtastrate von 44.100 schrittweise auf 4.000 Hz. Achte auf das Zischen der Hi-Hat: Bei welcher Rate ist es weg? Wie klingt die Musik bei 8.000 Hz, der Rate des Telefons? Geh dann zurück auf 44.100 Hz und nimm Bits weg. Ab wie vielen Bits hörst du ein Rauschen, und wo hörst du es zuerst, in lauten oder in leisen Stellen? Im Bild sitzt bei wenigen Bits jedes Sample auf einer der Linien. Bei der Stimme ändert sich zwischen 44.100 und 22.050 Hz nichts: warum?
 </div>
 
-Die Messungen in gleichen Abständen als Zahlen zu senden, heißt **Pulscodemodulation**, kurz PCM. Alec Reeves, ein Ingenieur bei ITT in Paris, schlug sie 1937 für Telefongespräche vor und meldete sie 1938 zum Patent an. Bauen ließ sie sich erst Jahrzehnte später: 1961 schickte das Telefonnetz der USA die ersten Gespräche als PCM, 8.000 Messungen mit je 8 Bit in der Sekunde. Die **Compact Disc** von Philips und Sony kam am 1. Oktober 1982 in Japan in die Läden, mit zwei Kanälen für Stereo und je 44.100 Messungen mit 16 Bit in der Sekunde. Die krumme Zahl kommt vom Videorekorder: Studios speicherten Musik digital auf Videobändern, drei Messungen in jeder Zeile des Fernsehbilds. Beim europäischen Fernsehen sind das 294 Zeilen mal 50 Halbbilder mal 3 Messungen, genau 44.100 in der Sekunde.
+Die Samples in gleichen Abständen als Zahlen zu senden, heißt **Pulscodemodulation**, kurz PCM. Alec Reeves, ein Ingenieur bei ITT in Paris, schlug sie 1937 für Telefongespräche vor und meldete sie 1938 zum Patent an. Bauen ließ sie sich erst Jahrzehnte später: 1961 schickte das Telefonnetz der USA die ersten Gespräche als PCM, 8.000 Samples mit je 8 Bit in der Sekunde. Die **Compact Disc** von Philips und Sony kam am 1. Oktober 1982 in Japan in die Läden, mit zwei Kanälen für Stereo und je 44.100 Samples mit 16 Bit in der Sekunde. Die krumme Zahl kommt vom Videorekorder: Studios speicherten Musik digital auf Videobändern, drei Samples in jeder Zeile des Fernsehbilds. Beim europäischen Fernsehen sind das 294 Zeilen mal 50 Halbbilder mal 3 Samples, genau 44.100 in der Sekunde.
 
 _task(cd-lied)
 
 ### Eine WAV-Datei Byte für Byte
 
-Eine WAV-Datei speichert genau das: wie oft gemessen wurde, wie genau, und dann die Messungen, eine Zahl nach der anderen. Das Format haben IBM und Microsoft 1991 festgelegt; die [Beschreibung des Formats an der McGill University](https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html) fasst die Spezifikation zusammen und verlinkt sie. Eine WAV-Datei ist eine RIFF-Datei: eine Folge von **Chunks**, jeder mit einem Namen aus vier Zeichen und seiner Länge. Zahlen stehen im **Little Endian** in der Datei, das niedrige Byte zuerst, wie bei [GIF](/gif).
+Eine WAV-Datei speichert genau das: wie oft gemessen wurde, wie genau, und dann die Samples, eine Zahl nach der anderen. Das Format haben IBM und Microsoft 1991 festgelegt; die [Beschreibung des Formats an der McGill University](https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html) fasst die Spezifikation zusammen und verlinkt sie. Eine WAV-Datei ist eine RIFF-Datei: eine Folge von **Chunks**, jeder mit einem Namen aus vier Zeichen und seiner Länge. Zahlen stehen im **Little Endian** in der Datei, das niedrige Byte zuerst, wie bei [GIF](/gif).
 
-Hier ist eine ganze WAV-Datei, 60 Bytes groß: acht Messungen eines Tons mit 1.000 Hz, 8.000-mal in der Sekunde gemessen, also eine Millisekunde lang.
+Hier ist eine ganze WAV-Datei, 60 Bytes groß: acht Samples eines Tons mit 1.000 Hz, 8.000-mal in der Sekunde gemessen, also eine Millisekunde lang.
 
 <pre class='spec hexdump'>
 00000000  <span class='m0'>52 49 46 46 34 00 00 00  57 41 56 45</span> <span class='m1'>66 6d 74 20</span>  |RIFF4...WAVEfmt |
@@ -98,7 +81,7 @@ Hier ist eine ganze WAV-Datei, 60 Bytes groß: acht Messungen eines Tons mit 1.0
 00000030  <span class='m3'>00 40 41 2d 00 00 bf d2  00 c0 bf d2</span>              |.@A-........|
 </pre>
 
-Die Farben zeigen die drei Chunks: <span class='m0'>RIFF</span>, <span class='m1'>fmt</span> und <span class='m2'>data</span>, und danach die <span class='m3'>Messungen</span>. Die ersten 44 Bytes heißen zusammen der **Header**; sie sind in jeder WAV-Datei dieser Art gleich aufgebaut, nur die Zahlen darin ändern sich.
+Die Farben zeigen die drei Chunks: <span class='m0'>RIFF</span>, <span class='m1'>fmt</span> und <span class='m2'>data</span>, und danach die <span class='m3'>Samples</span>. Die ersten 44 Bytes heißen zusammen der **Header**; sie sind in jeder WAV-Datei dieser Art gleich aufgebaut, nur die Zahlen darin ändern sich.
 
 #### Der RIFF-Chunk
 
@@ -133,7 +116,7 @@ Die Farben zeigen die drei Chunks: <span class='m0'>RIFF</span>, <span class='m1
 <td><span class='m1'><code>34 00 00 00</code></span></td>
 <td>Chunk Size: 0x34 = 52
 <p class='expl'>
-So viele Bytes kommen nach diesem Feld noch, bis die Datei zu Ende ist: 60 − 8. Im Header gezählt sind das 36 Bytes und dazu die Bytes der Messungen.
+So viele Bytes kommen nach diesem Feld noch, bis die Datei zu Ende ist: 60 − 8. Im Header gezählt sind das 36 Bytes und dazu die Bytes der Samples.
 </p>
 </td>
 </tr>
@@ -201,25 +184,25 @@ So viele Bytes kommen nach diesem Feld noch, bis die Datei zu Ende ist: 60 − 8
 </tr>
 <tr>
 <td><span class='m2'><code>01 00</code></span></td>
-<td>Audio Format: 1 heißt PCM, die Messungen stehen so in der Datei, wie sie gemessen wurden.
+<td>Audio Format: 1 heißt PCM, die Samples stehen so in der Datei, wie sie gemessen wurden.
 <p class='expl'>
-Andere Zahlen stehen für Verfahren, die die Messungen umrechnen; eines davon, μ-law, kommt im nächsten Kapitel.
+Andere Zahlen stehen für Verfahren, die die Samples umrechnen; eines davon, μ-law, kommt im nächsten Kapitel.
 </p>
 </td>
 </tr>
 <tr>
 <td><span class='m3'><code>01 00</code></span></td>
-<td>Number of Channels: 1, Mono. Bei Stereo stünde hier 2, und die Messungen für links und rechts kämen abwechselnd.</td>
+<td>Number of Channels: 1, Mono. Bei Stereo stünde hier 2, und die Samples für links und rechts kämen abwechselnd.</td>
 </tr>
 <tr>
 <td><span class='m4'><code>40 1f 00 00</code></span></td>
-<td>Sample Rate: 0x1f40 = 8.000 Messungen in der Sekunde</td>
+<td>Sample Rate: 0x1f40 = 8.000 Samples in der Sekunde</td>
 </tr>
 <tr>
 <td><span class='m5'><code>80 3e 00 00</code></span></td>
 <td>Byte Rate: 0x3e80 = 16.000 Bytes in der Sekunde
 <p class='expl'>
-Abtastrate mal Kanäle mal Bytes je Messung: 8.000 · 1 · 2. Ein Programm, das die Datei abspielt, sieht daran, wie schnell es lesen muss.
+Abtastrate mal Kanäle mal Bytes je Sample: 8.000 · 1 · 2. Ein Programm, das die Datei abspielt, sieht daran, wie schnell es lesen muss.
 </p>
 </td>
 </tr>
@@ -266,7 +249,7 @@ Abtastrate mal Kanäle mal Bytes je Messung: 8.000 · 1 · 2. Ein Programm, das 
 </tr>
 <tr>
 <td><span class='m1'><code>10 00 00 00</code></span></td>
-<td>Chunk Size: 16 Bytes, acht Messungen zu je 2 Bytes</td>
+<td>Chunk Size: 16 Bytes, acht Samples zu je 2 Bytes</td>
 </tr>
 <tr>
 <td><span class='m2'><code>00 00</code></span></td>
@@ -295,7 +278,7 @@ Eine negative Zahl steht im Zweierkomplement in der Datei: 0xd2bf ist 53.951, un
 </table>
 </div>
 
-Eine Schwingung mit 1.000 Hz dauert eine Millisekunde, genau so lange wie diese acht Messungen: Die Datei ist eine einzige Schwingung, gemessen an acht Punkten.
+Eine Schwingung mit 1.000 Hz dauert eine Millisekunde, genau so lange wie diese acht Samples: Die Datei ist eine einzige Schwingung, gemessen an acht Punkten.
 
 ### Den Header schreiben
 
@@ -322,7 +305,7 @@ def wav_header(n, rate):
     return riff + fmt + data
 ```
 
-`wav_header` bekommt die Zahl der Messungen `n` und die Abtastrate `rate` und gibt die 44 Bytes des Headers zurück, für eine Datei in Mono mit 16 Bit. `size` ist die Zahl der Bytes der Messungen, zwei für jede.
+`wav_header` bekommt die Zahl der Samples `n` und die Abtastrate `rate` und gibt die 44 Bytes des Headers zurück, für eine Datei in Mono mit 16 Bit. `size` ist die Zahl der Bytes der Samples, zwei für jede.
 
 <div class='hint own' data-check='wav-header'>
 <strong>Jetzt bist du dran:</strong> Schreib die beiden Zeilen für <code>fmt</code> und <code>data</code>, jede mit einem <code>struct.pack</code>. Die Felder, ihre Längen und ihre Werte stehen in den Tabellen oben.
@@ -348,7 +331,7 @@ def wav_header(n, rate):
 
 _task(wav-header)
 
-Nach dem Header kommen die Messungen. Im Programm sind sie Kommazahlen von −1 bis 1, damit es beim Rechnen egal ist, wie viele Bits die Datei hat; erst beim Schreiben werden sie zu ganzen Zahlen mit 16 Bit. Schreib zwei Funktionen dazu, eine zum Schreiben und eine zum Lesen, und oben die Zeilen für `wave` und `numpy`:
+Nach dem Header kommen die Samples. Im Programm sind sie Kommazahlen von −1 bis 1, damit es beim Rechnen egal ist, wie viele Bits die Datei hat; erst beim Schreiben werden sie zu ganzen Zahlen mit 16 Bit. Schreib zwei Funktionen dazu, eine zum Schreiben und eine zum Lesen, und oben die Zeilen für `wave` und `numpy`:
 
 ```python
 ~ import struct
@@ -372,17 +355,17 @@ def read_wav(path):
     return np.frombuffer(frames, dtype='<i2') / 32767, rate
 ```
 
-`samples` ist ein numpy-Array, eine Liste von Zahlen, mit der man auf einmal rechnet: `samples * 32767` multipliziert jede Zahl darin. `np.round` rundet jede, `np.clip` begrenzt jede auf −32.768 bis 32.767, und `astype('<i2')` macht daraus ganze Zahlen mit 2 Bytes im Little Endian. `tobytes` gibt ihre Bytes, eine Messung nach der anderen.
+`samples` ist ein numpy-Array, eine Liste von Zahlen, mit der man auf einmal rechnet: `samples * 32767` multipliziert jede Zahl darin. `np.round` rundet jede, `np.clip` begrenzt jede auf −32.768 bis 32.767, und `astype('<i2')` macht daraus ganze Zahlen mit 2 Bytes im Little Endian. `tobytes` gibt ihre Bytes, ein Sample nach dem anderen.
 
-Zum Lesen nimmt `read_wav` das Modul [`wave`](https://docs.python.org/3/library/wave.html) aus Python: Es liest den Header und gibt die Abtastrate und die Bytes der Messungen. Ist der Header kaputt, bricht es mit einem Fehler ab. `np.frombuffer` macht aus den Bytes wieder Zahlen, und `/ 32767` bringt sie zurück auf −1 bis 1.
+Zum Lesen nimmt `read_wav` das Modul [`wave`](https://docs.python.org/3/library/wave.html) aus Python: Es liest den Header und gibt die Abtastrate und die Bytes der Samples. Ist der Header kaputt, bricht es mit einem Fehler ab. `np.frombuffer` macht aus den Bytes wieder Zahlen, und `/ 32767` bringt sie zurück auf −1 bis 1.
 
 ### Ein Ton aus Zahlen
 
-Ein reiner Ton ist eine Sinusschwingung. Mit `f` Schwingungen in der Sekunde und halb so laut, wie es geht, ist die Messung zur Zeit `t` (in Sekunden)
+Ein reiner Ton ist eine Sinusschwingung. Mit `f` Schwingungen in der Sekunde und halb so laut, wie es geht, ist das Sample zur Zeit `t` (in Sekunden)
 
 $$x(t) = 0{,}5 \cdot \sin(2\pi f t)$$
 
-Die `n`-te Messung wird zur Zeit \\(t = n / \text{rate}\\) gemacht. Lege die Datei `tones.py` an:
+Das `n`-te Sample wird zur Zeit \\(t = n / \text{rate}\\) gemacht. Lege die Datei `tones.py` an:
 
 <!-- page-code: own -->
 ```python
@@ -392,7 +375,7 @@ from wav import write_wav
 
 
 def tone(freq, seconds, rate):
-    # hier: die Messungen eines Tons
+    # hier: die Samples eines Tons
 
 
 if __name__ == '__main__':
@@ -401,11 +384,11 @@ if __name__ == '__main__':
 ```
 
 <div class='hint own' data-check='ton'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>tone(freq, seconds, rate)</code>. Die Funktion gibt ein numpy-Array mit den Messungen eines Tons mit <code>freq</code> Hz zurück, <code>seconds</code> Sekunden lang, bei <code>rate</code> Messungen in der Sekunde. <code>np.arange(k)</code> gibt die Zahlen 0, 1, …, k − 1 als Array, und <code>np.sin</code> rechnet den Sinus jeder Zahl eines Arrays.
+<strong>Jetzt bist du dran:</strong> Schreib <code>tone(freq, seconds, rate)</code>. Die Funktion gibt ein numpy-Array mit den Samples eines Tons mit <code>freq</code> Hz zurück, <code>seconds</code> Sekunden lang, bei <code>rate</code> Samples in der Sekunde. <code>np.arange(k)</code> gibt die Zahlen 0, 1, …, k − 1 als Array, und <code>np.sin</code> rechnet den Sinus jeder Zahl eines Arrays.
 </div>
 
 <!-- hint -->
-Wie viele Messungen sind es? Bei `rate` Messungen in der Sekunde und `seconds` Sekunden: `round(seconds * rate)`. Für `tone(1000, 0.001, 8000)` sind es 8.
+Wie viele Samples sind es? Bei `rate` Samples in der Sekunde und `seconds` Sekunden: `round(seconds * rate)`. Für `tone(1000, 0.001, 8000)` sind es 8.
 <!-- /hint -->
 <!-- hint -->
 Erst die Zeiten, dann die Formel, beides für das ganze Array auf einmal:
@@ -477,11 +460,11 @@ Damit es sauber klingt, muss die Summe unter 1 bleiben, etwa so: `chord = (…) 
 
 ## Kleine Tricks
 
-Eine Minute in CD-Qualität braucht 10 MB. Bevor es darum geht, was das Ohr nicht hört, bringen drei kleine Tricks schon einiges: Stufen, die sich nach der Lautstärke richten, eine Vorhersage der nächsten Messung und kurze Codes für kleine Zahlen. Die beiden letzten verlieren nichts: Was herauskommt, ist Bit für Bit dasselbe wie vorher.
+Eine Minute in CD-Qualität braucht 10 MB. Bevor es darum geht, was das Ohr nicht hört, bringen drei kleine Tricks schon einiges: Stufen, die sich nach der Lautstärke richten, eine Vorhersage des nächsten Samples und kurze Codes für kleine Zahlen. Die beiden letzten verlieren nichts: Was herauskommt, ist Bit für Bit dasselbe wie vorher.
 
 ### Leise Stellen, grobe Stufen
 
-Das Telefonnetz schickt Gespräche seit 1961 als 8.000 Messungen in der Sekunde mit je 8 Bit, 64.000 Bit in der Sekunde. 8 Bit sind 255 Stufen von −127 bis 127, mit gleichen Abständen von 1/127 zwischen −1 und 1. Eine laute Stimme nutzt sie alle. Eine leise, die nur bis 0,06 geht, nutzt nur die Stufen von −8 bis 8. Der Fehler beim Runden ist bei beiden gleich groß, bei der leisen Stimme aber fast so laut wie die Stimme selbst.
+Das Telefonnetz schickt Gespräche seit 1961 als 8.000 Samples in der Sekunde mit je 8 Bit, 64.000 Bit in der Sekunde. 8 Bit sind 255 Stufen von −127 bis 127, mit gleichen Abständen von 1/127 zwischen −1 und 1. Eine laute Stimme nutzt sie alle. Eine leise, die nur bis 0,06 geht, nutzt nur die Stufen von −8 bis 8. Der Fehler beim Runden ist bei beiden gleich groß, bei der leisen Stimme aber fast so laut wie die Stimme selbst.
 
 Im Widget ist die Stimme so leise; damit du etwas hörst, wird sie nach dem Runden wieder lauter gemacht:
 
@@ -491,15 +474,15 @@ Im Widget ist die Stimme so leise; damit du etwas hörst, wird sie nach dem Rund
 <strong>Ausprobieren:</strong> Spiel die leise Stimme mit gleichmäßigen Stufen ab und hör auf das Rauschen am Ende jedes Worts, wenn die Stimme leiser wird. Schalt dann auf 16 Bit und zurück auf 8. Schalt danach auf μ-law: Wo ist das Rauschen geblieben? Stell zum Schluss 4 Bit ein und zähl im Bild die Linien der Stufen, auf denen die leise Stimme sitzt, einmal gleichmäßig und einmal nach μ-law.
 </div>
 
-Gleichmäßige Stufen sind für leise Stellen zu grob und für laute unnötig fein: Ein Fehler von 1/127 fällt bei einer Messung von 0,9 nicht auf, bei einer von 0,02 schon. Besser sind Stufen, die mit der Messung wachsen, eng bei null und weit bei den lauten Messungen. Dann ist der Fehler immer ungefähr derselbe Bruchteil der Messung, bei leisen Stellen genauso wie bei lauten.
+Gleichmäßige Stufen sind für leise Stellen zu grob und für laute unnötig fein: Ein Fehler von 1/127 fällt bei einem Sample von 0,9 nicht auf, bei einem von 0,02 schon. Besser sind Stufen, die mit dem Sample wachsen, eng bei null und weit bei den lauten Samples. Dann ist der Fehler immer ungefähr derselbe Bruchteil des Samples, bei leisen Stellen genauso wie bei lauten.
 
 <img class='drawing' style='width: 35em' src='mulaw-stufen.svg' alt='Die Stufen von 4 Bit auf der positiven Hälfte von 0 bis 1, zweimal übereinander. Oben gleichmäßig: acht Striche in gleichen Abständen, bei 0, einem Siebtel, zwei Siebteln und so weiter bis 1. Unten nach μ-law: dieselben acht Striche, aber dicht gedrängt bei 0 und nach rechts immer weiter auseinander, der vorletzte erst bei knapp 0,5. Ein blasser Streifen von 0 bis 0,06 markiert eine leise Stimme: Oben liegt darin nur der Strich bei 0, unten liegen vier.'>
 
-So arbeitet **μ-law** (gesprochen »mü-law«): Erst wird jede Messung `x` mit einem Logarithmus gestaucht, dann gleichmäßig gerundet, und beim Abspielen wird das Stauchen wieder rückgängig gemacht. Gestaucht wird mit
+So arbeitet **μ-law** (gesprochen »mü-law«): Erst wird jedes Sample `x` mit einem Logarithmus gestaucht, dann gleichmäßig gerundet, und beim Abspielen wird das Stauchen wieder rückgängig gemacht. Gestaucht wird mit
 
 $$y = \operatorname{sgn}(x) \cdot \frac{\ln(1 + \mu \lvert x \rvert)}{\ln(1 + \mu)}, \quad \mu = 255$$
 
-`sgn(x)` ist das Vorzeichen, 1 oder −1: Der Logarithmus rechnet mit dem Betrag \\(\lvert x \rvert\\), und das Vorzeichen kommt danach wieder dazu. Aus 0 wird 0, aus 1 wird 1, aber schon 0,06 wird zu 0,5. Die halbe Zahl der Stufen gehört so den Messungen unter 0,06.
+`sgn(x)` ist das Vorzeichen, 1 oder −1: Der Logarithmus rechnet mit dem Betrag \\(\lvert x \rvert\\), und das Vorzeichen kommt danach wieder dazu. Aus 0 wird 0, aus 1 wird 1, aber schon 0,06 wird zu 0,5. Die halbe Zahl der Stufen gehört so den Samples unter 0,06.
 
 Festgelegt hat das die internationale Fernmeldeunion 1972 in der Norm [G.711](https://www.itu.int/rec/T-REC-G.711): μ-law in Nordamerika und Japan, das ähnliche A-law in Europa und fast überall sonst. Um die Null liegen die Stufen von 8 Bit nach μ-law enger als die von 13 Bit mit gleichmäßigen Stufen. G.711 ist bis heute im Einsatz, auch bei Anrufen über das Internet.
 
@@ -555,7 +538,7 @@ def snr(original, copy):
     return 10 * np.log10(np.sum(original ** 2) / np.sum(noise ** 2))
 ```
 
-`quantise` rundet jede Messung auf eine von `2 * top + 1` gleichmäßigen Stufen, bei 8 Bit auf ein Vielfaches von 1/127. `snr` vergleicht die Energie des Originals, die Summe der Quadrate aller Messungen, mit der Energie des Fehlers. Das Verhältnis heißt **Signal-Rausch-Abstand** und wird in **Dezibel** angegeben, 10-mal dem Logarithmus zur Basis 10: 10 dB mehr sind 10-mal so viel Energie, 20 dB 100-mal so viel. Ist eine Welle doppelt so hoch, hat sie 4-mal so viel Energie, das sind 6 dB mehr. Je größer die Zahl, desto weniger hört man den Fehler.
+`quantise` rundet jedes Sample auf eine von `2 * top + 1` gleichmäßigen Stufen, bei 8 Bit auf ein Vielfaches von 1/127. `snr` vergleicht die Energie des Originals, die Summe der Quadrate aller Samples, mit der Energie des Fehlers. Das Verhältnis heißt **Signal-Rausch-Abstand** und wird in **Dezibel** angegeben, 10-mal dem Logarithmus zur Basis 10: 10 dB mehr sind 10-mal so viel Energie, 20 dB 100-mal so viel. Ist eine Welle doppelt so hoch, hat sie 4-mal so viel Energie, das sind 6 dB mehr. Je größer die Zahl, desto weniger hört man den Fehler.
 
 Unten in die Datei kommt das Programm: Es macht die Stimme leiser, rundet sie auf beide Arten mit 8 Bit und gibt aus, wie weit der Fehler jeweils unter der Stimme liegt. Die leiseste Fassung schreibt es in zwei Dateien, wieder laut gemacht:
 
@@ -591,27 +574,27 @@ wait-for-text: 0.06: gleichmäßig 12.1 dB
 Bei voller Lautstärke liegen beide Fehler weit unter der Stimme, gleichmäßig 35 dB, μ-law knapp 38. Viermal leiser verliert die gleichmäßige Rundung 12 dB, wie vorhergesagt: Ihr Fehler bleibt gleich groß, die Stimme hat ein Sechzehntel der Energie. Noch einmal etwa viermal leiser sind es nur 12 dB, der Fehler ist fast so laut wie die Stimme. μ-law verliert dabei kaum etwas, weil seine Stufen mit der Stimme kleiner werden. Hör dir die beiden Dateien `leise-gleichmaessig.wav` und `leise-mulaw.wav` an.
 <!-- /after -->
 
-### Die nächste Messung raten
+### Das nächste Sample raten
 
-Bei 44.100 Messungen in der Sekunde ändert sich ein Klang von einer Messung zur nächsten nur wenig. Hier sind acht Messungen aus der Stimme, ab dem Index 56.019, als ganze Zahlen mit 16 Bit:
+Bei 44.100 Samples in der Sekunde ändert sich ein Klang von einem Sample zum nächsten nur wenig. Hier sind acht Samples aus der Stimme, ab dem Index 56.019, als ganze Zahlen mit 16 Bit:
 
 <div class='table-responsive'>
 <table class='table'>
-<tr><th>Messung</th><td>6.445</td><td>6.866</td><td>7.298</td><td>7.730</td><td>8.163</td><td>8.600</td><td>9.040</td><td>9.481</td></tr>
+<tr><th>Sample</th><td>6.445</td><td>6.866</td><td>7.298</td><td>7.730</td><td>8.163</td><td>8.600</td><td>9.040</td><td>9.481</td></tr>
 <tr><th>minus die vorige</th><td></td><td>421</td><td>432</td><td>432</td><td>433</td><td>437</td><td>440</td><td>441</td></tr>
 <tr><th>minus die Gerade</th><td></td><td></td><td>11</td><td>0</td><td>1</td><td>4</td><td>3</td><td>1</td></tr>
 </table>
 </div>
 
-Die Messungen sind Zahlen um 8.000, ihre Unterschiede zur vorigen Messung nur um 430. Noch besser rät, wer die Gerade durch die beiden letzten Messungen verlängert: Steigt der Klang von 6.445 auf 6.866, um 421, dann ist die beste Schätzung für die nächste Messung 6.866 + 421 = 7.287. Gemessen sind 7.298, der Rest ist 11. Allgemein ist die Schätzung für die Messung mit dem Index `n`
+Die Samples sind Zahlen um 8.000, ihre Unterschiede zum vorigen Sample nur um 430. Noch besser rät, wer die Gerade durch die beiden letzten Samples verlängert: Steigt der Klang von 6.445 auf 6.866, um 421, dann ist die beste Schätzung für das nächste Sample 6.866 + 421 = 7.287. Gemessen sind 7.298, der Rest ist 11. Allgemein ist die Schätzung für das Sample mit dem Index `n`
 
 $$x\_{n-1} + (x\_{n-1} - x\_{n-2}) = 2 x\_{n-1} - x\_{n-2}$$
 
-An dieser Stelle steigt die Welle fast gerade an, darum klappt es so gut; an anderen Stellen ist der Rest größer. Gespeichert werden statt der Messungen die Reste. Wer sie liest, rechnet dieselbe Schätzung aus und zählt den Rest dazu: Er bekommt die Messung genau zurück.
+An dieser Stelle steigt die Welle fast gerade an, darum klappt es so gut; an anderen Stellen ist der Rest größer. Gespeichert werden statt der Samples die Reste. Wer sie liest, rechnet dieselbe Schätzung aus und zählt den Rest dazu: Er bekommt das Sample genau zurück.
 
-Die Idee ist alt. C. Chapin Cutler von den Bell Labs meldete 1950 ein [Patent](https://patents.google.com/patent/US2605361A/en) an, Unterschiede statt Messungen zu senden, die **Differenz-Pulscodemodulation** (DPCM). Mit Unterschieden, die sich nach der Lautstärke richten, kam die ITU 1984 in der Norm G.721 auf 4 Bit je Messung, halb so viel wie G.711. Dort werden die Unterschiede gerundet, und etwas geht verloren. Hier bleibt jeder Rest, wie er ist.
+Die Idee ist alt. C. Chapin Cutler von den Bell Labs meldete 1950 ein [Patent](https://patents.google.com/patent/US2605361A/en) an, Unterschiede statt Samples zu senden, die **Differenz-Pulscodemodulation** (DPCM). Mit Unterschieden, die sich nach der Lautstärke richten, kam die ITU 1984 in der Norm G.721 auf 4 Bit je Sample, halb so viel wie G.711. Dort werden die Unterschiede gerundet, und etwas geht verloren. Hier bleibt jeder Rest, wie er ist.
 
-Lege `predict.py` an. Zum Rechnen braucht es die Messungen als ganze Zahlen, wie in der Datei; `numbers` macht sie aus dem, was `read_wav` gibt. Mit `int64`, 8 Bytes je Zahl, passt auch ein Rest, der größer ist als 16 Bit:
+Lege `predict.py` an. Zum Rechnen braucht es die Samples als ganze Zahlen, wie in der Datei; `numbers` macht sie aus dem, was `read_wav` gibt. Mit `int64`, 8 Bytes je Zahl, passt auch ein Rest, der größer ist als 16 Bit:
 
 <!-- page-code: own -->
 ```python
@@ -629,17 +612,17 @@ def residual(x):
     # hier: die Reste
 ```
 
-Mit numpy rechnet man am besten mit Ausschnitten statt mit einer Schleife. `x[2:]` sind alle Messungen ab dem Index 2, `x[1:-1]` alle vom Index 1 bis ohne die letzte, `x[:-2]` alle ohne die letzten beiden. Die drei sind gleich lang, und an derselben Stelle steht in ihnen eine Messung, ihre Vorgängerin und deren Vorgängerin.
+Mit numpy rechnet man am besten mit Ausschnitten statt mit einer Schleife. `x[2:]` sind alle Samples ab dem Index 2, `x[1:-1]` alle vom Index 1 bis ohne das letzte, `x[:-2]` alle ohne die letzten beiden. Die drei sind gleich lang, und an derselben Stelle steht in ihnen ein Sample, sein Vorgänger und dessen Vorgänger.
 
 <div class='hint own' data-check='residual'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>residual(x)</code>: Die Funktion bekommt ein numpy-Array mit ganzen Zahlen und gibt ein gleich langes Array zurück. Die ersten beiden Zahlen bleiben, wie sie sind, denn für sie gibt es keine Gerade. Ab dem Index 2 steht dort die Messung minus die Schätzung <code>2 * x[n - 1] - x[n - 2]</code>. <code>x</code> selbst bleibt dabei unverändert.
+<strong>Jetzt bist du dran:</strong> Schreib <code>residual(x)</code>: Die Funktion bekommt ein numpy-Array mit ganzen Zahlen und gibt ein gleich langes Array zurück. Die ersten beiden Zahlen bleiben, wie sie sind, denn für sie gibt es keine Gerade. Ab dem Index 2 steht dort das Sample minus die Schätzung <code>2 * x[n - 1] - x[n - 2]</code>. <code>x</code> selbst bleibt dabei unverändert.
 </div>
 
 <!-- hint -->
 Fang mit einer Kopie an, `r = x.copy()`; dann bleiben die ersten beiden Zahlen von selbst, und `x` ändert sich nicht. Einem Ausschnitt kann man ein ganzes Array zuweisen: `r[2:] = …`.
 <!-- /hint -->
 <!-- hint -->
-Die Messungen sind `x[2:]`, ihre Vorgängerinnen `x[1:-1]` und deren Vorgängerinnen `x[:-2]`:
+Die Samples sind `x[2:]`, ihre Vorgänger `x[1:-1]` und deren Vorgänger `x[:-2]`:
 
 ```python
 r = x.copy()
@@ -659,7 +642,7 @@ def residual(x):
 
 _task(residual)
 
-Zurück geht es nur der Reihe nach, denn für jede Messung braucht man die beiden davor, und die stehen erst fest, wenn sie selbst zurückgerechnet sind. Darum braucht `restore` eine Schleife. Schreib sie unter `residual`, dazu das Programm:
+Zurück geht es nur der Reihe nach, denn für jedes Sample braucht man die beiden davor, und die stehen erst fest, wenn sie selbst zurückgerechnet sind. Darum braucht `restore` eine Schleife. Schreib sie unter `residual`, dazu das Programm:
 
 ```python
 def restore(r):
@@ -673,7 +656,7 @@ if __name__ == '__main__':
     for path in ['stimme.wav', 'musik.wav']:
         x = numbers(path)
         r = residual(x)
-        print(f'{path}: Messungen im Mittel {np.abs(x).mean():.0f}, Reste {np.abs(r).mean():.0f}')
+        print(f'{path}: Samples im Mittel {np.abs(x).mean():.0f}, Reste {np.abs(r).mean():.0f}')
         print('  zurück wie vorher:', np.array_equal(restore(r), x))
 ```
 
@@ -691,10 +674,10 @@ terminal-wait-for-prompt: 30
 wait-for-text: Reste 397
 -->
 
-Bei der Stimme sind die Reste im Mittel ein Zwanzigstel so groß wie die Messungen, bei der Musik ein Zehntel, und `restore` bringt jede Messung genau zurück.
+Bei der Stimme sind die Reste im Mittel ein Zwanzigstel so groß wie die Samples, bei der Musik ein Zehntel, und `restore` bringt jedes Sample genau zurück.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Rate statt mit der Geraden mit der vorigen Messung allein: <code>r[2:] = x[2:] - x[1:-1]</code>, und in <code>restore</code> entsprechend <code>x[n] = r[n] + x[n - 1]</code>. Bei welcher der beiden Dateien hilft die Gerade mehr? Die Hi-Hat der Musik ist Rauschen: Lässt sich Rauschen vorhersagen? Stell beides danach wieder zurück.
+<strong>Ausprobieren:</strong> Rate statt mit der Geraden mit dem vorigen Sample allein: <code>r[2:] = x[2:] - x[1:-1]</code>, und in <code>restore</code> entsprechend <code>x[n] = r[n] + x[n - 1]</code>. Bei welcher der beiden Dateien hilft die Gerade mehr? Die Hi-Hat der Musik ist Rauschen: Lässt sich Rauschen vorhersagen? Stell beides danach wieder zurück.
 </div>
 
 ### Kleine Zahlen, kurze Codes
@@ -784,7 +767,7 @@ terminal-wait-for-prompt: 30
 wait-for-text: musik.wav: 70% mit einem k
 -->
 
-Die Stimme braucht 58 % ihrer 16 Bit je Messung, die Musik 70 %, und nichts ist verloren. Ein `k` für die ganze Datei passt aber nicht überall: In einer Pause sind die Reste winzig, in einem lauten Wort groß. Teil die Reste darum in Blöcke von 4.096 Messungen und such für jeden Block sein eigenes `k`. Das kostet 4 Bit je Block, um `k` zu speichern.
+Die Stimme braucht 58 % ihrer 16 Bit je Sample, die Musik 70 %, und nichts ist verloren. Ein `k` für die ganze Datei passt aber nicht überall: In einer Pause sind die Reste winzig, in einem lauten Wort groß. Teil die Reste darum in Blöcke von 4.096 Samples und such für jeden Block sein eigenes `k`. Das kostet 4 Bit je Block, um `k` zu speichern.
 
 _task(je-block)
 
@@ -804,12 +787,12 @@ terminal-wait-for-prompt: 30
 wait-for-text: musik.wav: 67% mit einem k je Block
 -->
 
-Die Stimme schrumpft von 58 auf 46 %, die Musik nur von 70 auf 67 %. Die Stimme hat Pausen und leise Silben, in denen ein kleines `k` reicht; ein Viertel ihrer Messungen liegt nahe bei null. Die Musik ist überall ungefähr gleich laut, und ein `k` passt fast überall.
+Die Stimme schrumpft von 58 auf 46 %, die Musik nur von 70 auf 67 %. Die Stimme hat Pausen und leise Silben, in denen ein kleines `k` reicht; ein Viertel ihrer Samples liegt nahe bei null. Die Musik ist überall ungefähr gleich laut, und ein `k` passt fast überall.
 <!-- /after -->
 
 <!-- stage: stufen/rice-2.py as rice.py -->
 
-So arbeitet **FLAC**, das freie Format für Musik ohne Verlust. Tony Robinson an der Universität Cambridge beschrieb 1994 sein Programm Shorten, das mit Vorhersage und Rice-Codes arbeitet. Josh Coalson begann im Jahr 2000 mit FLAC, Version 1.0 erschien 2001, und seit Dezember 2024 beschreibt es der [RFC 9639](https://www.rfc-editor.org/rfc/rfc9639.html). Die Vorhersage mit der Geraden steht dort genau so, als »fixed predictor« der Ordnung 2. FLAC kann mehr: Es sucht für jeden Block die beste Vorhersage, auch eine aus bis zu 32 vorigen Messungen mit eigenen Faktoren, und teilt jeden Block in Stücke mit eigenem `k`. Lass ffmpeg die beiden Dateien als FLAC schreiben:
+So arbeitet **FLAC**, das freie Format für Musik ohne Verlust. Tony Robinson an der Universität Cambridge beschrieb 1994 sein Programm Shorten, das mit Vorhersage und Rice-Codes arbeitet. Josh Coalson begann im Jahr 2000 mit FLAC, Version 1.0 erschien 2001, und seit Dezember 2024 beschreibt es der [RFC 9639](https://www.rfc-editor.org/rfc/rfc9639.html). Die Vorhersage mit der Geraden steht dort genau so, als »fixed predictor« der Ordnung 2. FLAC kann mehr: Es sucht für jeden Block die beste Vorhersage, auch eine aus bis zu 32 vorigen Samples mit eigenen Faktoren, und teilt jeden Block in Stücke mit eigenem `k`. Lass ffmpeg die beiden Dateien als FLAC schreiben:
 
 ```bash
 ffmpeg -loglevel error -i stimme.wav stimme.flac
@@ -827,7 +810,7 @@ Die Stimme braucht als FLAC etwa ein Drittel, die Musik etwa 60 %. Viel mehr sch
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
-<p><strong>SHORTEN: Simple lossless and near-lossless waveform compression</strong>, Tony Robinson, Cambridge University Engineering Department, 1994. Die Vorhersage aus den vorigen Messungen und kurze Codes für die Reste, die Idee hinter FLAC, auf wenigen Seiten: <a href='http://mi.eng.cam.ac.uk/reports/svr-ftp/auto-pdf/robinson_tr156.pdf'>PDF</a>, die <a href='https://mi.eng.cam.ac.uk/reports/abstracts/robinson_tr156.html'>Zusammenfassung</a> in Cambridge.</p>
+<p><strong>SHORTEN: Simple lossless and near-lossless waveform compression</strong>, Tony Robinson, Cambridge University Engineering Department, 1994. Die Vorhersage aus den vorigen Samples und kurze Codes für die Reste, die Idee hinter FLAC, auf wenigen Seiten: <a href='http://mi.eng.cam.ac.uk/reports/svr-ftp/auto-pdf/robinson_tr156.pdf'>PDF</a>, die <a href='https://mi.eng.cam.ac.uk/reports/abstracts/robinson_tr156.html'>Zusammenfassung</a> in Cambridge.</p>
 </div>
 
 ## Frequenzen
@@ -848,9 +831,9 @@ Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit ei
 
 ### Mit einem Testton vergleichen
 
-Wie findet man heraus, wie stark eine Frequenz in `N` Messungen steckt? Man nimmt einen Testton dieser Frequenz, multipliziert jede Messung mit ihm und zählt alles zusammen. Steckt die Frequenz im Klang, gehen beide gemeinsam auf und ab, die Produkte sind meist positiv, und die Summe wird groß. Andere Frequenzen geraten mal in den gleichen Takt, mal in den entgegengesetzten, und ihre Produkte heben sich auf.
+Wie findet man heraus, wie stark eine Frequenz in `N` Samples steckt? Man nimmt einen Testton dieser Frequenz, multipliziert jedes Sample mit ihm und zählt alles zusammen. Steckt die Frequenz im Klang, gehen beide gemeinsam auf und ab, die Produkte sind meist positiv, und die Summe wird groß. Andere Frequenzen geraten mal in den gleichen Takt, mal in den entgegengesetzten, und ihre Produkte heben sich auf.
 
-Ein Testton macht genau `k` Schwingungen in den `N` Messungen; bei `rate` Messungen in der Sekunde hat er die Frequenz `k * rate / N`. Weil ein Ton im Klang gegen den Testton verschoben sein kann, nimmt man zwei Testtöne, einen Kosinus und einen Sinus:
+Ein Testton macht genau `k` Schwingungen in den `N` Samples; bei `rate` Samples in der Sekunde hat er die Frequenz `k * rate / N`. Weil ein Ton im Klang gegen den Testton verschoben sein kann, nimmt man zwei Testtöne, einen Kosinus und einen Sinus:
 
 $$c\_k = \sum\_{n=0}^{N-1} x\_n \cos\left(\frac{2\pi k n}{N}\right), \qquad s\_k = \sum\_{n=0}^{N-1} x\_n \sin\left(\frac{2\pi k n}{N}\right)$$
 
@@ -858,12 +841,12 @@ Die Stärke der Frequenz, so hoch, wie die Schwingung im Klang geht, ist dann
 
 $$A\_k = \frac{2}{N} \sqrt{c\_k^2 + s\_k^2}$$
 
-Probier es von Hand mit acht Messungen, \\(x = (1, 2, 1, 0, 1, 2, 1, 0)\\). Für `k = 2` sind die beiden Testtöne:
+Probier es von Hand mit acht Samples, \\(x = (1, 2, 1, 0, 1, 2, 1, 0)\\). Für `k = 2` sind die beiden Testtöne:
 
 <div class='table-responsive'>
 <table class='table'>
 <tr><th><code>n</code></th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
-<tr><th>Messung</th><td>1</td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>1</td><td>0</td></tr>
+<tr><th>Sample</th><td>1</td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>1</td><td>0</td></tr>
 <tr><th>Kosinus</th><td>1</td><td>0</td><td>−1</td><td>0</td><td>1</td><td>0</td><td>−1</td><td>0</td></tr>
 <tr><th>Sinus</th><td>0</td><td>1</td><td>0</td><td>−1</td><td>0</td><td>1</td><td>0</td><td>−1</td></tr>
 </table>
@@ -872,10 +855,10 @@ Probier es von Hand mit acht Messungen, \\(x = (1, 2, 1, 0, 1, 2, 1, 0)\\). Für
 _task(von-hand)
 
 <!-- after: von-hand -->
-Mit dem Kosinus heben sich die Produkte auf, 1 − 1 + 1 − 1 = 0. Mit dem Sinus bleibt 2 + 2 = 4, denn bei `n = 3` und `n = 7` ist die Messung 0. Also ist \\(A_2 = \frac{2}{8} \sqrt{0^2 + 4^2} = 1\\): In den Messungen steckt ein Sinus mit zwei Schwingungen und der Höhe 1. Dazu kommt eine 1, die immer gleich bleibt; sie gehört zu `k = 0`, der Frequenz 0.
+Mit dem Kosinus heben sich die Produkte auf, 1 − 1 + 1 − 1 = 0. Mit dem Sinus bleibt 2 + 2 = 4, denn bei `n = 3` und `n = 7` ist das Sample 0. Also ist \\(A_2 = \frac{2}{8} \sqrt{0^2 + 4^2} = 1\\): In den Samples steckt ein Sinus mit zwei Schwingungen und der Höhe 1. Dazu kommt eine 1, die immer gleich bleibt; sie gehört zu `k = 0`, der Frequenz 0.
 <!-- /after -->
 
-Python rechnet mit Kosinus und Sinus auf einmal, mit **komplexen Zahlen**. Eine komplexe Zahl ist ein Paar aus zwei Zahlen, in Python `c + s * 1j`. `np.exp(-1j * phi)` ist das Paar aus `np.cos(phi)` und `-np.sin(phi)`. Multipliziert man die Messungen mit `np.exp(-2j * np.pi * k * n / N)` und zählt alles zusammen, steht in der Summe \\(c\_k\\) und \\(-s\_k\\), und `abs` gibt \\(\sqrt{c\_k^2 + s\_k^2}\\). Diese Summen für alle `k` von 0 bis `N - 1` heißen die **diskrete Fourier-Transformation**, kurz DFT:
+Python rechnet mit Kosinus und Sinus auf einmal, mit **komplexen Zahlen**. Eine komplexe Zahl ist ein Paar aus zwei Zahlen, in Python `c + s * 1j`. `np.exp(-1j * phi)` ist das Paar aus `np.cos(phi)` und `-np.sin(phi)`. Multipliziert man die Samples mit `np.exp(-2j * np.pi * k * n / N)` und zählt alles zusammen, steht in der Summe \\(c\_k\\) und \\(-s\_k\\), und `abs` gibt \\(\sqrt{c\_k^2 + s\_k^2}\\). Diese Summen für alle `k` von 0 bis `N - 1` heißen die **diskrete Fourier-Transformation**, kurz DFT:
 
 $$X\_k = \sum\_{n=0}^{N-1} x\_n \, e^{-2\pi i k n / N}$$
 
@@ -912,11 +895,11 @@ if __name__ == '__main__':
 `strongest` rechnet aus den Summen die Stärken \\(A_k\\), sortiert sie mit `np.argsort` und gibt die `count` stärksten Frequenzen in Hz mit ihrer Stärke zurück. Das Programm macht eine Sekunde aus zwei Tönen, 440 Hz mit der Höhe 0,5 und 1.000 Hz mit 0,25, und misst mit `time.perf_counter`, wie lange `dft` braucht.
 
 <div class='hint own' data-check='dft'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>dft(x)</code>: Die Funktion gibt ein numpy-Array mit den <code>N</code> komplexen Zahlen \(X_0\) bis \(X_{N-1}\) zurück, eine für jedes <code>k</code>. Für jedes <code>k</code> reicht eine Zeile, die mit allen Messungen auf einmal rechnet.
+<strong>Jetzt bist du dran:</strong> Schreib <code>dft(x)</code>: Die Funktion gibt ein numpy-Array mit den <code>N</code> komplexen Zahlen \(X_0\) bis \(X_{N-1}\) zurück, eine für jedes <code>k</code>. Für jedes <code>k</code> reicht eine Zeile, die mit allen Samples auf einmal rechnet.
 </div>
 
 <!-- hint -->
-Leg zuerst ein Array für das Ergebnis an, `X = np.zeros(N, dtype=complex)`, und die Indizes der Messungen, `n = np.arange(N)`. Dann geht eine Schleife über alle `k` von 0 bis `N - 1`.
+Leg zuerst ein Array für das Ergebnis an, `X = np.zeros(N, dtype=complex)`, und die Indizes der Samples, `n = np.arange(N)`. Dann geht eine Schleife über alle `k` von 0 bis `N - 1`.
 <!-- /hint -->
 <!-- hint -->
 In der Schleife ist `x * np.exp(-2j * np.pi * k * n / N)` das Array der Produkte; `np.sum` zählt sie zusammen:
@@ -954,34 +937,34 @@ terminal-wait-for-prompt: 60
 wait-for-text: [(440, 0.5), (1000, 0.25)]
 -->
 
-`dft` findet die beiden Töne mit ihren Höhen. Für 4.096 Messungen braucht es auf einem Workspace etwa eine halbe Sekunde.
+`dft` findet die beiden Töne mit ihren Höhen. Für 4.096 Samples braucht es auf einem Workspace etwa eine halbe Sekunde.
 
 _task(doppelt)
 
 <!-- after: doppelt -->
-Probier es aus: Setz `rate = 8192`, dann sind es 8.192 Messungen.
+Probier es aus: Setz `rate = 8192`, dann sind es 8.192 Samples.
 
-Es dauert etwa viermal so lange: Für jedes der `N` Ergebnisse geht `dft` alle `N` Messungen durch, das sind \\(N^2\\) Multiplikationen. Doppelt so viele Messungen sind viermal so viel Arbeit. Eine Sekunde in CD-Qualität hat 44.100 Messungen, und `dft` bräuchte dafür Minuten.
+Es dauert etwa viermal so lange: Für jedes der `N` Ergebnisse geht `dft` alle `N` Samples durch, das sind \\(N^2\\) Multiplikationen. Doppelt so viele Samples sind viermal so viel Arbeit. Eine Sekunde in CD-Qualität hat 44.100 Samples, und `dft` bräuchte dafür Minuten.
 <!-- /after -->
 
 ### Schneller: die FFT
 
-Die DFT von `N` Messungen lässt sich aus zwei DFTs von je `N / 2` Messungen zusammensetzen: aus der DFT der Messungen mit geradem Index, `E`, und der mit ungeradem, `O`. Für jedes `k` unter `N / 2` gilt
+Die DFT von `N` Samples lässt sich aus zwei DFTs von je `N / 2` Samples zusammensetzen: aus der DFT der Samples mit geradem Index, `E`, und der mit ungeradem, `O`. Für jedes `k` unter `N / 2` gilt
 
 $$X\_k = E\_k + e^{-2\pi i k / N} \, O\_k, \qquad X\_{k + N/2} = E\_k - e^{-2\pi i k / N} \, O\_k$$
 
-Warum? In der Summe von \\(X_k\\) sind die Summanden mit geradem `n = 2m` genau die DFT der geraden Messungen, denn \\(2\pi k \cdot 2m / N = 2\pi k m / (N/2)\\). Bei ungeradem `n = 2m + 1` kommt nur der Faktor \\(e^{-2\pi i k / N}\\) dazu. Für \\(k + N/2\\) dreht sich jeder Testton der halben DFTs einmal ganz herum, und das ändert nichts; nur der Faktor wechselt sein Vorzeichen. So liefern zwei halbe DFTs alle `N` Ergebnisse.
+Warum? In der Summe von \\(X_k\\) sind die Summanden mit geradem `n = 2m` genau die DFT der geraden Samples, denn \\(2\pi k \cdot 2m / N = 2\pi k m / (N/2)\\). Bei ungeradem `n = 2m + 1` kommt nur der Faktor \\(e^{-2\pi i k / N}\\) dazu. Für \\(k + N/2\\) dreht sich jeder Testton der halben DFTs einmal ganz herum, und das ändert nichts; nur der Faktor wechselt sein Vorzeichen. So liefern zwei halbe DFTs alle `N` Ergebnisse.
 
-Die beiden halben DFTs macht man genauso, mit Vierteln, und so weiter, bis nur noch eine Messung übrig ist: Die DFT einer einzigen Messung ist die Messung selbst. Bei 8.192 = 2¹³ Messungen sind das 13 Stufen mit je 8.192 Multiplikationen, gut 100.000 statt 67 Millionen. Das ist die **schnelle Fourier-Transformation**, auf Englisch Fast Fourier Transform, kurz FFT. Sie braucht eine Zweierpotenz als `N`.
+Die beiden halben DFTs macht man genauso, mit Vierteln, und so weiter, bis nur noch ein Sample übrig ist: Die DFT eines einzigen Samples ist das Sample selbst. Bei 8.192 = 2¹³ Samples sind das 13 Stufen mit je 8.192 Multiplikationen, gut 100.000 statt 67 Millionen. Das ist die **schnelle Fourier-Transformation**, auf Englisch Fast Fourier Transform, kurz FFT. Sie braucht eine Zweierpotenz als `N`.
 
-Veröffentlicht haben sie James Cooley von IBM und John Tukey von der Universität Princeton 1965. Tukey soll die Idee in einer Sitzung der Berater von Präsident Kennedy gehabt haben, in der es darum ging, Atomwaffentests der Sowjetunion an Messungen von Erdbebenstationen außerhalb des Landes zu erkennen. Später stellte sich heraus, dass Carl Friedrich Gauß denselben Trick schon um 1805 benutzt hatte, um die Bahnen der Kleinplaneten Pallas und Juno zu berechnen. Veröffentlicht wurde das erst nach seinem Tod.
+Veröffentlicht haben sie James Cooley von IBM und John Tukey von der Universität Princeton 1965. Tukey soll die Idee in einer Sitzung der Berater von Präsident Kennedy gehabt haben, in der es darum ging, Atomwaffentests der Sowjetunion an Samples von Erdbebenstationen außerhalb des Landes zu erkennen. Später stellte sich heraus, dass Carl Friedrich Gauß denselben Trick schon um 1805 benutzt hatte, um die Bahnen der Kleinplaneten Pallas und Juno zu berechnen. Veröffentlicht wurde das erst nach seinem Tod.
 
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>An Algorithm for the Machine Calculation of Complex Fourier Series</strong>, James W. Cooley und John W. Tukey, Mathematics of Computation, 1965. Fünf Seiten, auf denen die FFT zu einem Programm für Computer wird: beim <a href='https://doi.org/10.1090/S0025-5718-1965-0178586-1'>Verlag</a>.</p>
 </div>
 
-Schreib unter `dft` die Funktion `fft`. `x[0::2]` sind die Messungen mit geradem Index, jede zweite ab der ersten, und `x[1::2]` die mit ungeradem; `np.concatenate` hängt zwei Arrays hintereinander:
+Schreib unter `dft` die Funktion `fft`. `x[0::2]` sind die Samples mit geradem Index, jedes zweite ab dem ersten, und `x[1::2]` die mit ungeradem; `np.concatenate` hängt zwei Arrays hintereinander:
 
 <!-- page-code: own -->
 ```python
@@ -993,7 +976,7 @@ def fft(x):
 ```
 
 <div class='hint own' data-check='fft'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>fft(x)</code> für ein <code>x</code>, dessen Länge eine Zweierpotenz ist: Die Funktion ruft sich selbst für die geraden und die ungeraden Messungen auf und setzt die Ergebnisse nach den beiden Formeln oben zusammen. Sie gibt dasselbe zurück wie <code>dft</code>, nur schneller.
+<strong>Jetzt bist du dran:</strong> Schreib <code>fft(x)</code> für ein <code>x</code>, dessen Länge eine Zweierpotenz ist: Die Funktion ruft sich selbst für die geraden und die ungeraden Samples auf und setzt die Ergebnisse nach den beiden Formeln oben zusammen. Sie gibt dasselbe zurück wie <code>dft</code>, nur schneller.
 </div>
 
 <!-- hint -->
@@ -1043,7 +1026,7 @@ terminal-wait-for-prompt: 60
 wait-for-text: numpy:
 -->
 
-Alle drei finden dasselbe. `dft` braucht gut zwei Sekunden, deine `fft` etwa ein Zwanzigstel Sekunde, und numpy wenige Tausendstel: Seine FFT ist in C geschrieben und rechnet ohne die vielen Aufrufe von Python. Für 65.536 Messungen, anderthalb Sekunden in CD-Qualität, bräuchte `dft` mehr als drei Minuten, deine `fft` eine halbe Sekunde und numpy drei Tausendstel. Auf der FFT beruhen MP3 und Opus, das Spektrogramm im Widget oben und vieles mehr, was mit Klang, Bildern und Funk rechnet.
+Alle drei finden dasselbe. `dft` braucht gut zwei Sekunden, deine `fft` etwa ein Zwanzigstel Sekunde, und numpy wenige Tausendstel: Seine FFT ist in C geschrieben und rechnet ohne die vielen Aufrufe von Python. Für 65.536 Samples, anderthalb Sekunden in CD-Qualität, bräuchte `dft` mehr als drei Minuten, deine `fft` eine halbe Sekunde und numpy drei Tausendstel. Auf der FFT beruhen MP3 und Opus, das Spektrogramm im Widget oben und vieles mehr, was mit Klang, Bildern und Funk rechnet.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Setz <code>rate = 8000</code>. Was passiert mit deiner <code>fft</code>, und an welcher Stelle der Rekursion? numpy rechnet weiter: Seine FFT zerlegt auch in Drittel, Fünftel und andere Teile.
@@ -1063,7 +1046,7 @@ Im [Spiel am Telefon](/telefonspiel) klingt jede Taste mit zwei Tönen zugleich,
 </table>
 </div>
 
-In der Datei `waehlen.wav` wählt jemand eine Telefonnummer, aufgenommen mit 8.000 Messungen in der Sekunde wie im Telefonnetz. Hol sie dir:
+In der Datei `waehlen.wav` wählt jemand eine Telefonnummer, aufgenommen mit 8.000 Samples in der Sekunde wie im Telefonnetz. Hol sie dir:
 
 ```bash_copy
 wget ${web_root}/audio/waehlen.wav
@@ -1074,7 +1057,7 @@ terminal-run: test -f waehlen.wav || curl -sO http://workspace_nginx_1/audio/wae
 terminal-wait-for-prompt: 30
 -->
 
-Für eine Taste braucht es keine ganze FFT: Es reicht, sieben Frequenzen zu prüfen, mit je einem Testton. Der muss nicht `k` ganze Schwingungen machen, er darf jede Frequenz haben; die `n`-te Messung ist zur Zeit `n / rate`. Lege `dial.py` an:
+Für eine Taste braucht es keine ganze FFT: Es reicht, sieben Frequenzen zu prüfen, mit je einem Testton. Der muss nicht `k` ganze Schwingungen machen, er darf jede Frequenz haben; das `n`-te Sample ist zur Zeit `n / rate`. Lege `dial.py` an:
 
 <!-- page-code: own -->
 ```python
@@ -1092,14 +1075,14 @@ def strength(block, freq, rate):
 ```
 
 <div class='hint own' data-check='staerke'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>strength(block, freq, rate)</code>: wie stark die Frequenz <code>freq</code> in den Messungen <code>block</code> steckt, als Höhe der Schwingung wie \(A_k\) oben. Ein Sinus mit der Höhe 0,5 und genau dieser Frequenz ergibt 0,5, ein Sinus mit einer anderen der sieben Frequenzen fast 0.
+<strong>Jetzt bist du dran:</strong> Schreib <code>strength(block, freq, rate)</code>: wie stark die Frequenz <code>freq</code> in den Samples <code>block</code> steckt, als Höhe der Schwingung wie \(A_k\) oben. Ein Sinus mit der Höhe 0,5 und genau dieser Frequenz ergibt 0,5, ein Sinus mit einer anderen der sieben Frequenzen fast 0.
 </div>
 
 <!-- hint -->
-Es ist eine einzige Summe der DFT. Statt `k * n / N` steht im Testton jetzt `freq * n / rate`: `freq` Schwingungen in der Sekunde, und die Messung mit dem Index `n` ist zur Zeit `n / rate`.
+Es ist eine einzige Summe der DFT. Statt `k * n / N` steht im Testton jetzt `freq * n / rate`: `freq` Schwingungen in der Sekunde, und das Sample mit dem Index `n` ist zur Zeit `n / rate`.
 <!-- /hint -->
 <!-- hint -->
-Mit `n = np.arange(len(block))` ist die Summe `np.sum(block * np.exp(-2j * np.pi * freq * n / rate))`. Ihr Betrag, mit `abs`, mal 2 und geteilt durch die Zahl der Messungen gibt die Höhe.
+Mit `n = np.arange(len(block))` ist die Summe `np.sum(block * np.exp(-2j * np.pi * freq * n / rate))`. Ihr Betrag, mit `abs`, mal 2 und geteilt durch die Zahl der Samples gibt die Höhe.
 <!-- /hint -->
 
 <!-- solution -->
@@ -1112,7 +1095,7 @@ def strength(block, freq, rate):
 
 _task(staerke)
 
-Den Rest schreibst du ab. `key` nimmt die stärkste der vier Zeilen und die stärkste der drei Spalten und schlägt die Taste nach. `tones` teilt die Messungen in Stücke von 10 Millisekunden und sammelt die lauten Stücke, die aufeinander folgen, zu einem Block, einem für jede Taste:
+Den Rest schreibst du ab. `key` nimmt die stärkste der vier Zeilen und die stärkste der drei Spalten und schlägt die Taste nach. `tones` teilt die Samples in Stücke von 10 Millisekunden und sammelt die lauten Stücke, die aufeinander folgen, zu einem Block, einem für jede Taste:
 
 ```python
 def key(block, rate):
@@ -1235,7 +1218,7 @@ _task(hoerschwelle)
 
 ### Weglassen, was niemand hört
 
-Jetzt kann ein Programm entscheiden, welche Frequenzen eines Klangs hörbar sind. Es teilt den Klang in Blöcke von 2.048 Messungen, für jeden Block berechnet `np.fft.rfft` die FFT, nur die erste Hälfte, die Frequenzen bis zur halben Abtastrate. `levels` macht aus jeder Zahl der FFT eine Lautstärke in dB SPL: die Höhe der Schwingung wie bei \\(A_k\\), in Dezibel, und 96 dazu. Das `1e-12` verhindert den Logarithmus von 0. Schreib unter `threshold`:
+Jetzt kann ein Programm entscheiden, welche Frequenzen eines Klangs hörbar sind. Es teilt den Klang in Blöcke von 2.048 Samples, für jeden Block berechnet `np.fft.rfft` die FFT, nur die erste Hälfte, die Frequenzen bis zur halben Abtastrate. `levels` macht aus jeder Zahl der FFT eine Lautstärke in dB SPL: die Höhe der Schwingung wie bei \\(A_k\\), in Dezibel, und 96 dazu. Das `1e-12` verhindert den Logarithmus von 0. Schreib unter `threshold`:
 
 ```python
 def levels(block):
@@ -1266,7 +1249,7 @@ def audible(block, rate):
 
 _task(hoerbar)
 
-Das Programm nimmt aus jedem Block der Musik und der Stimme die Frequenzen unter der Hörschwelle heraus: Es multipliziert die FFT mit dem Array aus `True` und `False`, das als 1 und 0 zählt, und `np.fft.irfft` macht daraus wieder Messungen. Es zählt, wie viele Frequenzen übrig bleiben, und schreibt das Ergebnis in eine neue Datei:
+Das Programm nimmt aus jedem Block der Musik und der Stimme die Frequenzen unter der Hörschwelle heraus: Es multipliziert die FFT mit dem Array aus `True` und `False`, das als 1 und 0 zählt, und `np.fft.irfft` macht daraus wieder Samples. Es zählt, wie viele Frequenzen übrig bleiben, und schreibt das Ergebnis in eine neue Datei:
 
 ```python
 if __name__ == '__main__':
@@ -1325,19 +1308,19 @@ Für einen Codec heißt das: Er muss nicht nur weglassen, was unter der Hörschw
 
 ## Blöcke und Fenster
 
-Ein Codec arbeitet in Blöcken: Er zerlegt jeden Block in Frequenzen und speichert sie ungenau, wo das Ohr es nicht merkt. In Kapitel 4 waren die Blöcke einfach aneinandergereiht. Das geht gut, solange nur Unhörbares wegfällt. Rundet man aber gröber, passen die Enden zweier Blöcke nicht mehr zusammen: Am Ende eines Blocks liegt die Welle etwas zu hoch, am Anfang des nächsten etwas zu tief. Jeder solche Sprung ist ein Knacken, bei Blöcken von 2.048 Messungen über 20-mal in der Sekunde, ein Knattern unter der Musik.
+Ein Codec arbeitet in Blöcken: Er zerlegt jeden Block in Frequenzen und speichert sie ungenau, wo das Ohr es nicht merkt. In Kapitel 4 waren die Blöcke einfach aneinandergereiht. Das geht gut, solange nur Unhörbares wegfällt. Rundet man aber gröber, passen die Enden zweier Blöcke nicht mehr zusammen: Am Ende eines Blocks liegt die Welle etwas zu hoch, am Anfang des nächsten etwas zu tief. Jeder solche Sprung ist ein Knacken, bei Blöcken von 2.048 Samples über 20-mal in der Sekunde, ein Knattern unter der Musik.
 
 ### Fenster, die sich überlappen
 
 Dagegen hilft ein **Fenster**: Jeder Block wird am Anfang und am Ende sanft auf null geblendet, und die Blöcke überlappen sich zur Hälfte, so dass einer ausblendet, während der nächste einblendet. Ein Fehler endet dann nicht mit einem Sprung, er wird leiser.
 
-Dafür bezahlt man: Überlappen sich die Blöcke zur Hälfte, ist jede Messung in zwei Blöcken, und eine FFT jedes Blocks gibt doppelt so viele Zahlen, wie es Messungen gibt. Ein Codec, der doppelt so viele Zahlen speichern muss, ist kein guter Codec.
+Dafür bezahlt man: Überlappen sich die Blöcke zur Hälfte, ist jedes Sample in zwei Blöcken, und eine FFT jedes Blocks gibt doppelt so viele Zahlen, wie es Samples gibt. Ein Codec, der doppelt so viele Zahlen speichern muss, ist kein guter Codec.
 
-John Princen, Alan Johnson und Alan Bradley an der University of Surrey fanden 1987 eine Transformation, die beides kann: Blöcke aus `2N` Messungen, die sich zur Hälfte überlappen, und für jeden Block nur `N` Zahlen. Sie heißt **modifizierte diskrete Kosinustransformation**, kurz MDCT, und steckt in MP3, AAC, Vorbis und Opus. Aus `2N` Messungen \\(x\_n\\) macht sie `N` Zahlen
+John Princen, Alan Johnson und Alan Bradley an der University of Surrey fanden 1987 eine Transformation, die beides kann: Blöcke aus `2N` Samples, die sich zur Hälfte überlappen, und für jeden Block nur `N` Zahlen. Sie heißt **modifizierte diskrete Kosinustransformation**, kurz MDCT, und steckt in MP3, AAC, Vorbis und Opus. Aus `2N` Samples \\(x\_n\\) macht sie `N` Zahlen
 
 $$X\_k = \sum\_{n=0}^{2N-1} x\_n \cos\left(\frac{\pi}{N} \left(n + \frac{1}{2} + \frac{N}{2}\right)\left(k + \frac{1}{2}\right)\right)$$
 
-Das ist eine Summe wie bei der DFT, nur mit einem einzigen Testton, einem Kosinus, der um eine halbe Messung und einen Viertelblock verschoben ist. Zurück geht es mit derselben Summe über `k`, mal `2 / N`. Lege `mdct.py` an, mit dem Rückweg `imdct` schon fertig:
+Das ist eine Summe wie bei der DFT, nur mit einem einzigen Testton, einem Kosinus, der um ein halbes Sample und einen Viertelblock verschoben ist. Zurück geht es mit derselben Summe über `k`, mal `2 / N`. Lege `mdct.py` an, mit dem Rückweg `imdct` schon fertig:
 
 <!-- page-code: own -->
 ```python
@@ -1347,7 +1330,7 @@ from wav import read_wav, write_wav
 
 
 def mdct(x):
-    # hier: die N Zahlen der MDCT von 2N Messungen
+    # hier: die N Zahlen der MDCT von 2N Samples
 
 
 def imdct(X):
@@ -1364,11 +1347,11 @@ if __name__ == '__main__':
 ```
 
 <div class='hint own' data-check='mdct'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>mdct(x)</code>: Die Funktion bekommt ein numpy-Array mit <code>2N</code> Messungen und gibt ein Array mit den <code>N</code> Zahlen \(X_0\) bis \(X_{N-1}\) zurück, nach der Formel oben.
+<strong>Jetzt bist du dran:</strong> Schreib <code>mdct(x)</code>: Die Funktion bekommt ein numpy-Array mit <code>2N</code> Samples und gibt ein Array mit den <code>N</code> Zahlen \(X_0\) bis \(X_{N-1}\) zurück, nach der Formel oben.
 </div>
 
 <!-- hint -->
-Es geht wie bei `dft`: `N = len(x) // 2`, ein Array `n = np.arange(2 * N)` für die Indizes der Messungen, ein Array `X = np.zeros(N)` für das Ergebnis und eine Schleife über alle `k` von 0 bis `N - 1`.
+Es geht wie bei `dft`: `N = len(x) // 2`, ein Array `n = np.arange(2 * N)` für die Indizes der Samples, ein Array `X = np.zeros(N)` für das Ergebnis und eine Schleife über alle `k` von 0 bis `N - 1`.
 <!-- /hint -->
 <!-- hint -->
 In der Schleife ist der Testton `np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5))`, wie in `imdct`, nur dass jetzt `n` das Array ist und `k` die Zahl. Multipliziere ihn mit `x` und zähl alles zusammen.
@@ -1405,7 +1388,7 @@ terminal-wait-for-prompt: 30
 wait-for-text: 23. 23.
 -->
 
-Heraus kommt `[-7, -5, -3, -1, 1, 3, 5, 7, 23, 23, 23, 23, 23, 23, 23, 23]`. In der ersten Hälfte steht jede Zahl minus ihr Spiegelbild, 0 − 7, 1 − 6, …, in der zweiten jede Zahl plus ihr Spiegelbild, 8 + 15, 9 + 14, …. Acht Zahlen können nicht 16 Messungen zurückgeben; die MDCT verliert die Hälfte, aber auf eine geschickte Art. Der nächste Block, einen halben Block später, bringt dieselben Messungen in seiner ersten Hälfte zurück, mit dem Spiegelbild **abgezogen**. Zählt man beide zusammen, heben sich die Spiegelbilder auf. Das heißt auf Englisch Time Domain Aliasing Cancellation, kurz TDAC.
+Heraus kommt `[-7, -5, -3, -1, 1, 3, 5, 7, 23, 23, 23, 23, 23, 23, 23, 23]`. In der ersten Hälfte steht jede Zahl minus ihr Spiegelbild, 0 − 7, 1 − 6, …, in der zweiten jede Zahl plus ihr Spiegelbild, 8 + 15, 9 + 14, …. Acht Zahlen können nicht 16 Samples zurückgeben; die MDCT verliert die Hälfte, aber auf eine geschickte Art. Der nächste Block, einen halben Block später, bringt dieselben Samples in seiner ersten Hälfte zurück, mit dem Spiegelbild **abgezogen**. Zählt man beide zusammen, heben sich die Spiegelbilder auf. Das heißt auf Englisch Time Domain Aliasing Cancellation, kurz TDAC.
 
 <img class='drawing' style='width: 35em' src='tdac.svg' alt='Drei Reihen mit derselben gestrichelten Welle, dem Original, über drei halbe Blöcke. Oben in Lila, was vom ersten Block zurückkommt: In seiner ersten Hälfte ist es leise und verschoben, in seiner zweiten folgt es dem Original nur ungefähr. In der Mitte, was vom zweiten Block zurückkommt, einen halben Block später: In seiner ersten Hälfte weicht es in die andere Richtung ab, in seiner zweiten folgt es dem Original. Unten die Summe beider in der Mitte, wo sie sich überlappen: genau das Original.'>
 
@@ -1430,7 +1413,7 @@ def decode(blocks, N, length):
     return y[N:N + length]
 ```
 
-`encode` setzt vor den Klang einen halben Block Stille, damit auch die ersten Messungen zwei Blöcke haben, und dahinter genug Stille für den letzten. Dann nimmt es alle `N` Messungen einen Block aus `2N`, multipliziert ihn mit dem Fenster und gibt die Liste der MDCTs zurück. `decode` geht den Weg zurück: Jeder Block geht durch `imdct` und das Fenster und wird an seiner Stelle dazugezählt, `+=`, so dass sich die überlappenden Hälften addieren. Am Ende schneidet es die Stille wieder ab. Prüf mit zwei Sekunden der Musik, ob alles zurückkommt:
+`encode` setzt vor den Klang einen halben Block Stille, damit auch die ersten Samples zwei Blöcke haben, und dahinter genug Stille für den letzten. Dann nimmt es alle `N` Samples einen Block aus `2N`, multipliziert ihn mit dem Fenster und gibt die Liste der MDCTs zurück. `decode` geht den Weg zurück: Jeder Block geht durch `imdct` und das Fenster und wird an seiner Stelle dazugezählt, `+=`, so dass sich die überlappenden Hälften addieren. Am Ende schneidet es die Stille wieder ab. Prüf mit zwei Sekunden der Musik, ob alles zurückkommt:
 
 ```python
 ~     print(np.round(imdct(mdct(np.arange(16.0))), 2))
@@ -1447,14 +1430,14 @@ terminal-wait-for-prompt: 60
 wait-for-text: größter Fehler:
 -->
 
-Der größte Fehler liegt bei 10⁻¹³, an der 13. Stelle hinter dem Komma, und das ist Rundung beim Rechnen: Die MDCT mit Fenster verliert nichts. Für die 88.200 Messungen sind es 88 Blöcke mit je 1.024 Zahlen, 90.112 Zahlen: so viele, wie es Messungen gibt, und dazu die Ränder.
+Der größte Fehler liegt bei 10⁻¹³, an der 13. Stelle hinter dem Komma, und das ist Rundung beim Rechnen: Die MDCT mit Fenster verliert nichts. Für die 88.200 Samples sind es 88 Blöcke mit je 1.024 Zahlen, 90.112 Zahlen: so viele, wie es Samples gibt, und dazu die Ränder.
 <!-- /after -->
 
 <!-- stage: stufen/mdct-2.py as mdct.py -->
 
 ### Vorechos
 
-Lange Blöcke haben einen Vorteil: Je mehr Messungen in einem Block stecken, desto feiner trennt die MDCT die Frequenzen, so wie die FFT bei mehr Messungen feinere Frequenzen findet. Und sie haben einen Nachteil, den die Kastagnetten zeigen. Hol sie dir:
+Lange Blöcke haben einen Vorteil: Je mehr Samples in einem Block stecken, desto feiner trennt die MDCT die Frequenzen, so wie die FFT bei mehr Samples feinere Frequenzen findet. Und sie haben einen Nachteil, den die Kastagnetten zeigen. Hol sie dir:
 
 ```bash_copy
 wget ${web_root}/audio/kastagnetten.wav
@@ -1504,7 +1487,7 @@ terminal-wait-for-prompt: 60
 wait-for-text: kurz: Blöcke mit 128 Zahlen, fertig
 -->
 
-Hör dir `kastagnetten.wav`, `kastagnetten-lang.wav` und `kastagnetten-kurz.wav` an. In den langen Blöcken rauscht es schon vor jedem Schlag, der nach einer Pause kommt: Ein Block von 2.048 Messungen dauert 46 Millisekunden, und das Runden verteilt seinen Fehler über den ganzen Block. Die größte Zahl im Block gehört zum Schlag, also sind die Stufen grob, und das Rauschen reicht bis an den Anfang des Blocks, in die leise Stelle davor. Das heißt **Vorecho**. Nach dem Schlag verdeckt der Schlag selbst das Rauschen, davor nur etwa 20 Millisekunden lang, wie im letzten Kapitel.
+Hör dir `kastagnetten.wav`, `kastagnetten-lang.wav` und `kastagnetten-kurz.wav` an. In den langen Blöcken rauscht es schon vor jedem Schlag, der nach einer Pause kommt: Ein Block von 2.048 Samples dauert 46 Millisekunden, und das Runden verteilt seinen Fehler über den ganzen Block. Die größte Zahl im Block gehört zum Schlag, also sind die Stufen grob, und das Rauschen reicht bis an den Anfang des Blocks, in die leise Stelle davor. Das heißt **Vorecho**. Nach dem Schlag verdeckt der Schlag selbst das Rauschen, davor nur etwa 20 Millisekunden lang, wie im letzten Kapitel.
 
 <img class='drawing' style='width: 35em' src='vorecho.svg' alt='Drei Reihen mit 60 Millisekunden der Kastagnetten um einen Schlag, der Schlag oben und unten abgeschnitten. Oben das Original: eine leise, glatte Welle, dann der Schlag. In der Mitte nach dem Runden in langen Blöcken: Schon 30 Millisekunden vor dem Schlag ist die Welle zerfranst und wird immer unruhiger. Unten nach dem Runden in kurzen Blöcken: Die Welle bleibt bis kurz vor dem Schlag glatt.'>
 
@@ -1517,7 +1500,7 @@ Jetzt kommt alles zusammen: die MDCT in Blöcken, die Mithörschwelle und das Ru
 
 ### Schneller rechnen
 
-`mdct` geht für jedes `k` alle Messungen durch und rechnet dabei jedes Mal die Testtöne neu aus. Für ein ganzes Lied dauert das zu lange. Die Testtöne hängen aber nur von `N` ab: Man kann sie einmal ausrechnen, als Tabelle mit einer Zeile für jedes `k`, eine **Matrix**. `tones(N) @ x` multipliziert jede Zeile mit `x` und zählt zusammen, alle `N` Summen auf einmal, und numpy macht das in C. `@functools.cache` merkt sich die Matrix für jedes `N`, damit sie nur einmal ausgerechnet wird. Ersetz `mdct` und `imdct` in `mdct.py` durch:
+`mdct` geht für jedes `k` alle Samples durch und rechnet dabei jedes Mal die Testtöne neu aus. Für ein ganzes Lied dauert das zu lange. Die Testtöne hängen aber nur von `N` ab: Man kann sie einmal ausrechnen, als Tabelle mit einer Zeile für jedes `k`, eine **Matrix**. `tones(N) @ x` multipliziert jede Zeile mit `x` und zählt zusammen, alle `N` Summen auf einmal, und numpy macht das in C. `@functools.cache` merkt sich die Matrix für jedes `N`, damit sie nur einmal ausgerechnet wird. Ersetz `mdct` und `imdct` in `mdct.py` durch:
 
 ```python
 @functools.cache
@@ -1660,7 +1643,7 @@ if __name__ == '__main__':
     print(f'{np.mean(values == 0):.0%} der Zahlen sind 0, die größte ist {np.abs(values).max()}')
 ```
 
-Das Programm codiert die ganze Musik, macht daraus wieder Messungen und schreibt zwei Dateien: `musik-codec.wav`, was der Codec übrig lässt, und `musik-rest.wav`, was er weggelassen hat, das Original minus das Ergebnis.
+Das Programm codiert die ganze Musik, macht daraus wieder Samples und schreibt zwei Dateien: `musik-codec.wav`, was der Codec übrig lässt, und `musik-rest.wav`, was er weggelassen hat, das Original minus das Ergebnis.
 
 _task(der-rest)
 
@@ -1765,7 +1748,7 @@ Aus 705.644 Bytes werden 129.193, knapp ein Fünftel. So fängt die Datei an:
 00000040  <span class='mg'>00 00</span> <span class='m3'>49 6e 66 6f</span> 00 00  00 0f 00 00 01 34 00 01  |..Info.......4..|
 </pre>
 
-Vorn steht ein <span class='m0'>ID3-Tag</span>, ein Kasten für Angaben zur Musik, Titel, Künstler, Album, Bild. ffmpeg schreibt nur einen <span class='m1'>Eintrag</span> hinein: `TSSE`, womit die Datei gemacht wurde, `Lavf60.16.100`, die Bibliothek von ffmpeg. Danach, nach ein paar <span class='mg'>Bytes Füllung</span>, beginnt mit <span class='m2'><code>ff fb 90 c0</code></span> der erste **Frame**. Eine MP3-Datei ist eine Folge von Frames, jeder mit einem Header von 4 Bytes und danach den Bits für 1.152 Messungen.
+Vorn steht ein <span class='m0'>ID3-Tag</span>, ein Kasten für Angaben zur Musik, Titel, Künstler, Album, Bild. ffmpeg schreibt nur einen <span class='m1'>Eintrag</span> hinein: `TSSE`, womit die Datei gemacht wurde, `Lavf60.16.100`, die Bibliothek von ffmpeg. Danach, nach ein paar <span class='mg'>Bytes Füllung</span>, beginnt mit <span class='m2'><code>ff fb 90 c0</code></span> der erste **Frame**. Eine MP3-Datei ist eine Folge von Frames, jeder mit einem Header von 4 Bytes und danach den Bits für 1.152 Samples.
 
 #### Das ID3-Tag
 
@@ -1834,7 +1817,7 @@ Die vier Bytes `ff fb 90 c0` sind Felder aus einzelnen Bits:
 
 Die Abtastrate hat drei Werte: Der Index 0 ist 44.100 Hz, 1 ist 48.000 Hz, 2 ist 32.000 Hz. Die Tabellen gelten für MPEG-1 Layer III; die Seite des [MPEG-Formats bei der Library of Congress](https://www.loc.gov/preservation/digital/formats/fdd/fdd000012.shtml) beschreibt das Format und nennt die Normen.
 
-Ein Frame enthält 1.152 Messungen. Bei 128.000 Bits in der Sekunde und 44.100 Messungen in der Sekunde sind das 1.152 · 128.000 / 44.100 Bits, geteilt durch 8 für Bytes: 144 · 128.000 / 44.100 = 417,96 Bytes. Ein Frame hat aber eine ganze Zahl von Bytes, abgerundet 417. Damit es im Mittel trotzdem genau 128 kbit/s werden, ist mancher Frame ein Byte länger; das sagt das Padding-Bit.
+Ein Frame enthält 1.152 Samples. Bei 128.000 Bits in der Sekunde und 44.100 Samples in der Sekunde sind das 1.152 · 128.000 / 44.100 Bits, geteilt durch 8 für Bytes: 144 · 128.000 / 44.100 = 417,96 Bytes. Ein Frame hat aber eine ganze Zahl von Bytes, abgerundet 417. Damit es im Mittel trotzdem genau 128 kbit/s werden, ist mancher Frame ein Byte länger; das sagt das Padding-Bit.
 
 _task(frame-bytes)
 
@@ -1918,7 +1901,7 @@ terminal-wait-for-prompt: 30
 wait-for-text: duration=8.045714
 -->
 
-309 Frames, 295 davon mit Padding, und nach dem letzten Frame kein Byte mehr. Der erste Frame enthält keinen Klang: Nach seinem Header steht `Info`, und darin hat der Coder notiert, wie viele Frames und Bytes folgen und wie viel Stille ein Player am Anfang und am Ende weglassen soll. Darum rechnet das Programm mit `frames - 1`: 308 Frames mit je 1.152 Messungen sind 8,0457 Sekunden, und genau das sagt auch `ffprobe`. Die Musik dauert 8 Sekunden; den Rest füllt der Coder mit Stille, vorn, weil er vorausschaut, und hinten bis zum vollen Frame.
+309 Frames, 295 davon mit Padding, und nach dem letzten Frame kein Byte mehr. Der erste Frame enthält keinen Klang: Nach seinem Header steht `Info`, und darin hat der Coder notiert, wie viele Frames und Bytes folgen und wie viel Stille ein Player am Anfang und am Ende weglassen soll. Darum rechnet das Programm mit `frames - 1`: 308 Frames mit je 1.152 Samples sind 8,0457 Sekunden, und genau das sagt auch `ffprobe`. Die Musik dauert 8 Sekunden; den Rest füllt der Coder mit Stille, vorn, weil er vorausschaut, und hinten bis zum vollen Frame.
 
 <!-- stage: stufen/mp3.py as mp3.py -->
 
@@ -1978,7 +1961,7 @@ Zum Prüfen hörte Brandenburg immer wieder ein Lied: »Tom's Diner« von Suzann
 
 **Vorbis** begann Chris Montgomery 1993, Version 1.0 erschien im Jahr 2000: ein Codec, für den niemand Lizenzen zahlen muss. Spotify nutzt ihn vor allem, und viele Spiele, darunter Minecraft, speichern ihre Klänge damit.
 
-**Opus** ist seit 2012 als [RFC 6716](https://www.rfc-editor.org/rfc/rfc6716) beschrieben. Es hat zwei Codecs in einem: SILK, von Skype für Sprache entwickelt, sagt die nächste Messung aus den vorigen voraus wie im Kapitel über kleine Tricks; CELT aus dem Umfeld der Xiph.Org Foundation arbeitet mit der MDCT in kurzen Blöcken, damit wenig Verzögerung entsteht. Opus kann alles von 6 bis 510 kbit/s, und jeder Browser muss es für Anrufe über WebRTC können: Wenn du im Browser telefonierst oder eine Videokonferenz hast, hörst du sehr wahrscheinlich Opus.
+**Opus** ist seit 2012 als [RFC 6716](https://www.rfc-editor.org/rfc/rfc6716) beschrieben. Es hat zwei Codecs in einem: SILK, von Skype für Sprache entwickelt, sagt das nächste Sample aus den vorigen voraus wie im Kapitel über kleine Tricks; CELT aus dem Umfeld der Xiph.Org Foundation arbeitet mit der MDCT in kurzen Blöcken, damit wenig Verzögerung entsteht. Opus kann alles von 6 bis 510 kbit/s, und jeder Browser muss es für Anrufe über WebRTC können: Wenn du im Browser telefonierst oder eine Videokonferenz hast, hörst du sehr wahrscheinlich Opus.
 
 **LC3** ist der Codec von Bluetooth LE Audio, entwickelt von Fraunhofer und Ericsson. Er löst den alten Codec SBC ab und klingt in den Hörtests der Bluetooth-Organisation besser als er, auch wenn Pakete verloren gehen.
 
@@ -1998,6 +1981,6 @@ Dahinter steckt ein anderer Gedanke als in deinem Codec. Dein Codec speichert de
 
 _task(erfundene-details)
 
-### Wie es weitergeht
+## Wie geht es weiter?
 
-Für Bilder gibt es dieselben Ideen: [Komprimieren mit JPEG](/jpeg) zerlegt Bilder in Blöcke und rundet ihre Frequenzen nach dem, was das Auge sieht. Und im [Spiel am Telefon](/telefonspiel) hörst du, was ein Telefon mit 8.000 Messungen in der Sekunde aus einer Stimme macht.
+Für Bilder gibt es dieselben Ideen: [Komprimieren mit JPEG](/jpeg) zerlegt Bilder in Blöcke und rundet ihre Frequenzen nach dem, was das Auge sieht. Und im [Spiel am Telefon](/telefonspiel) hörst du, was ein Telefon mit 8.000 Samples in der Sekunde aus einer Stimme macht.

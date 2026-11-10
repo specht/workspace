@@ -223,8 +223,9 @@ seconds at 720p each.
    for 32 here); the ABX widget (`abx_widget.js`, Munson and Gardner 1950)
    with pieces made by `sounds/abx.py`: coded, decoded by ffmpeg, cut to the
    same five seconds as lossless FLAC (4,4 MB for ten pieces), checked to
-   start at the same sample. The page is in parts (`parts:`), one per
-   chapter, each with a picture for the card (`bilder/teile.py`). Part 8
+   start at the same sample. The page was split into parts for a while
+   (`parts:`), then put back on one page at the maintainer's word: eight
+   chapters do not need it. Part 8
    is written: MP3's history (Seitzer's jukebox over ISDN, Brandenburg's
    thesis 1989, MPEG-1 1992/93, Tom's Diner, .mp3 in 1995, the patents to
    2017), AAC, Vorbis, Opus (SILK and CELT, WebRTC), LC3, Opus at 6 kbit/s

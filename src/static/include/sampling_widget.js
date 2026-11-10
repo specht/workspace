@@ -153,9 +153,9 @@
             playButton,
         ]);
         const settings = el('div', { class: 'sampling-controls' }, [
-            group('rate', 'Messungen je Sekunde', RATES.map((r) => ({ value: String(r), label: de(r) })), String(rate),
+            group('rate', 'Samples je Sekunde', RATES.map((r) => ({ value: String(r), label: de(r) })), String(rate),
                 (v) => { rate = Number(v); update(); }),
-            group('bits', 'Bits je Messung', BITS.map((b) => ({ value: String(b), label: String(b) })), String(bits),
+            group('bits', 'Bits je Sample', BITS.map((b) => ({ value: String(b), label: String(b) })), String(bits),
                 (v) => { bits = Number(v); update(); }),
         ]);
         if (mulawChoice) {
@@ -166,7 +166,7 @@
         const picture = el('canvas', { class: 'sampling-picture', role: 'img' });
         const legend = el('div', { class: 'sampling-legend' }, [
             el('span', { class: 'sampling-l-orig' }, [el('i'), 'vor dem Messen']),
-            el('span', { class: 'sampling-l-dots' }, [el('i'), 'die Messungen']),
+            el('span', { class: 'sampling-l-dots' }, [el('i'), 'die Samples']),
             el('span', { class: 'sampling-l-heard' }, [el('i'), 'was du hörst']),
         ]);
         const strip = el('canvas', { class: 'sampling-strip', tabindex: '0', role: 'slider', 'aria-label': 'Stelle im Klang' });
@@ -185,11 +185,11 @@
 
         function describe() {
             const perSecond = rate * bits;
-            rateLine.innerHTML = `${de(rate)} Messungen je Sekunde mit je ${bits} Bit: `
+            rateLine.innerHTML = `${de(rate)} Samples je Sekunde mit je ${bits} Bit: `
                 + `<strong>${de(perSecond)} Bit</strong> für jede Sekunde Klang (${de(perSecond / 1000, 1)} kbit/s)`
                 + (mulaw ? ', mit Stufen nach μ-law' : '') + '.';
             const top = 2 ** (bits - 1) - 1;
-            picture.setAttribute('aria-label', `5 Millisekunden bei ${de(at, 2)} s: ${de(Math.round(rate * WINDOW))} Messungen auf `
+            picture.setAttribute('aria-label', `5 Millisekunden bei ${de(at, 2)} s: ${de(Math.round(rate * WINDOW))} Samples auf `
                 + `${de(2 * top + 1)} Stufen${mulaw ? ' nach μ-law, dicht bei null enger' : ''}.`);
         }
 
