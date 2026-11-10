@@ -83,3 +83,10 @@ examples:
     fail:
       - { files: { audio/ear.py: fehler/hoerbar-index.py, audio/wav.py: stufen/wav.py }, say: 'np.fft.rfftfreq' }
       - { files: { audio/ear.py: fehler/hoerbar-ohne-schwelle.py, audio/wav.py: stufen/wav.py }, say: 'liegt die Schwelle aber über 45 dB' }
+  mdct:
+    pass:
+      - { files: { audio/mdct.py: stufen/mdct-1.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/mdct.py: stufen/mdct-2.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/mdct.py: fehler/mdct-ohne-verschiebung.py, audio/wav.py: stufen/wav.py }, say: 'k + 0.5' }
+      - { files: { audio/mdct.py: fehler/mdct-ganz-n.py, audio/wav.py: stufen/wav.py }, say: 'range(N)' }

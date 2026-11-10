@@ -199,8 +199,15 @@ seconds at 720p each.
    volume once), `threshold` after Terhardt (via Painter and Spanias 2000)
    and `audible` with the 96 dB assumption (music keeps 53 % of the
    frequencies, the voice 39 %; what goes is mostly bass under 60 Hz and
-   highs over 14 kHz), masking in time in text. Next: part 5 (frames,
-   windows, the MDCT, pre-echo). The section is
+   highs over 14 kHz), masking in time in text. Part 5 is written: why
+   blocks side by side crack, windows and overlap, `mdct` of one's own
+   (`imdct`, `window`, `encode`, `decode` on the page), a single block and
+   its mirror images as a prediction, a drawing of TDAC (`bilder/tdac.py`,
+   computed with the stage), the castanets (`kastagnetten.wav` from
+   `sounds/make.py`) rounded per block in long and short blocks, a drawing
+   of the pre-echo (`bilder/vorecho.py`), block switching in AAC (1.024 and
+   8 × 128) and MP3 (576 and 3 × 192). Next: part 6 (quantising by ear:
+   bands, scale factors, bit allocation under the masking threshold). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

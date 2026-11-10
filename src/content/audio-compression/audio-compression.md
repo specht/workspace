@@ -1304,3 +1304,191 @@ Die Verdeckung reicht nach oben viel weiter als nach unten. Ein tiefer, lauter K
 Verdeckt wird auch in der Zeit. Nach einem lauten Schlag hört das Ohr etwa 100 Millisekunden lang schlechter, als müsste es sich erst erholen. Und sogar kurz davor, etwa 20 Millisekunden. Warum, ist nicht ganz geklärt; eine Erklärung ist, dass das Gehirn einen lauten Klang schneller verarbeitet als einen leisen.
 
 Für einen Codec heißt das: Er muss nicht nur weglassen, was unter der Hörschwelle liegt. Er darf alles ungenau speichern, solange der Fehler unter der Mithörschwelle bleibt, die die lauten Teile des Klangs gerade hochziehen. Wie das geht, zeigen die nächsten beiden Kapitel: Erst braucht es Blöcke, die gut zusammenpassen, dann das Runden nach Gehör.
+
+## Blöcke und Fenster
+
+Ein Codec arbeitet in Blöcken: Er zerlegt jeden Block in Frequenzen und speichert sie ungenau, wo das Ohr es nicht merkt. In Kapitel 4 waren die Blöcke einfach aneinandergereiht. Das geht gut, solange nur Unhörbares wegfällt. Rundet man aber gröber, passen die Enden zweier Blöcke nicht mehr zusammen: Am Ende eines Blocks liegt die Welle etwas zu hoch, am Anfang des nächsten etwas zu tief. Jeder solche Sprung ist ein Knacken, bei Blöcken von 2.048 Messungen über 20-mal in der Sekunde, ein Knattern unter der Musik.
+
+### Fenster, die sich überlappen
+
+Dagegen hilft ein **Fenster**: Jeder Block wird am Anfang und am Ende sanft auf null geblendet, und die Blöcke überlappen sich zur Hälfte, so dass einer ausblendet, während der nächste einblendet. Ein Fehler endet dann nicht mit einem Sprung, er wird leiser.
+
+Dafür bezahlt man: Überlappen sich die Blöcke zur Hälfte, ist jede Messung in zwei Blöcken, und eine FFT jedes Blocks gibt doppelt so viele Zahlen, wie es Messungen gibt. Ein Codec, der doppelt so viele Zahlen speichern muss, ist kein guter Codec.
+
+John Princen, Alan Johnson und Alan Bradley an der University of Surrey fanden 1987 eine Transformation, die beides kann: Blöcke aus `2N` Messungen, die sich zur Hälfte überlappen, und für jeden Block nur `N` Zahlen. Sie heißt **modifizierte diskrete Kosinustransformation**, kurz MDCT, und steckt in MP3, AAC, Vorbis und Opus. Aus `2N` Messungen \\(x\_n\\) macht sie `N` Zahlen
+
+$$X\_k = \sum\_{n=0}^{2N-1} x\_n \cos\left(\frac{\pi}{N} \left(n + \frac{1}{2} + \frac{N}{2}\right)\left(k + \frac{1}{2}\right)\right)$$
+
+Das ist eine Summe wie bei der DFT, nur mit einem einzigen Testton, einem Kosinus, der um eine halbe Messung und einen Viertelblock verschoben ist. Zurück geht es mit derselben Summe über `k`, mal `2 / N`. Lege `mdct.py` an, mit dem Rückweg `imdct` schon fertig:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def mdct(x):
+    # hier: die N Zahlen der MDCT von 2N Messungen
+
+
+def imdct(X):
+    N = len(X)
+    k = np.arange(N)
+    y = np.zeros(2 * N)
+    for n in range(2 * N):
+        y[n] = np.sum(X * np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5)))
+    return y * 2 / N
+
+
+if __name__ == '__main__':
+    print(np.round(imdct(mdct(np.arange(16.0))), 2))
+```
+
+<div class='hint own' data-check='mdct'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>mdct(x)</code>: Die Funktion bekommt ein numpy-Array mit <code>2N</code> Messungen und gibt ein Array mit den <code>N</code> Zahlen \(X_0\) bis \(X_{N-1}\) zurück, nach der Formel oben.
+</div>
+
+<!-- hint -->
+Es geht wie bei `dft`: `N = len(x) // 2`, ein Array `n = np.arange(2 * N)` für die Indizes der Messungen, ein Array `X = np.zeros(N)` für das Ergebnis und eine Schleife über alle `k` von 0 bis `N - 1`.
+<!-- /hint -->
+<!-- hint -->
+In der Schleife ist der Testton `np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5))`, wie in `imdct`, nur dass jetzt `n` das Array ist und `k` die Zahl. Multipliziere ihn mit `x` und zähl alles zusammen.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def mdct(x):
+    N = len(x) // 2
+    n = np.arange(2 * N)
+    X = np.zeros(N)
+    for k in range(N):
+        X[k] = np.sum(x * np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5)))
+    return X
+```
+<!-- /solution -->
+
+_task(mdct)
+
+Das Programm gibt der MDCT einen einzigen Block, die Zahlen 0 bis 15, und schickt ihre acht Zahlen durch `imdct` zurück.
+
+_task(ein-block)
+
+<!-- after: ein-block -->
+```bash
+python3 mdct.py
+```
+
+<!-- tutorial-step
+write-file: audio/mdct.py <- file:stufen/mdct-1.py
+check-task: mdct
+terminal-run: python3 mdct.py
+terminal-wait-for-prompt: 30
+wait-for-text: 23. 23.
+-->
+
+Heraus kommt `[-7, -5, -3, -1, 1, 3, 5, 7, 23, 23, 23, 23, 23, 23, 23, 23]`. In der ersten Hälfte steht jede Zahl minus ihr Spiegelbild, 0 − 7, 1 − 6, …, in der zweiten jede Zahl plus ihr Spiegelbild, 8 + 15, 9 + 14, …. Acht Zahlen können nicht 16 Messungen zurückgeben; die MDCT verliert die Hälfte, aber auf eine geschickte Art. Der nächste Block, einen halben Block später, bringt dieselben Messungen in seiner ersten Hälfte zurück, mit dem Spiegelbild **abgezogen**. Zählt man beide zusammen, heben sich die Spiegelbilder auf. Das heißt auf Englisch Time Domain Aliasing Cancellation, kurz TDAC.
+
+<img class='drawing' style='width: 35em' src='tdac.svg' alt='Drei Reihen mit derselben gestrichelten Welle, dem Original, über drei halbe Blöcke. Oben in Lila, was vom ersten Block zurückkommt: In seiner ersten Hälfte ist es leise und verschoben, in seiner zweiten folgt es dem Original nur ungefähr. In der Mitte, was vom zweiten Block zurückkommt, einen halben Block später: In seiner ersten Hälfte weicht es in die andere Richtung ab, in seiner zweiten folgt es dem Original. Unten die Summe beider in der Mitte, wo sie sich überlappen: genau das Original.'>
+
+Damit das klappt, braucht es ein Fenster, mit dem jeder Block vor der MDCT und nach der `imdct` multipliziert wird. Das Sinusfenster \\(w\_n = \sin\left(\frac{\pi}{2N}\left(n + \frac{1}{2}\right)\right)\\) erfüllt, was Princen und Bradley dafür verlangen: An jeder Stelle der Überlappung ergeben die Quadrate der beiden Fenster zusammen 1. Schreib dazu unter `imdct`:
+
+```python
+def window(N):
+    return np.sin(np.pi * (np.arange(2 * N) + 0.5) / (2 * N))
+
+
+def encode(x, N):
+    w = window(N)
+    x = np.concatenate([np.zeros(N), x, np.zeros(2 * N)])
+    return [mdct(w * x[s:s + 2 * N]) for s in range(0, len(x) - 2 * N + 1, N)]
+
+
+def decode(blocks, N, length):
+    w = window(N)
+    y = np.zeros((len(blocks) + 1) * N)
+    for i, X in enumerate(blocks):
+        y[i * N:i * N + 2 * N] += w * imdct(X)
+    return y[N:N + length]
+```
+
+`encode` setzt vor den Klang einen halben Block Stille, damit auch die ersten Messungen zwei Blöcke haben, und dahinter genug Stille für den letzten. Dann nimmt es alle `N` Messungen einen Block aus `2N`, multipliziert ihn mit dem Fenster und gibt die Liste der MDCTs zurück. `decode` geht den Weg zurück: Jeder Block geht durch `imdct` und das Fenster und wird an seiner Stelle dazugezählt, `+=`, so dass sich die überlappenden Hälften addieren. Am Ende schneidet es die Stille wieder ab. Prüf mit zwei Sekunden der Musik, ob alles zurückkommt:
+
+```python
+~     print(np.round(imdct(mdct(np.arange(16.0))), 2))
+    x, rate = read_wav('musik.wav')
+    x = x[:2 * rate]
+    y = decode(encode(x, 1024), 1024, len(x))
+    print('größter Fehler:', np.abs(x - y).max())
+```
+
+<!-- tutorial-step
+write-file: audio/mdct.py <- file:stufen/mdct-2.py
+terminal-run: python3 mdct.py
+terminal-wait-for-prompt: 60
+wait-for-text: größter Fehler:
+-->
+
+Der größte Fehler liegt bei 10⁻¹³, an der 13. Stelle hinter dem Komma, und das ist Rundung beim Rechnen: Die MDCT mit Fenster verliert nichts. Für die 88.200 Messungen sind es 88 Blöcke mit je 1.024 Zahlen, 90.112 Zahlen: so viele, wie es Messungen gibt, und dazu die Ränder.
+<!-- /after -->
+
+<!-- stage: stufen/mdct-2.py as mdct.py -->
+
+### Vorechos
+
+Lange Blöcke haben einen Vorteil: Je mehr Messungen in einem Block stecken, desto feiner trennt die MDCT die Frequenzen, so wie die FFT bei mehr Messungen feinere Frequenzen findet. Und sie haben einen Nachteil, den die Kastagnetten zeigen. Hol sie dir:
+
+```bash_copy
+wget ${web_root}/audio/kastagnetten.wav
+```
+
+<!-- tutorial-step
+terminal-run: test -f kastagnetten.wav || curl -sO http://workspace_nginx_1/audio/kastagnetten.wav
+terminal-wait-for-prompt: 30
+-->
+
+Lege `vorecho.py` an. Es rundet die Zahlen jedes Blocks grob: Die größte Zahl eines Blocks bestimmt die Stufen, und jede Zahl wird auf ein Vielfaches eines Achtels von ihr gerundet. Das macht es einmal mit langen Blöcken von 1.024 Zahlen und einmal mit kurzen von 128:
+
+```python
+import numpy as np
+
+from mdct import decode, encode
+from wav import read_wav, write_wav
+
+
+def coarse(blocks):
+    out = []
+    for X in blocks:
+        step = np.abs(X).max() / 8
+        out.append(np.round(X / step) * step)
+    return out
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('kastagnetten.wav')
+    for N, name in [(1024, 'lang'), (128, 'kurz')]:
+        y = decode(coarse(encode(x, N)), N, len(x))
+        write_wav(f'kastagnetten-{name}.wav', y, rate)
+        print(f'{name}: Blöcke mit {N} Zahlen, fertig')
+```
+
+_task(vorecho)
+
+<!-- after: vorecho -->
+```bash
+python3 vorecho.py
+```
+
+<!-- tutorial-step
+write-file: audio/vorecho.py <- file:stufen/vorecho.py
+terminal-run: python3 vorecho.py
+terminal-wait-for-prompt: 60
+wait-for-text: kurz: Blöcke mit 128 Zahlen, fertig
+-->
+
+Hör dir `kastagnetten.wav`, `kastagnetten-lang.wav` und `kastagnetten-kurz.wav` an. In den langen Blöcken rauscht es schon vor jedem Schlag, der nach einer Pause kommt: Ein Block von 2.048 Messungen dauert 46 Millisekunden, und das Runden verteilt seinen Fehler über den ganzen Block. Die größte Zahl im Block gehört zum Schlag, also sind die Stufen grob, und das Rauschen reicht bis an den Anfang des Blocks, in die leise Stelle davor. Das heißt **Vorecho**. Nach dem Schlag verdeckt der Schlag selbst das Rauschen, davor nur etwa 20 Millisekunden lang, wie im letzten Kapitel.
+
+<img class='drawing' style='width: 35em' src='vorecho.svg' alt='Drei Reihen mit 60 Millisekunden der Kastagnetten um einen Schlag, der Schlag oben und unten abgeschnitten. Oben das Original: eine leise, glatte Welle, dann der Schlag. In der Mitte nach dem Runden in langen Blöcken: Schon 30 Millisekunden vor dem Schlag ist die Welle zerfranst und wird immer unruhiger. Unten nach dem Runden in kurzen Blöcken: Die Welle bleibt bis kurz vor dem Schlag glatt.'>
+
+In den kurzen Blöcken bleibt der Fehler beim Schlag. Darum schalten Codecs um: AAC nimmt Blöcke mit 1.024 Zahlen, und wo ein Schlag kommt, acht kurze mit je 128; MP3 wechselt zwischen 576 und dreimal 192. Ein Codec muss dafür vorausschauen, ob ein Schlag kommt, und das ist ein Grund, warum ein Codec immer etwas Verzögerung hat.
+<!-- /after -->

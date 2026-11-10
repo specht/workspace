@@ -557,3 +557,89 @@ tasks:
     solution: |
       Der Ton mit 1.400 Hz: Die Verdeckung reicht nach oben viel weiter als
       nach unten.
+
+  - id: mdct
+    title: Die MDCT
+    prompt: |
+      Schreib in `audio/mdct.py` die Funktion `mdct(x)`: aus `2N` Messungen
+      die `N` Zahlen der MDCT nach der Formel auf der Seite. Die Prüfung
+      vergleicht mit Zahlen, die die Formel ergibt.
+    check:
+      type: python
+      file: audio/mdct.py
+      cases:
+        - call: len(mdct(np.zeros(16)))
+          expect: 8
+          say: Aus `2N` Messungen werden `N` Zahlen, aus 16 also 8. Läuft die Schleife über `range(N)` mit `N = len(x) // 2`?
+        - call: '[round(float(v), 4) for v in mdct(np.array([1.0, 0, 0, 0, 0, 0, 0, 0]))]'
+          expect: '[0.5556, -0.9808, 0.1951, 0.8315]'
+          say: 'Für eine 1 am Anfang ist jede Zahl der Testton bei `n = 0`: `np.cos(np.pi / N * (0.5 + N / 2) * (k + 0.5))`. Stehen `+ 0.5 + N / 2` und `k + 0.5` in der Formel?'
+        - call: '[round(float(v), 4) for v in mdct(np.arange(4.0))]'
+          expect: '[-5.0021, -0.9895]'
+          say: Für die Messungen 0, 1, 2, 3 ergibt die Formel etwa −5,0021 und −0,9895. Wird jede Messung mit ihrem Testton multipliziert und alles zusammengezählt?
+        - call: '[round(float(v), 2) for v in imdct(mdct(np.arange(16.0)))]'
+          expect: '[-7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0]'
+          say: Mit `imdct` von der Seite muss ein einzelner Block die Spiegelbilder zeigen. Steht `imdct` so in der Datei wie auf der Seite?
+    solution: |
+      ```python
+      def mdct(x):
+          N = len(x) // 2
+          n = np.arange(2 * N)
+          X = np.zeros(N)
+          for k in range(N):
+              X[k] = np.sum(x * np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5)))
+          return X
+      ```
+
+  - id: ein-block
+    title: Ein einziger Block
+    prediction: true
+    prompt: |
+      Was gibt `print(np.round(imdct(mdct(np.arange(16.0))), 2))` aus, für
+      einen einzigen Block mit den Zahlen 0 bis 15, ohne Fenster und ohne
+      Nachbarn?
+    check:
+      type: choice
+      options:
+        - Die Zahlen 0 bis 15, denn `imdct` macht `mdct` rückgängig.
+        - Die Zahlen 0 bis 7, dann achtmal 0, denn es sind nur acht Zahlen übrig.
+        - Andere Zahlen, in die ein Spiegelbild des Blocks gemischt ist.
+        - Lauter Nullen, denn ohne Fenster geht es nicht.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Aus 16 Messungen werden acht Zahlen. Können acht Zahlen 16 beliebige Messungen zurückgeben?
+      - when: { picked: 1 }
+        say: Die acht Zahlen gehören nicht zu den ersten acht Messungen. In jeder von ihnen steckt jede der 16 Messungen.
+      - when: { picked: 3 }
+        say: Das Fenster braucht es erst, wenn die Blöcke sich überlappen. Ein Block allein gibt auch ohne Fenster etwas zurück, nur nicht das Original.
+    solution: |
+      Andere Zahlen: In der ersten Hälfte steht jede Zahl minus ihr
+      Spiegelbild, in der zweiten plus ihr Spiegelbild. Erst der nächste
+      Block hebt die Spiegelbilder auf.
+
+  - id: vorecho
+    title: Wo das Rauschen hingeht
+    prediction: true
+    prompt: |
+      `vorecho.py` rundet die Kastagnetten in langen Blöcken grob. Wo hörst
+      du in `kastagnetten-lang.wav` das Rauschen vom Runden?
+    check:
+      type: choice
+      options:
+        - Nur während der Schläge, dort sind die Zahlen groß.
+        - Schon vor den Schlägen, in der leisen Stelle davor.
+        - Erst lange nach jedem Schlag.
+        - Gar nicht, 17 Stufen je Block reichen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Jede Zahl der MDCT gehört zum ganzen Block, nicht zu einer Stelle in ihm. Wohin verteilt sich ein Fehler in einer dieser Zahlen?
+      - when: { picked: 2 }
+        say: Ein Fehler in einer Zahl der MDCT verteilt sich über den ganzen Block, vorn wie hinten. Wie lang ist ein Block von 2.048 Messungen?
+      - when: { picked: 3 }
+        say: Die Stufen richten sich nach der größten Zahl im Block, und die gehört zum lauten Schlag. Wie fein sind sie dann für die leise Stelle?
+    solution: |
+      Schon vor den Schlägen: Der Fehler verteilt sich über den ganzen Block
+      von 46 Millisekunden, auch in die leise Stelle vor dem Schlag, wo
+      nichts ihn verdeckt. Das heißt Vorecho.

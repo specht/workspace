@@ -12,6 +12,9 @@ from src/static/audio/, and the widgets of the page play the same files:
   of different length. The number is one of those the Bundesnetzagentur
   keeps free for films and books (»Drama Numbers«, Berlin 030 23125-xxx),
   so nobody answers it; the page does not give it away.
+- kastagnetten.wav: two seconds of castanets, clicks with a short ring
+  near 2.800 Hz, over a quiet chord; between some clicks a pause of a
+  third of a second or more, where a pre-echo is heard alone.
 
 All are mono, 16 bit, a plain 44-byte header (as the students' write_wav
 writes it), the first two at 44.100 Hz. Runs in the image of the speech
@@ -20,7 +23,7 @@ write (Piper does not speak the same way twice, so stimme.wav changes
 whenever it is made again):
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo \\
-        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik waehlen]
+        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik waehlen kastagnetten]
 """
 
 import os
@@ -188,15 +191,34 @@ def dialling(number):
     return signal + 0.02 * rng.standard_normal(len(signal))
 
 
+def castanets():
+    """Clicks: noise that dies away in 0,4 ms and a ring at 2.800 Hz
+    that dies away in 1,5 ms; under them A minor, quietly."""
+    rng = np.random.default_rng(31)
+    t = np.arange(int(2.0 * RATE)) / RATE
+    signal = sum(0.012 * np.sin(2 * np.pi * f * t) for f in (220.0, 261.63, 329.63))
+    for at in (0.2, 0.35, 0.4, 0.45, 0.8, 1.2, 1.35, 1.4, 1.45, 1.8):
+        i = int(at * RATE)
+        u = np.arange(int(0.012 * RATE)) / RATE
+        click = rng.uniform(-1, 1, len(u)) * np.exp(-u / 0.0004) + 0.5 * np.sin(2 * np.pi * 2800 * u) * np.exp(-u / 0.0015)
+        signal[i:i + len(u)] += click
+    fade = int(0.05 * RATE)
+    signal[:fade] *= np.linspace(0, 1, fade)
+    signal[-fade:] *= np.linspace(1, 0, fade)
+    return signal / np.abs(signal).max() * 0.8
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
-    chosen = sys.argv[1:] or ['stimme', 'musik', 'waehlen']
+    chosen = sys.argv[1:] or ['stimme', 'musik', 'waehlen', 'kastagnetten']
     if 'stimme' in chosen:
         write_wav(os.path.join(OUT, 'stimme.wav'), thorsten('Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.'))
     if 'musik' in chosen:
         write_wav(os.path.join(OUT, 'musik.wav'), music())
     if 'waehlen' in chosen:
         write_wav(os.path.join(OUT, 'waehlen.wav'), dialling('03023125386'), PHONE)
+    if 'kastagnetten' in chosen:
+        write_wav(os.path.join(OUT, 'kastagnetten.wav'), castanets())
 
 
 main()
