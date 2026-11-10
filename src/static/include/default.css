@@ -15889,7 +15889,7 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     font-size: 0.75rem;
     line-height: 1;
     opacity: 0;
-    transition: opacity 0.15s;
+    /* no fading: a fading bookmark leaves a trail down the list */
 }
 .autotoc-secondary .toc-entry:hover .toc-bookmark,
 .autotoc-secondary .toc-bookmark:focus-visible {
