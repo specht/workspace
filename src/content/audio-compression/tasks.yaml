@@ -278,3 +278,167 @@ tasks:
       Die Stimme, von 58 auf 46 %: Sie hat Pausen und leise Silben, in denen
       ein kleines `k` reicht. Die Musik ist überall ungefähr gleich laut und
       schrumpft nur von 70 auf 67 %.
+
+  - id: von-hand
+    title: Eine Frequenz von Hand
+    prompt: |
+      Rechne für die acht Messungen aus der Tabelle \(c_2\), \(s_2\) und
+      daraus die Stärke \(A_2\) aus. Wie groß ist \(A_2\)?
+    check:
+      type: number
+      expect: 1
+      tolerance: 0.01
+    feedback:
+      - when: { between: [3.99, 4.01] }
+        say: Das ist \(\sqrt{c_2^2 + s_2^2}\). Die Stärke ist das noch mal \(2 / N\), bei acht Messungen also mal 2/8.
+      - when: { between: [0.49, 0.51] }
+        say: Geteilt durch 8 ist nur die halbe Höhe; die Formel teilt durch \(N\) und multipliziert mit 2.
+      - when: { between: [-0.01, 0.01] }
+        say: Mit dem Kosinus heben sich die Produkte auf, aber nicht mit dem Sinus. Beide gehören in die Wurzel.
+    solution: |
+      \(c_2 = 1 - 1 + 1 - 1 = 0\) und \(s_2 = 2 + 2 = 4\), also
+      \(A_2 = \frac{2}{8}\sqrt{0^2 + 4^2} = 1\).
+
+  - id: dft
+    title: Die DFT
+    prompt: |
+      Schreib in `audio/freq.py` die Funktion `dft(x)`, die für jedes `k` von
+      0 bis `N - 1` die Summe \(X_k\) ausrechnet und alle als numpy-Array
+      zurückgibt. Die Prüfung vergleicht mit der FFT von numpy.
+    check:
+      type: python
+      file: audio/freq.py
+      cases:
+        - call: len(dft(np.zeros(8)))
+          expect: 8
+          say: Für `N` Messungen gibt es `N` Ergebnisse, eines für jedes `k` von 0 bis `N - 1`.
+        - call: round(float(abs(dft(np.array([1.0, 2, 1, 0, 1, 2, 1, 0]))[0])), 4)
+          expect: 8.0
+          say: Für `k = 0` ist der Testton überall 1, und die Summe ist die Summe aller Messungen, hier 8.
+        - call: round(float(abs(dft(np.array([1.0, 2, 1, 0, 1, 2, 1, 0]))[2])), 4)
+          expect: 4.0
+          say: Für die Messungen aus der Tabelle ist der Betrag von \(X_2\) gleich \(\sqrt{c_2^2 + s_2^2} = 4\). Steht im Testton `k * n / N`, mit dem Array `n` der Indizes?
+        - call: bool(np.allclose(dft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6])), np.fft.fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6]))))
+          expect: true
+          say: Die Beträge stimmen, aber nicht die Zahlen selbst. Hat der Testton das Minus, `np.exp(-2j * np.pi * k * n / N)`?
+    solution: |
+      ```python
+      def dft(x):
+          N = len(x)
+          n = np.arange(N)
+          X = np.zeros(N, dtype=complex)
+          for k in range(N):
+              X[k] = np.sum(x * np.exp(-2j * np.pi * k * n / N))
+          return X
+      ```
+
+  - id: doppelt
+    title: Doppelt so viele Messungen
+    prediction: true
+    prompt: |
+      `dft` braucht für 4.096 Messungen etwa eine halbe Sekunde. Wie lange
+      braucht es für 8.192?
+    check:
+      type: choice
+      options:
+        - Etwa genauso lange, die Töne sind ja dieselben.
+        - Etwa doppelt so lange, eine Sekunde.
+        - Etwa viermal so lange, zwei Sekunden.
+        - Etwa achtmal so lange, vier Sekunden.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Gerechnet wird mit jeder Messung, ob sie zu einem Ton gehört oder nicht. Wie viele Messungen sind es jetzt?
+      - when: { picked: 1 }
+        say: Es sind doppelt so viele Messungen, aber auch doppelt so viele `k`. Wie oft läuft die Zeile in der Schleife, und mit wie vielen Zahlen rechnet sie jedes Mal?
+      - when: { picked: 3 }
+        say: Zähl, was sich verdoppelt, die Zahl der `k` und die Zahl der Messungen, mit denen für jedes `k` gerechnet wird.
+    solution: |
+      Etwa viermal so lange: Die Schleife läuft `N`-mal, und jedes Mal wird
+      mit allen `N` Messungen gerechnet, \(N^2\) Multiplikationen.
+
+  - id: fft
+    title: Die FFT
+    prompt: |
+      Schreib in `audio/freq.py` die Funktion `fft(x)` für ein `x`, dessen
+      Länge eine Zweierpotenz ist: Sie ruft sich für die geraden und die
+      ungeraden Messungen selbst auf und setzt das Ergebnis daraus zusammen.
+      Die Prüfung vergleicht mit der FFT von numpy und misst, ob 16.384
+      Messungen in weniger als einer Sekunde gehen.
+    check:
+      type: python
+      file: audio/freq.py
+      timeout: 30
+      cases:
+        - call: '[complex(v) for v in fft(np.array([5.0]))]'
+          expect: '[5 + 0j]'
+          say: Die FFT einer einzigen Messung ist die Messung selbst.
+        - call: len(fft(np.zeros(16)))
+          expect: 16
+          say: Für `N` Messungen gibt es `N` Ergebnisse, die erste Hälfte mit `+`, die zweite mit `-`.
+        - call: bool(np.allclose(fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6])), np.fft.fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6]))))
+          expect: true
+          say: Das Ergebnis passt nicht zur FFT von numpy. Wird `odd` mit dem Faktor `np.exp(-2j * np.pi * np.arange(N // 2) / N)` multipliziert, und steht `even + w` vorn und `even - w` hinten?
+        - call: bool(np.allclose(fft(np.sin(np.arange(1024) * 0.3)), np.fft.fft(np.sin(np.arange(1024) * 0.3))))
+          expect: true
+          say: Bei acht Messungen stimmt es, bei 1.024 nicht mehr. Kommen die Hälften aus `x[0::2]` und `x[1::2]`?
+        - call: t = time.perf_counter(); fft(np.zeros(16384)); time.perf_counter() - t < 1
+          expect: true
+          say: Für 16.384 Messungen braucht `fft` länger als eine Sekunde. Ruft sie sich selbst für die beiden Hälften auf, statt `dft`?
+    solution: |
+      ```python
+      def fft(x):
+          N = len(x)
+          if N == 1:
+              return x.astype(complex)
+          even = fft(x[0::2])
+          odd = fft(x[1::2])
+          w = np.exp(-2j * np.pi * np.arange(N // 2) / N) * odd
+          return np.concatenate([even + w, even - w])
+      ```
+
+  - id: staerke
+    title: Wie stark eine Frequenz ist
+    prompt: |
+      Schreib in `audio/dial.py` die Funktion `strength(block, freq, rate)`:
+      wie hoch die Schwingung mit `freq` Hz in den Messungen `block` ist, bei
+      `rate` Messungen in der Sekunde. Die Prüfung gibt ihr Sinustöne der
+      Tasten.
+    check:
+      type: python
+      file: audio/dial.py
+      cases:
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 770 * np.arange(800) / 8000), 770, 8000)), 2)
+          expect: 0.5
+          say: Ein Sinus mit 770 Hz und der Höhe 0,5 ergibt bei 770 Hz die Stärke 0,5. Steht im Testton `freq * n / rate`, und wird der Betrag der Summe mit 2 multipliziert und durch die Zahl der Messungen geteilt?
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 770 * np.arange(800) / 8000), 1336, 8000)), 2)
+          expect: 0.0
+          say: Ein Ton mit 770 Hz enthält keine 1.336 Hz. Steht im Testton `freq * n / rate`?
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 697 * np.arange(800) / 8000), 697, 8000)), 2)
+          expect: 0.5
+          say: 697 Hz machen in 800 Messungen keine ganze Zahl von Schwingungen; der Testton muss trotzdem genau 697 Hz haben.
+        - call: round(float(strength(0.3 * np.sin(2 * np.pi * 1209 * np.arange(4410) / 44100), 1209, 44100)), 2)
+          expect: 0.3
+          say: Bei 44.100 Messungen in der Sekunde ist die Messung mit dem Index `n` zur Zeit `n / 44100`. Rechnet der Testton mit `rate`?
+        - call: key(0.25 * np.sin(2 * np.pi * 852 * np.arange(1000) / 8000) + 0.25 * np.sin(2 * np.pi * 1336 * np.arange(1000) / 8000), 8000)
+          expect: "'8'"
+          say: 852 Hz und 1.336 Hz sind die Taste 8. Steht `key` so in der Datei wie auf der Seite?
+    solution: |
+      ```python
+      def strength(block, freq, rate):
+          n = np.arange(len(block))
+          return 2 * abs(np.sum(block * np.exp(-2j * np.pi * freq * n / rate))) / len(block)
+      ```
+
+  - id: nummer
+    title: Die gewählte Nummer
+    prompt: |
+      Welche Telefonnummer wird in `waehlen.wav` gewählt? Leerzeichen,
+      Schrägstriche und Bindestriche sind egal.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\D*0\D*3\D*0\D*2\D*3\D*1\D*2\D*5\D*3\D*8\D*6\D*$'
+    solution: |
+      030 23125386, eine Nummer, die in Berlin für Filme, Bücher und
+      Aufgaben frei gehalten wird.

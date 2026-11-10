@@ -7,17 +7,25 @@ from src/static/audio/, and the widgets of the page play the same files:
 - musik.wav: eight seconds of a band made of numbers: drums (the hi-hat
   reaches up to 16 kHz), bass, chords and a melody, A minor, 120 beats per
   minute.
+- waehlen.wav: a telephone number dialled with the tones of the keys
+  (DTMF), at 8.000 Hz like a telephone line, with a little noise and pauses
+  of different length. The number is one of those the Bundesnetzagentur
+  keeps free for films and books (»Drama Numbers«, Berlin 030 23125-xxx),
+  so nobody answers it; the page does not give it away.
 
-Both are mono, 44.100 Hz, 16 bit, a plain 44-byte header (as the students'
-write_wav writes it). Runs in the image of the speech service, which has
-numpy, soxr and Thorsten:
+All are mono, 16 bit, a plain 44-byte header (as the students' write_wav
+writes it), the first two at 44.100 Hz. Runs in the image of the speech
+service, which has numpy, soxr and Thorsten; names choose which files to
+write (Piper does not speak the same way twice, so stimme.wav changes
+whenever it is made again):
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo \\
-        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py
+        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik waehlen]
 """
 
 import os
 import struct
+import sys
 
 import numpy as np
 import soxr
@@ -28,14 +36,14 @@ RATE = 44100
 rng = np.random.default_rng(11)
 
 
-def write_wav(path, samples):
+def write_wav(path, samples, rate=RATE):
     data = (np.clip(samples, -1, 1) * 32767).round().astype('<i2').tobytes()
     header = (struct.pack('<4sI4s', b'RIFF', 36 + len(data), b'WAVE')
-              + struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 1, RATE, 2 * RATE, 2, 16)
+              + struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 1, rate, 2 * rate, 2, 16)
               + struct.pack('<4sI', b'data', len(data)))
     with open(path, 'wb') as f:
         f.write(header + data)
-    print(path, len(header + data), 'bytes', f'{len(samples) / RATE:.2f} s')
+    print(path, len(header + data), 'bytes', f'{len(samples) / rate:.2f} s')
 
 
 def band(signal, low, high):
@@ -160,10 +168,35 @@ def thorsten(sentence):
     return np.concatenate([pause, audio / np.abs(audio).max() * 0.89, pause])
 
 
+PHONE = 8000
+ROWS, COLUMNS = [697, 770, 852, 941], [1209, 1336, 1477]
+KEYS = ['123', '456', '789', '*0#']
+
+
+def dialling(number):
+    """Each key two sines of 0,25, 0,12 to 0,18 s long with ramps of
+    5 ms, pauses of 0,08 to 0,3 s, a quiet noise under all of it."""
+    rng = np.random.default_rng(23)
+    parts = [np.zeros(int(0.3 * PHONE))]
+    for digit in number:
+        row = next(i for i, keys in enumerate(KEYS) if digit in keys)
+        t = np.arange(int(rng.uniform(0.12, 0.18) * PHONE)) / PHONE
+        tone = 0.25 * np.sin(2 * np.pi * ROWS[row] * t) + 0.25 * np.sin(2 * np.pi * COLUMNS[KEYS[row].index(digit)] * t)
+        ramp = np.minimum(1, np.minimum(t, t[-1] - t) / 0.005)
+        parts += [tone * ramp, np.zeros(int(rng.uniform(0.08, 0.3) * PHONE))]
+    signal = np.concatenate(parts + [np.zeros(int(0.3 * PHONE))])
+    return signal + 0.02 * rng.standard_normal(len(signal))
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
-    write_wav(os.path.join(OUT, 'stimme.wav'), thorsten('Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.'))
-    write_wav(os.path.join(OUT, 'musik.wav'), music())
+    chosen = sys.argv[1:] or ['stimme', 'musik', 'waehlen']
+    if 'stimme' in chosen:
+        write_wav(os.path.join(OUT, 'stimme.wav'), thorsten('Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.'))
+    if 'musik' in chosen:
+        write_wav(os.path.join(OUT, 'musik.wav'), music())
+    if 'waehlen' in chosen:
+        write_wav(os.path.join(OUT, 'waehlen.wav'), dialling('03023125386'), PHONE)
 
 
 main()

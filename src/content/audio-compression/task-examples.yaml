@@ -41,3 +41,33 @@ examples:
     fail:
       - { files: { audio/rice.py: fehler/rice-ohne-fuehrende-nullen.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'beiden Stellen' }
       - { files: { audio/rice.py: fehler/rice-einsen-vorn.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'keine Nullen vorn' }
+  dft:
+    pass:
+      - { files: { audio/freq.py: stufen/freq-1.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/freq.py: stufen/freq-2.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/freq.py: fehler/dft-plus.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Minus' }
+      - { files: { audio/freq.py: fehler/dft-ohne-n.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Array `n`' }
+  fft:
+    pass:
+      - { files: { audio/freq.py: stufen/freq-2.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/freq.py: stufen/freq-1.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'fft' }
+      - { files: { audio/freq.py: fehler/fft-ohne-faktor.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Faktor' }
+      - { files: { audio/freq.py: fehler/fft-vertauscht.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'even + w' }
+      - { files: { audio/freq.py: fehler/fft-mit-dft.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'statt `dft`' }
+  staerke:
+    pass:
+      - { files: { audio/dial.py: stufen/dial.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/dial.py: fehler/staerke-ohne-zwei.py, audio/wav.py: stufen/wav.py }, say: 'mit 2 multipliziert' }
+      - { files: { audio/dial.py: fehler/staerke-ohne-rate.py, audio/wav.py: stufen/wav.py }, say: 'freq * n / rate' }
+  nummer:
+    pass:
+      - answer: '03023125386'
+      - answer: 030 23125386
+      - answer: 030/23125-386
+    fail:
+      - answer: '03023125368'
+      - answer: '0302312538'
+      - answer: 030 23125386 1

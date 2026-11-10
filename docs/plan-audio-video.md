@@ -182,7 +182,17 @@ seconds at 720p each.
    block of 4.096, FLAC from ffmpeg for comparison (voice 33 %, music 60 %;
    ours 46 % and 67 %). The recipes fetch the clips from
    `http://workspace_nginx_1/audio/`, which a Workspace on the development
-   machine reaches. Next: part 3 (DFT, FFT, spectrogram widget, DTMF). The section is
+   machine reaches. Part 3 is written: the spectrogram widget
+   (`spectrum_widget.js`: music, voice, the chord, a gliding tone; the
+   spectrum at the chosen moment), the DFT by hand on eight samples, `dft`
+   and `fft` of one's own against `np.fft.fft` (4.096 samples 0,6 s, 8.192
+   2,2 s; fft 0,05 s; numpy 5 ms; measured in the Workspace image), Cooley
+   and Tukey with Gauß, `strength` and the number in `waehlen.wav` (a Drama
+   Number of the Bundesnetzagentur, 030 23125386). A person box for Fourier
+   waits until the page is public (the Personen test wants every box on a
+   visible page): the engraving after Boilly, »Fourier2 - restoration1.jpg«
+   on Wikimedia Commons, public domain, cropped 1200 × 1500 from (230, 140).
+   Next: part 4 (the ear: threshold in quiet, Bark, masking). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

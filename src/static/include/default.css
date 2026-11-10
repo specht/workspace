@@ -8716,6 +8716,7 @@ div[data-stepper],
 .qr-damage,
 .dtmf-widget,
 .sampling-widget,
+.spectrum-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8735,6 +8736,7 @@ html[data-bs-theme="dark"] .bitplane-widget,
 html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
 html[data-bs-theme="dark"] .sampling-widget,
+html[data-bs-theme="dark"] .spectrum-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -15138,6 +15140,51 @@ html[data-bs-theme="dark"] .sampling-widget {
 .sampling-l-heard i { border-color: var(--sampling-heard); border-top-width: 3px; }
 .sampling-l-dots i { width: 0.6em; height: 0.6em; border: none; border-radius: 50%; background: var(--sampling-heard); }
 .sampling-rate { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+
+/* Frequencies (spectrum_widget.js, »Audio komprimieren«): the clip as a
+   spectrogram (the louder, the stronger the colour), the spectrum at the
+   chosen moment in purple, what is current */
+.spectrum-widget {
+    --spectrum-ink: var(--widget-ink);
+    --spectrum-quiet: var(--widget-line);
+    --spectrum-mark: #6741d9;
+    --spectrum-ground: #f1f2f5;
+    --spectrum-hot: #2d1680;
+}
+html[data-bs-theme="dark"] .spectrum-widget {
+    --spectrum-mark: #b197fc;
+    --spectrum-ground: #111213;
+    --spectrum-hot: #e5dbff;
+}
+.spectrum-widget::before {
+    content: 'Zum Ausprobieren: abspielen und klicken';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.spectrum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.2em; margin-bottom: 0.6em; }
+.spectrum-group { display: flex; align-items: center; gap: 0.5em; }
+.spectrum-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; }
+@media (max-width: 576px) {
+    .spectrum-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+    .spectrum-group .btn-group { flex-wrap: wrap; }
+}
+.spectrum-figure { margin: 0.4em 0 0; }
+.spectrum-figure figcaption { font-size: 0.85em; color: var(--spectrum-ink); margin-bottom: 0.25em; }
+.spectrum-gram { display: block; width: 100%; height: 260px; cursor: pointer; }
+.spectrum-gram:focus-visible { outline: 2px solid var(--spectrum-mark); outline-offset: 2px; }
+.spectrum-chart { display: block; width: 100%; height: 170px; }
+.spectrum-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+@media (max-width: 576px) {
+    .spectrum-gram { height: 200px; }
+    .spectrum-chart { height: 150px; }
+}
 
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
    Telefon«): the keypad with the frequencies of its rows (amber) and

@@ -17,6 +17,7 @@ reference: [bits-und-bytes]
 </div>
 
 <script src='/include/sampling_widget.js'></script>
+<script src='/include/spectrum_widget.js'></script>
 
 # Audio komprimieren
 
@@ -809,3 +810,334 @@ Die Stimme braucht als FLAC etwa ein Drittel, die Musik etwa 60 %. Viel mehr sch
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>SHORTEN: Simple lossless and near-lossless waveform compression</strong>, Tony Robinson, Cambridge University Engineering Department, 1994. Die Vorhersage aus den vorigen Messungen und kurze Codes für die Reste, die Idee hinter FLAC, auf wenigen Seiten: <a href='http://mi.eng.cam.ac.uk/reports/svr-ftp/auto-pdf/robinson_tr156.pdf'>PDF</a>, die <a href='https://mi.eng.cam.ac.uk/reports/abstracts/robinson_tr156.html'>Zusammenfassung</a> in Cambridge.</p>
 </div>
+
+## Frequenzen
+
+Der Akkord aus dem ersten Kapitel war eine Summe von drei Sinustönen. Joseph Fourier behauptete 1822 in seinem Buch über die Ausbreitung von Wärme, dass sich fast jede Schwingung so schreiben lässt: als Summe von Sinusschwingungen verschiedener Frequenzen, jede mit ihrer eigenen Stärke. Welche Frequenzen in einem Klang stecken und wie stark, heißt sein **Spektrum**. Für das Ohr ist das die wichtigste Beschreibung eines Klangs: Im Innenohr reagiert jede Stelle auf eine andere Frequenz. Und für das Komprimieren auch: Was das Ohr nicht hört, lässt sich erst weglassen, wenn man die Frequenzen kennt.
+
+### Frequenzen sehen
+
+Ein **Spektrogramm** zeigt das Spektrum über die Zeit: nach rechts die Zeit, nach oben die Frequenz, und je stärker eine Frequenz zu einer Zeit ist, desto kräftiger die Farbe. Die Frequenzen stehen auf einer logarithmischen Skala, wie auf einer Klaviatur: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz, eine Oktave.
+
+<div class='spectrum-widget'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Such in der Musik die Schläge der Bass-Trommel und der Hi-Hat: Wie hoch liegt jede?
+</div>
+
+Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit einer Grundfrequenz, beim Sprechen meist zwischen 80 und 250 Hz, und dazu mit jedem Vielfachen davon. Laute wie s, sch und z sind dagegen Rauschen, ein Gemisch sehr vieler Frequenzen, und das liegt hoch. Darum gehen sie bei einer kleinen Abtastrate als Erstes verloren.
+
+### Mit einem Testton vergleichen
+
+Wie findet man heraus, wie stark eine Frequenz in `N` Messungen steckt? Man nimmt einen Testton dieser Frequenz, multipliziert jede Messung mit ihm und zählt alles zusammen. Steckt die Frequenz im Klang, gehen beide gemeinsam auf und ab, die Produkte sind meist positiv, und die Summe wird groß. Andere Frequenzen geraten mal in den gleichen Takt, mal in den entgegengesetzten, und ihre Produkte heben sich auf.
+
+Ein Testton macht genau `k` Schwingungen in den `N` Messungen; bei `rate` Messungen in der Sekunde hat er die Frequenz `k * rate / N`. Weil ein Ton im Klang gegen den Testton verschoben sein kann, nimmt man zwei Testtöne, einen Kosinus und einen Sinus:
+
+$$c\_k = \sum\_{n=0}^{N-1} x\_n \cos\left(\frac{2\pi k n}{N}\right), \qquad s\_k = \sum\_{n=0}^{N-1} x\_n \sin\left(\frac{2\pi k n}{N}\right)$$
+
+Die Stärke der Frequenz, so hoch, wie die Schwingung im Klang geht, ist dann
+
+$$A\_k = \frac{2}{N} \sqrt{c\_k^2 + s\_k^2}$$
+
+Probier es von Hand mit acht Messungen, \\(x = (1, 2, 1, 0, 1, 2, 1, 0)\\). Für `k = 2` sind die beiden Testtöne:
+
+<div class='table-responsive'>
+<table class='table'>
+<tr><th><code>n</code></th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+<tr><th>Messung</th><td>1</td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>1</td><td>0</td></tr>
+<tr><th>Kosinus</th><td>1</td><td>0</td><td>−1</td><td>0</td><td>1</td><td>0</td><td>−1</td><td>0</td></tr>
+<tr><th>Sinus</th><td>0</td><td>1</td><td>0</td><td>−1</td><td>0</td><td>1</td><td>0</td><td>−1</td></tr>
+</table>
+</div>
+
+_task(von-hand)
+
+<!-- after: von-hand -->
+Mit dem Kosinus heben sich die Produkte auf, 1 − 1 + 1 − 1 = 0. Mit dem Sinus bleibt 2 + 2 = 4, denn bei `n = 3` und `n = 7` ist die Messung 0. Also ist \\(A_2 = \frac{2}{8} \sqrt{0^2 + 4^2} = 1\\): In den Messungen steckt ein Sinus mit zwei Schwingungen und der Höhe 1. Dazu kommt eine 1, die immer gleich bleibt; sie gehört zu `k = 0`, der Frequenz 0.
+<!-- /after -->
+
+Python rechnet mit Kosinus und Sinus auf einmal, mit **komplexen Zahlen**. Eine komplexe Zahl ist ein Paar aus zwei Zahlen, in Python `c + s * 1j`. `np.exp(-1j * phi)` ist das Paar aus `np.cos(phi)` und `-np.sin(phi)`. Multipliziert man die Messungen mit `np.exp(-2j * np.pi * k * n / N)` und zählt alles zusammen, steht in der Summe \\(c\_k\\) und \\(-s\_k\\), und `abs` gibt \\(\sqrt{c\_k^2 + s\_k^2}\\). Diese Summen für alle `k` von 0 bis `N - 1` heißen die **diskrete Fourier-Transformation**, kurz DFT:
+
+$$X\_k = \sum\_{n=0}^{N-1} x\_n \, e^{-2\pi i k n / N}$$
+
+Für einen Klang aus reellen Zahlen ist die zweite Hälfte ein Spiegelbild der ersten; wichtig sind nur die `k` unter `N / 2`, die Frequenzen bis zur halben Abtastrate. Lege `freq.py` an:
+
+<!-- page-code: own -->
+```python
+import time
+
+import numpy as np
+
+from tones import tone
+
+
+def dft(x):
+    # hier: die DFT
+
+
+def strongest(X, rate, count):
+    N = len(X)
+    amplitude = np.abs(X[:N // 2]) * 2 / N
+    best = np.argsort(amplitude)[::-1][:count]
+    return [(round(k * rate / N), round(float(amplitude[k]), 2)) for k in best]
+
+
+if __name__ == '__main__':
+    rate = 4096
+    x = tone(440, 1, rate) + 0.5 * tone(1000, 1, rate)
+    start = time.perf_counter()
+    X = dft(x)
+    print(f'dft: {time.perf_counter() - start:.3f} s', strongest(X, rate, 2))
+```
+
+`strongest` rechnet aus den Summen die Stärken \\(A_k\\), sortiert sie mit `np.argsort` und gibt die `count` stärksten Frequenzen in Hz mit ihrer Stärke zurück. Das Programm macht eine Sekunde aus zwei Tönen, 440 Hz mit der Höhe 0,5 und 1.000 Hz mit 0,25, und misst mit `time.perf_counter`, wie lange `dft` braucht.
+
+<div class='hint own' data-check='dft'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>dft(x)</code>: Die Funktion gibt ein numpy-Array mit den <code>N</code> komplexen Zahlen \(X_0\) bis \(X_{N-1}\) zurück, eine für jedes <code>k</code>. Für jedes <code>k</code> reicht eine Zeile, die mit allen Messungen auf einmal rechnet.
+</div>
+
+<!-- hint -->
+Leg zuerst ein Array für das Ergebnis an, `X = np.zeros(N, dtype=complex)`, und die Indizes der Messungen, `n = np.arange(N)`. Dann geht eine Schleife über alle `k` von 0 bis `N - 1`.
+<!-- /hint -->
+<!-- hint -->
+In der Schleife ist `x * np.exp(-2j * np.pi * k * n / N)` das Array der Produkte; `np.sum` zählt sie zusammen:
+
+```python
+for k in range(N):
+    X[k] = np.sum(…)
+return X
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def dft(x):
+    N = len(x)
+    n = np.arange(N)
+    X = np.zeros(N, dtype=complex)
+    for k in range(N):
+        X[k] = np.sum(x * np.exp(-2j * np.pi * k * n / N))
+    return X
+```
+<!-- /solution -->
+
+_task(dft)
+
+```bash
+python3 freq.py
+```
+
+<!-- tutorial-step
+write-file: audio/freq.py <- file:stufen/freq-1.py
+check-task: dft
+terminal-run: cd /workspace/audio && python3 freq.py
+terminal-wait-for-prompt: 60
+wait-for-text: [(440, 0.5), (1000, 0.25)]
+-->
+
+`dft` findet die beiden Töne mit ihren Höhen. Für 4.096 Messungen braucht es auf einem Workspace etwa eine halbe Sekunde.
+
+_task(doppelt)
+
+<!-- after: doppelt -->
+Probier es aus: Setz `rate = 8192`, dann sind es 8.192 Messungen.
+
+Es dauert etwa viermal so lange: Für jedes der `N` Ergebnisse geht `dft` alle `N` Messungen durch, das sind \\(N^2\\) Multiplikationen. Doppelt so viele Messungen sind viermal so viel Arbeit. Eine Sekunde in CD-Qualität hat 44.100 Messungen, und `dft` bräuchte dafür Minuten.
+<!-- /after -->
+
+### Schneller: die FFT
+
+Die DFT von `N` Messungen lässt sich aus zwei DFTs von je `N / 2` Messungen zusammensetzen: aus der DFT der Messungen mit geradem Index, `E`, und der mit ungeradem, `O`. Für jedes `k` unter `N / 2` gilt
+
+$$X\_k = E\_k + e^{-2\pi i k / N} \, O\_k, \qquad X\_{k + N/2} = E\_k - e^{-2\pi i k / N} \, O\_k$$
+
+Warum? In der Summe von \\(X_k\\) sind die Summanden mit geradem `n = 2m` genau die DFT der geraden Messungen, denn \\(2\pi k \cdot 2m / N = 2\pi k m / (N/2)\\). Bei ungeradem `n = 2m + 1` kommt nur der Faktor \\(e^{-2\pi i k / N}\\) dazu. Für \\(k + N/2\\) dreht sich jeder Testton der halben DFTs einmal ganz herum, und das ändert nichts; nur der Faktor wechselt sein Vorzeichen. So liefern zwei halbe DFTs alle `N` Ergebnisse.
+
+Die beiden halben DFTs macht man genauso, mit Vierteln, und so weiter, bis nur noch eine Messung übrig ist: Die DFT einer einzigen Messung ist die Messung selbst. Bei 8.192 = 2¹³ Messungen sind das 13 Stufen mit je 8.192 Multiplikationen, gut 100.000 statt 67 Millionen. Das ist die **schnelle Fourier-Transformation**, auf Englisch Fast Fourier Transform, kurz FFT. Sie braucht eine Zweierpotenz als `N`.
+
+Veröffentlicht haben sie James Cooley von IBM und John Tukey von der Universität Princeton 1965. Tukey soll die Idee in einer Sitzung der Berater von Präsident Kennedy gehabt haben, in der es darum ging, Atomwaffentests der Sowjetunion an Messungen von Erdbebenstationen außerhalb des Landes zu erkennen. Später stellte sich heraus, dass Carl Friedrich Gauß denselben Trick schon um 1805 benutzt hatte, um die Bahnen der Kleinplaneten Pallas und Juno zu berechnen. Veröffentlicht wurde das erst nach seinem Tod.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>An Algorithm for the Machine Calculation of Complex Fourier Series</strong>, James W. Cooley und John W. Tukey, Mathematics of Computation, 1965. Fünf Seiten, auf denen die FFT zu einem Programm für Computer wird: beim <a href='https://doi.org/10.1090/S0025-5718-1965-0178586-1'>Verlag</a>.</p>
+</div>
+
+Schreib unter `dft` die Funktion `fft`. `x[0::2]` sind die Messungen mit geradem Index, jede zweite ab der ersten, und `x[1::2]` die mit ungeradem; `np.concatenate` hängt zwei Arrays hintereinander:
+
+<!-- page-code: own -->
+```python
+def fft(x):
+    N = len(x)
+    if N == 1:
+        return x.astype(complex)
+    # hier: zwei halbe FFTs und daraus das Ganze
+```
+
+<div class='hint own' data-check='fft'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>fft(x)</code> für ein <code>x</code>, dessen Länge eine Zweierpotenz ist: Die Funktion ruft sich selbst für die geraden und die ungeraden Messungen auf und setzt die Ergebnisse nach den beiden Formeln oben zusammen. Sie gibt dasselbe zurück wie <code>dft</code>, nur schneller.
+</div>
+
+<!-- hint -->
+Erst die beiden Hälften: `even = fft(x[0::2])` und `odd = fft(x[1::2])`. Dann die Faktoren für alle `k` unter `N / 2` auf einmal, `np.exp(-2j * np.pi * np.arange(N // 2) / N)`, multipliziert mit `odd`.
+<!-- /hint -->
+<!-- hint -->
+Mit `w` für die Faktoren mal `odd` ist die erste Hälfte des Ergebnisses `even + w` und die zweite `even - w`:
+
+```python
+w = np.exp(-2j * np.pi * np.arange(N // 2) / N) * odd
+return np.concatenate([…, …])
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def fft(x):
+    N = len(x)
+    if N == 1:
+        return x.astype(complex)
+    even = fft(x[0::2])
+    odd = fft(x[1::2])
+    w = np.exp(-2j * np.pi * np.arange(N // 2) / N) * odd
+    return np.concatenate([even + w, even - w])
+```
+<!-- /solution -->
+
+_task(fft)
+
+Lass im Programm alle drei gegeneinander antreten, `dft`, deine `fft` und die von numpy, `np.fft.fft`:
+
+```python
+if __name__ == '__main__':
+    rate = 8192
+    x = tone(440, 1, rate) + 0.5 * tone(1000, 1, rate)
+    for name, transform in [('dft', dft), ('fft', fft), ('numpy', np.fft.fft)]:
+        start = time.perf_counter()
+        X = transform(x)
+        print(f'{name:5}: {time.perf_counter() - start:.4f} s', strongest(X, rate, 2))
+```
+
+<!-- tutorial-step
+write-file: audio/freq.py <- file:stufen/freq-2.py
+check-task: fft
+terminal-run: python3 freq.py
+terminal-wait-for-prompt: 60
+wait-for-text: numpy:
+-->
+
+Alle drei finden dasselbe. `dft` braucht gut zwei Sekunden, deine `fft` etwa ein Zwanzigstel Sekunde, und numpy wenige Tausendstel: Seine FFT ist in C geschrieben und rechnet ohne die vielen Aufrufe von Python. Für 65.536 Messungen, anderthalb Sekunden in CD-Qualität, bräuchte `dft` mehr als drei Minuten, deine `fft` eine halbe Sekunde und numpy drei Tausendstel. Auf der FFT beruhen MP3 und Opus, das Spektrogramm im Widget oben und vieles mehr, was mit Klang, Bildern und Funk rechnet.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>rate = 8000</code>. Was passiert mit deiner <code>fft</code>, und an welcher Stelle der Rekursion? numpy rechnet weiter: Seine FFT zerlegt auch in Drittel, Fünftel und andere Teile.
+</div>
+
+### Eine Telefonnummer aus Tönen
+
+Im [Spiel am Telefon](/telefonspiel) klingt jede Taste mit zwei Tönen zugleich, einem für ihre Zeile und einem für ihre Spalte:
+
+<div class='table-responsive'>
+<table class='table'>
+<tr><th></th><th>1.209 Hz</th><th>1.336 Hz</th><th>1.477 Hz</th></tr>
+<tr><th>697 Hz</th><td>1</td><td>2</td><td>3</td></tr>
+<tr><th>770 Hz</th><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>852 Hz</th><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>941 Hz</th><td>*</td><td>0</td><td>#</td></tr>
+</table>
+</div>
+
+In der Datei `waehlen.wav` wählt jemand eine Telefonnummer, aufgenommen mit 8.000 Messungen in der Sekunde wie im Telefonnetz. Hol sie dir:
+
+```bash_copy
+wget ${web_root}/audio/waehlen.wav
+```
+
+<!-- tutorial-step
+terminal-run: test -f waehlen.wav || curl -sO http://workspace_nginx_1/audio/waehlen.wav
+terminal-wait-for-prompt: 30
+-->
+
+Für eine Taste braucht es keine ganze FFT: Es reicht, sieben Frequenzen zu prüfen, mit je einem Testton. Der muss nicht `k` ganze Schwingungen machen, er darf jede Frequenz haben; die `n`-te Messung ist zur Zeit `n / rate`. Lege `dial.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav
+
+ROWS = [697, 770, 852, 941]
+COLUMNS = [1209, 1336, 1477]
+KEYS = ['123', '456', '789', '*0#']
+
+
+def strength(block, freq, rate):
+    # hier: wie stark freq in block steckt
+```
+
+<div class='hint own' data-check='staerke'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>strength(block, freq, rate)</code>: wie stark die Frequenz <code>freq</code> in den Messungen <code>block</code> steckt, als Höhe der Schwingung wie \(A_k\) oben. Ein Sinus mit der Höhe 0,5 und genau dieser Frequenz ergibt 0,5, ein Sinus mit einer anderen der sieben Frequenzen fast 0.
+</div>
+
+<!-- hint -->
+Es ist eine einzige Summe der DFT. Statt `k * n / N` steht im Testton jetzt `freq * n / rate`: `freq` Schwingungen in der Sekunde, und die Messung mit dem Index `n` ist zur Zeit `n / rate`.
+<!-- /hint -->
+<!-- hint -->
+Mit `n = np.arange(len(block))` ist die Summe `np.sum(block * np.exp(-2j * np.pi * freq * n / rate))`. Ihr Betrag, mit `abs`, mal 2 und geteilt durch die Zahl der Messungen gibt die Höhe.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def strength(block, freq, rate):
+    n = np.arange(len(block))
+    return 2 * abs(np.sum(block * np.exp(-2j * np.pi * freq * n / rate))) / len(block)
+```
+<!-- /solution -->
+
+_task(staerke)
+
+Den Rest schreibst du ab. `key` nimmt die stärkste der vier Zeilen und die stärkste der drei Spalten und schlägt die Taste nach. `tones` teilt die Messungen in Stücke von 10 Millisekunden und sammelt die lauten Stücke, die aufeinander folgen, zu einem Block, einem für jede Taste:
+
+```python
+def key(block, rate):
+    row = max(range(4), key=lambda i: strength(block, ROWS[i], rate))
+    column = max(range(3), key=lambda i: strength(block, COLUMNS[i], rate))
+    return KEYS[row][column]
+
+
+def tones(samples, rate):
+    piece = rate // 100
+    blocks = []
+    start = None
+    for i in range(0, len(samples), piece):
+        loud = np.abs(samples[i:i + piece]).max() > 0.2
+        if loud and start is None:
+            start = i
+        elif not loud and start is not None:
+            blocks.append(samples[start:i])
+            start = None
+    return blocks
+
+
+if __name__ == '__main__':
+    samples, rate = read_wav('waehlen.wav')
+    print(''.join(key(block, rate) for block in tones(samples, rate)))
+```
+
+`max(range(4), key=…)` gibt den Index, für den `strength` am größten ist. `start` merkt sich, wo der laute Teil begann; wird es wieder leise, kommt alles von `start` bis hier als Block in die Liste.
+
+```bash
+python3 dial.py
+```
+
+<!-- tutorial-step
+write-file: audio/dial.py <- file:stufen/dial.py
+check-task: staerke
+terminal-run: python3 dial.py
+terminal-wait-for-prompt: 30
+-->
+
+_task(nummer)
+
+<!-- after: nummer -->
+Ruf die Nummer besser nicht an: Es gibt dort niemanden. Die Bundesnetzagentur hält in Berlin die Nummern 030 23125-000 bis -999 und ein paar weitere für Filme, Bücher und Aufgaben wie diese frei, damit niemand angerufen wird, dessen Nummer zufällig in einem Krimi vorkommt.
+<!-- /after -->
+
+Mit dem Spektrum weißt du jetzt, aus welchen Frequenzen ein Klang besteht. Das ist die Sprache, in der MP3, AAC und Opus über Klänge nachdenken: Sie zerlegen ihn in Frequenzen und fragen für jede, ob das Ohr sie überhaupt hört.
