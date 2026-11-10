@@ -9618,7 +9618,7 @@ div[data-stepper] .stepper-word { display: none; }
     grid-template-columns: minmax(0, 1fr);
     max-width: none;
 }
-.idct-stepper .jpeg-picker .jpeg-picker-lens {
+.idct-stepper .jpeg-picker .jpeg-picker-lens-box {
     width: calc(8 * var(--idct-cell) + 2px);
 }
 @container (min-width: 40em) {
@@ -15706,4 +15706,17 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 /* the channels Y, Cb and Cr as buttons of one width */
 .idct-stepper .idct-blocks button {
     min-width: 2.8em;
+}
+
+/* the magnifier and, over it, its grid in device pixels (jpeg_image.js) */
+.jpeg-picker .jpeg-picker-lens-box {
+    position: relative;
+}
+.jpeg-picker .jpeg-picker-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
 }

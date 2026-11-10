@@ -285,10 +285,12 @@
         element.classList.add('jpeg-picker');
         element.innerHTML = `
             <canvas class='jpeg-picker-photo' tabindex='0' data-no-swipe role='img'></canvas>
-            <canvas class='jpeg-picker-lens' tabindex='-1' data-no-swipe aria-hidden='true'></canvas>
+            <div class='jpeg-picker-lens-box'><canvas class='jpeg-picker-lens' tabindex='-1' data-no-swipe aria-hidden='true'></canvas><canvas class='jpeg-picker-grid' aria-hidden='true'></canvas></div>
             <div class='jpeg-picker-where' aria-live='polite'></div>`;
         const photo = element.querySelector('.jpeg-picker-photo');
         const lens = element.querySelector('.jpeg-picker-lens');
+        // the grid over the magnifier, in device pixels, so that its lines stay put
+        const grid = element.querySelector('.jpeg-picker-grid');
         const where = element.querySelector('.jpeg-picker-where');
         photo.width = image.width;
         photo.height = image.height;
@@ -300,6 +302,37 @@
         let hover = null;              // the photo pixel under the pointer in the magnifier, for the block lit there
         lens.width = span * mcuW * zoom;
         lens.height = span * mcuH * zoom;
+
+        // the grid on its own canvas, as large as the device pixels it covers:
+        // each line a light and a dark device pixel side by side, at whole
+        // device pixels, so that it neither wavers nor blurs and shows on
+        // bright and dark pixels alike; the blocks fainter than the MCUs
+        function drawGrid(gx, gy, bw, bh) {
+            const box = lens.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const w = Math.round(box.width * ratio), h = Math.round(box.height * ratio);
+            if (!w || !h) return;
+            if (grid.width !== w || grid.height !== h) { grid.width = w; grid.height = h; }
+            const g = grid.getContext('2d');
+            g.clearRect(0, 0, w, h);
+            const scale = w / lens.width;          // device pixels per pixel of the magnifier's canvas
+            const lines = (step, origin, size, length, vertical, alpha) => {
+                for (let i = -1; i * step * zoom * scale <= size + step * zoom * scale; i++) {
+                    const at = Math.round((origin + i * step) * zoom * scale);
+                    if (at < -1 || at > size + 1) continue;
+                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                    if (vertical) g.fillRect(at - 1, 0, 1, length); else g.fillRect(0, at - 1, length, 1);
+                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+                    if (vertical) g.fillRect(at, 0, 1, length); else g.fillRect(0, at, length, 1);
+                }
+            };
+            if (bw < mcuW) lines(bw, gx, w, h, true, 0.2);
+            if (bh < mcuH) lines(bh, gy, h, w, false, 0.2);
+            lines(mcuW, gx, w, h, true, 0.4);
+            lines(mcuH, gy, h, w, false, 0.4);
+        }
+        // a new size of the magnifier (window, zoom): the grid anew
+        if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(lens);
 
         function draw() {
             const ctx = photo.getContext('2d');
@@ -323,27 +356,8 @@
             lctx.drawImage(image.photo(), sx, sy, span * mcuW, span * mcuH, 0, 0, lens.width, lens.height);
             // the MCU grid, faint, and the chosen MCU
             const gx = (mx - AROUND) * mcuW - sx, gy = (my - AROUND) * mcuH - sy;   // where the grid starts, in photo pixels
-            // a grid line is a light and a dark line side by side, each 1,5 pixels
-            // of the canvas, so that it shows on bright and on dark pixels alike
-            const gridLines = (step, count, origin, vertical, alpha) => {
-                lctx.lineWidth = 1.5;
-                for (let i = -1; i <= count + 1; i++) {
-                    const at = (origin + i * step) * zoom;
-                    for (const [shift, colour] of [[-0.75, `rgba(255, 255, 255, ${alpha})`], [0.75, `rgba(0, 0, 0, ${alpha})`]]) {
-                        lctx.strokeStyle = colour;
-                        lctx.beginPath();
-                        if (vertical) { lctx.moveTo(at + shift, 0); lctx.lineTo(at + shift, lens.height); } else { lctx.moveTo(0, at + shift); lctx.lineTo(lens.width, at + shift); }
-                        lctx.stroke();
-                    }
-                }
-            };
-            // the blocks of the channel, fainter, where a block is smaller than an MCU
             const [bw, bh] = options.blockSize ? options.blockSize() : [mcuW, mcuH];
-            if (bw < mcuW) gridLines(bw, span * mcuW / bw, gx, true, 0.2);
-            if (bh < mcuH) gridLines(bh, span * mcuH / bh, gy, false, 0.2);
-            // the MCUs
-            gridLines(mcuW, span, gx, true, 0.35);
-            gridLines(mcuH, span, gy, false, 0.35);
+            drawGrid(gx, gy, bw, bh);
             // the block under the pointer, framed just outside its edge so that
             // no pixel of it is covered
             if (hover && options.onBlock) {
