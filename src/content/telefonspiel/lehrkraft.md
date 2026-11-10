@@ -1,11 +1,11 @@
 Lernende programmieren ein Spiel, das man anrufen kann, in Ruby, Python oder JavaScript: Es spricht mit der Stimme Thorsten, spielt Musik und verzweigt nach den Tasten des Telefons. Am Ende steht ein eigenes Abenteuer aus Szenen, das jemand aus der Klasse durchspielt und das, wenn die Lernenden es einreichen, im öffentlichen Telefonbuch steht.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Verzweigungen mit <code>if</code> und <code>else</code> (<a href='/kata-decisions'>Katas: Verzweigungen</a>) und eigene Funktionen ohne Parameter. Mehr braucht es nicht; das Spiel ist ein guter erster Grund, Funktionen zu schreiben.</td></tr>
+<tr><th>Voraussetzungen</th><td>Verzweigungen mit <code>if</code> und <code>else</code> (<a href='/kata-decisions'>Katas: Verzweigungen</a>). Mehr braucht es nicht: Eigene Funktionen ohne Parameter führt die Seite an der Höhle ein, erst dieselben Zeilen ohne und dann in einer Funktion, die genauso klingt; das Spiel ist ein guter erster Grund, Funktionen zu schreiben.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in den anderen. In JavaScript (Node) holt die erste Zeile die Befehle mit <code>require('telefon')</code>, Stimmung und Ausschnitte stehen in geschweiften Klammern (<code>say('…', { mood: 'whisper' })</code>), und verglichen wird mit <code>===</code>: Mit <code>==</code> wäre <code>'1' == 1</code> wahr, darum fragt »Text oder Zahl?« dort nach <code>===</code>.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> der erste Anruf, Musik und Pausen, die Frage mit Tasten, Text oder Zahl, die dritte Wahl.</li>
-<li><b>2. Doppelstunde:</b> die Höhle aus Szenen, »Niemand drückt«, der Gang als eigene Funktion, Stimmungen (Thorsten flüstert, staunt, ist müde), Stille im Gang und Musik beim Schatz, Abkürzen mit <code>interrupt</code>, Auflegen mit <code>hangup</code>; dann die Karte der eigenen Geschichte auf Papier.</li>
+<li><b>2. Doppelstunde:</b> die Höhle erst ohne Funktionen, dann jede Szene als Funktion, »Niemand drückt«, der Gang als eigene Funktion, Stimmungen (Thorsten flüstert, staunt, ist müde), Stille im Gang und Musik beim Schatz, Abkürzen mit <code>interrupt</code>, Auflegen mit <code>hangup</code>; dann die Karte der eigenen Geschichte auf Papier.</li>
 <li><b>3. Doppelstunde:</b> die eigene Geschichte programmieren, Spieltest in Paaren, danach verbessern und einreichen.</li>
 <li><b>Für Schnelle:</b> das Zahlenschloss (Extra), die Aussprache englischer Wörter mit Lautschrift.</li>
 </ul></td></tr>

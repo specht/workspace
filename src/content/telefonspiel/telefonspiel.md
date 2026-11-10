@@ -496,23 +496,95 @@ passiert, wenn du schon während der Frage drückst.
 
 ## Eine Höhle aus Szenen
 
-### Szenen
+### Vor der Höhle
 
 Ein Abenteuer besteht aus Szenen: Jede sagt, wo man gerade ist, und welche
 Taste wohin führt. Auf einer Karte sind die Szenen Kästen und die Tasten
 Pfeile. Diese Höhle hat erst einmal drei Szenen: davor, nach Hause und den
 Schatz.
 
-<img class='drawing d-none d-lg-block' src='hoehle-karte-wide.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach rechts zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach unten zum Kasten »nach Hause«. Ein Bogen mit »keine Taste« führt von »vor der Höhle« zurück in denselben Kasten.'>
-<img class='drawing d-lg-none' src='hoehle-karte.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach unten zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach rechts zum Kasten »nach Hause«. Ein Bogen mit »keine Taste« führt von »vor der Höhle« zurück in denselben Kasten.'>
+<img class='drawing d-none d-lg-block' src='hoehle-karte-anfang-wide.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach rechts zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach unten zum Kasten »nach Hause«. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
+<img class='drawing d-lg-none' src='hoehle-karte-anfang.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach unten zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach rechts zum Kasten »nach Hause«. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
 
-Jede Szene wird in deinem Programm eine Funktion. Die Funktion sagt, was in
-ihrer Szene zu sagen ist, wartet auf eine Taste und ruft die Funktion der
-nächsten Szene auf. Lege `hoehle` an:
+Vor der Höhle wartet eine Frage wie die nach Katzen und Hunden. Lege
+`hoehle` an:
 
 <!-- language: ruby -->
 `hoehle.rb`:
 
+```ruby
+require 'telefon'
+
+music 'https://www.youtube.com/watch?v=-xRD8VmjBQM'
+sleep 3
+say 'Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.'
+key = keys(1)
+if key == '1'
+  say 'Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!'
+elsif key == '2'
+  say 'Du gehst nach Hause. Vielleicht ein anderes Mal.'
+end
+say 'Ende.'
+```
+<!-- /language -->
+<!-- language: python -->
+`hoehle.py`:
+
+```python
+from telefon import keys, music, say, sleep
+
+music('https://www.youtube.com/watch?v=-xRD8VmjBQM')
+sleep(3)
+say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.')
+key = keys(1)
+if key == '1':
+    say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!')
+elif key == '2':
+    say('Du gehst nach Hause. Vielleicht ein anderes Mal.')
+say('Ende.')
+```
+<!-- /language -->
+<!-- language: javascript -->
+`hoehle.js`:
+
+```javascript
+const { keys, music, say, sleep } = require('telefon');
+
+music('https://www.youtube.com/watch?v=-xRD8VmjBQM');
+sleep(3);
+say('Du stehst vor einer dunklen Höhle. Drück 1, um hineinzugehen, oder 2, um nach Hause zu gehen.');
+const key = keys(1);
+if (key === '1') {
+  say('Im Licht einer Fackel glänzt eine Kiste voller Gold. Du hast den Schatz gefunden!');
+} else if (key === '2') {
+  say('Du gehst nach Hause. Vielleicht ein anderes Mal.');
+}
+say('Ende.');
+```
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/5-hoehle/hoehle.rb as hoehle.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/5-hoehle/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/5-hoehle/hoehle.js as hoehle.js -->
+<!-- /language -->
+
+Erst Musik, eine Pause, dann die Frage vor der Höhle; nach der Antwort sagt
+das Spiel »Ende.«, und der Anruf ist vorbei. Ruf an und probier die 1 und
+die 2.
+
+### Szenen als Funktionen
+
+Bald hat die Höhle mehr Szenen, und zu manchen kommt man mehr als einmal.
+Darum bekommt jede Szene einen Namen: Sie wird eine Funktion. Pack den Satz
+vom Schatz in die Funktion `treasure` und die Szene vor der Höhle in die
+Funktion `cave`:
+
+<!-- language: ruby -->
 ```ruby
 require 'telefon'
 
@@ -527,8 +599,6 @@ def cave
     treasure
   elsif key == '2'
     say 'Du gehst nach Hause. Vielleicht ein anderes Mal.'
-  else
-    cave
   end
 end
 
@@ -539,8 +609,6 @@ say 'Ende.'
 ```
 <!-- /language -->
 <!-- language: python -->
-`hoehle.py`:
-
 ```python
 from telefon import keys, music, say, sleep
 
@@ -556,8 +624,6 @@ def cave():
         treasure()
     elif key == '2':
         say('Du gehst nach Hause. Vielleicht ein anderes Mal.')
-    else:
-        cave()
 
 
 music('https://www.youtube.com/watch?v=-xRD8VmjBQM')
@@ -567,8 +633,6 @@ say('Ende.')
 ```
 <!-- /language -->
 <!-- language: javascript -->
-`hoehle.js`:
-
 ```javascript
 const { keys, music, say, sleep } = require('telefon');
 
@@ -583,8 +647,6 @@ function cave() {
     treasure();
   } else if (key === '2') {
     say('Du gehst nach Hause. Vielleicht ein anderes Mal.');
-  } else {
-    cave();
   }
 }
 
@@ -596,23 +658,106 @@ say('Ende.');
 <!-- /language -->
 
 <!-- language: ruby -->
-<!-- stage: stufen/5-hoehle/hoehle.rb as hoehle.rb -->
+<!-- stage: stufen/6-szenen/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
-<!-- stage: stufen/5-hoehle/hoehle.py as hoehle.py -->
+<!-- stage: stufen/6-szenen/hoehle.py as hoehle.py -->
 <!-- /language -->
 <!-- language: javascript -->
-<!-- stage: stufen/5-hoehle/hoehle.js as hoehle.js -->
+<!-- stage: stufen/6-szenen/hoehle.js as hoehle.js -->
 <!-- /language -->
 
-Unten steht, was beim Anruf passiert: Musik, eine Pause, dann die Szene vor
-der Höhle. Wenn sie zu Ende ist, sagt das Spiel »Ende.«, und der Anruf ist
-vorbei. Die Szene »nach Hause« ist so kurz, dass sie keine eigene Funktion
-braucht: Sie ist nur ein Satz.
+Ruf an: Das Spiel klingt genau wie vorher. Die Zeilen sind dieselben, sie
+stehen nur an einem anderen Ort.
+<!-- language: ruby -->
+Von `def cave` bis zu seinem `end` steht, was zu `cave` gehört. Dabei
+sagt das Spiel noch nichts: Erst die Zeile `cave` weiter unten ruft die
+Funktion auf, und dann laufen ihre Zeilen, eine nach der anderen. Genauso
+ruft `cave` die Funktion `treasure` auf, wenn jemand die 1 drückt.
+<!-- /language -->
+<!-- language: python -->
+Was unter `def cave():` eingerückt steht, gehört zu `cave`. Dabei sagt das
+Spiel noch nichts: Erst die Zeile `cave()` weiter unten ruft die Funktion
+auf, und dann laufen ihre Zeilen, eine nach der anderen. Genauso ruft
+`cave` die Funktion `treasure` auf, wenn jemand die 1 drückt.
+<!-- /language -->
+<!-- language: javascript -->
+Was in den geschweiften Klammern von `function cave()` steht, gehört zu
+`cave`. Dabei sagt das Spiel noch nichts: Erst die Zeile `cave();` weiter
+unten ruft die Funktion auf, und dann laufen ihre Zeilen, eine nach der
+anderen. Genauso ruft `cave` die Funktion `treasure` auf, wenn jemand die
+1 drückt.
+<!-- /language -->
+Die Szene »nach Hause« ist so kurz, dass sie keine eigene Funktion braucht:
+Sie ist nur ein Satz.
+
+<div class='hint try'>
+<!-- language: ruby -->
+<strong>Ausprobieren:</strong> Setz ein <code>#</code> vor die Zeile
+<code>cave</code> unten, damit sie nicht mehr läuft, und ruf an. Achte
+darauf, was du nach der Musik noch hörst. Nimm das <code>#</code> danach
+wieder weg.
+<!-- /language -->
+<!-- language: python -->
+<strong>Ausprobieren:</strong> Setz ein <code>#</code> vor die Zeile
+<code>cave()</code> unten, damit sie nicht mehr läuft, und ruf an. Achte
+darauf, was du nach der Musik noch hörst. Nimm das <code>#</code> danach
+wieder weg.
+<!-- /language -->
+<!-- language: javascript -->
+<strong>Ausprobieren:</strong> Setz <code>//</code> vor die Zeile
+<code>cave();</code> unten, damit sie nicht mehr läuft, und ruf an. Achte
+darauf, was du nach der Musik noch hörst. Nimm die <code>//</code> danach
+wieder weg.
+<!-- /language -->
+</div>
 
 ### Wenn niemand drückt
 
-Steh vor der Höhle und drück gar nichts.
+Die Verzweigung in `cave` bekommt einen letzten Zweig, für alles außer der
+1 und der 2:
+
+<!-- language: ruby -->
+```ruby
+~   elsif key == '2'
+~     say 'Du gehst nach Hause. Vielleicht ein anderes Mal.'
+  else
+    cave
+~   end
+~ end
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+~     elif key == '2':
+~         say('Du gehst nach Hause. Vielleicht ein anderes Mal.')
+    else:
+        cave()
+```
+<!-- /language -->
+<!-- language: javascript -->
+```javascript
+~   } else if (key === '2') {
+~     say('Du gehst nach Hause. Vielleicht ein anderes Mal.');
+  } else {
+    cave();
+~   }
+~ }
+```
+<!-- /language -->
+
+<!-- language: ruby -->
+<!-- stage: stufen/7-hoehle/hoehle.rb as hoehle.rb -->
+<!-- /language -->
+<!-- language: python -->
+<!-- stage: stufen/7-hoehle/hoehle.py as hoehle.py -->
+<!-- /language -->
+<!-- language: javascript -->
+<!-- stage: stufen/7-hoehle/hoehle.js as hoehle.js -->
+<!-- /language -->
+
+Was passiert jetzt, wenn vor der Höhle niemand etwas drückt? Überleg es dir,
+bevor du anrufst.
 
 _task(nichts-gedrueckt)
 
@@ -621,7 +766,11 @@ Nach zehn Sekunden sagt das Spiel den Satz vor der Höhle noch einmal. `keys`
 gibt dann `''` zurück, und im Zweig für alles andere ruft `cave` sich selbst
 auf: Die Szene beginnt von vorn. Das passt zum Telefon. Wer nicht weiß, was
 er drücken soll, hört die Wahl noch einmal. Dasselbe passiert bei einer
-Taste, die in dieser Szene nichts bedeutet, etwa der 7.
+Taste, die in dieser Szene nichts bedeutet, etwa der 7. Auf der Karte ist
+das ein Bogen zurück in denselben Kasten:
+
+<img class='drawing d-none d-lg-block' src='hoehle-karte-wide.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach rechts zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach unten zum Kasten »nach Hause«. Ein Bogen mit »keine Taste« führt von »vor der Höhle« zurück in denselben Kasten. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
+<img class='drawing d-lg-none' src='hoehle-karte.svg' alt='Die Karte der ersten Höhle: ein Kasten »vor der Höhle«, von dem ein Pfeil mit der 1 nach unten zum blau umrandeten Kasten »Schatz« führt und ein Pfeil mit der 2 nach rechts zum Kasten »nach Hause«. Ein Bogen mit »keine Taste« führt von »vor der Höhle« zurück in denselben Kasten. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
 <!-- /after -->
 
 ### Der Gang
@@ -631,8 +780,8 @@ nicht mehr direkt zum Schatz, sondern in einen Gang: Links flackert Licht,
 dort liegt der Schatz. Rechts rauscht Wasser, das ist eiskalt, und man muss
 zurück in den Gang.
 
-<img class='drawing d-none d-lg-block' src='gang-karte-wide.svg' alt='Die Karte mit dem Gang: von »vor der Höhle« führt die 1 nach rechts zum Kasten »Gang« und die 2 nach unten zu »nach Hause«; vom Gang führt die 1 weiter nach rechts zum blau umrandeten »Schatz«. Über »vor der Höhle« ein Bogen »keine Taste« zurück in denselben Kasten, über »Gang« zwei Bögen zurück in den Gang: »keine Taste« und die 2 mit »eiskaltes Wasser«.'>
-<img class='drawing d-lg-none' src='gang-karte.svg' alt='Die Karte mit dem Gang, von oben nach unten: von »vor der Höhle« führt die 1 nach unten zum Kasten »Gang« und die 2 nach rechts zu »nach Hause«; vom Gang führt die 1 weiter nach unten zum blau umrandeten »Schatz«. Über »vor der Höhle« ein Bogen »keine Taste« zurück in denselben Kasten, über »Gang« zwei Bögen zurück in den Gang: »keine Taste« und die 2 mit »eiskaltes Wasser«.'>
+<img class='drawing d-none d-lg-block' src='gang-karte-wide.svg' alt='Die Karte mit dem Gang: von »vor der Höhle« führt die 1 nach rechts zum Kasten »Gang« und die 2 nach unten zu »nach Hause«; vom Gang führt die 1 weiter nach rechts zum blau umrandeten »Schatz«. Über »vor der Höhle« ein Bogen »keine Taste« zurück in denselben Kasten, über »Gang« zwei Bögen zurück in den Gang: »keine Taste« und die 2 mit »eiskaltes Wasser«. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
+<img class='drawing d-lg-none' src='gang-karte.svg' alt='Die Karte mit dem Gang, von oben nach unten: von »vor der Höhle« führt die 1 nach unten zum Kasten »Gang« und die 2 nach rechts zu »nach Hause«; vom Gang führt die 1 weiter nach unten zum blau umrandeten »Schatz«. Über »vor der Höhle« ein Bogen »keine Taste« zurück in denselben Kasten, über »Gang« zwei Bögen zurück in den Gang: »keine Taste« und die 2 mit »eiskaltes Wasser«. Ein Pfeil mit »Start« zeigt auf »vor der Höhle«, dort beginnt das Spiel.'>
 
 <div class='hint own' data-check='gang'>
 <strong>Jetzt bist du dran:</strong> Schreib die Szene <code>tunnel</code>
@@ -782,13 +931,13 @@ In `cave` führt die 1 in den Gang:
 <!-- /solution -->
 
 <!-- language: ruby -->
-<!-- stage: stufen/6-gang/hoehle.rb as hoehle.rb -->
+<!-- stage: stufen/8-gang/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
-<!-- stage: stufen/6-gang/hoehle.py as hoehle.py -->
+<!-- stage: stufen/8-gang/hoehle.py as hoehle.py -->
 <!-- /language -->
 <!-- language: javascript -->
-<!-- stage: stufen/6-gang/hoehle.js as hoehle.js -->
+<!-- stage: stufen/8-gang/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(gang)
@@ -890,13 +1039,13 @@ die Überraschung.
 <!-- /solution -->
 
 <!-- language: ruby -->
-<!-- stage: stufen/7-stimmen/hoehle.rb as hoehle.rb -->
+<!-- stage: stufen/9-stimmen/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
-<!-- stage: stufen/7-stimmen/hoehle.py as hoehle.py -->
+<!-- stage: stufen/9-stimmen/hoehle.py as hoehle.py -->
 <!-- /language -->
 <!-- language: javascript -->
-<!-- stage: stufen/7-stimmen/hoehle.js as hoehle.js -->
+<!-- stage: stufen/9-stimmen/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(stimmen)
@@ -1024,13 +1173,13 @@ function tunnel() {
 <!-- /solution -->
 
 <!-- language: ruby -->
-<!-- stage: stufen/8-klang/hoehle.rb as hoehle.rb -->
+<!-- stage: stufen/10-klang/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
-<!-- stage: stufen/8-klang/hoehle.py as hoehle.py -->
+<!-- stage: stufen/10-klang/hoehle.py as hoehle.py -->
 <!-- /language -->
 <!-- language: javascript -->
-<!-- stage: stufen/8-klang/hoehle.js as hoehle.js -->
+<!-- stage: stufen/10-klang/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(klang)
@@ -1196,13 +1345,13 @@ const { hangup, keys, music, say, sleep } = require('telefon');
 <!-- /solution -->
 
 <!-- language: ruby -->
-<!-- stage: stufen/9-auflegen/hoehle.rb as hoehle.rb -->
+<!-- stage: stufen/11-auflegen/hoehle.rb as hoehle.rb -->
 <!-- /language -->
 <!-- language: python -->
-<!-- stage: stufen/9-auflegen/hoehle.py as hoehle.py -->
+<!-- stage: stufen/11-auflegen/hoehle.py as hoehle.py -->
 <!-- /language -->
 <!-- language: javascript -->
-<!-- stage: stufen/9-auflegen/hoehle.js as hoehle.js -->
+<!-- stage: stufen/11-auflegen/hoehle.js as hoehle.js -->
 <!-- /language -->
 
 _task(auflegen)
@@ -1263,8 +1412,8 @@ Was ein Spiel am Telefon gut macht:
   wütend klingt, wenn man sie weckt.
 - **Abkürzen erlaubt.** `interrupt` für Sätze, die man beim zweiten Mal schon
   kennt.
-- **Ein Ende darf auflegen.** Nach dem Sturz in die Schlucht sagt das
-  Besetztzeichen den Rest.
+- **Auflegen als Ende.** Nach dem Sturz in die Schlucht legt das Spiel mit
+  `hangup` auf, und das Besetztzeichen sagt den Rest.
 
 _task(geschichte)
 
@@ -1416,7 +1565,7 @@ funktioniert, übst du in den [Katas zu Dictionaries](/kata-dicts).
 # Wörter, dieselbe Zeit, stehende Animationen; teaser dreht das Telefon ein
 # wenig und rückt beides in die Mitte.
 write-file: telefon/frage.rb <- file:stufen/4-drei/frage.rb
-write-file: telefon/hoehle.rb <- file:stufen/6-gang/hoehle.rb
+write-file: telefon/hoehle.rb <- file:stufen/8-gang/hoehle.rb
 check-task: drei
 check-task: gang
 terminal-open

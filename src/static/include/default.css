@@ -15019,6 +15019,22 @@ html[data-bs-theme="dark"] .splat-viewer {
 .phone-publish .pp-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-top: .9rem; }
 .phone-publish .pp-actions .form-text { margin-top: 0; }
 .phone-publish .pp-own-number { font-weight: 700; font-variant-numeric: tabular-nums; }
+/* On a phone the card runs from edge to edge like the boxes of a page
+   (.reference-card), its text where the page's text is; the list of games
+   inside it has lines between the games, no frame of its own. */
+@media (max-width: 575.98px) {
+    .phone-publish.card {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding: 1rem max(1rem, calc(50vw - 50%));
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .phone-publish .list-group { border-radius: 0; }
+    .phone-publish .list-group-item { border-left: 0; border-right: 0; padding-left: 0; padding-right: 0; }
+}
 
 /* recordings to play, as the phone of the Telefonspiel shows a call
    (sound_buttons.js; the moods of »Ein Spiel am Telefon«): Thorsten's

@@ -5,12 +5,15 @@ for phones):
     python3 src/content/telefonspiel/bilder/karten.py
     ruby src/scripts/render-svg.rb src/content/telefonspiel/NAME.svg WIDTH
 
-- hoehle-karte: the first cave (stufen/5-hoehle): in front of the cave, the
+- hoehle-karte-anfang: the first cave as plain code (stufen/5-hoehle),
+  without the loop: no key ends the game.
+- hoehle-karte: the first cave (stufen/7-hoehle): in front of the cave, the
   1 to the treasure, the 2 home, no key back to the start.
-- gang-karte: with the tunnel (stufen/6-gang) between the cave and the
+- gang-karte: with the tunnel (stufen/8-gang) between the cave and the
   treasure; its 2 (the icy water) and no key lead back into the tunnel.
 
-Every scene a box, every key an arrow labelled with it; a key that leads
+Every scene a box, every key an arrow labelled with it, »Start« with an
+arrow onto the first scene; a key that leads
 back into the same scene is a loop above its box. The treasure, the good
 end, has a blue frame; the way home is the other end.
 """
@@ -81,32 +84,39 @@ def key(a, b, label, label_at=0.5):
     return ''.join(parts)
 
 
-def loop(at, label, side, note=None, feet=(22, 78), note_anchor='middle'):
-    """A key back into the same scene: a loop above the box, on its left or
-    right half (side -1 or 1), the tip coming down onto the box."""
+def loop(at, label, side, note=None, feet=(30, 66), note_anchor='middle'):
+    """A key back into the same scene: a round loop above the box, on its
+    left or right half (side -1 or 1), both ends inside the top edge (clear
+    of the rounded corners); it leaves at the outer foot, swings out and
+    comes down onto the inner one, the head along the curve."""
     x, y = at
     top = y - BOX_H / 2
-    a = x + side * feet[0]
-    b = x + side * feet[1]
-    start, end = (a, top), (b, top)
-    if side < 0:
-        start, end = end, start
-    c1 = (start[0], top - 62)
-    c2 = (end[0], top - 62)
-    head = 12
-    # the tip on the top edge, the head along the curve's last tangent
-    parts = [f"<path d='M {start[0]:.1f} {start[1]:.1f} C {c1[0]:.1f} {c1[1]:.1f} {c2[0]:.1f} {c2[1]:.1f} "
-             f"{end[0]:.1f} {end[1] - head + 1:.1f}' fill='none' stroke='{INK}' stroke-width='2.2'/>",
-             ap.arrowhead(end[0], end[1], 0, 1, INK, head, 6)]
+    outer, inner = x + side * feet[1], x + side * feet[0]
+    rise, flare = 64, 24                 # the peak at 3/4 of the rise
+    start, end = (outer, top), (inner, top)
+    c1 = (outer + side * flare, top - rise)
+    c2 = (inner - side * flare, top - rise)
+    parts = [ap.curve(start, c1, c2, end, INK, 2.2, 12, 6)]
     lx = x + side * (feet[0] + feet[1]) / 2
-    parts.append(text(lx, top - 56, label, 17, BLUE, weight=600))
+    parts.append(text(lx, top - rise * 0.75 - 9, label, 17, BLUE, weight=600))
     if note:
-        nx = a if note_anchor == 'start' else lx
-        parts.append(text(nx, top - 76, note, 15, GREY, note_anchor, italic=True))
+        nx = inner if note_anchor == 'start' else lx
+        parts.append(text(nx, top - rise * 0.75 - 29, note, 15, GREY, note_anchor, italic=True))
     return ''.join(parts)
 
 
-def hoehle(wide):
+def start(at):
+    """Where the game begins: an arrow from »Start« down onto the right half
+    of the box (the loop takes the left half)."""
+    x, y = at
+    x += 40
+    top = y - BOX_H / 2
+    head = 13
+    return (f"<line x1='{x:.1f}' y1='{top - 40:.1f}' x2='{x:.1f}' y2='{top - head + 1:.1f}' stroke='{INK}' stroke-width='2.2'/>"
+            + ap.arrowhead(x, top, 0, 1, INK, head, 6.5) + text(x, top - 48, 'Start', 17, INK, weight=600))
+
+
+def hoehle(wide, again=True):
     global box_w
     if wide:
         box_w, w, h = BOX_W, 560, 300
@@ -116,11 +126,12 @@ def hoehle(wide):
         box_w, w, h = 160, 420, 360
         at = {'vor der Höhle': (110, 130), 'nach Hause': (320, 130), 'Schatz': (110, 320)}
         down, home = 0.5, 0.5
-    parts = [key(at['vor der Höhle'], at['Schatz'], '1', down),
-             key(at['vor der Höhle'], at['nach Hause'], '2', home),
-             loop(at['vor der Höhle'], 'keine Taste', -1, feet=(30, 80) if not wide else (22, 78))]
+    parts = [start(at['vor der Höhle']), key(at['vor der Höhle'], at['Schatz'], '1', down),
+             key(at['vor der Höhle'], at['nach Hause'], '2', home)]
+    if again:
+        parts.append(loop(at['vor der Höhle'], 'keine Taste', -1))
     parts += [scene(n, x, y, n == 'Schatz') for n, (x, y) in at.items()]
-    name = 'hoehle-karte-wide' if wide else 'hoehle-karte'
+    name = 'hoehle-karte' + ('' if again else '-anfang') + ('-wide' if wide else '')
     save(name, w, h, 'Die erste Höhle: jede Szene ein Kasten, jede Taste ein Pfeil', parts)
 
 
@@ -129,7 +140,7 @@ def gang(wide):
     if wide:
         box_w, w, h = BOX_W, 820, 300
         at = {'vor der Höhle': (125, 150), 'Gang': (410, 150), 'Schatz': (695, 150), 'nach Hause': (125, 262)}
-        parts = [key(at['vor der Höhle'], at['Gang'], '1'),
+        parts = [start(at['vor der Höhle']), key(at['vor der Höhle'], at['Gang'], '1'),
                  key(at['vor der Höhle'], at['nach Hause'], '2'),
                  key(at['Gang'], at['Schatz'], '1'),
                  loop(at['vor der Höhle'], 'keine Taste', -1),
@@ -139,17 +150,18 @@ def gang(wide):
         # the loops of the tunnel left and right of the arrow that comes down into it
         box_w, w, h = 160, 420, 600
         at = {'vor der Höhle': (110, 130), 'nach Hause': (320, 130), 'Gang': (110, 370), 'Schatz': (110, 545)}
-        parts = [key(at['vor der Höhle'], at['Gang'], '1', 0.18),
+        parts = [start(at['vor der Höhle']), key(at['vor der Höhle'], at['Gang'], '1', 0.18),
                  key(at['vor der Höhle'], at['nach Hause'], '2'),
                  key(at['Gang'], at['Schatz'], '1'),
-                 loop(at['vor der Höhle'], 'keine Taste', -1, feet=(30, 80)),
-                 loop(at['Gang'], 'keine Taste', -1, feet=(32, 88)),
-                 loop(at['Gang'], '2', 1, 'eiskaltes Wasser', feet=(22, 72), note_anchor='start')]
+                 loop(at['vor der Höhle'], 'keine Taste', -1),
+                 loop(at['Gang'], 'keine Taste', -1),
+                 loop(at['Gang'], '2', 1, 'eiskaltes Wasser', note_anchor='start')]
     parts += [scene(n, x, y, n == 'Schatz') for n, (x, y) in at.items()]
     name = 'gang-karte-wide' if wide else 'gang-karte'
     save(name, w, h, 'Die Höhle mit dem Gang: jede Szene ein Kasten, jede Taste ein Pfeil', parts)
 
 
 for wide in (True, False):
+    hoehle(wide, again=False)
     hoehle(wide)
     gang(wide)
