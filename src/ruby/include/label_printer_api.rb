@@ -5,7 +5,8 @@ require_relative 'label_printer'
 # the switch and the queue for the administration (/etiketten-station),
 # printing for visitors (/etiketten, with the key of the QR code, no
 # account), and the two calls of the station on the laptop (with its
-# token). Who drew a label is not stored; a label goes after two days.
+# token). Who drew a label is not stored; a label goes after two days, one
+# with a photo as soon as it is printed (or after two hours unprinted).
 class Main < Sinatra::Base
     LABEL_SETTING = 'labels'
 
@@ -30,7 +31,9 @@ class Main < Sinatra::Base
     end
 
     def label_jobs_cleanup
-        neo4j_query('MATCH (j:LabelJob) WHERE j.ts < $before DELETE j;', :before => Time.now.to_i - LabelPrinter::KEEP_SECONDS)
+        now = Time.now.to_i
+        neo4j_query('MATCH (j:LabelJob) WHERE j.ts < $before OR (j.photo AND j.ts < $photos) DELETE j;',
+                    :before => now - LabelPrinter::KEEP_SECONDS, :photos => now - LabelPrinter::PHOTO_SECONDS)
     end
 
     def label_visitor!(key)
@@ -72,8 +75,8 @@ class Main < Sinatra::Base
         label_jobs_cleanup
         setting = label_setting
         on = LabelPrinter.on?(setting)
-        jobs = neo4j_query('MATCH (j:LabelJob) RETURN j.id AS id, j.ts AS ts, j.state AS state, j.bits AS bits ORDER BY j.ts DESC LIMIT 60;').map do |r|
-            { :id => r['id'], :ts => r['ts'].to_i, :state => r['state'], :bits => r['bits'] }
+        jobs = neo4j_query('MATCH (j:LabelJob) RETURN j.id AS id, j.ts AS ts, j.state AS state, j.bits AS bits, j.photo AS photo ORDER BY j.ts DESC LIMIT 60;').map do |r|
+            { :id => r['id'], :ts => r['ts'].to_i, :state => r['state'], :bits => r['bits'], :photo => r['photo'] == true }
         end
         url = on ? label_url(setting) : nil
         respond(:on => on, :until => on ? setting[:until] : nil, :url => url, :qr => url && label_qr_svg(url),
@@ -106,7 +109,8 @@ class Main < Sinatra::Base
     end
 
     post '/api/labels/print' do
-        data = parse_request_data(:required_keys => [:key, :browser, :bits],
+        data = parse_request_data(:required_keys => [:key, :browser, :bits], :optional_keys => [:photo],
+                                  :types => { :photo => TrueClass },
                                   :max_body_length => LabelPrinter::BYTES * 2 + 1024,
                                   :max_value_lengths => { :bits => LabelPrinter::BYTES * 2 })
         label_visitor!(data[:key])
@@ -125,7 +129,9 @@ class Main < Sinatra::Base
         queued = neo4j_query("MATCH (j:LabelJob {state: 'queued'}) RETURN count(j) AS n;").first['n'].to_i
         halt 429, { :error => 'busy' }.to_json if queued >= LabelPrinter::MAX_QUEUED
         id = RandomTag.generate(16)
-        neo4j_query("CREATE (:LabelJob {id: $id, ts: $ts, state: 'queued', bits: $bits});", :id => id, :ts => now, :bits => bits)
+        label_jobs_cleanup
+        neo4j_query("CREATE (:LabelJob {id: $id, ts: $ts, state: 'queued', bits: $bits, photo: $photo});",
+                    :id => id, :ts => now, :bits => bits, :photo => data[:photo] == true)
         respond(:id => id, :ahead => queued)
     end
 
@@ -157,6 +163,8 @@ class Main < Sinatra::Base
     post '/api/labels/done' do
         data = parse_request_data(:required_keys => [:token, :id])
         label_station!(data[:token])
+        # with a photo it goes at once; the page then hears »gone«
+        neo4j_query("MATCH (j:LabelJob {id: $id}) WHERE j.photo DELETE j;", :id => data[:id])
         neo4j_query("MATCH (j:LabelJob {id: $id}) SET j.state = 'printed';", :id => data[:id])
         respond(:ok => true)
     end

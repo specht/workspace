@@ -26,6 +26,7 @@ module LabelPrinter
     BROWSER_SECONDS = 20              # between two labels of one browser
     MAX_QUEUED = 15                   # labels waiting at once
     KEEP_SECONDS = 2 * 86_400         # labels go after two days
+    PHOTO_SECONDS = 2 * 3600          # a label with a photo: gone when printed, or after two hours
     STATION_SECONDS = 15              # the station counts as there this long after asking
 
     # The picture as the page sends it: BYTES * 2 hexadecimal digits

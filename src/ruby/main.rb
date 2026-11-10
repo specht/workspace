@@ -876,6 +876,13 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Reading the server's load failed: #{e.class}: #{e.message}"
                 end
+                # labels of the Tag der offenen Tür past their time (with a
+                # photo: two hours unprinted), include/label_printer_api.rb
+                begin
+                    Main.new!.label_jobs_cleanup
+                rescue => e
+                    STDERR.puts "Deleting old labels failed: #{e.class}: #{e.message}"
+                end
             end
         end
 

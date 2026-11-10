@@ -1,113 +1,183 @@
 <style>
     /* /etiketten: a label to draw on for the Tag der offenen Tür
        (label_printer.rb, labels.js). The label is always white with black,
-       in both themes: it is the sticker as it comes out of the printer. */
-    .lb-page { max-width: 46rem; }
+       in both themes: it is the sticker as it comes out of the printer.
+       Wide screens (PC, tablet across): the label left, the tools right;
+       phones and tablets upright: the tools under the label. */
+    .lb-page { max-width: 74rem; }
+    /* no floating page bar here: on a phone it would lie over the sticker
+       while one draws */
+    .autotoc { display: none !important; }
+    .lb-editor { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+    /* the sticker stays in sight while one scrolls through the tools */
+    .lb-stage {
+        position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+        padding: 0.5rem 0; background: var(--bs-body-bg);
+    }
+    @media (min-width: 992px) {
+        .lb-editor { grid-template-columns: minmax(0, 1fr) 21rem; }
+        .lb-stage { top: calc(env(safe-area-inset-top, 0px) + 1rem); padding: 0; }
+    }
     .lb-label {
         position: relative;
         width: 100%;
         aspect-ratio: 472 / 268;
-        border-radius: 0.6rem;
+        border-radius: 0.7rem;
         background: #fff;
-        box-shadow: 0 0.15rem 0.8rem rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.12);
         overflow: hidden;
         touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
     }
-    .lb-label canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-        image-rendering: pixelated;
-        cursor: crosshair;
+    .lb-label canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    .lb-label .lb-art { image-rendering: pixelated; }
+    .lb-label .lb-ui { pointer-events: none; }
+    .lb-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; align-items: center; }
+    .lb-actions .btn .bi { margin-right: 0.35em; }
+    .lb-actions .lb-icon-only .bi { margin-right: 0; }
+    .lb-actions .lb-spacer { flex: 1 1 auto; }
+    .lb-actions .btn.active { background: var(--bs-primary); border-color: var(--bs-primary); color: #fff; }
+
+    .lb-panel { display: flex; flex-direction: column; gap: 1rem; }
+    .lb-palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem; }
+    .lb-palette button {
+        display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+        padding: 0.45rem 0.2rem 0.35rem; border-radius: 0.6rem;
+        border: 1px solid var(--bs-border-color); background: var(--bs-body-bg); color: var(--bs-body-color);
+        font-size: 0.78rem; line-height: 1.1;
     }
-    /* the safe area: closer to the border the printer may cut */
-    .lb-safe {
-        position: absolute;
-        inset: calc(100% * 16 / 268) calc(100% * 16 / 472);
-        border: 1px dashed rgba(13, 110, 253, 0.45);
-        border-radius: 0.3rem;
-        pointer-events: none;
+    .lb-palette button .bi { font-size: 1.35rem; margin: 0; }
+    .lb-palette button[aria-pressed='true'] { border-color: var(--bs-primary); background: var(--bs-primary-bg-subtle); color: var(--bs-primary-text-emphasis); box-shadow: 0 0 0 1px var(--bs-primary); }
+    .lb-opt { display: flex; flex-direction: column; gap: 0.6rem; }
+    .lb-opt[hidden] { display: none; }
+    .lb-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .lb-row .btn .bi { margin-right: 0.35em; }
+    .lb-caption { font-size: 0.85rem; color: var(--bs-secondary-color); margin: 0; }
+    .lb-swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem; }
+    .lb-swatches button, .lb-frames button {
+        padding: 0.2rem; border-radius: 0.5rem; border: 1px solid var(--bs-border-color); background: #fff;
     }
-    .lb-tools { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0 0.75rem; }
-    .lb-tools .btn .bi { margin-right: 0.4em; }
-    .lb-tools .lb-icon-only .bi { margin-right: 0; }
-    .lb-spacer { flex: 1 1 auto; }
-    .lb-options { min-height: 3rem; margin-bottom: 1rem; }
-    .lb-stamps { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.9rem, 1fr)); gap: 0.35rem; }
+    .lb-swatches canvas, .lb-frames canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+    .lb-swatches button[aria-pressed='true'], .lb-frames button:focus-visible { box-shadow: 0 0 0 2px var(--bs-primary); border-color: var(--bs-primary); }
+    .lb-frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+    .lb-stamps { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr)); gap: 0.3rem; }
     .lb-stamps button {
-        aspect-ratio: 1;
-        font-size: 1.45rem;
-        padding: 0;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 0.5rem;
-        background: var(--bs-body-bg);
-        color: var(--bs-body-color);
+        aspect-ratio: 1; font-size: 1.3rem; padding: 0;
+        border: 1px solid var(--bs-border-color); border-radius: 0.5rem;
+        background: var(--bs-body-bg); color: var(--bs-body-color);
     }
     .lb-stamps button .bi { margin: 0; }
-    .lb-stamps button[aria-pressed='true'] { border-color: var(--bs-primary); box-shadow: 0 0 0 2px var(--bs-primary); }
-    .lb-hint { font-size: 0.9rem; color: var(--bs-secondary-color); margin: 0.4rem 0 0; }
-    .lb-print { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+    .lb-float { border-top: 1px solid var(--bs-border-color); padding-top: 0.75rem; }
+    .lb-float label { font-size: 0.85rem; color: var(--bs-secondary-color); display: flex; align-items: center; gap: 0.5rem; }
+    .lb-float input[type='range'] { flex: 1 1 auto; }
+    .lb-print { display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--bs-border-color); padding-top: 1rem; }
     .lb-print .btn-lg .bi { margin-right: 0.5em; }
-    .lb-status { margin: 0; }
+    .lb-status { margin: 0; min-height: 1.5em; }
+    .lb-hint { font-size: 0.85rem; color: var(--bs-secondary-color); margin: 0; }
 </style>
 <div class='container lb-page'>
-    <h1 class='mt-4'>Dein Etikett</h1>
-    <p class='abstract'>Mal etwas, setz Bilder und Text darauf, und der Drucker am Stand druckt es dir als Aufkleber, in Schwarz auf Weiß.</p>
+    <h1 class='mt-4'>Dein Aufkleber</h1>
+    <p class='abstract'>Mal etwas, spiegel es, füll es mit Mustern, setz Bilder, Text oder ein Foto darauf, und der Drucker am Stand druckt es dir als Aufkleber, in Schwarz auf Weiß.</p>
     <div class='lb-closed alert alert-secondary' hidden></div>
     <div class='lb-app' hidden>
-        <div class='lb-label'><canvas width='472' height='268' aria-label='Das Etikett zum Bemalen'></canvas><div class='lb-safe'></div></div>
-        <div class='lb-tools' role='toolbar' aria-label='Werkzeuge'>
-            <div class='btn-group' role='group' aria-label='Werkzeug'>
-                <button type='button' class='btn btn-outline-primary active' data-tool='pen'><i class='bi bi-pencil'></i>Stift</button>
-                <button type='button' class='btn btn-outline-primary' data-tool='eraser'><i class='bi bi-eraser'></i>Radierer</button>
-                <button type='button' class='btn btn-outline-primary' data-tool='stamp'><i class='bi bi-emoji-smile'></i>Bild</button>
-                <button type='button' class='btn btn-outline-primary' data-tool='text'><i class='bi bi-fonts'></i>Text</button>
-            </div>
-            <span class='lb-spacer'></span>
-            <button type='button' class='btn btn-outline-secondary lb-icon-only lb-undo' title='Rückgängig' aria-label='Rückgängig'><i class='bi bi-arrow-counterclockwise'></i></button>
-            <button type='button' class='btn btn-outline-secondary lb-clear'><i class='bi bi-trash'></i>Leeren</button>
-        </div>
-        <div class='lb-options'>
-            <div class='lb-opt' data-for='pen eraser'>
-                <div class='btn-group btn-group-sm' role='group' aria-label='Strichstärke'>
-                    <button type='button' class='btn btn-outline-secondary' data-width='3'>fein</button>
-                    <button type='button' class='btn btn-outline-secondary active' data-width='7'>mittel</button>
-                    <button type='button' class='btn btn-outline-secondary' data-width='16'>dick</button>
+        <div class='lb-editor'>
+            <div class='lb-stage'>
+                <div class='lb-label'>
+                    <canvas class='lb-art' width='472' height='268' aria-label='Der Aufkleber zum Bemalen'></canvas>
+                    <canvas class='lb-ui' aria-hidden='true'></canvas>
+                </div>
+                <div class='lb-actions' role='toolbar' aria-label='Ganzer Aufkleber'>
+                    <button type='button' class='btn btn-outline-secondary btn-sm' data-action='pixel' aria-pressed='false' title='Große Pixel'><i class='bi bi-grid-3x3'></i>Pixel</button>
+                    <button type='button' class='btn btn-outline-secondary btn-sm' data-action='mirror' title='Spiegeln: aus, links und rechts, in alle vier Ecken'><i class='bi bi-symmetry-vertical'></i><span class='lb-mirror-label'>Spiegeln: aus</span></button>
+                    <button type='button' class='btn btn-outline-secondary btn-sm' data-action='invert'><i class='bi bi-circle-half'></i>Umkehren</button>
+                    <span class='lb-spacer'></span>
+                    <button type='button' class='btn btn-outline-secondary btn-sm lb-icon-only' data-action='undo' title='Rückgängig' aria-label='Rückgängig'><i class='bi bi-arrow-counterclockwise'></i></button>
+                    <button type='button' class='btn btn-outline-secondary btn-sm' data-action='clear'><i class='bi bi-trash'></i>Leeren</button>
                 </div>
             </div>
-            <div class='lb-opt' data-for='stamp' hidden>
-                <div class='lb-stamps' role='group' aria-label='Bilder'></div>
-                <div class='d-flex flex-wrap gap-3 align-items-center mt-2'>
-                    <div class='btn-group btn-group-sm' role='group' aria-label='Größe des Bildes'>
-                        <button type='button' class='btn btn-outline-secondary' data-stamp-size='60'>klein</button>
-                        <button type='button' class='btn btn-outline-secondary active' data-stamp-size='120'>mittel</button>
-                        <button type='button' class='btn btn-outline-secondary' data-stamp-size='210'>groß</button>
+            <div class='lb-panel'>
+                <div class='lb-palette' role='group' aria-label='Werkzeug'>
+                    <button type='button' data-tool='pen' aria-pressed='true'><i class='bi bi-pencil'></i>Stift</button>
+                    <button type='button' data-tool='eraser' aria-pressed='false'><i class='bi bi-eraser'></i>Radierer</button>
+                    <button type='button' data-tool='fill' aria-pressed='false'><i class='bi bi-paint-bucket'></i>Füllen</button>
+                    <button type='button' data-tool='shape' aria-pressed='false'><i class='bi bi-pentagon'></i>Formen</button>
+                    <button type='button' data-tool='stamp' aria-pressed='false'><i class='bi bi-emoji-smile'></i>Bilder</button>
+                    <button type='button' data-tool='text' aria-pressed='false'><i class='bi bi-fonts'></i>Text</button>
+                    <button type='button' data-tool='photo' aria-pressed='false'><i class='bi bi-camera'></i>Foto</button>
+                    <button type='button' data-tool='frame' aria-pressed='false'><i class='bi bi-border-outer'></i>Rahmen</button>
+                </div>
+
+                <div class='lb-opt' data-for='pen eraser'>
+                    <div class='lb-row' role='group' aria-label='Strichstärke'>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-width='1'>fein</button>
+                        <button type='button' class='btn btn-sm btn-outline-secondary active' data-width='2'>mittel</button>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-width='3'>dick</button>
                     </div>
-                    <p class='lb-hint m-0'>Bild wählen, dann auf das Etikett tippen.</p>
+                    <p class='lb-caption'>Mit »Spiegeln« malst du auf einer Seite, und der Spiegel malt die andere mit.</p>
                 </div>
-            </div>
-            <div class='lb-opt' data-for='text' hidden>
-                <div class='d-flex flex-wrap gap-2 align-items-center'>
-                    <input type='text' class='form-control lb-text' id='lb-text' maxlength='30' placeholder='Dein Text' aria-label='Text für das Etikett' style='max-width: 16rem;'>
-                    <select class='form-select lb-font' id='lb-font' aria-label='Schrift' style='max-width: 11rem;'>
+                <div class='lb-opt' data-for='fill shape' hidden>
+                    <div class='lb-swatches' role='group' aria-label='Muster'></div>
+                </div>
+                <div class='lb-opt' data-for='fill' hidden>
+                    <p class='lb-caption'>Muster wählen, dann in eine Fläche tippen.</p>
+                </div>
+                <div class='lb-opt' data-for='shape' hidden>
+                    <div class='lb-row' role='group' aria-label='Form'>
+                        <button type='button' class='btn btn-sm btn-outline-secondary active' data-shape='line'><i class='bi bi-slash-lg'></i>Linie</button>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-shape='rect'><i class='bi bi-square'></i>Rechteck</button>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-shape='ellipse'><i class='bi bi-circle'></i>Kreis</button>
+                    </div>
+                    <div class='lb-row' role='group' aria-label='Füllung'>
+                        <button type='button' class='btn btn-sm btn-outline-secondary active' data-filled='0'>nur Umriss</button>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-filled='1'>mit Muster gefüllt</button>
+                    </div>
+                    <p class='lb-caption'>Auf dem Aufkleber ziehen, von einer Ecke zur anderen.</p>
+                </div>
+                <div class='lb-opt' data-for='stamp' hidden>
+                    <div class='lb-stamps' role='group' aria-label='Bilder'></div>
+                </div>
+                <div class='lb-opt' data-for='text' hidden>
+                    <input type='text' class='form-control lb-text' id='lb-text' maxlength='30' placeholder='Dein Text' aria-label='Text für den Aufkleber'>
+                    <select class='form-select lb-font' id='lb-font' aria-label='Schrift'>
                         <option value='Patua One'>Patua One</option>
                         <option value='Pixelify Sans'>Pixelify Sans</option>
                         <option value='IBM Plex Sans'>IBM Plex Sans</option>
+                        <option value='0xProto'>0xProto</option>
                     </select>
-                    <div class='btn-group btn-group-sm' role='group' aria-label='Schriftgröße'>
-                        <button type='button' class='btn btn-outline-secondary' data-text-size='28'>klein</button>
-                        <button type='button' class='btn btn-outline-secondary active' data-text-size='48'>mittel</button>
-                        <button type='button' class='btn btn-outline-secondary' data-text-size='80'>groß</button>
+                </div>
+                <div class='lb-opt' data-for='photo' hidden>
+                    <label class='btn btn-outline-primary' for='lb-photo'><i class='bi bi-camera'></i>Foto aufnehmen oder wählen</label>
+                    <input type='file' id='lb-photo' class='lb-photo-input' accept='image/*' hidden>
+                    <p class='lb-caption'>Das Foto wird auf deinem Gerät in Punkte verwandelt. Zum Drucker geht nur der Aufkleber, und er wird gelöscht, sobald er gedruckt ist. Fotografier nur, wer einverstanden ist.</p>
+                </div>
+                <div class='lb-opt' data-for='frame' hidden>
+                    <div class='lb-frames' role='group' aria-label='Rahmen'></div>
+                    <p class='lb-caption'>Ein Rahmen kommt über das, was schon da ist.</p>
+                </div>
+
+                <div class='lb-opt lb-float' hidden>
+                    <p class='lb-caption'>Zum Verschieben ziehen oder an eine andere Stelle tippen.</p>
+                    <label>Größe <input type='range' class='form-range lb-size' id='lb-size' min='20' max='260' value='110'></label>
+                    <label class='lb-brightness-row'>Helligkeit <input type='range' class='form-range lb-brightness' id='lb-brightness' min='-80' max='80' value='0'></label>
+                    <div class='lb-row'>
+                        <div class='btn-group btn-group-sm lb-ink' role='group' aria-label='Farbe'>
+                            <button type='button' class='btn btn-outline-secondary active' data-ink='1'>schwarz</button>
+                            <button type='button' class='btn btn-outline-secondary' data-ink='0'>weiß</button>
+                        </div>
+                        <span class='flex-grow-1'></span>
+                        <button type='button' class='btn btn-sm btn-outline-secondary' data-float='drop'><i class='bi bi-x-lg'></i>Weg</button>
+                        <button type='button' class='btn btn-sm btn-primary' data-float='done'><i class='bi bi-check-lg'></i>Fertig</button>
                     </div>
                 </div>
-                <p class='lb-hint'>Text schreiben, dann auf das Etikett tippen, wo seine Mitte hin soll.</p>
+
+                <div class='lb-print'>
+                    <button type='button' class='btn btn-success btn-lg lb-send'><i class='bi bi-printer'></i>Drucken</button>
+                    <p class='lb-status' aria-live='polite'></p>
+                    <p class='lb-hint'>Was nah an der gestrichelten Linie oder außerhalb liegt, kann der Drucker abschneiden. Gespeichert wird nur der Aufkleber, ohne Namen: zwei Tage lang, mit einem Foto nur bis zum Druck.</p>
+                </div>
             </div>
         </div>
-        <div class='lb-print'>
-            <button type='button' class='btn btn-success btn-lg lb-send'><i class='bi bi-printer'></i>Drucken</button>
-            <p class='lb-status' aria-live='polite'></p>
-        </div>
-        <p class='lb-hint mt-3'>Was nah an der gestrichelten Linie oder außerhalb liegt, kann der Drucker abschneiden. Gespeichert wird nur das Bild, ohne Namen, und nach zwei Tagen gelöscht.</p>
     </div>
 </div>
 <script src='/include/labels.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

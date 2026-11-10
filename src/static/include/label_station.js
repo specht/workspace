@@ -53,7 +53,7 @@
         io += "<div class='ls-jobs'>";
         s.jobs.forEach((j) => {
             io += `<div class='ls-job' data-id='${esc(j.id)}'><canvas width='${W}' height='${H}' aria-label='Etikett von ${time(j.ts)} Uhr'></canvas>` +
-                `<div class='ls-job-meta'><span class='ls-when'>${day(j.ts)} ${time(j.ts)}, ${STATES[j.state] || esc(j.state)}</span>` +
+                `<div class='ls-job-meta'><span class='ls-when'>${day(j.ts)} ${time(j.ts)}, ${STATES[j.state] || esc(j.state)}${j.photo ? ', mit Foto (geht nach dem Druck)' : ''}</span>` +
                 `<button class='btn btn-sm btn-outline-secondary' data-again='${esc(j.id)}' title='Nochmal drucken' aria-label='Nochmal drucken'><i class='bi bi-arrow-repeat'></i></button>` +
                 `<button class='btn btn-sm btn-outline-danger' data-delete='${esc(j.id)}' title='Löschen' aria-label='Löschen'><i class='bi bi-trash'></i></button></div></div>`;
         });

@@ -1,9 +1,24 @@
 # Etiketten am Tag der offenen Tür
 
-Besucher malen auf `/etiketten` ein Etikett, setzen Bilder (Bootstrap
-Icons) und eine Zeile Text darauf, und der ZPL-Etikettendrucker am Stand
-druckt es sofort als Aufkleber. Das geht auf dem eigenen Handy über einen
-QR-Code und auf den Rechnern am Stand, ohne Konto.
+Besucher gestalten auf `/etiketten` einen Aufkleber, und der
+ZPL-Etikettendrucker am Stand druckt ihn sofort. Das geht auf dem eigenen
+Handy über einen QR-Code, auf den Tablets und Rechnern am Stand, ohne Konto.
+
+Der Editor soll es leicht machen, dass etwas gut aussieht:
+
+- Stift und Radierer in drei Stärken; Füllen mit acht Mustern (Schwarz,
+  Weiß, Raster, Punkte, Streifen, Linien, Mauer, Verlauf); Linie, Rechteck und
+  Kreis, als Umriss oder mit Muster gefüllt.
+- »Spiegeln«: links und rechts, oder in alle vier Ecken; jeder Strich, jede
+  Form, jede Füllung und jedes Bild kommt gespiegelt mit.
+- »Pixel«: alles auf großen Pixeln von 8 × 8 Punkten, mit Raster.
+- Bilder (Bootstrap Icons), Text in vier Schriften und ein Foto schweben
+  über dem Aufkleber, bis man »Fertig« drückt: verschieben, Größe, schwarz
+  oder weiß. Ein Foto wird auf dem Gerät mit Atkinson-Dithering zu Punkten.
+- Sechs Rahmen (Rand, Doppelt, Ticket, Punkte, Namensschild »HALLO ich
+  bin«, Sprechblase) und »Umkehren« für Weiß auf Schwarz.
+- Auf breiten Bildschirmen stehen die Werkzeuge neben dem Aufkleber, auf
+  Handys darunter; der Aufkleber bleibt beim Scrollen oben.
 
 ## Am Tag selbst
 
@@ -46,7 +61,10 @@ anderen Drucker schief, ersetzt `--home` diese Verschiebung.
 Gegen zu viele Etiketten: Drucken geht nur mit dem Schlüssel aus dem
 QR-Code, solange eingeschaltet ist; jeder Browser wartet 20 Sekunden bis zum
 nächsten Etikett; höchstens 15 warten gleichzeitig. Gespeichert wird nur das
-Bild mit Uhrzeit, ohne Namen, zwei Tage lang (`privacy.rb`).
+Bild mit Uhrzeit, ohne Namen, zwei Tage lang (`privacy.rb`). Ein Aufkleber
+mit Foto (die Seite sagt es mit `photo: true`) wird gelöscht, sobald der
+Laptop ihn gedruckt meldet, ungedruckt nach zwei Stunden; das Foto selbst
+verlässt das Gerät nicht.
 
 ## Offen
 
