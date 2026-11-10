@@ -15859,3 +15859,7 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     padding-top: 0.35em;
     padding-bottom: 0.35em;
 }
+/* the map is drawn in device pixels: no scaling, so not pixelated */
+.motion-widget .motion-zooms .motion-figure:last-child canvas {
+    image-rendering: auto;
+}

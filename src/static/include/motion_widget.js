@@ -194,7 +194,12 @@
             }
         }
 
+        // the map in device pixels, so that its cells and rings are sharp
         function drawMap() {
+            const box = map.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const size = Math.round(box.width * ratio);
+            if (size && map.width !== size) { map.width = size; map.height = size; }
             const ctx = map.getContext('2d');
             // before a search: a quiet empty map, so that nothing moves when it comes
             if (!found) {
@@ -202,26 +207,30 @@
                 ctx.fillRect(0, 0, map.width, map.height);
                 return;
             }
-            const cell = map.width / (2 * R + 1);
+            const count = 2 * R + 1, cell = map.width / count;
+            const edge = (i) => Math.round(i * cell);
             let lo = Infinity, hi = 0;
             for (const s of sums) if (s !== null) { lo = Math.min(lo, s); hi = Math.max(hi, s); }
             sums.forEach((s, i) => {
-                const dy = Math.floor(i / (2 * R + 1)) - R, dx = (i % (2 * R + 1)) - R;
+                const dy = Math.floor(i / count) - R, dx = (i % count) - R;
                 // from deep purple (smallest) to a pale violet (largest)
                 const t = s === null ? 1 : Math.sqrt((s - lo) / Math.max(1, hi - lo));
                 const r = Math.round(103 + (243 - 103) * t), g = Math.round(65 + (240 - 65) * t), b = Math.round(217 + (255 - 217) * t);
                 ctx.fillStyle = s === null ? '#9ca3af' : `rgb(${r}, ${g}, ${b})`;
-                ctx.fillRect((dx + R) * cell, (dy + R) * cell, cell, cell);
+                ctx.fillRect(edge(dx + R), edge(dy + R), edge(dx + R + 1) - edge(dx + R), edge(dy + R + 1) - edge(dy + R));
             });
-            // rings large enough to find: the reader's square white, the best yellow
+            // rings large enough to find, with a dark edge: the reader's square white, the best yellow
             const ring = (x, y, colour) => {
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = colour;
+                const cx = (x + R + 0.5) * cell, cy = (y + R + 0.5) * cell, radius = 2.5 * cell;
                 ctx.beginPath();
-                ctx.arc((x + R + 0.5) * cell, (y + R + 0.5) * cell, 2.5 * cell, 0, 2 * Math.PI);
+                ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+                ctx.lineWidth = 3.5 * ratio;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.stroke();
+                ctx.lineWidth = 2 * ratio;
+                ctx.strokeStyle = colour;
                 ctx.stroke();
             };
-            // the reader's square where it is now, white, unless it is the best
             if (vx !== found.vx || vy !== found.vy) ring(vx, vy, '#ffffff');
             ring(found.vx, found.vy, '#facc15');
         }
