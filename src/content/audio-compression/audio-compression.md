@@ -578,13 +578,8 @@ Bei voller Lautstärke liegen beide Fehler weit unter der Stimme, gleichmäßig 
 
 Bei 44.100 Samples in der Sekunde ändert sich ein Klang von einem Sample zum nächsten nur wenig. Hier sind acht Samples aus der Stimme, ab dem Index 56.019, als ganze Zahlen mit 16 Bit:
 
-<div class='table-responsive'>
-<table class='table'>
-<tr><th>Sample</th><td>6.445</td><td>6.866</td><td>7.298</td><td>7.730</td><td>8.163</td><td>8.600</td><td>9.040</td><td>9.481</td></tr>
-<tr><th>minus die vorige</th><td></td><td>421</td><td>432</td><td>432</td><td>433</td><td>437</td><td>440</td><td>441</td></tr>
-<tr><th>minus die Gerade</th><td></td><td></td><td>11</td><td>0</td><td>1</td><td>4</td><td>3</td><td>1</td></tr>
-</table>
-</div>
+<img class='drawing d-none d-lg-block' style='width: 60em' src='vorhersage-wide.svg' alt='Acht Samples der Stimme als Punkte, die fast auf einer geraden Linie ansteigen. Eine gestrichelte Gerade durch die ersten beiden führt weiter zum dritten; dort markiert ein Ring die Schätzung 7.287, die fast genau auf dem Sample liegt, Rest 11. Darunter in Spalten die Zahlen: die Samples 6.445, 6.866, 7.298, 7.730, 8.163, 8.600, 9.040, 9.481; minus das vorige 421, 432, 432, 433, 437, 440, 441; minus die Gerade 11, 0, 1, 4, 3, 1.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='vorhersage.svg' alt='Acht Samples der Stimme als Punkte, die fast auf einer geraden Linie ansteigen; eine gestrichelte Gerade durch die ersten beiden trifft fast genau das dritte, Rest 11. Darunter eine Zeile je Sample mit drei Zahlen: das Sample, minus das vorige und minus die Gerade, von 6.445 bis 9.481, die Unterschiede von 421 bis 441, die Reste 11, 0, 1, 4, 3, 1.'>
 
 Die Samples sind Zahlen um 8.000, ihre Unterschiede zum vorigen Sample nur um 430. Noch besser rät, wer die Gerade durch die beiden letzten Samples verlängert: Steigt der Klang von 6.445 auf 6.866, um 421, dann ist die beste Schätzung für das nächste Sample 6.866 + 421 = 7.287. Gemessen sind 7.298, der Rest ist 11. Allgemein ist die Schätzung für das Sample mit dem Index `n`
 
