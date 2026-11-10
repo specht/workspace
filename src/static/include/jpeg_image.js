@@ -265,8 +265,10 @@
     //
     // The photo with the chosen MCU marked, the rest a little darker, and
     // beside it a magnifier: five by five MCUs around the chosen one, two
-    // times larger. A click on either chooses an MCU, the arrow keys move
-    // it by one. picker(element, image, { mx, my, onPick(mx, my), mark }),
+    // times larger. A click on either chooses an MCU, dragging over the
+    // photo moves it along, the arrow keys move it by one. Dragging the
+    // magnifier moves it like a map; a tap in it chooses the MCU tapped, or,
+    // inside the chosen MCU, calls onInside(fx, fy) with where (0 to 1). picker(element, image, { mx, my, onPick(mx, my), mark }),
     // mark(ctx, scale): draws more into the chosen MCU of the magnifier (the
     // block the iDCT stepper shows). Returns { set(mx, my), redraw() }.
 
@@ -353,14 +355,50 @@
             const rect = canvas.getBoundingClientRect();
             return [(event.clientX - rect.left) * canvas.width / rect.width, (event.clientY - rect.top) * canvas.height / rect.height];
         };
-        photo.addEventListener('click', (event) => {
+        // a click or a drag over the photo: the MCU follows the pointer
+        let holding = false;
+        const follow = (event) => {
             const [x, y] = at(photo, event);
             set(Math.floor(x / mcuW), Math.floor(y / mcuH));
+        };
+        photo.addEventListener('pointerdown', (event) => {
+            holding = true;
+            photo.setPointerCapture(event.pointerId);
+            follow(event);
+            event.preventDefault();
         });
-        lens.addEventListener('click', (event) => {
+        photo.addEventListener('pointermove', (event) => { if (holding) follow(event); });
+        photo.addEventListener('pointerup', () => { holding = false; });
+        photo.addEventListener('pointercancel', () => { holding = false; });
+        // the magnifier: dragged like a map, or tapped
+        let grab = null;
+        lens.addEventListener('pointerdown', (event) => {
             const [x, y] = at(lens, event);
-            set(mx - AROUND + Math.floor(x / (mcuW * zoom)), my - AROUND + Math.floor(y / (mcuH * zoom)));
+            grab = { x, y, mx, my, moved: false };
+            lens.setPointerCapture(event.pointerId);
+            event.preventDefault();
         });
+        lens.addEventListener('pointermove', (event) => {
+            if (!grab) return;
+            const [x, y] = at(lens, event);
+            const sx = Math.round((grab.x - x) / (mcuW * zoom)), sy = Math.round((grab.y - y) / (mcuH * zoom));
+            if (sx || sy) grab.moved = true;
+            if (grab.moved) set(grab.mx + sx, grab.my + sy);
+        });
+        lens.addEventListener('pointerup', (event) => {
+            if (!grab) return;
+            const tap = !grab.moved;
+            grab = null;
+            if (!tap) return;
+            const [x, y] = at(lens, event);
+            const cx = Math.floor(x / (mcuW * zoom)) - AROUND, cy = Math.floor(y / (mcuH * zoom)) - AROUND;
+            if (cx === 0 && cy === 0 && options.onInside) {
+                options.onInside(x / (mcuW * zoom) - AROUND, y / (mcuH * zoom) - AROUND);
+            } else {
+                set(mx + cx, my + cy);
+            }
+        });
+        lens.addEventListener('pointercancel', () => { grab = null; });
         photo.addEventListener('keydown', (event) => {
             const moves = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
             const move = moves[event.key];

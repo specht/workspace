@@ -9608,7 +9608,9 @@ div[data-stepper] .stepper-word { display: none; }
     color: var(--widget-ink);
 }
 .idct-stepper .idct-choose {
-    margin-bottom: 1em;
+    flex: 1 1 18em;
+    max-width: 32em;
+    margin-bottom: 0;
 }
 .idct-stepper .jpeg-picker {
     max-width: 32em;
@@ -15658,3 +15660,12 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
 /* the part shown on the card of an activity in parts */
 .tutorial_card3 .card-content .card-part { font-weight: 600; font-size: 0.9em; color: #6741d9; margin: -0.15em 0 0.2em; }
 html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b197fc; }
+
+/* the magnifier is dragged like a map */
+.jpeg-picker .jpeg-picker-lens {
+    cursor: grab;
+    touch-action: none;
+}
+.jpeg-picker .jpeg-picker-photo {
+    touch-action: none;
+}
