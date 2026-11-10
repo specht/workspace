@@ -4184,6 +4184,9 @@ class Main < Sinatra::Base
         end
         if DEVELOPMENT && path =~ /^\/(reference\/)?[a-zA-Z0-9_-]+$/
             Main.refresh_tutorial(path[1, path.size - 1])
+        elsif DEVELOPMENT && (part_path = path.match(%r{\A/([a-z0-9-]+)/\d{1,2}\z}))
+            # a part of an activity in parts (ActivityParts): the activity
+            Main.refresh_tutorial(part_path[1])
         end
         running_tests = my_running_tests()
         if path[0, 7] == '/share/'

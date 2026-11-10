@@ -15390,12 +15390,22 @@ html[data-bs-theme="dark"] .activity-parts {
 }
 .activity-parts ol {
     list-style: none;
-    padding: 0 0 0.3em;
+    padding: 0;
     margin: 0.75em 0 0.5em;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.4em;
-    overflow-x: auto;
-    scrollbar-width: none;
+}
+/* on tablets and phones one line that scrolls sideways, with room for the
+   frame of the current part */
+@media (max-width: 991.98px) {
+    .activity-parts ol {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 3px 3px 0.4em;
+        margin-inline: -3px;
+    }
 }
 .activity-parts ol::-webkit-scrollbar { display: none; }
 /* faded at a side where more parts are hidden (follow_part_anchor) */
