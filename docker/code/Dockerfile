@@ -53,6 +53,8 @@ ARG RUBY_API_VERSION=3.4.0
 ARG NEO4J_BOLT_VERSION=0.5.1
 ARG MYSQL_CONNECTOR_PYTHON_VERSION=26.7.0
 ARG PYTEST_VERSION=9.1.1
+ARG NUMPY_VERSION=2.5.4
+ARG PILLOW_VERSION=13.0.0
 ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.2.0
@@ -776,6 +778,25 @@ ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 ARG PYTEST_VERSION
 RUN pip install --no-cache-dir "pytest==${PYTEST_VERSION}" \
     && python3 -m pytest --version | grep -q "${PYTEST_VERSION}"
+
+# Sound, pictures and video in Python (docs/plan-audio-video.md, »Fraktale
+# Bildkompression«): numpy and Pillow, so that no class waits for pip and
+# the task checks find the same versions; ffmpeg and ffprobe to read, write
+# and inspect real audio and video files. Late in the file, so that the
+# layers above stay as they are.
+ARG NUMPY_VERSION
+ARG PILLOW_VERSION
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg \
+    && ffmpeg -hide_banner -version | head -1 \
+    && ffmpeg -hide_banner -encoders | grep -q libmp3lame \
+    && ffmpeg -hide_banner -encoders | grep -q libopus \
+    && ffmpeg -hide_banner -encoders | grep -q libx264 \
+    && ffmpeg -hide_banner -encoders | grep -q libaom-av1 \
+    && pip install --no-cache-dir "numpy==${NUMPY_VERSION}" "pillow==${PILLOW_VERSION}" \
+    && python3 -c "import numpy, PIL; assert numpy.__version__ == '${NUMPY_VERSION}' and PIL.__version__ == '${PILLOW_VERSION}', (numpy.__version__, PIL.__version__)"
 
 
 # --------------------------------------------------------------------

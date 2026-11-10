@@ -158,7 +158,10 @@ seconds at 720p each.
 ## Order of work
 
 1. The image: ffmpeg, numpy, Pillow; build, measure, test in a
-   Workspace; CHANGELOG.
+   Workspace; CHANGELOG. Done on 10 November 2026: ffmpeg 6.1.1 with lame,
+   Opus, x264 and libaom-av1, numpy 2.5.4, Pillow 13.0.0, 248 MB; tested as
+   the student user. Once the image is in production, »Fraktale
+   Bildkompression« can drop its `pip install numpy pillow`.
 2. Sound: the material and its generator, the widgets, the page part by
    part, tasks with checks and `task-examples.yaml`, teacher note,
    `curriculum:` and `topics:` (docs/lehrplan.md, docs/bundeslaender.md),
