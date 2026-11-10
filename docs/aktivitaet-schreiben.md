@@ -600,6 +600,16 @@ kurz wiederholt, und ein Verweis nennt das Kapitel (»wie im Kapitel
 Frequenzen«) statt »oben«. `parts:` lohnt sich ab etwa fünf Kapiteln, die
 je eine Doppelstunde füllen; Beispiel: »Audio komprimieren«.
 
+Mehrere Aktivitäten, die aufeinander aufbauen und doch jede für sich stehen
+(eigene Aufgaben, eigene Notiz, einzeln einer Klasse zuzuweisen), werden in
+`sections.yaml` zu einer **Reihe**: Unter den Einträgen ihres Abschnitts steht
+`series:` mit der Liste ihrer Slugs in der Reihenfolge, in der man sie
+macht. Im Katalog zeigt dann eine einzige Karte, an der Stelle der ersten,
+die Bilder aller mit Pfeilen und Punkten zum Blättern (`card_series.js`;
+nichts bewegt sich von selbst), und über jeder Seite der Reihe steht die
+Reihe ihrer Titel, ohne Nummern, weil die Titel ihre eigenen tragen (»Level
+1: Die Tiefe«). Beispiel: die Backrooms, Level 0 bis 3.
+
 ### Wie geht es weiter?
 
 Ein Abschnitt `## Wie geht es weiter?` am Ende ist von Hand geschrieben und

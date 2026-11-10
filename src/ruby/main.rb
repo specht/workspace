@@ -2789,6 +2789,77 @@ class Main < Sinatra::Base
                             :css_class => css_class, :of => usage[:mode] == :teacher ? counts[:of] : nil)
     end
 
+    # The cards of a catalog section: a slug each, or for a series
+    # (sections.yaml series:) the list of its members shown here, at the
+    # place of the first.
+    def catalog_cards(section, entries)
+        series = Array(section[:series]).map { |list| list.map(&:to_s) & entries }.select { |list| list.size > 1 }
+        entries.each_with_object([]) do |slug, cards|
+            list = series.find { |members| members.include?(slug) }
+            if list.nil?
+                cards << slug
+            elsif list.first == slug
+                cards << list
+            end
+        end
+    end
+
+    def card_title_text(slug)
+        CGI.unescapeHTML((@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip
+    end
+
+    # A card's picture and text. slide: its number in the carousel of a
+    # series (count pictures), whose others are hidden until shown
+    # (card_series.js); each slide is a link's target of its own.
+    def card_body_html(slug, catalog, band, card_index, slide: nil, count: 1, part: nil)
+        content = @@content[slug]
+        # a part of an activity in parts (ActivityParts): its picture, its title under the activity's
+        picture = part ? content[:parts][part - 1] : content
+        part_title = part ? "Teil #{part}: #{CGI.unescapeHTML(content[:parts][part - 1][:title].sub(/\A\d+\.\s*/, ''))}" : nil
+        href = part ? ActivityParts.url(slug, part) : "/#{slug}"
+        label = part ? "#{card_title_text(slug)}, #{part_title}" : card_title_text(slug)
+        StringIO.open do |io|
+            attributes = slide.nil? ? '' : " class='card-series-slide' data-href='#{href}' aria-label='Bild #{slide + 1} von #{count}: #{CGI.escapeHTML(label)}'#{slide > 0 ? ' hidden' : ''}"
+            io.puts "<div#{attributes}>"
+            additional_classes = []
+            if content[:needs_contrast] == 'light'
+                additional_classes << 'dark-only-bg-contrast-light'
+            end
+            # Small variants (CardImages). Only the first row loads
+            # at once; the rest when it comes near the screen, and
+            # of a light and a dark picture only the one shown.
+            loading = card_index <= 3 && !content[:image_dark] && !slide.to_i.positive? ? '' : " loading='lazy'"
+            card_image = ->(url) { "#{CardImages.attributes(url)}#{loading} decoding='async'" }
+            image_style = part ? 'object-position: 50% 50%;' : "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
+            # What the picture shows (image_alt); the title next to
+            # it is no alt text, so without one it stays empty.
+            card_alt = CGI.escapeHTML(picture[:image_alt].to_s)
+            if picture[:image_dark]
+                io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-light']).join(' ')}' #{card_image.(picture[:image])} style='#{image_style}'>"
+                io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' #{card_image.(picture[:image_dark])} style='#{image_style}'>"
+            else
+                io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' #{card_image.(picture[:image] || '/images/white.webp')} style='#{image_style}'>"
+            end
+            io.puts "<div class='shade'></div>"
+            io.puts "<div class='card-content'>"
+            # The kind on its own line above the title (default.css).
+            # With it, for a student who solved a task here, how many (»3/7«).
+            io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
+            io.puts "<div class='card-title-row'>"
+            io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
+            io.puts "</div>"
+            io.puts "<div class='card-part'>#{CGI.escapeHTML(part_title)}</div>" if part_title
+            io.puts "<div class='abstract'>#{content[:abstract]}</div>"
+            if catalog == :student
+                io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT))
+            end
+            io.puts band
+            io.puts "</div>"
+            io.puts "</div>"
+            io.string
+        end
+    end
+
     def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
         assert([:student, :teaching, :reference].include?(catalog))
@@ -2815,6 +2886,7 @@ class Main < Sinatra::Base
                     section_order = []
                 end
                 card_index = 0
+                series_cards = false
                 # pinned for one of the person's groups: a pin on the card, as on the Kata strip
                 catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
                 # the band at the foot of the cards (card_usage): admins, teachers, students
@@ -2882,58 +2954,55 @@ class Main < Sinatra::Base
                     # half empty: the last cards go in pairs instead, each a
                     # compact row like on a phone (default.css, .hscol-pair),
                     # the last two (5, 8 …) or the last four (4, 7 …).
-                    rest = entries.size % 3
-                    paired = rest == 0 ? 0 : (rest == 1 ? [4, entries.size].min : 2)
-                    entries.each_with_index do |slug, index|
+                    # A series (sections.yaml series:) is one card, where its
+                    # first member stands, with a carousel of all of them.
+                    cards = catalog_cards(section, entries)
+                    rest = cards.size % 3
+                    paired = rest == 0 ? 0 : (rest == 1 ? [4, cards.size].min : 2)
+                    cards.each_with_index do |card, index|
+                        members = card.is_a?(Array) ? card : [card]
+                        slug = members.first
                         content = @@content[slug]
-                        io.puts "<div class='hscol#{index >= entries.size - paired ? ' hscol-pair' : ''}'>"
+                        # an activity in parts with a picture for each: its parts
+                        # are the slides, all of the one activity
+                        parts = !card.is_a?(Array) && content[:parts] && content[:parts].all? { |part| part[:image] } ? content[:parts] : nil
+                        io.puts "<div class='hscol#{index >= cards.size - paired ? ' hscol-pair' : ''}'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
                         band = usage_html(usage, slug, 'card-usage')
                         used_card = band.empty? ? '' : ' card-with-usage'
-                        io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}#{used_card}'>"
+                        series = members.size > 1 || !parts.nil?
+                        if series
+                            # a link over the whole card to the member shown, the
+                            # buttons above it (card_series.js); no button inside a link
+                            io.puts "<div class='tutorial_card3 card-series#{pinned_card ? ' card-pinned' : ''}#{used_card}' data-card-series>"
+                            io.puts "<a class='card-series-link' href='/#{slug}'><span class='visually-hidden'>#{CGI.escapeHTML(card_title_text(slug))}</span></a>"
+                        else
+                            io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}#{used_card}'>"
+                        end
                         io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
                         io.puts "<h4>#{content[:title]}</h4>"
-                        io.puts "<div>"
-                        additional_classes = []
-                        if content[:needs_contrast] == 'light'
-                            additional_classes << 'dark-only-bg-contrast-light'
+                        slides = parts ? parts.each_index.map { |i| [slug, i + 1] } : members.map { |member| [member, nil] }
+                        slides.each_with_index do |(member, part), slide|
+                            card_index += 1 if slide == 0
+                            io.puts card_body_html(member, catalog, slide == 0 ? band : '', card_index,
+                                :slide => series ? slide : nil, :count => slides.size, :part => part)
                         end
-                        # Small variants (CardImages). Only the first row loads
-                        # at once; the rest when it comes near the screen, and
-                        # of a light and a dark picture only the one shown.
-                        card_index += 1
-                        loading = card_index <= 3 && !content[:image_dark] ? '' : " loading='lazy'"
-                        card_image = ->(url) { "#{CardImages.attributes(url)}#{loading} decoding='async'" }
-                        image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
-                        # What the picture shows (image_alt); the title next to
-                        # it is no alt text, so without one it stays empty.
-                        card_alt = CGI.escapeHTML(content[:image_alt].to_s)
-                        if content[:image_dark]
-                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-light']).join(' ')}' #{card_image.(content[:image])} style='#{image_style}'>"
-                            io.puts "<img alt='#{card_alt}' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' #{card_image.(content[:image_dark])} style='#{image_style}'>"
+                        if series
+                            io.puts "<span class='card-series-controls'>" \
+                                "<button type='button' class='card-series-prev' aria-label='Voriges Bild'><i class='bi bi-chevron-left' aria-hidden='true'></i></button>" \
+                                "<span class='card-series-dots' aria-hidden='true'>#{"<span></span>" * slides.size}</span>" \
+                                "<button type='button' class='card-series-next' aria-label='Nächstes Bild'><i class='bi bi-chevron-right' aria-hidden='true'></i></button>" \
+                                "</span>"
+                            io.puts "</div>"
+                            series_cards = true
                         else
-                            io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' #{card_image.(content[:image] || '/images/white.webp')} style='#{image_style}'>"
+                            io.puts "</a>"
                         end
-                        io.puts "<div class='shade'></div>"
-                        io.puts "<div class='card-content'>"
-                        # The kind on its own line above the title (default.css).
-                        # With it, for a student who solved a task here, how many (»3/7«).
-                        io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
-                        io.puts "<div class='card-title-row'>"
-                        io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
-                        io.puts "</div>"
-                        io.puts "<div class='abstract'>#{content[:abstract]}</div>"
-                        if catalog == :student
-                            io.puts StudentHome.card_requires(PageKinds.requires_of(slug, @@content, :development => DEVELOPMENT))
-                        end
-                        io.puts band
-                        io.puts "</div>"
-                        io.puts "</div>"
-                        io.puts "</a>"
                         io.puts "</div>"
                     end
                     io.puts "</div>"
                 end
+                io.puts "<script src='/include/card_series.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" if series_cards
             else
                 io.puts "<div style='text-align: center;'>"
                 io.puts "<h2>Leistungsüberprüfung</h2>"
@@ -3872,11 +3941,30 @@ class Main < Sinatra::Base
     # carries their key (CaseServer.personal_archive_path).
     # On a page with a class repository (ClassRepos), the variant for this
     # person and the address of their group.
+    # The series of activities slug belongs to (sections.yaml series:, a
+    # list of slugs in order), with only the members a viewer may see.
+    def series_of(slug)
+        @@sections.each_value do |section|
+            Array(section[:series]).each do |list|
+                members = list.map(&:to_s).select { |member| @@content[member] && (DEVELOPMENT || !@@content[member][:dev_only]) }
+                return members if members.size > 1 && members.include?(slug)
+            end
+        end
+        nil
+    end
+
     def page_html(slug)
         content = @@content[slug]
         html = content[:html]
         # an activity in parts (ActivityParts): the part asked for, the first at /slug
         html = content[:parts][(@activity_part || 1) - 1][:html] if content[:parts]
+        # one of a series of activities (sections.yaml series:): the row of
+        # the series under the title
+        if (series = series_of(slug))
+            titles = series.map { |member| CGI.unescapeHTML((@@content[member] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip }
+            nav = ActivityParts.nav_html(slug, titles, series.index(slug) + 1, :hrefs => series.map { |member| "/#{member}" })
+            html = html.sub(%r{</h1>}) { "</h1>#{nav}" }
+        end
         # Only pages that use the class repository's variables look it up.
         if content[:class_repo] || html.match?(ClassRepos::TOKEN)
             view = class_repo_view(slug)

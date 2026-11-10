@@ -89,6 +89,15 @@
     - raycaster
     - raylib
     - level-0-c1d8a2f7
+    - level-1-7e3a91c4
+    - level-2-b52d0f18
+    - level-3-4c9e6a2d
+  # Activities that belong together, in this order: one card with a
+  # carousel of their pictures in the catalog, and over each page a row of
+  # all of them (ActivityParts.nav_html, Main#series_of). The Backrooms:
+  # Level 0 to 3, each building on the one before.
+  series:
+    - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
 
 - key: writing
   compact: true
@@ -281,21 +290,6 @@
     - working-with-files
     - git
     - terminal-mystery
-
-# Hidden: not in the catalog and not pinnable; the pages are found by their
-# address. Levels 1 to 3 of the series that begins with level-0-c1d8a2f7
-# (in »Spiele & 3D-Welten«, also reached by typing noclip on the 404 page):
-# each is linked only from the level before it.
-
-- key: hidden
-  hidden: true
-  label: Verborgen
-  icon: /images/bookmark.png
-  entrance: level-0-c1d8a2f7
-  entries:
-    - level-1-7e3a91c4
-    - level-2-b52d0f18
-    - level-3-4c9e6a2d
 
 - key: programming_languages
   compact: true

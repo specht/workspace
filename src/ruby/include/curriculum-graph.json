@@ -2,154 +2,316 @@
   "layouts": [
     {
       "name": "production",
-      "key": "fbce882b861a9596",
-      "cost": 491.49,
+      "key": "9ea6b978552a7946",
+      "cost": 426.67,
       "quick": 883.54,
       "orders": [
         [
           0,
           [
-            "tcpip",
-            "git",
-            "working-with-files",
-            "pip-1",
-            "pixelram",
-            "drawing",
-            "kata-functions",
-            "glsl",
             "static-website",
+            "drawing",
             "turtle-1",
-            "mysql"
+            "mysql",
+            "glsl",
+            "kata-functions",
+            "tcpip",
+            "pixelram",
+            "pip-1",
+            "working-with-files",
+            "git"
           ]
         ],
         [
           1,
           [
-            "wetter",
-            "crypto",
-            "dns",
-            "class-quiz",
-            "terminal-mystery",
-            "pip-1>pip-2#1",
-            "webserver",
-            "pixelram>jpeg#1",
-            "raylib",
-            "raycaster",
-            "pixelram>gif#1",
-            "raytracing",
-            "fire",
-            "kata-decisions",
-            "glsl>webgl#1",
             "hugo",
             "svelte",
+            "fire",
             "turtle-1>turtle-2#1",
             "bobby_tables",
             "sql-joins",
             "filmdatenbank",
-            "sql-index"
+            "sql-index",
+            "glsl>webgl#1",
+            "kata-decisions",
+            "crypto",
+            "dns",
+            "wetter",
+            "raytracing",
+            "webserver",
+            "pixelram>jpeg#1",
+            "raycaster",
+            "raylib",
+            "pixelram>gif#1",
+            "pip-1>pip-2#1",
+            "terminal-mystery",
+            "class-quiz"
           ]
         ],
         [
           2,
           [
-            "totp",
-            "pixelram>jpeg#2",
-            "pip-1>pip-2#2",
-            "pixelwand",
-            "nebenlaeufigkeit",
-            "tracking",
-            "pixelram>gif#2",
-            "kata-loops",
+            "turtle-1>turtle-2#2",
+            "neo4j-filmdatenbank",
+            "glsl>webgl#2",
             "telefonspiel",
             "raytracing>webgl#1",
-            "glsl>webgl#2",
-            "turtle-1>turtle-2#2",
-            "neo4j-filmdatenbank"
+            "totp",
+            "kata-loops",
+            "tracking",
+            "nebenlaeufigkeit",
+            "pixelwand",
+            "pip-1>pip-2#2",
+            "pixelram>jpeg#2",
+            "pixelram>gif#2"
           ]
         ],
         [
           3,
           [
-            "pixelram>jpeg#3",
-            "pip-2",
-            "pixelram>gif#3",
-            "kata-texts",
-            "raytracing>webgl#2",
+            "turtle-1>turtle-2#3",
             "glsl>webgl#3",
-            "turtle-1>turtle-2#3"
+            "raytracing>webgl#2",
+            "kata-texts",
+            "pip-2",
+            "pixelram>jpeg#3",
+            "pixelram>gif#3"
           ]
         ],
         [
           4,
           [
-            "pixelram>jpeg#4",
-            "pip-2>pip-3#1",
-            "pixelram>gif#4",
-            "kata-lists",
-            "raytracing>webgl#3",
+            "turtle-1>turtle-2#4",
             "glsl>webgl#4",
-            "turtle-1>turtle-2#4"
+            "raytracing>webgl#3",
+            "kata-lists",
+            "pip-2>pip-3#1",
+            "pixelram>jpeg#4",
+            "pixelram>gif#4"
           ]
         ],
         [
           5,
           [
-            "pixelram>jpeg#5",
-            "pip-2>pip-3#2",
-            "pixelram>gif#5",
-            "rle",
-            "kata-dicts",
-            "perzeptron",
-            "sandbox-sortieren",
-            "fraktale-kompression",
-            "kata-lists>suchmaschine#1",
-            "naechste-nachbarn",
-            "testen",
-            "kata-lists>gaussian-splatting#1",
-            "webgl",
-            "kata-recursion",
-            "check-digits",
             "turtle-1>turtle-2#5",
-            "supermarkt"
+            "kata-recursion",
+            "supermarkt",
+            "webgl",
+            "kata-lists>gaussian-splatting#1",
+            "kata-lists>suchmaschine#1",
+            "perzeptron",
+            "check-digits",
+            "kata-dicts",
+            "sandbox-sortieren",
+            "rle",
+            "testen",
+            "fraktale-kompression",
+            "naechste-nachbarn",
+            "pip-2>pip-3#2",
+            "pixelram>jpeg#5",
+            "pixelram>gif#5"
           ]
         ],
         [
           6,
           [
-            "pixelram>jpeg#6",
-            "pip-3",
-            "huffman",
-            "pixelram>gif#6",
-            "lzw",
-            "kata-functional",
-            "kata-objects",
-            "automata",
-            "routenplaner",
-            "sprachmodell",
-            "suchmaschine",
-            "kata-bits",
+            "turtle-2",
+            "prolog",
+            "kata-search",
+            "sandbox-datenstrukturen",
             "laufzeit",
             "gaussian-splatting",
-            "kata-search",
-            "prolog",
-            "turtle-2",
-            "sandbox-datenstrukturen"
+            "suchmaschine",
+            "kata-bits",
+            "kata-functional",
+            "routenplaner",
+            "sprachmodell",
+            "automata",
+            "kata-objects",
+            "huffman",
+            "lzw",
+            "pip-3",
+            "pixelram>jpeg#6",
+            "pixelram>gif#6"
           ]
         ],
         [
           7,
           [
-            "jpeg",
-            "gif",
-            "textadventure",
+            "turtle-3",
+            "kata-tests",
+            "steganography",
+            "logikgatter",
+            "turingmaschine",
+            "calculator",
             "kellerautomat",
+            "regex",
+            "textadventure",
+            "jpeg",
+            "gif"
+          ]
+        ],
+        [
+          8,
+          [
+            "logikwerkstatt",
+            "grammatiken"
+          ]
+        ]
+      ]
+    },
+    {
+      "name": "development",
+      "key": "038b3847fd2f2e92",
+      "cost": 440.65,
+      "quick": 877.65,
+      "orders": [
+        [
+          0,
+          [
+            "git",
+            "working-with-files",
+            "mysql",
+            "turtle-1",
+            "tcpip",
+            "static-website",
+            "pixelram",
+            "kata-functions",
+            "pip-1",
+            "drawing",
+            "glsl"
+          ]
+        ],
+        [
+          1,
+          [
+            "class-quiz",
+            "terminal-mystery",
+            "sql-index",
+            "bobby_tables",
+            "filmdatenbank",
+            "turtle-1>turtle-2#1",
+            "sql-joins",
+            "dns",
+            "crypto",
+            "wetter",
+            "webserver",
+            "hugo",
+            "svelte",
+            "raylib",
+            "raycaster",
+            "pixelram>jpeg#1",
+            "raytracing",
+            "kata-decisions",
+            "pip-1>pip-2#1",
+            "fire",
+            "glsl>webgl#1",
+            "pixelram>gif#1"
+          ]
+        ],
+        [
+          2,
+          [
+            "neo4j-filmdatenbank",
+            "turtle-1>turtle-2#2",
+            "totp",
+            "nebenlaeufigkeit",
+            "tracking",
+            "pixelwand",
+            "pixelram>jpeg#2",
+            "kata-loops",
+            "telefonspiel",
+            "pip-1>pip-2#2",
+            "raytracing>webgl#1",
+            "glsl>webgl#2",
+            "pixelram>gif#2"
+          ]
+        ],
+        [
+          3,
+          [
+            "turtle-1>turtle-2#3",
+            "kata-texts",
+            "pixelram>jpeg#3",
+            "pip-2",
+            "raytracing>webgl#2",
+            "glsl>webgl#3",
+            "pixelram>gif#3"
+          ]
+        ],
+        [
+          4,
+          [
+            "turtle-1>turtle-2#4",
+            "kata-lists",
+            "pixelram>jpeg#4",
+            "pip-2>pip-3#1",
+            "raytracing>webgl#3",
+            "glsl>webgl#4",
+            "pixelram>gif#4"
+          ]
+        ],
+        [
+          5,
+          [
+            "turtle-1>turtle-2#5",
+            "kata-recursion",
+            "supermarkt",
+            "check-digits",
+            "fraktale-kompression",
+            "kata-lists>suchmaschine#1",
+            "naechste-nachbarn",
+            "kata-dicts",
+            "rle",
+            "sandbox-sortieren",
+            "perzeptron",
+            "kata-lists>gaussian-splatting#1",
+            "testen",
+            "pip-2>pip-3#2",
+            "pixelram>jpeg#5",
+            "webgl",
+            "pixelram>gif#5"
+          ]
+        ],
+        [
+          6,
+          [
+            "turtle-2",
+            "kata-search",
+            "prolog",
+            "sandbox-datenstrukturen",
+            "laufzeit",
+            "automata",
+            "routenplaner",
+            "suchmaschine",
+            "sprachmodell",
+            "kata-objects",
+            "huffman",
+            "kata-bits",
+            "kata-functional",
+            "lzw",
+            "pip-3",
+            "pixelram>jpeg#6",
+            "gaussian-splatting",
+            "pixelram>gif#6"
+          ]
+        ],
+        [
+          7,
+          [
+            "turtle-3",
+            "kata-tests",
             "regex",
             "calculator",
             "turingmaschine",
-            "logikgatter",
+            "kellerautomat",
+            "textadventure",
+            "audio-compression",
             "steganography",
-            "kata-tests",
-            "turtle-3"
+            "logikgatter",
+            "jpeg",
+            "gif"
           ]
         ],
         [

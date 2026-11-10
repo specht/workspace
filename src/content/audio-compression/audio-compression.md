@@ -6,7 +6,19 @@ language: Python
 duration: 5 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Huffman-Codierung), Vertiefung Technische Informatik (Abtastung, Quantisierung, Audiokompression)"
 topics: [kompression, codierung, zahlensysteme]
-parts: true
+parts:
+  - image: teaser.webp
+    image_alt: "Eine Welle, in gleichen Abständen gemessen; jede Messung ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
+  - image: teil-2.webp
+    image_alt: "Die Kurve von μ-law, die leise Messungen streckt: Acht gleichmäßige Stufen nach oben gehören zu Messungen, die bei null dicht beieinander liegen und nach rechts immer weiter auseinander."
+  - image: teil-3.webp
+    image_alt: "Oben eine unruhige Welle, darunter ein Gleichheitszeichen und drei glatte Sinuswellen, eine langsame, eine mittlere und eine schnelle: Zusammengezählt ergeben sie die Welle oben."
+  - image: teil-4.webp
+    image_alt: "Die Hörschwelle als Kurve über den Frequenzen, tief in der Mitte, steil bei den tiefen und den hohen Tönen; bei 1 kHz ein lautes Band, über dem eine gestrichelte Spitze die Schwelle hebt. Punkte für Töne: Die über den Kurven sind kräftig, zwei unter der gestrichelten Spitze blass."
+  - image: teil-5.webp
+    image_alt: "Sieben Bögen von Sinusfenstern nebeneinander, jeder überlappt den nächsten zur Hälfte, abwechselnd kräftig und blass; darunter eine Welle."
+  - image: teil-6.webp
+    image_alt: "Sechzehn Balken für die Lautstärke von Bändern, nach rechts leiser; in jedem ein kräftigerer, niedrigerer Teil für das erlaubte Rauschen, darüber die Mithörschwelle als gestrichelte Treppe."
 requires: [huffman]
 reference: [bits-und-bytes]
 </div>

@@ -74,19 +74,23 @@ module ActivityParts
     end
 
     # The row of parts under the title: number and title of each, the
-    # current one marked and not a link.
-    def self.nav_html(slug, titles, current)
+    # current one marked and not a link. hrefs: the addresses of a series of
+    # activities (sections.yaml series:) instead of the parts of one; their
+    # titles carry their own numbers (»Level 1: Die Tiefe«), so the row has
+    # none.
+    def self.nav_html(slug, titles, current, hrefs: nil)
         items = titles.each_with_index.map do |title, index|
             number = index + 1
-            label = CGI.escapeHTML(title.sub(/\A\d+\.\s*/, ''))
-            inner = "<span class='activity-part-number'>#{number}</span><span class='activity-part-title'>#{label}</span>"
+            label = CGI.escapeHTML(hrefs ? title : title.sub(/\A\d+\.\s*/, ''))
+            inner = hrefs ? "<span class='activity-part-title'>#{label}</span>" :
+                "<span class='activity-part-number'>#{number}</span><span class='activity-part-title'>#{label}</span>"
             if number == current
                 "<li><span class='activity-part current' aria-current='page'>#{inner}</span></li>"
             else
-                "<li><a class='activity-part' href='#{url(slug, number)}'>#{inner}</a></li>"
+                "<li><a class='activity-part' href='#{hrefs ? hrefs[index] : url(slug, number)}'>#{inner}</a></li>"
             end
         end
-        "<nav class='activity-parts' aria-label='Teile'><ol>#{items.join}</ol></nav>"
+        "<nav class='activity-parts#{hrefs ? ' activity-series' : ''}' aria-label='Teile'><ol>#{items.join}</ol></nav>"
     end
 
     # At the end of a part: on to the next.

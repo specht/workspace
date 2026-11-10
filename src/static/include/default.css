@@ -15390,3 +15390,53 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
     .activity-parts li { flex: 0 0 auto; max-width: 15em; }
 }
 .activity-part-next { margin: 2.5em 0 1em; }
+
+/* The card of a series (card_series.js): a link over the whole card to the
+   member shown, above it a small pill with the arrows and a dot for each
+   picture, at the top right of the picture */
+.tutorial_card3.card-series { cursor: pointer; }
+.card-series-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+}
+.card-series-link:focus-visible { outline: 3px solid #6741d9; outline-offset: -3px; }
+.card-series-controls {
+    position: absolute;
+    z-index: 3;
+    top: 0.5em;
+    right: 0.5em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    padding: 0.1em;
+    border-radius: 1em;
+    background-color: rgba(20, 20, 24, 0.62);
+    color: #ffffff;
+}
+.card-series-controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9em;
+    height: 1.9em;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+}
+.card-series-controls button:hover { background-color: rgba(255, 255, 255, 0.18); }
+.card-series-controls button:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; }
+.card-series-dots { display: inline-flex; gap: 0.3em; }
+.card-series-dots > span {
+    width: 0.45em;
+    height: 0.45em;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.45);
+}
+.card-series-dots > span.active { background-color: #ffffff; }
+/* the part shown on the card of an activity in parts */
+.tutorial_card3 .card-content .card-part { font-weight: 600; font-size: 0.9em; color: #6741d9; margin: -0.15em 0 0.2em; }
+html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b197fc; }

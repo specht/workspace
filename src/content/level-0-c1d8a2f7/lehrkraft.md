@@ -5,9 +5,8 @@ Lernende entwerfen eigene Backrooms, die endlosen gelben Räume einer Internet-L
 <li><a href='/level-1-7e3a91c4'>Level 1</a>: Rampen, Treppen, Stockwerke, Kollision</li>
 <li><a href='/level-2-b52d0f18'>Level 2</a>: Wasser, Portale</li>
 <li><a href='/level-3-4c9e6a2d'>Level 3</a>: Licht, Veröffentlichen, am Ende die Nachtschicht, ein fertiges Level, dessen Räume man dann ganz lesen kann</li>
-</ul>Lernende kommen in jedes Level nur über den Link am Ende des vorigen.</td></tr>
-<tr><th>Versteckt</th><td><ul>
-<li>Die Seite steht in keinem Katalog und lässt sich nicht anheften (Abschnitt <code>hidden</code> in <code>sections.yaml</code>).</li>
+</ul>Im Katalog stehen die vier Level unter »Spiele &amp; 3D-Welten« auf einer Karte, durch deren Bilder man mit Pfeilen blättert (<code>series:</code> in <code>sections.yaml</code>); über jeder Seite steht die Reihe aller vier.</td></tr>
+<tr><th>Geheime Eingänge</th><td><ul>
 <li>Wer auf der Fehlerseite (jede Adresse, die es nicht gibt) <code>noclip</code> tippt, den Cheat aus Quake, oder auf einem Tablet fünfmal schnell auf die große 404 tippt, fällt hinein; ein Kommentar im Quelltext der Fehlerseite deutet es an. In der Klötzchenwelt führt das Wort »hinunterfällst« (bei den unsichtbaren Wänden unter der Welt) auf eine solche Fehlerseite.</li>
 <li>Die Adresse ist absichtlich unauffällig, <code>/level-0-c1d8a2f7</code>, damit man sie nicht errät; <code>/backrooms</code> ist eine gewöhnliche Fehlerseite.</li>
 <li>Sie können die Adresse auch weitergeben, etwa als Belohnung oder für eine Vertretungsstunde.</li>
