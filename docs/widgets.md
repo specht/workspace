@@ -390,8 +390,11 @@ only to look nice.
   komprimieren«): above the steps the picture, four times as large with
   sharp pixels, in a grid of 8 × 8 blocks; the chosen block dashed yellow
   as in the JPEG picker, dragged, tapped or moved with the arrow keys while
-  the picture has the focus; beside the picture the block alone, enlarged
-  in Y, as the goal of the steps. »Der Block bisher« shows the true greys,
+  the picture has the focus; beside the picture the block alone in Y, as
+  large as the blocks under it, as the goal of the steps; the panel of
+  pixel values becomes the error, the goal minus the block so far (orange
+  still too dark, blue too bright, black right) with its mean in the
+  caption. Without a picture (the JPEG page) the pixel values stay. »Der Block bisher« shows the true greys,
   without stretching the contrast (the maintainer, November 2026). The widget computes the block's DCT itself
   (Y − 128, rounded to multiples of data-quantize) and starts its steps
   anew; data-coef shows the first block until the picture has loaded.

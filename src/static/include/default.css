@@ -9464,6 +9464,11 @@ div[data-stepper] .stepper-word { display: none; }
     min-height: 3em;
     margin-top: 0.6em;
 }
+/* the row of the picture and its goal (data-picture) has the cells of the
+   panels, so that the goal is as large as the blocks under it */
+.idct-stepper .idct-picture-row {
+    --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);
+}
 .idct-stepper .idct-panels {
     --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);
     display: grid;
@@ -9472,12 +9477,18 @@ div[data-stepper] .stepper-word { display: none; }
     align-items: start;
 }
 @container (min-width: 26em) {
+    .idct-stepper .idct-picture-row {
+        --idct-cell: clamp(1.5em, calc((100cqi - 1.2em - 4px) / 16), 1.9em);
+    }
     .idct-stepper .idct-panels {
         --idct-cell: clamp(1.5em, calc((100cqi - 1.2em - 4px) / 16), 1.9em);
         grid-template-columns: repeat(2, max-content);
     }
 }
 @container (min-width: 54em) {
+    .idct-stepper .idct-picture-row {
+        --idct-cell: clamp(1.55em, calc((100cqi - 3.6em - 8px) / 32), 1.9em);
+    }
     .idct-stepper .idct-panels {
         --idct-cell: clamp(1.55em, calc((100cqi - 3.6em - 8px) / 32), 1.9em);
         grid-template-columns: repeat(4, max-content);
@@ -9564,20 +9575,13 @@ div[data-stepper] .stepper-word { display: none; }
 }
 .idct-stepper .idct-picture-box {
     flex: 1 1 18em;
+    width: auto;
     max-width: 32em;
     margin: 0;
 }
 .idct-stepper .idct-target-box {
     flex: 0 0 auto;
-    width: 8em;
     margin: 0;
-}
-.idct-stepper .idct-target {
-    display: block;
-    width: 8em;
-    height: 8em;
-    image-rendering: pixelated;
-    border: 1px solid var(--widget-line);
 }
 .idct-stepper .idct-target-box figcaption {
     margin-top: 0.25em;

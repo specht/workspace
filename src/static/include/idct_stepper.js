@@ -14,7 +14,8 @@
 // the picture stands above it with a grid
 // of 8 × 8 blocks; the chosen block (data-block='x y', multiples of 8) is
 // dragged, tapped or moved with the arrow keys, shown beside the picture
-// enlarged in Y as the goal of the steps, and its coefficients are
+// in Y as the goal of the steps (and the panel of pixel values becomes
+// the error: the goal minus the block so far), and its coefficients are
 // computed here: the DCT of Y − 128 (Y = 0,299 R + 0,587 G + 0,114 B),
 // rounded to multiples of data-quantize (1 if not given).
 
@@ -79,7 +80,7 @@
         let list = steps(coef);
         element.innerHTML = `
             ${element.dataset.src ? `<div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div>` : ''}
-            ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><canvas class='idct-target' width='8' height='8' role='img' aria-label='Der markierte Block in Y, vergrößert: das Ziel der Schritte'></canvas><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
+            ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
                 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -91,7 +92,9 @@
                 <figure><div class='idct-grid idct-coef'></div><figcaption>Koeffizienten</figcaption></figure>
                 <figure><div class='idct-grid idct-basis'></div><figcaption class='idct-basis-caption'></figcaption></figure>
                 <figure><div class='idct-grid idct-block'></div><figcaption>Der Block bisher</figcaption></figure>
-                <figure><div class='idct-grid idct-numbers'></div><figcaption>Pixelwerte</figcaption></figure>
+                ${element.dataset.picture !== undefined
+                    ? `<figure><div class='idct-grid idct-error' role='img' aria-label='Der Fehler: Ziel minus Block bisher'></div><figcaption class='idct-error-caption'>Fehler</figcaption></figure>`
+                    : `<figure><div class='idct-grid idct-numbers'></div><figcaption>Pixelwerte</figcaption></figure>`}
             </div>
             <div class='idct-say' aria-live='polite'></div>`;
         const say = element.querySelector('.idct-say');
@@ -114,10 +117,26 @@
             });
             element.querySelector('.idct-basis-caption').textContent = `Basisbild u = ${step.u}, v = ${step.v}, mal ${step.value}`;
             element.querySelector('.idct-block').innerHTML = cells(step.block, (p) => `<span style='background: ${grey(p)}'></span>`);
-            element.querySelector('.idct-numbers').innerHTML = cells(step.block, (p, i) => {
-                const before = current > 0 ? list[current - 1].block[i] : null;
-                return `<span class='${before !== null && before !== p ? 'changed' : ''}'>${p}</span>`;
-            });
+            const numbers = element.querySelector('.idct-numbers');
+            if (numbers) {
+                numbers.innerHTML = cells(step.block, (p, i) => {
+                    const before = current > 0 ? list[current - 1].block[i] : null;
+                    return `<span class='${before !== null && before !== p ? 'changed' : ''}'>${p}</span>`;
+                });
+            }
+            // with a picture: the error, the goal minus the block so far,
+            // orange where the block is still too dark, blue where too bright
+            const error = element.querySelector('.idct-error');
+            if (error && element.idctTarget) {
+                const diffs = step.block.map((p, i) => element.idctTarget[i] - p);
+                error.innerHTML = cells(diffs, (d) => {
+                    const t = Math.min(1, Math.abs(d) / 40);
+                    const [r, g, b] = d > 0 ? [245, 158, 11] : [59, 130, 246];
+                    return `<span style='background: rgb(${Math.round(r * t)}, ${Math.round(g * t)}, ${Math.round(b * t)})'></span>`;
+                });
+                const mean = diffs.reduce((sum, d) => sum + Math.abs(d), 0) / 64;
+                element.querySelector('.idct-error-caption').textContent = `Fehler, im Mittel ${mean.toLocaleString('de-DE', { maximumFractionDigits: 1 })}`;
+            }
             say.textContent = describe(step, current, list.length);
             count.textContent = `Schritt ${current + 1} von ${list.length}`;
             go('first').disabled = go('prev').disabled = current <= 0;
@@ -244,16 +263,10 @@
                 draw();
                 const block = [];
                 for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(luma(bx + xx, by + yy) - 128);
-                // the goal: the block in Y, beside the picture
+                // the goal: the block in Y, beside the picture and for the error
+                element.idctTarget = block.map((value) => Math.max(0, Math.min(255, Math.round(value + 128))));
                 const target = element.querySelector('.idct-target');
-                if (target) {
-                    const tctx = target.getContext('2d');
-                    block.forEach((value, i) => {
-                        const g = Math.max(0, Math.min(255, Math.round(value + 128)));
-                        tctx.fillStyle = `rgb(${g}, ${g}, ${g})`;
-                        tctx.fillRect(i % 8, Math.floor(i / 8), 1, 1);
-                    });
-                }
+                if (target) target.innerHTML = cells(element.idctTarget, (g) => `<span style='background: ${grey(g)}'></span>`);
                 show(forward(block, q));
             };
             const at = (event) => {
