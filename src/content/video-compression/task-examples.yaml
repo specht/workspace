@@ -51,3 +51,15 @@ examples:
       - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
     fail:
       - { files: { video/blocks.py: fehler/best-mode-largest.py, video/chroma.py: stufen/chroma-2.py }, say: 'kleinsten' }
+  differences:
+    pass:
+      - { files: { video/difference.py: stufen/difference-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+      - { files: { video/difference.py: stufen/difference-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/difference.py: fehler/differences-bytes.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'astype(int)' }
+  encode:
+    pass:
+      - { files: { video/difference.py: stufen/difference-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/difference.py: stufen/difference-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'encode' }
+      - { files: { video/difference.py: fehler/encode-from-original.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'decoded[-1]' }

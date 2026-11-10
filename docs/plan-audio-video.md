@@ -278,6 +278,16 @@ seconds at 720p each.
    original neighbours, not the decoded ones, which the page says. A map of
    the chosen modes was tried and left out: in calm areas the choice is
    close to chance, and the map shows noise.
+   Part 4 is written: R. D. Kell 1929 (Wikipedia, »Video coding format«),
+   bytes that wrap (3 − 5 = 254) as a prediction, `differences` of one's
+   own, the four clips as numbers (0,46, 3,94, 5,57, 12,51 per value) and
+   difference pictures, what the difference costs against the frame alone
+   (glance 0,00 against 0,18, pan 0,33 against 0,32, slope 0,55 against
+   0,62, tilt 0,98 against 0,74 bits per pixel; pan as a prediction), drift
+   as a prediction and `encode` of one's own (the error of `encode_naive`
+   grows from 3,3 to 13,2 in a second, `encode` stays at 3,4). For part 5:
+   in 1959 NHK researchers (Taki, Hatori, Tanaka) proposed motion
+   compensation between frames (Wikipedia, »Motion compensation«).
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

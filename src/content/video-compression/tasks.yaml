@@ -375,3 +375,124 @@ tasks:
     solution: |
       Fast überall mittelgrau: In ruhigen Flächen sagen die Nachbarn den Block
       gut voraus. Hell und dunkel bleiben Kanten und feine Muster wie Gras.
+
+  - id: wrap
+    title: Bytes voneinander abziehen
+    prediction: true
+    prompt: |
+      `a = np.array([3], dtype=np.uint8)` und `b = np.array([5], dtype=np.uint8)`
+      sind zwei Bytes, wie sie in einem Bild aus `read_frames` stehen. Was
+      ergibt `a - b`?
+    check:
+      type: choice
+      options:
+        - '`[-2]`'
+        - '`[0]`'
+        - '`[254]`'
+        - Eine Fehlermeldung.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Ein Byte kann nicht negativ sein. Was macht numpy dann mit −2?
+      - when: { picked: 1 }
+        say: numpy schneidet nicht bei 0 ab. Denk an eine Uhr mit 256 Stunden.
+      - when: { picked: 3 }
+        say: numpy rechnet ohne Fehlermeldung weiter, auch wenn das Ergebnis nicht in ein Byte passt.
+    solution: |
+      `[254]`: Bytes rechnen modulo 256, und −2 + 256 = 254.
+
+  - id: differences
+    title: Unterschiede von Bild zu Bild
+    prompt: |
+      Schreib in `video/difference.py` die Funktion `differences(frames)`: ein
+      Bild weniger als `frames`, Bild `k` ist Bild `k + 1` minus Bild `k`, als
+      ganze Zahlen, auch negative.
+    check:
+      type: python
+      file: video/difference.py
+      cases:
+        - call: differences(np.array([3, 5, 4], dtype=np.uint8)).tolist()
+          expect: '[2, -1]'
+          say: Aus den Bytes 3, 5 und 4 werden die Unterschiede 2 und −1. Kommt 255 heraus statt −1, rechnet numpy mit Bytes modulo 256; wandle vorher mit `astype(int)` um.
+        - call: differences(np.zeros((5, 2, 2, 3), dtype=np.uint8)).shape
+          expect: (4, 2, 2, 3)
+          say: Aus 5 Bildern werden 4 Unterschiede, jeder so groß wie ein Bild.
+    solution: |
+      ```python
+      def differences(frames):
+          return frames[1:].astype(int) - frames[:-1]
+      ```
+
+  - id: pan-bits
+    title: Der Unterschied beim Schwenk
+    prediction: true
+    prompt: |
+      Beim langsamen Schwenk am Bergkamm entlang, `pan.mp4`: Wie viele Bits
+      kostet der gerundete Unterschied von Bild 11 zu Bild 12, verglichen mit
+      Bild 12 allein?
+    check:
+      type: choice
+      options:
+        - Fast nichts, der Schwenk ist ja langsam.
+        - Etwa halb so viel.
+        - Etwa gleich viel.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Fast nichts kostet er beim Blick, wo sich nichts bewegt. Beim Schwenk verschiebt sich das ganze Bild ein wenig. Was steht nach dem Verschieben an jeder Kante?
+      - when: { picked: 1 }
+        say: Schau dir `pan-diff.png` an. Wo ist der Unterschied nicht mittelgrau?
+    solution: |
+      Etwa gleich viel, 0,33 gegen 0,32 Bits je Pixel. Der Schwenk verschiebt
+      jede Kante ein Stück, und an jeder Kante bleibt im Unterschied etwas
+      stehen.
+
+  - id: drift
+    title: Unterschiede zum Original
+    prediction: true
+    prompt: |
+      `encode_naive` baut jedes Bild aus dem zuletzt gebauten und dem
+      gerundeten Unterschied zwischen den Originalen. Wie entwickelt sich der
+      Fehler der gebauten Bilder über eine Sekunde?
+    check:
+      type: choice
+      options:
+        - Er bleibt etwa gleich.
+        - Er wächst von Bild zu Bild.
+        - Er wird kleiner, weil jeder Unterschied etwas korrigiert.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Jeder gerundete Unterschied hat einen kleinen Fehler. Was passiert mit diesen Fehlern, wenn der Decoder alle Unterschiede zusammenzählt?
+      - when: { picked: 2 }
+        say: Der Unterschied zwischen den Originalen weiß nichts vom Fehler im gebauten Bild. Kann er ihn korrigieren?
+    solution: |
+      Er wächst: Jeder Unterschied ist etwas falsch gerundet, und der Decoder
+      zählt alle Fehler zusammen, beim Schwenk von 3,3 auf 13,2 in einer
+      Sekunde.
+
+  - id: encode
+    title: Der Encoder enthält einen Decoder
+    prompt: |
+      Schreib in `video/difference.py` die Funktion `encode(planes, step)` wie
+      `encode_naive`, aber mit dem Unterschied zum zuletzt gebauten Bild,
+      `decoded[-1]`. Die Prüfung gibt ihr Ebenen aus 4 × 4 Pixeln, die mit
+      jedem Bild um 3 heller werden.
+    check:
+      type: python
+      file: video/difference.py
+      cases:
+        - call: encode(np.zeros((3, 8, 8)), 10).shape
+          expect: (3, 8, 8)
+          say: '`encode` gibt alle gebauten Bilder als Array zurück, mit `np.array(decoded)`.'
+        - call: 'p = np.array([np.full((4, 4), 128.0 + 3 * k) for k in range(10)]); bool(np.abs(encode(p, 32)[-1] - p[-1]).max() < 6)'
+          expect: 'True'
+          say: Zehn Ebenen, jede um 3 heller als die vorige. Bei Schritt 32 wird jeder einzelne Unterschied von 3 zu 0 gerundet; beim letzten Bild ist der Fehler 27, wenn `encode` zum vorigen Original rechnet. Rechnet es den Unterschied zu `decoded[-1]`?
+    solution: |
+      ```python
+      def encode(planes, step):
+          decoded = [code(planes[0] - 128, step) + 128]
+          for plane in planes[1:]:
+              decoded.append(decoded[-1] + code(plane - decoded[-1], step))
+          return np.array(decoded)
+      ```

@@ -836,3 +836,237 @@ Kleine Blöcke folgen den Kanten besser, aber ohne Vorhersage kosten sie mehr: J
 <!-- /after -->
 
 <!-- stage: stufen/blocks-2.py as blocks.py -->
+
+## Von Bild zu Bild
+
+Zwei Bilder hintereinander sind sich meist sehr ähnlich, zwischen ihnen liegt nur eine vierundzwanzigstel Sekunde. Statt jedes Bild für sich zu speichern, kann ein Codec speichern, was sich geändert hat. Die Idee ist fast hundert Jahre alt: 1929 schlug R. D. Kell in Großbritannien vor, beim Fernsehen nur die Teile eines Bildes zu übertragen, die sich seit dem vorigen geändert haben.
+
+### Unterschiede
+
+Ein Bild aus `read_frames` besteht aus Bytes, Zahlen von 0 bis 255 (`uint8`). Was passiert, wenn man zwei davon voneinander abzieht?
+
+_task(wrap)
+
+<!-- after: wrap -->
+Bytes können nicht negativ werden: numpy rechnet `3 - 5` modulo 256 und kommt auf 254. Aus einem kleinen Unterschied wird so ein riesiger. Vor dem Abziehen muss man die Bytes darum in größere Zahlen umwandeln, mit `astype(int)`.
+<!-- /after -->
+
+Lege `difference.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+from PIL import Image
+
+from video import read_frames
+
+CLIPS = ['glance', 'pan', 'slope', 'tilt']
+
+
+def luma(frames):
+    return frames @ np.array([0.299, 0.587, 0.114])
+
+
+def differences(frames):
+    # hier: jedes Bild minus das vorige
+
+
+if __name__ == '__main__':
+    for name in CLIPS:
+        frames = read_frames(f'{name}.mp4')[:24]
+        d = differences(frames)
+        print(f'{name}: im Mittel {np.abs(d).mean():.2f} Unterschied je Wert')
+        grey = (luma(d[11]) + 128).round().clip(0, 255).astype(np.uint8)
+        Image.fromarray(grey).save(f'{name}-diff.png')
+```
+
+`luma` rechnet nur Y aus, die Helligkeit, mit den Gewichten aus `to_ycbcr`; `@` multipliziert die letzte Achse, R, G und B, mit den drei Gewichten. Das Programm nimmt die erste Sekunde jedes Ausschnitts und speichert den Unterschied von Bild 11 zu Bild 12 als Graubild, ein Unterschied von 0 ist mittelgrau.
+
+<div class='hint own' data-check='differences'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>differences(frames)</code>: ein Array mit einem Bild weniger als <code>frames</code>, in dem Bild <code>k</code> der Unterschied von Bild <code>k + 1</code> zu Bild <code>k</code> ist, als ganze Zahlen, auch negative.
+</div>
+
+<!-- hint -->
+`frames[1:]` sind alle Bilder ab dem zweiten, `frames[:-1]` alle bis auf das letzte. Zieht man das eine vom anderen ab, steht an jedem Index der Unterschied zum vorigen Bild.
+<!-- /hint -->
+<!-- hint -->
+Wandle vor dem Abziehen in ganze Zahlen um, sonst rechnet numpy modulo 256:
+
+```python
+frames[1:].astype(int)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def differences(frames):
+    return frames[1:].astype(int) - frames[:-1]
+```
+<!-- /solution -->
+
+_task(differences)
+
+```bash
+python3 difference.py
+```
+
+<!-- tutorial-step
+write-file: video/difference.py <- file:stufen/difference-1.py
+check-task: differences
+terminal-run: python3 difference.py
+terminal-wait-for-prompt: 120
+wait-for-text: tilt: im Mittel
+-->
+
+```text
+glance: im Mittel 0.46 Unterschied je Wert
+pan: im Mittel 3.94 Unterschied je Wert
+slope: im Mittel 5.57 Unterschied je Wert
+tilt: im Mittel 12.51 Unterschied je Wert
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/glance-diff.png 1
+-->
+<img class='inspect' src='glance-diff.webp' alt='Der Unterschied zwischen zwei Bildern von glance.mp4 als Graubild: fast überall gleichmäßig mittelgrau, nur ganz schwach die Umrisse des Gesichts und des Stabs.'>
+<figcaption><code>glance.mp4</code>: fast nichts</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/pan-diff.png 1
+-->
+<img class='inspect' src='pan-diff.webp' alt='Der Unterschied zwischen zwei Bildern von pan.mp4 als Graubild: mittelgrau mit hellen und dunklen Linien an den Kanten des Bergkamms und der Felsen.'>
+<figcaption><code>pan.mp4</code>: die Kanten des Bergkamms</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/slope-diff.png 1
+-->
+<img class='inspect' src='slope-diff.webp' alt='Der Unterschied zwischen zwei Bildern von slope.mp4 als Graubild: mittelgrau mit kräftigen Umrissen des Mädchens und des Hundes und schwachen Linien an Felsen und Gras.'>
+<figcaption><code>slope.mp4</code>: das Mädchen und der Hund, schwach die Felsen</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/tilt-diff.png 1
+-->
+<img class='inspect' src='tilt-diff.webp' alt='Der Unterschied zwischen zwei Bildern von tilt.mp4 als Graubild: überall helle und dunkle Linien: die Pflanzen an der Wand, die Felskante, das Mädchen mit dem Hund.'>
+<figcaption><code>tilt.mp4</code>: alles</figcaption></figure>
+</div>
+
+Im Blick des Mädchens ändert sich fast nichts. Beim Hang gehen das Mädchen und der Hund, und die Kamera bewegt sich ein wenig mit. Beim Schwenk ändert sich jede Kante, obwohl sich nichts im Bild bewegt außer der Kamera, und bei der schnellen Fahrt die Wand hinauf ändert sich alles.
+
+### Was der Unterschied kostet
+
+Der Unterschied ist eine Ebene wie jede andere: Man kann ihn in Blöcke teilen, mit der DCT zerlegen und runden, mit den Funktionen aus `blocks.py`. Ein Bild allein bekommt dabei die Vorhersage aus den Nachbarn wie in »Innerhalb eines Bildes«.
+
+_task(pan-bits)
+
+Beim Speichern von Unterschieden gibt es eine Falle. Der Decoder kennt das vorige Bild nicht, wie es war, sondern nur, wie er es selbst aus gerundeten Zahlen gebaut hat. `encode_naive` rechnet den Unterschied trotzdem zum Original:
+
+<!-- page-code: own -->
+```python
+STEP = 32
+
+
+def code(plane, step):
+    return join(restore(quantize(split(plane, 4), step), step))
+
+
+def encode_naive(planes, step):
+    decoded = [code(planes[0] - 128, step) + 128]
+    for k in range(1, len(planes)):
+        decoded.append(decoded[-1] + code(planes[k] - planes[k - 1], step))
+    return np.array(decoded)
+
+
+def encode(planes, step):
+    # hier: der Unterschied zum Bild, das der Decoder hat
+
+
+def frame_bits(plane, step):
+    return bits(quantize(split(plane, 4), step)) / plane.size
+```
+
+`code` macht, was Encoder und Decoder zusammen mit einer Ebene tun: teilen, zerlegen, runden und zurück. `decoded` ist die Liste der Bilder, die der Decoder baut, das erste aus dem ersten Bild allein, jedes weitere aus dem vorigen und dem gerundeten Unterschied. `frame_bits` gibt die Bits je Pixel. Oben kommt dazu:
+
+```python
+from blocks import split, join, quantize, restore, bits, residual
+```
+
+_task(drift)
+
+<div class='hint own' data-check='encode'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>encode(planes, step)</code> wie <code>encode_naive</code>, aber so, dass sich der Fehler nicht aufsummiert: Der Unterschied wird zu dem Bild gerechnet, das der Decoder zuletzt gebaut hat, nicht zum Original. Das Ergebnis ist ein Array aller gebauten Bilder.
+</div>
+
+<!-- hint -->
+Das zuletzt gebaute Bild ist `decoded[-1]`. Der Unterschied des nächsten Bildes zu ihm ist `plane - decoded[-1]`.
+<!-- /hint -->
+<!-- hint -->
+```python
+for plane in planes[1:]:
+    decoded.append(decoded[-1] + code(plane - decoded[-1], step))
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def encode(planes, step):
+    decoded = [code(planes[0] - 128, step) + 128]
+    for plane in planes[1:]:
+        decoded.append(decoded[-1] + code(plane - decoded[-1], step))
+    return np.array(decoded)
+```
+<!-- /solution -->
+
+_task(encode)
+
+Und unten im Hauptprogramm:
+
+```python
+    for name in CLIPS:
+        planes = luma(read_frames(f'{name}.mp4')[:24])
+        alone = frame_bits(residual(planes[12], 4), STEP)
+        change = frame_bits(planes[12] - planes[11], STEP)
+        print(f'{name}: Bild allein {alone:.2f}, Unterschied {change:.2f} Bits je Pixel')
+
+    planes = luma(read_frames('pan.mp4')[:24])
+    for coder in (encode_naive, encode):
+        decoded = coder(planes, STEP)
+        errors = np.abs(decoded - planes).mean(axis=(1, 2))
+        print(coder.__name__, ' '.join(f'{e:.1f}' for e in errors[::4]))
+```
+
+Die letzte Schleife gibt für beide Arten den mittleren Fehler der Bilder 0, 4, 8, … aus.
+
+```bash
+python3 difference.py
+```
+
+<!-- tutorial-step
+write-file: video/difference.py <- file:stufen/difference-2.py
+check-task: encode
+terminal-run: python3 difference.py
+terminal-wait-for-prompt: 180
+wait-for-text: encode 3.3
+-->
+
+<!-- after: drift -->
+```text
+glance: Bild allein 0.18, Unterschied 0.00 Bits je Pixel
+pan: Bild allein 0.32, Unterschied 0.33 Bits je Pixel
+slope: Bild allein 0.62, Unterschied 0.55 Bits je Pixel
+tilt: Bild allein 0.74, Unterschied 0.98 Bits je Pixel
+encode_naive 3.3 5.8 8.0 9.8 11.6 13.2
+encode 3.3 3.4 3.4 3.4 3.4 3.5
+```
+
+Beim Blick kostet der Unterschied fast nichts: Bei Schritt 32 wird er überall 0. Beim Hang spart er ein wenig. Beim Schwenk kostet er so viel wie das Bild allein, und bei der Fahrt die Wand hinauf sogar mehr. Ein Schwenk verschiebt das ganze Bild; abziehen hilft dann nicht, denn an jeder Kante steht nun etwas anderes.
+
+`encode_naive` verliert in einer Sekunde den Anschluss: Jeder gerundete Unterschied hat einen kleinen Fehler, und der Decoder zählt alle zusammen. Der Fehler wächst von 3,3 auf 13,2 und wüchse weiter, bis zum nächsten Bild, das allein gespeichert ist. `encode` rechnet den Unterschied zum Bild, das der Decoder wirklich hat; was einmal falsch gerundet wurde, steckt im nächsten Unterschied und wird dort ausgeglichen. Darum enthält jeder Encoder einen Decoder. Auch was zu klein war und zu 0 gerundet wurde, geht nicht verloren: Der Unterschied wächst von Bild zu Bild, bis er groß genug ist, und kommt dann an.
+<!-- /after -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Rechne die Unterschiede nicht zum vorigen Bild, sondern zum ersten: <code>planes[12] - planes[0]</code>. Bei welchem Ausschnitt wird das teurer, bei welchem kaum?
+</div>
+
+<!-- stage: stufen/difference-2.py as difference.py -->
