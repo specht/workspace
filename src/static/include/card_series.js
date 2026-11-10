@@ -37,13 +37,54 @@
             show(i);
         }));
         // dragging sideways, with a mouse as with a finger: the picture
-        // follows, and past 40 px the next or the previous one comes; a
-        // drag does not open the link, and the browser's own dragging of
-        // links and pictures is off
+        // follows and the next or the previous one comes in beside it, in a
+        // frame of the picture's size (the picture is on top of the card or
+        // beside the text); past 40 px it slides on, else back. At the first
+        // and the last picture it moves only a little. A drag opens no link,
+        // and the browser's own dragging of links and pictures is off.
         link.draggable = false;
         card.querySelectorAll('img').forEach((img) => { img.draggable = false; });
-        let startX = null, dx = 0, dragged = false;
-        const pictures = () => slides[current].querySelectorAll('img');
+        // the neighbours' pictures load once the pointer is on the card
+        card.addEventListener('pointerenter', () => {
+            card.querySelectorAll('img[loading=lazy]').forEach((img) => { img.loading = 'eager'; });
+        }, { once: true });
+        let startX = null, dx = 0, dragged = false, stage = null;
+        const shown = (slide) => Array.from(slide.querySelectorAll('img'));
+        function makeStage() {
+            const slide = slides[current];
+            const pictures = shown(slide);
+            const img = pictures.find((i) => i.offsetWidth > 0);
+            if (!img) return null;
+            const box = slide.getBoundingClientRect(), pic = img.getBoundingClientRect();
+            const frame = document.createElement('div');
+            frame.className = 'card-series-stage';
+            Object.assign(frame.style, { left: `${pic.left - box.left}px`, top: `${pic.top - box.top}px`,
+                width: `${pic.width}px`, height: `${pic.height}px` });
+            const strip = document.createElement('div');
+            strip.className = 'card-series-strip';
+            frame.append(strip);
+            const add = (index, at) => {
+                if (index < 0 || index >= slides.length) return;
+                shown(slides[index]).forEach((source) => {
+                    const copy = source.cloneNode();
+                    copy.loading = 'eager';
+                    Object.assign(copy.style, { left: `${at * pic.width}px`, width: `${pic.width}px`, height: `${pic.height}px` });
+                    strip.append(copy);
+                });
+            };
+            add(current - 1, -1);
+            add(current, 0);
+            add(current + 1, 1);
+            slide.append(frame);
+            pictures.forEach((i) => { i.style.visibility = 'hidden'; });
+            return { frame, strip, pictures, width: pic.width };
+        }
+        function dropStage() {
+            if (!stage) return;
+            stage.pictures.forEach((i) => { i.style.visibility = ''; });
+            stage.frame.remove();
+            stage = null;
+        }
         card.addEventListener('pointerdown', (e) => {
             if (e.button !== 0 || e.target.closest('.card-series-dots')) return;
             startX = e.clientX;
@@ -56,16 +97,28 @@
             if (Math.abs(dx) > 8 && !dragged) {
                 dragged = true;
                 card.setPointerCapture(e.pointerId);
+                dropStage();
+                stage = makeStage();
             }
-            // past the first or the last picture it moves only a little
+            if (!stage) return;
             const edge = (dx > 0 && current === 0) || (dx < 0 && current === slides.length - 1);
-            if (dragged) pictures().forEach((img) => { img.style.transition = 'none'; img.style.transform = `translateX(${edge ? dx / 5 : dx}px)`; });
+            stage.strip.style.transition = 'none';
+            stage.strip.style.transform = `translateX(${edge ? dx / 5 : dx}px)`;
         });
         const end = () => {
             if (startX === null) return;
             startX = null;
-            pictures().forEach((img) => { img.style.transition = ''; img.style.transform = ''; });
-            if (dragged && Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+            if (!stage) return;
+            const edge = (dx > 0 && current === 0) || (dx < 0 && current === slides.length - 1);
+            const go = dragged && !edge && Math.abs(dx) > 40 ? (dx < 0 ? 1 : -1) : 0;
+            const finished = stage;
+            finished.strip.style.transition = 'transform 0.22s ease-out';
+            finished.strip.style.transform = `translateX(${-go * finished.width}px)`;
+            finished.strip.addEventListener('transitionend', () => {
+                if (stage !== finished) return;
+                if (go) show(current + go);
+                dropStage();
+            }, { once: true });
         };
         card.addEventListener('pointerup', end);
         card.addEventListener('pointercancel', end);

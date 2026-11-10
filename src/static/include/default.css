@@ -15439,7 +15439,11 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
    member shown, and small dots at the foot of its picture to show another
    (placed by the script, as the picture is on top or beside the text) */
 .tutorial_card3.card-series { cursor: pointer; touch-action: pan-y; user-select: none; }
-.tutorial_card3.card-series img { transition: transform 0.2s ease; }
+/* while dragging: a frame of the picture's size with the picture and its
+   neighbours side by side, moved as one */
+.card-series-stage { position: absolute; z-index: 1; overflow: hidden; }
+.card-series-strip { position: absolute; inset: 0; }
+.tutorial_card3 .card-series-strip img { position: absolute; top: 0; max-width: none; aspect-ratio: auto; object-fit: cover; }
 .card-series-link {
     position: absolute;
     inset: 0;
