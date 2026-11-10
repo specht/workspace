@@ -7,6 +7,11 @@ LZW steppers and the like. A widget is there so that students *see* what an
 algorithm does, step by step, in the order the code does it. It is not
 decoration and not a quiz.
 
+Widgets without steps (the bit planes of `steganography`, the damaged QR
+code of `check-digits`, the DTMF keypad of `telefonspiel`,
+`dtmf_widget.js`) get the same slate frame and a pill that says what to do
+(`default.css`).
+
 The movement between steps comes from `src/static/include/stepper_motion.js`
 (loaded on every page). The AVL tree on `reference/baeume` is the model: when
 in doubt, do it the way it does.

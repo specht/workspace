@@ -8714,6 +8714,7 @@ h3:has(+ .person) {
 div[data-stepper],
 .bitplane-widget,
 .qr-damage,
+.dtmf-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8731,6 +8732,7 @@ div[data-stepper],
 html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget,
 html[data-bs-theme="dark"] .qr-damage,
+html[data-bs-theme="dark"] .dtmf-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -15080,3 +15082,89 @@ html[data-bs-theme="dark"] .splat-viewer {
 .table code.code-chip { padding: .1rem .4rem; border-radius: .3rem; font-size: .88em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 html:not([data-bs-theme="dark"]) .table code.code-chip { background-color: #f6f7f8 !important; }
 html[data-bs-theme="dark"] .table code.code-chip { background-color: rgba(255, 255, 255, .06) !important; }
+
+/* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
+   Telefon«): the keypad with the frequencies of its rows (amber) and
+   columns (teal), the wave of the two tones and their sum (purple, what is
+   current), the waterfall; beside each other where there is room */
+.dtmf-widget {
+    --dtmf-ink: var(--widget-ink);
+    --dtmf-quiet: var(--widget-line);
+    --dtmf-row: #b45309;
+    --dtmf-col: #0e7490;
+    --dtmf-sum: #6741d9;
+    --dtmf-ground: #f1f2f5;
+    --dtmf-hot: #2d1680;
+}
+html[data-bs-theme="dark"] .dtmf-widget {
+    --dtmf-row: #f59f00;
+    --dtmf-col: #3bc9db;
+    --dtmf-sum: #b197fc;
+    --dtmf-ground: #111213;
+    --dtmf-hot: #e5dbff;
+}
+.dtmf-widget::before {
+    content: 'Zum Ausprobieren: Tasten drücken';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.dtmf-widget:focus { outline: none; }
+.dtmf-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25em 1.75em;
+    align-items: flex-start;
+}
+.dtmf-pad {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: 2.8em repeat(3, 4.1em);
+    gap: 0.45em;
+    align-items: center;
+    justify-items: center;
+    font-variant-numeric: tabular-nums;
+}
+.dtmf-corner { color: var(--dtmf-ink); font-size: 0.8em; }
+.dtmf-freq { font-size: 0.8em; }
+.dtmf-row { color: var(--dtmf-row); justify-self: end; }
+.dtmf-col { color: var(--dtmf-col); }
+.dtmf-freq.on { font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+.dtmf-key {
+    width: 100%;
+    height: 2.6em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.6em;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 1.15em;
+    font-weight: 600;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background-color 0.08s, color 0.08s;
+}
+.dtmf-key:hover { border-color: var(--dtmf-sum); }
+.dtmf-key:focus-visible { outline: 2px solid var(--dtmf-sum); outline-offset: 2px; }
+.dtmf-key.on { background: var(--dtmf-sum); border-color: var(--dtmf-sum); color: var(--bs-body-bg); }
+.dtmf-views {
+    flex: 1 1 18em;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+}
+.dtmf-figure { margin: 0; }
+.dtmf-figure figcaption { font-size: 0.85em; color: var(--dtmf-ink); margin-bottom: 0.25em; }
+.dtmf-wave { display: block; width: 100%; height: 110px; }
+.dtmf-fall { display: block; width: 100%; height: 220px; border-radius: 0.4em; }
+.dtmf-message { margin: 0.9em 0 0.6em; min-height: 1.5em; }
+.dtmf-r { color: var(--dtmf-row); font-weight: 600; }
+.dtmf-c { color: var(--dtmf-col); font-weight: 600; }
+.dtmf-actions { display: flex; flex-wrap: wrap; gap: 0.5em; }

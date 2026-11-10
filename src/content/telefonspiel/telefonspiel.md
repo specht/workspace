@@ -624,6 +624,31 @@ darauf, ob du es schaffst, nach dem Ende der Frage noch zu drücken, und was
 passiert, wenn du schon während der Frage drückst.
 </div>
 
+### Wie das Telefon die Tasten hört
+
+Drückst du am Telefon im Workspace eine Taste, hörst du einen kurzen Ton.
+Genau genommen sind es zwei Töne zugleich: einer für die Zeile der Taste und
+einer für ihre Spalte. Die Taste 5 klingt mit 770 Hz und 1.336 Hz. Daran
+erkannte früher die Vermittlungsstelle, welche Taste gedrückt wurde: Sie
+suchte in dem, was durch die Leitung kam, nach diesen sieben Frequenzen. Das
+Verfahren heißt Mehrfrequenzwahl, auf Englisch DTMF (Dual-Tone
+Multi-Frequency).
+
+<script src='/include/dtmf_widget.js'></script>
+<div class='dtmf-widget'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Drück »Rätsel: drei Tasten« und lies die drei
+Tasten im Wasserfall ab. Achte darauf, welche Frequenz der untere Strich hat
+und welche der obere: Der untere sagt die Zeile, der obere die Spalte.
+</div>
+
+Zwei Töne statt einem, damit eine Stimme oder ein Lied nicht aus Versehen
+eine Taste drückt: Dass genau zwei dieser Frequenzen zugleich und allein
+klingen, kommt in Sprache und Musik selten vor. Bei Telefonie über das
+Internet geht eine Taste heute meist als eigenes kleines Paket mit, das nur
+sagt, welche Taste es war; die Töne hörst du im Hörer trotzdem.
+
 ## Eine Höhle aus Szenen
 
 ### Vor der Höhle
