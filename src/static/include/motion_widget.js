@@ -108,7 +108,6 @@
         let bx = 0, by = 0;            // the block's top left corner
         let vy = 0, vx = 0;            // the vector from the block to the square
         let sums = null;               // the sum for every shift, after a search
-        let searched = false;          // once searched, the map stays live: a new block is searched at once
         let found = null;              // what the search found: { vx, vy, s }
         let hover = null;              // the block under the mouse in the frame now: its top left corner
 
@@ -255,8 +254,8 @@
         function choose(x, y) {
             bx = Math.max(R, Math.min(now.width - R - N, Math.floor(x / N) * N));
             by = Math.max(R, Math.min(now.height - R - N, Math.floor(y / N) * N));
+            // a new block: no answer until the reader searches again
             vx = 0; vy = 0; sums = null; found = null;
-            if (searched) runSearch();
             draw();
         }
         function move(dy, dx) {
@@ -341,7 +340,6 @@
         }
         search.addEventListener('click', () => {
             if (!now) return;
-            searched = true;
             runSearch();
             vy = found.vy; vx = found.vx;
             draw();
