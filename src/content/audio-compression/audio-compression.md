@@ -1161,6 +1161,7 @@ _task(am-besten)
 
 <!-- after: am-besten -->
 Am leisesten hört das Ohr um 3.500 Hz. Der Gehörgang ist ein Rohr von etwa 2,5 cm, das an einem Ende offen und am anderen vom Trommelfell geschlossen ist. In einem solchen Rohr schwingt die Luft am stärksten bei einer Wellenlänge von viermal seiner Länge, 10 cm, und das sind bei 343 m/s Schallgeschwindigkeit etwa 3.400 Hz. Dort verstärkt der Gehörgang, was ankommt.
+<!-- /after -->
 
 Miss deine eigene Hörschwelle. **Nimm Kopfhörer und fang leise an:** Stell mit dem Bezugston einmal die Lautstärke ein und dreh danach nicht mehr daran, auch wenn ein Ton nicht zu hören ist. Lauter als der Regler erlaubt spielt das Widget nichts ab. Wenn etwas unangenehm laut ist, nimm die Kopfhörer ab.
 
@@ -1169,7 +1170,6 @@ Miss deine eigene Hörschwelle. **Nimm Kopfhörer und fang leise an:** Stell mit
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Fang mit 1.000 Hz an: Spiel den Ton ab und schieb den Pegel nach links, bis du ihn nicht mehr hörst, dann merk dir den Wert. Mach dasselbe für die anderen Töne. Bei welchem Ton kommst du am weitesten nach links? Hörst du 16.000 Hz überhaupt, und hört ihn jemand neben dir, der älter ist?
 </div>
-<!-- /after -->
 
 Die gestrichelte Kurve ist die Hörschwelle eines jungen Menschen mit gesunden Ohren, wie Ernst Terhardt sie 1979 in einer Formel zusammengefasst hat; viele Modelle des Gehörs in Audiocodecs benutzen sie. Mit `f` in Kilohertz ist sie in dB
 
@@ -1289,15 +1289,15 @@ Die Hörschwelle gilt in der Stille. Neben einem lauten Klang steigt sie: Ein le
 
 _task(welche-seite)
 
-<!-- after: welche-seite -->
 Im Widget rauscht es laut zwischen 920 und 1.080 Hz, in einer Frequenzgruppe. Daneben piept ein leiser Ton.
 
 <div class='hearing-widget' data-kind='masking'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Nimm den Ton bei 1.400 Hz, schalt das Rauschen aus und hör, wie leise er sein darf. Schalt das Rauschen an und schieb den Pegel nach links, bis der Ton im Rauschen verschwindet, und merk dir den Wert. Mach dasselbe bei 700 Hz, dann bei den anderen Tönen. Auf welcher Seite des Rauschens musst du weiter nach rechts, damit der Ton zu hören bleibt?
+<strong>Ausprobieren:</strong> Nimm den Ton bei 1.400 Hz, schalt das Rauschen aus und hör, wie leise er sein darf. Schalt das Rauschen an und schieb den Pegel nach links, bis der Ton im Rauschen verschwindet, und merk dir den Wert. Mach dasselbe bei 700 Hz, dann bei den anderen Tönen. Auf welcher Seite des Rauschens musst du weiter nach rechts, damit der Ton zu hören bleibt? Schalt erst danach »Modell zeigen« ein und vergleich deine Werte mit der Kurve.
 </div>
 
+<!-- after: welche-seite -->
 Die Verdeckung reicht nach oben viel weiter als nach unten. Ein tiefer, lauter Klang bringt die Basilarmembran auf einer langen Strecke zum Schwingen, die zuerst an den Stellen für hohe Frequenzen vorbeiführt; ein hoher Klang dagegen schwingt nur kurz vor den tiefen Stellen. Im Modell des Widgets liegt die Mithörschwelle zwei Frequenzgruppen über dem Rauschen etwa 17 dB unter ihm, zwei Frequenzgruppen darunter etwa 32 dB.
 <!-- /after -->
 

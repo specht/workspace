@@ -194,8 +194,9 @@ seconds at 720p each.
    on Wikimedia Commons, public domain, cropped 1200 × 1500 from (230, 140).
    Part 4 is written: cochlea and Bark, the
    threshold-in-quiet widget and the masking widget (`hearing_widget.js`,
-   both inside the after blocks of the predictions their curves would give
-   away; nothing plays louder than -20 dBFS, a reference tone sets the
+   right after their predictions; the masking model waits for its switch
+   »Modell zeigen«, the threshold curve for the student's own note at
+   1.000 Hz, so neither gives the prediction away; nothing plays louder than -20 dBFS, a reference tone sets the
    volume once), `threshold` after Terhardt (via Painter and Spanias 2000)
    and `audible` with the 96 dB assumption (music keeps 53 % of the
    frequencies, the voice 39 %; what goes is mostly bass under 60 Hz and

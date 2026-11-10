@@ -12,9 +12,11 @@
 // shape can be compared).
 //
 // masking: a band of noise from 920 to 1.080 Hz, and a quiet beeping tone
-// beside it, made quieter until the noise covers it; noted the same way and
-// drawn over a model of the masking threshold (the spreading function of
-// Schroeder, Atal and Hall over Zwicker's Bark scale, 5 dB under the noise).
+// beside it, made quieter until the noise covers it; noted the same way.
+// »Modell zeigen« draws a model of the masking threshold (the spreading
+// function of Schroeder, Atal and Hall over Zwicker's Bark scale, 5 dB
+// under the noise); it starts hidden, because it answers the prediction
+// the page asks before the widget.
 //
 // Levels are in dB of the loudest a file can hold (dBFS), as RMS; nothing
 // plays louder than -20 dBFS.
@@ -106,6 +108,7 @@
         let freq = kind === 'threshold' ? 1000 : 1400;
         let level = -40;
         let masker = true;
+        let showModel = kind === 'threshold';           // the masking model waits for its switch
         const notes = new Map();                       // frequency → the level noted
         let playing = null;                            // the beep that plays: a function that stops it, with its gain
         let refStop = null;                            // the reference tone, while it plays
@@ -122,6 +125,10 @@
             return el('div', { class: 'hearing-group' }, [el('span', { class: 'hearing-label', text: label }), box]);
         };
 
+        const legendModel = el('span', { class: 'hearing-l-model' }, [el('i'), kind === 'threshold'
+            ? 'Hörschwelle nach Terhardt, an deine Messung bei 1.000 Hz gelegt'
+            : 'Mithörschwelle nach einem Modell']);
+        legendModel.hidden = !showModel;
         const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' });
         const noteButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' },
             [el('i', { class: 'bi bi-pin-angle' }), kind === 'threshold' ? ' Nicht mehr zu hören: merken' : ' Verdeckt: merken']);
@@ -154,20 +161,28 @@
                     (v) => { freq = Number(v); level = -40; slider.value = String(level); if (playing) restart(); draw(); }),
             ]),
             kind === 'masking'
-                ? el('div', { class: 'hearing-controls' }, [group('noise', 'Rauschen um 1.000 Hz', [{ value: 'on', label: 'an' }, { value: 'off', label: 'aus' }], 'on',
-                    (v) => { masker = v === 'on'; if (playing) restart(); draw(); })])
+                ? el('div', { class: 'hearing-controls' }, [
+                    group('noise', 'Rauschen um 1.000 Hz', [{ value: 'on', label: 'an' }, { value: 'off', label: 'aus' }], 'on',
+                        (v) => { masker = v === 'on'; if (playing) restart(); draw(); }),
+                    modelSwitch()])
                 : '',
             el('div', { class: 'hearing-controls' }, [
                 el('label', { class: 'hearing-label', for: slider.id, text: 'Pegel' }), slider, levelText]),
             el('div', { class: 'hearing-controls' }, [playButton, noteButton, clearButton]),
             el('figure', { class: 'hearing-figure' }, [chart, el('div', { class: 'hearing-legend' }, [
                 el('span', { class: 'hearing-l-notes' }, [el('i'), kind === 'threshold' ? 'deine Messungen' : 'wo der Ton für dich verschwand']),
-                el('span', { class: 'hearing-l-model' }, [el('i'), kind === 'threshold'
-                    ? 'Hörschwelle nach Terhardt, an deine Messung bei 1.000 Hz gelegt'
-                    : 'Mithörschwelle nach einem Modell']),
+                legendModel,
                 ...(kind === 'masking' ? [el('span', { class: 'hearing-l-noise' }, [el('i'), 'das Rauschen'])] : []),
             ])]),
             line);
+
+        // »Modell zeigen«: a switch for the dashed curve of the masking widget
+        function modelSwitch() {
+            const input = el('input', { class: 'form-check-input', type: 'checkbox', role: 'switch', id: `${id}-model` });
+            input.addEventListener('change', () => { showModel = input.checked; legendModel.hidden = !showModel; draw(); });
+            return el('div', { class: 'form-check form-switch hearing-switch' }, [
+                input, el('label', { class: 'form-check-label', for: `${id}-model`, text: 'Modell zeigen' })]);
+        }
 
         const colours = () => {
             const s = getComputedStyle(root);
@@ -273,7 +288,7 @@
                 const at1k = notes.has(1000) ? notes.get(1000) : null;
                 if (at1k !== null) model = (f) => terhardt(f) - terhardt(1000) + at1k;
             } else if (masker) {
-                model = (f) => MASKER - 5 + spread(bark(f) - bark(1000));
+                if (showModel) model = (f) => MASKER - 5 + spread(bark(f) - bark(1000));
                 // the noise as a band
                 g.fillStyle = col.noise; g.globalAlpha = 0.35;
                 g.fillRect(xOf(920), yOf(MASKER), xOf(1080) - xOf(920), plotH - yOf(MASKER));

@@ -15230,6 +15230,8 @@ html[data-bs-theme="dark"] .hearing-widget {
 .hearing-slider:focus::-moz-range-thumb { box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--hearing-mark) 30%, transparent); }
 .hearing-level { font-variant-numeric: tabular-nums; min-width: 4.5em; }
 .hearing-clear { color: var(--widget-ink); }
+.hearing-switch { margin: 0; display: flex; align-items: center; gap: 0.4em; }
+.hearing-switch .form-check-input:checked { background-color: var(--hearing-mark); border-color: var(--hearing-mark); }
 @media (max-width: 576px) {
     .hearing-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
 }
