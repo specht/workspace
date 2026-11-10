@@ -249,6 +249,10 @@
             const rgba = octx.getImageData(0, 0, w, h).data;
             // Y, Cb or Cr of a pixel, with the formulas of »Farbe sparen«
             let channel = 0;
+            // a block covers 8 × 8 pixels in Y, 16 × 16 in Cb and Cr: there the
+            // colour has half the resolution in each direction, as in 4:2:0, and
+            // each value of the block is the mean of 2 × 2 pixels
+            const size = () => (channel ? 16 : 8);
             const value = (x, y) => {
                 const i = 4 * (y * w + x), r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
                 if (channel === 1) return 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
@@ -277,17 +281,17 @@
                 g.clearRect(0, 0, gw, gh);
                 const k = gw / w;                      // device pixels per pixel of the picture
                 const X = (px) => Math.round(px * k), Y = (py) => Math.round(py * k);
-                for (let x = 8; x < w; x += 8) {
+                for (let x = size(); x < w; x += size()) {
                     g.fillStyle = 'rgba(255, 255, 255, 0.22)'; g.fillRect(X(x) - 1, 0, 1, gh);
                     g.fillStyle = 'rgba(0, 0, 0, 0.22)'; g.fillRect(X(x), 0, 1, gh);
                 }
-                for (let y = 8; y < h; y += 8) {
+                for (let y = size(); y < h; y += size()) {
                     g.fillStyle = 'rgba(255, 255, 255, 0.22)'; g.fillRect(0, Y(y) - 1, gw, 1);
                     g.fillStyle = 'rgba(0, 0, 0, 0.22)'; g.fillRect(0, Y(y), gw, 1);
                 }
                 const thick = Math.max(2, Math.round(ratio * 1.5));
                 const frame = (x0, y0, dash) => {
-                    const r = [X(x0), Y(y0), X(x0 + 8), Y(y0 + 8)];
+                    const r = [X(x0), Y(y0), X(x0 + size()), Y(y0 + size())];
                     g.setLineDash([]);
                     g.lineWidth = 1;
                     g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
@@ -303,14 +307,22 @@
             };
             if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(canvas);
             const pick = (x, y, again) => {
-                const nx = Math.max(0, Math.min(w - 8, Math.floor(x / 8) * 8)), ny = Math.max(0, Math.min(h - 8, Math.floor(y / 8) * 8));
+                const n = size();
+                const nx = Math.max(0, Math.min(w - n, Math.floor(x / n) * n)), ny = Math.max(0, Math.min(h - n, Math.floor(y / n) * n));
                 if (nx === bx && ny === by && canvas.dataset.ready && !again) return;
                 bx = nx; by = ny;
                 canvas.dataset.ready = '1';
                 draw();
                 const block = [];
-                for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(value(bx + xx, by + yy) - 128);
-                // the goal: the block in Y, beside the picture and for the error
+                const k = n / 8;              // 1 in Y, 2 in Cb and Cr: the mean of k × k pixels
+                for (let yy = 0; yy < 8; yy++) {
+                    for (let xx = 0; xx < 8; xx++) {
+                        let sum = 0;
+                        for (let dy = 0; dy < k; dy++) for (let dx = 0; dx < k; dx++) sum += value(bx + k * xx + dx, by + k * yy + dy);
+                        block.push(sum / (k * k) - 128);
+                    }
+                }
+                // the goal: the block in its channel, beside the picture and for the error
                 element.idctTarget = block.map((value) => Math.max(0, Math.min(255, Math.round(value + 128))));
                 show(forward(block, q));
             };
@@ -323,14 +335,16 @@
             canvas.addEventListener('pointermove', (event) => {
                 const [x, y] = at(event);
                 if (holding) { pick(x, y); return; }
-                const hx = Math.max(0, Math.min(w - 8, Math.floor(x / 8) * 8)), hy = Math.max(0, Math.min(h - 8, Math.floor(y / 8) * 8));
+                const n = size();
+                const hx = Math.max(0, Math.min(w - n, Math.floor(x / n) * n)), hy = Math.max(0, Math.min(h - n, Math.floor(y / n) * n));
                 if (!hover || hover[0] !== hx || hover[1] !== hy) { hover = [hx, hy]; draw(); }
             });
             canvas.addEventListener('pointerleave', () => { if (hover) { hover = null; draw(); } });
             canvas.addEventListener('pointerup', () => { holding = false; });
             canvas.addEventListener('pointercancel', () => { holding = false; });
             canvas.addEventListener('keydown', (event) => {
-                const step = { ArrowUp: [0, -8], ArrowDown: [0, 8], ArrowLeft: [-8, 0], ArrowRight: [8, 0] }[event.key];
+                const n = size();
+                const step = { ArrowUp: [0, -n], ArrowDown: [0, n], ArrowLeft: [-n, 0], ArrowRight: [n, 0] }[event.key];
                 if (!step) return;
                 event.preventDefault();
                 event.stopPropagation();
@@ -339,6 +353,7 @@
             // the channel: Y, Cb or Cr
             element.querySelectorAll('[data-channel]').forEach((button) => button.addEventListener('click', () => {
                 channel = Number(button.dataset.channel);
+                hover = null;
                 element.querySelectorAll('[data-channel]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
                 element.querySelector('.idct-target-caption').textContent = `Ziel in ${button.textContent}`;
                 pick(bx, by, true);

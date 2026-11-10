@@ -410,7 +410,8 @@ only to look nice.
   as in the JPEG picker, dragged, tapped or moved with the arrow keys while
   the picture has the focus, the block under the mouse dashed, grid and
   frames on a canvas in device pixels; Y, Cb and Cr to switch (the formulas
-  of »Farbe sparen«); beside the picture the block alone in the channel, as
+  of »Farbe sparen«; a block of Cb or Cr covers 16 × 16 pixels, each value
+  the mean of 2 × 2, as in 4:2:0, at the maintainer's question); beside the picture the block alone in the channel, as
   large as the blocks under it, as the goal of the steps; the panel of
   pixel values becomes the error, the goal minus the block so far (orange
   still too dark, blue too bright, black right) with its mean in the
