@@ -579,6 +579,27 @@ kein `_task()` in einem Extra steht. Markiert werden nur ganze Kapitel
 Ablauf.
 
 
+### Eine Aktivität in Teilen
+
+Eine Aktivität über viele Doppelstunden, die ein Kurs bleibt (eine
+`tasks.yaml`, eine Notiz für Lehrkräfte, eine Karte, ein Kasten auf
+/lehrplan), wird mit `parts: true` im Meta-Block auf mehrere Seiten
+verteilt, eine für jedes Kapitel (`##`). Das erste Kapitel steht unter
+`/slug`, die anderen unter `/slug/2`, `/slug/3` und so weiter. Jede Seite hat
+unter dem Titel eine Reihe mit allen Teilen, der aktuelle lila umrandet, und
+am Ende »Weiter mit Teil n: …«; die Kurzfassung (`abstract`) steht nur auf
+dem ersten Teil. Die Leiste der Kapitel oben nennt alle Teile und öffnet sie,
+die Liste am Rand nur die Abschnitte des aktuellen. Ein alter Link auf eine
+Überschrift (`/slug#ein-ton-aus-zahlen`) führt zu dem Teil, der sie hat.
+
+Geschrieben wird weiter in einer einzigen Markdown-Datei: Rezepte, Stufen,
+Aufgaben und Tests sehen sie wie vorher, geteilt wird erst die fertige Seite
+(`src/ruby/include/activity_parts.rb`). Darum muss jedes Kapitel für sich
+lesbar sein: Was ein späteres braucht, steht in den Stufen oder wird dort
+kurz wiederholt, und ein Verweis nennt das Kapitel (»wie im Kapitel
+Frequenzen«) statt »oben«. `parts:` lohnt sich ab etwa fünf Kapiteln, die
+je eine Doppelstunde füllen; Beispiel: »Audio komprimieren«.
+
 ### Wie geht es weiter?
 
 Ein Abschnitt `## Wie geht es weiter?` am Ende ist von Hand geschrieben und

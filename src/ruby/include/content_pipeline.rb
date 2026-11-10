@@ -810,6 +810,21 @@ class Main < Sinatra::Base
                 if page_tasks
                     parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
                 end
+                # parts: true (ActivityParts): one page per chapter, each with
+                # the row of parts and the link to the next
+                if page_meta['parts'] && !entry[:kenney]
+                    pieces = ActivityParts.split(root, slug)
+                    if pieces.empty?
+                        STDERR.puts "#{path}: parts: needs at least two chapters (##)"
+                    else
+                        parsed_content[slug][:parts] = pieces.map do |part_root, title|
+                            part_html = part_root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                                "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+                            end
+                            { :title => title, :html => part_html }
+                        end
+                    end
+                end
                 # class_repo: group (ClassRepos): the variant for people without a
                 # class repository, with its own HTML and tasks.
                 parsed_content[slug][:class_repo] = ClassRepos.page?(page_meta)

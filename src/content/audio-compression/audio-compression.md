@@ -6,6 +6,7 @@ language: Python
 duration: 5 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Huffman-Codierung), Vertiefung Technische Informatik (Abtastung, Quantisierung, Audiokompression)"
 topics: [kompression, codierung, zahlensysteme]
+parts: true
 requires: [huffman]
 reference: [bits-und-bytes]
 </div>

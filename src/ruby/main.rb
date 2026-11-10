@@ -9,6 +9,7 @@ require './include/kata_map.rb'
 require './include/solution_blocks.rb'
 require './include/hint_steps.rb'
 require './include/after_task.rb'
+require './include/activity_parts.rb'
 require './include/card_usage.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
@@ -3874,6 +3875,8 @@ class Main < Sinatra::Base
     def page_html(slug)
         content = @@content[slug]
         html = content[:html]
+        # an activity in parts (ActivityParts): the part asked for, the first at /slug
+        html = content[:parts][(@activity_part || 1) - 1][:html] if content[:parts]
         # Only pages that use the class repository's variables look it up.
         if content[:class_repo] || html.match?(ClassRepos::TOKEN)
             view = class_repo_view(slug)
@@ -4122,6 +4125,17 @@ class Main < Sinatra::Base
         end
         if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
+            path = '/a.html'
+        elsif (part = path.match(%r{\A/([a-z0-9-]+)/(\d{1,2})\z})) && (@@content[part[1]] || {})[:parts]
+            # a part of an activity in parts (ActivityParts): /slug/2 …
+            number = part[2].to_i
+            if number == 1
+                redirect "#{WEB_ROOT}/#{part[1]}", 301
+                return
+            end
+            halt 404 unless number.between?(2, @@content[part[1]][:parts].size)
+            slug = part[1]
+            @activity_part = number
             path = '/a.html'
         end
         if path == '/'

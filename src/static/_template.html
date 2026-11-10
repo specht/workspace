@@ -469,6 +469,11 @@ function install_autotoc() {
         if (div.hasClass('extra')) item.addClass('extra').prepend(extra_chapter_mark());
         item.data('autotoc-index', i);
         item[0].addEventListener('click', function(e) {
+            // another part of an activity in parts (ActivityParts): its page
+            if (containers[i].dataset.href) {
+                window.location.href = containers[i].dataset.href;
+                return;
+            }
             $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
         });
         autotoc_items.push(item[0]);
@@ -512,6 +517,26 @@ function heading_content(heading) {
     let fragment = document.createDocumentFragment();
     fragment.append(...copy.childNodes);
     return fragment;
+}
+
+// An activity in parts (ActivityParts): a link to an anchor that is in
+// another part (/slug#ein-ton-aus-zahlen) goes to that part. Each other
+// part is an empty container that lists its anchors.
+function follow_part_anchor() {
+    // on a phone the row of parts scrolls sideways: the current one in view
+    let current = document.querySelector('.activity-parts .current');
+    if (current) {
+        let row = current.closest('ol');
+        row.scrollLeft = current.parentElement.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
+    }
+    let id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id || document.getElementById(id)) return;
+    for (let stub of document.querySelectorAll('.autotoc-container[data-href]')) {
+        if ((stub.dataset.anchors || '').split(' ').includes(id)) {
+            window.location.replace(`${stub.dataset.href}#${encodeURIComponent(id)}`);
+            return;
+        }
+    }
 }
 
 var autotoc_secondary = null;
@@ -796,6 +821,7 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
     install_secondary_autotoc();
+    follow_part_anchor();
 });
 
 const ALT_REVIEW_STORAGE_KEY = 'hackschule-alt-review-enabled';
