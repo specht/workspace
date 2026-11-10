@@ -24,6 +24,9 @@ test('a bookmark in the table of contents stays after a reload', async ({ page, 
   await entry.hover();
   await button.click();
   await expect(button).toHaveAttribute('aria-pressed', 'true');
+  // still under the mouse: the sign of what the next click does
+  await expect(button.locator('i')).toHaveClass(/bi-bookmark-x-fill/);
+  await page.mouse.move(0, 0);
   await expect(button.locator('i')).toHaveClass(/bi-bookmark-fill/);
 
   await page.reload();

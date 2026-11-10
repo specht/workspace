@@ -17,14 +17,18 @@
         const marked = new Set();
         const buttons = new Map();
 
+        // hovering the bookmark itself shows what a click does: a plus to
+        // set it, an × to remove it
         const show = (anchor) => {
             const button = buttons.get(anchor);
             if (!button) return;
             const on = marked.has(anchor);
+            const hover = button.matches(':hover');
             button.classList.toggle('set', on);
+            button.classList.toggle('preview', hover);
             button.setAttribute('aria-pressed', String(on));
             button.title = on ? 'Lesezeichen entfernen' : 'Lesezeichen setzen';
-            button.querySelector('i').className = `bi ${on ? 'bi-bookmark-fill' : 'bi-bookmark'}`;
+            button.querySelector('i').className = `bi ${hover ? (on ? 'bi-bookmark-x-fill' : 'bi-bookmark-plus') : (on ? 'bi-bookmark-fill' : 'bi-bookmark')}`;
         };
 
         links.forEach((link) => {
@@ -53,6 +57,8 @@
                     }
                 }, { no_please_wait: true });
             });
+            button.addEventListener('mouseenter', () => show(anchor));
+            button.addEventListener('mouseleave', () => show(anchor));
             entry.append(button);
             entry.classList.toggle('level-2', link.classList.contains('level-2'));
             buttons.set(anchor, button);
