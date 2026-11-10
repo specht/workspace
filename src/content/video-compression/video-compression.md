@@ -85,7 +85,7 @@ def write_video(path, frames, fps=24):
 
 ### Ein Film aus elf Fotos
 
-Lege `pferd.py` an:
+Lege `horse.py` an:
 
 ```python
 import numpy as np
@@ -102,24 +102,24 @@ for k in range(11):
     frames.append(plate[y:y + 200, x:x + 316])
 frames = np.stack(frames)
 rgb = np.stack([frames, frames, frames], axis=-1)
-write_video('pferd.mp4', np.tile(rgb, (10, 1, 1, 1)), fps=25)
+write_video('horse.mp4', np.tile(rgb, (10, 1, 1, 1)), fps=25)
 ```
 
 `Image.open(…).convert('L')` liest die Tafel als Graustufen, ein Byte je Pixel, und `np.asarray` macht ein Array mit Zeilen und Spalten daraus. Die Fotos liegen in einem Raster: `divmod(k, 4)` gibt für Foto `k` die Reihe und die Spalte, und alle 218 Zeilen und 335 Spalten beginnt ein neues Foto. `plate[y:y + 200, x:x + 316]` schneidet eines aus, 200 Zeilen hoch und 316 Spalten breit. `np.stack` legt die elf Fotos zu einem Array mit drei Achsen übereinander, und noch einmal `np.stack` macht aus dem Grau drei gleiche Farben, Rot, Grün und Blau. `np.tile` wiederholt den Galoppsprung zehnmal.
 
 ```bash
-python3 pferd.py
+python3 horse.py
 ```
 
 <!-- tutorial-step
 write-file: video/video.py <- file:stufen/video.py
-write-file: video/pferd.py <- file:stufen/pferd.py
-terminal-run: cd /workspace/video && python3 pferd.py && ls -l pferd.mp4
+write-file: video/horse.py <- file:stufen/horse.py
+terminal-run: cd /workspace/video && python3 horse.py && ls -l horse.mp4
 terminal-wait-for-prompt: 60
-wait-for-text: pferd.mp4
+wait-for-text: horse.mp4
 -->
 
-Öffne `pferd.mp4`: Das Pferd galoppiert, so schnell wie 1878 in Palo Alto.
+Öffne `horse.mp4`: Das Pferd galoppiert, so schnell wie 1878 in Palo Alto.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere <code>fps</code> auf 12 und auf 50. Bei welcher Zahl sieht der Galopp für dich echt aus? Und was passiert, wenn du mit <code>range(12)</code> auch das zwölfte Foto mitnimmst?
@@ -130,21 +130,21 @@ wait-for-text: pferd.mp4
 Muybridges Pferd hat elf Bilder in Grau. Für den Rest der Seite gibt es Videos von heute, Ausschnitte aus **Spring**, einem Film der Blender Foundation von 2019, Regie Andy Goralczyk: © Blender Foundation | [cloud.blender.org/spring](https://studio.blender.org/films/spring/), unter der Lizenz [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de). Es sind vier Stücke von je vier Sekunden, verkleinert auf 960 × 400 Pixel, 24 Bilder in der Sekunde. Gemacht sind sie aus der Fassung, die Blender auf YouTube zeigt und die auf Wikimedia Commons liegt: Der Film ist also schon einmal komprimiert, mit 2.048 Pixeln Breite. Verkleinert auf weniger als die Hälfte fällt davon kaum noch etwas auf. Hol sie dir:
 
 ```bash_copy
-wget ${web_root}/video/blick.mp4 ${web_root}/video/schwenk.mp4 ${web_root}/video/hang.mp4 ${web_root}/video/aufwaerts.mp4
+wget ${web_root}/video/glance.mp4 ${web_root}/video/pan.mp4 ${web_root}/video/slope.mp4 ${web_root}/video/tilt.mp4
 ```
 
 <!-- tutorial-step
-terminal-run: cd /workspace/video && for c in blick schwenk hang aufwaerts; do test -f $c.mp4 || curl -sO http://workspace_nginx_1/video/$c.mp4; done; ls *.mp4
+terminal-run: cd /workspace/video && for c in glance pan slope tilt; do test -f $c.mp4 || curl -sO http://workspace_nginx_1/video/$c.mp4; done; ls *.mp4
 terminal-wait-for-prompt: 60
-wait-for-text: schwenk.mp4
+wait-for-text: pan.mp4
 -->
 
 <script src='/include/video_in_view.js'></script>
 <div class='gallery columns-2'>
-<figure><video src='/video/blick.mp4' poster='/video/blick.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Eine Nahaufnahme des Mädchens mit dunklen Haaren, großen grünen Augen und einem Wanderstab; sie schaut besorgt zur Seite, nur ihre Augen bewegen sich ein wenig.'></video><figcaption><code>blick.mp4</code>: Das Mädchen schaut zur Seite; fast nur ihre Augen bewegen sich.</figcaption></figure>
-<figure><video src='/video/schwenk.mp4' poster='/video/schwenk.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Die Kamera gleitet langsam an einem verschneiten Bergkamm entlang, vor ziehenden Wolken.'></video><figcaption><code>schwenk.mp4</code>: Die Kamera gleitet langsam an einem Bergkamm entlang.</figcaption></figure>
-<figure><video src='/video/hang.mp4' poster='/video/hang.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Ein Hang im Abendlicht mit Felsen und Gras; das Mädchen mit Wanderstab und ihr kleiner Hund gehen einen Pfad entlang.'></video><figcaption><code>hang.mp4</code>: Ein Hang im Abendlicht, das Mädchen und ihr Hund gehen vorbei.</figcaption></figure>
-<figure><video src='/video/aufwaerts.mp4' poster='/video/aufwaerts.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Die Kamera fährt schnell eine Felswand mit gelben Pflanzen hinauf.'></video><figcaption><code>aufwaerts.mp4</code>: Die Kamera fährt schnell eine Felswand hinauf.</figcaption></figure>
+<figure><video src='/video/glance.mp4' poster='/video/glance.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Eine Nahaufnahme des Mädchens mit dunklen Haaren, großen grünen Augen und einem Wanderstab; sie schaut besorgt zur Seite, nur ihre Augen bewegen sich ein wenig.'></video><figcaption><code>glance.mp4</code>: Das Mädchen schaut zur Seite; fast nur ihre Augen bewegen sich.</figcaption></figure>
+<figure><video src='/video/pan.mp4' poster='/video/pan.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Die Kamera gleitet langsam an einem verschneiten Bergkamm entlang, vor ziehenden Wolken.'></video><figcaption><code>pan.mp4</code>: Die Kamera gleitet langsam an einem Bergkamm entlang.</figcaption></figure>
+<figure><video src='/video/slope.mp4' poster='/video/slope.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Ein Hang im Abendlicht mit Felsen und Gras; das Mädchen mit Wanderstab und ihr kleiner Hund gehen einen Pfad entlang.'></video><figcaption><code>slope.mp4</code>: Ein Hang im Abendlicht, das Mädchen und ihr Hund gehen vorbei.</figcaption></figure>
+<figure><video src='/video/tilt.mp4' poster='/video/tilt.webp' data-play-in-view muted loop playsinline preload='none' role='img' aria-label='Die Kamera fährt schnell eine Felswand mit gelben Pflanzen hinauf.'></video><figcaption><code>tilt.mp4</code>: Die Kamera fährt schnell eine Felswand hinauf.</figcaption></figure>
 </div>
 
 Öffne die Dateien auch im Explorer: VS Code spielt sie ab.
@@ -168,12 +168,12 @@ def held(frames, step):
 
 
 if __name__ == '__main__':
-    frames = read_frames('schwenk.mp4')
+    frames = read_frames('pan.mp4')
     print(frames.shape, frames.nbytes, 'Bytes')
-    write_video('schwenk-6.mp4', held(frames, 4))
+    write_video('pan-6.mp4', held(frames, 4))
 ```
 
-<div class='hint own' data-check='festhalten'>
+<div class='hint own' data-check='held'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>held(frames, step)</code>: ein Array mit genauso vielen Bildern wie <code>frames</code>, in dem die Bilder 0, <code>step</code>, <code>2 * step</code>, … je <code>step</code>-mal hintereinander stehen. Bei 24 Bildern pro Sekunde und <code>step = 4</code> sieht der Schwenk aus wie mit 6 Bildern pro Sekunde.
 </div>
 
@@ -195,7 +195,7 @@ def held(frames, step):
 ```
 <!-- /solution -->
 
-_task(festhalten)
+_task(held)
 
 ```bash
 python3 frames.py
@@ -204,23 +204,23 @@ python3 frames.py
 <!-- tutorial-step
 write-file: video/video.py <- file:stufen/video.py
 write-file: video/frames.py <- file:stufen/frames-1.py
-check-task: festhalten
+check-task: held
 terminal-run: python3 frames.py
 terminal-wait-for-prompt: 60
 wait-for-text: 110592000 Bytes
 -->
 
-96 Bilder, je 400 Zeilen mit 960 Pixeln und 3 Farben: 110.592.000 Bytes für vier Sekunden, als MP4 sind es 1,3 MB. Öffne `schwenk-6.mp4` und `schwenk.mp4` nacheinander: Mit 6 Bildern pro Sekunde ruckelt der Schwenk, die Wolken springen.
+96 Bilder, je 400 Zeilen mit 960 Pixeln und 3 Farben: 110.592.000 Bytes für vier Sekunden, als MP4 sind es 1,3 MB. Öffne `pan-6.mp4` und `pan.mp4` nacheinander: Mit 6 Bildern pro Sekunde ruckelt der Schwenk, die Wolken springen.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Versuch <code>step</code> 2 und 3, also 12 und 8 Bilder pro Sekunde. Ab wann sieht der Schwenk für dich flüssig aus? Mach dasselbe mit <code>blick.mp4</code>: Warum fällt es dort viel weniger auf?
+<strong>Ausprobieren:</strong> Versuch <code>step</code> 2 und 3, also 12 und 8 Bilder pro Sekunde. Ab wann sieht der Schwenk für dich flüssig aus? Mach dasselbe mit <code>glance.mp4</code>: Warum fällt es dort viel weniger auf?
 </div>
 
 ### Halbbilder
 
 Das Fernsehen hatte ein anderes Problem. Ein Bild nach dem anderen zu übertragen, hätte zu viel Bandbreite gebraucht, und mit nur 25 Bildern in der Sekunde flackerte die Röhre. Darum sendete es in **Halbbildern**: erst alle geraden Zeilen, dann alle ungeraden, 50-mal in der Sekunde, im Takt des Stromnetzes mit 50 Hz. Die beiden Halbbilder eines Bildes sind aber zu verschiedenen Zeiten aufgenommen, eine fünfzigstel Sekunde auseinander. Das heißt auf Englisch **Interlacing**.
 
-<div class='hint own' data-check='halbbilder'>
+<div class='hint own' data-check='interlace'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>interlace(frames)</code>: Bild <code>k</code> des Ergebnisses hat die geraden Zeilen (0, 2, 4, …) von Bild <code>k</code> und die ungeraden (1, 3, 5, …) von Bild <code>k + 1</code>. Das Ergebnis hat ein Bild weniger als <code>frames</code>, und <code>frames</code> selbst bleibt unverändert.
 </div>
 
@@ -240,16 +240,16 @@ def interlace(frames):
 ```
 <!-- /solution -->
 
-_task(halbbilder)
+_task(interlace)
 
 Unten ins Programm kommt, was die Halbbilder der schnellen Fahrt zeigt. Von einem davon speichert es einen Ausschnitt, die oberen 200 Zeilen und die Spalten 300 bis 699, doppelt so groß und mit scharfen Pixeln (`Image.NEAREST`):
 
 ```python
-~     write_video('schwenk-6.mp4', held(frames, 4))
-    fast = read_frames('aufwaerts.mp4')
+~     write_video('pan-6.mp4', held(frames, 4))
+    fast = read_frames('tilt.mp4')
     combed = interlace(fast)
     Image.fromarray(combed[48, :200, 300:700]).resize((800, 400), Image.NEAREST).save('combing.png')
-    write_video('aufwaerts-halbbilder.mp4', combed)
+    write_video('tilt-interlaced.mp4', combed)
 ```
 
 _task(combing)
@@ -257,10 +257,10 @@ _task(combing)
 <!-- after: combing -->
 <!-- tutorial-step
 write-file: video/frames.py <- file:stufen/frames-2.py
-check-task: halbbilder
-terminal-run: python3 frames.py && ls -l aufwaerts*.mp4
+check-task: interlace
+terminal-run: python3 frames.py && ls -l tilt*.mp4
 terminal-wait-for-prompt: 60
-wait-for-text: aufwaerts-halbbilder.mp4
+wait-for-text: tilt-interlaced.mp4
 -->
 
 Öffne `combing.png`: Wo sich etwas bewegt, sind die Kanten in feine Streifen zerfranst, jede zweite Zeile ein Stück verschoben. Das sieht aus wie die Zinken eines Kamms und heißt darum **Combing** (englisch *comb*, der Kamm). Wo das Bild still steht, fällt nichts auf.
@@ -270,7 +270,7 @@ image-file: video/combing.png 1
 -->
 <img class='full fit-width' src='combing.webp' alt='Ein vergrößerter Ausschnitt aus einem Halbbild der Fahrt die Felswand hinauf: Die gelben Pflanzen an der Wand sind in waagerechte Streifen zerfranst, jede zweite Zeile ein Stück nach oben verschoben.'>
 
-Und noch etwas zeigt `ls -l`: `aufwaerts-halbbilder.mp4` ist größer als `aufwaerts.mp4`, obwohl es kein Bild mehr hat. Die feinen Streifen sind für einen Codec schwer zu speichern. Streams im Internet senden ganze Bilder; Halbbilder gibt es noch im Fernsehen, etwa bei Sendern mit 1080i, dem i für interlaced.
+Und noch etwas zeigt `ls -l`: `tilt-interlaced.mp4` ist größer als `tilt.mp4`, obwohl es kein Bild mehr hat. Die feinen Streifen sind für einen Codec schwer zu speichern. Streams im Internet senden ganze Bilder; Halbbilder gibt es noch im Fernsehen, etwa bei Sendern mit 1080i, dem i für interlaced.
 <!-- /after -->
 
 <!-- stage: stufen/frames-2.py as frames.py -->
@@ -293,10 +293,10 @@ $$Cr = 128 + 0{,}5\,R - 0{,}418688\,G - 0{,}081312\,B$$
 
 Grün zählt für die Helligkeit am meisten, weil das Auge für Grün am empfindlichsten ist, Blau am wenigsten. Bei einem Grau sind R, G und B gleich: Dann ist Y genau dieser Wert, und Cb und Cr sind 128, denn die Zahlen vor R, G und B ergeben in beiden Zeilen zusammen 0. Fernsehen in HD rechnet mit etwas anderen Gewichten (die Norm BT.709) und lässt Y nur von 16 bis 235 laufen; die Idee ist dieselbe. Wie die drei Teile zusammen ein Foto ergeben, zeigt <a href='/colorspace' target='_blank' rel='noopener'>Trennung von Helligkeit und Farbe</a>.
 
-Für dieses Kapitel gibt es ein einzelnes Bild als PNG, von derselben Stelle des Films wie `hang.mp4`. Warum kein Bild aus `hang.mp4`, steht am Ende des Kapitels.
+Für dieses Kapitel gibt es ein einzelnes Bild als PNG, von derselben Stelle des Films wie `slope.mp4`. Warum kein Bild aus `slope.mp4`, steht am Ende des Kapitels.
 
 ```bash_copy
-wget ${web_root}/video/hang.png
+wget ${web_root}/video/slope.png
 ```
 
 Lege `chroma.py` an:
@@ -316,7 +316,7 @@ def save_grey(path, plane):
 
 
 if __name__ == '__main__':
-    frame = np.asarray(Image.open('hang.png').convert('RGB'))
+    frame = np.asarray(Image.open('slope.png').convert('RGB'))
     ycbcr = to_ycbcr(frame)
     save_grey('y.png', ycbcr[..., 0])
     save_grey('cb.png', ycbcr[..., 1])
@@ -354,7 +354,7 @@ def to_ycbcr(rgb):
 
 _task(ycbcr)
 
-Das Mädchen in `hang.png` trägt eine rote Jacke. Bevor du das Programm startest:
+Das Mädchen in `slope.png` trägt eine rote Jacke. Bevor du das Programm startest:
 
 _task(jacket)
 
@@ -363,9 +363,9 @@ python3 chroma.py
 ```
 
 <!-- tutorial-step
-terminal-run: cd /workspace/video && (test -f hang.png || curl -sO http://workspace_nginx_1/video/hang.png) && ls -l hang.png
+terminal-run: cd /workspace/video && (test -f slope.png || curl -sO http://workspace_nginx_1/video/slope.png) && ls -l slope.png
 terminal-wait-for-prompt: 30
-wait-for-text: hang.png
+wait-for-text: slope.png
 -->
 
 <!-- after: jacket -->
@@ -519,10 +519,10 @@ Mit gröberer Farbe sieht der Ausschnitt aus wie das Original. Mit gröberer Hel
 
 ### Schon gespart
 
-Warum `hang.png` und kein Bild aus `hang.mp4`? In `write_video` steht `-pix_fmt yuv420p`: Jede MP4-Datei dieser Seite ist schon 4:2:0, wie fast jedes Video im Internet, auf Blu-ray und im Fernsehen. Ein Bild aus `hang.mp4` hat Cb und Cr also schon gemittelt, und `subsample` fände nichts mehr zu sparen. `hang.png` ist auch aus dem Film von YouTube gemacht, der seine Farbe in 4:2:0 hat, aber für 2.048 Pixel Breite: 1.024 Werte je Zeile. Verkleinert auf 960 Pixel bekommt fast jedes Pixel wieder eine eigene Farbe.
+Warum `slope.png` und kein Bild aus `slope.mp4`? In `write_video` steht `-pix_fmt yuv420p`: Jede MP4-Datei dieser Seite ist schon 4:2:0, wie fast jedes Video im Internet, auf Blu-ray und im Fernsehen. Ein Bild aus `slope.mp4` hat Cb und Cr also schon gemittelt, und `subsample` fände nichts mehr zu sparen. `slope.png` ist auch aus dem Film von YouTube gemacht, der seine Farbe in 4:2:0 hat, aber für 2.048 Pixel Breite: 1.024 Werte je Zeile. Verkleinert auf 960 Pixel bekommt fast jedes Pixel wieder eine eigene Farbe.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib im Hauptprogramm aus, wie weit <code>small_chroma</code> im Mittel vom Original abweicht: <code>print(np.abs(from_ycbcr(small_chroma).astype(int) - frame).mean())</code>. Dann nimm statt <code>hang.png</code> das erste Bild aus <code>hang.mp4</code>, <code>read_frames('hang.mp4')[0]</code> mit <code>from video import read_frames</code>. Wie ändert sich die Zahl?
+<strong>Ausprobieren:</strong> Gib im Hauptprogramm aus, wie weit <code>small_chroma</code> im Mittel vom Original abweicht: <code>print(np.abs(from_ycbcr(small_chroma).astype(int) - frame).mean())</code>. Dann nimm statt <code>slope.png</code> das erste Bild aus <code>slope.mp4</code>, <code>read_frames('slope.mp4')[0]</code> mit <code>from video import read_frames</code>. Wie ändert sich die Zahl?
 </div>
 
 <!-- stage: stufen/chroma-2.py as chroma.py -->

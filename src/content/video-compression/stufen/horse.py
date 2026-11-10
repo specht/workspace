@@ -12,4 +12,4 @@ for k in range(11):
     frames.append(plate[y:y + 200, x:x + 316])
 frames = np.stack(frames)
 rgb = np.stack([frames, frames, frames], axis=-1)
-write_video('pferd.mp4', np.tile(rgb, (10, 1, 1, 1)), fps=25)
+write_video('horse.mp4', np.tile(rgb, (10, 1, 1, 1)), fps=25)

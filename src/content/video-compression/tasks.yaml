@@ -29,7 +29,7 @@ tasks:
       Mbit/s. Ein Stream in Full HD hat meist nur einige Mbit/s, ein
       Zweihundertstel davon oder weniger.
 
-  - id: festhalten
+  - id: held
     title: Weniger Bilder
     prompt: |
       Schreib in `video/frames.py` die Funktion `held(frames, step)`: genauso
@@ -55,7 +55,7 @@ tasks:
           return np.repeat(frames[::step], step, axis=0)[:len(frames)]
       ```
 
-  - id: halbbilder
+  - id: interlace
     title: Halbbilder
     prompt: |
       Schreib in `video/frames.py` die Funktion `interlace(frames)`: Bild `k`

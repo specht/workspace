@@ -9,8 +9,8 @@ Lernende bauen aus Muybridges Fotos von 1878 einen Film, lesen Videos mit Python
 <li><b>Weitere Doppelstunden</b> folgen: Blöcke und Vorhersage im Bild, Unterschiede von Bild zu Bild, Bewegungsschätzung, I-, P- und B-Frames, Artefakte und Filter, Bitrate, Geschichte und heute.</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td><ul>
-<li>Alles in <code>/workspace/video</code>: <code>video.py</code> (Lesen und Schreiben über ffmpeg), <code>pferd.py</code> (Muybridges Pferd), <code>frames.py</code> (<code>held</code>, <code>interlace</code>; schreibt <code>schwenk-6.mp4</code>, <code>aufwaerts-halbbilder.mp4</code> und <code>combing.png</code>), <code>chroma.py</code> (<code>to_ycbcr</code>, <code>subsample</code>; schreibt die Ebenen <code>y.png</code>, <code>cb.png</code>, <code>cr.png</code> und drei Ausschnitte <code>detail*.png</code>).</li>
-<li>Die Ausschnitte laden die Lernenden mit <code>wget</code> von der Website (<code>/video/</code>): vier Stücke von je vier Sekunden aus »Spring« (Blender Foundation, CC BY 4.0), 960 × 400 Pixel, 24 Bilder pro Sekunde, gemacht von <code>clips/make.py</code>; dazu Muybridges Tafel (gemeinfrei) und <code>hang.png</code>, ein Bild aus dem Film, das nie durch H.264 ging und darum noch fast seine ganze Farbe hat.</li>
+<li>Alles in <code>/workspace/video</code>: <code>video.py</code> (Lesen und Schreiben über ffmpeg), <code>horse.py</code> (Muybridges Pferd), <code>frames.py</code> (<code>held</code>, <code>interlace</code>; schreibt <code>pan-6.mp4</code>, <code>tilt-interlaced.mp4</code> und <code>combing.png</code>), <code>chroma.py</code> (<code>to_ycbcr</code>, <code>subsample</code>; schreibt die Ebenen <code>y.png</code>, <code>cb.png</code>, <code>cr.png</code> und drei Ausschnitte <code>detail*.png</code>).</li>
+<li>Die Ausschnitte laden die Lernenden mit <code>wget</code> von der Website (<code>/video/</code>): vier Stücke von je vier Sekunden aus »Spring« (Blender Foundation, CC BY 4.0), 960 × 400 Pixel, 24 Bilder pro Sekunde, gemacht von <code>clips/make.py</code>; dazu Muybridges Tafel (gemeinfrei) und <code>slope.png</code>, ein Bild aus dem Film, das nie durch H.264 ging und darum noch fast seine ganze Farbe hat.</li>
 <li>Jeder Stand liegt unter <code>src/content/video-compression/stufen</code>.</li>
 </ul></td></tr>
 <tr><th>Prüfung</th><td><ul>
@@ -27,4 +27,4 @@ Lernende bauen aus Muybridges Fotos von 1878 einen Film, lesen Videos mit Python
 - **`ValueError: assignment destination is read-only`.** Das Array aus `read_frames` kommt direkt aus den Bytes von ffmpeg und lässt sich nicht ändern; mit `.copy()` entsteht eines, das sich ändern lässt.
 - **VS Code spielt das Video nicht ab.** Die Vorschau spielt, was der Browser kann; H.264 in MP4 können alle verbreiteten Browser.
 - **`ValueError: cannot reshape array` in `subsample`.** Höhe und Breite müssen Vielfache von `n` sein; bei 960 × 400 geht das für 2, 4 und 8, nicht für 3.
-- **Die Ausschnitte mit gröberer Farbe und das Original sehen gleich aus.** Wer statt `hang.png` ein Bild aus `hang.mp4` nimmt, mittelt eine Farbe, die H.264 schon gemittelt hat; das klärt der Abschnitt »Schon gespart«.
+- **Die Ausschnitte mit gröberer Farbe und das Original sehen gleich aus.** Wer statt `slope.png` ein Bild aus `slope.mp4` nimmt, mittelt eine Farbe, die H.264 schon gemittelt hat; das klärt der Abschnitt »Schon gespart«.

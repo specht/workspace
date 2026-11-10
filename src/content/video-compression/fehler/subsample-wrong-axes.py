@@ -36,7 +36,7 @@ def save_detail(path, rgb):
 
 
 if __name__ == '__main__':
-    frame = np.asarray(Image.open('hang.png').convert('RGB'))
+    frame = np.asarray(Image.open('slope.png').convert('RGB'))
     ycbcr = to_ycbcr(frame)
     save_grey('y.png', ycbcr[..., 0])
     save_grey('cb.png', ycbcr[..., 1])

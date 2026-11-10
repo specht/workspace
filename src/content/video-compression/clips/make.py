@@ -5,16 +5,16 @@ the film; both sides multiples of 16, the size of a macroblock), 24
 frames per second, without sound, as H.264 of high quality (CRF 14) in
 src/static/video/:
 
-    blick.mp4      65,5 s: the girl looks to the side; only her eyes move
-    schwenk.mp4    37 s:   a slow pan along a mountain ridge with clouds
-    hang.mp4       395 s:  a slope in the evening sun, the girl walking; fine texture
-    aufwaerts.mp4  408 s:  the camera tilts fast up a rock face with plants
+    glance.mp4      65,5 s: the girl looks to the side; only her eyes move
+    pan.mp4    37 s:   a slow pan along a mountain ridge with clouds
+    slope.mp4       395 s:  a slope in the evening sun, the girl walking; fine texture
+    tilt.mp4  408 s:  the camera tilts fast up a rock face with plants
 
-their first frames as stills for the page (blick.webp, …), and one
+their first frames as stills for the page (glance.webp, …), and one
 frame with all its colour, never through H.264 and its 4:2:0, as
 PNG:
 
-    hang.png       395 s:  the first frame of hang.mp4
+    slope.png       395 s:  the first frame of slope.mp4
 
 The film comes from Wikimedia Commons, which has it from the Blender
 Studio's YouTube channel, so it was compressed once before (VP9, 2048 ×
@@ -31,7 +31,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'static', 'video')
-CLIPS = {'blick': 65.5, 'schwenk': 37.0, 'hang': 395.0, 'aufwaerts': 408.0}
+CLIPS = {'glance': 65.5, 'pan': 37.0, 'slope': 395.0, 'tilt': 408.0}
 SECONDS = 4
 WIDTH, HEIGHT = 960, 400
 
@@ -50,8 +50,8 @@ def main(source):
     for name in CLIPS:
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', os.path.join(OUT, f'{name}.mp4'), '-frames:v', '1',
                         '-c:v', 'libwebp', '-quality', '80', os.path.join(OUT, f'{name}.webp')], check=True)
-    target = os.path.join(OUT, 'hang.png')
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(CLIPS['hang']), '-i', source, '-frames:v', '1',
+    target = os.path.join(OUT, 'slope.png')
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(CLIPS['slope']), '-i', source, '-frames:v', '1',
                     '-vf', f'scale={WIDTH}:-2:flags=lanczos+full_chroma_int+accurate_rnd,crop={WIDTH}:{HEIGHT},format=rgb24',
                     target], check=True)
     print(target, os.path.getsize(target), 'bytes')

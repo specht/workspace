@@ -243,12 +243,12 @@ seconds at 720p each.
    Doppelstunden`). The material: four clips of four seconds from »Spring«
    (Blender Foundation, CC BY 4.0), made by `clips/make.py` from the film on
    Wikimedia Commons, 960 × 400 at 24 frames, in `src/static/video/`
-   (`blick`, `schwenk`, `hang`, `aufwaerts`); Muybridge's plate of 1878
+   (`glance`, `pan`, `slope`, `tilt`); Muybridge's plate of 1878
    (`muybridge.jpg`, public domain). The teaser is a frame of the slope with
    the blocks a codec might choose, split by the spread of the brightness
    (`bilder/teaser.py`). Part 1 is written: a second of Full HD in Mbit/s,
    `read_frames` and `write_video` through a pipe to ffmpeg (`video.py`),
-   Muybridge's horse cut from the plate into a film (`pferd.py`), `held` of
+   Muybridge's horse cut from the plate into a film (`horse.py`), `held` of
    one's own (fewer frames, each shown longer; 24 frames as the compromise
    of the sound film), `interlace` of one's own (fields, the prediction of
    Combing, the larger file). The order is Muybridge first, then Python,
@@ -256,7 +256,7 @@ seconds at 720p each.
    (`video_in_view.js`: nothing loads before a clip is in view, stills from
    `clips/make.py`). Part 2 is written: colour television as the origin,
    `to_ycbcr` of one's own (JPEG's formulas), the three planes of
-   `hang.png` (a frame made from the film without H.264, so with nearly all
+   `slope.png` (a frame made from the film without H.264, so with nearly all
    its colour) and the prediction of the red jacket (Cr 162, Cb 105 on
    average), a drawing of 4:4:4, 4:2:2 and 4:2:0 (`bilder/subsampling.py`),
    the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
@@ -268,7 +268,7 @@ seconds at 720p each.
    [spring-benchmark.org](https://spring-benchmark.org/download)) has
    lossless Full HD frames rendered from the film's files, 24 frames a
    second, and the true optical flow; two of its sequences are our shots
-   (0006 is `blick` from its frame 58, 0047 is `aufwaerts` from its frame
+   (0006 is `glance` from its frame 58, 0047 is `tilt` from its frame
    32, the band of 2,4 : 1 from row 138). But the frames are the render
    before compositing: no grading, no depth of field, no glow, so the clips
    stay the film's. The flow may serve part 5 (motion vectors against the

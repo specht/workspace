@@ -9,6 +9,6 @@ def held(frames, step):
 
 
 if __name__ == '__main__':
-    frames = read_frames('schwenk.mp4')
+    frames = read_frames('pan.mp4')
     print(frames.shape, frames.nbytes, 'Bytes')
-    write_video('schwenk-6.mp4', held(frames, 4))
+    write_video('pan-6.mp4', held(frames, 4))
