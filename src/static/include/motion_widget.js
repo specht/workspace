@@ -108,7 +108,7 @@
         let bx = 0, by = 0;            // the block's top left corner
         let vy = 0, vx = 0;            // the vector from the block to the square
         let sums = null;               // the sum for every shift, after a search
-        let manual = null;             // the reader's square when they searched: { vx, vy, s }
+        let searched = false;          // once searched, the map stays live: a new block is searched at once
         let found = null;              // what the search found: { vx, vy, s }
         let hover = null;              // the block under the mouse in the frame now: its top left corner
 
@@ -221,7 +221,8 @@
                 ctx.arc((x + R + 0.5) * cell, (y + R + 0.5) * cell, 2.5 * cell, 0, 2 * Math.PI);
                 ctx.stroke();
             };
-            if (manual && (manual.vx !== found.vx || manual.vy !== found.vy)) ring(manual.vx, manual.vy, '#ffffff');
+            // the reader's square where it is now, white, unless it is the best
+            if (vx !== found.vx || vy !== found.vy) ring(vx, vy, '#ffffff');
             ring(found.vx, found.vy, '#facc15');
         }
 
@@ -245,7 +246,8 @@
         function choose(x, y) {
             bx = Math.max(R, Math.min(now.width - R - N, Math.floor(x / N) * N));
             by = Math.max(R, Math.min(now.height - R - N, Math.floor(y / N) * N));
-            vx = 0; vy = 0; sums = null; manual = null; found = null;
+            vx = 0; vy = 0; sums = null; found = null;
+            if (searched) runSearch();
             draw();
         }
         function move(dy, dx) {
@@ -315,8 +317,8 @@
         el.addEventListener('pointerdown', () => { engaged = el; }, true);
         el.addEventListener('focusin', () => { engaged = el; });
 
-        search.addEventListener('click', () => {
-            if (!now) return;
+        // every shift in the search area: the map and the best one
+        function runSearch() {
             sums = [];
             let best = null;
             for (let dy = -R; dy <= R; dy++) {
@@ -326,9 +328,13 @@
                     if (s !== null && (best === null || s < best[0])) best = [s, dy, dx];
                 }
             }
-            manual = { vx, vy, s: sad(vy, vx) };
             found = { vx: best[2], vy: best[1], s: best[0] };
-            vy = best[1]; vx = best[2];
+        }
+        search.addEventListener('click', () => {
+            if (!now) return;
+            searched = true;
+            runSearch();
+            vy = found.vy; vx = found.vx;
             draw();
         });
 
