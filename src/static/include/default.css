@@ -15742,7 +15742,7 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 .gallery-carousel {
     position: relative;
     /* room for ‹ and › beside the pictures, not over them */
-    padding: 0 2.9em;
+    padding: 0 3em;
     --carousel-gap: 1.5em;
     --carousel-per-view: 3;
 }
@@ -15783,23 +15783,26 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     top: calc(50% - 1.5em);
     transform: translateY(-50%);
     width: 2.4em;
-    height: 2.4em;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 50%;
-    background: var(--bs-body-bg);
-    color: var(--bs-body-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    height: 3em;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--bs-secondary-color);
+    font-size: 1.5em;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
 }
+.gallery-carousel-step:hover {
+    color: var(--bs-body-color);
+}
 .gallery-carousel-step:disabled {
     opacity: 0;
     pointer-events: none;
 }
-.gallery-carousel-prev { left: 0; }
-.gallery-carousel-next { right: 0; }
+.gallery-carousel-prev { left: 0; width: 2em; }
+.gallery-carousel-next { right: 0; width: 2em; }
 
 /* the pictures of the block-matching widget and, over each, its grid and
    frames in device pixels */
