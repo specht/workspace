@@ -478,7 +478,7 @@ Gleichmäßige Stufen sind für leise Stellen zu grob und für laute unnötig fe
 
 <img class='drawing' style='width: 35em' src='mulaw-stufen.svg' alt='Die Stufen von 4 Bit auf der positiven Hälfte von 0 bis 1, zweimal übereinander. Oben gleichmäßig: acht Striche in gleichen Abständen, bei 0, einem Siebtel, zwei Siebteln und so weiter bis 1. Unten nach μ-law: dieselben acht Striche, aber dicht gedrängt bei 0 und nach rechts immer weiter auseinander, der vorletzte erst bei knapp 0,5. Ein blasser Streifen von 0 bis 0,06 markiert eine leise Stimme: Oben liegt darin nur der Strich bei 0, unten liegen vier.'>
 
-So arbeitet **μ-law** (gesprochen »mü-law«): Erst wird jedes Sample `x` mit einem Logarithmus gestaucht, dann gleichmäßig gerundet, und beim Abspielen wird das Stauchen wieder rückgängig gemacht. Gestaucht wird mit
+So arbeitet **μ-law**, gesprochen wie im Englischen »mju-law«: Erst wird jedes Sample `x` mit einem Logarithmus gestaucht, dann gleichmäßig gerundet, und beim Abspielen wird das Stauchen wieder rückgängig gemacht. Gestaucht wird mit
 
 $$y = \operatorname{sgn}(x) \cdot \frac{\ln(1 + \mu \lvert x \rvert)}{\ln(1 + \mu)}, \quad \mu = 255$$
 
@@ -824,7 +824,7 @@ Ein **Spektrogramm** zeigt das Spektrum über die Zeit: nach rechts die Zeit, na
 <div class='spectrum-widget'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Such in der Musik die Schläge der Bass-Trommel und der Hi-Hat: Wie hoch liegt jede?
+<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Schalt bei der Musik die Instrumente einzeln aus und wieder an: Wo liegt die Bass-Trommel, wo die Hi-Hat, und welches Instrument macht die waagerechten Linien in der Mitte?
 </div>
 
 Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit einer Grundfrequenz, beim Sprechen meist zwischen 80 und 250 Hz, und dazu mit jedem Vielfachen davon. Laute wie s, sch und z sind dagegen Rauschen, ein Gemisch sehr vieler Frequenzen, und das liegt hoch. Darum gehen sie bei einer kleinen Abtastrate als Erstes verloren.

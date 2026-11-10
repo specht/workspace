@@ -15,6 +15,10 @@ from src/static/audio/, and the widgets of the page play the same files:
 - kastagnetten.wav: two seconds of castanets, clicks with a short ring
   near 2.800 Hz, over a quiet chord; between some clicks a pause of a
   third of a second or more, where a pre-echo is heard alone.
+- musik/*.flac: the six instruments of musik.wav one by one (bass-trommel,
+  snare, hi-hat, bass, akkorde, melodie), each scaled and in the room as in
+  the mix, so that they add up to it; for the switches of the spectrogram
+  widget. Made by the name »spuren«.
 
 All are mono, 16 bit, a plain 44-byte header (as the students' write_wav
 writes it), the first two at 44.100 Hz. Runs in the image of the speech
@@ -23,11 +27,12 @@ write (Piper does not speak the same way twice, so stimme.wav changes
 whenever it is made again):
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo \\
-        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik waehlen kastagnetten]
+        --entrypoint python3 workspace_phone_speech src/content/audio-compression/sounds/make.py [stimme musik spuren waehlen kastagnetten]
 """
 
 import os
 import struct
+import subprocess
 import sys
 
 import numpy as np
@@ -122,20 +127,23 @@ def place(track, sound, at):
     track[start:end] += sound[:end - start]
 
 
-def music():
+def music(stems=False):
+    """The mix; with stems=True instead each instrument alone, scaled and in
+    the room exactly as in the mix, so that the six add up to it."""
     beat = 0.5                                   # 120 beats per minute
     length = 16 * beat
     n = int(length * RATE)
-    drums, bass, chords, melody = (np.zeros(n) for _ in range(4))
+    kicks, snares, hats, bass, chords, melody = (np.zeros(n) for _ in range(6))
     for b in range(16):
         at = b * beat
         if b % 4 in (0, 2):
-            place(drums, kick(), at)
+            place(kicks, kick(), at)
         if b % 4 in (1, 3):
-            place(drums, 0.7 * snare(), at)
-        place(drums, 0.32 * hat(), at)
-        place(drums, 0.26 * hat(open_=(b % 2 == 1)), at + beat / 2)
-    place(drums, 0.8 * kick(), 15.5 * beat)
+            place(snares, 0.7 * snare(), at)
+        place(hats, 0.32 * hat(), at)
+        place(hats, 0.26 * hat(open_=(b % 2 == 1)), at + beat / 2)
+    place(kicks, 0.8 * kick(), 15.5 * beat)
+    drums = kicks + snares + hats
     progression = [('A2', ['A3', 'C4', 'E4']), ('F2', ['F3', 'A3', 'C4']),
                    ('C2', ['C4', 'E4', 'G4']), ('G2', ['G3', 'B3', 'D4'])]
     for bar, (root, triad) in enumerate(progression):
@@ -159,7 +167,21 @@ def music():
     wet = dry + 0.12 * room / np.abs(room).max() * np.abs(dry).max()
     fade = int(0.05 * RATE)
     wet[-fade:] *= np.linspace(1, 0, fade)
-    return wet / np.abs(wet).max() * 0.89
+    if not stems:
+        return wet / np.abs(wet).max() * 0.89
+    # each instrument through the same scaling, room and fade as the mix
+    scale = 0.89 / np.abs(wet).max()
+    echo = 0.12 / np.abs(room).max() * np.abs(dry).max()
+    parts = {'bass-trommel': 0.62 * kicks / np.abs(drums).max(), 'snare': 0.62 * snares / np.abs(drums).max(),
+             'hi-hat': 0.62 * hats / np.abs(drums).max(), 'bass': 0.42 * norm(bass),
+             'akkorde': 0.2 * norm(chords), 'melodie': 0.24 * norm(melody)}
+    out = {}
+    for name, part in parts.items():
+        part_room = np.fft.irfft(np.fft.rfft(part, n + m) * np.fft.rfft(impulse, n + m), n + m)[:n]
+        part_wet = part + echo * part_room
+        part_wet[-fade:] *= np.linspace(1, 0, fade)
+        out[name] = part_wet * scale
+    return out
 
 
 def thorsten(sentence):
@@ -210,11 +232,25 @@ def castanets():
 
 def main():
     os.makedirs(OUT, exist_ok=True)
+    start = rng.bit_generator.state
     chosen = sys.argv[1:] or ['stimme', 'musik', 'waehlen', 'kastagnetten']
     if 'stimme' in chosen:
         write_wav(os.path.join(OUT, 'stimme.wav'), thorsten('Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.'))
     if 'musik' in chosen:
         write_wav(os.path.join(OUT, 'musik.wav'), music())
+    if 'spuren' in chosen:
+        # the instruments of musik.wav one by one, as FLAC, for the switches
+        # of the spectrogram widget (spectrum_widget.js); the random numbers
+        # of snare, hi-hat and room are drawn as for musik.wav, from the
+        # state the generator had when main began
+        rng.bit_generator.state = start
+        folder = os.path.join(OUT, 'musik')
+        os.makedirs(folder, exist_ok=True)
+        for name, part in music(stems=True).items():
+            temporary = os.path.join(folder, f'{name}.wav')
+            write_wav(temporary, part)
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', temporary, '-c:a', 'flac', os.path.join(folder, f'{name}.flac')], check=True)
+            os.remove(temporary)
     if 'waehlen' in chosen:
         write_wav(os.path.join(OUT, 'waehlen.wav'), dialling('03023125386'), PHONE)
     if 'kastagnetten' in chosen:

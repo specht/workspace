@@ -10,7 +10,9 @@
 //   <div class='spectrum-widget' data-clip='akkord'></div>
 //
 // The clips: the two files students fetch (/audio/*.wav, read as in
-// sampling_widget.js), the chord of »Drei Töne auf einmal« (each tone 0,5,
+// sampling_widget.js; for the music, switches for its six instruments, from
+// /audio/musik/*.flac, made by sounds/make.py so that they add up to it),
+// the chord of »Drei Töne auf einmal« (each tone 0,5,
 // the sum divided by 3) and a tone that glides from 100 Hz to 10 kHz, both
 // computed here. The spectra come from an FFT of 4.096 measurements under
 // a Hann window, every 512 measurements, computed once per clip.
@@ -134,6 +136,21 @@
         return out;
     }
 
+    // the instruments of the music, each a track of its own (sounds/make.py)
+    const INSTRUMENTS = [['bass-trommel', 'Bass-Trommel'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'],
+        ['bass', 'Bass'], ['akkorde', 'Akkorde'], ['melodie', 'Melodie']];
+    let tracks = null;
+    function loadTracks() {
+        if (!tracks) {
+            const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+            tracks = Promise.all(INSTRUMENTS.map(([name]) => fetch(`/audio/musik/${name}.flac`)
+                .then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+                .then((data) => new OAC(1, 1, SOURCE).decodeAudioData(data))
+                .then((buffer) => buffer.getChannelData(0))));
+        }
+        return tracks;
+    }
+
     const BIN = SOURCE / N;
     // the level between bin b0 and bin b1 (not whole numbers): low down,
     // where a pixel is less than a bin, between the two nearest bins; high
@@ -154,6 +171,7 @@
         const id = `spectrum-${++counter}`;
         let clip = CLIPS.find((c) => c.id === root.dataset.clip) || CLIPS[0];
         let samples = null, frames = null, at = clip.at;
+        const muted = new Set();                       // instruments switched off
         let ctx = null, source = null, startedAt = 0, offset = 0, playing = false;
 
         const group = (name, label, items, checked, onPick) => {
@@ -169,6 +187,20 @@
         };
 
         const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary spectrum-play' });
+        // the instruments of the music, each a switch
+        const instruments = el('div', { class: 'btn-group btn-group-sm spectrum-instruments', role: 'group', 'aria-label': 'Instrumente' });
+        INSTRUMENTS.forEach(([name, label]) => {
+            const inputId = `${id}-instrument-${name}`;
+            const input = el('input', { type: 'checkbox', class: 'btn-check', id: inputId, autocomplete: 'off' });
+            input.checked = true;
+            input.addEventListener('change', () => {
+                if (input.checked) muted.delete(name); else muted.add(name);
+                remix();
+            });
+            instruments.append(input, el('label', { class: 'btn btn-outline-secondary', for: inputId, text: label }));
+        });
+        const instrumentRow = el('div', { class: 'spectrum-controls' }, [
+            el('div', { class: 'spectrum-group' }, [el('span', { class: 'spectrum-label', text: 'Instrumente' }), instruments])]);
         const showPlay = () => {
             playButton.replaceChildren(el('i', { class: `bi ${playing ? 'bi-stop-fill' : 'bi-play-fill'}` }), playing ? ' Anhalten' : ' Abspielen');
         };
@@ -181,6 +213,7 @@
                 group('clip', 'Klang', CLIPS.map((c) => ({ value: c.id, label: c.label })), clip.id, (v) => pickClip(v)),
                 playButton,
             ]),
+            instrumentRow,
             el('figure', { class: 'spectrum-figure' }, [
                 el('figcaption', { text: 'Spektrogramm: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe. Hier klicken oder ziehen wählt den Zeitpunkt.' }),
                 gram]),
@@ -396,8 +429,41 @@
             requestAnimationFrame(tick);
         }
 
+        // the music with only the instruments switched on: the sum of their tracks
+        let remixing = 0;
+        async function remix() {
+            if (clip.id !== 'musik') return;
+            const ticket = ++remixing;
+            const from = now();
+            const wasPlaying = playing;
+            let mixed;
+            try {
+                if (muted.size === 0) {
+                    mixed = await load(clip);
+                } else {
+                    const parts = await loadTracks();
+                    mixed = new Float32Array(parts[0].length);
+                    INSTRUMENTS.forEach(([name], i) => {
+                        if (muted.has(name)) return;
+                        const part = parts[i];
+                        for (let j = 0; j < mixed.length; j++) mixed[j] += part[j];
+                    });
+                }
+            } catch (e) {
+                line.textContent = 'Die Instrumente ließen sich nicht laden.';
+                return;
+            }
+            if (ticket !== remixing || clip.id !== 'musik') return;
+            samples = mixed;
+            frames = spectra(mixed);
+            image = null;
+            at = offset = from;
+            if (wasPlaying) start(from); else draw();
+        }
+
         async function pickClip(value) {
             clip = CLIPS.find((c) => c.id === value);
+            instrumentRow.hidden = clip.id !== 'musik';
             if (playing) { stopSource(); playing = false; showPlay(); }
             samples = null; frames = null; image = null;
             at = offset = clip.at;
@@ -407,6 +473,7 @@
                 if (clip.id !== value) return;
                 samples = x;
                 frames = spectra(x);
+                if (clip.id === 'musik' && muted.size) { remix(); return; }
             } catch (e) {
                 line.textContent = 'Der Klang ließ sich nicht laden.';
                 return;
