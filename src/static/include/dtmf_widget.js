@@ -20,10 +20,12 @@
     const KEYS = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['*', '0', '#']];
     const LOW = 600, HIGH = 1600;           // the waterfall's frequencies
     const WINDOW = 0.010;                   // the wave: 10 ms
-    const SLOW = 400;                       // while a key sounds the wave runs, this many times slower
+    const RAMP = 0.005;                     // each tone fades in and out in 5 ms
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     const MIN_TONE = 0.15, LEVEL = 0.18;    // as the phone: 150 ms; each tone's amplitude
     const FLOOR = -95, TOP = -35;           // dB from the analyser, dark to bright
+    const COLUMN = 1 / 60;                  // seconds per column of the waterfall, whatever the screen's rate
+    const AXIS = 18;                        // the time labels under the waterfall
 
     const tonesOf = (key) => {
         for (let r = 0; r < 4; r++) {
@@ -43,10 +45,10 @@
     function setUp(root) {
         let ctx = null, analyser = null, out = null, bins = null;
         let sounding = null;                 // { key, oscs, gain, started, release }
-        let shown = '5';                     // the key the wave shows
+        let tones = [];                      // what sounds or sounded: { f1, f2, start, end } on the audio clock
         let hidden = false, riddle = null, busy = false;
-        let columns = [], running = false, quietFrames = 0, visible = true;
-        let waveTime = 0, lastFrame = 0;         // where the wave's window starts, in seconds
+        let columns = [], running = false, quietFrames = 0, visible = true, lastColumn = 0;
+        let lastScope = 0;                   // when the oscilloscope was last drawn (reduced motion: four times a second)
 
         // the keypad, with the frequencies of its rows and columns
         const pad = el('div', 'dtmf-pad');
@@ -73,7 +75,18 @@
         fall.setAttribute('role', 'img');
         fall.setAttribute('aria-label', 'Wasserfall: nach rechts die Zeit, nach oben die Frequenz von 600 bis 1.600 Hz; jede Taste zeigt sich als zwei helle Striche übereinander.');
         const waveBox = el('figure', 'dtmf-figure');
-        waveBox.append(el('figcaption', null, 'Die Schwingung, 10 Millisekunden, 400-mal langsamer'), wave);
+        // the legend: which line is which, with the frequencies of the key that sounds
+        const legend = el('div', 'dtmf-legend');
+        const entry = (cls) => { const s = el('span', cls); s.append(el('i'), el('span')); legend.appendChild(s); return s.lastChild; };
+        const legendRow = entry('dtmf-l-row'), legendCol = entry('dtmf-l-col'), legendSum = entry('dtmf-l-sum');
+        const label = (key) => {
+            const t = key && !hidden ? tonesOf(key) : null;
+            legendRow.textContent = t ? `${hz(t[0])}, die Zeile` : 'der Ton der Zeile';
+            legendCol.textContent = t ? `${hz(t[1])}, die Spalte` : 'der Ton der Spalte';
+            legendSum.textContent = 'beide zusammen: das hört man';
+        };
+        label(null);
+        waveBox.append(el('figcaption', null, 'Das Oszilloskop: die Schwingung, die gerade erklingt'), wave, legend);
         const fallBox = el('figure', 'dtmf-figure');
         fallBox.append(el('figcaption', null, 'Der Wasserfall: welche Frequenzen wann erklingen'), fall);
         const views = el('div', 'dtmf-views');
@@ -118,6 +131,24 @@
         }
 
         // the wave: both tones faint, their sum strong -----------------------------
+        // the oscilloscope: what sounds now, both tones faint and their sum strong,
+        // computed from the audio clock of the tones that play (their ramps
+        // too), so silence is a flat line; triggered like a real oscilloscope
+        // on a rising zero crossing of the sum, so the picture stands still
+        // as far as the signal allows (the two tones are no whole multiple
+        // of each other, the sum never repeats exactly)
+        function parts(t) {
+            let a = 0, b = 0;
+            for (const tone of tones) {
+                if (t < tone.start) continue;
+                const env = Math.max(0, Math.min(1, (t - tone.start) / RAMP, 1 - (t - tone.end) / RAMP));
+                if (!env) continue;
+                a += 0.5 * env * Math.sin(2 * Math.PI * tone.f1 * (t - tone.start));
+                b += 0.5 * env * Math.sin(2 * Math.PI * tone.f2 * (t - tone.start));
+            }
+            return [a, b];
+        }
+
         function drawWave() {
             const w = wave.clientWidth, h = wave.clientHeight, dpr = window.devicePixelRatio || 1;
             if (!w) return;
@@ -128,35 +159,40 @@
             const g = wave.getContext('2d');
             g.setTransform(dpr, 0, 0, dpr, 0, 0);
             const col = colours();
-            const [f1, f2] = tonesOf(shown);
-            const pad_ = 8, mid = (h - 18) / 2, amp = (h - 18) / 2 - pad_;
+            const mid = (h - 18) / 2, amp = (h - 18) / 2 - 8;
+            const now = ctx ? ctx.currentTime : 0;
+            tones = tones.filter((tone) => tone.end + RAMP > now - 2 * WINDOW);
+            // the trigger: the latest rising zero crossing that leaves a whole window before now
+            const step = 1 / (ctx ? ctx.sampleRate : 48000);
+            const sum = (t) => { const [a, b] = parts(t); return a + b; };
+            let begin = now - WINDOW;
+            for (let t = now - WINDOW, after = sum(t); t > now - 2 * WINDOW; t -= step) {
+                const before = sum(t - step);
+                if (before < 0 && after >= 0) { begin = t; break; }
+                after = before;
+            }
             g.clearRect(0, 0, w, h);
             g.strokeStyle = col.quiet;
             g.lineWidth = 1;
             g.beginPath(); g.moveTo(0, mid); g.lineTo(w, mid); g.stroke();
+            const values = [];
+            for (let x = 0; x <= w; x++) values.push(parts(begin + x / w * WINDOW));
             const curve = (fn, colour, width) => {
                 g.strokeStyle = colour; g.lineWidth = width; g.beginPath();
-                for (let x = 0; x <= w; x++) {
-                    const t = waveTime + x / w * WINDOW;
-                    const y = mid - amp * fn(t);
-                    x ? g.lineTo(x, y) : g.moveTo(x, y);
-                }
+                values.forEach((v, x) => { const y = mid - amp * fn(v); x ? g.lineTo(x, y) : g.moveTo(x, y); });
                 g.stroke();
             };
-            const s1 = (t) => Math.sin(2 * Math.PI * f1 * t), s2 = (t) => Math.sin(2 * Math.PI * f2 * t);
             g.globalAlpha = 0.7;
-            curve((t) => 0.5 * s1(t), col.row, 1.2);
-            curve((t) => 0.5 * s2(t), col.col, 1.2);
+            curve((v) => v[0], col.row, 1.2);
+            curve((v) => v[1], col.col, 1.2);
             g.globalAlpha = 1;
-            curve((t) => 0.5 * (s1(t) + s2(t)), col.sum, 2.4);
+            curve((v) => v[0] + v[1], col.sum, 2.4);
             g.fillStyle = col.ink;
             g.font = '12px system-ui, sans-serif';
             g.textBaseline = 'bottom';
             g.textAlign = 'left'; g.fillText('0 ms', 0, h);
             g.textAlign = 'center'; g.fillText('5 ms', w / 2, h);
             g.textAlign = 'right'; g.fillText('10 ms', w, h);
-            wave.setAttribute('aria-label', hidden ? 'Die Schwingung ist im Rätsel verdeckt.'
-                : `Die Schwingung der Taste ${shown}: ${hz(f1)} und ${hz(f2)}, schwach gezeichnet, und ihre Summe kräftig.`);
             if (hidden) {
                 g.fillStyle = col.ground;
                 g.fillRect(0, 0, w, h - 16);
@@ -178,17 +214,19 @@
             g.setTransform(dpr, 0, 0, dpr, 0, 0);
             const col = colours();
             const plotW = Math.max(10, Math.floor(w - LABEL_W));
+            const plotH = h - AXIS;
+            g.clearRect(0, 0, w, h);
             g.fillStyle = col.ground;
-            g.fillRect(0, 0, w, h);
+            g.fillRect(0, 0, w, plotH);
             // the columns, newest at the right; brightness from the analyser's dB
             const ground = rgb(col.ground), hot = rgb(col.hot);
-            const image = g.createImageData(plotW, h);
+            const image = g.createImageData(plotW, plotH);
             const start = Math.max(0, columns.length - plotW);
             for (let i = start; i < columns.length; i++) {
                 const x = plotW - (columns.length - i);
                 const column = columns[i];
-                for (let y = 0; y < h; y++) {
-                    const v = column[Math.floor(y / h * column.length)] || 0;
+                for (let y = 0; y < plotH; y++) {
+                    const v = column[Math.floor(y / plotH * column.length)] || 0;
                     const o = (y * plotW + x) * 4;
                     image.data[o] = ground[0] + (hot[0] - ground[0]) * v;
                     image.data[o + 1] = ground[1] + (hot[1] - ground[1]) * v;
@@ -198,26 +236,28 @@
             }
             // putImageData ignores the transform: a canvas of its own, drawn scaled
             const tmp = drawFall.tmp || (drawFall.tmp = document.createElement('canvas'));
-            tmp.width = plotW; tmp.height = h;
+            tmp.width = plotW; tmp.height = plotH;
             tmp.getContext('2d').putImageData(image, 0, 0);
             g.imageSmoothingEnabled = false;
-            g.drawImage(tmp, LABEL_W, 0, plotW, h);
+            g.drawImage(tmp, LABEL_W, 0, plotW, plotH);
             // the seven frequencies: a fine line and the number at the left
             g.font = '12px system-ui, sans-serif';
             g.textAlign = 'right'; g.textBaseline = 'middle';
             for (const [list, colour] of [[ROWS, col.row], [COLS, col.col]]) {
                 for (const f of list) {
-                    const y = Math.round(freqY(f, h)) + 0.5;
-                    g.strokeStyle = colour; g.globalAlpha = 0.35; g.lineWidth = 1;
+                    const y = Math.round(freqY(f, plotH)) + 0.5;
+                    g.strokeStyle = colour; g.globalAlpha = 0.6; g.lineWidth = 1;
                     g.beginPath(); g.moveTo(LABEL_W - 4, y); g.lineTo(w, y); g.stroke();
                     g.globalAlpha = 1; g.fillStyle = colour;
                     g.fillText(f.toLocaleString('de-DE'), LABEL_W - 7, y);
                 }
             }
-            if (!columns.length) {
-                g.fillStyle = col.ink; g.textAlign = 'center';
-                g.fillText('Drück eine Taste', LABEL_W + plotW / 2, h / 2 - 22);
-            }
+            // the time: how long ago at the left, now at the right
+            const seconds = plotW * COLUMN;
+            g.fillStyle = col.ink;
+            g.textBaseline = 'bottom';
+            g.textAlign = 'left'; g.fillText(`vor ${seconds.toLocaleString('de-DE', { maximumFractionDigits: 0 })} s`, LABEL_W, h);
+            g.textAlign = 'right'; g.fillText('jetzt', w, h);
         }
 
         function rgb(colour) {
@@ -229,7 +269,7 @@
 
         function sample() {
             analyser.getFloatFrequencyData(bins);
-            const h = fall.clientHeight || 200;
+            const h = (fall.clientHeight || 236) - AXIS;
             const column = new Float32Array(h);
             const binHz = ctx.sampleRate / analyser.fftSize;
             let loud = false;
@@ -240,26 +280,35 @@
                 column[y] = v * v;
                 if (v > 0.3) loud = true;
             }
-            columns.push(column);
+            return { column, loud };
+        }
+
+        // as many columns as time has passed (at most half a second at once:
+        // a tab in the background does not paint)
+        function advance() {
+            const now = performance.now() / 1000;
+            if (!lastColumn) lastColumn = now - COLUMN;
+            const steps = Math.min(30, Math.floor((now - lastColumn) / COLUMN));
+            if (steps < 1) return null;
+            lastColumn = Math.max(lastColumn + steps * COLUMN, now - COLUMN);
+            const { column, loud } = sample();
+            for (let i = 0; i < steps; i++) columns.push(column);
             const keep = (fall.clientWidth || 600) + 10;
             if (columns.length > keep) columns.splice(0, columns.length - keep);
-            return loud;
+            return { loud, steps };
         }
 
         function loop() {
             if (!running) return;
-            const loud = sample();
-            quietFrames = loud || sounding ? 0 : quietFrames + 1;
-            drawFall();
-            // the wave runs on while a key sounds, slowed down
-            const now = performance.now();
-            if (sounding && !hidden && !still.matches && lastFrame) {
-                waveTime += Math.min(100, now - lastFrame) / 1000 / SLOW;
-                drawWave();
+            const moved = advance();
+            if (moved) {
+                quietFrames = moved.loud || sounding ? 0 : quietFrames + moved.steps;
+                drawFall();
             }
-            lastFrame = now;
+            const now = performance.now();
+            if (!still.matches || now - lastScope > 250) { drawWave(); lastScope = now; }
             // stops when the last tone has run out of the picture, or off screen
-            if (!visible || quietFrames > fall.clientWidth + 10) { running = false; return; }
+            if (!visible || quietFrames > fall.clientWidth + 10) { running = false; drawWave(); return; }
             requestAnimationFrame(loop);
         }
 
@@ -267,7 +316,7 @@
             if (running || !analyser) return;
             running = true;
             quietFrames = 0;
-            lastFrame = 0;
+            lastColumn = 0;
             requestAnimationFrame(loop);
         }
 
@@ -305,8 +354,9 @@
                 o.start(now);
                 return o;
             });
-            sounding = { key, oscs, gain, started: now };
-            if (!hidden) { shown = key; say(key); drawWave(); }
+            sounding = { key, oscs, gain, started: now, tone: { f1, f2, start: now, end: Infinity } };
+            tones.push(sounding.tone);
+            if (!hidden) { say(key); label(key); }
             mark(key);
             run();
         }
@@ -321,6 +371,7 @@
             s.gain.gain.setValueAtTime(LEVEL, end);
             s.gain.gain.linearRampToValueAtTime(0, end + 0.005);
             s.oscs.forEach((o) => o.stop(end + 0.01));
+            s.tone.end = end;
             const wait = Math.max(0, (end - ctx.currentTime) * 1000);
             setTimeout(() => { if (!sounding) mark(null); }, wait);
         }
@@ -376,6 +427,7 @@
             riddle = Array.from({ length: 3 }, () => KEYS.flat()[Math.floor(Math.random() * 12)]);
             hidden = true;
             mark(null);
+            label(null);
             drawWave();
             message.textContent = 'Drei Tasten erklingen. Welche? Lies ihre Töne im Wasserfall ab.';
             await play(riddle);
@@ -401,7 +453,8 @@
         }).observe(fall);
         new MutationObserver(() => { drawWave(); drawFall(); })
             .observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
-        message.textContent = 'Drück eine Taste und hör hin; die Schwingung zeigt bis dahin die Taste 5.';
+        const resting = 'Halte eine Taste gedrückt, solange sie klingen soll.';
+        message.textContent = resting;
         drawWave();
         drawFall();
     }

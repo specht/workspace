@@ -15163,8 +15163,14 @@ html[data-bs-theme="dark"] .dtmf-widget {
 .dtmf-figure { margin: 0; }
 .dtmf-figure figcaption { font-size: 0.85em; color: var(--dtmf-ink); margin-bottom: 0.25em; }
 .dtmf-wave { display: block; width: 100%; height: 110px; }
-.dtmf-fall { display: block; width: 100%; height: 220px; border-radius: 0.4em; }
+.dtmf-fall { display: block; width: 100%; height: 236px; }
 .dtmf-message { margin: 0.9em 0 0.6em; min-height: 1.5em; }
+.dtmf-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--dtmf-ink); }
+.dtmf-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
+.dtmf-legend i { display: inline-block; width: 1.4em; border-top: 2px solid; }
+.dtmf-l-row i { border-color: var(--dtmf-row); opacity: 0.8; }
+.dtmf-l-col i { border-color: var(--dtmf-col); opacity: 0.8; }
+.dtmf-l-sum i { border-top-width: 3px; border-color: var(--dtmf-sum); }
 .dtmf-r { color: var(--dtmf-row); font-weight: 600; }
 .dtmf-c { color: var(--dtmf-col); font-weight: 600; }
 .dtmf-actions { display: flex; flex-wrap: wrap; gap: 0.5em; }
