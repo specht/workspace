@@ -496,3 +496,118 @@ tasks:
               decoded.append(decoded[-1] + code(plane - decoded[-1], step))
           return np.array(decoded)
       ```
+
+  - id: best-vector
+    title: Den Block wiederfinden
+    prompt: |
+      Schreib in `video/motion.py` die Funktion `best_vector(current,
+      reference, y, x, n, radius)`: die Verschiebung `(dx, dy)` mit der
+      kleinsten Summe der Unterschiede zwischen dem Block
+      `current[y:y + n, x:x + n]` und dem Stück von `reference`, das bei
+      `y + dy` und `x + dx` beginnt. Stücke über den Rand lässt sie aus.
+    check:
+      type: python
+      file: video/motion.py
+      cases:
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; cur = np.roll(ref, (1, -2), axis=(0, 1)); best_vector(cur, ref, 8, 8, 4, 3)'
+          expect: (2, -1)
+          say: Die Prüfung verschiebt ein Muster um eine Zeile nach unten und zwei Spalten nach links. Der Block bei (8, 8) war vorher also zwei Spalten weiter rechts und eine Zeile höher, `(2, -1)`, erst `dx`, dann `dy`. Nimmt `best_vector` die kleinste Summe, und beginnt das Stück bei `y + dy` und `x + dx`?
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; best_vector(ref, ref, 0, 0, 4, 3)'
+          expect: (0, 0)
+          say: Ein Block oben links, im selben Bild gesucht, passt am besten ohne Verschiebung. Verschiebungen nach oben und links gehen über den Rand; lässt `best_vector` sie mit `continue` aus? Ein negativer Index zählt in numpy von hinten.
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; cur = np.roll(ref, (1, -2), axis=(0, 1)); all(abs(int(v)) <= 1 for v in best_vector(cur, ref, 8, 8, 4, 1))'
+          expect: 'True'
+          say: Mit `radius = 1` probiert `best_vector` nur Verschiebungen von −1 bis 1, auch wenn die beste weiter weg liegt.
+    solution: |
+      ```python
+      def best_vector(current, reference, y, x, n, radius):
+          block = current[y:y + n, x:x + n]
+          height, width = reference.shape
+          best, best_sad = (0, 0), None
+          for dy in range(-radius, radius + 1):
+              for dx in range(-radius, radius + 1):
+                  top, left = y + dy, x + dx
+                  if top < 0 or left < 0 or top + n > height or left + n > width:
+                      continue
+                  sad = np.abs(block - reference[top:top + n, left:left + n]).sum()
+                  if best_sad is None or sad < best_sad:
+                      best, best_sad = (dx, dy), sad
+          return best
+      ```
+
+  - id: arrows
+    title: Wohin die Vektoren zeigen
+    prediction: true
+    prompt: |
+      In `tilt.mp4` fährt die Kamera die Felswand hinauf. Ein Vektor zeigt
+      vom Block dorthin, wo sein Inhalt im vorigen Bild war. Wohin zeigen die
+      meisten gelben Striche in `tilt-vectors.png`?
+    check:
+      type: choice
+      options:
+        - Nach oben.
+        - Nach unten.
+        - Nach links.
+        - Kreuz und quer.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Fährt die Kamera nach oben, wandert die Wand im Bild nach unten. Wo war ein Stück der Wand also im vorigen Bild?
+      - when: { picked: 2 }
+        say: Die Kamera fährt nach oben, nicht zur Seite.
+      - when: { picked: 3 }
+        say: Kreuz und quer zeigen sie nur, wo sich etwas anders bewegt als die Kamera. Der größte Teil des Bildes ist die Wand.
+    solution: |
+      Nach oben: Die Kamera fährt hinauf, das Bild wandert nach unten, und
+      was jetzt an einer Stelle ist, war im vorigen Bild weiter oben.
+
+  - id: compensate
+    title: Die Vorhersage aus dem vorigen Bild
+    prompt: |
+      Schreib in `video/motion.py` die Funktion `compensate(reference, vectors,
+      n)`: eine Ebene so groß wie `reference`, jeder Block das Stück von
+      `reference`, das um seinen Vektor verschoben liegt.
+    check:
+      type: python
+      file: video/motion.py
+      cases:
+        - call: 'r = np.arange(36.0).reshape(6, 6); compensate(r, np.zeros((3, 3, 2), dtype=int), 2).tolist() == r.tolist()'
+          expect: 'True'
+          say: Sind alle Vektoren `(0, 0)`, ist die Vorhersage `reference` selbst.
+        - call: 'r = np.arange(36.0).reshape(6, 6); v = np.zeros((3, 3, 2), dtype=int); v[1, 1] = (-1, 1); compensate(r, v, 2)[2:4, 2:4].tolist()'
+          expect: '[[19.0, 20.0], [25.0, 26.0]]'
+          say: Der Block in Reihe 1 und Spalte 1 beginnt bei (2, 2); mit dem Vektor `(-1, 1)`, eine Spalte nach links und eine Zeile nach unten, kommt er aus `reference[3:5, 1:3]`. Ist der erste Wert `dx`, die Verschiebung der Spalten?
+    solution: |
+      ```python
+      def compensate(reference, vectors, n):
+          predicted = np.zeros_like(reference)
+          for r, c in np.ndindex(vectors.shape[:2]):
+              dx, dy = vectors[r, c]
+              y, x = r * n, c * n
+              predicted[y:y + n, x:x + n] = reference[y + dy:y + dy + n, x + dx:x + dx + n]
+          return predicted
+      ```
+
+  - id: mc-bytes
+    title: Was die Bewegung spart
+    prediction: true
+    prompt: |
+      Bild 12 vom Hang allein kostet bei Schritt 32 etwa 29.700 Bytes, der
+      Unterschied zu Bild 11 etwa 26.300. Wie viel kosten die Vektoren und der
+      Rest nach der Bewegungskompensation zusammen?
+    check:
+      type: choice
+      options:
+        - Etwa so viel wie der Unterschied, 25.000 Bytes.
+        - Etwa ein Viertel davon, 6.000 Bytes.
+        - Fast nichts, unter 500 Bytes.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Der Unterschied kostet so viel, weil jede Kante ein Stück verschoben ist. Was bleibt, wenn jeder Block erst an seine Stelle geschoben wird?
+      - when: { picked: 2 }
+        say: So wenig wäre es, wenn sich nur die Kamera bewegte. Das Mädchen und der Hund ändern aber ihre Form.
+    solution: |
+      Etwa 6.100 Bytes, ein Fünftel des Bildes allein: Die Vektoren kosten
+      kaum etwas, und übrig bleiben vor allem die Beine des Mädchens und der
+      Hund.

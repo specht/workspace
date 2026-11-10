@@ -1070,3 +1070,294 @@ Beim Blick kostet der Unterschied fast nichts: Bei Schritt 32 wird er überall 0
 </div>
 
 <!-- stage: stufen/difference-2.py as difference.py -->
+
+## Bewegung schätzen
+
+Beim Schwenk kostet der Unterschied so viel wie das Bild allein, weil alles ein Stück verschoben ist. Ein Codec sucht darum zu jedem Block des neuen Bildes die Stelle im vorigen Bild, an der derselbe Inhalt war, und zieht erst dann ab. Die Verschiebung heißt **Bewegungsvektor**, das Verfahren **Bewegungskompensation**. Vorgeschlagen haben es Forscher des japanischen Rundfunks NHK 1959, Y. Taki, M. Hatori und S. Tanaka; seit H.261 von 1988 steckt es in jedem Codec für Video.
+
+### Den Block wiederfinden
+
+Für einen Block probiert der Encoder Verschiebungen aus. Für jede rechnet er die **Summe der Unterschiede** aus, auf Englisch **SAD** (Sum of Absolute Differences): Er legt den Block über das Stück des vorigen Bildes, zieht Pixel für Pixel ab und zählt die Beträge zusammen. Die Verschiebung mit der kleinsten Summe gewinnt. Probier es hier mit zwei Bildern vom Hang, direkt hintereinander:
+
+<script src='/include/motion_widget.js'></script>
+<div class='motion-widget' data-block='112 64'>
+<img data-noconvert src='motion-after.png' alt='Ein Ausschnitt aus dem Bild vom Hang: das Mädchen mit Stab, der Hund und der Berg dahinter, mit einem Raster aus Blöcken.' data-label='Bild 6'>
+<img data-noconvert src='motion-before.png' alt='Derselbe Ausschnitt ein Bild früher, kaum anders als der erste.' data-label='Bild 5'>
+</div>
+
+Zieh das Quadrat dorthin, wo du den Block im Bild davor vermutest, und achte auf die Summe: Je kleiner, desto besser passt es. Dann lass die Suche alle Verschiebungen ausprobieren und vergleich ihre Summe mit deiner. Der Block am Haar des Mädchens hat einen anderen Vektor als der Hang daneben: Sie geht nach links, und ihr Kopf wippt beim Gehen, während die Kamera langsam mitschwenkt. Zieh den Block dann an den Rand des sonnigen Hangs links: Dort ist die Karte aller Verschiebungen ein dunkles Band entlang der Kante. Schiebt man das Quadrat an der Kante entlang, ändert sich die Summe wenig, und nur die Gräser auf dem Hang entscheiden, wo genau sie am kleinsten ist.
+
+Lege `motion.py` an. Es nimmt `luma` aus `difference.py` und die Funktionen aus `blocks.py`:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+from PIL import Image, ImageDraw
+
+from blocks import split, join, quantize, restore, bits, residual
+from difference import luma
+from video import read_frames
+
+N = 16
+RADIUS = 4
+
+
+def best_vector(current, reference, y, x, n, radius):
+    # hier: die Verschiebung (dx, dy) mit der kleinsten Summe der Unterschiede
+
+
+def motion_field(current, reference, n, radius):
+    height, width = current.shape
+    vectors = np.zeros((height // n, width // n, 2), dtype=int)
+    for r in range(height // n):
+        for c in range(width // n):
+            vectors[r, c] = best_vector(current, reference, r * n, c * n, n, radius)
+    return vectors
+
+
+def draw_vectors(plane, vectors, n, path):
+    picture = Image.fromarray(plane.round().clip(0, 255).astype(np.uint8)).convert('RGB')
+    draw = ImageDraw.Draw(picture)
+    for r, c in np.ndindex(vectors.shape[:2]):
+        dx, dy = vectors[r, c]
+        cy, cx = r * n + n // 2, c * n + n // 2
+        draw.line([(cx, cy), (cx + 4 * dx, cy + 4 * dy)], fill=(255, 210, 0), width=2)
+        draw.ellipse([cx - 1, cy - 1, cx + 1, cy + 1], fill=(255, 210, 0))
+    picture.save(path)
+
+
+if __name__ == '__main__':
+    for name in ['pan', 'tilt']:
+        planes = luma(read_frames(f'{name}.mp4')[:24])
+        vectors = motion_field(planes[12], planes[11], N, RADIUS)
+        draw_vectors(planes[12], vectors, N, f'{name}-vectors.png')
+        values, counts = np.unique(vectors.reshape(-1, 2), axis=0, return_counts=True)
+        print(f'{name}: am häufigsten {tuple(int(v) for v in values[counts.argmax()])}')
+```
+
+`motion_field` sucht für jeden Block aus 16 × 16 Pixeln den Vektor, `vectors[r, c]` ist der des Blocks in Reihe `r` und Spalte `c`. `draw_vectors` malt in jeden Block einen gelben Strich von seiner Mitte aus, viermal so lang wie der Vektor. `np.unique` zählt, welche Vektoren wie oft vorkommen.
+
+<div class='hint own' data-check='best-vector'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>best_vector(current, reference, y, x, n, radius)</code>. Der Block ist <code>current[y:y + n, x:x + n]</code>. Probier jede Verschiebung <code>dx</code> und <code>dy</code> von <code>-radius</code> bis <code>radius</code>: Das Stück von <code>reference</code> beginnt bei <code>y + dy</code> und <code>x + dx</code>. Gib die Verschiebung mit der kleinsten Summe der Unterschiede als <code>(dx, dy)</code> zurück, erst die Spalten, dann die Zeilen, wie bei x und y. Stücke, die über den Rand von <code>reference</code> hinausgehen, lässt du aus.
+</div>
+
+<!-- hint -->
+Zwei Schleifen ineinander, über `range(-radius, radius + 1)`. Die Summe der Unterschiede ist `np.abs(block - reference[top:top + n, left:left + n]).sum()`, mit `top = y + dy` und `left = x + dx`. Merk dir die beste Verschiebung und ihre Summe, wie in `best_mode`.
+<!-- /hint -->
+<!-- hint -->
+Ein Stück liegt im Bild, wenn `top` und `left` nicht negativ sind und `top + n` und `left + n` nicht größer als Höhe und Breite. Sonst überspring es mit `continue`; ein negativer Index würde in numpy von hinten zählen.
+
+```python
+height, width = reference.shape
+if top < 0 or left < 0 or top + n > height or left + n > width:
+    continue
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def best_vector(current, reference, y, x, n, radius):
+    block = current[y:y + n, x:x + n]
+    height, width = reference.shape
+    best, best_sad = (0, 0), None
+    for dy in range(-radius, radius + 1):
+        for dx in range(-radius, radius + 1):
+            top, left = y + dy, x + dx
+            if top < 0 or left < 0 or top + n > height or left + n > width:
+                continue
+            sad = np.abs(block - reference[top:top + n, left:left + n]).sum()
+            if best_sad is None or sad < best_sad:
+                best, best_sad = (dx, dy), sad
+    return best
+```
+<!-- /solution -->
+
+_task(best-vector)
+
+Das Programm malt die Vektoren für Bild 12 des Schwenks und der Fahrt die Wand hinauf. Ein Vektor zeigt vom Block dorthin, wo sein Inhalt im vorigen Bild war.
+
+_task(arrows)
+
+```bash
+python3 motion.py
+```
+
+<!-- tutorial-step
+write-file: video/motion.py <- file:stufen/motion-1.py
+check-task: best-vector
+terminal-run: python3 motion.py
+terminal-wait-for-prompt: 120
+wait-for-text: tilt: am häufigsten
+-->
+
+<!-- after: arrows -->
+```text
+pan: am häufigsten (-2, 0)
+tilt: am häufigsten (0, -1)
+```
+
+<!-- tutorial-screenshot
+image-file: video/tilt-vectors.png 1
+-->
+<img class='full fit-width inspect' src='tilt-vectors.webp' alt='Bild 12 der Fahrt die Wand hinauf in Graustufen, in jedem Block ein gelber Punkt mit einem kurzen Strich. Im Hintergrund zeigen fast alle Striche nach oben, gleich lang. Am Mädchen mit dem Hund zeigen sie kreuz und quer.'>
+
+Die Kamera fährt nach oben, also wandert das Bild nach unten: Was jetzt an einer Stelle ist, war im vorigen Bild weiter oben, und der Vektor zeigt nach oben. Beim Schwenk ist es ein Pixel oder zwei nach links. Wo sich das Mädchen bewegt und ihre Form ändert, findet jeder Block irgendeine Stelle, und die Pfeile zeigen kreuz und quer; dort bleibt später mehr Rest übrig.
+<!-- /after -->
+
+### Wie H.264 sucht
+
+ffmpeg kann die Vektoren zeigen, die der Encoder von H.264 für `tilt.mp4` gefunden hat:
+
+```bash
+ffmpeg -flags2 +export_mvs -i tilt.mp4 -vf 'select=eq(n\,13),codecview=mv=pf' -frames:v 1 tilt-h264.png
+```
+
+<!-- tutorial-step
+terminal-run: ffmpeg -v error -y -flags2 +export_mvs -i tilt.mp4 -vf 'select=eq(n\,13),codecview=mv=pf' -frames:v 1 tilt-h264.png && ls tilt-h264.png
+terminal-wait-for-prompt: 60
+wait-for-text: tilt-h264.png
+-->
+
+`-flags2 +export_mvs` lässt den Decoder die Vektoren mitliefern, `select` nimmt Bild 13, und `codecview` malt die Vektoren in das Bild.
+
+<!-- tutorial-screenshot
+image-file: video/tilt-h264.png 1
+-->
+<img class='full fit-width inspect' src='tilt-h264.webp' alt='Bild 13 der Fahrt die Wand hinauf in Farbe, darüber viele kleine weiße Pfeile. Im Hintergrund zeigen alle nach unten, dicht an dicht; am Mädchen mit dem Hund sind die Blöcke kleiner und die Pfeile zeigen in verschiedene Richtungen.'>
+
+Die Pfeile zeigen nach unten: ffmpeg malt sie vom Ort im vorigen Bild zum Block, also so, wie sich der Inhalt bewegt, andersherum als `draw_vectors`. Der Encoder von H.264 macht mehr als `motion_field`. Er teilt einen Block von 16 × 16 Pixeln in kleinere, wo das hilft, bis 4 × 4, und er sucht nicht nur ganze Pixel, sondern Viertel davon: Der Schwenk bewegt sich etwa anderthalb Pixel je Bild, nicht eines oder zwei. Und er probiert nicht alle Verschiebungen aus, sondern geht vom Vektor der Nachbarn aus und sucht in kleinen Schritten weiter, wo die Summe kleiner wird.
+
+### Was übrig bleibt
+
+Mit den Vektoren baut der Decoder aus dem vorigen Bild eine Vorhersage: Jeder Block wird aus dem vorigen Bild kopiert, um seinen Vektor verschoben. Dazu kommt der gerundete Rest. Erweitere `motion.py`:
+
+<!-- page-code: own -->
+```python
+def compensate(reference, vectors, n):
+    # hier: jeder Block aus reference, um seinen Vektor verschoben
+
+
+def vector_bits(vectors):
+    total = 0
+    for k in range(2):
+        _, counts = np.unique(vectors[..., k], return_counts=True)
+        p = counts / counts.sum()
+        total += -(p * np.log2(p)).sum() * counts.sum()
+    return total
+
+
+def save_grey(path, plane):
+    Image.fromarray(plane.round().clip(0, 255).astype(np.uint8)).save(path)
+```
+
+`vector_bits` schätzt die Bits der Vektoren wie `bits`, mit einer Tabelle für `dy` und einer für `dx`.
+
+<div class='hint own' data-check='compensate'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>compensate(reference, vectors, n)</code>: eine Ebene so groß wie <code>reference</code>, in der jeder Block aus <code>n</code> × <code>n</code> Pixeln an Reihe <code>r</code> und Spalte <code>c</code> das Stück von <code>reference</code> ist, das um <code>vectors[r, c]</code> verschoben liegt.
+</div>
+
+<!-- hint -->
+`np.ndindex(vectors.shape[:2])` geht alle Paare `r, c` durch, wie in `draw_vectors`. Der Block beginnt bei `y = r * n` und `x = c * n`, das Stück in `reference` bei `y + dy` und `x + dx`.
+<!-- /hint -->
+<!-- hint -->
+```python
+predicted = np.zeros_like(reference)
+for r, c in np.ndindex(vectors.shape[:2]):
+    dx, dy = vectors[r, c]
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def compensate(reference, vectors, n):
+    predicted = np.zeros_like(reference)
+    for r, c in np.ndindex(vectors.shape[:2]):
+        dx, dy = vectors[r, c]
+        y, x = r * n, c * n
+        predicted[y:y + n, x:x + n] = reference[y + dy:y + dy + n, x + dx:x + dx + n]
+    return predicted
+```
+<!-- /solution -->
+
+_task(compensate)
+
+Unten im Hauptprogramm kommt dazu, für Bild 12 vom Hang:
+
+```python
+    planes = luma(read_frames('slope.mp4')[:24])
+    previous, current = planes[11], planes[12]
+    vectors = motion_field(current, previous, N, RADIUS)
+    predicted = compensate(previous, vectors, N)
+    rest = current - predicted
+    levels = quantize(split(rest, 4), 32)
+    decoded = predicted + join(restore(levels, 32))
+    save_grey('mc-previous.png', previous)
+    save_grey('mc-predicted.png', predicted)
+    save_grey('mc-rest.png', rest + 128)
+    save_grey('mc-decoded.png', decoded)
+    alone = bits(quantize(split(residual(current, 4), 4), 32))
+    change = bits(quantize(split(current - previous, 4), 32))
+    moved = bits(levels) + vector_bits(vectors)
+    print(f'Bild allein:      {alone / 8:7.0f} Bytes')
+    print(f'Unterschied:      {change / 8:7.0f} Bytes')
+    print(f'mit Bewegung:     {moved / 8:7.0f} Bytes, davon Vektoren {vector_bits(vectors) / 8:.0f}')
+```
+
+Alles hier ist unsere eigene Suche und unsere Schätzung der Bits, nicht die Datei von H.264. Die Vorhersage kommt aus dem Original von Bild 11; ein echter Encoder nimmt das Bild, das der Decoder gebaut hat, wie `encode` in »Von Bild zu Bild«. Der Rest wird in Blöcken aus 4 × 4 Pixeln gerundet, mit Schritt 32 wie zuvor.
+
+_task(mc-bytes)
+
+```bash
+python3 motion.py
+```
+
+<!-- tutorial-step
+write-file: video/motion.py <- file:stufen/motion-2.py
+check-task: compensate
+terminal-run: python3 motion.py
+terminal-wait-for-prompt: 120
+wait-for-text: mit Bewegung
+-->
+
+<!-- after: mc-bytes -->
+```text
+Bild allein:        29694 Bytes
+Unterschied:        26294 Bytes
+mit Bewegung:        6127 Bytes, davon Vektoren 239
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/mc-previous.png 1
+-->
+<img class='inspect' src='mc-previous.webp' alt='Das Bild vom Hang in Graustufen, Bild 11: das Mädchen mit Stab und der Hund auf dem Pfad zwischen Felsen.'>
+<figcaption>Bild 11, das Bild davor</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/mc-predicted.png 1
+-->
+<img class='inspect' src='mc-predicted.webp' alt='Fast dasselbe Bild, aus Blöcken von Bild 11 zusammengesetzt; es sieht aus wie Bild 12.'>
+<figcaption>Bild 11, jeder Block um seinen Vektor verschoben</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/mc-rest.png 1
+-->
+<img class='inspect' src='mc-rest.webp' alt='Fast überall mittelgrau; nur an den Beinen des Mädchens, am Hund und an seinem Schatten bleiben helle und dunkle Flecken.'>
+<figcaption>was übrig bleibt: Bild 12 minus die Vorhersage</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/mc-decoded.png 1
+-->
+<img class='inspect' src='mc-decoded.webp' alt='Das Bild vom Hang, Bild 12, aus der Vorhersage und dem gerundeten Rest; es sieht aus wie das Original.'>
+<figcaption>Bild 12, wie der Decoder es baut</figcaption></figure>
+</div>
+
+Die Vorhersage sieht schon aus wie Bild 12. Übrig bleibt, was sich nicht nur verschoben hat: die Beine des Mädchens, die sich anders bewegen als ihr Körper, und der Hund. Das Bild, das der Decoder daraus baut, kostet etwa 6.100 Bytes statt fast 30.000 für das Bild allein, ein Fünftel; die 1.500 Vektoren davon nur 239 Bytes, weil fast alle gleich sind.
+<!-- /after -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>RADIUS</code> auf 1 und auf 8. Wie ändern sich die Bytes und wie lange braucht das Programm? Achte bei <code>tilt.mp4</code> darauf, welche Blöcke mit kleinem Radius keine gute Stelle mehr finden.
+</div>
+
+<!-- stage: stufen/motion-2.py as motion.py -->

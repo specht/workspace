@@ -8729,6 +8729,7 @@ div[data-stepper],
 .spectrum-widget,
 .hearing-widget,
 .abx-widget,
+.motion-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8751,6 +8752,7 @@ html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .spectrum-widget,
 html[data-bs-theme="dark"] .hearing-widget,
 html[data-bs-theme="dark"] .abx-widget,
+html[data-bs-theme="dark"] .motion-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -10325,6 +10327,88 @@ html[data-bs-theme="dark"] .automaton-stepper {
     width: 100%;
     height: auto;
     margin: 0.4em auto 0;
+}
+
+/* The block-matching widget (motion_widget.js): the frame now and the frame
+   before side by side (one under the other on a phone), under them the
+   block, the square, their difference and the map of all shifts, enlarged
+   with sharp pixels */
+.motion-widget {
+    --motion-accent: #6741d9;
+}
+.motion-widget::before {
+    content: 'Zum Ausprobieren: Block und Quadrat ziehen';
+    display: inline-block;
+    margin-bottom: 0.6em;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.motion-widget .motion-frames {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75em;
+}
+@media (max-width: 575.98px) {
+    .motion-widget .motion-frames {
+        grid-template-columns: 1fr;
+    }
+}
+.motion-widget .motion-figure {
+    margin: 0;
+}
+.motion-widget .motion-figure figcaption {
+    margin-top: 0.25em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.motion-widget canvas {
+    display: block;
+    border-radius: 0.3em;
+    image-rendering: pixelated;
+}
+.motion-widget .motion-frame {
+    width: 100%;
+    height: auto;
+}
+.motion-widget .motion-drag {
+    cursor: grab;
+    touch-action: none;
+}
+.motion-widget .motion-drag:focus-visible {
+    outline: 3px solid var(--motion-accent);
+    outline-offset: 2px;
+}
+.motion-widget .motion-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+    margin: 0.75em 0;
+}
+.motion-widget .motion-say,
+.motion-widget .motion-compare {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+.motion-widget .motion-compare {
+    font-weight: 600;
+}
+.motion-widget .motion-zooms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+}
+.motion-widget .motion-zoom {
+    width: 8em;
+    height: 8em;
+}
+.motion-widget .motion-figure[hidden] {
+    display: none;
 }
 
 /* The bit-plane widget (bitplane_widget.js): the bits 7 to 0 as cells, the

@@ -63,3 +63,16 @@ examples:
     fail:
       - { files: { video/difference.py: stufen/difference-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'encode' }
       - { files: { video/difference.py: fehler/encode-from-original.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'decoded[-1]' }
+  best-vector:
+    pass:
+      - { files: { video/motion.py: stufen/motion-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+      - { files: { video/motion.py: stufen/motion-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+    fail:
+      - { files: { video/motion.py: fehler/best-vector-largest.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'kleinste' }
+      - { files: { video/motion.py: fehler/best-vector-no-edge.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'continue' }
+  compensate:
+    pass:
+      - { files: { video/motion.py: stufen/motion-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+    fail:
+      - { files: { video/motion.py: stufen/motion-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'compensate' }
+      - { files: { video/motion.py: fehler/compensate-swapped.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'dx' }

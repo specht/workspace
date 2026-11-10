@@ -288,6 +288,20 @@ seconds at 720p each.
    grows from 3,3 to 13,2 in a second, `encode` stays at 3,4). For part 5:
    in 1959 NHK researchers (Taki, Hatori, Tanaka) proposed motion
    compensation between frames (Wikipedia, »Motion compensation«).
+   Part 5 is written: NHK 1959, the block-matching widget
+   (`motion_widget.js`, block and square dragged, the map of all sums, the
+   reader's square against the search, frames 5 and 6 of the slope:
+   neighbours, as the maintainer asked; 0 and 12 had been chosen first for
+   larger shifts, which no codec predicts across), vectors as (dx, dy) at
+   the maintainer's word, `best_vector` of one's own (full search,
+   radius 4, blocks of 16; pan mostly (−2, 0), tilt (0, −1)), the direction
+   of the vectors as a prediction, the vectors of x264 in `tilt.mp4` from
+   ffmpeg's `codecview` (frame 13, a P-frame; drawn the other way round),
+   `compensate` of one's own and, at the maintainer's wish, the frame
+   before, the prediction, the rest and the decoded frame with their bytes
+   (alone 29.694, difference 26.294, with motion 6.127 of which vectors
+   239; our own search and estimate, not the bytes of the H.264 file,
+   which the page says).
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

@@ -385,6 +385,19 @@ only to look nice.
   printed label, white in both modes. No steps, no timeline: the reader
   paints. `test/static/qr_code.test.cjs` checks the layout against
   qrencode and the page's stickers against jsQR.
+- **Block matching** (`motion_widget.js`, »Video komprimieren«): the frame
+  now and the frame before (two PNGs inside the div, 288 × 192 from
+  `bilder/motion_widget.py`); the block (16 × 16) is dragged over the frame
+  now and snaps to the grid, the square over the frame before, within the
+  search area of ±16 that stays bright; mouse, finger or arrow keys on
+  either. Enlarged under them: the block, the square, their difference
+  (black is 0) and, after »Beste Verschiebung suchen«, the sum for every
+  shift as a map from deep purple (small) to pale, the best ringed in
+  yellow, the reader's own square in white. The sum and the vector (dx, dy)
+  are words under the buttons; after the search a second line compares the
+  reader's square with the best. No steps, no timeline: the reader drags.
+  Frames 5 and 6 of the slope, neighbours as a P-frame and the frame it is
+  predicted from, not the frames of the tasks.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.
