@@ -10,6 +10,9 @@
 // where it is darker, black where they agree), with the sum of the differences (SAD) and the vector (dx, dy)
 // from the block to the square. »Beste Verschiebung suchen« tries every
 // shift in the search area, puts the square on the best one and shows the
+// Once the reader has touched the widget (until they click elsewhere), the
+// arrow keys move the square by a pixel and, with Shift, the block by a
+// block, wherever the focus is; before that they scroll the page as usual.
 // sum of every shift as a small map, the darker the smaller, the best ringed
 // yellow and the reader's own square white; a second line compares the
 // reader's square with the search.
@@ -59,9 +62,10 @@
         const zoomCandidate = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Das Quadrat im Bild davor, vergrößert' });
         const zoomDiff = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Unterschied, vergrößert' });
         const map = html('canvas', { class: 'motion-zoom', width: (2 * R + 1) * 4, height: (2 * R + 1) * 4, role: 'img', 'aria-label': 'Die Summe der Unterschiede für jede Verschiebung' });
-        const mapFigure = html('figure', { class: 'motion-figure', hidden: '' }, [map, html('figcaption', { text: 'Summe für jede Verschiebung, dunkel ist klein' })]);
+        const mapFigure = html('figure', { class: 'motion-figure', hidden: '' }, [map, html('figcaption', { text: 'Karte' })]);
         const search = html('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary', text: 'Beste Verschiebung suchen' });
         const say = html('p', { class: 'motion-say', 'aria-live': 'polite' });
+        const legend = html('p', { class: 'motion-legend', text: 'Unterschied: orange ist der Block heller, blau dunkler, schwarz gleich. Karte: die Summe für jede Verschiebung, dunkel ist klein, gelb die beste, weiß dein Quadrat.' });
         const compare = html('p', { class: 'motion-compare', 'aria-live': 'polite' });
         el.replaceChildren(
             html('div', { class: 'motion-frames' }, [
@@ -72,9 +76,10 @@
             html('div', { class: 'motion-zooms' }, [
                 html('figure', { class: 'motion-figure' }, [zoomBlock, html('figcaption', { text: 'Block' })]),
                 html('figure', { class: 'motion-figure' }, [zoomCandidate, html('figcaption', { text: 'Quadrat davor' })]),
-                html('figure', { class: 'motion-figure' }, [zoomDiff, html('figcaption', { text: 'Unterschied: orange heller, blau dunkler' })]),
+                html('figure', { class: 'motion-figure' }, [zoomDiff, html('figcaption', { text: 'Unterschied' })]),
                 mapFigure,
-            ]));
+            ]),
+            legend);
 
         let now = null, before = null;
         let bx = 0, by = 0;            // the block's top left corner
@@ -234,12 +239,6 @@
         nowCanvas.addEventListener('pointermove', (event) => { if (holding) follow(event); });
         nowCanvas.addEventListener('pointerup', () => { holding = false; });
         nowCanvas.addEventListener('pointercancel', () => { holding = false; });
-        nowCanvas.addEventListener('keydown', (event) => {
-            const step = { ArrowUp: [0, -N], ArrowDown: [0, N], ArrowLeft: [-N, 0], ArrowRight: [N, 0] }[event.key];
-            if (!step || !now) return;
-            event.preventDefault();
-            choose(bx + step[0], by + step[1]);
-        });
 
         // dragging the square: it keeps the place where it was grabbed
         let grab = null;
@@ -259,12 +258,15 @@
         const release = () => { grab = null; };
         beforeCanvas.addEventListener('pointerup', release);
         beforeCanvas.addEventListener('pointercancel', release);
-        beforeCanvas.addEventListener('keydown', (event) => {
-            const step = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[event.key];
-            if (!step) return;
-            event.preventDefault();
-            move(vy + step[0], vx + step[1]);
-        });
+
+        // the arrow keys, once the reader has used the widget
+        el.motionKey = (dx, dy, block) => {
+            if (!now) return;
+            if (block) choose(bx + dx * N, by + dy * N);
+            else move(vy + dy, vx + dx);
+        };
+        el.addEventListener('pointerdown', () => { engaged = el; }, true);
+        el.addEventListener('focusin', () => { engaged = el; });
 
         search.addEventListener('click', () => {
             if (!now) return;
@@ -292,6 +294,24 @@
             choose(Number.isFinite(x) ? x : now.width / 2, Number.isFinite(y) ? y : now.height / 2);
         });
     }
+
+    // the widget the keys belong to: the one used last, until a click elsewhere
+    let engaged = null;
+    document.addEventListener('pointerdown', (event) => {
+        if (engaged && !engaged.contains(event.target)) engaged = null;
+    }, true);
+    // in the capture phase, before stepper_keys.js, which leaves a key alone
+    // once it is taken
+    window.addEventListener('keydown', (event) => {
+        const step = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[event.key];
+        if (!step || !engaged || !engaged.isConnected || event.ctrlKey || event.altKey || event.metaKey) return;
+        const target = event.target;
+        if (target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+        if (document.querySelector('dialog[open]')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        engaged.motionKey(step[0], step[1], event.shiftKey);
+    }, true);
 
     const go = () => document.querySelectorAll('.motion-widget').forEach((el) => {
         if (!el.dataset.ready) { el.dataset.ready = '1'; mount(el); }

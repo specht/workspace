@@ -10,6 +10,12 @@
 // picker above it chooses any block of the photo: an MCU on the photo, then
 // one of its blocks; data-coef is the block shown first. A »jpeg-block«
 // event on the document ({ comp, index, mx, my }) chooses one from outside.
+// With data-picture and an <img> inside (the page resolves its address),
+// the picture stands above it with a grid
+// of 8 × 8 blocks; the chosen block (data-block='x y', multiples of 8) is
+// dragged, tapped or moved with the arrow keys, and its coefficients are
+// computed here: the DCT of Y − 128 (Y = 0,299 R + 0,587 G + 0,114 B),
+// rounded to multiples of data-quantize (1 if not given).
 
 (function (root) {
     'use strict';
@@ -67,10 +73,12 @@
     }
 
     function mount(element) {
+        const pictureImg = element.querySelector('img');
         let coef = element.dataset.coef.trim().split(/\s+/).map(Number);
         let list = steps(coef);
         element.innerHTML = `
             ${element.dataset.src ? `<div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div>` : ''}
+            ${element.dataset.picture !== undefined ? `<figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
                 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -136,6 +144,7 @@
         go('last').addEventListener('click', () => to(list.length - 1));
         draw();
         if (element.dataset.src && root.JpegImage) choose(element, (c) => { coef = c; list = steps(coef); range(); to(0); });
+        if (element.dataset.picture !== undefined && pictureImg) pickFromPicture(element, pictureImg, (c) => { coef = c; list = steps(coef); range(); to(0); });
     }
 
     // The picker above the stepper: the MCU on the photo, then one of its
@@ -189,7 +198,84 @@
         }).catch((error) => { pickBox.textContent = `Das Foto ließ sich nicht laden: ${error.message}`; });
     }
 
-    const api = { ZIGZAG, basis, steps, mount };
+    // The coefficients of an 8 × 8 block (values row by row) in natural
+    // order, rounded to multiples of q: the DCT the page computes in Python.
+    function forward(block, q = 1) {
+        return Array.from({ length: 64 }, (_, i) => {
+            const u = i % 8, v = Math.floor(i / 8);
+            let sum = 0;
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    sum += block[y * 8 + x] * Math.cos((2 * x + 1) * u * Math.PI / 16) * Math.cos((2 * y + 1) * v * Math.PI / 16);
+                }
+            }
+            const c = C(u) * C(v) / 4 * sum;
+            return Math.round(c / q) * q + 0;
+        });
+    }
+
+    // The picture above the stepper (data-picture): the chosen block marked,
+    // a grid of 8 × 8 blocks; dragging, a tap or the arrow keys move it.
+    function pickFromPicture(element, img, show) {
+        const canvas = element.querySelector('.idct-picture');
+        const q = Number(element.dataset.quantize) || 1;
+        const ready = img.complete && img.naturalWidth ? Promise.resolve() : new Promise((done) => img.addEventListener('load', done, { once: true }));
+        ready.then(() => {
+            const w = img.naturalWidth, h = img.naturalHeight;
+            const off = document.createElement('canvas');
+            off.width = w; off.height = h;
+            const octx = off.getContext('2d', { willReadFrequently: true });
+            octx.drawImage(img, 0, 0);
+            const rgba = octx.getImageData(0, 0, w, h).data;
+            const luma = (x, y) => { const i = 4 * (y * w + x); return 0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]; };
+            const SCALE = 4;
+            canvas.width = w * SCALE; canvas.height = h * SCALE;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+            let [bx, by] = (element.dataset.block || '0 0').split(/\s+/).map(Number);
+            const draw = () => {
+                ctx.drawImage(img, 0, 0, w * SCALE, h * SCALE);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+                ctx.lineWidth = 1;
+                for (let x = 8; x < w; x += 8) { ctx.beginPath(); ctx.moveTo(x * SCALE + 0.5, 0); ctx.lineTo(x * SCALE + 0.5, h * SCALE); ctx.stroke(); }
+                for (let y = 8; y < h; y += 8) { ctx.beginPath(); ctx.moveTo(0, y * SCALE + 0.5); ctx.lineTo(w * SCALE, y * SCALE + 0.5); ctx.stroke(); }
+                ctx.setLineDash([6, 4]);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#ffd43b';
+                ctx.strokeRect(bx * SCALE + 1.5, by * SCALE + 1.5, 8 * SCALE - 3, 8 * SCALE - 3);
+                ctx.setLineDash([]);
+            };
+            const pick = (x, y) => {
+                const nx = Math.max(0, Math.min(w - 8, Math.floor(x / 8) * 8)), ny = Math.max(0, Math.min(h - 8, Math.floor(y / 8) * 8));
+                if (nx === bx && ny === by && canvas.dataset.ready) return;
+                bx = nx; by = ny;
+                canvas.dataset.ready = '1';
+                draw();
+                const block = [];
+                for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(luma(bx + xx, by + yy) - 128);
+                show(forward(block, q));
+            };
+            const at = (event) => {
+                const box = canvas.getBoundingClientRect();
+                return [(event.clientX - box.left) * w / box.width, (event.clientY - box.top) * h / box.height];
+            };
+            let holding = false;
+            canvas.addEventListener('pointerdown', (event) => { holding = true; canvas.setPointerCapture(event.pointerId); pick(...at(event)); event.preventDefault(); });
+            canvas.addEventListener('pointermove', (event) => { if (holding) pick(...at(event)); });
+            canvas.addEventListener('pointerup', () => { holding = false; });
+            canvas.addEventListener('pointercancel', () => { holding = false; });
+            canvas.addEventListener('keydown', (event) => {
+                const step = { ArrowUp: [0, -8], ArrowDown: [0, 8], ArrowLeft: [-8, 0], ArrowRight: [8, 0] }[event.key];
+                if (!step) return;
+                event.preventDefault();
+                event.stopPropagation();
+                pick(bx + step[0], by + step[1]);
+            });
+            pick(bx, by);
+        });
+    }
+
+    const api = { ZIGZAG, basis, steps, mount, forward };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     root.IdctStepper = api;
     if (typeof document !== 'undefined') {

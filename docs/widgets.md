@@ -385,12 +385,24 @@ only to look nice.
   printed label, white in both modes. No steps, no timeline: the reader
   paints. `test/static/qr_code.test.cjs` checks the layout against
   qrencode and the page's stickers against jsQR.
+- **The iDCT stepper with a picture** (`idct_stepper.js`,
+  `data-picture data-quantize='8' data-block='72 56'` and an `<img>` inside, »Video
+  komprimieren«): above the steps the picture, four times as large with
+  sharp pixels, in a grid of 8 × 8 blocks; the chosen block dashed yellow
+  as in the JPEG picker, dragged, tapped or moved with the arrow keys while
+  the picture has the focus. The widget computes the block's DCT itself
+  (Y − 128, rounded to multiples of data-quantize) and starts its steps
+  anew; data-coef shows the first block until the picture has loaded.
 - **Block matching** (`motion_widget.js`, »Video komprimieren«): the frame
   now and the frame before (two PNGs inside the div, 288 × 192 from
   `bilder/motion_widget.py`); the block (16 × 16) is dragged over the frame
   now and snaps to the grid, the square over the frame before, within the
   search area of ±16 that stays bright, carrying the block as a half
-  transparent onion skin; mouse, finger or arrow keys on either. Enlarged
+  transparent onion skin; mouse or finger on either. Once the reader has
+  touched or focused the widget, the arrow keys move the square by a pixel
+  and with Shift the block by a block, wherever the focus is, until a click
+  elsewhere; before that they scroll the page (the widget takes them in the
+  capture phase, so stepper_keys.js leaves them alone). Enlarged
   under them: the block, the square, their difference with its sign
   (orange brighter, blue darker, black 0) and, after »Beste Verschiebung suchen«, the sum for every
   shift as a map from deep purple (small) to pale, the best ringed in
