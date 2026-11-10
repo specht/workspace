@@ -404,11 +404,13 @@ only to look nice.
   finished block as the goal, and the error to it in place of the pixel
   values (0 everywhere after the last step).
 - **The iDCT stepper with a picture** (`idct_stepper.js`,
-  `data-picture data-quantize='8' data-block='72 32'` and an `<img>` inside, »Video
+  `data-picture data-quantize='8' data-block='88 40'` and an `<img>` inside, »Video
   komprimieren«): above the steps the picture, four times as large with
   sharp pixels, in a grid of 8 × 8 blocks; the chosen block dashed yellow
   as in the JPEG picker, dragged, tapped or moved with the arrow keys while
-  the picture has the focus; beside the picture the block alone in Y, as
+  the picture has the focus, the block under the mouse dashed, grid and
+  frames on a canvas in device pixels; Y, Cb and Cr to switch (the formulas
+  of »Farbe sparen«); beside the picture the block alone in the channel, as
   large as the blocks under it, as the goal of the steps; the panel of
   pixel values becomes the error, the goal minus the block so far (orange
   still too dark, blue too bright, black right) with its mean in the

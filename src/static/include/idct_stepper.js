@@ -81,7 +81,7 @@
         let list = steps(coef);
         element.innerHTML = `
             ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Kanal'></div><p class='idct-lens-legend'>Wähle Y, Cb oder Cr, dann einen Block: in der Lupe mit der Maus darüber und klicken, oder auf dem Foto. Ziehen verschiebt die Lupe. Weiß ist die MCU, gelb der Block der Zeitlupe, gestrichelt der unter der Maus.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
-            ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
+            ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><div class='idct-picture-wrap'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><canvas class='idct-picture-grid' aria-hidden='true'></canvas></div><figcaption>Gelb der Block der Zeitlupe, gestrichelt der unter der Maus: ziehen, klicken oder die Pfeiltasten</figcaption><div class='idct-blocks' role='group' aria-label='Kanal'><button type='button' class='btn btn-sm btn-outline-secondary' data-channel='0' aria-pressed='true'>Y</button><button type='button' class='btn btn-sm btn-outline-secondary' data-channel='1' aria-pressed='false'>Cb</button><button type='button' class='btn btn-sm btn-outline-secondary' data-channel='2' aria-pressed='false'>Cr</button></div></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption class='idct-target-caption'>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
                 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -247,32 +247,69 @@
             const octx = off.getContext('2d', { willReadFrequently: true });
             octx.drawImage(img, 0, 0);
             const rgba = octx.getImageData(0, 0, w, h).data;
-            const luma = (x, y) => { const i = 4 * (y * w + x); return 0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]; };
+            // Y, Cb or Cr of a pixel, with the formulas of »Farbe sparen«
+            let channel = 0;
+            const value = (x, y) => {
+                const i = 4 * (y * w + x), r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
+                if (channel === 1) return 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+                if (channel === 2) return 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+                return 0.299 * r + 0.587 * g + 0.114 * b;
+            };
             const SCALE = 4;
             canvas.width = w * SCALE; canvas.height = h * SCALE;
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
             let [bx, by] = (element.dataset.block || '0 0').split(/\s+/).map(Number);
+            let hover = null;          // the block under the mouse: its top left corner
+            // the picture on its canvas; the grid and the frames on a second one
+            // in device pixels, at whole pixels, so that nothing wavers: each grid
+            // line a light and a dark device pixel, the chosen block solid yellow,
+            // the block under the mouse dashed, both just outside its pixels
+            const grid = element.querySelector('.idct-picture-grid');
             const draw = () => {
                 ctx.drawImage(img, 0, 0, w * SCALE, h * SCALE);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-                ctx.lineWidth = 1;
-                for (let x = 8; x < w; x += 8) { ctx.beginPath(); ctx.moveTo(x * SCALE + 0.5, 0); ctx.lineTo(x * SCALE + 0.5, h * SCALE); ctx.stroke(); }
-                for (let y = 8; y < h; y += 8) { ctx.beginPath(); ctx.moveTo(0, y * SCALE + 0.5); ctx.lineTo(w * SCALE, y * SCALE + 0.5); ctx.stroke(); }
-                ctx.setLineDash([6, 4]);
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#ffd43b';
-                ctx.strokeRect(bx * SCALE + 1.5, by * SCALE + 1.5, 8 * SCALE - 3, 8 * SCALE - 3);
-                ctx.setLineDash([]);
+                const box = canvas.getBoundingClientRect();
+                const ratio = window.devicePixelRatio || 1;
+                const gw = Math.round(box.width * ratio), gh = Math.round(box.height * ratio);
+                if (!gw || !gh) return;
+                if (grid.width !== gw || grid.height !== gh) { grid.width = gw; grid.height = gh; }
+                const g = grid.getContext('2d');
+                g.clearRect(0, 0, gw, gh);
+                const k = gw / w;                      // device pixels per pixel of the picture
+                const X = (px) => Math.round(px * k), Y = (py) => Math.round(py * k);
+                for (let x = 8; x < w; x += 8) {
+                    g.fillStyle = 'rgba(255, 255, 255, 0.22)'; g.fillRect(X(x) - 1, 0, 1, gh);
+                    g.fillStyle = 'rgba(0, 0, 0, 0.22)'; g.fillRect(X(x), 0, 1, gh);
+                }
+                for (let y = 8; y < h; y += 8) {
+                    g.fillStyle = 'rgba(255, 255, 255, 0.22)'; g.fillRect(0, Y(y) - 1, gw, 1);
+                    g.fillStyle = 'rgba(0, 0, 0, 0.22)'; g.fillRect(0, Y(y), gw, 1);
+                }
+                const thick = Math.max(2, Math.round(ratio * 1.5));
+                const frame = (x0, y0, dash) => {
+                    const r = [X(x0), Y(y0), X(x0 + 8), Y(y0 + 8)];
+                    g.setLineDash([]);
+                    g.lineWidth = 1;
+                    g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+                    g.strokeRect(r[0] - thick - 0.5, r[1] - thick - 0.5, r[2] - r[0] + 2 * thick + 1, r[3] - r[1] + 2 * thick + 1);
+                    g.lineWidth = thick;
+                    g.strokeStyle = '#ffd43b';
+                    g.setLineDash(dash ? [3 * thick, 2 * thick] : []);
+                    g.strokeRect(r[0] - thick / 2, r[1] - thick / 2, r[2] - r[0] + thick, r[3] - r[1] + thick);
+                    g.setLineDash([]);
+                };
+                frame(bx, by, false);
+                if (hover && (hover[0] !== bx || hover[1] !== by)) frame(hover[0], hover[1], true);
             };
-            const pick = (x, y) => {
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(canvas);
+            const pick = (x, y, again) => {
                 const nx = Math.max(0, Math.min(w - 8, Math.floor(x / 8) * 8)), ny = Math.max(0, Math.min(h - 8, Math.floor(y / 8) * 8));
-                if (nx === bx && ny === by && canvas.dataset.ready) return;
+                if (nx === bx && ny === by && canvas.dataset.ready && !again) return;
                 bx = nx; by = ny;
                 canvas.dataset.ready = '1';
                 draw();
                 const block = [];
-                for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(luma(bx + xx, by + yy) - 128);
+                for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(value(bx + xx, by + yy) - 128);
                 // the goal: the block in Y, beside the picture and for the error
                 element.idctTarget = block.map((value) => Math.max(0, Math.min(255, Math.round(value + 128))));
                 show(forward(block, q));
@@ -283,7 +320,13 @@
             };
             let holding = false;
             canvas.addEventListener('pointerdown', (event) => { holding = true; canvas.setPointerCapture(event.pointerId); pick(...at(event)); event.preventDefault(); });
-            canvas.addEventListener('pointermove', (event) => { if (holding) pick(...at(event)); });
+            canvas.addEventListener('pointermove', (event) => {
+                const [x, y] = at(event);
+                if (holding) { pick(x, y); return; }
+                const hx = Math.max(0, Math.min(w - 8, Math.floor(x / 8) * 8)), hy = Math.max(0, Math.min(h - 8, Math.floor(y / 8) * 8));
+                if (!hover || hover[0] !== hx || hover[1] !== hy) { hover = [hx, hy]; draw(); }
+            });
+            canvas.addEventListener('pointerleave', () => { if (hover) { hover = null; draw(); } });
             canvas.addEventListener('pointerup', () => { holding = false; });
             canvas.addEventListener('pointercancel', () => { holding = false; });
             canvas.addEventListener('keydown', (event) => {
@@ -293,6 +336,13 @@
                 event.stopPropagation();
                 pick(bx + step[0], by + step[1]);
             });
+            // the channel: Y, Cb or Cr
+            element.querySelectorAll('[data-channel]').forEach((button) => button.addEventListener('click', () => {
+                channel = Number(button.dataset.channel);
+                element.querySelectorAll('[data-channel]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+                element.querySelector('.idct-target-caption').textContent = `Ziel in ${button.textContent}`;
+                pick(bx, by, true);
+            }));
             pick(bx, by);
         });
     }

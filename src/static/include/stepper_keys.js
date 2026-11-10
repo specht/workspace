@@ -469,7 +469,11 @@ document.addEventListener('keydown', (event) => {
         const render = () => {
             const steps = Number(widget.dataset.steps) || 0;
             const at = Number(widget.dataset.step) || 0;
-            box.hidden = steps < 2;
+            // with a single step the timeline is invisible but keeps its place,
+            // so that a widget whose steps change (a block with only its DC
+            // coefficient) does not jump
+            box.hidden = steps < 1;
+            box.style.visibility = steps < 2 ? 'hidden' : '';
             if (box.children.length !== steps) box.replaceChildren(...Array.from({ length: steps }, () => document.createElement('span')));
             [...box.children].forEach((tick, i) => { tick.className = i < at ? 'done' : i === at ? 'current' : ''; });
             box.setAttribute('aria-valuemax', Math.max(0, steps - 1));

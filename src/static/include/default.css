@@ -15720,3 +15720,17 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     pointer-events: none;
     border-radius: 0.3em;
 }
+
+/* the picture of the iDCT stepper (data-picture) and, over it, its grid and
+   frames in device pixels */
+.idct-stepper .idct-picture-wrap {
+    position: relative;
+}
+.idct-stepper .idct-picture-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
+}
