@@ -79,7 +79,7 @@
         let coef = element.dataset.coef.trim().split(/\s+/).map(Number);
         let list = steps(coef);
         element.innerHTML = `
-            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
+            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div><p class='idct-lens-legend'>In der Lupe: weiß die MCU, 16 × 16 Pixel, gelb gestrichelt der Block der Zeitlupe, 8 × 8. Die Lupe lässt sich ziehen, ein Tippen in die MCU wählt einen ihrer Y-Blöcke.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
             ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -175,8 +175,8 @@
                 const c = image.comps[comp];
                 const sw = image.hmax / c.h * 8 * zoom, sh = image.vmax / c.v * 8 * zoom;
                 const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
-                ctx.setLineDash([6, 4]);
-                ctx.lineWidth = 3;
+                ctx.setLineDash([7, 5]);
+                ctx.lineWidth = 2.5;
                 ctx.strokeStyle = '#ffd43b';
                 ctx.strokeRect(x + 5, y + 5, sw - 10, sh - 10);
             };

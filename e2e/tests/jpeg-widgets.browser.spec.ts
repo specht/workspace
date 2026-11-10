@@ -29,6 +29,7 @@ test('the iDCT stepper and the MCU on the demo photo', async ({ page }) => {
 
   await test.step('another MCU by dragging over the photo', async () => {
     const photo = stepper.locator('.jpeg-picker-photo');
+    await photo.scrollIntoViewIfNeeded();
     const box = await photo.boundingBox();
     if (!box) throw new Error('no photo');
     const width = await photo.evaluate((c) => (c as HTMLCanvasElement).width);

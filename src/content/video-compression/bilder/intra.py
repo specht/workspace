@@ -66,7 +66,7 @@ def panel(x0, y0, w, h, mode):
 
 
 def wide():
-    W, w, h = 960, 56, 44
+    W, w, h = 960, 56, 56
     parts = []
     for k, mode in enumerate(MODES):
         parts += panel(20 + k * 320, 44, w, h, mode)
@@ -74,7 +74,7 @@ def wide():
 
 
 def narrow():
-    W, w, h = 440, 60, 46
+    W, w, h = 440, 60, 60
     parts = []
     for k, mode in enumerate(MODES):
         parts += panel((W - 5 * w) // 2, 44 + k * (5 * h + 84), w, h, mode)

@@ -9608,12 +9608,33 @@ div[data-stepper] .stepper-word { display: none; }
     color: var(--widget-ink);
 }
 .idct-stepper .idct-choose {
-    flex: 1 1 18em;
-    max-width: 32em;
+    flex: 0 1 auto;
+    min-width: 0;
     margin-bottom: 0;
 }
 .idct-stepper .jpeg-picker {
-    max-width: 32em;
+    /* the magnifier as large as the blocks under it: under the photo on a
+       narrow widget, beside it on a wide one */
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+}
+.idct-stepper .jpeg-picker .jpeg-picker-lens {
+    width: calc(8 * var(--idct-cell) + 2px);
+}
+@container (min-width: 40em) {
+    /* the photo as high as the blocks, its width from its proportions */
+    .idct-stepper .jpeg-picker {
+        grid-template-columns: auto calc(8 * var(--idct-cell) + 2px);
+        justify-content: start;
+    }
+    /* the picker as wide as photo and magnifier; the lines under them wrap */
+    .idct-stepper .idct-choose {
+        width: min-content;
+    }
+    .idct-stepper .jpeg-picker .jpeg-picker-photo {
+        width: auto;
+        height: calc(8 * var(--idct-cell) + 2px);
+    }
 }
 .idct-stepper .idct-blocks {
     display: flex;
@@ -15668,4 +15689,11 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 }
 .jpeg-picker .jpeg-picker-photo {
     touch-action: none;
+}
+
+/* the legend under the picker of the iDCT stepper on the JPEG page */
+.idct-stepper .idct-lens-legend {
+    margin: 0.4em 0 0;
+    font-size: 0.85em;
+    color: var(--widget-ink);
 }
