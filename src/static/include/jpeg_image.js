@@ -272,10 +272,11 @@
     // centres it on the chosen MCU. With options.blockSize() (the
     // size of a block in photo pixels) and options.onBlock(px, py), the
     // magnifier draws the blocks too, lights the block under the pointer,
-    // and a click on the photo or in the magnifier chooses that block; a tap in it chooses the MCU tapped, or,
-    // inside the chosen MCU, calls onInside(fx, fy) with where (0 to 1). picker(element, image, { mx, my, onPick(mx, my), mark }),
-    // mark(ctx, scale): draws more into the chosen MCU of the magnifier (the
-    // block the iDCT stepper shows). Returns { set(mx, my), redraw() }.
+    // and a click on the photo or in the magnifier chooses that block;
+    // without them a tap in the magnifier chooses the MCU tapped.
+    // picker(element, image, { mx, my, onPick(mx, my), blockSize, onBlock,
+    // markBlock }), markBlock(): the block to frame in yellow (x, y, width,
+    // height in photo pixels). Returns { set(mx, my), redraw() }.
 
     const AROUND = 1;
 
@@ -303,11 +304,14 @@
         lens.width = span * mcuW * zoom;
         lens.height = span * mcuH * zoom;
 
-        // the grid on its own canvas, as large as the device pixels it covers:
-        // each line a light and a dark device pixel side by side, at whole
-        // device pixels, so that it neither wavers nor blurs and shows on
-        // bright and dark pixels alike; the blocks fainter than the MCUs
-        function drawGrid(gx, gy, bw, bh) {
+        // Everything drawn over the magnifier is on its own canvas, as large as
+        // the device pixels it covers, at whole device pixels, so that nothing
+        // wavers or blurs while the view moves: the grid (each line a light and
+        // a dark device pixel, the blocks fainter than the MCUs, across the
+        // whole view), the rest dimmed around the chosen MCU, its frame, the
+        // chosen block (options.markBlock()) in yellow, the block under the
+        // pointer dashed. Frames lie just outside the pixels they mark.
+        function drawOverlay(sx, sy, bw, bh) {
             const box = lens.getBoundingClientRect();
             const ratio = window.devicePixelRatio || 1;
             const w = Math.round(box.width * ratio), h = Math.round(box.height * ratio);
@@ -315,21 +319,59 @@
             if (grid.width !== w || grid.height !== h) { grid.width = w; grid.height = h; }
             const g = grid.getContext('2d');
             g.clearRect(0, 0, w, h);
-            const scale = w / lens.width;          // device pixels per pixel of the magnifier's canvas
-            const lines = (step, origin, size, length, vertical, alpha) => {
-                for (let i = -1; i * step * zoom * scale <= size + step * zoom * scale; i++) {
-                    const at = Math.round((origin + i * step) * zoom * scale);
-                    if (at < -1 || at > size + 1) continue;
-                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-                    if (vertical) g.fillRect(at - 1, 0, 1, length); else g.fillRect(0, at - 1, length, 1);
-                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`;
-                    if (vertical) g.fillRect(at, 0, 1, length); else g.fillRect(0, at, length, 1);
+            const scale = w / lens.width * zoom;   // device pixels per pixel of the photo
+            const X = (px) => Math.round((px - sx) * scale), Y = (py) => Math.round((py - sy) * scale);
+            const viewW = w / scale, viewH = h / scale;
+            const lines = (step, alpha, skip) => {
+                for (let n = Math.floor(sx / step); n * step <= sx + viewW + step; n++) {
+                    if (skip && (n * step) % skip === 0) continue;
+                    const at = X(n * step);
+                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`; g.fillRect(at - 1, 0, 1, h);
+                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`; g.fillRect(at, 0, 1, h);
+                }
+                for (let n = Math.floor(sy / step); n * step <= sy + viewH + step; n++) {
+                    if (skip && (n * step) % skip === 0) continue;
+                    const at = Y(n * step);
+                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`; g.fillRect(0, at - 1, w, 1);
+                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`; g.fillRect(0, at, w, 1);
                 }
             };
-            if (bw < mcuW) lines(bw, gx, w, h, true, 0.2);
-            if (bh < mcuH) lines(bh, gy, h, w, false, 0.2);
-            lines(mcuW, gx, w, h, true, 0.4);
-            lines(mcuH, gy, h, w, false, 0.4);
+            if (bw < mcuW) lines(bw, 0.16, mcuW);
+            lines(mcuW, 0.38, 0);
+            // the rest a little darker, so that the chosen MCU stands out
+            const m = [X(mx * mcuW), Y(my * mcuH), X((mx + 1) * mcuW), Y((my + 1) * mcuH)];
+            g.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            g.beginPath();
+            g.rect(0, 0, w, h);
+            g.rect(m[0], m[1], m[2] - m[0], m[3] - m[1]);
+            g.fill('evenodd');
+            // a frame of `width` device pixels just outside a rectangle, with a
+            // dark edge of one device pixel outside it
+            const frame = (r, colour, width, dash) => {
+                g.setLineDash([]);
+                g.lineWidth = 1;
+                g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+                g.strokeRect(r[0] - width - 0.5, r[1] - width - 0.5, r[2] - r[0] + 2 * width + 1, r[3] - r[1] + 2 * width + 1);
+                g.lineWidth = width;
+                g.strokeStyle = colour;
+                g.setLineDash(dash ? [3 * width, 2 * width] : []);
+                g.strokeRect(r[0] - width / 2, r[1] - width / 2, r[2] - r[0] + width, r[3] - r[1] + width);
+                g.setLineDash([]);
+            };
+            const thick = Math.max(2, Math.round(ratio * 1.5));
+            frame(m, '#ffffff', thick, false);
+            const yellow = '#ffd43b';
+            let chosen = null;
+            if (options.markBlock) {
+                const [bx, by, cw, ch] = options.markBlock();
+                chosen = [X(bx), Y(by), X(bx + cw), Y(by + ch)];
+                frame(chosen, yellow, thick, false);
+            }
+            if (hover && options.onBlock) {
+                const hx = Math.floor(hover[0] / bw) * bw, hy = Math.floor(hover[1] / bh) * bh;
+                const r = [X(hx), Y(hy), X(hx + bw), Y(hy + bh)];
+                if (!chosen || r.some((v, i) => v !== chosen[i])) frame(r, yellow, thick, true);
+            }
         }
         // a new size of the magnifier (window, zoom): the grid anew
         if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(lens);
@@ -354,31 +396,8 @@
             lctx.fillRect(0, 0, lens.width, lens.height);
             const sx = vx, sy = vy;
             lctx.drawImage(image.photo(), sx, sy, span * mcuW, span * mcuH, 0, 0, lens.width, lens.height);
-            // the MCU grid, faint, and the chosen MCU
-            const gx = (mx - AROUND) * mcuW - sx, gy = (my - AROUND) * mcuH - sy;   // where the grid starts, in photo pixels
             const [bw, bh] = options.blockSize ? options.blockSize() : [mcuW, mcuH];
-            drawGrid(gx, gy, bw, bh);
-            // the block under the pointer, framed just outside its edge so that
-            // no pixel of it is covered
-            if (hover && options.onBlock) {
-                const hx = Math.floor(hover[0] / bw) * bw, hy = Math.floor(hover[1] / bh) * bh;
-                lctx.strokeStyle = '#ffd43b';
-                lctx.lineWidth = 3;
-                lctx.strokeRect((hx - sx) * zoom - 1.5, (hy - sy) * zoom - 1.5, bw * zoom + 3, bh * zoom + 3);
-            }
-            const cx = (gx + AROUND * mcuW) * zoom, cy = (gy + AROUND * mcuH) * zoom;
-            lctx.lineWidth = 2;
-            lctx.strokeStyle = '#000';
-            lctx.strokeRect(cx - 1, cy - 1, mcuW * zoom + 2, mcuH * zoom + 2);
-            lctx.strokeStyle = '#fff';
-            lctx.lineWidth = 1.5;
-            lctx.strokeRect(cx + 0.75, cy + 0.75, mcuW * zoom - 1.5, mcuH * zoom - 1.5);
-            if (options.mark) {
-                lctx.save();
-                lctx.translate(cx, cy);
-                options.mark(lctx, zoom);
-                lctx.restore();
-            }
+            drawOverlay(sx, sy, bw, bh);
 
             const x1 = Math.min(x + mcuW, image.width) - 1, y1 = Math.min(y + mcuH, image.height) - 1;
             const label = `MCU in Spalte ${mx}, Reihe ${my}: x = ${x} bis ${x1}, y = ${y} bis ${y1}`;

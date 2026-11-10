@@ -80,7 +80,7 @@
         let coef = element.dataset.coef.trim().split(/\s+/).map(Number);
         let list = steps(coef);
         element.innerHTML = `
-            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Kanal'></div><p class='idct-lens-legend'>Wähle Y, Cb oder Cr, dann einen Block: in der Lupe mit der Maus darüber und klicken, oder auf dem Foto. Ziehen verschiebt die Lupe. Weiß ist die MCU, gelb gestrichelt der Block der Zeitlupe.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
+            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Kanal'></div><p class='idct-lens-legend'>Wähle Y, Cb oder Cr, dann einen Block: in der Lupe mit der Maus darüber und klicken, oder auf dem Foto. Ziehen verschiebt die Lupe. Weiß ist die MCU, gelb der Block der Zeitlupe, gestrichelt der unter der Maus.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
             ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -175,20 +175,14 @@
             const blockName = blocks.querySelector('.idct-block-name');
             // a block of the channel, in pixels of the photo
             const blockSize = () => { const c = image.comps[comp]; return [mcuW / c.h, mcuH / c.v]; };
-            // the chosen block, outlined in the magnifier
-            const mark = (ctx, zoom) => {
+            // the chosen block, in pixels of the photo, for the magnifier's frame
+            const markBlock = () => {
                 const c = image.comps[comp];
-                const sw = mcuW / c.h * zoom, sh = mcuH / c.v * zoom;
-                const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
-                // just outside the block's edge, so that no pixel of it is covered
-                ctx.setLineDash([7, 5]);
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#ffd43b';
-                ctx.strokeRect(x - 1.5, y - 1.5, sw + 3, sh + 3);
-                ctx.setLineDash([]);
+                const sw = mcuW / c.h, sh = mcuH / c.v;
+                return [mx * mcuW + (index % c.h) * sw, my * mcuH + Math.floor(index / c.h) * sh, sw, sh];
             };
             const picker = root.JpegImage.picker(pickBox, image, {
-                mx, my, mark, blockSize,
+                mx, my, markBlock, blockSize,
                 onPick: (x, y) => { mx = x; my = y; update(); },
                 // a block chosen by its pixel on the photo or in the magnifier
                 onBlock: (px, py) => {
