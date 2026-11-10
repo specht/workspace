@@ -18,6 +18,7 @@ reference: [bits-und-bytes]
 
 <script src='/include/sampling_widget.js'></script>
 <script src='/include/spectrum_widget.js'></script>
+<script src='/include/hearing_widget.js'></script>
 
 # Audio komprimieren
 
@@ -1141,3 +1142,165 @@ Ruf die Nummer besser nicht an: Es gibt dort niemanden. Die Bundesnetzagentur h�
 <!-- /after -->
 
 Mit dem Spektrum weißt du jetzt, aus welchen Frequenzen ein Klang besteht. Das ist die Sprache, in der MP3, AAC und Opus über Klänge nachdenken: Sie zerlegen ihn in Frequenzen und fragen für jede, ob das Ohr sie überhaupt hört.
+
+## Was das Ohr nicht hört
+
+Bis hierher ging nichts verloren, oder es klang schlechter. MP3 und alle Codecs nach ihm machen etwas anderes: Sie lassen weg, was das Ohr ohnehin nicht hört, und das ist mehr, als man denkt. Dazu muss man wissen, wie das Ohr hört.
+
+### Wie das Ohr Frequenzen trennt
+
+Im Innenohr liegt die Schnecke, ein aufgerollter Gang von gut drei Zentimetern, gefüllt mit Flüssigkeit. Durch ihn läuft die Basilarmembran, an deren Anfang hohe Frequenzen am stärksten schwingen und an deren Ende tiefe. Auf ihr sitzen Haarzellen, die melden, wo sie schwingt. Das Ohr zerlegt einen Klang also selbst in Frequenzen, ähnlich wie deine FFT. Georg von Békésy hat diese Welle auf der Membran an Ohren von Verstorbenen sichtbar gemacht und dafür 1961 den Nobelpreis für Medizin bekommen.
+
+Diese Zerlegung ist nicht beliebig fein. Ein Ton bringt nicht nur eine Stelle der Membran zum Schwingen, sondern ein Stück davon. Was im selben Stück landet, hört das Ohr zusammen. Eberhard Zwicker teilte den Bereich des Hörens 1961 in 24 solche Stücke, die **Frequenzgruppen**; gezählt wird in **Bark**, nach dem Physiker Heinrich Barkhausen. Unten sind die Gruppen etwa 100 Hz breit, oben mehrere tausend.
+
+### Die Hörschwelle
+
+Wie leise darf ein Ton sein, damit man ihn gerade noch hört? Das hängt stark von seiner Frequenz ab.
+
+_task(am-besten)
+
+<!-- after: am-besten -->
+Am leisesten hört das Ohr um 3.500 Hz. Der Gehörgang ist ein Rohr von etwa 2,5 cm, das an einem Ende offen und am anderen vom Trommelfell geschlossen ist. In einem solchen Rohr schwingt die Luft am stärksten bei einer Wellenlänge von viermal seiner Länge, 10 cm, und das sind bei 343 m/s Schallgeschwindigkeit etwa 3.400 Hz. Dort verstärkt der Gehörgang, was ankommt.
+
+Miss deine eigene Hörschwelle. **Nimm Kopfhörer und fang leise an:** Stell mit dem Bezugston einmal die Lautstärke ein und dreh danach nicht mehr daran, auch wenn ein Ton nicht zu hören ist. Lauter als der Regler erlaubt spielt das Widget nichts ab. Wenn etwas unangenehm laut ist, nimm die Kopfhörer ab.
+
+<div class='hearing-widget' data-kind='threshold'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Fang mit 1.000 Hz an: Spiel den Ton ab und schieb den Pegel nach links, bis du ihn nicht mehr hörst, dann merk dir den Wert. Mach dasselbe für die anderen Töne. Bei welchem Ton kommst du am weitesten nach links? Hörst du 16.000 Hz überhaupt, und hört ihn jemand neben dir, der älter ist?
+</div>
+<!-- /after -->
+
+Die gestrichelte Kurve ist die Hörschwelle eines jungen Menschen mit gesunden Ohren, wie Ernst Terhardt sie 1979 in einer Formel zusammengefasst hat; viele Modelle des Gehörs in Audiocodecs benutzen sie. Mit `f` in Kilohertz ist sie in dB
+
+$$T(f) = 3{,}64 \cdot f^{-0{,}8} - 6{,}5 \cdot e^{-0{,}6\,(f - 3{,}3)^2} + 10^{-3} \cdot f^4$$
+
+Die Dezibel hier sind keine dBFS wie im Widget, sondern **dB SPL**: Schalldruck, gemessen gegen 20 Mikropascal, ungefähr den leisesten Druck, den ein Ohr bei 1.000 Hz hört. Wie laut eine Datei im Ohr ankommt, weiß weder der Browser noch ein Codec, denn das hängt vom Regler und von den Kopfhörern ab. Ein Codec nimmt deshalb an, dass die lauteste Zahl einer Datei mit 16 Bit so laut klingt wie 96 dB SPL, sehr laut. Was dann noch unter der Schwelle liegt, hört auch niemand, der leiser hört.
+
+Lege `ear.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def threshold(f):
+    # hier: die Hörschwelle in dB SPL für f in Hz
+```
+
+<div class='hint own' data-check='hoerschwelle'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>threshold(f)</code>: die Formel von Terhardt für <code>f</code> in Hz, als Zahl oder als ganzes numpy-Array auf einmal.
+</div>
+
+<!-- hint -->
+Rechne zuerst die Kilohertz aus, `k = f / 1000`. Hoch geht in Python mit `**`, und `np.exp` ist \\(e\\) hoch.
+<!-- /hint -->
+<!-- hint -->
+Die drei Teile der Formel, mit `k` statt `f`:
+
+```python
+return 3.64 * k ** -0.8 - 6.5 * np.exp(…) + 0.001 * k ** 4
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def threshold(f):
+    k = f / 1000
+    return 3.64 * k ** -0.8 - 6.5 * np.exp(-0.6 * (k - 3.3) ** 2) + 0.001 * k ** 4
+```
+<!-- /solution -->
+
+_task(hoerschwelle)
+
+### Weglassen, was niemand hört
+
+Jetzt kann ein Programm entscheiden, welche Frequenzen eines Klangs hörbar sind. Es teilt den Klang in Blöcke von 2.048 Messungen, für jeden Block berechnet `np.fft.rfft` die FFT, nur die erste Hälfte, die Frequenzen bis zur halben Abtastrate. `levels` macht aus jeder Zahl der FFT eine Lautstärke in dB SPL: die Höhe der Schwingung wie bei \\(A_k\\), in Dezibel, und 96 dazu. Das `1e-12` verhindert den Logarithmus von 0. Schreib unter `threshold`:
+
+```python
+def levels(block):
+    X = np.fft.rfft(block)
+    return 20 * np.log10(np.abs(X) * 2 / len(block) + 1e-12) + 96
+```
+
+`np.fft.rfftfreq(len(block), 1 / rate)` gibt die Frequenz zu jeder dieser Zahlen, in Hz.
+
+<div class='hint own' data-check='hoerbar'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>audible(block, rate)</code>: ein Array aus <code>True</code> und <code>False</code>, eines für jede Frequenz der FFT, <code>True</code> für die, die mindestens so laut sind wie die Hörschwelle bei ihrer Frequenz.
+</div>
+
+<!-- hint -->
+Du brauchst zwei Arrays gleicher Länge: `levels(block)` und die Hörschwelle bei jeder Frequenz, `threshold(freqs)`. Vergleicht man zwei numpy-Arrays mit `>=`, kommt ein Array aus `True` und `False` heraus.
+<!-- /hint -->
+<!-- hint -->
+Die erste Frequenz ist 0 Hz, und dort teilt `threshold` durch 0. Nimm für sie 20 Hz, die tiefste Frequenz, die ein Ohr hört: `np.maximum(freqs, 20)` macht aus jeder Frequenz unter 20 eine 20.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def audible(block, rate):
+    freqs = np.fft.rfftfreq(len(block), 1 / rate)
+    return levels(block) >= threshold(np.maximum(freqs, 20))
+```
+<!-- /solution -->
+
+_task(hoerbar)
+
+Das Programm nimmt aus jedem Block der Musik und der Stimme die Frequenzen unter der Hörschwelle heraus: Es multipliziert die FFT mit dem Array aus `True` und `False`, das als 1 und 0 zählt, und `np.fft.irfft` macht daraus wieder Messungen. Es zählt, wie viele Frequenzen übrig bleiben, und schreibt das Ergebnis in eine neue Datei:
+
+```python
+if __name__ == '__main__':
+    N = 2048
+    for name in ['musik', 'stimme']:
+        x, rate = read_wav(name + '.wav')
+        out = np.zeros(len(x))
+        kept = 0
+        total = 0
+        for s in range(0, len(x) - N + 1, N):
+            block = x[s:s + N]
+            keep = audible(block, rate)
+            out[s:s + N] = np.fft.irfft(np.fft.rfft(block) * keep, N)
+            kept += keep.sum()
+            total += len(keep)
+        print(f'{name}: {kept / total:.0%} der Frequenzen über der Hörschwelle')
+        write_wav(name + '-hoerbar.wav', out, rate)
+```
+
+```bash
+python3 ear.py
+```
+
+<!-- tutorial-step
+write-file: audio/ear.py <- file:stufen/ear.py
+check-task: hoerschwelle
+check-task: hoerbar
+terminal-run: python3 ear.py
+terminal-wait-for-prompt: 60
+wait-for-text: stimme: 39%
+-->
+
+Bei der Musik liegt gut die Hälfte der Frequenzen über der Hörschwelle, bei der Stimme weniger als zwei Fünftel, denn sie hat Pausen und nichts über 11.000 Hz. Hör dir `musik-hoerbar.wav` und `musik.wav` nacheinander an. Was fehlt, ist vor allem der tiefste Bass unter 60 Hz, wo das Ohr eine hohe Schwelle hat, und das Höchste über 14.000 Hz. Mit guten Kopfhörern und lautem Regler hörst du vielleicht, dass die Bass-Trommel etwas dünner klingt: Das ist die Annahme mit den 96 dB, die bei dir nicht stimmt.
+
+### Ein lauter Klang verdeckt einen leisen
+
+Die Hörschwelle gilt in der Stille. Neben einem lauten Klang steigt sie: Ein leiser Ton, den man allein gut hört, verschwindet neben einem lauten mit ähnlicher Frequenz, weil beide dasselbe Stück der Basilarmembran zum Schwingen bringen. Das heißt **Verdeckung**, auf Englisch Masking, und die erhöhte Schwelle neben dem lauten Klang die **Mithörschwelle**.
+
+_task(welche-seite)
+
+<!-- after: welche-seite -->
+Im Widget rauscht es laut zwischen 920 und 1.080 Hz, in einer Frequenzgruppe. Daneben piept ein leiser Ton.
+
+<div class='hearing-widget' data-kind='masking'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Nimm den Ton bei 1.400 Hz, schalt das Rauschen aus und hör, wie leise er sein darf. Schalt das Rauschen an und schieb den Pegel nach links, bis der Ton im Rauschen verschwindet, und merk dir den Wert. Mach dasselbe bei 700 Hz, dann bei den anderen Tönen. Auf welcher Seite des Rauschens musst du weiter nach rechts, damit der Ton zu hören bleibt?
+</div>
+
+Die Verdeckung reicht nach oben viel weiter als nach unten. Ein tiefer, lauter Klang bringt die Basilarmembran auf einer langen Strecke zum Schwingen, die zuerst an den Stellen für hohe Frequenzen vorbeiführt; ein hoher Klang dagegen schwingt nur kurz vor den tiefen Stellen. Im Modell des Widgets liegt die Mithörschwelle zwei Frequenzgruppen über dem Rauschen etwa 17 dB unter ihm, zwei Frequenzgruppen darunter etwa 32 dB.
+<!-- /after -->
+
+Verdeckt wird auch in der Zeit. Nach einem lauten Schlag hört das Ohr etwa 100 Millisekunden lang schlechter, als müsste es sich erst erholen. Und sogar kurz davor, etwa 20 Millisekunden. Warum, ist nicht ganz geklärt; eine Erklärung ist, dass das Gehirn einen lauten Klang schneller verarbeitet als einen leisen.
+
+Für einen Codec heißt das: Er muss nicht nur weglassen, was unter der Hörschwelle liegt. Er darf alles ungenau speichern, solange der Fehler unter der Mithörschwelle bleibt, die die lauten Teile des Klangs gerade hochziehen. Wie das geht, zeigen die nächsten beiden Kapitel: Erst braucht es Blöcke, die gut zusammenpassen, dann das Runden nach Gehör.

@@ -442,3 +442,118 @@ tasks:
     solution: |
       030 23125386, eine Nummer, die in Berlin für Filme, Bücher und
       Aufgaben frei gehalten wird.
+
+  - id: am-besten
+    title: Wo das Ohr am besten hört
+    prediction: true
+    prompt: |
+      Vier Töne, alle gleich laut und sehr leise. Welchen hörst du am ehesten?
+    check:
+      type: choice
+      options:
+        - 100 Hz
+        - 1.000 Hz
+        - 3.500 Hz
+        - 12.000 Hz
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Tiefe Töne braucht das Ohr deutlich lauter; ein tiefer Bass ist eher zu spüren als zu hören.
+      - when: { picked: 1 }
+        say: Bei 1.000 Hz hört das Ohr gut, aber nicht am besten. Denk an den Gehörgang, ein Rohr von etwa 2,5 cm.
+      - when: { picked: 3 }
+        say: Hohe Töne hört man mit dem Alter immer schlechter, und schon bei jungen Menschen steigt die Schwelle über 10.000 Hz steil an.
+    solution: |
+      3.500 Hz: Der Gehörgang verstärkt um diese Frequenz, und dort ist die
+      Hörschwelle am niedrigsten.
+
+  - id: hoerschwelle
+    title: Die Hörschwelle als Formel
+    prompt: |
+      Schreib in `audio/ear.py` die Funktion `threshold(f)`: die Hörschwelle
+      nach Terhardt in dB SPL für `f` in Hz, auch für ein ganzes numpy-Array.
+    check:
+      type: python
+      file: audio/ear.py
+      cases:
+        - call: round(float(threshold(1000)), 1)
+          expect: 3.4
+          say: Bei 1.000 Hz ist `f` in Kilohertz 1, und die Formel ergibt 3,64 − 6,5 · e^(−0,6 · 2,3²) + 0,001, etwa 3,4. Wird `f` durch 1.000 geteilt?
+        - call: round(float(threshold(100)), 1)
+          expect: 23.0
+          say: Bei 100 Hz sind es 0,1 kHz, und 3,64 · 0,1 hoch −0,8 ist etwa 23. Steht das Minus im Exponenten, `** -0.8`?
+        - call: round(float(threshold(3300)), 1)
+          expect: -5.0
+          say: Bei 3.300 Hz hat die Hörschwelle ihr Tal, etwa −5 dB SPL. Steht in `np.exp` der Exponent `-0.6 * (k - 3.3) ** 2`?
+        - call: round(float(threshold(16000)), 1)
+          expect: 65.9
+          say: Bei 16.000 Hz steigt die Hörschwelle steil, durch den letzten Teil `0.001 * k ** 4`.
+        - call: '[round(float(v), 1) for v in threshold(np.array([100.0, 1000.0]))]'
+          expect: '[23.0, 3.4]'
+          say: '`threshold` soll auch ein ganzes Array auf einmal nehmen: mit `np.exp` statt `math.exp`.'
+    solution: |
+      ```python
+      def threshold(f):
+          k = f / 1000
+          return 3.64 * k ** -0.8 - 6.5 * np.exp(-0.6 * (k - 3.3) ** 2) + 0.001 * k ** 4
+      ```
+
+  - id: hoerbar
+    title: Was über der Hörschwelle liegt
+    prompt: |
+      Schreib in `audio/ear.py` die Funktion `audible(block, rate)`: für
+      jede Frequenz der FFT `True`, wenn sie mindestens so laut ist wie die
+      Hörschwelle bei ihrer Frequenz. Die Prüfung gibt ihr Töne, die genau
+      auf eine Frequenz der FFT fallen, laut, leise und tief.
+    check:
+      type: python
+      file: audio/ear.py
+      cases:
+        - call: len(audible(np.zeros(2048), 44100))
+          expect: 1025
+          say: Die FFT von `np.fft.rfft` hat für 2.048 Messungen 1.025 Zahlen, und für jede gibt es ein `True` oder `False`.
+        - call: int(audible(0.5 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 1
+          say: Ein lauter Ton mit 43 Schwingungen im Block ist genau eine Frequenz der FFT, und nur sie ist hörbar.
+        - call: int(np.argmax(audible(0.5 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100)))
+          expect: 43
+          say: Hörbar ist die Frequenz mit dem Index 43, etwa 926 Hz.
+        - call: int(audible(0.0001 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 1
+          say: Ein Ton der Höhe 0,0001 hat 96 − 80 = 16 dB SPL und liegt bei 926 Hz über der Hörschwelle von etwa 4 dB. Wird mit der Hörschwelle bei der Frequenz in Hz verglichen, aus `np.fft.rfftfreq`?
+        - call: int(audible(0.00001 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 0
+          say: Ein Ton der Höhe 0,00001 hat nur −4 dB SPL und liegt unter der Hörschwelle.
+        - call: int(audible(0.001 * np.sin(2 * np.pi * 2 * np.arange(2048) / 2048), 44100).sum())
+          expect: 0
+          say: Ein Ton mit 2 Schwingungen im Block hat 43 Hz. Mit 36 dB SPL wäre er bei 926 Hz hörbar, bei 43 Hz liegt die Schwelle aber über 45 dB. Bekommt `threshold` die Frequenzen in Hz, aus `np.fft.rfftfreq`?
+    solution: |
+      ```python
+      def audible(block, rate):
+          freqs = np.fft.rfftfreq(len(block), 1 / rate)
+          return levels(block) >= threshold(np.maximum(freqs, 20))
+      ```
+
+  - id: welche-seite
+    title: Nach oben oder nach unten
+    prediction: true
+    prompt: |
+      Ein lautes Rauschen um 1.000 Hz. Daneben spielt ein leiser Ton, einmal
+      mit 700 Hz, einmal mit 1.400 Hz, beide gleich leise und gleich weit
+      vom Rauschen entfernt, wenn man in Frequenzgruppen zählt. Welcher
+      verschwindet eher im Rauschen?
+    check:
+      type: choice
+      options:
+        - Der Ton mit 700 Hz.
+        - Der Ton mit 1.400 Hz.
+        - Beide gleich, sie sind gleich weit entfernt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Denk an die Basilarmembran. Eine Welle von einem Ton läuft von den Stellen für hohe Frequenzen zu denen für tiefe; wo schwingt sie bei 1.000 Hz noch mit?
+      - when: { picked: 2 }
+        say: Gleich weit ist nicht gleich verdeckt. Die Welle auf der Basilarmembran ist nicht symmetrisch.
+    solution: |
+      Der Ton mit 1.400 Hz: Die Verdeckung reicht nach oben viel weiter als
+      nach unten.

@@ -192,7 +192,15 @@ seconds at 720p each.
    waits until the page is public (the Personen test wants every box on a
    visible page): the engraving after Boilly, »Fourier2 - restoration1.jpg«
    on Wikimedia Commons, public domain, cropped 1200 × 1500 from (230, 140).
-   Next: part 4 (the ear: threshold in quiet, Bark, masking). The section is
+   Part 4 is written: cochlea and Bark, the
+   threshold-in-quiet widget and the masking widget (`hearing_widget.js`,
+   both inside the after blocks of the predictions their curves would give
+   away; nothing plays louder than -20 dBFS, a reference tone sets the
+   volume once), `threshold` after Terhardt (via Painter and Spanias 2000)
+   and `audible` with the 96 dB assumption (music keeps 53 % of the
+   frequencies, the voice 39 %; what goes is mostly bass under 60 Hz and
+   highs over 14 kHz), masking in time in text. Next: part 5 (frames,
+   windows, the MDCT, pre-echo). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

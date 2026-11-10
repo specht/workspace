@@ -8717,6 +8717,7 @@ div[data-stepper],
 .dtmf-widget,
 .sampling-widget,
 .spectrum-widget,
+.hearing-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8737,6 +8738,7 @@ html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
 html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .spectrum-widget,
+html[data-bs-theme="dark"] .hearing-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -15185,6 +15187,61 @@ html[data-bs-theme="dark"] .spectrum-widget {
     .spectrum-gram { height: 200px; }
     .spectrum-chart { height: 150px; }
 }
+
+/* What the ear hears (hearing_widget.js, »Audio komprimieren«): a tone
+   made quieter until it is gone, alone or beside a band of noise; the
+   levels noted in purple (what is current), the model dashed */
+.hearing-widget {
+    --hearing-ink: var(--widget-ink);
+    --hearing-quiet: var(--widget-line);
+    --hearing-mark: #6741d9;
+    --hearing-model: #5c677d;
+    --hearing-noise: #b45309;
+    --hearing-ground: #f1f2f5;
+}
+html[data-bs-theme="dark"] .hearing-widget {
+    --hearing-mark: #b197fc;
+    --hearing-model: #a5abb7;
+    --hearing-noise: #f59f00;
+    --hearing-ground: #111213;
+}
+.hearing-widget::before {
+    content: 'Zum Ausprobieren, mit Kopfhörern';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.hearing-step { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em 1.2em; margin-bottom: 0.8em; }
+.hearing-step p { margin: 0; flex: 1 1 20em; }
+.hearing-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.6em; }
+.hearing-group { display: flex; align-items: center; gap: 0.5em; }
+.hearing-group .btn-group { flex-wrap: wrap; }
+.hearing-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; margin: 0; }
+.hearing-slider { flex: 1 1 12em; max-width: 26em; }
+.hearing-slider::-webkit-slider-thumb { background-color: var(--hearing-mark); }
+.hearing-slider::-moz-range-thumb { background-color: var(--hearing-mark); }
+.hearing-slider:focus::-webkit-slider-thumb { box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--hearing-mark) 30%, transparent); }
+.hearing-slider:focus::-moz-range-thumb { box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--hearing-mark) 30%, transparent); }
+.hearing-level { font-variant-numeric: tabular-nums; min-width: 4.5em; }
+.hearing-clear { color: var(--widget-ink); }
+@media (max-width: 576px) {
+    .hearing-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+}
+.hearing-figure { margin: 0.4em 0 0; }
+.hearing-chart { display: block; width: 100%; height: 240px; }
+.hearing-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--hearing-ink); }
+.hearing-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
+.hearing-legend i { display: inline-block; width: 1.4em; border-top: 2px solid; }
+.hearing-l-notes i { border-color: var(--hearing-mark); border-top-width: 3px; }
+.hearing-l-model i { border-color: var(--hearing-model); border-top-style: dashed; }
+.hearing-l-noise i { height: 0.8em; border: none; background: var(--hearing-noise); opacity: 0.35; }
+.hearing-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
 
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
    Telefon«): the keypad with the frequencies of its rows (amber) and
