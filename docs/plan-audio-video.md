@@ -31,16 +31,13 @@ Proposed for the image:
 
 - `ffmpeg` (with `ffprobe`) from Ubuntu's packages.
 - `numpy` and `Pillow` for Python, pinned like `pytest`.
-- For Ruby, `numo-narray` and `numo-pocketfft` (native extensions, built at
-  image build time; gcc is there). Less common than numpy; see the open
-  decision on languages.
 - A note in CHANGELOG (new Workspace image) and the size it adds, measured.
 
 ## Activity 1: sound (`audio-compression`)
 
 Title proposals: »Audio komprimieren«, after »Komprimieren mit Huffman« and
 »Komprimieren mit LZW«; or »Von der CD bis Opus«. Oberstufe, about five
-double lessons, Python and Ruby. Builds on »Komprimieren mit Huffman«; the
+double lessons, Python. Builds on »Komprimieren mit Huffman«; the
 section on sampling in »Ein Spiel am Telefon« is the short version for Sek I
 and links here.
 
@@ -110,7 +107,7 @@ each with its source in a README beside it.
 ## Activity 2: moving pictures (`video-compression`)
 
 Title proposals: »Video komprimieren«; or »Von H.261 bis AV2«. Oberstufe,
-about five double lessons, Python and Ruby. The JPEG decoder (C, four double
+about five double lessons, Python. The JPEG decoder (C, four double
 lessons) is too heavy as a requirement: the parts about blocks and the DCT
 come again in short, with the existing iDCT widget (`idct_stepper.js`), and
 link to JPEG for those who did it.
@@ -160,7 +157,7 @@ seconds at 720p each.
 
 ## Order of work
 
-1. The image: ffmpeg, numpy, Pillow, the numo gems; build, measure, test in a
+1. The image: ffmpeg, numpy, Pillow; build, measure, test in a
    Workspace; CHANGELOG.
 2. Sound: the material and its generator, the widgets, the page part by
    part, tasks with checks and `task-examples.yaml`, teacher note,
@@ -190,16 +187,18 @@ matching) are most of it.
 Every other date above is from memory and gets a source when its page is
 written.
 
+## Decided (10 November 2026)
+
+- **Python only**, like »Fraktale Bildkompression«: numpy is what signal
+  processing uses, one version of every task. The numo gems are not needed.
+- **The section** »Bilder und Kompression« becomes »Bilder, Ton und
+  Kompression«; both activities go after JPEG.
+- **The titles** are still open; the folders are `audio-compression` and
+  `video-compression` whatever the titles become.
+
 ## Open decisions for the maintainer
 
-- **The titles** (above).
-- **Languages.** Python and Ruby like Huffman, with numo for Ruby; or Python
-  only like »Fraktale Bildkompression«, since numpy is what signal
-  processing uses and numo is rare. A middle
-  way: the early parts in plain code for both, a small helper library of our
-  own (like `telefon`) for reading, writing and the FFT.
-- **The section.** »Bilder und Kompression« could become »Bilder, Ton und
-  Kompression«.
+- **The titles** (proposals above).
 - **The hearing threshold widget** plays quiet and loud tones: a warning to
   start quietly, and a maximum level in the code.
 - **A real MP3 decoder in C** (like JPEG) stays out; perhaps later for strong
