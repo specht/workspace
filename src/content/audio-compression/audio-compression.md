@@ -1492,3 +1492,227 @@ Hör dir `kastagnetten.wav`, `kastagnetten-lang.wav` und `kastagnetten-kurz.wav`
 
 In den kurzen Blöcken bleibt der Fehler beim Schlag. Darum schalten Codecs um: AAC nimmt Blöcke mit 1.024 Zahlen, und wo ein Schlag kommt, acht kurze mit je 128; MP3 wechselt zwischen 576 und dreimal 192. Ein Codec muss dafür vorausschauen, ob ein Schlag kommt, und das ist ein Grund, warum ein Codec immer etwas Verzögerung hat.
 <!-- /after -->
+
+## Quantisieren nach Gehör
+
+Jetzt kommt alles zusammen: die MDCT in Blöcken, die Mithörschwelle und das Runden. Ein Codec wie MP3 oder AAC rundet jede Zahl der MDCT so grob, wie es geht, ohne dass man den Fehler hört. Wo die Musik laut ist und viel verdeckt, sind die Stufen grob; wo es leise ist, fein. Was dabei herauskommt, sind fast nur kleine ganze Zahlen und sehr viele Nullen, und die lassen sich mit wenigen Bits speichern.
+
+### Schneller rechnen
+
+`mdct` geht für jedes `k` alle Messungen durch und rechnet dabei jedes Mal die Testtöne neu aus. Für ein ganzes Lied dauert das zu lange. Die Testtöne hängen aber nur von `N` ab: Man kann sie einmal ausrechnen, als Tabelle mit einer Zeile für jedes `k`, eine **Matrix**. `tones(N) @ x` multipliziert jede Zeile mit `x` und zählt zusammen, alle `N` Summen auf einmal, und numpy macht das in C. `@functools.cache` merkt sich die Matrix für jedes `N`, damit sie nur einmal ausgerechnet wird. Ersetz `mdct` und `imdct` in `mdct.py` durch:
+
+```python
+@functools.cache
+def tones(N):
+    n = np.arange(2 * N)
+    k = np.arange(N)
+    return np.cos(np.pi / N * np.outer(k + 0.5, n + 0.5 + N / 2))
+
+
+def mdct(x):
+    return tones(len(x) // 2) @ x
+
+
+def imdct(X):
+    return tones(len(X)).T @ X * 2 / len(X)
+```
+
+`np.outer` bildet aus zwei Arrays die Tabelle aller Produkte, Zeile für Zeile `k + 0.5` mal jedes `n + 0.5 + N / 2`. `.T` dreht die Matrix, so dass die Zeilen zu Spalten werden: Für `imdct` läuft die Summe über `k` statt über `n`. Oben in die Datei kommt `import functools`. Es kommen dieselben Zahlen heraus, nur viel schneller.
+
+<!-- tutorial-step
+write-file: audio/mdct.py <- file:stufen/mdct-3.py
+check-task: mdct
+-->
+
+<!-- stage: stufen/mdct-3.py as mdct.py -->
+
+### Bänder
+
+Ein Codec speichert nicht für jede der 1.024 Zahlen eines Blocks eine eigene Stufe, das kostete zu viele Bits. Er teilt die Zahlen in **Bänder**, ungefähr in Frequenzgruppen, eines für jedes Bark, und gibt jedem Band eine Stufe. Unten sind die Bänder 4 bis 10 Zahlen breit, oben über 300. Lege `codec.py` an:
+
+```python
+import numpy as np
+
+from ear import threshold
+from mdct import decode, encode
+from wav import read_wav, write_wav
+
+N = 1024
+RATE = 44100
+CAL = 44.0
+OFFSET = 15
+
+
+def bark(f):
+    return 13 * np.arctan(0.00076 * f) + 3.5 * np.arctan((f / 7500) ** 2)
+
+
+def spread(dz):
+    return 15.81 + 7.5 * (dz + 0.474) - 17.5 * np.sqrt(1 + (dz + 0.474) ** 2)
+
+
+def make_bands():
+    edges = [0]
+    for z in range(1, 26):
+        k = int(np.searchsorted(bark(FREQS), z))
+        if k - edges[-1] >= 4 and k < N:
+            edges.append(k)
+    edges.append(N)
+    return list(zip(edges[:-1], edges[1:]))
+
+
+FREQS = (np.arange(N) + 0.5) * RATE / (2 * N)
+BANDS = make_bands()
+CENTRES = np.array([bark(FREQS[(a + b) // 2]) for a, b in BANDS])
+QUIET = np.array([threshold(FREQS[a:b]).min() for a, b in BANDS])
+```
+
+`FREQS` ist die Frequenz jeder der 1.024 Zahlen der MDCT. `bark` ist die Formel von Zwicker, die aus Hz Bark macht, und `make_bands` sucht mit `np.searchsorted` die Stelle, an der jedes ganze Bark beginnt; ein Band hat mindestens vier Zahlen. `BANDS` ist dann eine Liste von 25 Paaren, Anfang und Ende jedes Bandes, `CENTRES` die Mitte jedes Bandes in Bark und `QUIET` die Hörschwelle in jedem Band, aus `ear.py`. `spread` ist die Kurve aus dem Widget zur Verdeckung: um wie viele dB die Mithörschwelle eines Klangs `dz` Bark neben ihm unter seiner Lautstärke liegt. `CAL` rechnet die Zahlen der MDCT in dB SPL um, so dass ein Sinus, so laut es geht, 96 dB hat. `OFFSET` sagt, wie weit der Fehler unter der Mithörschwelle bleiben soll.
+
+### Die Mithörschwelle eines Blocks
+
+Für jedes Band kennt der Codec seine Lautstärke in dB SPL, `level`. Jedes Band verdeckt sich selbst und seine Nachbarn: Band `j` hebt die Schwelle in Band `i` auf `level[j] + spread(CENTRES[i] - CENTRES[j]) - OFFSET`. Verdecken mehrere Bänder dasselbe Band, zählen ihre Wirkungen zusammen, aber nicht als Dezibel: Dezibel sind ein Logarithmus. Zusammen zählt die Energie, \\(10^{L / 10}\\) für \\(L\\) dB, und aus der Summe werden mit \\(10 \cdot \log\_{10}\\) wieder Dezibel. Zwei gleich laute Verdecker ergeben so 3 dB mehr, nicht doppelt so viele dB.
+
+<div class='hint own' data-check='mithoerschwelle'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>allowed(level)</code>: Die Funktion bekommt für jedes der 25 Bänder seine Lautstärke in dB und gibt für jedes Band zurück, wie laut der Fehler dort sein darf: die Energie aller Verdecker zusammen, in dB, aber nie unter der Hörschwelle <code>QUIET</code>.
+</div>
+
+<!-- hint -->
+Zwei Schleifen: außen über die Bänder `i`, für die du die Schwelle suchst, innen über alle Bänder `j`, die etwas verdecken. Innen zählst du `10 ** ((level[j] + spread(CENTRES[i] - CENTRES[j]) - OFFSET) / 10)` zusammen.
+<!-- /hint -->
+<!-- hint -->
+Nach der inneren Schleife ist `10 * np.log10(power)` die Schwelle für Band `i`. Zum Schluss nimmt `np.maximum(out, QUIET)` für jedes Band den größeren der beiden Werte:
+
+```python
+out = np.zeros(len(level))
+for i in range(len(level)):
+    power = 0
+    for j in range(len(level)):
+        power += …
+    out[i] = 10 * np.log10(power)
+return np.maximum(out, QUIET)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def allowed(level):
+    out = np.zeros(len(level))
+    for i in range(len(level)):
+        power = 0
+        for j in range(len(level)):
+            power += 10 ** ((level[j] + spread(CENTRES[i] - CENTRES[j]) - OFFSET) / 10)
+        out[i] = 10 * np.log10(power)
+    return np.maximum(out, QUIET)
+```
+<!-- /solution -->
+
+_task(mithoerschwelle)
+
+### Runden nach Gehör
+
+Jetzt das Runden. Rundet man auf ein Vielfaches einer Stufe `step`, ist der Fehler gleichmäßig zwischen `-step / 2` und `step / 2` verteilt, und seine Energie ist im Mittel `step ** 2 / 12` je Zahl. `quantise` wählt die Stufe jedes Bandes so, dass die Energie des Fehlers im ganzen Band gerade so groß ist, wie `allowed` erlaubt. Heraus kommen ganze Zahlen `q` und für jedes Band seine Stufe; `dequantise` macht daraus wieder die Zahlen der MDCT. Schreib unter `allowed`:
+
+```python
+def quantise(X):
+    level = np.array([10 * np.log10(np.sum(X[a:b] ** 2) + 1e-20) + CAL for a, b in BANDS])
+    noise = allowed(level)
+    q = np.zeros(N, dtype=int)
+    steps = np.zeros(len(BANDS))
+    for i, (a, b) in enumerate(BANDS):
+        steps[i] = np.sqrt(12 * 10 ** ((noise[i] - CAL) / 10) / (b - a))
+        q[a:b] = np.round(X[a:b] / steps[i])
+    return q, steps
+
+
+def dequantise(q, steps):
+    Y = np.zeros(N)
+    for i, (a, b) in enumerate(BANDS):
+        Y[a:b] = q[a:b] * steps[i]
+    return Y
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('musik.wav')
+    coded = [quantise(X) for X in encode(x, N)]
+    y = decode([dequantise(q, steps) for q, steps in coded], N, len(x))
+    write_wav('musik-codec.wav', y, rate)
+    write_wav('musik-rest.wav', x - y, rate)
+    values = np.concatenate([q for q, steps in coded])
+    print(f'{np.mean(values == 0):.0%} der Zahlen sind 0, die größte ist {np.abs(values).max()}')
+```
+
+Das Programm codiert die ganze Musik, macht daraus wieder Messungen und schreibt zwei Dateien: `musik-codec.wav`, was der Codec übrig lässt, und `musik-rest.wav`, was er weggelassen hat, das Original minus das Ergebnis.
+
+_task(der-rest)
+
+<!-- after: der-rest -->
+```bash
+python3 codec.py
+```
+
+<!-- tutorial-step
+write-file: audio/codec.py <- file:stufen/codec-1.py
+check-task: mithoerschwelle
+terminal-run: python3 codec.py
+terminal-wait-for-prompt: 60
+wait-for-text: der Zahlen sind 0
+-->
+
+Hör dir `musik.wav` und `musik-codec.wav` nacheinander an, dann `musik-rest.wav`. Der Rest ist nicht still: Er ist nur etwa 14 dB leiser als die Musik und wird mit ihr lauter und leiser, denn er ist so laut, wie die Mithörschwelle erlaubt, und die folgt der Musik. Fast zwei Drittel seiner Energie liegen unter 200 Hz, bei Bass und Bass-Trommel: Dort hören wir schlecht, und laute tiefe Töne verdecken viel. Allein hört man den Rest gut; unter der Musik soll er verschwinden, wenn das Modell stimmt. Gut zwei Drittel der gerundeten Zahlen sind 0, und die größte ist 16.
+<!-- /after -->
+
+### Wie viele Bits
+
+Wie viele Bits braucht es, die gerundeten Zahlen zu speichern? Kommt eine Zahl mit der Wahrscheinlichkeit `p` vor, braucht ein guter Code für sie \\(\log\_2(1/p)\\) Bits: Eine Zahl, die in der Hälfte der Fälle vorkommt, 1 Bit, eine, die in einem Achtel vorkommt, 3 Bits. Im Mittel sind das
+
+$$H = \sum p \cdot \log_2 \frac{1}{p}$$
+
+Bits je Zahl. Claude Shannon hat 1948 gezeigt, dass kein Code im Mittel mit weniger auskommt; man nennt \\(H\\) die **Entropie**. Ein [Huffman-Code](/huffman) kommt bis auf weniger als ein Bit je Zahl heran. MP3 und AAC haben feste Huffman-Tabellen für die gerundeten Zahlen, Opus einen Coder, der noch etwas näher an \\(H\\) kommt.
+
+<div class='hint own' data-check='entropie'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>entropy(values)</code>: die Entropie der Zahlen in einem numpy-Array, in Bits je Zahl. <code>np.unique(values, return_counts=True)</code> gibt die verschiedenen Zahlen und wie oft jede vorkommt.
+</div>
+
+<!-- hint -->
+`np.unique` gibt zwei Arrays zurück; du brauchst nur das zweite: `_, counts = np.unique(values, return_counts=True)`. Die Wahrscheinlichkeiten sind dann `counts / counts.sum()`.
+<!-- /hint -->
+<!-- hint -->
+Mit `p` für das Array der Wahrscheinlichkeiten ist die Formel `np.sum(p * np.log2(1 / p))`; `float` macht daraus eine gewöhnliche Zahl.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def entropy(values):
+    _, counts = np.unique(values, return_counts=True)
+    p = counts / counts.sum()
+    return float(np.sum(p * np.log2(1 / p)))
+```
+<!-- /solution -->
+
+_task(entropie)
+
+Dazu kommen die Stufen der Bänder. Ein Codec speichert sie als kleine ganze Zahl, AAC etwa in Schritten von 1,5 dB; rechne mit 6 Bits für jedes Band in jedem Block. Schreib unten ins Programm:
+
+```python
+~     print(f'{np.mean(values == 0):.0%} der Zahlen sind 0, die größte ist {np.abs(values).max()}')
+    bits = entropy(values) * len(values) + 6 * len(BANDS) * len(coded)
+    seconds = len(x) / rate
+    print(f'{bits / seconds / 1000:.0f} kbit/s statt {16 * rate / 1000:.0f} kbit/s')
+```
+
+<!-- tutorial-step
+write-file: audio/codec.py <- file:stufen/codec-2.py
+check-task: entropie
+terminal-run: python3 codec.py
+terminal-wait-for-prompt: 60
+wait-for-text: kbit/s statt 706 kbit/s
+-->
+
+Dein Codec braucht für die Musik etwa 76 kbit/s statt 706, ein Neuntel. MP3 braucht für Musik in Stereo meist 128 bis 320 kbit/s, für Mono etwa die Hälfte; dein Codec liegt also in derselben Gegend, mit einem viel einfacheren Modell des Gehörs.
+
+<!-- stage: stufen/codec-2.py as codec.py -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz <code>OFFSET</code> auf 5 und lass das Programm noch einmal laufen: Wie viele kbit/s sind es, und hörst du in <code>musik-codec.wav</code> einen Unterschied zum Original? Geh in Schritten von 5 weiter nach unten, bis zu −10. Ab wann hörst du das Rauschen, und woran zuerst? Setz <code>OFFSET</code> dann wieder auf 15.
+</div>

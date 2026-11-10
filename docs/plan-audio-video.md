@@ -207,8 +207,16 @@ seconds at 720p each.
    computed with the stage), the castanets (`kastagnetten.wav` from
    `sounds/make.py`) rounded per block in long and short blocks, a drawing
    of the pre-echo (`bilder/vorecho.py`), block switching in AAC (1.024 and
-   8 × 128) and MP3 (576 and 3 × 192). Next: part 6 (quantising by ear:
-   bands, scale factors, bit allocation under the masking threshold). The section is
+   8 × 128) and MP3 (576 and 3 × 192). Part 6 is written: the MDCT as a
+   matrix (`tones` with `functools.cache`), 25 bands after Bark, `allowed`
+   of one's own (Schroeder's spreading, energies added, never under the
+   threshold in quiet), one step per band from the noise it may have
+   (`step ** 2 / 12`), the rest as a prediction, `entropy` of one's own and
+   the bit rate (music 76 kbit/s mono at `OFFSET` 15 against 706; 70 % of
+   the numbers are 0; the rest is 14 dB under the music, 61 % of its
+   energy under 200 Hz). Not yet listened to by a person: whether 15 dB is
+   transparent. Next: part 7 (real files: an MP3 frame header byte by
+   byte, ffmpeg's MP3, AAC and Opus at several rates, an ABX test). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

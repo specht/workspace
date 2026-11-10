@@ -643,3 +643,96 @@ tasks:
       Schon vor den Schlägen: Der Fehler verteilt sich über den ganzen Block
       von 46 Millisekunden, auch in die leise Stelle vor dem Schlag, wo
       nichts ihn verdeckt. Das heißt Vorecho.
+
+  - id: mithoerschwelle
+    title: Die Mithörschwelle der Bänder
+    prompt: |
+      Schreib in `audio/codec.py` die Funktion `allowed(level)`: für jedes
+      Band die Energie aller Verdecker zusammen, in dB, aber nie unter der
+      Hörschwelle `QUIET`. Die Prüfung gibt ihr Bänder, die still sind, ein
+      lautes Band und zwei laute Bänder.
+    check:
+      type: python
+      file: audio/codec.py
+      cases:
+        - call: len(allowed(np.full(len(BANDS), -100.0)))
+          expect: 25
+          say: Für jedes der 25 Bänder gibt es einen Wert.
+        - call: bool(np.allclose(allowed(np.full(len(BANDS), -100.0)), QUIET))
+          expect: true
+          say: Sind alle Bänder still, bleibt in jedem nur die Hörschwelle, `np.maximum(out, QUIET)`.
+        - call: round(float(allowed(np.where(np.arange(len(BANDS)) == 10, 80.0, -100.0))[10]), 1)
+          expect: 65.0
+          say: Ein Band mit 80 dB verdeckt sich selbst bis 80 + spread(0) − 15, etwa 65 dB. Wird `OFFSET` abgezogen, und steht `CENTRES[i] - CENTRES[j]` in `spread`?
+        - call: '[round(float(v), 1) for v in allowed(np.where(np.arange(len(BANDS)) == 10, 80.0, -100.0))[9:12]]'
+          expect: '[56.7, 65.0, 60.8]'
+          say: Neben dem lauten Band liegt die Schwelle darüber höher als darunter, 60,8 und 56,7 dB. Ist es `CENTRES[i] - CENTRES[j]`, die Entfernung vom Verdecker `j` zum Band `i`, und nicht umgekehrt?
+        - call: round(float(allowed(np.where((np.arange(len(BANDS)) == 10) | (np.arange(len(BANDS)) == 12), 80.0, -100.0))[11]), 1)
+          expect: 62.3
+          say: Zwei laute Bänder verdecken das Band zwischen ihnen gemeinsam. Ihre Energien zählen zusammen, `10 ** (dB / 10)`, und erst die Summe wird mit `10 * np.log10` wieder zu dB; der größere der beiden Werte allein ist zu wenig.
+    solution: |
+      ```python
+      def allowed(level):
+          out = np.zeros(len(level))
+          for i in range(len(level)):
+              power = 0
+              for j in range(len(level)):
+                  power += 10 ** ((level[j] + spread(CENTRES[i] - CENTRES[j]) - OFFSET) / 10)
+              out[i] = 10 * np.log10(power)
+          return np.maximum(out, QUIET)
+      ```
+
+  - id: der-rest
+    title: Was weggelassen wurde
+    prediction: true
+    prompt: |
+      `musik-rest.wav` ist das Original minus das, was dein Codec übrig
+      lässt. Was hörst du darin?
+    check:
+      type: choice
+      options:
+        - Stille, denn was fehlt, hört man nicht.
+        - Ein leises Rauschen, das mit der Musik lauter und leiser wird.
+        - Ein gleichmäßiges Rauschen, immer gleich laut, wie bei wenigen Bits.
+        - Die Musik, fast so laut wie das Original.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Unhörbar ist der Fehler nur unter der Musik, die ihn verdeckt. Allein, ohne die Musik, verdeckt ihn nichts.
+      - when: { picked: 2 }
+        say: Die Stufen sind nicht überall gleich. Wo ist der Codec grob, wo fein?
+      - when: { picked: 3 }
+        say: Der Fehler darf nur so laut sein wie die Mithörschwelle, und die liegt unter der Musik, bei dir 15 dB darunter und mehr.
+    solution: |
+      Ein leises Rauschen, das mit der Musik lauter und leiser wird: Der
+      Codec lässt den Fehler so laut werden, wie die Mithörschwelle erlaubt,
+      und die folgt der Musik.
+
+  - id: entropie
+    title: Die Entropie
+    prompt: |
+      Schreib in `audio/codec.py` die Funktion `entropy(values)`: die
+      Entropie der Zahlen in `values`, in Bits je Zahl.
+    check:
+      type: python
+      file: audio/codec.py
+      cases:
+        - call: entropy(np.array([0, 0, 0, 0])) == 0
+          expect: true
+          say: Kommt immer dieselbe Zahl, braucht man keine Bits, sie zu nennen. Sind die Wahrscheinlichkeiten `counts / counts.sum()`, so dass sie zusammen 1 ergeben?
+        - call: round(entropy(np.array([0, 1])), 4)
+          expect: 1.0
+          say: Zwei Zahlen, jede in der Hälfte der Fälle, brauchen 1 Bit je Zahl. Rechnest du mit `np.log2`, dem Logarithmus zur Basis 2?
+        - call: round(entropy(np.arange(8)), 4)
+          expect: 3.0
+          say: Acht verschiedene Zahlen, jede gleich oft, brauchen 3 Bits je Zahl. Rechnest du mit `np.log2`, dem Logarithmus zur Basis 2?
+        - call: round(entropy(np.array([0, 0, 0, 1])), 4)
+          expect: 0.8113
+          say: Bei drei Nullen und einer Eins sind es 0,75 · log₂(1/0,75) + 0,25 · log₂(4), etwa 0,81 Bits je Zahl. Sind die Wahrscheinlichkeiten `counts / counts.sum()`?
+    solution: |
+      ```python
+      def entropy(values):
+          _, counts = np.unique(values, return_counts=True)
+          p = counts / counts.sum()
+          return float(np.sum(p * np.log2(1 / p)))
+      ```

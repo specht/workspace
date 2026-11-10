@@ -87,6 +87,22 @@ examples:
     pass:
       - { files: { audio/mdct.py: stufen/mdct-1.py, audio/wav.py: stufen/wav.py } }
       - { files: { audio/mdct.py: stufen/mdct-2.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/mdct.py: stufen/mdct-3.py, audio/wav.py: stufen/wav.py } }
     fail:
       - { files: { audio/mdct.py: fehler/mdct-ohne-verschiebung.py, audio/wav.py: stufen/wav.py }, say: 'k + 0.5' }
       - { files: { audio/mdct.py: fehler/mdct-ganz-n.py, audio/wav.py: stufen/wav.py }, say: 'range(N)' }
+  mithoerschwelle:
+    pass:
+      - { files: { audio/codec.py: stufen/codec-1.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/codec.py: stufen/codec-2.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/codec.py: fehler/mithoer-maximum.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'Energien zählen zusammen' }
+      - { files: { audio/codec.py: fehler/mithoer-ohne-ruhe.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'np.maximum(out, QUIET)' }
+      - { files: { audio/codec.py: fehler/mithoer-vertauscht.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'nicht umgekehrt' }
+  entropie:
+    pass:
+      - { files: { audio/codec.py: stufen/codec-2.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/codec.py: stufen/codec-1.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'entropy' }
+      - { files: { audio/codec.py: fehler/entropie-ln.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'np.log2' }
+      - { files: { audio/codec.py: fehler/entropie-counts.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'counts / counts.sum()' }
