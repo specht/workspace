@@ -1,0 +1,113 @@
+<style>
+    /* /etiketten: a label to draw on for the Tag der offenen Tür
+       (label_printer.rb, labels.js). The label is always white with black,
+       in both themes: it is the sticker as it comes out of the printer. */
+    .lb-page { max-width: 46rem; }
+    .lb-label {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 472 / 268;
+        border-radius: 0.6rem;
+        background: #fff;
+        box-shadow: 0 0.15rem 0.8rem rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        touch-action: none;
+    }
+    .lb-label canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+        cursor: crosshair;
+    }
+    /* the safe area: closer to the border the printer may cut */
+    .lb-safe {
+        position: absolute;
+        inset: calc(100% * 16 / 268) calc(100% * 16 / 472);
+        border: 1px dashed rgba(13, 110, 253, 0.45);
+        border-radius: 0.3rem;
+        pointer-events: none;
+    }
+    .lb-tools { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0 0.75rem; }
+    .lb-tools .btn .bi { margin-right: 0.4em; }
+    .lb-tools .lb-icon-only .bi { margin-right: 0; }
+    .lb-spacer { flex: 1 1 auto; }
+    .lb-options { min-height: 3rem; margin-bottom: 1rem; }
+    .lb-stamps { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.9rem, 1fr)); gap: 0.35rem; }
+    .lb-stamps button {
+        aspect-ratio: 1;
+        font-size: 1.45rem;
+        padding: 0;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        background: var(--bs-body-bg);
+        color: var(--bs-body-color);
+    }
+    .lb-stamps button .bi { margin: 0; }
+    .lb-stamps button[aria-pressed='true'] { border-color: var(--bs-primary); box-shadow: 0 0 0 2px var(--bs-primary); }
+    .lb-hint { font-size: 0.9rem; color: var(--bs-secondary-color); margin: 0.4rem 0 0; }
+    .lb-print { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+    .lb-print .btn-lg .bi { margin-right: 0.5em; }
+    .lb-status { margin: 0; }
+</style>
+<div class='container lb-page'>
+    <h1 class='mt-4'>Dein Etikett</h1>
+    <p class='abstract'>Mal etwas, setz Bilder und Text darauf, und der Drucker am Stand druckt es dir als Aufkleber, in Schwarz auf Weiß.</p>
+    <div class='lb-closed alert alert-secondary' hidden></div>
+    <div class='lb-app' hidden>
+        <div class='lb-label'><canvas width='472' height='268' aria-label='Das Etikett zum Bemalen'></canvas><div class='lb-safe'></div></div>
+        <div class='lb-tools' role='toolbar' aria-label='Werkzeuge'>
+            <div class='btn-group' role='group' aria-label='Werkzeug'>
+                <button type='button' class='btn btn-outline-primary active' data-tool='pen'><i class='bi bi-pencil'></i>Stift</button>
+                <button type='button' class='btn btn-outline-primary' data-tool='eraser'><i class='bi bi-eraser'></i>Radierer</button>
+                <button type='button' class='btn btn-outline-primary' data-tool='stamp'><i class='bi bi-emoji-smile'></i>Bild</button>
+                <button type='button' class='btn btn-outline-primary' data-tool='text'><i class='bi bi-fonts'></i>Text</button>
+            </div>
+            <span class='lb-spacer'></span>
+            <button type='button' class='btn btn-outline-secondary lb-icon-only lb-undo' title='Rückgängig' aria-label='Rückgängig'><i class='bi bi-arrow-counterclockwise'></i></button>
+            <button type='button' class='btn btn-outline-secondary lb-clear'><i class='bi bi-trash'></i>Leeren</button>
+        </div>
+        <div class='lb-options'>
+            <div class='lb-opt' data-for='pen eraser'>
+                <div class='btn-group btn-group-sm' role='group' aria-label='Strichstärke'>
+                    <button type='button' class='btn btn-outline-secondary' data-width='3'>fein</button>
+                    <button type='button' class='btn btn-outline-secondary active' data-width='7'>mittel</button>
+                    <button type='button' class='btn btn-outline-secondary' data-width='16'>dick</button>
+                </div>
+            </div>
+            <div class='lb-opt' data-for='stamp' hidden>
+                <div class='lb-stamps' role='group' aria-label='Bilder'></div>
+                <div class='d-flex flex-wrap gap-3 align-items-center mt-2'>
+                    <div class='btn-group btn-group-sm' role='group' aria-label='Größe des Bildes'>
+                        <button type='button' class='btn btn-outline-secondary' data-stamp-size='60'>klein</button>
+                        <button type='button' class='btn btn-outline-secondary active' data-stamp-size='120'>mittel</button>
+                        <button type='button' class='btn btn-outline-secondary' data-stamp-size='210'>groß</button>
+                    </div>
+                    <p class='lb-hint m-0'>Bild wählen, dann auf das Etikett tippen.</p>
+                </div>
+            </div>
+            <div class='lb-opt' data-for='text' hidden>
+                <div class='d-flex flex-wrap gap-2 align-items-center'>
+                    <input type='text' class='form-control lb-text' id='lb-text' maxlength='30' placeholder='Dein Text' aria-label='Text für das Etikett' style='max-width: 16rem;'>
+                    <select class='form-select lb-font' id='lb-font' aria-label='Schrift' style='max-width: 11rem;'>
+                        <option value='Patua One'>Patua One</option>
+                        <option value='Pixelify Sans'>Pixelify Sans</option>
+                        <option value='IBM Plex Sans'>IBM Plex Sans</option>
+                    </select>
+                    <div class='btn-group btn-group-sm' role='group' aria-label='Schriftgröße'>
+                        <button type='button' class='btn btn-outline-secondary' data-text-size='28'>klein</button>
+                        <button type='button' class='btn btn-outline-secondary active' data-text-size='48'>mittel</button>
+                        <button type='button' class='btn btn-outline-secondary' data-text-size='80'>groß</button>
+                    </div>
+                </div>
+                <p class='lb-hint'>Text schreiben, dann auf das Etikett tippen, wo seine Mitte hin soll.</p>
+            </div>
+        </div>
+        <div class='lb-print'>
+            <button type='button' class='btn btn-success btn-lg lb-send'><i class='bi bi-printer'></i>Drucken</button>
+            <p class='lb-status' aria-live='polite'></p>
+        </div>
+        <p class='lb-hint mt-3'>Was nah an der gestrichelten Linie oder außerhalb liegt, kann der Drucker abschneiden. Gespeichert wird nur das Bild, ohne Namen, und nach zwei Tagen gelöscht.</p>
+    </div>
+</div>
+<script src='/include/labels.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>

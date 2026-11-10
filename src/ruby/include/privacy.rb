@@ -352,6 +352,13 @@ module Privacy
                 :how_long => 'bis die Person das Spiel zurückzieht oder eine Ablehnung entfernt (die Kopie eines abgelehnten Spiels gleich bei der Ablehnung), sonst ' + ACCOUNT_END,
             },
             {
+                :data => 'Etiketten vom Tag der offenen Tür: das Bild, das jemand auf /etiketten gemalt hat, schwarz und weiß, mit Uhrzeit und Stand (wartet, gedruckt), ohne Namen und ohne Konto; dazu nur im Arbeitsspeicher eine zufällige Kennung des Browsers mit der Zeit des letzten Etiketts, damit niemand den Drucker mit Etiketten überschüttet',
+                :categories => [:content],
+                :purpose => 'das Etikett auf dem Etikettendrucker am Stand drucken',
+                :who => 'Administration; der Laptop am Stand, der die Etiketten zum Drucker bringt',
+                :how_long => 'zwei Tage; die Kennung des Browsers eine Stunde oder bis zum Neustart des Servers',
+            },
+            {
                 :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos, Einreichen, Zurückziehen und Freigeben eines Telefonspiels; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
                 :categories => [:traffic],
                 :purpose => 'Betrieb, Sicherheit und Fehlersuche',

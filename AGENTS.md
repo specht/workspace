@@ -57,6 +57,8 @@ address from `credentials.rb` and the code `123456`.
 - [docs/plan-telefonspiel.md](docs/plan-telefonspiel.md): the Telefonspiel, a game behind a real phone
   number: the old Hackschule's version and why it was flaky, the decisions (Asterisk with any SIP trunk,
   several languages, one number for many games and calls), the protocol, the steps
+- [docs/etiketten.md](docs/etiketten.md): the label printer for the Tag der offenen Tür: visitors draw a label
+  (`/etiketten`, QR code, no account), a script on a laptop at school fetches it and prints by USB
 - [docs/checkliste.md](docs/checkliste.md): every rule an activity must meet, why, and what checks it;
   go through it for every new or changed activity. `src/scripts/audit-activities.rb` counts the countable part
 - [src/tutorial-screenshots/README.md](src/tutorial-screenshots/README.md): the recipe language for generated pictures

@@ -1,0 +1,26 @@
+<style>
+    /* /etiketten-station: the label printer for the administration
+       (label_printer_api.rb, label_station.js): the switch, the QR code
+       for the stand, the laptop's command, the labels of the last days. */
+    .ls-page { max-width: 60rem; }
+    .ls-setup { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+    @media (min-width: 768px) { .ls-setup { grid-template-columns: 13rem 1fr; } }
+    .ls-qr { background: #fff; border-radius: 0.5rem; padding: 0.5rem; box-shadow: 0 0 0 1px var(--bs-border-color); }
+    .ls-qr svg { display: block; width: 100%; height: auto; }
+    .ls-command { white-space: pre-wrap; word-break: break-all; font-size: 0.85rem; padding: 0.6rem 0.8rem; border-radius: 0.4rem;
+        background: var(--bs-tertiary-bg); color: var(--bs-body-color); box-shadow: 0 0 0 1px var(--bs-border-color); }
+    .ls-state { display: inline-flex; align-items: center; gap: 0.4em; }
+    .ls-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--bs-secondary-color); }
+    .ls-dot.ls-live { background: var(--bs-success); }
+    .ls-jobs { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 1rem; }
+    .ls-job canvas { display: block; width: 100%; aspect-ratio: 472 / 268; background: #fff; border-radius: 0.4rem; box-shadow: 0 0 0 1px var(--bs-border-color); image-rendering: pixelated; }
+    .ls-job-meta { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; font-size: 0.85rem; color: var(--bs-secondary-color); }
+    .ls-job-meta .ls-when { flex: 1 1 auto; }
+    .ls-job-meta .btn .bi { margin-right: 0; }
+</style>
+<div class='container ls-page'>
+    <h1 class='mt-4'>Etikettendrucker</h1>
+    <p class='abstract'>Für den Tag der offenen Tür: Besucher malen auf <a href='/etiketten'>/etiketten</a> ein Etikett, und der Etikettendrucker am Stand druckt es sofort. Der Drucker hängt per USB an einem Laptop, auf dem ein kleines Programm die Etiketten abholt.</p>
+    <div class='ls-root'></div>
+</div>
+<script src='/include/label_station.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>
