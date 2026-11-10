@@ -385,10 +385,13 @@ only to look nice.
   printed label, white in both modes. No steps, no timeline: the reader
   paints. `test/static/qr_code.test.cjs` checks the layout against
   qrencode and the page's stickers against jsQR.
-- **The iDCT stepper on the JPEG page** (`data-src`): the photo and the
-  magnifier of the picker (jpeg_image.js); dragging over the photo moves the
-  MCU along, the magnifier is dragged like a map, and a tap inside the
-  chosen MCU in it chooses the Y block there; beside the picker the
+- **The iDCT stepper on the JPEG page** (`data-src`): one button per
+  channel (Y, Cb, Cr), the photo and a magnifier of 3 × 3 MCUs (picker in
+  jpeg_image.js, as large as the blocks under it). The magnifier draws the
+  MCU grid and, finer, the channel's blocks; the block under the pointer
+  lights up, a click chooses it, a click or drag on the photo chooses the
+  block under the pointer; dragging the magnifier moves it like a map and
+  it settles on the MCU in its middle; beside the picker the
   finished block as the goal, and the error to it in place of the pixel
   values (0 everywhere after the last step).
 - **The iDCT stepper with a picture** (`idct_stepper.js`,

@@ -79,7 +79,7 @@
         let coef = element.dataset.coef.trim().split(/\s+/).map(Number);
         let list = steps(coef);
         element.innerHTML = `
-            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div><p class='idct-lens-legend'>In der Lupe: weiß die MCU, 16 × 16 Pixel, gelb gestrichelt der Block der Zeitlupe, 8 × 8. Die Lupe lässt sich ziehen, ein Tippen in die MCU wählt einen ihrer Y-Blöcke.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
+            ${element.dataset.src ? `<div class='idct-picture-row'><div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Kanal'></div><p class='idct-lens-legend'>Wähle Y, Cb oder Cr, dann einen Block: in der Lupe mit der Maus darüber und klicken, oder auf dem Foto. Ziehen verschiebt die Lupe. Weiß ist die MCU, gelb gestrichelt der Block der Zeitlupe.</p></div><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der fertige Block: das Ziel der Schritte'></div><figcaption>Ziel: der fertige Block</figcaption></figure></div>` : ''}
             ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><div class='idct-grid idct-target' role='img' aria-label='Der markierte Block in Y: das Ziel der Schritte'></div><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -165,44 +165,50 @@
         pickBox.textContent = 'Das Foto wird geladen …';
         root.JpegImage.load(element.dataset.src).then((image) => {
             let mx = 0, my = 0, comp = 0, index = 0;
-            const names = [];
-            image.comps.forEach((c, ci) => {
-                for (let i = 0; i < c.h * c.v; i++) names.push({ comp: ci, index: i, label: c.h * c.v > 1 ? `${c.name}<sub>${i}</sub>` : c.name });
-            });
-            blocks.innerHTML = names.map((n, i) => `<button type='button' class='btn btn-sm btn-outline-secondary' data-block='${i}' aria-pressed='${i === 0}'>${n.label}</button>`).join('');
+            const mcuW = 8 * image.hmax, mcuH = 8 * image.vmax;
+            // one button per channel (Y, Cb, Cr); the block is chosen in the
+            // magnifier or on the photo
+            blocks.innerHTML = image.comps.map((c, ci) => `<button type='button' class='btn btn-sm btn-outline-secondary' data-comp='${ci}' aria-pressed='${ci === 0}'>${c.name}</button>`).join('')
+                + `<span class='idct-block-name' aria-live='polite'></span>`;
+            const blockName = blocks.querySelector('.idct-block-name');
+            // a block of the channel, in pixels of the photo
+            const blockSize = () => { const c = image.comps[comp]; return [mcuW / c.h, mcuH / c.v]; };
             // the chosen block, outlined in the magnifier
             const mark = (ctx, zoom) => {
                 const c = image.comps[comp];
-                const sw = image.hmax / c.h * 8 * zoom, sh = image.vmax / c.v * 8 * zoom;
+                const sw = mcuW / c.h * zoom, sh = mcuH / c.v * zoom;
                 const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
                 ctx.setLineDash([7, 5]);
                 ctx.lineWidth = 2.5;
                 ctx.strokeStyle = '#ffd43b';
-                ctx.strokeRect(x + 5, y + 5, sw - 10, sh - 10);
+                ctx.strokeRect(x + 4, y + 4, sw - 8, sh - 8);
+                ctx.setLineDash([]);
             };
             const picker = root.JpegImage.picker(pickBox, image, {
-                mx, my, mark,
+                mx, my, mark, blockSize,
                 onPick: (x, y) => { mx = x; my = y; update(); },
-                // a tap inside the chosen MCU in the magnifier: the Y block there
-                onInside: (fx, fy) => {
-                    const c = image.comps[0];
-                    comp = 0;
-                    index = Math.min(c.v - 1, Math.max(0, Math.floor(fy * c.v))) * c.h + Math.min(c.h - 1, Math.max(0, Math.floor(fx * c.h)));
+                // a block chosen by its pixel on the photo or in the magnifier
+                onBlock: (px, py) => {
+                    const c = image.comps[comp];
+                    const [bw, bh] = blockSize();
+                    mx = Math.floor(px / mcuW);
+                    my = Math.floor(py / mcuH);
+                    index = Math.min(c.v - 1, Math.floor((py - my * mcuH) / bh)) * c.h + Math.min(c.h - 1, Math.floor((px - mx * mcuW) / bw));
                     update();
                 },
             });
             function update() {
-                blocks.querySelectorAll('button').forEach((b) => {
-                    const n = names[Number(b.dataset.block)];
-                    b.setAttribute('aria-pressed', String(n.comp === comp && n.index === index));
-                });
+                blocks.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.comp) === comp)));
+                const c = image.comps[comp];
+                blockName.innerHTML = c.h * c.v > 1 ? `Block ${c.name}<sub>${index}</sub> der MCU` : `Block ${c.name} der MCU`;
                 picker.redraw();
                 show(image.block(comp, mx, my, index));
             }
             blocks.addEventListener('click', (event) => {
-                const button = event.target.closest('button[data-block]');
+                const button = event.target.closest('button[data-comp]');
                 if (!button) return;
-                ({ comp, index } = names[Number(button.dataset.block)]);
+                comp = Number(button.dataset.comp);
+                index = 0;
                 update();
             });
             // a block chosen above, at the Huffman stepper of the page
@@ -211,6 +217,7 @@
                 picker.set(mx, my);
                 update();
             });
+            update();
         }).catch((error) => { pickBox.textContent = `Das Foto ließ sich nicht laden: ${error.message}`; });
     }
 

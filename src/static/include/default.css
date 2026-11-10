@@ -15697,3 +15697,9 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     font-size: 0.85em;
     color: var(--widget-ink);
 }
+.idct-stepper .idct-block-name {
+    align-self: center;
+    margin-left: 0.4em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}

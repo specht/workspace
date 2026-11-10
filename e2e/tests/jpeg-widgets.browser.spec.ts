@@ -20,9 +20,17 @@ test('the iDCT stepper and the MCU on the demo photo', async ({ page }) => {
     .map((s) => (s.getAttribute('style') || '').match(/rgb\((\d+)/)?.[1]).join(' '))).toBe('40 41 43 46 46 43 41 42');
   await expect(stepper.locator('.idct-error-caption')).toHaveText('Fehler, im Mittel 0');
 
-  await test.step('another block of the same MCU', async () => {
-    await stepper.locator("button[data-block='1']").click();
-    await expect(stepper.locator("button[data-block='1']")).toHaveAttribute('aria-pressed', 'true');
+  await test.step('another block of the same MCU: hovered and clicked in the magnifier', async () => {
+    const lens = stepper.locator('.jpeg-picker-lens');
+    await lens.scrollIntoViewIfNeeded();
+    const box = await lens.boundingBox();
+    if (!box) throw new Error('no magnifier');
+    // the magnifier shows 3 × 3 MCUs around MCU (0, 0); Y1 is its upper right block
+    await page.mouse.move(box.x + 0.583 * box.width, box.y + 0.417 * box.height);
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(stepper.locator('.idct-block-name')).toHaveText('Block Y1 der MCU');
+    await expect(stepper.locator("button[data-comp='0']")).toHaveAttribute('aria-pressed', 'true');
     await expect(stepper.locator('.idct-count')).toContainText('Schritt 1 von');
     await expect(stepper.locator('.idct-coef span').first()).toHaveText('-690');
   });
