@@ -15,8 +15,8 @@ from src/static/audio/, and the widgets of the page play the same files:
 - kastagnetten.wav: two seconds of castanets, clicks with a short ring
   near 2.800 Hz, over a quiet chord; between some clicks a pause of a
   third of a second or more, where a pre-echo is heard alone.
-- musik/*.flac: the six instruments of musik.wav one by one (bass-trommel,
-  snare, hi-hat, bass, akkorde, melodie), each scaled and in the room as in
+- musik/*.flac: the six instruments of musik.wav one by one (kick, snare,
+  hi-hat, bass, chords, melody), each scaled and in the room as in
   the mix, so that they add up to it; for the switches of the spectrogram
   widget. Made by the name »spuren«.
 
@@ -172,9 +172,9 @@ def music(stems=False):
     # each instrument through the same scaling, room and fade as the mix
     scale = 0.89 / np.abs(wet).max()
     echo = 0.12 / np.abs(room).max() * np.abs(dry).max()
-    parts = {'bass-trommel': 0.62 * kicks / np.abs(drums).max(), 'snare': 0.62 * snares / np.abs(drums).max(),
+    parts = {'kick': 0.62 * kicks / np.abs(drums).max(), 'snare': 0.62 * snares / np.abs(drums).max(),
              'hi-hat': 0.62 * hats / np.abs(drums).max(), 'bass': 0.42 * norm(bass),
-             'akkorde': 0.2 * norm(chords), 'melodie': 0.24 * norm(melody)}
+             'chords': 0.2 * norm(chords), 'melody': 0.24 * norm(melody)}
     out = {}
     for name, part in parts.items():
         part_room = np.fft.irfft(np.fft.rfft(part, n + m) * np.fft.rfft(impulse, n + m), n + m)[:n]

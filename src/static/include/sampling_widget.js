@@ -304,35 +304,58 @@
         function draw() { describe(); drawPicture(); drawStrip(); }
 
         // sound ----------------------------------------------------------------------
+        // Playing: one looping source with its own gain. A change (rate,
+        // bits, μ-law, place) never stops the sound first: the new source is
+        // scheduled a little ahead on the audio clock, at the place the old
+        // one will have reached by then, and the two cross over in FADE
+        // seconds, so that nothing breaks.
+        const FADE = 0.02;
+        let voice = null;                                       // { source, gain }
         function position() {
             if (!playing || !original) return offset;
             const duration = original.length / SOURCE;
-            return (offset + ctx.currentTime - startedAt) % duration;
+            return ((offset + Math.max(0, ctx.currentTime - startedAt)) % duration + duration) % duration;
         }
-
-        function start(from) {
+        function start(from, smooth = playing) {
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC || !heard) return;
             if (!ctx) ctx = new AC();
             if (ctx.state === 'suspended') ctx.resume();
-            stopSource();
+            const duration = original.length / SOURCE;
+            const when = ctx.currentTime + (smooth ? 0.03 : 0.005);
+            // where the old source will be at that moment, unless asked for another place
+            const place = from === null ? ((offset + when - startedAt) % duration + duration) % duration : from;
             const buffer = ctx.createBuffer(1, heard.length, SOURCE);
             // a quiet clip is played loud again, so that the noise of the levels is heard
             buffer.copyToChannel(level === 1 ? heard : heard.map((v) => Math.max(-1, Math.min(1, v / level))), 0);
-            source = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, when);
+            gain.gain.linearRampToValueAtTime(1, when + FADE);
+            gain.connect(ctx.destination);
+            const source = ctx.createBufferSource();
             source.buffer = buffer;
             source.loop = true;
-            source.connect(ctx.destination);
-            offset = from;
-            startedAt = ctx.currentTime;
-            source.start(0, from);
+            source.connect(gain);
+            source.start(when, place);
+            fadeOut(voice, when);
+            voice = { source, gain };
+            offset = place;
+            startedAt = when;
             playing = true;
             showPlay();
             requestAnimationFrame(tick);
         }
-
+        function fadeOut(old, when) {
+            if (!old) return;
+            old.gain.gain.cancelScheduledValues(when);
+            old.gain.gain.setValueAtTime(1, when);
+            old.gain.gain.linearRampToValueAtTime(0, when + FADE);
+            old.source.stop(when + FADE + 0.01);
+            setTimeout(() => { old.source.disconnect(); old.gain.disconnect(); }, (when - ctx.currentTime + FADE) * 1000 + 200);
+        }
         function stopSource() {
-            if (source) { try { source.stop(); } catch (e) { /* already stopped */ } source.disconnect(); source = null; }
+            if (voice) fadeOut(voice, ctx.currentTime);
+            voice = null;
         }
 
         function stop() {
@@ -353,7 +376,7 @@
         function update() {
             compute();
             draw();
-            if (playing) start(position());
+            if (playing) start(null);
         }
 
         async function pickClip(value) {

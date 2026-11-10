@@ -137,8 +137,8 @@
     }
 
     // the instruments of the music, each a track of its own (sounds/make.py)
-    const INSTRUMENTS = [['bass-trommel', 'Bass-Trommel'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'],
-        ['bass', 'Bass'], ['akkorde', 'Akkorde'], ['melodie', 'Melodie']];
+    const INSTRUMENTS = [['kick', 'Kick'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'],
+        ['bass', 'Bass'], ['chords', 'Akkorde'], ['melody', 'Melodie']];
     let tracks = null;
     function loadTracks() {
         if (!tracks) {
@@ -188,7 +188,8 @@
 
         const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary spectrum-play' });
         // the instruments of the music, each a switch
-        const instruments = el('div', { class: 'btn-group btn-group-sm spectrum-instruments', role: 'group', 'aria-label': 'Instrumente' });
+        // separate switches, not a bar: each instrument on its own
+        const instruments = el('div', { class: 'spectrum-instruments', role: 'group', 'aria-label': 'Instrumente' });
         INSTRUMENTS.forEach(([name, label]) => {
             const inputId = `${id}-instrument-${name}`;
             const input = el('input', { type: 'checkbox', class: 'btn-check', id: inputId, autocomplete: 'off' });
@@ -197,7 +198,7 @@
                 if (input.checked) muted.delete(name); else muted.add(name);
                 remix();
             });
-            instruments.append(input, el('label', { class: 'btn btn-outline-secondary', for: inputId, text: label }));
+            instruments.append(input, el('label', { class: 'btn btn-sm btn-outline-secondary', for: inputId, text: label }));
         });
         const instrumentRow = el('div', { class: 'spectrum-controls' }, [
             el('div', { class: 'spectrum-group' }, [el('span', { class: 'spectrum-label', text: 'Instrumente' }), instruments])]);
@@ -390,30 +391,54 @@
         function draw() { drawGram(); drawChart(); describe(); }
 
         // sound --------------------------------------------------------------------
+        // A change (instruments, a new moment) never stops the sound first:
+        // the new source is scheduled a little ahead on the audio clock, at
+        // the place the old one will have reached (or the place asked for),
+        // and the two cross over in FADE seconds.
+        const FADE = 0.02;
+        let voice = null;                                       // { source, gain }
         function position() {
             if (!playing) return offset;
-            return (offset + ctx.currentTime - startedAt) % duration();
+            const d = duration();
+            return ((offset + Math.max(0, ctx.currentTime - startedAt)) % d + d) % d;
         }
-        function start(from) {
+        function start(from, smooth = playing) {
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC || !samples) return;
             if (!ctx) ctx = new AC();
             if (ctx.state === 'suspended') ctx.resume();
-            stopSource();
+            const d = duration();
+            const when = ctx.currentTime + (smooth ? 0.03 : 0.005);
+            const place = from === null ? ((offset + when - startedAt) % d + d) % d : from;
             const buffer = ctx.createBuffer(1, samples.length, SOURCE);
             buffer.copyToChannel(samples, 0);
-            source = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, when);
+            gain.gain.linearRampToValueAtTime(1, when + FADE);
+            gain.connect(ctx.destination);
+            const source = ctx.createBufferSource();
             source.buffer = buffer;
             source.loop = true;
-            source.connect(ctx.destination);
-            offset = from; startedAt = ctx.currentTime;
-            source.start(0, from);
+            source.connect(gain);
+            source.start(when, place);
+            fadeOut(voice, when);
+            voice = { source, gain };
+            offset = place; startedAt = when;
             playing = true;
             showPlay();
             requestAnimationFrame(tick);
         }
+        function fadeOut(old, when) {
+            if (!old) return;
+            old.gain.gain.cancelScheduledValues(when);
+            old.gain.gain.setValueAtTime(1, when);
+            old.gain.gain.linearRampToValueAtTime(0, when + FADE);
+            old.source.stop(when + FADE + 0.01);
+            setTimeout(() => { old.source.disconnect(); old.gain.disconnect(); }, (when - ctx.currentTime + FADE) * 1000 + 200);
+        }
         function stopSource() {
-            if (source) { try { source.stop(); } catch (e) { /* already stopped */ } source.disconnect(); source = null; }
+            if (voice) fadeOut(voice, ctx.currentTime);
+            voice = null;
         }
         function stop() {
             at = offset = position();
@@ -457,8 +482,9 @@
             samples = mixed;
             frames = spectra(mixed);
             image = null;
-            at = offset = from;
-            if (wasPlaying) start(from); else draw();
+            at = from;
+            // playing, the new mix takes over where the sound is; else it waits at the moment
+            if (wasPlaying) start(null); else { offset = from; draw(); }
         }
 
         async function pickClip(value) {

@@ -192,43 +192,68 @@
         };
 
         // sound ------------------------------------------------------------------
-        // start a beep at f with level dB (and the noise, if asked); returns a function that stops it
-        function start(f, db, withNoise, onEnd) {
+        // start a beep at f with level dB (and the noise, if asked) at the audio
+        // clock's time when, phase seconds into the beep and the noise; returns a
+        // function that stops it (fading out from the time given, else now), with
+        // its gain and when it started. Faded in and out over FADE seconds, so
+        // that a change never breaks the flow.
+        const FADE = 0.02;
+        function start(f, db, withNoise, onEnd, when = null, phase = 0) {
             const c = audio();
             if (!c) return null;
+            const at = when === null ? c.currentTime + 0.005 : when;
+            const fader = c.createGain();
+            fader.gain.setValueAtTime(0, at);
+            fader.gain.linearRampToValueAtTime(1, at + FADE);
+            fader.connect(c.destination);
             const gain = c.createGain();
             gain.gain.value = 10 ** (Math.min(TOP, db) / 20);
-            gain.connect(c.destination);
+            gain.connect(fader);
             const tone = c.createBufferSource();
             tone.buffer = beep(f);
             tone.loop = true;
             tone.connect(gain);
-            tone.start();
+            tone.start(at, phase % tone.buffer.duration);
             const sources = [tone];
             let noiseGain = null;
             if (withNoise) {
                 noiseGain = c.createGain();
                 noiseGain.gain.value = 10 ** (MASKER / 20);
-                noiseGain.connect(c.destination);
+                noiseGain.connect(fader);
                 const n = c.createBufferSource();
                 n.buffer = noiseBuffer();
                 n.loop = true;
                 n.connect(noiseGain);
-                n.start();
+                n.start(at, phase % n.buffer.duration);
                 sources.push(n);
             }
-            const stopIt = () => {
-                sources.forEach((s) => { try { s.stop(); } catch (e) { /* stopped */ } s.disconnect(); });
-                gain.disconnect();
-                if (noiseGain) noiseGain.disconnect();
+            const stopIt = (from = null) => {
+                const t = from === null ? c.currentTime : from;
+                fader.gain.cancelScheduledValues(t);
+                fader.gain.setValueAtTime(1, t);
+                fader.gain.linearRampToValueAtTime(0, t + FADE);
+                sources.forEach((s) => s.stop(t + FADE + 0.01));
+                setTimeout(() => {
+                    sources.forEach((s) => s.disconnect());
+                    gain.disconnect();
+                    fader.disconnect();
+                    if (noiseGain) noiseGain.disconnect();
+                }, (t - c.currentTime + FADE) * 1000 + 200);
                 if (onEnd) onEnd();
             };
-            return Object.assign(stopIt, { gain });
+            return Object.assign(stopIt, { gain, startedAt: at, phase });
         }
+        // a new tone or the noise on or off while playing: the new sound takes
+        // over at the same place in the beep, crossing over the old one
         function restart() {
-            stop();
             if (refStop) refStop();
-            const s = start(freq, level, kind === 'masking' && masker);
+            const c = audio();
+            if (!c) return;
+            const old = playing;
+            const when = c.currentTime + 0.03;
+            const phase = old ? old.phase + (when - old.startedAt) : 0;
+            const s = start(freq, level, kind === 'masking' && masker, null, old ? when : null, phase);
+            if (old) old(when);
             if (s) playing = s;
             showPlay();
         }

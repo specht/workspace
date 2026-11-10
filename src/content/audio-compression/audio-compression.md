@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Das Spektrogramm einer kurzen Musik: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe; unten die Schläge der Bass-Trommel als dunkle Flecken, darüber die waagerechten Linien der Akkorde und der Melodie, oben die Wolken der Hi-Hat. Eine senkrechte Linie markiert einen Moment, und darunter steht das Spektrum dieses Moments als Kurve mit vielen Spitzen."
+image_alt: "Das Spektrogramm einer kurzen Musik: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe; unten die Schläge der Kick-Drum als dunkle Flecken, darüber die waagerechten Linien der Akkorde und der Melodie, oben die Wolken der Hi-Hat. Eine senkrechte Linie markiert einen Moment, und darunter steht das Spektrum dieses Moments als Kurve mit vielen Spitzen."
 kind: labor
 language: Python
 duration: 8 Doppelstunden
@@ -819,7 +819,7 @@ Ein **Spektrogramm** zeigt das Spektrum über die Zeit: nach rechts die Zeit, na
 <div class='spectrum-widget'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Schalt bei der Musik die Instrumente einzeln aus und wieder an: Wo liegt die Bass-Trommel, wo die Hi-Hat, und welches Instrument macht die waagerechten Linien in der Mitte?
+<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Schalt bei der Musik die Instrumente einzeln aus und wieder an: Wo liegt die Kick-Drum, wo die Hi-Hat, und welches Instrument macht die waagerechten Linien in der Mitte?
 </div>
 
 Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit einer Grundfrequenz, beim Sprechen meist zwischen 80 und 250 Hz, und dazu mit jedem Vielfachen davon. Laute wie s, sch und z sind dagegen Rauschen, ein Gemisch sehr vieler Frequenzen, und das liegt hoch. Darum gehen sie bei einer kleinen Abtastrate als Erstes verloren.
@@ -1277,7 +1277,7 @@ terminal-wait-for-prompt: 60
 wait-for-text: stimme: 39%
 -->
 
-Bei der Musik liegt gut die Hälfte der Frequenzen über der Hörschwelle, bei der Stimme weniger als zwei Fünftel, denn sie hat Pausen und nichts über 11.000 Hz. Hör dir `musik-hoerbar.wav` und `musik.wav` nacheinander an. Was fehlt, ist vor allem der tiefste Bass unter 60 Hz, wo das Ohr eine hohe Schwelle hat, und das Höchste über 14.000 Hz. Mit guten Kopfhörern und lautem Regler hörst du vielleicht, dass die Bass-Trommel etwas dünner klingt: Das ist die Annahme mit den 96 dB, die bei dir nicht stimmt.
+Bei der Musik liegt gut die Hälfte der Frequenzen über der Hörschwelle, bei der Stimme weniger als zwei Fünftel, denn sie hat Pausen und nichts über 11.000 Hz. Hör dir `musik-hoerbar.wav` und `musik.wav` nacheinander an. Was fehlt, ist vor allem der tiefste Bass unter 60 Hz, wo das Ohr eine hohe Schwelle hat, und das Höchste über 14.000 Hz. Mit guten Kopfhörern und lautem Regler hörst du vielleicht, dass die Kick-Drum etwas dünner klingt: Das ist die Annahme mit den 96 dB, die bei dir nicht stimmt.
 
 ### Ein lauter Klang verdeckt einen leisen
 
@@ -1655,7 +1655,7 @@ terminal-wait-for-prompt: 60
 wait-for-text: der Zahlen sind 0
 -->
 
-Hör dir `musik.wav` und `musik-codec.wav` nacheinander an, dann `musik-rest.wav`. Der Rest ist nicht still: Er ist nur etwa 14 dB leiser als die Musik und wird mit ihr lauter und leiser, denn er ist so laut, wie die Mithörschwelle erlaubt, und die folgt der Musik. Fast zwei Drittel seiner Energie liegen unter 200 Hz, bei Bass und Bass-Trommel: Dort hören wir schlecht, und laute tiefe Töne verdecken viel. Allein hört man den Rest gut; unter der Musik soll er verschwinden, wenn das Modell stimmt. Gut zwei Drittel der gerundeten Zahlen sind 0, und die größte ist 16.
+Hör dir `musik.wav` und `musik-codec.wav` nacheinander an, dann `musik-rest.wav`. Der Rest ist nicht still: Er ist nur etwa 14 dB leiser als die Musik und wird mit ihr lauter und leiser, denn er ist so laut, wie die Mithörschwelle erlaubt, und die folgt der Musik. Fast zwei Drittel seiner Energie liegen unter 200 Hz, bei Bass und Kick-Drum: Dort hören wir schlecht, und laute tiefe Töne verdecken viel. Allein hört man den Rest gut; unter der Musik soll er verschwinden, wenn das Modell stimmt. Gut zwei Drittel der gerundeten Zahlen sind 0, und die größte ist 16.
 <!-- /after -->
 
 ### Wie viele Bits

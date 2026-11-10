@@ -15178,7 +15178,7 @@ html[data-bs-theme="dark"] .spectrum-widget {
 }
 .spectrum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.2em; margin-bottom: 0.6em; }
 .spectrum-group { display: flex; align-items: center; gap: 0.5em; }
-.spectrum-instruments { flex-wrap: wrap; }
+.spectrum-instruments { display: flex; flex-wrap: wrap; gap: 0.35em; }
 .spectrum-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; }
 @media (max-width: 576px) {
     .spectrum-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
