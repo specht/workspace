@@ -174,7 +174,7 @@ seconds at 720p each.
    `data-mulaw`, a quiet clip with `data-level`), a WAV file of 60 bytes in
    the style of the GIF and JPEG pages (hexdump, field diagrams, byte
    tables), `wav_header` and `tone` as »Jetzt bist du dran«, the chord that
-   clips; the teaser is a drawing (`bilder/teaser.py`). Part 2 is written:
+   clips; the teaser is the spectrogram of the music, computed by `bilder/teaser.py`. Part 2 is written:
    the quiet voice in the widget with even steps and μ-law, a drawing of
    the levels (`bilder/mulaw-stufen.py`), `unmulaw` and the signal-to-noise
    ratio in dB, the line through the last two samples (`residual`, FLAC's

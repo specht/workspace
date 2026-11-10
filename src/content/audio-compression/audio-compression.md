@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Eine Welle, in gleichen Abständen gemessen; jedes Sample ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
+image_alt: "Das Spektrogramm einer kurzen Musik: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe; unten die Schläge der Bass-Trommel als dunkle Flecken, darüber die waagerechten Linien der Akkorde und der Melodie, oben die Wolken der Hi-Hat. Eine senkrechte Linie markiert einen Moment, und darunter steht das Spektrum dieses Moments als Kurve mit vielen Spitzen."
 kind: labor
 language: Python
 duration: 8 Doppelstunden
