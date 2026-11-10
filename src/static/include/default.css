@@ -14995,8 +14995,11 @@ html[data-bs-theme="dark"] .splat-viewer {
 .phone-publish .pp-fields { display: grid; grid-template-columns: minmax(0, 1fr) 9.5rem; gap: 1rem; align-items: end; }
 .phone-publish .pp-number-input { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
 /* the dice beside the number: part of the field, as an add-on, not a button of its own */
+/* square: as wide as the field is high (Bootstrap's .form-control height) */
 .phone-publish .pp-random { border: var(--bs-border-width) solid var(--bs-border-color); background: var(--bs-tertiary-bg);
-    color: var(--bs-secondary-color); padding: 0 .75rem; font-size: 1.1rem; }
+    color: var(--bs-secondary-color); padding: 0; font-size: 1rem; flex: 0 0 auto;
+    width: calc(1.5em + .75rem + var(--bs-border-width) * 2); display: grid; place-items: center; }
+.phone-publish .pp-random .bi { font-size: 1.15rem; margin: 0; }
 .phone-publish .pp-random:hover, .phone-publish .pp-random:focus-visible { background: var(--bs-secondary-bg); color: var(--bs-body-color); border-color: var(--bs-border-color); }
 .phone-publish .pp-random.rolling i { display: inline-block; animation: pp-roll .35s ease-out; }
 @keyframes pp-roll { from { transform: rotate(-200deg) scale(.7); } to { transform: none; } }
@@ -15034,6 +15037,7 @@ html[data-bs-theme="dark"] .splat-viewer {
     }
     .phone-publish .list-group { border-radius: 0; }
     .phone-publish .list-group-item { border-left: 0; border-right: 0; padding-left: 0; padding-right: 0; }
+    .phone-publish .list-group-item:last-child { border-bottom: 0; padding-bottom: 0; }
 }
 
 /* recordings to play, as the phone of the Telefonspiel shows a call

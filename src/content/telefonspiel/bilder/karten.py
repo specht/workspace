@@ -105,11 +105,11 @@ def loop(at, label, side, note=None, feet=(30, 66), note_anchor='middle'):
     return ''.join(parts)
 
 
-def start(at):
-    """Where the game begins: an arrow from »Start« down onto the right half
-    of the box (the loop takes the left half)."""
+def start(at, beside_loop=True):
+    """Where the game begins: an arrow from »Start« down onto the box, in its
+    middle, or on its right half when a loop takes the left half."""
     x, y = at
-    x += 40
+    x += 40 if beside_loop else 0
     top = y - BOX_H / 2
     head = 13
     return (f"<line x1='{x:.1f}' y1='{top - 40:.1f}' x2='{x:.1f}' y2='{top - head + 1:.1f}' stroke='{INK}' stroke-width='2.2'/>"
@@ -126,7 +126,7 @@ def hoehle(wide, again=True):
         box_w, w, h = 160, 420, 360
         at = {'vor der Höhle': (110, 130), 'nach Hause': (320, 130), 'Schatz': (110, 320)}
         down, home = 0.5, 0.5
-    parts = [start(at['vor der Höhle']), key(at['vor der Höhle'], at['Schatz'], '1', down),
+    parts = [start(at['vor der Höhle'], again), key(at['vor der Höhle'], at['Schatz'], '1', down),
              key(at['vor der Höhle'], at['nach Hause'], '2', home)]
     if again:
         parts.append(loop(at['vor der Höhle'], 'keine Taste', -1))
