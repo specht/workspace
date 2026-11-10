@@ -13,7 +13,8 @@
 // With data-picture and an <img> inside (the page resolves its address),
 // the picture stands above it with a grid
 // of 8 × 8 blocks; the chosen block (data-block='x y', multiples of 8) is
-// dragged, tapped or moved with the arrow keys, and its coefficients are
+// dragged, tapped or moved with the arrow keys, shown beside the picture
+// enlarged in Y as the goal of the steps, and its coefficients are
 // computed here: the DCT of Y − 128 (Y = 0,299 R + 0,587 G + 0,114 B),
 // rounded to multiples of data-quantize (1 if not given).
 
@@ -78,7 +79,7 @@
         let list = steps(coef);
         element.innerHTML = `
             ${element.dataset.src ? `<div class='idct-choose'><div class='idct-pick'></div><div class='idct-blocks' role='group' aria-label='Block der MCU'></div></div>` : ''}
-            ${element.dataset.picture !== undefined ? `<figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure>` : ''}
+            ${element.dataset.picture !== undefined ? `<div class='idct-picture-row'><figure class='idct-picture-box'><canvas class='idct-picture' tabindex='0' role='img' aria-label='Das Bild in Blöcken aus 8 × 8 Pixeln, ein Block ist markiert; er lässt sich ziehen, antippen oder mit den Pfeiltasten verschieben.'></canvas><figcaption>Den Block ziehen oder antippen</figcaption></figure><figure class='idct-target-box'><canvas class='idct-target' width='8' height='8' role='img' aria-label='Der markierte Block in Y, vergrößert: das Ziel der Schritte'></canvas><figcaption>Ziel in Y</figcaption></figure></div>` : ''}
             <div class='idct-controls'>
                 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
                 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -89,7 +90,7 @@
             <div class='idct-panels'>
                 <figure><div class='idct-grid idct-coef'></div><figcaption>Koeffizienten</figcaption></figure>
                 <figure><div class='idct-grid idct-basis'></div><figcaption class='idct-basis-caption'></figcaption></figure>
-                <figure><div class='idct-grid idct-block'></div><figcaption>Der Block bisher, mit verstärktem Kontrast</figcaption></figure>
+                <figure><div class='idct-grid idct-block'></div><figcaption>Der Block bisher</figcaption></figure>
                 <figure><div class='idct-grid idct-numbers'></div><figcaption>Pixelwerte</figcaption></figure>
             </div>
             <div class='idct-say' aria-live='polite'></div>`;
@@ -97,16 +98,6 @@
         const count = element.querySelector('.idct-count');
         const go = (name) => element.querySelector(`[data-go='${name}']`);
         let current = 0;
-        // The grey picture of the block stretched to the range of the finished
-        // block, so that small changes show; the numbers stay as they are.
-        let low = 0, high = 255;
-        const range = () => {
-            const final = list[list.length - 1].block;
-            low = Math.min(...final);
-            high = Math.max(...final);
-        };
-        range();
-        const stretch = (p) => Math.max(0, Math.min(255, Math.round((p - low) / Math.max(1, high - low) * 235 + 10)));
 
         function draw() {
             const step = list[current];
@@ -122,7 +113,7 @@
                 return `<span style='background: ${grey(shade)}'></span>`;
             });
             element.querySelector('.idct-basis-caption').textContent = `Basisbild u = ${step.u}, v = ${step.v}, mal ${step.value}`;
-            element.querySelector('.idct-block').innerHTML = cells(step.block, (p) => `<span style='background: ${grey(stretch(p))}'></span>`);
+            element.querySelector('.idct-block').innerHTML = cells(step.block, (p) => `<span style='background: ${grey(p)}'></span>`);
             element.querySelector('.idct-numbers').innerHTML = cells(step.block, (p, i) => {
                 const before = current > 0 ? list[current - 1].block[i] : null;
                 return `<span class='${before !== null && before !== p ? 'changed' : ''}'>${p}</span>`;
@@ -143,8 +134,8 @@
         go('next').addEventListener('click', () => to(current + 1));
         go('last').addEventListener('click', () => to(list.length - 1));
         draw();
-        if (element.dataset.src && root.JpegImage) choose(element, (c) => { coef = c; list = steps(coef); range(); to(0); });
-        if (element.dataset.picture !== undefined && pictureImg) pickFromPicture(element, pictureImg, (c) => { coef = c; list = steps(coef); range(); to(0); });
+        if (element.dataset.src && root.JpegImage) choose(element, (c) => { coef = c; list = steps(coef); to(0); });
+        if (element.dataset.picture !== undefined && pictureImg) pickFromPicture(element, pictureImg, (c) => { coef = c; list = steps(coef); to(0); });
     }
 
     // The picker above the stepper: the MCU on the photo, then one of its
@@ -253,6 +244,16 @@
                 draw();
                 const block = [];
                 for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 8; xx++) block.push(luma(bx + xx, by + yy) - 128);
+                // the goal: the block in Y, beside the picture
+                const target = element.querySelector('.idct-target');
+                if (target) {
+                    const tctx = target.getContext('2d');
+                    block.forEach((value, i) => {
+                        const g = Math.max(0, Math.min(255, Math.round(value + 128)));
+                        tctx.fillStyle = `rgb(${g}, ${g}, ${g})`;
+                        tctx.fillRect(i % 8, Math.floor(i / 8), 1, 1);
+                    });
+                }
                 show(forward(block, q));
             };
             const at = (event) => {

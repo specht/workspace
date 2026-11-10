@@ -9555,8 +9555,34 @@ div[data-stepper] .stepper-word { display: none; }
 
 /* the iDCT stepper with the photo (idct_stepper.js, data-src): the picker,
    then the blocks of the chosen MCU */
-.idct-stepper .idct-picture-box {
+.idct-stepper .idct-picture-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75em 1.25em;
     margin: 0 0 0.75em;
+}
+.idct-stepper .idct-picture-box {
+    flex: 1 1 18em;
+    max-width: 32em;
+    margin: 0;
+}
+.idct-stepper .idct-target-box {
+    flex: 0 0 auto;
+    width: 8em;
+    margin: 0;
+}
+.idct-stepper .idct-target {
+    display: block;
+    width: 8em;
+    height: 8em;
+    image-rendering: pixelated;
+    border: 1px solid var(--widget-line);
+}
+.idct-stepper .idct-target-box figcaption {
+    margin-top: 0.25em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
 }
 .idct-stepper .idct-picture {
     display: block;
