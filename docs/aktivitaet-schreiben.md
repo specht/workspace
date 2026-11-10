@@ -162,7 +162,7 @@ einzelnes Bild, das man lesen muss, ein Diagramm mit Beschriftungen oder eine
 Karte (höchstens 36em breit und nie höher als der größte Teil des
 Bildschirms, in der Mitte), `wide-narrow` für ein
 breites Bild neben einem schmaleren, etwa gleich hoch (ein Blick in den Raum
-und die flache Textur daneben; auf dem Handy untereinander). Mit `carousel` wird die Galerie bei jeder Breite eine Reihe zum Durchblättern: ein Bild in der Mitte, das nächste schaut herein, ‹ und › an den Seiten, Punkte darunter zum Anklicken, mit der Maus ziehbar; für viele gleichartige Bilder, die man nacheinander ansieht (die neun Arten der Vorhersage in »Video komprimieren«). Mit `hide-lone` fällt von vier Bildern das vierte
+und die flache Textur daneben; auf dem Handy untereinander). Mit `carousel` wird die Galerie bei jeder Breite eine Reihe zum Durchblättern: so viele Bilder, wie Platz haben (drei, auf dem Tablet zwei, auf dem Handy eins), ‹ und › daneben, mit der Maus ziehbar, und sie endet, wo das letzte Bild ganz zu sehen ist; für viele gleichartige Bilder, die man nacheinander ansieht (die neun Arten der Vorhersage in »Video komprimieren«). Mit `hide-lone` fällt von vier Bildern das vierte
 weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
 Beispiele, bei denen drei genügen. Ein Bild mit der Klasse `inspect`
 (`<img class='inspect' …>`) ist zum genauen Hinsehen da, etwa eine ganze

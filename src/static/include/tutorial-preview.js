@@ -19,10 +19,11 @@
 // phone stay as they are: tiles, a few small drawings (centered), a single
 // picture to read, four columns (a grid of two there).
 //
-// A gallery with class 'carousel' is such a row at every width: one picture
-// at a time, the next one peeking in, ‹ and › at the sides, the dots below
-// to click, and on a desktop the row dragged with the mouse; it snaps to a
-// picture, and a drag does not open the picture large.
+// A gallery with class 'carousel' is such a row at every width: as many
+// pictures as fit (three on a desktop, two on a tablet, one on a phone),
+// aligned left, ‹ and › beside them, no dots; on a desktop the row is
+// dragged with the mouse; it snaps to a picture and ends where the last one
+// is whole, and a drag does not open the picture large.
 document.addEventListener('DOMContentLoaded', () => {
     const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair';
     for (const gallery of document.querySelectorAll('.gallery')) {
@@ -52,19 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const go = (i) => {
             const target = figures[Math.max(0, Math.min(figures.length - 1, i))];
-            gallery.scrollTo({ left: target.offsetLeft - (gallery.clientWidth - target.offsetWidth) / 2, behavior: 'smooth' });
+            gallery.scrollTo({ left: target.offsetLeft - figures[0].offsetLeft, behavior: 'smooth' });
         };
-        // the dots as buttons
-        dots.removeAttribute('aria-hidden');
-        dots.setAttribute('role', 'group');
-        dots.setAttribute('aria-label', 'Bilder');
-        [...dots.children].forEach((dot, i) => {
-            dot.setAttribute('role', 'button');
-            dot.setAttribute('tabindex', '0');
-            dot.setAttribute('aria-label', `Bild ${i + 1} von ${figures.length}`);
-            dot.addEventListener('click', () => go(i));
-            dot.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); go(i); } });
-        });
+        dots.remove();
         // ‹ and › beside the row
         const wrap = document.createElement('div');
         wrap.className = 'gallery-carousel';
@@ -81,8 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const steps = () => {
             const i = index();
-            wrap.querySelector('.gallery-carousel-prev').disabled = i <= 0;
-            wrap.querySelector('.gallery-carousel-next').disabled = i >= figures.length - 1;
+            wrap.querySelector('.gallery-carousel-prev').disabled = gallery.scrollLeft <= 2;
+            wrap.querySelector('.gallery-carousel-next').disabled = gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 2;
         };
         gallery.addEventListener('scroll', steps, { passive: true });
         steps();

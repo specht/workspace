@@ -73,11 +73,15 @@ def predicted(mode):
     return [[source(c + 0.5, r + 0.5, d)[1] for c in range(4)] for r in range(4)]
 
 
-def cell(col, row, value, neighbour):
+def cell(col, row, value, neighbour, dashed=False):
     """a cell tinted by its value; the neighbours a little apart from each
-    other, the block's cells joined"""
+    other, the block's cells joined; dashed: the four above to the right,
+    which only the ways from the upper right use"""
     x, y = X0 + (col + 1) * S, Y0 + (row + 1) * S
     inset = 2 if neighbour else 0
+    if dashed:
+        return [f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='3' fill='{WHITE}'/>",
+                f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='3' fill='{PURPLE}' fill-opacity='{0.06 + 0.6 * value / 255:.2f}' stroke='{GREY}' stroke-width='1.2' stroke-dasharray='3 2.5'/>"]
     return [f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='{3 if neighbour else 0}' fill='{WHITE}'/>",
             f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='{3 if neighbour else 0}' fill='{PURPLE}' fill-opacity='{0.06 + 0.6 * value / 255:.2f}' stroke='{LINE}' stroke-width='1'/>"]
 
@@ -94,7 +98,8 @@ def arrows(d):
     dx, dy = d
     n = math.hypot(dx, dy)
     ux, uy = dx / n, dy / n
-    sources = [(i + 0.5, -0.5) for i, v in enumerate(TOP) if v == max(TOP)] + [(-0.5, j + 0.5) for j, v in enumerate(LEFT) if v == max(LEFT)]
+    reach = 8 if dx < 0 else 4
+    sources = [(i + 0.5, -0.5) for i, v in enumerate(TOP[:reach]) if v == max(TOP)] + [(-0.5, j + 0.5) for j, v in enumerate(LEFT) if v == max(LEFT)]
     best = None
     for sx, sy in sources:
         # where the path enters and leaves the block (0 to 4 in both)
@@ -121,8 +126,10 @@ def draw(mode):
     number, name, d = mode
     w, h = X0 * 2 + 9 * S, Y0 * 2 + 5 * S
     parts = cell(-1, -1, CORNER, True)
-    for i, v in enumerate(TOP):
-        parts += cell(i, -1, v, True)
+    # the four above to the right only where the way needs them (from the upper right)
+    above_right = d is not None and d[0] < 0
+    for i, v in enumerate(TOP[:8 if above_right else 4]):
+        parts += cell(i, -1, v, True, dashed=i >= 4)
     for j, v in enumerate(LEFT):
         parts += cell(-1, j, v, True)
     for r, row in enumerate(predicted(mode)):

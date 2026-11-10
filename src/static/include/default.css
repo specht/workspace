@@ -15736,22 +15736,33 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 }
 
 /* A gallery as a carousel (.carousel, tutorial-preview.js): at every width a
-   row of pictures, one in the middle and the next peeking in, ‹ and › at the
-   sides, clickable dots below */
+   row of as many pictures as fit, aligned left, ‹ and › beside them,
+   vertically in the middle of the pictures; it ends where the last picture
+   is whole */
 .gallery-carousel {
     position: relative;
+    /* room for ‹ and › beside the pictures, not over them */
+    padding: 0 2.9em;
+    --carousel-gap: 1.5em;
+    --carousel-per-view: 3;
+}
+@media (max-width: 991.98px) {
+    .gallery-carousel { --carousel-per-view: 2; }
+}
+@media (max-width: 480px) {
+    .gallery-carousel { --carousel-per-view: 1; }
 }
 .gallery.carousel.swipe {
     display: flex;
     align-items: flex-start;
-    gap: 1.25em;
+    gap: var(--carousel-gap);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    padding: 0 calc((100% - min(30em, 82%)) / 2);
-    scroll-padding: 0 calc((100% - min(30em, 82%)) / 2);
-    margin-bottom: 0.4em;
+    margin: 0 0 1.5em;
+    padding: 0;
+    scroll-padding: 0;
     cursor: grab;
 }
 .gallery.carousel.swipe.dragging {
@@ -15763,32 +15774,13 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     display: none;
 }
 .gallery.carousel.swipe > figure {
-    flex: 0 0 min(30em, 82%);
-    scroll-snap-align: center;
-}
-.gallery-carousel + .gallery-dots,
-.gallery.carousel + .gallery-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.55em;
-    margin: 0.3em 0 1.5em;
-}
-.gallery-carousel ~ .gallery-dots span,
-.gallery.carousel ~ .gallery-dots span {
-    width: 0.55em;
-    height: 0.55em;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.25;
-    cursor: pointer;
-    transition: opacity 150ms ease;
-}
-.gallery-carousel ~ .gallery-dots span.active {
-    opacity: 0.75;
+    flex: 0 0 calc((100% - (var(--carousel-per-view) - 1) * var(--carousel-gap)) / var(--carousel-per-view));
+    scroll-snap-align: start;
 }
 .gallery-carousel-step {
     position: absolute;
-    top: 40%;
+    /* the middle of the pictures, above their captions */
+    top: calc(50% - 1.5em);
     transform: translateY(-50%);
     width: 2.4em;
     height: 2.4em;
@@ -15796,23 +15788,18 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     border-radius: 50%;
     background: var(--bs-body-bg);
     color: var(--bs-body-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
 }
 .gallery-carousel-step:disabled {
-    opacity: 0.35;
+    opacity: 0;
+    pointer-events: none;
 }
-.gallery-carousel-prev { left: 0.25em; }
-.gallery-carousel-next { right: 0.25em; }
-@media (max-width: 480px) {
-    .gallery-carousel-step { display: none; }
-}
-.gallery.carousel.swipe > figure img {
-    margin: 0 auto;
-}
+.gallery-carousel-prev { left: 0; }
+.gallery-carousel-next { right: 0; }
 
 /* the pictures of the block-matching widget and, over each, its grid and
    frames in device pixels */
