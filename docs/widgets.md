@@ -386,7 +386,7 @@ only to look nice.
   paints. `test/static/qr_code.test.cjs` checks the layout against
   qrencode and the page's stickers against jsQR.
 - **The iDCT stepper with a picture** (`idct_stepper.js`,
-  `data-picture data-quantize='8' data-block='72 56'` and an `<img>` inside, »Video
+  `data-picture data-quantize='8' data-block='72 32'` and an `<img>` inside, »Video
   komprimieren«): above the steps the picture, four times as large with
   sharp pixels, in a grid of 8 × 8 blocks; the chosen block dashed yellow
   as in the JPEG picker, dragged, tapped or moved with the arrow keys while

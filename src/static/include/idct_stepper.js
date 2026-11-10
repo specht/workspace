@@ -129,10 +129,14 @@
             const error = element.querySelector('.idct-error');
             if (error && element.idctTarget) {
                 const diffs = step.block.map((p, i) => element.idctTarget[i] - p);
+                // each cell with its error as a number, light on dark, dark on bright
                 error.innerHTML = cells(diffs, (d) => {
                     const t = Math.min(1, Math.abs(d) / 40);
                     const [r, g, b] = d > 0 ? [245, 158, 11] : [59, 130, 246];
-                    return `<span style='background: rgb(${Math.round(r * t)}, ${Math.round(g * t)}, ${Math.round(b * t)})'></span>`;
+                    const [cr, cg, cb] = [r * t, g * t, b * t].map(Math.round);
+                    const light = 0.299 * cr + 0.587 * cg + 0.114 * cb > 110;
+                    const text = d > 0 ? `+${d}` : d < 0 ? `−${-d}` : '0';
+                    return `<span style='background: rgb(${cr}, ${cg}, ${cb}); color: ${!d ? '#6b7280' : light ? '#1f2937' : '#e5e7eb'}'>${text}</span>`;
                 });
                 const mean = diffs.reduce((sum, d) => sum + Math.abs(d), 0) / 64;
                 element.querySelector('.idct-error-caption').textContent = `Fehler, im Mittel ${mean.toLocaleString('de-DE', { maximumFractionDigits: 1 })}`;

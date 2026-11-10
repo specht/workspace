@@ -266,8 +266,10 @@ seconds at 720p each.
    the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
    coarser against brightness made coarser in a detail, and why a frame
    from an MP4 has nothing left to subsample.
-   Part 3 is written: a block of the girl's cheek in the iDCT stepper of the
-   JPEG page (20 of 64 coefficients after rounding to multiples of 8),
+   Part 3 is written: the iDCT stepper of the JPEG page with a picture to
+   pick blocks from (`data-picture`; the goal in Y beside it, the error in
+   place of the pixel values; it starts on the glowing rim of the girl's
+   hair, 33 of 64 coefficients after rounding to multiples of 8),
    `blocks.py` with the DCT as a matrix for blocks of any size, `bits` with
    one table per position, `quantize` and `restore` of one's own (step 8,
    32, 64: 33 %, 11,5 %, 5,4 % of the coefficients not 0; 0,67 bits per

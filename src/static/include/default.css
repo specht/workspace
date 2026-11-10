@@ -9515,7 +9515,7 @@ div[data-stepper] .stepper-word { display: none; }
     justify-content: center;
     overflow: hidden;
 }
-.idct-stepper .idct-coef span, .idct-stepper .idct-numbers span {
+.idct-stepper .idct-coef span, .idct-stepper .idct-numbers span, .idct-stepper .idct-error span {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: calc(var(--idct-cell) * 0.36);
 }
