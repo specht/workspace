@@ -475,7 +475,7 @@ function install_autotoc() {
                 window.location.href = containers[i].dataset.href;
                 return;
             }
-            $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
+            window.scrollTo({ top: heading_top($(containers[i]).find('h2')[0]), behavior: 'smooth' });
         });
         autotoc_items.push(item[0]);
         autotoc_items_visible.push(false);
@@ -487,6 +487,16 @@ function install_autotoc() {
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+}
+
+// Where to scroll so that a heading stands at the top of the window: its
+// place in the page (offsetTop counts from the nearest positioned box, not
+// the page), less the bar of chapters where it covers the window (it is not
+// shown beside the side navigation on a wide screen) and a little air.
+function heading_top(heading) {
+    let bar = document.querySelector('.autotoc');
+    let covering = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().height : 0;
+    return heading.getBoundingClientRect().top + window.scrollY - covering - 20;
 }
 
 // The mark of an optional chapter (ExtraChapters) in both tables of
@@ -652,7 +662,7 @@ function install_secondary_autotoc() {
             e.preventDefault();
 
             window.scrollTo({
-                top: heading.offsetTop - 90,
+                top: heading_top(heading),
                 behavior: 'smooth'
             });
 
