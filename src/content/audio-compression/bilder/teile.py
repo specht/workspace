@@ -12,9 +12,10 @@ is about.
             threshold as steps, the noise under it
     teil-7  Echte Dateien: the four bytes of an MP3 frame header and their
             bits, the fields that matter (bit rate, sample rate) in purple
+    teil-8  Heute: a timeline from G.711 to SoundStream, the years to scale
 
     src/scripts/drawings python3 src/content/audio-compression/bilder/teile.py
-    for n in 2 3 4 5 6 7; do src/scripts/drawings ruby src/scripts/render-svg.rb --webp src/content/audio-compression/teil-$n.svg; done
+    for n in 2 3 4 5 6 7 8; do src/scripts/drawings ruby src/scripts/render-svg.rb --webp src/content/audio-compression/teil-$n.svg; done
 """
 
 import math
@@ -196,9 +197,34 @@ def header():
     save('teil-7', 'Die Karte von Teil 7: die vier Bytes eines MP3-Headers und ihre Bits; gemacht von bilder/teile.py, als Bild:', parts)
 
 
+def timeline():
+    # the years to scale, a dot for each codec, the names above and below by
+    # turns; Vorbis, close to MP3, a level higher
+    left, right, y = 130, 1470, 500
+    first, last = 1970, 2027
+    sx = lambda year: left + (right - left) * (year - first) / (last - first)
+    events = [(1972, 'G.711', 1), (1982, 'CD', -1), (1993, 'MP3', 1), (1997, 'AAC', -1), (2000, 'Vorbis', 2),
+              (2012, 'Opus', -1), (2021, 'SoundStream', 1)]
+    parts = [f"<line x1='{left}' y1='{y}' x2='{right}' y2='{y}' stroke='{LINE}' stroke-width='6' stroke-linecap='round'/>"]
+    for year, name, tier in events:
+        x = sx(year)
+        stem = 110 if abs(tier) == 1 else 240
+        sign = -1 if tier > 0 else 1
+        parts.append(f"<line x1='{x:.1f}' y1='{y}' x2='{x:.1f}' y2='{y + sign * stem}' stroke='{LINE}' stroke-width='3'/>")
+        parts.append(f"<circle cx='{x:.1f}' cy='{y}' r='18' fill='{PURPLE}'/>")
+        if sign < 0:
+            parts.append(text(x, y - stem - 30, name, 52, PURPLE, weight=600))
+            parts.append(text(x, y - stem - 95, str(year), 36, GREY))
+        else:
+            parts.append(text(x, y + stem + 65, name, 52, PURPLE, weight=600))
+            parts.append(text(x, y + stem + 120, str(year), 36, GREY))
+    save('teil-8', 'Die Karte von Teil 8: eine Zeitleiste von G.711 bis SoundStream; gemacht von bilder/teile.py, als Bild:', parts)
+
+
 mulaw()
 frequencies()
 ear()
 blocks()
 quantise()
 header()
+timeline()

@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Eine Welle, in gleichen Abständen gemessen; jede Messung ist ein Punkt auf einer von sieben Stufen, und unter jedem Punkt stehen die drei Bits, die gespeichert werden."
 kind: labor
 language: Python
-duration: 5 Doppelstunden
+duration: 8 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Huffman-Codierung), Vertiefung Technische Informatik (Abtastung, Quantisierung, Audiokompression)"
 topics: [kompression, codierung, zahlensysteme]
 parts:
@@ -21,6 +21,8 @@ parts:
     image_alt: "Sechzehn Balken für die Lautstärke von Bändern, nach rechts leiser; in jedem ein kräftigerer, niedrigerer Teil für das erlaubte Rauschen, darüber die Mithörschwelle als gestrichelte Treppe."
   - image: teil-7.webp
     image_alt: "Die vier Bytes ff, fb, 90 und c0 vom Anfang eines MP3-Frames, darunter ihre 32 Bits; elf Einsen am Anfang sind als Sync markiert, und im dritten Byte sind die vier Bits der Bitrate, 128 kbit/s, und die zwei der Abtastrate, 44.100 Hz, hervorgehoben."
+  - image: teil-8.webp
+    image_alt: "Eine Zeitleiste von 1972 bis heute mit sieben Punkten: G.711 1972, die CD 1982, MP3 1993, AAC 1997, Vorbis 2000, Opus 2012 und SoundStream 2021."
 requires: [huffman]
 reference: [bits-und-bytes]
 </div>
@@ -1959,3 +1961,43 @@ Im Widget sind A und B fünf Sekunden der Musik, B einmal durch den Codec und zu
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Fang mit MP3 bei 128 kbit/s an und spiel 10 Runden. Geh dann mit der Bitrate herunter: Ab welcher hörst du sicher einen Unterschied? Achte auf die Hi-Hat, das Zischen oben, und auf den Klang der Glocke, wenn sie verklingt. Vergleiche danach die drei Codecs bei 32 kbit/s.
 </div>
+
+## Heute
+
+Alles, was du gebaut hast, steckt in den Codecs, die heute jeden Tag Milliarden Mal laufen. Wie sie entstanden sind und wohin es geht.
+
+### Wie MP3 entstand
+
+1987 taten sich die Universität Erlangen-Nürnberg und das Fraunhofer-Institut für Integrierte Schaltungen in Erlangen zusammen. Dieter Seitzer, Professor in Erlangen, träumte von einer digitalen Jukebox: Musik aus einem Rechner, über eine ISDN-Leitung des Telefonnetzes, und dafür musste sie etwa zwölfmal kleiner werden, ungefähr so viel wie bei deinem Codec. Sein Doktorand Karlheinz Brandenburg schrieb 1989 seine Doktorarbeit darüber, wie man Klänge nach dem codiert, was das Ohr wahrnimmt, genau das, was du in den Kapiteln über das Ohr und das Runden gemacht hast. Die Moving Picture Experts Group, kurz MPEG, machte daraus mit anderen Vorschlägen eine Norm, MPEG-1, fertig 1992 und 1993 veröffentlicht als ISO/IEC 11172. Sie hat drei Stufen, Layer I bis III, und Layer III ist das, was man heute MP3 nennt: eine Filterbank und danach eine MDCT, Runden nach Gehör und Huffman-Codes.
+
+Zum Prüfen hörte Brandenburg immer wieder ein Lied: »Tom's Diner« von Suzanne Vega, eine Stimme ohne Begleitung. Eine einzelne Stimme verdeckt wenig, und jeder Fehler ist zu hören. 1995 stimmten die Forscher in Erlangen ab, wie die Dateien heißen sollten, und wählten die Endung `.mp3`. Wer MP3 benutzen wollte, zahlte bis 2017 Lizenzen; dann lief das letzte Patent ab, und MP3 ist frei.
+
+### Nach MP3
+
+**AAC** wurde 1997 als Nachfolger von MP3 genormt, von Dolby, AT&T, Fraunhofer und Sony gemeinsam. Es hat nur noch die MDCT, ohne die Filterbank davor, und Blöcke mit 1.024 oder achtmal 128 Zahlen, wie im Kapitel über Blöcke. AAC steckt in Videos, bei Apple und bei den meisten Musikdiensten.
+
+**Vorbis** begann Chris Montgomery 1993, Version 1.0 erschien im Jahr 2000: ein Codec, für den niemand Lizenzen zahlen muss. Spotify nutzt ihn vor allem, und viele Spiele, darunter Minecraft, speichern ihre Klänge damit.
+
+**Opus** ist seit 2012 als [RFC 6716](https://www.rfc-editor.org/rfc/rfc6716) beschrieben. Es hat zwei Codecs in einem: SILK, von Skype für Sprache entwickelt, sagt die nächste Messung aus den vorigen voraus wie im Kapitel über kleine Tricks; CELT aus dem Umfeld der Xiph.Org Foundation arbeitet mit der MDCT in kurzen Blöcken, damit wenig Verzögerung entsteht. Opus kann alles von 6 bis 510 kbit/s, und jeder Browser muss es für Anrufe über WebRTC können: Wenn du im Browser telefonierst oder eine Videokonferenz hast, hörst du sehr wahrscheinlich Opus.
+
+**LC3** ist der Codec von Bluetooth LE Audio, entwickelt von Fraunhofer und Ericsson. Er löst den alten Codec SBC ab und klingt in den Hörtests der Bluetooth-Organisation besser als er, auch wenn Pakete verloren gehen.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Wie wenig reicht für eine Stimme? Mach aus <code>stimme.wav</code> eine Opus-Datei mit 6 kbit/s, der kleinsten Bitrate, und wieder eine WAV-Datei zum Anhören:
+<pre><code>ffmpeg -i stimme.wav -c:a libopus -b:a 6k -application voip stimme-6.opus
+ffmpeg -i stimme-6.opus stimme-6.wav
+ls -l stimme.wav stimme-6.opus</code></pre>
+Wie viel kleiner ist die Opus-Datei? Achte beim Anhören von <code>stimme-6.wav</code> auf die Laute s, z und sch: Sind sie noch da?
+</div>
+
+### Codecs, die lernen
+
+Seit einigen Jahren gibt es Codecs, in denen ein neuronales Netz steckt. Opus 1.5 vom März 2024 kann mit Netzen verlorene Pakete füllen und Sprache bei 6 kbit/s deutlich besser klingen lassen; ausgeschaltet ist das, bis man es einschaltet. Weiter gehen Codecs, die ganz aus Netzen bestehen. **SoundStream** von Forschenden bei Google (2021) hat einen Coder, der aus dem Klang wenige Zahlen macht, und einen Decoder, der daraus wieder einen Klang macht; beide haben an sehr vielen Klängen gelernt, wie man das gut macht. In ihren Hörtests klang SoundStream mit 3 kbit/s besser als Opus mit 12. **EnCodec** (2022) arbeitet ähnlich, mit 1,5 bis 24 kbit/s.
+
+Dahinter steckt ein anderer Gedanke als in deinem Codec. Dein Codec speichert den Klang ungenau, aber was er zurückgibt, ist der Klang mit etwas Rauschen. Ein neuronaler Decoder bekommt so wenig, dass er vieles ergänzen muss, und er ergänzt es so, wie es zu den Klängen passt, die er beim Lernen gehört hat: Was er ausgibt, klingt echt, auch wo es nicht stimmt.
+
+_task(erfundene-details)
+
+### Wie es weitergeht
+
+Für Bilder gibt es dieselben Ideen: [Komprimieren mit JPEG](/jpeg) zerlegt Bilder in Blöcke und rundet ihre Frequenzen nach dem, was das Auge sieht. Und im [Spiel am Telefon](/telefonspiel) hörst du, was ein Telefon mit 8.000 Messungen in der Sekunde aus einer Stimme macht.

@@ -787,3 +787,24 @@ tasks:
           padding = (header[2] >> 1) & 1
           return 144 * bitrate // rate + padding
       ```
+
+  - id: erfundene-details
+    title: Ein Codec, der ergänzt
+    prompt: |
+      Ein neuronaler Decoder ergänzt, was ihm fehlt, so dass es echt klingt,
+      auch wo es nicht stimmt. Wo wäre das in Ordnung, und wo nicht? Nenne
+      je ein Beispiel und begründe.
+    check:
+      type: reflection
+      min_words: 25
+    examples:
+      - |
+        Bei einem Videoanruf mit Freunden ist es in Ordnung: Es kommt darauf
+        an, dass man sich versteht, und ein erfundenes Detail im Hintergrund
+        stört nicht. Bei einer Aufnahme, die als Beweis vor Gericht dienen
+        soll, nicht: Dort muss das, was man hört, wirklich gesagt worden sein.
+      - |
+        Für Musik im Bus finde ich es in Ordnung, weil es nur gut klingen
+        muss. Bei einem Interview für die Zeitung nicht, denn wenn der
+        Decoder ein undeutliches Wort ergänzt, steht vielleicht etwas im
+        Artikel, das niemand gesagt hat.
