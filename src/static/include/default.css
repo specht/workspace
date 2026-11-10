@@ -6708,6 +6708,10 @@ html[data-bs-theme="dark"] .usage-charts {
     margin-top: 0.5em;
 }
 
+/* only in development: the mark of a page not yet in the catalog, over the
+   top left corner of the picture, taking no room from the text */
+.tutorial_card3 .card-dev { position: absolute; top: 0.6em; left: 0.6em; z-index: 3; }
+
 .tutorial_card3 .card-content .card-title-row {
     margin-bottom: 6px;
 

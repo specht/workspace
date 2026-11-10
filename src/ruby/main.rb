@@ -2841,12 +2841,14 @@ class Main < Sinatra::Base
                 io.puts "<img alt='#{card_alt}' class='#{additional_classes.join(' ')}' #{card_image.(picture[:image] || '/images/white.webp')} style='#{image_style}'>"
             end
             io.puts "<div class='shade'></div>"
+            # only in development, over the picture's corner (default.css, .card-dev)
+            io.puts '<span class="badge badge-sm bg-danger card-dev">dev</span>' if content[:dev_only]
             io.puts "<div class='card-content'>"
             # The kind on its own line above the title (default.css).
             # With it, for a student who solved a task here, how many (»3/7«).
             io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
             io.puts "<div class='card-title-row'>"
-            io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
+            io.puts "<h4>#{content[:title]}</h4>"
             io.puts "</div>"
             io.puts "<div class='card-part'>#{CGI.escapeHTML(part_title)}</div>" if part_title
             io.puts "<div class='abstract'>#{content[:abstract]}</div>"
