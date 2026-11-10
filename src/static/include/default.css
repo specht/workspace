@@ -15273,16 +15273,18 @@ html[data-bs-theme="dark"] .abx-widget {
 }
 .abx-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.6em; }
 .abx-label { font-size: 0.9em; color: var(--widget-ink); min-width: 4.5em; }
-.abx-play { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5em; margin: 0.9em 0; }
-.abx-button { padding-block: 0.7em; }
-.abx-button.active { background-color: var(--abx-mark); border-color: var(--abx-mark); color: var(--abx-mark-ink); }
+.abx-play { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6em; margin: 0.9em 0; }
+.abx-play-button { min-width: 9em; padding-block: 0.6em; }
+.abx-listen { flex: 1 1 24em; }
+.abx-listen .btn { flex: 1 1 0; padding-block: 0.6em; }
+.abx-listen .btn-check:checked + .btn { background-color: var(--abx-mark); border-color: var(--abx-mark); color: var(--abx-mark-ink); }
 .abx-answer { margin-top: 0.4em; }
 .abx-again { color: var(--widget-ink); }
 .abx-verdict { margin: 0.5em 0 0; min-height: 1.5em; }
 .abx-verdict.abx-right { color: var(--abx-right); }
 .abx-tally { margin: 0.3em 0 0.2em; font-variant-numeric: tabular-nums; }
 @media (max-width: 575.98px) {
-    .abx-play { grid-template-columns: 1fr; }
+    .abx-play-button { flex: 1 1 100%; }
 }
 
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
