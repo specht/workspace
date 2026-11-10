@@ -20,6 +20,8 @@
     const KEYS = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['*', '0', '#']];
     const LOW = 600, HIGH = 1600;           // the waterfall's frequencies
     const WINDOW = 0.010;                   // the wave: 10 ms
+    const SLOW = 400;                       // while a key sounds the wave runs, this many times slower
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     const MIN_TONE = 0.15, LEVEL = 0.18;    // as the phone: 150 ms; each tone's amplitude
     const FLOOR = -95, TOP = -35;           // dB from the analyser, dark to bright
 
@@ -44,6 +46,7 @@
         let shown = '5';                     // the key the wave shows
         let hidden = false, riddle = null, busy = false;
         let columns = [], running = false, quietFrames = 0, visible = true;
+        let waveTime = 0, lastFrame = 0;         // where the wave's window starts, in seconds
 
         // the keypad, with the frequencies of its rows and columns
         const pad = el('div', 'dtmf-pad');
@@ -70,7 +73,7 @@
         fall.setAttribute('role', 'img');
         fall.setAttribute('aria-label', 'Wasserfall: nach rechts die Zeit, nach oben die Frequenz von 600 bis 1.600 Hz; jede Taste zeigt sich als zwei helle Striche übereinander.');
         const waveBox = el('figure', 'dtmf-figure');
-        waveBox.append(el('figcaption', null, 'Die Schwingung, 10 Millisekunden'), wave);
+        waveBox.append(el('figcaption', null, 'Die Schwingung, 10 Millisekunden, 400-mal langsamer'), wave);
         const fallBox = el('figure', 'dtmf-figure');
         fallBox.append(el('figcaption', null, 'Der Wasserfall: welche Frequenzen wann erklingen'), fall);
         const views = el('div', 'dtmf-views');
@@ -118,8 +121,10 @@
         function drawWave() {
             const w = wave.clientWidth, h = wave.clientHeight, dpr = window.devicePixelRatio || 1;
             if (!w) return;
-            wave.width = Math.round(w * dpr);
-            wave.height = Math.round(h * dpr);
+            if (wave.width !== Math.round(w * dpr) || wave.height !== Math.round(h * dpr)) {
+                wave.width = Math.round(w * dpr);
+                wave.height = Math.round(h * dpr);
+            }
             const g = wave.getContext('2d');
             g.setTransform(dpr, 0, 0, dpr, 0, 0);
             const col = colours();
@@ -132,7 +137,7 @@
             const curve = (fn, colour, width) => {
                 g.strokeStyle = colour; g.lineWidth = width; g.beginPath();
                 for (let x = 0; x <= w; x++) {
-                    const t = x / w * WINDOW;
+                    const t = waveTime + x / w * WINDOW;
                     const y = mid - amp * fn(t);
                     x ? g.lineTo(x, y) : g.moveTo(x, y);
                 }
@@ -246,6 +251,13 @@
             const loud = sample();
             quietFrames = loud || sounding ? 0 : quietFrames + 1;
             drawFall();
+            // the wave runs on while a key sounds, slowed down
+            const now = performance.now();
+            if (sounding && !hidden && !still.matches && lastFrame) {
+                waveTime += Math.min(100, now - lastFrame) / 1000 / SLOW;
+                drawWave();
+            }
+            lastFrame = now;
             // stops when the last tone has run out of the picture, or off screen
             if (!visible || quietFrames > fall.clientWidth + 10) { running = false; return; }
             requestAnimationFrame(loop);
@@ -255,6 +267,7 @@
             if (running || !analyser) return;
             running = true;
             quietFrames = 0;
+            lastFrame = 0;
             requestAnimationFrame(loop);
         }
 
