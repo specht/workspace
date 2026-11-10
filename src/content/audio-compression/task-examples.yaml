@@ -21,3 +21,23 @@ examples:
     fail:
       - { files: { audio/tones.py: fehler/tone-ohne-rate.py, audio/wav.py: stufen/wav.py }, say: '`rate`' }
       - { files: { audio/tones.py: fehler/tone-zu-laut.py, audio/wav.py: stufen/wav.py }, say: '0,5' }
+  unmulaw:
+    pass:
+      - { files: { audio/mulaw.py: stufen/mulaw.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/mulaw.py: fehler/unmulaw-ohne-vorzeichen.py, audio/wav.py: stufen/wav.py }, say: 'np.sign(y)' }
+      - { files: { audio/mulaw.py: fehler/unmulaw-exp.py, audio/wav.py: stufen/wav.py }, say: '1 + MU' }
+  residual:
+    pass:
+      - { files: { audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/predict.py: fehler/residual-in-place.py, audio/wav.py: stufen/wav.py }, say: 'x.copy()' }
+      - { files: { audio/predict.py: fehler/residual-ohne-anfang.py, audio/wav.py: stufen/wav.py }, say: 'ersten beiden' }
+      - { files: { audio/predict.py: fehler/residual-differenz.py, audio/wav.py: stufen/wav.py }, say: 'Geraden' }
+  rice:
+    pass:
+      - { files: { audio/rice.py: stufen/rice-1.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/rice.py: stufen/rice-2.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/rice.py: fehler/rice-ohne-fuehrende-nullen.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'beiden Stellen' }
+      - { files: { audio/rice.py: fehler/rice-einsen-vorn.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'keine Nullen vorn' }

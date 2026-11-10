@@ -174,8 +174,15 @@ seconds at 720p each.
    `data-mulaw`, a quiet clip with `data-level`), a WAV file of 60 bytes in
    the style of the GIF and JPEG pages (hexdump, field diagrams, byte
    tables), `wav_header` and `tone` as »Jetzt bist du dran«, the chord that
-   clips; the teaser is a drawing (`bilder/teaser.py`). Next: part 2 (μ-law
-   with the widget's `data-mulaw`, prediction, Rice codes). The section is
+   clips; the teaser is a drawing (`bilder/teaser.py`). Part 2 is written:
+   the quiet voice in the widget with even steps and μ-law, a drawing of
+   the levels (`bilder/mulaw-stufen.py`), `unmulaw` and the signal-to-noise
+   ratio in dB, the line through the last two samples (`residual`, FLAC's
+   fixed predictor of order 2), zigzag and Rice codes (`rice`), one `k` per
+   block of 4.096, FLAC from ffmpeg for comparison (voice 33 %, music 60 %;
+   ours 46 % and 67 %). The recipes fetch the clips from
+   `http://workspace_nginx_1/audio/`, which a Workspace on the development
+   machine reaches. Next: part 3 (DFT, FFT, spectrogram widget, DTMF). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

@@ -126,3 +126,155 @@ tasks:
       Kratzig: Die Summe der drei Töne geht an manchen Stellen bis fast 1,5,
       und `np.clip` schneidet alles über 1 ab. Die flachen Stellen in der
       Welle hört man als Verzerrung, das Clipping.
+
+  - id: unmulaw
+    title: μ-law rückgängig machen
+    prompt: |
+      Schreib in `audio/mulaw.py` die Funktion `unmulaw(y)`, die `mulaw`
+      rückgängig macht, für ein ganzes numpy-Array auf einmal. Die Prüfung
+      ruft sie mit einzelnen Zahlen auf und mit allen Werten von −1 bis 1 in
+      Schritten von 0,02, die vorher durch `mulaw` gegangen sind.
+    check:
+      type: python
+      file: audio/mulaw.py
+      cases:
+        - call: round(float(unmulaw(0.0)), 4)
+          expect: 0.0
+          say: Aus 0 wird mit `mulaw` 0, also muss auch `unmulaw(0)` 0 ergeben.
+        - call: round(float(unmulaw(1.0)), 4)
+          expect: 1.0
+          say: Aus 1 wird mit `mulaw` 1, also muss auch `unmulaw(1)` 1 ergeben. Ist (1 + MU) hoch 1, minus 1, durch MU gleich 1?
+        - call: round(float(unmulaw(0.5)), 4)
+          expect: 0.0588
+          say: Aus 0,5 wird (256 hoch 0,5 − 1) / 255 = 15 / 255, etwa 0,0588. Rechnest du mit `1 + MU` als Basis?
+        - call: round(float(unmulaw(-1.0)), 4)
+          expect: -1.0
+          say: Eine negative Zahl wird zur negativen Zahl mit demselben Betrag. Rechne mit dem Betrag `np.abs(y)` und multipliziere zum Schluss mit `np.sign(y)`.
+        - call: round(float(np.abs(unmulaw(mulaw(np.linspace(-1, 1, 101))) - np.linspace(-1, 1, 101)).max()), 6)
+          expect: 0.0
+          say: Für jede Zahl eines Arrays muss `unmulaw(mulaw(x))` wieder `x` ergeben. Rechnet die Funktion mit numpy (`np.abs`, `np.sign`, `**`) statt mit `math`?
+    solution: |
+      ```python
+      def unmulaw(y):
+          return np.sign(y) * ((1 + MU) ** np.abs(y) - 1) / MU
+      ```
+
+  - id: viermal-leiser
+    title: Viermal leiser
+    prediction: true
+    prompt: |
+      Bei voller Lautstärke liegt der Fehler der gleichmäßigen Stufen etwa
+      35 dB unter der Stimme. Um wie viel ändert sich diese Zahl, wenn die
+      Stimme viermal leiser ist, also bei `level` 0,25?
+    check:
+      type: choice
+      options:
+        - Gar nicht, denn an den Stufen ändert sich nichts.
+        - Sie sinkt um etwa 6 dB.
+        - Sie sinkt um etwa 12 dB.
+        - Sie sinkt auf ein Viertel, etwa 9 dB.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die Stufen bleiben, und darum bleibt auch der Fehler gleich groß. Aber die Stimme ist leiser; was heißt das für das Verhältnis?
+      - when: { picked: 1 }
+        say: 6 dB weniger wäre eine halb so hohe Welle. Viermal leiser ist zweimal halb so hoch.
+      - when: { picked: 3 }
+        say: Dezibel sind ein Logarithmus. Ein Viertel der Höhe ist ein Sechzehntel der Energie; wie viele dB sind das?
+    solution: |
+      Um etwa 12 dB: Der Fehler bleibt gleich groß, die Stimme hat ein
+      Viertel der Höhe und damit ein Sechzehntel der Energie, und
+      10 · log₁₀(16) ist etwa 12.
+
+  - id: residual
+    title: Die Reste der Vorhersage
+    prompt: |
+      Schreib in `audio/predict.py` die Funktion `residual(x)`: Sie gibt ein
+      gleich langes Array zurück, die ersten beiden Zahlen wie in `x`, ab dem
+      Index 2 die Messung minus `2 * x[n - 1] - x[n - 2]`. `x` selbst bleibt
+      unverändert.
+    check:
+      type: python
+      file: audio/predict.py
+      cases:
+        - call: len(residual(np.array([1, 4, 9, 16, 25])))
+          expect: 5
+          say: Das Array der Reste ist so lang wie das der Messungen; die ersten beiden Zahlen bleiben, wie sie sind.
+        - call: '[int(v) for v in residual(np.array([3, 5, 7, 9, 11]))]'
+          expect: '[3, 5, 0, 0, 0]'
+          say: Auf einer Geraden stimmt jede Schätzung genau, und die Reste sind 0. Die ersten beiden Zahlen bleiben.
+        - call: '[int(v) for v in residual(np.array([1, 4, 9, 16, 25]))]'
+          expect: '[1, 4, 2, 2, 2]'
+          say: Für die 9 ist die Schätzung 2 · 4 − 1 = 7, der Rest also 2.
+        - call: '[int(v) for v in residual(np.array([6445, 6866, 7298, 7730, 8163]))]'
+          expect: '[6445, 6866, 11, 0, 1]'
+          say: Die Messungen aus der Tabelle auf der Seite.
+        - call: x = np.array([1, 4, 9, 16]); residual(x); [int(v) for v in x]
+          expect: '[1, 4, 9, 16]'
+          say: '`residual` darf `x` nicht verändern: Fang mit einer Kopie an, `r = x.copy()`.'
+    solution: |
+      ```python
+      def residual(x):
+          r = x.copy()
+          r[2:] = x[2:] - (2 * x[1:-1] - x[:-2])
+          return r
+      ```
+
+  - id: rice
+    title: Ein Rice-Code
+    prompt: |
+      Schreib in `audio/rice.py` die Funktion `rice(u, k)`: der Rice-Code
+      der Zahl `u ≥ 0` mit dem Parameter `k ≥ 1` als Text aus Nullen und
+      Einsen, erst `u // 2**k` Nullen und eine 1, dann `u % 2**k` mit genau
+      `k` Stellen.
+    check:
+      type: python
+      file: audio/rice.py
+      cases:
+        - call: rice(0, 2)
+          expect: "'100'"
+          say: Für 0 gibt es keine Nullen vorn, dann die 1 und die beiden Stellen von 0, also `'1'` und `'00'`.
+        - call: rice(5, 2)
+          expect: "'0101'"
+          say: 5 // 4 = 1 Null und die 1, dann 5 % 4 = 1 mit zwei Stellen, `'01'`. Hat der zweite Teil genau `k` Stellen, auch mit führenden Nullen?
+        - call: rice(13, 3)
+          expect: "'01101'"
+          say: 13 // 8 = 1, 13 % 8 = 5 = `'101'`.
+        - call: rice(40, 3)
+          expect: "'000001000'"
+          say: 40 // 8 = 5 Nullen und die 1, dann 40 % 8 = 0 mit drei Stellen.
+        - call: len(rice(1000, 4))
+          expect: 67
+          say: 1000 // 16 = 62 Nullen, die 1 und 4 Stellen.
+    solution: |
+      ```python
+      def rice(u, k):
+          return '0' * (u // 2 ** k) + '1' + format(u % 2 ** k, f'0{k}b')
+      ```
+
+  - id: je-block
+    title: Ein k je Block
+    prediction: true
+    prompt: |
+      Mit einem `k` für die ganze Datei braucht die Stimme 58 % und die Musik
+      70 % ihrer Bits. Jetzt bekommt jeder Block von 4.096 Messungen sein
+      eigenes `k`. Welche Datei wird dadurch deutlich kleiner?
+    check:
+      type: choice
+      options:
+        - Die Stimme.
+        - Die Musik.
+        - Beide etwa gleich viel.
+        - Keine, die 4 Bit für jedes `k` fressen den Gewinn auf.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Hör dir beide Dateien noch einmal an. Wo wechseln laute und leise Stellen, wo bleibt es ungefähr gleich laut?
+      - when: { picked: 2 }
+        say: Ein eigenes `k` hilft dort, wo die Reste mal klein und mal groß sind. Bei welcher Datei ist das so?
+      - when: { picked: 3 }
+        say: Ein Block hat 4.096 Messungen; 4 Bit für sein `k` sind weniger als ein Tausendstel Bit je Messung.
+    solution: |
+      Die Stimme, von 58 auf 46 %: Sie hat Pausen und leise Silben, in denen
+      ein kleines `k` reicht. Die Musik ist überall ungefähr gleich laut und
+      schrumpft nur von 70 auf 67 %.

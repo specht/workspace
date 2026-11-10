@@ -454,3 +454,358 @@ Damit es sauber klingt, muss die Summe unter 1 bleiben, etwa so: `chord = (…) 
 <!-- /after -->
 
 <!-- stage: stufen/tones-3.py as tones.py -->
+
+## Kleine Tricks
+
+Eine Minute in CD-Qualität braucht 10 MB. Bevor es darum geht, was das Ohr nicht hört, bringen drei kleine Tricks schon einiges: Stufen, die sich nach der Lautstärke richten, eine Vorhersage der nächsten Messung und kurze Codes für kleine Zahlen. Die beiden letzten verlieren nichts: Was herauskommt, ist Bit für Bit dasselbe wie vorher.
+
+### Leise Stellen, grobe Stufen
+
+Das Telefonnetz schickt Gespräche seit 1961 als 8.000 Messungen in der Sekunde mit je 8 Bit, 64.000 Bit in der Sekunde. 8 Bit sind 255 Stufen von −127 bis 127, mit gleichen Abständen von 1/127 zwischen −1 und 1. Eine laute Stimme nutzt sie alle. Eine leise, die nur bis 0,06 geht, nutzt nur die Stufen von −8 bis 8. Der Fehler beim Runden ist bei beiden gleich groß, bei der leisen Stimme aber fast so laut wie die Stimme selbst.
+
+Im Widget ist die Stimme so leise; damit du etwas hörst, wird sie nach dem Runden wieder lauter gemacht:
+
+<div class='sampling-widget' data-mulaw data-bits='8' data-clip='stimme' data-level='0.06'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Spiel die leise Stimme mit gleichmäßigen Stufen ab und hör auf das Rauschen am Ende jedes Worts, wenn die Stimme leiser wird. Schalt dann auf 16 Bit und zurück auf 8. Schalt danach auf μ-law: Wo ist das Rauschen geblieben? Stell zum Schluss 4 Bit ein und zähl im Bild die Linien der Stufen, auf denen die leise Stimme sitzt, einmal gleichmäßig und einmal nach μ-law.
+</div>
+
+Gleichmäßige Stufen sind für leise Stellen zu grob und für laute unnötig fein: Ein Fehler von 1/127 fällt bei einer Messung von 0,9 nicht auf, bei einer von 0,02 schon. Besser sind Stufen, die mit der Messung wachsen, eng bei null und weit bei den lauten Messungen. Dann ist der Fehler immer ungefähr derselbe Bruchteil der Messung, bei leisen Stellen genauso wie bei lauten.
+
+<img class='drawing' style='width: 35em' src='mulaw-stufen.svg' alt='Die Stufen von 4 Bit auf der positiven Hälfte von 0 bis 1, zweimal übereinander. Oben gleichmäßig: acht Striche in gleichen Abständen, bei 0, einem Siebtel, zwei Siebteln und so weiter bis 1. Unten nach μ-law: dieselben acht Striche, aber dicht gedrängt bei 0 und nach rechts immer weiter auseinander, der vorletzte erst bei knapp 0,5. Ein blasser Streifen von 0 bis 0,06 markiert eine leise Stimme: Oben liegt darin nur der Strich bei 0, unten liegen vier.'>
+
+So arbeitet **μ-law** (gesprochen »mü-law«): Erst wird jede Messung `x` mit einem Logarithmus gestaucht, dann gleichmäßig gerundet, und beim Abspielen wird das Stauchen wieder rückgängig gemacht. Gestaucht wird mit
+
+$$y = \operatorname{sgn}(x) \cdot \frac{\ln(1 + \mu \lvert x \rvert)}{\ln(1 + \mu)}, \quad \mu = 255$$
+
+`sgn(x)` ist das Vorzeichen, 1 oder −1: Der Logarithmus rechnet mit dem Betrag \\(\lvert x \rvert\\), und das Vorzeichen kommt danach wieder dazu. Aus 0 wird 0, aus 1 wird 1, aber schon 0,06 wird zu 0,5. Die halbe Zahl der Stufen gehört so den Messungen unter 0,06.
+
+Festgelegt hat das die internationale Fernmeldeunion 1972 in der Norm [G.711](https://www.itu.int/rec/T-REC-G.711): μ-law in Nordamerika und Japan, das ähnliche A-law in Europa und fast überall sonst. Um die Null liegen die Stufen von 8 Bit nach μ-law enger als die von 13 Bit mit gleichmäßigen Stufen. G.711 ist bis heute im Einsatz, auch bei Anrufen über das Internet.
+
+Lege die Datei `mulaw.py` an. `mulaw` staucht wie in der Formel, `np.log` ist der natürliche Logarithmus und `np.sign` das Vorzeichen:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+MU = 255
+
+
+def mulaw(x):
+    return np.sign(x) * np.log(1 + MU * np.abs(x)) / np.log(1 + MU)
+
+
+def unmulaw(y):
+    # hier: das Stauchen rückgängig machen
+```
+
+<div class='hint own' data-check='unmulaw'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>unmulaw(y)</code>: Die Funktion macht <code>mulaw</code> rückgängig, also gilt <code>unmulaw(mulaw(x)) == x</code>, bis auf die letzten Stellen hinter dem Komma. Wie bei <code>mulaw</code> soll sie mit einem ganzen numpy-Array auf einmal rechnen.
+</div>
+
+<!-- hint -->
+Rechne mit dem Betrag: Aus \\(\lvert y \rvert = \ln(1 + \mu \lvert x \rvert) / \ln(1 + \mu)\\) wird, mit \\(\ln(1 + \mu)\\) multipliziert, \\(\lvert y \rvert \cdot \ln(1 + \mu) = \ln(1 + \mu \lvert x \rvert)\\). Was ist \\(e\\) hoch beide Seiten?
+<!-- /hint -->
+<!-- hint -->
+\\(e^{\lvert y \rvert \cdot \ln(1 + \mu)}\\) ist \\((1 + \mu)^{\lvert y \rvert}\\), also gilt \\((1 + \mu)^{\lvert y \rvert} = 1 + \mu \lvert x \rvert\\). Löse nach \\(\lvert x \rvert\\) auf und multipliziere zum Schluss mit `np.sign(y)`. `**` rechnet in numpy mit jeder Zahl eines Arrays.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def unmulaw(y):
+    return np.sign(y) * ((1 + MU) ** np.abs(y) - 1) / MU
+```
+<!-- /solution -->
+
+_task(unmulaw)
+
+Jetzt fehlt das Runden, und ein Maß dafür, wie gut eine Kopie zum Original passt. Schreib unter `unmulaw`:
+
+```python
+def quantise(x, bits):
+    top = 2 ** (bits - 1) - 1
+    return np.round(x * top) / top
+
+
+def snr(original, copy):
+    noise = original - copy
+    return 10 * np.log10(np.sum(original ** 2) / np.sum(noise ** 2))
+```
+
+`quantise` rundet jede Messung auf eine von `2 * top + 1` gleichmäßigen Stufen, bei 8 Bit auf ein Vielfaches von 1/127. `snr` vergleicht die Energie des Originals, die Summe der Quadrate aller Messungen, mit der Energie des Fehlers. Das Verhältnis heißt **Signal-Rausch-Abstand** und wird in **Dezibel** angegeben, 10-mal dem Logarithmus zur Basis 10: 10 dB mehr sind 10-mal so viel Energie, 20 dB 100-mal so viel. Ist eine Welle doppelt so hoch, hat sie 4-mal so viel Energie, das sind 6 dB mehr. Je größer die Zahl, desto weniger hört man den Fehler.
+
+Unten in die Datei kommt das Programm: Es macht die Stimme leiser, rundet sie auf beide Arten mit 8 Bit und gibt aus, wie weit der Fehler jeweils unter der Stimme liegt. Die leiseste Fassung schreibt es in zwei Dateien, wieder laut gemacht:
+
+```python
+if __name__ == '__main__':
+    voice, rate = read_wav('stimme.wav')
+    for level in [1, 0.25, 0.06]:
+        quiet = voice * level
+        even = quantise(quiet, 8)
+        law = unmulaw(quantise(mulaw(quiet), 8))
+        print(f'{level:4}: gleichmäßig {snr(quiet, even):4.1f} dB, μ-law {snr(quiet, law):4.1f} dB')
+    write_wav('leise-gleichmaessig.wav', even / level, rate)
+    write_wav('leise-mulaw.wav', law / level, rate)
+```
+
+_task(viermal-leiser)
+
+<!-- after: viermal-leiser -->
+Lass das Programm laufen:
+
+```bash
+python3 mulaw.py
+```
+
+<!-- tutorial-step
+write-file: audio/mulaw.py <- file:stufen/mulaw.py
+check-task: unmulaw
+terminal-run: cd /workspace/audio && (test -f stimme.wav || curl -sO http://workspace_nginx_1/audio/stimme.wav) && (test -f musik.wav || curl -sO http://workspace_nginx_1/audio/musik.wav) && python3 mulaw.py
+terminal-wait-for-prompt: 30
+wait-for-text: 0.06: gleichmäßig 12.1 dB
+-->
+
+Bei voller Lautstärke liegen beide Fehler weit unter der Stimme, gleichmäßig 35 dB, μ-law knapp 38. Viermal leiser verliert die gleichmäßige Rundung 12 dB, wie vorhergesagt: Ihr Fehler bleibt gleich groß, die Stimme hat ein Sechzehntel der Energie. Noch einmal etwa viermal leiser sind es nur 12 dB, der Fehler ist fast so laut wie die Stimme. μ-law verliert dabei kaum etwas, weil seine Stufen mit der Stimme kleiner werden. Hör dir die beiden Dateien `leise-gleichmaessig.wav` und `leise-mulaw.wav` an.
+<!-- /after -->
+
+### Die nächste Messung raten
+
+Bei 44.100 Messungen in der Sekunde ändert sich ein Klang von einer Messung zur nächsten nur wenig. Hier sind acht Messungen aus der Stimme, ab dem Index 56.019, als ganze Zahlen mit 16 Bit:
+
+<div class='table-responsive'>
+<table class='table'>
+<tr><th>Messung</th><td>6.445</td><td>6.866</td><td>7.298</td><td>7.730</td><td>8.163</td><td>8.600</td><td>9.040</td><td>9.481</td></tr>
+<tr><th>minus die vorige</th><td></td><td>421</td><td>432</td><td>432</td><td>433</td><td>437</td><td>440</td><td>441</td></tr>
+<tr><th>minus die Gerade</th><td></td><td></td><td>11</td><td>0</td><td>1</td><td>4</td><td>3</td><td>1</td></tr>
+</table>
+</div>
+
+Die Messungen sind Zahlen um 8.000, ihre Unterschiede zur vorigen Messung nur um 430. Noch besser rät, wer die Gerade durch die beiden letzten Messungen verlängert: Steigt der Klang von 6.445 auf 6.866, um 421, dann ist die beste Schätzung für die nächste Messung 6.866 + 421 = 7.287. Gemessen sind 7.298, der Rest ist 11. Allgemein ist die Schätzung für die Messung mit dem Index `n`
+
+$$x\_{n-1} + (x\_{n-1} - x\_{n-2}) = 2 x\_{n-1} - x\_{n-2}$$
+
+An dieser Stelle steigt die Welle fast gerade an, darum klappt es so gut; an anderen Stellen ist der Rest größer. Gespeichert werden statt der Messungen die Reste. Wer sie liest, rechnet dieselbe Schätzung aus und zählt den Rest dazu: Er bekommt die Messung genau zurück.
+
+Die Idee ist alt. C. Chapin Cutler von den Bell Labs meldete 1950 ein [Patent](https://patents.google.com/patent/US2605361A/en) an, Unterschiede statt Messungen zu senden, die **Differenz-Pulscodemodulation** (DPCM). Mit Unterschieden, die sich nach der Lautstärke richten, kam die ITU 1984 in der Norm G.721 auf 4 Bit je Messung, halb so viel wie G.711. Dort werden die Unterschiede gerundet, und etwas geht verloren. Hier bleibt jeder Rest, wie er ist.
+
+Lege `predict.py` an. Zum Rechnen braucht es die Messungen als ganze Zahlen, wie in der Datei; `numbers` macht sie aus dem, was `read_wav` gibt. Mit `int64`, 8 Bytes je Zahl, passt auch ein Rest, der größer ist als 16 Bit:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav
+
+
+def numbers(path):
+    samples, rate = read_wav(path)
+    return np.round(samples * 32767).astype(np.int64)
+
+
+def residual(x):
+    # hier: die Reste
+```
+
+Mit numpy rechnet man am besten mit Ausschnitten statt mit einer Schleife. `x[2:]` sind alle Messungen ab dem Index 2, `x[1:-1]` alle vom Index 1 bis ohne die letzte, `x[:-2]` alle ohne die letzten beiden. Die drei sind gleich lang, und an derselben Stelle steht in ihnen eine Messung, ihre Vorgängerin und deren Vorgängerin.
+
+<div class='hint own' data-check='residual'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>residual(x)</code>: Die Funktion bekommt ein numpy-Array mit ganzen Zahlen und gibt ein gleich langes Array zurück. Die ersten beiden Zahlen bleiben, wie sie sind, denn für sie gibt es keine Gerade. Ab dem Index 2 steht dort die Messung minus die Schätzung <code>2 * x[n - 1] - x[n - 2]</code>. <code>x</code> selbst bleibt dabei unverändert.
+</div>
+
+<!-- hint -->
+Fang mit einer Kopie an, `r = x.copy()`; dann bleiben die ersten beiden Zahlen von selbst, und `x` ändert sich nicht. Einem Ausschnitt kann man ein ganzes Array zuweisen: `r[2:] = …`.
+<!-- /hint -->
+<!-- hint -->
+Die Messungen sind `x[2:]`, ihre Vorgängerinnen `x[1:-1]` und deren Vorgängerinnen `x[:-2]`:
+
+```python
+r = x.copy()
+r[2:] = x[2:] - (2 * … - …)
+return r
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def residual(x):
+    r = x.copy()
+    r[2:] = x[2:] - (2 * x[1:-1] - x[:-2])
+    return r
+```
+<!-- /solution -->
+
+_task(residual)
+
+Zurück geht es nur der Reihe nach, denn für jede Messung braucht man die beiden davor, und die stehen erst fest, wenn sie selbst zurückgerechnet sind. Darum braucht `restore` eine Schleife. Schreib sie unter `residual`, dazu das Programm:
+
+```python
+def restore(r):
+    x = r.copy()
+    for n in range(2, len(x)):
+        x[n] = r[n] + 2 * x[n - 1] - x[n - 2]
+    return x
+
+
+if __name__ == '__main__':
+    for path in ['stimme.wav', 'musik.wav']:
+        x = numbers(path)
+        r = residual(x)
+        print(f'{path}: Messungen im Mittel {np.abs(x).mean():.0f}, Reste {np.abs(r).mean():.0f}')
+        print('  zurück wie vorher:', np.array_equal(restore(r), x))
+```
+
+`np.abs(x).mean()` ist der Mittelwert der Beträge, wie groß eine Zahl im Mittel ist. `np.array_equal` sagt, ob zwei Arrays in jeder Zahl übereinstimmen.
+
+```bash
+python3 predict.py
+```
+
+<!-- tutorial-step
+write-file: audio/predict.py <- file:stufen/predict.py
+check-task: residual
+terminal-run: python3 predict.py
+terminal-wait-for-prompt: 30
+wait-for-text: Reste 397
+-->
+
+Bei der Stimme sind die Reste im Mittel ein Zwanzigstel so groß wie die Messungen, bei der Musik ein Zehntel, und `restore` bringt jede Messung genau zurück.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Rate statt mit der Geraden mit der vorigen Messung allein: <code>r[2:] = x[2:] - x[1:-1]</code>, und in <code>restore</code> entsprechend <code>x[n] = r[n] + x[n - 1]</code>. Bei welcher der beiden Dateien hilft die Gerade mehr? Die Hi-Hat der Musik ist Rauschen: Lässt sich Rauschen vorhersagen? Stell beides danach wieder zurück.
+</div>
+
+### Kleine Zahlen, kurze Codes
+
+Die Reste sind klein, aber in der Datei hätte jeder immer noch 16 Bit, und gespart wäre nichts. Kleine Zahlen brauchen kurze Codes, große dürfen längere haben, wie bei [Huffman](/huffman). Ein Huffman-Code bräuchte eine Tabelle für jede Datei. Für Zahlen, bei denen kleine häufig und große selten sind, geht es ohne: Solomon Golomb fand 1966 Codes dafür, und Robert Rice nahm am Jet Propulsion Laboratory der NASA davon die einfachsten, für Daten von Raumsonden. Ein **Rice-Code** hat einen Parameter `k` und schreibt eine Zahl `u ≥ 0` in zwei Teilen:
+
+1. `u // 2**k` als so viele Nullen, gefolgt von einer 1,
+2. dann `u % 2**k` als Binärzahl mit genau `k` Stellen.
+
+Mit `k = 2` sieht das so aus:
+
+<div class='table-responsive'>
+<table class='table'>
+<tr><th><code>u</code></th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>Code</th><td><code>1 00</code></td><td><code>1 01</code></td><td><code>1 10</code></td><td><code>1 11</code></td><td><code>01 00</code></td><td><code>01 01</code></td><td><code>01 10</code></td><td><code>01 11</code></td><td><code>001 00</code></td><td><code>001 01</code></td></tr>
+</table>
+</div>
+
+Zahlen bis 3 brauchen 3 Bit, bis 7 vier, und jede weitere Vierergruppe ein Bit mehr. Wer liest, zählt die Nullen bis zur 1 und liest dann `k` Bits: Ein Code endet von selbst, ohne Trennzeichen. Ein größeres `k` passt für größere Zahlen.
+
+Die Reste sind aber auch negativ. Darum werden sie vorher im Zickzack umgeordnet, 0, −1, 1, −2, 2, … werden zu 0, 1, 2, 3, 4, …: Eine Zahl `r ≥ 0` wird zu `2 * r`, eine negative zu `-2 * r - 1`. Lege `rice.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from predict import numbers, residual
+
+
+def zigzag(r):
+    return np.where(r >= 0, 2 * r, -2 * r - 1)
+
+
+def rice(u, k):
+    # hier: der Code als Text aus 0 und 1
+```
+
+`np.where(bedingung, a, b)` nimmt für jede Zahl `a`, wo die Bedingung gilt, sonst `b`.
+
+<div class='hint own' data-check='rice'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>rice(u, k)</code> für eine ganze Zahl <code>u ≥ 0</code> und <code>k ≥ 1</code>. Die Funktion gibt den Rice-Code als Text aus Nullen und Einsen zurück, ohne Leerzeichen: <code>rice(5, 2)</code> ergibt <code>'0101'</code>.
+</div>
+
+<!-- hint -->
+Rechne erst die beiden Teile aus: `q = u // 2**k` und `rest = u % 2**k`. Aus `q` werden `'0' * q` und eine `'1'`.
+<!-- /hint -->
+<!-- hint -->
+`format(rest, 'b')` schreibt eine Zahl binär, aber ohne führende Nullen. Mit `format(rest, '02b')` hat sie mindestens 2 Stellen, mit `format(rest, f'0{k}b')` mindestens `k`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def rice(u, k):
+    return '0' * (u // 2 ** k) + '1' + format(u % 2 ** k, f'0{k}b')
+```
+<!-- /solution -->
+
+_task(rice)
+
+Für die ganze Datei braucht es keine Texte, nur ihre Länge: `u // 2**k` Nullen, eine 1 und `k` Bits. `u >> k` ist dasselbe wie `u // 2**k` und rechnet mit dem ganzen Array. Welches `k` am besten ist, probiert `best_bits` einfach aus:
+
+```python
+def rice_bits(u, k):
+    return int(np.sum((u >> k) + 1 + k))
+
+
+def best_bits(u):
+    return min(rice_bits(u, k) for k in range(16))
+
+
+if __name__ == '__main__':
+    for path in ['stimme.wav', 'musik.wav']:
+        x = numbers(path)
+        u = zigzag(residual(x))
+        print(f'{path}: {best_bits(u) / (16 * len(x)):.0%} mit einem k')
+```
+
+```bash
+python3 rice.py
+```
+
+<!-- tutorial-step
+write-file: audio/rice.py <- file:stufen/rice-1.py
+check-task: rice
+terminal-run: python3 rice.py
+terminal-wait-for-prompt: 30
+wait-for-text: musik.wav: 70% mit einem k
+-->
+
+Die Stimme braucht 58 % ihrer 16 Bit je Messung, die Musik 70 %, und nichts ist verloren. Ein `k` für die ganze Datei passt aber nicht überall: In einer Pause sind die Reste winzig, in einem lauten Wort groß. Teil die Reste darum in Blöcke von 4.096 Messungen und such für jeden Block sein eigenes `k`. Das kostet 4 Bit je Block, um `k` zu speichern.
+
+_task(je-block)
+
+<!-- after: je-block -->
+Schreib unten in die Schleife:
+
+```python
+~         print(f'{path}: {best_bits(u) / (16 * len(x)):.0%} mit einem k')
+        blocks = sum(best_bits(u[s:s + 4096]) + 4 for s in range(0, len(u), 4096))
+        print(f'{path}: {blocks / (16 * len(x)):.0%} mit einem k je Block')
+```
+
+<!-- tutorial-step
+write-file: audio/rice.py <- file:stufen/rice-2.py
+terminal-run: python3 rice.py
+terminal-wait-for-prompt: 30
+wait-for-text: musik.wav: 67% mit einem k je Block
+-->
+
+Die Stimme schrumpft von 58 auf 46 %, die Musik nur von 70 auf 67 %. Die Stimme hat Pausen und leise Silben, in denen ein kleines `k` reicht; ein Viertel ihrer Messungen liegt nahe bei null. Die Musik ist überall ungefähr gleich laut, und ein `k` passt fast überall.
+<!-- /after -->
+
+<!-- stage: stufen/rice-2.py as rice.py -->
+
+So arbeitet **FLAC**, das freie Format für Musik ohne Verlust. Tony Robinson an der Universität Cambridge beschrieb 1994 sein Programm Shorten, das mit Vorhersage und Rice-Codes arbeitet. Josh Coalson begann im Jahr 2000 mit FLAC, Version 1.0 erschien 2001, und seit Dezember 2024 beschreibt es der [RFC 9639](https://www.rfc-editor.org/rfc/rfc9639.html). Die Vorhersage mit der Geraden steht dort genau so, als »fixed predictor« der Ordnung 2. FLAC kann mehr: Es sucht für jeden Block die beste Vorhersage, auch eine aus bis zu 32 vorigen Messungen mit eigenen Faktoren, und teilt jeden Block in Stücke mit eigenem `k`. Lass ffmpeg die beiden Dateien als FLAC schreiben:
+
+```bash
+ffmpeg -loglevel error -i stimme.wav stimme.flac
+ffmpeg -loglevel error -i musik.wav musik.flac
+ls -l *.wav *.flac
+```
+
+<!-- tutorial-step
+terminal-run: ffmpeg -y -loglevel error -i stimme.wav stimme.flac && ffmpeg -y -loglevel error -i musik.wav musik.flac && ls -l stimme.* musik.*
+terminal-wait-for-prompt: 30
+wait-for-text: musik.flac
+-->
+
+Die Stimme braucht als FLAC etwa ein Drittel, die Musik etwa 60 %. Viel mehr schafft kein Verfahren ohne Verlust: Rauschen lässt sich nicht vorhersagen, und jedes Bit davon muss mit in die Datei. Wer eine Minute Musik auf ein Zehntel bringen will, muss etwas weglassen: das, was das Ohr nicht hört. Dazu muss man wissen, aus welchen Frequenzen ein Klang besteht.
+
+<div class='book'>
+<i class='bi bi-file-earmark-text'></i>
+<p><strong>SHORTEN: Simple lossless and near-lossless waveform compression</strong>, Tony Robinson, Cambridge University Engineering Department, 1994. Die Vorhersage aus den vorigen Messungen und kurze Codes für die Reste, die Idee hinter FLAC, auf wenigen Seiten: <a href='http://mi.eng.cam.ac.uk/reports/svr-ftp/auto-pdf/robinson_tr156.pdf'>PDF</a>, die <a href='https://mi.eng.cam.ac.uk/reports/abstracts/robinson_tr156.html'>Zusammenfassung</a> in Cambridge.</p>
+</div>
