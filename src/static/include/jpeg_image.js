@@ -308,7 +308,7 @@
         // the device pixels it covers, at whole device pixels, so that nothing
         // wavers or blurs while the view moves: the grid (each line a light and
         // a dark device pixel, the blocks fainter than the MCUs, across the
-        // whole view), the rest dimmed around the chosen MCU, its frame, the
+        // whole view), the frame of the chosen MCU, the
         // chosen block (options.markBlock()) in yellow, the block under the
         // pointer dashed. Frames lie just outside the pixels they mark.
         function drawOverlay(sx, sy, bw, bh) {
@@ -338,13 +338,7 @@
             };
             if (bw < mcuW) lines(bw, 0.16, mcuW);
             lines(mcuW, 0.38, 0);
-            // the rest a little darker, so that the chosen MCU stands out
             const m = [X(mx * mcuW), Y(my * mcuH), X((mx + 1) * mcuW), Y((my + 1) * mcuH)];
-            g.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            g.beginPath();
-            g.rect(0, 0, w, h);
-            g.rect(m[0], m[1], m[2] - m[0], m[3] - m[1]);
-            g.fill('evenodd');
             // a frame of `width` device pixels just outside a rectangle, with a
             // dark edge of one device pixel outside it
             const frame = (r, colour, width, dash) => {
@@ -380,15 +374,14 @@
             const ctx = photo.getContext('2d');
             ctx.drawImage(image.photo(), 0, 0);
             const x = mx * mcuW, y = my * mcuH;
-            // darker around the MCU, so that it stands out at any size
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-            ctx.beginPath();
-            ctx.rect(0, 0, image.width, image.height);
-            ctx.rect(x - 6, y - 6, mcuW + 12, mcuH + 12);
-            ctx.fill('evenodd');
+            // the chosen MCU: a white frame with a thin dark edge, the photo
+            // undimmed around it
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.strokeRect(x - 5, y - 5, mcuW + 10, mcuH + 10);
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#fff';
-            ctx.strokeRect(x - 4.5, y - 4.5, mcuW + 9, mcuH + 9);
+            ctx.strokeRect(x - 2.5, y - 2.5, mcuW + 5, mcuH + 5);
 
             const lctx = lens.getContext('2d');
             lctx.imageSmoothingEnabled = false;
