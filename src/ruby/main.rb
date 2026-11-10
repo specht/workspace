@@ -536,6 +536,8 @@ class Main < Sinatra::Base
     require './include/access.rb'
     require './include/accounts_page.rb'
     require './include/activity_feedback_page.rb'
+    require './include/bookmarks.rb'
+    require './include/bookmarks_page.rb'
     require './include/cable_page.rb'
     require './include/class_page.rb'
     require './include/content_pipeline.rb'

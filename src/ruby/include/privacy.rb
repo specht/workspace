@@ -289,6 +289,14 @@ module Privacy
                 :how_long => 'bis die Lehrkraft ihr Konto löscht oder es gelöscht wird; wird die Gruppe gelöscht, bleibt die Rückmeldung mit dem Namen der Gruppe',
             },
             {
+                :data => 'Lesezeichen im Inhaltsverzeichnis einer Seite: die Seite, die Überschrift und wann es gesetzt wurde',
+                :source => 'von der Person selbst gesetzt',
+                :categories => [:content],
+                :purpose => 'Stellen auf langen Seiten wiederfinden, auf jedem Rechner',
+                :who => 'nur die Person selbst',
+                :how_long => 'bis die Person es entfernt, sonst ' + ACCOUNT_END,
+            },
+            {
                 :data => 'Workspace: eigene Dateien und Programme, Verlauf im Terminal, installierte Pakete und Erweiterungen',
                 :categories => [:content],
                 :purpose => 'Programmieren im Unterricht und zu Hause',

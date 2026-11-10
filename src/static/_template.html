@@ -32,6 +32,7 @@
     <script src="/include/stepper_keys.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/stepper_motion.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/hint_steps.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
+    #{user_logged_in? ? "<script src='/include/bookmarks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}
     #{DEVELOPMENT ? '<script defer src="/include/tutorial-screenshot-live.js?' + CACHE_BUSTER + Time.now.to_i.to_s + '"></script>' : ''}
     <script src="/include/bootstrap-5.3.3/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/clipboard.min.js"></script>
@@ -623,7 +624,7 @@ function install_secondary_autotoc() {
     up.className = 'autotoc-up autotoc-secondary-up';
     up.title = 'Nach oben';
     up.setAttribute('aria-label', 'Nach oben');
-    up.innerHTML = "<i class='bi bi-arrow-up' aria-hidden='true'></i>";
+    up.innerHTML = "<i class='bi bi-chevron-double-up' aria-hidden='true'></i>";
     up.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     title_element.append(up);
 
@@ -1214,7 +1215,7 @@ window.addEventListener('load', function() {
     #{CONTENT}
 
     <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
-        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-arrow-up' aria-hidden='true'></i></button>
+        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-chevron-double-up' aria-hidden='true'></i></button>
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
         <div class="progress_sm"></div>

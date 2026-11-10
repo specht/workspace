@@ -1818,8 +1818,8 @@ h2 > .squircle {
     flex: 0 0 calc(2.415em + 0.9em + 2px);
 }
 
-/* »Nach oben«: a small round button, centred on the line of the chapter
-   labels; quiet until it is pointed at. */
+/* »Nach oben«: a plain chevron, no circle, centred on the line of the
+   chapter labels; quiet until it is pointed at. */
 .autotoc-up {
     flex: 0 0 auto;
     display: flex;
@@ -1829,12 +1829,12 @@ h2 > .squircle {
     height: 2.3em;
     margin: 0.6em 0.45em 0 0.45em;
     padding: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 50%;
-    color: #495057;
-    background: #f1f3f5;
+    border: none;
+    border-radius: 0.4em;
+    color: #868e96;
+    background: none;
     font: inherit;
-    font-size: 1.05em;
+    font-size: 1.15em;
     line-height: 1;
     position: relative;
     cursor: pointer;
@@ -1843,8 +1843,8 @@ h2 > .squircle {
 
 .autotoc-up:hover {
     color: #212529;
-    background: #e2e6ea;
-    transform: translateY(-1px);
+    background: none;
+    transform: translateY(-2px);
 }
 
 .autotoc-up:focus-visible {
@@ -15865,4 +15865,49 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 /* the map is drawn in device pixels: no scaling, so not pixelated */
 .motion-widget .motion-zooms .motion-figure:last-child canvas {
     image-rendering: auto;
+}
+
+/* Bookmarks in the table of contents on the left (bookmarks.js): the entry
+   keeps its look, a bookmark at its right edge, shown on hover or focus and
+   always when set */
+.autotoc-secondary .toc-entry {
+    position: relative;
+}
+.autotoc-secondary .toc-entry > a {
+    padding-right: 1.5rem;
+}
+.autotoc-secondary .toc-bookmark {
+    position: absolute;
+    top: 0.05rem;
+    right: 0.1rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.autotoc-secondary .toc-entry:hover .toc-bookmark,
+.autotoc-secondary .toc-bookmark:focus-visible {
+    opacity: 0.55;
+}
+.autotoc-secondary .toc-bookmark:hover {
+    opacity: 0.9;
+}
+.autotoc-secondary .toc-bookmark.set {
+    opacity: 1;
+    color: #c2410c;
+}
+html[data-bs-theme="dark"] .autotoc-secondary .toc-bookmark.set {
+    color: #fb923c;
+}
+/* on a touch screen there is no hover: the bookmarks stay faintly visible */
+@media (hover: none) {
+    .autotoc-secondary .toc-bookmark {
+        opacity: 0.35;
+    }
 }

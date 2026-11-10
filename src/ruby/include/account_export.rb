@@ -39,7 +39,7 @@ module AccountExport
     END_OF_TEXT
 
     # rows: :user (Hash), :groups (Array), :task_states, :attempts,
-    # :look_ins, :live_apps, :sessions, :feedback (Arrays of Hashes, as Neo4j returns
+    # :look_ins, :live_apps, :sessions, :feedback, :bookmarks (Arrays of Hashes, as Neo4j returns
     # them). Of a session only the days and the device: the sid logs in.
     def self.account_hash(rows, now: Time.now)
         user = rows[:user] || {}
@@ -58,6 +58,8 @@ module AccountExport
             'rueckmeldungen' => (rows[:feedback] || []).map do |f|
                 pick(f, %w[group former_group activity overall overall_text duration duration_planned level languages languages_text text contact created_at updated_at snoozed_until never])
             end,
+            # bookmarks in the table of contents (Bookmarks)
+            'lesezeichen' => (rows[:bookmarks] || []).map { |b| pick(b, %w[page anchor created_at]) },
         }
     end
 

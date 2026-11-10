@@ -466,6 +466,7 @@ class Main < Sinatra::Base
                 :live_apps => neo4j_query('MATCH (:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare) RETURN s;', :email => email).map { |r| r['s'] },
                 :sessions => neo4j_query('MATCH (s:Session)-[:FOR]->(:User {email: $email}) WHERE s.impersonated_by IS NULL RETURN s;', :email => email).map { |r| r['s'] },
                 :feedback => neo4j_query('MATCH (f:ActivityFeedback)-[:BY]->(:User {email: $email}) RETURN f;', :email => email).map { |r| r['f'] },
+                :bookmarks => neo4j_query('MATCH (b:Bookmark)-[:BY]->(:User {email: $email}) RETURN b ORDER BY b.page, b.created_at;', :email => email).map { |r| r['b'] },
             }
             File.write(File.join(dir, 'konto.json'), AccountExport.account_json(rows))
             File.write(File.join(dir, 'LIESMICH.txt'), AccountExport::README)
