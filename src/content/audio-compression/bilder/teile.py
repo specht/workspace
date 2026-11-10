@@ -10,9 +10,11 @@ is about.
     teil-5  Blöcke und Fenster: a wave under overlapping sine windows
     teil-6  Quantisieren nach Gehör: bands with their level, the masking
             threshold as steps, the noise under it
+    teil-7  Echte Dateien: the four bytes of an MP3 frame header and their
+            bits, the fields that matter (bit rate, sample rate) in purple
 
     src/scripts/drawings python3 src/content/audio-compression/bilder/teile.py
-    for n in 2 3 4 5 6; do src/scripts/drawings ruby src/scripts/render-svg.rb --webp src/content/audio-compression/teil-$n.svg; done
+    for n in 2 3 4 5 6 7; do src/scripts/drawings ruby src/scripts/render-svg.rb --webp src/content/audio-compression/teil-$n.svg; done
 """
 
 import math
@@ -162,8 +164,41 @@ def quantise():
     save('teil-6', 'Die Karte von Teil 6: Bänder mit ihrer Lautstärke, die Mithörschwelle als Stufen, das Rauschen darunter; gemacht von bilder/teile.py, als Bild:', parts)
 
 
+def header():
+    # the bytes ff fb 90 c0, and under each its eight bits; the bits of the
+    # bit rate and the sample rate in purple with a bracket and a label each,
+    # the sync pale
+    cell, gap = 42, 30
+    width = 8 * cell
+    left = (W - 4 * width - 3 * gap) / 2
+    top = 300
+    bytes_ = [0xFF, 0xFB, 0x90, 0xC0]
+    purple = {(2, b) for b in range(6)}
+    sync = {(0, b) for b in range(8)} | {(1, 0), (1, 1), (1, 2)}
+    bit_x = lambda i, b: left + i * (width + gap) + b * cell
+    parts = []
+    for i, value in enumerate(bytes_):
+        parts.append(text(bit_x(i, 0) + width / 2, top, f'{value:02x}', 170, PURPLE if i == 2 else GREY, weight=600))
+        for b in range(8):
+            bit = (value >> (7 - b)) & 1
+            color = PURPLE if (i, b) in purple else (LINE if (i, b) in sync else GREY)
+            parts.append(f"<rect x='{bit_x(i, b) + 3:.1f}' y='{top + 70}' width='{cell - 6}' height='{cell * 2}' rx='6' fill='{color}' opacity='{1 if color == PURPLE else 0.6}'/>")
+            parts.append(text(bit_x(i, b) + cell / 2, top + 70 + cell * 1.33, str(bit), 46, '#ffffff' if color == PURPLE else INK, weight=600))
+
+    def bracket(x0, x1, y, label, color):
+        parts.append(line([(x0 + 4, y - 18), (x0 + 4, y), (x1 - 4, y), (x1 - 4, y - 18)], color, 4))
+        parts.append(text((x0 + x1) / 2, y + 52, label, 42, color))
+
+    below = top + 70 + 2 * cell + 40
+    bracket(bit_x(0, 0), bit_x(1, 3), below, 'Sync', GREY)
+    bracket(bit_x(2, 0), bit_x(2, 4), below, '128 kbit/s', PURPLE)
+    bracket(bit_x(2, 4), bit_x(2, 6), below + 110, '44.100 Hz', PURPLE)
+    save('teil-7', 'Die Karte von Teil 7: die vier Bytes eines MP3-Headers und ihre Bits; gemacht von bilder/teile.py, als Bild:', parts)
+
+
 mulaw()
 frequencies()
 ear()
 blocks()
 quantise()
+header()

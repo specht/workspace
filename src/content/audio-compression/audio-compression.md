@@ -19,6 +19,8 @@ parts:
     image_alt: "Sieben Bögen von Sinusfenstern nebeneinander, jeder überlappt den nächsten zur Hälfte, abwechselnd kräftig und blass; darunter eine Welle."
   - image: teil-6.webp
     image_alt: "Sechzehn Balken für die Lautstärke von Bändern, nach rechts leiser; in jedem ein kräftigerer, niedrigerer Teil für das erlaubte Rauschen, darüber die Mithörschwelle als gestrichelte Treppe."
+  - image: teil-7.webp
+    image_alt: "Die vier Bytes ff, fb, 90 und c0 vom Anfang eines MP3-Frames, darunter ihre 32 Bits; elf Einsen am Anfang sind als Sync markiert, und im dritten Byte sind die vier Bits der Bitrate, 128 kbit/s, und die zwei der Abtastrate, 44.100 Hz, hervorgehoben."
 requires: [huffman]
 reference: [bits-und-bytes]
 </div>
@@ -32,6 +34,7 @@ reference: [bits-und-bytes]
 <script src='/include/sampling_widget.js'></script>
 <script src='/include/spectrum_widget.js'></script>
 <script src='/include/hearing_widget.js'></script>
+<script src='/include/abx_widget.js'></script>
 
 # Audio komprimieren
 
@@ -1728,4 +1731,231 @@ Dein Codec braucht für die Musik etwa 76 kbit/s statt 706, ein Neuntel. MP3 bra
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Setz <code>OFFSET</code> auf 5 und lass das Programm noch einmal laufen: Wie viele kbit/s sind es, und hörst du in <code>musik-codec.wav</code> einen Unterschied zum Original? Geh in Schritten von 5 weiter nach unten, bis zu −10. Ab wann hörst du das Rauschen, und woran zuerst? Setz <code>OFFSET</code> dann wieder auf 15.
+</div>
+
+## Echte Dateien
+
+Dein Codec zeigt, wie es geht. Jetzt die echten: Was steht in einer MP3-Datei, und wie gut klingen MP3, AAC und Opus bei wenigen Bits?
+
+### Eine MP3-Datei Byte für Byte
+
+ffmpeg macht aus der Musik eine MP3-Datei mit 128 kbit/s:
+
+```bash
+ffmpeg -i musik.wav -b:a 128k musik.mp3
+ls -l musik.wav musik.mp3
+hexdump -C musik.mp3 | head -5
+```
+
+<!-- tutorial-step
+terminal-run: cd /workspace/audio && ffmpeg -v error -y -i musik.wav -b:a 128k musik.mp3 && ls -l musik.wav musik.mp3 && hexdump -C musik.mp3 | head -5
+terminal-wait-for-prompt: 30
+wait-for-text: Info
+-->
+
+Aus 705.644 Bytes werden 129.193, knapp ein Fünftel. So fängt die Datei an:
+
+<pre class='spec hexdump'>
+00000000  <span class='m0'>49 44 33 04 00 00 00 00  00 23</span> <span class='m1'>54 53 53 45 00 00</span>  |ID3......#TSSE..|
+00000010  <span class='m1'>00 0f 00 00 03 4c 61 76  66 36 30 2e 31 36 2e 31</span>  |.....Lavf60.16.1|
+00000020  <span class='m1'>30 30 00</span> <span class='mg'>00 00 00 00 00  00 00 00 00 00</span> <span class='m2'>ff fb 90</span>  |00..............|
+00000030  <span class='m2'>c0</span> <span class='mg'>00 00 00 00 00 00 00  00 00 00 00 00 00 00 00</span>  |................|
+00000040  <span class='mg'>00 00</span> <span class='m3'>49 6e 66 6f</span> 00 00  00 0f 00 00 01 34 00 01  |..Info.......4..|
+</pre>
+
+Vorn steht ein <span class='m0'>ID3-Tag</span>, ein Kasten für Angaben zur Musik, Titel, Künstler, Album, Bild. ffmpeg schreibt nur einen <span class='m1'>Eintrag</span> hinein: `TSSE`, womit die Datei gemacht wurde, `Lavf60.16.100`, die Bibliothek von ffmpeg. Danach, nach ein paar <span class='mg'>Bytes Füllung</span>, beginnt mit <span class='m2'><code>ff fb 90 c0</code></span> der erste **Frame**. Eine MP3-Datei ist eine Folge von Frames, jeder mit einem Header von 4 Bytes und danach den Bits für 1.152 Messungen.
+
+#### Das ID3-Tag
+
+Die ersten zehn Bytes sagen, wie lang das Tag ist: `ID3`, die Version 2.4.0 (`04 00`), Flags (`00`) und die Größe in vier Bytes, `00 00 00 23`. Die Größe ist besonders geschrieben: Von jedem Byte zählen nur die unteren 7 Bits, das oberste ist immer 0. So kommt im Tag nie `ff` vor, und ein Programm, das Frames am Byte `ff` erkennt, stolpert nicht über das Tag. Hier ist es einfach 0x23 = 35: Nach den zehn Bytes kommen 35 Bytes Tag, und der erste Frame beginnt beim Byte 45.
+
+#### Der Header eines Frames
+
+Die vier Bytes `ff fb 90 c0` sind Felder aus einzelnen Bits:
+
+<pre class='spec'>
+      7 6 5 4 3 2 1 0        Field Name
+     +-+-+-+-+-+-+-+-+
+   0 |<span class='m0'>1 1 1 1 1 1 1 1</span>|       <span class='m0'>Sync: 11 Bits, alle 1</span>
+     +-+-+-+-+-+-+-+-+
+   1 |<span class='m0'>1 1 1</span>|<span class='m1'>1 1</span>|<span class='m2'>0 1</span>|<span class='m3'>1</span>|       <span class='m1'>Version</span>, <span class='m2'>Layer</span>, <span class='m3'>ohne Prüfsumme</span>
+     +-+-+-+-+-+-+-+-+
+   2 |<span class='m4'>1 0 0 1</span>|<span class='m5'>0 0</span>|<span class='m6'>0</span>|<span class='mg'>0</span>|       <span class='m4'>Bitrate</span>, <span class='m5'>Abtastrate</span>, <span class='m6'>Padding</span>, <span class='mg'>frei</span>
+     +-+-+-+-+-+-+-+-+
+   3 |<span class='m7'>1 1</span>|<span class='mg'>0 0 0 0 0 0</span>|       <span class='m7'>Kanäle</span>, <span class='mg'>Weiteres</span>
+     +-+-+-+-+-+-+-+-+
+</pre>
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table bytes'>
+<tr>
+<td><span class='m0'><code>11111111 111</code></span></td>
+<td>Sync: elf Einsen, an denen ein Player den Anfang eines Frames erkennt, auch wenn er mitten in einen Strom einsteigt, etwa beim Internetradio</td>
+</tr>
+<tr>
+<td><span class='m1'><code>11</code></span></td>
+<td>Version: MPEG-1</td>
+</tr>
+<tr>
+<td><span class='m2'><code>01</code></span></td>
+<td>Layer III, das ist das »3« in MP3</td>
+</tr>
+<tr>
+<td><span class='m3'><code>1</code></span></td>
+<td>keine Prüfsumme nach dem Header</td>
+</tr>
+<tr>
+<td><span class='m4'><code>1001</code></span></td>
+<td>Bitrate: der Index 9 in der Tabelle unten, 128 kbit/s</td>
+</tr>
+<tr>
+<td><span class='m5'><code>00</code></span></td>
+<td>Abtastrate: der Index 0, 44.100 Hz</td>
+</tr>
+<tr>
+<td><span class='m6'><code>0</code></span></td>
+<td>Padding: ob der Frame ein Byte länger ist</td>
+</tr>
+<tr>
+<td><span class='m7'><code>11</code></span></td>
+<td>Kanäle: Mono (<code>00</code> wäre Stereo)</td>
+</tr>
+</table>
+</div>
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Index</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
+<tr><th>Bitrate in kbit/s</th><td>32</td><td>40</td><td>48</td><td>56</td><td>64</td><td>80</td><td>96</td><td>112</td><td>128</td><td>160</td><td>192</td><td>224</td><td>256</td><td>320</td></tr>
+</table>
+</div>
+
+Die Abtastrate hat drei Werte: Der Index 0 ist 44.100 Hz, 1 ist 48.000 Hz, 2 ist 32.000 Hz. Die Tabellen gelten für MPEG-1 Layer III; die Seite des [MPEG-Formats bei der Library of Congress](https://www.loc.gov/preservation/digital/formats/fdd/fdd000012.shtml) beschreibt das Format und nennt die Normen.
+
+Ein Frame enthält 1.152 Messungen. Bei 128.000 Bits in der Sekunde und 44.100 Messungen in der Sekunde sind das 1.152 · 128.000 / 44.100 Bits, geteilt durch 8 für Bytes: 144 · 128.000 / 44.100 = 417,96 Bytes. Ein Frame hat aber eine ganze Zahl von Bytes, abgerundet 417. Damit es im Mittel trotzdem genau 128 kbit/s werden, ist mancher Frame ein Byte länger; das sagt das Padding-Bit.
+
+_task(frame-bytes)
+
+Lege `mp3.py` an:
+
+<!-- page-code: own -->
+```python
+BITRATES = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
+RATES = [44100, 48000, 32000]
+
+
+def frame_length(header):
+    # hier: die Länge des Frames in Bytes, aus seinem Header
+```
+
+Um ein Feld aus einem Byte zu holen, schiebt man es nach rechts und schneidet ab, was links davon steht: `header[2] >> 4` sind die oberen vier Bits von Byte 2, der Index der Bitrate. `(header[2] >> 2) & 3` schiebt um zwei Stellen und behält mit `& 3`, binär `11`, nur die unteren zwei Bits: den Index der Abtastrate. Mehr dazu steht im Handbuch unter [Bits und Bytes](/reference/bits-und-bytes).
+
+<div class='hint own' data-check='frame-laenge'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>frame_length(header)</code>: Die Funktion bekommt die vier Bytes eines Headers und gibt zurück, wie viele Bytes der Frame lang ist, mit dem Padding.
+</div>
+
+<!-- hint -->
+Drei Felder aus Byte 2: die Bitrate `BITRATES[header[2] >> 4]` in kbit/s, die Abtastrate `RATES[(header[2] >> 2) & 3]` und das Padding, ein einziges Bit, `(header[2] >> 1) & 1`.
+<!-- /hint -->
+<!-- hint -->
+Die Länge ist `144 * bitrate // rate + padding`, mit der Bitrate in Bit pro Sekunde, also mal 1.000. `//` teilt ganzzahlig und rundet ab.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def frame_length(header):
+    bitrate = BITRATES[header[2] >> 4] * 1000
+    rate = RATES[(header[2] >> 2) & 3]
+    padding = (header[2] >> 1) & 1
+    return 144 * bitrate // rate + padding
+```
+<!-- /solution -->
+
+_task(frame-laenge)
+
+Jetzt kann ein Programm von Frame zu Frame springen: am Header die Länge ablesen, so viele Bytes weiter, und dort muss wieder ein Header stehen. `id3_size` liest die Größe des Tags, sieben Bits je Byte. Schreib dazu:
+
+```python
+def id3_size(data):
+    if data[:3] != b'ID3':
+        return 0
+    size = 0
+    for byte in data[6:10]:
+        size = size * 128 + byte
+    return 10 + size
+
+
+if __name__ == '__main__':
+    with open('musik.mp3', 'rb') as f:
+        data = f.read()
+    pos = id3_size(data)
+    print(f'ID3-Tag: {pos} Bytes')
+    frames = 0
+    padded = 0
+    while pos + 4 <= len(data) and data[pos] == 0xFF and data[pos + 1] & 0xE0 == 0xE0:
+        length = frame_length(data[pos:pos + 4])
+        padded += (data[pos + 2] >> 1) & 1
+        pos += length
+        frames += 1
+    print(f'{frames} Frames, {padded} davon mit Padding, {len(data) - pos} Bytes danach')
+    print(f'{(frames - 1) * 1152 / 44100:.4f} Sekunden Klang')
+```
+
+`data[pos + 1] & 0xE0 == 0xE0` prüft die oberen drei Bits des zweiten Bytes, den Rest des Syncs. Findet die Schleife keinen Header mehr, hört sie auf.
+
+```bash
+python3 mp3.py
+ffprobe -v error -show_entries format=duration musik.mp3
+```
+
+<!-- tutorial-step
+write-file: audio/mp3.py <- file:stufen/mp3.py
+check-task: frame-laenge
+terminal-run: python3 mp3.py && ffprobe -v error -show_entries format=duration musik.mp3
+terminal-wait-for-prompt: 30
+wait-for-text: duration=8.045714
+-->
+
+309 Frames, 295 davon mit Padding, und nach dem letzten Frame kein Byte mehr. Der erste Frame enthält keinen Klang: Nach seinem Header steht `Info`, und darin hat der Coder notiert, wie viele Frames und Bytes folgen und wie viel Stille ein Player am Anfang und am Ende weglassen soll. Darum rechnet das Programm mit `frames - 1`: 308 Frames mit je 1.152 Messungen sind 8,0457 Sekunden, und genau das sagt auch `ffprobe`. Die Musik dauert 8 Sekunden; den Rest füllt der Coder mit Stille, vorn, weil er vorausschaut, und hinten bis zum vollen Frame.
+
+<!-- stage: stufen/mp3.py as mp3.py -->
+
+### MP3, AAC und Opus
+
+Seit MP3 sind weitere Codecs dazugekommen: **AAC** (1997), heute in Videos und bei Musikdiensten, und **Opus** (2012), im Browser bei Videoanrufen. ffmpeg kann alle drei. Mach dieselbe Musik mit jedem bei mehreren Bitraten:
+
+```bash_copy
+for r in 32 64 128; do ffmpeg -v error -y -i musik.wav -b:a ${r}k musik-$r.mp3; done
+for r in 32 64 128; do ffmpeg -v error -y -i musik.wav -c:a aac -b:a ${r}k musik-$r.m4a; done
+for r in 16 32 64; do ffmpeg -v error -y -i musik.wav -c:a libopus -b:a ${r}k musik-$r.opus; done
+ls -l musik*
+```
+
+<!-- tutorial-step
+terminal-run: for r in 32 64 128; do ffmpeg -v error -y -i musik.wav -b:a ${r}k musik-$r.mp3; ffmpeg -v error -y -i musik.wav -c:a aac -b:a ${r}k musik-$r.m4a; done; for r in 16 32 64; do ffmpeg -v error -y -i musik.wav -c:a libopus -b:a ${r}k musik-$r.opus; done; ls -l musik*.opus
+terminal-wait-for-prompt: 60
+wait-for-text: musik-64.opus
+-->
+
+<div class='table-responsive'>
+<table class='table'>
+<tr><th></th><th>16 kbit/s</th><th>32 kbit/s</th><th>64 kbit/s</th><th>128 kbit/s</th></tr>
+<tr><th>MP3</th><td></td><td>32.410</td><td>64.618</td><td>129.193</td></tr>
+<tr><th>AAC</th><td></td><td>34.461</td><td>66.899</td><td>137.813</td></tr>
+<tr><th>Opus</th><td>22.587</td><td>50.515</td><td>88.747</td><td></td></tr>
+</table>
+</div>
+
+Die Bytes bei dir sollten genauso aussehen. MP3 und AAC halten die Bitrate fast genau ein: 8 Sekunden mal 32.000 Bit sind 32.000 Bytes. Opus nimmt die Bitrate als Ziel und gibt einem Klang, der schwer zu codieren ist, mehr: Bei dieser Musik sind es statt 32 etwa 50 kbit/s.
+
+### Hören, ob man es hört
+
+Ob man einen Codec hört, lässt sich nicht mit einer Frage wie »Klingt das gut?« klären: Wer weiß, welches das Original ist, hört leicht einen Unterschied, den es nicht gibt. Darum gibt es den **ABX-Test**, den W. A. Munson und Mark B. Gardner von den Bell Labs 1950 beschrieben: Du hörst **A**, das Original, und **B**, die Fassung mit Codec, und dazu **X**, das eins von beiden ist, ohne dass du weißt, welches. Dann sagst du, ob X A oder B ist. Wer keinen Unterschied hört, liegt im Mittel bei der Hälfte richtig. Wer in 10 Runden 9-mal richtig liegt, hat mit Raten nur eine Chance von etwa 1 %: Er hört einen Unterschied.
+
+Im Widget sind A und B fünf Sekunden der Musik, B einmal durch den Codec und zurück; du kannst jederzeit umschalten, ohne dass die Musik von vorn anfängt.
+
+<div class='abx-widget'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Fang mit MP3 bei 128 kbit/s an und spiel 10 Runden. Geh dann mit der Bitrate herunter: Ab welcher hörst du sicher einen Unterschied? Achte auf die Hi-Hat, das Zischen oben, und auf den Klang der Glocke, wenn sie verklingt. Vergleiche danach die drei Codecs bei 32 kbit/s.
 </div>

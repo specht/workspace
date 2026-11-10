@@ -736,3 +736,54 @@ tasks:
           p = counts / counts.sum()
           return float(np.sum(p * np.log2(1 / p)))
       ```
+
+  - id: frame-bytes
+    title: Wie lang ist dieser Frame?
+    prompt: |
+      Ein Frame beginnt mit den Bytes `ff fb 54 c4`. Wie viele Bytes ist er
+      lang?
+    check:
+      type: number
+      expect: 192
+    feedback:
+      - when: { between: [208, 209] }
+        say: Die Bitrate stimmt, aber schau dir die beiden Bits für die Abtastrate in 0x54 noch einmal an.
+      - when: { between: [384, 385] }
+        say: Die Abtastrate stimmt, aber der Index der Bitrate sind die oberen vier Bits von 0x54.
+      - when: { between: [192.5, 193.5] }
+        say: Ist das Padding-Bit in 0x54 gesetzt?
+    solution: |
+      0x54 ist binär `0101 0100`: Bitrate-Index 5, also 64 kbit/s,
+      Abtastrate-Index `01`, also 48.000 Hz, Padding 0. Die Länge ist
+      144 · 64.000 / 48.000 = 192 Bytes.
+
+  - id: frame-laenge
+    title: Die Länge eines Frames
+    prompt: |
+      Schreib in `audio/mp3.py` die Funktion `frame_length(header)`: wie
+      viele Bytes der Frame mit diesem Header lang ist, mit dem Padding. Die
+      Prüfung gibt ihr Header mit verschiedenen Bitraten und Abtastraten.
+    check:
+      type: python
+      file: audio/mp3.py
+      cases:
+        - call: frame_length(bytes([0xFF, 0xFB, 0x90, 0xC0]))
+          expect: 417
+          say: Der erste Frame von `musik.mp3`, 128 kbit/s bei 44.100 Hz, ohne Padding, ist 144 · 128.000 / 44.100 = 417,96, abgerundet 417 Bytes lang. Wird die Bitrate mit 1.000 multipliziert und mit `//` geteilt?
+        - call: frame_length(bytes([0xFF, 0xFB, 0x92, 0xC0]))
+          expect: 418
+          say: Mit dem Padding-Bit, `(header[2] >> 1) & 1`, ist der Frame ein Byte länger.
+        - call: frame_length(bytes([0xFF, 0xFB, 0x54, 0xC4]))
+          expect: 192
+          say: 64 kbit/s bei 48.000 Hz sind 192 Bytes. Kommt die Abtastrate aus `RATES[(header[2] >> 2) & 3]`?
+        - call: frame_length(bytes([0xFF, 0xFB, 0xE8, 0x00]))
+          expect: 1440
+          say: 320 kbit/s bei 32.000 Hz sind 1.440 Bytes. Kommt die Bitrate aus den oberen vier Bits, `header[2] >> 4`?
+    solution: |
+      ```python
+      def frame_length(header):
+          bitrate = BITRATES[header[2] >> 4] * 1000
+          rate = RATES[(header[2] >> 2) & 3]
+          padding = (header[2] >> 1) & 1
+          return 144 * bitrate // rate + padding
+      ```

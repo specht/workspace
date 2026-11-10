@@ -215,8 +215,17 @@ seconds at 720p each.
    the bit rate (music 76 kbit/s mono at `OFFSET` 15 against 706; 70 % of
    the numbers are 0; the rest is 14 dB under the music, 61 % of its
    energy under 200 Hz). Not yet listened to by a person: whether 15 dB is
-   transparent. Next: part 7 (real files: an MP3 frame header byte by
-   byte, ffmpeg's MP3, AAC and Opus at several rates, an ABX test). The section is
+   transparent. Part 7 is written: `musik.mp3` from
+   ffmpeg in a hexdump (ID3 tag with its synchsafe size, the frame header
+   bit by bit), `frame_length` of one's own, all 309 frames walked and the
+   Info frame, the duration against ffprobe; MP3, AAC and Opus at three
+   rates each and their sizes (Opus takes the rate as a target: 50 kbit/s
+   for 32 here); the ABX widget (`abx_widget.js`, Munson and Gardner 1950)
+   with pieces made by `sounds/abx.py`: coded, decoded by ffmpeg, cut to the
+   same five seconds as lossless FLAC (4,4 MB for ten pieces), checked to
+   start at the same sample. The page is in parts (`parts:`), one per
+   chapter, each with a picture for the card (`bilder/teile.py`). Next:
+   part 8 (today: MP3's history, AAC, Vorbis, Opus, LC3, neural codecs). The section is
    renamed and the /lehrplan graph recomputed when the page leaves
    development, not before: until then no public page is about sound.
 3. Moving pictures the same way.

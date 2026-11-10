@@ -8718,6 +8718,7 @@ div[data-stepper],
 .sampling-widget,
 .spectrum-widget,
 .hearing-widget,
+.abx-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8739,6 +8740,7 @@ html[data-bs-theme="dark"] .dtmf-widget,
 html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .spectrum-widget,
 html[data-bs-theme="dark"] .hearing-widget,
+html[data-bs-theme="dark"] .abx-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -15244,6 +15246,44 @@ html[data-bs-theme="dark"] .hearing-widget {
 .hearing-l-model i { border-color: var(--hearing-model); border-top-style: dashed; }
 .hearing-l-noise i { height: 0.8em; border: none; background: var(--hearing-noise); opacity: 0.35; }
 .hearing-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+
+/* A listening test (abx_widget.js, »Audio komprimieren«): codec and bit
+   rate, A, B and X to play, the answer, the tally; what plays in purple */
+.abx-widget {
+    --abx-mark: #6741d9;
+    --abx-mark-ink: #ffffff;
+    --abx-right: #2b8a3e;
+}
+html[data-bs-theme="dark"] .abx-widget {
+    --abx-mark: #b197fc;
+    --abx-mark-ink: #1a1b1b;
+    --abx-right: #69db7c;
+}
+.abx-widget::before {
+    content: 'Zum Ausprobieren, mit Kopfhörern';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.abx-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.6em; }
+.abx-label { font-size: 0.9em; color: var(--widget-ink); min-width: 4.5em; }
+.abx-play { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5em; margin: 0.9em 0; }
+.abx-button { padding-block: 0.7em; }
+.abx-button.active { background-color: var(--abx-mark); border-color: var(--abx-mark); color: var(--abx-mark-ink); }
+.abx-answer { margin-top: 0.4em; }
+.abx-again { color: var(--widget-ink); }
+.abx-verdict { margin: 0.5em 0 0; min-height: 1.5em; }
+.abx-verdict.abx-right { color: var(--abx-right); }
+.abx-tally { margin: 0.3em 0 0.2em; font-variant-numeric: tabular-nums; }
+@media (max-width: 575.98px) {
+    .abx-play { grid-template-columns: 1fr; }
+}
 
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
    Telefon«): the keypad with the frequencies of its rows (amber) and

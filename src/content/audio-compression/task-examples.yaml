@@ -106,3 +106,10 @@ examples:
       - { files: { audio/codec.py: stufen/codec-1.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'entropy' }
       - { files: { audio/codec.py: fehler/entropie-ln.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'np.log2' }
       - { files: { audio/codec.py: fehler/entropie-counts.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'counts / counts.sum()' }
+  frame-laenge:
+    pass:
+      - { files: { audio/mp3.py: stufen/mp3.py } }
+    fail:
+      - { files: { audio/mp3.py: fehler/frame-ohne-padding.py }, say: 'Padding-Bit' }
+      - { files: { audio/mp3.py: fehler/frame-feste-rate.py }, say: 'RATES[(header[2] >> 2) & 3]' }
+      - { files: { audio/mp3.py: fehler/frame-kbit.py }, say: 'mit 1.000 multipliziert' }
