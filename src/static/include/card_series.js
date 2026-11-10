@@ -36,55 +36,61 @@
             event.stopPropagation();
             show(i);
         }));
-        // dragging sideways, with a mouse as with a finger: the picture
-        // follows and the next or the previous one comes in beside it, in a
-        // frame of the picture's size (the picture is on top of the card or
-        // beside the text); past 40 px it slides on, else back. At the first
-        // and the last picture it moves only a little. A drag opens no link,
-        // and the browser's own dragging of links and pictures is off.
+        // dragging sideways, with a mouse as with a finger: all pictures
+        // lie side by side in a frame of the picture's size (the picture is
+        // on top of the card or beside the text), and one drag runs through
+        // the whole gallery; the dots and the text follow the nearest one.
+        // Past the first or the last picture the strip gives less the
+        // further it is pulled, and springs back. Let go, it settles on the
+        // nearest picture; a short flick of more than 40 px moves on by one.
+        // A drag opens no link, and the browser's own dragging of links and
+        // pictures is off.
         link.draggable = false;
         card.querySelectorAll('img').forEach((img) => { img.draggable = false; });
-        // the neighbours' pictures load once the pointer is on the card
+        // the other pictures load once the pointer is on the card
         card.addEventListener('pointerenter', () => {
             card.querySelectorAll('img[loading=lazy]').forEach((img) => { img.loading = 'eager'; });
         }, { once: true });
-        let startX = null, dx = 0, dragged = false, stage = null;
+        let startX = null, dx = 0, dragged = false, stage = null, from = 0;
         const shown = (slide) => Array.from(slide.querySelectorAll('img'));
         function makeStage() {
-            const slide = slides[current];
-            const pictures = shown(slide);
-            const img = pictures.find((i) => i.offsetWidth > 0);
+            const img = shown(slides[current]).find((i) => i.offsetWidth > 0);
             if (!img) return null;
-            const box = slide.getBoundingClientRect(), pic = img.getBoundingClientRect();
-            const frame = document.createElement('div');
+            const box = card.getBoundingClientRect(), pic = img.getBoundingClientRect();
+            const frame = document.createElement('span');
             frame.className = 'card-series-stage';
             Object.assign(frame.style, { left: `${pic.left - box.left}px`, top: `${pic.top - box.top}px`,
                 width: `${pic.width}px`, height: `${pic.height}px` });
-            const strip = document.createElement('div');
+            const strip = document.createElement('span');
             strip.className = 'card-series-strip';
             frame.append(strip);
-            const add = (index, at) => {
-                if (index < 0 || index >= slides.length) return;
-                shown(slides[index]).forEach((source) => {
-                    const copy = source.cloneNode();
-                    copy.loading = 'eager';
-                    Object.assign(copy.style, { left: `${at * pic.width}px`, width: `${pic.width}px`, height: `${pic.height}px` });
-                    strip.append(copy);
-                });
-            };
-            add(current - 1, -1);
-            add(current, 0);
-            add(current + 1, 1);
-            slide.append(frame);
-            pictures.forEach((i) => { i.style.visibility = 'hidden'; });
-            return { frame, strip, pictures, width: pic.width };
+            slides.forEach((slide, index) => shown(slide).forEach((source) => {
+                const copy = source.cloneNode();
+                copy.loading = 'eager';
+                Object.assign(copy.style, { left: `${index * pic.width}px`, width: `${pic.width}px`, height: `${pic.height}px`, visibility: '' });
+                strip.append(copy);
+            }));
+            card.append(frame);
+            card.classList.add('card-series-dragging');
+            return { frame, strip, width: pic.width };
         }
         function dropStage() {
             if (!stage) return;
-            stage.pictures.forEach((i) => { i.style.visibility = ''; });
             stage.frame.remove();
+            card.classList.remove('card-series-dragging');
             stage = null;
         }
+        // where the strip stands for a drag of dx: beyond the ends a pull that
+        // gives less and less, never more than a third of a picture
+        function offset(dx) {
+            const w = stage.width, last = -(slides.length - 1) * w;
+            const x = -from * w + dx;
+            const give = (over) => (w / 3) * over / (over + w / 3);
+            if (x > 0) return give(x);
+            if (x < last) return last - give(last - x);
+            return x;
+        }
+        const nearest = (x) => Math.max(0, Math.min(slides.length - 1, Math.round(-x / stage.width)));
         card.addEventListener('pointerdown', (e) => {
             if (e.button !== 0 || e.target.closest('.card-series-dots')) return;
             startX = e.clientX;
@@ -98,27 +104,30 @@
                 dragged = true;
                 card.setPointerCapture(e.pointerId);
                 dropStage();
+                from = current;
                 stage = makeStage();
             }
             if (!stage) return;
-            const edge = (dx > 0 && current === 0) || (dx < 0 && current === slides.length - 1);
+            const x = offset(dx);
             stage.strip.style.transition = 'none';
-            stage.strip.style.transform = `translateX(${edge ? dx / 5 : dx}px)`;
+            stage.strip.style.transform = `translateX(${x}px)`;
+            const near = nearest(x);
+            if (near !== current) show(near);
         });
         const end = () => {
             if (startX === null) return;
             startX = null;
             if (!stage) return;
-            const edge = (dx > 0 && current === 0) || (dx < 0 && current === slides.length - 1);
-            const go = dragged && !edge && Math.abs(dx) > 40 ? (dx < 0 ? 1 : -1) : 0;
+            let target = nearest(offset(dx));
+            // a short flick still moves on by one
+            if (target === from && Math.abs(dx) > 40) target = Math.max(0, Math.min(slides.length - 1, from + (dx < 0 ? 1 : -1)));
             const finished = stage;
-            finished.strip.style.transition = 'transform 0.22s ease-out';
-            finished.strip.style.transform = `translateX(${-go * finished.width}px)`;
-            finished.strip.addEventListener('transitionend', () => {
-                if (stage !== finished) return;
-                if (go) show(current + go);
-                dropStage();
-            }, { once: true });
+            if (target !== current) show(target);
+            finished.strip.style.transition = 'transform 0.25s ease-out';
+            finished.strip.style.transform = `translateX(${-target * finished.width}px)`;
+            const done = () => { if (stage === finished) dropStage(); };
+            finished.strip.addEventListener('transitionend', done, { once: true });
+            setTimeout(done, 400);
         };
         card.addEventListener('pointerup', end);
         card.addEventListener('pointercancel', end);

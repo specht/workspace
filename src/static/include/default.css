@@ -15441,8 +15441,10 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
 .tutorial_card3.card-series { cursor: pointer; touch-action: pan-y; user-select: none; }
 /* while dragging: a frame of the picture's size with the picture and its
    neighbours side by side, moved as one */
-.card-series-stage { position: absolute; z-index: 1; overflow: hidden; }
-.card-series-strip { position: absolute; inset: 0; }
+.card-series-stage { display: block; position: absolute; z-index: 1; overflow: hidden; }
+/* the real pictures stay hidden under the frame while it is dragged */
+.card-series-dragging .card-series-slide img { visibility: hidden; }
+.card-series-strip { display: block; position: absolute; inset: 0; }
 .tutorial_card3 .card-series-strip img { position: absolute; top: 0; max-width: none; aspect-ratio: auto; object-fit: cover; }
 .card-series-link {
     position: absolute;

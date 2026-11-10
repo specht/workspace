@@ -2969,7 +2969,8 @@ class Main < Sinatra::Base
                         io.puts "<div class='hscol#{index >= cards.size - paired ? ' hscol-pair' : ''}'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
                         band = usage_html(usage, slug, 'card-usage')
-                        used_card = band.empty? ? '' : ' card-with-usage'
+                        # a series card has the band's room if any of its members has a band
+                        used_card = members.any? { |member| !usage_html(usage, member, 'card-usage').empty? } ? ' card-with-usage' : ''
                         series = members.size > 1 || !parts.nil?
                         if series
                             # a link over the whole card to the member shown, the
@@ -2984,7 +2985,9 @@ class Main < Sinatra::Base
                         slides = parts ? parts.each_index.map { |i| [slug, i + 1] } : members.map { |member| [member, nil] }
                         slides.each_with_index do |(member, part), slide|
                             card_index += 1 if slide == 0
-                            io.puts card_body_html(member, catalog, slide == 0 ? band : '', card_index,
+                            # each member of a series with its own band; the parts of one activity with the activity's
+                            slide_band = slide == 0 || part ? band : usage_html(usage, member, 'card-usage')
+                            io.puts card_body_html(member, catalog, slide_band, card_index,
                                 :slide => series ? slide : nil, :count => slides.size, :part => part)
                         end
                         if series
