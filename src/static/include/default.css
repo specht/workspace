@@ -15898,7 +15898,8 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
 .autotoc-secondary .toc-bookmark:hover {
     opacity: 0.9;
 }
-.autotoc-secondary .toc-bookmark.set {
+.autotoc-secondary .toc-entry .toc-bookmark.set,
+.autotoc-secondary .toc-entry:hover .toc-bookmark.set {
     opacity: 1;
     color: #c2410c;
 }
