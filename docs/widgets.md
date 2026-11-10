@@ -389,9 +389,10 @@ only to look nice.
   now and the frame before (two PNGs inside the div, 288 × 192 from
   `bilder/motion_widget.py`); the block (16 × 16) is dragged over the frame
   now and snaps to the grid, the square over the frame before, within the
-  search area of ±16 that stays bright; mouse, finger or arrow keys on
-  either. Enlarged under them: the block, the square, their difference
-  (black is 0) and, after »Beste Verschiebung suchen«, the sum for every
+  search area of ±16 that stays bright, carrying the block as a half
+  transparent onion skin; mouse, finger or arrow keys on either. Enlarged
+  under them: the block, the square, their difference with its sign
+  (orange brighter, blue darker, black 0) and, after »Beste Verschiebung suchen«, the sum for every
   shift as a map from deep purple (small) to pale, the best ringed in
   yellow, the reader's own square in white. The sum and the vector (dx, dy)
   are words under the buttons; after the search a second line compares the

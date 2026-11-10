@@ -3,8 +3,11 @@
 // snaps to the grid of blocks; a tap or the arrow keys work too); in the
 // frame before, a square of the same size can be dragged (mouse, finger, or
 // the arrow keys) within the search area around the block's own place.
-// Beside them, enlarged: the block, the square under it and their
-// difference, with the sum of the differences (SAD) and the vector (dx, dy)
+// The square carries the block as an onion skin, half transparent, so that
+// it merges with the picture where it fits and shows doubled edges where
+// it does not. Beside them, enlarged: the block, the square under it and
+// their difference with its sign (orange where the block is brighter, blue
+// where it is darker, black where they agree), with the sum of the differences (SAD) and the vector (dx, dy)
 // from the block to the square. »Beste Verschiebung suchen« tries every
 // shift in the search area, puts the square on the best one and shows the
 // sum of every shift as a small map, the darker the smaller, the best ringed
@@ -69,7 +72,7 @@
             html('div', { class: 'motion-zooms' }, [
                 html('figure', { class: 'motion-figure' }, [zoomBlock, html('figcaption', { text: 'Block' })]),
                 html('figure', { class: 'motion-figure' }, [zoomCandidate, html('figcaption', { text: 'Quadrat davor' })]),
-                html('figure', { class: 'motion-figure' }, [zoomDiff, html('figcaption', { text: 'Unterschied' })]),
+                html('figure', { class: 'motion-figure' }, [zoomDiff, html('figcaption', { text: 'Unterschied: orange heller, blau dunkler' })]),
                 mapFigure,
             ]));
 
@@ -106,6 +109,10 @@
                 ctx.lineWidth = 1;
                 ctx.strokeRect(bx - R + 0.5, by - R + 0.5, N + 2 * R - 1, N + 2 * R - 1);
                 ctx.setLineDash([]);
+                // the onion skin: the block of the frame now, half transparent
+                ctx.globalAlpha = 0.5;
+                ctx.drawImage(now.canvas, bx, by, N, N, square[0], square[1], N, N);
+                ctx.globalAlpha = 1;
             } else {
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
                 ctx.lineWidth = 1;
@@ -117,6 +124,21 @@
             ctx.strokeRect(square[0] - 1, square[1] - 1, N + 2, N + 2);
             ctx.strokeStyle = purple;
             ctx.strokeRect(square[0] + 1, square[1] + 1, N - 2, N - 2);
+        }
+
+        // the difference with its sign: orange where the block is brighter,
+        // blue where it is darker, black where they agree; full at 40
+        function drawSigned(canvas, values) {
+            const ctx = canvas.getContext('2d');
+            for (let y = 0; y < N; y++) {
+                for (let x = 0; x < N; x++) {
+                    const d = values(x, y);
+                    const t = Math.min(1, Math.abs(d) / 40);
+                    const [r, g, b] = d > 0 ? [245, 158, 11] : [59, 130, 246];
+                    ctx.fillStyle = `rgb(${Math.round(r * t)}, ${Math.round(g * t)}, ${Math.round(b * t)})`;
+                    ctx.fillRect(x * ZOOM, y * ZOOM, ZOOM, ZOOM);
+                }
+            }
         }
 
         function drawZoom(canvas, values) {
@@ -163,8 +185,7 @@
             drawFrame(beforeCanvas, before, [bx + vx, by + vy], true);
             drawZoom(zoomBlock, (x, y) => now.luma[(by + y) * now.width + bx + x]);
             drawZoom(zoomCandidate, (x, y) => before.luma[(by + vy + y) * before.width + bx + vx + x]);
-            // the difference: 0 black, 64 and more white
-            drawZoom(zoomDiff, (x, y) => 4 * Math.abs(now.luma[(by + y) * now.width + bx + x] - before.luma[(by + vy + y) * before.width + bx + vx + x]));
+            drawSigned(zoomDiff, (x, y) => now.luma[(by + y) * now.width + bx + x] - before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawMap();
             say.textContent = `Vektor (${signed(vx)}, ${signed(vy)}): Summe der Unterschiede ${de(sad(vy, vx))}.`;
             if (!found) {
