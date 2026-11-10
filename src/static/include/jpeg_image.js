@@ -323,35 +323,27 @@
             lctx.drawImage(image.photo(), sx, sy, span * mcuW, span * mcuH, 0, 0, lens.width, lens.height);
             // the MCU grid, faint, and the chosen MCU
             const gx = (mx - AROUND) * mcuW - sx, gy = (my - AROUND) * mcuH - sy;   // where the grid starts, in photo pixels
-            // 3 pixels of the canvas, about 2 on the screen, so that they do not flicker
-            lctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-            lctx.lineWidth = 3;
-            for (let i = -1; i <= span + 1; i++) {
-                lctx.beginPath();
-                lctx.moveTo((gx + i * mcuW) * zoom, 0);
-                lctx.lineTo((gx + i * mcuW) * zoom, lens.height);
-                lctx.moveTo(0, (gy + i * mcuH) * zoom);
-                lctx.lineTo(lens.width, (gy + i * mcuH) * zoom);
-                lctx.stroke();
-            }
-            // the blocks of the channel, finer, where a block is smaller than an MCU
+            // a grid line is a light and a dark line side by side, each 1,5 pixels
+            // of the canvas, so that it shows on bright and on dark pixels alike
+            const gridLines = (step, count, origin, vertical, alpha) => {
+                lctx.lineWidth = 1.5;
+                for (let i = -1; i <= count + 1; i++) {
+                    const at = (origin + i * step) * zoom;
+                    for (const [shift, colour] of [[-0.75, `rgba(255, 255, 255, ${alpha})`], [0.75, `rgba(0, 0, 0, ${alpha})`]]) {
+                        lctx.strokeStyle = colour;
+                        lctx.beginPath();
+                        if (vertical) { lctx.moveTo(at + shift, 0); lctx.lineTo(at + shift, lens.height); } else { lctx.moveTo(0, at + shift); lctx.lineTo(lens.width, at + shift); }
+                        lctx.stroke();
+                    }
+                }
+            };
+            // the blocks of the channel, fainter, where a block is smaller than an MCU
             const [bw, bh] = options.blockSize ? options.blockSize() : [mcuW, mcuH];
-            if (bw < mcuW || bh < mcuH) {
-                lctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                lctx.lineWidth = 2;
-                for (let i = -1; i <= span * mcuW / bw + 1; i++) {
-                    lctx.beginPath();
-                    lctx.moveTo((gx + i * bw) * zoom, 0);
-                    lctx.lineTo((gx + i * bw) * zoom, lens.height);
-                    lctx.stroke();
-                }
-                for (let i = -1; i <= span * mcuH / bh + 1; i++) {
-                    lctx.beginPath();
-                    lctx.moveTo(0, (gy + i * bh) * zoom);
-                    lctx.lineTo(lens.width, (gy + i * bh) * zoom);
-                    lctx.stroke();
-                }
-            }
+            if (bw < mcuW) gridLines(bw, span * mcuW / bw, gx, true, 0.2);
+            if (bh < mcuH) gridLines(bh, span * mcuH / bh, gy, false, 0.2);
+            // the MCUs
+            gridLines(mcuW, span, gx, true, 0.35);
+            gridLines(mcuH, span, gy, false, 0.35);
             // the block under the pointer, framed just outside its edge so that
             // no pixel of it is covered
             if (hover && options.onBlock) {
