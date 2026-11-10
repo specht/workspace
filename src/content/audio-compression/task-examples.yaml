@@ -1,0 +1,23 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt das Gerüst der
+# Seite und in fehler/ je ein typischer Fehler.
+format: 1
+activity: audio-compression
+examples:
+  wav-header:
+    pass:
+      - { files: { audio/wav.py: stufen/wav.py } }
+    fail:
+      - files: { audio/wav.py: { text: "import struct\n\n\ndef wav_header(n, rate):\n    size = 2 * n\n    riff = struct.pack('<4sI4s', b'RIFF', 36 + size, b'WAVE')\n    # hier: fmt und data\n    return riff + fmt + data\n" } }
+        say: fmt
+      - { files: { audio/wav.py: fehler/wav-big-endian.py }, say: Little Endian }
+      - { files: { audio/wav.py: fehler/wav-groesse-messungen.py }, say: 'Bytes der Messungen' }
+      - { files: { audio/wav.py: fehler/wav-byte-rate-fest.py }, say: Byte Rate }
+  ton:
+    pass:
+      - { files: { audio/tones.py: stufen/tones-1.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/tones.py: fehler/tone-ohne-rate.py, audio/wav.py: stufen/wav.py }, say: '`rate`' }
+      - { files: { audio/tones.py: fehler/tone-zu-laut.py, audio/wav.py: stufen/wav.py }, say: '0,5' }

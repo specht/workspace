@@ -1,0 +1,128 @@
+# Aufgaben zu »Audio komprimieren«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/audio; die Funktionen der Lernenden rechnen mit numpy, das im
+# Workspace-Image ist. Die Zahlen gehören zu den Programmen in stufen/.
+format: 1
+activity: audio-compression
+tasks:
+  - id: cd-lied
+    title: Ein Lied auf der CD
+    prompt: |
+      Ein Lied ist 3 Minuten und 30 Sekunden lang und steht auf einer CD:
+      Stereo, je Kanal 44.100 Messungen in der Sekunde mit 16 Bit. Wie viele
+      Megabytes brauchen seine Messungen? Ein Megabyte sind 1.000.000 Bytes.
+    check:
+      type: number
+      expect: 37.044
+      tolerance: 0.05
+    feedback:
+      - when: { between: [18.4, 18.6] }
+        say: Das ist ein Kanal. Stereo sind zwei, links und rechts.
+      - when: { between: [296.2, 296.5] }
+        say: Das sind Megabits. Ein Byte hat 8 Bits.
+      - when: { between: [35.2, 35.4] }
+        say: So viele Mebibytes sind es, 1.048.576 Bytes je MiB. Gefragt ist das Megabyte mit 1.000.000 Bytes.
+      - when: { between: [10.5, 10.7] }
+        say: Das ist eine Minute. Das Lied ist dreieinhalb Minuten lang.
+    solution: |
+      44.100 Messungen · 2 Bytes · 2 Kanäle = 176.400 Bytes in der Sekunde,
+      mal 210 Sekunden sind 37.044.000 Bytes, also etwa 37 MB. Als MP3 mit
+      128 kbit/s wären es 210 · 128.000 / 8 = 3.360.000 Bytes, ein Elftel.
+
+  - id: wav-header
+    title: Der Header einer WAV-Datei
+    prompt: |
+      Schreib in `audio/wav.py` die Funktion `wav_header(n, rate)`: Sie gibt
+      die 44 Bytes des Headers einer WAV-Datei mit `n` Messungen in Mono mit
+      16 Bit und `rate` Messungen in der Sekunde zurück. Die Prüfung ruft sie
+      mit 8 Messungen bei 8.000 Hz auf, wie die Datei auf der Seite, und mit
+      44.100 Messungen bei 44.100 Hz, und vergleicht die Bytes als Hexzahlen.
+    check:
+      type: python
+      file: audio/wav.py
+      cases:
+        - call: len(wav_header(8, 8000))
+          expect: 44
+          say: Der Header hat 44 Bytes, 12 für den RIFF-Chunk, 24 für den fmt-Chunk und 8 für den Anfang des data-Chunks.
+        - call: wav_header(8, 8000)[:12].hex()
+          expect: "'524946463400000057415645'"
+          say: Der RIFF-Chunk wie auf der Seite. Chunk Size ist 36 plus die Bytes der Messungen, hier 36 + 16 = 52 = 0x34.
+        - call: wav_header(8, 8000)[12:36].hex()
+          expect: "'666d74201000000001000100401f0000803e000002001000'"
+          say: Der fmt-Chunk sollte genau so aussehen wie auf der Seite. Stehen die Bytes einer Zahl andersherum, fehlt das `<` für Little Endian; ist er zu lang oder zu kurz, passt ein `I` oder `H` nicht zur Länge des Felds.
+        - call: wav_header(8, 8000)[36:].hex()
+          expect: "'6461746110000000'"
+          say: Der data-Chunk beginnt mit `data` und der Zahl der Bytes der Messungen, 2 je Messung, hier 16.
+        - call: wav_header(44100, 44100)[4:8].hex()
+          expect: "'ac580100'"
+          say: Bei 44.100 Messungen sind es 88.200 Bytes Messungen, und Chunk Size ist 36 + 88.200 = 88.236 = 0x158ac.
+        - call: wav_header(44100, 44100)[24:32].hex()
+          expect: "'44ac000088580100'"
+          say: Abtastrate 44.100 = 0xac44 und Byte Rate 2 · 44.100 = 88.200 = 0x15888. Hängt die Byte Rate von `rate` ab?
+    solution: |
+      ```python
+      def wav_header(n, rate):
+          size = 2 * n
+          riff = struct.pack('<4sI4s', b'RIFF', 36 + size, b'WAVE')
+          fmt = struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 1, rate, 2 * rate, 2, 16)
+          data = struct.pack('<4sI', b'data', size)
+          return riff + fmt + data
+      ```
+
+  - id: ton
+    title: Ein Ton aus Zahlen
+    prompt: |
+      Schreib in `audio/tones.py` die Funktion `tone(freq, seconds, rate)`:
+      die Messungen eines Sinustons mit `freq` Hz, halb so laut, wie es geht,
+      `seconds` Sekunden lang, bei `rate` Messungen in der Sekunde, als
+      numpy-Array. Die Prüfung ruft sie mit Tönen von 1.000, 440 und 250 Hz
+      auf.
+    check:
+      type: python
+      file: audio/tones.py
+      cases:
+        - call: len(tone(1000, 0.001, 8000))
+          expect: 8
+          say: Eine Millisekunde bei 8.000 Messungen in der Sekunde sind 8 Messungen.
+        - call: len(tone(440, 2, 44100))
+          expect: 88200
+          say: Zwei Sekunden bei 44.100 Messungen in der Sekunde sind 88.200 Messungen.
+        - call: round(float(tone(1000, 0.001, 8000)[0]), 4)
+          expect: 0.0
+          say: Die erste Messung ist zur Zeit 0, und sin(0) = 0.
+        - call: round(float(tone(1000, 0.001, 8000)[2]), 4)
+          expect: 0.5
+          say: Die Messung mit dem Index 2 ist zur Zeit 2 / 8.000 s, einer Viertelschwingung bei 1.000 Hz, also am höchsten Punkt, 0,5. Wird `t` durch `rate` geteilt?
+        - call: round(float(abs(tone(250, 1, 8000)).max()), 4)
+          expect: 0.5
+          say: Halb so laut, wie es geht, heißt, die Schwingung geht bis 0,5 und −0,5.
+    solution: |
+      ```python
+      def tone(freq, seconds, rate):
+          t = np.arange(round(seconds * rate)) / rate
+          return 0.5 * np.sin(2 * np.pi * freq * t)
+      ```
+
+  - id: drei-toene
+    title: Drei Töne auf einmal
+    prediction: true
+    prompt: |
+      Jeder der drei Töne schwingt bis 0,5. Was hörst du in `akkord.wav`?
+    check:
+      type: choice
+      options:
+        - Den Akkord aus drei Tönen, sauber und lauter als ein Ton allein.
+        - Den Akkord, aber kratzig und verzerrt.
+        - Nur den höchsten der drei Töne, weil er die anderen übertönt.
+        - Nichts, weil `write_wav` die Datei bei zu großen Zahlen nicht schreibt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Rechne nach, wie weit die Summe an einer Stelle gehen kann, an der alle drei Töne oben sind. Was macht `write_wav` mit einer Zahl über 1?
+      - when: { picked: 2 }
+        say: Die drei Töne sind gleich laut. In der Summe steckt jeder von ihnen ganz.
+      - when: { picked: 3 }
+        say: Lies `write_wav` noch einmal. `np.clip` lässt keine Zahl durch, die nicht in 16 Bit passt; abgebrochen wird nichts.
+    solution: |
+      Kratzig: Die Summe der drei Töne geht an manchen Stellen bis fast 1,5,
+      und `np.clip` schneidet alles über 1 ab. Die flachen Stellen in der
+      Welle hört man als Verzerrung, das Clipping.

@@ -151,6 +151,7 @@
     - lzw
     - gif
     - jpeg
+    - .audio-compression
     - fraktale-kompression
     - steganography
 

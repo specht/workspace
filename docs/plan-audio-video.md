@@ -166,6 +166,18 @@ seconds at 720p each.
    part, tasks with checks and `task-examples.yaml`, teacher note,
    `curriculum:` and `topics:` (docs/lehrplan.md, docs/bundeslaender.md),
    `sections.yaml`, the /lehrplan graph, the review of docs/checkliste.md.
+   Begun on 10 November 2026, dev-only (`.audio-compression` after `jpeg`
+   in `sections.yaml`), working title »Audio komprimieren«. Part 1 is
+   written: the clips (`sounds/make.py`: `stimme.wav`, Thorsten's pangram,
+   and `musik.wav`, a synthesised band, in `src/static/audio/`), the
+   sampling widget (`sampling_widget.js`: rate, bits, μ-law with
+   `data-mulaw`, a quiet clip with `data-level`), a WAV file of 60 bytes in
+   the style of the GIF and JPEG pages (hexdump, field diagrams, byte
+   tables), `wav_header` and `tone` as »Jetzt bist du dran«, the chord that
+   clips; the teaser is a drawing (`bilder/teaser.py`). Next: part 2 (μ-law
+   with the widget's `data-mulaw`, prediction, Rice codes). The section is
+   renamed and the /lehrplan graph recomputed when the page leaves
+   development, not before: until then no public page is about sound.
 3. Moving pictures the same way.
 
 Each activity is several sessions of work; the widgets (spectrum and

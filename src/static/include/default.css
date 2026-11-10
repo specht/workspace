@@ -8715,6 +8715,7 @@ div[data-stepper],
 .bitplane-widget,
 .qr-damage,
 .dtmf-widget,
+.sampling-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8733,6 +8734,7 @@ html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget,
 html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
+html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -15082,6 +15084,60 @@ html[data-bs-theme="dark"] .splat-viewer {
 .table code.code-chip { padding: .1rem .4rem; border-radius: .3rem; font-size: .88em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 html:not([data-bs-theme="dark"]) .table code.code-chip { background-color: #f6f7f8 !important; }
 html[data-bs-theme="dark"] .table code.code-chip { background-color: rgba(255, 255, 255, .06) !important; }
+
+/* Sampling and quantising (sampling_widget.js, »Audio komprimieren«): the
+   choices above, 5 ms of the clip with the wave before measuring (faint),
+   the measurements and the wave that is heard (purple, what is current),
+   the whole clip as a strip to choose the place */
+.sampling-widget {
+    --sampling-ink: var(--widget-ink);
+    --sampling-quiet: var(--widget-line);
+    --sampling-orig: #9aa1ae;
+    --sampling-heard: #6741d9;
+    --sampling-ground: #f1f2f5;
+}
+html[data-bs-theme="dark"] .sampling-widget {
+    --sampling-orig: #6b7280;
+    --sampling-heard: #b197fc;
+    --sampling-ground: #111213;
+}
+.sampling-widget::before {
+    content: 'Zum Ausprobieren: abspielen und umschalten';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.sampling-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1.2em;
+    margin-bottom: 0.6em;
+}
+.sampling-group { display: flex; align-items: center; gap: 0.5em; }
+.sampling-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; }
+.sampling-group .btn { font-variant-numeric: tabular-nums; }
+@media (max-width: 576px) {
+    .sampling-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+}
+.sampling-figure { margin: 0.4em 0 0; }
+.sampling-figure figcaption { font-size: 0.85em; color: var(--sampling-ink); margin-bottom: 0.25em; }
+.sampling-picture { display: block; width: 100%; height: 190px; }
+.sampling-strip { display: block; width: 100%; height: 44px; cursor: pointer; border-radius: 0.2em; }
+.sampling-strip:focus-visible { outline: 2px solid var(--sampling-heard); outline-offset: 2px; }
+.sampling-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--sampling-ink); }
+.sampling-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
+.sampling-legend i { display: inline-block; width: 1.4em; border-top: 2px solid; }
+.sampling-l-orig i { border-color: var(--sampling-orig); }
+.sampling-l-heard i { border-color: var(--sampling-heard); border-top-width: 3px; }
+.sampling-l-dots i { width: 0.6em; height: 0.6em; border: none; border-radius: 50%; background: var(--sampling-heard); }
+.sampling-rate { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
 
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
    Telefon«): the keypad with the frequencies of its rows (amber) and
