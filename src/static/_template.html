@@ -527,7 +527,14 @@ function follow_part_anchor() {
     let current = document.querySelector('.activity-parts .current');
     if (current) {
         let row = current.closest('ol');
-        row.scrollLeft = current.parentElement.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
+        row.scrollLeft = current.parentElement.offsetLeft - row.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
+        const fade = function() {
+            row.classList.toggle('more-left', row.scrollLeft > 1);
+            row.classList.toggle('more-right', row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
+        };
+        row.addEventListener('scroll', fade, { passive: true });
+        window.addEventListener('resize', fade);
+        fade();
     }
     let id = decodeURIComponent(window.location.hash.slice(1));
     if (!id || document.getElementById(id)) return;
