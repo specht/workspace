@@ -33,6 +33,15 @@ in doubt, do it the way it does.
   input of a task. Choosing one sets the widget up anew (`setUp`, the old
   listeners and timers go with `algoTeardown`).
 
+- **Choosing a place in a picture** (a block, an MCU, a pixel, a search
+  square; the maintainer, November 2026): what is chosen can be dragged with
+  the mouse and a finger, a tap or click chooses where it lands, and the
+  arrow keys move it; a magnifier is dragged like a map and keeps its view
+  when something in it is clicked; hovering shows what a click would
+  choose. The widget starts on an interesting place (an edge, an eye, a
+  moving head; not the corner of the picture), and a frame marking the
+  choice runs outside the chosen pixels, never over them. Small labels say
+  what the frames mean.
 - **A title says what can be seen** (`data-title`), above the buttons, short
   and not too specific: »Suchbaum: einfügen«, »AVL-Baum: entfernen«,
   »Heap: pop«, »Merge Sort«.

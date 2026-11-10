@@ -8,7 +8,8 @@
 // with the 64 dequantised coefficients in natural order (row by row: v * 8 + u).
 // With data-src='/jpeg/44-baseline.jpg' (and jpeg_image.js on the page) a
 // picker above it chooses any block of the photo: an MCU on the photo, then
-// one of its blocks; data-coef is the block shown first. A »jpeg-block«
+// one of its blocks; data-start='mx my comp index' is the block shown
+// first, data-coef its coefficients until the photo has loaded. A »jpeg-block«
 // event on the document ({ comp, index, mx, my }) chooses one from outside.
 // With data-picture and an <img> inside (the page resolves its address),
 // the picture stands above it with a grid
@@ -164,7 +165,8 @@
         const blocks = element.querySelector('.idct-blocks');
         pickBox.textContent = 'Das Foto wird geladen …';
         root.JpegImage.load(element.dataset.src).then((image) => {
-            let mx = 0, my = 0, comp = 0, index = 0;
+            // the block shown first (data-start: MCU column, MCU row, channel, block)
+            let [mx, my, comp, index] = (element.dataset.start || '0 0 0 0').split(/\s+/).map(Number);
             const mcuW = 8 * image.hmax, mcuH = 8 * image.vmax;
             // one button per channel (Y, Cb, Cr); the block is chosen in the
             // magnifier or on the photo
@@ -178,10 +180,11 @@
                 const c = image.comps[comp];
                 const sw = mcuW / c.h * zoom, sh = mcuH / c.v * zoom;
                 const x = (index % c.h) * sw, y = Math.floor(index / c.h) * sh;
+                // just outside the block's edge, so that no pixel of it is covered
                 ctx.setLineDash([7, 5]);
-                ctx.lineWidth = 2.5;
+                ctx.lineWidth = 3;
                 ctx.strokeStyle = '#ffd43b';
-                ctx.strokeRect(x + 4, y + 4, sw - 8, sh - 8);
+                ctx.strokeRect(x - 1.5, y - 1.5, sw + 3, sh + 3);
                 ctx.setLineDash([]);
             };
             const picker = root.JpegImage.picker(pickBox, image, {

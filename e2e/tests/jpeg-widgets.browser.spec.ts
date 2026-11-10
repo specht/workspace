@@ -12,6 +12,16 @@ test('the iDCT stepper and the MCU on the demo photo', async ({ page }) => {
   await page.goto('/jpeg');
 
   const stepper = page.locator('.idct-stepper');
+  // it starts on the baby's eye, block Y3 of MCU (30, 20)
+  await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 30, Reihe 20: x = 480 bis 495, y = 320 bis 335.');
+  await expect(stepper.locator('.idct-block-name')).toHaveText('Block Y3 der MCU');
+  await expect(stepper.locator('.idct-count')).toHaveText('Schritt 1 von 32');
+  // a click into the corner of the photo: the first block, as the page's decoder reads it
+  const corner = stepper.locator('.jpeg-picker-photo');
+  await corner.scrollIntoViewIfNeeded();
+  const cornerBox = await corner.boundingBox();
+  if (!cornerBox) throw new Error('no photo');
+  await page.mouse.click(cornerBox.x + 3, cornerBox.y + 3);
   await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 0, Reihe 0: x = 0 bis 15, y = 0 bis 15.');
   await expect(stepper.locator('.idct-count')).toHaveText('Schritt 1 von 16');
   await stepper.locator("[data-go='last']").click();

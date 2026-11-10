@@ -15703,3 +15703,7 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     font-size: 0.9em;
     color: var(--widget-ink);
 }
+/* the channels Y, Cb and Cr as buttons of one width */
+.idct-stepper .idct-blocks button {
+    min-width: 2.8em;
+}

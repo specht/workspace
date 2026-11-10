@@ -133,8 +133,17 @@
             draw();
         };
         canvases.forEach((canvas) => {
-            canvas.addEventListener('pointermove', (event) => { if (event.pointerType === 'mouse') toPixel(canvas, event); });
-            canvas.addEventListener('pointerdown', (event) => toPixel(canvas, event));
+            // a mouse points at a pixel; a finger or a held button drags over them
+            let holding = false;
+            canvas.addEventListener('pointermove', (event) => { if (event.pointerType === 'mouse' || holding) toPixel(canvas, event); });
+            canvas.addEventListener('pointerdown', (event) => {
+                holding = true;
+                canvas.setPointerCapture(event.pointerId);
+                toPixel(canvas, event);
+                event.preventDefault();
+            });
+            canvas.addEventListener('pointerup', () => { holding = false; });
+            canvas.addEventListener('pointercancel', () => { holding = false; });
             canvas.setAttribute('role', 'img');
             canvas.setAttribute('aria-label', canvas.nextElementSibling.textContent + '. Die Pfeiltasten wählen ein Pixel, darunter steht, wie seine Farbe entsteht.');
             canvas.addEventListener('keydown', (event) => {

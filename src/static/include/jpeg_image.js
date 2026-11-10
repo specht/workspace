@@ -267,8 +267,9 @@
     // beside it a magnifier: three by three MCUs around the chosen one, eight
     // times larger. A click on either chooses an MCU, dragging over the
     // photo moves it along, the arrow keys move it by one. Dragging the
-    // magnifier moves it like a map, smoothly, the MCU in its middle the
-    // chosen one, settling on it when let go. With options.blockSize() (the
+    // magnifier moves its view like a map and leaves it there; a choice in
+    // the magnifier keeps the view, a choice on the photo or by the keys
+    // centres it on the chosen MCU. With options.blockSize() (the
     // size of a block in photo pixels) and options.onBlock(px, py), the
     // magnifier draws the blocks too, lights the block under the pointer,
     // and a click on the photo or in the magnifier chooses that block; a tap in it chooses the MCU tapped, or,
@@ -293,8 +294,10 @@
         photo.height = image.height;
         const span = 2 * AROUND + 1;
         const zoom = 8;
-        let ox = 0, oy = 0;
-        let hover = null;              // the photo pixel under the pointer in the magnifier, for the block lit there            // while the magnifier is dragged: how far the view is off the MCU, in pixels of the photo
+        // the magnifier's view: its top left corner in pixels of the photo
+        let vx = (mx - AROUND) * mcuW, vy = (my - AROUND) * mcuH;
+        const centre = () => { vx = (mx - AROUND) * mcuW; vy = (my - AROUND) * mcuH; };
+        let hover = null;              // the photo pixel under the pointer in the magnifier, for the block lit there
         lens.width = span * mcuW * zoom;
         lens.height = span * mcuH * zoom;
 
@@ -316,7 +319,7 @@
             lctx.imageSmoothingEnabled = false;
             lctx.fillStyle = '#777';
             lctx.fillRect(0, 0, lens.width, lens.height);
-            const sx = (mx - AROUND) * mcuW + ox, sy = (my - AROUND) * mcuH + oy;
+            const sx = vx, sy = vy;
             lctx.drawImage(image.photo(), sx, sy, span * mcuW, span * mcuH, 0, 0, lens.width, lens.height);
             // the MCU grid, faint, and the chosen MCU
             const gx = (mx - AROUND) * mcuW - sx, gy = (my - AROUND) * mcuH - sy;   // where the grid starts, in photo pixels
@@ -349,14 +352,13 @@
                     lctx.stroke();
                 }
             }
-            // the block under the pointer, lit
+            // the block under the pointer, framed just outside its edge so that
+            // no pixel of it is covered
             if (hover && options.onBlock) {
                 const hx = Math.floor(hover[0] / bw) * bw, hy = Math.floor(hover[1] / bh) * bh;
-                lctx.fillStyle = 'rgba(255, 212, 59, 0.25)';
-                lctx.fillRect((hx - sx) * zoom, (hy - sy) * zoom, bw * zoom, bh * zoom);
                 lctx.strokeStyle = '#ffd43b';
-                lctx.lineWidth = 2;
-                lctx.strokeRect((hx - sx) * zoom + 1, (hy - sy) * zoom + 1, bw * zoom - 2, bh * zoom - 2);
+                lctx.lineWidth = 3;
+                lctx.strokeRect((hx - sx) * zoom - 1.5, (hy - sy) * zoom - 1.5, bw * zoom + 3, bh * zoom + 3);
             }
             const cx = (gx + AROUND * mcuW) * zoom, cy = (gy + AROUND * mcuH) * zoom;
             lctx.lineWidth = 2;
@@ -378,12 +380,13 @@
             photo.setAttribute('aria-label', `Das Foto. Die Pfeiltasten wählen eine andere MCU. Gewählt: ${label}.`);
         }
 
-        function set(x, y, quiet) {
+        function set(x, y, quiet, keepView) {
             x = Math.max(0, Math.min(image.mcusX - 1, x));
             y = Math.max(0, Math.min(image.mcusY - 1, y));
             if (x === mx && y === my) return;
             mx = x;
             my = y;
+            if (!keepView) centre();
             draw();
             if (!quiet) options.onPick(mx, my);
         }
@@ -393,10 +396,10 @@
         };
         // a click or a drag over the photo: the MCU follows the pointer
         let holding = false;
-        const pickPixel = (px, py) => {
+        const pickPixel = (px, py, keepView) => {
             px = Math.max(0, Math.min(image.width - 1, px));
             py = Math.max(0, Math.min(image.height - 1, py));
-            set(Math.floor(px / mcuW), Math.floor(py / mcuH), true);
+            set(Math.floor(px / mcuW), Math.floor(py / mcuH), true, keepView);
             options.onBlock(px, py);
             draw();
         };
@@ -416,46 +419,44 @@
         photo.addEventListener('pointercancel', () => { holding = false; });
         // the magnifier: dragged like a map, smoothly, or tapped
         let grab = null;
+        // the photo pixel under a point of the magnifier
+        const lensPixel = (x, y) => [vx + x / zoom, vy + y / zoom];
         lens.addEventListener('pointerdown', (event) => {
             const [x, y] = at(lens, event);
-            grab = { x, y, mx, my, moved: false };
+            grab = { x, y, vx, vy, moved: false };
             lens.setPointerCapture(event.pointerId);
             event.preventDefault();
         });
-        // the photo pixel under a point of the magnifier
-        const lensPixel = (x, y) => [(mx - AROUND) * mcuW + ox + x / zoom, (my - AROUND) * mcuH + oy + y / zoom];
         lens.addEventListener('pointermove', (event) => {
             const [x, y] = at(lens, event);
             if (!grab) {
                 if (options.onBlock) { hover = lensPixel(x, y); draw(); }
                 return;
             }
-            // how far the view has moved, in photo pixels; the MCU nearest the middle is the chosen one
+            // dragging moves the view only, up to an MCU beyond the photo
             const dx = (grab.x - x) / zoom, dy = (grab.y - y) / zoom;
             if (Math.abs(dx) > 1 || Math.abs(dy) > 1) grab.moved = true;
             if (!grab.moved) return;
-            const nx = Math.max(0, Math.min(image.mcusX - 1, grab.mx + Math.round(dx / mcuW)));
-            const ny = Math.max(0, Math.min(image.mcusY - 1, grab.my + Math.round(dy / mcuH)));
-            ox = grab.mx * mcuW + dx - nx * mcuW;
-            oy = grab.my * mcuH + dy - ny * mcuH;
-            if (nx !== mx || ny !== my) set(nx, ny); else draw();
+            vx = Math.max(-AROUND * mcuW, Math.min(image.width - (AROUND + 1) * mcuW, grab.vx + dx));
+            vy = Math.max(-AROUND * mcuH, Math.min(image.height - (AROUND + 1) * mcuH, grab.vy + dy));
+            hover = null;
+            draw();
         });
         lens.addEventListener('pointerup', (event) => {
             if (!grab) return;
             const tap = !grab.moved;
             grab = null;
-            ox = 0; oy = 0;
-            if (!tap) { draw(); return; }
+            if (!tap) return;
             const [x, y] = at(lens, event);
+            const [px, py] = lensPixel(x, y);
+            if (px < 0 || py < 0 || px >= image.width || py >= image.height) return;
             if (options.onBlock) {
-                const [px, py] = lensPixel(x, y);
-                if (px >= 0 && py >= 0 && px < image.width && py < image.height) pickPixel(px, py);
+                pickPixel(px, py, true);
                 return;
             }
-            const cx = Math.floor(x / (mcuW * zoom)) - AROUND, cy = Math.floor(y / (mcuH * zoom)) - AROUND;
-            set(mx + cx, my + cy);
+            set(Math.floor(px / mcuW), Math.floor(py / mcuH), false, true);
         });
-        lens.addEventListener('pointercancel', () => { grab = null; ox = 0; oy = 0; draw(); });
+        lens.addEventListener('pointercancel', () => { grab = null; draw(); });
         lens.addEventListener('pointerleave', () => { if (hover) { hover = null; draw(); } });
         photo.addEventListener('keydown', (event) => {
             const moves = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
