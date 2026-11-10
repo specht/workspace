@@ -9,11 +9,12 @@
 //   <div class='spectrum-widget'></div>
 //   <div class='spectrum-widget' data-clip='akkord'></div>
 //
-// The clips: the two files students fetch (/audio/*.wav, read as in
-// sampling_widget.js; for the music, switches for its six instruments, from
-// /audio/musik/*.flac, made by sounds/make.py so that they add up to it),
+// The clips: the files students fetch (/audio/*.wav, read as in
+// sampling_widget.js): the band, the dramatic organ piece and the voice; for
+// each piece of music switches for its six instruments, from
+// /audio/<clip>/*.flac, made by sounds/make.py so that they add up to it;
 // the chord of »Drei Töne auf einmal« (each tone 0,5,
-// the sum divided by 3) and a tone that glides from 100 Hz to 10 kHz, both
+// the sum divided by 3) and a sweep, a tone that glides from 100 Hz to 10 kHz, both
 // computed here. The spectra come from an FFT of 4.096 measurements under
 // a Hann window, every 512 measurements, computed once per clip.
 (function () {
@@ -35,11 +36,12 @@
     };
     const CLIPS = [
         { id: 'musik', label: 'Musik', at: 2.6 },
+        { id: 'orgel', label: 'Orgel', at: 4.9 },
         { id: 'stimme', label: 'Stimme', at: 0.7 },
         { id: 'akkord', label: 'Akkord', at: 1, make: () => tone(2, (t) =>
             [440, 554.37, 659.26].reduce((s, f) => s + 0.5 * Math.sin(2 * Math.PI * f * t), 0) / 3) },
         // a tone gliding from 100 Hz to 10 kHz in 4 s, evenly on the logarithmic scale
-        { id: 'gleiten', label: 'Gleitender Ton', at: 2, make: () => {
+        { id: 'sweep', label: 'Sweep', at: 2, make: () => {
             const k = Math.log(100) / 4;
             return tone(4, (t) => 0.4 * Math.sin(2 * Math.PI * 100 * (Math.exp(k * t) - 1) / k));
         } },
@@ -137,18 +139,22 @@
     }
 
     // the instruments of the music, each a track of its own (sounds/make.py)
-    const INSTRUMENTS = [['kick', 'Kick'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'],
-        ['bass', 'Bass'], ['chords', 'Akkorde'], ['melody', 'Melodie']];
-    let tracks = null;
-    function loadTracks() {
-        if (!tracks) {
+    // the pieces of music and their instruments, each a track of its own
+    // (/audio/<clip>/<name>.flac)
+    const INSTRUMENTS = {
+        musik: [['kick', 'Kick'], ['snare', 'Snare'], ['hi-hat', 'Hi-Hat'], ['bass', 'Bass'], ['chords', 'Akkorde'], ['melody', 'Melodie']],
+        orgel: [['organ', 'Orgel'], ['bass', 'Bass'], ['kick', 'Kick'], ['snare', 'Snare'], ['toms', 'Toms'], ['strings', 'Streicher']],
+    };
+    const tracks = {};
+    function loadTracks(clipId) {
+        if (!tracks[clipId]) {
             const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-            tracks = Promise.all(INSTRUMENTS.map(([name]) => fetch(`/audio/musik/${name}.flac`)
+            tracks[clipId] = Promise.all(INSTRUMENTS[clipId].map(([name]) => fetch(`/audio/${clipId}/${name}.flac`)
                 .then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
                 .then((data) => new OAC(1, 1, SOURCE).decodeAudioData(data))
                 .then((buffer) => buffer.getChannelData(0))));
         }
-        return tracks;
+        return tracks[clipId];
     }
 
     const BIN = SOURCE / N;
@@ -187,19 +193,23 @@
         };
 
         const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary spectrum-play' });
-        // the instruments of the music, each a switch
-        // separate switches, not a bar: each instrument on its own
+        // the instruments of a piece of music, each a switch of its own (not a
+        // bar), made anew for each piece; all on at first
         const instruments = el('div', { class: 'spectrum-instruments', role: 'group', 'aria-label': 'Instrumente' });
-        INSTRUMENTS.forEach(([name, label]) => {
-            const inputId = `${id}-instrument-${name}`;
-            const input = el('input', { type: 'checkbox', class: 'btn-check', id: inputId, autocomplete: 'off' });
-            input.checked = true;
-            input.addEventListener('change', () => {
-                if (input.checked) muted.delete(name); else muted.add(name);
-                remix();
+        function makeSwitches() {
+            muted.clear();
+            instruments.replaceChildren();
+            (INSTRUMENTS[clip.id] || []).forEach(([name, label]) => {
+                const inputId = `${id}-instrument-${clip.id}-${name}`;
+                const input = el('input', { type: 'checkbox', class: 'btn-check', id: inputId, autocomplete: 'off' });
+                input.checked = true;
+                input.addEventListener('change', () => {
+                    if (input.checked) muted.delete(name); else muted.add(name);
+                    remix();
+                });
+                instruments.append(input, el('label', { class: 'btn btn-sm btn-outline-secondary', for: inputId, text: label }));
             });
-            instruments.append(input, el('label', { class: 'btn btn-sm btn-outline-secondary', for: inputId, text: label }));
-        });
+        }
         const instrumentRow = el('div', { class: 'spectrum-controls' }, [
             el('div', { class: 'spectrum-group' }, [el('span', { class: 'spectrum-label', text: 'Instrumente' }), instruments])]);
         const showPlay = () => {
@@ -457,7 +467,8 @@
         // the music with only the instruments switched on: the sum of their tracks
         let remixing = 0;
         async function remix() {
-            if (clip.id !== 'musik') return;
+            if (!INSTRUMENTS[clip.id]) return;
+            const piece = clip.id;
             const ticket = ++remixing;
             const from = now();
             const wasPlaying = playing;
@@ -466,9 +477,9 @@
                 if (muted.size === 0) {
                     mixed = await load(clip);
                 } else {
-                    const parts = await loadTracks();
+                    const parts = await loadTracks(piece);
                     mixed = new Float32Array(parts[0].length);
-                    INSTRUMENTS.forEach(([name], i) => {
+                    INSTRUMENTS[piece].forEach(([name], i) => {
                         if (muted.has(name)) return;
                         const part = parts[i];
                         for (let j = 0; j < mixed.length; j++) mixed[j] += part[j];
@@ -478,7 +489,7 @@
                 line.textContent = 'Die Instrumente ließen sich nicht laden.';
                 return;
             }
-            if (ticket !== remixing || clip.id !== 'musik') return;
+            if (ticket !== remixing || clip.id !== piece) return;
             samples = mixed;
             frames = spectra(mixed);
             image = null;
@@ -489,7 +500,8 @@
 
         async function pickClip(value) {
             clip = CLIPS.find((c) => c.id === value);
-            instrumentRow.hidden = clip.id !== 'musik';
+            instrumentRow.hidden = !INSTRUMENTS[clip.id];
+            makeSwitches();
             if (playing) { stopSource(); playing = false; showPlay(); }
             samples = null; frames = null; image = null;
             at = offset = clip.at;
@@ -499,7 +511,7 @@
                 if (clip.id !== value) return;
                 samples = x;
                 frames = spectra(x);
-                if (clip.id === 'musik' && muted.size) { remix(); return; }
+                if (INSTRUMENTS[clip.id] && muted.size) { remix(); return; }
             } catch (e) {
                 line.textContent = 'Der Klang ließ sich nicht laden.';
                 return;
