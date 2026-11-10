@@ -433,9 +433,13 @@ only to look nice.
   under them: the block, the square, their difference with its sign
   (orange brighter, blue darker, black 0) and, after »Beste Verschiebung suchen«, the sum for every
   shift as a map from deep purple (small) to pale, the best ringed in
-  yellow, the reader's own square in white. The sum and the vector (dx, dy)
-  are words under the buttons; after the search a second line compares the
-  reader's square with the best. No steps, no timeline: the reader drags.
+  yellow, the reader's own square in white. Places to start (data-presets,
+  buttons above the controls: background, head, staff, dog, leg) put the
+  block where the motion differs. A small table of fixed size gives the
+  reader's square and the best shift with vector and sum (»–« before a
+  search, a check mark where they agree), a sentence says how many shifts
+  the search tries; the map keeps its place before the search, so that
+  nothing moves. No steps, no timeline: the reader drags.
   Frames 5 and 6 of the slope, neighbours as a P-frame and the frame it is
   predicted from, not the frames of the tasks.
 - **What grows comes first**: in a step that also sprouts a pointer, an

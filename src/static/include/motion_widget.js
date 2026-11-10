@@ -65,17 +65,37 @@
         const zoomCandidate = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Das Quadrat im Bild davor, vergrößert' });
         const zoomDiff = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Unterschied, vergrößert' });
         const map = html('canvas', { class: 'motion-zoom', width: (2 * R + 1) * 4, height: (2 * R + 1) * 4, role: 'img', 'aria-label': 'Die Summe der Unterschiede für jede Verschiebung' });
-        const mapFigure = html('figure', { class: 'motion-figure', hidden: '' }, [map, html('figcaption', { text: 'Karte' })]);
+        const mapFigure = html('figure', { class: 'motion-figure' }, [map, html('figcaption', { text: 'Karte' })]);
         const search = html('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary', text: 'Beste Verschiebung suchen' });
-        const say = html('p', { class: 'motion-say', 'aria-live': 'polite' });
+        // the reader's square and the best shift, in a small table that keeps
+        // its size; a sentence says what the search does
+        const cellOf = () => html('span', { class: 'motion-num' });
+        const mineVector = cellOf(), mineSum = cellOf(), bestVector = cellOf(), bestSum = cellOf();
+        const mineMark = html('i', { class: 'bi bi-check-lg motion-same', 'aria-hidden': 'true', hidden: '' });
+        const stats = html('div', { class: 'motion-stats', role: 'group', 'aria-live': 'polite' }, [
+            html('span', { class: 'motion-head', text: '' }), html('span', { class: 'motion-head', text: 'Vektor' }), html('span', { class: 'motion-head', text: 'Summe der Unterschiede' }),
+            html('span', { class: 'motion-row' }, ['Dein Quadrat ', mineMark]), mineVector, mineSum,
+            html('span', { class: 'motion-row', text: 'Beste Verschiebung' }), bestVector, bestSum,
+        ]);
+        const count = (2 * R + 1) * (2 * R + 1);
+        const explain = html('p', { class: 'motion-explain', text: `Die Suche probiert alle ${2 * R + 1} × ${2 * R + 1} = ${de(count)} Verschiebungen im Suchfeld aus, bis zu ${R} Pixel in jede Richtung, und nimmt die mit der kleinsten Summe.` });
+        // places to start: blocks whose motion differs (data-presets='Name: x y | …')
+        const presets = (el.dataset.presets || '').split('|').map((p) => p.trim()).filter(Boolean).map((p) => {
+            const [name, where] = p.split(':');
+            const [x, y] = where.trim().split(/\s+/).map(Number);
+            const button = html('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary', text: name.trim() });
+            button.addEventListener('click', () => { if (now) choose(x, y); });
+            return button;
+        });
         const legend = html('p', { class: 'motion-legend', text: 'Unterschied: orange ist der Block heller, blau dunkler, schwarz gleich. Karte: die Summe für jede Verschiebung, dunkel ist klein, gelb die beste, weiß dein Quadrat.' });
-        const compare = html('p', { class: 'motion-compare', 'aria-live': 'polite' });
         el.replaceChildren(
             html('div', { class: 'motion-frames' }, [
                 html('figure', { class: 'motion-figure' }, [html('div', { class: 'motion-wrap' }, [nowCanvas, nowOverlay]), html('figcaption', { text: `${nowImg.dataset.label || 'jetzt'}: den Block ziehen` })]),
                 html('figure', { class: 'motion-figure' }, [html('div', { class: 'motion-wrap' }, [beforeCanvas, beforeOverlay]), html('figcaption', { text: `${beforeImg.dataset.label || 'vorher'}: das Quadrat ziehen` })]),
             ]),
-            html('div', { class: 'motion-controls' }, [search, html('div', {}, [say, compare])]),
+            ...(presets.length ? [html('div', { class: 'motion-presets', role: 'group', 'aria-label': 'Blöcke zum Ausprobieren' }, [html('span', { class: 'motion-presets-label', text: 'Probier:' }), ...presets])] : []),
+            html('div', { class: 'motion-controls' }, [search, stats]),
+            explain,
             html('div', { class: 'motion-zooms' }, [
                 html('figure', { class: 'motion-figure' }, [zoomBlock, html('figcaption', { text: 'Block' })]),
                 html('figure', { class: 'motion-figure' }, [zoomCandidate, html('figcaption', { text: 'Quadrat davor' })]),
@@ -175,9 +195,13 @@
         }
 
         function drawMap() {
-            if (!found) { mapFigure.hidden = true; return; }
-            mapFigure.hidden = false;
             const ctx = map.getContext('2d');
+            // before a search: a quiet empty map, so that nothing moves when it comes
+            if (!found) {
+                ctx.fillStyle = getComputedStyle(el).getPropertyValue('--widget-chip').trim() || '#ebecef';
+                ctx.fillRect(0, 0, map.width, map.height);
+                return;
+            }
             const cell = map.width / (2 * R + 1);
             let lo = Infinity, hi = 0;
             for (const s of sums) if (s !== null) { lo = Math.min(lo, s); hi = Math.max(hi, s); }
@@ -209,16 +233,13 @@
             drawZoom(zoomCandidate, (x, y) => before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawSigned(zoomDiff, (x, y) => now.luma[(by + y) * now.width + bx + x] - before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawMap();
-            say.textContent = `Vektor (${signed(vx)}, ${signed(vy)}): Summe der Unterschiede ${de(sad(vy, vx))}.`;
-            if (!found) {
-                compare.textContent = '';
-            } else {
-                const count = de(sums.filter((s) => s !== null).length);
-                const vector = (v) => `(${signed(v.vx)}, ${signed(v.vy)})`;
-                compare.textContent = manual.s === found.s
-                    ? `Du hast die beste Verschiebung gefunden: ${vector(found)} mit ${de(found.s)}, die kleinste von ${count}.`
-                    : `Dein Quadrat: ${vector(manual)} mit ${de(manual.s)}. Die Suche: ${vector(found)} mit ${de(found.s)}, die kleinste von ${count}.`;
-            }
+            const vector = (x, y) => `(${signed(x)}, ${signed(y)})`;
+            mineVector.textContent = vector(vx, vy);
+            mineSum.textContent = de(sad(vy, vx));
+            bestVector.textContent = found ? vector(found.vx, found.vy) : '–';
+            bestSum.textContent = found ? de(found.s) : '–';
+            // a check mark where the reader's square is as good as the best
+            mineMark.hidden = !(found && sad(vy, vx) === found.s);
         }
 
         function choose(x, y) {

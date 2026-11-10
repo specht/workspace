@@ -15814,3 +15814,48 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     pointer-events: none;
     border-radius: 0.3em;
 }
+
+/* the block-matching widget's places to start, and its table of the reader's
+   square and the best shift: one size whatever it holds */
+.motion-widget .motion-presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+    margin: 0.75em 0 0;
+}
+.motion-widget .motion-presets-label {
+    margin-right: 0.25em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-stats {
+    display: grid;
+    grid-template-columns: auto 6.5em auto;
+    column-gap: 1.25em;
+    row-gap: 0.1em;
+    font-variant-numeric: tabular-nums;
+}
+.motion-widget .motion-head {
+    font-size: 0.8em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-row {
+    color: var(--widget-ink);
+}
+.motion-widget .motion-same {
+    color: #2f9e44;
+}
+.motion-widget .motion-explain {
+    margin: 0 0 0.75em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-controls {
+    align-items: flex-start;
+}
+/* a carousel leaves room for the focus ring of its pictures */
+.gallery.carousel.swipe {
+    padding-top: 0.35em;
+    padding-bottom: 0.35em;
+}

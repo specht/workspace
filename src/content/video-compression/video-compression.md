@@ -1094,12 +1094,14 @@ Beim Schwenk kostet der Unterschied so viel wie das Bild allein, weil alles ein 
 Für einen Block probiert der Encoder Verschiebungen aus. Für jede rechnet er die **Summe der Unterschiede** aus, auf Englisch **SAD** (Sum of Absolute Differences): Er legt den Block über das Stück des vorigen Bildes, zieht Pixel für Pixel ab und zählt die Beträge zusammen. Die Verschiebung mit der kleinsten Summe gewinnt. Probier es hier mit zwei Bildern vom Hang, direkt hintereinander:
 
 <script src='/include/motion_widget.js'></script>
-<div class='motion-widget' data-block='112 64'>
+<div class='motion-widget' data-block='128 80' data-presets='Hintergrund: 16 16 | Kopf: 128 80 | Stab: 80 32 | Hund: 208 160 | Bein: 96 144'>
 <img data-noconvert src='motion-after.png' alt='Ein Ausschnitt aus dem Bild vom Hang: das Mädchen mit Stab, der Hund und der Berg dahinter, mit einem Raster aus Blöcken.' data-label='Bild 6'>
 <img data-noconvert src='motion-before.png' alt='Derselbe Ausschnitt ein Bild früher, kaum anders als der erste.' data-label='Bild 5'>
 </div>
 
-Zieh das Quadrat dorthin, wo du den Block im Bild davor vermutest. Im vergrößerten Unterschied ist orange, wo der Block heller ist, und blau, wo er dunkler ist; liegen ein oranger und ein blauer Streifen nebeneinander, ist das Quadrat an dieser Kante etwas verschoben. Achte auf die Summe: Je kleiner, desto besser passt es. Hast du das Widget einmal angefasst, schieben auch die Pfeiltasten das Quadrat, mit Shift den Block. Dann lass die Suche alle Verschiebungen ausprobieren und vergleich ihre Summe mit deiner. Der Block am Haar des Mädchens hat einen anderen Vektor als der Hang daneben: Sie geht nach links, und ihr Kopf wippt beim Gehen, während die Kamera langsam mitschwenkt. Zieh den Block dann an den Rand des sonnigen Hangs links: Dort ist die Karte aller Verschiebungen ein dunkles Band entlang der Kante. Schiebt man das Quadrat an der Kante entlang, ändert sich die Summe wenig, und nur die Gräser auf dem Hang entscheiden, wo genau sie am kleinsten ist.
+Zieh das Quadrat dorthin, wo du den Block im Bild davor vermutest. Im vergrößerten Unterschied ist orange, wo der Block heller ist, und blau, wo er dunkler ist; liegen ein oranger und ein blauer Streifen nebeneinander, ist das Quadrat an dieser Kante etwas verschoben. Achte auf die Summe: Je kleiner, desto besser passt es. Dann lass die Suche alle Verschiebungen ausprobieren und vergleich ihre Summe mit deiner. Hast du das Widget einmal angefasst, schieben auch die Pfeiltasten das Quadrat, mit Shift den Block.
+
+Die Knöpfe über den Bildern setzen den Block an Stellen, die sich verschieden bewegen. Der Hintergrund wandert höchstens um ein Pixel, weil die Kamera langsam mitschwenkt. Kopf und Körper des Mädchens kommen um 5 oder 6 Pixel von rechts, sie geht nach links. Ihr Stab schwingt anders als ihr Körper, der Hund läuft für sich. Für das Bein findet die Suche keine Stelle, die gut passt: Es ändert beim Gehen seine Form, und keine Verschiebung macht daraus denselben Block.
 
 Lege `motion.py` an. Es nimmt `luma` aus `difference.py` und die Funktionen aus `blocks.py`:
 
