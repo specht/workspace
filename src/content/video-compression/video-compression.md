@@ -699,7 +699,7 @@ Bei einer senkrechten Kante passt `vertical`, bei einem waagerechten Horizont `h
 
 H.264 kennt für Blöcke aus 4 × 4 Pixeln neun Arten: diese drei und sechs schräge. Für die schrägen nach links unten braucht es auch die vier Pixel rechts über dem Block. In den Zeichnungen haben die Nachbarn je eine helle Zelle, so sieht man, wohin jede Art sie trägt; je kräftiger eine Zelle, desto heller ihr Pixel. Sie rechnen vereinfacht: H.264 glättet die Nachbarn vorher ein wenig, die Richtungen sind dieselben.
 
-<div class='gallery columns-3'>
+<div class='gallery carousel'>
 <figure><img src='intra-mode-0.svg' alt='Vorhersage 0 von H.264, vertical: Die hellen Zellen der oberen Reihe setzen sich senkrecht nach unten durch den Block fort; Pfeile zeigen nach unten.'><figcaption>0 vertical: von oben</figcaption></figure>
 <figure><img src='intra-mode-1.svg' alt='Vorhersage 1 von H.264, horizontal: Die helle Zelle der linken Spalte setzt sich waagerecht als helle Zeile durch den Block fort; Pfeile zeigen nach rechts.'><figcaption>1 horizontal: von links</figcaption></figure>
 <figure><img src='intra-mode-2.svg' alt='Vorhersage 2 von H.264, dc: Alle 16 Pixel des Blocks haben denselben mittleren Ton, den Mittelwert der acht Nachbarn; keine Pfeile.'><figcaption>2 dc: der Mittelwert der Nachbarn</figcaption></figure>

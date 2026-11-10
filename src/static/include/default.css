@@ -15734,3 +15734,82 @@ html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b1
     pointer-events: none;
     border-radius: 0.3em;
 }
+
+/* A gallery as a carousel (.carousel, tutorial-preview.js): at every width a
+   row of pictures, one in the middle and the next peeking in, ‹ and › at the
+   sides, clickable dots below */
+.gallery-carousel {
+    position: relative;
+}
+.gallery.carousel.swipe {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25em;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 0 calc((100% - min(30em, 82%)) / 2);
+    scroll-padding: 0 calc((100% - min(30em, 82%)) / 2);
+    margin-bottom: 0.4em;
+    cursor: grab;
+}
+.gallery.carousel.swipe.dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+}
+.gallery.carousel.swipe::-webkit-scrollbar {
+    display: none;
+}
+.gallery.carousel.swipe > figure {
+    flex: 0 0 min(30em, 82%);
+    scroll-snap-align: center;
+}
+.gallery-carousel + .gallery-dots,
+.gallery.carousel + .gallery-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.55em;
+    margin: 0.3em 0 1.5em;
+}
+.gallery-carousel ~ .gallery-dots span,
+.gallery.carousel ~ .gallery-dots span {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.25;
+    cursor: pointer;
+    transition: opacity 150ms ease;
+}
+.gallery-carousel ~ .gallery-dots span.active {
+    opacity: 0.75;
+}
+.gallery-carousel-step {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 2.4em;
+    height: 2.4em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 50%;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+.gallery-carousel-step:disabled {
+    opacity: 0.35;
+}
+.gallery-carousel-prev { left: 0.25em; }
+.gallery-carousel-next { right: 0.25em; }
+@media (max-width: 480px) {
+    .gallery-carousel-step { display: none; }
+}
+.gallery.carousel.swipe > figure img {
+    margin: 0 auto;
+}

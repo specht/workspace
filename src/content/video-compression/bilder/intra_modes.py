@@ -74,10 +74,12 @@ def predicted(mode):
 
 
 def cell(col, row, value, neighbour):
+    """a cell tinted by its value; the neighbours a little apart from each
+    other, the block's cells joined"""
     x, y = X0 + (col + 1) * S, Y0 + (row + 1) * S
-    parts = [f"<rect x='{x}' y='{y}' width='{S}' height='{S}' fill='{WHITE}' stroke='{INK if neighbour else LINE}' stroke-width='1.5'/>"]
-    parts.append(f"<rect x='{x + 1}' y='{y + 1}' width='{S - 2}' height='{S - 2}' fill='{PURPLE}' fill-opacity='{0.06 + 0.6 * value / 255:.2f}'/>")
-    return parts
+    inset = 2 if neighbour else 0
+    return [f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='{3 if neighbour else 0}' fill='{WHITE}'/>",
+            f"<rect x='{x + inset}' y='{y + inset}' width='{S - 2 * inset}' height='{S - 2 * inset}' rx='{3 if neighbour else 0}' fill='{PURPLE}' fill-opacity='{0.06 + 0.6 * value / 255:.2f}' stroke='{LINE}' stroke-width='1'/>"]
 
 
 def point(px, py):
@@ -86,27 +88,33 @@ def point(px, py):
 
 
 def arrows(d):
-    """three arrows across the block along d, from the neighbours' centre line"""
+    """one arrow along the path of a bright neighbour through the block: from
+    the centre of the bright neighbour whose path runs furthest through the
+    block, to where the path leaves it"""
     dx, dy = d
     n = math.hypot(dx, dy)
     ux, uy = dx / n, dy / n
-    parts = []
-    for k in (-1.3, 0, 1.3):
-        px, py = 2 - uy * k, 2 + ux * k
-        (sx, sy), _ = source(px, py, d)
-        if sx > 7.5 or sy > 3.5:
-            continue                          # beyond the neighbours: no arrow
-        # where the line leaves the block
-        exits = [((4 if v > 0 else 0) - p) / v for p, v in ((px, dx), (py, dy)) if v]
-        t = min(e for e in exits if e > 0)
-        ex, ey = px + (t - 0.25) * dx / 1, py + (t - 0.25) * dy / 1
-        if not (0 <= ex <= 4 and 0 <= ey <= 4):
-            continue
-        a, b = point(sx, sy), point(ex, ey)
-        parts.append(f"<line x1='{a[0]:.1f}' y1='{a[1]:.1f}' x2='{b[0] - ux * 6:.1f}' y2='{b[1] - uy * 6:.1f}' stroke='{INK}' stroke-width='2'/>")
-        parts.append(ap.arrowhead(b[0], b[1], ux, uy, INK, 10, 5))
-        parts.append(f"<circle cx='{a[0]:.1f}' cy='{a[1]:.1f}' r='3' fill='{INK}'/>")
-    return parts
+    sources = [(i + 0.5, -0.5) for i, v in enumerate(TOP) if v == max(TOP)] + [(-0.5, j + 0.5) for j, v in enumerate(LEFT) if v == max(LEFT)]
+    best = None
+    for sx, sy in sources:
+        # where the path enters and leaves the block (0 to 4 in both)
+        t0, t1 = 0, math.inf
+        for p, v in ((sx, dx), (sy, dy)):
+            if v == 0:
+                if not 0 <= p <= 4:
+                    t0, t1 = 1, 0
+                continue
+            a, b = (0 - p) / v, (4 - p) / v
+            t0, t1 = max(t0, min(a, b)), min(t1, max(a, b))
+        if t1 > t0 and (best is None or t1 - t0 > best[0]):
+            best = (t1 - t0, sx, sy, t1)
+    if best is None:
+        return []
+    _, sx, sy, t1 = best
+    a, b = point(sx, sy), point(sx + (t1 - 0.2) * dx, sy + (t1 - 0.2) * dy)
+    return [f"<line x1='{a[0]:.1f}' y1='{a[1]:.1f}' x2='{b[0] - ux * 8:.1f}' y2='{b[1] - uy * 8:.1f}' stroke='{INK}' stroke-width='2.5' stroke-linecap='round'/>",
+            ap.arrowhead(b[0], b[1], ux, uy, INK, 12, 6),
+            f"<circle cx='{a[0]:.1f}' cy='{a[1]:.1f}' r='4' fill='{INK}'/>"]
 
 
 def draw(mode):
@@ -120,6 +128,8 @@ def draw(mode):
     for r, row in enumerate(predicted(mode)):
         for c, v in enumerate(row):
             parts += cell(c, r, v, False)
+    # the block itself outlined, so that it reads as one
+    parts.append(f"<rect x='{X0 + S}' y='{Y0 + S}' width='{4 * S}' height='{4 * S}' fill='none' stroke='{INK}' stroke-width='2'/>")
     if d is not None:
         parts += arrows(d)
     head = ap.svg_head(w, h, f'Vorhersage {number} von H.264 ({name}); gemacht von bilder/intra_modes.py, hell und dunkel:',
