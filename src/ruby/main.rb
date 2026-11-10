@@ -2794,6 +2794,13 @@ class Main < Sinatra::Base
     # The cards of a catalog section: a slug each, or for a series
     # (sections.yaml series:) the list of its members shown here, at the
     # place of the first.
+    # A series as one card with a carousel of its members' pictures: shelved
+    # (the maintainer, November 2026: the Backrooms were the only card with
+    # one). While false, a series is the card of its first member alone; the
+    # others are reached from the row of the series over each of its pages.
+    # true brings the carousel back as it was.
+    SERIES_CAROUSEL = false
+
     def catalog_cards(section, entries)
         series = Array(section[:series]).map { |list| list.map(&:to_s) & entries }.select { |list| list.size > 1 }
         entries.each_with_object([]) do |slug, cards|
@@ -2801,7 +2808,7 @@ class Main < Sinatra::Base
             if list.nil?
                 cards << slug
             elsif list.first == slug
-                cards << list
+                cards << (SERIES_CAROUSEL ? list : slug)
             end
         end
     end
