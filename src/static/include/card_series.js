@@ -1,6 +1,6 @@
 // The card of a series in the catalog (sections.yaml series:, Main#card_body_html):
 // one picture, title and text per member, the others hidden; small dots at
-// the foot of the picture and a swipe show another, and the link over the
+// the foot of the picture and dragging sideways (mouse or finger) show another, and the link over the
 // whole card leads to the one shown. Nothing moves by itself. The picture
 // is on top of the card or beside the text, depending on the width, so the
 // dots are placed under the picture shown.
@@ -19,8 +19,9 @@
             dotsBox.style.left = `${pic.left - box.left + pic.width / 2}px`;
             dotsBox.style.top = `${pic.bottom - box.top - dotsBox.offsetHeight - 6}px`;
         }
+        // it stops at the first and the last picture, it does not go round
         function show(index) {
-            current = (index + slides.length) % slides.length;
+            current = Math.max(0, Math.min(slides.length - 1, index));
             slides.forEach((slide, i) => { slide.hidden = i !== current; });
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === current);
@@ -35,14 +36,42 @@
             event.stopPropagation();
             show(i);
         }));
-        // a swipe sideways on a touch screen
-        let startX = null;
-        card.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-        card.addEventListener('touchend', (e) => {
+        // dragging sideways, with a mouse as with a finger: the picture
+        // follows, and past 40 px the next or the previous one comes; a
+        // drag does not open the link, and the browser's own dragging of
+        // links and pictures is off
+        link.draggable = false;
+        card.querySelectorAll('img').forEach((img) => { img.draggable = false; });
+        let startX = null, dx = 0, dragged = false;
+        const pictures = () => slides[current].querySelectorAll('img');
+        card.addEventListener('pointerdown', (e) => {
+            if (e.button !== 0 || e.target.closest('.card-series-dots')) return;
+            startX = e.clientX;
+            dx = 0;
+            dragged = false;
+        });
+        card.addEventListener('pointermove', (e) => {
             if (startX === null) return;
-            const dx = e.changedTouches[0].clientX - startX;
+            dx = e.clientX - startX;
+            if (Math.abs(dx) > 8 && !dragged) {
+                dragged = true;
+                card.setPointerCapture(e.pointerId);
+            }
+            // past the first or the last picture it moves only a little
+            const edge = (dx > 0 && current === 0) || (dx < 0 && current === slides.length - 1);
+            if (dragged) pictures().forEach((img) => { img.style.transition = 'none'; img.style.transform = `translateX(${edge ? dx / 5 : dx}px)`; });
+        });
+        const end = () => {
+            if (startX === null) return;
             startX = null;
-            if (Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+            pictures().forEach((img) => { img.style.transition = ''; img.style.transform = ''; });
+            if (dragged && Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+        };
+        card.addEventListener('pointerup', end);
+        card.addEventListener('pointercancel', end);
+        // the click that ends a drag
+        link.addEventListener('click', (e) => {
+            if (dragged) { e.preventDefault(); dragged = false; }
         });
         new ResizeObserver(place).observe(card);
         show(0);

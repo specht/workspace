@@ -15135,7 +15135,7 @@ html[data-bs-theme="dark"] .sampling-widget {
 .sampling-figure { margin: 0.4em 0 0; }
 .sampling-figure figcaption { font-size: 0.85em; color: var(--sampling-ink); margin-bottom: 0.25em; }
 .sampling-picture { display: block; width: 100%; height: 190px; }
-.sampling-strip { display: block; width: 100%; height: 44px; cursor: pointer; border-radius: 0.2em; }
+.sampling-strip { display: block; width: 100%; height: 44px; cursor: ew-resize; border-radius: 0.2em; touch-action: pan-y; }
 .sampling-strip:focus-visible { outline: 2px solid var(--sampling-heard); outline-offset: 2px; }
 .sampling-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--sampling-ink); }
 .sampling-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
@@ -15181,7 +15181,7 @@ html[data-bs-theme="dark"] .spectrum-widget {
 }
 .spectrum-figure { margin: 0.4em 0 0; }
 .spectrum-figure figcaption { font-size: 0.85em; color: var(--spectrum-ink); margin-bottom: 0.25em; }
-.spectrum-gram { display: block; width: 100%; height: 260px; cursor: pointer; }
+.spectrum-gram { display: block; width: 100%; height: 260px; cursor: ew-resize; touch-action: pan-y; }
 .spectrum-gram:focus-visible { outline: 2px solid var(--spectrum-mark); outline-offset: 2px; }
 .spectrum-chart { display: block; width: 100%; height: 170px; }
 .spectrum-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
@@ -15438,7 +15438,8 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
 /* The card of a series (card_series.js): a link over the whole card to the
    member shown, and small dots at the foot of its picture to show another
    (placed by the script, as the picture is on top or beside the text) */
-.tutorial_card3.card-series { cursor: pointer; }
+.tutorial_card3.card-series { cursor: pointer; touch-action: pan-y; user-select: none; }
+.tutorial_card3.card-series img { transition: transform 0.2s ease; }
 .card-series-link {
     position: absolute;
     inset: 0;

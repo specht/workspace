@@ -2,7 +2,7 @@
 // right and frequency upwards on a logarithmic scale from 40 Hz to 20 kHz,
 // the louder the darker (in the dark theme the brighter); under it the
 // spectrum at the chosen moment, how strong each frequency is, in dB, with
-// the strongest one named. A click or the arrow keys choose the moment;
+// the strongest one named. A click, a drag or the arrow keys choose the moment;
 // while the clip plays, the moment follows it.
 //
 //   <script src='/include/spectrum_widget.js'></script>
@@ -182,7 +182,7 @@
                 playButton,
             ]),
             el('figure', { class: 'spectrum-figure' }, [
-                el('figcaption', { text: 'Spektrogramm: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe. Hier klicken wählt den Zeitpunkt.' }),
+                el('figcaption', { text: 'Spektrogramm: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe. Hier klicken oder ziehen wählt den Zeitpunkt.' }),
                 gram]),
             el('figure', { class: 'spectrum-figure' }, [
                 el('figcaption', { text: 'Spektrum am gewählten Zeitpunkt: wie stark jede Frequenz ist' }),
@@ -415,16 +415,35 @@
         }
 
         playButton.addEventListener('click', () => { if (playing) stop(); else start(at); });
-        const moveTo = (t) => {
+        // restart: while dragging only the pictures follow; the sound goes
+        // on from the new moment when the pointer lets go
+        const moveTo = (t, restart = true) => {
             at = Math.max(0, Math.min(duration() - 0.01, t));
-            if (playing) start(at); else offset = at;
+            if (!playing) offset = at;
+            else if (restart) start(at);
+            else { offset = at; startedAt = ctx.currentTime; }
             draw();
+        };
+        // a click chooses the moment, and dragging moves it
+        let dragging = false;
+        const fromPointer = (e) => {
+            const r = gram.getBoundingClientRect();
+            return (e.clientX - r.left - LABEL_W) / (r.width - LABEL_W) * duration();
         };
         gram.addEventListener('pointerdown', (e) => {
             if (!frames) return;
-            const r = gram.getBoundingClientRect();
-            moveTo((e.clientX - r.left - LABEL_W) / (r.width - LABEL_W) * duration());
+            dragging = true;
+            gram.setPointerCapture(e.pointerId);
+            moveTo(fromPointer(e), false);
         });
+        gram.addEventListener('pointermove', (e) => { if (dragging) moveTo(fromPointer(e), false); });
+        const release = (e) => {
+            if (!dragging) return;
+            dragging = false;
+            moveTo(fromPointer(e), true);
+        };
+        gram.addEventListener('pointerup', release);
+        gram.addEventListener('pointercancel', release);
         gram.addEventListener('keydown', (e) => {
             if (!frames || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
             e.preventDefault();

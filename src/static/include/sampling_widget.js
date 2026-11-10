@@ -4,8 +4,8 @@
 // The picture shows 5 ms of the clip: the wave before measuring (faint),
 // the measurements as dots on the levels the bits allow, and the wave that
 // is heard, made again from the measurements (purple, what is current).
-// The strip under it is the whole clip; a click there chooses the 5 ms and,
-// while it plays, the place to play from.
+// The strip under it is the whole clip; a click or a drag there chooses
+// the 5 ms and, while it plays, the place to play from.
 //
 //   <script src='/include/sampling_widget.js'></script>
 //   <div class='sampling-widget'></div>
@@ -173,7 +173,7 @@
         const rateLine = el('p', { class: 'sampling-rate', 'aria-live': 'polite' });
         root.append(controls, settings,
             el('figure', { class: 'sampling-figure' }, [el('figcaption', { text: level === 1 ? '5 Millisekunden des Klangs' : `5 Millisekunden des leisen Klangs, ${de(1 / level)}-mal vergrößert` }), picture, legend]),
-            el('figure', { class: 'sampling-figure' }, [el('figcaption', { text: 'Der ganze Klang: hier klicken wählt die Stelle' }), strip]),
+            el('figure', { class: 'sampling-figure' }, [el('figcaption', { text: 'Der ganze Klang: hier klicken oder ziehen wählt die Stelle' }), strip]),
             rateLine);
 
         const colours = () => {
@@ -379,17 +379,35 @@
 
         playButton.addEventListener('click', () => { if (playing) stop(); else start(offset); });
 
-        const moveTo = (t) => {
+        // restart: while dragging only the picture follows; the sound
+        // goes on from the new place when the pointer lets go
+        const moveTo = (t, restart = true) => {
             const duration = original.length / SOURCE;
             at = Math.max(0, Math.min(duration - WINDOW, t));
-            if (playing) start(at); else offset = at;
+            if (!playing) offset = at;
+            else if (restart) start(at);
             draw();
+        };
+        // a click chooses the place, and dragging moves it
+        let dragging = false;
+        const fromPointer = (e) => {
+            const r = strip.getBoundingClientRect();
+            return (e.clientX - r.left) / r.width * original.length / SOURCE;
         };
         strip.addEventListener('pointerdown', (e) => {
             if (!original) return;
-            const r = strip.getBoundingClientRect();
-            moveTo((e.clientX - r.left) / r.width * original.length / SOURCE);
+            dragging = true;
+            strip.setPointerCapture(e.pointerId);
+            moveTo(fromPointer(e), false);
         });
+        strip.addEventListener('pointermove', (e) => { if (dragging) moveTo(fromPointer(e), false); });
+        const release = (e) => {
+            if (!dragging) return;
+            dragging = false;
+            moveTo(fromPointer(e), true);
+        };
+        strip.addEventListener('pointerup', release);
+        strip.addEventListener('pointercancel', release);
         strip.addEventListener('keydown', (e) => {
             if (!original || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
             e.preventDefault();
