@@ -1,17 +1,14 @@
-"""The card picture of »Audioeffekte«: the compressor widget of the page,
-fitted to the card. On the left its curve (how loud a sound comes out for
-each level: dashed without the compressor, purple with it, a dot at the
-level that plays), on the right the sound itself, an orchestra from very
-quiet to loud (»Orchester leise und laut« of the widget): above as it was,
-in grey, below in purple as compress() of the page makes it, the quiet part
-raised, the loud one held down. No labels and no boxes, the widget's
-colours on its ground, light and dark; 1600 × 900, drawn twice as large.
+"""The card picture of »Audioeffekte«: an echo. A phrase of the Gesang clip
+(»Running with Renegades«, as in the widgets) as a wave, and after it its
+echoes, each a little later, smaller and fainter than the one before, as if
+the sound went off into the distance; the first strong in the widgets'
+purple, the last nearly the colour of the ground. No labels, the widgets'
+colours, light and dark; 1600 × 900, drawn twice as large.
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo --entrypoint python3 \\
         hs_code_server:latest src/content/audio-effects/bilder/teaser.py
 """
 
-import math
 import os
 import subprocess
 
@@ -20,88 +17,52 @@ from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.join(HERE, '..', '..', '..', '..')
-SOURCE = os.path.join(REPO, 'src', 'static', 'audio', 'effects', 'dynamic-orchestra.flac')
+SOURCE = os.path.join(REPO, 'src', 'static', 'audio', 'effects', 'singing-voice-2.flac')
 OUT = os.path.join(HERE, '..')
 W, H, S = 1600, 900, 2                      # the picture, drawn S times as large
 RATE = 22050
-START, LENGTH = 0, 19.5                     # seconds of the clip: all of it
-THRESHOLD, RATIO, ATTACK, RELEASE, MAKEUP = -30, 6, 0.005, 0.2, 14
-# the widget's colours (default.css, --fx-…)
+START, END = 1.95, 3.05                     # seconds of the clip: one phrase
+ECHOES = 8
+STEP, SHRINK, LOWER = 0.78, 0.72, 0.62      # each echo: this far on (of the width before), this wide, this high
+# the widgets' colours (default.css, --fx-…)
 THEMES = {
-    '': {'ground': '#f1f2f5', 'quiet': '#dbdee3', 'sound': '#8a90a0', 'mark': '#6741d9'},
-    '-dark': {'ground': '#111213', 'quiet': '#2a2e34', 'sound': '#6b7280', 'mark': '#b197fc'},
+    '': {'ground': '#f1f2f5', 'mark': '#6741d9'},
+    '-dark': {'ground': '#111213', 'mark': '#b197fc'},
 }
 
 
-def gain_db(level, threshold, ratio):
-    return 0 if level <= threshold else (threshold - level) * (1 - 1 / ratio)
+def rgb(colour):
+    return np.array([int(colour[i:i + 2], 16) for i in (1, 3, 5)], dtype=float)
 
 
-def compress(x, rate):
-    """compress() of the page, its level in dB per sample"""
-    a, r = math.exp(-1 / (ATTACK * rate)), math.exp(-1 / (RELEASE * rate))
-    level, y, levels = 0.0, np.zeros_like(x), np.zeros_like(x)
-    for n, v in enumerate(np.abs(x).tolist()):
-        c = a if v > level else r
-        level = c * level + (1 - c) * v
-        db = 20 * math.log10(max(level, 1e-9))
-        levels[n] = db
-        y[n] = x[n] * 10 ** ((gain_db(db, THRESHOLD, RATIO) + MAKEUP) / 20)
-    return y, levels
+def towards(a, b, t):
+    return tuple(int(v) for v in rgb(a) * (1 - t) + rgb(b) * t)
+
+
+def envelope(z, columns):
+    """per column the highest and the lowest sample"""
+    edges = np.linspace(0, len(z), columns + 1).astype(int)
+    return [(z[edges[i]:edges[i + 1]].max(), z[edges[i]:edges[i + 1]].min()) for i in range(columns)]
 
 
 raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', SOURCE, '-ac', '1', '-ar', str(RATE), '-f', 'f32le', '-'],
                      capture_output=True, check=True).stdout
-x = np.frombuffer(raw, '<f4').astype(float)
-x = x[int(START * RATE):int((START + LENGTH) * RATE)]
-x /= np.abs(x).max()
-y, levels = compress(x, RATE)
-y /= max(1, np.abs(y).max())
-
-# where things go, in pixels of the large picture: the curve left, the two
-# sounds right, all inside a margin that a card cutting its sides keeps
-curve = (130 * S, 90 * S, 640 * S, 810 * S)           # left, top, right, bottom
-above = (730 * S, 90 * S, 1480 * S, 435 * S)
-below = (730 * S, 465 * S, 1480 * S, 810 * S)
-
-
-def envelope(z, box):
-    """per column the lowest and highest sample, as y in the box"""
-    left, top, right, bottom = box
-    cols = right - left
-    edges = np.linspace(0, len(z), cols + 1).astype(int)
-    mid, half = (top + bottom) / 2, (bottom - top) / 2
-    return [(left + i, mid - z[edges[i]:edges[i + 1]].max() * half, mid - z[edges[i]:edges[i + 1]].min() * half)
-            for i in range(cols)]
-
+phrase = np.frombuffer(raw, '<f4').astype(float)[int(START * RATE):int(END * RATE)]
+phrase /= np.abs(phrase).max()
 
 for suffix, theme in THEMES.items():
     image = Image.new('RGB', (W * S, H * S), theme['ground'])
     draw = ImageDraw.Draw(image)
-    # the curve: in −60 … 0 dB to the right, out −60 … +6 dB up (the widget
-    # goes to +24 dB, which this curve does not reach)
-    left, top, right, bottom = curve
-    LO, HI = -60, 6
-    xof = lambda db: left + (db - LO) / -LO * (right - left)
-    yof = lambda db: top + (HI - db) / (HI - LO) * (bottom - top)
-    for db in (0, -24, -48):
-        draw.line([(left, yof(db)), (right, yof(db))], fill=theme['quiet'], width=3 * S)
-    # the threshold: where the curve bends, a quiet vertical line
-    draw.line([(xof(THRESHOLD), top), (xof(THRESHOLD), bottom)], fill=theme['quiet'], width=3 * S)
-    # the axes, in and out
-    draw.line([(left, top), (left, bottom), (right, bottom)], fill=theme['sound'], width=4 * S)
-    # dashed: without the compressor, out = in
-    for k in np.arange(0, 60, 4):
-        draw.line([(xof(LO + k), yof(LO + k)), (xof(LO + k + 2.4), yof(LO + k + 2.4))], fill=theme['sound'], width=6 * S)
-    out = lambda db: db + gain_db(db, THRESHOLD, RATIO) + MAKEUP
-    points = [(xof(db), yof(out(db))) for db in np.linspace(LO, 0, 400)]
-    draw.line(points, fill=theme['mark'], width=11 * S, joint='curve')
-    now = float(np.median(levels[int(0.7 * len(levels)):]))
-    cx, cy, rad = xof(now), yof(out(now)), 24 * S
-    draw.ellipse([cx - rad, cy - rad, cx + rad, cy + rad], fill=theme['mark'], outline=theme['ground'], width=6 * S)
-    # the sound, before and after
-    for box, z, colour in ((above, x, theme['sound']), (below, y, theme['mark'])):
-        for px, hi, lo in envelope(z, box):
-            draw.line([(px, hi), (px, max(lo, hi + S))], fill=colour, width=1)
+    middle = H * S / 2
+    left, width, height = 150 * S, 520 * S, 350 * S
+    # the farthest first, so that each nearer one lies over it
+    copies = []
+    for k in range(ECHOES):
+        copies.append((k, left, width, height))
+        left, width, height = left + width * STEP, width * SHRINK, height * LOWER
+    for k, left, width, height in reversed(copies):
+        colour = towards(theme['mark'], theme['ground'], min(0.85, 0.16 * k))
+        for i, (hi, lo) in enumerate(envelope(phrase, int(width))):
+            draw.line([(left + i, middle - hi * height), (left + i, middle - lo * height)], fill=colour)
     image.resize((W, H), Image.LANCZOS).save(os.path.join(OUT, f'teaser{suffix}.webp'), quality=90)
     print(f'teaser{suffix}.webp')

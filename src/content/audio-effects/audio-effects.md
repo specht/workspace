@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Links die Kennlinie eines Compressors: gestrichelt eine gerade Linie, so laut wie hinein, so laut heraus; lila eine Linie, die ab einer Schwelle abknickt und flacher weiterläuft, darauf ein Punkt. Rechts ein Orchester, das sehr leise beginnt und dann laut wird, oben grau als Welle, wie es aufgenommen wurde, unten lila nach dem Compressor: Der leise Anfang ist fast so hoch wie der laute Teil."
+image_alt: "Ein kurzer gesungener Satz als lila Welle, und rechts dahinter seine Echos: jedes etwas später, kleiner und blasser als das vorige, bis das letzte am rechten Rand fast verschwindet."
 kind: labor
 language: Python
 duration: 6 Doppelstunden
