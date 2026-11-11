@@ -10,11 +10,12 @@ src/static/video/:
     slope.mp4       395 s:  a slope in the evening sun, the girl walking; fine texture
     tilt.mp4  408 s:  the camera tilts fast up a rock face with plants
 
-their first frames as stills for the page (glance.webp, …), and one
-frame with all its colour, never through H.264 and its 4:2:0, as
+their first frames as stills for the page (glance.webp, …), and two
+frames with all their colour, never through H.264 and its 4:2:0, as
 PNG:
 
-    slope.png       395 s:  the first frame of slope.mp4
+    slope.png       395 s:  the first frame of slope.mp4 (»Innerhalb eines Bildes«)
+    portrait.png    68,5 s: frame 72 of glance.mp4, the girl close up, crisp (»Farbe sparen«)
 
 The film comes from Wikimedia Commons, which has it from the Blender
 Studio's YouTube channel, so it was compressed once before (VP9, 2048 ×
@@ -32,6 +33,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'static', 'video')
 CLIPS = {'glance': 65.5, 'pan': 37.0, 'slope': 395.0, 'tilt': 408.0}
+STILLS = {'slope': 395.0, 'portrait': 68.5}
 SECONDS = 4
 WIDTH, HEIGHT = 960, 400
 
@@ -50,11 +52,12 @@ def main(source):
     for name in CLIPS:
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', os.path.join(OUT, f'{name}.mp4'), '-frames:v', '1',
                         '-c:v', 'libwebp', '-quality', '80', os.path.join(OUT, f'{name}.webp')], check=True)
-    target = os.path.join(OUT, 'slope.png')
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(CLIPS['slope']), '-i', source, '-frames:v', '1',
-                    '-vf', f'scale={WIDTH}:-2:flags=lanczos+full_chroma_int+accurate_rnd,crop={WIDTH}:{HEIGHT},format=rgb24',
-                    target], check=True)
-    print(target, os.path.getsize(target), 'bytes')
+    for name, at in STILLS.items():
+        target = os.path.join(OUT, f'{name}.png')
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(at), '-i', source, '-frames:v', '1',
+                        '-vf', f'scale={WIDTH}:-2:flags=lanczos+full_chroma_int+accurate_rnd,crop={WIDTH}:{HEIGHT},format=rgb24',
+                        target], check=True)
+        print(target, os.path.getsize(target), 'bytes')
 
 
 main(sys.argv[1])

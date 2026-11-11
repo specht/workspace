@@ -32,11 +32,11 @@ def save_grey(path, plane):
 
 
 def save_detail(path, rgb):
-    Image.fromarray(rgb[130:310, 460:700]).resize((720, 540), Image.NEAREST).save(path)
+    Image.fromarray(rgb[130:310, 390:630]).resize((720, 540), Image.NEAREST).save(path)
 
 
 if __name__ == '__main__':
-    frame = np.asarray(Image.open('slope.png').convert('RGB'))
+    frame = np.asarray(Image.open('portrait.png').convert('RGB'))
     ycbcr = to_ycbcr(frame)
     save_grey('y.png', ycbcr[..., 0])
     save_grey('cb.png', ycbcr[..., 1])

@@ -15,7 +15,7 @@ def save_grey(path, plane):
 
 
 if __name__ == '__main__':
-    frame = np.asarray(Image.open('slope.png').convert('RGB'))
+    frame = np.asarray(Image.open('portrait.png').convert('RGB'))
     ycbcr = to_ycbcr(frame)
     save_grey('y.png', ycbcr[..., 0])
     save_grey('cb.png', ycbcr[..., 1])
