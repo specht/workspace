@@ -1377,3 +1377,323 @@ Die Vorhersage sieht schon aus wie Bild 12. Übrig bleibt, was sich nicht nur ve
 </div>
 
 <!-- stage: stufen/motion-2.py as motion.py -->
+
+## I-, P- und B-Frames
+
+Ein Video besteht also aus drei Arten von Bildern. Ein **I-Frame** (intra) steht für sich allein, wie in »Innerhalb eines Bildes«. Ein **P-Frame** (predicted) wird aus einem früheren Bild vorhergesagt, mit Bewegungsvektoren und Rest wie in »Bewegung schätzen«. Ein **B-Frame** (bidirectional) darf aus einem früheren und einem späteren Bild vorhersagen und für jeden Block das bessere nehmen oder beide mitteln. H.261 kannte nur die ersten beiden, B-Frames kamen 1993 mit MPEG-1.
+
+Jeder Pfeil führt von einem Bild zu einem, aus dem es vorhergesagt wird; über der Reihe zeigt er auf ein früheres Bild, unter ihr auf ein späteres:
+
+<img class='drawing d-none d-lg-block' style='width: 55em' src='gop-refs-wide.svg' alt='Neun Bilder in einer Reihe, wie sie gezeigt werden: I0, B1, B2, B3, P4, B5, B6, B7, P8. Über der Reihe Pfeile von B1, B2, B3 und P4 zurück zu I0 und von B5, B6, B7 und P8 zurück zu P4. Unter der Reihe Pfeile von B1, B2 und B3 vor zu P4 und von B5, B6 und B7 vor zu P8. Von jedem B-Frame gehen also zwei Pfeile aus, von jedem P-Frame einer, vom I-Frame keiner.'>
+<img class='drawing d-lg-none' style='width: 25.5em' src='gop-refs.svg' alt='Fünf Bilder in einer Reihe, wie sie gezeigt werden: I0, B1, B2, B3, P4. Über der Reihe Pfeile von B1, B2, B3 und P4 zurück zu I0, unter der Reihe Pfeile von B1, B2 und B3 vor zu P4. Von jedem B-Frame gehen also zwei Pfeile aus, vom P-Frame einer, vom I-Frame keiner.'>
+
+Das I-Frame braucht kein anderes Bild, ein P-Frame eines, ein B-Frame zwei. Danach wiederholt sich die Gruppe: P4 ist für B5 bis P8, was I0 für B1 bis P4 war.
+
+### Wie groß ist jedes Bild?
+
+ffprobe, das mit ffmpeg kommt, zeigt für jedes Bild einer Datei seine Art und wie viele Bytes es braucht. Mit `-of json` gibt es das so aus, dass Python es mit dem Modul `json` lesen kann. Lege `gop.py` an:
+
+<!-- page-code: own -->
+```python
+import json
+import subprocess
+
+from PIL import Image, ImageDraw, ImageFont
+
+CLIPS = ['glance', 'pan', 'slope', 'tilt']
+COLOURS = {'I': (220, 38, 38), 'P': (37, 99, 235), 'B': (22, 163, 74)}
+
+
+def frame_sizes(path):
+    # hier: für jedes Bild (Art, Bytes), in der Reihenfolge, in der es gezeigt wird
+
+
+def draw_bars(frames, path, width=960, height=320):
+    picture = Image.new('RGB', (width, height), 'white')
+    draw = ImageDraw.Draw(picture)
+    font = ImageFont.load_default(size=18)
+    largest = max(size for _, size in frames)
+    step = width / len(frames)
+    for k, (kind, size) in enumerate(frames):
+        top = height - 10 - (height - 50) * size / largest
+        draw.rectangle([k * step + 1, top, (k + 1) * step - 2, height - 10], fill=COLOURS[kind])
+    draw.text((8, 8), f'{largest // 1000} KB', fill='black', font=font)
+    for n, kind in enumerate('IPB'):
+        x = width - 150 + 50 * n
+        draw.rectangle([x, 12, x + 14, 26], fill=COLOURS[kind])
+        draw.text((x + 20, 8), kind, fill='black', font=font)
+    picture.save(path)
+
+
+if __name__ == '__main__':
+    for name in CLIPS:
+        frames = frame_sizes(f'{name}.mp4')
+        kinds = ''.join(kind for kind, _ in frames)
+        print(name, kinds[:25])
+        for kind in 'IPB':
+            sizes = [size for k, size in frames if k == kind]
+            if sizes:
+                print(f'   {kind}: {len(sizes):2} Bilder, im Mittel {sum(sizes) // len(sizes):6} Bytes')
+        draw_bars(frames, f'{name}-bars.png')
+```
+
+`draw_bars` malt für jedes Bild einen Balken, so hoch wie seine Bytes, rot für I, blau für P, grün für B. Probier ffprobe zuerst im Terminal:
+
+```bash
+ffprobe -v error -select_streams v -show_entries frame=pict_type,pkt_size -of json glance.mp4 | head -20
+```
+
+`-select_streams v` nimmt nur das Video, `-show_entries frame=pict_type,pkt_size` von jedem Bild nur seine Art und seine Größe in Bytes.
+
+<div class='hint own' data-check='frame-sizes'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>frame_sizes(path)</code>: Es ruft ffprobe wie oben für die Datei <code>path</code> auf und gibt eine Liste zurück, für jedes Bild ein Paar <code>(Art, Bytes)</code>, etwa <code>('I', 93849)</code>, die Bytes als ganze Zahl.
+</div>
+
+<!-- hint -->
+`subprocess.run(command, capture_output=True, text=True, check=True).stdout` gibt die Ausgabe als Text, wie in `video.py`. `json.loads(text)` macht daraus ein Dictionary; unter `'frames'` steht eine Liste, in der jedes Bild ein Dictionary mit `'pict_type'` und `'pkt_size'` ist.
+<!-- /hint -->
+<!-- hint -->
+`pkt_size` steht dort als Text, `int(...)` macht eine Zahl daraus.
+
+```python
+command = ['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'frame=pict_type,pkt_size',
+           '-of', 'json', path]
+data = json.loads(subprocess.run(command, capture_output=True, text=True, check=True).stdout)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def frame_sizes(path):
+    command = ['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'frame=pict_type,pkt_size',
+               '-of', 'json', path]
+    data = json.loads(subprocess.run(command, capture_output=True, text=True, check=True).stdout)
+    return [(frame['pict_type'], int(frame['pkt_size'])) for frame in data['frames']]
+```
+<!-- /solution -->
+
+_task(frame-sizes)
+
+_task(biggest)
+
+```bash
+python3 gop.py
+```
+
+<!-- tutorial-step
+write-file: video/gop.py <- file:stufen/gop-1.py
+check-task: frame-sizes
+terminal-run: python3 gop.py
+terminal-wait-for-prompt: 60
+wait-for-text: tilt IBBB
+-->
+
+<!-- after: biggest -->
+```text
+glance IBBBPBBBPBBBPBBBPBBBPBBBP
+   I:  1 Bilder, im Mittel  93849 Bytes
+   P: 36 Bilder, im Mittel  11737 Bytes
+   B: 59 Bilder, im Mittel    610 Bytes
+pan IBBBPBBBPBBBPBBBPBBBPBBBP
+   I:  1 Bilder, im Mittel  80126 Bytes
+   P: 24 Bilder, im Mittel  36331 Bytes
+   B: 71 Bilder, im Mittel   4266 Bytes
+slope IBBBPBBBPBBBPBBBPBBBPBBBP
+   I:  1 Bilder, im Mittel 141237 Bytes
+   P: 24 Bilder, im Mittel  50849 Bytes
+   B: 71 Bilder, im Mittel   6308 Bytes
+tilt IBBBPPBBBPBBBPBBBPBBBPBBB
+   I:  1 Bilder, im Mittel 181021 Bytes
+   P: 25 Bilder, im Mittel  58457 Bytes
+   B: 70 Bilder, im Mittel   7831 Bytes
+```
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/glance-bars.png 1
+-->
+<img src='glance-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von glance.mp4: ganz links ein hoher roter Balken für das I-Frame, danach meist alle vier Bilder ein niedriger blauer für ein P-Frame, in der Mitte einige blaue hintereinander, und dazwischen kaum sichtbare grüne für die B-Frames.'>
+<figcaption>glance.mp4: ein großes I-Frame, dann fast nur winzige B-Frames</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/tilt-bars.png 1
+-->
+<img src='tilt-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von tilt.mp4: links ein hoher roter Balken für das I-Frame, danach blaue P-Frames, etwa ein Drittel so hoch, und dazwischen niedrige grüne B-Frames.'>
+<figcaption>tilt.mp4: auch die P-Frames sind groß, die Kamera fährt schnell</figcaption></figure>
+</div>
+
+Jeder Ausschnitt beginnt mit einem I-Frame, und es bleibt das einzige: x264 setzt höchstens alle 250 Bilder eines, und die Ausschnitte haben 96. Danach wechseln sich P-Frames und meist je drei B-Frames ab. Ein I-Frame braucht so viel wie zwei bis sieben P-Frames, ein B-Frame nur einen Bruchteil eines P-Frames, beim Blick sogar nur ein Zwanzigstel. Ein B-Frame kann für jeden Block das passendere von zwei Bildern nehmen, und weil kein anderes Bild aus ihm vorhergesagt wird, darf der Encoder es gröber runden: Ein Fehler darin wandert nicht weiter.
+<!-- /after -->
+
+### Die Reihenfolge in der Datei
+
+Ein B-Frame braucht das Bild nach ihm. Also muss der Decoder dieses spätere Bild zuerst bekommen, und die Datei speichert die Bilder in einer anderen Reihenfolge, als sie gezeigt werden: Nach dem I-Frame kommt das P-Frame, dann die B-Frames, die davor gezeigt werden.
+
+<div class='hint own' data-check='decode-order'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>decode_order(kinds)</code>: <code>kinds</code> ist ein Text wie <code>'IBBBP'</code>, die Arten der Bilder in der Reihenfolge, in der sie gezeigt werden. Gib die Nummern der Bilder in der Reihenfolge zurück, in der der Decoder sie braucht: jedes I- und P-Frame vor den B-Frames, die vor ihm gezeigt werden. Für <code>'IBBBP'</code> ist das <code>[0, 4, 1, 2, 3]</code>. B-Frames am Ende ohne ein Bild danach kommen zuletzt.
+</div>
+
+<!-- hint -->
+Geh die Bilder der Reihe nach durch und sammle B-Frames in einer Liste, die wartet. Kommt ein I- oder P-Frame, kommt es in die Reihenfolge, und danach die wartenden B-Frames.
+<!-- /hint -->
+<!-- hint -->
+```python
+order = []
+waiting = []
+for k, kind in enumerate(kinds):
+    if kind == 'B':
+        waiting.append(k)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def decode_order(kinds):
+    order = []
+    waiting = []
+    for k, kind in enumerate(kinds):
+        if kind == 'B':
+            waiting.append(k)
+        else:
+            order.append(k)
+            order += waiting
+            waiting = []
+    return order + waiting
+```
+<!-- /solution -->
+
+_task(decode-order)
+
+<!-- after: decode-order -->
+<img class='drawing d-none d-lg-block' style='width: 55em' src='gop-order-wide.svg' alt='Oben neun Bilder, wie sie gezeigt werden: I0, B1, B2, B3, P4, B5, B6, B7, P8. Unten dieselben Bilder, wie sie in der Datei stehen: I0, P4, B1, B2, B3, P8, B5, B6, B7. Pfeile führen von jedem Bild oben zu seinem Platz unten; die Pfeile von P4 und P8 kreuzen die der B-Frames, weil die beiden P-Frames vor ihre B-Frames rücken.'>
+<img class='drawing d-lg-none' style='width: 25.5em' src='gop-order.svg' alt='Oben fünf Bilder, wie sie gezeigt werden: I0, B1, B2, B3, P4. Unten dieselben Bilder, wie sie in der Datei stehen: I0, P4, B1, B2, B3. Pfeile führen von jedem Bild oben zu seinem Platz unten; der Pfeil von P4 kreuzt die der B-Frames, weil P4 vor sie rückt.'>
+<!-- /after -->
+
+Wie die Datei die Bilder wirklich speichert, zeigt ffprobe mit `-show_entries packet=pts`: Jedes Paket hat einen Zeitstempel, wann sein Bild gezeigt wird, und die Pakete stehen in der Reihenfolge, in der der Decoder sie liest. Erweitere `gop.py` um `decode_order` und diese Funktion:
+
+```python
+def stored_order(path, count):
+    command = ['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'packet=pts',
+               '-of', 'json', path]
+    data = json.loads(subprocess.run(command, capture_output=True, text=True, check=True).stdout)
+    times = [int(packet['pts']) for packet in data['packets']]
+    step = sorted(times)[1] - sorted(times)[0]
+    return [(t - min(times)) // step for t in times[:count]]
+```
+
+`stored_order` rechnet die Zeitstempel in Nummern von Bildern um: Der kleinste ist Bild 0, und der Abstand zwischen zwei Bildern ist überall gleich. Unten im Hauptprogramm:
+
+```python
+    kinds = ''.join(kind for kind, _ in frame_sizes('glance.mp4'))[:13]
+    print('Zeigen:     ', list(range(13)))
+    print('Typen:      ', ' '.join(kinds))
+    print('Gerechnet:  ', decode_order(kinds))
+    print('In der Datei:', stored_order('glance.mp4', 13))
+```
+
+<!-- tutorial-step
+write-file: video/gop.py <- file:stufen/gop-2.py
+check-task: decode-order
+terminal-run: python3 gop.py | tail -4
+terminal-wait-for-prompt: 60
+wait-for-text: In der Datei
+-->
+
+```text
+Zeigen:      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+Typen:       I B B B P B B B P B B B P
+Gerechnet:   [0, 4, 1, 2, 3, 8, 5, 6, 7, 12, 9, 10, 11]
+In der Datei: [0, 4, 2, 1, 3, 8, 6, 5, 7, 12, 10, 9, 11]
+```
+
+Fast: x264 nimmt von drei B-Frames das mittlere zuerst, Bild 2 vor 1 und 3. Das mittlere wird nämlich selbst zur Vorlage für die beiden anderen, die so näher an einem Bild liegen, aus dem sie vorhersagen. Das heißt **B-Pyramide**.
+
+<img class='drawing d-none d-lg-block' style='width: 34.5em' src='gop-pyramid-wide.svg' alt='Fünf Bilder in einer Reihe: I0, B1, B2, B3, P4. Über der Reihe Pfeile von P4, B2 und B1 zurück zu I0 und von B3 zurück zu B2. Unter der Reihe Pfeile von B2 und B3 vor zu P4 und von B1 vor zu B2. B2 wird aus I0 und P4 vorhergesagt, B1 aus I0 und B2, B3 aus B2 und P4.'>
+<img class='drawing d-lg-none' style='width: 28em' src='gop-pyramid.svg' alt='Fünf Bilder in einer Reihe: I0, B1, B2, B3, P4. Über der Reihe Pfeile von P4, B2 und B1 zurück zu I0 und von B3 zurück zu B2. Unter der Reihe Pfeile von B2 und B3 vor zu P4 und von B1 vor zu B2. B2 wird aus I0 und P4 vorhergesagt, B1 aus I0 und B2, B3 aus B2 und P4.'>
+
+### Ein Decoder bei der Arbeit
+
+Hier baut ein Decoder 17 Bilder vom Hang zusammen, mit einem I-Frame am Anfang, in der Mitte und am Ende. Die Leiste oben zeigt, was die Datei für jedes Bild speichert, und wie viele Bytes es braucht: Ein I-Frame ist ein ganzes Bild, ein P- oder B-Frame nur sein Rest, dazu Vektoren, die man in der Leiste nicht sieht. Der obere Regler geht von Bild zu Bild, der untere durch die Schritte, in denen ein Bild entsteht: erst die Vorlage, dann die Blöcke, die um ihre Vektoren verschoben werden, zuletzt der Rest. »Weiter« geht durch alle Schritte aller Bilder, die beiden Knöpfe »Bild« von Bild zu Bild. Achte darauf, wie viele Bytes die Bilder zwischen zwei I-Frames brauchen und wie wenig in ihrem Rest zu sehen ist.
+
+<script src='/include/gop_stepper.js'></script>
+<div class='gop-stepper' data-stepper data-src='/video/gop-steps'></div>
+
+Die 17 Bilder sind dafür eigens codiert, mit demselben Muster wie in den Ausschnitten, aber mit genau einer Vorlage in jede Richtung, damit klar ist, auf welches Bild ein Vektor zeigt, mit einem I-Frame alle 8 Bilder und mit festem Quantisierer, damit sich die Bytes vergleichen lassen. In den Ausschnitten darf ein Bild auf bis zu fünf Vorlagen schauen, und nur das erste von 96 Bildern ist ein I-Frame. Arten, Vektoren und Bytes sind die von x264; die Stücke, die sich die Blöcke holen, und den Rest haben wir aus den Vektoren nachgerechnet.
+
+### Springen
+
+Ein Player kann nur bei einem I-Frame zu zeigen anfangen: Jedes andere Bild braucht Bilder davor. Springt man in die Mitte eines Videos, sucht der Player das I-Frame davor und rechnet von dort aus. Darum setzen Encoder für Streams regelmäßig I-Frames, für Live-Streams empfiehlt YouTube eines alle zwei Sekunden, und bei jedem Schnitt in eine neue Szene eines, weil dort die Vorhersage ohnehin nichts taugt. Probier aus, was das kostet, mit `slope.mp4` und immer derselben Qualität:
+
+```bash
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -crf 18 slope-default.mp4
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -crf 18 -g 24 slope-g24.mp4
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -crf 18 -bf 0 slope-bf0.mp4
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -crf 18 -g 1 slope-intra.mp4
+ls -l slope-*.mp4
+```
+
+Mit einem I-Frame alle 8 Bilder sieht ein Sprung zu Bild 13 so aus; jeder Pfeil zeigt auf das Bild, aus dem ein P-Frame vorhergesagt wird:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='gop-seek-wide.svg' alt='16 Bilder in einer Reihe: I0, P1 bis P7, I8, P9 bis P15. Von jedem P-Frame zeigt ein kurzer Pfeil auf das Bild davor. Über P13 steht Sprung, unter I8 bis P13 eine Klammer: rechnen, bevor 13 erscheint.'>
+<img class='drawing d-lg-none' style='width: 26em' src='gop-seek.svg' alt='16 Bilder in zwei Reihen: oben I0 und P1 bis P7, unten I8 und P9 bis P15. Von jedem P-Frame zeigt ein kurzer Pfeil auf das Bild davor. Über P13 steht Sprung, unter I8 bis P13 eine Klammer: rechnen, bevor 13 erscheint.'>
+
+Der Player rechnet sechs Bilder, bevor er eines zeigt; ohne I8 wären es vierzehn. Je seltener I-Frames, desto länger kann ein Sprung dauern.
+
+`-g 24` setzt höchstens alle 24 Bilder ein I-Frame, also jede Sekunde eines; `-bf 0` verbietet B-Frames; `-g 1` macht jedes Bild zum I-Frame.
+
+_task(intra-size)
+
+<!-- tutorial-step
+terminal-run: for o in default:'' g24:'-g 24' bf0:'-bf 0' intra:'-g 1'; do ffmpeg -v error -y -i slope.mp4 -c:v libx264 -crf 18 ${o#*:} slope-${o%%:*}.mp4; done; ls -l slope-*.mp4
+terminal-wait-for-prompt: 120
+wait-for-text: slope-intra.mp4
+-->
+
+<!-- after: intra-size -->
+```text
+1477186 slope-bf0.mp4
+1037368 slope-default.mp4
+1287764 slope-g24.mp4
+4685365 slope-intra.mp4
+```
+
+Ein I-Frame jede Sekunde kostet ein Viertel mehr, ohne B-Frames sind es zwei Fünftel mehr, und nur aus I-Frames wird die Datei viereinhalbmal so groß.
+<!-- /after -->
+
+### Ohne I-Frame
+
+Was passiert, wenn ein I-Frame fehlt? Probier es mit dem Schwenk und der Fahrt die Wand hinauf: Beide werden ohne B-Frames codiert und als roher H.264-Strom hintereinandergehängt, dann wirft ffmpeg jedes I-Frame außer dem ersten weg. Der Decoder bekommt also nach dem letzten Bild des Schwenks gleich das erste P-Frame der Fahrt.
+
+_task(mosh)
+
+```bash
+for c in pan tilt; do ffmpeg -v error -y -i $c.mp4 -c:v libx264 -crf 18 -bf 0 -g 1000 -sc_threshold 0 -bsf:v h264_mp4toannexb -f h264 $c.h264; done
+cat pan.h264 tilt.h264 > both.h264
+ffmpeg -v error -y -fflags +genpts -r 24 -i both.h264 -c copy -bsf:v 'noise=drop=key*gt(n\,0)' mosh.h264
+ffmpeg -v error -y -r 24 -i mosh.h264 -c:v libx264 -crf 18 -pix_fmt yuv420p mosh.mp4
+```
+
+`-g 1000 -sc_threshold 0` sorgt dafür, dass jeder Ausschnitt nur am Anfang ein I-Frame hat, `-f h264` schreibt den rohen Strom ohne MP4 drumherum. `cat` hängt die beiden Ströme aneinander, und der Filter `noise` wirft jedes Paket weg, das ein I-Frame ist (`key`) und nicht das erste (`gt(n,0)`). Zuletzt macht ffmpeg wieder eine MP4-Datei daraus, die VS Code abspielt.
+
+<!-- tutorial-step
+terminal-run: for c in pan tilt; do ffmpeg -v error -y -i $c.mp4 -c:v libx264 -crf 18 -bf 0 -g 1000 -sc_threshold 0 -bsf:v h264_mp4toannexb -f h264 $c.h264; done; cat pan.h264 tilt.h264 > both.h264; ffmpeg -v error -y -fflags +genpts -r 24 -i both.h264 -c copy -bsf:v 'noise=drop=key*gt(n\,0)' mosh.h264; ffmpeg -v error -y -r 24 -i mosh.h264 -c:v libx264 -crf 18 -pix_fmt yuv420p mosh.mp4; ffmpeg -v error -y -i mosh.mp4 -vf 'select=eq(n\,96)+eq(n\,110)+eq(n\,130)+eq(n\,160),tile=2x2' -frames:v 1 mosh-sheet.png; ls mosh*
+terminal-wait-for-prompt: 180
+wait-for-text: mosh-sheet.png
+-->
+
+<!-- after: mosh -->
+<!-- tutorial-screenshot
+image-file: video/mosh-sheet.png 1
+-->
+<img class='full fit-width inspect' src='mosh-sheet.webp' alt='Vier Bilder aus mosh.mp4 nach dem Übergang: Der Bergkamm aus dem Schwenk bleibt stehen, aber über ihn ziehen die gelben Pflanzen und blauen Streifen der Felswand nach unten, und mitten darin setzt sich das Mädchen aus Flecken zusammen. Im letzten Bild ist vom Bergkamm fast nichts mehr übrig, die Felswand hat ihn übermalt.'>
+
+Der Decoder setzt die Vektoren und Reste des nächsten P-Frames auf das Bild, das er gerade hat, auch wenn es aus einer ganz anderen Szene ist:
+
+<img class='drawing d-none d-lg-block' style='width: 44em' src='gop-mosh-wide.svg' alt='Links die letzten Bilder von pan.h264, P93, P94 und P95, rechts die ersten von tilt.h264: ein gestricheltes, blasses I0, das weggeworfen wurde, dann P1, P2 und P3. Von P1 führt ein gestrichelter Pfeil über der Reihe zu I0, beschriftet so codiert, und ein lila Pfeil unter der Reihe zu P95, beschriftet so gerechnet.'>
+<img class='drawing d-lg-none' style='width: 22em' src='gop-mosh.svg' alt='Links das letzte Bild von pan.h264, P95, rechts die ersten von tilt.h264: ein gestricheltes, blasses I0, das weggeworfen wurde, dann P1 und P2. Von P1 führt ein gestrichelter Pfeil über der Reihe zu I0, beschriftet so codiert, und ein lila Pfeil unter der Reihe zu P95, beschriftet so gerechnet.'>
+
+Das sieht aus, als male die Bewegung der einen Szene über das Bild der anderen, und heißt **Datamoshing**. Ab dem Übergang bekommt der Decoder nur noch Vektoren und Reste der Fahrt die Wand hinauf. Er schiebt die Blöcke des Bergkamms damit nach unten und zählt die Reste dazu, als wäre es die Felswand. Das Mädchen erscheint aus den Resten, Stück für Stück, wo die Vorhersage nichts Passendes fand. Erst ein neues I-Frame würde aufräumen.
+<!-- /after -->
+
+<!-- stage: stufen/gop-2.py as gop.py -->

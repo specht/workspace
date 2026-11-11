@@ -24,6 +24,12 @@
       "state_hash": "cd8b1105e9708a5e500b3885820bc75782224d80d7261307765d423622b76112",
       "workspace_look": "4.140.0-ls368"
     },
+    "glance-bars.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "996995ec2dc2c06f1db44d25f4e701d99e2cf14f25c4bde267ee77e9ffe785d9",
+      "state_hash": "69b7f0b775360b18950eb45c8fdde1138e296053da8c66c5f0cc26981bdf0e0a",
+      "workspace_look": "4.140.0-ls368"
+    },
     "glance-diff.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "688e9162f021b6cebb2d8ffb03b9675979fdcd38cbd5d3210dc827d1551ba923",
@@ -52,6 +58,12 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "1c2f3d77dd92b342ee1c8e15998d16ab39efeeea4f4809db6759e542d028318a",
       "state_hash": "49f6de01844c41d2580b677cc81e83684a425f4feb965872159054469276c5ee",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "mosh-sheet.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cf89dd5c9d27fa0928372c3b7b47bfb027c2d3243d0c645ee37ab7406aee428f",
+      "state_hash": "3fd99e80b616dfedaae713383cfb1c647d46e55e79905002f7eaf6dee23016b7",
       "workspace_look": "4.140.0-ls368"
     },
     "pan-diff.webp": {
@@ -106,6 +118,12 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "51ec835809807869e16bf2c996f353c71ef6e1eeedb66ab6635376fb99eaced0",
       "state_hash": "ebc1ce9ace844fdb399b35171bd2ae1c8339b1384b967ee2e0e73e68c8b5a172",
+      "workspace_look": "4.140.0-ls368"
+    },
+    "tilt-bars.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "65f585f3c8aae77776f98105ae0364d68097afbda67c0a85470c03be4f8ce489",
+      "state_hash": "9af138adf1a317237ea22d344e6498b4f3dffe516da1766df88df50d6fd53a97",
       "workspace_look": "4.140.0-ls368"
     },
     "tilt-diff.webp": {

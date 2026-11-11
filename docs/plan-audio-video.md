@@ -140,7 +140,8 @@ link to JPEG for those who did it.
    The maintainer's idea (10 November 2026): show how many bytes each I-,
    P- and B-frame of a sequence takes, from `ffprobe -show_frames`
    (`pict_type`, `pkt_size`), as a bar chart the students draw; the I-frames
-   stand out.
+   stand out. Done, with a widget that decodes five frames step by step
+   (11 November 2026).
 7. **Artefakte und Filter.** Blocks, banding, the deblocking filter, film
    grain that AV1 removes before coding and adds again in the player.
 8. **Bitrate steuern.** Constant quality against constant rate, two passes,
@@ -305,6 +306,32 @@ seconds at 720p each.
    (alone 29.694, difference 26.294, with motion 6.127 of which vectors
    239; our own search and estimate, not the bytes of the H.264 file,
    which the page says).
+   Part 6 is written: drawings of the references (`bilder/gop.py`:
+   arrows from a frame to the frames it looks to, at the maintainer's word;
+   above the row to an earlier frame, below to a later one), of the order in
+   the file (after `decode-order`), of the B-pyramid, of a jump to frame 13
+   and of datamoshing; `frame_sizes` of one's own (ffprobe as JSON), the
+   bars of bytes per frame (glance: I 93.849, P 11.737, B 610 on average;
+   tilt: I 181.021, P 58.457, B 7.831), `decode_order` of one's own against
+   the order in the file (x264's B-pyramid: 0 4 2 1 3), the widget »Ein
+   Decoder bei der Arbeit« (`gop_stepper.js`, data from
+   `bilder/gop_steps.py` in `/video/gop-steps.json` and a sheet named by
+   its hash: 17 frames of the slope from frame 24, I B B B P B B B I … I,
+   encoded with PyAV in a throwaway container, ref=1 so that each vector
+   names its frame, open-gop, qp=23 because crf moved bytes between
+   frames; x264's vectors, our rebuilt pieces and residual). The
+   maintainer's design (11 November 2026): frames in the order shown, a
+   film strip of what the file stores (an I-frame as picture, P and B as
+   residual) with their bytes, all 17 from the start (frames sliding in
+   when decoded were tried and dropped), »Bild« buttons from finished
+   frame to finished frame, one slider for the frames and one for the steps of a frame (reference,
+   blocks sliding to their place, residual), arrows to the references
+   coming on with their step, all of it on one Full HD screen; no block
+   selection. The 17 together: uncompressed 9.792.000, as I-frames
+   1.434.644, as they are 323.428 bytes), jumping (`-g 24`, `-bf 0`, `-g 1` at crf 18: 1.287.764,
+   1.477.186, 4.685.365 against 1.037.368) and datamoshing (pan and tilt
+   without B-frames, every I-frame but the first dropped with
+   `noise=drop=key*gt(n,0)`).
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

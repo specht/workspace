@@ -15930,3 +15930,281 @@ html[data-bs-theme="dark"] .autotoc-secondary .toc-bookmark.set {
 html[data-bs-theme="dark"] .autotoc-secondary .toc-entry .toc-bookmark.preview {
     color: #fb923c;
 }
+
+/* »Ein Decoder bei der Arbeit« (gop_stepper.js, »Video komprimieren«): a
+   film strip of what the file stores, five slots wide, moving along. The frames
+   together three ways, the buttons, the jog (the stepper timeline, a dot a
+   frame), the steps of the frame as a segmented control of three that
+   keeps its size, the frame being built, the message. Frames around
+   pictures lie outside them (outline-offset). */
+.gop-stepper {
+    container-type: inline-size;
+}
+.gop-stepper .gop-strip-head {
+    margin: 0.2em 0 0.3em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-strip {
+    position: relative;
+    margin: 0 -0.25em;
+}
+/* the cover flow: every card as large as one that pops out, placed and
+   turned by gop_stepper.js; the room for the arrows above them */
+.gop-stepper .gop-track {
+    position: relative;
+    overflow: hidden;
+    padding-top: 3em;
+    height: 10em;
+}
+.gop-stepper .gop-arcs {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 200;
+    overflow: visible;
+    color: var(--widget-ink);
+    pointer-events: none;
+}
+.gop-stepper .gop-slot {
+    position: absolute;
+    left: 0;
+    top: 3em;
+    width: var(--gop-card, 12em);
+    margin: 0;
+    padding: 0 0.25em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    cursor: pointer;
+    transform-origin: 50% 40%;
+    transition: transform 0.5s ease;
+}
+.gop-stepper .gop-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.2em;
+    background: #808080;
+    outline: 1.5px solid color-mix(in srgb, var(--gop-kind) 70%, transparent);
+    outline-offset: 1px;
+    transition: filter 0.3s ease;
+}
+.gop-stepper .gop-slot:not(.popped) .gop-thumb {
+    filter: brightness(0.82);
+    box-shadow: 0 0.2em 0.6em rgba(0, 0, 0, 0.25);
+}
+.gop-stepper .gop-slot:not(.popped) figcaption,
+.gop-stepper .gop-slot:not(.popped) .gop-bar {
+    visibility: hidden;
+}
+.gop-stepper .gop-slot:hover:not(.current) .gop-thumb,
+.gop-stepper .gop-slot:focus-visible:not(.current) .gop-thumb {
+    filter: none;
+    outline: 2px solid color-mix(in srgb, var(--stepper-current) 55%, transparent);
+    outline-offset: 2px;
+}
+.gop-stepper .gop-slot:focus-visible {
+    outline: none;
+}
+.gop-stepper .gop-slot.current .gop-thumb {
+    outline: 3px solid var(--stepper-current);
+    outline-offset: 2px;
+}
+.gop-stepper .gop-slot figcaption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.2em;
+    margin-top: 0.25em;
+    font-size: 0.8em;
+    line-height: 1.2;
+}
+.gop-stepper .gop-name {
+    font-size: 1.1em;
+}
+.gop-stepper .gop-name sub {
+    font-size: 0.7em;
+}
+.gop-stepper .gop-bytes,
+.gop-stepper .gop-total-bytes {
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+.gop-stepper .gop-bar {
+    display: block;
+    height: 0.3em;
+    border-radius: 0.15em;
+    background: var(--widget-chip);
+    overflow: hidden;
+}
+.gop-stepper .gop-bar > span {
+    display: block;
+    height: 100%;
+}
+.gop-stepper .gop-totals {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    gap: 0.2em 0.7em;
+    align-items: center;
+    margin: 0.8em 0 0.8em;
+    font-size: 0.8em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-total-bar {
+    display: flex;
+    gap: 1px;
+    height: 0.6em;
+    border-radius: 0.15em;
+    background: var(--widget-chip);
+    overflow: hidden;
+}
+.gop-stepper .gop-total-bar > span {
+    flex: none;
+    min-width: 1px;
+    height: 100%;
+}
+.gop-stepper .gop-controls {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.7em;
+}
+.gop-stepper .gop-count {
+    margin-left: 0.6em;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+/* the switch for the steps in between, beside the count; the count keeps
+   its width, so that the switch stays where it is. The row
+   (stepper_keys.js) gives every part that is not a step button an auto
+   margin on the right; only the switch takes the room here */
+.gop-stepper .gop-count {
+    display: inline-block;
+    min-width: 9.5em;
+}
+.gop-stepper .gop-controls > .gop-count {
+    margin-right: 0 !important;
+}
+.gop-stepper .gop-steps-toggle {
+    margin: 0 auto 0 0.6rem !important;
+}
+.gop-stepper .gop-steps-toggle .bi {
+    margin-right: 0.3em;
+    font-size: 1.15em;
+    vertical-align: -0.12em;
+}
+.gop-stepper .gop-steps-toggle[aria-pressed='true'] .bi {
+    color: var(--stepper-current);
+}
+/* the steps of the frame: three equal parts, one wide label for an I-frame */
+.gop-stepper .gop-build {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0.5em 0 0.7em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+.gop-stepper .gop-build-step {
+    min-height: 2.2em;
+    padding: 0.3em 0.5em;
+    border: 0;
+    border-left: 1px solid var(--widget-line);
+    background: transparent;
+    color: var(--widget-ink);
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+.gop-stepper .gop-build-step:first-child {
+    border-left: 0;
+}
+.gop-stepper .gop-build-step.done {
+    background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
+}
+.gop-stepper .gop-build-step.current {
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
+}
+.gop-stepper .gop-build-step.current .gop-name {
+    color: inherit !important;
+}
+.gop-stepper .gop-build-step:focus-visible {
+    outline: 2px solid var(--stepper-current);
+    outline-offset: -3px;
+}
+.gop-stepper .gop-build-alone {
+    display: none;
+}
+.gop-stepper .gop-build.alone .gop-build-step {
+    display: none;
+}
+.gop-stepper .gop-build.alone .gop-build-alone {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.2em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-view {
+    display: block;
+    width: 100%;
+    max-width: 52em;
+    margin: 0 auto;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.25em;
+    background: #808080;
+}
+.gop-stepper .gop-say {
+    margin-top: 0.6em;
+}
+/* while the pictures load: a light picture of the first frame where the
+   frame being built will be, a bar and the share over it; about as tall
+   as the widget will be, so that nothing below it moves much */
+.gop-stepper .gop-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 52em;
+}
+.gop-stepper .gop-preview {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6em;
+    width: 100%;
+    max-width: 52em;
+    margin: 0 auto;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.25em;
+    background: #808080 center / cover no-repeat;
+}
+.gop-stepper .gop-progress {
+    width: min(60%, 24em);
+    height: 0.5em;
+    border-radius: 0.25em;
+    background: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.gop-stepper .gop-progress-bar {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--stepper-current);
+    transition: width 0.2s ease;
+}
+.gop-stepper .gop-progress-label {
+    padding: 0.15em 0.7em;
+    border-radius: 1em;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 0.9em;
+}

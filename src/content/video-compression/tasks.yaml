@@ -611,3 +611,142 @@ tasks:
       Etwa 6.100 Bytes, ein Fünftel des Bildes allein: Die Vektoren kosten
       kaum etwas, und übrig bleiben vor allem die Beine des Mädchens und der
       Hund.
+
+  - id: frame-sizes
+    title: Die Größe jedes Bildes
+    prompt: |
+      Schreib in `video/gop.py` die Funktion `frame_sizes(path)`: eine Liste
+      mit einem Paar `(Art, Bytes)` für jedes Bild der Datei, die Bytes als
+      ganze Zahl. Die Prüfung macht mit ffmpeg ein kleines Video aus acht
+      Bildern, I P P P I P P P, und liest es mit deiner Funktion.
+    check:
+      type: python
+      file: video/gop.py
+      cases:
+        - call: "subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=64x48:rate=8:duration=1', '-c:v', 'libx264', '-x264-params', 'keyint=4:min-keyint=4:bframes=0:scenecut=0', '/tmp/frame-sizes-check.mp4'], check=True); [k for k, _ in frame_sizes('/tmp/frame-sizes-check.mp4')]"
+          expect: "['I', 'P', 'P', 'P', 'I', 'P', 'P', 'P']"
+          say: Die Arten der acht Bilder sind I P P P I P P P. Steht im Paar zuerst die Art, `frame['pict_type']`, dann die Bytes?
+        - call: "subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=64x48:rate=8:duration=1', '-c:v', 'libx264', '-x264-params', 'keyint=4:min-keyint=4:bframes=0:scenecut=0', '/tmp/frame-sizes-check.mp4'], check=True); all(isinstance(s, int) and s > 0 for _, s in frame_sizes('/tmp/frame-sizes-check.mp4'))"
+          expect: 'True'
+          say: Die Bytes stehen in ffprobes JSON als Text. Macht `int(...)` eine Zahl daraus?
+    solution: |
+      ```python
+      def frame_sizes(path):
+          command = ['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'frame=pict_type,pkt_size',
+                     '-of', 'json', path]
+          data = json.loads(subprocess.run(command, capture_output=True, text=True, check=True).stdout)
+          return [(frame['pict_type'], int(frame['pkt_size'])) for frame in data['frames']]
+      ```
+
+  - id: biggest
+    title: Welche Bilder sind groß?
+    prediction: true
+    prompt: |
+      Was meinst du: Welche Bilder eines Ausschnitts brauchen die meisten
+      Bytes, welche die wenigsten?
+    check:
+      type: choice
+      options:
+        - I-Frames die meisten, B-Frames die wenigsten.
+        - P-Frames die meisten, I-Frames die wenigsten.
+        - B-Frames die meisten, weil sie zwei Bilder brauchen.
+        - Alle etwa gleich viele.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein I-Frame hat keine Vorlage, jeder Block steht für sich. Wie viel kostet ein Bild allein, verglichen mit einem Unterschied?
+      - when: { picked: 2 }
+        say: Ein B-Frame braucht zwei Bilder als Vorlage, speichert aber selbst nur Vektoren und einen kleinen Rest.
+      - when: { picked: 3 }
+        say: "Denk an »Von Bild zu Bild«: Wie viel kostete der Blick als Bild allein, wie viel als Unterschied?"
+    solution: |
+      I-Frames die meisten, sie stehen für sich allein; B-Frames die
+      wenigsten, sie dürfen aus zwei Bildern vorhersagen und werden gröber
+      gerundet.
+
+  - id: decode-order
+    title: Die Reihenfolge in der Datei
+    prompt: |
+      Schreib in `video/gop.py` die Funktion `decode_order(kinds)`: die
+      Nummern der Bilder in der Reihenfolge, in der der Decoder sie braucht,
+      jedes I- und P-Frame vor den B-Frames, die vor ihm gezeigt werden.
+    check:
+      type: python
+      file: video/gop.py
+      cases:
+        - call: decode_order('IBBBP')
+          expect: '[0, 4, 1, 2, 3]'
+          say: Die B-Frames 1, 2 und 3 brauchen Bild 4, also kommt es vor ihnen, und jedes Bild kommt genau einmal vor.
+        - call: decode_order('IPPP')
+          expect: '[0, 1, 2, 3]'
+          say: Ohne B-Frames bleibt die Reihenfolge, wie sie ist.
+        - call: decode_order('IBBPBBP')
+          expect: '[0, 3, 1, 2, 6, 4, 5]'
+          say: Nach jedem I- oder P-Frame kommen die B-Frames, die vor ihm gezeigt werden, und keine anderen. Leert deine Funktion die wartende Liste danach?
+        - call: decode_order('IPBB')
+          expect: '[0, 1, 2, 3]'
+          say: B-Frames am Ende ohne ein Bild danach kommen zuletzt. Hängt deine Funktion die wartenden am Schluss an?
+    solution: |
+      ```python
+      def decode_order(kinds):
+          order = []
+          waiting = []
+          for k, kind in enumerate(kinds):
+              if kind == 'B':
+                  waiting.append(k)
+              else:
+                  order.append(k)
+                  order += waiting
+                  waiting = []
+          return order + waiting
+      ```
+
+  - id: intra-size
+    title: Nur I-Frames
+    prediction: true
+    prompt: |
+      `slope-intra.mp4` besteht nur aus I-Frames, bei derselben Qualität wie
+      `slope-default.mp4`. Wie groß wird es?
+    check:
+      type: choice
+      options:
+        - Etwa gleich groß.
+        - Etwa doppelt so groß.
+        - Mehr als viermal so groß.
+        - Kleiner, weil I-Frames einfacher sind.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: In `slope-default.mp4` ist ein Bild von 96 ein I-Frame. Wie groß ist eines davon, verglichen mit einem P-Frame?
+      - when: { picked: 1 }
+        say: Ein I-Frame von `slope.mp4` braucht fast dreimal so viel wie ein P-Frame und über zwanzigmal so viel wie ein B-Frame.
+      - when: { picked: 3 }
+        say: Einfacher zu rechnen ja, aber jedes I-Frame speichert das ganze Bild, nicht nur, was sich geändert hat.
+    solution: |
+      Mehr als viermal so groß, 4,7 statt 1,0 MB: Jedes Bild speichert alles,
+      nichts kommt aus dem vorigen.
+
+  - id: mosh
+    title: Ein fehlendes I-Frame
+    prediction: true
+    prompt: |
+      Beim Übergang vom Schwenk zur Fahrt die Wand hinauf fehlt das I-Frame
+      der Fahrt. Was zeigt `mosh.mp4` danach?
+    check:
+      type: choice
+      options:
+        - Die Fahrt die Wand hinauf wie im Original.
+        - Ein schwarzes Bild, bis wieder ein I-Frame kommt.
+        - Den Bergkamm, über den die Bewegung der Felswand malt.
+        - Nichts, das Video bricht ab.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die P-Frames der Fahrt speichern nur Vektoren und Reste. Woher soll der Decoder das Bild der Felswand haben?
+      - when: { picked: 1 }
+        say: Der Decoder hat noch ein Bild, das letzte des Schwenks. Was macht er mit den Vektoren des nächsten P-Frames?
+      - when: { picked: 3 }
+        say: Die Pakete der P-Frames sind alle noch da, nur das I-Frame fehlt.
+    solution: |
+      Den Bergkamm: Der Decoder setzt die Vektoren und Reste der Fahrt auf das
+      letzte Bild des Schwenks, und die Felswand malt über ihn.
