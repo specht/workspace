@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein kurzer Klang als Welle und dahinter seine Echos, jedes etwas leiser als das vorige."
 kind: labor
 language: Python
-duration: 8 Doppelstunden
+duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Faltung), Vertiefung Technische Informatik (digitale Signalverarbeitung)"
 topics: [codierung, listen]
 requires: [audio-compression]
@@ -21,10 +21,14 @@ reference: [bits-und-bytes]
 # Audioeffekte
 
 <p class='abstract'>
-Ein Equalizer, ein Echo, Hall, ein Chorus, ein Compressor, eine Stimme in einer anderen Tonhöhe und ein Roboter, der singt: Du baust die Effekte eines Tonstudios in Python mit numpy und hörst bei jedem im Widget, was seine Regler tun.
+Dezibel und ein Compressor, ein Equalizer, Echo, Chorus und Hall, eine Stimme in einer anderen Tonhöhe, Autotune und ein Roboter, der spricht: Du baust die Effekte eines Tonstudios in Python mit numpy und hörst bei jedem im Widget, was seine Regler tun.
 </p>
 
-## Einrichten
+## Lautstärke
+
+Der einfachste Effekt macht einen Klang lauter oder leiser, alles auf einmal. Ein Compressor macht nur die lauten Stellen leiser. Beide rechnen in Dezibel.
+
+### Einrichten
 
 Leg einen Ordner an und hol die Klänge aus »Audio komprimieren«: die Musik und die Stimme.
 
@@ -73,16 +77,16 @@ terminal-wait-for-prompt: 30
 wait-for-text: stimme.wav
 -->
 
-## Lautstärke in Dezibel
+### Dezibel
 
-Wie laut ein Klang ist, gibt man in **Dezibel** an, kurz dB. Dezibel zählen nicht, wie viel lauter etwas wird, sondern womit es multipliziert wird: Jedes Sample wird mit dem Faktor \\(10^{dB / 20}\\) multipliziert. +20 dB ist also mal 10, −20 dB mal ein Zehntel, und etwa −6 dB halbiert jede Schwingung. Das passt zum Ohr: Es hört nicht, um wie viel ein Klang lauter wird, sondern um welchen Faktor. Zwischen dem leisesten Klang, den man gerade noch hört, und einem, der wehtut, liegen etwa 120 dB: ein Faktor von einer Million in der Höhe der Schwingung, in Dezibel eine handliche Zahl.
+Wie laut ein Klang ist, gibt man in **Dezibel** an, kurz dB. Dezibel zählen nicht, wie viel lauter etwas wird, sondern womit es multipliziert wird: Jedes Sample wird mit dem Faktor \\(10^{dB / 20}\\) multipliziert. +20 dB ist also mal 10, −20 dB mal ein Zehntel. Das passt zum Ohr: Es hört nicht, um wie viel ein Klang lauter wird, sondern um welchen Faktor. Zwischen dem leisesten Klang, den man gerade noch hört, und einem, der wehtut, liegen etwa 120 dB: ein Faktor von einer Million in der Höhe der Schwingung, in Dezibel eine handliche Zahl.
 
 Warum 20? Dezibel waren zuerst für die Leistung gedacht, und die wächst mit dem Quadrat der Schwingung: +10 dB sind die zehnfache Leistung, und dafür reicht eine Schwingung, die etwa 3,16-mal so hoch ist, die Wurzel aus 10. Für die Höhe der Schwingung teilt man darum durch 20 statt durch 10.
 
 <div class='effect-widget' data-effect='gain'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Stell −6 dB ein und schalt <strong>Effekt an</strong> aus und ein: Klingt die Musik halb so laut? Dann −20 dB und −40 dB: Wie viel hörst du noch? Viele Menschen hören erst etwa 10 dB weniger als halb so laut. Zum Schluss Rock mit +12 dB: Was hörst du, und wie sieht die Welle unten aus?
+<strong>Ausprobieren:</strong> Stell −10 dB ein und schalt <strong>Effekt an</strong> aus und ein: Klingt die Musik halb so laut? So hören es viele Menschen. Dann −20 dB und −40 dB: Wie viel hörst du noch? Zum Schluss Rock mit +12 dB: Was hörst du, und wie sieht die Welle unten aus?
 </div>
 
 _task(db-half)
@@ -139,9 +143,121 @@ wait-for-text: +6 dB
 
 Hör dir die drei Dateien an. Bei +6 dB ist die lauteste Stelle über 1: Eine WAV-Datei mit 16 Bit kann das nicht speichern, und `write_wav` schneidet ab, was darüber hinausgeht. Die Schwingung bekommt flache Spitzen, und das klingt kratzig: Das heißt **Übersteuern**, englisch Clipping.
 
-## Equalizer
+### Compressor
 
-In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Frequenzen kennt, kann sie auch verändern. Ein **Equalizer**, kurz EQ, macht einen Bereich von Frequenzen lauter oder leiser: der Bassregler am Lautsprecher, die Klangregler im Musikprogramm, im Tonstudio Dutzende davon. Ein Regler des EQ hat drei Einstellungen: um welche Frequenz es geht, wie breit der Bereich ist und wie viele Dezibel dazukommen oder wegfallen. Die Breite zählt man in Oktaven, denn das Ohr hört Frequenzen auf einer logarithmischen Skala: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz.
+Im Radio klingt ein Lied gleichmäßig laut, auch wo jemand leise singt, und ein Podcast ist in der Bahn gut zu verstehen, ohne dass ein Lachen in den Ohren schmerzt. Dahinter steckt ein **Compressor**, wie man ihn auch im deutschen Tonstudio nennt: Er macht laute Stellen leiser und lässt leise, wie sie sind. Was über dem **Threshold** liegt, der Schwelle, staucht er nach der **Ratio**: Bei 2 : 1 kommt von 10 dB über dem Threshold nur die Hälfte heraus, 5 dB. Danach ist alles höchstens so laut wie vorher, und man kann es als Ganzes wieder lauter machen, mit dem **Make-up Gain**. Jetzt sind die leisen Stellen lauter als vorher, die lauten aber nicht.
+
+Wie laut der Klang gerade ist, sagt ein einzelnes Sample nicht, denn eine Schwingung geht ständig durch null. Der Compressor folgt deshalb dem Betrag der Samples mit Verzögerung, dem **Pegel**:
+
+$$p\_n = c \cdot p\_{n-1} + (1 - c) \cdot |x\_n|$$
+
+\\(c\\) liegt knapp unter 1: Je näher an 1, desto langsamer folgt der Pegel. Wird der Klang lauter, nimmt der Compressor ein \\(c\\) für die Zeit **Attack**, wird er leiser, eins für die Zeit **Release**.
+
+<div class='effect-widget' data-effect='compressor'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Hör dir das Schlagzeug bei 20 : 1 an und zieh den Threshold langsam von 0 dB herunter bis −40 dB. Achte auf den Anschlag jeder Snare, den ersten Moment des Schlags: Wann wird er stumpf? Stell dann die Attack auf 30 ms: Was kommt zurück, und warum? Schau dabei rechts im Bild, wie viele dB der Compressor wegnimmt, und auf die Welle darunter. Nimm dann das Funk-Schlagzeug, mit 20 dB Make-up Gain: Was wird aus den leisen Schlägen auf der Snare zwischen den lauten?
+</div>
+
+_task(compressor-level)
+
+### Ein Compressor in Python
+
+Lege `compressor.py` an:
+
+<!-- page-code: own -->
+```python
+import math
+
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def gain_db(level, threshold, ratio):
+    # hier: wie viele dB der Compressor bei diesem Pegel dazugibt (0 oder weniger)
+
+
+def compress(x, rate, threshold, ratio, attack, release, makeup):
+    a = math.exp(-1 / (attack * rate))
+    r = math.exp(-1 / (release * rate))
+    level = 0
+    y = np.zeros_like(x)
+    for n, v in enumerate(np.abs(x).tolist()):
+        c = a if v > level else r
+        level = c * level + (1 - c) * v
+        db = 20 * math.log10(max(level, 1e-9))
+        y[n] = x[n] * 10 ** ((gain_db(db, threshold, ratio) + makeup) / 20)
+    return y
+
+
+def save(path, y, rate):
+    peak = np.abs(y).max()
+    write_wav(path, y / max(1, peak), rate)
+    print(f'{path}: lauteste Stelle {peak:.2f}')
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('stimme.wav')
+    save('stimme-komprimiert.wav', compress(x, rate, -30, 4, 0.005, 0.1, 15), rate)
+```
+
+`compress` geht einmal über alle Samples, denn jeder Pegel braucht den vorigen. `math.exp` macht aus der Zeit `attack` in Sekunden das \\(c\\): Nach dieser Zeit ist der Pegel knapp zwei Drittel des Wegs zum neuen Betrag gegangen. Der Pegel in Dezibel geht an `gain_db`, und das Sample wird mit dem Faktor multipliziert, der zu `gain_db` und dem Make-up Gain `makeup` gehört. `save` macht leiser, was lauter als 1 geworden ist, statt es abzuschneiden wie `write_wav`.
+
+<div class='hint own' data-check='gain-db'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>gain_db(level, threshold, ratio)</code>: Liegt der Pegel <code>level</code> in dB höchstens beim Threshold <code>threshold</code>, gibt der Compressor 0 dB dazu. Liegt er darüber, gib zurück, um wie viele dB der Compressor ihn leiser macht, als negative Zahl.
+</div>
+
+<!-- hint -->
+Liegt der Pegel 12 dB über dem Threshold und die Ratio ist 4, bleiben 12 / 4 = 3 dB über dem Threshold. Der Compressor nimmt also 9 dB weg: `gain_db` gibt −9 zurück.
+<!-- /hint -->
+<!-- hint -->
+Von dem, was über dem Threshold liegt, `level - threshold`, bleibt der Teil `1 / ratio`; weggenommen wird der Teil `1 - 1 / ratio`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def gain_db(level, threshold, ratio):
+    if level <= threshold:
+        return 0
+    return (threshold - level) * (1 - 1 / ratio)
+```
+<!-- /solution -->
+
+_task(gain-db)
+
+```bash
+python3 compressor.py
+```
+
+<!-- tutorial-step
+write-file: effects/compressor.py <- file:stufen/compressor.py
+check-task: gain-db
+terminal-run: cd /workspace/effects && python3 compressor.py
+terminal-wait-for-prompt: 120
+wait-for-text: stimme-komprimiert.wav
+-->
+
+Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der komprimierten Fassung sind die leisen Silben etwa 5 dB lauter geworden, die lauten etwa 1 dB leiser. Lagen zwischen ihnen vorher fast 20 dB, sind es jetzt etwa 13. Ein Compressor macht aber alles Leise lauter, auch ein Rauschen oder ein Atmen: Er kann nicht wissen, welche leisen Klänge man hören will.
+
+<div class='history' id='history-loudness-war'>
+<img src='geschichte/loudness-war.webp' alt='Metallica 2008 auf der Bühne der O2 Arena in London: Lars Ulrich und James Hetfield nebeneinander, die Arme umeinander gelegt'>
+<p><strong>Der Loudness War</strong>, 2008. Lange wurde Musik immer lauter aufgenommen. Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio. Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt. Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten. Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=K6AJuRK2NE4'>»The Day That Never Comes«</a> aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen, wenn die ganze Band einsetzt.</p>
+<p class='history-credit'>Lars Ulrich und James Hetfield von Metallica. Foto: Kreepin Deth, 2008, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Metallica_at_The_O2_Arena_London_2008.jpg'>Wikimedia Commons</a>)</p>
+</div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell im Widget Rock ein, die Attack auf 1 ms, die Release auf 20 ms und den Threshold tief. Jetzt klingt der Bass verzerrt: Der Pegel folgt so schnell, dass der Compressor die einzelnen Schwingungen des Basses leiser und lauter macht und ihre Form verändert. Wie lang muss die Release sein, bis die Verzerrung verschwindet?
+</div>
+
+## Frequenzen
+
+In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Frequenzen kennt, kann sie auch verändern: tiefe lauter, hohe leiser, oder nur einen Bereich durchlassen.
+
+### Equalizer
+
+Ein **Equalizer**, kurz EQ, macht einen Bereich von Frequenzen lauter oder leiser: der Bassregler am Lautsprecher, die Klangregler im Musikprogramm, im Tonstudio Dutzende davon. Ein Regler des EQ hat drei Einstellungen: um welche Frequenz es geht, wie breit der Bereich ist und wie viele Dezibel dazukommen oder wegfallen. Die Breite zählt man in Oktaven, denn das Ohr hört Frequenzen auf einer logarithmischen Skala: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz.
 
 <div class='effect-widget' data-effect='eq'></div>
 
@@ -156,6 +272,8 @@ In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Fr
 <p class='history-credit'>Daft Punk. Foto: Sony Music Entertainment, 2013, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Daft_Punk_in_2013_2-_centered.jpg'>Wikimedia Commons</a>)</p>
 </div>
 
+### Der Drop
+
 In elektronischer Tanzmusik hilft ein Filter beim **Drop**: Vor dem Moment, in dem das ganze Lied mit voller Kraft einsetzt, nimmt ein **Hochpass** über einige Takte nach und nach den Bass heraus, und mit dem Drop kommt er auf einen Schlag zurück. Weil der Bass eine Weile fehlte, wirkt er danach umso gewaltiger ([Icon Collective](https://www.iconcollective.edu/edm-drop-tips) beschreibt es für Produzenten). Im Widget kannst du die **Form** auf Hochpass stellen und die Frequenz langsam nach oben schieben: Was bleibt von der Musik, wenn der Bass fehlt?
 
 <div class='history' id='history-drop'>
@@ -163,16 +281,18 @@ In elektronischer Tanzmusik hilft ein Filter beim **Drop**: Vor dem Moment, in d
 <p>Hör dir <a href='https://www.youtube.com/watch?v=gCYcHz2k5x0'>das Video</a> auf YouTube an: Wann wird die Musik dünner, und wie wirkt der Drop danach?</p>
 </div>
 
-Ein EQ rechnet in Dezibel, aber was er mit dem Klang tut, ist eine Multiplikation: Jede Frequenz wird mit einem Faktor multipliziert.
+### Ein Equalizer in Python
 
-_task(eq-factor)
-
-<!-- after: eq-factor -->
-Aus \\(G\\) Dezibel wird der Faktor \\(10^{G / 20}\\) für die Höhe der Schwingung, 20, nicht 10 wie bei der Energie, denn die Energie ist das Quadrat der Höhe. Für den Regler im Widget ist die Verstärkung eine Glocke über den Oktaven: In der Mitte wirkt sie ganz, `width` Oktaven daneben noch zur Hälfte, weiter weg immer weniger. Ist `d` der Abstand von der Mitte in Oktaven, gibt der Regler
+Ein EQ rechnet in Dezibel, und aus den Dezibeln wird wie bei `gain` ein Faktor, mit dem jede Frequenz multipliziert wird. Für den Regler im Widget ist die Verstärkung eine Glocke über den Oktaven: In der Mitte wirkt sie ganz, `width` Oktaven daneben noch zur Hälfte, weiter weg immer weniger. Ist `d` der Abstand von der Mitte in Oktaven, gibt der Regler
 
 $$G(d) = G \cdot 2^{-(d / \text{width})^2}$$
 
-Dezibel dazu. Lege `eq.py` an:
+Dezibel dazu.
+
+_task(eq-octave)
+
+<!-- after: eq-octave -->
+Lege `eq.py` an:
 
 <!-- page-code: own -->
 ```python
@@ -182,7 +302,7 @@ from wav import read_wav, write_wav
 
 
 def bell(freqs, centre, width, gain):
-    # hier: für jede Frequenz der Faktor, mit dem das EQ ihre Schwingung multipliziert
+    # hier: für jede Frequenz der Faktor, mit dem der EQ ihre Schwingung multipliziert
 
 
 def equalize(x, rate, centre, width, gain):
@@ -203,7 +323,7 @@ if __name__ == '__main__':
     save('musik-ohne-hihat.wav', equalize(x, rate, 10000, 2, -30), rate)
 ```
 
-`equalize` macht mit der FFT von numpy, was du in »Audio komprimieren« selbst gebaut hast: `np.fft.rfft` zerlegt die ganzen acht Sekunden auf einmal in ihre Frequenzen, nur die erste Hälfte, bis zur halben Abtastrate, und `np.fft.rfftfreq` gibt die Frequenz zu jeder Zahl. Jede Zahl wird mit dem Faktor ihrer Frequenz multipliziert, und `np.fft.irfft` macht daraus wieder Samples. `save` macht leiser, was lauter als 1 geworden ist, statt es abzuschneiden.
+`equalize` macht mit der FFT von numpy, was du in »Audio komprimieren« selbst gebaut hast: `np.fft.rfft` zerlegt die ganzen acht Sekunden auf einmal in ihre Frequenzen, nur die erste Hälfte, bis zur halben Abtastrate, und `np.fft.rfftfreq` gibt die Frequenz zu jeder Zahl. Jede Zahl wird mit dem Faktor ihrer Frequenz multipliziert, und `np.fft.irfft` macht daraus wieder Samples. `save` kennst du aus dem Compressor.
 
 <div class='hint own' data-check='eq-bell'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>bell(freqs, centre, width, gain)</code>: <code>freqs</code> ist ein numpy-Array von Frequenzen in Hz, <code>centre</code> die Mitte in Hz, <code>width</code> die Breite in Oktaven und <code>gain</code> die Verstärkung in dB. Gib für jede Frequenz den Faktor für die Schwingung zurück.
@@ -256,7 +376,11 @@ Hör dir beide Dateien an und vergleich sie mit `musik.wav`. Beim Bass wäre die
 <strong>Ausprobieren:</strong> Mach die Stimme, <code>stimme.wav</code>, verständlicher oder unverständlicher: Gib zwischen 2.000 und 4.000 Hz einige dB dazu oder nimm dort viel weg. Woran hörst du den Unterschied zuerst? Bau dann wie im Widget einen Bandpass: Gib <code>bell</code> einen fünften Parameter <code>rest=0</code>, die Dezibel weit weg von der Mitte, und rechne <code>db = rest + (gain - rest) * 2 ** (-(octaves / width) ** 2)</code>. Mit <code>rest=-24</code> und <code>gain=0</code> bleibt nur der Bereich um <code>centre</code>.
 </div>
 
-## Echo
+## Verzögerte Kopien
+
+Ein Echo, ein Chorus und Hall zählen zum Klang Kopien von sich selbst dazu, die später kommen: eine Viertelsekunde später, einige Millisekunden oder so viele, dass man sie nicht mehr einzeln hört.
+
+### Echo
 
 Ruft man in den Bergen, kommt der Ruf von einer Felswand zurück, leiser und etwas später. Ein **Echo** im Tonstudio macht dasselbe: Es zählt zum Klang eine Kopie dazu, die um eine feste Zeit verzögert ist. Kommt auch jedes Echo selbst wieder als Echo zurück, immer leiser, heißt das **Rückkopplung**. Mit der Verzögerung \\(D\\) in Samples und der Rückkopplung \\(g\\) ist
 
@@ -267,7 +391,7 @@ Jedes Sample bekommt das, was \\(D\\) Samples vorher herauskam, \\(g\\)-mal so h
 <div class='effect-widget' data-effect='echo'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Stimme mit 0,3 Sekunden Verzögerung an und dreh die Rückkopplung langsam hoch: Wie viele Echos hörst du, bevor sie verschwinden? Mach die Verzögerung dann immer kürzer, bis unter 0,1 Sekunden: Wann hörst du keine einzelnen Echos mehr, sondern einen Raum? Probier dasselbe mit dem Schlagzeug.
+<strong>Ausprobieren:</strong> Hör dir den Gesang mit 0,3 Sekunden Verzögerung an und dreh die Rückkopplung langsam hoch: Wie viele Echos hörst du, bevor sie verschwinden? Mach die Verzögerung dann immer kürzer, bis unter 0,1 Sekunden: Wann hörst du keine einzelnen Echos mehr, sondern einen Raum? Probier dasselbe mit dem Schlagzeug.
 </div>
 
 _task(echo-height)
@@ -355,17 +479,17 @@ Lange bevor Rechner Klänge bearbeiteten, machte man Echos mit Tonband: Ein Tonk
 <strong>Ausprobieren:</strong> Setz die Rückkopplung auf 1 oder höher. Was passiert mit der lautesten Stelle, und warum?
 </div>
 
-## Chorus
+### Chorus
 
 Singen zwei Menschen dieselbe Melodie, klingt es nie wie einer, der lauter singt: Der eine ist immer ein klein wenig früher oder später, und das ändert sich ständig. Ein **Chorus** macht das mit einem einzigen Klang nach. Er zählt eine Kopie dazu, die etwa 15 Millisekunden hinterherläuft, und diese Verzögerung wandert langsam hin und her: um die **Tiefe**, mit dem **Tempo** einer Sinusschwingung. Zu kurz für ein Echo, das man hört; was man hört, ist ein Klang, der breiter wird.
 
 <div class='effect-widget' data-effect='chorus'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Melodie mit einer Tiefe von 0 an: Wie klingt sie, nur mit einer Kopie 15 ms dahinter? Dreh dann die Tiefe langsam auf und hör, wann die Melodie zu schweben beginnt. Mit einem hohen Tempo und viel Tiefe singt sie falsch: Woran hörst du das?
+<strong>Ausprobieren:</strong> Hör dir den Gesang mit einer Tiefe von 0 an: Wie klingt er, nur mit einer Kopie 15 ms dahinter? Dreh dann die Tiefe langsam auf und hör, wann er zu schweben beginnt. Mit einem hohen Tempo und viel Tiefe singt er falsch: Woran hörst du das? Probier dasselbe mit den Gitarren.
 </div>
 
-Die Verzögerung ist fast nie eine ganze Zahl von Samples: Bei 44.100 Samples in der Sekunde sind 15,3 Millisekunden 674,73 Samples. Die Kopie muss also zwischen zwei Samples gelesen werden, so wie H.264 einen Block um einen Viertelpixel verschiebt: Zwischen zwei Samples liegt eine Gerade, und auf ihr liest man ab. An der Stelle 2,25 sind das drei Viertel von Sample 2 und ein Viertel von Sample 3.
+Die Verzögerung ist fast nie eine ganze Zahl von Samples: Bei 44.100 Samples in der Sekunde sind 15,3 Millisekunden 674,73 Samples. Die Kopie muss also zwischen zwei Samples gelesen werden: Zwischen zwei Samples denkt man sich eine Gerade und liest auf ihr ab. An der Stelle 2,25 sind das drei Viertel von Sample 2 und ein Viertel von Sample 3.
 
 Lege `chorus.py` an:
 
@@ -443,10 +567,10 @@ wait-for-text: stimme-chorus.wav
 Hör dir `stimme-chorus.wav` an: eine Stimme, die klingt wie zwei, die nicht ganz zusammen sprechen.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere in <code>chorus</code> die 15 Millisekunden, <code>0.015</code>, in eine Millisekunde, <code>0.001</code>, und gib mehr Mischung. Jetzt rauscht die Stimme wie ein startendes Flugzeug: Das ist ein **Flanger**. Er heißt so, weil man ihn früher mit zwei Tonbändern machte und eines am Rand der Spule, englisch *flange*, mit dem Finger bremste.
+<strong>Ausprobieren:</strong> Ändere in <code>chorus</code> die 15 Millisekunden, <code>0.015</code>, in eine Millisekunde, <code>0.001</code>, und gib mehr Mischung. Jetzt rauscht die Stimme wie ein startendes Flugzeug: Das ist ein <strong>Flanger</strong>. Er heißt so, weil man ihn früher mit zwei Tonbändern machte und eines am Rand der Spule, englisch <em>flange</em>, mit dem Finger bremste.
 </div>
 
-## Hall
+### Hall
 
 In einem Raum kommt ein Klang nicht nur einmal zurück, sondern von jeder Wand, von der Decke und vom Boden, und jedes Echo wird wieder zurückgeworfen. Nach kurzer Zeit sind es so viele, dass man keines mehr einzeln hört, nur noch ein Nachklingen, das leiser wird: **Hall**. Wie lange er dauert, misst man als **Nachhallzeit**: die Zeit, bis er um 60 dB leiser ist, ein Tausendstel der Höhe. Ein Wohnzimmer hat etwa eine halbe Sekunde, eine große Kirche mehrere.
 
@@ -549,120 +673,18 @@ Hör dir `stimme-raum.wav` und `stimme-kirche.wav` an. In der Kirche verschwimme
 <strong>Ausprobieren:</strong> Lass die beiden Allpässe weg: Wie klingt der Hall nur aus den vier Echos? Und was passiert mit nur einem Echo statt vier?
 </div>
 
-## Compressor
+## Tonhöhe und Stimme
 
-Im Radio klingt ein Lied gleichmäßig laut, auch wo jemand leise singt, und ein Podcast ist in der Bahn gut zu verstehen, ohne dass ein Lachen in den Ohren schmerzt. Dahinter steckt ein **Compressor**, wie man ihn auch im deutschen Tonstudio nennt: Er macht laute Stellen leiser und lässt leise, wie sie sind. Was über dem **Threshold** liegt, der Schwelle, staucht er nach der **Ratio**: Bei 4 : 1 kommt von 12 dB über dem Threshold nur ein Viertel heraus, 3 dB. Danach ist alles höchstens so laut wie vorher, und man kann es als Ganzes wieder lauter machen, mit dem **Make-up Gain**. Jetzt sind die leisen Stellen lauter als vorher, die lauten aber nicht.
+Eine Stimme höher oder tiefer, ohne dass sie schneller wird, eine Stimme auf den richtigen Ton gerückt und eine Stimme, die auf einem Akkord spricht: Dafür muss ein Effekt wissen, wie hoch ein Klang gerade ist, oder ihn in Bänder zerlegen.
 
-Wie laut der Klang gerade ist, sagt ein einzelnes Sample nicht, denn eine Schwingung geht ständig durch null. Der Compressor folgt deshalb dem Betrag der Samples mit Verzögerung, dem **Pegel**:
+### Pitch Shifting
 
-$$p\_n = c \cdot p\_{n-1} + (1 - c) \cdot |x\_n|$$
-
-\\(c\\) liegt knapp unter 1: Je näher an 1, desto langsamer folgt der Pegel. Wird der Klang lauter, nimmt der Compressor ein \\(c\\) für die Zeit **Attack**, wird er leiser, eins für die Zeit **Release**.
-
-<div class='effect-widget' data-effect='compressor'></div>
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir das Schlagzeug bei 20 : 1 an und zieh den Threshold langsam von 0 dB herunter bis −40 dB. Achte auf den Anschlag jeder Snare, den ersten Moment des Schlags: Wann wird er stumpf? Stell dann die Attack auf 30 ms: Was kommt zurück, und warum? Schau dabei rechts im Bild, wie viele dB der Compressor wegnimmt, und auf die Welle darunter. Nimm dann das Funk-Schlagzeug, mit 20 dB Make-up Gain: Was wird aus den leisen Schlägen auf der Snare zwischen den lauten?
-</div>
-
-_task(compressor-level)
-
-Lege `compressor.py` an:
-
-<!-- page-code: own -->
-```python
-import math
-
-import numpy as np
-
-from wav import read_wav, write_wav
-
-
-def gain_db(level, threshold, ratio):
-    # hier: wie viele dB der Compressor bei diesem Pegel dazugibt (0 oder weniger)
-
-
-def compress(x, rate, threshold, ratio, attack, release, makeup):
-    a = math.exp(-1 / (attack * rate))
-    r = math.exp(-1 / (release * rate))
-    level = 0
-    y = np.zeros_like(x)
-    for n, v in enumerate(np.abs(x).tolist()):
-        c = a if v > level else r
-        level = c * level + (1 - c) * v
-        db = 20 * math.log10(max(level, 1e-9))
-        y[n] = x[n] * 10 ** ((gain_db(db, threshold, ratio) + makeup) / 20)
-    return y
-
-
-def save(path, y, rate):
-    peak = np.abs(y).max()
-    write_wav(path, y / max(1, peak), rate)
-    print(f'{path}: lauteste Stelle {peak:.2f}')
-
-
-if __name__ == '__main__':
-    x, rate = read_wav('stimme.wav')
-    save('stimme-komprimiert.wav', compress(x, rate, -30, 4, 0.005, 0.1, 15), rate)
-```
-
-`compress` geht einmal über alle Samples, denn jeder Pegel braucht den vorigen. `math.exp` macht aus der Zeit `attack` in Sekunden das \\(c\\): Nach dieser Zeit ist der Pegel knapp zwei Drittel des Wegs zum neuen Betrag gegangen. Der Pegel in Dezibel geht an `gain_db`, und das Sample wird mit dem Faktor multipliziert, der zu `gain_db` und dem Make-up Gain `makeup` gehört.
-
-<div class='hint own' data-check='gain-db'>
-<strong>Jetzt bist du dran:</strong> Schreib <code>gain_db(level, threshold, ratio)</code>: Liegt der Pegel <code>level</code> in dB höchstens beim Threshold <code>threshold</code>, gibt der Compressor 0 dB dazu. Liegt er darüber, gib zurück, um wie viele dB der Compressor ihn leiser macht, als negative Zahl.
-</div>
-
-<!-- hint -->
-Liegt der Pegel 12 dB über dem Threshold und die Ratio ist 4, bleiben 12 / 4 = 3 dB über dem Threshold. Der Compressor nimmt also 9 dB weg: `gain_db` gibt −9 zurück.
-<!-- /hint -->
-<!-- hint -->
-Von dem, was über dem Threshold liegt, `level - threshold`, bleibt der Teil `1 / ratio`; weggenommen wird der Teil `1 - 1 / ratio`.
-<!-- /hint -->
-
-<!-- solution -->
-```python
-def gain_db(level, threshold, ratio):
-    if level <= threshold:
-        return 0
-    return (threshold - level) * (1 - 1 / ratio)
-```
-<!-- /solution -->
-
-_task(gain-db)
-
-```bash
-python3 compressor.py
-```
-
-<!-- tutorial-step
-write-file: effects/compressor.py <- file:stufen/compressor.py
-check-task: gain-db
-terminal-run: cd /workspace/effects && python3 compressor.py
-terminal-wait-for-prompt: 120
-wait-for-text: stimme-komprimiert.wav
--->
-
-Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der komprimierten Fassung sind die leisen Silben etwa 5 dB lauter geworden, die lauten etwa 1 dB leiser. Lagen zwischen ihnen vorher fast 20 dB, sind es jetzt etwa 13. Ein Compressor macht aber alles Leise lauter, auch ein Rauschen oder ein Atmen: Er kann nicht wissen, welche leisen Klänge man hören will.
-
-<div class='history' id='history-loudness-war'>
-<img src='geschichte/loudness-war.webp' alt='Metallica 2008 auf der Bühne der O2 Arena in London: Lars Ulrich und James Hetfield nebeneinander, die Arme umeinander gelegt'>
-<p><strong>Der Loudness War</strong>, 2008. Lange wurde Musik immer lauter aufgenommen. Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio. Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt. Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten. Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören.</p>
-<p>Hör dir <a href='https://www.youtube.com/watch?v=K6AJuRK2NE4'>»The Day That Never Comes«</a> aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen, wenn die ganze Band einsetzt.</p>
-<p class='history-credit'>Lars Ulrich und James Hetfield von Metallica. Foto: Kreepin Deth, 2008, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Metallica_at_The_O2_Arena_London_2008.jpg'>Wikimedia Commons</a>)</p>
-</div>
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Stell im Widget die Musik ein, die Attack auf 1 ms, die Release auf 20 ms und den Threshold tief. Jetzt klingt der Bass verzerrt: Der Pegel folgt so schnell, dass der Compressor die einzelnen Schwingungen des Basses leiser und lauter macht und ihre Form verändert. Wie lang muss die Release sein, bis die Verzerrung verschwindet?
-</div>
-
-## Pitch Shifting
-
-Spielt man eine Aufnahme schneller ab, wird sie höher, und kürzer: Doppelt so schnell ist eine Oktave höher und halb so lang, die Stimme klingt nach Zeichentrick. Ein **Pitch Shifter** ändert nur die Tonhöhe und lässt die Länge, wie sie ist. Er zerlegt den Klang in **Grains**, kurze Stücke von 50 ms, die sich überlappen. Jedes Grain liest er schneller oder langsamer, mit `read` aus dem Chorus, legt es aber an seinen alten Platz zurück: So wird jedes Stück höher, und der Klang bleibt gleich lang.
+Spielt man eine Aufnahme schneller ab, wird sie höher und kürzer: Doppelt so schnell ist eine Oktave höher und halb so lang, die Stimme klingt nach Zeichentrick. Ein **Pitch Shifter** ändert nur die Tonhöhe und lässt die Länge, wie sie ist. Er zerlegt den Klang in **Grains**, kurze Stücke von 50 ms, die sich überlappen. Jedes Grain liest er schneller oder langsamer, mit `read` aus dem Chorus, legt es aber an seinen alten Platz zurück: So wird jedes Stück höher, und der Klang bleibt gleich lang.
 
 <div class='effect-widget' data-effect='pitch'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schieb die Stimme 12 Halbtöne nach oben, eine Oktave, und dann 12 nach unten. Woran hörst du, dass es dieselbe Person ist, und woran, dass etwas nicht stimmt? Probier dasselbe mit der Musik: Was klingt dort zuerst falsch, das Schlagzeug oder die Melodie?
+<strong>Ausprobieren:</strong> Schieb den Gesang 12 Halbtöne nach oben, eine Oktave, und dann 12 nach unten. Woran hörst du, dass es dieselbe Stimme ist, und woran, dass etwas nicht stimmt? Probier dasselbe mit Funk: Was klingt dort zuerst falsch, das Schlagzeug oder die Melodie?
 </div>
 
 _task(speed-length)
@@ -675,6 +697,8 @@ _task(speed-length)
 </div>
 
 Die Grains haben einen Haken: Liegen zwei übereinander, deren Schwingungen gerade gegeneinander laufen, löschen sie sich aus, und die Stimme klingt hohl. Darum verschiebt der Pitch Shifter jedes Grain, bevor er es hinzuzählt, um bis zu eine Schwingung der tiefsten Stimme (1/60 Sekunde), bis es am besten zu dem passt, was schon da ist. Am besten passt es, wo das Produkt der beiden, Sample für Sample addiert, am größten ist: `np.correlate` rechnet das für alle Verschiebungen auf einmal aus.
+
+### Die Tonhöhe finden
 
 Dasselbe Produkt sagt auch, wie hoch eine Stimme gerade ist. Multipliziert man einen Block Sample für Sample mit sich selbst, um `lag` Samples verschoben, und zählt zusammen, heißt das **Autokorrelation**. Sie ist groß, wo der Block zu sich selbst passt: bei einer Verschiebung um eine ganze Schwingung, um zwei und so weiter. Bei 0 passt er immer, und kurz danach noch fast, denn eine Stimme ändert sich von Sample zu Sample kaum. Erst nach einer halben Schwingung läuft die verschobene Kopie gegen das Original und die Summe wird negativ. Die Tonhöhe findet man also so: Warte, bis die Autokorrelation einmal negativ war, und nimm dann die Verschiebung, bei der sie am größten ist. Ist sie das bei `lag` Samples, dauert eine Schwingung `lag / rate` Sekunden, und die Frequenz ist `rate / lag`.
 
@@ -786,7 +810,7 @@ wait-for-text: stimme-tief.wav
 
 Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, wie bei vielen erwachsenen Männern. Wo jemand ein »s« oder »sch« spricht, schwingt nichts, und `pitch` findet eine zufällige, oft sehr hohe Zahl. Hör dir `stimme-hoch.wav` und `stimme-tief.wav` an: fünf Halbtöne höher und tiefer, gleich lang wie `stimme.wav`.
 
-## Autotune
+### Autotune
 
 **Autotune** rückt schiefen Gesang gerade: Es findet die Tonhöhe jedes Blocks und schiebt sie zum nächsten Halbton. Gedacht ist es unhörbar, mit einer **Retune Speed** von einigen Dutzend Millisekunden, so dass die Stimme langsam zum richtigen Ton gleitet. Stellt man sie auf 0, springt die Stimme sofort von Halbton zu Halbton, ohne das Gleiten dazwischen, und klingt wie eine Maschine.
 
@@ -800,7 +824,7 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir zuerst den Kommentar an, wie er gesprochen wurde: den Start der Rakete von Artemis II, 2026. Schalt <strong>Effekt an</strong> ein, mit dem Ziel <strong>ein Ton</strong>: Jede Silbe liegt jetzt auf demselben Ton, und die Stimme klingt wie eine Maschine. Nimm dann den nächsten Halbton: Wo springt die Stimme im Bild von Linie zu Linie? Dreh die Retune Speed langsam auf: Ab wann klingt sie wieder wie gesprochen?
+<strong>Ausprobieren:</strong> Hör dir den Gesang zuerst an, wie er gesungen wurde. Schalt <strong>Effekt an</strong> ein, mit dem Ziel <strong>ein Ton</strong>: Jetzt ist die Melodie weg, jeder Ton liegt auf demselben, und im Bild liegen die lila Punkte auf einer Höhe. Nimm dann <strong>gespiegelt</strong>: Wo die Melodie hinaufging, geht sie jetzt hinunter, auf Halbtönen. Erkennst du das Lied noch? Mit <strong>der nächste Halbton</strong> hörst du kaum einen Unterschied, denn der Gesang trifft die Töne schon fast: Wo springt die Stimme trotzdem im Bild von Linie zu Linie? Dreh zum Schluss die Retune Speed langsam auf: Ab wann klingt die Stimme wieder wie gesungen?
 </div>
 
 <div class='history' id='history-songify'>
@@ -877,22 +901,21 @@ Hör dir `stimme-autotune.wav` an: Jede Silbe liegt jetzt auf einem Halbton und 
 <strong>Ausprobieren:</strong> Gib <code>autotune</code> eine Retune Speed: Merk dir in <code>factor</code> den Faktor des vorigen Blocks und geh von ihm aus nur ein Stück auf den neuen zu, zum Beispiel ein Fünftel des Wegs. Wie klingt die Stimme jetzt?
 </div>
 
-## Vocoder
+### Vocoder
 
 Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder, von tief bis hoch, und misst in jedem Block, wie stark sie in jedem Band ist. Dann nimmt er einen zweiten Klang, den **Träger**, etwa einen Akkord, und macht ihn in jedem Band genau so stark wie die Stimme. Was man hört, hat die Tonhöhe des Akkords, aber die Laute der Stimme: Ein »a« und ein »i« unterscheiden sich nicht in der Tonhöhe, sondern darin, welche Bänder stark sind.
 
 <div class='effect-widget' data-effect='vocoder'></div>
 
-Im Widget ist der Kommentar des Starts von Artemis II ein Lied geworden, wie die Gregory Brothers es mit Nachrichten machen: Die Sätze stehen im Takt, und im Refrain singt der Kommentator »The crew of Artemis two, now bound for the Moon«. Gesungen ist das mit einem Vocoder, nicht mit Autotune. Die Töne spielt ein Instrument, und die Stimme gibt ihm nur ihre Laute. Autotune könnte die Stimme zwar auf die Töne schieben, aber ein gesprochenes Wort dauert nur Zehntelsekunden; ein Instrument hält einen Ton, so lange die Melodie es will.
-
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir das Lied zuerst ohne Effekt an: Die Silben des Refrains stehen im Takt, aber gesprochen. Schalt <strong>Effekt an</strong> ein: Jetzt singt der Refrain, die Strophe und der Countdown bleiben gesprochen, denn dort schweigt das Instrument. Schalt <strong>Band dazu</strong> ein. Nimm dann die Stimme mit dem Akkord als Träger und schalt den Effekt aus und an. Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
+<strong>Ausprobieren:</strong> Hör dir den Gesang zuerst ohne Effekt an und schalt dann <strong>Effekt an</strong> ein: Er singt jetzt nicht mehr seine Melodie, sondern immer denselben Akkord, und die Wörter bleiben. Nimm Rauschen als Träger: Jetzt flüstert die Stimme. Warum versteht man sie, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter? Probier dasselbe mit dem Chor.
 </div>
 
 <div class='history' id='history-vocoder'>
 <img src='geschichte/vocoder.webp' alt='Die Vorführung des Voders auf der Weltausstellung 1939: eine Halle mit der Aufschrift »The Voder«, davor viele Zuschauer um ein Pult'>
 <p><strong>Der Vocoder</strong>, 1937. Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache. Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche. 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten. Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn.</p>
 <p>Hör dir <a href='https://www.youtube.com/watch?v=aQUlA8Hcv4s'>»Mr. Blue Sky«</a> vom Electric Light Orchestra auf YouTube an, 1977: Wo singt eine Stimme durch den Vocoder, und was singt sie?</p>
+<p>Imogen Heap sang »Hide and Seek« 2004 durch die Einstellung »Vocoder« eines Harmonizers, als ihr Rechner keinen Strom mehr hatte. Welche Töne ihre Stimme singt, bestimmte ein Keyboard: Der Harmonizer setzt die Stimme auf jeden Ton, den sie dort spielte, so dass sie mehrstimmig mit sich selbst singt. Hör dir <a href='https://www.youtube.com/watch?v=UYIAfiVGluk'>»Hide and Seek«</a> auf YouTube an: Wo wechseln die Töne, während sie ein Wort singt?</p>
 <p class='history-credit'>Der Voder auf der Weltausstellung. Bild: Bell System Technical Journal, 1940, keine bekannten Rechte, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Homer_Dudley_(October_1940)._%22The_Carrier_Nature_of_Speech%22._Bell_System_Technical_Journal,_XIX(4);495-515._--_Fig.5_The_voder_being_demonstrated_at_the_New_York_World%27s_Fair.jpg'>Wikimedia Commons</a>)</p>
 </div>
 

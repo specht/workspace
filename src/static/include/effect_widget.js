@@ -10,7 +10,7 @@
 //
 //   <script src='/include/effect_widget.js'></script>
 //   <div class='effect-widget' data-effect='eq'></div>
-//   <div class='effect-widget' data-effect='echo' data-clip='stimme'></div>
+//   <div class='effect-widget' data-effect='echo' data-clip='gesang'></div>
 //
 // The effects (EFFECTS below): gain, eq, echo, chorus, reverb, compressor, pitch, autotune, vocoder, voices. Each has its knobs, its picture
 // and its function in WORKER, written like the Python of the page.
@@ -38,12 +38,8 @@
         return node;
     };
 
-    // the sounds: the files of »Audio komprimieren«
+    // the sounds: recordings under free licences (audio/effects/), each with its credit
     const CLIPS = {
-        musik: { label: 'Musik', url: '/audio/musik.wav' },
-        stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
-        melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
-        // recordings under free licences (audio/effects/), each with its credit
         gesang: { label: 'Gesang', url: '/audio/effects/singing-voice-2.flac',
             credit: "»Running with Renegades (Main Vox)«, feat. Ashes and Dreams, CC BY 4.0 (<a href='https://freesound.org/people/ashesanddreams/sounds/610416/'>Freesound</a>)" },
         chor: { label: 'Chor', url: '/audio/effects/choir.flac',
@@ -74,17 +70,6 @@
             credit: "»Drums_120bpm_closedhat_snareghost_loop1« von tichec, CC0 (<a href='https://freesound.org/people/tichec/sounds/169870/'>Freesound</a>)" },
         dynamik: { label: 'Orchester leise und laut', url: '/audio/effects/dynamic-orchestra.flac',
             credit: "Ludwig van Beethoven, Egmont-Ouvertüre op. 84, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Beethoven_-_Egmont_Overture,_Op._84_(Musopen_Symphony).flac'>Wikimedia Commons</a>)" },
-        // NASA's commentary of the launch of Artemis II, 2026, as a song (bilder/liftoff_song.py)
-        liftoffSpoken: { label: 'Gesprochen', url: '/audio/liftoff-gesprochen.flac',
-            credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>)" },
-        liftoff: { label: 'Im Takt', url: '/audio/liftoff.flac',
-            credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>); die Silben im Takt geschnitten" },
-        liftoffMelodie: { label: 'Melodie', url: '/audio/liftoff-melodie.flac',
-            credit: 'Die Melodie zu den Worten: ein Ton für jede Silbe, in der Stimmlage des Sprechers.' },
-        liftoffCarrier: { label: 'Träger', url: '/audio/liftoff-traeger.flac',
-            credit: 'Die Melodie als Instrument, Sägezahn- und Rechteckschwingung.' },
-        liftoffBand: { label: 'Band', url: '/audio/liftoff-band.flac',
-            credit: "Funk in h-Moll, Refrain auf dem »Royal Road« des J-Pop (Gmaj7, A7, F#7, Bm7), 128 Schläge in der Minute; Schlagzeug aus Samples von Alastair_Pursloe, sakebeats, Akssu, GRD-music-, deadrobotmusic und spaghettiSFX, CC0 (<a href='https://freesound.org/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -121,7 +106,7 @@
     const EFFECTS = {
         gain: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['musik', 'stimme', 'klavier', 'rock'],
+            clips: ['rock', 'klavier', 'gesang'],
             knobs: [
                 { key: 'db', label: 'Verstärkung', min: -40, max: 12, step: 1, value: -6,
                   marks: [[-40, '−40'], [-30, '−30'], [-20, '−20'], [-12, '−12'], [-6, '−6'], [0, '0'], [6, '+6'], [12, '+12 dB']], show: signedDb },
@@ -142,7 +127,7 @@
         },
         eq: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['musik', 'stimme', 'jazz', 'elektronik', 'orchester', 'funk'],
+            clips: ['funk', 'jazz', 'elektronik', 'orchester'],
             knobs: [
                 { key: 'centre', label: 'Frequenz', min: 0, max: 1000, step: 1, value: CENTRE.from(1000), scale: CENTRE,
                   marks: [[50, '50'], [100, '100'], [200, '200'], [500, '500'], [1000, '1k'], [2000, '2k'], [5000, '5k'], [10000, '10k']],
@@ -174,7 +159,7 @@
         },
         echo: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'schlagzeug', 'funkdrums', 'akustikgitarre', 'klavier', 'gesang'],
+            clips: ['gesang', 'schlagzeug', 'funkdrums', 'akustikgitarre', 'klavier'],
             knobs: [
                 { key: 'delay', label: 'Verzögerung', min: 0.05, max: 1, step: 0.01, value: 0.3,
                   marks: [[0.1, '0,1'], [0.25, '0,25'], [0.5, '0,5'], [0.75, '0,75'], [1, '1 s']], show: (v) => `${de(v, 2)} s` },
@@ -194,7 +179,7 @@
         },
         chorus: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['melodie', 'akustikgitarre', 'egitarre', 'gesang', 'stimme'],
+            clips: ['gesang', 'akustikgitarre', 'egitarre'],
             knobs: [
                 { key: 'depth', label: 'Tiefe', min: 0, max: 0.01, step: 0.0005, value: 0.004,
                   marks: [[0, '0'], [0.0025, '2,5'], [0.005, '5'], [0.0075, '7,5'], [0.01, '10 ms']], show: (v) => `${de(v * 1000, 1)} ms` },
@@ -211,7 +196,7 @@
         },
         reverb: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['schlagzeug', 'klavier', 'gesang', 'chor', 'stimme'],
+            clips: ['schlagzeug', 'klavier', 'gesang', 'chor'],
             knobs: [
                 { key: 'size', label: 'Raumgröße', min: 0.5, max: 2, step: 0.05, value: 1,
                   marks: [[0.5, '½'], [1, '1'], [1.5, '1½'], [2, '2']], show: (v) => `${de(v, 2)}-mal` },
@@ -228,7 +213,7 @@
         },
         pitch: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'gesang', 'klavier', 'veena', 'gamelan', 'musik'],
+            clips: ['gesang', 'funk', 'klavier', 'veena', 'gamelan'],
             knobs: [
                 { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 5,
                   marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
@@ -242,10 +227,10 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['liftoffSpoken', 'stimme'],
+            clips: ['gesang'],
             startOff: true,                      // first the voice as it is
             choices: [
-                { key: 'target', label: 'Ziel', value: 'flat', options: [['flat', 'ein Ton'], ['note', 'der nächste Halbton']] },
+                { key: 'target', label: 'Ziel', value: 'flat', options: [['flat', 'ein Ton'], ['note', 'der nächste Halbton'], ['mirror', 'gespiegelt']] },
             ],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
@@ -258,7 +243,7 @@
             neutral: () => false,
             caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
             line: (p) => {
-                const goal = p.target === 'melody' ? 'den Ton der Melodie' : p.target === 'flat' ? 'denselben Ton' : 'den nächsten Halbton';
+                const goal = { flat: 'denselben Ton', note: 'den nächsten Halbton', mirror: 'den Halbton, der so weit unter der Mitte liegt wie der gesungene darüber (oder umgekehrt)' }[p.target];
                 return p.speed === 0
                     ? `Jeder Block springt sofort auf ${goal}: Die Stimme klingt wie eine Maschine.`
                     : `Jeder Block geht in etwa ${de(p.speed * 1000)} ms auf ${goal} zu.`;
@@ -267,14 +252,11 @@
         },
         vocoder: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['liftoff', 'stimme', 'gesang'],
-            carrierClip: 'liftoffCarrier',       // the carrier »Melodie« …
-            melodyFor: 'liftoff',                // … for this clip
+            clips: ['gesang', 'chor'],
             startOff: true,
             choices: [
-                { key: 'carrier', label: 'Träger', value: 'melody', options: [['melody', 'Melodie'], ['chord', 'Akkord'], ['noise', 'Rauschen']] },
+                { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['noise', 'Rauschen']] },
             ],
-            switches: [{ key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
                 { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 24,
                   marks: [[2, '2'], [4, '4'], [8, '8'], [16, '16'], [24, '24'], [32, '32']], show: (v) => `${v}` },
@@ -282,12 +264,12 @@
             live: true,
             neutral: () => false,
             caption: 'Wie stark jedes Band gerade ist, von 100 Hz bis 8 kHz: grau in der Stimme, lila im Ergebnis, dem Träger mit der Stärke der Stimme.',
-            line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', melody: 'die Melodie des Lieds, gespielt von einem Instrument; wo es schweigt, die Stimme, wie sie ist', noise: 'Rauschen' }[p.carrier]}.`,
+            line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', noise: 'Rauschen' }[p.carrier]}.`,
             draw: drawVocoder,
         },
         voices: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'liftoff'],
+            clips: ['gesang'],
             knobs: [
                 { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 0,
                   marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
@@ -320,7 +302,7 @@
         },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['funkdrums', 'schlagzeug', 'dynamik', 'stimme', 'rock'],
+            clips: ['funkdrums', 'schlagzeug', 'dynamik', 'rock'],
             knobs: [
                 { key: 'threshold', label: 'Threshold', min: -48, max: 0, step: 1, value: -24,
                   marks: [[-48, '−48'], [-36, '−36'], [-24, '−24'], [-12, '−12'], [0, '0 dB']], show: signedDb },
@@ -421,12 +403,12 @@
         return bend < 0 ? lag + 0.5 * (a - c) / bend : lag;
     }
     // per block the factor of autotune: the nearest semitone of the pitch
-    // (moved by transpose), approached in the time speed
-    // (or, with the target melody, to the melody's pitch in that block)
-    function tuneFactors(found, rate, p, melody) {
+    // (moved by transpose), approached in the time speed; »ein Ton« puts
+    // everything on the voice's middle, »gespiegelt« each note as far below
+    // the middle as it was above and the other way round
+    function tuneFactors(found, rate, p) {
         const n = found.length, out = new Float32Array(n), move = 2 ** (p.transpose / 12);
         const step = p.speed > 0 ? 1 - Math.exp(-HOP / rate / p.speed) : 1;
-        const toMelody = p.target === 'melody' && melody;
         // »ein Ton«: the voice's own middle, every syllable on it
         let flat = 0;
         if (p.target === 'flat') {
@@ -441,41 +423,22 @@
             near.sort((a, b) => a - b);
             voice[k] = found[k] > 60 && found[k] < 1000 && near.length ? near[near.length >> 1] : 0;
         }
-        // with the melody as the target: one factor for each connected voiced
-        // stretch (a syllable, a held vowel), from its median pitch to the
-        // melody's note there, so that it sits steadily on the note
-        if (toMelody) {
-            const out2 = new Float32Array(n);
-            let now2 = move, k = 0;
-            while (k < n) {
-                if (!voice[k]) { out2[k] = now2; k++; continue; }
-                let e = k;
-                while (e < n && (voice[e] || (e + 2 < n && (voice[e + 1] || voice[e + 2])))) e++;
-                const pitches = [], targets = [];
-                for (let j = k; j < e; j++) { if (voice[j]) pitches.push(voice[j]); if (melody[j] > 60) targets.push(melody[j]); }
-                pitches.sort((a, b) => a - b);
-                targets.sort((a, b) => a - b);
-                const own = pitches[pitches.length >> 1];
-                const want = targets.length ? targets[targets.length >> 1] * move / own : move;
-                for (let j = k; j < e; j++) { now2 += (want - now2) * step; out2[j] = now2; }
-                k = e;
-            }
-            return out2;
+        const semitone = (f) => 440 * 2 ** (Math.round(12 * Math.log2(f / 440)) / 12);
+        // the mirror's axis: the semitone of the voice's middle
+        let axis = 0;
+        if (p.target === 'mirror') {
+            const all = Array.from(voice).filter((f) => f).sort((a, b) => a - b);
+            axis = all.length ? semitone(all[all.length >> 1]) : 0;
         }
-        let now = move, note = 0, quiet = 0;
+        let now = move;
         for (let k = 0; k < n; k++) {
             const f = voice[k];
-            // the melody's short gaps keep the last note; after a second without melody the voice is free again
-            if (toMelody && melody[k] > 60) { note = melody[k]; quiet = 0; }
-            else if (toMelody && ++quiet * HOP / rate > 1) note = 0;
-            let want = now;
+            let want = now;                                            // no voice: stay where it is
             if (f && flat) want = flat * move / f;
-            else if (f && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
-            else if (f && note) want = note * move / f;
-            else if (f && toMelody) want = move;                       // no melody here: the voice as it is
-            else if (!f) want = now;                                   // no voice: stay where it is
+            else if (f && axis) want = semitone(axis * axis / semitone(f)) * move / f;
+            else if (f) want = semitone(f * move) / f;
             // more than 7 semitones away from where it is: a wrong pitch, not followed
-            if (Math.abs(12 * Math.log2(want / now)) > 7 && Math.abs(12 * Math.log2(want / move)) > 7) want = now;
+            if (!axis && Math.abs(12 * Math.log2(want / now)) > 7 && Math.abs(12 * Math.log2(want / move)) > 7) want = now;
             now += (want - now) * step;
             out[k] = now;
         }
@@ -552,25 +515,15 @@
         }
         return y;
     }
-    // the carriers: a chord of saw waves (C, E, G), a saw wave on the
-    // melody's notes (each held until the next), noise
-    function carrierFor(kind, n, rate, melody) {
+    // the carriers: a chord of saw waves (C, E, G), noise
+    function carrierFor(kind, n, rate) {
         const out = new Float32Array(n);
         if (kind === 'noise') { for (let i = 0; i < n; i++) out[i] = Math.random() * 2 - 1; return out; }
-        const freqs = kind === 'melody' && melody ? null : [130.8, 164.8, 196.0];
-        const phase = [0, 0, 0];
-        let held = 130.8;
+        const freqs = [130.8, 164.8, 196.0], phase = [0, 0, 0];
         for (let i = 0; i < n; i++) {
-            if (freqs) {
-                let sum = 0;
-                for (let k = 0; k < 3; k++) { phase[k] = (phase[k] + freqs[k] / rate) % 1; sum += 2 * phase[k] - 1; }
-                out[i] = sum / 3;
-            } else {
-                const f = melody[Math.min(melody.length - 1, Math.max(0, Math.floor((i - SIZE / 2) / HOP)))];
-                if (f > 60 && f < 1000) held = f;
-                phase[0] = (phase[0] + held / rate) % 1;
-                out[i] = 2 * phase[0] - 1;
-            }
+            let sum = 0;
+            for (let k = 0; k < 3; k++) { phase[k] = (phase[k] + freqs[k] / rate) % 1; sum += 2 * phase[k] - 1; }
+            out[i] = sum / 3;
         }
         return out;
     }
@@ -599,7 +552,9 @@
         }
         const y = new Float32Array(L), weight = new Float32Array(L);
         let m = 0;
-        for (let t = 0; t < L;) {
+        for (let exact = 0; exact < L;) {
+            // the output moves in steps of P / factor, which are not whole samples
+            const t = Math.round(exact);
             while (m + 1 < marks.length && Math.abs(marks[m + 1] - t) <= Math.abs(marks[m] - t)) m++;
             const P = periodAt(t), k = blockAt(t, n);
             const half = Math.round(P || step);
@@ -610,7 +565,7 @@
                 y[o] += w * x[((at + j) % L + L) % L];
                 weight[o] += w;
             }
-            t += P ? Math.max(1, P / factors[k]) : step;
+            exact += P ? Math.max(1, P / factors[k]) : step;
         }
         for (let j = 0; j < L; j++) y[j] /= Math.max(weight[j], 0.5);
         // where nothing is to change (factor 1), the voice as it is, crossing over in 20 ms
@@ -706,21 +661,7 @@ onmessage = (e) => {
             found = clip.track;
         }
     } else if (m.effect === 'vocoder') {
-        const lead = m.params.carrier === 'melody' && clips[m.melody] ? clips[m.melody].x : null;
-        if (lead) {
-            // the melody's instrument as carrier; where it is silent, the voice as it is (20 ms crossfades)
-            out = vocoder(clip.x, lead, clip.rate, m.params.bands);
-            const ramp = Math.round(0.02 * clip.rate);
-            let level = 0, mix = 0, a = 0, b = 0;
-            for (let i = 0; i < out.length; i++) {
-                level = Math.max(Math.abs(lead[i % lead.length]), level * 0.999);
-                mix += ((level > 0.02 ? 1 : 0) - mix) / ramp;
-                // the hiss of the consonants from the voice itself (above about 4 kHz), which a vocoder loses
-                const hiss = clip.x[i] - 2 * a + b;
-                b = a; a = clip.x[i];
-                out[i] = mix * (out[i] * 1.6 + 0.35 * hiss) + (1 - mix) * clip.x[i];
-            }
-        } else out = vocoder(clip.x, carrierFor(m.params.carrier === 'melody' ? 'chord' : m.params.carrier, clip.x.length, clip.rate, null), clip.rate, m.params.bands);
+        out = vocoder(clip.x, carrierFor(m.params.carrier, clip.x.length, clip.rate), clip.rate, m.params.bands);
     } else if (m.effect === 'voices') {
         out = m.params.semitones ? shift(clip.x, clip.rate, () => 2 ** (m.params.semitones / 12), 0.05) : Float32Array.from(clip.x);
         if (m.params.ring) for (let n = 0; n < out.length; n++) out[n] *= Math.sin(2 * Math.PI * m.params.ring * n / clip.rate);
@@ -735,13 +676,7 @@ onmessage = (e) => {
         if (!clip.track) clip.track = track(clip.x, clip.rate);
         found = clip.track;
         const n = found.length;
-        let melody = null;
-        if (m.effect === 'autotune' && clips[m.melody]) {
-            const mc = clips[m.melody];
-            if (!mc.track) mc.track = track(mc.x, mc.rate);
-            melody = mc;
-        }
-        const factors = m.effect === 'autotune' ? tuneFactors(found, clip.rate, m.params, melody && melody.track) : null;
+        const factors = m.effect === 'autotune' ? tuneFactors(found, clip.rate, m.params) : null;
         const constant = 2 ** ((m.params.semitones || 0) / 12);
         out = factors ? psola(clip.x, clip.rate, factors, found) : shift(clip.x, clip.rate, () => constant, 0.05);
     } else if (m.effect === 'eq') out = eq(clip, m.params);
@@ -751,22 +686,17 @@ onmessage = (e) => {
         x2.set(clip.x); x2.set(clip.x, n);
         out = EFFECTS[m.effect](x2, clip.rate, m.params).slice(n);
     } else out = EFFECTS[m.effect](clip.x, clip.rate, m.params);
-    for (const [id, level] of m.mixes || []) {
-        const other = clips[id] && clips[id].x;
-        if (other) for (let i = 0; i < out.length; i++) out[i] += level * other[i % other.length];
-    }
     if (m.cut) {
         // as a converter does: what is above full scale is cut off
         for (let i = 0; i < out.length; i++) out[i] = Math.max(-1, Math.min(1, out[i]));
-        postMessage({ out, id: m.id, track: null, melodyTrack: null });
+        postMessage({ out, id: m.id, track: null });
         return;
     }
     // never louder than full scale: quieter as a whole instead of clipped
     let peak = 0;
     for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
     if (peak > 0.99) for (let i = 0; i < out.length; i++) out[i] *= 0.99 / peak;
-    const melodyTrack = m.melody && clips[m.melody] && clips[m.melody].track;
-    postMessage({ out, id: m.id, track: found ? Float32Array.from(found) : null, melodyTrack: melodyTrack ? Float32Array.from(melodyTrack) : null });
+    postMessage({ out, id: m.id, track: found ? Float32Array.from(found) : null });
 };`;
 
     // an FFT in place, iterative: bit reversal, then the butterflies;
@@ -1044,18 +974,8 @@ onmessage = (e) => {
                 g.fillRect(x - r, yOf(f) - r, 2 * r, 2 * r);
             }
         };
-        if (live.melody && !live.plain) {
-            // the melody as short lines: the target
-            g.fillStyle = col.ink;
-            for (let k = 0; k < live.melody.length; k++) {
-                const f = live.melody[k];
-                if (!(f > F0 && f < F1)) continue;
-                const x = xOfBlock(k, from);
-                if (x >= LABEL_W && x <= w) g.fillRect(x - 2, yOf(f) - 0.75, 4, 1.5);
-            }
-        }
         dots((k) => found[k], col.sound, 2.5);
-        if (on && !live.plain) dots((k) => found[k] * factors(k), col.mark, 1.5);
+        if (on) dots((k) => found[k] * factors(k), col.mark, 1.5);
         markStart(g, LABEL_W, plotW, 0, plotH, at / rate, L / rate, 4, col);
         const xm = Math.round(LABEL_W + plotW / 2) + 0.5;
         g.strokeStyle = col.ink; g.lineWidth = 1.5;
@@ -1233,15 +1153,6 @@ onmessage = (e) => {
             });
             return el('div', { class: 'fx-row' }, [el('span', { class: 'fx-label', text: 'So klingt' }), el('div', { class: 'fx-track fx-presets' }, buttons), el('span')]);
         };
-        const toggle = (t) => {
-            const id = `fx-${t.key}-${uid}`;
-            const input = el('input', { type: 'checkbox', class: 'form-check-input', id, role: 'switch' });
-            input.checked = t.value;
-            params[t.key] = t.value;
-            input.addEventListener('change', () => { params[t.key] = input.checked; changed(); });
-            resets.push(() => { input.checked = t.value; params[t.key] = t.value; });
-            return el('div', { class: 'form-check form-switch fx-switch' }, [input, el('label', { class: 'form-check-label', for: id, text: t.label })]);
-        };
         const slider = (knob) => {
             const id = `fx-${knob.key}-${uid}`;
             const input = el('input', { type: 'range', class: 'form-range fx-slider', id, min: knob.min, max: knob.max, step: knob.step, value: knob.value });
@@ -1264,7 +1175,7 @@ onmessage = (e) => {
                 el('div', { class: 'fx-track' }, [input, scale]), out]);
         };
 
-        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary fx-play' });
+        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-success fx-play' });
         const showPlay = () => playButton.replaceChildren(el('i', { class: `bi ${playing ? 'bi-stop-fill' : 'bi-play-fill'}` }), playing ? ' Anhalten' : ' Abspielen');
         showPlay();
         const fromStart = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary fx-from-start' },
@@ -1293,8 +1204,7 @@ onmessage = (e) => {
         root.append(
             el('div', { class: 'fx-controls' }, [
                 ...(effect.clips.length > 1 ? [clipGroup] : []), playButton, fromStart, clock, resetButton,
-                el('div', { class: 'form-check form-switch fx-switch' }, [onSwitch, el('label', { class: 'form-check-label', for: `fx-on-${uid}`, text: 'Effekt an' })]),
-                ...(effect.switches || []).map(toggle)]),
+                el('div', { class: 'form-check form-switch fx-switch' }, [onSwitch, el('label', { class: 'form-check-label', for: `fx-on-${uid}`, text: 'Effekt an' })])]),
             credit,
             ...(effect.choices || []).map(choice),
             ...effect.knobs.map(slider),
@@ -1345,12 +1255,9 @@ onmessage = (e) => {
                 live = { ...smooth, binHz: rate / N };
             } else if ((name === 'pitch' || name === 'autotune') && original && tracks[clipId]) {
                 const found = tracks[clipId];
-                const melody = melodyNow() && tracks[effect.melody];
-                const tuned = name === 'autotune' ? tuneFactors(found, rate, params, melody) : null;
+                const tuned = name === 'autotune' ? tuneFactors(found, rate, params) : null;
                 const constant = 2 ** ((params.semitones || 0) / 12);
-                const plain = (effect.plain || []).includes(clipId);
-                live = { found, factors: tuned && !plain ? (k) => tuned[k] : () => constant, at: sampleNow(), rate, length: original.length,
-                    melody: melody && params.target === 'melody' ? melody : null, plain };
+                live = { found, factors: tuned ? (k) => tuned[k] : () => constant, at: sampleNow(), rate, length: original.length };
             } else if (name === 'voices' && original) {
                 live = { before: original, after: current || original, at: sampleNow(), rate };
             } else if (name === 'compressor' && original) {
@@ -1487,16 +1394,14 @@ onmessage = (e) => {
 
         // a knob moved: the picture at once, the sound as soon as the worker
         // has the last one (also while dragging), always the last setting
-        // the switched-on clips to mix in, where they belong to the clip that plays
-        const mixesNow = () => (effect.switches || []).filter((t) => t.mix && params[t.key] && melodyNow()).map((t) => [t.mix, t.level]);
-        const effectNow = () => on && !effect.neutral(params) && !(effect.plain || []).includes(clipId);
+        const effectNow = () => on && !effect.neutral(params);
         function message() {
-            return { effect: name, clip: clipId, melody: melodyNow(), params: { ...params }, twice: !!effect.twice, id: ++asked,
-                on: effectNow(), mixes: mixesNow(), cut: !!effect.clip };
+            return { effect: name, clip: clipId, params: { ...params }, twice: !!effect.twice, id: ++asked,
+                on: effectNow(), cut: !!effect.clip };
         }
         function ask() {
             if (!loaded[clipId]) return;                 // ready() computes it once the clip is there
-            if (!effectNow() && !mixesNow().length) { current = original; if (playing) start(); return; }
+            if (!effectNow()) { current = original; if (playing) start(); return; }
             busy = true;
             worker.postMessage(message());
         }
@@ -1506,14 +1411,8 @@ onmessage = (e) => {
             if (busy) { again = true; return; }
             ask();
         }
-        // the melody clip, where it belongs to the clip that plays
-        function melodyNow() {
-            const m = effect.melody || effect.carrierClip;
-            return m && (!effect.melodyFor || effect.melodyFor === clipId) ? m : null;
-        }
         function keepTracks(e) {
             if (e.data.track) tracks[clipId] = e.data.track;
-            if (e.data.melodyTrack) tracks[effect.melody] = e.data.melodyTrack;
         }
         function heard(e) {
             busy = false;
@@ -1544,13 +1443,10 @@ onmessage = (e) => {
                 worker = new Worker(URL.createObjectURL(new Blob([WORKER], { type: 'text/javascript' })));
                 worker.onmessage = heard;
             }
-            if (effect.melody) await loadClip(effect.melody);
-            if (effect.carrierClip) await loadClip(effect.carrierClip);
-            for (const t of effect.switches || []) if (t.mix) await loadClip(t.mix);
             original = await loadClip(clipId);
             current = original;
             const needsTrack = (name === 'pitch' || name === 'autotune') && !tracks[clipId];
-            if (effectNow() || mixesNow().length || needsTrack) {
+            if (effectNow() || needsTrack) {
                 // the first sound of a clip waits for the worker once
                 await new Promise((done) => {
                     worker.onmessage = (e) => { worker.onmessage = heard; if (e.data.out) current = e.data.out; keepTracks(e); done(); };

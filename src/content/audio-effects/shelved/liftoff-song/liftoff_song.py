@@ -1,7 +1,11 @@
-"""A song from NASA's commentary of the launch of Artemis II, 1 April 2026
+"""Shelved in November 2026: the vocoder did not make the voice sing well
+enough, and the song is not on the page; nothing of it is used. The files
+go to out/ beside this script.
+
+A song from NASA's commentary of the launch of Artemis II, 1 April 2026
 (public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
-for the vocoder widget: the commentary as it was said over the verse, the
+once for the vocoder widget: the commentary as it was said over the verse, the
 build and »and liftoff« on the chorus, sung only in the chorus (»The crew of
 Artemis twoooo / now bound for the Moooon«), answered spoken (»humanity's
 next great voyage begins«); a funk track at 128 beats a minute in B minor
@@ -18,7 +22,7 @@ files of the same length:
   liftoff.flac          the syllables on the grid (SHEET), the voice's own pitch
   liftoff-melodie.flac  the melody, one note per syllable
   liftoff-traeger.flac  the melody as a punchy lead, the vocoder's carrier
-  liftoff-band.flac     electronic drum samples (audio/drums-electronic, CC0)
+  liftoff-band.flac     electronic drum samples (drums-electronic, CC0)
                         and the instruments, harmonies and chops of the voice
 
 The two excerpts (artemis/four-explorers.flac, 5:35:01.6 to 5:35:15.6 of the
@@ -26,7 +30,7 @@ commentary, and artemis/liftoff.flac, 5:35:23.4 to 5:35:44.0) are made from
 the original with ffmpeg, channel 1, mono, 44.1 kHz.
 
     docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo --entrypoint python3 \\
-        hs_code_server:latest src/content/audio-effects/bilder/liftoff_song.py
+        hs_code_server:latest src/content/audio-effects/shelved/liftoff-song/liftoff_song.py
 """
 
 import os
@@ -37,7 +41,8 @@ import wave
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-AUDIO = os.path.join(HERE, '..', '..', '..', 'static', 'audio')
+OUT = os.path.join(HERE, 'out')
+os.makedirs(OUT, exist_ok=True)
 RATE = 44100
 BPM = 128
 BEAT = 60 / BPM
@@ -91,7 +96,7 @@ def write(name, z):
     """a FLAC file through ffmpeg"""
     data = (np.clip(z, -1, 1) * 32767).astype('<i2').tobytes()
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 's16le', '-ar', str(RATE), '-ac', '1', '-i', '-',
-                    os.path.join(AUDIO, name)], input=data, check=True)
+                    os.path.join(OUT, name)], input=data, check=True)
     print(name, f'{len(z) / RATE:.2f} s, peak {np.abs(z).max():.2f}')
 
 
@@ -504,7 +509,7 @@ def chord_at(seconds):
 
 
 rng = np.random.default_rng(1962)
-DRUMS = os.path.join(AUDIO, 'drums-electronic')
+DRUMS = os.path.join(HERE, 'drums-electronic')
 guitar = np.zeros(LENGTH + 3 * RATE)
 # the guitar, as Cory Wong plays: sixteenths all the time, down on the
 # beats and the »and«, up between; most of them muted scratches, the

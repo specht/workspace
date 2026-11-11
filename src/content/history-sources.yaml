@@ -124,6 +124,24 @@ vocoder:
     note: das Album »Out of the Blue« erschien 1977; der Link ist das offizielle Video auf ELOVEVO, in Deutschland abspielbar (geprüft)
   - text: Wo singt eine Stimme durch den Vocoder, und was singt sie
     none: eine Frage zum Anhören
+  - text: Imogen Heap sang »Hide and Seek« 2004 durch die Einstellung »Vocoder« eines Harmonizers, als ihr Rechner keinen Strom mehr hatte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "\"Hide and Seek\" was recorded during a late-night studio session, where Heap decided to record her voice using the \"vocoder\" setting on a DigiTech Vocalist Workstation harmonizer after her computer lost power."
+    note: aufgenommen 2004 nach dem Kasten der Wikipedia (»Recorded 2004«), erschienen am 19. Mai 2005
+  - text: Welche Töne ihre Stimme singt, bestimmte ein Keyboard
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "Heap uses a keyboard-controlled digital harmonizer (similar to a vocoder) on the song to generate distorted harmonies of her voice"
+  - text: Der Harmonizer setzt die Stimme auf jeden Ton, den sie dort spielte, so dass sie mehrstimmig mit sich selbst singt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "Heap uses a keyboard-controlled digital harmonizer (similar to a vocoder) on the song to generate distorted harmonies of her voice, lending the song its altered a cappella sound."
+  - text: auf YouTube an
+    none: der Link
+    note: das offizielle Video auf ImogenHeapVEVO (oEmbed); ob es in Deutschland abspielbar ist, war am 11. November 2026 von hier nicht zu prüfen (YouTube antwortete mit einem Captcha)
+  - text: Wo wechseln die Töne, während sie ein Wort singt
+    none: eine Frage zum Anhören
 
 sped-up:
   - text: Nightcore, »sped up« und »slowed«, 2001

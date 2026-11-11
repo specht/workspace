@@ -1,7 +1,6 @@
 # Electronic drum samples
 
-One-shots for the song of the vocoder widget (src/content/audio-effects/
-bilder/liftoff_song.py), all CC0, from Freesound (the high-quality previews),
+One-shots for the shelved song (liftoff_song.py beside this folder), all CC0, from Freesound (the high-quality previews),
 mono, 44.1 kHz, 16 bit, starting at the attack, peak −1 dBFS.
 
 - snare: »909 Sn 01a dry« by sakebeats, https://freesound.org/people/sakebeats/sounds/176348/

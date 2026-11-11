@@ -58,20 +58,32 @@ does already: `eq_widget.js`, which becomes the first effect of it).
 ## State (11 November 2026)
 
 Built, each with a widget, a prediction, a function of one's own with
-checks and examples, a file to listen to: Lautstärke in Dezibel (gain),
-Equalizer (bell, with presets old radio, phone, party next door), Echo,
-Chorus (read between samples), Hall (allpass), Compressor (gain_db),
-Pitch Shifting (pitch by autocorrelation, grains aligned with
-np.correlate), Autotune (nearest_note; the widget tunes the spoken commentary
-to one note or the nearest semitone), Vocoder (vocode_frame; in the widget
-NASA's commentary of the Artemis II launch as a Songify song, a funk track
-from bilder/liftoff_song.py: an instrument plays the melody, the voice gives
-it its sounds; autotuning speech onto a melody was tried first and failed,
-and Kennedy's »We choose to go to the Moon« before that, its 1962 sound too
-poor), Stimmen für Filme (ring; chipmunk, giant, Dalek, Vader,
-Grievous). History boxes with sources in content/history-sources.yaml.
-The widget plays fifteen recordings under free licences (audio/effects/,
-credits in CLIPS of effect_widget.js); one widget plays at a time.
+checks and examples, a file to listen to, in four chapters:
+
+- Lautstärke: Dezibel (gain), Compressor (gain_db).
+- Frequenzen: Equalizer (bell, with presets old radio, phone, party next
+  door; the high-pass before a drop).
+- Verzögerte Kopien: Echo, Chorus (read between samples), Hall (allpass).
+- Tonhöhe und Stimme: Pitch Shifting (pitch by autocorrelation, grains
+  aligned with np.correlate), Autotune (nearest_note; the widget tunes
+  a sung voice to one note, the nearest semitone or the melody mirrored
+  around its middle), Vocoder (vocode_frame; a song and a choir on a chord
+  or noise).
+
+History boxes with sources in content/history-sources.yaml. The widget
+plays only recordings under free licences (audio/effects/, credits in CLIPS
+of effect_widget.js), no longer the generated musik.wav, its stems and the
+Thorsten voice (the maintainer, 11 November 2026); the Python of the page
+still reads musik.wav and stimme.wav from »Audio komprimieren«. One widget
+plays at a time.
+
+Shelved, in content/audio-effects/shelved/: Stimmen für Filme (ring;
+chipmunk, giant, Dalek, Vader, Grievous), and a Songify song from the
+Artemis II commentary (liftoff-song/); Artemis is no longer in any widget. The song was taken off the page on 11 November 2026:
+autotuning speech onto a melody sounded wrong, and the vocoder with an
+instrument as carrier did not make the sung parts good enough either.
+Kennedy's »We choose to go to the Moon« was tried before Artemis, its 1962
+sound too poor.
 
 ## Real sounds instead of generated ones
 

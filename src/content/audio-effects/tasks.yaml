@@ -3,33 +3,130 @@
 format: 1
 activity: audio-effects
 tasks:
-  - id: eq-factor
-    title: Zwölf Dezibel mehr
+  - id: db-half
+    title: Halb so hoch
     prediction: true
     prompt: |
-      Ein EQ gibt den Frequenzen um 80 Hz 12 dB dazu. Mit welchem Faktor
-      wird dort die Höhe der Schwingung multipliziert? Zwei Stellen hinter
-      dem Komma genügen.
+      Jede Schwingung eines Klangs wird halb so hoch, jedes Sample mal 0,5.
+      Um wie viele Dezibel ändert sich der Klang? Eine Stelle hinter dem
+      Komma genügt.
     check:
       type: number
-      expect: 3.98
-      tolerance: 0.05
+      expect: -6.02
+      tolerance: 0.1
     feedback:
-      - when: { equals: 12 }
-        say: 12 ist die Zahl in Dezibel. Dezibel sind ein Logarithmus; welcher Faktor steckt dahinter?
-      - when: { between: [15.8, 15.9] }
-        say: 10 hoch 12/10 ist der Faktor für die Energie. Die Höhe der Schwingung wächst langsamer, die Energie ist ihr Quadrat.
-      - when: { equals: 2 }
-        say: 6 dB verdoppeln die Höhe. 12 dB sind zweimal 6 dB.
+      - when: { between: [5.9, 6.1] }
+        say: Der Klang wird leiser, nicht lauter; die Dezibel sind negativ.
+      - when: { between: [-3.1, -2.9] }
+        say: −3 dB halbieren die Leistung. Die Höhe der Schwingung wird mit 10^(dB/20) multipliziert, nicht mit 10^(dB/10).
+      - when: { equals: -50 }
+        say: Dezibel sind kein Prozent. Gesucht ist die Zahl dB, für die 10^(dB/20) = 0,5 ist.
     solution: |
-      Fast 4, genauer 10 hoch 12/20 = 3,98: 6 dB verdoppeln die Höhe der
-      Schwingung, 12 dB verdoppeln sie zweimal.
+      Etwa −6,0 dB: 20 · log10(0,5) = −6,02. Darum heißen 6 dB oft
+      »doppelt so hoch«.
+
+  - id: gain
+    title: Dezibel als Faktor
+    prompt: |
+      Schreib in `effects/gain.py` die Funktion `gain(x, db)`: `x` mit dem
+      Faktor zu `db` Dezibel multipliziert.
+    check:
+      type: python
+      file: effects/gain.py
+      cases:
+        - call: '[round(v, 4) for v in gain(np.array([1.0, -0.5]), -20)]'
+          expect: '[0.1, -0.05]'
+          say: '−20 dB sind ein Zehntel: 10^(−20/20) = 0,1. Rechnest du `10 ** (db / 20)`, durch 20?'
+        - call: gain(np.array([0.3, -0.7]), 0).tolist()
+          expect: '[0.3, -0.7]'
+          say: 0 dB lassen alles, wie es ist, ein Faktor von 1. Multiplizierst du `x` mit dem Faktor, statt etwas dazuzuzählen?
+        - call: '[round(v, 3) for v in gain(np.array([0.5]), 6.0206)]'
+          expect: '[1.0]'
+          say: Etwa +6 dB verdoppeln die Schwingung.
+    solution: |
+      ```python
+      def gain(x, db):
+          return x * 10 ** (db / 20)
+      ```
+
+  - id: compressor-level
+    title: Gestaucht
+    prediction: true
+    prompt: |
+      Ein Compressor mit dem Threshold −20 dB und der Ratio 4 : 1, ohne
+      Make-up Gain. Ein Ton kommt mit einem Pegel von −8 dB an. Mit wie vielen dB
+      kommt er heraus?
+    check:
+      type: number
+      expect: -17
+      tolerance: 0.1
+    feedback:
+      - when: { equals: -8 }
+        say: −8 dB liegt über dem Threshold von −20 dB; dort wird der Compressor tätig.
+      - when: { equals: -11 }
+        say: 'Du hast ein Viertel der 12 dB über dem Threshold weggenommen. Bei 4 : 1 bleibt ein Viertel übrig.'
+      - when: { equals: -20 }
+        say: 'Genau auf den Threshold drückt nur eine Ratio ohne Ende, ein Limiter. Bei 4 : 1 bleibt ein Teil über dem Threshold.'
+      - when: { equals: -2 }
+        say: Der Ton kommt leiser heraus, als er ankommt, nicht lauter.
+    solution: |
+      −17 dB: Der Ton liegt 12 dB über dem Threshold, davon bleibt ein
+      Viertel, 3 dB, also −20 + 3 = −17 dB.
+
+  - id: gain-db
+    title: Wie viel leiser
+    prompt: |
+      Schreib in `effects/compressor.py` die Funktion `gain_db(level, threshold, ratio)`:
+      0, wenn der Pegel `level` höchstens beim Threshold liegt, sonst die
+      Dezibel, die der Compressor wegnimmt, als negative Zahl.
+    check:
+      type: python
+      file: effects/compressor.py
+      cases:
+        - call: float(gain_db(-30, -20, 4))
+          expect: '0.0'
+          say: −30 dB liegt unter dem Threshold von −20 dB; dort gibt der Compressor 0 dB dazu.
+        - call: round(gain_db(-8, -20, 4), 6)
+          expect: '-9.0'
+          say: '12 dB über dem Threshold; bei 4 : 1 bleiben 3 dB übrig, also nimmt der Compressor 9 dB weg und `gain_db` gibt −9 zurück. Rechnest du `(threshold - level) * (1 - 1 / ratio)`?'
+        - call: round(gain_db(0, -24, 2), 6)
+          expect: '-12.0'
+          say: '24 dB über dem Threshold, bei 2 : 1 bleibt die Hälfte; weggenommen werden 12 dB.'
+    solution: |
+      ```python
+      def gain_db(level, threshold, ratio):
+          if level <= threshold:
+              return 0
+          return (threshold - level) * (1 - 1 / ratio)
+      ```
+
+  - id: eq-octave
+    title: Eine Oktave daneben
+    prediction: true
+    prompt: |
+      Ein Regler des EQ gibt bei 1.000 Hz 20 dB dazu, mit einer Breite von
+      einer Oktave. Mit welchem Faktor multipliziert er die Schwingung bei
+      2.000 Hz? Zwei Stellen hinter dem Komma genügen.
+    check:
+      type: number
+      expect: 3.16
+      tolerance: 0.03
+    feedback:
+      - when: { equals: 10 }
+        say: Der Faktor 10 gehört zu 20 dB, und die gibt der Regler nur in der Mitte, bei 1.000 Hz. Wie viele dB sind es eine Oktave daneben?
+      - when: { equals: 5 }
+        say: Zur Hälfte wirken eine Oktave daneben die Dezibel, nicht der Faktor. Welcher Faktor gehört zu 10 dB?
+      - when: { equals: 1 }
+        say: Eine Oktave neben der Mitte wirkt der Regler noch, nur schwächer.
+    solution: |
+      Etwa 3,16: 2.000 Hz liegt eine Oktave über der Mitte. Dort gibt der
+      Regler 20 · 2^(−1) = 10 dB dazu, und 10^(10/20) = √10 ≈ 3,16.
 
   - id: eq-bell
     title: Die Glocke des EQ
     prompt: |
       Schreib in `effects/eq.py` die Funktion `bell(freqs, centre, width, gain)`:
-      für jede Frequenz in `freqs` der Faktor, mit dem das EQ ihre Schwingung
+      für jede Frequenz in `freqs` der Faktor, mit dem der EQ ihre Schwingung
       multipliziert. `width` Oktaven neben `centre` wirkt noch die Hälfte der
       Verstärkung `gain` in dB.
     check:
@@ -47,7 +144,7 @@ tasks:
           say: 500 Hz liegt eine Oktave unter 1.000 Hz, genauso weit weg wie 2.000 Hz. Zählt deine Funktion den Abstand in Oktaven, mit `np.log2(freqs / centre)`?
         - call: round(float(bell(np.array([100.0]), 1000, 1, 12)[0]), 2)
           expect: 1.0
-          say: Weit weg von der Mitte, mehr als drei Oktaven, ändert das EQ fast nichts; der Faktor ist dort 1.
+          say: Weit weg von der Mitte, mehr als drei Oktaven, ändert der EQ fast nichts; der Faktor ist dort 1.
         - call: round(float(bell(np.array([1000.0]), 1000, 1, -12)[0]), 2)
           expect: 0.25
           say: Mit −12 dB wird die Schwingung leiser, Faktor 10 hoch −12/20, etwa 0,25.
@@ -158,57 +255,6 @@ tasks:
               if n >= D:
                   y[n] += x[n - D] + g * y[n - D]
           return y
-      ```
-
-  - id: compressor-level
-    title: Gestaucht
-    prediction: true
-    prompt: |
-      Ein Compressor mit dem Threshold −20 dB und der Ratio 4 : 1, ohne
-      Make-up Gain. Ein Ton kommt mit einem Pegel von −8 dB an. Mit wie vielen dB
-      kommt er heraus?
-    check:
-      type: number
-      expect: -17
-      tolerance: 0.1
-    feedback:
-      - when: { equals: -8 }
-        say: −8 dB liegt über dem Threshold von −20 dB; dort wird der Compressor tätig.
-      - when: { equals: -11 }
-        say: 'Du hast ein Viertel der 12 dB über dem Threshold weggenommen. Bei 4 : 1 bleibt ein Viertel übrig.'
-      - when: { equals: -20 }
-        say: 'Genau auf den Threshold drückt nur eine Ratio ohne Ende, ein Limiter. Bei 4 : 1 bleibt ein Teil über dem Threshold.'
-      - when: { equals: -2 }
-        say: Der Ton kommt leiser heraus, als er ankommt, nicht lauter.
-    solution: |
-      −17 dB: Der Ton liegt 12 dB über dem Threshold, davon bleibt ein
-      Viertel, 3 dB, also −20 + 3 = −17 dB.
-
-  - id: gain-db
-    title: Wie viel leiser
-    prompt: |
-      Schreib in `effects/compressor.py` die Funktion `gain_db(level, threshold, ratio)`:
-      0, wenn der Pegel `level` höchstens beim Threshold liegt, sonst die
-      Dezibel, die der Compressor wegnimmt, als negative Zahl.
-    check:
-      type: python
-      file: effects/compressor.py
-      cases:
-        - call: float(gain_db(-30, -20, 4))
-          expect: '0.0'
-          say: −30 dB liegt unter dem Threshold von −20 dB; dort gibt der Compressor 0 dB dazu.
-        - call: round(gain_db(-8, -20, 4), 6)
-          expect: '-9.0'
-          say: '12 dB über dem Threshold; bei 4 : 1 bleiben 3 dB übrig, also nimmt der Compressor 9 dB weg und `gain_db` gibt −9 zurück. Rechnest du `(threshold - level) * (1 - 1 / ratio)`?'
-        - call: round(gain_db(0, -24, 2), 6)
-          expect: '-12.0'
-          say: '24 dB über dem Threshold, bei 2 : 1 bleibt die Hälfte; weggenommen werden 12 dB.'
-    solution: |
-      ```python
-      def gain_db(level, threshold, ratio):
-          if level <= threshold:
-              return 0
-          return (threshold - level) * (1 - 1 / ratio)
       ```
 
   - id: speed-length
@@ -333,50 +379,4 @@ tasks:
               c = np.sqrt(np.sum(np.abs(carrier[lo:hi]) ** 2))
               out[lo:hi] *= v / c if c > 0 else 0
           return out
-      ```
-
-  - id: db-half
-    title: Halb so hoch
-    prediction: true
-    prompt: |
-      Jede Schwingung eines Klangs wird halb so hoch, jedes Sample mal 0,5.
-      Um wie viele Dezibel ändert sich der Klang? Eine Stelle hinter dem
-      Komma genügt.
-    check:
-      type: number
-      expect: -6.02
-      tolerance: 0.1
-    feedback:
-      - when: { between: [5.9, 6.1] }
-        say: Der Klang wird leiser, nicht lauter; die Dezibel sind negativ.
-      - when: { between: [-3.1, -2.9] }
-        say: −3 dB halbieren die Leistung. Die Höhe der Schwingung wird mit 10^(dB/20) multipliziert, nicht mit 10^(dB/10).
-      - when: { equals: -50 }
-        say: Dezibel sind kein Prozent. Gesucht ist die Zahl dB, für die 10^(dB/20) = 0,5 ist.
-    solution: |
-      Etwa −6,0 dB: 20 · log10(0,5) = −6,02. Darum heißen 6 dB oft
-      »doppelt so hoch«.
-
-  - id: gain
-    title: Dezibel als Faktor
-    prompt: |
-      Schreib in `effects/gain.py` die Funktion `gain(x, db)`: `x` mit dem
-      Faktor zu `db` Dezibel multipliziert.
-    check:
-      type: python
-      file: effects/gain.py
-      cases:
-        - call: '[round(v, 4) for v in gain(np.array([1.0, -0.5]), -20)]'
-          expect: '[0.1, -0.05]'
-          say: '−20 dB sind ein Zehntel: 10^(−20/20) = 0,1. Rechnest du `10 ** (db / 20)`, durch 20?'
-        - call: gain(np.array([0.3, -0.7]), 0).tolist()
-          expect: '[0.3, -0.7]'
-          say: 0 dB lassen alles, wie es ist, ein Faktor von 1. Multiplizierst du `x` mit dem Faktor, statt etwas dazuzuzählen?
-        - call: '[round(v, 3) for v in gain(np.array([0.5]), 6.0206)]'
-          expect: '[1.0]'
-          say: Etwa +6 dB verdoppeln die Schwingung.
-    solution: |
-      ```python
-      def gain(x, db):
-          return x * 10 ** (db / 20)
       ```
