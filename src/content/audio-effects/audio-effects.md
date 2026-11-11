@@ -587,6 +587,12 @@ Spielt man eine Aufnahme schneller ab, wird sie höher, und kürzer: Doppelt so 
 
 _task(speed-length)
 
+<div class='history' id='history-sped-up'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Nightcore, »sped up« und »slowed«</strong>, 2001. »Nightcore« war der Name eines Schulprojekts: Lieder, etwa 35 % schneller abgespielt, und damit höher. In den frühen 2020er-Jahren wurde das durch TikTok wieder beliebt. Bei FIFTY FIFTYs »Cupid« wurde 2023 zuerst die schnellere Fassung eines Fans auf TikTok bekannt, dann brachte die Plattenfirma eine eigene heraus. Den umgekehrten Weg geht »slowed and reverb«: ein Lied langsamer abgespielt, also tiefer, und mit Hall dazu, beliebt auf YouTube und TikTok.</p>
+<p>Hör dir »Cupid« in drei Fassungen an, alle von FIFTY FIFTY auf YouTube: <a href='https://www.youtube.com/watch?v=OFDTqxlgWOw'>wie aufgenommen</a>, <a href='https://www.youtube.com/watch?v=Xxb9Hl5d6n4'>schneller</a> und <a href='https://www.youtube.com/watch?v=31Igu1C9H4g'>langsamer</a>. Achte auf die Stimmen: Wie klingen sie in der schnellen Fassung, und wie lang ist jede Fassung?</p>
+</div>
+
 Die Grains haben einen Haken: Liegen zwei übereinander, deren Schwingungen gerade gegeneinander laufen, löschen sie sich aus, und die Stimme klingt hohl. Darum verschiebt der Pitch Shifter jedes Grain, bevor er es hinzuzählt, um bis zu eine Schwingung der tiefsten Stimme (1/60 Sekunde), bis es am besten zu dem passt, was schon da ist. Am besten passt es, wo das Produkt der beiden, Sample für Sample addiert, am größten ist: `np.correlate` rechnet das für alle Verschiebungen auf einmal aus.
 
 Dasselbe Produkt sagt auch, wie hoch eine Stimme gerade ist. Multipliziert man einen Block Sample für Sample mit sich selbst, um `lag` Samples verschoben, und zählt zusammen, heißt das **Autokorrelation**. Sie ist groß, wo der Block zu sich selbst passt: bei einer Verschiebung um eine ganze Schwingung, um zwei und so weiter. Bei 0 passt er immer, und kurz danach noch fast, denn eine Stimme ändert sich von Sample zu Sample kaum. Erst nach einer halben Schwingung läuft die verschobene Kopie gegen das Original und die Summe wird negativ. Die Tonhöhe findet man also so: Warte, bis die Autokorrelation einmal negativ war, und nimm dann die Verschiebung, bei der sie am größten ist. Ist sie das bei `lag` Samples, dauert eine Schwingung `lag / rate` Sekunden, und die Frequenz ist `rate / lag`.
@@ -712,7 +718,7 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir den Liedtext und die Melodie zuerst einzeln an, den Liedtext mit <strong>Effekt an</strong> aus: gesprochen, jede Silbe so lang wie ihr Ton. Schalt den Effekt dann ein: Jetzt singt die Stimme die Melodie. Welches Lied ist es? Schalt <strong>Melodie dazu</strong> ein und hör, ob die Stimme den Ton trifft. Stell dann das Ziel auf den nächsten Halbton und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild?
+<strong>Ausprobieren:</strong> Hör dir die Stimme mit einer Retune Speed von 0 an und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed dann langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild? Probier dasselbe mit der Melodie: Warum ändert Autotune an ihr fast nichts?
 </div>
 
 Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.
@@ -789,7 +795,7 @@ Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder
 <div class='effect-widget' data-effect='vocoder'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Stimme mit dem Akkord an und schalt den Effekt aus und an. Nimm dann die Melodie als Träger: Was singt der Roboter? Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
+<strong>Ausprobieren:</strong> Hör dir die Stimme mit dem Akkord an und schalt den Effekt aus und an. Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
 </div>
 
 <div class='history' id='history-vocoder'>

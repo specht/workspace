@@ -37,12 +37,8 @@
     const CLIPS = {
         musik: { label: 'Musik', url: '/audio/musik.wav' },
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
-        // the words of »Ode an die Freude«, timed to stimmeMelodie (bilder/voice_melody.py)
-        stimmeImTakt: { label: 'Liedtext', url: '/audio/stimme-im-takt.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
-        // »Ode an die Freude«, as long as stimme-im-takt.wav (bilder/voice_melody.py)
-        stimmeMelodie: { label: 'Melodie', url: '/audio/stimme-melodie.wav' },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -158,13 +154,7 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimmeImTakt', 'stimmeMelodie'],
-            plain: ['stimmeMelodie'],            // played as it is
-            melody: 'stimmeMelodie',             // the target of »Melodie«
-            choices: [
-                { key: 'target', label: 'Ziel', value: 'melody', options: [['melody', 'die Melodie'], ['note', 'der nächste Halbton']] },
-            ],
-            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false }],
+            clips: ['stimme', 'melodie'],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
@@ -174,7 +164,7 @@
             ],
             live: true,
             neutral: () => false,
-            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau die Stimme, lila mit Autotune, dunkel die Melodie; die dünnen Linien sind die Halbtöne.',
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune; die dünnen Linien sind die Halbtöne.',
             line: (p) => {
                 const goal = p.target === 'melody' ? 'den Ton der Melodie' : 'den nächsten Halbton';
                 return p.speed === 0
@@ -185,10 +175,9 @@
         },
         vocoder: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimmeImTakt', 'stimme'],
-            melody: 'stimmeMelodie',
+            clips: ['stimme'],
             choices: [
-                { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['melody', 'Melodie'], ['noise', 'Rauschen']] },
+                { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['noise', 'Rauschen']] },
             ],
             knobs: [
                 { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 16,

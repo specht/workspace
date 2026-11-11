@@ -117,3 +117,33 @@ vocoder:
     sources:
       - url: https://en.wikipedia.org/wiki/Kraftwerk
         quote: "Kraftwerk used a custom-built vocoder on its albums Ralf & Florian and Autobahn … Schneider processing his voice with a vocoder live"
+
+sped-up:
+  - text: Nightcore, »sped up« und »slowed«, 2001
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "The term \"nightcore\" was first used in 2001 as the name for a school project"
+  - text: »Nightcore« war der Name eines Schulprojekts
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "The term \"nightcore\" was first used in 2001 as the name for a school project"
+  - text: Lieder, etwa 35 % schneller abgespielt, und damit höher
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "speeds up its source material by approximately 35%, which also raises the pitch"
+  - text: In den frühen 2020er-Jahren wurde das durch TikTok wieder beliebt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "Nightcore saw a general resurgence in popularity in the early 2020s due to TikTok"
+  - text: Bei FIFTY FIFTYs »Cupid« wurde 2023 zuerst die schnellere Fassung eines Fans auf TikTok bekannt, dann brachte die Plattenfirma eine eigene heraus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cupid_(Fifty_Fifty_song)
+        quote: "a user-generated sped-up version became popular on TikTok due to a dance challenge started by the group … an official sped-up rendition of \"Twin\" version was released on various streaming platforms"
+  - text: 'Den umgekehrten Weg geht »slowed and reverb«: ein Lied langsamer abgespielt, also tiefer, und mit Hall dazu, beliebt auf YouTube und TikTok'
+    sources:
+      - url: https://en.wikipedia.org/wiki/Slowed_and_reverb
+        quote: "slowing down and adding reverb to a previously existing song … The style became especially popular on YouTube. … Remixes using the technique also became popular on the video-sharing service TikTok."
+  - text: Hör dir »Cupid« in drei Fassungen an
+    none: eine Einladung zum Anhören; die Links sind die offiziellen Aufnahmen auf »FIFTY FIFTY - Topic«
+  - text: Achte auf die Stimmen
+    none: eine Frage zum Anhören
