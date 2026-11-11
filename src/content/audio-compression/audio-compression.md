@@ -61,7 +61,7 @@ Probier beides aus. Spiel einen Klang ab und schalte um, während er läuft:
 <div class='sampling-widget'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Stell bei der Musik die Abtastrate von 44.100 schrittweise auf 4.000 Hz. Achte auf das Zischen der Hi-Hat: Bei welcher Rate ist es weg? Wie klingt die Musik bei 8.000 Hz, der Rate des Telefons? Geh dann zurück auf 44.100 Hz und nimm Bits weg. Ab wie vielen Bits hörst du ein Rauschen, und wo hörst du es zuerst, in lauten oder in leisen Stellen? Im Bild sitzt bei wenigen Bits jedes Sample auf einer der Linien. Bei der Stimme ändert sich zwischen 44.100 und 22.050 Hz nichts: warum?
+<strong>Ausprobieren:</strong> Stell bei Funk die Abtastrate von 44.100 schrittweise auf 4.000 Hz. Achte auf das Zischen der Hi-Hat: Bei welcher Rate ist es weg? Wie klingt Funk bei 8.000 Hz, der Rate des Telefons? Geh dann zurück auf 44.100 Hz und nimm Bits weg. Ab wie vielen Bits hörst du ein Rauschen, und wo hörst du es zuerst, in lauten oder in leisen Stellen? Im Bild sitzt bei wenigen Bits jedes Sample auf einer der Linien. Bei der Stimme ändert sich zwischen 44.100 und 22.050 Hz nichts: warum?
 </div>
 
 Die Samples in gleichen Abständen als Zahlen zu senden, heißt **Pulscodemodulation**, kurz PCM. Alec Reeves, ein Ingenieur bei ITT in Paris, schlug sie 1937 für Telefongespräche vor und meldete sie 1938 zum Patent an. Bauen ließ sie sich erst Jahrzehnte später: 1961 schickte das Telefonnetz der USA die ersten Gespräche als PCM, 8.000 Samples mit je 8 Bit in der Sekunde. Die **Compact Disc** von Philips und Sony kam am 1. Oktober 1982 in Japan in die Läden, mit zwei Kanälen für Stereo und je 44.100 Samples mit 16 Bit in der Sekunde. Die krumme Zahl kommt vom Videorekorder: Studios speicherten Musik digital auf Videobändern, drei Samples in jeder Zeile des Fernsehbilds. Beim europäischen Fernsehen sind das 294 Zeilen mal 50 Halbbilder mal 3 Samples, genau 44.100 in der Sekunde.
@@ -830,7 +830,7 @@ Ein **Spektrogramm** zeigt das Spektrum über die Zeit: nach rechts die Zeit, na
 <div class='spectrum-widget'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Der <strong>Sweep</strong> ist ein Ton, der in vier Sekunden von 100 Hz bis 10.000 Hz gleitet: Auf der logarithmischen Skala wird er zu einer geraden Linie. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Schalt bei der Musik die Instrumente einzeln aus und wieder an: Wo liegt die Kick-Drum, wo die Hi-Hat, und welches Instrument macht die waagerechten Linien in der Mitte?
+<strong>Ausprobieren:</strong> Beim Akkord siehst du drei waagerechte Linien: Lies im Spektrum unten ab, bei welchen Frequenzen sie liegen. Der <strong>Sweep</strong> ist ein Ton, der in vier Sekunden von 100 Hz bis 10.000 Hz gleitet: Auf der logarithmischen Skala wird er zu einer geraden Linie. Bei der Stimme liegen viele Linien in gleichen Abständen übereinander und bewegen sich gemeinsam auf und ab, wenn die Stimme höher oder tiefer wird. Wo im Satz siehst du statt Linien eine breite Wolke weit oben, und welche Laute sind das? Beim Gesang sind die Linien noch deutlicher: Wo ein Ton lange gehalten wird, wellen sie sich ein wenig, das ist das Vibrato. Beim Schlagzeug gibt es kaum Linien: Woran erkennst du trotzdem Kick-Drum, Snare und Hi-Hat? Schalt bei der Musik die Instrumente einzeln aus und wieder an: Wo liegt die Kick-Drum, wo die Hi-Hat, und welches Instrument macht die waagerechten Linien in der Mitte?
 </div>
 
 Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit einer Grundfrequenz, beim Sprechen meist zwischen 80 und 250 Hz, und dazu mit jedem Vielfachen davon. Laute wie s, sch und z sind dagegen Rauschen, ein Gemisch sehr vieler Frequenzen, und das liegt hoch. Darum gehen sie bei einer kleinen Abtastrate als Erstes verloren.
@@ -1988,7 +1988,7 @@ Die Bytes bei dir sollten genauso aussehen. MP3 und AAC halten die Bitrate fast 
 
 Ob man einen Codec hört, lässt sich nicht mit einer Frage wie »Klingt das gut?« klären: Wer weiß, welches das Original ist, hört leicht einen Unterschied, den es nicht gibt. Darum gibt es den **ABX-Test**, den W. A. Munson und Mark B. Gardner von den Bell Labs 1950 beschrieben: Du hörst **A**, das Original, und **B**, die Fassung mit Codec, und dazu **X**, das eins von beiden ist, ohne dass du weißt, welches. Dann sagst du, ob X A oder B ist. Wer keinen Unterschied hört, liegt im Mittel bei der Hälfte richtig. Wer in 10 Runden 9-mal richtig liegt, hat mit Raten nur eine Chance von etwa 1 %: Er hört einen Unterschied.
 
-Im Widget sind A und B fünf Sekunden der Musik, B einmal durch den Codec und zurück; du kannst jederzeit umschalten, ohne dass die Musik von vorn anfängt.
+Im Widget sind A und B fünf Sekunden Jazz, die Aufnahme eines Quartetts, B einmal durch den Codec und zurück; du kannst jederzeit umschalten, ohne dass die Musik von vorn anfängt.
 
 <div class='abx-widget'></div>
 
