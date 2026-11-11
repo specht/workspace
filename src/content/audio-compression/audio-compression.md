@@ -1635,6 +1635,13 @@ def allowed(level):
 
 _task(mithoerschwelle)
 
+So sieht das für einen Block der Musik aus, etwa 1,4 Sekunden nach dem Anfang, mit deinem `allowed`:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='masking-block-wide.svg' alt='Ein Diagramm über die 25 Bänder, nach rechts die Frequenz von 100 bis über 10.000 Hz, nach oben dB SPL von 0 bis 100. Graue Striche zeigen die Lautstärke jedes Bandes, unten um 75 dB, in der Mitte um 50, einige Bänder viel leiser. Eine lila Stufenlinie zeigt den erlaubten Fehler: knapp unter den lauten Bändern, dazwischen höher als die leisen. Gestrichelt darunter die Hörschwelle in der Stille, weit unten. Vier Bereiche sind hell hinterlegt, in denen das Band leiser ist als der erlaubte Fehler.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='masking-block.svg' alt='Ein Diagramm über die 25 Bänder, nach rechts die Frequenz von 100 bis über 5.000 Hz, nach oben dB SPL von 0 bis 100. Graue Striche zeigen die Lautstärke jedes Bandes, eine lila Stufenlinie den erlaubten Fehler knapp unter den lauten Bändern, gestrichelt weit darunter die Hörschwelle in der Stille. Vier Bereiche sind hell hinterlegt, in denen das Band leiser ist als der erlaubte Fehler.'>
+
+Die lila Linie liegt fast überall weit über der Hörschwelle: Die lauten Bänder ziehen die Mithörschwelle für sich und ihre Nachbarn hoch. Wo ein Band lila hinterlegt ist, ist es leiser als der Fehler, den die Nachbarn verdecken; dort darf alles 0 werden, und niemand hört es. Ganz oben hebt die Hörschwelle selbst die Linie: So hoch hört kaum ein Ohr.
+
 ### Runden nach Gehör
 
 Jetzt das Runden. Rundet man auf ein Vielfaches einer Stufe `step`, ist der Fehler gleichmäßig zwischen `-step / 2` und `step / 2` verteilt, und seine Energie ist im Mittel `step ** 2 / 12` je Zahl. `quantise` wählt die Stufe jedes Bandes so, dass die Energie des Fehlers im ganzen Band gerade so groß ist, wie `allowed` erlaubt. Heraus kommen ganze Zahlen `q` und für jedes Band seine Stufe; `dequantise` macht daraus wieder die Zahlen der MDCT. Schreib unter `allowed`:
