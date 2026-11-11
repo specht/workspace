@@ -169,6 +169,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1830 -->
+<!-- part: muybridge -->
+### Eadweard Muybridge
+
+<div class='person'>
+<img src='muybridge.webp' alt='Eadweard Muybridge im Alter: ein Mann mit wildem weißem Haar und langem weißem Vollbart in einem dunklen Anzug, der ernst zur Seite blickt.'>
+<p><strong>Eadweard Muybridge</strong> (1830–1904), englischer Fotograf aus Kingston upon Thames, hieß eigentlich Edward James Muggeridge; »Eadweard« hielt er für die alte angelsächsische Form von Edward. Mit 20 Jahren wanderte er in die USA aus, verkaufte Bücher in New York und San Francisco und stellte 1868 große Fotos aus dem Yosemite-Tal aus.</p>
+<p>Von 1883 bis 1886 machte er an der University of Pennsylvania in Philadelphia über 100.000 Fotos von Menschen und Tieren in Bewegung. Sein Zoopraxiskop, das gemalte Bilder von Glasscheiben auf eine Leinwand warf, war eines der Vorbilder für das Kinetoskop von Thomas Edison und William Kennedy Dickson, das erste Gerät, mit dem man Filme gegen Geld zeigte.</p>
+<p class='person-credit'>Foto: Frances Benjamin Johnston, zwischen 1890 und 1910, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Eadweard_Muybridge_by_Frances_Benjamin_Johnston_(cph_3b02731).tif'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1831 -->
 <!-- part: maxwell -->
 ### James Clerk Maxwell

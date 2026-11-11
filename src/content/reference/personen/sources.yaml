@@ -4171,6 +4171,31 @@ parsons:
     sources:
       - url: https://en.wikipedia.org/wiki/Kane_Parsons
         quote: "released by A24 on May 29, 2026. … At 20 years old upon the film's release, … Parsons became the youngest director to have a film open at number one at the North American box office,"
+muybridge:
+  - text: (1830–1904), englischer Fotograf aus Kingston upon Thames, hieß eigentlich Edward James Muggeridge
+    sources:
+      - url: https://en.wikipedia.org/wiki/Eadweard_Muybridge
+        quote: "Eadweard Muybridge ( ED-wərd MY-brij; 9 April 1830 – 8 May 1904, born Edward James Muggeridge) was an English photographer … Born in Kingston upon Thames, Surrey, England,"
+  - text: »Eadweard« hielt er für die alte angelsächsische Form von Edward
+    sources:
+      - url: https://en.wikipedia.org/wiki/Eadweard_Muybridge
+        quote: "He adopted the first name \"Eadweard\" as the original Anglo-Saxon form of \"Edward\","
+  - text: Mit 20 Jahren wanderte er in die USA aus, verkaufte Bücher in New York und San Francisco und stellte 1868 große Fotos aus dem Yosemite-Tal aus.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Eadweard_Muybridge
+        quote: "at the age of 20 he emigrated to the United States as a bookseller, first to New York City and then to San Francisco. … In 1868, he exhibited large photographs of Yosemite Valley,"
+  - text: Von 1883 bis 1886 machte er an der University of Pennsylvania in Philadelphia über 100.000 Fotos von Menschen und Tieren in Bewegung.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Eadweard_Muybridge
+        quote: "From 1883 to 1886, he entered a very productive period at the University of Pennsylvania in Philadelphia, producing over 100,000 images of animals and humans in motion,"
+  - text: Sein Zoopraxiskop, das gemalte Bilder von Glasscheiben auf eine Leinwand warf
+    sources:
+      - url: https://en.wikipedia.org/wiki/Eadweard_Muybridge
+        quote: "his zoopraxiscope, a device for projecting painted motion pictures from glass discs"
+  - text: war eines der Vorbilder für das Kinetoskop von Thomas Edison und William Kennedy Dickson, das erste Gerät, mit dem man Filme gegen Geld zeigte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Zoopraxiscope
+        quote: "The device appears to have been one of the primary inspirations for Thomas Edison and William Kennedy Dickson's Kinetoscope, the first commercial film exhibition system."
 bekesy:
   - text: (1899–1972), ungarischer Physiker.
     sources:

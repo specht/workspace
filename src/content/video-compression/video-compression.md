@@ -36,6 +36,8 @@ Berührt ein galoppierendes Pferd immer mit einem Huf den Boden? Das wollte Lela
 
 Unter der Tafel steht, dass die Fotos etwa eine fünfundzwanzigstel Sekunde auseinander liegen: 25 Bilder pro Sekunde, so viele wie später beim europäischen Fernsehen. Die ersten elf Fotos zeigen einen Galoppsprung. Ausgeschnitten und nacheinander gezeigt, werden sie zu einem Film. Muybridge tat das ab 1880 mit einer Scheibe, auf die er die Bilder malte und die er drehte. Das machst du gleich selbst, mit Python.
 
+_person(muybridge)
+
 ### Einrichten
 
 Lege einen Ordner an und hol dir die Tafel mit Muybridges Fotos:
