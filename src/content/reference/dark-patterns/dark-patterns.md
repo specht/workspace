@@ -3,8 +3,6 @@ kind: reference
 search: Deceptive Patterns, Cookie-Banner, Einwilligung, Nudging, Kündigungsbutton
 </div>
 
-<script src='/include/dark_patterns_demo.js'></script>
-
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
@@ -55,43 +53,14 @@ Die englischen Namen sind die von [deceptive.design](https://www.deceptive.desig
 </div>
 <!-- /part -->
 
-### Ablehnen, so schwer wie möglich
+### Warum sie wirken
 
-Ein Banner, das Zustimmen leicht macht und Ablehnen schwer, kostet niemanden
-viel Zeit, nur ein paar Klicks. Genau darauf zählt es: Wer es eilig hat, klickt
-den großen Knopf.
-
-<div class='dp-demo' data-demo='banner'></div>
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Lehne in beiden Bannern alles ab. Wie viele Klicks brauchst du links, wie viele rechts? Was ist links schon eingeschaltet, wenn du die Einstellungen öffnest?
-</div>
-
-### Irreführende Wörter
-
-Zwei Verneinungen in einem Satz liest kaum jemand richtig, schon gar nicht,
-wenn man nur schnell bestellen will.
-
-<div class='dp-demo' data-demo='wording'></div>
-
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Überleg zuerst, ob du mit dem Häkchen Werbung bekommst oder nicht, und bestell dann. Hattest du recht?
-</div>
-
-### Falsche Eile
-
-Ein Countdown setzt unter Druck: Wer glaubt, dass ein Angebot gleich endet,
-denkt weniger nach.
-
-<div class='dp-demo' data-demo='urgency'></div>
-
-### Versteckte Kosten
-
-Wer schon drei Schritte bis zur Kasse gegangen ist, bricht ungern ab, auch
-wenn der Preis gestiegen ist.
-
-<div class='dp-demo' data-demo='costs'></div>
-
+Jedes Muster kostet nur ein wenig: ein paar Klicks mehr zum Ablehnen, einen
+Satz, den man zweimal lesen muss, ein paar Euro, die erst an der Kasse
+dazukommen. Genau darauf zählen sie. Wer es eilig hat, klickt den großen
+Knopf; wer glaubt, dass ein Angebot gleich endet, denkt weniger nach; und wer
+schon drei Schritte bis zur Kasse gegangen ist, bricht ungern ab, auch wenn
+der Preis gestiegen ist.
 
 <!-- part: dark-pattern-gesetz -->
 <!-- short: Einwilligung nach DSGVO, die Sicht der deutschen Aufsichtsbehörden auf Cookie-Banner, Art. 25 Digital Services Act, der Kündigungsbutton nach § 312k BGB. -->

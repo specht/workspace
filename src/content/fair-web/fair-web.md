@@ -392,6 +392,19 @@ aber nur, wenn es stimmt.
 
 _task(kein-countdown)
 
+### Der Preis an der Kasse
+
+Die AG kostet nichts. Beim Einkaufen im Netz begegnet dir noch ein Muster:
+Der Preis, mit dem ein Angebot lockt, wächst Schritt für Schritt bis zur
+Kasse. Wer schon drei Schritte gegangen ist, bricht ungern ab, auch wenn es
+teurer geworden ist.
+
+<div class='dp-demo' data-demo='costs'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Geh links Schritt für Schritt bis zur Kasse. Um wie viel Prozent ist der Preis gestiegen? Welche Gebühr passt nicht zu einer Karte, die als Datei kommt?
+</div>
+
 ## Phishing
 
 Eine Mail, die aussieht, als käme sie von der Schule, von einem Paketdienst
