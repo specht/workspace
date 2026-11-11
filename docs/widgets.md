@@ -580,8 +580,13 @@ only to look nice.
   the step at once. A click during a movement finishes it first.
 - `prefers-reduced-motion` shows every step at once. `?motion=slow` in the
   address makes every movement six times slower, to look at it closely.
-- Four buttons with `data-go` (first, prev, next, last) and ← → through
-  `stepper_keys.js` (`data-stepper` on the widget); on a touch screen a
+- Four buttons with `data-go` (first, prev, next, last) and ← →, Pos1 and
+  Ende through `stepper_keys.js` (`data-stepper` on the widget). The keys go
+  to the widget that has the window (at least half of it visible, or
+  filling at least half of the window; of several, the one taking up most
+  of it), which shows it with its left edge in the purple of »current«
+  (`stepper-has-keys`); without such a widget the keys are the page's, and
+  Pos1 and Ende scroll it (the maintainer, November 2026). On a touch screen a
   sideways swipe across the picture steps it too (not on the timeline,
   `data-no-swipe`). On a touch screen (tablet, phone) the controls sit on
   the right, where the thumb is: back and next large and finger-sized

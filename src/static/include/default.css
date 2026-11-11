@@ -8761,6 +8761,14 @@ html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget-line: #2a2e34;
     --widget-tint: #1a1b1b;
 }
+/* the widget that has the keys (← →, Pos1, Ende; stepper_keys.js): its
+   left edge in the purple of »current« */
+div[data-stepper] {
+    transition: border-left-color 0.25s ease;
+}
+div[data-stepper].stepper-has-keys {
+    border-left-color: var(--stepper-current);
+}
 /* the lightbox for a demo (stepper_keys.js): the square button at the top
    right; the widget larger over the page; arrows at the edges to the
    previous and next widget */

@@ -1,41 +1,77 @@
 // ← and → step through a step-by-step widget: the Huffman tree, the LZW
-// tables, the GIF decoder, the JPEG decoder. A widget built after the page
+// tables, the GIF decoder, the JPEG decoder; Pos1 and Ende go to its start
+// and its end. A widget built after the page
 // has loaded sends document the event stepper-added (detail: the widget),
 // so that it gets the lightbox, play, the timeline and its reserved heights. A widget is an element with
 // data-stepper; its buttons say what they do with data-go (first, prev,
 // next, last), and the keys press them, so a widget does nothing extra.
 //
-// With several widgets on a page, the keys step the one that takes up most
-// of the window. They leave alone a text field (the cursor moves there), a
-// key with Ctrl, Alt or Cmd, and an open dialog such as a picture opened
-// large, which steps with the arrow keys itself.
-document.addEventListener('keydown', (event) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return;
-    const target = event.target;
-    if (target instanceof HTMLElement &&
-        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
-    if (document.querySelector('dialog[open]')) return;
-
+// The keys go to the widget that has the window: of the widgets that show
+// at least half of themselves or fill at least half of the window, the one
+// that takes up most of it. That widget gets the class stepper-has-keys
+// (its left edge in the purple of »current«, default.css), so that the
+// reader sees where the keys go. Without such a widget the keys do what
+// they do on the page (Pos1 and Ende scroll to its start and end). They
+// leave alone a text field (the cursor moves there), a key with Ctrl, Alt
+// or Cmd, and an open dialog such as a picture opened large, which steps
+// with the arrow keys itself.
+const stepperWithKeys = () => {
     let best = null;
     let bestArea = 0;
+    const windowArea = window.innerWidth * window.innerHeight;
     for (const widget of document.querySelectorAll('[data-stepper]')) {
         const rect = widget.getBoundingClientRect();
         const width = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0);
         const height = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
         const area = Math.max(0, width) * Math.max(0, height);
-        if (area > bestArea) {
+        const own = rect.width * rect.height;
+        const holds = area > 0 && (area >= 0.5 * own || area >= 0.5 * windowArea);
+        if (holds && area > bestArea) {
             best = widget;
             bestArea = area;
         }
     }
-    if (!best) return;
+    return best;
+};
 
-    const button = best.querySelector(`[data-go='${event.key === 'ArrowLeft' ? 'prev' : 'next'}']`);
-    if (!button || button.disabled) return;
+document.addEventListener('keydown', (event) => {
+    const which = { ArrowLeft: 'prev', ArrowRight: 'next', Home: 'first', End: 'last' }[event.key];
+    if (!which) return;
+    if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.defaultPrevented) return;
+    const target = event.target;
+    if (target instanceof HTMLElement &&
+        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+    if (document.querySelector('dialog[open]')) return;
+
+    const best = stepperWithKeys();
+    if (!best) return;
+    const button = best.querySelector(`[data-go='${which}']`);
+    if (!button) return;
+    // at the start or the end already: the key is still the widget's, so
+    // that Pos1 does not throw the page to its top
     event.preventDefault();
-    button.click();
+    if (!button.disabled) button.click();
 });
+
+// the widget that has the keys, marked; again when the page scrolls, the
+// window changes or a widget is added
+(() => {
+    let marked = null;
+    let waiting = 0;
+    const mark = () => {
+        waiting = 0;
+        const best = stepperWithKeys();
+        if (best === marked) return;
+        if (marked) marked.classList.remove('stepper-has-keys');
+        if (best) best.classList.add('stepper-has-keys');
+        marked = best;
+    };
+    const soon = () => { if (!waiting) waiting = requestAnimationFrame(mark); };
+    window.addEventListener('scroll', soon, { passive: true });
+    window.addEventListener('resize', soon);
+    document.addEventListener('stepper-added', soon);
+    if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon);
+})();
 
 // On a touch screen a swipe to the left or right across a widget steps it,
 // like turning a page: next to the left, back to the right. Not in a text
