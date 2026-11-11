@@ -7,7 +7,7 @@ duration: 9 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Diskrete Kosinustransformation, Bewegungsschätzung), Vertiefung Technische Informatik (Videokompression)"
 topics: [kompression, codierung]
 requires: [jpeg, audio-compression]
-reference: [bits-und-bytes, ffmpeg]
+reference: [bits-und-bytes, ffmpeg, farbraeume]
 </div>
 
 <div
@@ -288,7 +288,7 @@ Die Idee ist älter als jeder Codec. Als das Farbfernsehen kam, sollten die alte
 
 ### Helligkeit und Farbe trennen
 
-Statt Rot, Grün und Blau speichert ein Codec drei andere Zahlen: **Y** ist die Helligkeit, auf Englisch **Luma**. **Cb** sagt, wie viel blauer das Pixel ist als ein Grau derselben Helligkeit, und **Cr**, wie viel röter; zusammen heißen die beiden **Chroma**. Die Formeln sind dieselben wie bei JPEG:
+Statt Rot, Grün und Blau speichert ein Codec drei andere Zahlen: **Y** ist die Helligkeit, auf Englisch **Luma**. **Cb** sagt, wie viel blauer das Pixel ist als ein Grau derselben Helligkeit, und **Cr**, wie viel röter; zusammen heißen die beiden **Chroma** (Handbuch, [Farbräume](/reference/farbraeume), YCbCr). Die Formeln sind dieselben wie bei JPEG:
 
 $$Y = 0{,}299\,R + 0{,}587\,G + 0{,}114\,B$$
 

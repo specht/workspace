@@ -3,6 +3,8 @@ kind: reference
 search: Barrierefreiheit, Accessibility, a11y, Screenreader, Kontrast, Alt-Text, Tastatur, WCAG, BITV, BFSG
 </div>
 
+<script src='/include/a11y_demo.js'></script>
+
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
@@ -62,6 +64,42 @@ der Regel in den WCAG 2.2 und ihre Stufe.
 </table>
 </div>
 <!-- /part -->
+
+### Nur Farbe
+
+Eine Rot-Grün-Schwäche ist häufig: In Europa hat sie etwa jeder zwölfte Mann.
+Wer sie hat, sieht Rot und Grün als ähnliche Brauntöne. Eine Liste, in der nur
+ein grüner oder ein roter Punkt sagt, was gelöst ist, sagt dann nichts mehr,
+und ein Feld, dessen Fehler nur ein roter Rahmen zeigt, sieht aus wie jedes
+andere. Ein Zeichen und ein Wort dazu gehen nicht verloren, auch nicht in Grau,
+auf einem schlechten Beamer oder beim Ausdruck.
+
+<div class='a11y-demo' data-demo='color'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell »Rot-Grün-Schwäche (grün)« ein: Welche Aufgaben sind links gelöst, welche rechts? Und welches Feld hat einen Fehler? Dann »in Grau«: Was bleibt links übrig?
+</div>
+
+### Kontrast
+
+Wie gut sich Text vom Hintergrund abhebt, misst das **Kontrastverhältnis**: von
+1 : 1, Grau auf demselben Grau, bis 21 : 1, Schwarz auf Weiß. Helles Grau auf
+Weiß sieht auf einem guten Bildschirm elegant aus, auf dem Handy in der Sonne
+ist es kaum zu lesen.
+
+<div class='a11y-demo' data-demo='contrast'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schieb das Grau langsam dunkler: Ab wann reicht es für großen Text, ab wann für normalen? Wie dunkel muss es sein, bis du es selbst gut lesen kannst?
+</div>
+
+### Was ein Screenreader hört
+
+Ein Screenreader sieht die Seite nicht, er liest ihr HTML. Was dort nicht steht,
+erfährt niemand, der ihm zuhört.
+
+<div class='a11y-demo' data-demo='reader'></div>
+
 
 <!-- part: barrierefreiheit-gesetz -->
 <!-- short: BITV 2.0 für öffentliche Stellen, das Barrierefreiheitsstärkungsgesetz seit 28. Juni 2025 für Online-Shops und andere Dienstleistungen, Kleinstunternehmen ausgenommen. -->

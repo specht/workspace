@@ -57,6 +57,9 @@ address from `credentials.rb` and the code `123456`.
 - [docs/plan-audio-video.md](docs/plan-audio-video.md): two activities planned, not built: audio and
   video compression from uncompressed data to Opus and AV2, with history, widgets and tasks;
   numpy, ffmpeg and Pillow for the image; the maintainer's open decisions
+- [docs/plan-barrierefreiheit.md](docs/plan-barrierefreiheit.md): an activity planned, not built: a
+  website full of barriers that students use as others do, then fix chapter by chapter (alt texts,
+  labels, buttons, contrast as a function of their own, structure, focus), with the new checks it needs
 - [docs/plan-telefonspiel.md](docs/plan-telefonspiel.md): the Telefonspiel, a game behind a real phone
   number: the old Hackschule's version and why it was flaky, the decisions (Asterisk with any SIP trunk,
   several languages, one number for many games and calls), the protocol, the steps
