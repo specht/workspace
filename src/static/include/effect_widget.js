@@ -84,7 +84,7 @@
         liftoffCarrier: { label: 'Träger', url: '/audio/liftoff-traeger.flac',
             credit: 'Die Melodie als Instrument, Sägezahn- und Rechteckschwingung.' },
         liftoffBand: { label: 'Band', url: '/audio/liftoff-band.flac',
-            credit: "Septakkorde, Refrain auf dem »Royal Road« des J-Pop (Gmaj7, A7, F#7, Bm7), 128 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
+            credit: "Funk in h-Moll, Refrain auf dem »Royal Road« des J-Pop (Gmaj7, A7, F#7, Bm7), 128 Schläge in der Minute; Schlagzeug aus Samples von Alastair_Pursloe, sakebeats, Akssu, GRD-music-, deadrobotmusic und spaghettiSFX, CC0 (<a href='https://freesound.org/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi

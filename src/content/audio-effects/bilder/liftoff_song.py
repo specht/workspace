@@ -1,7 +1,7 @@
 """A song from NASA's commentary of the launch of Artemis II, 1 April 2026
 (public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
-for the autotune widget: the commentary as it was said over the verse, the
+for the vocoder widget: the commentary as it was said over the verse, the
 build and »and liftoff« on the chorus, sung only in the chorus (»The crew of
 Artemis twoooo / now bound for the Moooon«), answered spoken (»humanity's
 next great voyage begins«); a funk track at 128 beats a minute in B minor
@@ -38,7 +38,6 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 AUDIO = os.path.join(HERE, '..', '..', '..', 'static', 'audio')
-DRUMS = os.path.join(AUDIO, 'drums')
 RATE = 44100
 BPM = 128
 BEAT = 60 / BPM
