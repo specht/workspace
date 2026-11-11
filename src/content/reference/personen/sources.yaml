@@ -4292,3 +4292,25 @@ golomb:
         quote: "The video game Tetris is based on the seven one-sided tetrominoes"
       - url: https://en.wikipedia.org/wiki/Tetris
         quote: "Pajitnov bought a pentomino puzzle set from a store and played with it in his office, and he became inspired to adapt the puzzle game to the computer."
+
+brignull:
+  - text: Designer für Benutzeroberflächen (User Experience) mit einem Doktortitel in Kognitionswissenschaft
+    sources:
+      - url: https://deceptive.design/about-us/dr-harry-brignull/
+        quote: "holds a PhD in cognitive science"
+      - url: https://en.wikipedia.org/wiki/Dark_pattern
+        quote: "User experience designer Harry Brignull"
+  - text: Am 28. Juli 2010 meldete er die Website darkpatterns.org an, eine Sammlung von Oberflächen, die Menschen absichtlich täuschen, und gab ihnen damit ihren Namen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dark_pattern
+        quote: "User experience designer Harry Brignull coined the neologism on 28 July 2010 with the registration of darkpatterns.org, a \"pattern library with the specific goal of naming and shaming deceptive user interfaces\"."
+  - text: Heute heißt die Sammlung deceptive.design; 2023 erschien sein Buch »Deceptive Patterns«, und vor Gericht erklärt er als Gutachter, wie solche Tricks wirken
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dark_pattern
+        quote: "The site has since moved to deceptive.design, and in 2023, he released the book Deceptive Patterns."
+      - url: https://www.brignull.com/
+        quote: "I provide expert witness and consulting services in litigation involving manipulative, coercive or deceptive design."
+  - text: "Ein Häkchen, das schon gesetzt ist, ein Satz mit doppelter Verneinung, eine Frist, die nicht stimmt: Jede dieser Arten steht in seiner Sammlung, mit echten Beispielen großer Firmen"
+    sources:
+      - url: https://www.deceptive.design/types
+        quote: "Preselection … Trick wording … Fake urgency: The user is pressured into completing an action because they are presented with a fake time limitation."

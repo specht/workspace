@@ -1384,6 +1384,17 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1980 -->
+<!-- part: brignull -->
+### Harry Brignull
+
+<div class='person'>
+<img src='brignull.webp' alt='Harry Brignull 2010 bei einem Vortrag auf der Konferenz UX Brighton: ein Mann mit kurzen Haaren in einem karierten Hemd, der beim Sprechen mit beiden Händen erklärt.'>
+<p><strong>Harry Brignull</strong>, Designer für Benutzeroberflächen (User Experience) mit einem Doktortitel in Kognitionswissenschaft. Am 28. Juli 2010 meldete er die Website darkpatterns.org an, eine Sammlung von Oberflächen, die Menschen absichtlich täuschen, und gab ihnen damit ihren Namen: Dark Patterns. Heute heißt die Sammlung deceptive.design; 2023 erschien sein Buch »Deceptive Patterns«, und vor Gericht erklärt er als Gutachter, wie solche Tricks wirken.</p>
+<p>Ein Häkchen, das schon gesetzt ist, ein Satz mit doppelter Verneinung, eine Frist, die nicht stimmt: Jede dieser Arten steht in seiner Sammlung, mit echten Beispielen großer Firmen.</p>
+<p class='person-credit'>Foto: Rob Douglas, 2010, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Harry_Brignull_-_UX_Brighton_2010_(5008498950)_(cropped).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- part: coast -->
 ### Steve Coast
 

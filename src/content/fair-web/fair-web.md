@@ -313,9 +313,11 @@ _task(erklaerung)
 Die Seite der AG ist jetzt für alle benutzbar. Ehrlich ist sie noch nicht: Der
 Cookie-Banner, das Häkchen im Formular und der Countdown sind **Dark
 Patterns**, Gestaltung, die Menschen zu etwas bringt, das sie gar nicht wollen.
-Der Name stammt von dem britischen Designer Harry Brignull, der sie 2010 zu
+Der Name stammt von dem Designer Harry Brignull, der sie 2010 zu
 sammeln begann. Das Handbuch zeigt die häufigsten unter
 [Dark Patterns](/reference/dark-patterns).
+
+_person(brignull)
 
 Wenn du den ersten Teil ausgelassen hast, hol dir die Seite wie dort unter
 [Die Seite holen](/fair-web#die-seite-holen) beschrieben.

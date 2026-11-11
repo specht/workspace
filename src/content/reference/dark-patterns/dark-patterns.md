@@ -24,6 +24,8 @@ Eine Gestaltung, die Menschen zu etwas bringt, das sie so nicht wollten: der gro
 [deceptive.design](https://www.deceptive.design/), sammelt er seitdem Beispiele;
 dort heißen sie inzwischen **Deceptive Patterns**, täuschende Muster.
 
+_person(brignull)
+
 Ein Dark Pattern ist keine Panne. Die Gestaltung ist so gewählt, dass mehr
 Menschen tun, was der Anbieter will: zustimmen, kaufen, bleiben. Oft wirkt sie
 nur zusammen mit anderen: Eine Farbe allein drängt kaum, eine Farbe, ein
