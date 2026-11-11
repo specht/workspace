@@ -27,7 +27,7 @@ Wer sich anmeldet, gibt die eigene E-Mail-Adresse ein und bekommt einen Code. Di
 In der Schule kommen viele nicht an ihr Postfach. Dafür gibt es die Klassenseite:
 
 1. Öffne **Klassen** und wähle oben deine Gruppe.
-2. Klick auf **Anmelde-Codes zeigen** und zeig die Seite am Beamer.
+2. Klick rechts neben der Gruppe auf **Anmelde-Codes zeigen** und zeig die Seite am Beamer. Der Knopf ist immer da, auch wenn noch niemand einen Code angefordert hat; die Seite ist dann erst einmal leer.
 3. Lass die Klasse die Anmeldung starten. Jeder Name erscheint mit seinem Code, sobald er angefordert ist; Mail-Adressen stehen dort nicht.
 
 <img class='full full-shadow shot' src='codes-beamer.webp' alt='Die Anmelde-Codes am Beamer: Namen und Codes in großer Schrift.'>
@@ -111,7 +111,7 @@ Hier steht jede Person der Gruppe mit allen Aktivitäten, an denen jemand aus de
 
 Hier steht jede Person der Gruppe mit ihrem Workspace: ob er läuft, wie viel Rechenzeit und Speicher er gerade braucht. Eine Zeile leuchtet gelb, solange ihr Workspace arbeitet. Darüber zeigt eine Zeile, wie ausgelastet der Server ist. So erkennst du, ob ein Workspace hängt oder ob gerade alle gleichzeitig etwas Großes starten.
 
-Im selben Reiter verwaltest du die Gruppe: Namen und Adressen, Willkommensmails, das Einverständnis, ein Enddatum, weitere Lehrkräfte, Umbenennen und Löschen; unten nimmst du neue Personen auf.
+Im selben Reiter verwaltest du die Gruppe: Namen und Adressen, Willkommensmails, das Einverständnis, ein Enddatum, weitere Lehrkräfte, Umbenennen und Löschen. Neue Personen nimmst du ganz unten auf: Ins große Feld kommt eine Person pro Zeile, mit Namen wie `Lena Muster <lena.muster@example.org>` oder nur mit Adresse, auch aus einer Tabelle kopiert; dann **Hinzufügen**.
 
 <img class='full full-shadow shot' src='klasse-lernende.webp' alt='Der Reiter Lernende: oben die Auslastung des Servers, darunter die Lernenden mit ihrem Workspace und den Angaben der Gruppe.'>
 

@@ -2534,7 +2534,7 @@ class Main < Sinatra::Base
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<span class='class-board-actions'>#{new_group_button_html}" \
-            "<button type='button' class='btn btn-outline-secondary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></span></form>"
+            "<button type='button' class='btn btn-outline-primary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></span></form>"
         io << new_group_note_html
         io << "<div class='class-login-codes' data-group='#{h.(group)}' data-school='#{h.(school_names_of_groups[group])}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
             "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
