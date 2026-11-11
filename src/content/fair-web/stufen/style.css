@@ -1,0 +1,95 @@
+:focus-visible {
+  outline: 3px solid #1a5fb4;
+  outline-offset: 2px;
+}
+
+body {
+  max-width: 40em;
+  margin: 0 auto;
+  padding: 1em;
+  font-family: sans-serif;
+  color: #333333;
+  background: #ffffff;
+}
+
+h1 {
+  color: #1e6b30;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: #1e6b30;
+}
+
+nav a {
+  color: #1a5fb4;
+}
+
+.logo {
+  width: 3em;
+  vertical-align: middle;
+}
+
+.photo {
+  width: 100%;
+}
+
+.on {
+  color: #1e6b30;
+}
+
+.off {
+  color: #b02525;
+}
+
+.cookie-banner {
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #f1f3f5;
+}
+
+.choice {
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+}
+
+input {
+  display: block;
+  margin: 0.5em 0;
+  padding: 0.4em;
+}
+
+input.error {
+  border: 2px solid #b02525;
+}
+
+.error-text {
+  color: #b02525;
+}
+
+.error-text::before {
+  content: "⚠ ";
+}
+
+.small {
+  font-size: 0.9em;
+}
+
+.small input {
+  display: inline;
+}
+
+.send {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  color: #ffffff;
+  background: #364fc7;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

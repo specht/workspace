@@ -35,8 +35,8 @@
     <rect x="62" y="42" width="34" height="6" fill="#adb5bd"/>
     <path d="M-10 92 H130 L120 80 H0 Z" fill="#868e96"/>
   </g>
-  <!-- the robot at the right end of the table: head with eyes and mouth, antenna, arms with grippers, wheels -->
-  <g transform="translate(530 83)">
+  <!-- the robot sitting at the right end of the table: head with eyes and mouth, antenna, arms with grippers -->
+  <g transform="translate(530 100)">
     <line x1="30" y1="4" x2="30" y2="-10" stroke="#495057" stroke-width="3"/>
     <circle cx="30" cy="-13" r="5" fill="#ff6b6b"/>
     <rect x="10" y="4" width="40" height="30" rx="6" fill="#dee2e6" stroke="#495057" stroke-width="3"/>
@@ -51,9 +51,5 @@
     <path d="M-12 80 L-6 84 L0 80" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
     <path d="M54 50 L70 62 L66 76" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M60 76 L66 80 L72 76" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="18" cy="104" r="9" fill="#495057"/>
-    <circle cx="42" cy="104" r="9" fill="#495057"/>
-    <circle cx="18" cy="104" r="3" fill="#adb5bd"/>
-    <circle cx="42" cy="104" r="3" fill="#adb5bd"/>
   </g>
 </svg>

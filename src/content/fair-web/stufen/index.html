@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hacker-AG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="cookie-banner" id="banner">
+    <p>Dürfen wir mit einem Cookie zählen, welche Seiten du liest?</p>
+    <button class="choice" onclick="closeBanner()">Ablehnen</button>
+    <button class="choice" onclick="closeBanner()">Zustimmen</button>
+  </div>
+
+  <nav>
+    <img src="bilder/logo.svg" alt="Logo der Hacker-AG" class="logo">
+    <a href="#termine">Termine</a>
+    <a href="#anmelden">Anmelden</a>
+  </nav>
+
+  <main>
+    <h1>Hacker-AG</h1>
+    <p class="intro">Jeden Dienstag bauen wir Spiele, Roboter und Webseiten. Wer neu ist, ist willkommen!</p>
+    <img src="bilder/ag.svg" class="photo" alt="Drei Laptops auf einem langen Tisch, auf dem ersten Code, auf dem zweiten ein Spiel, auf dem dritten eine Webseite, daneben ein kleiner Roboter">
+
+    <h2 id="termine">Nächste Termine</h2>
+    <ul class="dates">
+      <li class="on">12. Mai: Spiele mit Python</li>
+      <li class="off">19. Mai: Webseiten bauen <strong>(fällt aus)</strong></li>
+      <li class="on">26. Mai: Roboter</li>
+    </ul>
+
+    <p>Die Anmeldung ist bis zum 10. Mai offen.</p>
+
+    <h2 id="anmelden">Anmelden</h2>
+    <form id="form">
+      <label for="name">Dein Name</label>
+      <input id="name" type="text" autocomplete="name">
+      <p id="name-error" class="error-text" hidden>Bitte gib deinen Namen ein.</p>
+      <label for="email">Deine E-Mail-Adresse</label>
+      <input id="email" type="email" autocomplete="email">
+      <p class="small">
+        <input type="checkbox" id="newsletter">
+        <label for="newsletter">Ja, schickt mir Neuigkeiten der AG per E-Mail.</label>
+      </p>
+      <button type="submit" class="send">Anmelden</button>
+    </form>
+  </main>
+
+  <a href="#" class="top">Nach oben</a>
+  <script src="script.js"></script>
+</body>
+</html>
