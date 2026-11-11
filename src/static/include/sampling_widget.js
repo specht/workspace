@@ -316,9 +316,11 @@
             const duration = original.length / SOURCE;
             return ((offset + Math.max(0, ctx.currentTime - startedAt)) % duration + duration) % duration;
         }
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
         function start(from, smooth = playing) {
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC || !heard) return;
+            announce();
             if (!ctx) ctx = new AC();
             if (ctx.state === 'suspended') ctx.resume();
             const duration = original.length / SOURCE;

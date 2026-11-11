@@ -1,7 +1,8 @@
 // Recordings to play, shown as the phone of the Telefonspiel shows a call
 // (default.css, .voice-chat): each .voice-item has a .voice-line button and
-// an <audio>. A click plays it, a second click stops it; another recording
-// stops the one before. ».voice-all« plays them one after the other.
+// an <audio>. A click plays it, a second click stops it; another recording,
+// or any other sound on the page, stops the one before. ».voice-all« plays
+// them one after the other.
 (function () {
     let current = null;     // { item, audio }
     let queue = [];         // the items still to come after it
@@ -27,6 +28,12 @@
         };
         audio.play().catch(() => { queue = []; finish(); });
     }
+
+    // another sound on the page (_template.html, audio_exclusive) stops this
+    // one and what was still to come
+    window.addEventListener('hs-audio-start', (e) => {
+        if (current && e.detail !== current.audio) { queue = []; finish(); }
+    });
 
     document.addEventListener('click', (e) => {
         const all = e.target.closest('.voice-all');

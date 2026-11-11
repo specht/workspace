@@ -198,7 +198,9 @@
         // its gain and when it started. Faded in and out over FADE seconds, so
         // that a change never breaks the flow.
         const FADE = 0.02;
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
         function start(f, db, withNoise, onEnd, when = null, phase = 0) {
+            announce();
             const c = audio();
             if (!c) return null;
             const at = when === null ? c.currentTime + 0.005 : when;

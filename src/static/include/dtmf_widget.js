@@ -338,8 +338,12 @@
             return ctx;
         }
 
+        // another sound starts on the page: the tone ends, a number being played stops
+        let cancelled = false;
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { cancelled = true; release(0); }) : () => {};
         function press(key) {
             if (!audio()) return;
+            announce();
             release(0);
             const [f1, f2] = tonesOf(key);
             const gain = ctx.createGain();
@@ -380,8 +384,10 @@
 
         async function play(keys) {
             busy = true;
+            cancelled = false;
             all.disabled = ask.disabled = true;
             for (const key of keys) {
+                if (cancelled) break;
                 press(key);
                 const started = sounding ? sounding.started : 0;
                 release(0.18);

@@ -604,6 +604,65 @@ function install_secondary_autotoc_button(nav, items) {
     window.addEventListener('resize', () => { if (window.innerWidth >= 1400) close(); });
 }
 
+// A card beside its picture (.hscol-pair, default.css) shows as many lines
+// of its text as fit beside the picture, measured: a title on two lines or
+// the line »Baut auf …« leave fewer. The clamps in default.css hold until
+// this has run, and wherever the cards stand above each other.
+function install_card_abstract_fit() {
+    let cards = document.querySelectorAll('.hscol-pair .tutorial_card3');
+    if (cards.length === 0) return;
+    function fit() {
+        for (let card of cards) {
+            // the picture that shows: a card has one for the light and one for the dark theme
+            let img = Array.from(card.querySelectorAll('img')).find((e) => e.getClientRects().length > 0);
+            let content = card.querySelector('.card-content');
+            let abstract = content && content.querySelector('.abstract');
+            if (!img || !abstract) continue;
+            abstract.style.webkitLineClamp = '';
+            abstract.style.lineClamp = '';
+            if (getComputedStyle(img.parentElement).flexDirection !== 'row') continue;
+            let line = parseFloat(getComputedStyle(abstract).lineHeight);
+            // the column is as tall as the picture: what its parts take is
+            // from the top of the first to the bottom of the last, with its padding
+            let parts = Array.from(content.children).filter((e) => getComputedStyle(e).position !== 'absolute' && e.getClientRects().length > 0);
+            let style = getComputedStyle(content);
+            let used = parts[parts.length - 1].getBoundingClientRect().bottom - parts[0].getBoundingClientRect().top
+                + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+            let others = used - abstract.getBoundingClientRect().height;
+            let lines = Math.max(1, Math.floor((img.getBoundingClientRect().height - others) / line + 0.05));
+            abstract.style.webkitLineClamp = lines;
+            abstract.style.lineClamp = lines;
+        }
+    }
+    let pending = null;
+    let later = () => { cancelAnimationFrame(pending); pending = requestAnimationFrame(fit); };
+    window.addEventListener('resize', later);
+    window.addEventListener('load', later);
+    if (document.fonts) document.fonts.ready.then(later);
+    fit();
+}
+
+// One sound at a time on a page: whatever starts to play announces it
+// (the event hs-audio-start), and everything else that plays stops. A
+// widget registers how it stops and calls what it gets back when it starts:
+//   const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
+// <audio> and <video> with sound take part by themselves; a muted video
+// that plays while it is in view (video_in_view.js) does not.
+function audio_exclusive(stop) {
+    let me = {};
+    window.addEventListener('hs-audio-start', (e) => { if (e.detail !== me) stop(); });
+    return () => window.dispatchEvent(new CustomEvent('hs-audio-start', { detail: me }));
+}
+document.addEventListener('play', (e) => {
+    let media = e.target;
+    if (media instanceof HTMLMediaElement && !media.muted) window.dispatchEvent(new CustomEvent('hs-audio-start', { detail: media }));
+}, true);
+window.addEventListener('hs-audio-start', (e) => {
+    document.querySelectorAll('audio, video').forEach((media) => {
+        if (media !== e.detail && !media.paused && !media.muted) media.pause();
+    });
+});
+
 var autotoc_secondary = null;
 var autotoc_secondary_headings = [];
 var autotoc_secondary_links = [];
@@ -1232,6 +1291,7 @@ window.addEventListener('load', function() {
     initialize_right_scrolled_images();
     install_autotoc();
     install_alt_review_toggle();
+    install_card_abstract_fit();
 });
 </script>
 

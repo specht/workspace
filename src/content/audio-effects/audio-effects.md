@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Das Spektrogramm einer Sängerin oder eines Sängers: die Zeit nach rechts, die Frequenz nach oben. Links, wie gesungen, laufen die Obertöne als viele parallele Linien, die sich mit der Melodie heben und senken und mit dem Vibrato wellen. Rechts von einer senkrechten Linie, nach Autotune auf einen einzigen Ton, liegen sie alle waagerecht und gerade."
+image_alt: "Ein kurzer gesungener Satz als lila Welle, und rechts dahinter seine Echos: jedes etwas später, kleiner und blasser als das vorige, bis das letzte am rechten Rand fast verschwindet."
 kind: labor
 language: Python
 duration: 6 Doppelstunden
