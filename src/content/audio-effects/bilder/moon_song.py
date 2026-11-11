@@ -1,18 +1,16 @@
 """A song from Kennedy's speech at Rice University, 12 September 1962 (the
 recording on Wikimedia Commons, public domain:
 File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg), for the
-autotune widget, made the way Songify songs are made: the catchiest phrase
-as the hook, its last word held, short pieces repeated as stutters, a verse,
-a build and a chorus with the full band. 16 bars at 120 beats a minute,
-C G Am F four times, in three files of the same length:
+autotune widget, made the way Songify songs are made: every syllable cut
+out on its own and put on the grid of eighths, held as long as its note
+(only its vowel stretched), silence between; the hook »We choose to go to
+the Moon« with its »Moon« held; and a melody that takes, for each
+syllable, the note of the scale nearest to his own voice, so that autotune
+moves him only a little. 16 bars at 120 beats a minute, D A Bm G four
+times, in three files of the same length:
 
-  kennedy.flac          his phrases, cut where Whisper put the words and
-                        where the voice stops, on the beats of SONG; a held
-                        word is made longer with grains that fit what is
-                        already there (as shift() of the page)
-  kennedy-melodie.flac  a melody on his words, one note per syllable, close
-                        to his own range, so that autotune moves him only a
-                        few semitones
+  kennedy.flac          his syllables on the grid (SHEET), his own pitch
+  kennedy-melodie.flac  the melody, one note per syllable
   kennedy-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
                         CC BY 4.0, and a clap, CC0), a plucked bass, an
                         electric piano, a pad in the chorus; a rise of noise
@@ -56,40 +54,43 @@ PIECES = {
     'easy': [532.62, 533.00, 533.23, 533.46, 533.80, 533.96, 534.15, 534.27],
     'hard': [534.27, 534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
     'because-hard': [534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
-    'hard-word': [535.60, 536.05],
 }
-# per bar its chord, as semitones above C
-CHORDS = [[0, 4, 7], [7, 11, 2], [9, 0, 4], [5, 9, 0]] * 4
-# (bar, beat, piece, a note per syllable, held for this many beats or None);
-# notes above C3, + one octave up
-SONG = [
-    # verse
-    (0, 0, 'moon1', 'E G G A G E G', None),
-    (1, 0, 'moon2', 'G G G B A G B', None),
-    (2, 0, 'moon3', 'E A A C+ B A E', None),
-    (3, 1, 'decade', 'A G F A', None),
-    (3, 3, 'the-moon', 'C+ A', None),
-    # build
-    (4, 0, 'easy', 'E G G A G E G', None),
-    (5, 0, 'hard', 'B B A G A B', None),
-    (6, 0, 'easy', 'E A A C+ B A E', None),
-    (7, 0, 'because-hard', 'A A C+ A F', None),
-    (7, 2.5, 'hard-word', 'A', None),
-    (7, 3, 'hard-word', 'C+', None),
-    # chorus: the hook twice, with its »Moon« held, and »the Moon« as an echo
-    (8, 0, 'we-choose1', 'E G G G A G', None),
-    (8, 2.5, 'moon-word1', 'G', 3),
-    (9, 2, 'the-moon', 'B D+', None),
-    (9, 3, 'the-moon', 'B G', None),
-    (10, 0, 'we-choose2', 'E A A A B A', None),
-    (10, 2.5, 'moon-word2', 'C+', 3),
-    (11, 2, 'the-moon', 'A C+', None),
-    (11, 3, 'the-moon', 'A F', None),
-    (12, 0, 'easy', 'G E G A G E G', None),
-    (13, 0, 'hard', 'B B D+ B A G', None),
-    (14, 0, 'we-choose1', 'E A A A C+ B', None),
-    (14, 2.5, 'moon-word1', 'A', 5),
+# per bar its chord, as semitones above C: D A Bm G
+CHORDS = [[2, 6, 9], [9, 1, 4], [11, 2, 6], [7, 11, 2]] * 4
+# D major: the notes a syllable may sing
+SCALE = [2, 4, 6, 7, 9, 11, 1]
+# the sheet: (bar, eighth in the bar, piece, eighths per syllable)
+SHEET = [
+    (0, 0, 'moon1', [1, 1, 1, 1, 1, 1, 2]),
+    (1, 0, 'moon2', [1, 1, 1, 1, 1, 1, 2]),
+    (2, 0, 'moon3', [1, 1, 1, 1, 1, 1, 2]),
+    (3, 0, 'decade', [1, 1, 1, 3]),
+    (3, 6, 'the-moon', [1, 1]),
+    (4, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
+    (5, 0, 'hard', [1, 1, 1, 1, 1, 3]),
+    (6, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
+    (7, 0, 'because-hard', [1, 1, 1, 1, 2]),
+    (8, 0, 'we-choose1', [1, 1, 1, 1, 1, 1]),
+    (8, 6, 'moon-word1', [10]),
+    (10, 0, 'we-choose2', [1, 1, 1, 1, 1, 1]),
+    (10, 6, 'moon-word2', [6]),
+    (11, 4, 'the-moon', [1, 1]),
+    (11, 6, 'the-moon', [1, 1]),
+    (12, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
+    (13, 0, 'hard', [1, 1, 1, 1, 1, 3]),
+    (14, 0, 'we-choose1', [1, 1, 1, 1, 1, 1]),
+    (14, 6, 'moon-word1', [10]),
 ]
+EIGHTH = BEAT / 2
+# the line of each phrase: semitones above his own pitch, per syllable; a
+# note may lie at most LIMIT semitones from his voice
+CONTOUR = {
+    'moon1': [0, 2, 2, 4, 2, 0, -1], 'moon2': [0, 2, 2, 4, 2, 0, 2], 'moon3': [0, 2, 2, 4, 5, 4, 2],
+    'decade': [0, 2, 4, 2], 'the-moon': [2, 0],
+    'easy': [0, -2, 0, 2, 0, -2, -3], 'hard': [3, 3, 2, 0, -1, -3], 'because-hard': [0, 2, 3, 2, 0],
+    'we-choose1': [0, 2, 2, 4, 5, 4], 'we-choose2': [0, 2, 2, 4, 2, 0], 'moon-word1': [2], 'moon-word2': [-1],
+}
+LIMIT = 4
 STEP = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
 C2, C3 = 65.41, 130.81
 BARS = len(CHORDS)
@@ -156,27 +157,86 @@ raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', sys.argv[1], '-ss', 
 speech = np.frombuffer(raw, dtype=np.float32).astype(float)
 speech /= np.abs(speech).max()
 
-# the voice and the melody, event by event
+
+
+def pitch(block):
+    best, best_lag, dipped = 0, 0, False
+    for lag in range(1, RATE // 60):
+        r = np.dot(block[:-lag], block[lag:])
+        if r < 0:
+            dipped = True
+        elif dipped and r > best:
+            best, best_lag = r, lag
+    return RATE / best_lag if best_lag else 0
+
+
+def at(t):
+    return int(round((t - 515) * RATE))
+
+
+def refine(t):
+    """a boundary between syllables moved to the quietest 10 ms within 40 ms"""
+    step = int(0.005 * RATE)
+    best = min(range(-8, 9), key=lambda k: np.sqrt(np.mean(speech[at(t) + k * step:at(t) + k * step + 2 * step] ** 2)))
+    return t + best * 0.005
+
+
+def own_pitch(piece):
+    """the median pitch of the voiced blocks of a syllable, 0 if none"""
+    found = []
+    for s in range(0, len(piece) - 2048, 512):
+        block = piece[s:s + 2048]
+        if np.sqrt(np.mean(block ** 2)) > 0.03:
+            f = pitch(block)
+            lag = round(RATE / f) if f else 0
+            if 70 < f < 500 and 0 < lag < 2048 and np.dot(block[:-lag], block[lag:]) > 0.5 * np.dot(block, block):
+                found.append(f)
+    return float(np.median(found)) if found else 0
+
+
+def hold(piece, n):
+    """a syllable n samples long: the start and the end as spoken, only the
+    middle (the vowel) stretched or squeezed"""
+    if n <= len(piece) * 1.15 and n >= len(piece) * 0.85:
+        out = np.zeros(n)
+        out[:min(n, len(piece))] = piece[:n]
+        return out
+    head, tail = int(len(piece) * 0.25), int(len(piece) * 0.2)
+    head, tail = min(head, n // 3), min(tail, n // 3)
+    middle = stretch(piece[head:len(piece) - tail], n - head - tail)
+    return np.concatenate([piece[:head], middle, piece[len(piece) - tail:]])
+
+
 voice = np.zeros(LENGTH + 2 * RATE)
 melody = np.zeros(LENGTH + 2 * RATE)
-for bar, beat, name, notes, held in SONG:
+shifts, sung = [], []
+for bar, eighth, name, lengths in SHEET:
     times = PIECES[name]
-    notes = notes.split()
-    assert len(notes) == len(times) - 1, (name, notes)
-    start = bar * BAR + beat * BEAT
-    a = times[0] - 0.03
-    piece = speech[int((a - 515) * RATE):int((times[-1] - 515) * RATE)]
-    scale = 1.0
-    if held:
-        n = int(held * BEAT * RATE)
-        scale = n / len(piece)
-        piece = stretch(piece, n)
-    place(voice, fade(piece, 10, 60 if held else 40), start)
-    for t0, t1, note in zip(times[:-1], times[1:], notes):
-        length = int((t1 - t0) * scale * RATE)
-        place(melody, 0.3 * fade(tone(note_hz(note), length), 12, 30), start + (t0 - a) * scale)
+    assert len(lengths) == len(times) - 1, name
+    bounds = [times[0]] + [refine(t) for t in times[1:-1]] + [times[-1]]
+    slot = bar * BAR + eighth * EIGHTH
+    for (t0, t1), eighths, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
+        piece = speech[at(t0):at(t1)]
+        n = int(eighths * EIGHTH * (0.92 if eighths > 1 else 0.98) * RATE)
+        place(voice, fade(hold(piece, n), 5, 25), slot)
+        # the note: of the scale, nearest to his own pitch, a chord tone on long ones
+        f = own_pitch(piece)
+        chord = CHORDS[min(BARS - 1, int(slot / BAR))]
+        allowed = chord if eighths >= 2 else SCALE
+        mine = 12 * np.log2(f / C3) if f else 12 * np.log2(237 / C3)
+        near = [o * 12 + c for o in range(-1, 3) for c in allowed if abs(o * 12 + c - mine) <= LIMIT] or \
+               [o * 12 + c for o in range(-1, 3) for c in SCALE if abs(o * 12 + c - mine) <= LIMIT]
+        note = min(near, key=lambda k: abs(k - (mine + step)))
+        if f:
+            shifts.append(note - mine)
+        sung.append(note)
+        place(melody, 0.3 * fade(tone(semis_hz(note), n), 12, 30), slot)
+        slot += eighths * EIGHTH
 voice = voice[:LENGTH] * 0.85 / np.abs(voice).max()
 melody = melody[:LENGTH]
+names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+print('melody:', ' '.join(names[n % 12] for n in sung))
+print('shift per syllable: median %.1f, largest %.1f semitones' % (np.median(np.abs(shifts)), np.max(np.abs(shifts))))
 
 
 # the band ----------------------------------------------------------------

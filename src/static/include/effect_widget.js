@@ -932,6 +932,7 @@ onmessage = (e) => {
         }
         dots((k) => found[k], col.sound, 2.5);
         if (on && !live.plain) dots((k) => found[k] * factors(k), col.mark, 1.5);
+        markStart(g, LABEL_W, plotW, 0, plotH, at / rate, L / rate, 4, col);
         const xm = Math.round(LABEL_W + plotW / 2) + 0.5;
         g.strokeStyle = col.ink; g.lineWidth = 1.5;
         g.beginPath(); g.moveTo(xm, 0); g.lineTo(xm, plotH); g.stroke();
@@ -1044,6 +1045,23 @@ onmessage = (e) => {
         } else {
             g.fillStyle = col.ink; g.textAlign = 'center'; g.textBaseline = 'middle';
             g.fillText('Spiel den Klang ab.', x2 + right / 2, plotH / 2);
+        }
+    }
+
+    // where the sound starts again (the loop's beginning) in a window of
+    // seconds around a place: a dashed line with »Anfang«
+    function markStart(g, x0, width, top, bottom, place, length, seconds, col) {
+        for (let k = -1; k <= 1; k++) {
+            const t = Math.ceil((place - seconds / 2) / length + k) * length - place;
+            if (Math.abs(t) > seconds / 2) continue;
+            const x = Math.round(x0 + (t / seconds + 0.5) * width) + 0.5;
+            g.save();
+            g.setLineDash([4, 3]); g.strokeStyle = col.ink; g.lineWidth = 1;
+            g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke();
+            g.setLineDash([]);
+            g.font = '11px system-ui, sans-serif'; g.fillStyle = col.ink; g.textAlign = 'left'; g.textBaseline = 'top';
+            g.fillText('Anfang', x + 3, top + 1);
+            g.restore();
         }
     }
 
@@ -1275,6 +1293,7 @@ onmessage = (e) => {
                 }
                 g.stroke();
             });
+            markStart(g, LABEL_W, plotW, 0, h, sampleNow() / rate, original.length / rate, WAVE_SECONDS, col);
             const x0 = Math.round(LABEL_W + plotW / 2) + 0.5;
             g.strokeStyle = col.ink; g.lineWidth = 1.5;
             g.beginPath(); g.moveTo(x0, 0); g.lineTo(x0, h); g.stroke();
