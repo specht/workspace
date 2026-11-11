@@ -1,4 +1,4 @@
-# Plan: an activity on accessibility and fair design (»Eine Seite für alle«)
+# Plan: an activity on accessibility, fair design and phishing (»Eine Seite für alle«)
 
 The Handbuch page `reference/accessibility` explains the rules and shows
 three of them (`a11y_demo.js`: only colour, contrast, what a screen reader
@@ -8,7 +8,20 @@ maintainer asked for it on 11 November 2026 (»if this becomes like an
 activity we should make an activity out of it or at least plan it«), and
 the same day: the activity should cover dark patterns too, and the demos of
 both Handbuch pages (`a11y_demo.js`, `dark_patterns_demo.js`) move into it,
-with tasks; the Handbuch keeps the rules. Not built.
+with tasks; the Handbuch keeps the rules. Later the same day: a part on
+phishing mails as well (»a real problem at our school«), all of it one
+activity. Being built from 11 November 2026.
+
+## Decided (the maintainer, 11 November 2026)
+
+- **One activity in three parts:** accessibility, dark patterns, phishing,
+  on one made-up club site; each part usable on its own.
+- **Labor:** find and fix on a prepared site, checked step by step.
+- **Phishing:** hunting clues in made-up mails (a widget), a link checker
+  of one's own (the real domain of a link against what its text claims,
+  look-alike letters included), and what to do after a click.
+- **Python and Ruby** for the two functions (contrast ratio, link
+  checker), with the page's language switch.
 
 ## The idea
 
@@ -62,12 +75,27 @@ First they **use** the page as others do, then they **fix** it, then they
    a choice (which wording is a dark pattern, and which), and checks of the
    HTML (no `checked` on the box, two buttons of the same class in the
    banner).
-10. **Prüfen:** Lighthouse in Chrome, the accessibility inspector of
+10. **Phishing:** the club's mailbox has five mails, two of them phishing
+   (a made-up school portal: »Ihr Postfach wird in 24 Stunden gelöscht«).
+   In a mail viewer (a widget, like the demos) students click what looks
+   wrong: the sender's address with a look-alike letter, a greeting
+   without a name, the haste, a link whose text and target differ (shown
+   on hover, as in a real mail program), an attachment `Rechnung.pdf.exe`.
+   Each clue found is explained; the real mails have none. Then the link
+   checker of their own: `real_domain(url)` (the registrable domain of a
+   link, `login.schul-portal.de.example.net` → `example.net`) and
+   `looks_like(a, b)` (two domains that differ only in look-alike
+   characters, `l` and `I`, `rn` and `m`, `0` and `o`), checked with
+   function tasks. Last, what to do: a prediction (what can someone do with
+   a stolen password?), a choice (what to do after a click: tell someone,
+   change the password, sign out everywhere), two-factor sign-in as the
+   answer. No real service or organisation is named or imitated.
+11. **Prüfen:** Lighthouse in Chrome, the accessibility inspector of
    Firefox; what tools cannot find (whether an alt text fits). Students
    write a short »Erklärung zur Barrierefreiheit« for their page, as the
    BITV asks of public bodies: what is accessible, what is not yet.
 
-About five double lessons; chapters 3 to 9 are independent of each other,
+About six double lessons; chapters 3 to 10 are independent of each other,
 so a class can stop after any of them. The demos of both Handbuch pages go
 into their chapters (the colour demo into 6, the screen reader into 3 and
 5, the banner, the wording, the countdown and the till into 9), each with
