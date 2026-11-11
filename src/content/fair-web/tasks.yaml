@@ -1,0 +1,825 @@
+# Aufgaben zu »Fair, barrierefrei, sicher«. Format: docs/aufgaben.md.
+# Die Seite der AG liegt in /workspace/fair-web; die Funktionen (Kontrast,
+# Link-Prüfer) werden in der Karte geschrieben, in Ruby und in Python (unter
+# python:). Eine Änderung an einer Funktion gehört in beide Sprachen.
+format: 1
+activity: fair-web
+tasks:
+  # ---------------------------------------------------------------- Teil 1
+  - id: tab-vorhersage
+    title: Mit der Tastatur zum Knopf
+    prediction: true
+    prompt: |
+      Bevor du es ausprobierst: Wie oft musst du auf der Seite der AG
+      <kbd>Tab</kbd> drücken, bis der Knopf »Anmelden« unter dem Formular
+      gewählt ist?
+    check:
+      type: choice
+      options:
+        - Dreimal
+        - Siebenmal
+        - Zwölfmal
+        - Gar nicht, er lässt sich mit Tab nicht erreichen
+      correct: 3
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Zähl, was vorher kommt, das man anklicken oder ausfüllen kann. Und dann probier es aus.
+      - when: { picked: 1 }
+        say: Sieben Stationen hat die Seite tatsächlich, vom Banner bis zum Häkchen. Probier aus, wohin der achte Druck auf Tab führt.
+      - when: { picked: 2 }
+        say: So viel ist auf der Seite nicht zu wählen. Probier es aus und zähl mit.
+    solution: |
+      Gar nicht: »Anmelden« ist ein `<div>` mit `onclick`, und ein `<div>`
+      bekommt den Fokus nie. Nach dem Häkchen springt Tab aus der Seite hinaus.
+
+  - id: alt-gut
+    title: Ein guter Alt-Text
+    prompt: Welcher Alt-Text passt zum großen Bild der AG?
+    check:
+      type: choice
+      options:
+        - "`alt=\"ag.svg\"`"
+        - "`alt=\"Bild der Hacker-AG\"`"
+        - "`alt=\"Der Raum der AG: drei Laptops auf einem langen Tisch mit Code, einem Spiel und einer Webseite, am Ende des Tischs ein kleiner Roboter, der winkt\"`"
+        - "`alt=\"\"`, weil das Bild nur schmückt"
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Den Dateinamen liest ein Screenreader auch ohne `alt` vor. Wer zuhört, weiß danach nicht, was auf dem Bild ist.
+      - when: { picked: 1 }
+        say: Dass es ein Bild ist, sagt der Screenreader schon selbst. Was sieht man darauf?
+      - when: { picked: 3 }
+        say: Das Bild zeigt, was in der AG passiert, und das ist für jemanden, der überlegt hinzugehen, wichtig. Leer bleibt `alt` nur bei reiner Zierde, einer Linie oder einem Muster.
+
+  - id: lang
+    title: Die Sprache der Seite
+    prompt: "`<html>` in `fair-web/index.html` sagt, in welcher Sprache die Seite ist."
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: html
+            attr: lang
+            say: "`<html>` hat noch kein `lang`. Für eine deutsche Seite: `<html lang=\"de\">`."
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/index.html` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen«."
+
+  - id: alt
+    title: Alt-Texte
+    prompt: Jedes Bild in `fair-web/index.html` hat ein `alt`, das sagt, was es zeigt, und keinen Dateinamen.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        img:
+          alt: descriptive
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/index.html` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen«."
+
+  - id: labels
+    title: Beschriftete Felder
+    prompt: Jedes Feld in `fair-web/index.html`, auch das Häkchen, hat ein `<label>`.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        labels: required
+    hint:
+      - "Ein `<label for=\"name\">` gehört zu dem Feld mit `id=\"name\"`. Die drei Felder haben ihre `id` schon."
+      - "Beim Häkchen wird der Satz daneben zum Label: `<label for=\"newsletter\">…</label>` um den Text."
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/index.html` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen«."
+
+  - id: linkliste
+    title: Die Liste der Links
+    prompt: |
+      Ein Screenreader zeigt auf Wunsch eine Liste aller Links der Seite, mit
+      ihrem Text. Was steht für die Seite der AG darin?
+    check:
+      type: choice
+      options:
+        - "Termine, Anmelden"
+        - "hier klicken, hier klicken, Einstellungen"
+        - "Nichts, Links ohne Unterstreichung zählen nicht"
+        - "Die Adressen: #termine, #anmelden, #"
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So sollte es sein. Schau in `index.html`, welcher Text zwischen `<a …>` und `</a>` steht.
+      - when: { picked: 2 }
+        say: Ob ein Link unterstrichen ist, entscheidet nur das CSS. Für den Screenreader zählt jedes `<a href>`.
+      - when: { picked: 3 }
+        say: Die Adresse steht in `href`. Vorgelesen wird der Text des Links, der zwischen `<a …>` und `</a>`.
+
+  - id: knopf
+    title: Echte Knöpfe
+    prompt: In `fair-web/index.html` ist nichts mehr ein `<div>` mit `onclick`, weder »Anmelden« noch das »↑«.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: div
+            attr: onclick
+            max: 0
+            say: "Ein `<div>` mit `onclick` ist noch da. »Anmelden« wird ein `<button type=\"submit\">` im Formular, das »↑« ein Link `<a href=\"#\">Nach oben</a>`."
+    hint: "Wenn »Anmelden« ein `<button type=\"submit\">` ist, ruft niemand mehr `send()` auf. Häng den Code in `script.js` an das Formular, wie im Codeblock oben."
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/index.html` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen«."
+
+  - id: luminance
+    title: Die Leuchtdichte einer Farbe
+    level: 2
+    prompt: |
+      Schreib `luminance(color)`. `color` ist ein String wie `'#2b8a3e'`; die
+      Funktion gibt die relative Leuchtdichte nach den Formeln oben zurück,
+      0 für Schwarz und 1 für Weiß.
+    starter: |
+      def luminance(color)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "luminance('#ffffff').round(4)"
+          expect: "1.0"
+        - call: "luminance('#000000').round(4)"
+          expect: "0.0"
+        - call: "luminance('#777777').round(4)"
+          expect: "0.1845"
+        - call: "luminance('#2b8a3e').round(4)"
+          expect: "0.1904"
+          say: Bei einer bunten Farbe zählt jeder Kanal anders, Grün am meisten.
+    feedback:
+      - when: { same_as: "def luminance(color)\n  r = color[1, 2].to_i(16) / 255.0\n  g = color[3, 2].to_i(16) / 255.0\n  b = color[5, 2].to_i(16) / 255.0\n  0.2126 * r + 0.7152 * g + 0.0722 * b\nend\n" }
+        say: Die Kanäle müssen erst linearisiert werden, bevor sie gewichtet werden. Sonst wäre ein mittleres Grau halb so hell wie Weiß, und auf dem Bildschirm ist es viel dunkler.
+    hint:
+      - "`color[1, 2]` sind die beiden Zeichen nach dem `#`, also Rot, `color[3, 2]` Grün, `color[5, 2]` Blau. `'8a'.to_i(16)` liest sie als hexadezimale Zahl: 138."
+      - "Für jeden Kanal: durch `255.0` teilen, dann mit `if c <= 0.04045` die eine oder die andere Formel. `**` ist die Potenz: `x**2.4`."
+      - "Ein Gerüst:\n```ruby\ndef luminance(color)\n  channels = [color[1, 2], color[3, 2], color[5, 2]].map do |hex|\n    c = hex.to_i(16) / 255.0\n    # hier: c linearisieren\n  end\n  # hier: die drei Kanäle gewichtet addieren\nend\n```"
+    solution: |
+      ```ruby
+      def luminance(color)
+        channels = [color[1, 2], color[3, 2], color[5, 2]].map do |hex|
+          c = hex.to_i(16) / 255.0
+          c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4
+        end
+        0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+      end
+      ```
+    python:
+      starter: |
+        def luminance(color):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "round(luminance('#ffffff'), 4)"
+            expect: "1.0"
+          - call: "round(luminance('#000000'), 4)"
+            expect: "0.0"
+          - call: "round(luminance('#777777'), 4)"
+            expect: "0.1845"
+          - call: "round(luminance('#2b8a3e'), 4)"
+            expect: "0.1904"
+            say: Bei einer bunten Farbe zählt jeder Kanal anders, Grün am meisten.
+      feedback:
+        - when: { same_as: "def luminance(color):\n    r = int(color[1:3], 16) / 255\n    g = int(color[3:5], 16) / 255\n    b = int(color[5:7], 16) / 255\n    return 0.2126 * r + 0.7152 * g + 0.0722 * b\n" }
+          say: Die Kanäle müssen erst linearisiert werden, bevor sie gewichtet werden. Sonst wäre ein mittleres Grau halb so hell wie Weiß, und auf dem Bildschirm ist es viel dunkler.
+      hint:
+        - "`color[1:3]` sind die beiden Zeichen nach dem `#`, also Rot, `color[3:5]` Grün, `color[5:7]` Blau. `int('8a', 16)` liest sie als hexadezimale Zahl: 138."
+        - "Für jeden Kanal: durch `255` teilen, dann mit `if c <= 0.04045` die eine oder die andere Formel. `**` ist die Potenz: `x ** 2.4`."
+        - "Ein Gerüst:\n```python\ndef luminance(color):\n    channels = []\n    for i in (1, 3, 5):\n        c = int(color[i:i + 2], 16) / 255\n        # hier: c linearisieren und an channels anhängen\n    # hier: die drei Kanäle gewichtet addieren\n```"
+      solution: |
+        ```python
+        def luminance(color):
+            channels = []
+            for i in (1, 3, 5):
+                c = int(color[i:i + 2], 16) / 255
+                channels.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
+            return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+        ```
+
+  - id: grau-vorhersage
+    title: Reicht dieses Grau?
+    prediction: true
+    prompt: |
+      Bevor du rechnest: Reicht `#777777`, ein mittleres Grau, auf Weiß für
+      normalen Text, also für 4,5 : 1?
+    check:
+      type: choice
+      options:
+        - "Ja, deutlich: mehr als 6 : 1"
+        - "Knapp ja: zwischen 4,5 und 5"
+        - "Knapp nicht: zwischen 4 und 4,5"
+        - "Nein, deutlich nicht: weniger als 3 : 1"
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Rechne es mit deiner Funktion nach, sobald sie steht.
+      - when: { picked: 1 }
+        say: Fast. Rechne es mit deiner Funktion nach, auf zwei Stellen.
+      - when: { picked: 3 }
+        say: So hell ist es nicht. Rechne es mit deiner Funktion nach.
+
+  - id: contrast-ratio
+    title: Das Kontrastverhältnis
+    level: 1
+    prompt: |
+      Schreib `contrast_ratio(a, b)`: das Kontrastverhältnis zweier Farben,
+      egal in welcher Reihenfolge sie kommen. Kopiere deine Funktion
+      `luminance` aus der Aufgabe darüber dazu.
+    starter: |
+      # hier deine Funktion luminance
+
+      def contrast_ratio(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "contrast_ratio('#000000', '#ffffff').round(2)"
+          expect: "21.0"
+        - call: "contrast_ratio('#ffffff', '#000000').round(2)"
+          expect: "21.0"
+          say: Die hellere Farbe kommt immer nach oben, auch wenn sie als erste übergeben wird.
+        - call: "contrast_ratio('#777777', '#ffffff').round(2)"
+          expect: "4.48"
+        - call: "contrast_ratio('#999999', '#999999').round(2)"
+          expect: "1.0"
+    feedback:
+      - when: { same_as: "def luminance(color)\n  channels = [color[1, 2], color[3, 2], color[5, 2]].map do |hex|\n    c = hex.to_i(16) / 255.0\n    c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4\n  end\n  0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]\nend\n\ndef contrast_ratio(a, b)\n  (luminance(a) + 0.05) / (luminance(b) + 0.05)\nend\n" }
+        say: "Ist die erste Farbe die dunklere, kommt ein Wert unter 1 heraus. Die hellere gehört nach oben: `[luminance(a), luminance(b)].max`."
+    hint:
+      - "`luminance('#000000')` ist 0, `luminance('#ffffff')` ist 1. Mit der Formel: (1 + 0,05) / (0 + 0,05) = 21."
+      - "`[x, y].max` und `[x, y].min` geben die größere und die kleinere von zwei Zahlen."
+    solution: |
+      ```ruby
+      def contrast_ratio(a, b)
+        light, dark = [luminance(a), luminance(b)].sort.reverse
+        (light + 0.05) / (dark + 0.05)
+      end
+      ```
+    python:
+      starter: |
+        # hier deine Funktion luminance
+
+        def contrast_ratio(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "round(contrast_ratio('#000000', '#ffffff'), 2)"
+            expect: "21.0"
+          - call: "round(contrast_ratio('#ffffff', '#000000'), 2)"
+            expect: "21.0"
+            say: Die hellere Farbe kommt immer nach oben, auch wenn sie als erste übergeben wird.
+          - call: "round(contrast_ratio('#777777', '#ffffff'), 2)"
+            expect: "4.48"
+          - call: "round(contrast_ratio('#999999', '#999999'), 2)"
+            expect: "1.0"
+      feedback:
+        - when: { same_as: "def luminance(color):\n    channels = []\n    for i in (1, 3, 5):\n        c = int(color[i:i + 2], 16) / 255\n        channels.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)\n    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]\n\ndef contrast_ratio(a, b):\n    return (luminance(a) + 0.05) / (luminance(b) + 0.05)\n" }
+          say: "Ist die erste Farbe die dunklere, kommt ein Wert unter 1 heraus. Die hellere gehört nach oben: `max(luminance(a), luminance(b))`."
+      hint:
+        - "`luminance('#000000')` ist 0, `luminance('#ffffff')` ist 1. Mit der Formel: (1 + 0,05) / (0 + 0,05) = 21."
+        - "`max(x, y)` und `min(x, y)` geben die größere und die kleinere von zwei Zahlen."
+      solution: |
+        ```python
+        def contrast_ratio(a, b):
+            light = max(luminance(a), luminance(b))
+            dark = min(luminance(a), luminance(b))
+            return (light + 0.05) / (dark + 0.05)
+        ```
+
+  - id: kontrast
+    title: Genug Kontrast
+    prompt: "Jede Schrift in `fair-web/style.css` erreicht auf ihrem Hintergrund mindestens 4,5 : 1."
+    check:
+      type: css
+      file: fair-web/style.css
+      expect:
+        contrast:
+          min: 4.5
+    hint:
+      - "Die Meldung nennt die Regel, die Farben und ihr Verhältnis. Rechne mit deiner Funktion nach, wie dunkel die Schrift sein muss."
+      - "Eine Farbe wird dunkler, wenn ihre drei Zahlen kleiner werden, `#2b8a3e` zu `#1e6b30`. Auf einem farbigen Hintergrund mit weißer Schrift wird der Hintergrund dunkler."
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/style.css` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen«."
+
+  - id: ueberschriften
+    title: Überschriften der Reihe nach
+    prompt: Die Überschriften in `fair-web/index.html` überspringen keine Ebene.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        headings: in_order
+    hint: "Aus `<h4>` wird `<h2>`. Damit die Überschriften so groß bleiben, ändere in `style.css` auch `h4 {` in `h2 {`."
+
+  - id: main-nav
+    title: Menü und Inhalt
+    prompt: In `fair-web/index.html` ist das Menü ein `<nav>`, der Inhalt steht in einem `<main>`.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: nav
+            min: 1
+            say: "Ein `<nav>` fehlt noch. Aus `<div class=\"menu\">` wird `<nav>`, und die Links darin sagen, wohin sie führen."
+          - selector: main
+            min: 1
+            say: "Ein `<main>` fehlt noch. Es geht um alles von `<h1>` bis zum Ende des Formulars."
+
+  - id: fokus
+    title: Ein sichtbarer Fokus
+    prompt: "`fair-web/style.css` gibt `:focus-visible` einen Rahmen mit `outline`."
+    check:
+      type: css
+      file: fair-web/style.css
+      expect:
+        declares:
+          - selector: ":focus-visible"
+            property: outline
+            say: "Eine Regel für `:focus-visible` mit `outline` fehlt noch. Und lösch `* { outline: none; }` ganz oben."
+
+  - id: bewegung
+    title: Weniger Bewegung
+    prompt: "`fair-web/style.css` hält die Animation an, wenn jemand »Bewegung reduzieren« eingeschaltet hat."
+    check:
+      type: css
+      file: fair-web/style.css
+      expect:
+        declares:
+          - media: prefers-reduced-motion
+            property: animation
+            say: "Eine Regel in `@media (prefers-reduced-motion: reduce)`, die `animation` setzt, fehlt noch."
+
+  - id: erklaerung
+    title: Deine Erklärung zur Barrierefreiheit
+    prompt: |
+      Lass Lighthouse oder den Reiter »Barrierefreiheit« von Firefox über
+      deine Seite laufen. Schreib dann in ein paar Sätzen eine Erklärung zur
+      Barrierefreiheit für die Seite der AG: Was hast du geändert, was ist
+      noch nicht barrierefrei, und was kann kein Werkzeug für dich prüfen?
+    check:
+      type: reflection
+      min_words: 30
+    examples:
+      - |
+        Die Seite hat jetzt eine Sprache, Alt-Texte, Labels für alle Felder,
+        echte Knöpfe, Überschriften der Reihe nach und genug Kontrast;
+        Lighthouse gibt 100 Punkte. Noch nicht geprüft ist, ob die Seite mit
+        einem Screenreader gut zu benutzen ist. Ob der Alt-Text zum Bild passt,
+        kann kein Werkzeug sagen, nur ein Mensch.
+      - |
+        Geändert habe ich lang, alt, label, button statt div, h2 statt h4,
+        nav und main, einen sichtbaren Fokus und dunklere Farben. Lighthouse
+        meldet nichts mehr. Es weiß aber nicht, ob »Termine« ein guter
+        Linktext ist oder ob die Reihenfolge Sinn ergibt. Getestet habe ich
+        nur mit der Tastatur, noch nicht mit einem Screenreader.
+
+  # ---------------------------------------------------------------- Teil 2
+  - id: banner-vorhersage
+    title: Wie viele Klicks zum Ablehnen?
+    prediction: true
+    prompt: |
+      Bevor du es ausprobierst: Wie viele Klicks brauchst du im linken Banner,
+      bis alles abgelehnt ist, was nicht nötig ist?
+    check:
+      type: choice
+      options:
+        - Einen
+        - Zwei
+        - Drei
+        - Fünf
+      correct: 3
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Einen braucht der faire Banner rechts. Probier den linken aus und zähl mit.
+      - when: { picked: 1 }
+        say: Probier es aus und zähl mit. Schau dabei, was in den Einstellungen schon eingeschaltet ist.
+      - when: { picked: 2 }
+        say: Probier es aus und zähl mit. Schau dabei, was in den Einstellungen schon eingeschaltet ist.
+    solution: |
+      Fünf: »Einstellungen«, drei Schalter aus und »Auswahl speichern«. Im
+      fairen Banner einer.
+
+  - id: banner-fair
+    title: Ein fairer Banner
+    prompt: Der Banner in `fair-web/index.html` hat zwei Knöpfe, Ablehnen und Zustimmen, und keinen kleinen Link mehr.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: "#banner button"
+            min: 2
+            say: "Im Banner fehlt noch ein zweiter Knopf. Ablehnen und Zustimmen sind beide ein `<button>`, mit derselben Klasse, damit sie gleich aussehen."
+          - selector: "#banner a"
+            max: 0
+            say: "Im Banner steht noch ein Link. »Einstellungen« klein und hellgrau ist der Trick: Ablehnen wird ein Knopf wie Zustimmen."
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/fair-web/index.html` gibt es noch nicht. Hol dir die Seite mit den Befehlen unter »Die Seite holen« im ersten Teil."
+
+  - id: doppelt-verneint
+    title: Was das Häkchen heißt
+    prediction: true
+    prompt: |
+      Im Formular der AG steht neben einem gesetzten Häkchen: »Entfernen Sie
+      das Häkchen nicht, wenn Sie keine Angebote nicht verpassen möchten.«
+      Was passiert, wenn du es stehen lässt und dich anmeldest?
+    check:
+      type: choice
+      options:
+        - Du bekommst Angebote per E-Mail.
+        - Du bekommst keine Angebote.
+        - Nichts, das Häkchen gilt nur für die Anmeldung.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "Streich die beiden Verneinungen: »keine Angebote nicht verpassen« heißt »Angebote nicht verpassen«, also bekommen."
+      - when: { picked: 2 }
+        say: Lies den Satz noch einmal langsam und streich die beiden Verneinungen.
+
+  - id: kein-haken
+    title: Nichts ist vorher angekreuzt
+    prompt: In `fair-web/index.html` ist kein Häkchen schon gesetzt.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: input
+            attr: checked
+            max: 0
+            say: "Ein Feld hat noch `checked`. Nimm es weg: Wer Neuigkeiten will, setzt das Häkchen selbst."
+
+  - id: countdown-vorhersage
+    title: Der Countdown
+    prediction: true
+    prompt: |
+      Bevor du es ausprobierst: Du wartest eine Minute, bis der Countdown bei
+      04:00 steht, und lädst die Seite dann neu. Was zeigt er?
+    check:
+      type: choice
+      options:
+        - "04:00, er läuft weiter"
+        - "05:00, er fängt von vorn an"
+        - "00:00, die Anmeldung ist vorbei"
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Probier es aus. Und schau in `script.js`, wo die Seite sich merken würde, wie viel Zeit noch ist.
+      - when: { picked: 2 }
+        say: Probier es aus. Und schau in `script.js`, womit `left` anfängt.
+
+  - id: kein-countdown
+    title: Ohne falsche Eile
+    prompt: In `fair-web/index.html` steht kein Countdown mehr.
+    check:
+      type: html
+      file: fair-web/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: "#countdown"
+            max: 0
+            say: "Der Countdown (`id=\"countdown\"`) ist noch da. Nimm die ganze Zeile heraus und das Zählen mit `setInterval` aus `script.js`."
+
+  # ---------------------------------------------------------------- Teil 3
+  - id: hinweise
+    title: Was beide gemeinsam haben
+    prompt: Welche Hinweise stecken in beiden Phishing-Mails?
+    check:
+      type: choice
+      options:
+        - Ein Anhang, der in Wahrheit ein Programm ist
+        - Ein Absender, in dem ein Buchstabe vertauscht ist
+        - Eine Anrede ohne Namen, eine Frist, die Eile macht, und ein Link, der einer anderen Domain gehört, als sein Text sagt
+        - Die Bitte, ein Passwort einzugeben
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Den Anhang hat nur die Mail des Paketdienstes. Öffne beide und vergleiche, welche Hinweise du in beiden gefunden hast.
+      - when: { picked: 1 }
+        say: Den vertauschten Buchstaben hat nur die Mail des Schulportals. Öffne beide und vergleiche.
+      - when: { picked: 3 }
+        say: Nach dem Passwort fragt nur die Mail des Schulportals; der Paketdienst will Geld. Öffne beide und vergleiche.
+
+  - id: wem-gehoert
+    title: Wem gehört der Link?
+    prediction: true
+    prompt: |
+      Wem gehört der Link
+      `https://schule-am-see.example.konto-pruefung.example/login`?
+    check:
+      type: choice
+      options:
+        - "Der Schule, `schule-am-see.example`"
+        - "`konto-pruefung.example`"
+        - "Niemandem, `.example` gibt es nicht"
+        - "`login`"
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Genau darauf zählt der Link. Lies den Rechnernamen von rechts.
+      - when: { picked: 2 }
+        say: "`.example` ist für Beispiele reserviert, aber in diesem Beispiel spielt es die Rolle einer echten Endung wie `.de`. Welcher Name steht direkt davor, ganz rechts?"
+      - when: { picked: 3 }
+        say: "`/login` ist der Pfad, die Seite auf dem Rechner. Der Rechner selbst steht davor, zwischen `://` und dem ersten `/`."
+
+  - id: host
+    title: Der Rechnername
+    level: 2
+    prompt: |
+      Schreib `host(url)`: den Rechnernamen einer Adresse, ohne Protokoll,
+      Pfad, Port und Benutzernamen. Eine Adresse ohne `://` beginnt gleich mit
+      dem Rechnernamen.
+    starter: |
+      def host(url)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "host('https://schule-am-see.example/login')"
+          expect: "'schule-am-see.example'"
+        - call: "host('https://schule-am-see.example')"
+          expect: "'schule-am-see.example'"
+          say: Auch ohne Pfad gibt es einen Rechnernamen.
+        - call: "host('schule-am-see.example/ag')"
+          expect: "'schule-am-see.example'"
+          say: Ohne `://` beginnt die Adresse gleich mit dem Rechnernamen, so wie im Text eines Links.
+        - call: "host('https://schule-am-see.example:8080/ag')"
+          expect: "'schule-am-see.example'"
+          say: Der Port hinter dem `:` gehört nicht zum Namen.
+        - call: "host('https://schule-am-see.example@konto-pruefung.example/login')"
+          expect: "'konto-pruefung.example'"
+          say: Vor dem `@` steht nur ein Benutzername. Der Rechner kommt danach.
+    hint:
+      - "Von Hand: In `https://a.example:8080/b` steht der Name zwischen `://` und dem ersten `/`, und davon bleibt der Teil vor dem `:`."
+      - "`url.split('://', 2)` teilt die Adresse beim ersten `://` in zwei Teile. Danach: am ersten `/` teilen, vom `@` den letzten Teil nehmen, am `:` den ersten."
+      - "Ein Gerüst:\n```ruby\ndef host(url)\n  rest = url.include?('://') ? url.split('://', 2)[1] : url\n  name = rest.split('/', 2)[0]\n  # hier: alles bis zum @ weg, dann den Port weg\nend\n```"
+    solution: |
+      ```ruby
+      def host(url)
+        rest = url.include?('://') ? url.split('://', 2)[1] : url
+        name = rest.split('/', 2)[0]
+        name = name.split('@').last
+        name.split(':')[0]
+      end
+      ```
+    python:
+      starter: |
+        def host(url):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "host('https://schule-am-see.example/login')"
+            expect: "'schule-am-see.example'"
+          - call: "host('https://schule-am-see.example')"
+            expect: "'schule-am-see.example'"
+            say: Auch ohne Pfad gibt es einen Rechnernamen.
+          - call: "host('schule-am-see.example/ag')"
+            expect: "'schule-am-see.example'"
+            say: Ohne `://` beginnt die Adresse gleich mit dem Rechnernamen, so wie im Text eines Links.
+          - call: "host('https://schule-am-see.example:8080/ag')"
+            expect: "'schule-am-see.example'"
+            say: Der Port hinter dem `:` gehört nicht zum Namen.
+          - call: "host('https://schule-am-see.example@konto-pruefung.example/login')"
+            expect: "'konto-pruefung.example'"
+            say: Vor dem `@` steht nur ein Benutzername. Der Rechner kommt danach.
+      hint:
+        - "Von Hand: In `https://a.example:8080/b` steht der Name zwischen `://` und dem ersten `/`, und davon bleibt der Teil vor dem `:`."
+        - "`url.split('://', 1)` teilt die Adresse beim ersten `://` in zwei Teile. Danach: am ersten `/` teilen, vom `@` den letzten Teil nehmen (`[-1]`), am `:` den ersten."
+        - "Ein Gerüst:\n```python\ndef host(url):\n    rest = url.split('://', 1)[1] if '://' in url else url\n    name = rest.split('/', 1)[0]\n    # hier: alles bis zum @ weg, dann den Port weg\n```"
+      solution: |
+        ```python
+        def host(url):
+            rest = url.split('://', 1)[1] if '://' in url else url
+            name = rest.split('/', 1)[0]
+            name = name.split('@')[-1]
+            return name.split(':')[0]
+        ```
+
+  - id: real-domain
+    title: Die Domain
+    level: 1
+    prompt: |
+      Schreib `real_domain(url)`: die letzten beiden Teile des Rechnernamens.
+      Kopiere deine Funktion `host` aus der Aufgabe darüber dazu.
+    starter: |
+      # hier deine Funktion host
+
+      def real_domain(url)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "real_domain('https://schule-am-see.example/login')"
+          expect: "'schule-am-see.example'"
+        - call: "real_domain('https://www.schule-am-see.example/')"
+          expect: "'schule-am-see.example'"
+        - call: "real_domain('https://schule-am-see.example.konto-pruefung.example/login')"
+          expect: "'konto-pruefung.example'"
+          say: Die Domain steht am Ende des Rechnernamens. Alles davor kann sich ihr Besitzer ausdenken.
+        - call: "real_domain('http://zustell-service.example.paket-track.example/de')"
+          expect: "'paket-track.example'"
+        - call: "real_domain('https://schule-am-see.example@konto-pruefung.example/')"
+          expect: "'konto-pruefung.example'"
+    feedback:
+      - when: { same_as: "def host(url)\n  rest = url.include?('://') ? url.split('://', 2)[1] : url\n  name = rest.split('/', 2)[0]\n  name = name.split('@').last\n  name.split(':')[0]\nend\n\ndef real_domain(url)\n  host(url).split('.').first(2).join('.')\nend\n" }
+        say: "Das sind die ersten beiden Teile, und genau auf die zählt ein Phishing-Link. Die Domain steht am Ende: `last(2)`."
+    hint:
+      - "`'a.b.c'.split('.')` gibt `['a', 'b', 'c']`, `join('.')` setzt eine Liste wieder mit Punkten zusammen."
+      - "`last(2)` gibt die letzten beiden Elemente einer Liste."
+    solution: |
+      ```ruby
+      def real_domain(url)
+        host(url).split('.').last(2).join('.')
+      end
+      ```
+    python:
+      starter: |
+        # hier deine Funktion host
+
+        def real_domain(url):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "real_domain('https://schule-am-see.example/login')"
+            expect: "'schule-am-see.example'"
+          - call: "real_domain('https://www.schule-am-see.example/')"
+            expect: "'schule-am-see.example'"
+          - call: "real_domain('https://schule-am-see.example.konto-pruefung.example/login')"
+            expect: "'konto-pruefung.example'"
+            say: Die Domain steht am Ende des Rechnernamens. Alles davor kann sich ihr Besitzer ausdenken.
+          - call: "real_domain('http://zustell-service.example.paket-track.example/de')"
+            expect: "'paket-track.example'"
+          - call: "real_domain('https://schule-am-see.example@konto-pruefung.example/')"
+            expect: "'konto-pruefung.example'"
+      feedback:
+        - when: { same_as: "def host(url):\n    rest = url.split('://', 1)[1] if '://' in url else url\n    name = rest.split('/', 1)[0]\n    name = name.split('@')[-1]\n    return name.split(':')[0]\n\ndef real_domain(url):\n    return '.'.join(host(url).split('.')[:2])\n" }
+          say: "Das sind die ersten beiden Teile, und genau auf die zählt ein Phishing-Link. Die Domain steht am Ende: `[-2:]`."
+      hint:
+        - "`'a.b.c'.split('.')` gibt `['a', 'b', 'c']`, `'.'.join(parts)` setzt eine Liste `parts` wieder mit Punkten zusammen."
+        - "`parts[-2:]` gibt die letzten beiden Elemente einer Liste."
+      solution: |
+        ```python
+        def real_domain(url):
+            return '.'.join(host(url).split('.')[-2:])
+        ```
+
+  - id: looks-like
+    title: Fast dieselbe Domain
+    level: 2
+    prompt: |
+      Schreib `looks_like(a, b)`: `true`, wenn die Domains `a` und `b`
+      verschieden sind, aber gleich werden, sobald in beiden `I` und `1` zu `l`,
+      `0` zu `o` und `rn` zu `m` werden; sonst `false`.
+    starter: |
+      def looks_like(a, b)
+      end
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "looks_like('schuIe-am-see.example', 'schule-am-see.example')"
+          expect: "true"
+        - call: "looks_like('schule-am-see.example', 'schuIe-am-see.example')"
+          expect: "true"
+        - call: "looks_like('rnensa.example', 'mensa.example')"
+          expect: "true"
+        - call: "looks_like('ag-0nline.example', 'ag-online.example')"
+          expect: "true"
+        - call: "looks_like('pa1ast.example', 'palast.example')"
+          expect: "true"
+        - call: "looks_like('schule-am-see.example', 'schule-am-see.example')"
+          expect: "false"
+          say: Zwei gleiche Domains sind dieselbe, keine Fälschung.
+        - call: "looks_like('zustell-service.example', 'schule-am-see.example')"
+          expect: "false"
+    feedback:
+      - when: { same_as: "def looks_like(a, b)\n  a.gsub('rn', 'm').tr('I10', 'llo') == b.gsub('rn', 'm').tr('I10', 'llo')\nend\n" }
+        say: Zwei gleiche Domains sind dieselbe, keine Fälschung. Prüfe zuerst, ob `a` und `b` verschieden sind.
+    hint:
+      - "Von Hand: Aus `schuIe-am-see.example` wird `schule-am-see.example`, aus `rnensa.example` wird `mensa.example`. Danach sind sie gleich wie die echten."
+      - "`gsub('rn', 'm')` ersetzt jedes `rn`, `tr('I10', 'llo')` ersetzt jedes `I` durch `l`, jede `1` durch `l` und jede `0` durch `o`. Eine eigene Funktion `normalize(domain)` dafür spart doppelten Code."
+    solution: |
+      ```ruby
+      def normalize(domain)
+        domain.gsub('rn', 'm').tr('I10', 'llo')
+      end
+
+      def looks_like(a, b)
+        a != b && normalize(a) == normalize(b)
+      end
+      ```
+    python:
+      prompt: |
+        Schreib `looks_like(a, b)`: `True`, wenn die Domains `a` und `b`
+        verschieden sind, aber gleich werden, sobald in beiden `I` und `1` zu `l`,
+        `0` zu `o` und `rn` zu `m` werden; sonst `False`.
+      starter: |
+        def looks_like(a, b):
+            pass
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "looks_like('schuIe-am-see.example', 'schule-am-see.example')"
+            expect: "True"
+          - call: "looks_like('schule-am-see.example', 'schuIe-am-see.example')"
+            expect: "True"
+          - call: "looks_like('rnensa.example', 'mensa.example')"
+            expect: "True"
+          - call: "looks_like('ag-0nline.example', 'ag-online.example')"
+            expect: "True"
+          - call: "looks_like('pa1ast.example', 'palast.example')"
+            expect: "True"
+          - call: "looks_like('schule-am-see.example', 'schule-am-see.example')"
+            expect: "False"
+            say: Zwei gleiche Domains sind dieselbe, keine Fälschung.
+          - call: "looks_like('zustell-service.example', 'schule-am-see.example')"
+            expect: "False"
+      feedback:
+        - when: { same_as: "def normalize(domain):\n    return domain.replace('rn', 'm').replace('I', 'l').replace('1', 'l').replace('0', 'o')\n\ndef looks_like(a, b):\n    return normalize(a) == normalize(b)\n" }
+          say: Zwei gleiche Domains sind dieselbe, keine Fälschung. Prüfe zuerst, ob `a` und `b` verschieden sind.
+      hint:
+        - "Von Hand: Aus `schuIe-am-see.example` wird `schule-am-see.example`, aus `rnensa.example` wird `mensa.example`. Danach sind sie gleich wie die echten."
+        - "`replace('rn', 'm')` ersetzt jedes `rn`; für `I`, `1` und `0` je ein weiteres `replace`. Eine eigene Funktion `normalize(domain)` dafür spart doppelten Code."
+      solution: |
+        ```python
+        def normalize(domain):
+            return domain.replace('rn', 'm').replace('I', 'l').replace('1', 'l').replace('0', 'o')
+
+        def looks_like(a, b):
+            return a != b and normalize(a) == normalize(b)
+        ```
+
+  - id: passwort-wert
+    title: Was ein Passwort wert ist
+    prediction: true
+    prompt: |
+      Jemand hat dein Passwort für die Mails der Schule. Was ist das
+      Schlimmste, was er damit tun kann?
+    check:
+      type: choice
+      options:
+        - Nichts, solange er nicht weiß, wer ich bin
+        - Meine Mails lesen
+        - In meinem Namen Mails an alle schreiben, die mir vertrauen, und in meine anderen Konten, wenn ich dort dasselbe Passwort benutze
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Wer das Passwort hat, ist für die Schule du. Was kann man in einem Postfach außer Lesen noch tun?
+      - when: { picked: 1 }
+        say: Lesen ist schon schlimm. Was kann man in einem Postfach außer Lesen noch tun?
+
+  - id: nach-dem-klick
+    title: Wenn es passiert ist
+    prompt: Du hast auf einer Phishing-Seite dein Passwort eingetippt. Was tust du zuerst?
+    check:
+      type: choice
+      options:
+        - Nichts, vielleicht passiert ja nichts
+        - Die Mail löschen, damit es niemand merkt
+        - Auf der echten Seite, die du selbst aufrufst, sofort das Passwort ändern und der Schule Bescheid sagen
+        - Über den Link in der Mail das Passwort ändern
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Wer das Passwort hat, benutzt es oft innerhalb von Minuten. Je schneller du es änderst, desto weniger kann er tun.
+      - when: { picked: 1 }
+        say: Peinlich ist es nicht, es passiert sehr vielen. Wer Bescheid weiß, kann andere warnen, bevor sie dieselbe Mail bekommen.
+      - when: { picked: 3 }
+        say: Der Link führt wieder zur falschen Seite, und dort gibst du das neue Passwort gleich mit ab. Ruf die echte Seite selbst auf.
